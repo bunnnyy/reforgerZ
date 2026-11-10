@@ -170,6 +170,12 @@ class RZ_Job_RealOrders : RZ_LeaderDelivery
 class RZ_Job_TrainingDay : RZ_LeaderHold
 {
 	protected IEntity m_Recruits;
+	protected bool m_bRecruitsSpawned;	// the group deletes itself when its last member dies: track it here
+	protected bool m_bSeenRecruits;
+	protected float m_fRecruitAge;
+	protected int m_iMostRecruits;
+
+	protected static const float SPAWN_RADIUS = 300;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -196,7 +202,6 @@ class RZ_Job_TrainingDay : RZ_LeaderHold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.8, s.m_fRadius + 40);
-		m_Recruits = RZ_Util.SpawnPrefab(gm.GetSurvivorGroupPrefab(), m_vPos);
 		m_sTitle = "Training Day";
 		m_sBrief = string.Format("Six recruits. Last week they were students. Today they do their first patrol, at the edge of %1, and they are going to panic. Stand with them for four minutes. Bring them all back.",
 			s.m_sName);
@@ -206,10 +211,29 @@ class RZ_Job_TrainingDay : RZ_LeaderHold
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		if (m_Recruits && RZ_Util.CountAlive(m_Recruits) == 0)
+		// The recruits turn up when someone comes to stand with them (AI only near players)
+		if (!m_bRecruitsSpawned && RZ_ContractHelp.AnyNear(players, m_vPos, SPAWN_RADIUS))
 		{
-			m_eState = RZ_EMissionState.FAILED;
-			return;
+			m_bRecruitsSpawned = true;
+			m_Recruits = RZ_Util.SpawnPrefab(gm.GetSurvivorGroupPrefab(), m_vPos);
+		}
+
+		if (m_bRecruitsSpawned)
+		{
+			// A null group (deleted when empty) counts as zero alive
+			m_fRecruitAge += dt;
+			int alive = RZ_Util.CountAlive(m_Recruits);
+			if (alive > 0)
+				m_bSeenRecruits = true;
+
+			if (alive > m_iMostRecruits)
+				m_iMostRecruits = alive;
+
+			if (alive == 0 && (m_bSeenRecruits || m_fRecruitAge > 15))
+			{
+				m_eState = RZ_EMissionState.FAILED;
+				return;
+			}
 		}
 
 		super.OnUpdate(gm, dt, ids, players);
@@ -218,12 +242,19 @@ class RZ_Job_TrainingDay : RZ_LeaderHold
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
+		if (m_bRecruitsSpawned && RZ_Util.CountAlive(m_Recruits) < m_iMostRecruits)
+		{
+			NotifyParticipants(gm, m_sTitle, "They walk back in step, more or less. Not all of them. Nobody says the names on the way in.");
+			return;
+		}
+
 		NotifyParticipants(gm, m_sTitle, "They walk back in step, more or less. One of them is sick behind the truck. All of them are alive.");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
+		super.Cleanup(gm);
 		RZ_Util.DeleteUnit(m_Recruits);
 	}
 }

@@ -294,7 +294,8 @@ class RZ_Mission_LostColleague : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! #6 Research Data: recover a hard drive from an overrun hospital (hold 45 s).
+//! #6 Research Data: recover a hard drive from an overrun clinic or pharmacy (or, in a town with
+//! none, where a courier fell near the middle), searching 45 s.
 //! Choice: Halcyon (research) or sell it to Bastion (Halcyon Infamy).
 class RZ_Mission_ResearchData : RZ_Mission_Choice
 {
@@ -348,13 +349,24 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 		if (!b)
 			return false;
 
-		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
+		// A real clinic, hospital or pharmacy when the town has one; otherwise no building is named
+		array<string> kinds = {"pharmacy"};
+		RZ_Landmark clinic = RZ_LandmarkFinder.FindNearest(s.m_vCenter, s.m_fRadius, kinds);
+		if (clinic)
+			m_vPos = RZ_Util.RandomPointInRing(clinic.m_vPos, 2, 5);
+		else
+			m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
+
 		SpawnDrop(gm, RZ_EFaction.INSTITUTE, halcyonPos);
 		SpawnDrop(gm, RZ_EFaction.MILITARY, LandPointNear(b.m_vCenter, b.m_fRadius * 0.8, b.m_fRadius + 50));
 		SpawnGuards(gm, m_vPos, 4, 10, 40);
 		m_fParticipationRadius = 0;
 		m_sTitle = "Research Data";
-		m_sBrief = string.Format("There's a hard drive with Halcyon's research in the hospital in %1. Search the building, then take it to the lab. Bastion's drop in %2 would pay for it too.", s.m_sName, b.m_sName);
+		if (clinic)
+			m_sBrief = string.Format("There's a hard drive with Halcyon's research in %1 in %2. Search the building, then take it to the lab. Bastion's drop in %3 would pay for it too.", clinic.m_sName, s.m_sName, b.m_sName);
+		else
+			m_sBrief = string.Format("A Halcyon courier went down near the middle of %1 with a hard drive of our research. Search where they fell, then take it to the lab. Bastion's drop in %2 would pay for it too.", s.m_sName, b.m_sName);
+
 		return true;
 	}
 
@@ -371,7 +383,7 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 			GetPlayersNear(ids, players, m_vPos, 40, near);
 			foreach (int playerId : near)
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, "Found it: the drive is on the floor of the records room.");
+				gm.NotifyPlayer(playerId, m_sTitle, "Found it: the drive is under the rubbish, still in its padded case.");
 			}
 		}
 	}

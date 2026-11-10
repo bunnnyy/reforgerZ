@@ -248,7 +248,8 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 //! the warning zone: at the waterline where the edge is coast, else at the treeline. Grab it and get out of the warning zone before the
 //! drone "locks on": the carrier may spend LOCK_SECONDS in total in the warning zone
 //! with it. Lock-on: one shot destroys the package (not the carrier) and the mission
-//! fails. Deliver it to the Haven drop in the safest town.
+//! fails. Deliver it to the Haven drop at the safehouse in the least infected town (with no
+//! safehouses, a drop in the safest town).
 class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 {
 	protected float m_fExposed;
@@ -290,13 +291,30 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 		if (!FindPackageSpot(perimeter, spot))
 			return false;
 
-		int safehouse = PickSafestSettlement(gm);
-		RZ_Settlement s = gm.GetSettlement(safehouse);
+		// A real Haven safehouse when there is one; otherwise the safest town
+		RZ_Safehouse house = RZ_ContractHelp.Safehouse(gm, RZ_SafehousePick.Safest(gm, false));
+		int town = -1;
+		vector dropAt;
+		if (house)
+			town = house.m_iSettlement;
+		else
+			town = PickSafestSettlement(gm);
+
+		RZ_Settlement s = gm.GetSettlement(town);
 		if (!s)
 			return false;
 
-		if (!SpawnDrop(gm, RZ_EFaction.SURVIVORS, LandPointNear(s.m_vCenter, 10, Math.Max(20, s.m_fRadius * 0.5))))
+		if (house)
+			dropAt = LandPointNear(house.m_vPos, 6, 14);
+		else
+			dropAt = LandPointNear(s.m_vCenter, 10, Math.Max(20, s.m_fRadius * 0.5));
+
+		if (!SpawnDrop(gm, RZ_EFaction.SURVIVORS, dropAt))
 			return false;
+
+		string destination = "our people in " + s.m_sName;
+		if (house)
+			destination = "our safehouse in " + s.m_sName;
 
 		if (!SpawnItem(gm, spot, gm.GetPerimeterPackagePrefab()))
 			return false;
@@ -311,8 +329,8 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 			m_fTimeLeft = Math.Clamp(left, 900, 7200);
 
 		m_sTitle = "The Crossing";
-		m_sBrief = string.Format("One of our runners was carrying medicine along the line tonight, the only road the Red Hand doesn't toll. A drone found her. She dropped the package at the %1 at grid %2, right under the drones, and ran. She made it. The medicine didn't. Take it and get out of the warning zone quickly: if you carry it too long under a drone, it locks on. Please bring it to our safehouse in %3. And be careful.",
-			m_sSpotKind, RZ_SettlementScanner.GridReference(spot), s.m_sName);
+		m_sBrief = string.Format("One of our runners was carrying medicine along the line tonight, the only road the Red Hand doesn't toll. A drone found her. She dropped the package at the %1 at grid %2, right under the drones, and ran. She made it. The medicine didn't. Take it and get out of the warning zone quickly: if you carry it too long under a drone, it locks on. Please bring it to %3. And be careful.",
+			m_sSpotKind, RZ_SettlementScanner.GridReference(spot), destination);
 		return true;
 	}
 
@@ -471,6 +489,9 @@ class RZ_Mission_ShotAtTheLine : RZ_PuzzleMission
 		else
 			m_vStash = LandPointNear(perimeter.PointInside(edge, inward, perimeter.GetWarnDistance() + 600), 0, 150);
 
+		// The letter gives a grid square: the stash sits in its middle
+		m_vStash = RZ_HiddenStash.GridSquareCentre(m_vStash);
+
 		if (RZ_Util.IsWater(m_vStash) || perimeter.IsNearLine(m_vStash))
 			return false;
 
@@ -518,8 +539,11 @@ class RZ_Mission_ShotAtTheLine : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		if (m_bRead && ReachedBy(ids, players, m_vStash, 10))
+		if (m_bRead && ReachedBy(ids, players, m_vStash, RZ_HiddenStash.FIND_RADIUS))
+		{
+			m_vStash = RZ_HiddenStash.FoundAt(players, m_vStash);
 			m_eState = RZ_EMissionState.SUCCEEDED;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

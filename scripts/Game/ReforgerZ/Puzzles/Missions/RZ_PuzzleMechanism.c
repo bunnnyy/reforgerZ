@@ -500,8 +500,9 @@ class RZ_Mission_LastExperiment : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		array<string> words4 = {"LAMB", "DOVE", "THAW", "MOTH", "WREN", "HUSK"};
-		array<string> words5 = {"EMBER", "MERCY", "ROWAN", "LINEN", "ASHES", "CEDAR"};
+		// No word here is an anagram of another common word: the letters spell exactly one answer
+		array<string> words4 = {"FAWN", "DOVE", "HYMN", "MOTH", "WREN", "HUSK"};
+		array<string> words5 = {"EMBER", "MERCY", "ROWAN", "LINEN", "ASHES", "BIRCH"};
 		array<string> pool = words4;
 		if (m_Rng.Chance(0.5))
 			pool = words5;

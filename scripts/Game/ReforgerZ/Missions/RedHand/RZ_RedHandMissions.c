@@ -192,10 +192,21 @@ class RZ_Mission_PharmacyHeist : RZ_Mission_Hold
 		if (!s)
 			return false;
 
-		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
+		// A real pharmacy (or clinic) when the town has one; otherwise the brief doesn't name a building
+		array<string> kinds = {"pharmacy"};
+		RZ_Landmark shop = RZ_LandmarkFinder.FindNearest(s.m_vCenter, s.m_fRadius, kinds);
+		if (shop)
+			m_vPos = RZ_Util.RandomPointInRing(shop.m_vPos, 2, 5);
+		else
+			m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
+
 		SpawnGuards(gm, m_vPos, 3, 15, 40);
 		m_sTitle = "Pharmacy Heist";
-		m_sBrief = string.Format("The Haven is sending people to the pharmacy in %1. Get there first and clean it out.", s.m_sName);
+		if (shop)
+			m_sBrief = string.Format("The Haven is sending people to %1 in %2. Get there first and clean it out.", shop.m_sName, s.m_sName);
+		else
+			m_sBrief = string.Format("The Haven is sending people to pick %1 clean of medicine. Get there first, hold the middle of town and clean it out.", s.m_sName);
+
 		return true;
 	}
 
@@ -441,8 +452,9 @@ class RZ_Mission_RaidTheCache : RZ_Mission_Hold
 }
 
 //------------------------------------------------------------------------------------------------
-//! #12 Zombie Bait: make enough noise at a Bastion checkpoint that a horde comes
-//! for it. ★ Radio Op: uses a radio to lure, twice the noise.
+//! #12 Zombie Bait: make enough noise at a Bastion post that a horde comes for it. With no
+//! Bastion outpost on the map (territory off), the edge of a town Bastion passes through.
+//! ★ Radio Op: uses a radio to lure, twice the noise.
 class RZ_Mission_ZombieBait : RZ_Mission
 {
 	protected static const float HEAT_NEEDED = 60;
@@ -467,15 +479,50 @@ class RZ_Mission_ZombieBait : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
+		m_sTitle = "Zombie Bait";
+		RZ_Holding post = PickBastionPost(gm);
+		if (post)
+		{
+			m_iSettlement = post.m_iSettlement;
+			if (m_iSettlement < 0)
+				m_iSettlement = gm.FindNearestSettlement(post.m_vPos);
+
+			m_vPos = LandPointNear(post.m_vPos, 25, 50);
+			m_sBrief = string.Format("Bastion has a post at %1. Make enough noise right outside it that every infected around comes for it. Then get out.", post.m_sName);
+			return true;
+		}
+
 		m_iSettlement = PickSettlement(gm, 0, 70);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.9, s.m_fRadius + 60);
-		m_sTitle = "Zombie Bait";
-		m_sBrief = string.Format("Bastion has a checkpoint outside %1. Make enough noise there that every infected around comes for it. Then get out.", s.m_sName);
+		m_sBrief = string.Format("We want %1 crawling the next time Bastion comes through. Make enough noise at the edge of town that every infected around comes for it. Then get out.", s.m_sName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A random Bastion outpost (never the stronghold) in a town no other mission holds, or null.
+	protected RZ_Holding PickBastionPost(RZ_GameModeComponent gm)
+	{
+		RZ_Territory territory = gm.GetTerritory();
+		if (!territory || !territory.IsActive())
+			return null;
+
+		array<RZ_Holding> posts = {};
+		territory.GetOutposts(RZ_EFaction.MILITARY, posts);
+		array<RZ_Holding> free = {};
+		foreach (RZ_Holding h : posts)
+		{
+			if (h.m_iSettlement < 0 || !gm.GetMissions().IsSettlementBusy(h.m_iSettlement))
+				free.Insert(h);
+		}
+
+		if (free.IsEmpty())
+			return null;
+
+		return free.GetRandomElement();
 	}
 
 	//------------------------------------------------------------------------------------------------

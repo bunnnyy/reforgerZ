@@ -165,7 +165,7 @@ class RZ_Mission_InstallSensors : RZ_Mission_VisitPoints
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.INSTITUTE, RZ_ETier.KNOWN, 22, 20);
-		m_Req.Bonus("radioop");
+		m_Req.Bonus("radioham");
 		m_Req.Bonus("labtech");
 		m_Req.m_bNotCured = true;
 		m_fBonusVisitSpeed = 2;
@@ -653,7 +653,7 @@ class RZ_Mission_MedicalDrone : RZ_Mission_Delivery
 	{
 		SetContract(RZ_EFaction.INSTITUTE, RZ_ETier.TRUSTED, 30, 30);
 		m_Req.Bonus("mechanic");
-		m_Req.Bonus("radioop");
+		m_Req.Bonus("radioham");
 		m_Req.m_bNotCured = true;
 		m_fTimeLeft = 3000;
 		m_fParticipationRadius = 0;
@@ -980,6 +980,7 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 class RZ_Mission_SerumTrial : RZ_PuzzleMission
 {
 	protected int m_iTalk = -1;
+	protected int m_iVolunteer = -1;	// who took the serum: still paid when it cured them
 
 	protected static const float CURE_CHANCE = 0.5;
 
@@ -1000,6 +1001,16 @@ class RZ_Mission_SerumTrial : RZ_PuzzleMission
 			return 0;
 
 		return 2;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cure clears the infection the job asks for: the volunteer stays eligible for the payout.
+	override bool IsEligible(RZ_GameModeComponent gm, int playerId)
+	{
+		if (m_iVolunteer > 0 && playerId == m_iVolunteer)
+			return true;
+
+		return super.IsEligible(gm, playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1029,6 +1040,7 @@ class RZ_Mission_SerumTrial : RZ_PuzzleMission
 
 		m_aParticipants.Clear();
 		m_aParticipants.Insert(playerId);
+		m_iVolunteer = playerId;
 		if (Math.RandomFloat01() < CURE_CHANCE)
 		{
 			gm.CurePlayer(playerId);

@@ -397,6 +397,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 			int bag = AddClue(m_sName + "'s bag", string.Format("A school bag with %1 written inside the flap. A map with %2 circled twice, and a page torn from a diary: \"%3. Mum isn't here. They say a doctor went toward %2. Going.\"",
 				m_sName, Where(gm, playerId, 2), RZ_NoteText.Day(DayNow(gm))));
 			SpawnClue(gm, RZ_EPuzzleProp.CLUE, m_aSpots[1], bag, "Look in the bag");
+			MoveToStep(gm, 1);
 			gm.NotifyPlayer(playerId, m_sTitle, "Next: " + Where(gm, playerId, 1) + ".");
 			return;
 		}
@@ -416,6 +417,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 				SpawnClue(gm, RZ_EPuzzleProp.BODY, m_aSpots[2], m_iFinal, "Search the body");
 			}
 
+			MoveToStep(gm, 2);
 			gm.NotifyPlayer(playerId, m_sTitle, "Next: " + Where(gm, playerId, 2) + ".");
 			return;
 		}
@@ -425,6 +427,19 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 			m_fRewardScale = 0.7;
 			m_eState = RZ_EMissionState.SUCCEEDED;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The journal follows the trail: the next town (its centre: the exact spot stays the clue's
+	//! job, or the ★ grid's).
+	protected void MoveToStep(RZ_GameModeComponent gm, int step)
+	{
+		m_iSettlement = m_aTowns[step];
+		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
+		if (s)
+			m_vPos = s.m_vCenter;
+		else
+			m_vPos = m_aSpots[step];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -823,6 +838,8 @@ class RZ_Mission_Distraction : RZ_PuzzleMission
 //! notebook at an observation post outside it. Getting within 50 m of one of them halves the
 //! pay (and they come for you); a wrong count fails it. The answer is how many are alive when
 //! you answer. A right count is also a little research. ★ Lab Tech: more Fame.
+//! *Simplified:* the town's own infected are cleared and kept out while it runs (the spawner's
+//! suppression, as in The Silent Village), so the only specials there are the ones being counted.
 class RZ_Mission_QuietCount : RZ_PuzzleMission
 {
 	protected vector m_vPost;
@@ -871,6 +888,10 @@ class RZ_Mission_QuietCount : RZ_PuzzleMission
 		}
 
 		SpawnGuards(gm, s.m_vCenter, 3, 0, s.m_fRadius * 0.7);
+
+		// Ambient specials would be indistinguishable from the counted ones: keep the town to the
+		// mission's own infected until it ends (mission zombies are never suppressed)
+		gm.GetSpawner().SetSuppressed(m_iSettlement, true);
 		m_vPos = s.m_vCenter;
 		m_fParticipationRadius = s.m_fRadius + 400;
 		m_sTitle = "Quiet Count";
@@ -927,5 +948,14 @@ class RZ_Mission_QuietCount : RZ_PuzzleMission
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		gm.GetCure().AddResearch(1, "A careful count from the field.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Cleanup(RZ_GameModeComponent gm)
+	{
+		if (m_iSettlement >= 0)
+			gm.GetSpawner().SetSuppressed(m_iSettlement, false);
+
+		super.Cleanup(gm);
 	}
 }
