@@ -344,6 +344,43 @@ class RZ_ItemHelper
 }
 
 //------------------------------------------------------------------------------------------------
+//! Spot kinds (the same values as RZ_Interactions.KIND_*), for switch statements.
+enum RZ_ESpotKind
+{
+	FURNITURE,
+	BUILDING,
+	BODY,
+	WRECK,
+	WORKBENCH,
+	WELL,
+	FUELPUMP,
+	STOVE,
+	BELL,
+	SIREN,
+	RADIO,
+	GENERATOR,
+	CAR
+}
+
+//------------------------------------------------------------------------------------------------
+//! Timed action kinds (the same values as RZ_Interactions.TASK_*), for switch statements.
+enum RZ_ETaskKind
+{
+	SEARCH,
+	FORCE,
+	HOTWIRE,
+	CRAFT,
+	SIPHON,
+	PUMP,
+	STRIP,
+	BOIL,
+	CRACK,
+	TREAT,
+	BURN,
+	FIT
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_Interactions
 {
 	static const int TAG = -9;				// RZ_PuzzleObjectComponent / RZ_ClueComponent mission id for spots
@@ -794,17 +831,17 @@ class RZ_Interactions
 	{
 		switch (s.m_iKind)
 		{
-			case KIND_FURNITURE: return m_Search.FurnitureNoun(name);
-			case KIND_BUILDING: return RZ_Search.TypeNoun(s.m_sType);
-			case KIND_WRECK: return "the wreck";
-			case KIND_WORKBENCH: return "the workbench";
-			case KIND_WELL: return "the well";
-			case KIND_FUELPUMP: return "the fuel pump";
-			case KIND_STOVE: return "the stove";
-			case KIND_BELL: return "the bell";
-			case KIND_SIREN: return "the siren";
-			case KIND_RADIO: return "the radio";
-			case KIND_GENERATOR: return "the generator";
+			case RZ_ESpotKind.FURNITURE: return m_Search.FurnitureNoun(name);
+			case RZ_ESpotKind.BUILDING: return RZ_Search.TypeNoun(s.m_sType);
+			case RZ_ESpotKind.WRECK: return "the wreck";
+			case RZ_ESpotKind.WORKBENCH: return "the workbench";
+			case RZ_ESpotKind.WELL: return "the well";
+			case RZ_ESpotKind.FUELPUMP: return "the fuel pump";
+			case RZ_ESpotKind.STOVE: return "the stove";
+			case RZ_ESpotKind.BELL: return "the bell";
+			case RZ_ESpotKind.SIREN: return "the siren";
+			case RZ_ESpotKind.RADIO: return "the radio";
+			case RZ_ESpotKind.GENERATOR: return "the generator";
 		}
 
 		return "it";
@@ -1019,53 +1056,53 @@ class RZ_Interactions
 
 		switch (s.m_iKind)
 		{
-			case KIND_WRECK:
+			case RZ_ESpotKind.WRECK:
 			{
 				m_Cars.WreckLabels(s, read, choiceLabels);
 				break;
 			}
-			case KIND_FUELPUMP:
+			case RZ_ESpotKind.FUELPUMP:
 			{
 				choiceLabels = "Work the hand pump (fuel)";
 				break;
 			}
-			case KIND_CAR:
+			case RZ_ESpotKind.CAR:
 			{
 				m_Cars.ProjectLabels(s, read, choiceLabels);
 				break;
 			}
-			case KIND_WORKBENCH:
+			case RZ_ESpotKind.WORKBENCH:
 			{
 				m_Crafting.WorkbenchLabels(s, read, useLabels, choiceLabels);
 				break;
 			}
-			case KIND_WELL:
+			case RZ_ESpotKind.WELL:
 			{
 				choiceLabels = "Fill a bottle|Fill a bottle and purify it";
 				break;
 			}
-			case KIND_STOVE:
+			case RZ_ESpotKind.STOVE:
 			{
 				choiceLabels = "Boil water";
 				break;
 			}
-			case KIND_BELL:
+			case RZ_ESpotKind.BELL:
 			{
 				choiceLabels = "Ring the bell";
 				break;
 			}
-			case KIND_SIREN:
+			case RZ_ESpotKind.SIREN:
 			{
 				choiceLabels = "Sound the siren";
 				break;
 			}
-			case KIND_RADIO:
+			case RZ_ESpotKind.RADIO:
 			{
 				read = "Listen to the radio";
 				choiceLabels = "Tune through the open channels|Work on a scrambled channel";
 				break;
 			}
-			case KIND_GENERATOR:
+			case RZ_ESpotKind.GENERATOR:
 			{
 				m_Traps.FoundGeneratorLabels(s, read, choiceLabels);
 				break;
@@ -1103,11 +1140,11 @@ class RZ_Interactions
 
 		switch (s.m_iKind)
 		{
-			case KIND_WRECK: m_Cars.DescribeWreck(playerId, s); return;
-			case KIND_CAR: m_Cars.Inspect(playerId, s, user); return;
-			case KIND_WORKBENCH: m_Crafting.DescribeBench(playerId); return;
-			case KIND_RADIO: m_Radio.ListenHouseRadio(playerId, s, user); return;
-			case KIND_GENERATOR: m_Traps.DescribeFoundGenerator(playerId, s); return;
+			case RZ_ESpotKind.WRECK: m_Cars.DescribeWreck(playerId, s); return;
+			case RZ_ESpotKind.CAR: m_Cars.Inspect(playerId, s, user); return;
+			case RZ_ESpotKind.WORKBENCH: m_Crafting.DescribeBench(playerId); return;
+			case RZ_ESpotKind.RADIO: m_Radio.ListenHouseRadio(playerId, s, user); return;
+			case RZ_ESpotKind.GENERATOR: m_Traps.DescribeFoundGenerator(playerId, s); return;
 		}
 
 		m_GM.NotifyPlayer(playerId, Title(s), DescribeSimple(s));
@@ -1118,11 +1155,11 @@ class RZ_Interactions
 	{
 		switch (s.m_iKind)
 		{
-			case KIND_WELL: return "A well. The water looks clear enough, which means nothing. Boil it or purify it before you drink.";
-			case KIND_FUELPUMP: return "The electric pumps are dead, but there's a hand pump on the side for when the power goes. There's still something in the tank, by the sound of it.";
-			case KIND_STOVE: return "Cold, but it would light. Boiling water takes a while and smokes a little.";
-			case KIND_BELL: return "A heavy bell on a rope. Everything for a mile would hear it, and come.";
-			case KIND_SIREN: return "A civil defence siren with a hand crank. It still turns.";
+			case RZ_ESpotKind.WELL: return "A well. The water looks clear enough, which means nothing. Boil it or purify it before you drink.";
+			case RZ_ESpotKind.FUELPUMP: return "The electric pumps are dead, but there's a hand pump on the side for when the power goes. There's still something in the tank, by the sound of it.";
+			case RZ_ESpotKind.STOVE: return "Cold, but it would light. Boiling water takes a while and smokes a little.";
+			case RZ_ESpotKind.BELL: return "A heavy bell on a rope. Everything for a mile would hear it, and come.";
+			case RZ_ESpotKind.SIREN: return "A civil defence siren with a hand crank. It still turns.";
 		}
 
 		return "Nothing special.";
@@ -1171,14 +1208,14 @@ class RZ_Interactions
 
 		switch (s.m_iKind)
 		{
-			case KIND_WRECK: m_Cars.HandleWreck(playerId, s, option, user); return;
-			case KIND_CAR: m_Cars.HandleProject(playerId, s, option, user); return;
-			case KIND_FUELPUMP: m_Cars.HandlePump(playerId, s, user); return;
-			case KIND_WORKBENCH: m_Crafting.HandleRecipe(playerId, s, option, user); return;
-			case KIND_WELL: m_Crafting.HandleWell(playerId, s, option, user); return;
-			case KIND_STOVE: m_Crafting.HandleStove(playerId, s, user); return;
-			case KIND_RADIO: m_Radio.HandleHouseRadio(playerId, s, option, user); return;
-			case KIND_GENERATOR: m_Traps.HandleFoundGenerator(playerId, s, option, user); return;
+			case RZ_ESpotKind.WRECK: m_Cars.HandleWreck(playerId, s, option, user); return;
+			case RZ_ESpotKind.CAR: m_Cars.HandleProject(playerId, s, option, user); return;
+			case RZ_ESpotKind.FUELPUMP: m_Cars.HandlePump(playerId, s, user); return;
+			case RZ_ESpotKind.WORKBENCH: m_Crafting.HandleRecipe(playerId, s, option, user); return;
+			case RZ_ESpotKind.WELL: m_Crafting.HandleWell(playerId, s, option, user); return;
+			case RZ_ESpotKind.STOVE: m_Crafting.HandleStove(playerId, s, user); return;
+			case RZ_ESpotKind.RADIO: m_Radio.HandleHouseRadio(playerId, s, option, user); return;
+			case RZ_ESpotKind.GENERATOR: m_Traps.HandleFoundGenerator(playerId, s, option, user); return;
 		}
 	}
 
@@ -1360,18 +1397,18 @@ class RZ_Interactions
 		RZ_Spot s = FindSpot(t.m_iSpot);
 		switch (t.m_iKind)
 		{
-			case TASK_SEARCH: m_Search.CompleteSearch(t.m_iPlayerId, s, user); return;
-			case TASK_FORCE: m_Search.CompleteForce(t.m_iPlayerId, s, user); return;
-			case TASK_BURN: m_Traps.CompleteBurn(t.m_iPlayerId, s, user); return;
-			case TASK_HOTWIRE: m_Cars.CompleteHotwire(t.m_iPlayerId, s, t.m_iArg); return;
-			case TASK_FIT: m_Cars.CompleteFit(t.m_iPlayerId, s, t.m_iArg, user); return;
-			case TASK_SIPHON: m_Cars.CompleteSiphon(t.m_iPlayerId, s, user); return;
-			case TASK_STRIP: m_Cars.CompleteStrip(t.m_iPlayerId, s, user); return;
-			case TASK_PUMP: m_Cars.CompletePump(t.m_iPlayerId, s, user); return;
-			case TASK_CRAFT: m_Crafting.CompleteRecipe(t.m_iPlayerId, s, t.m_iArg, user); return;
-			case TASK_BOIL: m_Crafting.CompleteBoil(t.m_iPlayerId, s, user); return;
-			case TASK_CRACK: m_Radio.CompleteCrack(t.m_iPlayerId, t.m_iArg, user, t.m_iSpot); return;
-			case TASK_TREAT: m_Medical.CompleteTreat(t.m_iPlayerId, user, t.m_Target, t.m_iArg); return;
+			case RZ_ETaskKind.SEARCH: m_Search.CompleteSearch(t.m_iPlayerId, s, user); return;
+			case RZ_ETaskKind.FORCE: m_Search.CompleteForce(t.m_iPlayerId, s, user); return;
+			case RZ_ETaskKind.BURN: m_Traps.CompleteBurn(t.m_iPlayerId, s, user); return;
+			case RZ_ETaskKind.HOTWIRE: m_Cars.CompleteHotwire(t.m_iPlayerId, s, t.m_iArg); return;
+			case RZ_ETaskKind.FIT: m_Cars.CompleteFit(t.m_iPlayerId, s, t.m_iArg, user); return;
+			case RZ_ETaskKind.SIPHON: m_Cars.CompleteSiphon(t.m_iPlayerId, s, user); return;
+			case RZ_ETaskKind.STRIP: m_Cars.CompleteStrip(t.m_iPlayerId, s, user); return;
+			case RZ_ETaskKind.PUMP: m_Cars.CompletePump(t.m_iPlayerId, s, user); return;
+			case RZ_ETaskKind.CRAFT: m_Crafting.CompleteRecipe(t.m_iPlayerId, s, t.m_iArg, user); return;
+			case RZ_ETaskKind.BOIL: m_Crafting.CompleteBoil(t.m_iPlayerId, s, user); return;
+			case RZ_ETaskKind.CRACK: m_Radio.CompleteCrack(t.m_iPlayerId, t.m_iArg, user, t.m_iSpot); return;
+			case RZ_ETaskKind.TREAT: m_Medical.CompleteTreat(t.m_iPlayerId, user, t.m_Target, t.m_iArg); return;
 		}
 	}
 
