@@ -332,6 +332,21 @@ class RZ_Wanderers
 	protected ref map<string, float> m_mRumourAt = new map<string, float>();
 	protected ref map<string, float> m_mJobAt = new map<string, float>();
 
+	// A faction lost an outpost (OnOutpostLost): the roads there are avoided for a while, the news
+	// goes round, and the losers' people are in a mood. Runtime only, it fades within the hour.
+	protected ref array<vector> m_aUnrestPos = {};
+	protected ref array<float> m_aUnrestUntil = {};
+	protected string m_sLossRumour;
+	protected float m_fRumourUntil = -1;
+	protected int m_iMoodFaction = -1;			// whose people are in a mood
+	protected int m_iMoodWinner = -1;
+	protected string m_sMoodPlace;
+	protected float m_fMoodUntil = -1;
+
+	protected static const float UNREST_RADIUS = 600;
+	protected static const float UNREST_SECONDS = 1800;
+	protected static const float LOSS_NEWS_SECONDS = 3600;
+
 	//------------------------------------------------------------------------------------------------
 	void RZ_Wanderers(RZ_GameModeComponent gm, RZ_WandererSettings settings)
 	{
@@ -934,6 +949,73 @@ class RZ_Wanderers
 
 	// ================================================================ Tick
 	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! From RZ_Territory: `loser` lost its outpost at pos (taken by `taker`, or abandoned if -1).
+	//! Wanderers headed that way pick somewhere else, the road talks about it for an hour, and the
+	//! losing side's people are in a mood (Haven wanderers keep to the safehouses).
+	void OnOutpostLost(int loser, int taker, vector pos, string place)
+	{
+		m_aUnrestPos.Insert(pos);
+		m_aUnrestUntil.Insert(m_fClock + UNREST_SECONDS);
+		m_iMoodFaction = loser;
+		m_iMoodWinner = taker;
+		m_sMoodPlace = place;
+		m_fMoodUntil = m_fClock + LOSS_NEWS_SECONDS;
+		m_fRumourUntil = m_fClock + LOSS_NEWS_SECONDS;
+		if (taker >= 0)
+			m_sLossRumour = string.Format("\"Heard %1 lost %2 to %3. The roads round there are bad now. I'm going the long way.\"", RZ_Factions.GetName(loser), place, RZ_Factions.GetNameInText(taker));
+		else
+			m_sLossRumour = string.Format("\"%1 pulled out of %2. Nobody's sure why. Nobody's going to look, either.\"", RZ_Factions.GetName(loser), place);
+
+		foreach (RZ_Wanderer w : m_aList)
+		{
+			if (!w.m_bAlive || w.m_iHeldBy >= 0 || w.m_iEscortPlayer > 0 || w.m_iNudgePlayer > 0 || w.m_eState != RZ_EWandererState.TRAVEL)
+				continue;
+
+			if (RZ_Util.DistXZ(w.m_vDest, pos) <= UNREST_RADIUS)
+				ChooseDestination(w);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsUnrest(vector pos)
+	{
+		for (int i = m_aUnrestPos.Count() - 1; i >= 0; i--)
+		{
+			if (m_fClock >= m_aUnrestUntil[i])
+			{
+				m_aUnrestPos.Remove(i);
+				m_aUnrestUntil.Remove(i);
+				continue;
+			}
+
+			if (RZ_Util.DistXZ(m_aUnrestPos[i], pos) <= UNREST_RADIUS)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The mood after a lost outpost, as a line before what they say. "" if none.
+	protected string MoodLine(RZ_Wanderer w)
+	{
+		if (m_fClock >= m_fMoodUntil || m_iMoodFaction < 0)
+			return "";
+
+		if (w.m_eRole == RZ_EWandererRole.DESERTER && m_iMoodFaction == RZ_EFaction.MILITARY)
+			return string.Format("\"Bastion lost %1? Told them. Nobody listens to a deserter.\" ", m_sMoodPlace);
+
+		if (m_iMoodFaction == RZ_EFaction.SURVIVORS && w.IsHaven())
+			return string.Format("They keep looking back the way they came. \"We lost %1. People we knew.\" ", m_sMoodPlace);
+
+		if (m_iMoodWinner == RZ_EFaction.BANDITS && w.IsHaven())
+			return string.Format("\"The Red Hand's in %1 now. Keep your voice down.\" ", m_sMoodPlace);
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		if (m_aList.IsEmpty())
@@ -1111,11 +1193,15 @@ class RZ_Wanderers
 			else if (w.m_eRole == RZ_EWandererRole.COURIER)
 				houseWeight = 2;
 
+			// The Haven lost an outpost: its people keep close to the safehouses for a while
+			if (m_iMoodFaction == RZ_EFaction.SURVIVORS && m_fClock < m_fMoodUntil && w.IsHaven())
+				houseWeight = houseWeight * 2;
+
 			for (int h = 0; h < safehouses.Count(); h++)
 			{
 				RZ_Safehouse house = safehouses.Get(h);
 				float hd = RZ_Util.DistXZ(w.m_vPos, house.m_vPos);
-				if (hd < 300 || hd > 4500 || !IsRouteClear(w.m_vPos, house.m_vPos))
+				if (hd < 300 || hd > 4500 || !IsRouteClear(w.m_vPos, house.m_vPos) || IsUnrest(house.m_vPos))
 					continue;
 
 				points.Insert(house.m_vPos);
@@ -1137,7 +1223,7 @@ class RZ_Wanderers
 				continue;
 
 			vector at = RZ_Mission.LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
-			if (!IsRouteClear(w.m_vPos, at))
+			if (!IsRouteClear(w.m_vPos, at) || IsUnrest(at))
 				continue;
 
 			points.Insert(at);
@@ -1893,6 +1979,13 @@ class RZ_Wanderers
 		if (!w.m_sDestName.IsEmpty())
 			lines.Insert(string.Format("\"I'm heading for %1. If you're going that way, it's quiet enough.\"", w.m_sDestName));
 
+		// A lost outpost is the talk of the road for an hour
+		if (m_fClock < m_fRumourUntil && !m_sLossRumour.IsEmpty())
+		{
+			lines.Insert(m_sLossRumour);
+			lines.Insert(m_sLossRumour);
+		}
+
 		// Road gossip about the factions (not always true) or a big moment people remember
 		if (m_GM.GetFactionLife())
 		{
@@ -1947,7 +2040,7 @@ class RZ_Wanderers
 			return;
 		}
 
-		string text = IntroText(w) + "\n" + IntelText(w, player.GetOrigin());
+		string text = MoodLine(w) + IntroText(w) + "\n" + IntelText(w, player.GetOrigin());
 		if (attitude >= 2)
 			text += "\n" + WarningText(player.GetOrigin());
 

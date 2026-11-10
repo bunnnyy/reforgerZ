@@ -27,7 +27,7 @@ the Workbench plugin) and a play-test before any of it can be called working
 | Real supply trucks with AI crews, shortages, escort, drive-in and theft | [Supply trucks](DESIGN.md#supply-trucks) |
 | Faction life: needs, morale, chatter, life events, truces and feuds, moments, rumours | [Faction life](DESIGN.md#faction-life), [REPUTATION.md](REPUTATION.md#morale-needs-truces-and-feuds) |
 | Haven safehouses: population tiers, upkeep, rescues, house rules, exile | [Haven safehouses](DESIGN.md#haven-safehouses) |
-| Named wanderers: travel, reactions, memory, deaths in the news | [Wanderers](DESIGN.md#wanderers) |
+| Named wanderers: travel, reactions, memory, deaths in the news, lost outposts (rerouting, rumours, mood) | [Wanderers](DESIGN.md#wanderers) |
 | Named leaders: traits, loyalty, memory, voiced briefs, deaths and replacements | [Leaders](DESIGN.md#leaders), [REPUTATION.md](REPUTATION.md#faction-leaders) |
 | 176 missions (every one designed so far): all 80 faction contracts (on shared building blocks: escorts, live capture, vehicle zones and convoys, health cost, step chains), all 25 world events, 17 puzzles, 11 unarmed, 3 Perimeter, 3 Haven house contracts and the Courier's letters, 32 leader jobs and Rein In, 3 arc missions | [MISSIONS.md](MISSIONS.md) |
 | Six story arcs and session headlines | [Story arcs](DESIGN.md#story-arcs-and-headlines) |
@@ -65,7 +65,6 @@ the Workbench plugin) and a play-test before any of it can be called working
 - Surrendering at checkpoints.
 - AI camps that warn and refuse by standing, and safe-zone entry.
 - Reputation clues other players can see (e.g. a bandit armband).
-- Wanderers react when their faction loses an outpost.
 
 ### Player to player
 - A notice board at each safehouse for short notes between sessions.

@@ -578,9 +578,15 @@ settlements above 8). Names come from a seed; roster, positions and memories are
 - **Performance.** With no player within 400 m, a wanderer is a position moving in a straight
   line on the tick. At most two bodies near each player.
 
+- **A lost outpost.** When a faction loses an outpost (taken or abandoned), wanderers headed
+  within 600 m of it pick somewhere else, and nobody heads there for 30 minutes. For an hour the
+  loss is the likeliest road news ("Heard Bastion lost Morton to the Red Hand"), and the losers'
+  people are in a mood: Haven wanderers open with it and keep twice as close to the safehouses;
+  the Deserter gloats when Bastion loses one; Haven people talk low when the Red Hand moves in.
+
 *Simplified:* routes are straight lines, not roads. A body without AI stands still while
 someone is near and walks on unseen. Only a wanderer whose body is an armed AI group fights
-back. Wanderers don't react to outposts changing hands; they only pass on the gossip.
+back. The mood after a lost outpost is one at a time, the latest, and isn't saved.
 
 ## Leaders
 

@@ -1236,6 +1236,11 @@ class RZ_Territory
 			life.OnOutpostGained(taker, h.m_sName);
 		}
 
+		// Wanderers avoid the place for a while and talk about it
+		RZ_Wanderers wanderers = m_GM.GetWanderers();
+		if (wanderers)
+			wanderers.OnOutpostLost(loser, taker, h.m_vPos, h.m_sName);
+
 		RZ_SupplyLines supply = m_GM.GetSupply();
 		if (supply)
 			supply.OnHoldingChanged(h.m_iId);
@@ -1347,6 +1352,10 @@ class RZ_Territory
 		RZ_FactionLife life = m_GM.GetFactionLife();
 		if (life)
 			life.AddMorale(h.m_eFaction, -2);
+
+		RZ_Wanderers wanderers = m_GM.GetWanderers();
+		if (wanderers)
+			wanderers.OnOutpostLost(h.m_eFaction, -1, h.m_vPos, h.m_sName);
 
 		RZ_SupplyLines supply = m_GM.GetSupply();
 		if (supply)
