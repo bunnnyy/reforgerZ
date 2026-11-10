@@ -76,6 +76,29 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot crate spawned as a mission reward", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sRewardCratePrefab;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Friendly survivor AI group for holdout missions (optional)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sSurvivorGroupPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Destructible zombie nest, e.g. from Zombie Hive (optional, enables Burn the Nest)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sNestPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bandit dead drop with RZ_SellSamplesToBanditsAction (optional, enables the bandit path)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sDeadDropPrefab;
+
+	// ---------------------------------------------------------------- Survival
+	[Attribute("3", desc: "Heat per shot fired by a player (times the background noise multiplier)", category: "ReforgerZ|Survival")]
+	protected float m_fHeatPerShot;
+
+	[Attribute("0.3", desc: "Chance that a zombie hit infects. 0 disables built-in bite detection", category: "ReforgerZ|Survival")]
+	protected float m_fBiteChance;
+
+	[Attribute("2.5", desc: "How close (m) a zombie must be for a health drop to count as its hit", category: "ReforgerZ|Survival")]
+	protected float m_fBiteReach;
+
+	// ---------------------------------------------------------------- Debug
+	[Attribute("1", desc: "Log a world status summary every few minutes", category: "ReforgerZ|Debug")]
+	protected bool m_bStatusLog;
+
 	// ---------------------------------------------------------------- Replicated summary
 	[RplProp()]
 	protected float m_fReplCureProgress;
@@ -95,6 +118,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_ZombieSpawner m_Spawner;
 	protected ref RZ_MissionManager m_Missions;
 	protected ref RZ_CureResearch m_Cure;
+	protected ref RZ_BiteDetector m_BiteDetector;
+	protected float m_fStatusTimer;
 	protected ref map<string, ref RZ_PlayerProfile> m_mProfiles = new map<string, ref RZ_PlayerProfile>();
 	protected ref array<IEntity> m_aSpawnPoints = {};
 	protected ref set<int> m_aWelcomed = new set<int>();
@@ -130,9 +155,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	void ~RZ_GameModeComponent()
 	{
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(ShowNextHint);
+
 		if (m_bServerRunning && GetGame() && GetGame().GetCallqueue())
 		{
 			GetGame().GetCallqueue().Remove(ServerTick);
+			GetGame().GetCallqueue().Remove(BiteCheck);
 			SaveState();
 		}
 
@@ -157,6 +186,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Director = new RZ_Director(this, m_aStages);
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
 		m_Missions = new RZ_MissionManager(this);
+		m_BiteDetector = new RZ_BiteDetector(this, m_fBiteChance, m_fBiteReach);
 
 		bool loaded = false;
 		if (!m_bWipeOnStart)
@@ -181,6 +211,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		UpdateReplicated();
 		m_bServerRunning = true;
 		GetGame().GetCallqueue().CallLater(ServerTick, m_fTickSeconds * 1000, true);
+		// Bites need a faster check than the main tick to catch individual hits
+		GetGame().GetCallqueue().CallLater(BiteCheck, 1000, true);
 
 		RZ_Log.Info(string.Format("Started. %1 settlements, stage %2, cure %3 percent, state %4.",
 			m_aSettlements.Count(), RZ_StageSettings.GetStageName(m_Director.GetStage()),
@@ -202,6 +234,21 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Missions.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
 		UpdateInfections(dt, ids);
+
+		foreach (int i, IEntity ent : players)
+		{
+			RZ_Objectives.Tick(this, ids[i], GetProfile(ids[i]), ent, dt);
+		}
+
+		if (m_bStatusLog)
+		{
+			m_fStatusTimer += dt;
+			if (m_fStatusTimer >= 300)
+			{
+				m_fStatusTimer = 0;
+				LogStatus(ids.Count());
+			}
+		}
 
 		m_fSpawnRotateTimer += dt;
 		if (m_fSpawnRotateTimer >= m_fSpawnRotateMinutes * 60)
@@ -226,6 +273,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
 	vector GetLabPosition() { return m_vLabPos; }
+	ResourceName GetSurvivorGroupPrefab() { return m_sSurvivorGroupPrefab; }
+	ResourceName GetNestPrefab() { return m_sNestPrefab; }
+	ResourceName GetDeadDropPrefab() { return m_sDeadDropPrefab; }
 
 	float GetReplicatedCureProgress() { return m_fReplCureProgress; }
 	RZ_EOutbreakStage GetReplicatedStage() { return m_iReplStage; }
@@ -344,24 +394,100 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_Background bg = ResolveBackground(playerId);
 		RZ_PlayerProfile profile = GetProfile(playerId);
 		profile.StartNewLife(bg);
+		RZ_Objectives.Assign(this, profile, bg, controlledEntity.GetOrigin());
 
-		NotifyPlayer(playerId, bg.m_sName, string.Format("Perk: %1\nFlaw: %2", bg.m_sPerk, bg.m_sFlaw));
+		m_BiteDetector.Reset(playerId);
+		RegisterGunfire(controlledEntity);
 
+		// 1. Who you are this life
+		string intro = string.Format("Perk: %1\nFlaw: %2\n\nYour goal: %3",
+			bg.m_sPerk, bg.m_sFlaw, RZ_Objectives.Describe(this, profile));
+		NotifyPlayer(playerId, bg.m_sName, intro);
+
+		// 2. The state of the world (first spawn of this session only)
 		if (!m_aWelcomed.Contains(playerId))
 		{
 			m_aWelcomed.Insert(playerId);
 			string lab = "";
 			if (m_bHasLab)
 			{
-				int idx = FindNearestSettlement(m_vLabPos);
-				RZ_Settlement s = GetSettlement(idx);
-				if (s)
-					lab = string.Format(" The Institute is running a lab near %1. Bring it samples from special infected.", s.m_sName);
+				lab = string.Format("\nThe Institute's lab: %1. Bring it samples from special infected.",
+					RZ_Util.DirectionText(controlledEntity.GetOrigin(), m_vLabPos));
 			}
 
 			NotifyPlayer(playerId, "Outbreak: " + RZ_StageSettings.GetStageName(m_Director.GetStage()),
 				string.Format("Cure research: %1 percent.%2", RZ_Util.RoundToInt(m_Cure.m_fProgress), lab));
 		}
+
+		// 3. What's on the radio
+		NotifyPlayer(playerId, "Radio", m_Missions.DescribeActiveFor(controlledEntity));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every player gets the brief with the distance and direction from where they are.
+	void AnnounceMission(RZ_Mission mission)
+	{
+		array<int> all = {};
+		GetGame().GetPlayerManager().GetPlayers(all);
+		foreach (int playerId : all)
+		{
+			string where = mission.GetLocationName(this);
+			IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+			if (ent)
+				where = where + ", " + RZ_Util.DirectionText(ent.GetOrigin(), mission.m_vPos);
+
+			NotifyPlayer(playerId, "New mission: " + mission.m_sTitle, string.Format("%1\n(%2)", mission.m_sBrief, where));
+		}
+	}
+
+	// ================================================================ Gunfire
+	//------------------------------------------------------------------------------------------------
+	protected void RegisterGunfire(IEntity character)
+	{
+		EventHandlerManagerComponent ev = EventHandlerManagerComponent.Cast(character.FindComponent(EventHandlerManagerComponent));
+		if (ev)
+			ev.RegisterScriptHandler("OnProjectileShot", this, OnPlayerShot); // VERIFY: event name and signature
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every shot is heard. Hunters are quieter, Mechanics and Radio Operators louder.
+	//! TODO: lower heat for suppressed weapons.
+	protected void OnPlayerShot(int playerID, BaseWeaponComponent weapon, IEntity entity)
+	{
+		IEntity shooter = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerID);
+		if (!shooter)
+			return;
+
+		m_Heat.AddHeat(shooter.GetOrigin(), m_fHeatPerShot * GetPlayerBackground(playerID).m_fNoiseMult);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void BiteCheck()
+	{
+		m_BiteDetector.Check();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LogStatus(int playerCount)
+	{
+		int safe, contested, infested, overrun;
+		foreach (RZ_Settlement s : m_aSettlements)
+		{
+			switch (s.GetState())
+			{
+				case RZ_ESettlementState.SAFE: safe++; break;
+				case RZ_ESettlementState.CONTESTED: contested++; break;
+				case RZ_ESettlementState.INFESTED: infested++; break;
+				case RZ_ESettlementState.OVERRUN: overrun++; break;
+			}
+		}
+
+		RZ_Log.Info(string.Format("Status | %1 (%2 min) | avg infection %3 | towns safe/contested/infested/overrun %4/%5/%6/%7 | zombies %8 | missions %9",
+			RZ_StageSettings.GetStageName(m_Director.GetStage()), RZ_Util.RoundToInt(m_Director.GetStageMinutes()),
+			RZ_Util.RoundToInt(m_Director.GetAverageInfection()), safe, contested, infested, overrun,
+			m_Spawner.GetTrackedCount(), m_Missions.GetActive().Count()));
+		RZ_Log.Info(string.Format("Status | players %1 | cure %2 percent (milestone %3, final stand %4)",
+			playerCount, RZ_Util.RoundToInt(m_Cure.m_fProgress), m_Cure.m_iMilestone, m_Cure.IsFinalStand()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -788,6 +914,51 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (targetPlayerId != -1 && SCR_PlayerController.GetLocalPlayerId() != targetPlayerId)
 			return;
 
-		SCR_HintManagerComponent.ShowCustomHint(text, title, 10); // VERIFY
+		QueueHint(title, text);
+	}
+
+	// ---------------------------------------------------------------- Client hint queue
+	//! The hint widget shows one hint at a time, so messages that arrive together
+	//! (e.g. the three on spawn) are queued and shown one after another.
+	protected ref array<string> m_aHintTitles = {};
+	protected ref array<string> m_aHintTexts = {};
+	protected bool m_bHintShowing;
+
+	protected static const int HINT_SECONDS = 9;
+	protected static const int HINT_QUEUE_MAX = 6;
+
+	//------------------------------------------------------------------------------------------------
+	protected void QueueHint(string title, string text)
+	{
+		// Under heavy traffic, drop the oldest messages rather than lag minutes behind
+		if (m_aHintTitles.Count() >= HINT_QUEUE_MAX)
+		{
+			m_aHintTitles.Remove(0);
+			m_aHintTexts.Remove(0);
+		}
+
+		m_aHintTitles.Insert(title);
+		m_aHintTexts.Insert(text);
+		if (!m_bHintShowing)
+			ShowNextHint();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowNextHint()
+	{
+		if (m_aHintTitles.IsEmpty())
+		{
+			m_bHintShowing = false;
+			return;
+		}
+
+		m_bHintShowing = true;
+		string title = m_aHintTitles[0];
+		string text = m_aHintTexts[0];
+		m_aHintTitles.Remove(0);
+		m_aHintTexts.Remove(0);
+
+		SCR_HintManagerComponent.ShowCustomHint(text, title, HINT_SECONDS); // VERIFY
+		GetGame().GetCallqueue().CallLater(ShowNextHint, HINT_SECONDS * 1000, false);
 	}
 }

@@ -196,6 +196,28 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! "1.2 km NE" from one point to another. Enfusion uses +X east and +Z north.
+	static string DirectionText(vector from, vector to)
+	{
+		float dx = to[0] - from[0];
+		float dz = to[2] - from[2];
+		float deg = Math.Atan2(dx, dz) * Math.RAD2DEG;
+		if (deg < 0)
+			deg += 360;
+
+		array<string> names = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
+		int idx = RoundToInt(deg / 45);
+		idx = idx % 8;
+
+		float dist = DistXZ(from, to);
+		if (dist < 1000)
+			return string.Format("%1 m %2", RoundToInt(dist / 10) * 10, names[idx]);
+
+		int tenths = RoundToInt(dist / 100);
+		return string.Format("%1.%2 km %3", tenths / 10, tenths % 10, names[idx]);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int RoundToInt(float f)
 	{
 		int i = Math.Round(f);

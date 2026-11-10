@@ -67,6 +67,15 @@ class RZ_Mission
 	void OnFailed(RZ_GameModeComponent gm) {}
 
 	//------------------------------------------------------------------------------------------------
+	void NotifyParticipants(RZ_GameModeComponent gm, string title, string text)
+	{
+		foreach (int playerId : m_aParticipants)
+		{
+			gm.NotifyPlayer(playerId, title, text);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	string GetLocationName(RZ_GameModeComponent gm)
 	{
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);

@@ -20,6 +20,10 @@ class RZ_MissionManager
 		RegisterType(RZ_Mission_ClearSettlement);
 		RegisterType(RZ_Mission_SampleHunt);
 		RegisterType(RZ_Mission_RadioRelay);
+		RegisterType(RZ_Mission_SurvivorHoldout);
+		RegisterType(RZ_Mission_EvacWindow);
+		RegisterType(RZ_Mission_BurnTheNest);
+		RegisterType(RZ_Mission_BanditDeadDrop);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -84,6 +88,36 @@ class RZ_MissionManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	void OnSamplesSoldToBandits(int playerId, int value, IEntity drop)
+	{
+		foreach (RZ_Mission m : m_aActive)
+		{
+			RZ_Mission_BanditDeadDrop deadDrop = RZ_Mission_BanditDeadDrop.Cast(m);
+			if (deadDrop && deadDrop.IsDrop(drop))
+			{
+				deadDrop.OnSold(m_GM, playerId, value);
+				return;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Text for a newly spawned player: what's going on and where.
+	string DescribeActiveFor(IEntity player)
+	{
+		if (m_aActive.IsEmpty())
+			return "The radio is quiet.";
+
+		string text = "";
+		foreach (RZ_Mission m : m_aActive)
+		{
+			text += string.Format("%1: %2 (%3)\n", m.m_sTitle, m.GetLocationName(m_GM), RZ_Util.DirectionText(player.GetOrigin(), m.m_vPos));
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void CreateRandom()
 	{
 		array<ref RZ_Mission> candidates = {};
@@ -125,7 +159,7 @@ class RZ_MissionManager
 			{
 				m_iNextId++;
 				m_aActive.Insert(mission);
-				m_GM.NotifyAll("New mission: " + mission.m_sTitle, mission.m_sBrief);
+				m_GM.AnnounceMission(mission);
 				RZ_Log.Info(string.Format("Mission %1 '%2' at %3", mission.m_iId, mission.m_sTitle, mission.GetLocationName(m_GM)));
 				return;
 			}
@@ -149,7 +183,9 @@ class RZ_MissionManager
 				RZ_Background bg = m_GM.GetPlayerBackground(playerId);
 				int rep = RZ_Util.RoundToInt(m.m_iRepReward * bg.m_fMissionRewardMult);
 				m_GM.AddReputation(playerId, m.m_eGiver, rep);
-				m_GM.GetProfile(playerId).m_iMissionsCompleted++;
+				RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+				profile.m_iMissionsCompleted++;
+				profile.m_iLifeMissions++;
 			}
 
 			m_GM.NotifyAll("Mission complete", string.Format("%1 (%2) is done.", m.m_sTitle, m.GetLocationName(m_GM)));

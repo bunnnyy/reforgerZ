@@ -31,8 +31,14 @@ They're isolated in small helpers, mostly in `Core/RZ_Util.c`.
 | `RZ_SpawnPoint.et` | vanilla `SpawnPoint` prefab | none |
 | `RZ_Lab.et` | any building or composition (field hospital tent, lab container) | `RZ_LabComponent`; in `ActionsManagerComponent` add `RZ_DepositSamplesAction` and `RZ_LabStatusAction` |
 | `RZ_Sample.et` | a small vanilla item (e.g. a medical vial or bandage) | `RZ_SampleItemComponent` |
-| `RZ_Antidote.et` | morphine or saline item | (phase 2: a use action that calls `CurePlayer`) |
+| `RZ_Antidote.et` | morphine or saline item | `RZ_InjectAntidoteAction` in its `ActionsManagerComponent` (used from the ground for now) |
 | `RZ_RewardCrate.et` | vanilla supply box | Fill its storage with loot |
+| `RZ_BanditDrop.et` *(optional)* | crate, barrel or car wreck | `RZ_SellSamplesToBanditsAction`. Enables the bandit dead-drop mission |
+| `RZ_Nest.et` *(optional)* | Zombie Hive prefab, or any destructible prop | Needs a damage manager. Enables Burn the Nest |
+| `RZ_SurvivorGroup.et` *(optional)* | civilian AI group on faction `SURV` | Real survivors in the holdout mission |
+
+Characters already have an `EventHandlerManagerComponent`, and ReforgerZ listens to
+its `OnProjectileShot` event for gunfire heat. Nothing to add.
 
 ## 4. Factions and backgrounds
 

@@ -106,16 +106,10 @@ class RZ_LabHelper
 }
 
 //------------------------------------------------------------------------------------------------
-//! "Deliver infected samples": the lab takes every sample the player is carrying.
-class RZ_DepositSamplesAction : ScriptedUserAction
+//! Shared logic for handing in the samples a player is carrying. Subclasses
+//! decide who receives them: the lab (research) or bandits (loot, no research).
+class RZ_SampleDeliveryActionBase : ScriptedUserAction
 {
-	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
-	{
-		outName = "Deliver infected samples";
-		return true;
-	}
-
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
@@ -159,7 +153,47 @@ class RZ_DepositSamplesAction : ScriptedUserAction
 		}
 
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
+		Deliver(gm, playerId, value, pOwnerEntity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Deliver(RZ_GameModeComponent gm, int playerId, int value, IEntity receiver) {}
+}
+
+//------------------------------------------------------------------------------------------------
+//! "Deliver infected samples": the lab takes every sample the player is carrying.
+class RZ_DepositSamplesAction : RZ_SampleDeliveryActionBase
+{
+	//------------------------------------------------------------------------------------------------
+	override bool GetActionNameScript(out string outName)
+	{
+		outName = "Deliver infected samples";
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void Deliver(RZ_GameModeComponent gm, int playerId, int value, IEntity receiver)
+	{
 		gm.DeliverSamples(playerId, value);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! "Sell samples": on the bandit dead-drop prefab. Pays loot and bandit standing,
+//! costs Institute standing, and slows the cure for everyone.
+class RZ_SellSamplesToBanditsAction : RZ_SampleDeliveryActionBase
+{
+	//------------------------------------------------------------------------------------------------
+	override bool GetActionNameScript(out string outName)
+	{
+		outName = "Leave samples for the bandits";
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void Deliver(RZ_GameModeComponent gm, int playerId, int value, IEntity receiver)
+	{
+		gm.GetMissions().OnSamplesSoldToBandits(playerId, value, receiver);
 	}
 }
 

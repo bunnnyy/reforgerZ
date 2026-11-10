@@ -7,11 +7,21 @@ class RZ_PlayerProfile
 	int m_iLives;
 	int m_iMissionsCompleted;
 	int m_iSamplesDelivered;
+	int m_iLegacy;					// personal objectives completed over all lives (meta progression)
 
 	// Current life
 	string m_sBackgroundId;
 	float m_fInfectionLeft = -1;	// seconds until turning, -1 = not infected
 	ref array<int> m_aRep = {0, 0, 0, 0};
+	float m_fLifeSeconds;
+	int m_iLifeSamples;
+	int m_iLifeMissions;
+
+	// Personal objective for this life (see RZ_Objectives)
+	int m_iObjType = -1;
+	int m_iObjTarget = -1;
+	int m_iObjGoal;
+	bool m_bObjDone;
 
 	//------------------------------------------------------------------------------------------------
 	void StartNewLife(RZ_Background bg)
@@ -19,6 +29,13 @@ class RZ_PlayerProfile
 		m_iLives++;
 		m_sBackgroundId = bg.m_sId;
 		m_fInfectionLeft = -1;
+		m_fLifeSeconds = 0;
+		m_iLifeSamples = 0;
+		m_iLifeMissions = 0;
+		m_iObjType = -1;
+		m_iObjTarget = -1;
+		m_iObjGoal = 0;
+		m_bObjDone = false;
 		m_aRep.Clear();
 		for (int i = 0; i < RZ_Factions.COUNT; i++)
 		{

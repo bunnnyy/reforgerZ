@@ -28,13 +28,18 @@ Out of scope: sleep and time skipping.
 |---|---|---|
 | Settlement detection (markers, map labels, building clusters) | `World/RZ_SettlementScanner.c` | Written |
 | Director: four outbreak stages, infection spread between towns | `Director/RZ_Director.c`, `RZ_OutbreakStage.c` | Written |
-| Heat: noise draws zombies, enough heat triggers a horde | `Director/RZ_HeatMap.c` | Written (presence and vehicles; gunfire is phase 2) |
+| Heat: noise draws zombies, enough heat triggers a horde | `Director/RZ_HeatMap.c` | Written (presence, vehicles, gunfire) |
 | Zombie spawner: near players only, despawns far away, counts kills | `Zombies/RZ_ZombieSpawner.c` | Written |
 | Backgrounds (8, chosen as loadouts in the deploy menu) | `Backgrounds/RZ_Background.c` | Written |
 | Per-life reputation with 4 factions | `Factions/`, `Backgrounds/RZ_PlayerProfile.c` | Written |
-| Random missions: Supply cache, Clear town, Alpha hunt, Radio relay | `Missions/` | Written |
+| Random missions (8 types, see below) | `Missions/` | Written |
+| Personal objective per life, Legacy points | `Backgrounds/RZ_Objectives.c` | Written |
+| Bite detection (health drop + zombie within reach → chance to infect) | `Zombies/RZ_BiteDetector.c` | Written |
+| Gunfire heat via `OnProjectileShot` | `Core/RZ_GameModeComponent.c` | Written |
+| Antidote use action | `Cure/RZ_AntidoteAction.c` | Written |
+| Queued hints, missions announced with distance and direction | `Core/RZ_GameModeComponent.c` | Written |
 | Cure research: samples, 4 breakthroughs, antidotes, final stand | `Cure/` | Written |
-| Infection timer: turns you when it runs out, cure slows it | `Core/RZ_GameModeComponent.c` | Written (the bite trigger is phase 2) |
+| Infection timer: turns you when it runs out, cure slows it | `Core/RZ_GameModeComponent.c` | Written |
 | Rotating spawn points in random towns | `Core/RZ_GameModeComponent.c` | Written |
 | Save and load of mode state | `Persistence/RZ_SaveData.c` | Written |
 
@@ -57,6 +62,29 @@ game versions. Fix those first. See [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md).
 
 Gear comes from the loadout prefab. Perks and flaws come from `RZ_Background`
 and change ReforgerZ systems, so they work with any other mods loaded.
+
+## Missions
+
+| Mission | Giver | When | What |
+|---|---|---|---|
+| Supply cache | Survivors | always | Hold a spot in town for 60 s; zombie guards; loot crate |
+| Retake the town | Military, then Survivors | infested towns | Kill 8 × size zombies in town; infection -35 |
+| Alpha sighting | Institute | until cured | Kill a special; extra samples |
+| Radio relay | Survivors | always | Hold high ground 3 min; noise brings a horde |
+| Survivors trapped | Survivors | more in later stages | Reach them, survive 3 waves |
+| Evac flight | Military | Collapse/Overrun only | Be at the LZ when it leaves; only those present get paid |
+| Burn the nest | Survivors | nest prefab set | Destroy a hive; infection -30; fail = +15 |
+| Bandit dead drop | Bandits | more in later stages | Sell samples for loot; Bandit rep up, Institute rep down, cure slows for everyone |
+
+Missions are announced to each player with distance and direction ("1.2 km NE").
+A freshly spawned player hears everything active on the radio.
+
+## Personal objectives
+
+Each life gets one goal, flavoured by background (the Hunter heads for their cabin,
+the Ex-Con digs up a stash): reach a town, survive 45 min, deliver 2 samples,
+be part of 2 missions, or earn a faction's trust. Completing one gives a
+**Legacy** point, saved across lives and set aside for unlocks in phase 4.
 
 ## Cure research
 
@@ -83,14 +111,17 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [ ] Play a 2-hour session on Arland, then tune density, spread rate and stage lengths
 
 ### Phase 2: make it feel alive
-- [ ] **Bite trigger**: hook Bacon Zombies' melee damage → `InfectPlayer()`
-- [ ] **Gunfire heat**: weapon-fired hook → `RZ_GameModeComponent.ReportNoise()`
-- [ ] **Antidote use action**: calls `CurePlayer()`
+- [x] Bite detection: works with any zombie mod (`RZ_BiteDetector`)
+- [x] Gunfire heat via `OnProjectileShot`
+- [x] Antidote use action (world action for now)
+- [x] Personal objective per life, Legacy points
+- [x] Survivors trapped, Evac flight, Burn the nest, Bandit dead drop
+- [x] Missions announced with distance and direction; queued hints
 - [ ] Map markers for missions and the lab
 - [ ] Custom deploy-menu panel that shows each background's perk and flaw before you pick it
-- [ ] **Personal objective per life** ("find insulin", "reach the coast") with a small reward
-- [ ] More missions: Rescue survivor (escort AI), Burn the nest (Zombie Hive), Military evac window, Supply convoy
-- [ ] Bandit missions: steal samples, raid a supply cache. This is the betrayal path.
+- [ ] Antidote as an inventory consumable (not just a world action)
+- [ ] Suppressors lower gunfire heat
+- [ ] Supply convoy mission (moving target)
 
 ### Phase 3: factions with teeth
 - [ ] AI faction camps (Military checkpoint, Bandit camp, Institute outpost) spawned at settlements

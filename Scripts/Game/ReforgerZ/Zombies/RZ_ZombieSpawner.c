@@ -197,6 +197,43 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True if any living zombie the spawner owns is within radius of pos.
+	//! Checks every member of a group, not just the leader.
+	bool IsZombieNear(vector pos, float radius)
+	{
+		array<AIAgent> agents = {};
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (!z.m_Entity)
+				continue;
+
+			// Cheap reject: a group never spreads out more than ~60 m
+			if (RZ_Util.DistXZ(z.m_vLastPos, pos) > radius + 60)
+				continue;
+
+			SCR_AIGroup group = SCR_AIGroup.Cast(z.m_Entity);
+			if (!group)
+			{
+				if (RZ_Util.DistXZ(z.m_Entity.GetOrigin(), pos) <= radius && RZ_Util.IsCharacterAlive(z.m_Entity))
+					return true;
+
+				continue;
+			}
+
+			agents.Clear();
+			group.GetAgents(agents);
+			foreach (AIAgent agent : agents)
+			{
+				IEntity member = agent.GetControlledEntity();
+				if (member && RZ_Util.DistXZ(member.GetOrigin(), pos) <= radius && RZ_Util.IsCharacterAlive(member))
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void UpdateTracked(array<IEntity> players)
 	{
 		for (int i = m_aTracked.Count() - 1; i >= 0; i--)

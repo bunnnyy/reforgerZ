@@ -88,6 +88,7 @@ class RZ_CureResearch
 
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		profile.m_iSamplesDelivered += count;
+		profile.m_iLifeSamples += count;
 		m_GM.AddReputation(playerId, RZ_EFaction.INSTITUTE, 3 * count);
 
 		string name = GetGame().GetPlayerManager().GetPlayerName(playerId);
