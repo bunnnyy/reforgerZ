@@ -675,6 +675,10 @@ class RZ_FactionPerks
 
 			foreach (int claimant : claimants)
 			{
+				// The faction doesn't pay people it hunts itself
+				if (RZ_Reputation.IsHunted(m_GM.GetTier(claimant, f)))
+					continue;
+
 				m_GM.AddFavor(claimant, f, BOUNTY_FAVOR);
 				m_GM.AddFame(claimant, f, BOUNTY_FAME, false);
 				m_GM.NotifyPlayer(claimant, "Bounty claimed", string.Format("%1 pays you %2 Favor for %3.", RZ_Factions.GetName(f), BOUNTY_FAVOR, RZ_Util.PlayerName(victim)));

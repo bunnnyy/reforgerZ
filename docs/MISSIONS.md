@@ -139,7 +139,7 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 16 | Steal the Antidotes | Trusted, the lab has doses in stock | ★ Lab Tech: twice as fast | Hold the lab's store room for 90 s while the crew loads up | Big Fame, Favor; up to two of the lab's doses move to the Red Hand's black market (Halcyon Infamy) | ✅ |
 | 17 | Double Agent | Trusted, Known by Bastion | ★ Police: Bastion believes you | Feed fake intel to Bastion | Fame with both; caught = big Bastion Infamy | planned |
 | 18 | Collect the Bounty | Champion | | Kill a player or AI with a bounty on them | Fame, Favor | planned |
-| 19 | Kill the Officer | Champion | | Assassinate a Bastion commander | Huge Fame (Kill on Sight with Bastion) | planned |
+| 19 | Kill the Officer | Champion | | Assassinate a Bastion outpost commander (the stronghold's commanding officer never dies) | Huge Fame (Kill on Sight with Bastion) | planned |
 | 20 | Take the Lab | Champion, final stand running | | Seize the lab during the final stand | The Red Hand wins the cure | planned |
 
 **Amends:** Fence the Goods works off Red Hand Infamy. Paying the fence a Favor "tax" is planned.
@@ -373,5 +373,5 @@ Every background has contracts it shines at, and some it's shut out of. Planned 
 | Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, *Bust Out* | Raid the Red Hand (until Champion with Bastion) |
 | Lab Tech | Field Samples, Water Survey, Quiet Count, Steal the Antidotes, *Patient Zero* | — |
 | Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, *Restore Comms*, *Install Sensors* | — |
-| Unemployed | +50% Fame from everything | — |
+| Unemployed | +50% Fame from every contract (and Infamy worked off by amends) | — |
 | Elder (unlock) | Walk Him Out, The Ledger, The Bell Order, The Silent Village | Requisition, *Protection Racket* |

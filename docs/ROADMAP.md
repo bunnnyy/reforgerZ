@@ -50,8 +50,9 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 - Remaining perks: Haven **Community** respawn with a supply bag, Bastion **Fire Mission**,
   Red Hand **Fence** and **Bounty board**, Halcyon **immunity booster** and **medic**.
 - Paying Favor to work off Infamy.
-- Bastion checkpoints and Red Hand roadblocks on the roads as AI (with the Known perks: pass a
-  checkpoint unsearched, pay the toll instead of being shot).
+- Bastion checkpoints and Red Hand roadblocks on the roads inside the Zone as AI (with the Known
+  perks: pass a checkpoint unsearched, pay the toll instead of being shot). The Perimeter's
+  checkpoints stay sealed to everyone.
 - Disguises (faction uniforms) and surrendering at checkpoints.
 - AI camps that warn and refuse by standing, and safe-zone entry.
 - Reputation clues other players can see (e.g. a bandit armband).
