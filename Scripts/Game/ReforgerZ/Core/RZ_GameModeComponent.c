@@ -187,6 +187,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_CureResearch m_Cure;
 	protected ref RZ_BiteDetector m_BiteDetector;
 	protected ref RZ_FactionPerks m_Perks;
+	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
+	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
 	protected ref map<string, ref RZ_PlayerProfile> m_mProfiles = new map<string, ref RZ_PlayerProfile>();
 	protected ref array<IEntity> m_aSpawnPoints = {};
@@ -260,6 +262,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		bool loaded = false;
 		if (!m_bWipeOnStart)
 			loaded = LoadState();
+
+		// The last finished season's ending. TODO (docs/PLAN.md): next-season rules from it.
+		RZ_SeasonRecord last = RZ_Persistence.LoadSeason();
+		if (last)
+			RZ_Log.Info(string.Format("Last season (%1) the cure went to %2.", last.world, last.winnerName));
 
 		if (m_aSettlements.IsEmpty())
 		{
@@ -806,6 +813,84 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! Hook: Fame actually gained with a faction (after clamping), for season totals.
 	protected void OnFameGained(RZ_EFaction faction, int gained)
 	{
+		if (gained <= 0)
+			return;
+
+		while (m_aSeasonFame.Count() < RZ_Factions.COUNT)
+		{
+			m_aSeasonFame.Insert(0);
+		}
+
+		m_aSeasonFame[faction] = m_aSeasonFame[faction] + gained;
+	}
+
+	// ================================================================ Season ending
+	//------------------------------------------------------------------------------------------------
+	//! Faction the server gave the most Fame this season, -1 if nobody earned any.
+	int GetSeasonLeader()
+	{
+		int best = -1;
+		int bestFame = 0;
+		foreach (int f, int fame : m_aSeasonFame)
+		{
+			if (fame > bestFame)
+			{
+				bestFame = fame;
+				best = f;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Called by RZ_CureResearch when the final stand is won. The cure goes to whichever
+	//! faction got the most Fame this season (docs/REPUTATION.md). The result is saved
+	//! so the next season can read it.
+	void OnCureCompleted()
+	{
+		m_iSeasonWinner = GetSeasonLeader();
+		if (m_iSeasonWinner < 0)
+			m_iSeasonWinner = RZ_EFaction.INSTITUTE;
+
+		NotifyAll("The cure goes to " + RZ_Factions.GetName(m_iSeasonWinner), GetEndingText(m_iSeasonWinner));
+		RZ_Log.Info(string.Format("Season over. Cure goes to %1. Season Fame: Haven %2, Bastion %3, Red Hand %4, Halcyon %5.",
+			RZ_Factions.GetName(m_iSeasonWinner), GetSeasonFame(0), GetSeasonFame(1), GetSeasonFame(2), GetSeasonFame(3)));
+
+		RZ_SeasonRecord record = new RZ_SeasonRecord();
+		record.world = GetWorldId();
+		record.winner = m_iSeasonWinner;
+		record.winnerName = RZ_Factions.GetName(m_iSeasonWinner);
+		foreach (int fame : m_aSeasonFame)
+		{
+			record.fame.Insert(fame);
+		}
+
+		RZ_Persistence.SaveSeason(record);
+		SaveState();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetSeasonFame(int faction)
+	{
+		if (faction < 0 || faction >= m_aSeasonFame.Count())
+			return 0;
+
+		return m_aSeasonFame[faction];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string GetEndingText(RZ_EFaction faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return "The cure spreads from person to person. The Haven opens its doors, and towns begin to rebuild.";
+			case RZ_EFaction.MILITARY: return "Martial law. Bastion holds the cure, and it only reaches those who comply.";
+			case RZ_EFaction.BANDITS: return "The cure is sold to the highest bidder. The Red Hand owns the roads now.";
+			case RZ_EFaction.INSTITUTE: return "Halcyon publishes the cure openly. Infection falls everywhere, but the infected that remain are adapting.";
+		}
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1198,6 +1283,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_Director.Restore(data.stage, data.stageMinutes);
 		m_Cure.Restore(data.cureProgress, data.cureMilestone, data.cured);
+		if (data.seasonFame)
+		{
+			for (int f = 0; f < data.seasonFame.Count() && f < RZ_Factions.COUNT; f++)
+			{
+				m_aSeasonFame[f] = data.seasonFame[f];
+			}
+		}
+
+		m_iSeasonWinner = data.seasonWinner;
 
 		m_bHasLab = data.hasLab;
 		m_vLabPos = Vector(data.labX, 0, data.labZ);
@@ -1218,6 +1312,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		data.cureProgress = m_Cure.m_fProgress;
 		data.cureMilestone = m_Cure.m_iMilestone;
 		data.cured = m_Cure.IsCured();
+		data.seasonWinner = m_iSeasonWinner;
+		foreach (int fame : m_aSeasonFame)
+		{
+			data.seasonFame.Insert(fame);
+		}
 		data.hasLab = m_bHasLab;
 		data.labX = m_vLabPos[0];
 		data.labZ = m_vLabPos[2];

@@ -26,6 +26,10 @@ class RZ_SaveData
 	int cureMilestone;
 	bool cured;
 
+	// Season: Fame given to each faction by all players, and who got the cure (-1 = not yet)
+	ref array<int> seasonFame = {};
+	int seasonWinner = -1;
+
 	bool hasLab;
 	float labX;
 	float labZ;
@@ -39,10 +43,48 @@ class RZ_SaveData
 	ref array<ref RZ_PlayerProfile> profiles = {};
 }
 
+//! The result of the last finished season. Kept in its own file so a season
+//! wipe (m_bWipeOnStart, or deleting state.json) doesn't lose it.
+class RZ_SeasonRecord
+{
+	string world;
+	int winner = -1;
+	string winnerName;
+	ref array<int> fame = {};
+}
+
 class RZ_Persistence
 {
 	static const string DIR = "$profile:ReforgerZ";
 	static const string PATH = "$profile:ReforgerZ/state.json";
+	static const string SEASON_PATH = "$profile:ReforgerZ/last_season.json";
+
+	//------------------------------------------------------------------------------------------------
+	static RZ_SeasonRecord LoadSeason()
+	{
+		if (!FileIO.FileExists(SEASON_PATH))
+			return null;
+
+		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext();
+		if (!ctx.LoadFromFile(SEASON_PATH))
+			return null;
+
+		RZ_SeasonRecord record = new RZ_SeasonRecord();
+		if (!ctx.ReadValue("season", record))
+			return null;
+
+		return record;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void SaveSeason(RZ_SeasonRecord record)
+	{
+		FileIO.MakeDirectory(DIR);
+		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext();
+		ctx.WriteValue("season", record);
+		if (!ctx.SaveToFile(SEASON_PATH))
+			RZ_Log.Warn("Could not write " + SEASON_PATH);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	// VERIFY: SCR_JsonLoadContext/SCR_JsonSaveContext automatically serialize plain class members

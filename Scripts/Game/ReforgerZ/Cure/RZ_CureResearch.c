@@ -242,6 +242,7 @@ class RZ_CureResearch
 		}
 
 		m_GM.NotifyAll("THE CURE IS HERE", "The cure is going out over every frequency. You did it. This season is over: the next wipe starts a new outbreak.");
+		m_GM.OnCureCompleted();
 		m_GM.GetDirector().SetStage(RZ_EOutbreakStage.AFTERMATH);
 		m_GM.OnCureChanged();
 	}
