@@ -21,7 +21,7 @@ grep -rn "VERIFY" Scripts/
 Each one is an engine API whose exact name or signature I couldn't confirm
 for the current game version. Usually the fix is a rename. Look up the class in
 the Script Editor or in the [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
-They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 65 of them
+They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 68 of them
 (one is the comment in `RZ_Util.c` that explains them).
 
 The riskiest ones in the puzzle missions (`Puzzles/`):
@@ -54,6 +54,17 @@ The riskiest ones in the Perimeter (`World/RZ_Perimeter.c`):
   them. If that fails it's moved over them on each tick instead (`SetOrigin()`, jumpier).
 - **Untouchable guards** (`EnableDamageHandling(false)`): guards stand outside the playable area
   anyway; if this fails they can be shot from inside, so use a prop or a character without AI.
+
+The riskiest ones in the safehouses and wanderers (`World/RZ_Safehouses.c`, `World/RZ_Wanderers.c`):
+
+- **Food in the inventory** (`RZ_FoodHelper.TakeFood`: `GetItems()` and `TryDeleteItem()`, the same
+  calls the radio check and the antidote use). If food isn't found, check the food keywords
+  against your food prefabs' names first.
+- **Healing** (`RZ_Util.HealCharacter`: `SCR_CharacterDamageManagerComponent.FullHeal()`), used by the
+  safehouse medic and the Doctor wanderer. If it doesn't exist, the Favor is still taken, so fix it before release.
+- Not a new VERIFY, but worth testing: wanderer and occupant actions reuse the puzzle civilian's
+  replicated labels (`[RplProp]`, above). Without them every slot shows with its generic label,
+  and "Choose" options 0, 1 and 3 still do the right thing.
 
 Two files can simply be deleted if they won't compile, because nothing else depends on them:
 
@@ -190,7 +201,7 @@ optional and only change the look: give them the same components and actions.
 | `RZ_FuseBox.et` | an electrical box | as the generic object | Puzzles > Fuse box (*generic*) | Junction Boxes |
 | `RZ_RadioMast.et` | an antenna mast | as the generic object | Puzzles > Radio mast (*generic*) | The Numbers Station |
 | `RZ_Safe.et` | a safe | as the generic object | Puzzles > Safe (*generic*) | Time-Lock Safe |
-| `RZ_Civilian.et` | a civilian character (no AI needed) or a seated figure prop | as the generic object | Puzzles > Civilian (*generic*) | The Rat (boss and suspects), The Witness |
+| `RZ_Civilian.et` | a civilian character (no AI needed) or a seated figure prop | as the generic object | Puzzles > Civilian (*generic*) | The Rat (boss and suspects), The Witness; Walk Him Out, The Ledger, the lookouts in A Quiet Arrangement; fallback for safehouse occupants and wanderers |
 | `RZ_ScaleCrate.et` | a crate with an inventory storage | as the generic object, plus the storage | Puzzles > Scale crate | The Weighing Vault |
 | `RZ_Landmark.et` | a wayside cross, shrine or painted mast | none | Puzzles > Landmark, plus **Landmark name** (default "the old cross") | fallback when a town has no church, tower or well |
 | `RZ_MorseLamp.et` | a lamp with a light | `RZ_BlinkLightComponent` (or nothing: the lamp is then spawned per flash) | Puzzles > Morse light | Lights in the Window |
@@ -257,6 +268,57 @@ were built and from what.
 
 Missions, spawn points and quartermasters keep out of the warning zone and away from checkpoints.
 
+### Haven safehouses
+
+Settings are on `RZ_GameModeComponent` under **Haven** (one settings object). Safehouses work
+with no prefabs of their own: they need the **Spawn point** prefab for their spawn points and
+the **Haven quartermaster** prefab for their services. Everything else only adds bodies.
+
+| Prefab | Base | Add | Setting | Used for |
+|---|---|---|---|---|
+| `RZ_QM_Haven.et` (the existing one) | | also 5 × `RZ_SafehouseAction`: STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE | Factions > Haven quartermaster | every safehouse's services. One is spawned at each safehouse while a player is near (the first safehouse sits at the main one) |
+| `RZ_SafehouseMedic.et` | a civilian character without AI | 2 × `RZ_SafehouseAction`: HEAL, DECLARE_BITE | Medic prefab | optional; Settlement and up. Without it the quartermaster's HEAL/DECLARE_BITE still work |
+| `RZ_SafehouseOccupant*.et` | civilian characters without AI or seated figure props; give them the generic puzzle object components to be talked to | | Occupant prefabs (a list; empty = Puzzles > Civilian) | 3-6 people shown while a player is within 300 m |
+| `RZ_SafehouseGuard.et` | a Haven AI character or group on faction `SURV` | | Guard prefab | 1 guard at Community and Settlement, 2 at Town |
+
+`RZ_SafehouseAction` has one attribute, **Kind**. It works at whichever safehouse it stands in
+(within 150 m) and says there's none elsewhere.
+
+**Settings** (defaults in brackets): **Enabled** (on); **Count** (3, at most one per 8
+settlements); **Start population** (4) and **Start food** (12); **Visible radius** (300 m);
+**Upkeep minutes** (180, real time with players online); **People per food** (5); **Food keywords**
+(empty = food, canned, ration, tushonka, bread, beans: lower-case words matched against item prefab
+names; set your food mod's words here); **Favor per food** (2); **Heal cost** (15); **No-fire radius** (50 m),
+**Defend radius** (40 m), **Fire Infamy** (3); **Caught Infamy** (15), **Caught chance** (0.3 a
+minute); **Leak chance** (0.25 every 10 min while a safehouse is short of food).
+
+**Placing safehouses yourself:** put `RZ_SafehouseMarkerEntity` entities (a script entity, no prefab
+needed) where the Haven should be, with an optional name, starting population and food. Placing any
+turns the automatic picking off; saved population and food are kept for a marker within 100 m of
+a saved safehouse. Without markers, safehouses are picked once per season and saved. The log says
+`Haven safehouses: N (picked | save | markers).`
+
+### Wanderers
+
+Settings are under **Wanderers**. Wanderers need no prefabs: without them they use
+**Puzzles > Civilian** (and that falls back to the generic puzzle object). A body can only be
+talked to if it has the generic puzzle object components (`RZ_PuzzleObjectComponent`,
+`RZ_ClueComponent`, `RZ_ReadClueAction`, 4 × `RZ_PuzzleChoiceAction`); the wanderer labels them.
+
+| Prefab | Base | Setting |
+|---|---|---|
+| `RZ_Wanderer_Trader.et`, `_Doctor`, `_Scavenger`, `_Deserter`, `_Preacher`, `_Courier`, `_Kid` | a civilian character without AI (stands still while seen), or a one-man AI group on `SURV` whose character has the components above (walks while seen) | one slot per role |
+| Trader goods | any items | **Trader goods** (a list); empty = the Trader only talks |
+
+**Settings** (defaults in brackets): **Enabled** (on); **Min count** (6) and **Max count** (10);
+**Trade cost** (15), **Rumour cost** (10), **Treat cost** (20) in Haven Favor; **Spawn radius**
+(400 m); **Walk speed** (1.3 m/s); **Replace minutes** (1440); **Bite chance** (0.05 per 30 s
+with an infected within 12 m); **Kill Infamy** (15), **Shot Infamy** (4), **Rob Infamy** (8).
+The log says `Wanderers: N on the roads (new roster, seed S)` or `(saved)`.
+
+The Courier's job needs **Missions > Mission item** and **Missions > Haven drop point**; A Quiet
+Arrangement needs the mission item and the **Red Hand drop point**.
+
 ## 4. Factions and backgrounds
 
 In the world's `FactionManager`:
@@ -295,6 +357,8 @@ points, towns or lab are needed, because they're generated at start. Check the l
 [ReforgerZ] Settlement scan: N named, M building clusters, took X ms.
 [ReforgerZ] Perimeter: x A to B, z C to D. Warning zone 300 m, kill zone 100 m.
 [ReforgerZ] Perimeter: N road checkpoints (from roads).
+[ReforgerZ] Haven safehouses: N (picked).
+[ReforgerZ] Wanderers: N on the roads (new roster, seed S).
 [ReforgerZ] Started. N settlements, stage Early Outbreak, cure 0 percent ...
 ```
 

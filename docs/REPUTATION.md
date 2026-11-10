@@ -64,10 +64,28 @@ total wipes:
 
 | Tier | Shop (Haven quartermaster) | Perk / service |
 |---|---|---|
-| Known | Canned food, water, bandages, crowbars | Haven safehouses let you in; fresh spawn point option at a Haven safehouse |
+| Known | Canned food, water, bandages, crowbars | Haven safehouses let you in and serve you |
 | Trusted | Hunting rifles, ammo, backpacks, radios, jerrycans | **Neighbours:** Haven AI shares intel; nearest active mission is marked on spawn |
 | Champion | Vehicles (pickup, van), fortification kits, good medkits | **Community:** respawn at any Haven safehouse with a small supply bag |
-| Hunted | — | Haven doors are barred, and their AI warns other players about you |
+| Hunted | — | **Exile:** see below |
+
+Each safehouse's quartermaster only stocks what its size allows: a Shelter sells Known
+items, a Community or Settlement up to Trusted, a Town up to Champion
+([WORLD.md](WORLD.md), "Safehouses and population"). Every safehouse is a spawn point for everyone.
+
+#### Haven house rules and exile
+
+| Rule | What happens |
+|---|---|
+| Firing within 50 m of a safehouse | +3 Haven Infamy (at most once every 20 s), unless an infected is within 40 m of the safehouse: then you're defending it |
+| Declaring a bite at a safehouse | Once per life: with a medic (Settlement and up), the infection's time left ×1.5. Without one, no slowing, but you can't be caught |
+| Hiding a bite | Inside a safehouse in your last 5 minutes without having declared it: 30% a minute to be caught, once per life, +15 Haven Infamy |
+| Shooting at, robbing or killing a wanderer | +4 (shot at, once per wanderer), +8 (robbed), +15 (killed) Haven Infamy; they remember you |
+| Hunted by the Haven (exile) | Safehouse services and the Haven quartermaster refuse you ("the door stays shut"); Haven wanderers refuse you and warn other players near you; a safehouse short on food may sell your rough location to the Red Hand (a hunter squad, and a message to players the Red Hand knows). Guards never shoot anyone, exiles included |
+
+Food delivered to a safehouse pays 2 Haven Favor per item, plus 1 Fame per 3 items (at most 5).
+Wanderers' attitude is your Haven standing (Bastion, reversed, for the Deserter) plus their
+memory of you; see [WORLD.md](WORLD.md), "Wanderers".
 
 ### Task Force Bastion
 
@@ -151,7 +169,9 @@ That sets the tone of the Aftermath and the next season's starting rules:
   action is used and refuses with a message; the action is not greyed out on the client.
   Shop System can still be used for general trading.
 - Missions: `m_eGiver` gets Fame, an optional `m_eRival` gets Infamy, `m_iFavorReward` pays out
-- Perks are checked in code where they apply (`RZ_FactionPerks`, `RZ_CureResearch`)
+- Perks are checked in code where they apply (`RZ_FactionPerks`, `RZ_CureResearch`).
+  House rules and exile are in `RZ_Safehouses` (and `RZ_Wanderers` for wanderers);
+  the location leak goes through `RZ_FactionPerks.LeakLocation`
 - AI hostility: Reforger factions are global, so per-player hostility is done by
   sending hunter squads at Hunted players, not by changing faction relations
 - Season ending: Fame earned with each faction is summed over all players
@@ -163,8 +183,9 @@ That sets the tone of the Aftermath and the next season's starting rules:
 |---|---|
 | All tiers, Fame/Infamy/Favor, rivals, amends missions | Paying Favor to remove Infamy |
 | Word gets around, all five unlockable backgrounds | Disguises, surrendering at checkpoints |
-| Quartermaster shops (any item, any tier) | Haven safehouse spawn points, Community respawns |
+| Quartermaster shops (any item, any tier); Haven stock by safehouse size | Community respawns (the supply bag) |
 | Requisition (half price at the quartermaster), sample scanner, Halcyon research bonus, Neighbours | Requisition from truck-supplied outpost stock; Fire Mission, Fence, Bounty board, Halcyon medic, immunity booster |
 | Toll pass (message only), Halcyon Hunted gets no Fame for samples | AI checkpoints and roadblocks reacting to standing |
-| Hunter squads (Bastion and Red Hand), Kill-on-Sight bounties | Haven AI warning other players |
+| Hunter squads (Bastion and Red Hand), Kill-on-Sight bounties | — |
+| Haven safehouse spawn points, house rules, exile, Haven wanderers warning other players, safehouse location leaks | — |
 | Season winner by Fame | Next-season rules from the winner |

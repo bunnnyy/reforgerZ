@@ -34,6 +34,10 @@ Out of scope: sleep and time skipping.
 | Fame, Infamy and Favor per faction per life; standing tiers; rival Infamy | `Factions/RZ_Reputation.c`, `Backgrounds/RZ_PlayerProfile.c` | Written |
 | Champion carry-over ("word gets around") and background unlocks | `Core/RZ_GameModeComponent.c` | Written |
 | Missions: 42 faction contracts + 10 world events, requirements, amends, background bonuses | `Missions/` (see [MISSIONS.md](MISSIONS.md)) | Written |
+| Haven safehouses: picked or placed, population tiers (shop stock, guards, medic, radio), spawn points, food upkeep, rescues adding people, bodies only near players | `World/RZ_Safehouses.c` (see [WORLD.md](WORLD.md)) | Written |
+| Haven house rules: no firing near a safehouse, declaring or hiding a bite, exile, location leaks to the Red Hand | `World/RZ_Safehouses.c`, `Factions/RZ_FactionPerks.c` | Written |
+| Wanderers: seeded roster of 6-10 with roles, data travel, reactions (hordes, events, bad destinations, bites), per-player memory, permanent deaths in the news, guidance hook | `World/RZ_Wanderers.c` | Written |
+| Haven house contracts: Walk Him Out, The Ledger, A Quiet Arrangement; the Courier's letters | `Missions/Haven/RZ_HavenHouseMissions.c` | Written |
 | Choice missions: hand an item to one of two factions | `Missions/RZ_MissionItems.c`, `RZ_MissionBases.c` | Written |
 | Quartermasters, Favor shops, standing check, Requisition | `Factions/RZ_Quartermaster.c` | Written |
 | Faction perks, hunter squads, Kill-on-Sight bounties | `Factions/RZ_FactionPerks.c` | Written |
@@ -92,7 +96,7 @@ and change ReforgerZ systems, so they work with any other mods loaded.
 Two kinds, described in full in [MISSIONS.md](MISSIONS.md):
 
 - **World events** (10 in code) are announced to everyone, and anyone who takes part shares the reward.
-- **Faction contracts** (42 in code, plus 17 puzzle missions and 3 Perimeter missions) are offered only to players who meet their requirements:
+- **Faction contracts** (42 in code, plus 17 puzzle missions, 3 Perimeter missions and 3 Haven house contracts) are offered only to players who meet their requirements:
   tier with the giver, standing with other factions, background, world state and player count.
   There's no "accept" button: eligible players who take part get paid, others get nothing.
   Each player gets at most one new offer a minute, by radio or at the faction's quartermaster.
@@ -157,6 +161,12 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] The Perimeter: warning and kill zones, one drone per player, sealed road checkpoints, government broadcast
 - [x] 3 Perimeter missions: The Blind Spot, The Crossing, Shot at the Line
 - [ ] Make the Perimeter prefabs (drone, warning shot, barricade, guard, smuggler, package, body) and test the edge on an island map and a land-locked one
+- [x] Haven safehouses with population tiers, food upkeep, house rules and exile (WORLD.md, "People")
+- [x] Wanderer roster: data travel, reactions, memory, deaths in the news, the bitten wanderer
+- [x] 3 grey Haven house contracts (Walk Him Out, The Ledger, A Quiet Arrangement) and the Courier's job
+- [ ] Make the safehouse and wanderer prefabs (occupants, guard, medic, one body per role) and add the `RZ_SafehouseAction`s to the Haven quartermaster; play-test upkeep timing and food keywords
+- [ ] New-player guidance: nudge a Courier or Scavenger toward brand-new players (`RZ_Wanderers.NudgeToward`)
+- [ ] Barter chains across wanderers; supply trucks that carry food to safehouses
 
 ### Phase 3: factions with teeth
 - [x] Fame / Infamy / Favor, standing tiers, rival Infamy, Champion carry-over
@@ -168,7 +178,8 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [ ] Requisition from a Bastion outpost's truck-supplied stock (WORLD.md supply trucks)
 - [x] Cheap perks: sample scanner, Halcyon research bonus, Neighbours, toll pass (message only)
 - [x] Hunter squads for Hunted players; Kill-on-Sight bounties
-- [ ] Remaining perks: Haven safehouse spawn points, Fire Mission, Fence, Bounty board, immunity booster, Halcyon medic
+- [x] Haven safehouse spawn points (one per safehouse, for everyone)
+- [ ] Remaining perks: Haven Community respawn with a supply bag, Fire Mission, Fence, Bounty board, immunity booster, Halcyon medic
 - [ ] Convoy, escort and AI-heavy contracts (Convoy Escort, Refugee Column, Hijack the Convoy, Rescue the Pilot...)
 - [ ] Disguises (faction uniforms) and surrendering at checkpoints
 - [ ] AI faction camps (Bastion checkpoint, Red Hand camp, Halcyon outpost) spawned at settlements
@@ -205,3 +216,5 @@ Every system finds its locations from `RZ_Settlement`, so for a new map:
 4. Optionally place a lab prefab. Otherwise one spawns in a random town.
 5. Check the logged Perimeter rectangle and checkpoint count. If the edge is wrong, set the
    override rectangle; for checkpoints on roads the scan missed, place `RZ_CheckpointMarkerEntity` entities.
+6. Check the logged safehouse count. To choose where the Haven holds out, place
+   `RZ_SafehouseMarkerEntity` entities (placing any turns the automatic picking off).

@@ -19,6 +19,10 @@ the cure.**
 - **Fame and Infamy**: the Haven, Task Force Bastion, the Red Hand and Halcyon each remember
   what you did for them and to them. Standing unlocks quartermaster shops and perks; Infamy
   brings hunter squads and bounties. The faction the server helps most gets the cure.
+- **Haven safehouses and wanderers**: a few Haven-held buildings in abandoned towns grow
+  from Shelter to Town as you rescue people and bring food, with house rules (no shooting,
+  declare your bite) and exile for those who break them. Named wanderers walk between them,
+  remember what you did, and their deaths make the news.
 - **Any map**: towns are detected from map labels and building clusters.
 - **Built on the Workshop**: zombies, hunger and thirst, traders and base building come from
   existing mods. ReforgerZ ties them together.
@@ -26,6 +30,8 @@ the cure.**
 ## Docs
 
 - [docs/PLAN.md](docs/PLAN.md): design, systems and roadmap
+- [docs/WORLD.md](docs/WORLD.md): the living world: safehouses, wanderers, territory, supply trucks
+- [docs/LORE.md](docs/LORE.md): the sealed Zone, tone and writing guide
 - [docs/REPUTATION.md](docs/REPUTATION.md): factions, Fame and Infamy, perks, unlocks
 - [docs/MISSIONS.md](docs/MISSIONS.md): every contract and world event (✅ = in code)
 - [docs/MOD_STACK.md](docs/MOD_STACK.md): which Workshop mods the server runs and why
@@ -40,7 +46,7 @@ the setup guide.
 ```
 Scripts/Game/ReforgerZ/
   Core/         game mode component (hub), helpers
-  World/        settlement detection, manual markers
+  World/        settlement detection, manual markers, the Perimeter, safehouses, wanderers
   Director/     outbreak stages, infection spread, heat
   Zombies/      spawner (works with any zombie mod's prefabs)
   Backgrounds/  civilian backgrounds, player profiles
