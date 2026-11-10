@@ -12,6 +12,7 @@ class RZ_Director
 	protected float m_fStageMinutes;
 
 	protected static const float NEIGHBOUR_DISTANCE = 2500;
+	protected ref array<ref array<int>> m_aNeighbours = {};	// per settlement, the others within NEIGHBOUR_DISTANCE
 	protected static const float SPREAD_SOURCE_INFECTION = 60;
 
 	//------------------------------------------------------------------------------------------------
@@ -144,14 +145,9 @@ class RZ_Director
 			if (source.m_fInfection < SPREAD_SOURCE_INFECTION)
 				continue;
 
-			foreach (int j, RZ_Settlement target : list)
+			array<int> nearby = Neighbours(list, i);
+			foreach (int j : nearby)
 			{
-				if (i == j)
-					continue;
-
-				if (RZ_Util.DistXZ(source.m_vCenter, target.m_vCenter) > NEIGHBOUR_DISTANCE)
-					continue;
-
 				delta[j] = delta[j] + perTick * (source.m_fInfection / 100);
 			}
 		}
@@ -160,6 +156,30 @@ class RZ_Director
 		{
 			settlement.AddInfection(delta[k]);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The settlements within NEIGHBOUR_DISTANCE of settlement i. Settlements don't move, so the
+	//! lists are built once (again if the list changes size) instead of every tick for every pair.
+	protected array<int> Neighbours(array<ref RZ_Settlement> list, int i)
+	{
+		if (m_aNeighbours.Count() != list.Count())
+		{
+			m_aNeighbours.Clear();
+			foreach (int a, RZ_Settlement here : list)
+			{
+				array<int> near = {};
+				foreach (int b, RZ_Settlement there : list)
+				{
+					if (a != b && RZ_Util.DistXZ(here.m_vCenter, there.m_vCenter) <= NEIGHBOUR_DISTANCE)
+						near.Insert(b);
+				}
+
+				m_aNeighbours.Insert(near);
+			}
+		}
+
+		return m_aNeighbours[i];
 	}
 
 	//------------------------------------------------------------------------------------------------
