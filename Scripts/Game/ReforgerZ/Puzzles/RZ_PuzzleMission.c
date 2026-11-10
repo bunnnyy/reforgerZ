@@ -332,6 +332,54 @@ class RZ_PuzzleMission : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True if any player is within radius of pos; they all become participants.
+	protected bool ReachedBy(array<int> ids, array<IEntity> players, vector pos, float radius)
+	{
+		bool reached = false;
+		foreach (int i, IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), pos) > radius)
+				continue;
+
+			AddParticipant(ids[i]);
+			reached = true;
+		}
+
+		return reached;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Players this mission talks to: offered it, or already taking part.
+	protected bool IsInvolved(int playerId)
+	{
+		return m_aOfferedTo.Contains(playerId) || m_aParticipants.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real seconds a night mission should last: until dawn if it's dark now, else until
+	//! dawn after the coming night. Clamped to [minSeconds, maxSeconds]; `fallback` if
+	//! the clock speed isn't known yet.
+	protected static float NightDuration(float minSeconds, float maxSeconds, float fallback)
+	{
+		float secs = RZ_GameTime.RealSecondsUntil(RZ_GameTime.NIGHT_END);
+		if (secs < 0)
+			return fallback;
+
+		return Math.Clamp(secs + 600, minSeconds, maxSeconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For GetWeight of night missions: dark now, or dark within `withinSeconds`.
+	protected static bool IsNightSoon(float withinSeconds)
+	{
+		if (RZ_GameTime.IsNight())
+			return true;
+
+		float secs = RZ_GameTime.RealSecondsUntil(RZ_GameTime.NIGHT_START);
+		return secs >= 0 && secs <= withinSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void AddParticipant(int playerId)
 	{
 		if (playerId > 0 && !m_aParticipants.Contains(playerId))

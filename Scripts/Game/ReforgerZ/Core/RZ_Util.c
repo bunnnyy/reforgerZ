@@ -249,6 +249,31 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Replace an AI group's waypoints with one move waypoint (hordes that change course).
+	//! Deletes the waypoints it removes. Returns the new waypoint, or null.
+	static IEntity RedirectGroup(IEntity e, vector target, ResourceName waypointPrefab)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(e);
+		if (!group || waypointPrefab.IsEmpty())
+			return null;
+
+		array<AIWaypoint> current = {};
+		group.GetWaypoints(current); // VERIFY: AIGroup.GetWaypoints() / RemoveWaypoint()
+		foreach (AIWaypoint old : current)
+		{
+			group.RemoveWaypoint(old);
+			if (old)
+				SCR_EntityHelper.DeleteEntityAndChildren(old);
+		}
+
+		AIWaypoint wp = AIWaypoint.Cast(SpawnPrefab(waypointPrefab, target));
+		if (wp)
+			group.AddWaypoint(wp);
+
+		return wp;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string PlayerName(int playerId)
 	{
 		return GetGame().GetPlayerManager().GetPlayerName(playerId);
