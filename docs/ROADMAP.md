@@ -108,7 +108,6 @@ In this order, because later ones depend on earlier ones:
 | A personal hideout per player | Leaves persistent physical traces; the Haven's safehouses are the shelter |
 | Factions hostile to all players or none | Replaced by per-player hostility through hidden faction variants |
 | Haven guards that never shoot | They shoot armed exiles near a safehouse; unarmed exiles just find the door shut |
-| The Last Broadcast event (Fame for broadcasting) | Free Fame; the radio station is cosmetic instead |
 | Shop System as the faction traders | Our own quartermasters gate stock by standing; Shop System stays optional for general trading |
 | DarcMissions | Its convoys, occupations and crash sites assume forces from outside; they don't fit the sealed Zone |
 | Ambient Zombies | Overlaps the ReforgerZ spawner |
