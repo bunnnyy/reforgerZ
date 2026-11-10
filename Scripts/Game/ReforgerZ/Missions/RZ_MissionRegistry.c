@@ -156,5 +156,12 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Event_GasStationFire);
 		mgr.RegisterType(RZ_Event_BurningTown);
 		mgr.RegisterType(RZ_Event_TunnelRats);
+		// Events about people (Missions/Events/RZ_WorldEventsPeople.c)
+		mgr.RegisterType(RZ_Event_DistressCall);
+		mgr.RegisterType(RZ_Event_FakeDistress);
+		mgr.RegisterType(RZ_Event_PrisonBreak);
+		mgr.RegisterType(RZ_Event_TheSniper);
+		mgr.RegisterType(RZ_Event_RivalSurvivors);
+		mgr.RegisterType(RZ_Event_CollapseShelter);
 	}
 }

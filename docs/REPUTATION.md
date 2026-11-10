@@ -293,6 +293,9 @@ Known toll pass the difference between being shot and not.
 | A hunter squad | The player it was sent after, within 800 m |
 | The Red Hand camp in Raid the Red Hand, the raiders in Trader Caravan and Lab Defence | Every player within 350 m of them while they live |
 | The killers' camp in The Witness | Players within 150 m who aren't at least Known with the Red Hand |
+| The ambush in Fake Distress Call, the convicts in Prison Break | Players within 300 m (250 m for the convicts) who aren't at least Known with the Red Hand |
+| The Sniper | Every player within 500 m, Red Hand friends included |
+| Rival Survivors (an unaligned group on `SURV`) | Only a player Hunted by any faction or Watched by two, once they come within 120 m (the Haven bit, like a wanderer's grudge) |
 
 In Trader Caravan the trader is put on a variant the Red Hand is hostile to, so the raiders go
 for him while he stays friendly to players.

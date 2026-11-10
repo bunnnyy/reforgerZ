@@ -10,14 +10,14 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 | Kind | In code | Designed, not built |
 |---|---|---|
 | [Faction contracts](#faction-contracts) (20 designed per faction) | 80 | — |
-| [World events](#world-events) | 15 | 10 (3 more are covered by other systems) |
+| [World events](#world-events) | 21 | 4 (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 17 | — |
 | [Unarmed missions](#unarmed-missions) | 10 | 1 |
 | [Perimeter missions](#perimeter-missions) | 3 | — |
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 32, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **165** | **11** |
+| **Total** | **171** | **5** |
 
 ## Who gets offered what
 
@@ -189,30 +189,30 @@ already in the Zone, and every crate is earned on the spot.
 | 2 | Horde Migration | A huge horde walks from one town to another | Get out of the way, or thin it out: 10+ kills leaves a crate | ✅ |
 | 3 | Night of the Dead | For 20 minutes, twice the infected and twice the specials everywhere | High risk, specials everywhere | ✅ |
 | 4 | Fog Bank | A region drops to low visibility for 20 min | Hiding is easy. So are ambushes | ✅ *the engine's fog is global and never changed: within 700 m of a town, heat is ×0.6 and infected spawn twice as close; an optional mist prop is the look* |
-| 5 | Distress Call | A survivor asks for help on the radio | Could be real, could be a trap (see 19) | planned |
+| 5 | Distress Call | A survivor asks for help on the radio | Could be real, could be a trap (see 19) | ✅ *two people cornered at a town's edge; infected surround the house once someone is within 300 m. Talk them out with nothing within 20 m: they join the nearest safehouse and leave a crate. 25 min. Radio Operators hear that it's live* |
 | 6 | Abandoned Convoy | Bastion trucks left on a highway | Loot, but it may be booby-trapped or watched | planned |
 | 7 | Power Surge | A town's power comes back for 10 min | Alarms go off (heat); electronics loot | ✅ *a dark town outside the grid's region is Powered through the power grid and town memory; three alarms make heat for 90 s; the grid's electronics search bonus applies* |
 | 8 | Siren Test | Air-raid sirens pull every infected into one town for 5 minutes | The towns around it are briefly safer to loot | ✅ |
 | 9 | Wandering Trader | A neutral merchant parks somewhere for 20 min | Rare items; protect him or rob him | ✅ |
 | 10 | Gas Station Fire | A station explodes and burns | Infection drops; loot is destroyed | ✅ *a real petrol station (by name) in a town nobody lives in; it goes up 3 min after the warning: infected within 30 m die, the station and up to two buildings beside it burn (the fire system), town infection −8. Needs fire on* |
-| 11 | Prison Break | Escaped convicts roam the area | Hostile; the Red Hand recruits them | planned |
+| 11 | Prison Break | Escaped convicts roam the area | Hostile; the Red Hand recruits them | ✅ *two groups from a town's police station walk to the nearest Red Hand camp (data until a player is within 600 m). They fight anyone near them except Red Hand friends (Known+). All dead: a crate where the last fell. Any reach the camp, or 30 min pass: the Red Hand gains strength, a headline, and its friends who walked in with them +4 Fame* |
 | 12 | Bastion Shelling | Bastion's own mortars shell an infested town after a 5-minute warning | Get out, or loot fast. Infection there drops sharply | ✅ |
 | 13 | Bell Tower | Someone rings church bells nonstop | A horde converges | *covered* by The Preacher's Flock arc: he rings bells in every town (twice the heat) and small hordes come for him |
-| 14 | The Sniper | A crazed survivor shoots from a tower | Take him down; his stash is up there | planned |
+| 14 | The Sniper | A crazed survivor shoots from a tower | Take him down; his stash is up there | ✅ *on the high ground above a town, not up a tower: one armed AI, there only while a player is within 900 m, who fights everyone (Red Hand friends too); his shots make heat. Dead: his stash. 30 min, then he moves on* |
 | 15 | Stash Note | A note with coordinates turns up | Treasure hunt | ✅ |
 | 16 | Mass Grave | A pit full of infected bodies | Lots of samples, and a horde underneath | ✅ |
 | 17 | Lost Child | A child wanders alone | Escort them to the Haven | *covered* by the Kid wanderer: show them the way and they follow you to a safehouse (+1 person, +5 Haven Fame) |
 | 18 | Burning Town | A town burns for 15 min | Infection there drops sharply | ✅ *one building every 100 s through the fire system, at most 8 and never more than 40% of the town; −3 infection and two infected killed per building. Only infested towns (50+) nobody lives in. Needs fire on* |
-| 19 | Fake Distress Call | A Red Hand ambush | Radio Operators are warned | planned |
+| 19 | Fake Distress Call | A Red Hand ambush | Radio Operators are warned | ✅ *announced exactly like Distress Call (never both at once): a tape on a crate, two Red Hand groups in the trees (they appear within 400 m and close in at 60 m) who spare Red Hand friends. All dead: their kit. Radio Operators are told it's a loop* |
 | 20 | Storm | For 15 minutes, noise carries less and heat fades three times as fast | A good time to move | ✅ |
 | 21 | Last Broadcast | A station is still on the air | Reach it and broadcast | *covered* by the radio station: always on the map rather than an event; take it over and broadcast a preset (cosmetic, no Fame) |
-| 22 | Rival Survivors | An unaligned AI group | They trade or fight depending on your reputation | planned |
+| 22 | Rival Survivors | An unaligned AI group | They trade or fight depending on your reputation | ✅ *a group on `SURV` camps outside a town for 30 min. Hunted by anyone, or Watched by two factions: they fight you (only you). Trusted by someone and Watched by nobody: a crate of their kit for 2 food; anyone else 3 food; two trades in all. Gunning them down when they'd fought nobody: +6 Haven Infamy; if they had: their kit* |
 | 23 | Locked Bunker | A sealed bunker, code split over 3 notes | Teamwork or a race between strangers | planned |
 | 24 | Turned Player | A player who turned roams with their gear (started when someone turns) | Their loot is up for grabs | ✅ |
 | 25 | Tunnel Rats | Infected flood out of tunnels | A town's infection spikes | ✅ *three culverts at the town's edge (the generic puzzle object); each open one adds 1 infection a minute (at most +20) and sends two infected into town while a player is within 700 m. Collapse all three (no infected within 12 m) for a crate and −5 infection* |
 | 26 | Military Remnant Camp | An abandoned Bastion camp with gear | Bastion Infamy if they're still around | planned |
 | 27 | Wedding Party | A horde in formal wear by a church | Dark humour, jewellery for trading | planned |
-| 28 | Collapse Shelter | A town's shelter is overrun and survivors scatter | Save them before they turn (Haven Fame) | planned |
+| 28 | Collapse Shelter | A town's shelter is overrun and survivors scatter | Save them before they turn (Haven Fame) | ✅ *four people hide round a town's school or church, each with infected close by; they turn after 15–22 min. Tell each the way (nothing within 15 m) and they join the nearest safehouse; the Haven's 12 Fame and 8 Favor go to the rescuers, scaled by how many were saved* |
 
 ---
 

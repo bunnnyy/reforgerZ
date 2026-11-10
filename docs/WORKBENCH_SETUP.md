@@ -111,7 +111,7 @@ If the player faction key isn't `SURV`, the variants are `<key>_H1`..`<key>_H15`
 
 ## 4. Prefabs by system
 
-The code has **138 prefab fields**: 40 on `RZ_GameModeComponent`, 92 in its settings objects, and
+The code has **141 prefab fields**: 40 on `RZ_GameModeComponent`, 95 in its settings objects, and
 6 in list entries and actions (shop item, requisition item, recipe output, loot table lists).
 Every prefab with an action list needs an `ActionsManagerComponent`; every prefab with an `RZ_`
 component needs an `RplComponent`. Slot names are the attribute's category, then its label.
@@ -197,10 +197,17 @@ them, standing beside the pilot, the deserter or the researcher for 10 s still g
 | Prefab | Base | Slot (fallback) | Used for |
 |---|---|---|---|
 | `RZ_FogEffect.et` | a low mist or fog particle effect | Fog effect (none: the fog bank works without a look) | Fog Bank |
+| `RZ_Convicts.et` | an AI group on `BAND`, prison clothes, pistols and bats | Convicts (Missions > Red Hand group) | Prison Break |
+| `RZ_Sniper.et` | a one-man AI group on `BAND` with a scoped rifle | Sniper (Contracts > Bounty target) | The Sniper; without either, the event never appears |
+| `RZ_RivalGroup.et` | an armed AI group on `SURV`, no faction's colours | Rival group (Missions > Survivor group) | Rival Survivors |
 
 The newer events also reuse **Missions > Explosion** (Gas Station Fire's blast, optional),
 **Interactions > Traps > Fire effect** (every burning building), the power grid, and the generic
-puzzle object (Tunnel Rats' culverts). Gas Station Fire and Burning Town need **Traps > Fire** on.
+puzzle object (Tunnel Rats' culverts, the tape in Fake Distress Call), **Puzzles > Civilian** (the
+people in Distress Call, Rival Survivors and Collapse Shelter) and **Missions > Red Hand group**
+(Fake Distress Call). Gas Station Fire and Burning Town need **Traps > Fire** on. The convicts,
+the sniper and the Fake Distress Call's ambush fight through the hostility system's fights, so they
+must be on `BAND`.
 
 Other prefabs the newer contracts reuse: **Cars > Car prefabs** (Car Theft), **Supply > Halcyon
 truck** (Mobile Lab's lab truck, falling back to the bus), **Supply > Haven truck** (the bus
@@ -456,7 +463,7 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | Backgrounds | Backgrounds (list) | Overrides; empty = the built-in 13. **Bite minutes** (20) |
 | Cure | (top level) | Lab, sample, antidote prefabs; research per sample (2%) |
 | Missions | (top level) | Reward crate, mission item, drop points and the optional mission prefabs |
-| Missions | Events | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20) |
+| Missions | Events | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs |
 | Missions | Contracts | Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) | The puzzle prefabs, **Scale counts items** (off), landmark name |
 | Perimeter | Perimeter | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
@@ -678,6 +685,12 @@ session, tick off:
   grid powers it. Gas Station Fire goes up after 3 minutes and burns at most three buildings;
   Burning Town burns one building at a time and stops at its cap. Tunnel Rats' culverts each
   send infected and can be collapsed only with none within 12 m.
+- [ ] People events: a Radio Operator gets a private line on both distress calls (live or a tape);
+  the fake's two groups appear within 400 m, close in at 60 m and leave a Red Hand Known player
+  alone. Prison Break's convicts walk toward the Red Hand camp and fight you, not a Red Hand
+  friend. The Sniper shoots everyone near him. Rival Survivors fight a Hunted player only, and
+  trade a crate for food with others. Collapse Shelter's people join the safehouse when told the
+  way and turn into infected when their time runs out.
 - [ ] Mission spots: start a few delivery and puzzle missions in towns with locked buildings.
   No item, note, person or crate is inside a locked building or in its doorway.
 - [ ] Nobody gets trapped: unlock, force and the inside latch remove the blocker at once; climb

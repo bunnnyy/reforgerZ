@@ -20,7 +20,7 @@ and one way to end it: **research the cure.**
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
-- **165 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
+- **171 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
   missions at the quarantine line, morally grey Haven work and leaders' off-book jobs.
 - **Search the world**: cupboards, car boots and bodies, locked doors that keep the infected
   out (they bang on them) and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting, traps, fire, water and

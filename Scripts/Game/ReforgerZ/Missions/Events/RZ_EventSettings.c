@@ -31,6 +31,16 @@ class RZ_EventSettings
 	[Attribute("3", desc: "Burning Town: infection taken off the town for each building that burns (on top of the fire's own)")]
 	float m_fBurnInfectionDrop = 3;
 
+	// ---------------------------------------------------------------- People
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Prison Break: escaped convicts, an armed AI group on BAND (the Red Hand takes them in). Empty = Missions > Red Hand group", "et")]
+	ResourceName m_sConvictGroupPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The Sniper: one armed AI with a scoped rifle, on BAND (he fights everyone near him through the hostility system). Empty = Contracts > Bounty target", "et")]
+	ResourceName m_sSniperPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Rival Survivors: an armed AI group on SURV, nobody's colours. Empty = Missions > Survivor group", "et")]
+	ResourceName m_sRivalGroupPrefab;
+
 	// ---------------------------------------------------------------- Tunnel Rats
 	[Attribute("20", desc: "Tunnel Rats: most infection the open culverts add to the town")]
 	float m_fTunnelInfectionCap = 20;
