@@ -14,6 +14,13 @@ class RZ_PlayerProfile
 	ref array<int> m_aChampionOf = {};	// factions any past or current character reached Champion with
 	ref array<string> m_aUnlocked = {};	// unlock ids of backgrounds this player may pick
 
+	// New-player guidance (RZ_Guidance): experience and what they've already been told
+	int m_iGuideLives;					// lives that lasted long enough to count (10 min by default)
+	int m_iGuideLastUnix;				// real-world time last seen playing (refresher after a long break)
+	int m_iGuideRefreshLeft;			// counted lives left with refreshed (stronger) guidance
+	int m_iGuideLastScenario = -1;		// the last spawn scenario, so the next one differs
+	ref array<string> m_aGuideSeen = {};	// once-only tips already given
+
 	// Current life
 	string m_sBackgroundId;
 	float m_fInfectionLeft = -1;	// seconds until turning, -1 = not infected
@@ -26,6 +33,7 @@ class RZ_PlayerProfile
 	bool m_bBiteDeclared;		// told a safehouse about the bite (slowed once, can't be caught)
 	bool m_bBiteCaught;			// caught hiding a bite in a safehouse
 	bool m_bDoctorTreated;		// a Doctor wanderer already slowed this life's infection
+	bool m_bGuideCounted;		// this life already counts as experience
 
 	// Personal objective for this life (see RZ_Objectives)
 	int m_iObjType = -1;
@@ -45,6 +53,7 @@ class RZ_PlayerProfile
 		m_bBiteDeclared = false;
 		m_bBiteCaught = false;
 		m_bDoctorTreated = false;
+		m_bGuideCounted = false;
 		m_iObjType = -1;
 		m_iObjTarget = -1;
 		m_iObjGoal = 0;
@@ -78,6 +87,8 @@ class RZ_PlayerProfile
 			m_aChampionOf = new array<int>();
 		if (!m_aUnlocked)
 			m_aUnlocked = new array<string>();
+		if (!m_aGuideSeen)
+			m_aGuideSeen = new array<string>();
 
 		while (m_aFame.Count() < RZ_Factions.COUNT)
 		{

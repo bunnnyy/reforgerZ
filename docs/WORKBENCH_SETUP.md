@@ -21,7 +21,7 @@ grep -rn "VERIFY" Scripts/
 Each one is an engine API whose exact name or signature I couldn't confirm
 for the current game version. Usually the fix is a rename. Look up the class in
 the Script Editor or in the [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
-They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 73 of them
+They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 74 of them
 (one is the comment in `RZ_Util.c` that explains them).
 
 The riskiest ones in the puzzle missions (`Puzzles/`):
@@ -395,6 +395,21 @@ posts off. Leader jobs use the mission item, the drop points and the puzzle civi
 object and well; each job is skipped while what it needs is missing. Training Day uses
 **Missions > Survivor group** if set. The log says
 `Faction leaders: N (new, seed S). Haven 2, Bastion 2, Red Hand 2, Halcyon 2` or `(saved)`.
+
+### New-player guidance
+
+Settings are under **Guidance** ([WORLD.md](WORLD.md), "New-player guidance"). Nothing to make:
+tips use the leaders, safehouse occupants, wanderers and the radio that already exist.
+
+**Settings** (defaults in brackets): **Enabled** (on); **Meaningful minutes** (10: a life must
+last this long to count as experience); **Lives learning / familiar / veteran** (1 / 3 / 8 counted
+lives for levels 1, 2 and 3); **Refresher days** (30; 0 = never); **Gentle mult** (0.5; 1 = off) and
+**Gentle minutes** (15); **Tip gap seconds** (90); **Loud heat** (45); **Tips** (empty = the built-in
+table; to edit, add entries with the same ids: each has an id, critical, max level, once, cooldown
+minutes and one line per speaker: Haven, Bastion, Red Hand, Halcyon, wanderer, radio, plain, short).
+
+The refresher reads the real date with `System.GetUnixTime()` (a VERIFY). If it doesn't exist,
+everything else still works and the refresher never fires.
 
 ## 4. Factions and backgrounds
 

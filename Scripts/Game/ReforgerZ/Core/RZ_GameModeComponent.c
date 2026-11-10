@@ -188,6 +188,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Named faction leaders: body prefabs per faction and role, interim outposts, replacement time, rogue-job discovery (docs/REPUTATION.md)", category: "ReforgerZ|Leaders")]
 	protected ref RZ_LeaderSettings m_LeaderSettings;
 
+	// ---------------------------------------------------------------- New-player guidance
+	[Attribute(desc: "Quiet in-world guidance: experience levels, contextual tips from nearby people, the first-life goal, the gentle start (docs/WORLD.md)", category: "ReforgerZ|Guidance")]
+	protected ref RZ_GuidanceSettings m_GuidanceSettings;
+
 	// ---------------------------------------------------------------- Survival
 	[Attribute("3", desc: "Heat per shot fired by a player (times the background noise multiplier)", category: "ReforgerZ|Survival")]
 	protected float m_fHeatPerShot;
@@ -264,6 +268,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Wanderers m_Wanderers;
 	protected ref RZ_Leaders m_Leaders;
 	protected ref RZ_Hostility m_Hostility;
+	protected ref RZ_Guidance m_Guidance;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -343,6 +348,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_HostilitySettings)
 			m_HostilitySettings = new RZ_HostilitySettings();
 
+		if (!m_GuidanceSettings)
+			m_GuidanceSettings = new RZ_GuidanceSettings();
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -362,6 +370,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Wanderers = new RZ_Wanderers(this, m_WandererSettings);
 		m_Leaders = new RZ_Leaders(this, m_LeaderSettings);
 		m_Hostility = new RZ_Hostility(this, m_HostilitySettings);
+		m_Guidance = new RZ_Guidance(this, m_GuidanceSettings);
 
 		bool loaded = false;
 		if (!m_bWipeOnStart)
@@ -442,6 +451,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			RZ_Objectives.Tick(this, ids[i], GetProfile(ids[i]), ent, dt);
 		}
 
+		// After the objectives, which advance each life's clock
+		m_Guidance.Tick(dt, ids, players);
+
 		if (m_bStatusLog)
 		{
 			m_fStatusTimer += dt;
@@ -495,6 +507,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Wanderers GetWanderers() { return m_Wanderers; }
 	RZ_Leaders GetLeaders() { return m_Leaders; }
 	RZ_Hostility GetHostility() { return m_Hostility; }
+	RZ_Guidance GetGuidance() { return m_Guidance; }
+	RZ_Broadcast GetBroadcast() { return m_Broadcast; }
+	float GetBroadcastMinutes() { return m_fBroadcastMinutes; }
 	string GetLandmarkFallbackName() { return m_sLandmarkName; }
 	bool ScaleCountsItems() { return m_bScaleCountsItems; }
 
@@ -771,6 +786,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		profile.StartNewLife(bg);
+		// Experience and refresher first: the first life that counts gets "Find the Haven"
+		m_Guidance.BeginLife(playerId, profile);
 		RZ_Objectives.Assign(this, profile, bg, controlledEntity.GetOrigin());
 
 		m_BiteDetector.Reset(playerId);
@@ -1041,6 +1058,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Hunted, Kill on Sight, exile and bounties all start at a tier: AI hostility follows
 		if (m_Hostility)
 			m_Hostility.OnStandingChanged(playerId);
+
+		// First rise with a faction, Watched, Hunted: a line from whoever is near
+		if (m_Guidance)
+			m_Guidance.OnTierChanged(playerId, faction, before, after);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1179,6 +1200,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		NotifyPlayer(playerId, "Infected", string.Format(
 			"You've been bitten. You have about %1 minutes. Find an antidote, or decide whether to tell anyone. A safehouse medic can slow it, if you tell her.",
 			RZ_Util.RoundToInt(seconds / 60)));
+
+		// Whoever is nearest says something about it (always at least a short line)
+		m_Guidance.OnBitten(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1284,7 +1308,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			s.AddInfection(-m_ZombieSettings.m_fInfectionDropPerKill * count);
 
 		if (special)
+		{
 			SpawnSamples(pos, 1);
+			m_Guidance.OnSpecialKilled(pos);
+		}
 
 		m_Wanderers.OnZombiesKilled(pos);
 		m_Leaders.OnZombiesKilled(pos);

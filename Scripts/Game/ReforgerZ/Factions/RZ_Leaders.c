@@ -1011,6 +1011,27 @@ class RZ_Leaders
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Hook for new-player guidance: a present leader whose body (or tagged quartermaster)
+	//! stands within radius of pos, null if none. The nearest plausible speaker for a tip.
+	RZ_Leader FindBodyNear(vector pos, float radius)
+	{
+		foreach (RZ_Leader l : m_aList)
+		{
+			if (!l.IsPresent())
+				continue;
+
+			IEntity body = l.m_Body;
+			if (!body)
+				body = l.m_TaggedQm;
+
+			if (body && RZ_Util.DistXZ(body.GetOrigin(), pos) <= radius)
+				return l;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True if this player has already talked to this leader.
 	bool HasMet(int leaderId, int playerId)
 	{

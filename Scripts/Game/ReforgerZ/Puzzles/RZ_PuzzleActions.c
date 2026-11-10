@@ -51,6 +51,10 @@ class RZ_ReadClueAction : ScriptedUserAction
 		}
 
 		m.HandleRead(gm, playerId, comp.GetClueIndex(), pOwnerEntity);
+
+		// "Notes like that usually point somewhere" (new-player guidance, once)
+		if (gm.GetGuidance())
+			gm.GetGuidance().OnClueRead(playerId);
 	}
 }
 

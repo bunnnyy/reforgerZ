@@ -66,6 +66,7 @@ Out of scope: sleep and time skipping.
 | The Perimeter: map edge from the world bounds fitted to land, warning zone (drone, loudspeaker), kill zone (warning shot, then fatal), blind spots | `World/RZ_Perimeter.c` | Written |
 | Sealed road checkpoints from the road network, or hand-placed markers | `World/RZ_Perimeter.c`, `RZ_CheckpointMarkerEntity.c` | Written |
 | Perimeter missions: The Blind Spot, The Crossing, Shot at the Line | `Missions/Perimeter/` | Written |
+| New-player guidance: experience levels that fade (never fully) with a refresher, data-driven contextual tips from the nearest plausible speaker, gentle first 15 minutes, "Find the Haven" first-life goal (see [WORLD.md](WORLD.md)) | `Guidance/` | Written |
 
 **None of it has been compiled yet.** It was written outside Workbench. Calls
 marked `// VERIFY:` are engine APIs whose exact names can differ between
@@ -122,6 +123,8 @@ Each life gets one goal, flavoured by background (the Hunter heads for their cab
 the Ex-Con digs up a stash): reach a town, survive 45 min, deliver 2 samples,
 be part of 2 missions, or earn a faction's trust. Completing one gives a
 **Legacy** point, saved across lives. 10 Legacy unlocks the Drifter background.
+A player's first life that lasts 10 minutes is always "Find the Haven" (reach a safehouse);
+see [WORLD.md](WORLD.md), "New-player guidance".
 
 ## Cure research
 
@@ -172,8 +175,9 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Wanderer roster: data travel, reactions, memory, deaths in the news, the bitten wanderer
 - [x] 3 grey Haven house contracts (Walk Him Out, The Ledger, A Quiet Arrangement) and the Courier's job
 - [ ] Make the safehouse and wanderer prefabs (occupants, guard, medic, one body per role) and add the `RZ_SafehouseAction`s to the Haven quartermaster; play-test upkeep timing and food keywords
-- [ ] New-player guidance: nudge a Courier or Scavenger toward brand-new players (`RZ_Wanderers.NudgeToward`),
-      and use the leaders' first-contact lines (`RZ_Leaders.GetFirstContactLine`, `DescribeStronghold`)
+- [x] New-player guidance: experience levels, contextual tips, gentle start, "Find the Haven" (WORLD.md, section 9)
+- [ ] New-player guidance in the world: spawn scenarios, wind-up radio, a wanderer who finds new players, faction voices
+- [ ] Play-test the tip table: is anything too chatty for a level-1 player? Do the speakers pick right?
 - [ ] Barter chains across wanderers; supply trucks that carry food to safehouses
 
 ### Phase 3: factions with teeth

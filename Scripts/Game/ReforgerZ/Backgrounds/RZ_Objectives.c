@@ -4,7 +4,8 @@ enum RZ_EObjective
 	SURVIVE,			// stay alive N minutes
 	DELIVER_SAMPLES,	// deliver N samples to the lab this life
 	COMPLETE_MISSIONS,	// take part in N successful missions this life
-	EARN_TRUST			// become Trusted (or better) with a faction
+	EARN_TRUST,			// become Trusted (or better) with a faction
+	FIND_HAVEN			// first meaningful life (new-player guidance): reach a Haven safehouse
 }
 
 //! One personal objective per life gives every character a small story of their
@@ -14,10 +15,25 @@ class RZ_Objectives
 {
 	static const float REACH_MIN_DIST = 1200;
 	static const float REACH_MAX_DIST = 4000;
+	static const float HAVEN_MIN_DIST = 200;
 
 	//------------------------------------------------------------------------------------------------
 	static void Assign(RZ_GameModeComponent gm, RZ_PlayerProfile profile, RZ_Background bg, vector spawnPos)
 	{
+		// A player's first life that counts is always about finding the Haven
+		if (gm.GetGuidance() && gm.GetGuidance().WantsHavenGoal(profile))
+		{
+			int house = PickHavenGoal(gm, spawnPos);
+			if (house >= 0)
+			{
+				profile.m_iObjType = RZ_EObjective.FIND_HAVEN;
+				profile.m_iObjTarget = house;
+				profile.m_iObjGoal = 0;
+				profile.m_bObjDone = false;
+				return;
+			}
+		}
+
 		array<int> pool = {
 			RZ_EObjective.REACH_TOWN, RZ_EObjective.REACH_TOWN,
 			RZ_EObjective.SURVIVE, RZ_EObjective.COMPLETE_MISSIONS,
@@ -86,6 +102,14 @@ class RZ_Objectives
 				return string.Format("Help out: be part of %1 successful missions.", profile.m_iObjGoal);
 			case RZ_EObjective.EARN_TRUST:
 				return string.Format("Earn the trust of %1: become %2 with them.", RZ_Factions.GetName(profile.m_iObjTarget), RZ_Reputation.GetTierName(RZ_ETier.TRUSTED));
+			case RZ_EObjective.FIND_HAVEN:
+			{
+				RZ_Safehouse goal = gm.GetSafehouses().Get(profile.m_iObjTarget);
+				if (!goal)
+					return "Find the Haven.";
+
+				return string.Format("Find the Haven. People say the safehouse in %1 takes people in.", goal.m_sName);
+			}
 		}
 
 		return "";
@@ -120,6 +144,10 @@ class RZ_Objectives
 			case RZ_EObjective.EARN_TRUST:
 				complete = RZ_Reputation.IsAtLeast(profile.GetTier(profile.m_iObjTarget), RZ_ETier.TRUSTED);
 				break;
+			case RZ_EObjective.FIND_HAVEN:
+				// Any safehouse will do: the Haven is the people, not the building
+				complete = gm.GetSafehouses().FindAt(ent.GetOrigin()) >= 0;
+				break;
 		}
 
 		if (!complete)
@@ -135,6 +163,31 @@ class RZ_Objectives
 		gm.NotifyPlayer(playerId, "Personal goal complete", string.Format("%1\nLegacy: %2", Describe(gm, profile), profile.m_iLegacy));
 		gm.AddFame(playerId, RZ_EFaction.SURVIVORS, 10);
 		gm.OnLegacyChanged(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest safehouse that isn't where the player woke up (a safehouse spawn point
+	//! would finish the goal at once). -1 if there's none.
+	protected static int PickHavenGoal(RZ_GameModeComponent gm, vector from)
+	{
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (!houses)
+			return -1;
+
+		int best = -1;
+		float bestDist = float.MAX;
+		for (int i = 0; i < houses.Count(); i++)
+		{
+			RZ_Safehouse h = houses.Get(i);
+			float d = RZ_Util.DistXZ(from, h.m_vPos);
+			if (d < HAVEN_MIN_DIST || d >= bestDist)
+				continue;
+
+			bestDist = d;
+			best = i;
+		}
+
+		return best;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -747,6 +747,25 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Hook for new-player guidance: the title of a wanderer whose body stands within radius
+	//! and who would still talk to this player (not the Kid, not someone they robbed or shot
+	//! at). "" if none.
+	string SpeakerNear(int playerId, vector pos, float radius)
+	{
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		foreach (RZ_Wanderer w : m_aList)
+		{
+			if (!w.m_bAlive || !w.m_Body || w.m_eRole == RZ_EWandererRole.KID || w.Remembers(ident, MEM_WRONGED))
+				continue;
+
+			if (RZ_Util.DistXZ(w.m_vPos, pos) <= radius)
+				return w.GetTitle();
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Hostility hook (RZ_Hostility): the wanderer within `radius` of pos who would fight this
 	//! player, or null. Only a body that's an AI group with an armed leader can fight; the Kid
 	//! never does. A grudge is having been robbed or shot at by them, or, for the Deserter,

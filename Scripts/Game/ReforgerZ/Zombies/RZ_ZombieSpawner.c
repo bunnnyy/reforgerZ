@@ -402,6 +402,9 @@ class RZ_ZombieSpawner
 					desired = desired * 0.4;
 			}
 
+			// A brand-new player nearby gets a gentler first few minutes (RZ_Guidance)
+			desired = desired * GentleMult(s.m_vCenter, m_Settings.m_fActivationRadius + s.m_fRadius);
+
 			int deficit = RZ_Util.RoundToInt(desired) - CountForSettlement(idx);
 			while (deficit > 0 && spawned < budget && m_aTracked.Count() < m_Settings.m_iGlobalCap)
 			{
@@ -430,7 +433,8 @@ class RZ_ZombieSpawner
 				return;
 
 			vector p = player.GetOrigin();
-			if (CountNear(p, AMBIENT_RADIUS) >= wanted)
+			int wantedHere = RZ_Util.RoundToInt(wanted * GentleMult(p, 1));
+			if (CountNear(p, AMBIENT_RADIUS) >= wantedHere)
 				continue;
 
 			vector pos;
@@ -440,6 +444,16 @@ class RZ_ZombieSpawner
 			SpawnZombie(pos, Math.RandomFloat01() < stage.m_fSpecialChance * m_fEventSpecialMult * 0.5, -1, -1);
 			spawned++;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Density multiplier from new-player guidance (1 = normal).
+	protected float GentleMult(vector pos, float radius)
+	{
+		if (!m_GM.GetGuidance())
+			return 1;
+
+		return m_GM.GetGuidance().GetDensityMult(pos, radius);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -58,5 +58,6 @@ Scripts/Game/ReforgerZ/
   Factions/     Fame/Infamy tiers, quartermasters and shops, perks, hunter squads, bounties, leaders, AI hostility
   Missions/     framework, requirements, bases; Haven/ Bastion/ RedHand/ Halcyon/ Events/ Leaders/
   Cure/         research, lab, samples, actions
+  Guidance/     new-player guidance: experience levels, contextual tips
   Persistence/  save/load of mode state
 ```

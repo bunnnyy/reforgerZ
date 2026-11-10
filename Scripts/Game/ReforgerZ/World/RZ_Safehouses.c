@@ -650,6 +650,20 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A safehouse whose people are shown (a player is near) within radius of pos, -1 if none.
+	//! New-player guidance uses its occupants as the nearest speaker.
+	int FindPeopleNear(vector pos, float radius)
+	{
+		foreach (int i, RZ_Safehouse h : m_aSafehouses)
+		{
+			if (h.m_bSpawned && !h.m_aBodies.IsEmpty() && RZ_Util.DistXZ(pos, h.m_vPos) <= radius + 10)
+				return i;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Hunted by the Haven = exile: the door stays shut.
 	bool IsExiled(int playerId)
 	{

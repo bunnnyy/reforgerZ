@@ -306,6 +306,82 @@ outposts that changed hands, wanderers lost, the cure percentage, the biggest re
   game already cleans up. Your dead character's **journal** is data. It
   shows up as a line in the headlines or as a rumour from a wanderer, not as an object.
 
+## 9. New-player guidance ✅ (built, `Guidance/`)
+
+The world teaches itself through things you find and people you hear, never tutorial pop-ups.
+Every line is in a speaker's voice ([LORE.md](LORE.md), "Writing guide").
+
+### Experience: guidance fades, but never disappears
+
+Each player has a **guidance level** worked out from lives that lasted at least 10 minutes
+(shorter lives don't count). It's saved on the player's profile.
+
+| Level | Counted lives | What they get |
+|---|---|---|
+| 0, brand new | 0 | Everything: every tip in full, the gentle start, the first-life goal |
+| 1, learning | 1–2 | Every tip in full |
+| 2, familiar | 3–7 | Every tip in full except the first-special tip |
+| 3, veteran | 8+ | Only critical tips (a bite, being Hunted), as one short line |
+
+- **Refresher:** a player who comes back after 30+ real days gets two levels more guidance for
+  their next two counted lives, and the once-only tips can come again.
+- **Floor:** a veteran still gets the short line for critical tips.
+
+### Contextual tips
+
+When something happens, the nearest plausible person says **one line** about it:
+
+1. a faction leader within 40 m (their body, or the quartermaster they stand in for), in their
+   faction's voice, unless they refuse you; or someone at a Haven safehouse whose people are
+   shown, in the Haven's voice, unless you're exiled;
+2. else a wanderer within 60 m (not the Kid, not one you robbed or shot at);
+3. else a voice on the radio, if you carry one;
+4. else a short plain hint.
+
+The Haven suggests its medic; the Red Hand suggests a stolen antidote. Each tip comes at most
+once per life, has a cooldown across lives, and waits 90 s after another tip (critical ones
+don't wait). The table is data: **Guidance > Tips** on the game mode, with the defaults in
+`RZ_GuidanceTips.c`. More can be added and fired with `RZ_Guidance.Report(playerId, id)`.
+
+| Tip | Trigger | Says | Critical |
+|---|---|---|---|
+| bitten | the infection starts | antidote, or tell a safehouse medic | ✅ |
+| special | a special dies within 80 m of you (once) | take the sample to the lab | |
+| samples | samples in your pack (checked every 30 s) | where the lab is | |
+| tier | your first rise to Known, Trusted or Champion with a faction (once) | the shop opens up | |
+| watched | Watched by a faction | amends contracts | |
+| hunted | Hunted or Kill on Sight | they shoot on sight; amends | ✅ |
+| perimeter | within about 450 m of the edge, or 350 m of a checkpoint (once) | nobody gets through | |
+| loud | heat 45+ where you stand | throw a noisemaker the other way | |
+| night | the first night (once) | they hear further, specials come out | |
+| safehouse | your first safehouse (once) | house rules: guns fine, no firing, declare bites | |
+| shortage | in a safehouse that's short of food | bring tins | |
+| clue | your first puzzle clue (once) | "Notes like that usually point somewhere. Check your map and compass." | |
+| hungry, car, channel | **hooks only** (see below) | eat; a car that might run; a scrambled channel nearby | |
+
+**Hooks left for later systems.** Hunger comes from a Workshop mod ReforgerZ can't read, there
+are no fixable cars or secure radio channels in code yet, and shop shortages wait for supply
+trucks. Each has its tip ready: the system (or another mod) calls
+`RZ_Guidance.Report(playerId, "hungry" | "car" | "channel" | "shortage", place)`.
+
+### Gentle first 15 minutes
+
+For the first 15 minutes of a brand-new player's life, zombie spawns near them run at half
+density: towns within the spawner's activation radius of them and the wandering ones around them.
+
+### First-life goal
+
+A player's first life that counts always gets the personal goal **Find the Haven**: reach a
+Haven safehouse (the nearest one that isn't where they woke). It pays like any other goal
+(a Legacy point and a little Haven Fame). A life that ends before 10 minutes doesn't count,
+so the next one gets the same goal.
+
+### Planned next
+
+Spawn scenarios with a clue each, a wind-up radio with open channels, a wanderer who finds a
+brand-new player, Bastion loudspeakers and Red Hand taunts near their seats, Halcyon flyers in
+safehouses, and wanderer gossip about the factions.
+
 ## Build order
 
 1. ✅ Safehouses with population tiers, and rescued survivors joining them
@@ -315,3 +391,4 @@ outposts that changed hands, wanderers lost, the cure percentage, the biggest re
 5. Strongholds and outposts, the territory tick, supply lines as data
 6. Light infection adaptation; day/night and weather modifiers
 7. Story arcs and headlines (leader headlines are already in)
+8. ✅ New-player guidance: experience levels, contextual tips, the gentle start, the first-life goal
