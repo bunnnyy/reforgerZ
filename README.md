@@ -28,6 +28,10 @@ the cure.**
   from Shelter to Town as you rescue people and bring food, with house rules (no shooting,
   declare your bite) and exile for those who break them. Named wanderers walk between them,
   remember what you did, and their deaths make the news.
+- **A world that teaches itself**: no tutorial pop-ups. You wake next to a note, a flyer or a
+  body that points somewhere, carry a wind-up radio that picks up the Haven's open channel, and
+  hear tips from whoever is nearest, in their own voice. It fades as you gain experience, but
+  never quite goes away.
 - **Any map**: towns are detected from map labels and building clusters.
 - **Built on the Workshop**: zombies, hunger and thirst, traders and base building come from
   existing mods. ReforgerZ ties them together.
@@ -58,6 +62,6 @@ Scripts/Game/ReforgerZ/
   Factions/     Fame/Infamy tiers, quartermasters and shops, perks, hunter squads, bounties, leaders, AI hostility
   Missions/     framework, requirements, bases; Haven/ Bastion/ RedHand/ Halcyon/ Events/ Leaders/
   Cure/         research, lab, samples, actions
-  Guidance/     new-player guidance: experience levels, contextual tips
+  Guidance/     new-player guidance: experience levels, contextual tips, spawn scenarios, open radio channels
   Persistence/  save/load of mode state
 ```

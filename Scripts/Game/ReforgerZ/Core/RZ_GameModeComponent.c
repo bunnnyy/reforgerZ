@@ -798,6 +798,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			bg.m_sPerk, bg.m_sFlaw, RZ_Objectives.Describe(this, profile));
 		NotifyPlayer(playerId, bg.m_sName, intro);
 
+		// Where you wake: a small clue nearby, and the wind-up radio (new-player guidance)
+		m_Guidance.OnPlayerSpawned(playerId, controlledEntity);
+
 		// 2. The state of the world (first spawn of this session only)
 		if (!m_aWelcomed.Contains(playerId))
 		{

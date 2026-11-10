@@ -21,7 +21,7 @@ grep -rn "VERIFY" Scripts/
 Each one is an engine API whose exact name or signature I couldn't confirm
 for the current game version. Usually the fix is a rename. Look up the class in
 the Script Editor or in the [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
-They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 74 of them
+They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 75 of them
 (one is the comment in `RZ_Util.c` that explains them).
 
 The riskiest ones in the puzzle missions (`Puzzles/`):
@@ -398,18 +398,44 @@ object and well; each job is skipped while what it needs is missing. Training Da
 
 ### New-player guidance
 
-Settings are under **Guidance** ([WORLD.md](WORLD.md), "New-player guidance"). Nothing to make:
-tips use the leaders, safehouse occupants, wanderers and the radio that already exist.
+Settings are under **Guidance** ([WORLD.md](WORLD.md), "New-player guidance"). It works with no
+prefabs of its own: tips use the leaders, safehouse occupants, wanderers and radios that already
+exist, and scenario clues fall back to **Puzzles > Note** and **Puzzles > Body**. Without those
+either, a scenario's clue text comes with its scene message. Each prefab below only adds to it.
+
+| Prefab | Base | Add | Setting | Used for |
+|---|---|---|---|---|
+| `RZ_WindupRadio.et` | a small radio item (a vanilla handheld radio works) | nothing; **its prefab name must contain "radio"** (or it needs a radio component) so `RZ_Radio` counts it | Radio prefab | given to every new life; empty = no radio given |
+| `RZ_CarWreck.et` | a wrecked car prop | optionally `RZ_ClueComponent` + `RZ_ReadClueAction` (else a note lies next to it) | Car wreck prefab | the back-road scenario |
+| `RZ_ScratchedDoor.et` | a door or wall panel prop | `RZ_ClueComponent`, `RZ_ReadClueAction`, `RplComponent` | Door prefab | the basement scenario |
+| `RZ_Flyer.et` | a paper or poster prop | `RZ_ClueComponent`, `RZ_ReadClueAction`, `RplComponent` | Flyer prefab | the church scenario and the flyer in each safehouse |
+| `RZ_TableRadio.et` | a radio prop | `RZ_ClueComponent`, `RZ_ReadClueAction` (label "Listen") | Table radio prefab (falls back to the radio item, unread) | the farmhouse scenario |
+| `RZ_DeadRaider.et` | a body prop with a red hand on the jacket | `RZ_ClueComponent`, `RZ_ReadClueAction` | Raider body prefab (falls back to Puzzles > Body) | the attic scenario |
+| `RZ_DeadSoldier.et` | a body prop in a Bastion uniform | `RZ_ClueComponent`, `RZ_ReadClueAction` | Soldier body prefab (falls back to Puzzles > Body) | the barricade scenario |
+| `RZ_Barricade.et` | sandbags and a car on its side | | Barricade prefab | scenery for the barricade scenario |
 
 **Settings** (defaults in brackets): **Enabled** (on); **Meaningful minutes** (10: a life must
 last this long to count as experience); **Lives learning / familiar / veteran** (1 / 3 / 8 counted
 lives for levels 1, 2 and 3); **Refresher days** (30; 0 = never); **Gentle mult** (0.5; 1 = off) and
 **Gentle minutes** (15); **Tip gap seconds** (90); **Loud heat** (45); **Tips** (empty = the built-in
 table; to edit, add entries with the same ids: each has an id, critical, max level, once, cooldown
-minutes and one line per speaker: Haven, Bastion, Red Hand, Halcyon, wanderer, radio, plain, short).
+minutes and one line per speaker: Haven, Bastion, Red Hand, Halcyon, wanderer, radio, plain, short);
+**Radio minutes** (12 for a brand-new player, x1.5 / x2.5 / x3.5 with experience; 0 = off);
+**Scenarios** (on); **Clue minutes** (20); **Safehouse flyers** (on); **Shout minutes** (30: Bastion
+loudspeakers and Red Hand taunts near their seats; 0 = off); **Wanderer finds** (on).
 
-The refresher reads the real date with `System.GetUnixTime()` (a VERIFY). If it doesn't exist,
-everything else still works and the refresher never fires.
+Two VERIFYs are new here:
+
+- **Real date** (`RZ_Guidance.UnixNow`: `System.GetUnixTime()`): only the 30-day refresher uses it.
+  If it doesn't exist, return 0 there: everything else works and the refresher never fires.
+- **Putting the radio in the inventory** (`RZ_Util.InsertIntoInventory`:
+  `SCR_InventoryStorageManagerComponent.TryInsertItem`): if it fails, the radio lies at the
+  player's feet and they're told so. Test that a fresh character's inventory is ready 3 s after
+  spawning (the radio is given then).
+
+Worth testing too: a clue prop the player picks up is never deleted by the cleanup (it checks
+`GetRootParent`, an existing VERIFY), and the hidden use and choice slots on a generic puzzle
+object used as a clue (the guidance labels them all empty).
 
 ## 4. Factions and backgrounds
 

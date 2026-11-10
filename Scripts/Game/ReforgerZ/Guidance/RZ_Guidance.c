@@ -8,7 +8,9 @@
 //!   line in their voice (a leader or safehouse occupant, else a wanderer, else the radio,
 //!   else a plain hint). The table is data (RZ_GuidanceTip);
 //! - a gentler first 15 minutes (fewer zombies near a brand-new player);
-//! - the first-life goal "Find the Haven" (RZ_Objectives).
+//! - the first-life goal "Find the Haven" (RZ_Objectives);
+//! - the world half (RZ_GuidanceWorld): spawn scenarios, the wind-up radio and its open
+//!   channels, voices near faction seats, safehouse flyers, gossip, a wanderer who finds you.
 //!
 //! Server only. Event-driven where a hook exists, otherwise a light poll every 10 s.
 
@@ -47,6 +49,48 @@ class RZ_GuidanceSettings
 	[Attribute("45", desc: "Heat around a player that counts as too loud (the 'loud' tip)")]
 	float m_fLoudHeat = 45;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Wind-up radio item put in every new life's inventory (or at their feet). Its prefab name must contain 'radio' or it needs a radio component, so RZ_Radio counts it. Empty = none given", "et")]
+	ResourceName m_sRadioPrefab;
+
+	[Attribute("12", desc: "Minutes between open-channel radio messages for a brand-new player (x1.5, x2.5, x3.5 with experience). 0 = off")]
+	float m_fRadioMinutes = 12;
+
+	[Attribute("1", desc: "Spawn scenarios: every new life starts near a small clue (a note, a flyer, a body, a radio)")]
+	bool m_bScenarios = true;
+
+	[Attribute("20", desc: "Minutes a scenario clue stays; it's removed after this once nobody is within 30 m, and after twice this anyway")]
+	float m_fClueMinutes = 20;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Crashed car (optional scenery for the back-road scenario; a note lies next to it unless it has RZ_ClueComponent)", "et")]
+	ResourceName m_sCarWreckPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Scratched door or wall panel (optional, basement scenario; readable with RZ_ClueComponent + RZ_ReadClueAction, else the note is used)", "et")]
+	ResourceName m_sDoorPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon flyer (optional, church scenario and safehouse walls; falls back to Puzzles > Note)", "et")]
+	ResourceName m_sFlyerPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Table radio (optional, farmhouse scenario; falls back to the wind-up radio item)", "et")]
+	ResourceName m_sTableRadioPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Dead raider with a red hand on his jacket (optional, attic scenario; falls back to Puzzles > Body)", "et")]
+	ResourceName m_sRaiderBodyPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Dead Bastion soldier (optional, barricade scenario; falls back to Puzzles > Body)", "et")]
+	ResourceName m_sSoldierBodyPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion barricade (optional scenery for the barricade scenario)", "et")]
+	ResourceName m_sBarricadePrefab;
+
+	[Attribute("1", desc: "Halcyon flyers on the walls of Haven safehouses (they mention the Haven clinic and Bastion's curfew)")]
+	bool m_bSafehouseFlyers = true;
+
+	[Attribute("30", desc: "Minutes between a Bastion loudspeaker or a Red Hand taunt near one of their seats, per player and faction (doubled for veterans). 0 = off")]
+	float m_fShoutMinutes = 30;
+
+	[Attribute("1", desc: "A Courier or Scavenger wanderer comes looking for brand-new players in their first 15 minutes")]
+	bool m_bWandererFinds = true;
+
 	[Attribute(desc: "Tips: one line from the nearest plausible speaker when something happens. Empty = the built-in table (RZ_GuidanceTips)")]
 	ref array<ref RZ_GuidanceTip> m_aTips = {};
 }
@@ -58,6 +102,10 @@ class RZ_GuidePlayer
 	float m_fLastTip = -1000;
 	ref array<string> m_aLifeTips = {};
 	float m_fSampleTimer;
+	float m_fRadioTimer;
+	int m_iRadioStep;
+	float m_fNudgeAt;
+	bool m_bNudged;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -82,6 +130,7 @@ class RZ_Guidance
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_GuidanceSettings m_Settings;
+	protected ref RZ_GuidanceWorld m_World;
 	protected ref array<ref RZ_GuidanceTip> m_aTips = {};
 	protected ref map<int, ref RZ_GuidePlayer> m_mPlayers = new map<int, ref RZ_GuidePlayer>();
 	protected ref map<string, float> m_mTipAt = new map<string, float>();
@@ -107,6 +156,8 @@ class RZ_Guidance
 		{
 			RZ_GuidanceTips.CreateDefaults(m_aTips);
 		}
+
+		m_World = new RZ_GuidanceWorld(gm, this, settings);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -173,6 +224,39 @@ class RZ_Guidance
 			p.m_iGuideLastUnix = now;
 
 		m_mPlayers.Set(playerId, new RZ_GuidePlayer());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! From OnPlayerSpawned, after the player was told who they are this life: the wind-up
+	//! radio and the spawn scenario.
+	void OnPlayerSpawned(int playerId, IEntity ent)
+	{
+		if (!m_Settings.m_bEnabled || !ent)
+			return;
+
+		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
+		m_World.OnPlayerSpawned(playerId, ent, p, GetState(playerId), GetLevel(p));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A guidance clue or flyer was read (RZ_PuzzleActionHelper.RouteRead).
+	void HandleRead(int playerId, int idx, IEntity owner)
+	{
+		m_World.HandleRead(playerId, idx, owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Halcyon's flyer for a safehouse wall (RZ_Safehouses spawns it with the occupants). Null if off.
+	IEntity SpawnSafehouseFlyer(int safehouseIdx, vector center)
+	{
+		return m_World.SpawnSafehouseFlyer(safehouseIdx, center);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line of faction gossip for a wanderer's "Talk", "" if none this time.
+	string WandererGossip(int playerId, int role, vector from)
+	{
+		return m_World.WandererGossip(playerId, role, from);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -247,8 +331,15 @@ class RZ_Guidance
 			}
 
 			if (poll)
-				Poll(playerId, ent, GetState(playerId), night);
+			{
+				RZ_GuidePlayer st = GetState(playerId);
+				Poll(playerId, ent, st, night);
+				m_World.Poll(playerId, ent, p, st, level, POLL_SECONDS);
+			}
 		}
+
+		if (m_Settings.m_bEnabled)
+			m_World.Tick(players, poll);
 	}
 
 	//------------------------------------------------------------------------------------------------

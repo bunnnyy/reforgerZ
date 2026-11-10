@@ -673,18 +673,20 @@ class RZ_Wanderers
 	//------------------------------------------------------------------------------------------------
 	//! Hook for new-player guidance: send the nearest living wanderer with a role in roleMask
 	//! (e.g. RoleBit(COURIER) | RoleBit(SCAVENGER)) walking toward the player. They give up
-	//! after 20 minutes. True if someone is on the way.
-	static bool NudgeToward(int playerId, int roleMask)
+	//! after 20 minutes. With maxStart > 0, one farther away who has no body (nobody can see
+	//! them) is moved, as data, to that distance first, so they arrive in minutes, not an hour.
+	//! True if someone is on the way.
+	static bool NudgeToward(int playerId, int roleMask, float maxStart = 0)
 	{
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		if (!gm || !gm.GetWanderers())
 			return false;
 
-		return gm.GetWanderers().Nudge(playerId, roleMask);
+		return gm.GetWanderers().Nudge(playerId, roleMask, maxStart);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	bool Nudge(int playerId, int roleMask)
+	bool Nudge(int playerId, int roleMask, float maxStart = 0)
 	{
 		IEntity player = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (!player)
@@ -710,6 +712,15 @@ class RZ_Wanderers
 
 		if (!best)
 			return false;
+
+		if (maxStart > 0 && bestDist > maxStart && !best.m_Body)
+		{
+			vector from = player.GetOrigin();
+			vector p = from;
+			p[0] = from[0] + (best.m_vPos[0] - from[0]) * maxStart / bestDist;
+			p[2] = from[2] + (best.m_vPos[2] - from[2]) * maxStart / bestDist;
+			best.m_vPos = RZ_Util.GroundPos(p);
+		}
 
 		best.m_iNudgePlayer = playerId;
 		best.m_fNudgeLeft = 1200;
@@ -1132,8 +1143,26 @@ class RZ_Wanderers
 				continue;
 
 			SpawnBody(w);
+			if (w.m_iNudgePlayer > 0)
+				OnNudgeSighted(w);
+
 			return;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Guidance: the wanderer who came looking for a new player is in sight. They wave and wait.
+	protected void OnNudgeSighted(RZ_Wanderer w)
+	{
+		IEntity target = GetGame().GetPlayerManager().GetPlayerControlledEntity(w.m_iNudgePlayer);
+		if (!w.m_Body || !target || RZ_Util.DistXZ(target.GetOrigin(), w.m_vPos) > m_Settings.m_fSpawnRadius)
+			return;
+
+		m_GM.NotifyPlayer(w.m_iNudgePlayer, w.GetTitle(), string.Format("Someone on the road, %1, is waving an arm over their head. They've seen you, and they're waiting.",
+			RZ_Util.DirectionText(target.GetOrigin(), w.m_vPos)));
+		w.m_iNudgePlayer = -1;
+		w.m_eState = RZ_EWandererState.REST;
+		w.m_fStateTimer = 300;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1778,6 +1807,14 @@ class RZ_Wanderers
 		string text = IntroText(w) + "\n" + IntelText(w, player.GetOrigin());
 		if (attitude >= 2)
 			text += "\n" + WarningText(player.GetOrigin());
+
+		// Faction gossip, mostly for players who are new to the Zone (new-player guidance)
+		if (m_GM.GetGuidance() && w.m_eRole != RZ_EWandererRole.KID)
+		{
+			string gossip = m_GM.GetGuidance().WandererGossip(playerId, w.m_eRole, player.GetOrigin());
+			if (!gossip.IsEmpty())
+				text += "\n" + gossip;
+		}
 
 		if (w.IsBitten())
 			text += "\nThere's a dressing on their arm, already dark through. \"Don't. I know.\"";

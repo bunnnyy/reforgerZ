@@ -251,7 +251,7 @@ class RZ_PuzzleActionHelper
 
 	//------------------------------------------------------------------------------------------------
 	//! Wanderers (RZ_Wanderers.TAG), safehouse occupants (RZ_Safehouses.TAG_OCCUPANT) and faction
-	//! leaders (RZ_Leaders.TAG) reuse the puzzle civilian. Their choice actions come here instead of to a mission.
+	//! leaders (RZ_Leaders.TAG) reuse the puzzle civilian; guidance clues (RZ_GuidanceWorld.TAG) the note. Their choice actions come here instead of to a mission.
 	//! True if `owner` is one of them (and the choice was handled).
 	static bool RouteChoice(RZ_GameModeComponent gm, IEntity owner, int playerId, int option, IEntity user)
 	{
@@ -286,6 +286,10 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		// Guidance clues hide their choice slots; nothing to do if one is used anyway
+		if (comp.GetMissionId() == RZ_GuidanceWorld.TAG)
+			return true;
+
 		return false;
 	}
 
@@ -316,6 +320,15 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetLeaders())
 				gm.GetLeaders().HandleTalk(playerId, comp.GetClueIndex(), owner);
+
+			return true;
+		}
+
+		// New-player guidance: spawn scenario clues and safehouse flyers
+		if (comp.GetMissionId() == RZ_GuidanceWorld.TAG)
+		{
+			if (gm.GetGuidance())
+				gm.GetGuidance().HandleRead(playerId, comp.GetClueIndex(), owner);
 
 			return true;
 		}

@@ -420,6 +420,26 @@ class RZ_Perimeter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The nearest road checkpoint to pos (for notes that warn about it). False if there are none.
+	bool GetNearestCheckpoint(vector pos, out vector checkpoint)
+	{
+		float best = float.MAX;
+		bool found = false;
+		foreach (vector cp : m_aCheckpoints)
+		{
+			float d = RZ_Util.DistXZ(pos, cp);
+			if (d < best)
+			{
+				best = d;
+				checkpoint = cp;
+				found = true;
+			}
+		}
+
+		return found;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Turn the cordon off within `radius` of `center` until RemoveBlindSpot. Returns a handle.
 	int AddBlindSpot(vector center, float radius)
 	{

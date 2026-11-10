@@ -243,6 +243,21 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Puts a spawned item into a character's inventory. False if it doesn't fit (or the call
+	//! doesn't work): the item then stays where it was spawned.
+	static bool InsertIntoInventory(IEntity character, IEntity item)
+	{
+		if (!character || !item)
+			return false;
+
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return false;
+
+		return inv.TryInsertItem(item); // VERIFY: TryInsertItem(IEntity) picks a storage with room (other params default)
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The player carrying an item in their inventory, or -1 if it's on the ground or held by AI.
 	static int GetCarrierPlayerId(IEntity item)
 	{

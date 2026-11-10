@@ -139,6 +139,10 @@ Even a win doesn't mean leaving: the next season is a new outbreak, in a new Zon
   - **Haven:** warm, worried.
   - **Red Hand:** mocking and casual.
   - **Halcyon:** precise, a bit cold, sometimes guilty.
+- **Open channels** on the radio are people, not institutions. The Haven's is a tired woman:
+  *"If you can hear this, Morton is open. Bring water if you can. Bring yourself either way."*
+  Bastion's net still calls Command, which never answers. The Red Hand uses the open channel
+  to laugh at Bastion: *"Still waiting for relief? We'll keep the kettle on."*
 - **Leaders** speak in their faction's voice, coloured by their traits: a Greedy one talks
   about pay first, a Paranoid one asks who saw you come in, a Merciful one tells you to sit
   down and eat. One short line before a brief and one after, never a speech.

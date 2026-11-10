@@ -115,10 +115,10 @@ food, an event nearby, or where they're heading. Actions on the body: the role's
 the safehouse in Morton." Whoever shot at them in the last 30 s takes Haven Infamy. A
 replacement (half the time the same role) shows up a real day later.
 
-**Hooks for new-player guidance (planned next):** `RZ_Wanderers.NudgeToward(playerId, roleMask)`
-sends the nearest wanderer with one of the roles walking toward a player (they give up after
-20 minutes and wait 5 minutes once they arrive); `RZ_Wanderers.RoleBit(role)` builds the mask;
-`DescribeNearest(pos, roleMask)` names the nearest one with distance and direction.
+**New-player guidance** (section 9) sends a Courier or Scavenger to brand-new players with
+`RZ_Wanderers.NudgeToward(playerId, roleMask, maxStart)` and adds a line of faction gossip to
+their talk. `DescribeNearest(pos, roleMask)` (the nearest one with distance and direction) is
+there for other systems.
 
 **Performance.** When no player is within 400 m, a wanderer is just a position moving in a
 straight line on the server tick, with no entity and no AI pathing. At most two bodies exist
@@ -318,14 +318,14 @@ Each player has a **guidance level** worked out from lives that lasted at least 
 
 | Level | Counted lives | What they get |
 |---|---|---|
-| 0, brand new | 0 | Everything: every tip in full, the gentle start, the first-life goal |
-| 1, learning | 1–2 | Every tip in full |
-| 2, familiar | 3–7 | Every tip in full except the first-special tip |
-| 3, veteran | 8+ | Only critical tips (a bite, being Hunted), as one short line |
+| 0, brand new | 0 | Everything: every tip in full, the gentle start, a wanderer who comes looking, scenarios leaning toward the Haven, the radio every 12 min |
+| 1, learning | 1–2 | Every tip in full, full scenario scenes, wanderer gossip every time |
+| 2, familiar | 3–7 | Every tip except the first-special one; one-line scenario scenes; gossip now and then |
+| 3, veteran | 8+ | The floor: a scenario clue, the open channels (every 42 min), and critical tips (a bite, being Hunted) as one short line |
 
 - **Refresher:** a player who comes back after 30+ real days gets two levels more guidance for
   their next two counted lives, and the once-only tips can come again.
-- **Floor:** a veteran still gets the short line for critical tips.
+- **Floor:** a veteran still gets a scenario clue, the open channels, and the short line for critical tips.
 
 ### Contextual tips
 
@@ -376,11 +376,63 @@ Haven safehouse (the nearest one that isn't where they woke). It pays like any o
 (a Legacy point and a little Haven Fame). A life that ends before 10 minutes doesn't count,
 so the next one gets the same goal.
 
-### Planned next
+### Where you wake: spawn scenarios
 
-Spawn scenarios with a clue each, a wind-up radio with open channels, a wanderer who finds a
-brand-new player, Bastion loudspeakers and Red Hand taunts near their seats, Halcyon flyers in
-safehouses, and wanderer gossip about the factions.
+Every new life starts a few metres from a small clue, picked at random (brand-new players lean
+toward the Haven, and never the same as last life if there's another). A one-line scene says
+where you woke, in the nearest town. Each one points somewhere:
+
+| Scenario | The clue | Points to | Needs |
+|---|---|---|---|
+| A back road | a car in the ditch; the dashboard note: "Gone to the safehouse in *town*. They're sharing food." with an arrow | the nearest Haven safehouse | a safehouse |
+| A basement | scratched into the door: the roads out end in concrete, the line shoots, nobody gets out (with the direction of the nearest checkpoint or edge) | the Perimeter | the Perimeter on |
+| Church notice | Halcyon's flyer, "Infected samples wanted. Reward.", on the nearest church door within 300 m if there is one | the lab | a lab |
+| A farmhouse kitchen | a wind-up radio on the table plays the broadcast, then the Haven's open channel | the Haven | a safehouse |
+| An attic | a dead raider with a red hand on his jacket and a list of toll roads | the Red Hand's boss | a Red Hand stronghold leader |
+| Behind the barricade | a dead Bastion soldier's orders: "Hold the line. Await relief.", and his notes up to today: nobody is coming | Bastion's stronghold | a Bastion stronghold leader |
+
+The clue is a prop that can be read: its own prefab if one is set and readable, otherwise the
+puzzle note (or body) next to it. With no prefab at all, the clue's text comes with the scene.
+Clues are removed after 20 minutes once nobody is within 30 m, and after 40 minutes anyway. A
+veteran still gets a scenario, with a one-line scene: that's part of the floor.
+
+*Simplification:* you don't really wake in a basement or an attic. The scene says so, and the
+clue lies next to wherever the spawn point put you.
+
+### The wind-up radio
+
+Every new life gets a wind-up radio (a configurable item) in their inventory, or at their feet
+if it doesn't fit. Radio Operators and anyone already carrying a radio don't get another. While
+you carry one (`RZ_Radio.HasRadio`) you pick up the **open channels**: the Haven ("If you can
+hear this, *town* is open. Bring water if you can. Bring yourself either way."), every other
+time, and Bastion's net or the Red Hand's taunts in between. The government broadcast already
+reaches everyone, so the radio only adds it when the server's broadcast loop is off. It's
+low-frequency: about every 12 minutes for a brand-new player, every 18, 30 and 42 minutes as they
+gain experience. Everything goes through the hint queue. Only open channels: secure channels are
+for a later system (and the "channel" tip hook).
+
+### Faction voices
+
+- **First contact** with a leader is already in ([REPUTATION.md](REPUTATION.md), "Talking to
+  leaders"): who they are and what they think of another faction, in their voice.
+- **Bastion loudspeakers:** within 80–450 m of a Bastion seat you hear its loudspeaker: curfew,
+  the Haven safehouse for shelter, armed groups on the roads.
+- **Red Hand taunts:** near a Red Hand seat, someone on a roof asks whether Bastion is still
+  waiting for relief, and says they pay faster than Halcyon. Each of these comes at most once
+  every 30 minutes per player (an hour for veterans).
+- **Halcyon flyers** hang in every Haven safehouse while its people are shown: samples wanted
+  at the lab, declare bites at the Haven clinic, Bastion's curfew.
+- **Wanderer gossip:** a wanderer's talk adds one line about a faction and where it sits,
+  preferring one whose stronghold leader you haven't met. Always for players at level 0–1,
+  about a third of the time after that.
+
+### A wanderer finds you
+
+Two to seven minutes into a brand-new player's life, the nearest Courier or Scavenger comes
+looking for them (until 15 minutes in; if none is free, it tries again every 2 minutes). One
+more than 600 m away whom nobody can see is moved, as data, to 600 m first, so they arrive in
+minutes. When their body appears within sight, the player hears that someone on the road is
+waving at them; they wait 5 minutes. Their talk includes faction gossip.
 
 ## Build order
 
@@ -391,4 +443,5 @@ safehouses, and wanderer gossip about the factions.
 5. Strongholds and outposts, the territory tick, supply lines as data
 6. Light infection adaptation; day/night and weather modifiers
 7. Story arcs and headlines (leader headlines are already in)
-8. ✅ New-player guidance: experience levels, contextual tips, the gentle start, the first-life goal
+8. ✅ New-player guidance: experience levels, contextual tips, the gentle start, the first-life goal,
+   spawn scenarios, the wind-up radio, faction voices, a wanderer who finds new players

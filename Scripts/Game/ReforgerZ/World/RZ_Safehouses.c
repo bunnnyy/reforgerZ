@@ -976,6 +976,14 @@ class RZ_Safehouses
 			if (medic)
 				h.m_aBodies.Insert(medic);
 		}
+
+		// Halcyon's flyer on the wall: the Haven clinic, Bastion's curfew, samples wanted
+		if (m_GM.GetGuidance())
+		{
+			IEntity flyer = m_GM.GetGuidance().SpawnSafehouseFlyer(idx, h.m_vPos);
+			if (flyer)
+				h.m_aBodies.Insert(flyer);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

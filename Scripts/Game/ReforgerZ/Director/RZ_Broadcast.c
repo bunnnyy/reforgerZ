@@ -55,10 +55,17 @@ class RZ_Broadcast
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Days since the gates closed, as the broadcast counts them.
+	int GetDay()
+	{
+		return FIRST_DAY + Math.Floor(m_GM.GetDirector().GetTotalMinutes() / 60);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! "Day 14. This area is under federal quarantine. ..." with the tone for the Zone's state.
 	string GetText()
 	{
-		int day = FIRST_DAY + Math.Floor(m_GM.GetDirector().GetTotalMinutes() / 60);
+		int day = GetDay();
 		return string.Format("\"%1. This area is under federal quarantine. Do not approach the perimeter. %2\"", RZ_NoteText.Day(day), GetToneLine());
 	}
 
