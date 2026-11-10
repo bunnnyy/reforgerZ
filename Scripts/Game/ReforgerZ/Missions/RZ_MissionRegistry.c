@@ -1,6 +1,7 @@
 //! Every built-in mission type, grouped by faction. Other mods can add their
 //! own through RZ_MissionManager.RegisterType(). RZ_Mission_TurnedPlayer is not
-//! listed: the game mode starts it directly when a player turns.
+//! listed: the game mode starts it directly when a player turns. Neither is
+//! RZ_Mission_CarKeys: a Mechanic wanderer starts it.
 class RZ_MissionRegistry
 {
 	//------------------------------------------------------------------------------------------------

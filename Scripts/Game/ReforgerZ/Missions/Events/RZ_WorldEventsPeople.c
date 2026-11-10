@@ -524,7 +524,7 @@ class RZ_Event_PrisonBreak : RZ_Mission
 		m_vPos = m_vLast;
 		if (RZ_EventGroup.AllDead(m_aGroups))
 		{
-			GetPlayersNear(ids, players, m_vLast, 250, m_aParticipants);
+			RZ_ContractHelp.AddNear(ids, players, m_vLast, 250, m_aParticipants);
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}
@@ -693,7 +693,7 @@ class RZ_Event_TheSniper : RZ_Mission
 
 		if (m_Sniper.IsDead())
 		{
-			GetPlayersNear(ids, players, m_vPos, 300, m_aParticipants);
+			RZ_ContractHelp.AddNear(ids, players, m_vPos, 300, m_aParticipants);
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}

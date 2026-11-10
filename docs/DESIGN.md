@@ -447,7 +447,7 @@ settlements above 8). Names come from a seed; roster, positions and memories are
 | Preacher | Walks between towns; while he rests, his bells add heat there | Harmless; stops the bells for an hour if asked |
 | Courier | Hands out an unarmed delivery job (letters to a safehouse) | Any non-Hunted player |
 | Kid | A lost child | Follows you to a safehouse if you show the way; runs from gunfire |
-| Mechanic | "Ask about cars": the nearest fixable car and what it needs; sells a part for 12 Haven Favor | Hands over that car's keys if they like you |
+| Mechanic | "Ask about cars": the nearest fixable car and what it needs, and the Car Keys job; sells a part for 12 Haven Favor | Hands over that car's keys if they like you |
 
 - **Travel:** travel → rest (10–20 min at a safehouse, 3–8 min in a town) → somewhere new,
   0.6–3.5 km away. Routes never cross water or the quarantine line.
@@ -701,6 +701,10 @@ searches, **stripping** wrecks, the Mechanic and the Haven shop. **Fuel:** sipho
 some) or a petrol station hand pump (10 heat). **Start:** hotwire (20 s, 5 s for a Mechanic, 8 heat)
 or use its keys, then **Start the engine** (15 heat): the prop becomes a real vehicle with a quarter
 tank, and from then on it's vanilla. A new project turns up elsewhere six hours later.
+
+The Car Keys job ([MISSIONS.md](MISSIONS.md#unarmed-missions)) adds one more car for as long as it
+runs: it already runs, needs only its keys (always in the one house the job names) or hotwiring,
+isn't saved and doesn't count toward the replacement timer.
 
 ### Light crafting
 

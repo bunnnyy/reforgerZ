@@ -20,7 +20,7 @@ and one way to end it: **research the cure.**
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
-- **175 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
+- **176 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
   missions at the quarantine line, morally grey Haven work and leaders' off-book jobs.
 - **Search the world**: cupboards, car boots and bodies, locked doors that keep the infected
   out (they bang on them) and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting, traps, fire, water and
@@ -31,7 +31,7 @@ and one way to end it: **research the cure.**
 
 ## Status
 
-All of it is **written but has never been compiled**. It's about 57,000 lines of Enforce
+All of it is **written but has never been compiled**. It's about 60,200 lines of Enforce
 Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **113 `VERIFY`
 markers** on engine calls whose exact names need checking, no prefabs or configs yet, and
 nothing has been play-tested. Start with [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
@@ -67,7 +67,8 @@ Scripts/Game/ReforgerZ/
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
   Cure/          research, lab, samples, antidotes
   Guidance/      experience levels, tips, spawn scenarios, open radio channels
-  Interactions/  searching, door locks, doorway blockers and keys, cars, crafting, water,
+  Interactions/  searching, door locks, doorway blockers and keys, building queries (mission
+                 spots kept out of locked buildings), cars, crafting, water,
                  traps, generators, fire, secure radio, treating others
   Persistence/   save and load of mode state
 ```

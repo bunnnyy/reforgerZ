@@ -2027,6 +2027,34 @@ class RZ_Wanderers
 
 		bool friendly = attitude >= 2 || w.Remembers(m_GM.GetProfile(playerId).m_sIdentity, MEM_HELPED);
 		m_GM.NotifyPlayer(playerId, w.GetTitle(), hub.GetCars().MechanicTalk(playerId, user.GetOrigin(), friendly));
+		if (attitude >= 0)
+			OfferCarKeys(w, playerId, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Mechanic's job (RZ_Mission_CarKeys): a car that runs, its keys in one of five houses.
+	//! One at a time, one per player per 30 min (shared with the Courier's letters). Says nothing
+	//! if there's no job to give.
+	protected void OfferCarKeys(RZ_Wanderer w, int playerId, IEntity user)
+	{
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		float last;
+		RZ_MissionManager missions = m_GM.GetMissions();
+		if ((m_mJobAt.Find(ident, last) && m_fClock - last < JOB_COOLDOWN) || missions.IsTypeRunning(RZ_Mission_CarKeys))
+			return;
+
+		RZ_Mission_CarKeys job = new RZ_Mission_CarKeys();
+		job.Configure(m_GM);
+		if (!job.IsEligible(m_GM, playerId) || !job.Prepare(m_GM, w.m_vPos, w.GetShortName(), playerId))
+			return;
+
+		if (!missions.StartMission(job))
+			return;
+
+		m_mJobAt.Set(ident, m_fClock);
+		job.m_aOfferedTo.Insert(playerId);
+		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(RZ_EFaction.SURVIVORS),
+			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.m_sBrief, job.GetWhereText(m_GM, user.GetOrigin())));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -704,6 +704,9 @@ session, tick off:
   crowbar with the keypad message, the right code from the three notes opens it, the crates
   stand inside on the floor (not under it), and the door works normally after. Wedding Party
   drops jewellery, and a Trader wanderer takes it instead of Favor.
+- [ ] Car Keys: "Ask about cars" at a Mechanic wanderer offers it; searching each of the five
+  houses, only one gives the keys; the car starts with them (or hotwired, for half pay), and
+  parking it at the Mechanic pays once you get out and removes it.
 - [ ] Mission spots: start a few delivery and puzzle missions in towns with locked buildings.
   No item, note, person or crate is inside a locked building or in its doorway.
 - [ ] Nobody gets trapped: unlock, force and the inside latch remove the blocker at once; climb

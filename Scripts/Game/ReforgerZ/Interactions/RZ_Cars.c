@@ -10,6 +10,10 @@
 //! ordinary vehicle: vanilla repair handles damage, vanilla persistence (if the server runs
 //! it) saves it. A new project turns up somewhere else a few hours later.
 //!
+//! A mission car (Car Keys) is a project that already runs: it needs only its keys, which are in
+//! one house the mission names, or hotwiring. It isn't saved, doesn't trigger a replacement,
+//! and goes when the mission ends unless someone started it.
+//!
 //! Parts come from garages and car boots (search), stripping wrecks (one part each), a
 //! Mechanic wanderer or the Haven quartermaster (shop actions) for Favor. Fuel comes from
 //! siphoning wrecks or a petrol station's hand pump into a container.
@@ -151,6 +155,9 @@ class RZ_CarProject
 	bool m_bKeysFound;		// someone has them (this session)
 	bool m_bHotwired;
 	string m_sNoun;			// "the blue hatchback"
+	int m_iMissionId = -1;	// a mission's car (Car Keys): not saved, not replaced
+	vector m_vKeyHouse;		// its keys are in the house here (mission cars)
+	bool m_bWired;			// started by hotwiring, not with its keys
 
 	IEntity m_Body;
 	int m_iSpot = -1;
@@ -178,6 +185,10 @@ class RZ_Cars
 	protected int m_iNextId = 1;
 	protected float m_fNextAt;
 	protected bool m_bOn;
+	protected ref map<int, IEntity> m_mStarted = new map<int, IEntity>();	// mission car id -> the vehicle it became
+	protected ref map<int, bool> m_mStartedWired = new map<int, bool>();
+
+	protected static const float KEY_HOUSE_RADIUS = 18;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Cars(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_CarSettings settings)
@@ -208,6 +219,9 @@ class RZ_Cars
 		roster.nextAt = m_fNextAt;
 		foreach (RZ_CarProject c : m_aCars)
 		{
+			if (c.m_iMissionId >= 0)
+				continue;
+
 			RZ_CarSave cs = new RZ_CarSave();
 			cs.id = c.m_iId;
 			cs.town = c.m_iTown;
@@ -627,6 +641,7 @@ class RZ_Cars
 			return;
 
 		c.m_bHotwired = true;
+		c.m_bWired = true;
 		m_GM.GetHeat().AddHeat(c.m_vPos, m_Settings.m_fHotwireHeat);
 		m_GM.NotifyPlayer(playerId, c.m_sNoun, "A spark, a cough from the starter. The wires are live.");
 	}
@@ -663,7 +678,12 @@ class RZ_Cars
 
 		RZ_Util.SetVehicleFuel(car, m_Settings.m_fStartFuel);
 		m_aCars.RemoveItem(c);
-		if (m_fNextAt <= 0)
+		if (c.m_iMissionId >= 0)
+		{
+			m_mStarted.Set(c.m_iId, car);
+			m_mStartedWired.Set(c.m_iId, c.m_bWired);
+		}
+		else if (m_fNextAt <= 0)
 			m_fNextAt = m_Hub.GetClock() + m_Settings.m_fReplaceHours * 3600;
 
 		m_GM.GetHeat().AddHeat(pos, m_Settings.m_fStartHeat);
@@ -679,10 +699,21 @@ class RZ_Cars
 		if (!m_bOn)
 			return "";
 
+		// A mission car's keys are always in the one house it names
+		foreach (RZ_CarProject mc : m_aCars)
+		{
+			if (mc.m_iMissionId < 0 || mc.m_bKeysFound || RZ_Util.DistXZ(mc.m_vKeyHouse, pos) > KEY_HOUSE_RADIUS)
+				continue;
+
+			mc.m_bKeysFound = true;
+			m_Hub.GetSearch().GiveKey(playerId, CarKey(mc), CarKeyTag(mc));
+			return string.Format("a set of car keys in a bowl by the door, on a fob with a plastic fish: they'll fit %1 in %2", mc.m_sNoun, TownName(mc));
+		}
+
 		int town = m_GM.FindNearestSettlement(pos);
 		foreach (RZ_CarProject c : m_aCars)
 		{
-			if (c.m_iTown != town || !c.m_bHasKeys || c.m_bKeysFound)
+			if (c.m_iMissionId >= 0 || c.m_iTown != town || !c.m_bHasKeys || c.m_bKeysFound)
 				continue;
 
 			if (Math.RandomFloat01() >= m_Settings.m_fKeyFindChance)
@@ -708,6 +739,9 @@ class RZ_Cars
 		float bestDist = float.MAX;
 		foreach (RZ_CarProject c : m_aCars)
 		{
+			if (c.m_iMissionId >= 0)
+				continue;
+
 			float d = RZ_Util.DistXZ(c.m_vPos, from);
 			if (d < bestDist)
 			{
@@ -776,6 +810,86 @@ class RZ_Cars
 	}
 
 	int GetPartCost() { return m_Settings.m_iPartCost; }
+
+	// ================================================================ Mission cars (Car Keys)
+	//------------------------------------------------------------------------------------------------
+	//! Fixable cars work: on, with car prefabs set.
+	bool IsOn()
+	{
+		return m_bOn;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A car that already runs, for a mission: only its keys (in the house at keyHouse) or
+	//! hotwiring stand between it and the road. Returns its id, -1 if cars are off.
+	int AddMissionCar(int town, vector pos, vector keyHouse, int missionId)
+	{
+		if (!m_bOn)
+			return -1;
+
+		RZ_CarProject c = Generate(town, pos);
+		c.m_iMissing = 0;
+		c.m_bHasKeys = false;
+		c.m_iMissionId = missionId;
+		c.m_vKeyHouse = keyHouse;
+		m_aCars.Insert(c);
+		return c.m_iId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "the blue hatchback". "" if it's gone.
+	string GetNoun(int carId)
+	{
+		RZ_CarProject c = Find(carId);
+		if (c)
+			return c.m_sNoun;
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone has found its keys (searched the right house, this session).
+	bool AreKeysFound(int carId)
+	{
+		RZ_CarProject c = Find(carId);
+		if (!c)
+			return false;
+
+		return c.m_bKeysFound;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The vehicle a mission car became when someone started it, null if not started.
+	IEntity GetStartedCar(int carId)
+	{
+		IEntity car;
+		m_mStarted.Find(carId, car);
+		return car;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! It was started by hotwiring rather than with its keys.
+	bool WasHotwired(int carId)
+	{
+		bool wired;
+		m_mStartedWired.Find(carId, wired);
+		return wired;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The mission is over: an unstarted car goes (prop and data); a started one is just a car now.
+	void RemoveMissionCar(int carId)
+	{
+		RZ_CarProject c = Find(carId);
+		if (c)
+		{
+			Hide(c);
+			m_aCars.RemoveItem(c);
+		}
+
+		m_mStarted.Remove(carId);
+		m_mStartedWired.Remove(carId);
+	}
 
 	// ================================================================ Wrecks
 	//------------------------------------------------------------------------------------------------
