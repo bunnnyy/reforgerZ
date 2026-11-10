@@ -584,6 +584,11 @@ points, towns or lab are needed, because they're generated at start. Check the l
 
 For another map, make another sub-scene with the same contents.
 
+**Town memory** (one settings object under **World**; [WORLD.md](WORLD.md), section 8; defaults in
+brackets): **Enabled** (on); **Loot return minutes** (120); **Looted below** (0.5); **Loot floor**
+(0.2); **Burned share** (0.5); **Burn fade minutes** (60); **Journal minutes** (10). No prefabs:
+it's data only.
+
 ## 7. Server config
 
 - **Broadcast minutes** (Director, default 25): how often everyone hears the government

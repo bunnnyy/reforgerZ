@@ -52,6 +52,9 @@ class RZ_SaveData
 	ref RZ_SupplySave supply;
 	ref RZ_FactionLifeSave factionLife;
 
+	// Town memory (loot levels, flags) and the journals of the dead
+	ref RZ_TownMemorySave towns;
+
 	ref array<ref RZ_SettlementSave> settlements = {};
 	ref array<ref RZ_PlayerProfile> profiles = {};
 }

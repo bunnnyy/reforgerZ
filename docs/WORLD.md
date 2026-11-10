@@ -404,14 +404,28 @@ Examples:
 (the last 10), a player's first spawn of a session shows the last three, and leaders mention the
 latest. Planned: wanderers lost, the cure percentage and the biggest rescue in them too.
 
-## 8. Town memory (data only, no lag)
+## 8. Town memory (data only, no lag) ✅ (built, `World/RZ_TownMemory.c`)
 
-- **Town flags:** Looted, Barricaded, Powered, Burned. These are plain values, not objects in the world.
-- **Loot comes back per town over about 2 hours.** A looted town still has some loot,
-  so nobody gets locked out, but the best stuff takes time to return.
+- **Town flags:** Looted, Barricaded, Powered, Burned. These are plain values per settlement,
+  not objects in the world, and they're saved.
+  - **Looted:** each town has a loot level (0–1). The search system (planned) reports what a
+    search took and scales what it finds by what's left. A town under 0.5 counts as Looted.
+  - **Barricaded:** set by a building or fortification system (planned).
+  - **Powered:** set by the power grid for the towns in its region (section 5).
+  - **Burned:** a fire system (planned) reports each building that burns; a town is Burned once
+    half its buildings have. The building count is a guess by size (12, 30 or 60) until a system
+    reports the real one. Each burned building stops counting after an hour, so towns recover.
+- **Loot comes back per town over about 2 hours.** A looted town never drops under 0.2, so
+  nobody gets locked out, but the best stuff takes time to return.
+- **Hooks for the later world interactions** (all static on `RZ_TownMemory`):
+  `GetLootLevel(pos)`, `ReportSearched(pos, share)`, `ReportBarricaded(pos, on)`,
+  `ReportBuildingBurned(pos)`, `ReportBuildingCount(pos, count)`. A town that becomes Burned is a
+  quiet headline.
 - **No physical traces.** No graffiti and no extra bodies beyond what the
-  game already cleans up. Your dead character's **journal** is data. It
-  shows up as a line in the headlines or as a rumour from a wanderer, not as an object.
+  game already cleans up. Your dead character's **journal** is data: a life that lasted 10
+  minutes leaves one line (where, your background, how long, the day, a personal line). The last
+  six are kept and saved; wanderers bring one up now and then in their talk ("Found a notebook
+  near Morton..."). It's never an object.
 
 ## 9. New-player guidance ✅ (built, `Guidance/`)
 

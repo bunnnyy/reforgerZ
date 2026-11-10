@@ -59,6 +59,7 @@ Out of scope: sleep and time skipping.
 | Infection timer: turns you when it runs out, cure slows it | `Core/RZ_GameModeComponent.c` | Written |
 | Rotating spawn points in random towns | `Core/RZ_GameModeComponent.c` | Written |
 | Save and load of mode state | `Persistence/RZ_SaveData.c` | Written |
+| Town memory: Looted, Barricaded, Powered, Burned per town as data, loot that returns over 2 hours, hooks for search, fire and building systems, journals of the dead (see [WORLD.md](WORLD.md)) | `World/RZ_TownMemory.c` | Written |
 | Puzzle missions: 17 contracts built on clues, answer actions and wrong-answer consequences | `Puzzles/`, `Puzzles/Missions/` | Written |
 | Readable clues and puzzle objects (keypad, choice, use) with server-side routing | `Puzzles/RZ_PuzzleComponents.c`, `RZ_PuzzleActions.c`, `RZ_PuzzleMission.c` | Written |
 | Noisemakers (thrown or timed heat) and "being noticed" (heat or a zombie too close for too long) | `Puzzles/RZ_Noisemaker.c`, `RZ_RadioStealth.c` | Written |
@@ -223,7 +224,7 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 
 ### Phase 4: Project Zomboid-style character creation
 - [ ] A trait-points system on top of backgrounds (positive and negative traits)
-- [ ] Journal left on your body: a hint for whoever finds it
+- [x] A dead character's journal as data (a wanderer's rumour; never an object)
 
 ### Phase 5: seasons
 - [x] The season's ending is decided by faction Fame; the winner is saved to `last_season.json`

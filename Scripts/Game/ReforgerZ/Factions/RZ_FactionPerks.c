@@ -653,6 +653,10 @@ class RZ_FactionPerks
 	{
 		m_GM.GetMissions().OnPlayerDied(victim, at);
 
+		// A life that lasted leaves a journal: a headline or a wanderer's rumour, never an object
+		if (m_GM.GetTownMemory())
+			m_GM.GetTownMemory().RecordJournal(victim, at);
+
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{
 			if (m_GM.GetTier(victim, f) != RZ_ETier.KILL_ON_SIGHT)

@@ -675,6 +675,14 @@ class RZ_FactionLife
 				return moment;
 		}
 
+		// A dead character's journal, found on the road (town memory)
+		if (m_GM.GetTownMemory() && Math.RandomFloat01() < 0.15)
+		{
+			string journal = m_GM.GetTownMemory().JournalRumour();
+			if (!journal.IsEmpty())
+				return journal;
+		}
+
 		return Rumour(-1, m_Settings.m_fFalseRumourChance * 0.5);
 	}
 

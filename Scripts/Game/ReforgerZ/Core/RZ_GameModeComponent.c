@@ -39,6 +39,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("20", desc: "Minutes between moving one spawn point to a new town", category: "ReforgerZ|World")]
 	protected float m_fSpawnRotateMinutes;
 
+	[Attribute(desc: "Town memory: Looted, Barricaded, Powered, Burned per town as data, loot that returns, journals of the dead (docs/WORLD.md, section 8)", category: "ReforgerZ|World")]
+	protected ref RZ_TownMemorySettings m_TownMemorySettings;
+
 	// ---------------------------------------------------------------- Director / zombies
 	[Attribute(desc: "Stage overrides. Leave empty to use the built-in defaults", category: "ReforgerZ|Director")]
 	protected ref array<ref RZ_StageSettings> m_aStages;
@@ -272,6 +275,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_HeatMap m_Heat;
 	protected ref RZ_ZombieSpawner m_Spawner;
 	protected ref RZ_Adaptation m_Adaptation;
+	protected ref RZ_TownMemory m_TownMemory;
 	protected ref RZ_MissionManager m_Missions;
 	protected ref RZ_CureResearch m_Cure;
 	protected ref RZ_BiteDetector m_BiteDetector;
@@ -356,6 +360,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_AdaptationSettings)
 			m_AdaptationSettings = new RZ_AdaptationSettings();
 
+		if (!m_TownMemorySettings)
+			m_TownMemorySettings = new RZ_TownMemorySettings();
+
 		if (!m_SafehouseSettings)
 			m_SafehouseSettings = new RZ_SafehouseSettings();
 
@@ -388,6 +395,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_Heat = new RZ_HeatMap();
 		m_Adaptation = new RZ_Adaptation(this, m_AdaptationSettings);
+		m_TownMemory = new RZ_TownMemory(this, m_TownMemorySettings);
 		m_Cure = new RZ_CureResearch(this);
 		m_Director = new RZ_Director(this, m_aStages);
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
@@ -425,6 +433,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// Before anything is placed, so missions, spawn points and quartermasters keep off the line
 		m_Perimeter.Init();
+		m_TownMemory.Setup();
 
 		SetupLab();
 		m_Perks.SetupQuartermasters();
@@ -471,6 +480,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Director.Tick(dt);
 		m_Spawner.Tick(dt, players);
 		m_Adaptation.Tick(dt, ids, players);
+		m_TownMemory.Tick(dt);
 		m_Missions.Tick(dt, ids, players);
 		m_Perimeter.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
@@ -527,6 +537,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_HeatMap GetHeat() { return m_Heat; }
 	RZ_ZombieSpawner GetSpawner() { return m_Spawner; }
 	RZ_Adaptation GetAdaptation() { return m_Adaptation; }
+	RZ_TownMemory GetTownMemory() { return m_TownMemory; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
 	vector GetLabPosition() { return m_vLabPos; }
@@ -1656,6 +1667,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Territory.Restore(data.territory);
 		m_Supply.Restore(data.supply);
 		m_FactionLife.Restore(data.factionLife);
+		m_TownMemory.Restore(data.towns);
 		return true;
 	}
 
@@ -1700,6 +1712,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_FactionLife && m_FactionLife.IsActive())
 			data.factionLife = m_FactionLife.Save();
+
+		if (m_TownMemory && m_TownMemory.IsEnabled())
+			data.towns = m_TownMemory.Save();
 
 		foreach (RZ_Settlement s : m_aSettlements)
 		{
