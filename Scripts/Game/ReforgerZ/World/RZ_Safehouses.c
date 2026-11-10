@@ -1133,6 +1133,15 @@ class RZ_Safehouses
 		if (h.HasMedic())
 			services += ", a medic, a radio";
 
+		// Who runs it (docs/REPUTATION.md, "Faction leaders")
+		RZ_Leaders leaders = m_GM.GetLeaders();
+		if (leaders)
+		{
+			RZ_Leader head = leaders.FindAt(RZ_EFaction.SURVIVORS, h.m_vPos);
+			if (head)
+				services += string.Format(". %1 runs the place", head.m_sName);
+		}
+
 		m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, string.Format("%1 people live here (%2). Food for %3 more upkeeps.\nThey have %4.\n%5",
 			h.m_iPopulation, RZ_Safehouse.TierName(h.GetTier()), meals, services, mood));
 	}

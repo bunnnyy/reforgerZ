@@ -95,9 +95,10 @@ class RZ_MissionManager
 	protected int CountActive(bool contracts)
 	{
 		int n = 0;
+		// Leaders' personal jobs don't take a radio contract's place
 		foreach (RZ_Mission m : m_aActive)
 		{
-			if (m.m_bContract == contracts)
+			if (m.m_bContract == contracts && !m.m_bInPersonOnly)
 				n++;
 		}
 

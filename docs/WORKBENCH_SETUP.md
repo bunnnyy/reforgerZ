@@ -66,6 +66,18 @@ The riskiest ones in the safehouses and wanderers (`World/RZ_Safehouses.c`, `Wor
   replicated labels (`[RplProp]`, above). Without them every slot shows with its generic label,
   and "Choose" options 0, 1 and 3 still do the right thing.
 
+The riskiest ones for faction leaders (`Factions/RZ_Leaders.c`): none are new, but three
+existing calls matter more now:
+
+- **Untouchable stronghold leaders** (`RZ_Util.MakeUntouchable`: `EnableDamageHandling(false)`,
+  moved there from the Perimeter, which now calls it). If it fails, a stronghold leader's body can be
+  shot: they're "wounded" and back later (they never die), but test it.
+- **Labels on a tagged quartermaster or leader body** reuse the puzzle object's `[RplProp]` labels
+  (above). The `RZ_LeaderAction`s on the quartermaster don't depend on them, so add those.
+- **Drops told apart by entity**: leader jobs with two drops of the same faction (Our Own First,
+  The Real Orders, The Notebook, the stronghold "turn it in" drop) match the drop entity the
+  `RZ_ChoiceDeliveryAction` was used on. That's plain script, but play-test it.
+
 Two files can simply be deleted if they won't compile, because nothing else depends on them:
 
 - `Cure/RZ_AntidoteConsumable.c` (antidote used from the inventory; the world action still works)
@@ -319,6 +331,32 @@ The log says `Wanderers: N on the roads (new roster, seed S)` or `(saved)`.
 The Courier's job needs **Missions > Mission item** and **Missions > Haven drop point**; A Quiet
 Arrangement needs the mission item and the **Red Hand drop point**.
 
+### Faction leaders
+
+Settings are under **Leaders**. Leaders need no prefabs of their own: at a stronghold or a
+safehouse the quartermaster is the leader, and outpost leaders use **Puzzles > Civilian**.
+
+| Prefab or action | Base | Add | Setting | Used for |
+|---|---|---|---|---|
+| `RZ_LeaderAction` on every quartermaster prefab (the existing four) | | 4 × `RZ_LeaderAction`: TALK, WORK, NEWS, STANDING | | talking to the leader whose seat this is (within 60 m). **Add these**: they're how players reach stronghold leaders and council heads |
+| `RZ_Leader_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | a character without AI (or a figure prop) | the generic puzzle object components (to be talked to), or the `RZ_LeaderAction`s | Haven / Bastion / Red Hand / Halcyon leader prefab | optional: a body for the stronghold leader next to the quartermaster. Damage is turned off |
+| `RZ_CouncilHead.et` | a civilian character without AI | as above | Council head prefab | optional: a body for each safehouse's council head |
+| `RZ_Outpost_Bastion.et`, `_RedHand`, `_Halcyon` | a character without AI | as above | Bastion / Red Hand / Halcyon outpost prefab (fall back to the faction leader, then the puzzle civilian) | optional: outpost leaders |
+
+**Settings** (defaults in brackets): **Enabled** (on); **Quartermaster is leader** (on; off = a puzzle
+civilian stands in at strongholds and safehouses without a leader prefab); **Auto outposts** (1:
+interim leader posts per faction for Bastion and the Red Hand, Halcyon at most 1); **Body radius**
+(200 m); **Replace minutes** (120); **Job minutes** (30, between one leader's personal jobs);
+**Danger scale** (1; 0 = outpost and safehouse leaders only die if killed); **Discovery Infamy** (10),
+**Discovery chance** (0.15), **Seen chance** (+0.35); **Kill Infamy** (15).
+
+**Placing outposts yourself:** put `RZ_OutpostMarkerEntity` entities (a script entity, no prefab
+needed) with a faction and an optional place name. Placing any for a faction turns its interim
+posts off. Leader jobs use the mission item, the drop points and the puzzle civilian, generic
+object and well; each job is skipped while what it needs is missing. Training Day uses
+**Missions > Survivor group** if set. The log says
+`Faction leaders: N (new, seed S). Haven 2, Bastion 2, Red Hand 2, Halcyon 2` or `(saved)`.
+
 ## 4. Factions and backgrounds
 
 In the world's `FactionManager`:
@@ -359,6 +397,7 @@ points, towns or lab are needed, because they're generated at start. Check the l
 [ReforgerZ] Perimeter: N road checkpoints (from roads).
 [ReforgerZ] Haven safehouses: N (picked).
 [ReforgerZ] Wanderers: N on the roads (new roster, seed S).
+[ReforgerZ] Faction leaders: N (new, seed S). Haven 2, Bastion 2, Red Hand 2, Halcyon 2
 [ReforgerZ] Started. N settlements, stage Early Outbreak, cure 0 percent ...
 ```
 

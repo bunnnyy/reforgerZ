@@ -261,7 +261,8 @@ class RZ_Job_OldClinic : RZ_LeaderHold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.4);
-		string nurse = RZ_NoteText.FirstName(new RZ_Rng(m_iId * 7919 + 13));
+		RZ_Rng rng = new RZ_Rng(m_iId * 7919 + 13);
+		string nurse = RZ_NoteText.FirstName(rng);
 		m_sTitle = "The Old Clinic";
 		m_sBrief = string.Format("There's a clinic in %1: shelves, a bed, a door that locks. Hold it while we clear it out and it's ours, an annex. %2 says she'll move in and run it if someone makes it safe first.",
 			s.m_sName, nurse);
@@ -323,7 +324,8 @@ class RZ_Job_RationRun : RZ_LeaderDelivery
 		m_iOwn = l.m_iSafehouse;
 		m_vHome = l.m_vPos;
 		RZ_Safehouse own = gm.GetSafehouses().Get(m_iOwn);
-		own.m_iFood = Math.Max(0, own.m_iFood - FOOD);
+		if (own)
+			own.m_iFood = Math.Max(0, own.m_iFood - FOOD);
 
 		m_sTitle = "Ration Run";
 		m_sBrief = string.Format("Three of ours have the fever, and the Red Hand has the only antibiotics between here and the coast. They want food for them. I've put three days of our stores in this sack. The council would call it theft. I call it arithmetic. Take it to %1.",
@@ -342,6 +344,14 @@ class RZ_Job_RationRun : RZ_LeaderDelivery
 	override protected void OnExposed(RZ_GameModeComponent gm, int playerId)
 	{
 		gm.GetSafehouses().AddFood(m_iOwn, FOOD);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Never delivered: the sack goes back on the shelf.
+	override void OnFailed(RZ_GameModeComponent gm)
+	{
+		if (gm.GetSafehouses())
+			gm.GetSafehouses().AddFood(m_iOwn, FOOD);
 	}
 
 	//------------------------------------------------------------------------------------------------

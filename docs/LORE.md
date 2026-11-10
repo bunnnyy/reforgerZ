@@ -34,6 +34,29 @@ of the chaos, and the scientists who might be the only way out.
 | Supply trucks | Everything that moves inside the Zone moves by road. A lost truck means empty shelves. |
 | The cure | Not just a cure: it's **proof**. Deliver it and the quarantine is lifted. |
 
+## Who's in charge
+
+Every place a faction holds has someone in charge, with a name, a past and opinions:
+a council head in each Haven safehouse, a commander at each Bastion post, a crew boss
+for each Red Hand crew, a lead researcher at a Halcyon field station, and above them one
+stronghold leader per faction (the chair of the Haven council, Bastion's commanding
+officer, the boss of the Red Hand, Halcyon's research director).
+
+Nobody outside gives these people orders any more, so they don't all follow the ones
+their own side gives them either:
+
+- **Loyal** leaders hold the stronghold's line.
+- **Independent** ones run their place their own way: they bend orders to keep their
+  people fed, and they remember who helped *them*.
+- **Rogue** ones work around or against their stronghold: side deals with rivals,
+  skimming, jobs nobody is supposed to know about.
+
+No faction ever splits. The stronghold leaders are always loyal to their own cause, they
+never fall, and a rogue place is reined in, replaced or comes back on its own. Outpost
+and safehouse leaders are ordinary people: they get bitten, they die in raids, and
+someone new takes the chair. How this works in play is in [REPUTATION.md](REPUTATION.md),
+"Faction leaders".
+
 ## The Perimeter
 
 The edge of the playable world is the Perimeter on any map. It's worked out from
@@ -116,6 +139,9 @@ Even a win doesn't mean leaving: the next season is a new outbreak, in a new Zon
   - **Haven:** warm, worried.
   - **Red Hand:** mocking and casual.
   - **Halcyon:** precise, a bit cold, sometimes guilty.
+- **Leaders** speak in their faction's voice, coloured by their traits: a Greedy one talks
+  about pay first, a Paranoid one asks who saw you come in, a Merciful one tells you to sit
+  down and eat. One short line before a brief and one after, never a speech.
 
 ## Name
 

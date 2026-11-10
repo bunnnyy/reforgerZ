@@ -38,6 +38,8 @@ Out of scope: sleep and time skipping.
 | Haven house rules: no firing near a safehouse, declaring or hiding a bite, exile, location leaks to the Red Hand | `World/RZ_Safehouses.c`, `Factions/RZ_FactionPerks.c` | Written |
 | Wanderers: seeded roster of 6-10 with roles, data travel, reactions (hordes, events, bad destinations, bites), per-player memory, permanent deaths in the news, guidance hook | `World/RZ_Wanderers.c` | Written |
 | Haven house contracts: Walk Him Out, The Ledger, A Quiet Arrangement; the Courier's letters | `Missions/Haven/RZ_HavenHouseMissions.c` | Written |
+| Named faction leaders: one per stronghold, safehouse and interim leader post; seeded names, traits with capped effects, loyalty (Loyal, Independent, Rogue) that drifts, per-player memory, voiced briefs, first-contact hook, deaths, replacements and headlines; outpost hook for territory | `Factions/RZ_Leaders.c`, `RZ_LeaderVoice.c` (see [REPUTATION.md](REPUTATION.md), [WORLD.md](WORLD.md)) | Written |
+| Leader missions: 30 personal jobs from Independent and Rogue leaders, discovery, turning a leader in, the stronghold's Rein In | `Missions/Leaders/` (see [MISSIONS.md](MISSIONS.md)) | Written |
 | Choice missions: hand an item to one of two factions | `Missions/RZ_MissionItems.c`, `RZ_MissionBases.c` | Written |
 | Quartermasters, Favor shops, standing check, Requisition | `Factions/RZ_Quartermaster.c` | Written |
 | Faction perks, hunter squads, Kill-on-Sight bounties | `Factions/RZ_FactionPerks.c` | Written |
@@ -96,12 +98,15 @@ and change ReforgerZ systems, so they work with any other mods loaded.
 Two kinds, described in full in [MISSIONS.md](MISSIONS.md):
 
 - **World events** (10 in code) are announced to everyone, and anyone who takes part shares the reward.
-- **Faction contracts** (42 in code, plus 17 puzzle missions, 3 Perimeter missions and 3 Haven house contracts) are offered only to players who meet their requirements:
+- **Faction contracts** (42 in code, plus 17 puzzle missions, 3 Perimeter missions, 3 Haven house contracts and Rein In) are offered only to players who meet their requirements:
   tier with the giver, standing with other factions, background, world state and player count.
   There's no "accept" button: eligible players who take part get paid, others get nothing.
   Each player gets at most one new offer a minute, by radio or at the faction's quartermaster.
 
-Contracts pay Fame and Favor with the giver, and often Infamy with a rival. *Amends* contracts
+- **Leader missions** (30 in code) are personal jobs that Independent and Rogue faction leaders give in person, off their stronghold's books.
+
+Contracts pay Fame and Favor with the giver, and often Infamy with a rival. Radio contracts are
+briefed in the voice of a named leader, whose traits nudge the pay. *Amends* contracts
 work Infamy off instead while you're Watched. ★ backgrounds get something better (faster
 holds, more Fame). Choice missions end with an item you hand to one of two factions.
 Puzzle missions are solved with clues and answer actions instead of guns; most low-tier ones
@@ -165,7 +170,8 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Wanderer roster: data travel, reactions, memory, deaths in the news, the bitten wanderer
 - [x] 3 grey Haven house contracts (Walk Him Out, The Ledger, A Quiet Arrangement) and the Courier's job
 - [ ] Make the safehouse and wanderer prefabs (occupants, guard, medic, one body per role) and add the `RZ_SafehouseAction`s to the Haven quartermaster; play-test upkeep timing and food keywords
-- [ ] New-player guidance: nudge a Courier or Scavenger toward brand-new players (`RZ_Wanderers.NudgeToward`)
+- [ ] New-player guidance: nudge a Courier or Scavenger toward brand-new players (`RZ_Wanderers.NudgeToward`),
+      and use the leaders' first-contact lines (`RZ_Leaders.GetFirstContactLine`, `DescribeStronghold`)
 - [ ] Barter chains across wanderers; supply trucks that carry food to safehouses
 
 ### Phase 3: factions with teeth
@@ -179,6 +185,11 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Cheap perks: sample scanner, Halcyon research bonus, Neighbours, toll pass (message only)
 - [x] Hunter squads for Hunted players; Kill-on-Sight bounties
 - [x] Haven safehouse spawn points (one per safehouse, for everyone)
+- [x] Named faction leaders with traits, loyalty, memory, voiced briefs, first contact, deaths and headlines
+- [x] 30 leader missions (Desertion Route and Private Collection not built), discovery, turning a leader in, Rein In
+- [ ] Add `RZ_LeaderAction` to the quartermaster prefabs (and optional leader bodies); play-test loyalty drift and discovery rates
+- [ ] Territory outposts register their leaders (`RZ_Leaders.RegisterOutpost`) and the interim leader posts are turned off
+- [ ] Desertion Route (needs people who walk with you) and Private Collection (needs a trap for a live special)
 - [ ] Remaining perks: Haven Community respawn with a supply bag, Fire Mission, Fence, Bounty board, immunity booster, Halcyon medic
 - [ ] Convoy, escort and AI-heavy contracts (Convoy Escort, Refugee Column, Hijack the Convoy, Rescue the Pilot...)
 - [ ] Disguises (faction uniforms) and surrendering at checkpoints

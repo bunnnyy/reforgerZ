@@ -134,6 +134,39 @@ near each player.
 
 **Planned:** barter chains across three wanderers; Haven Champion "Community" respawns with a supply bag.
 
+### Leaders ✅ (built, `Factions/RZ_Leaders.c`)
+
+A named person runs every place a faction holds. What they do for and against you is in
+[REPUTATION.md](REPUTATION.md), "Faction leaders"; their personal jobs are in
+[MISSIONS.md](MISSIONS.md), "Leader missions". Here is where they are and how they're simulated.
+
+| Seat | Built now | Planned |
+|---|---|---|
+| Stronghold (one per faction) | At the faction's quartermaster; Halcyon's at the lab. Without a quartermaster: the Haven's at its first safehouse, the others in a town that suits them | Same, at the real stronghold |
+| Haven safehouse | One council head per safehouse | — |
+| Outpost | **Interim leader posts**: 1 per faction for Bastion, the Red Hand and Halcyon (a "field station", never more than one), picked once in a town that suits the faction (bigger towns for Bastion, rougher ones for the Red Hand, quiet ones for Halcyon), saved. Mission makers can place `RZ_OutpostMarkerEntity` instead | Territory (section 3) calls `RZ_Leaders.RegisterOutpost(faction, pos, name)` for each outpost and `UnregisterOutpost(id, why)` when it's lost; the interim posts are turned off then |
+
+On Arland that's about 8–10 leaders (4 strongholds, 1–2 council heads, 3 posts); with
+territory it would be 12–20.
+
+- **Data first.** A leader is a saved record (name, title, backstory, traits, loyalty,
+  memories). A body exists only while a player is within 200 m of their seat. At a
+  stronghold or safehouse, the quartermaster there *is* the leader unless a leader prefab
+  is set (it gets `RZ_LeaderAction`s, and its puzzle components are labelled if it has them).
+  Outpost leaders without a prefab use the puzzle civilian.
+- **Stronghold leaders** never die and are never replaced; their bodies take no damage.
+- **Others die off-screen** (bites, raids, Bastion acting on a tip) or if a player kills them,
+  and are replaced two hours later by someone new. Deaths, replacements and big loyalty
+  changes are headlines ("Word on the roads"); the last three are shown on a player's first spawn.
+- **Personal jobs** come up "occasionally": every two minutes, an Independent or Rogue leader
+  with a player near them and no job on has a 35% chance to think of one (at most one per
+  30 minutes per leader), and asking them for work tries straight away. They're offered only
+  in person.
+
+**Simplifications:** interim posts are leader seats only (no camp, guards or shop of their own
+yet). A leader's "people" who can see a rogue job are their faction's other seats (within 60 m)
+and, for the Haven, its wanderers. Off-screen deaths only happen with nobody within 400 m.
+
 ## 2. Unarmed missions: low level, but still a challenge
 
 For new characters, Unarmed backgrounds (Nurse, Lab Tech, Unemployed), or
@@ -188,6 +221,8 @@ doesn't need to be.
   - **Floor:** a faction always keeps its Stronghold and at least one Outpost.
   - **Recovery:** a lost outpost tends to swing back after a while if the faction is still strong.
   - Changes go into the **headlines** only. No server-wide alerts.
+- Every outpost has a named leader (section 1, "Leaders"): the territory tick registers
+    and unregisters them through `RZ_Leaders.RegisterOutpost` / `UnregisterOutpost`.
 - **Faction strength** moves a little with contracts done for or against the faction, and drifts back toward the middle over time.
 
 ### Supply lines
@@ -271,6 +306,7 @@ outposts that changed hands, wanderers lost, the cure percentage, the biggest re
 1. ✅ Safehouses with population tiers, and rescued survivors joining them
 2. ✅ The wanderer roster with simulated travel, reactions and memory
 3. Noisemakers, the "being noticed" check, and the first 6 unarmed missions
-4. Strongholds and outposts, the territory tick, supply lines as data
-5. Light infection adaptation; day/night and weather modifiers
-6. Story arcs and headlines
+4. ✅ Named leaders at strongholds, safehouses and interim leader posts
+5. Strongholds and outposts, the territory tick, supply lines as data
+6. Light infection adaptation; day/night and weather modifiers
+7. Story arcs and headlines (leader headlines are already in)

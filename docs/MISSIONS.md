@@ -4,7 +4,7 @@ There are two kinds of missions:
 
 - **World events** (28) are announced to everyone, and anyone can take part.
   They are what makes strangers meet: a horde, a helicopter wreck, a town about to be shelled.
-- **Faction contracts** (20 per faction, plus 17 puzzle missions, 3 Perimeter missions and 3 Haven house contracts) are offered only to players who
+- **Faction contracts** (20 per faction, plus 17 puzzle missions, 3 Perimeter missions, 3 Haven house contracts and 32 leader missions, 30 of them in code) are offered only to players who
   qualify, by radio or at the faction's contact. A contract belongs to the
   person or group that accepts it. Others can still turn up and interfere.
 
@@ -311,6 +311,78 @@ Simplifications in code:
 
 The **bitten wanderer** (a wanderer bitten on the road, saved by an antidote) is part of the
 wanderer simulation, not a mission: see [WORLD.md](WORLD.md), "Wanderers".
+
+## Leader missions: 32 personal jobs, plus Rein In
+
+Work that Independent and Rogue leaders give **in person**, off their stronghold's books
+(who they are and how loyalty works: [REPUTATION.md](REPUTATION.md), "Faction leaders").
+Code: `Scripts/Game/ReforgerZ/Missions/Leaders/`.
+
+- **Who gets offered what.** Only a leader of the matching faction and loyalty offers a job,
+  and only in person: ask them for work, or walk up to one who has a job for you. They're never
+  on the radio. The leader's attitude decides who may take it (not your tier), so a Rogue
+  leader can hire someone their stronghold hunts.
+- **Traits pick the job.** Each job has a tone; Ruthless leaders lean to dark ones, Idealists
+  and Merciful ones to hopeful ones, Pragmatists (and a little, the Greedy) to cross-faction
+  ones, Veterans to hard ones, Talkers to talking ones.
+- **Pay.** Independent jobs pay a little faction Fame and Favor; Rogue jobs pay Favor only (the
+  leader pays from their own stores), plus any Fame with the other faction involved. The
+  leader's traits scale it, and they remember you helped.
+- **Rogue jobs can be discovered** (+10 Infamy with the faction; the leader is removed or pulled
+  back into line), and most rogue deliveries have a second drop at the stronghold: hand it in
+  there to **turn the leader in** (Fame and Favor from the stronghold; the leader remembers).
+- Item jobs need the mission item and the drop points they name; people need the puzzle civilian.
+
+| # | Job | From | What you do | Result |
+|---|---|---|---|---|
+| 1 | Our Own First ✅ | Haven, Independent | Supplies meant for another safehouse wait in a town. Bring them here, or where they were meant to go | Here: this safehouse +4 food. There: that one +4 food, half pay, no credit with the council head |
+| 2 | Bring Them Home ✅ | Haven, Independent | Find a local's family in another town. One of them is bitten | All three: +3 people, the town's infection +5. The two who are well: +2 people, less pay. Leave them: fails |
+| 3 | Over the Fence ✅ | Haven, Independent | Take bread to a nearby Bastion post for medicine | Bastion Fame +3; the safehouse town's infection −3 |
+| 4 | The Old Clinic ✅ | Haven, Independent | Hold a clinic in the next town for 3 min (2 waves) so it can be an annex | That town's infection −10; +1 person at the safehouse |
+| 5 | Ration Run ✅ | Haven, Rogue | Three days of the stores go to the Red Hand for antibiotics | Stores −3 food (back if it fails or you turn it in); Red Hand Fame +3; the town's infection −3 |
+| 6 | Names for Bastion ✅ | Haven, Rogue | Deliver a "troublemakers" list to Bastion for protection | Bastion Fame +3; online players the Haven exiled take +5 Bastion Infamy |
+| 7 | Shut the Door ✅ | Haven, Rogue | A family at the edge of town asks to come in. Turn them away | Turned away: paid, they take to the roads. Let in: +3 people, no pay, the council head remembers |
+| 8 | Hidden Stores ✅ | Haven, Rogue | Move the council head's hidden stash before the count (20 min) | Paid. Fail it once you've started: the count finds it (the leader is discovered). Turn it in: +5 food |
+| 9 | Hearts and Minds ✅ | Bastion, Independent | Rations to a Haven safehouse, against orders | That safehouse +4 food; Haven Fame +4 |
+| 10 | The Real Orders ✅ | Bastion, Independent | Recover command's last orders from a dead courier (guarded). Picking them up shows what they say | To the commander: if they reveal the garrison was written off (60%), the commander drifts away from the stronghold, else toward it. To the stronghold: +10 Fame, they're burned, the commander remembers |
+| 11 | Training Day ✅ | Bastion, Independent | Stand with raw recruits at a town's edge for 4 min (3 waves) | Paid. With the survivor group prefab, the recruits are real and must live |
+| 12 | Local Law ✅ | Bastion, Independent | Two families fight over a well. Hear both sides, then decide. One shot near them and it's over | Split the days: full pay. Give it to one: 80%, the other family leaves |
+| 13 | Rifles for Sale ✅ | Bastion, Rogue | Army rifles to a Red Hand buyer | Red Hand Fame +4 |
+| 14 | Off-Book Requisition ✅ | Bastion, Rogue | Collect a "contribution" from a village (a safehouse village if one is near) | All: +6 Haven Infamy, the safehouse −4 food. Half and lie: 60% pay, half the harm. Pay it yourself: 15 Bastion Favor, nobody hurt |
+| 15 | Burn the Ledger ✅ | Bastion, Rogue | Burn the supply ledger behind the post before the audit (15 min) | Burn it: paid, heat. Keep it for the auditor: the commander is turned in |
+| – | Desertion Route | Bastion, Rogue | Get deserters to a Haven safehouse or the Blind Spot | *Not built:* nothing in the framework can walk a group of people to a place yet |
+| 16 | Our Crossroads ✅ | Red Hand, Independent | Hold the crew's crossroads outside town for 5 min (3 waves) | Paid |
+| 17 | Honour Among Thieves ✅ | Red Hand, Independent | Recover what a crew member stole | Take it back: paid, loud. Talk it back: 60% (always for a Talker), else he runs. Let him keep it: fails |
+| 18 | House Rules ✅ | Red Hand, Independent | The crew's own fight pit behind the garages (4 waves) | Mostly Favor (the bets) |
+| 19 | Debt Collection ✅ | Red Hand, Independent | Collect from a debtor (a real wanderer when one is free): talk, threaten or pay | Talk: 60% pay. Threaten: full pay, +3 Haven Infamy if a wanderer. Pay it yourself: 15 Red Hand Favor |
+| 20 | The Soft Touch ✅ | Red Hand, Rogue | Secret medicine to a Haven safehouse | Haven Fame +5; that town's infection −5 |
+| 21 | Coup Talk ✅ | Red Hand, Rogue | Carry a word to two other crews (other Red Hand posts, else camps outside two towns), 20 s at each | Never fully works: laughed off (the crew boss is pulled back toward the boss) or a purge (the crew boss is discovered; carriers take Red Hand Infamy, and if the boss is removed nobody pays) |
+| 22 | Sell Out a Rival Crew ✅ | Red Hand, Rogue | A map of another crew's camp, to Bastion | Bastion Fame +4; another Red Hand crew boss, if there is one, dies in the raid (replaced later) |
+| 23 | Skim the Toll ✅ | Red Hand, Rogue | Take the boss's toll on the road out for 5 min | Paid; +3 Haven Infamy (the travellers) |
+| 24 | Field Station ✅ | Halcyon, Independent | Hold a house in a quiet village for 3 min (1 wave) while a station goes up | Research +1 |
+| 25 | Second Opinion ✅ | Halcyon, Independent | Notes to a Haven medic (a safehouse with one if in reach) | Research +1; Haven Fame +3 |
+| 26 | Patients Not Samples ✅ | Halcyon, Independent | A dying man. Sit with him, or take the sample the protocol wants | Sit: Haven Fame +3. Sample: research +1, half pay, the field lead remembers |
+| 27 | The Notebook ✅ | Halcyon, Independent | A dead researcher's notebook (guarded): half research, half what she thought of the director | To the field lead: research +1. To the director: research +2, +10 Fame, the field lead remembers |
+| 28 | Unsanctioned Trial ✅ | Halcyon, Rogue | A willing, dying volunteer and an untested serum | Half the time he lives (research +2), half the time he turns (research +1, a special). Refuse: fails |
+| 29 | Leak the Data ✅ | Halcyon, Rogue | Research data to a Haven safehouse for nothing | Haven Fame +5; that town's infection −3 |
+| – | Private Collection | Halcyon, Rogue | Capture a special alive | *Not built:* needs a way to trap and hold a special |
+| 30 | Sell the Formula ✅ | Halcyon, Rogue | The antidote formula to the Red Hand | Red Hand Fame +5 |
+| – | Rein In ✅ | The stronghold (radio contract, Known) | A leader turned Rogue. Go to them and read the terms, or take their counter-offer (25 Favor ×traits) | Terms: their loyalty +25. Counter-offer: no stronghold pay, the leader remembers, 35% the stronghold finds out (+10 Infamy) |
+
+Simplifications in code:
+
+- **"In person"** means at the leader's seat (within 80 m for listing, 15 m for the nudge).
+- **Bring Them Home, Shut the Door**: the families are one stand-in figure; the people join or
+  leave as numbers.
+- **Over the Fence, Hearts and Minds, the Red Hand and Bastion buyers**: the other side is a
+  drop point at their nearest seat (within 5 km), else outside a town 0.8–3 km away.
+- **The Real Orders**: the orders are read out to whoever first picks up the satchel.
+- **Training Day**: without the survivor group prefab, the recruits are only in the brief.
+- **Coup Talk**: "other crews" are other Red Hand seats when there are any; usually there aren't
+  until territory exists, so they're camps outside towns.
+- **Rein In** is offered by radio a few minutes after a leader is Rogue (including one who starts
+  the season Rogue), then at most once an hour while they stay Rogue. The rogue leader is shown by a stand-in while it runs.
+- Rewards never include loot: Favor, Fame, research, food and population only.
 
 ## Character-type summary
 

@@ -726,12 +726,13 @@ class RZ_Leaders
 
 		if (found)
 		{
+			// Into the live list first, so the saved list never holds the only reference
+			m_aList.Insert(found);
 			saved.RemoveItem(found);
 			found.m_vPos = RZ_Util.GroundPos(pos);
 			found.m_iSource = source;
 			found.m_iSafehouse = safehouse;
 			found.m_bActive = true;
-			m_aList.Insert(found);
 			return found;
 		}
 
@@ -1179,7 +1180,8 @@ class RZ_Leaders
 				mult = mult * 1.15;
 		}
 
-		if (amends && l.HasTrait(RZ_ELeaderTrait.MERCIFUL))
+		// A Merciful stronghold leader already forgives faction-wide (ScaleInfamy); don't count it twice
+		if (amends && l.HasTrait(RZ_ELeaderTrait.MERCIFUL) && !l.IsStronghold())
 			mult = mult * 1.15;
 
 		return Cap(mult);
@@ -1855,6 +1857,18 @@ class RZ_Leaders
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A leader dies off-screen because of something a mission did (Bastion raiding a camp
+	//! someone sold out). Stronghold leaders never die.
+	void KillOffscreen(int leaderId, string how)
+	{
+		RZ_Leader l = Get(leaderId);
+		if (!l || !l.IsPresent() || l.IsStronghold())
+			return;
+
+		Die(l, how, -1);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Dismissed by the stronghold: gone from the seat, replaced like a death.
 	protected void Dismiss(RZ_Leader l, string headline)
 	{
@@ -2418,7 +2432,13 @@ class RZ_Leaders
 	//! From RZ_LeaderAction on a quartermaster: the leader whose seat this is.
 	void HandleAction(int playerId, RZ_ELeaderAction kind, IEntity owner, IEntity user)
 	{
-		RZ_Leader l = FindNearest(-1, owner.GetOrigin(), SEAT_RADIUS);
+		// On a quartermaster: that faction's leader. Elsewhere: whoever's seat is nearest
+		int faction = -1;
+		RZ_QuartermasterComponent qm = RZ_QuartermasterComponent.Cast(owner.FindComponent(RZ_QuartermasterComponent));
+		if (qm)
+			faction = qm.GetFaction();
+
+		RZ_Leader l = FindNearest(faction, owner.GetOrigin(), SEAT_RADIUS);
 		if (!l)
 		{
 			m_GM.NotifyPlayer(playerId, "Nobody in charge", "Whoever ran this place isn't here. Someone says to come back in a day or two.");

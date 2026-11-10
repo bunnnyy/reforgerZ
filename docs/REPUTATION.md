@@ -114,6 +114,104 @@ memory of you; see [WORLD.md](WORLD.md), "Wanderers".
 | Champion | Experimental immunity booster (shrugs off one bite) | **Lab access:** your deliveries count 25% more; you can call in a Halcyon medic |
 | Hunted | — | The lab refuses your samples: they're taken without reward, and its guards turn hostile |
 
+## Faction leaders
+
+Every place a faction holds has a named leader ([LORE.md](LORE.md), "Who's in charge"),
+and reputation is with people as well as factions. Code: `Factions/RZ_Leaders.c`,
+`Factions/RZ_LeaderVoice.c`; where they sit is in [WORLD.md](WORLD.md), "Leaders".
+
+| Leader | Where | Can die? |
+|---|---|---|
+| Stronghold leader (one per faction) | at the faction's quartermaster; Halcyon's at the lab | Never; never replaced; always Loyal |
+| Council head | each Haven safehouse (the one at the Haven quartermaster is the stronghold) | Yes |
+| Commander, crew boss, lead researcher | each outpost (interim leader posts until territory exists) | Yes |
+
+Each has a seeded name, a title, a one-line backstory and **two traits**. They're saved.
+Only the leader at the place you're standing near has a body; at a stronghold or
+safehouse that's usually the quartermaster itself.
+
+### Traits
+
+Every effect is small and capped: one leader's combined multiplier never goes past ±20%.
+
+| Trait | On contracts they give | Elsewhere |
+|---|---|---|
+| Greedy | Favor ×1.2; cross-faction trade jobs a little more often | Their quartermaster charges ×1.15 |
+| Paranoid | Fame ×0.85 | Stronghold: Infamy with the faction ×1.15. Remembers being crossed harder |
+| Merciful | Amends work off ×1.15 more Infamy (outpost and safehouse leaders) | Stronghold: Infamy gained ×0.9, worked off ×1.2; amends contracts more often. Forgives faster |
+| Ruthless | Darker personal jobs more often | Stronghold: contracts that hurt a rival more often |
+| Idealist | Hopeful personal jobs more often, dark ones less | Stronghold: harmless contracts more often. Halcyon Idealists remember anyone who sells samples to the Red Hand |
+| Pragmatist | Cross-faction personal jobs more often | Deals with people their faction hates (their bad standing counts as Watched at worst). Stronghold: choice missions more often |
+| Veteran | Favor ×1.1; Fame ×1.15 for Soldiers and Police; tough jobs more often | Respects Soldiers and Police. Stronghold: Trusted+ contracts more often |
+| Talker | Talky jobs more often | Two rumours instead of one, two other factions in a first meeting; their rogue jobs leak more easily |
+
+"Stronghold" effects come from the faction's stronghold leader and apply faction-wide.
+Contract weights change by at most ±20%.
+
+### Loyalty
+
+Outpost and safehouse leaders have a loyalty: **Loyal** (60+ on a hidden 0–100 score),
+**Independent**, or **Rogue** (below 25). It changes how your standing counts with them:
+
+| Loyalty | Their attitude to you | Work |
+|---|---|---|
+| Loyal | Your faction standing plus their memory of you. Hunted by the faction = no | Voice the stronghold's radio contracts; no personal jobs |
+| Independent | Half your standing plus double their memory | Off-book personal jobs |
+| Rogue | Double their memory; bad standing doesn't count if you've helped them | Off-book jobs that work against the stronghold; their quartermaster sells you Known items even if the stronghold hunts you |
+
+**Memory** (per player, saved): *helped* (did work for them: +1), *saved* (killed infected at
+their door: +2), *crossed* (shot near them, turned them in, worked against their faction,
+took the job the way they didn't want: −3, −2 for a Merciful leader, −4 for a Paranoid one). At −2 or below they won't talk to you. Their
+quartermaster's prices move ×0.9 for people they owe and ×1.1 for people who crossed them
+(doubled for Independent and Rogue leaders), within the ±20% cap.
+
+**What moves loyalty** (at most 15 points an hour, except for the big events):
+
+| Event | Change |
+|---|---|
+| A safehouse runs out of food / is fed again | −5 / +2 |
+| The faction's contracts near them fail / succeed | −2 / +1 |
+| They finish a rogue job without getting caught | −3 |
+| Their own off-book delivery against orders (Our Own First, Hearts and Minds) | −2 |
+| Every hour, back toward their temperament (55; Idealist +10, Paranoid +5, Pragmatist −10, Ruthless −5) | ±1–2 |
+| Rein In: terms read / counter-offer taken | +25 / −5 |
+| A rogue job is discovered and they keep their place | +25 |
+| A new leader | rolled fresh: 40% Loyal, 40% Independent, 20% Rogue |
+
+At most one leader per faction is Rogue at a time, and stronghold leaders are always Loyal,
+so no faction ever splits. When a leader turns Rogue the stronghold puts out **Rein In**
+([MISSIONS.md](MISSIONS.md), "Leader missions").
+
+**Discovery.** A rogue job is discovered when it's done with a 15% chance, +35% if you were
+seen by the faction's own people while doing it (you passed another of its places, or a Haven
+wanderer saw you), +10% for a Talker leader, −5% for a Paranoid one. Discovered: everyone who
+was paid takes **+10 Infamy** with the faction, and the leader is removed (half the time) or
+pulled back into line. You can also turn a rogue leader in yourself: most rogue deliveries
+have a drop at the stronghold, which pays you instead and costs the leader their place or
+their nerve.
+
+### Talking to leaders
+
+Talk to a leader (their body, or `RZ_LeaderAction` on the quartermaster): **Ask for work**
+(their personal job if they have one for you, else the stronghold's contracts),
+**Ask for news** (other leaders' loyalties and off-book work, hungry safehouses, noise), and
+**Ask what they think of you** (their opinion, what they remember, where they stand with their
+stronghold if they trust you, and their traits). Radio contracts are briefed in the voice of
+the nearest Loyal leader of the giver, with an intro and an outro by trait, and that leader's
+traits set the pay.
+
+**First contact.** The first time you talk to a leader they say who their faction is, who
+they are, and what they think of one other faction (two for a Talker), with where its nearest
+leader sits. The hook for new-player guidance is
+`RZ_Leaders.GetFirstContactLine(faction, leaderId, playerId)` (leaderId −1 = the stronghold
+leader; marks them as met) and `RZ_Leaders.DescribeStronghold(faction, fromPos)`.
+
+**Deaths and replacements.** Off-screen, every half hour, an outpost or safehouse leader can be
+bitten (1–4%, more in an infected town) or killed in a raid (1%, doubled at a hungry safehouse).
+Killing one yourself is +15 Infamy with their faction. A new leader takes the chair after
+2 hours of server time, with new traits and a new loyalty. All of it is headline news ("Word on
+the roads"); new players see the last three headlines when they first spawn.
+
 ## Making it hurt: rivalries and choices
 
 - **Rival penalties.** Fame with one faction often gives Infamy with its rival.
@@ -168,7 +266,12 @@ That sets the tone of the Aftermath and the next season's starting rules:
   required tier, Favor cost, item prefab and name. The server checks tier and Favor when the
   action is used and refuses with a message; the action is not greyed out on the client.
   Shop System can still be used for general trading.
-- Missions: `m_eGiver` gets Fame, an optional `m_eRival` gets Infamy, `m_iFavorReward` pays out
+- Missions: `m_eGiver` gets Fame, an optional `m_eRival` gets Infamy, `m_iFavorReward` pays out.
+  `m_iLeaderId` is the leader who gives it: their traits scale the Fame and Favor
+  (`RZ_Leaders.FameMult`, `FavorMult`), and they remember who did it
+- `RZ_Leaders`: leaders, traits, loyalty, memory, discovery, headlines. `RZ_GameModeComponent.AddInfamy`
+  runs every Infamy change through the stronghold leader's temper (`ScaleInfamy`); shop prices go
+  through `PriceMult` in `RZ_FactionShopAction`
 - Perks are checked in code where they apply (`RZ_FactionPerks`, `RZ_CureResearch`).
   House rules and exile are in `RZ_Safehouses` (and `RZ_Wanderers` for wanderers);
   the location leak goes through `RZ_FactionPerks.LeakLocation`
@@ -188,4 +291,5 @@ That sets the tone of the Aftermath and the next season's starting rules:
 | Toll pass (message only), Halcyon Hunted gets no Fame for samples | AI checkpoints and roadblocks reacting to standing |
 | Hunter squads (Bastion and Red Hand), Kill-on-Sight bounties | — |
 | Haven safehouse spawn points, house rules, exile, Haven wanderers warning other players, safehouse location leaks | — |
+| Named leaders: traits, loyalty, memory, voiced briefs, first contact, discovery, deaths and replacements, Rein In | Leaders for real territory outposts (the `RegisterOutpost` hook is ready) |
 | Season winner by Fame | Next-season rules from the winner |
