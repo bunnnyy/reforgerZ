@@ -220,6 +220,25 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Quiet in-world guidance: experience levels, contextual tips from nearby people, the first-life goal, the gentle start (docs/WORLD.md)", category: "ReforgerZ|Guidance")]
 	protected ref RZ_GuidanceSettings m_GuidanceSettings;
 
+	// ---------------------------------------------------------------- World interactions
+	[Attribute(desc: "World interactions: the interaction spot prefab, scan radius and caps, bells and sirens, water, treating other players (docs/WORLD.md, World interactions)", category: "ReforgerZ|Interactions")]
+	protected ref RZ_InteractionSettings m_InteractionSettings;
+
+	[Attribute(desc: "Searching: loot pool and tables per building type, chances, locks and keys, readable things, bodies", category: "ReforgerZ|Interactions")]
+	protected ref RZ_SearchSettings m_SearchSettings;
+
+	[Attribute(desc: "Fixable cars (rare), wrecks, parts, fuel, hotwiring", category: "ReforgerZ|Interactions")]
+	protected ref RZ_CarSettings m_CarSettings;
+
+	[Attribute(desc: "Crafting at workbenches: built-in recipes' output prefabs, input keywords, extra recipes", category: "ReforgerZ|Interactions")]
+	protected ref RZ_CraftSettings m_CraftSettings;
+
+	[Attribute(desc: "Barricades, tripwires, spike traps, generators, molotovs and fire", category: "ReforgerZ|Interactions")]
+	protected ref RZ_TrapSettings m_TrapSettings;
+
+	[Attribute(desc: "Secure radio channels (Radio Operators) and house radios", category: "ReforgerZ|Interactions")]
+	protected ref RZ_RadioCrackSettings m_RadioCrackSettings;
+
 	// ---------------------------------------------------------------- Survival
 	[Attribute("3", desc: "Heat per shot fired by a player (times the background noise multiplier)", category: "ReforgerZ|Survival")]
 	protected float m_fHeatPerShot;
@@ -307,6 +326,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Territory m_Territory;
 	protected ref RZ_SupplyLines m_Supply;
 	protected ref RZ_FactionLife m_FactionLife;
+	protected ref RZ_Interactions m_Interactions;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -416,6 +436,24 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_FactionLifeSettings)
 			m_FactionLifeSettings = new RZ_FactionLifeSettings();
 
+		if (!m_InteractionSettings)
+			m_InteractionSettings = new RZ_InteractionSettings();
+
+		if (!m_SearchSettings)
+			m_SearchSettings = new RZ_SearchSettings();
+
+		if (!m_CarSettings)
+			m_CarSettings = new RZ_CarSettings();
+
+		if (!m_CraftSettings)
+			m_CraftSettings = new RZ_CraftSettings();
+
+		if (!m_TrapSettings)
+			m_TrapSettings = new RZ_TrapSettings();
+
+		if (!m_RadioCrackSettings)
+			m_RadioCrackSettings = new RZ_RadioCrackSettings();
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -446,6 +484,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Territory = new RZ_Territory(this, m_TerritorySettings);
 		m_Supply = new RZ_SupplyLines(this, m_SupplySettings);
 		m_FactionLife = new RZ_FactionLife(this, m_FactionLifeSettings);
+		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
 
 		bool loaded = false;
 		if (!m_bWipeOnStart)
@@ -483,6 +522,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_FactionLife.Setup();
 		m_Territory.Setup();
 		m_Supply.Setup();
+		// Searching, cars, crafting, traps, fire, radios: keep off safehouses, holdings and the lab
+		m_Interactions.Setup();
 		// Arcs are made of the missions, wanderers, safehouses, territory and trucks above
 		m_StoryArcs.Setup();
 		m_Hostility.Init();
@@ -522,6 +563,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Environment.Tick(dt, ids, players);
 		m_PowerGrid.Tick(dt, ids, players);
 		m_RadioStation.Tick(dt, ids, players);
+		m_Interactions.Tick(dt, ids, players);
 		m_Missions.Tick(dt, ids, players);
 		m_Perimeter.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
@@ -612,6 +654,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Territory GetTerritory() { return m_Territory; }
 	RZ_SupplyLines GetSupply() { return m_Supply; }
 	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
+	RZ_Interactions GetInteractions() { return m_Interactions; }
+	RZ_GuidanceSettings GetGuidanceSettings() { return m_GuidanceSettings; }
+	float GetResearchPerSample() { return m_fResearchPerSample; }
 	float GetTickSeconds() { return m_fTickSeconds; }
 	RZ_Broadcast GetBroadcast() { return m_Broadcast; }
 	float GetBroadcastMinutes() { return m_fBroadcastMinutes; }
@@ -897,6 +942,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_BiteDetector.Reset(playerId);
 		RegisterGunfire(controlledEntity);
+		// Keys, timed actions and cracked channels belong to the last life
+		m_Interactions.OnPlayerSpawned(playerId);
 
 		// 1. Who you are this life
 		string intro = string.Format("Perk: %1\nFlaw: %2\n\nYour goal: %3",
@@ -1445,6 +1492,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_Wanderers.OnZombiesKilled(pos);
 		m_Leaders.OnZombiesKilled(pos);
+		// A body to search, for a few minutes, if a player saw it die
+		m_Interactions.OnZombiesKilled(pos, count);
 		m_Missions.OnZombiesKilled(settlementIdx, missionId, special, pos, count);
 	}
 
@@ -1715,6 +1764,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_RadioStation.Restore(data.radio);
 		m_StoryArcs.Restore(data.story);
 		m_Headlines.Restore(data.news);
+		m_Interactions.Restore(data.interactions);
 		return true;
 	}
 
@@ -1774,6 +1824,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Headlines)
 			data.news = m_Headlines.Save();
+
+		if (m_Interactions && m_Interactions.IsActive())
+			data.interactions = m_Interactions.Save();
 
 		foreach (RZ_Settlement s : m_aSettlements)
 		{

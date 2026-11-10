@@ -1,7 +1,7 @@
 # Living world
 
-How the world changes on its own, without becoming overpowered or lagging
-the server. Three rules apply throughout:
+How the world changes on its own, and what players can do with it, without becoming
+overpowered or lagging the server. Three rules apply throughout:
 
 - **Simulate as data, spawn as bodies only near players.** Population,
   wanderers and territory are numbers on the server. AI entities
@@ -70,7 +70,7 @@ in [REPUTATION.md](REPUTATION.md), "Haven house rules and exile".
 ### Wanderers ✅ (built, `World/RZ_Wanderers.c`)
 
 A small roster of named survivors travels the map: 6–10 per server (6, plus one per 6
-settlements above 8). Each one has a role, a route and opinions. Names come from a seed, and
+settlements above 8), eight roles. Each one has a role, a route and opinions. Names come from a seed, and
 the roster, positions and memories are saved.
 
 | Role | What they do | Typical reaction to you |
@@ -82,6 +82,7 @@ the roster, positions and memories are saved.
 | Preacher | Walks between towns; while he rests in one, his bells add heat there | Harmless; agrees to stop the bells for an hour if asked |
 | Courier | Hands out an unarmed delivery job (letters to a safehouse) | Any non-Hunted player |
 | Kid | A lost child, wandering | Follows you to a safehouse if you show the way; runs from gunfire |
+| Mechanic | Knows the cars: "Ask about cars" names the nearest fixable car and what it needs (section 10), and sells a part it needs for Haven Favor | Hands over that car's keys if they like you (Trusted with the Haven, or they remember you helped) |
 
 **How they behave.** A simple state machine: travel → rest (10–20 min at a safehouse,
 3–8 min in a town) → choose somewhere new, 0.6–3.5 km away.
@@ -199,7 +200,7 @@ Two small mechanics make them work:
 | 5 | **Lead Them Away** | Haven | A horde is drifting toward a safehouse. Use noise to lead it to a marked quarry without getting caught | ✅ |
 | 6 | **Rooftop Rescue** | Haven | A survivor is stuck on a roof. Find a ladder route and time it between zombie waves | ✅ |
 | 7 | **Trail of Clues** | Wanderer | Follow belongings and notes from a missing person's house to wherever they ended up | ✅ |
-| 8 | **Car Keys** | Mechanic wanderer | A working car, but the keys are in one of 5 houses. Search quietly, drive it back | planned (needs fixable cars) |
+| 8 | **Car Keys** | Mechanic wanderer | A working car, but the keys are in one of 5 houses. Search quietly, drive it back | planned (the fixable cars and keys it needs are in, section 10) |
 | 9 | **Scout the Town** | Bastion | Visit 4 observation points in town and stay unnoticed at each for 20 s | covered by Recon |
 | 10 | **Night Lantern** | Halcyon | Reach a high point at night with no light and switch on a beacon | covered by Lights in the Window and Signal Fires |
 | 11 | **Water Run** | Haven | Carry heavy water containers back. Choose the slow safe road or the fast risky one | ✅ |
@@ -330,10 +331,12 @@ players, are in [REPUTATION.md](REPUTATION.md), "Morale, needs, truces and feuds
   the road is heading, a short place, an outpost's next shift or night watch, the Red Hand's toll
   hours (and Bastion's truck on the road, which it watches), Halcyon's research and samples
   wanted. The Haven's channel reaches everyone with a radio; the others reach people Known with
-  that faction, and Radio Operators, who tune rival open channels too.
-- **Secure channels** are a hook for a later step: `RZ_FactionLife.GetSecureTraffic(faction)`
-  is what a faction says where nobody's meant to hear (its truck's route, the next departure).
-  A Radio Operator within 400 m of a faction's holding when it chatters gets the "channel" tip.
+  that faction, Radio Operators, who tune rival open channels too, and anyone with a radio within
+  30 m of a running generator (section 10).
+- **Secure channels**: `RZ_FactionLife.GetSecureTraffic(faction)` is what Bastion, the Red Hand
+  and Halcyon say where nobody's meant to hear (truck routes and departures, shift and watch
+  times, short places, samples wanted). Radio Operators crack them (section 10, "Radios"). A Radio
+  Operator within 400 m of a faction's holding when it chatters gets the "channel" tip.
 - **Life events** in the headlines, one every 35 minutes or so (±30%): funerals for leaders
   and truck crews who died (10–20 minutes later), Bastion promotions (a named private or
   corporal is promoted, and the new rank sticks), recruiting in a strong faction's town (strength
@@ -400,10 +403,11 @@ Time is never skipped or changed. The environment is read every 30 s and nudges 
   3. **Throw the main switch.**
 
   Then every town within 2.5 km is **Powered** (town memory, section 8) and everyone hears it.
-  What power does: a hook for lights (`RZ_PowerGrid.IsPoweredAt(pos)`; no lamps are switched on
-  yet), working radios (faction chatter every 6 minutes instead of 10, and the radio station
-  can broadcast twice as often), and an electronics loot bonus for the search system
-  (`RZ_PowerGrid.LootMult(pos, "electronics")`, ×1.5). But the generator hums: 10 heat a minute
+  What power does: a hook for lights (`RZ_PowerGrid.IsPoweredAt(pos)`, also true within 40 m of a
+  running generator, section 10; no lamps are switched on), working radios (faction chatter every
+  6 minutes instead of 10, and the radio station can broadcast twice as often, also with a
+  generator running next to it), and electronics are ×1.5 as likely in searches in its towns
+  (`RZ_PowerGrid.LootMult(pos, "electronics")`; the grid only, not generators). But the generator hums: 10 heat a minute
   at the station, which draws hordes. It **slowly fails**: about four hours with players online.
   Players in the region are warned at 20%. **Refuel and grease the generator** restores 60% with
   a fuel item (prefab name with "jerrycan" or "fuel", used up) or 25% without, once per player
@@ -470,19 +474,19 @@ portions are real.
 
 - **Town flags:** Looted, Barricaded, Powered, Burned. These are plain values per settlement,
   not objects in the world, and they're saved.
-  - **Looted:** each town has a loot level (0–1). The search system (planned) reports what a
-    search took and scales what it finds by what's left. A town under 0.5 counts as Looted.
-  - **Barricaded:** set by a building or fortification system (planned).
+  - **Looted:** each town has a loot level (0–1). Every search reports what it took (section 10)
+    and finds less as the level drops. A town under 0.5 counts as Looted.
+  - **Barricaded:** while a player's barricade stands in it (section 10).
   - **Powered:** set by the power grid for the towns in its region (section 5).
-  - **Burned:** a fire system (planned) reports each building that burns; a town is Burned once
-    half its buildings have. The building count is a guess by size (12, 30 or 60) until a system
-    reports the real one. Each burned building stops counting after an hour, so towns recover.
+  - **Burned:** fire (section 10) reports each building that burns; a town is Burned once
+    half its buildings have. The building count is a guess by size (12, 30 or 60); nothing reports
+    the real one yet. Each burned building stops counting after an hour, so towns recover.
 - **Loot comes back per town over about 2 hours.** A looted town never drops under 0.2, so
   nobody gets locked out, but the best stuff takes time to return.
-- **Hooks for the later world interactions** (all static on `RZ_TownMemory`):
-  `GetLootLevel(pos)`, `ReportSearched(pos, share)`, `ReportBarricaded(pos, on)`,
-  `ReportBuildingBurned(pos)`, `ReportBuildingCount(pos, count)`. A town that becomes Burned is a
-  quiet headline.
+- **Hooks** (all static on `RZ_TownMemory`), used by the world interactions (section 10) and open
+  to other mods: `GetLootLevel(pos)`, `ReportSearched(pos, share)`, `ReportBarricaded(pos, on)`,
+  `ReportBuildingBurned(pos)`, `ReportBuildingCount(pos, count)` (unused so far). A town that
+  becomes Burned is a quiet headline.
 - **No physical traces.** No graffiti and no extra bodies beyond what the
   game already cleans up. Your dead character's **journal** is data: a life that lasted 10
   minutes leaves one line (where, your background, how long, the day, a personal line). The last
@@ -540,14 +544,14 @@ don't wait). The table is data: **Guidance > Tips** on the game mode, with the d
 | safehouse | your first safehouse (once) | house rules: guns fine, no firing, declare bites | |
 | shortage | in a safehouse that's short of food, or near a place whose supply truck didn't arrive | bring tins; the next delivery | |
 | clue | your first puzzle clue (once) | "Notes like that usually point somewhere. Check your map and compass." | |
-| channel | a Radio Operator near a faction's holding when it talks on the radio | a scrambled channel nearby | |
-| hungry, car | **hooks only** (see below) | eat; a car that might run | |
+| channel | a Radio Operator near a faction's holding when it talks on the radio, or starting to crack a secure channel (section 10) | a scrambled channel nearby | |
+| car | the first time you inspect a fixable car (section 10) | a car that might run; engines are loud | |
+| hungry | **hook only** (see below) | eat | |
 
-**Hooks left for later systems.** Hunger comes from a Workshop mod ReforgerZ can't read and
-there are no fixable cars in code yet. Each has its tip ready: the system (or another mod) calls
-`RZ_Guidance.Report(playerId, "hungry" | "car", place)`. Supply trucks already report
-"shortage" for shops whose truck didn't arrive (section 3), and faction life reports "channel"
-to Radio Operators near a faction's holding; cracking secure channels is still to come.
+**Hooks.** Hunger comes from a Workshop mod ReforgerZ can't read, so "hungry" waits for that mod
+(or a bridge) to call `RZ_Guidance.Report(playerId, "hungry", place)`. Supply trucks report
+"shortage" for shops whose truck didn't arrive (section 3), faction life and secure radio report
+"channel", and fixable cars report "car" (section 10).
 
 ### Gentle first 15 minutes
 
@@ -594,7 +598,7 @@ time, and Bastion's net or the Red Hand's taunts in between. The government broa
 reaches everyone, so the radio only adds it when the server's broadcast loop is off. It's
 low-frequency: about every 12 minutes for a brand-new player, every 18, 30 and 42 minutes as they
 gain experience. Everything goes through the hint queue. Only open channels: secure channels are
-for a later system (and the "channel" tip hook).
+for Radio Operators to crack (section 10).
 
 ### Faction voices
 
@@ -619,6 +623,191 @@ more than 600 m away whom nobody can see is moved, as data, to 600 m first, so t
 minutes. When their body appears within sight, the player hears that someone on the road is
 waving at them; they wait 5 minutes. Their talk includes faction gossip.
 
+## 10. World interactions ✅ (built, `Interactions/`)
+
+Searching, keys, cars, crafting, water, barricades and traps, generators, fire, bells, radios and
+treating each other. All of it follows the three rules at the top: data until a player is near,
+capped and decaying, nothing left behind.
+
+### How it works on any map
+
+- **Things are recognised by name.** Every 10 s (once a player has moved 10 m) the server looks at
+  the static map objects within 30 m of each player and sorts them by prefab or mesh name:
+  buildings by type, furniture (cupboard, fridge, desk, wardrobe, drawers, shelves, locker), car
+  wrecks, workbenches, wells and water pumps, fuel pumps, stoves and fireplaces, bells (every
+  church gets one), sirens and alarms, house radios and generators. A building with no furniture
+  found inside gets one spot for the whole building.
+- **Interaction spots, only near players.** Each recognised thing gets an invisible spot (one
+  prefab with the generic puzzle object's actions and replicated labels: "Search the fridge"),
+  at most 10 around a player and 70 on the server. They're removed when everyone has gone.
+- **Decided on the server, when it happens.** Loot is rolled when someone searches, and only
+  then is an item spawned (into their inventory, or at their feet). What was searched, opened,
+  stripped or burned is remembered as positions and times, and saved.
+- **Timed actions.** Searching (4 s), forcing a lock (10 s), hotwiring (20 s), crafting, boiling,
+  pumping fuel, cracking a channel (60 s) and treating someone (20 s) run on the server tick: move
+  more than 3.5 m away and it stops. Cracking also stops if you move at all, get hit, it gets loud
+  or an infected comes within 10 m. The tick is 5 s, so times are "about".
+
+### 1. Searching
+
+| Building type (from the prefab name) | What it tends to have |
+|---|---|
+| Pharmacy (pharmacy, hospital, clinic, drugstore) | Bandages, medicine, saline, purification tablets; rare: morphine, antibiotics |
+| Garage (garage, workshop, repair) | Jerrycans, tools, batteries, tyres, spark plugs, crowbars, planks, wire |
+| Farm (farm, barn, stable, shed) | Food, water, axes, rope, planks, matches; rare: hunting guns |
+| Police (police, gendarmerie) | Ammo, batons, torches, radios; rare: pistols, vests |
+| Shop (shop, store, market, kiosk) | Food, water, batteries, torches, bleach |
+| House (anything else) | Food, water, cloth, bandages, knives, torches |
+| Body (an infected killed with a player within 60 m; searchable for 4 minutes) | Bandages, ammo, small things; sometimes a key or something to read |
+| Car boot (a wreck) | Jerrycans, tools, rope, batteries, tyres |
+
+- **Tables are data**: one flat loot pool on the game mode, sorted into these by keywords in the
+  prefab names, or a table per type set by hand (docs/WORKBENCH_SETUP.md).
+- **The roll:** a search finds something 60% of the time at full town loot, scaled by
+  `RZ_TownMemory.GetLootLevel` (never under its floor), sometimes two things. 10% of finds are rare
+  (20% behind a lock), 10% electronics (×1.5 in towns the grid powers, `RZ_PowerGrid.LootMult`).
+  Each search takes 2% of the town's loot (4% for a whole building) through `ReportSearched`; it
+  comes back over about two hours. A searched spot has nothing new for an hour.
+- Searching makes a little noise (1 heat).
+
+### 2. Locked places and keys
+
+- **Which ones:** about half of pharmacies and police stations, a third of garages, a quarter of
+  shops and a tenth of houses and farms. It's seeded from the building's position and the save, so
+  the same buildings are locked after a restart.
+- **The lock is on the loot, not the door.** Doors can't be locked from script, so you can walk in;
+  what's worth having is behind "the dispensary's steel door", "the padlocked tool store", "the
+  evidence room": Search is refused until the lock is opened.
+- **Keys are data**, carried for the rest of this life (a restart or a death loses them): a key
+  opens that kind of building in that town ("Pharmacy, Morton"). They're found on infected bodies
+  (8%), taped inside readable things (below), and the Mechanic wanderer hands over car keys.
+- **Or force it** with a crowbar (an item whose name has "crowbar" or "prybar"): 10 s and 25 heat.
+- Opened locks stay open for three hours. Behind a lock, a search is 25% likelier to find
+  something, often two things, and rare finds are twice as likely.
+
+### 3. Readable things
+
+12% of searches (30% of bodies) turn up an ID card, a letter, a receipt or a photo, written from
+`RZ_NoteText` in the Zone's voice ([LORE.md](LORE.md), "Writing guide"): names, the town it's in,
+a personal line. One in five has a key taped inside, about one in seven a stash written on the back
+(a grid near a landmark in a town nearby: search there within 90 minutes and it's there, two extra
+finds), and one in ten a puzzle mission in progress circled on a map. With a puzzle note prefab set,
+the readable thing is also left at the spot for half an hour, for others to read.
+
+### 4. Cars: easy projects, kept rare
+
+- **How many:** one fixable car per three settlements (at most 6, at most one per town); every
+  other wreck is just a wreck. Placed at the first start in towns that aren't overrun, saved.
+- **Inspect** says exactly what's missing: "Needs: fuel, a battery." Each runs with only one or two
+  of fuel, battery, tyre and spark plugs fitted. The first inspect gives the "car" tip.
+- **Parts:** searching garages and car boots; **Strip a part** from a wreck (one per wreck, 12 s);
+  a Mechanic wanderer (12 Haven Favor, a quarter off if they remember you); the Haven quartermaster
+  (shop actions, [REPUTATION.md](REPUTATION.md)).
+- **Fuel:** siphon a wreck into an empty can (15 s, 60% still have some), or the hand pump at a
+  petrol station (30 s, 10 heat, every 20 minutes per pump). Fuelling a car uses one fuel item.
+- **Starting:** hotwire it (20 s, 5 s for a Mechanic, 8 heat), or use its keys: half the cars have
+  keys in a house in their town (a search there finds them 20% of the time) or with the Mechanic.
+  Then **Start the engine** (15 heat): the prop is swapped for a real vehicle with a quarter tank.
+  From then on it's an ordinary vehicle: vanilla repair, vanilla persistence. A new project turns
+  up elsewhere six hours later.
+
+### 5. Light crafting
+
+At a workbench (in garages and sheds by prefab name, or any placed prefab with "workbench" in its
+name), up to eight recipes. Inputs are keywords; outputs are prefabs, and a recipe whose output
+isn't set is hidden.
+
+| Recipe | Takes | Notes |
+|---|---|---|
+| Improvised bandage | a rag or cloth | |
+| Molotov | a bottle, fuel, a rag | burns a building (below) |
+| Tin rattle | 2 empty tins, wire or string | a noisemaker |
+| Spear | a knife, a pole or plank, wire | |
+| Tin-can tripwire | 2 empty tins, wire | a kit (below) |
+| Spike trap | 2 planks, nails | a kit (below) |
+| Purification tablets | bleach or iodine | |
+| Purify water | untreated water, a tablet | |
+
+More recipes can be added as data.
+
+### 6–7. Barricades and traps
+
+Kits are items you put down and use where they lie (each capped per player, each decays, none saved):
+
+| Kit | Per player | Lasts | What it does |
+|---|---|---|---|
+| Planks (barricade) | 3 | 60 min (about a night) | Boards up a doorway or window (a building within 12 m). Infected against it make noise (6 heat a hit); 8 hits break it. The town counts as Barricaded while one stands (`ReportBarricaded`) |
+| Tin-can tripwire | 3 | 60 min | Rattles (20 heat) when an infected or another player walks through; the one who set it hears it within 400 m. Noise only; six rattles and it's spent |
+| Spike trap | 2 | 60 min | Kills an infected that walks onto it, three times. Players aren't hurt |
+
+### 8. Generators
+
+A portable generator (a kit, half full) or one found in a shed or farm (empty). Start, stop and
+refuel it (30 minutes a fuel item). While it runs: 6 heat a minute; `IsPoweredAt` is true within
+40 m (the lights hook); a radio within 30 m hears every open channel; standing within 15 m for a
+minute **charges** your radio and torch for 30 minutes (a charged radio cracks a channel a quarter
+faster). One running generator per player. It integrates with the grid's hooks, it isn't a second
+grid: it powers no towns.
+
+### 9. Fire
+
+A thrown molotov (like a noisemaker, the server sees it land) makes 25 heat, kills the infected
+within 3 m and burns the building within 10 m; or **Set it alight** at a building with a molotov
+or fuel (5 s). That one building burns: `ReportBuildingBurned`, 30 heat, an optional fire effect for
+three minutes, the town's infection −1, and for two hours nothing to search there and no infected
+spawning within 30 m of it. A town is Burned only once most of its buildings are (section 8).
+Strongholds, outposts, safehouses, quartermasters and the lab can't burn.
+
+### 10. Water
+
+Fill an empty bottle at a well or water pump (untreated water), then boil it on a stove or
+fireplace (30 s, a little smoke) or purify it with a tablet (at the well, or the Purify water
+recipe). The water items are set on the game mode: use the hunger and thirst mod's own if it has
+an unsafe and a safe water item ([MOD_STACK.md](MOD_STACK.md)), otherwise make two bottle items.
+ReforgerZ doesn't know what drinking does; that's the survival mod's.
+
+### 11. Treating each other
+
+**Treat their wounds** on another player: a first-aid kit and 20 s next to them, and they're
+patched up (the same full heal as the safehouse medic). Nurses take 8 s and Doctors 6 s, and both
+can do it with just a bandage; a Nurse or Doctor treating a bitten player also slows the
+infection (×1.15 of the time left, once per life). The same person can be treated every 5 minutes.
+Blood and saline are the vanilla items, used the vanilla way.
+
+### 12. Bells, sirens and alarms
+
+Anyone can ring a church bell (45 heat) or crank a siren or alarm (60 heat), once every 15 minutes
+each, to pull a horde somewhere else. Players within 1.2 km hear it. Enough heat brings a horde the
+usual way.
+
+### 13. Radios, open and secure
+
+- **Open channels** are the ones already on the air (faction chatter, section 3; the Haven's open
+  line and the others, section 9). A **house radio** can be tuned through them: every faction's open
+  channel with power or a generator, two of them on weak batteries.
+- **Secure channels** (Bastion's command net, the Red Hand boss's channel, Halcyon's lab channel):
+  only a Radio Operator can crack one, on a radio lying on the ground or a house radio: stand still
+  for 60 s with nothing loud near. It's the nearest of those factions' places within 3 km. Then
+  listen for 20 minutes, a line every 4 minutes, while you carry a radio (or stay within 30 m of the
+  house radio): `GetSecureTraffic` (truck departures and routes, watch and shift times, short
+  places, how many samples the next breakthrough needs, where the Red Hand means to hit Bastion's
+  truck). Starting it gives the "channel" tip.
+
+*Simplifications and what the engine may not allow:*
+- **Doors aren't locked.** A lock gates the Search action and the loot behind it, not the door.
+- **Spots stand on the object's origin.** A cupboard's spot is where the cupboard is; a building's
+  spot is at its origin, usually in the middle of the ground floor. If furniture inside building
+  prefabs isn't found as separate static entities (VERIFY), every building gets one spot instead.
+- **Carrying the wounded isn't added.** If the game version has dragging or carrying, use that.
+- **Item names are guesses.** Crowbars, parts, fuel cans, water and food are matched by keywords
+  in prefab names, all of them settings; check them against the mods you run.
+- **Fuel cans are full or empty by name**, not by how much is in them. A fixed car's fuel is set
+  with a fuel-node call that may need fixing (VERIFY).
+- **Traps check on the tick** (every 5 s), so something walking fast may pass a tripwire unheard.
+  "Hits" on a barricade are infected standing against it, not real damage.
+- **Keys don't survive a restart or a death.** Car keys can then be found again.
+- Bodies to search are where infected died with a player close; they're not tied to the corpse.
+
 ## Build order
 
 1. ✅ Safehouses with population tiers, and rescued survivors joining them
@@ -630,3 +819,5 @@ waving at them; they wait 5 minutes. Their talk includes faction gossip.
 7. ✅ Story arcs and session headlines
 8. ✅ New-player guidance: experience levels, contextual tips, the gentle start, the first-life goal,
    spawn scenarios, the wind-up radio, faction voices, a wanderer who finds new players
+9. ✅ World interactions: searching, locks and keys, readable things, fixable cars, crafting,
+   barricades and traps, generators, fire, water, treating each other, bells and sirens, secure radio

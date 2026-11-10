@@ -148,6 +148,13 @@ Even a win doesn't mean leaving: the next season is a new outbreak, in a new Zon
   radio than they should.
 - **Rumours** are gossip, often wrong and worst about rivals: *"I heard Bastion got thrown out
   of Levie. Good riddance."* Never mark which ones are true.
+- **Things found in drawers and on bodies** (ID cards, letters, receipts, photos) are one person's
+  life in a sentence or two: a name, the town they're found in, what they bought or meant to say.
+  *"A till receipt from Morton, Day 2: tinned peaches, batteries (all of them), bleach. Underneath,
+  in pencil: 'enough for a week?'"* Some point somewhere: a key with a tag, a grid on the back.
+- **Secure channels** are what a faction says when it thinks nobody's listening: blunter than its
+  open channel, with numbers in it. *"All stations: Morton rotates the watch at 20:30. Two on the
+  gate. Ten minutes where nobody's looking."*
 - **Headlines** about the factions are one plain sentence with one small detail: *"Bastion buried
   Corporal Weber outside Morton. No salute: they're saving ammunition."*
 - **Haven gossip** is about food, never blame: *"The safehouse in Levie has gone to half portions.

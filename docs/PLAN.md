@@ -76,6 +76,8 @@ Out of scope: sleep and time skipping.
 | The Perimeter: map edge from the world bounds fitted to land, warning zone (drone, loudspeaker), kill zone (warning shot, then fatal), blind spots | `World/RZ_Perimeter.c` | Written |
 | Sealed road checkpoints from the road network, or hand-placed markers | `World/RZ_Perimeter.c`, `RZ_CheckpointMarkerEntity.c` | Written |
 | Perimeter missions: The Blind Spot, The Crossing, Shot at the Line | `Missions/Perimeter/` | Written |
+| World interactions: interaction spots near players found by prefab name; searching by building type (pharmacy, garage, farm, police, shop, house, bodies, car boots) with town loot levels and electronics bonus; locks on the loot, keys as data, crowbars; readable ID cards, letters, receipts and photos with keys, stashes and puzzle hints; rare fixable cars (inspect, parts, fuel, siphoning, hand pumps, hotwiring, keys); workbench crafting; barricades, tripwires, spike traps; generators; molotovs and fire per building; water; treating other players; bells and sirens; house radios and cracking secure channels (see [WORLD.md](WORLD.md), section 10) | `Interactions/` | Written |
+| Mechanic wanderer: where a fixable car is, parts for Favor, sometimes its keys | `World/RZ_Wanderers.c` | Written |
 | New-player guidance: experience levels that fade (never fully) with a refresher, data-driven contextual tips from the nearest plausible speaker, gentle first 15 minutes, "Find the Haven" first-life goal, six spawn scenarios with clues, wind-up radio and open channels, Bastion loudspeakers and Red Hand taunts, Halcyon flyers in safehouses, wanderer gossip, a wanderer who finds new players (see [WORLD.md](WORLD.md)) | `Guidance/` | Written |
 
 **None of it has been compiled yet.** It was written outside Workbench. Calls
@@ -88,16 +90,16 @@ Starting standing below is Fame (+) or Infamy (−).
 
 | Background | Perk | Flaw |
 |---|---|---|
-| Nurse | Medical supplies. Infection takes 50% longer to kill you | Unarmed |
-| Mechanic | Toolbox and jerrycan | 25% louder |
+| Nurse | Medical supplies. Treats other players in 8 s, even with a bandage. Infection takes 50% longer to kill you | Unarmed |
+| Mechanic | Toolbox and jerrycan. Hotwires a car in 5 s | 25% louder |
 | Hunter | Hunting rifle, 25% quieter | Little ammo, Bastion -10 |
 | Police Officer | Sidearm, Bastion +20 (Known) | Red Hand -25 (Watched) |
 | Ex-Con | Red Hand +25 (Known), knife | Bastion -25 (Watched), Haven -10, infection kills 20% faster |
 | Lab Technician | Samples worth double research, Halcyon +20 (Known) | Unarmed, 15% louder |
-| Radio Operator | Radio, horde warnings and intel map-wide | 20% louder |
+| Radio Operator | Radio, horde warnings and intel map-wide. Cracks secure faction channels | 20% louder |
 | Unemployed | +50% mission Fame | Starts with nothing |
 | Soldier (unlock: Champion with Bastion) | Service rifle and armour, Bastion +20 | Red Hand -15 (Watched) |
-| Doctor (unlock: Champion with Halcyon) | Infection takes 2.5x as long, Halcyon +20 | Unarmed |
+| Doctor (unlock: Champion with Halcyon) | Infection takes 2.5x as long, treats other players in 6 s, Halcyon +20 | Unarmed |
 | Raider (unlock: Champion with the Red Hand) | Red Hand +40 (Trusted) | Haven and Bastion -15 (Watched) |
 | Elder (unlock: Champion with the Haven) | Haven +40 (Trusted) | 30% louder |
 | Drifter (unlock: 10 Legacy) | Known with every faction | No gear |
@@ -178,7 +180,10 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Noisemakers and "being noticed" (WORLD.md, unarmed missions)
 - [ ] Make the puzzle prefabs (note, generic puzzle object, keypad, scale crate, Morse lamp, noisemakers) and play-test each puzzle
 - [x] 10 unarmed missions from WORLD.md (Pharmacy Lure, Silent Courier, Lead Them Away, Rooftop Rescue, Trail of Clues, Water Run, Barter Chain, Distraction, Medicine Before Dark, Quiet Count)
-- [ ] Car Keys (needs fixable cars); play-test how far a thrown bottle really leads a horde
+- [ ] Car Keys (fixable cars and keys now exist); play-test how far a thrown bottle really leads a horde
+- [x] World interactions: searching, locks and keys, readable things, fixable cars, crafting, water, barricades and traps, generators, fire, treating each other, bells and sirens, house radios (WORLD.md, section 10)
+- [ ] Make the world interaction prefabs (interaction spot, car project prop, parts, fuel can, kits, molotov, water bottles, recipe outputs) and fill the loot pool; check the furniture and wreck keywords against the map's prefab names
+- [ ] Play-test search rates against the town loot level, and how often a fixable car is found and finished
 - [x] The Perimeter: warning and kill zones, one drone per player, sealed road checkpoints, government broadcast
 - [x] 3 Perimeter missions: The Blind Spot, The Crossing, Shot at the Line
 - [ ] Make the Perimeter prefabs (drone, warning shot, barricade, guard, smuggler, package, body) and test the edge on an island map and a land-locked one
@@ -220,7 +225,7 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Real supply trucks with AI crews, shortages, escort, drive-in and theft
 - [x] Faction life: needs, morale, radio chatter, routines, named people, life events, truces and feuds, remembered moments, rumours
 - [ ] Make the territory and supply prefabs (guards, occupants, trucks, crews) and play-test a truck run from stronghold to outpost; check AI seating and driving first
-- [ ] Crack secure radio channels (the `RZ_FactionLife.GetSecureTraffic` hook and the "channel" tip)
+- [x] Crack secure radio channels: Radio Operators, 60 s still, 20 minutes of `GetSecureTraffic` (WORLD.md, section 10)
 - [ ] Desertion Route (needs people who walk with you) and Private Collection (needs a trap for a live special)
 - [ ] Remaining perks: Haven Community respawn with a supply bag, Fire Mission, Fence, Bounty board, immunity booster, Halcyon medic
 - [ ] Convoy, escort and AI-heavy contracts (Convoy Escort, Refugee Column, Hijack the Convoy, Rescue the Pilot...)
@@ -267,3 +272,6 @@ Every system finds its locations from `RZ_Settlement`, so for a new map:
    `RZ_OutpostMarkerEntity` there.
 8. Check the logged power station and radio station. To choose them, place an
    `RZ_PowerStationMarkerEntity` and an `RZ_RadioStationMarkerEntity`.
+9. Check the logged number of fixable cars, then walk into a few houses: if no "Search" spots
+   appear, the map's furniture and building names need adding to the keywords
+   (docs/WORKBENCH_SETUP.md, "World interactions").

@@ -420,6 +420,39 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A living infected character the spawner owns within radius of pos (a group's member), or
+	//! null. Spike traps and molotovs use it.
+	IEntity FindZombieNear(vector pos, float radius)
+	{
+		array<AIAgent> members = {};
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (!z.m_Entity || RZ_Util.DistXZ(z.m_vLastPos, pos) > radius + 60)
+				continue;
+
+			SCR_AIGroup group = SCR_AIGroup.Cast(z.m_Entity);
+			if (!group)
+			{
+				if (RZ_Util.DistXZ(z.m_Entity.GetOrigin(), pos) <= radius && RZ_Util.IsCharacterAlive(z.m_Entity))
+					return z.m_Entity;
+
+				continue;
+			}
+
+			members.Clear();
+			group.GetAgents(members);
+			foreach (AIAgent agent : members)
+			{
+				IEntity member = agent.GetControlledEntity();
+				if (member && RZ_Util.DistXZ(member.GetOrigin(), pos) <= radius && RZ_Util.IsCharacterAlive(member))
+					return member;
+			}
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void UpdateTracked(array<IEntity> players)
 	{
 		for (int i = m_aTracked.Count() - 1; i >= 0; i--)
@@ -573,6 +606,11 @@ class RZ_ZombieSpawner
 				continue;
 
 			if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))
+				continue;
+
+			// Nothing crawls out of a building that's still smouldering (world interactions, fire)
+			RZ_Interactions hub = m_GM.GetInteractions();
+			if (hub && hub.IsActive() && hub.GetTraps().IsScorched(pos))
 				continue;
 
 			return true;

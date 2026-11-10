@@ -109,14 +109,14 @@ class RZ_Background
 		RZ_Background b;
 
 		b = Make("nurse", "Nurse",
-			"Starts with medical supplies. Infection takes 50% longer to kill you.",
+			"Starts with medical supplies. Treats other players fast, even with just a bandage. Infection takes 50% longer to kill you.",
 			"Starts unarmed.");
 		b.m_fInfectionTimeMult = 1.5;
 		b.m_iRepSurvivors = 10;
 		outList.Insert(b);
 
 		b = Make("mechanic", "Mechanic",
-			"Starts with a toolbox and a jerrycan, enough to get a car running.",
+			"Starts with a toolbox and a jerrycan, enough to get a car running. Hotwires a car in seconds.",
 			"Clumsy and loud: draws 25% more zombie attention.");
 		b.m_fNoiseMult = 1.25;
 		outList.Insert(b);
@@ -153,7 +153,7 @@ class RZ_Background
 		outList.Insert(b);
 
 		b = Make("radioham", "Radio Operator",
-			"Starts with a radio. Hears horde warnings and intel from anywhere.",
+			"Starts with a radio. Hears horde warnings and intel from anywhere, and can crack secure faction channels.",
 			"Talks too much: draws 20% more zombie attention.");
 		b.m_bRadioIntel = true;
 		b.m_iRepSurvivors = 10;
@@ -175,7 +175,7 @@ class RZ_Background
 		outList.Insert(b);
 
 		b = MakeLocked("doctor", "Doctor", "Reach Champion with Halcyon in any life.",
-			"Can treat bites: an infection takes two and a half times as long to kill you. Halcyon knows you.",
+			"Can treat bites: an infection takes two and a half times as long to kill you. Treats other players fastest. Halcyon knows you.",
 			"Starts unarmed.");
 		b.m_fInfectionTimeMult = 2.5;
 		b.m_iRepInstitute = 20;

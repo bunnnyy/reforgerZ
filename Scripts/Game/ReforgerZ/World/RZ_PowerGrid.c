@@ -7,7 +7,7 @@
 //! - are Powered (RZ_TownMemory), the hook for lights (IsPoweredAt; no lamps are switched on),
 //! - get working radios: faction chatter comes more often (ChatterMult), and the radio
 //!   station can broadcast twice as often,
-//! - give an electronics loot bonus to the later search system (LootMult),
+//! - give an electronics loot bonus to searches (LootMult, RZ_Search),
 //! - but the generator hums: steady heat at the station, which draws hordes.
 //!
 //! It slowly fails (about four hours with players online) unless someone maintains it.
@@ -170,8 +170,20 @@ class RZ_PowerGrid
 
 	// ================================================================ Hooks
 	//------------------------------------------------------------------------------------------------
-	//! Hook for lights and radios: is the town at pos powered right now?
+	//! Hook for lights and radios: is there power at pos right now? The grid's region, or a
+	//! running generator close by (world interactions, RZ_Traps).
 	static bool IsPoweredAt(vector pos)
+	{
+		RZ_Interactions hub = RZ_Interactions.Get();
+		if (hub && hub.GetTraps().IsLitAt(pos))
+			return true;
+
+		return IsGridPoweredAt(pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The grid only: is the town at pos in the power station's region while it runs?
+	static bool IsGridPoweredAt(vector pos)
 	{
 		RZ_PowerGrid grid = Get();
 		if (!grid || !grid.IsPowered())
@@ -182,10 +194,10 @@ class RZ_PowerGrid
 
 	//------------------------------------------------------------------------------------------------
 	//! Hook for the search system: a loot multiplier for a category at pos ("electronics" gets
-	//! the bonus in powered towns; everything else 1).
+	//! the bonus in towns the grid powers; everything else 1). A generator doesn't count.
 	static float LootMult(vector pos, string category)
 	{
-		if (category != "electronics" || !IsPoweredAt(pos))
+		if (category != "electronics" || !IsGridPoweredAt(pos))
 			return 1;
 
 		RZ_PowerGrid grid = Get();

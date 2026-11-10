@@ -291,7 +291,8 @@ Code: `Scripts/Game/ReforgerZ/Missions/Unarmed/`.
 
 Simplifications in code:
 
-- **Car Keys** (WORLD.md #8) isn't built: there's no fixable car in code yet.
+- **Car Keys** (WORLD.md #8) isn't built yet. The fixable cars and keys it needs now exist
+  ([WORLD.md](WORLD.md), section 10).
 - **The Safe Code, Breaker Sequence, Scout the Town and Night Lantern** (WORLD.md #3, #4, #9, #10) are
   covered by existing missions: The Last Experiment's keypad and the Time-Lock Safe, Junction
   Boxes, Recon, and Lights in the Window and Signal Fires.

@@ -252,7 +252,8 @@ class RZ_PuzzleActionHelper
 	//------------------------------------------------------------------------------------------------
 	//! Wanderers (RZ_Wanderers.TAG), safehouse occupants (RZ_Safehouses.TAG_OCCUPANT), faction
 	//! leaders (RZ_Leaders.TAG) and named outpost people (RZ_Territory.TAG) reuse the puzzle civilian; guidance clues (RZ_GuidanceWorld.TAG) the note;
-	//! the power station (RZ_PowerGrid.TAG) and radio station (RZ_RadioStation.TAG) the generic object. Their choice actions come here instead of to a mission.
+	//! the power station (RZ_PowerGrid.TAG), radio station (RZ_RadioStation.TAG) and world interaction spots (RZ_Interactions.TAG) the generic object.
+	//! Their choice actions come here instead of to a mission.
 	//! True if `owner` is one of them (and the choice was handled).
 	static bool RouteChoice(RZ_GameModeComponent gm, IEntity owner, int playerId, int option, IEntity user)
 	{
@@ -316,7 +317,33 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		// World interactions: search spots, wrecks, workbenches, wells, bells, radios, cars
+		if (comp.GetMissionId() == RZ_Interactions.TAG)
+		{
+			if (gm.GetInteractions())
+				gm.GetInteractions().HandleChoice(playerId, comp.GetObjectIndex(), option, owner, user);
+
+			return true;
+		}
+
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Same for RZ_PuzzleUseAction: a workbench's last four recipes. True if handled.
+	static bool RouteUse(RZ_GameModeComponent gm, IEntity owner, int playerId, int value, IEntity user)
+	{
+		if (!gm || !owner)
+			return false;
+
+		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(owner.FindComponent(RZ_PuzzleObjectComponent));
+		if (!comp || comp.GetMissionId() != RZ_Interactions.TAG)
+			return false;
+
+		if (gm.GetInteractions())
+			gm.GetInteractions().HandleUse(playerId, comp.GetObjectIndex(), value, owner, user);
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -380,6 +407,15 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetRadioStation())
 				gm.GetRadioStation().HandleRead(playerId);
+
+			return true;
+		}
+
+		// World interactions: a spot ("Look at the fridge") or a readable thing a search turned up
+		if (comp.GetMissionId() == RZ_Interactions.TAG || comp.GetMissionId() == RZ_Interactions.TAG_NOTE)
+		{
+			if (gm.GetInteractions())
+				gm.GetInteractions().HandleRead(playerId, comp.GetMissionId(), comp.GetClueIndex(), owner);
 
 			return true;
 		}

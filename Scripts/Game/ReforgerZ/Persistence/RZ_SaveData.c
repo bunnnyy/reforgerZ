@@ -63,6 +63,9 @@ class RZ_SaveData
 	ref RZ_StorySave story;
 	ref RZ_HeadlineSave news;
 
+	// World interactions: searched spots, opened locks, burned buildings, stripped wrecks, fixable cars
+	ref RZ_InteractionSave interactions;
+
 	ref array<ref RZ_SettlementSave> settlements = {};
 	ref array<ref RZ_PlayerProfile> profiles = {};
 }

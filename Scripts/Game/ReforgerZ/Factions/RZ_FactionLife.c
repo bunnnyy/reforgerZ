@@ -8,7 +8,7 @@
 //!   likely to stay; high morale the other way. All small.
 //! - Radio chatter on the factions' open channels with real information (truck departures and
 //!   routes, shift times, toll hours, samples wanted). Radio Operators hear rival open channels;
-//!   secure channels are a hook for later (GetSecureTraffic).
+//!   secure channels (GetSecureTraffic) are cracked by Radio Operators (RZ_SecureRadio).
 //! - Life events in the headlines: funerals, promotions, recruiting, a researcher quitting.
 //! - Temporary truces and feuds (at most two at once, 45-90 minutes, always end) that change
 //!   rival Infamy and who takes towns from whom.
@@ -1068,7 +1068,13 @@ class RZ_FactionLife
 		{
 			int playerId = ids[i];
 			bool operatorHears = RZ_Radio.IsRadioOperator(m_GM, playerId);
-			if (f != RZ_EFaction.SURVIVORS && !operatorHears && !RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, f), RZ_ETier.KNOWN))
+			// A radio next to a running generator (world interactions) pulls in every open channel
+			bool boosted = false;
+			RZ_Interactions hub = RZ_Interactions.Get();
+			if (hub && hub.GetTraps().IsRadioBoosted(p.GetOrigin()))
+				boosted = true;
+
+			if (f != RZ_EFaction.SURVIVORS && !operatorHears && !boosted && !RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, f), RZ_ETier.KNOWN))
 				continue;
 
 			if (!RZ_Radio.HasRadio(m_GM, playerId, p))
@@ -1076,7 +1082,7 @@ class RZ_FactionLife
 
 			m_GM.NotifyPlayer(playerId, RZ_FactionVoice.ChannelTitle(f), line);
 
-			// A Radio Operator near a faction's holding notices its secure traffic (a later step cracks it)
+			// A Radio Operator near a faction's holding notices its secure traffic (cracked in RZ_SecureRadio)
 			if (operatorHears && !GetSecureTraffic(f).IsEmpty() && m_GM.GetTerritory())
 			{
 				RZ_Holding h = m_GM.GetTerritory().FindHolding(f, p.GetOrigin(), SECURE_RADIUS);
@@ -1155,26 +1161,130 @@ class RZ_FactionLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Hook for a later step (cracking secure channels): what a faction says where it thinks
-	//! nobody can hear. Its truck's route and driver, or when the next one leaves. "" if nothing.
+	//! A line on faction f's open channel right now, "" if it has nothing to say (house radios).
+	string ChatterFor(int f)
+	{
+		if (!m_bActive)
+			return "";
+
+		return BuildChatter(f);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a faction says where it thinks nobody can hear: Bastion's command net, Halcyon's lab
+	//! channel, the Red Hand boss's frequency. Cracked by Radio Operators (RZ_SecureRadio).
+	//! Patrol and shift times, truck departures and routes, samples wanted. "" if nothing.
 	string GetSecureTraffic(int f)
 	{
 		if (!m_bActive || f == RZ_EFaction.SURVIVORS)
 			return "";
 
+		array<string> options = {};
 		RZ_SupplyLines supply = m_GM.GetSupply();
-		if (!supply)
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (supply)
+		{
+			string dest = supply.TruckDestination(f);
+			if (!dest.IsEmpty())
+				options.Insert(SecureTruck(f, dest));
+
+			float secs = supply.SecondsToDeparture(f);
+			if (secs >= 0)
+				options.Insert(SecureDeparture(f, RZ_Util.RoundToInt(Math.Max(60, secs) / 60)));
+
+			string shortPlace = supply.ShortPlace(f);
+			if (!shortPlace.IsEmpty())
+				options.Insert(SecureShort(f, shortPlace));
+		}
+
+		if (territory && territory.IsActive())
+		{
+			array<RZ_Holding> posts = {};
+			territory.GetOutposts(f, posts);
+			string clock = territory.NextRoutineClock();
+			if (!posts.IsEmpty() && !clock.IsEmpty())
+				options.Insert(SecurePatrol(f, posts.GetRandomElement().m_sName, clock));
+		}
+
+		if (f == RZ_EFaction.INSTITUTE && m_GM.HasLab() && !m_GM.GetCure().IsCured())
+			options.Insert(SecureSamples());
+
+		if (f == RZ_EFaction.BANDITS && supply)
+		{
+			string bastionDest = supply.TruckDestination(RZ_EFaction.MILITARY);
+			if (!bastionDest.IsEmpty())
+				options.Insert(string.Format("\"Bastion's truck is on the %1 road. Nobody touches it till it's past the bridge. Then it's ours.\"", bastionDest));
+		}
+
+		if (options.IsEmpty())
 			return "";
 
-		string dest = supply.TruckDestination(f);
-		if (!dest.IsEmpty())
-			return string.Format("Truck en route to %1. Crew of two. Hold position on contact.", dest);
+		return options.GetRandomElement();
+	}
 
-		float secs = supply.SecondsToDeparture(f);
-		int minutes = RZ_Util.RoundToInt(Math.Max(60, secs) / 60);
-		if (secs >= 0)
-			return string.Format("Next run leaves in %1 minutes. Route to follow.", minutes);
+	//------------------------------------------------------------------------------------------------
+	protected string SecureTruck(int f, string dest)
+	{
+		switch (f)
+		{
+			case RZ_EFaction.MILITARY: return string.Format("\"Command, Logistics. Vehicle en route to %1, crew of two. If contact, hold position and wait. Nobody is coming, but wait.\"", dest);
+			case RZ_EFaction.BANDITS: return string.Format("\"Boss, the truck's going to %1. Two lads in it. If anyone stops it, I want names.\"", dest);
+			case RZ_EFaction.INSTITUTE: return string.Format("\"Courier vehicle to %1. Cold boxes on board. Do not open them for anyone.\"", dest);
+		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string SecureDeparture(int f, int minutes)
+	{
+		switch (f)
+		{
+			case RZ_EFaction.MILITARY: return string.Format("\"Logistics, Command. Next run departs in %1 minutes. Route to follow. Do not broadcast it in the clear.\"", minutes);
+			case RZ_EFaction.BANDITS: return string.Format("\"Truck goes out in %1 minutes. Keep the road clear and your mouths shut.\"", minutes);
+			case RZ_EFaction.INSTITUTE: return string.Format("\"The next transfer leaves in %1 minutes. Samples first, people second. I'm sorry, but that's the order.\"", minutes);
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string SecureShort(int f, string place)
+	{
+		switch (f)
+		{
+			case RZ_EFaction.MILITARY: return string.Format("\"%1 is dry. Requisitions suspended until resupply. Do not tell the civilians.\"", place);
+			case RZ_EFaction.BANDITS: return string.Format("\"%1's empty. Double the prices till the truck comes. Nobody's going anywhere else.\"", place);
+			case RZ_EFaction.INSTITUTE: return string.Format("\"%1 is out of stock. We are rationing reagents. Note it in the log.\"", place);
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string SecurePatrol(int f, string place, string clock)
+	{
+		switch (f)
+		{
+			case RZ_EFaction.MILITARY: return string.Format("\"All stations: %1 rotates the watch at %2. Two on the gate, the rest stood down. Ten minutes where nobody's looking.\"", place, clock);
+			case RZ_EFaction.BANDITS: return string.Format("\"%1 changes over at %2. The new lot are always late. Don't be.\"", place, clock);
+			case RZ_EFaction.INSTITUTE: return string.Format("\"The station at %1 rotates at %2. The guards don't check bags at changeover.\"", place, clock);
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many samples the next breakthrough needs, roughly.
+	protected string SecureSamples()
+	{
+		RZ_CureResearch cure = m_GM.GetCure();
+		if (cure.m_iMilestone >= 4)
+			return "\"Director, lab. Every result is in. Now we have to hold this building long enough to finish. Pray they don't hear us.\"";
+
+		float next = (cure.m_iMilestone + 1) * 25;
+		float per = Math.Max(0.5, m_GM.GetResearchPerSample());
+		int needed = Math.Max(1, Math.Ceil((next - cure.m_fProgress) / per));
+		return string.Format("\"Director, lab. We are %1 percent there. Roughly %2 more samples for the next result. Whatever it costs. Don't put that in the log.\"", RZ_Util.RoundToInt(cure.m_fProgress), needed);
 	}
 }

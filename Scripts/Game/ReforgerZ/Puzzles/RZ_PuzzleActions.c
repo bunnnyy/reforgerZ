@@ -249,6 +249,10 @@ class RZ_PuzzleUseAction : ScriptedUserAction
 		if (!gm || playerId <= 0)
 			return;
 
+		// A workbench's recipes 4-7 (world interactions)
+		if (RZ_PuzzleActionHelper.RouteUse(gm, pOwnerEntity, playerId, m_iValue, pUserEntity))
+			return;
+
 		int objectIndex;
 		RZ_PuzzleMission m = RZ_PuzzleActionHelper.FindForObject(gm, pOwnerEntity, objectIndex);
 		if (!m)

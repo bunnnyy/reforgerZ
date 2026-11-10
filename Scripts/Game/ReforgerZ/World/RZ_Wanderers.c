@@ -17,7 +17,8 @@ enum RZ_EWandererRole
 	DESERTER,
 	PREACHER,
 	COURIER,
-	KID
+	KID,
+	MECHANIC	// cars (world interactions): where a fixable car is, parts for Favor, sometimes its keys
 }
 
 enum RZ_EWandererState
@@ -62,6 +63,9 @@ class RZ_WandererSettings
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Kid body (falls back to the puzzle civilian)", "et")]
 	ResourceName m_sKidPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Mechanic body (falls back to the puzzle civilian)", "et")]
+	ResourceName m_sMechanicPrefab;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "What the Trader sells (one at random per purchase). Empty = the Trader only talks", "et")]
 	ref array<ResourceName> m_aTraderGoods = {};
@@ -295,7 +299,7 @@ class RZ_Wanderer
 class RZ_Wanderers
 {
 	static const int TAG = -2;				// RZ_PuzzleObjectComponent / RZ_ClueComponent mission id
-	static const int ROLE_COUNT = 7;
+	static const int ROLE_COUNT = 8;
 	static const int MEM_HELPED = 1;
 	static const int MEM_WRONGED = 2;		// robbed or shot at
 	static const int MEM_SAVED = 4;			// saved my life
@@ -344,6 +348,7 @@ class RZ_Wanderers
 			case RZ_EWandererRole.PREACHER: return "preacher";
 			case RZ_EWandererRole.COURIER: return "courier";
 			case RZ_EWandererRole.KID: return "kid";
+			case RZ_EWandererRole.MECHANIC: return "mechanic";
 		}
 
 		return "wanderer";
@@ -505,7 +510,10 @@ class RZ_Wanderers
 			return missing[0];
 		}
 
-		return rng.Int(0, RZ_EWandererRole.KID);
+		// Any role but a second Kid
+		array<int> roles = {RZ_EWandererRole.TRADER, RZ_EWandererRole.DOCTOR, RZ_EWandererRole.SCAVENGER, RZ_EWandererRole.DESERTER,
+			RZ_EWandererRole.PREACHER, RZ_EWandererRole.COURIER, RZ_EWandererRole.MECHANIC};
+		return roles[rng.Int(0, roles.Count())];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -910,7 +918,7 @@ class RZ_Wanderers
 			return "";
 
 		// Rescued people and leavers are never the Deserter or the Kid
-		array<int> roles = {RZ_EWandererRole.TRADER, RZ_EWandererRole.DOCTOR, RZ_EWandererRole.SCAVENGER, RZ_EWandererRole.PREACHER, RZ_EWandererRole.COURIER};
+		array<int> roles = {RZ_EWandererRole.TRADER, RZ_EWandererRole.DOCTOR, RZ_EWandererRole.SCAVENGER, RZ_EWandererRole.PREACHER, RZ_EWandererRole.COURIER, RZ_EWandererRole.MECHANIC};
 		int role = roles.GetRandomElement();
 		RZ_Wanderer w = Generate(role, RZ_Mission.LandPointNear(pos, 10, 40));
 		if (slot >= 0)
@@ -1274,6 +1282,7 @@ class RZ_Wanderers
 			case RZ_EWandererRole.PREACHER: prefab = m_Settings.m_sPreacherPrefab; break;
 			case RZ_EWandererRole.COURIER: prefab = m_Settings.m_sCourierPrefab; break;
 			case RZ_EWandererRole.KID: prefab = m_Settings.m_sKidPrefab; break;
+			case RZ_EWandererRole.MECHANIC: prefab = m_Settings.m_sMechanicPrefab; break;
 		}
 
 		if (prefab.IsEmpty())
@@ -1336,7 +1345,7 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Choice slots: 0 the role's special, 1 give food, 2 unused, 3 rob.
+	//! Choice slots: 0 the role's special, 1 give food, 2 the Mechanic's "Ask about cars", 3 rob.
 	protected string ChoiceLabels(RZ_Wanderer w)
 	{
 		string special = "";
@@ -1349,9 +1358,14 @@ class RZ_Wanderers
 			case RZ_EWandererRole.PREACHER: special = "Ask him to stop ringing the bells"; break;
 			case RZ_EWandererRole.COURIER: special = "Ask for work"; break;
 			case RZ_EWandererRole.KID: special = "Show the kid the way to a safehouse"; break;
+			case RZ_EWandererRole.MECHANIC: special = string.Format("Buy a car part (%1 Haven Favor)", PartCost()); break;
 		}
 
-		array<string> labels = {special, "Share some food", "", "Rob " + w.GetShortName()};
+		string extra = "";
+		if (w.m_eRole == RZ_EWandererRole.MECHANIC)
+			extra = "Ask about cars";
+
+		array<string> labels = {special, "Share some food", extra, "Rob " + w.GetShortName()};
 		return RZ_PuzzleLabels.Join(labels);
 	}
 
@@ -1817,6 +1831,7 @@ class RZ_Wanderers
 			case RZ_EWandererRole.PREACHER: return "\"The bells are for them, not for us. Somebody has to tell them where to go.\"";
 			case RZ_EWandererRole.COURIER: return "\"Letters, mostly. People still write to each other. Isn't that something?\"";
 			case RZ_EWandererRole.KID: return "The kid holds on to the strap of a bag that's far too big. \"Mum said to wait at the safehouse. I don't know which one.\"";
+			case RZ_EWandererRole.MECHANIC: return "Oil to the elbows, a spanner in a back pocket. \"Everything's broken. That's the good news, if you know how to fix things.\"";
 		}
 
 		return "";
@@ -1967,6 +1982,12 @@ class RZ_Wanderers
 			return;
 		}
 
+		if (option == 2 && w.m_eRole == RZ_EWandererRole.MECHANIC)
+		{
+			AskAboutCars(w, playerId, user, attitude);
+			return;
+		}
+
 		if (option != 0)
 			return;
 
@@ -1979,7 +2000,66 @@ class RZ_Wanderers
 			case RZ_EWandererRole.PREACHER: StopBells(w, playerId); break;
 			case RZ_EWandererRole.COURIER: OfferJob(w, playerId, user); break;
 			case RZ_EWandererRole.KID: Escort(w, playerId, user); break;
+			case RZ_EWandererRole.MECHANIC: SellPart(w, playerId, owner, user); break;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int PartCost()
+	{
+		RZ_Interactions hub = RZ_Interactions.Get();
+		if (!hub)
+			return 12;
+
+		return hub.GetCars().GetPartCost();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Mechanic: where the nearest fixable car is and what it needs; its keys if they like you.
+	protected void AskAboutCars(RZ_Wanderer w, int playerId, IEntity user, int attitude)
+	{
+		RZ_Interactions hub = RZ_Interactions.Get();
+		if (!hub)
+		{
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Cars? Nothing out here runs any more.\"");
+			return;
+		}
+
+		bool friendly = attitude >= 2 || w.Remembers(m_GM.GetProfile(playerId).m_sIdentity, MEM_HELPED);
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), hub.GetCars().MechanicTalk(playerId, user.GetOrigin(), friendly));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A part the nearest fixable car needs, for Haven Favor (a quarter off if they remember you).
+	protected void SellPart(RZ_Wanderer w, int playerId, IEntity owner, IEntity user)
+	{
+		RZ_Interactions hub = RZ_Interactions.Get();
+		ResourceName part;
+		if (hub)
+			part = hub.GetCars().PartFor(user.GetOrigin());
+
+		if (part.IsEmpty())
+		{
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Nothing in the bag today. Strip a wreck, it's what I do.\"");
+			return;
+		}
+
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		int cost = PartCost();
+		if (w.Remembers(ident, MEM_HELPED) || w.Remembers(ident, MEM_SAVED))
+			cost = (cost * 3 + 3) / 4;
+
+		if (!Pay(w, playerId, cost))
+			return;
+
+		if (!RZ_QuartermasterHelper.SpawnNear(part, owner, user))
+		{
+			m_GM.AddFavor(playerId, RZ_EFaction.SURVIVORS, cost); // refund
+			return;
+		}
+
+		w.Remember(ident, MEM_HELPED);
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("\"%1. Took it off a car that won't be needing it.\" %2 Haven Favor.", RZ_ItemHelper.DisplayName(part), cost));
 	}
 
 	//------------------------------------------------------------------------------------------------

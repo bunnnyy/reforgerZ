@@ -64,7 +64,7 @@ total wipes:
 
 | Tier | Shop (Haven quartermaster) | Perk / service |
 |---|---|---|
-| Known | Canned food, water, bandages, crowbars | Haven safehouses let you in and serve you |
+| Known | Canned food, water, bandages, crowbars, car parts (spark plugs, tyres, batteries) | Haven safehouses let you in and serve you |
 | Trusted | Hunting rifles, ammo, backpacks, radios, jerrycans | **Neighbours:** Haven AI shares intel; nearest active mission is marked on spawn |
 | Champion | Vehicles (pickup, van), fortification kits, good medkits | **Community:** respawn at any Haven safehouse with a small supply bag |
 | Hunted | — | **Exile:** see below |
@@ -85,7 +85,10 @@ items, a Community or Settlement up to Trusted, a Town up to Champion
 
 Food delivered to a safehouse pays 2 Haven Favor per item, plus 1 Fame per 3 items (at most 5).
 Wanderers' attitude is your Haven standing (Bastion, reversed, for the Deserter) plus their
-memory of you; see [WORLD.md](WORLD.md), "Wanderers".
+memory of you; see [WORLD.md](WORLD.md), "Wanderers". The Mechanic wanderer sells car parts for
+12 Haven Favor (a quarter off if they remember you helped) and gives a fixable car's keys to
+players they like ([WORLD.md](WORLD.md), section 10). Car parts in the quartermaster's shop are
+ordinary shop actions with the part prefabs.
 
 ### Task Force Bastion
 

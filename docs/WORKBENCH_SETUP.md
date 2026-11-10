@@ -21,7 +21,7 @@ grep -rn "VERIFY" Scripts/
 Each one is an engine API whose exact name or signature I couldn't confirm
 for the current game version. Usually the fix is a rename. Look up the class in
 the Script Editor or in the [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
-They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 85 of them
+They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 93 of them
 (one is the comment in `RZ_Util.c` that explains them).
 
 The riskiest ones in the puzzle missions (`Puzzles/`):
@@ -125,6 +125,27 @@ The riskiest ones for time and weather (`Director/RZ_Environment.c`). Four are n
   storms then never count, and the night and the Storm event still work. The status log line ends
   with what the server thinks it is ("night, rain").
 - **The world cast** (`ChimeraWorld.CastFrom`), the same call as the game clock's.
+
+The riskiest ones for world interactions (`Interactions/`, [WORLD.md](WORLD.md), section 10).
+Eight markers are new: four new APIs, and four repeats of calls listed above:
+
+- **Finding furniture** (`RZ_Interactions.Scan`: `QueryEntitiesBySphere(..., EQueryEntitiesFlags.STATIC)`
+  and the prefab or mesh names, `RZ_Util.GetPrefabName`): the whole system stands on it. If
+  cupboards and fridges inside buildings aren't separate static entities, every building still
+  gets one "Search the house" spot. If no spots appear at all, log what `GetPrefabName` returns
+  for a few objects in a house and add those words to the keyword settings.
+- **Inventory by keyword** (`RZ_ItemHelper.Count`: `GetItems()`, the same call as the radio and
+  food checks): crowbars, parts, fuel, water, recipe inputs and medkits are all found this way.
+- **Fixed car fuel** (`RZ_Util.SetVehicleFuel`: `FuelManagerComponent.GetFuelNodesList`,
+  `BaseFuelNode.GetMaxFuel/SetFuel`): if it doesn't compile, empty the helper's body; a fixed car
+  then has its prefab's own fuel.
+- **Facing a barricade** (`IEntity.GetAngles()`): it's spawned facing the way the player looks.
+- **Stopping a query early** (returning false from the callback): if it isn't supported, the
+  callback just runs to the end; nothing breaks.
+- Not new, but worth testing: thrown molotovs and picked-up kits use `GetRootParent()` (as
+  noisemakers do), and every spot reuses the generic puzzle object's replicated labels
+  (`[RplProp]`, above). Without them all eight slots show their generic labels and the actions
+  still route by slot.
 
 Two files can simply be deleted if they won't compile, because nothing else depends on them:
 
@@ -402,7 +423,7 @@ talked to if it has the generic puzzle object components (`RZ_PuzzleObjectCompon
 
 | Prefab | Base | Setting |
 |---|---|---|
-| `RZ_Wanderer_Trader.et`, `_Doctor`, `_Scavenger`, `_Deserter`, `_Preacher`, `_Courier`, `_Kid` | a civilian character without AI (stands still while seen), or a one-man AI group on `SURV` whose character has the components above (walks while seen). Give an AI group's character a gun if it should fight back (the Deserter at least) | one slot per role |
+| `RZ_Wanderer_Trader.et`, `_Doctor`, `_Scavenger`, `_Deserter`, `_Preacher`, `_Courier`, `_Kid`, `_Mechanic` | a civilian character without AI (stands still while seen), or a one-man AI group on `SURV` whose character has the components above (walks while seen). Give an AI group's character a gun if it should fight back (the Deserter at least) | one slot per role |
 | Trader goods | any items | **Trader goods** (a list); empty = the Trader only talks |
 
 **Settings** (defaults in brackets): **Enabled** (on); **Min count** (6) and **Max count** (10);
@@ -542,10 +563,86 @@ skip** (0.5); **Rain heat mult** (0.7); **Rain from** (0.3); **Fog from** (0.4);
 
 **Power grid settings:** **Enabled** (on); **Control prefab**; **Region radius** (2500 m); **Spin-up
 seconds** (90); **Noise per minute** (10 heat); **Run hours** (4); **Fuel restore** (0.6) and **Patch
-restore** (0.25); **Electronics loot mult** (1.5, a hook for the search system); **Chatter mult** (0.6).
+restore** (0.25); **Electronics loot mult** (1.5, used by searches); **Chatter mult** (0.6).
 
 **Radio station settings:** **Enabled** (on); **Console prefab**; **Takeover seconds** (30);
 **Cooldown minutes** (10, halved with power).
+
+### World interactions
+
+Settings are under **Interactions** ([WORLD.md](WORLD.md), section 10), in six groups: General,
+Search, Cars, Crafting, Traps (with generators and fire) and Secure radio. Everything works
+without prefabs of its own (spots fall back to the generic puzzle object), but without items in
+the loot pool searches find nothing, and every feature whose output prefab is empty stays quiet.
+
+| Prefab | Base | Add | Setting | Used for |
+|---|---|---|---|---|
+| `RZ_InteractionSpot.et` | a `GenericEntity` with a small invisible collision box (about 0.5 m, no mesh) | `RplComponent`, `ActionsManagerComponent` with an action context, the generic puzzle object components (`RZ_PuzzleObjectComponent`, `RZ_ClueComponent`, `RZ_ReadClueAction`, 4 × `RZ_PuzzleUseAction` values 0–3, 4 × `RZ_PuzzleChoiceAction` options 0–3) | General > Spot prefab (falls back to Puzzles > Generic object, which is visible) | every searchable thing, wreck, workbench, well, stove, bell, siren, house radio and found generator near players |
+| `RZ_CarProject.et` | a non-drivable car prop (a vehicle mesh without a controller) | the same components as the spot | Cars > Project prefab (falls back to the generic object) | a fixable car before it runs |
+| Drivable cars | vanilla civilian cars | nothing | Cars > Car prefabs (a list; empty = no fixable cars) | what a fixed car becomes |
+| `RZ_CarBattery.et`, `RZ_Tyre.et`, `RZ_SparkPlugs.et` | small inventory items | nothing; names must contain "battery", "tyre"/"tire"/"wheel", "spark" (or change the keywords) | Cars > Battery / Tyre / Spark prefab | stripping wrecks, the Mechanic wanderer |
+| `RZ_FuelCan_Full.et`, `RZ_FuelCan_Empty.et` | jerrycan items | nothing; names must match the fuel and empty-container keywords | Cars > Fuel prefab (the full one) | siphoning, hand pumps, fuelling cars and generators, setting fires |
+| `RZ_Planks.et` | a planks bundle item | `RZ_PlaceableComponent` (Barricade), `RZ_PlaceAction`, `RplComponent` | (found as loot; name with "plank" so recipes use it) | a barricade kit |
+| `RZ_BoardedDoorway.et` | a few planks nailed across a door frame, with collision | nothing | Traps > Barricade prefab (falls back to Guidance > Barricade, then the planks stay) | the boarded doorway |
+| `RZ_TripwireKit.et`, `RZ_SpikeTrapKit.et` | small items | `RZ_PlaceableComponent` (Tripwire / Spike trap), `RZ_PlaceAction`, `RplComponent` | Crafting > Tripwire / Spike trap prefab (recipe outputs) | traps; optional "set" props in Traps > Tripwire / Spike set prefab |
+| `RZ_PortableGenerator.et` | a small generator item | `RZ_PlaceableComponent` (Generator), two `RZ_PlaceAction` (one with Refuel on), `RplComponent` | (found as loot or sold) | a generator you carry |
+| `RZ_Molotov.et` | a throwable bottle (a vanilla grenade without the explosion) | `RZ_MolotovComponent`; name with "molotov" | Crafting > Molotov prefab | fire |
+| `RZ_FireEffect.et` | a fire and smoke particle prefab | nothing | Traps > Fire effect prefab (optional) | a burning building, for three minutes |
+| Recipe outputs | an improvised bandage, a tin rattle (`RZ_NoisemakerComponent`), a spear, purification tablets | as the item needs | Crafting > Bandage / Noisemaker / Spear / Tablets prefab | the workbench |
+| Water | untreated and safe water bottles (the survival mod's own if it has both) | nothing; names must match the water keywords | General > Dirty water / Clean water prefab | wells, stoves, purifying |
+
+Also add to existing prefabs:
+
+- **The player character prefab** (the one every background's loadout uses): `RZ_TreatOtherAction`
+  on its `ActionsManagerComponent`, so others can treat you.
+- **The wind-up radio** (Guidance > Radio prefab) and any radio item that should be crackable:
+  `RZ_TuneRadioAction` ("Work on a scrambled channel", used with the radio on the ground).
+- **The Haven quartermaster**: `RZ_FactionShopAction`s for the car part prefabs (Known), if you
+  want parts in its shop ([REPUTATION.md](REPUTATION.md)).
+
+**The loot pool** (Search > Loot pool) is one list of every item a search can find. Each building
+type takes the items whose prefab names contain its keywords (bandage, med, pill, saline... for a
+pharmacy; jerrycan, tool, battery, tyre, spark, crowbar... for a garage; the full lists are in
+`RZ_Search.TypeWords`); rare and electronics lists the same way. To control a type exactly, add a
+**Loot table** for it (type pharmacy, garage, farm, police, shop, house, body or car) with its own
+common, rare and electronics lists; its empty lists still fall back to the pool.
+
+**Settings** (defaults in brackets):
+
+- **General:** Enabled (on); Spot prefab; Scan radius (30 m); Scan seconds (10); Spots per player
+  (10); Spot cap (70); Task reach (3.5 m); Bell heat (45), Siren heat (60), Bell cooldown minutes
+  (15); Bell words, Siren words; Dirty water / Clean water prefabs, Container words, Dirty water
+  words, Tablet words, Well words, Stove words, Boil seconds (30); Treat others (on), Treat seconds
+  (20), Nurse mult (0.4), Doctor mult (0.3), Medkit words, Bandage words, Treat cooldown minutes
+  (5), Treat slows infection (1.15).
+- **Search:** Enabled (on); Loot pool; Loot tables; Find chance (0.6); Rare chance (0.1);
+  Electronics chance (0.1); Spot share (0.02); Building share (0.04); Spot return minutes (60);
+  Search seconds (4); Search heat (1); Locks (on) and the locked share per type (pharmacy 0.5,
+  police 0.5, garage 0.35, shop 0.25, house 0.1); Crowbar words; Force seconds (10); Force heat
+  (25); Relock minutes (180); Readable chance (0.12); Body readable chance (0.3); Body key chance
+  (0.08); Body minutes (4); Body cap (8).
+- **Cars:** Enabled (on); Car prefabs; Project prefab; Per settlement (0.34); Max cars (6);
+  Replace hours (6); Start fuel (0.25); Battery, Tyre, Spark, Fuel prefabs and their keywords;
+  Container words; Wreck words; Hotwire seconds (20) and Mechanic hotwire seconds (5); Hotwire heat
+  (8); Start heat (15); Keys chance (0.5); Key find chance (0.2); Fit seconds (8); Strip seconds
+  (12); Siphon seconds (15) and Siphon chance (0.6); Pump seconds (30), Pump heat (10), Pump
+  cooldown minutes (20); Wreck return minutes (120); Part cost (12 Haven Favor, the Mechanic).
+- **Crafting:** Enabled (on); Workbench words; the eight built-in recipes' output prefabs (Bandage,
+  Molotov, Noisemaker, Spear, Tripwire, Spike trap, Tablets; Purify water uses General > Clean
+  water) and their input keywords; Recipes (more, each with a name, up to three inputs as keywords
+  and counts, an output, seconds and heat).
+- **Traps:** Enabled (on); Barricade prefab, minutes (60), per player (3), hits (8), hit heat (6);
+  Tripwire set prefab, per player (3), minutes (60), heat (20); Spike set prefab, per player (2),
+  minutes (60), kills (3); Generator words; Generator heat per minute (6), fuel minutes (30), light
+  radius (40 m), radio radius (30 m); Charge seconds (60), Charged minutes (30); Generators per
+  player (1); Fuel words; Fire (on); Molotov words; Fire effect prefab and seconds (180); Burn heat
+  (30); Burn minutes (120); Burn infection drop (1); Molotov heat (25), radius (3 m), reach (10 m).
+- **Secure radio:** Enabled (on); Crack seconds (60); Charged mult (0.75); Listen minutes (20);
+  Line minutes (4); Range (3000 m); Noise interrupt (40 heat); Zombie interrupt (10 m); House radio
+  words.
+
+The log says `Search: N items in the loot pool, M tables set by hand.`, `World interactions: on.
+N fixable cars on the map.` and `Cars: the blue hatchback in Morton fixed by player 3.`
 
 ## 4. Factions and backgrounds
 

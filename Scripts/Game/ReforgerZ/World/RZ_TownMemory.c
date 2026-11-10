@@ -1,7 +1,7 @@
 //! Town memory (docs/WORLD.md, section 8). Plain values per settlement, never objects in the
 //! world: Looted, Barricaded, Powered and Burned, and how much loot a town still has (it comes
-//! back over about two hours). Nothing here spawns anything; the later search, building and
-//! fire systems report into it through the static hooks, and read it back.
+//! back over about two hours). Nothing here spawns anything; the world interactions
+//! (Interactions/: search, barricades, fire) report into it through the static hooks, and read it back.
 //!
 //! Also the dead characters' journals: a few lines of data per life that ended, which surface
 //! as a headline or a wanderer's rumour, never as an object.

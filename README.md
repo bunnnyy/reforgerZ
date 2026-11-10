@@ -41,6 +41,12 @@ the cure.**
   what hears you, a power station can be brought back (lights, radios, and the noise that draws
   hordes) and a radio station taken over. Short story arcs run through the missions, wanderers
   and trucks, towns remember being looted or burned, and every session starts with the news.
+- **Search the world**: cupboards, fridges, desks, car boots and bodies, with loot that suits the
+  building and towns that run dry and recover. Some places are locked: find the key or force it,
+  loudly. Read the letters and ID cards you find; some point somewhere. A few rare cars can be made
+  to run. Craft at workbenches, board up a door for the night, set tin-can tripwires and spike
+  traps, run a generator, burn a building, boil water, ring a church bell to pull a horde away,
+  patch each other up, and, as a Radio Operator, crack a faction's secure channel.
 - **A world that teaches itself**: no tutorial pop-ups. You wake next to a note, a flyer or a
   body that points somewhere, carry a wind-up radio that picks up the Haven's open channel, and
   hear tips from whoever is nearest, in their own voice. It fades as you gain experience, but
@@ -52,7 +58,7 @@ the cure.**
 ## Docs
 
 - [docs/PLAN.md](docs/PLAN.md): design, systems and roadmap
-- [docs/WORLD.md](docs/WORLD.md): the living world: safehouses, wanderers, territory, supply trucks, adaptation, time and weather, arcs, town memory
+- [docs/WORLD.md](docs/WORLD.md): the living world: safehouses, wanderers, territory, supply trucks, adaptation, time and weather, arcs, town memory, world interactions
 - [docs/LORE.md](docs/LORE.md): the sealed Zone, tone and writing guide
 - [docs/REPUTATION.md](docs/REPUTATION.md): factions, Fame and Infamy, perks, unlocks
 - [docs/MISSIONS.md](docs/MISSIONS.md): every contract and world event (✅ = in code)
@@ -78,5 +84,6 @@ Scripts/Game/ReforgerZ/
   Missions/     framework, requirements, bases; Haven/ Bastion/ RedHand/ Halcyon/ Events/ Leaders/ Unarmed/
   Cure/         research, lab, samples, actions
   Guidance/     new-player guidance: experience levels, contextual tips, spawn scenarios, open radio channels
+  Interactions/ searching, locks and keys, cars, crafting, water, traps, generators, fire, secure radio, treating others
   Persistence/  save/load of mode state
 ```

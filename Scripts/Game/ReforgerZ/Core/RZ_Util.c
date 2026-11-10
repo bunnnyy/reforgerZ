@@ -579,6 +579,27 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Sets a vehicle's fuel to a share of its tanks (a freshly fixed car). Does nothing without
+	//! a fuel manager.
+	static void SetVehicleFuel(IEntity vehicle, float share)
+	{
+		if (!vehicle)
+			return;
+
+		FuelManagerComponent fm = FuelManagerComponent.Cast(vehicle.FindComponent(FuelManagerComponent));
+		if (!fm)
+			return;
+
+		array<BaseFuelNode> nodes = {};
+		fm.GetFuelNodesList(nodes); // VERIFY: FuelManagerComponent.GetFuelNodesList(array<BaseFuelNode>), BaseFuelNode.GetMaxFuel()/SetFuel()
+		foreach (BaseFuelNode node : nodes)
+		{
+			if (node)
+				node.SetFuel(node.GetMaxFuel() * Math.Clamp(share, 0, 1));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A character's health (the same accessor the bite detector uses), -1 without a damage manager.
 	static float GetCharacterHealth(IEntity e)
 	{
