@@ -294,6 +294,44 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Living specials (individuals) that belong to a mission (Quiet Count).
+	int CountSpecialsForMission(int missionId)
+	{
+		int n = 0;
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (z.m_iMissionId == missionId && z.m_bSpecial && z.m_Entity)
+				n += Math.Max(0, RZ_Util.CountAlive(z.m_Entity));
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A living special of this mission within radius of pos (last known position).
+	bool IsMissionSpecialNear(int missionId, vector pos, float radius)
+	{
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (z.m_iMissionId == missionId && z.m_bSpecial && z.m_Entity && RZ_Util.DistXZ(z.m_vLastPos, pos) <= radius)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The units (zombies or groups) a mission owns, for missions that steer them.
+	void GetMissionUnits(int missionId, notnull array<IEntity> result)
+	{
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (z.m_iMissionId == missionId && z.m_Entity)
+				result.Insert(z.m_Entity);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Positions of living special infected within radius (for the Halcyon sample scanner).
 	void GetSpecialsNear(vector pos, float radius, notnull array<vector> result)
 	{

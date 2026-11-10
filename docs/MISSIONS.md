@@ -4,7 +4,7 @@ There are two kinds of missions:
 
 - **World events** (28) are announced to everyone, and anyone can take part.
   They are what makes strangers meet: a horde, a helicopter wreck, a town about to be shelled.
-- **Faction contracts** (20 per faction, plus 17 puzzle missions, 3 Perimeter missions, 3 Haven house contracts and 32 leader missions, 30 of them in code) are offered only to players who
+- **Faction contracts** (20 per faction, plus 17 puzzle missions, 10 unarmed missions, 3 Perimeter missions, 3 Haven house contracts and 32 leader missions, 30 of them in code) are offered only to players who
   qualify, by radio or at the faction's contact. A contract belongs to the
   person or group that accepts it. Others can still turn up and interfere.
 
@@ -261,6 +261,52 @@ How they work in code:
 - Missions turn themselves off when a prefab they need is missing: see
   [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "Puzzle prefabs".
 
+## Unarmed missions: 10 contracts
+
+Low-level work for new characters, unarmed backgrounds (Nurse, Lab Tech, Unemployed) or anyone
+who'd rather not shoot ([WORLD.md](WORLD.md), section 2). All are open to anyone not Hunted by
+the giver, pay small Fame, and are built on **noise** and **being noticed**:
+
+- **Noise that leads:** any loud noise (a thrown bottle, a firecracker, an alarm clock, a burst
+  of fire: 5+ heat at once) within range of infected a mission controls makes them walk to it.
+  They stay about 90 s, then drift back.
+- **Being noticed:** the same check as the puzzles: heat where you stand over a threshold, or one
+  of them within 10–12 m of you for 6–8 s. Missions that are about making noise only use the
+  second part.
+
+Code: `Scripts/Game/ReforgerZ/Missions/Unarmed/`.
+
+| # | Mission | From | Bg | What you do | Result |
+|---|---|---|---|---|---|
+| 1 | Pharmacy Lure ✅ | Haven | ★ Nurse/Doctor: more Fame | Four infected stand in a pharmacy (a building named like one, else near the town centre). Make noise away from the door to draw them out, take the medicine, bring it to the nearest safehouse | Fame, Favor. Noticed when you take it: they come for you and the pay is cut to 60% |
+| 2 | Silent Courier ✅ | Haven (a Courier wanderer's job, named if one is alive) | ★ Hunter: heat limit 45 | Carry a letter from one town through an infested town to people hiding on the far side. In the town, heat where you stand must stay under 35 | Fame, Favor. Too loud: fails. Went round the town: half pay |
+| 3 | Lead Them Away ✅ | Haven | ★ Radio Op: more Fame | A horde spawns 750–950 m from a safehouse and drifts toward it. Each loud noise within 200 m of it turns it there; lead it to a quarry pit 550–750 m from the safehouse. Noticed near it, it turns on you | Fame, Favor. It reaches the safehouse: fails, two people there die. Killed instead: half pay |
+| 4 | Rooftop Rescue ✅ | Haven | ★ Mechanic: 15 m is clear enough | A survivor is stuck up a building (a school, station, bank or church). Every 90 s three infected wander in. Talk them down the ladder when none is within 25 m and you aren't noticed | Fame, Favor; they join the nearest safehouse. Too early: "not now" and noise |
+| 5 | Trail of Clues ✅ | Haven (for a wanderer) | ★ Police: grid references | A note in one town leads to a bag in a second, which leads to a third. Each clue appears only after the one before was read. Half the time the missing person is alive | Alive: bring them home (they join a safehouse). Dead: their last letter, 70% pay |
+| 6 | Water Run ✅ | Haven | | Carry water from a well or water tower to a safehouse 0.8–2.5 km away. The fast road goes through an infested town | Fame, Favor, the safehouse +2 food. Through the town unnoticed: ×1.33 pay; noticed there: ×0.7 (it spilled) |
+| 7 | Barter Chain ✅ | Haven, through three wanderers | | The first wants something the second has; the second wants something the third has; the third wants food. Talk to them in the right order (share a food item with the third) | Small Fame, Favor; all three remember you helped. One of them dies: fails |
+| 8 | Distraction ✅ | Any faction (picked each time) | | Infected guard a cellar. Someone makes noise at a marked spot across the street; someone else searches the cellar. The search takes 3 minutes and only runs while there's been noise there in the last 15 s. Noticed while searching: it starts again | Fame, Favor, the cellar (reward crate). Doable alone with alarm clocks |
+| 9 | Medicine Before Dark ✅ | Haven (for a Doctor wanderer, named if one is alive) | ★ Nurse/Doctor: more Fame | A bitten survivor waits in one town; medicine is in a pharmacy in another. Bring it before nightfall (20:30). Offered only 15–90 real minutes before dark | Fame, Favor; they join a safehouse. Dark first: fails, and a special rises there if anyone's near |
+| 10 | Quiet Count ✅ | Halcyon | ★ Lab Tech: more Fame | Two to four specials (and a few others) in a town. Count them from outside and write the number in the notebook at an observation post (one or none / two / three / four or more). The answer is how many are alive when you write it | Fame, Favor, +1 research. Within 50 m of one: half pay and they come for you. Wrong count: fails |
+
+Simplifications in code:
+
+- **Car Keys** (WORLD.md #8) isn't built: there's no fixable car in code yet.
+- **The Safe Code, Breaker Sequence, Scout the Town and Night Lantern** (WORLD.md #3, #4, #9, #10) are
+  covered by existing missions: The Last Experiment's keypad and the Time-Lock Safe, Junction
+  Boxes, Recon, and Lights in the Window and Signal Fires.
+- **Rooftop Rescue:** the survivor stands at the foot of the building (the ladder), not on the
+  roof: the code can't tell where a roof is.
+- **Water Run:** "heavy" is the mission item prefab's weight. The fast road counts as taken if the
+  carrier passes through the infested town.
+- **Barter Chain:** only the food changes hands; the other items are words.
+- **Lead Them Away:** the quarry is a grid reference, not a detected quarry.
+- Needs: Pharmacy Lure, Silent Courier, Water Run and Medicine Before Dark the mission item and
+  the Haven drop point; Rooftop Rescue and Medicine Before Dark the puzzle civilian; Trail of Clues
+  the note and the civilian; Distraction and Quiet Count the generic puzzle object; Pharmacy Lure,
+  Lead Them Away and Distraction the zombie **Move waypoint**; Lead Them Away and Water Run a
+  safehouse; Barter Chain three living wanderers. Each is off while what it needs is missing.
+
 ## Perimeter missions: 3 contracts
 
 The only links to the outside, at the edge of the map (the Perimeter, see
@@ -395,12 +441,12 @@ Every background has contracts it shines at, and at least one it's shut out of.
 
 | Background | Shines at | Shut out of |
 |---|---|---|
-| Nurse | Medicine Run, Bitten Friend, Cold Chain, Pilot rescue, Walk Him Out | — |
-| Mechanic | Fuel, Clear the Road, Recover the Bus, Car Theft, Convoy repairs | — |
-| Hunter | Harvest Guard, Rescue the Kids, Smuggler's Run, Hunt the Screamer | — |
-| Police | Checkpoint Duty, Curfew Patrol, Loot the Armory, Double Agent | The Informant |
+| Nurse | Medicine Run, Bitten Friend, Cold Chain, Pilot rescue, Walk Him Out, Pharmacy Lure, Medicine Before Dark | — |
+| Mechanic | Fuel, Clear the Road, Recover the Bus, Car Theft, Convoy repairs, Rooftop Rescue | — |
+| Hunter | Harvest Guard, Rescue the Kids, Smuggler's Run, Hunt the Screamer, Silent Courier | — |
+| Police | Checkpoint Duty, Curfew Patrol, Loot the Armory, Double Agent, Trail of Clues | The Informant |
 | Ex-Con | Dead Drop, Fence, Bust Out, A Quiet Arrangement | Raid the Red Hand (until Champion with Bastion) |
-| Lab Tech | Field Samples, Water Survey, Patient Zero, Steal the Antidotes | — |
-| Radio Op | Radio Relay, Recon, Restore Comms, Zombie Bait, Install Sensors | — |
+| Lab Tech | Field Samples, Water Survey, Patient Zero, Steal the Antidotes, Quiet Count | — |
+| Radio Op | Radio Relay, Recon, Restore Comms, Zombie Bait, Install Sensors, Lead Them Away | — |
 | Unemployed | +50% reputation from everything | — |
 | Elder (unlock) | Haven contracts, Walk Him Out, The Ledger | Requisition, Protection Racket |

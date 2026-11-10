@@ -81,6 +81,18 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_SilentVillage);
 		mgr.RegisterType(RZ_Mission_TheWitness);
 
+		// Unarmed missions (Missions/Unarmed/): stealth, noise and thinking, small Fame
+		mgr.RegisterType(RZ_Mission_PharmacyLure);
+		mgr.RegisterType(RZ_Mission_SilentCourier);
+		mgr.RegisterType(RZ_Mission_LeadThemAway);
+		mgr.RegisterType(RZ_Mission_RooftopRescue);
+		mgr.RegisterType(RZ_Mission_TrailOfClues);
+		mgr.RegisterType(RZ_Mission_WaterRun);
+		mgr.RegisterType(RZ_Mission_BarterChain);
+		mgr.RegisterType(RZ_Mission_Distraction);
+		mgr.RegisterType(RZ_Mission_MedicineBeforeDark);
+		mgr.RegisterType(RZ_Mission_QuietCount);
+
 		// Perimeter missions (Missions/Perimeter/)
 		mgr.RegisterType(RZ_Mission_BlindSpot);
 		mgr.RegisterType(RZ_Mission_TheCrossing);

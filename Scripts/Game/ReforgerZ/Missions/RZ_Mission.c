@@ -257,6 +257,14 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! "Talk to"/"Read" on a person or thing a non-puzzle mission tagged with RZ_ClueComponent
+	//! (e.g. the patient in Medicine Before Dark). True if handled.
+	bool HandleTalk(RZ_GameModeComponent gm, int playerId, int clueIdx)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A player died (or turned) at pos.
 	void OnPlayerDied(RZ_GameModeComponent gm, int playerId, vector pos)
 	{

@@ -13,7 +13,8 @@ the cure.**
   spreads infection from town to town, and sends hordes toward noise.
 - **World events and faction contracts** in real towns on whatever map you load: 10 world
   events anyone can join (horde migrations, Night of the Dead, Bastion shelling) and 42 contracts
-  offered only to players the faction trusts, some of which make you choose who gets the prize.
+  offered only to players the faction trusts, some of which make you choose who gets the prize,
+  plus puzzle missions and ten unarmed ones you win with noise, patience and not being seen.
 - **Cure research**: kill special infected, take their samples to the lab, unlock
   server-wide breakthroughs, then hold the lab through the final stand.
 - **Fame and Infamy**: the Haven, Task Force Bastion, the Red Hand and Halcyon each remember

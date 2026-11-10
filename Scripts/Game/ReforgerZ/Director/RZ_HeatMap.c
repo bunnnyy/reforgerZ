@@ -13,6 +13,14 @@ class RZ_HeatMap
 	protected float m_fEnvSpread;		// night: this share also reaches the four neighbouring squares
 
 	protected static const int GRID_STRIDE = 100000;
+	protected static const float NOISE_EVENT_MIN = 5;	// heat this big at once counts as a noise (bottle, alarm, shot burst)
+	protected static const int NOISE_EVENTS_KEPT = 16;
+
+	// Recent loud noises, so a mission can make infected turn toward one (unarmed missions)
+	protected ref array<vector> m_aNoisePos = {};
+	protected ref array<float> m_aNoiseAt = {};
+	protected ref array<float> m_aNoiseAmount = {};
+	protected float m_fClock;
 
 	//------------------------------------------------------------------------------------------------
 	protected int Key(vector p)
@@ -56,6 +64,9 @@ class RZ_HeatMap
 		int key = Key(pos);
 		AddToCell(key, amount);
 
+		if (amount >= NOISE_EVENT_MIN)
+			RecordNoise(pos, amount);
+
 		if (amount <= 0 || m_fEnvSpread <= 0)
 			return;
 
@@ -64,6 +75,43 @@ class RZ_HeatMap
 		AddToCell(key - 1, side);
 		AddToCell(key + GRID_STRIDE, side);
 		AddToCell(key - GRID_STRIDE, side);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RecordNoise(vector pos, float amount)
+	{
+		m_aNoisePos.Insert(pos);
+		m_aNoiseAt.Insert(m_fClock);
+		m_aNoiseAmount.Insert(amount);
+		while (m_aNoisePos.Count() > NOISE_EVENTS_KEPT)
+		{
+			m_aNoisePos.Remove(0);
+			m_aNoiseAt.Remove(0);
+			m_aNoiseAmount.Remove(0);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The loudest noise (a noisemaker, an alarm, a burst of fire) within radius of center in the
+	//! last maxAge seconds. Infected that a mission controls can be sent toward it. False if none.
+	bool FindRecentNoise(vector center, float radius, float maxAge, out vector pos)
+	{
+		float best = 0;
+		bool found = false;
+		foreach (int i, vector p : m_aNoisePos)
+		{
+			if (m_fClock - m_aNoiseAt[i] > maxAge || RZ_Util.DistXZ(p, center) > radius)
+				continue;
+
+			if (m_aNoiseAmount[i] > best)
+			{
+				best = m_aNoiseAmount[i];
+				pos = p;
+				found = true;
+			}
+		}
+
+		return found;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -85,6 +133,7 @@ class RZ_HeatMap
 	//------------------------------------------------------------------------------------------------
 	void Decay(float dt)
 	{
+		m_fClock += dt;
 		float amount = m_fDecayPerMinute * m_fDecayMult * dt / 60;
 		array<int> keys = {};
 		foreach (int cellKey, float cellHeat : m_mHeat)

@@ -315,6 +315,16 @@ A thrown noisemaker counts when it was carried at one tick and lies at least 4 m
 the carrier stood at the next. Other mods (car alarms...) can call
 `RZ_GameModeComponent.ReportNoise(pos, heat)`.
 
+#### Unarmed missions
+
+No new prefabs: the ten unarmed missions ([MISSIONS.md](MISSIONS.md), "Unarmed missions") reuse
+the mission item, the Haven drop point, the puzzle note, civilian and generic object, and the
+zombie **Move waypoint**; each is off while what it needs is missing. They look for real
+buildings by prefab name: "pharmacy", "hospital", "clinic" or "medical" for the pharmacy (else
+near the town centre), wells and water towers for the Water Run, schools, stations, banks and
+churches for the Rooftop Rescue. A noise only leads infected if it's 5 heat or more at once, so
+keep the noisemakers' heat at 10 or more.
+
 ### The Perimeter
 
 The edge of the map is the quarantine line ([LORE.md](LORE.md), "The Perimeter"). It works

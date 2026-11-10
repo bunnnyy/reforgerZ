@@ -46,6 +46,14 @@ class RZ_ReadClueAction : ScriptedUserAction
 
 		if (!m)
 		{
+			// A person or thing an ordinary mission tagged (unarmed missions)
+			if (comp && gm.GetMissions())
+			{
+				RZ_Mission plain = gm.GetMissions().FindById(comp.GetMissionId());
+				if (plain && plain.m_eState == RZ_EMissionState.ACTIVE && plain.HandleTalk(gm, playerId, comp.GetClueIndex()))
+					return;
+			}
+
 			gm.NotifyPlayer(playerId, "Nothing", "Whatever was written here has run in the rain. You can't make out a word.");
 			return;
 		}

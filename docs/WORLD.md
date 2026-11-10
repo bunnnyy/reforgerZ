@@ -138,7 +138,8 @@ near each player.
   joins in. Without an armed AI body, the Deserter's refusal is still a pistol and a retreat.
 - Wanderers don't react to outposts changing hands (section 3); they only pass on the gossip.
 
-**Planned:** barter chains across three wanderers; Haven Champion "Community" respawns with a supply bag.
+**Planned:** Haven Champion "Community" respawns with a supply bag. (Barter chains across three
+wanderers are the Barter Chain contract, section 2.)
 
 ### Leaders ✅ (built, `Factions/RZ_Leaders.c`)
 
@@ -174,33 +175,37 @@ shop); territory outposts have guards, named people and a quartermaster when the
 set. A leader's "people" who can see a rogue job are their faction's other seats (within 60 m)
 and, for the Haven, its wanderers. Off-screen deaths only happen with nobody within 400 m.
 
-## 2. Unarmed missions: low level, but still a challenge
+## 2. Unarmed missions: low level, but still a challenge ✅ (built, `Missions/Unarmed/`)
 
 For new characters, Unarmed backgrounds (Nurse, Lab Tech, Unemployed), or
 anyone who doesn't want a gunfight. These are about **stealth, noise and
 thinking**, and they pay small amounts of Fame with whoever offers them.
+What each one does in code, its rewards and simplifications are in
+[MISSIONS.md](MISSIONS.md), "Unarmed missions".
 
 Two small mechanics make them work:
-- **Noisemakers.** A thrown bottle or firecracker, an alarm clock, a car alarm. Each one adds heat at a spot, which pulls zombies toward it.
+- **Noisemakers.** A thrown bottle or firecracker, an alarm clock, a car alarm. Each one adds heat
+  at a spot, which pulls zombies toward it: the heat map keeps the last few loud noises, and
+  infected a mission controls walk to one that's close.
 - **Being noticed.** A mission can fail if heat near you passes a threshold or a zombie stays close for too long.
 
-| # | Mission | From | Challenge |
-|---|---|---|---|
-| 1 | **Pharmacy Lure** | Haven | Infected fill a pharmacy. Use noisemakers to draw them out, then sneak in for the medicine |
-| 2 | **Silent Courier** | Courier | Carry a letter through an infested town without raising heat over a limit |
-| 3 | **The Safe Code** | Scavenger | A safe needs a 4-digit code. Clues are on notes in 3 houses; wrong guesses set off an alarm |
-| 4 | **Breaker Sequence** | Bastion | Restore power to a building by flipping breakers in the right order. The wrong order sets off an alarm |
-| 5 | **Lead Them Away** | Haven | A horde is drifting toward a safehouse. Use noise to lead it to a marked quarry without getting caught |
-| 6 | **Rooftop Rescue** | Haven | A survivor is stuck on a roof. Find a ladder route and time it between zombie waves |
-| 7 | **Trail of Clues** | Wanderer | Follow belongings and notes from a missing person's house to wherever they ended up |
-| 8 | **Car Keys** | Mechanic wanderer | A working car, but the keys are in one of 5 houses. Search quietly, drive it back |
-| 9 | **Scout the Town** | Bastion | Visit 4 observation points in town and stay unnoticed at each for 20 s |
-| 10 | **Night Lantern** | Halcyon | Reach a high point at night with no light and switch on a beacon |
-| 11 | **Water Run** | Haven | Carry heavy water containers back. Choose the slow safe road or the fast risky one |
-| 12 | **Barter Chain** | Wanderers | Trade item to item across three wanderers to get what the first one wanted |
-| 13 | **Distraction** | Anyone | Keep the zombies in one area busy with noise for 3 minutes while another player loots |
-| 14 | **Medicine Before Dark** | Doctor wanderer | Bring a specific medicine to a bitten wanderer before nightfall |
-| 15 | **Quiet Count** | Halcyon | Count the specials in a town without getting close. Answer correctly for the reward |
+| # | Mission | From | Challenge | Status |
+|---|---|---|---|---|
+| 1 | **Pharmacy Lure** | Haven | Infected fill a pharmacy. Use noisemakers to draw them out, then sneak in for the medicine | ✅ |
+| 2 | **Silent Courier** | Courier | Carry a letter through an infested town without raising heat over a limit | ✅ |
+| 3 | **The Safe Code** | Scavenger | A safe needs a 4-digit code. Clues are on notes in 3 houses; wrong guesses set off an alarm | covered by The Last Experiment and Time-Lock Safe |
+| 4 | **Breaker Sequence** | Bastion | Restore power to a building by flipping breakers in the right order. The wrong order sets off an alarm | covered by Junction Boxes |
+| 5 | **Lead Them Away** | Haven | A horde is drifting toward a safehouse. Use noise to lead it to a marked quarry without getting caught | ✅ |
+| 6 | **Rooftop Rescue** | Haven | A survivor is stuck on a roof. Find a ladder route and time it between zombie waves | ✅ |
+| 7 | **Trail of Clues** | Wanderer | Follow belongings and notes from a missing person's house to wherever they ended up | ✅ |
+| 8 | **Car Keys** | Mechanic wanderer | A working car, but the keys are in one of 5 houses. Search quietly, drive it back | planned (needs fixable cars) |
+| 9 | **Scout the Town** | Bastion | Visit 4 observation points in town and stay unnoticed at each for 20 s | covered by Recon |
+| 10 | **Night Lantern** | Halcyon | Reach a high point at night with no light and switch on a beacon | covered by Lights in the Window and Signal Fires |
+| 11 | **Water Run** | Haven | Carry heavy water containers back. Choose the slow safe road or the fast risky one | ✅ |
+| 12 | **Barter Chain** | Wanderers | Trade item to item across three wanderers to get what the first one wanted | ✅ |
+| 13 | **Distraction** | Anyone | Keep the zombies in one area busy with noise for 3 minutes while another player loots | ✅ |
+| 14 | **Medicine Before Dark** | Doctor wanderer | Bring a specific medicine to a bitten wanderer before nightfall | ✅ |
+| 15 | **Quiet Count** | Halcyon | Count the specials in a town without getting close. Answer correctly for the reward | ✅ |
 
 The higher-tier version of a contract can be armed; the entry-level version
 doesn't need to be.
@@ -603,7 +608,7 @@ waving at them; they wait 5 minutes. Their talk includes faction gossip.
 
 1. ✅ Safehouses with population tiers, and rescued survivors joining them
 2. ✅ The wanderer roster with simulated travel, reactions and memory
-3. Noisemakers, the "being noticed" check, and the first 6 unarmed missions
+3. ✅ Noisemakers, the "being noticed" check, and the unarmed missions
 4. ✅ Named leaders at strongholds, safehouses and outposts
 5. ✅ Strongholds and outposts, the territory tick, real supply trucks, faction life
 6. ✅ Light infection adaptation; day/night and weather modifiers, the power grid and the radio station

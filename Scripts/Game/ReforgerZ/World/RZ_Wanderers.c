@@ -601,6 +601,71 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where a wanderer is (as data). False if unknown or dead.
+	bool GetPosition(int id, out vector pos)
+	{
+		RZ_Wanderer w = Find(id);
+		if (!w || !w.m_bAlive)
+			return false;
+
+		pos = w.m_vPos;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsAlive(int id)
+	{
+		RZ_Wanderer w = Find(id);
+		if (!w)
+			return false;
+
+		return w.m_bAlive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Living wanderers with a role in roleMask (shuffled), for missions and story arcs that
+	//! need people on the road without holding them.
+	void GetLiving(int roleMask, notnull array<int> result)
+	{
+		foreach (RZ_Wanderer w : m_aList)
+		{
+			if (w.m_bAlive && w.m_iHeldBy < 0 && (RoleBit(w.m_eRole) & roleMask) != 0)
+				result.Insert(w.m_iId);
+		}
+
+		for (int i = result.Count() - 1; i > 0; i--)
+		{
+			int j = Math.RandomInt(0, i + 1);
+			int tmp = result[i];
+			result[i] = result[j];
+			result[j] = tmp;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Old Marta" for a living wanderer of a role in roleMask, "" if none. A brief can name them.
+	string AnyName(int roleMask)
+	{
+		array<int> ids = {};
+		GetLiving(roleMask, ids);
+		if (ids.IsEmpty())
+			return "";
+
+		return GetName(ids[0]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "near Morton" for a living wanderer, "" if unknown.
+	string WhereIs(int id)
+	{
+		RZ_Wanderer w = Find(id);
+		if (!w || !w.m_bAlive)
+			return "";
+
+		return WhereText(w);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A living Haven wanderer with a role in roleMask, not near any player, for a mission
 	//! to use as a character (it then holds them). -1 if none.
 	int FindForMission(int roleMask)
@@ -1811,6 +1876,13 @@ class RZ_Wanderers
 		{
 			m_GM.NotifyPlayer(playerId, w.GetTitle(), RefuseText(w, attitude));
 			Flee(w, player.GetOrigin());
+			return;
+		}
+
+		// A barter chain (unarmed mission) or a story arc step that runs through this person
+		if (RZ_Mission_BarterChain.OnWandererTalk(m_GM, playerId, w.m_iId, w.GetTitle(), player))
+		{
+			w.Remember(m_GM.GetProfile(playerId).m_sIdentity, MEM_HELPED);
 			return;
 		}
 

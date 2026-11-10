@@ -63,6 +63,7 @@ Out of scope: sleep and time skipping.
 | Puzzle missions: 17 contracts built on clues, answer actions and wrong-answer consequences | `Puzzles/`, `Puzzles/Missions/` | Written |
 | Readable clues and puzzle objects (keypad, choice, use) with server-side routing | `Puzzles/RZ_PuzzleComponents.c`, `RZ_PuzzleActions.c`, `RZ_PuzzleMission.c` | Written |
 | Noisemakers (thrown or timed heat) and "being noticed" (heat or a zombie too close for too long) | `Puzzles/RZ_Noisemaker.c`, `RZ_RadioStealth.c` | Written |
+| Unarmed missions: 10 contracts built on noise that leads infected and being noticed (see [MISSIONS.md](MISSIONS.md)) | `Missions/Unarmed/` | Written |
 | Radio checks (carries a radio or Radio Operator), Morse light, game clock and night detection | `Puzzles/RZ_RadioStealth.c`, `RZ_BlinkingLight.c`, `RZ_GameTime.c` | Written |
 | Landmark finder (church, water tower, well... by prefab name, fallback prop), compass bearings and paces | `Puzzles/RZ_Landmarks.c` | Written |
 | Seeded note text: names, days, personal lines in the Zone's voice | `Puzzles/RZ_NoteText.c` | Written |
@@ -108,7 +109,7 @@ and change ReforgerZ systems, so they work with any other mods loaded.
 Two kinds, described in full in [MISSIONS.md](MISSIONS.md):
 
 - **World events** (10 in code) are announced to everyone, and anyone who takes part shares the reward.
-- **Faction contracts** (42 in code, plus 17 puzzle missions, 3 Perimeter missions, 3 Haven house contracts and Rein In) are offered only to players who meet their requirements:
+- **Faction contracts** (42 in code, plus 17 puzzle missions, 10 unarmed missions, 3 Perimeter missions, 3 Haven house contracts and Rein In) are offered only to players who meet their requirements:
   tier with the giver, standing with other factions, background, world state and player count.
   There's no "accept" button: eligible players who take part get paid, others get nothing.
   Each player gets at most one new offer a minute, by radio or at the faction's quartermaster.
@@ -175,7 +176,8 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] 17 puzzle missions: navigation, logic, timing and stealth, mechanisms, mysteries
 - [x] Noisemakers and "being noticed" (WORLD.md, unarmed missions)
 - [ ] Make the puzzle prefabs (note, generic puzzle object, keypad, scale crate, Morse lamp, noisemakers) and play-test each puzzle
-- [ ] The other unarmed missions in WORLD.md (Pharmacy Lure, Silent Courier, The Safe Code...) on the puzzle framework
+- [x] 10 unarmed missions from WORLD.md (Pharmacy Lure, Silent Courier, Lead Them Away, Rooftop Rescue, Trail of Clues, Water Run, Barter Chain, Distraction, Medicine Before Dark, Quiet Count)
+- [ ] Car Keys (needs fixable cars); play-test how far a thrown bottle really leads a horde
 - [x] The Perimeter: warning and kill zones, one drone per player, sealed road checkpoints, government broadcast
 - [x] 3 Perimeter missions: The Blind Spot, The Crossing, Shot at the Line
 - [ ] Make the Perimeter prefabs (drone, warning shot, barricade, guard, smuggler, package, body) and test the edge on an island map and a land-locked one
@@ -187,7 +189,7 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] New-player guidance in the world: spawn scenarios, wind-up radio, a wanderer who finds new players, faction voices
 - [ ] Make the guidance prefabs (wind-up radio, flyer, scratched door, car wreck, table radio, dead raider and soldier, barricade)
 - [ ] Play-test the tip table: is anything too chatty for a level-1 player? Do the speakers pick right?
-- [ ] Barter chains across wanderers
+- [x] Barter chains across wanderers (the Barter Chain contract)
 - [x] Supply trucks that carry food to safehouses (WORLD.md, "Supply lines")
 - [ ] Wanderers react when their faction loses an outpost
 - [x] Infection adapts a little: breakthrough specials, one trait per stage, favourite spots (WORLD.md, section 4)
