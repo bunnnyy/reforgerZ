@@ -11,3 +11,6 @@ PrefabChecklist.md
 
 # Python
 __pycache__/
+
+# Claude Code agent worktrees
+.claude/worktrees/
