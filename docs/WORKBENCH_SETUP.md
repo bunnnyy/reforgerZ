@@ -191,6 +191,13 @@ and Favor when it's used. `RZ_RequisitionAction` has the same cost, item and nam
 the full price (a Trusted player pays half, once an hour). Set it up for ammo and rations only.
 You can also put `RZ_ChoiceDeliveryAction` on a quartermaster so it accepts hand-ins.
 
+- **Antidotes.** A shop action whose item is the **Cure > Antidote** prefab sells from a stock, not
+  freely: on the Halcyon quartermaster it sells the lab's doses (one every 15 minutes after the
+  second breakthrough, 3 at most), anywhere else (the Red Hand) only doses stolen from the lab.
+  The lab no longer leaves doses on the ground, so give Halcyon's quartermaster one (Trusted).
+- **Price food above 2 Favor.** A safehouse pays 2 Haven Favor (and a little Fame) per food item
+  handed in, so food the Haven quartermaster sells for 2 or less turns Favor into free Fame.
+
 Suggested starting stock (from [REPUTATION.md](REPUTATION.md)):
 
 | Faction | Known | Trusted | Champion |
@@ -249,7 +256,7 @@ shooter). Slots are in **Perimeter**.
 | `RZ_WarningShot.et` | a gunshot sound or impact effect | Warning shot prefab | optional | the warning shot |
 | `RZ_Checkpoint.et` | concrete blocks and a closed barrier | Barricade prefab | **required for checkpoints** | road checkpoints |
 | `RZ_CheckpointGuard.et` | a soldier without AI, or a figure prop | Guard prefab | optional | 0–4 per checkpoint |
-| `RZ_Smuggler.et` | a civilian without AI | Smuggler prefab (falls back to Puzzles > Civilian) | optional | The Blind Spot |
+| `RZ_Smuggler.et` | a civilian without AI (the Red Hand runner) | Smuggler prefab (falls back to Puzzles > Civilian) | optional | The Blind Spot |
 | `RZ_Package.et` | a small box item with `RZ_MissionItemComponent` | Package prefab (falls back to the mission item) | optional | The Blind Spot, The Crossing |
 | `RZ_LineBody.et` | a body with `RZ_ClueComponent`, `RZ_ReadClueAction` | Line body prefab (falls back to Puzzles > Body) | optional | Shot at the Line |
 
@@ -441,10 +448,10 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_GameModeComponent.c:846` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
 | `Core/RZ_GameModeComponent.c:915` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
 | `Core/RZ_GameModeComponent.c:1047` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1711`, `:1712` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1722` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:1938`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
-| `Persistence/RZ_SaveData.c:117` | JSON contexts serialise plain members | Nothing is saved |
+| `Core/RZ_GameModeComponent.c:1695`, `:1696` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1706` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:1924`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Persistence/RZ_SaveData.c:119` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:369`, `:377` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
 | `Core/RZ_Util.c:614`, `Zombies/RZ_BiteDetector.c:74` | total health accessor (maybe `GetDefaultHitZone().GetHealth()`) | No bites; retaliation only sees kills |

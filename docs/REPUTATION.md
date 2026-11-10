@@ -93,7 +93,7 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 
 | Tier | Shop | Perk / service |
 |---|---|---|
-| Known | Military rations, morphine, flares | Pass Bastion checkpoints unsearched (needs checkpoints as AI) |
+| Known | Military rations, morphine, flares | Pass Bastion's road checks inside the Zone unsearched (planned: needs checkpoints as AI; the game only says Bastion knows you) |
 | Trusted | Service rifles, body armour, helmets, NVGs | **Requisition** ✅: once an hour, ammo or rations at half the Favor cost. While Bastion's trucks run, it's drawn at a Bastion outpost's quartermaster from the stock its trucks brought, and refused while that outpost is short |
 | Champion | Machine guns, grenades, military trucks | **Fire Mission**: mark a horde with smoke for an artillery strike |
 | Hunted | — | Bastion AI shoots you ✅; hunter squads get your last position ✅ |
@@ -104,7 +104,7 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 |---|---|---|
 | Known | Knives, pistols, lockpick-style tools | **Toll pass**: roadblocks let you pass for a toll (message only ✅; roadblocks as AI planned) |
 | Trusted | Suppressors, scoped rifles, explosives | **Fence**: sell loot for Favor; ambush crews ignore you |
-| Champion | Rare military gear, stolen antidotes | **Bounty board**: post bounties on other players |
+| Champion | Rare military gear, stolen antidotes (only the doses stolen from the lab ✅) | **Bounty board**: post bounties on other players |
 | Hunted | — | Red Hand AI shoots you ✅; hunter squads come for you ✅ |
 
 ### Halcyon
@@ -112,7 +112,7 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 | Tier | Shop (lab stores) | Perk / service |
 |---|---|---|
 | Known | Antiseptic, painkillers, sample containers | — |
-| Trusted | Antidotes, stim kits, gas masks | **Sample scanner** ✅: special infected within 300 m are revealed every minute |
+| Trusted | Antidotes (only while the lab has doses in stock ✅), stim kits, gas masks | **Sample scanner** ✅: special infected within 300 m are revealed every minute |
 | Champion | Experimental immunity booster (planned item) | **Lab access** ✅: your samples count 25% more. Calling in a Halcyon medic is planned |
 | Hunted | — | The lab takes your samples without Fame ✅, and Halcyon AI shoots you ✅ |
 

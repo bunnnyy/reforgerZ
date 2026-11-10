@@ -18,7 +18,7 @@ The official broadcast still loops on every frequency:
 Aid is not on its way. Nothing comes in, and nothing ever will. You're a civilian who was
 here when the gates closed. Everyone in the Zone is stuck in it together: the soldiers who
 were left inside, the ordinary people who happened to be here, the criminals who were glad
-of the chaos, and the scientists who might be the only way out.
+of the chaos, and the scientists who might be the only way it ends.
 
 **The only way the quarantine ends is a cure.**
 
@@ -100,7 +100,7 @@ black market and sell protection. They don't care who you were. They care who yo
 
 A research team that was at the outbreak site before the lockdown. They run the only lab.
 They pay for samples, they need guards, and they know more about how this started than they
-say. A cure is their way out, and everyone's.
+say. A cure is the only thing that opens the gates, for them and for everyone.
 
 **Voice:** precise, a bit cold, sometimes guilty.
 
@@ -134,11 +134,12 @@ then a sniper you never see. Where the main roads leave the Zone, they end in co
 blocks and a closed barrier with guards behind it. Nobody passes, in either direction,
 ever. There are no papers, bribes or deals.
 
-There's no escape. Your character's story ends inside the Zone. The only links to the
-outside are rare and dangerous: a gap in the drones' rotation the Red Hand knows about, a
-medicine package someone outside leaves at the waterline, a body at the line with papers on it.
-How the line works is in [DESIGN.md](DESIGN.md), "The Perimeter"; the three missions are in
-[MISSIONS.md](MISSIONS.md), "Perimeter missions".
+There's no escape. Your character's story ends inside the Zone. Nothing crosses the line, and
+nothing comes over it, but the line itself has its own small stories, rare and dangerous: a gap
+in the drones' rotation that the Red Hand uses to reach the cache it hides in the kill zone, a
+Haven runner's medicine dropped at the waterline when a drone found her, a body at the line
+with papers on it. How the line works is in [DESIGN.md](DESIGN.md), "The Perimeter"; the three
+missions are in [MISSIONS.md](MISSIONS.md), "Perimeter missions".
 
 ## The outside world: silent, watching
 

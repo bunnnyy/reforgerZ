@@ -5,7 +5,7 @@ A zombie survival game mode for **Arma Reforger**, set in a sealed government
 roads ending in concrete, snipers nobody sees. Nothing comes in and nobody gets out.
 You're a civilian who was inside when the gates closed. Survive alone, team up with
 strangers, or turn on them. The whole server shares one outbreak that slowly gets worse,
-and one way out: **research the cure.**
+and one way to end it: **research the cure.**
 
 ## Features
 

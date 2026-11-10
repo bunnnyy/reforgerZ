@@ -250,7 +250,7 @@ class RZ_Objectives
 			case "mechanic": return "Find your brother's garage in %1.";
 			case "hunter": return "Make it to your hunting cabin near %1.";
 			case "police": return "Report in at the station in %1.";
-			case "excon": return "Dig up the stash you buried near %1.";
+			case "excon": return "Go back for the stash you buried near %1. Someone may have beaten you to it.";
 			case "labtech": return "Recover your research notes from %1.";
 			case "radioham": return "Track down the signal coming out of %1.";
 		}

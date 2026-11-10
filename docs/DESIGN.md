@@ -267,9 +267,9 @@ a locked background keeps its gear for that life but plays as Unemployed, and is
 unlock it.
 
 **Personal goals.** Each life gets one goal, flavoured by background (the Hunter heads for
-their cabin, the Ex-Con digs up a stash): reach a town 1.2–4 km away, survive a while, deliver
-samples, take part in missions, or become Trusted with a faction. Completing it gives a
-**Legacy** point and a little Fame. A player's first life that lasts 10 minutes is always
+their cabin, the Ex-Con goes back for an old stash): reach a town 1.2–4 km away, survive a while,
+deliver samples, take part in missions, or become Trusted with a faction. Completing it gives a
+**Legacy** point and 10 Haven Fame, never loot, so a fresh life can't farm crates. A player's first life that lasts 10 minutes is always
 **Find the Haven**: reach a safehouse ([New-player guidance](#new-player-guidance)).
 
 ## Factions in the background
@@ -481,7 +481,8 @@ On Arland that's about 9–10 leaders; on Everon about 16–20.
   200 m of their seat. At a stronghold or safehouse the quartermaster *is* the leader unless a
   leader prefab is set.
 - **Off-screen deaths** (bites, raids) only with nobody within 400 m, every half hour; a new
-  leader takes the chair 2 hours later. Deaths and replacements are headlines.
+  leader takes the chair 2 hours later. Deaths, replacements and loyalty changes are headlines,
+  and leader news is also announced to everyone as it happens (territory and faction life stay quiet).
 - **Personal jobs:** every two minutes, an Independent or Rogue leader with a player near and
   no job on has a 35% chance to think of one (at most one per 30 minutes per leader).
 
@@ -585,7 +586,9 @@ loot level, sometimes two things. 10% of finds are rare (20% behind a lock), 10%
 
 About half of pharmacies and police stations, a third of garages, a quarter of shops and a tenth
 of houses are locked, seeded from the building's position so the same ones are locked after a
-restart. **The lock is on the building's outside doors**, and its Search follows it.
+restart. **The lock is on the building's outside doors**, and its Search follows it. Places people
+use are never locked: nothing within 80 m of a safehouse, the lab or an outpost, 100 m of a
+quartermaster, or 150 m of a stronghold (the same places that can't burn).
 
 | State | How it gets there | What it means |
 |---|---|---|
@@ -670,7 +673,7 @@ None of these are saved.
 A thrown molotov (25 heat) kills infected within 3 m and burns the building within 10 m; or **Set
 it alight** with a molotov or fuel. That one building burns: 30 heat, an optional fire effect, the
 town's infection −1, and for two hours nothing to search and no spawns within 30 m. Strongholds,
-outposts, safehouses, quartermasters and the lab can't burn.
+outposts, safehouses, quartermasters and the lab can't burn (or be locked).
 
 ### Water
 
@@ -794,16 +797,21 @@ Code: `Cure/`, `Core/RZ_GameModeComponent.c`.
 special infected killed ─▶ sample item drops ─▶ carried to the lab ─▶ "Deliver samples"
                                                                 │
  25% Field antiviral   spread -15%, bites take 25% longer      ◀┘
- 50% Bite treatment    lab produces an antidote every 15 min
+ 50% Bite treatment    the lab makes an antidote dose every 15 min (3 in stock at most)
  75% Immunity serum    spread -45% total, bites take 50% longer
 100% FINAL STAND       hold the lab 15 min against hordes every 2 min
        win  ─▶ infection everywhere -70%, Aftermath, season over
-       lose ─▶ lab abandoned for 90 s, research drops to 90%
+       lose ─▶ nobody at the lab for 90 s: the batch is ruined, research drops to 90%
 ```
 
 - Each sample is 2% research (×2 for a Lab Technician, +25% for Halcyon's Champions).
 - **The lab** is a placed prefab, or spawns in a random town and stays there across restarts.
-- **Antidotes** are used as a world action or from the inventory; they cure an infection.
+- **Antidotes** are used as a world action or from the inventory; they cure an infection. The
+  lab's doses are a **stock**, not items lying around: Halcyon's quartermaster sells them (a shop
+  action whose item is the antidote prefab), one dose per sale, and refuses when the lab has none.
+  The Red Hand's Steal the Antidotes moves up to two doses from the lab to the Red Hand's black
+  market (4 at most), and a Red Hand antidote shop action sells only those. Both stocks are saved.
+- **The lab never falls.** It's Halcyon's stronghold; losing the final stand ruins the batch, not the lab.
 - **The season's end.** When the final stand is won, the cure goes to the faction the server
   gave the most Fame this season (summed over all players). The winner is saved to
   `last_season.json`. What each ending means is in [LORE.md](LORE.md), "Endings";
@@ -814,7 +822,7 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
 Code: `Persistence/RZ_SaveData.c`.
 
 Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stage, every
-settlement's infection and town memory, cure progress, player profiles (standing, Legacy,
+settlement's infection and town memory, cure progress and antidote stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
 supply stock, faction life, the power grid and radio station, story arcs, headlines and world
 interactions. A save from another map is ignored. Player bodies, inventories and vehicles use

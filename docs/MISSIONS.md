@@ -72,11 +72,11 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 6 | Fuel for the Lights | Known | ★ Mechanic: generator runs twice as long | Bring 2 jerrycans to a safehouse generator. The lights raise heat there | Fame | planned |
 | 7 | Take Back the Town | Known, Bastion gone (Overrun+) | | Kill 8 × size infected in a town | Fame, town infection −35 | ✅ |
 | 8 | Harvest Guard | Known | ★ Hunter: farmers stay hidden longer | Protect farmers in the fields for 10 min | Fame, food | planned |
-| 9 | Missing Scout | Known | | Find a scout's body and bring his notes home | Fame; the notes reveal a stash | ✅ |
+| 9 | Missing Scout | Known | | Find a scout's body and bring his notes home | Fame; the notes mark a stash (a reward crate in a random town) for whoever brought them | ✅ |
 | 10 | Clear the Road | Known | ★ Mechanic: bonus Fame | Kill the infected on the road between two Haven towns | Fame | ✅ *no wrecks to clear* |
 | 11 | Burn the Nest | Trusted | | Destroy a hive in an infested town | Fame, infection −30 | ✅ |
 | 12 | Refugee Column | Trusted | | Escort a group walking a road to a safe town | Big Fame | planned |
-| 13 | Signal Fires | Trusted, 3+ players online | | Light beacons on 3 hills within 2 minutes of each other | Fame for each player; nearby towns' infection drops | ✅ |
+| 13 | Signal Fires | Trusted, 3+ players online | | Light beacons on 3 hills within 2 minutes of each other | Fame for each player; every town within 2 km −10 infection | ✅ |
 | 14 | Water Purifier | Trusted | ★ Mechanic/Lab Tech: 2 of 3 parts | Find 3 purifier parts in a town and bring them to a safehouse | Fame | planned |
 | 15 | Fortify the Safehouse | Trusted | ★ Mechanic | Hold the area while barricades go up | Fame | planned |
 | 16 | Trader Caravan | Trusted, not Trusted by the Red Hand | | Defend a Haven trader at a crossroads from a Red Hand raid | Fame (Red Hand Infamy) | ✅ |
@@ -125,7 +125,7 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 2 | Fence the Goods | Any | ★ Ex-Con: +50% Fame, extra Favor | Carry stolen goods to a fence in another town | Fame, mostly Favor | ✅ |
 | 3 | Car Theft | Any | ★ Mechanic: hotwires faster | Deliver a specific vehicle to the chop shop | Fame | planned |
 | 4 | Pharmacy Heist | Any | | Hold a pharmacy for 90 s before the Haven gets there | Fame (Haven Infamy) | ✅ |
-| 5 | Fight Pit | Known | | Survive waves of infected in a ring while the Red Hand bets | Fame; bets pay Favor | ✅ |
+| 5 | Fight Pit | Known | | Survive 4 minutes of waves in a ring while the Red Hand bets | Fame; the bets pay Favor | ✅ *the bets are a fixed, larger Favor reward* |
 | 6 | Toll Road | Known | | Set up a roadblock between two towns and hold it for 10 min | Fame (Haven Infamy) | ✅ |
 | 7 | Smuggler's Run | Known | ★ Hunter: fewer location reports | Carry a package across the map. Everyone is told a courier is out | Big Favor | ✅ |
 | 8 | Raid the Cache | Known, Watched or Hunted by the Haven | | Beat the Haven to a supply cache | Fame (Haven Infamy) | ✅ |
@@ -136,7 +136,7 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 13 | Bust Out | Trusted | ★ Ex-Con | Free Red Hand prisoners from a Bastion stockade | Fame (Bastion Infamy) | planned |
 | 14 | Arson | Trusted | | Burn a Bastion fuel depot | Fame (Bastion Infamy) | ✅ |
 | 15 | Sabotage the Relay | Trusted, not Trusted by the Haven | | Destroy a Haven radio relay | Fame (Haven Infamy) | ✅ |
-| 16 | Steal the Antidotes | Trusted, the lab makes antidotes | ★ Lab Tech: twice as fast | Hold the lab's store room for 90 s | Big Fame; two antidotes for the taking (Halcyon Infamy) | ✅ |
+| 16 | Steal the Antidotes | Trusted, the lab has doses in stock | ★ Lab Tech: twice as fast | Hold the lab's store room for 90 s while the crew loads up | Big Fame, Favor; up to two of the lab's doses move to the Red Hand's black market (Halcyon Infamy) | ✅ |
 | 17 | Double Agent | Trusted, Known by Bastion | ★ Police: Bastion believes you | Feed fake intel to Bastion | Fame with both; caught = big Bastion Infamy | planned |
 | 18 | Collect the Bounty | Champion | | Kill a player or AI with a bounty on them | Fame, Favor | planned |
 | 19 | Kill the Officer | Champion | | Assassinate a Bastion commander | Huge Fame (Kill on Sight with Bastion) | planned |
@@ -150,7 +150,7 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 |---|---|---|---|---|---|---|
 | 1 | Alpha Sighting | Any | | Kill a special that's been spotted and bring its samples | Fame, samples | ✅ |
 | 2 | Field Samples | Any | ★ Lab Tech/Nurse: each kill counts double | Kill infected in an infested town while Halcyon takes readings | Fame, research | ✅ |
-| 3 | Water Survey | Any | ★ Lab Tech: +50% Fame | Sample wells in 3 towns (10 s at each) | Fame; reveals the town most at risk | ✅ |
+| 3 | Water Survey | Any | ★ Lab Tech: +50% Fame | Sample wells in 3 towns (10 s at each) | Fame; reveals the town most at risk | ✅ *the most infected town still under 50, anywhere on the map* |
 | 4 | Power the Lab | Any | ★ Mechanic | Bring fuel and a generator part to the lab | Fame; antidotes come faster | planned |
 | 5 | Lost Colleague | Known | | Find a missing researcher. Half the time he's turned | Fame, research | ✅ |
 | 6 | Research Data | Known | | Recover a hard drive from an overrun hospital (hold 45 s) | **Choice:** Halcyon research, or sell it to Bastion (Halcyon Infamy) | ✅ |
@@ -191,15 +191,15 @@ Announced to everyone, open to everyone. Most pay in loot found on the spot rath
 | 10 | Gas Station Fire | A station explodes and burns | Infection drops; loot is destroyed | planned |
 | 11 | Prison Break | Escaped convicts roam the area | Hostile; the Red Hand recruits them | planned |
 | 12 | Bastion Shelling | Bastion's own mortars shell an infested town after a 5-minute warning | Get out, or loot fast. Infection there drops sharply | ✅ |
-| 13 | Bell Tower | Someone rings church bells nonstop | A horde converges | *covered:* The Preacher's Flock arc |
+| 13 | Bell Tower | Someone rings church bells nonstop | A horde converges | *covered* by The Preacher's Flock arc: he rings bells in every town (twice the heat) and small hordes come for him |
 | 14 | The Sniper | A crazed survivor shoots from a tower | Take him down; his stash is up there | planned |
 | 15 | Stash Note | A note with coordinates turns up | Treasure hunt | ✅ |
 | 16 | Mass Grave | A pit full of infected bodies | Lots of samples, and a horde underneath | ✅ |
-| 17 | Lost Child | A child wanders alone | Escort them to the Haven | *covered:* the Kid wanderer |
+| 17 | Lost Child | A child wanders alone | Escort them to the Haven | *covered* by the Kid wanderer: show them the way and they follow you to a safehouse (+1 person, +5 Haven Fame) |
 | 18 | Burning Town | A town burns for 15 min | Infection there drops sharply | planned |
 | 19 | Fake Distress Call | A Red Hand ambush | Radio Operators are warned | planned |
 | 20 | Storm | For 15 minutes, noise carries less and heat fades three times as fast | A good time to move | ✅ |
-| 21 | Last Broadcast | A station is still on the air | Reach it and broadcast | *covered:* the radio station (cosmetic, no Fame) |
+| 21 | Last Broadcast | A station is still on the air | Reach it and broadcast | *covered* by the radio station: always on the map rather than an event; take it over and broadcast a preset (cosmetic, no Fame) |
 | 22 | Rival Survivors | An unaligned AI group | They trade or fight depending on your reputation | planned |
 | 23 | Locked Bunker | A sealed bunker, code split over 3 notes | Teamwork or a race between strangers | planned |
 | 24 | Turned Player | A player who turned roams with their gear (started when someone turns) | Their loot is up for grabs | ✅ |
@@ -272,14 +272,14 @@ Time-Lock Safe), Breaker Sequence (Junction Boxes), Scout the Town (Recon) and N
 
 ## Perimeter missions
 
-The only links to the outside, at the quarantine line ([DESIGN.md](DESIGN.md), "The Perimeter").
-Rare and dangerous on purpose; nothing is built for them. They never appear while the Perimeter
+Jobs at the quarantine line ([DESIGN.md](DESIGN.md), "The Perimeter"). Nothing crosses the line in
+either direction; these happen at it. Rare and dangerous on purpose; nothing is built for them. They never appear while the Perimeter
 is off. Code: `Missions/Perimeter/`.
 
 | # | Mission | From | Needs | What you do | Result | Status |
 |---|---|---|---|---|---|---|
-| 1 | The Blind Spot | Red Hand | Known, night | Ten minutes after the offer, a 250 m stretch of the edge goes uncovered for ten minutes. A smuggler waits in the kill zone. Take his package to a Red Hand drop 500–700 m inland before the drones come back | Fame, Favor. The window closing: fails, and anyone still in the kill zone is shot | ✅ *window in real minutes; offered only if it ends before dawn* |
-| 2 | The Crossing | Haven | Any, night | A medicine package left at the waterline (or any dry edge). Take it out of the warning zone before the drone locks on (45 s with the package), and deliver it | Fame, Favor. Lock-on: the package is shot, fails | ✅ |
+| 1 | The Blind Spot | Red Hand | Known, night | Ten minutes after the offer, a 250 m stretch of the edge goes uncovered for ten minutes. A Red Hand runner waits in the kill zone with a package from the cache it hides there. Take it to a Red Hand drop 500–700 m inland before the drones come back | Fame, Favor. The window closing: fails, and anyone still in the kill zone is shot | ✅ *window in real minutes; offered only if it ends before dawn* |
+| 2 | The Crossing | Haven | Any, night | A Haven runner dropped a medicine package at the waterline (or any dry edge) when a drone found her. Take it out of the warning zone before the drone locks on (45 s with the package), and deliver it | Fame, Favor. Lock-on: the package is shot, fails | ✅ |
 | 3 | Shot at the Line | Any faction | Any | A body lies in the warning zone. Search it without going further; its papers name a stash | Fame, Favor; the stash (a reward crate) | ✅ |
 
 ## Haven house contracts
