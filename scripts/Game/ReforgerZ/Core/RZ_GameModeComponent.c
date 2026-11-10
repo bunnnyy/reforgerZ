@@ -136,7 +136,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Helicopter wreck prop (optional, enables Crash Site and Crashed Helicopter)", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sHeliWreckPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Corpse pile prop (optional, only visual: Burn the Bodies and Decontamination work without it)", "et", category: "ReforgerZ|Missions")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Corpse pile prop (optional): the piles in Burn the Bodies and the Memorial. Without it they use the puzzle object prefab", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sCorpsePilePrefab;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand AI group (optional, enables Raid the Red Hand and Trader Caravan, adds raiders to Lab Defence)", "et", category: "ReforgerZ|Missions")]
@@ -1221,6 +1221,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 			// Session news: the latest headline, wanderers lost, the biggest rescue, the cure
 			string news = m_Headlines.Build();
+			news = news.Trim();
 			if (!news.IsEmpty())
 				NotifyPlayer(playerId, "Word on the roads", news);
 
