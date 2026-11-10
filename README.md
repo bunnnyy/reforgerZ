@@ -22,8 +22,8 @@ and one way to end it: **research the cure.**
   loyalties of their own, story arcs and session headlines.
 - **120 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
   missions at the quarantine line, morally grey Haven work and leaders' off-book jobs.
-- **Search the world**: cupboards, car boots and bodies, locked doors and keys you can lose or
-  trade, letters that point somewhere, rare fixable cars, crafting, traps, fire, water and
+- **Search the world**: cupboards, car boots and bodies, locked doors that keep the infected
+  out (they bang on them) and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting, traps, fire, water and
   secure radio channels.
 - **Teaches itself**: no tutorial pop-ups, just a note where you wake, a wind-up radio and
   people who tell you things.
@@ -31,8 +31,8 @@ and one way to end it: **research the cure.**
 
 ## Status
 
-All of it is **written but has never been compiled**. It's about 48,500 lines of Enforce
-Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **105 `VERIFY`
+All of it is **written but has never been compiled**. It's about 49,500 lines of Enforce
+Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **109 `VERIFY`
 markers** on engine calls whose exact names need checking, no prefabs or configs yet, and
 nothing has been play-tested. Start with [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
@@ -66,7 +66,7 @@ Scripts/Game/ReforgerZ/
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
   Cure/          research, lab, samples, antidotes
   Guidance/      experience levels, tips, spawn scenarios, open radio channels
-  Interactions/  searching, door locks and keys, cars, crafting, water, traps, generators,
-                 fire, secure radio, treating others
+  Interactions/  searching, door locks, doorway blockers and keys, cars, crafting, water,
+                 traps, generators, fire, secure radio, treating others
   Persistence/   save and load of mode state
 ```

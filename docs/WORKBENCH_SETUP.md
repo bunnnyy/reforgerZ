@@ -335,6 +335,7 @@ stays quiet. Slots under **Interactions**.
 |---|---|---|---|
 | `RZ_InteractionSpot.et` | a `GenericEntity` with a small invisible collision box, `RplComponent`, `ActionsManagerComponent` and the generic components | General > Spot prefab | every searchable thing near players, and the Unlock / Lock / Force spot outside a locked door (keep the box small and off the character collision layer so it never blocks a door or a doorway) |
 | `RZ_Key.et` | a small item (a key or key ring) with `RplComponent`, `RZ_KeyItemComponent` and optionally `RZ_ReadKeyTagAction` | Search > Key prefab | keys as real items that can be dropped, traded and stolen (empty = keys are data for one life) |
+| `RZ_DoorBlocker.et` | a `GenericEntity` with only a thin collision box (recipe below) | Search > Doorway blocker | keeps AI out of locked doorways near players (empty = no blockers; the AI door hook and banging still work) |
 | `RZ_CarProject.et` | a non-drivable car prop with the same components | Cars > Project prefab | a fixable car before it runs |
 | Drivable cars | vanilla civilian cars | Cars > Car prefabs (empty = no fixable cars) | what a fixed car becomes |
 | `RZ_CarBattery.et`, `RZ_Tyre.et`, `RZ_SparkPlugs.et` | items named with "battery", "tyre", "spark" | Cars > Battery / Tyre / Spark | parts |
@@ -349,9 +350,27 @@ stays quiet. Slots under **Interactions**.
 | Water | untreated and safe bottles (the survival mod's if it has both) | General > Dirty / Clean water | wells, stoves |
 
 **Door locks need no prefab.** The vanilla door action is modded (`Interactions/RZ_DoorHooks.c`),
-so vanilla doors refuse by themselves. If that file doesn't compile, see the first door row in
-[the VERIFY list](#6-the-verify-list); turning **Search > Door locks** off puts every lock back on
-the loot.
+so vanilla doors refuse players by themselves. If that file doesn't compile, see the first door
+row in [the VERIFY list](#6-the-verify-list); turning **Search > Door locks** off puts every lock
+back on the loot. AI need more (how it works is in [DESIGN.md](DESIGN.md#locks-and-keys)): the
+optional `Interactions/RZ_AIDoorHook.c` (delete it if it doesn't compile) and the doorway blocker.
+
+**The doorway blocker** (`RZ_DoorBlocker.et`). Players must never see or feel it, and it must
+stop characters:
+1. A box collider about **1.3 m wide (X) × 2.3 m high (Y) × 0.1 m deep (Z)**, origin at the
+   box's centre. The script stands it in the doorway, 0.1 m outside the door leaf, with Z
+   pointing out of the wall. Make it as a collision-only model (an FBX with just a `UCX_` box,
+   no visual mesh) on a `MeshObject`, plus a static `RigidBody`; no material, no shadow.
+2. **Collision layer:** one that blocks characters and counts for the navmesh, but not
+   projectiles, fire geometry, view or interaction traces (so bullets pass and the door's
+   action and Unlock spot still work through it). Copy the layer preset of a vanilla invisible
+   wall or AI-only obstacle if your version has one.
+3. `RplComponent`, so clients collide with it too. Nothing else: no actions, no hit zones.
+4. Test it: place one in a doorway in the editor. You walk into it, a shot passes through,
+   and the door's Open action still shows from both sides.
+
+Leave **Navmesh rebuild** on unless a rebuild proves too slow (watch the server frame time when
+a blocker comes or goes); off, AI walk into the blocker and stop there.
 
 **The loot pool** (Search > Loot pool) is one list of every item a search can find. Each building
 type takes the items whose prefab names contain its keywords (the lists are in
@@ -409,7 +428,7 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | Territory | Faction life | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Guidance | Guidance | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
 | Interactions | General | **Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
-| Interactions | Search | **Loot pool**, loot tables, chances (find 0.6, rare 0.1, electronics 0.1), locks and their shares, **Door locks** (on; off = the lock on the loot), **Key prefab**, force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances |
+| Interactions | Search | **Loot pool**, loot tables, chances (find 0.6, rare 0.1, electronics 0.1), locks and their shares, **Door locks** (on; off = the lock on the loot), **Key prefab**, force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
 | Interactions | Cars | Car prefabs, project prefab, per settlement (0.34), max (6), parts and keywords, hotwire and siphon timings, Mechanic part cost (12) |
 | Interactions | Crafting | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
 | Interactions | Traps | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs |
@@ -433,7 +452,7 @@ The last winner is kept in `$profile:ReforgerZ/last_season.json`, which a wipe d
 grep -rn "VERIFY" Scripts/
 ```
 
-There are **105** markers (one is the comment in `Core/RZ_Util.c` that explains them). Each is an
+There are **109** markers (one is the comment in `Core/RZ_Util.c` that explains them). Each is an
 engine API whose exact name or signature couldn't be confirmed. Usually the fix is a rename, and
 most are isolated in small helpers in `Core/RZ_Util.c`. They're grouped by risk; fix them in this
 order. Paths are under `Scripts/Game/ReforgerZ/`.
@@ -461,7 +480,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Puzzles/RZ_RadioStealth.c:36` | `GetItems()` lists every carried storage | Radio checks fail (the same call is used for food and keywords) |
 | `Puzzles/RZ_PuzzleActions.c:15` | `ScriptedUserAction.GetOwner()` | No clue can be read |
 
-### Medium risk: big features, with a fallback (49)
+### Medium risk: big features, with a fallback (53)
 
 | Where | Call | Fallback |
 |---|---|---|
@@ -472,8 +491,8 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Factions/RZ_SupplyLines.c:817` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:560` | vehicle `SCR_DamageManagerComponent.GetState()` | A burnt-out truck counts as late instead |
 | `Core/RZ_Util.c:574`, `:578` | `SetWorldTransform`, `Physics.SetVelocity` | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
-| `Interactions/RZ_Interactions.c:644` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
-| `Interactions/RZ_Interactions.c:720` | `SCR_DestructibleBuildingEntity` as the building class | Buildings aren't recognised; furniture still is |
+| `Interactions/RZ_Interactions.c:645` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
+| `Interactions/RZ_Interactions.c:721` | `SCR_DestructibleBuildingEntity` as the building class | Buildings aren't recognised; furniture still is |
 | `Interactions/RZ_Interactions.c:251` | `GetItems()` for keyword items | Crowbars, parts, fuel, water and medkits not found |
 | `Puzzles/RZ_Landmarks.c:55` | `QueryEntitiesBySphere(center, radius, cb, filter, flags)` | No landmarks: the fallback landmark prop |
 | `Puzzles/RZ_PuzzleComponents.c:80`, `:142`, `Puzzles/RZ_BlinkingLight.c:161` | `[RplProp]` on a `ScriptComponent` | Labels don't replicate: generic labels, all slots visible, actions still work |
@@ -490,9 +509,12 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:594` | fuel nodes: `GetFuelNodesList`, `GetMaxFuel`, `SetFuel` | Empty the helper: a fixed car has its prefab's own fuel |
 | `Interactions/RZ_DoorHooks.c:11` | `modded class SCR_DoorUserAction`: the vanilla door action's name, owned by the door entity | **Doesn't compile if the name is wrong.** Rename it to the action in the door prefabs' `ActionsManagerComponent` (maybe `DoorUserAction`); if there's no scripted one, delete the file and turn **Search > Door locks** off (locks go back on the loot) |
 | `Interactions/RZ_DoorHooks.c:22`, `:32` | `SetCannotPerformReason(string)`; the door action's `PerformAction` also runs on the server | No "Locked" reason, only a greyed action / the server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
-| `Interactions/RZ_DoorLocks.c:39`, `:49`, `:58` | `DoorComponent`; `GetControlValue()` is 0 when shut; `SetControlValue(0)` shuts it | No doors found: every building keeps the loot lock / open and shut mixed up: fix the threshold / locked doors aren't pulled shut |
-| `Interactions/RZ_DoorLocks.c:70`, `:97` | `GetParent()`; `GetChildren()`/`GetSibling()` list a building's door entities | No door belongs to a building: no door locks, the loot lock everywhere |
-| `Interactions/RZ_DoorLocks.c:118`, `:127` | `GetBounds()` is the building's local box; `GetWorldTransform()` | No box: no outside doors (the loot lock). A wrong box or transform gets inside and outside wrong: try every locked door from both sides |
+| `Interactions/RZ_DoorLocks.c:44`, `:54`, `:63` | `DoorComponent`; `GetControlValue()` is 0 when shut; `SetControlValue(0)` shuts it | No doors found: every building keeps the loot lock / open and shut mixed up: fix the threshold / locked doors aren't pulled shut |
+| `Interactions/RZ_DoorLocks.c:75`, `:102` | `GetParent()`; `GetChildren()`/`GetSibling()` list a building's door entities | No door belongs to a building: no door locks, the loot lock everywhere |
+| `Interactions/RZ_DoorLocks.c:123`, `:132` | `GetBounds()` is the building's local box; `GetWorldTransform()` | No box: no outside doors (the loot lock). A wrong box or transform gets inside and outside wrong: try every locked door from both sides, and from a closet near the outline |
+| `Interactions/RZ_DoorLocks.c:290` | `GetBounds()` on a door is its leaf's local box | Blockers stand at the door's origin (often the hinge) instead of the middle of the doorway: check where one appears |
+| `Interactions/RZ_AIDoorHook.c:16` | `modded class SCR_AIOpenDoor` with `EOnTaskSimulate(AIAgent, float)`: the AI's door-opening task (**a guess, low confidence**) | **Doesn't compile if wrong: delete the file**, nothing refers to it. Blockers and banging still keep AI out. If it compiles but AI still open locked doors, move its check (`RZ_DoorLocks.AiMayOpenNear`) into the real door task |
+| `Interactions/RZ_DoorBlockers.c:58`, `:67` | `GetAIWorld()` as `SCR_AIWorld`; `RequestNavmeshRebuildAreas(areas, redoRoads)` (what Game Master placement uses) | Doesn't compile: try `RequestNavmeshRebuildEntity(blocker)`, or empty the helper and turn **Navmesh rebuild** off (blockers only) |
 
 ### Low risk: contained or cosmetic (31)
 
@@ -534,6 +556,7 @@ Every line starts with `[ReforgerZ]`. On start you should see, in roughly this o
 [ReforgerZ] Story arcs: on, running none.
 [ReforgerZ] Search: N items in the loot pool, M tables set by hand.
 [ReforgerZ] Locks: on the doors (the loot where no doors are found); keys are key items.
+[ReforgerZ] Door blockers: on, navmesh rebuilt, at most 20 within 150 m; AI door hook on.
 [ReforgerZ] World interactions: on. N fixable cars on the map.
 [ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
 [ReforgerZ] Started. N settlements, stage Early Outbreak, cure 0 percent, state ...
@@ -599,6 +622,15 @@ session, tick off:
 - [ ] A key item can be dropped, picked up by someone else and opens the door for them;
   "Read the tag" shows its label on the ground.
 - [ ] With **Relock minutes** at 5: the door is locked and pulled shut again once you step away.
-- [ ] Infected or AI going through a locked door: note what happens (they aren't stopped).
+- [ ] From a closet or small room behind a door near the outline, the door opens for you.
+- [ ] Doorway blockers: with the navmesh debug view on, a locked door near you shows a gap a few
+  seconds after you arrive. Lead infected and a hostile AI group at it: they route to another
+  door or wait outside; they don't open it. Note the server frame time when blockers come and go.
+- [ ] Infected pressed against a locked door make noise (heat), and you're told once.
+- [ ] Nobody gets trapped: unlock, force and the inside latch remove the blocker at once; climb
+  in through a window and walk out of the door; stand in the doorway while it relocks. Nothing
+  stops you and nothing feels in the way.
+- [ ] Without `RZ_AIDoorHook.c` (deleted) and with **Navmesh rebuild** off, blockers alone still
+  stop infected at the door.
 - [ ] A thrown bottle draws nearby infected; a puzzle mission can be finished.
 - [ ] Night: missions that need the dark are offered; the log says "night".

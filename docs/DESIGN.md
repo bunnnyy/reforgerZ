@@ -106,7 +106,7 @@ caps at 200 per square.
 | A player being somewhere | 0.5 a tick |
 | In a vehicle | +4 a tick |
 | A shot | 3 × the background's noise multiplier; ×0.3 with a suppressor (detected by attachment name) |
-| Noisemakers, bells, sirens, generators, searches, forcing locks, fire | see [World interactions](#world-interactions) |
+| Noisemakers, bells, sirens, generators, searches, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
 
 - Heat draws extra zombies. **80** heat in one area sends a horde toward it (at most one
   every 10 minutes).

@@ -3,8 +3,8 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** everything under "Built" is written in Enforce Script (about 48,500 lines) and
-**has never been compiled**. It needs Workbench, the 105 `VERIFY` fixes and a play-test
+**Status:** everything under "Built" is written in Enforce Script (about 49,500 lines) and
+**has never been compiled**. It needs Workbench, the 109 `VERIFY` fixes and a play-test
 before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
 ## Built
@@ -30,7 +30,7 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 | 120 missions: 42 contracts, 10 world events, 17 puzzles, 10 unarmed, 3 Perimeter, 3 Haven house contracts and the Courier's letters, 30 leader jobs and Rein In, 3 arc missions | [MISSIONS.md](MISSIONS.md) |
 | Six story arcs and session headlines | [Story arcs](DESIGN.md#story-arcs-and-headlines) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
-| World interactions: searching, locked doors (the vanilla door action hooked) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
+| World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
 | Cure research, antidotes, the final stand, the season's winner | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
@@ -91,7 +91,9 @@ In this order, because later ones depend on earlier ones:
 7. **Searching:** do spots appear in houses? Search rates against town loot; how often a car is fixed.
    **Door locks:** does the hooked door action compile, refuse only from outside, and get inside
    right on several building types? Do door spots stand at the right doors? If hooking fails,
-   turn **Door locks** off (the lock goes back on the loot).
+   turn **Door locks** off (the lock goes back on the loot). **Keeping AI out:** does the AI door
+   hook compile (else delete it)? Do blockers stand in the doorway, make AI route around a locked
+   door after the navmesh rebuild, and cost little server time? Can anyone get trapped?
 8. **The Perimeter** on an island map and a land-locked one.
 9. **Safehouses:** upkeep timing, food keywords, the medic and bite declarations.
 10. **Leaders:** loyalty drift and rogue-job discovery rates.
