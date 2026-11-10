@@ -28,6 +28,25 @@ Reading the tables:
 Backgrounds: Nurse, Mechanic, Hunter, Police, Ex-Con, Lab Tech, Radio Op, Unemployed;
 unlockable: Soldier, Doctor, Raider, Elder, Drifter.
 
+### How the code does it
+
+- There's no "accept" step. A contract is offered by radio (one new offer per player a
+  minute) or by the faction's quartermaster when you walk up. Anyone can join in, but only
+  players who meet the requirements when it ends are paid.
+- Missions marked ✅ are built from a few blocks: hold an area, kill what the mission spawned,
+  visit points, destroy a prop, carry an item to a drop point, or choose which drop point gets it.
+  Some are simpler than the table says. For example Clear the Road kills the infected on the
+  road (no wrecks), Toll Road and Checkpoint Duty are 10-minute holds with waves, Zombie Bait
+  is "make enough noise at the checkpoint", and Field Samples counts kills in the town.
+- Missions that need an optional prefab (drop points, mission item, helicopter wreck, Red Hand
+  AI group, fuel depot, relay, trader, explosion) never appear until that prefab is set.
+  See [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md).
+- ★ bonuses in code: shorter holds (Radio Relay, Crash Site, Checkpoint Duty, Rescue the Kids,
+  Steal the Antidotes), more Fame (Retake, Survivors Trapped, Medicine Run, Clear the Road,
+  Recon, Fence, Water Survey, Hunt the Screamer), faster burning (Burn the Bodies,
+  Decontamination), double kills (Field Samples), a slower infection (Bitten Friend),
+  better pay (Dead Drop), fewer courier reports (Smuggler's Run), more noise (Zombie Bait).
+
 ---
 
 ## The Haven (Survivors): 20 contracts

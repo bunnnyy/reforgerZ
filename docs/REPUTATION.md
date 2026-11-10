@@ -136,12 +136,35 @@ That sets the tone of the Aftermath and the next season's starting rules:
 
 ## How it maps to code
 
-- `RZ_PlayerProfile`: Fame/Infamy/Favor arrays per faction, plus a persistent `m_aChampionOf` set
-- `RZ_Reputation`: tier calculation, rival table, display names
-- `RZ_FactionShopAction`: an action on a quartermaster prefab with faction, required tier, Favor cost and item prefab.
-  Shop System can still be used for general trading. Faction shops stay in our own code, so tiers are enforced.
+- `RZ_PlayerProfile`: Fame/Infamy/Favor arrays per faction for the current life, plus
+  the persistent `m_aChampionOf` and `m_aUnlocked` (background unlock ids)
+- `RZ_Reputation`: tier table, access ranks, standing checks, rival table, display names.
+  Mixed tiers count one step lower for access: Respected = Trusted, Tolerated and
+  Wildcard = Known, Uneasy = Stranger. Negative tiers have no access.
+- `RZ_GameModeComponent`: `AddFame`, `AddInfamy`, `AddFavor`, `SpendFavor`, `GetTier`.
+  Players are told when their tier changes, not on every point.
+- Rival table (Fame with the first faction also adds this share as Infamy with the second):
+  Haven → Red Hand 15%, Bastion → Red Hand 25%, Red Hand → Bastion 20% and Haven 15%,
+  Halcyon → Red Hand 10%. Missions with an explicit rival use that instead of the table.
+- `RZ_QuartermasterComponent` marks a faction contact. `RZ_FactionShopAction` on it has faction,
+  required tier, Favor cost, item prefab and name. The server checks tier and Favor when the
+  action is used and refuses with a message; the action is not greyed out on the client.
+  Shop System can still be used for general trading.
 - Missions: `m_eGiver` gets Fame, an optional `m_eRival` gets Infamy, `m_iFavorReward` pays out
-- Perks are checked in code where they apply (scanner, requisition, toll pass...)
+- Perks are checked in code where they apply (`RZ_FactionPerks`, `RZ_CureResearch`)
 - AI hostility: Reforger factions are global, so per-player hostility is done by
-  sending hunter squads or checkpoint attack waypoints at Hunted players, not by
-  changing faction relations
+  sending hunter squads at Hunted players, not by changing faction relations
+- Season ending: Fame earned with each faction is summed over all players
+  (`RZ_SaveData.seasonFame`); the winner is written to `last_season.json`
+
+### What's in code and what isn't yet
+
+| In code | Not yet |
+|---|---|
+| All tiers, Fame/Infamy/Favor, rivals, amends missions | Paying Favor to remove Infamy |
+| Word gets around, all five unlockable backgrounds | Disguises, surrendering at checkpoints |
+| Quartermaster shops (any item, any tier) | Haven safehouse spawn points, Community respawns |
+| Requisition, sample scanner, Halcyon research bonus, Neighbours | Fire Mission, Fence, Bounty board, Halcyon medic, immunity booster |
+| Toll pass (message only), Halcyon Hunted gets no Fame for samples | AI checkpoints and roadblocks reacting to standing |
+| Hunter squads (Bastion and Red Hand), Kill-on-Sight bounties | Haven AI warning other players |
+| Season winner by Fame | Next-season rules from the winner |

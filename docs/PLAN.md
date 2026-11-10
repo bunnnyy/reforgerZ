@@ -13,8 +13,8 @@ research the cure.
    the server through stages and sends hordes toward noise.
 3. **One shared goal.** Cure research is server-wide and needs many players.
    It's also something to fight over: samples, antidotes, the lab.
-4. **Factions and reputation.** Military, Bandits, the Institute and Survivors remember
-   what *this character* did.
+4. **Factions and reputation.** The Haven, Task Force Bastion, the Red Hand and Halcyon
+   remember what *this character* did, as Fame and Infamy (see [REPUTATION.md](REPUTATION.md)).
 5. **Works on any map.** Everything is placed relative to settlements that
    are detected automatically.
 6. **Use the Workshop.** Zombies, hunger and thirst, traders and building come from existing
@@ -28,15 +28,21 @@ Out of scope: sleep and time skipping.
 |---|---|---|
 | Settlement detection (markers, map labels, building clusters) | `World/RZ_SettlementScanner.c` | Written |
 | Director: four outbreak stages, infection spread between towns | `Director/RZ_Director.c`, `RZ_OutbreakStage.c` | Written |
-| Heat: noise draws zombies, enough heat triggers a horde | `Director/RZ_HeatMap.c` | Written (presence, vehicles, gunfire) |
+| Heat: noise draws zombies, enough heat triggers a horde | `Director/RZ_HeatMap.c` | Written (presence, vehicles, gunfire, suppressors) |
 | Zombie spawner: near players only, despawns far away, counts kills | `Zombies/RZ_ZombieSpawner.c` | Written |
-| Backgrounds (8, chosen as loadouts in the deploy menu) | `Backgrounds/RZ_Background.c` | Written |
-| Per-life reputation with 4 factions | `Factions/`, `Backgrounds/RZ_PlayerProfile.c` | Written |
-| Random missions (8 types, see below) | `Missions/` | Written |
+| Backgrounds (8, plus 5 unlockable through Legacy) | `Backgrounds/RZ_Background.c` | Written |
+| Fame, Infamy and Favor per faction per life; standing tiers; rival Infamy | `Factions/RZ_Reputation.c`, `Backgrounds/RZ_PlayerProfile.c` | Written |
+| Champion carry-over ("word gets around") and background unlocks | `Core/RZ_GameModeComponent.c` | Written |
+| Missions: 42 faction contracts + 12 world events, requirements, amends, background bonuses | `Missions/` (see [MISSIONS.md](MISSIONS.md)) | Written |
+| Choice missions: hand an item to one of two factions | `Missions/RZ_MissionItems.c`, `RZ_MissionBases.c` | Written |
+| Quartermasters, Favor shops, standing check, Requisition | `Factions/RZ_Quartermaster.c` | Written |
+| Faction perks, hunter squads, Kill-on-Sight bounties | `Factions/RZ_FactionPerks.c` | Written |
+| Season ending: the cure goes to the faction with the most Fame | `Core/RZ_GameModeComponent.c` | Written |
+| Map markers for world events and the lab | `Core/RZ_MapMarkers.c` | Written (toggle) |
 | Personal objective per life, Legacy points | `Backgrounds/RZ_Objectives.c` | Written |
 | Bite detection (health drop + zombie within reach → chance to infect) | `Zombies/RZ_BiteDetector.c` | Written |
 | Gunfire heat via `OnProjectileShot` | `Core/RZ_GameModeComponent.c` | Written |
-| Antidote use action | `Cure/RZ_AntidoteAction.c` | Written |
+| Antidote: world action and inventory consumable | `Cure/RZ_AntidoteAction.c`, `RZ_AntidoteConsumable.c` | Written |
 | Queued hints, missions announced with distance and direction | `Core/RZ_GameModeComponent.c` | Written |
 | Cure research: samples, 4 breakthroughs, antidotes, final stand | `Cure/` | Written |
 | Infection timer: turns you when it runs out, cure slows it | `Core/RZ_GameModeComponent.c` | Written |
@@ -49,42 +55,50 @@ game versions. Fix those first. See [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md).
 
 ## Backgrounds
 
+Starting standing below is Fame (+) or Infamy (−).
+
 | Background | Perk | Flaw |
 |---|---|---|
 | Nurse | Medical supplies. Infection takes 50% longer to kill you | Unarmed |
 | Mechanic | Toolbox and jerrycan | 25% louder |
-| Hunter | Hunting rifle, 25% quieter | Little ammo, Military -10 |
-| Police Officer | Sidearm, Military +20 | Bandits -25 |
-| Ex-Con | Bandits +25, knife | Military -25, Survivors -10, infection kills 20% faster |
-| Lab Technician | Samples worth double research, Institute +20 | Unarmed, 15% louder |
+| Hunter | Hunting rifle, 25% quieter | Little ammo, Bastion -10 |
+| Police Officer | Sidearm, Bastion +20 (Known) | Red Hand -25 (Watched) |
+| Ex-Con | Red Hand +25 (Known), knife | Bastion -25 (Watched), Haven -10, infection kills 20% faster |
+| Lab Technician | Samples worth double research, Halcyon +20 (Known) | Unarmed, 15% louder |
 | Radio Operator | Radio, horde warnings and intel map-wide | 20% louder |
-| Unemployed | +50% mission reputation | Starts with nothing |
+| Unemployed | +50% mission Fame | Starts with nothing |
+| Soldier (unlock: Champion with Bastion) | Service rifle and armour, Bastion +20 | Red Hand -15 (Watched) |
+| Doctor (unlock: Champion with Halcyon) | Infection takes 2.5x as long, Halcyon +20 | Unarmed |
+| Raider (unlock: Champion with the Red Hand) | Red Hand +40 (Trusted) | Haven and Bastion -15 (Watched) |
+| Elder (unlock: Champion with the Haven) | Haven +40 (Trusted) | 30% louder |
+| Drifter (unlock: 10 Legacy) | Known with every faction | No gear |
 
 Gear comes from the loadout prefab. Perks and flaws come from `RZ_Background`
 and change ReforgerZ systems, so they work with any other mods loaded.
 
 ## Missions
 
-| Mission | Giver | When | What |
-|---|---|---|---|
-| Supply cache | Survivors | always | Hold a spot in town for 60 s; zombie guards; loot crate |
-| Retake the town | Military, then Survivors | infested towns | Kill 8 × size zombies in town; infection -35 |
-| Alpha sighting | Institute | until cured | Kill a special; extra samples |
-| Radio relay | Survivors | always | Hold high ground 3 min; noise brings a horde |
-| Survivors trapped | Survivors | more in later stages | Reach them, survive 3 waves |
-| Evac flight | Military | Collapse/Overrun only | Be at the LZ when it leaves; only those present get paid |
-| Burn the nest | Survivors | nest prefab set | Destroy a hive; infection -30; fail = +15 |
-| Bandit dead drop | Bandits | more in later stages | Sell samples for loot; Bandit rep up, Institute rep down, cure slows for everyone |
+Two kinds, described in full in [MISSIONS.md](MISSIONS.md):
+
+- **World events** (12 in code) are announced to everyone, and anyone who takes part shares the reward.
+- **Faction contracts** (42 in code) are offered only to players who meet their requirements:
+  tier with the giver, standing with other factions, background, world state and player count.
+  There's no "accept" button: eligible players who take part get paid, others get nothing.
+  Each player gets at most one new offer a minute, by radio or at the faction's quartermaster.
+
+Contracts pay Fame and Favor with the giver, and often Infamy with a rival. *Amends* contracts
+work Infamy off instead while you're Watched. ★ backgrounds get something better (faster
+holds, more Fame). Choice missions end with an item you hand to one of two factions.
 
 Missions are announced to each player with distance and direction ("1.2 km NE").
-A freshly spawned player hears everything active on the radio.
+A freshly spawned player hears every world event and the contracts they qualify for.
 
 ## Personal objectives
 
 Each life gets one goal, flavoured by background (the Hunter heads for their cabin,
 the Ex-Con digs up a stash): reach a town, survive 45 min, deliver 2 samples,
 be part of 2 missions, or earn a faction's trust. Completing one gives a
-**Legacy** point, saved across lives and set aside for unlocks in phase 4.
+**Legacy** point, saved across lives. 10 Legacy unlocks the Drifter background.
 
 ## Cure research
 
@@ -95,7 +109,8 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
  50% Bite treatment    lab produces an antidote every 15 min
  75% Immunity serum    spread -45% total, bites take 50% longer
 100% FINAL STAND       hold the lab 15 min against hordes every 2 min
-       win  ─▶ infection everywhere -70%, Aftermath, season over
+       win  ─▶ infection everywhere -70%, Aftermath, season over,
+               the cure goes to the faction with the most Fame this season
        lose ─▶ lab abandoned for 90 s, research drops to 90%
 ```
 
@@ -117,15 +132,26 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Personal objective per life, Legacy points
 - [x] Survivors trapped, Evac flight, Burn the nest, Bandit dead drop
 - [x] Missions announced with distance and direction; queued hints
-- [ ] Map markers for missions and the lab
+- [x] Map markers for world events and the lab (`RZ_MapMarkers`, toggle on the game mode)
 - [ ] Custom deploy-menu panel that shows each background's perk and flaw before you pick it
-- [ ] Antidote as an inventory consumable (not just a world action)
-- [ ] Suppressors lower gunfire heat
+- [x] Antidote as an inventory consumable (`RZ_ConsumableAntidote`, needs checking in Workbench)
+- [x] Suppressors lower gunfire heat (detected from attachment prefab names)
 - [ ] Supply convoy mission (moving target)
 
 ### Phase 3: factions with teeth
-- [ ] AI faction camps (Military checkpoint, Bandit camp, Institute outpost) spawned at settlements
-- [ ] Reputation gates trader access and prices (Shop System), safe-zone entry and mission offers
+- [x] Fame / Infamy / Favor, standing tiers, rival Infamy, Champion carry-over
+- [x] Five unlockable backgrounds
+- [x] Contract requirements (tier, standing with others, background, world state), amends, ★ bonuses
+- [x] Choice missions, delivery missions, drop points
+- [x] 42 contracts and 12 world events from MISSIONS.md
+- [x] Quartermasters with Favor shops gated by tier; Requisition; standing check
+- [x] Cheap perks: sample scanner, Halcyon research bonus, Neighbours, toll pass (message only)
+- [x] Hunter squads for Hunted players; Kill-on-Sight bounties
+- [ ] Remaining perks: Haven safehouse spawn points, Fire Mission, Fence, Bounty board, immunity booster, Halcyon medic
+- [ ] Convoy, escort and AI-heavy contracts (Convoy Escort, Refugee Column, Hijack the Convoy, Rescue the Pilot...)
+- [ ] Disguises (faction uniforms) and surrendering at checkpoints
+- [ ] AI faction camps (Bastion checkpoint, Red Hand camp, Halcyon outpost) spawned at settlements
+- [ ] Shop System prices tied to standing; safe-zone entry
 - [ ] AI camp behaviour per player standing (warn, refuse, shoot)
 - [ ] Reputation clues visible to other players (e.g. bandit armband)
 
@@ -134,6 +160,9 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [ ] Journal left on your body: a hint for whoever finds it
 
 ### Phase 5: seasons
+- [x] The season's ending is decided by faction Fame; the winner is saved to `last_season.json`
+- [ ] TODO: next-season starting rules from the last winner (more safe towns, strong checkpoints,
+      lawless roads, or lower infection with more specials; see REPUTATION.md)
 - [ ] Wipe cycle tied to cure completion, or a fixed number of weeks
 - [ ] Season rule sets: Winter (ENDURE), Fog, Military Collapse, No Vehicles
 - [ ] Hall of fame: who delivered the most samples, who held the final stand
