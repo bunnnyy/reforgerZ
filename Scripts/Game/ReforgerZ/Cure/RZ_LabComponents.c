@@ -250,6 +250,6 @@ class RZ_LabStatusAction : ScriptedUserAction
 		if (gm.IsReplicatedCured())
 			text = "The cure is complete.\n" + text;
 
-		SCR_HintManagerComponent.ShowCustomHint(text, "Institute Lab", 8); // VERIFY: ShowCustomHint
+		SCR_HintManagerComponent.ShowCustomHint(text, "Halcyon lab", 8); // VERIFY: ShowCustomHint
 	}
 }

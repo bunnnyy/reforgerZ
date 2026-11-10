@@ -87,7 +87,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Research sample item with RZ_SampleItemComponent", "et", category: "ReforgerZ|Cure")]
 	protected ResourceName m_sSamplePrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Antidote item the lab produces after the second breakthrough", "et", category: "ReforgerZ|Cure")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Antidote item. After the second breakthrough the lab makes doses into a stock; quartermaster shop actions selling this prefab draw on it", "et", category: "ReforgerZ|Cure")]
 	protected ResourceName m_sAntidotePrefab;
 
 	[Attribute("2", desc: "Research percent per sample (x background multiplier)", category: "ReforgerZ|Cure")]
@@ -975,7 +975,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			string lab = "";
 			if (m_bHasLab)
 			{
-				lab = string.Format("\nThe Institute's lab: %1. Bring it samples from special infected.",
+				lab = string.Format("\nHalcyon's lab: %1. Bring it samples from special infected.",
 					RZ_Util.DirectionText(controlledEntity.GetOrigin(), m_vLabPos));
 			}
 
@@ -1487,7 +1487,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			if (RZ_Util.DistXZ(p.GetOrigin(), target) < 800)
 				NotifyPlayer(ids[i], "Horde", "Something big heard you. A horde is moving in.");
 			else if (GetPlayerBackground(ids[i]).m_bRadioIntel)
-				NotifyPlayer(ids[i], "Radio chatter", "Survivors report a horde moving toward " + where + ".");
+				NotifyPlayer(ids[i], "Radio chatter", "Someone on the open channel says a horde is moving toward " + where + ".");
 		}
 	}
 
@@ -1525,22 +1525,6 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			RZ_Util.SpawnPrefab(m_sSamplePrefab, RZ_Util.RandomPointInRing(pos, 0.3, 1.5) + Vector(0, 0.3, 0));
 		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void SpawnAntidote()
-	{
-		if (!m_bHasLab)
-			return;
-
-		RZ_Util.SpawnPrefab(m_sAntidotePrefab, RZ_Util.RandomPointInRing(m_vLabPos, 2, 5) + Vector(0, 0.3, 0));
-		NotifyAll("Institute", "A fresh antidote dose is ready at the lab.");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	IEntity SpawnAntidoteAt(vector pos)
-	{
-		return RZ_Util.SpawnPrefab(m_sAntidotePrefab, RZ_Util.GroundPos(pos) + Vector(0, 0.3, 0));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1754,7 +1738,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		m_Director.Restore(data.stage, data.stageMinutes);
-		m_Cure.Restore(data.cureProgress, data.cureMilestone, data.cured);
+		m_Cure.Restore(data.cureProgress, data.cureMilestone, data.cured, data.labAntidotes, data.stolenAntidotes);
 		if (data.seasonFame)
 		{
 			for (int f = 0; f < data.seasonFame.Count() && f < RZ_Factions.COUNT; f++)
@@ -1796,6 +1780,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		data.cureProgress = m_Cure.m_fProgress;
 		data.cureMilestone = m_Cure.m_iMilestone;
 		data.cured = m_Cure.IsCured();
+		data.labAntidotes = m_Cure.GetLabAntidotes();
+		data.stolenAntidotes = m_Cure.GetStolenAntidotes();
 		data.seasonWinner = m_iSeasonWinner;
 		foreach (int fame : m_aSeasonFame)
 		{

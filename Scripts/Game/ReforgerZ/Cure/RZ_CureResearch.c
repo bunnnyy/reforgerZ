@@ -2,7 +2,9 @@
 //! to the lab and deliver them. Progress changes the world for everyone:
 //!
 //!  25%  Field antiviral    infection spreads slower, bites take longer to kill
-//!  50%  Bite treatment     the lab starts producing antidotes (players will fight over them)
+//!  50%  Bite treatment     the lab makes an antidote dose every 15 minutes, into its stock
+//!                          (at most 3). Halcyon's quartermaster sells from that stock; the Red
+//!                          Hand sells only what it has stolen from it. No doses lie loose.
 //!  75%  Immunity serum     spread slows further, bites take even longer
 //! 100%  Final stand        hold the lab against wave after wave for 15 minutes.
 //!                          Win: the cure goes out and the season ends.
@@ -21,10 +23,16 @@ class RZ_CureResearch
 	protected float m_fWaveTimer;
 	protected float m_fAntidoteTimer;
 
+	//! Doses the lab has made and not yet sold, and doses the Red Hand has stolen from it
+	protected int m_iLabAntidotes;
+	protected int m_iStolenAntidotes;
+
 	static const float FINAL_STAND_SECONDS = 900;
 	static const float ABANDON_LIMIT_SECONDS = 90;
 	static const float WAVE_INTERVAL_SECONDS = 120;
 	static const float ANTIDOTE_INTERVAL_SECONDS = 900;
+	static const int LAB_ANTIDOTE_CAP = 3;
+	static const int STOLEN_ANTIDOTE_CAP = 4;
 	static const float LAB_DEFENCE_RADIUS = 150;
 
 	//------------------------------------------------------------------------------------------------
@@ -34,15 +42,60 @@ class RZ_CureResearch
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void Restore(float progress, int milestone, bool cured)
+	void Restore(float progress, int milestone, bool cured, int labAntidotes, int stolenAntidotes)
 	{
 		m_fProgress = progress;
 		m_iMilestone = milestone;
 		m_bCured = cured;
+		m_iLabAntidotes = Math.ClampInt(labAntidotes, 0, LAB_ANTIDOTE_CAP);
+		m_iStolenAntidotes = Math.ClampInt(stolenAntidotes, 0, STOLEN_ANTIDOTE_CAP);
 
 		// A restart in the middle of the final stand starts it again from the beginning
 		if (m_iMilestone >= 4 && !m_bCured)
 			StartFinalStand();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetLabAntidotes() { return m_iLabAntidotes; }
+
+	//------------------------------------------------------------------------------------------------
+	int GetStolenAntidotes() { return m_iStolenAntidotes; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Sells one dose from the lab's stock (Halcyon's quartermaster). False if there's none.
+	bool TakeLabAntidote()
+	{
+		if (m_iLabAntidotes <= 0)
+			return false;
+
+		m_iLabAntidotes--;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sells one stolen dose (the Red Hand's black market). False if there's none.
+	bool TakeStolenAntidote()
+	{
+		if (m_iStolenAntidotes <= 0)
+			return false;
+
+		m_iStolenAntidotes--;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Red Hand robs the lab's store: up to `count` doses move to its black market.
+	//! Returns how many were taken.
+	int StealLabAntidotes(int count)
+	{
+		int taken = Math.Min(count, m_iLabAntidotes);
+		taken = Math.Min(taken, STOLEN_ANTIDOTE_CAP - m_iStolenAntidotes);
+		if (taken <= 0)
+			return 0;
+
+		m_iLabAntidotes -= taken;
+		m_iStolenAntidotes += taken;
+		return taken;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -138,7 +191,7 @@ class RZ_CureResearch
 			if (m_fAntidoteTimer >= ANTIDOTE_INTERVAL_SECONDS)
 			{
 				m_fAntidoteTimer = 0;
-				m_GM.SpawnAntidote();
+				MakeAntidote();
 			}
 		}
 
@@ -165,11 +218,11 @@ class RZ_CureResearch
 		switch (milestone)
 		{
 			case 1:
-				m_GM.NotifyAll("Breakthrough: Field antiviral", "The Institute has slowed the infection. It spreads slower and bites take longer to kill.");
+				m_GM.NotifyAll("Breakthrough: Field antiviral", "Halcyon has slowed the infection. It spreads slower and bites take longer to kill.");
 				break;
 			case 2:
-				m_GM.NotifyAll("Breakthrough: Bite treatment", "The lab can make antidotes now. Fresh doses will show up at the lab regularly.");
-				m_GM.SpawnAntidote();
+				m_GM.NotifyAll("Breakthrough: Bite treatment", "The lab can make antidotes now: a dose every quarter of an hour, a few at a time. Halcyon's quartermaster has them for people it trusts.");
+				MakeAntidote();
 				break;
 			case 3:
 				m_GM.NotifyAll("Breakthrough: Immunity serum", "Infection spread is slowing a lot. One final push is all that's left.");
@@ -178,6 +231,17 @@ class RZ_CureResearch
 				StartFinalStand();
 				break;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One dose into the lab's stock, if there's room. Nothing is spawned in the world.
+	protected void MakeAntidote()
+	{
+		if (!m_GM.HasLab() || m_iLabAntidotes >= LAB_ANTIDOTE_CAP)
+			return;
+
+		m_iLabAntidotes++;
+		m_GM.NotifyAll("Halcyon", string.Format("A fresh antidote dose is ready at the lab. Doses in stock: %1.", m_iLabAntidotes));
 	}
 
 	//------------------------------------------------------------------------------------------------

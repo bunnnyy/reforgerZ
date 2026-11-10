@@ -25,6 +25,8 @@ class RZ_SaveData
 	float cureProgress;
 	int cureMilestone;
 	bool cured;
+	int labAntidotes;		// doses in the lab's stock
+	int stolenAntidotes;	// doses on the Red Hand's black market
 
 	// Season: Fame given to each faction by all players, and who got the cure (-1 = not yet)
 	ref array<int> seasonFame = {};
