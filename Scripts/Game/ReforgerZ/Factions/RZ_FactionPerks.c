@@ -4,7 +4,7 @@
 //! Implemented perks:
 //!   Haven Known          tier message (safehouses let you in: flavour for now)
 //!   Haven Trusted        Neighbours: direction to the nearest job, on spawn and every 10 min
-//!   Bastion Trusted      Requisition: a supply crate once per hour (RZ_RequisitionAction)
+//!   Bastion Trusted      Requisition: once an hour, ammo or rations at half Favor (RZ_RequisitionAction)
 //!   Red Hand Known       toll pass (flavour message for now)
 //!   Halcyon Trusted      sample scanner: specials within 300 m, every minute
 //!   Halcyon Champion     +25% research from your samples (RZ_CureResearch)
@@ -287,7 +287,7 @@ class RZ_FactionPerks
 				if (tier == RZ_ETier.KNOWN)
 					return "Bastion checkpoints will let you through without a search.";
 				if (tier == RZ_ETier.TRUSTED)
-					return "Requisition: ask the Bastion quartermaster for a supply crate once an hour.";
+					return "Requisition: once an hour, the Bastion quartermaster lets you draw ammo or rations at half the Favor cost.";
 				break;
 			}
 			case RZ_EFaction.BANDITS:
@@ -384,8 +384,19 @@ class RZ_FactionPerks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Bastion Trusted: one supply crate per hour per player (by identity, so it survives respawns).
-	bool TryRequisition(int playerId, IEntity owner)
+	//! Requisition price: half the full Favor cost, rounded up.
+	static int RequisitionPrice(int fullCost)
+	{
+		if (fullCost <= 0)
+			return 0;
+
+		return (fullCost + 1) / 2;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bastion Trusted: once an hour per player (by identity, so it survives respawns), one
+	//! item from the quartermaster at half price. Nothing is free: it's paid in Favor.
+	bool TryRequisition(int playerId, IEntity owner, IEntity user, ResourceName prefab, string itemName, int fullCost)
 	{
 		string bastion = RZ_Factions.GetName(RZ_EFaction.MILITARY);
 		RZ_ETier tier = m_GM.GetTier(playerId, RZ_EFaction.MILITARY);
@@ -404,15 +415,27 @@ class RZ_FactionPerks
 			return false;
 		}
 
-		ResourceName crate = m_GM.GetRequisitionCratePrefab();
-		vector pos = RZ_Mission.LandPointNear(owner.GetOrigin(), 3, 6);
-		if (crate.IsEmpty())
-			m_GM.SpawnRewardCrate(pos);
-		else
-			RZ_Util.SpawnPrefab(crate, pos, Math.RandomFloat(0, 360));
+		if (prefab.IsEmpty())
+		{
+			m_GM.NotifyPlayer(playerId, bastion, "The stores are empty. Nothing to requisition.");
+			return false;
+		}
+
+		int price = RequisitionPrice(fullCost);
+		if (!m_GM.SpendFavor(playerId, RZ_EFaction.MILITARY, price))
+		{
+			m_GM.NotifyPlayer(playerId, bastion, string.Format("Requisitioned %1 still costs %2 Favor. You have %3.", itemName, price, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.MILITARY)));
+			return false;
+		}
+
+		if (!RZ_QuartermasterHelper.SpawnNear(prefab, owner, user))
+		{
+			m_GM.AddFavor(playerId, RZ_EFaction.MILITARY, price); // refund
+			return false;
+		}
 
 		m_mRequisitionAt.Set(ident, m_fClock);
-		m_GM.NotifyPlayer(playerId, bastion, "Requisition approved. The crate is next to the quartermaster.");
+		m_GM.NotifyPlayer(playerId, bastion, string.Format("Requisition approved: %1, signed out of Bastion stock. %2 Favor left.", itemName, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.MILITARY)));
 		return true;
 	}
 

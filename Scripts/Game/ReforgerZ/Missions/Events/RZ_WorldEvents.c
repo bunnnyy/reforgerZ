@@ -39,7 +39,7 @@ class RZ_Event_CrashedHelicopter : RZ_Mission
 		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 6, 10));
 		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 6, 10));
 		gm.GetHeat().AddHeat(m_vPos, 50);
-		m_sTitle = "Helicopter wreck";
+		m_sTitle = "Crashed helicopter";
 		m_sBrief = string.Format("Survivors found one of Bastion's lost helicopters near %1, down since the first week. Its cargo is still aboard. So are the infected nesting around it.", s.m_sName);
 		return true;
 	}

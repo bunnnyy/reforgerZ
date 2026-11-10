@@ -1,7 +1,7 @@
 enum RZ_EOutbreakStage
 {
-	EARLY_OUTBREAK,	// Power still on, military still fighting, runners are rare
-	COLLAPSE,		// Towns falling, military pulling out
+	EARLY_OUTBREAK,	// Power still on, Bastion still holding towns, runners are rare
+	COLLAPSE,		// Towns falling, Bastion pulling back to its bases
 	OVERRUN,		// Hordes everywhere, specials common
 	AFTERMATH		// The dust settles: fewer but nastier zombies, big roaming hordes
 }
@@ -29,7 +29,7 @@ class RZ_StageSettings
 	[Attribute("120", desc: "Minutes before advancing to the next stage. 0 = only advance on infection level")]
 	float m_fDurationMinutes = 120;
 
-	[Attribute("1", desc: "How often military missions show up (military pulls out as things get worse)")]
+	[Attribute("1", desc: "How often Bastion missions show up (Bastion pulls back to its bases as things get worse)")]
 	float m_fMilitaryPresence = 1;
 
 	//------------------------------------------------------------------------------------------------
@@ -86,10 +86,10 @@ class RZ_StageSettings
 	{
 		switch (stage)
 		{
-			case RZ_EOutbreakStage.EARLY_OUTBREAK: return "Emergency broadcast: stay indoors. The military has the situation under control.";
-			case RZ_EOutbreakStage.COLLAPSE: return "The broadcasts have stopped. Military convoys are leaving. Towns are going dark.";
-			case RZ_EOutbreakStage.OVERRUN: return "There is no one coming. The dead outnumber the living.";
-			case RZ_EOutbreakStage.AFTERMATH: return "The world has gone quiet. What's left out there has had time to change.";
+			case RZ_EOutbreakStage.EARLY_OUTBREAK: return "Emergency broadcast: this area is under federal quarantine. Remain indoors. Do not approach the perimeter.";
+			case RZ_EOutbreakStage.COLLAPSE: return "Bastion is pulling its people back behind its own walls. Towns are going dark. The broadcast on the radio hasn't changed a word.";
+			case RZ_EOutbreakStage.OVERRUN: return "The dead outnumber the living. Nothing is coming through the line, and nobody is going out.";
+			case RZ_EOutbreakStage.AFTERMATH: return "The Zone has gone quiet. Whatever is left in here has had time to change.";
 		}
 
 		return "";

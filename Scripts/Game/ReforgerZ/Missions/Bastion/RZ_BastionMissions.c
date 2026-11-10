@@ -97,22 +97,25 @@ class RZ_Mission_TakeBackTown : RZ_Mission_ClearSettlement
 }
 
 //------------------------------------------------------------------------------------------------
-//! #2 Evac Flight: a helicopter leaves from a landing zone at a fixed time.
-//! Only players standing at the LZ when it leaves get the reward, so
-//! everyone converges on one spot. Expect PvP. Only while Bastion is pulling out.
-class RZ_Mission_EvacWindow : RZ_Mission
+//! #2 Last Helicopter: Bastion's one working helicopter shuttles people and stock
+//! between its own bases inside the Zone. It sets down at an LZ outside a town and
+//! lifts off at a fixed time. Everyone at the LZ when it leaves is paid for keeping it
+//! clear (Fame and Favor only: nothing is thrown out of the helicopter). Everyone
+//! converges on one spot, so expect PvP. Only while Bastion is still around.
+class RZ_Mission_LastHelicopter : RZ_Mission
 {
 	protected bool m_bWarned;
+	protected bool m_bLanded;
 
 	protected static const float LZ_RADIUS = 40;
 	protected static const float COUNTDOWN = 720;
+	protected static const float GROUND_TIME = 180;	// it lands this long before it leaves
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.STRANGER, 25, 20);
-		m_Req.m_iMinStage = RZ_EOutbreakStage.COLLAPSE;
-		m_Req.m_iMaxStage = RZ_EOutbreakStage.OVERRUN;
+		m_Req.m_fMinMilitary = 0.2;
 		m_fTimeLeft = COUNTDOWN;
 		m_fParticipationRadius = 0; // decided at departure, see OnUpdate
 	}
@@ -133,8 +136,8 @@ class RZ_Mission_EvacWindow : RZ_Mission
 
 		// LZ on the edge of town where a helicopter could land
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 150);
-		m_sTitle = "Evac flight";
-		m_sBrief = string.Format("A Bastion helicopter is leaving the LZ outside %1 in %2 minutes. Be there when it lifts off.",
+		m_sTitle = "Last helicopter";
+		m_sBrief = string.Format("Bastion's last working helicopter is setting down at the LZ outside %1 on its run between bases. It lifts off in %2 minutes. Keep the LZ clear and be there when it goes.",
 			s.m_sName, RZ_Util.RoundToInt(COUNTDOWN / 60));
 		return true;
 	}
@@ -142,14 +145,20 @@ class RZ_Mission_EvacWindow : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
+		if (!m_bLanded && m_fTimeLeft < GROUND_TIME)
+		{
+			m_bLanded = true;
+			NotifyInterested(gm, "Last helicopter", "The helicopter is down at the LZ outside " + GetLocationName(gm) + ". Three minutes on the ground.");
+		}
+
 		// The rotors are loud
-		if (m_fTimeLeft < 120)
+		if (m_bLanded)
 			gm.GetHeat().AddHeat(m_vPos, 4 * dt);
 
-		if (!m_bWarned && m_fTimeLeft < 120)
+		if (!m_bWarned && m_fTimeLeft < 60)
 		{
 			m_bWarned = true;
-			NotifyInterested(gm, "Evac flight", "Two minutes until the helicopter leaves " + GetLocationName(gm) + ".");
+			NotifyInterested(gm, "Last helicopter", "One minute until the helicopter lifts off from " + GetLocationName(gm) + ".");
 		}
 
 		if (m_fTimeLeft > 0)
@@ -165,11 +174,15 @@ class RZ_Mission_EvacWindow : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
+	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		// The crew kicks out what they can't carry
-		gm.SpawnRewardCrate(m_vPos);
-		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 4, 8));
+		return "The helicopter is up and gone from " + GetLocationName(gm) + ". Bastion noticed who kept the LZ clear.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetFailText(RZ_GameModeComponent gm)
+	{
+		return "The helicopter left " + GetLocationName(gm) + " with nobody holding the LZ.";
 	}
 }
 
@@ -463,7 +476,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 
 		m_fParticipationRadius = 0;
 		m_sTitle = "Crash site";
-		m_sBrief = string.Format("A Bastion helicopter went down near %1. Secure the wreck and recover the black box. Bastion's drop is at %2. The Red Hand would pay for it at %3.", s.m_sName, b.m_sName, r.m_sName);
+		m_sBrief = string.Format("The wreck of a Bastion helicopter lost in the first week lies near %1. Secure it and recover the black box. Bastion's drop is at %2. The Red Hand would pay for it at %3.", s.m_sName, b.m_sName, r.m_sName);
 		return true;
 	}
 

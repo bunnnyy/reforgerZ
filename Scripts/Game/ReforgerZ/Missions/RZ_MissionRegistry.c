@@ -22,7 +22,7 @@ class RZ_MissionRegistry
 
 		// Task Force Bastion
 		mgr.RegisterType(RZ_Mission_ClearSettlement);
-		mgr.RegisterType(RZ_Mission_EvacWindow);
+		mgr.RegisterType(RZ_Mission_LastHelicopter);
 		mgr.RegisterType(RZ_Mission_BurnTheBodies);
 		mgr.RegisterType(RZ_Mission_Recon);
 		mgr.RegisterType(RZ_Mission_CheckpointDuty);
@@ -76,16 +76,14 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_TheWitness);
 
 		// World events
-		mgr.RegisterType(RZ_Event_Airdrop);
 		mgr.RegisterType(RZ_Event_CrashedHelicopter);
 		mgr.RegisterType(RZ_Event_HordeMigration);
 		mgr.RegisterType(RZ_Event_NightOfTheDead);
 		mgr.RegisterType(RZ_Event_SirenTest);
 		mgr.RegisterType(RZ_Event_Storm);
 		mgr.RegisterType(RZ_Event_WanderingTrader);
-		mgr.RegisterType(RZ_Event_BombingRun);
+		mgr.RegisterType(RZ_Event_BastionShelling);
 		mgr.RegisterType(RZ_Event_MassGrave);
 		mgr.RegisterType(RZ_Event_StashNote);
-		mgr.RegisterType(RZ_Event_SupplyPlaneCrash);
 	}
 }

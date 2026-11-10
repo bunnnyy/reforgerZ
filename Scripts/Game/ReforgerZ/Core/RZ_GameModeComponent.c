@@ -115,13 +115,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Destructible Haven radio relay with a damage manager (optional, enables Sabotage the Relay)", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sRelayPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Airdrop crate (optional, the reward crate is used if empty)", "et", category: "ReforgerZ|Missions")]
-	protected ResourceName m_sAirdropPrefab;
-
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Wandering trader: a character, vehicle or composition, e.g. with a Shop System trader (optional, enables Wandering Trader)", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sTraderPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Explosion effect prefab, e.g. an artillery shell impact (optional, enables Bombing Run)", "et", category: "ReforgerZ|Missions")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Explosion effect prefab, e.g. a mortar or artillery shell impact (optional, enables Bastion Shelling)", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sExplosionPrefab;
 
 	// ---------------------------------------------------------------- Puzzles
@@ -190,7 +187,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven quartermaster (RZ_QuartermasterComponent + shop actions). Spawned in the safest town if none is placed", "et", category: "ReforgerZ|Factions")]
 	protected ResourceName m_sQuartermasterHaven;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion quartermaster (also add RZ_RequisitionAction)", "et", category: "ReforgerZ|Factions")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion quartermaster (also add RZ_RequisitionAction for ammo and rations)", "et", category: "ReforgerZ|Factions")]
 	protected ResourceName m_sQuartermasterBastion;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand quartermaster (black market)", "et", category: "ReforgerZ|Factions")]
@@ -198,9 +195,6 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon quartermaster, spawned next to the lab", "et", category: "ReforgerZ|Factions")]
 	protected ResourceName m_sQuartermasterHalcyon;
-
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Crate for the Bastion Requisition perk (the reward crate is used if empty)", "et", category: "ReforgerZ|Factions")]
-	protected ResourceName m_sRequisitionCratePrefab;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion hunter squad: AI group sent after players Hunted by Bastion (optional)", "et", category: "ReforgerZ|Factions")]
 	protected ResourceName m_sBastionHunterPrefab;
@@ -420,11 +414,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	ResourceName GetRedHandGroupPrefab() { return m_sRedHandGroupPrefab; }
 	ResourceName GetFuelDepotPrefab() { return m_sFuelDepotPrefab; }
 	ResourceName GetRelayPrefab() { return m_sRelayPrefab; }
-	ResourceName GetAirdropPrefab() { return m_sAirdropPrefab; }
 	ResourceName GetTraderPrefab() { return m_sTraderPrefab; }
 	ResourceName GetExplosionPrefab() { return m_sExplosionPrefab; }
 	ResourceName GetAntidotePrefab() { return m_sAntidotePrefab; }
-	ResourceName GetRequisitionCratePrefab() { return m_sRequisitionCratePrefab; }
 	float GetHunterSquadMinutes() { return m_fHunterSquadMinutes; }
 	float GetBountyMinutes() { return Math.Max(1, m_fBountyMinutes); }
 	RZ_FactionPerks GetPerks() { return m_Perks; }
@@ -497,10 +489,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Bastion Requisition perk, from RZ_RequisitionAction.
-	bool TryRequisition(int playerId, IEntity quartermaster)
+	//! Bastion Requisition perk, from RZ_RequisitionAction: one item at half price, once an hour.
+	bool TryRequisition(int playerId, IEntity quartermaster, IEntity user, ResourceName prefab, string itemName, int fullCost)
 	{
-		return m_Perks.TryRequisition(playerId, quartermaster);
+		return m_Perks.TryRequisition(playerId, quartermaster, user, prefab, itemName, fullCost);
 	}
 	bool HasLab() { return m_bHasLab; }
 

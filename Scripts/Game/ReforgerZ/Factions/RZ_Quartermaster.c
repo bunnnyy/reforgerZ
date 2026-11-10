@@ -208,14 +208,27 @@ class RZ_StandingStatusAction : ScriptedUserAction
 }
 
 //------------------------------------------------------------------------------------------------
-//! Bastion Trusted perk "Requisition": call in a supply crate once per hour.
-//! Put this on the Bastion quartermaster.
+//! Bastion Trusted perk "Requisition": once an hour, draw ammo or rations from
+//! Bastion's stock at half the Favor cost. Put one per item on the Bastion
+//! quartermaster and set its attributes, like RZ_FactionShopAction. All of them
+//! share one hourly allowance per player.
+//! TODO (docs/WORLD.md, supply trucks): draw from an outpost's truck-supplied stock
+//! instead of the quartermaster, and refuse while that outpost hasn't been resupplied.
 class RZ_RequisitionAction : ScriptedUserAction
 {
+	[Attribute("30", desc: "Full Favor price. Requisition charges half of it, rounded up")]
+	protected int m_iFavorCost;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Ammo or rations to hand out, spawned next to the quartermaster", "et")]
+	protected ResourceName m_sItemPrefab;
+
+	[Attribute("rations", desc: "Name shown in the action menu")]
+	protected string m_sDisplayName;
+
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		outName = "Request a supply crate (Bastion Trusted, once per hour)";
+		outName = string.Format("Requisition %1 (%2 Favor, Bastion Trusted, once an hour)", m_sDisplayName, RZ_FactionPerks.RequisitionPrice(m_iFavorCost));
 		return true;
 	}
 
@@ -234,6 +247,6 @@ class RZ_RequisitionAction : ScriptedUserAction
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
 		if (gm && playerId > 0)
-			gm.TryRequisition(playerId, pOwnerEntity);
+			gm.TryRequisition(playerId, pOwnerEntity, pUserEntity, m_sItemPrefab, m_sDisplayName, m_iFavorCost);
 	}
 }
