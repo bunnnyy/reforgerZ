@@ -258,7 +258,7 @@ class RZ_Mission_DestroyTarget : RZ_Mission
 		if (!dmg)
 			return false;
 
-		return dmg.GetState() == EDamageState.DESTROYED; // VERIFY: damage manager on the target prefab
+		return dmg.GetState() == EDamageState.DESTROYED; // VERIFY: the target prefab has an SCR_DamageManagerComponent (else the mission ends only when the target is deleted)
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -354,7 +354,7 @@ class RZ_Mission_Delivery : RZ_Mission
 			return;
 		}
 
-		IEntity root = m_Item.GetRootParent(); // the same call RZ_Util.GetCarrierPlayerId makes (listed there)
+		IEntity root = m_Item.GetRootParent(); // the carrier, or the vehicle they sit in
 		m_bItemWasCarried = root && root != m_Item;
 		if (m_bItemWasCarried)
 			m_vItemLastPos = root.GetOrigin();

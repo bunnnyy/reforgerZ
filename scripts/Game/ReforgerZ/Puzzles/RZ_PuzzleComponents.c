@@ -77,7 +77,7 @@ class RZ_ClueComponent : ScriptComponent
 		m_iMissionId = missionId;
 		m_iClueIndex = clueIndex;
 		m_sReadLabel = readLabel;
-		Replication.BumpMe(); // VERIFY: RplProp on a ScriptComponent (needs an RplComponent on the prefab)
+		Replication.BumpMe(); // needs an RplComponent on the prefab
 	}
 
 	int GetMissionId() { return m_iMissionId; }
@@ -139,7 +139,7 @@ class RZ_PuzzleObjectComponent : ScriptComponent
 		m_sUseLabels = useLabels;
 		m_sChoiceLabels = choiceLabels;
 		m_bLabelled = !useLabels.IsEmpty() || !choiceLabels.IsEmpty();
-		Replication.BumpMe(); // VERIFY: RplProp on a ScriptComponent
+		Replication.BumpMe();
 	}
 
 	//------------------------------------------------------------------------------------------------

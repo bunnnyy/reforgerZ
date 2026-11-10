@@ -69,7 +69,6 @@ class RZ_SampleSearchPredicate : InventorySearchPredicate
 	}
 
 	//------------------------------------------------------------------------------------------------
-	// VERIFY: IsMatch signature in your game version
 	override protected bool IsMatch(BaseInventoryStorageComponent storage, IEntity item, array<GenericComponent> queriedComponents, array<BaseItemAttributeData> queriedAttributes)
 	{
 		return true;
@@ -156,7 +155,7 @@ class RZ_SampleDeliveryActionBase : ScriptedUserAction
 
 		foreach (IEntity item : items)
 		{
-			inv.TryDeleteItem(item); // VERIFY: TryDeleteItem()
+			inv.TryDeleteItem(item);
 		}
 
 		Deliver(gm, playerId, value, pOwnerEntity);
@@ -253,6 +252,6 @@ class RZ_LabStatusAction : ScriptedUserAction
 		if (gm.IsReplicatedCured())
 			text = "The cure is complete.\n" + text;
 
-		SCR_HintManagerComponent.ShowCustomHint(text, "Halcyon lab", 8); // VERIFY: ShowCustomHint
+		SCR_HintManagerComponent.ShowCustomHint(text, "Halcyon lab", 8);
 	}
 }

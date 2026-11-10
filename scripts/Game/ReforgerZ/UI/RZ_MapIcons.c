@@ -7,7 +7,7 @@
 //! Add RZ_MapIconsUI to the components of the map configuration the game uses (the full-screen map
 //! config; WORKBENCH_SETUP.md, "Setting up the UI") and set UI > Map icon layout. Without the
 //! layout, the layer does nothing and the vanilla text markers stay.
-class RZ_MapIconsUI : SCR_MapUIBaseComponent // VERIFY: SCR_MapUIBaseComponent with m_RootWidget and m_MapEntity, OnMapOpen/OnMapClose(MapConfiguration) and Update(float)
+class RZ_MapIconsUI : SCR_MapUIBaseComponent
 {
 	protected static const float HALF = 14;	// half the icon's size, to centre it on the spot
 

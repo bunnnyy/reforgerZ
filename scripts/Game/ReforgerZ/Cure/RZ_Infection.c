@@ -1099,11 +1099,11 @@ class RZ_Symptoms
 		if (!ent)
 			return false;
 
-		CharacterStaminaComponent stamina = CharacterStaminaComponent.Cast(ent.FindComponent(CharacterStaminaComponent)); // VERIFY: CharacterStaminaComponent on the character (else SCR_CharacterStaminaComponent)
+		CharacterStaminaComponent stamina = CharacterStaminaComponent.Cast(ent.FindComponent(CharacterStaminaComponent));
 		if (!stamina)
 			return false;
 
-		stamina.AddStamina(-share); // VERIFY: AddStamina(float) on the 0-1 scale, server-side and replicated (negative drains)
+		stamina.AddStamina(-share); // VERIFY: the drain shows on the player's stamina (vanilla also calls AddStamina only on the authority)
 		return true;
 	}
 
@@ -1118,7 +1118,7 @@ class RZ_Symptoms
 		if (!stamina)
 			return -1;
 
-		return stamina.GetStamina(); // VERIFY: GetStamina() returns 0-1
+		return stamina.GetStamina();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1126,6 +1126,6 @@ class RZ_Symptoms
 	//! effect from the server, so this returns false and the caller uses stamina and noise instead.
 	static bool Disorient(IEntity ent)
 	{
-		return false; // VERIFY: wire a client post-process blur or an aim-sway modifier here if the game version has one
+		return false;
 	}
 }

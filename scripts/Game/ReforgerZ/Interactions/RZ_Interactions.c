@@ -248,7 +248,7 @@ class RZ_ItemHelper
 			return 0;
 
 		array<IEntity> items = {};
-		inv.GetItems(items); // VERIFY: GetItems() lists items in every storage the character carries (same as RZ_Radio)
+		inv.GetItems(items);
 		int n = 0;
 		foreach (IEntity item : items)
 		{
@@ -726,7 +726,7 @@ class RZ_Interactions
 			return true;
 
 		string name = RZ_ItemHelper.LowerName(e);
-		bool building = SCR_DestructibleBuildingEntity.Cast(e) != null; // VERIFY: building base class (as in RZ_SettlementScanner)
+		bool building = SCR_DestructibleBuildingEntity.Cast(e) != null; // as in RZ_SettlementScanner
 		if (name.IsEmpty() && !building)
 			return true;
 

@@ -46,7 +46,6 @@ class RZ_MissionItemSearchPredicate : InventorySearchPredicate
 	}
 
 	//------------------------------------------------------------------------------------------------
-	// VERIFY: IsMatch signature in your game version (same as RZ_SampleSearchPredicate)
 	override protected bool IsMatch(BaseInventoryStorageComponent storage, IEntity item, array<GenericComponent> queriedComponents, array<BaseItemAttributeData> queriedAttributes)
 	{
 		return true;
@@ -72,7 +71,7 @@ class RZ_MissionItemHelper
 	{
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(user.FindComponent(SCR_InventoryStorageManagerComponent));
 		if (inv)
-			inv.TryDeleteItem(item); // VERIFY: TryDeleteItem()
+			inv.TryDeleteItem(item);
 		else
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 	}

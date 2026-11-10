@@ -505,7 +505,7 @@ class RZ_FactionServices
 			return 0;
 
 		array<IEntity> items = {};
-		inv.GetItems(items); // VERIFY: GetItems() lists items in every storage the character carries (same as RZ_FoodHelper)
+		inv.GetItems(items);
 		int taken = 0;
 		foreach (IEntity item : items)
 		{

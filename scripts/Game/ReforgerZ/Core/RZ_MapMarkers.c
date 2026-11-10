@@ -1,7 +1,6 @@
 //! Thin wrapper around the vanilla map marker system, so missions and the lab
 //! can show up on everyone's map. Turn it off with RZ_GameModeComponent >
-//! "Map markers" if it misbehaves. If it doesn't compile in your game version,
-//! empty the bodies of Add() and Remove(): nothing else depends on them.
+//! "Map markers" if it misbehaves.
 class RZ_MapMarkers
 {
 	protected static ref map<int, ref SCR_MapMarkerBase> s_mMarkers;
@@ -11,15 +10,15 @@ class RZ_MapMarkers
 	//! Server: a marker everyone sees. Returns a handle for Remove(), -1 on failure.
 	static int Add(vector pos, string text)
 	{
-		SCR_MapMarkerManagerComponent mgr = SCR_MapMarkerManagerComponent.GetInstance(); // VERIFY: marker manager singleton
+		SCR_MapMarkerManagerComponent mgr = SCR_MapMarkerManagerComponent.GetInstance();
 		if (!mgr)
 			return -1;
 
 		SCR_MapMarkerBase marker = new SCR_MapMarkerBase();
-		marker.SetType(SCR_EMapMarkerType.PLACED_CUSTOM); // VERIFY: marker type enum
-		marker.SetWorldPos(pos[0], pos[2]); // VERIFY: SetWorldPos(x, y)
-		marker.SetCustomText(text); // VERIFY: SetCustomText
-		mgr.InsertStaticMarker(marker, false, true); // VERIFY: InsertStaticMarker(marker, isLocal, isServerMarker)
+		marker.SetType(SCR_EMapMarkerType.PLACED_CUSTOM);
+		marker.SetWorldPos(pos[0], pos[2]);
+		marker.SetCustomText(text);
+		mgr.InsertStaticMarker(marker, false, true);
 
 		if (!s_mMarkers)
 			s_mMarkers = new map<int, ref SCR_MapMarkerBase>();
@@ -41,8 +40,8 @@ class RZ_MapMarkers
 			return;
 
 		s_mMarkers.Remove(handle);
-		SCR_MapMarkerManagerComponent mgr = SCR_MapMarkerManagerComponent.GetInstance(); // VERIFY
+		SCR_MapMarkerManagerComponent mgr = SCR_MapMarkerManagerComponent.GetInstance();
 		if (mgr && marker)
-			mgr.RemoveStaticMarker(marker); // VERIFY: RemoveStaticMarker
+			mgr.RemoveStaticMarker(marker);
 	}
 }

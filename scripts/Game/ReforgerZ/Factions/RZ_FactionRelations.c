@@ -13,10 +13,11 @@
 modded class SCR_Faction
 {
 	//------------------------------------------------------------------------------------------------
-	// VERIFY: SCR_Faction.DoCheckIfFactionFriendly(Faction) is the scripted check behind
-	// Faction.IsFactionFriendly / IsFactionEnemy, and AI perception and target selection go
-	// through it (and don't cache the answer for long). If they don't, use the Outlaw mode
-	// and give SURV_OUTLAW real enemies in the FactionManager (docs/WORKBENCH_SETUP.md).
+	// DoCheckIfFactionFriendly is the engine event behind Faction.IsFactionFriendly; vanilla
+	// notes it "can be called very often, especially by AI".
+	// VERIFY: AI perception and target selection pick up a changed answer quickly (no long
+	// caching). If they don't, use the Outlaw mode and give SURV_OUTLAW real enemies in the
+	// FactionManager (docs/WORKBENCH_SETUP.md).
 	override bool DoCheckIfFactionFriendly(Faction faction)
 	{
 		if (!faction)

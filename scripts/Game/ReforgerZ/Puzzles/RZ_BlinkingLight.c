@@ -52,7 +52,7 @@ class RZ_Morse
 	static string Encode(string text)
 	{
 		string upper = text;
-		upper.ToUpper(); // VERIFY: ToUpper() changes the string in place
+		upper.ToUpper();
 		string result = "";
 		int len = upper.Length();
 		for (int i = 0; i < len; i++)
@@ -69,7 +69,7 @@ class RZ_Morse
 				result += code + " ";
 		}
 
-		return result.Trim(); // VERIFY: string.Trim() returns the trimmed copy
+		return result.Trim();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ class RZ_BlinkLightComponent : ScriptComponent
 			return;
 
 		m_bOn = on;
-		Replication.BumpMe(); // VERIFY: RplProp on a ScriptComponent
+		Replication.BumpMe();
 		ApplyVisual();
 	}
 
@@ -175,7 +175,7 @@ class RZ_BlinkLightComponent : ScriptComponent
 			return;
 
 		if (on)
-			e.SetFlags(EntityFlags.VISIBLE, true); // VERIFY: SetFlags/ClearFlags(EntityFlags.VISIBLE) hides a light and its mesh
+			e.SetFlags(EntityFlags.VISIBLE, true); // VERIFY: SetFlags/ClearFlags(EntityFlags.VISIBLE) hides a light and its mesh, on clients too
 		else
 			e.ClearFlags(EntityFlags.VISIBLE, true);
 

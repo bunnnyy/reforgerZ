@@ -13,7 +13,7 @@ class RZ_ChatCommands
 		if (s_Instance)
 			return;
 
-		SCR_ChatPanelManager chat = SCR_ChatPanelManager.GetInstance(); // VERIFY: SCR_ChatPanelManager.GetInstance() and GetCommandInvoker(name) taking callbacks (SCR_ChatPanel panel, string data)
+		SCR_ChatPanelManager chat = SCR_ChatPanelManager.GetInstance();
 		if (!chat)
 			return;
 

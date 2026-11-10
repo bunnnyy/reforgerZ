@@ -10,9 +10,9 @@
 //! A dry run only reports. "ReforgerZ: Write prefab checklist" writes the same work as a
 //! checklist file to follow by hand.
 //!
-//! HONEST WARNING: this plugin has never been compiled or run. Every editor call is a best
-//! guess at the Workbench API and is marked VERIFY. Each one sits in a small helper in RZ_WB
-//! below, so fixing a wrong name is one edit. Expect a round of fixes the first time; use the
+//! HONEST WARNING: this plugin has never been compiled or run. Its editor calls were checked
+//! against the 1.9 Workbench script declarations; what only a run can show is marked VERIFY.
+//! Each call sits in a small helper in RZ_WB below, so fixing one is one edit. Expect a round of fixes the first time; use the
 //! dry run first, and fall back to the checklist (or docs/WORKBENCH_SETUP.md) if it fails.
 
 //------------------------------------------------------------------------------------------------
@@ -235,7 +235,6 @@ class RZ_WB
 	static const string LOADOUT_FACTION = "m_sAffiliatedFaction";
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: Workbench.GetModule(WorldEditor) and WorldEditor.GetApi()
 	static WorldEditorAPI Api()
 	{
 		WorldEditor worldEditor = WorldEditor.Cast(Workbench.GetModule(WorldEditor));
@@ -245,7 +244,6 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: Workbench.GetAbsolutePath(path, out absPath, mustExist) and "$Addon:" file system names
 	static bool AbsolutePath(string path, out string absPath, bool mustExist)
 	{
 		return Workbench.GetAbsolutePath(path, absPath, mustExist);
@@ -277,7 +275,6 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: ResourceManager module, GetMetaFile(absolutePath) and MetaFile.GetResourceID()
 	static ResourceName ResourceNameOf(string path)
 	{
 		string absPath;
@@ -295,8 +292,8 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: Workbench.SearchResources(callback, extensions, search strings). Newer versions may
-	// take a SearchResourcesFilter instead: Workbench.SearchResources(filter, callback).
+	// Workbench.SearchResources is marked obsolete in 1.9 (ResourceDatabase.SearchResources replaces
+	// it) but still exists with this signature.
 	static void Search(string fileName, notnull RZ_WBSearch results)
 	{
 		array<string> extensions = {"et"};
@@ -312,7 +309,7 @@ class RZ_WB
 		Search(FileNameOf(fileName), results);
 		foreach (ResourceName found : results.m_aFound)
 		{
-			string foundPath = found.GetPath();	// VERIFY: ResourceName.GetPath() is the path without the GUID
+			string foundPath = found.GetPath();	// the path without the GUID
 			if (EndsWith(foundPath, "/" + fileName) || foundPath == fileName)
 				return found;
 		}
@@ -340,7 +337,6 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: BeginEntityAction / EndEntityAction wrap edits in one undo step
 	static void Begin(WorldEditorAPI api)
 	{
 		api.BeginEntityAction("ReforgerZ: Create prefabs");
@@ -352,29 +348,26 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: CreateEntity(prefab or class name, name, layer, parent, position, angles) and GetCurrentEntityLayerId()
 	static IEntitySource CreateEntity(WorldEditorAPI api, string prefabOrClass, string entityName)
 	{
 		return api.CreateEntity(prefabOrClass, entityName, api.GetCurrentEntityLayerId(), null, vector.Zero, vector.Zero);
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: DeleteEntity(IEntitySource)
 	static void DeleteEntity(WorldEditorAPI api, IEntitySource src)
 	{
 		api.DeleteEntity(src);
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: CreateEntityTemplate(IEntitySource, absolute .et path) saves a new prefab that
-	// inherits from the entity's prefab and writes its .meta (GUID)
+	// VERIFY: CreateEntityTemplate(src, absolute .et path) saves a new prefab that inherits from
+	// the entity's prefab and writes its .meta (GUID)
 	static bool SaveAsPrefab(WorldEditorAPI api, IEntitySource src, string absPath)
 	{
 		return api.CreateEntityTemplate(src, absPath);
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: BaseContainerTools.LoadContainer(ResourceName) and Resource.GetResource().ToEntitySource()
 	static Resource LoadPrefab(ResourceName prefab)
 	{
 		return BaseContainerTools.LoadContainer(prefab);
@@ -391,16 +384,13 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: BaseContainerTools.SaveContainer(container, ResourceName) writes the prefab back
 	static bool SavePrefab(IEntitySource src, ResourceName prefab)
 	{
 		return BaseContainerTools.SaveContainer(src, prefab);
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: IEntitySource.GetComponentCount(), GetComponent(i), BaseContainer.GetClassName()
 	//! The class name of the first component that is cls or inherits from it ("" if none).
-	// VERIFY: string.ToType() and typename.IsInherited() for engine component classes
 	static string FindComponent(IEntitySource src, string cls)
 	{
 		typename wanted = cls.ToType();
@@ -434,35 +424,31 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: WorldEditorAPI.CreateComponent(IEntitySource, className)
 	static bool AddComponent(WorldEditorAPI api, IEntitySource src, string cls)
 	{
 		return api.CreateComponent(src, cls) != null;
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: ContainerIdPathEntry(name) and (name, index); SetVariableValue(src, path, key, value as text)
 	static bool SetValue(WorldEditorAPI api, IEntitySource src, array<ref ContainerIdPathEntry> path, string key, string value)
 	{
 		return api.SetVariableValue(src, path, key, value);
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: CreateObjectVariableMember(src, path, key, className) makes an object attribute (a settings object, UIInfo)
 	static bool CreateObject(WorldEditorAPI api, IEntitySource src, array<ref ContainerIdPathEntry> path, string key, string cls)
 	{
 		return api.CreateObjectVariableMember(src, path, key, cls);
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: CreateObjectArrayVariableMember(src, path, key, className, index) adds to an object array
 	static bool AddArrayObject(WorldEditorAPI api, IEntitySource src, array<ref ContainerIdPathEntry> path, string key, string cls, int index)
 	{
 		return api.CreateObjectArrayVariableMember(src, path, key, cls, index);
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: a string or ResourceName array is set as one comma-separated value
+	// A string or ResourceName array is set as one comma-separated value, as vanilla plugins do.
 	static bool SetStringArray(WorldEditorAPI api, IEntitySource src, array<ref ContainerIdPathEntry> path, string key, array<string> items)
 	{
 		string joined;
@@ -476,7 +462,6 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: BaseContainer.GetObjectArray(key) returns a BaseContainerList with Count() and Get(i)
 	static int ArrayCount(BaseContainer container, string key)
 	{
 		if (!container)
@@ -496,7 +481,6 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: BaseContainer.GetObject(key) returns the object attribute or null
 	static BaseContainer GetObject(BaseContainer container, string key)
 	{
 		if (!container)
@@ -523,7 +507,6 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: GetEditorEntityCount() and GetEditorEntity(i) list the entities of the open world
 	static void WorldEntities(WorldEditorAPI api, notnull array<IEntitySource> entities)
 	{
 		int count = api.GetEditorEntityCount();
@@ -536,15 +519,14 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: Workbench.Dialog(caption, text)
 	static void Dialog(string caption, string text)
 	{
 		Workbench.Dialog(caption, text);
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: Workbench.ScriptDialog(caption, text, object) shows the object's attributes and its
-	// [ButtonAttribute] methods, and returns the pressed button's result (0 = cancel)
+	// Shows the object's attributes and its [ButtonAttribute] methods, and returns the pressed
+	// button's result (0 = cancel), as vanilla's WorkbenchDialog_OKCancel
 	static int OptionsDialog(string caption, string text, Managed options)
 	{
 		return Workbench.ScriptDialog(caption, text, options);
@@ -573,7 +555,6 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: FileIO.OpenFile(path, FileMode.WRITE), FileHandle.WriteLine and Close
 	static bool WriteLines(string path, array<string> lines)
 	{
 		FileHandle file = FileIO.OpenFile(path, FileMode.WRITE);
@@ -1582,7 +1563,7 @@ class RZ_PrefabPluginBase : WorkbenchPlugin
 	[Attribute("$ReforgerZ:Configs/ReforgerZ/PrefabManifest.json", desc: "The manifest file")]
 	protected string m_sManifestPath;
 
-	// VERIFY: "$ReforgerZ:" is the file system name of this addon (its project name)
+	// "$ReforgerZ:" is this addon's file system name (the ID in addon.gproj)
 	[Attribute("$ReforgerZ:", desc: "File system prefix of this mod: new prefabs are saved under it")]
 	protected string m_sAddonPrefix;
 
@@ -1603,7 +1584,6 @@ class RZ_PrefabPluginBase : WorkbenchPlugin
 }
 
 //------------------------------------------------------------------------------------------------
-// VERIFY: the WorkbenchPluginAttribute parameters (name, description, wbModules, awesomeFontCode)
 [WorkbenchPluginAttribute(name: "ReforgerZ: Create prefabs", description: "Create the ReforgerZ prefabs from the manifest and wire them into the game mode", wbModules: {"WorldEditor"}, awesomeFontCode: 0xF1B3)]
 class RZ_CreatePrefabsPlugin : RZ_PrefabPluginBase
 {
@@ -1661,7 +1641,6 @@ class RZ_CreatePrefabsPlugin : RZ_PrefabPluginBase
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: [ButtonAttribute(label, focused)] methods become the options dialog's buttons
 	[ButtonAttribute("Run", true)]
 	protected int ButtonRun()
 	{

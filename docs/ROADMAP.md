@@ -46,8 +46,8 @@ needs prefabs, the behavioural `VERIFY` checks and a play-test before it can be 
 ## Next
 
 ### Get it running
-- Set up the Workbench project, fix every `VERIFY` in the game scripts, and get it compiling.
-- Run **ReforgerZ: Create prefabs** as a dry run, fix its `VERIFY`s until it makes prefabs, then
+- Set up the Workbench project (the game scripts already compile on 1.9).
+- Run **ReforgerZ: Create prefabs** as a dry run, fix what fails until it makes prefabs, then
   run it for real (or follow the manual checklist). Make the minimum playable subset and the
   factions, then play a 2-hour session on Arland ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 

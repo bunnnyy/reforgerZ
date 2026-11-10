@@ -68,7 +68,7 @@ class RZ_Weather
 	//------------------------------------------------------------------------------------------------
 	protected static TimeAndWeatherManagerEntity Manager()
 	{
-		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld()); // VERIFY: ChimeraWorld.CastFrom (as in RZ_GameTime)
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
 		if (!world)
 			return null;
 
@@ -83,7 +83,7 @@ class RZ_Weather
 		if (!tm)
 			return -1;
 
-		return tm.GetRainIntensity(); // VERIFY: BaseWeatherManagerEntity.GetRainIntensity() (0..1); if it doesn't compile, return -1 here
+		return tm.GetRainIntensity();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ class RZ_Weather
 		if (!tm)
 			return -1;
 
-		return tm.GetFogAmount(); // VERIFY: a fog accessor (GetFogAmount or the current weather state's fog); if none, return -1 here
+		return tm.GetFogAmount();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ class RZ_Weather
 		if (!tm)
 			return -1;
 
-		return tm.GetWindSpeed(); // VERIFY: BaseWeatherManagerEntity.GetWindSpeed() in m/s; if it doesn't compile, return -1 here
+		return tm.GetWindSpeed(); // m/s
 	}
 }
 

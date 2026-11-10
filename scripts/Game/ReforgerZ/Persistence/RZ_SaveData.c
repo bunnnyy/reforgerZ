@@ -128,7 +128,7 @@ class RZ_Persistence
 	}
 
 	//------------------------------------------------------------------------------------------------
-	// VERIFY: JsonLoadContext/JsonSaveContext automatically serialize plain class members
+	// VERIFY: JsonSaveContext and JsonLoadContext write and read plain class members and arrays of them (check a save file after a restart)
 	static RZ_SaveData Load()
 	{
 		if (!FileIO.FileExists(PATH))

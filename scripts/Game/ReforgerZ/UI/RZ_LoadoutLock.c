@@ -1,12 +1,12 @@
 //! Locked backgrounds in the vanilla deploy menu (docs/UI.md, "Background picker"): a background
-//! loadout the player hasn't unlocked is unavailable, so the menu shows it but won't spawn it, and
-//! the background panel says how to unlock it. Behind UI > Lock loadouts (on by default).
+//! loadout the player hasn't unlocked is unavailable, so the menu won't spawn it, and the
+//! background panel says how to unlock it. Behind UI > Lock loadouts (on by default).
 //!
-//! The server decides (RZ_GameModeComponent.IsLoadoutLocked, from the saved profile); the client
-//! asks the same question of the last backgrounds payload, which the panel asks for. If this file
-//! doesn't compile in your game version, delete it: locked loadouts then spawn as the default
-//! background with their gear, as before.
-modded class SCR_BasePlayerLoadout // VERIFY: SCR_BasePlayerLoadout has IsLoadoutAvailable(int playerId) (server) and IsLoadoutAvailableClient() (deploy menu), and the menu greys out unavailable loadouts
+//! The client asks the last backgrounds payload, which the panel asks for. The 1.9 deploy menu is
+//! the only vanilla caller: it reads IsLoadoutAvailableClient(). Nothing in vanilla calls the
+//! server-side IsLoadoutAvailable(playerId), so the server's own check is in
+//! RZ_GameModeComponent.ResolveBackground: a locked loadout spawns as the default background.
+modded class SCR_BasePlayerLoadout // VERIFY: what the player sees: the 1.9 deploy menu leaves unavailable loadouts out when it builds the list, and greys their buttons when it refreshes
 {
 	//------------------------------------------------------------------------------------------------
 	override bool IsLoadoutAvailable(int playerId)

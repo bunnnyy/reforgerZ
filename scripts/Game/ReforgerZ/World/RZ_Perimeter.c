@@ -461,14 +461,14 @@ class RZ_Perimeter
 		vector mins = Vector(center[0] - radius, -1000, center[2] - radius);
 		vector maxs = Vector(center[0] + radius, 10000, center[2] + radius);
 		array<BaseRoad> found = {};
-		roads.GetRoadsInAABB(mins, maxs, found); // VERIFY: the same GetRoadsInAABB as FindRoadExits
+		roads.GetRoadsInAABB(mins, maxs, found);
 		foreach (BaseRoad road : found)
 		{
 			if (!road)
 				continue;
 
 			array<vector> points = {};
-			road.GetPoints(points); // VERIFY: the same GetPoints as FindRoadExits
+			road.GetPoints(points);
 			foreach (vector pt : points)
 			{
 				if (RZ_Util.DistXZ(pt, center) <= radius)
@@ -670,7 +670,11 @@ class RZ_Perimeter
 		// In a vehicle or a boat the character hangs off its seat: don't attach to that, the
 		// tick moves the drone over them instead (KeepDroneOver)
 		if (drone && !RZ_Util.IsInVehicle(player))
-			player.AddChild(drone, -1); // VERIFY: IEntity.AddChild(child, pivot) keeps the drone's world position; it then follows the player with no polling
+		{
+			// RECALC_LOCAL_TRANSFORM keeps the drone where it is (above the player) instead of
+			// reading its world position as an offset from the player
+			player.AddChild(drone, -1, EAddChildFlags.AUTO_TRANSFORM | EAddChildFlags.RECALC_LOCAL_TRANSFORM); // VERIFY: the attached drone follows the player on every client, with no polling
+		}
 
 		return drone;
 	}
@@ -762,15 +766,15 @@ class RZ_Perimeter
 			GetEdgeStrip(side, band, stripMin, stripMax);
 
 			array<BaseRoad> found = {};
-			roads.GetRoadsInAABB(stripMin, stripMax, found); // VERIFY: RoadNetworkManager.GetRoadsInAABB(mins, maxs, roads)
+			roads.GetRoadsInAABB(stripMin, stripMax, found);
 			foreach (BaseRoad road : found)
 			{
 				if (!road)
 					continue;
 
 				array<vector> points = {};
-				road.GetPoints(points); // VERIFY: BaseRoad.GetPoints() gives the road's centre line
-				float width = road.GetWidth(); // VERIFY: BaseRoad.GetWidth(); main roads are wider
+				road.GetPoints(points);
+				float width = road.GetWidth(); // main roads are wider
 
 				for (int k = 1; k < points.Count(); k++)
 				{
@@ -815,11 +819,11 @@ class RZ_Perimeter
 	//------------------------------------------------------------------------------------------------
 	static RoadNetworkManager GetRoadNetwork()
 	{
-		SCR_AIWorld aiWorld = SCR_AIWorld.Cast(GetGame().GetAIWorld()); // VERIFY: GetGame().GetAIWorld() returns SCR_AIWorld
+		SCR_AIWorld aiWorld = SCR_AIWorld.Cast(GetGame().GetAIWorld());
 		if (!aiWorld)
 			return null;
 
-		return aiWorld.GetRoadNetworkManager(); // VERIFY: AIWorld.GetRoadNetworkManager()
+		return aiWorld.GetRoadNetworkManager();
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -609,7 +609,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetOwner());
 		if (gameMode)
-			gameMode.GetOnPlayerSpawned().Insert(HandlePlayerSpawned); // VERIFY: invoker name
+			gameMode.GetOnPlayerSpawned().Insert(HandlePlayerSpawned);
 
 		UpdateReplicated();
 		m_bServerRunning = true;
@@ -1072,7 +1072,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!loadoutComp)
 			return "";
 
-		SCR_BasePlayerLoadout loadout = loadoutComp.GetLoadout(); // VERIFY
+		SCR_BasePlayerLoadout loadout = loadoutComp.GetLoadout();
 		if (!loadout)
 			return "";
 
@@ -1087,6 +1087,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (loadoutName.IsEmpty())
 			return GetDefaultBackground();
 
+		// The server's own lock check: vanilla never calls IsLoadoutAvailable(playerId) (UI/RZ_LoadoutLock.c)
+		if (RZ_UISettings.Get().m_bLockLoadouts && IsLoadoutLocked(playerId, loadoutName))
+		{
+			RZ_Log.Warn("Player " + playerId + " spawned with locked loadout '" + loadoutName + "': default background");
+			return GetDefaultBackground();
+		}
+
 		foreach (RZ_Background bg : m_aBackgrounds)
 		{
 			if (bg.m_sLoadoutName == loadoutName)
@@ -1099,7 +1106,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: a background loadout this player hasn't unlocked (the deploy menu refuses it,
-	//! UI/RZ_LoadoutLock.c). False for loadouts that aren't backgrounds.
+	//! UI/RZ_LoadoutLock.c, and ResolveBackground falls back to the default). False for loadouts
+	//! that aren't backgrounds.
 	bool IsLoadoutLocked(int playerId, string loadoutName)
 	{
 		if (!m_aBackgrounds || playerId <= 0)
@@ -1254,7 +1262,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	{
 		EventHandlerManagerComponent ev = EventHandlerManagerComponent.Cast(character.FindComponent(EventHandlerManagerComponent));
 		if (ev)
-			ev.RegisterScriptHandler("OnProjectileShot", this, OnPlayerShot); // VERIFY: event name and signature
+			ev.RegisterScriptHandler("OnProjectileShot", this, OnPlayerShot);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1925,8 +1933,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		SCR_SpawnPoint sp = SCR_SpawnPoint.Cast(ent);
 		if (sp)
 		{
-			sp.SetFactionKey(m_sPlayerFactionKey); // VERIFY
-			sp.SetSpawnPointName(name); // VERIFY
+			sp.SetFactionKey(m_sPlayerFactionKey);
+			sp.SetSpawnPointName(name);
 		}
 
 		return ent;
@@ -1936,7 +1944,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	protected string GetWorldId()
 	{
-		return GetGame().GetWorldFile(); // VERIFY
+		return GetGame().GetWorldFile();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2195,7 +2203,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_aHintTitles.RemoveOrdered(0);
 		m_aHintTexts.RemoveOrdered(0);
 
-		SCR_HintManagerComponent.ShowCustomHint(text, title, HINT_SECONDS); // VERIFY
+		SCR_HintManagerComponent.ShowCustomHint(text, title, HINT_SECONDS);
 		GetGame().GetCallqueue().CallLater(ShowNextHint, HINT_SECONDS * 1000, false);
 	}
 }

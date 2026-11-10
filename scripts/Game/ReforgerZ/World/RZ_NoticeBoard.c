@@ -367,6 +367,6 @@ class RZ_NoticeBoard
 		if (!pm || playerId <= 0)
 			return false;
 
-		return pm.HasPlayerRole(playerId, EPlayerRole.ADMINISTRATOR) || pm.HasPlayerRole(playerId, EPlayerRole.SESSION_ADMINISTRATOR); // VERIFY: PlayerManager.HasPlayerRole(playerId, EPlayerRole.ADMINISTRATOR / SESSION_ADMINISTRATOR)
+		return pm.HasPlayerRole(playerId, EPlayerRole.ADMINISTRATOR) || pm.HasPlayerRole(playerId, EPlayerRole.SESSION_ADMINISTRATOR);
 	}
 }

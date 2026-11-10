@@ -55,7 +55,7 @@ class RZ_NavRebuild
 	//! Rebuilds the navmesh in a small box around `centre`. False if there's no AI world.
 	static bool RequestArea(vector centre, float half)
 	{
-		SCR_AIWorld aiWorld = SCR_AIWorld.Cast(GetGame().GetAIWorld()); // VERIFY: GetGame().GetAIWorld() returns SCR_AIWorld (as in RZ_Perimeter.c)
+		SCR_AIWorld aiWorld = SCR_AIWorld.Cast(GetGame().GetAIWorld());
 		if (!aiWorld)
 			return false;
 
@@ -64,7 +64,7 @@ class RZ_NavRebuild
 		vector extent = Vector(half, half, half);
 		areas.Insert(new Tuple2<vector, vector>(centre - extent, centre + extent));
 		redoRoads.Insert(false);
-		aiWorld.RequestNavmeshRebuildAreas(areas, redoRoads); // VERIFY: SCR_AIWorld.RequestNavmeshRebuildAreas(array<ref Tuple2<vector, vector>>, array<bool>), what Game Master placement uses (else RequestNavmeshRebuildEntity on the blocker)
+		aiWorld.RequestNavmeshRebuildAreas(areas, redoRoads); // what destruction and Game Master placement use
 		return true;
 	}
 }

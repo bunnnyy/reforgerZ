@@ -194,7 +194,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		RZ_UIW.Tint(m_wRoot, "RadioIcon", c);
 		RZ_UIW.Tint(m_wRoot, "RadioChannel", c);
 		string channel = RZ_SecureRadio.ChannelName(f);
-		channel.ToUpper(); // VERIFY: ToUpper() changes the string in place
+		channel.ToUpper();
 		RZ_UIW.SetText(m_wRoot, "RadioChannel", channel);
 		int minutes = Math.Max(1, RZ_Util.RoundToInt(ui.GetListenLeft() / 60));
 		RZ_UIW.SetText(m_wRoot, "RadioSub", string.Format("Cracked - codes change in %1 min", minutes));

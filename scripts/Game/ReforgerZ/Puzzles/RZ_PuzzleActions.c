@@ -12,7 +12,7 @@ class RZ_ReadClueAction : ScriptedUserAction
 	override bool GetActionNameScript(out string outName)
 	{
 		outName = m_sLabel;
-		RZ_ClueComponent comp = RZ_ClueComponent.Cast(GetOwner().FindComponent(RZ_ClueComponent)); // VERIFY: ScriptedUserAction.GetOwner()
+		RZ_ClueComponent comp = RZ_ClueComponent.Cast(GetOwner().FindComponent(RZ_ClueComponent));
 		if (comp && !comp.GetReadLabel().IsEmpty())
 			outName = comp.GetReadLabel();
 

@@ -53,7 +53,7 @@ class RZ_LandmarkFinder
 		m_aFound = result;
 		m_aKinds = kinds;
 		BaseWorld world = GetGame().GetWorld();
-		world.QueryEntitiesBySphere(center, radius, OnEntity, null, EQueryEntitiesFlags.STATIC); // VERIFY: QueryEntitiesBySphere(center, radius, addEntity, filter, flags)
+		world.QueryEntitiesBySphere(center, radius, OnEntity, null, EQueryEntitiesFlags.STATIC);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ class RZ_LandmarkFinder
 		if (name.IsEmpty())
 			return true;
 
-		name.ToLower(); // VERIFY: ToLower() changes the string in place
+		name.ToLower();
 		foreach (string kind : m_aKinds)
 		{
 			if (!Matches(kind, name))

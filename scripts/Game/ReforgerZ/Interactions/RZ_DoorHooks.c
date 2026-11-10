@@ -3,12 +3,8 @@
 //! the action out as "Locked" (from the replicated list of locked buildings near players),
 //! and the server refuses it again in case the client check is bypassed or out of date.
 //! Shutting a door, interior doors and opening from inside are never refused.
-//!
-//! If this file doesn't compile because the class name is wrong, rename the modded class to
-//! the action on the vanilla door prefabs; if there's no scripted door action at all, delete
-//! this file and turn Interactions > Search > Door locks off (the lock goes back on the loot).
 
-// VERIFY: SCR_DoorUserAction is the vanilla "Open / Close" action on door prefabs and its owner is the door entity (else DoorUserAction or the name in the door prefab's ActionsManagerComponent)
+// VERIFY: the vanilla door prefabs use SCR_DoorUserAction (else hook the action named in the door prefab's ActionsManagerComponent, or turn Interactions > Search > Door locks off)
 modded class SCR_DoorUserAction
 {
 	//------------------------------------------------------------------------------------------------
@@ -19,7 +15,7 @@ modded class SCR_DoorUserAction
 
 		if (RZ_DoorGeometry.LooksLocked(GetOwner(), user))
 		{
-			SetCannotPerformReason("Locked"); // VERIFY: SetCannotPerformReason(string) on the user action base class
+			SetCannotPerformReason("Locked");
 			return false;
 		}
 

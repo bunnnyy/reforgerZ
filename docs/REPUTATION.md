@@ -139,7 +139,7 @@ player kill. The killer gets 40 Red Hand Favor, less than it cost, so a pair of 
 it; and never the poster, anyone in the poster's or the target's group, or someone the Red Hand
 hunts. One posting per poster and per target, three on the server at once; unclaimed after 2 hours,
 it comes down and the poster gets half back. Postings aren't saved. *Simplified:* "friends" means
-the same vanilla player group (a VERIFY); without it, only the poster is excluded.
+the same vanilla player group; a poster in no group excludes only themselves.
 
 | Hunted | — | Red Hand AI shoots you ✅; hunter squads come for you ✅ |
 
@@ -169,8 +169,8 @@ visit the medic; calling one out isn't built.
   you (50 Favor and a little Fame), and only for a player kill: dying to the infected, a fall or
   your own hand pays nobody. With several factions after you, the one with the most Infamy pays;
   a faction never pays someone it hunts too. If none pays, a posting on the Red Hand's
-  [bounty board](#the-red-hand) can. *The killer is read from the body (a VERIFY); if that fails,
-  no bounty is paid.*
+  [bounty board](#the-red-hand) can. *The killer is the last attacker the body's damage manager
+  recorded; if that wasn't a player, no bounty is paid.*
 - **Choice missions** ✅: you decide which faction's drop point gets the item. The winner gives
   Fame; the one you double-crossed gives Infamy.
 - **Disguises** ✅: a faction's uniform gets you past its AI while you're not Hunted by it;

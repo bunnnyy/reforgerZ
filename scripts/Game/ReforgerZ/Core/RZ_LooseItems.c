@@ -124,7 +124,7 @@ class RZ_LooseItems
 	//! In an inventory or any storage: attached to something, or sitting in a storage slot.
 	protected static bool IsStored(IEntity e)
 	{
-		IEntity root = e.GetRootParent(); // VERIFY: GetRootParent() (as in RZ_Util.GetCarrierPlayerId)
+		IEntity root = e.GetRootParent();
 		if (root && root != e)
 			return true;
 
@@ -132,7 +132,7 @@ class RZ_LooseItems
 		if (!inv)
 			return false;
 
-		return inv.GetParentSlot() != null; // VERIFY: InventoryItemComponent.GetParentSlot() is set while the item is in any storage
+		return inv.GetParentSlot() != null;
 	}
 
 	//------------------------------------------------------------------------------------------------

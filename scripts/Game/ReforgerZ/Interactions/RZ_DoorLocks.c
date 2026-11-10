@@ -41,7 +41,7 @@ class RZ_DoorGeometry
 		if (!e)
 			return null;
 
-		return DoorComponent.Cast(e.FindComponent(DoorComponent)); // VERIFY: DoorComponent is the vanilla door's component class
+		return DoorComponent.Cast(e.FindComponent(DoorComponent));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ class RZ_DoorGeometry
 		if (!dc)
 			return false;
 
-		return Math.AbsFloat(dc.GetControlValue()) > 0.05; // VERIFY: DoorComponent.GetControlValue() is 0 when shut (negative when it swings the other way)
+		return Math.AbsFloat(dc.GetControlValue()) > 0.05; // -1..1: 0 when shut, negative when it swings the other way
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ class RZ_DoorGeometry
 	{
 		DoorComponent dc = GetDoor(door);
 		if (dc)
-			dc.SetControlValue(0, RplId.Invalid()); // VERIFY: SetControlValue on the server shuts the door and replicates
+			dc.SetControlValue(0, RplId.Invalid()); // VERIFY: SetControlValue on the server shuts the door for every client
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ class RZ_DoorGeometry
 			return null;
 
 		IEntity top;
-		IEntity p = door.GetParent(); // VERIFY: IEntity.GetParent(); doors are child entities of the building prefab
+		IEntity p = door.GetParent(); // VERIFY: doors are child entities of the building prefab
 		while (p)
 		{
 			if (SCR_DestructibleBuildingEntity.Cast(p))
@@ -99,7 +99,7 @@ class RZ_DoorGeometry
 		if (!e || depth > CHILD_DEPTH)
 			return;
 
-		IEntity child = e.GetChildren(); // VERIFY: GetChildren()/GetSibling() list a building's door entities
+		IEntity child = e.GetChildren(); // VERIFY: a building's door entities are its children (GetChildren/GetSibling)
 		while (child)
 		{
 			if (GetDoor(child))
@@ -120,7 +120,7 @@ class RZ_DoorGeometry
 		if (!building)
 			return false;
 
-		building.GetBounds(mins, maxs); // VERIFY: IEntity.GetBounds(out mins, out maxs) is the local box of the building's mesh
+		building.GetBounds(mins, maxs); // the local box of the building's mesh
 		return maxs[0] - mins[0] > 2 && maxs[2] - mins[2] > 2;
 	}
 
@@ -129,7 +129,7 @@ class RZ_DoorGeometry
 	static vector ToLocal(IEntity building, vector world)
 	{
 		vector mat[4];
-		building.GetWorldTransform(mat); // VERIFY: GetWorldTransform(out vector mat[4]): three axes, then the origin
+		building.GetWorldTransform(mat); // three axes, then the origin
 		vector d = world - mat[3];
 		vector ax = mat[0];
 		vector ay = mat[1];
@@ -287,7 +287,7 @@ class RZ_DoorGeometry
 	{
 		vector mins;
 		vector maxs;
-		door.GetBounds(mins, maxs); // VERIFY: as for buildings, GetBounds() on a door child entity is its leaf's local box
+		door.GetBounds(mins, maxs); // as for buildings: the door leaf's local box
 		if (maxs[0] - mins[0] < 0.2 && maxs[2] - mins[2] < 0.2)
 			return door.GetOrigin();
 

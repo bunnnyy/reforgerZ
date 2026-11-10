@@ -33,13 +33,13 @@ class RZ_Radio
 			return false;
 
 		array<IEntity> items = {};
-		inv.GetItems(items); // VERIFY: GetItems() lists items in every storage the character carries
+		inv.GetItems(items);
 		foreach (IEntity item : items)
 		{
 			if (!item)
 				continue;
 
-			if (item.FindComponent(BaseRadioComponent)) // VERIFY: BaseRadioComponent class name
+			if (item.FindComponent(BaseRadioComponent))
 				return true;
 
 			string name = RZ_Util.GetPrefabName(item);

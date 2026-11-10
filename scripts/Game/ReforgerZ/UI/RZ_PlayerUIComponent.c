@@ -78,7 +78,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	//! A player's component (server), or null.
 	static RZ_PlayerUIComponent GetFor(int playerId)
 	{
-		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId); // VERIFY: PlayerManager.GetPlayerController(playerId) on the server
+		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);
 		if (!pc)
 			return null;
 
@@ -99,7 +99,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 		if (!pc)
 			return -1;
 
-		return pc.GetPlayerId(); // VERIFY: PlayerController.GetPlayerId()
+		return pc.GetPlayerId();
 	}
 
 	// ================================================================ Server: send
@@ -146,12 +146,12 @@ class RZ_PlayerUIComponent : ScriptComponent
 		if (IsLocalOwner())
 			RpcDo_Payload(kind, payload);
 		else
-			Rpc(RpcDo_Payload, kind, payload); // VERIFY: a string RPC argument of a few KB (RZ_UIFeed caps payloads at 6000 characters)
+			Rpc(RpcDo_Payload, kind, payload); // VERIFY: a string RPC argument of a few KB arrives whole (RZ_UIFeed caps payloads at 6000 characters)
 	}
 
 	// ================================================================ Client: receive
 	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Owner)] // VERIFY: RplRcver.Owner reaches the owning client of a player controller component
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_Infection(int state, float left, float total, float finalSeconds, float pauseLeft)
 	{
 		m_iInfState = state;

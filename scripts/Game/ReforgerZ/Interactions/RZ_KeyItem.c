@@ -26,7 +26,7 @@ class RZ_KeyItemComponent : ScriptComponent
 	{
 		m_sKeyId = keyId;
 		m_sTag = tag;
-		Replication.BumpMe(); // VERIFY: RplProp on a ScriptComponent of an inventory item (needs the item's RplComponent)
+		Replication.BumpMe(); // needs the item's RplComponent
 	}
 
 	string GetKeyId() { return m_sKeyId; }
@@ -78,7 +78,7 @@ class RZ_KeyItemComponent : ScriptComponent
 			return false;
 
 		array<IEntity> items = {};
-		inv.GetItems(items); // VERIFY: the same GetItems() as RZ_ItemHelper.Count (every carried storage, nested bags too)
+		inv.GetItems(items); // VERIFY: GetItems() also finds a key in a bag inside another bag
 		foreach (IEntity item : items)
 		{
 			RZ_KeyItemComponent key = Of(item);

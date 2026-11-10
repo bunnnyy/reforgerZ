@@ -2,8 +2,8 @@
 //! A treatment as an inventory consumable, like RZ_ConsumableAntidote. Set it as the consumable
 //! effect on the prefab's SCR_ConsumableItemComponent and pick the kind.
 //!
-//! VERIFY: the whole class, like RZ_ConsumableAntidote. If this file doesn't compile, delete
-//! it: RZ_UseMedAction (Cure/RZ_Meds.c) still works from the ground.
+//! VERIFY: as for RZ_ConsumableAntidote, ApplyEffect also runs on the server. RZ_UseMedAction
+//! (Cure/RZ_Meds.c) still works from the ground either way.
 //! (The item is used up by the consumable either way, even when the treatment refuses.)
 [BaseContainerProps()]
 class RZ_ConsumableMed : SCR_ConsumableEffectBase
@@ -12,7 +12,7 @@ class RZ_ConsumableMed : SCR_ConsumableEffectBase
 	protected RZ_EMed m_eKind;
 
 	//------------------------------------------------------------------------------------------------
-	override void ApplyEffect(notnull IEntity target, notnull IEntity user, IEntity item, ItemUseParameters animParams) // VERIFY: signature, as in RZ_ConsumableAntidote
+	override void ApplyEffect(notnull IEntity target, notnull IEntity user, IEntity item, ItemUseParameters animParams)
 	{
 		super.ApplyEffect(target, user, item, animParams);
 

@@ -127,7 +127,7 @@ class RZ_NoisemakerComponent : ScriptComponent
 		if (!owner)
 			return;
 
-		IEntity root = owner.GetRootParent(); // VERIFY: carried items are children of the character
+		IEntity root = owner.GetRootParent(); // carried items are children of the character (or of the vehicle they sit in)
 		if (root && root != owner)
 		{
 			m_bWasCarried = true;
