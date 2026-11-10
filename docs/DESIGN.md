@@ -601,12 +601,15 @@ quartermaster, or 150 m of a stronghold (the same places that can't burn).
 
 - **Which doors.** Only outside doors: a door entity of the building that stands within 1.2 m of
   the building's outline (its bounding box). Interior doors never lock. Doors are data: they're
-  looked at only when a player comes within 30 m of a locked place, or tries one.
+  looked at only when a player comes within 150 m of a locked place (one look per player every
+  30 s, after moving 40 m), or tries one.
 - **At the door.** Each outside door of a locked place gets an interaction spot just outside it,
   with Unlock, Lock and Force (at most three per building; a double door shares one). Looking at
   it, or trying the locked door, tells you what the key's tag says.
-- **Inside always opens.** Inside means past the door toward the middle of the building, and
-  within its width. Shutting a door is never refused.
+- **Inside always opens.** Inside means anywhere in the building's bounding box, at least 0.5 m
+  in from its sides, or past the door toward the middle of the building and within its width.
+  The first covers a shallow closet behind a door near the outline. Shutting a door is never
+  refused.
 - **Enforced twice.** The client greys the action out from a replicated list of locked buildings
   within 80 m of a player; the server refuses it again. Locked doors found open (AI opened them)
   are pulled shut once nobody stands within 2.5 m.
@@ -621,11 +624,35 @@ quartermaster, or 150 m of a stronghold (the same places that can't burn).
   a key" and "Force the lock" (the same key, time and heat). With **Door locks** off, every
   building does; use it if hooking the door action doesn't work.
 
-*Limitations:* AI and the infected path through doors without the action, so a lock doesn't stop
-them; the door is only pulled shut afterwards. Buildings whose doors are part of the mesh have no
-door lock, only the loot one. An interior door within 1.2 m of the outline counts as an outside
-door, so someone standing between it and the outer wall (a very shallow closet) counts as outside.
-Key items don't survive a restart; data keys don't survive a death.
+#### Keeping AI and the infected out
+
+AI and the infected don't use the door action: they follow the navmesh and open doors
+themselves. Three layers keep them out of a locked place.
+
+| Layer | What it does | Without it |
+|---|---|---|
+| **AI door hook** (optional file) | The AI's own "open the door" task is refused at a locked outside door, from outside. From inside they're let out, without turning the latch for anyone | Layers 2 and 3 still work |
+| **Doorway blocker** | While an outside door is shut and locked and a player is within 150 m, a thin invisible collision box stands just outside the door leaf, and the navmesh around that doorway (a 5 m box) is rebuilt so AI route around it. At most 20 doorways on the server, the nearest to players first | With **Navmesh rebuild** off, blockers only: AI walk into the box and stop there. With no blocker prefab, no blockers |
+| **Banging** | A tracked infected pressing within 1.8 m of a locked doorway (blocked or not) makes 4 heat, at most every 15 s per doorway. Players within 30 m are told, at most every 90 s | Silent |
+
+- **Rebuilds are throttled.** Requests are queued, merged per doorway and sent two per 5 s tick.
+  A doorway whose blocker came or went can't get one back for 60 s, so lock and unlock spam
+  costs at most two rebuilds a minute per door.
+- **Nobody is trapped.** A blocker appears only while the door is shut and locked, with nobody
+  within 2.5 m of the door and no player inside the building. It goes at once on Unlock, Force
+  or the inside latch, and on the next tick when a player is inside the building or on the
+  inside of an open locked door. Blockers aren't saved; after a restart there are none until
+  players come near.
+
+*Limitations:* the AI door hook is a guess at the engine's class; if it's wrong the file is
+deleted and only blockers and banging remain. Locked places more than 150 m from every player,
+or past the 20 nearest, have no blocker, so AI there still open their doors (the doors are pulled
+shut again once a player comes near). Each blocker costs two small navmesh rebuilds (on and off);
+how much that costs on a busy server isn't measured yet. A blocker is one fixed size, so a very
+wide door may leave a gap. Buildings whose doors are part of the mesh have no door lock, only
+the loot one. Where the building's box reaches past its walls (a porch, a deep recess), someone
+standing in front of a recessed door, 0.5 m or more inside the box, counts as inside and can
+open it. Key items don't survive a restart; data keys don't survive a death.
 
 ### Readable things
 

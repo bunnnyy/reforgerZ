@@ -1,5 +1,5 @@
 //! OPTIONAL: the AI's own door opening, hooked for door locks (docs/DESIGN.md, "Locks and
-//! keys"; docs/WORKBENCH_SETUP.md, the VERIFY list). Layer 1 of 3; the doorway blockers and
+//! keys"; docs/WORKBENCH_SETUP.md, section 6). Layer 1 of 3; the doorway blockers and
 //! the banging (RZ_DoorBlockers.c) work without it.
 //!
 //! The class and method below are a best guess at the behaviour-tree task that makes an AI
