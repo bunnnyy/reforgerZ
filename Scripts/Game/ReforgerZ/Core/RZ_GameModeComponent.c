@@ -585,7 +585,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		UpdatePlayerHeat(ids, players);
 		m_Heat.Decay(dt);
-		m_Director.Tick(dt);
+		m_Director.Tick(dt, !ids.IsEmpty()); // the outbreak's clock runs only while someone plays
 		m_Spawner.Tick(dt, players);
 		m_Adaptation.Tick(dt, ids, players);
 		m_TownMemory.Tick(dt);

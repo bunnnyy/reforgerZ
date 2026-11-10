@@ -12,7 +12,8 @@ and one way to end it: **research the cure.**
 - **Backgrounds** picked in the spawn menu (Nurse, Mechanic, Hunter, Police Officer, Ex-Con,
   Lab Technician, Radio Operator, Unemployed), each with a real perk and flaw. Five more are
   unlocked through Legacy.
-- **The Director** moves the server through four outbreak stages, spreads infection from town
+- **The Director** moves the server through four outbreak stages over a season of about ten
+  days (a season speed setting fits it to the server's size), spreads infection from town
   to town and sends hordes toward noise. The infected adapt a little as the cure advances.
 - **Bites you can survive**: most hits are scratches, a bite can be cleaned in its first two
   minutes, and the infection runs through fever, weakness and a final stage. Antidotes, Halcyon's

@@ -30,11 +30,11 @@ class RZ_TerritorySettings
 	[Attribute("0.2", desc: "Expansion stops once this share of all settlements is held (strongholds included). The starting outposts always fit")]
 	float m_fHeldShare = 0.2;
 
-	[Attribute("20", desc: "Shortest real minutes between territory ticks (each does at most one thing; only while players are online)")]
-	float m_fTickMinMinutes = 20;
+	[Attribute("45", desc: "Shortest real minutes between territory ticks (each does at most one thing; only while players are online; divided by season speed)")]
+	float m_fTickMinMinutes = 45;
 
-	[Attribute("30", desc: "Longest real minutes between territory ticks")]
-	float m_fTickMaxMinutes = 30;
+	[Attribute("75", desc: "Longest real minutes between territory ticks")]
+	float m_fTickMaxMinutes = 75;
 
 	[Attribute("25", desc: "Real minutes a stronghold stays Under Pressure (no supply trucks, top shop tier locked)")]
 	float m_fPressureMinutes = 25;
@@ -1045,7 +1045,7 @@ class RZ_Territory
 	{
 		float lo = Math.Max(1, m_Settings.m_fTickMinMinutes);
 		float hi = Math.Max(lo, m_Settings.m_fTickMaxMinutes);
-		m_fNextTick = m_fClock + Math.RandomFloat(lo, hi) * 60;
+		m_fNextTick = m_fClock + Math.RandomFloat(lo, hi) * 60 / m_GM.GetSeasonSpeed();
 	}
 
 	//------------------------------------------------------------------------------------------------

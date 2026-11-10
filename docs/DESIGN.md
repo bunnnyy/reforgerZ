@@ -27,7 +27,8 @@ Code paths are under `Scripts/Game/ReforgerZ/`.
 17. [World interactions](#world-interactions)
 18. [New-player guidance](#new-player-guidance)
 19. [Cure research and the season's end](#cure-research-and-the-seasons-end)
-20. [Persistence](#persistence)
+20. [Season pacing](#season-pacing)
+21. [Persistence](#persistence)
 
 ## Principles
 
@@ -76,15 +77,18 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
 
 Code: `Director/RZ_Director.c`, `Director/RZ_OutbreakStage.c`.
 
-The server moves through four stages. A stage ends when its time is up or when average
-infection passes its threshold. Each stage's numbers can be overridden on the game mode.
+The server moves through four stages over a season of about ten days ([Season pacing](#season-pacing)).
+A stage ends when its time is up or when average infection passes its threshold. **The
+outbreak's clock only runs while someone is playing**: stage time and spread stand still on an
+empty server. Stage lengths are divided by the **season speed** and spread is multiplied by it.
+Each stage's numbers can be overridden on the game mode.
 
-| Stage | Lasts | Or when average infection reaches | Density | Special chance | Spread / min | Missions | Bastion presence |
+| Stage | Lasts (hours played) | Or when average infection reaches | Density | Special chance | Spread / min | Missions | Bastion presence |
 |---|---|---|---|---|---|---|---|
-| Early Outbreak | 90 min | 45 | ×0.6 | 1% | 0.3 | 3 | ×1.0 |
-| Collapse | 150 min | 65 | ×1.0 | 3% | 0.6 | 4 | ×0.6 |
-| Overrun | 180 min | 85 | ×1.5 | 6% | 0.9 | 4 | ×0.25 |
-| Aftermath | until the cure | — | ×0.8 | 8% | 0.2 | 5 | ×0.1 |
+| Early Outbreak | 8 h (about day 1) | 45 | ×0.6 | 1% | 0.05 | 3 | ×1.0 |
+| Collapse | 16 h (days 2–3) | 65 | ×1.0 | 1.5% | 0.08 | 4 | ×0.6 |
+| Overrun | 24 h (days 4–6) | 85 | ×1.5 | 2% | 0.1 | 4 | ×0.25 |
+| Aftermath | until the cure | — | ×0.8 | 2.5% | 0.03 | 5 | ×0.1 |
 
 - **Spread.** Every town creeps up slowly. A town at 60+ infection also spreads to every
   town within 2.5 km, in proportion to its own infection. Cure breakthroughs slow spread.
@@ -403,7 +407,8 @@ Code: `Factions/RZ_Territory.c`.
   Never: a town already held (or within 400 m of a holding), a safehouse town, the lab town,
   a town at 85+ infection, or anything near the quarantine line. Not under 700 m from the
   faction's own stronghold, and rarely over 6 km.
-- **The territory tick**, every 20–30 minutes while players are online, does at most **one**
+- **The territory tick**, every 45–75 minutes while players are online (divided by the season
+  speed), does at most **one**
   thing. First the floor (a faction with no outpost founds one), then each faction in random
   order by its strength:
 
@@ -441,7 +446,7 @@ Code: `Factions/RZ_SupplyLines.c`.
   real vehicle with an AI crew drives in from the faction's Stronghold and parks within 50 m.
   At most one truck per faction is on the road. Places within 300 m of their stronghold
   never need one.
-- **Departures** every 40–60 minutes (the first 10–40 minutes after a start), only while
+- **Departures** every 60–90 minutes, divided by the season speed (the first 10–40 minutes after a start), only while
   players are online and not while the stronghold is Under Pressure. The truck goes where it's
   needed most: a short place first, then the least stock, then the longest wait.
 - **Stuck:** a truck that hasn't moved 8 m in 90 s, with no player within 1 km, is quietly
@@ -982,7 +987,7 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
 
 - Each sample is 1% research (×2 for a Lab Technician, +25% for Halcyon's Champions; never more
   than ×2 together). Research from missions counts ×0.75 of what the mission names. Both are
-  multiplied by the **season speed** (1 by default).
+  multiplied by the **season speed** ([Season pacing](#season-pacing)).
 - **The lab** is a placed prefab, or spawns in a random town and stays there across restarts.
 - **Antidotes** are used as a world action or from the inventory; they cure an infection. The
   lab makes doses into a **stock** from the first day, faster with each breakthrough
@@ -1004,6 +1009,77 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
   gave the most Fame this season (summed over all players). The winner is saved to
   `last_season.json`. What each ending means is in [LORE.md](LORE.md), "Endings";
   next-season rules from the winner are **planned**.
+
+## Season pacing
+
+Code: `Core/RZ_GameModeComponent.c` (**Season speed**), `Director/RZ_OutbreakStage.c`, `Cure/RZ_CureResearch.c`.
+
+A season is tuned for **about 10 days with 5–10 regular players**. Everything that moves the
+season along is tied to that horizon, and one setting, **Season speed** (top level, 1), scales
+all of it for other servers.
+
+**Assumptions** (the design point; none of these are measured yet):
+
+| | Value |
+|---|---|
+| Regular players | about 7, each playing 2–3 hours a day |
+| Player-hours | about 17.5 a day, 150–250 over the season |
+| Hours a day with someone online ("hours played", the clock stages run on) | about 8 |
+| Infected killed | about 20 per player-hour (travel, looting and missions mixed) |
+| Samples that reach the lab | about 60% (deaths, the Red Hand's dead drop, pockets) |
+| Research missions finished | 2–3 a day, about 2.5 named points each |
+
+**How research adds up** (1% a sample, missions ×0.75, Lab Technicians and Halcyon Champions
+about +20% overall):
+
+| Stage | Specials (with night and adaptation) | From samples | From missions | Research a day |
+|---|---|---|---|---|
+| Early Outbreak | ~1.1% of kills | ~3% | ~4.5% | ~7.5% |
+| Collapse | ~1.6% | ~4.5% | ~4.5% | ~9% |
+| Overrun | ~2.2% | ~5.5% | ~4.5% | ~10% |
+| Aftermath | ~2.7% | ~7% | ~4.5% | ~11.5% |
+
+**What that gives:**
+
+| Milestone | Target | Expected |
+|---|---|---|
+| 25% Field antiviral | day 2–3 | end of day 3 (Collapse) |
+| 50% Bite treatment | day 4–6 | about day 5.5 (Overrun) |
+| 75% Immunity serum | day 7–9 | about day 7.5 (Aftermath from day 7) |
+| 100% Final stand | day 9–14 | about day 10; a lost stand (back to 90%) costs about a day |
+
+**The final stand** lasts 15 minutes with one horde every 2.5 minutes, plus one per 6 players at
+the lab: six hordes for five defenders, so about five steady players can win it.
+
+**The other clocks**, on the same horizon (all with players online only, all ÷ season speed):
+
+| Clock | Every | Over a season |
+|---|---|---|
+| Outbreak stages | 8, 16, 24 hours played | Aftermath from about day 7 |
+| Infection creep | a quarter of the stage's spread a minute: 0.75–1.5 a played hour | +60 or so over the first six days if nobody pushes back (1.5 per kill) |
+| Territory tick | 45–75 min | about 80 ticks, at most one change each |
+| Supply trucks | 60–90 min per faction | about 6 a day per faction |
+| Safehouse upkeep | 3 h | about 2–3 meals a day |
+| Safehouse stragglers | 4 h, up to 12 people | a Settlement (medic, radio) by about day 4 without rescues |
+
+Treatment supply (antidotes, stabilisers) is on real time, not the season clock
+([Treatments](#treatments)).
+
+**Season speed by server** (research is roughly proportional to player-hours, and busier servers
+also have more hours played a day):
+
+| Regular players | Season speed | Season |
+|---|---|---|
+| 2–4 | 1.5–2 | about 10 days |
+| 5–10 | 1 (the design point) | about 10 days |
+| 11–20 | 0.5–0.7 | about 10 days |
+| 20+ | 0.3–0.5 | about 10 days |
+| Any, for a one-week season | the row above × 1.4 | about 7 days |
+
+*Simplified:* the season speed doesn't change antidote production, mission counts, the infection
+timer or anything a player does by hand. Check real kills and specials per player-hour in the
+first sessions (the status log shows research and the stage every few minutes) against the
+targets above, and adjust **Research per sample** or the season speed.
 
 ## Persistence
 

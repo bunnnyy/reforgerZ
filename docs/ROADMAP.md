@@ -12,7 +12,7 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 | System | Design |
 |---|---|
 | Settlement detection, rotating spawn points, mission announcements, map markers | [Settlements](DESIGN.md#settlements-spawn-points-and-the-map) |
-| The Director: four outbreak stages, infection spread | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread) |
+| The Director: four outbreak stages, infection spread, paced for a season of about 10 days (season speed for other server sizes) | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread), [Season pacing](DESIGN.md#season-pacing) |
 | Heat from presence, vehicles, gunfire (suppressors quieter), noisemakers; hordes toward noise | [Heat and noise](DESIGN.md#heat-and-noise) |
 | Zombie spawner for any zombie mod, bite detection (scratches and bites, protective clothing), the golden window and wound cleaning, staged infection, the Turned Player | [Zombies](DESIGN.md#zombies-bites-and-infection) |
 | Treatments from day one: antidote and stabiliser stocks scaled by research, Halcyon's trial dose, safehouse bite declarations, five low-grade meds with side effects | [Treatments](DESIGN.md#treatments) |
@@ -77,7 +77,9 @@ In this order, because later ones depend on earlier ones:
 1. **Compile** and fix the `VERIFY` list, riskiest first ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list)).
 2. **Per-player hostility.** A player Hunted by Bastion near a Bastion AI group: does it fire?
    Do the deploy menu, chat and groups stay on `SURV`? If AI ignores the variants, switch to Outlaw.
-3. **The core loop on Arland** for 2 hours: zombie density, spread rate, stage lengths, cure pace.
+3. **The core loop on Arland** for 2 hours: zombie density, spread rate, cure pace. Then the
+   season's first days: are kills, specials and research per player-hour near the assumptions
+   in [Season pacing](DESIGN.md#season-pacing)? Adjust research per sample or the season speed.
 4. **Supply trucks:** one truck from stronghold to outpost. Is the crew seated, and does it drive?
 5. **Noise:** how far a thrown bottle really leads infected; the favourite-spot rate.
 6. **Puzzles** one by one, and whether replicated action labels work.

@@ -17,17 +17,17 @@ class RZ_StageSettings
 	[Attribute("1", desc: "Zombie density multiplier")]
 	float m_fDensityMult = 1;
 
-	[Attribute("0.03", desc: "Chance that a spawned zombie is a special (drops research samples)")]
-	float m_fSpecialChance = 0.03;
+	[Attribute("0.015", desc: "Chance that a spawned zombie is a special (drops research samples)")]
+	float m_fSpecialChance = 0.015;
 
-	[Attribute("0.5", desc: "Infection points per minute that an infested town spreads to its neighbours")]
-	float m_fSpreadPerMinute = 0.5;
+	[Attribute("0.08", desc: "Infection points per minute (while players are online, x season speed) that an infested town spreads to its neighbours; a quarter of it creeps up everywhere")]
+	float m_fSpreadPerMinute = 0.08;
 
 	[Attribute("3", desc: "Concurrent missions (plus one per 4 players)")]
 	int m_iBaseMissions = 3;
 
-	[Attribute("120", desc: "Minutes before advancing to the next stage. 0 = only advance on infection level")]
-	float m_fDurationMinutes = 120;
+	[Attribute("960", desc: "Minutes with players online (divided by season speed) before advancing to the next stage. 0 = only advance on infection level")]
+	float m_fDurationMinutes = 960;
 
 	[Attribute("1", desc: "How often Bastion missions show up (Bastion pulls back to its bases as things get worse)")]
 	float m_fMilitaryPresence = 1;
@@ -39,17 +39,19 @@ class RZ_StageSettings
 		s.m_eStage = stage;
 		switch (stage)
 		{
+			// Paced for a season of about 10 days (docs/DESIGN.md, "Season pacing"): 8, 16 and 24
+			// hours with players online, about day 1, days 2-3 and days 4-6
 			case RZ_EOutbreakStage.EARLY_OUTBREAK:
-				s.Set(0.6, 0.01, 0.3, 3, 90, 1.0);
+				s.Set(0.6, 0.01, 0.05, 3, 480, 1.0);
 				break;
 			case RZ_EOutbreakStage.COLLAPSE:
-				s.Set(1.0, 0.03, 0.6, 4, 150, 0.6);
+				s.Set(1.0, 0.015, 0.08, 4, 960, 0.6);
 				break;
 			case RZ_EOutbreakStage.OVERRUN:
-				s.Set(1.5, 0.06, 0.9, 4, 180, 0.25);
+				s.Set(1.5, 0.02, 0.1, 4, 1440, 0.25);
 				break;
 			case RZ_EOutbreakStage.AFTERMATH:
-				s.Set(0.8, 0.08, 0.2, 5, 0, 0.1);
+				s.Set(0.8, 0.025, 0.03, 5, 0, 0.1);
 				break;
 		}
 

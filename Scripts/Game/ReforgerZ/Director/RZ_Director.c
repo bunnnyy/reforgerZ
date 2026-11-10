@@ -1,6 +1,9 @@
 //! The Director runs the outbreak: it moves the server through the stages and
 //! spreads infection from town to town. Players push back by clearing towns
 //! and by researching the cure.
+//!
+//! Its clock only runs while someone is playing, and the season speed scales it
+//! (docs/DESIGN.md, "Season pacing"): stage lengths are divided by it, spread multiplied.
 class RZ_Director
 {
 	protected RZ_GameModeComponent m_GM;
@@ -52,7 +55,7 @@ class RZ_Director
 		float total = m_fStageMinutes;
 		for (int i = 0; i < m_eStage && i < m_aStages.Count(); i++)
 		{
-			total += m_aStages[i].m_fDurationMinutes;
+			total += m_aStages[i].m_fDurationMinutes / m_GM.GetSeasonSpeed();
 		}
 
 		return total;
@@ -72,8 +75,12 @@ class RZ_Director
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void Tick(float dt)
+	//! online = at least one player is playing. An empty server's outbreak stands still.
+	void Tick(float dt, bool online)
 	{
+		if (!online)
+			return;
+
 		m_fStageMinutes += dt / 60;
 		SpreadInfection(dt);
 		CheckStageAdvance();
@@ -113,7 +120,7 @@ class RZ_Director
 	{
 		RZ_StageSettings stage = GetStageSettings();
 		float mult = m_GM.GetCure().GetSpreadMultiplier();
-		float perTick = stage.m_fSpreadPerMinute * (dt / 60) * mult;
+		float perTick = stage.m_fSpreadPerMinute * (dt / 60) * mult * m_GM.GetSeasonSpeed();
 
 		array<ref RZ_Settlement> list = m_GM.GetSettlements();
 		array<float> delta = {};
@@ -162,7 +169,7 @@ class RZ_Director
 			return;
 
 		RZ_StageSettings stage = GetStageSettings();
-		bool timeUp = stage.m_fDurationMinutes > 0 && m_fStageMinutes >= stage.m_fDurationMinutes;
+		bool timeUp = stage.m_fDurationMinutes > 0 && m_fStageMinutes >= stage.m_fDurationMinutes / m_GM.GetSeasonSpeed();
 
 		float avg = GetAverageInfection();
 		bool infectionUp = false;

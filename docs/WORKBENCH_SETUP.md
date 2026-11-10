@@ -483,7 +483,7 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | World | Town memory | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
-| Director | Stages (list) | Per-stage overrides; empty = the built-in four |
+| Director | Stages (list) | Per-stage overrides; empty = the built-in four (8, 16 and 24 hours played; [DESIGN.md](DESIGN.md#season-pacing)) |
 | Director | (top level) | **Broadcast minutes** (25; 0 = only on first join) |
 | Director | Environment | Night heat spread (0.25), night specials (×1.25), rain and fog thresholds, storm thresholds, storm grounds the helicopter |
 | Director | Story arcs | Minutes between (60), start chance (0.6), repeat hours (4), the dark-side arc's limits |
@@ -500,8 +500,8 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | Haven | Safehouses | **Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, caught chance (0.3 a minute in Final), declare multipliers by tier (1.15/1.25/1.4/1.5), meds cost (5), stragglers (4 h), leak chance (0.25), body prefabs |
 | Wanderers | Wanderers | **Enabled**, min and max count (6, 10), prices, spawn radius (400 m), walk speed, replace minutes (1440), bite chance, Infamy, body prefabs, Trader goods |
 | Leaders | Leaders | **Enabled**, quartermaster is leader (on), interim posts (1, territory off only), body radius (200 m), replace minutes (120), job minutes (30), danger scale, discovery, kill Infamy, body prefabs |
-| Territory | Territory | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (20–30 min), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs |
-| Territory | Supply | **Enabled**, truck and crew prefabs, departures (40–60 min), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
+| Territory | Territory | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs |
+| Territory | Supply | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
 | Territory | Faction life | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Guidance | Guidance | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
 | Interactions | General | **Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
@@ -521,7 +521,9 @@ default; this is what each one covers. Defaults are in brackets where they matte
 buildings, uniforms, buses, protective clothing, alcohol, antiseptic and herbs are found by
 lower-case words in prefab names. Check them against the mods you run.
 
-**Server.** Keep time acceleration modest and fixed; don't use time-skip or sleep mods. For a
+**Server.** Keep time acceleration modest and fixed; don't use time-skip or sleep mods. Set
+**Season speed** for the server's size: 1 for 5–10 regulars (about 10 days), 1.5–2 for 2–4,
+0.5–0.7 for 11–20, 0.3–0.5 above that; ×1.4 for a one-week season ([DESIGN.md](DESIGN.md#season-pacing)). For a
 season wipe, set **Wipe on start** for one restart, or delete `$profile:ReforgerZ/state.json`.
 The last winner is kept in `$profile:ReforgerZ/last_season.json`, which a wipe doesn't touch.
 
@@ -695,6 +697,8 @@ session, tick off:
 - [ ] A contract is offered by radio, completes, and pays Fame and Favor; a tier change is announced.
 - [ ] A quartermaster sells an item at the right tier and refuses one above it.
 - [ ] Stop and restart the server: stage, infection, research and your standing are back.
+- [ ] With nobody online for a while, the stage minutes and town infection don't move; with
+  **Season speed** at 4, a stage change, a territory tick and a truck come four times as often.
 
 **Factions**
 - [ ] Hunted by Bastion near Bastion AI: they shoot you, not a friend next to you.

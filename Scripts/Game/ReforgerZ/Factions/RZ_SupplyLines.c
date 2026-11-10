@@ -47,11 +47,11 @@ class RZ_SupplySettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon crew: an AI group on INST", "et")]
 	ResourceName m_sHalcyonCrew;
 
-	[Attribute("40", desc: "Shortest real minutes between one faction's trucks")]
-	float m_fDepartMinMinutes = 40;
+	[Attribute("60", desc: "Shortest real minutes between one faction's trucks (divided by season speed)")]
+	float m_fDepartMinMinutes = 60;
 
-	[Attribute("60", desc: "Longest real minutes between one faction's trucks")]
-	float m_fDepartMaxMinutes = 60;
+	[Attribute("90", desc: "Longest real minutes between one faction's trucks")]
+	float m_fDepartMaxMinutes = 90;
 
 	[Attribute("1000", desc: "A stuck truck is quietly moved on only if no player is this close (m)")]
 	float m_fUnstickRadius = 1000;
@@ -643,7 +643,7 @@ class RZ_SupplyLines
 	{
 		float lo = Math.Max(5, m_Settings.m_fDepartMinMinutes);
 		float hi = Math.Max(lo, m_Settings.m_fDepartMaxMinutes);
-		m_aNextDeparture[f] = m_fClock + Math.RandomFloat(lo, hi) * 60;
+		m_aNextDeparture[f] = m_fClock + Math.RandomFloat(lo, hi) * 60 / m_GM.GetSeasonSpeed();
 	}
 
 	//------------------------------------------------------------------------------------------------
