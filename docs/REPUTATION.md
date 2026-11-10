@@ -74,7 +74,7 @@ total wipes:
 | Tier | Shop (Bastion requisition) | Perk / service |
 |---|---|---|
 | Known | Military rations, morphine, flares | Checkpoints let you through without being searched |
-| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition:** call in a military supply crate once per hour |
+| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition:** once an hour, draw ammo and rations from a Bastion outpost's stock at half Favor cost. It only works while that outpost has been resupplied by truck |
 | Champion | Machine guns, grenades, military trucks | **Fire mission:** mark a horde with smoke for an artillery strike (long cooldown) |
 | Hunted | — | Checkpoints open fire; patrols get your last known position |
 

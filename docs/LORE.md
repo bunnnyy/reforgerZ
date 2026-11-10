@@ -3,16 +3,16 @@
 ## The premise
 
 Eleven days ago something got out. Within forty-eight hours the government
-declared the region a **Quarantine Zone** and sealed it off: concrete
-barriers and wire on the roads, guard towers on the hills, patrol boats on
-the water, drones overhead. No one gets in. **No one gets out.**
+declared the region a **Quarantine Zone** and sealed it off: roadblocks
+on every road out, drones over the line, patrol boats on the water, snipers
+nobody ever sees. No one gets in. **No one gets out.**
 
 The official broadcast still loops on every frequency:
 
 > *"This area is under federal quarantine. Remain indoors. Do not approach the
 > perimeter. Aid is on its way."*
 
-Aid is not on its way. You're a civilian who was here when the gates
+Aid is not on its way. Nothing comes in, and nothing ever will. You're a civilian who was here when the gates
 closed. Everyone in the Zone is stuck in it together: the soldiers who were
 left inside, the people who used to live here, the criminals who were glad
 of the chaos, and the scientists who might be the only way out.
@@ -23,56 +23,79 @@ of the chaos, and the scientists who might be the only way out.
 
 | System | In the Zone |
 |---|---|
-| Map edge | **The Perimeter.** The wall, wire and towers on land, a naval blockade on coasts. Get close and you're warned. Keep going and you're shot. |
+| Map edge | **The Perimeter.** An unseen cordon: drones, loudspeakers and snipers you never see. Get close and you're warned. Keep going and you're shot. |
 | Task Force Bastion | Soldiers who were inside when the order came. Command left them here to "hold the line", and now they're as trapped as you. Some still follow orders; some are starting to wonder whose side they're on. |
 | The Haven | Locals who refuse to give up their homes, and people helping each other because nobody outside will. |
 | The Red Hand | People who figured out that inside the Zone there are no laws, only whoever has the guns. |
 | Halcyon | A research team that was studying the outbreak site before the lockdown. They're the only ones who can prove the Zone is safe, so the world outside will lift the quarantine. |
-| Outbreak stages | How long the Zone has been sealed, and how much patience the outside has left. |
-| Evac flights | Not escape. Bastion's own **supply flights**: the outside resupplies its soldiers and nobody else. Being at the LZ means grabbing what they drop. |
-| Airdrops | "Humanitarian aid" from outside, dropped carelessly over the Zone. People fight over them. |
+| Outbreak stages | How long the Zone has been sealed. |
+| Last Helicopter | Bastion's one working helicopter, shuttling between its own bases *inside* the Zone. Nobody outside resupplies anyone, Bastion included. |
+| Loot | Nothing is dropped in from outside. **There are no supply drops.** Everything you have, you scavenged, earned or took. |
 | Supply trucks | Everything that moves inside the Zone moves by road. A lost truck means empty shelves. |
 | The cure | Not just a cure: it's **proof**. Deliver it and the quarantine is lifted. |
 
 ## The Perimeter
 
-The edge of the playable world becomes the Perimeter on any map. It's worked
-out from the map's bounds and coastline, so nothing needs to be placed by hand.
+The edge of the playable world is the Perimeter on any map. It's worked out from
+the map's bounds and coastline, so nothing needs to be placed by hand. **The
+cordon is never seen**, only felt. Nothing is built around the edge.
 
-- **Warning zone** (about 300 m from the edge): a loudspeaker or radio warning, and a drone overhead.
-- **Kill zone** (about 100 m): a sniper warning shot, then you're shot. Tower fire kills you; it isn't a negotiation.
-- Bodies and wrecks near the wire: environmental storytelling about people who tried.
-- Some missions use the Perimeter rather than fight it:
-  - **Smuggler's Gap.** The Red Hand knows a hole in the fence and brings goods in from outside, for a price.
-  - **The Crossing.** Someone on the other side is passing medicine through the wire at night, and Bastion mustn't see.
-  - **Shot at the Wall.** Recover the papers from a body near the fence without getting too close.
-- **Nobody escapes.** There's no "get out" win. Your character's story ends inside the Zone.
+- **Warning zone** (about 300 m from the edge): a drone appears above *you*,
+  follows you, and a loudspeaker voice says
+  *"You are approaching the quarantine line. Turn back."* The drone leaves when you do.
+  There's never more than one drone per player near the edge, and none anywhere else.
+- **Kill zone** (about 100 m): one warning shot (a sound and a near miss), then you're
+  shot by a sniper you never see.
+- **Road checkpoints, fully sealed:** the only built part of the cordon. Where each
+  main road leaves the map (usually 4–8 per map), the road ends in concrete blocks
+  and a closed barrier, with guards behind it. They are **not** a way through:
+  - Nobody passes in either direction, ever. There are no papers, bribes, trades or talking.
+  - Within about 150 m, the loudspeaker warns you. Closer than about 60 m, the guards shoot.
+  - They're scenery that says *the roads are closed for good*, and they're
+    sealed the same way as the rest of the line. The guards are outside the playable area,
+    so they can't be killed or looted.
+  - They can be turned off per server.
+- **No escape.** There's no "get out" win. Your character's story ends inside the Zone.
 
-## The outside world is watching
+### Missions that use the Perimeter (no fence assets)
 
-It's never a faction you meet. It's a pressure in the background, shown as a
-server-wide **Patience** value that drifts with the state of the Zone:
+- **The Blind Spot** (Red Hand). The drones run a rotation, and for ten minutes a
+  night one stretch of the edge isn't covered. The Red Hand knows when and where. Be in that
+  stretch inside the window to meet a smuggler on the other side and bring the package
+  back before coverage returns. Arrive late or stay too long and the kill zone is live again.
+- **The Crossing** (Haven). Someone outside is getting medicine in: at night, a sealed
+  package is left at the waterline or at the treeline right at the edge. Get in, grab it and
+  get out of the warning zone before the drone locks on (the "being noticed" timer).
+- **Shot at the Line** (any). A body lies in the warning zone with papers on them.
+  Recover them without crossing into the kill zone.
 
-- **Patience falls** when infection is high and cure progress stalls.
-- **Patience rises** with cure breakthroughs and towns reclaimed.
+These are the only links to the outside, and they're rare and dangerous on purpose.
 
-| Patience | What the outside does |
+## The outside world: silent, watching
+
+The outside doesn't act. It doesn't send aid, doesn't bomb, doesn't negotiate.
+It guards the line, and that's all. Every threat in the Zone comes from inside it.
+
+The only sign of the outside is the **government broadcast**, looping on every
+frequency. It never changes its message, but its tone shifts with the state of
+the Zone. It's flavour only, with no mechanics behind it:
+
+| Zone state | Broadcast tone |
 |---|---|
-| High | Regular airdrops, Bastion supply flights, the radio promising help |
-| Falling | Fewer drops, harsher broadcasts, more drones over the Zone |
-| Low | **Sterilisation runs:** a jet bombs one heavily infested town, with a warning first. It's an event, not a wipe, and at most one every couple of hours |
-| Gone | **Final warning:** a deadline is announced. If the cure isn't finished in time, the season ends in "Sterilisation" (see endings) |
-
-This is capped so it never runs away. It's a reason to push the cure, not a punishment.
+| Early, cure progressing | *"Remain indoors. Aid is on its way."* |
+| Infection spreading, cure stalled | *"Residents are reminded that the perimeter is for your protection."* |
+| Overrun, little progress | *"The perimeter will be maintained."* |
+| Long stall | *"The perimeter will be maintained indefinitely."* |
+| Cure breakthroughs | *"Reports of research inside the zone are being evaluated."* |
 
 ## Endings (per season)
 
-The season ends when the cure is delivered, or when the outside gives up.
+The season ends one way: **the cure is finished**. Then the quarantine is
+lifted and the gates open. The faction with the most Fame controls how the cure
+is released (see REPUTATION.md), which sets the tone of the next season.
 
-| Ending | How | What it means |
-|---|---|---|
-| **Quarantine Lifted** | Cure finished; the faction with the most Fame controls how it's released (see REPUTATION.md) | The gates open. The flavour depends on the faction |
-| **Sterilisation** | Patience runs out before the cure | The outside "solves" it. The season wipes with a grim broadcast |
+Urgency comes from inside. The outbreak keeps slowly getting worse
+(stages, spread, adaptation) until the cure is done. There's no outside deadline.
 
 Even a win doesn't mean leaving: the next season is a new outbreak, in a new Zone.
 

@@ -166,8 +166,8 @@ Small, capped changes that keep late game interesting without making it a wall:
 
 - **Day and night, no time skip.** At night zombies hear further and specials appear, while
   human AI patrols less. It's a good time for stealth and unarmed missions.
-- **Weather:** rain dampens noise, fog limits sight lines for everyone, and storms can down
-  helicopters, which spawns a crash-site event.
+- **Weather:** rain dampens noise, fog limits sight lines for everyone, and storms can
+  ground Bastion's helicopter.
 - **Power grid:** a group can restore a power station. The region gets lights, working radios
   and electronics loot, but the noise draws hordes there. It slowly fails unless someone maintains it.
 - **Radio station:** players can take it over to broadcast news or warnings. Cosmetic and social only: no Fame bonus.
