@@ -4,6 +4,10 @@
 //! Implemented perks:
 //!   Haven Known          tier message (safehouses let you in: flavour for now)
 //!   Haven Trusted        Neighbours: direction to the nearest job, on spawn and every 10 min
+//!   Haven Champion       Safe Harbour: inside any safehouse, hunter squads lose your trail and
+//!                        bounty notices give only a vague area. Remembered: when you die, a
+//!                        memorial headline, the council reads your name, and your next character
+//!                        is kin (one free treatment and a greeting at their first safehouse)
 //!   Bastion Trusted      Requisition: once an hour, ammo or rations at half Favor (RZ_RequisitionAction),
 //!                        from a Bastion outpost's truck-supplied stock while supply trucks run
 //!   Red Hand Known       toll pass (flavour message for now)
@@ -35,6 +39,9 @@ class RZ_FactionPerks
 	// Consequences
 	protected ref array<IEntity> m_aHunters = {};
 	protected ref array<float> m_aHunterExpiry = {};
+	protected ref array<int> m_aHunterTarget = {};		// who each squad was sent after
+	protected ref array<bool> m_aHunterLost = {};		// lost the trail (Safe Harbour): walking away
+	protected ref set<int> m_aHarbourTold = new set<int>();
 	protected float m_fHunterTimer;
 	protected float m_fBountyTimer;
 	protected ref map<int, vector> m_mLastAlivePos = new map<int, vector>();
@@ -51,6 +58,7 @@ class RZ_FactionPerks
 	protected static const float BOUNTY_CLAIM_RADIUS = 150;
 	protected static const int BOUNTY_FAVOR = 50;
 	protected static const int BOUNTY_FAME = 10;
+	protected static const float LOST_TRAIL_SECONDS = 120;	// a squad that lost the trail gives up this soon
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_FactionPerks(RZ_GameModeComponent gm)
@@ -290,9 +298,11 @@ class RZ_FactionPerks
 			case RZ_EFaction.SURVIVORS:
 			{
 				if (tier == RZ_ETier.KNOWN)
-					return "Haven safehouses will let you in. Their quartermaster sells you basic supplies. House rules: don't fire near a safehouse, and tell the medic if you're bitten.";
+					return "Haven safehouses will let you in. Their quartermaster sells you basic supplies. House rules: don't fire near a safehouse, and tell them at the door if you're bitten.";
 				if (tier == RZ_ETier.TRUSTED)
 					return "Neighbours: the Haven will point you to the nearest job.";
+				if (tier == RZ_ETier.CHAMPION)
+					return "Safe Harbour: inside any safehouse, hunters lose your trail and bounty notices can only guess where you are. And if you fall, the Haven will remember you.";
 				break;
 			}
 			case RZ_EFaction.MILITARY:
@@ -492,19 +502,18 @@ class RZ_FactionPerks
 			IEntity h = m_aHunters[i];
 			if (!h || RZ_Util.CountAlive(h) == 0)
 			{
-				m_aHunters.Remove(i);
-				m_aHunterExpiry.Remove(i);
+				RemoveHunter(i);
 				continue;
 			}
 
+			LoseTrailIfHarboured(i, ids, players);
 			if (m_fClock < m_aHunterExpiry[i])
 				continue;
 
 			if (RZ_Util.NearestDistance(RZ_Util.GetUnitPosition(h), players) > 300)
 			{
 				RZ_Util.DeleteUnit(h);
-				m_aHunters.Remove(i);
-				m_aHunterExpiry.Remove(i);
+				RemoveHunter(i);
 			}
 		}
 
@@ -525,6 +534,10 @@ class RZ_FactionPerks
 		array<int> hunters = {RZ_EFaction.MILITARY, RZ_EFaction.BANDITS};
 		foreach (int j, IEntity p : players)
 		{
+			// Safe Harbour: nobody is sent after a Haven Champion inside a safehouse
+			if (IsHarboured(ids[j], p))
+				continue;
+
 			foreach (int f : hunters)
 			{
 				if (!RZ_Reputation.IsHunted(m_GM.GetTier(ids[j], f)))
@@ -557,12 +570,76 @@ class RZ_FactionPerks
 			hostility.MarkHostileAround(faction, squad, HUNTER_HOSTILE_RADIUS, playerId);
 		m_aHunters.Insert(squad);
 		m_aHunterExpiry.Insert(m_fClock + HUNTER_LIFETIME);
+		m_aHunterTarget.Insert(playerId);
+		m_aHunterLost.Insert(false);
 
 		string text = "A Bastion patrol has your last known position.";
 		if (faction == RZ_EFaction.BANDITS)
 			text = "A Red Hand crew is hunting you. They're close.";
 
 		m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(faction), text + " (" + RZ_Util.DirectionText(at, from) + ")");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RemoveHunter(int i)
+	{
+		m_aHunters.Remove(i);
+		m_aHunterExpiry.Remove(i);
+		m_aHunterTarget.Remove(i);
+		m_aHunterLost.Remove(i);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Haven Champion perk "Safe Harbour": inside any safehouse.
+	protected bool IsHarboured(int playerId, IEntity ent)
+	{
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (!ent || !houses)
+			return false;
+
+		return houses.IsSafeHarbour(playerId, ent.GetOrigin());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A squad whose target is in Safe Harbour loses the trail: it walks off the other way and
+	//! gives up soon after.
+	protected void LoseTrailIfHarboured(int i, array<int> ids, array<IEntity> players)
+	{
+		if (m_aHunterLost[i])
+			return;
+
+		int target = m_aHunterTarget[i];
+		int idx = ids.Find(target);
+		if (idx < 0 || !IsHarboured(target, players[idx]))
+			return;
+
+		m_aHunterLost[i] = true;
+		m_aHunterExpiry[i] = Math.Min(m_aHunterExpiry[i], m_fClock + LOST_TRAIL_SECONDS);
+		vector safe = players[idx].GetOrigin();
+		vector squadPos = RZ_Util.GetUnitPosition(m_aHunters[i]);
+		float gap = RZ_Util.DistXZ(squadPos, safe);
+		vector away = RZ_Util.RandomPointInRing(safe, 400, 500);
+		if (gap >= 1)
+			away = squadPos + (squadPos - safe) * (400 / gap);
+
+		RZ_Util.RedirectGroup(m_aHunters[i], RZ_Util.GroundPos(away), m_GM.GetSpawner().GetMoveWaypointPrefab());
+		if (!m_aHarbourTold.Contains(target))
+		{
+			m_aHarbourTold.Insert(target);
+			m_GM.NotifyPlayer(target, "Safe Harbour", "The shutters come down and someone moves the cart across the gate. Whoever was following you loses the trail at the edge of town.");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A bounty notice's "last seen" that only guesses: a town 1.5-3 km from where they really are.
+	protected string VagueArea(vector pos)
+	{
+		vector guess = RZ_Util.RandomPointInRing(pos, 1500, 3000);
+		RZ_Settlement s = m_GM.GetSettlement(m_GM.FindNearestSettlement(guess));
+		if (s)
+			return string.Format("somewhere out toward %1, they think", s.m_sName);
+
+		return "nobody's sure where";
 	}
 
 	// ================================================================ Bounties
@@ -609,11 +686,15 @@ class RZ_FactionPerks
 					continue;
 
 				RZ_Settlement s = m_GM.GetSettlement(m_GM.FindNearestSettlement(p.GetOrigin()));
-				string where = RZ_SettlementScanner.GridReference(p.GetOrigin());
+				string where = "near " + RZ_SettlementScanner.GridReference(p.GetOrigin());
 				if (s)
-					where = s.m_sName;
+					where = "near " + s.m_sName;
 
-				string text = string.Format("%1 has put a bounty on %2. Last seen near %3. Be near when they die to claim %4 Favor.",
+				// Safe Harbour: the Haven doesn't say where its Champions sleep
+				if (IsHarboured(ids[i], p))
+					where = VagueArea(p.GetOrigin());
+
+				string text = string.Format("%1 has put a bounty on %2. Last seen %3. Be near when they die to claim %4 Favor.",
 					RZ_Factions.GetName(f), RZ_Util.PlayerName(ids[i]), where, BOUNTY_FAVOR);
 				foreach (int other : ids)
 				{
@@ -661,6 +742,12 @@ class RZ_FactionPerks
 		// A life that lasted leaves a journal: a headline or a wanderer's rumour, never an object
 		if (m_GM.GetTownMemory())
 			m_GM.GetTownMemory().RecordJournal(victim, at);
+
+		// Haven Champion perk "Remembered": the Haven mourns them and greets their kin
+		m_aHarbourTold.RemoveItem(victim);
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (houses && RZ_Reputation.IsAtLeast(m_GM.GetTier(victim, RZ_EFaction.SURVIVORS), RZ_ETier.CHAMPION))
+			houses.OnChampionFallen(victim, at);
 
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{

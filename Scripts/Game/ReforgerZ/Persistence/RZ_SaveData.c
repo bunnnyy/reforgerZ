@@ -27,6 +27,7 @@ class RZ_SaveData
 	bool cured;
 	int labAntidotes;		// doses in the lab's stock
 	int stolenAntidotes;	// doses on the Red Hand's black market
+	int labStabilisers;		// stabilisers in Halcyon's stock
 
 	// Season: Fame given to each faction by all players, and who got the cure (-1 = not yet)
 	ref array<int> seasonFame = {};

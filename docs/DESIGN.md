@@ -126,12 +126,104 @@ Code: `Zombies/RZ_ZombieSpawner.c`, `Zombies/RZ_BiteDetector.c`, `Core/RZ_GameMo
   removed beyond 1.1 km. Two roaming infected stay around each player in the countryside. At most
   60 tracked spawns on the server and 4 per tick.
 - **Specials** (the stage's chance) drop a cure sample when killed.
-- **Bites.** Works with any zombie mod: when a player's health drops with an infected
-  within 2.5 m, there's a 30% chance it was a bite.
-- **Infection timer.** 20 minutes from bite to turning (× the background's multiplier).
-  Cure breakthroughs, antidotes, safehouse medics, Doctor wanderers and Nurses slow it.
-  A player who turns becomes the **Turned Player** world event: they roam with their gear.
 - **Zombie-free settlements** while a mission needs one (The Silent Village).
+
+A bite is survivable if you act on it. Code: `Zombies/RZ_BiteDetector.c`, `Cure/RZ_Infection.c`, `Cure/RZ_Meds.c`.
+
+### Bites
+
+Works with any zombie mod: a player's health dropping with an infected within 2.5 m is a hit.
+**Most hits are scratches** ("Nails, not teeth", told at most once a minute). Each hit is an
+infecting bite with the **Survival > Bite chance** (10%), changed by what's happening:
+
+| Situation | Bite chance |
+|---|---|
+| Surrounded: 3 or more infected within 5 m | ×2 |
+| Grabbed: a second hit within 4 s | ×1.5 |
+| Tired: stamina under a quarter (needs the stamina hook) | ×1.5 |
+| Hurt: under 40% health | ×1.5 |
+| Wearing a jacket / gloves / a helmet (worn prefab names) | ×0.8 / ×0.8 / ×0.85 |
+| Never above | 60% |
+
+A careful player in a jacket and gloves who isn't cornered is bitten about one hit in sixteen;
+someone pinned by three infected at low health, nearly half the time (60% at most).
+
+### The golden window
+
+A bite **doesn't take for 2 minutes**, and the timer stands still. Cleaning it in that window can
+stop it, once per bite:
+
+| How | Stops it |
+|---|---|
+| "Clean the bite" with alcohol or antiseptic (prefab-name keywords) | 70% |
+| "Disinfect and bandage it" (disinfectant or antiseptic and a bandage, or a first-aid kit) | 90% |
+| Another player's **Treat their wounds** | 90% |
+| Declaring the bite at a safehouse | 90% |
+
+The "Clean the bite" spot (an interaction spot) follows the bitten player's feet; anyone can use
+it with their own supplies. Nobody is told whether it worked until the window closes: a minute
+later "it didn't take", or the infection starts.
+
+### Infection stages
+
+Once it takes, **60 minutes** to turning (**Backgrounds > Bite minutes**) × the background's
+multiplier (Nurse ×1.5, Doctor ×2.5, Ex-Con ×0.8) × the cure's (×1.25 after 25%, ×1.5 after 75%).
+
+| Stage | When | What it does |
+|---|---|---|
+| **Fever** | the first half | A line every 4 minutes. Nothing else |
+| **Weakness** | the second half, until Final | Stamina drains every 30 s (fallback: a little noise, laboured breathing). Players within 15 m are told every 3 minutes that you look sick. Safehouses can catch a hidden bite (half chance) |
+| **Final** | the last 10 minutes (at most 30% of the whole) | Stamina drains every 20 s (fallback: noise). A countdown every minute. Others within 15 m see it every 2 minutes; full chance to be caught in a safehouse |
+
+Meds and safehouse slowing add time, so a player can drop back a stage. A player who turns
+becomes the **Turned Player** world event: they roam with their gear.
+
+*Simplified:* stamina goes through an engine hook (VERIFY); without it the stages make noise
+instead. "Visible to others" is a message to players nearby, not a change to how you look.
+
+### Treatments
+
+Bite treatment exists from the start of a season. Cure research only changes **supply, price
+and odds**; the world-level breakthroughs (spread, timers, the final stand) are in
+[Cure research](#cure-research-and-the-seasons-end).
+
+| Treatment | Where | Does |
+|---|---|---|
+| **Antidote** | Halcyon's quartermaster (Trusted), from the lab's stock; the Red Hand's stolen doses; very rare finds | Cures |
+| **Trial dose** | Halcyon's quartermaster, "Volunteer for the trial dose": anyone bitten, free, once per life | Cures 80% of the time; otherwise the time left is halved. +3 Halcyon Fame either way. Refused to people Halcyon hunts |
+| **Stabiliser** | Halcyon's quartermaster (Known), from a small stock; rare in pharmacies and hospitals | Pauses the infection for 20 minutes, once per life |
+| **Declaring the bite** | Any safehouse | Once per life: time left ×1.15 (Shelter), ×1.25 (Community), ×1.4 (Settlement), ×1.5 (Town). A fresh bite is cleaned instead |
+| Doctor wanderer, Nurse or Doctor player | On the roads; "Treat their wounds" | ×1.25 / ×1.15 of the time left, once per life each |
+
+**Supply by research:**
+
+| Research | Antidote stock | Stabiliser stock | Stabiliser price | Finds per pharmacy search (antidote / stabiliser) |
+|---|---|---|---|---|
+| 0% | 1 per 30 min, 2 at most | 1 per 90 min, 1 at most | ×2 | 0.4% / 1% |
+| 25% | 1 per 20 min, 3 | 1 per 45 min, 2 | ×2 | 0.8% / 1.5% |
+| 50% | 1 per 15 min, 4 | 1 per 45 min, 2 | ×1 | 1.2% / 2% |
+| 75% | 1 per 10 min, 5 | 1 per 15 min, 5 | ×1 | 1.6% / 2.5% |
+
+Finds are doubled behind a lock. Infected bodies (some were Halcyon couriers) have half the
+pharmacy's antidote chance. Power the Lab still doubles antidote production for 2 hours.
+Players Known with Halcyon hear when a dose is ready.
+
+### Low-grade meds
+
+Buy time, never a cure (except a lucky cut dose). **Each works once per life**, and between them
+they add **30 minutes at most** (a stabiliser doesn't count). Used like the antidote: drop it and
+"Take" it, or from the inventory as a consumable. Each has a guidance tip on first use.
+
+| Med | Where | Does | Side effect (10 min) |
+|---|---|---|---|
+| Expired antibiotics | Common: pharmacies, houses, bodies; every safehouse hands them out for 5 Haven Favor | +10 min; 30% nothing | Nausea: a burst of lost stamina every 90 s (fallback: a little health) |
+| Veterinary antiviral | Farms and vet clinics | Pauses 20 min | Coughing fits: 12 heat every 60–90 s |
+| Red Hand cut dose | The Red Hand's quartermaster, Known, cheap | Cures 50%; otherwise time left ×0.6 | Fever: 1.5% health every 30 s, never below 30% |
+| Fever suppressant | Pharmacies, some shops | Nothing to the timer. Hides the symptoms for 30 min: nobody nearby sees them and a safehouse can't catch the bite | — |
+| Home remedy | Brewed on a stove from alcohol and herbs | +5 min | Drunk for 5 min: sway and blur (fallback: stumbling, stamina and noise) |
+
+*Simplified:* there's no known script hook for sway or blur, so the home remedy always uses the
+fallback. The side effects use health, stamina and noise, not animations.
 
 ## Infection adapts
 
@@ -390,7 +482,7 @@ Capped, background and cheap. Needs, morale, truces and feuds are in
   crews, Bastion promotions, recruiting in a strong faction's town, a researcher walking out of
   Halcyon when its morale is low.
 - **Remembered moments**: the night the lab nearly fell, the convoy that burned, the day
-  Bastion lost a town, the first antidote. The last 8 are saved. Leaders and named people bring
+  Bastion lost a town, the day the lab got the antidote right (50%). The last 8 are saved. Leaders and named people bring
   one up a quarter of the time ("Not since the night the lab nearly fell.").
 - **Rumours**: a leader's news and a wanderer's talk include gossip about another faction
   (rivals twice as often). About a rival it's biased or false 35% of the time; otherwise 10%.
@@ -417,18 +509,25 @@ isn't kept as an AI body: they become **+1 population** at the nearest safehouse
   |---|---|---|
   | 0–4 | Shelter | Spawn point; shop sells Known items only; 3 occupants |
   | 5–11 | Community | Trusted stock, one guard, 4 occupants |
-  | 12–19 | Settlement | A medic (heals for Favor, takes bite declarations) and a radio (missions within 3 km); 5 occupants |
+  | 12–19 | Settlement | A medic (heals for Favor) and a radio (missions within 3 km); 5 occupants |
   | 20–30 | Town | Champion stock, two guards, 6 occupants |
 
-- **Upkeep.** Every 3 hours of real time with players online, a safehouse eats one food
-  per 5 people. Players hand food items to the quartermaster (2 Haven Favor each). Short of
+- **Upkeep.** Every 3 hours of real time with players online (divided by the season speed),
+  a safehouse eats one food per 5 people. Players hand food items to the quartermaster (2 Haven Favor each). Short of
   food, 1–3 people leave, to a safehouse that can feed them or onto the roads (one may become
   a named wanderer). Upkeep never takes a safehouse below 2 people.
 - **Food in and out.** Haven trucks bring 6. The Water Run brings 2. Bastion's Requisition
   contract takes 4; so do some leader jobs ([MISSIONS.md](MISSIONS.md)).
+- **Stragglers.** A fed safehouse under 12 people takes in one person every 4 hours with
+  players online (divided by the season speed), so a house reaches Settlement in about four
+  days of play even if nobody rescues anyone. Rescues are the fast way.
 - **Rescues add population.** Survivors Trapped +3 (+4 with a ★ Nurse or Doctor), Rescue the
   Kids +3, escorting the Kid wanderer +1, and several unarmed and leader jobs. About 1 in 10
   rescued survivors won't stay behind walls and becomes a named wanderer instead.
+- **Bites at every safehouse.** Any safehouse takes a bite declaration and hands out expired
+  antibiotics for 5 Haven Favor ("Ask for something for the fever"); the bigger the house, the
+  more declaring slows the bite ([Treatments](#treatments)). House rules are in
+  [REPUTATION.md](REPUTATION.md), "Haven house rules and exile".
 - **A notice board** for short notes between sessions is **planned**.
 
 ## Wanderers
@@ -597,7 +696,7 @@ and treating each other. Data until a player is near, capped and decaying, nothi
 |---|---|
 | Pharmacy (pharmacy, hospital, clinic) | Bandages, medicine, saline, purification tablets; rare: morphine, antibiotics |
 | Garage (garage, workshop, repair) | Jerrycans, tools, batteries, tyres, spark plugs, crowbars, planks, wire |
-| Farm (farm, barn, stable, shed) | Food, water, axes, rope, planks, matches; rare: hunting guns |
+| Farm (farm, barn, stable, shed, vet clinic) | Food, water, axes, rope, planks, matches; rare: hunting guns |
 | Police (police, gendarmerie) | Ammo, batons, torches, radios; rare: pistols, vests |
 | Shop (shop, store, market, kiosk) | Food, water, batteries, torches, bleach |
 | House (anything else) | Food, water, cloth, bandages, knives, torches |
@@ -606,7 +705,9 @@ and treating each other. Data until a player is near, capped and decaying, nothi
 
 A search (4 s, 1 heat) finds something 60% of the time at full town loot, scaled by the town's
 loot level, sometimes two things. 10% of finds are rare (20% behind a lock), 10% electronics
-(×1.5 in powered towns). A searched spot has nothing new for an hour.
+(×1.5 in powered towns). A searched spot has nothing new for an hour. Each search also has one
+roll for a treatment (expired antibiotics, suppressant, vet antiviral, stabiliser, antidote),
+from a configurable list ([Treatments](#treatments)).
 
 ### Locks and keys
 
@@ -722,6 +823,9 @@ prefab isn't set is hidden.
 | Purification tablets | bleach or iodine |
 | Purify water | untreated water, a tablet |
 
+The **home remedy** (alcohol and herbs, 20 s) is brewed on a stove ("Brew a home remedy"), since
+the workbench's eight slots are full.
+
 ### Barricades, traps and generators
 
 | Kit | Per player | Lasts | What it does |
@@ -752,7 +856,9 @@ tablet. What drinking does belongs to the hunger and thirst mod ([MOD_STACK.md](
 
 **Treat their wounds**: a first-aid kit and 20 s next to another player for a full heal. Nurses
 (8 s) and Doctors (6 s) can do it with a bandage, and also slow a bite (×1.15 of the time left,
-once per life). Every 5 minutes per patient.
+once per life). Every 5 minutes per patient. On a fresh bite (the golden window) a treatment is a
+proper clean instead: 90% that it never takes. Anyone can also use the bitten player's **Clean
+the bite** spot ([The golden window](#the-golden-window)).
 
 ### Bells, sirens and alarms
 
@@ -803,7 +909,9 @@ tips (critical ones don't wait). The table is data (**Guidance > Tips**, default
 
 | Tip | Trigger | Critical |
 |---|---|---|
-| bitten | the infection starts | ✅ |
+| clean | a fresh bite ("Clean it, now. Before it takes.") | ✅ |
+| bitten | the bite takes hold | ✅ |
+| med_stabiliser, med_antibiotics, med_vet, med_cutdose, med_suppressant, med_remedy | the first use of each treatment (once per player) | |
 | special | a special dies within 80 m of you | |
 | samples | samples in your pack | |
 | tier | your first rise to Known, Trusted or Champion | |
@@ -865,20 +973,26 @@ Code: `Cure/`, `Core/RZ_GameModeComponent.c`.
 special infected killed ─▶ sample item drops ─▶ carried to the lab ─▶ "Deliver samples"
                                                                 │
  25% Field antiviral   spread -15%, bites take 25% longer      ◀┘
- 50% Bite treatment    the lab makes an antidote dose every 15 min (3 in stock at most)
+ 50% Bite treatment    (antidotes and stabilisers cheaper and more plentiful)
  75% Immunity serum    spread -45% total, bites take 50% longer
-100% FINAL STAND       hold the lab 15 min against hordes every 2 min
+100% FINAL STAND       hold the lab 15 min against waves every 2.5 min
        win  ─▶ infection everywhere -70%, Aftermath, season over
        lose ─▶ nobody at the lab for 90 s: the batch is ruined, research drops to 90%
 ```
 
-- Each sample is 2% research (×2 for a Lab Technician, +25% for Halcyon's Champions).
+- Each sample is 1% research (×2 for a Lab Technician, +25% for Halcyon's Champions; never more
+  than ×2 together). Research from missions counts ×0.75 of what the mission names. Both are
+  multiplied by the **season speed** (1 by default).
 - **The lab** is a placed prefab, or spawns in a random town and stays there across restarts.
 - **Antidotes** are used as a world action or from the inventory; they cure an infection. The
-  lab's doses are a **stock**, not items lying around: Halcyon's quartermaster sells them (a shop
-  action whose item is the antidote prefab), one dose per sale, and refuses when the lab has none.
-  The Red Hand's Steal the Antidotes moves up to two doses from the lab to the Red Hand's black
-  market (4 at most), and a Red Hand antidote shop action sells only those. Both stocks are saved.
+  lab makes doses into a **stock** from the first day, faster with each breakthrough
+  ([Treatments](#treatments)): Halcyon's quartermaster sells them (a shop action whose item is
+  the antidote prefab), one dose per sale, and refuses when the lab has none. The Red Hand's
+  Steal the Antidotes moves up to two doses from the lab to the Red Hand's black market (4 at
+  most), and a Red Hand antidote shop action sells only those. Stabilisers are a second, smaller
+  stock at the same quartermaster. All three stocks are saved.
+- **The final stand** sends one horde every 2.5 minutes, plus one more per 6 players at the lab
+  (3 at most), so about five steady players can hold it.
 - **The lab never falls.** It's Halcyon's stronghold; losing the final stand ruins the batch, not the lab.
   The Red Hand's **Take the Lab** can steal the batch during the stand instead (hold the clean room
   for 90 s): the same result, research back to 90 percent, plus two doses on the black market
@@ -896,7 +1010,7 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
 Code: `Persistence/RZ_SaveData.c`.
 
 Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stage, every
-settlement's infection and town memory, cure progress and antidote stock, player profiles (standing, Legacy,
+settlement's infection and town memory, cure progress and antidote and stabiliser stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
 supply stock, faction life, the power grid and radio station, story arcs, headlines and world
 interactions. A save from another map is ignored. Player bodies, inventories and vehicles use

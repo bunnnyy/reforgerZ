@@ -14,6 +14,10 @@ and one way to end it: **research the cure.**
   unlocked through Legacy.
 - **The Director** moves the server through four outbreak stages, spreads infection from town
   to town and sends hordes toward noise. The infected adapt a little as the cure advances.
+- **Bites you can survive**: most hits are scratches, a bite can be cleaned in its first two
+  minutes, and the infection runs through fever, weakness and a final stage. Antidotes, Halcyon's
+  trial dose, stabilisers and five low-grade meds with side effects exist from day one; research
+  makes them more plentiful.
 - **Four factions that remember you**: the Haven, Task Force Bastion, the Red Hand and Halcyon.
   Fame and Infamy unlock quartermaster shops and perks, or bring hunter squads, bounties and AI
   that shoots *you* and nobody else. A faction's uniform gets you past its people, until you're caught.
@@ -31,8 +35,8 @@ and one way to end it: **research the cure.**
 
 ## Status
 
-All of it is **written but has never been compiled**. It's about 60,200 lines of Enforce
-Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **113 `VERIFY`
+All of it is **written but has never been compiled**. It's about 62,300 lines of Enforce
+Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **119 `VERIFY`
 markers** on engine calls whose exact names need checking, no prefabs or configs yet, and
 nothing has been play-tested. Start with [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
@@ -65,7 +69,7 @@ Scripts/Game/ReforgerZ/
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
-  Cure/          research, lab, samples, antidotes
+  Cure/          research, lab, samples, antidotes, infection stages, treatments and meds
   Guidance/      experience levels, tips, spawn scenarios, open radio channels
   Interactions/  searching, door locks, doorway blockers and keys, building queries (mission
                  spots kept out of locked buildings), cars, crafting, water,

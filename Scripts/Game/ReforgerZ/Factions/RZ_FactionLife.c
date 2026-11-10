@@ -581,7 +581,7 @@ class RZ_FactionLife
 	{
 		AddMorale(RZ_EFaction.INSTITUTE, 10);
 		if (milestone == 2)
-			RecordMoment("the day the first antidote came out of the lab");
+			RecordMoment("the day the lab got the antidote right");
 	}
 
 	//------------------------------------------------------------------------------------------------

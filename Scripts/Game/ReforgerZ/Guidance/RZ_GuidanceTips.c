@@ -9,7 +9,7 @@
 [BaseContainerProps(), SCR_BaseContainerCustomTitleField("m_sId")]
 class RZ_GuidanceTip
 {
-	[Attribute("", desc: "Trigger id. Built in: bitten (%1 nearest safehouse town), special and samples (%1 the lab, place and direction), tier (%1 faction, %2 tier), watched and hunted (%1 faction), perimeter, loud, night, safehouse and shortage (%1 town), clue. Hooks for other systems: hungry, car, channel (RZ_Guidance.Report)")]
+	[Attribute("", desc: "Trigger id. Built in: clean (a fresh bite), bitten (%1 nearest safehouse town; the bite has taken), med_stabiliser, med_antibiotics, med_vet, med_cutdose, med_suppressant, med_remedy (first use of each), special and samples (%1 the lab, place and direction), tier (%1 faction, %2 tier), watched and hunted (%1 faction), perimeter, loud, night, safehouse and shortage (%1 town), clue. Hooks for other systems: hungry, car, channel (RZ_Guidance.Report)")]
 	string m_sId;
 
 	[Attribute("0", desc: "Critical: past its level, a veteran still gets the short line")]
@@ -84,15 +84,50 @@ class RZ_GuidanceTips
 	{
 		RZ_GuidanceTip t;
 
+		t = Add(list, "clean", true, 3, false, 0);
+		t.m_sHaven = "\"Clean it, now. Before it takes. Anything with alcohol in it, then a clean dressing. Don't wait to see.\"";
+		t.m_sBastion = "\"Wound protocol: irrigate, disinfect, dress. You have two minutes before it's in the blood. Move.\"";
+		t.m_sRedHand = "\"Pour the vodka on it, not in you. Quick, before it takes.\"";
+		t.m_sHalcyon = "\"The first two minutes matter more than anything we sell. Disinfect it and bandage it, now.\"";
+		t.m_sWanderer = "\"Clean it, now. Before it takes. Spirit, iodine, anything.\"";
+		t.m_sRadio = "\"...if you've just been bitten: clean it, now, before it takes. Alcohol, antiseptic, a clean bandage.\"";
+		t.m_sPlain = "Clean it, now. Before it takes. Alcohol or antiseptic might stop it; disinfectant and a bandage are better.";
+		t.m_sShort = "Clean it, now. Before it takes.";
+
 		t = Add(list, "bitten", true, 2, false, 0);
-		t.m_sHaven = "\"Let me see. Oh, love. Go to our medic, now, and tell her straight. She can slow it. Hiding a bite is the one thing we don't forgive.\"";
-		t.m_sBastion = "\"You're bitten. Procedure: an antidote if you can get one, Halcyon makes them. Otherwise report to a Haven medic. Don't make me use the other procedure.\"";
-		t.m_sRedHand = "\"Bitten? Shame. The eggheads' antidotes fall off the back of trucks all the time. Ours have hardly been used. Bring Favor.\"";
-		t.m_sHalcyon = "\"That's a bite. You have minutes, not hours. An antidote stops it, and the lab makes them when the research allows. A Haven medic can slow it. I'm sorry.\"";
-		t.m_sWanderer = "\"That's a bite. Don't hide it. The safehouse in %1 has a medic, or find the Doctor on the roads. Go now.\"";
-		t.m_sRadio = "\"...Haven, open channel. Anyone bitten: come to %1 and say so at the door. The medic can slow it. We can tell when people lie.\"";
-		t.m_sPlain = "That's a bite. An antidote cures it. A safehouse medic (%1) slows it, if you tell her.";
-		t.m_sShort = "Bitten: find an antidote, or tell a safehouse medic.";
+		t.m_sHaven = "\"Let me see. Oh, love. Come to us and tell us straight, any house will help. Hiding a bite is the one thing we don't forgive.\"";
+		t.m_sBastion = "\"You're bitten. Procedure: an antidote if you can get one. Halcyon runs a trial for the bitten. Otherwise report to a Haven safehouse. Don't make me use the other procedure.\"";
+		t.m_sRedHand = "\"Bitten? Shame. Our cut dose works half the time, which is better than nothing. The eggheads' antidotes fall off trucks too. Bring Favor.\"";
+		t.m_sHalcyon = "\"That's a bite. An antidote stops it. If you can't get one, come to the lab: the trial dose works eight times in ten. A Haven house can slow it. I'm sorry.\"";
+		t.m_sWanderer = "\"That's a bite. Don't hide it. The safehouse in %1 will slow it, the lab runs a trial, or find the Doctor on the roads. Go now.\"";
+		t.m_sRadio = "\"...Haven, open channel. Anyone bitten: come to %1 and say so at the door. We can slow it. We can tell when people lie.\"";
+		t.m_sPlain = "It's taken. An antidote cures it; Halcyon's trial dose at the lab works most of the time. Tell any safehouse (%1) and they'll slow it.";
+		t.m_sShort = "Bitten: an antidote, the lab's trial dose, or tell a safehouse.";
+
+		t = Add(list, "med_stabiliser", false, 3, true, 0);
+		t.m_sHalcyon = "\"The stabiliser stops the clock, it doesn't turn it back. Twenty minutes. Spend them getting an antidote.\"";
+		t.m_sPlain = "A stabiliser pauses the infection for about 20 minutes. It cures nothing: use the time to reach an antidote or the lab.";
+
+		t = Add(list, "med_antibiotics", false, 3, true, 0);
+		t.m_sHaven = "\"Those are past their date. They might buy you ten minutes. They'll turn your stomach either way.\"";
+		t.m_sWanderer = "\"Old antibiotics. Sometimes they help a bit. Always make you sick.\"";
+		t.m_sPlain = "Expired antibiotics: about ten more minutes, three times in ten nothing at all, and nausea that saps your stamina.";
+
+		t = Add(list, "med_vet", false, 3, true, 0);
+		t.m_sWanderer = "\"That's for cattle. Holds the fever off a while. You'll cough like one, too, and they'll hear you.\"";
+		t.m_sPlain = "Veterinary antiviral: pauses the infection for a while, but coughing fits make noise the infected hear.";
+
+		t = Add(list, "med_cutdose", false, 3, true, 0);
+		t.m_sRedHand = "\"Half antidote, half whatever was in the bag. Works half the time. When it doesn't, it doesn't, fast. Fever either way.\"";
+		t.m_sPlain = "A Red Hand cut dose cures half the time; otherwise the turn comes faster. The fever after it drains your health for a while.";
+
+		t = Add(list, "med_suppressant", false, 3, true, 0);
+		t.m_sHaven = "\"Those pills hide a fever. Nothing else. If you're using them to walk into one of our houses, think about who sleeps there.\"";
+		t.m_sPlain = "A fever suppressant hides the symptoms, so nobody can see you're bitten. It doesn't slow the infection at all.";
+
+		t = Add(list, "med_remedy", false, 3, true, 0);
+		t.m_sHaven = "\"Grandmother's recipe. Five minutes, maybe, and a headache. Don't drive.\"";
+		t.m_sPlain = "A home remedy buys a few minutes and goes to your head: you'll stumble, and stumbling is loud.";
 
 		t = Add(list, "special", false, 1, true, 0);
 		t.m_sHaven = "\"Was that one of the changed ones? Leave the rest, but take the sample. The scientists in %1 will want it, and so will everyone else.\"";
@@ -184,7 +219,7 @@ class RZ_GuidanceTips
 		t.m_sPlain = "Your radio picks up a scrambled channel nearby. Someone is talking where they think nobody can hear.";
 
 		t = Add(list, "safehouse", false, 2, true, 0);
-		t.m_sHaven = "\"Welcome to %1. House rules: guns are fine, firing them isn't. If you're bitten, tell us at the door and the medic will help. If you hide it, we'll find out.\"";
+		t.m_sHaven = "\"Welcome to %1. House rules: guns are fine, firing them isn't. If you're bitten, tell us at the door and we'll help. If you hide it, we'll find out.\"";
 		t.m_sWanderer = "\"%1's a good house. Keep your gun slung, don't fire it, and tell them if you're bitten. They're fair if you're honest.\"";
 		t.m_sPlain = "A Haven safehouse. Weapons are fine here, firing them isn't. Declare a bite at the door.";
 

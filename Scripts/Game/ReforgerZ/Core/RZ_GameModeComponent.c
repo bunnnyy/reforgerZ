@@ -23,6 +23,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("120", desc: "Seconds between state saves", category: "ReforgerZ")]
 	protected float m_fSaveIntervalSeconds;
 
+	[Attribute("1", UIWidgets.Slider, "Season speed: research, outbreak stages, infection spread, territory, supply trucks and safehouse upkeep run this many times as fast. 1 = about 10 days with 5-10 players; 2 for 2-4 players, 0.5 for 15-20 (docs/DESIGN.md, Season pacing)", "0.25 4 0.05", category: "ReforgerZ")]
+	protected float m_fSeasonSpeed;
+
 	// ---------------------------------------------------------------- World
 	[Attribute("300", desc: "Grid cell (m) used to find building clusters without a map label", category: "ReforgerZ|World")]
 	protected float m_fScanCellSize;
@@ -77,7 +80,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Civilian backgrounds. Leave empty to use the built-in eight", category: "ReforgerZ|Backgrounds")]
 	protected ref array<ref RZ_Background> m_aBackgrounds;
 
-	[Attribute("20", desc: "Base minutes from a bite to turning", category: "ReforgerZ|Backgrounds")]
+	[Attribute("60", desc: "Base minutes from a bite taking hold to turning, through Fever, Weakness and Final (x background and cure multipliers). Hardcore 40, casual 90", category: "ReforgerZ|Backgrounds")]
 	protected float m_fInfectionMinutes;
 
 	// ---------------------------------------------------------------- Cure
@@ -87,11 +90,14 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Research sample item with RZ_SampleItemComponent", "et", category: "ReforgerZ|Cure")]
 	protected ResourceName m_sSamplePrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Antidote item. After the second breakthrough the lab makes doses into a stock; quartermaster shop actions selling this prefab draw on it", "et", category: "ReforgerZ|Cure")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Antidote item. From the start the lab makes doses into a stock (faster with each breakthrough); quartermaster shop actions selling this prefab draw on it. Rare finds in pharmacies and on bodies", "et", category: "ReforgerZ|Cure")]
 	protected ResourceName m_sAntidotePrefab;
 
-	[Attribute("2", desc: "Research percent per sample (x background multiplier)", category: "ReforgerZ|Cure")]
+	[Attribute("1", desc: "Research percent per sample (x the background and Halcyon Champion multipliers, x2 at most together; x season speed)", category: "ReforgerZ|Cure")]
 	protected float m_fResearchPerSample;
+
+	[Attribute("0.75", desc: "Research from missions (data, readings, live specimens) is multiplied by this (x season speed)", category: "ReforgerZ|Cure")]
+	protected float m_fMissionResearchMult;
 
 	// ---------------------------------------------------------------- Rewards
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot crate spawned as a mission reward", "et", category: "ReforgerZ|Missions")]
@@ -252,8 +258,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("0.3", desc: "Heat multiplier for shots from a suppressed weapon", category: "ReforgerZ|Survival")]
 	protected float m_fSuppressedHeatMult;
 
-	[Attribute("0.3", desc: "Chance that a zombie hit infects. 0 disables built-in bite detection", category: "ReforgerZ|Survival")]
+	[Attribute("0.1", desc: "Base chance that a zombie hit is an infecting bite rather than a scratch (more when surrounded, grabbed, tired or hurt; less in a jacket, gloves, helmet). Hardcore 0.15, casual 0.07. 0 disables built-in bite detection", category: "ReforgerZ|Survival")]
 	protected float m_fBiteChance;
+
+	[Attribute(desc: "Infection: bite modifiers and protective clothing, the golden window and wound cleaning, the stages, treatments, their prefabs and where they're found (docs/DESIGN.md, Zombies, bites and infection)", category: "ReforgerZ|Survival")]
+	protected ref RZ_InfectionSettings m_InfectionSettings;
 
 	[Attribute("2.5", desc: "How close (m) a zombie must be for a health drop to count as its hit", category: "ReforgerZ|Survival")]
 	protected float m_fBiteReach;
@@ -324,6 +333,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_MissionManager m_Missions;
 	protected ref RZ_CureResearch m_Cure;
 	protected ref RZ_BiteDetector m_BiteDetector;
+	protected ref RZ_Infection m_Infection;
 	protected ref RZ_FactionPerks m_Perks;
 	protected ref RZ_Broadcast m_Broadcast;
 	protected ref RZ_Perimeter m_Perimeter;
@@ -469,6 +479,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_EventSettings)
 			m_EventSettings = new RZ_EventSettings();
 
+		if (!m_InfectionSettings)
+			m_InfectionSettings = new RZ_InfectionSettings();
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -487,7 +500,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Director = new RZ_Director(this, m_aStages);
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
 		m_Missions = new RZ_MissionManager(this);
-		m_BiteDetector = new RZ_BiteDetector(this, m_fBiteChance, m_fBiteReach);
+		m_Infection = new RZ_Infection(this, m_InfectionSettings);
+		m_BiteDetector = new RZ_BiteDetector(this, m_fBiteChance, m_fBiteReach, m_InfectionSettings);
 		m_Perks = new RZ_FactionPerks(this);
 		m_Broadcast = new RZ_Broadcast(this);
 		m_Perimeter = new RZ_Perimeter(this, m_PerimeterSettings);
@@ -595,7 +609,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Broadcast.Tick(dt, m_fBroadcastMinutes);
 		RZ_GameTime.Tick(dt);
 		RZ_NoisemakerComponent.TickAll();
-		UpdateInfections(dt, ids);
+		m_Infection.Tick(dt, ids, players);
 
 		foreach (int i, IEntity ent : players)
 		{
@@ -644,6 +658,19 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Headlines GetHeadlines() { return m_Headlines; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
+	RZ_Infection GetInfection() { return m_Infection; }
+	float GetMissionResearchMult() { return m_fMissionResearchMult; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Season speed (docs/DESIGN.md, Season pacing), 0.25 to 4. Research gains and the season's
+	//! clocks (stages, spread, territory, trucks, upkeep) are scaled by it.
+	float GetSeasonSpeed()
+	{
+		if (m_fSeasonSpeed <= 0)
+			return 1;
+
+		return Math.Clamp(m_fSeasonSpeed, 0.25, 4);
+	}
 	vector GetLabPosition() { return m_vLabPos; }
 	ResourceName GetSurvivorGroupPrefab() { return m_sSurvivorGroupPrefab; }
 	ResourceName GetNestPrefab() { return m_sNestPrefab; }
@@ -973,6 +1000,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_Objectives.Assign(this, profile, bg, controlledEntity.GetOrigin());
 
 		m_BiteDetector.Reset(playerId);
+		m_Infection.OnPlayerSpawned(playerId);
 		RegisterGunfire(controlledEntity);
 		// Keys, timed actions and cracked channels belong to the last life
 		m_Interactions.OnPlayerSpawned(playerId);
@@ -1400,7 +1428,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	// ================================================================ Infection
 	//------------------------------------------------------------------------------------------------
-	//! Public API: call this from a zombie mod's bite or damage event.
+	//! Public API: call this from a zombie mod's bite event. The bite opens the golden window,
+	//! then takes hold and runs through its stages (RZ_Infection).
 	void InfectPlayer(int playerId)
 	{
 		RZ_PlayerProfile profile = GetProfile(playerId);
@@ -1409,13 +1438,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		RZ_Background bg = GetPlayerBackground(playerId);
 		float seconds = m_fInfectionMinutes * 60 * bg.m_fInfectionTimeMult * m_Cure.GetInfectionTimeMultiplier();
+		profile.ClearInfection();
 		profile.m_fInfectionLeft = seconds;
-		NotifyPlayer(playerId, "Infected", string.Format(
-			"You've been bitten. You have about %1 minutes. Find an antidote, or decide whether to tell anyone. A safehouse medic can slow it, if you tell her.",
-			RZ_Util.RoundToInt(seconds / 60)));
-
-		// Whoever is nearest says something about it (always at least a short line)
-		m_Guidance.OnBitten(playerId);
+		profile.m_fInfectionTotal = seconds;
+		m_Infection.OnBite(playerId, profile);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1426,36 +1452,21 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!profile.IsInfected())
 			return;
 
-		profile.m_fInfectionLeft = -1;
+		profile.ClearInfection();
+		m_Infection.OnCured(playerId);
 		NotifyPlayer(playerId, "Cured", "The fever breaks. You'll live, for now.");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void UpdateInfections(float dt, array<int> ids)
+	//! The mode took health itself (a fever): the bite detector mustn't read it as a hit.
+	void ForgetBiteHealth(int playerId)
 	{
-		foreach (int playerId : ids)
-		{
-			RZ_PlayerProfile profile = GetProfile(playerId);
-			if (!profile.IsInfected())
-				continue;
-
-			float before = profile.m_fInfectionLeft;
-			profile.m_fInfectionLeft = profile.m_fInfectionLeft - dt;
-
-			if (before > 300 && profile.m_fInfectionLeft <= 300)
-				NotifyPlayer(playerId, "Infection", "The fever is getting worse. You have about 5 minutes.");
-
-			if (profile.m_fInfectionLeft <= 0)
-			{
-				profile.m_fInfectionLeft = -1;
-				TurnPlayer(playerId);
-			}
-		}
+		m_BiteDetector.Reset(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The player dies and gets up as one of them.
-	protected void TurnPlayer(int playerId)
+	//! The player dies and gets up as one of them (RZ_Infection, when the time runs out).
+	void TurnPlayer(int playerId)
 	{
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (!ent)
@@ -1767,7 +1778,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		m_Director.Restore(data.stage, data.stageMinutes);
-		m_Cure.Restore(data.cureProgress, data.cureMilestone, data.cured, data.labAntidotes, data.stolenAntidotes);
+		m_Cure.Restore(data.cureProgress, data.cureMilestone, data.cured, data.labAntidotes, data.stolenAntidotes, data.labStabilisers);
 		if (data.seasonFame)
 		{
 			for (int f = 0; f < data.seasonFame.Count() && f < RZ_Factions.COUNT; f++)
@@ -1811,6 +1822,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		data.cured = m_Cure.IsCured();
 		data.labAntidotes = m_Cure.GetLabAntidotes();
 		data.stolenAntidotes = m_Cure.GetStolenAntidotes();
+		data.labStabilisers = m_Cure.GetLabStabilisers();
 		data.seasonWinner = m_iSeasonWinner;
 		foreach (int fame : m_aSeasonFame)
 		{

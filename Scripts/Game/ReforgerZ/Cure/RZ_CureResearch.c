@@ -2,14 +2,18 @@
 //! to the lab and deliver them. Progress changes the world for everyone:
 //!
 //!  25%  Field antiviral    infection spreads slower, bites take longer to kill
-//!  50%  Bite treatment     the lab makes an antidote dose every 15 minutes, into its stock
-//!                          (at most 3). Halcyon's quartermaster sells from that stock; the Red
-//!                          Hand sells only what it has stolen from it. No doses lie loose.
+//!  50%  Bite treatment     (no world effect of its own; supply below)
 //!  75%  Immunity serum     spread slows further, bites take even longer
-//! 100%  Final stand        hold the lab against wave after wave for 15 minutes.
+//! 100%  Final stand        hold the lab against waves for 15 minutes.
 //!                          Win: the cure goes out and the season ends.
 //!                          Abandon the lab: the batch is ruined and research drops back to 90%
 //!                          (the lab itself never falls: it's Halcyon's stronghold).
+//!
+//! Bite treatment exists from the start; research only scales supply and price
+//! (docs/DESIGN.md, "Treatments"). The lab makes antidote doses into a stock (1 per 30 min,
+//! cap 2; 1/20 min, cap 3 after 25%; 1/15, cap 4 after 50%; 1/10, cap 5 after 75%) that
+//! Halcyon's quartermaster sells; the Red Hand sells only what it has stolen from it. Stabilisers
+//! are a second, smaller stock: rare and dear at first, plentiful after 75%.
 class RZ_CureResearch
 {
 	protected RZ_GameModeComponent m_GM;
@@ -23,6 +27,8 @@ class RZ_CureResearch
 	protected float m_fAbandonedFor;
 	protected float m_fWaveTimer;
 	protected float m_fAntidoteTimer;
+	protected float m_fStabiliserTimer;
+	protected int m_iLabStabilisers;
 	protected float m_fAntidoteBoostLeft;	// Power the Lab: doses come twice as fast for a while (not saved)
 	protected IEntity m_Annex;				// Mobile Lab: a field annex taking samples for a while (not saved)
 	protected float m_fAnnexLeft;
@@ -33,9 +39,10 @@ class RZ_CureResearch
 
 	static const float FINAL_STAND_SECONDS = 900;
 	static const float ABANDON_LIMIT_SECONDS = 90;
-	static const float WAVE_INTERVAL_SECONDS = 120;
-	static const float ANTIDOTE_INTERVAL_SECONDS = 900;
-	static const int LAB_ANTIDOTE_CAP = 3;
+	static const float WAVE_INTERVAL_SECONDS = 150;
+	static const int LAB_ANTIDOTE_CAP = 5;		// the most the stock ever holds (after 75%)
+	static const int STABILISER_CAP = 5;
+	static const float MAX_RESEARCH_MULT = 2;	// background x Champion perk, per sample
 	static const int STOLEN_ANTIDOTE_CAP = 4;
 	static const float LAB_DEFENCE_RADIUS = 150;
 
@@ -46,13 +53,14 @@ class RZ_CureResearch
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void Restore(float progress, int milestone, bool cured, int labAntidotes, int stolenAntidotes)
+	void Restore(float progress, int milestone, bool cured, int labAntidotes, int stolenAntidotes, int labStabilisers)
 	{
 		m_fProgress = progress;
 		m_iMilestone = milestone;
 		m_bCured = cured;
-		m_iLabAntidotes = Math.ClampInt(labAntidotes, 0, LAB_ANTIDOTE_CAP);
+		m_iLabAntidotes = Math.ClampInt(labAntidotes, 0, AntidoteCap());
 		m_iStolenAntidotes = Math.ClampInt(stolenAntidotes, 0, STOLEN_ANTIDOTE_CAP);
+		m_iLabStabilisers = Math.ClampInt(labStabilisers, 0, StabiliserCap());
 
 		// A restart in the middle of the final stand starts it again from the beginning
 		if (m_iMilestone >= 4 && !m_bCured)
@@ -64,6 +72,79 @@ class RZ_CureResearch
 
 	//------------------------------------------------------------------------------------------------
 	int GetStolenAntidotes() { return m_iStolenAntidotes; }
+
+	//------------------------------------------------------------------------------------------------
+	int GetLabStabilisers() { return m_iLabStabilisers; }
+
+	// ================================================================ Treatment supply by research
+	//------------------------------------------------------------------------------------------------
+	//! Seconds between antidote doses: 30, 20, 15 and 10 minutes by breakthrough.
+	float AntidoteInterval()
+	{
+		switch (Math.Min(m_iMilestone, 3))
+		{
+			case 0: return 1800;
+			case 1: return 1200;
+			case 2: return 900;
+		}
+
+		return 600;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Most doses in the lab's stock: 2, 3, 4 and 5 by breakthrough.
+	int AntidoteCap()
+	{
+		return Math.Min(LAB_ANTIDOTE_CAP, 2 + Math.Min(m_iMilestone, 3));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds between stabilisers: rare at the start, more common after 25%, plentiful after 75%.
+	float StabiliserInterval()
+	{
+		switch (Math.Min(m_iMilestone, 3))
+		{
+			case 0: return 5400;
+			case 1: return 2700;
+			case 2: return 2700;
+		}
+
+		return 900;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int StabiliserCap()
+	{
+		switch (Math.Min(m_iMilestone, 3))
+		{
+			case 0: return 1;
+			case 1: return 2;
+			case 2: return 2;
+		}
+
+		return STABILISER_CAP;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stabiliser price multiplier: double until 50%, then the shop's own price.
+	float StabiliserPriceMult()
+	{
+		if (m_iMilestone >= 2)
+			return 1;
+
+		return 2;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sells one stabiliser from Halcyon's stock. False if there's none.
+	bool TakeStabiliser()
+	{
+		if (m_iLabStabilisers <= 0)
+			return false;
+
+		m_iLabStabilisers--;
+		return true;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Sells one dose from the lab's stock (Halcyon's quartermaster). False if there's none.
@@ -142,13 +223,15 @@ class RZ_CureResearch
 		RZ_Background bg = m_GM.GetPlayerBackground(playerId);
 		RZ_ETier halcyon = m_GM.GetTier(playerId, RZ_EFaction.INSTITUTE);
 
-		// Halcyon Champion perk "Lab access": deliveries count 25% more
+		// Halcyon Champion perk "Lab access": deliveries count 25% more. With the background's
+		// multiplier (the Lab Technician's x2) it's never more than x2 a sample.
 		float perk = 1;
 		if (halcyon == RZ_ETier.CHAMPION)
 			perk = 1.25;
 
+		float mult = Math.Min(MAX_RESEARCH_MULT, bg.m_fResearchMult * perk);
 		float before = m_fProgress;
-		m_fProgress = Math.Min(100, m_fProgress + count * pointsPerSample * bg.m_fResearchMult * perk);
+		m_fProgress = Math.Min(100, m_fProgress + count * pointsPerSample * mult * m_GM.GetSeasonSpeed());
 
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		profile.m_iSamplesDelivered += count;
@@ -177,6 +260,8 @@ class RZ_CureResearch
 		if (m_bCured || points <= 0)
 			return;
 
+		// Missions count a share of what they say (Cure > Mission research), x season speed
+		points = points * m_GM.GetMissionResearchMult() * m_GM.GetSeasonSpeed();
 		m_fProgress = Math.Min(100, m_fProgress + points);
 		m_GM.NotifyAll("Cure research", string.Format("%1 Research: %2 percent.", reason, RZ_Util.RoundToInt(m_fProgress)));
 		CheckMilestones();
@@ -190,20 +275,26 @@ class RZ_CureResearch
 		if (m_bCured)
 			return;
 
-		if (m_iMilestone >= 2)
+		// Antidotes from day one; research makes them faster and the stock bigger
+		m_fAntidoteTimer += dt;
+		if (m_fAntidoteBoostLeft > 0)
 		{
+			m_fAntidoteBoostLeft -= dt;
 			m_fAntidoteTimer += dt;
-			if (m_fAntidoteBoostLeft > 0)
-			{
-				m_fAntidoteBoostLeft -= dt;
-				m_fAntidoteTimer += dt;
-			}
+		}
 
-			if (m_fAntidoteTimer >= ANTIDOTE_INTERVAL_SECONDS)
-			{
-				m_fAntidoteTimer = 0;
-				MakeAntidote();
-			}
+		if (m_fAntidoteTimer >= AntidoteInterval())
+		{
+			m_fAntidoteTimer = 0;
+			MakeAntidote();
+		}
+
+		m_fStabiliserTimer += dt;
+		if (m_fStabiliserTimer >= StabiliserInterval())
+		{
+			m_fStabiliserTimer = 0;
+			if (m_GM.HasLab() && m_iLabStabilisers < StabiliserCap())
+				m_iLabStabilisers++;
 		}
 
 		if (m_bFinalStand)
@@ -229,14 +320,14 @@ class RZ_CureResearch
 		switch (milestone)
 		{
 			case 1:
-				m_GM.NotifyAll("Breakthrough: Field antiviral", "Halcyon has slowed the infection. It spreads slower and bites take longer to kill.");
+				m_GM.NotifyAll("Breakthrough: Field antiviral", "Halcyon has slowed the infection. It spreads slower and bites take longer to kill. The lab makes antidotes faster, and stabilisers are easier to come by.");
 				break;
 			case 2:
-				m_GM.NotifyAll("Breakthrough: Bite treatment", "The lab can make antidotes now: a dose every quarter of an hour, a few at a time. Halcyon's quartermaster has them for people it trusts.");
+				m_GM.NotifyAll("Breakthrough: Bite treatment", "The lab has the antidote right: a dose every quarter of an hour now, more in stock, and stabilisers at a fair price. Pharmacies may still hold the odd dose.");
 				MakeAntidote();
 				break;
 			case 3:
-				m_GM.NotifyAll("Breakthrough: Immunity serum", "Infection spread is slowing a lot. One final push is all that's left.");
+				m_GM.NotifyAll("Breakthrough: Immunity serum", "Infection spread is slowing a lot. Antidotes every ten minutes, stabilisers on every shelf at the lab. One final push is all that's left.");
 				break;
 			case 4:
 				StartFinalStand();
@@ -248,11 +339,20 @@ class RZ_CureResearch
 	//! One dose into the lab's stock, if there's room. Nothing is spawned in the world.
 	protected void MakeAntidote()
 	{
-		if (!m_GM.HasLab() || m_iLabAntidotes >= LAB_ANTIDOTE_CAP)
+		if (!m_GM.HasLab() || m_iLabAntidotes >= AntidoteCap())
 			return;
 
 		m_iLabAntidotes++;
-		m_GM.NotifyAll("Halcyon", string.Format("A fresh antidote dose is ready at the lab. Doses in stock: %1.", m_iLabAntidotes));
+
+		// Only people Halcyon knows hear about it (it's every 10 to 30 minutes)
+		string text = string.Format("A fresh antidote dose is ready at the lab. Doses in stock: %1.", m_iLabAntidotes);
+		array<int> all = {};
+		GetGame().GetPlayerManager().GetPlayers(all);
+		foreach (int playerId : all)
+		{
+			if (RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, RZ_EFaction.INSTITUTE), RZ_ETier.KNOWN))
+				m_GM.NotifyPlayer(playerId, "Halcyon", text);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -262,7 +362,7 @@ class RZ_CureResearch
 		m_fFinalStandLeft = FINAL_STAND_SECONDS;
 		m_fAbandonedFor = 0;
 		m_fWaveTimer = WAVE_INTERVAL_SECONDS;
-		m_GM.NotifyAll("THE FINAL STAND", "The cure is being synthesized. Every infected for miles can sense it. Hold the lab for 15 minutes!");
+		m_GM.NotifyAll("THE FINAL STAND", "The cure is being synthesized. Every infected for miles can sense it. Hold the lab for 15 minutes! A handful of steady people can do it; more of you draw more of them.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -280,12 +380,18 @@ class RZ_CureResearch
 			return;
 		}
 
+		// Waves scale with the defenders, so about five players can hold it: one horde a wave,
+		// one more per 6 players at the lab, three at most
 		m_fWaveTimer += dt;
 		if (m_fWaveTimer >= WAVE_INTERVAL_SECONDS)
 		{
 			m_fWaveTimer = 0;
-			m_GM.GetSpawner().SpawnHorde(lab, 350);
-			m_GM.GetSpawner().SpawnHorde(lab, 400);
+			int defenders = RZ_Mission.CountPlayersNear(players, lab, LAB_DEFENCE_RADIUS);
+			int hordes = Math.Min(3, 1 + defenders / 6);
+			for (int h = 0; h < hordes; h++)
+			{
+				m_GM.GetSpawner().SpawnHorde(lab, 350 + 50 * h);
+			}
 		}
 
 		m_fFinalStandLeft -= dt;

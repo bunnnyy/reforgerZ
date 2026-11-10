@@ -6,7 +6,9 @@
 //!   purified water. Inputs are item keywords (prefab names); outputs are prefabs on the game
 //!   mode. A recipe without an output prefab is hidden. More recipes can be added as data.
 //! - Water: fill an empty bottle at a well or a pump (untreated water), then boil it on a
-//!   stove or fireplace, or purify it with a tablet. The water items are the hunger and thirst
+//!   stove or fireplace, or purify it with a tablet.
+//! - The home remedy (docs/DESIGN.md, "Treatments") is brewed on a stove from alcohol and herbs,
+//!   since the workbench's eight slots are taken. The water items are the hunger and thirst
 //!   mod's own if it has suitable ones (docs/MOD_STACK.md); ReforgerZ doesn't model drinking.
 
 //------------------------------------------------------------------------------------------------
@@ -355,8 +357,35 @@ class RZ_Crafting
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void HandleStove(int playerId, RZ_Spot s, IEntity user)
+	//! "Boil water", and "Brew a home remedy" when its prefab is set.
+	string StoveLabels()
 	{
+		if (RemedyPrefab().IsEmpty())
+			return "Boil water";
+
+		return "Boil water|Brew a home remedy (alcohol, herbs)";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ResourceName RemedyPrefab()
+	{
+		RZ_Infection infection = m_GM.GetInfection();
+		if (!infection)
+			return "";
+
+		return infection.MedPrefab(RZ_EMed.REMEDY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! 0 boil water, 1 brew a home remedy.
+	void HandleStove(int playerId, RZ_Spot s, int option, IEntity user)
+	{
+		if (option == 1)
+		{
+			StartBrew(playerId, s, user);
+			return;
+		}
+
 		string title = m_Hub.Title(s);
 		if (m_Water.m_sCleanWaterPrefab.IsEmpty() || !RZ_ItemHelper.Has(user, m_Water.m_sDirtyWaterWords))
 		{
@@ -382,5 +411,50 @@ class RZ_Crafting
 		RZ_ItemHelper.Give(m_Water.m_sCleanWaterPrefab, user, at);
 		m_GM.GetHeat().AddHeat(at, 3);
 		m_GM.NotifyPlayer(playerId, "Boiled water", "It rolls for a minute, and you let it cool. Flat and warm, and safe.");
+	}
+
+	// ================================================================ The home remedy
+	//------------------------------------------------------------------------------------------------
+	protected void StartBrew(int playerId, RZ_Spot s, IEntity user)
+	{
+		string title = m_Hub.Title(s);
+		RZ_Infection infection = m_GM.GetInfection();
+		if (!infection || RemedyPrefab().IsEmpty())
+			return;
+
+		RZ_InfectionSettings med = infection.GetSettings();
+		if (!RZ_ItemHelper.Has(user, med.m_sAlcoholWords) || !RZ_ItemHelper.Has(user, med.m_sHerbWords))
+		{
+			m_GM.NotifyPlayer(playerId, title, "A home remedy takes something strong to drink and a handful of herbs. You haven't got both.");
+			return;
+		}
+
+		m_GM.GetHeat().AddHeat(s.m_vPos, 2);
+		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_BREW, s.m_iId, 0, med.m_fBrewSeconds, "the brewing", false);
+		m_GM.NotifyPlayer(playerId, title, string.Format("Herbs in the pot, the bottle after them, and a low flame. About %1 seconds. It smells like a grandmother's kitchen and a bar fight.", RZ_Util.RoundToInt(med.m_fBrewSeconds)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void CompleteBrew(int playerId, RZ_Spot s, IEntity user)
+	{
+		RZ_Infection infection = m_GM.GetInfection();
+		if (!infection)
+			return;
+
+		RZ_InfectionSettings med = infection.GetSettings();
+		if (!RZ_ItemHelper.Has(user, med.m_sAlcoholWords) || !RZ_ItemHelper.Has(user, med.m_sHerbWords))
+		{
+			m_GM.NotifyPlayer(playerId, "Home remedy", "Something you needed is gone from your pack.");
+			return;
+		}
+
+		RZ_ItemHelper.Take(user, med.m_sAlcoholWords, 1);
+		RZ_ItemHelper.Take(user, med.m_sHerbWords, 1);
+		vector at = user.GetOrigin();
+		if (s)
+			at = s.m_vPos;
+
+		RZ_ItemHelper.Give(RemedyPrefab(), user, at);
+		m_GM.NotifyPlayer(playerId, "Home remedy", "A bottle of something brown and bitter. It won't cure anything. It might buy you a few minutes, and it'll go straight to your head.");
 	}
 }

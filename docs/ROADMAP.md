@@ -3,8 +3,8 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** everything under "Built" is written in Enforce Script (about 60,200 lines) and
-**has never been compiled**. It needs Workbench, the 113 `VERIFY` fixes and a play-test
+**Status:** everything under "Built" is written in Enforce Script (about 62,300 lines) and
+**has never been compiled**. It needs Workbench, the 119 `VERIFY` fixes and a play-test
 before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
 ## Built
@@ -14,12 +14,13 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 | Settlement detection, rotating spawn points, mission announcements, map markers | [Settlements](DESIGN.md#settlements-spawn-points-and-the-map) |
 | The Director: four outbreak stages, infection spread | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread) |
 | Heat from presence, vehicles, gunfire (suppressors quieter), noisemakers; hordes toward noise | [Heat and noise](DESIGN.md#heat-and-noise) |
-| Zombie spawner for any zombie mod, bite detection, infection timer, the Turned Player | [Zombies](DESIGN.md#zombies-bites-and-infection) |
+| Zombie spawner for any zombie mod, bite detection (scratches and bites, protective clothing), the golden window and wound cleaning, staged infection, the Turned Player | [Zombies](DESIGN.md#zombies-bites-and-infection) |
+| Treatments from day one: antidote and stabiliser stocks scaled by research, Halcyon's trial dose, safehouse bite declarations, five low-grade meds with side effects | [Treatments](DESIGN.md#treatments) |
 | Light adaptation: specials after breakthroughs, one trait per stage, favourite spots | [Infection adapts](DESIGN.md#infection-adapts) |
 | The Perimeter: warning and kill zones, one drone per player, sealed road checkpoints | [The Perimeter](DESIGN.md#the-perimeter) |
 | Night, rain, fog, fog banks and storms; the power grid and power surges; the radio station; the government broadcast | [Time and environment](DESIGN.md#time-and-environment) |
 | 13 backgrounds (5 unlocked through Legacy), personal goals, Legacy points | [Backgrounds](DESIGN.md#backgrounds-and-personal-goals) |
-| Fame, Infamy and Favor; tiers; rivals; amends; quartermaster shops; Requisition; cheap perks; hunter squads; bounties | [REPUTATION.md](REPUTATION.md) |
+| Fame, Infamy and Favor; tiers; rivals; amends; quartermaster shops; Requisition; cheap perks; the Haven Champion's Safe Harbour and Remembered; hunter squads; bounties | [REPUTATION.md](REPUTATION.md) |
 | Per-player AI hostility (hidden faction variants), retaliation, disguises, Outlaw fallback | [REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you) |
 | Territory: strongholds, outposts, the territory tick, faction strength | [Territory](DESIGN.md#territory) |
 | Real supply trucks with AI crews, shortages, escort, drive-in and theft | [Supply trucks](DESIGN.md#supply-trucks) |
@@ -47,7 +48,7 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 - A trait-points system on top of backgrounds (positive and negative traits).
 
 ### Factions
-- Remaining perks: Haven **Community** respawn with a supply bag, Bastion **Fire Mission**,
+- Remaining perks: Bastion **Fire Mission**,
   Red Hand **Fence** and **Bounty board**, Halcyon **immunity booster** and **medic**.
 - Paying Favor to work off Infamy.
 - Bastion checkpoints and Red Hand roadblocks on the roads inside the Zone as AI (with the Known
@@ -88,6 +89,9 @@ In this order, because later ones depend on earlier ones:
    door after the navmesh rebuild, and cost little server time? Can anyone get trapped?
 8. **The Perimeter** on an island map and a land-locked one.
 9. **Safehouses:** upkeep timing, food keywords, the medic and bite declarations.
+   **Bites:** how often hits become bites in real fights (the protective clothing keywords),
+   whether the golden window is long enough to clean a bite mid-fight, whether the stamina hook
+   works (else the stages only make noise), and whether the meds' side effects are worth it.
 10. **Leaders:** loyalty drift and rogue-job discovery rates.
 11. **Guidance:** is anything too chatty for a level-0 player? Do the right speakers say it?
 12. **Story arcs** end to end (start one with `RZ_StoryArcs.Begin(kind)`) and how often they come.
@@ -103,6 +107,7 @@ In this order, because later ones depend on earlier ones:
 | Evac as an escape or a way to win | Nobody leaves the Zone; the only ending is the cure |
 | Crates from the evac helicopter | Free loot; the Last Helicopter pays Fame and Favor instead |
 | The free hourly Requisition crate | Free loot; Requisition is a half-price purchase |
+| The Haven Champion's supply bag on respawn | Free loot; replaced by Safe Harbour and Remembered |
 | A personal hideout per player | Leaves persistent physical traces; the Haven's safehouses are the shelter |
 | Factions hostile to all players or none | Replaced by per-player hostility through hidden faction variants |
 | Haven guards that never shoot | They shoot armed exiles near a safehouse; unarmed exiles just find the door shut |

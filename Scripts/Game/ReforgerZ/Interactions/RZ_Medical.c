@@ -151,8 +151,13 @@ class RZ_Medical
 		RZ_PlayerProfile profile = m_GM.GetProfile(patient);
 		m_mTreatedAt.Set(profile.m_sIdentity, m_Hub.GetClock());
 
+		// A fresh bite (the golden window) is cleaned properly: it may never take
+		RZ_Infection infection = m_GM.GetInfection();
+		if (infection && infection.CleanByTreatment(patient, playerId))
+			return;
+
 		string extra = "";
-		if (medic && profile.IsInfected() && !m_aSlowed.Contains(profile.m_sIdentity))
+		if (medic && profile.HasInfectionTaken() && !m_aSlowed.Contains(profile.m_sIdentity))
 		{
 			m_aSlowed.Insert(profile.m_sIdentity);
 			profile.m_fInfectionLeft = profile.m_fInfectionLeft * m_Settings.m_fTreatSlowsInfection;

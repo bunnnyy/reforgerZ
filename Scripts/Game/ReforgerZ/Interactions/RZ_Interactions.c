@@ -363,7 +363,8 @@ enum RZ_ESpotKind
 	RADIO,
 	GENERATOR,
 	CAR,
-	DOOR
+	DOOR,
+	WOUND
 }
 
 //------------------------------------------------------------------------------------------------
@@ -381,7 +382,9 @@ enum RZ_ETaskKind
 	CRACK,
 	TREAT,
 	BURN,
-	FIT
+	FIT,
+	CLEAN,
+	BREW
 }
 
 //------------------------------------------------------------------------------------------------
@@ -404,6 +407,7 @@ class RZ_Interactions
 	static const int KIND_GENERATOR = 11;
 	static const int KIND_CAR = 12;
 	static const int KIND_DOOR = 13;		// a locked place's outside door (RZ_DoorLocks)
+	static const int KIND_WOUND = 14;		// a fresh bite at a player's feet (RZ_Infection): Clean the bite
 
 	static const int TASK_SEARCH = 0;
 	static const int TASK_FORCE = 1;
@@ -417,6 +421,8 @@ class RZ_Interactions
 	static const int TASK_TREAT = 9;
 	static const int TASK_BURN = 10;
 	static const int TASK_FIT = 11;
+	static const int TASK_CLEAN = 12;		// cleaning a fresh bite (RZ_Infection)
+	static const int TASK_BREW = 13;		// brewing a home remedy on a stove
 
 	protected static const float DESPAWN_MARGIN = 25;
 	protected static const float RESCAN_MOVE = 10;
@@ -1151,7 +1157,13 @@ class RZ_Interactions
 			}
 			case RZ_ESpotKind.STOVE:
 			{
-				choiceLabels = "Boil water";
+				choiceLabels = m_Crafting.StoveLabels();
+				break;
+			}
+			case RZ_ESpotKind.WOUND:
+			{
+				if (m_GM.GetInfection())
+					m_GM.GetInfection().WoundLabels(read, choiceLabels);
 				break;
 			}
 			case RZ_ESpotKind.BELL:
@@ -1214,6 +1226,12 @@ class RZ_Interactions
 			case RZ_ESpotKind.WORKBENCH: m_Crafting.DescribeBench(playerId); return;
 			case RZ_ESpotKind.RADIO: m_Radio.ListenHouseRadio(playerId, s, user); return;
 			case RZ_ESpotKind.GENERATOR: m_Traps.DescribeFoundGenerator(playerId, s); return;
+			case RZ_ESpotKind.WOUND:
+			{
+				if (m_GM.GetInfection())
+					m_GM.GetInfection().DescribeWound(playerId, s);
+				return;
+			}
 		}
 
 		m_GM.NotifyPlayer(playerId, Title(s), DescribeSimple(s));
@@ -1283,7 +1301,13 @@ class RZ_Interactions
 			case RZ_ESpotKind.FUELPUMP: m_Cars.HandlePump(playerId, s, user); return;
 			case RZ_ESpotKind.WORKBENCH: m_Crafting.HandleRecipe(playerId, s, option, user); return;
 			case RZ_ESpotKind.WELL: m_Crafting.HandleWell(playerId, s, option, user); return;
-			case RZ_ESpotKind.STOVE: m_Crafting.HandleStove(playerId, s, user); return;
+			case RZ_ESpotKind.STOVE: m_Crafting.HandleStove(playerId, s, option, user); return;
+			case RZ_ESpotKind.WOUND:
+			{
+				if (m_GM.GetInfection())
+					m_GM.GetInfection().StartClean(playerId, s, option, user);
+				return;
+			}
 			case RZ_ESpotKind.RADIO: m_Radio.HandleHouseRadio(playerId, s, option, user); return;
 			case RZ_ESpotKind.GENERATOR: m_Traps.HandleFoundGenerator(playerId, s, option, user); return;
 		}
@@ -1479,6 +1503,13 @@ class RZ_Interactions
 			case RZ_ETaskKind.BOIL: m_Crafting.CompleteBoil(t.m_iPlayerId, s, user); return;
 			case RZ_ETaskKind.CRACK: m_Radio.CompleteCrack(t.m_iPlayerId, t.m_iArg, user, t.m_iSpot); return;
 			case RZ_ETaskKind.TREAT: m_Medical.CompleteTreat(t.m_iPlayerId, user, t.m_Target, t.m_iArg); return;
+			case RZ_ETaskKind.BREW: m_Crafting.CompleteBrew(t.m_iPlayerId, s, user); return;
+			case RZ_ETaskKind.CLEAN:
+			{
+				if (m_GM.GetInfection())
+					m_GM.GetInfection().CompleteClean(t.m_iPlayerId, t.m_iArg, user);
+				return;
+			}
 		}
 	}
 

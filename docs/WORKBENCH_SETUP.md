@@ -47,7 +47,7 @@ and add the rest from [section 4](#4-prefabs-by-system) over time.
 | 6 | **Zombies:** Bacon common, special and horde group prefabs, and the vanilla `AIWaypoint_Move.et` as **Move waypoint** | The infected, hordes, many missions |
 | 7 | **Cure:** lab, sample and antidote prefabs | The cure |
 | 8 | **Missions > Reward crate** | Mission rewards |
-| 9 | The four **quartermasters** with a few shop actions, `RZ_StandingStatusAction` and the four `RZ_LeaderAction`s; the Haven one also with the five `RZ_SafehouseAction`s | Shops, leaders, safehouse services |
+| 9 | The four **quartermasters** with a few shop actions, `RZ_StandingStatusAction` and the four `RZ_LeaderAction`s; the Haven one also with the six `RZ_SafehouseAction`s, Halcyon's with `RZ_TrialDoseAction` | Shops, leaders, safehouse services, the trial dose |
 | 10 | **Missions > Mission item** and the four **drop points** | Delivery and choice missions |
 | 11 | **Puzzles > Note**, **Puzzles > Puzzle object** and **Puzzles > Civilian** | Puzzles, unarmed missions, wanderers, leaders and occupants to talk to, interaction spots |
 
@@ -55,7 +55,8 @@ No towns, spawn points or lab need placing: they're generated at start. With onl
 these stay off: hunter squads, Perimeter checkpoints and drones (the line still works with
 messages), supply trucks (places count as supplied), territory guards, adaptation traits, the
 power station's own control prefab (it falls back), world-interaction loot (searches find
-nothing until the loot pool is filled), fixable cars, crafting and traps.
+nothing until the loot pool is filled), fixable cars, crafting and traps, and the treatments other than the antidote and the trial dose
+(stabiliser, low-grade meds).
 
 **On another map:** make another sub-scene with the same contents, then check the log lines in
 [section 7](#7-log-lines-to-check). If the map has no name labels and few buildings, place a few
@@ -111,7 +112,7 @@ If the player faction key isn't `SURV`, the variants are `<key>_H1`..`<key>_H15`
 
 ## 4. Prefabs by system
 
-The code has **147 prefab fields**: 40 on `RZ_GameModeComponent`, 101 in its settings objects, and
+The code has **153 prefab fields**: 40 on `RZ_GameModeComponent`, 107 in its settings objects, and
 6 in list entries and actions (shop item, requisition item, recipe output, loot table lists).
 Every prefab with an action list needs an `ActionsManagerComponent`; every prefab with an `RZ_`
 component needs an `RplComponent`. Slot names are the attribute's category, then its label.
@@ -140,6 +141,24 @@ still route correctly.
 | `RZ_Sample.et` | a small item (a vial) | `RZ_SampleItemComponent` | Cure > Sample | **required** | samples from specials |
 | `RZ_Antidote.et` | morphine or saline item | `RZ_AntidoteItemComponent`, `RZ_InjectAntidoteAction`; optionally the consumable effect `RZ_ConsumableAntidote` | Cure > Antidote | **required** | antidotes |
 | `RZ_RewardCrate.et` | a vanilla supply box, filled with loot | | Missions > Reward crate | **required** | mission rewards |
+
+**Treatments** (slots under **Survival > Infection**; each is optional and turns its treatment off
+when empty). Each is a small item with `RZ_MedItemComponent` (its **Kind**) and
+`RZ_UseMedAction` ("Take ..."), and optionally the consumable effect `RZ_ConsumableMed` with the
+same kind. Names in brackets suit the keyword lists.
+
+| Prefab | Kind | Slot | Where it comes from |
+|---|---|---|---|
+| `RZ_Stabiliser.et` (an autoinjector) | STABILISER | Stabiliser | Halcyon's quartermaster (a Known shop action; sold from the lab's stock), rare in pharmacies |
+| `RZ_Antibiotics_Expired.et` (a pill strip) | ANTIBIOTICS | Antibiotics | Searches; every safehouse's "Ask for something for the fever" |
+| `RZ_VetAntiviral.et` (a vial) | VET_ANTIVIRAL | Vet antiviral | Farms and vet clinics |
+| `RZ_CutDose.et` (a dirty syringe) | CUT_DOSE | Cut dose | The Red Hand quartermaster: a Known shop action, cheap (10–15 Favor) |
+| `RZ_FeverSuppressant.et` (a pill bottle) | SUPPRESSANT | Suppressant | Pharmacies, some shops |
+| `RZ_HomeRemedy.et` (a brown bottle; not named "vodka" or "herb") | REMEDY | Remedy | Brewed on a stove from alcohol and herbs |
+
+Wound cleaning needs no prefab: it uses carried items by keyword (alcohol, antiseptic, bandages,
+first-aid kits) and the interaction spot. Make sure the loot pool has some alcohol, antiseptic
+and herbs.
 
 ### Zombies
 
@@ -231,10 +250,10 @@ Halcyon's next to the lab). Their positions are saved.
 
 | Prefab | Add | Slot |
 |---|---|---|
-| `RZ_QM_Haven.et` | `RZ_QuartermasterComponent` (SURVIVORS); `RZ_StandingStatusAction`; several `RZ_FactionShopAction`; 4 × `RZ_LeaderAction` (TALK, WORK, NEWS, STANDING); 5 × `RZ_SafehouseAction` (STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE) | Factions > Haven quartermaster |
+| `RZ_QM_Haven.et` | `RZ_QuartermasterComponent` (SURVIVORS); `RZ_StandingStatusAction`; several `RZ_FactionShopAction`; 4 × `RZ_LeaderAction` (TALK, WORK, NEWS, STANDING); 6 × `RZ_SafehouseAction` (STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS) | Factions > Haven quartermaster |
 | `RZ_QM_Bastion.et` | the same with MILITARY (no safehouse actions), plus one `RZ_RequisitionAction` per requisition item | Factions > Bastion quartermaster |
 | `RZ_QM_RedHand.et` | the same with BANDITS | Factions > Red Hand quartermaster |
-| `RZ_QM_Halcyon.et` | the same with INSTITUTE | Factions > Halcyon quartermaster |
+| `RZ_QM_Halcyon.et` | the same with INSTITUTE, plus `RZ_TrialDoseAction` (the trial dose for the bitten) | Factions > Halcyon quartermaster |
 
 Each `RZ_FactionShopAction` sells one thing: **Faction**, **Required tier** (Stranger, Known,
 Trusted or Champion), **Favor cost**, **Item prefab** (an item, crate or vehicle, spawned next
@@ -244,9 +263,13 @@ the full price (a Trusted player pays half, once an hour). Set it up for ammo an
 You can also put `RZ_ChoiceDeliveryAction` on a quartermaster so it accepts hand-ins.
 
 - **Antidotes.** A shop action whose item is the **Cure > Antidote** prefab sells from a stock, not
-  freely: on the Halcyon quartermaster it sells the lab's doses (one every 15 minutes after the
-  second breakthrough, 3 at most), anywhere else (the Red Hand) only doses stolen from the lab.
-  Doses never lie on the ground, so give Halcyon's quartermaster one (Trusted), or the lab's doses can only be stolen.
+  freely: on the Halcyon quartermaster it sells the lab's doses (from the start; one every 30
+  minutes, 2 at most, down to every 10 minutes and 5 at most after 75%), anywhere else (the Red
+  Hand) only doses stolen from the lab. Give Halcyon's quartermaster one (Trusted), or the lab's
+  doses can only be stolen.
+- **Stabilisers.** A Halcyon shop action whose item is the **Survival > Infection > Stabiliser**
+  prefab sells from a second, smaller stock, at double its price until research reaches 50%. Make
+  it Known, about 40 Favor. Anywhere else it's an ordinary item.
 - **Price food above 2 Favor.** A safehouse pays 2 Haven Favor (and a little Fame) per food item
   handed in, so food the Haven quartermaster sells for 2 or less turns Favor into free Fame.
 
@@ -256,8 +279,8 @@ Suggested starting stock (from [REPUTATION.md](REPUTATION.md)):
 |---|---|---|---|
 | Haven | canned food, water, bandages, crowbar, car parts | hunting rifle, ammo, backpack, radio, jerrycan | pickup, van, fortification kit, good medkit |
 | Bastion | rations, morphine, flares | service rifle, body armour, helmet, NVGs | machine gun, grenades, military truck |
-| Red Hand | knife, pistol | suppressor, scoped rifle, explosives | rare military gear, a stolen antidote |
-| Halcyon | antiseptic, painkillers | antidote, stim kit, gas mask | — |
+| Red Hand | knife, pistol, cut dose | suppressor, scoped rifle, explosives | rare military gear, a stolen antidote |
+| Halcyon | antiseptic, painkillers, stabiliser | antidote, stim kit, gas mask | — |
 
 ### Faction consequences
 
@@ -320,7 +343,7 @@ object's components.
 
 | Prefab | Base | Slot | Used for |
 |---|---|---|---|
-| `RZ_SafehouseMedic.et` | a civilian without AI with 2 × `RZ_SafehouseAction` (HEAL, DECLARE_BITE) | Haven > Medic prefab | Settlement and up (the quartermaster's actions work without it) |
+| `RZ_SafehouseMedic.et` | a civilian without AI with 2 × `RZ_SafehouseAction` (HEAL, DECLARE_BITE) | Haven > Medic prefab | Settlement and up (the quartermaster's actions work without it; bites can be declared at every safehouse) |
 | `RZ_SafehouseOccupant*.et` | civilians without AI or seated props, with the generic components | Haven > Occupant prefabs (a list; empty = Puzzles > Civilian) | 3–6 people shown |
 | `RZ_SafehouseGuard.et` | an armed AI character or group on `SURV` | Haven > Guard prefab | guards; they shoot armed exiles |
 | `RZ_Wanderer_Trader.et`, `_Doctor`, `_Scavenger`, `_Deserter`, `_Preacher`, `_Courier`, `_Kid`, `_Mechanic` | a civilian without AI (stands still while seen), or a one-man AI group on `SURV` (walks while seen; give it a gun to fight back) | Wanderers > one slot per role | the roster's bodies |
@@ -385,7 +408,7 @@ stays quiet. Slots under **Interactions**.
 
 | Prefab | Base | Slot | Used for |
 |---|---|---|---|
-| `RZ_InteractionSpot.et` | a `GenericEntity` with a small invisible collision box, `RplComponent`, `ActionsManagerComponent` and the generic components | General > Spot prefab | every searchable thing near players, and the Unlock / Lock / Force spot outside a locked door (keep the box small and off the character collision layer so it never blocks a door or a doorway) |
+| `RZ_InteractionSpot.et` | a `GenericEntity` with a small invisible collision box, `RplComponent`, `ActionsManagerComponent` and the generic components | General > Spot prefab | every searchable thing near players, the Unlock / Lock / Force spot outside a locked door, and the "Clean the bite" spot at a bitten player's feet (keep the box small and off the character collision layer so it never blocks a door, a doorway or a player) |
 | `RZ_Key.et` | a small item (a key or key ring) with `RplComponent`, `RZ_KeyItemComponent` and optionally `RZ_ReadKeyTagAction` | Search > Key prefab | keys as real items that can be dropped, traded and stolen (empty = keys are data for one life) |
 | `RZ_DoorBlocker.et` | a `GenericEntity` with only a thin collision box (recipe below) | Search > Doorway blocker | keeps AI out of locked doorways near players (empty = no blockers; the AI door hook and banging still work) |
 | `RZ_CarProject.et` | a non-drivable car prop with the same components | Cars > Project prefab | a fixable car before it runs |
@@ -450,12 +473,12 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 24 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 25 settings objects and two lists. Every value has a working
 default; this is what each one covers. Defaults are in brackets where they matter for setup.
 
 | Category | Object | Covers |
 |---|---|---|
-| ReforgerZ | (top level) | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120) |
+| ReforgerZ | (top level) | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1) |
 | World | (top level) | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20) |
 | World | Town memory | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
@@ -467,14 +490,14 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | Zombies | Zombie settings | Common, special, horde prefabs, Move waypoint, per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | (top level) | Presence heat (0.5/tick), vehicle heat (+4/tick) |
-| Backgrounds | Backgrounds (list) | Overrides; empty = the built-in 13. **Bite minutes** (20) |
-| Cure | (top level) | Lab, sample, antidote prefabs; research per sample (2%) |
+| Backgrounds | Backgrounds (list) | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
+| Cure | (top level) | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75) |
 | Missions | (top level) | Reward crate, mission item, drop points and the optional mission prefabs |
 | Missions | Events | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
 | Missions | Contracts | Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) | The puzzle prefabs, **Scale counts items** (off), landmark name |
 | Perimeter | Perimeter | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
-| Haven | Safehouses | **Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, leak chance (0.25), body prefabs |
+| Haven | Safehouses | **Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, caught chance (0.3 a minute in Final), declare multipliers by tier (1.15/1.25/1.4/1.5), meds cost (5), stragglers (4 h), leak chance (0.25), body prefabs |
 | Wanderers | Wanderers | **Enabled**, min and max count (6, 10), prices, spawn radius (400 m), walk speed, replace minutes (1440), bite chance, Infamy, body prefabs, Trader goods |
 | Leaders | Leaders | **Enabled**, quartermaster is leader (on), interim posts (1, territory off only), body radius (200 m), replace minutes (120), job minutes (30), danger scale, discovery, kill Infamy, body prefabs |
 | Territory | Territory | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (20–30 min), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs |
@@ -487,14 +510,16 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | Interactions | Crafting | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
 | Interactions | Traps | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs |
 | Interactions | Secure radio | Crack seconds (60), listen minutes (20), line minutes (4), range (3 km), interrupts, house radio keywords |
-| Survival | (top level) | Shot heat (3), suppressed mult (0.3), bite chance (0.3), bite reach (2.5 m) |
+| Survival | (top level) | Shot heat (3), suppressed mult (0.3), **Bite chance** (0.1; hardcore 0.15, casual 0.07), bite reach (2.5 m) |
+| Survival | Infection | Bite modifiers (surrounded ×2, grabbed ×1.5, tired ×1.5, hurt ×1.5, max 0.6), **protective clothing keywords** and multipliers (jacket 0.8, gloves 0.8, helmet 0.85), **Golden window** (120 s; hardcore 60, casual 180), alcohol and antiseptic keywords, clean chances (0.7, 0.9) and seconds (6), Final stage minutes (10), the six treatment prefabs, stabiliser minutes (20), med cap (30 min), trial dose cure (0.8) and Fame (3), cut dose cure (0.5), antibiotics fail (0.3), herb keywords, brew seconds (20), **Finds** (where treatments turn up; empty = the built-in list) |
 | Factions | (top level) | Quartermaster and hunter prefabs, hunter minutes (10; 0 = off), bounty minutes (10) |
 | Factions | Hostility | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
 | Map | (top level) | **Map markers** (on) |
 | Debug | (top level) | Status log every few minutes (on) |
 
 **Keywords are guesses.** Food, water, fuel, parts, crowbars, medkits, furniture, wrecks,
-buildings, uniforms and buses are found by lower-case words in prefab names. Check them against the mods you run.
+buildings, uniforms, buses, protective clothing, alcohol, antiseptic and herbs are found by
+lower-case words in prefab names. Check them against the mods you run.
 
 **Server.** Keep time acceleration modest and fixed; don't use time-skip or sleep mods. For a
 season wipe, set **Wipe on start** for one restart, or delete `$profile:ReforgerZ/state.json`.
@@ -506,7 +531,7 @@ The last winner is kept in `$profile:ReforgerZ/last_season.json`, which a wipe d
 grep -rn "VERIFY" Scripts/
 ```
 
-There are **113** markers (one is the comment in `Core/RZ_Util.c` that explains them). Each is an
+There are **119** markers (one is the comment in `Core/RZ_Util.c` that explains them). Each is an
 engine API whose exact name or signature couldn't be confirmed. Usually the fix is a rename, and
 most are isolated in small helpers in `Core/RZ_Util.c`. They're grouped by risk; fix them in this
 order. Paths are under `Scripts/Game/ReforgerZ/`.
@@ -517,24 +542,24 @@ No fallback. If these are wrong, the basic game doesn't work.
 
 | Where | Call | If it fails |
 |---|---|---|
-| `Core/RZ_GameModeComponent.c:551` | `GetOnPlayerSpawned()` invoker | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:863` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
-| `Core/RZ_GameModeComponent.c:932` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
-| `Core/RZ_GameModeComponent.c:1064` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1724`, `:1725` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1735` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:1953`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
-| `Persistence/RZ_SaveData.c:119` | JSON contexts serialise plain members | Nothing is saved |
+| `Core/RZ_GameModeComponent.c:565` | `GetOnPlayerSpawned()` invoker | Nothing per-player runs on spawn (backgrounds, goals, radio) |
+| `Core/RZ_GameModeComponent.c:890` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
+| `Core/RZ_GameModeComponent.c:959` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
+| `Core/RZ_GameModeComponent.c:1092` | `OnProjectileShot` event and signature | No gunfire heat |
+| `Core/RZ_GameModeComponent.c:1735`, `:1736` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1746` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:1965`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Persistence/RZ_SaveData.c:120` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:369`, `:377` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
-| `Core/RZ_Util.c:614`, `Zombies/RZ_BiteDetector.c:74` | total health accessor (maybe `GetDefaultHitZone().GetHealth()`) | No bites; retaliation only sees kills |
+| `Core/RZ_Util.c:614`, `Zombies/RZ_BiteDetector.c:167` | total health accessor (maybe `GetDefaultHitZone().GetHealth()`) | No bites; retaliation only sees kills |
 | `Core/RZ_Util.c:171` | `Kill()` signature | The infection timer and kill zone can't kill |
 | `Cure/RZ_LabComponents.c:72`, `Missions/RZ_MissionItems.c:49`, `Cure/RZ_AntidoteItem.c:23` | `IsMatch` predicate signature | Samples, mission items and antidotes aren't found in inventories |
 | `Cure/RZ_LabComponents.c:156`, `Missions/RZ_MissionItems.c:75`, `Cure/RZ_AntidoteItem.c:47` | `TryDeleteItem()` | Items aren't taken when handed in |
 | `Puzzles/RZ_RadioStealth.c:36` | `GetItems()` lists every carried storage | Radio checks fail (the same call is used for food and keywords) |
 | `Puzzles/RZ_PuzzleActions.c:15` | `ScriptedUserAction.GetOwner()` | No clue can be read |
 
-### Medium risk: big features, with a fallback (57)
+### Medium risk: big features, with a fallback (60)
 
 | Where | Call | Fallback |
 |---|---|---|
@@ -545,8 +570,8 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Factions/RZ_SupplyLines.c:824` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:560` | vehicle `SCR_DamageManagerComponent.GetState()` | A burnt-out truck counts as late instead |
 | `Core/RZ_Util.c:574`, `:578` | `SetWorldTransform`, `Physics.SetVelocity` | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
-| `Interactions/RZ_Interactions.c:645` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
-| `Interactions/RZ_Interactions.c:721` | `SCR_DestructibleBuildingEntity` as the building class | Buildings aren't recognised; furniture still is |
+| `Interactions/RZ_Interactions.c:651` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
+| `Interactions/RZ_Interactions.c:727` | `SCR_DestructibleBuildingEntity` as the building class | Buildings aren't recognised; furniture still is |
 | `Interactions/RZ_Interactions.c:251` | `GetItems()` for keyword items | Crowbars, parts, fuel, water and medkits not found |
 | `Puzzles/RZ_Landmarks.c:56` | `QueryEntitiesBySphere(center, radius, cb, filter, flags)` | No landmarks: the fallback landmark prop |
 | `Puzzles/RZ_PuzzleComponents.c:80`, `:142`, `Puzzles/RZ_BlinkingLight.c:161` | `[RplProp]` on a `ScriptComponent` | Labels don't replicate: generic labels, all slots visible, actions still work |
@@ -559,7 +584,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:184` | `FullHeal()` | Medics and Doctors take Favor but don't heal: fix before release |
 | `Core/RZ_Util.c:257` | `TryInsertItem` | Items (the wind-up radio) land at the player's feet |
 | `Core/RZ_Util.c:301` | `AIGroup.GetWaypoints()` / `RemoveWaypoint()` | Hordes can't be redirected (The Clockwork Horde, unarmed missions) |
-| `World/RZ_Safehouses.c:336`, `:346` | `GetItems`, `TryDeleteItem` for food | Food isn't found or taken; check the food keywords first |
+| `World/RZ_Safehouses.c:359`, `:369` | `GetItems`, `TryDeleteItem` for food | Food isn't found or taken; check the food keywords first |
 | `Core/RZ_Util.c:594` | fuel nodes: `GetFuelNodesList`, `GetMaxFuel`, `SetFuel` | Empty the helper: a fixed car has its prefab's own fuel |
 | `Interactions/RZ_DoorHooks.c:11` | `modded class SCR_DoorUserAction`: the vanilla door action's name, owned by the door entity | **Doesn't compile if the name is wrong.** Rename it to the action in the door prefabs' `ActionsManagerComponent` (maybe `DoorUserAction`); if there's no scripted one, delete the file and turn **Search > Door locks** off (locks go back on the loot) |
 | `Interactions/RZ_DoorHooks.c:22`, `:32` | `SetCannotPerformReason(string)`; the door action's `PerformAction` also runs on the server | No "Locked" reason, only a greyed action / the server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
@@ -571,15 +596,17 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:632` | a seated character is a child entity of its vehicle (`GetParent()`) | Vehicle deliveries by type (Recover the Bus) never see who drives: switch the helper to `CompartmentAccessComponent.GetVehicleIn`. A specific vehicle still counts a player in a vehicle right beside it |
 | `Core/RZ_Util.c:643`, `:654` | `HitZone.GetMaxHealth()` and `SetHealth()` on the default hit zone (server, replicated, no knock-out above zero) | The Blood Drive refuses everyone ("health can't be read"); nothing else uses them |
 | `Core/RZ_Util.c:685` | worn clothing is attached as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
+| `Cure/RZ_Infection.c:1092`, `:1096`, `:1111` | `CharacterStaminaComponent` on the character; `AddStamina(float)` on a 0–1 scale, server side and replicated (negative drains); `GetStamina()` | No stamina effects: the Weakness and Final stages, nausea and the drunk remedy fall back to noise and a little health drain, and the "tired" bite modifier never applies. Try `SCR_CharacterStaminaComponent` |
 | `Interactions/RZ_DoorBlockers.c:58`, `:67` | `GetAIWorld()` as `SCR_AIWorld`; `RequestNavmeshRebuildAreas(areas, redoRoads)` (what Game Master placement uses) | Doesn't compile: try `RequestNavmeshRebuildEntity(blocker)`, or empty the helper and turn **Navmesh rebuild** off (blockers only) |
 
-### Low risk: contained or cosmetic (31)
+### Low risk: contained or cosmetic (34)
 
 | Where | Call | Fallback |
 |---|---|---|
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Core/RZ_MapMarkers.c:14`, `:19`, `:20`, `:21`, `:22`, `:44`, `:46` | map marker manager, type, position, text, insert, remove | Empty `Add()` and `Remove()`, or turn **Map markers** off |
-| `Cure/RZ_AntidoteConsumable.c:8`, `:15` | the consumable effect class and `ApplyEffect` signature | Delete the file: the world action still works |
+| `Cure/RZ_AntidoteConsumable.c:8`, `:15`, `Cure/RZ_MedConsumable.c:5`, `:15` | the consumable effect class and `ApplyEffect` signature | Delete the file: the world actions ("Inject antidote", "Take ...") still work |
+| `Cure/RZ_Infection.c:1119` | no known script hook for camera sway or blur (`RZ_Symptoms.Disorient` returns false) | The home remedy's drunkenness is stumbling (stamina and noise). Wire a blur or aim-sway effect here if the game version has one |
 | `Guidance/RZ_Guidance.c:172` | `System.GetUnixTime()` | Return 0: the 30-day refresher never fires |
 | `Puzzles/RZ_BlinkingLight.c:55`, `:72`; `Puzzles/RZ_Landmarks.c:66`; `Core/RZ_Util.c:347` | `ToUpper`, `Trim`, `ToLower` in place or as copies | Swap to the other form |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
@@ -653,7 +680,17 @@ session, tick off:
 
 **Core loop**
 - [ ] Infected spawn near you in towns and despawn far away; a shot makes heat, enough heat a horde.
-- [ ] A bite starts the infection timer; an antidote cures it; turning starts the Turned Player.
+- [ ] Most zombie hits say "Scratched"; a bite opens the golden window and a "Clean the bite" spot
+  that follows you. Cleaning with vodka or antiseptic, or disinfectant and a bandage, either stops
+  it (told a minute later) or it takes when the 2 minutes are up.
+- [ ] With **Bite minutes** at 6: Fever, then Weakness (stamina drains, a friend 10 m away is told
+  you look sick), then Final with a countdown; turning starts the Turned Player.
+- [ ] An antidote cures it; the trial dose at Halcyon's quartermaster cures or halves the time,
+  and refuses a second time; a stabiliser pauses the countdown.
+- [ ] Each low-grade med works once and shows its side effect (nausea, coughing heat, fever
+  health drain, drunk stumbling); a fever suppressant stops a safehouse catching you; the meds
+  never add more than 30 minutes together.
+- [ ] Wearing a jacket, gloves and a helmet makes bites rarer (watch the log or count them).
 - [ ] A special drops a sample; delivering it at the lab moves research.
 - [ ] A contract is offered by radio, completes, and pays Fame and Favor; a tier change is announced.
 - [ ] A quartermaster sells an item at the right tier and refuses one above it.
@@ -671,7 +708,12 @@ session, tick off:
 
 **World**
 - [ ] Walking near the map edge: drone and loudspeaker at 300 m, warning shot at 100 m.
-- [ ] A safehouse shows occupants; you can hand in food and declare a bite.
+- [ ] A safehouse shows occupants; you can hand in food, declare a bite at a Shelter (smaller
+  slowdown) and a Town (bigger), and buy expired antibiotics for 5 Favor.
+- [ ] As a Haven Champion, walk into a safehouse with a hunter squad on you: it turns away, and
+  a bounty notice names only a nearby town. Die as a Haven Champion: the memorial headline goes
+  out, and your next character is greeted and treated free at their first safehouse.
+- [ ] A stove offers "Brew a home remedy" with alcohol and herbs in your pack.
 - [ ] A wanderer can be talked to and remembers you.
 - [ ] "Search" spots appear in a house; a search finds something from the loot pool.
 - [ ] A locked place's outside door says "Locked" from outside and opens from inside (which

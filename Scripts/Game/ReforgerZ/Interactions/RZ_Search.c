@@ -451,6 +451,10 @@ class RZ_Search
 	//! The building type from its lower-case prefab or mesh name.
 	string BuildingType(string name)
 	{
+		// Vet clinics stock what farms do (the veterinary antiviral), not a pharmacy's shelves
+		if (name.Contains("veterin") || name.Contains("vet_") || name.Contains("vetclinic"))
+			return "farm";
+
 		if (RZ_LandmarkFinder.Matches("pharmacy", name) || name.Contains("drugstore") || name.Contains("apothec"))
 			return "pharmacy";
 
@@ -1048,6 +1052,15 @@ class RZ_Search
 			}
 
 			found.Insert("the stash from the note, wrapped in a bin bag");
+		}
+
+		// Treatments (docs/DESIGN.md, "Treatments"): one roll, better behind a lock
+		RZ_Infection infection = m_GM.GetInfection();
+		if (infection)
+		{
+			string med = infection.RollMedFind(s.m_sType, locked, user, s.m_vPos);
+			if (!med.IsEmpty())
+				found.Insert(med);
 		}
 
 		// Car keys for a fixable car in this town, sometimes

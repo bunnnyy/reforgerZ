@@ -21,9 +21,26 @@ class RZ_PlayerProfile
 	int m_iGuideLastScenario = -1;		// the last spawn scenario, so the next one differs
 	ref array<string> m_aGuideSeen = {};	// once-only tips already given
 
+	// Remembered (Haven Champion perk): a Haven Champion died; the next character is kin
+	bool m_bFallenPending;			// set at the Champion's death, used up by the next life
+	string m_sFallenPlace;			// where they fell (for the greeting)
+
 	// Current life
 	string m_sBackgroundId;
 	float m_fInfectionLeft = -1;	// seconds until turning, -1 = not infected
+	float m_fInfectionTotal;		// seconds from the bite to turning, as set at the bite (stages)
+	float m_fWoundLeft = -1;		// golden window: seconds before the bite takes hold (> 0 = fresh)
+	bool m_bWoundCleaned;			// the one cleaning of this bite was tried
+	float m_fPauseLeft;				// stabiliser or vet antiviral: seconds the timer stands still
+	int m_iInfectionStage;			// RZ_EInfectionStage
+	int m_iMedsUsed;				// bitmask of RZ_EMed taken this life (each works once per life)
+	float m_fMedExtension;			// seconds low-grade meds have added (capped)
+	int m_iSideEffect = -1;			// RZ_EMed whose side effect is running, -1 = none
+	float m_fSideEffectLeft;
+	float m_fSymptomsHiddenLeft;	// fever suppressant: the symptoms don't show
+	bool m_bTrialDoseTaken;			// Halcyon's trial dose, once per life
+	bool m_bFallenKin;				// Remembered: this life is kin to a fallen Haven Champion
+	bool m_bKinGreeted;				// ...and has had its free treatment at a safehouse
 	ref array<int> m_aFame = {0, 0, 0, 0};
 	ref array<int> m_aInfamy = {0, 0, 0, 0};
 	ref array<int> m_aFavor = {0, 0, 0, 0};
@@ -47,6 +64,16 @@ class RZ_PlayerProfile
 		m_iLives++;
 		m_sBackgroundId = bg.m_sId;
 		m_fInfectionLeft = -1;
+		ClearInfection();
+		m_iMedsUsed = 0;
+		m_fMedExtension = 0;
+		m_iSideEffect = -1;
+		m_fSideEffectLeft = 0;
+		m_fSymptomsHiddenLeft = 0;
+		m_bTrialDoseTaken = false;
+		m_bFallenKin = m_bFallenPending;
+		m_bFallenPending = false;
+		m_bKinGreeted = false;
 		m_fLifeSeconds = 0;
 		m_iLifeSamples = 0;
 		m_iLifeMissions = 0;
@@ -192,5 +219,44 @@ class RZ_PlayerProfile
 	bool IsInfected()
 	{
 		return m_fInfectionLeft >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bitten, but still inside the golden window: cleaning the wound can stop it.
+	bool IsWoundFresh()
+	{
+		return IsInfected() && m_fWoundLeft > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The bite has taken hold (the stages run).
+	bool HasInfectionTaken()
+	{
+		return IsInfected() && m_fWoundLeft <= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Per-bite state back to "not infected" (cured, turned or a new life). Med use, side effects
+	//! and the trial dose belong to the life and stay.
+	void ClearInfection()
+	{
+		m_fInfectionLeft = -1;
+		m_fInfectionTotal = 0;
+		m_fWoundLeft = -1;
+		m_bWoundCleaned = false;
+		m_fPauseLeft = 0;
+		m_iInfectionStage = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasUsedMed(int kind)
+	{
+		return (m_iMedsUsed & (1 << kind)) != 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void MarkMedUsed(int kind)
+	{
+		m_iMedsUsed = m_iMedsUsed | (1 << kind);
 	}
 }

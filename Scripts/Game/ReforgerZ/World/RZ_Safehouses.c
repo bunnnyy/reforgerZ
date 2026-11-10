@@ -18,8 +18,9 @@ enum RZ_ESafehouseAction
 	STATUS,			// "How are things here?" population, food, what they need
 	DELIVER_FOOD,	// hand over food items for Favor (tops up the food stock)
 	HEAL,			// the medic patches you up for Favor (Settlement and up)
-	DECLARE_BITE,	// tell the medic you're bitten: slows the infection once per life
-	RADIO			// mission intel from the safehouse radio (Settlement and up)
+	DECLARE_BITE,	// tell them you're bitten: slows the infection once per life (every safehouse)
+	RADIO,			// mission intel from the safehouse radio (Settlement and up)
+	MEDS			// low-grade meds for a little Favor (every safehouse)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -79,8 +80,26 @@ class RZ_SafehouseSettings
 	[Attribute("15", desc: "Haven Infamy for being caught hiding a bite inside a safehouse")]
 	int m_iCaughtInfamy = 15;
 
-	[Attribute("0.3", desc: "Chance per minute that a bitten player who hasn't declared it is caught inside a safehouse in their last 5 minutes")]
+	[Attribute("0.3", desc: "Chance per minute that a bitten player who hasn't declared it is caught inside a safehouse in the Final stage (half that in Weakness; never in Fever, the golden window, or on a fever suppressant)")]
 	float m_fCaughtChance = 0.3;
+
+	[Attribute("1.15", desc: "Declaring a bite at a Shelter: the time left x this (once per life)")]
+	float m_fDeclareShelter = 1.15;
+
+	[Attribute("1.25", desc: "...at a Community")]
+	float m_fDeclareCommunity = 1.25;
+
+	[Attribute("1.4", desc: "...at a Settlement (it has a medic)")]
+	float m_fDeclareSettlement = 1.4;
+
+	[Attribute("1.5", desc: "...at a Town")]
+	float m_fDeclareTown = 1.5;
+
+	[Attribute("5", desc: "Haven Favor for a dose of expired antibiotics (every safehouse, anyone not exiled; needs Survival > Infection > Antibiotics prefab)")]
+	int m_iMedsCost = 5;
+
+	[Attribute("4", desc: "Stragglers: a fed safehouse under 12 people takes in one person every this many hours with players online (divided by season speed). 0 = only rescues add people")]
+	float m_fStragglerHours = 4;
 
 	[Attribute("0.25", desc: "Chance every 10 min that a safehouse short on food sells a Hunted player's rough location to bounty hunters")]
 	float m_fLeakChance = 0.25;
@@ -100,6 +119,7 @@ class RZ_SafehouseSave
 	bool anchored;
 	bool shortFood;
 	int lost;
+	float straggle;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -116,6 +136,7 @@ class RZ_Safehouse
 	bool m_bShort;		// the last upkeep ran short: the safehouse is under pressure
 	int m_iLost;		// people lost lately (hunger, raids, contracts), fading by one an hour (story arcs)
 	float m_fLostFade;
+	float m_fStraggleTimer;	// stragglers: one more person every few hours while fed
 
 	// Runtime
 	ref array<IEntity> m_aBodies = {};
@@ -219,6 +240,7 @@ class RZ_Safehouse
 		s.anchored = m_bAnchored;
 		s.shortFood = m_bShort;
 		s.lost = m_iLost;
+		s.straggle = m_fStraggleTimer;
 		return s;
 	}
 
@@ -235,6 +257,7 @@ class RZ_Safehouse
 		h.m_bAnchored = s.anchored;
 		h.m_bShort = s.shortFood;
 		h.m_iLost = Math.Max(0, s.lost);
+		h.m_fStraggleTimer = Math.Max(0, s.straggle);
 		return h;
 	}
 }
@@ -367,6 +390,7 @@ class RZ_Safehouses
 	protected static const float FIRE_COOLDOWN = 20;
 	protected static const float DESPAWN_MARGIN = 50;
 	protected static const float RESCUE_WANDERER_CHANCE = 0.1;
+	protected static const int STRAGGLER_CAP = 12;			// stragglers alone bring a safehouse up to a Settlement
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_SafehouseSettings m_Settings;
@@ -876,19 +900,25 @@ class RZ_Safehouses
 			}
 		}
 
-		// Upkeep only runs while someone is playing, so an empty server doesn't starve
+		// Upkeep and stragglers only run while someone is playing, so an empty server doesn't
+		// starve; both follow the season speed
 		if (!ids.IsEmpty())
 		{
+			float speed = m_GM.GetSeasonSpeed();
 			foreach (int i, RZ_Safehouse h : m_aSafehouses)
 			{
-				h.m_fUpkeepTimer = h.m_fUpkeepTimer + dt;
+				h.m_fUpkeepTimer = h.m_fUpkeepTimer + dt * speed;
 				if (h.m_fUpkeepTimer >= m_Settings.m_fUpkeepMinutes * 60)
 				{
 					h.m_fUpkeepTimer = 0;
 					Upkeep(i);
 				}
+
+				TickStragglers(h, dt * speed);
 			}
 		}
+
+		GreetKin(ids, players);
 
 		m_fCheckTimer += dt;
 		if (m_fCheckTimer >= CHECK_INTERVAL)
@@ -903,6 +933,28 @@ class RZ_Safehouses
 			m_fLeakTimer = 0;
 			CheckLeaks(ids, players);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stragglers: a fed safehouse slowly takes in people who find it on their own, up to a
+	//! Settlement. Rescues do the rest.
+	protected void TickStragglers(RZ_Safehouse h, float dt)
+	{
+		if (m_Settings.m_fStragglerHours <= 0 || h.m_bShort || h.m_iPopulation >= STRAGGLER_CAP)
+		{
+			h.m_fStraggleTimer = 0;
+			return;
+		}
+
+		h.m_fStraggleTimer = h.m_fStraggleTimer + dt;
+		if (h.m_fStraggleTimer < m_Settings.m_fStragglerHours * 3600)
+			return;
+
+		h.m_fStraggleTimer = 0;
+		RZ_ESafehouseTier before = h.GetTier();
+		h.m_iPopulation = h.m_iPopulation + 1;
+		if (h.GetTier() != before)
+			NotifyHaven(string.Format("Someone walked into %1 last night with a bag and a story. It's a %2 now: %3 people.", h.m_sName, RZ_Safehouse.TierName(h.GetTier()), h.m_iPopulation));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1120,19 +1172,32 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A bitten player who hasn't said so, inside a safehouse when the fever shows (last
-	//! 5 minutes), may be caught. Once per life.
+	//! A bitten player who hasn't said so, inside a safehouse once it shows (Weakness: half the
+	//! chance; Final: the full chance), may be caught. Once per life. The golden window, the Fever
+	//! stage and a fever suppressant don't show.
 	protected void CheckHiddenBites(array<int> ids, array<IEntity> players)
 	{
+		RZ_Infection infection = m_GM.GetInfection();
+		if (!infection)
+			return;
+
 		foreach (int i, IEntity p : players)
 		{
 			RZ_PlayerProfile profile = m_GM.GetProfile(ids[i]);
-			if (!profile.IsInfected() || profile.m_bBiteDeclared || profile.m_bBiteCaught || profile.m_fInfectionLeft > 300)
+			if (!profile.IsInfected() || profile.m_bBiteDeclared || profile.m_bBiteCaught)
 				continue;
+
+			int shows = infection.VisibleSickness(profile);
+			if (shows <= 0)
+				continue;
+
+			float chance = m_Settings.m_fCaughtChance;
+			if (shows == 1)
+				chance = chance * 0.5;
 
 			int idx = FindNearest(p.GetOrigin(), INSIDE_RADIUS);
 			RZ_Safehouse h = Get(idx);
-			if (!h || Math.RandomFloat01() >= m_Settings.m_fCaughtChance)
+			if (!h || Math.RandomFloat01() >= chance)
 				continue;
 
 			profile.m_bBiteCaught = true;
@@ -1195,6 +1260,7 @@ class RZ_Safehouses
 			case RZ_ESafehouseAction.HEAL: Heal(playerId, h, user); break;
 			case RZ_ESafehouseAction.DECLARE_BITE: DeclareBite(playerId, h); break;
 			case RZ_ESafehouseAction.RADIO: Radio(playerId, h, user); break;
+			case RZ_ESafehouseAction.MEDS: SellMeds(playerId, h, owner, user); break;
 		}
 	}
 
@@ -1298,33 +1364,171 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Telling the truth about a bite: once per life, the medic slows it (x1.5 of what's left).
-	//! Without a medic they still thank you, and you can't be caught hiding it.
+	//! Time-left multiplier for a declared bite here: the bigger the house, the more it can do.
+	protected float DeclareMult(RZ_Safehouse h)
+	{
+		switch (h.GetTier())
+		{
+			case RZ_ESafehouseTier.SHELTER: return m_Settings.m_fDeclareShelter;
+			case RZ_ESafehouseTier.COMMUNITY: return m_Settings.m_fDeclareCommunity;
+			case RZ_ESafehouseTier.SETTLEMENT: return m_Settings.m_fDeclareSettlement;
+		}
+
+		return m_Settings.m_fDeclareTown;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Telling the truth about a bite, at any safehouse: once per life it's slowed (x1.15 at a
+	//! Shelter up to x1.5 at a Town), and you can't be caught hiding it. A fresh bite (the golden
+	//! window) is washed out properly instead, which may stop it.
 	protected void DeclareBite(int playerId, RZ_Safehouse h)
 	{
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		string title = "Safehouse: " + h.m_sName;
 		if (!profile.IsInfected())
 		{
-			m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "\"You're not bitten. Good. Keep it that way.\"");
+			m_GM.NotifyPlayer(playerId, title, "\"You're not bitten. Good. Keep it that way.\"");
 			return;
 		}
 
 		if (profile.m_bBiteDeclared)
 		{
-			m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "\"We know. We've done what we can. Sit by the door, where it's cooler.\"");
+			m_GM.NotifyPlayer(playerId, title, "\"We know. We've done what we can. Sit by the door, where it's cooler.\"");
 			return;
 		}
 
 		profile.m_bBiteDeclared = true;
-		if (!h.HasMedic())
+		RZ_Infection infection = m_GM.GetInfection();
+		if (profile.IsWoundFresh())
 		{
-			m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "There's no medic here. They thank you for telling them, give you a blanket and a chair by the door, and nobody stares.");
+			if (infection && infection.CleanAtSafehouse(playerId))
+				m_GM.NotifyPlayer(playerId, title, "\"Just now? Sit. Bite your sleeve.\" Boiled water, a brush, the last of the iodine, and a clean dressing. \"If it was going to work, that did it.\"");
+			else
+				m_GM.NotifyPlayer(playerId, title, "\"It's been cleaned already. Then we wait, and we hope.\" Someone puts a blanket round you.");
+
 			return;
 		}
 
-		profile.m_fInfectionLeft = profile.m_fInfectionLeft * 1.5;
-		m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, string.Format("You tell the medic. She doesn't flinch. Something cold in a needle, a clean dressing. \"It'll buy you time. About %1 minutes. Use it well.\"",
-			RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60)));
+		profile.m_fInfectionLeft = profile.m_fInfectionLeft * DeclareMult(h);
+		int minutes = RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60);
+		if (h.HasMedic())
+		{
+			m_GM.NotifyPlayer(playerId, title, string.Format("You tell the medic. She doesn't flinch. Something cold in a needle, a clean dressing. \"It'll buy you time. About %1 minutes. Use it well.\"", minutes));
+			return;
+		}
+
+		m_GM.NotifyPlayer(playerId, title, string.Format("There's no medic here, just a first-aid box and a woman who used to teach biology. She does what she can, and it's not nothing. \"About %1 minutes. Go to the lab, love. They run a trial for people like you.\"", minutes));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Low-grade meds at every safehouse: a dose of expired antibiotics for a little Favor.
+	protected void SellMeds(int playerId, RZ_Safehouse h, IEntity owner, IEntity user)
+	{
+		string title = "Safehouse: " + h.m_sName;
+		RZ_Infection infection = m_GM.GetInfection();
+		ResourceName prefab;
+		if (infection)
+			prefab = infection.MedPrefab(RZ_EMed.ANTIBIOTICS);
+
+		if (prefab.IsEmpty())
+		{
+			m_GM.NotifyPlayer(playerId, title, "\"Aspirin and a kind word. That's the medicine cabinet.\"");
+			return;
+		}
+
+		if (!m_GM.SpendFavor(playerId, RZ_EFaction.SURVIVORS, m_Settings.m_iMedsCost))
+		{
+			m_GM.NotifyPlayer(playerId, title, string.Format("\"We need %1 Favor for it. Medicine's the one thing we can't grow.\" You have %2.", m_Settings.m_iMedsCost,
+				m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.SURVIVORS)));
+			return;
+		}
+
+		if (!RZ_QuartermasterHelper.SpawnNear(prefab, owner, user))
+		{
+			m_GM.AddFavor(playerId, RZ_EFaction.SURVIVORS, m_Settings.m_iMedsCost); // refund
+			return;
+		}
+
+		m_GM.NotifyPlayer(playerId, title, "A strip of antibiotics two years out of date, from a shoebox under the stairs. \"It's that or nothing. It might buy you a little time. It'll make you sick.\"");
+	}
+
+	// ================================================================ Haven Champions (docs/REPUTATION.md)
+	//------------------------------------------------------------------------------------------------
+	//! Safe Harbour: a Haven Champion inside any safehouse. Hunter squads lose the trail and bounty
+	//! notices only give a vague area (RZ_FactionPerks).
+	bool IsSafeHarbour(int playerId, vector pos)
+	{
+		if (FindAt(pos) < 0 || IsExiled(playerId))
+			return false;
+
+		return RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, RZ_EFaction.SURVIVORS), RZ_ETier.CHAMPION);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Remembered: a Haven Champion died. A memorial headline, the nearest safehouse's council reads
+	//! the name out, and the player's next character is kin (one free treatment, a greeting).
+	void OnChampionFallen(int playerId, vector pos)
+	{
+		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		string place = RZ_SettlementScanner.GridReference(pos);
+		RZ_Settlement s = m_GM.GetSettlement(m_GM.FindNearestSettlement(pos));
+		if (s)
+			place = s.m_sName;
+
+		profile.m_bFallenPending = true;
+		profile.m_sFallenPlace = place;
+
+		string name = RZ_Util.PlayerName(playerId);
+		RZ_Leaders leaders = m_GM.GetLeaders();
+		if (leaders)
+			leaders.AddHeadline(string.Format("The Haven lost %1 near %2. Every safehouse lit a candle in the window last night.", name, place));
+
+		RZ_Safehouse h = Get(FindNearest(pos));
+		if (!h)
+			return;
+
+		string reader = "The council";
+		if (leaders)
+		{
+			RZ_Leader head = leaders.FindAt(RZ_EFaction.SURVIVORS, h.m_vPos);
+			if (head)
+				reader = head.m_sName;
+		}
+
+		NotifyHaven(string.Format("%1 read the name out at supper in %2: %3, who stood up for the Haven when it counted. Nobody ate for a minute.", reader, h.m_sName, name));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Kin of a fallen Haven Champion, at their first safehouse this life: the greeting and one
+	//! free treatment (a heal; a bite is slowed as if declared at a Town, which also counts as declaring it).
+	protected void GreetKin(array<int> ids, array<IEntity> players)
+	{
+		foreach (int i, IEntity p : players)
+		{
+			RZ_PlayerProfile profile = m_GM.GetProfile(ids[i]);
+			if (!profile.m_bFallenKin || profile.m_bKinGreeted || IsExiled(ids[i]))
+				continue;
+
+			RZ_Safehouse h = Get(FindAt(p.GetOrigin()));
+			if (!h)
+				continue;
+
+			profile.m_bKinGreeted = true;
+			RZ_Util.HealCharacter(p);
+			string extra = "";
+			if (profile.HasInfectionTaken() && !profile.m_bBiteDeclared)
+			{
+				profile.m_bBiteDeclared = true;
+				profile.m_fInfectionLeft = profile.m_fInfectionLeft * m_Settings.m_fDeclareTown;
+				extra = string.Format(" She sees the bite and doesn't say a word about it, just works. About %1 minutes, now.", RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60));
+			}
+
+			string where = profile.m_sFallenPlace;
+			if (where.IsEmpty())
+				where = "the road";
+
+			m_GM.NotifyPlayer(ids[i], "Safehouse: " + h.m_sName, string.Format("Someone at the door looks twice at you. \"You're family of the one we lost near %1, aren't you. You have the look.\" They sit you down, feed you, and the medic sees to you for nothing.%2", where, extra));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1360,7 +1564,7 @@ class RZ_Safehouses
 
 //------------------------------------------------------------------------------------------------
 //! A safehouse service. Put one per kind on the Haven quartermaster prefab (STATUS,
-//! DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE) and HEAL + DECLARE_BITE on the medic prefab.
+//! DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS) and HEAL + DECLARE_BITE on the medic prefab.
 //! It works at whichever safehouse it stands in; elsewhere it says there's none.
 class RZ_SafehouseAction : ScriptedUserAction
 {
@@ -1375,8 +1579,9 @@ class RZ_SafehouseAction : ScriptedUserAction
 			case RZ_ESafehouseAction.STATUS: outName = "Ask how things are"; break;
 			case RZ_ESafehouseAction.DELIVER_FOOD: outName = "Hand over food"; break;
 			case RZ_ESafehouseAction.HEAL: outName = "Ask the medic to patch you up"; break;
-			case RZ_ESafehouseAction.DECLARE_BITE: outName = "Tell the medic you've been bitten"; break;
+			case RZ_ESafehouseAction.DECLARE_BITE: outName = "Tell them you've been bitten"; break;
 			case RZ_ESafehouseAction.RADIO: outName = "Listen to the safehouse radio"; break;
+			case RZ_ESafehouseAction.MEDS: outName = "Ask for something for the fever"; break;
 		}
 
 		return true;

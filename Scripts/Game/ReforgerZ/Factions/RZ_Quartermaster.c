@@ -202,17 +202,38 @@ class RZ_FactionShopAction : ScriptedUserAction
 			if (doses <= 0)
 			{
 				if (fromLab)
-					gm.NotifyPlayer(playerId, factionName, "\"No doses left. The lab makes one every quarter of an hour, when the research allows. Come back.\"");
+					gm.NotifyPlayer(playerId, factionName, string.Format("\"No doses left. The lab makes one about every %1 minutes, faster as the research goes. Come back.\"", RZ_Util.RoundToInt(gm.GetCure().AntidoteInterval() / 60)));
 				else
 					gm.NotifyPlayer(playerId, factionName, "\"Antidotes? Fresh out. Somebody would have to fetch us some from the lab.\"");
 				return;
 			}
 		}
 
+		// Stabilisers at Halcyon come from the lab's small stock too, and cost double until the
+		// research reaches 50% (docs/DESIGN.md, "Treatments"). Anywhere else it's an ordinary item.
+		bool stabiliser = false;
+		float stockMult = 1;
+		if (fromLab && gm.GetCure() && gm.GetInfection())
+		{
+			ResourceName stabPrefab = gm.GetInfection().GetSettings().m_sStabiliserPrefab;
+			stabiliser = !stabPrefab.IsEmpty() && m_sItemPrefab == stabPrefab;
+		}
+
+		if (stabiliser)
+		{
+			if (gm.GetCure().GetLabStabilisers() <= 0)
+			{
+				gm.NotifyPlayer(playerId, factionName, string.Format("\"No stabilisers. We make about one every %1 minutes, and they go fast. Come back.\"", RZ_Util.RoundToInt(gm.GetCure().StabiliserInterval() / 60)));
+				return;
+			}
+
+			stockMult = gm.GetCure().StabiliserPriceMult();
+		}
+
 		// Supply lines (docs/DESIGN.md): a shop whose truck didn't get through is short until the
 		// next one does (some items out, the top tier maybe locked, dearer); a stronghold Under
 		// Pressure keeps its top tier back. Morale moves prices a little.
-		float supplyMult = 1;
+		float supplyMult = stockMult;
 		RZ_SupplyLines supply = gm.GetSupply();
 		RZ_SupplyState shortage;
 		if (supply)
@@ -227,7 +248,7 @@ class RZ_FactionShopAction : ScriptedUserAction
 				return;
 			}
 
-			supplyMult = shortage.m_fPriceMult;
+			supplyMult = supplyMult * shortage.m_fPriceMult;
 		}
 
 		RZ_Territory territory = gm.GetTerritory();
@@ -270,6 +291,9 @@ class RZ_FactionShopAction : ScriptedUserAction
 			else
 				gm.GetCure().TakeStolenAntidote();
 		}
+
+		if (stabiliser)
+			gm.GetCure().TakeStabiliser();
 
 		gm.NotifyPlayer(playerId, factionName, string.Format("Here's your %1, for %2 Favor. %3 Favor left.", m_sDisplayName, cost, gm.GetProfile(playerId).GetFavor(m_eFaction)));
 	}

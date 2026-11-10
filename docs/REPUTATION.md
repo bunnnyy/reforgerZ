@@ -69,6 +69,8 @@ standing ([DESIGN.md](DESIGN.md), "Backgrounds and personal goals"). Two things 
   character starts at Known with it.
 - **Unlocks** ✅: Champion with a faction unlocks a background (Soldier, Doctor, Raider, Elder);
   10 Legacy points unlock the Drifter.
+- **Remembered** ✅: the next character after a Haven Champion dies is kin of the fallen
+  ([The Haven](#the-haven)).
 
 ## What each faction gives you
 
@@ -81,10 +83,22 @@ didn't arrive), × the faction's morale (0.95–1.1). The server checks tier and
 
 | Tier | Shop | Perk / service |
 |---|---|---|
-| Known | Canned food, water, bandages, crowbars, car parts | A welcome message ✅ (safehouse services are open to anyone the Haven hasn't exiled) |
+| Known | Canned food, water, bandages, crowbars, car parts | A welcome message ✅ (safehouse services, including bite declarations and expired antibiotics for 5 Favor, are open to anyone the Haven hasn't exiled) |
 | Trusted | Hunting rifles, ammo, backpacks, radios, jerrycans | **Neighbours** ✅: the direction to the nearest job you'd be paid for, on spawn and every 10 min |
-| Champion | Vehicles, fortification kits, good medkits | **Community**: respawn at a safehouse with a small supply bag |
+| Champion | Vehicles, fortification kits, good medkits | **Safe Harbour** ✅ and **Remembered** ✅: see below |
 | Hunted | — | **Exile** ✅: see below |
+
+**Safe Harbour.** While a Haven Champion is inside any safehouse (within 60 m of it), no hunter
+squad is sent after them, and a squad already hunting them loses the trail: it walks 400 m away
+and gives up within 2 minutes (the player is told once a life). Bounty notices give only a
+vague area: a town 1.5–3 km from where they really are.
+
+**Remembered.** When a Haven Champion dies, a memorial headline goes out to everyone and the
+nearest safehouse's council head reads the name at supper (players Known with the Haven hear
+it). That player's next character is **kin of the fallen**: at their first safehouse they're
+greeted as family and the medic sees to them for nothing, once (a full heal; a bite is slowed as
+if declared at a Town, which counts as declaring it). Nothing more: the "word gets around" Known
+start is separate.
 
 Each safehouse's quartermaster stocks by its size: a Shelter sells Known items, a Community or
 Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven safehouses").
@@ -102,7 +116,7 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 
 | Tier | Shop (black market) | Perk / service |
 |---|---|---|
-| Known | Knives, pistols, lockpick-style tools | **Toll pass**: roadblocks let you pass for a toll (message only ✅; roadblocks as AI planned) |
+| Known | Knives, pistols, lockpick-style tools, the **cut dose** (cheap: cures half the time, else a faster turn and a fever ✅) | **Toll pass**: roadblocks let you pass for a toll (message only ✅; roadblocks as AI planned) |
 | Trusted | Suppressors, scoped rifles, explosives | **Fence**: sell loot for Favor; ambush crews ignore you |
 | Champion | Rare military gear, stolen antidotes (only the doses stolen from the lab ✅) | **Bounty board**: post bounties on other players |
 | Hunted | — | Red Hand AI shoots you ✅; hunter squads come for you ✅ |
@@ -111,7 +125,8 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 
 | Tier | Shop (lab stores) | Perk / service |
 |---|---|---|
-| Known | Antiseptic, painkillers, sample containers | — |
+| Stranger | The **trial dose** for anyone bitten (free, once per life, 80% cure ✅) | — |
+| Known | Antiseptic, painkillers, sample containers, **stabilisers** (from a small stock; double price until 50% research ✅) | — |
 | Trusted | Antidotes (only while the lab has doses in stock ✅), stim kits, gas masks | **Sample scanner** ✅: special infected within 300 m are revealed every minute |
 | Champion | Experimental immunity booster (planned item) | **Lab access** ✅: your samples count 25% more. Calling in a Halcyon medic is planned |
 | Hunted | — | The lab takes your samples without Fame ✅, and Halcyon AI shoots you ✅ |
@@ -135,8 +150,8 @@ Who the Haven are, and why they keep these rules, is in [LORE.md](LORE.md), "The
 | Rule | What happens |
 |---|---|
 | Firing within 50 m of a safehouse | +3 Haven Infamy (at most once every 20 s), unless an infected is within 40 m of the safehouse: then you're defending it. Drawing a weapon is fine |
-| Declaring a bite at a safehouse | Once per life: with a medic (Settlement and up), the infection's time left ×1.5. Without one, no slowing, but you can't be caught |
-| Hiding a bite | Inside a safehouse in your last 5 minutes without having declared it: 30% a minute to be caught, once per life, +15 Haven Infamy |
+| Declaring a bite at a safehouse | At any safehouse, once per life: the infection's time left ×1.15 (Shelter), ×1.25 (Community), ×1.4 (Settlement, a medic), ×1.5 (Town). A fresh bite is cleaned instead (90% it never takes). Either way you can't be caught |
+| Hiding a bite | Inside a safehouse without having declared it, once it shows: 15% a minute in Weakness, 30% in the Final stage, once per life, +15 Haven Infamy. A fresh bite, the Fever stage and a fever suppressant don't show |
 | Shooting at, robbing or killing a wanderer | +4 (shot at, once per wanderer), +8 (robbed), +15 (killed) Haven Infamy; they remember you |
 | Hunted by the Haven (**exile**) | Safehouse services and the Haven quartermaster refuse you ("the door stays shut"); Haven wanderers refuse you and warn other players near you. The guards shoot an exile only while they carry a firearm within 100 m of a safehouse (with a minute's grace after spawning at one); an unarmed exile just finds the door shut |
 | A hungry safehouse and an exile | A safehouse short on food may sell an exile's rough location to the Red Hand (25% every 10 minutes): a hunter squad that really shoots them, and a message to players the Red Hand knows |

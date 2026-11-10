@@ -58,6 +58,10 @@ who opened the door. Every house keeps the same rules:
 - **Everyone works**: watch, water, cooking, burying.
 - **Declare your bite.** Say it out loud, and the house will help if it can.
 
+**The Haven remembers its own.** When someone who stood up for the Haven dies, every house
+lights a candle in the window and the council reads the name out at supper. Whoever turns up
+later with the same look about them is fed, and seen by the medic, for nothing.
+
 **The hard edges.** The Haven is kind, and it is also frightened and hungry. It has a
 little dark side that nobody talks about:
 
@@ -92,7 +96,8 @@ Some are starting to wonder whose side they're on.
 
 People who stopped pretending. Some were criminals before; most were mechanics, drivers and
 bored young men who noticed that nobody was coming. They take tolls on the roads, run a
-black market and sell protection. They don't care who you were. They care who you've crossed.
+black market and sell protection. Their "cut dose" is stolen antidote stretched with whatever
+was in the bag: it works half the time. They don't care who you were. They care who you've crossed.
 
 **Voice:** mocking and casual. They laugh at Bastion on the open channel.
 
@@ -100,7 +105,9 @@ black market and sell protection. They don't care who you were. They care who yo
 
 A research team that was at the outbreak site before the lockdown. They run the only lab.
 They pay for samples, they need guards, and they know more about how this started than they
-say. A cure is the only thing that opens the gates, for them and for everyone.
+say. A cure is the only thing that opens the gates, for them and for everyone. Anyone bitten
+can volunteer for their trial dose: eight in ten walk out, and Halcyon writes down what happens
+to the other two.
 
 **Voice:** precise, a bit cold, sometimes guilty.
 

@@ -434,6 +434,43 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! How many living infected the spawner owns are within radius of pos, counting group members.
+	//! Stops counting at stopAt (the bite detector only needs to know "3 or more").
+	int CountZombiesNear(vector pos, float radius, int stopAt)
+	{
+		int n = 0;
+		array<AIAgent> crowd = {};
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (!z.m_Entity || RZ_Util.DistXZ(z.m_vLastPos, pos) > radius + 60)
+				continue;
+
+			SCR_AIGroup group = SCR_AIGroup.Cast(z.m_Entity);
+			if (!group)
+			{
+				if (RZ_Util.DistXZ(z.m_Entity.GetOrigin(), pos) <= radius && RZ_Util.IsCharacterAlive(z.m_Entity))
+					n++;
+			}
+			else
+			{
+				crowd.Clear();
+				group.GetAgents(crowd);
+				foreach (AIAgent agent : crowd)
+				{
+					IEntity member = agent.GetControlledEntity();
+					if (member && RZ_Util.DistXZ(member.GetOrigin(), pos) <= radius && RZ_Util.IsCharacterAlive(member))
+						n++;
+				}
+			}
+
+			if (n >= stopAt)
+				return n;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A living infected character the spawner owns within radius of pos (a group's member), or
 	//! null. Spike traps and molotovs use it.
 	IEntity FindZombieNear(vector pos, float radius)
