@@ -52,7 +52,7 @@ class RZ_AdaptationSettings
 	[Attribute("500", desc: "Favourite spots: area size (m, one grid square)")]
 	float m_fSpotCell;
 
-	[Attribute("60", desc: "Favourite spots: player-minutes in one area (fading by a fifth every 10 min) before it counts")]
+	[Attribute("35", desc: "Favourite spots: player-minutes in one area (fading by a fifth every 10 min) before it counts. One player staying put levels off near 50, so keep this under that")]
 	float m_fSpotMinutes;
 
 	[Attribute("60", desc: "Favourite spots: real minutes between two checks of the same area (at least)")]

@@ -84,6 +84,7 @@ class RZ_ZombieSpawner
 	protected ref array<int> m_aSuppressed = {};	// settlements with no spawns at all (The Silent Village)
 
 	protected static const float AMBIENT_RADIUS = 300;
+	protected static const float HORDE_PLAYER_RANGE = 600;	// heat hordes only go to squares this close to a living player
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_ZombieSpawner(RZ_GameModeComponent gm, RZ_ZombieSettings settings)
@@ -109,7 +110,7 @@ class RZ_ZombieSpawner
 			PopulateWilderness(players, stage, budget);
 
 		m_fHordeCooldownLeft -= dt;
-		TryHeatHorde();
+		TryHeatHorde(players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -157,8 +158,8 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawn a horde `distance` metres from target and send it there.
-	void SpawnHorde(vector target, float distance, int missionId = -1)
+	//! Spawn a horde `distance` metres from target and send it there. False if nothing spawned.
+	bool SpawnHorde(vector target, float distance, int missionId = -1)
 	{
 		vector pos;
 		bool found = false;
@@ -173,14 +174,14 @@ class RZ_ZombieSpawner
 		}
 
 		if (!found)
-			return;
+			return false;
 
-		SpawnHordeAt(pos, target, missionId);
+		return SpawnHordeAt(pos, target, missionId);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawn a horde at pos and send it to target. Returns the spawned units.
-	void SpawnHordeAt(vector pos, vector target, int missionId = -1, array<IEntity> spawnedOut = null)
+	//! Spawn a horde at pos and send it to target. The spawned units go into spawnedOut; false if none.
+	bool SpawnHordeAt(vector pos, vector target, int missionId = -1, array<IEntity> spawnedOut = null)
 	{
 		array<IEntity> spawned = {};
 		if (!m_Settings.m_aHordePrefabs.IsEmpty())
@@ -205,6 +206,8 @@ class RZ_ZombieSpawner
 			if (spawnedOut)
 				spawnedOut.Insert(e);
 		}
+
+		return !spawned.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -594,6 +597,7 @@ class RZ_ZombieSpawner
 	protected int PopulateSettlements(array<IEntity> players, RZ_StageSettings stage, int budget)
 	{
 		int spawned = 0;
+		float maxFromPlayer = Math.Min(m_Settings.m_fActivationRadius, m_Settings.m_fDespawnRadius * 0.9);
 		array<ref RZ_Settlement> settlements = m_GM.GetSettlements();
 		foreach (int idx, RZ_Settlement s : settlements)
 		{
@@ -622,8 +626,9 @@ class RZ_ZombieSpawner
 			int deficit = RZ_Util.RoundToInt(desired) - CountForSettlement(idx);
 			while (deficit > 0 && spawned < budget && m_aTracked.Count() < m_Settings.m_iGlobalCap)
 			{
+				// Never farther from every player than the despawn check allows, or it's deleted next tick
 				vector pos;
-				if (!FindSpawnPos(s.m_vCenter, 0, s.m_fRadius, players, pos))
+				if (!FindSpawnPos(s.m_vCenter, 0, s.m_fRadius, players, pos, maxFromPlayer))
 					break;
 
 				// Halcyon's sensors (Install Sensors) draw specials to a town for a while
@@ -676,24 +681,28 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void TryHeatHorde()
+	protected void TryHeatHorde(array<IEntity> players)
 	{
 		if (m_fHordeCooldownLeft > 0)
 			return;
 
+		// Only where someone is: a powered station or a bell tower on an empty map draws nothing
 		vector hotPos;
 		float heat;
-		if (!m_GM.GetHeat().GetHottest(hotPos, heat) || heat < m_Settings.m_fHordeHeatThreshold)
+		if (!m_GM.GetHeat().GetHottestNear(players, HORDE_PLAYER_RANGE, hotPos, heat) || heat < m_Settings.m_fHordeHeatThreshold)
 			return;
 
-		SpawnHorde(hotPos, 450);
+		if (!SpawnHorde(hotPos, 450))
+			return;
+
 		m_GM.GetHeat().AddHeat(hotPos, -heat * 0.5);
 		m_fHordeCooldownLeft = m_Settings.m_fHordeCooldown;
 		m_GM.NotifyHorde(hotPos);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool FindSpawnPos(vector center, float minR, float maxR, array<IEntity> players, out vector pos)
+	//! maxFromPlayer > 0: the point must also be within that distance of some player.
+	protected bool FindSpawnPos(vector center, float minR, float maxR, array<IEntity> players, out vector pos, float maxFromPlayer = -1)
 	{
 		for (int i = 0; i < 6; i++)
 		{
@@ -705,7 +714,11 @@ class RZ_ZombieSpawner
 			if (m_bFogBank && RZ_Util.DistXZ(pos, m_vFogPos) <= m_fFogRadius)
 				minMult = Math.Min(minMult, m_fFogSpawnMult);
 
-			if (RZ_Util.NearestDistance(pos, players) < m_Settings.m_fMinSpawnDistance * minMult)
+			float nearest = RZ_Util.NearestDistance(pos, players);
+			if (nearest < m_Settings.m_fMinSpawnDistance * minMult)
+				continue;
+
+			if (maxFromPlayer > 0 && nearest > maxFromPlayer)
 				continue;
 
 			if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))

@@ -330,7 +330,8 @@ class RZ_StoryArcs
 	//------------------------------------------------------------------------------------------------
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
-		if (!m_Settings.m_bEnabled)
+		// Like the outbreak, the arcs' clock only runs while someone plays
+		if (!m_Settings.m_bEnabled || ids.IsEmpty())
 			return;
 
 		m_fClock += dt;
@@ -350,7 +351,7 @@ class RZ_StoryArcs
 			return;
 		}
 
-		if (ids.IsEmpty() || m_fClock < m_fNextChance)
+		if (m_fClock < m_fNextChance)
 			return;
 
 		float mean = Math.Max(10, m_Settings.m_fMinutesBetween) * 60;

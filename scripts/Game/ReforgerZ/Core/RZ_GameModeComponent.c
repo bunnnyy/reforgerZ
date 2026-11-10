@@ -410,6 +410,21 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Per-session caches keyed by player id are dropped when the player leaves. The identity cache
+	//! stays: late callbacks (a reward to someone who just left) still need it to reach the right
+	//! saved profile, and ids aren't reused, so it grows by one short entry per connection.
+	override void OnPlayerDisconnected(int playerId, KickCauseCode cause, int timeout)
+	{
+		super.OnPlayerDisconnected(playerId, cause, timeout);
+		if (!m_bServerRunning)
+			return;
+
+		m_aWelcomed.RemoveItem(playerId);
+		if (m_BiteDetector)
+			m_BiteDetector.Forget(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void ~RZ_GameModeComponent()
 	{
 		if (GetGame() && GetGame().GetCallqueue())
@@ -552,10 +567,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_FactionLife = new RZ_FactionLife(this, m_FactionLifeSettings);
 		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
 
-		// A wipe that came due last run (the wipe cycle) is carried out now: backup, then fresh
-		bool wipe = m_bWipeOnStart;
-		if (RZ_Seasons.TakeWipeMarker())
-			wipe = true;
+		// A wipe that came due last run (the wipe cycle) or one by hand is carried out now:
+		// backup, then fresh
+		int wipedSeason;
+		bool wipe = RZ_Seasons.TakeWipe(m_bWipeOnStart, wipedSeason);
 
 		bool loaded = false;
 		if (!wipe)
@@ -566,16 +581,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (last)
 			RZ_Log.Info(string.Format("Last season (%1, season %2) the cure went to %3.", last.world, last.season, last.winnerName));
 
-		m_Seasons.Begin(loaded, last);
+		m_Seasons.Begin(loaded, last, wipedSeason);
 
 		if (m_aSettlements.IsEmpty())
 		{
 			RZ_SettlementScanner scanner = new RZ_SettlementScanner();
 			scanner.Scan(m_fScanCellSize, m_iScanMinBuildings, m_aSettlements);
 		}
-
-		// Fresh season only: starting infection and safe towns from the season's rules
-		m_Seasons.ApplyStartRules();
 
 		if (m_aSettlements.IsEmpty())
 			RZ_Log.Error("No settlements found on this map. Place RZ_SettlementMarkerEntity entities in the world.");
@@ -587,6 +599,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_RadioStation.Setup();
 
 		SetupLab();
+		// Fresh season only: starting infection and safe towns from the season's rules. After the
+		// lab is chosen, so a safe town is never the lab's; before anything reads infection
+		m_Seasons.ApplyStartRules();
 		m_Perks.SetupQuartermasters();
 		// Safehouses anchor on the Haven quartermaster; wanderers start from safehouses
 		m_Safehouses.Setup();

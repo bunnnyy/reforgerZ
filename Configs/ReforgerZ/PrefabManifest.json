@@ -4296,7 +4296,7 @@
     "m_fScreamerHeat": "20",
     "m_bFavouriteSpots": "1",
     "m_fSpotCell": "500",
-    "m_fSpotMinutes": "60",
+    "m_fSpotMinutes": "35",
     "m_fSpotCooldownMinutes": "60",
     "m_iSpotHordeSize": "3"
    }
