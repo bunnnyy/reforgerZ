@@ -510,7 +510,10 @@ class RZ_Seasons
 			m_iCureUnix = 0;
 			m_bWipeDue = false;
 			m_iRulesWinner = -1;
-			if (last && m_Settings.m_bWinnerRules)
+
+			// Only the season just ended counts: a record older than the hall's last season (a
+			// wipe by hand after a season without a cure) leaves nothing behind
+			if (last && m_Settings.m_bWinnerRules && last.season >= m_Hall.GetSeason())
 				m_iRulesWinner = last.winner;
 		}
 		else

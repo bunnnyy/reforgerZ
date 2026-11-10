@@ -1143,7 +1143,8 @@ after the last one and starts its real-time clock. Both are saved, so a restart 
 
 A fresh season reads `last_season.json` and starts with what the winning faction left behind
 ([LORE.md](LORE.md#endings)). **Season > Winner rules** (on) turns it off. A season that ran out
-of time without a cure leaves nothing.
+of time without a cure leaves nothing, and neither does a record older than the last season the
+hall of fame knows (a wipe by hand after a season without one).
 
 | Last winner | This season |
 |---|---|
