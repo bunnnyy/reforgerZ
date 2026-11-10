@@ -70,6 +70,16 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_Arson);
 		mgr.RegisterType(RZ_Mission_SabotageRelay);
 		mgr.RegisterType(RZ_Mission_StealAntidotes);
+		// Built on the mission building blocks (Missions/RedHand/RZ_RedHandContracts.c)
+		mgr.RegisterType(RZ_Mission_CarTheft);
+		mgr.RegisterType(RZ_Mission_LootTheArmory);
+		mgr.RegisterType(RZ_Mission_ProtectionRacket);
+		mgr.RegisterType(RZ_Mission_HijackTheConvoy);
+		mgr.RegisterType(RZ_Mission_BustOut);
+		mgr.RegisterType(RZ_Mission_DoubleAgent);
+		mgr.RegisterType(RZ_Mission_CollectTheBounty);
+		mgr.RegisterType(RZ_Mission_KillTheOfficer);
+		mgr.RegisterType(RZ_Mission_TakeTheLab);
 
 		// Halcyon
 		mgr.RegisterType(RZ_Mission_SampleHunt);

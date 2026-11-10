@@ -9,7 +9,7 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 
 | Kind | In code | Designed, not built |
 |---|---|---|
-| [Faction contracts](#faction-contracts) (20 designed per faction) | 60 | 20 |
+| [Faction contracts](#faction-contracts) (20 designed per faction) | 69 | 11 |
 | [World events](#world-events) | 10 | 15 (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 17 | — |
 | [Unarmed missions](#unarmed-missions) | 10 | 1 |
@@ -17,7 +17,7 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 30, plus Rein In | 2 |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **138** | **38** |
+| **Total** | **147** | **29** |
 
 ## Who gets offered what
 
@@ -125,26 +125,28 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 |---|---|---|---|---|---|---|
 | 1 | Dead Drop | Any | ★ Ex-Con: 25% better pay | Sell infected samples for loot and Favor | Fame (Halcyon Infamy; the cure slows) | ✅ |
 | 2 | Fence the Goods | Any | ★ Ex-Con: +50% Fame, extra Favor | Carry stolen goods to a fence in another town | Fame, mostly Favor | ✅ |
-| 3 | Car Theft | Any | ★ Mechanic: hotwires faster | Deliver a specific vehicle to the chop shop | Fame | planned |
+| 3 | Car Theft | Any | ★ Mechanic: +25% Fame | Deliver a specific vehicle to the chop shop | Fame | ✅ *a car from Cars > Car prefabs parked in a town, driven to a Red Hand drop and left there (it's stripped: it leaves the world); spawned cars aren't locked, so no hotwiring* |
 | 4 | Pharmacy Heist | Any | | Hold a pharmacy for 90 s before the Haven gets there | Fame (Haven Infamy) | ✅ |
 | 5 | Fight Pit | Known | | Survive 4 minutes of waves in a ring while the Red Hand bets | Fame; the bets pay Favor | ✅ *the bets are a fixed, larger Favor reward* |
 | 6 | Toll Road | Known | | Set up a roadblock between two towns and hold it for 10 min | Fame (Haven Infamy) | ✅ |
 | 7 | Smuggler's Run | Known | ★ Hunter: fewer location reports | Carry a package across the map. Everyone is told a courier is out | Big Favor | ✅ |
 | 8 | Raid the Cache | Known, Watched or Hunted by the Haven | | Beat the Haven to a supply cache | Fame (Haven Infamy) | ✅ |
-| 9 | Loot the Armory | Known | ★ Police: knows the layout | Break into a police station armory | Fame, weapons | planned |
-| 10 | Protection Racket | Trusted | 🔒 not Elder | "Collect" from a Haven safehouse. Pay or fight | Fame (Haven Infamy) | planned |
-| 11 | Hijack the Convoy | Trusted, not Trusted by Bastion | | Ambush a Bastion convoy | Big Fame (big Bastion Infamy) | planned |
+| 9 | Loot the Armory | Known | ★ Police: knows the layout (40 s, not 60) | Break into a police station armory | Fame, mostly Favor | ✅ *the gun cage at a police station (the town centre if the map has none): cut it open (loud), carry the case to a Red Hand drop; nobody keeps the guns* |
+| 10 | Protection Racket | Trusted | 🔒 not Elder | "Collect" from a Haven safehouse. Pay or fight | Fame (Haven Infamy); the safehouse loses 3 food | ✅ *the keeper pays 55% of the time; refused, lean on them: a fight with the keeper's people if the survivor group prefab is set, else they pay and you take +5 more Haven Infamy* |
+| 11 | Hijack the Convoy | Trusted, not Trusted by Bastion | | Ambush a Bastion convoy | Big Fame (big Bastion Infamy) | ✅ *Bastion's own supply truck to an outpost: robbed, burnt or driven off counts, for anyone within 300 m when it happens. Needs supply trucks* |
 | 12 | Zombie Bait | Trusted | ★ Radio Op: twice the noise | Make enough noise at a Bastion checkpoint that a horde comes for it | Fame (Bastion Infamy) | ✅ |
-| 13 | Bust Out | Trusted | ★ Ex-Con | Free Red Hand prisoners from a Bastion stockade | Fame (Bastion Infamy) | planned |
+| 13 | Bust Out | Trusted | ★ Ex-Con: cuts the lock in 8 s, not 20 | Free Red Hand prisoners from a Bastion stockade | Fame (Bastion Infamy) | ✅ *a gate near a Bastion seat; its guards (Contracts > Bastion squad) see you unless you're in Bastion's uniform ([disguises](REPUTATION.md#disguises)); the prisoners walk with you to a Red Hand drop* |
 | 14 | Arson | Trusted | | Burn a Bastion fuel depot | Fame (Bastion Infamy) | ✅ |
 | 15 | Sabotage the Relay | Trusted, not Trusted by the Haven | | Destroy a Haven radio relay | Fame (Haven Infamy) | ✅ |
 | 16 | Steal the Antidotes | Trusted, the lab has doses in stock | ★ Lab Tech: twice as fast | Hold the lab's store room for 90 s while the crew loads up | Big Fame, Favor; up to two of the lab's doses move to the Red Hand's black market (Halcyon Infamy) | ✅ |
-| 17 | Double Agent | Trusted, Known by Bastion | ★ Police: Bastion believes you | Feed fake intel to Bastion | Fame with both; caught = big Bastion Infamy | planned |
-| 18 | Collect the Bounty | Champion | | Kill a player or AI with a bounty on them | Fame, Favor | planned |
-| 19 | Kill the Officer | Champion | | Assassinate a Bastion outpost commander (the stronghold's commanding officer never dies) | Huge Fame (Kill on Sight with Bastion) | planned |
-| 20 | Take the Lab | Champion, final stand running | | Seize the lab during the final stand | The Red Hand wins the cure | planned |
+| 17 | Double Agent | Trusted, Known by Bastion | ★ Police: Bastion believes you (caught 15%, not 35%) | Feed fake intel to Bastion | Fame with both (Bastion +5); caught = +20 Bastion Infamy | ✅ *a dossier from a Red Hand seat to a Bastion drop; believed, Bastion loses a little strength* |
+| 18 | Collect the Bounty | Champion | | Kill a player or AI with a bounty on them | Fame, Favor | ✅ *a player Kill on Sight with another faction (not a Red Hand friend), paid to whoever is within 150 m when they die; else an armed AI outside a town (Contracts > Bounty target)* |
+| 19 | Kill the Officer | Champion | | Assassinate a Bastion outpost commander (the stronghold's commanding officer never dies) | Huge Fame (+75 Bastion Infamy: Kill on Sight) | ✅ *needs a killable commander body (Leaders > Bastion outpost commander or Bastion leader); a new one takes the chair after 2 hours* |
+| 20 | Take the Lab | Champion, final stand running | | Hold the lab's clean room for 90 s during the final stand while the crew steals the batch | Huge Fame (Halcyon Infamy); the final stand ends, research drops to 90%, two doses reach the black market | ✅ *reframed: the batch is stolen, which only delays the cure. The lab never falls and nobody wins the cure by taking it* |
 
 **Amends:** Fence the Goods works off Red Hand Infamy. Paying the fence a Favor "tax" is planned.
+Hijack the Convoy and Convoy Escort use Bastion's real supply truck, so the truck's own escort
+and theft rewards ([DESIGN.md](DESIGN.md), "Supply trucks") are paid on top.
 
 ### Halcyon
 
@@ -369,11 +371,11 @@ Every background has contracts it shines at, and some it's shut out of. Planned 
 | Background | Shines at | Shut out of |
 |---|---|---|
 | Nurse | Medicine Run, Bitten Friend, Walk Him Out, Pharmacy Lure, Medicine Before Dark, Rescue the Pilot, *Cold Chain* | — |
-| Mechanic | Clear the Road, Crash Site, Junction Boxes, Rooftop Rescue, Fuel for the Lights, Water Purifier, Fortify the Safehouse, Recover the Bus, Convoy Escort, Blow the Bridge, *Car Theft* | — |
+| Mechanic | Clear the Road, Crash Site, Junction Boxes, Rooftop Rescue, Fuel for the Lights, Water Purifier, Fortify the Safehouse, Recover the Bus, Convoy Escort, Blow the Bridge, Car Theft | — |
 | Hunter | Rescue the Kids, Smuggler's Run, Hunt the Screamer, Silent Courier, Harvest Guard | — |
-| Police | Checkpoint Duty, Trail of Clues, The Rat, Curfew Patrol, *Loot the Armory*, *Double Agent* | The Informant |
-| Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, *Bust Out* | Raid the Red Hand (until Champion with Bastion) |
+| Police | Checkpoint Duty, Trail of Clues, The Rat, Curfew Patrol, Loot the Armory, Double Agent | The Informant |
+| Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, Bust Out | Raid the Red Hand (until Champion with Bastion) |
 | Lab Tech | Field Samples, Water Survey, Quiet Count, Steal the Antidotes, Water Purifier, *Patient Zero* | — |
 | Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, Restore Comms, *Install Sensors* | — |
 | Unemployed | +50% Fame from every contract (and Infamy worked off by amends) | — |
-| Elder (unlock) | Walk Him Out, The Ledger, The Bell Order, The Silent Village | Requisition, *Protection Racket* |
+| Elder (unlock) | Walk Him Out, The Ledger, The Bell Order, The Silent Village | Requisition, Protection Racket |

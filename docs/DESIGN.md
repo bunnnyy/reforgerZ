@@ -859,6 +859,9 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
   The Red Hand's Steal the Antidotes moves up to two doses from the lab to the Red Hand's black
   market (4 at most), and a Red Hand antidote shop action sells only those. Both stocks are saved.
 - **The lab never falls.** It's Halcyon's stronghold; losing the final stand ruins the batch, not the lab.
+  The Red Hand's **Take the Lab** can steal the batch during the stand instead (hold the clean room
+  for 90 s): the same result, research back to 90 percent, plus two doses on the black market
+  (within its cap). It delays the cure; the Red Hand doesn't win it that way.
 - **The season's end.** When the final stand is won, the cure goes to the faction the server
   gave the most Fame this season (summed over all players). The winner is saved to
   `last_season.json`. What each ending means is in [LORE.md](LORE.md), "Endings";
