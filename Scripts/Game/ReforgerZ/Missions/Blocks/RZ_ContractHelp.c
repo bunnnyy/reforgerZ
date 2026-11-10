@@ -92,17 +92,26 @@ class RZ_ContractHelp
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawns `prefab` (or the puzzle prop `fallback`) with the generic object's actions for a
-	//! puzzle mission. The mission still owns it and must delete it.
-	static IEntity SpawnTagged(RZ_GameModeComponent gm, ResourceName prefab, RZ_EPuzzleProp fallback, vector pos, int missionId, int objIdx, string useLabels, string choiceLabels)
+	//! Is one of this mission's items in the player's inventory? Takes it if `take`.
+	static bool CarriesItemOf(IEntity user, int missionId, bool take)
 	{
-		if (prefab.IsEmpty())
-			prefab = gm.GetPuzzlePrefab(fallback);
+		if (!user)
+			return false;
 
-		IEntity e = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(pos), Math.RandomFloat(0, 360));
-		if (e)
-			RZ_PuzzleObjectComponent.Tag(e, missionId, objIdx, useLabels, choiceLabels);
+		array<IEntity> items = {};
+		RZ_MissionItemHelper.FindItems(user, items);
+		foreach (IEntity item : items)
+		{
+			RZ_MissionItemComponent comp = RZ_MissionItemComponent.Cast(item.FindComponent(RZ_MissionItemComponent));
+			if (!comp || comp.GetMissionId() != missionId)
+				continue;
 
-		return e;
+			if (take)
+				RZ_MissionItemHelper.RemoveItem(user, item);
+
+			return true;
+		}
+
+		return false;
 	}
 }

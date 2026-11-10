@@ -541,3 +541,130 @@ class RZ_Job_BurnTheLedger : RZ_LeaderPuzzle
 		}
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! Desertion Route (Rogue): two soldiers want out, and the commander is letting them go. Walk them
+//! (RZ_Escort) from the post to a Haven safehouse; they join it. Or talk to them on the way and
+//! march them to the stronghold instead: the commander is turned in.
+//! *Simplified:* a safehouse only, not the Blind Spot; the two are one escorted group.
+class RZ_Job_DesertionRoute : RZ_PuzzleMission
+{
+	protected ref RZ_Escort m_Escort = new RZ_Escort();
+	protected int m_iHouse = -1;
+	protected vector m_vTop;
+	protected string m_sTopPlace;
+	protected bool m_bMet;
+	protected bool m_bTurnIn;
+	protected int m_iTalk = -1;
+
+	protected static const int PEOPLE = 2;
+	protected static const int EXPOSE_FAME = 10;
+	protected static const int EXPOSE_FAVOR = 10;
+
+	//------------------------------------------------------------------------------------------------
+	override void Configure(RZ_GameModeComponent gm)
+	{
+		SetLeaderJob(RZ_EFaction.MILITARY, RZ_ELoyalty.ROGUE, RZ_Leaders.TONE_HOPEFUL | RZ_Leaders.TONE_CROSS, 0, 35);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override float GetWeight(RZ_GameModeComponent gm)
+	{
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override float GetLeaderWeight(RZ_GameModeComponent gm, RZ_Leader leader)
+	{
+		if (!RZ_Escort.HasRoom(gm) || !leader || RZ_LeaderJob.SafehouseNear(gm, leader.m_vPos, 300, 5000, -1) < 0)
+			return 0;
+
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
+	{
+		RZ_Leader l = RZ_LeaderJob.Leader(gm, this);
+		if (!l)
+			return false;
+
+		m_iHouse = RZ_LeaderJob.SafehouseNear(gm, l.m_vPos, 300, 5000, -1);
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+		RZ_Leader top = RZ_LeaderJob.Stronghold(gm, RZ_EFaction.MILITARY);
+		if (!h || !top || top == l)
+			return false;
+
+		m_vTop = LandPointNear(top.m_vPos, 6, 12);
+		m_sTopPlace = top.m_sPlace;
+		m_vPos = LandPointNear(l.m_vPos, 4, 8);
+		m_iSettlement = gm.FindNearestSettlement(l.m_vPos);
+		m_iTalk = AddClue("Two soldiers", "Two of them, packs already on, rifles left behind. \"The commander says you'll get us somewhere they won't look.\"");
+		m_Escort.m_sName = "the two soldiers";
+		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 2);
+		m_Escort.SetDestination(h.m_vPos);
+		m_Escort.SetTalk(m_iId, 0, "Walk them to the safehouse|March them to the stronghold instead", m_iTalk, "Talk to the soldiers");
+		m_sTitle = "Desertion Route";
+		m_sBrief = string.Format("Two of my people are done. I'm not going to make them stay, and I'm not going to report it. Walk them to the safehouse in %1. The Haven takes anyone.", h.m_sName);
+		return m_Escort.Begin(gm, m_vPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (!RZ_LeaderJob.Leader(gm, this) && !m_bTurnIn)
+		{
+			m_eState = RZ_EMissionState.FAILED;
+			return;
+		}
+
+		if (!m_bMet && ReachedBy(ids, players, m_Escort.m_vPos, 20))
+		{
+			m_bMet = true;
+			m_Escort.Go();
+		}
+
+		m_Escort.Update(gm, dt, ids, players);
+		m_vPos = m_Escort.m_vPos;
+		RZ_ContractHelp.AddNear(ids, players, m_vPos, 100, m_aParticipants);
+		if (m_Escort.IsDead())
+			m_eState = RZ_EMissionState.FAILED;
+		else if (m_Escort.IsArrived())
+			m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option, IEntity source)
+	{
+		if (objIdx != 0 || option != 1 || m_bTurnIn)
+			return;
+
+		m_bTurnIn = true;
+		m_bExposed = true;
+		m_bRogueJob = false;
+		m_bHasRival = false;
+		m_iFameReward = EXPOSE_FAME;
+		m_iFavorReward = EXPOSE_FAVOR;
+		m_Escort.SetDestination(m_vTop);
+		m_Escort.Go();
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("You tell them where they're really going. Neither of them says a word all the way to %1.", m_sTopPlace));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnSuccess(RZ_GameModeComponent gm)
+	{
+		if (m_bTurnIn)
+			return;
+
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+		if (h)
+			gm.GetSafehouses().AddRescued(h.m_vPos, PEOPLE, m_aParticipants);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Cleanup(RZ_GameModeComponent gm)
+	{
+		super.Cleanup(gm);
+		m_Escort.Cleanup();
+	}
+}

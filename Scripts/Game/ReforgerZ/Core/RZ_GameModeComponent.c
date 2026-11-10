@@ -668,6 +668,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_ContractSettings GetContractSettings() { return m_ContractSettings; }
 	RZ_CarSettings GetCarSettings() { return m_CarSettings; }
 	RZ_SupplySettings GetSupplySettings() { return m_SupplySettings; }
+	ResourceName GetLabPrefab() { return m_sLabPrefab; }
 	float GetResearchPerSample() { return m_fResearchPerSample; }
 	float GetTickSeconds() { return m_fTickSeconds; }
 	RZ_Broadcast GetBroadcast() { return m_Broadcast; }

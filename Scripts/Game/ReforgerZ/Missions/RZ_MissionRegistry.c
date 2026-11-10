@@ -91,6 +91,18 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_QuarantineBreach);
 		mgr.RegisterType(RZ_Mission_Decontamination);
 		mgr.RegisterType(RZ_Mission_LabDefence);
+		// Built on the mission building blocks (Missions/Halcyon/RZ_HalcyonContracts.c)
+		mgr.RegisterType(RZ_Mission_PowerTheLab);
+		mgr.RegisterType(RZ_Mission_InstallSensors);
+		mgr.RegisterType(RZ_Mission_BloodDrive);
+		mgr.RegisterType(RZ_Mission_ColdChain);
+		mgr.RegisterType(RZ_Mission_EscortTheScientist);
+		mgr.RegisterType(RZ_Mission_SpecimenFromTheNest);
+		mgr.RegisterType(RZ_Mission_MedicalDrone);
+		mgr.RegisterType(RZ_Mission_PatientZero);
+		mgr.RegisterType(RZ_Mission_LiveCapture);
+		mgr.RegisterType(RZ_Mission_SerumTrial);
+		mgr.RegisterType(RZ_Mission_MobileLab);
 
 		// Puzzle missions (Puzzles/), each a contract from one faction
 		mgr.RegisterType(RZ_Mission_NumbersStation);

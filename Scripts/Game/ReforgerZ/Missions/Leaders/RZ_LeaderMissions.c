@@ -33,6 +33,7 @@ class RZ_LeaderJobRegistry
 		types.Insert(RZ_Job_RiflesForSale);
 		types.Insert(RZ_Job_OffBookRequisition);
 		types.Insert(RZ_Job_BurnTheLedger);
+		types.Insert(RZ_Job_DesertionRoute);
 
 		// The Red Hand (RZ_LeaderJobsRedHand.c)
 		types.Insert(RZ_Job_OurCrossroads);
@@ -51,6 +52,7 @@ class RZ_LeaderJobRegistry
 		types.Insert(RZ_Job_TheNotebook);
 		types.Insert(RZ_Job_UnsanctionedTrial);
 		types.Insert(RZ_Job_LeakTheData);
+		types.Insert(RZ_Job_PrivateCollection);
 		types.Insert(RZ_Job_SellTheFormula);
 	}
 }

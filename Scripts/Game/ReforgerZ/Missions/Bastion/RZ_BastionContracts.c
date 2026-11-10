@@ -2,32 +2,9 @@
 //! 12, 14, 16, 18, 19, 20), built on the mission building blocks (Missions/Blocks/).
 
 //------------------------------------------------------------------------------------------------
-//! Shared: is one of this mission's items in the player's inventory? Takes it if `take`.
+//! Shared by Bastion's contracts.
 class RZ_BastionContractHelp
 {
-	//------------------------------------------------------------------------------------------------
-	static bool CarriesItemOf(IEntity user, int missionId, bool take)
-	{
-		if (!user)
-			return false;
-
-		array<IEntity> items = {};
-		RZ_MissionItemHelper.FindItems(user, items);
-		foreach (IEntity item : items)
-		{
-			RZ_MissionItemComponent comp = RZ_MissionItemComponent.Cast(item.FindComponent(RZ_MissionItemComponent));
-			if (!comp || comp.GetMissionId() != missionId)
-				continue;
-
-			if (take)
-				RZ_MissionItemHelper.RemoveItem(user, item);
-
-			return true;
-		}
-
-		return false;
-	}
-
 	//------------------------------------------------------------------------------------------------
 	//! Bastion intel on the radio: where infected are massing, for the players given and every
 	//! player Known or better with Bastion.
@@ -160,7 +137,7 @@ class RZ_Mission_RestoreComms : RZ_PuzzleMission
 			return;
 		}
 
-		if (!RZ_BastionContractHelp.CarriesItemOf(user, m_iId, true))
+		if (!RZ_ContractHelp.CarriesItemOf(user, m_iId, true))
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You've nothing to fit. The spares are in %1.", m_sPartsTown));
 			return;

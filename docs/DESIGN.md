@@ -862,6 +862,9 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
   The Red Hand's **Take the Lab** can steal the batch during the stand instead (hold the clean room
   for 90 s): the same result, research back to 90 percent, plus two doses on the black market
   (within its cap). It delays the cure; the Red Hand doesn't win it that way.
+- **Contracts that touch the lab** (not saved across a restart): Power the Lab makes doses come
+  twice as fast for 2 hours; Mobile Lab opens a **field annex**, a second lab prefab in a safer
+  town where samples can be handed in for 3 hours, then it packs up. The lab itself never moves.
 - **The season's end.** When the final stand is won, the cure goes to the faction the server
   gave the most Fame this season (summed over all players). The winner is saved to
   `last_season.json`. What each ending means is in [LORE.md](LORE.md), "Endings";

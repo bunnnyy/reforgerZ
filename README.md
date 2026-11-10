@@ -20,7 +20,7 @@ and one way to end it: **research the cure.**
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
-- **147 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
+- **160 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
   missions at the quarantine line, morally grey Haven work and leaders' off-book jobs.
 - **Search the world**: cupboards, car boots and bodies, locked doors that keep the infected
   out (they bang on them) and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting, traps, fire, water and
@@ -31,7 +31,7 @@ and one way to end it: **research the cure.**
 
 ## Status
 
-All of it is **written but has never been compiled**. It's about 49,500 lines of Enforce
+All of it is **written but has never been compiled**. It's about 56,700 lines of Enforce
 Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **113 `VERIFY`
 markers** on engine calls whose exact names need checking, no prefabs or configs yet, and
 nothing has been play-tested. Start with [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).

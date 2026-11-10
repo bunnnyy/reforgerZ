@@ -9,15 +9,15 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 
 | Kind | In code | Designed, not built |
 |---|---|---|
-| [Faction contracts](#faction-contracts) (20 designed per faction) | 69 | 11 |
+| [Faction contracts](#faction-contracts) (20 designed per faction) | 80 | — |
 | [World events](#world-events) | 10 | 15 (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 17 | — |
 | [Unarmed missions](#unarmed-missions) | 10 | 1 |
 | [Perimeter missions](#perimeter-missions) | 3 | — |
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
-| [Leader missions](#leader-missions) | 30, plus Rein In | 2 |
+| [Leader missions](#leader-missions) | 32, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **147** | **29** |
+| **Total** | **160** | **16** |
 
 ## Who gets offered what
 
@@ -155,25 +155,25 @@ and theft rewards ([DESIGN.md](DESIGN.md), "Supply trucks") are paid on top.
 | 1 | Alpha Sighting | Any | | Kill a special that's been spotted and bring its samples | Fame, samples | ✅ |
 | 2 | Field Samples | Any | ★ Lab Tech/Nurse: each kill counts double | Kill infected in an infested town while Halcyon takes readings | Fame, research | ✅ |
 | 3 | Water Survey | Any | ★ Lab Tech: +50% Fame | Sample wells in 3 towns (10 s at each) | Fame; reveals the town most at risk | ✅ *the most infected town still under 50, anywhere on the map* |
-| 4 | Power the Lab | Any | ★ Mechanic | Bring fuel and a generator part to the lab | Fame; antidotes come faster | planned |
+| 4 | Power the Lab | Any | ★ Mechanic: +50% Fame | Bring fuel and a generator part to the lab | Fame; antidote doses come twice as fast for 2 hours | ✅ *the part is the mission item at a factory, petrol station or power station in a nearby town* |
 | 5 | Lost Colleague | Known | | Find a missing researcher. Half the time he's turned | Fame, research | ✅ |
 | 6 | Research Data | Known | | Recover a hard drive from an overrun hospital (hold 45 s) | **Choice:** Halcyon research, or sell it to Bastion (Halcyon Infamy) | ✅ |
-| 7 | Install Sensors | Known | ★ Radio Op/Lab Tech | Place 3 sensors in infested towns | Fame; more specials there | planned |
-| 8 | Blood Drive | Known | 🔒 not infected | Donate blood at the lab (costs health) | Fame, small research | planned |
-| 9 | Cold Chain | Known, cure 50%+ | ★ Nurse | Get an antidote batch to a Haven clinic before it spoils | Fame with Halcyon and the Haven | planned |
-| 10 | Escort the Scientist | Trusted | | Escort a scientist to take readings at 3 sites | Fame, research | planned |
-| 11 | Specimen from the Nest | Trusted | | Get a sample from inside a hive without destroying it | Big research | planned |
+| 7 | Install Sensors | Known | ★ Radio Op/Lab Tech: twice as fast | Place 3 sensors in infested towns | Fame; twice the specials there for 2 hours | ✅ *15 s at each spot* |
+| 8 | Blood Drive | Known | 🔒 not infected | Donate blood at the lab (costs health) | Fame, small research | ✅ *a quarter of your health, refused under 70%, once per life; amends* |
+| 9 | Cold Chain | Known, cure 50%+ | ★ Nurse/Doctor: 25 min, not 15 | Get an antidote batch to a Haven clinic before it spoils | Fame with Halcyon and the Haven | ✅ *the clock starts when it's picked up; the clinic is a Haven drop at a safehouse* |
+| 10 | Escort the Scientist | Trusted | | Escort a scientist to take readings at 3 sites | Fame, research | ✅ *she follows whoever leads her; 20 s within 15 m of each site* |
+| 11 | Specimen from the Nest | Trusted | | Get a sample from inside a hive without destroying it | Big research | ✅ *20 s within 4 m of the nest, then carry it to the lab. Needs the nest prefab* |
 | 12 | Hunt the Screamer | Trusted | ★ Hunter: +50% Fame | Kill a Screamer before it alerts the town (4 min) | Fame, rare sample | ✅ |
 | 13 | Quarantine Breach | Trusted | | Kill the infected inside a safe town within 10 minutes | Fame (Haven Fame too) | ✅ |
 | 14 | Decontamination | Trusted | ★ Nurse: faster | Burn four corpse piles around the lab | Fame; the lab's town less infected | ✅ |
 | 15 | Lab Defence | Trusted | | Hold the lab for 4 minutes against waves (and Red Hand raiders if their prefab is set) | Fame (Red Hand Infamy if raiders) | ✅ |
-| 16 | Medical Drone | Trusted | ★ Mechanic/Radio Op | Recover a crashed prototype drone | Fame | planned |
-| 17 | Patient Zero | Champion | ★ Lab Tech: clearer clues | Follow clues through 4 towns to the outbreak's origin | Huge research | planned |
-| 18 | Live Capture | Champion | | Lure a special into a cage trap alive | Huge research | planned |
-| 19 | Serum Trial | Champion | 🔒 infected only | Take an experimental serum while bitten: it cures you or speeds up the turn | Huge Fame; research either way | planned |
-| 20 | Mobile Lab | Champion | | Escort the lab truck to a safer town | Fame; the lab relocates | planned |
+| 16 | Medical Drone | Trusted | ★ Mechanic/Radio Op: the exact grid within 600 m | Recover a crashed prototype drone | Fame, a little research | ✅ *somewhere within 250 m of its last ping; carry its core to the lab* |
+| 17 | Patient Zero | Champion | ★ Lab Tech: clues also give the grid | Follow clues through 4 towns to the outbreak's origin | Huge research | ✅ *a body in each town names the next; at the last, 45 s searching the clinic while infected come* |
+| 18 | Live Capture | Champion | | Lure a special into a cage trap alive | Huge research | ✅ *or wound it and tie it; hold it 30 s, then carry the case to the lab within 12 min* |
+| 19 | Serum Trial | Champion | 🔒 infected only | Take an experimental serum while bitten: it cures you or speeds up the turn | Huge Fame; research either way | ✅ *50/50; the turn comes twice as fast* |
+| 20 | Mobile Lab | Champion | | Escort the lab truck to a safer town | Fame; a field annex there takes samples for 3 hours | ✅ *the lab never moves (it's the stronghold); players drive the truck; the annex is a second lab prefab* |
 
-**Amends:** Field Samples works off Halcyon Infamy while you're Watched. Blood Drive is planned as a second.
+**Amends:** Field Samples and Blood Drive work off Halcyon Infamy while you're Watched.
 
 ---
 
@@ -328,23 +328,23 @@ Personal jobs that Independent and Rogue leaders give **in person**, off their s
 | 13 | Rifles for Sale | Bastion, Rogue | Army rifles to a Red Hand buyer | Red Hand Fame +4 | ✅ |
 | 14 | Off-Book Requisition | Bastion, Rogue | Collect a "contribution" from a village | All: +6 Haven Infamy, −4 food. Half: 60% pay. Pay it yourself: 15 Bastion Favor | ✅ |
 | 15 | Burn the Ledger | Bastion, Rogue | Burn the supply ledger before the audit (15 min) | Burn it: paid. Keep it: the commander is turned in | ✅ |
-| – | Desertion Route | Bastion, Rogue | Get deserters to a safehouse or the Blind Spot | — | planned (needs people who walk with you) |
-| 16 | Our Crossroads | Red Hand, Independent | Hold the crew's crossroads for 5 min (3 waves) | Paid | ✅ |
-| 17 | Honour Among Thieves | Red Hand, Independent | Recover what a crew member stole | Take it: paid, loud. Talk it back: 60%. Let him keep it: fails | ✅ |
-| 18 | House Rules | Red Hand, Independent | The crew's own fight pit (4 waves) | Mostly Favor (the bets) | ✅ |
-| 19 | Debt Collection | Red Hand, Independent | Collect from a debtor (a real wanderer if free): talk, threaten or pay | Talk: 60%. Threaten: full, +3 Haven Infamy. Pay it: 15 Red Hand Favor | ✅ |
-| 20 | The Soft Touch | Red Hand, Rogue | Secret medicine to a Haven safehouse | Haven Fame +5; infection −5 | ✅ |
-| 21 | Coup Talk | Red Hand, Rogue | Carry a word to two other crews | Never fully works: laughed off, or a purge | ✅ |
-| 22 | Sell Out a Rival Crew | Red Hand, Rogue | A map of another crew's camp, to Bastion | Bastion Fame +4; another crew boss dies | ✅ |
-| 23 | Skim the Toll | Red Hand, Rogue | Take the boss's toll on the road for 5 min | Paid; +3 Haven Infamy | ✅ |
-| 24 | Field Station | Halcyon, Independent | Hold a house in a quiet village for 3 min | Research +1 | ✅ |
-| 25 | Second Opinion | Halcyon, Independent | Notes to a Haven medic | Research +1; Haven Fame +3 | ✅ |
-| 26 | Patients Not Samples | Halcyon, Independent | A dying man: sit with him, or take the sample | Sit: Haven Fame +3. Sample: research +1, half pay | ✅ |
-| 27 | The Notebook | Halcyon, Independent | A dead researcher's notebook (guarded) | To the field lead: research +1. To the director: research +2, +10 Fame | ✅ |
-| 28 | Unsanctioned Trial | Halcyon, Rogue | A willing, dying volunteer and an untested serum | Half the time he lives (research +2), half he turns (research +1, a special) | ✅ |
-| 29 | Leak the Data | Halcyon, Rogue | Research data to a Haven safehouse for nothing | Haven Fame +5; infection −3 | ✅ |
-| – | Private Collection | Halcyon, Rogue | Capture a special alive | — | planned (needs a trap for a live special) |
-| 30 | Sell the Formula | Halcyon, Rogue | The antidote formula to the Red Hand | Red Hand Fame +5 | ✅ |
+| 16 | Desertion Route | Bastion, Rogue | Walk two deserters to a safehouse, or march them to the stronghold instead | Paid; they join the safehouse. Marched in: the commander is turned in | ✅ *a safehouse only, not the Blind Spot* |
+| 17 | Our Crossroads | Red Hand, Independent | Hold the crew's crossroads for 5 min (3 waves) | Paid | ✅ |
+| 18 | Honour Among Thieves | Red Hand, Independent | Recover what a crew member stole | Take it: paid, loud. Talk it back: 60%. Let him keep it: fails | ✅ |
+| 19 | House Rules | Red Hand, Independent | The crew's own fight pit (4 waves) | Mostly Favor (the bets) | ✅ |
+| 20 | Debt Collection | Red Hand, Independent | Collect from a debtor (a real wanderer if free): talk, threaten or pay | Talk: 60%. Threaten: full, +3 Haven Infamy. Pay it: 15 Red Hand Favor | ✅ |
+| 21 | The Soft Touch | Red Hand, Rogue | Secret medicine to a Haven safehouse | Haven Fame +5; infection −5 | ✅ |
+| 22 | Coup Talk | Red Hand, Rogue | Carry a word to two other crews | Never fully works: laughed off, or a purge | ✅ |
+| 23 | Sell Out a Rival Crew | Red Hand, Rogue | A map of another crew's camp, to Bastion | Bastion Fame +4; another crew boss dies | ✅ |
+| 24 | Skim the Toll | Red Hand, Rogue | Take the boss's toll on the road for 5 min | Paid; +3 Haven Infamy | ✅ |
+| 25 | Field Station | Halcyon, Independent | Hold a house in a quiet village for 3 min | Research +1 | ✅ |
+| 26 | Second Opinion | Halcyon, Independent | Notes to a Haven medic | Research +1; Haven Fame +3 | ✅ |
+| 27 | Patients Not Samples | Halcyon, Independent | A dying man: sit with him, or take the sample | Sit: Haven Fame +3. Sample: research +1, half pay | ✅ |
+| 28 | The Notebook | Halcyon, Independent | A dead researcher's notebook (guarded) | To the field lead: research +1. To the director: research +2, +10 Fame | ✅ |
+| 29 | Unsanctioned Trial | Halcyon, Rogue | A willing, dying volunteer and an untested serum | Half the time he lives (research +2), half he turns (research +1, a special) | ✅ |
+| 30 | Leak the Data | Halcyon, Rogue | Research data to a Haven safehouse for nothing | Haven Fame +5; infection −3 | ✅ |
+| 31 | Private Collection | Halcyon, Rogue | Capture a special alive for the field lead | Paid. Taken to the lab instead: the field lead is turned in, research +3 | ✅ |
+| 32 | Sell the Formula | Halcyon, Rogue | The antidote formula to the Red Hand | Red Hand Fame +5 | ✅ |
 | – | Rein In | The stronghold (radio, Known) | A leader turned Rogue. Read them the terms, or take their counter-offer | Terms: loyalty +25. Counter-offer: Favor, 35% the stronghold finds out (+10 Infamy) | ✅ |
 
 *Simplified:* "in person" means at the leader's seat. Families are one stand-in figure; people
@@ -366,16 +366,16 @@ missions exist only inside arcs and are never picked at random:
 
 ## Backgrounds at a glance
 
-Every background has contracts it shines at, and some it's shut out of. Planned ones in *italics*.
+Every background has contracts it shines at, and some it's shut out of.
 
 | Background | Shines at | Shut out of |
 |---|---|---|
-| Nurse | Medicine Run, Bitten Friend, Walk Him Out, Pharmacy Lure, Medicine Before Dark, Rescue the Pilot, *Cold Chain* | — |
+| Nurse | Medicine Run, Bitten Friend, Walk Him Out, Pharmacy Lure, Medicine Before Dark, Rescue the Pilot, Cold Chain | — |
 | Mechanic | Clear the Road, Crash Site, Junction Boxes, Rooftop Rescue, Fuel for the Lights, Water Purifier, Fortify the Safehouse, Recover the Bus, Convoy Escort, Blow the Bridge, Car Theft | — |
 | Hunter | Rescue the Kids, Smuggler's Run, Hunt the Screamer, Silent Courier, Harvest Guard | — |
 | Police | Checkpoint Duty, Trail of Clues, The Rat, Curfew Patrol, Loot the Armory, Double Agent | The Informant |
 | Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, Bust Out | Raid the Red Hand (until Champion with Bastion) |
-| Lab Tech | Field Samples, Water Survey, Quiet Count, Steal the Antidotes, Water Purifier, *Patient Zero* | — |
-| Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, Restore Comms, *Install Sensors* | — |
+| Lab Tech | Field Samples, Water Survey, Quiet Count, Steal the Antidotes, Water Purifier, Install Sensors, Patient Zero | — |
+| Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, Restore Comms, Install Sensors, Medical Drone | — |
 | Unemployed | +50% Fame from every contract (and Infamy worked off by amends) | — |
 | Elder (unlock) | Walk Him Out, The Ledger, The Bell Order, The Silent Village | Requisition, Protection Racket |

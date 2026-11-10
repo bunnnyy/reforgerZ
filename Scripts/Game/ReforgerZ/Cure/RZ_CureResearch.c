@@ -24,6 +24,8 @@ class RZ_CureResearch
 	protected float m_fWaveTimer;
 	protected float m_fAntidoteTimer;
 	protected float m_fAntidoteBoostLeft;	// Power the Lab: doses come twice as fast for a while (not saved)
+	protected IEntity m_Annex;				// Mobile Lab: a field annex taking samples for a while (not saved)
+	protected float m_fAnnexLeft;
 
 	//! Doses the lab has made and not yet sold, and doses the Red Hand has stolen from it
 	protected int m_iLabAntidotes;
@@ -184,6 +186,7 @@ class RZ_CureResearch
 	//------------------------------------------------------------------------------------------------
 	void Tick(float dt, array<IEntity> players)
 	{
+		TickAnnex(dt, players);
 		if (m_bCured)
 			return;
 
@@ -316,6 +319,33 @@ class RZ_CureResearch
 		m_iStolenAntidotes = Math.Min(STOLEN_ANTIDOTE_CAP, m_iStolenAntidotes + 2);
 		LoseBatch("The batch is gone", "The Red Hand walked out of the clean room with the batch while Halcyon was holding the doors. It won't cure anyone in their hands: it needs the lab. Research has dropped to 90 percent, and Halcyon has to start the synthesis again.");
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mobile Lab: a second lab prefab where samples can be handed in, for `seconds`. One at a time;
+	//! a new one replaces the old. Removed when its time is up and nobody is within 100 m.
+	void SetAnnex(IEntity annex, float seconds)
+	{
+		if (m_Annex && m_Annex != annex)
+			RZ_Util.DeleteUnit(m_Annex);
+
+		m_Annex = annex;
+		m_fAnnexLeft = seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void TickAnnex(float dt, array<IEntity> players)
+	{
+		if (!m_Annex)
+			return;
+
+		m_fAnnexLeft -= dt;
+		if (m_fAnnexLeft > 0 || RZ_Util.NearestDistance(m_Annex.GetOrigin(), players) <= 100)
+			return;
+
+		RZ_Util.DeleteUnit(m_Annex);
+		m_Annex = null;
+		m_GM.NotifyAll("Halcyon", "The field annex has packed up and gone back to the lab.");
 	}
 
 	//------------------------------------------------------------------------------------------------

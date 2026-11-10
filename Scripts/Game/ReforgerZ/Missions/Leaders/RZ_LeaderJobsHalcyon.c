@@ -449,3 +449,133 @@ class RZ_Job_SellTheFormula : RZ_LeaderDelivery
 			RZ_LeaderJob.CrossFame(gm, playerId, RZ_EFaction.BANDITS, 5);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! Private Collection (Rogue): the field lead wants a special alive for their own study, off the
+//! lab's books (RZ_LiveCapture). Deliver the case to their seat; or take it to the lab instead and
+//! they're turned in (the lab gets the research).
+class RZ_Job_PrivateCollection : RZ_PuzzleMission
+{
+	protected ref RZ_LiveCapture m_Capture = new RZ_LiveCapture();
+	protected IEntity m_SeatDrop;
+	protected IEntity m_LabDrop;
+
+	protected static const int EXPOSE_FAME = 10;
+	protected static const int EXPOSE_FAVOR = 10;
+
+	//------------------------------------------------------------------------------------------------
+	override void Configure(RZ_GameModeComponent gm)
+	{
+		SetLeaderJob(RZ_EFaction.INSTITUTE, RZ_ELoyalty.ROGUE, RZ_Leaders.TONE_DARK, 0, 45);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override float GetWeight(RZ_GameModeComponent gm)
+	{
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override float GetLeaderWeight(RZ_GameModeComponent gm, RZ_Leader leader)
+	{
+		if (!RZ_LiveCapture.HasRoom(gm) || gm.GetDropPointPrefab(RZ_EFaction.INSTITUTE).IsEmpty())
+			return 0;
+
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
+	{
+		RZ_Leader l = RZ_LeaderJob.Leader(gm, this);
+		if (!l)
+			return false;
+
+		m_iSettlement = PickSettlementAway(gm, l.m_vPos, 400, 3500, 40, 100);
+		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
+		if (!s)
+			return false;
+
+		m_SeatDrop = RZ_Util.SpawnPrefab(gm.GetDropPointPrefab(RZ_EFaction.INSTITUTE), RZ_Util.GroundPos(LandPointNear(l.m_vPos, 4, 8)), Math.RandomFloat(0, 360));
+		if (!m_SeatDrop)
+			return false;
+
+		TrackProp(m_SeatDrop);
+		RZ_Leader top = RZ_LeaderJob.Stronghold(gm, RZ_EFaction.INSTITUTE);
+		if (top && top != l)
+		{
+			m_LabDrop = RZ_Util.SpawnPrefab(gm.GetDropPointPrefab(RZ_EFaction.INSTITUTE), RZ_Util.GroundPos(LandPointNear(top.m_vPos, 6, 12)), Math.RandomFloat(0, 360));
+			TrackProp(m_LabDrop);
+		}
+
+		vector lair = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.6);
+		vector cage = LandPointNear(lair, 60, 120);
+		m_vPos = cage;
+		m_sTitle = "Private Collection";
+		m_sBrief = string.Format("I want one of the specials alive, for me, not for the director's committee. The trap is set outside %1. Bring it here in its case. Nobody at the lab needs to know.", s.m_sName);
+		return m_Capture.Begin(gm, m_iId, m_iSettlement, cage, lair, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		m_Capture.Update(gm, dt, ids, players);
+		if (m_Capture.m_eState == RZ_ECaptureState.CAUGHT)
+			RZ_ContractHelp.AddNear(ids, players, m_Capture.m_vHeld, 30, m_aParticipants);
+
+		if (m_Capture.IsLost())
+			m_eState = RZ_EMissionState.FAILED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option, IEntity source)
+	{
+		if (objIdx == 0 && option == 0)
+			m_Capture.TryCloseCage(gm, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnZombiesKilled(RZ_GameModeComponent gm, int settlementIdx, int missionId, bool special, vector pos, int count)
+	{
+		m_Capture.OnSpecialKilled(gm, missionId, special);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnItemDelivered(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction, IEntity drop)
+	{
+		if (faction != RZ_EFaction.INSTITUTE || (drop != m_SeatDrop && drop != m_LabDrop) || !m_Capture.Deliver())
+			return false;
+
+		m_aParticipants.Clear();
+		m_aParticipants.Insert(playerId);
+		if (drop == m_LabDrop)
+		{
+			m_bExposed = true;
+			m_bRogueJob = false;
+			m_iFameReward = EXPOSE_FAME;
+			m_iFavorReward = EXPOSE_FAVOR;
+			gm.GetCure().AddResearch(3, "A live special was handed to the lab instead of a private collection.");
+			gm.NotifyPlayer(playerId, m_sTitle, "The lab takes the case, and your account of who asked for it.");
+		}
+		else
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "The field lead signs for it in a notebook that isn't the lab's. \"Thank you. This stays between us.\"");
+		}
+
+		m_eState = RZ_EMissionState.SUCCEEDED;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetFailText(RZ_GameModeComponent gm)
+	{
+		return "Private Collection: " + m_Capture.m_sLostReason;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Cleanup(RZ_GameModeComponent gm)
+	{
+		super.Cleanup(gm);
+		m_Capture.Cleanup();
+	}
+}

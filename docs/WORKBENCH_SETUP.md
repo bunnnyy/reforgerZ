@@ -136,7 +136,7 @@ still route correctly.
 |---|---|---|---|---|---|
 | `RZ_GameMode.et` | `GameMode_Plain` | `RZ_GameModeComponent` | (placed) | **required** | everything |
 | `RZ_SpawnPoint.et` | vanilla spawn point | | World > Spawn point prefab | **required** | spawning |
-| `RZ_Lab.et` | a field hospital tent or lab container | `RZ_LabComponent`; `RZ_DepositSamplesAction`, `RZ_LabStatusAction` | Cure > Lab prefab | **required** | the cure (spawned in a town if none is placed) |
+| `RZ_Lab.et` | a field hospital tent or lab container | `RZ_LabComponent`; `RZ_DepositSamplesAction`, `RZ_LabStatusAction` | Cure > Lab prefab | **required** | the cure (spawned in a town if none is placed); a second copy is Mobile Lab's field annex for 3 hours |
 | `RZ_Sample.et` | a small item (a vial) | `RZ_SampleItemComponent` | Cure > Sample | **required** | samples from specials |
 | `RZ_Antidote.et` | morphine or saline item | `RZ_AntidoteItemComponent`, `RZ_InjectAntidoteAction`; optionally the consumable effect `RZ_ConsumableAntidote` | Cure > Antidote | **required** | antidotes |
 | `RZ_RewardCrate.et` | a vanilla supply box, filled with loot | | Missions > Reward crate | **required** | mission rewards |
@@ -156,17 +156,17 @@ still route correctly.
 | Prefab | Base | Add | Slot | Enables |
 |---|---|---|---|---|
 | `RZ_MissionItem.et` | a small carryable item | `RZ_MissionItemComponent` | Missions > Mission item | every delivery and choice mission |
-| `RZ_Drop_Haven.et` / `_Bastion` / `_RedHand` / `_Halcyon` | a crate, table or mailbox | `RZ_ChoiceDeliveryAction` with faction SURVIVORS / MILITARY / BANDITS / INSTITUTE | Missions > Haven / Bastion / Red Hand / Halcyon drop point | the drops those missions name (Medicine Run, Fence the Goods, Crash Site, Requisition, Research Data, the Perimeter and leader deliveries) |
-| `RZ_SurvivorGroup.et` | a civilian AI group on `SURV` | | Missions > Survivor group | real survivors in Survivors Trapped and Training Day; The Bitten Friend; Trader Caravan |
-| `RZ_Nest.et` | a Zombie Hive prefab or destructible prop | a damage manager | Missions > Nest | Burn the Nest |
+| `RZ_Drop_Haven.et` / `_Bastion` / `_RedHand` / `_Halcyon` | a crate, table or mailbox | `RZ_ChoiceDeliveryAction` with faction SURVIVORS / MILITARY / BANDITS / INSTITUTE | Missions > Haven / Bastion / Red Hand / Halcyon drop point | the drops those missions name (Medicine Run, Fence the Goods, Crash Site, Requisition, Research Data, Water Purifier, Weapons Cache, Loot the Armory, Double Agent, Cold Chain, Specimen from the Nest, Medical Drone, Live Capture, the Perimeter and leader deliveries); the Red Hand drop is also Car Theft's chop shop |
+| `RZ_SurvivorGroup.et` | a civilian AI group on `SURV` | | Missions > Survivor group | real survivors in Survivors Trapped, Training Day and Harvest Guard; The Bitten Friend; Trader Caravan; the keeper's people in Protection Racket; the fallback escort and bounty target |
+| `RZ_Nest.et` | a Zombie Hive prefab or destructible prop | a damage manager | Missions > Nest | Burn the Nest, Specimen from the Nest |
 | `RZ_BanditDrop.et` | crate, barrel or car wreck | `RZ_SellSamplesToBanditsAction` | Missions > Dead drop | Dead Drop |
-| `RZ_HeliWreck.et` | a helicopter wreck prop | optionally `RZ_ClueComponent` + `RZ_ReadClueAction` | Missions > Helicopter wreck | Crash Site, Crashed Helicopter, Two Bearings |
-| `RZ_CorpsePile.et` | a body bag pile | | Missions > Corpse pile | visual only |
-| `RZ_RedHandGroup.et` | an AI group on `BAND` | | Missions > Red Hand group | Raid the Red Hand, Trader Caravan, raiders in Lab Defence, the camp in The Witness; default Red Hand hunter squad |
+| `RZ_HeliWreck.et` | a helicopter wreck prop | optionally `RZ_ClueComponent` + `RZ_ReadClueAction` | Missions > Helicopter wreck | Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash |
+| `RZ_CorpsePile.et` | a body bag pile | | Missions > Corpse pile | visual only (also Memorial's bodies) |
+| `RZ_RedHandGroup.et` | an AI group on `BAND` | | Missions > Red Hand group | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, the camp in The Witness; default Red Hand hunter squad |
 | `RZ_FuelDepot.et` | fuel tanks | a damage manager | Missions > Fuel depot | Arson |
 | `RZ_Relay.et` | a radio mast | a damage manager | Missions > Relay | Sabotage the Relay |
 | `RZ_Trader.et` | a character or vehicle (e.g. a Shop System trader) | | Missions > Trader | Wandering Trader |
-| `RZ_Explosion.et` | a mortar impact effect | | Missions > Explosion | Bastion Shelling |
+| `RZ_Explosion.et` | a mortar impact effect | | Missions > Explosion | Bastion Shelling; the charges in Blow the Bridge and the shells in Fire Mission (look only) |
 
 One mission item prefab serves everything (medicine, notes, black box, package): the mission
 tags it when it spawns. Missions spawn and remove their own drop points.
@@ -187,7 +187,17 @@ tags it when it spawns. Missions spawn and remove their own drop points.
 | `RZ_Smoke.et` | a coloured smoke effect | Smoke marker (none: the message says it) | Fire Mission |
 
 An escort prefab that isn't an AI group (a character or prop) still works: the people then
-move as data and stand as that figure when they stop.
+move as data and stand as that figure when they stop. **To talk to escorted people** (patch up
+the pilot, divert the courier, march the deserters to the stronghold), the escort characters
+(an AI group's leader) need the generic puzzle object's components, like the wanderers. Without
+them, standing beside the pilot, the deserter or the researcher for 10 s still gets them moving.
+
+Other prefabs the newer contracts reuse: **Cars > Car prefabs** (Car Theft), **Supply > Halcyon
+truck** (Mobile Lab's lab truck, falling back to the bus), **Supply > Haven truck** (the bus
+fallback), the four **supply trucks and crews** (Convoy Escort and Hijack the Convoy ride
+Bastion's real truck), **Leaders > Bastion outpost commander** (Kill the Officer needs a body
+that can die) and Puzzles > Fuse box, Radio mast and Civilian (generators, the relay mast,
+the people you talk to).
 
 ### Quartermasters and shops
 
@@ -483,12 +493,12 @@ No fallback. If these are wrong, the basic game doesn't work.
 | Where | Call | If it fails |
 |---|---|---|
 | `Core/RZ_GameModeComponent.c:545` | `GetOnPlayerSpawned()` invoker | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:855` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
-| `Core/RZ_GameModeComponent.c:924` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
-| `Core/RZ_GameModeComponent.c:1056` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1711`, `:1712` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1722` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:1940`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Core/RZ_GameModeComponent.c:856` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
+| `Core/RZ_GameModeComponent.c:925` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
+| `Core/RZ_GameModeComponent.c:1057` | `OnProjectileShot` event and signature | No gunfire heat |
+| `Core/RZ_GameModeComponent.c:1712`, `:1713` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1723` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:1941`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
 | `Persistence/RZ_SaveData.c:119` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:369`, `:377` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
@@ -658,3 +668,23 @@ session, tick off:
   stop infected at the door.
 - [ ] A thrown bottle draws nearby infected; a puzzle mission can be finished.
 - [ ] Night: missions that need the dark are offered; the log says "night".
+
+**Contracts on the building blocks** (start one by raising its weight, or wait for the radio)
+- [ ] Escort: Refugee Column's group walks when you're within 150 m, stops when you run ahead or
+  infected come within 25 m, and joins the safehouse on arrival. With the escort prefab empty they
+  move as data and stand as a civilian figure when they stop. A fourth escort contract never starts.
+- [ ] Rescue the Pilot: help him up (talk, or stand beside him 10 s) and he follows you; the clock
+  stops for a Nurse; killing his AI body fails it.
+- [ ] Live Capture: lure the special into the cage and drop the door within 4 m; it vanishes without
+  a sample, the cage area gets loud, after 30 s the case appears; deliver it at the lab drop before
+  12 minutes. Killing it fails; wounding it to a third and standing over it ties it.
+- [ ] Vehicles: Recover the Bus counts the spawned bus and any truck or van driven into the safehouse
+  zone, and pays once nobody is sitting in it; Car Theft counts only its own car.
+- [ ] Convoys: Convoy Escort and Hijack the Convoy ask for Bastion's next truck within two minutes;
+  the breakdown stops and restarts the crew; robbing it completes the hijack, its arrival the escort.
+- [ ] Blood Drive takes a quarter of your health (check it shows), refuses under 70% and a second
+  time in the same life.
+- [ ] Patient Zero: each town's body appears only when you're near; a Lab Tech reads a grid in it.
+- [ ] Take the Lab during a final stand: 90 s in the clean room ends the stand, research shows 90%,
+  and the Red Hand antidote stock goes up by two.
+- [ ] Mobile Lab: the field annex takes samples and disappears after 3 hours.
