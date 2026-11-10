@@ -146,18 +146,30 @@ class RZ_SampleDeliveryActionBase : ScriptedUserAction
 		if (value <= 0)
 			return;
 
+		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
+		if (!CanAccept(gm, playerId, pOwnerEntity))
+			return;
+
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(pUserEntity.FindComponent(SCR_InventoryStorageManagerComponent));
 		foreach (IEntity item : items)
 		{
 			inv.TryDeleteItem(item); // VERIFY: TryDeleteItem()
 		}
 
-		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
 		Deliver(gm, playerId, value, pOwnerEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Deliver(RZ_GameModeComponent gm, int playerId, int value, IEntity receiver) {}
+	//! Checked on the server before any sample is taken. Tell the player why if it refuses.
+	protected bool CanAccept(RZ_GameModeComponent gm, int playerId, IEntity receiver)
+	{
+		return playerId > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Deliver(RZ_GameModeComponent gm, int playerId, int value, IEntity receiver)
+	{
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -179,15 +191,25 @@ class RZ_DepositSamplesAction : RZ_SampleDeliveryActionBase
 }
 
 //------------------------------------------------------------------------------------------------
-//! "Sell samples": on the bandit dead-drop prefab. Pays loot and bandit standing,
-//! costs Institute standing, and slows the cure for everyone.
+//! "Sell samples": on the Red Hand dead-drop prefab. Pays loot, Red Hand Fame and
+//! Favor, costs Halcyon standing, and slows the cure for everyone. Only players
+//! the Red Hand deals with (contract requirements) can sell.
 class RZ_SellSamplesToBanditsAction : RZ_SampleDeliveryActionBase
 {
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		outName = "Leave samples for the bandits";
+		outName = "Leave samples for the Red Hand";
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected bool CanAccept(RZ_GameModeComponent gm, int playerId, IEntity receiver)
+	{
+		if (playerId <= 0)
+			return false;
+
+		return gm.GetMissions().CanSellToBandits(playerId, receiver);
 	}
 
 	//------------------------------------------------------------------------------------------------

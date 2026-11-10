@@ -82,8 +82,23 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Destructible zombie nest, e.g. from Zombie Hive (optional, enables Burn the Nest)", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sNestPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bandit dead drop with RZ_SellSamplesToBanditsAction (optional, enables the bandit path)", "et", category: "ReforgerZ|Missions")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand dead drop with RZ_SellSamplesToBanditsAction (optional, enables the Dead Drop contract)", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sDeadDropPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Mission item (black box, data drive, package) with RZ_MissionItemComponent. Enables delivery and choice missions", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sMissionItemPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven drop point: a prop with RZ_ChoiceDeliveryAction set to SURVIVORS", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sDropPointHaven;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion drop point: a prop with RZ_ChoiceDeliveryAction set to MILITARY", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sDropPointBastion;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand drop point: a prop with RZ_ChoiceDeliveryAction set to BANDITS", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sDropPointRedHand;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon drop point: a prop with RZ_ChoiceDeliveryAction set to INSTITUTE", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sDropPointHalcyon;
 
 	// ---------------------------------------------------------------- Survival
 	[Attribute("3", desc: "Heat per shot fired by a player (times the background noise multiplier)", category: "ReforgerZ|Survival")]
@@ -276,6 +291,21 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	ResourceName GetSurvivorGroupPrefab() { return m_sSurvivorGroupPrefab; }
 	ResourceName GetNestPrefab() { return m_sNestPrefab; }
 	ResourceName GetDeadDropPrefab() { return m_sDeadDropPrefab; }
+	ResourceName GetMissionItemPrefab() { return m_sMissionItemPrefab; }
+
+	//------------------------------------------------------------------------------------------------
+	ResourceName GetDropPointPrefab(RZ_EFaction faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return m_sDropPointHaven;
+			case RZ_EFaction.MILITARY: return m_sDropPointBastion;
+			case RZ_EFaction.BANDITS: return m_sDropPointRedHand;
+			case RZ_EFaction.INSTITUTE: return m_sDropPointHalcyon;
+		}
+
+		return "";
+	}
 
 	float GetReplicatedCureProgress() { return m_fReplCureProgress; }
 	RZ_EOutbreakStage GetReplicatedStage() { return m_iReplStage; }
@@ -454,11 +484,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		// 3. What's on the radio
-		NotifyPlayer(playerId, "Radio", m_Missions.DescribeActiveFor(controlledEntity));
+		NotifyPlayer(playerId, "Radio", m_Missions.DescribeActiveFor(controlledEntity, playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Every player gets the brief with the distance and direction from where they are.
+	//! World events: every player gets the brief with the distance and direction from
+	//! where they are. Contracts are offered by RZ_MissionManager instead.
 	void AnnounceMission(RZ_Mission mission)
 	{
 		array<int> all = {};
@@ -468,10 +499,22 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			string where = mission.GetLocationName(this);
 			IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 			if (ent)
-				where = where + ", " + RZ_Util.DirectionText(ent.GetOrigin(), mission.m_vPos);
+				where = mission.GetWhereText(this, ent.GetOrigin());
 
-			NotifyPlayer(playerId, "New mission: " + mission.m_sTitle, string.Format("%1\n(%2)", mission.m_sBrief, where));
+			NotifyPlayer(playerId, "World event: " + mission.m_sTitle, string.Format("%1\n(%2)", mission.m_sBrief, where));
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Map marker for a world event or the lab. Returns a handle for RemoveMapMarker, -1 if off.
+	int AddMapMarker(vector pos, string text)
+	{
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void RemoveMapMarker(int handle)
+	{
 	}
 
 	// ================================================================ Gunfire

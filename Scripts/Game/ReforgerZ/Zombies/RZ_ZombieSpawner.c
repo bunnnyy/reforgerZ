@@ -147,6 +147,13 @@ class RZ_ZombieSpawner
 		if (!found)
 			return;
 
+		SpawnHordeAt(pos, target, missionId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawn a horde at pos and send it to target. Returns the spawned units.
+	void SpawnHordeAt(vector pos, vector target, int missionId = -1, array<IEntity> spawnedOut = null)
+	{
 		array<IEntity> spawned = {};
 		if (!m_Settings.m_aHordePrefabs.IsEmpty())
 		{
@@ -164,18 +171,42 @@ class RZ_ZombieSpawner
 			}
 		}
 
-		if (m_Settings.m_sMoveWaypointPrefab.IsEmpty())
-			return;
-
 		foreach (IEntity e : spawned)
 		{
-			SCR_AIGroup group = SCR_AIGroup.Cast(e);
-			if (!group)
-				continue;
+			RZ_Util.SendGroupTo(e, target, m_Settings.m_sMoveWaypointPrefab);
+			if (spawnedOut)
+				spawnedOut.Insert(e);
+		}
+	}
 
-			AIWaypoint wp = AIWaypoint.Cast(RZ_Util.SpawnPrefab(m_Settings.m_sMoveWaypointPrefab, target));
-			if (wp)
-				group.AddWaypoint(wp);
+	//------------------------------------------------------------------------------------------------
+	ResourceName GetMoveWaypointPrefab()
+	{
+		return m_Settings.m_sMoveWaypointPrefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tracked units (zombies or groups) still alive that belong to a mission.
+	int CountForMission(int missionId)
+	{
+		int n = 0;
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (z.m_iMissionId == missionId && z.m_Entity)
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Positions of living special infected within radius (for the Halcyon sample scanner).
+	void GetSpecialsNear(vector pos, float radius, notnull array<vector> result)
+	{
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (z.m_bSpecial && z.m_Entity && RZ_Util.DistXZ(z.m_vLastPos, pos) <= radius)
+				result.Insert(z.m_vLastPos);
 		}
 	}
 

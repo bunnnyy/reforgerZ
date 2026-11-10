@@ -218,6 +218,43 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The player carrying an item in their inventory, or -1 if it's on the ground or held by AI.
+	static int GetCarrierPlayerId(IEntity item)
+	{
+		if (!item)
+			return -1;
+
+		IEntity root = item.GetRootParent(); // VERIFY: GetRootParent() (inventory items are children of the character)
+		if (!root || root == item)
+			return -1;
+
+		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(root);
+		if (playerId <= 0)
+			return -1;
+
+		return playerId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Give an AI group a move waypoint. Does nothing for non-groups or without a waypoint prefab.
+	static void SendGroupTo(IEntity e, vector target, ResourceName waypointPrefab)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(e);
+		if (!group || waypointPrefab.IsEmpty())
+			return;
+
+		AIWaypoint wp = AIWaypoint.Cast(SpawnPrefab(waypointPrefab, target));
+		if (wp)
+			group.AddWaypoint(wp);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string PlayerName(int playerId)
+	{
+		return GetGame().GetPlayerManager().GetPlayerName(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int RoundToInt(float f)
 	{
 		int i = Math.Round(f);
