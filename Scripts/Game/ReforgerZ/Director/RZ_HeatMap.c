@@ -61,18 +61,18 @@ class RZ_HeatMap
 	{
 		float amount = m_fDecayPerMinute * m_fDecayMult * dt / 60;
 		array<int> keys = {};
-		foreach (int key, float v : m_mHeat)
+		foreach (int cellKey, float cellHeat : m_mHeat)
 		{
-			keys.Insert(key);
+			keys.Insert(cellKey);
 		}
 
 		foreach (int key : keys)
 		{
-			float v = m_mHeat.Get(key) - amount;
-			if (v <= 0)
+			float remaining = m_mHeat.Get(key) - amount;
+			if (remaining <= 0)
 				m_mHeat.Remove(key);
 			else
-				m_mHeat.Set(key, v);
+				m_mHeat.Set(key, remaining);
 		}
 	}
 
