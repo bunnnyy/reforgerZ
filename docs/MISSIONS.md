@@ -115,8 +115,8 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 19 | Blow the Bridge | Champion | ★ Mechanic/Soldier: two charges, not three | Plant charges to stop a horde heading for a safe town | Fame; the horde turns back. It arrives: +10 infection there | ✅ *no real bridge: a choke point on its way; the horde is data until a player is within 600 m* |
 | 20 | Fire Mission | Champion | | Mark three hordes with smoke for artillery | Fame | ✅ *10 s within 80 m marks one; 30 s later the strike kills it outright* |
 
-**Amends:** Burn the Bodies and Recon work off Bastion Infamy while you're Watched.
-Surrendering at a checkpoint is planned.
+**Amends:** Burn the Bodies and Recon work off Bastion Infamy while you're Watched. So do
+surrendering at a Bastion checkpoint and paying Favor ([REPUTATION.md](REPUTATION.md#working-off-infamy)).
 
 ### The Red Hand
 
@@ -145,7 +145,7 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 19 | Kill the Officer | Champion | | Assassinate a Bastion outpost commander (the stronghold's commanding officer never dies) | Huge Fame (+75 Bastion Infamy: Kill on Sight) | ✅ *needs a killable commander body (Leaders > Bastion outpost commander or Bastion leader); a new one takes the chair after 2 hours* |
 | 20 | Take the Lab | Champion, final stand running | | Hold the lab's clean room for 90 s during the final stand while the crew steals the batch | Huge Fame (Halcyon Infamy); the final stand ends, research drops to 90%, two doses reach the black market | ✅ *reframed: the batch is stolen, which only delays the cure. The lab never falls and nobody wins the cure by taking it* |
 
-**Amends:** Fence the Goods works off Red Hand Infamy. Paying the fence a Favor "tax" is planned.
+**Amends:** Fence the Goods works off Red Hand Infamy; so does paying Favor ([REPUTATION.md](REPUTATION.md#working-off-infamy)).
 
 ### Halcyon
 

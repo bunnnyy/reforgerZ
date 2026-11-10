@@ -1,6 +1,7 @@
 //! The background panel for the vanilla deploy menu (docs/UI.md, "Background picker"): the
-//! picked loadout's background, its perk and flaw, starting standing, and whether it's locked
-//! for this player (with how to unlock it). It does not hide locked loadouts (planned).
+//! picked loadout's background, its perk and flaw, starting standing, its starting gear, and
+//! whether it's locked for this player (with how to unlock it). Locked loadouts themselves are
+//! refused by the deploy menu (UI/RZ_LoadoutLock.c).
 //!
 //! No modded deploy-menu class: put a widget built from the BackgroundPanel layout into the deploy
 //! menu's layout and add this component to it (UI/LAYOUTS.md). It polls the picked loadout twice a
@@ -57,7 +58,7 @@ class RZ_BackgroundPanelComponent : ScriptedWidgetComponent // VERIFY: ScriptedW
 
 	//------------------------------------------------------------------------------------------------
 	//! G|legacy|Legacy for the Drifter
-	//! B|id|name|loadout|perk|flaw|locked|unlock text|Haven|Bastion|Red Hand|Halcyon
+	//! B|id|name|loadout|perk|flaw|locked|unlock text|Haven|Bastion|Red Hand|Halcyon|gear
 	protected void Draw(string payload, string loadout)
 	{
 		array<string> lines = {};
@@ -94,6 +95,11 @@ class RZ_BackgroundPanelComponent : ScriptedWidgetComponent // VERIFY: ScriptedW
 		RZ_UIW.SetText(m_wRoot, "BgName", bgName);
 		RZ_UIW.SetText(m_wRoot, "BgPerk", RZ_UIText.Str(found, 4));
 		RZ_UIW.SetText(m_wRoot, "BgFlaw", RZ_UIText.Str(found, 5));
+		string gear = RZ_UIText.Str(found, 12);
+		if (gear.IsEmpty())
+			gear = "Whatever the loadout gives you.";
+
+		RZ_UIW.SetText(m_wRoot, "BgGear", gear);
 
 		bool locked = RZ_UIText.Int(found, 6) == 1;
 		RZ_UIW.Show(m_wRoot, "LockedBlock", locked);
@@ -109,7 +115,11 @@ class RZ_BackgroundPanelComponent : ScriptedWidgetComponent // VERIFY: ScriptedW
 			RZ_UIW.Icon(m_wRoot, "StateIcon", "status_door_locked");
 			RZ_UIW.SetText(m_wRoot, "StateText", "LOCKED");
 			RZ_UIW.Tint(m_wRoot, "StateText", RZ_UIColor.Dim());
-			RZ_UIW.SetText(m_wRoot, "LockedText", why + " Pick it now and you keep its gear, but you play as the default background this life.");
+			string after = " Pick it now and you keep its gear, but you play as the default background this life.";
+			if (RZ_UISettings.Get().m_bLockLoadouts)
+				after = " Until then the deploy menu won't let you take it.";
+
+			RZ_UIW.SetText(m_wRoot, "LockedText", why + after);
 		}
 
 		string rep = "";

@@ -39,6 +39,9 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected string m_sStanding;
 	protected string m_sJournal;
 	protected string m_sBackgrounds;
+	protected string m_sMap;
+	protected int m_iMapVersion;
+	protected ref set<string> m_aLockedLoadouts = new set<string>();
 	protected int m_iStandingVersion;
 	protected int m_iJournalVersion;
 	protected int m_iBackgroundsVersion;
@@ -46,7 +49,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected ref array<ref RZ_RadioEntry> m_aRadio = {};
 
 	// ---------------------------------------------------------------- server
-	protected float m_fLastAsk = -100;
+	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100};
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -125,7 +128,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! kind: 0 standing, 1 journal, 2 backgrounds
+	//! kind: 0 standing, 1 journal, 2 backgrounds, 3 map
 	void SendPayload(int kind, string payload)
 	{
 		if (IsLocalOwner())
@@ -189,16 +192,46 @@ class RZ_PlayerUIComponent : ScriptComponent
 			m_sJournal = payload;
 			m_iJournalVersion++;
 		}
+		else if (kind == 3)
+		{
+			m_sMap = payload;
+			m_iMapVersion++;
+		}
 		else
 		{
 			m_sBackgrounds = payload;
 			m_iBackgroundsVersion++;
+			ReadLockedLoadouts();
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! B records with the locked flag set (field 6), by loadout name (field 3).
+	protected void ReadLockedLoadouts()
+	{
+		m_aLockedLoadouts.Clear();
+		array<string> lines = {};
+		RZ_UIText.Split(m_sBackgrounds, "\n", lines);
+		foreach (string ln : lines)
+		{
+			array<string> f = {};
+			RZ_UIText.Split(ln, RZ_UIText.SEP, f);
+			if (RZ_UIText.Str(f, 0) == "B" && RZ_UIText.Int(f, 6) == 1)
+				m_aLockedLoadouts.Insert(RZ_UIText.Str(f, 3));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: a background loadout this player hasn't unlocked, as far as the last backgrounds
+	//! payload says (UI/RZ_LoadoutLock.c). False until it has arrived; the server checks anyway.
+	bool IsLoadoutLocked(string loadoutName)
+	{
+		return m_aLockedLoadouts.Contains(loadoutName);
 	}
 
 	// ================================================================ Client: ask
 	//------------------------------------------------------------------------------------------------
-	//! kind: 0 standing, 1 journal, 2 backgrounds
+	//! kind: 0 standing, 1 journal, 2 backgrounds, 3 map
 	void Ask(int kind)
 	{
 		if (Replication.IsServer())
@@ -215,12 +248,15 @@ class RZ_PlayerUIComponent : ScriptComponent
 		if (!gm || !gm.GetUIFeed())
 			return;
 
-		// A cheap spam guard: the menus ask once when they open
-		float now = RZ_UIW.Now();
-		if (now - m_fLastAsk < ASK_GAP && kind != 2)
+		// A cheap spam guard per kind: the menus ask once when they open, the map every 20 s
+		if (kind < 0 || kind > 3)
 			return;
 
-		m_fLastAsk = now;
+		float now = RZ_UIW.Now();
+		if (now - m_aLastAsk[kind] < ASK_GAP)
+			return;
+
+		m_aLastAsk[kind] = now;
 		int playerId = OwnerPlayerId();
 		if (playerId <= 0)
 			return;
@@ -289,6 +325,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	string GetStanding() { return m_sStanding; }
 	string GetJournal() { return m_sJournal; }
 	string GetBackgrounds() { return m_sBackgrounds; }
+	string GetMap() { return m_sMap; }
+	int GetMapVersion() { return m_iMapVersion; }
 	int GetStandingVersion() { return m_iStandingVersion; }
 	int GetJournalVersion() { return m_iJournalVersion; }
 	int GetBackgroundsVersion() { return m_iBackgroundsVersion; }

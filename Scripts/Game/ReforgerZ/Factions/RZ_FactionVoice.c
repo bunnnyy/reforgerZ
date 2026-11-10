@@ -581,4 +581,33 @@ class RZ_FactionVoice
 
 		return "The people nearby turn on you.";
 	}
+
+	// ================================================================ Camps (RZ_Checkpoints)
+	//------------------------------------------------------------------------------------------------
+	//! A camp warns off someone the faction watches.
+	static string CampWarning(RZ_EFaction f)
+	{
+		switch (f)
+		{
+			case RZ_EFaction.MILITARY: return "A sentry on the wall: "That's close enough. You're on a list here. Turn around, or come back when you've made it right."";
+			case RZ_EFaction.BANDITS: return "Someone whistles from a rooftop. "We know you. You're not welcome. Keep walking."";
+			case RZ_EFaction.INSTITUTE: return "A guard steps out from behind the sandbags. "The lab's closed to you. Please don't make this difficult."";
+		}
+
+		return ""That's close enough."";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Coming into a stronghold or the lab: the rule of the place.
+	static string SafeZoneRule(RZ_EFaction f)
+	{
+		switch (f)
+		{
+			case RZ_EFaction.MILITARY: return "A stencilled sign on the gate: WEAPONS SLUNG. NO FIRING INSIDE THE WIRE. Somebody has added: "we mean it".";
+			case RZ_EFaction.BANDITS: return ""Guns stay quiet in here. You want to shoot someone, do it outside. House rule."";
+			case RZ_EFaction.INSTITUTE: return "A laminated notice: NO FIREARMS DISCHARGED WITHIN THE SITE. They will close the doors on you, and worse.";
+		}
+
+		return "No shooting here.";
+	}
 }

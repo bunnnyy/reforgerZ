@@ -10,16 +10,35 @@
 //!                        is kin (one free treatment and a greeting at their first safehouse)
 //!   Bastion Trusted      Requisition: once an hour, ammo or rations at half Favor (RZ_RequisitionAction),
 //!                        from a Bastion outpost's truck-supplied stock while supply trucks run
-//!   Red Hand Known       toll pass (flavour message for now)
-//!   Halcyon Trusted      sample scanner: specials within 300 m, every minute
-//!   Halcyon Champion     +25% research from your samples (RZ_CureResearch)
+//!   Bastion Known        pass Bastion's road checkpoints unsearched (RZ_Checkpoints)
+//!   Bastion Champion     Fire Mission (RZ_FactionServices)
+//!   Red Hand Known       toll pass: roadblocks take a toll instead of shooting (RZ_Checkpoints)
+//!   Red Hand Trusted     Fence (RZ_FactionServices); roadblocks wave you through
+//!   Red Hand Champion    Bounty board: a bounty on whoever last killed you (PostBounty)
+//!   Halcyon Trusted      sample scanner: specials within 300 m, every minute; the medic
+//!   Halcyon Champion     +25% research from your samples (RZ_CureResearch); the immunity booster
 //!   Halcyon Hunted       the lab takes your samples without Fame (RZ_CureResearch)
 //! Consequences:
 //!   Hunted / Kill on Sight by Bastion or the Red Hand: hunter squads
 //!   Kill on Sight by anyone: public bounty, paid once to the player who kills you
+//!   A posted bounty (the board): paid the same way, killer only, never to the poster or a friend
 //!   Hunted by the Haven: a hungry safehouse may sell your rough location (LeakLocation)
 //!   Hunted by anyone: that faction's AI really shoots you (RZ_Hostility); a hunter squad
 //!   is always hostile to the player it was sent after
+//------------------------------------------------------------------------------------------------
+//! A bounty a Red Hand Champion posted on the board. Kept by identity; not saved.
+class RZ_PostedBounty
+{
+	string m_sPoster;
+	string m_sPosterName;
+	string m_sTarget;
+	string m_sTargetName;
+	int m_iPaid;			// what the poster paid
+	int m_iPayout;			// what the killer gets
+	float m_fUntil;
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_FactionPerks
 {
 	protected RZ_GameModeComponent m_GM;
@@ -48,6 +67,11 @@ class RZ_FactionPerks
 	protected ref map<int, IEntity> m_mLastAliveEnt = new map<int, IEntity>();	// the body, to read the killer from
 	protected int m_iDeathVictim = -1;		// the death being handled now (KillerOf)
 	protected int m_iDeathKiller = -1;
+
+	// The bounty board (Red Hand Champion)
+	protected ref array<ref RZ_PostedBounty> m_aPosted = {};
+	protected ref map<string, string> m_mLastKiller = new map<string, string>();		// victim identity -> killer identity
+	protected ref map<string, string> m_mLastKillerName = new map<string, string>();	// victim identity -> killer's name
 
 	protected static const float QM_GREET_RADIUS = 15;
 	protected static const float QM_GREET_COOLDOWN = 300;
@@ -247,6 +271,7 @@ class RZ_FactionPerks
 		}
 
 		UpdateHunters(dt, ids, players);
+		ExpirePostings();
 
 		m_fBountyTimer += dt;
 		if (m_fBountyTimer >= m_GM.GetBountyMinutes() * 60)
@@ -311,9 +336,11 @@ class RZ_FactionPerks
 			case RZ_EFaction.MILITARY:
 			{
 				if (tier == RZ_ETier.KNOWN)
-					return "Bastion knows your face. Its posts will talk to you, and its quartermasters sell you the basics.";
+					return "Bastion knows your face. Its posts will talk to you, its road checkpoints wave you through unsearched, and its quartermasters sell you the basics.";
 				if (tier == RZ_ETier.TRUSTED)
 					return "Requisition: once an hour, Bastion lets you draw ammo or rations at half the Favor cost, from an outpost the supply trucks have stocked.";
+				if (tier == RZ_ETier.CHAMPION)
+					return "Fire Mission: throw a Bastion signal smoke on a horde, well away from people, and the guns answer. Once an hour.";
 				break;
 			}
 			case RZ_EFaction.BANDITS:
@@ -321,7 +348,9 @@ class RZ_FactionPerks
 				if (tier == RZ_ETier.KNOWN)
 					return "Toll pass: Red Hand roadblocks will let you pass for a toll.";
 				if (tier == RZ_ETier.TRUSTED)
-					return "The black market's better shelves are open to you.";
+					return "The black market's better shelves are open to you, the fence will buy what you find, and the roadblocks wave you through.";
+				if (tier == RZ_ETier.CHAMPION)
+					return "Bounty board: you can put a price on whoever last killed you.";
 				break;
 			}
 			case RZ_EFaction.INSTITUTE:
@@ -329,9 +358,9 @@ class RZ_FactionPerks
 				if (tier == RZ_ETier.KNOWN)
 					return "Halcyon's stores are open to you.";
 				if (tier == RZ_ETier.TRUSTED)
-					return "Sample scanner: Halcyon will tell you when special infected are close.";
+					return "Sample scanner: Halcyon will tell you when special infected are close. Their medic will see you, for a price.";
 				if (tier == RZ_ETier.CHAMPION)
-					return "Lab access: your samples are worth 25% more research.";
+					return "Lab access: your samples are worth 25% more research, and the immunity booster is yours if you can pay for it.";
 				break;
 			}
 		}
@@ -734,6 +763,31 @@ class RZ_FactionPerks
 					m_GM.NotifyPlayer(other, "Bounty", text);
 			}
 		}
+
+		// The board's postings, with the same rough "last seen"
+		foreach (RZ_PostedBounty b : m_aPosted)
+		{
+			int targetId = FindPlayer(b.m_sTarget);
+			int idx = ids.Find(targetId);
+			if (idx < 0)
+				continue;
+
+			vector seen = players[idx].GetOrigin();
+			RZ_Settlement town = m_GM.GetSettlement(m_GM.FindNearestSettlement(seen));
+			string near = "near " + RZ_SettlementScanner.GridReference(seen);
+			if (town)
+				near = "near " + town.m_sName;
+
+			if (IsHarboured(targetId, players[idx]))
+				near = VagueArea(seen);
+
+			string posted = string.Format("The Red Hand board: %1 Favor on %2. Last seen %3.", b.m_iPayout, b.m_sTargetName, near);
+			foreach (int listener : ids)
+			{
+				if (listener != targetId)
+					m_GM.NotifyPlayer(listener, "Bounty", posted);
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -790,6 +844,7 @@ class RZ_FactionPerks
 
 		m_iDeathVictim = victim;
 		m_iDeathKiller = killer;
+		RememberKiller(victim, killer);
 		m_GM.GetMissions().OnPlayerDied(victim, at);
 
 		// A life that lasted leaves a journal: a headline or a wanderer's rumour, never an object
@@ -820,6 +875,15 @@ class RZ_FactionPerks
 		if (!connected.Contains(killer))
 			return;
 
+		// One bounty per death: Kill on Sight first, else a posting on the board
+		if (!PayKillOnSight(victim, killer))
+			PayPosted(victim, killer);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool PayKillOnSight(int victim, int killer)
+	{
+
 		int payer = -1;
 		int worst = -1;
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
@@ -840,11 +904,186 @@ class RZ_FactionPerks
 		}
 
 		if (payer < 0)
-			return;
+			return false;
 
 		m_GM.AddFavor(killer, payer, BOUNTY_FAVOR);
 		m_GM.AddFame(killer, payer, BOUNTY_FAME, false);
 		m_GM.NotifyPlayer(killer, "Bounty claimed", string.Format("%1 pays you %2 Favor for %3.", RZ_Factions.GetName(payer), BOUNTY_FAVOR, RZ_Util.PlayerName(victim)));
 		m_GM.NotifyAll("Bounty", string.Format("The %1 bounty on %2 has been claimed.", RZ_Factions.GetShortName(payer), RZ_Util.PlayerName(victim)));
+		return true;
+	}
+
+	// ================================================================ The bounty board
+	//------------------------------------------------------------------------------------------------
+	//! Who killed whom last, by identity: the only person a Champion can post a bounty on.
+	protected void RememberKiller(int victim, int killer)
+	{
+		if (killer <= 0)
+			return;
+
+		string victimIdent = m_GM.GetProfile(victim).m_sIdentity;
+		string killerIdent = m_GM.GetProfile(killer).m_sIdentity;
+		if (victimIdent.IsEmpty() || killerIdent.IsEmpty())
+			return;
+
+		m_mLastKiller.Set(victimIdent, killerIdent);
+		m_mLastKillerName.Set(victimIdent, RZ_Util.PlayerName(killer));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The connected player with this identity, -1 if none.
+	protected int FindPlayer(string ident)
+	{
+		if (ident.IsEmpty())
+			return -1;
+
+		array<int> all = {};
+		GetGame().GetPlayerManager().GetPlayers(all);
+		foreach (int id : all)
+		{
+			if (m_GM.GetProfile(id).m_sIdentity == ident)
+				return id;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_PostedBounty FindPosting(string targetIdent)
+	{
+		foreach (RZ_PostedBounty b : m_aPosted)
+		{
+			if (b.m_sTarget == targetIdent)
+				return b;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Red Hand Champion (RZ_FactionServiceAction BOUNTY_BOARD): a bounty on the last player who
+	//! killed you. Capped (one per poster, one per target, a few on the server), and it pays the
+	//! killer less than it costs, so it can't be farmed with a friend.
+	void PostBounty(int playerId)
+	{
+		string title = "The Red Hand board";
+		RZ_ServiceSettings settings = m_GM.GetServiceSettings();
+		if (!settings || !settings.m_bBountyBoard)
+			return;
+
+		RZ_ETier tier = m_GM.GetTier(playerId, RZ_EFaction.BANDITS);
+		if (tier != RZ_ETier.CHAMPION)
+		{
+			m_GM.NotifyPlayer(playerId, title, string.Format("The board is for the Red Hand's own Champions. You're %1 with them.", RZ_Reputation.GetTierName(tier)));
+			return;
+		}
+
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		string target;
+		if (!m_mLastKiller.Find(ident, target) || target.IsEmpty())
+		{
+			m_GM.NotifyPlayer(playerId, title, ""A bounty on who? Nobody's put you down lately. Not that we heard."");
+			return;
+		}
+
+		string targetName;
+		m_mLastKillerName.Find(ident, targetName);
+		int targetId = FindPlayer(target);
+		if (targetId > 0 && RZ_Util.SameGroup(playerId, targetId))
+		{
+			m_GM.NotifyPlayer(playerId, title, ""On your own crew? Sort that out yourselves."");
+			return;
+		}
+
+		foreach (RZ_PostedBounty mine : m_aPosted)
+		{
+			if (mine.m_sPoster == ident)
+			{
+				m_GM.NotifyPlayer(playerId, title, string.Format(""You've already got one up, on %1. One at a time."", mine.m_sTargetName));
+				return;
+			}
+		}
+
+		if (FindPosting(target))
+		{
+			m_GM.NotifyPlayer(playerId, title, string.Format(""There's already a price on %1. Wait your turn."", targetName));
+			return;
+		}
+
+		if (m_aPosted.Count() >= settings.m_iBountyMaxActive)
+		{
+			m_GM.NotifyPlayer(playerId, title, ""Board's full. Come back when somebody's collected."");
+			return;
+		}
+
+		int cost = settings.m_iBountyCost;
+		if (!m_GM.SpendFavor(playerId, RZ_EFaction.BANDITS, cost))
+		{
+			m_GM.NotifyPlayer(playerId, title, string.Format(""A bounty costs %1 Favor." You have %2.", cost, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS)));
+			return;
+		}
+
+		RZ_PostedBounty b = new RZ_PostedBounty();
+		b.m_sPoster = ident;
+		b.m_sPosterName = RZ_Util.PlayerName(playerId);
+		b.m_sTarget = target;
+		b.m_sTargetName = targetName;
+		b.m_iPaid = cost;
+		b.m_iPayout = Math.Min(settings.m_iBountyPayout, cost);
+		b.m_fUntil = m_fClock + Math.Max(0.25, settings.m_fBountyHours) * 3600;
+		m_aPosted.Insert(b);
+
+		m_GM.NotifyPlayer(playerId, title, string.Format("Your name goes up next to %1's, in red paint. %2 Favor to whoever puts them down.", targetName, b.m_iPayout));
+		m_GM.NotifyAll("Bounty", string.Format("The Red Hand board: %1 Favor on %2.", b.m_iPayout, targetName));
+		if (targetId > 0)
+			m_GM.NotifyPlayer(targetId, "A bad feeling", "Your name is on the Red Hand board. Someone you put down wants you to know it.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The killer only: never the poster, nobody in the poster's or the victim's group, and nobody
+	//! the Red Hand hunts. Paid like any bounty (RZ_FactionPerks.PayBounty decides who killed whom).
+	protected bool PayPosted(int victim, int killer)
+	{
+		string victimIdent = m_GM.GetProfile(victim).m_sIdentity;
+		RZ_PostedBounty b = FindPosting(victimIdent);
+		if (!b)
+			return false;
+
+		string killerIdent = m_GM.GetProfile(killer).m_sIdentity;
+		int posterId = FindPlayer(b.m_sPoster);
+		if (killerIdent == b.m_sPoster || RZ_Util.SameGroup(killer, posterId) || RZ_Util.SameGroup(killer, victim))
+			return false;
+
+		if (RZ_Reputation.IsHunted(m_GM.GetTier(killer, RZ_EFaction.BANDITS)))
+			return false;
+
+		m_aPosted.RemoveItem(b);
+		m_GM.AddFavor(killer, RZ_EFaction.BANDITS, b.m_iPayout);
+		m_GM.NotifyPlayer(killer, "Bounty claimed", string.Format("The Red Hand board pays you %1 Favor for %2.", b.m_iPayout, b.m_sTargetName));
+		if (posterId > 0)
+			m_GM.NotifyPlayer(posterId, "The Red Hand board", string.Format("Somebody collected on %1. Your name comes off the board.", b.m_sTargetName));
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Unclaimed postings come down; the poster gets half back if they're on.
+	protected void ExpirePostings()
+	{
+		for (int i = m_aPosted.Count() - 1; i >= 0; i--)
+		{
+			RZ_PostedBounty b = m_aPosted[i];
+			if (m_fClock < b.m_fUntil)
+				continue;
+
+			m_aPosted.Remove(i);
+			int posterId = FindPlayer(b.m_sPoster);
+			if (posterId <= 0)
+				continue;
+
+			int back = b.m_iPaid / 2;
+			m_GM.AddFavor(posterId, RZ_EFaction.BANDITS, back);
+			m_GM.NotifyPlayer(posterId, "The Red Hand board", string.Format("Nobody collected on %1. The paint's washed off; you get %2 Favor back.", b.m_sTargetName, back));
+		}
 	}
 }

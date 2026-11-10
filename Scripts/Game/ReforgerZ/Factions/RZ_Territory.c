@@ -1609,7 +1609,7 @@ class RZ_Territory
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected ResourceName GuardPrefab(RZ_EFaction f)
+	ResourceName GuardPrefab(RZ_EFaction f)
 	{
 		switch (f)
 		{

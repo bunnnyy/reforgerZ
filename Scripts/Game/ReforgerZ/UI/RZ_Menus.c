@@ -4,6 +4,10 @@
 //!
 //! Each menu asks RZ_PlayerUIComponent for its data when it opens and redraws when a new copy
 //! arrives. They only read; nothing here changes the game.
+//!
+//! Mouse: the tabs (Tab0-Tab3), the close button (CloseButton), journal rows (MissionRow) and the
+//! radio filter chip (FilterButton) are Buttons in the layouts; RZ_MenuClick hears their clicks.
+//! The lists scroll with the wheel inside a ScrollLayout. Keys work as before.
 
 modded enum ChimeraMenuPreset // VERIFY: ChimeraMenuPreset can be modded, and the entries need matching chimeraMenus.conf entries
 {
@@ -14,6 +18,29 @@ modded enum ChimeraMenuPreset // VERIFY: ChimeraMenuPreset can be modded, and th
 }
 
 //------------------------------------------------------------------------------------------------
+//! Passes a clicked widget to its menu.
+class RZ_MenuClick : ScriptedWidgetEventHandler
+{
+	protected RZ_MenuBase m_Menu;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_MenuClick(RZ_MenuBase menu)
+	{
+		m_Menu = menu;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button) // VERIFY: ScriptedWidgetEventHandler.OnClick(Widget, int x, int y, int button)
+	{
+		if (!m_Menu || !w)
+			return false;
+
+		m_Menu.OnWidgetClick(w);
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_MenuBase : ChimeraMenuBase // VERIFY: ChimeraMenuBase, GetRootWidget(), Close() and the OnMenuOpen/OnMenuClose/OnMenuUpdate overrides
 {
 	protected static const float POLL = 0.25;
@@ -21,6 +48,7 @@ class RZ_MenuBase : ChimeraMenuBase // VERIFY: ChimeraMenuBase, GetRootWidget(),
 	protected Widget m_wRoot;
 	protected int m_iSeen = -1;
 	protected float m_fPoll;
+	protected ref RZ_MenuClick m_Click;
 
 	//------------------------------------------------------------------------------------------------
 	//! 0 Standing, 1 Journal, 2 Radio, 3 Map key
@@ -54,8 +82,45 @@ class RZ_MenuBase : ChimeraMenuBase // VERIFY: ChimeraMenuBase, GetRootWidget(),
 		RZ_UIW.Listen("MenuBack", OnBack); // VERIFY: the vanilla MenuBack, MenuTabLeft, MenuTabRight action names
 		RZ_UIW.Listen("MenuTabLeft", OnTabLeft);
 		RZ_UIW.Listen("MenuTabRight", OnTabRight);
+		m_Click = new RZ_MenuClick(this);
+		for (int t = 0; t < 4; t++)
+		{
+			RZ_UIW.OnClick(m_wRoot, "Tab" + t.ToString(), m_Click);
+		}
+
+		RZ_UIW.OnClick(m_wRoot, "CloseButton", m_Click);
 		OnOpened();
 		Redraw();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse (RZ_MenuClick): the tabs and the close button here, the rest in OnClickOther.
+	void OnWidgetClick(Widget w)
+	{
+		string name = w.GetName();
+		if (name == "CloseButton")
+		{
+			Close();
+			return;
+		}
+
+		for (int t = 0; t < 4; t++)
+		{
+			if (name == "Tab" + t.ToString())
+			{
+				if (t != TabIndex())
+					SwitchTo(t);
+
+				return;
+			}
+		}
+
+		OnClickOther(w, name);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnClickOther(Widget w, string name)
+	{
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -380,7 +445,18 @@ class RZ_JournalMenu : RZ_MenuBase
 			RZ_UIW.SetText(row, "RowSub", sub);
 			RZ_UIW.SetText(row, "RowDir", RZ_UIText.Str(m, 7));
 			RZ_UIW.SetText(row, "RowTime", RZ_UIText.Str(m, 8) + " min left");
+			RZ_UIW.SetTag(row, i);
+			RZ_UIW.OnClick(row, "", m_Click);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A click on a row (its root, MissionRow, is a Button) selects it.
+	override protected void OnClickOther(Widget w, string name)
+	{
+		int idx = RZ_UIW.GetTag(w);
+		if (name == "MissionRow" && idx >= 0 && idx < m_aMissions.Count())
+			m_iSelected = idx;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -455,6 +531,14 @@ class RZ_RadioLogMenu : RZ_MenuBase
 	override protected void OnOpened()
 	{
 		RZ_UIW.Listen("RZ_RadioFilter", OnFilter);
+		RZ_UIW.OnClick(m_wRoot, "FilterButton", m_Click);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnClickOther(Widget w, string name)
+	{
+		if (name == "FilterButton")
+			OnFilter();
 	}
 
 	//------------------------------------------------------------------------------------------------

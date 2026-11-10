@@ -471,6 +471,49 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Kills up to `cap` living infected the spawner owns within radius of pos (an artillery strike,
+	//! RZ_Artillery). Returns how many. Their deaths are counted by the normal tick.
+	int KillZombiesNear(vector pos, float radius, int cap)
+	{
+		int killed = 0;
+		array<AIAgent> herd = {};
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (killed >= cap)
+				break;
+
+			if (!z.m_Entity || RZ_Util.DistXZ(z.m_vLastPos, pos) > radius + 60)
+				continue;
+
+			SCR_AIGroup group = SCR_AIGroup.Cast(z.m_Entity);
+			if (!group)
+			{
+				if (RZ_Util.DistXZ(z.m_Entity.GetOrigin(), pos) <= radius && RZ_Util.IsCharacterAlive(z.m_Entity))
+				{
+					RZ_Util.KillCharacter(z.m_Entity);
+					killed++;
+				}
+
+				continue;
+			}
+
+			herd.Clear();
+			group.GetAgents(herd);
+			foreach (AIAgent agent : herd)
+			{
+				IEntity member = agent.GetControlledEntity();
+				if (killed < cap && member && RZ_Util.DistXZ(member.GetOrigin(), pos) <= radius && RZ_Util.IsCharacterAlive(member))
+				{
+					RZ_Util.KillCharacter(member);
+					killed++;
+				}
+			}
+		}
+
+		return killed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A living infected character the spawner owns within radius of pos (a group's member), or
 	//! null. Spike traps and molotovs use it.
 	IEntity FindZombieNear(vector pos, float radius)

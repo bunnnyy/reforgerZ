@@ -167,6 +167,7 @@ class RZ_Hostility
 	protected ref map<int, float> m_mSpawnedAt = new map<int, float>();
 	protected ref array<ref RZ_HostileZone> m_aZones = {};
 	protected ref set<string> m_aMissing = new set<string>();
+	protected ref map<string, float> m_mStandDown = new map<string, float>();	// "player:faction" -> clock until (a surrender)
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Hostility(RZ_GameModeComponent gm, RZ_HostilitySettings settings)
@@ -204,6 +205,50 @@ class RZ_Hostility
 	void OnPlayerShot(int playerId, vector pos)
 	{
 		m_Retaliation.OnPlayerShot(playerId, pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Timed hostility from a faction's AI around `at` (RZ_Checkpoints: a refused toll, a run
+	//! checkpoint, an armed approach to a camp after a warning). Like retaliation: it restarts,
+	//! never adds up.
+	void AddGrudge(int playerId, RZ_EFaction faction, vector at)
+	{
+		m_Retaliation.Grudge(playerId, faction, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A surrender (RZ_Checkpoints): the faction's AI holds its fire on this player for `seconds`,
+	//! whatever their standing, fights or grudges say. Their fights with it are forgotten.
+	void StandDown(int playerId, RZ_EFaction faction, float seconds)
+	{
+		if (playerId <= 0 || !RZ_Factions.IsValid(faction))
+			return;
+
+		m_mStandDown.Set(string.Format("%1:%2", playerId, faction), m_fClock + seconds);
+		m_Retaliation.ClearGrudge(playerId, faction);
+		for (int i = m_aZones.Count() - 1; i >= 0; i--)
+		{
+			if (m_aZones[i].m_iPlayerId == playerId && m_aZones[i].m_eFaction == faction)
+				m_aZones.Remove(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bits of the factions standing down for this player now.
+	protected int StandDownMask(int playerId)
+	{
+		if (m_mStandDown.IsEmpty())
+			return 0;
+
+		int mask = 0;
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			float until;
+			if (m_mStandDown.Find(string.Format("%1:%2", playerId, f), until) && m_fClock < until)
+				mask = mask | RZ_Factions.Bit(f);
+		}
+
+		return mask;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -287,6 +332,11 @@ class RZ_Hostility
 
 		foreach (int gone : stale)
 		{
+			for (int f = 0; f < RZ_Factions.COUNT; f++)
+			{
+				m_mStandDown.Remove(string.Format("%1:%2", gone, f));
+			}
+
 			m_mMask.Remove(gone);
 			m_mBaseMask.Remove(gone);
 			m_mStanding.Remove(gone);
@@ -516,6 +566,8 @@ class RZ_Hostility
 			int baseMask = ComputeMask(playerId, ent);
 			m_mBaseMask.Set(playerId, baseMask);
 			mask = baseMask | m_Retaliation.MaskFor(playerId, ent.GetOrigin());
+			int calm = StandDownMask(playerId);
+			mask = mask - (mask & calm);
 		}
 
 		int before;

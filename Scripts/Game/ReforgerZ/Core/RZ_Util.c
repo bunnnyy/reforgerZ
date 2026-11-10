@@ -300,6 +300,28 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Two players in the same player group (friends, for the bounty board). False if either has
+	//! no group or the groups manager isn't there.
+	static bool SameGroup(int a, int b)
+	{
+		if (a <= 0 || b <= 0)
+			return false;
+
+		if (a == b)
+			return true;
+
+		SCR_GroupsManagerComponent groups = SCR_GroupsManagerComponent.GetInstance(); // VERIFY: SCR_GroupsManagerComponent.GetInstance(), GetPlayerGroup(playerId)
+		if (!groups)
+			return false;
+
+		SCR_AIGroup ga = groups.GetPlayerGroup(a);
+		if (!ga)
+			return false;
+
+		return ga == groups.GetPlayerGroup(b);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Give an AI group a move waypoint. Does nothing for non-groups or without a waypoint prefab.
 	static void SendGroupTo(IEntity e, vector target, ResourceName waypointPrefab)
 	{
@@ -691,6 +713,61 @@ class RZ_Util
 			return null;
 
 		return dmg.GetDefaultHitZone();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Hunting_Rifle_CR527.et" -> "Hunting Rifle CR527": a readable name from a prefab path.
+	static string PrettyPrefabName(string path)
+	{
+		string name = path;
+		int slash = name.LastIndexOf("/");
+		if (slash >= 0)
+			name = name.Substring(slash + 1, name.Length() - slash - 1);
+
+		int dot = name.LastIndexOf(".");
+		if (dot > 0)
+			name = name.Substring(0, dot);
+
+		name.Replace("_", " "); // VERIFY: string.Replace works in place (as RZ_UIText.Clean)
+		return name;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Readable names of what a character wears and carries, for the deploy panel's gear list.
+	//! At most `cap`, no repeats.
+	static void GearNames(IEntity character, int cap, notnull array<string> result)
+	{
+		if (!character)
+			return;
+
+		array<IEntity> things = {};
+		IEntity child = character.GetChildren(); // VERIFY: the same child walk as CollectChildNames
+		while (child)
+		{
+			things.Insert(child);
+			child = child.GetSibling();
+		}
+
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (inv)
+		{
+			array<IEntity> items = {};
+			inv.GetItems(items); // VERIFY: the same GetItems as RZ_FoodHelper.TakeFood
+			foreach (IEntity item : items)
+			{
+				things.Insert(item);
+			}
+		}
+
+		foreach (IEntity e : things)
+		{
+			if (result.Count() >= cap)
+				return;
+
+			string pretty = PrettyPrefabName(GetPrefabName(e));
+			if (!pretty.IsEmpty() && !result.Contains(pretty))
+				result.Insert(pretty);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -227,7 +227,7 @@ class RZ_Retaliation
 
 	//------------------------------------------------------------------------------------------------
 	//! One grudge per player and faction: a new hit moves it and restarts its timer, never adds.
-	protected void Trigger(int playerId, RZ_EFaction f, vector at)
+	protected void Trigger(int playerId, RZ_EFaction f, vector at, bool tell = true)
 	{
 		float mult = 1;
 		if (m_GM.GetFactionLife())
@@ -253,7 +253,28 @@ class RZ_Retaliation
 		grudge.m_fRadius = radius;
 		grudge.m_fUntil = m_fClock + seconds;
 		m_aGrudges.Insert(grudge);
-		m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), RZ_FactionVoice.Retaliation(f));
+		if (tell)
+			m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), RZ_FactionVoice.Retaliation(f));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Temporary trouble from outside a shooting (a toll refused, a checkpoint run, an armed
+	//! approach to a camp after a warning): the same timed grudge, so it never builds up.
+	void Grudge(int playerId, RZ_EFaction f, vector at)
+	{
+		if (playerId > 0 && RZ_Factions.IsValid(f))
+			Trigger(playerId, f, at, false); // the caller says why
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A surrender: the faction's grudge against this player goes.
+	void ClearGrudge(int playerId, RZ_EFaction f)
+	{
+		for (int i = m_aGrudges.Count() - 1; i >= 0; i--)
+		{
+			if (m_aGrudges[i].m_iPlayerId == playerId && m_aGrudges[i].m_eFaction == f)
+				m_aGrudges.Remove(i);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -26,6 +26,9 @@ class RZ_Background
 	[Attribute("", UIWidgets.EditBoxMultiline, "Flaw text shown on spawn")]
 	string m_sFlaw;
 
+	[Attribute("", desc: "Starting gear for the deploy panel, until the server has seen this loadout spawn (then it lists what it really carries)")]
+	string m_sGear;
+
 	[Attribute("1", desc: "Multiplier on the heat (zombie attention) this player generates")]
 	float m_fNoiseMult = 1;
 
@@ -98,7 +101,32 @@ class RZ_Background
 		b.m_sLoadoutName = name;
 		b.m_sPerk = perk;
 		b.m_sFlaw = flaw;
+		b.m_sGear = DefaultGear(id);
 		return b;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the built-in loadouts carry (docs/WORKBENCH_SETUP.md, "Factions and loadouts").
+	protected static string DefaultGear(string id)
+	{
+		switch (id)
+		{
+			case "nurse": return "Medical bag, bandages, morphine, saline. No weapon.";
+			case "mechanic": return "Toolbox, jerrycan, wrench, work clothes.";
+			case "hunter": return "Hunting rifle, five rounds, hunting jacket.";
+			case "police": return "Pistol, one magazine, police jacket.";
+			case "excon": return "Knife, plain clothes.";
+			case "labtech": return "Lab coat, gloves. No weapon.";
+			case "radioham": return "Handheld radio, batteries.";
+			case "unemployed": return "The clothes you stand in.";
+			case "soldier": return "Service rifle, two magazines, body armour, helmet.";
+			case "doctor": return "Medical bag, morphine, bandages, gloves. No weapon.";
+			case "raider": return "Pistol or sawn-off, knife, red armband or jacket.";
+			case "elder": return "Walking clothes, a little food and water.";
+			case "drifter": return "Nothing at all.";
+		}
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

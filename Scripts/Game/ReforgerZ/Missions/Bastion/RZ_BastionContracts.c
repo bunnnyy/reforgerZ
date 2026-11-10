@@ -1310,7 +1310,8 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 //! #20 Fire Mission: three hordes mill in infested towns. Stand within 80 m of one for 10 s to
 //! mark it with smoke; 30 s later Bastion's guns hit it (an explosion per shell and every infected
 //! there dies). Get clear: the shells don't check who's standing there. All three: paid.
-//! *Simplified:* the strike kills the marked horde outright; the shells are the explosion prefab.
+//! *Simplified:* the strike kills the marked horde outright; the shells are the explosion prefab
+//! (RZ_Artillery, shared with the Bastion Champion perk in RZ_FactionServices).
 class RZ_Mission_FireMission : RZ_Mission
 {
 	protected ref array<vector> m_aTargets = {};
@@ -1430,13 +1431,7 @@ class RZ_Mission_FireMission : RZ_Mission
 	protected void Strike(RZ_GameModeComponent gm, int idx)
 	{
 		vector at = m_aTargets[idx];
-		ResourceName fx = gm.GetExplosionPrefab();
-		for (int n = 0; n < 4; n++)
-		{
-			IEntity boom = RZ_Util.SpawnPrefab(fx, RZ_Util.RandomPointInRing(at, 0, STRIKE_RADIUS * 0.6));
-			if (boom)
-				m_aProps.Insert(boom);
-		}
+		RZ_Artillery.Shell(gm, at, STRIKE_RADIUS, 4, m_aProps);
 
 		foreach (IEntity unit : m_aUnits[idx])
 		{
@@ -1449,7 +1444,6 @@ class RZ_Mission_FireMission : RZ_Mission
 			}
 		}
 
-		gm.GetHeat().AddHeat(at, 30);
 		m_aHit[idx] = true;
 		m_iHits++;
 		RZ_ContractHelp.NotifyNear(gm, at, 600, m_sTitle, string.Format("The shells land in a tight group. Then nothing moves. (%1 of %2)", m_iHits, TARGETS));

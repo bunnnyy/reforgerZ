@@ -116,6 +116,11 @@ Four menus share a frame: a heading, a sub-line (`Header`), four tabs (Standing,
 Map key; the open one in bone with dark text) and a footer of keys. Build the frame once and copy
 it. Root: a full-screen `Frame` with a dark overlay (`#08090A` at 75%) so the world shows faintly.
 
+**Mouse.** The four tabs are `Button`s named `Tab0` to `Tab3` (Standing, Journal, Radio, Map key),
+with a `Text` inside; add a small `Button` named `CloseButton` (an × at the top right). Put each
+list (`List`, `Log`) inside a `ScrollLayout` so the wheel scrolls it. Menus show the cursor while
+open; if yours doesn't, check the menu's entry in `chimeraMenus.conf`.
+
 Register the menus in a `chimeraMenus.conf` override (copy the vanilla one into the addon and
 add four entries), each with its layout and class:
 
@@ -184,10 +189,11 @@ Frame (root)
       └─ Text  DetailClues     serif 16 on a paper-coloured panel #E4DDC8 with dark text #23211C
 ```
 
-`RZ_MissionRow.layout` (**UI > Mission row layout**), 660 × 62:
+`RZ_MissionRow.layout` (**UI > Mission row layout**), 660 × 62. The root is a `Button` named
+`MissionRow` (clicking it selects the row), with no visual of its own:
 
 ```
-Frame (root)
+Button MissionRow (root)
 ├─ Image  RowSelected   full size, bone 7%, hidden unless selected
 ├─ Image  RowAccent     4 × 62, left edge
 ├─ Image  RowIcon       30 × 30 at (26, 16)
@@ -204,7 +210,8 @@ Frame (root)
 ├─ (menu frame: heading "RADIO", tabs, footer with "F  Filter")
 ├─ Frame  (channels panel, at (72, 168), 450 × 840): static list of the channels (icons and names)
 └─ Frame  (log panel, at (546, 168), 1302 × 840)
-   ├─ Text   FilterText     mono bold 12 in a bone chip: ALL / OPEN / SECURE / BROADCAST
+   ├─ Button FilterButton   the bone chip; click cycles the filter
+│  └─ Text FilterText     mono bold 12: ALL / OPEN / SECURE / BROADCAST
    ├─ VerticalLayout Log   fills the panel, newest first
    └─ Text   Empty          "Nothing on the air yet."
 ```
@@ -224,8 +231,19 @@ Frame (root)
 ### Map key: `RZ_MapKeyMenu.layout`
 
 Static: the menu frame and the legend panel from `UI/Mockups/map_legend.html`: one row per marker (icon 32 × 32 in its colour, name in
-bold 15, one line in 13 dim). No names are looked up. The marker icons on the map itself are
-still the vanilla markers (`Core/RZ_MapMarkers.c`); giving them these icons is planned.
+bold 15, one line in 13 dim). No names are looked up.
+
+## Map icon: `RZ_MapIcon.layout`
+
+One marker on the real map (**UI > Map icon layout**), created into the map's root by
+`RZ_MapIconsUI` (add it to the map configuration's components; WORKBENCH_SETUP.md). The script
+centres the 28 × 28 icon on the spot and tints it.
+
+```
+Frame (root, 28 × 28, top-left anchor, not hit-testable)
+├─ Image  Icon       28 × 28, a marker_* icon (white; the script sets the image and tints it)
+└─ Text   Label      under the icon, offset (-60, 30), 148 wide, centred, 12, bone, a 1-unit dark shadow
+```
 
 ## Background panel: `RZ_BackgroundPanel.layout`
 
@@ -247,10 +265,12 @@ Frame (root, 560 wide)
 │  ├─ Text   (label "PERK")  │ Text BgPerk      17, #BFD39B, multi-line
 │  ├─ Text   (label "FLAW")  │ Text BgFlaw      17, #E4826F, multi-line
 │  ├─ Text   (label "STARTING STANDING") │ Text BgStanding  mono bold 14, multi-line
+│  ├─ Text   (label "STARTING GEAR")     │ Text BgGear      15, multi-line
 │  └─ Frame  LockedBlock            dashed border, shown when locked
 │     └─ Text  LockedText           15, dim, multi-line
 ├─ Text        Legacy               mono bold 12, dim
 └─ ProgressBar LegacyBar            160 × 8, fill #E3A33B
 ```
 
-Starting gear isn't listed separately: the perk text names it. Reading the loadout's items is planned.
+`BgGear` lists what the loadout spawned with the last time anyone took it, or the background's
+gear line until then. A locked loadout is unavailable in the menu itself (`RZ_LoadoutLock.c`).

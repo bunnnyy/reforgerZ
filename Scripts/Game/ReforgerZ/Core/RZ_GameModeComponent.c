@@ -298,8 +298,14 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Per-player AI hostility: mode (bitmask variants, outlaw fallback, off), from which standing each faction's AI shoots, the Haven exile rule, fights, wanderers fighting back (docs/REPUTATION.md)", category: "ReforgerZ|Factions")]
 	protected ref RZ_HostilitySettings m_HostilitySettings;
 
+	[Attribute(desc: "Faction services and the last perks: Fire Mission, the fence, the bounty board, Halcyon's medic and immunity booster, paying for amends, reputation clues (docs/REPUTATION.md)", category: "ReforgerZ|Factions")]
+	protected ref RZ_ServiceSettings m_ServiceSettings;
+
+	[Attribute(desc: "Bastion checkpoints and Red Hand roadblocks inside the Zone, surrender, camps that warn and refuse, safe zones (docs/REPUTATION.md)", category: "ReforgerZ|Factions")]
+	protected ref RZ_CheckpointSettings m_CheckpointSettings;
+
 	// ---------------------------------------------------------------- Map
-	[Attribute("1", desc: "Show world events and the lab on the map (vanilla map markers). Turn off if markers misbehave", category: "ReforgerZ|Map")]
+	[Attribute("1", desc: "Show world events and the lab on the map as vanilla text markers, when the icon layer isn't set up (UI > Map icon layout). Turn off if markers misbehave", category: "ReforgerZ|Map")]
 	protected bool m_bMapMarkers;
 
 	// ---------------------------------------------------------------- UI
@@ -342,6 +348,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_BiteDetector m_BiteDetector;
 	protected ref RZ_Infection m_Infection;
 	protected ref RZ_FactionPerks m_Perks;
+	protected ref RZ_FactionServices m_Services;
+	protected ref RZ_Checkpoints m_Checkpoints;
 	protected ref RZ_Broadcast m_Broadcast;
 	protected ref RZ_Perimeter m_Perimeter;
 	protected ref RZ_Safehouses m_Safehouses;
@@ -453,6 +461,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_HostilitySettings)
 			m_HostilitySettings = new RZ_HostilitySettings();
 
+		if (!m_ServiceSettings)
+			m_ServiceSettings = new RZ_ServiceSettings();
+
+		if (!m_CheckpointSettings)
+			m_CheckpointSettings = new RZ_CheckpointSettings();
+
 		if (!m_GuidanceSettings)
 			m_GuidanceSettings = new RZ_GuidanceSettings();
 
@@ -515,6 +529,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Infection = new RZ_Infection(this, m_InfectionSettings);
 		m_BiteDetector = new RZ_BiteDetector(this, m_fBiteChance, m_fBiteReach, m_InfectionSettings);
 		m_Perks = new RZ_FactionPerks(this);
+		m_Services = new RZ_FactionServices(this, m_ServiceSettings);
+		m_Checkpoints = new RZ_Checkpoints(this, m_CheckpointSettings);
 		m_Broadcast = new RZ_Broadcast(this);
 		m_Perimeter = new RZ_Perimeter(this, m_PerimeterSettings);
 		m_Safehouses = new RZ_Safehouses(this, m_SafehouseSettings);
@@ -609,6 +625,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Perimeter.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
 		m_Perks.Tick(dt, ids, players);
+		m_Services.Tick(dt, ids, players);
 		m_Safehouses.Tick(dt, ids, players);
 		m_Wanderers.Tick(dt, ids, players);
 		m_Leaders.Tick(dt, ids, players);
@@ -616,6 +633,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Supply.Tick(dt, ids, players);
 		m_FactionLife.Tick(dt, ids, players);
 		m_StoryArcs.Tick(dt, ids, players);
+		m_Checkpoints.Tick(dt, ids, players);
 		// After everything that changes standing or spawns fights this tick
 		m_Hostility.Tick(dt, ids, players);
 		m_Broadcast.Tick(dt, m_fBroadcastMinutes);
@@ -705,6 +723,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	float GetHunterSquadMinutes() { return m_fHunterSquadMinutes; }
 	float GetBountyMinutes() { return Math.Max(1, m_fBountyMinutes); }
 	RZ_FactionPerks GetPerks() { return m_Perks; }
+	RZ_FactionServices GetServices() { return m_Services; }
+	RZ_ServiceSettings GetServiceSettings() { return m_ServiceSettings; }
+	RZ_Checkpoints GetCheckpoints() { return m_Checkpoints; }
 	RZ_Perimeter GetPerimeter() { return m_Perimeter; }
 	RZ_Safehouses GetSafehouses() { return m_Safehouses; }
 	RZ_Wanderers GetWanderers() { return m_Wanderers; }
@@ -1007,31 +1028,57 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The loadout the player picked in the deploy menu, "" if unknown.
+	string GetPickedLoadoutName(int playerId)
+	{
+		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);
+		if (!pc)
+			return "";
+
+		SCR_PlayerLoadoutComponent loadoutComp = SCR_PlayerLoadoutComponent.Cast(pc.FindComponent(SCR_PlayerLoadoutComponent));
+		if (!loadoutComp)
+			return "";
+
+		SCR_BasePlayerLoadout loadout = loadoutComp.GetLoadout(); // VERIFY
+		if (!loadout)
+			return "";
+
+		return loadout.GetLoadoutName();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The background is whichever loadout the player picked in the deploy menu.
 	protected RZ_Background ResolveBackground(int playerId)
 	{
-		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);
-		if (pc)
-		{
-			SCR_PlayerLoadoutComponent loadoutComp = SCR_PlayerLoadoutComponent.Cast(pc.FindComponent(SCR_PlayerLoadoutComponent));
-			if (loadoutComp)
-			{
-				SCR_BasePlayerLoadout loadout = loadoutComp.GetLoadout(); // VERIFY
-				if (loadout)
-				{
-					string loadoutName = loadout.GetLoadoutName();
-					foreach (RZ_Background bg : m_aBackgrounds)
-					{
-						if (bg.m_sLoadoutName == loadoutName)
-							return bg;
-					}
+		string loadoutName = GetPickedLoadoutName(playerId);
+		if (loadoutName.IsEmpty())
+			return GetDefaultBackground();
 
-					RZ_Log.Warn("No background matches loadout '" + loadoutName + "'");
-				}
-			}
+		foreach (RZ_Background bg : m_aBackgrounds)
+		{
+			if (bg.m_sLoadoutName == loadoutName)
+				return bg;
 		}
 
+		RZ_Log.Warn("No background matches loadout '" + loadoutName + "'");
 		return GetDefaultBackground();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a background loadout this player hasn't unlocked (the deploy menu refuses it,
+	//! UI/RZ_LoadoutLock.c). False for loadouts that aren't backgrounds.
+	bool IsLoadoutLocked(int playerId, string loadoutName)
+	{
+		if (!m_aBackgrounds || playerId <= 0)
+			return false;
+
+		foreach (RZ_Background bg : m_aBackgrounds)
+		{
+			if (bg.m_sLoadoutName == loadoutName)
+				return bg.m_bLocked && !GetProfile(playerId).HasUnlocked(bg.m_sUnlockId);
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1067,6 +1114,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_BiteDetector.Reset(playerId);
 		m_Infection.OnPlayerSpawned(playerId);
 		m_UIFeed.OnPlayerSpawned(playerId);
+		m_UIFeed.RecordGearSoon(playerId, GetPickedLoadoutName(playerId));
 		RegisterGunfire(controlledEntity);
 		// Keys, timed actions and cracked channels belong to the last life
 		m_Interactions.OnPlayerSpawned(playerId);
@@ -1114,6 +1162,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_Safehouses.FindAt(controlledEntity.GetOrigin()) >= 0 && m_Safehouses.IsExiled(playerId))
 			NotifyPlayer(playerId, "The Haven", "You come to outside the safehouse door. It stays shut. Nobody inside will look at you, and if you're carrying a gun, the guards will in a minute. Move on.");
 		m_Perks.OnPlayerSpawned(playerId, controlledEntity);
+		m_Services.OnPlayerSpawned(playerId, controlledEntity);
+		m_Checkpoints.OnPlayerSpawned(playerId);
 
 		// The new life's standing decides which hidden variant the character goes on
 		m_Hostility.OnPlayerSpawned(playerId, controlledEntity);
@@ -1139,9 +1189,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Map marker for a world event or the lab. Returns a handle for RemoveMapMarker, -1 if off.
+	//! With the icon layer set up (UI > Map icon layout) the icons show these instead, per player.
 	int AddMapMarker(vector pos, string text)
 	{
-		if (!m_bMapMarkers)
+		if (!m_bMapMarkers || RZ_UISettings.Get().UsesMapIcons())
 			return -1;
 
 		return RZ_MapMarkers.Add(pos, text);
@@ -1184,6 +1235,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Missions.OnPlayerShot(playerID, shooter.GetOrigin());
 		if (m_Supply)
 			m_Supply.OnPlayerShot(playerID, shooter.GetOrigin());
+
+		// Safe zones: firing inside a stronghold or the lab
+		m_Checkpoints.OnPlayerShot(playerID, shooter.GetOrigin());
 
 		// Retaliation: who fired, and when (a hit on a faction's AI is matched to it)
 		m_Hostility.OnPlayerShot(playerID, shooter.GetOrigin());
@@ -1366,6 +1420,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_Perks)
 			m_Perks.OnTierChanged(playerId, faction, before, after);
 
+		// Reputation clues: the armband or the ribbon at Trusted
+		if (m_Services)
+			m_Services.OnTierChanged(playerId, faction, after);
+
 		// Hunted, Kill on Sight, exile and bounties all start at a tier: AI hostility follows
 		if (m_Hostility)
 			m_Hostility.OnStandingChanged(playerId);
@@ -1504,6 +1562,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	{
 		RZ_PlayerProfile profile = GetProfile(playerId);
 		if (profile.IsInfected())
+			return;
+
+		// Halcyon's immunity booster takes one bite (RZ_FactionServices)
+		if (m_Services && m_Services.TryShrugOffBite(playerId))
 			return;
 
 		RZ_Background bg = GetPlayerBackground(playerId);

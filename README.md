@@ -20,8 +20,10 @@ and one way to end it: **research the cure.**
   trial dose, stabilisers and five low-grade meds with side effects exist from day one; research
   makes them more plentiful.
 - **Four factions that remember you**: the Haven, Task Force Bastion, the Red Hand and Halcyon.
-  Fame and Infamy unlock quartermaster shops and perks, or bring hunter squads, bounties and AI
-  that shoots *you* and nobody else. A faction's uniform gets you past its people, until you're caught.
+  Fame and Infamy unlock quartermaster shops and perks (artillery on a horde, a fence, a bounty
+  board, an immunity booster), or bring hunter squads, bounties and AI that shoots *you* and
+  nobody else. Bastion checkpoints and Red Hand roadblocks on the roads search you, take a toll
+  or let you surrender. A faction's uniform gets you past its people, until you're caught.
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
@@ -35,13 +37,14 @@ and one way to end it: **research the cure.**
 - **Any map**: towns, the quarantine line and its checkpoints are found automatically.
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
   emblems, an infection timer with the golden window, styled notice cards in each faction's
-  colour, and screens for standing, missions and the radio (layouts still to be built).
+  colour, screens for standing, missions and the radio, and on the map only what you know
+  (layouts still to be built).
 
 ## Status
 
-All of it is **written but has never been compiled**. It's about 65,700 lines of Enforce
-Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **186 `VERIFY`
-markers** on engine and editor calls whose exact names need checking (150 in the game, 36 in the
+All of it is **written but has never been compiled**. It's about 68,400 lines of Enforce
+Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **201 `VERIFY`
+markers** on engine and editor calls whose exact names need checking (165 in the game, 36 in the
 Workbench plugin), no prefabs, layouts or configs yet, and nothing has been play-tested. The icon
 set and mockups of every screen are done (`UI/`). Every prefab,
 setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
@@ -72,8 +75,9 @@ Scripts/Game/ReforgerZ/
                  the broadcast, story arcs, headlines
   Zombies/       spawner (any zombie mod's prefabs), bite detection
   Backgrounds/   backgrounds, personal goals, player profiles
-  Factions/      reputation, quartermasters and shops, perks, hunter squads, bounties,
-                 leaders, AI hostility, disguises and retaliation, territory, supply trucks, faction life
+  Factions/      reputation, quartermasters and shops, perks, services, hunter squads, bounties,
+                 road posts and camps, leaders, AI hostility, disguises and retaliation,
+                 territory, supply trucks, faction life
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/
@@ -84,7 +88,8 @@ Scripts/Game/ReforgerZ/
                  spots kept out of locked buildings), cars, crafting, water,
                  traps, generators, fire, secure radio, treating others
   Persistence/   save and load of mode state
-  UI/            the per-player data feed, HUD, menus, deploy-menu panel, notice styles
+  UI/            the per-player data feed, HUD, menus, deploy-menu panel and loadout lock,
+                 the map's icon layer, notice styles
 Scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
 Configs/ReforgerZ/PrefabManifest.json

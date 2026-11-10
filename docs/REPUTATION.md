@@ -28,8 +28,8 @@ Each faction tracks **Fame 0–100** and **Infamy 0–100** for your current lif
 
 - Helping a faction gives Fame with it, and usually Infamy with its rival.
 - Hurting a faction (killing its people, stealing, sabotage, siding against it) gives Infamy.
-- Neither goes down on its own. **Amends** contracts work Infamy off while you're Watched ✅;
-  paying Favor to work it off is planned.
+- Neither goes down on its own. You work Infamy off with **amends** ✅
+  ([Working off Infamy](#working-off-infamy)).
 
 ### Standing tiers
 
@@ -107,18 +107,40 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 
 | Tier | Shop | Perk / service |
 |---|---|---|
-| Known | Military rations, morphine, flares | Pass Bastion's road checks inside the Zone unsearched (planned: needs checkpoints as AI; the game only says Bastion knows you) |
+| Known | Military rations, morphine, flares | **Waved through** ✅: Bastion's checkpoints inside the Zone let you pass unsearched ([Checkpoints](#checkpoints-roadblocks-and-camps)) |
 | Trusted | Service rifles, body armour, helmets, NVGs | **Requisition** ✅: once an hour, ammo or rations at half the Favor cost. While Bastion's trucks run, it's drawn at a Bastion outpost's quartermaster from the stock its trucks brought, and refused while that outpost is short |
-| Champion | Machine guns, grenades, military trucks | **Fire Mission**: mark a horde with smoke for an artillery strike |
+| Champion | Machine guns, grenades, military trucks, the **signal smoke** | **Fire Mission** ✅: see below |
 | Hunted | — | Bastion AI shoots you ✅; hunter squads get your last position ✅ |
+
+**Fire Mission.** A Bastion Champion throws a signal smoke (bought on the Champion shelf) at a
+horde: at least 6 infected within 50 m of where it lands. 30 seconds later the guns hit it: four
+shells, and up to 25 infected there die. Once an hour per player; never within 250 m of a
+safehouse, a faction holding or the lab; the shells don't check who's standing there. It pays
+nothing: the reward is the horde gone. A non-Champion's smoke gets no answer. It shares the
+shelling with the Fire Mission contract ([MISSIONS.md](MISSIONS.md)).
 
 ### The Red Hand
 
 | Tier | Shop (black market) | Perk / service |
 |---|---|---|
-| Known | Knives, pistols, lockpick-style tools, the **cut dose** (cheap: cures half the time, else a faster turn and a fever ✅) | **Toll pass**: roadblocks let you pass for a toll (message only ✅; roadblocks as AI planned) |
-| Trusted | Suppressors, scoped rifles, explosives | **Fence**: sell loot for Favor; ambush crews ignore you |
-| Champion | Rare military gear, stolen antidotes (only the doses stolen from the lab ✅) | **Bounty board**: post bounties on other players |
+| Known | Knives, pistols, lockpick-style tools, the **cut dose** (cheap: cures half the time, else a faster turn and a fever ✅) | **Toll pass** ✅: Red Hand roadblocks take a toll instead of shooting ([Checkpoints](#checkpoints-roadblocks-and-camps)) |
+| Trusted | Suppressors, scoped rifles, explosives | **Fence** ✅: sell found loot for Favor; roadblocks wave you through ✅; the **red armband** ✅ ([clues](#reputation-clues)) |
+| Champion | Rare military gear, stolen antidotes (only the doses stolen from the lab ✅) | **Bounty board** ✅: a bounty on whoever last killed you |
+
+**Fence.** "Fence what you're carrying" at a Red Hand quartermaster buys found loot by keyword
+(watches, jewellery, binoculars, compasses, cameras, lighters: a setting) for 3 Favor an item,
+at most 8 a sale and 30 Favor an hour. It never buys anything a quartermaster sold (the last 300
+sales are remembered), so buying and selling back can't make Favor.
+
+**Bounty board.** A Champion can post a bounty on **the last player who killed them** (60 Red
+Hand Favor). It's announced to everyone, and with the Kill on Sight bounties every 10 minutes, with
+the same rough "last seen". It's paid the same way as any bounty: once, to the killer only, for a
+player kill. The killer gets 40 Red Hand Favor, less than it cost, so a pair of friends can't farm
+it; and never the poster, anyone in the poster's or the target's group, or someone the Red Hand
+hunts. One posting per poster and per target, three on the server at once; unclaimed after 2 hours,
+it comes down and the poster gets half back. Postings aren't saved. *Simplified:* "friends" means
+the same vanilla player group (a VERIFY); without it, only the poster is excluded.
+
 | Hunted | — | Red Hand AI shoots you ✅; hunter squads come for you ✅ |
 
 ### Halcyon
@@ -127,8 +149,14 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 |---|---|---|
 | Stranger | The **trial dose** for anyone bitten (free, once per life, 80% cure ✅) | — |
 | Known | Antiseptic, painkillers, sample containers, **stabilisers** (from a small stock; double price until 50% research ✅) | — |
-| Trusted | Antidotes (only while the lab has doses in stock ✅), stim kits, gas masks | **Sample scanner** ✅: special infected within 300 m are revealed every minute |
-| Champion | Experimental immunity booster (planned item) | **Lab access** ✅: your samples count 25% more. Calling in a Halcyon medic is planned |
+| Trusted | Antidotes (only while the lab has doses in stock ✅), stim kits, gas masks | **Sample scanner** ✅: special infected within 300 m are revealed every minute. **The medic** ✅: 20 Favor to be patched up, and a fresh bite washed out |
+| Champion | The **immunity booster** ✅ (80 Favor, once per life: the next bite doesn't take) | **Lab access** ✅: your samples count 25% more |
+
+The medic and the booster are services at Halcyon's quartermaster, not items. The medic is the
+safehouse medic's treatment (a full heal; a fresh bite is cleaned as if declared at a safehouse);
+a bite that has taken needs the trial dose or an antidote. The booster can't be taken while
+infected, and it's used up by the first bite that would have infected you. *Simplified:* you
+visit the medic; calling one out isn't built.
 | Hunted | — | The lab takes your samples without Fame ✅, and Halcyon AI shoots you ✅ |
 
 ### Consequences for everyone
@@ -140,8 +168,9 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
   10 minutes with a rough location (one notice, however many factions want you). One bounty is paid per death, only to the player who killed
   you (50 Favor and a little Fame), and only for a player kill: dying to the infected, a fall or
   your own hand pays nobody. With several factions after you, the one with the most Infamy pays;
-  a faction never pays someone it hunts too. *The killer is read from the body (a VERIFY); if
-  that fails, no bounty is paid.*
+  a faction never pays someone it hunts too. If none pays, a posting on the Red Hand's
+  [bounty board](#the-red-hand) can. *The killer is read from the body (a VERIFY); if that fails,
+  no bounty is paid.*
 - **Choice missions** ✅: you decide which faction's drop point gets the item. The winner gives
   Fame; the one you double-crossed gives Infamy.
 - **Disguises** ✅: a faction's uniform gets you past its AI while you're not Hunted by it;
@@ -165,6 +194,73 @@ Wanderers' attitude is your Haven standing (Bastion, reversed, for the Deserter)
 memory of you ([DESIGN.md](DESIGN.md), "Wanderers"). The Mechanic wanderer sells car parts for
 12 Haven Favor (a quarter off if they remember you helped) and gives a fixable car's keys to
 players they like.
+
+## Working off Infamy
+
+Infamy never fades on its own. Three ways to work it off ✅, each capped so none is a reset:
+
+| Way | What it takes | How much |
+|---|---|---|
+| **Amends contracts** | Watched with the giver: the contract works Infamy off instead of paying Fame ([MISSIONS.md](MISSIONS.md)) | the contract's Fame, as Infamy off |
+| **Paying** | "Pay to make amends" at any quartermaster, in that faction's own Favor | 5 Infamy for 15 Favor; each payment this life costs ×1.5 more; at most 15 Infamy a life per faction, once every 30 minutes, and never below 15 (the Watched line): the rest takes amends contracts. Kill on Sight: refused |
+| **Surrender** | Bastion only, at one of its checkpoints ([below](#checkpoints-roadblocks-and-camps)) | 8 Bastion Infamy, once an hour |
+
+The stronghold leader's temper applies to all three (a Merciful leader forgives ×1.2).
+
+## Checkpoints, roadblocks and camps
+
+Code: `Factions/RZ_Checkpoints.c`. ✅ all. The Perimeter's sealed checkpoints at the map edge are a
+different thing ([DESIGN.md](DESIGN.md#the-perimeter)): they stay sealed to everyone.
+
+**Road posts.** Every 15 minutes, if fewer than two are up, a Bastion checkpoint or a Red Hand
+roadblock may go up on a road 350–1,000 m from a random player, within 2.5 km of one of that
+faction's holdings (not near the line, a safehouse, a holding or another post). It stays 45
+minutes. It's data: the barrier and its crew (the territory guard prefab unless set) exist only
+while a player is within 600 m, and its crew counts for retaliation. It needs territory and the
+road network.
+
+| Post | You are | What happens |
+|---|---|---|
+| Bastion checkpoint | Known or better | Waved through, unsearched |
+| | Anyone else | Told at 150 m to walk to the barrier. At the barrier (35 m) for 15 s: searched, and up to three contraband items taken (suppressors, explosives: a setting). Leave the barrier before it's done and you've **run** it: +3 Bastion Infamy and the post fires on you for a few minutes |
+| | Hunted | Shot (as everywhere); or [surrender](#surrender) |
+| Red Hand roadblock | Trusted or better | Waved through |
+| | Known | Pay the **toll** at the barrier (10 Red Hand Favor) and pass. Can't pay: treated as a stranger |
+| | Anyone else | Told at 150 m to turn around. At the barrier: fired on for a few minutes |
+| | Hunted | Shot |
+
+A cleared pass lasts while the post is up; walk well away without clearing it and the next approach
+starts again.
+
+### Surrender
+
+At a Bastion checkpoint, a player with Bastion Infamy (15 or more: Watched or Hunted) who walks to
+the barrier **with no firearm** and waits 10 seconds gives themselves up: searched, 8 Bastion
+Infamy off, and Bastion's AI holds its fire on them for 5 minutes, whatever their standing,
+fights or grudges say. Once an hour per player; within the hour it's just a search. Armed and
+Hunted, they shoot.
+
+**Camps.** A faction's outposts and stronghold (and the lab, for Halcyon) warn off a player the
+faction watches (Watched) at 150 m, and at the gate
+(50 m) turn them away: unarmed, the gate stays shut; armed, they open fire for a few minutes.
+Hunted players are simply shot. The Haven's holdings follow its house rules instead.
+
+**Safe zones.** Strongholds and the lab: within 80 m you're told the rule as you come in
+("weapons slung"), and firing there, with no infected within 40 m, costs 2 Infamy with the
+faction (at most once every 20 s) and draws their fire for a few minutes. Safehouses have their
+own [house rules](#haven-house-rules-and-exile).
+
+Every "fired on for a few minutes" here is the same timed grudge as
+[shooting back](#what-makes-ai-shoot-you): it restarts, never adds up.
+
+## Reputation clues
+
+Something other players can see ✅. At **Trusted** the Red Hand gives you a **red armband** and
+the Haven an **amber ribbon** (once per life, into your pack, or at your feet if it's full).
+Wearing it is up to you; worn, anyone can read whose you are. The armband's name carries the Red
+Hand disguise keyword, so it counts as one piece of a Red Hand [disguise](#disguises). Both need
+their prefabs set; without them nothing is given. *Simplified:* it's an item to wear, not worn
+automatically.
 
 ## Faction leaders
 
@@ -310,6 +406,7 @@ Known toll pass the difference between being shot and not.
 | Who | Shoots |
 |---|---|
 | A hunter squad | The player it was sent after, within 800 m |
+| A road post or camp | For a few minutes: a player who ran a Bastion checkpoint, came up to a Red Hand roadblock without paying, or came armed past a camp's gate after the warning ([Checkpoints](#checkpoints-roadblocks-and-camps)) |
 | The Red Hand camp in Raid the Red Hand, the raiders in Trader Caravan and Lab Defence | Every player within 350 m of them while they live |
 | The killers' camp in The Witness | Players within 150 m who aren't at least Known with the Red Hand |
 | The ambush in Fake Distress Call, the convicts in Prison Break | Players within 300 m (250 m for the convicts) who aren't at least Known with the Red Hand |
@@ -376,8 +473,12 @@ this season ✅. What that means is in [LORE.md](LORE.md), "Endings".
   (`RZ_SupplyLines.FindShopState` for shortages, `PriceMult` for leaders and morale).
 - Missions: `m_eGiver` gets Fame, an optional `m_eRival` gets Infamy, `m_iFavorReward` pays out,
   `m_iLeaderId` is the leader whose traits scale it.
-- `RZ_FactionPerks`: perks, hunter squads, bounties, the safehouse location leak (`LeakLocation`).
-  House rules and exile are in `RZ_Safehouses` and `RZ_Wanderers`.
+- `RZ_FactionPerks`: perks, hunter squads, bounties and the bounty board, the safehouse location
+  leak (`LeakLocation`). House rules and exile are in `RZ_Safehouses` and `RZ_Wanderers`.
+- `RZ_FactionServices`: the Fire Mission perk (`RZ_FireMissionSmokeComponent`), the fence, the
+  medic and booster, paying for amends, reputation clues; `RZ_FactionServiceAction` on quartermasters.
+- `RZ_Checkpoints`: road posts, surrender, camps and safe zones. A surrender is
+  `RZ_Hostility.StandDown`; every "fired on for a few minutes" is `RZ_Hostility.AddGrudge`.
 - AI hostility: `RZ_Hostility` works out each player's bitmask; `RZ_Factions` builds and decodes
   the keys; the modded `SCR_Faction` in `RZ_FactionRelations.c` turns them into relations;
   `RZ_Retaliation` handles shooting back; `RZ_Disguise` reads uniforms and doubles Infamy when caught.

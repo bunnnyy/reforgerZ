@@ -1367,6 +1367,132 @@
    "notes": ""
   },
   {
+   "id": "SignalSmoke",
+   "kind": "create",
+   "system": "Faction services and road posts",
+   "path": "Prefabs/ReforgerZ/Factions/RZ_SignalSmoke.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "a vanilla smoke grenade (still throwable; red smoke if there is one)",
+   "components": [{"cls": "RZ_FireMissionSmokeComponent", "values": [], "name": ""}],
+   "actions": [],
+   "slots": [],
+   "listSlot": false,
+   "slotLabel": "(Bastion shop)",
+   "required": false,
+   "minimum": false,
+   "use": "Fire Mission perk: a Bastion Champion throws it at a horde; sold on the Bastion quartermaster's Champion shelf",
+   "notes": ""
+  },
+  {
+   "id": "RedHandArmband",
+   "kind": "create",
+   "system": "Faction services and road posts",
+   "path": "Prefabs/ReforgerZ/Factions/RZ_RedHandArmband.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "a red armband or bandana clothing item; keep \"armband_red\" or \"redhand\" in its name",
+   "components": [],
+   "actions": [],
+   "slots": ["m_ServiceSettings.m_sRedHandArmbandPrefab"],
+   "listSlot": false,
+   "slotLabel": "Factions > Services > Red Hand armband",
+   "required": false,
+   "minimum": false,
+   "use": "reputation clue at Red Hand Trusted (also counts toward the Red Hand disguise)",
+   "notes": ""
+  },
+  {
+   "id": "HavenRibbon",
+   "kind": "create",
+   "system": "Faction services and road posts",
+   "path": "Prefabs/ReforgerZ/Factions/RZ_HavenRibbon.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "an amber armband or ribbon clothing item (no Red Hand or Bastion keywords in its name)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_ServiceSettings.m_sHavenRibbonPrefab"],
+   "listSlot": false,
+   "slotLabel": "Factions > Services > Haven ribbon",
+   "required": false,
+   "minimum": false,
+   "use": "reputation clue at Haven Trusted",
+   "notes": ""
+  },
+  {
+   "id": "BastionPostBarrier",
+   "kind": "create",
+   "system": "Faction services and road posts",
+   "path": "Prefabs/ReforgerZ/Factions/RZ_BastionPostBarrier.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "sandbags and a barrier pole (a small composition)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_CheckpointSettings.m_sBastionBarrierPrefab"],
+   "listSlot": false,
+   "slotLabel": "Factions > Checkpoints > Bastion checkpoint barrier",
+   "required": false,
+   "minimum": false,
+   "use": "Bastion checkpoints inside the Zone (without it: the crew alone)",
+   "notes": ""
+  },
+  {
+   "id": "RedHandRoadblock",
+   "kind": "create",
+   "system": "Faction services and road posts",
+   "path": "Prefabs/ReforgerZ/Factions/RZ_RedHandRoadblock.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "a car wreck or logs across the road",
+   "components": [],
+   "actions": [],
+   "slots": ["m_CheckpointSettings.m_sRedHandBarrierPrefab"],
+   "listSlot": false,
+   "slotLabel": "Factions > Checkpoints > Red Hand roadblock",
+   "required": false,
+   "minimum": false,
+   "use": "Red Hand roadblocks inside the Zone (without it: the crew alone)",
+   "notes": ""
+  },
+  {
+   "id": "BastionPostCrew",
+   "kind": "create",
+   "system": "Faction services and road posts",
+   "path": "Prefabs/ReforgerZ/Factions/RZ_BastionPostCrew.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "an AI group of two or three on MIL",
+   "components": [],
+   "actions": [],
+   "slots": ["m_CheckpointSettings.m_sBastionCrewPrefab"],
+   "listSlot": false,
+   "slotLabel": "Factions > Checkpoints > Bastion checkpoint crew",
+   "required": false,
+   "minimum": false,
+   "use": "Bastion checkpoints (falls back to Territory > Bastion guard; none = no checkpoints)",
+   "notes": ""
+  },
+  {
+   "id": "RedHandPostCrew",
+   "kind": "create",
+   "system": "Faction services and road posts",
+   "path": "Prefabs/ReforgerZ/Factions/RZ_RedHandPostCrew.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "an AI group of two or three on BAND",
+   "components": [],
+   "actions": [],
+   "slots": ["m_CheckpointSettings.m_sRedHandCrewPrefab"],
+   "listSlot": false,
+   "slotLabel": "Factions > Checkpoints > Red Hand roadblock crew",
+   "required": false,
+   "minimum": false,
+   "use": "Red Hand roadblocks (falls back to Territory > Red Hand guard, then the Red Hand group; none = no roadblocks)",
+   "notes": ""
+  },
+  {
    "id": "QMHaven",
    "kind": "create",
    "system": "Quartermasters",
@@ -1386,7 +1512,8 @@
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=4"], "name": "Ask about the radio"},
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=2"], "name": "Get patched up"},
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=3"], "name": "Tell them you're bitten"},
-    {"cls": "RZ_SafehouseAction", "values": ["m_eKind=5"], "name": "Ask for something for the fever"}
+    {"cls": "RZ_SafehouseAction", "values": ["m_eKind=5"], "name": "Ask for something for the fever"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"}
    ],
    "slots": ["m_sQuartermasterHaven"],
    "listSlot": false,
@@ -1410,7 +1537,19 @@
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=2"], "name": "Ask for news"},
-    {"cls": "RZ_LeaderAction", "values": ["m_eKind=3"], "name": "Ask about standing"}
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=3"], "name": "Ask about standing"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
+    {
+     "cls": "RZ_FactionShopAction",
+     "values": [
+      "m_eFaction=1",
+      "m_eRequiredTier=3",
+      "m_iFavorCost=30",
+      "m_sItemPrefab=@SignalSmoke",
+      "m_sDisplayName=Signal smoke"
+     ],
+     "name": "Buy"
+    }
    ],
    "slots": ["m_sQuartermasterBastion"],
    "listSlot": false,
@@ -1439,7 +1578,10 @@
      "cls": "RZ_FactionShopAction",
      "values": ["m_eFaction=2", "m_eRequiredTier=1", "m_iFavorCost=12", "m_sItemPrefab=@CutDose", "m_sDisplayName=Cut dose"],
      "name": "Buy"
-    }
+    },
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=0"], "name": "Fence"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=1"], "name": "Bounty board"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"}
    ],
    "slots": ["m_sQuartermasterRedHand"],
    "listSlot": false,
@@ -1474,7 +1616,10 @@
      "cls": "RZ_FactionShopAction",
      "values": ["m_eFaction=3", "m_eRequiredTier=1", "m_iFavorCost=40", "m_sItemPrefab=@Stabiliser", "m_sDisplayName=Stabiliser"],
      "name": "Buy"
-    }
+    },
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=3"], "name": "Medic"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=2"], "name": "Immunity booster"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"}
    ],
    "slots": ["m_sQuartermasterHalcyon"],
    "listSlot": false,
@@ -3502,6 +3647,24 @@
    "minimum": false,
    "use": "radio log rows",
    "notes": ""
+  },
+  {
+   "id": "UIMapIconLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the MapIcon layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sMapIconLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Map icon layout",
+   "required": false,
+   "minimum": false,
+   "use": "the ReforgerZ icons on the map, per player (empty = vanilla text markers for events and the lab)",
+   "notes": "Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI)."
   }
  ],
  "additions": [
@@ -3526,9 +3689,10 @@
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=2"], "name": "Ask for news"},
-    {"cls": "RZ_LeaderAction", "values": ["m_eKind=3"], "name": "Ask about standing"}
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=3"], "name": "Ask about standing"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"}
    ],
-   "why": "standing and the stronghold leader (the plugin's quartermasters get these already)",
+   "why": "standing, the stronghold leader and amends (the plugin's quartermasters get these already; also add the faction's services: Fence and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon)",
    "required": false,
    "minimum": false
   },
@@ -3976,12 +4140,28 @@
    "covers": "**Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys"
   },
   {
+   "category": "Factions",
+   "object": "Services",
+   "field": "m_ServiceSettings",
+   "covers": "**Fire Mission** (on, 60 min cooldown, 6 infected, 50 m, 30 s, kills at most 25, not within 250 m of people), **Fence** (on, keywords, 3 Favor an item, 8 a sale, 30 an hour), **Bounty board** (on, 60 to post, 40 paid, 3 at once, 2 h), booster (80) and medic (20) prices, **Amends** (15 Favor, ×1.5 each time, 5 Infamy, 15 a life, never below 15, every 30 min), armband and ribbon prefabs"
+  },
+  {
+   "category": "Factions",
+   "object": "Checkpoints",
+   "field": "m_CheckpointSettings",
+   "covers": "**Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy)"
+  },
+  {
    "category": "UI",
    "object": "UI",
    "field": "m_UISettings",
-   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (3), queue (8), radio log size (40), infection timer and noise meter (on), resync (60 s), **icon imageset** and the three row layouts ([UI/LAYOUTS.md](../UI/LAYOUTS.md))"
+   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (3), queue (8), radio log size (40), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on) ([UI/LAYOUTS.md](../UI/LAYOUTS.md))"
   },
-  {"category": "Map", "object": "(top level)", "covers": "**Map markers** (on)"},
+  {
+   "category": "Map",
+   "object": "(top level)",
+   "covers": "**Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout)"
+  },
   {"category": "Debug", "object": "(top level)", "covers": "Status log every few minutes (on)"}
  ],
  "settings": [
@@ -4554,6 +4734,70 @@
    }
   },
   {
+   "field": "m_ServiceSettings",
+   "category": "Factions",
+   "label": "Services",
+   "cls": "RZ_ServiceSettings",
+   "defaults": {
+    "m_bFireMission": "1",
+    "m_fFireMissionCooldownMinutes": "60",
+    "m_iFireMissionMinInfected": "6",
+    "m_fFireMissionRadius": "50",
+    "m_fFireMissionDelay": "30",
+    "m_iFireMissionKillCap": "25",
+    "m_fFireMissionSafeDistance": "250",
+    "m_bFence": "1",
+    "m_sFenceWords": "watch,jewel,ring,necklace,gold,silver,binocular,compass,camera,lighter",
+    "m_iFencePrice": "3",
+    "m_iFenceMaxItems": "8",
+    "m_iFenceHourlyCap": "30",
+    "m_bBountyBoard": "1",
+    "m_iBountyCost": "60",
+    "m_iBountyPayout": "40",
+    "m_iBountyMaxActive": "3",
+    "m_fBountyHours": "2",
+    "m_iBoosterCost": "80",
+    "m_iMedicCost": "20",
+    "m_iAmendsCost": "15",
+    "m_fAmendsGrowth": "1.5",
+    "m_iAmendsInfamy": "5",
+    "m_iAmendsLifeCap": "15",
+    "m_iAmendsFloor": "15",
+    "m_fAmendsCooldownMinutes": "30"
+   }
+  },
+  {
+   "field": "m_CheckpointSettings",
+   "category": "Factions",
+   "label": "Checkpoints",
+   "cls": "RZ_CheckpointSettings",
+   "defaults": {
+    "m_bRoadPosts": "1",
+    "m_iMaxPosts": "2",
+    "m_fPostMinutes": "15",
+    "m_fPostLifetimeMinutes": "45",
+    "m_fHoldingRange": "2500",
+    "m_fSpawnRadius": "600",
+    "m_fWarnRadius": "150",
+    "m_fStopRadius": "35",
+    "m_fSearchSeconds": "15",
+    "m_sContrabandWords": "suppressor,silencer,explosive,c4,demo_charge",
+    "m_iRunInfamy": "3",
+    "m_iToll": "10",
+    "m_bSurrender": "1",
+    "m_fSurrenderSeconds": "10",
+    "m_iSurrenderInfamy": "8",
+    "m_fSurrenderCooldownMinutes": "60",
+    "m_fStandDownSeconds": "300",
+    "m_bCamps": "1",
+    "m_fCampWarnRadius": "150",
+    "m_fCampRefuseRadius": "50",
+    "m_bSafeZones": "1",
+    "m_fSafeZoneRadius": "80",
+    "m_iSafeZoneShotInfamy": "2"
+   }
+  },
+  {
    "field": "m_UISettings",
    "category": "UI",
    "label": "UI",
@@ -4566,7 +4810,9 @@
     "m_iRadioLogSize": "40",
     "m_bInfectionTimer": "1",
     "m_bNoiseMeter": "1",
-    "m_fResyncSeconds": "60"
+    "m_fResyncSeconds": "60",
+    "m_fMapRefreshSeconds": "20",
+    "m_bLockLoadouts": "1"
    }
   }
  ],

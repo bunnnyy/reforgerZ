@@ -64,7 +64,7 @@ from Early Outbreak to Aftermath, and the only way to win is together: research 
 
 ## Settlements, spawn points and the map
 
-Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameModeComponent.c`, `Core/RZ_MapMarkers.c`.
+Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameModeComponent.c`, `Core/RZ_MapMarkers.c`, `UI/RZ_MapIcons.c`.
 
 - **Settlements** come from the map's name labels plus clusters of buildings (a 300 m grid
   cell with 8 or more buildings). Each has a centre, a size class and an infection level
@@ -73,7 +73,12 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
   20 minutes. Every Haven safehouse is also a spawn point for everyone.
 - **Missions are announced** with distance and direction ("1.2 km NE"). Messages are queued
   so they never pile up: as styled notice cards, or vanilla hints without the UI ([UI.md](UI.md)).
-  World events and the lab can show as map markers (a toggle).
+- **The map** shows each player what they're allowed to know, with the ReforgerZ icons: the lab,
+  the safehouses (not to exiles), every stronghold, the outposts of factions that know them or that
+  they've been near, the power and radio stations, the sealed checkpoints and world events.
+  **Contracts are never on the map**: they give a rough area in the journal. This needs the icon
+  layer ([UI.md](UI.md#the-map)); without it, world events and the lab are vanilla text markers
+  for everyone (a toggle).
 
 ## The Director: outbreak stages and spread
 
@@ -348,7 +353,7 @@ Its tone follows the cure and the outbreak ([LORE.md](LORE.md), "The outside wor
 Code: `Backgrounds/RZ_Background.c`, `Backgrounds/RZ_Objectives.c`, `Backgrounds/RZ_PlayerProfile.c`.
 
 You pick a background in the vanilla deploy menu (each is a loadout); a panel there shows its
-perk, flaw and whether it's locked ([UI.md](UI.md#screens)). Gear comes from the
+perk, flaw, starting gear and whether it's locked ([UI.md](UI.md#screens)). Gear comes from the
 loadout; the perk and flaw change ReforgerZ systems, so they work with any other mods.
 Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 
@@ -368,9 +373,10 @@ Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 | **Elder** (Champion with the Haven) | Trusted by the Haven from the start | 30% louder | Haven +40 (Trusted) |
 | **Drifter** (10 Legacy points) | Known with every faction | No gear | +15 with all four |
 
-The last five are unlocked through **Legacy**, which carries across lives. A player who picks
-a locked background keeps its gear for that life but plays as Unemployed, and is told how to
-unlock it.
+The last five are unlocked through **Legacy**, which carries across lives. The deploy menu won't
+spawn a locked background (**UI > Lock loadouts**, on by default); with that off, or if the menu
+lets one through, the player keeps its gear for that life but plays as Unemployed, and is told
+how to unlock it.
 
 **Personal goals.** Each life gets one goal, flavoured by background (the Hunter heads for
 their cabin, the Ex-Con goes back for an old stash): reach a town 1.2–4 km away, survive a while,
@@ -441,6 +447,9 @@ Code: `Factions/RZ_Territory.c`.
 *Simplified:* towns are judged by size, infection, name and neighbours, not real roads or
 airfields. A town "taken" changes hands as data while nobody is there: no battle to watch.
 Guards and named people stand where they're spawned.
+
+Bastion and the Red Hand also put temporary **road posts** on the roads near their holdings, and
+their camps warn off the people they watch: [REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps).
 
 ### Supply trucks
 

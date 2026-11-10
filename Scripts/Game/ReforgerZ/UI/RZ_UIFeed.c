@@ -3,8 +3,10 @@
 //!
 //! - Pushed on change: the infection timer (plus a resync every minute), the secure channel the
 //!   player is listening to, and a noise level 0-6 from the heat where they stand.
-//! - Asked for by a menu as it opens: standing, the journal, the backgrounds (one string each,
-//!   one record per line, fields split by '|'; see BuildPayload).
+//! - Asked for by a menu as it opens: standing, the journal, the backgrounds, and by the map's
+//!   icon layer: what this player knows the place of (one string each, one record per line,
+//!   fields split by '|'; see BuildPayload).
+//! - The gear each background loadout really spawns with (seen at spawns), for the deploy panel.
 //! - Clues read in puzzle missions are remembered here per player, while the mission runs.
 //!
 //! Nothing here changes the game. If RZ_PlayerUIComponent isn't on the player controller, every
@@ -67,6 +69,7 @@ class RZ_UIFeed
 	static const int PAYLOAD_STANDING = 0;
 	static const int PAYLOAD_JOURNAL = 1;
 	static const int PAYLOAD_BACKGROUNDS = 2;
+	static const int PAYLOAD_MAP = 3;
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;
@@ -74,6 +77,12 @@ class RZ_UIFeed
 	protected RZ_GameModeComponent m_GM;
 	protected ref map<int, ref RZ_UIFeedState> m_mStates = new map<int, ref RZ_UIFeedState>();
 	protected ref map<int, ref array<ref RZ_UIClue>> m_mClues = new map<int, ref array<ref RZ_UIClue>>();
+	protected ref map<string, string> m_mGear = new map<string, string>();				// loadout name -> what it spawned with
+	protected ref map<string, ref array<int>> m_mVisited = new map<string, ref array<int>>();	// identity -> holdings seen up close
+	protected float m_fVisitTimer;
+
+	protected static const float VISIT_RADIUS = 300;
+	protected static const int GEAR_CAP = 10;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_UIFeed(RZ_GameModeComponent gm)
@@ -123,6 +132,79 @@ class RZ_UIFeed
 			PushListening(ui, playerId, st);
 			PushNoise(ui, ent, st);
 		}
+
+		m_fVisitTimer += dt;
+		if (m_fVisitTimer >= 30)
+		{
+			m_fVisitTimer = 0;
+			NoteVisits(ids, players);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Outposts a player has been near: they're on that player's map from then on (this session).
+	protected void NoteVisits(array<int> ids, array<IEntity> players)
+	{
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (!territory || !territory.IsActive())
+			return;
+
+		foreach (int i, IEntity p : players)
+		{
+			RZ_Holding h = territory.FindHolding(-1, p.GetOrigin(), VISIT_RADIUS, true);
+			if (!h)
+				continue;
+
+			string ident = m_GM.GetProfile(ids[i]).m_sIdentity;
+			if (ident.IsEmpty())
+				continue;
+
+			array<int> seen;
+			if (!m_mVisited.Find(ident, seen))
+			{
+				seen = new array<int>();
+				m_mVisited.Set(ident, seen);
+			}
+
+			if (!seen.Contains(h.m_iId))
+				seen.Insert(h.m_iId);
+		}
+	}
+
+	// ================================================================ Gear
+	//------------------------------------------------------------------------------------------------
+	//! From the spawn: a few seconds later (the inventory fills after the body), note what this
+	//! loadout carries, for the deploy panel's gear list.
+	void RecordGearSoon(int playerId, string loadoutName)
+	{
+		if (loadoutName.IsEmpty())
+			return;
+
+		GetGame().GetCallqueue().CallLater(RecordGear, 3000, false, playerId, loadoutName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RecordGear(int playerId, string loadoutName)
+	{
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!ent)
+			return;
+
+		array<string> names = {};
+		RZ_Util.GearNames(ent, GEAR_CAP, names);
+		if (names.IsEmpty())
+			return;
+
+		string text = "";
+		foreach (int i, string n : names)
+		{
+			if (i > 0)
+				text += ", ";
+
+			text += n;
+		}
+
+		m_mGear.Set(loadoutName, text);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -249,6 +331,8 @@ class RZ_UIFeed
 			payload = BuildStanding(playerId);
 		else if (kind == PAYLOAD_JOURNAL)
 			payload = BuildJournal(playerId);
+		else if (kind == PAYLOAD_MAP)
+			payload = BuildMap(playerId);
 		else
 			payload = BuildBackgrounds(playerId);
 
@@ -390,7 +474,7 @@ class RZ_UIFeed
 
 	//------------------------------------------------------------------------------------------------
 	//! G|legacy|Legacy for the Drifter
-	//! B|id|name|loadout|perk|flaw|locked (0/1)|unlock text|Haven|Bastion|Red Hand|Halcyon (signed start standing)
+	//! B|id|name|loadout|perk|flaw|locked (0/1)|unlock text|Haven|Bastion|Red Hand|Halcyon (signed start standing)|gear
 	protected string BuildBackgrounds(int playerId)
 	{
 		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
@@ -409,10 +493,95 @@ class RZ_UIFeed
 			RZ_UILine lnB = new RZ_UILine("B");
 			lnB.Add(bg.m_sId).Add(bg.m_sName).Add(bg.m_sLoadoutName).Add(bg.m_sPerk).Add(bg.m_sFlaw).Add(locked).Add(bg.m_sUnlockText);
 			lnB.AddInt(bg.GetStartRep(RZ_EFaction.SURVIVORS)).AddInt(bg.GetStartRep(RZ_EFaction.MILITARY));
-			s += lnB.AddInt(bg.GetStartRep(RZ_EFaction.BANDITS)).AddInt(bg.GetStartRep(RZ_EFaction.INSTITUTE)).End();
+			string gear;
+			if (!m_mGear.Find(bg.m_sLoadoutName, gear))
+				gear = bg.m_sGear;
+
+			s += lnB.AddInt(bg.GetStartRep(RZ_EFaction.BANDITS)).AddInt(bg.GetStartRep(RZ_EFaction.INSTITUTE)).Add(gear).End();
 		}
 
 		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What this player knows the place of, for the map's icon layer (UI/RZ_MapIcons.c). Contracts
+	//! are never on it: they give a rough area, in the journal.
+	//! P|icon|faction (-1 none)|x|z|label
+	protected string BuildMap(int playerId)
+	{
+		string s = "";
+		if (m_GM.HasLab())
+			s += MapLine("marker_lab", RZ_EFaction.INSTITUTE, m_GM.GetLabPosition(), "Halcyon lab");
+
+		// Safehouses: everyone knows them, except the people the Haven turned out
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (houses && !RZ_Reputation.IsHunted(m_GM.GetTier(playerId, RZ_EFaction.SURVIVORS)))
+		{
+			for (int i = 0; i < houses.Count(); i++)
+			{
+				RZ_Safehouse h = houses.Get(i);
+				s += MapLine("marker_safehouse", RZ_EFaction.SURVIVORS, h.m_vPos, string.Format("Safehouse, %1 (%2)", h.m_sName, RZ_Safehouse.TierName(h.GetTier())));
+			}
+		}
+
+		// Strongholds are common knowledge; an outpost only once they know the faction or have been there
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (territory && territory.IsActive())
+		{
+			array<int> seen;
+			m_mVisited.Find(m_GM.GetProfile(playerId).m_sIdentity, seen);
+			foreach (RZ_Holding hold : territory.GetHoldings())
+			{
+				if (hold.m_bStronghold)
+				{
+					s += MapLine("marker_stronghold", hold.m_eFaction, hold.m_vPos, hold.GetTitle());
+					continue;
+				}
+
+				bool known = RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, hold.m_eFaction), RZ_ETier.KNOWN);
+				if (known || (seen && seen.Contains(hold.m_iId)))
+					s += MapLine("marker_outpost", hold.m_eFaction, hold.m_vPos, hold.GetTitle());
+			}
+		}
+
+		RZ_PowerGrid grid = m_GM.GetPowerGrid();
+		if (grid && grid.IsActive())
+			s += MapLine("marker_power", -1, grid.GetPosition(), grid.GetName());
+
+		RZ_RadioStation radio = m_GM.GetRadioStation();
+		if (radio && radio.IsActive())
+			s += MapLine("marker_radio", -1, radio.GetPosition(), radio.GetName());
+
+		RZ_Perimeter perimeter = m_GM.GetPerimeter();
+		if (perimeter)
+		{
+			array<vector> checkpoints = {};
+			perimeter.GetCheckpoints(checkpoints);
+			foreach (vector cp : checkpoints)
+			{
+				s += MapLine("marker_checkpoint", -1, cp, "Sealed checkpoint");
+			}
+		}
+
+		// World events are public; contracts aren't on the map at all
+		RZ_MissionManager mm = m_GM.GetMissions();
+		if (mm)
+		{
+			foreach (RZ_Mission m : mm.GetActive())
+			{
+				if (!m.m_bContract && !m.m_bGlobal)
+					s += MapLine("marker_event", -1, m.m_vPos, m.m_sTitle);
+			}
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string MapLine(string icon, int faction, vector pos, string label)
+	{
+		RZ_UILine ln = new RZ_UILine("P");
+		return ln.Add(icon).AddInt(faction).AddInt(RZ_Util.RoundToInt(pos[0])).AddInt(RZ_Util.RoundToInt(pos[2])).Add(label).End();
 	}
 
 	//------------------------------------------------------------------------------------------------

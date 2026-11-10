@@ -3,8 +3,8 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** everything under "Built" is written in Enforce Script (about 65,700 lines) and
-**has never been compiled**. It needs Workbench, the 186 `VERIFY` fixes (150 in the game, 36 in
+**Status:** everything under "Built" is written in Enforce Script (about 68,400 lines) and
+**has never been compiled**. It needs Workbench, the 201 `VERIFY` fixes (165 in the game, 36 in
 the Workbench plugin) and a play-test before any of it can be called working
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
@@ -12,7 +12,7 @@ the Workbench plugin) and a play-test before any of it can be called working
 
 | System | Design |
 |---|---|
-| Settlement detection, rotating spawn points, mission announcements, map markers | [Settlements](DESIGN.md#settlements-spawn-points-and-the-map) |
+| Settlement detection, rotating spawn points, mission announcements, per-player map icons (vanilla text markers without them) | [Settlements](DESIGN.md#settlements-spawn-points-and-the-map) |
 | The Director: four outbreak stages, infection spread, paced for a season of about 10 days (season speed for other server sizes) | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread), [Season pacing](DESIGN.md#season-pacing) |
 | Heat from presence, vehicles, gunfire (suppressors quieter), noisemakers; hordes toward noise | [Heat and noise](DESIGN.md#heat-and-noise) |
 | Zombie spawner for any zombie mod, bite detection (scratches and bites, protective clothing), the golden window and wound cleaning, staged infection, the Turned Player | [Zombies](DESIGN.md#zombies-bites-and-infection) |
@@ -21,7 +21,8 @@ the Workbench plugin) and a play-test before any of it can be called working
 | The Perimeter: warning and kill zones, one drone per player, sealed road checkpoints | [The Perimeter](DESIGN.md#the-perimeter) |
 | Night, rain, fog, fog banks and storms; the power grid and power surges; the radio station; the government broadcast | [Time and environment](DESIGN.md#time-and-environment) |
 | 13 backgrounds (5 unlocked through Legacy), personal goals, Legacy points | [Backgrounds](DESIGN.md#backgrounds-and-personal-goals) |
-| Fame, Infamy and Favor; tiers; rivals; amends; quartermaster shops; Requisition; cheap perks; the Haven Champion's Safe Harbour and Remembered; hunter squads; bounties | [REPUTATION.md](REPUTATION.md) |
+| Fame, Infamy and Favor; tiers; rivals; amends (contracts, paying Favor, surrender); quartermaster shops; every perk (Requisition, Fire Mission, the fence, the bounty board, Halcyon's medic and immunity booster, the Haven Champion's Safe Harbour and Remembered...); hunter squads; bounties; reputation clues | [REPUTATION.md](REPUTATION.md) |
+| Bastion checkpoints and Red Hand roadblocks inside the Zone (unsearched passage, tolls, searches), surrender, camps that warn and refuse, safe zones | [REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps) |
 | Per-player AI hostility (hidden faction variants), retaliation, disguises, Outlaw fallback | [REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you) |
 | Territory: strongholds, outposts, the territory tick, faction strength | [Territory](DESIGN.md#territory) |
 | Real supply trucks with AI crews, shortages, escort, drive-in and theft | [Supply trucks](DESIGN.md#supply-trucks) |
@@ -37,7 +38,7 @@ the Workbench plugin) and a play-test before any of it can be called working
 | Cure research, antidotes, the final stand, the season's winner | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
-| The UI: an original icon set (60 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the standing screen, journal, radio log, map key and a deploy-menu background panel, fed per player from the server. Layouts are still to be built in Workbench | [UI.md](UI.md) |
+| The UI: an original icon set (60 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the standing screen, journal, radio log and map key (keys and mouse), a deploy-menu background panel with the loadout's gear and locked loadouts unavailable, and the marker icons on the map, fed per player from the server. Layouts are still to be built in Workbench | [UI.md](UI.md) |
 | Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout), the Workbench plugin **ReforgerZ: Create prefabs** with a dry run and a checklist fallback (never run), and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
 
 ## Next
@@ -50,21 +51,7 @@ the Workbench plugin) and a play-test before any of it can be called working
 
 ### Characters and UI
 - Build the UI layouts and the icon imageset in Workbench ([UI/LAYOUTS.md](../UI/LAYOUTS.md)).
-- The deploy menu hides locked backgrounds (the panel already shows them as locked), and the
-  panel lists a loadout's gear.
-- The new marker icons on the map; mouse support in the menus.
 - A trait-points system on top of backgrounds (positive and negative traits).
-
-### Factions
-- Remaining perks: Bastion **Fire Mission**,
-  Red Hand **Fence** and **Bounty board**, Halcyon **immunity booster** and **medic**.
-- Paying Favor to work off Infamy.
-- Bastion checkpoints and Red Hand roadblocks on the roads inside the Zone as AI (with the Known
-  perks: pass a checkpoint unsearched, pay the toll instead of being shot). The Perimeter's
-  checkpoints stay sealed to everyone.
-- Surrendering at checkpoints.
-- AI camps that warn and refuse by standing, and safe-zone entry.
-- Reputation clues other players can see (e.g. a bandit armband).
 
 ### Player to player
 - A notice board at each safehouse for short notes between sessions.
@@ -106,8 +93,13 @@ In this order, because later ones depend on earlier ones:
 11. **Guidance:** is anything too chatty for a level-0 player? Do the right speakers say it?
 12. **Story arcs** end to end (start one with `RZ_StoryArcs.Begin(kind)`) and how often they come.
 13. **Weather** accessors and the generator's noise.
-14. **The UI**, once the layouts exist: does the owner-only feed arrive, does the timer agree with
-    the stage messages, and do the menus open and fill ([UI.md](UI.md)).
+14. **Road posts and camps:** do posts go up on real roads ahead of players, and do the search,
+    the toll, running and surrender fire at the right distances? Is the timed grudge enough to
+    make the crew shoot, and does a surrender's stand-down stop them? Is a Fire Mission's horde
+    check too strict or too loose; does the fence take the right things?
+15. **The UI**, once the layouts exist: does the owner-only feed arrive, does the timer agree with
+    the stage messages, do the menus open, fill and take clicks, do the map icons sit on their
+    spots while panning and zooming, and does the deploy menu grey out locked loadouts ([UI.md](UI.md)).
 
 ## Dropped
 

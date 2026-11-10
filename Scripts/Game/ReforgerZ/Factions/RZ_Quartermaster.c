@@ -66,6 +66,9 @@ class RZ_QuartermasterComponent : ScriptComponent
 //! Shared server-side helpers for quartermaster actions.
 class RZ_QuartermasterHelper
 {
+	protected static ref array<IEntity> s_aBought;		// weak: what quartermasters sold lately (the fence won't buy it)
+	protected static const int BOUGHT_MEMORY = 300;
+
 	//------------------------------------------------------------------------------------------------
 	static int GetPlayerId(IEntity user)
 	{
@@ -84,7 +87,39 @@ class RZ_QuartermasterHelper
 		pos = RZ_Util.RandomPointInRing(pos, 0.5, 1.5) + Vector(0, 0.3, 0);
 		IEntity bought = RZ_Util.SpawnPrefab(prefab, pos);
 		RZ_GameModeComponent.TrackLooseItem(bought); // left lying there, it's cleaned up in time
+		MarkBought(bought);
 		return bought;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Remembers a sold item, so the Red Hand fence (RZ_FactionServices) never buys it back.
+	static void MarkBought(IEntity e)
+	{
+		if (!e)
+			return;
+
+		if (!s_aBought)
+			s_aBought = new array<IEntity>();
+
+		// Deleted items leave null entries: drop those first, then the oldest
+		for (int i = s_aBought.Count() - 1; i >= 0; i--)
+		{
+			if (!s_aBought[i])
+				s_aBought.RemoveOrdered(i);
+		}
+
+		while (s_aBought.Count() >= BOUGHT_MEMORY)
+		{
+			s_aBought.RemoveOrdered(0);
+		}
+
+		s_aBought.Insert(e);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool WasBought(IEntity e)
+	{
+		return e && s_aBought && s_aBought.Contains(e);
 	}
 }
 

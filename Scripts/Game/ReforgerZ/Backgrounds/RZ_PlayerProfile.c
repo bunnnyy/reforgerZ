@@ -52,6 +52,10 @@ class RZ_PlayerProfile
 	bool m_bDoctorTreated;		// a Doctor wanderer already slowed this life's infection
 	bool m_bMedicSlowed;		// a Nurse or Doctor player already slowed this life's infection
 	bool m_bGuideCounted;		// this life already counts as experience
+	bool m_bBoosted;			// Halcyon's immunity booster: the next bite doesn't take (once)
+	int m_iCluesGiven;			// bitmask of factions whose reputation clue (armband, ribbon) this life has had
+	ref array<int> m_aAmendsPaid = {0, 0, 0, 0};	// paid amends per faction this life (each costs more)
+	ref array<int> m_aAmendsWorked = {0, 0, 0, 0};	// Infamy worked off by paying, per faction this life (capped)
 
 	// Personal objective for this life (see RZ_Objectives)
 	int m_iObjType = -1;
@@ -83,6 +87,8 @@ class RZ_PlayerProfile
 		m_bDoctorTreated = false;
 		m_bMedicSlowed = false;
 		m_bGuideCounted = false;
+		m_bBoosted = false;
+		m_iCluesGiven = 0;
 		m_iObjType = -1;
 		m_iObjTarget = -1;
 		m_iObjGoal = 0;
@@ -99,6 +105,8 @@ class RZ_PlayerProfile
 			m_aFame[i] = fame;
 			m_aInfamy[i] = bg.GetStartInfamy(i);
 			m_aFavor[i] = 0;
+			m_aAmendsPaid[i] = 0;
+			m_aAmendsWorked[i] = 0;
 		}
 	}
 
@@ -126,6 +134,18 @@ class RZ_PlayerProfile
 			m_aUnlocked = new array<string>();
 		if (!m_aGuideSeen)
 			m_aGuideSeen = new array<string>();
+		if (!m_aAmendsPaid)
+			m_aAmendsPaid = new array<int>();
+		if (!m_aAmendsWorked)
+			m_aAmendsWorked = new array<int>();
+		while (m_aAmendsPaid.Count() < RZ_Factions.COUNT)
+		{
+			m_aAmendsPaid.Insert(0);
+		}
+		while (m_aAmendsWorked.Count() < RZ_Factions.COUNT)
+		{
+			m_aAmendsWorked.Insert(0);
+		}
 
 		while (m_aFame.Count() < RZ_Factions.COUNT)
 		{

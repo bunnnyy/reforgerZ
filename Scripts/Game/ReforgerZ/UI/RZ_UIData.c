@@ -86,7 +86,23 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourceNamePicker, "Layout of one radio log row (UI/LAYOUTS.md, RadioRow)", "layout")]
 	ResourceName m_sRadioRowLayout;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Layout of one map icon (UI/LAYOUTS.md, MapIcon). Set, the map shows each player what they know with the ReforgerZ icons (RZ_MapIconsUI on the map config) instead of vanilla text markers", "layout")]
+	ResourceName m_sMapIconLayout;
+
+	[Attribute("20", desc: "Map icons: seconds between refreshes while the map is open")]
+	float m_fMapRefreshSeconds = 20;
+
+	[Attribute("1", desc: "The deploy menu refuses background loadouts the player hasn't unlocked (UI/RZ_LoadoutLock.c). Off: picking one plays as the default background with its gear")]
+	bool m_bLockLoadouts = true;
+
 	protected static ref RZ_UISettings s_Defaults;
+
+	//------------------------------------------------------------------------------------------------
+	//! The icon layer replaces the vanilla text markers (RZ_GameModeComponent.AddMapMarker).
+	bool UsesMapIcons()
+	{
+		return !m_sMapIconLayout.IsEmpty();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The game mode's settings, else the defaults (always non-null).
@@ -612,6 +628,58 @@ class RZ_UIW
 		MenuManager mm = GetGame().GetMenuManager();
 		if (mm)
 			mm.OpenMenu(preset); // VERIFY: MenuManager.OpenMenu(ChimeraMenuPreset)
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse: `handler` hears clicks on the named widget, or on root itself if name is "" (make it a
+	//! Button in the layout).
+	static void OnClick(Widget root, string name, ScriptedWidgetEventHandler handler)
+	{
+		Widget w = root;
+		if (!name.IsEmpty())
+			w = Find(root, name);
+
+		if (w && handler)
+			w.AddHandler(handler); // VERIFY: Widget.AddHandler(ScriptedWidgetEventHandler); the handler's OnClick fires for Button widgets
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A number stored on a widget (a journal row's index), read back by the click handler.
+	static void SetTag(Widget w, int tag)
+	{
+		if (w)
+			w.SetUserID(tag); // VERIFY: Widget.SetUserID / GetUserID
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int GetTag(Widget w)
+	{
+		if (!w)
+			return -1;
+
+		return w.GetUserID();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Map: screen position (layout units) of a world spot on the open map. False if there's no map.
+	static bool MapToScreen(SCR_MapEntity mapEnt, float x, float z, out float sx, out float sy)
+	{
+		if (!mapEnt)
+			return false;
+
+		int px, py;
+		mapEnt.WorldToScreen(x, z, px, py, true); // VERIFY: SCR_MapEntity.WorldToScreen(worldX, worldY, out screenX, out screenY, withPan)
+		WorkspaceWidget ws = GetGame().GetWorkspace();
+		sx = ws.DPIUnscale(px); // VERIFY: WorkspaceWidget.DPIUnscale
+		sy = ws.DPIUnscale(py);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void SetPos(Widget w, float x, float y)
+	{
+		if (w)
+			FrameSlot.SetPos(w, x, y); // VERIFY: FrameSlot.SetPos(widget, x, y) for a child of a Frame
 	}
 
 	//------------------------------------------------------------------------------------------------

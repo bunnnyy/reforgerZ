@@ -440,6 +440,44 @@ class RZ_Perimeter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The sealed road checkpoints (the map's icon layer shows them).
+	void GetCheckpoints(notnull array<vector> result)
+	{
+		foreach (vector cp : m_aCheckpoints)
+		{
+			result.Insert(cp);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Points on roads within `radius` of `center` (centre lines, one every few metres as the road
+	//! network stores them), for posts inside the Zone (RZ_Checkpoints). Empty without a road network.
+	static void RoadPointsNear(vector center, float radius, notnull array<vector> result)
+	{
+		RoadNetworkManager roads = GetRoadNetwork();
+		if (!roads)
+			return;
+
+		vector mins = Vector(center[0] - radius, -1000, center[2] - radius);
+		vector maxs = Vector(center[0] + radius, 10000, center[2] + radius);
+		array<BaseRoad> found = {};
+		roads.GetRoadsInAABB(mins, maxs, found); // VERIFY: the same GetRoadsInAABB as FindRoadExits
+		foreach (BaseRoad road : found)
+		{
+			if (!road)
+				continue;
+
+			array<vector> points = {};
+			road.GetPoints(points); // VERIFY: the same GetPoints as FindRoadExits
+			foreach (vector pt : points)
+			{
+				if (RZ_Util.DistXZ(pt, center) <= radius)
+					result.Insert(pt);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Turn the cordon off within `radius` of `center` until RemoveBlindSpot. Returns a handle.
 	int AddBlindSpot(vector center, float radius)
 	{
@@ -775,7 +813,7 @@ class RZ_Perimeter
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static RoadNetworkManager GetRoadNetwork()
+	static RoadNetworkManager GetRoadNetwork()
 	{
 		SCR_AIWorld aiWorld = SCR_AIWorld.Cast(GetGame().GetAIWorld()); // VERIFY: GetGame().GetAIWorld() returns SCR_AIWorld
 		if (!aiWorld)

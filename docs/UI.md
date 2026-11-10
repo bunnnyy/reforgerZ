@@ -71,13 +71,34 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; up to three at once. The secure-radio indicator while a cracked channel lasts. A subtle noise meter | `RZ_HudDisplay` | Written |
 | Standing | `standing.png` | Per faction: tier, Fame, Infamy (with the tier bands marked), Favor, the leaders you've met and what they think of you, what the faction needs, a warning when it hunts you. Truces and feuds, and the tier grid | `RZ_StandingMenu` | Written; the tier grid is static |
 | Journal | `journal.png` | Active contracts, events, puzzles, leader jobs and arcs with type icon, giver, rough direction and distance and time left. The selected one in full: brief, where, requirements, rewards, and the puzzle clues you've read | `RZ_JournalMenu` | Written |
-| Background picker | `background_picker.png` | A panel in the vanilla deploy menu: the picked background's name, perk, flaw, starting standing, locked or available (with how to unlock), Legacy toward the Drifter | `RZ_BackgroundPanelComponent` | Written; hiding locked loadouts and listing the loadout's gear are planned |
+| Background picker | `background_picker.png` | A panel in the vanilla deploy menu: the picked background's name, perk, flaw, starting standing, starting gear, locked or available (with how to unlock), Legacy toward the Drifter. Locked loadouts are unavailable in the menu itself | `RZ_BackgroundPanelComponent`, `RZ_LoadoutLock.c` | Written |
 | Radio log | `radio_log.png` | What you heard this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice; a filter | `RZ_RadioLogMenu` | Written; the channel list is static |
-| Map key | `map_legend.png` | The marker icons in use, with one line each | `RZ_MapKeyMenu` | Layout only; the map still uses vanilla markers (planned: these icons on the map) |
+| Map key | `map_legend.png` | The marker icons in use, with one line each | `RZ_MapKeyMenu` | Layout only |
+| The map | — | The marker icons on the vanilla map, per player ([below](#the-map)) | `RZ_MapIconsUI` | Written |
 
 The menus share one frame: Standing, Journal, Radio and Map key are tabs (Q/E), Esc closes. Keys:
 **K** standing, **J** journal, **U** radio, **F** filter in the radio log (input actions you add;
-[LAYOUTS.md](../UI/LAYOUTS.md#menus)).
+[LAYOUTS.md](../UI/LAYOUTS.md#menus)). **Mouse:** click a tab to switch, the close button to
+close, a journal row to select it, the filter chip to cycle the radio filter; the wheel scrolls the
+lists (they sit in a ScrollLayout). Those widgets are Buttons in the layouts.
+
+### The background picker
+
+The panel reads the picked loadout twice a second. Its **starting gear** is what that loadout
+really spawned with the last time anyone took it (the server notes up to ten things a few seconds
+after the spawn, by prefab name); until then, the background's own gear line (`RZ_Background.m_sGear`).
+A locked background's loadout is **unavailable** in the vanilla menu (**UI > Lock loadouts**, on):
+`RZ_LoadoutLock.c` mods `SCR_BasePlayerLoadout`, the server refusing it from the saved profile
+and the client greying it from the last backgrounds payload. The panel says how to unlock it.
+
+### The map
+
+`RZ_MapIconsUI` is a component on the map configuration: while the map is open it asks the server
+for this player's list (on open, then every 20 s) and draws one icon per place, in its colour
+(the faction's, hazard yellow for events and the sealed checkpoints, bone for the stations), with
+a label, following pan and zoom. The list is what this player may know ([DESIGN.md](DESIGN.md#settlements-spawn-points-and-the-map)):
+contracts are never on it. With **UI > Map icon layout** set, the vanilla text markers for
+events and the lab are off; without it, the layer does nothing and those markers stay.
 
 ## How the scripts fit
 
@@ -85,17 +106,20 @@ Code: `Scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 
 | Class | Runs on | Does |
 |---|---|---|
-| `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes** (the timer also resyncs every minute; the client counts down in between). Builds the standing, journal and background data when a menu asks. Remembers the clues each player has read while the puzzle runs |
+| `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes** (the timer also resyncs every minute; the client counts down in between). Builds the standing, journal, background and map data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, one request RPC from the client (at most every 2 s), and the client's cache. Keeps the radio log on the client for this life |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplay`) | Draws the HUD five times a second from the cache; shows the notice cards |
-| `RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu` | client (`ChimeraMenuBase`) | Ask for their data on open, redraw when a new copy arrives |
-| `RZ_BackgroundPanelComponent` | client (widget handler) | Watches the picked loadout in the deploy menu and shows its background |
+| `RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu` | client (`ChimeraMenuBase`) | Ask for their data on open, redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them |
+| `RZ_BackgroundPanelComponent` | client (widget handler) | Watches the picked loadout in the deploy menu and shows its background and gear |
+| `SCR_BasePlayerLoadout` (modded, `RZ_LoadoutLock.c`) | server and client | Makes a locked background's loadout unavailable |
+| `RZ_MapIconsUI` | client (map component) | The icon layer on the map |
 | `RZ_NoticeStyle` | client | Classifies a notice by its title (faction names, leader titles, channel names) into a kind and a faction for its card and the radio log. The 600-odd `NotifyPlayer` calls are unchanged |
 | `RZ_UIW`, `RZ_UIText`, `RZ_UIColor` | client | Every engine UI call in one helper; payload text; the palette |
 
 **Data is cheap.** Pushed values are a few numbers per change, to the owning player only. Menu data
 is one string (one record per line, fields split by `|`, at most 6000 characters) sent when the
-menu opens. Nothing is replicated to other players.
+menu opens; the map's every 20 s while it's open. Each kind can be asked for at most every 2 s.
+Nothing is replicated to other players.
 
 **Notices.** Every message still goes through `RZ_GameModeComponent.NotifyPlayer` and its
 broadcast RPC. On the client, `QueueHint` classifies it, adds radio messages to the radio log, and
@@ -104,11 +128,15 @@ missing, the vanilla hint queue shows it exactly as before.
 
 **Turning it off.** Styled notices off gives the vanilla hints back. Leaving
 `RZ_PlayerUIComponent` off the controller stops all sending. To remove the UI entirely, delete
-`UI/` and the lines that use it: the `m_UISettings` attribute, `m_UIFeed` (creation, tick, spawn
-and accessors) and the block at the top of `QueueHint` in `Core/RZ_GameModeComponent.c`, and the
-`OnClueRead` call in `Puzzles/RZ_PuzzleMission.c`.
+`UI/` and the lines that use it: the `m_UISettings` attribute, `m_UIFeed` (creation, tick, spawn,
+`RecordGearSoon` and accessors), the `UsesMapIcons` check in `AddMapMarker` and the block at the
+top of `QueueHint` in `Core/RZ_GameModeComponent.c`, and the `OnClueRead` call in
+`Puzzles/RZ_PuzzleMission.c`. `RZ_LoadoutLock.c` and `RZ_MapIcons.c` can each be deleted on their
+own.
 
-*Simplified:* notices are classified by their title, so an unusual title gets a plain card.
+*Simplified:* notices are classified by their title, so an unusual title gets a plain card. The
+map's icons don't cluster or scale with zoom; outposts a player has seen are remembered for the
+session only.
 Journal rewards are the mission's base Fame and Favor ("about"), before leader traits and
 background multipliers. The tier grid on the standing screen and the radio channel list are
 static parts of the layouts.
@@ -117,6 +145,6 @@ static parts of the layouts.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; six mockups and previews; the feed, the HUD, four menus, the deploy-menu panel, styled notices with the vanilla fallback, the radio log (all written, never compiled) |
-| Workbench | The layouts, the imageset, the menu and input config entries, adding the component and the info display ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui)) |
-| Planned | The new icons on the map markers; hiding locked loadouts in the deploy menu; listing a loadout's gear; mouse and button support in the menus (keys only for now); a sound on new notices |
+| Built | The icon set and its renderer; six mockups and previews; the feed, the HUD, four menus with mouse support, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback, the radio log (all written, never compiled) |
+| Workbench | The layouts, the imageset, the menu and input config entries, adding the component, the info display and the map component ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui)) |
+| Planned | A sound on new notices |
