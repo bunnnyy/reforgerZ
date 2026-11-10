@@ -92,7 +92,7 @@ memory of you; see [WORLD.md](WORLD.md), "Wanderers".
 | Tier | Shop (Bastion requisition) | Perk / service |
 |---|---|---|
 | Known | Military rations, morphine, flares | Checkpoints let you through without being searched |
-| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition:** once an hour, draw ammo or rations from Bastion's stock at half the Favor cost, at the Bastion quartermaster. *(Planned: drawn from a nearby outpost's stock instead, and only while a supply truck has restocked it; see [WORLD.md](WORLD.md).)* |
+| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition:** once an hour, draw ammo or rations at half the Favor cost. While Bastion's supply trucks run, it's signed out at a Bastion outpost's quartermaster from the stock its trucks brought (one unit per item), and refused while that outpost is short or empty; the stronghold quartermaster points you to the nearest outpost with stock. Without trucks, at the Bastion quartermaster ([WORLD.md](WORLD.md), "Supply lines") |
 | Champion | Machine guns, grenades, military trucks | **Fire mission:** mark a horde with smoke for an artillery strike (long cooldown) |
 | Hunted | — | Bastion soldiers shoot on sight; hunter squads get your last known position |
 
@@ -124,7 +124,7 @@ and reputation is with people as well as factions. Code: `Factions/RZ_Leaders.c`
 |---|---|---|
 | Stronghold leader (one per faction) | at the faction's quartermaster; Halcyon's at the lab | Never; never replaced; always Loyal |
 | Council head | each Haven safehouse (the one at the Haven quartermaster is the stronghold) | Yes |
-| Commander, crew boss, lead researcher | each outpost (interim leader posts until territory exists) | Yes |
+| Commander, crew boss, lead researcher | each outpost ([WORLD.md](WORLD.md), section 3; interim leader posts with territory off) | Yes |
 
 Each has a seeded name, a title, a one-line backstory and **two traits**. They're saved.
 Only the leader at the place you're standing near has a body; at a stronghold or
@@ -212,10 +212,54 @@ Killing one yourself is +15 Infamy with their faction. A new leader takes the ch
 2 hours of server time, with new traits and a new loyalty. All of it is headline news ("Word on
 the roads"); new players see the last three headlines when they first spawn.
 
+## Morale, needs, truces and feuds
+
+Factions change with the world (code: `Factions/RZ_FactionLife.c`; the radio chatter, life
+events, remembered moments and rumours this feeds are in [WORLD.md](WORLD.md), section 3).
+Every effect is small, capped and recovers.
+
+**Needs.** Each faction has one need at a time, worked out every 5 minutes from the world.
+Leaders and named people say it when you talk to them (most of the time), and contracts that
+answer it are picked more often (×1.2):
+
+| Need | When | Contracts it favours |
+|---|---|---|
+| Food (Haven) | a safehouse is short, or a Haven truck was lost in the last hour or so | deliveries and choice missions |
+| Supplies (Bastion, the Red Hand) | one of its trucks was lost recently | deliveries and choice missions |
+| Security | a leader died or an outpost was lost recently (the Haven: a death) | holds, kill missions, work against a rival |
+| Revenge (Bastion, the Red Hand) | a feud; for the Red Hand also an outpost lost (before anything else) | work that costs a rival Infamy |
+| Samples (Halcyon) | the cure isn't done (unless it needs security) | Halcyon's contracts |
+| People (Haven) | its safehouses hold fewer than 6 people each on average | rescues and escorts |
+
+**Morale** (5–95, starts at 60, recovers 2 points every 10 minutes toward 60): a lost truck −10,
+a lost outpost −10, a dead leader −8, Under Pressure −5 (+5 when it ends), a lost final stand
+−15 (Halcyon); a delivered truck +4, a new or won outpost +5, a breakthrough +10 (Halcyon), a
+contract for them +1 (−1 if it failed). What it changes:
+
+| Morale | Their shops | The Haven |
+|---|---|---|
+| Under 30 | ×1.1 | rescued survivors walk off 2.5× as often (at most half) |
+| Over 75 | ×0.95 | half as often |
+
+A demoralised faction (under 30) also puts out a little less work (contract weights ×0.9).
+Contract weights from needs and morale stay within 0.85–1.2.
+
+**Truces and feuds.** Temporary, and they always end: 45–90 minutes each, at most two at once,
+one per pair of factions, and a 30-minute pause after one ends before the next can start.
+
+| | Starts | Rival Infamy between the two | Territory |
+|---|---|---|---|
+| Truce | every 30 minutes, 30% × a pair of rivals with low morale (both under 45) or a bad outbreak (average infection 50+ or Collapse) | halved | neither takes the other's towns |
+| Feud | a truck lost near the other's holding (50%), a stolen truck delivered to them (60%), an outpost taken by them (60%); or the 30-minute roll for rivals who've been losing trucks or towns | ×1.5 | the stronger takes the weaker's towns with no strength margin |
+
+Both apply to the general rival table and to a contract's own rival Infamy. They're headlines,
+never alerts.
+
 ## Making it hurt: rivalries and choices
 
 - **Rival penalties.** Fame with one faction often gives Infamy with its rival.
-  Clear a Red Hand camp for Bastion and the Red Hand remembers.
+  Clear a Red Hand camp for Bastion and the Red Hand remembers. A truce halves it, a feud
+  makes it ×1.5 (above).
 - **Choice missions.** The objective is an item (a black box, data drive,
   stolen antidotes, a prisoner). You decide whose drop point gets it. The winner gives Fame;
   the faction you double-crossed gives Infamy.
@@ -318,6 +362,10 @@ That sets the tone of the Aftermath and the next season's starting rules:
 - `RZ_QuartermasterComponent` marks a faction contact. `RZ_FactionShopAction` on it has faction,
   required tier, Favor cost, item prefab and name. The server checks tier and Favor when the
   action is used and refuses with a message; the action is not greyed out on the client.
+  The price is the base cost × the leader's `PriceMult` (±20%), × a shortage's +25–50% at an
+  outpost or safehouse whose truck didn't arrive (some items out, maybe the Champion tier
+  locked; `RZ_SupplyLines.FindShopState`), × the faction's morale (0.95–1.1). A stronghold
+  Under Pressure locks its own Champion tier.
   Shop System can still be used for general trading.
 - Missions: `m_eGiver` gets Fame, an optional `m_eRival` gets Infamy, `m_iFavorReward` pays out.
   `m_iLeaderId` is the leader who gives it: their traits scale the Fame and Favor
@@ -342,10 +390,11 @@ That sets the tone of the Aftermath and the next season's starting rules:
 | All tiers, Fame/Infamy/Favor, rivals, amends missions | Paying Favor to remove Infamy |
 | Word gets around, all five unlockable backgrounds | Disguises, surrendering at checkpoints |
 | Quartermaster shops (any item, any tier); Haven stock by safehouse size | Community respawns (the supply bag) |
-| Requisition (half price at the quartermaster), sample scanner, Halcyon research bonus, Neighbours | Requisition from truck-supplied outpost stock; Fire Mission, Fence, Bounty board, Halcyon medic, immunity booster |
+| Requisition (half price, from a Bastion outpost's truck-supplied stock while trucks run), sample scanner, Halcyon research bonus, Neighbours | Fire Mission, Fence, Bounty board, Halcyon medic, immunity booster |
 | Toll pass (message only), Halcyon Hunted gets no Fame for samples | Bastion checkpoints and Red Hand roadblocks as AI (the AI that exists already shoots by standing) |
 | Per-player AI hostility: hidden faction variants, stances per faction, armed exiles, fights, wanderers fighting back, Outlaw fallback | Shooting at a faction's AI making it fight back (only fights, standing and grudges do) |
 | Hunter squads (Bastion and Red Hand), Kill-on-Sight bounties | — |
 | Haven safehouse spawn points, house rules, exile, Haven wanderers warning other players, safehouse location leaks | — |
-| Named leaders: traits, loyalty, memory, voiced briefs, first contact, discovery, deaths and replacements, Rein In | Leaders for real territory outposts (the `RegisterOutpost` hook is ready) |
+| Named leaders: traits, loyalty, memory, voiced briefs, first contact, discovery, deaths and replacements, Rein In, leaders for territory outposts | — |
+| Faction needs, morale, truces and feuds; shop shortages from lost supply trucks | — |
 | Season winner by Fame | Next-season rules from the winner |

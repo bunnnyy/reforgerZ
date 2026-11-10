@@ -4,8 +4,9 @@ How the world changes on its own, without becoming overpowered or lagging
 the server. Three rules apply throughout:
 
 - **Simulate as data, spawn as bodies only near players.** Population,
-  wanderers, territory and convoys are numbers on the server. AI entities
-  exist only within a few hundred metres of a player.
+  wanderers and territory are numbers on the server. AI entities
+  exist only within a few hundred metres of a player. The one exception is supply trucks: at
+  most one real truck per faction is on the road (section 3).
 - **Effects are capped and recover.** Nothing a player or the Director does wipes
   out a faction, a town or a safehouse for good.
 - **Background, not foreground.** Territory and adaptation are slow, low-key
@@ -42,8 +43,8 @@ survivor isn't kept as an AI body: they become **+1 population** at the nearest 
   items to the quartermaster (prefab names containing food words; 2 Haven Favor per item).
   If the stock is short, 1–3 people leave: to the nearest safehouse that can feed them, or onto
   the roads (one may become a named wanderer). Upkeep never takes a safehouse below 2 people.
-  *Simplification:* there are no supply trucks yet, so food only comes from players and the
-  starting stock. Bastion's Requisition contract takes 4 food when the supplies go to Bastion.
+  Haven supply trucks bring 6 food when they park at a safehouse (section 3, "Supply lines").
+  Bastion's Requisition contract takes 4 food when the supplies go to Bastion.
 - **Rescues add population.** Survivors Trapped adds 3 (4 with a ★ Nurse or Doctor), Rescue the
   Kids adds 3, and escorting the Kid wanderer adds 1. About 1 in 10 rescued survivors won't stay
   behind walls and becomes a named wanderer instead, if the roster has room.
@@ -135,7 +136,7 @@ near each player.
   on the Haven's faction, so this works through the player's Haven bit within 80 m of the
   wanderer: any other Haven AI there (a safehouse's guards, if the wanderer is resting at one)
   joins in. Without an armed AI body, the Deserter's refusal is still a pistol and a retreat.
-- "Their faction loses an outpost" isn't in: there's no territory yet (section 3).
+- Wanderers don't react to outposts changing hands (section 3); they only pass on the gossip.
 
 **Planned:** barter chains across three wanderers; Haven Champion "Community" respawns with a supply bag.
 
@@ -147,12 +148,12 @@ A named person runs every place a faction holds. What they do for and against yo
 
 | Seat | Built now | Planned |
 |---|---|---|
-| Stronghold (one per faction) | At the faction's quartermaster; Halcyon's at the lab. Without a quartermaster: the Haven's at its first safehouse, the others in a town that suits them | Same, at the real stronghold |
+| Stronghold (one per faction) | At the faction's quartermaster; Halcyon's at the lab. Without a quartermaster: the Haven's at its first safehouse, the others in a town that suits them. This is the territory's Stronghold (section 3) | — |
 | Haven safehouse | One council head per safehouse | — |
-| Outpost | **Interim leader posts**: 1 per faction for Bastion, the Red Hand and Halcyon (a "field station", never more than one), picked once in a town that suits the faction (bigger towns for Bastion, rougher ones for the Red Hand, quiet ones for Halcyon), saved. Mission makers can place `RZ_OutpostMarkerEntity` instead | Territory (section 3) calls `RZ_Leaders.RegisterOutpost(faction, pos, name)` for each outpost and `UnregisterOutpost(id, why)` when it's lost; the interim posts are turned off then |
+| Outpost | One per territory outpost (section 3): the territory calls `RZ_Leaders.RegisterOutpost(faction, pos, name)` for each and `UnregisterOutpost(id, why)` when it's lost or dropped. With **Territory** off, **interim leader posts** instead: 1 per faction for Bastion, the Red Hand and Halcyon (a "field station", never more than one), picked once in a town that suits the faction, saved. Mission makers can place `RZ_OutpostMarkerEntity` either way | — |
 
-On Arland that's about 8–10 leaders (4 strongholds, 1–2 council heads, 3 posts); with
-territory it would be 12–20.
+On Arland that's about 9–10 leaders (4 strongholds, 1–2 council heads, 4 outposts); on Everon
+about 16–20.
 
 - **Data first.** A leader is a saved record (name, title, backstory, traits, loyalty,
   memories). A body exists only while a player is within 200 m of their seat. At a
@@ -168,8 +169,9 @@ territory it would be 12–20.
   30 minutes per leader), and asking them for work tries straight away. They're offered only
   in person.
 
-**Simplifications:** interim posts are leader seats only (no camp, guards or shop of their own
-yet). A leader's "people" who can see a rogue job are their faction's other seats (within 60 m)
+**Simplifications:** with territory off, interim posts are leader seats only (no guards or
+shop); territory outposts have guards, named people and a quartermaster when the prefabs are
+set. A leader's "people" who can see a rogue job are their faction's other seats (within 60 m)
 and, for the Haven, its wanderers. Off-screen deaths only happen with nobody within 400 m.
 
 ## 2. Unarmed missions: low level, but still a challenge
@@ -205,49 +207,140 @@ doesn't need to be.
 
 ## 3. Factions in the background (strongholds never fall)
 
-- **Most of the map is abandoned.** At most around 20% of towns are held by
-  any faction at all. The rest are empty, looted or infested, which is where
-  the scavenging, missions and danger are. A faction holding a town is the exception.
-  - On a small map like Arland: each faction has its Stronghold and 1 Outpost.
-  - On a large map like Everon: a Stronghold and 2–3 Outposts each.
-  - Factions only claim towns that make sense for them. Bastion takes towns
-    near roads and airfields, the Haven takes quiet villages, the Red Hand takes crossroads and outskirts,
-    and Halcyon only ever holds the lab town plus at most one field station.
-  - Haven safehouses don't count as holding a town: they're a single building in an otherwise abandoned place.
-  - **Factions abandon places too.** An outpost that sees little traffic
-    for long enough is dropped and goes back to being abandoned.
-- Each faction has **one Stronghold** that **cannot be captured or destroyed**.
-  At worst it can be **Under Pressure** for a while: a few services pause,
-  then it recovers on its own. It's always a safe place for that faction's friends.
-- Each faction also holds a few **Outposts** in other towns. Every
-  20–30 minutes a quiet "territory tick" may do **one** thing, based on faction strength:
-  set up a new outpost in a nearby *abandoned* town (only if under the cap),
-  take one from a neighbouring faction, or abandon a weak one.
-  - **Floor:** a faction always keeps its Stronghold and at least one Outpost.
-  - **Recovery:** a lost outpost tends to swing back after a while if the faction is still strong.
-  - Changes go into the **headlines** only. No server-wide alerts.
-- Every outpost has a named leader (section 1, "Leaders"): the territory tick registers
-    and unregisters them through `RZ_Leaders.RegisterOutpost` / `UnregisterOutpost`.
-- **Faction strength** moves a little with contracts done for or against the faction, and drifts back toward the middle over time.
+### Territory ✅ (built, `Factions/RZ_Territory.c`)
 
-### Supply lines
+- **Most of the map is abandoned.** Only a few towns are held, and expansion stops once
+  about a fifth of all settlements are held (strongholds included; **Held share**, 0.2). The
+  rest are empty, looted or infested, which is where the scavenging, missions and danger are.
+- **One Stronghold per faction**, where its stronghold leader sits: its quartermaster
+  (Halcyon's at the lab; with leaders off, the same places by the same rules). It can never be
+  captured or destroyed. At worst it is **Under Pressure** for 25 minutes: while a faction's
+  strength is 25 or less or its morale 20 or less, each territory tick has a 50% chance to start
+  it. Then no supply truck leaves and the stronghold quartermaster's Champion tier is locked.
+  It ends on its own (+5 strength, +5 morale), with a two-hour pause before it can happen again.
+- **Outposts, by map size:** under 24 settlements (Arland) 1 per faction, under 48 2, more 3
+  (**Outposts per faction** overrides it, 1–4). Halcyon never has more than one: its field
+  station. Each faction can grow one past its starting count.
+- **Towns that make sense.** A town scores by faction; "on the roads" is read from how many
+  towns lie within 1.6 km (a hub), which works on any map:
 
-- **A real truck does the resupplying.** Each faction's outposts and safehouses
-  only restock when an actual supply truck, a real vehicle with an AI driver,
-  drives in from the Stronghold and parks. No truck, no restock.
-  - Each faction has at most one truck on the road at a time, so the AI cost stays small.
-  - A truck runs every 40–60 minutes, at a random time within that window so it feels real.
-  - If a truck gets stuck and no player is within 1 km, it's quietly moved past the obstacle.
-    If a player is nearby, it stays stuck, and that's a chance to help or rob it.
-- **Shortages.** If a truck is destroyed, robbed or never arrives, that faction's shops in those towns:
-  - run out of some items,
-  - **raise prices** (+25% to +50%),
-  - and may **lock their top tier** until the next truck gets through.
-  - The shortage lasts until the next successful delivery: **40–60 minutes**, random each time.
-- **Players can drive the truck.** Escort it for Fame. Drive it in yourself if the driver is dead, for more Fame.
-  Or steal it and deliver it to a rival's stronghold. That's Red Hand Fame, and the owner's Infamy.
-- Haven trucks also carry the food that keeps safehouse population up (planned: they add to
-  the safehouse food stock that players fill by hand today).
+  | Faction | Prefers |
+  |---|---|
+  | Bastion | towns (size 2+), hubs, names with "air", "base", "field" or "port" |
+  | Red Hand | hubs (crossroads) and small places (outskirts), some infection |
+  | Haven | quiet villages: small, low infection, few neighbours, away from the Red Hand |
+  | Halcyon | quiet, low-infection places |
+
+  Never: a town that's already held (or within 400 m of a holding), a Haven safehouse town
+  (safehouses don't count as holding a town, but nobody sets up next to one), the lab town, a
+  town at 85+ infection, or anything near the quarantine line. Not too close to the faction's
+  own stronghold (under 700 m), and rarely the far side of the map (over 6 km).
+- **The territory tick**, every 20–30 minutes while players are online, does at most **one**
+  thing. First the floor (a faction with no outpost founds one), then each faction in random
+  order by its strength:
+
+  | Strength | Does (first that applies) |
+  |---|---|
+  | 60+ | win back a town it lost (after 30 min, within 6 h: re-found it if it's empty, or take it from a weaker holder); found an outpost near its holdings if under its count (or half the time if there's room); at 65+ take the nearest outpost of a neighbour at least 10 weaker (any weaker during a feud), within 4 km of its holdings |
+  | 41–59 | under its count: found one (half the time); else 20%: drop an outpost with almost no traffic that has stood 3 hours |
+  | 40 or less | 60%: drop its quietest outpost (not one with real traffic) |
+
+  The Haven and Halcyon never take towns. Nobody takes or drops an outpost a player is near,
+  a faction's last outpost, a placed marker, or one from a faction it has a truce with.
+- **Traffic** is player-minutes within 400 m, plus 5 for each contract done for the faction
+  within 1.5 km; it fades by a quarter every tick.
+- **Faction strength** (10–90, starts at 50): +2 for the giver of a finished contract, −1 for a
+  rival it hurt, −1 for a failed one (at most 6 points an hour per faction from contracts);
+  +1 per truck delivered, −2 per truck lost; +3 / −5 when a town changes hands. It drifts 2
+  points an hour back toward 50.
+- **Headlines only.** Every change goes into the headlines ("Bastion has set up a post in
+  Morton. Captain Weber is in charge.", "The Red Hand has driven Bastion out of Levie.") without
+  a server-wide alert: players see them on their first spawn, and leaders mention the latest.
+- **Leaders.** Each outpost's leader is registered through `RZ_Leaders.RegisterOutpost` and
+  leaves with `UnregisterOutpost`; a town that changes hands gets a new leader. With territory on,
+  the leaders' interim posts are turned off; on the first run with an older save, the saved
+  interim posts become outposts, so their leaders keep their names, loyalty and memories.
+  `RZ_OutpostMarkerEntity` entities are fixed outposts: never dropped or taken.
+- **Bodies only near players.** Within 300 m of a holding: its guards (the faction's guard
+  prefab), two of its three **named people** (a guard or occupant with a name in the faction's
+  style and a role: the cook, the sentry, the toll man...), and at an outpost the faction's
+  quartermaster (its shop; Bastion's Requisition). Named people are saved and come back on
+  every visit; a town that changes hands gets new ones. Talking to one gives a line or two in
+  the faction's voice, what the faction needs, and now and then a remembered moment.
+- **Routines** (atmosphere only): shift change at 05:30 and 17:30, the dusk meal at 18:30,
+  night watch from 20:30. A player near a holding hears the routine change (at most every
+  20 minutes per holding), and the people there mention it. Leaders, quartermasters and
+  occupants can always be talked to and traded with, whatever the hour.
+
+*Simplifications:* towns are judged by size, infection, name and how many towns are near, not by
+real roads or airfields. A town "taken" changes hands as data while nobody is there: there's no
+battle to watch. Guards and named people stand where they're spawned.
+
+### Supply lines ✅ (built, `Factions/RZ_SupplyLines.c`)
+
+- **A real truck does the resupplying.** Outposts and Haven safehouses only restock when a
+  real vehicle with an AI crew drives in from the faction's Stronghold and parks (within 50 m).
+  No truck, no restock. The one exception to "bodies only near players": at most one truck per
+  faction is on the road, so the AI cost stays small. Places within 300 m of their stronghold
+  are stocked by hand and never need a truck.
+- **Departures** every 40–60 minutes at a random time (the first 10–40 minutes after a start),
+  only while players are online and not while the stronghold is Under Pressure. The truck goes
+  where it's needed most: a short place first, then the least stock, then the longest wait.
+  The crew boards on the next tick and drives to a move waypoint at the destination.
+- **Stuck:** a truck that hasn't moved 8 m in 90 s, with no player within 1 km, is quietly moved
+  80–150 m on toward its destination. With a player near, it stays stuck.
+- **Failure:** destroyed, robbed (its crew killed) or late (twice the trip at 4 m/s, plus 15
+  minutes). The destination is then **short** until the next delivery, which is 40–60 minutes
+  away: about 30% of its shop's items are out (the same ones until the truck comes), prices are
+  +25% to +50%, half the time the Champion tier is locked, and an outpost's stock drops to 0.
+  Players within 600 m are told, and `RZ_Guidance.Report(..., "shortage", place)` fires for
+  them (and for anyone who walks up to a short place later).
+- **Stock:** a delivery fills an outpost to 8 units; it uses one every 45 minutes with players
+  online. Bastion's Requisition draws one unit per item ([REPUTATION.md](REPUTATION.md)).
+- **Haven trucks carry food:** arriving at a safehouse adds 6 food (`RZ_Safehouses.AddFood`).
+- **Players and trucks.** Ride along within 150 m for 40% of the trip and see it arrive: +4 Fame
+  and +5 Favor with the owner (not if they hunt you). Its crew dead, drive it in yourself:
+  the delivery counts and pays +8 Fame. Or drive it into a rival's stronghold (within 80 m):
+  +6 Red Hand Fame (the receiver's Fame, for a Red Hand truck) and +10 Infamy with the owner.
+  Trucks aren't contracts; Convoy Escort and Hijack the Convoy
+  are still planned ([MISSIONS.md](MISSIONS.md)).
+- **No traces.** A finished truck stays parked while anyone is within 300 m (up to 15 minutes),
+  then it and its crew are removed. A robbed truck can be taken for 20 minutes; one a player
+  sits in is never removed under them.
+
+*Simplifications:* trucks drive straight to one waypoint (the AI picks the road) and don't drive
+back. A restart takes a truck off the road with no shortage. "In the truck" is a player in a
+vehicle within 6 m of it. Supply trucks need territory; with it off, or without a faction's
+truck and crew prefabs (or the move waypoint), that faction's places count as always supplied.
+
+### Factions feel alive ✅ (built, `Factions/RZ_FactionLife.c`, `RZ_FactionVoice.c`)
+
+Capped, background and cheap. Morale, needs, truces and feuds, and what they change for
+players, are in [REPUTATION.md](REPUTATION.md), "Morale, needs, truces and feuds".
+
+- **Radio chatter** with real information, every 10 minutes, one faction at a time, on its
+  open channel: the next truck leaving its stronghold (if within 20 minutes), where its truck on
+  the road is heading, a short place, an outpost's next shift or night watch, the Red Hand's toll
+  hours (and Bastion's truck on the road, which it watches), Halcyon's research and samples
+  wanted. The Haven's channel reaches everyone with a radio; the others reach people Known with
+  that faction, and Radio Operators, who tune rival open channels too.
+- **Secure channels** are a hook for a later step: `RZ_FactionLife.GetSecureTraffic(faction)`
+  is what a faction says where nobody's meant to hear (its truck's route, the next departure).
+  A Radio Operator within 400 m of a faction's holding when it chatters gets the "channel" tip.
+- **Life events** in the headlines, one every 35 minutes or so (±30%): funerals for leaders
+  and truck crews who died (10–20 minutes later), Bastion promotions (a named private or
+  corporal is promoted, and the new rank sticks), recruiting in a strong faction's town (strength
+  58+), a researcher walking out of Halcyon when its morale is under 40.
+- **Remembered moments**: the night the lab nearly fell (a lost final stand), the convoy that
+  burned on the road to Morton, the day Bastion lost Levie, the day a leader was shot, the horde
+  at Morton (one every two hours at most), the week the towns started falling, the first
+  antidote, the day the cure went out. The last 8 are saved. Leaders and named people bring
+  one up a quarter of the time ("Not since the night the lab nearly fell."), wanderers now and then.
+- **Rumours**: a leader's news and a wanderer's talk include gossip about another faction
+  (rivals twice as often): its strength, a town it holds, what it needs, where its truck is going,
+  or a smear. About a rival it's biased or false 35% of the time; about anyone else, and in a
+  wanderer's gossip, 10%. A false one inverts the strength, says a town was lost that wasn't,
+  names the wrong destination or invents a need.
 
 ## 4. Infection adapts, a little
 
@@ -294,8 +387,9 @@ Examples:
 5. **Fever Town.** A safehouse's infection creeps up. A Halcyon contract checks the water,
    a Haven contract evacuates the vulnerable, and a Red Hand rumour says someone poisoned it.
 
-**Headlines:** every session (and on join) players get 3–4 lines of server news:
-outposts that changed hands, wanderers lost, the cure percentage, the biggest rescue.
+**Headlines:** built so far: leader news, territory changes and faction life events are kept
+(the last 10), a player's first spawn of a session shows the last three, and leaders mention the
+latest. Planned: wanderers lost, the cure percentage and the biggest rescue in them too.
 
 ## 8. Town memory (data only, no lag)
 
@@ -355,14 +449,16 @@ don't wait). The table is data: **Guidance > Tips** on the game mode, with the d
 | loud | heat 45+ where you stand | throw a noisemaker the other way | |
 | night | the first night (once) | they hear further, specials come out | |
 | safehouse | your first safehouse (once) | house rules: guns fine, no firing, declare bites | |
-| shortage | in a safehouse that's short of food | bring tins | |
+| shortage | in a safehouse that's short of food, or near a place whose supply truck didn't arrive | bring tins; the next delivery | |
 | clue | your first puzzle clue (once) | "Notes like that usually point somewhere. Check your map and compass." | |
-| hungry, car, channel | **hooks only** (see below) | eat; a car that might run; a scrambled channel nearby | |
+| channel | a Radio Operator near a faction's holding when it talks on the radio | a scrambled channel nearby | |
+| hungry, car | **hooks only** (see below) | eat; a car that might run | |
 
-**Hooks left for later systems.** Hunger comes from a Workshop mod ReforgerZ can't read, there
-are no fixable cars or secure radio channels in code yet, and shop shortages wait for supply
-trucks. Each has its tip ready: the system (or another mod) calls
-`RZ_Guidance.Report(playerId, "hungry" | "car" | "channel" | "shortage", place)`.
+**Hooks left for later systems.** Hunger comes from a Workshop mod ReforgerZ can't read and
+there are no fixable cars in code yet. Each has its tip ready: the system (or another mod) calls
+`RZ_Guidance.Report(playerId, "hungry" | "car", place)`. Supply trucks already report
+"shortage" for shops whose truck didn't arrive (section 3), and faction life reports "channel"
+to Radio Operators near a faction's holding; cracking secure channels is still to come.
 
 ### Gentle first 15 minutes
 
@@ -439,8 +535,8 @@ waving at them; they wait 5 minutes. Their talk includes faction gossip.
 1. ✅ Safehouses with population tiers, and rescued survivors joining them
 2. ✅ The wanderer roster with simulated travel, reactions and memory
 3. Noisemakers, the "being noticed" check, and the first 6 unarmed missions
-4. ✅ Named leaders at strongholds, safehouses and interim leader posts
-5. Strongholds and outposts, the territory tick, supply lines as data
+4. ✅ Named leaders at strongholds, safehouses and outposts
+5. ✅ Strongholds and outposts, the territory tick, real supply trucks, faction life
 6. Light infection adaptation; day/night and weather modifiers
 7. Story arcs and headlines (leader headlines are already in)
 8. ✅ New-player guidance: experience levels, contextual tips, the gentle start, the first-life goal,

@@ -21,7 +21,7 @@ grep -rn "VERIFY" Scripts/
 Each one is an engine API whose exact name or signature I couldn't confirm
 for the current game version. Usually the fix is a rename. Look up the class in
 the Script Editor or in the [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
-They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 75 of them
+They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 80 of them
 (one is the comment in `RZ_Util.c` that explains them).
 
 The riskiest ones in the puzzle missions (`Puzzles/`):
@@ -98,6 +98,23 @@ really shoots individual players, so test them first ([REPUTATION.md](REPUTATION
 - **Armed check** (`RZ_Util.IsArmed`: `BaseWeaponManagerComponent.GetWeaponsList`,
   `BaseWeaponComponent.GetWeaponType`, the `EWeaponType` names): if it's always false, armed
   exiles are never shot and wanderers never fight back; if always true, unarmed exiles are shot.
+
+The riskiest ones for territory and supply trucks (`Factions/RZ_Territory.c`,
+`RZ_SupplyLines.c`, the vehicle helpers in `Core/RZ_Util.c`). Five are new:
+
+- **AI driving** (`RZ_SupplyLines.Board`: `SCR_CompartmentAccessComponent.MoveInVehicle(vehicle,
+  ECompartmentType)` seats the crew, the first in `PILOT`; then a move waypoint on the group).
+  The biggest unknown: if the crew isn't seated, or a seated group doesn't drive to a move
+  waypoint, no truck ever arrives and every destination ends up short. Test one truck from
+  start to finish first. If seating fails, try the vanilla "get in" waypoint on the group, or a
+  vehicle prefab with its crew already in it (and leave the crew slot as a dummy).
+- **Unsticking** (`RZ_Util.MoveVehicle`: `SetWorldTransform` and `Physics.SetVelocity`): it only
+  runs with no player within 1 km, so a bad teleport is unseen, but check the truck and its crew
+  arrive together.
+- **Destroyed vehicles** (`RZ_Util.IsDestroyed`: the vehicle's `SCR_DamageManagerComponent.GetState()`):
+  if it never says destroyed, a burnt-out truck counts as late instead (a shortage either way).
+- Not new, but worth testing: a player in the truck is "a player in a vehicle within 6 m"
+  (`IsInVehicle`), used for driving a truck in or stealing it.
 
 Two files can simply be deleted if they won't compile, because nothing else depends on them:
 
@@ -183,7 +200,10 @@ player why if they can't buy it.
 
 `RZ_RequisitionAction` (Bastion's Requisition perk) has the same **Favor cost**, **Item prefab**
 and **Display name** attributes. The cost is the full price: a Trusted player pays half (rounded
-up), once an hour across all requisition actions. Set it up for ammo and rations only. `RZ_StandingStatusAction` shows the player's standing
+up), once an hour across all requisition actions. Set it up for ammo and rations only. While
+Bastion's supply trucks run, Requisition works at a Bastion *outpost's* quartermaster (Territory >
+Outpost quartermaster spawns the Bastion prefab there), drawing on that outpost's stock; the
+stronghold's quartermaster points players to the nearest outpost with stock. `RZ_StandingStatusAction` shows the player's standing
 with every faction and the contracts this quartermaster has for them.
 
 A starting shop list, from REPUTATION.md:
@@ -384,17 +404,52 @@ safehouse the quartermaster is the leader, and outpost leaders use **Puzzles > C
 
 **Settings** (defaults in brackets): **Enabled** (on); **Quartermaster is leader** (on; off = a puzzle
 civilian stands in at strongholds and safehouses without a leader prefab); **Auto outposts** (1:
-interim leader posts per faction for Bastion and the Red Hand, Halcyon at most 1); **Body radius**
+interim leader posts per faction for Bastion and the Red Hand, Halcyon at most 1, only while
+**Territory** is off); **Body radius**
 (200 m); **Replace minutes** (120); **Job minutes** (30, between one leader's personal jobs);
 **Danger scale** (1; 0 = outpost and safehouse leaders only die if killed); **Discovery Infamy** (10),
 **Discovery chance** (0.15), **Seen chance** (+0.35); **Kill Infamy** (15).
 
 **Placing outposts yourself:** put `RZ_OutpostMarkerEntity` entities (a script entity, no prefab
-needed) with a faction and an optional place name. Placing any for a faction turns its interim
-posts off. Leader jobs use the mission item, the drop points and the puzzle civilian, generic
+needed) with a faction and an optional place name. With Territory on they're fixed outposts
+(never dropped or taken) on top of the automatic ones; with it off, placing any for a faction
+turns its interim posts off. Leader jobs use the mission item, the drop points and the puzzle civilian, generic
 object and well; each job is skipped while what it needs is missing. Training Day uses
 **Missions > Survivor group** if set. The log says
 `Faction leaders: N (new, seed S). Haven 2, Bastion 2, Red Hand 2, Halcyon 2` or `(saved)`.
+
+### Territory and supply trucks
+
+Settings are under **Territory** (three settings objects: Territory, Supply, Faction life;
+[WORLD.md](WORLD.md), section 3). Territory needs no prefabs: holdings are data, and every
+prefab below only adds bodies near players. Supply trucks need a truck and a crew per faction,
+plus **Zombies > Move waypoint** (the waypoint they drive to); a faction without them counts its
+outposts as always supplied.
+
+| Prefab | Base | Add | Setting | Used for |
+|---|---|---|---|---|
+| `RZ_Guard_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | an armed AI character or small group on `SURV` / `MIL` / `BAND` / `INST` | | Territory > Haven / Bastion / Red Hand / Halcyon guard | guards at strongholds and outposts while a player is within 300 m |
+| `RZ_Occupant_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | a character without AI (or a figure prop) in the faction's clothes | the generic puzzle object components, so the named person can be talked to | Territory > ... occupant (empty = Puzzles > Civilian) | the named people at each holding |
+| the four quartermaster prefabs (existing) | | | Factions > ... quartermaster, with Territory > **Outpost quartermaster** on | a shop (and Bastion's Requisition) at each outpost while a player is near |
+| `RZ_Truck_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | a drivable vehicle (van, truck) with a damage manager | | Supply > Haven / Bastion / Red Hand / Halcyon truck | the supply truck |
+| `RZ_TruckCrew_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | an AI group of 1-2 on `SURV` / `MIL` / `BAND` / `INST` | | Supply > ... crew | the driver (the first member) and a passenger |
+
+**Territory settings** (defaults in brackets): **Enabled** (on; off = the leaders' interim posts);
+**Outposts per faction** (0 = by map size: 1 under 24 settlements, 2 under 48, else 3; Halcyon 1);
+**Held share** (0.2); **Tick min / max minutes** (20 / 30); **Pressure minutes** (25);
+**Visible radius** (300 m); **Guard count** (1); **Occupant count** (2); **Outpost quartermaster** (on);
+the four guard and four occupant prefabs. The log says
+`Territory: 8 holdings in 14 settlements (new, seed S). Haven 1+1, Bastion 1+1, ...`.
+
+**Supply settings:** **Enabled** (on); the four truck and four crew prefabs; **Depart min / max
+minutes** (40 / 60); **Unstick radius** (1000 m); **Stuck seconds** (90); **Delivery stock** (8);
+**Haven food** (6); **Stock drain minutes** (45); **Out of stock share** (0.3); **Escort Fame /
+Favor** (4 / 5); **Drive Fame** (8); **Steal Fame** (6, Red Hand); **Steal Infamy** (10, with the
+owner). The log says `Supply trucks: Haven, Bastion.` (the factions whose trucks run) and one line
+per departure and loss.
+
+**Faction life settings:** **Enabled** (on); **Chatter minutes** (10; 0 = off); **Life event
+minutes** (35; 0 = off); **Truces and feuds** (on); **False rumour chance** (0.35, about rivals).
 
 ### New-player guidance
 

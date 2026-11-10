@@ -188,6 +188,16 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Named faction leaders: body prefabs per faction and role, interim outposts, replacement time, rogue-job discovery (docs/REPUTATION.md)", category: "ReforgerZ|Leaders")]
 	protected ref RZ_LeaderSettings m_LeaderSettings;
 
+	// ---------------------------------------------------------------- Territory, supply trucks, faction life
+	[Attribute(desc: "Background territory: strongholds and outposts, the territory tick, faction strength, outpost guards and named occupants (docs/WORLD.md, section 3)", category: "ReforgerZ|Territory")]
+	protected ref RZ_TerritorySettings m_TerritorySettings;
+
+	[Attribute(desc: "Supply trucks: truck and crew prefabs per faction, departures, unsticking, stock, shortages, escort and theft rewards (docs/WORLD.md, Supply lines)", category: "ReforgerZ|Territory")]
+	protected ref RZ_SupplySettings m_SupplySettings;
+
+	[Attribute(desc: "Faction life: needs, morale, radio chatter, life events, truces and feuds, remembered moments, rumours (docs/WORLD.md, section 3)", category: "ReforgerZ|Territory")]
+	protected ref RZ_FactionLifeSettings m_FactionLifeSettings;
+
 	// ---------------------------------------------------------------- New-player guidance
 	[Attribute(desc: "Quiet in-world guidance: experience levels, contextual tips from nearby people, the first-life goal, the gentle start (docs/WORLD.md)", category: "ReforgerZ|Guidance")]
 	protected ref RZ_GuidanceSettings m_GuidanceSettings;
@@ -269,6 +279,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Leaders m_Leaders;
 	protected ref RZ_Hostility m_Hostility;
 	protected ref RZ_Guidance m_Guidance;
+	protected ref RZ_Territory m_Territory;
+	protected ref RZ_SupplyLines m_Supply;
+	protected ref RZ_FactionLife m_FactionLife;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -351,6 +364,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_GuidanceSettings)
 			m_GuidanceSettings = new RZ_GuidanceSettings();
 
+		if (!m_TerritorySettings)
+			m_TerritorySettings = new RZ_TerritorySettings();
+
+		if (!m_SupplySettings)
+			m_SupplySettings = new RZ_SupplySettings();
+
+		if (!m_FactionLifeSettings)
+			m_FactionLifeSettings = new RZ_FactionLifeSettings();
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -371,6 +393,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Leaders = new RZ_Leaders(this, m_LeaderSettings);
 		m_Hostility = new RZ_Hostility(this, m_HostilitySettings);
 		m_Guidance = new RZ_Guidance(this, m_GuidanceSettings);
+		m_Territory = new RZ_Territory(this, m_TerritorySettings);
+		m_Supply = new RZ_SupplyLines(this, m_SupplySettings);
+		m_FactionLife = new RZ_FactionLife(this, m_FactionLifeSettings);
 
 		bool loaded = false;
 		if (!m_bWipeOnStart)
@@ -398,8 +423,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Safehouses anchor on the Haven quartermaster; wanderers start from safehouses
 		m_Safehouses.Setup();
 		m_Wanderers.Setup();
-		// Leaders sit at the quartermasters, the lab and the safehouses
+		// Leaders sit at the quartermasters, the lab and the safehouses. With territory on, real
+		// outposts replace the interim leader posts: territory registers their leaders
+		m_Leaders.SetTerritoryOutposts(m_TerritorySettings.m_bEnabled);
 		m_Leaders.Setup();
+		m_FactionLife.Setup();
+		m_Territory.Setup();
+		m_Supply.Setup();
 		m_Hostility.Init();
 		if (m_bHasLab)
 			AddMapMarker(m_vLabPos, "Halcyon lab");
@@ -439,6 +469,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Safehouses.Tick(dt, ids, players);
 		m_Wanderers.Tick(dt, ids, players);
 		m_Leaders.Tick(dt, ids, players);
+		m_Territory.Tick(dt, ids, players);
+		m_Supply.Tick(dt, ids, players);
+		m_FactionLife.Tick(dt, ids, players);
 		// After everything that changes standing or spawns fights this tick
 		m_Hostility.Tick(dt, ids, players);
 		m_Broadcast.Tick(dt, m_fBroadcastMinutes);
@@ -508,6 +541,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Leaders GetLeaders() { return m_Leaders; }
 	RZ_Hostility GetHostility() { return m_Hostility; }
 	RZ_Guidance GetGuidance() { return m_Guidance; }
+	RZ_Territory GetTerritory() { return m_Territory; }
+	RZ_SupplyLines GetSupply() { return m_Supply; }
+	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
 	RZ_Broadcast GetBroadcast() { return m_Broadcast; }
 	float GetBroadcastMinutes() { return m_fBroadcastMinutes; }
 	string GetLandmarkFallbackName() { return m_sLandmarkName; }
@@ -969,10 +1005,31 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{
-			int infamy = RZ_Util.RoundToInt(amount * RZ_Reputation.GetRivalShare(faction, f));
+			int infamy = RZ_Util.RoundToInt(amount * RZ_Reputation.GetRivalShare(faction, f) * RivalMult(faction, f));
 			if (infamy > 0)
 				AddInfamy(playerId, f, infamy);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Rival Infamy between two factions right now: halved during a truce, x1.5 during a feud.
+	float RivalMult(int a, int b)
+	{
+		if (!m_FactionLife)
+			return 1;
+
+		return m_FactionLife.RivalMult(a, b);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A contract ended (RZ_MissionManager.Finish): faction strength and morale move a little.
+	void OnContractFinished(RZ_Mission m, bool success)
+	{
+		if (m_Territory)
+			m_Territory.OnContractFinished(m, success);
+
+		if (m_FactionLife)
+			m_FactionLife.OnContractFinished(m, success);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1290,6 +1347,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (s)
 			where = s.m_sName;
 
+		if (m_FactionLife && s)
+			m_FactionLife.OnHorde(s.m_sName);
+
 		array<int> ids = {};
 		array<IEntity> players = {};
 		RZ_Util.GetAlivePlayers(ids, players);
@@ -1367,6 +1427,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	void OnStageChanged(RZ_EOutbreakStage stage)
 	{
+		if (m_FactionLife)
+			m_FactionLife.OnStageChanged(stage);
+
 		UpdateReplicated();
 	}
 
@@ -1577,6 +1640,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Safehouses.Restore(data.safehouses);
 		m_Wanderers.Restore(data.wanderers);
 		m_Leaders.Restore(data.leaders);
+		m_Territory.Restore(data.territory);
+		m_Supply.Restore(data.supply);
+		m_FactionLife.Restore(data.factionLife);
 		return true;
 	}
 
@@ -1612,6 +1678,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Leaders)
 			data.leaders = m_Leaders.Save();
+
+		if (m_Territory && m_Territory.IsActive())
+			data.territory = m_Territory.Save();
+
+		if (m_Supply && m_Supply.IsActive())
+			data.supply = m_Supply.Save();
+
+		if (m_FactionLife && m_FactionLife.IsActive())
+			data.factionLife = m_FactionLife.Save();
 
 		foreach (RZ_Settlement s : m_aSettlements)
 		{

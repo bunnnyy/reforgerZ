@@ -143,6 +143,13 @@ Even a win doesn't mean leaving: the next season is a new outbreak, in a new Zon
   *"If you can hear this, Morton is open. Bring water if you can. Bring yourself either way."*
   Bastion's net still calls Command, which never answers. The Red Hand uses the open channel
   to laugh at Bastion: *"Still waiting for relief? We'll keep the kettle on."*
+- **Faction chatter** on the open channels is shift talk with something real in it: a truck
+  leaving in twenty minutes, a toll until dusk, the night watch at 20:30. People say more on the
+  radio than they should.
+- **Rumours** are gossip, often wrong and worst about rivals: *"I heard Bastion got thrown out
+  of Levie. Good riddance."* Never mark which ones are true.
+- **Headlines** about the factions are one plain sentence with one small detail: *"Bastion buried
+  Corporal Weber outside Morton. No salute: they're saving ammunition."*
 - **Leaders** speak in their faction's voice, coloured by their traits: a Greedy one talks
   about pay first, a Paranoid one asks who saw you come in, a Merciful one tells you to sit
   down and eat. One short line before a brief and one after, never a speech.

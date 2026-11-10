@@ -744,9 +744,15 @@ class RZ_Safehouses
 
 		int joined = 0;
 		string walker = "";
+
+		// The Haven's morale: fewer stay when it's low, more when it's high
+		float walkChance = RESCUE_WANDERER_CHANCE;
+		if (m_GM.GetFactionLife())
+			walkChance = m_GM.GetFactionLife().HavenWalkChance(walkChance);
+
 		for (int n = 0; n < count; n++)
 		{
-			if (walker.IsEmpty() && Math.RandomFloat01() < RESCUE_WANDERER_CHANCE && m_GM.GetWanderers())
+			if (walker.IsEmpty() && Math.RandomFloat01() < walkChance && m_GM.GetWanderers())
 			{
 				walker = m_GM.GetWanderers().AddFromRescue(pos);
 				if (!walker.IsEmpty())
@@ -793,8 +799,8 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Food delivered from outside the action (later: supply trucks).
-	//! TODO (docs/WORLD.md, supply lines): Haven supply trucks call this when they park.
+	//! Food delivered from outside the action: a Haven supply truck that parks here
+	//! (Factions/RZ_SupplyLines.c), or another mod.
 	void AddFood(int idx, int amount)
 	{
 		RZ_Safehouse h = Get(idx);

@@ -4,7 +4,8 @@
 //! Implemented perks:
 //!   Haven Known          tier message (safehouses let you in: flavour for now)
 //!   Haven Trusted        Neighbours: direction to the nearest job, on spawn and every 10 min
-//!   Bastion Trusted      Requisition: once an hour, ammo or rations at half Favor (RZ_RequisitionAction)
+//!   Bastion Trusted      Requisition: once an hour, ammo or rations at half Favor (RZ_RequisitionAction),
+//!                        from a Bastion outpost's truck-supplied stock while supply trucks run
 //!   Red Hand Known       toll pass (flavour message for now)
 //!   Halcyon Trusted      sample scanner: specials within 300 m, every minute
 //!   Halcyon Champion     +25% research from your samples (RZ_CureResearch)
@@ -299,7 +300,7 @@ class RZ_FactionPerks
 				if (tier == RZ_ETier.KNOWN)
 					return "Bastion checkpoints will let you through without a search.";
 				if (tier == RZ_ETier.TRUSTED)
-					return "Requisition: once an hour, the Bastion quartermaster lets you draw ammo or rations at half the Favor cost.";
+					return "Requisition: once an hour, Bastion lets you draw ammo or rations at half the Favor cost, from an outpost the supply trucks have stocked.";
 				break;
 			}
 			case RZ_EFaction.BANDITS:
@@ -433,6 +434,29 @@ class RZ_FactionPerks
 			return false;
 		}
 
+		// Supply lines: signed out at an outpost, from what its trucks brought in
+		RZ_SupplyState stock;
+		int supplied = -1;
+		RZ_SupplyLines supply = m_GM.GetSupply();
+		if (supply)
+			supplied = supply.RequisitionStock(owner.GetOrigin(), stock);
+
+		if (supply && supply.IsFactionRunning(RZ_EFaction.MILITARY) && supplied < 0)
+		{
+			string nearest = supply.NearestSuppliedOutpost(owner.GetOrigin());
+			if (nearest.IsEmpty())
+				nearest = "none of them right now; wait for the trucks";
+
+			m_GM.NotifyPlayer(playerId, bastion, "Requisitions are signed out at the outposts, from what the trucks bring in. Nearest with stock: " + nearest + ".");
+			return false;
+		}
+
+		if (supplied == 0)
+		{
+			m_GM.NotifyPlayer(playerId, bastion, "Nothing to sign out here until the next supply truck gets through.");
+			return false;
+		}
+
 		int price = RequisitionPrice(fullCost);
 		if (!m_GM.SpendFavor(playerId, RZ_EFaction.MILITARY, price))
 		{
@@ -447,7 +471,14 @@ class RZ_FactionPerks
 		}
 
 		m_mRequisitionAt.Set(ident, m_fClock);
-		m_GM.NotifyPlayer(playerId, bastion, string.Format("Requisition approved: %1, signed out of Bastion stock. %2 Favor left.", itemName, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.MILITARY)));
+		string from = "Bastion stock";
+		if (stock)
+		{
+			stock.m_iStock = Math.Max(0, stock.m_iStock - 1);
+			from = string.Format("this outpost's stock (%1 left)", stock.m_iStock);
+		}
+
+		m_GM.NotifyPlayer(playerId, bastion, string.Format("Requisition approved: %1, signed out of %2. %3 Favor left.", itemName, from, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.MILITARY)));
 		return true;
 	}
 

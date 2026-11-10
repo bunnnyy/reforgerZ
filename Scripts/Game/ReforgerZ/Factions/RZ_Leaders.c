@@ -2,10 +2,11 @@
 //!
 //! One leader per place a faction holds: a stronghold leader per faction (at its
 //! quartermaster; Halcyon's is at the lab), a council head per Haven safehouse, and a
-//! commander, crew boss or lead researcher per outpost. Outposts don't exist yet as
-//! territory: until they do, each faction but the Haven gets RZ_LeaderSettings.m_iAutoOutposts
-//! interim "leader posts" in a town that suits it, mission makers can place
-//! RZ_OutpostMarkerEntity entities, and a later territory system calls RegisterOutpost().
+//! commander, crew boss or lead researcher per outpost. With territory on (Factions/RZ_Territory.c),
+//! the territory registers each real outpost through RegisterOutpost() and unregisters it when
+//! it's lost or abandoned. With territory off, each faction but the Haven gets
+//! RZ_LeaderSettings.m_iAutoOutposts interim "leader posts" in a town that suits it instead.
+//! Mission makers can place RZ_OutpostMarkerEntity entities either way.
 //!
 //! Leaders are data. Only the one at the place a player is standing near has a body, and
 //! at a stronghold or safehouse that body is the quartermaster unless a leader prefab is
@@ -85,7 +86,7 @@ class RZ_LeaderSettings
 	[Attribute("1", desc: "Without a leader prefab, the quartermaster at a stronghold or safehouse is the leader (give it RZ_LeaderAction). Off = a puzzle civilian stands in")]
 	bool m_bQuartermasterIsLeader = true;
 
-	[Attribute("1", UIWidgets.Slider, "Interim leader posts per faction (Bastion, Red Hand; Halcyon at most 1) until territory exists. Placing RZ_OutpostMarkerEntity for a faction turns this off for it", "0 3 1")]
+	[Attribute("1", UIWidgets.Slider, "Interim leader posts per faction (Bastion, Red Hand; Halcyon at most 1), only while Territory is off. Placing RZ_OutpostMarkerEntity for a faction turns this off for it", "0 3 1")]
 	int m_iAutoOutposts = 1;
 
 	[Attribute("200", desc: "A leader's body exists only while a player is this close (m)")]
@@ -412,7 +413,7 @@ class RZ_Leaders
 	protected static const float REIN_INTERVAL = 3600;
 	protected static const float SEEN_RADIUS = 60;
 	protected static const float BLAME_SECONDS = 30;
-	protected static const int HEADLINES_KEPT = 6;
+	protected static const int HEADLINES_KEPT = 10;
 	protected static const float MULT_MIN = 0.8;
 	protected static const float MULT_MAX = 1.2;
 
@@ -429,6 +430,7 @@ class RZ_Leaders
 	protected float m_fDangerTimer;
 	protected float m_fDriftTimer;
 	protected float m_fJobTimer;
+	protected bool m_bTerritoryOutposts;	// territory registers the outposts: no interim posts
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Leaders(RZ_GameModeComponent gm, RZ_LeaderSettings settings)
@@ -442,6 +444,14 @@ class RZ_Leaders
 	bool IsEnabled() { return m_Settings.m_bEnabled; }
 	float GetClock() { return m_fClock; }
 	RZ_LeaderSettings GetSettings() { return m_Settings; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Before Setup: territory owns the outposts, so no interim posts are made. Saved interim
+	//! posts wait, inactive, for the territory to adopt them (GetDormantOutposts).
+	void SetTerritoryOutposts(bool on)
+	{
+		m_bTerritoryOutposts = on;
+	}
 
 	// ================================================================ Save / load
 	//------------------------------------------------------------------------------------------------
@@ -602,6 +612,19 @@ class RZ_Leaders
 				mname = PlaceName(mpos);
 
 			AddSeat(saved, marker.GetFaction(), RZ_ELeaderRole.OUTPOST, RZ_Leader.SOURCE_MARKER, mpos, mname, -1);
+		}
+
+		// Territory registers real outposts instead. Saved interim posts become dormant
+		// external seats (kept below), so their leaders keep their places when adopted.
+		if (m_bTerritoryOutposts)
+		{
+			foreach (RZ_Leader interim : saved)
+			{
+				if (interim.m_eRole == RZ_ELeaderRole.OUTPOST && interim.m_iSource == RZ_Leader.SOURCE_AUTO)
+					interim.m_iSource = RZ_Leader.SOURCE_EXTERNAL;
+			}
+
+			return;
 		}
 
 		array<int> autoFactions = {RZ_EFaction.MILITARY, RZ_EFaction.BANDITS, RZ_EFaction.INSTITUTE};
@@ -933,7 +956,8 @@ class RZ_Leaders
 	//------------------------------------------------------------------------------------------------
 	//! Hook for territory (docs/WORLD.md, section 3): an outpost exists at pos. Returns its
 	//! leader's id: the saved one for this place if there is one, else a new leader. -1 if off.
-	int RegisterOutpost(RZ_EFaction faction, vector pos, string placeName)
+	//! announce = false: no headline (the territory writes its own).
+	int RegisterOutpost(RZ_EFaction faction, vector pos, string placeName, bool announce = true)
 	{
 		if (!m_Settings.m_bEnabled || !RZ_Factions.IsValid(faction))
 			return -1;
@@ -946,15 +970,31 @@ class RZ_Leaders
 			if (l.m_eFaction == faction && l.m_eRole == RZ_ELeaderRole.OUTPOST && RZ_Util.DistXZ(l.m_vPos, pos) < 150)
 			{
 				l.m_bActive = true;
-				l.m_iSource = RZ_Leader.SOURCE_EXTERNAL;
+				if (l.m_iSource != RZ_Leader.SOURCE_MARKER)
+					l.m_iSource = RZ_Leader.SOURCE_EXTERNAL;
+
 				return l.m_iId;
 			}
 		}
 
 		RZ_Leader fresh = Generate(faction, RZ_ELeaderRole.OUTPOST, RZ_Leader.SOURCE_EXTERNAL, pos, placeName, -1, 0);
 		m_aList.Insert(fresh);
-		AddHeadline(string.Format("%1 has a new outpost in %2. %3 is in charge.", RZ_Factions.GetName(faction), placeName, fresh.m_sName));
+		if (announce)
+			AddHeadline(string.Format("%1 has a new outpost in %2. %3 is in charge.", RZ_Factions.GetName(faction), placeName, fresh.m_sName));
+
 		return fresh.m_iId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Saved outpost leaders waiting for the territory to register their seat (old interim
+	//! posts, and outposts the territory hasn't registered yet), for adoption on the first run.
+	void GetDormantOutposts(RZ_EFaction f, notnull array<RZ_Leader> result)
+	{
+		foreach (RZ_Leader l : m_aList)
+		{
+			if (l.m_eFaction == f && l.m_eRole == RZ_ELeaderRole.OUTPOST && !l.m_bActive && l.m_iSource == RZ_Leader.SOURCE_EXTERNAL)
+				result.Insert(l);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1870,6 +1910,10 @@ class RZ_Leaders
 		l.m_fDiedAt = m_fClock;
 		AddHeadline(string.Format("%1, %2, %3.", l.m_sName, l.m_sTitle, how));
 
+		// Morale, a funeral later, and maybe something people remember
+		if (m_GM.GetFactionLife())
+			m_GM.GetFactionLife().OnLeaderDied(l.m_eFaction, l.m_sName, l.m_sPlace, killer);
+
 		if (killer > 0)
 		{
 			m_GM.AddInfamy(killer, l.m_eFaction, m_Settings.m_iKillInfamy);
@@ -1939,7 +1983,9 @@ class RZ_Leaders
 
 	// ================================================================ Headlines
 	//------------------------------------------------------------------------------------------------
-	void AddHeadline(string text)
+	//! Server news ("Word on the roads"), kept for first spawns and leaders' news. announce =
+	//! false keeps it quiet (territory, faction life): stored, never broadcast.
+	void AddHeadline(string text, bool announce = true)
 	{
 		m_aHeadlines.Insert(text);
 		while (m_aHeadlines.Count() > HEADLINES_KEPT)
@@ -1947,7 +1993,8 @@ class RZ_Leaders
 			m_aHeadlines.Remove(0);
 		}
 
-		m_GM.NotifyAll("Word on the roads", text);
+		if (announce)
+			m_GM.NotifyAll("Word on the roads", text);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2412,6 +2459,14 @@ class RZ_Leaders
 			text = RZ_LeaderVoice.Greeting(rng, l.m_eFaction) + "\n" + News(l, player.GetOrigin());
 		}
 
+		// What the faction needs right now, and now and then a big moment they remember
+		if (m_GM.GetFactionLife())
+		{
+			string extra = m_GM.GetFactionLife().TalkExtra(l.m_eFaction, l.m_vPos);
+			if (!extra.IsEmpty())
+				text += "\n" + extra;
+		}
+
 		RZ_Mission job = FindJob(l);
 		if (job && job.IsEligible(m_GM, playerId) && !job.m_aOfferedTo.Contains(playerId))
 			text += string.Format("\n%1 lowers their voice. \"I might have something for you. Ask.\"", l.m_sShort);
@@ -2548,6 +2603,10 @@ class RZ_Leaders
 		float heat;
 		if (m_GM.GetHeat().GetHottest(hot, heat) && heat >= 40 && RZ_Util.DistXZ(from, hot) <= 2500)
 			lines.Insert(string.Format("\"Something's stirred them up, %1 from here.\"", RZ_Util.DirectionText(from, hot)));
+
+		// Territory and faction news: the latest quiet headline, a rumour (true or not)
+		if (m_GM.GetFactionLife())
+			m_GM.GetFactionLife().AddNewsLines(l.m_eFaction, from, lines);
 
 		if (lines.IsEmpty())
 			return "\"Nothing worth repeating. That's news too, these days.\"";

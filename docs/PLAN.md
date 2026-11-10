@@ -38,10 +38,13 @@ Out of scope: sleep and time skipping.
 | Haven house rules: no firing near a safehouse, declaring or hiding a bite, exile, location leaks to the Red Hand | `World/RZ_Safehouses.c`, `Factions/RZ_FactionPerks.c` | Written |
 | Wanderers: seeded roster of 6-10 with roles, data travel, reactions (hordes, events, bad destinations, bites), per-player memory, permanent deaths in the news, guidance hook | `World/RZ_Wanderers.c` | Written |
 | Haven house contracts: Walk Him Out, The Ledger, A Quiet Arrangement; the Courier's letters | `Missions/Haven/RZ_HavenHouseMissions.c` | Written |
-| Named faction leaders: one per stronghold, safehouse and interim leader post; seeded names, traits with capped effects, loyalty (Loyal, Independent, Rogue) that drifts, per-player memory, voiced briefs, first-contact hook, deaths, replacements and headlines; outpost hook for territory | `Factions/RZ_Leaders.c`, `RZ_LeaderVoice.c` (see [REPUTATION.md](REPUTATION.md), [WORLD.md](WORLD.md)) | Written |
+| Named faction leaders: one per stronghold, safehouse and outpost (interim leader posts with territory off); seeded names, traits with capped effects, loyalty (Loyal, Independent, Rogue) that drifts, per-player memory, voiced briefs, first-contact hook, deaths, replacements and headlines; outposts registered by territory | `Factions/RZ_Leaders.c`, `RZ_LeaderVoice.c` (see [REPUTATION.md](REPUTATION.md), [WORLD.md](WORLD.md)) | Written |
 | Leader missions: 30 personal jobs from Independent and Rogue leaders, discovery, turning a leader in, the stronghold's Rein In | `Missions/Leaders/` (see [MISSIONS.md](MISSIONS.md)) | Written |
 | Choice missions: hand an item to one of two factions | `Missions/RZ_MissionItems.c`, `RZ_MissionBases.c` | Written |
-| Quartermasters, Favor shops, standing check, Requisition | `Factions/RZ_Quartermaster.c` | Written |
+| Quartermasters, Favor shops, standing check, Requisition (from a Bastion outpost's truck-supplied stock) | `Factions/RZ_Quartermaster.c`, `RZ_FactionPerks.c` | Written |
+| Territory: one Stronghold per faction (never falls; Under Pressure for a while), outposts in towns that suit each faction scaled to map size, a quiet tick every 20-30 min (found, take, abandon, swing back), faction strength, the floor and the cap, migration of the interim posts, guards, named people, routines and an outpost quartermaster near players (see [WORLD.md](WORLD.md)) | `Factions/RZ_Territory.c` | Written |
+| Supply trucks: one real truck with an AI crew per faction on the road, departures every 40-60 min, unsticking out of sight, shortages (items out, +25-50% prices, top tier locked), escort, drive-in and theft rewards, Haven food | `Factions/RZ_SupplyLines.c` | Written |
+| Faction life: needs, morale, radio chatter with real information, life events, truces and feuds, remembered moments, rumours (see [WORLD.md](WORLD.md), [REPUTATION.md](REPUTATION.md)) | `Factions/RZ_FactionLife.c`, `RZ_FactionVoice.c` | Written |
 | Faction perks, hunter squads, Kill-on-Sight bounties | `Factions/RZ_FactionPerks.c` | Written |
 | Per-player AI hostility: hidden player-faction variants (bitmask), stance per faction, armed exiles at safehouses, mission fights, wanderers fighting back, Outlaw fallback (see [REPUTATION.md](REPUTATION.md)) | `Factions/RZ_Hostility.c`, `RZ_FactionRelations.c`, `RZ_Factions.c` | Written |
 | Season ending: the cure goes to the faction with the most Fame | `Core/RZ_GameModeComponent.c` | Written |
@@ -179,7 +182,9 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] New-player guidance in the world: spawn scenarios, wind-up radio, a wanderer who finds new players, faction voices
 - [ ] Make the guidance prefabs (wind-up radio, flyer, scratched door, car wreck, table radio, dead raider and soldier, barricade)
 - [ ] Play-test the tip table: is anything too chatty for a level-1 player? Do the speakers pick right?
-- [ ] Barter chains across wanderers; supply trucks that carry food to safehouses
+- [ ] Barter chains across wanderers
+- [x] Supply trucks that carry food to safehouses (WORLD.md, "Supply lines")
+- [ ] Wanderers react when their faction loses an outpost
 
 ### Phase 3: factions with teeth
 - [x] Fame / Infamy / Favor, standing tiers, rival Infamy, Champion carry-over
@@ -188,7 +193,7 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Choice missions, delivery missions, drop points
 - [x] 42 contracts and 10 world events from MISSIONS.md
 - [x] Quartermasters with Favor shops gated by tier; Requisition (half price, hourly); standing check
-- [ ] Requisition from a Bastion outpost's truck-supplied stock (WORLD.md supply trucks)
+- [x] Requisition from a Bastion outpost's truck-supplied stock (WORLD.md supply trucks)
 - [x] Cheap perks: sample scanner, Halcyon research bonus, Neighbours, toll pass (message only)
 - [x] Hunter squads for Hunted players; Kill-on-Sight bounties
 - [x] Per-player AI hostility: AI of each faction shoots only the players it wants dead (hidden faction variants)
@@ -196,12 +201,18 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Named faction leaders with traits, loyalty, memory, voiced briefs, first contact, deaths and headlines
 - [x] 30 leader missions (Desertion Route and Private Collection not built), discovery, turning a leader in, Rein In
 - [ ] Add `RZ_LeaderAction` to the quartermaster prefabs (and optional leader bodies); play-test loyalty drift and discovery rates
-- [ ] Territory outposts register their leaders (`RZ_Leaders.RegisterOutpost`) and the interim leader posts are turned off
+- [x] Territory outposts register their leaders (`RZ_Leaders.RegisterOutpost`) and the interim leader posts are turned off
+- [x] Background territory: strongholds, outposts, the territory tick, faction strength (WORLD.md, section 3)
+- [x] Real supply trucks with AI crews, shortages, escort, drive-in and theft
+- [x] Faction life: needs, morale, radio chatter, routines, named people, life events, truces and feuds, remembered moments, rumours
+- [ ] Make the territory and supply prefabs (guards, occupants, trucks, crews) and play-test a truck run from stronghold to outpost; check AI seating and driving first
+- [ ] Crack secure radio channels (the `RZ_FactionLife.GetSecureTraffic` hook and the "channel" tip)
 - [ ] Desertion Route (needs people who walk with you) and Private Collection (needs a trap for a live special)
 - [ ] Remaining perks: Haven Community respawn with a supply bag, Fire Mission, Fence, Bounty board, immunity booster, Halcyon medic
 - [ ] Convoy, escort and AI-heavy contracts (Convoy Escort, Refugee Column, Hijack the Convoy, Rescue the Pilot...)
 - [ ] Disguises (faction uniforms) and surrendering at checkpoints
-- [ ] AI faction camps (Bastion checkpoint, Red Hand camp, Halcyon outpost) spawned at settlements
+- [x] Faction outposts with guards, named people and a quartermaster, spawned only near players
+- [ ] Bastion checkpoints and Red Hand roadblocks on the roads as AI
 - [ ] Shop System prices tied to standing; safe-zone entry
 - [ ] AI camp behaviour per player standing: warn and refuse (shooting by standing is in)
 - [ ] Shooting at a faction's AI makes it fight back (today only standing, fights and grudges do)
@@ -238,3 +249,5 @@ Every system finds its locations from `RZ_Settlement`, so for a new map:
    override rectangle; for checkpoints on roads the scan missed, place `RZ_CheckpointMarkerEntity` entities.
 6. Check the logged safehouse count. To choose where the Haven holds out, place
    `RZ_SafehouseMarkerEntity` entities (placing any turns the automatic picking off).
+7. Check the logged territory (holdings per faction). To fix an outpost in place, put an
+   `RZ_OutpostMarkerEntity` there.

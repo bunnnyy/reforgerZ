@@ -46,6 +46,12 @@ class RZ_SaveData
 	// Faction leaders (names, traits, loyalty, memories) and their recent headlines
 	ref RZ_LeaderRosterSave leaders;
 
+	// Territory (holdings, strength, pressure), supply (stock, shortages, departures) and
+	// faction life (morale, truces and feuds, remembered moments)
+	ref RZ_TerritorySave territory;
+	ref RZ_SupplySave supply;
+	ref RZ_FactionLifeSave factionLife;
+
 	ref array<ref RZ_SettlementSave> settlements = {};
 	ref array<ref RZ_PlayerProfile> profiles = {};
 }

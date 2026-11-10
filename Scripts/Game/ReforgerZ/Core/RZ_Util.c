@@ -502,6 +502,82 @@ class RZ_Util
 		return false;
 	}
 
+	// ================================================================ Vehicles and units (supply trucks, retaliation)
+	//------------------------------------------------------------------------------------------------
+	//! The characters of a unit: a group's members, or the character itself.
+	static void GetUnitMembers(IEntity unit, notnull array<IEntity> result)
+	{
+		if (!unit)
+			return;
+
+		SCR_AIGroup group = SCR_AIGroup.Cast(unit);
+		if (!group)
+		{
+			if (ChimeraCharacter.Cast(unit))
+				result.Insert(unit);
+
+			return;
+		}
+
+		array<AIAgent> agents = {};
+		group.GetAgents(agents);
+		foreach (AIAgent agent : agents)
+		{
+			if (agent && agent.GetControlledEntity())
+				result.Insert(agent.GetControlledEntity());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seats a character in a vehicle at once: the driver's seat, or a passenger seat.
+	static bool BoardVehicle(IEntity character, IEntity vehicle, bool driver)
+	{
+		if (!character || !vehicle)
+			return false;
+
+		SCR_CompartmentAccessComponent cac = SCR_CompartmentAccessComponent.Cast(character.FindComponent(SCR_CompartmentAccessComponent));
+		if (!cac)
+			return false;
+
+		ECompartmentType type = ECompartmentType.CARGO;
+		if (driver)
+			type = ECompartmentType.PILOT;
+
+		return cac.MoveInVehicle(vehicle, type); // VERIFY: SCR_CompartmentAccessComponent.MoveInVehicle(vehicle, ECompartmentType) seats AI instantly; PILOT is the driver's seat
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A vehicle or prop whose damage manager says it's destroyed. False without one.
+	static bool IsDestroyed(IEntity e)
+	{
+		if (!e)
+			return true;
+
+		SCR_DamageManagerComponent dmg = SCR_DamageManagerComponent.Cast(e.FindComponent(SCR_DamageManagerComponent));
+		if (!dmg)
+			return false;
+
+		return dmg.GetState() == EDamageState.DESTROYED; // VERIFY: vehicles carry an SCR_DamageManagerComponent (SCR_VehicleDamageManagerComponent) with GetState()
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts a vehicle (and whoever sits in it) somewhere else, stopped. Stuck supply trucks only,
+	//! and only with no player near.
+	static void MoveVehicle(IEntity vehicle, vector pos, float yaw)
+	{
+		if (!vehicle)
+			return;
+
+		vector mat[4];
+		Math3D.AnglesToMatrix(Vector(yaw, 0, 0), mat);
+		mat[3] = pos + Vector(0, 0.5, 0);
+		vehicle.SetWorldTransform(mat); // VERIFY: SetWorldTransform moves a physics vehicle with its crew (else use the vehicle's teleport helper)
+
+		Physics phys = vehicle.GetPhysics();
+		if (phys)
+			phys.SetVelocity(vector.Zero); // VERIFY: Physics.SetVelocity
+	}
+
 	//------------------------------------------------------------------------------------------------
 	static int RoundToInt(float f)
 	{

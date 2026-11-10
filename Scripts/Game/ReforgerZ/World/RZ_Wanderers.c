@@ -1765,6 +1765,14 @@ class RZ_Wanderers
 		if (!w.m_sDestName.IsEmpty())
 			lines.Insert(string.Format("\"I'm heading for %1. If you're going that way, it's quiet enough.\"", w.m_sDestName));
 
+		// Road gossip about the factions (not always true) or a big moment people remember
+		if (m_GM.GetFactionLife())
+		{
+			string gossip = m_GM.GetFactionLife().WandererLine();
+			if (!gossip.IsEmpty())
+				lines.Insert(gossip);
+		}
+
 		if (lines.IsEmpty())
 			return "\"Quiet out here. I don't trust it.\"";
 

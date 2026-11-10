@@ -24,6 +24,12 @@ the cure.**
   and two traits that colour their briefs and nudge their prices and pay. Outpost and safehouse
   leaders can be Loyal, Independent or Rogue, give off-book jobs that can be discovered, die,
   and are replaced; stronghold leaders never fall.
+- **Factions in the background**: each faction has a Stronghold that never falls and a few
+  outposts in towns that suit it; most of the map stays abandoned. Every 20-30 minutes the
+  territory shifts a little by faction strength, and real supply trucks with AI crews keep the
+  outposts and safehouses stocked: escort them, drive them in, or rob them and watch the prices
+  go up. Factions have needs, morale, truces and feuds, chatter on the radio, bury their dead,
+  remember the worst nights and spread rumours that aren't always true.
 - **Haven safehouses and wanderers**: a few Haven-held buildings in abandoned towns grow
   from Shelter to Town as you rescue people and bring food, with house rules (no shooting,
   declare your bite) and exile for those who break them. Named wanderers walk between them,
@@ -59,7 +65,8 @@ Scripts/Game/ReforgerZ/
   Director/     outbreak stages, infection spread, heat
   Zombies/      spawner (works with any zombie mod's prefabs)
   Backgrounds/  civilian backgrounds, player profiles
-  Factions/     Fame/Infamy tiers, quartermasters and shops, perks, hunter squads, bounties, leaders, AI hostility
+  Factions/     Fame/Infamy tiers, quartermasters and shops, perks, hunter squads, bounties, leaders, AI hostility,
+                territory, supply trucks, faction life
   Missions/     framework, requirements, bases; Haven/ Bastion/ RedHand/ Halcyon/ Events/ Leaders/
   Cure/         research, lab, samples, actions
   Guidance/     new-player guidance: experience levels, contextual tips, spawn scenarios, open radio channels

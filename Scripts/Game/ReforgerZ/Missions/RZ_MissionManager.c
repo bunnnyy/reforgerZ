@@ -409,6 +409,10 @@ class RZ_MissionManager
 			if (contract && m_GM.GetLeaders())
 				w = w * m_GM.GetLeaders().ContractWeightMult(m);
 
+			// ...and so does what the faction needs right now (lost trucks, deaths, research)
+			if (contract && m_GM.GetFactionLife())
+				w = w * m_GM.GetFactionLife().ContractWeightMult(m);
+
 			candidates.Insert(m);
 			weights.Insert(w);
 			total += w;
@@ -477,6 +481,9 @@ class RZ_MissionManager
 		if (m_GM.GetLeaders())
 			m_GM.GetLeaders().OnMissionFinished(m, success, paid);
 
+		// Faction strength and morale
+		m_GM.OnContractFinished(m, success);
+
 		m.Cleanup(m_GM);
 	}
 
@@ -529,7 +536,8 @@ class RZ_MissionManager
 
 			if (m.m_bHasRival && m.m_iRivalInfamy > 0)
 			{
-				int infamy = RZ_Util.RoundToInt(m.m_iRivalInfamy * m.m_fRewardScale);
+				// A truce halves it, a feud makes it worse (docs/REPUTATION.md, "Truces and feuds")
+				int infamy = Math.Max(1, RZ_Util.RoundToInt(m.m_iRivalInfamy * m.m_fRewardScale * m_GM.RivalMult(m.m_eGiver, m.m_eRival)));
 				m_GM.AddInfamy(playerId, m.m_eRival, infamy);
 				text += string.Format("\n%1 won't forget this: +%2 Infamy.", RZ_Factions.GetName(m.m_eRival), infamy);
 				if (leaders)

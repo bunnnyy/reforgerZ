@@ -189,9 +189,47 @@ class RZ_FactionShopAction : ScriptedUserAction
 			return;
 		}
 
+		// Supply lines (docs/WORLD.md): a shop whose truck didn't get through is short until the
+		// next one does (some items out, the top tier maybe locked, dearer); a stronghold Under
+		// Pressure keeps its top tier back. Morale moves prices a little.
+		float supplyMult = 1;
+		RZ_SupplyLines supply = gm.GetSupply();
+		RZ_SupplyState shortage;
+		if (supply)
+			shortage = supply.FindShopState(m_eFaction, pOwnerEntity.GetOrigin());
+
+		bool topTier = RZ_Reputation.GetAccessRank(m_eRequiredTier) >= 3;
+		if (shortage && shortage.m_bShortage)
+		{
+			if ((topTier && shortage.m_bTopLocked) || supply.IsOutOfStock(shortage, m_sDisplayName))
+			{
+				gm.NotifyPlayer(playerId, factionName, string.Format("No %1 until the next truck gets through.", m_sDisplayName));
+				return;
+			}
+
+			supplyMult = shortage.m_fPriceMult;
+		}
+
+		RZ_Territory territory = gm.GetTerritory();
+		if (topTier && territory && territory.IsUnderPressure(m_eFaction))
+		{
+			RZ_Holding top = territory.GetStronghold(m_eFaction);
+			if (top && RZ_Util.DistXZ(top.m_vPos, pOwnerEntity.GetOrigin()) < 150)
+			{
+				gm.NotifyPlayer(playerId, factionName, string.Format("Not while we're under pressure. The %1 stays locked up until things calm down.", m_sDisplayName));
+				return;
+			}
+		}
+
+		if (gm.GetFactionLife())
+			supplyMult = supplyMult * gm.GetFactionLife().PriceMult(m_eFaction);
+
 		int cost = m_iFavorCost;
 		if (leaders && leader && cost > 0)
 			cost = Math.Max(1, RZ_Util.RoundToInt(cost * leaders.PriceMult(leader, playerId)));
+
+		if (cost > 0 && supplyMult != 1)
+			cost = Math.Max(1, RZ_Util.RoundToInt(cost * supplyMult));
 
 		if (!gm.SpendFavor(playerId, m_eFaction, cost))
 		{
@@ -257,8 +295,9 @@ class RZ_StandingStatusAction : ScriptedUserAction
 //! Bastion's stock at half the Favor cost. Put one per item on the Bastion
 //! quartermaster and set its attributes, like RZ_FactionShopAction. All of them
 //! share one hourly allowance per player.
-//! TODO (docs/WORLD.md, supply trucks): draw from an outpost's truck-supplied stock
-//! instead of the quartermaster, and refuse while that outpost hasn't been resupplied.
+//! With supply trucks running for Bastion, it's signed out at a Bastion outpost's
+//! quartermaster, from the stock its trucks brought (one unit each), and refused while that
+//! outpost is short or hasn't been resupplied (RZ_FactionPerks.TryRequisition).
 class RZ_RequisitionAction : ScriptedUserAction
 {
 	[Attribute("30", desc: "Full Favor price. Requisition charges half of it, rounded up")]

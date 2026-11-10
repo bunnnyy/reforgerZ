@@ -52,6 +52,11 @@ unlockable: Soldier, Doctor, Raider, Elder, Drifter.
   ([WORLD.md](WORLD.md), "People"): Survivors Trapped adds 3 (4 with a ★), Rescue the Kids adds 3.
   Medicine Run's drop point is at a real safehouse when there are any. Requisition's supplies
   are real: delivered to Bastion, the nearest safehouse loses 4 food.
+- **Supply trucks aren't contracts.** Escorting one, driving one in after its crew died, or
+  stealing one to a rival's stronghold pays directly ([WORLD.md](WORLD.md), "Supply lines").
+  Convoy Escort and Hijack the Convoy are still planned. What a faction needs right now (lost
+  trucks, deaths, research) makes matching contracts more likely ([REPUTATION.md](REPUTATION.md),
+  "Morale, needs, truces and feuds").
 
 ---
 
@@ -378,8 +383,8 @@ Simplifications in code:
   drop point at their nearest seat (within 5 km), else outside a town 0.8–3 km away.
 - **The Real Orders**: the orders are read out to whoever first picks up the satchel.
 - **Training Day**: without the survivor group prefab, the recruits are only in the brief.
-- **Coup Talk**: "other crews" are other Red Hand seats when there are any; usually there aren't
-  until territory exists, so they're camps outside towns.
+- **Coup Talk**: "other crews" are other Red Hand seats (its outposts) when there are any;
+  otherwise they're camps outside towns.
 - **Rein In** is offered by radio a few minutes after a leader is Rogue (including one who starts
   the season Rogue), then at most once an hour while they stay Rogue. The rogue leader is shown by a stand-in while it runs.
 - Rewards never include loot: Favor, Fame, research, food and population only.

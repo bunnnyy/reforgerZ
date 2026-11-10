@@ -159,6 +159,9 @@ class RZ_CureResearch
 	//------------------------------------------------------------------------------------------------
 	protected void OnMilestone(int milestone)
 	{
+		if (milestone < 4 && m_GM.GetFactionLife())
+			m_GM.GetFactionLife().OnBreakthrough(milestone);
+
 		switch (milestone)
 		{
 			case 1:
@@ -202,6 +205,9 @@ class RZ_CureResearch
 			m_fProgress = 90;
 			m_iMilestone = 3;
 			m_GM.NotifyAll("The lab has fallen", "No one held the line. The batch is ruined. Research has dropped to 90 percent.");
+			if (m_GM.GetFactionLife())
+				m_GM.GetFactionLife().OnFinalStandLost();
+
 			m_GM.OnCureChanged();
 			return;
 		}
@@ -242,6 +248,9 @@ class RZ_CureResearch
 		}
 
 		m_GM.NotifyAll("THE CURE IS HERE", "The cure is going out over every frequency, and with it the proof. The quarantine is lifted and the gates are opening. This season is over: the next wipe starts a new outbreak, in a new Zone.");
+		if (m_GM.GetFactionLife())
+			m_GM.GetFactionLife().OnCureDone();
+
 		m_GM.OnCureCompleted();
 		m_GM.GetDirector().SetStage(RZ_EOutbreakStage.AFTERMATH);
 		m_GM.OnCureChanged();
