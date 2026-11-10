@@ -898,7 +898,7 @@ off and every message goes back to the vanilla hint. How the UI is put together 
 | `UI/RZ_UIData.c:561`, `:568`, `:577` | `CreateWidgets(layout, parent)`, `RemoveFromHierarchy`, `GetChildren`/`GetSibling` | No cards or rows: `PushNotice` sees no card and the vanilla hint is used |
 | `UI/RZ_UIData.c:495` | `Color.FromRGBA` | Nothing is tinted |
 | `UI/RZ_UIData.c:590` | `System.GetTickCount()` in milliseconds | Countdowns and card timing are off: use the world time instead |
-| `UI/RZ_UIData.c:117`, `:129`, `:346`; `UI/RZ_HudDisplay.c:188` | `string.Replace`, `string.Split`, `ToLower`, `ToUpper` in place | Payloads don't parse, or notices aren't classified (plain cards) |
+| `UI/RZ_UIData.c:117`, `:129`, `:346`; `UI/RZ_HudDisplay.c:189` | `string.Replace`, `string.Split`, `ToLower`, `ToUpper` in place | Payloads don't parse, or notices aren't classified (plain cards) |
 | `UI/RZ_UIData.c:625` | `SCR_PlayerLoadoutComponent.GetLoadout()`, `GetLoadoutName()` on the local controller | The background panel stays empty; the spawn notice still names the perk and flaw |
 | `UI/RZ_BackgroundPanel.c:8` | `ScriptedWidgetComponent`, `HandlerAttached`/`HandlerDeattached` | No background panel |
 
