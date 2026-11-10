@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ReforgerZ mission journal</title>
+<link rel="stylesheet" href="common/zone.css">
+<script src="common/zone.js"></script>
+<style>
+  .list { position: absolute; left: 72px; top: 168px; width: 660px; height: 840px; background: var(--panel); border: 1px solid var(--line); padding: 8px 0; }
+  .grp { padding: 14px 22px 6px; }
+  .row { display: flex; align-items: center; gap: 14px; padding: 11px 22px; border-left: 4px solid transparent; }
+  .row.sel { background: rgba(232,226,208,.07); border-left-color: var(--acc); }
+  .row .ic { width: 30px; height: 30px; color: var(--acc); }
+  .row .t { flex: 1; min-width: 0; }
+  .row .t b { display: block; font: 700 17px Inter; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .t span { font: 400 13px Inter; color: var(--dim); }
+  .row .dir { text-align: right; font: 600 14px 'JetBrains Mono'; color: var(--bone); white-space: nowrap; }
+  .row .dir span { display: block; font-size: 12px; color: var(--faint); font-weight: 500; margin-top: 2px; }
+  .detail { position: absolute; left: 750px; top: 168px; width: 1098px; height: 840px; background: var(--panel); border: 1px solid var(--line); border-top: 5px solid var(--halcyon); padding: 26px 34px; }
+  .dh { display: flex; gap: 18px; align-items: center; }
+  .dh .ic { width: 56px; height: 56px; color: var(--halcyon); }
+  .dh h2 { margin: 0; font: 800 34px/1 'Inter Display', Inter; letter-spacing: .06em; text-transform: uppercase; }
+  .dh .by { font: 500 15px Inter; color: var(--dim); margin-top: 8px; }
+  .dh .by b { color: var(--bone); }
+  .brief { margin: 20px 0 22px; padding: 14px 18px; border-left: 3px solid var(--halcyon); background: rgba(79,184,176,.06); font: italic 400 18px/1.5 Inter; color: #DDD6C2; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 40px; }
+  .k { display: flex; align-items: flex-start; gap: 10px; margin: 9px 0; font: 400 16px/1.4 Inter; }
+  .k .m { font: 700 15px 'JetBrains Mono'; width: 20px; flex: none; }
+  .k .m.ok { color: var(--ok); } .k .m.no { color: var(--faint); } .k .m.st { color: var(--hazard); }
+  .where { display: flex; gap: 18px; align-items: center; margin-top: 10px; }
+  .compass { width: 74px; height: 74px; border: 2px solid var(--line2); border-radius: 50%; position: relative; flex: none; }
+  .compass b { position: absolute; left: 50%; top: 4px; transform: translateX(-50%); font: 700 11px 'JetBrains Mono'; color: var(--dim); }
+  .compass i { position: absolute; left: 35px; top: 12px; width: 4px; height: 26px; background: var(--hazard); transform-origin: 2px 25px; transform: rotate(135deg); }
+  .compass i::after { content: ''; position: absolute; left: -5px; top: -6px; border: 7px solid transparent; border-bottom: 9px solid var(--hazard); border-top: 0; }
+  .where .big { font: 700 26px 'JetBrains Mono'; }
+  .where .sm { font: 400 15px Inter; color: var(--dim); }
+  .rew { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid var(--line2); font: 700 13px 'JetBrains Mono'; letter-spacing: .06em; }
+  .pill .ic { width: 18px; height: 18px; }
+  .clues { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 16px; }
+  .clue { display: flex; gap: 14px; margin: 12px 0; padding: 12px 16px; background: #E4DDC8; color: #23211c; border-radius: 1px; box-shadow: 2px 3px 0 rgba(0,0,0,.4); transform: rotate(-.25deg); }
+  .clue:nth-child(odd) { transform: rotate(.3deg); }
+  .clue .ic { width: 26px; height: 26px; color: #4a463c; }
+  .clue b { font: 700 14px 'JetBrains Mono'; letter-spacing: .08em; text-transform: uppercase; }
+  .clue p { margin: 4px 0 0; font: 400 16px/1.45 'Liberation Serif', serif; }
+  .clue.unread { background: transparent; color: var(--dim); border: 1px dashed var(--line2); box-shadow: none; }
+  .clue.unread .ic { color: var(--faint); }
+  .lock { margin-top: 10px; font: 600 13px 'JetBrains Mono'; color: var(--hazard); letter-spacing: .06em; }
+</style>
+</head>
+<body>
+<canvas class="scene" data-scene="dusk"></canvas>
+<div class="dimmer"></div>
+<div class="layer">
+  <div class="menu-head">
+    <div><h1>Journal</h1><div class="who">7 OPEN · DAY 14 · 19:46 · YOU ARE NEAR LEVIE</div></div>
+    <div class="tabs"><div class="tab">Standing</div><div class="tab on">Journal</div><div class="tab">Radio</div><div class="tab">Map key</div></div>
+  </div>
+
+  <div class="list">
+    <div class="grp label">Contracts</div>
+    <div class="row" style="--acc:var(--haven)"><i data-i="mission_contract"></i><div class="t"><b>The Bitten Friend</b><span>The Haven · Ines Calder</span></div><div class="dir">NE 1.2 km<span>31 min left</span></div></div>
+    <div class="row" style="--acc:var(--haven)"><i data-i="mission_contract"></i><div class="t"><b>Medicine Run</b><span>The Haven · from the pharmacy in Chotain</span></div><div class="dir">W 2.6 km<span>38 min left</span></div></div>
+    <div class="row" style="--acc:var(--halcyon)"><i data-i="mission_contract"></i><div class="t"><b>Field Samples</b><span>Halcyon · Dr Ilse Varga</span></div><div class="dir">S 3.1 km<span>52 min left</span></div></div>
+    <div class="grp label">Puzzles</div>
+    <div class="row sel" style="--acc:var(--halcyon)"><i data-i="mission_puzzle"></i><div class="t"><b>Patient Zero's Ledger</b><span>Halcyon · 2 of 4 clues read</span></div><div class="dir">SE 2.8 km<span>44 min left</span></div></div>
+    <div class="grp label">Leader jobs</div>
+    <div class="row" style="--acc:var(--haven)"><i data-i="mission_leader"></i><div class="t"><b>Our Own First</b><span>Ines Calder · off the books</span></div><div class="dir">N 0.9 km<span>25 min left</span></div></div>
+    <div class="grp label">World events</div>
+    <div class="row" style="--acc:var(--hazard)"><i data-i="mission_event"></i><div class="t"><b>Fog Bank</b><span>Le Moule · they hunt by sound in there</span></div><div class="dir">E 1.9 km<span>18 min left</span></div></div>
+    <div class="row" style="--acc:var(--hazard)"><i data-i="mission_arc"></i><div class="t"><b>Fever Water</b><span>Story · the wells around Meaux</span></div><div class="dir">NW 4.0 km<span>open</span></div></div>
+  </div>
+
+  <div class="detail">
+    <div class="dh"><i data-i="faction_halcyon"></i><div><h2>Patient Zero's Ledger</h2><div class="by">Puzzle · given by <b>Dr Ilse Varga</b>, lead researcher at the field station in Saint Philippe</div></div></div>
+    <div class="brief">"Somebody wrote the first name in this ledger before the gates closed. I need to know whose it was. The bodies by the old hospital still have their bracelets. Read them, then come and tell me. Don't guess. We can't afford a guess."</div>
+    <div class="grid">
+      <div>
+        <div class="label">Where</div>
+        <div class="where"><div class="compass"><b>N</b><i></i></div><div><div class="big">SE · 2.8 km</div><div class="sm">The old hospital, Saint Philippe. Answer at the lab.</div></div></div>
+      </div>
+      <div>
+        <div class="label">Rewards</div>
+        <div class="rew">
+          <span class="pill" style="color:var(--halcyon)"><i data-i="faction_halcyon"></i>+14 FAME</span>
+          <span class="pill" style="color:var(--halcyon)">+12 FAVOR</span>
+          <span class="pill"><i data-i="item_sample" style="color:var(--halcyon)"></i>RESEARCH +2%</span>
+        </div>
+      </div>
+      <div>
+        <div class="label">Requirements</div>
+        <div class="k"><span class="m ok">✓</span>Known with Halcyon</div>
+        <div class="k"><span class="m ok">✓</span>The lab is standing</div>
+        <div class="k"><span class="m st">★</span><span>Lab Technician or Doctor: the method spelled out <span style="color:var(--faint)">(not you)</span></span></div>
+      </div>
+      <div>
+        <div class="label">If you're wrong</div>
+        <div class="k"><span class="m no">—</span>Locked out for 5 minutes. Twice, and it fails.</div>
+        <div class="lock">NO WRONG ANSWERS YET</div>
+      </div>
+    </div>
+    <div class="clues">
+      <div class="label">Clues you've read · 2 of 4</div>
+      <div class="clue"><i data-i="mission_contract"></i><div><b>The ledger, page 14</b><p>Admissions, Day 0, in a nurse's careful hand: name, ward, time in. Someone has gone over every time again in red, as if they'd stopped trusting the clock.</p></div></div>
+      <div class="clue"><i data-i="item_jewellery"></i><div><b>Bracelet, by the ambulance bay</b><p>OSTROVA, K. · WARD B · ADMITTED 06:40. The plastic is chewed at one end.</p></div></div>
+      <div class="clue unread"><i data-i="mission_puzzle"></i><div><b>Two more bodies</b><p style="font-family:Inter;font-size:15px">Near the hospital chapel and the loading dock. Their bracelets haven't been read.</p></div></div>
+    </div>
+  </div>
+
+  <div class="menu-foot"><span><span class="key">ESC</span>Close</span><span><span class="key">Q</span><span class="key">E</span>Tabs</span><span><span class="key">M</span>Show on map</span><span style="margin-left:auto">Directions are rough on purpose. Nobody here has GPS.</span></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+/* ReforgerZ mockup styles: the Zone's visual identity (docs/UI.md).
+   Flat, high-contrast, quarantine signage and stencilled markings. */
+:root {
+  --bone: #E8E2D0;       /* main text */
+  --dim: #A39E90;        /* secondary text */
+  --faint: #6E6A60;      /* tertiary text, rules */
+  --panel: rgba(13, 15, 17, 0.90);
+  --panel-solid: #121416;
+  --line: #2A2E31;
+  --line2: #3A3F42;
+  --haven: #E3A33B;
+  --bastion: #9AA35E;
+  --redhand: #C8352B;
+  --halcyon: #4FB8B0;
+  --hazard: #F2C230;
+  --black: #141414;
+  --ok: #8DB36A;
+  --bad: #D2553F;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0b0d0e; }
+body { color: var(--bone); font: 400 17px/1.4 Inter, sans-serif; position: relative; }
+canvas.scene { position: absolute; inset: 0; width: 1920px; height: 1080px; z-index: 0; }
+.dimmer { position: absolute; inset: 0; z-index: 1; background: radial-gradient(ellipse at 50% 45%, rgba(8,10,11,.62), rgba(5,6,7,.9)); backdrop-filter: blur(6px); }
+.layer { position: absolute; inset: 0; z-index: 2; }
+
+/* Icons: inline SVG, tinted by `color` */
+.ic { display: inline-block; width: 24px; height: 24px; vertical-align: middle; flex: none; }
+.ic svg { width: 100%; height: 100%; display: block; }
+.plated .under, .ic.plated .under { fill: #16181B; stroke: #16181B; stroke-width: 3; }
+
+/* Type */
+.stencil { font-family: 'Inter Display', Inter, sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+.label { font: 600 12px/1 'JetBrains Mono', monospace; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
+.voice { font-style: italic; color: #D9D2BE; }
+
+/* Panels */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 3px; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+.hazard { background: repeating-linear-gradient(-45deg, var(--hazard) 0 14px, var(--black) 14px 28px); }
+.hazard-thin { height: 6px; background: repeating-linear-gradient(-45deg, var(--hazard) 0 8px, var(--black) 8px 16px); }
+
+/* Menu chrome shared by the full-screen menus */
+.menu-head { position: absolute; left: 72px; right: 72px; top: 48px; height: 92px; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 2px solid var(--line2); padding-bottom: 16px; }
+.menu-head h1 { margin: 0; font: 800 46px/1 'Inter Display', Inter; letter-spacing: .16em; text-transform: uppercase; }
+.menu-head .who { font: 500 17px 'JetBrains Mono'; color: var(--dim); margin-top: 10px; letter-spacing: .04em; }
+.menu-head .tabs { display: flex; gap: 6px; }
+.tab { font: 700 13px 'JetBrains Mono'; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); padding: 10px 16px; border: 1px solid var(--line); border-bottom: none; background: rgba(20,22,24,.7); }
+.tab.on { color: var(--black); background: var(--bone); border-color: var(--bone); }
+.menu-foot { position: absolute; left: 72px; right: 72px; bottom: 34px; display: flex; gap: 28px; font: 600 13px 'JetBrains Mono'; color: var(--dim); letter-spacing: .08em; }
+.key { display: inline-block; min-width: 26px; padding: 3px 7px; margin-right: 8px; border: 1px solid var(--line2); border-bottom-width: 3px; border-radius: 3px; color: var(--bone); text-align: center; background: #1a1d20; }
+.stamp { position: absolute; font: 800 13px 'JetBrains Mono'; letter-spacing: .2em; color: rgba(232,226,208,.22); border: 2px solid rgba(232,226,208,.18); padding: 6px 10px; transform: rotate(-4deg); }

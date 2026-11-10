@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ReforgerZ standing screen</title>
+<link rel="stylesheet" href="common/zone.css">
+<script src="common/zone.js"></script>
+<style>
+  .cols { position: absolute; left: 72px; top: 168px; display: flex; gap: 18px; }
+  .fac { width: 431px; height: 610px; background: var(--panel); border: 1px solid var(--line); border-top: 5px solid var(--acc); padding: 18px 22px; position: relative; }
+  .fh { display: flex; gap: 16px; align-items: center; }
+  .fh .ic { width: 54px; height: 54px; color: var(--acc); }
+  .fh h2 { margin: 0; font: 800 24px/1.1 'Inter Display', Inter; letter-spacing: .1em; text-transform: uppercase; }
+  .fh .sub { font: 500 12px 'JetBrains Mono'; color: var(--dim); letter-spacing: .1em; margin-top: 5px; }
+  .tier { display: flex; align-items: center; gap: 14px; margin: 20px 0 16px; padding: 12px 14px; background: rgba(255,255,255,.035); border: 1px solid var(--line); }
+  .tier .ic { width: 42px; height: 42px; color: var(--tc); }
+  .tier b { display: block; font: 800 26px/1 'Inter Display', Inter; letter-spacing: .08em; text-transform: uppercase; color: var(--tc); }
+  .tier span { font: 500 13px 'JetBrains Mono'; color: var(--dim); }
+  .meter { margin: 10px 0; }
+  .meter .top { display: flex; justify-content: space-between; font: 700 12px 'JetBrains Mono'; letter-spacing: .14em; color: var(--dim); }
+  .meter .top b { color: var(--bone); font-size: 14px; letter-spacing: .04em; }
+  .bar { position: relative; height: 10px; background: #26292b; margin-top: 6px; }
+  .bar i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--f); }
+  .bar u { position: absolute; top: -3px; bottom: -3px; width: 2px; background: #0d0f10; }
+  .favor { display: flex; align-items: baseline; gap: 10px; margin: 12px 0 2px; font: 700 12px 'JetBrains Mono'; letter-spacing: .14em; color: var(--dim); }
+  .favor b { font: 700 24px 'JetBrains Mono'; color: var(--acc); letter-spacing: 0; }
+  .sec { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .leader { margin: 8px 0 10px; }
+  .leader .n { font: 700 16px Inter; }
+  .leader .t { font: 400 13px Inter; color: var(--dim); }
+  .leader .say { font: italic 400 14px Inter; color: #D9D2BE; margin-top: 2px; }
+  .none { font: italic 400 14px Inter; color: var(--dim); margin-top: 8px; }
+  .need { display: flex; gap: 10px; align-items: flex-start; margin-top: 8px; }
+  .need .ic { width: 22px; height: 22px; color: var(--acc); margin-top: 1px; }
+  .need .k { font: 700 12px 'JetBrains Mono'; letter-spacing: .14em; color: var(--acc); }
+  .need .v { font: italic 400 14px/1.4 Inter; color: #D9D2BE; }
+  .warn { position: absolute; left: 0; right: 0; bottom: 0; padding: 9px 22px 10px; background: rgba(200,53,43,.16); border-top: 1px solid rgba(200,53,43,.5); font: 600 13px 'JetBrains Mono'; color: #E4826F; letter-spacing: .04em; }
+  .bottom { position: absolute; left: 72px; top: 798px; display: flex; gap: 18px; }
+  .rel { width: 880px; height: 196px; background: var(--panel); border: 1px solid var(--line); padding: 16px 22px; }
+  .relrow { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .relrow:last-child { border-bottom: 0; }
+  .chip { font: 800 12px 'JetBrains Mono'; letter-spacing: .16em; padding: 5px 9px; border: 1px solid; }
+  .pair { display: flex; align-items: center; gap: 6px; font: 600 16px Inter; flex: 1; }
+  .pair .ic { width: 24px; height: 24px; }
+  .relrow .m { font: 500 13px 'JetBrains Mono'; color: var(--dim); text-align: right; }
+  .matrix { width: 874px; height: 196px; background: var(--panel); border: 1px solid var(--line); padding: 14px 18px; display: grid; grid-template-columns: 96px repeat(4, 1fr); grid-template-rows: 18px repeat(4, 1fr); gap: 3px; }
+  .matrix .h { font: 600 11px 'JetBrains Mono'; color: var(--faint); letter-spacing: .08em; display: flex; align-items: center; }
+  .matrix .c { background: rgba(255,255,255,.035); font: 600 11px 'JetBrains Mono'; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); display: flex; align-items: center; padding: 0 8px; gap: 6px; }
+  .matrix .c.pos { color: #BFD39B; } .matrix .c.neg { color: #E4826F; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--d); box-shadow: 0 0 0 2px #0d0f10; }
+</style>
+</head>
+<body>
+<canvas class="scene" data-scene="dusk"></canvas>
+<div class="dimmer"></div>
+<div class="layer">
+  <div class="menu-head">
+    <div><h1>Standing</h1><div class="who">MARA VENN · NURSE · THIRD LIFE · DAY 14 OF THE QUARANTINE</div></div>
+    <div class="tabs"><div class="tab on">Standing</div><div class="tab">Journal</div><div class="tab">Radio</div><div class="tab">Map key</div></div>
+  </div>
+
+  <div class="cols">
+    <!-- The Haven -->
+    <div class="fac" style="--acc:var(--haven)">
+      <div class="fh"><i data-i="faction_haven"></i><div><h2>The Haven</h2><div class="sub">4 SAFEHOUSES · MORTON, LEVIE +2</div></div></div>
+      <div class="tier" style="--tc:#BFD39B"><i data-i="tier_trusted"></i><div><b>Trusted</b><span>Neighbours: paid work, pointed out</span></div></div>
+      <div class="meter"><div class="top">FAME <b>46</b></div><div class="bar" style="--f:var(--haven)"><i style="width:46%"></i><u style="left:15%"></u><u style="left:40%"></u><u style="left:75%"></u></div></div>
+      <div class="meter"><div class="top">INFAMY <b>4</b></div><div class="bar" style="--f:var(--bad)"><i style="width:4%"></i><u style="left:15%"></u><u style="left:40%"></u><u style="left:75%"></u></div></div>
+      <div class="favor">FAVOR <b>38</b></div>
+      <div class="sec"><div class="label">Leaders you've met</div>
+        <div class="leader"><div class="n">Teodor Lisk</div><div class="t">chair of the Haven council</div><div class="say">"Sit down and eat first. Then tell me."</div></div>
+        <div class="leader"><div class="n">Ines Calder</div><div class="t">council head in Morton · owes you</div></div>
+      </div>
+      <div class="sec"><div class="label">What they need</div>
+        <div class="need"><i data-i="status_shortage"></i><div><div class="k">FOOD</div><div class="v">Levie's gone to half portions. The children eat first.</div></div></div>
+      </div>
+    </div>
+
+    <!-- Task Force Bastion -->
+    <div class="fac" style="--acc:var(--bastion)">
+      <div class="fh"><i data-i="faction_bastion"></i><div><h2>Task Force Bastion</h2><div class="sub">STRONGHOLD GRAVETTE · 2 OUTPOSTS</div></div></div>
+      <div class="tier" style="--tc:var(--dim)"><i data-i="tier_mixed"></i><div><b>Uneasy</b><span>Counts as Stranger for access</span></div></div>
+      <div class="meter"><div class="top">FAME <b>18</b></div><div class="bar" style="--f:var(--bastion)"><i style="width:18%"></i><u style="left:15%"></u><u style="left:40%"></u><u style="left:75%"></u></div></div>
+      <div class="meter"><div class="top">INFAMY <b>22</b></div><div class="bar" style="--f:var(--bad)"><i style="width:22%"></i><u style="left:15%"></u><u style="left:40%"></u><u style="left:75%"></u></div></div>
+      <div class="favor">FAVOR <b>6</b></div>
+      <div class="sec"><div class="label">Leaders you've met</div>
+        <div class="leader"><div class="n">Major Anton Weber</div><div class="t">commanding officer of Task Force Bastion</div><div class="say">"Who saw you come in? Names."</div></div>
+        <div class="leader"><div class="n">Lieutenant Sofia Brandt</div><div class="t">outpost commander in Provins · wary of you</div></div>
+      </div>
+      <div class="sec"><div class="label">What they need</div>
+        <div class="need"><i data-i="item_fuelcan"></i><div><div class="k">SUPPLIES</div><div class="v">Two trucks lost on the river road this week. Nobody's saying how.</div></div></div>
+      </div>
+    </div>
+
+    <!-- The Red Hand -->
+    <div class="fac" style="--acc:var(--redhand)">
+      <div class="fh"><i data-i="faction_redhand"></i><div><h2>The Red Hand</h2><div class="sub">STRONGHOLD MONTIGNAC · 3 CREWS</div></div></div>
+      <div class="tier" style="--tc:#E4826F"><i data-i="tier_hunted"></i><div><b>Hunted</b><span>Their people shoot on sight</span></div></div>
+      <div class="meter"><div class="top">FAME <b>3</b></div><div class="bar" style="--f:var(--redhand)"><i style="width:3%"></i><u style="left:15%"></u><u style="left:40%"></u><u style="left:75%"></u></div></div>
+      <div class="meter"><div class="top">INFAMY <b>47</b></div><div class="bar" style="--f:var(--bad)"><i style="width:47%"></i><u style="left:15%"></u><u style="left:40%"></u><u style="left:75%"></u></div></div>
+      <div class="favor">FAVOR <b>0</b></div>
+      <div class="sec"><div class="label">Leaders you've met</div>
+        <div class="none">Nobody's offered you a name. They've got yours.</div>
+      </div>
+      <div class="sec"><div class="label">What they need</div>
+        <div class="need"><i data-i="tier_kill_on_sight"></i><div><div class="k">REVENGE</div><div class="v">"Bastion took the bridge at Durras. They'll give it back, one way or another."</div></div></div>
+      </div>
+      <div class="warn">HUNTER SQUADS ARE OUT FOR YOU</div>
+    </div>
+
+    <!-- Halcyon -->
+    <div class="fac" style="--acc:var(--halcyon)">
+      <div class="fh"><i data-i="faction_halcyon"></i><div><h2>Halcyon</h2><div class="sub">THE LAB · SAINT PHILIPPE</div></div></div>
+      <div class="tier" style="--tc:#BFD39B"><i data-i="tier_known"></i><div><b>Known</b><span>Lab stores: stabilisers, antiseptic</span></div></div>
+      <div class="meter"><div class="top">FAME <b>27</b></div><div class="bar" style="--f:var(--halcyon)"><i style="width:27%"></i><u style="left:15%"></u><u style="left:40%"></u><u style="left:75%"></u></div></div>
+      <div class="meter"><div class="top">INFAMY <b>0</b></div><div class="bar" style="--f:var(--bad)"><i style="width:0%"></i><u style="left:15%"></u><u style="left:40%"></u><u style="left:75%"></u></div></div>
+      <div class="favor">FAVOR <b>14</b></div>
+      <div class="sec"><div class="label">Leaders you've met</div>
+        <div class="leader"><div class="n">Dr Ilse Varga</div><div class="t">lead researcher at the field station in Saint Philippe</div><div class="say">"Samples, please. Not stories."</div></div>
+      </div>
+      <div class="sec"><div class="label">What they need</div>
+        <div class="need"><i data-i="item_sample"></i><div><div class="k">SAMPLES</div><div class="v">Research stands at 41 per cent. Every sample is a day off the end of this.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="rel">
+      <div class="label" style="margin-bottom:6px">Between the factions</div>
+      <div class="relrow">
+        <span class="chip" style="color:var(--ok);border-color:rgba(141,179,106,.5)">TRUCE</span>
+        <div class="pair"><i data-i="faction_haven" style="color:var(--haven)"></i>The Haven <span style="color:var(--faint)">and</span> <i data-i="faction_redhand" style="color:var(--redhand)"></i>the Red Hand</div>
+        <div class="m">52 MIN LEFT<br>RIVAL INFAMY HALVED</div>
+      </div>
+      <div class="relrow">
+        <span class="chip" style="color:var(--bad);border-color:rgba(210,85,63,.55)">FEUD&nbsp;</span>
+        <div class="pair"><i data-i="faction_bastion" style="color:var(--bastion)"></i>Task Force Bastion <span style="color:var(--faint)">and</span> <i data-i="faction_redhand" style="color:var(--redhand)"></i>the Red Hand</div>
+        <div class="m">1 H 10 MIN LEFT<br>RIVAL INFAMY ×1.5</div>
+      </div>
+    </div>
+    <div class="matrix">
+      <div class="h">FAME ↓ INFAMY →</div><div class="h">UNDER 15</div><div class="h">15–39</div><div class="h">40–74</div><div class="h">75+</div>
+      <div class="h">75+</div><div class="c pos">Champion</div><div class="c">Respected</div><div class="c">Wildcard</div><div class="c">Wildcard</div>
+      <div class="h">40–74</div><div class="c pos">Trusted <i class="dot" style="--d:var(--haven)"></i></div><div class="c">Tolerated</div><div class="c">Wildcard</div><div class="c neg">Hunted</div>
+      <div class="h">15–39</div><div class="c pos">Known <i class="dot" style="--d:var(--halcyon)"></i></div><div class="c">Uneasy <i class="dot" style="--d:var(--bastion)"></i></div><div class="c neg">Hunted</div><div class="c neg">Kill on sight</div>
+      <div class="h">UNDER 15</div><div class="c">Stranger</div><div class="c neg">Watched</div><div class="c neg">Hunted <i class="dot" style="--d:var(--redhand)"></i></div><div class="c neg">Kill on sight</div>
+    </div>
+  </div>
+
+  <div class="menu-foot"><span><span class="key">ESC</span>Close</span><span><span class="key">Q</span><span class="key">E</span>Tabs</span><span style="margin-left:auto">Standing is for this life. Champion carries over: word gets around.</span></div>
+</div>
+</body>
+</html>

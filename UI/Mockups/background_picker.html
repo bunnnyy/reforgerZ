@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ReforgerZ background picker</title>
+<link rel="stylesheet" href="common/zone.css">
+<script src="common/zone.js"></script>
+<style>
+  .mapdim { position: absolute; inset: 0; background: rgba(6,8,9,.55); }
+  .van { position: absolute; font: 500 11px 'JetBrains Mono'; letter-spacing: .14em; color: rgba(232,226,208,.4); }
+  .loadouts { position: absolute; left: 48px; top: 120px; width: 330px; background: rgba(20,22,24,.86); border: 1px solid #33373a; }
+  .loadouts .h { padding: 14px 18px; font: 700 14px Inter; letter-spacing: .1em; text-transform: uppercase; color: #cfcab9; border-bottom: 1px solid #33373a; }
+  .loadouts .it { padding: 10px 18px; font: 500 16px Inter; color: #bdb8a9; border-bottom: 1px solid rgba(255,255,255,.04); }
+  .loadouts .it.sel { background: rgba(232,226,208,.14); color: #fff; }
+  .deploy { position: absolute; left: 50%; bottom: 46px; transform: translateX(-50%); padding: 16px 64px; background: #cfcab9; color: #15171a; font: 800 18px Inter; letter-spacing: .2em; }
+  .spawn { position: absolute; left: 820px; top: 470px; width: 22px; height: 22px; border: 3px solid #cfcab9; border-radius: 50%; }
+  .spawnlbl { position: absolute; left: 852px; top: 470px; font: 600 15px Inter; color: #cfcab9; }
+
+  .bp { position: absolute; right: 48px; top: 120px; width: 560px; background: var(--panel); border: 1px solid var(--line); border-top: 5px solid var(--bone); padding: 22px 26px 24px; }
+  .bp .top { display: flex; align-items: center; gap: 18px; }
+  .bp .top > .ic { width: 58px; height: 58px; color: var(--bone); }
+  .bp h2 { margin: 2px 0 0; font: 800 36px/1 'Inter Display', Inter; letter-spacing: .06em; text-transform: uppercase; }
+  .state { display: inline-flex; align-items: center; gap: 7px; margin-top: 8px; font: 700 12px 'JetBrains Mono'; letter-spacing: .16em; padding: 4px 8px; border: 1px solid; }
+  .state .ic { width: 16px; height: 16px; }
+  .blk { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .blk p { margin: 8px 0 0; font: 400 17px/1.45 Inter; }
+  .perk { color: var(--ok); } .flaw { color: #E4826F; }
+  .gear { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .gear span { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid var(--line2); background: rgba(255,255,255,.03); font: 500 14px Inter; }
+  .gear .ic { width: 20px; height: 20px; color: var(--dim); }
+  .rep { display: flex; gap: 10px; margin-top: 10px; }
+  .rep span { display: inline-flex; align-items: center; gap: 8px; font: 700 14px 'JetBrains Mono'; padding: 6px 10px; border: 1px solid var(--line2); }
+  .rep .ic { width: 20px; height: 20px; }
+  .locked { position: absolute; right: 48px; top: 836px; width: 560px; background: rgba(13,15,17,.82); border: 1px dashed var(--line2); padding: 16px 22px; display: flex; gap: 16px; }
+  .locked .ic { width: 40px; height: 40px; color: var(--faint); }
+  .locked b { font: 800 18px 'Inter Display', Inter; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+  .locked p { margin: 6px 0 0; font: 400 15px/1.45 Inter; color: var(--dim); }
+  .legacy { display: flex; align-items: center; gap: 12px; margin-top: 18px; font: 700 12px 'JetBrains Mono'; letter-spacing: .14em; color: var(--dim); }
+  .legacy .pips { display: flex; gap: 4px; }
+  .legacy .pips i { width: 16px; height: 8px; background: #2a2d2f; }
+  .legacy .pips i.on { background: var(--haven); }
+  .callout { position: absolute; font: 600 12px 'JetBrains Mono'; color: rgba(242,194,48,.85); letter-spacing: .1em; }
+</style>
+</head>
+<body>
+<canvas class="scene" data-scene="map"></canvas>
+<script>
+  window.RZ_TOWNS = [
+    { name: 'Morton', x: 760, y: 640, size: 4 }, { name: 'Levie', x: 980, y: 560, size: 3 }, { name: 'Gravette', x: 1160, y: 470, size: 5 },
+    { name: 'Chotain', x: 560, y: 250, size: 3 }, { name: 'Montignac', x: 1500, y: 300, size: 4 }, { name: 'Saint Philippe', x: 1230, y: 880, size: 5 },
+    { name: 'Meaux', x: 300, y: 820, size: 3 }, { name: 'Le Moule', x: 1600, y: 760, size: 3 },
+  ];
+</script>
+<div class="mapdim"></div>
+<div class="layer">
+  <div class="loadouts">
+    <div class="h">Loadout</div>
+    <div class="it">Nurse</div><div class="it">Mechanic</div><div class="it">Hunter</div><div class="it">Police Officer</div>
+    <div class="it">Ex-Con</div><div class="it">Lab Technician</div><div class="it sel">Radio Operator</div><div class="it">Unemployed</div>
+    <div class="it">Soldier</div><div class="it">Doctor</div><div class="it">Raider</div><div class="it">Elder</div><div class="it">Drifter</div>
+  </div>
+  <div class="van" style="left:48px;top:92px">VANILLA DEPLOY MENU (STAND-IN)</div>
+  <div class="spawn"></div><div class="spawnlbl">Spawn: Levie</div>
+  <div class="deploy">DEPLOY</div>
+
+  <div class="callout" style="right:48px;top:92px">RZ_BackgroundPanel ▼</div>
+  <div class="bp">
+    <div class="label">Background</div>
+    <div class="top" style="margin-top:10px"><i data-i="item_radio"></i><div><h2>Radio Operator</h2>
+      <div class="state" style="color:var(--ok);border-color:rgba(141,179,106,.5)"><i data-i="status_door_unlocked"></i>AVAILABLE</div></div></div>
+    <div class="blk"><div class="label">Perk</div>
+      <p class="perk">A radio. Hears horde warnings and intel from anywhere on the map. Can crack secure channels: stand still for a minute and Bastion's command net comes clear.</p></div>
+    <div class="blk"><div class="label">Flaw</div><p class="flaw">20% louder. The set crackles at the worst moments.</p></div>
+    <div class="blk"><div class="label">Starting gear</div>
+      <div class="gear"><span><i data-i="status_radio_open"></i>Handheld radio</span><span><i data-i="item_radio"></i>Wind-up radio</span><span><i data-i="item_bandage"></i>Bandage</span><span><i data-i="item_tablets"></i>Water bottle</span></div></div>
+    <div class="blk"><div class="label">Starting standing</div>
+      <div class="rep"><span style="color:var(--haven)"><i data-i="faction_haven"></i>THE HAVEN +10 FAME</span></div></div>
+    <div class="legacy">LEGACY <div class="pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div> 6 / 10 · THE DRIFTER AT 10</div>
+  </div>
+
+  <div class="locked">
+    <i data-i="status_door_locked"></i>
+    <div><b>Doctor · locked</b>
+      <p>Become a Champion of Halcyon to unlock it. Pick it now and you keep its gear, but you play as Unemployed this life.</p></div>
+  </div>
+  <div class="callout" style="right:48px;top:810px">THE SAME PANEL, WITH A LOCKED BACKGROUND SELECTED ▼</div>
+</div>
+</body>
+</html>

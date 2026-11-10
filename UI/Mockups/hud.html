@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ReforgerZ HUD pieces</title>
+<link rel="stylesheet" href="common/zone.css">
+<script src="common/zone.js"></script>
+<style>
+  /* faint stand-ins for the vanilla HUD, for context only */
+  .compass { position: absolute; left: 660px; top: 26px; width: 600px; height: 34px; display: flex; justify-content: space-between; align-items: flex-end; font: 600 14px 'JetBrains Mono'; color: rgba(232,226,208,.5); border-bottom: 1px solid rgba(232,226,208,.25); padding: 0 8px 6px; }
+  .compass b { color: rgba(232,226,208,.85); }
+  .ammo { position: absolute; right: 48px; bottom: 44px; text-align: right; font: 600 15px 'JetBrains Mono'; color: rgba(232,226,208,.55); }
+  .ammo big { display: block; font-size: 30px; color: rgba(232,226,208,.8); }
+  .vanilla-tag { position: absolute; font: 500 11px 'JetBrains Mono'; color: rgba(232,226,208,.35); letter-spacing: .1em; }
+
+  /* notice cards */
+  .cards { position: absolute; right: 44px; top: 96px; width: 460px; display: flex; flex-direction: column; gap: 12px; }
+  .card { position: relative; background: rgba(13,15,17,.9); border: 1px solid var(--line); border-top: 4px solid var(--acc); border-radius: 2px; padding: 12px 16px 16px; box-shadow: 0 8px 28px rgba(0,0,0,.5); }
+  .card .hd { display: flex; align-items: center; gap: 10px; color: var(--acc); }
+  .card .hd .ic { width: 26px; height: 26px; }
+  .card .kind { font: 700 12px 'JetBrains Mono'; letter-spacing: .16em; text-transform: uppercase; flex: 1; }
+  .card .time { font: 500 12px 'JetBrains Mono'; color: var(--faint); }
+  .card .spk { font: 700 17px Inter; margin: 10px 0 4px; color: var(--bone); }
+  .card .txt { font: 400 16px/1.45 Inter; color: #D9D2BE; }
+  .card .life { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--acc); opacity: .7; }
+  .card.small { padding: 9px 14px 11px; opacity: .82; }
+  .card.small .spk { font-size: 15px; margin: 6px 0 2px; }
+  .card.small .txt { font-size: 14px; }
+  .card.broadcast { border-top: none; padding-top: 0; overflow: hidden; }
+  .card.broadcast .stripe { margin: 0 -16px 10px; height: 8px; }
+  .card.broadcast .txt { font: 500 15px/1.5 'JetBrains Mono'; color: var(--bone); }
+  .queued { font: 600 12px 'JetBrains Mono'; letter-spacing: .14em; color: var(--faint); text-align: right; }
+
+  /* secure radio */
+  .radio { position: absolute; left: 44px; top: 40px; display: flex; align-items: center; gap: 14px; background: rgba(13,15,17,.86); border: 1px solid var(--line); border-left: 4px solid var(--bastion); padding: 10px 16px 10px 12px; border-radius: 2px; }
+  .radio .ic { width: 34px; height: 34px; color: var(--bastion); }
+  .radio .ch { font: 700 13px 'JetBrains Mono'; letter-spacing: .14em; color: var(--bastion); }
+  .radio .sub { font: 500 13px 'JetBrains Mono'; color: var(--dim); margin-top: 3px; }
+  .bars { display: flex; gap: 3px; align-items: flex-end; height: 22px; margin-left: 6px; }
+  .bars i { width: 4px; background: var(--bastion); }
+
+  /* infection widget */
+  .inf { width: 430px; background: rgba(13,15,17,.9); border: 1px solid var(--line); border-left: 5px solid var(--st); border-radius: 2px; padding: 14px 18px 14px 16px; box-shadow: 0 8px 28px rgba(0,0,0,.45); }
+  .inf .row { display: flex; align-items: center; gap: 14px; }
+  .inf .ic.big { width: 46px; height: 46px; color: var(--st); }
+  .inf .stage { font: 700 13px 'JetBrains Mono'; letter-spacing: .16em; color: var(--st); text-transform: uppercase; }
+  .inf .clock { font: 700 44px/1 'JetBrains Mono'; color: var(--bone); letter-spacing: .02em; margin-top: 4px; }
+  .inf .clock small { font-size: 15px; color: var(--dim); letter-spacing: .1em; margin-left: 8px; }
+  .track { display: flex; gap: 3px; margin: 14px 0 8px; position: relative; }
+  .track div { height: 8px; background: #2a2d2f; position: relative; }
+  .track div.done { background: var(--c); opacity: .45; }
+  .track div.now { background: linear-gradient(90deg, var(--c) var(--p), #2a2d2f var(--p)); }
+  .track .tick { position: absolute; top: -6px; width: 3px; height: 20px; background: var(--bone); }
+  .tlabels { display: flex; gap: 3px; font: 600 11px 'JetBrains Mono'; letter-spacing: .12em; color: var(--faint); text-transform: uppercase; }
+  .tlabels span.on { color: var(--bone); }
+  .inf .note { font: italic 400 14px/1.4 Inter; color: var(--dim); margin-top: 8px; }
+  .inf.golden { border: 2px solid var(--hazard); border-left-width: 2px; padding-top: 0; overflow: hidden; }
+  .inf.golden .hazard-thin { margin: 0 -18px 12px -16px; }
+  .gbar { height: 8px; background: #2a2d2f; margin: 12px 0 6px; }
+  .gbar i { display: block; height: 100%; background: var(--hazard); }
+  .inf.final { box-shadow: 0 0 0 1px rgba(210,65,47,.6), 0 0 34px rgba(210,65,47,.35); }
+  .paused { display: inline-flex; align-items: center; gap: 8px; font: 700 12px 'JetBrains Mono'; letter-spacing: .12em; color: var(--halcyon); border: 1px solid rgba(79,184,176,.5); padding: 4px 8px; margin-top: 8px; }
+  .paused .ic { width: 18px; height: 18px; }
+
+  /* noise */
+  .noise { position: absolute; left: 500px; bottom: 52px; display: flex; align-items: center; gap: 10px; opacity: .85; }
+  .noise .ic { width: 26px; height: 26px; color: var(--bone); }
+  .noise .seg { display: flex; gap: 3px; }
+  .noise .seg i { width: 14px; height: 8px; background: rgba(232,226,208,.18); }
+  .noise .seg i.on { background: var(--bone); }
+  .noise .seg i.hot { background: #E07A2E; }
+  .noise span { font: 700 12px 'JetBrains Mono'; letter-spacing: .16em; color: var(--dim); }
+
+  /* states sheet */
+  .sheet { position: absolute; left: 44px; top: 128px; width: 470px; padding: 16px 18px 18px; background: rgba(8,9,10,.62); border: 1px dashed rgba(232,226,208,.22); }
+  .sheet h3 { margin: 0 0 12px; font: 700 12px 'JetBrains Mono'; letter-spacing: .18em; color: var(--dim); }
+  .sheet .inf { width: 100%; margin-bottom: 12px; transform-origin: left top; }
+  .cap { font: 500 11px 'JetBrains Mono'; color: var(--faint); letter-spacing: .08em; margin: -6px 0 12px; }
+  .live { position: absolute; left: 44px; bottom: 44px; }
+  .callout { position: absolute; font: 600 12px 'JetBrains Mono'; color: rgba(242,194,48,.85); letter-spacing: .1em; }
+</style>
+</head>
+<body>
+<canvas class="scene" data-scene="dusk"></canvas>
+<div class="layer">
+  <div class="compass"><span>240</span><span>255</span><b>W</b><span>285</span><span>300</span><span>315</span><b>NW</b><span>345</span></div>
+  <div class="ammo"><big>18 / 2</big>Hunting rifle · single</div>
+
+  <!-- secure radio listening -->
+  <div class="radio">
+    <i data-i="status_secure_radio"></i>
+    <div><div class="ch">BASTION COMMAND NET</div><div class="sub">Cracked · codes change in 12 min</div></div>
+    <div class="bars"><i style="height:8px"></i><i style="height:13px"></i><i style="height:18px"></i><i style="height:22px;opacity:.3"></i></div>
+  </div>
+
+  <!-- infection states sheet -->
+  <div class="sheet">
+    <h3>INFECTION TIMER · STATES</h3>
+    <div class="inf golden" style="--st:var(--hazard)">
+      <div class="hazard-thin"></div>
+      <div class="row"><i class="ic big" data-i="status_golden"></i>
+        <div><div class="stage">Bitten · clean it now</div><div class="clock">1:24<small>BEFORE IT TAKES</small></div></div></div>
+      <div class="gbar"><i style="width:70%"></i></div>
+      <div class="note">Alcohol or antiseptic might do it. Disinfectant and a bandage are better.</div>
+    </div>
+    <div class="cap">Golden window: the clock stands still. One try to clean it.</div>
+    <div class="inf" style="--st:#E2B33C">
+      <div class="row"><i class="ic big" data-i="status_fever"></i>
+        <div><div class="stage">Infected · fever</div><div class="clock">52:10</div></div></div>
+      <div class="track"><div class="now" style="flex:25;--c:#E2B33C;--p:30%"></div><div style="flex:15"></div><div style="flex:10"></div></div>
+      <div class="tlabels"><span class="on" style="flex:25">Fever</span><span style="flex:15">Weakness</span><span style="flex:10">Final</span></div>
+    </div>
+    <div class="cap">Fever: the first half. Weakness and Final follow.</div>
+    <div class="inf final" style="--st:#D2412F">
+      <div class="row"><i class="ic big" data-i="status_final"></i>
+        <div><div class="stage">The end of it</div><div class="clock">06:12<small>LEFT</small></div></div></div>
+      <div class="track"><div class="done" style="flex:25;--c:#E2B33C"></div><div class="done" style="flex:15;--c:#E07A2E"></div><div class="now" style="flex:10;--c:#D2412F;--p:38%"></div></div>
+      <div class="tlabels"><span style="flex:25">Fever</span><span style="flex:15">Weakness</span><span class="on" style="flex:10">Final</span></div>
+    </div>
+    <div class="cap">Final: the last 10 minutes. The border glows.</div>
+  </div>
+
+  <!-- the live widget, as the player sees it now -->
+  <div class="live">
+    <div class="inf" style="--st:#E07A2E">
+      <div class="row"><i class="ic big" data-i="status_weakness"></i>
+        <div><div class="stage">Infected · weakness</div><div class="clock">23:41</div></div></div>
+      <div class="track"><div class="done" style="flex:25;--c:#E2B33C"></div><div class="now" style="flex:15;--c:#E07A2E;--p:42%"></div><div style="flex:10"></div></div>
+      <div class="tlabels"><span style="flex:25">Fever</span><span class="on" style="flex:15">Weakness</span><span style="flex:10">Final</span></div>
+      <div class="paused"><i data-i="item_stabiliser"></i>PAUSED · STABILISER 14:02</div>
+    </div>
+  </div>
+  <div class="callout" style="left:500px;bottom:96px">◀ RZ_HudDisplay · infection timer, noise meter ▼</div>
+
+  <div class="noise">
+    <i data-i="status_noise"></i>
+    <div class="seg"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+    <span>QUIET</span>
+  </div>
+
+  <!-- notice cards -->
+  <div class="cards">
+    <div class="card" style="--acc:var(--haven)">
+      <div class="hd"><i data-i="faction_haven"></i><div class="kind">Open channel · the Haven</div><div class="time">DAY 14 · 19:42</div></div>
+      <div class="spk">Ines Calder, council head in Morton</div>
+      <div class="txt">If you can hear this, Morton is open. Bring water if you can. Bring yourself either way. Night watch goes up at 20:30.</div>
+      <div class="life" style="width:64%"></div>
+    </div>
+    <div class="card" style="--acc:var(--bastion)">
+      <div class="hd"><i data-i="status_secure_radio"></i><div class="kind">Secure · Bastion command net</div><div class="time">19:40</div></div>
+      <div class="spk">Bastion command net</div>
+      <div class="txt">All stations: truck leaves Gravette for Levie at 20:10, two in the cab. Levie is short on rations. Do not, repeat, do not use the river road.</div>
+    </div>
+    <div class="card broadcast small" style="--acc:var(--hazard)">
+      <div class="stripe hazard"></div>
+      <div class="hd"><i data-i="status_broadcast"></i><div class="kind">Government broadcast</div><div class="time">19:30</div></div>
+      <div class="txt">DAY 14. RESIDENTS ARE REMINDED THAT THE PERIMETER IS FOR YOUR PROTECTION.</div>
+    </div>
+    <div class="queued">+2 QUEUED</div>
+  </div>
+  <div class="callout" style="right:44px;top:66px">RZ_HudDisplay · notice cards ▼</div>
+</div>
+</body>
+</html>

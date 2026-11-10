@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ReforgerZ map legend</title>
+<link rel="stylesheet" href="common/zone.css">
+<script src="common/zone.js"></script>
+<style>
+  body { background: #1d2a2e; }
+  .mapwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform: translate(14px, 128px) scale(.765); transform-origin: 0 0; }
+  .mk { position: absolute; width: 48px; height: 48px; transform: translate(-50%, -50%); filter: drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
+  .mk.sm { width: 38px; height: 38px; }
+  .you { position: absolute; width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-bottom: 26px solid #fff; transform: translate(-50%, -50%) rotate(35deg); filter: drop-shadow(0 0 3px #000); }
+  .ring { position: absolute; border: 2px dashed rgba(242,194,48,.8); border-radius: 50%; transform: translate(-50%, -50%); }
+  .maphead { position: absolute; left: 24px; top: 52px; width: 1440px; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--line2); padding-bottom: 14px; }
+  .maphead .stencil { font-size: 40px; }
+  .maphead .mono { font-size: 15px; color: var(--dim); letter-spacing: .1em; }
+  .mapwrap::after { content: ''; position: absolute; inset: 0; border: 2px solid var(--line2); }
+  .tagline { position: absolute; font: 700 16px 'JetBrains Mono'; color: #15171a; background: rgba(232,226,208,.9); padding: 3px 6px; transform: translate(-50%, 0); white-space: nowrap; letter-spacing: .06em; }
+  .legend { position: absolute; right: 40px; width: 410px; height: 826px; top: 128px; background: var(--panel); border: 1px solid var(--line); border-top: 5px solid var(--bone); padding: 20px 24px; }
+  .legend h2 { margin: 0 0 4px; font: 800 26px 'Inter Display', Inter; letter-spacing: .14em; text-transform: uppercase; }
+  .legend .sub { font: 500 13px 'JetBrains Mono'; color: var(--dim); margin-bottom: 8px; }
+  .lg { margin-top: 14px; }
+  .li { display: flex; align-items: center; gap: 14px; margin: 9px 0; }
+  .li .ic { width: 32px; height: 32px; }
+  .li .sw { display: flex; gap: 4px; }
+  .li .sw .ic { width: 24px; height: 24px; }
+  .li b { display: block; font: 700 15px Inter; }
+  .li span { font: 400 13px Inter; color: var(--dim); }
+  .li > .ic, .li > .perim { margin-right: 48px; }
+  .perim { width: 32px; height: 0; border-top: 3px dashed var(--hazard); flex: none; }
+</style>
+</head>
+<body>
+<script>
+  window.RZ_TOWN_FONT = 19;
+  window.RZ_TOWNS = [
+    { name: 'Morton', x: 760, y: 640, size: 4, lx: -40, ly: 44 }, { name: 'Levie', x: 980, y: 560, size: 3, lx: 26, ly: 34 },
+    { name: 'Gravette', x: 1160, y: 470, size: 5, lx: -30, ly: -34 }, { name: 'Chotain', x: 560, y: 250, size: 3, lx: 26, ly: 30 },
+    { name: 'Montignac', x: 1500, y: 300, size: 4 }, { name: 'Saint Philippe', x: 1230, y: 880, size: 5, lx: -60, ly: 46 },
+    { name: 'Meaux', x: 300, y: 820, size: 3, lx: 34, ly: -18 }, { name: 'Le Moule', x: 1600, y: 760, size: 3, lx: 40, ly: -30 },
+    { name: 'Provins', x: 1330, y: 430, size: 2, lx: 24, ly: 30 }, { name: 'Durras', x: 1420, y: 560, size: 2, lx: -10, ly: 46 },
+  ];
+</script>
+<div class="mapwrap"><canvas class="scene" data-scene="map"></canvas>
+<div class="layer">
+  <!-- places -->
+  <i class="mk plated" data-i="marker_safehouse" style="left:760px;top:640px;color:var(--haven)"></i>
+  <i class="mk sm plated" data-i="marker_quartermaster" style="left:808px;top:610px;color:var(--haven)"></i>
+  <i class="mk plated" data-i="marker_safehouse" style="left:980px;top:560px;color:var(--haven)"></i>
+  <i class="mk plated" data-i="marker_stronghold" style="left:560px;top:250px;color:var(--haven)"></i>
+  <i class="mk plated" data-i="marker_stronghold" style="left:1160px;top:470px;color:var(--bastion)"></i>
+  <i class="mk sm plated" data-i="marker_quartermaster" style="left:1112px;top:510px;color:var(--bastion)"></i>
+  <i class="mk plated" data-i="marker_stronghold" style="left:1500px;top:300px;color:var(--redhand)"></i>
+  <i class="mk plated" data-i="marker_outpost" style="left:1330px;top:430px;color:var(--bastion)"></i>
+  <i class="mk plated" data-i="marker_outpost" style="left:1420px;top:560px;color:var(--redhand)"></i>
+  <i class="mk plated" data-i="marker_lab" style="left:1230px;top:880px;color:var(--halcyon)"></i>
+  <i class="mk sm plated" data-i="marker_outpost" style="left:1180px;top:850px;color:var(--halcyon)"></i>
+  <!-- world -->
+  <i class="mk plated" data-i="marker_power" style="left:700px;top:480px;color:var(--hazard)"></i>
+  <i class="mk plated" data-i="marker_radio" style="left:640px;top:360px;color:var(--bone)"></i>
+  <i class="mk plated" data-i="marker_checkpoint" style="left:206px;top:880px;color:var(--hazard)"></i>
+  <i class="mk plated" data-i="marker_checkpoint" style="left:1610px;top:200px;color:var(--hazard)"></i>
+  <div class="ring" style="left:1600px;top:760px;width:190px;height:190px"></div>
+  <i class="mk plated" data-i="marker_event" style="left:1600px;top:760px;color:var(--hazard)"></i>
+  <div class="tagline" style="left:1600px;top:796px">FOG BANK · 18 MIN</div>
+  <i class="mk plated" data-i="marker_event" style="left:300px;top:820px;color:var(--hazard)"></i>
+  <div class="tagline" style="left:300px;top:856px">FEVER WATER</div>
+  <div class="you" style="left:930px;top:600px"></div>
+</div></div>
+<div class="layer">
+  <div class="maphead"><span class="stencil">Zone map</span><span class="mono">DAY 14 · 19:48 · GRID 400 M</span></div>
+  <div class="legend">
+    <h2>Map key</h2>
+    <div class="sub">Markers you can see now. The Zone is wider than any map.</div>
+    <div class="lg"><div class="label">Who holds what</div>
+      <div class="li"><div class="sw"><i class="plated" data-i="marker_stronghold" style="color:var(--haven)"></i><i class="plated" data-i="marker_stronghold" style="color:var(--bastion)"></i><i class="plated" data-i="marker_stronghold" style="color:var(--redhand)"></i></div><div><b>Stronghold</b><span>A faction's seat. It never falls.</span></div></div>
+      <div class="li"><div class="sw"><i class="plated" data-i="marker_outpost" style="color:var(--bastion)"></i><i class="plated" data-i="marker_outpost" style="color:var(--redhand)"></i><i class="plated" data-i="marker_outpost" style="color:var(--halcyon)"></i></div><div><b>Outpost</b><span>Held for now. Towns change hands.</span></div></div>
+      <div class="li"><i class="plated" data-i="marker_safehouse" style="color:var(--haven)"></i><div><b>Haven safehouse</b><span>Don't fire near it. Declare your bite.</span></div></div>
+      <div class="li"><i class="plated" data-i="marker_quartermaster" style="color:var(--bone)"></i><div><b>Quartermaster</b><span>Shop and leader, in the faction's colour.</span></div></div>
+      <div class="li"><i class="plated" data-i="marker_lab" style="color:var(--halcyon)"></i><div><b>Halcyon's lab</b><span>Samples, the trial dose, the cure.</span></div></div>
+    </div>
+    <div class="lg"><div class="label">The world</div>
+      <div class="li"><i class="plated" data-i="marker_event" style="color:var(--hazard)"></i><div><b>World event</b><span>Open to anyone. The ring is roughly where.</span></div></div>
+      <div class="li"><i class="plated" data-i="marker_power" style="color:var(--hazard)"></i><div><b>Power station</b><span>Restore it for light, and noise.</span></div></div>
+      <div class="li"><i class="plated" data-i="marker_radio" style="color:var(--bone)"></i><div><b>Radio station</b><span>Hold the mast, speak to everyone.</span></div></div>
+      <div class="li"><i class="plated" data-i="marker_checkpoint" style="color:var(--hazard)"></i><div><b>Perimeter checkpoint</b><span>Sealed. Nobody passes, either way.</span></div></div>
+      <div class="li"><div class="perim"></div><div><b>The Perimeter</b><span>Drones, loudspeakers, unseen snipers.</span></div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
