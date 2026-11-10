@@ -136,11 +136,21 @@ doesn't need to be.
 
 ### Supply lines
 
-- Factions run AI convoys between their Stronghold and Outposts, as data until a player is near.
-- **Raiding a convoy** lowers that faction's shop **stock** in the towns it was heading for,
-  temporarily: some items run out for about 30 minutes. Prices don't spike and tiers don't lock.
-- **Escorting a convoy** restocks those shops sooner and gives Fame.
-- Haven convoys also carry the food that keeps safehouse population up.
+- **A real truck does the resupplying.** Each faction's outposts and safehouses
+  only restock when an actual supply truck, a real vehicle with an AI driver,
+  drives in from the Stronghold and parks. No truck, no restock.
+  - Each faction has at most one truck on the road at a time, so the AI cost stays small.
+  - A truck runs every 40–60 minutes, at a random time within that window so it feels real.
+  - If a truck gets stuck and no player is within 1 km, it's quietly moved past the obstacle.
+    If a player is nearby, it stays stuck, and that's a chance to help or rob it.
+- **Shortages.** If a truck is destroyed, robbed or never arrives, that faction's shops in those towns:
+  - run out of some items,
+  - **raise prices** (+25% to +50%),
+  - and may **lock their top tier** until the next truck gets through.
+  - The shortage lasts until the next successful delivery: **40–60 minutes**, random each time.
+- **Players can drive the truck.** Escort it for Fame. Drive it in yourself if the driver is dead, for more Fame.
+  Or steal it and deliver it to a rival's stronghold. That's Red Hand Fame, and the owner's Infamy.
+- Haven trucks also carry the food that keeps safehouse population up.
 
 ## 4. Infection adapts, a little
 
