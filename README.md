@@ -37,8 +37,8 @@ and one way to end it: **research the cure.**
 ## Status
 
 All of it is **written but has never been compiled**. It's about 62,300 lines of Enforce
-Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **155 `VERIFY`
-markers** on engine and editor calls whose exact names need checking (119 in the game, 36 in the
+Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **158 `VERIFY`
+markers** on engine and editor calls whose exact names need checking (122 in the game, 36 in the
 Workbench plugin), no prefabs or configs yet, and nothing has been play-tested. Every prefab,
 setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
 plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run). Start with
@@ -60,7 +60,7 @@ plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run
 
 ```
 Scripts/Game/ReforgerZ/
-  Core/          game mode component (the hub), helpers, map markers
+  Core/          game mode component (the hub), helpers, map markers, loose-item cleanup
   World/         settlements, the Perimeter, safehouses, wanderers, town memory,
                  the power grid, the radio station
   Director/      outbreak stages, spread, heat, adaptation, time and weather,

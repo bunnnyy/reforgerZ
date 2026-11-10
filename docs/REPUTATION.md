@@ -136,8 +136,11 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 - **Hunter squads** ✅: every 10 minutes, Bastion or the Red Hand sends an AI group 400 m from
   a player they Hunt, toward where they were. It's hostile to that player within 800 m.
 - **Bounties** ✅: Kill on Sight with any faction puts a public bounty on you, announced every
-  10 minutes with a rough location, claimed by whoever is near when you die (50 Favor and a
-  little Fame each, from the faction; not for anyone that faction hunts too).
+  10 minutes with a rough location. One bounty is paid per death, only to the player who killed
+  you (50 Favor and a little Fame), and only for a player kill: dying to the infected, a fall or
+  your own hand pays nobody. With several factions after you, the one with the most Infamy pays;
+  a faction never pays someone it hunts too. *The killer is read from the body (a VERIFY); if
+  that fails, no bounty is paid.*
 - **Choice missions** ✅: you decide which faction's drop point gets the item. The winner gives
   Fame; the one you double-crossed gives Infamy.
 - **Disguises** ✅: a faction's uniform gets you past its AI while you're not Hunted by it;

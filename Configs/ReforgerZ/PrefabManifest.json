@@ -3707,7 +3707,7 @@
   {
    "category": "World",
    "object": "(top level)",
-   "covers": "Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20)"
+   "covers": "Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off)"
   },
   {
    "category": "World",
@@ -4479,6 +4479,7 @@
   "m_iScanMinBuildings": "8",
   "m_iSpawnPointCount": "6",
   "m_fSpawnRotateMinutes": "20",
+  "m_fLooseItemMinutes": "30",
   "m_fBroadcastMinutes": "25",
   "m_fHeatPresence": "0.5",
   "m_fHeatVehicle": "4",

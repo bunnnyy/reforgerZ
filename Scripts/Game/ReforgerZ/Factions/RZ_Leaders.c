@@ -1957,10 +1957,13 @@ class RZ_Leaders
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Someone new takes the empty chair: new name, new traits, new loyalty, no memories.
+	//! Someone new takes the empty chair: new name, new traits, new loyalty, no memories. Same seat id.
 	protected RZ_Leader Replace(RZ_Leader old)
 	{
 		RZ_Leader l = Generate(old.m_eFaction, old.m_eRole, old.m_iSource, old.m_vPos, old.m_sPlace, old.m_iSafehouse, old.m_iGeneration + 1);
+		// The seat keeps its id: territory holdings point at their leader by it (UnregisterOutpost,
+		// the founder's name), so a new id would leave the holding without its leader
+		l.m_iId = old.m_iId;
 		l.m_bActive = old.m_bActive;
 		AddHeadline(string.Format("%1 has a new %2: %3. %4 (%5)", old.m_sPlace, ShortTitle(l), l.m_sName, l.m_sBackstory, RZ_LeaderVoice.LoyaltyName(l.m_eLoyalty)));
 		return l;
@@ -1992,7 +1995,7 @@ class RZ_Leaders
 		m_aHeadlines.Insert(text);
 		while (m_aHeadlines.Count() > HEADLINES_KEPT)
 		{
-			m_aHeadlines.Remove(0);
+			m_aHeadlines.RemoveOrdered(0);
 		}
 
 		if (announce)

@@ -70,8 +70,8 @@ class RZ_Director
 	//------------------------------------------------------------------------------------------------
 	void Restore(RZ_EOutbreakStage stage, float minutes)
 	{
-		m_eStage = stage;
-		m_fStageMinutes = minutes;
+		m_eStage = Math.ClampInt(stage, RZ_EOutbreakStage.EARLY_OUTBREAK, RZ_EOutbreakStage.AFTERMATH);
+		m_fStageMinutes = Math.Max(0, minutes);
 	}
 
 	//------------------------------------------------------------------------------------------------

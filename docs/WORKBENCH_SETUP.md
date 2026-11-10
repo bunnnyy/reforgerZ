@@ -696,7 +696,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Category | Object | Field | Covers |
 |---|---|---|---|
 | ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1) |
-| World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20) |
+| World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off) |
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
@@ -751,7 +751,7 @@ The last winner is kept in `$profile:ReforgerZ/last_season.json`, which a wipe d
 grep -rn "VERIFY" Scripts/
 ```
 
-There are **155** markers: 119 in the game scripts (one is the comment in `Core/RZ_Util.c` that
+There are **158** markers: 122 in the game scripts (one is the comment in `Core/RZ_Util.c` that
 explains them) and 36 in the Workbench plugin (one is its header comment). Each is an engine or
 editor API whose exact name or signature couldn't be confirmed. Usually the fix is a rename, and
 most are isolated in small helpers (`Core/RZ_Util.c`, and `RZ_WB` in the plugin). The game
@@ -764,36 +764,36 @@ No fallback. If these are wrong, the basic game doesn't work.
 
 | Where | Call | If it fails |
 |---|---|---|
-| `Core/RZ_GameModeComponent.c:565` | `GetOnPlayerSpawned()` invoker | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:890` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
-| `Core/RZ_GameModeComponent.c:959` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
-| `Core/RZ_GameModeComponent.c:1092` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1735`, `:1736` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1746` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:1965`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Core/RZ_GameModeComponent.c:570` | `GetOnPlayerSpawned()` invoker (the handler is `HandlePlayerSpawned`, not an override of the base `OnPlayerSpawned`) | Nothing per-player runs on spawn (backgrounds, goals, radio) |
+| `Core/RZ_GameModeComponent.c:896` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
+| `Core/RZ_GameModeComponent.c:965` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
+| `Core/RZ_GameModeComponent.c:1107` | `OnProjectileShot` event and signature | No gunfire heat |
+| `Core/RZ_GameModeComponent.c:1762`, `:1763` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1773` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:2004`, `Cure/RZ_LabComponents.c:256` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
 | `Persistence/RZ_SaveData.c:120` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
-| `Core/RZ_Util.c:369`, `:377` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
-| `Core/RZ_Util.c:614`, `Zombies/RZ_BiteDetector.c:167` | total health accessor (maybe `GetDefaultHitZone().GetHealth()`) | No bites; retaliation only sees kills |
+| `Core/RZ_Util.c:393`, `:401` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
+| `Core/RZ_Util.c:638`, `Zombies/RZ_BiteDetector.c:167` | total health accessor (maybe `GetDefaultHitZone().GetHealth()`) | No bites; retaliation only sees kills |
 | `Core/RZ_Util.c:171` | `Kill()` signature | The infection timer and kill zone can't kill |
 | `Cure/RZ_LabComponents.c:72`, `Missions/RZ_MissionItems.c:49`, `Cure/RZ_AntidoteItem.c:23` | `IsMatch` predicate signature | Samples, mission items and antidotes aren't found in inventories |
-| `Cure/RZ_LabComponents.c:156`, `Missions/RZ_MissionItems.c:75`, `Cure/RZ_AntidoteItem.c:47` | `TryDeleteItem()` | Items aren't taken when handed in |
+| `Cure/RZ_LabComponents.c:159`, `Missions/RZ_MissionItems.c:75`, `Cure/RZ_AntidoteItem.c:47` | `TryDeleteItem()` | Items aren't taken when handed in |
 | `Puzzles/RZ_RadioStealth.c:36` | `GetItems()` lists every carried storage | Radio checks fail (the same call is used for food and keywords) |
 | `Puzzles/RZ_PuzzleActions.c:15` | `ScriptedUserAction.GetOwner()` | No clue can be read |
 
-### Medium risk: big features, with a fallback (60)
+### Medium risk: big features, with a fallback (63)
 
 | Where | Call | Fallback |
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:16` | modded `SCR_Faction.DoCheckIfFactionFriendly(Faction)` is what AI uses | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If it never fires, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Core/RZ_Util.c:403`, `:428` | `GetAffiliatedFaction`, `SetAffiliatedFaction` (server side, replicated, read by AI) | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
-| `Core/RZ_Util.c:475`, `:482` | `GetWeaponsList`, `GetWeaponType` and `EWeaponType` names | Always false: armed exiles never shot, wanderers never fight back. Always true: unarmed exiles shot |
-| `Core/RZ_Util.c:546` | `MoveInVehicle(vehicle, ECompartmentType)` seats AI, `PILOT` drives | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
+| `Core/RZ_Util.c:427`, `:452` | `GetAffiliatedFaction`, `SetAffiliatedFaction` (server side, replicated, read by AI) | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
+| `Core/RZ_Util.c:499`, `:506` | `GetWeaponsList`, `GetWeaponType` and `EWeaponType` names | Always false: armed exiles never shot, wanderers never fight back. Always true: unarmed exiles shot |
+| `Core/RZ_Util.c:570` | `MoveInVehicle(vehicle, ECompartmentType)` seats AI, `PILOT` drives | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:824` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
-| `Core/RZ_Util.c:560` | vehicle `SCR_DamageManagerComponent.GetState()` | A burnt-out truck counts as late instead |
-| `Core/RZ_Util.c:574`, `:578` | `SetWorldTransform`, `Physics.SetVelocity` | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
-| `Interactions/RZ_Interactions.c:651` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
-| `Interactions/RZ_Interactions.c:727` | `SCR_DestructibleBuildingEntity` as the building class | Buildings aren't recognised; furniture still is |
+| `Core/RZ_Util.c:584` | vehicle `SCR_DamageManagerComponent.GetState()` | A burnt-out truck counts as late instead |
+| `Core/RZ_Util.c:598`, `:602` | `SetWorldTransform`, `Physics.SetVelocity` | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
+| `Interactions/RZ_Interactions.c:653` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
+| `Interactions/RZ_Interactions.c:729` | `SCR_DestructibleBuildingEntity` as the building class | Buildings aren't recognised; furniture still is |
 | `Interactions/RZ_Interactions.c:251` | `GetItems()` for keyword items | Crowbars, parts, fuel, water and medkits not found |
 | `Puzzles/RZ_Landmarks.c:56` | `QueryEntitiesBySphere(center, radius, cb, filter, flags)` | No landmarks: the fallback landmark prop |
 | `Puzzles/RZ_PuzzleComponents.c:80`, `:142`, `Puzzles/RZ_BlinkingLight.c:161` | `[RplProp]` on a `ScriptComponent` | Labels don't replicate: generic labels, all slots visible, actions still work |
@@ -804,10 +804,10 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `World/RZ_Perimeter.c:633`, `:647` | `AddChild` keeps the drone on the player; `SetOrigin` replicates | Moved each tick instead (jumpier) |
 | `Core/RZ_Util.c:196` | `EnableDamageHandling(false)` | Checkpoint guards and stronghold leaders can be shot (leaders are "wounded" and come back) |
 | `Core/RZ_Util.c:184` | `FullHeal()` | Medics and Doctors take Favor but don't heal: fix before release |
-| `Core/RZ_Util.c:257` | `TryInsertItem` | Items (the wind-up radio) land at the player's feet |
-| `Core/RZ_Util.c:301` | `AIGroup.GetWaypoints()` / `RemoveWaypoint()` | Hordes can't be redirected (The Clockwork Horde, unarmed missions) |
+| `Core/RZ_Util.c:281` | `TryInsertItem` | Items (the wind-up radio) land at the player's feet |
+| `Core/RZ_Util.c:325` | `AIGroup.GetWaypoints()` / `RemoveWaypoint()` | Hordes can't be redirected (The Clockwork Horde, unarmed missions) |
 | `World/RZ_Safehouses.c:359`, `:369` | `GetItems`, `TryDeleteItem` for food | Food isn't found or taken; check the food keywords first |
-| `Core/RZ_Util.c:594` | fuel nodes: `GetFuelNodesList`, `GetMaxFuel`, `SetFuel` | Empty the helper: a fixed car has its prefab's own fuel |
+| `Core/RZ_Util.c:618` | fuel nodes: `GetFuelNodesList`, `GetMaxFuel`, `SetFuel` | Empty the helper: a fixed car has its prefab's own fuel |
 | `Interactions/RZ_DoorHooks.c:11` | `modded class SCR_DoorUserAction`: the vanilla door action's name, owned by the door entity | **Doesn't compile if the name is wrong.** Rename it to the action in the door prefabs' `ActionsManagerComponent` (maybe `DoorUserAction`); if there's no scripted one, delete the file and turn **Search > Door locks** off (locks go back on the loot) |
 | `Interactions/RZ_DoorHooks.c:22`, `:32` | `SetCannotPerformReason(string)`; the door action's `PerformAction` also runs on the server | No "Locked" reason, only a greyed action / the server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:44`, `:54`, `:63` | `DoorComponent`; `GetControlValue()` is 0 when shut; `SetControlValue(0)` shuts it | No doors found: every building keeps the loot lock / open and shut mixed up: fix the threshold / locked doors aren't pulled shut |
@@ -815,11 +815,13 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Interactions/RZ_DoorLocks.c:123`, `:132` | `GetBounds()` is the building's local box; `GetWorldTransform()` | No box: no outside doors (the loot lock). A wrong box or transform gets inside and outside wrong: try every locked door from both sides, and from a closet near the outline |
 | `Interactions/RZ_DoorLocks.c:290` | `GetBounds()` on a door is its leaf's local box | Blockers stand at the door's origin (often the hinge) instead of the middle of the doorway: check where one appears |
 | `Interactions/RZ_AIDoorHook.c:16` | `modded class SCR_AIOpenDoor` with `EOnTaskSimulate(AIAgent, float)`: the AI's door-opening task (**a guess, low confidence**) | **Doesn't compile if wrong: delete the file**, nothing refers to it. Blockers and banging still keep AI out. If it compiles but AI still open locked doors, move its check (`RZ_DoorLocks.AiMayOpenNear`) into the real door task |
-| `Core/RZ_Util.c:632` | a seated character is a child entity of its vehicle (`GetParent()`) | Vehicle deliveries by type (Recover the Bus) never see who drives: switch the helper to `CompartmentAccessComponent.GetVehicleIn`. A specific vehicle still counts a player in a vehicle right beside it |
-| `Core/RZ_Util.c:643`, `:654` | `HitZone.GetMaxHealth()` and `SetHealth()` on the default hit zone (server, replicated, no knock-out above zero) | The Blood Drive refuses everyone ("health can't be read"); nothing else uses them |
-| `Core/RZ_Util.c:685` | worn clothing is attached as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
+| `Core/RZ_Util.c:656` | a seated character is a child entity of its vehicle (`GetParent()`) | Vehicle deliveries by type (Recover the Bus) never see who drives: switch the helper to `CompartmentAccessComponent.GetVehicleIn`. A specific vehicle still counts a player in a vehicle right beside it |
+| `Core/RZ_Util.c:667`, `:678` | `HitZone.GetMaxHealth()` and `SetHealth()` on the default hit zone (server, replicated, no knock-out above zero) | The Blood Drive refuses everyone ("health can't be read"); nothing else uses them |
+| `Core/RZ_Util.c:709` | worn clothing is attached as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
 | `Cure/RZ_Infection.c:1096`, `:1100`, `:1115` | `CharacterStaminaComponent` on the character; `AddStamina(float)` on a 0–1 scale, server side and replicated (negative drains); `GetStamina()` | No stamina effects: the Weakness and Final stages, nausea and the drunk remedy fall back to noise and a little health drain, and the "tired" bite modifier never applies. Try `SCR_CharacterStaminaComponent` |
 | `Interactions/RZ_DoorBlockers.c:58`, `:67` | `GetAIWorld()` as `SCR_AIWorld`; `RequestNavmeshRebuildAreas(areas, redoRoads)` (what Game Master placement uses) | Doesn't compile: try `RequestNavmeshRebuildEntity(blocker)`, or empty the helper and turn **Navmesh rebuild** off (blockers only) |
+| `Core/RZ_Util.c:219` | `GetInstigator()` on the character's damage manager after death, `Instigator.GetInstigatorPlayerID()` | No killer is ever known: no bounty (public or Collect the Bounty's player target) is paid. Check a player kill pays the killer, and a death to the infected pays nobody |
+| `Core/RZ_LooseItems.c:127`, `:135` | `GetRootParent()`; `InventoryItemComponent.GetParentSlot()` set while an item is in any storage | **If both fail, carried items could be cleaned up after 30 min away from players.** Test: carry a sample 200 m from everyone for 31 min (Loose item minutes at 1 to test fast). If it vanishes, set **World > Loose item minutes** to 0 |
 
 ### Low risk: contained or cosmetic (34)
 
@@ -830,18 +832,18 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Cure/RZ_AntidoteConsumable.c:8`, `:15`, `Cure/RZ_MedConsumable.c:5`, `:15` | the consumable effect class and `ApplyEffect` signature | Delete the file: the world actions ("Inject antidote", "Take ...") still work |
 | `Cure/RZ_Infection.c:1123` | no known script hook for camera sway or blur (`RZ_Symptoms.Disorient` returns false) | The home remedy's drunkenness is stumbling (stamina and noise). Wire a blur or aim-sway effect here if the game version has one |
 | `Guidance/RZ_Guidance.c:172` | `System.GetUnixTime()` | Return 0: the 30-day refresher never fires |
-| `Puzzles/RZ_BlinkingLight.c:55`, `:72`; `Puzzles/RZ_Landmarks.c:66`; `Core/RZ_Util.c:347` | `ToUpper`, `Trim`, `ToLower` in place or as copies | Swap to the other form |
+| `Puzzles/RZ_BlinkingLight.c:55`, `:72`; `Puzzles/RZ_Landmarks.c:66`; `Core/RZ_Util.c:371` | `ToUpper`, `Trim`, `ToLower` in place or as copies | Swap to the other form |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
-| `Core/RZ_Util.c:340`, `:343` | `GetChildren()`/`GetSibling()`, attachment prefab names | Suppressors aren't detected (full gunfire heat) |
+| `Core/RZ_Util.c:364`, `:367` | `GetChildren()`/`GetSibling()`, attachment prefab names | Suppressors aren't detected (full gunfire heat) |
 | `Core/RZ_Util.c:203` | `IsInCompartment()` | Driving or stealing a supply truck isn't recognised; interaction scans don't skip players in vehicles |
-| `Core/RZ_Util.c:267`, `Puzzles/RZ_Noisemaker.c:130`, `Interactions/RZ_Traps.c:245`, `:412` | `GetRootParent()`: carried items are children of the character | Thrown noisemakers, molotovs and picked-up kits aren't noticed; a picked-up clue could be cleaned up |
+| `Core/RZ_Util.c:291`, `Puzzles/RZ_Noisemaker.c:130`, `Interactions/RZ_Traps.c:245`, `:412` | `GetRootParent()`: carried items are children of the character | Thrown noisemakers, molotovs and picked-up kits aren't noticed; a picked-up clue could be cleaned up |
 | `Interactions/RZ_Traps.c:605` | `IEntity.GetAngles()` | Barricades face the wrong way |
 | `Interactions/RZ_Traps.c:666` | returning false stops a query early | The callback runs to the end; nothing breaks |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:408`, `:425` | `GetAll()`, `GetTotalWeight()` | Turn on **Scale counts items** |
 | `Puzzles/RZ_RadioStealth.c:42` | `BaseRadioComponent` class name | Radios are found by name ("radio") only |
 | `Missions/RZ_MissionBases.c:244` | damage manager `GetState()` on a target prop | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_KeyItem.c:29` | `[RplProp]` on a key item's component | "Read the tag" shows no label; keys still open their locks (the id is on the server) |
-| `Interactions/RZ_KeyItem.c:80` | `GetItems()` finds key items in every carried storage | Carried keys aren't found: leave **Key prefab** empty (data keys) |
+| `Interactions/RZ_KeyItem.c:81` | `GetItems()` finds key items in every carried storage | Carried keys aren't found: leave **Key prefab** empty (data keys) |
 
 ### The Workbench plugin (35)
 
@@ -960,6 +962,12 @@ session, tick off:
 - [ ] A contract is offered by radio, completes, and pays Fame and Favor; a tier change is announced.
 - [ ] A quartermaster sells an item at the right tier and refuses one above it.
 - [ ] Stop and restart the server: stage, infection, research and your standing are back.
+- [ ] Restart the server during the final stand with nobody on: it doesn't count as abandoned
+  while the server is empty, and the first player to spawn is told the stand is running.
+- [ ] Loose items (set **Loose item minutes** to 2 to test): a dropped sample and a bought item
+  left on the ground vanish once nobody is within 150 m; the same items in your pack, in a car's
+  storage, or lying next to a running mission stay. A bought vehicle is never removed.
+- [ ] Messages that arrive together (the three on spawn) show in the order they were sent.
 - [ ] With nobody online for a while, the stage minutes and town infection don't move; with
   **Season speed** at 4, a stage change, a territory tick and a truck come four times as often.
 
@@ -970,6 +978,11 @@ session, tick off:
 - [ ] Shooting a guard makes nearby guards of that faction fire back for about 3 minutes.
 - [ ] Disguise: with Bastion set to shoot from Watched, a Watched player in two Bastion uniform
   pieces walks past Bastion AI and is told so; Infamy with Bastion while wearing it is doubled.
+- [ ] Bounty: a player at Kill on Sight with two factions is killed by another player; only the
+  killer is paid, once, by one faction. Die to the infected (or a fall) while at Kill on Sight:
+  nobody is paid. Collect the Bounty on a player pays only whoever killed them.
+- [ ] A Bastion outpost leader dies and is replaced (Replace minutes at 1): when that outpost is
+  later abandoned or taken, the new leader leaves with it.
 - [ ] A supply truck leaves, is driven by its crew, and arrives.
 - [ ] A leader answers Talk, Work, News and Standing.
 

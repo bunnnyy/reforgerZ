@@ -601,7 +601,7 @@ class RZ_FactionLife
 		m_aMoments.Insert(phrase);
 		while (m_aMoments.Count() > MOMENTS_KEPT)
 		{
-			m_aMoments.Remove(0);
+			m_aMoments.RemoveOrdered(0);
 		}
 	}
 

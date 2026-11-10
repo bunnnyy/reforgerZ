@@ -42,6 +42,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("20", desc: "Minutes between moving one spawn point to a new town", category: "ReforgerZ|World")]
 	protected float m_fSpawnRotateMinutes;
 
+	[Attribute("30", desc: "Loose items: reward crates, dropped samples, key items, purchases and finds left lying this many real minutes with no player within 150 m (and not at a running mission) are removed. Never from a pack or a vehicle. 0 = off (docs/DESIGN.md, Loose items)", category: "ReforgerZ|World")]
+	protected float m_fLooseItemMinutes;
+
 	[Attribute(desc: "Town memory: Looted, Barricaded, Powered, Burned per town as data, loot that returns, journals of the dead (docs/DESIGN.md, Town memory)", category: "ReforgerZ|World")]
 	protected ref RZ_TownMemorySettings m_TownMemorySettings;
 
@@ -346,6 +349,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_SupplyLines m_Supply;
 	protected ref RZ_FactionLife m_FactionLife;
 	protected ref RZ_Interactions m_Interactions;
+	protected ref RZ_LooseItems m_LooseItems;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -489,6 +493,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		m_Heat = new RZ_HeatMap();
+		m_LooseItems = new RZ_LooseItems(this, m_fLooseItemMinutes);
 		m_Adaptation = new RZ_Adaptation(this, m_AdaptationSettings);
 		m_TownMemory = new RZ_TownMemory(this, m_TownMemorySettings);
 		m_Environment = new RZ_Environment(this, m_EnvironmentSettings);
@@ -562,7 +567,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetOwner());
 		if (gameMode)
-			gameMode.GetOnPlayerSpawned().Insert(OnPlayerSpawned); // VERIFY: invoker name
+			gameMode.GetOnPlayerSpawned().Insert(HandlePlayerSpawned); // VERIFY: invoker name
 
 		UpdateReplicated();
 		m_bServerRunning = true;
@@ -610,6 +615,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_GameTime.Tick(dt);
 		RZ_NoisemakerComponent.TickAll();
 		m_Infection.Tick(dt, ids, players);
+		m_LooseItems.Tick(dt, players);
 
 		foreach (int i, IEntity ent : players)
 		{
@@ -975,8 +981,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void OnPlayerSpawned(int playerId, IEntity controlledEntity)
+	//! From the game mode's spawn invoker. Not named OnPlayerSpawned: SCR_BaseGameModeComponent has a
+	//! method of that name, and overriding it as well would run all of this twice per spawn.
+	protected void HandlePlayerSpawned(int playerId, IEntity controlledEntity)
 	{
+		if (!controlledEntity)
+			return;
+
 		RZ_Background bg = ResolveBackground(playerId);
 		RZ_PlayerProfile profile = GetProfile(playerId);
 		OnLegacyChanged(playerId); // older profiles may already have 10 Legacy
@@ -1029,6 +1040,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 			if (!m_Cure.IsCured())
 				NotifyPlayer(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText());
+
+			// A final stand that was running (or restarted with the server) needs defenders
+			if (m_Cure.IsFinalStand())
+				NotifyPlayer(playerId, "THE FINAL STAND", string.Format("Halcyon is synthesizing the cure and the lab is under siege. About %1 minutes left to hold it.", m_Cure.GetFinalStandMinutesLeft()));
 
 			// Session news: the latest headline, wanderers lost, the biggest rescue, the cure
 			string news = m_Headlines.Build();
@@ -1558,19 +1573,31 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	{
 		for (int i = 0; i < count; i++)
 		{
-			RZ_Util.SpawnPrefab(m_sSamplePrefab, RZ_Util.RandomPointInRing(pos, 0.3, 1.5) + Vector(0, 0.3, 0));
+			TrackLooseItem(RZ_Util.SpawnPrefab(m_sSamplePrefab, RZ_Util.RandomPointInRing(pos, 0.3, 1.5) + Vector(0, 0.3, 0)));
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Public API: an item spawned for players (a crate, a purchase, a find) that should be cleaned
+	//! up once it lies abandoned (RZ_LooseItems). Never removed from a pack or a vehicle.
+	static void TrackLooseItem(IEntity e)
+	{
+		if (e && s_Instance && s_Instance.m_LooseItems)
+			s_Instance.m_LooseItems.Track(e);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The crate, or null (no prefab). Missions that may take it back (a booby trap) keep it.
-	//! onGround = false: exactly at pos (inside a building, on its floor).
+	//! onGround = false: exactly at pos (inside a building, on its floor). Left alone for half an
+	//! hour (and not at a running mission), it's cleaned up (RZ_LooseItems).
 	IEntity SpawnRewardCrate(vector pos, bool onGround = true)
 	{
 		if (onGround)
 			pos = RZ_Util.GroundPos(pos);
 
-		return RZ_Util.SpawnPrefab(m_sRewardCratePrefab, pos, Math.RandomFloat(0, 360));
+		IEntity crate = RZ_Util.SpawnPrefab(m_sRewardCratePrefab, pos, Math.RandomFloat(0, 360));
+		TrackLooseItem(crate);
+		return crate;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1678,7 +1705,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		else if (!m_aSpawnPoints.IsEmpty())
 		{
 			RZ_Util.DeleteUnit(m_aSpawnPoints[0]);
-			m_aSpawnPoints.Remove(0);
+			m_aSpawnPoints.RemoveOrdered(0);
 		}
 
 		// Drop references to anything deleted elsewhere
@@ -1759,8 +1786,17 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			return false;
 		}
 
+		if (!data.settlements || !data.profiles)
+		{
+			RZ_Log.Warn("Save file is corrupt or from an incompatible version, ignoring.");
+			return false;
+		}
+
 		foreach (RZ_SettlementSave ss : data.settlements)
 		{
+			if (!ss)
+				continue;
+
 			RZ_Settlement s = new RZ_Settlement();
 			s.m_sName = ss.name;
 			s.m_vCenter = Vector(ss.x, ss.y, ss.z);
@@ -1773,6 +1809,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		foreach (RZ_PlayerProfile p : data.profiles)
 		{
+			if (!p || p.m_sIdentity.IsEmpty())
+				continue;
+
 			p.EnsureArrays(); // profiles from older saves have no Fame/Infamy/Favor yet
 			m_mProfiles.Set(p.m_sIdentity, p);
 		}
@@ -1937,8 +1976,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Under heavy traffic, drop the oldest messages rather than lag minutes behind
 		if (m_aHintTitles.Count() >= HINT_QUEUE_MAX)
 		{
-			m_aHintTitles.Remove(0);
-			m_aHintTexts.Remove(0);
+			m_aHintTitles.RemoveOrdered(0);
+			m_aHintTexts.RemoveOrdered(0);
 		}
 
 		m_aHintTitles.Insert(title);
@@ -1959,8 +1998,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_bHintShowing = true;
 		string title = m_aHintTitles[0];
 		string text = m_aHintTexts[0];
-		m_aHintTitles.Remove(0);
-		m_aHintTexts.Remove(0);
+		m_aHintTitles.RemoveOrdered(0);
+		m_aHintTexts.RemoveOrdered(0);
 
 		SCR_HintManagerComponent.ShowCustomHint(text, title, HINT_SECONDS); // VERIFY
 		GetGame().GetCallqueue().CallLater(ShowNextHint, HINT_SECONDS * 1000, false);

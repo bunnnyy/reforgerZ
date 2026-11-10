@@ -4,7 +4,7 @@
 //!  25%  Field antiviral    infection spreads slower, bites take longer to kill
 //!  50%  Bite treatment     (no world effect of its own; supply below)
 //!  75%  Immunity serum     spread slows further, bites take even longer
-//! 100%  Final stand        hold the lab against waves for 15 minutes.
+//! 100%  Final stand        hold the lab against waves for 15 minutes (paused while nobody is online).
 //!                          Win: the cure goes out and the season ends.
 //!                          Abandon the lab: the batch is ruined and research drops back to 90%
 //!                          (the lab itself never falls: it's Halcyon's stronghold).
@@ -196,6 +196,13 @@ class RZ_CureResearch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whole minutes of the final stand still to hold (at least 1 while it runs).
+	int GetFinalStandMinutesLeft()
+	{
+		return Math.Max(1, RZ_Util.RoundToInt(m_fFinalStandLeft / 60));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	float GetSpreadMultiplier()
 	{
 		if (m_bCured)
@@ -297,7 +304,9 @@ class RZ_CureResearch
 				m_iLabStabilisers++;
 		}
 
-		if (m_bFinalStand)
+		// Like the outbreak's clock, the stand waits while nobody is online: an empty server (or one
+		// restarted mid-stand) doesn't lose the batch to "nobody held the lab"
+		if (m_bFinalStand && !players.IsEmpty())
 			TickFinalStand(dt, players);
 	}
 

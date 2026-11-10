@@ -73,7 +73,8 @@ class RZ_QuartermasterHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawns a prefab next to the quartermaster, a little in front of the buyer.
+	//! Spawns a prefab next to the quartermaster, a little in front of the buyer. Tracked as a loose
+	//! item (vehicles aren't).
 	static IEntity SpawnNear(ResourceName prefab, IEntity owner, IEntity user)
 	{
 		vector pos = owner.GetOrigin();
@@ -81,7 +82,9 @@ class RZ_QuartermasterHelper
 			pos = (pos + user.GetOrigin()) * 0.5;
 
 		pos = RZ_Util.RandomPointInRing(pos, 0.5, 1.5) + Vector(0, 0.3, 0);
-		return RZ_Util.SpawnPrefab(prefab, pos);
+		IEntity bought = RZ_Util.SpawnPrefab(prefab, pos);
+		RZ_GameModeComponent.TrackLooseItem(bought); // left lying there, it's cleaned up in time
+		return bought;
 	}
 }
 

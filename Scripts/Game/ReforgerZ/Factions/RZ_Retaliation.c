@@ -123,6 +123,10 @@ class RZ_Retaliation
 			w.m_fAge = w.m_fAge + dt;
 			if (!w.m_Anchor)
 			{
+				// A group deletes itself when its last member dies: that death still counts
+				if (!w.m_aMembers.IsEmpty())
+					CheckUnit(w, ids, players, baseMasks);
+
 				m_aUnits.Remove(i);
 				continue;
 			}

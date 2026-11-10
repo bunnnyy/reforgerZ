@@ -734,8 +734,8 @@ class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 
 //------------------------------------------------------------------------------------------------
 //! #18 Collect the Bounty: someone has a price on their head. If a player online is Kill on Sight
-//! with Bastion, the Haven or Halcyon (and not a friend of the Red Hand), it's them: be within
-//! 150 m when they die. Otherwise an armed man hiding outside a town (Contracts > Bounty target,
+//! with Bastion, the Haven or Halcyon (and not a friend of the Red Hand), it's them: paid to the
+//! player who kills them (not for a death to the infected, a fall or suicide). Otherwise an armed man hiding outside a town (Contracts > Bounty target,
 //! else the survivor group), spawned when someone comes near: kill him.
 class RZ_Mission_CollectTheBounty : RZ_Mission
 {
@@ -825,7 +825,7 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 			m_sTarget = RZ_Util.PlayerName(m_iTarget);
 			m_vPos = t.GetOrigin();
 			m_iSettlement = gm.FindNearestSettlement(m_vPos);
-			m_sBrief = string.Format("There's a price on %1 and we mean to collect it. Last seen near %2. Be there when they go down.", m_sTarget, GetLocationName(gm));
+			m_sBrief = string.Format("There's a price on %1 and we mean to collect it. Last seen near %2. Whoever puts them down gets paid.", m_sTarget, GetLocationName(gm));
 			return true;
 		}
 
@@ -920,17 +920,19 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 		if (m_iTarget <= 0 || playerId != m_iTarget || m_eState != RZ_EMissionState.ACTIVE)
 			return;
 
-		array<int> ids = {};
-		array<IEntity> players = {};
-		RZ_Util.GetAlivePlayers(ids, players);
-		RZ_ContractHelp.AddNear(ids, players, pos, CLAIM_RADIUS, m_aParticipants);
-		m_aParticipants.RemoveItem(m_iTarget);
-		if (m_aParticipants.IsEmpty())
+		// Paid to the player who killed them, and only for a kill (not the infected, a fall or suicide)
+		int killer = -1;
+		if (gm.GetPerks())
+			killer = gm.GetPerks().KillerOf(playerId);
+
+		if (killer <= 0 || killer == m_iTarget)
 		{
 			m_eState = RZ_EMissionState.FAILED;
 			return;
 		}
 
+		m_aParticipants.Clear();
+		m_aParticipants.Insert(killer);
 		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 

@@ -342,6 +342,8 @@ class RZ_ItemHelper
 		if (user)
 			RZ_Util.InsertIntoInventory(user, item);
 
+		// Dropped later, or left on the ground because it didn't fit: cleaned up in time
+		RZ_GameModeComponent.TrackLooseItem(item);
 		return true;
 	}
 }

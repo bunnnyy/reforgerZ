@@ -103,9 +103,9 @@ class RZ_HeatMap
 		m_aNoiseAmount.Insert(amount);
 		while (m_aNoisePos.Count() > NOISE_EVENTS_KEPT)
 		{
-			m_aNoisePos.Remove(0);
-			m_aNoiseAt.Remove(0);
-			m_aNoiseAmount.Remove(0);
+			m_aNoisePos.RemoveOrdered(0);
+			m_aNoiseAt.RemoveOrdered(0);
+			m_aNoiseAmount.RemoveOrdered(0);
 		}
 	}
 

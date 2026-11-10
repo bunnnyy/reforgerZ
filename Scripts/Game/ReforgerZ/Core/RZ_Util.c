@@ -204,6 +204,30 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The player whose damage killed this character (bounties), -1 if it wasn't a player: the
+	//! infected, a fall, a fire, or nothing the engine recorded. Read it from the body after death.
+	static int GetKillerPlayerId(IEntity victim)
+	{
+		ChimeraCharacter c = ChimeraCharacter.Cast(victim);
+		if (!c)
+			return -1;
+
+		SCR_CharacterDamageManagerComponent dmg = SCR_CharacterDamageManagerComponent.Cast(c.GetDamageManager());
+		if (!dmg)
+			return -1;
+
+		Instigator killer = dmg.GetInstigator(); // VERIFY: the damage manager keeps the last Instigator after death; Instigator.GetInstigatorPlayerID() is the player id (0 or -1 for AI)
+		if (!killer)
+			return -1;
+
+		int playerId = killer.GetInstigatorPlayerID();
+		if (playerId <= 0)
+			return -1;
+
+		return playerId;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void GetAlivePlayers(notnull array<int> outIds, notnull array<IEntity> outEntities)
 	{
 		array<int> all = {};

@@ -1472,6 +1472,9 @@ class RZ_Mission_FeverEvacuation : RZ_Mission_Hold
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		RZ_Safehouses houses = gm.GetSafehouses();
+		if (!houses)
+			return;
+
 		RZ_Safehouse h = houses.Get(m_iHouse);
 		if (!h || houses.Count() < 2)
 			return;

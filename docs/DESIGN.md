@@ -28,7 +28,8 @@ Code paths are under `Scripts/Game/ReforgerZ/`.
 18. [New-player guidance](#new-player-guidance)
 19. [Cure research and the season's end](#cure-research-and-the-seasons-end)
 20. [Season pacing](#season-pacing)
-21. [Persistence](#persistence)
+21. [Loose items](#loose-items)
+22. [Persistence](#persistence)
 
 ## Principles
 
@@ -997,7 +998,9 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
   most), and a Red Hand antidote shop action sells only those. Stabilisers are a second, smaller
   stock at the same quartermaster. All three stocks are saved.
 - **The final stand** sends one horde every 2.5 minutes, plus one more per 6 players at the lab
-  (3 at most), so about five steady players can hold it.
+  (3 at most), so about five steady players can hold it. Its clock stands still while nobody is
+  online; a restart during the stand starts it again from 15 minutes, and players joining are told
+  it's running.
 - **The lab never falls.** It's Halcyon's stronghold; losing the final stand ruins the batch, not the lab.
   The Red Hand's **Take the Lab** can steal the batch during the stand instead (hold the clean room
   for 90 s): the same result, research back to 90 percent, plus two doses on the black market
@@ -1080,6 +1083,21 @@ also have more hours played a day):
 timer or anything a player does by hand. Check real kills and specials per player-hour in the
 first sessions (the status log shows research and the stage every few minutes) against the
 targets above, and adjust **Research per sample** or the season speed.
+
+## Loose items
+
+Code: `Core/RZ_LooseItems.c`.
+
+Things the mode spawns for players are tracked: reward crates, dropped samples, key items, shop
+and requisition purchases, search finds, crafted items and treatments. One that lies untouched
+for **30 minutes** (**World > Loose item minutes**; 0 = off) with no player within 150 m is
+removed. Never removed: anything in a pack, a container or a vehicle's storage (its clock starts
+again when it's put down), vehicles (a bought car isn't litter), and anything within 300 m of a
+running mission. At most 300 are tracked; past that the oldest carried entry is forgotten, else
+the oldest abandoned item goes early. Not saved: after a restart, older items are left alone.
+
+*Simplified:* "in a pack" is read from the item's parent or inventory slot (two VERIFYs). If both
+fail in your game version, carried items could be removed: set the minutes to 0.
 
 ## Persistence
 

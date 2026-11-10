@@ -16,7 +16,7 @@
 //!   Halcyon Hunted       the lab takes your samples without Fame (RZ_CureResearch)
 //! Consequences:
 //!   Hunted / Kill on Sight by Bastion or the Red Hand: hunter squads
-//!   Kill on Sight by anyone: public bounty, claimed by whoever is near when you die
+//!   Kill on Sight by anyone: public bounty, paid once to the player who kills you
 //!   Hunted by the Haven: a hungry safehouse may sell your rough location (LeakLocation)
 //!   Hunted by anyone: that faction's AI really shoots you (RZ_Hostility); a hunter squad
 //!   is always hostile to the player it was sent after
@@ -45,6 +45,9 @@ class RZ_FactionPerks
 	protected float m_fHunterTimer;
 	protected float m_fBountyTimer;
 	protected ref map<int, vector> m_mLastAlivePos = new map<int, vector>();
+	protected ref map<int, IEntity> m_mLastAliveEnt = new map<int, IEntity>();	// the body, to read the killer from
+	protected int m_iDeathVictim = -1;		// the death being handled now (KillerOf)
+	protected int m_iDeathKiller = -1;
 
 	protected static const float QM_GREET_RADIUS = 15;
 	protected static const float QM_GREET_COOLDOWN = 300;
@@ -55,7 +58,6 @@ class RZ_FactionPerks
 	protected static const float HUNTER_DISTANCE = 400;
 	protected static const float HUNTER_LIFETIME = 900;
 	protected static const float HUNTER_HOSTILE_RADIUS = 800;	// the squad is hostile to its target within this distance
-	protected static const float BOUNTY_CLAIM_RADIUS = 150;
 	protected static const int BOUNTY_FAVOR = 50;
 	protected static const int BOUNTY_FAME = 10;
 	protected static const float LOST_TRAIL_SECONDS = 120;	// a squad that lost the trail gives up this soon
@@ -282,7 +284,7 @@ class RZ_FactionPerks
 			shoots = " " + shoots;
 
 		if (tier == RZ_ETier.KILL_ON_SIGHT)
-			return "They want you dead. There's a price on your head, and anyone near you when you fall can claim it." + shoots;
+			return "They want you dead. There's a price on your head, and whoever kills you can claim it." + shoots;
 
 		if (RZ_Reputation.IsHunted(tier))
 		{
@@ -694,7 +696,7 @@ class RZ_FactionPerks
 				if (IsHarboured(ids[i], p))
 					where = VagueArea(p.GetOrigin());
 
-				string text = string.Format("%1 has put a bounty on %2. Last seen %3. Be near when they die to claim %4 Favor.",
+				string text = string.Format("%1 has put a bounty on %2. Last seen %3. Whoever kills them gets %4 Favor.",
 					RZ_Factions.GetName(f), RZ_Util.PlayerName(ids[i]), where, BOUNTY_FAVOR);
 				foreach (int other : ids)
 				{
@@ -723,20 +725,42 @@ class RZ_FactionPerks
 		foreach (int deadId : gone)
 		{
 			vector at = m_mLastAlivePos.Get(deadId);
+			IEntity body;
+			m_mLastAliveEnt.Find(deadId, body);
 			m_mLastAlivePos.Remove(deadId);
+			m_mLastAliveEnt.Remove(deadId);
 			if (connected.Contains(deadId))
-				OnPlayerDied(deadId, at, ids, players);
+				OnPlayerDied(deadId, at, body, ids, players);
 		}
 
 		foreach (int i, IEntity p : players)
 		{
 			m_mLastAlivePos.Set(ids[i], p.GetOrigin());
+			m_mLastAliveEnt.Set(ids[i], p);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void OnPlayerDied(int victim, vector at, array<int> ids, array<IEntity> players)
+	//! While a death is being handled (missions' OnPlayerDied): the player who killed `victim`,
+	//! -1 if it wasn't another player (infected, suicide, a fall, unknown).
+	int KillerOf(int victim)
 	{
+		if (victim <= 0 || victim != m_iDeathVictim)
+			return -1;
+
+		return m_iDeathKiller;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnPlayerDied(int victim, vector at, IEntity body, array<int> ids, array<IEntity> players)
+	{
+		// Only a kill by another player counts for bounties (not the infected, suicide or a fall)
+		int killer = RZ_Util.GetKillerPlayerId(body);
+		if (killer == victim)
+			killer = -1;
+
+		m_iDeathVictim = victim;
+		m_iDeathKiller = killer;
 		m_GM.GetMissions().OnPlayerDied(victim, at);
 
 		// A life that lasted leaves a journal: a headline or a wanderer's rumour, never an object
@@ -749,29 +773,49 @@ class RZ_FactionPerks
 		if (houses && RZ_Reputation.IsAtLeast(m_GM.GetTier(victim, RZ_EFaction.SURVIVORS), RZ_ETier.CHAMPION))
 			houses.OnChampionFallen(victim, at);
 
+		PayBounty(victim, killer);
+		m_iDeathVictim = -1;
+		m_iDeathKiller = -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One bounty per death, to the killer only: from the faction that holds the most against the
+	//! victim among those that put them at Kill on Sight and don't hunt the killer too.
+	protected void PayBounty(int victim, int killer)
+	{
+		if (killer <= 0)
+			return;
+
+		array<int> connected = {};
+		GetGame().GetPlayerManager().GetPlayers(connected);
+		if (!connected.Contains(killer))
+			return;
+
+		int payer = -1;
+		int worst = -1;
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{
 			if (m_GM.GetTier(victim, f) != RZ_ETier.KILL_ON_SIGHT)
 				continue;
 
-			array<int> claimants = {};
-			RZ_Mission.GetPlayersNear(ids, players, at, BOUNTY_CLAIM_RADIUS, claimants);
-			claimants.RemoveItem(victim);
-			if (claimants.IsEmpty())
+			// The faction doesn't pay people it hunts itself
+			if (RZ_Reputation.IsHunted(m_GM.GetTier(killer, f)))
 				continue;
 
-			foreach (int claimant : claimants)
+			int infamy = m_GM.GetProfile(victim).GetInfamy(f);
+			if (infamy > worst)
 			{
-				// The faction doesn't pay people it hunts itself
-				if (RZ_Reputation.IsHunted(m_GM.GetTier(claimant, f)))
-					continue;
-
-				m_GM.AddFavor(claimant, f, BOUNTY_FAVOR);
-				m_GM.AddFame(claimant, f, BOUNTY_FAME, false);
-				m_GM.NotifyPlayer(claimant, "Bounty claimed", string.Format("%1 pays you %2 Favor for %3.", RZ_Factions.GetName(f), BOUNTY_FAVOR, RZ_Util.PlayerName(victim)));
+				worst = infamy;
+				payer = f;
 			}
-
-			m_GM.NotifyAll("Bounty", string.Format("The %1 bounty on %2 has been claimed.", RZ_Factions.GetShortName(f), RZ_Util.PlayerName(victim)));
 		}
+
+		if (payer < 0)
+			return;
+
+		m_GM.AddFavor(killer, payer, BOUNTY_FAVOR);
+		m_GM.AddFame(killer, payer, BOUNTY_FAME, false);
+		m_GM.NotifyPlayer(killer, "Bounty claimed", string.Format("%1 pays you %2 Favor for %3.", RZ_Factions.GetName(payer), BOUNTY_FAVOR, RZ_Util.PlayerName(victim)));
+		m_GM.NotifyAll("Bounty", string.Format("The %1 bounty on %2 has been claimed.", RZ_Factions.GetShortName(payer), RZ_Util.PlayerName(victim)));
 	}
 }

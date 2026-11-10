@@ -62,6 +62,7 @@ class RZ_KeyItemComponent : ScriptComponent
 
 		key.SetKey(keyId, tag);
 		RZ_Util.InsertIntoInventory(character, item);
+		RZ_GameModeComponent.TrackLooseItem(item); // a key dropped and forgotten is cleaned up in time
 		return true;
 	}
 

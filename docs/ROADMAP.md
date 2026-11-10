@@ -4,7 +4,7 @@ What's built, what's next, what to test first, and what was dropped. How each sy
 is in [DESIGN.md](DESIGN.md).
 
 **Status:** everything under "Built" is written in Enforce Script (about 62,300 lines) and
-**has never been compiled**. It needs Workbench, the 155 `VERIFY` fixes (119 in the game, 36 in
+**has never been compiled**. It needs Workbench, the 158 `VERIFY` fixes (122 in the game, 36 in
 the Workbench plugin) and a play-test before any of it can be called working
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
@@ -35,6 +35,7 @@ the Workbench plugin) and a play-test before any of it can be called working
 | World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
 | Cure research, antidotes, the final stand, the season's winner | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
+| Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
 | Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout), the Workbench plugin **ReforgerZ: Create prefabs** with a dry run and a checklist fallback (never run), and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
 

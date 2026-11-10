@@ -151,6 +151,9 @@ class RZ_SampleDeliveryActionBase : ScriptedUserAction
 			return;
 
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(pUserEntity.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return;
+
 		foreach (IEntity item : items)
 		{
 			inv.TryDeleteItem(item); // VERIFY: TryDeleteItem()
