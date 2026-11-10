@@ -13,6 +13,8 @@
 //!   Hunted / Kill on Sight by Bastion or the Red Hand: hunter squads
 //!   Kill on Sight by anyone: public bounty, claimed by whoever is near when you die
 //!   Hunted by the Haven: a hungry safehouse may sell your rough location (LeakLocation)
+//!   Hunted by anyone: that faction's AI really shoots you (RZ_Hostility); a hunter squad
+//!   is always hostile to the player it was sent after
 class RZ_FactionPerks
 {
 	protected RZ_GameModeComponent m_GM;
@@ -44,6 +46,7 @@ class RZ_FactionPerks
 	protected static const float REQUISITION_COOLDOWN = 3600;
 	protected static const float HUNTER_DISTANCE = 400;
 	protected static const float HUNTER_LIFETIME = 900;
+	protected static const float HUNTER_HOSTILE_RADIUS = 800;	// the squad is hostile to its target within this distance
 	protected static const float BOUNTY_CLAIM_RADIUS = 150;
 	protected static const int BOUNTY_FAVOR = 50;
 	protected static const int BOUNTY_FAME = 10;
@@ -261,16 +264,24 @@ class RZ_FactionPerks
 	//------------------------------------------------------------------------------------------------
 	protected string GetTierPerkText(RZ_EFaction faction, RZ_ETier tier)
 	{
+		string shoots = "";
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (hostility && RZ_Reputation.IsHunted(tier))
+			shoots = hostility.DescribeHunted(faction);
+
+		if (!shoots.IsEmpty())
+			shoots = " " + shoots;
+
 		if (tier == RZ_ETier.KILL_ON_SIGHT)
-			return "They want you dead. There's a price on your head, and anyone near you when you fall can claim it.";
+			return "They want you dead. There's a price on your head, and anyone near you when you fall can claim it." + shoots;
 
 		if (RZ_Reputation.IsHunted(tier))
 		{
 			if (faction == RZ_EFaction.MILITARY || faction == RZ_EFaction.BANDITS)
-				return "They're hunting you. Expect armed squads to come looking.";
+				return "They're hunting you. Expect armed squads to come looking." + shoots;
 			if (faction == RZ_EFaction.INSTITUTE)
-				return "The lab will still take your samples, but you'll get nothing for them.";
-			return "Exile: the safehouse doors stay shut to you, their people warn others about you, and a hungry safehouse may sell your name.";
+				return "The lab will still take your samples, but you'll get nothing for them." + shoots;
+			return "Exile: the safehouse doors stay shut to you, their people warn others about you, and a hungry safehouse may sell your name." + shoots;
 		}
 
 		switch (faction)
@@ -503,6 +514,11 @@ class RZ_FactionPerks
 			return;
 
 		RZ_Util.SendGroupTo(squad, at, m_GM.GetSpawner().GetMoveWaypointPrefab());
+		// Real hostility toward the target, even if their standing alone wouldn't give it
+		// (a Haven exile sold to the Red Hand)
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (hostility)
+			hostility.MarkHostileAround(faction, squad, HUNTER_HOSTILE_RADIUS, playerId);
 		m_aHunters.Insert(squad);
 		m_aHunterExpiry.Insert(m_fClock + HUNTER_LIFETIME);
 

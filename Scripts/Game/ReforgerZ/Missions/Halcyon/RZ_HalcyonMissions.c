@@ -608,6 +608,7 @@ class RZ_Mission_LabDefence : RZ_Mission_Hold
 			return;
 
 		RZ_Util.SendGroupTo(m_Raiders, m_vPos, gm.GetSpawner().GetMoveWaypointPrefab());
+		RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Raiders);
 		SetRival(RZ_EFaction.BANDITS, 10);
 		NotifyParticipants(gm, m_sTitle, "Red Hand raiders are using the infected as cover!");
 	}

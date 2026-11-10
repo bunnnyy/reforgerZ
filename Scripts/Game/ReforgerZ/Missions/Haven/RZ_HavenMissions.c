@@ -729,6 +729,10 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 			vector from = LandPointNear(m_vPos, 250, 350);
 			m_Raiders = RZ_Util.SpawnPrefab(gm.GetRedHandGroupPrefab(), from);
 			RZ_Util.SendGroupTo(m_Raiders, m_vPos, gm.GetSpawner().GetMoveWaypointPrefab());
+			// The raiders fight the players near them and go for the trader, who stays friendly to players
+			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Raiders);
+			if (gm.GetHostility())
+				gm.GetHostility().MakeUnitHostileTo(m_Trader, RZ_EFaction.BANDITS);
 			NotifyParticipants(gm, m_sTitle, "Red Hand raiders incoming!");
 			return;
 		}

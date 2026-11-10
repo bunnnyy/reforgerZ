@@ -747,6 +747,41 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Hostility hook (RZ_Hostility): the wanderer within `radius` of pos who would fight this
+	//! player, or null. Only a body that's an AI group with an armed leader can fight; the Kid
+	//! never does. A grudge is having been robbed or shot at by them, or, for the Deserter,
+	//! facing one of Bastion's Champions (the people he'd draw on anyway).
+	RZ_Wanderer FindArmedGrudgeNear(int playerId, vector pos, float radius)
+	{
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		foreach (RZ_Wanderer w : m_aList)
+		{
+			if (!w.m_bAlive || !w.m_Body || !w.m_bBodyWalks || w.m_eRole == RZ_EWandererRole.KID)
+				continue;
+
+			if (RZ_Util.DistXZ(RZ_Util.GetUnitPosition(w.m_Body), pos) > radius)
+				continue;
+
+			bool grudge = w.Remembers(ident, MEM_WRONGED);
+			if (!grudge && w.m_eRole == RZ_EWandererRole.DESERTER && Attitude(w, playerId) <= -9)
+				grudge = true;
+
+			if (!grudge)
+				continue;
+
+			SCR_AIGroup group = SCR_AIGroup.Cast(w.m_Body);
+			if (!group)
+				continue;
+
+			AIAgent leader = group.GetLeaderAgent();
+			if (leader && RZ_Util.IsArmed(leader.GetControlledEntity()))
+				return w;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Someone from a safehouse or a rescue takes to the roads as a named wanderer.
 	//! Fills a dead slot or a free place in the roster. Returns their title, "" if full.
 	string AddFromRescue(vector pos)

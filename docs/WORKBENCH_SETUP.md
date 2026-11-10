@@ -21,7 +21,7 @@ grep -rn "VERIFY" Scripts/
 Each one is an engine API whose exact name or signature I couldn't confirm
 for the current game version. Usually the fix is a rename. Look up the class in
 the Script Editor or in the [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
-They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 68 of them
+They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 73 of them
 (one is the comment in `RZ_Util.c` that explains them).
 
 The riskiest ones in the puzzle missions (`Puzzles/`):
@@ -77,6 +77,27 @@ existing calls matter more now:
 - **Drops told apart by entity**: leader jobs with two drops of the same faction (Our Own First,
   The Real Orders, The Notebook, the stronghold "turn it in" drop) match the drop entity the
   `RZ_ChoiceDeliveryAction` was used on. That's plain script, but play-test it.
+
+The riskiest ones for per-player AI hostility (`Factions/RZ_FactionRelations.c`,
+`Factions/RZ_Hostility.c`, the faction helpers in `Core/RZ_Util.c`). These decide whether AI
+really shoots individual players, so test them first ([REPUTATION.md](REPUTATION.md), "What makes AI shoot you"):
+
+- **The faction check** (`modded SCR_Faction`, `DoCheckIfFactionFriendly(Faction)`): the
+  biggest unknown. It has to be the check AI perception and target selection use, and the
+  answer mustn't be cached for long. If the override doesn't compile (other name, `protected`),
+  fix the signature. Test: make a player Hunted by Bastion, stand near a Bastion AI group, see
+  if it fires. If it never does, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW`
+  real enemies in the FactionManager (section 4), which only uses vanilla relations.
+- **Moving the character** (`RZ_Util.SetCharacterFaction`: `FactionAffiliationComponent.SetAffiliatedFaction`,
+  `GetAffiliatedFaction`): server side, and it must replicate and be read by AI. The player
+  controller's faction is a separate component (`SCR_PlayerFactionAffiliationComponent`), which is
+  what the deploy menu, chat channels, groups and map markers read as far as I know, so they
+  should stay on `SURV`; check each once. Also check that nothing resets the character to
+  `SURV` (the tick puts it back within 5 s if something does), and what name tags, vehicle
+  locks and team-kill penalties do with a character on a variant.
+- **Armed check** (`RZ_Util.IsArmed`: `BaseWeaponManagerComponent.GetWeaponsList`,
+  `BaseWeaponComponent.GetWeaponType`, the `EWeaponType` names): if it's always false, armed
+  exiles are never shot and wanderers never fight back; if always true, unarmed exiles are shot.
 
 Two files can simply be deleted if they won't compile, because nothing else depends on them:
 
@@ -182,8 +203,26 @@ A starting shop list, from REPUTATION.md:
 | `RZ_RedHandHunters.et` | an AI group on faction `BAND` | Factions > Red Hand hunter squad (falls back to the Red Hand group) |
 
 Hunter squads spawn 400 m from a Hunted player and get a move waypoint (the zombie
-move waypoint prefab) to where the player was. Set **Hunter squad minutes** to 0 to turn
-them off. **Bounty minutes** sets how often Kill-on-Sight bounties are announced.
+move waypoint prefab) to where the player was. They're hostile to that player within 800 m.
+Set **Hunter squad minutes** to 0 to turn them off. **Bounty minutes** sets how often
+Kill-on-Sight bounties are announced.
+
+**Hostility** (one settings object under **Factions**; defaults in brackets) decides which AI
+shoots which player ([REPUTATION.md](REPUTATION.md), "What makes AI shoot you"). It needs the
+hidden factions from section 4.
+
+- **Mode** (Bitmask): *Bitmask* uses `SURV_H1`..`SURV_H15`; *Outlaw* uses one `SURV_OUTLAW` for
+  anyone any faction would shoot (fallback if AI ignores the modded faction check); *Off* = vanilla.
+- **Haven / Bastion / Red Hand / Halcyon shoots from** (Hunted for all four): Hunted, Watched,
+  Strangers (anyone below Known) or Never.
+- **Exile: armed only** (on) and **Exile radius** (100 m): the Haven only shoots a player it
+  wants dead while they carry a firearm this close to a safehouse. Off = everywhere.
+- **Fight radius** (350 m): players this close to a mission's Red Hand group are hostile to it.
+- **Wanderers fight back** (on) and **Grudge radius** (80 m).
+- **Bastion / Red Hand / Halcyon key** (MIL, BAND, INST): their FactionManager keys. The Haven's
+  is the game mode's **Player faction key** (SURV).
+
+The log says `Hostility: bitmask mode, all 15 variant factions found.`, or how many are missing.
 
 Characters already have an `EventHandlerManagerComponent`, and ReforgerZ listens to
 its `OnProjectileShot` event for gunfire heat. Nothing to add. Suppressors are detected by
@@ -291,7 +330,7 @@ the **Haven quartermaster** prefab for their services. Everything else only adds
 | `RZ_QM_Haven.et` (the existing one) | | also 5 × `RZ_SafehouseAction`: STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE | Factions > Haven quartermaster | every safehouse's services. One is spawned at each safehouse while a player is near (the first safehouse sits at the main one) |
 | `RZ_SafehouseMedic.et` | a civilian character without AI | 2 × `RZ_SafehouseAction`: HEAL, DECLARE_BITE | Medic prefab | optional; Settlement and up. Without it the quartermaster's HEAL/DECLARE_BITE still work |
 | `RZ_SafehouseOccupant*.et` | civilian characters without AI or seated figure props; give them the generic puzzle object components to be talked to | | Occupant prefabs (a list; empty = Puzzles > Civilian) | 3-6 people shown while a player is within 300 m |
-| `RZ_SafehouseGuard.et` | a Haven AI character or group on faction `SURV` | | Guard prefab | 1 guard at Community and Settlement, 2 at Town |
+| `RZ_SafehouseGuard.et` | an armed Haven AI character or group on faction `SURV` | | Guard prefab | 1 guard at Community and Settlement, 2 at Town; they shoot armed exiles |
 
 `RZ_SafehouseAction` has one attribute, **Kind**. It works at whichever safehouse it stands in
 (within 150 m) and says there's none elsewhere.
@@ -319,7 +358,7 @@ talked to if it has the generic puzzle object components (`RZ_PuzzleObjectCompon
 
 | Prefab | Base | Setting |
 |---|---|---|
-| `RZ_Wanderer_Trader.et`, `_Doctor`, `_Scavenger`, `_Deserter`, `_Preacher`, `_Courier`, `_Kid` | a civilian character without AI (stands still while seen), or a one-man AI group on `SURV` whose character has the components above (walks while seen) | one slot per role |
+| `RZ_Wanderer_Trader.et`, `_Doctor`, `_Scavenger`, `_Deserter`, `_Preacher`, `_Courier`, `_Kid` | a civilian character without AI (stands still while seen), or a one-man AI group on `SURV` whose character has the components above (walks while seen). Give an AI group's character a gun if it should fight back (the Deserter at least) | one slot per role |
 | Trader goods | any items | **Trader goods** (a list); empty = the Trader only talks |
 
 **Settings** (defaults in brackets): **Enabled** (on); **Min count** (6) and **Max count** (10);
@@ -373,6 +412,37 @@ In the world's `FactionManager`:
   In game they're called Task Force Bastion, the Red Hand and Halcyon; `SURV` is the Haven.
 - The Bacon Zombies faction is hostile to all of the above.
 
+**Relations.** AI shoots individual players through the hidden factions below, so the base
+relations are the "nobody wants you dead" case:
+
+| | SURV | MIL | BAND | INST |
+|---|---|---|---|---|
+| SURV | friendly | friendly | friendly | friendly |
+| MIL | friendly | | hostile | friendly |
+| BAND | friendly | hostile | | hostile |
+| INST | friendly | friendly | hostile | |
+
+Set them in each faction's friendly list (both ways). `SURV`–`BAND` friendly is what makes the
+Red Hand neutral by default; its mission groups still fight the players near them.
+
+**Hidden player factions (15, plus 1 optional).** In the `FactionManager`'s faction list:
+
+1. Duplicate the `SURV` entry. Change only its **Faction key** to `SURV_H1`.
+2. Keep its name, colour, flag and identity the same, so anything that shows it looks like the
+   Haven. Turn **Is Playable** off, so it never appears in the deploy menu's faction list,
+   and empty its loadout list if it has one (spawning always uses `SURV`).
+3. Repeat for `SURV_H2` up to `SURV_H15` (the number is the bitmask: 1 Haven, 2 Bastion,
+   4 Red Hand, 8 Halcyon, added up).
+4. Their friendly lists don't matter: the modded faction check decides their relations from
+   the key. Copying `SURV`'s is fine.
+5. Optional, for **Hostility > Mode** *Outlaw*: one more copy keyed `SURV_OUTLAW`. Since the
+   Outlaw mode is the fallback for when the modded check doesn't reach the AI, give it real
+   relations: friendly with nothing (or only itself), and remove it from the friendly lists of
+   `SURV`, `MIL`, `BAND` and `INST`.
+
+If the player faction key isn't `SURV`, the variants are `<key>_H1`..`<key>_H15` and `<key>_OUTLAW`.
+Missing variants only switch the feature off for the players who'd need them (logged once).
+
 Players then pick their background in the vanilla deploy menu. That's the
 "choose it in the spawn menu" part, with no new UI yet.
 
@@ -398,6 +468,7 @@ points, towns or lab are needed, because they're generated at start. Check the l
 [ReforgerZ] Haven safehouses: N (picked).
 [ReforgerZ] Wanderers: N on the roads (new roster, seed S).
 [ReforgerZ] Faction leaders: N (new, seed S). Haven 2, Bastion 2, Red Hand 2, Halcyon 2
+[ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
 [ReforgerZ] Started. N settlements, stage Early Outbreak, cure 0 percent ...
 ```
 

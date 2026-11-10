@@ -14,7 +14,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("5", UIWidgets.Slider, "Server tick interval (seconds)", "1 30 1", category: "ReforgerZ")]
 	protected float m_fTickSeconds;
 
-	[Attribute("SURV", desc: "Faction key players spawn as", category: "ReforgerZ")]
+	[Attribute("SURV", desc: "Faction key players spawn as (the deploy menu, chat, groups and map markers stay on it; characters move onto its hidden variants, see Factions > Hostility)", category: "ReforgerZ")]
 	protected string m_sPlayerFactionKey;
 
 	[Attribute("0", desc: "Ignore the saved state on start (season wipe)", category: "ReforgerZ")]
@@ -226,6 +226,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("10", desc: "Minutes between public bounty announcements for players at Kill on Sight", category: "ReforgerZ|Factions")]
 	protected float m_fBountyMinutes;
 
+	[Attribute(desc: "Per-player AI hostility: mode (bitmask variants, outlaw fallback, off), from which standing each faction's AI shoots, the Haven exile rule, fights, wanderers fighting back (docs/REPUTATION.md)", category: "ReforgerZ|Factions")]
+	protected ref RZ_HostilitySettings m_HostilitySettings;
+
 	// ---------------------------------------------------------------- Map
 	[Attribute("1", desc: "Show world events and the lab on the map (vanilla map markers). Turn off if markers misbehave", category: "ReforgerZ|Map")]
 	protected bool m_bMapMarkers;
@@ -260,6 +263,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Safehouses m_Safehouses;
 	protected ref RZ_Wanderers m_Wanderers;
 	protected ref RZ_Leaders m_Leaders;
+	protected ref RZ_Hostility m_Hostility;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -285,6 +289,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	{
 		super.OnPostInit(owner);
 		s_Instance = this;
+
+		// On every machine: the modded faction check (RZ_FactionRelations.c) decodes keys with these
+		if (m_HostilitySettings)
+			RZ_Factions.Configure(m_sPlayerFactionKey, m_HostilitySettings.m_sBastionKey, m_HostilitySettings.m_sRedHandKey, m_HostilitySettings.m_sHalcyonKey);
+		else
+			RZ_Factions.Configure(m_sPlayerFactionKey, "", "", "");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -330,6 +340,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_LeaderSettings)
 			m_LeaderSettings = new RZ_LeaderSettings();
 
+		if (!m_HostilitySettings)
+			m_HostilitySettings = new RZ_HostilitySettings();
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -348,6 +361,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Safehouses = new RZ_Safehouses(this, m_SafehouseSettings);
 		m_Wanderers = new RZ_Wanderers(this, m_WandererSettings);
 		m_Leaders = new RZ_Leaders(this, m_LeaderSettings);
+		m_Hostility = new RZ_Hostility(this, m_HostilitySettings);
 
 		bool loaded = false;
 		if (!m_bWipeOnStart)
@@ -377,6 +391,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Wanderers.Setup();
 		// Leaders sit at the quartermasters, the lab and the safehouses
 		m_Leaders.Setup();
+		m_Hostility.Init();
 		if (m_bHasLab)
 			AddMapMarker(m_vLabPos, "Halcyon lab");
 		RefreshSpawnPoints(true);
@@ -415,6 +430,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Safehouses.Tick(dt, ids, players);
 		m_Wanderers.Tick(dt, ids, players);
 		m_Leaders.Tick(dt, ids, players);
+		// After everything that changes standing or spawns fights this tick
+		m_Hostility.Tick(dt, ids, players);
 		m_Broadcast.Tick(dt, m_fBroadcastMinutes);
 		RZ_GameTime.Tick(dt);
 		RZ_NoisemakerComponent.TickAll();
@@ -477,6 +494,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Safehouses GetSafehouses() { return m_Safehouses; }
 	RZ_Wanderers GetWanderers() { return m_Wanderers; }
 	RZ_Leaders GetLeaders() { return m_Leaders; }
+	RZ_Hostility GetHostility() { return m_Hostility; }
 	string GetLandmarkFallbackName() { return m_sLandmarkName; }
 	bool ScaleCountsItems() { return m_bScaleCountsItems; }
 
@@ -800,8 +818,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// The deploy menu can't hide a safehouse spawn point from one player, so an exile
 		// who picks one is told the door stays shut (its services refuse them)
 		if (m_Safehouses.FindAt(controlledEntity.GetOrigin()) >= 0 && m_Safehouses.IsExiled(playerId))
-			NotifyPlayer(playerId, "The Haven", "You come to outside the safehouse door. It stays shut. Nobody inside will look at you.");
+			NotifyPlayer(playerId, "The Haven", "You come to outside the safehouse door. It stays shut. Nobody inside will look at you, and if you're carrying a gun, the guards will in a minute. Move on.");
 		m_Perks.OnPlayerSpawned(playerId, controlledEntity);
+
+		// The new life's standing decides which hidden variant the character goes on
+		m_Hostility.OnPlayerSpawned(playerId, controlledEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1016,6 +1037,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	{
 		if (m_Perks)
 			m_Perks.OnTierChanged(playerId, faction, before, after);
+
+		// Hunted, Kill on Sight, exile and bounties all start at a tier: AI hostility follows
+		if (m_Hostility)
+			m_Hostility.OnStandingChanged(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------

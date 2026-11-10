@@ -607,7 +607,10 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 		{
 			IEntity g = RZ_Util.SpawnPrefab(gm.GetRedHandGroupPrefab(), LandPointNear(m_vPos, 0, 25));
 			if (g)
+			{
 				m_aGroups.Insert(g);
+				RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, g); // the camp shoots back
+			}
 		}
 
 		if (m_aGroups.IsEmpty())

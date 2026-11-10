@@ -60,8 +60,9 @@ in [REPUTATION.md](REPUTATION.md), "Haven house rules and exile".
   inside a safehouse in their last 5 minutes may be caught: Haven Infamy.
 - **Exile.** Hunted by the Haven: safehouse services refuse you ("the door stays shut"),
   Haven wanderers warn other players near you, and a safehouse short on food may sell your
-  rough location to bounty hunters. Guards are on the player faction, so they never shoot
-  anyone, exiles included: exile is a shut door, not a firefight.
+  rough location to bounty hunters. Come within 100 m of a safehouse with a firearm and its
+  guards shoot; unarmed, exile stays a shut door. How the AI tells one player from another
+  is in [REPUTATION.md](REPUTATION.md), "What makes AI shoot you".
 - **Grey contracts.** Walk Him Out, The Ledger and A Quiet Arrangement
   ([MISSIONS.md](MISSIONS.md), "Haven house contracts").
 
@@ -100,8 +101,9 @@ but the Deserter, who reads Bastion the other way round) plus their **memory of 
 per player:
 - *Helped me* (traded, treated, fed, escorted, paid a debt) → better Trader prices, and they
   add a warning when they talk ("one of the changed ones, 300 m NE").
-- *Robbed or shot at me* → they refuse you and run. Robbing or shooting near them (with no
-  infected close) costs Haven Infamy.
+- *Robbed or shot at me* → they refuse you and run, or, if their body is an armed AI group,
+  shoot you when you come within 80 m. Robbing or shooting near them (with no infected close)
+  costs Haven Infamy.
 - *Saved my life* (killing infected right next to them, or an antidote) → a one-off gift of
   Haven Favor, and they remember it for the rest of the season.
 
@@ -128,8 +130,11 @@ near each player.
   without AI, or a prop (the fallback puzzle civilian), stands still while someone is near and
   walks on, unseen, once they leave. Fleeing without AI means the body is removed and they
   move on out of sight. An escorted Kid without an AI body goes ahead unseen while you stay within 150 m.
-- The Deserter "turning hostile" is a refusal at gunpoint and a retreat, not a fight (Reforger's
-  factions are global, so one wanderer can't be hostile to one player).
+- Only a wanderer whose body is an armed AI group fights back (the Deserter at Bastion's
+  Champions, anyone at players who robbed or shot at them; never the Kid). Wanderer bodies are
+  on the Haven's faction, so this works through the player's Haven bit within 80 m of the
+  wanderer: any other Haven AI there (a safehouse's guards, if the wanderer is resting at one)
+  joins in. Without an armed AI body, the Deserter's refusal is still a pistol and a retreat.
 - "Their faction loses an outpost" isn't in: there's no territory yet (section 3).
 
 **Planned:** barter chains across three wanderers; Haven Champion "Community" respawns with a supply bag.

@@ -288,6 +288,8 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 		{
 			m_Group = RZ_Util.SpawnPrefab(groupPrefab, RZ_Util.RandomPointInRing(m_vCamp, 8, 15));
 			TrackProp(m_Group);
+			// The killers shoot strangers who come close; people the Red Hand knows can deal
+			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Group, 150, true);
 		}
 
 		m_fTimeLeft = NightDuration(2400, 10800, 4800);

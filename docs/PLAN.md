@@ -43,6 +43,7 @@ Out of scope: sleep and time skipping.
 | Choice missions: hand an item to one of two factions | `Missions/RZ_MissionItems.c`, `RZ_MissionBases.c` | Written |
 | Quartermasters, Favor shops, standing check, Requisition | `Factions/RZ_Quartermaster.c` | Written |
 | Faction perks, hunter squads, Kill-on-Sight bounties | `Factions/RZ_FactionPerks.c` | Written |
+| Per-player AI hostility: hidden player-faction variants (bitmask), stance per faction, armed exiles at safehouses, mission fights, wanderers fighting back, Outlaw fallback (see [REPUTATION.md](REPUTATION.md)) | `Factions/RZ_Hostility.c`, `RZ_FactionRelations.c`, `RZ_Factions.c` | Written |
 | Season ending: the cure goes to the faction with the most Fame | `Core/RZ_GameModeComponent.c` | Written |
 | Map markers for world events and the lab | `Core/RZ_MapMarkers.c` | Written (toggle) |
 | Personal objective per life, Legacy points | `Backgrounds/RZ_Objectives.c` | Written |
@@ -142,7 +143,8 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 
 ### Phase 1: the core loop on Arland (now)
 - [ ] Set up the Workbench project, fix every `VERIFY`, and get it compiling
-- [ ] Faction setup (SURV, MIL, BAND, INST plus the Bacon zombie faction)
+- [ ] Faction setup (SURV, MIL, BAND, INST plus the Bacon zombie faction, and the 15 hidden SURV variants)
+- [ ] Check in play that AI turns on a player whose character changes faction, and that the deploy menu, chat and groups stay on SURV; if AI ignores the variants, switch Hostility to Outlaw mode
 - [ ] 8 loadouts for the backgrounds
 - [ ] Lab prefab with the two actions, sample item prefab, reward crate prefab
 - [ ] Play a 2-hour session on Arland, then tune density, spread rate and stage lengths
@@ -184,6 +186,7 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [ ] Requisition from a Bastion outpost's truck-supplied stock (WORLD.md supply trucks)
 - [x] Cheap perks: sample scanner, Halcyon research bonus, Neighbours, toll pass (message only)
 - [x] Hunter squads for Hunted players; Kill-on-Sight bounties
+- [x] Per-player AI hostility: AI of each faction shoots only the players it wants dead (hidden faction variants)
 - [x] Haven safehouse spawn points (one per safehouse, for everyone)
 - [x] Named faction leaders with traits, loyalty, memory, voiced briefs, first contact, deaths and headlines
 - [x] 30 leader missions (Desertion Route and Private Collection not built), discovery, turning a leader in, Rein In
@@ -195,7 +198,8 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [ ] Disguises (faction uniforms) and surrendering at checkpoints
 - [ ] AI faction camps (Bastion checkpoint, Red Hand camp, Halcyon outpost) spawned at settlements
 - [ ] Shop System prices tied to standing; safe-zone entry
-- [ ] AI camp behaviour per player standing (warn, refuse, shoot)
+- [ ] AI camp behaviour per player standing: warn and refuse (shooting by standing is in)
+- [ ] Shooting at a faction's AI makes it fight back (today only standing, fights and grudges do)
 - [ ] Reputation clues visible to other players (e.g. bandit armband)
 
 ### Phase 4: Project Zomboid-style character creation

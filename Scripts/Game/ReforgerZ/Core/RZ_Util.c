@@ -367,6 +367,127 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True if the FactionManager has a faction with this key.
+	static bool HasFaction(string key)
+	{
+		FactionManager fm = GetGame().GetFactionManager();
+		return fm && fm.GetFactionByKey(key) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Key of the faction a character (not the player controller) is affiliated with, "" if none.
+	static string GetCharacterFactionKey(IEntity e)
+	{
+		if (!e)
+			return "";
+
+		FactionAffiliationComponent fac = FactionAffiliationComponent.Cast(e.FindComponent(FactionAffiliationComponent));
+		if (!fac)
+			return "";
+
+		Faction f = fac.GetAffiliatedFaction(); // VERIFY: FactionAffiliationComponent.GetAffiliatedFaction()
+		if (!f)
+			return "";
+
+		return f.GetFactionKey();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Moves only the character onto another faction. The player controller's faction (deploy
+	//! menu, chat, groups, map markers) is a different component and stays as it is.
+	//! False if the faction isn't in the FactionManager or the character can't be changed.
+	static bool SetCharacterFaction(IEntity e, string key)
+	{
+		FactionManager fm = GetGame().GetFactionManager();
+		if (!e || !fm)
+			return false;
+
+		Faction f = fm.GetFactionByKey(key);
+		if (!f)
+			return false;
+
+		FactionAffiliationComponent fac = FactionAffiliationComponent.Cast(e.FindComponent(FactionAffiliationComponent));
+		if (!fac)
+			return false;
+
+		fac.SetAffiliatedFaction(f); // VERIFY: SetAffiliatedFaction(Faction) on the server, replicated, and read by AI perception
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every member of an AI group (or one character) onto the faction. Returns how many moved.
+	//! Group members only exist a moment after the group, so call it once they're there.
+	static int SetUnitFaction(IEntity unit, string key)
+	{
+		if (!unit)
+			return 0;
+
+		SCR_AIGroup group = SCR_AIGroup.Cast(unit);
+		if (!group)
+		{
+			if (SetCharacterFaction(unit, key))
+				return 1;
+
+			return 0;
+		}
+
+		int moved = 0;
+		array<AIAgent> agents = {};
+		group.GetAgents(agents);
+		foreach (AIAgent agent : agents)
+		{
+			if (agent && SetCharacterFaction(agent.GetControlledEntity(), key))
+				moved++;
+		}
+
+		return moved;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True if the character has a firearm in a weapon slot: in their hands, slung or holstered.
+	//! Grenades and anything without a firearm weapon type don't count; nor does a gun packed
+	//! away in a backpack.
+	static bool IsArmed(IEntity character)
+	{
+		if (!character)
+			return false;
+
+		BaseWeaponManagerComponent wm = BaseWeaponManagerComponent.Cast(character.FindComponent(BaseWeaponManagerComponent));
+		if (!wm)
+			return false;
+
+		array<IEntity> weapons = {};
+		wm.GetWeaponsList(weapons); // VERIFY: BaseWeaponManagerComponent.GetWeaponsList(array<IEntity>) lists the slotted weapons
+		foreach (IEntity w : weapons)
+		{
+			if (!w)
+				continue;
+
+			BaseWeaponComponent wc = BaseWeaponComponent.Cast(w.FindComponent(BaseWeaponComponent));
+			if (wc && IsFirearmType(wc.GetWeaponType())) // VERIFY: BaseWeaponComponent.GetWeaponType() and the EWeaponType names
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsFirearmType(EWeaponType t)
+	{
+		switch (t)
+		{
+			case EWeaponType.WT_RIFLE: return true;
+			case EWeaponType.WT_SNIPERRIFLE: return true;
+			case EWeaponType.WT_MACHINEGUN: return true;
+			case EWeaponType.WT_HANDGUN: return true;
+			case EWeaponType.WT_GRENADELAUNCHER: return true;
+			case EWeaponType.WT_ROCKETLAUNCHER: return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int RoundToInt(float f)
 	{
 		int i = Math.Round(f);

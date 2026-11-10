@@ -18,7 +18,8 @@ the cure.**
   server-wide breakthroughs, then hold the lab through the final stand.
 - **Fame and Infamy**: the Haven, Task Force Bastion, the Red Hand and Halcyon each remember
   what you did for them and to them. Standing unlocks quartermaster shops and perks; Infamy
-  brings hunter squads and bounties. The faction the server helps most gets the cure.
+  brings hunter squads, bounties, and AI of that faction that really shoots *you* (and nobody
+  else). The faction the server helps most gets the cure.
 - **Named faction leaders**: a person runs every place a faction holds, with a name, a past
   and two traits that colour their briefs and nudge their prices and pay. Outpost and safehouse
   leaders can be Loyal, Independent or Rogue, give off-book jobs that can be discovered, die,
@@ -54,7 +55,7 @@ Scripts/Game/ReforgerZ/
   Director/     outbreak stages, infection spread, heat
   Zombies/      spawner (works with any zombie mod's prefabs)
   Backgrounds/  civilian backgrounds, player profiles
-  Factions/     Fame/Infamy tiers, quartermasters and shops, perks, hunter squads, bounties, leaders
+  Factions/     Fame/Infamy tiers, quartermasters and shops, perks, hunter squads, bounties, leaders, AI hostility
   Missions/     framework, requirements, bases; Haven/ Bastion/ RedHand/ Halcyon/ Events/ Leaders/
   Cure/         research, lab, samples, actions
   Persistence/  save/load of mode state

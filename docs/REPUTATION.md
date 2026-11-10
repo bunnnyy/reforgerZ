@@ -81,7 +81,7 @@ items, a Community or Settlement up to Trusted, a Town up to Champion
 | Declaring a bite at a safehouse | Once per life: with a medic (Settlement and up), the infection's time left ×1.5. Without one, no slowing, but you can't be caught |
 | Hiding a bite | Inside a safehouse in your last 5 minutes without having declared it: 30% a minute to be caught, once per life, +15 Haven Infamy |
 | Shooting at, robbing or killing a wanderer | +4 (shot at, once per wanderer), +8 (robbed), +15 (killed) Haven Infamy; they remember you |
-| Hunted by the Haven (exile) | Safehouse services and the Haven quartermaster refuse you ("the door stays shut"); Haven wanderers refuse you and warn other players near you; a safehouse short on food may sell your rough location to the Red Hand (a hunter squad, and a message to players the Red Hand knows). Guards never shoot anyone, exiles included |
+| Hunted by the Haven (exile) | Safehouse services and the Haven quartermaster refuse you ("the door stays shut"); Haven wanderers refuse you and warn other players near you; a safehouse short on food may sell your rough location to the Red Hand (a hunter squad that really shoots you, and a message to players the Red Hand knows). The guards shoot an exile only while they carry a firearm within 100 m of a safehouse (with a minute's grace after spawning at one); an unarmed exile just gets the shut door |
 
 Food delivered to a safehouse pays 2 Haven Favor per item, plus 1 Fame per 3 items (at most 5).
 Wanderers' attitude is your Haven standing (Bastion, reversed, for the Deserter) plus their
@@ -94,7 +94,7 @@ memory of you; see [WORLD.md](WORLD.md), "Wanderers".
 | Known | Military rations, morphine, flares | Checkpoints let you through without being searched |
 | Trusted | Service rifles, body armour, helmets, NVGs | **Requisition:** once an hour, draw ammo or rations from Bastion's stock at half the Favor cost, at the Bastion quartermaster. *(Planned: drawn from a nearby outpost's stock instead, and only while a supply truck has restocked it; see [WORLD.md](WORLD.md).)* |
 | Champion | Machine guns, grenades, military trucks | **Fire mission:** mark a horde with smoke for an artillery strike (long cooldown) |
-| Hunted | — | Checkpoints open fire; patrols get your last known position |
+| Hunted | — | Bastion soldiers shoot on sight; hunter squads get your last known position |
 
 ### The Red Hand
 
@@ -103,7 +103,7 @@ memory of you; see [WORLD.md](WORLD.md), "Wanderers".
 | Known | Knives, pistols, lockpick-style tools | Red Hand roadblocks let you pass for a toll instead of shooting |
 | Trusted | Suppressors, scoped rifles, explosives | **Fence:** sell loot for Favor; Red Hand ambush crews ignore you |
 | Champion | Anything stolen (rare military gear, stolen antidotes) | **Bounty board:** post bounties on other players |
-| Hunted | — | Ambush crews spawn on roads near you |
+| Hunted | — | Red Hand crews shoot on sight; hunter squads come for you |
 
 ### Halcyon
 
@@ -112,7 +112,7 @@ memory of you; see [WORLD.md](WORLD.md), "Wanderers".
 | Known | Antiseptic, painkillers, sample containers | You can buy antidotes when the lab has stock |
 | Trusted | Antidotes (when produced), stim kits, gas masks | **Sample scanner:** special infected within 300 m are revealed |
 | Champion | Experimental immunity booster (shrugs off one bite) | **Lab access:** your deliveries count 25% more; you can call in a Halcyon medic |
-| Hunted | — | The lab refuses your samples: they're taken without reward, and its guards turn hostile |
+| Hunted | — | The lab takes your samples without reward, and Halcyon's guards shoot on sight |
 
 ## Faction leaders
 
@@ -227,6 +227,59 @@ the roads"); new players see the last three headlines when they first spawn.
 - **Amends.** Each faction has missions that work Infamy off, so a
   mistake doesn't lock you out for the rest of the life.
 
+## What makes AI shoot you
+
+AI shoots individual players, not everyone on the player faction. Each faction's AI
+fires on a player when one of these is true for that player:
+
+| Faction (AI) | Default stance toward strangers | Shoots you when |
+|---|---|---|
+| The Haven (guards, occupants, survivor groups, wanderers) | Peaceful | You're Hunted by the Haven (exile) **and** carry a firearm within 100 m of a safehouse; or you're near an armed wanderer who has a grudge against you (below) |
+| Task Force Bastion | Wary: no shooting; the Perimeter and its sealed checkpoints work as before | You're Hunted or Kill on Sight by Bastion |
+| The Red Hand | Neutral, like the New Vegas factions: they leave you alone | You're Hunted or Kill on Sight by the Red Hand; or you're near one of their crews in a fight (below) |
+| Halcyon | Peaceful | You're Hunted or Kill on Sight by Halcyon |
+
+The stance is a setting per faction (**Shoots from**: Hunted, Watched, Strangers or Never;
+[WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "Faction perks and consequences"). Setting the Red
+Hand to *Strangers* makes its crews shoot anyone below Known, which turns the Known toll pass
+into the difference between being shot and not.
+
+**Fights.** Some AI is spawned to fight, whatever your standing:
+
+| Who | Shoots |
+|---|---|
+| A hunter squad | The player it was sent after (within 800 m), including a Haven exile whose location was sold |
+| The Red Hand camp in Raid the Red Hand, the raiders in Trader Caravan and Lab Defence | Every player within 350 m of them while they live |
+| The killers' camp in The Witness | Players within 150 m who aren't at least Known with the Red Hand |
+
+In Trader Caravan the trader is put on a variant the Red Hand is hostile to, so the
+raiders go for him while he stays friendly to players.
+
+**Wanderers fight back.** A wanderer whose body is an armed AI group shoots, within 80 m,
+a player who robbed or shot at them, and the Deserter draws on Bastion's Champions. The
+Kid never does. Wanderers without an armed AI body still refuse you and run.
+
+**Players and each other.** Player-against-player damage is unchanged. At the AI level,
+players stay friendly to each other, with one exception: while the Haven shoots you, you
+also count as hostile to players nobody is shooting (both are on the Haven's faction), which
+can show in name tags and in vanilla team-kill accounting.
+
+**How it works.** Reforger decides hostility per faction, so each player's *character* is
+moved onto one of 15 hidden copies of the player faction (`SURV_H1` to `SURV_H15`) whose
+number is a bitmask of the AI factions that shoot them: 1 the Haven, 2 Bastion, 4 the Red
+Hand, 8 Halcyon. A Hunted-by-Bastion exile standing armed at a safehouse is `SURV_H3`. A
+modded faction check decodes the key, so the copies need no relations of their own. Nobody
+sees this: the player controller stays on `SURV`, so the deploy menu, chat, groups and map
+markers don't change. Standing is re-read only when a tier changes or you spawn; nearness
+(safehouses, fights, wanderers) is checked on the server tick, and your character is only
+moved when the answer changes.
+
+**Fallback.** If AI turns out not to follow the modded check, set **Mode** to *Outlaw*:
+anyone any faction would shoot goes onto one `SURV_OUTLAW` faction, configured in the
+FactionManager as hostile to every AI faction. It's blunter (a Bastion-Hunted player is
+then shot by the Haven and Halcyon too), but it only uses vanilla faction relations.
+*Off* turns all of this off.
+
 ## The season's ending is decided by players
 
 When the cure reaches 100% and the final stand is won, the cure goes to
@@ -275,8 +328,10 @@ That sets the tone of the Aftermath and the next season's starting rules:
 - Perks are checked in code where they apply (`RZ_FactionPerks`, `RZ_CureResearch`).
   House rules and exile are in `RZ_Safehouses` (and `RZ_Wanderers` for wanderers);
   the location leak goes through `RZ_FactionPerks.LeakLocation`
-- AI hostility: Reforger factions are global, so per-player hostility is done by
-  sending hunter squads at Hunted players, not by changing faction relations
+- AI hostility: `RZ_Hostility` works out each player's bitmask and moves their character
+  onto the matching variant; `RZ_Factions` builds and decodes the keys (`KeyForMask`,
+  `DecodeMask`, `IsPlayerSide`), and the modded `SCR_Faction` in `RZ_FactionRelations.c`
+  turns them into relations. Missions mark their fights with `RZ_Hostility.MarkFight`
 - Season ending: Fame earned with each faction is summed over all players
   (`RZ_SaveData.seasonFame`); the winner is written to `last_season.json`
 
@@ -288,7 +343,8 @@ That sets the tone of the Aftermath and the next season's starting rules:
 | Word gets around, all five unlockable backgrounds | Disguises, surrendering at checkpoints |
 | Quartermaster shops (any item, any tier); Haven stock by safehouse size | Community respawns (the supply bag) |
 | Requisition (half price at the quartermaster), sample scanner, Halcyon research bonus, Neighbours | Requisition from truck-supplied outpost stock; Fire Mission, Fence, Bounty board, Halcyon medic, immunity booster |
-| Toll pass (message only), Halcyon Hunted gets no Fame for samples | AI checkpoints and roadblocks reacting to standing |
+| Toll pass (message only), Halcyon Hunted gets no Fame for samples | Bastion checkpoints and Red Hand roadblocks as AI (the AI that exists already shoots by standing) |
+| Per-player AI hostility: hidden faction variants, stances per faction, armed exiles, fights, wanderers fighting back, Outlaw fallback | Shooting at a faction's AI making it fight back (only fights, standing and grudges do) |
 | Hunter squads (Bastion and Red Hand), Kill-on-Sight bounties | — |
 | Haven safehouse spawn points, house rules, exile, Haven wanderers warning other players, safehouse location leaks | — |
 | Named leaders: traits, loyalty, memory, voiced briefs, first contact, discovery, deaths and replacements, Rein In | Leaders for real territory outposts (the `RegisterOutpost` hook is ready) |
