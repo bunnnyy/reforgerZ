@@ -45,8 +45,8 @@ The Haven are the people who happened to be here: a bus driver whose route ended
 roadblock, a coach of tourists, a teacher with the eleven kids from her class trip, a
 night-shift nurse, farmers, retirees. Nobody planned a faction.
 
-It started with strangers. On day two someone forced the doors of a school gym and let
-people sleep there. On day four a priest opened his church. Word went round by radio and
+It started with strangers. On Day 2 someone forced the doors of a school gym and let
+people sleep there. On Day 4 a priest opened his church. Word went round by radio and
 by notes on doors, and more places opened. The Haven is **a network, not an army**: a
 handful of safehouses that talk to each other. The rule for getting in is simple: *you get
 in if you're willing to help.*
@@ -60,7 +60,9 @@ who opened the door. Every house keeps the same rules:
 
 **The Haven remembers its own.** When someone who stood up for the Haven dies, every house
 lights a candle in the window and the council reads the name out at supper. Whoever turns up
-later with the same look about them is fed, and seen by the medic, for nothing.
+later with the same look about them is fed, and seen by the medic, for nothing. Someone the
+Haven has come to trust is given an amber ribbon, to wear or not as they like
+([REPUTATION.md](REPUTATION.md), "Reputation clues").
 
 **The hard edges.** The Haven is kind, and it is also frightened and hungry. It has a
 little dark side that nobody talks about:
@@ -85,31 +87,216 @@ yourself either way."*
 
 ### Task Force Bastion
 
-Soldiers who were on exercise or on guard inside the line when the order came. Command
-told them to hold the line and stopped answering. They still run checkpoints, still keep
-a duty roster, still call Command on the radio every night. Some still follow orders.
-Some are starting to wonder whose side they're on.
+Soldiers who were inside the line when the order came: a battalion on exercise in the hills,
+the first cordon detail sent in to "contain an incident", reservists, a few men on leave who
+reported for duty anyway. Command told them to hold the line and stopped answering. They still
+run checkpoints, still keep a duty roster, still call Command on the radio every night. Some
+still follow orders. Some are starting to wonder whose side they're on.
 
-**Voice:** clipped, procedural, tired.
+It started with orders that made sense. On Day 1 the cordon detail put roadblocks round an
+"incident" in the hills and was told it was a two-week posting. At six on the morning of Day 2
+the order came to walk civilians to the road checkpoints at the edge, to be processed out.
+Lieutenant Hana Sedlak took a bus, forty cars and a line of people on foot to the checkpoint
+on the north road. At two in the afternoon the barrier was still down. A loudspeaker told them
+to turn back. The soldiers behind the concrete wore the same badge she did. When she walked
+up to talk to them, a warning shot went through the bus's mirror. She turned the column round.
+The bus driver's route ended there, and he went looking for somewhere to put his passengers.
+
+That evening the last clear message came over the net: *"Hold the line. Await relief."*
+On Day 3 a longer signal came through the relay, too broken for voice, and a runner set off
+with the decoded text. He never arrived. That night the senior officer inside, a major, gave
+the units a name on the radio, Task Force Bastion, so that Command would have something to
+call them. Command never used it. The same night a pilot flew for the line with the wounded
+aboard. The line shot him down short of it. Nobody has flown toward the edge since, and of
+the helicopters Bastion came in with, only one still flies.
+
+**How a post runs.** A commander runs each post: an officer if there's one left, a sergeant
+if not. Every post keeps the same routine:
+
+- **The roster.** Every name, every duty, in grease pencil on a board. The shift changes at
+  05:30 and 17:30, and the night watch starts at 20:30.
+- **The nightly call.** After the night watch is set, the radio operator reads the numbers to
+  Command: effective strength, rounds, fuel, civilians sheltered. Then they wait. Then they
+  write *"No reply"* in the log, and the sergeant chalks up one more day.
+- **Inside the wire,** weapons are slung and nobody fires. Outside it, civilians are searched
+  at the checkpoints and there's a curfew at dusk.
+- **Everything is signed for.** Ammunition, rations, fuel, people.
+
+On the secure net, the stronghold answers to "Command" now. Someone had to.
+
+**Bastion counts its dead.** They're buried outside the post with no salute, because they're
+saving ammunition. One tag stays with the body. The other goes on a nail behind the radio, and
+that night the operator reads the new names to Command along with the numbers. Promotions
+come off the dead too: the new corporal's stripes were cut from a dead man's sleeve, and
+nobody thinks less of them for it. A civilian who has earned Bastion's trust is waved
+through at the checkpoints, and a few are trusted to throw the smoke the guns answer to
+([REPUTATION.md](REPUTATION.md), "Task Force Bastion").
+
+**The hard edges.** Bastion is disciplined, and the discipline is all that holds it together.
+Underneath, it is doing things nobody would put in a report:
+
+| What they don't say out loud | What it means | Where it shows in play |
+|---|---|---|
+| **"No reply"** | Every night the log says the same thing. Some operators swear they've heard something on the net. Nobody writes that down. | The nightly call on Bastion's open channel; the rumour that Bastion has a radio to the outside |
+| **"Expended"** | Nobody knows what the last orders said. Some posts think "relief is coming". Others have heard a word they don't repeat. Any copy that reaches the stronghold goes into the stove. | The Real Orders |
+| **"Struck off"** | A deserter's name is struck off the roster and written up as killed in action, so the numbers add up when relief comes. Then someone is sent to find him. | Hunt the Deserter; Desertion Route; the Deserter wanderer; the rumour that Bastion shoots its own deserters |
+| **The bunker** | Stores that Bastion never told anyone about, not even its own posts. | The Deserter's Map arc |
+| **"Contribution"** | Food taken from civilians "for their protection". It's never called a tax, and on a bad week it's never written down. | Requisition; Off-Book Requisition |
+| **"Fell off the inventory"** | Rifles that went to the Red Hand for fuel and fresh food. Ledgers where rations "spoil" and diesel "evaporates". | Rifles for Sale; Burn the Ledger |
+| **Containment** | Bastion does to a town what was done to Bastion: barriers across the roads, nobody in or out. Or the guns, after five minutes' warning, whoever is still inside. | Quarantine Line; Bastion Shelling; the Fire Mission perk |
+
+**How they see the others:**
+
+- **The Haven** are the people Bastion walked to the line and back on Day 2. Every post feeds
+  them a little and resents it a little.
+- **The Red Hand** are looters with a logo. Bastion keeps a few of them in a stockade, and the rest
+  keep trying to get them out. They laugh at Bastion on the open channel, and Bastion keeps a list.
+- **Halcyon** has the lab Command wanted secured. Bastion thinks Halcyon knew what was coming
+  before anyone, and would like the cure somewhere it can count it.
+
+**Voice:** clipped, procedural, tired. *"Command, Bastion. Effective strength thirty-eight.
+Civilians sheltered, two hundred and eleven. Requesting relief. Over."* A long hiss. *"Bastion out."*
 
 ### The Red Hand
 
 People who stopped pretending. Some were criminals before; most were mechanics, drivers and
 bored young men who noticed that nobody was coming. They take tolls on the roads, run a
-black market and sell protection. Their "cut dose" is stolen antidote stretched with whatever
-was in the bag: it works half the time. They don't care who you were. They care who you've crossed.
+black market and sell protection. They don't care who you were. They care who you've crossed.
 
-**Voice:** mocking and casual. They laugh at Bastion on the open channel.
+It started with a tank of diesel. On Day 1 the guards at the prison went home to their
+families, and by morning the cells were open. On Day 2 the cars that had been turned back from
+the line queued at every petrol station, and the pumps ran dry. Rudi Kasper drove the tow
+truck for a garage at a crossroads, and he had the key to the tank under the forecourt. He sold
+diesel for money, until money stopped meaning anything. Then he sold it for tins.
+
+On Day 4 the Janda brothers parked an articulated lorry across the crossroads. Rudi put his hand
+in the red paint they used for the forecourt lines and slapped it on the trailer. *"Red hand.
+Like at the lights. Means stop."* The first toll was one tin a car. On Day 5 a Bastion truck
+came to clear the road. The driver looked at the lorry, at the lads on top of it and at his
+fuel gauge, and paid in diesel. It's the Red Hand's favourite story. Bastion says it never
+happened.
+
+The convicts drifted in that week, and then the rest. Other crossroads got lorries and painted
+hands. Rudi was bitten on Day 8. He sat on the lorry with a bottle and asked them to do it
+before dark, and they did. The crews argued for two days about who was boss. The boss is the
+one who won.
+
+**How it runs.** A crew holds a camp and a stretch of road, and a crew boss runs it. Every
+crew pays **the boss** a cut, and the boss doesn't get a say in anything else. The boss runs
+**the market** at the stronghold: stolen kit, a fence who buys watches and jewellery by the
+handful, and the cut dose. On the roads there's **the toll**: tins, fuel or manners, mostly
+tins. Everything owed is in **the book**, and the book has to balance.
+
+The code is short, and everyone knows it:
+
+- **Pay your cut.** Crews that skim get found out, eventually.
+- **A debt is a debt.** It stays in the book until it's paid, by someone.
+- **Guns stay quiet in camp.** You want to shoot someone, do it outside.
+- **Nobody rats.** Not to Bastion, not to anyone.
+- **They don't care who you were.** They care who you've crossed, and they remember.
+
+**The Red Hand sends its own off loud.** Horns, music, shots in the air, whatever's left in
+the bottle. More than once a horde has come to see what the fuss was. The dead man's boots go
+to whoever carried him home. What he owed dies with him; what he was owed, the crew collects
+in his name. Status is a **name**: you don't pick your own, the crew gives you one, usually
+after something stupid. New faces paint a red hand on, and the ones the crews trust get the
+red armband ([REPUTATION.md](REPUTATION.md), "Reputation clues").
+
+**The hard edges.** The Red Hand jokes about everything. That's how it avoids saying anything:
+
+| What they don't say out loud | What it means | Where it shows in play |
+|---|---|---|
+| **The cut dose** | Antidote stretched with whatever was in the bag. They know it works half the time. They sell it to outsiders, never to the crew. | The cut dose on the black market |
+| **"The well story"** | What happens to a place that doesn't pay is never said. Somebody tells the story about the well instead, and lets you finish it yourself. | Protection Racket; the poisoned-well rumours, Fever Town's among them |
+| **Strays** | Crews keep track of the people the Haven turned out, and where they sleep. A hungry safehouse will sometimes sell one. | A hungry house selling an exile's location; A Quiet Arrangement |
+| **Learning the drones** | The gap in the drones' rotation was found by sending people toward the line and timing what happened. Most of the ones they sent were in the book. | The Blind Spot (the gap). How they found it: lore only |
+| **The pit** | A ring of infected and bets on who stays standing. When nobody volunteers, someone in the book goes in. | Fight Pit and House Rules (the pit). The debtors: lore only |
+| **"Cargo"** | Trucks that carry people, not tins. Where to, nobody says. | Rumours |
+| **Crews eat crews** | Out loud there's one Red Hand. Quietly, crews sell each other's camps to Bastion, and the boss purges any crew that talks about a new boss. | Sell Out a Rival Crew; Coup Talk |
+
+**How they see the others:**
+
+- **The Haven:** lovely people, lots of tins, terrible locks. Half the crews have a mother or a
+  kid sister in a safehouse, and some crew bosses quietly send medicine.
+- **Bastion** is still saluting a radio that stopped talking. Bastion paid the first toll.
+- **Halcyon** pays in hope; the Red Hand pays in cash. The lab's doses sell better with the
+  lab's stickers still on.
+
+**Voice:** mocking and casual. They laugh at Bastion on the open channel. *"Red hand means stop.
+Stop means pay. Pay means we're friends. See? Easy."*
 
 ### Halcyon
 
 A research team that was at the outbreak site before the lockdown. They run the only lab.
 They pay for samples, they need guards, and they know more about how this started than they
-say. A cure is the only thing that opens the gates, for them and for everyone. Anyone bitten
-can volunteer for their trial dose: eight in ten walk out, and Halcyon writes down what happens
-to the other two.
+say. A cure is the only thing that opens the gates, for them and for everyone.
 
-**Voice:** precise, a bit cold, sometimes guilty.
+It started before Day 1, and that's the problem. Halcyon is the field team of a research
+institute, and it had been working for months at a closed site in the hills. What the site
+was for is in their reports. Nobody else has read the reports. Three weeks before the gates
+closed, a man from the site was brought into a clinic with a fever nobody could name. Someone
+wrote *"notify the Institute"* in the margin and underlined it twice.
+
+On Day 1, whatever got out, got out. The team loaded two vans with the freezers, the
+centrifuge and every notebook they could find, and drove down into town. On Day 2 the
+Institute's last call reached them: nobody leaves until the Zone is proven clean, and proof
+opens the gates. Then the line went dead. On Day 3 the team lead, Dr Greta Wolff, went back up
+to the site for the rest of the samples. Her driver came back alone and wouldn't say what he'd
+seen. On Day 4 a Bastion platoon arrived with Command's order, two days old, to secure the
+lab. The researchers wouldn't open the doors, and the soldiers wouldn't leave, and they stood
+there all night. In the morning
+the platoon went home, except for two men who stayed and became Halcyon's first guards. On Day 6
+ten bitten people from the Haven volunteered for the first trial dose. Eight walked out. The
+number has been eight in ten ever since, which the lab says is a coincidence.
+
+**How it runs.** The research director runs the lab, and the lab never stops:
+
+- **The lab** works in shifts, because somebody always has to watch the incubators. At night
+  the generator goes to the freezers and the lights go dim. The overnight numbers are read out
+  at the change of shift. Nobody comments on them.
+- **The field stations.** A house in a quiet village with sensors, a cold box and a radio, run
+  by a lead researcher who is often younger than their job. Couriers walk samples between them
+  and the lab in steel cases.
+- **The trial dose.** Anyone bitten may volunteer, once, for nothing. Eight in ten walk out,
+  and Halcyon writes down what happens to the other two
+  ([DESIGN.md](DESIGN.md#treatments)).
+- **The notebooks.** Everyone keeps one, numbered. Every reading, every sample, every
+  volunteer goes in it. When a researcher dies, the notebook belongs to the lab.
+- **The numbers go out on the open channel,** with the samples wanted, in case somebody
+  outside is writing them down.
+
+**Halcyon keeps its dead in the record.** When someone dies, the director speaks for two
+minutes and goes back to work. Their notebook is read into the record, page by page, and their
+name goes on the list of authors for the paper that will open the gates: researchers, couriers,
+guards. Volunteers who didn't walk out are on it too, by number. The Haven wants them named.
+Status is whose initials go on a result, and who is let into the clean room. An outsider the lab
+trusts gets antidotes, a medic, and in the end a pass to the lab itself
+([REPUTATION.md](REPUTATION.md), "Halcyon").
+
+**The hard edges.** Halcyon is careful, polite and very tired. It has decided some things
+matter more than people, and it apologises for that, quietly:
+
+| What they don't say out loud | What it means | Where it shows in play |
+|---|---|---|
+| **The three weeks** | The first case was three weeks before the gates closed, and the Institute was told. Nobody at the lab says what anyone did with those three weeks. | Patient Zero (the clinic records); the rumour that Halcyon made this |
+| **"The other two"** | The two in ten who don't walk out of the trial dose leave with half the time they came in with, and a page in someone's notebook. Someone sits with them with a clipboard instead of a hand. | The trial dose; Serum Trial; Unsanctioned Trial |
+| **"Samples first, people second"** | When a van can't take both, the cold boxes go. It's an order, and they say sorry for it on the secure channel. | Secure channels |
+| **"At the moment of turning"** | The protocol wants tissue taken as a person turns, so someone has to be there, waiting, with the kit. | Patients Not Samples |
+| **Live ones** | Specials caught alive, for the lab, and sometimes for a field lead's own notebook. People say Halcyon pays the Red Hand for live ones. | Live Capture; Private Collection; rumours |
+| **Pages in the stove** | A dead researcher's notebook belongs to the lab. The pages about the director don't always get there. | The Notebook |
+| **Lazarus** | A locked terminal from a team that went into the field and didn't come back. Nobody at the lab will say what the project was. | The Last Experiment |
+
+**How they see the others:**
+
+- **The Haven** keeps people alive long enough to matter. Its medics have seen more bites than
+  anyone at the lab, and the lab sometimes asks them what it's getting wrong.
+- **Bastion** would like the cure in a locked crate. The director would trade what the lab
+  knows for Bastion's protection, and some field leads would rather give it away.
+- **The Red Hand** buys samples, and every one it buys is research the lab loses. It also sells
+  the lab the things the director won't ask for.
+
+**Voice:** precise, a bit cold, sometimes guilty. *"Eight in ten. We write down the other two.
+Somebody has to, and they should be counted."*
 
 ## Who's in charge
 
