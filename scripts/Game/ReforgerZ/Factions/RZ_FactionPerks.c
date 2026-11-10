@@ -201,13 +201,17 @@ class RZ_FactionPerks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A random town of at least `minSize` in the infection range that has no quartermaster yet.
+	//! A random town of at least `minSize` in the infection range that has no quartermaster yet
+	//! and isn't the lab's (Halcyon's stronghold).
 	protected int PickTown(int minSize, float minInf, float maxInf)
 	{
 		array<int> options = {};
 		foreach (int i, RZ_Settlement s : m_GM.GetSettlements())
 		{
 			if (s.m_iSize < minSize || s.m_fInfection < minInf || s.m_fInfection > maxInf)
+				continue;
+
+			if (i == m_GM.GetLabSettlement())
 				continue;
 
 			bool taken = false;
@@ -258,6 +262,7 @@ class RZ_FactionPerks
 		{
 			m_fScanTimer = 0;
 			SampleScanner(ids, players);
+			PruneGreetings();
 		}
 
 		m_fNeighbourTimer += dt;
@@ -392,6 +397,23 @@ class RZ_FactionPerks
 				if (!work.IsEmpty())
 					m_GM.NotifyPlayer(playerId, "Work from " + RZ_Factions.GetName(f), work);
 			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Greetings whose cooldown has run out (players who left among them), so the map stays small.
+	protected void PruneGreetings()
+	{
+		array<string> expired = {};
+		foreach (string key, float last : m_mGreeted)
+		{
+			if (m_fClock - last >= QM_GREET_COOLDOWN)
+				expired.Insert(key);
+		}
+
+		foreach (string old : expired)
+		{
+			m_mGreeted.Remove(old);
 		}
 	}
 
@@ -663,20 +685,49 @@ class RZ_FactionPerks
 		if (idx < 0 || !IsHarboured(target, players[idx]))
 			return;
 
-		m_aHunterLost[i] = true;
-		m_aHunterExpiry[i] = Math.Min(m_aHunterExpiry[i], m_fClock + LOST_TRAIL_SECONDS);
-		vector safe = players[idx].GetOrigin();
-		vector squadPos = RZ_Util.GetUnitPosition(m_aHunters[i]);
-		float gap = RZ_Util.DistXZ(squadPos, safe);
-		vector away = RZ_Util.RandomPointInRing(safe, 400, 500);
-		if (gap >= 1)
-			away = squadPos + (squadPos - safe) * (400 / gap);
-
-		RZ_Util.RedirectGroup(m_aHunters[i], RZ_Util.GroundPos(away), m_GM.GetSpawner().GetMoveWaypointPrefab());
+		GiveUpTrail(i, players[idx].GetOrigin());
 		if (!m_aHarbourTold.Contains(target))
 		{
 			m_aHarbourTold.Insert(target);
 			m_GM.NotifyPlayer(target, "Safe Harbour", "The shutters come down and someone moves the cart across the gate. Whoever was following you loses the trail at the edge of town.");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The squad walks off, away from `from`, and gives up soon after (removed away from players).
+	protected void GiveUpTrail(int i, vector from)
+	{
+		m_aHunterLost[i] = true;
+		m_aHunterExpiry[i] = Math.Min(m_aHunterExpiry[i], m_fClock + LOST_TRAIL_SECONDS);
+		vector squadPos = RZ_Util.GetUnitPosition(m_aHunters[i]);
+		float gap = RZ_Util.DistXZ(squadPos, from);
+		vector away = RZ_Util.RandomPointInRing(from, 400, 500);
+		if (gap >= 1)
+			away = squadPos + (squadPos - from) * (400 / gap);
+
+		RZ_Util.RedirectGroup(m_aHunters[i], RZ_Util.GroundPos(away), m_GM.GetSpawner().GetMoveWaypointPrefab());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Their target died: squads with no player near are removed; the others stop hunting, walk
+	//! off and no longer count toward the next life's cap.
+	protected void StandDownHunters(int victim, vector at, array<IEntity> players)
+	{
+		for (int i = m_aHunters.Count() - 1; i >= 0; i--)
+		{
+			if (m_aHunterTarget[i] != victim)
+				continue;
+
+			IEntity squad = m_aHunters[i];
+			if (!squad || RZ_Util.NearestDistance(RZ_Util.GetUnitPosition(squad), players) > 300)
+			{
+				RZ_Util.DeleteUnit(squad);
+				RemoveHunter(i);
+				continue;
+			}
+
+			m_aHunterTarget[i] = -1;
+			GiveUpTrail(i, at);
 		}
 	}
 
@@ -857,6 +908,7 @@ class RZ_FactionPerks
 		if (houses && RZ_Reputation.IsAtLeast(m_GM.GetTier(victim, RZ_EFaction.SURVIVORS), RZ_ETier.CHAMPION))
 			houses.OnChampionFallen(victim, at);
 
+		StandDownHunters(victim, at, players);
 		PayBounty(victim, killer);
 		m_iDeathVictim = -1;
 		m_iDeathKiller = -1;
@@ -1067,7 +1119,7 @@ class RZ_FactionPerks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Unclaimed postings come down; the poster gets half back if they're on.
+	//! Unclaimed postings come down; the poster gets half back, online or not.
 	protected void ExpirePostings()
 	{
 		for (int i = m_aPosted.Count() - 1; i >= 0; i--)
@@ -1077,11 +1129,18 @@ class RZ_FactionPerks
 				continue;
 
 			m_aPosted.Remove(i);
+			int back = b.m_iPaid / 2;
 			int posterId = FindPlayer(b.m_sPoster);
 			if (posterId <= 0)
-				continue;
+			{
+				// Offline: credited to their profile by identity
+				RZ_PlayerProfile poster = m_GM.FindProfileByIdentity(b.m_sPoster);
+				if (poster)
+					poster.AddFavor(RZ_EFaction.BANDITS, back);
 
-			int back = b.m_iPaid / 2;
+				continue;
+			}
+
 			m_GM.AddFavor(posterId, RZ_EFaction.BANDITS, back);
 			m_GM.NotifyPlayer(posterId, "The Red Hand board", string.Format("Nobody collected on %1. The paint's washed off; you get %2 Favor back.", b.m_sTargetName, back));
 		}

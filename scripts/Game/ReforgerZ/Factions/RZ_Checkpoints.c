@@ -649,7 +649,15 @@ class RZ_Checkpoints
 		if (!m_GM.HasLab())
 			return;
 
+		// Halcyon's stronghold seated at the lab was handled with the holdings above
 		vector lab = m_GM.GetLabPosition();
+		if (territory && territory.IsActive())
+		{
+			RZ_Holding halcyon = territory.GetStronghold(RZ_EFaction.INSTITUTE);
+			if (halcyon && RZ_Util.DistXZ(halcyon.m_vPos, lab) <= m_Settings.m_fCampWarnRadius)
+				return;
+		}
+
 		foreach (int j, IEntity q : players)
 		{
 			float ld = RZ_Util.DistXZ(q.GetOrigin(), lab);

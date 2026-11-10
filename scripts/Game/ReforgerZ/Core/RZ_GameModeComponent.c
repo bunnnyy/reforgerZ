@@ -1024,6 +1024,21 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The stored profile for an identity, or null: never creates one. Works for players who are
+	//! offline (profiles are kept by identity).
+	RZ_PlayerProfile FindProfileByIdentity(string ident)
+	{
+		if (ident.IsEmpty())
+			return null;
+
+		RZ_PlayerProfile profile;
+		if (m_mProfiles.Find(ident, profile))
+			return profile;
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_Background GetBackground(string id)
 	{
 		foreach (RZ_Background bg : m_aBackgrounds)
@@ -1389,17 +1404,19 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Infamy with `faction`. Negative amounts work Infamy off (amends).
-	void AddInfamy(int playerId, RZ_EFaction faction, int amount)
+	//! scaled = false: the caller already applied the disguise and leader scaling (paid amends,
+	//! which clamp the scaled amount to their floor and life cap).
+	void AddInfamy(int playerId, RZ_EFaction faction, int amount, bool scaled = true)
 	{
 		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
 			return;
 
 		// Caught in a faction's uniform: Infamy with it doubles (RZ_Disguise)
-		if (m_Hostility && amount > 0)
+		if (scaled && m_Hostility && amount > 0)
 			amount = m_Hostility.ScaleInfamyForDisguise(playerId, faction, amount);
 
 		// The faction's stronghold leader sets its temper: Paranoid harsher, Merciful forgives faster
-		if (m_Leaders)
+		if (scaled && m_Leaders)
 			amount = m_Leaders.ScaleInfamy(faction, amount);
 
 		RZ_PlayerProfile profile = GetProfile(playerId);

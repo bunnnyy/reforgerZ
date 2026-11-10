@@ -181,8 +181,9 @@ class RZ_FactionShopAction : ScriptedUserAction
 		if (leaders)
 			leader = leaders.FindAt(m_eFaction, pOwnerEntity.GetOrigin());
 
+		// Only for people the stronghold ranks below Known: a better customer keeps their own tier
 		bool rogueFavour = false;
-		if (leaders)
+		if (leaders && !RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
 			rogueFavour = leaders.ShopOverride(leader, playerId);
 		if (rogueFavour)
 		{

@@ -98,12 +98,16 @@ class RZ_PlayerProfile
 		for (int i = 0; i < RZ_Factions.COUNT; i++)
 		{
 			int fame = bg.GetStartFame(i);
-			// Word gets around: a past Champion starts at least Known
+			int infamy = bg.GetStartInfamy(i);
+			// Word gets around: a past Champion starts at least Known (no starting Infamy spoils it)
 			if (m_aChampionOf.Contains(i))
+			{
 				fame = Math.Max(fame, RZ_Reputation.WORD_GETS_AROUND_FAME);
+				infamy = Math.Min(infamy, RZ_Reputation.WORD_GETS_AROUND_INFAMY_MAX);
+			}
 
 			m_aFame[i] = fame;
-			m_aInfamy[i] = bg.GetStartInfamy(i);
+			m_aInfamy[i] = infamy;
 			m_aFavor[i] = 0;
 			m_aAmendsPaid[i] = 0;
 			m_aAmendsWorked[i] = 0;

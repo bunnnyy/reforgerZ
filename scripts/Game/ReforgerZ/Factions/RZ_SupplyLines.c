@@ -371,11 +371,12 @@ class RZ_SupplyLines
 
 	// ================================================================ States
 	//------------------------------------------------------------------------------------------------
-	protected RZ_SupplyState FindState(int kind, int index)
+	//! Matched by faction too: an outpost that changed hands starts a new state for its new owner.
+	protected RZ_SupplyState FindState(int kind, int index, int f)
 	{
 		foreach (RZ_SupplyState st : m_aStates)
 		{
-			if (st.m_iKind == kind && st.m_iIndex == index)
+			if (st.m_iKind == kind && st.m_iIndex == index && st.m_eFaction == f)
 				return st;
 		}
 
@@ -386,7 +387,7 @@ class RZ_SupplyLines
 	//! The state for a destination, made on first use: a new outpost arrives with a little stock.
 	protected RZ_SupplyState GetState(int kind, int index, RZ_EFaction f)
 	{
-		RZ_SupplyState st = FindState(kind, index);
+		RZ_SupplyState st = FindState(kind, index, f);
 		if (st)
 			return st;
 
@@ -401,12 +402,26 @@ class RZ_SupplyLines
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Territory: an outpost changed hands or was abandoned. Its stock and shortage go with it.
+	//! Territory: an outpost changed hands or was abandoned. Its stock and shortage go with it,
+	//! and a truck still on its way there turns back: no delivery, no reward, no shortage.
 	void OnHoldingChanged(int holdingId)
 	{
-		RZ_SupplyState st = FindState(KIND_OUTPOST, holdingId);
-		if (st)
-			m_aStates.RemoveItem(st);
+		for (int i = m_aStates.Count() - 1; i >= 0; i--)
+		{
+			if (m_aStates[i].m_iKind == KIND_OUTPOST && m_aStates[i].m_iIndex == holdingId)
+				m_aStates.Remove(i);
+		}
+
+		foreach (RZ_SupplyTruck t : m_aTrucks)
+		{
+			if (t.m_bDone || t.m_iDestKind != KIND_OUTPOST || t.m_iDestIndex != holdingId)
+				continue;
+
+			// Only cleanup left (Cleanup removes it away from players)
+			t.m_bDone = true;
+			t.m_fDoneAt = t.m_fAge;
+			RZ_Log.Info(string.Format("Supply: %1 truck to %2 called off (the outpost changed hands or was abandoned).", RZ_Factions.GetShortName(t.m_eFaction), t.m_sDestName));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

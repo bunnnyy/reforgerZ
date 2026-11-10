@@ -66,7 +66,8 @@ Reputation is per character, so a new life starts fresh with only its background
 standing ([DESIGN.md](DESIGN.md), "Backgrounds and personal goals"). Two things carry over:
 
 - **Word gets around** ✅: if any past character reached Champion with a faction, every new
-  character starts at Known with it.
+  character starts at least Known with it (at least 15 Fame, and any starting Infamy the
+  background gives with it is cut to 14).
 - **Unlocks** ✅: Champion with a faction unlocks a background (Soldier, Doctor, Raider, Elder);
   10 Legacy points unlock the Drifter.
 - **Remembered** ✅: the next character after a Haven Champion dies is kin of the fallen
@@ -163,7 +164,8 @@ visit the medic; calling one out isn't built.
 
 - **Hunter squads** ✅: every 10 minutes, Bastion or the Red Hand sends an AI group 400 m from
   a player they Hunt, toward where they were. It's hostile to that player within 800 m. At most
-  two squads are after one player at a time.
+  two squads are after one player at a time. When that player dies, their squads stand down
+  (walk off, or vanish if nobody is near): a new life starts with nobody on its trail.
 - **Bounties** ✅: Kill on Sight with any faction puts a public bounty on you, announced every
   10 minutes with a rough location (one notice, however many factions want you). One bounty is paid per death, only to the player who killed
   you (50 Favor and a little Fame), and only for a player kill: dying to the infected, a fall or

@@ -231,6 +231,7 @@ class RZ_Territory
 	protected ref array<int> m_aLostTown = {};
 	protected ref array<int> m_aLostFaction = {};
 	protected ref array<float> m_aLostAt = {};
+	protected ref array<int> m_aQmTowns;	// settlements with a placed quartermaster (QuartermasterTowns)
 	protected ref map<string, float> m_mRoutineTold = new map<string, float>();
 	protected int m_iSeed;
 	protected int m_iNextId = 1;
@@ -822,6 +823,10 @@ class RZ_Territory
 		if (idx == m_GM.GetLabSettlement() || s.m_fInfection >= 85 || RZ_Perimeter.IsNearLineAt(s.m_vCenter))
 			return 0;
 
+		// A placed quartermaster's town is some faction's stronghold, even before it is seated
+		if (QuartermasterTowns().Contains(idx))
+			return 0;
+
 		int hub = Neighbours(idx);
 		string lower = s.m_sName;
 		lower.ToLower();
@@ -904,6 +909,24 @@ class RZ_Territory
 		}
 
 		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Settlements with a placed quartermaster in them (worked out once: quartermasters don't move).
+	protected array<int> QuartermasterTowns()
+	{
+		if (m_aQmTowns)
+			return m_aQmTowns;
+
+		m_aQmTowns = {};
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			vector qm;
+			if (m_GM.GetPerks().GetQuartermasterPos(f, qm))
+				m_aQmTowns.Insert(m_GM.FindNearestSettlement(qm));
+		}
+
+		return m_aQmTowns;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1264,7 +1287,7 @@ class RZ_Territory
 
 	//------------------------------------------------------------------------------------------------
 	//! A strong faction tends to win back a town it lost: re-found it if it's empty again, or
-	//! take it from a weaker holder.
+	//! take it from a weaker holder (not the Haven or Halcyon, who never take towns).
 	protected bool TrySwingBack(RZ_EFaction f, array<IEntity> players)
 	{
 		if (CountOutposts(f) >= MaxOutposts(f))
@@ -1286,6 +1309,9 @@ class RZ_Territory
 				RemoveLoss(i);
 				return FoundAt(f, town, true);
 			}
+
+			if (f == RZ_EFaction.SURVIVORS || f == RZ_EFaction.INSTITUTE)
+				continue;
 
 			if (!CanChangeHands(holder, f, players) || m_aStrength[holder.m_eFaction] >= m_aStrength[f])
 				continue;

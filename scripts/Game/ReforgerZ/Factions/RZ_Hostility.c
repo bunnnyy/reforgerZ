@@ -314,6 +314,14 @@ class RZ_Hostility
 		m_mBaseMask.Remove(playerId);
 		m_Retaliation.Forget(playerId);
 		m_mSpawnedAt.Set(playerId, m_fClock);
+
+		// Fights aimed at the last life (a hunter squad's target) don't follow this one
+		for (int i = m_aZones.Count() - 1; i >= 0; i--)
+		{
+			if (m_aZones[i].m_iPlayerId == playerId)
+				m_aZones.Remove(i);
+		}
+
 		Update(playerId, ent);
 	}
 
@@ -349,6 +357,19 @@ class RZ_Hostility
 			m_mBaseMask.Remove(gone);
 			m_mStanding.Remove(gone);
 			m_mSpawnedAt.Remove(gone);
+		}
+
+		// Warnings whose cooldown has run out (players who left among them)
+		array<int> warned = {};
+		foreach (int warnedId, float at : m_mWarnedAt)
+		{
+			if (m_fClock - at >= WARN_COOLDOWN)
+				warned.Insert(warnedId);
+		}
+
+		foreach (int expired : warned)
+		{
+			m_mWarnedAt.Remove(expired);
 		}
 	}
 

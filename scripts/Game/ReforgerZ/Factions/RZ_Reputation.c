@@ -39,6 +39,8 @@ class RZ_Reputation
 
 	//! Fame given with every faction a past character was Champion with ("word gets around").
 	static const int WORD_GETS_AROUND_FAME = 15;
+	//! ...and their background's starting Infamy with it is capped below the "some" band, so the start is Known.
+	static const int WORD_GETS_AROUND_INFAMY_MAX = 14;
 
 	//------------------------------------------------------------------------------------------------
 	//! 0 = low (< 15), 1 = some (15-39), 2 = high (40-74), 3 = extreme (75+)

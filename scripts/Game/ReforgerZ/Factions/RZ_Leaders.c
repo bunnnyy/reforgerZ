@@ -683,7 +683,8 @@ class RZ_Leaders
 
 	//------------------------------------------------------------------------------------------------
 	//! A town that suits the faction (Bastion bigger towns, Red Hand rougher ones, Halcyon quiet
-	//! villages), at least minDist from `from`, not already a seat, a safehouse town or the line.
+	//! villages), at least minDist from `from`, not already a seat, a safehouse town, the lab's
+	//! town, a placed quartermaster's town (a stronghold seat maybe not seated yet) or the line.
 	protected int PickTownFor(RZ_EFaction f, vector from, float minDist)
 	{
 		int minSize = 1;
@@ -715,6 +716,9 @@ class RZ_Leaders
 				if (m_GM.GetSafehouses() && m_GM.GetSafehouses().IsSafehouseTown(i))
 					continue;
 
+				if (i == m_GM.GetLabSettlement() || IsQuartermasterTown(i))
+					continue;
+
 				options.Insert(i);
 			}
 
@@ -723,6 +727,20 @@ class RZ_Leaders
 		}
 
 		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A placed quartermaster stands in this settlement: some faction's stronghold seat.
+	protected bool IsQuartermasterTown(int idx)
+	{
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			vector qm;
+			if (m_GM.GetPerks().GetQuartermasterPos(f, qm) && m_GM.FindNearestSettlement(qm) == idx)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

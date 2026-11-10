@@ -427,7 +427,7 @@ Code: `Factions/RZ_Territory.c`.
 
   | Strength | Does (first that applies) |
   |---|---|
-  | 60+ | win back a town it lost (after 30 min, within 6 h); found an outpost near its holdings if under its count; at 65+ take the nearest outpost of a neighbour at least 10 weaker (any weaker during a feud), within 4 km |
+  | 60+ | win back a town it lost (after 30 min, within 6 h; the Haven and Halcyon only re-found one that is empty again); found an outpost near its holdings if under its count; at 65+ take the nearest outpost of a neighbour at least 10 weaker (any weaker during a feud), within 4 km |
   | 41–59 | under its count: found one (half the time); else 20%: drop an outpost with almost no traffic that has stood 3 hours |
   | 40 or less | 60%: drop its quietest outpost |
 
@@ -471,6 +471,9 @@ Code: `Factions/RZ_SupplyLines.c`.
   until the next delivery: about 30% of its shop's items are out, prices are +25% to +50%,
   half the time the Champion tier is locked, and an outpost's stock drops to 0. Players within
   600 m are told.
+- **Destination lost:** if the outpost changes hands or is abandoned while a truck is on its
+  way, the run is called off: no delivery, no reward, no shortage, and the truck is removed like
+  a finished one. The outpost's stock and shortage go with its old owner.
 - **Stock:** a delivery fills an outpost to 8 units; it uses one every 45 minutes. Bastion's
   Requisition draws one unit per item. **Haven trucks carry food:** +6 at a safehouse.
 - **Players and trucks.** Ride along within 150 m for 40% of the trip and see it arrive: +4
@@ -620,7 +623,7 @@ are in [MISSIONS.md](MISSIONS.md), "Leader missions".
 
 | Seat | Where |
 |---|---|
-| Stronghold (one per faction) | At the faction's quartermaster; Halcyon's at the lab. Never dies, never replaced |
+| Stronghold (one per faction) | At the faction's quartermaster; Halcyon's at the lab. Without either, a town that suits the faction: never another stronghold's town, a quartermaster's town or the lab's. Never dies, never replaced |
 | Haven safehouse | One council head per safehouse |
 | Outpost | One per territory outpost. With territory off, one **interim leader post** per faction for Bastion, the Red Hand and Halcyon instead |
 

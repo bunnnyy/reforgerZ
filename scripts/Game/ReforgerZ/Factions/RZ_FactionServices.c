@@ -628,7 +628,13 @@ class RZ_FactionServices
 		int infamy = p.GetInfamy(f);
 		int minInfamy = Math.Max(0, m_Settings.m_iAmendsFloor);
 		int lifeRoom = m_Settings.m_iAmendsLifeCap - p.m_aAmendsWorked[f];
-		int amount = Math.Min(m_Settings.m_iAmendsInfamy, Math.Min(lifeRoom, infamy - minInfamy));
+		// The stronghold leader's temper first (Merciful: more), then the floor and the life cap
+		int amount = m_Settings.m_iAmendsInfamy;
+		RZ_Leaders leaders = m_GM.GetLeaders();
+		if (leaders)
+			amount = -leaders.ScaleInfamy(f, -amount);
+
+		amount = Math.Min(amount, Math.Min(lifeRoom, infamy - minInfamy));
 		if (infamy <= minInfamy)
 		{
 			m_GM.NotifyPlayer(playerId, name, "\"Nothing to pay for. Whatever's left, you work off with your hands, not your Favor.\"");
@@ -659,8 +665,8 @@ class RZ_FactionServices
 
 		m_mAmendsAt.Set(key, m_fClock);
 		p.m_aAmendsPaid[f] = p.m_aAmendsPaid[f] + 1;
-		p.m_aAmendsWorked[f] = p.m_aAmendsWorked[f] + amount;
-		m_GM.AddInfamy(playerId, f, -amount);
+		m_GM.AddInfamy(playerId, f, -amount, false);
+		p.m_aAmendsWorked[f] = p.m_aAmendsWorked[f] + Math.Max(0, infamy - p.GetInfamy(f));
 		m_GM.NotifyPlayer(playerId, name, string.Format("%1 Favor changes hands and someone crosses out a line in a book. Infamy with %2 is now %3. The next payment will cost %4.",
 			cost, RZ_Factions.GetNameInText(f), p.GetInfamy(f), AmendsCost(p.m_aAmendsPaid[f])));
 	}
