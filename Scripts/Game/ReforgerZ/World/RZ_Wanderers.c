@@ -163,6 +163,7 @@ class RZ_Wanderer
 	float m_fNudgeLeft;
 	int m_iEscortPlayer = -1;	// the Kid follows this player to a safehouse
 	bool m_bBodyWalks;			// the last body spawned was an AI group (it walks by itself)
+	bool m_bTagged;				// the body's talk/choice actions are routed to us
 	float m_fBellsOffUntil;		// the Preacher agreed to stop for a while
 
 	//------------------------------------------------------------------------------------------------
@@ -1050,6 +1051,9 @@ class RZ_Wanderers
 			}
 			else
 			{
+				if (!w.m_bTagged)
+					TryTagBody(w);
+
 				w.m_vPos = RZ_Util.GetUnitPosition(w.m_Body);
 				if (RZ_Util.NearestDistance(w.m_vPos, players) > m_Settings.m_fSpawnRadius + DESPAWN_MARGIN)
 					DespawnBody(w);
@@ -1126,13 +1130,33 @@ class RZ_Wanderers
 		w.m_Body = e;
 		w.m_bHasBody = true;
 		w.m_bBodyWalks = SCR_AIGroup.Cast(e) != null;
+		w.m_bTagged = false;
 		w.m_vPos = pos;
-
-		RZ_PuzzleObjectComponent.Tag(e, TAG, w.m_iId, "", ChoiceLabels(w));
-		RZ_ClueComponent.Tag(e, TAG, w.m_iId, "Talk to " + w.GetShortName());
+		TryTagBody(w);
 
 		if (w.m_eState == RZ_EWandererState.TRAVEL)
 			RZ_Util.SendGroupTo(e, w.m_vDest, m_GM.GetSpawner().GetMoveWaypointPrefab());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Label the body's actions. For an AI group the components are on its leader, who
+	//! only exists a frame after the group, so this is retried on the next ticks.
+	protected void TryTagBody(RZ_Wanderer w)
+	{
+		IEntity target = w.m_Body;
+		SCR_AIGroup group = SCR_AIGroup.Cast(w.m_Body);
+		if (group)
+		{
+			AIAgent leader = group.GetLeaderAgent();
+			if (!leader || !leader.GetControlledEntity())
+				return;
+
+			target = leader.GetControlledEntity();
+		}
+
+		RZ_PuzzleObjectComponent.Tag(target, TAG, w.m_iId, "", ChoiceLabels(w));
+		RZ_ClueComponent.Tag(target, TAG, w.m_iId, "Talk to " + w.GetShortName());
+		w.m_bTagged = true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1227,6 +1251,17 @@ class RZ_Wanderers
 				w.m_iNudgePlayer = -1;
 			else if (w.m_eState == RZ_EWandererState.TRAVEL)
 				w.m_vDest = target.GetOrigin();
+		}
+
+		// The Kid gives up on an escort who wandered off (or left)
+		if (w.m_iEscortPlayer > 0)
+		{
+			IEntity escort = GetGame().GetPlayerManager().GetPlayerControlledEntity(w.m_iEscortPlayer);
+			if (!escort || RZ_Util.DistXZ(escort.GetOrigin(), w.m_vPos) > 400)
+			{
+				w.m_iEscortPlayer = -1;
+				ChooseDestination(w);
+			}
 		}
 
 		bool zombieClose = m_GM.GetSpawner().IsZombieNear(w.m_vPos, 40);

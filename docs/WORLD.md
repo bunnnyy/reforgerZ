@@ -13,70 +13,126 @@ the server. Three rules apply throughout:
 
 ## 1. People
 
-### Rescued survivors and safehouse population (no crowding)
+### Safehouses and population ✅ (built, `World/RZ_Safehouses.c`)
 
-A rescued survivor isn't kept as an AI body. They become **+1 population**
-at the nearest Haven safehouse.
+A safehouse is a single Haven-held spot in an otherwise abandoned town. A rescued
+survivor isn't kept as an AI body: they become **+1 population** at the nearest safehouse.
 
-- **Few bodies on screen.** A safehouse shows at most 3–6 AI occupants, and only while a
-  player is within 300 m. A safehouse of 4 and one of 40 look about the same; the difference is in
-  what they offer.
-- **Population tiers** (diminishing returns, hard cap of 30 per safehouse):
+- **Where they are.** At the first start of a season, up to 3 safehouses (one per 8
+  settlements, at least 1) are picked: the first at the Haven quartermaster, the rest in quiet,
+  low-infection villages, at least 1.2 km apart, away from the lab and the quarantine line.
+  Positions, population and food are saved. Mission makers can place
+  `RZ_SafehouseMarkerEntity` entities instead; placing any turns the picking off.
+- **Few bodies on screen.** While a player is within 300 m, a safehouse shows 3–6 occupants
+  (never more than its population), its guards, its medic and its own Haven quartermaster.
+  They're removed again when everyone has left. A safehouse of 4 and one of 30 look about the
+  same; the difference is in what they offer.
+- **Population tiers** (hard cap of 30 per safehouse; past the cap, new arrivals go to the
+  next nearest safehouse):
 
-  | Population | Safehouse becomes |
-  |---|---|
-  | 0–4 | Shelter: a spawn point, basic Haven shop |
-  | 5–11 | Community: more shop stock, one guard on watch |
-  | 12–19 | Settlement: a medic (heals for Favor), a radio (intel on missions nearby) |
-  | 20–30 | Town: Haven Champion shop items stocked here, two guards |
+  | Population | Safehouse becomes | Built effects |
+  |---|---|---|
+  | 0–4 | Shelter | A spawn point; the quartermaster stocks Known items only; 3 occupants |
+  | 5–11 | Community | Trusted stock, one guard, 4 occupants |
+  | 12–19 | Settlement | A medic (heals for Favor, takes bite declarations) and a radio (missions within 3 km); 5 occupants |
+  | 20–30 | Town | Champion stock, two guards, 6 occupants |
 
-- **Overflow** moves on its own: past the cap, new arrivals go to the next safehouse.
-- **Upkeep.** Every few hours population needs food. If the Haven supply line
-  to a safehouse is cut (see Supply lines), a few people leave, either to another
-  safehouse or to become wanderers. The safehouse shrinks but never drops below Shelter.
-- **Some rescued people stay on as characters.** About 1 in 10 becomes a named
-  wanderer, so the people you save turn up on the roads later.
+- **Upkeep.** Every 3 hours of real time with players online, a safehouse eats one food
+  unit per 5 people. Food is a plain stock per safehouse. Players top it up by handing food
+  items to the quartermaster (prefab names containing food words; 2 Haven Favor per item).
+  If the stock is short, 1–3 people leave: to the nearest safehouse that can feed them, or onto
+  the roads (one may become a named wanderer). Upkeep never takes a safehouse below 2 people.
+  *Simplification:* there are no supply trucks yet, so food only comes from players and the
+  starting stock. Bastion's Requisition contract takes 4 food when the supplies go to Bastion.
+- **Rescues add population.** Survivors Trapped adds 3 (4 with a ★ Nurse or Doctor), Rescue the
+  Kids adds 3, and escorting the Kid wanderer adds 1. About 1 in 10 rescued survivors won't stay
+  behind walls and becomes a named wanderer instead, if the roster has room.
 
-### Wanderers
+### House rules and the dark side ✅ (built)
 
-A small roster of named survivors travels the map: 6–10 per server, scaled
-by map size. Each one has a role, a route and opinions.
+What the Haven expects of you, and what happens when it turns you out. Standing effects are
+in [REPUTATION.md](REPUTATION.md), "Haven house rules and exile".
+
+- **No shooting.** Drawing a weapon in a safehouse is fine. Firing within 50 m of one costs
+  Haven Infamy, unless an infected is within 40 m of the safehouse at that moment.
+- **Declare your bite.** Telling a safehouse you're bitten slows the infection (×1.5 of the
+  time left, once per life) if it has a medic. A bitten player who hasn't said so and is
+  inside a safehouse in their last 5 minutes may be caught: Haven Infamy.
+- **Exile.** Hunted by the Haven: safehouse services refuse you ("the door stays shut"),
+  Haven wanderers warn other players near you, and a safehouse short on food may sell your
+  rough location to bounty hunters. Guards are on the player faction, so they never shoot
+  anyone, exiles included: exile is a shut door, not a firefight.
+- **Grey contracts.** Walk Him Out, The Ledger and A Quiet Arrangement
+  ([MISSIONS.md](MISSIONS.md), "Haven house contracts").
+
+### Wanderers ✅ (built, `World/RZ_Wanderers.c`)
+
+A small roster of named survivors travels the map: 6–10 per server (6, plus one per 6
+settlements above 8). Each one has a role, a route and opinions. Names come from a seed, and
+the roster, positions and memories are saved.
 
 | Role | What they do | Typical reaction to you |
 |---|---|---|
-| Trader | Moves goods between safehouses; best prices | Trades if you're not Hunted by the Haven |
-| Doctor | Treats people; can slow an infection for Favor | Helps the injured; refuses the Red Hand's Trusted |
-| Scavenger | Knows where loot is; sells rumours | Swaps a rumour for food or ammo |
-| Deserter | Ex-Bastion, paranoid | Friendly if Bastion hates you, hostile if Bastion loves you |
-| Preacher | Wanders between churches, rings bells | Harmless, but draws zombies; keeps the world "weird" |
-| Courier | Carries messages between factions | Hands out unarmed delivery jobs |
-| Kid | A lost child heading for a safehouse | Follows you if you're kind; flees from gunfire |
+| Trader | Moves between safehouses; sells goods for Haven Favor, cheaper if you've helped them | Trades if you're not Hunted by the Haven |
+| Doctor | Patches you up, or slows an infection (×1.25 of the time left, once per life) for Favor | Refuses the Red Hand's Trusted |
+| Scavenger | Sells a rumour pointing at a puzzle mission in progress, or at a stash, for Favor or one food item | Swaps a rumour for food |
+| Deserter | Ex-Bastion, paranoid; tells you what Bastion is up to | Friendly if Bastion hates you, refuses if Bastion likes you, draws on Bastion's Champions |
+| Preacher | Walks between towns; while he rests in one, his bells add heat there | Harmless; agrees to stop the bells for an hour if asked |
+| Courier | Hands out an unarmed delivery job (letters to a safehouse) | Any non-Hunted player |
+| Kid | A lost child, wandering | Follows you to a safehouse if you show the way; runs from gunfire |
 
-**How they behave.** Each wanderer has a simple state machine:
-travel → rest at a safehouse → trade or talk → move on.
+**How they behave.** A simple state machine: travel → rest (10–20 min at a safehouse,
+3–8 min in a town) → choose somewhere new, 0.6–3.5 km away.
 
-**They react to the world:**
-- If their destination falls to infection, they change route.
-- If a horde is nearby, they flee or hide in a building.
+**They react to the world** (checked every 30 s):
+- A destination that becomes overrun (infection 75+), loud, or near the quarantine line is
+  dropped for another. Routes that cross water or the line are never chosen.
+- A horde or a lot of noise nearby (an infected within 40 m, or heat 50+): they stop and hide
+  for a few minutes.
 - During Night of the Dead or a storm, they shelter until it ends.
-- If their faction loses an outpost, they avoid that area.
-- They can get bitten. A bitten wanderer can trigger a "Bitten Friend"-style event.
+- Rarely, an infected within 12 m bites one. **Bitten on the road:** players within 1.5 km
+  hear about it; the wanderer heads for the nearest safehouse, and an antidote used next to
+  them within 20 minutes saves them (and they remember who did). A Doctor nearby slows it.
+  Otherwise they turn, and a special appears there if players are near.
 
-**They react to you.** Their attitude toward you is your reputation with their faction, plus their own
-**memory of you** (stored per player, per wanderer):
-- *Helped me* (escorted, healed, traded fairly) → better prices, rumours, warnings ("there's a horde past the bridge")
-- *Robbed or shot at me* → refuses you, warns others: Haven safehouses hear about it (+ Haven Infamy)
-- *Saved my life* → gives a one-off gift and remembers you for the rest of the season
+**They react to you.** Attitude is your standing with their faction (the Haven for everyone
+but the Deserter, who reads Bastion the other way round) plus their **memory of you**, stored
+per player:
+- *Helped me* (traded, treated, fed, escorted, paid a debt) → better Trader prices, and they
+  add a warning when they talk ("one of the changed ones, 300 m NE").
+- *Robbed or shot at me* → they refuse you and run. Robbing or shooting near them (with no
+  infected close) costs Haven Infamy.
+- *Saved my life* (killing infected right next to them, or an antidote) → a one-off gift of
+  Haven Favor, and they remember it for the rest of the season.
 
-**They tie into everything else:**
-- **Unarmed missions** (below) come mostly from wanderers.
-- **Barter chains:** the Scavenger wants a radio, the Courier has one but wants medicine,
-  and the Doctor has medicine but wants a fuel can. A small puzzle across the map.
-- **Death is permanent and makes the news.** "Old Marta the trader was killed on the coast road."
-  A replacement shows up a day later, so the roster refreshes.
+**Talking.** "Talk" gives one piece of road news: where the noise is, which safehouse is out of
+food, an event nearby, or where they're heading. Actions on the body: the role's special,
+"Share some food" (barter: a food item for goodwill and news), and "Rob".
 
-**Performance.** When no player is within 400 m, a wanderer is just a position moving along its route on the
-server, with no entity. Only the 1–2 wanderers near each player exist as AI.
+**Death is permanent and makes the news.** "Old Marta the trader was killed on the road to
+the safehouse in Morton." Whoever shot at them in the last 30 s takes Haven Infamy. A
+replacement (half the time the same role) shows up a real day later.
+
+**Hooks for new-player guidance (planned next):** `RZ_Wanderers.NudgeToward(playerId, roleMask)`
+sends the nearest wanderer with one of the roles walking toward a player (they give up after
+20 minutes and wait 5 minutes once they arrive); `RZ_Wanderers.RoleBit(role)` builds the mask;
+`DescribeNearest(pos, roleMask)` names the nearest one with distance and direction.
+
+**Performance.** When no player is within 400 m, a wanderer is just a position moving in a
+straight line on the server tick, with no entity and no AI pathing. At most two bodies exist
+near each player.
+
+**Simplifications:**
+- Routes are straight lines between places, not roads.
+- A body that's an AI group walks to its destination on its own. A body that's a character
+  without AI, or a prop (the fallback puzzle civilian), stands still while someone is near and
+  walks on, unseen, once they leave. Fleeing without AI means the body is removed and they
+  move on out of sight. An escorted Kid without an AI body goes ahead unseen while you stay within 150 m.
+- The Deserter "turning hostile" is a refusal at gunpoint and a retreat, not a fight (Reforger's
+  factions are global, so one wanderer can't be hostile to one player).
+- "Their faction loses an outpost" isn't in: there's no territory yet (section 3).
+
+**Planned:** barter chains across three wanderers; Haven Champion "Community" respawns with a supply bag.
 
 ## 2. Unarmed missions: low level, but still a challenge
 
@@ -150,7 +206,8 @@ doesn't need to be.
   - The shortage lasts until the next successful delivery: **40–60 minutes**, random each time.
 - **Players can drive the truck.** Escort it for Fame. Drive it in yourself if the driver is dead, for more Fame.
   Or steal it and deliver it to a rival's stronghold. That's Red Hand Fame, and the owner's Infamy.
-- Haven trucks also carry the food that keeps safehouse population up.
+- Haven trucks also carry the food that keeps safehouse population up (planned: they add to
+  the safehouse food stock that players fill by hand today).
 
 ## 4. Infection adapts, a little
 
@@ -211,8 +268,8 @@ outposts that changed hands, wanderers lost, the cure percentage, the biggest re
 
 ## Build order
 
-1. Safehouses with population tiers, and rescued survivors joining them
-2. The wanderer roster with simulated travel, reactions and memory
+1. ✅ Safehouses with population tiers, and rescued survivors joining them
+2. ✅ The wanderer roster with simulated travel, reactions and memory
 3. Noisemakers, the "being noticed" check, and the first 6 unarmed missions
 4. Strongholds and outposts, the territory tick, supply lines as data
 5. Light infection adaptation; day/night and weather modifiers

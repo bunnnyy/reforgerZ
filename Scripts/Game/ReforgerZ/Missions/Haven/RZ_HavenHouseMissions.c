@@ -11,6 +11,7 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 	protected vector m_vStart;
 	protected string m_sCourier;
 	protected bool m_bPrepared;
+	protected int m_iFor = -1;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -35,8 +36,19 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 
 		m_vStart = at;
 		m_sCourier = courier;
+		m_iFor = playerId;
 		m_bPrepared = true;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The job belongs to whoever asked the courier (and whoever walks in with them).
+	override bool IsEligible(RZ_GameModeComponent gm, int playerId)
+	{
+		if (m_iFor > 0 && playerId != m_iFor && !m_aParticipants.Contains(playerId))
+			return false;
+
+		return super.IsEligible(gm, playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------

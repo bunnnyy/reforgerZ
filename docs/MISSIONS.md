@@ -4,7 +4,7 @@ There are two kinds of missions:
 
 - **World events** (28) are announced to everyone, and anyone can take part.
   They are what makes strangers meet: a horde, a helicopter wreck, a town about to be shelled.
-- **Faction contracts** (20 per faction, plus 17 puzzle missions and 3 Perimeter missions) are offered only to players who
+- **Faction contracts** (20 per faction, plus 17 puzzle missions, 3 Perimeter missions and 3 Haven house contracts) are offered only to players who
   qualify, by radio or at the faction's contact. A contract belongs to the
   person or group that accepts it. Others can still turn up and interfere.
 
@@ -45,7 +45,13 @@ unlockable: Soldier, Doctor, Raider, Elder, Drifter.
   Steal the Antidotes), more Fame (Retake, Survivors Trapped, Medicine Run, Clear the Road,
   Recon, Fence, Water Survey, Hunt the Screamer), faster burning (Burn the Bodies,
   Decontamination), double kills (Field Samples), a slower infection (Bitten Friend),
-  better pay (Dead Drop), fewer courier reports (Smuggler's Run), more noise (Zombie Bait).
+  better pay (Dead Drop), fewer courier reports (Smuggler's Run), more noise (Zombie Bait),
+  reading the bite and more Fame (Walk Him Out), more Fame (The Ledger), harder to spot
+  (A Quiet Arrangement).
+- **Rescues and safehouses.** Rescued people become population at the nearest Haven safehouse
+  ([WORLD.md](WORLD.md), "People"): Survivors Trapped adds 3 (4 with a ★), Rescue the Kids adds 3.
+  Medicine Run's drop point is at a real safehouse when there are any. Requisition's supplies
+  are real: delivered to Bastion, the nearest safehouse loses 4 food.
 
 ---
 
@@ -54,9 +60,9 @@ unlockable: Soldier, Doctor, Raider, Elder, Drifter.
 | # | Contract | Needs | Bg | What you do | Result |
 |---|---|---|---|---|---|
 | 1 | Supply Cache ✅ | Any | | Hold a cache in a town for 60 s | Haven Fame |
-| 2 | Survivors Trapped ✅ | Any | ★ Nurse: survivors leave healthier, bonus Fame | Reach a barricaded family and survive 3 waves | Haven Fame |
+| 2 | Survivors Trapped ✅ | Any | ★ Nurse: survivors leave healthier, bonus Fame | Reach a barricaded family and survive 3 waves | Haven Fame; the family joins a safehouse (+3, +4 with ★) |
 | 3 | Radio Relay ✅ | Any | ★ Radio Op: half the hold time | Keep a relay on high ground running for 3 min | Haven Fame |
-| 4 | Medicine Run ✅ | Any | ★ Nurse/Doctor: knows the pharmacy; it's pre-marked | Bring medical supplies from a pharmacy town to a safehouse | Haven Fame |
+| 4 | Medicine Run ✅ | Any | ★ Nurse/Doctor: knows the pharmacy; it's pre-marked | Bring medical supplies from a pharmacy town to a Haven safehouse | Haven Fame |
 | 5 | The Bitten Friend ✅ | Known | ★ Nurse: can slow his infection | A Haven member is bitten. Bring an antidote before he turns, or end it | Fame; mercy kill = less Fame |
 | 6 | Fuel for the Lights | Known | ★ Mechanic: generator runs twice as long | Bring 2 jerrycans to a safehouse generator. The lights raise heat there | Haven Fame |
 | 7 | Take Back the Town ✅ | Known, Bastion gone (Overrun+) | | Kill 8 × size infected in town | Fame, town infection -35 |
@@ -69,7 +75,7 @@ unlockable: Soldier, Doctor, Raider, Elder, Drifter.
 | 14 | Water Purifier | Trusted | ★ Mechanic/Lab Tech: only need 2 of 3 parts | Find 3 purifier parts scattered around a town | Fame, the safehouse becomes a spawn point |
 | 15 | Fortify the Safehouse | Trusted | ★ Mechanic | Hold the area while barricades go up (or build them with the building mod) | Fame; the safehouse resists attacks |
 | 16 | Trader Caravan ✅ | Trusted, not Trusted by the Red Hand | | Defend a Haven trader at a crossroads from a Red Hand raid | Fame (Red Hand Infamy) |
-| 17 | Rescue the Kids ✅ | Trusted | ★ Hunter: quieter approach | Get children out of a school without making noise. Too loud and a horde comes | Big Fame |
+| 17 | Rescue the Kids ✅ | Trusted | ★ Hunter: quieter approach | Get children out of a school without making noise. Too loud and a horde comes | Big Fame; the kids join a safehouse (+3) |
 | 18 | The Informant | Trusted, Watched+ by the Red Hand | 🔒 not Police/Soldier | Pose as a buyer at a Red Hand dead drop and report who shows up | Fame (Red Hand Infamy if spotted) |
 | 19 | Recover the Bus | Champion | ★ Mechanic | Get a bus or truck running and drive it to the safehouse | Fame; the Haven gains a vehicle |
 | 20 | Memorial | Champion | | Collect ID tags of the dead from an overrun city | Fame; unlocks the Haven Champion vehicle shop |
@@ -99,7 +105,7 @@ while Watched by the Haven. They remove Infamy instead of adding Fame.
 | 14 | Clear the Airfield | Trusted | | Clear an airfield so the Last Helicopter can land there | Fame; the Last Helicopter runs more often |
 | 15 | Raid the Red Hand ✅ | Trusted, not Trusted by the Red Hand | 🔒 not Ex-Con/Raider unless Champion with Bastion | Assault a Red Hand camp | Big Fame (big Red Hand Infamy) |
 | 16 | Hunt the Deserter | Trusted | | Track down a deserter who stole supplies. Bring him back or kill him | Fame; capture = more Fame |
-| 17 | Requisition ✅ | Trusted | 🔒 not Elder | "Collect" supplies from a Haven safehouse | Fame (Haven Infamy); a nasty choice |
+| 17 | Requisition ✅ | Trusted | 🔒 not Elder | "Collect" supplies from a Haven safehouse | Fame (Haven Infamy); a nasty choice. Taken to Bastion, the safehouse loses 4 food |
 | 18 | Secure the Shipment | Champion | | Escort a Halcyon sample shipment and deliver it to Bastion | **Choice:** Bastion Fame (Halcyon Infamy) or let it reach the lab |
 | 19 | Blow the Bridge | Champion | ★ Mechanic/Soldier: needs fewer charges | Plant charges to stop a horde migrating toward a safe town | Fame; the horde is diverted |
 | 20 | Fire Mission | Champion | | Mark three hordes with smoke for artillery | Fame; unlocks the Fire Mission perk |
@@ -277,18 +283,47 @@ Simplifications in code:
 - **The smuggler** is scenery: reaching him hands over the package. The first player to reach
   him gets it, hired or not.
 
+## Haven house contracts: 3 contracts, plus the Courier's job
+
+Morally grey work around the Haven's safehouses and their rules ([WORLD.md](WORLD.md),
+"House rules and the dark side"). Nobody in them is a villain. Each is a normal contract
+(requirements, ★, Fame and Favor as above) and works on any map: they need at least one
+safehouse. Walk Him Out and The Ledger need the puzzle civilian (or the generic puzzle object);
+A Quiet Arrangement and the Courier's job need the mission item and a drop point. Code:
+`Scripts/Game/ReforgerZ/Missions/Haven/RZ_HavenHouseMissions.c`.
+
+| # | Contract | From | Needs | Bg | What you do | Result |
+|---|---|---|---|---|---|---|
+| 1 | Walk Him Out ✅ | Haven | Known, dusk | ★ Nurse: can read how far the bite has gone; ★ Nurse/Elder: more Fame | A bitten Haven member told the council himself. At dusk he waits at the edge of his safehouse's town (he's no longer counted in its population). Reach him and choose: **end it here** or **let him walk on** | End it: Fame. Walk on: 60% Fame, and the town's infection +5. Nobody comes within 40 min: he turns there |
+| 2 | The Ledger ✅ | Haven | Known | ★ Elder: more Fame | A safehouse council wants a member who's been taking extra from the stores "reminded". They're in another town, with a reason. Choose: **threaten** them, **pay their debt** (20 of your Haven Favor), or **tell them to disappear** | Threaten: Fame; they remember it (wronged). Pay: Fame; they remember (helped). Warn off: no pay, +3 Haven Infamy; they remember you saved them. Uses a real Haven wanderer (Trader, Scavenger or Courier) when one is free |
+| 3 | A Quiet Arrangement ✅ | Red Hand | Known | ★ Ex-Con: lookouts spot you at 25 m instead of 35 m | A safehouse keeper pays the Red Hand to be left alone and can't be seen carrying it. Take the envelope from the safehouse to a Red Hand drop 0.8–2.5 km away without being seen by the two Haven lookouts on the way or a Haven wanderer | Small Red Hand Fame, Favor. Seen: +12 Haven Infamy on delivery. Never delivered: the Red Hand collects in person (the safehouse loses 2 people) |
+| – | Letters (the Courier's job) ✅ | Haven, via the Courier wanderer | Any, one at a time | | Ask a Courier for work: carry a bundle of letters to a safehouse (or a quiet town) 0.8–4 km away. No fighting needed | Small Haven Fame, Favor. Only the player who asked (and anyone with them at the drop) is paid |
+
+Simplifications in code:
+
+- **Walk Him Out**: he waits at the edge rather than walking there with you (a prop can't
+  walk), and "dusk" means the offer only appears between 16:30 and 21:00 game time (any time
+  if the clock can't be read).
+- **The Ledger**: the member is a separate figure; when a real wanderer plays the part, that
+  wanderer is kept off the roads until the contract ends, then walks on from there.
+- **A Quiet Arrangement**: the lookouts are mission props, not wanderers. Being seen right
+  at the safehouse doesn't count (the keeper handed it over in private).
+
+The **bitten wanderer** (a wanderer bitten on the road, saved by an antidote) is part of the
+wanderer simulation, not a mission: see [WORLD.md](WORLD.md), "Wanderers".
+
 ## Character-type summary
 
 Every background has contracts it shines at, and at least one it's shut out of.
 
 | Background | Shines at | Shut out of |
 |---|---|---|
-| Nurse | Medicine Run, Bitten Friend, Cold Chain, Pilot rescue | — |
+| Nurse | Medicine Run, Bitten Friend, Cold Chain, Pilot rescue, Walk Him Out | — |
 | Mechanic | Fuel, Clear the Road, Recover the Bus, Car Theft, Convoy repairs | — |
 | Hunter | Harvest Guard, Rescue the Kids, Smuggler's Run, Hunt the Screamer | — |
 | Police | Checkpoint Duty, Curfew Patrol, Loot the Armory, Double Agent | The Informant |
-| Ex-Con | Dead Drop, Fence, Bust Out | Raid the Red Hand (until Champion with Bastion) |
+| Ex-Con | Dead Drop, Fence, Bust Out, A Quiet Arrangement | Raid the Red Hand (until Champion with Bastion) |
 | Lab Tech | Field Samples, Water Survey, Patient Zero, Steal the Antidotes | — |
 | Radio Op | Radio Relay, Recon, Restore Comms, Zombie Bait, Install Sensors | — |
 | Unemployed | +50% reputation from everything | — |
-| Elder (unlock) | Haven contracts | Requisition, Protection Racket |
+| Elder (unlock) | Haven contracts, Walk Him Out, The Ledger | Requisition, Protection Racket |
