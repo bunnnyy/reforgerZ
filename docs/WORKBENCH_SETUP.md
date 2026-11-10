@@ -1,8 +1,9 @@
 # Workbench setup
 
 How to turn the scripts in this repo into a playable mod. The scripts are plain Enforce
-Script; prefabs, configs and the `.gproj` are made in Workbench, because they need GUIDs that
-Workbench generates. **Nothing has been compiled yet.** Expect to fix the `VERIFY` list first.
+Script; prefabs and configs are made in Workbench, because they need GUIDs that Workbench
+generates. The repo ships its own `addon.gproj` (mod ID `A88C8A4C8C74454A`, picked at random;
+change it before the first Workshop upload if you like). **Nothing has been compiled yet.** Expect to fix the `VERIFY` list first.
 
 Everything you must create or configure is listed once, in the **prefab manifest**
 (`Configs/ReforgerZ/PrefabManifest.json`). The Workbench plugin **ReforgerZ: Create prefabs**
@@ -30,13 +31,11 @@ Run **ReforgerZ: Create prefabs** (or follow the manual checklist). First:
 
 1. Subscribe to the dependencies in the game ([MOD_STACK.md](MOD_STACK.md)): at minimum
    **Bacon Zombies**; Metabolism and Special Zombies are recommended.
-2. Arma Reforger Tools → **Create new project** named `ReforgerZ`.
-3. Put this repo's contents in the project's folder, so `Scripts/` sits next to `addon.gproj`
-   (or clone the repo there first and point the new project at that folder).
-4. Project Settings → Dependencies: add Arma Reforger, Bacon Zombies and whatever else you use.
-5. Open the Script Editor and compile (**F7**). Fix errors using [the VERIFY list](#6-the-verify-list).
-   Commit `addon.gproj` once it exists.
-6. Make a world as a **sub-scene of Arland** and open it in the World Editor
+2. Arma Reforger Tools → **Add existing project** → pick this repo's `addon.gproj`.
+3. Project Settings → Dependencies: Arma Reforger is already there; add Bacon Zombies and
+   whatever else you use. Commit the changed `addon.gproj`.
+4. Open the Script Editor and compile (**F7**). Fix errors using [the VERIFY list](#6-the-verify-list).
+5. Make a world as a **sub-scene of Arland** and open it in the World Editor
    ([world steps](#the-world)).
 
 Look up classes in the Script Editor or the
