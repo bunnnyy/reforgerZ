@@ -267,9 +267,9 @@ Low-level work for new characters, unarmed backgrounds (Nurse, Lab Tech, Unemplo
 who'd rather not shoot ([WORLD.md](WORLD.md), section 2). All are open to anyone not Hunted by
 the giver, pay small Fame, and are built on **noise** and **being noticed**:
 
-- **Noise that leads:** any loud noise (a thrown bottle, a firecracker, an alarm clock, a burst
-  of fire: 5+ heat at once) within range of infected a mission controls makes them walk to it.
-  They stay about 90 s, then drift back.
+- **Noise that leads:** any loud noise (a thrown bottle, a firecracker, an alarm clock, or
+  anything else that makes 8+ heat at once; single shots and engines don't) within range of
+  infected a mission controls makes them walk to it. They stay about 90 s, then drift back.
 - **Being noticed:** the same check as the puzzles: heat where you stand over a threshold, or one
   of them within 10–12 m of you for 6–8 s. Missions that are about making noise only use the
   second part.

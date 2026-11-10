@@ -18,7 +18,7 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 	protected float m_fCheck;
 	protected float m_fSinceLure = 1000;
 	protected bool m_bHeadingHome;
-	protected bool m_bStarted;
+	protected vector m_vLure;
 
 	protected static const float CHECK_INTERVAL = 5;
 	protected static const float LURE_RANGE = 200;
@@ -126,7 +126,11 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 		vector noise;
 		if (gm.GetHeat().FindRecentNoise(at, LURE_RANGE, RZ_UnarmedHelper.LURE_AGE, noise))
 		{
-			RZ_UnarmedHelper.SteerUnits(gm, m_aHorde, noise, m_aWaypoints);
+			// The same noise heard again: they're already on their way
+			if (m_bHeadingHome || RZ_Util.DistXZ(noise, m_vLure) > 20)
+				RZ_UnarmedHelper.SteerUnits(gm, m_aHorde, noise, m_aWaypoints);
+
+			m_vLure = noise;
 			m_fSinceLure = 0;
 			m_bHeadingHome = false;
 			return;

@@ -265,3 +265,5 @@ Every system finds its locations from `RZ_Settlement`, so for a new map:
    `RZ_SafehouseMarkerEntity` entities (placing any turns the automatic picking off).
 7. Check the logged territory (holdings per faction). To fix an outpost in place, put an
    `RZ_OutpostMarkerEntity` there.
+8. Check the logged power station and radio station. To choose them, place an
+   `RZ_PowerStationMarkerEntity` and an `RZ_RadioStationMarkerEntity`.

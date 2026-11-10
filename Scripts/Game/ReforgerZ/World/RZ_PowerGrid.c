@@ -100,6 +100,17 @@ class RZ_PowerStationMarkerEntity : GenericEntity
 }
 
 //------------------------------------------------------------------------------------------------
+//! The power station's steps (the same values as RZ_PowerGrid.STEP_*), for switch statements.
+enum RZ_EPowerStep
+{
+	DARK,
+	OPEN,
+	SPINNING,
+	READY,
+	POWERED
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_PowerGrid
 {
 	static const int TAG = -7;				// RZ_PuzzleObjectComponent / RZ_ClueComponent mission id
@@ -515,11 +526,11 @@ class RZ_PowerGrid
 	{
 		switch (m_iStep)
 		{
-			case STEP_DARK: return "Force the control room door";
-			case STEP_OPEN: return "Reset the breakers and start the generator";
-			case STEP_SPINNING: return "";
-			case STEP_READY: return "Throw the main switch";
-			case STEP_POWERED: return "|Refuel and grease the generator";
+			case RZ_EPowerStep.DARK: return "Force the control room door";
+			case RZ_EPowerStep.OPEN: return "Reset the breakers and start the generator";
+			case RZ_EPowerStep.SPINNING: return "";
+			case RZ_EPowerStep.READY: return "Throw the main switch";
+			case RZ_EPowerStep.POWERED: return "|Refuel and grease the generator";
 		}
 
 		return "";
@@ -537,11 +548,11 @@ class RZ_PowerGrid
 	{
 		switch (m_iStep)
 		{
-			case STEP_DARK: return "dark, locked up";
-			case STEP_OPEN: return "dark, control room open";
-			case STEP_SPINNING: return "spinning up";
-			case STEP_READY: return "ready to switch on";
-			case STEP_POWERED: return string.Format("running (%1 percent)", RZ_Util.RoundToInt(m_fCondition * 100));
+			case RZ_EPowerStep.DARK: return "dark, locked up";
+			case RZ_EPowerStep.OPEN: return "dark, control room open";
+			case RZ_EPowerStep.SPINNING: return "spinning up";
+			case RZ_EPowerStep.READY: return "ready to switch on";
+			case RZ_EPowerStep.POWERED: return string.Format("running (%1 percent)", RZ_Util.RoundToInt(m_fCondition * 100));
 		}
 
 		return "";
@@ -554,11 +565,11 @@ class RZ_PowerGrid
 		string text;
 		switch (m_iStep)
 		{
-			case STEP_DARK: text = "A steel door with a padlock and a sign: DANGER - HIGH VOLTAGE. Through the louvres you can see a diesel generator and a wall of breakers. It looks like it could run, if someone made the noise to start it."; break;
-			case STEP_OPEN: text = "Breakers all tripped. The generator has fuel in it. Starting it will be loud, and someone has to stay with it until it settles."; break;
-			case STEP_SPINNING: text = string.Format("The generator is coming up to speed: about %1 seconds. Stay close.", RZ_Util.RoundToInt(m_fSpinLeft)); break;
-			case STEP_READY: text = "Every needle in the green. The main switch is waiting."; break;
-			case STEP_POWERED: text = string.Format("Running. The service gauge reads %1 percent. Powering %2.", RZ_Util.RoundToInt(m_fCondition * 100), RegionNames()); break;
+			case RZ_EPowerStep.DARK: text = "A steel door with a padlock and a sign: DANGER - HIGH VOLTAGE. Through the louvres you can see a diesel generator and a wall of breakers. It looks like it could run, if someone made the noise to start it."; break;
+			case RZ_EPowerStep.OPEN: text = "Breakers all tripped. The generator has fuel in it. Starting it will be loud, and someone has to stay with it until it settles."; break;
+			case RZ_EPowerStep.SPINNING: text = string.Format("The generator is coming up to speed: about %1 seconds. Stay close.", RZ_Util.RoundToInt(m_fSpinLeft)); break;
+			case RZ_EPowerStep.READY: text = "Every needle in the green. The main switch is waiting."; break;
+			case RZ_EPowerStep.POWERED: text = string.Format("Running. The service gauge reads %1 percent. Powering %2.", RZ_Util.RoundToInt(m_fCondition * 100), RegionNames()); break;
 		}
 
 		m_GM.NotifyPlayer(playerId, "Power station", text);

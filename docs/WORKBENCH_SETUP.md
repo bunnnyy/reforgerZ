@@ -322,7 +322,7 @@ the mission item, the Haven drop point, the puzzle note, civilian and generic ob
 zombie **Move waypoint**; each is off while what it needs is missing. They look for real
 buildings by prefab name: "pharmacy", "hospital", "clinic" or "medical" for the pharmacy (else
 near the town centre), wells and water towers for the Water Run, schools, stations, banks and
-churches for the Rooftop Rescue. A noise only leads infected if it's 5 heat or more at once, so
+churches for the Rooftop Rescue. A noise only leads infected if it's 8 heat or more at once, so
 keep the noisemakers' heat at 10 or more.
 
 ### The Perimeter
@@ -624,9 +624,12 @@ points, towns or lab are needed, because they're generated at start. Check the l
 [ReforgerZ] Settlement scan: N named, M building clusters, took X ms.
 [ReforgerZ] Perimeter: x A to B, z C to D. Warning zone 300 m, kill zone 100 m.
 [ReforgerZ] Perimeter: N road checkpoints (from roads).
+[ReforgerZ] Power grid: the power station outside Morton at grid 047-112 (picked), 3 towns in its region, dark, locked up.
+[ReforgerZ] Radio station: the radio mast near Levie at grid 052-118 (picked).
 [ReforgerZ] Haven safehouses: N (picked).
 [ReforgerZ] Wanderers: N on the roads (new roster, seed S).
 [ReforgerZ] Faction leaders: N (new, seed S). Haven 2, Bastion 2, Red Hand 2, Halcyon 2
+[ReforgerZ] Story arcs: on, running none.
 [ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
 [ReforgerZ] Started. N settlements, stage Early Outbreak, cure 0 percent ...
 ```

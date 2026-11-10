@@ -156,6 +156,18 @@ class RZ_StoryArc
 }
 
 //------------------------------------------------------------------------------------------------
+//! The arcs (the same values as RZ_StoryArcs.ARC_*), for switch statements.
+enum RZ_EArc
+{
+	COURIER,
+	CONVOY,
+	FLOCK,
+	MAP,
+	FEVER,
+	CONGREGATION
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_StoryArcs
 {
 	static const int ARC_COURIER = 0;		// The Missing Courier
@@ -197,12 +209,12 @@ class RZ_StoryArcs
 	{
 		switch (kind)
 		{
-			case ARC_COURIER: return "The Missing Courier";
-			case ARC_CONVOY: return "The Last Convoy";
-			case ARC_FLOCK: return "The Preacher's Flock";
-			case ARC_MAP: return "The Deserter's Map";
-			case ARC_FEVER: return "Fever Town";
-			case ARC_CONGREGATION: return "The Quiet Congregation";
+			case RZ_EArc.COURIER: return "The Missing Courier";
+			case RZ_EArc.CONVOY: return "The Last Convoy";
+			case RZ_EArc.FLOCK: return "The Preacher's Flock";
+			case RZ_EArc.MAP: return "The Deserter's Map";
+			case RZ_EArc.FEVER: return "Fever Town";
+			case RZ_EArc.CONGREGATION: return "The Quiet Congregation";
 		}
 
 		return "";
@@ -241,9 +253,9 @@ class RZ_StoryArcs
 
 		switch (m_Arc.m_iKind)
 		{
-			case ARC_COURIER: return m_Arc.m_iStep == 0 || m_Arc.m_iStep == 3;
-			case ARC_MAP: return true;
-			case ARC_FEVER: return m_Arc.m_iStep >= 1;
+			case RZ_EArc.COURIER: return m_Arc.m_iStep == 0 || m_Arc.m_iStep == 3;
+			case RZ_EArc.MAP: return true;
+			case RZ_EArc.FEVER: return m_Arc.m_iStep >= 1;
 		}
 
 		return false;
@@ -384,12 +396,12 @@ class RZ_StoryArcs
 		bool ok = false;
 		switch (kind)
 		{
-			case ARC_COURIER: ok = StartCourier(); break;
-			case ARC_CONVOY: ok = StartConvoy(); break;
-			case ARC_FLOCK: ok = StartFlock(); break;
-			case ARC_MAP: ok = StartMap(); break;
-			case ARC_FEVER: ok = StartFever(); break;
-			case ARC_CONGREGATION: ok = StartCongregation(); break;
+			case RZ_EArc.COURIER: ok = StartCourier(); break;
+			case RZ_EArc.CONVOY: ok = StartConvoy(); break;
+			case RZ_EArc.FLOCK: ok = StartFlock(); break;
+			case RZ_EArc.MAP: ok = StartMap(); break;
+			case RZ_EArc.FEVER: ok = StartFever(); break;
+			case RZ_EArc.CONGREGATION: ok = StartCongregation(); break;
 		}
 
 		if (!ok)
@@ -469,12 +481,12 @@ class RZ_StoryArcs
 	{
 		switch (m_Arc.m_iKind)
 		{
-			case ARC_COURIER: TickCourier(); break;
-			case ARC_CONVOY: TickConvoy(); break;
-			case ARC_FLOCK: TickFlock(players); break;
-			case ARC_MAP: TickMap(); break;
-			case ARC_FEVER: TickFever(dt, players); break;
-			case ARC_CONGREGATION: TickCongregation(); break;
+			case RZ_EArc.COURIER: TickCourier(); break;
+			case RZ_EArc.CONVOY: TickConvoy(); break;
+			case RZ_EArc.FLOCK: TickFlock(players); break;
+			case RZ_EArc.MAP: TickMap(); break;
+			case RZ_EArc.FEVER: TickFever(dt, players); break;
+			case RZ_EArc.CONGREGATION: TickCongregation(); break;
 		}
 	}
 
@@ -545,17 +557,17 @@ class RZ_StoryArcs
 
 		switch (m_Arc.m_iKind)
 		{
-			case ARC_COURIER:
+			case RZ_EArc.COURIER:
 			{
 				if (m_Arc.m_iStep >= 2)
 					return string.Format("\"The Red Hand camp near %1 has antidotes for sale. In Halcyon cases. Make of that what you like.\"", m_Arc.S(1));
 
 				break;
 			}
-			case ARC_CONVOY: return string.Format("\"Bastion's pulling %1 back. Big convoy. Every Red Hand lookout from here to the coast is watching that road.\"", m_Arc.S(0));
-			case ARC_FLOCK: return string.Format("\"%1 rings the bells in every town now. And they follow him. Hundreds.\"", m_Arc.S(0));
-			case ARC_FEVER: return string.Format("\"Half the safehouse in %1 is running a fever. Somebody says the Red Hand put something in the well.\"", m_Arc.S(0));
-			case ARC_CONGREGATION:
+			case RZ_EArc.CONVOY: return string.Format("\"Bastion's pulling %1 back. Big convoy. Every Red Hand lookout from here to the coast is watching that road.\"", m_Arc.S(0));
+			case RZ_EArc.FLOCK: return string.Format("\"%1 rings the bells in every town now. And they follow him. Hundreds.\"", m_Arc.S(0));
+			case RZ_EArc.FEVER: return string.Format("\"Half the safehouse in %1 is running a fever. Somebody says the Red Hand put something in the well.\"", m_Arc.S(0));
+			case RZ_EArc.CONGREGATION:
 			{
 				if (m_Arc.m_iStep >= 1)
 					return string.Format("\"The safehouse in %1 has gone strange. They pray with the Preacher, eat half portions and 'borrow' from the other houses. Nobody says no to them.\"", m_Arc.S(0));

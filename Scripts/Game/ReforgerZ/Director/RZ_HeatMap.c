@@ -13,7 +13,7 @@ class RZ_HeatMap
 	protected float m_fEnvSpread;		// night: this share also reaches the four neighbouring squares
 
 	protected static const int GRID_STRIDE = 100000;
-	protected static const float NOISE_EVENT_MIN = 5;	// heat this big at once counts as a noise (bottle, alarm, shot burst)
+	protected static const float NOISE_EVENT_MIN = 8;	// heat this big at once counts as a noise (bottle, firecracker, alarm clock)
 	protected static const int NOISE_EVENTS_KEPT = 16;
 
 	// Recent loud noises, so a mission can make infected turn toward one (unarmed missions)
@@ -58,14 +58,15 @@ class RZ_HeatMap
 	//------------------------------------------------------------------------------------------------
 	void AddHeat(vector pos, float amount)
 	{
+		// A noise leads infected however much the weather muffles the heat it leaves
+		if (amount >= NOISE_EVENT_MIN)
+			RecordNoise(pos, amount);
+
 		if (amount > 0)
 			amount = amount * m_fAddMult * m_fEnvAddMult;
 
 		int key = Key(pos);
 		AddToCell(key, amount);
-
-		if (amount >= NOISE_EVENT_MIN)
-			RecordNoise(pos, amount);
 
 		if (amount <= 0 || m_fEnvSpread <= 0)
 			return;
