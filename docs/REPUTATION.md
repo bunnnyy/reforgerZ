@@ -185,7 +185,7 @@ Who the Haven are, and why they keep these rules, is in [LORE.md](LORE.md), "The
 | Rule | What happens |
 |---|---|
 | Firing within 50 m of a safehouse | +3 Haven Infamy (at most once every 20 s), unless an infected is within 40 m of the safehouse: then you're defending it. Drawing a weapon is fine |
-| Declaring a bite at a safehouse | At any safehouse, once per life: the infection's time left ×1.15 (Shelter), ×1.25 (Community), ×1.4 (Settlement, a medic), ×1.5 (Town). A fresh bite is cleaned instead (90% it never takes). Either way you can't be caught |
+| Declaring a bite at a safehouse | At any safehouse, once per life: the infection's time left ×1.15 (Shelter), ×1.25 (Community), ×1.4 (Settlement, a medic), ×1.5 (Town). A fresh bite is cleaned instead (90% it never takes). Either way you can't be caught hiding that bite; a later bite in the same life can be declared too, but isn't slowed again. A bite that's been cleaned already uses nothing: come back if it takes |
 | Hiding a bite | Inside a safehouse without having declared it, once it shows: 15% a minute in Weakness, 30% in the Final stage, once per life, +15 Haven Infamy. A fresh bite, the Fever stage and a fever suppressant don't show |
 | Shooting at, robbing or killing a wanderer | +4 (shot at, once per wanderer), +8 (robbed), +15 (killed) Haven Infamy; they remember you |
 | Hunted by the Haven (**exile**) | Safehouse services and the Haven quartermaster refuse you ("the door stays shut"); Haven wanderers refuse you and warn other players near you. The guards shoot an exile only while they carry a firearm within 100 m of a safehouse (with a minute's grace after spawning at one); an unarmed exile just finds the door shut |

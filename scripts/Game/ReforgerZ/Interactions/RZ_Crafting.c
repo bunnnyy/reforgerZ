@@ -144,7 +144,7 @@ class RZ_Crafting
 		RZ_ItemHelper.Words(m_Settings.m_sWorkbenchWords, m_aBenchWords);
 		m_aList.Clear();
 		AddBuiltIn("Improvised bandage", m_Settings.m_sClothWords, 1, "", 0, "", 0, m_Settings.m_sBandagePrefab, 6, 1);
-		AddBuiltIn("Molotov", m_Settings.m_sBottleWords, 1, m_Settings.m_sFuelWords, 1, m_Settings.m_sClothWords, 1, m_Settings.m_sMolotovPrefab, 10, 1);
+		AddBuiltIn("Molotov", m_Settings.m_sBottleWords, 1, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, 1, m_Settings.m_sClothWords, 1, m_Settings.m_sMolotovPrefab, 10, 1);
 		AddBuiltIn("Tin rattle (noisemaker)", m_Settings.m_sTinWords, 2, m_Settings.m_sWireWords, 1, "", 0, m_Settings.m_sNoisemakerPrefab, 6, 1);
 		AddBuiltIn("Spear", m_Settings.m_sBladeWords, 1, m_Settings.m_sPlankWords, 1, m_Settings.m_sWireWords, 1, m_Settings.m_sSpearPrefab, 12, 2);
 		AddBuiltIn("Tin-can tripwire", m_Settings.m_sTinWords, 2, m_Settings.m_sWireWords, 1, "", 0, m_Settings.m_sTripwirePrefab, 8, 1);

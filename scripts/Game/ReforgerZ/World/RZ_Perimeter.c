@@ -265,7 +265,8 @@ class RZ_Perimeter
 		if (landMaxX < landMinX)
 			return; // no land at all: keep the world box
 
-		float margin = Math.Max(0, m_Settings.m_fSeaMargin);
+		// Land can reach up to one step past the outermost sample: add it, so the margin is at least the setting
+		float margin = Math.Max(0, m_Settings.m_fSeaMargin) + step;
 		SetBounds(Math.Max(m_fMinX, landMinX - margin), Math.Max(m_fMinZ, landMinZ - margin),
 			Math.Min(m_fMaxX, landMaxX + margin), Math.Min(m_fMaxZ, landMaxZ + margin));
 	}

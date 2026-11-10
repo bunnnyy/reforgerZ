@@ -205,16 +205,16 @@ class RZ_MolotovComponentClass : ScriptComponentClass
 {
 }
 
-//! Put this on a throwable item (e.g. based on a vanilla grenade without the explosion). Like a
-//! thrown noisemaker, the server sees it was carried and then lies away from the thrower.
+//! Put this on a throwable item (e.g. based on a vanilla grenade without the explosion). It only
+//! ignites after a real throw: the carrier's "OnGrenadeThrown" event names this bottle. Dropped
+//! from the inventory it's just a bottle.
 class RZ_MolotovComponent : ScriptComponent
 {
-	protected bool m_bWasCarried;
-	protected vector m_vCarrierPos;
+	protected IEntity m_Carrier;	// the character whose throws we listen to (server)
+	protected bool m_bThrown;
 	protected int m_iThrower = -1;
 
 	protected static ref array<RZ_MolotovComponent> s_aAll;
-	protected static const float THROW_MIN_DISTANCE = 4;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -232,7 +232,46 @@ class RZ_MolotovComponent : ScriptComponent
 		if (s_aAll)
 			s_aAll.RemoveItem(this);
 
+		Listen(null);
 		super.OnDelete(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Listen to this character's throws instead of the last carrier's (null: stop).
+	protected void Listen(IEntity carrier)
+	{
+		if (carrier == m_Carrier)
+			return;
+
+		if (m_Carrier)
+		{
+			EventHandlerManagerComponent old = EventHandlerManagerComponent.Cast(m_Carrier.FindComponent(EventHandlerManagerComponent));
+			if (old)
+				old.RemoveScriptHandler("OnGrenadeThrown", this, OnThrown);
+		}
+
+		m_Carrier = carrier;
+		m_bThrown = false;
+		if (!carrier)
+			return;
+
+		EventHandlerManagerComponent ev = EventHandlerManagerComponent.Cast(carrier.FindComponent(EventHandlerManagerComponent));
+		if (ev)
+			ev.RegisterScriptHandler("OnGrenadeThrown", this, OnThrown); // VERIFY: the character's OnGrenadeThrown fires on the server for a thrown molotov, with the bottle as the entity or the weapon's owner
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnThrown(int playerID, BaseWeaponComponent weapon, IEntity entity)
+	{
+		IEntity owner = GetOwner();
+		if (!owner)
+			return;
+
+		if (entity == owner || (weapon && weapon.GetOwner() == owner))
+		{
+			m_bThrown = true;
+			m_iThrower = playerID;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -245,17 +284,11 @@ class RZ_MolotovComponent : ScriptComponent
 		IEntity root = owner.GetRootParent(); // carried items are children of the character (as for noisemakers)
 		if (root && root != owner)
 		{
-			m_bWasCarried = true;
-			m_vCarrierPos = root.GetOrigin();
-			m_iThrower = RZ_Util.GetCarrierPlayerId(owner);
+			Listen(root);
 			return;
 		}
 
-		if (!m_bWasCarried)
-			return;
-
-		m_bWasCarried = false;
-		if (RZ_Util.DistXZ(owner.GetOrigin(), m_vCarrierPos) < THROW_MIN_DISTANCE)
+		if (!m_bThrown)
 			return;
 
 		RZ_Interactions hub = RZ_Interactions.Get();
@@ -757,7 +790,7 @@ class RZ_Traps
 	//------------------------------------------------------------------------------------------------
 	protected void Refuel(int playerId, RZ_Generator g, IEntity user)
 	{
-		if (RZ_ItemHelper.Take(user, m_Settings.m_sFuelWords, 1) <= 0)
+		if (RZ_ItemHelper.Take(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, 1) <= 0)
 		{
 			m_GM.NotifyPlayer(playerId, "Generator", "You've no fuel for it. A jerrycan, from a garage or a wreck.");
 			return;
@@ -954,7 +987,7 @@ class RZ_Traps
 			return;
 		}
 
-		if (!RZ_ItemHelper.Has(user, m_Settings.m_sMolotovWords) && !RZ_ItemHelper.Has(user, m_Settings.m_sFuelWords))
+		if (!RZ_ItemHelper.Has(user, m_Settings.m_sMolotovWords) && !RZ_ItemHelper.Has(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY))
 		{
 			m_GM.NotifyPlayer(playerId, title, "You'd need fuel or a molotov to set it going.");
 			return;
@@ -970,7 +1003,7 @@ class RZ_Traps
 		if (!s)
 			return;
 
-		if (RZ_ItemHelper.Take(user, m_Settings.m_sMolotovWords, 1) <= 0 && RZ_ItemHelper.Take(user, m_Settings.m_sFuelWords, 1) <= 0)
+		if (RZ_ItemHelper.Take(user, m_Settings.m_sMolotovWords, 1) <= 0 && RZ_ItemHelper.Take(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, 1) <= 0)
 			return;
 
 		Burn(s.m_vBuilding, playerId);

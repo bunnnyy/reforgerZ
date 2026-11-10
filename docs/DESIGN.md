@@ -175,9 +175,11 @@ stop it, once per bite:
 | Another player's **Treat their wounds** | 90% |
 | Declaring the bite at a safehouse | 90% |
 
-The "Clean the bite" spot (an interaction spot) follows the bitten player's feet; anyone can use
-it with their own supplies. Nobody is told whether it worked until the window closes: a minute
-later "it didn't take", or the infection starts.
+The "Clean the bite" spot (an interaction spot) follows the bitten player's feet and is never
+refused by the spot cap; anyone can use it with their own supplies, and the bitten player has to
+stay next to them until it's done. Nobody is told whether it worked until the window closes: then
+"it didn't take", or the infection starts. Until then the HUD still shows the window, and meds,
+an antidote and a safehouse answer the same either way (an antidote used then is spent).
 
 ### Infection stages
 
@@ -207,7 +209,7 @@ and odds**; the world-level breakthroughs (spread, timers, the final stand) are 
 | **Antidote** | Halcyon's quartermaster (Trusted), from the lab's stock; the Red Hand's stolen doses; very rare finds | Cures |
 | **Trial dose** | Halcyon's quartermaster, "Volunteer for the trial dose": anyone bitten, free, once per life | Cures 80% of the time; otherwise the time left is halved. +3 Halcyon Fame either way. Refused to people Halcyon hunts |
 | **Stabiliser** | Halcyon's quartermaster (Known), from a small stock; rare in pharmacies and hospitals | Pauses the infection for 20 minutes, once per life |
-| **Declaring the bite** | Any safehouse | Once per life: time left ×1.15 (Shelter), ×1.25 (Community), ×1.4 (Settlement), ×1.5 (Town). A fresh bite is cleaned instead |
+| **Declaring the bite** | Any safehouse | Once per life: time left ×1.15 (Shelter), ×1.25 (Community), ×1.4 (Settlement), ×1.5 (Town). A fresh bite is cleaned instead; one cleaned already uses nothing ([details](REPUTATION.md)) |
 | Doctor wanderer, Nurse or Doctor player | On the roads; "Treat their wounds" | ×1.25 / ×1.15 of the time left, once per life each |
 
 **Supply by research:**
@@ -228,6 +230,10 @@ Players Known with Halcyon hear when a dose is ready.
 Buy time, never a cure (except a lucky cut dose). **Each works once per life**, and between them
 they add **30 minutes at most** (a stabiliser doesn't count). Used like the antidote: drop it and
 "Take" it, or from the inventory as a consumable. Each has a guidance tip on first use.
+
+From the inventory, the antidote and the meds only work on yourself, and only while your HUD shows
+a bite (meds: once it has taken), so a healthy player can't use one up. The server still refuses a
+med already taken this life; from the inventory that dose is lost (from the ground it isn't).
 
 | Med | Where | Does | Side effect (10 min) |
 |---|---|---|---|
@@ -267,7 +273,8 @@ whatever the prefabs are; the code doesn't change speed or armour itself.
 Code: `World/RZ_Perimeter.c`, `World/RZ_CheckpointMarkerEntity.c`. The story is in [LORE.md](LORE.md), "The Perimeter".
 
 The edge of the playable world is the quarantine line, on any map. It's worked out from the
-world's bounds, pulled in to the outermost dry land plus a 200 m sea margin, so nothing is
+world's bounds, pulled in to the outermost dry land plus a 200 m sea margin (plus one step of the
+coarse land sampling, so the real margin is never less), so nothing is
 placed by hand. **Nothing is built along the edge** except the road checkpoints.
 
 - **Warning zone** (300 m from the edge): a drone appears above *you* and follows you, and a
@@ -595,8 +602,10 @@ settlements above 8). Names come from a seed; roster, positions and memories are
 - **They react to the world** (every 30 s): an overrun, loud or line-side destination is
   dropped; a horde or noise nearby makes them hide; Night of the Dead or a storm makes them
   shelter. Rarely, an infected bites one: players within 1.5 km hear about it, the wanderer
-  heads for a safehouse, and an antidote within 20 minutes saves them. Otherwise they turn,
-  and a special appears if players are near.
+  heads for a safehouse, and an antidote within 20 minutes saves them: a player chooses **Give
+  them your antidote** (it takes the place of the Mechanic's "Ask about cars" while bitten).
+  Nobody's dose is taken without asking. Otherwise they turn, and a special appears if players
+  are near.
 - **They react to you.** Attitude is your Haven standing (Bastion, reversed, for the Deserter)
   plus their **memory of you**: *helped me* (better prices, warnings), *robbed or shot at me*
   (they refuse and run, or shoot if armed), *saved my life* (a one-off gift of Favor).
@@ -711,13 +720,16 @@ town. The congregation's "borrowing" is talk only; its half portions are real.
 
 Code: `World/RZ_TownMemory.c`.
 
-- **Town flags:** Looted, Barricaded, Powered, Burned. Plain saved values per settlement.
+- **Town flags:** Looted, Barricaded, Powered, Burned. Plain values per settlement, saved except
+  Barricaded and Powered.
   - **Looted:** each town has a loot level (0–1). Every search takes a little, and the town
     counts as Looted under 0.5. It never drops under 0.2 and comes back over about 2 hours.
-  - **Barricaded:** while a player's barricade stands in it.
+  - **Barricaded:** while a player's barricade stands in it, or once Fortify the Safehouse has
+    succeeded there. Not kept across a restart (barricades aren't saved).
   - **Powered:** set by the power grid.
   - **Burned:** once half its buildings have burned (a building count guessed by size: 12, 30
-    or 60). Each burned building stops counting after an hour, so towns recover.
+    or 60). Each burned building stops counting an hour after it burned (restored ones, an hour
+    after the restart), so towns recover.
 - **Hooks** for other mods: `GetLootLevel`, `ReportSearched`, `ReportBarricaded`,
   `ReportBuildingBurned`, `ReportBuildingCount` (unused so far).
 - **Journals of the dead.** A life that lasted 10 minutes leaves one line (where, background,
@@ -898,7 +910,9 @@ None of these are saved.
 
 ### Fire
 
-A thrown molotov (25 heat) kills infected within 3 m and burns the building within 10 m; or **Set
+A thrown molotov (25 heat) kills infected within 3 m and burns the building within 10 m. Only a
+real throw counts (the thrower's grenade-throw event names the bottle); one dropped from the
+inventory is just a bottle. Or **Set
 it alight** with a molotov or fuel. That one building burns: 30 heat, an optional fire effect, the
 town's infection −1, and for two hours nothing to search and no spawns within 30 m. Strongholds,
 outposts, safehouses, quartermasters and the lab can't burn (or be locked).
@@ -935,7 +949,9 @@ horde somewhere else. Players within 1.2 km hear it.
   places, samples needed.
 
 *Simplified:* spots stand on the object's origin (door spots just outside the door). Carrying
-the wounded isn't added. Item names are matched by keyword. Fuel cans are full or empty by name.
+the wounded isn't added. Item names are matched by keyword. Fuel cans are full or empty by name:
+nothing with "empty" in its name counts as fuel (cars, generators, fires, the power station, the
+molotov recipe).
 Traps check on the 5 s tick.
 
 ## New-player guidance
@@ -1054,7 +1070,8 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
 - **The final stand** sends one horde every 2.5 minutes, plus one more per 6 players at the lab
   (3 at most), so about five steady players can hold it. Its clock stands still while nobody is
   online; a restart during the stand starts it again from 15 minutes, and players joining are told
-  it's running.
+  it's running. After the breakthrough or a restart, the stand (its clock, its waves and the 90 s
+  "nobody at the lab" rule) only starts once a player reaches the lab.
 - **The lab never falls.** It's Halcyon's stronghold; losing the final stand ruins the batch, not the lab.
   The Red Hand's **Take the Lab** can steal the batch during the stand instead (hold the clean room
   for 90 s): the same result, research back to 90 percent, plus two doses on the black market

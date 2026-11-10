@@ -4545,7 +4545,7 @@
     "m_fNurseMult": "0.4",
     "m_fDoctorMult": "0.3",
     "m_sMedkitWords": "medkit,firstaid,first_aid,ifak",
-    "m_sBandageWords": "bandage,dressing,saline,gauze",
+    "m_sBandageWords": "bandage,dressing,gauze",
     "m_fTreatCooldownMinutes": "5",
     "m_fTreatSlowsInfection": "1.15"
    }

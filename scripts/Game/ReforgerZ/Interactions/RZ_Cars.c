@@ -587,7 +587,7 @@ class RZ_Cars
 	protected int PartsCarried(IEntity user, int mask)
 	{
 		int found = 0;
-		if ((mask & PART_FUEL) != 0 && RZ_ItemHelper.Has(user, m_Settings.m_sFuelWords))
+		if ((mask & PART_FUEL) != 0 && RZ_ItemHelper.Has(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY))
 			found = found | PART_FUEL;
 		if ((mask & PART_BATTERY) != 0 && RZ_ItemHelper.Has(user, m_Settings.m_sBatteryWords))
 			found = found | PART_BATTERY;
@@ -610,7 +610,7 @@ class RZ_Cars
 			return;
 
 		int fitted = 0;
-		if ((mask & PART_FUEL) != 0 && RZ_ItemHelper.Take(user, m_Settings.m_sFuelWords, 1) > 0)
+		if ((mask & PART_FUEL) != 0 && RZ_ItemHelper.Take(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, 1) > 0)
 			fitted = fitted | PART_FUEL;
 		if ((mask & PART_BATTERY) != 0 && RZ_ItemHelper.Take(user, m_Settings.m_sBatteryWords, 1) > 0)
 			fitted = fitted | PART_BATTERY;

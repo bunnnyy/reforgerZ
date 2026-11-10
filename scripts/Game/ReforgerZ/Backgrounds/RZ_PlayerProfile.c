@@ -47,7 +47,8 @@ class RZ_PlayerProfile
 	float m_fLifeSeconds;
 	int m_iLifeSamples;
 	int m_iLifeMissions;
-	bool m_bBiteDeclared;		// told a safehouse about the bite (slowed once, can't be caught)
+	bool m_bBiteDeclared;		// told a safehouse about this bite (can't be caught hiding it; cleared with the bite)
+	bool m_bDeclareSlowed;		// a declared bite was slowed this life (once per life)
 	bool m_bBiteCaught;			// caught hiding a bite in a safehouse
 	bool m_bDoctorTreated;		// a Doctor wanderer already slowed this life's infection
 	bool m_bMedicSlowed;		// a Nurse or Doctor player already slowed this life's infection
@@ -83,6 +84,7 @@ class RZ_PlayerProfile
 		m_iLifeSamples = 0;
 		m_iLifeMissions = 0;
 		m_bBiteDeclared = false;
+		m_bDeclareSlowed = false;
 		m_bBiteCaught = false;
 		m_bDoctorTreated = false;
 		m_bMedicSlowed = false;
@@ -280,6 +282,7 @@ class RZ_PlayerProfile
 		m_bWoundCleaned = false;
 		m_fPauseLeft = 0;
 		m_iInfectionStage = 0;
+		m_bBiteDeclared = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
