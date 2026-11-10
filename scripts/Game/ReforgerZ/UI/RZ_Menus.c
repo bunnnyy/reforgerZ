@@ -82,9 +82,9 @@ class RZ_MenuBase : ChimeraMenuBase // VERIFY: ChimeraMenuBase, GetRootWidget(),
 	{
 		super.OnMenuOpen();
 		m_wRoot = GetRootWidget();
-		RZ_UIW.Listen("MenuBack", OnBack); // VERIFY: the vanilla MenuBack, MenuTabLeft, MenuTabRight action names
-		RZ_UIW.Listen("MenuTabLeft", OnTabLeft);
-		RZ_UIW.Listen("MenuTabRight", OnTabRight);
+		GetGame().GetInputManager().AddActionListener("MenuBack", EActionTrigger.DOWN, OnBack); // VERIFY: the vanilla MenuBack, MenuTabLeft, MenuTabRight action names
+		GetGame().GetInputManager().AddActionListener("MenuTabLeft", EActionTrigger.DOWN, OnTabLeft);
+		GetGame().GetInputManager().AddActionListener("MenuTabRight", EActionTrigger.DOWN, OnTabRight);
 		m_Click = new RZ_MenuClick(this);
 		for (int t = 0; t < 4; t++)
 		{
@@ -129,9 +129,9 @@ class RZ_MenuBase : ChimeraMenuBase // VERIFY: ChimeraMenuBase, GetRootWidget(),
 	//------------------------------------------------------------------------------------------------
 	override void OnMenuClose()
 	{
-		RZ_UIW.Unlisten("MenuBack", OnBack);
-		RZ_UIW.Unlisten("MenuTabLeft", OnTabLeft);
-		RZ_UIW.Unlisten("MenuTabRight", OnTabRight);
+		GetGame().GetInputManager().RemoveActionListener("MenuBack", EActionTrigger.DOWN, OnBack);
+		GetGame().GetInputManager().RemoveActionListener("MenuTabLeft", EActionTrigger.DOWN, OnTabLeft);
+		GetGame().GetInputManager().RemoveActionListener("MenuTabRight", EActionTrigger.DOWN, OnTabRight);
 		super.OnMenuClose();
 	}
 
@@ -366,8 +366,8 @@ class RZ_JournalMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	override protected void OnOpened()
 	{
-		RZ_UIW.Listen("MenuUp", OnUp); // VERIFY: the vanilla MenuUp, MenuDown action names
-		RZ_UIW.Listen("MenuDown", OnDown);
+		GetGame().GetInputManager().AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp); // VERIFY: the vanilla MenuUp, MenuDown action names
+		GetGame().GetInputManager().AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)
 			ui.Ask(RZ_UIFeed.PAYLOAD_JOURNAL);
@@ -376,8 +376,8 @@ class RZ_JournalMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	override void OnMenuClose()
 	{
-		RZ_UIW.Unlisten("MenuUp", OnUp);
-		RZ_UIW.Unlisten("MenuDown", OnDown);
+		GetGame().GetInputManager().RemoveActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
+		GetGame().GetInputManager().RemoveActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		super.OnMenuClose();
 	}
 
@@ -533,7 +533,7 @@ class RZ_RadioLogMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	override protected void OnOpened()
 	{
-		RZ_UIW.Listen("RZ_RadioFilter", OnFilter);
+		GetGame().GetInputManager().AddActionListener("RZ_RadioFilter", EActionTrigger.DOWN, OnFilter);
 		RZ_UIW.OnClick(m_wRoot, "FilterButton", m_Click);
 	}
 
@@ -547,7 +547,7 @@ class RZ_RadioLogMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	override void OnMenuClose()
 	{
-		RZ_UIW.Unlisten("RZ_RadioFilter", OnFilter);
+		GetGame().GetInputManager().RemoveActionListener("RZ_RadioFilter", EActionTrigger.DOWN, OnFilter);
 		super.OnMenuClose();
 	}
 
@@ -646,7 +646,7 @@ class RZ_NoticeBoardMenu : RZ_StandaloneMenu
 	protected static bool s_bOpen;
 
 	//------------------------------------------------------------------------------------------------
-	static bool IsOpen()
+	static bool IsBoardOpen()
 	{
 		return s_bOpen;
 	}

@@ -541,7 +541,7 @@ class RZ_UIFeed
 	{
 		string s = "";
 		if (m_GM.HasLab())
-			s += MapLine("marker_lab", RZ_EFaction.INSTITUTE, m_GM.GetLabPosition(), "Halcyon lab");
+			s += MapEntry("marker_lab", RZ_EFaction.INSTITUTE, m_GM.GetLabPosition(), "Halcyon lab");
 
 		// Safehouses: everyone knows them, except the people the Haven turned out
 		RZ_Safehouses houses = m_GM.GetSafehouses();
@@ -550,7 +550,7 @@ class RZ_UIFeed
 			for (int i = 0; i < houses.Count(); i++)
 			{
 				RZ_Safehouse h = houses.Get(i);
-				s += MapLine("marker_safehouse", RZ_EFaction.SURVIVORS, h.m_vPos, string.Format("Safehouse, %1 (%2)", h.m_sName, RZ_Safehouse.TierName(h.GetTier())));
+				s += MapEntry("marker_safehouse", RZ_EFaction.SURVIVORS, h.m_vPos, string.Format("Safehouse, %1 (%2)", h.m_sName, RZ_Safehouse.TierName(h.GetTier())));
 			}
 		}
 
@@ -564,23 +564,23 @@ class RZ_UIFeed
 			{
 				if (hold.m_bStronghold)
 				{
-					s += MapLine("marker_stronghold", hold.m_eFaction, hold.m_vPos, hold.GetTitle());
+					s += MapEntry("marker_stronghold", hold.m_eFaction, hold.m_vPos, hold.GetTitle());
 					continue;
 				}
 
 				bool known = RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, hold.m_eFaction), RZ_ETier.KNOWN);
 				if (known || (seen && seen.Contains(hold.m_iId)))
-					s += MapLine("marker_outpost", hold.m_eFaction, hold.m_vPos, hold.GetTitle());
+					s += MapEntry("marker_outpost", hold.m_eFaction, hold.m_vPos, hold.GetTitle());
 			}
 		}
 
 		RZ_PowerGrid grid = m_GM.GetPowerGrid();
 		if (grid && grid.IsActive())
-			s += MapLine("marker_power", -1, grid.GetPosition(), grid.GetName());
+			s += MapEntry("marker_power", -1, grid.GetPosition(), grid.GetName());
 
 		RZ_RadioStation radio = m_GM.GetRadioStation();
 		if (radio && radio.IsActive())
-			s += MapLine("marker_radio", -1, radio.GetPosition(), radio.GetName());
+			s += MapEntry("marker_radio", -1, radio.GetPosition(), radio.GetName());
 
 		RZ_Perimeter perimeter = m_GM.GetPerimeter();
 		if (perimeter)
@@ -589,7 +589,7 @@ class RZ_UIFeed
 			perimeter.GetCheckpoints(checkpoints);
 			foreach (vector cp : checkpoints)
 			{
-				s += MapLine("marker_checkpoint", -1, cp, "Sealed checkpoint");
+				s += MapEntry("marker_checkpoint", -1, cp, "Sealed checkpoint");
 			}
 		}
 
@@ -600,7 +600,7 @@ class RZ_UIFeed
 			foreach (RZ_Mission m : mm.GetActive())
 			{
 				if (!m.m_bContract && !m.m_bGlobal)
-					s += MapLine("marker_event", -1, m.m_vPos, m.m_sTitle);
+					s += MapEntry("marker_event", -1, m.m_vPos, m.m_sTitle);
 			}
 		}
 
@@ -608,7 +608,7 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected string MapLine(string icon, int faction, vector pos, string label)
+	protected string MapEntry(string icon, int faction, vector pos, string label)
 	{
 		RZ_UILine ln = new RZ_UILine("P");
 		return ln.Add(icon).AddInt(faction).AddInt(RZ_Util.RoundToInt(pos[0])).AddInt(RZ_Util.RoundToInt(pos[2])).Add(label).End();

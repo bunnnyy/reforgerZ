@@ -589,12 +589,12 @@ class RZ_FactionVoice
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return "A sentry on the wall: "That's close enough. You're on a list here. Turn around, or come back when you've made it right."";
-			case RZ_EFaction.BANDITS: return "Someone whistles from a rooftop. "We know you. You're not welcome. Keep walking."";
-			case RZ_EFaction.INSTITUTE: return "A guard steps out from behind the sandbags. "The lab's closed to you. Please don't make this difficult."";
+			case RZ_EFaction.MILITARY: return "A sentry on the wall: \"That's close enough. You're on a list here. Turn around, or come back when you've made it right.\"";
+			case RZ_EFaction.BANDITS: return "Someone whistles from a rooftop. \"We know you. You're not welcome. Keep walking.\"";
+			case RZ_EFaction.INSTITUTE: return "A guard steps out from behind the sandbags. \"The lab's closed to you. Please don't make this difficult.\"";
 		}
 
-		return ""That's close enough."";
+		return "\"That's close enough.\"";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -603,8 +603,8 @@ class RZ_FactionVoice
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return "A stencilled sign on the gate: WEAPONS SLUNG. NO FIRING INSIDE THE WIRE. Somebody has added: "we mean it".";
-			case RZ_EFaction.BANDITS: return ""Guns stay quiet in here. You want to shoot someone, do it outside. House rule."";
+			case RZ_EFaction.MILITARY: return "A stencilled sign on the gate: WEAPONS SLUNG. NO FIRING INSIDE THE WIRE. Somebody has added: \"we mean it\".";
+			case RZ_EFaction.BANDITS: return "\"Guns stay quiet in here. You want to shoot someone, do it outside. House rule.\"";
 			case RZ_EFaction.INSTITUTE: return "A laminated notice: NO FIREARMS DISCHARGED WITHIN THE SITE. They will close the doors on you, and worse.";
 		}
 

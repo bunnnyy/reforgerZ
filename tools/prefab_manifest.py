@@ -17,10 +17,10 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SCRIPTS = os.path.join(ROOT, "Scripts", "Game", "ReforgerZ")
+SCRIPTS = os.path.join(ROOT, "scripts", "Game", "ReforgerZ")
 MANIFEST = os.path.join(ROOT, "Configs", "ReforgerZ", "PrefabManifest.json")
 DOC = os.path.join(ROOT, "docs", "WORKBENCH_SETUP.md")
-PLUGIN = os.path.join(ROOT, "Scripts", "WorkbenchGame", "ReforgerZ", "RZ_CreatePrefabsPlugin.c")
+PLUGIN = os.path.join(ROOT, "scripts", "WorkbenchGame", "ReforgerZ", "RZ_CreatePrefabsPlugin.c")
 
 # Classes that exist but never go on a prefab themselves.
 NOT_ON_PREFABS = {

@@ -3,10 +3,10 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** everything under "Built" is written in Enforce Script (about 71,000 lines) and
-**has never been compiled**. It needs Workbench, the 204 `VERIFY` fixes (168 in the game, 36 in
-the Workbench plugin) and a play-test before any of it can be called working
-([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
+**Status:** everything under "Built" is written in Enforce Script (about 71,000 lines) and the
+game scripts **compile cleanly** against Arma Reforger 1.9. None of it has run in a world yet: it
+needs prefabs, the behavioural `VERIFY` checks and a play-test before it can be called working
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)). The Workbench plugin hasn't been compiled.
 
 ## Built
 
@@ -58,8 +58,9 @@ the Workbench plugin) and a play-test before any of it can be called working
 
 In this order, because later ones depend on earlier ones:
 
-1. **Compile** and fix the `VERIFY` list, riskiest first ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list)).
-   Then the plugin: a dry run, then a real run; note which editor calls needed fixing.
+1. **Compile in Workbench** (the game scripts already compile on the server), then the plugin:
+   a dry run, then a real run; note which editor calls needed fixing. Check the `VERIFY`
+   behaviours, riskiest first ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list)).
 2. **Per-player hostility.** A player Hunted by Bastion near a Bastion AI group: does it fire?
    Do the deploy menu, chat and groups stay on `SURV`? If AI ignores the variants, switch to Outlaw.
 3. **The core loop on Arland** for 2 hours: zombie density, spread rate, cure pace. Then the

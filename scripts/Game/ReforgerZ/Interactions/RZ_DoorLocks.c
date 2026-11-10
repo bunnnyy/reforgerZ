@@ -60,7 +60,7 @@ class RZ_DoorGeometry
 	{
 		DoorComponent dc = GetDoor(door);
 		if (dc)
-			dc.SetControlValue(0); // VERIFY: SetControlValue(0) on the server shuts the door and replicates
+			dc.SetControlValue(0, RplId.Invalid()); // VERIFY: SetControlValue on the server shuts the door and replicates
 	}
 
 	//------------------------------------------------------------------------------------------------

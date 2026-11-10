@@ -214,7 +214,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 			// The server sends the board when it's read: open the board menu if it isn't open
 			m_sBoard = payload;
 			m_iBoardVersion++;
-			if (!payload.IsEmpty() && !RZ_NoticeBoardMenu.IsOpen())
+			if (!payload.IsEmpty() && !RZ_NoticeBoardMenu.IsBoardOpen())
 				RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_NoticeBoardMenu);
 		}
 		else if (kind == RZ_UIFeed.PAYLOAD_HALL)

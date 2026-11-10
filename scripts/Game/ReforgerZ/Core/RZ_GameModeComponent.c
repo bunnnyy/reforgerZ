@@ -968,9 +968,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_mIdentities.Find(playerId, ident))
 			return ident;
 
-		ident = GetGame().GetBackendApi().GetPlayerIdentityId(playerId); // VERIFY
-		if (!ident.IsEmpty())
+		UUID uid = SCR_PlayerIdentityUtils.GetPlayerIdentityId(playerId);
+		if (!uid.IsNull())
 		{
+			ident = uid;
 			m_mIdentities.Set(playerId, ident);
 			return ident;
 		}

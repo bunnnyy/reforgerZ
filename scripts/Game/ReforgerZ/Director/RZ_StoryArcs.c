@@ -551,9 +551,9 @@ class RZ_StoryArcs
 
 		if (m_Arc.m_iKind == ARC_MAP)
 		{
-			RZ_Mission_DeserterMap map = RZ_Mission_DeserterMap.Cast(m_GM.GetMissions().FindById(m_Arc.I(0)));
-			if (map)
-				return map.WandererPiece(m_GM, playerId, wandererId);
+			RZ_Mission_DeserterMap mapMission = RZ_Mission_DeserterMap.Cast(m_GM.GetMissions().FindById(m_Arc.I(0)));
+			if (mapMission)
+				return mapMission.WandererPiece(m_GM, playerId, wandererId);
 		}
 
 		return "";

@@ -551,11 +551,11 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: SCR_JsonLoadContext reads nested script classes and arrays of them by member name,
+	// VERIFY: JsonLoadContext reads nested script classes and arrays of them by member name,
 	// and ignores JSON keys that have no member
 	static RZ_Manifest LoadManifest(string path)
 	{
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext();
+		JsonLoadContext ctx = new JsonLoadContext();
 		if (!ctx.LoadFromFile(path))
 			return null;
 		RZ_Manifest mf = new RZ_Manifest();

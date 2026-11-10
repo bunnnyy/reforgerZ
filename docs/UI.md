@@ -6,8 +6,7 @@ feed them, and what's built. Building the layouts in Workbench is in
 [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui). The setting and the voices used in every line of
 text are in [LORE.md](LORE.md).
 
-**Status:** the icon set and the mockups are done. The scripts are written but, like everything
-else, **never compiled**, and the layouts don't exist yet: they must be built in Workbench. Until
+**Status:** the icon set and the mockups are done. The scripts compile but have never run, and the layouts don't exist yet: they must be built in Workbench. Until
 then every message shows as the vanilla hint, as before.
 
 ## Art direction
@@ -114,14 +113,14 @@ events and the lab are off; without it, the layer does nothing and those markers
 
 ## How the scripts fit
 
-Code: `Scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the game.
+Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the game.
 
 | Class | Runs on | Does |
 |---|---|---|
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes** (the timer also resyncs every minute; the client counts down in between). Builds the standing, journal, background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each at most every 2 s), and the client's cache. Keeps the radio log on the client for this life. A notice board payload from the server opens the board menu |
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/hall`, sent as commands to the server, which checks them again. Registered with the first notice |
-| `RZ_HudDisplay` | client (`SCR_InfoDisplay`) | Draws the HUD five times a second from the cache; shows the notice cards |
+| `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards |
 | `RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu`, `RZ_NoticeBoardMenu`, `RZ_HallOfFameMenu` | client (`ChimeraMenuBase`) | Ask for their data on open, redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them |
 | `RZ_BackgroundPanelComponent` | client (widget handler) | Watches the picked loadout in the deploy menu and shows its background and gear |
 | `SCR_BasePlayerLoadout` (modded, `RZ_LoadoutLock.c`) | server and client | Makes a locked background's loadout unavailable |
@@ -159,6 +158,6 @@ static parts of the layouts.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; six mockups and previews; the feed, the HUD, six menus with mouse support (four tabs, the notice board, the hall of fame), chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback, the radio log (all written, never compiled) |
+| Built | The icon set and its renderer; six mockups and previews; the feed, the HUD, six menus with mouse support (four tabs, the notice board, the hall of fame), chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback, the radio log (all compile, never run) |
 | Workbench | The layouts, the imageset, the menu and input config entries, adding the component, the info display and the map component ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui)) |
 | Planned | A sound on new notices; mockups of the notice board and the hall of fame |

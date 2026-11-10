@@ -4,7 +4,7 @@ How every ReforgerZ system works, organised by system. Everything here is writte
 unless it says **planned**; *Simplified* notes say where the code does less than the idea.
 What's next and what was dropped is in [ROADMAP.md](ROADMAP.md). Factions, standing and
 AI hostility are in [REPUTATION.md](REPUTATION.md); every mission is in [MISSIONS.md](MISSIONS.md).
-Code paths are under `Scripts/Game/ReforgerZ/`.
+Code paths are under `scripts/Game/ReforgerZ/`.
 
 ## Contents
 

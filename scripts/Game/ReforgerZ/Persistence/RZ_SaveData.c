@@ -106,7 +106,7 @@ class RZ_Persistence
 		if (!FileIO.FileExists(SEASON_PATH))
 			return null;
 
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext();
+		JsonLoadContext ctx = new JsonLoadContext();
 		if (!ctx.LoadFromFile(SEASON_PATH))
 			return null;
 
@@ -121,20 +121,20 @@ class RZ_Persistence
 	static void SaveSeason(RZ_SeasonRecord record)
 	{
 		FileIO.MakeDirectory(DIR);
-		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext();
+		JsonSaveContext ctx = new JsonSaveContext();
 		ctx.WriteValue("season", record);
 		if (!ctx.SaveToFile(SEASON_PATH))
 			RZ_Log.Warn("Could not write " + SEASON_PATH);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	// VERIFY: SCR_JsonLoadContext/SCR_JsonSaveContext automatically serialize plain class members
+	// VERIFY: JsonLoadContext/JsonSaveContext automatically serialize plain class members
 	static RZ_SaveData Load()
 	{
 		if (!FileIO.FileExists(PATH))
 			return null;
 
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext();
+		JsonLoadContext ctx = new JsonLoadContext();
 		if (!ctx.LoadFromFile(PATH))
 		{
 			RZ_Log.Warn("Could not read " + PATH);
@@ -162,7 +162,7 @@ class RZ_Persistence
 	static void SaveTo(RZ_SaveData data, string path)
 	{
 		FileIO.MakeDirectory(DIR);
-		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext();
+		JsonSaveContext ctx = new JsonSaveContext();
 		ctx.WriteValue("state", data);
 		if (!ctx.SaveToFile(path))
 			RZ_Log.Warn("Could not write " + path);

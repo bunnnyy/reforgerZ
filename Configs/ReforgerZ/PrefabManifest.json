@@ -1,6 +1,6 @@
 {
  "version": 1,
- "about": "ReforgerZ prefab manifest: every prefab, slot, settings object, faction and loadout the mod needs. Read by the Workbench plugin 'ReforgerZ: Create prefabs' (Scripts/WorkbenchGame/ReforgerZ/RZ_CreatePrefabsPlugin.c) and by tools/prefab_manifest.py, which checks it against the code and writes the tables in docs/WORKBENCH_SETUP.md. Vanilla paths and file names are suggestions: confirm them in Workbench.",
+ "about": "ReforgerZ prefab manifest: every prefab, slot, settings object, faction and loadout the mod needs. Read by the Workbench plugin 'ReforgerZ: Create prefabs' (scripts/WorkbenchGame/ReforgerZ/RZ_CreatePrefabsPlugin.c) and by tools/prefab_manifest.py, which checks it against the code and writes the tables in docs/WORKBENCH_SETUP.md. Vanilla paths and file names are suggestions: confirm them in Workbench.",
  "addon": "ReforgerZ",
  "gameMode": {
   "id": "GameMode",

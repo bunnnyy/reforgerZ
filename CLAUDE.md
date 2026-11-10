@@ -1,7 +1,7 @@
 # ReforgerZ: project rules
 
 A zombie survival game mode for Arma Reforger (Enfusion engine, Enforce Script),
-set in a sealed government Quarantine Zone. Scripts live in `Scripts/Game/ReforgerZ/`,
+set in a sealed government Quarantine Zone. Scripts live in `scripts/Game/ReforgerZ/`,
 and design and setup docs in `docs/`.
 
 ## Docs must always match the project
@@ -61,7 +61,8 @@ When you restructure, update the **Doc map** below and the README's doc list in 
 
 ## Code rules (Enforce Script)
 
-Nothing can be compiled outside Workbench, so write conservatively:
+The game scripts compile on the dedicated server (below); the Workbench plugin only in Workbench.
+Write conservatively:
 - No ternary operator, no C-style casts (use `Type.Cast(x)`, `RZ_Util.RoundToInt`).
 - `out` is a reserved word, so don't use it as a name.
 - Don't reuse a local variable name twice in one function, even in sibling blocks.
@@ -72,7 +73,9 @@ Nothing can be compiled outside Workbench, so write conservatively:
 - Server-authoritative. Poll on the existing tick, not per frame. Spawn AI and props only near players.
 - Works on any map: place things relative to settlements and landmarks, never fixed coordinates.
 - Optional prefabs are attributes on `RZ_GameModeComponent`; features that need one turn themselves off when it's empty.
-- Run a brace/paren balance check over all `.c` files before committing.
+- Run `tools/compile_check.sh` before committing script changes: it compiles everything on the
+  Linux dedicated server and must exit 0 with no ReforgerZ errors or warnings.
+- Script folders are lowercase `scripts/` (the Linux server is case-sensitive).
 
 ## Design guardrails (agreed with the author)
 - **Sealed Zone:** no supply drops, no outside aid, no visible wall. The perimeter is drones,

@@ -48,10 +48,11 @@ and one way to end it: **research the cure.**
 
 ## Status
 
-All of it is **written but has never been compiled**. It's about 71,000 lines of Enforce
-Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **204 `VERIFY`
-markers** on engine and editor calls whose exact names need checking (168 in the game, 36 in the
-Workbench plugin), no prefabs, layouts or configs yet, and nothing has been play-tested. The icon
+The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
+the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
+That's about 71,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Compiling proves the
+names and signatures exist, not that the calls behave as assumed: the `VERIFY` markers left are
+on those behaviours. There are no prefabs, layouts or configs yet, and nothing has been play-tested. The icon
 set and mockups of every screen are done (`UI/`). Every prefab,
 setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
 plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run). Start with
@@ -73,7 +74,7 @@ plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run
 ## Code
 
 ```
-Scripts/Game/ReforgerZ/
+scripts/Game/ReforgerZ/
   Core/          game mode component (the hub), helpers, map markers, loose-item cleanup,
                  seasons (the winner's rules, rule sets, the wipe cycle)
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
@@ -97,7 +98,7 @@ Scripts/Game/ReforgerZ/
   Persistence/   save and load of mode state, the hall of fame
   UI/            the per-player data feed, HUD, menus, deploy-menu panel and loadout lock,
                  the map's icon layer, notice styles, chat commands
-Scripts/WorkbenchGame/ReforgerZ/
+scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
 Configs/ReforgerZ/PrefabManifest.json
                  every prefab, slot, settings object, faction and loadout to set up
@@ -107,4 +108,7 @@ UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previe
                  the layout guide (LAYOUTS.md)
 tools/render_ui.js
                  renders the icon PNGs and the mockup previews (Node and Playwright)
+tools/compile_check.sh
+                 compiles the scripts on the Linux dedicated server, no Workbench needed
+addon.gproj      the project file (mod ID, dependencies)
 ```

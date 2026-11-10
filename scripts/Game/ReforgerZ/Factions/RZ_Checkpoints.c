@@ -408,7 +408,7 @@ class RZ_Checkpoints
 					continue;
 				}
 
-				Contact(post, ids[j], p, d, dt);
+				PostContact(post, ids[j], p, d, dt);
 			}
 		}
 	}
@@ -461,7 +461,7 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Contact(RZ_RoadPost post, int playerId, IEntity ent, float dist, float dt)
+	protected void PostContact(RZ_RoadPost post, int playerId, IEntity ent, float dist, float dt)
 	{
 		RZ_PostContact c = GetContact(post, playerId);
 		if (c.m_bCleared || c.m_bPunished)

@@ -89,7 +89,7 @@ class RZ_HallOfFame
 		if (!FileIO.FileExists(PATH))
 			return null;
 
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext();
+		JsonLoadContext ctx = new JsonLoadContext();
 		if (!ctx.LoadFromFile(PATH))
 			return null;
 
@@ -117,7 +117,7 @@ class RZ_HallOfFame
 
 		m_bDirty = false;
 		FileIO.MakeDirectory(RZ_Persistence.DIR);
-		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext();
+		JsonSaveContext ctx = new JsonSaveContext();
 		ctx.WriteValue("hall", m_Data);
 		if (!ctx.SaveToFile(PATH))
 			RZ_Log.Warn("Could not write " + PATH);

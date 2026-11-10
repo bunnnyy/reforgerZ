@@ -982,7 +982,7 @@ class RZ_FactionPerks
 		string target;
 		if (!m_mLastKiller.Find(ident, target) || target.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, title, ""A bounty on who? Nobody's put you down lately. Not that we heard."");
+			m_GM.NotifyPlayer(playerId, title, "\"A bounty on who? Nobody's put you down lately. Not that we heard.\"");
 			return;
 		}
 
@@ -991,7 +991,7 @@ class RZ_FactionPerks
 		int targetId = FindPlayer(target);
 		if (targetId > 0 && RZ_Util.SameGroup(playerId, targetId))
 		{
-			m_GM.NotifyPlayer(playerId, title, ""On your own crew? Sort that out yourselves."");
+			m_GM.NotifyPlayer(playerId, title, "\"On your own crew? Sort that out yourselves.\"");
 			return;
 		}
 
@@ -999,27 +999,27 @@ class RZ_FactionPerks
 		{
 			if (mine.m_sPoster == ident)
 			{
-				m_GM.NotifyPlayer(playerId, title, string.Format(""You've already got one up, on %1. One at a time."", mine.m_sTargetName));
+				m_GM.NotifyPlayer(playerId, title, string.Format("\"You've already got one up, on %1. One at a time.\"", mine.m_sTargetName));
 				return;
 			}
 		}
 
 		if (FindPosting(target))
 		{
-			m_GM.NotifyPlayer(playerId, title, string.Format(""There's already a price on %1. Wait your turn."", targetName));
+			m_GM.NotifyPlayer(playerId, title, string.Format("\"There's already a price on %1. Wait your turn.\"", targetName));
 			return;
 		}
 
 		if (m_aPosted.Count() >= settings.m_iBountyMaxActive)
 		{
-			m_GM.NotifyPlayer(playerId, title, ""Board's full. Come back when somebody's collected."");
+			m_GM.NotifyPlayer(playerId, title, "\"Board's full. Come back when somebody's collected.\"");
 			return;
 		}
 
 		int cost = settings.m_iBountyCost;
 		if (!m_GM.SpendFavor(playerId, RZ_EFaction.BANDITS, cost))
 		{
-			m_GM.NotifyPlayer(playerId, title, string.Format(""A bounty costs %1 Favor." You have %2.", cost, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS)));
+			m_GM.NotifyPlayer(playerId, title, string.Format("\"A bounty costs %1 Favor.\" You have %2.", cost, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS)));
 			return;
 		}
 

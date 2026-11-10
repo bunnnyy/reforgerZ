@@ -8,7 +8,7 @@
 //! Notices: RZ_GameModeComponent.QueueHint calls PushNotice first. It returns false when styled
 //! notices are off, the layout has no NoticeStack, or no card layout is set; the vanilla hint is
 //! used then, exactly as before.
-class RZ_HudDisplay : SCR_InfoDisplay // VERIFY: SCR_InfoDisplay, its m_wRoot and the DisplayStartDraw/DisplayStopDraw/DisplayUpdate overrides
+class RZ_HudDisplay : SCR_InfoDisplayExtended
 {
 	protected static const float REFRESH = 0.2;
 
@@ -26,20 +26,20 @@ class RZ_HudDisplay : SCR_InfoDisplay // VERIFY: SCR_InfoDisplay, its m_wRoot an
 	{
 		super.DisplayStartDraw(owner);
 		s_Instance = this;
-		RZ_UIW.Listen("RZ_OpenStanding", OpenStanding);
-		RZ_UIW.Listen("RZ_OpenJournal", OpenJournal);
-		RZ_UIW.Listen("RZ_OpenRadio", OpenRadio);
-		RZ_UIW.Listen("RZ_OpenHall", OpenHall);
+		GetGame().GetInputManager().AddActionListener("RZ_OpenStanding", EActionTrigger.DOWN, OpenStanding);
+		GetGame().GetInputManager().AddActionListener("RZ_OpenJournal", EActionTrigger.DOWN, OpenJournal);
+		GetGame().GetInputManager().AddActionListener("RZ_OpenRadio", EActionTrigger.DOWN, OpenRadio);
+		GetGame().GetInputManager().AddActionListener("RZ_OpenHall", EActionTrigger.DOWN, OpenHall);
 		Refresh();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void DisplayStopDraw(IEntity owner)
 	{
-		RZ_UIW.Unlisten("RZ_OpenStanding", OpenStanding);
-		RZ_UIW.Unlisten("RZ_OpenJournal", OpenJournal);
-		RZ_UIW.Unlisten("RZ_OpenRadio", OpenRadio);
-		RZ_UIW.Unlisten("RZ_OpenHall", OpenHall);
+		GetGame().GetInputManager().RemoveActionListener("RZ_OpenStanding", EActionTrigger.DOWN, OpenStanding);
+		GetGame().GetInputManager().RemoveActionListener("RZ_OpenJournal", EActionTrigger.DOWN, OpenJournal);
+		GetGame().GetInputManager().RemoveActionListener("RZ_OpenRadio", EActionTrigger.DOWN, OpenRadio);
+		GetGame().GetInputManager().RemoveActionListener("RZ_OpenHall", EActionTrigger.DOWN, OpenHall);
 		foreach (Widget w : m_aCards)
 		{
 			RZ_UIW.Remove(w);

@@ -3,7 +3,8 @@
 How to turn the scripts in this repo into a playable mod. The scripts are plain Enforce
 Script; prefabs and configs are made in Workbench, because they need GUIDs that Workbench
 generates. The repo ships its own `addon.gproj` (mod ID `A88C8A4C8C74454A`, picked at random;
-change it before the first Workshop upload if you like). **Nothing has been compiled yet.** Expect to fix the `VERIFY` list first.
+change it before the first Workshop upload if you like). The game scripts compile cleanly on the dedicated server
+([how](#compile-check-without-workbench)); the `VERIFY` list is what compiling can't prove.
 
 Everything you must create or configure is listed once, in the **prefab manifest**
 (`Configs/ReforgerZ/PrefabManifest.json`). The Workbench plugin **ReforgerZ: Create prefabs**
@@ -43,7 +44,7 @@ Look up classes in the Script Editor or the
 
 ### 1.2 Run "ReforgerZ: Create prefabs"
 
-The plugin in `Scripts/WorkbenchGame/ReforgerZ/RZ_CreatePrefabsPlugin.c` reads the manifest and
+The plugin in `scripts/WorkbenchGame/ReforgerZ/RZ_CreatePrefabsPlugin.c` reads the manifest and
 does as much of sections 2 to 4 as it can. **It has never been run**: every editor call in it is a
 guess at the Workbench API, marked `VERIFY` ([the list](#the-workbench-plugin-35)). Expect a round
 of fixes the first time, and use the [manual checklist](#13-by-hand-the-manual-checklist) for
@@ -820,26 +821,47 @@ notice boards (server admins are whoever the server config lists).
 
 ## 6. The VERIFY list
 
+### Compile check without Workbench
+
+`tools/compile_check.sh` compiles every script on the Arma Reforger **Linux dedicated server**.
+On first run it installs SteamCMD and the server (anonymous login, about 12 GB). It copies the
+repo into a test addon folder, starts the server just long enough to compile, and prints any
+ReforgerZ errors and warnings. Exit code 0 means the Game module compiled. Run it before every
+commit that touches scripts.
+
 ```bash
-grep -rn "VERIFY" Scripts/
+tools/compile_check.sh
 ```
 
-There are **204** markers: 168 in the game scripts (one is the comment in `Core/RZ_Util.c` that
-explains them; 38 are in the UI) and 36 in the Workbench plugin (one is its header comment). Each
+What it can't do:
+
+| Limit | Why |
+|---|---|
+| The Workbench plugin isn't compiled | The server never loads the WorkbenchGame module. Compile it in Workbench (**F7**) |
+| No behaviour is tested | It only compiles. Nothing runs until there's a world with the game mode in it |
+| Folder names must be lowercase `scripts/` | The Linux server is case-sensitive and only looks there. Windows doesn't care, so keep it lowercase for Linux-hosted servers |
+
+### The markers
+
+```bash
+grep -rn "VERIFY" scripts/
+```
+
+There are **201** markers: 165 in the game scripts (one is the comment in `Core/RZ_Util.c` that
+explains them; 36 are in the UI) and 36 in the Workbench plugin (one is its header comment). Each
 is an engine or editor API whose exact name or signature couldn't be confirmed. Usually the fix is
 a rename, and most are isolated in small helpers (`Core/RZ_Util.c`, `RZ_UIW` in `UI/RZ_UIData.c`,
 and `RZ_WB` in the plugin). The game scripts' markers are grouped by risk; fix them in this order.
-Their paths are under `Scripts/Game/ReforgerZ/`. The [UI's](#the-ui-38) and the
+Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-36) and the
 [plugin's](#the-workbench-plugin-35) come last.
 
-### High risk: the core loop (25)
+### High risk: the core loop (24)
 
 No fallback. If these are wrong, the basic game doesn't work.
 
 | Where | Call | If it fails |
 |---|---|---|
 | `Core/RZ_GameModeComponent.c:612` | `GetOnPlayerSpawned()` invoker (the handler is `HandlePlayerSpawned`, not an override of the base `OnPlayerSpawned`) | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:971` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
 | `Core/RZ_GameModeComponent.c:1074` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
 | `Core/RZ_GameModeComponent.c:1256` | `OnProjectileShot` event and signature | No gunfire heat |
 | `Core/RZ_GameModeComponent.c:1927`, `:1928` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
@@ -885,7 +907,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:640` | fuel nodes: `GetFuelNodesList`, `GetMaxFuel`, `SetFuel` | Empty the helper: a fixed car has its prefab's own fuel |
 | `Interactions/RZ_DoorHooks.c:11` | `modded class SCR_DoorUserAction`: the vanilla door action's name, owned by the door entity | **Doesn't compile if the name is wrong.** Rename it to the action in the door prefabs' `ActionsManagerComponent` (maybe `DoorUserAction`); if there's no scripted one, delete the file and turn **Search > Door locks** off (locks go back on the loot) |
 | `Interactions/RZ_DoorHooks.c:22`, `:32` | `SetCannotPerformReason(string)`; the door action's `PerformAction` also runs on the server | No "Locked" reason, only a greyed action / the server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
-| `Interactions/RZ_DoorLocks.c:44`, `:54`, `:63` | `DoorComponent`; `GetControlValue()` is 0 when shut; `SetControlValue(0)` shuts it | No doors found: every building keeps the loot lock / open and shut mixed up: fix the threshold / locked doors aren't pulled shut |
+| `Interactions/RZ_DoorLocks.c:44`, `:54`, `:63` | `DoorComponent`; `GetControlValue()` is 0 when shut; `SetControlValue(0, RplId.Invalid())` shuts it | No doors found: every building keeps the loot lock / open and shut mixed up: fix the threshold / locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | `GetParent()`; `GetChildren()`/`GetSibling()` list a building's door entities | No door belongs to a building: no door locks, the loot lock everywhere |
 | `Interactions/RZ_DoorLocks.c:123`, `:132` | `GetBounds()` is the building's local box; `GetWorldTransform()` | No box: no outside doors (the loot lock). A wrong box or transform gets inside and outside wrong: try every locked door from both sides, and from a closet near the outline |
 | `Interactions/RZ_DoorLocks.c:290` | `GetBounds()` on a door is its leaf's local box | Blockers stand at the door's origin (often the hinge) instead of the middle of the doorway: check where one appears |
@@ -924,7 +946,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Interactions/RZ_KeyItem.c:81` | `GetItems()` finds key items in every carried storage | Carried keys aren't found: leave **Key prefab** empty (data keys) |
 | `World/RZ_NoticeBoard.c:370` | `PlayerManager.HasPlayerRole` with `EPlayerRole.ADMINISTRATOR` and `SESSION_ADMINISTRATOR` | `/noteclear` refuses everyone: fix the role check, or clear boards with a wipe |
 
-### The UI (38)
+### The UI (36)
 
 None of these affect the game: the UI only reads. They must compile, though, because the game mode
 calls the feed and the notice hook. If the HUD or a menu misbehaves, turn **UI > Styled notices**
@@ -935,10 +957,9 @@ off and every message goes back to the vanilla hint. How the UI is put together 
 | `UI/RZ_PlayerUIComponent.c:154` | `RplRcver.Owner` reaches the owning client of a component on the player controller | No data reaches the client: no timer, radio indicator, noise or menu data. Check the controller prefab has the component and an `RplComponent` |
 | `UI/RZ_PlayerUIComponent.c:81`, `:102` | `PlayerManager.GetPlayerController(playerId)`; `PlayerController.GetPlayerId()` | Nothing is sent, or menu requests are ignored |
 | `UI/RZ_PlayerUIComponent.c:149` | a string RPC argument of a few KB (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
-| `UI/RZ_HudDisplay.c:11` | `SCR_InfoDisplay`, its `m_wRoot`, `DisplayStartDraw`/`DisplayStopDraw`/`DisplayUpdate` | No HUD and no styled cards; the vanilla hint is used |
 | `UI/RZ_Menus.c:13`, `:47` | modding `ChimeraMenuPreset`; `ChimeraMenuBase`, `GetRootWidget()`, `Close()`, the menu overrides | No menus: delete `RZ_Menus.c` and the three listeners in `RZ_HudDisplay` |
 | `UI/RZ_Menus.c:85`, `:369` | the vanilla `MenuBack`, `MenuTabLeft`, `MenuTabRight`, `MenuUp`, `MenuDown` action names | Esc, Q/E or the journal's up/down do nothing: use the names in the vanilla input config |
-| `UI/RZ_UIData.c:636`, `:652` | `AddActionListener`/`RemoveActionListener`; `MenuManager.OpenMenu` | The keys don't open the menus |
+| `UI/RZ_UIData.c:637` | `MenuManager.OpenMenu` | The keys don't open the menus |
 | `UI/RZ_UIData.c:523`, `:531`, `:539`, `:547`, `:559`, `:588` | `FindAnyWidget`, `TextWidget.SetText`, `SetVisible`, `SetColor`, `ImageWidget.LoadImageFromSet`, `ProgressBarWidget` | Widgets stay as the layout made them |
 | `UI/RZ_UIData.c:599`, `:606`, `:615` | `CreateWidgets(layout, parent)`, `RemoveFromHierarchy`, `GetChildren`/`GetSibling` | No cards or rows: `PushNotice` sees no card and the vanilla hint is used |
 | `UI/RZ_UIData.c:514` | `Color.FromRGBA` | Nothing is tinted |
@@ -955,7 +976,7 @@ off and every message goes back to the vanilla hint. How the UI is put together 
 
 ### The Workbench plugin (35)
 
-Paths are under `Scripts/WorkbenchGame/ReforgerZ/`. None of these affect the game: if the plugin
+Paths are under `scripts/WorkbenchGame/ReforgerZ/`. None of these affect the game: if the plugin
 fails, make the prefabs by hand. Riskiest first: the first eight decide whether it makes anything.
 
 | Where | Call | If it fails |

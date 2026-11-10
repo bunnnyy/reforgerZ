@@ -1,6 +1,6 @@
 //! The ReforgerZ UI: shared data, settings and small widget helpers (docs/UI.md).
 //!
-//! Isolation: nothing outside Scripts/Game/ReforgerZ/UI/ needs the UI to work. The server
+//! Isolation: nothing outside scripts/Game/ReforgerZ/UI/ needs the UI to work. The server
 //! feeds the owning client through RZ_PlayerUIComponent (on the player controller); the client
 //! draws it with RZ_HudDisplay (an SCR_InfoDisplay) and the menus in RZ_Menus.c. Missing
 //! layouts or a missing component just mean the vanilla hint is used, as before.
@@ -552,11 +552,11 @@ class RZ_UIW
 	static void Icon(Widget root, string name, string icon)
 	{
 		ImageWidget img = ImageWidget.Cast(Find(root, name));
-		ResourceName set = RZ_UISettings.Get().m_sIconImageset;
-		if (!img || set.IsEmpty() || icon.IsEmpty())
+		ResourceName imageset = RZ_UISettings.Get().m_sIconImageset;
+		if (!img || imageset.IsEmpty() || icon.IsEmpty())
 			return;
 
-		img.LoadImageFromSet(0, set, icon); // VERIFY: ImageWidget.LoadImageFromSet(index, imageset, name)
+		img.LoadImageFromSet(0, imageset, icon); // VERIFY: ImageWidget.LoadImageFromSet(index, imageset, name)
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -628,21 +628,6 @@ class RZ_UIW
 		return System.GetTickCount() / 1000.0; // VERIFY: System.GetTickCount() in milliseconds
 	}
 
-	//------------------------------------------------------------------------------------------------
-	static void Listen(string action, ActionListenerCallback callback)
-	{
-		InputManager im = GetGame().GetInputManager();
-		if (im)
-			im.AddActionListener(action, EActionTrigger.DOWN, callback); // VERIFY: AddActionListener(name, EActionTrigger.DOWN, ActionListenerCallback) and RemoveActionListener
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static void Unlisten(string action, ActionListenerCallback callback)
-	{
-		InputManager im = GetGame().GetInputManager();
-		if (im)
-			im.RemoveActionListener(action, EActionTrigger.DOWN, callback);
-	}
 
 	//------------------------------------------------------------------------------------------------
 	static void OpenMenu(int preset)

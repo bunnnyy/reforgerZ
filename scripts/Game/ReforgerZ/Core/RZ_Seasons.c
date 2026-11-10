@@ -448,7 +448,7 @@ class RZ_Seasons
 		if (!FileIO.FileExists(WIPE_PATH))
 			return null;
 
-		SCR_JsonLoadContext ctx = new SCR_JsonLoadContext();
+		JsonLoadContext ctx = new JsonLoadContext();
 		if (!ctx.LoadFromFile(WIPE_PATH))
 			return null;
 
@@ -463,7 +463,7 @@ class RZ_Seasons
 	protected static void SaveMarker(RZ_WipeMarker marker)
 	{
 		FileIO.MakeDirectory(RZ_Persistence.DIR);
-		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext();
+		JsonSaveContext ctx = new JsonSaveContext();
 		ctx.WriteValue("wipe", marker);
 		if (!ctx.SaveToFile(WIPE_PATH))
 			RZ_Log.Warn("Could not write " + WIPE_PATH);
