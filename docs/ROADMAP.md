@@ -53,7 +53,6 @@ the Workbench plugin) and a play-test before any of it can be called working
 
 ### Characters and UI
 - Build the UI layouts and the icon imageset in Workbench ([UI/LAYOUTS.md](../UI/LAYOUTS.md)).
-- A trait-points system on top of backgrounds (positive and negative traits).
 
 ## Play-test priorities
 
@@ -113,3 +112,4 @@ In this order, because later ones depend on earlier ones:
 | DarcMissions | Its convoys, occupations and crash sites assume forces from outside; they don't fit the sealed Zone |
 | Ambient Zombies | Overlaps the ReforgerZ spawner |
 | Sleep and time skip | Out of scope by design |
+| A trait-points system on top of backgrounds | Not wanted; backgrounds, personal goals and Legacy unlocks carry character choice |
