@@ -109,7 +109,8 @@ class RZ_Event_FogBank : RZ_Event_Timed
 		if (!gm.GetEnvironment() || gm.GetMissions().IsTypeRunning(RZ_Event_Storm))
 			return 0;
 
-		return 0.7;
+		// Season rules (Fog): more fog banks
+		return 0.7 * RZ_Seasons.Mods().m_fFogBankMult;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -568,6 +568,13 @@ class RZ_Mission_SignalFires : RZ_Mission
 	protected static const float LIGHT_RADIUS = 10;
 
 	//------------------------------------------------------------------------------------------------
+	//! The beacons are listed by grid: never a rough area.
+	override bool NeedsExactLocation()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.TRUSTED, 25, 25);

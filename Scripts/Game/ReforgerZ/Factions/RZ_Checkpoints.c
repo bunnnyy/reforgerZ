@@ -238,7 +238,10 @@ class RZ_Checkpoints
 	protected void TryNewPost(array<int> ids, array<IEntity> players)
 	{
 		RZ_Territory territory = m_GM.GetTerritory();
-		if (players.IsEmpty() || m_aPosts.Count() >= m_Settings.m_iMaxPosts || !territory || !territory.IsActive())
+		// Season rules: one or two more posts (lawless roads, strong checkpoints), six at most
+		RZ_SeasonMods season = RZ_Seasons.Mods();
+		int maxPosts = Math.Min(6, m_Settings.m_iMaxPosts + season.m_iRoadPostBonus);
+		if (players.IsEmpty() || m_aPosts.Count() >= maxPosts || !territory || !territory.IsActive())
 			return;
 
 		IEntity p = players.GetRandomElement();
@@ -246,8 +249,14 @@ class RZ_Checkpoints
 			return;
 
 		vector at = p.GetOrigin();
+		// Who tries first: half and half, or the season's share; under a curfew Bastion after dark
+		float bastionFirst = season.m_fBastionPostShare;
+		RZ_Environment env = m_GM.GetEnvironment();
+		if (season.m_bCurfew && env && env.IsNight())
+			bastionFirst = 1;
+
 		array<int> order = {RZ_EFaction.MILITARY, RZ_EFaction.BANDITS};
-		if (Math.RandomFloat01() < 0.5)
+		if (Math.RandomFloat01() >= bastionFirst)
 		{
 			order.Clear();
 			order.Insert(RZ_EFaction.BANDITS);

@@ -461,7 +461,9 @@ where a faction is set to shoot from Watched or Strangers, or in a mission that 
 ## The season's winner
 
 When the final stand is won, the cure goes to whichever faction the server gave the most Fame
-this season ✅. What that means is in [LORE.md](LORE.md), "Endings".
+this season ✅. What that means is in [LORE.md](LORE.md), "Endings". The winner shapes the next season's
+starting rules ✅: in the Red Hand's season the fence opens at Known, and in Bastion's its
+checkpoints keep a curfew ([DESIGN.md](DESIGN.md#seasons)).
 
 ## How it maps to code
 

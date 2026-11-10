@@ -28,8 +28,9 @@ Code paths are under `Scripts/Game/ReforgerZ/`.
 18. [New-player guidance](#new-player-guidance)
 19. [Cure research and the season's end](#cure-research-and-the-seasons-end)
 20. [Season pacing](#season-pacing)
-21. [Loose items](#loose-items)
-22. [Persistence](#persistence)
+21. [Seasons](#seasons)
+22. [Loose items](#loose-items)
+23. [Persistence](#persistence)
 
 ## Principles
 
@@ -547,7 +548,19 @@ isn't kept as an AI body: they become **+1 population** at the nearest safehouse
   antibiotics for 5 Haven Favor ("Ask for something for the fever"); the bigger the house, the
   more declaring slows the bite ([Treatments](#treatments)). House rules are in
   [REPUTATION.md](REPUTATION.md), "Haven house rules and exile".
-- **A notice board** for short notes between sessions is **planned**.
+- **A notice board** at every safehouse (`World/RZ_NoticeBoard.c`): short notes players leave
+  for each other between sessions. Cosmetic and social only.
+  - **Read** it with "Read the notice board" at the safehouse's quartermaster. **Write** by typing
+    `/note` and the message in chat while at a safehouse (within 60 m); "Leave a note on the
+    board" says how. With **UI > Board menus** on, reading opens the board menu, which has a box
+    to write in ([UI.md](UI.md)).
+  - The newest 8 notes per board, 160 characters at most, one note per player every 10 minutes
+    (on any board), the author's name on each, and notes come down by themselves after 3 real
+    days. A **note filter** (Haven settings) blanks listed words out with asterisks. Exiles can't
+    write. Server admins clear a board with `/noteclear` (the nearest within 1 km) or every board
+    with `/noteclear all`. Notes are saved with the safehouse and go with a season wipe.
+  - *Simplified:* the filter is a plain word list, matched anywhere in the text; no way for
+    players to take a note down.
 
 ## Wanderers
 
@@ -1040,8 +1053,8 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
   town where samples can be handed in for 3 hours, then it packs up. The lab itself never moves.
 - **The season's end.** When the final stand is won, the cure goes to the faction the server
   gave the most Fame this season (summed over all players). The winner is saved to
-  `last_season.json`. What each ending means is in [LORE.md](LORE.md), "Endings";
-  next-season rules from the winner are **planned**.
+  `last_season.json`. What each ending means is in [LORE.md](LORE.md), "Endings"; what it
+  leaves the next season, the wipe and the hall of fame are in [Seasons](#seasons).
 
 ## Season pacing
 
@@ -1114,6 +1127,102 @@ timer or anything a player does by hand. Check real kills and specials per playe
 first sessions (the status log shows research and the stage every few minutes) against the
 targets above, and adjust **Research per sample** or the season speed.
 
+## Seasons
+
+Code: `Core/RZ_Seasons.c`, `Persistence/RZ_HallOfFame.c`. Settings: **Season** (top level).
+
+A season runs from a fresh outbreak to the cure (or a set number of weeks), then the server
+wipes and a new outbreak starts. Three things carry across: the last winner's starting rules,
+the rule sets the admin picks, and the hall of fame. Every effect nudges a system that already
+exists, and the combined effects are capped (below), so nothing runs away.
+
+**The season's number and clock.** A fresh season (no state, or after a wipe) numbers itself
+after the last one and starts its real-time clock. Both are saved, so a restart continues it.
+
+### Next-season rules from the last winner
+
+A fresh season reads `last_season.json` and starts with what the winning faction left behind
+([LORE.md](LORE.md#endings)). **Season > Winner rules** (on) turns it off. A season that ran out
+of time without a cure leaves nothing.
+
+| Last winner | This season |
+|---|---|
+| The Haven | 2 more safe towns (the quietest start at 5% infection), 1 more safehouse, Haven strength +5 |
+| Bastion | 1 more road post, 70% of posts are Bastion checkpoints, a **curfew** (Bastion keeps its full guard at night and its checkpoints go up first after dark), rare finds at police stations and on bodies ×1.3, Bastion strength +5 |
+| The Red Hand | 1 more road post, 70% of posts are Red Hand roadblocks, the **black market everywhere** (the fence opens at Known instead of Trusted and holds two more stolen doses), Red Hand strength +5 |
+| Halcyon | Starting infection ×0.8, spread ×0.9, specials ×1.15, Halcyon strength +5 |
+
+### Rule sets
+
+**Season > Rule sets** names the rule sets for this season, comma-separated (empty = none). Each
+is a list entry with the same fields as the winner's rules, so admins can add their own, or
+replace a built-in one by giving theirs the same name (**Season > Rule set list**).
+
+| Rule set | What it does |
+|---|---|
+| **Winter** | At night they hear further (heat spread ×1.5) and specials come out more (×1.2); safehouses eat 30% more food. Shelter matters more through existing systems: food, the safehouse's walls, the dark |
+| **Fog** | Fog counts from thinner fog (threshold ÷1.6), Fog Bank events 2.5 times as often, and infected spawn 15% closer all the time |
+| **Military Collapse** | Bastion strength −15 and Red Hand +10 (they start and settle there), 75% of road posts are roadblocks, rare finds at police stations and on bodies ×1.5 |
+| **No Vehicles** | No fixable cars, no supply trucks (so no shortages, and the Haven's truck food doesn't come), no contracts that hand players a vehicle (Recover the Bus, Car Theft, Mobile Lab, the car keys job) |
+
+*Simplified:* **Winter** doesn't make anyone cold: the mode has no temperature. Run a weather or
+temperature mod alongside it for real cold and snow; Winter only adds the rules above. **Fog**
+can't shorten the real view distance: the engine's fog is global and the mode never changes it.
+Set the server's weather foggy for that; the rule set only changes how the mode reads fog and
+spawns infected. The No Vehicles rule doesn't remove vehicles placed in the world or brought by
+other mods.
+
+**Caps** once everything is combined: starting infection ×0.6–1.3, safe towns 3, spread ×0.75–1.25,
+specials ×0.8–1.4, night specials up to ×1.3, night hearing up to ×2, upkeep up to ×1.5, fog
+threshold up to ÷2, fog banks up to ×3, sight down to ×0.7, safehouses +2 (never more than one per
+5 settlements), road posts +2 (6 at most), rare finds up to ×2 (half at most), strength ±20.
+Starting infection, safe towns, extra safehouses and starting strength apply only to a fresh
+season; the rest apply at once and follow the setting if it's changed.
+
+### The wipe cycle
+
+**Season > Wipe**: *On cure* (the default), *After weeks*, *whichever comes first*, or *Off* (by
+hand: **Wipe on start**, or delete `state.json`).
+
+- **On cure:** the world stays open for an **epilogue** of 48 real hours (Aftermath, with the
+  ending) after the final stand is won.
+- **After weeks:** 4 real weeks after the season started, cure or not. With no cure, the season
+  record says nobody won, and the next season gets no winner's rules.
+- **Warnings:** in the last 24 real hours, the broadcast says so every hour ("Residents are
+  advised that the zone will be reprocessed in about 6 hours."), with a plain line under it, and
+  first spawns are told.
+- **When it's due:** the season record is written (`last_season.json`), the hall of fame archives
+  the season, a marker (`wipe.json`) is written, and everyone is told the Zone resets at the next
+  restart. Nothing is deleted while the server runs.
+- **On the next start:** the old `state.json` is copied to `state_season<N>.json`, and a fresh
+  outbreak starts on the same map (new settlements' infection, safehouses, leaders, wanderers,
+  territory; profiles, standing and Legacy start over too). The hall of fame and the season
+  record stay.
+
+*Simplified:* the wipe only happens on a restart; the mode never restarts the server itself.
+Real time is the server's clock (`System.GetUnixTime`, a VERIFY in `Guidance/RZ_Guidance.c`); if it
+reads 0, the wipe never comes due.
+
+### Hall of fame
+
+Saved to `hall_of_fame.json`, which no wipe touches. **Season > Hall of fame** (on).
+
+| Record | Counted when |
+|---|---|
+| Most samples delivered | samples handed in at the lab or an annex |
+| Held the final stand | at the lab when the final stand is won (everyone there is listed) |
+| Most people rescued | a rescue brings people in (to a safehouse or onto the roads), for each rescuer |
+| Longest life | a life's clock, checked every minute (lives over 10 minutes) |
+| Most missions | each mission a player is paid for |
+| Champion of each faction | the most Fame anyone reached with that faction in one life |
+
+It's kept for **this season** and **all time**, plus a few lines for each of the last 10 seasons.
+Players get it on their first spawn of a session, after the news; `/hall` in chat shows it
+again, and the hall of fame menu (key **RZ_OpenHall**) shows it in full ([UI.md](UI.md)).
+
+*Simplified:* players are matched by their backend identity and shown by the name they last
+played under; at most 500 records are kept per list (the emptiest go first).
+
 ## Loose items
 
 Code: `Core/RZ_LooseItems.c`.
@@ -1142,5 +1251,7 @@ interactions. A save from another map is ignored. A profile that never spawned a
 lasting (no lives, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
 left before the server knew them (a wound described after a disconnect) gets a blank profile
 that is never stored, so no junk `local_` profiles pile up. Player bodies, inventories and vehicles use
-vanilla persistence ([MOD_STACK.md](MOD_STACK.md)). A season wipe ignores `state.json` but keeps
-`last_season.json`.
+vanilla persistence ([MOD_STACK.md](MOD_STACK.md)). The season's number, clock and rules and the
+notice boards' notes are in `state.json` too. A season wipe ([Seasons](#seasons)) backs `state.json` up to
+`state_season<N>.json` and ignores it; `last_season.json` (the last season's result) and
+`hall_of_fame.json` are kept.

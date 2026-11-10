@@ -744,6 +744,12 @@ class RZ_Mission_RecoverTheBus : RZ_Mission
 	protected ResourceName m_sPrefab;
 
 	//------------------------------------------------------------------------------------------------
+	override bool NeedsVehicle()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.CHAMPION, 45, 40);
@@ -931,6 +937,13 @@ class RZ_Mission_Memorial : RZ_Mission
 
 	protected static const int BODIES = 5;
 	protected static const float TAG_SECONDS = 8;
+
+	//------------------------------------------------------------------------------------------------
+	//! The bodies are listed by grid: never a rough area.
+	override bool NeedsExactLocation()
+	{
+		return true;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)

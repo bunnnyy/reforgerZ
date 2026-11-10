@@ -44,7 +44,18 @@ class RZ_CureResearch
 	static const int STABILISER_CAP = 5;
 	static const float MAX_RESEARCH_MULT = 2;	// background x Champion perk, per sample
 	static const int STOLEN_ANTIDOTE_CAP = 4;
+	static const int BLACK_MARKET_EXTRA = 2;	// season rules: the black market everywhere holds two more
 	static const float LAB_DEFENCE_RADIUS = 150;
+
+	//------------------------------------------------------------------------------------------------
+	//! Most stolen doses the Red Hand's black market holds (4, or 6 with the season's open black market).
+	static int StolenCap()
+	{
+		if (RZ_Seasons.Mods().m_bOpenBlackMarket)
+			return STOLEN_ANTIDOTE_CAP + BLACK_MARKET_EXTRA;
+
+		return STOLEN_ANTIDOTE_CAP;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_CureResearch(RZ_GameModeComponent gm)
@@ -59,7 +70,7 @@ class RZ_CureResearch
 		m_iMilestone = milestone;
 		m_bCured = cured;
 		m_iLabAntidotes = Math.ClampInt(labAntidotes, 0, AntidoteCap());
-		m_iStolenAntidotes = Math.ClampInt(stolenAntidotes, 0, STOLEN_ANTIDOTE_CAP);
+		m_iStolenAntidotes = Math.ClampInt(stolenAntidotes, 0, STOLEN_ANTIDOTE_CAP + BLACK_MARKET_EXTRA);
 		m_iLabStabilisers = Math.ClampInt(labStabilisers, 0, StabiliserCap());
 
 		// A restart in the middle of the final stand starts it again from the beginning
@@ -174,7 +185,7 @@ class RZ_CureResearch
 	int StealLabAntidotes(int count)
 	{
 		int taken = Math.Min(count, m_iLabAntidotes);
-		taken = Math.Min(taken, STOLEN_ANTIDOTE_CAP - m_iStolenAntidotes);
+		taken = Math.Min(taken, StolenCap() - m_iStolenAntidotes);
 		if (taken <= 0)
 			return 0;
 
@@ -243,6 +254,8 @@ class RZ_CureResearch
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		profile.m_iSamplesDelivered += count;
 		profile.m_iLifeSamples += count;
+		if (m_GM.GetHall())
+			m_GM.GetHall().AddSamples(playerId, count);
 
 		// Hunted by Halcyon: the lab takes the samples, but you get nothing for them
 		if (RZ_Reputation.IsHunted(halcyon))
@@ -431,7 +444,7 @@ class RZ_CureResearch
 		if (!m_bFinalStand)
 			return false;
 
-		m_iStolenAntidotes = Math.Min(STOLEN_ANTIDOTE_CAP, m_iStolenAntidotes + 2);
+		m_iStolenAntidotes = Math.Min(StolenCap(), m_iStolenAntidotes + 2);
 		LoseBatch("The batch is gone", "The Red Hand walked out of the clean room with the batch while Halcyon was holding the doors. It won't cure anyone in their hands: it needs the lab. Research has dropped to 90 percent, and Halcyon has to start the synthesis again.");
 		return true;
 	}
@@ -490,6 +503,10 @@ class RZ_CureResearch
 			int id = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(p);
 			m_GM.AddFame(id, RZ_EFaction.INSTITUTE, 50);
 			m_GM.AddFame(id, RZ_EFaction.SURVIVORS, 30);
+
+			// The hall of fame: they held the final stand
+			if (m_GM.GetHall())
+				m_GM.GetHall().AddStand(id);
 		}
 
 		m_GM.NotifyAll("THE CURE IS HERE", "The cure is going out over every frequency, and with it the proof. The quarantine is lifted and the gates are opening. This season is over: the next wipe starts a new outbreak, in a new Zone.");

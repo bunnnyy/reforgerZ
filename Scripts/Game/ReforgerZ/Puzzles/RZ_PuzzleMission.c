@@ -49,6 +49,13 @@ class RZ_PuzzleMission : RZ_Mission
 	protected static const int MAX_CODE = 12;
 
 	//------------------------------------------------------------------------------------------------
+	//! Puzzles give their own clues and grid references: never a rough area.
+	override bool NeedsExactLocation()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
 		m_Rng = new RZ_Rng(Math.RandomInt(1, 2000000000) + m_iId * 7919);

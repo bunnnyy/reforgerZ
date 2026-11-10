@@ -175,10 +175,14 @@ class RZ_Environment
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Guards at a holding: fewer at night, never under one if it had any.
-	int GuardCount(int normal)
+	//! Guards at a holding: fewer at night, never under one if it had any. Under a curfew
+	//! (season rules) Bastion keeps its full guard.
+	int GuardCount(int normal, int faction = -1)
 	{
 		if (!IsNight() || normal <= 0)
+			return normal;
+
+		if (faction == RZ_EFaction.MILITARY && RZ_Seasons.Mods().m_bCurfew)
 			return normal;
 
 		return Math.Max(1, normal - m_Settings.m_iNightGuardDrop);
@@ -218,7 +222,7 @@ class RZ_Environment
 			float f = RZ_Weather.Fog();
 			float w = RZ_Weather.Wind();
 			rain = r >= m_Settings.m_fRainFrom;
-			fog = f >= m_Settings.m_fFogFrom;
+			fog = f >= m_Settings.m_fFogFrom / RZ_Seasons.Mods().m_fFogMult;
 			storm = r >= m_Settings.m_fStormRain && w >= m_Settings.m_fStormWind;
 		}
 
@@ -242,19 +246,22 @@ class RZ_Environment
 		if (m_bRain)
 			heatMult = m_Settings.m_fRainHeatMult;
 
+		// Season rules: Winter nights carry sound further and bring out more specials; Fog
+		// shortens sight (infected spawn closer) all the time
+		RZ_SeasonMods season = RZ_Seasons.Mods();
 		float spread = 0;
 		if (m_bNight)
-			spread = m_Settings.m_fNightHeatSpread;
+			spread = Math.Min(0.5, m_Settings.m_fNightHeatSpread * season.m_fNightHearingMult);
 
 		m_GM.GetHeat().SetEnvironmentModifiers(heatMult, spread);
 
 		float specials = 1;
 		if (m_bNight)
-			specials = m_Settings.m_fNightSpecialMult;
+			specials = m_Settings.m_fNightSpecialMult * season.m_fNightSpecialMult;
 
-		float spawnDist = 1;
+		float spawnDist = season.m_fSightMult;
 		if (m_bFog)
-			spawnDist = m_Settings.m_fFogSpawnMult;
+			spawnDist = spawnDist * m_Settings.m_fFogSpawnMult;
 
 		m_GM.GetSpawner().SetEnvironmentModifiers(specials, spawnDist);
 	}

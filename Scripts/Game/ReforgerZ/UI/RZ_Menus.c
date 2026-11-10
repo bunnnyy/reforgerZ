@@ -1,5 +1,6 @@
 //! The ReforgerZ menus (docs/UI.md, "Screens"): Standing, Journal, Radio and the Map key, one
-//! tab each (Q/E switch tabs, Esc closes). Layouts and widget names are in UI/LAYOUTS.md; the
+//! tab each (Q/E switch tabs, Esc closes), and two on their own: the safehouse notice board and
+//! the hall of fame. Layouts and widget names are in UI/LAYOUTS.md; the
 //! presets are registered in a chimeraMenus.conf override (WORKBENCH_SETUP.md).
 //!
 //! Each menu asks RZ_PlayerUIComponent for its data when it opens and redraws when a new copy
@@ -14,7 +15,9 @@ modded enum ChimeraMenuPreset // VERIFY: ChimeraMenuPreset can be modded, and th
 	RZ_StandingMenu,
 	RZ_JournalMenu,
 	RZ_RadioLogMenu,
-	RZ_MapKeyMenu
+	RZ_MapKeyMenu,
+	RZ_NoticeBoardMenu,
+	RZ_HallOfFameMenu
 }
 
 //------------------------------------------------------------------------------------------------
@@ -614,4 +617,192 @@ class RZ_MapKeyMenu : RZ_MenuBase
 {
 	//------------------------------------------------------------------------------------------------
 	override protected int TabIndex() { return 3; }
+}
+
+//------------------------------------------------------------------------------------------------
+//! A menu that isn't one of the four tabs: Q/E do nothing, Esc and the close button close it.
+class RZ_StandaloneMenu : RZ_MenuBase
+{
+	//------------------------------------------------------------------------------------------------
+	override protected int TabIndex() { return -1; }
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnTabLeft(float value = 0, EActionTrigger reason = 0)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnTabRight(float value = 0, EActionTrigger reason = 0)
+	{
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The notice board at the safehouse you're at (World/RZ_NoticeBoard.c): the notes, newest first,
+//! and a box to write one (NoteInput, PostButton). Opened by the server when the board is read
+//! (UI > Board menus); without it the board is a notice and notes are written with /note.
+class RZ_NoticeBoardMenu : RZ_StandaloneMenu
+{
+	protected static bool s_bOpen;
+
+	//------------------------------------------------------------------------------------------------
+	static bool IsOpen()
+	{
+		return s_bOpen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected int DataVersion()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui)
+			return 0;
+
+		return ui.GetBoardVersion();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnOpened()
+	{
+		s_bOpen = true;
+		RZ_UIW.OnClick(m_wRoot, "PostButton", m_Click);
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.Ask(RZ_UIFeed.PAYLOAD_BOARD);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuClose()
+	{
+		s_bOpen = false;
+		super.OnMenuClose();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnClickOther(Widget w, string name)
+	{
+		if (name != "PostButton")
+			return;
+
+		string text = RZ_UIW.GetEditText(m_wRoot, "NoteInput");
+		if (text.IsEmpty())
+			return;
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.SendCommand(RZ_PlayerUIComponent.CMD_NOTE, text);
+
+		RZ_UIW.SetEditText(m_wRoot, "NoteInput", "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! B|safehouse|notes|longest note|can write, then N|author|age|text newest first
+	override protected void Redraw()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui)
+			return;
+
+		array<ref array<string>> recs = {};
+		Records(ui.GetBoard(), recs);
+		string notes = "";
+		bool canWrite = false;
+		int limit = 160;
+		foreach (array<string> f : recs)
+		{
+			string tag = RZ_UIText.Str(f, 0);
+			if (tag == "B")
+			{
+				string head = "NOTICE BOARD: " + RZ_UIText.Str(f, 1);
+				head.ToUpper();
+				RZ_UIW.SetText(m_wRoot, "Header", head);
+				limit = RZ_UIText.Int(f, 3);
+				canWrite = RZ_UIText.Int(f, 4) == 1;
+			}
+			else if (tag == "N")
+			{
+				notes += string.Format("%1, %2\n%3\n\n", RZ_UIText.Str(f, 1), RZ_UIText.Str(f, 2), RZ_UIText.Str(f, 3));
+			}
+		}
+
+		RZ_UIW.Show(m_wRoot, "Empty", notes.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "Notes", notes);
+		RZ_UIW.Show(m_wRoot, "WriteBlock", canWrite);
+		RZ_UIW.SetText(m_wRoot, "NoteLimit", string.Format("%1 characters at most. Everyone who comes by can read it.", limit));
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The hall of fame (Persistence/RZ_HallOfFame.c): this season's names, all time, and past seasons.
+//! Opened with RZ_OpenHall; /hall in chat gives the same as a notice.
+class RZ_HallOfFameMenu : RZ_StandaloneMenu
+{
+	//------------------------------------------------------------------------------------------------
+	override protected int DataVersion()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui)
+			return 0;
+
+		return ui.GetHallVersion();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnOpened()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.Ask(RZ_UIFeed.PAYLOAD_HALL);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! H|season, S and A|category|category name|name|value, P|season|winner|lines
+	override protected void Redraw()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		bool have = false;
+		if (ui)
+			have = !ui.GetHall().IsEmpty();
+
+		RZ_UIW.Show(m_wRoot, "Waiting", !have);
+		if (!have)
+			return;
+
+		array<ref array<string>> recs = {};
+		Records(ui.GetHall(), recs);
+		string seasonText = "";
+		string allText = "";
+		string pastText = "";
+		foreach (array<string> f : recs)
+		{
+			string tag = RZ_UIText.Str(f, 0);
+			if (tag == "H")
+			{
+				RZ_UIW.SetText(m_wRoot, "Header", "SEASON " + RZ_UIText.Str(f, 1));
+			}
+			else if (tag == "S" || tag == "A")
+			{
+				string line = string.Format("%1\n%2", RZ_UIText.Str(f, 2), RZ_UIText.Str(f, 3));
+				string value = RZ_UIText.Str(f, 4);
+				if (!value.IsEmpty())
+					line += "  (" + value + ")";
+
+				if (tag == "S")
+					seasonText += line + "\n\n";
+				else
+					allText += line + "\n\n";
+			}
+			else if (tag == "P")
+			{
+				pastText += string.Format("Season %1: the cure went to %2.\n%3\n\n", RZ_UIText.Str(f, 1), RZ_UIText.Str(f, 2), RZ_UIText.Str(f, 3));
+			}
+		}
+
+		if (seasonText.IsEmpty())
+			seasonText = "Nobody's name is on it yet.";
+
+		RZ_UIW.SetText(m_wRoot, "SeasonList", seasonText);
+		RZ_UIW.SetText(m_wRoot, "AllTimeList", allText);
+		RZ_UIW.SetText(m_wRoot, "PastList", pastText);
+	}
 }

@@ -20,7 +20,9 @@ enum RZ_ESafehouseAction
 	HEAL,			// the medic patches you up for Favor (Settlement and up)
 	DECLARE_BITE,	// tell them you're bitten: slows the infection once per life (every safehouse)
 	RADIO,			// mission intel from the safehouse radio (Settlement and up)
-	MEDS			// low-grade meds for a little Favor (every safehouse)
+	MEDS,			// low-grade meds for a little Favor (every safehouse)
+	BOARD_READ,		// read the notice board (World/RZ_NoticeBoard.c)
+	BOARD_WRITE		// how to leave a note on it (the note itself is typed: /note in chat, or the board menu)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -103,6 +105,25 @@ class RZ_SafehouseSettings
 
 	[Attribute("0.25", desc: "Chance every 10 min that a safehouse short on food sells a Hunted player's rough location to bounty hunters")]
 	float m_fLeakChance = 0.25;
+
+	// ---------------------------------------------------------------- Notice boards (RZ_NoticeBoard)
+	[Attribute("1", desc: "Notice boards: short notes players leave at a safehouse between sessions (cosmetic and social only)")]
+	bool m_bNoticeBoards = true;
+
+	[Attribute("8", UIWidgets.Slider, "Notes kept per board (the newest)", "1 20 1")]
+	int m_iBoardNotes = 8;
+
+	[Attribute("160", desc: "Longest note (characters); longer ones are cut")]
+	int m_iNoteLength = 160;
+
+	[Attribute("10", desc: "Real minutes between two notes from the same player (any board)")]
+	float m_fNoteGapMinutes = 10;
+
+	[Attribute("3", desc: "Real days before a note comes down by itself")]
+	float m_fNoteDays = 3;
+
+	[Attribute("", desc: "Word filter: words (lower case, comma-separated) blanked out of notes with asterisks. Empty = no filter")]
+	string m_sNoteFilter;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -120,6 +141,7 @@ class RZ_SafehouseSave
 	bool shortFood;
 	int lost;
 	float straggle;
+	ref array<ref RZ_Note> notes = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -137,6 +159,7 @@ class RZ_Safehouse
 	int m_iLost;		// people lost lately (hunger, raids, contracts), fading by one an hour (story arcs)
 	float m_fLostFade;
 	float m_fStraggleTimer;	// stragglers: one more person every few hours while fed
+	ref array<ref RZ_Note> m_aNotes = {};	// the notice board, oldest first (RZ_NoticeBoard)
 
 	// Runtime
 	ref array<IEntity> m_aBodies = {};
@@ -241,6 +264,11 @@ class RZ_Safehouse
 		s.shortFood = m_bShort;
 		s.lost = m_iLost;
 		s.straggle = m_fStraggleTimer;
+		foreach (RZ_Note n : m_aNotes)
+		{
+			s.notes.Insert(n);
+		}
+
 		return s;
 	}
 
@@ -258,6 +286,15 @@ class RZ_Safehouse
 		h.m_bShort = s.shortFood;
 		h.m_iLost = Math.Max(0, s.lost);
 		h.m_fStraggleTimer = Math.Max(0, s.straggle);
+		if (s.notes)
+		{
+			foreach (RZ_Note n : s.notes)
+			{
+				if (n)
+					h.m_aNotes.Insert(n);
+			}
+		}
+
 		return h;
 	}
 }
@@ -399,6 +436,7 @@ class RZ_Safehouses
 	protected ref array<string> m_aFoodWords = {};
 	protected ref map<int, float> m_mFireAt = new map<int, float>();
 	protected ref map<string, float> m_mLeakAt = new map<string, float>();
+	protected ref RZ_NoticeBoard m_Board;
 	protected float m_fClock;
 	protected float m_fCheckTimer;
 	protected float m_fLeakTimer;
@@ -421,11 +459,14 @@ class RZ_Safehouses
 		{
 			RZ_FoodHelper.DefaultKeywords(m_aFoodWords);
 		}
+
+		m_Board = new RZ_NoticeBoard(gm, settings, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	bool IsEnabled() { return m_Settings.m_bEnabled; }
 	int Count() { return m_aSafehouses.Count(); }
+	RZ_NoticeBoard GetBoard() { return m_Board; }
 	array<string> GetFoodKeywords() { return m_aFoodWords; }
 
 	//------------------------------------------------------------------------------------------------
@@ -530,6 +571,14 @@ class RZ_Safehouses
 			h.m_iFood = Math.Max(0, saved.food);
 			h.m_fUpkeepTimer = saved.upkeep;
 			h.m_bShort = saved.shortFood;
+			if (saved.notes)
+			{
+				foreach (RZ_Note sn : saved.notes)
+				{
+					if (sn)
+						h.m_aNotes.Insert(sn);
+				}
+			}
 		}
 
 		vector qm;
@@ -545,6 +594,11 @@ class RZ_Safehouses
 	protected void PickSafehouses()
 	{
 		int wanted = Math.Max(1, Math.Min(m_Settings.m_iCount, 1 + m_GM.GetSettlements().Count() / 8));
+
+		// Season rules (the Haven's season): one or two more, never more than one per 5 settlements
+		int bonus = RZ_Seasons.Mods().m_iSafehouseBonus;
+		if (bonus > 0)
+			wanted = Math.Min(wanted + bonus, Math.Max(wanted, m_GM.GetSettlements().Count() / 5));
 
 		vector qm;
 		if (m_GM.GetPerks().GetQuartermasterPos(RZ_EFaction.SURVIVORS, qm))
@@ -827,6 +881,10 @@ class RZ_Safehouses
 		if (h && joined > 0 && m_GM.GetHeadlines())
 			m_GM.GetHeadlines().OnRescue(joined, "the safehouse in " + h.m_sName);
 
+		// The hall of fame counts everyone brought in, safehouse or road
+		if (m_GM.GetHall() && rescuers)
+			m_GM.GetHall().AddRescues(rescuers, count);
+
 		if (!h || !rescuers)
 			return;
 
@@ -885,6 +943,7 @@ class RZ_Safehouses
 
 		m_fClock += dt;
 		UpdateBodies(players);
+		m_Board.Tick(dt);
 
 		// Losses fade: one an hour
 		foreach (RZ_Safehouse lossHouse : m_aSafehouses)
@@ -969,6 +1028,11 @@ class RZ_Safehouses
 		RZ_StoryArcs arcs = m_GM.GetStoryArcs();
 		if (arcs && arcs.UpkeepMult(idx) < 1)
 			need = Math.Max(1, RZ_Util.RoundToInt(need * arcs.UpkeepMult(idx)));
+
+		// Season rules (Winter): a cold season burns through more
+		float seasonMult = RZ_Seasons.Mods().m_fUpkeepMult;
+		if (seasonMult > 1)
+			need = Math.Max(1, RZ_Util.RoundToInt(need * seasonMult));
 
 		if (h.m_iFood >= need)
 		{
@@ -1261,6 +1325,8 @@ class RZ_Safehouses
 			case RZ_ESafehouseAction.DECLARE_BITE: DeclareBite(playerId, h); break;
 			case RZ_ESafehouseAction.RADIO: Radio(playerId, h, user); break;
 			case RZ_ESafehouseAction.MEDS: SellMeds(playerId, h, owner, user); break;
+			case RZ_ESafehouseAction.BOARD_READ: m_Board.Read(playerId, idx); break;
+			case RZ_ESafehouseAction.BOARD_WRITE: m_Board.HowToWrite(playerId, idx); break;
 		}
 	}
 
@@ -1551,7 +1617,7 @@ class RZ_Safehouses
 			if (m.m_bContract)
 				who = RZ_Factions.GetShortName(m.m_Req.m_eGiver);
 
-			text += string.Format("%1 (%2): %3\n", m.m_sTitle, who, m.GetWhereText(m_GM, user.GetOrigin()));
+			text += string.Format("%1 (%2): %3\n", m.m_sTitle, who, m.GetWhereTextFor(m_GM, user.GetOrigin(), playerId));
 			n++;
 		}
 
@@ -1564,7 +1630,8 @@ class RZ_Safehouses
 
 //------------------------------------------------------------------------------------------------
 //! A safehouse service. Put one per kind on the Haven quartermaster prefab (STATUS,
-//! DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS) and HEAL + DECLARE_BITE on the medic prefab.
+//! DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE) and HEAL +
+//! DECLARE_BITE on the medic prefab.
 //! It works at whichever safehouse it stands in; elsewhere it says there's none.
 class RZ_SafehouseAction : ScriptedUserAction
 {
@@ -1582,6 +1649,8 @@ class RZ_SafehouseAction : ScriptedUserAction
 			case RZ_ESafehouseAction.DECLARE_BITE: outName = "Tell them you've been bitten"; break;
 			case RZ_ESafehouseAction.RADIO: outName = "Listen to the safehouse radio"; break;
 			case RZ_ESafehouseAction.MEDS: outName = "Ask for something for the fever"; break;
+			case RZ_ESafehouseAction.BOARD_READ: outName = "Read the notice board"; break;
+			case RZ_ESafehouseAction.BOARD_WRITE: outName = "Leave a note on the board"; break;
 		}
 
 		return true;

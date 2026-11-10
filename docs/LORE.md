@@ -167,16 +167,21 @@ the Zone. It's flavour only, with no mechanics behind it:
 
 ## Endings
 
-A season ends one way: **the cure is finished** and the final stand at the lab is held.
+A season is won one way: **the cure is finished** and the final stand at the lab is held.
 The quarantine is lifted and the gates open. The cure goes to the faction the server gave
 the most Fame this season, and that faction decides how it reaches people:
 
-| Cure goes to | Aftermath | Next season starts with (planned) |
+| Cure goes to | Aftermath | Next season starts with |
 |---|---|---|
-| The Haven | The cure spreads person to person. Towns rebuild. | More safe towns, more Haven safehouses |
-| Bastion | Martial law. The cure only reaches those who comply. | Strong checkpoints, curfew, more military loot |
-| The Red Hand | The cure is sold to the highest bidder. | Lawless roads, the black market everywhere |
+| The Haven | The cure spreads person to person. Towns rebuild. | More safe towns, one more Haven safehouse |
+| Bastion | Martial law. The cure only reaches those who comply. | Stronger checkpoints, a curfew, more military kit |
+| The Red Hand | The cure is sold to the highest bidder. | More roadblocks, the black market open to anyone they know |
 | Halcyon | The cure is published openly. | Lower infection everywhere, more specials (they adapt) |
+
+Each is a small, capped nudge; the numbers, the rule sets an admin can add (Winter, Fog,
+Military Collapse, No Vehicles) and the wipe are in [DESIGN.md](DESIGN.md#seasons). A season can
+also end without a cure when the server wipes after a set number of weeks: then nobody won, and
+the next season starts plain.
 
 Urgency comes from inside: the outbreak keeps slowly getting worse (stages, spread,
 adaptation) until the cure is done. Even a win doesn't mean leaving: the next season is a

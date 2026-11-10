@@ -33,6 +33,14 @@ class RZ_SaveData
 	ref array<int> seasonFame = {};
 	int seasonWinner = -1;
 
+	// The season's number and clock, whose rules it started with, and a wipe that came due
+	// (Core/RZ_Seasons.c). Older saves have 0 here: the season is then counted from now.
+	int seasonNumber;
+	int seasonStartUnix;
+	int cureUnix;
+	int rulesWinner = -1;
+	bool wipeDue;
+
 	bool hasLab;
 	float labX;
 	float labZ;
@@ -74,12 +82,15 @@ class RZ_SaveData
 }
 
 //! The result of the last finished season. Kept in its own file so a season
-//! wipe (m_bWipeOnStart, or deleting state.json) doesn't lose it.
+//! wipe (the wipe cycle, Wipe on start, or deleting state.json) doesn't lose it. The next fresh
+//! season reads it for its starting rules (Core/RZ_Seasons.c).
 class RZ_SeasonRecord
 {
 	string world;
-	int winner = -1;
+	int season;
+	int winner = -1;		// -1: the season ran out of time without a cure
 	string winnerName;
+	string endedBy = "cure";	// "cure" or "time"
 	ref array<int> fame = {};
 }
 
@@ -143,10 +154,24 @@ class RZ_Persistence
 	//------------------------------------------------------------------------------------------------
 	static void Save(RZ_SaveData data)
 	{
+		SaveTo(data, PATH);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The state written somewhere else (a season wipe's backup).
+	static void SaveTo(RZ_SaveData data, string path)
+	{
 		FileIO.MakeDirectory(DIR);
 		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext();
 		ctx.WriteValue("state", data);
-		if (!ctx.SaveToFile(PATH))
-			RZ_Log.Warn("Could not write " + PATH);
+		if (!ctx.SaveToFile(path))
+			RZ_Log.Warn("Could not write " + path);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a wiped season's state is kept: state_season3.json.
+	static string BackupPath(int season)
+	{
+		return string.Format("%1/state_season%2.json", DIR, Math.Max(0, season));
 	}
 }

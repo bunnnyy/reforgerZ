@@ -1668,7 +1668,7 @@ class RZ_Leaders
 
 			string where = job.GetLocationName(m_GM);
 			if (user)
-				where = job.GetWhereText(m_GM, user.GetOrigin());
+				where = job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId);
 
 			string bonus = "";
 			if (job.HasBonus(m_GM, playerId))

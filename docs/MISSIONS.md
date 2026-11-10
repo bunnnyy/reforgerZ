@@ -42,6 +42,20 @@ How the code does it:
   capture a special alive, drive a vehicle into a zone, pay in health, or follow a chain of
   steps ([DESIGN.md](DESIGN.md#mission-building-blocks)). Puzzle-style missions add clues and
   answer actions.
+- **Rough areas.** A contract names a circle, not a spot: "Somewhere around Morton: within 500 m
+  of a point 1.2 km NE". The circle holds the real spot but is centred off it (30–70% of the
+  radius). Within 500 m of the spot a player learns it, and is told if it was offered to them.
+  **Radio Operators** and players **Trusted** (or more) with the giver get the exact spot from the
+  start. Offers, the quartermaster's and safehouse radio's lists, leaders, wanderers, the Haven
+  neighbours perk and the journal all use the same rule (**Contracts > Rough radius**, 0 = always
+  exact). Contracts that give their own positions keep them: puzzles (their clues and grids),
+  points to visit (Curfew Patrol, Install Sensors, Recon, Burn the Bodies, Water Survey, leaders'
+  visits), Signal Fires, the Memorial, the car keys job and Medical Drone (its brief already
+  gives a ping, give or take 250 m). World events stay exact. *Simplified:* the extra lines some
+  contracts add (drop points, grids) also wait until you're close; a contract's own progress
+  messages may still give directions.
+- **No Vehicles** (a season rule set, [DESIGN.md](DESIGN.md#seasons)) takes out Recover the Bus,
+  Car Theft, Mobile Lab and the car keys job.
 - **Missions that need an optional prefab** never appear until it's set.
 - **Needs and morale** make matching contracts more likely ([REPUTATION.md](REPUTATION.md),
   "Morale, needs, truces and feuds").

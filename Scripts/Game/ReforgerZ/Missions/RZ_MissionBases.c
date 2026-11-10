@@ -140,6 +140,13 @@ class RZ_Mission_VisitPoints : RZ_Mission
 	protected string m_sPointName = "point";
 
 	//------------------------------------------------------------------------------------------------
+	//! The points to visit are the job: their grids are given: never a rough area.
+	override bool NeedsExactLocation()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void AddPoint(vector p)
 	{
 		m_aPoints.Insert(p);

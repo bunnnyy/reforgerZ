@@ -1513,6 +1513,8 @@
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=2"], "name": "Get patched up"},
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=3"], "name": "Tell them you're bitten"},
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=5"], "name": "Ask for something for the fever"},
+    {"cls": "RZ_SafehouseAction", "values": ["m_eKind=6"], "name": "Read the notice board"},
+    {"cls": "RZ_SafehouseAction", "values": ["m_eKind=7"], "name": "Leave a note on the board"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"}
    ],
    "slots": ["m_sQuartermasterHaven"],
@@ -3948,6 +3950,12 @@
    "covers": "Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1)"
   },
   {
+   "category": "ReforgerZ",
+   "object": "Season",
+   "field": "m_SeasonSettings",
+   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure; Off, After weeks, or the first of both), epilogue (48 h), weeks (4), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
+  },
+  {
    "category": "World",
    "object": "(top level)",
    "covers": "Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off)"
@@ -4026,7 +4034,7 @@
    "category": "Missions",
    "object": "Contracts",
    "field": "m_ContractSettings",
-   "covers": "Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs"
+   "covers": "**Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs"
   },
   {
    "category": "Puzzles",
@@ -4043,7 +4051,7 @@
    "category": "Haven",
    "object": "Safehouses",
    "field": "m_SafehouseSettings",
-   "covers": "**Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, caught chance (0.3 a minute in Final), declare multipliers by tier (1.15/1.25/1.4/1.5), meds cost (5), stragglers (4 h), leak chance (0.25), body prefabs"
+   "covers": "**Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, caught chance (0.3 a minute in Final), declare multipliers by tier (1.15/1.25/1.4/1.5), meds cost (5), stragglers (4 h), leak chance (0.25), **notice boards** (on, 8 notes, 160 characters, one every 10 min, 3 days, **note filter**), body prefabs"
   },
   {
    "category": "Wanderers",
@@ -4155,7 +4163,7 @@
    "category": "UI",
    "object": "UI",
    "field": "m_UISettings",
-   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (3), queue (8), radio log size (40), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on) ([UI/LAYOUTS.md](../UI/LAYOUTS.md))"
+   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (3), queue (8), radio log size (40), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu) ([UI/LAYOUTS.md](../UI/LAYOUTS.md))"
   },
   {
    "category": "Map",
@@ -4165,6 +4173,21 @@
   {"category": "Debug", "object": "(top level)", "covers": "Status log every few minutes (on)"}
  ],
  "settings": [
+  {
+   "field": "m_SeasonSettings",
+   "category": "ReforgerZ",
+   "label": "Season",
+   "cls": "RZ_SeasonSettings",
+   "defaults": {
+    "m_bWinnerRules": "1",
+    "m_sRuleSets": "",
+    "m_eWipeMode": "1",
+    "m_fEpilogueHours": "48",
+    "m_iWipeWeeks": "4",
+    "m_fWarnHours": "24",
+    "m_bHallOfFame": "1"
+   }
+  },
   {
    "field": "m_TownMemorySettings",
    "category": "World",
@@ -4284,6 +4307,8 @@
    "label": "Contracts",
    "cls": "RZ_ContractSettings",
    "defaults": {
+    "m_fRoughRadius": "500",
+    "m_fRevealDistance": "500",
     "m_iMaxEscorts": "3",
     "m_fEscortLeash": "150",
     "m_fEscortBodyRadius": "300",
@@ -4366,7 +4391,13 @@
     "m_fDeclareTown": "1.5",
     "m_iMedsCost": "5",
     "m_fStragglerHours": "4",
-    "m_fLeakChance": "0.25"
+    "m_fLeakChance": "0.25",
+    "m_bNoticeBoards": "1",
+    "m_iBoardNotes": "8",
+    "m_iNoteLength": "160",
+    "m_fNoteGapMinutes": "10",
+    "m_fNoteDays": "3",
+    "m_sNoteFilter": ""
    }
   },
   {
@@ -4812,7 +4843,8 @@
     "m_bNoiseMeter": "1",
     "m_fResyncSeconds": "60",
     "m_fMapRefreshSeconds": "20",
-    "m_bLockLoadouts": "1"
+    "m_bLockLoadouts": "1",
+    "m_bBoardMenus": "0"
    }
   }
  ],

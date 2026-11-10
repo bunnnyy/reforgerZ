@@ -59,6 +59,11 @@ class RZ_Mission
 	int m_iJobLoyalty = -1;
 	int m_iJobTone;					// RZ_Leaders.TONE_* bits, which traits lean toward
 
+	// Rough areas (docs/MISSIONS.md, "Who gets offered what"): contracts name a circle, not a spot
+	ref array<int> m_aExactFor = {};	// players who came close: they know the spot now
+	protected vector m_vRoughOffset;	// the circle's centre, from the real spot (follows it if it moves)
+	protected bool m_bRoughReady;
+
 	//------------------------------------------------------------------------------------------------
 	//! Set giver, rival, rewards and requirements here. Runs before GetWeight and Setup.
 	void Configure(RZ_GameModeComponent gm)
@@ -130,6 +135,21 @@ class RZ_Mission
 			return false;
 
 		return RZ_Util.DistXZ(l.m_vPos, playerPos) <= 80;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True for contracts that must give exact positions: puzzles and others that give their own
+	//! clues or grid references, points to visit, a rough ping of their own. Never a rough area.
+	bool NeedsExactLocation()
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True for missions that hand players a vehicle (off under the season's No Vehicles rule).
+	bool NeedsVehicle()
+	{
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -226,10 +246,168 @@ class RZ_Mission
 			}
 		}
 
+		RevealNear(gm, ids, players);
 		OnUpdate(gm, dt, ids, players);
 
 		if (m_eState == RZ_EMissionState.ACTIVE && m_fTimeLeft <= 0)
 			OnTimeUp(gm);
+	}
+
+	// ================================================================ Rough areas
+	//------------------------------------------------------------------------------------------------
+	//! The rough-area radius for this mission, 0 if it gives exact positions.
+	protected float RoughRadius(RZ_GameModeComponent gm)
+	{
+		if (!m_bContract || m_bGlobal || NeedsExactLocation())
+			return 0;
+
+		RZ_ContractSettings cs = gm.GetContractSettings();
+		if (!cs)
+			return 0;
+
+		return Math.Max(0, cs.m_fRoughRadius);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float RevealDistance(RZ_GameModeComponent gm)
+	{
+		RZ_ContractSettings cs = gm.GetContractSettings();
+		if (!cs)
+			return 500;
+
+		return Math.Max(50, cs.m_fRevealDistance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who knows only the rough area, whatever their distance: everyone but Radio Operators,
+	//! players Trusted (or more) with the giver, and those who have been close.
+	protected bool RoughByStanding(RZ_GameModeComponent gm, int playerId)
+	{
+		if (RoughRadius(gm) <= 0)
+			return false;
+
+		if (playerId <= 0)
+			return true;
+
+		if (m_aExactFor.Contains(playerId))
+			return false;
+
+		RZ_Background bg = gm.GetPlayerBackground(playerId);
+		if (bg && bg.m_bRadioIntel)
+			return false;
+
+		RZ_ETier tier = gm.GetTier(playerId, m_Req.m_eGiver);
+		return !RZ_Reputation.IsAtLeast(tier, RZ_ETier.TRUSTED) || RZ_Reputation.IsHunted(tier);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Does this player, standing at `from`, get only the rough area?
+	bool IsRoughFor(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (!RoughByStanding(gm, playerId))
+			return false;
+
+		return from == vector.Zero || RZ_Util.DistXZ(from, m_vPos) > RevealDistance(gm);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rough circle's centre: the real spot moved a random 30-70% of the radius, once.
+	vector GetRoughCenter(RZ_GameModeComponent gm)
+	{
+		if (!m_bRoughReady)
+		{
+			m_bRoughReady = true;
+			float r = RoughRadius(gm);
+			float angle = Math.RandomFloat(0, Math.PI2);
+			float dist = Math.RandomFloat(r * 0.3, r * 0.7);
+			m_vRoughOffset = Vector(Math.Cos(angle) * dist, 0, Math.Sin(angle) * dist);
+		}
+
+		return m_vPos + m_vRoughOffset;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Somewhere around Morton: within 500 m of a point 1.2 km NE".
+	string GetRoughWhereText(RZ_GameModeComponent gm, vector from)
+	{
+		string text = string.Format("Somewhere %1: within %2 m of a point", GetRoughAreaName(gm), RZ_Util.RoundToInt(RoughRadius(gm)));
+		if (from != vector.Zero)
+			text += " " + RZ_Util.DirectionText(from, GetRoughCenter(gm));
+		else
+			text += " at grid " + RZ_SettlementScanner.GridReference(GetRoughCenter(gm));
+
+		return text + string.Format(". You'll know the spot within %1 m.", RZ_Util.RoundToInt(RevealDistance(gm)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "around Morton", or "near grid 045-112" without a settlement.
+	string GetRoughAreaName(RZ_GameModeComponent gm)
+	{
+		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
+		if (s)
+			return "around " + s.m_sName;
+
+		return "near grid " + RZ_SettlementScanner.GridReference(GetRoughCenter(gm));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where text for one player: the rough area, or the full text (GetWhereText) once they know
+	//! the spot. Every brief, radio list and journal entry for a player goes through here.
+	string GetWhereTextFor(RZ_GameModeComponent gm, vector from, int playerId)
+	{
+		if (IsRoughFor(gm, playerId, from))
+			return GetRoughWhereText(gm, from);
+
+		if (from == vector.Zero)
+			return GetLocationName(gm);
+
+		return GetWhereText(gm, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place's name for one player (the journal's "where"): "around Morton" while rough.
+	string GetLocationNameFor(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (IsRoughFor(gm, playerId, from))
+			return GetRoughAreaName(gm) + string.Format(" (within %1 m)", RZ_Util.RoundToInt(RoughRadius(gm)));
+
+		return GetLocationName(gm);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Distance and direction for one player (the journal and the guidance): to the rough
+	//! circle's centre while rough, "" without a position.
+	string GetDirectionFor(RZ_GameModeComponent gm, vector from, int playerId)
+	{
+		if (m_bGlobal || from == vector.Zero)
+			return "";
+
+		if (IsRoughFor(gm, playerId, from))
+			return "about " + RZ_Util.DirectionText(from, GetRoughCenter(gm));
+
+		return RZ_Util.DirectionText(from, m_vPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Players who were only given the rough area and come within the reveal distance learn the
+	//! spot (and are told, if the contract was offered to them).
+	protected void RevealNear(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players)
+	{
+		if (RoughRadius(gm) <= 0)
+			return;
+
+		float reveal = RevealDistance(gm);
+		foreach (int i, IEntity p : players)
+		{
+			int playerId = ids[i];
+			if (m_aExactFor.Contains(playerId) || RZ_Util.DistXZ(p.GetOrigin(), m_vPos) > reveal)
+				continue;
+
+			bool wasRough = RoughByStanding(gm, playerId);
+			m_aExactFor.Insert(playerId);
+			if (wasRough && m_aOfferedTo.Contains(playerId))
+				gm.NotifyPlayer(playerId, m_sTitle, "This is the place. " + GetWhereText(gm, p.GetOrigin()));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -346,7 +346,15 @@ class RZ_Territory
 		bool fresh = !m_Restored;
 		m_Restored = null;
 		if (fresh)
+		{
 			m_iSeed = Math.RandomInt(1, 2000000000);
+
+			// Season rules: a faction starts a little stronger or weaker (and settles there)
+			for (int of = 0; of < RZ_Factions.COUNT; of++)
+			{
+				m_aStrength[of] = StrengthMid(of);
+			}
+		}
 
 		if (m_fNextTick <= m_fClock)
 			ScheduleTick();
@@ -940,6 +948,13 @@ class RZ_Territory
 
 	// ================================================================ Strength
 	//------------------------------------------------------------------------------------------------
+	//! Where a faction's strength settles: the middle, moved by the season's rules (at most 20).
+	protected float StrengthMid(int f)
+	{
+		return Math.Clamp(STRENGTH_MID + RZ_Seasons.Mods().StrengthOffset(f), STRENGTH_MIN + 10, STRENGTH_MAX - 10);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Faction strength 10..90 (starts at 50, drifts back to the middle).
 	void AddStrength(int f, float delta)
 	{
@@ -1026,9 +1041,10 @@ class RZ_Territory
 			m_fDriftTimer = 0;
 			for (int f = 0; f < RZ_Factions.COUNT; f++)
 			{
-				if (m_aStrength[f] > STRENGTH_MID + 1)
+				float mid = StrengthMid(f);
+				if (m_aStrength[f] > mid + 1)
 					AddStrength(f, -2);
-				else if (m_aStrength[f] < STRENGTH_MID - 1)
+				else if (m_aStrength[f] < mid - 1)
 					AddStrength(f, 2);
 			}
 		}
@@ -1553,7 +1569,7 @@ class RZ_Territory
 		RZ_Environment env = m_GM.GetEnvironment();
 		if (env && env.IsNight())
 		{
-			guards = env.GuardCount(guards);
+			guards = env.GuardCount(guards, h.m_eFaction);
 			guardMin = 5;
 			guardMax = 15;
 		}

@@ -345,9 +345,11 @@ class RZ_MissionManager
 	protected void Offer(RZ_Mission m, int playerId, IEntity player)
 	{
 		m.m_aOfferedTo.Insert(playerId);
-		string where = m.GetLocationName(m_GM);
+		vector from = vector.Zero;
 		if (player)
-			where = m.GetWhereText(m_GM, player.GetOrigin());
+			from = player.GetOrigin();
+
+		string where = m.GetWhereTextFor(m_GM, from, playerId);
 
 		string bonus = "";
 		if (m.HasBonus(m_GM, playerId))
@@ -379,7 +381,7 @@ class RZ_MissionManager
 			if (!m.m_aOfferedTo.Contains(playerId))
 				m.m_aOfferedTo.Insert(playerId);
 
-			text += string.Format("%1: %2\n", m.m_sTitle, m.GetWhereText(m_GM, player.GetOrigin()));
+			text += string.Format("%1: %2\n", m.m_sTitle, m.GetWhereTextFor(m_GM, player.GetOrigin(), playerId));
 		}
 
 		return text;
@@ -438,7 +440,7 @@ class RZ_MissionManager
 			if (m.m_bContract)
 				continue;
 
-			text += string.Format("%1: %2\n", m.m_sTitle, m.GetWhereText(m_GM, player.GetOrigin()));
+			text += string.Format("%1: %2\n", m.m_sTitle, m.GetWhereTextFor(m_GM, player.GetOrigin(), playerId));
 		}
 
 		string contracts = "";
@@ -450,7 +452,7 @@ class RZ_MissionManager
 			if (!c.m_aOfferedTo.Contains(playerId))
 				c.m_aOfferedTo.Insert(playerId);
 
-			contracts += string.Format("%1 (%2): %3\n", c.m_sTitle, RZ_Factions.GetShortName(c.m_Req.m_eGiver), c.GetWhereText(m_GM, player.GetOrigin()));
+			contracts += string.Format("%1 (%2): %3\n", c.m_sTitle, RZ_Factions.GetShortName(c.m_Req.m_eGiver), c.GetWhereTextFor(m_GM, player.GetOrigin(), playerId));
 		}
 
 		if (!contracts.IsEmpty())
@@ -480,6 +482,10 @@ class RZ_MissionManager
 
 			m.Configure(m_GM);
 			if (m.m_bContract != contract)
+				continue;
+
+			// Season rules (No Vehicles): nothing that hands players a vehicle
+			if (m.NeedsVehicle() && RZ_Seasons.Mods().m_bNoVehicles)
 				continue;
 
 			if (!m.m_Req.IsWorldOk(m_GM, ids.Count()))
@@ -581,6 +587,8 @@ class RZ_MissionManager
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		profile.m_iMissionsCompleted++;
 		profile.m_iLifeMissions++;
+		if (m_GM.GetHall())
+			m_GM.GetHall().AddMission(playerId);
 
 		string text = m.m_sTitle + " is done.";
 		if (m.m_bHasGiver)

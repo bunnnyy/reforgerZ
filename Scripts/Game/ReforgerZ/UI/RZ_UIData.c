@@ -95,6 +95,9 @@ class RZ_UISettings
 	[Attribute("1", desc: "The deploy menu refuses background loadouts the player hasn't unlocked (UI/RZ_LoadoutLock.c). Off: picking one plays as the default background with its gear")]
 	bool m_bLockLoadouts = true;
 
+	[Attribute("0", desc: "The safehouse notice board opens as a menu with a box to write in (RZ_NoticeBoardMenu; needs its layout and chimeraMenus entry, UI/LAYOUTS.md). Off = notices, and notes are written with /note in chat")]
+	bool m_bBoardMenus = false;
+
 	protected static ref RZ_UISettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -554,6 +557,25 @@ class RZ_UIW
 			return;
 
 		img.LoadImageFromSet(0, set, icon); // VERIFY: ImageWidget.LoadImageFromSet(index, imageset, name)
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The text typed into an edit box, "" if there's none.
+	static string GetEditText(Widget root, string name)
+	{
+		EditBoxWidget box = EditBoxWidget.Cast(Find(root, name));
+		if (!box)
+			return "";
+
+		return box.GetText(); // VERIFY: EditBoxWidget.GetText() and SetText(string)
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void SetEditText(Widget root, string name, string text)
+	{
+		EditBoxWidget box = EditBoxWidget.Cast(Find(root, name));
+		if (box)
+			box.SetText(text);
 	}
 
 	//------------------------------------------------------------------------------------------------

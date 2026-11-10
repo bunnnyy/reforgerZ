@@ -435,7 +435,7 @@ class RZ_FactionPerks
 
 		RZ_Mission m = m_GM.GetMissions().FindNearestFor(playerId, ent.GetOrigin());
 		if (m)
-			m_GM.NotifyPlayer(playerId, "Haven neighbours", string.Format("Nearest job: %1, %2.", m.m_sTitle, m.GetWhereText(m_GM, ent.GetOrigin())));
+			m_GM.NotifyPlayer(playerId, "Haven neighbours", string.Format("Nearest job: %1, %2.", m.m_sTitle, m.GetWhereTextFor(m_GM, ent.GetOrigin(), playerId)));
 	}
 
 	//------------------------------------------------------------------------------------------------

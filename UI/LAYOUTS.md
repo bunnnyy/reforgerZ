@@ -115,6 +115,7 @@ Frame  (root, 460 wide, height fits content)
 Four menus share a frame: a heading, a sub-line (`Header`), four tabs (Standing, Journal, Radio,
 Map key; the open one in bone with dark text) and a footer of keys. Build the frame once and copy
 it. Root: a full-screen `Frame` with a dark overlay (`#08090A` at 75%) so the world shows faintly.
+The notice board and the hall of fame use the same frame without the four tabs.
 
 **Mouse.** The four tabs are `Button`s named `Tab0` to `Tab3` (Standing, Journal, Radio, Map key),
 with a `Text` inside; add a small `Button` named `CloseButton` (an × at the top right). Put each
@@ -122,7 +123,7 @@ list (`List`, `Log`) inside a `ScrollLayout` so the wheel scrolls it. Menus show
 open; if yours doesn't, check the menu's entry in `chimeraMenus.conf`.
 
 Register the menus in a `chimeraMenus.conf` override (copy the vanilla one into the addon and
-add four entries), each with its layout and class:
+add six entries), each with its layout and class:
 
 | Preset | Class | Layout |
 |---|---|---|
@@ -130,10 +131,12 @@ add four entries), each with its layout and class:
 | `RZ_JournalMenu` | `RZ_JournalMenu` | `RZ_JournalMenu.layout` |
 | `RZ_RadioLogMenu` | `RZ_RadioLogMenu` | `RZ_RadioLogMenu.layout` |
 | `RZ_MapKeyMenu` | `RZ_MapKeyMenu` | `RZ_MapKeyMenu.layout` |
+| `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu.layout` |
+| `RZ_HallOfFameMenu` | `RZ_HallOfFameMenu` | `RZ_HallOfFameMenu.layout` |
 
-Add four input actions to the addon's input config (a `chimeraInputCommon.conf` override), in the
+Add five input actions to the addon's input config (a `chimeraInputCommon.conf` override), in the
 character context: `RZ_OpenStanding` (default **K**), `RZ_OpenJournal` (**J**), `RZ_OpenRadio`
-(**U**), and `RZ_RadioFilter` (**F**, menu context). Esc, Q/E and up/down use the vanilla menu actions.
+(**U**), `RZ_OpenHall` (**O**, or any free key), and `RZ_RadioFilter` (**F**, menu context). Esc, Q/E and up/down use the vanilla menu actions.
 
 ### Standing: `RZ_StandingMenu.layout`
 
@@ -232,6 +235,44 @@ Frame (root)
 
 Static: the menu frame and the legend panel from `UI/Mockups/map_legend.html`: one row per marker (icon 32 × 32 in its colour, name in
 bold 15, one line in 13 dim). No names are looked up.
+
+### Notice board: `RZ_NoticeBoardMenu.layout`
+
+Not a tab: no `Tab0`–`Tab3` (the menu frame's heading, `Header` and `CloseButton` only). Opened by
+the server when a player reads a safehouse board with **UI > Board menus** on; turn that on only
+once this layout and its `chimeraMenus.conf` entry exist, or reading the board shows nothing.
+
+```
+Frame (root)
+├─ (menu frame: Text Header "NOTICE BOARD: MORTON", Button CloseButton)
+├─ Frame  (board panel, at (72, 168), 1100 × 840, a cork or plank texture, or the panel colour)
+│  ├─ Text  Notes        multi-line, 18, dark text #23211C on paper-coloured cards (or bone on the panel), inside a ScrollLayout
+│  └─ Text  Empty        "Nothing pinned up." centred
+└─ Frame  WriteBlock     at (1200, 168), 648 × 300, hidden for exiles
+   ├─ Text     (label "LEAVE A NOTE")
+   ├─ EditBox  NoteInput   648 × 160, multi-line, 16
+   ├─ Text     NoteLimit   13, dim
+   └─ Button   PostButton  with a Text "PIN IT UP"
+```
+
+### Hall of fame: `RZ_HallOfFameMenu.layout`
+
+Not a tab either: the menu frame's heading ("HALL OF FAME"), `Header` (the season) and `CloseButton`.
+
+```
+Frame (root)
+├─ (menu frame: heading "HALL OF FAME", Text Header "SEASON 3", Button CloseButton)
+├─ Text   Waiting        centred, "Reading the names..." (until the data arrives)
+├─ Frame  (this season, at (72, 168), 580 × 840)
+│  ├─ Text (label "THIS SEASON")
+│  └─ Text SeasonList    multi-line, 16 (each record: the category, then the name and value)
+├─ Frame  (all time, at (670, 168), 580 × 840)
+│  ├─ Text (label "ALL TIME")
+│  └─ Text AllTimeList   multi-line, 16
+└─ Frame  (past seasons, at (1268, 168), 580 × 840)
+   ├─ Text (label "PAST SEASONS")
+   └─ Text PastList      multi-line, 14, dim, inside a ScrollLayout
+```
 
 ## Map icon: `RZ_MapIcon.layout`
 

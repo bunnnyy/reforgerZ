@@ -74,11 +74,23 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Background picker | `background_picker.png` | A panel in the vanilla deploy menu: the picked background's name, perk, flaw, starting standing, starting gear, locked or available (with how to unlock), Legacy toward the Drifter. Locked loadouts are unavailable in the menu itself | `RZ_BackgroundPanelComponent`, `RZ_LoadoutLock.c` | Written |
 | Radio log | `radio_log.png` | What you heard this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice; a filter | `RZ_RadioLogMenu` | Written; the channel list is static |
 | Map key | `map_legend.png` | The marker icons in use, with one line each | `RZ_MapKeyMenu` | Layout only |
+| Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), and a box to write one with a Post button. Opened when you read the board, with **UI > Board menus** on | `RZ_NoticeBoardMenu` | Written; no mockup |
+| Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallOfFameMenu` | Written; no mockup |
 | The map | — | The marker icons on the vanilla map, per player ([below](#the-map)) | `RZ_MapIconsUI` | Written |
 
 The menus share one frame: Standing, Journal, Radio and Map key are tabs (Q/E), Esc closes. Keys:
-**K** standing, **J** journal, **U** radio, **F** filter in the radio log (input actions you add;
-[LAYOUTS.md](../UI/LAYOUTS.md#menus)). **Mouse:** click a tab to switch, the close button to
+**K** standing, **J** journal, **U** radio, **F** filter in the radio log, **O** the hall of fame
+(input actions you add; [LAYOUTS.md](../UI/LAYOUTS.md#menus)). The notice board and the hall of
+fame aren't tabs: Esc or the close button closes them.
+
+**Chat commands** (`RZ_ChatCommands`, client): `/note <text>` pins a note on the board you're at,
+`/noteclear` and `/noteclear all` clear boards (server admins), `/hall` shows the hall of fame
+as a notice. They work without any layout. Without the board menu, reading the board is a
+notice and notes are written with `/note`.
+
+**Rough areas in the journal.** A contract's "where" and direction are the rough circle ("around
+Morton (within 500 m)", "about 1.2 km NE") until the player knows the spot
+([MISSIONS.md](MISSIONS.md#who-gets-offered-what)). **Mouse:** click a tab to switch, the close button to
 close, a journal row to select it, the filter chip to cycle the radio filter; the wheel scrolls the
 lists (they sit in a ScrollLayout). Those widgets are Buttons in the layouts.
 
@@ -106,10 +118,11 @@ Code: `Scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 
 | Class | Runs on | Does |
 |---|---|---|
-| `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes** (the timer also resyncs every minute; the client counts down in between). Builds the standing, journal, background and map data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
-| `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, one request RPC from the client (at most every 2 s), and the client's cache. Keeps the radio log on the client for this life |
+| `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes** (the timer also resyncs every minute; the client counts down in between). Builds the standing, journal, background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
+| `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each at most every 2 s), and the client's cache. Keeps the radio log on the client for this life. A notice board payload from the server opens the board menu |
+| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/hall`, sent as commands to the server, which checks them again. Registered with the first notice |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplay`) | Draws the HUD five times a second from the cache; shows the notice cards |
-| `RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu` | client (`ChimeraMenuBase`) | Ask for their data on open, redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them |
+| `RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu`, `RZ_NoticeBoardMenu`, `RZ_HallOfFameMenu` | client (`ChimeraMenuBase`) | Ask for their data on open, redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them |
 | `RZ_BackgroundPanelComponent` | client (widget handler) | Watches the picked loadout in the deploy menu and shows its background and gear |
 | `SCR_BasePlayerLoadout` (modded, `RZ_LoadoutLock.c`) | server and client | Makes a locked background's loadout unavailable |
 | `RZ_MapIconsUI` | client (map component) | The icon layer on the map |
@@ -130,7 +143,8 @@ missing, the vanilla hint queue shows it exactly as before.
 `RZ_PlayerUIComponent` off the controller stops all sending. To remove the UI entirely, delete
 `UI/` and the lines that use it: the `m_UISettings` attribute, `m_UIFeed` (creation, tick, spawn,
 `RecordGearSoon` and accessors), the `UsesMapIcons` check in `AddMapMarker` and the block at the
-top of `QueueHint` in `Core/RZ_GameModeComponent.c`, and the `OnClueRead` call in
+top of `QueueHint` (with the chat commands' registration) in `Core/RZ_GameModeComponent.c`, the
+board menu call in `World/RZ_NoticeBoard.c` (`SendMenu`), and the `OnClueRead` call in
 `Puzzles/RZ_PuzzleMission.c`. `RZ_LoadoutLock.c` and `RZ_MapIcons.c` can each be deleted on their
 own.
 
@@ -145,6 +159,6 @@ static parts of the layouts.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; six mockups and previews; the feed, the HUD, four menus with mouse support, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback, the radio log (all written, never compiled) |
+| Built | The icon set and its renderer; six mockups and previews; the feed, the HUD, six menus with mouse support (four tabs, the notice board, the hall of fame), chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback, the radio log (all written, never compiled) |
 | Workbench | The layouts, the imageset, the menu and input config entries, adding the component, the info display and the map component ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui)) |
-| Planned | A sound on new notices |
+| Planned | A sound on new notices; mockups of the notice board and the hall of fame |

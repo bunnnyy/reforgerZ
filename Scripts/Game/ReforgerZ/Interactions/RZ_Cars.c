@@ -255,7 +255,8 @@ class RZ_Cars
 	void Setup(RZ_CarRosterSave saved)
 	{
 		RZ_ItemHelper.Words(m_Settings.m_sWreckWords, m_aWreckWords);
-		m_bOn = m_Settings.m_bEnabled && m_Settings.m_aCarPrefabs && !m_Settings.m_aCarPrefabs.IsEmpty();
+		// Season rules (No Vehicles): no fixable cars this season
+		m_bOn = m_Settings.m_bEnabled && m_Settings.m_aCarPrefabs && !m_Settings.m_aCarPrefabs.IsEmpty() && !RZ_Seasons.Mods().m_bNoVehicles;
 		if (saved)
 		{
 			m_iNextId = Math.Max(1, saved.nextId);

@@ -121,7 +121,7 @@ class RZ_Director
 	{
 		RZ_StageSettings stage = GetStageSettings();
 		float mult = m_GM.GetCure().GetSpreadMultiplier();
-		float perTick = stage.m_fSpreadPerMinute * (dt / 60) * mult * m_GM.GetSeasonSpeed();
+		float perTick = stage.m_fSpreadPerMinute * (dt / 60) * mult * m_GM.GetSeasonSpeed() * RZ_Seasons.Mods().m_fSpreadMult;
 
 		array<ref RZ_Settlement> list = m_GM.GetSettlements();
 		array<float> delta = {};

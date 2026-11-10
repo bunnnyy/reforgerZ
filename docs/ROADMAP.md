@@ -3,8 +3,8 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** everything under "Built" is written in Enforce Script (about 68,400 lines) and
-**has never been compiled**. It needs Workbench, the 201 `VERIFY` fixes (165 in the game, 36 in
+**Status:** everything under "Built" is written in Enforce Script (about 71,000 lines) and
+**has never been compiled**. It needs Workbench, the 204 `VERIFY` fixes (168 in the game, 36 in
 the Workbench plugin) and a play-test before any of it can be called working
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
@@ -27,7 +27,7 @@ the Workbench plugin) and a play-test before any of it can be called working
 | Territory: strongholds, outposts, the territory tick, faction strength | [Territory](DESIGN.md#territory) |
 | Real supply trucks with AI crews, shortages, escort, drive-in and theft | [Supply trucks](DESIGN.md#supply-trucks) |
 | Faction life: needs, morale, chatter, life events, truces and feuds, moments, rumours | [Faction life](DESIGN.md#faction-life), [REPUTATION.md](REPUTATION.md#morale-needs-truces-and-feuds) |
-| Haven safehouses: population tiers, upkeep, rescues, house rules, exile | [Haven safehouses](DESIGN.md#haven-safehouses) |
+| Haven safehouses: population tiers, upkeep, rescues, house rules, exile, notice boards (notes between sessions, `/note`) | [Haven safehouses](DESIGN.md#haven-safehouses) |
 | Named wanderers: travel, reactions, memory, deaths in the news, lost outposts (rerouting, rumours, mood) | [Wanderers](DESIGN.md#wanderers) |
 | Named leaders: traits, loyalty, memory, voiced briefs, deaths and replacements | [Leaders](DESIGN.md#leaders), [REPUTATION.md](REPUTATION.md#faction-leaders) |
 | 176 missions (every one designed so far): all 80 faction contracts (on shared building blocks: escorts, live capture, vehicle zones and convoys, health cost, step chains), all 25 world events, 17 puzzles, 11 unarmed, 3 Perimeter, 3 Haven house contracts and the Courier's letters, 32 leader jobs and Rein In, 3 arc missions | [MISSIONS.md](MISSIONS.md) |
@@ -36,9 +36,11 @@ the Workbench plugin) and a play-test before any of it can be called working
 | World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
 | Cure research, antidotes, the final stand, the season's winner | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
+| Seasons: next-season rules from the last winner, rule sets (Winter, Fog, Military Collapse, No Vehicles, or your own), the wipe cycle (on cure after an epilogue, or after N weeks; backup and announcements), the hall of fame | [Seasons](DESIGN.md#seasons) |
+| Contracts that give a rough area (a 500 m circle) until you're close; Radio Operators and Trusted players get the spot | [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
-| The UI: an original icon set (60 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the standing screen, journal, radio log and map key (keys and mouse), a deploy-menu background panel with the loadout's gear and locked loadouts unavailable, and the marker icons on the map, fed per player from the server. Layouts are still to be built in Workbench | [UI.md](UI.md) |
+| The UI: an original icon set (60 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the standing screen, journal, radio log and map key (keys and mouse), the notice board and hall of fame menus, chat commands (`/note`, `/hall`), a deploy-menu background panel with the loadout's gear and locked loadouts unavailable, and the marker icons on the map, fed per player from the server. Layouts are still to be built in Workbench | [UI.md](UI.md) |
 | Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout), the Workbench plugin **ReforgerZ: Create prefabs** with a dry run and a checklist fallback (never run), and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
 
 ## Next
@@ -52,17 +54,6 @@ the Workbench plugin) and a play-test before any of it can be called working
 ### Characters and UI
 - Build the UI layouts and the icon imageset in Workbench ([UI/LAYOUTS.md](../UI/LAYOUTS.md)).
 - A trait-points system on top of backgrounds (positive and negative traits).
-
-### Player to player
-- A notice board at each safehouse for short notes between sessions.
-- Contracts that give a rough area, with the exact spot shown within 500 m (Radio Operators
-  and Trusted players see it from the start).
-
-### Seasons
-- Next-season starting rules from the last winner ([LORE.md](LORE.md#endings)).
-- A wipe cycle tied to cure completion, or a fixed number of weeks.
-- Season rule sets: Winter (with a cold mod), Fog, Military Collapse, No Vehicles.
-- A hall of fame: who delivered the most samples, who held the final stand.
 
 ## Play-test priorities
 
@@ -97,7 +88,10 @@ In this order, because later ones depend on earlier ones:
     the toll, running and surrender fire at the right distances? Is the timed grudge enough to
     make the crew shoot, and does a surrender's stand-down stop them? Is a Fire Mission's horde
     check too strict or too loose; does the fence take the right things?
-15. **The UI**, once the layouts exist: does the owner-only feed arrive, does the timer agree with
+15. **Seasons:** a wipe end to end (backup, fresh start, the winner's rules, the hall of fame
+    kept), and whether the rule sets feel different enough without being unfair. Are rough
+    contract areas fun to search, or too vague at 500 m?
+16. **The UI**, once the layouts exist: does the owner-only feed arrive, does the timer agree with
     the stage messages, do the menus open, fill and take clicks, do the map icons sit on their
     spots while panning and zooming, and does the deploy menu grey out locked loadouts ([UI.md](UI.md)).
 

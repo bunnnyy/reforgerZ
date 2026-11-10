@@ -1186,6 +1186,11 @@ class RZ_Search
 		if (locked)
 			rare = rare * 2;
 
+		// Season rules (Bastion's season, Military Collapse): more military kit at police
+		// stations and on bodies
+		if (body || type == "police")
+			rare = Math.Min(0.5, rare * RZ_Seasons.Mods().m_fMilitaryLootMult);
+
 		float electronics = m_Settings.m_fElectronicsChance * RZ_PowerGrid.LootMult(pos, "electronics");
 		int given = 0;
 		for (int i = 0; i < count; i++)

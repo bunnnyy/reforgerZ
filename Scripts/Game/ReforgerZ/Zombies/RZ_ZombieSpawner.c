@@ -369,10 +369,10 @@ class RZ_ZombieSpawner
 
 	//------------------------------------------------------------------------------------------------
 	//! Chance that a spawn is a special: the stage's, times world events, the night
-	//! (RZ_Environment) and cure breakthroughs (RZ_Adaptation, +15% at most).
+	//! (RZ_Environment), cure breakthroughs (RZ_Adaptation, +15% at most) and the season's rules.
 	float GetSpecialChance(RZ_StageSettings stage)
 	{
-		float chance = stage.m_fSpecialChance * m_fEventSpecialMult * m_fEnvSpecialMult;
+		float chance = stage.m_fSpecialChance * m_fEventSpecialMult * m_fEnvSpecialMult * RZ_Seasons.Mods().m_fSpecialMult;
 		if (m_GM.GetAdaptation())
 			chance = chance * m_GM.GetAdaptation().SpecialMult();
 

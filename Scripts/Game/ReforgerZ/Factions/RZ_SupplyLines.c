@@ -338,8 +338,12 @@ class RZ_SupplyLines
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! "" (trucks don't run) under the season's No Vehicles rule.
 	protected ResourceName TruckPrefab(int f)
 	{
+		if (RZ_Seasons.Mods().m_bNoVehicles)
+			return "";
+
 		switch (f)
 		{
 			case RZ_EFaction.SURVIVORS: return m_Settings.m_sHavenTruck;

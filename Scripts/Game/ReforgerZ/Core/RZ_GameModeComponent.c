@@ -23,6 +23,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("120", desc: "Seconds between state saves", category: "ReforgerZ")]
 	protected float m_fSaveIntervalSeconds;
 
+	[Attribute(desc: "Seasons: the last winner's starting rules, rule sets (Winter, Fog, Military Collapse, No Vehicles, your own), the wipe cycle and the hall of fame (docs/DESIGN.md, Seasons)", category: "ReforgerZ")]
+	protected ref RZ_SeasonSettings m_SeasonSettings;
+
 	[Attribute("1", UIWidgets.Slider, "Season speed: research, outbreak stages, infection spread, territory, supply trucks and safehouse upkeep run this many times as fast. 1 = about 10 days with 5-10 players; 2 for 2-4 players, 0.5 for 15-20 (docs/DESIGN.md, Season pacing)", "0.25 4 0.05", category: "ReforgerZ")]
 	protected float m_fSeasonSpeed;
 
@@ -363,6 +366,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Interactions m_Interactions;
 	protected ref RZ_LooseItems m_LooseItems;
 	protected ref RZ_UIFeed m_UIFeed;
+	protected ref RZ_Seasons m_Seasons;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -506,12 +510,17 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_InfectionSettings)
 			m_InfectionSettings = new RZ_InfectionSettings();
 
+		if (!m_SeasonSettings)
+			m_SeasonSettings = new RZ_SeasonSettings();
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
 			RZ_Background.CreateDefaults(m_aBackgrounds);
 		}
 
+		// First: the season's rules (RZ_Seasons.Mods) are read by the systems below
+		m_Seasons = new RZ_Seasons(this, m_SeasonSettings);
 		m_Heat = new RZ_HeatMap();
 		m_LooseItems = new RZ_LooseItems(this, m_fLooseItemMinutes);
 		m_Adaptation = new RZ_Adaptation(this, m_AdaptationSettings);
@@ -543,20 +552,30 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_FactionLife = new RZ_FactionLife(this, m_FactionLifeSettings);
 		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
 
+		// A wipe that came due last run (the wipe cycle) is carried out now: backup, then fresh
+		bool wipe = m_bWipeOnStart;
+		if (RZ_Seasons.TakeWipeMarker())
+			wipe = true;
+
 		bool loaded = false;
-		if (!m_bWipeOnStart)
+		if (!wipe)
 			loaded = LoadState();
 
-		// The last finished season's ending. TODO (docs/ROADMAP.md): next-season rules from it.
+		// The last finished season's ending: a fresh season starts with the winner's rules
 		RZ_SeasonRecord last = RZ_Persistence.LoadSeason();
 		if (last)
-			RZ_Log.Info(string.Format("Last season (%1) the cure went to %2.", last.world, last.winnerName));
+			RZ_Log.Info(string.Format("Last season (%1, season %2) the cure went to %3.", last.world, last.season, last.winnerName));
+
+		m_Seasons.Begin(loaded, last);
 
 		if (m_aSettlements.IsEmpty())
 		{
 			RZ_SettlementScanner scanner = new RZ_SettlementScanner();
 			scanner.Scan(m_fScanCellSize, m_iScanMinBuildings, m_aSettlements);
 		}
+
+		// Fresh season only: starting infection and safe towns from the season's rules
+		m_Seasons.ApplyStartRules();
 
 		if (m_aSettlements.IsEmpty())
 			RZ_Log.Error("No settlements found on this map. Place RZ_SettlementMarkerEntity entities in the world.");
@@ -642,6 +661,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Infection.Tick(dt, ids, players);
 		m_UIFeed.Tick(dt, ids, players);
 		m_LooseItems.Tick(dt, players);
+		m_Seasons.Tick(dt, ids);
 
 		foreach (int i, IEntity ent : players)
 		{
@@ -693,6 +713,18 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Infection GetInfection() { return m_Infection; }
 	RZ_UIFeed GetUIFeed() { return m_UIFeed; }
 	RZ_UISettings GetUISettings() { return m_UISettings; }
+	RZ_Seasons GetSeasons() { return m_Seasons; }
+	int GetSeasonWinner() { return m_iSeasonWinner; }
+
+	//------------------------------------------------------------------------------------------------
+	//! The hall of fame, or null (off, or before the server started).
+	RZ_HallOfFame GetHall()
+	{
+		if (!m_Seasons || !m_Seasons.GetHall() || !m_Seasons.GetHall().IsEnabled())
+			return null;
+
+		return m_Seasons.GetHall();
+	}
 	array<ref RZ_Background> GetBackgrounds() { return m_aBackgrounds; }
 	static int GetDrifterLegacy() { return DRIFTER_LEGACY; }
 	float GetMissionResearchMult() { return m_fMissionResearchMult; }
@@ -1152,6 +1184,17 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			string news = m_Headlines.Build();
 			if (!news.IsEmpty())
 				NotifyPlayer(playerId, "Word on the roads", news);
+
+			// The season: its number, its rules (the last winner's, the rule sets), a coming wipe
+			NotifyPlayer(playerId, "This season", m_Seasons.DescribeForWelcome());
+
+			// The hall of fame, so far
+			if (GetHall())
+			{
+				string hall = GetHall().BuildText();
+				if (!hall.IsEmpty())
+					NotifyPlayer(playerId, "Hall of fame", hall);
+			}
 		}
 
 		// 3. What's on the radio
@@ -1295,6 +1338,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_ETier before = profile.GetTier(faction);
 		int gained = profile.AddFame(faction, amount);
 		OnFameGained(faction, gained);
+		if (gained > 0 && GetHall())
+			GetHall().NoteFame(playerId, faction, profile.GetFame(faction));
 		CheckTierChange(playerId, faction, before);
 
 		if (!applyRivals || amount <= 0)
@@ -1483,6 +1528,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		RZ_SeasonRecord record = new RZ_SeasonRecord();
 		record.world = GetWorldId();
+		record.season = m_Seasons.GetSeason();
 		record.winner = m_iSeasonWinner;
 		record.winnerName = RZ_Factions.GetName(m_iSeasonWinner);
 		foreach (int fame : m_aSeasonFame)
@@ -1491,6 +1537,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		RZ_Persistence.SaveSeason(record);
+		// The epilogue starts: the wipe cycle counts from now (RZ_Seasons)
+		m_Seasons.OnCureCompleted();
 		SaveState();
 	}
 
@@ -1891,6 +1939,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The map, as saves and season records name it.
+	string GetWorldName()
+	{
+		return GetWorldId();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool LoadState()
 	{
 		RZ_SaveData data = RZ_Persistence.Load();
@@ -1944,6 +1999,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		m_iSeasonWinner = data.seasonWinner;
+		m_Seasons.Restore(data);
 
 		m_bHasLab = data.hasLab;
 		m_vLabPos = Vector(data.labX, 0, data.labZ);
@@ -1984,6 +2040,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			data.seasonFame.Insert(fame);
 		}
+		if (m_Seasons)
+			m_Seasons.Save(data);
+
 		data.hasLab = m_bHasLab;
 		data.labX = m_vLabPos[0];
 		data.labZ = m_vLabPos[2];
@@ -2094,6 +2153,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	protected void QueueHint(string title, string text)
 	{
+		// Chat commands (/note, /noteclear, /hall): registered once, here, on the client
+		RZ_ChatCommands.Register();
+
 		// The ReforgerZ UI (UI/): the radio log keeps radio messages, and the styled card shows it
 		// if it can. Otherwise the vanilla hint below, as before.
 		RZ_NoticeStyle style = RZ_NoticeStyle.Classify(title);

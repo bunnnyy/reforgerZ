@@ -5,6 +5,13 @@
 [BaseContainerProps()]
 class RZ_ContractSettings
 {
+	// ---------------------------------------------------------------- Rough areas (RZ_Mission)
+	[Attribute("500", desc: "Contracts give a rough area: a circle of this radius (m) that holds the real spot, centred off it. Radio Operators and players Trusted with the giver get the exact spot. 0 = always exact")]
+	float m_fRoughRadius = 500;
+
+	[Attribute("500", desc: "The exact spot is revealed to a player who comes this close (m) to it")]
+	float m_fRevealDistance = 500;
+
 	// ---------------------------------------------------------------- Escorts (RZ_Escort)
 	[Attribute("3", desc: "Most escorts (people walking with players) at once, server-wide")]
 	int m_iMaxEscorts = 3;

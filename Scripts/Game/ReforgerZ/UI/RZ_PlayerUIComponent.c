@@ -19,7 +19,8 @@ class RZ_RadioEntry
 //!
 //! Server to client: owner-only RPCs, sent by RZ_UIFeed only when something changed (the infection
 //! timer also resyncs every minute; the client counts down between). Client to server: the
-//! menus ask for their data when they open (at most once every 2 s per player).
+//! menus ask for their data when they open (at most once every 2 s per player), and chat commands
+//! and the board menu send a command (/note, /noteclear, /hall; also at most every 2 s).
 //! On a listen server the owner is this machine, so calls go straight to the handler.
 class RZ_PlayerUIComponent : ScriptComponent
 {
@@ -40,6 +41,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected string m_sJournal;
 	protected string m_sBackgrounds;
 	protected string m_sMap;
+	protected string m_sBoard;
+	protected string m_sHall;
+	protected int m_iBoardVersion;
+	protected int m_iHallVersion;
 	protected int m_iMapVersion;
 	protected ref set<string> m_aLockedLoadouts = new set<string>();
 	protected int m_iStandingVersion;
@@ -49,7 +54,14 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected ref array<ref RZ_RadioEntry> m_aRadio = {};
 
 	// ---------------------------------------------------------------- server
-	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100};
+	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
+	protected float m_fLastCommand = -100;
+
+	//! Commands from the client (RZ_ChatCommands, the board menu)
+	static const int CMD_NOTE = 0;
+	static const int CMD_CLEAR_BOARD = 1;
+	static const int CMD_CLEAR_ALL = 2;
+	static const int CMD_HALL = 3;
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -128,7 +140,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! kind: 0 standing, 1 journal, 2 backgrounds, 3 map
+	//! kind: RZ_UIFeed.PAYLOAD_* (standing, journal, backgrounds, map, notice board, hall of fame)
 	void SendPayload(int kind, string payload)
 	{
 		if (IsLocalOwner())
@@ -197,6 +209,19 @@ class RZ_PlayerUIComponent : ScriptComponent
 			m_sMap = payload;
 			m_iMapVersion++;
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_BOARD)
+		{
+			// The server sends the board when it's read: open the board menu if it isn't open
+			m_sBoard = payload;
+			m_iBoardVersion++;
+			if (!payload.IsEmpty() && !RZ_NoticeBoardMenu.IsOpen())
+				RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_NoticeBoardMenu);
+		}
+		else if (kind == RZ_UIFeed.PAYLOAD_HALL)
+		{
+			m_sHall = payload;
+			m_iHallVersion++;
+		}
 		else
 		{
 			m_sBackgrounds = payload;
@@ -231,7 +256,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ================================================================ Client: ask
 	//------------------------------------------------------------------------------------------------
-	//! kind: 0 standing, 1 journal, 2 backgrounds, 3 map
+	//! kind: RZ_UIFeed.PAYLOAD_*
 	void Ask(int kind)
 	{
 		if (Replication.IsServer())
@@ -249,7 +274,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		// A cheap spam guard per kind: the menus ask once when they open, the map every 20 s
-		if (kind < 0 || kind > 3)
+		if (kind < 0 || kind >= RZ_UIFeed.PAYLOAD_KINDS)
 			return;
 
 		float now = RZ_UIW.Now();
@@ -262,6 +287,78 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		SendPayload(kind, gm.GetUIFeed().BuildPayload(playerId, kind));
+	}
+
+	// ================================================================ Client: commands
+	//------------------------------------------------------------------------------------------------
+	//! A command for the server: CMD_NOTE with the note's text, the board clears (admins), the hall.
+	void SendCommand(int cmd, string text)
+	{
+		if (Replication.IsServer())
+			RpcAsk_Command(cmd, text);
+		else
+			Rpc(RpcAsk_Command, cmd, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_Command(int cmd, string text)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm)
+			return;
+
+		float now = RZ_UIW.Now();
+		if (now - m_fLastCommand < ASK_GAP)
+			return;
+
+		m_fLastCommand = now;
+		int playerId = OwnerPlayerId();
+		if (playerId <= 0)
+			return;
+
+		// Notes are short; anything longer is cut on the server whatever the client sent
+		string note = text;
+		if (note.Length() > 400)
+			note = note.Substring(0, 400);
+
+		RZ_Safehouses houses = gm.GetSafehouses();
+		RZ_NoticeBoard board;
+		if (houses)
+			board = houses.GetBoard();
+
+		switch (cmd)
+		{
+			case CMD_NOTE:
+			{
+				if (board)
+					board.Post(playerId, note);
+				break;
+			}
+			case CMD_CLEAR_BOARD:
+			{
+				if (board)
+					board.Clear(playerId, false);
+				break;
+			}
+			case CMD_CLEAR_ALL:
+			{
+				if (board)
+					board.Clear(playerId, true);
+				break;
+			}
+			case CMD_HALL:
+			{
+				string hall = "";
+				if (gm.GetHall())
+					hall = gm.GetHall().BuildText();
+				if (hall.IsEmpty())
+					hall = "Nobody's name is on it yet.";
+
+				gm.NotifyPlayer(playerId, "Hall of fame", hall);
+				break;
+			}
+		}
 	}
 
 	// ================================================================ Client: the radio log
@@ -326,6 +423,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 	string GetJournal() { return m_sJournal; }
 	string GetBackgrounds() { return m_sBackgrounds; }
 	string GetMap() { return m_sMap; }
+	string GetBoard() { return m_sBoard; }
+	string GetHall() { return m_sHall; }
+	int GetBoardVersion() { return m_iBoardVersion; }
+	int GetHallVersion() { return m_iHallVersion; }
 	int GetMapVersion() { return m_iMapVersion; }
 	int GetStandingVersion() { return m_iStandingVersion; }
 	int GetJournalVersion() { return m_iJournalVersion; }

@@ -28,7 +28,13 @@ and one way to end it: **research the cure.**
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
 - **176 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
-  missions at the quarantine line, morally grey Haven work and leaders' off-book jobs.
+  missions at the quarantine line, morally grey Haven work and leaders' off-book jobs. Contracts
+  name a rough area until you're close, unless you're a Radio Operator or trusted by the giver.
+- **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
+  sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself after
+  the cure's epilogue or a set number of weeks, and a hall of fame remembers who carried samples,
+  held the final stand and rescued the most, season after season.
+- **Notes between players**: a notice board at every Haven safehouse.
 - **Search the world**: cupboards, car boots and bodies, locked doors that keep the infected
   out (they bang on them) and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting, traps, fire, water and
   secure radio channels.
@@ -42,9 +48,9 @@ and one way to end it: **research the cure.**
 
 ## Status
 
-All of it is **written but has never been compiled**. It's about 68,400 lines of Enforce
-Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **201 `VERIFY`
-markers** on engine and editor calls whose exact names need checking (165 in the game, 36 in the
+All of it is **written but has never been compiled**. It's about 71,000 lines of Enforce
+Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **204 `VERIFY`
+markers** on engine and editor calls whose exact names need checking (168 in the game, 36 in the
 Workbench plugin), no prefabs, layouts or configs yet, and nothing has been play-tested. The icon
 set and mockups of every screen are done (`UI/`). Every prefab,
 setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
@@ -68,9 +74,10 @@ plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run
 
 ```
 Scripts/Game/ReforgerZ/
-  Core/          game mode component (the hub), helpers, map markers, loose-item cleanup
-  World/         settlements, the Perimeter, safehouses, wanderers, town memory,
-                 the power grid, the radio station
+  Core/          game mode component (the hub), helpers, map markers, loose-item cleanup,
+                 seasons (the winner's rules, rule sets, the wipe cycle)
+  World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
+                 town memory, the power grid, the radio station
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, story arcs, headlines
   Zombies/       spawner (any zombie mod's prefabs), bite detection
@@ -87,9 +94,9 @@ Scripts/Game/ReforgerZ/
   Interactions/  searching, door locks, doorway blockers and keys, building queries (mission
                  spots kept out of locked buildings), cars, crafting, water,
                  traps, generators, fire, secure radio, treating others
-  Persistence/   save and load of mode state
+  Persistence/   save and load of mode state, the hall of fame
   UI/            the per-player data feed, HUD, menus, deploy-menu panel and loadout lock,
-                 the map's icon layer, notice styles
+                 the map's icon layer, notice styles, chat commands
 Scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
 Configs/ReforgerZ/PrefabManifest.json

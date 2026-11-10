@@ -642,6 +642,13 @@ class RZ_Mission_MedicalDrone : RZ_Mission_Delivery
 	protected ref array<int> m_aTold = {};
 
 	//------------------------------------------------------------------------------------------------
+	//! The brief already gives a rough ping (grid, give or take 250 m): never a rough area.
+	override bool NeedsExactLocation()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.INSTITUTE, RZ_ETier.TRUSTED, 30, 30);
@@ -1057,6 +1064,12 @@ class RZ_Mission_MobileLab : RZ_Mission
 	protected string m_sDest;
 
 	protected static const float ANNEX_SECONDS = 10800;
+
+	//------------------------------------------------------------------------------------------------
+	override bool NeedsVehicle()
+	{
+		return true;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)

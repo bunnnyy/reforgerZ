@@ -32,6 +32,19 @@ class RZ_Mission_CarKeys : RZ_Mission
 	protected static const float ZONE_RADIUS = 30;
 
 	//------------------------------------------------------------------------------------------------
+	//! The five houses are listed by grid: never a rough area.
+	override bool NeedsExactLocation()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool NeedsVehicle()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.STRANGER, 10, 12);

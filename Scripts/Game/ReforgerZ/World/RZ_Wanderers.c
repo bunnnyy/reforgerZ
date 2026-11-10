@@ -2166,7 +2166,7 @@ class RZ_Wanderers
 		m_mJobAt.Set(ident, m_fClock);
 		job.m_aOfferedTo.Insert(playerId);
 		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(RZ_EFaction.SURVIVORS),
-			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.m_sBrief, job.GetWhereText(m_GM, user.GetOrigin())));
+			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.m_sBrief, job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2306,7 +2306,7 @@ class RZ_Wanderers
 				continue;
 
 			m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("\"Something odd near %1. Notes, people asking questions, things that don't add up. Worth a look.\" (%2)",
-				m.GetLocationName(m_GM), m.GetWhereText(m_GM, user.GetOrigin())));
+				m.GetLocationName(m_GM), m.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
 			return;
 		}
 
@@ -2386,7 +2386,7 @@ class RZ_Wanderers
 		w.Remember(ident, MEM_HELPED);
 		job.m_aOfferedTo.Insert(playerId);
 		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(RZ_EFaction.SURVIVORS),
-			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.m_sBrief, job.GetWhereText(m_GM, user.GetOrigin())));
+			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.m_sBrief, job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
 	}
 
 	//------------------------------------------------------------------------------------------------

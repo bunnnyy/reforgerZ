@@ -16,6 +16,12 @@ class RZ_Mission_CarTheft : RZ_Mission
 	protected ResourceName m_sPrefab;
 
 	//------------------------------------------------------------------------------------------------
+	override bool NeedsVehicle()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.BANDITS, RZ_ETier.STRANGER, 18, 25);

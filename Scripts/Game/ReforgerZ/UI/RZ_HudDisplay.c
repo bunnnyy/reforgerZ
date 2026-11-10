@@ -29,6 +29,7 @@ class RZ_HudDisplay : SCR_InfoDisplay // VERIFY: SCR_InfoDisplay, its m_wRoot an
 		RZ_UIW.Listen("RZ_OpenStanding", OpenStanding);
 		RZ_UIW.Listen("RZ_OpenJournal", OpenJournal);
 		RZ_UIW.Listen("RZ_OpenRadio", OpenRadio);
+		RZ_UIW.Listen("RZ_OpenHall", OpenHall);
 		Refresh();
 	}
 
@@ -38,6 +39,7 @@ class RZ_HudDisplay : SCR_InfoDisplay // VERIFY: SCR_InfoDisplay, its m_wRoot an
 		RZ_UIW.Unlisten("RZ_OpenStanding", OpenStanding);
 		RZ_UIW.Unlisten("RZ_OpenJournal", OpenJournal);
 		RZ_UIW.Unlisten("RZ_OpenRadio", OpenRadio);
+		RZ_UIW.Unlisten("RZ_OpenHall", OpenHall);
 		foreach (Widget w : m_aCards)
 		{
 			RZ_UIW.Remove(w);
@@ -80,6 +82,12 @@ class RZ_HudDisplay : SCR_InfoDisplay // VERIFY: SCR_InfoDisplay, its m_wRoot an
 	protected void OpenRadio(float value = 0, EActionTrigger reason = 0)
 	{
 		RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_RadioLogMenu);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OpenHall(float value = 0, EActionTrigger reason = 0)
+	{
+		RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_HallOfFameMenu);
 	}
 
 	// ================================================================ Drawing

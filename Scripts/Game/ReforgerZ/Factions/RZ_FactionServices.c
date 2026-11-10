@@ -456,7 +456,12 @@ class RZ_FactionServices
 		if (!m_Settings.m_bFence || !user)
 			return;
 
-		if (!Allowed(playerId, RZ_EFaction.BANDITS, RZ_ETier.TRUSTED, "The fence"))
+		// Season rules (the Red Hand's season): the black market is open to anyone they know
+		RZ_ETier fenceTier = RZ_ETier.TRUSTED;
+		if (RZ_Seasons.Mods().m_bOpenBlackMarket)
+			fenceTier = RZ_ETier.KNOWN;
+
+		if (!Allowed(playerId, RZ_EFaction.BANDITS, fenceTier, "The fence"))
 			return;
 
 		string ident = Ident(playerId);

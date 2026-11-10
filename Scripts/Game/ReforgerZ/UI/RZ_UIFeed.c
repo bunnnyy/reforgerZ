@@ -70,6 +70,9 @@ class RZ_UIFeed
 	static const int PAYLOAD_JOURNAL = 1;
 	static const int PAYLOAD_BACKGROUNDS = 2;
 	static const int PAYLOAD_MAP = 3;
+	static const int PAYLOAD_BOARD = 4;		// the notice board the player stands at (World/RZ_NoticeBoard.c)
+	static const int PAYLOAD_HALL = 5;		// the hall of fame (Persistence/RZ_HallOfFame.c)
+	static const int PAYLOAD_KINDS = 6;
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;
@@ -333,6 +336,10 @@ class RZ_UIFeed
 			payload = BuildJournal(playerId);
 		else if (kind == PAYLOAD_MAP)
 			payload = BuildMap(playerId);
+		else if (kind == PAYLOAD_BOARD)
+			payload = BuildBoard(playerId);
+		else if (kind == PAYLOAD_HALL)
+			payload = BuildHall();
 		else
 			payload = BuildBackgrounds(playerId);
 
@@ -340,6 +347,28 @@ class RZ_UIFeed
 			payload = payload.Substring(0, MAX_PAYLOAD);
 
 		return payload;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The notice board the player stands at (RZ_NoticeBoard.BuildPayload), "" if none.
+	protected string BuildBoard(int playerId)
+	{
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (!houses || !houses.GetBoard())
+			return "";
+
+		return houses.GetBoard().BuildPayload(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hall of fame (RZ_HallOfFame.BuildPayload), "" if it's off.
+	protected string BuildHall()
+	{
+		RZ_HallOfFame hall = m_GM.GetHall();
+		if (!hall)
+			return "";
+
+		return hall.BuildPayload();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -437,9 +466,10 @@ class RZ_UIFeed
 					by = l.GetHeader();
 			}
 
+			// Contracts give a rough area until the player knows the spot (RZ_Mission)
 			string dir = "";
-			if (!m.m_bGlobal && ent)
-				dir = RZ_Util.DirectionText(from, m.m_vPos);
+			if (ent)
+				dir = m.GetDirectionFor(m_GM, from, playerId);
 
 			string req = "";
 			if (m.m_bContract)
@@ -450,7 +480,7 @@ class RZ_UIFeed
 				part = "1";
 
 			RZ_UILine lnM = new RZ_UILine("M");
-			lnM.AddInt(m.m_iId).AddInt(MissionKind(m)).AddInt(giver).Add(m.m_sTitle).Add(by).Add(m.GetLocationName(m_GM)).Add(dir);
+			lnM.AddInt(m.m_iId).AddInt(MissionKind(m)).AddInt(giver).Add(m.m_sTitle).Add(by).Add(m.GetLocationNameFor(m_GM, playerId, from)).Add(dir);
 			lnM.AddInt(RZ_Util.RoundToInt(m.m_fTimeLeft / 60)).Add(req).AddInt(m.m_iFameReward).AddInt(m.m_iFavorReward).Add(m.m_sBrief).Add(part);
 			s += lnM.End();
 			shown.Insert(m.m_iId);
