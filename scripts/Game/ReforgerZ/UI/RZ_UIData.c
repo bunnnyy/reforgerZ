@@ -51,28 +51,28 @@ enum RZ_EMissionKindUI
 class RZ_UISettings
 {
 	[Attribute("1", desc: "Styled notice cards (faction-coloured header, speaker) instead of the vanilla hint. Off, or with no HUD layout, every message uses the vanilla hint as before")]
-	bool m_bStyledNotices = true;
+	bool m_bStyledNotices;
 
 	[Attribute("9", desc: "Seconds a notice card stays on screen")]
-	float m_fNoticeSeconds = 9;
+	float m_fNoticeSeconds;
 
 	[Attribute("3", desc: "Notice cards shown at once (newest on top); the rest wait their turn")]
-	int m_iNoticeStack = 3;
+	int m_iNoticeStack;
 
 	[Attribute("8", desc: "Notices waiting at most; older ones are dropped under heavy traffic")]
-	int m_iNoticeQueue = 8;
+	int m_iNoticeQueue;
 
 	[Attribute("40", desc: "Radio log: messages kept on the client for this life")]
-	int m_iRadioLogSize = 40;
+	int m_iRadioLogSize;
 
 	[Attribute("1", desc: "Show the infection timer (golden window, stages)")]
-	bool m_bInfectionTimer = true;
+	bool m_bInfectionTimer;
 
 	[Attribute("1", desc: "Show the noise meter (subtle: how much attention you draw where you stand)")]
-	bool m_bNoiseMeter = true;
+	bool m_bNoiseMeter;
 
 	[Attribute("60", desc: "Seconds between infection timer resyncs (the client counts down between them)")]
-	float m_fResyncSeconds = 60;
+	float m_fResyncSeconds;
 
 	[Attribute("", UIWidgets.ResourceNamePicker, "Imageset with the ReforgerZ icons (UI/LAYOUTS.md). Empty = icons stay as set in the layouts", "imageset")]
 	ResourceName m_sIconImageset;
@@ -90,13 +90,13 @@ class RZ_UISettings
 	ResourceName m_sMapIconLayout;
 
 	[Attribute("20", desc: "Map icons: seconds between refreshes while the map is open")]
-	float m_fMapRefreshSeconds = 20;
+	float m_fMapRefreshSeconds;
 
 	[Attribute("1", desc: "The deploy menu refuses background loadouts the player hasn't unlocked (UI/RZ_LoadoutLock.c). Off: picking one plays as the default background with its gear")]
-	bool m_bLockLoadouts = true;
+	bool m_bLockLoadouts;
 
 	[Attribute("0", desc: "The safehouse notice board opens as a menu with a box to write in (RZ_NoticeBoardMenu; needs its layout and chimeraMenus entry, UI/LAYOUTS.md). Off = notices, and notes are written with /note in chat")]
-	bool m_bBoardMenus = false;
+	bool m_bBoardMenus;
 
 	protected static ref RZ_UISettings s_Defaults;
 
@@ -116,7 +116,7 @@ class RZ_UISettings
 			return gm.GetUISettings();
 
 		if (!s_Defaults)
-			s_Defaults = new RZ_UISettings();
+			s_Defaults = RZ_UISettings.Cast(RZ_Util.NewWithDefaults("RZ_UISettings"));
 
 		return s_Defaults;
 	}

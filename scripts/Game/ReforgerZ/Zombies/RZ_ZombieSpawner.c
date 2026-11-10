@@ -5,46 +5,46 @@
 class RZ_ZombieSettings
 {
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Common zombies (group or character prefabs)", "et")]
-	ref array<ResourceName> m_aCommonPrefabs = {};
+	ref array<ResourceName> m_aCommonPrefabs;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Special zombies. Killing one drops a research sample", "et")]
-	ref array<ResourceName> m_aSpecialPrefabs = {};
+	ref array<ResourceName> m_aSpecialPrefabs;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Horde groups (large groups for horde events)", "et")]
-	ref array<ResourceName> m_aHordePrefabs = {};
+	ref array<ResourceName> m_aHordePrefabs;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Move waypoint used to send hordes toward noise (e.g. vanilla AIWaypoint_Move)", "et")]
 	ResourceName m_sMoveWaypointPrefab;
 
 	[Attribute("4", desc: "Spawns per size class at 100% infection (size 3 city at 100% = 12)")]
-	float m_fDensityPerSize = 4;
+	float m_fDensityPerSize;
 
 	[Attribute("600", desc: "Settlements within this distance of a player get populated")]
-	float m_fActivationRadius = 600;
+	float m_fActivationRadius;
 
 	[Attribute("1100", desc: "Zombies farther than this from every player are removed")]
-	float m_fDespawnRadius = 1100;
+	float m_fDespawnRadius;
 
 	[Attribute("120", desc: "Never spawn closer than this to a player")]
-	float m_fMinSpawnDistance = 120;
+	float m_fMinSpawnDistance;
 
 	[Attribute("60", desc: "Max tracked spawns on the whole server (performance cap)")]
-	int m_iGlobalCap = 60;
+	int m_iGlobalCap;
 
 	[Attribute("4", desc: "Max spawns per tick")]
-	int m_iSpawnsPerTick = 4;
+	int m_iSpawnsPerTick;
 
 	[Attribute("2", desc: "Wandering zombies kept around each player in the countryside")]
-	int m_iAmbientPerPlayer = 2;
+	int m_iAmbientPerPlayer;
 
 	[Attribute("1.5", desc: "Settlement infection removed per zombie kill")]
-	float m_fInfectionDropPerKill = 1.5;
+	float m_fInfectionDropPerKill;
 
 	[Attribute("80", desc: "Heat needed in one area to trigger a horde")]
-	float m_fHordeHeatThreshold = 80;
+	float m_fHordeHeatThreshold;
 
 	[Attribute("600", desc: "Seconds between hordes")]
-	float m_fHordeCooldown = 600;
+	float m_fHordeCooldown;
 }
 
 //! Something the spawner created and is keeping an eye on.

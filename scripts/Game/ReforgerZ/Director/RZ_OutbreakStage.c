@@ -15,27 +15,27 @@ class RZ_StageSettings
 	RZ_EOutbreakStage m_eStage;
 
 	[Attribute("1", desc: "Zombie density multiplier")]
-	float m_fDensityMult = 1;
+	float m_fDensityMult;
 
 	[Attribute("0.015", desc: "Chance that a spawned zombie is a special (drops research samples)")]
-	float m_fSpecialChance = 0.015;
+	float m_fSpecialChance;
 
 	[Attribute("0.08", desc: "Infection points per minute (while players are online, x season speed) that an infested town spreads to its neighbours; a quarter of it creeps up everywhere")]
-	float m_fSpreadPerMinute = 0.08;
+	float m_fSpreadPerMinute;
 
 	[Attribute("3", desc: "Concurrent missions (plus one per 4 players)")]
-	int m_iBaseMissions = 3;
+	int m_iBaseMissions;
 
 	[Attribute("960", desc: "Minutes with players online (divided by season speed) before advancing to the next stage. 0 = only advance on infection level")]
-	float m_fDurationMinutes = 960;
+	float m_fDurationMinutes;
 
 	[Attribute("1", desc: "How often Bastion missions show up (Bastion pulls back to its bases as things get worse)")]
-	float m_fMilitaryPresence = 1;
+	float m_fMilitaryPresence;
 
 	//------------------------------------------------------------------------------------------------
 	static RZ_StageSettings CreateDefault(RZ_EOutbreakStage stage)
 	{
-		RZ_StageSettings s = new RZ_StageSettings();
+		RZ_StageSettings s = RZ_StageSettings.Cast(RZ_Util.NewWithDefaults("RZ_StageSettings"));
 		s.m_eStage = stage;
 		switch (stage)
 		{

@@ -22,34 +22,34 @@
 class RZ_TerritorySettings
 {
 	[Attribute("1", desc: "Background territory on: one Stronghold per faction and a few Outposts in towns that suit it. Off = the leaders' interim posts instead")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("0", UIWidgets.Slider, "Outposts per faction at the start. 0 = by map size (1 under 24 settlements, like Arland; 2 under 48; 3 above, like Everon). Halcyon never has more than 1", "0 4 1")]
-	int m_iOutpostsPerFaction = 0;
+	int m_iOutpostsPerFaction;
 
 	[Attribute("0.2", desc: "Expansion stops once this share of all settlements is held (strongholds included). The starting outposts always fit")]
-	float m_fHeldShare = 0.2;
+	float m_fHeldShare;
 
 	[Attribute("45", desc: "Shortest real minutes between territory ticks (each does at most one thing; only while players are online; divided by season speed)")]
-	float m_fTickMinMinutes = 45;
+	float m_fTickMinMinutes;
 
 	[Attribute("75", desc: "Longest real minutes between territory ticks")]
-	float m_fTickMaxMinutes = 75;
+	float m_fTickMaxMinutes;
 
 	[Attribute("25", desc: "Real minutes a stronghold stays Under Pressure (no supply trucks, top shop tier locked)")]
-	float m_fPressureMinutes = 25;
+	float m_fPressureMinutes;
 
 	[Attribute("300", desc: "Guards, named occupants and the outpost quartermaster exist only while a player is this close (m)")]
-	float m_fVisibleRadius = 300;
+	float m_fVisibleRadius;
 
 	[Attribute("1", UIWidgets.Slider, "Guard bodies (the guard prefab, a character or a group) at each holding while a player is near", "0 4 1")]
-	int m_iGuardCount = 1;
+	int m_iGuardCount;
 
 	[Attribute("2", UIWidgets.Slider, "Named occupants shown at each holding while a player is near", "0 3 1")]
-	int m_iOccupantCount = 2;
+	int m_iOccupantCount;
 
 	[Attribute("1", desc: "Spawn the faction's quartermaster prefab at its outposts while a player is near (its shop; Bastion's Requisition)")]
-	bool m_bOutpostQuartermaster = true;
+	bool m_bOutpostQuartermaster;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven guard at Haven holdings (optional): an armed AI character or group on SURV", "et")]
 	ResourceName m_sHavenGuardPrefab;

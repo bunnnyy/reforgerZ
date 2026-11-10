@@ -20,46 +20,46 @@
 class RZ_GuidanceSettings
 {
 	[Attribute("1", desc: "New-player guidance on: tips, the first-life goal, the gentle start")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("10", desc: "Minutes a life must last to count as experience")]
-	float m_fMeaningfulMinutes = 10;
+	float m_fMeaningfulMinutes;
 
 	[Attribute("1", desc: "Counted lives for level 1 (learning). Below this a player is brand new (level 0)")]
-	int m_iLivesLearning = 1;
+	int m_iLivesLearning;
 
 	[Attribute("3", desc: "Counted lives for level 2 (familiar)")]
-	int m_iLivesFamiliar = 3;
+	int m_iLivesFamiliar;
 
 	[Attribute("8", desc: "Counted lives for level 3 (veteran: only critical tips, short)")]
-	int m_iLivesVeteran = 8;
+	int m_iLivesVeteran;
 
 	[Attribute("30", desc: "Real days away that bring guidance back for the next two counted lives (a refresher). 0 = never")]
-	int m_iRefresherDays = 30;
+	int m_iRefresherDays;
 
 	[Attribute("0.5", desc: "Zombie density near a brand-new player during the gentle start (1 = off)")]
-	float m_fGentleMult = 0.5;
+	float m_fGentleMult;
 
 	[Attribute("15", desc: "Minutes of each brand-new life with the gentle density")]
-	float m_fGentleMinutes = 15;
+	float m_fGentleMinutes;
 
 	[Attribute("90", desc: "Seconds between two tips to the same player (critical tips don't wait)")]
-	float m_fTipGapSeconds = 90;
+	float m_fTipGapSeconds;
 
 	[Attribute("45", desc: "Heat around a player that counts as too loud (the 'loud' tip)")]
-	float m_fLoudHeat = 45;
+	float m_fLoudHeat;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Wind-up radio item put in every new life's inventory (or at their feet). Its prefab name must contain 'radio' or it needs a radio component, so RZ_Radio counts it. Empty = none given", "et")]
 	ResourceName m_sRadioPrefab;
 
 	[Attribute("12", desc: "Minutes between open-channel radio messages for a brand-new player (x1.5, x2.5, x3.5 with experience). 0 = off")]
-	float m_fRadioMinutes = 12;
+	float m_fRadioMinutes;
 
 	[Attribute("1", desc: "Spawn scenarios: every new life starts near a small clue (a note, a flyer, a body, a radio)")]
-	bool m_bScenarios = true;
+	bool m_bScenarios;
 
 	[Attribute("20", desc: "Minutes a scenario clue stays; it's removed after this once nobody is within 30 m, and after twice this anyway")]
-	float m_fClueMinutes = 20;
+	float m_fClueMinutes;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Crashed car (optional scenery for the back-road scenario; a note lies next to it unless it has RZ_ClueComponent)", "et")]
 	ResourceName m_sCarWreckPrefab;
@@ -83,16 +83,16 @@ class RZ_GuidanceSettings
 	ResourceName m_sBarricadePrefab;
 
 	[Attribute("1", desc: "Halcyon flyers on the walls of Haven safehouses (they mention the Haven clinic and Bastion's curfew)")]
-	bool m_bSafehouseFlyers = true;
+	bool m_bSafehouseFlyers;
 
 	[Attribute("30", desc: "Minutes between a Bastion loudspeaker or a Red Hand taunt near one of their seats, per player and faction (doubled for veterans). 0 = off")]
-	float m_fShoutMinutes = 30;
+	float m_fShoutMinutes;
 
 	[Attribute("1", desc: "A Courier or Scavenger wanderer comes looking for brand-new players in their first 15 minutes")]
-	bool m_bWandererFinds = true;
+	bool m_bWandererFinds;
 
 	[Attribute(desc: "Tips: one line from the nearest plausible speaker when something happens. Empty = the built-in table (RZ_GuidanceTips)")]
-	ref array<ref RZ_GuidanceTip> m_aTips = {};
+	ref array<ref RZ_GuidanceTip> m_aTips;
 }
 
 //------------------------------------------------------------------------------------------------

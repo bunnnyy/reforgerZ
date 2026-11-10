@@ -43,21 +43,21 @@ enum RZ_EMed
 class RZ_MedFind
 {
 	[Attribute("pharmacy", desc: "Building type: pharmacy (pharmacies and hospitals), garage, farm (vet clinics count), police, shop, house, body (infected bodies, some of them Halcyon couriers) or car")]
-	string m_sType = "pharmacy";
+	string m_sType;
 
 	[Attribute("1", UIWidgets.ComboBox, "What is found", "", ParamEnumArray.FromEnum(RZ_EMed))]
-	RZ_EMed m_iMed = RZ_EMed.ANTIBIOTICS;
+	RZ_EMed m_iMed;
 
 	[Attribute("0.05", desc: "Chance per search (doubled behind a lock)")]
-	float m_fChance = 0.05;
+	float m_fChance;
 
 	[Attribute("0", desc: "Added to the chance per cure breakthrough (25, 50, 75 percent)")]
-	float m_fPerMilestone = 0;
+	float m_fPerMilestone;
 
 	//------------------------------------------------------------------------------------------------
 	static RZ_MedFind Make(string type, RZ_EMed med, float chance, float perMilestone)
 	{
-		RZ_MedFind f = new RZ_MedFind();
+		RZ_MedFind f = RZ_MedFind.Cast(RZ_Util.NewWithDefaults("RZ_MedFind"));
 		f.m_sType = type;
 		f.m_iMed = med;
 		f.m_fChance = chance;
@@ -73,59 +73,59 @@ class RZ_InfectionSettings
 {
 	// ---------------------------------------------------------------- Bites
 	[Attribute("2", desc: "Bite chance x this with 3 or more infected within 5 m (surrounded)")]
-	float m_fSurroundedMult = 2;
+	float m_fSurroundedMult;
 
 	[Attribute("1.5", desc: "Bite chance x this for a second hit within 4 s (grabbed and held)")]
-	float m_fGrabbedMult = 1.5;
+	float m_fGrabbedMult;
 
 	[Attribute("1.5", desc: "Bite chance x this with stamina under a quarter (needs the stamina hook)")]
-	float m_fTiredMult = 1.5;
+	float m_fTiredMult;
 
 	[Attribute("1.5", desc: "Bite chance x this under 40% health")]
-	float m_fHurtMult = 1.5;
+	float m_fHurtMult;
 
 	[Attribute("0.6", desc: "The bite chance never goes above this")]
-	float m_fMaxBiteChance = 0.6;
+	float m_fMaxBiteChance;
 
 	[Attribute("jacket,coat,parka,leather,smock,anorak,m65,gorka,hoodie", desc: "Protective jacket keywords (worn clothing prefab names)")]
-	string m_sJacketWords = "jacket,coat,parka,leather,smock,anorak,m65,gorka,hoodie";
+	string m_sJacketWords;
 
 	[Attribute("0.8", desc: "Bite chance x this wearing a jacket")]
-	float m_fJacketMult = 0.8;
+	float m_fJacketMult;
 
 	[Attribute("glove,gauntlet", desc: "Glove keywords")]
-	string m_sGloveWords = "glove,gauntlet";
+	string m_sGloveWords;
 
 	[Attribute("0.8", desc: "Bite chance x this wearing gloves")]
-	float m_fGloveMult = 0.8;
+	float m_fGloveMult;
 
 	[Attribute("helmet,helm_,_helm,ssh68,pasgt,motorcycle", desc: "Helmet keywords")]
-	string m_sHelmetWords = "helmet,helm_,_helm,ssh68,pasgt,motorcycle";
+	string m_sHelmetWords;
 
 	[Attribute("0.85", desc: "Bite chance x this wearing a helmet")]
-	float m_fHelmetMult = 0.85;
+	float m_fHelmetMult;
 
 	// ---------------------------------------------------------------- The golden window and the stages
 	[Attribute("120", desc: "Golden window: seconds before a bite takes hold, while cleaning it can stop it. 0 = bites take hold at once")]
-	float m_fGoldenSeconds = 120;
+	float m_fGoldenSeconds;
 
 	[Attribute("vodka,whisky,whiskey,alcohol,spirit,moonshine,brandy,slivovic,liquor,rum_bottle", desc: "Alcohol keywords (cleaning a bite, the home remedy)")]
-	string m_sAlcoholWords = "vodka,whisky,whiskey,alcohol,spirit,moonshine,brandy,slivovic,liquor,rum_bottle";
+	string m_sAlcoholWords;
 
 	[Attribute("antiseptic,iodine,betadine,swab,peroxide,disinfect,chlorhex", desc: "Antiseptic and disinfectant keywords")]
-	string m_sAntisepticWords = "antiseptic,iodine,betadine,swab,peroxide,disinfect,chlorhex";
+	string m_sAntisepticWords;
 
 	[Attribute("0.7", desc: "Chance that cleaning a fresh bite with alcohol or antiseptic stops it")]
-	float m_fCleanChance = 0.7;
+	float m_fCleanChance;
 
 	[Attribute("0.9", desc: "Chance that disinfectant and a bandage (or a first-aid kit, or another player's treatment) stops it")]
-	float m_fDisinfectChance = 0.9;
+	float m_fDisinfectChance;
 
 	[Attribute("6", desc: "Seconds cleaning a bite takes (stay close)")]
-	float m_fCleanSeconds = 6;
+	float m_fCleanSeconds;
 
 	[Attribute("10", desc: "Final stage: the last this many minutes (at most 30% of the whole infection)")]
-	float m_fFinalMinutes = 10;
+	float m_fFinalMinutes;
 
 	// ---------------------------------------------------------------- Treatments
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Stabiliser: pauses the infection. An item with RZ_MedItemComponent (STABILISER) and RZ_UseMedAction. Halcyon's quartermaster sells it from a stock (Known); rare in pharmacies and hospitals", "et")]
@@ -147,28 +147,28 @@ class RZ_InfectionSettings
 	ResourceName m_sRemedyPrefab;
 
 	[Attribute("20", desc: "Minutes a stabiliser pauses the infection")]
-	float m_fStabiliserMinutes = 20;
+	float m_fStabiliserMinutes;
 
 	[Attribute("30", desc: "Most minutes the low-grade meds add between them in one life (a stabiliser doesn't count)")]
-	float m_fMedCapMinutes = 30;
+	float m_fMedCapMinutes;
 
 	[Attribute("0.8", desc: "Halcyon's trial dose: chance it cures (else the turn comes twice as fast)")]
-	float m_fTrialCureChance = 0.8;
+	float m_fTrialCureChance;
 
 	[Attribute("3", desc: "Halcyon Fame for taking the trial dose, whatever happens")]
-	int m_iTrialFame = 3;
+	int m_iTrialFame;
 
 	[Attribute("0.5", desc: "Red Hand cut dose: chance it cures (else the turn comes faster)")]
-	float m_fCutDoseCureChance = 0.5;
+	float m_fCutDoseCureChance;
 
 	[Attribute("0.3", desc: "Expired antibiotics: chance they do nothing at all")]
-	float m_fAntibioticsFailChance = 0.3;
+	float m_fAntibioticsFailChance;
 
 	[Attribute("herb,chamomile,camomile,mint,nettle,garlic,teabag,tea_bag,thyme", desc: "Herb keywords (the home remedy)")]
-	string m_sHerbWords = "herb,chamomile,camomile,mint,nettle,garlic,teabag,tea_bag,thyme";
+	string m_sHerbWords;
 
 	[Attribute("20", desc: "Seconds brewing a home remedy on a stove")]
-	float m_fBrewSeconds = 20;
+	float m_fBrewSeconds;
 
 	[Attribute(desc: "Where treatments are found when searching (empty = the built-in list in docs/DESIGN.md)")]
 	ref array<ref RZ_MedFind> m_aFinds;

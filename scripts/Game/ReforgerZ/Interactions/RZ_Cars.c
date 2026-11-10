@@ -24,25 +24,25 @@
 class RZ_CarSettings
 {
 	[Attribute("1", desc: "Fixable cars and wrecks you can strip and siphon")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Drivable vehicles a fixed car becomes (one at random). Empty = no fixable cars (wrecks still work)", "et")]
-	ref array<ResourceName> m_aCarPrefabs = {};
+	ref array<ResourceName> m_aCarPrefabs;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The car before it runs: a non-drivable car prop with the generic puzzle object's components. Empty = the interaction spot on the drivable prefab's position (Puzzles > Generic object)", "et")]
 	ResourceName m_sProjectPrefab;
 
 	[Attribute("0.34", desc: "Fixable cars per settlement on the map (about 1 per 3), at most one per town")]
-	float m_fPerSettlement = 0.34;
+	float m_fPerSettlement;
 
 	[Attribute("6", desc: "Most fixable cars on the server at once")]
-	int m_iMaxCars = 6;
+	int m_iMaxCars;
 
 	[Attribute("6", desc: "Real hours before a fixed car's project is replaced somewhere else")]
-	float m_fReplaceHours = 6;
+	float m_fReplaceHours;
 
 	[Attribute("0.25", desc: "Fuel in a freshly fixed car (0..1 of its tank)")]
-	float m_fStartFuel = 0.25;
+	float m_fStartFuel;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Car battery item (stripping, the Mechanic)", "et")]
 	ResourceName m_sBatteryPrefab;
@@ -57,67 +57,67 @@ class RZ_CarSettings
 	ResourceName m_sFuelPrefab;
 
 	[Attribute("battery,accumulator", desc: "Car battery keywords")]
-	string m_sBatteryWords = "battery,accumulator";
+	string m_sBatteryWords;
 
 	[Attribute("tyre,tire,wheel", desc: "Tyre keywords")]
-	string m_sTyreWords = "tyre,tire,wheel";
+	string m_sTyreWords;
 
 	[Attribute("spark", desc: "Spark plug keywords")]
-	string m_sSparkWords = "spark";
+	string m_sSparkWords;
 
 	[Attribute("jerrycan,jerry_can,fuelcan,fuel_can,canister", desc: "Fuel keywords (one is used up fuelling a car)")]
-	string m_sFuelWords = "jerrycan,jerry_can,fuelcan,fuel_can,canister";
+	string m_sFuelWords;
 
 	[Attribute("jerrycan_empty,empty_jerrycan,canister_empty,empty_canister,fuelcan_empty", desc: "Empty fuel container keywords (filled by siphoning or pumping)")]
-	string m_sContainerWords = "jerrycan_empty,empty_jerrycan,canister_empty,empty_canister,fuelcan_empty";
+	string m_sContainerWords;
 
 	[Attribute("wreck,carwreck,car_wreck,burntcar,burnt_car,car_burnt", desc: "Wreck keywords (search the boot, strip a part, siphon)")]
-	string m_sWreckWords = "wreck,carwreck,car_wreck,burntcar,burnt_car,car_burnt";
+	string m_sWreckWords;
 
 	[Attribute("20", desc: "Seconds to hotwire")]
-	float m_fHotwireSeconds = 20;
+	float m_fHotwireSeconds;
 
 	[Attribute("5", desc: "Seconds to hotwire for a Mechanic")]
-	float m_fMechanicHotwireSeconds = 5;
+	float m_fMechanicHotwireSeconds;
 
 	[Attribute("8", desc: "Heat hotwiring makes (sparks, the starter)")]
-	float m_fHotwireHeat = 8;
+	float m_fHotwireHeat;
 
 	[Attribute("15", desc: "Heat an engine starting makes")]
-	float m_fStartHeat = 15;
+	float m_fStartHeat;
 
 	[Attribute("0.5", desc: "Chance a fixable car's keys are in a house in its town")]
-	float m_fKeysChance = 0.5;
+	float m_fKeysChance;
 
 	[Attribute("0.2", desc: "Chance a search in that town finds them")]
-	float m_fKeyFindChance = 0.2;
+	float m_fKeyFindChance;
 
 	[Attribute("8", desc: "Seconds to fit parts or fuel")]
-	float m_fFitSeconds = 8;
+	float m_fFitSeconds;
 
 	[Attribute("12", desc: "Seconds to strip a part from a wreck")]
-	float m_fStripSeconds = 12;
+	float m_fStripSeconds;
 
 	[Attribute("15", desc: "Seconds to siphon a wreck")]
-	float m_fSiphonSeconds = 15;
+	float m_fSiphonSeconds;
 
 	[Attribute("0.6", desc: "Chance a wreck still has fuel to siphon")]
-	float m_fSiphonChance = 0.6;
+	float m_fSiphonChance;
 
 	[Attribute("30", desc: "Seconds to fill a can at a petrol station's hand pump")]
-	float m_fPumpSeconds = 30;
+	float m_fPumpSeconds;
 
 	[Attribute("10", desc: "Heat the hand pump makes")]
-	float m_fPumpHeat = 10;
+	float m_fPumpHeat;
 
 	[Attribute("20", desc: "Real minutes before the same pump gives fuel again")]
-	float m_fPumpCooldownMinutes = 20;
+	float m_fPumpCooldownMinutes;
 
 	[Attribute("120", desc: "Real minutes before a stripped or siphoned wreck has anything again")]
-	float m_fWreckReturnMinutes = 120;
+	float m_fWreckReturnMinutes;
 
 	[Attribute("12", desc: "Haven Favor for a part from a Mechanic wanderer")]
-	int m_iPartCost = 12;
+	int m_iPartCost;
 }
 
 //------------------------------------------------------------------------------------------------

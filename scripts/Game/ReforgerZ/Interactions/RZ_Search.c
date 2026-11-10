@@ -27,16 +27,16 @@
 class RZ_LootTable
 {
 	[Attribute("house", desc: "Building type: pharmacy, garage, farm, police, shop, house, body (infected bodies) or car (car boots)")]
-	string m_sType = "house";
+	string m_sType;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Everyday finds", "et")]
-	ref array<ResourceName> m_aCommon = {};
+	ref array<ResourceName> m_aCommon;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Rare finds (more likely behind a lock)", "et")]
-	ref array<ResourceName> m_aRare = {};
+	ref array<ResourceName> m_aRare;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Electronics (radios, batteries, torches): more likely where the power is on", "et")]
-	ref array<ResourceName> m_aElectronics = {};
+	ref array<ResourceName> m_aElectronics;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -45,115 +45,115 @@ class RZ_LootTable
 class RZ_SearchSettings
 {
 	[Attribute("1", desc: "Searching cupboards, fridges, desks, buildings, car boots and bodies")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot pool: every item a search can find. Tables left empty are filled from it by keywords in the prefab names (see docs/WORKBENCH_SETUP.md)", "et")]
-	ref array<ResourceName> m_aLootPool = {};
+	ref array<ResourceName> m_aLootPool;
 
 	[Attribute(desc: "Loot tables per building type (optional; empty lists use the pool)")]
 	ref array<ref RZ_LootTable> m_aTables;
 
 	[Attribute("0.6", desc: "Chance a search finds anything, at full town loot (scaled by what the town has left)")]
-	float m_fFindChance = 0.6;
+	float m_fFindChance;
 
 	[Attribute("0.1", desc: "Chance a find is rare (doubled behind a lock)")]
-	float m_fRareChance = 0.1;
+	float m_fRareChance;
 
 	[Attribute("0.1", desc: "Chance a find is electronics (x the power grid's electronics multiplier)")]
-	float m_fElectronicsChance = 0.1;
+	float m_fElectronicsChance;
 
 	[Attribute("0.02", desc: "Town loot one container search takes (RZ_TownMemory.ReportSearched)")]
-	float m_fSpotShare = 0.02;
+	float m_fSpotShare;
 
 	[Attribute("0.04", desc: "Town loot a whole-building search takes")]
-	float m_fBuildingShare = 0.04;
+	float m_fBuildingShare;
 
 	[Attribute("60", desc: "Real minutes before a searched spot has anything again")]
-	float m_fSpotReturnMinutes = 60;
+	float m_fSpotReturnMinutes;
 
 	[Attribute("4", desc: "Seconds a search takes (stay close)")]
-	float m_fSearchSeconds = 4;
+	float m_fSearchSeconds;
 
 	[Attribute("1", desc: "Heat a search makes (doors, drawers)")]
-	float m_fSearchHeat = 1;
+	float m_fSearchHeat;
 
 	// ---------------------------------------------------------------- Locks and keys
 	[Attribute("1", desc: "Some buildings are locked (seeded from their position): their doors, or their loot")]
-	bool m_bLocks = true;
+	bool m_bLocks;
 
 	[Attribute("1", desc: "Lock the outside doors of locked buildings (the vanilla door action refuses; Unlock, Lock and Force at the door). Off = the old lock on the loot only (use it if door hooking doesn't work)")]
-	bool m_bDoorLocks = true;
+	bool m_bDoorLocks;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Key item: a small item with RZ_KeyItemComponent (and optionally RZ_ReadKeyTagAction). Keys found are real items that can be dropped, traded and stolen. Empty = keys are data kept for this life", "et")]
 	ResourceName m_sKeyPrefab;
 
 	[Attribute("0.5", desc: "Share of pharmacies that are locked")]
-	float m_fLockPharmacy = 0.5;
+	float m_fLockPharmacy;
 
 	[Attribute("0.5", desc: "Share of police stations that are locked")]
-	float m_fLockPolice = 0.5;
+	float m_fLockPolice;
 
 	[Attribute("0.35", desc: "Share of garages that are locked")]
-	float m_fLockGarage = 0.35;
+	float m_fLockGarage;
 
 	[Attribute("0.25", desc: "Share of shops that are locked")]
-	float m_fLockShop = 0.25;
+	float m_fLockShop;
 
 	[Attribute("0.1", desc: "Share of houses (and farmhouses) that are locked")]
-	float m_fLockHouse = 0.1;
+	float m_fLockHouse;
 
 	[Attribute("crowbar,crow_bar,prybar,pry_bar,wreckingbar,wrecking_bar", desc: "Crowbar keywords (forces a lock)")]
-	string m_sCrowbarWords = "crowbar,crow_bar,prybar,pry_bar,wreckingbar,wrecking_bar";
+	string m_sCrowbarWords;
 
 	[Attribute("10", desc: "Seconds to force a lock or a door")]
-	float m_fForceSeconds = 10;
+	float m_fForceSeconds;
 
 	[Attribute("25", desc: "Heat forcing a lock makes")]
-	float m_fForceHeat = 25;
+	float m_fForceHeat;
 
 	[Attribute("180", desc: "Real minutes before an unlocked, forced or latched lock is back to its default (locked, doors shut)")]
-	float m_fRelockMinutes = 180;
+	float m_fRelockMinutes;
 
 	// ---------------------------------------------------------------- Keeping AI out (RZ_DoorBlockers.c, RZ_AIDoorHook.c)
 	[Attribute("1", desc: "AI door hook: the AI's own door opening refuses a locked outside door (RZ_AIDoorHook.c, optional file). Off = the hook lets every door open")]
-	bool m_bAiDoorHook = true;
+	bool m_bAiDoorHook;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Doorway blocker: an invisible, thin collision box that stops characters (not bullets) and counts for the navmesh. Stands in a locked outside doorway near players. Empty = no blockers (docs/WORKBENCH_SETUP.md)", "et")]
 	ResourceName m_sDoorBlockerPrefab;
 
 	[Attribute("1", desc: "Rebuild the navmesh around a doorway when its blocker comes or goes, so AI routes around a locked door. Off = blockers only (AI walk into them and stop)")]
-	bool m_bNavmeshRebuild = true;
+	bool m_bNavmeshRebuild;
 
 	[Attribute("150", desc: "Locked doorways this close (m) to a player get a blocker and can be banged on")]
-	float m_fBlockerRange = 150;
+	float m_fBlockerRange;
 
 	[Attribute("20", desc: "Most blocked doorways on the server (the nearest to players win)")]
-	int m_iBlockerCap = 20;
+	int m_iBlockerCap;
 
 	[Attribute("60", desc: "Seconds after a doorway's blocker came or went before it can come back (lock and unlock spam can't force rebuilds). Removing is always instant")]
-	float m_fBlockerCooldown = 60;
+	float m_fBlockerCooldown;
 
 	[Attribute("4", desc: "Heat an infected pressing at a locked doorway makes (0 = silent)")]
-	float m_fDoorBangHeat = 4;
+	float m_fDoorBangHeat;
 
 	[Attribute("15", desc: "Seconds between bangs at one doorway")]
-	float m_fDoorBangSeconds = 15;
+	float m_fDoorBangSeconds;
 
 	// ---------------------------------------------------------------- Readable things and bodies
 	[Attribute("0.12", desc: "Chance a search turns up something readable (ID card, letter, receipt, photo)")]
-	float m_fReadableChance = 0.12;
+	float m_fReadableChance;
 
 	[Attribute("0.3", desc: "Chance an infected body has something readable on it")]
-	float m_fBodyReadableChance = 0.3;
+	float m_fBodyReadableChance;
 
 	[Attribute("0.08", desc: "Chance an infected body has a key on it")]
-	float m_fBodyKeyChance = 0.08;
+	float m_fBodyKeyChance;
 
 	[Attribute("4", desc: "Real minutes an infected body can be searched (players within 60 m when it died)")]
-	float m_fBodyMinutes = 4;
+	float m_fBodyMinutes;
 
 	[Attribute("8", desc: "Most searchable bodies at once")]
-	int m_iBodyCap = 8;
+	int m_iBodyCap;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -323,7 +323,7 @@ class RZ_Search
 	//! A table per type: the one set by hand, with any empty list filled from the pool.
 	protected void BuildTable(string type)
 	{
-		RZ_LootTable t = new RZ_LootTable();
+		RZ_LootTable t = RZ_LootTable.Cast(RZ_Util.NewWithDefaults("RZ_LootTable"));
 		t.m_sType = type;
 		if (m_Settings.m_aTables)
 		{

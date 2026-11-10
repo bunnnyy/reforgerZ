@@ -12,7 +12,7 @@ class RZ_EventHelp
 	{
 		RZ_EventSettings settings = gm.GetEventSettings();
 		if (!settings)
-			settings = new RZ_EventSettings();
+			settings = RZ_EventSettings.Cast(RZ_Util.NewWithDefaults("RZ_EventSettings"));
 
 		return settings;
 	}

@@ -29,104 +29,104 @@ enum RZ_EPlaceable
 class RZ_TrapSettings
 {
 	[Attribute("1", desc: "Barricades, tripwires, spike traps and generators players put down")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Boarded-up doorway or window (a prop with collision) that a planks bundle becomes. Empty = New-player guidance > Barricade, else the planks stay where they are (cosmetic)", "et")]
 	ResourceName m_sBarricadePrefab;
 
 	[Attribute("60", desc: "Real minutes a barricade lasts (about a night)")]
-	float m_fBarricadeMinutes = 60;
+	float m_fBarricadeMinutes;
 
 	[Attribute("3", desc: "Barricades per player")]
-	int m_iBarricadesPerPlayer = 3;
+	int m_iBarricadesPerPlayer;
 
 	[Attribute("8", desc: "Hits (an infected against it on a tick) before a barricade breaks")]
-	int m_iBarricadeHits = 8;
+	int m_iBarricadeHits;
 
 	[Attribute("6", desc: "Heat each hit on a barricade makes")]
-	float m_fBarricadeHitHeat = 6;
+	float m_fBarricadeHitHeat;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "A set tripwire (optional: without it the kit itself lies where it was set)", "et")]
 	ResourceName m_sTripwireSetPrefab;
 
 	[Attribute("3", desc: "Tripwires per player")]
-	int m_iTripwiresPerPlayer = 3;
+	int m_iTripwiresPerPlayer;
 
 	[Attribute("60", desc: "Real minutes a tripwire lasts")]
-	float m_fTripwireMinutes = 60;
+	float m_fTripwireMinutes;
 
 	[Attribute("20", desc: "Heat a rattling tripwire makes")]
-	float m_fTripwireHeat = 20;
+	float m_fTripwireHeat;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "A set spike trap (optional: without it the kit itself lies where it was set)", "et")]
 	ResourceName m_sSpikeSetPrefab;
 
 	[Attribute("2", desc: "Spike traps per player")]
-	int m_iSpikesPerPlayer = 2;
+	int m_iSpikesPerPlayer;
 
 	[Attribute("60", desc: "Real minutes a spike trap lasts")]
-	float m_fSpikeMinutes = 60;
+	float m_fSpikeMinutes;
 
 	[Attribute("3", desc: "Infected a spike trap kills before it's spent")]
-	int m_iSpikeKills = 3;
+	int m_iSpikeKills;
 
 	[Attribute("generator,genset", desc: "Generator prefab name keywords (found ones in sheds and farms)")]
-	string m_sGeneratorWords = "generator,genset";
+	string m_sGeneratorWords;
 
 	[Attribute("6", desc: "Heat a running generator makes per minute")]
-	float m_fGeneratorHeatPerMinute = 6;
+	float m_fGeneratorHeatPerMinute;
 
 	[Attribute("30", desc: "Real minutes a generator runs on one fuel item")]
-	float m_fGeneratorFuelMinutes = 30;
+	float m_fGeneratorFuelMinutes;
 
 	[Attribute("40", desc: "Lights (RZ_PowerGrid.IsPoweredAt) within this distance of a running generator")]
-	float m_fGeneratorLightRadius = 40;
+	float m_fGeneratorLightRadius;
 
 	[Attribute("30", desc: "Players with a radio this close to a running generator hear every open channel")]
-	float m_fGeneratorRadioRadius = 30;
+	float m_fGeneratorRadioRadius;
 
 	[Attribute("60", desc: "Seconds next to a running generator (15 m) to charge your radio and torch")]
-	float m_fChargeSeconds = 60;
+	float m_fChargeSeconds;
 
 	[Attribute("30", desc: "Real minutes the charge lasts")]
-	float m_fChargedMinutes = 30;
+	float m_fChargedMinutes;
 
 	[Attribute("1", desc: "Running generators per player")]
-	int m_iGeneratorsPerPlayer = 1;
+	int m_iGeneratorsPerPlayer;
 
 	[Attribute("jerrycan,jerry_can,fuelcan,fuel_can,canister", desc: "Fuel keywords (generators, setting fires)")]
-	string m_sFuelWords = "jerrycan,jerry_can,fuelcan,fuel_can,canister";
+	string m_sFuelWords;
 
 	// ---------------------------------------------------------------- Fire
 	[Attribute("1", desc: "Molotovs and fuel burn buildings (one building each)")]
-	bool m_bFire = true;
+	bool m_bFire;
 
 	[Attribute("molotov,firebomb", desc: "Molotov keywords (setting a fire by hand uses one, or a fuel item)")]
-	string m_sMolotovWords = "molotov,firebomb";
+	string m_sMolotovWords;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Fire effect spawned on a burning building for a few minutes (optional)", "et")]
 	ResourceName m_sFireEffectPrefab;
 
 	[Attribute("180", desc: "Seconds the fire effect stays")]
-	float m_fFireEffectSeconds = 180;
+	float m_fFireEffectSeconds;
 
 	[Attribute("30", desc: "Heat a building going up makes")]
-	float m_fBurnHeat = 30;
+	float m_fBurnHeat;
 
 	[Attribute("120", desc: "Real minutes a burned building has nothing to search, and keeps infected from spawning within 30 m")]
-	float m_fBurnMinutes = 120;
+	float m_fBurnMinutes;
 
 	[Attribute("1", desc: "Infection taken off the town when one of its buildings burns")]
-	float m_fBurnInfectionDrop = 1;
+	float m_fBurnInfectionDrop;
 
 	[Attribute("25", desc: "Heat a molotov makes where it lands")]
-	float m_fMolotovHeat = 25;
+	float m_fMolotovHeat;
 
 	[Attribute("3", desc: "Infected within this distance (m) of a molotov die")]
-	float m_fMolotovRadius = 3;
+	float m_fMolotovRadius;
 
 	[Attribute("10", desc: "A molotov burns the building within this distance (m) of where it lands")]
-	float m_fMolotovReach = 10;
+	float m_fMolotovReach;
 }
 
 //------------------------------------------------------------------------------------------------

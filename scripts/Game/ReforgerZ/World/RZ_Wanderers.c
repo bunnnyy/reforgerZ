@@ -35,13 +35,13 @@ enum RZ_EWandererState
 class RZ_WandererSettings
 {
 	[Attribute("1", desc: "Named wanderers on")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("6", desc: "Roster size on a small map")]
-	int m_iMinCount = 6;
+	int m_iMinCount;
 
 	[Attribute("10", desc: "Roster size on a big map (one more per 6 settlements above 8)")]
-	int m_iMaxCount = 10;
+	int m_iMaxCount;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Trader body (falls back to the puzzle civilian). Needs the generic puzzle object components to be talked to. An AI group walks visibly; a character without AI or a prop stands still while seen", "et")]
 	ResourceName m_sTraderPrefab;
@@ -68,37 +68,37 @@ class RZ_WandererSettings
 	ResourceName m_sMechanicPrefab;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "What the Trader sells (one at random per purchase). Empty = the Trader only talks", "et")]
-	ref array<ResourceName> m_aTraderGoods = {};
+	ref array<ResourceName> m_aTraderGoods;
 
 	[Attribute("15", desc: "Haven Favor for one Trader purchase (a quarter off if they remember you helped)")]
-	int m_iTradeCost = 15;
+	int m_iTradeCost;
 
 	[Attribute("10", desc: "Haven Favor for a Scavenger's rumour (or one food item)")]
-	int m_iRumourCost = 10;
+	int m_iRumourCost;
 
 	[Attribute("20", desc: "Haven Favor for the Doctor's treatment")]
-	int m_iTreatCost = 20;
+	int m_iTreatCost;
 
 	[Attribute("400", desc: "Bodies exist only within this distance (m) of a player")]
-	float m_fSpawnRadius = 400;
+	float m_fSpawnRadius;
 
 	[Attribute("1.3", desc: "Walking speed while simulated (m/s)")]
-	float m_fWalkSpeed = 1.3;
+	float m_fWalkSpeed;
 
 	[Attribute("1440", desc: "Real minutes before a dead wanderer's replacement appears")]
-	float m_fReplaceMinutes = 1440;
+	float m_fReplaceMinutes;
 
 	[Attribute("0.05", desc: "Chance per check (30 s) that a wanderer with an infected within 12 m is bitten")]
-	float m_fBiteChance = 0.05;
+	float m_fBiteChance;
 
 	[Attribute("15", desc: "Haven Infamy for killing a wanderer")]
-	int m_iKillInfamy = 15;
+	int m_iKillInfamy;
 
 	[Attribute("4", desc: "Haven Infamy for shooting at one (once per wanderer)")]
-	int m_iShotInfamy = 4;
+	int m_iShotInfamy;
 
 	[Attribute("8", desc: "Haven Infamy for robbing one")]
-	int m_iRobInfamy = 8;
+	int m_iRobInfamy;
 }
 
 //------------------------------------------------------------------------------------------------

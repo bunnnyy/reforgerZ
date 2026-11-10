@@ -22,43 +22,43 @@
 class RZ_EnvironmentSettings
 {
 	[Attribute("1", desc: "Time and weather nudge the infected and the factions (docs/DESIGN.md, Time and environment). Time is never skipped or changed")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("1", desc: "Read the real weather (rain, fog, wind). Off = only night and the Storm event apply")]
-	bool m_bReadWeather = true;
+	bool m_bReadWeather;
 
 	[Attribute("0.25", desc: "Night: share of every bit of heat that also reaches the four neighbouring heat squares (they hear further). 0 = off")]
-	float m_fNightHeatSpread = 0.25;
+	float m_fNightHeatSpread;
 
 	[Attribute("1.25", desc: "Night: special chance multiplier")]
-	float m_fNightSpecialMult = 1.25;
+	float m_fNightSpecialMult;
 
 	[Attribute("1", UIWidgets.Slider, "Night: fewer guards at each holding (never under 1 if it had any)", "0 3 1")]
-	int m_iNightGuardDrop = 1;
+	int m_iNightGuardDrop;
 
 	[Attribute("0.5", desc: "Night: chance a hunter squad round is skipped")]
-	float m_fNightHunterSkip = 0.5;
+	float m_fNightHunterSkip;
 
 	[Attribute("0.7", desc: "Rain: heat added is multiplied by this")]
-	float m_fRainHeatMult = 0.7;
+	float m_fRainHeatMult;
 
 	[Attribute("0.3", desc: "Rain counts from this intensity (0..1)")]
-	float m_fRainFrom = 0.3;
+	float m_fRainFrom;
 
 	[Attribute("0.4", desc: "Fog counts from this amount (0..1)")]
-	float m_fFogFrom = 0.4;
+	float m_fFogFrom;
 
 	[Attribute("0.75", desc: "Fog: the closest distance infected spawn from players is multiplied by this")]
-	float m_fFogSpawnMult = 0.75;
+	float m_fFogSpawnMult;
 
 	[Attribute("0.6", desc: "Real storm: rain at least this heavy...")]
-	float m_fStormRain = 0.6;
+	float m_fStormRain;
 
 	[Attribute("10", desc: "...with wind at least this strong (m/s)")]
-	float m_fStormWind = 10;
+	float m_fStormWind;
 
 	[Attribute("1", desc: "Storms ground Bastion's helicopter: no Last Helicopter contract during a storm")]
-	bool m_bStormGroundsHelicopter = true;
+	bool m_bStormGroundsHelicopter;
 }
 
 //------------------------------------------------------------------------------------------------

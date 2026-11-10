@@ -57,7 +57,7 @@ enum RZ_ELeaderAction
 class RZ_LeaderSettings
 {
 	[Attribute("1", desc: "Named faction leaders on")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven stronghold leader body (optional). Empty = the Haven quartermaster is the leader", "et")]
 	ResourceName m_sHavenLeaderPrefab;
@@ -84,34 +84,34 @@ class RZ_LeaderSettings
 	ResourceName m_sHalcyonOutpostPrefab;
 
 	[Attribute("1", desc: "Without a leader prefab, the quartermaster at a stronghold or safehouse is the leader (give it RZ_LeaderAction). Off = a puzzle civilian stands in")]
-	bool m_bQuartermasterIsLeader = true;
+	bool m_bQuartermasterIsLeader;
 
 	[Attribute("1", UIWidgets.Slider, "Interim leader posts per faction (Bastion, Red Hand; Halcyon at most 1), only while Territory is off. Placing RZ_OutpostMarkerEntity for a faction turns this off for it", "0 3 1")]
-	int m_iAutoOutposts = 1;
+	int m_iAutoOutposts;
 
 	[Attribute("200", desc: "A leader's body exists only while a player is this close (m)")]
-	float m_fBodyRadius = 200;
+	float m_fBodyRadius;
 
 	[Attribute("120", desc: "Real minutes before a dead or dismissed outpost or safehouse leader is replaced")]
-	float m_fReplaceMinutes = 120;
+	float m_fReplaceMinutes;
 
 	[Attribute("30", desc: "Real minutes between personal jobs from one leader")]
-	float m_fJobMinutes = 30;
+	float m_fJobMinutes;
 
 	[Attribute("1", desc: "Scales the chance of outpost and safehouse leaders dying off-screen (bites, raids). 0 = they only die if killed")]
-	float m_fDangerScale = 1;
+	float m_fDangerScale;
 
 	[Attribute("10", desc: "Infamy with the leader's faction when a rogue job is discovered")]
-	int m_iDiscoveryInfamy = 10;
+	int m_iDiscoveryInfamy;
 
 	[Attribute("0.15", desc: "Base chance a finished rogue job is discovered")]
-	float m_fDiscoveryChance = 0.15;
+	float m_fDiscoveryChance;
 
 	[Attribute("0.35", desc: "Extra discovery chance if the faction's own people saw the job")]
-	float m_fSeenChance = 0.35;
+	float m_fSeenChance;
 
 	[Attribute("15", desc: "Infamy with the faction for killing one of its leaders")]
-	int m_iKillInfamy = 15;
+	int m_iKillInfamy;
 }
 
 //------------------------------------------------------------------------------------------------

@@ -16,13 +16,13 @@ class RZ_GuidanceTip
 	bool m_bCritical;
 
 	[Attribute("2", UIWidgets.Slider, "Said in full up to this guidance level (0 brand new, 1 learning, 2 familiar, 3 veteran)", "0 3 1")]
-	int m_iMaxLevel = 2;
+	int m_iMaxLevel;
 
 	[Attribute("0", desc: "Once per player (until a refresher brings guidance back), not once per life")]
 	bool m_bOnce;
 
 	[Attribute("20", desc: "Minutes before the same player can hear it again in a later life")]
-	float m_fCooldownMinutes = 20;
+	float m_fCooldownMinutes;
 
 	[Attribute("", UIWidgets.EditBoxMultiline, "A Haven leader or safehouse occupant says")]
 	string m_sHaven;
@@ -69,7 +69,7 @@ class RZ_GuidanceTips
 	//------------------------------------------------------------------------------------------------
 	protected static RZ_GuidanceTip Add(notnull array<ref RZ_GuidanceTip> list, string id, bool critical, int maxLevel, bool once, float cooldown)
 	{
-		RZ_GuidanceTip t = new RZ_GuidanceTip();
+		RZ_GuidanceTip t = RZ_GuidanceTip.Cast(RZ_Util.NewWithDefaults("RZ_GuidanceTip"));
 		t.m_sId = id;
 		t.m_bCritical = critical;
 		t.m_iMaxLevel = maxLevel;

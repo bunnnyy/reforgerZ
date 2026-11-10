@@ -30,16 +30,16 @@ class RZ_Background
 	string m_sGear;
 
 	[Attribute("1", desc: "Multiplier on the heat (zombie attention) this player generates")]
-	float m_fNoiseMult = 1;
+	float m_fNoiseMult;
 
 	[Attribute("1", desc: "Multiplier on how long an infection takes to kill you")]
-	float m_fInfectionTimeMult = 1;
+	float m_fInfectionTimeMult;
 
 	[Attribute("1", desc: "Multiplier on research points per delivered sample")]
-	float m_fResearchMult = 1;
+	float m_fResearchMult;
 
 	[Attribute("1", desc: "Multiplier on Fame earned from missions")]
-	float m_fMissionRewardMult = 1;
+	float m_fMissionRewardMult;
 
 	[Attribute("0", desc: "Hears horde warnings and intel from anywhere on the map")]
 	bool m_bRadioIntel;
@@ -95,7 +95,7 @@ class RZ_Background
 	//------------------------------------------------------------------------------------------------
 	protected static RZ_Background Make(string id, string name, string perk, string flaw)
 	{
-		RZ_Background b = new RZ_Background();
+		RZ_Background b = RZ_Background.Cast(RZ_Util.NewWithDefaults("RZ_Background"));
 		b.m_sId = id;
 		b.m_sName = name;
 		b.m_sLoadoutName = name;

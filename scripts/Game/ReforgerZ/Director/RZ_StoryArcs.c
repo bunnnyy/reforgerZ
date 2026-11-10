@@ -16,25 +16,25 @@
 class RZ_StorySettings
 {
 	[Attribute("1", desc: "Story arcs on: short storylines made of missions, rumours and headlines (docs/DESIGN.md, Story arcs and headlines)")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("60", desc: "Average real minutes (with players online) between chances for a new arc")]
-	float m_fMinutesBetween = 60;
+	float m_fMinutesBetween;
 
 	[Attribute("0.6", desc: "Chance that an arc starts when one is considered")]
-	float m_fStartChance = 0.6;
+	float m_fStartChance;
 
 	[Attribute("4", desc: "Hours before the same arc can run again")]
-	float m_fRepeatHours = 4;
+	float m_fRepeatHours;
 
 	[Attribute("6", desc: "The Quiet Congregation: people a safehouse must have lost recently (to hunger, raids, contracts)")]
-	int m_iDarkSideLosses = 6;
+	int m_iDarkSideLosses;
 
 	[Attribute("12", desc: "The Quiet Congregation: hours before it can happen again")]
-	float m_fDarkSideRepeatHours = 12;
+	float m_fDarkSideRepeatHours;
 
 	[Attribute("0.35", desc: "The Quiet Congregation: chance it's picked when it could run")]
-	float m_fDarkSideChance = 0.35;
+	float m_fDarkSideChance;
 }
 
 //------------------------------------------------------------------------------------------------

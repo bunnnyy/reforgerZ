@@ -360,6 +360,23 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A new object of a [BaseContainerProps] class with its [Attribute] defaults, as a prefab would
+	//! make it. Use this instead of `new` for any class with attributes: `new` leaves every field
+	//! at zero, because attribute fields have no initialisers (an initialiser overrides the value
+	//! set in Workbench).
+	static Managed NewWithDefaults(string className)
+	{
+		Resource holder = BaseContainerTools.CreateContainer(className);
+		if (!holder || !holder.IsValid())
+		{
+			RZ_Log.Error("Could not make default " + className);
+			return null;
+		}
+
+		return BaseContainerTools.CreateInstanceFromContainer(holder.GetResource().ToBaseContainer());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A string-table key (#AR-...) in the server's language; anything else unchanged.
 	static string Localize(string text)
 	{

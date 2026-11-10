@@ -18,79 +18,79 @@
 class RZ_ServiceSettings
 {
 	[Attribute("1", desc: "Bastion Champion perk Fire Mission: a thrown Bastion signal smoke (RZ_FireMissionSmokeComponent) near a horde calls in the guns")]
-	bool m_bFireMission = true;
+	bool m_bFireMission;
 
 	[Attribute("60", desc: "Fire Mission: real minutes between strikes for one player")]
-	float m_fFireMissionCooldownMinutes = 60;
+	float m_fFireMissionCooldownMinutes;
 
 	[Attribute("6", desc: "Fire Mission: infected within the strike radius needed (a horde, not a straggler)")]
-	int m_iFireMissionMinInfected = 6;
+	int m_iFireMissionMinInfected;
 
 	[Attribute("50", desc: "Fire Mission: strike radius (m)")]
-	float m_fFireMissionRadius = 50;
+	float m_fFireMissionRadius;
 
 	[Attribute("30", desc: "Fire Mission: seconds from smoke to shells")]
-	float m_fFireMissionDelay = 30;
+	float m_fFireMissionDelay;
 
 	[Attribute("25", desc: "Fire Mission: most infected one strike kills")]
-	int m_iFireMissionKillCap = 25;
+	int m_iFireMissionKillCap;
 
 	[Attribute("250", desc: "Fire Mission: Bastion won't shell within this distance (m) of a safehouse, a faction holding or the lab")]
-	float m_fFireMissionSafeDistance = 250;
+	float m_fFireMissionSafeDistance;
 
 	[Attribute("1", desc: "Red Hand Trusted perk Fence: sell found loot for Red Hand Favor")]
-	bool m_bFence = true;
+	bool m_bFence;
 
 	[Attribute("watch,jewel,ring,necklace,gold,silver,binocular,compass,camera,lighter", desc: "Fence: keywords (lower case, in prefab names) of the loot it buys")]
-	string m_sFenceWords = "watch,jewel,ring,necklace,gold,silver,binocular,compass,camera,lighter";
+	string m_sFenceWords;
 
 	[Attribute("3", desc: "Fence: Favor per item. Keep it well below shop prices; shop goods are never bought back")]
-	int m_iFencePrice = 3;
+	int m_iFencePrice;
 
 	[Attribute("8", desc: "Fence: most items in one sale")]
-	int m_iFenceMaxItems = 8;
+	int m_iFenceMaxItems;
 
 	[Attribute("30", desc: "Fence: most Favor one player gets from it per real hour")]
-	int m_iFenceHourlyCap = 30;
+	int m_iFenceHourlyCap;
 
 	[Attribute("1", desc: "Red Hand Champion perk Bounty board: post a bounty on whoever last killed you")]
-	bool m_bBountyBoard = true;
+	bool m_bBountyBoard;
 
 	[Attribute("60", desc: "Bounty board: Red Hand Favor to post a bounty")]
-	int m_iBountyCost = 60;
+	int m_iBountyCost;
 
 	[Attribute("40", desc: "Bounty board: Red Hand Favor paid to the killer (below the cost, so it can't be farmed)")]
-	int m_iBountyPayout = 40;
+	int m_iBountyPayout;
 
 	[Attribute("3", desc: "Bounty board: postings up at once on the server")]
-	int m_iBountyMaxActive = 3;
+	int m_iBountyMaxActive;
 
 	[Attribute("2", desc: "Bounty board: real hours a posting stays up; unclaimed, half the cost comes back")]
-	float m_fBountyHours = 2;
+	float m_fBountyHours;
 
 	[Attribute("80", desc: "Halcyon Champion: the immunity booster's price in Halcyon Favor (once per life)")]
-	int m_iBoosterCost = 80;
+	int m_iBoosterCost;
 
 	[Attribute("20", desc: "Halcyon Trusted: the medic's price in Halcyon Favor")]
-	int m_iMedicCost = 20;
+	int m_iMedicCost;
 
 	[Attribute("15", desc: "Amends: Favor (the faction's own) for the first payment")]
-	int m_iAmendsCost = 15;
+	int m_iAmendsCost;
 
 	[Attribute("1.5", desc: "Amends: each further payment to the same faction this life costs this much more")]
-	float m_fAmendsGrowth = 1.5;
+	float m_fAmendsGrowth;
 
 	[Attribute("5", desc: "Amends: Infamy worked off per payment (before the stronghold leader's temper)")]
-	int m_iAmendsInfamy = 5;
+	int m_iAmendsInfamy;
 
 	[Attribute("15", desc: "Amends: most Infamy one life can work off by paying, per faction")]
-	int m_iAmendsLifeCap = 15;
+	int m_iAmendsLifeCap;
 
 	[Attribute("15", desc: "Amends: paying never takes Infamy below this (the Watched line); the rest takes amends contracts")]
-	int m_iAmendsFloor = 15;
+	int m_iAmendsFloor;
 
 	[Attribute("30", desc: "Amends: real minutes between payments to one faction")]
-	float m_fAmendsCooldownMinutes = 30;
+	float m_fAmendsCooldownMinutes;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Reputation clue: a red armband (clothing) given at Red Hand Trusted, to wear or not (optional)", "et")]
 	ResourceName m_sRedHandArmbandPrefab;

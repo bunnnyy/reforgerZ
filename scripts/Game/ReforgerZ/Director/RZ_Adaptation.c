@@ -17,49 +17,49 @@
 class RZ_AdaptationSettings
 {
 	[Attribute("1", desc: "Infection adapts a little: more specials after breakthroughs, one trait per stage, favourite spots (docs/DESIGN.md, Infection adapts)")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("0.05", desc: "Specials: extra share of the stage's special chance per cure breakthrough (0.05 = +5%)")]
-	float m_fSpecialPerBreakthrough = 0.05;
+	float m_fSpecialPerBreakthrough;
 
 	[Attribute("0.15", desc: "Specials: the most that breakthroughs add (0.15 = +15%)")]
-	float m_fSpecialCap = 0.15;
+	float m_fSpecialCap;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Collapse trait: faster runners (zombie group or character prefabs). Empty = no runner trait", "et")]
-	ref array<ResourceName> m_aRunnerPrefabs = {};
+	ref array<ResourceName> m_aRunnerPrefabs;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Overrun trait: helmeted infected. Empty = no helmet trait", "et")]
-	ref array<ResourceName> m_aHelmetPrefabs = {};
+	ref array<ResourceName> m_aHelmetPrefabs;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Aftermath trait: screamers (a special prefab). Empty = some ordinary specials act as screamers", "et")]
-	ref array<ResourceName> m_aScreamerPrefabs = {};
+	ref array<ResourceName> m_aScreamerPrefabs;
 
 	[Attribute("0.15", desc: "Share of common spawns that get a stage trait (runner, helmet) once the stage has one")]
-	float m_fTraitShare = 0.15;
+	float m_fTraitShare;
 
 	[Attribute("0.1", desc: "Aftermath: share of specials that are screamers")]
-	float m_fScreamerShare = 0.1;
+	float m_fScreamerShare;
 
 	[Attribute("40", desc: "A screamer 'sees' a player this close (m)")]
-	float m_fScreamerSight = 40;
+	float m_fScreamerSight;
 
 	[Attribute("20", desc: "Heat a screamer adds where it sees a player (at most once a minute per screamer)")]
-	float m_fScreamerHeat = 20;
+	float m_fScreamerHeat;
 
 	[Attribute("1", desc: "Favourite spots: an area players keep returning to gets a small horde checking it out now and then")]
-	bool m_bFavouriteSpots = true;
+	bool m_bFavouriteSpots;
 
 	[Attribute("500", desc: "Favourite spots: area size (m, one grid square)")]
-	float m_fSpotCell = 500;
+	float m_fSpotCell;
 
 	[Attribute("60", desc: "Favourite spots: player-minutes in one area (fading by a fifth every 10 min) before it counts")]
-	float m_fSpotMinutes = 60;
+	float m_fSpotMinutes;
 
 	[Attribute("60", desc: "Favourite spots: real minutes between two checks of the same area (at least)")]
-	float m_fSpotCooldownMinutes = 60;
+	float m_fSpotCooldownMinutes;
 
 	[Attribute("3", UIWidgets.Slider, "Favourite spots: infected sent to look (commons)", "1 6 1")]
-	int m_iSpotHordeSize = 3;
+	int m_iSpotHordeSize;
 }
 
 //------------------------------------------------------------------------------------------------

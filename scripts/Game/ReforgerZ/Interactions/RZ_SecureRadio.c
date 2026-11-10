@@ -16,31 +16,31 @@
 class RZ_RadioCrackSettings
 {
 	[Attribute("1", desc: "Radio Operators can crack secure faction channels; house radios can be tuned")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("60", desc: "Seconds standing still with a radio to crack a channel")]
-	float m_fCrackSeconds = 60;
+	float m_fCrackSeconds;
 
 	[Attribute("0.75", desc: "Crack time multiplier with a charged radio (a generator)")]
-	float m_fChargedMult = 0.75;
+	float m_fChargedMult;
 
 	[Attribute("20", desc: "Real minutes you can listen once it's cracked")]
-	float m_fListenMinutes = 20;
+	float m_fListenMinutes;
 
 	[Attribute("4", desc: "Real minutes between lines of secure traffic")]
-	float m_fLineMinutes = 4;
+	float m_fLineMinutes;
 
 	[Attribute("3000", desc: "The secure channel of the nearest faction place within this distance (m) is the one you crack")]
-	float m_fRange = 3000;
+	float m_fRange;
 
 	[Attribute("40", desc: "Heat where you stand that stops the cracking")]
-	float m_fNoiseInterrupt = 40;
+	float m_fNoiseInterrupt;
 
 	[Attribute("10", desc: "An infected this close (m) stops the cracking")]
-	float m_fZombieInterrupt = 10;
+	float m_fZombieInterrupt;
 
 	[Attribute("radio,transistor,receiver,wireless,shortwave", desc: "House radio prefab keywords (masts and stations are left out)")]
-	string m_sHouseRadioWords = "radio,transistor,receiver,wireless,shortwave";
+	string m_sHouseRadioWords;
 }
 
 //------------------------------------------------------------------------------------------------

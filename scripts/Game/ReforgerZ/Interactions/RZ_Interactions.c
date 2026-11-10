@@ -27,41 +27,41 @@
 class RZ_InteractionSettings
 {
 	[Attribute("1", desc: "World interactions on: searching, locks, cars, crafting, water, traps, generators, fire, bells, secure radio, treating others (docs/DESIGN.md, World interactions)")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Interaction spot: a small invisible prop (a little collision box, no mesh) with RplComponent, ActionsManagerComponent and the generic puzzle object's components (RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleUseAction values 0-3, 4 RZ_PuzzleChoiceAction options 0-3). Empty = Puzzles > Generic object (visible)", "et")]
 	ResourceName m_sSpotPrefab;
 
 	[Attribute("30", desc: "Things within this distance (m) of a player get an interaction spot")]
-	float m_fScanRadius = 30;
+	float m_fScanRadius;
 
 	[Attribute("10", desc: "Seconds between looks around each player (only after they moved 10 m)")]
-	float m_fScanSeconds = 10;
+	float m_fScanSeconds;
 
 	[Attribute("10", desc: "Most interaction spots around one player (the nearest win)")]
-	int m_iSpotsPerPlayer = 10;
+	int m_iSpotsPerPlayer;
 
 	[Attribute("70", desc: "Most interaction spots on the whole server (performance cap)")]
-	int m_iSpotCap = 70;
+	int m_iSpotCap;
 
 	[Attribute("3.5", desc: "A timed action (search, hotwire, craft...) stops if you move further than this (m)")]
-	float m_fTaskReach = 3.5;
+	float m_fTaskReach;
 
 	// ---------------------------------------------------------------- Bells, sirens and alarms
 	[Attribute("45", desc: "Heat a rung church bell makes (it draws hordes)")]
-	float m_fBellHeat = 45;
+	float m_fBellHeat;
 
 	[Attribute("60", desc: "Heat a siren or alarm makes")]
-	float m_fSirenHeat = 60;
+	float m_fSirenHeat;
 
 	[Attribute("15", desc: "Real minutes before the same bell or siren can be used again")]
-	float m_fBellCooldownMinutes = 15;
+	float m_fBellCooldownMinutes;
 
 	[Attribute("bell,belfry", desc: "Bell prefab name keywords (churches get a bell spot too)")]
-	string m_sBellWords = "bell,belfry";
+	string m_sBellWords;
 
 	[Attribute("siren,alarm,klaxon", desc: "Siren and alarm prefab name keywords")]
-	string m_sSirenWords = "siren,alarm,klaxon";
+	string m_sSirenWords;
 
 	// ---------------------------------------------------------------- Water
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Untreated water: a bottle from a well or pump (the hunger and thirst mod's unsafe water if it has one). Empty = no filling", "et")]
@@ -71,47 +71,47 @@ class RZ_InteractionSettings
 	ResourceName m_sCleanWaterPrefab;
 
 	[Attribute("bottle_empty,empty_bottle,emptybottle,canteen_empty,empty_canteen", desc: "Empty container keywords (one is filled at a well)")]
-	string m_sContainerWords = "bottle_empty,empty_bottle,emptybottle,canteen_empty,empty_canteen";
+	string m_sContainerWords;
 
 	[Attribute("water_dirty,dirty_water,untreated,unsafe_water,water_unsafe", desc: "Untreated water keywords (boiled or purified into safe water)")]
-	string m_sDirtyWaterWords = "water_dirty,dirty_water,untreated,unsafe_water,water_unsafe";
+	string m_sDirtyWaterWords;
 
 	[Attribute("purification,purifying,watertablet,water_tablet", desc: "Water purification tablet keywords")]
-	string m_sTabletWords = "purification,purifying,watertablet,water_tablet";
+	string m_sTabletWords;
 
 	[Attribute("well,waterpump,water_pump,handpump,hand_pump,pump_water", desc: "Well and water pump prefab name keywords")]
-	string m_sWellWords = "well,waterpump,water_pump,handpump,hand_pump,pump_water";
+	string m_sWellWords;
 
 	[Attribute("stove,oven,fireplace,campfire,furnace,hearth", desc: "Stove and fireplace keywords (boil water there)")]
-	string m_sStoveWords = "stove,oven,fireplace,campfire,furnace,hearth";
+	string m_sStoveWords;
 
 	[Attribute("30", desc: "Seconds to boil water")]
-	float m_fBoilSeconds = 30;
+	float m_fBoilSeconds;
 
 	// ---------------------------------------------------------------- Treating other players
 	[Attribute("1", desc: "Treat another player (RZ_TreatOtherAction on the player character prefab)")]
-	bool m_bTreatOthers = true;
+	bool m_bTreatOthers;
 
 	[Attribute("20", desc: "Seconds to treat someone (anyone with a first-aid kit)")]
-	float m_fTreatSeconds = 20;
+	float m_fTreatSeconds;
 
 	[Attribute("0.4", desc: "Nurse: treating time multiplier (works with just a bandage)")]
-	float m_fNurseMult = 0.4;
+	float m_fNurseMult;
 
 	[Attribute("0.3", desc: "Doctor: treating time multiplier (works with just a bandage)")]
-	float m_fDoctorMult = 0.3;
+	float m_fDoctorMult;
 
 	[Attribute("medkit,firstaid,first_aid,ifak", desc: "First-aid kit keywords (anyone can treat with one)")]
-	string m_sMedkitWords = "medkit,firstaid,first_aid,ifak";
+	string m_sMedkitWords;
 
 	[Attribute("bandage,dressing,saline,gauze", desc: "Bandage keywords (Nurses and Doctors treat with one of these too)")]
-	string m_sBandageWords = "bandage,dressing,saline,gauze";
+	string m_sBandageWords;
 
 	[Attribute("5", desc: "Real minutes before the same player can be treated again")]
-	float m_fTreatCooldownMinutes = 5;
+	float m_fTreatCooldownMinutes;
 
 	[Attribute("1.15", desc: "A Nurse or Doctor treating a bitten player slows the infection this much (x the time left, once per life)")]
-	float m_fTreatSlowsInfection = 1.15;
+	float m_fTreatSlowsInfection;
 }
 
 //------------------------------------------------------------------------------------------------

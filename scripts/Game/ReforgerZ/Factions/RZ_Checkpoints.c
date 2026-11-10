@@ -27,22 +27,22 @@
 class RZ_CheckpointSettings
 {
 	[Attribute("1", desc: "Bastion checkpoints and Red Hand roadblocks on roads inside the Zone (needs territory and a road network)")]
-	bool m_bRoadPosts = true;
+	bool m_bRoadPosts;
 
 	[Attribute("2", UIWidgets.Slider, "Road posts up at once on the map", "0 4 1")]
-	int m_iMaxPosts = 2;
+	int m_iMaxPosts;
 
 	[Attribute("15", desc: "Real minutes between tries to put up a new post near a player")]
-	float m_fPostMinutes = 15;
+	float m_fPostMinutes;
 
 	[Attribute("45", desc: "Real minutes a post stays up (it goes once nobody is near)")]
-	float m_fPostLifetimeMinutes = 45;
+	float m_fPostLifetimeMinutes;
 
 	[Attribute("2500", desc: "A post goes up within this distance (m) of one of its faction's holdings")]
-	float m_fHoldingRange = 2500;
+	float m_fHoldingRange;
 
 	[Attribute("600", desc: "The barrier and crew exist only while a player is this close (m)")]
-	float m_fSpawnRadius = 600;
+	float m_fSpawnRadius;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion checkpoint barrier: a small composition (sandbags, a barrier pole). Optional: the crew alone without it", "et")]
 	ResourceName m_sBastionBarrierPrefab;
@@ -57,55 +57,55 @@ class RZ_CheckpointSettings
 	ResourceName m_sRedHandCrewPrefab;
 
 	[Attribute("150", desc: "Posts call out to players within this distance (m)")]
-	float m_fWarnRadius = 150;
+	float m_fWarnRadius;
 
 	[Attribute("35", desc: "The barrier: within this distance (m) you're stopped, searched or charged")]
-	float m_fStopRadius = 35;
+	float m_fStopRadius;
 
 	[Attribute("15", desc: "Seconds a Bastion search takes (stay at the barrier)")]
-	float m_fSearchSeconds = 15;
+	float m_fSearchSeconds;
 
 	[Attribute("suppressor,silencer,explosive,c4,demo_charge", desc: "What a Bastion search takes (keywords, lower case, in prefab names). At most three items")]
-	string m_sContrabandWords = "suppressor,silencer,explosive,c4,demo_charge";
+	string m_sContrabandWords;
 
 	[Attribute("3", desc: "Bastion Infamy for running a checkpoint (leaving the barrier before the search is done)")]
-	int m_iRunInfamy = 3;
+	int m_iRunInfamy;
 
 	[Attribute("10", desc: "Red Hand toll (Red Hand Favor) for players Known with them")]
-	int m_iToll = 10;
+	int m_iToll;
 
 	[Attribute("1", desc: "Surrender at Bastion checkpoints: unarmed, with Bastion Infamy, wait at the barrier")]
-	bool m_bSurrender = true;
+	bool m_bSurrender;
 
 	[Attribute("10", desc: "Surrender: seconds at the barrier with no firearm")]
-	float m_fSurrenderSeconds = 10;
+	float m_fSurrenderSeconds;
 
 	[Attribute("8", desc: "Surrender: Bastion Infamy worked off (before the stronghold leader's temper)")]
-	int m_iSurrenderInfamy = 8;
+	int m_iSurrenderInfamy;
 
 	[Attribute("60", desc: "Surrender: real minutes before the same player can surrender again")]
-	float m_fSurrenderCooldownMinutes = 60;
+	float m_fSurrenderCooldownMinutes;
 
 	[Attribute("300", desc: "Surrender: seconds Bastion's AI holds its fire afterwards")]
-	float m_fStandDownSeconds = 300;
+	float m_fStandDownSeconds;
 
 	[Attribute("1", desc: "Camps: outposts and strongholds warn off players their faction watches, and turn them away at the gate")]
-	bool m_bCamps = true;
+	bool m_bCamps;
 
 	[Attribute("150", desc: "Camps: the warning comes at this distance (m)")]
-	float m_fCampWarnRadius = 150;
+	float m_fCampWarnRadius;
 
 	[Attribute("50", desc: "Camps: the gate. Watched and armed past it after the warning, you're fired on for a few minutes")]
-	float m_fCampRefuseRadius = 50;
+	float m_fCampRefuseRadius;
 
 	[Attribute("1", desc: "Safe zones: strongholds and the lab tell you the rule as you come in, and firing inside costs Infamy")]
-	bool m_bSafeZones = true;
+	bool m_bSafeZones;
 
 	[Attribute("80", desc: "Safe zones: radius (m) around a stronghold or the lab")]
-	float m_fSafeZoneRadius = 80;
+	float m_fSafeZoneRadius;
 
 	[Attribute("2", desc: "Safe zones: Infamy with the faction for firing inside (at most once every 20 s; never with an infected within 40 m)")]
-	int m_iSafeZoneShotInfamy = 2;
+	int m_iSafeZoneShotInfamy;
 }
 
 //------------------------------------------------------------------------------------------------

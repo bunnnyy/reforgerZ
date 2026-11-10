@@ -28,64 +28,64 @@ class RZ_SeasonRuleSet
 	string m_sDescription;
 
 	[Attribute("1", desc: "Fresh season only: every town's starting infection x this (0.6-1.3 after combining)")]
-	float m_fStartInfectionMult = 1;
+	float m_fStartInfectionMult;
 
 	[Attribute("0", desc: "Fresh season only: this many more of the quietest towns start almost clean (at most 3 after combining)")]
-	int m_iSafeTowns = 0;
+	int m_iSafeTowns;
 
 	[Attribute("1", desc: "Infection spread x this (0.75-1.25 after combining)")]
-	float m_fSpreadMult = 1;
+	float m_fSpreadMult;
 
 	[Attribute("1", desc: "Chance an infected is a special x this (0.8-1.4 after combining)")]
-	float m_fSpecialMult = 1;
+	float m_fSpecialMult;
 
 	[Attribute("1", desc: "At night: specials x this on top (1-1.3 after combining)")]
-	float m_fNightSpecialMult = 1;
+	float m_fNightSpecialMult;
 
 	[Attribute("1", desc: "At night: how far the infected hear (the heat spread to neighbouring squares) x this (1-2 after combining)")]
-	float m_fNightHearingMult = 1;
+	float m_fNightHearingMult;
 
 	[Attribute("1", desc: "Food a safehouse eats at each upkeep x this (1-1.5 after combining)")]
-	float m_fUpkeepMult = 1;
+	float m_fUpkeepMult;
 
 	[Attribute("1", desc: "Fog counts as fog from thinner fog: the fog threshold is divided by this (1-2 after combining)")]
-	float m_fFogMult = 1;
+	float m_fFogMult;
 
 	[Attribute("1", desc: "Fog Bank events come this many times as often (1-3 after combining)")]
-	float m_fFogBankMult = 1;
+	float m_fFogBankMult;
 
 	[Attribute("1", desc: "The closest distance infected spawn from players x this, all the time (shorter sight; 0.7-1 after combining)")]
-	float m_fSightMult = 1;
+	float m_fSightMult;
 
 	[Attribute("0", desc: "Fresh season only: this many more Haven safehouses (at most 2 more after combining)")]
-	int m_iSafehouseBonus = 0;
+	int m_iSafehouseBonus;
 
 	[Attribute("0", desc: "Road posts up at once: this many more (at most 2 more after combining, 6 in all)")]
-	int m_iRoadPostBonus = 0;
+	int m_iRoadPostBonus;
 
 	[Attribute("-1", desc: "Share of new road posts that are Bastion checkpoints rather than Red Hand roadblocks (0-1). -1 = unchanged (half)")]
-	float m_fBastionPostShare = -1;
+	float m_fBastionPostShare;
 
 	[Attribute("0", desc: "Curfew: Bastion keeps its full guard at night, and its checkpoints go up first after dark")]
 	bool m_bCurfew;
 
 	[Attribute("1", desc: "Military loot: the rare-find chance at police stations and on bodies x this (1-2 after combining)")]
-	float m_fMilitaryLootMult = 1;
+	float m_fMilitaryLootMult;
 
 	[Attribute("0", desc: "Black market everywhere: the Red Hand's fence opens at Known (not Trusted) and holds two more stolen doses")]
 	bool m_bOpenBlackMarket;
 
 	[Attribute("0", desc: "The Haven's strength: starts (fresh season) and settles this much above its middle (-20 to 20 after combining)")]
-	int m_iHavenStrength = 0;
+	int m_iHavenStrength;
 
 	[Attribute("0", desc: "Bastion's strength offset, as above")]
-	int m_iBastionStrength = 0;
+	int m_iBastionStrength;
 
 	[Attribute("0", desc: "The Red Hand's strength offset, as above")]
-	int m_iRedHandStrength = 0;
+	int m_iRedHandStrength;
 
 	[Attribute("0", desc: "Halcyon's strength offset, as above")]
-	int m_iHalcyonStrength = 0;
+	int m_iHalcyonStrength;
 
 	[Attribute("0", desc: "No vehicles: no fixable cars, no supply trucks (so no shortages), no contracts that need a vehicle")]
 	bool m_bNoVehicles;
@@ -93,7 +93,7 @@ class RZ_SeasonRuleSet
 	//------------------------------------------------------------------------------------------------
 	protected static RZ_SeasonRuleSet Make(string name, string description)
 	{
-		RZ_SeasonRuleSet r = new RZ_SeasonRuleSet();
+		RZ_SeasonRuleSet r = RZ_SeasonRuleSet.Cast(RZ_Util.NewWithDefaults("RZ_SeasonRuleSet"));
 		r.m_sName = name;
 		r.m_sDescription = description;
 		return r;
@@ -183,7 +183,7 @@ class RZ_SeasonRuleSet
 class RZ_SeasonSettings
 {
 	[Attribute("1", desc: "A fresh season starts with the last winner's rules (last_season.json; docs/LORE.md, Endings)")]
-	bool m_bWinnerRules = true;
+	bool m_bWinnerRules;
 
 	[Attribute("", desc: "Rule sets for this season, by name, comma-separated (Winter, Fog, Military Collapse, No Vehicles, or your own below). Empty = none")]
 	string m_sRuleSets;
@@ -192,19 +192,19 @@ class RZ_SeasonSettings
 	ref array<ref RZ_SeasonRuleSet> m_aRuleSets;
 
 	[Attribute("1", UIWidgets.ComboBox, "Wipe: Off (by hand), On cure (after the epilogue), After weeks, or whichever comes first. A wipe backs up state.json and starts fresh on the next restart", "", ParamEnumArray.FromEnum(RZ_EWipeMode))]
-	RZ_EWipeMode m_eWipeMode = RZ_EWipeMode.ON_CURE;
+	RZ_EWipeMode m_eWipeMode;
 
 	[Attribute("48", desc: "Epilogue: real hours the world stays open after the cure before the wipe is due")]
-	float m_fEpilogueHours = 48;
+	float m_fEpilogueHours;
 
 	[Attribute("4", desc: "After weeks: real weeks from the season's start until the wipe is due")]
-	int m_iWipeWeeks = 4;
+	int m_iWipeWeeks;
 
 	[Attribute("24", desc: "Players are warned this many real hours before the wipe is due (every hour, and on first spawn)")]
-	float m_fWarnHours = 24;
+	float m_fWarnHours;
 
 	[Attribute("1", desc: "Hall of fame: samples, the final stand, rescues, longest life, missions and each faction's Champion, per season and all time (hall_of_fame.json, never wiped)")]
-	bool m_bHallOfFame = true;
+	bool m_bHallOfFame;
 }
 
 //------------------------------------------------------------------------------------------------

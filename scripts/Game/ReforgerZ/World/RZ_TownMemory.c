@@ -12,25 +12,25 @@
 class RZ_TownMemorySettings
 {
 	[Attribute("1", desc: "Town memory on: Looted, Barricaded, Powered, Burned per town, loot that returns, journals of the dead (docs/DESIGN.md, Town memory)")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("120", desc: "Real minutes for a fully searched town's loot to come all the way back")]
-	float m_fLootReturnMinutes = 120;
+	float m_fLootReturnMinutes;
 
 	[Attribute("0.5", desc: "A town counts as Looted while its loot level is under this (0..1)")]
-	float m_fLootedBelow = 0.5;
+	float m_fLootedBelow;
 
 	[Attribute("0.2", desc: "Loot level a town never drops below, so nobody is locked out")]
-	float m_fLootFloor = 0.2;
+	float m_fLootFloor;
 
 	[Attribute("0.5", desc: "A town counts as Burned once this share of its buildings has burned")]
-	float m_fBurnedShare = 0.5;
+	float m_fBurnedShare;
 
 	[Attribute("60", desc: "Real minutes for one burned building to stop counting (towns recover)")]
-	float m_fBurnFadeMinutes = 60;
+	float m_fBurnFadeMinutes;
 
 	[Attribute("10", desc: "Journals: a life must last this many minutes to leave one")]
-	float m_fJournalMinutes = 10;
+	float m_fJournalMinutes;
 }
 
 //------------------------------------------------------------------------------------------------

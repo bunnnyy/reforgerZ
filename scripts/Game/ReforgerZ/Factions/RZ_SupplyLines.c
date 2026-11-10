@@ -21,7 +21,7 @@
 class RZ_SupplySettings
 {
 	[Attribute("1", desc: "Supply trucks on (needs Territory, a move waypoint prefab and, per faction, a truck and a crew prefab)")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven truck: a drivable vehicle (a civilian truck or van)", "et")]
 	ResourceName m_sHavenTruck;
@@ -48,43 +48,43 @@ class RZ_SupplySettings
 	ResourceName m_sHalcyonCrew;
 
 	[Attribute("60", desc: "Shortest real minutes between one faction's trucks (divided by season speed)")]
-	float m_fDepartMinMinutes = 60;
+	float m_fDepartMinMinutes;
 
 	[Attribute("90", desc: "Longest real minutes between one faction's trucks")]
-	float m_fDepartMaxMinutes = 90;
+	float m_fDepartMaxMinutes;
 
 	[Attribute("1000", desc: "A stuck truck is quietly moved on only if no player is this close (m)")]
-	float m_fUnstickRadius = 1000;
+	float m_fUnstickRadius;
 
 	[Attribute("90", desc: "Seconds without moving before a truck counts as stuck")]
-	float m_fStuckSeconds = 90;
+	float m_fStuckSeconds;
 
 	[Attribute("8", desc: "Stock a delivery brings to an outpost (a Bastion Requisition draws one)")]
-	int m_iDeliveryStock = 8;
+	int m_iDeliveryStock;
 
 	[Attribute("6", desc: "Food units a Haven truck adds to a safehouse")]
-	int m_iHavenFood = 6;
+	int m_iHavenFood;
 
 	[Attribute("45", desc: "Real minutes for an outpost to use up one unit of stock (with players online)")]
-	float m_fStockDrainMinutes = 45;
+	float m_fStockDrainMinutes;
 
 	[Attribute("0.3", desc: "Share of a short shop's items that are out")]
-	float m_fOutOfStockShare = 0.3;
+	float m_fOutOfStockShare;
 
 	[Attribute("4", desc: "Fame with the owner for escorting a truck that arrives (and its Favor below)")]
-	int m_iEscortFame = 4;
+	int m_iEscortFame;
 
 	[Attribute("5", desc: "Favor for escorting a truck that arrives")]
-	int m_iEscortFavor = 5;
+	int m_iEscortFavor;
 
 	[Attribute("8", desc: "Fame with the owner for driving a truck in yourself after its crew died")]
-	int m_iDriveFame = 8;
+	int m_iDriveFame;
 
 	[Attribute("6", desc: "Red Hand Fame for driving a stolen truck to a rival's stronghold")]
-	int m_iStealFame = 6;
+	int m_iStealFame;
 
 	[Attribute("10", desc: "Infamy with the truck's owner for that")]
-	int m_iStealInfamy = 10;
+	int m_iStealInfamy;
 }
 
 //------------------------------------------------------------------------------------------------

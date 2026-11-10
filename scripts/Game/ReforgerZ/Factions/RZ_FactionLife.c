@@ -22,19 +22,19 @@
 class RZ_FactionLifeSettings
 {
 	[Attribute("1", desc: "Faction life on: needs, morale, radio chatter, life events, truces and feuds, remembered moments, rumours")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("10", desc: "Real minutes between faction chatter on the open channels (players with a radio). 0 = off")]
-	float m_fChatterMinutes = 10;
+	float m_fChatterMinutes;
 
 	[Attribute("35", desc: "Average real minutes between faction life events in the headlines. 0 = off")]
-	float m_fLifeEventMinutes = 35;
+	float m_fLifeEventMinutes;
 
 	[Attribute("1", desc: "Temporary truces and feuds between factions (they change rival Infamy and territory takes, and always end)")]
-	bool m_bTrucesAndFeuds = true;
+	bool m_bTrucesAndFeuds;
 
 	[Attribute("0.35", desc: "Chance a rumour about a rival is biased or false (about anyone else: 0.1)")]
-	float m_fFalseRumourChance = 0.35;
+	float m_fFalseRumourChance;
 }
 
 //------------------------------------------------------------------------------------------------

@@ -22,34 +22,34 @@
 class RZ_PowerSettings
 {
 	[Attribute("1", desc: "A power station players can restore (docs/DESIGN.md, Time and environment)")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Control object: a generator, control panel or breaker cabinet with the generic puzzle object components (RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleChoiceAction). Empty = Puzzles > Fuse box, then the generic object", "et")]
 	ResourceName m_sControlPrefab;
 
 	[Attribute("2500", desc: "Towns within this distance (m) of the station get the power")]
-	float m_fRegionRadius = 2500;
+	float m_fRegionRadius;
 
 	[Attribute("90", desc: "Seconds the generator needs to spin up, with someone within 60 m")]
-	float m_fSpinUpSeconds = 90;
+	float m_fSpinUpSeconds;
 
 	[Attribute("10", desc: "Heat per minute the running station makes (it draws hordes)")]
-	float m_fNoisePerMinute = 10;
+	float m_fNoisePerMinute;
 
 	[Attribute("4", desc: "Hours (with players online) a fully maintained station runs before it fails")]
-	float m_fRunHours = 4;
+	float m_fRunHours;
 
 	[Attribute("0.6", desc: "Maintenance with a fuel item (jerrycan) restores this much of its condition (0..1)")]
-	float m_fFuelRestore = 0.6;
+	float m_fFuelRestore;
 
 	[Attribute("0.25", desc: "Maintenance without fuel (grease, patching) restores this much")]
-	float m_fPatchRestore = 0.25;
+	float m_fPatchRestore;
 
 	[Attribute("1.5", desc: "Search hook: electronics loot multiplier in powered towns")]
-	float m_fElectronicsLootMult = 1.5;
+	float m_fElectronicsLootMult;
 
 	[Attribute("0.6", desc: "Faction radio chatter interval multiplier while the power is on (working radios)")]
-	float m_fChatterMult = 0.6;
+	float m_fChatterMult;
 }
 
 //------------------------------------------------------------------------------------------------

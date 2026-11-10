@@ -45,79 +45,79 @@ enum RZ_EHostileFrom
 class RZ_HostilitySettings
 {
 	[Attribute("0", UIWidgets.ComboBox, "Bitmask: hidden SURV_H1..SURV_H15 factions, each hostile only to the AI factions that want the player. Outlaw (fallback): one SURV_OUTLAW faction, hostile to every AI faction, for anyone wanted by anyone. Off: vanilla", "", ParamEnumArray.FromEnum(RZ_EHostilityMode))]
-	RZ_EHostilityMode m_eMode = RZ_EHostilityMode.BITMASK;
+	RZ_EHostilityMode m_eMode;
 
 	[Attribute("0", UIWidgets.ComboBox, "Haven AI (guards, occupants, wanderers) shoots from this standing. See Exile: armed only", "", ParamEnumArray.FromEnum(RZ_EHostileFrom))]
-	RZ_EHostileFrom m_eHavenFrom = RZ_EHostileFrom.HUNTED;
+	RZ_EHostileFrom m_eHavenFrom;
 
 	[Attribute("0", UIWidgets.ComboBox, "Bastion AI (checkpoints, patrols, hunter squads) shoots from this standing. Default: wary, only the Hunted", "", ParamEnumArray.FromEnum(RZ_EHostileFrom))]
-	RZ_EHostileFrom m_eBastionFrom = RZ_EHostileFrom.HUNTED;
+	RZ_EHostileFrom m_eBastionFrom;
 
 	[Attribute("0", UIWidgets.ComboBox, "Red Hand AI shoots from this standing. Default: neutral, only the Hunted (plus fights). Strangers = their roadblocks shoot anyone below Known", "", ParamEnumArray.FromEnum(RZ_EHostileFrom))]
-	RZ_EHostileFrom m_eRedHandFrom = RZ_EHostileFrom.HUNTED;
+	RZ_EHostileFrom m_eRedHandFrom;
 
 	[Attribute("0", UIWidgets.ComboBox, "Halcyon AI (lab guards) shoots from this standing. Default: peaceful, only the Hunted", "", ParamEnumArray.FromEnum(RZ_EHostileFrom))]
-	RZ_EHostileFrom m_eHalcyonFrom = RZ_EHostileFrom.HUNTED;
+	RZ_EHostileFrom m_eHalcyonFrom;
 
 	[Attribute("1", desc: "Exile: armed only. The Haven only shoots a player it wants dead while they carry a firearm near a safehouse. Off = everywhere, armed or not")]
-	bool m_bHavenArmedOnly = true;
+	bool m_bHavenArmedOnly;
 
 	[Attribute("100", desc: "Exile: how close to a safehouse (m) an armed exile is shot at")]
-	float m_fExileRadius = 100;
+	float m_fExileRadius;
 
 	[Attribute("350", desc: "Fights: players this close (m) to a mission's hostile group (raids, raiders, the Witness camp) are hostile to its faction while it lives")]
-	float m_fFightRadius = 350;
+	float m_fFightRadius;
 
 	[Attribute("1", desc: "Wanderers fight back: an armed wanderer AI group shoots players who robbed or shot at them (and the Deserter shoots Bastion's Champions)")]
-	bool m_bWanderersFightBack = true;
+	bool m_bWanderersFightBack;
 
 	[Attribute("80", desc: "Wanderers fight back within this distance (m)")]
-	float m_fGrudgeRadius = 80;
+	float m_fGrudgeRadius;
 
 	[Attribute("1", desc: "Retaliation: shooting or killing a faction's AI (outpost guards, truck crews, safehouse guards) makes its AI near the spot hostile to the shooter for a few minutes. Never permanent by itself")]
-	bool m_bRetaliation = true;
+	bool m_bRetaliation;
 
 	[Attribute("300", desc: "Retaliation: how far from the spot (m) the faction's AI turns on the shooter")]
-	float m_fRetaliationRadius = 300;
+	float m_fRetaliationRadius;
 
 	[Attribute("180", desc: "Retaliation: seconds it lasts after the last hit (a new hit restarts it, never adds up)")]
-	float m_fRetaliationSeconds = 180;
+	float m_fRetaliationSeconds;
 
 	[Attribute("3", desc: "Retaliation: Infamy with the faction for killing one of its AI")]
-	int m_iRetaliationKillInfamy = 3;
+	int m_iRetaliationKillInfamy;
 
 	[Attribute("12", desc: "Retaliation: at most this much kill Infamy per player and faction per hour")]
-	int m_iRetaliationInfamyCap = 12;
+	int m_iRetaliationInfamyCap;
 
 	[Attribute("1", desc: "Disguises: wearing enough of a faction's uniform makes its AI look past you while you're not Hunted by it; Infamy with it doubles if you're caught (docs/REPUTATION.md)")]
-	bool m_bDisguises = true;
+	bool m_bDisguises;
 
 	[Attribute("us_army,usarmy,bdu,m81,ocp,woodland_us", desc: "Disguises: keywords of Bastion uniform pieces (prefab names, lower case). Check them against your Bastion loadouts")]
-	string m_sBastionUniformWords = "us_army,usarmy,bdu,m81,ocp,woodland_us";
+	string m_sBastionUniformWords;
 
 	[Attribute("bandit,redhand,red_hand,armband_red", desc: "Disguises: keywords of Red Hand clothing (e.g. a red armband or bandana)")]
-	string m_sRedHandUniformWords = "bandit,redhand,red_hand,armband_red";
+	string m_sRedHandUniformWords;
 
 	[Attribute("hazmat,labcoat,lab_coat,cbrn,scientist", desc: "Disguises: keywords of Halcyon clothing")]
-	string m_sHalcyonUniformWords = "hazmat,labcoat,lab_coat,cbrn,scientist";
+	string m_sHalcyonUniformWords;
 
 	[Attribute("2", desc: "Disguises: pieces of one faction's uniform needed (jacket and trousers, say)")]
-	int m_iDisguiseItems = 2;
+	int m_iDisguiseItems;
 
 	[Attribute("10", desc: "Disguises: seconds between checks of what each player wears")]
-	float m_fDisguiseCheckSeconds = 10;
+	float m_fDisguiseCheckSeconds;
 
 	[Attribute("15", desc: "Disguises: real minutes a blown disguise stops working")]
-	float m_fDisguiseBlownMinutes = 15;
+	float m_fDisguiseBlownMinutes;
 
 	[Attribute("MIL", desc: "FactionManager key of Bastion's AI")]
-	string m_sBastionKey = "MIL";
+	string m_sBastionKey;
 
 	[Attribute("BAND", desc: "FactionManager key of the Red Hand's AI")]
-	string m_sRedHandKey = "BAND";
+	string m_sRedHandKey;
 
 	[Attribute("INST", desc: "FactionManager key of Halcyon's AI")]
-	string m_sHalcyonKey = "INST";
+	string m_sHalcyonKey;
 
 	//------------------------------------------------------------------------------------------------
 	RZ_EHostileFrom GetFrom(RZ_EFaction f)

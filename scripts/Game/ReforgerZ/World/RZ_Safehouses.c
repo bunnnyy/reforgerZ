@@ -32,19 +32,19 @@ enum RZ_ESafehouseAction
 class RZ_SafehouseSettings
 {
 	[Attribute("1", desc: "Haven safehouses on. Off = no safehouses, population or house rules")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("3", desc: "Safehouses picked at start when none are placed (fewer on small maps: one per 8 settlements, at least 1)")]
-	int m_iCount = 3;
+	int m_iCount;
 
 	[Attribute("4", desc: "Starting population of a new safehouse")]
-	int m_iStartPopulation = 4;
+	int m_iStartPopulation;
 
 	[Attribute("12", desc: "Starting food stock (units) of a new safehouse")]
-	int m_iStartFood = 12;
+	int m_iStartFood;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Occupants: civilian characters or seated figure props (no AI needed). 3-6 are shown while a player is within 300 m. Empty = the puzzle civilian", "et")]
-	ref array<ResourceName> m_aOccupantPrefabs = {};
+	ref array<ResourceName> m_aOccupantPrefabs;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Guard: a Haven AI character or group on the player faction (Community and up)", "et")]
 	ResourceName m_sGuardPrefab;
@@ -53,74 +53,74 @@ class RZ_SafehouseSettings
 	ResourceName m_sMedicPrefab;
 
 	[Attribute("300", desc: "Occupants, guards, medic and the safehouse quartermaster exist only while a player is this close (m)")]
-	float m_fVisibleRadius = 300;
+	float m_fVisibleRadius;
 
 	[Attribute("180", desc: "Real minutes between upkeep (food eaten). Only counts while players are online")]
-	float m_fUpkeepMinutes = 180;
+	float m_fUpkeepMinutes;
 
 	[Attribute("5", desc: "People one unit of food feeds per upkeep")]
-	int m_iPeoplePerFood = 5;
+	int m_iPeoplePerFood;
 
 	[Attribute("", desc: "Food items: prefab names containing any of these words (lower case) count as food. Empty = food, canned, ration, tushonka, bread, beans")]
-	ref array<string> m_aFoodKeywords = {};
+	ref array<string> m_aFoodKeywords;
 
 	[Attribute("2", desc: "Haven Favor paid per food item delivered")]
-	int m_iFavorPerFood = 2;
+	int m_iFavorPerFood;
 
 	[Attribute("15", desc: "Haven Favor the medic charges to patch you up")]
-	int m_iHealCost = 15;
+	int m_iHealCost;
 
 	[Attribute("50", desc: "House rule: firing within this distance (m) of a safehouse costs Haven Infamy")]
-	float m_fNoFireRadius = 50;
+	float m_fNoFireRadius;
 
 	[Attribute("40", desc: "...unless an infected is this close (m) to the safehouse: then you're defending it")]
-	float m_fDefendRadius = 40;
+	float m_fDefendRadius;
 
 	[Attribute("3", desc: "Haven Infamy for firing at a safehouse (at most once every 20 s)")]
-	int m_iFireInfamy = 3;
+	int m_iFireInfamy;
 
 	[Attribute("15", desc: "Haven Infamy for being caught hiding a bite inside a safehouse")]
-	int m_iCaughtInfamy = 15;
+	int m_iCaughtInfamy;
 
 	[Attribute("0.3", desc: "Chance per minute that a bitten player who hasn't declared it is caught inside a safehouse in the Final stage (half that in Weakness; never in Fever, the golden window, or on a fever suppressant)")]
-	float m_fCaughtChance = 0.3;
+	float m_fCaughtChance;
 
 	[Attribute("1.15", desc: "Declaring a bite at a Shelter: the time left x this (once per life)")]
-	float m_fDeclareShelter = 1.15;
+	float m_fDeclareShelter;
 
 	[Attribute("1.25", desc: "...at a Community")]
-	float m_fDeclareCommunity = 1.25;
+	float m_fDeclareCommunity;
 
 	[Attribute("1.4", desc: "...at a Settlement (it has a medic)")]
-	float m_fDeclareSettlement = 1.4;
+	float m_fDeclareSettlement;
 
 	[Attribute("1.5", desc: "...at a Town")]
-	float m_fDeclareTown = 1.5;
+	float m_fDeclareTown;
 
 	[Attribute("5", desc: "Haven Favor for a dose of expired antibiotics (every safehouse, anyone not exiled; needs Survival > Infection > Antibiotics prefab)")]
-	int m_iMedsCost = 5;
+	int m_iMedsCost;
 
 	[Attribute("4", desc: "Stragglers: a fed safehouse under 12 people takes in one person every this many hours with players online (divided by season speed). 0 = only rescues add people")]
-	float m_fStragglerHours = 4;
+	float m_fStragglerHours;
 
 	[Attribute("0.25", desc: "Chance every 10 min that a safehouse short on food sells a Hunted player's rough location to bounty hunters")]
-	float m_fLeakChance = 0.25;
+	float m_fLeakChance;
 
 	// ---------------------------------------------------------------- Notice boards (RZ_NoticeBoard)
 	[Attribute("1", desc: "Notice boards: short notes players leave at a safehouse between sessions (cosmetic and social only)")]
-	bool m_bNoticeBoards = true;
+	bool m_bNoticeBoards;
 
 	[Attribute("8", UIWidgets.Slider, "Notes kept per board (the newest)", "1 20 1")]
-	int m_iBoardNotes = 8;
+	int m_iBoardNotes;
 
 	[Attribute("160", desc: "Longest note (characters); longer ones are cut")]
-	int m_iNoteLength = 160;
+	int m_iNoteLength;
 
 	[Attribute("10", desc: "Real minutes between two notes from the same player (any board)")]
-	float m_fNoteGapMinutes = 10;
+	float m_fNoteGapMinutes;
 
 	[Attribute("3", desc: "Real days before a note comes down by itself")]
-	float m_fNoteDays = 3;
+	float m_fNoteDays;
 
 	[Attribute("", desc: "Word filter: words (lower case, comma-separated) blanked out of notes with asterisks. Empty = no filter")]
 	string m_sNoteFilter;

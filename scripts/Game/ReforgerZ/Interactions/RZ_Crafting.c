@@ -23,28 +23,28 @@ class RZ_Recipe
 	string m_sIn1;
 
 	[Attribute("1", desc: "How many of the first input")]
-	int m_iN1 = 1;
+	int m_iN1;
 
 	[Attribute("", desc: "Second input keywords (empty = none)")]
 	string m_sIn2;
 
 	[Attribute("1", desc: "How many of the second input")]
-	int m_iN2 = 1;
+	int m_iN2;
 
 	[Attribute("", desc: "Third input keywords (empty = none)")]
 	string m_sIn3;
 
 	[Attribute("1", desc: "How many of the third input")]
-	int m_iN3 = 1;
+	int m_iN3;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "What it makes. Empty = the recipe is hidden", "et")]
 	ResourceName m_sOutput;
 
 	[Attribute("8", desc: "Seconds at the workbench")]
-	float m_fSeconds = 8;
+	float m_fSeconds;
 
 	[Attribute("2", desc: "Heat it makes (hammering)")]
-	float m_fHeat = 2;
+	float m_fHeat;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -53,10 +53,10 @@ class RZ_Recipe
 class RZ_CraftSettings
 {
 	[Attribute("1", desc: "Crafting at workbenches")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("workbench,work_bench,toolbench,tool_bench,workshop_table,vise", desc: "Workbench prefab name keywords (a placed prefab with one of these in its name works too)")]
-	string m_sWorkbenchWords = "workbench,work_bench,toolbench,tool_bench,workshop_table,vise";
+	string m_sWorkbenchWords;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Improvised bandage (from a rag or cloth)", "et")]
 	ResourceName m_sBandagePrefab;
@@ -80,31 +80,31 @@ class RZ_CraftSettings
 	ResourceName m_sTabletsPrefab;
 
 	[Attribute("rag,cloth,shirt,towel,bandana,sheet,tshirt", desc: "Cloth keywords")]
-	string m_sClothWords = "rag,cloth,shirt,towel,bandana,sheet,tshirt";
+	string m_sClothWords;
 
 	[Attribute("bottle_empty,empty_bottle,emptybottle,glass_bottle,bottle", desc: "Bottle keywords (molotov)")]
-	string m_sBottleWords = "bottle_empty,empty_bottle,emptybottle,glass_bottle,bottle";
+	string m_sBottleWords;
 
 	[Attribute("jerrycan,jerry_can,fuelcan,fuel_can,canister,fuel", desc: "Fuel keywords (molotov)")]
-	string m_sFuelWords = "jerrycan,jerry_can,fuelcan,fuel_can,canister,fuel";
+	string m_sFuelWords;
 
 	[Attribute("tin_can,tincan,emptycan,empty_can,can_empty,tin_empty", desc: "Empty tin keywords")]
-	string m_sTinWords = "tin_can,tincan,emptycan,empty_can,can_empty,tin_empty";
+	string m_sTinWords;
 
 	[Attribute("wire,string,twine,cord,rope", desc: "Wire and string keywords")]
-	string m_sWireWords = "wire,string,twine,cord,rope";
+	string m_sWireWords;
 
 	[Attribute("knife,bayonet,machete", desc: "Blade keywords (spear)")]
-	string m_sBladeWords = "knife,bayonet,machete";
+	string m_sBladeWords;
 
 	[Attribute("plank,board,stick,pole,broom,shovel_handle", desc: "Plank and pole keywords")]
-	string m_sPlankWords = "plank,board,stick,pole,broom,shovel_handle";
+	string m_sPlankWords;
 
 	[Attribute("nail,screw", desc: "Nail keywords (spike trap)")]
-	string m_sNailWords = "nail,screw";
+	string m_sNailWords;
 
 	[Attribute("bleach,chlorine,iodine", desc: "Keywords for what makes purification tablets")]
-	string m_sBleachWords = "bleach,chlorine,iodine";
+	string m_sBleachWords;
 
 	[Attribute(desc: "More recipes (added after the built-in ones; at most eight are shown at a workbench)")]
 	ref array<ref RZ_Recipe> m_aRecipes;
@@ -168,7 +168,7 @@ class RZ_Crafting
 		if (output.IsEmpty() || m_aList.Count() >= SLOTS)
 			return;
 
-		RZ_Recipe r = new RZ_Recipe();
+		RZ_Recipe r = RZ_Recipe.Cast(RZ_Util.NewWithDefaults("RZ_Recipe"));
 		r.m_sName = name;
 		r.m_sIn1 = in1;
 		r.m_iN1 = n1;

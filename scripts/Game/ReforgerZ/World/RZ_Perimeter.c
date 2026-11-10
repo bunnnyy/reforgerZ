@@ -4,22 +4,22 @@
 class RZ_PerimeterSettings
 {
 	[Attribute("1", desc: "Turn the Perimeter on: warning zone, kill zone, drones and road checkpoints")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("300", desc: "Warning zone: distance (m) from the edge where the drone and the loudspeaker start")]
-	float m_fWarnDistance = 300;
+	float m_fWarnDistance;
 
 	[Attribute("100", desc: "Kill zone: distance (m) from the edge where the warning shot comes, then the fatal one")]
-	float m_fKillDistance = 100;
+	float m_fKillDistance;
 
 	[Attribute("8", desc: "Seconds between the warning shot and the fatal one (rounded up to the server tick)")]
-	float m_fGraceSeconds = 8;
+	float m_fGraceSeconds;
 
 	[Attribute("1", desc: "Pull the edge in to the dry land plus the sea margin, so on island maps the line sits offshore. Off = the whole world box")]
-	bool m_bFitToLand = true;
+	bool m_bFitToLand;
 
 	[Attribute("200", desc: "How far out to sea (m) the edge sits beyond the outermost land, when fitting to land. Above the warning distance, beaches are never warned (and The Crossing only uses land edges)")]
-	float m_fSeaMargin = 200;
+	float m_fSeaMargin;
 
 	[Attribute("0", desc: "Use the rectangle below instead of detecting the edge (if detection gets it wrong)")]
 	bool m_bOverride;
@@ -34,13 +34,13 @@ class RZ_PerimeterSettings
 	ResourceName m_sDronePrefab;
 
 	[Attribute("25", desc: "Drone height above the player (m)")]
-	float m_fDroneHeight = 25;
+	float m_fDroneHeight;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Warning shot: a gunshot sound or bullet impact effect spawned a few metres from the player (optional: a message without it)", "et")]
 	ResourceName m_sWarningShotPrefab;
 
 	[Attribute("1", desc: "Sealed road checkpoints where roads reach the edge")]
-	bool m_bCheckpoints = true;
+	bool m_bCheckpoints;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Checkpoint barricade: a small composition of concrete blocks and a closed barrier. Checkpoints are off without it", "et")]
 	ResourceName m_sBarricadePrefab;
@@ -49,22 +49,22 @@ class RZ_PerimeterSettings
 	ResourceName m_sGuardPrefab;
 
 	[Attribute("2", UIWidgets.Slider, "Guards behind each barricade", "0 4 1")]
-	int m_iGuardsPerCheckpoint = 2;
+	int m_iGuardsPerCheckpoint;
 
 	[Attribute("6", UIWidgets.Slider, "Most checkpoints on one map", "1 8 1")]
-	int m_iMaxCheckpoints = 6;
+	int m_iMaxCheckpoints;
 
 	[Attribute("60", desc: "Barricade distance (m) inside the edge")]
-	float m_fCheckpointInset = 60;
+	float m_fCheckpointInset;
 
 	[Attribute("800", desc: "Minimum distance (m) between two checkpoints")]
-	float m_fCheckpointSpacing = 800;
+	float m_fCheckpointSpacing;
 
 	[Attribute("150", desc: "Loudspeaker warning within this distance (m) of a checkpoint")]
-	float m_fCheckpointWarnRadius = 150;
+	float m_fCheckpointWarnRadius;
 
 	[Attribute("60", desc: "Lethal within this distance (m) of a checkpoint (warning shot first)")]
-	float m_fCheckpointKillRadius = 60;
+	float m_fCheckpointKillRadius;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The Blind Spot's smuggler: a civilian character without AI, or a figure prop (optional: falls back to Puzzles > Civilian)", "et")]
 	ResourceName m_sSmugglerPrefab;

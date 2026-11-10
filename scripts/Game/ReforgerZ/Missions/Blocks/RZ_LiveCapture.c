@@ -169,7 +169,7 @@ class RZ_LiveCapture
 	{
 		RZ_ContractSettings cs = gm.GetContractSettings();
 		if (!cs)
-			cs = new RZ_ContractSettings();
+			cs = RZ_ContractSettings.Cast(RZ_Util.NewWithDefaults("RZ_ContractSettings"));
 
 		return cs;
 	}

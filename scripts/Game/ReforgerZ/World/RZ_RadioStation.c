@@ -14,16 +14,16 @@
 class RZ_RadioStationSettings
 {
 	[Attribute("1", desc: "A radio station players can take over and broadcast from (cosmetic and social only, docs/DESIGN.md, Time and environment)")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Console: a radio set or desk with the generic puzzle object components (RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleChoiceAction). Empty = Puzzles > Radio mast, then the generic object", "et")]
 	ResourceName m_sConsolePrefab;
 
 	[Attribute("30", desc: "Seconds a player must stay at the console (no infected within 15 m) to take it over")]
-	float m_fTakeoverSeconds = 30;
+	float m_fTakeoverSeconds;
 
 	[Attribute("10", desc: "Real minutes between broadcasts, server-wide (halved while the station has power)")]
-	float m_fCooldownMinutes = 10;
+	float m_fCooldownMinutes;
 }
 
 //------------------------------------------------------------------------------------------------

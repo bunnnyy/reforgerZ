@@ -430,88 +430,88 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected void InitServer()
 	{
 		if (!m_ZombieSettings)
-			m_ZombieSettings = new RZ_ZombieSettings();
+			m_ZombieSettings = RZ_ZombieSettings.Cast(RZ_Util.NewWithDefaults("RZ_ZombieSettings"));
 
 		if (!m_PerimeterSettings)
-			m_PerimeterSettings = new RZ_PerimeterSettings();
+			m_PerimeterSettings = RZ_PerimeterSettings.Cast(RZ_Util.NewWithDefaults("RZ_PerimeterSettings"));
 
 		if (!m_AdaptationSettings)
-			m_AdaptationSettings = new RZ_AdaptationSettings();
+			m_AdaptationSettings = RZ_AdaptationSettings.Cast(RZ_Util.NewWithDefaults("RZ_AdaptationSettings"));
 
 		if (!m_TownMemorySettings)
-			m_TownMemorySettings = new RZ_TownMemorySettings();
+			m_TownMemorySettings = RZ_TownMemorySettings.Cast(RZ_Util.NewWithDefaults("RZ_TownMemorySettings"));
 
 		if (!m_EnvironmentSettings)
-			m_EnvironmentSettings = new RZ_EnvironmentSettings();
+			m_EnvironmentSettings = RZ_EnvironmentSettings.Cast(RZ_Util.NewWithDefaults("RZ_EnvironmentSettings"));
 
 		if (!m_PowerSettings)
-			m_PowerSettings = new RZ_PowerSettings();
+			m_PowerSettings = RZ_PowerSettings.Cast(RZ_Util.NewWithDefaults("RZ_PowerSettings"));
 
 		if (!m_RadioStationSettings)
-			m_RadioStationSettings = new RZ_RadioStationSettings();
+			m_RadioStationSettings = RZ_RadioStationSettings.Cast(RZ_Util.NewWithDefaults("RZ_RadioStationSettings"));
 
 		if (!m_StorySettings)
-			m_StorySettings = new RZ_StorySettings();
+			m_StorySettings = RZ_StorySettings.Cast(RZ_Util.NewWithDefaults("RZ_StorySettings"));
 
 		if (!m_SafehouseSettings)
-			m_SafehouseSettings = new RZ_SafehouseSettings();
+			m_SafehouseSettings = RZ_SafehouseSettings.Cast(RZ_Util.NewWithDefaults("RZ_SafehouseSettings"));
 
 		if (!m_WandererSettings)
-			m_WandererSettings = new RZ_WandererSettings();
+			m_WandererSettings = RZ_WandererSettings.Cast(RZ_Util.NewWithDefaults("RZ_WandererSettings"));
 
 		if (!m_LeaderSettings)
-			m_LeaderSettings = new RZ_LeaderSettings();
+			m_LeaderSettings = RZ_LeaderSettings.Cast(RZ_Util.NewWithDefaults("RZ_LeaderSettings"));
 
 		if (!m_HostilitySettings)
-			m_HostilitySettings = new RZ_HostilitySettings();
+			m_HostilitySettings = RZ_HostilitySettings.Cast(RZ_Util.NewWithDefaults("RZ_HostilitySettings"));
 
 		if (!m_ServiceSettings)
-			m_ServiceSettings = new RZ_ServiceSettings();
+			m_ServiceSettings = RZ_ServiceSettings.Cast(RZ_Util.NewWithDefaults("RZ_ServiceSettings"));
 
 		if (!m_CheckpointSettings)
-			m_CheckpointSettings = new RZ_CheckpointSettings();
+			m_CheckpointSettings = RZ_CheckpointSettings.Cast(RZ_Util.NewWithDefaults("RZ_CheckpointSettings"));
 
 		if (!m_GuidanceSettings)
-			m_GuidanceSettings = new RZ_GuidanceSettings();
+			m_GuidanceSettings = RZ_GuidanceSettings.Cast(RZ_Util.NewWithDefaults("RZ_GuidanceSettings"));
 
 		if (!m_TerritorySettings)
-			m_TerritorySettings = new RZ_TerritorySettings();
+			m_TerritorySettings = RZ_TerritorySettings.Cast(RZ_Util.NewWithDefaults("RZ_TerritorySettings"));
 
 		if (!m_SupplySettings)
-			m_SupplySettings = new RZ_SupplySettings();
+			m_SupplySettings = RZ_SupplySettings.Cast(RZ_Util.NewWithDefaults("RZ_SupplySettings"));
 
 		if (!m_FactionLifeSettings)
-			m_FactionLifeSettings = new RZ_FactionLifeSettings();
+			m_FactionLifeSettings = RZ_FactionLifeSettings.Cast(RZ_Util.NewWithDefaults("RZ_FactionLifeSettings"));
 
 		if (!m_InteractionSettings)
-			m_InteractionSettings = new RZ_InteractionSettings();
+			m_InteractionSettings = RZ_InteractionSettings.Cast(RZ_Util.NewWithDefaults("RZ_InteractionSettings"));
 
 		if (!m_SearchSettings)
-			m_SearchSettings = new RZ_SearchSettings();
+			m_SearchSettings = RZ_SearchSettings.Cast(RZ_Util.NewWithDefaults("RZ_SearchSettings"));
 
 		if (!m_CarSettings)
-			m_CarSettings = new RZ_CarSettings();
+			m_CarSettings = RZ_CarSettings.Cast(RZ_Util.NewWithDefaults("RZ_CarSettings"));
 
 		if (!m_CraftSettings)
-			m_CraftSettings = new RZ_CraftSettings();
+			m_CraftSettings = RZ_CraftSettings.Cast(RZ_Util.NewWithDefaults("RZ_CraftSettings"));
 
 		if (!m_TrapSettings)
-			m_TrapSettings = new RZ_TrapSettings();
+			m_TrapSettings = RZ_TrapSettings.Cast(RZ_Util.NewWithDefaults("RZ_TrapSettings"));
 
 		if (!m_RadioCrackSettings)
-			m_RadioCrackSettings = new RZ_RadioCrackSettings();
+			m_RadioCrackSettings = RZ_RadioCrackSettings.Cast(RZ_Util.NewWithDefaults("RZ_RadioCrackSettings"));
 
 		if (!m_ContractSettings)
-			m_ContractSettings = new RZ_ContractSettings();
+			m_ContractSettings = RZ_ContractSettings.Cast(RZ_Util.NewWithDefaults("RZ_ContractSettings"));
 
 		if (!m_EventSettings)
-			m_EventSettings = new RZ_EventSettings();
+			m_EventSettings = RZ_EventSettings.Cast(RZ_Util.NewWithDefaults("RZ_EventSettings"));
 
 		if (!m_InfectionSettings)
-			m_InfectionSettings = new RZ_InfectionSettings();
+			m_InfectionSettings = RZ_InfectionSettings.Cast(RZ_Util.NewWithDefaults("RZ_InfectionSettings"));
 
 		if (!m_SeasonSettings)
-			m_SeasonSettings = new RZ_SeasonSettings();
+			m_SeasonSettings = RZ_SeasonSettings.Cast(RZ_Util.NewWithDefaults("RZ_SeasonSettings"));
 
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{

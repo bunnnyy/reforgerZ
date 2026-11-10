@@ -68,7 +68,9 @@ Write conservatively:
 - Don't reuse a local variable name twice in one function, even in sibling blocks.
 - Empty virtual methods get `{}`, not `;`. `string.Format` supports `%1`–`%9` only.
 - `ref` for owned objects; engine entities (`IEntity`) as weak references.
-- Attribute defaults don't apply to `new`, so also set field initialisers.
+- Never give an `[Attribute]` field an initialiser: it overrides the value set in Workbench (tested).
+  The attribute's default string is the only default. To create an attribute class in code, use
+  `RZ_Util.NewWithDefaults("ClassName")`, not `new` (which leaves every field at zero).
 - Mark any engine API you aren't sure of with `// VERIFY: ...` and keep engine calls in small helpers.
 - Server-authoritative. Poll on the existing tick, not per frame. Spawn AI and props only near players.
 - Works on any map: place things relative to settlements and landmarks, never fixed coordinates.
