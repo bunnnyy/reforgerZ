@@ -551,3 +551,22 @@ class RZ_Escort
 		return prefab;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! Shared by escort missions.
+class RZ_EscortHelp
+{
+	//------------------------------------------------------------------------------------------------
+	//! A player within radius of pos (the first found), -1 if none: someone standing beside the
+	//! escorted person, so a mission can go on even if the body can't be talked to.
+	static int PlayerBeside(array<int> ids, array<IEntity> players, vector pos, float radius)
+	{
+		foreach (int i, IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), pos) <= radius)
+				return ids[i];
+		}
+
+		return -1;
+	}
+}

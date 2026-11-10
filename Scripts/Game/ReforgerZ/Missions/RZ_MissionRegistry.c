@@ -46,6 +46,17 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_QuarantineLine);
 		mgr.RegisterType(RZ_Mission_RaidRedHand);
 		mgr.RegisterType(RZ_Mission_Requisition);
+		// Built on the mission building blocks (Missions/Bastion/RZ_BastionContracts.c)
+		mgr.RegisterType(RZ_Mission_RestoreComms);
+		mgr.RegisterType(RZ_Mission_CurfewPatrol);
+		mgr.RegisterType(RZ_Mission_WeaponsCache);
+		mgr.RegisterType(RZ_Mission_ConvoyEscort);
+		mgr.RegisterType(RZ_Mission_RescueThePilot);
+		mgr.RegisterType(RZ_Mission_ClearTheAirfield);
+		mgr.RegisterType(RZ_Mission_HuntTheDeserter);
+		mgr.RegisterType(RZ_Mission_SecureTheShipment);
+		mgr.RegisterType(RZ_Mission_BlowTheBridge);
+		mgr.RegisterType(RZ_Mission_FireMission);
 
 		// The Red Hand
 		mgr.RegisterType(RZ_Mission_BanditDeadDrop);

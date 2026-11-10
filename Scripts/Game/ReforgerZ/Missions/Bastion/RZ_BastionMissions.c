@@ -111,6 +111,9 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 	protected static const float COUNTDOWN = 720;
 	protected static const float GROUND_TIME = 180;	// it lands this long before it leaves
 
+	//! Clear the Airfield: the helicopter runs twice as often until this mission-manager clock time
+	protected static float s_fBoostUntil;
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -127,7 +130,18 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 		if (gm.GetEnvironment() && gm.GetEnvironment().IsHelicopterGrounded())
 			return 0;
 
-		return 3 * gm.GetDirector().GetStageSettings().m_fMilitaryPresence;
+		float w = 3 * gm.GetDirector().GetStageSettings().m_fMilitaryPresence;
+		if (gm.GetMissions().GetClock() < s_fBoostUntil)
+			w = w * 2;
+
+		return w;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Clear the Airfield: more runs for a while (not saved).
+	static void Boost(RZ_GameModeComponent gm, float seconds)
+	{
+		s_fBoostUntil = Math.Max(s_fBoostUntil, gm.GetMissions().GetClock() + seconds);
 	}
 
 	//------------------------------------------------------------------------------------------------

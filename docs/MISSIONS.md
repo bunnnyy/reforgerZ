@@ -9,7 +9,7 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 
 | Kind | In code | Designed, not built |
 |---|---|---|
-| [Faction contracts](#faction-contracts) (20 designed per faction) | 50 | 30 |
+| [Faction contracts](#faction-contracts) (20 designed per faction) | 60 | 20 |
 | [World events](#world-events) | 10 | 15 (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 17 | — |
 | [Unarmed missions](#unarmed-missions) | 10 | 1 |
@@ -17,7 +17,7 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 30, plus Rein In | 2 |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **128** | **48** |
+| **Total** | **138** | **38** |
 
 ## Who gets offered what
 
@@ -100,19 +100,19 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 5 | Checkpoint Duty | Known | ★ Police: holds faster | Hold a checkpoint at a town's edge for 10 min against waves | Fame (Red Hand Infamy) | ✅ |
 | 6 | Missing Patrol | Known | | Find a squad's last position and deal with the turned soldiers | Fame, a crate of military loot | ✅ |
 | 7 | Crash Site | Known | ★ Mechanic: black box twice as fast | Secure a helicopter wreck for 60 s and take its black box | **Choice:** Bastion Fame, or sell it to the Red Hand | ✅ |
-| 8 | Restore Comms | Known | ★ Radio Op: needs no parts | Bring parts and repair a radio tower | Fame; Bastion intel on the radio | planned |
-| 9 | Curfew Patrol | Known, night | ★ Police | Patrol a town at night and keep it clear | Fame | planned |
-| 10 | Weapons Cache | Trusted | | Retrieve weapons from an armory in an overrun base | Fame | planned |
-| 11 | Convoy Escort | Trusted | ★ Mechanic: fixes a broken-down truck | Escort supply trucks between two towns | Big Fame (Red Hand Infamy if you kill raiders) | planned |
-| 12 | Rescue the Pilot | Trusted | ★ Nurse/Doctor | Find a downed pilot and bring them out | Fame | planned |
+| 8 | Restore Comms | Known | ★ Radio Op: needs no parts | Bring parts and repair a radio tower | Fame; Bastion intel on the radio | ✅ *the parts are the mission item in a nearby town; then 60 s by the humming mast; the intel goes to everyone Known with Bastion* |
+| 9 | Curfew Patrol | Known, night | ★ Police: 1.5× faster | Patrol a town at night and keep it clear | Fame | ✅ *four patrol points (15 s each) and six infected killed in town; until dawn* |
+| 10 | Weapons Cache | Trusted | | Retrieve weapons from an armory in an overrun base | Fame; Bastion gets stronger | ✅ *a barracks or police station in an overrun town if the map has one; search 30 s, carry the case to a Bastion drop* |
+| 11 | Convoy Escort | Trusted | ★ Mechanic: fixes a broken-down truck in a third of the time | Escort supply trucks between two towns | Big Fame (Red Hand Infamy if raiders came) | ✅ *Bastion's own supply truck from its stronghold to an outpost; it breaks down once halfway (30 s to fix); raiders only with the Red Hand group prefab; paid for staying with it 40% of the way. Needs supply trucks* |
+| 12 | Rescue the Pilot | Trusted | ★ Nurse/Doctor: patches him up, no clock | Find a downed pilot and bring them out | Fame | ✅ *he follows you to a Bastion seat; 20 min before he bleeds out* |
 | 13 | Quarantine Line | Trusted | | Hold the edge of an infested town for 10 min | Fame; the town stops spreading for 30 min | ✅ |
-| 14 | Clear the Airfield | Trusted | | Clear an airfield so the Last Helicopter can land there | Fame; the Last Helicopter runs more often | planned |
+| 14 | Clear the Airfield | Trusted | | Clear an airfield so the Last Helicopter can land there | Fame; the Last Helicopter runs twice as often for 2 hours | ✅ *a flat field outside a town, not a real airfield; it doesn't land there* |
 | 15 | Raid the Red Hand | Trusted, not Trusted by the Red Hand | 🔒 not Ex-Con/Raider unless Champion with Bastion | Assault a Red Hand camp | Big Fame (big Red Hand Infamy) | ✅ |
-| 16 | Hunt the Deserter | Trusted | | Track down a deserter who stole supplies. Bring him back or kill him | Fame; capture = more | planned |
+| 16 | Hunt the Deserter | Trusted | | Track down a deserter who stole supplies. Bring him back or kill him | Fame; killed = 60% | ✅ *a two-step trail (his pack, his fire) to his hideout; arrested, he follows you to a Bastion seat* |
 | 17 | Requisition | Trusted | 🔒 not Elder | "Collect" supplies from a Haven safehouse. Deliver them to Bastion, or give them back | To Bastion: Fame (Haven Infamy), the safehouse loses 4 food. Back: Bastion Infamy | ✅ |
-| 18 | Secure the Shipment | Champion | | Escort a Halcyon sample shipment | **Choice:** Bastion Fame (Halcyon Infamy) or let it reach the lab | planned |
-| 19 | Blow the Bridge | Champion | ★ Mechanic/Soldier: fewer charges | Plant charges to stop a horde heading for a safe town | Fame; the horde is diverted | planned |
-| 20 | Fire Mission | Champion | | Mark three hordes with smoke for artillery | Fame | planned |
+| 18 | Secure the Shipment | Champion | | Escort a Halcyon sample shipment | **Choice:** Bastion Fame (Halcyon Infamy) or let it reach the lab (Halcyon Fame, research) | ✅ *a courier on foot; divert her by talking to her* |
+| 19 | Blow the Bridge | Champion | ★ Mechanic/Soldier: two charges, not three | Plant charges to stop a horde heading for a safe town | Fame; the horde turns back. It arrives: +10 infection there | ✅ *no real bridge: a choke point on its way; the horde is data until a player is within 600 m* |
+| 20 | Fire Mission | Champion | | Mark three hordes with smoke for artillery | Fame | ✅ *10 s within 80 m marks one; 30 s later the strike kills it outright* |
 
 **Amends:** Burn the Bodies and Recon work off Bastion Infamy while you're Watched.
 Surrendering at a checkpoint is planned.
@@ -368,12 +368,12 @@ Every background has contracts it shines at, and some it's shut out of. Planned 
 
 | Background | Shines at | Shut out of |
 |---|---|---|
-| Nurse | Medicine Run, Bitten Friend, Walk Him Out, Pharmacy Lure, Medicine Before Dark, *Cold Chain*, *Rescue the Pilot* | — |
-| Mechanic | Clear the Road, Crash Site, Junction Boxes, Rooftop Rescue, Fuel for the Lights, Water Purifier, Fortify the Safehouse, Recover the Bus, *Car Theft* | — |
+| Nurse | Medicine Run, Bitten Friend, Walk Him Out, Pharmacy Lure, Medicine Before Dark, Rescue the Pilot, *Cold Chain* | — |
+| Mechanic | Clear the Road, Crash Site, Junction Boxes, Rooftop Rescue, Fuel for the Lights, Water Purifier, Fortify the Safehouse, Recover the Bus, Convoy Escort, Blow the Bridge, *Car Theft* | — |
 | Hunter | Rescue the Kids, Smuggler's Run, Hunt the Screamer, Silent Courier, Harvest Guard | — |
-| Police | Checkpoint Duty, Trail of Clues, The Rat, *Curfew Patrol*, *Loot the Armory*, *Double Agent* | The Informant |
+| Police | Checkpoint Duty, Trail of Clues, The Rat, Curfew Patrol, *Loot the Armory*, *Double Agent* | The Informant |
 | Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, *Bust Out* | Raid the Red Hand (until Champion with Bastion) |
 | Lab Tech | Field Samples, Water Survey, Quiet Count, Steal the Antidotes, Water Purifier, *Patient Zero* | — |
-| Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, *Restore Comms*, *Install Sensors* | — |
+| Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, Restore Comms, *Install Sensors* | — |
 | Unemployed | +50% Fame from every contract (and Infamy worked off by amends) | — |
 | Elder (unlock) | Walk Him Out, The Ledger, The Bell Order, The Silent Village | Requisition, *Protection Racket* |
