@@ -290,7 +290,15 @@ placed by hand. **Nothing is built along the edge** except the road checkpoints.
   hurt. Checkpoints come from the road network, or from placed `RZ_CheckpointMarkerEntity`s.
 - **Blind spots.** The drones run a rotation; The Blind Spot mission opens a 250 m gap for
   ten minutes ([MISSIONS.md](MISSIONS.md), "Perimeter missions").
-- Missions, spawn points and quartermasters keep out of the warning zone.
+- **Sea edges.** Where the edge runs out at sea it sits at least the sea margin offshore, so
+  the kill zone is water and the warning zone only reaches the beach where the land comes
+  within 300 m of the line. Swimming or sailing out gets you warned and shot as on land.
+- **Missions at the line** measure from where the land starts, not from the edge. The first
+  time one is considered, points every 100 m along the edge (away from the corners, at most
+  400) are walked inward in 10 m steps to the first dry ground, up to 600 m; points with no land
+  that close are left out. A mission picks among these, preferring spots under the drones;
+  one that finds nowhere on a map is never offered there (worked out once per run).
+- Other missions, spawn points and quartermasters keep out of the warning zone.
 
 ## Time and environment
 

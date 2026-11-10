@@ -41,6 +41,67 @@ class RZ_EventHelp
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Settlements within the infection range that nobody lives in (IsLivedIn) and no other
+	//! mission is using. Filtering here, not after a random pick, is what keeps an event from
+	//! failing on a map where most of its towns are held.
+	static void CollectEmptyTowns(RZ_GameModeComponent gm, float minInf, float maxInf, notnull array<int> result)
+	{
+		foreach (int i, RZ_Settlement s : gm.GetSettlements())
+		{
+			if (s.m_fInfection < minInf || s.m_fInfection > maxInf)
+				continue;
+
+			if (!gm.GetMissions().IsSettlementBusy(i) && !IsLivedIn(gm, i))
+				result.Insert(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A random settlement from CollectEmptyTowns. -1 if there's none.
+	static int PickEmptyTown(RZ_GameModeComponent gm, float minInf, float maxInf)
+	{
+		array<int> towns = {};
+		CollectEmptyTowns(gm, minInf, maxInf, towns);
+		if (towns.IsEmpty())
+			return -1;
+
+		return towns.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The largest distance (m) between two settlement centres along x or z: how big the
+	//! lived part of the map is, for distances that have to scale with it. 0 with no settlements.
+	static float MapSpan(RZ_GameModeComponent gm)
+	{
+		float minX = 0;
+		float minZ = 0;
+		float maxX = 0;
+		float maxZ = 0;
+		bool any = false;
+		foreach (RZ_Settlement s : gm.GetSettlements())
+		{
+			float x = s.m_vCenter[0];
+			float z = s.m_vCenter[2];
+			if (!any)
+			{
+				minX = x;
+				maxX = x;
+				minZ = z;
+				maxZ = z;
+				any = true;
+				continue;
+			}
+
+			minX = Math.Min(minX, x);
+			maxX = Math.Max(maxX, x);
+			minZ = Math.Min(minZ, z);
+			maxZ = Math.Max(maxZ, z);
+		}
+
+		return Math.Max(maxX - minX, maxZ - minZ);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Up to `max` infected within radius of pos die (fire, a blast). Returns how many.
 	static int KillInfectedNear(RZ_GameModeComponent gm, vector pos, float radius, int max)
 	{
@@ -424,13 +485,10 @@ class RZ_Event_BurningTown : RZ_Mission
 		RZ_EventSettings settings = RZ_EventHelp.Settings(gm);
 		for (int tries = 0; tries < 6; tries++)
 		{
-			int idx = PickSettlement(gm, 50, 100);
+			int idx = RZ_EventHelp.PickEmptyTown(gm, 50, 100);
 			RZ_Settlement s = gm.GetSettlement(idx);
 			if (!s)
 				return false;
-
-			if (RZ_EventHelp.IsLivedIn(gm, idx))
-				continue;
 
 			int cap = settings.m_iBurnMax;
 			if (gm.GetTownMemory())

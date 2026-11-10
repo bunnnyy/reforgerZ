@@ -660,9 +660,12 @@ class RZ_Event_TheSniper : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 90);
+		if (Prefab(gm).IsEmpty())
+			return false;
+
+		m_iSettlement = RZ_EventHelp.PickEmptyTown(gm, 0, 90);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s || RZ_EventHelp.IsLivedIn(gm, m_iSettlement))
+		if (!s)
 			return false;
 
 		m_vPos = HighPointNear(s.m_vCenter, s.m_fRadius + 80, s.m_fRadius + 450);
@@ -784,9 +787,12 @@ class RZ_Event_RivalSurvivors : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 70);
+		if (Prefab(gm).IsEmpty())
+			return false;
+
+		m_iSettlement = RZ_EventHelp.PickEmptyTown(gm, 0, 70);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s || RZ_EventHelp.IsLivedIn(gm, m_iSettlement))
+		if (!s)
 			return false;
 
 		m_vCamp = LandPointNear(s.m_vCenter, s.m_fRadius + 50, s.m_fRadius + 300);
@@ -1029,9 +1035,9 @@ class RZ_Event_CollapseShelter : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 30, 90);
+		m_iSettlement = RZ_EventHelp.PickEmptyTown(gm, 30, 90);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s || RZ_EventHelp.IsLivedIn(gm, m_iSettlement))
+		if (!s)
 			return false;
 
 		array<string> kinds = {"school", "church"};

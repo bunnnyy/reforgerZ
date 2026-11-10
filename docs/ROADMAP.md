@@ -76,7 +76,7 @@ In this order, because later ones depend on earlier ones:
    turn **Door locks** off (the lock goes back on the loot). **Keeping AI out:** does the AI door
    hook compile (else delete it)? Do blockers stand in the doorway, make AI route around a locked
    door after the navmesh rebuild, and cost little server time? Can anyone get trapped?
-8. **The Perimeter** on an island map and a land-locked one.
+8. **The Perimeter** on an island map and a land-locked one. On the island: do the three Perimeter missions put their spots on the shore (the `Perimeter shore:` log line), and is the coast under the drones often enough?
 9. **Safehouses:** upkeep timing, food keywords, the medic and bite declarations.
    **Bites:** how often hits become bites in real fights (the protective clothing keywords),
    whether the golden window is long enough to clean a bite mid-fight, whether the stamina hook

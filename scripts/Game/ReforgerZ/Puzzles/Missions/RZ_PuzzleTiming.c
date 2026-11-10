@@ -15,6 +15,7 @@ class RZ_Mission_ClockworkHorde : RZ_PuzzleMission
 	protected ref array<IEntity> m_aHorde = {};
 
 	protected static const float SIREN_INTERVAL = 120;
+	protected static const int MAX_ATTEMPTS = 8;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -37,19 +38,29 @@ class RZ_Mission_ClockworkHorde : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 20, 90);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
+		// A town and an axis through it with dry ground at both ends (coastal towns need a few goes)
+		RZ_Settlement s = null;
+		bool found = false;
+		for (int attempt = 0; attempt < MAX_ATTEMPTS && !found; attempt++)
+		{
+			m_iSettlement = PickSettlement(gm, 20, 90);
+			s = gm.GetSettlement(m_iSettlement);
+			if (!s)
+				return false;
+
+			m_vBox = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.15);
+			float axis = m_Rng.Range(0, 360);
+			m_vSirenA = RZ_Compass.PointAt(m_vBox, axis, s.m_fRadius * 0.8);
+			m_vSirenB = RZ_Compass.PointAt(m_vBox, axis + 180, s.m_fRadius * 0.8);
+			if (!RZ_Util.IsWater(m_vSirenA) && !RZ_Util.IsWater(m_vSirenB))
+				found = true;
+		}
+
+		if (!found)
 			return false;
 
 		m_vPos = s.m_vCenter;
 		m_fParticipationRadius = s.m_fRadius + 100;
-		m_vBox = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.15);
-		float axis = m_Rng.Range(0, 360);
-		m_vSirenA = RZ_Compass.PointAt(m_vBox, axis, s.m_fRadius * 0.8);
-		m_vSirenB = RZ_Compass.PointAt(m_vBox, axis + 180, s.m_fRadius * 0.8);
-		if (RZ_Util.IsWater(m_vSirenA) || RZ_Util.IsWater(m_vSirenB))
-			return false;
 
 		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_vBox, 0, "Take the strongbox", "");
 		gm.GetSpawner().SpawnHordeAt(LandPointNear(m_vSirenA, 0, 30), m_vSirenA, m_iId, m_aHorde);

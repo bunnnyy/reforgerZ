@@ -395,11 +395,19 @@ class RZ_Event_BastionShelling : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 60, 100);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s || s.m_bHasLab)
+		// Never the lab's town: filter it out first, so a map where it's the only one in range just has none
+		array<int> towns = {};
+		foreach (int i, RZ_Settlement t : gm.GetSettlements())
+		{
+			if (t.m_fInfection >= 60 && !t.m_bHasLab && !gm.GetMissions().IsSettlementBusy(i))
+				towns.Insert(i);
+		}
+
+		if (towns.IsEmpty())
 			return false;
 
+		m_iSettlement = towns.GetRandomElement();
+		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		m_vPos = s.m_vCenter;
 		m_sTitle = "Bastion Shelling";
 		m_sBrief = string.Format("Bastion's mortar crews will shell %1 in five minutes. They don't check for survivors. Get out, or loot fast.", s.m_sName);

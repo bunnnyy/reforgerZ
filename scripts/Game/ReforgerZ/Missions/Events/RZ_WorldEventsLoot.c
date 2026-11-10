@@ -213,7 +213,8 @@ class RZ_Event_AbandonedConvoy : RZ_Mission
 //! infested town, with turned soldiers still on guard and two crates of its stores. While
 //! Bastion is still around (stage military presence 0.1 or more), anyone who gets within 4 m of
 //! a crate takes Bastion Infamy (Missions > Events > Camp Infamy): Bastion keeps lists. Camp
-//! prop: Missions > Events > Camp (look only).
+//! prop: Missions > Events > Camp (look only). Never near a Bastion holding: an eighth of the
+//! map's span, 400 m to 1.5 km.
 class RZ_Event_RemnantCamp : RZ_Mission
 {
 	protected ref RZ_LootCache m_Cache = new RZ_LootCache();
@@ -223,6 +224,8 @@ class RZ_Event_RemnantCamp : RZ_Mission
 
 	protected static const float TAKE_RADIUS = 4;
 	protected static const float LEAVE_RADIUS = 150;
+	protected static const float HOLDING_GAP_MIN = 400;
+	protected static const float HOLDING_GAP_MAX = 1500;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -248,16 +251,31 @@ class RZ_Event_RemnantCamp : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 30, 100);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s || RZ_EventHelp.IsLivedIn(gm, m_iSettlement))
-			return false;
-
-		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 100, s.m_fRadius + 400);
-
 		// Abandoned means abandoned: never next to one of Bastion's own holdings
 		RZ_Territory territory = gm.GetTerritory();
-		if (territory && territory.IsActive() && territory.FindHolding(RZ_EFaction.MILITARY, m_vPos, 1500))
+		if (territory && !territory.IsActive())
+			territory = null;
+
+		float gap = Math.Clamp(RZ_EventHelp.MapSpan(gm) / 8, HOLDING_GAP_MIN, HOLDING_GAP_MAX);
+		array<int> towns = {};
+		RZ_EventHelp.CollectEmptyTowns(gm, 30, 100, towns);
+		RZ_Settlement s = null;
+		bool found = false;
+		for (int tries = 0; tries < 8 && !found && !towns.IsEmpty(); tries++)
+		{
+			int pick = Math.RandomInt(0, towns.Count());
+			m_iSettlement = towns[pick];
+			towns.Remove(pick);
+			s = gm.GetSettlement(m_iSettlement);
+			for (int spot = 0; spot < 4 && !found; spot++)
+			{
+				m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 100, s.m_fRadius + 400);
+				if (!territory || !territory.FindHolding(RZ_EFaction.MILITARY, m_vPos, gap))
+					found = true;
+			}
+		}
+
+		if (!found)
 			return false;
 
 		ResourceName camp = RZ_EventHelp.Settings(gm).m_sCampPrefab;
@@ -371,9 +389,9 @@ class RZ_Event_LockedBunker : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 90);
+		m_iSettlement = RZ_EventHelp.PickEmptyTown(gm, 0, 90);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s || RZ_EventHelp.IsLivedIn(gm, m_iSettlement))
+		if (!s)
 			return false;
 
 		int code = m_Rng.Int(100000, 1000000);
@@ -623,9 +641,9 @@ class RZ_Event_WeddingParty : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 20, 95);
+		m_iSettlement = RZ_EventHelp.PickEmptyTown(gm, 20, 95);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s || RZ_EventHelp.IsLivedIn(gm, m_iSettlement))
+		if (!s)
 			return false;
 
 		array<string> kinds = {"church"};

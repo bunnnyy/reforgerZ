@@ -18,7 +18,7 @@ class RZ_PerimeterSettings
 	[Attribute("1", desc: "Pull the edge in to the dry land plus the sea margin, so on island maps the line sits offshore. Off = the whole world box")]
 	bool m_bFitToLand;
 
-	[Attribute("200", desc: "How far out to sea (m) the edge sits beyond the outermost land, when fitting to land. Above the warning distance, beaches are never warned (and The Crossing only uses land edges)")]
+	[Attribute("200", desc: "How far out to sea (m) the edge sits beyond the outermost land, when fitting to land. Set it above the warning distance and beaches are never warned. Missions at the line measure from where the land starts, so they work either way")]
 	float m_fSeaMargin;
 
 	[Attribute("0", desc: "Use the rectangle below instead of detecting the edge (if detection gets it wrong)")]
@@ -99,6 +99,14 @@ class RZ_BlindSpot
 	float m_fRadius;
 }
 
+//! One point along the edge, for missions at the line: how far in the land starts.
+class RZ_ShorePoint
+{
+	vector m_vEdge;		// on the edge, on the ground (or the sea)
+	vector m_vInward;	// unit vector into the Zone
+	float m_fLand;		// metres from the edge to the first dry ground: 0 where the edge runs over land
+}
+
 //! The Perimeter: the unseen cordon at the edge of the playable world, on any map.
 //! Nothing is built along it except the sealed road checkpoints.
 //!
@@ -134,6 +142,9 @@ class RZ_Perimeter
 	protected int m_iNextBlindSpot = 1;
 	protected ref array<IEntity> m_aEffects = {};
 	protected ref array<float> m_aEffectTimes = {};
+	protected ref array<ref RZ_ShorePoint> m_aShore = {};
+	protected bool m_bShoreBuilt;
+	protected ref map<string, bool> m_mSpotFound = new map<string, bool>();
 
 	protected static const float LEAVE_MARGIN = 25;		// leave the zone by this much before the drone goes (no flicker)
 	protected static const float WARN_REPEAT = 30;		// seconds before the loudspeaker repeats itself on re-entry
@@ -142,6 +153,10 @@ class RZ_Perimeter
 	protected static const float GUARD_DEPTH = 20;		// guards stand this far outside the edge
 	protected static const float MIN_SIZE = 1000;
 	protected static const int MAX_CHECKPOINTS = 8;
+	protected static const float SHORE_SPACING = 100;	// metres between shore points along the edge
+	protected static const int MAX_SHORE_POINTS = 400;	// spacing grows on big maps to stay under this
+	protected static const float SHORE_WALK = 600;		// how far in (m) to look for land; further in, the point is left out
+	protected static const float SHORE_STEP = 10;
 
 	static const string LOUDSPEAKER = "Loudspeaker";
 
@@ -311,44 +326,111 @@ class RZ_Perimeter
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A random point on the edge, away from the corners, and the direction into the Zone.
-	bool RandomEdgePoint(out vector edge, out vector inward)
-	{
-		if (!m_bActive || m_fMaxX - m_fMinX < 3 * CORNER_MARGIN || m_fMaxZ - m_fMinZ < 3 * CORNER_MARGIN)
-			return false;
-
-		float alongX = Math.RandomFloat(m_fMinX + CORNER_MARGIN, m_fMaxX - CORNER_MARGIN);
-		float alongZ = Math.RandomFloat(m_fMinZ + CORNER_MARGIN, m_fMaxZ - CORNER_MARGIN);
-		int side = Math.RandomInt(0, 4);
-		switch (side)
-		{
-			case 0:
-				edge = Vector(m_fMinX, 0, alongZ);
-				inward = Vector(1, 0, 0);
-				break;
-			case 1:
-				edge = Vector(m_fMaxX, 0, alongZ);
-				inward = Vector(-1, 0, 0);
-				break;
-			case 2:
-				edge = Vector(alongX, 0, m_fMinZ);
-				inward = Vector(0, 0, 1);
-				break;
-			default:
-				edge = Vector(alongX, 0, m_fMaxZ);
-				inward = Vector(0, 0, -1);
-				break;
-		}
-
-		edge = RZ_Util.GroundPos(edge);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The ground `depth` metres inside the edge from an edge point.
 	vector PointInside(vector edge, vector inward, float depth)
 	{
 		return RZ_Util.GroundPos(edge + inward * depth);
+	}
+
+	// ================================================================ The shore (missions at the line)
+	//------------------------------------------------------------------------------------------------
+	//! Points along the edge, away from the corners, each with how far in the land starts. Where
+	//! the edge runs over land that's 0; where it runs offshore (FitToLand), the land starts at
+	//! the coast, at least the sea margin in. Points with no land within SHORE_WALK are left out.
+	//! Built once, the first time a mission asks.
+	int GetShoreCount()
+	{
+		if (!m_bShoreBuilt)
+			BuildShore();
+
+		return m_aShore.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_ShorePoint GetShorePoint(int idx)
+	{
+		if (!m_bShoreBuilt)
+			BuildShore();
+
+		if (idx < 0 || idx >= m_aShore.Count())
+			return null;
+
+		return m_aShore[idx];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void BuildShore()
+	{
+		m_bShoreBuilt = true;
+		if (!m_bActive)
+			return;
+
+		float lenX = m_fMaxX - m_fMinX - 2 * CORNER_MARGIN;
+		float lenZ = m_fMaxZ - m_fMinZ - 2 * CORNER_MARGIN;
+		if (lenX < CORNER_MARGIN || lenZ < CORNER_MARGIN)
+			return;
+
+		float spacing = Math.Max(SHORE_SPACING, 2 * (lenX + lenZ) / MAX_SHORE_POINTS);
+		for (float x = m_fMinX + CORNER_MARGIN; x <= m_fMaxX - CORNER_MARGIN; x += spacing)
+		{
+			AddShorePoint(Vector(x, 0, m_fMinZ), Vector(0, 0, 1));
+			AddShorePoint(Vector(x, 0, m_fMaxZ), Vector(0, 0, -1));
+		}
+
+		for (float z = m_fMinZ + CORNER_MARGIN; z <= m_fMaxZ - CORNER_MARGIN; z += spacing)
+		{
+			AddShorePoint(Vector(m_fMinX, 0, z), Vector(1, 0, 0));
+			AddShorePoint(Vector(m_fMaxX, 0, z), Vector(-1, 0, 0));
+		}
+
+		int sea = 0;
+		foreach (RZ_ShorePoint p : m_aShore)
+		{
+			if (p.m_fLand > 0)
+				sea++;
+		}
+
+		RZ_Log.Info(string.Format("Perimeter shore: %1 points along the edge with land within %2 m, %3 of them on a sea edge.",
+			m_aShore.Count(), RZ_Util.RoundToInt(SHORE_WALK), sea));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Walk in from the edge until the ground is dry.
+	protected void AddShorePoint(vector edge, vector inward)
+	{
+		for (float depth = 0; depth <= SHORE_WALK; depth += SHORE_STEP)
+		{
+			if (RZ_Util.IsWater(PointInside(edge, inward, depth)))
+				continue;
+
+			RZ_ShorePoint p = new RZ_ShorePoint();
+			p.m_vEdge = RZ_Util.GroundPos(edge);
+			p.m_vInward = inward;
+			p.m_fLand = depth;
+			m_aShore.Insert(p);
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a mission at the line found anywhere on this map: -1 not checked yet, 0 no, 1 yes.
+	//! Missions cache it here so one that can't fit isn't drawn again and again.
+	int GetSpotState(string mission)
+	{
+		bool found;
+		if (!m_mSpotFound.Find(mission, found))
+			return -1;
+
+		if (found)
+			return 1;
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetSpotState(string mission, bool found)
+	{
+		m_mSpotFound.Set(mission, found);
 	}
 
 	// ================================================================ Zones

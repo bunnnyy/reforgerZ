@@ -897,8 +897,8 @@ No fallback. If this is wrong, nothing persists.
 | `Core/RZ_Util.c:651` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Interactions.c:703` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
 | `Core/RZ_Util.c:454` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
-| `World/RZ_Perimeter.c:226` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:677`, `:692` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `World/RZ_Perimeter.c:241` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
+| `World/RZ_Perimeter.c:759`, `:774` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Door locks** off (locks go back on the loot) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
@@ -993,6 +993,8 @@ Warnings worth acting on:
 | `No common zombie prefabs configured. ...` | Set Zombies > Common prefabs (logged as an error: no infected spawn) |
 | `Using N hand-placed settlement markers.` | Detection is off because markers are placed |
 | `No checkpoint barricade prefab set: road checkpoints are off.` | Set Perimeter > Barricade prefab |
+| `Perimeter shore: N points along the edge with land within 600 m, M of them on a sea edge.` | Printed once, the first time a Perimeter mission is considered. N near 0 means the edge sits too far out to sea for missions at the line: lower **Sea margin** or set the **Override** rectangle |
+| `The Blind Spot: nowhere suitable at the line on this map, so it won't be offered.` (or The Crossing, Shot at the Line) | That mission found no dry spot clear of the checkpoints near the edge, and is off for this map. Same fix |
 | `No road network found: place RZ_CheckpointMarkerEntity entities ...` | The road network calls found no roads, or the map has none |
 | `Hostility: bitmask mode, only N of 15 variant factions ...` | Some `SURV_H` factions are missing |
 | `Hostility: outlaw mode, but the FactionManager has no SURV_OUTLAW.` | Add the Outlaw faction |

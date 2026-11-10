@@ -250,6 +250,7 @@ class RZ_Mission_SilentCourier : RZ_Mission_Delivery
 
 	protected static const float HEAT_LIMIT = 35;
 	protected static const float HEAT_LIMIT_BONUS = 45;
+	protected static const int MAX_ATTEMPTS = 8;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -272,20 +273,32 @@ class RZ_Mission_SilentCourier : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iTown = PickSettlement(gm, 40, 90);
-		RZ_Settlement town = gm.GetSettlement(m_iTown);
-		if (!town)
-			return false;
+		// Start and destination on opposite sides of the town, so the short way is through it.
+		// One try often lands the far side in the sea or at the line: have a few.
+		RZ_Settlement town = null;
+		RZ_Settlement start = null;
+		int from = -1;
+		vector dest;
+		bool found = false;
+		for (int attempt = 0; attempt < MAX_ATTEMPTS && !found; attempt++)
+		{
+			m_iTown = PickSettlement(gm, 40, 90);
+			town = gm.GetSettlement(m_iTown);
+			if (!town)
+				return false;
 
-		// Start and destination on opposite sides of the town, so the short way is through it
-		int from = PickSettlementAway(gm, town.m_vCenter, 600, 1500, 0, 70);
-		RZ_Settlement start = gm.GetSettlement(from);
-		if (!start)
-			return false;
+			from = PickSettlementAway(gm, town.m_vCenter, 600, 1500, 0, 70);
+			start = gm.GetSettlement(from);
+			if (!start)
+				continue;
 
-		float back = RZ_Compass.Bearing(town.m_vCenter, start.m_vCenter);
-		vector dest = LandPointNear(RZ_Compass.PointAt(town.m_vCenter, back + 180 + Math.RandomFloat(-35, 35), Math.RandomFloat(700, 1200)), 0, 60);
-		if (RZ_Util.IsWater(dest) || RZ_Perimeter.IsNearLineAt(dest))
+			float back = RZ_Compass.Bearing(town.m_vCenter, start.m_vCenter);
+			dest = LandPointNear(RZ_Compass.PointAt(town.m_vCenter, back + 180 + Math.RandomFloat(-35, 35), Math.RandomFloat(700, 1200)), 0, 60);
+			if (!RZ_Util.IsWater(dest) && !RZ_Perimeter.IsNearLineAt(dest))
+				found = true;
+		}
+
+		if (!found)
 			return false;
 
 		if (!SpawnItem(gm, LandPointNear(start.m_vCenter, 0, start.m_fRadius * 0.3)) || !SpawnDrop(gm, RZ_EFaction.SURVIVORS, dest))
