@@ -1,82 +1,10 @@
 //! World events: announced to everyone, open to everyone. See docs/MISSIONS.md, "World events".
-//! Most pay in loot rather than Fame.
+//! Most pay in loot found on the spot rather than Fame. Nothing comes in from outside the Zone.
 
 //------------------------------------------------------------------------------------------------
-//! #1 Airdrop: a crate lands somewhere after a three-minute countdown. Everyone sees where.
-class RZ_Event_Airdrop : RZ_Mission
-{
-	protected float m_fLandIn = 180;
-	protected bool m_bLanded;
-
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetEvent(false);
-		m_fTimeLeft = 1200;
-		m_fParticipationRadius = 30;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 2;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 0, 100);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius + 400);
-		m_sTitle = "Airdrop";
-		m_sBrief = string.Format("A supply plane is dropping a crate near %1 in three minutes. Everyone heard the broadcast.", s.m_sName);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
-	{
-		if (!m_bLanded)
-		{
-			m_fLandIn -= dt;
-			if (m_fLandIn > 0)
-				return;
-
-			m_bLanded = true;
-			ResourceName prefab = gm.GetAirdropPrefab();
-			if (prefab.IsEmpty())
-				gm.SpawnRewardCrate(m_vPos);
-			else
-				RZ_Util.SpawnPrefab(prefab, m_vPos, Math.RandomFloat(0, 360));
-
-			gm.GetHeat().AddHeat(m_vPos, 30);
-			gm.NotifyAll("Airdrop", "The crate is down near " + GetLocationName(gm) + ".");
-			return;
-		}
-
-		if (CountPlayersNear(players, m_vPos, 15) > 0)
-			m_eState = RZ_EMissionState.SUCCEEDED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnTimeUp(RZ_GameModeComponent gm)
-	{
-		m_eState = RZ_EMissionState.SUCCEEDED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override string GetSuccessText(RZ_GameModeComponent gm)
-	{
-		return "Someone reached the airdrop near " + GetLocationName(gm) + ".";
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! #2 Crashed Helicopter: a smoking wreck with military loot. The crash noise
-//! brings a horde as soon as someone gets there. Needs the wreck prefab.
+//! #1 Crashed Helicopter: the wreck of a Bastion helicopter lost in the first days,
+//! found with its military cargo still aboard. The infected nest around it, and a horde
+//! comes as soon as someone gets there. Needs the wreck prefab.
 class RZ_Event_CrashedHelicopter : RZ_Mission
 {
 	//------------------------------------------------------------------------------------------------
@@ -111,8 +39,8 @@ class RZ_Event_CrashedHelicopter : RZ_Mission
 		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 6, 10));
 		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 6, 10));
 		gm.GetHeat().AddHeat(m_vPos, 50);
-		m_sTitle = "Crashed helicopter";
-		m_sBrief = string.Format("A helicopter came down near %1. There's military cargo in the wreck, and every infected for a mile heard it.", s.m_sName);
+		m_sTitle = "Helicopter wreck";
+		m_sBrief = string.Format("Survivors found one of Bastion's lost helicopters near %1, down since the first week. Its cargo is still aboard. So are the infected nesting around it.", s.m_sName);
 		return true;
 	}
 
@@ -140,7 +68,7 @@ class RZ_Event_CrashedHelicopter : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! #3 Horde Migration: a huge horde walks from one town to another. Get out of the
+//! #2 Horde Migration: a huge horde walks from one town to another. Get out of the
 //! way, or thin it out: 10+ kills from it leaves a crate where the last one fell.
 class RZ_Event_HordeMigration : RZ_Mission
 {
@@ -238,7 +166,7 @@ class RZ_Event_Timed : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! #4 Night of the Dead: for 20 minutes, twice the infected and twice the specials everywhere.
+//! #3 Night of the Dead: for 20 minutes, twice the infected and twice the specials everywhere.
 class RZ_Event_NightOfTheDead : RZ_Event_Timed
 {
 	//------------------------------------------------------------------------------------------------
@@ -280,7 +208,7 @@ class RZ_Event_NightOfTheDead : RZ_Event_Timed
 }
 
 //------------------------------------------------------------------------------------------------
-//! #9 Siren Test: air-raid sirens pull every infected into one town for 5 minutes.
+//! #8 Siren Test: air-raid sirens pull every infected into one town for 5 minutes.
 //! The towns around it are briefly safer to loot.
 class RZ_Event_SirenTest : RZ_Event_Timed
 {
@@ -333,7 +261,7 @@ class RZ_Event_SirenTest : RZ_Event_Timed
 }
 
 //------------------------------------------------------------------------------------------------
-//! #22 Storm: for 15 minutes, noise carries less and heat fades three times as fast.
+//! #20 Storm: for 15 minutes, noise carries less and heat fades three times as fast.
 class RZ_Event_Storm : RZ_Event_Timed
 {
 	//------------------------------------------------------------------------------------------------
@@ -374,7 +302,7 @@ class RZ_Event_Storm : RZ_Event_Timed
 }
 
 //------------------------------------------------------------------------------------------------
-//! #10 Wandering Trader: a neutral merchant parks somewhere for 20 minutes.
+//! #9 Wandering Trader: a neutral merchant parks somewhere for 20 minutes.
 //! Needs the trader prefab (e.g. a Shop System trader).
 class RZ_Event_WanderingTrader : RZ_Event_Timed
 {
@@ -429,9 +357,10 @@ class RZ_Event_WanderingTrader : RZ_Event_Timed
 }
 
 //------------------------------------------------------------------------------------------------
-//! #13 Bombing Run: Bastion strikes an infested town after a five-minute warning.
-//! Infection there drops sharply. Needs the explosion prefab.
-class RZ_Event_BombingRun : RZ_Mission
+//! #12 Bastion Shelling: Bastion's own mortar crews shell an infested town after a
+//! five-minute warning. Infection there drops sharply. Nothing comes from outside the
+//! Zone: only while Bastion is still around. Needs the explosion (mortar impact) prefab.
+class RZ_Event_BastionShelling : RZ_Mission
 {
 	protected bool m_bWarned;
 
@@ -462,8 +391,8 @@ class RZ_Event_BombingRun : RZ_Mission
 			return false;
 
 		m_vPos = s.m_vCenter;
-		m_sTitle = "Bombing run";
-		m_sBrief = string.Format("Bastion is bombing %1 in five minutes. Get out, or loot fast.", s.m_sName);
+		m_sTitle = "Bastion shelling";
+		m_sBrief = string.Format("Bastion's mortar crews will shell %1 in five minutes. They don't check for survivors. Get out, or loot fast.", s.m_sName);
 		return true;
 	}
 
@@ -473,7 +402,7 @@ class RZ_Event_BombingRun : RZ_Mission
 		if (!m_bWarned && m_fTimeLeft <= 60)
 		{
 			m_bWarned = true;
-			gm.NotifyAll("Bombing run", "One minute until the strike on " + GetLocationName(gm) + ".");
+			gm.NotifyAll("Bastion shelling", "One minute until the mortars open up on " + GetLocationName(gm) + ".");
 		}
 	}
 
@@ -498,12 +427,12 @@ class RZ_Event_BombingRun : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		return GetLocationName(gm) + " has been bombed. Not much is moving there now.";
+		return GetLocationName(gm) + " has been shelled. Not much is moving there now.";
 	}
 }
 
 //------------------------------------------------------------------------------------------------
-//! #17 Mass Grave: a pit full of infected bodies. Lots of samples, and a horde
+//! #16 Mass Grave: a pit full of infected bodies. Lots of samples, and a horde
 //! underneath that wakes when someone gets close.
 class RZ_Event_MassGrave : RZ_Mission
 {
@@ -562,7 +491,7 @@ class RZ_Event_MassGrave : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! #16 Stash Note: a note with coordinates turns up. Treasure hunt.
+//! #15 Stash Note: a note with coordinates turns up. Treasure hunt.
 class RZ_Event_StashNote : RZ_Mission
 {
 	//------------------------------------------------------------------------------------------------
@@ -615,62 +544,7 @@ class RZ_Event_StashNote : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! #19 Supply Plane Crash: cargo scattered over a kilometre. Several small,
-//! contested crates; the event ends when all are found or time runs out.
-class RZ_Event_SupplyPlaneCrash : RZ_Mission_VisitPoints
-{
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetEvent(false);
-		m_fTimeLeft = 1800;
-		m_fVisitRadius = 8;
-		m_sPointName = "Crate";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 1;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 0, 100);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 200, s.m_fRadius + 800);
-		m_fParticipationRadius = 0;
-		for (int i = 0; i < 4; i++)
-		{
-			vector p = LandPointNear(m_vPos, 50, 500);
-			AddPoint(p);
-			gm.SpawnRewardCrate(p);
-		}
-
-		m_sTitle = "Supply plane crash";
-		m_sBrief = string.Format("A cargo plane broke up over %1. Crates are scattered over a kilometre.", s.m_sName);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnTimeUp(RZ_GameModeComponent gm)
-	{
-		m_eState = RZ_EMissionState.SUCCEEDED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override string GetSuccessText(RZ_GameModeComponent gm)
-	{
-		return string.Format("The cargo near %1 has been picked over: %2 of %3 crates found.", GetLocationName(gm), m_iVisited, m_aPoints.Count());
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! #26 Turned Player: a player who turned roams with their gear. Started by the
+//! #24 Turned Player: a player who turned roams with their gear. Started by the
 //! game mode when someone turns (never picked at random). Their body and loot are
 //! where they fell; the turned zombie is marked as the event.
 class RZ_Mission_TurnedPlayer : RZ_Mission_KillTagged
