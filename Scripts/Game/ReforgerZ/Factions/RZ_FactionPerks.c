@@ -61,6 +61,7 @@ class RZ_FactionPerks
 	protected static const int BOUNTY_FAVOR = 50;
 	protected static const int BOUNTY_FAME = 10;
 	protected static const float LOST_TRAIL_SECONDS = 120;	// a squad that lost the trail gives up this soon
+	protected static const int MAX_SQUADS_PER_TARGET = 2;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_FactionPerks(RZ_GameModeComponent gm)
@@ -558,6 +559,11 @@ class RZ_FactionPerks
 	//------------------------------------------------------------------------------------------------
 	protected void SendHunters(int playerId, IEntity target, RZ_EFaction faction, ResourceName prefab)
 	{
+		// Squads only go when nobody is near them, so a target who keeps fighting could gather
+		// more and more of them: at most two after one player at a time
+		if (CountHuntersAfter(playerId) >= MAX_SQUADS_PER_TARGET)
+			return;
+
 		vector at = target.GetOrigin();
 		vector from = RZ_Mission.LandPointNear(at, HUNTER_DISTANCE * 0.9, HUNTER_DISTANCE * 1.1);
 		IEntity squad = RZ_Util.SpawnPrefab(prefab, from);
@@ -580,6 +586,19 @@ class RZ_FactionPerks
 			text = "A Red Hand crew is hunting you. They're close.";
 
 		m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(faction), text + " (" + RZ_Util.DirectionText(at, from) + ")");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int CountHuntersAfter(int playerId)
+	{
+		int n = 0;
+		foreach (int i, int target : m_aHunterTarget)
+		{
+			if (target == playerId && m_aHunters[i])
+				n++;
+		}
+
+		return n;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -682,27 +701,37 @@ class RZ_FactionPerks
 	{
 		foreach (int i, IEntity p : players)
 		{
+			// One notice per wanted player, however many factions want them (one bounty is paid)
+			string who = "";
 			for (int f = 0; f < RZ_Factions.COUNT; f++)
 			{
 				if (m_GM.GetTier(ids[i], f) != RZ_ETier.KILL_ON_SIGHT)
 					continue;
 
-				RZ_Settlement s = m_GM.GetSettlement(m_GM.FindNearestSettlement(p.GetOrigin()));
-				string where = "near " + RZ_SettlementScanner.GridReference(p.GetOrigin());
-				if (s)
-					where = "near " + s.m_sName;
+				if (!who.IsEmpty())
+					who += " and ";
 
-				// Safe Harbour: the Haven doesn't say where its Champions sleep
-				if (IsHarboured(ids[i], p))
-					where = VagueArea(p.GetOrigin());
+				who += RZ_Factions.GetName(f);
+			}
 
-				string text = string.Format("%1 has put a bounty on %2. Last seen %3. Whoever kills them gets %4 Favor.",
-					RZ_Factions.GetName(f), RZ_Util.PlayerName(ids[i]), where, BOUNTY_FAVOR);
-				foreach (int other : ids)
-				{
-					if (other != ids[i])
-						m_GM.NotifyPlayer(other, "Bounty", text);
-				}
+			if (who.IsEmpty())
+				continue;
+
+			RZ_Settlement s = m_GM.GetSettlement(m_GM.FindNearestSettlement(p.GetOrigin()));
+			string where = "near " + RZ_SettlementScanner.GridReference(p.GetOrigin());
+			if (s)
+				where = "near " + s.m_sName;
+
+			// Safe Harbour: the Haven doesn't say where its Champions sleep
+			if (IsHarboured(ids[i], p))
+				where = VagueArea(p.GetOrigin());
+
+			string text = string.Format("%1: a bounty on %2. Last seen %3. Whoever kills them gets %4 Favor.",
+				who, RZ_Util.PlayerName(ids[i]), where, BOUNTY_FAVOR);
+			foreach (int other : ids)
+			{
+				if (other != ids[i])
+					m_GM.NotifyPlayer(other, "Bounty", text);
 			}
 		}
 	}

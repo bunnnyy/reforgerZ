@@ -183,6 +183,10 @@ class RZ_Retaliation
 			if (shooter <= 0)
 				continue;
 
+			// A supply truck's crew: whoever shot them gets no Fame for driving the truck in
+			if (m_GM.GetSupply())
+				m_GM.GetSupply().OnCrewHit(w.m_Anchor, shooter);
+
 			int baseMask;
 			if (baseMasks && baseMasks.Find(shooter, baseMask) && (baseMask & RZ_Factions.Bit(w.m_eFaction)) != 0)
 				continue; // they already shoot this player: it's a fight, not a provocation

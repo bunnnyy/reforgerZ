@@ -460,7 +460,8 @@ Code: `Factions/RZ_SupplyLines.c`.
   Requisition draws one unit per item. **Haven trucks carry food:** +6 at a safehouse.
 - **Players and trucks.** Ride along within 150 m for 40% of the trip and see it arrive: +4
   Fame and +5 Favor with the owner. Its crew dead, drive it in yourself: +8 Fame. Neither pays
-  anyone who fired within 150 m of the truck while its crew lived with no infected about. Or drive it
+  anyone who fired within 150 m of the truck while its crew lived with no infected about, or
+  whose shot hit the crew from any range (seen by retaliation, when it's on). Or drive it
   into a rival's stronghold: +6 Fame with the Red Hand, who fence the cargo (with the receiver, for
   a Red Hand truck), and +10 Infamy with the owner. Killing the crew counts as shooting the faction's people ([REPUTATION.md](REPUTATION.md), "What makes AI shoot you").
 - **No traces.** A finished truck stays parked while anyone is within 300 m (up to 15

@@ -1155,6 +1155,21 @@ class RZ_SupplyLines
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! From retaliation: a player's shot hit this crew (from any range). They're a shooter for that
+	//! truck, so a long-range kill can't be followed by a drive-in for Fame.
+	void OnCrewHit(IEntity crew, int playerId)
+	{
+		if (!crew || playerId <= 0)
+			return;
+
+		foreach (RZ_SupplyTruck t : m_aTrucks)
+		{
+			if (t.m_Crew == crew && !t.m_aShooters.Contains(playerId) && t.m_aShooters.Count() < 8)
+				t.m_aShooters.Insert(playerId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Driven into a rival's stronghold: Red Hand Fame (the receiver's, for a Red Hand truck),
 	//! the owner's Infamy, and the cargo is the receiver's now.
 	protected void Stolen(RZ_SupplyTruck t, int driver, int receiver)

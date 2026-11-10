@@ -764,13 +764,13 @@ No fallback. If these are wrong, the basic game doesn't work.
 
 | Where | Call | If it fails |
 |---|---|---|
-| `Core/RZ_GameModeComponent.c:570` | `GetOnPlayerSpawned()` invoker (the handler is `HandlePlayerSpawned`, not an override of the base `OnPlayerSpawned`) | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:896` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
-| `Core/RZ_GameModeComponent.c:965` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
-| `Core/RZ_GameModeComponent.c:1107` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1762`, `:1763` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1773` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:2004`, `Cure/RZ_LabComponents.c:256` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Core/RZ_GameModeComponent.c:571` | `GetOnPlayerSpawned()` invoker (the handler is `HandlePlayerSpawned`, not an override of the base `OnPlayerSpawned`) | Nothing per-player runs on spawn (backgrounds, goals, radio) |
+| `Core/RZ_GameModeComponent.c:903` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
+| `Core/RZ_GameModeComponent.c:975` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
+| `Core/RZ_GameModeComponent.c:1117` | `OnProjectileShot` event and signature | No gunfire heat |
+| `Core/RZ_GameModeComponent.c:1772`, `:1773` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1783` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:2014`, `Cure/RZ_LabComponents.c:256` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
 | `Persistence/RZ_SaveData.c:120` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:393`, `:401` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |

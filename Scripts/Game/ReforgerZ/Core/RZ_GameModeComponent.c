@@ -354,6 +354,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
 	protected ref map<string, ref RZ_PlayerProfile> m_mProfiles = new map<string, ref RZ_PlayerProfile>();
+	protected ref map<int, string> m_mIdentities = new map<int, string>();
 	protected ref array<IEntity> m_aSpawnPoints = {};
 	protected ref set<int> m_aWelcomed = new set<int>();
 
@@ -891,13 +892,22 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	// ================================================================ Players, backgrounds, reputation
 	//------------------------------------------------------------------------------------------------
+	//! Asked for many times a tick (every standing check goes through GetProfile), so a backend
+	//! identity is remembered per player id once known. The name fallback isn't cached.
 	protected string GetIdentity(int playerId)
 	{
-		string ident = GetGame().GetBackendApi().GetPlayerIdentityId(playerId); // VERIFY
-		if (ident.IsEmpty())
-			ident = "local_" + GetGame().GetPlayerManager().GetPlayerName(playerId);
+		string ident;
+		if (m_mIdentities.Find(playerId, ident))
+			return ident;
 
-		return ident;
+		ident = GetGame().GetBackendApi().GetPlayerIdentityId(playerId); // VERIFY
+		if (!ident.IsEmpty())
+		{
+			m_mIdentities.Set(playerId, ident);
+			return ident;
+		}
+
+		return "local_" + GetGame().GetPlayerManager().GetPlayerName(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
