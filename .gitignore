@@ -1,0 +1,7 @@
+# Workbench generated / local
+*.bak
+*.tmp
+resourceDatabase.rdb
+.workbench/
+logs/
+profile/

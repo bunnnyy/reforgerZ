@@ -1,0 +1,62 @@
+enum RZ_ESettlementState
+{
+	SAFE,		// < 20 infection
+	CONTESTED,	// 20 - 50
+	INFESTED,	// 50 - 80
+	OVERRUN		// 80+
+}
+
+//! A town, village or cluster of buildings found on the current map.
+//! Settlements are what make the mode map-agnostic: zombies, missions,
+//! spawn points and the lab are all placed relative to them.
+class RZ_Settlement
+{
+	string m_sName;
+	vector m_vCenter;
+	float m_fRadius = 200;
+	int m_iSize = 1;			// 1 = village / outskirts, 2 = town, 3 = city
+	float m_fInfection = 30;	// 0..100
+	bool m_bHasLab;
+
+	//------------------------------------------------------------------------------------------------
+	void AddInfection(float amount)
+	{
+		m_fInfection = Math.Clamp(m_fInfection + amount, 0, 100);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_ESettlementState GetState()
+	{
+		if (m_fInfection >= 80)
+			return RZ_ESettlementState.OVERRUN;
+		if (m_fInfection >= 50)
+			return RZ_ESettlementState.INFESTED;
+		if (m_fInfection >= 20)
+			return RZ_ESettlementState.CONTESTED;
+		return RZ_ESettlementState.SAFE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetStateName()
+	{
+		switch (GetState())
+		{
+			case RZ_ESettlementState.SAFE: return "Safe";
+			case RZ_ESettlementState.CONTESTED: return "Contested";
+			case RZ_ESettlementState.INFESTED: return "Infested";
+			case RZ_ESettlementState.OVERRUN: return "Overrun";
+		}
+
+		return "Unknown";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float DefaultRadiusForSize(int size)
+	{
+		if (size >= 3)
+			return 450;
+		if (size == 2)
+			return 280;
+		return 160;
+	}
+}
