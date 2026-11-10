@@ -21,7 +21,7 @@ grep -rn "VERIFY" Scripts/
 Each one is an engine API whose exact name or signature I couldn't confirm
 for the current game version. Usually the fix is a rename. Look up the class in
 the Script Editor or in the [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
-They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 80 of them
+They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 81 of them
 (one is the comment in `RZ_Util.c` that explains them).
 
 The riskiest ones in the puzzle missions (`Puzzles/`):
@@ -99,8 +99,8 @@ really shoots individual players, so test them first ([REPUTATION.md](REPUTATION
   `BaseWeaponComponent.GetWeaponType`, the `EWeaponType` names): if it's always false, armed
   exiles are never shot and wanderers never fight back; if always true, unarmed exiles are shot.
 
-The riskiest ones for territory and supply trucks (`Factions/RZ_Territory.c`,
-`RZ_SupplyLines.c`, the vehicle helpers in `Core/RZ_Util.c`). Five are new:
+The riskiest ones for territory, supply trucks and retaliation (`Factions/RZ_Territory.c`,
+`RZ_SupplyLines.c`, `RZ_Retaliation.c`, the vehicle helpers in `Core/RZ_Util.c`). Six are new:
 
 - **AI driving** (`RZ_SupplyLines.Board`: `SCR_CompartmentAccessComponent.MoveInVehicle(vehicle,
   ECompartmentType)` seats the crew, the first in `PILOT`; then a move waypoint on the group).
@@ -113,6 +113,8 @@ The riskiest ones for territory and supply trucks (`Factions/RZ_Territory.c`,
   arrive together.
 - **Destroyed vehicles** (`RZ_Util.IsDestroyed`: the vehicle's `SCR_DamageManagerComponent.GetState()`):
   if it never says destroyed, a burnt-out truck counts as late instead (a shortage either way).
+- **Health of watched AI** (`RZ_Util.GetCharacterHealth`, the same accessor as the bite detector):
+  if it doesn't change on a hit, retaliation only notices kills.
 - Not new, but worth testing: a player in the truck is "a player in a vehicle within 6 m"
   (`IsInVehicle`), used for driving a truck in or stealing it.
 
@@ -239,6 +241,10 @@ hidden factions from section 4.
   wants dead while they carry a firearm this close to a safehouse. Off = everywhere.
 - **Fight radius** (350 m): players this close to a mission's Red Hand group are hostile to it.
 - **Wanderers fight back** (on) and **Grudge radius** (80 m).
+- **Retaliation** (on): shooting or killing a faction's AI that ReforgerZ spawned makes its AI
+  near the spot hostile to the shooter for a while; **Retaliation radius** (300 m), **seconds**
+  (180, restarted by each hit, never added up), **kill Infamy** (3) and **Infamy cap** (12 per
+  faction per hour).
 - **Bastion / Red Hand / Halcyon key** (MIL, BAND, INST): their FactionManager keys. The Haven's
   is the game mode's **Player faction key** (SURV).
 
@@ -428,7 +434,7 @@ outposts as always supplied.
 
 | Prefab | Base | Add | Setting | Used for |
 |---|---|---|---|---|
-| `RZ_Guard_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | an armed AI character or small group on `SURV` / `MIL` / `BAND` / `INST` | | Territory > Haven / Bastion / Red Hand / Halcyon guard | guards at strongholds and outposts while a player is within 300 m |
+| `RZ_Guard_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | an armed AI character or small group on `SURV` / `MIL` / `BAND` / `INST` | | Territory > Haven / Bastion / Red Hand / Halcyon guard | guards at strongholds and outposts while a player is within 300 m; watched for retaliation |
 | `RZ_Occupant_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | a character without AI (or a figure prop) in the faction's clothes | the generic puzzle object components, so the named person can be talked to | Territory > ... occupant (empty = Puzzles > Civilian) | the named people at each holding |
 | the four quartermaster prefabs (existing) | | | Factions > ... quartermaster, with Territory > **Outpost quartermaster** on | a shop (and Bastion's Requisition) at each outpost while a player is near |
 | `RZ_Truck_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | a drivable vehicle (van, truck) with a damage manager | | Supply > Haven / Bastion / Red Hand / Halcyon truck | the supply truck |

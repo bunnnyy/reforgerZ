@@ -565,4 +565,20 @@ class RZ_FactionVoice
 
 		return "Radio";
 	}
+
+	// ================================================================ Retaliation
+	//------------------------------------------------------------------------------------------------
+	//! Told when a faction's people near you turn on you for shooting at them.
+	static string Retaliation(RZ_EFaction f)
+	{
+		switch (f)
+		{
+			case RZ_EFaction.SURVIVORS: return "\"Somebody's shooting at us!\" The Haven's people nearby take cover, and the ones with guns point them at you. For a few minutes, keep away.";
+			case RZ_EFaction.MILITARY: return "\"Contact! Hostile civilian!\" Every Bastion rifle nearby is on you now. Get clear and give them a few minutes.";
+			case RZ_EFaction.BANDITS: return "\"Oh, you've done it now.\" The Red Hand's people nearby are coming for you. It'll blow over. Probably.";
+			case RZ_EFaction.INSTITUTE: return "Halcyon's guards nearby open fire on you. They'll calm down in a few minutes, if you're gone.";
+		}
+
+		return "The people nearby turn on you.";
+	}
 }

@@ -46,7 +46,7 @@ Out of scope: sleep and time skipping.
 | Supply trucks: one real truck with an AI crew per faction on the road, departures every 40-60 min, unsticking out of sight, shortages (items out, +25-50% prices, top tier locked), escort, drive-in and theft rewards, Haven food | `Factions/RZ_SupplyLines.c` | Written |
 | Faction life: needs, morale, radio chatter with real information, life events, truces and feuds, remembered moments, rumours (see [WORLD.md](WORLD.md), [REPUTATION.md](REPUTATION.md)) | `Factions/RZ_FactionLife.c`, `RZ_FactionVoice.c` | Written |
 | Faction perks, hunter squads, Kill-on-Sight bounties | `Factions/RZ_FactionPerks.c` | Written |
-| Per-player AI hostility: hidden player-faction variants (bitmask), stance per faction, armed exiles at safehouses, mission fights, wanderers fighting back, Outlaw fallback (see [REPUTATION.md](REPUTATION.md)) | `Factions/RZ_Hostility.c`, `RZ_FactionRelations.c`, `RZ_Factions.c` | Written |
+| Per-player AI hostility: hidden player-faction variants (bitmask), stance per faction, armed exiles at safehouses, mission fights, wanderers fighting back, retaliation for shooting a faction's AI (setting), Outlaw fallback (see [REPUTATION.md](REPUTATION.md)) | `Factions/RZ_Hostility.c`, `RZ_Retaliation.c`, `RZ_FactionRelations.c`, `RZ_Factions.c` | Written |
 | Season ending: the cure goes to the faction with the most Fame | `Core/RZ_GameModeComponent.c` | Written |
 | Map markers for world events and the lab | `Core/RZ_MapMarkers.c` | Written (toggle) |
 | Personal objective per life, Legacy points | `Backgrounds/RZ_Objectives.c` | Written |
@@ -215,7 +215,7 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [ ] Bastion checkpoints and Red Hand roadblocks on the roads as AI
 - [ ] Shop System prices tied to standing; safe-zone entry
 - [ ] AI camp behaviour per player standing: warn and refuse (shooting by standing is in)
-- [ ] Shooting at a faction's AI makes it fight back (today only standing, fights and grudges do)
+- [x] Shooting at a faction's AI makes its AI nearby fight back for a few minutes (retaliation, a setting)
 - [ ] Reputation clues visible to other players (e.g. bandit armband)
 
 ### Phase 4: Project Zomboid-style character creation

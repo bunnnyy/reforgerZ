@@ -544,6 +544,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Territory GetTerritory() { return m_Territory; }
 	RZ_SupplyLines GetSupply() { return m_Supply; }
 	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
+	float GetTickSeconds() { return m_fTickSeconds; }
 	RZ_Broadcast GetBroadcast() { return m_Broadcast; }
 	float GetBroadcastMinutes() { return m_fBroadcastMinutes; }
 	string GetLandmarkFallbackName() { return m_sLandmarkName; }
@@ -944,6 +945,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Wanderers.OnPlayerShot(playerID, shooter.GetOrigin());
 		m_Leaders.OnPlayerShot(playerID, shooter.GetOrigin());
 		m_Missions.OnPlayerShot(playerID, shooter.GetOrigin());
+		// Retaliation: who fired, and when (a hit on a faction's AI is matched to it)
+		m_Hostility.OnPlayerShot(playerID, shooter.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------

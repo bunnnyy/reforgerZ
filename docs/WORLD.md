@@ -302,7 +302,8 @@ battle to watch. Guards and named people stand where they're spawned.
   and +5 Favor with the owner (not if they hunt you). Its crew dead, drive it in yourself:
   the delivery counts and pays +8 Fame. Or drive it into a rival's stronghold (within 80 m):
   +6 Red Hand Fame (the receiver's Fame, for a Red Hand truck) and +10 Infamy with the owner.
-  Trucks aren't contracts; Convoy Escort and Hijack the Convoy
+  Killing the crew is shooting the faction's people: see "Shooting back" in
+  [REPUTATION.md](REPUTATION.md). Trucks aren't contracts; Convoy Escort and Hijack the Convoy
   are still planned ([MISSIONS.md](MISSIONS.md)).
 - **No traces.** A finished truck stays parked while anyone is within 300 m (up to 15 minutes),
   then it and its crew are removed. A robbed truck can be taken for 20 minutes; one a player

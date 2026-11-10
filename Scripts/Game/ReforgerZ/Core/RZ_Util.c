@@ -579,6 +579,21 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A character's health (the same accessor the bite detector uses), -1 without a damage manager.
+	static float GetCharacterHealth(IEntity e)
+	{
+		ChimeraCharacter c = ChimeraCharacter.Cast(e);
+		if (!c)
+			return -1;
+
+		SCR_CharacterDamageManagerComponent dmg = SCR_CharacterDamageManagerComponent.Cast(c.GetDamageManager());
+		if (!dmg)
+			return -1;
+
+		return dmg.GetHealth(); // VERIFY: total health accessor (may be GetDefaultHitZone().GetHealth()), as in RZ_BiteDetector
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int RoundToInt(float f)
 	{
 		int i = Math.Round(f);

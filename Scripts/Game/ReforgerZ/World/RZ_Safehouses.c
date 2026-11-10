@@ -965,7 +965,13 @@ class RZ_Safehouses
 		{
 			IEntity guard = RZ_Util.SpawnPrefab(m_Settings.m_sGuardPrefab, RZ_Mission.LandPointNear(h.m_vPos, 15, 30), Math.RandomFloat(0, 360));
 			if (guard)
+			{
 				h.m_aBodies.Insert(guard);
+
+				// Shooting at a safehouse guard turns the Haven's people there on you for a while
+				if (m_GM.GetHostility())
+					m_GM.GetHostility().WatchUnit(guard, RZ_EFaction.SURVIVORS);
+			}
 		}
 
 		// The safehouse's own quartermaster (the anchored one already has the real one)

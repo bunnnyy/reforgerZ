@@ -767,6 +767,11 @@ class RZ_SupplyLines
 		t.m_Vehicle = vehicle;
 		t.m_Crew = crew;
 		t.m_vLastPos = at;
+
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (hostility)
+			hostility.WatchUnit(crew, f);
+
 		return t;
 	}
 

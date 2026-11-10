@@ -29,7 +29,8 @@ the cure.**
   territory shifts a little by faction strength, and real supply trucks with AI crews keep the
   outposts and safehouses stocked: escort them, drive them in, or rob them and watch the prices
   go up. Factions have needs, morale, truces and feuds, chatter on the radio, bury their dead,
-  remember the worst nights and spread rumours that aren't always true.
+  remember the worst nights and spread rumours that aren't always true. Shoot their people and
+  their people nearby shoot back, for a while.
 - **Haven safehouses and wanderers**: a few Haven-held buildings in abandoned towns grow
   from Shelter to Town as you rescue people and bring food, with house rules (no shooting,
   declare your bite) and exile for those who break them. Named wanderers walk between them,

@@ -4,7 +4,7 @@
 //! - Needs: what each faction wants most right now, from the world (lost trucks, deaths,
 //!   lost towns, hungry safehouses, research). Leaders say it; it leans contract weights (+20% at most).
 //! - Morale 5..95 per faction: falls with losses, recovers toward 60 on its own. Low morale
-//!   makes its shops dearer and the Haven's rescued less
+//!   makes its people jumpier (retaliation), its shops dearer and the Haven's rescued less
 //!   likely to stay; high morale the other way. All small.
 //! - Radio chatter on the factions' open channels with real information (truck departures and
 //!   routes, shift times, toll hours, samples wanted). Radio Operators hear rival open channels;
@@ -277,6 +277,22 @@ class RZ_FactionLife
 			else if (m_aMorale[f] > MORALE_REST + 1)
 				AddMorale(f, -2);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Retaliation radius and time for this faction's people: x1.25 at low morale, x0.85 at high.
+	float JumpinessMult(int f)
+	{
+		if (!m_bActive)
+			return 1;
+
+		float m = GetMorale(f);
+		if (m < 30)
+			return 1.25;
+		if (m > 75)
+			return 0.85;
+
+		return 1;
 	}
 
 	//------------------------------------------------------------------------------------------------

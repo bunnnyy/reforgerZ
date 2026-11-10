@@ -236,10 +236,10 @@ a lost outpost −10, a dead leader −8, Under Pressure −5 (+5 when it ends),
 −15 (Halcyon); a delivered truck +4, a new or won outpost +5, a breakthrough +10 (Halcyon), a
 contract for them +1 (−1 if it failed). What it changes:
 
-| Morale | Their shops | The Haven |
-|---|---|---|
-| Under 30 | ×1.1 | rescued survivors walk off 2.5× as often (at most half) |
-| Over 75 | ×0.95 | half as often |
+| Morale | Their people | Their shops | The Haven |
+|---|---|---|---|
+| Under 30 | jumpier: retaliation reaches ×1.25 as far and lasts ×1.25 as long | ×1.1 | rescued survivors walk off 2.5× as often (at most half) |
+| Over 75 | calmer: ×0.85 | ×0.95 | half as often |
 
 A demoralised faction (under 30) also puts out a little less work (contract weights ×0.9).
 Contract weights from needs and morale stay within 0.85–1.2.
@@ -302,6 +302,18 @@ raiders go for him while he stays friendly to players.
 **Wanderers fight back.** A wanderer whose body is an armed AI group shoots, within 80 m,
 a player who robbed or shot at them, and the Deserter draws on Bastion's Champions. The
 Kid never does. Wanderers without an armed AI body still refuse you and run.
+
+**Shooting back (retaliation).** Shoot or kill a faction's AI that ReforgerZ spawned (outpost
+and stronghold guards and named people, supply truck crews, safehouse guards) and that faction's
+AI within 300 m of the spot turns on you for 3 minutes (morale changes both, above). It's one
+timed bit per player and faction: another hit moves it and restarts the timer, never adds to it,
+so it can't become lasting hostility by itself. A kill also costs +3 Infamy with the faction, at
+most 12 an hour per faction. A hit counts when a watched character's health drops (or they
+die) and you fired within the last few seconds within 500 m (the nearest such player). It
+doesn't count with an infected within 40 m of them (you were fighting the infected, the same
+exception as the house rules), near a mission fight or a hunter squad (within 350 m: a
+crossfire), or if that faction already shoots you for another reason (a fight, your standing). Leaders, wanderers and mission fights keep their own rules. Turn it off
+with **Hostility > Retaliation**.
 
 **Players and each other.** Player-against-player damage is unchanged. At the AI level,
 players stay friendly to each other, with one exception: while the Haven shoots you, you
@@ -379,7 +391,9 @@ That sets the tone of the Aftermath and the next season's starting rules:
 - AI hostility: `RZ_Hostility` works out each player's bitmask and moves their character
   onto the matching variant; `RZ_Factions` builds and decodes the keys (`KeyForMask`,
   `DecodeMask`, `IsPlayerSide`), and the modded `SCR_Faction` in `RZ_FactionRelations.c`
-  turns them into relations. Missions mark their fights with `RZ_Hostility.MarkFight`
+  turns them into relations. Missions mark their fights with `RZ_Hostility.MarkFight`;
+  systems that spawn faction AI register it for retaliation with `RZ_Hostility.WatchUnit`
+  (`RZ_Retaliation`)
 - Season ending: Fame earned with each faction is summed over all players
   (`RZ_SaveData.seasonFame`); the winner is written to `last_season.json`
 
@@ -392,7 +406,7 @@ That sets the tone of the Aftermath and the next season's starting rules:
 | Quartermaster shops (any item, any tier); Haven stock by safehouse size | Community respawns (the supply bag) |
 | Requisition (half price, from a Bastion outpost's truck-supplied stock while trucks run), sample scanner, Halcyon research bonus, Neighbours | Fire Mission, Fence, Bounty board, Halcyon medic, immunity booster |
 | Toll pass (message only), Halcyon Hunted gets no Fame for samples | Bastion checkpoints and Red Hand roadblocks as AI (the AI that exists already shoots by standing) |
-| Per-player AI hostility: hidden faction variants, stances per faction, armed exiles, fights, wanderers fighting back, Outlaw fallback | Shooting at a faction's AI making it fight back (only fights, standing and grudges do) |
+| Per-player AI hostility: hidden faction variants, stances per faction, armed exiles, fights, wanderers fighting back, retaliation for shooting a faction's AI, Outlaw fallback | — |
 | Hunter squads (Bastion and Red Hand), Kill-on-Sight bounties | — |
 | Haven safehouse spawn points, house rules, exile, Haven wanderers warning other players, safehouse location leaks | — |
 | Named leaders: traits, loyalty, memory, voiced briefs, first contact, discovery, deaths and replacements, Rein In, leaders for territory outposts | — |

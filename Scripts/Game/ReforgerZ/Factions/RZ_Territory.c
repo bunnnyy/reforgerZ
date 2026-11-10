@@ -1535,6 +1535,7 @@ class RZ_Territory
 	protected void SpawnBodies(RZ_Holding h)
 	{
 		h.m_bSpawned = true;
+		RZ_Hostility hostility = m_GM.GetHostility();
 
 		ResourceName guardPrefab = GuardPrefab(h.m_eFaction);
 		for (int g = 0; g < m_Settings.m_iGuardCount && !guardPrefab.IsEmpty(); g++)
@@ -1544,6 +1545,8 @@ class RZ_Territory
 				continue;
 
 			h.m_aBodies.Insert(guard);
+			if (hostility)
+				hostility.WatchUnit(guard, h.m_eFaction);
 		}
 
 		ResourceName occupantPrefab = OccupantPrefab(h.m_eFaction);
@@ -1558,6 +1561,8 @@ class RZ_Territory
 			RZ_PuzzleObjectComponent.Tag(person, TAG, code, "", "Ask how things are");
 			RZ_ClueComponent.Tag(person, TAG, code, "Talk to " + h.m_aPeople[p]);
 			h.m_aBodies.Insert(person);
+			if (hostility)
+				hostility.WatchUnit(person, h.m_eFaction);
 		}
 
 		// An outpost's own quartermaster (the stronghold already has the real one)

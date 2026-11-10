@@ -15,6 +15,8 @@
 //!     the Witness camp) and the one player a hunter squad was sent after
 //!   - wanderers: near an armed AI-group wanderer who holds a grudge (the Haven bit, since
 //!     wanderer bodies are on SURV)
+//!   - retaliation (setting, on by default; RZ_Retaliation): for a few minutes after shooting
+//!     or killing a faction's AI, near the spot
 //! Standing is cached and recomputed only when a tier changes or the player spawns; the
 //! nearness checks are a few distance tests on the server tick. The character's faction
 //! is only touched when the wanted key differs from the one it has.
@@ -70,6 +72,21 @@ class RZ_HostilitySettings
 	[Attribute("80", desc: "Wanderers fight back within this distance (m)")]
 	float m_fGrudgeRadius = 80;
 
+	[Attribute("1", desc: "Retaliation: shooting or killing a faction's AI (outpost guards, truck crews, safehouse guards) makes its AI near the spot hostile to the shooter for a few minutes. Never permanent by itself")]
+	bool m_bRetaliation = true;
+
+	[Attribute("300", desc: "Retaliation: how far from the spot (m) the faction's AI turns on the shooter")]
+	float m_fRetaliationRadius = 300;
+
+	[Attribute("180", desc: "Retaliation: seconds it lasts after the last hit (a new hit restarts it, never adds up)")]
+	float m_fRetaliationSeconds = 180;
+
+	[Attribute("3", desc: "Retaliation: Infamy with the faction for killing one of its AI")]
+	int m_iRetaliationKillInfamy = 3;
+
+	[Attribute("12", desc: "Retaliation: at most this much kill Infamy per player and faction per hour")]
+	int m_iRetaliationInfamyCap = 12;
+
 	[Attribute("MIL", desc: "FactionManager key of Bastion's AI")]
 	string m_sBastionKey = "MIL";
 
@@ -120,6 +137,8 @@ class RZ_Hostility
 	protected float m_fClock;
 	protected ref map<int, int> m_mStanding = new map<int, int>();	// playerId -> standing bits (+ HAVEN_IF_ARMED), cached
 	protected ref map<int, int> m_mMask = new map<int, int>();		// playerId -> last full mask
+	protected ref map<int, int> m_mBaseMask = new map<int, int>();	// playerId -> last mask without retaliation
+	protected ref RZ_Retaliation m_Retaliation;
 	protected ref map<int, float> m_mWarnedAt = new map<int, float>();
 	protected ref map<int, float> m_mSpawnedAt = new map<int, float>();
 	protected ref array<ref RZ_HostileZone> m_aZones = {};
@@ -130,6 +149,22 @@ class RZ_Hostility
 	{
 		m_GM = gm;
 		m_Settings = settings;
+		m_Retaliation = new RZ_Retaliation(gm, settings);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Retaliation: AI that ReforgerZ spawned for a faction (outpost guards and occupants,
+	//! truck crews, safehouse guards). Shooting it makes its faction's AI nearby turn on you.
+	void WatchUnit(IEntity unit, RZ_EFaction faction)
+	{
+		m_Retaliation.Watch(unit, faction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! From the gunfire hook (retaliation needs to know who fired, and when).
+	void OnPlayerShot(int playerId, vector pos)
+	{
+		m_Retaliation.OnPlayerShot(playerId, pos);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -184,6 +219,8 @@ class RZ_Hostility
 	{
 		m_mStanding.Remove(playerId);
 		m_mMask.Remove(playerId);
+		m_mBaseMask.Remove(playerId);
+		m_Retaliation.Forget(playerId);
 		m_mSpawnedAt.Set(playerId, m_fClock);
 		Update(playerId, ent);
 	}
@@ -193,6 +230,7 @@ class RZ_Hostility
 	{
 		m_fClock += dt;
 		UpdateZones();
+		m_Retaliation.Tick(dt, ids, players, m_mBaseMask);
 
 		foreach (int i, IEntity p : players)
 		{
@@ -210,6 +248,7 @@ class RZ_Hostility
 		foreach (int gone : stale)
 		{
 			m_mMask.Remove(gone);
+			m_mBaseMask.Remove(gone);
 			m_mStanding.Remove(gone);
 			m_mSpawnedAt.Remove(gone);
 		}
@@ -266,6 +305,20 @@ class RZ_Hostility
 			return false;
 
 		return RZ_Util.SetUnitFaction(unit, key) > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A fight (a mission's hostile group, a hunter squad) within radius of pos. Retaliation
+	//! ignores hits there: in a crossfire it can't tell who hit whom.
+	bool IsFightNear(vector pos, float radius)
+	{
+		foreach (RZ_HostileZone z : m_aZones)
+		{
+			if (RZ_Util.DistXZ(z.m_vPos, pos) <= radius)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -411,7 +464,11 @@ class RZ_Hostility
 
 		int mask = 0;
 		if (m_Settings.m_eMode != RZ_EHostilityMode.OFF)
-			mask = ComputeMask(playerId, ent);
+		{
+			int baseMask = ComputeMask(playerId, ent);
+			m_mBaseMask.Set(playerId, baseMask);
+			mask = baseMask | m_Retaliation.MaskFor(playerId, ent.GetOrigin());
+		}
 
 		int before;
 		if (m_mMask.Find(playerId, before) && before != mask)
