@@ -125,8 +125,8 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
   little Fame each, from the faction; not for anyone that faction hunts too).
 - **Choice missions** ✅: you decide which faction's drop point gets the item. The winner gives
   Fame; the one you double-crossed gives Infamy.
-- **Disguises** (planned): a faction's uniform gets you past its checkpoints while Watched or
-  Uneasy; caught, your Infamy gain doubles.
+- **Disguises** ✅: a faction's uniform gets you past its AI while you're not Hunted by it;
+  caught, your Infamy gain doubles ([Disguises](#disguises)).
 
 ## Haven house rules and exile
 
@@ -324,6 +324,20 @@ faction would shoot goes onto one `SURV_OUTLAW` faction, hostile to every AI fac
 blunter (a Bastion-Hunted player is then shot by the Haven and Halcyon too) but uses only
 vanilla relations. Setup is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "Factions".
 
+### Disguises
+
+Wear enough of a faction's uniform (two pieces by default: say, jacket and trousers) and its AI
+looks past you as long as it isn't Hunting you. With the default stances that only matters
+where a faction is set to shoot from Watched or Strangers, or in a mission that asks for it
+(Bust Out walks you past the stockade guards). ✅
+
+- **What counts** is read from the prefab names of what the character wears, every 10 seconds,
+  against keyword lists per faction (Bastion, the Red Hand, Halcyon; the Haven has no uniform).
+- **Caught:** any Infamy you earn with that faction while wearing its uniform is doubled, and the
+  disguise stops working for 15 minutes ("they know your face now").
+- **It doesn't hide a fight.** Mission fights, hunter squads and retaliation still shoot you.
+- *Simplified:* one faction at a time, nothing partial, nothing saved.
+
 ## The season's winner
 
 When the final stand is won, the cure goes to whichever faction the server gave the most Fame
@@ -344,6 +358,6 @@ this season ✅. What that means is in [LORE.md](LORE.md), "Endings".
   House rules and exile are in `RZ_Safehouses` and `RZ_Wanderers`.
 - AI hostility: `RZ_Hostility` works out each player's bitmask; `RZ_Factions` builds and decodes
   the keys; the modded `SCR_Faction` in `RZ_FactionRelations.c` turns them into relations;
-  `RZ_Retaliation` handles shooting back.
+  `RZ_Retaliation` handles shooting back; `RZ_Disguise` reads uniforms and doubles Infamy when caught.
 - The season's winner: Fame per faction summed over all players (`RZ_SaveData.seasonFame`),
   written to `last_season.json`.

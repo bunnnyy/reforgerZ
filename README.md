@@ -32,7 +32,7 @@ and one way to end it: **research the cure.**
 ## Status
 
 All of it is **written but has never been compiled**. It's about 49,500 lines of Enforce
-Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **109 `VERIFY`
+Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **113 `VERIFY`
 markers** on engine calls whose exact names need checking, no prefabs or configs yet, and
 nothing has been play-tested. Start with [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
@@ -60,8 +60,9 @@ Scripts/Game/ReforgerZ/
   Zombies/       spawner (any zombie mod's prefabs), bite detection
   Backgrounds/   backgrounds, personal goals, player profiles
   Factions/      reputation, quartermasters and shops, perks, hunter squads, bounties,
-                 leaders, AI hostility and retaliation, territory, supply trucks, faction life
-  Missions/      framework, requirements, bases; Haven/ Bastion/ RedHand/ Halcyon/
+                 leaders, AI hostility, disguises and retaliation, territory, supply trucks, faction life
+  Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
+                 capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
   Cure/          research, lab, samples, antidotes

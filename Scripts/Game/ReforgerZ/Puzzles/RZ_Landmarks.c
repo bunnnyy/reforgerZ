@@ -18,7 +18,7 @@ class RZ_LandmarkFinder
 
 	//------------------------------------------------------------------------------------------------
 	//! Kinds: church, watertower, tower, castle, lighthouse, school, station, fuel, well, bank, monument,
-	//! power, industrial, radio, pharmacy.
+	//! power, industrial, radio, pharmacy, police, military.
 	static void Find(vector center, float radius, array<string> kinds, notnull array<ref RZ_Landmark> result)
 	{
 		RZ_LandmarkFinder finder = new RZ_LandmarkFinder();
@@ -107,6 +107,8 @@ class RZ_LandmarkFinder
 			case "industrial": return name.Contains("factory") || name.Contains("industrial") || name.Contains("warehouse") || name.Contains("sawmill");
 			case "radio": return name.Contains("radio") || name.Contains("antenna") || name.Contains("transmitter") || name.Contains("telecom");
 			case "pharmacy": return name.Contains("pharmacy") || name.Contains("hospital") || name.Contains("clinic") || name.Contains("medical");
+			case "police": return name.Contains("police") || name.Contains("gendarm") || name.Contains("sheriff");
+			case "military": return name.Contains("military") || name.Contains("barrack") || name.Contains("bunker") || name.Contains("armory") || name.Contains("armoury");
 		}
 
 		return false;
@@ -135,6 +137,8 @@ class RZ_LandmarkFinder
 			case "industrial": return "the factory";
 			case "radio": return "the radio mast";
 			case "pharmacy": return "the pharmacy";
+			case "police": return "the police station";
+			case "military": return "the barracks";
 		}
 
 		return "the " + kind;

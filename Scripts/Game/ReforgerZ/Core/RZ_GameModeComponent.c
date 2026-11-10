@@ -142,6 +142,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Explosion effect prefab, e.g. a mortar or artillery shell impact (optional, enables Bastion Shelling)", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sExplosionPrefab;
 
+	[Attribute(desc: "Contracts: escort, live capture, vehicle delivery and health-cost limits, and the optional prefabs of the contracts built on them (docs/DESIGN.md, Mission building blocks)", category: "ReforgerZ|Missions")]
+	protected ref RZ_ContractSettings m_ContractSettings;
+
 	// ---------------------------------------------------------------- Puzzles
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Readable note: RZ_ClueComponent + RZ_ReadClueAction. Enables every puzzle mission", "et", category: "ReforgerZ|Puzzles")]
 	protected ResourceName m_sPuzzleNotePrefab;
@@ -457,6 +460,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_RadioCrackSettings)
 			m_RadioCrackSettings = new RZ_RadioCrackSettings();
 
+		if (!m_ContractSettings)
+			m_ContractSettings = new RZ_ContractSettings();
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -659,6 +665,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
 	RZ_Interactions GetInteractions() { return m_Interactions; }
 	RZ_GuidanceSettings GetGuidanceSettings() { return m_GuidanceSettings; }
+	RZ_ContractSettings GetContractSettings() { return m_ContractSettings; }
+	RZ_CarSettings GetCarSettings() { return m_CarSettings; }
+	RZ_SupplySettings GetSupplySettings() { return m_SupplySettings; }
 	float GetResearchPerSample() { return m_fResearchPerSample; }
 	float GetTickSeconds() { return m_fTickSeconds; }
 	RZ_Broadcast GetBroadcast() { return m_Broadcast; }
@@ -1170,6 +1179,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	{
 		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
 			return;
+
+		// Caught in a faction's uniform: Infamy with it doubles (RZ_Disguise)
+		if (m_Hostility && amount > 0)
+			amount = m_Hostility.ScaleInfamyForDisguise(playerId, faction, amount);
 
 		// The faction's stronghold leader sets its temper: Paranoid harsher, Merciful forgives faster
 		if (m_Leaders)

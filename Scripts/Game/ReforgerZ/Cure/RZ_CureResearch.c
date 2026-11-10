@@ -23,6 +23,7 @@ class RZ_CureResearch
 	protected float m_fAbandonedFor;
 	protected float m_fWaveTimer;
 	protected float m_fAntidoteTimer;
+	protected float m_fAntidoteBoostLeft;	// Power the Lab: doses come twice as fast for a while (not saved)
 
 	//! Doses the lab has made and not yet sold, and doses the Red Hand has stolen from it
 	protected int m_iLabAntidotes;
@@ -189,6 +190,12 @@ class RZ_CureResearch
 		if (m_iMilestone >= 2)
 		{
 			m_fAntidoteTimer += dt;
+			if (m_fAntidoteBoostLeft > 0)
+			{
+				m_fAntidoteBoostLeft -= dt;
+				m_fAntidoteTimer += dt;
+			}
+
 			if (m_fAntidoteTimer >= ANTIDOTE_INTERVAL_SECONDS)
 			{
 				m_fAntidoteTimer = 0;
@@ -266,14 +273,7 @@ class RZ_CureResearch
 
 		if (m_fAbandonedFor >= ABANDON_LIMIT_SECONDS)
 		{
-			m_bFinalStand = false;
-			m_fProgress = 90;
-			m_iMilestone = 3;
-			m_GM.NotifyAll("The batch is lost", "Nobody held the lab. The infected got into the clean room before Halcyon could seal it, and the batch is ruined. Research has dropped to 90 percent.");
-			if (m_GM.GetFactionLife())
-				m_GM.GetFactionLife().OnFinalStandLost();
-
-			m_GM.OnCureChanged();
+			LoseBatch("The batch is lost", "Nobody held the lab. The infected got into the clean room before Halcyon could seal it, and the batch is ruined. Research has dropped to 90 percent.");
 			return;
 		}
 
@@ -288,6 +288,41 @@ class RZ_CureResearch
 		m_fFinalStandLeft -= dt;
 		if (m_fFinalStandLeft <= 0)
 			CompleteCure(players);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The final stand ends without a cure: research back to 90 percent. The lab never falls.
+	protected void LoseBatch(string title, string text)
+	{
+		m_bFinalStand = false;
+		m_fProgress = 90;
+		m_iMilestone = 3;
+		m_GM.NotifyAll(title, text);
+		if (m_GM.GetFactionLife())
+			m_GM.GetFactionLife().OnFinalStandLost();
+
+		m_GM.OnCureChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Red Hand's Take the Lab: the batch is stolen during the final stand, which ends it as
+	//! if it were ruined (research back to 90 percent, a new final stand at 100). Two doses go to
+	//! the black market, within its cap. Nobody wins the cure this way. False if no stand runs.
+	bool StealBatch()
+	{
+		if (!m_bFinalStand)
+			return false;
+
+		m_iStolenAntidotes = Math.Min(STOLEN_ANTIDOTE_CAP, m_iStolenAntidotes + 2);
+		LoseBatch("The batch is gone", "The Red Hand walked out of the clean room with the batch while Halcyon was holding the doors. It won't cure anyone in their hands: it needs the lab. Research has dropped to 90 percent, and Halcyon has to start the synthesis again.");
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Power the Lab: antidote doses come twice as fast for `seconds` (once the lab makes them).
+	void BoostAntidotes(float seconds)
+	{
+		m_fAntidoteBoostLeft = Math.Max(m_fAntidoteBoostLeft, seconds);
 	}
 
 	//------------------------------------------------------------------------------------------------

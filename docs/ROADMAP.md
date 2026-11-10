@@ -4,7 +4,7 @@ What's built, what's next, what to test first, and what was dropped. How each sy
 is in [DESIGN.md](DESIGN.md).
 
 **Status:** everything under "Built" is written in Enforce Script (about 49,500 lines) and
-**has never been compiled**. It needs Workbench, the 109 `VERIFY` fixes and a play-test
+**has never been compiled**. It needs Workbench, the 113 `VERIFY` fixes and a play-test
 before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
 ## Built
@@ -20,7 +20,7 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 | Night, rain, fog and storms; the power grid; the radio station; the government broadcast | [Time and environment](DESIGN.md#time-and-environment) |
 | 13 backgrounds (5 unlocked through Legacy), personal goals, Legacy points | [Backgrounds](DESIGN.md#backgrounds-and-personal-goals) |
 | Fame, Infamy and Favor; tiers; rivals; amends; quartermaster shops; Requisition; cheap perks; hunter squads; bounties | [REPUTATION.md](REPUTATION.md) |
-| Per-player AI hostility (hidden faction variants), retaliation, Outlaw fallback | [REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you) |
+| Per-player AI hostility (hidden faction variants), retaliation, disguises, Outlaw fallback | [REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you) |
 | Territory: strongholds, outposts, the territory tick, faction strength | [Territory](DESIGN.md#territory) |
 | Real supply trucks with AI crews, shortages, escort, drive-in and theft | [Supply trucks](DESIGN.md#supply-trucks) |
 | Faction life: needs, morale, chatter, life events, truces and feuds, moments, rumours | [Faction life](DESIGN.md#faction-life), [REPUTATION.md](REPUTATION.md#morale-needs-truces-and-feuds) |
@@ -53,7 +53,7 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 - Bastion checkpoints and Red Hand roadblocks on the roads inside the Zone as AI (with the Known
   perks: pass a checkpoint unsearched, pay the toll instead of being shot). The Perimeter's
   checkpoints stay sealed to everyone.
-- Disguises (faction uniforms) and surrendering at checkpoints.
+- Surrendering at checkpoints.
 - AI camps that warn and refuse by standing, and safe-zone entry.
 - Reputation clues other players can see (e.g. a bandit armband).
 - Wanderers react when their faction loses an outpost.

@@ -271,6 +271,13 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A supply truck arrived or was lost (RZ_SupplyLines.TRUCK_*). driver: the player who drove
+	//! it in or away, -1 if none. Convoy missions (Missions/Blocks/RZ_VehicleZone.c) use it.
+	void OnTruckEvent(RZ_GameModeComponent gm, int faction, int what, vector pos, int driver)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void OnSuccess(RZ_GameModeComponent gm)
 	{
 	}

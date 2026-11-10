@@ -497,6 +497,25 @@ Two kinds: **world events**, announced to everyone, and **contracts**, offered o
 players who qualify. There's no "accept" button: eligible players who take part get paid.
 Every mission, its requirements and its status are in [MISSIONS.md](MISSIONS.md).
 
+### Mission building blocks
+
+Code: `Missions/RZ_MissionBases.c` (base classes), `Missions/Blocks/` (helpers a mission owns
+and ticks, so they combine with any base). Limits and optional prefabs are in **Missions >
+Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
+
+| Block | What it does | Used by |
+|---|---|---|
+| Hold, kill tagged, visit points, destroy, deliver, choice | The base classes: hold an area (optional waves and heat), kill what the mission spawned, stand at points, destroy a prop, carry the mission item to a drop, choose whose drop gets it | most contracts |
+| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Hunt the Deserter, Bust Out, Mobile Lab, Desertion Route |
+| **Live capture** (`RZ_LiveCapture`) | A cage trap and a special, both spawned only when a player is near. Lure it into the cage and drop the door within 4 m, or wound it to a third of its health and get within 3 m to tie it. Hold it for 30 s while it fights (heat), then a transport case (the mission item) to deliver before it wakes (12 min). It leaves the world without a kill, so no sample. Killing it fails. At most 2 at once | Live Capture, Private Collection |
+| **Vehicle zone** (`RZ_VehicleZone`, `RZ_ConvoyWatch`) | A specific vehicle, or any vehicle whose prefab name has a keyword (or is one of a list), driven into a zone by a player. Works with vehicles a mission spawns, fixed cars and supply trucks. The convoy watch asks the supply system for a faction's next truck to an outpost and reports whether it arrived, was robbed, destroyed, stolen or late | Recover the Bus, Car Theft, Mobile Lab; Convoy Escort, Hijack the Convoy |
+| **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver | Blood Drive |
+| **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue | Patient Zero, Hunt the Deserter |
+| **Disguises** (`Factions/RZ_Disguise.c`) | A faction's uniform gets you past its AI; caught, the Infamy doubles ([REPUTATION.md](REPUTATION.md#disguises)) | Bust Out; anywhere a faction shoots from Watched |
+
+*Simplified:* escorted people without an AI body can't be hurt (only a body can die), and
+move in a straight line. A caught special is carried as a case, not dragged in its cage.
+
 ## Story arcs and headlines
 
 Code: `Director/RZ_StoryArcs.c`, `Director/RZ_Headlines.c`.

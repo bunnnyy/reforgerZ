@@ -18,6 +18,7 @@ class RZ_Settlement
 	float m_fInfection = 30;	// 0..100
 	bool m_bHasLab;
 	float m_fNoSpreadSeconds;	// Quarantine Line: this town doesn't spread infection for a while (not saved)
+	float m_fSensorSeconds;		// Install Sensors: twice the specials here for a while (not saved)
 
 	//------------------------------------------------------------------------------------------------
 	void AddInfection(float amount)

@@ -192,6 +192,13 @@ class RZ_SupplyLines
 	static const int KIND_OUTPOST = 0;
 	static const int KIND_SAFEHOUSE = 1;
 
+	//! Truck results told to missions (RZ_Mission.OnTruckEvent)
+	static const int TRUCK_ARRIVED = 0;
+	static const int TRUCK_DESTROYED = 1;
+	static const int TRUCK_ROBBED = 2;
+	static const int TRUCK_LATE = 3;
+	static const int TRUCK_STOLEN = 4;
+
 	protected static const float CHECK_INTERVAL = 30;
 	protected static const float ARRIVE_RADIUS = 50;
 	protected static const float NEAR_STRONGHOLD = 300;
@@ -1048,6 +1055,7 @@ class RZ_SupplyLines
 
 		RewardEscorts(t, driver);
 		NotifyNear(t.m_vDest, factionName, RZ_FactionVoice.TruckArrives(t.m_eFaction, t.m_sDestName, t.m_sDriver), SHORTAGE_NEWS_RADIUS);
+		m_GM.GetMissions().OnTruckEvent(t.m_eFaction, TRUCK_ARRIVED, t.m_vDest, driver);
 		if (t.m_bConvoy && m_GM.GetStoryArcs())
 			m_GM.GetStoryArcs().OnConvoyResult(t.m_eFaction, t.m_sDestName, true);
 	}
@@ -1078,6 +1086,17 @@ class RZ_SupplyLines
 	{
 		t.m_bFailed = true;
 		ScheduleNext(t.m_eFaction);
+		vector lostAt = t.m_vDest;
+		if (t.m_Vehicle)
+			lostAt = t.m_Vehicle.GetOrigin();
+
+		int lostHow = TRUCK_LATE;
+		if (why == "destroyed")
+			lostHow = TRUCK_DESTROYED;
+		else if (why == "robbed")
+			lostHow = TRUCK_ROBBED;
+
+		m_GM.GetMissions().OnTruckEvent(t.m_eFaction, lostHow, lostAt, -1);
 		if (t.m_bConvoy && m_GM.GetStoryArcs())
 			m_GM.GetStoryArcs().OnConvoyResult(t.m_eFaction, t.m_sDestName, false);
 
@@ -1159,6 +1178,8 @@ class RZ_SupplyLines
 
 		if (t.m_bConvoy && m_GM.GetStoryArcs())
 			m_GM.GetStoryArcs().OnConvoyResult(t.m_eFaction, t.m_sDestName, false);
+
+		m_GM.GetMissions().OnTruckEvent(t.m_eFaction, TRUCK_STOLEN, t.m_Vehicle.GetOrigin(), driver);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1234,5 +1255,50 @@ class RZ_SupplyLines
 			if (RZ_Util.DistXZ(p.GetOrigin(), pos) <= radius)
 				m_GM.NotifyPlayer(ids[i], title, text);
 		}
+	}
+
+	// ================================================================ Missions (Missions/Blocks/RZ_VehicleZone.c)
+	//------------------------------------------------------------------------------------------------
+	//! The faction's truck on the road (or just finished), or null. Missions read its vehicle,
+	//! crew and destination; they may stop and restart the crew, nothing else.
+	RZ_SupplyTruck GetActiveTruck(int f)
+	{
+		if (!m_bActive)
+			return null;
+
+		return GetTruck(f);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A convoy is already asked for (a story arc or a mission): don't ask again.
+	bool HasConvoyRequest(int f)
+	{
+		if (!RZ_Factions.IsValid(f))
+			return false;
+
+		return m_aConvoyTo[f] >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An outpost of the faction a truck can be sent to (not right next to the stronghold), or -1.
+	int PickConvoyOutpost(int f)
+	{
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (!territory)
+			return -1;
+
+		array<RZ_Holding> posts = {};
+		territory.GetOutposts(f, posts);
+		array<int> options = {};
+		foreach (RZ_Holding h : posts)
+		{
+			if (!IsNearStronghold(f, h.m_vPos))
+				options.Insert(h.m_iId);
+		}
+
+		if (options.IsEmpty())
+			return -1;
+
+		return options.GetRandomElement();
 	}
 }

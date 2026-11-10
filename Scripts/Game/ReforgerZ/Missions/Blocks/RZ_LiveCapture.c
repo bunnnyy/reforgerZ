@@ -1,0 +1,343 @@
+//! Live capture block (docs/DESIGN.md, "Mission building blocks"). Halcyon wants a special
+//! alive (Live Capture, Private Collection). A puzzle mission owns one RZ_LiveCapture, starts it,
+//! ticks it, routes the cage's choice to TryCloseCage() and asks it about hand-ins.
+//!
+//!   BAIT     a cage trap stands near the special's lair; both appear only when a player comes
+//!            close. Lure the special (it chases you) to the cage and drop the door while it's
+//!            within 4 m. Or wound it to a third of its health and get within 3 m: it's pinned
+//!            and tied where it lies. Killing it fails the job.
+//!   CAUGHT   it fights the bars: someone stays within 15 m for 30 s while the noise draws
+//!            infected (heat), then the sedative takes.
+//!   CRATED   a transport case (the mission item) to carry to the drop. It wakes after 12 real
+//!            minutes (Contracts > Specimen wake minutes): the case breaks and the special is loose.
+//!
+//! The caught special leaves the world without a kill (RZ_ZombieSpawner.RemoveSilently), so it
+//! drops no sample. At most Contracts > Max captures run at once. Cleanup() removes the cage,
+//! the case and nothing else (a special still loose is released to the spawner).
+enum RZ_ECaptureState
+{
+	BAIT,
+	CAUGHT,
+	CRATED,
+	DELIVERED,
+	LOST
+}
+
+class RZ_LiveCapture
+{
+	protected static int s_iRunning;
+
+	RZ_ECaptureState m_eState = RZ_ECaptureState.BAIT;
+	string m_sLostReason;
+	vector m_vCage;
+	vector m_vLair;
+	vector m_vHeld;
+
+	protected int m_iMissionId = -1;
+	protected int m_iSettlement = -1;
+	protected int m_iCageObj = -1;
+	protected bool m_bCounted;
+	protected IEntity m_Cage;
+	protected bool m_bSpecialSpawned;
+	protected float m_fStartHealth = -1;
+	protected float m_fHeldFor;
+	protected IEntity m_Item;
+	protected float m_fWakeLeft;
+	protected int m_iCarrier = -1;
+	protected bool m_bWarnedWake;
+
+	protected static const float SPAWN_RADIUS = 250;
+	protected static const float HOLD_SECONDS = 30;
+	protected static const float HOLD_RADIUS = 15;
+	protected static const float RESTRAIN_REACH = 3;
+
+	//------------------------------------------------------------------------------------------------
+	static bool HasRoom(RZ_GameModeComponent gm)
+	{
+		RZ_ContractSettings cs = gm.GetContractSettings();
+		int cap = 2;
+		if (cs)
+			cap = cs.m_iMaxCaptures;
+
+		return s_iRunning < cap && !gm.GetMissionItemPrefab().IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! cageObj: the puzzle object index the mission uses for the cage's choice ("Drop the door").
+	bool Begin(RZ_GameModeComponent gm, int missionId, int settlement, vector cagePos, vector lairPos, int cageObj)
+	{
+		if (!m_bCounted)
+		{
+			if (!HasRoom(gm))
+				return false;
+
+			s_iRunning++;
+			m_bCounted = true;
+		}
+
+		m_iMissionId = missionId;
+		m_iSettlement = settlement;
+		m_vCage = RZ_Util.GroundPos(cagePos);
+		m_vLair = RZ_Util.GroundPos(lairPos);
+		m_vHeld = m_vCage;
+		m_iCageObj = cageObj;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsLost()
+	{
+		return m_eState == RZ_ECaptureState.LOST;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Update(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		switch (m_eState)
+		{
+			case RZ_ECaptureState.BAIT:
+				UpdateBait(gm, players);
+				return;
+			case RZ_ECaptureState.CAUGHT:
+				UpdateHeld(gm, dt, ids, players);
+				return;
+			case RZ_ECaptureState.CRATED:
+				UpdateCrate(gm, dt);
+				return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void UpdateBait(RZ_GameModeComponent gm, array<IEntity> players)
+	{
+		if (!m_Cage && RZ_Util.NearestDistance(m_vCage, players) <= SPAWN_RADIUS)
+			SpawnCage(gm);
+
+		if (!m_bSpecialSpawned && RZ_Util.NearestDistance(m_vLair, players) <= SPAWN_RADIUS)
+		{
+			m_bSpecialSpawned = gm.GetSpawner().SpawnZombie(m_vLair, true, m_iSettlement, m_iMissionId) != null;
+			return;
+		}
+
+		RZ_TrackedZombie z = gm.GetSpawner().FindMissionSpecial(m_iMissionId);
+		if (!z)
+			return;
+
+		// Wounded and someone's on it: pinned and tied
+		IEntity body = SpecialBody(z.m_Entity);
+		float health = RZ_Util.GetCharacterHealth(body);
+		if (health <= 0)
+			return;
+
+		if (m_fStartHealth < 0)
+			m_fStartHealth = health;
+
+		float share = Math.Max(0.05, Settings(gm).m_fRestrainShare);
+		if (health > m_fStartHealth * share)
+			return;
+
+		vector at = body.GetOrigin();
+		if (RZ_Util.NearestDistance(at, players) > RESTRAIN_REACH)
+			return;
+
+		Catch(gm, z.m_Entity, at, "It goes down hard and you're on it before it gets up: knee on its back, belt round its wrists, a sack over its head. It's still fighting. Hold it here until it's under.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected IEntity SpecialBody(IEntity e)
+	{
+		array<IEntity> members = {};
+		RZ_Util.GetUnitMembers(e, members);
+		if (!members.IsEmpty())
+			return members[0];
+
+		return e;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_ContractSettings Settings(RZ_GameModeComponent gm)
+	{
+		RZ_ContractSettings cs = gm.GetContractSettings();
+		if (!cs)
+			cs = new RZ_ContractSettings();
+
+		return cs;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SpawnCage(RZ_GameModeComponent gm)
+	{
+		ResourceName prefab = Settings(gm).m_sCagePrefab;
+		if (prefab.IsEmpty())
+			prefab = gm.GetPuzzlePrefab(RZ_EPuzzleProp.OBJECT);
+
+		m_Cage = RZ_Util.SpawnPrefab(prefab, m_vCage, Math.RandomFloat(0, 360));
+		if (m_Cage)
+			RZ_PuzzleObjectComponent.Tag(m_Cage, m_iMissionId, m_iCageObj, "", "Drop the cage door");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Drop the cage door" (the mission routes the cage's choice here). True if it caught it.
+	bool TryCloseCage(RZ_GameModeComponent gm, int playerId)
+	{
+		if (m_eState != RZ_ECaptureState.BAIT)
+		{
+			gm.NotifyPlayer(playerId, "The cage", "The door's already down.");
+			return false;
+		}
+
+		RZ_TrackedZombie z = gm.GetSpawner().FindMissionSpecial(m_iMissionId);
+		float reach = Settings(gm).m_fCaptureRadius;
+		if (!z || RZ_Util.DistXZ(RZ_Util.GetUnitPosition(z.m_Entity), m_vCage) > reach)
+		{
+			gm.GetHeat().AddHeat(m_vCage, 6);
+			gm.NotifyPlayer(playerId, "The cage", "The door slams on nothing. Everything nearby heard it. You haul it back up.");
+			return false;
+		}
+
+		Catch(gm, z.m_Entity, m_vCage, "The door drops. It hits the bars so hard the whole cage jumps, again and again. Stay close until Halcyon's sedative takes.");
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Catch(RZ_GameModeComponent gm, IEntity special, vector at, string text)
+	{
+		gm.GetSpawner().RemoveSilently(special);
+		m_vHeld = at;
+		m_eState = RZ_ECaptureState.CAUGHT;
+		m_fHeldFor = 0;
+		if (m_Cage)
+			RZ_PuzzleObjectComponent.Tag(m_Cage, m_iMissionId, m_iCageObj, "", "");
+
+		NotifyNear(gm, at, 80, "Caught", text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! It fights: heat every tick. Someone near for 30 s and it's crated.
+	protected void UpdateHeld(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		gm.GetHeat().AddHeat(m_vHeld, 2 * dt);
+		if (RZ_Mission.CountPlayersNear(players, m_vHeld, HOLD_RADIUS) == 0)
+			return;
+
+		m_fHeldFor += dt;
+		if (m_fHeldFor < HOLD_SECONDS)
+			return;
+
+		m_Item = RZ_Util.SpawnPrefab(gm.GetMissionItemPrefab(), m_vHeld + Vector(0, 0.3, 0));
+		if (!m_Item)
+		{
+			m_eState = RZ_ECaptureState.LOST;
+			m_sLostReason = "There was nothing to put it in. (The mission item prefab is missing.)";
+			return;
+		}
+
+		RZ_MissionItemComponent.Tag(m_Item, m_iMissionId);
+		m_fWakeLeft = Math.Max(1, Settings(gm).m_fSpecimenWakeMinutes) * 60;
+		m_eState = RZ_ECaptureState.CRATED;
+		NotifyNear(gm, m_vHeld, 80, "Caught", string.Format("It's under. Into the transport case, and the case into your pack. The sedative lasts about %1 minutes.", RZ_Util.RoundToInt(m_fWakeLeft / 60)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void UpdateCrate(RZ_GameModeComponent gm, float dt)
+	{
+		if (!m_Item)
+		{
+			m_eState = RZ_ECaptureState.LOST;
+			m_sLostReason = "The case is gone, and what was in it.";
+			return;
+		}
+
+		int carrier = RZ_Util.GetCarrierPlayerId(m_Item);
+		if (carrier > 0)
+			m_iCarrier = carrier;
+
+		m_fWakeLeft -= dt;
+		if (!m_bWarnedWake && m_fWakeLeft <= 120)
+		{
+			m_bWarnedWake = true;
+			if (m_iCarrier > 0)
+				gm.NotifyPlayer(m_iCarrier, "The case", "Something inside the case shifts. Two minutes, maybe less.");
+		}
+
+		if (m_fWakeLeft > 0)
+			return;
+
+		// It wakes: the case splits and it's loose where the case is
+		vector at = m_Item.GetOrigin();
+		if (carrier > 0)
+		{
+			IEntity holder = GetGame().GetPlayerManager().GetPlayerControlledEntity(carrier);
+			if (holder)
+				at = holder.GetOrigin();
+		}
+
+		RZ_Util.DeleteUnit(m_Item);
+		m_Item = null;
+		gm.GetSpawner().SpawnZombie(RZ_Util.RandomPointInRing(at, 2, 4), true, -1, -1);
+		m_eState = RZ_ECaptureState.LOST;
+		m_sLostReason = "The sedative wore off. The case split open from the inside.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The special was killed before it was caught (from the mission's OnZombiesKilled).
+	void OnSpecialKilled(RZ_GameModeComponent gm, int missionId, bool special)
+	{
+		if (m_eState != RZ_ECaptureState.BAIT || missionId != m_iMissionId || !special)
+			return;
+
+		m_eState = RZ_ECaptureState.LOST;
+		m_sLostReason = "It's dead. Halcyon needed it breathing.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The case was handed in at an accepted drop (the mission decides which drops count).
+	bool Deliver()
+	{
+		if (m_eState != RZ_ECaptureState.CRATED)
+			return false;
+
+		m_eState = RZ_ECaptureState.DELIVERED;
+		m_Item = null;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Minutes until it wakes, for the carrier's messages. 0 when not crated.
+	int MinutesLeft()
+	{
+		if (m_eState != RZ_ECaptureState.CRATED)
+			return 0;
+
+		return Math.Max(1, RZ_Util.RoundToInt(m_fWakeLeft / 60));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void NotifyNear(RZ_GameModeComponent gm, vector pos, float radius, string title, string text)
+	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), pos) <= radius)
+				gm.NotifyPlayer(ids[i], title, text);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Cleanup()
+	{
+		RZ_Util.DeleteUnit(m_Cage);
+		m_Cage = null;
+		if (m_Item && m_eState != RZ_ECaptureState.DELIVERED)
+			RZ_Util.DeleteUnit(m_Item);
+
+		m_Item = null;
+		if (m_bCounted)
+		{
+			s_iRunning = Math.Max(0, s_iRunning - 1);
+			m_bCounted = false;
+		}
+	}
+}

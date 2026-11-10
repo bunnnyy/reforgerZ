@@ -190,6 +190,7 @@ class RZ_Leader
 	int m_iHeldBy = -1;
 	int m_iLastShooter = -1;
 	float m_fLastShotAt = -1000;
+	int m_iKilledBy = -1;		// the player blamed for their death (Kill the Officer)
 	bool m_bWasShort;
 	float m_fDriftWindow;
 	int m_iDriftSum;
@@ -1908,6 +1909,7 @@ class RZ_Leaders
 		FailJobsOf(l);
 		l.m_bAlive = false;
 		l.m_fDiedAt = m_fClock;
+		l.m_iKilledBy = killer;
 		AddHeadline(string.Format("%1, %2, %3.", l.m_sName, l.m_sTitle, how));
 
 		// Morale, a funeral later, and maybe something people remember

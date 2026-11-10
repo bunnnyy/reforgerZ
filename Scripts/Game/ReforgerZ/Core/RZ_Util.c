@@ -620,4 +620,78 @@ class RZ_Util
 		int i = Math.Round(f);
 		return i;
 	}
+
+	// ================================================================ Mission building blocks (Missions/Blocks/)
+	//------------------------------------------------------------------------------------------------
+	//! The vehicle a character sits in, or null if they're on foot.
+	static IEntity GetVehicleOf(IEntity character)
+	{
+		if (!character || !IsInVehicle(character))
+			return null;
+
+		return character.GetParent(); // VERIFY: a seated character is a child entity of its vehicle (else use CompartmentAccessComponent.GetVehicleIn(character))
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A character's full health (the default hit zone's maximum), -1 without a damage manager.
+	static float GetCharacterMaxHealth(IEntity e)
+	{
+		HitZone hz = DefaultHitZone(e);
+		if (!hz)
+			return -1;
+
+		return hz.GetMaxHealth(); // VERIFY: HitZone.GetMaxHealth() on the default hit zone, the same scale as GetCharacterHealth()
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets a character's health (health-cost actions such as the Blood Drive). False without a hit zone.
+	static bool SetCharacterHealth(IEntity e, float health)
+	{
+		HitZone hz = DefaultHitZone(e);
+		if (!hz)
+			return false;
+
+		hz.SetHealth(Math.Max(1, health)); // VERIFY: HitZone.SetHealth(float) on the server is replicated and doesn't kill or knock out above zero
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static HitZone DefaultHitZone(IEntity e)
+	{
+		ChimeraCharacter c = ChimeraCharacter.Cast(e);
+		if (!c)
+			return null;
+
+		SCR_CharacterDamageManagerComponent dmg = SCR_CharacterDamageManagerComponent.Cast(c.GetDamageManager());
+		if (!dmg)
+			return null;
+
+		return dmg.GetDefaultHitZone();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lower-case prefab names of what a character wears and carries on them (disguises).
+	static void GetWornNames(IEntity character, notnull array<string> result)
+	{
+		CollectChildNames(character, 0, result);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void CollectChildNames(IEntity e, int depth, notnull array<string> result)
+	{
+		if (!e || depth > 1 || result.Count() > 40)
+			return;
+
+		IEntity child = e.GetChildren(); // VERIFY: worn clothing is attached to the character as child entities (else read the loadout storage's slots)
+		while (child)
+		{
+			string name = GetPrefabName(child);
+			name.ToLower();
+			if (!name.IsEmpty())
+				result.Insert(name);
+
+			CollectChildNames(child, depth + 1, result);
+			child = child.GetSibling();
+		}
+	}
 }

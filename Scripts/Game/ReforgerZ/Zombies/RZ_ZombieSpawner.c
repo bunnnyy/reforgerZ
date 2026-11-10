@@ -532,7 +532,12 @@ class RZ_ZombieSpawner
 				if (!FindSpawnPos(s.m_vCenter, 0, s.m_fRadius, players, pos))
 					break;
 
-				bool special = Math.RandomFloat01() < GetSpecialChance(stage);
+				// Halcyon's sensors (Install Sensors) draw specials to a town for a while
+				float specialChance = GetSpecialChance(stage);
+				if (s.m_fSensorSeconds > 0)
+					specialChance = Math.Min(0.5, specialChance * 2);
+
+				bool special = Math.RandomFloat01() < specialChance;
 				SpawnZombie(pos, special, idx, -1);
 				deficit--;
 				spawned++;
@@ -643,5 +648,40 @@ class RZ_ZombieSpawner
 		}
 
 		return n;
+	}
+
+	// ================================================================ Mission building blocks
+	//------------------------------------------------------------------------------------------------
+	//! The first living special a mission owns, or null (live capture).
+	RZ_TrackedZombie FindMissionSpecial(int missionId)
+	{
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (z.m_iMissionId == missionId && z.m_bSpecial && z.m_Entity && z.m_iLastAlive != 0)
+				return z;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes a tracked unit out of the world without counting it as killed (no kill event, no
+	//! sample): a special caught alive. False if the spawner doesn't own it.
+	bool RemoveSilently(IEntity e)
+	{
+		if (!e)
+			return false;
+
+		for (int i = m_aTracked.Count() - 1; i >= 0; i--)
+		{
+			if (m_aTracked[i].m_Entity != e)
+				continue;
+
+			m_aTracked.Remove(i);
+			RZ_Util.DeleteUnit(e);
+			return true;
+		}
+
+		return false;
 	}
 }

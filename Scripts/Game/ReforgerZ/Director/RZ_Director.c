@@ -125,6 +125,9 @@ class RZ_Director
 
 		foreach (int i, RZ_Settlement source : list)
 		{
+			if (source.m_fSensorSeconds > 0)
+				source.m_fSensorSeconds = source.m_fSensorSeconds - dt;
+
 			if (source.m_fNoSpreadSeconds > 0)
 			{
 				source.m_fNoSpreadSeconds = source.m_fNoSpreadSeconds - dt;

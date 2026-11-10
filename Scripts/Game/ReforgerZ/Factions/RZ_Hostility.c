@@ -17,6 +17,8 @@
 //!     wanderer bodies are on SURV)
 //!   - retaliation (setting, on by default; RZ_Retaliation): for a few minutes after shooting
 //!     or killing a faction's AI, near the spot
+//! A disguise (RZ_Disguise) clears a faction's standing bit while the player wears its uniform
+//! and isn't Hunted by it; fights and retaliation still set it.
 //! Standing is cached and recomputed only when a tier changes or the player spawns; the
 //! nearness checks are a few distance tests on the server tick. The character's faction
 //! is only touched when the wanted key differs from the one it has.
@@ -87,6 +89,27 @@ class RZ_HostilitySettings
 	[Attribute("12", desc: "Retaliation: at most this much kill Infamy per player and faction per hour")]
 	int m_iRetaliationInfamyCap = 12;
 
+	[Attribute("1", desc: "Disguises: wearing enough of a faction's uniform makes its AI look past you while you're not Hunted by it; Infamy with it doubles if you're caught (docs/REPUTATION.md)")]
+	bool m_bDisguises = true;
+
+	[Attribute("us_army,usarmy,bdu,m81,ocp,woodland_us", desc: "Disguises: keywords of Bastion uniform pieces (prefab names, lower case). Check them against your Bastion loadouts")]
+	string m_sBastionUniformWords = "us_army,usarmy,bdu,m81,ocp,woodland_us";
+
+	[Attribute("bandit,redhand,red_hand,armband_red", desc: "Disguises: keywords of Red Hand clothing (e.g. a red armband or bandana)")]
+	string m_sRedHandUniformWords = "bandit,redhand,red_hand,armband_red";
+
+	[Attribute("hazmat,labcoat,lab_coat,cbrn,scientist", desc: "Disguises: keywords of Halcyon clothing")]
+	string m_sHalcyonUniformWords = "hazmat,labcoat,lab_coat,cbrn,scientist";
+
+	[Attribute("2", desc: "Disguises: pieces of one faction's uniform needed (jacket and trousers, say)")]
+	int m_iDisguiseItems = 2;
+
+	[Attribute("10", desc: "Disguises: seconds between checks of what each player wears")]
+	float m_fDisguiseCheckSeconds = 10;
+
+	[Attribute("15", desc: "Disguises: real minutes a blown disguise stops working")]
+	float m_fDisguiseBlownMinutes = 15;
+
 	[Attribute("MIL", desc: "FactionManager key of Bastion's AI")]
 	string m_sBastionKey = "MIL";
 
@@ -139,6 +162,7 @@ class RZ_Hostility
 	protected ref map<int, int> m_mMask = new map<int, int>();		// playerId -> last full mask
 	protected ref map<int, int> m_mBaseMask = new map<int, int>();	// playerId -> last mask without retaliation
 	protected ref RZ_Retaliation m_Retaliation;
+	protected ref RZ_Disguise m_Disguise;
 	protected ref map<int, float> m_mWarnedAt = new map<int, float>();
 	protected ref map<int, float> m_mSpawnedAt = new map<int, float>();
 	protected ref array<ref RZ_HostileZone> m_aZones = {};
@@ -150,6 +174,21 @@ class RZ_Hostility
 		m_GM = gm;
 		m_Settings = settings;
 		m_Retaliation = new RZ_Retaliation(gm, settings);
+		m_Disguise = new RZ_Disguise(gm, settings);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Disguises (RZ_Disguise): who wears whose uniform.
+	RZ_Disguise GetDisguise()
+	{
+		return m_Disguise;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! From RZ_GameModeComponent.AddInfamy: caught in a faction's uniform doubles the Infamy.
+	int ScaleInfamyForDisguise(int playerId, RZ_EFaction faction, int amount)
+	{
+		return m_Disguise.ScaleInfamy(playerId, faction, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -230,6 +269,7 @@ class RZ_Hostility
 	{
 		m_fClock += dt;
 		UpdateZones();
+		m_Disguise.Tick(dt, ids, players);
 		m_Retaliation.Tick(dt, ids, players, m_mBaseMask);
 
 		foreach (int i, IEntity p : players)
@@ -431,6 +471,14 @@ class RZ_Hostility
 		int standing = GetStandingMask(playerId);
 		int mask = standing & RZ_Factions.ALL_BITS;
 		int haven = RZ_Factions.Bit(RZ_EFaction.SURVIVORS);
+
+		// In a faction's uniform, its AI looks past what it holds against you (not Hunted)
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			int bit = RZ_Factions.Bit(f);
+			if ((mask & bit) != 0 && m_Disguise.Covers(playerId, f))
+				mask = mask - bit;
+		}
 
 		if (IsArmedExileAtSafehouse(playerId, standing, ent))
 			mask = mask | haven;

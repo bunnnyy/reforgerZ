@@ -196,6 +196,23 @@ class RZ_MissionManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! From RZ_SupplyLines: a truck arrived or was lost.
+	void OnTruckEvent(int faction, int what, vector pos, int driver)
+	{
+		foreach (RZ_Mission m : m_aActive)
+		{
+			m.OnTruckEvent(m_GM, faction, what, pos, driver);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds since the server started (missions that leave an effect behind for a while).
+	float GetClock()
+	{
+		return m_fClock;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void OnPlayerDied(int playerId, vector pos)
 	{
 		foreach (RZ_Mission m : m_aActive)

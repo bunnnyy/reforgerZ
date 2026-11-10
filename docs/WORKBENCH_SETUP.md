@@ -111,7 +111,7 @@ If the player faction key isn't `SURV`, the variants are `<key>_H1`..`<key>_H15`
 
 ## 4. Prefabs by system
 
-The code has **128 prefab fields**: 40 on `RZ_GameModeComponent`, 82 in its settings objects, and
+The code has **137 prefab fields**: 40 on `RZ_GameModeComponent`, 91 in its settings objects, and
 6 in list entries and actions (shop item, requisition item, recipe output, loot table lists).
 Every prefab with an action list needs an `ActionsManagerComponent`; every prefab with an `RZ_`
 component needs an `RplComponent`. Slot names are the attribute's category, then its label.
@@ -170,6 +170,24 @@ still route correctly.
 
 One mission item prefab serves everything (medicine, notes, black box, package): the mission
 tags it when it spawns. Missions spawn and remove their own drop points.
+
+**Contracts** (slots under **Missions > Contracts**; how the blocks work is in
+[DESIGN.md](DESIGN.md#mission-building-blocks)). All optional, each with a fallback:
+
+| Prefab | Base | Slot (fallback) | Used for |
+|---|---|---|---|
+| `RZ_EscortCivilians.et` | an AI group of 2–4 unarmed civilians on `SURV` | Escort civilians (Missions > Survivor group, then data with Puzzles > Civilian) | people who walk with you: refugees, prisoners, deserters |
+| `RZ_EscortScientist.et` | a one-man AI group on `INST` | Escort scientist (escort civilians) | Escort the Scientist, Secure the Shipment |
+| `RZ_EscortSoldier.et` | a one-man AI group on `MIL` | Escort soldier (escort civilians) | Rescue the Pilot, Hunt the Deserter |
+| `RZ_Cage.et` | a cage or box trap with the generic puzzle object's components | Cage trap (Puzzles > Puzzle object) | Live Capture, Private Collection |
+| `RZ_Bus.et` | a drivable bus or truck with a damage manager | Bus (Supply > Haven truck, then Cars > Car prefabs) | Recover the Bus |
+| `RZ_BountyTarget.et` | an armed AI group or character | Bounty target (Missions > Survivor group) | Collect the Bounty |
+| `RZ_BastionSquad.et` | an AI group on `MIL` | Bastion squad (Factions > Bastion hunter squad, then Supply > Bastion crew) | the stockade guards in Bust Out |
+| `RZ_DroneWreck.et` | a small wreck prop | Crashed drone (Puzzles > Puzzle object) | Medical Drone |
+| `RZ_Smoke.et` | a coloured smoke effect | Smoke marker (none: the message says it) | Fire Mission |
+
+An escort prefab that isn't an AI group (a character or prop) still works: the people then
+move as data and stand as that figure when they stop.
 
 ### Quartermasters and shops
 
@@ -398,7 +416,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 22 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 23 settings objects and two lists. Every value has a working
 default; this is what each one covers. Defaults are in brackets where they matter for setup.
 
 | Category | Object | Covers |
@@ -418,6 +436,7 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | Backgrounds | Backgrounds (list) | Overrides; empty = the built-in 13. **Bite minutes** (20) |
 | Cure | (top level) | Lab, sample, antidote prefabs; research per sample (2%) |
 | Missions | (top level) | Reward crate, mission item, drop points and the optional mission prefabs |
+| Missions | Contracts | Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) | The puzzle prefabs, **Scale counts items** (off), landmark name |
 | Perimeter | Perimeter | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
 | Haven | Safehouses | **Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, leak chance (0.25), body prefabs |
@@ -435,12 +454,12 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | Interactions | Secure radio | Crack seconds (60), listen minutes (20), line minutes (4), range (3 km), interrupts, house radio keywords |
 | Survival | (top level) | Shot heat (3), suppressed mult (0.3), bite chance (0.3), bite reach (2.5 m) |
 | Factions | (top level) | Quartermaster and hunter prefabs, hunter minutes (10; 0 = off), bounty minutes (10) |
-| Factions | Hostility | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), the three AI faction keys |
+| Factions | Hostility | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
 | Map | (top level) | **Map markers** (on) |
 | Debug | (top level) | Status log every few minutes (on) |
 
-**Keywords are guesses.** Food, water, fuel, parts, crowbars, medkits, furniture, wrecks and
-buildings are found by lower-case words in prefab names. Check them against the mods you run.
+**Keywords are guesses.** Food, water, fuel, parts, crowbars, medkits, furniture, wrecks,
+buildings, uniforms and buses are found by lower-case words in prefab names. Check them against the mods you run.
 
 **Server.** Keep time acceleration modest and fixed; don't use time-skip or sleep mods. For a
 season wipe, set **Wipe on start** for one restart, or delete `$profile:ReforgerZ/state.json`.
@@ -452,7 +471,7 @@ The last winner is kept in `$profile:ReforgerZ/last_season.json`, which a wipe d
 grep -rn "VERIFY" Scripts/
 ```
 
-There are **109** markers (one is the comment in `Core/RZ_Util.c` that explains them). Each is an
+There are **113** markers (one is the comment in `Core/RZ_Util.c` that explains them). Each is an
 engine API whose exact name or signature couldn't be confirmed. Usually the fix is a rename, and
 most are isolated in small helpers in `Core/RZ_Util.c`. They're grouped by risk; fix them in this
 order. Paths are under `Scripts/Game/ReforgerZ/`.
@@ -463,13 +482,13 @@ No fallback. If these are wrong, the basic game doesn't work.
 
 | Where | Call | If it fails |
 |---|---|---|
-| `Core/RZ_GameModeComponent.c:539` | `GetOnPlayerSpawned()` invoker | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:846` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
-| `Core/RZ_GameModeComponent.c:915` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
-| `Core/RZ_GameModeComponent.c:1047` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1698`, `:1699` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1709` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:1927`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Core/RZ_GameModeComponent.c:545` | `GetOnPlayerSpawned()` invoker | Nothing per-player runs on spawn (backgrounds, goals, radio) |
+| `Core/RZ_GameModeComponent.c:855` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
+| `Core/RZ_GameModeComponent.c:924` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
+| `Core/RZ_GameModeComponent.c:1056` | `OnProjectileShot` event and signature | No gunfire heat |
+| `Core/RZ_GameModeComponent.c:1711`, `:1712` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1722` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:1940`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
 | `Persistence/RZ_SaveData.c:119` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:369`, `:377` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
@@ -480,7 +499,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Puzzles/RZ_RadioStealth.c:36` | `GetItems()` lists every carried storage | Radio checks fail (the same call is used for food and keywords) |
 | `Puzzles/RZ_PuzzleActions.c:15` | `ScriptedUserAction.GetOwner()` | No clue can be read |
 
-### Medium risk: big features, with a fallback (53)
+### Medium risk: big features, with a fallback (57)
 
 | Where | Call | Fallback |
 |---|---|---|
@@ -488,7 +507,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:403`, `:428` | `GetAffiliatedFaction`, `SetAffiliatedFaction` (server side, replicated, read by AI) | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:475`, `:482` | `GetWeaponsList`, `GetWeaponType` and `EWeaponType` names | Always false: armed exiles never shot, wanderers never fight back. Always true: unarmed exiles shot |
 | `Core/RZ_Util.c:546` | `MoveInVehicle(vehicle, ECompartmentType)` seats AI, `PILOT` drives | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
-| `Factions/RZ_SupplyLines.c:817` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
+| `Factions/RZ_SupplyLines.c:824` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:560` | vehicle `SCR_DamageManagerComponent.GetState()` | A burnt-out truck counts as late instead |
 | `Core/RZ_Util.c:574`, `:578` | `SetWorldTransform`, `Physics.SetVelocity` | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Interactions.c:645` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
@@ -514,6 +533,9 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Interactions/RZ_DoorLocks.c:123`, `:132` | `GetBounds()` is the building's local box; `GetWorldTransform()` | No box: no outside doors (the loot lock). A wrong box or transform gets inside and outside wrong: try every locked door from both sides, and from a closet near the outline |
 | `Interactions/RZ_DoorLocks.c:290` | `GetBounds()` on a door is its leaf's local box | Blockers stand at the door's origin (often the hinge) instead of the middle of the doorway: check where one appears |
 | `Interactions/RZ_AIDoorHook.c:16` | `modded class SCR_AIOpenDoor` with `EOnTaskSimulate(AIAgent, float)`: the AI's door-opening task (**a guess, low confidence**) | **Doesn't compile if wrong: delete the file**, nothing refers to it. Blockers and banging still keep AI out. If it compiles but AI still open locked doors, move its check (`RZ_DoorLocks.AiMayOpenNear`) into the real door task |
+| `Core/RZ_Util.c:632` | a seated character is a child entity of its vehicle (`GetParent()`) | Vehicle deliveries by type (Recover the Bus) never see who drives: switch the helper to `CompartmentAccessComponent.GetVehicleIn`. A specific vehicle still counts a player in a vehicle right beside it |
+| `Core/RZ_Util.c:643`, `:654` | `HitZone.GetMaxHealth()` and `SetHealth()` on the default hit zone (server, replicated, no knock-out above zero) | The Blood Drive refuses everyone ("health can't be read"); nothing else uses them |
+| `Core/RZ_Util.c:685` | worn clothing is attached as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
 | `Interactions/RZ_DoorBlockers.c:58`, `:67` | `GetAIWorld()` as `SCR_AIWorld`; `RequestNavmeshRebuildAreas(areas, redoRoads)` (what Game Master placement uses) | Doesn't compile: try `RequestNavmeshRebuildEntity(blocker)`, or empty the helper and turn **Navmesh rebuild** off (blockers only) |
 
 ### Low risk: contained or cosmetic (31)
@@ -607,6 +629,8 @@ session, tick off:
 - [ ] Your deploy menu, chat and group stay on the Haven while you're on a variant.
 - [ ] An exile with a gun near a safehouse is shot; without one, the door is just shut.
 - [ ] Shooting a guard makes nearby guards of that faction fire back for about 3 minutes.
+- [ ] Disguise: with Bastion set to shoot from Watched, a Watched player in two Bastion uniform
+  pieces walks past Bastion AI and is told so; Infamy with Bastion while wearing it is doubled.
 - [ ] A supply truck leaves, is driven by its crew, and arrives.
 - [ ] A leader answers Talk, Work, News and Standing.
 
