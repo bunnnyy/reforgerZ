@@ -271,8 +271,8 @@ class RZ_Mission_DestroyTarget : RZ_Mission
 
 //------------------------------------------------------------------------------------------------
 //! An item to carry to a faction drop point. Subclasses spawn the item (now or
-//! later) and one or more drop points. Handing the item in at an accepted drop
-//! point succeeds; losing the item (deleted, destroyed) fails.
+//! later) and one or more drop points. Handing the item in at one of those drop
+//! points succeeds; losing the item (deleted, destroyed) fails.
 //! Only the player who hands it in, and anyone with them at the drop, is paid.
 class RZ_Mission_Delivery : RZ_Mission
 {
@@ -410,9 +410,14 @@ class RZ_Mission_Delivery : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Only at one of this mission's own drops (never another mission's drop of the same faction).
 	override bool OnItemDelivered(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction, IEntity drop)
 	{
-		if (m_bDelivered || !m_aDropFactions.Contains(faction))
+		if (m_bDelivered || !drop)
+			return false;
+
+		int dropIdx = m_aDrops.Find(drop);
+		if (dropIdx < 0 || m_aDropFactions[dropIdx] != faction)
 			return false;
 
 		m_bDelivered = true;

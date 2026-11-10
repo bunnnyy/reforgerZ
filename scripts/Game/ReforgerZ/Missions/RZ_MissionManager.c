@@ -34,6 +34,7 @@ class RZ_MissionManager
 		m_GM = gm;
 		RZ_Escort.ResetCount();
 		RZ_LiveCapture.ResetCount();
+		RZ_Mission_LastHelicopter.ResetBoost();
 		RZ_MissionRegistry.RegisterAll(this);
 	}
 
@@ -156,11 +157,18 @@ class RZ_MissionManager
 	//! have run. Returns false if Setup() found no valid location.
 	bool StartMission(RZ_Mission mission)
 	{
+		// Every attempt gets its own id: guards a failed setup spawned are never mistaken for a later mission's
 		mission.m_iId = m_iNextId;
-		if (!mission.Setup(m_GM))
-			return false;
-
 		m_iNextId++;
+		if (!mission.Setup(m_GM))
+		{
+			// Whatever it spawned before it gave up goes again
+			mission.m_eState = RZ_EMissionState.FAILED;
+			m_GM.GetSpawner().ReleaseMission(mission.m_iId);
+			mission.Cleanup(m_GM);
+			return false;
+		}
+
 		m_aActive.Insert(mission);
 		m_fSpotsAt = -1; // its props count from now
 		OnStarted(mission);

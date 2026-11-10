@@ -119,6 +119,7 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 	protected string m_sMan;
 	protected string m_sTown;
 	protected int m_iTalk = -1;
+	protected bool m_bGuarded;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -171,7 +172,6 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 		m_iTalk = AddClue(m_sMan, string.Format("\"I told them myself. I didn't want anyone finding out the other way.\" He rolls his sleeve up to show you, like it's a splinter. \"I'd like to keep walking from here. Or I'd like you to make sure I don't. I can't decide. You can.\" He looks back at %1 once, and then doesn't again.",
 			m_sTown));
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, edge, 0, "", "End it here|Let him walk on", m_iTalk, "Talk to " + m_sMan);
-		SpawnGuards(gm, edge, 2, 60, 120);
 
 		// He's left the safehouse for good, whatever happens next
 		houses.RemovePopulation(m_iHouse, 1);
@@ -193,10 +193,28 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		// The infected on the edge of town turn up when someone comes near
+		if (!m_bGuarded && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
+		{
+			m_bGuarded = true;
+			SpawnGuards(gm, m_vPos, 2, 60, 120);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Only someone the council sent may settle it: a passer-by gets nothing from him.
 	override protected void OnChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option, IEntity source)
 	{
 		if (objIdx != 0)
 			return;
+
+		if (!IsEligible(gm, playerId))
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 looks at you and shakes his head. \"The council didn't send you. I'll wait for the one they did.\"", m_sMan));
+			return;
+		}
 
 		m_aParticipants.Clear();
 		m_aParticipants.Insert(playerId);
@@ -332,6 +350,13 @@ class RZ_Mission_TheLedger : RZ_PuzzleMission
 	{
 		if (objIdx != 0)
 			return;
+
+		// Only someone the council sent may settle it, and before any Favor changes hands
+		if (!IsEligible(gm, playerId))
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 looks you over. \"You're not from the council. This is between me and them.\"", m_sMember));
+			return;
+		}
 
 		if (option == 1 && !gm.SpendFavor(playerId, RZ_EFaction.SURVIVORS, DEBT_FAVOR))
 		{
@@ -513,15 +538,10 @@ class RZ_Mission_QuietArrangement : RZ_Mission_Delivery
 		if (who.IsEmpty())
 			return;
 
+		// The Haven holds it against the carrier now, delivered or not
 		m_bSeen = true;
-		gm.NotifyPlayer(m_iCarrier, m_sTitle, string.Format("%1 sees the envelope in your hand and knows exactly what it is. By tonight, so will the safehouse in %2.", who, m_sHouse));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnDelivered(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction)
-	{
-		if (m_bSeen)
-			SetRival(RZ_EFaction.SURVIVORS, SEEN_INFAMY);
+		gm.AddInfamy(m_iCarrier, RZ_EFaction.SURVIVORS, SEEN_INFAMY);
+		gm.NotifyPlayer(m_iCarrier, m_sTitle, string.Format("%1 sees the envelope in your hand and knows exactly what it is. By tonight, so will the safehouse in %2. (+%3 Haven Infamy)", who, m_sHouse, SEEN_INFAMY));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -55,7 +55,7 @@ class RZ_Mission_RestoreComms : RZ_PuzzleMission
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.KNOWN, 22, 20);
-		m_Req.Bonus("radioop");
+		m_Req.Bonus("radioham");
 		m_fTimeLeft = 3000;
 		m_fParticipationRadius = 0;
 	}
@@ -1098,6 +1098,8 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 //! #19 Blow the Bridge: a horde is walking toward a safe town. Plant charges at the narrow point
 //! on its way (three, two with a Mechanic or Soldier there; 10 s each), then blow them from the
 //! detonator before it passes. It turns back. It reaches the town: +10 infection there, failed.
+//! Killed to the last instead: the town is safe, paid all the same. Each charge spot is a puzzle
+//! object (use it to see how far its wiring is). The clock covers the horde's whole walk.
 //! *Simplified:* no real bridge: a choke point on the line between the horde and the town. The
 //! horde is data (walking 1 m/s) until a player is within 600 m.
 class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
@@ -1108,7 +1110,6 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 	protected vector m_vDetonator;
 	protected ref array<vector> m_aCharges = {};
 	protected ref array<float> m_aPlanted = {};
-	protected ref array<IEntity> m_aHorde = {};
 	protected int m_iPlanted;
 	protected int m_iNeeded = 3;
 	protected bool m_bBonusChecked;
@@ -1116,10 +1117,13 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 	protected bool m_bBlown;
 	protected bool m_bTurned;
 	protected bool m_bHordeSpawned;
+	protected bool m_bHordeSeen;		// its bodies were there once: gone again means killed (mission units never despawn)
+	protected bool m_bReached;
 	protected float m_fStartIn = 300;
 
 	protected static const float HORDE_SPEED = 1;
 	protected static const float CHARGE_SECONDS = 10;
+	protected static const float SPARE_SECONDS = 600;	// on top of the horde's walk, before the job lapses
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -1163,6 +1167,9 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 
 		m_vDetonator = LandPointNear(m_vChoke, 45, 60);
 		m_vPos = m_vChoke;
+
+		// The clock covers the horde's whole walk, so it never lapses before they get there
+		m_fTimeLeft = m_fStartIn + RZ_Util.DistXZ(m_vHorde, m_vTown) / HORDE_SPEED + SPARE_SECONDS;
 		m_sTitle = "Blow the Bridge";
 		m_sBrief = string.Format("A horde out of %1 is walking toward %2. There's a narrow point on its way at grid %3. Plant the charges there and blow it before they pass. You have about five minutes before they move.",
 			src.m_sName, s.m_sName, RZ_SettlementScanner.GridReference(m_vChoke));
@@ -1172,7 +1179,7 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		UpdateHorde(gm, dt, players);
+		UpdateHorde(gm, dt, ids, players);
 		if (m_eState != RZ_EMissionState.ACTIVE)
 			return;
 
@@ -1180,6 +1187,12 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 		{
 			m_bDetonatorShown = true;
 			SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_vDetonator, 0, "", "Blow the charges");
+			foreach (int n, vector spot : m_aCharges)
+			{
+				SpawnObject(gm, RZ_EPuzzleProp.OBJECT, spot, n + 1, "Check the charge", "");
+			}
+
+			RZ_ContractHelp.NotifyNear(gm, m_vChoke, 300, m_sTitle, string.Format("The charges are stacked at the narrow point (grid %1). Stand by each for %2 seconds to wire it, then blow them from the detonator.", ChargeGrids(), RZ_Util.RoundToInt(CHARGE_SECONDS)));
 		}
 
 		if (!m_bBonusChecked && AnyBonusNear(gm, ids, players, m_vChoke, 40))
@@ -1207,8 +1220,61 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The charge spots not wired yet, by grid: "045-112, 046-112".
+	protected string ChargeGrids()
+	{
+		string text = "";
+		foreach (int i, vector c : m_aCharges)
+		{
+			if (m_aPlanted[i] >= CHARGE_SECONDS)
+				continue;
+
+			if (!text.IsEmpty())
+				text += ", ";
+
+			text += RZ_SettlementScanner.GridReference(c);
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetWhereText(RZ_GameModeComponent gm, vector from)
+	{
+		string text = super.GetWhereText(gm, from);
+		string grids = ChargeGrids();
+		if (!m_bBlown && !grids.IsEmpty())
+			text += "\nCharges (grid): " + grids;
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A charge spot: says how far its wiring is.
+	override protected void OnUse(RZ_GameModeComponent gm, int playerId, int objIdx, int value, IEntity source, IEntity user)
+	{
+		int idx = objIdx - 1;
+		if (idx < 0 || idx >= m_aCharges.Count())
+			return;
+
+		if (m_aPlanted[idx] >= CHARGE_SECONDS)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("This one's wired. %1 of %2 set.", m_iPlanted, m_iNeeded));
+			return;
+		}
+
+		if (m_iPlanted >= m_iNeeded)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "Enough of them are wired. Get to the detonator.");
+			return;
+		}
+
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("Stay right here while you wire it: %1 more seconds.", RZ_Util.RoundToInt(CHARGE_SECONDS - m_aPlanted[idx])));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Data until someone is near, then real groups walking to the town.
-	protected void UpdateHorde(RZ_GameModeComponent gm, float dt, array<IEntity> players)
+	protected void UpdateHorde(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
 		if (m_bTurned)
 			return;
@@ -1224,9 +1290,23 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 			array<IEntity> units = {};
 			gm.GetSpawner().GetMissionUnits(m_iId, units);
 			if (!units.IsEmpty())
+			{
+				m_bHordeSeen = true;
 				m_vHorde = RZ_Util.GetUnitPosition(units[0]);
+			}
+			else if (m_bHordeSeen)
+			{
+				// Killed to the last (mission units never despawn): nothing is left to turn back
+				m_bTurned = true;
+				RZ_ContractHelp.AddNear(ids, players, m_vHorde, 300, m_aParticipants);
+				RZ_ContractHelp.NotifyNear(gm, m_vHorde, 600, m_sTitle, string.Format("The last of them goes down. Nothing is walking to %1 now. Bastion pays all the same.", GetLocationName(gm)));
+				m_eState = RZ_EMissionState.SUCCEEDED;
+				return;
+			}
 			else
-				m_bHordeSpawned = false;	// despawned or killed: walk on as data
+			{
+				m_bHordeSpawned = false;	// nothing came of the spawn: walk on as data
+			}
 		}
 		else
 		{
@@ -1249,6 +1329,7 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 		if (s)
 			s.AddInfection(10);
 
+		m_bReached = true;
 		m_eState = RZ_EMissionState.FAILED;
 	}
 
@@ -1302,7 +1383,10 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Blow the Bridge: the horde reached %1.", GetLocationName(gm));
+		if (m_bReached)
+			return string.Format("Blow the Bridge: the horde reached %1.", GetLocationName(gm));
+
+		return string.Format("Blow the Bridge: nobody blew the narrow point, and the horde is still on the road to %1.", GetLocationName(gm));
 	}
 }
 

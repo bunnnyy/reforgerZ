@@ -63,6 +63,11 @@ How the code does it:
   ([DESIGN.md](DESIGN.md), "Supply trucks"). Convoy Escort and Hijack the Convoy ask for
   Bastion's next real truck, so those truck rewards are paid on top of the contract.
 - **Rescues** add population at the nearest Haven safehouse ([DESIGN.md](DESIGN.md), "Haven safehouses").
+- **Bodies on approach.** A contract's guards, AI people and raiders are spawned when a player
+  comes within about 300 m of them; until then the job is data. A spawned AI group that is gone
+  (groups delete themselves when the last member dies) counts as dead.
+- **Drops are the mission's own.** An item is only taken at a drop point that mission spawned,
+  never at another mission's drop of the same faction.
 
 **Reading the tables:**
 - **Needs:** tier with the giver first, then other requirements. *Any* = Stranger or better and not Hunted.
@@ -81,26 +86,26 @@ Soldier, Doctor, Raider, Elder, Drifter.
 
 | # | Contract | Needs | Bg | What you do | Result | Status |
 |---|---|---|---|---|---|---|
-| 1 | Supply Cache | Any | | Hold a cache in a town for 60 s | Haven Fame | ✅ |
-| 2 | Survivors Trapped | Any | ★ Nurse: healthier survivors, bonus Fame | Reach a barricaded family and survive 3 waves | Fame; the family joins a safehouse (+3, +4 with ★) | ✅ |
-| 3 | Radio Relay | Any | ★ Radio Op: half the hold time | Keep a loud relay on high ground running for 3 min | Fame | ✅ |
+| 1 | Supply Cache | Any | | Hold a cache in a town for 60 s | Haven Fame; a reward crate | ✅ |
+| 2 | Survivors Trapped | Any | ★ Nurse: healthier survivors, bonus Fame | Reach a barricaded family and survive 3 waves | Fame, a reward crate; the family joins a safehouse (+3, +4 with ★) | ✅ *the family is real AI only with the survivor group prefab; if they all die it fails* |
+| 3 | Radio Relay | Any | ★ Radio Op: half the hold time | Keep a loud relay on high ground running for 3 min | Fame; a reward crate | ✅ *a horde comes after the first minute* |
 | 4 | Medicine Run | Any | ★ Nurse/Doctor: the pharmacy is pre-marked, bonus Fame | Bring medical supplies from a pharmacy town to a Haven safehouse | Fame | ✅ |
-| 5 | The Bitten Friend | Known | ★ Nurse: slows his infection | A Haven member is bitten. Bring an antidote before he turns, or end it | Fame; mercy = half the Fame | ✅ |
+| 5 | The Bitten Friend | Known | ★ Nurse: slows his infection | A Haven member is bitten. Bring an antidote before he turns, or end it | Fame; mercy = half the Fame. Killed by anything else: failed | ✅ *mercy counts only if a player fired within 30 m of him in his last 10 s; there's no one-person slot, so the survivor group stands in for him (all of it has to die)* |
 | 6 | Fuel for the Lights | Known | ★ Mechanic: generator runs twice as long | Bring 2 jerrycans to a safehouse generator. The lights raise heat there | Fame | ✅ *the lights run 10 min (20 with a Mechanic) and it pays when they go out* |
 | 7 | Take Back the Town | Known, Bastion gone (Overrun+) | | Kill 8 × size infected in a town | Fame, town infection −35 | ✅ |
 | 8 | Harvest Guard | Known | ★ Hunter: farmers stay hidden longer | Protect farmers in the fields for 10 min | Fame; +3 food at the nearest safehouse | ✅ *farmers are real only with the survivor group prefab; ★ delays the first wave by 2 min* |
-| 9 | Missing Scout | Known | | Find a scout's body and bring his notes home | Fame; the notes mark a stash (a reward crate in a random town) for whoever brought them | ✅ |
-| 10 | Clear the Road | Known | ★ Mechanic: bonus Fame | Kill the infected on the road between two Haven towns | Fame | ✅ *no wrecks to clear* |
-| 11 | Burn the Nest | Trusted | | Destroy a hive in an infested town | Fame, infection −30 | ✅ |
+| 9 | Missing Scout | Known | | Find a scout's body and bring his notes home | Fame; the notes mark a stash (a reward crate in a random town) for whoever brought them | ✅ *home is a Haven safehouse (the safest town when there's none)* |
+| 10 | Clear the Road | Known | ★ Mechanic: bonus Fame | Kill the infected on the road between two Haven towns | Fame; infection −5 in both towns | ✅ *no wrecks to clear; the infected are on four stretches of the straight line between them* |
+| 11 | Burn the Nest | Trusted | | Destroy a hive in an infested town | Fame, infection −30, a sample. Fails: infection +15 there | ✅ |
 | 12 | Refugee Column | Trusted | | Escort a group walking a road to a safe town | Big Fame; three join the safehouse | ✅ *to a safehouse 0.8–3.5 km away, in a straight line through a midpoint* |
 | 13 | Signal Fires | Trusted, 3+ players online | | Light beacons on 3 hills within 2 minutes of each other | Fame for each player; every town within 2 km −10 infection | ✅ |
 | 14 | Water Purifier | Trusted | ★ Mechanic/Lab Tech: 2 of 3 parts | Find 3 purifier parts in a town and bring them to a safehouse | Fame | ✅ *the parts are the mission item, lying in the streets with two infected each* |
 | 15 | Fortify the Safehouse | Trusted | ★ Mechanic: 1.5× faster | Hold the area for 3 min (3 waves) while barricades go up | Fame; the town counts as Barricaded | ✅ |
-| 16 | Trader Caravan | Trusted, not Trusted by the Red Hand | | Defend a Haven trader at a crossroads from a Red Hand raid | Fame (Red Hand Infamy) | ✅ |
+| 16 | Trader Caravan | Trusted, not Trusted by the Red Hand | | Defend a Haven trader at a crossroads from a Red Hand raid | Fame, a reward crate (Red Hand Infamy) | ✅ *the raid comes 90 s after someone reaches him* |
 | 17 | Rescue the Kids | Trusted | ★ Hunter: quieter approach | Hold a school for 90 s without making noise. Too loud and a horde comes | Big Fame; the kids join a safehouse (+3) | ✅ |
-| 18 | The Informant | Trusted, Watched+ by the Red Hand | 🔒 not Police/Soldier | Pose as a buyer at a Red Hand dead drop and report who shows up | Fame; the Red Hand loses a little strength (+10 Red Hand Infamy for the buyer if spotted) | ✅ *wait 60 s for the seller, buy, then reach any safehouse; spotted 20%, +30% carrying a gun* |
-| 19 | Recover the Bus | Champion | ★ Mechanic: tunes it to half a tank | Get a bus or truck running and drive it to a safehouse | Fame | ✅ *it starts with a splash of fuel; any bus, truck or van counts; the Haven keeps it (it leaves the world)* |
-| 20 | Memorial | Champion | | Collect ID tags of the dead from an overrun city | Fame | ✅ *five bodies, 8 s each, then any safehouse* |
+| 18 | The Informant | Trusted, Watched+ by the Red Hand | 🔒 not Police/Soldier | Pose as a buyer at a Red Hand dead drop and report who shows up | Fame; the Red Hand loses a little strength (+10 Red Hand Infamy for the buyer the moment he's spotted, even if the names never arrive) | ✅ *wait 60 s for the seller, buy, then reach any safehouse; spotted 20%, +30% carrying a gun* |
+| 19 | Recover the Bus | Champion | ★ Mechanic: tunes it to half a tank | Get a bus or truck running and drive it to a safehouse | Fame | ✅ *it starts with a splash of fuel; any bus, truck or van counts, also after the depot's bus is wrecked; the Haven keeps it (it leaves the world)* |
+| 20 | Memorial | Champion | | Collect ID tags of the dead from an overrun city | Fame | ✅ *five bodies, 8 s each, then any safehouse; the bodies are the corpse pile prop (else the puzzle object), and it never appears without either* |
 
 **Amends:** Medicine Run and Survivors Trapped work off Haven Infamy while you're Watched.
 
@@ -110,7 +115,7 @@ Soldier, Doctor, Raider, Elder, Drifter.
 |---|---|---|---|---|---|---|
 | 1 | Retake the Town | Any, Bastion present | ★ Police/Soldier: +25% Fame | Kill 8 × size infected in a town | Fame, infection −35 | ✅ |
 | 2 | Last Helicopter | Any, Bastion present, no storm | | Bastion's one helicopter lands at an LZ on its run between its own bases. Keep the LZ clear and be there when it lifts off | Fame, Favor | ✅ |
-| 3 | Burn the Bodies | Any | ★ Nurse: faster | Stand at 5 corpse piles in a town for 10 s each | Fame, spread slows there | ✅ |
+| 3 | Burn the Bodies | Any | ★ Nurse: faster | Stand at 5 corpse piles in a town for 10 s each | Fame, infection −10 there | ✅ *the piles are the corpse pile prop (else the puzzle object); it never appears without either* |
 | 4 | Recon | Any | ★ Hunter/Radio Op: double Fame | Visit 3 observation points on high ground | Fame; Bastion shares where the next horde is forming | ✅ |
 | 5 | Checkpoint Duty | Known | ★ Police: holds faster | Hold a checkpoint at a town's edge for 10 min against waves | Fame (Red Hand Infamy) | ✅ |
 | 6 | Missing Patrol | Known | | Find a squad's last position and deal with the turned soldiers | Fame, a crate of military loot | ✅ |
@@ -122,11 +127,11 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 12 | Rescue the Pilot | Trusted | ★ Nurse/Doctor: patches him up, no clock | Find a downed pilot and bring them out | Fame | ✅ *he follows you to a Bastion seat; 20 min before he bleeds out* |
 | 13 | Quarantine Line | Trusted | | Hold the edge of an infested town for 10 min | Fame; the town stops spreading for 30 min | ✅ |
 | 14 | Clear the Airfield | Trusted | | Clear an airfield so the Last Helicopter can land there | Fame; the Last Helicopter runs twice as often for 2 hours | ✅ *a flat field outside a town, not a real airfield; it doesn't land there* |
-| 15 | Raid the Red Hand | Trusted, not Trusted by the Red Hand | 🔒 not Ex-Con/Raider unless Champion with Bastion | Assault a Red Hand camp | Big Fame (big Red Hand Infamy) | ✅ |
+| 15 | Raid the Red Hand | Trusted, not Trusted by the Red Hand | 🔒 not Ex-Con/Raider unless Champion with Bastion | Assault a Red Hand camp | Big Fame, a reward crate (big Red Hand Infamy) | ✅ *two Red Hand groups; every member has to die* |
 | 16 | Hunt the Deserter | Trusted | | Track down a deserter who stole supplies. Bring him back or kill him | Fame; killed = 60% | ✅ *a two-step trail (his pack, his fire) to his hideout; arrested, he follows you to a Bastion seat* |
-| 17 | Requisition | Trusted | 🔒 not Elder | "Collect" supplies from a Haven safehouse. Deliver them to Bastion, or give them back | To Bastion: Fame (Haven Infamy), the safehouse loses 4 food. Back: Bastion Infamy | ✅ |
+| 17 | Requisition | Trusted | 🔒 not Elder | "Collect" supplies from a Haven safehouse. Deliver them to Bastion, or give them back | To Bastion: Fame (Haven Infamy), the safehouse loses 4 food. Back: Bastion Infamy | ✅ *giving them back means carrying them to another safehouse 0.8–5 km away (a quiet town when there's none)* |
 | 18 | Secure the Shipment | Champion | | Escort a Halcyon sample shipment | **Choice:** Bastion Fame (Halcyon Infamy) or let it reach the lab (Halcyon Fame, research) | ✅ *a courier on foot; divert her by talking to her* |
-| 19 | Blow the Bridge | Champion | ★ Mechanic/Soldier: two charges, not three | Plant charges to stop a horde heading for a safe town | Fame; the horde turns back. It arrives: +10 infection there | ✅ *no real bridge: a choke point on its way; the horde is data until a player is within 600 m* |
+| 19 | Blow the Bridge | Champion | ★ Mechanic/Soldier: two charges, not three | Plant charges to stop a horde heading for a safe town | Fame; the horde turns back. Killed to the last instead: paid all the same. It arrives: +10 infection there | ✅ *no real bridge: a choke point on its way; the horde is data until a player is within 600 m; each charge spot is a puzzle object (stand by it 10 s), listed by grid; the clock covers the horde's whole walk* |
 | 20 | Fire Mission | Champion | | Mark three hordes with smoke for artillery | Fame | ✅ *10 s within 80 m marks one; 30 s later the strike kills it outright* |
 
 **Amends:** Burn the Bodies and Recon work off Bastion Infamy while you're Watched. So do
@@ -310,9 +315,9 @@ They need at least one safehouse. Code: `Missions/Haven/RZ_HavenHouseMissions.c`
 
 | # | Contract | From | Needs | Bg | What you do | Result | Status |
 |---|---|---|---|---|---|---|---|
-| 1 | Walk Him Out | Haven | Known, dusk | ★ Nurse: reads the bite; ★ Nurse/Elder: more Fame | A bitten member declared it himself. At dusk he waits at the edge of town. **End it here** or **let him walk on** | End it: Fame. Walk on: 60% Fame, town infection +5. Nobody comes in 40 min: he turns | ✅ *he waits rather than walking with you* |
-| 2 | The Ledger | Haven | Known | ★ Elder: more Fame | A member has been taking extra from the stores. **Threaten** them, **pay their debt** (20 Haven Favor), or **tell them to disappear** | Threaten or pay: Fame. Warn off: no pay, +3 Haven Infamy. They remember you | ✅ |
-| 3 | A Quiet Arrangement | Red Hand | Known | ★ Ex-Con: lookouts spot you at 25 m | A safehouse keeper pays the Red Hand to be left alone. Carry the envelope to a Red Hand drop without being seen by two Haven lookouts or a wanderer | Small Red Hand Fame, Favor. Seen: +12 Haven Infamy. Never delivered: the safehouse loses 2 people | ✅ *the lookouts are props* |
+| 1 | Walk Him Out | Haven | Known, dusk | ★ Nurse: reads the bite; ★ Nurse/Elder: more Fame | A bitten member declared it himself. At dusk he waits at the edge of town. **End it here** or **let him walk on** | End it: Fame. Walk on: 60% Fame, town infection +5. Nobody comes in 40 min: he turns | ✅ *he waits rather than walking with you; only a player the job is open to can choose* |
+| 2 | The Ledger | Haven | Known | ★ Elder: more Fame | A member has been taking extra from the stores. **Threaten** them, **pay their debt** (20 Haven Favor), or **tell them to disappear** | Threaten or pay: Fame. Warn off: no pay, +3 Haven Infamy. They remember you | ✅ *only a player the job is open to can choose (checked before the Favor is spent)* |
+| 3 | A Quiet Arrangement | Red Hand | Known | ★ Ex-Con: lookouts spot you at 25 m | A safehouse keeper pays the Red Hand to be left alone. Carry the envelope to a Red Hand drop without being seen by two Haven lookouts or a wanderer | Small Red Hand Fame, Favor. Seen: +12 Haven Infamy at once. Never delivered: the safehouse loses 2 people | ✅ *the lookouts are props* |
 | – | Letters (the Courier's job) | Haven, via a Courier wanderer | Any | | Carry letters to a safehouse or quiet town 0.8–4 km away | Small Haven Fame, Favor: only the one who asked, and anyone with them at the drop (taking the letters off them pays nobody) | ✅ |
 
 ## Leader missions

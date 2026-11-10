@@ -335,7 +335,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_Nest.et` | a Zombie Hive prefab or a destructible prop with a damage manager | — | Missions > Nest | optional | Burn the Nest, Specimen from the Nest |
 | `RZ_BanditDrop.et` | a crate, barrel or car wreck prop | `RZ_SellSamplesToBanditsAction` | Missions > Dead drop | optional | Dead Drop |
 | `RZ_HeliWreck.et` | a helicopter wreck prop | the clue set | Missions > Helicopter wreck | optional | Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash |
-| `RZ_CorpsePile.et` | a body bag pile prop | — | Missions > Corpse pile | optional | look only (also Memorial's bodies) |
+| `RZ_CorpsePile.et` | a body bag pile prop | — | Missions > Corpse pile | optional | look only: Burn the Bodies' piles and Memorial's bodies (both fall back to the puzzle object) |
 | `RZ_RedHandGroup.et` | an AI group on BAND | — | Missions > Red Hand group | optional | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness; default Red Hand hunter squad |
 | `RZ_FuelDepot.et` | fuel tanks with a damage manager | — | Missions > Fuel depot | optional | Arson |
 | `RZ_Relay.et` | a radio mast with a damage manager | — | Missions > Relay | optional | Sabotage the Relay |

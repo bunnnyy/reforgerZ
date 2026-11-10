@@ -145,6 +145,13 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A new mission manager (a new game on this server) starts with no boost.
+	static void ResetBoost()
+	{
+		s_fBoostUntil = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
 		m_iSettlement = PickSettlement(gm, 0, 70);
@@ -207,7 +214,8 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 //------------------------------------------------------------------------------------------------
 //! #3 Burn the Bodies: burn corpse piles in a town to slow the infection. Stand at
 //! each pile for 10 s. Amends: works off Bastion Infamy. ★ Nurse: faster.
-//! The pile prefab is optional and only visual.
+//! The piles are Missions > Corpse pile, else Puzzles > Puzzle object (look only): without
+//! either nobody could find them, so it never appears.
 class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 {
 	protected ref array<IEntity> m_aPiles = {};
@@ -230,6 +238,9 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
+		if (RZ_ContractHelp.CorpsePilePrefab(gm).IsEmpty())
+			return 0;
+
 		return 1.5;
 	}
 
@@ -256,7 +267,7 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 		{
 			vector p = LandPointNear(center, minR, maxR);
 			AddPoint(p);
-			m_aPiles.Insert(RZ_Util.SpawnPrefab(gm.GetCorpsePilePrefab(), p, Math.RandomFloat(0, 360)));
+			m_aPiles.Insert(RZ_Util.SpawnPrefab(RZ_ContractHelp.CorpsePilePrefab(gm), RZ_Util.GroundPos(p), Math.RandomFloat(0, 360)));
 		}
 	}
 
@@ -422,12 +433,23 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 200, s.m_fRadius + 600);
-		SpawnGuards(gm, m_vPos, 4, 0, 20);
-		SpawnGuards(gm, m_vPos, 1, 0, 10, true);
-		m_bSpawned = true;
 		m_sTitle = "Missing Patrol";
 		m_sBrief = string.Format("A Bastion patrol went silent outside %1. Find their last position and put down whatever they've become.", s.m_sName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What's left of the patrol turns up when someone comes near.
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (!m_bSpawned && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
+		{
+			m_bSpawned = true;
+			SpawnGuards(gm, m_vPos, 4, 0, 20);
+			SpawnGuards(gm, m_vPos, 1, 0, 10, true);
+		}
+
+		super.OnUpdate(gm, dt, ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -445,6 +467,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 {
 	protected IEntity m_Wreck;
 	protected float m_fSecured;
+	protected bool m_bGuarded;
 
 	protected static const float SECURE_SECONDS = 60;
 
@@ -481,7 +504,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 			return false;
 
 		int bastionTown = PickSettlementAway(gm, m_vPos, 800, 5000, 0, 60);
-		int redHandTown = PickSettlementAway(gm, m_vPos, 800, 5000, 0, 100);
+		int redHandTown = PickSettlementAway(gm, m_vPos, 800, 5000, 0, 100, bastionTown);
 		RZ_Settlement b = gm.GetSettlement(bastionTown);
 		RZ_Settlement r = gm.GetSettlement(redHandTown);
 		if (!b || !r)
@@ -489,7 +512,6 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 
 		SpawnDrop(gm, RZ_EFaction.MILITARY, LandPointNear(b.m_vCenter, b.m_fRadius * 0.8, b.m_fRadius + 50));
 		SpawnDrop(gm, RZ_EFaction.BANDITS, LandPointNear(r.m_vCenter, r.m_fRadius * 0.8, r.m_fRadius + 50));
-		SpawnGuards(gm, m_vPos, 3, 15, 40);
 		gm.GetHeat().AddHeat(m_vPos, 40);
 
 		m_fParticipationRadius = 0;
@@ -501,6 +523,13 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 	//------------------------------------------------------------------------------------------------
 	override protected void OnDeliveryTick(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
+		// The infected around the wreck turn up when someone comes near
+		if (!m_bGuarded && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
+		{
+			m_bGuarded = true;
+			SpawnGuards(gm, m_vPos, 3, 15, 40);
+		}
+
 		if (m_bItemSpawned || CountPlayersNear(players, m_vPos, 25) == 0)
 			return;
 
@@ -588,8 +617,10 @@ class RZ_Mission_QuarantineLine : RZ_Mission_Hold
 //! Not for Ex-Cons or Raiders unless they're Champions of Bastion.
 class RZ_Mission_RaidRedHand : RZ_Mission
 {
-	protected ref array<IEntity> m_aGroups = {};
-	protected float m_fGrace = 15;
+	protected ref array<ref RZ_UnitWatch> m_aGroups = {};
+	protected bool m_bSpawned;
+
+	protected static const int GROUPS = 2;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -621,19 +652,6 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.8, s.m_fRadius + 250);
-		for (int i = 0; i < 2; i++)
-		{
-			IEntity g = RZ_Util.SpawnPrefab(gm.GetRedHandGroupPrefab(), LandPointNear(m_vPos, 0, 25));
-			if (g)
-			{
-				m_aGroups.Insert(g);
-				RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, g); // the camp shoots back
-			}
-		}
-
-		if (m_aGroups.IsEmpty())
-			return false;
-
 		m_fParticipationRadius = 250;
 		m_sTitle = "Raid the Red Hand";
 		m_sBrief = string.Format("The Red Hand has a camp outside %1. Bastion wants it gone.", s.m_sName);
@@ -643,17 +661,39 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		m_fGrace -= dt;
-		if (m_fGrace > 0)
-			return;
-
-		foreach (IEntity g : m_aGroups)
+		// The camp is manned when someone comes near
+		if (!m_bSpawned)
 		{
-			if (RZ_Util.CountAlive(g) > 0)
+			if (!RZ_ContractHelp.AnyNear(players, m_vPos, 300))
 				return;
+
+			m_bSpawned = true;
+			for (int i = 0; i < GROUPS; i++)
+			{
+				RZ_UnitWatch g = new RZ_UnitWatch();
+				if (!g.Spawn(gm.GetRedHandGroupPrefab(), LandPointNear(m_vPos, 0, 25)))
+					continue;
+
+				m_aGroups.Insert(g);
+				RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, g.m_Unit); // the camp shoots back
+			}
+
+			if (m_aGroups.IsEmpty())
+				m_eState = RZ_EMissionState.FAILED;
+
+			return;
 		}
 
-		m_eState = RZ_EMissionState.SUCCEEDED;
+		// Every group has to be dead (a group deletes itself when its last member dies)
+		bool allDead = true;
+		foreach (RZ_UnitWatch watch : m_aGroups)
+		{
+			if (!watch.IsDead(dt))
+				allDead = false;
+		}
+
+		if (allDead)
+			m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -666,10 +706,12 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
-		foreach (IEntity g : m_aGroups)
+		foreach (RZ_UnitWatch watch : m_aGroups)
 		{
-			RZ_Util.DeleteUnit(g);
+			watch.Delete();
 		}
+
+		m_aGroups.Clear();
 	}
 }
 
@@ -712,14 +754,39 @@ class RZ_Mission_Requisition : RZ_Mission_Choice
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.4);
+
+		// Handing them back means carrying them to another Haven safehouse, not dropping them by the door
+		vector havenPos;
+		string havenName;
+		int house = RZ_ContractHelp.PickSafehouse(gm, m_vPos, 800, 5000);
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, house);
+		if (h && h.m_iSettlement != bastionTown)
+		{
+			havenPos = LandPointNear(h.m_vPos, 4, 10);
+			havenName = "the safehouse in " + h.m_sName;
+		}
+		else
+		{
+			RZ_Settlement other = gm.GetSettlement(PickSettlementAway(gm, s.m_vCenter, 800, 5000, 0, 40, bastionTown));
+			if (!other)
+				return false;
+
+			havenPos = LandPointNear(other.m_vCenter, 0, other.m_fRadius * 0.4);
+			havenName = other.m_sName;
+		}
+
 		if (!SpawnItem(gm, m_vPos))
 			return false;
 
-		SpawnDrop(gm, RZ_EFaction.SURVIVORS, LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.4));
-		SpawnDrop(gm, RZ_EFaction.MILITARY, LandPointNear(b.m_vCenter, b.m_fRadius * 0.8, b.m_fRadius + 50));
+		if (!SpawnDrop(gm, RZ_EFaction.SURVIVORS, havenPos))
+			return false;
+
+		if (!SpawnDrop(gm, RZ_EFaction.MILITARY, LandPointNear(b.m_vCenter, b.m_fRadius * 0.8, b.m_fRadius + 50)))
+			return false;
+
 		m_fParticipationRadius = 0;
 		m_sTitle = "Requisition";
-		m_sBrief = string.Format("Bastion is 'requisitioning' the Haven's supplies in %1. Take them to the Bastion drop at %2. Or hand them back to the Haven. Your call.", s.m_sName, b.m_sName);
+		m_sBrief = string.Format("Bastion is 'requisitioning' the Haven's supplies in %1. Take them to the Bastion drop at %2. Or carry them to the Haven in %3 and hand them back. Your call.", s.m_sName, b.m_sName, havenName);
 		return true;
 	}
 

@@ -42,6 +42,39 @@ class RZ_ContractHelp
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A random safehouse whose town no running mission is using, -1 if none.
+	static int PickFreeSafehouse(RZ_GameModeComponent gm)
+	{
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (!houses)
+			return -1;
+
+		array<int> options = {};
+		for (int i = 0; i < houses.Count(); i++)
+		{
+			if (!gm.GetMissions().IsSettlementBusy(houses.Get(i).m_iSettlement))
+				options.Insert(i);
+		}
+
+		if (options.IsEmpty())
+			return -1;
+
+		return options.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What marks a body or a corpse pile (Burn the Bodies, Memorial): Missions > Corpse pile, else
+	//! Puzzles > Puzzle object. "" if neither is set (those missions then never appear).
+	static ResourceName CorpsePilePrefab(RZ_GameModeComponent gm)
+	{
+		ResourceName prefab = gm.GetCorpsePilePrefab();
+		if (prefab.IsEmpty())
+			prefab = gm.GetPuzzlePrefab(RZ_EPuzzleProp.OBJECT);
+
+		return prefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Fuel can keywords (Interactions > Cars).
 	static string FuelWords(RZ_GameModeComponent gm)
 	{
@@ -113,5 +146,69 @@ class RZ_ContractHelp
 		}
 
 		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A spawned unit (a character or an AI group) a mission needs alive. An SCR_AIGroup deletes
+//! itself when its last member dies, so a unit that was spawned and is now gone counts as dead.
+//! Group members appear a moment after the group: it isn't judged until they've been seen alive
+//! (or 15 s have passed). Call IsDead once per tick.
+class RZ_UnitWatch
+{
+	IEntity m_Unit;
+	protected bool m_bSpawned;
+	protected bool m_bSeenAlive;
+	protected float m_fAge;
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawns it (once). False if the prefab is empty or invalid.
+	bool Spawn(ResourceName prefab, vector pos, float yaw = 0)
+	{
+		m_Unit = RZ_Util.SpawnPrefab(prefab, pos, yaw);
+		m_bSpawned = m_Unit != null;
+		m_bSeenAlive = false;
+		m_fAge = 0;
+		return m_bSpawned;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsSpawned()
+	{
+		return m_bSpawned;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True once everyone in it is dead (or it was deleted). False before it was spawned.
+	bool IsDead(float dt)
+	{
+		if (!m_bSpawned)
+			return false;
+
+		if (!m_Unit)
+			return true;
+
+		m_fAge += dt;
+		int alive = RZ_Util.CountAlive(m_Unit);
+		if (alive > 0)
+			m_bSeenAlive = true;
+
+		return alive == 0 && (m_bSeenAlive || m_fAge > 15);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	vector GetPos(vector fallback)
+	{
+		if (!m_Unit)
+			return fallback;
+
+		return RZ_Util.GetUnitPosition(m_Unit);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Delete()
+	{
+		RZ_Util.DeleteUnit(m_Unit);
+		m_Unit = null;
 	}
 }
