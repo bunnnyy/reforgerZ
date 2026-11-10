@@ -73,6 +73,7 @@ class RZ_ZombieSpawner
 	protected float m_fEventDensityMult = 1;
 	protected float m_fEventSpecialMult = 1;
 	protected int m_iFocusSettlement = -1;	// gets 1.5x density, every other town 0.4x
+	protected ref array<int> m_aSuppressed = {};	// settlements with no spawns at all (The Silent Village)
 
 	protected static const float AMBIENT_RADIUS = 300;
 
@@ -195,6 +196,55 @@ class RZ_ZombieSpawner
 	void SetFocusSettlement(int idx)
 	{
 		m_iFocusSettlement = idx;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No zombies spawn in this settlement while suppressed. Turning it on also removes
+	//! the ones already there (not mission zombies).
+	void SetSuppressed(int idx, bool suppressed)
+	{
+		if (idx < 0)
+			return;
+
+		if (!suppressed)
+		{
+			m_aSuppressed.RemoveItem(idx);
+			return;
+		}
+
+		if (!m_aSuppressed.Contains(idx))
+			m_aSuppressed.Insert(idx);
+
+		RZ_Settlement s = m_GM.GetSettlement(idx);
+		for (int i = m_aTracked.Count() - 1; i >= 0; i--)
+		{
+			RZ_TrackedZombie z = m_aTracked[i];
+			if (z.m_iMissionId != -1)
+				continue;
+
+			bool inside = z.m_iSettlement == idx;
+			if (!inside && s && RZ_Util.DistXZ(z.m_vLastPos, s.m_vCenter) <= s.m_fRadius)
+				inside = true;
+
+			if (!inside)
+				continue;
+
+			RZ_Util.DeleteUnit(z.m_Entity);
+			m_aTracked.Remove(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsSuppressedAt(vector pos)
+	{
+		foreach (int idx : m_aSuppressed)
+		{
+			RZ_Settlement s = m_GM.GetSettlement(idx);
+			if (s && RZ_Util.DistXZ(pos, s.m_vCenter) <= s.m_fRadius + 50)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -339,6 +389,9 @@ class RZ_ZombieSpawner
 			if (RZ_Util.NearestDistance(s.m_vCenter, players) > m_Settings.m_fActivationRadius + s.m_fRadius)
 				continue;
 
+			if (m_aSuppressed.Contains(idx))
+				continue;
+
 			float desired = s.m_iSize * m_Settings.m_fDensityPerSize * (s.m_fInfection / 100) * stage.m_fDensityMult * m_fEventDensityMult;
 			desired += m_GM.GetHeat().GetHeat(s.m_vCenter) / 25;
 			if (m_iFocusSettlement >= 0)
@@ -416,6 +469,9 @@ class RZ_ZombieSpawner
 				continue;
 
 			if (RZ_Util.NearestDistance(pos, players) < m_Settings.m_fMinSpawnDistance)
+				continue;
+
+			if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))
 				continue;
 
 			return true;

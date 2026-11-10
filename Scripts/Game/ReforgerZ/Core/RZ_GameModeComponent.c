@@ -124,6 +124,55 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Explosion effect prefab, e.g. an artillery shell impact (optional, enables Bombing Run)", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sExplosionPrefab;
 
+	// ---------------------------------------------------------------- Puzzles
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Readable note: RZ_ClueComponent + RZ_ReadClueAction. Enables every puzzle mission", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sPuzzleNotePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Generic puzzle object: RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleUseAction (values 0-3), 4 RZ_PuzzleChoiceAction (options 0-3). Fallback for wells, bells, fuse boxes, masts, safes, people", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sPuzzleObjectPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Keypad: RZ_PuzzleObjectComponent + 12 RZ_KeypadAction (keys 0-9, 10 Clear, 11 Enter) + RZ_ClueComponent/RZ_ReadClueAction (optional)", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sKeypadPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Terminal (optional, falls back to the keypad): a computer prop with the keypad's components", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sTerminalPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Body with something readable (optional, falls back to the note): RZ_ClueComponent + RZ_ReadClueAction", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sPuzzleBodyPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Well (optional): the generic object's components on a well prop", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sWellPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bell (optional): the generic object's components on a bell prop", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sBellPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Fuse box (optional): the generic object's components on an electrical box", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sFuseBoxPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Radio mast (optional): the generic object's components on an antenna", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sRadioMastPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Safe (optional): the generic object's components on a safe", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sSafePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Scale crate: a crate with an inventory storage plus the generic object's components. Enables The Weighing Vault", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sScaleCratePrefab;
+
+	[Attribute("0", desc: "The Weighing Vault counts items in the crate instead of weighing them (use if the storage weight API doesn't work)", category: "ReforgerZ|Puzzles")]
+	protected bool m_bScaleCountsItems;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "A person to talk to (optional, falls back to the generic object): a civilian character or a seated figure prop with the generic object's components", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sCivilianPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Fallback landmark when a town has no church, tower or well, e.g. a wayside cross or a painted mast", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sLandmarkPrefab;
+
+	[Attribute("the old cross", desc: "What notes call the fallback landmark", category: "ReforgerZ|Puzzles")]
+	protected string m_sLandmarkName;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Morse light: a lamp with RZ_BlinkLightComponent (or any light prefab: it's then spawned per flash). Enables Lights in the Window", "et", category: "ReforgerZ|Puzzles")]
+	protected ResourceName m_sBlinkLightPrefab;
+
 	// ---------------------------------------------------------------- Survival
 	[Attribute("3", desc: "Heat per shot fired by a player (times the background noise multiplier)", category: "ReforgerZ|Survival")]
 	protected float m_fHeatPerShot;
@@ -320,6 +369,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Missions.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
 		m_Perks.Tick(dt, ids, players);
+		RZ_GameTime.Tick(dt);
+		RZ_NoisemakerComponent.TickAll();
 		UpdateInfections(dt, ids);
 
 		foreach (int i, IEntity ent : players)
@@ -377,6 +428,42 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	float GetHunterSquadMinutes() { return m_fHunterSquadMinutes; }
 	float GetBountyMinutes() { return Math.Max(1, m_fBountyMinutes); }
 	RZ_FactionPerks GetPerks() { return m_Perks; }
+	string GetLandmarkFallbackName() { return m_sLandmarkName; }
+	bool ScaleCountsItems() { return m_bScaleCountsItems; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Prefab for a puzzle prop, with the fallbacks described on RZ_EPuzzleProp. "" = not available.
+	ResourceName GetPuzzlePrefab(RZ_EPuzzleProp kind)
+	{
+		switch (kind)
+		{
+			case RZ_EPuzzleProp.CLUE: return m_sPuzzleNotePrefab;
+			case RZ_EPuzzleProp.OBJECT: return m_sPuzzleObjectPrefab;
+			case RZ_EPuzzleProp.KEYPAD: return m_sKeypadPrefab;
+			case RZ_EPuzzleProp.SCALE: return m_sScaleCratePrefab;
+			case RZ_EPuzzleProp.LANDMARK: return m_sLandmarkPrefab;
+			case RZ_EPuzzleProp.LIGHT: return m_sBlinkLightPrefab;
+			case RZ_EPuzzleProp.TERMINAL: return PuzzleFallback(m_sTerminalPrefab, m_sKeypadPrefab);
+			case RZ_EPuzzleProp.BODY: return PuzzleFallback(m_sPuzzleBodyPrefab, m_sPuzzleNotePrefab);
+			case RZ_EPuzzleProp.WELL: return PuzzleFallback(m_sWellPrefab, m_sPuzzleObjectPrefab);
+			case RZ_EPuzzleProp.BELL: return PuzzleFallback(m_sBellPrefab, m_sPuzzleObjectPrefab);
+			case RZ_EPuzzleProp.FUSEBOX: return PuzzleFallback(m_sFuseBoxPrefab, m_sPuzzleObjectPrefab);
+			case RZ_EPuzzleProp.RADIO_MAST: return PuzzleFallback(m_sRadioMastPrefab, m_sPuzzleObjectPrefab);
+			case RZ_EPuzzleProp.SAFE: return PuzzleFallback(m_sSafePrefab, m_sPuzzleObjectPrefab);
+			case RZ_EPuzzleProp.CIVILIAN: return PuzzleFallback(m_sCivilianPrefab, m_sPuzzleObjectPrefab);
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ResourceName PuzzleFallback(ResourceName preferred, ResourceName fallback)
+	{
+		if (preferred.IsEmpty())
+			return fallback;
+
+		return preferred;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	ResourceName GetQuartermasterPrefab(RZ_EFaction faction)
