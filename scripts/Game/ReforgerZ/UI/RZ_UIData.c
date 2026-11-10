@@ -133,7 +133,7 @@ class RZ_UIText
 	static string Clean(string text, int maxLen = 400)
 	{
 		string s = text;
-		s.Replace("|", "/");		// VERIFY: string.Replace(sample, replacement) works in place
+		s.Replace("|", "/");
 		s.Replace("\n", " ");
 		if (maxLen > 0 && s.Length() > maxLen)
 			s = s.Substring(0, maxLen - 3) + "...";
@@ -145,7 +145,7 @@ class RZ_UIText
 	static void Split(string text, string delimiter, notnull array<string> parts)
 	{
 		parts.Clear();
-		text.Split(delimiter, parts, false); // VERIFY: string.Split(delimiter, out array, removeEmpty)
+		text.Split(delimiter, parts, false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -362,7 +362,7 @@ class RZ_NoticeStyle
 	{
 		RZ_NoticeStyle st = new RZ_NoticeStyle();
 		string t = title;
-		t.ToLower(); // VERIFY: ToLower() changes the string in place
+		t.ToLower();
 
 		if (t.Contains("government broadcast"))
 		{
@@ -511,7 +511,7 @@ class RZ_UIW
 	//------------------------------------------------------------------------------------------------
 	static Color Rgb(int r, int g, int b)
 	{
-		return Color.FromRGBA(r, g, b, 255); // VERIFY: Color.FromRGBA(int r, int g, int b, int a)
+		return Color.FromRGBA(r, g, b, 255);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -520,7 +520,7 @@ class RZ_UIW
 		if (!root)
 			return null;
 
-		return root.FindAnyWidget(name); // VERIFY: Widget.FindAnyWidget(name)
+		return root.FindAnyWidget(name);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -528,7 +528,7 @@ class RZ_UIW
 	{
 		TextWidget t = TextWidget.Cast(Find(root, name));
 		if (t)
-			t.SetText(text); // VERIFY: TextWidget.SetText
+			t.SetText(text);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -536,7 +536,7 @@ class RZ_UIW
 	{
 		Widget w = Find(root, name);
 		if (w)
-			w.SetVisible(show); // VERIFY: Widget.SetVisible
+			w.SetVisible(show);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -544,7 +544,7 @@ class RZ_UIW
 	{
 		Widget w = Find(root, name);
 		if (w && c)
-			w.SetColor(c); // VERIFY: Widget.SetColor(Color)
+			w.SetColor(c);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -556,7 +556,7 @@ class RZ_UIW
 		if (!img || imageset.IsEmpty() || icon.IsEmpty())
 			return;
 
-		img.LoadImageFromSet(0, imageset, icon); // VERIFY: ImageWidget.LoadImageFromSet(index, imageset, name)
+		img.LoadImageFromSet(0, imageset, icon);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -567,7 +567,7 @@ class RZ_UIW
 		if (!box)
 			return "";
 
-		return box.GetText(); // VERIFY: EditBoxWidget.GetText() and SetText(string)
+		return box.GetText();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -585,7 +585,7 @@ class RZ_UIW
 		if (!p)
 			return;
 
-		p.SetMin(0); // VERIFY: ProgressBarWidget SetMin, SetMax, SetCurrent
+		p.SetMin(0);
 		p.SetMax(1);
 		p.SetCurrent(Math.Clamp(share, 0, 1));
 	}
@@ -596,14 +596,14 @@ class RZ_UIW
 		if (layout.IsEmpty() || !parent)
 			return null;
 
-		return GetGame().GetWorkspace().CreateWidgets(layout, parent); // VERIFY: WorkspaceWidget.CreateWidgets(layout, parent)
+		return GetGame().GetWorkspace().CreateWidgets(layout, parent);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static void Remove(Widget w)
 	{
 		if (w)
-			w.RemoveFromHierarchy(); // VERIFY: Widget.RemoveFromHierarchy
+			w.RemoveFromHierarchy();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -612,7 +612,7 @@ class RZ_UIW
 		if (!parent)
 			return;
 
-		Widget c = parent.GetChildren(); // VERIFY: Widget.GetChildren / GetSibling
+		Widget c = parent.GetChildren();
 		while (c)
 		{
 			Widget next = c.GetSibling();
@@ -625,7 +625,7 @@ class RZ_UIW
 	//! Real seconds on this machine (for the client-side countdowns).
 	static float Now()
 	{
-		return System.GetTickCount() / 1000.0; // VERIFY: System.GetTickCount() in milliseconds
+		return System.GetTickCount() / 1000.0; // milliseconds since the game started
 	}
 
 
@@ -634,7 +634,7 @@ class RZ_UIW
 	{
 		MenuManager mm = GetGame().GetMenuManager();
 		if (mm)
-			mm.OpenMenu(preset); // VERIFY: MenuManager.OpenMenu(ChimeraMenuPreset)
+			mm.OpenMenu(preset);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -647,7 +647,7 @@ class RZ_UIW
 			w = Find(root, name);
 
 		if (w && handler)
-			w.AddHandler(handler); // VERIFY: Widget.AddHandler(ScriptedWidgetEventHandler); the handler's OnClick fires for Button widgets
+			w.AddHandler(handler);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -655,7 +655,7 @@ class RZ_UIW
 	static void SetTag(Widget w, int tag)
 	{
 		if (w)
-			w.SetUserID(tag); // VERIFY: Widget.SetUserID / GetUserID
+			w.SetUserID(tag);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -675,9 +675,9 @@ class RZ_UIW
 			return false;
 
 		int px, py;
-		mapEnt.WorldToScreen(x, z, px, py, true); // VERIFY: SCR_MapEntity.WorldToScreen(worldX, worldY, out screenX, out screenY, withPan)
+		mapEnt.WorldToScreen(x, z, px, py, true);
 		WorkspaceWidget ws = GetGame().GetWorkspace();
-		sx = ws.DPIUnscale(px); // VERIFY: WorkspaceWidget.DPIUnscale
+		sx = ws.DPIUnscale(px);
 		sy = ws.DPIUnscale(py);
 		return true;
 	}
@@ -686,7 +686,7 @@ class RZ_UIW
 	static void SetPos(Widget w, float x, float y)
 	{
 		if (w)
-			FrameSlot.SetPos(w, x, y); // VERIFY: FrameSlot.SetPos(widget, x, y) for a child of a Frame
+			FrameSlot.SetPos(w, x, y);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -697,7 +697,7 @@ class RZ_UIW
 		if (!pc)
 			return "";
 
-		SCR_PlayerLoadoutComponent lc = SCR_PlayerLoadoutComponent.Cast(pc.FindComponent(SCR_PlayerLoadoutComponent)); // VERIFY: SCR_PlayerLoadoutComponent on the controller, GetLoadout(), GetLoadoutName()
+		SCR_PlayerLoadoutComponent lc = SCR_PlayerLoadoutComponent.Cast(pc.FindComponent(SCR_PlayerLoadoutComponent));
 		if (!lc)
 			return "";
 

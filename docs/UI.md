@@ -99,8 +99,11 @@ The panel reads the picked loadout twice a second. Its **starting gear** is what
 really spawned with the last time anyone took it (the server notes up to ten things a few seconds
 after the spawn, by prefab name); until then, the background's own gear line (`RZ_Background.m_sGear`).
 A locked background's loadout is **unavailable** in the vanilla menu (**UI > Lock loadouts**, on):
-`RZ_LoadoutLock.c` mods `SCR_BasePlayerLoadout`, the server refusing it from the saved profile
-and the client greying it from the last backgrounds payload. The panel says how to unlock it.
+`RZ_LoadoutLock.c` mods `SCR_BasePlayerLoadout`, so the client marks it unavailable from the last
+backgrounds payload. The 1.9 menu leaves unavailable loadouts out of its list when it builds it and
+greys their buttons when it refreshes (which one players see is a VERIFY). Vanilla never asks the
+server, so the server checks on spawn: a locked pick spawns as the default background. The panel
+says how to unlock it.
 
 ### The map
 

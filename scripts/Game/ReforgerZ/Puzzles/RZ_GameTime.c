@@ -18,15 +18,15 @@ class RZ_GameTime
 	//! Hour of the day, 0..24. -1 if the world has no time manager.
 	static float GetHour()
 	{
-		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld()); // VERIFY: ChimeraWorld.CastFrom
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
 		if (!world)
 			return -1;
 
-		TimeAndWeatherManagerEntity tm = world.GetTimeAndWeatherManager(); // VERIFY: GetTimeAndWeatherManager()
+		TimeAndWeatherManagerEntity tm = world.GetTimeAndWeatherManager();
 		if (!tm)
 			return -1;
 
-		return tm.GetTimeOfTheDay(); // VERIFY: GetTimeOfTheDay() returns hours as a float
+		return tm.GetTimeOfTheDay(); // hours as a float, e.g. 16.5
 	}
 
 	//------------------------------------------------------------------------------------------------

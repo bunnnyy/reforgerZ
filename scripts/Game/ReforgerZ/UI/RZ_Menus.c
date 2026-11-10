@@ -10,7 +10,7 @@
 //! radio filter chip (FilterButton) are Buttons in the layouts; RZ_MenuClick hears their clicks.
 //! The lists scroll with the wheel inside a ScrollLayout. Keys work as before.
 
-modded enum ChimeraMenuPreset // VERIFY: ChimeraMenuPreset can be modded, and the entries need matching chimeraMenus.conf entries
+modded enum ChimeraMenuPreset // each entry needs a matching chimeraMenus.conf entry
 {
 	RZ_StandingMenu,
 	RZ_JournalMenu,
@@ -33,7 +33,7 @@ class RZ_MenuClick : ScriptedWidgetEventHandler
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool OnClick(Widget w, int x, int y, int button) // VERIFY: ScriptedWidgetEventHandler.OnClick(Widget, int x, int y, int button)
+	override bool OnClick(Widget w, int x, int y, int button)
 	{
 		if (!m_Menu || !w)
 			return false;
@@ -44,7 +44,7 @@ class RZ_MenuClick : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
-class RZ_MenuBase : ChimeraMenuBase // VERIFY: ChimeraMenuBase, GetRootWidget(), Close() and the OnMenuOpen/OnMenuClose/OnMenuUpdate overrides
+class RZ_MenuBase : ChimeraMenuBase
 {
 	protected static const float POLL = 0.25;
 
@@ -82,7 +82,7 @@ class RZ_MenuBase : ChimeraMenuBase // VERIFY: ChimeraMenuBase, GetRootWidget(),
 	{
 		super.OnMenuOpen();
 		m_wRoot = GetRootWidget();
-		GetGame().GetInputManager().AddActionListener("MenuBack", EActionTrigger.DOWN, OnBack); // VERIFY: the vanilla MenuBack, MenuTabLeft, MenuTabRight action names
+		GetGame().GetInputManager().AddActionListener("MenuBack", EActionTrigger.DOWN, OnBack);
 		GetGame().GetInputManager().AddActionListener("MenuTabLeft", EActionTrigger.DOWN, OnTabLeft);
 		GetGame().GetInputManager().AddActionListener("MenuTabRight", EActionTrigger.DOWN, OnTabRight);
 		m_Click = new RZ_MenuClick(this);
@@ -366,7 +366,7 @@ class RZ_JournalMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	override protected void OnOpened()
 	{
-		GetGame().GetInputManager().AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp); // VERIFY: the vanilla MenuUp, MenuDown action names
+		GetGame().GetInputManager().AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		GetGame().GetInputManager().AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)

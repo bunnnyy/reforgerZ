@@ -192,8 +192,8 @@ multiplier (Nurse ×1.5, Doctor ×2.5, Ex-Con ×0.8) × the cure's (×1.25 after
 Meds and safehouse slowing add time, so a player can drop back a stage. A player who turns
 becomes the **Turned Player** world event: they roam with their gear.
 
-*Simplified:* stamina goes through an engine hook (VERIFY); without it the stages make noise
-instead. "Visible to others" is a message to players nearby, not a change to how you look.
+*Simplified:* stamina is drained on the server (whether the player feels it is a VERIFY);
+without it the stages make noise instead. "Visible to others" is a message to players nearby, not a change to how you look.
 
 ### Treatments
 
@@ -310,8 +310,8 @@ The game clock's night is 20:30 to 05:00.
   may spawn twice as close. The engine's fog is global, so it isn't touched; an optional mist
   prop is the only look.
 
-*Simplified:* the weather accessors are engine calls that may need fixing (VERIFY); without
-them only night and the Storm event apply.
+*Simplified:* weather is read from the time and weather manager (rain and fog 0 to 1, wind in
+m/s); on a map without one, only night and the Storm event apply.
 
 ### The power grid
 
@@ -1203,8 +1203,7 @@ hand: **Wipe on start**, or delete `state.json`).
   record stay.
 
 *Simplified:* the wipe only happens on a restart; the mode never restarts the server itself.
-Real time is the server's clock (`System.GetUnixTime`, a VERIFY in `Guidance/RZ_Guidance.c`); if it
-reads 0, the wipe never comes due.
+Real time is the server's clock (`System.GetUnixTime`).
 
 ### Hall of fame
 
@@ -1239,8 +1238,8 @@ again when it's put down), vehicles (a bought car isn't litter), and anything wi
 running mission. At most 300 are tracked; past that the oldest carried entry is forgotten, else
 the oldest abandoned item goes early. Not saved: after a restart, older items are left alone.
 
-*Simplified:* "in a pack" is read from the item's parent or inventory slot (two VERIFYs). If both
-fail in your game version, carried items could be removed: set the minutes to 0.
+*Simplified:* "in a pack" means the item has a parent entity or sits in an inventory slot. If a
+carried item is ever removed, set the minutes to 0.
 
 ## Persistence
 

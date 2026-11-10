@@ -405,7 +405,7 @@ class RZ_ScaleHelper
 		if (!storage)
 			return;
 
-		storage.GetAll(items); // VERIFY: BaseInventoryStorageComponent.GetAll() lists the items stored in it
+		storage.GetAll(items);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -422,7 +422,7 @@ class RZ_ScaleHelper
 
 			InventoryItemComponent iic = InventoryItemComponent.Cast(item.FindComponent(InventoryItemComponent));
 			if (iic)
-				total += iic.GetTotalWeight(); // VERIFY: InventoryItemComponent.GetTotalWeight() (item plus its own contents)
+				total += iic.GetTotalWeight(); // VERIFY: GetTotalWeight() (weight plus "additional weight") includes a bag's contents
 		}
 
 		return total;

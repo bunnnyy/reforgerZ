@@ -6,7 +6,7 @@
 //! No modded deploy-menu class: put a widget built from the BackgroundPanel layout into the deploy
 //! menu's layout and add this component to it (UI/LAYOUTS.md). It polls the picked loadout twice a
 //! second while the menu is open. If it isn't added, the spawn notice still names the perk and flaw.
-class RZ_BackgroundPanelComponent : ScriptedWidgetComponent // VERIFY: ScriptedWidgetComponent, HandlerAttached/HandlerDeattached
+class RZ_BackgroundPanelComponent : ScriptedWidgetComponent
 {
 	protected static const int POLL_MS = 500;
 

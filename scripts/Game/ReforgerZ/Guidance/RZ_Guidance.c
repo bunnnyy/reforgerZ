@@ -169,7 +169,7 @@ class RZ_Guidance
 	//! Real-world seconds since 1970, 0 if unknown.
 	static int UnixNow()
 	{
-		return System.GetUnixTime(); // VERIFY: System.GetUnixTime() (real-world time, used for the 30-day refresher)
+		return System.GetUnixTime(); // real-world time, used for the 30-day refresher
 	}
 
 	// ================================================================ Experience

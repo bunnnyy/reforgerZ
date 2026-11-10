@@ -5,14 +5,13 @@
 //! consumable effect to RZ_ConsumableAntidote. Keep RZ_InjectAntidoteAction as
 //! well; it still works from the ground.
 //!
-//! VERIFY: the whole class. SCR_ConsumableEffectBase's ApplyEffect signature has
-//! changed between game versions. If this file doesn't compile, delete it: the
-//! world action keeps working without it.
+//! VERIFY: ApplyEffect also runs on the server, where the cure happens (vanilla calls it from
+//! SCR_ConsumableItemComponent when the item-use animation completes)
 [BaseContainerProps()]
 class RZ_ConsumableAntidote : SCR_ConsumableEffectBase
 {
 	//------------------------------------------------------------------------------------------------
-	override void ApplyEffect(notnull IEntity target, notnull IEntity user, IEntity item, ItemUseParameters animParams) // VERIFY: signature
+	override void ApplyEffect(notnull IEntity target, notnull IEntity user, IEntity item, ItemUseParameters animParams)
 	{
 		super.ApplyEffect(target, user, item, animParams);
 

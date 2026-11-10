@@ -1,6 +1,6 @@
 //! Shared helpers. Every engine call here is kept small so it is easy to fix
-//! if an API name differs in your game version. Search the codebase for
-//! "VERIFY:" to find all calls that still need checking in Workbench.
+//! if an API changes in a later game version. Search the codebase for
+//! "VERIFY:" to find the runtime behaviour a play-test still has to confirm.
 class RZ_Log
 {
 	static void Info(string msg)
@@ -168,7 +168,7 @@ class RZ_Util
 
 		SCR_CharacterDamageManagerComponent dmg = SCR_CharacterDamageManagerComponent.Cast(c.GetDamageManager());
 		if (dmg)
-			dmg.Kill(Instigator.CreateInstigator(null)); // VERIFY: Kill() signature in your game version
+			dmg.Kill(Instigator.CreateInstigator(null));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -181,7 +181,7 @@ class RZ_Util
 
 		SCR_CharacterDamageManagerComponent dmg = SCR_CharacterDamageManagerComponent.Cast(c.GetDamageManager());
 		if (dmg)
-			dmg.FullHeal(); // VERIFY: FullHeal() (also stops bleeding) in your game version
+			dmg.FullHeal(); // also stops bleeding
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -193,14 +193,14 @@ class RZ_Util
 
 		SCR_DamageManagerComponent dmg = SCR_DamageManagerComponent.Cast(e.FindComponent(SCR_DamageManagerComponent));
 		if (dmg)
-			dmg.EnableDamageHandling(false); // VERIFY: DamageManagerComponent.EnableDamageHandling(bool)
+			dmg.EnableDamageHandling(false);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static bool IsInVehicle(IEntity e)
 	{
 		CompartmentAccessComponent cac = CompartmentAccessComponent.Cast(e.FindComponent(CompartmentAccessComponent));
-		return cac && cac.IsInCompartment(); // VERIFY: IsInCompartment()
+		return cac && cac.IsInCompartment();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ class RZ_Util
 		if (!dmg)
 			return -1;
 
-		Instigator killer = dmg.GetInstigator(); // VERIFY: the damage manager keeps the last Instigator after death; Instigator.GetInstigatorPlayerID() is the player id (0 or -1 for AI)
+		Instigator killer = dmg.GetInstigator();
 		if (!killer)
 			return -1;
 
@@ -278,7 +278,7 @@ class RZ_Util
 		if (!inv)
 			return false;
 
-		return inv.TryInsertItem(item); // VERIFY: TryInsertItem(IEntity) picks a storage with room (other params default)
+		return inv.TryInsertItem(item);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -288,15 +288,19 @@ class RZ_Util
 		if (!item)
 			return -1;
 
-		IEntity root = item.GetRootParent(); // VERIFY: GetRootParent() (inventory items are children of the character)
-		if (!root || root == item)
-			return -1;
+		// Inventory items are children of the character, but a seated character is itself a
+		// child of the vehicle, so walk up rather than take the root parent.
+		IEntity parent = item.GetParent();
+		while (parent)
+		{
+			int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(parent);
+			if (playerId > 0)
+				return playerId;
 
-		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(root);
-		if (playerId <= 0)
-			return -1;
+			parent = parent.GetParent();
+		}
 
-		return playerId;
+		return -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -310,7 +314,7 @@ class RZ_Util
 		if (a == b)
 			return true;
 
-		SCR_GroupsManagerComponent groups = SCR_GroupsManagerComponent.GetInstance(); // VERIFY: SCR_GroupsManagerComponent.GetInstance(), GetPlayerGroup(playerId)
+		SCR_GroupsManagerComponent groups = SCR_GroupsManagerComponent.GetInstance();
 		if (!groups)
 			return false;
 
@@ -344,7 +348,7 @@ class RZ_Util
 			return null;
 
 		array<AIWaypoint> current = {};
-		group.GetWaypoints(current); // VERIFY: AIGroup.GetWaypoints() / RemoveWaypoint()
+		group.GetWaypoints(current);
 		foreach (AIWaypoint old : current)
 		{
 			group.RemoveWaypoint(old);
@@ -410,14 +414,14 @@ class RZ_Util
 		if (!e || depth > 2)
 			return false;
 
-		IEntity child = e.GetChildren(); // VERIFY: GetChildren()/GetSibling() walk attachments
+		IEntity child = e.GetChildren(); // VERIFY: a weapon's attachments (the suppressor) are child entities of the weapon
 		while (child)
 		{
-			EntityPrefabData data = child.GetPrefabData(); // VERIFY: GetPrefabData().GetPrefabName()
+			EntityPrefabData data = child.GetPrefabData();
 			if (data)
 			{
 				string name = data.GetPrefabName();
-				name.ToLower(); // VERIFY: ToLower() changes the string in place
+				name.ToLower();
 				if (name.Contains("suppress") || name.Contains("silenc"))
 					return true;
 			}
@@ -439,7 +443,7 @@ class RZ_Util
 		if (!e)
 			return "";
 
-		EntityPrefabData data = e.GetPrefabData(); // VERIFY: GetPrefabData().GetPrefabName()
+		EntityPrefabData data = e.GetPrefabData();
 		if (data)
 		{
 			string prefab = data.GetPrefabName();
@@ -447,7 +451,7 @@ class RZ_Util
 				return prefab;
 		}
 
-		VObject obj = e.GetVObject(); // VERIFY: GetVObject().GetResourceName() for placed map meshes
+		VObject obj = e.GetVObject(); // VERIFY: GetVObject().GetResourceName() names the mesh of map objects that aren't prefab instances
 		if (obj)
 			return obj.GetResourceName();
 
@@ -473,7 +477,7 @@ class RZ_Util
 		if (!fac)
 			return "";
 
-		Faction f = fac.GetAffiliatedFaction(); // VERIFY: FactionAffiliationComponent.GetAffiliatedFaction()
+		Faction f = fac.GetAffiliatedFaction();
 		if (!f)
 			return "";
 
@@ -498,7 +502,7 @@ class RZ_Util
 		if (!fac)
 			return false;
 
-		fac.SetAffiliatedFaction(f); // VERIFY: SetAffiliatedFaction(Faction) on the server, replicated, and read by AI perception
+		fac.SetAffiliatedFaction(f); // VERIFY: SetAffiliatedFaction on the server replicates, and AI perception reads it
 		return true;
 	}
 
@@ -545,14 +549,14 @@ class RZ_Util
 			return false;
 
 		array<IEntity> weapons = {};
-		wm.GetWeaponsList(weapons); // VERIFY: BaseWeaponManagerComponent.GetWeaponsList(array<IEntity>) lists the slotted weapons
+		wm.GetWeaponsList(weapons);
 		foreach (IEntity w : weapons)
 		{
 			if (!w)
 				continue;
 
 			BaseWeaponComponent wc = BaseWeaponComponent.Cast(w.FindComponent(BaseWeaponComponent));
-			if (wc && IsFirearmType(wc.GetWeaponType())) // VERIFY: BaseWeaponComponent.GetWeaponType() and the EWeaponType names
+			if (wc && IsFirearmType(wc.GetWeaponType()))
 				return true;
 		}
 
@@ -616,7 +620,7 @@ class RZ_Util
 		if (driver)
 			type = ECompartmentType.PILOT;
 
-		return cac.MoveInVehicle(vehicle, type); // VERIFY: SCR_CompartmentAccessComponent.MoveInVehicle(vehicle, ECompartmentType) seats AI instantly; PILOT is the driver's seat
+		return cac.MoveInVehicle(vehicle, type); // VERIFY: an AI is seated at once (MoveInVehicle sends an RPC to the character's owner, the server for AI); PILOT is the driver's seat
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -630,7 +634,7 @@ class RZ_Util
 		if (!dmg)
 			return false;
 
-		return dmg.GetState() == EDamageState.DESTROYED; // VERIFY: vehicles carry an SCR_DamageManagerComponent (SCR_VehicleDamageManagerComponent) with GetState()
+		return dmg.GetState() == EDamageState.DESTROYED;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -648,7 +652,7 @@ class RZ_Util
 
 		Physics phys = vehicle.GetPhysics();
 		if (phys)
-			phys.SetVelocity(vector.Zero); // VERIFY: Physics.SetVelocity
+			phys.SetVelocity(vector.Zero);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -664,7 +668,7 @@ class RZ_Util
 			return;
 
 		array<BaseFuelNode> nodes = {};
-		fm.GetFuelNodesList(nodes); // VERIFY: FuelManagerComponent.GetFuelNodesList(array<BaseFuelNode>), BaseFuelNode.GetMaxFuel()/SetFuel()
+		fm.GetFuelNodesList(nodes);
 		foreach (BaseFuelNode node : nodes)
 		{
 			if (node)
@@ -684,7 +688,7 @@ class RZ_Util
 		if (!dmg)
 			return -1;
 
-		return dmg.GetHealth(); // VERIFY: total health accessor (may be GetDefaultHitZone().GetHealth()), as in RZ_BiteDetector
+		return dmg.GetHealth();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -702,7 +706,7 @@ class RZ_Util
 		if (!character || !IsInVehicle(character))
 			return null;
 
-		return character.GetParent(); // VERIFY: a seated character is a child entity of its vehicle (else use CompartmentAccessComponent.GetVehicleIn(character))
+		return CompartmentAccessComponent.GetVehicleIn(character);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -713,7 +717,7 @@ class RZ_Util
 		if (!hz)
 			return -1;
 
-		return hz.GetMaxHealth(); // VERIFY: HitZone.GetMaxHealth() on the default hit zone, the same scale as GetCharacterHealth()
+		return hz.GetMaxHealth();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -724,7 +728,7 @@ class RZ_Util
 		if (!hz)
 			return false;
 
-		hz.SetHealth(Math.Max(1, health)); // VERIFY: HitZone.SetHealth(float) on the server is replicated and doesn't kill or knock out above zero
+		hz.SetHealth(Math.Max(1, health)); // VERIFY: HitZone.SetHealth on the server replicates and doesn't knock the character out above zero
 		return true;
 	}
 
@@ -755,7 +759,7 @@ class RZ_Util
 		if (dot > 0)
 			name = name.Substring(0, dot);
 
-		name.Replace("_", " "); // VERIFY: string.Replace works in place (as RZ_UIText.Clean)
+		name.Replace("_", " ");
 		return name;
 	}
 
@@ -768,7 +772,7 @@ class RZ_Util
 			return;
 
 		array<IEntity> things = {};
-		IEntity child = character.GetChildren(); // VERIFY: the same child walk as CollectChildNames
+		IEntity child = character.GetChildren();
 		while (child)
 		{
 			things.Insert(child);
@@ -779,7 +783,7 @@ class RZ_Util
 		if (inv)
 		{
 			array<IEntity> items = {};
-			inv.GetItems(items); // VERIFY: the same GetItems as RZ_FoodHelper.TakeFood
+			inv.GetItems(items);
 			foreach (IEntity item : items)
 			{
 				things.Insert(item);

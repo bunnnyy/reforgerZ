@@ -242,7 +242,7 @@ class RZ_MolotovComponent : ScriptComponent
 		if (!owner)
 			return;
 
-		IEntity root = owner.GetRootParent(); // VERIFY: carried items are children of the character (as for noisemakers)
+		IEntity root = owner.GetRootParent(); // carried items are children of the character (as for noisemakers)
 		if (root && root != owner)
 		{
 			m_bWasCarried = true;
@@ -409,7 +409,7 @@ class RZ_Traps
 			bool gone = !p.m_Ent;
 			if (!gone && p.m_bKit)
 			{
-				IEntity root = p.m_Ent.GetRootParent(); // VERIFY: as for noisemakers: picked up = child of a character
+				IEntity root = p.m_Ent.GetRootParent(); // as for noisemakers: picked up = child of a character
 				gone = root && root != p.m_Ent;
 			}
 
@@ -602,7 +602,7 @@ class RZ_Traps
 		p.m_bKit = true;
 		if (!setPrefab.IsEmpty())
 		{
-			vector angles = user.GetAngles(); // VERIFY: IEntity.GetAngles() returns pitch, yaw, roll in degrees
+			vector angles = user.GetAngles(); // rotation around X, Y, Z in degrees: [1] is the yaw
 			IEntity deployed = RZ_Util.SpawnPrefab(setPrefab, RZ_Util.GroundPos(kit.GetOrigin()), angles[1]);
 			if (deployed)
 			{
@@ -663,7 +663,7 @@ class RZ_Traps
 		if (SCR_DestructibleBuildingEntity.Cast(e))
 		{
 			m_bFoundBuilding = true;
-			return false; // VERIFY: returning false from the query callback stops the query early
+			return false; // returning false stops the query early
 		}
 
 		string name = RZ_ItemHelper.LowerName(e);

@@ -20,7 +20,6 @@ class RZ_AntidoteSearchPredicate : InventorySearchPredicate
 	}
 
 	//------------------------------------------------------------------------------------------------
-	// VERIFY: IsMatch signature in your game version (same as RZ_SampleSearchPredicate)
 	override protected bool IsMatch(BaseInventoryStorageComponent storage, IEntity item, array<GenericComponent> queriedComponents, array<BaseItemAttributeData> queriedAttributes)
 	{
 		return true;
@@ -44,7 +43,7 @@ class RZ_AntidoteHelper
 		if (items.IsEmpty())
 			return false;
 
-		inv.TryDeleteItem(items[0]); // VERIFY: TryDeleteItem()
+		inv.TryDeleteItem(items[0]);
 		return true;
 	}
 }

@@ -35,7 +35,8 @@ Run **ReforgerZ: Create prefabs** (or follow the manual checklist). First:
 2. Arma Reforger Tools → **Add existing project** → pick this repo's `addon.gproj`.
 3. Project Settings → Dependencies: Arma Reforger is already there; add Bacon Zombies and
    whatever else you use. Commit the changed `addon.gproj`.
-4. Open the Script Editor and compile (**F7**). Fix errors using [the VERIFY list](#6-the-verify-list).
+4. Open the Script Editor and compile (**F7**). The game scripts compile cleanly on 1.9; [the VERIFY list](#6-the-verify-list)
+   is what to watch in play.
 5. Make a world as a **sub-scene of Arland** and open it in the World Editor
    ([world steps](#the-world)).
 
@@ -45,9 +46,9 @@ Look up classes in the Script Editor or the
 ### 1.2 Run "ReforgerZ: Create prefabs"
 
 The plugin in `scripts/WorkbenchGame/ReforgerZ/RZ_CreatePrefabsPlugin.c` reads the manifest and
-does as much of sections 2 to 4 as it can. **It has never been run**: every editor call in it is a
-guess at the Workbench API, marked `VERIFY` ([the list](#the-workbench-plugin-35)). Expect a round
-of fixes the first time, and use the [manual checklist](#13-by-hand-the-manual-checklist) for
+does as much of sections 2 to 4 as it can. **It has never been run**: its editor calls were checked
+against the 1.9 Workbench script declarations, and what only a run can show is marked `VERIFY`
+([the list](#the-workbench-plugin-9)). Expect a round of fixes the first time, and use the [manual checklist](#13-by-hand-the-manual-checklist) for
 whatever it can't do.
 
 1. Compile the scripts (the plugin is in the Workbench script module, so `RZ_` classes must exist).
@@ -570,7 +571,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 
 **The generic puzzle object** is reused by many systems for anything that's read, talked to or
 used, so make it early. Missions label the actions ("Seal the well", "Accuse Mirek") and hide the
-slots they don't use. **Without replicated labels** (a VERIFY), every slot shows its generic
+slots they don't use. **Without replicated labels** (the prefab needs an `RplComponent`), every slot shows its generic
 label, and the actions still route correctly. The specific puzzle props only change the look;
 missions turn themselves off when a prefab they need is missing.
 
@@ -679,10 +680,10 @@ collision layer, so it never blocks a door, a doorway or a player. Name parts wi
 "tyre" and "spark", and the home remedy not with "vodka" or "herb".
 
 **Door locks need no prefab.** The vanilla door action is modded (`Interactions/RZ_DoorHooks.c`),
-so vanilla doors refuse players by themselves. If that file doesn't compile, see the first door
-row in [the VERIFY list](#6-the-verify-list); turning **Search > Door locks** off puts every lock
+so vanilla doors refuse players by themselves. If they don't, see the door rows in
+[the VERIFY list](#6-the-verify-list); turning **Search > Door locks** off puts every lock
 back on the loot. AI need more (how it works is in [DESIGN.md](DESIGN.md#locks-and-keys)): the
-optional `Interactions/RZ_AIDoorHook.c` (delete it if it doesn't compile) and the doorway blocker.
+optional `Interactions/RZ_AIDoorHook.c` and the doorway blocker.
 
 **The doorway blocker** (`RZ_DoorBlocker.et`). Players must never see or feel it, and it must
 stop characters:
@@ -847,175 +848,86 @@ What it can't do:
 grep -rn "VERIFY" scripts/
 ```
 
-There are **201** markers: 165 in the game scripts (one is the comment in `Core/RZ_Util.c` that
-explains them; 36 are in the UI) and 36 in the Workbench plugin (one is its header comment). Each
-is an engine or editor API whose exact name or signature couldn't be confirmed. Usually the fix is
-a rename, and most are isolated in small helpers (`Core/RZ_Util.c`, `RZ_UIW` in `UI/RZ_UIData.c`,
-and `RZ_WB` in the plugin). The game scripts' markers are grouped by risk; fix them in this order.
-Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-36) and the
-[plugin's](#the-workbench-plugin-35) come last.
+There are **40** lines with the tag: 30 in the game scripts (one is the comment in `Core/RZ_Util.c`
+that explains them; 2 are in the UI) and 10 in the Workbench plugin (one is its header comment).
+Every name and signature question is settled: the game scripts compile on 1.9, and each call was
+checked against the base game's script source (its doc comments and how vanilla uses it). Each
+marker left is a **behaviour** only a play-test can show (for the plugin, a run in Workbench):
+replication, what the AI does, what a prefab carries. The game scripts' markers are grouped by
+risk; check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The
+[UI's](#the-ui-2) and the [plugin's](#the-workbench-plugin-9) come last.
 
-### High risk: the core loop (24)
+### High risk: the core loop (1)
 
-No fallback. If these are wrong, the basic game doesn't work.
+No fallback. If this is wrong, nothing persists.
 
-| Where | Call | If it fails |
+| Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Core/RZ_GameModeComponent.c:612` | `GetOnPlayerSpawned()` invoker (the handler is `HandlePlayerSpawned`, not an override of the base `OnPlayerSpawned`) | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:1074` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
-| `Core/RZ_GameModeComponent.c:1256` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1927`, `:1928` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1938` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:2197`, `Cure/RZ_LabComponents.c:256` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
-| `Persistence/RZ_SaveData.c:131` | JSON contexts serialise plain members | Nothing is saved |
-| `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
-| `Core/RZ_Util.c:415`, `:423` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
-| `Core/RZ_Util.c:660`, `Zombies/RZ_BiteDetector.c:167` | total health accessor (maybe `GetDefaultHitZone().GetHealth()`) | No bites; retaliation only sees kills |
-| `Core/RZ_Util.c:171` | `Kill()` signature | The infection timer and kill zone can't kill |
-| `Cure/RZ_LabComponents.c:72`, `Missions/RZ_MissionItems.c:49`, `Cure/RZ_AntidoteItem.c:23` | `IsMatch` predicate signature | Samples, mission items and antidotes aren't found in inventories |
-| `Cure/RZ_LabComponents.c:159`, `Missions/RZ_MissionItems.c:75`, `Cure/RZ_AntidoteItem.c:47` | `TryDeleteItem()` | Items aren't taken when handed in |
-| `Puzzles/RZ_RadioStealth.c:36` | `GetItems()` lists every carried storage | Radio checks fail (the same call is used for food and keywords) |
-| `Puzzles/RZ_PuzzleActions.c:15` | `ScriptedUserAction.GetOwner()` | No clue can be read |
+| `Persistence/RZ_SaveData.c:131` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 
-### Medium risk: big features, with a fallback (65)
+### Medium risk: big features, with a fallback (19)
 
-| Where | Call | Fallback |
+| Where | Behaviour to check | Fallback |
 |---|---|---|
-| `Factions/RZ_FactionRelations.c:16` | modded `SCR_Faction.DoCheckIfFactionFriendly(Faction)` is what AI uses | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If it never fires, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Core/RZ_Util.c:449`, `:474` | `GetAffiliatedFaction`, `SetAffiliatedFaction` (server side, replicated, read by AI) | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
-| `Core/RZ_Util.c:521`, `:528` | `GetWeaponsList`, `GetWeaponType` and `EWeaponType` names | Always false: armed exiles never shot, wanderers never fight back. Always true: unarmed exiles shot |
-| `Core/RZ_Util.c:592` | `MoveInVehicle(vehicle, ECompartmentType)` seats AI, `PILOT` drives | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
+| `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
+| `Core/RZ_Util.c:488` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
+| `Core/RZ_Util.c:606` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:828` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
-| `Core/RZ_Util.c:606` | vehicle `SCR_DamageManagerComponent.GetState()` | A burnt-out truck counts as late instead |
-| `Core/RZ_Util.c:620`, `:624` | `SetWorldTransform`, `Physics.SetVelocity` | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
+| `Core/RZ_Util.c:634` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Interactions.c:653` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
-| `Interactions/RZ_Interactions.c:729` | `SCR_DestructibleBuildingEntity` as the building class | Buildings aren't recognised; furniture still is |
-| `Interactions/RZ_Interactions.c:251` | `GetItems()` for keyword items | Crowbars, parts, fuel, water and medkits not found |
-| `Puzzles/RZ_Landmarks.c:56` | `QueryEntitiesBySphere(center, radius, cb, filter, flags)` | No landmarks: the fallback landmark prop |
-| `Puzzles/RZ_PuzzleComponents.c:80`, `:142`, `Puzzles/RZ_BlinkingLight.c:161` | `[RplProp]` on a `ScriptComponent` | Labels don't replicate: generic labels, all slots visible, actions still work |
-| `Puzzles/RZ_GameTime.c:21`, `:25`, `:29` | `ChimeraWorld.CastFrom`, `GetTimeAndWeatherManager`, `GetTimeOfTheDay` | -1: night missions never appear, no night effects |
-| `Director/RZ_Environment.c:71`, `:86`, `:97`, `:108` | world cast; rain, fog and wind accessors | Make the helper return -1: only night and the Storm event apply |
-| `World/RZ_Perimeter.c:226` | `BaseWorld.GetBoundBox()` | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:765`, `:772`, `:773`, `:818`, `:822` | road network: `GetAIWorld`, `GetRoadNetworkManager`, `GetRoadsInAABB`, `GetPoints`, `GetWidth` | Empty `FindRoadExits()` and place `RZ_CheckpointMarkerEntity`s |
-| `World/RZ_Perimeter.c:464`, `:471` | the same road calls, around players, for the road posts inside the Zone | No road posts (the log says no road points were found); camps, safe zones and everything else still work |
-| `World/RZ_Perimeter.c:673`, `:687` | `AddChild` keeps the drone on the player; `SetOrigin` replicates | Moved each tick instead (jumpier) |
-| `Core/RZ_Util.c:196` | `EnableDamageHandling(false)` | Checkpoint guards and stronghold leaders can be shot (leaders are "wounded" and come back) |
-| `Core/RZ_Util.c:184` | `FullHeal()` | Medics and Doctors take Favor but don't heal: fix before release |
-| `Core/RZ_Util.c:281` | `TryInsertItem` | Items (the wind-up radio) land at the player's feet |
-| `Core/RZ_Util.c:347` | `AIGroup.GetWaypoints()` / `RemoveWaypoint()` | Hordes can't be redirected (The Clockwork Horde, unarmed missions) |
-| `World/RZ_Safehouses.c:396`, `:406` | `GetItems`, `TryDeleteItem` for food | Food isn't found or taken; check the food keywords first |
-| `Core/RZ_Util.c:640` | fuel nodes: `GetFuelNodesList`, `GetMaxFuel`, `SetFuel` | Empty the helper: a fixed car has its prefab's own fuel |
-| `Interactions/RZ_DoorHooks.c:11` | `modded class SCR_DoorUserAction`: the vanilla door action's name, owned by the door entity | **Doesn't compile if the name is wrong.** Rename it to the action in the door prefabs' `ActionsManagerComponent` (maybe `DoorUserAction`); if there's no scripted one, delete the file and turn **Search > Door locks** off (locks go back on the loot) |
-| `Interactions/RZ_DoorHooks.c:22`, `:32` | `SetCannotPerformReason(string)`; the door action's `PerformAction` also runs on the server | No "Locked" reason, only a greyed action / the server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
-| `Interactions/RZ_DoorLocks.c:44`, `:54`, `:63` | `DoorComponent`; `GetControlValue()` is 0 when shut; `SetControlValue(0, RplId.Invalid())` shuts it | No doors found: every building keeps the loot lock / open and shut mixed up: fix the threshold / locked doors aren't pulled shut |
-| `Interactions/RZ_DoorLocks.c:75`, `:102` | `GetParent()`; `GetChildren()`/`GetSibling()` list a building's door entities | No door belongs to a building: no door locks, the loot lock everywhere |
-| `Interactions/RZ_DoorLocks.c:123`, `:132` | `GetBounds()` is the building's local box; `GetWorldTransform()` | No box: no outside doors (the loot lock). A wrong box or transform gets inside and outside wrong: try every locked door from both sides, and from a closet near the outline |
-| `Interactions/RZ_DoorLocks.c:290` | `GetBounds()` on a door is its leaf's local box | Blockers stand at the door's origin (often the hinge) instead of the middle of the doorway: check where one appears |
-| `Interactions/RZ_AIDoorHook.c:16` | `modded class SCR_AIOpenDoor` with `EOnTaskSimulate(AIAgent, float)`: the AI's door-opening task (**a guess, low confidence**) | **Doesn't compile if wrong: delete the file**, nothing refers to it. Blockers and banging still keep AI out. If it compiles but AI still open locked doors, move its check (`RZ_DoorLocks.AiMayOpenNear`) into the real door task |
-| `Core/RZ_Util.c:678` | a seated character is a child entity of its vehicle (`GetParent()`) | Vehicle deliveries by type (Recover the Bus) never see who drives: switch the helper to `CompartmentAccessComponent.GetVehicleIn`. A specific vehicle still counts a player in a vehicle right beside it |
-| `Core/RZ_Util.c:689`, `:700` | `HitZone.GetMaxHealth()` and `SetHealth()` on the default hit zone (server, replicated, no knock-out above zero) | The Blood Drive refuses everyone ("health can't be read"); nothing else uses them |
-| `Core/RZ_Util.c:786` | worn clothing is attached as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
-| `Cure/RZ_Infection.c:1102`, `:1106`, `:1121` | `CharacterStaminaComponent` on the character; `AddStamina(float)` on a 0–1 scale, server side and replicated (negative drains); `GetStamina()` | No stamina effects: the Weakness and Final stages, nausea and the drunk remedy fall back to noise and a little health drain, and the "tired" bite modifier never applies. Try `SCR_CharacterStaminaComponent` |
-| `Interactions/RZ_DoorBlockers.c:58`, `:67` | `GetAIWorld()` as `SCR_AIWorld`; `RequestNavmeshRebuildAreas(areas, redoRoads)` (what Game Master placement uses) | Doesn't compile: try `RequestNavmeshRebuildEntity(blocker)`, or empty the helper and turn **Navmesh rebuild** off (blockers only) |
-| `Core/RZ_Util.c:219` | `GetInstigator()` on the character's damage manager after death, `Instigator.GetInstigatorPlayerID()` | No killer is ever known: no bounty (public or Collect the Bounty's player target) is paid. Check a player kill pays the killer, and a death to the infected pays nobody |
-| `Core/RZ_LooseItems.c:127`, `:135` | `GetRootParent()`; `InventoryItemComponent.GetParentSlot()` set while an item is in any storage | **If both fail, carried items could be cleaned up after 30 min away from players.** Test: carry a sample 200 m from everyone for 31 min (Loose item minutes at 1 to test fast). If it vanishes, set **World > Loose item minutes** to 0 |
+| `Core/RZ_Util.c:437` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
+| `World/RZ_Perimeter.c:226` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
+| `World/RZ_Perimeter.c:676`, `:691` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Door locks** off (locks go back on the loot) |
+| `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
+| `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
+| `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: no door locks, the loot lock everywhere |
+| `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
+| `Core/RZ_Util.c:714` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:800` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
+| `Cure/RZ_Infection.c:1106` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 
-### Low risk: contained or cosmetic (40)
+### Low risk: contained or cosmetic (8)
 
-| Where | Call | Fallback |
+| Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
-| `Core/RZ_Util.c:313` | `SCR_GroupsManagerComponent.GetInstance()`, `GetPlayerGroup()` | The bounty board can't tell friends apart: only the poster is excluded from a payout (it still pays less than it costs) |
-| `Factions/RZ_FactionServices.c:508` | `GetItems()` finds loot in every carried storage | The fence finds nothing to buy |
-| `Core/RZ_Util.c:731`, `:744`, `:755` | `string.Replace`, the child walk and `GetItems()` for a loadout's gear | The deploy panel shows the background's gear line instead |
-| `Core/RZ_MapMarkers.c:14`, `:19`, `:20`, `:21`, `:22`, `:44`, `:46` | map marker manager, type, position, text, insert, remove | Empty `Add()` and `Remove()`, or turn **Map markers** off |
-| `Cure/RZ_AntidoteConsumable.c:8`, `:15`, `Cure/RZ_MedConsumable.c:5`, `:15` | the consumable effect class and `ApplyEffect` signature | Delete the file: the world actions ("Inject antidote", "Take ...") still work |
-| `Cure/RZ_Infection.c:1129` | no known script hook for camera sway or blur (`RZ_Symptoms.Disorient` returns false) | The home remedy's drunkenness is stumbling (stamina and noise). Wire a blur or aim-sway effect here if the game version has one |
-| `Guidance/RZ_Guidance.c:172` | `System.GetUnixTime()` | Return 0: the 30-day refresher never fires |
-| `Puzzles/RZ_BlinkingLight.c:55`, `:72`; `Puzzles/RZ_Landmarks.c:66`; `Core/RZ_Util.c:393` | `ToUpper`, `Trim`, `ToLower` in place or as copies | Swap to the other form |
-| `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
-| `Core/RZ_Util.c:386`, `:389` | `GetChildren()`/`GetSibling()`, attachment prefab names | Suppressors aren't detected (full gunfire heat) |
-| `Core/RZ_Util.c:203` | `IsInCompartment()` | Driving or stealing a supply truck isn't recognised; interaction scans don't skip players in vehicles |
-| `Core/RZ_Util.c:291`, `Puzzles/RZ_Noisemaker.c:130`, `Interactions/RZ_Traps.c:245`, `:412` | `GetRootParent()`: carried items are children of the character | Thrown noisemakers, molotovs and picked-up kits aren't noticed; a picked-up clue could be cleaned up |
-| `Interactions/RZ_Traps.c:605` | `IEntity.GetAngles()` | Barricades face the wrong way |
-| `Interactions/RZ_Traps.c:666` | returning false stops a query early | The callback runs to the end; nothing breaks |
-| `Puzzles/Missions/RZ_PuzzleMechanism.c:408`, `:425` | `GetAll()`, `GetTotalWeight()` | Turn on **Scale counts items** |
-| `Puzzles/RZ_RadioStealth.c:42` | `BaseRadioComponent` class name | Radios are found by name ("radio") only |
-| `Missions/RZ_MissionBases.c:261` | damage manager `GetState()` on a target prop | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
-| `Interactions/RZ_KeyItem.c:29` | `[RplProp]` on a key item's component | "Read the tag" shows no label; keys still open their locks (the id is on the server) |
-| `Interactions/RZ_KeyItem.c:81` | `GetItems()` finds key items in every carried storage | Carried keys aren't found: leave **Key prefab** empty (data keys) |
-| `World/RZ_NoticeBoard.c:370` | `PlayerManager.HasPlayerRole` with `EPlayerRole.ADMINISTRATOR` and `SESSION_ADMINISTRATOR` | `/noteclear` refuses everyone: fix the role check, or clear boards with a wipe |
+| `Cure/RZ_AntidoteConsumable.c:8`, `Cure/RZ_MedConsumable.c:5` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
+| `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
+| `Core/RZ_Util.c:400` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
+| `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
+| `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
+| `Interactions/RZ_KeyItem.c:81` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages, or leave **Key prefab** empty (data keys) |
 
-### The UI (36)
+### The UI (2)
 
-None of these affect the game: the UI only reads. They must compile, though, because the game mode
-calls the feed and the notice hook. If the HUD or a menu misbehaves, turn **UI > Styled notices**
-off and every message goes back to the vanilla hint. How the UI is put together is in [UI.md](UI.md).
+None of these affect the game: the UI only reads. If the HUD or a menu misbehaves, turn **UI >
+Styled notices** off and every message goes back to the vanilla hint. How the UI is put together
+is in [UI.md](UI.md).
 
-| Where | Call | If it fails |
+| Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_PlayerUIComponent.c:154` | `RplRcver.Owner` reaches the owning client of a component on the player controller | No data reaches the client: no timer, radio indicator, noise or menu data. Check the controller prefab has the component and an `RplComponent` |
-| `UI/RZ_PlayerUIComponent.c:81`, `:102` | `PlayerManager.GetPlayerController(playerId)`; `PlayerController.GetPlayerId()` | Nothing is sent, or menu requests are ignored |
-| `UI/RZ_PlayerUIComponent.c:149` | a string RPC argument of a few KB (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
-| `UI/RZ_Menus.c:13`, `:47` | modding `ChimeraMenuPreset`; `ChimeraMenuBase`, `GetRootWidget()`, `Close()`, the menu overrides | No menus: delete `RZ_Menus.c` and the three listeners in `RZ_HudDisplay` |
-| `UI/RZ_Menus.c:85`, `:369` | the vanilla `MenuBack`, `MenuTabLeft`, `MenuTabRight`, `MenuUp`, `MenuDown` action names | Esc, Q/E or the journal's up/down do nothing: use the names in the vanilla input config |
-| `UI/RZ_UIData.c:637` | `MenuManager.OpenMenu` | The keys don't open the menus |
-| `UI/RZ_UIData.c:523`, `:531`, `:539`, `:547`, `:559`, `:588` | `FindAnyWidget`, `TextWidget.SetText`, `SetVisible`, `SetColor`, `ImageWidget.LoadImageFromSet`, `ProgressBarWidget` | Widgets stay as the layout made them |
-| `UI/RZ_UIData.c:599`, `:606`, `:615` | `CreateWidgets(layout, parent)`, `RemoveFromHierarchy`, `GetChildren`/`GetSibling` | No cards or rows: `PushNotice` sees no card and the vanilla hint is used |
-| `UI/RZ_UIData.c:514` | `Color.FromRGBA` | Nothing is tinted |
-| `UI/RZ_LoadoutLock.c:9` | modding `SCR_BasePlayerLoadout`: `IsLoadoutAvailable(playerId)`, `IsLoadoutAvailableClient()`, and the menu greying unavailable loadouts | Delete `RZ_LoadoutLock.c`: locked loadouts spawn as the default background with their gear, as before |
-| `UI/RZ_MapIcons.c:10` | `SCR_MapUIBaseComponent`: `m_RootWidget`, `m_MapEntity`, `OnMapOpen`/`OnMapClose`, `Update` | Delete `RZ_MapIcons.c` and leave **Map icon layout** empty: the vanilla text markers come back |
-| `UI/RZ_UIData.c:693`, `:695`, `:704` | `SCR_MapEntity.WorldToScreen`, `DPIUnscale`, `FrameSlot.SetPos` | Map icons sit in the wrong place: leave **Map icon layout** empty |
-| `UI/RZ_Menus.c:36`, `UI/RZ_UIData.c:665`, `:673` | `ScriptedWidgetEventHandler.OnClick`, `Widget.AddHandler`, `SetUserID`/`GetUserID` | No mouse in the menus; the keys still work |
-| `UI/RZ_UIData.c:628` | `System.GetTickCount()` in milliseconds | Countdowns and card timing are off: use the world time instead |
-| `UI/RZ_UIData.c:136`, `:148`, `:365`; `UI/RZ_HudDisplay.c:197` | `string.Replace`, `string.Split`, `ToLower`, `ToUpper` in place | Payloads don't parse, or notices aren't classified (plain cards) |
-| `UI/RZ_UIData.c:715` | `SCR_PlayerLoadoutComponent.GetLoadout()`, `GetLoadoutName()` on the local controller | The background panel stays empty; the spawn notice still names the perk and flaw |
-| `UI/RZ_BackgroundPanel.c:9` | `ScriptedWidgetComponent`, `HandlerAttached`/`HandlerDeattached` | No background panel |
-| `UI/RZ_ChatCommands.c:16` | `SCR_ChatPanelManager.GetInstance()`, `GetCommandInvoker(name)` with `(SCR_ChatPanel, string)` callbacks | No `/note`, `/noteclear` or `/hall`: notes can only be written in the board menu (**UI > Board menus**); the hall still shows on first spawn. Delete the file and its `Register()` call in `QueueHint` if it doesn't compile |
-| `UI/RZ_UIData.c:570` | `EditBoxWidget.GetText()`, `SetText()` | The board menu's box can't post: use `/note` |
+| `UI/RZ_PlayerUIComponent.c:149` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_LoadoutLock.c:9` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still spawns a locked pick as the default background |
 
-### The Workbench plugin (35)
+### The Workbench plugin (9)
 
-Paths are under `scripts/WorkbenchGame/ReforgerZ/`. None of these affect the game: if the plugin
-fails, make the prefabs by hand. Riskiest first: the first eight decide whether it makes anything.
+Paths are under `scripts/WorkbenchGame/ReforgerZ/`. The plugin isn't compiled by the server check,
+but its editor calls were checked against the 1.9 Workbench script declarations. What's left is
+what only a run in Workbench shows. None of these affect the game: if the plugin fails, make the
+prefabs by hand. Riskiest first.
 
-| Where | Call | If it fails |
+| Where | Behaviour to check | If it fails |
 |---|---|---|
-| `RZ_CreatePrefabsPlugin.c:238` | `Workbench.GetModule(WorldEditor)`, `GetApi()` | Nothing runs except a dry run: open a world, check the module name |
-| `RZ_CreatePrefabsPlugin.c:355` | `CreateEntity(...)`, `GetCurrentEntityLayerId()` | No prefab is made: fix the signature in `RZ_WB.CreateEntity` |
-| `RZ_CreatePrefabsPlugin.c:369` | `CreateEntityTemplate(src, absPath)` saves an inherited prefab and its `.meta` | No prefab is saved: try the World Editor's own "Create prefab" call, or make prefabs by hand |
-| `RZ_CreatePrefabsPlugin.c:437` | `CreateComponent(src, class)` | Prefabs are made without their components ("not added" in the summary) |
-| `RZ_CreatePrefabsPlugin.c:458` | `CreateObjectArrayVariableMember(...)` | No actions, action contexts, faction variants or loadout entries |
-| `RZ_CreatePrefabsPlugin.c:444` | `ContainerIdPathEntry`, `SetVariableValue(src, path, key, text)` | No attribute values or slots set ("not set" in the summary) |
-| `RZ_CreatePrefabsPlugin.c:451` | `CreateObjectVariableMember(...)` | Settings objects and action labels aren't created: create the settings objects by hand, then run again |
-| `RZ_CreatePrefabsPlugin.c:953` | API edits on a prefab loaded from its file | Slots aren't wired: wire a placed instance and apply it to the prefab, or fill the slots by hand |
-| `RZ_CreatePrefabsPlugin.c:377` | `BaseContainerTools.LoadContainer`, `ToEntitySource()` | "couldn't open RZ_GameMode.et": fill the slots by hand |
-| `RZ_CreatePrefabsPlugin.c:394` | `BaseContainerTools.SaveContainer` | "couldn't save": fill the slots by hand |
+| `RZ_CreatePrefabsPlugin.c:363` | `CreateEntityTemplate(src, absPath)` saves a prefab that inherits from the entity's prefab and writes its `.meta` | No prefab is saved: make prefabs by hand |
+| `RZ_CreatePrefabsPlugin.c:934` | API edits on a prefab loaded from its file, not only on world entities | Slots aren't wired: wire a placed instance and apply it to the prefab, or fill the slots by hand |
 | `RZ_CreatePrefabsPlugin.c:214` | The editor names: `ActionContexts`, `additionalActions`, `ParentContextList`, `UIInfo`, `Factions`, `FactionKey`, `m_bIsPlayable`, `m_aFriendlyFactionsIds`, `m_aPlayerLoadouts` and the rest | Actions without a context, factions or loadouts not found: compare with a vanilla `.et`/`.conf` and fix the constants |
-| `RZ_CreatePrefabsPlugin.c:465` | string arrays set as one comma-separated value | Parent contexts, list slots and friendly lists are wrong: check one in the editor |
-| `RZ_CreatePrefabsPlugin.c:554` | JSON load of nested classes and arrays | "Couldn't read the manifest": use the checklist from this doc |
-| `RZ_CreatePrefabsPlugin.c:248` | `Workbench.GetAbsolutePath`, the `$ReforgerZ:` file system | Every prefab looks missing, or nothing can be saved: fix the Addon prefix option |
-| `RZ_CreatePrefabsPlugin.c:1585` | the addon prefix default | As above |
-| `RZ_CreatePrefabsPlugin.c:280` | `ResourceManager.GetMetaFile`, `GetResourceID()` | Falls back to a search; else `@` values and slots stay empty |
-| `RZ_CreatePrefabsPlugin.c:298` | `Workbench.SearchResources` | No base is found by name: set `basePrefab` in the manifest |
-| `RZ_CreatePrefabsPlugin.c:315` | `ResourceName.GetPath()` | As above |
-| `RZ_CreatePrefabsPlugin.c:401` | component listing on an entity source | Components added twice, or actions put on the wrong manager |
-| `RZ_CreatePrefabsPlugin.c:403` | `string.ToType()`, `IsInherited` | A subclassed actions manager isn't recognised and a second one is added |
-| `RZ_CreatePrefabsPlugin.c:479` | `GetObjectArray`, `BaseContainerList` | Counts read as 0: actions overwrite index 0, factions and loadouts look missing |
-| `RZ_CreatePrefabsPlugin.c:499` | `BaseContainer.GetObject` | Settings objects look missing and are created again |
-| `RZ_CreatePrefabsPlugin.c:508` | `BaseContainer.Get(key, string)` | Filled slots look empty (it never overwrites, but may report wrongly); faction keys unreadable |
-| `RZ_CreatePrefabsPlugin.c:518` | `BaseContainer.Get(key, array)` | Lists look empty; friendly lists are rewritten with only the new key: check them |
-| `RZ_CreatePrefabsPlugin.c:526` | `GetEditorEntityCount`, `GetEditorEntity` | The world looks empty: a second game mode may be placed |
-| `RZ_CreatePrefabsPlugin.c:1177` | factions inline on the FactionManager | Variants can't be added: do it by hand |
-| `RZ_CreatePrefabsPlugin.c:1379` | loadouts inline on the LoadoutManager | Loadout entries can't be added: do it by hand |
-| `RZ_CreatePrefabsPlugin.c:343` | `BeginEntityAction`, `EndEntityAction` | No undo step; remove both calls if they don't compile |
-| `RZ_CreatePrefabsPlugin.c:362` | `DeleteEntity` | Temporary `RZ_Temp_*` entities stay in the world: delete them |
-| `RZ_CreatePrefabsPlugin.c:262` | `FileIO.MakeDirectory` | Saving into a new folder fails: make the `Prefabs/ReforgerZ/...` folders by hand |
-| `RZ_CreatePrefabsPlugin.c:1606` | `WorkbenchPluginAttribute(...)` | The menu entries don't appear |
-| `RZ_CreatePrefabsPlugin.c:546` | `Workbench.ScriptDialog` | No options dialog: it may run with the defaults (a dry run) |
-| `RZ_CreatePrefabsPlugin.c:1664` | `[ButtonAttribute]` methods | Dialog buttons missing |
-| `RZ_CreatePrefabsPlugin.c:539` | `Workbench.Dialog` | No summary box; the log still has it |
-| `RZ_CreatePrefabsPlugin.c:576` | `FileIO.OpenFile`, `WriteLine` | No checklist file: use this doc |
+| `RZ_CreatePrefabsPlugin.c:536` | JSON load of nested classes and arrays, ignoring unknown keys | "Couldn't read the manifest": use the checklist from this doc |
+| `RZ_CreatePrefabsPlugin.c:492` | `BaseContainer.Get(key, string)` reads a string, ResourceName, number or colour as text | Filled slots look empty (it never overwrites, but may report wrongly); faction keys unreadable |
+| `RZ_CreatePrefabsPlugin.c:502` | `BaseContainer.Get(key, array<string>)` reads a string or ResourceName array | Lists look empty; friendly lists are rewritten with only the new key: check them |
+| `RZ_CreatePrefabsPlugin.c:1158` | factions inline on the FactionManager | Variants can't be added: do it by hand |
+| `RZ_CreatePrefabsPlugin.c:1360` | loadouts inline on the LoadoutManager | Loadout entries can't be added: do it by hand |
+| `RZ_CreatePrefabsPlugin.c:260` | `FileIO.MakeDirectory` on absolute paths and existing folders | Saving into a new folder fails: make the `Prefabs/ReforgerZ/...` folders by hand |
 
 ## 7. Log lines to check
 
@@ -1059,11 +971,11 @@ Warnings worth acting on:
 | `No common zombie prefabs configured. ...` | Set Zombies > Common prefabs (logged as an error: no infected spawn) |
 | `Using N hand-placed settlement markers.` | Detection is off because markers are placed |
 | `No checkpoint barricade prefab set: road checkpoints are off.` | Set Perimeter > Barricade prefab |
-| `No road network found: place RZ_CheckpointMarkerEntity entities ...` | The road VERIFYs failed or the map has no roads |
+| `No road network found: place RZ_CheckpointMarkerEntity entities ...` | The road network calls found no roads, or the map has none |
 | `Hostility: bitmask mode, only N of 15 variant factions ...` | Some `SURV_H` factions are missing |
 | `Hostility: outlaw mode, but the FactionManager has no SURV_OUTLAW.` | Add the Outlaw faction |
 | `No background matches loadout '...'` | A loadout name doesn't match a background |
-| `Checkpoints: no road points found near players; road posts stay down.` | The road VERIFYs failed, or no roads near where players were |
+| `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
 | `Mission item prefab has no RZ_MissionItemComponent ...` | The mission item is missing its component |
@@ -1072,7 +984,7 @@ Warnings worth acting on:
 | `Saved state is from another map, starting a fresh outbreak.` | Expected after changing maps |
 | `Season wipe carried out (...). A fresh outbreak starts.` | The wipe cycle ran on this start; the old state is in `state_season<N>.json` |
 | `Season rule set '...' doesn't exist; ignored.` | A name in **Season > Rule sets** is misspelt |
-| `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON VERIFY failed) |
+| `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON save behaviour in the VERIFY list is wrong) |
 
 While running: `Status | ...` lines every few minutes (stage, infection, zombies, missions, cure),
 `Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...` and `... lost (...)`,

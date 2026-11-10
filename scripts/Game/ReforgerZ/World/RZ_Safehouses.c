@@ -393,7 +393,7 @@ class RZ_FoodHelper
 			return 0;
 
 		array<IEntity> items = {};
-		inv.GetItems(items); // VERIFY: GetItems() lists items in every storage the character carries (same as RZ_Radio)
+		inv.GetItems(items);
 		int taken = 0;
 		foreach (IEntity item : items)
 		{
@@ -403,7 +403,7 @@ class RZ_FoodHelper
 			if (!item || !IsFood(item, keywords))
 				continue;
 
-			inv.TryDeleteItem(item); // VERIFY: TryDeleteItem() (same as the antidote)
+			inv.TryDeleteItem(item);
 			taken++;
 		}
 

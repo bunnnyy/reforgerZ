@@ -50,9 +50,10 @@ and one way to end it: **research the cure.**
 
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
-That's about 71,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Compiling proves the
-names and signatures exist, not that the calls behave as assumed: the `VERIFY` markers left are
-on those behaviours. There are no prefabs, layouts or configs yet, and nothing has been play-tested. The icon
+That's about 71,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+was also checked against the base game's script source; the 29 `VERIFY` markers left in the game
+scripts (and 9 in the plugin) are behaviours only a play-test can show, such as replication and
+what the AI does. There are no prefabs, layouts or configs yet, and nothing has been play-tested. The icon
 set and mockups of every screen are done (`UI/`). Every prefab,
 setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
 plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run). Start with

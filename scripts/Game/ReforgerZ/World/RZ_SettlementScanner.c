@@ -60,7 +60,7 @@ class RZ_SettlementScanner
 		if (descr)
 			TryAddDescriptor(e, descr);
 
-		// VERIFY: building base class name. Anything with a building prefab works here.
+		// Map buildings are SCR_DestructibleBuildingEntity (the Arland test found its clusters this way).
 		if (SCR_DestructibleBuildingEntity.Cast(e))
 			AddBuilding(e.GetOrigin());
 
@@ -70,7 +70,6 @@ class RZ_SettlementScanner
 	//------------------------------------------------------------------------------------------------
 	protected void TryAddDescriptor(IEntity e, MapDescriptorComponent descr)
 	{
-		// VERIFY: GetBaseType() and the EMapDescriptorType names
 		int type = descr.GetBaseType();
 		int size = 0;
 		if (type == EMapDescriptorType.MDT_NAME_CITY)

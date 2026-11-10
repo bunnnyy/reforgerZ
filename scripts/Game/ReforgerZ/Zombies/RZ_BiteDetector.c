@@ -164,6 +164,6 @@ class RZ_BiteDetector
 		if (!dmg)
 			return 0;
 
-		return dmg.GetHealth(); // VERIFY: total health accessor (may be GetDefaultHitZone().GetHealth())
+		return dmg.GetHealth(); // the default hit zone's health
 	}
 }
