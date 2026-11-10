@@ -135,6 +135,29 @@ class RZ_FactionShopAction : ScriptedUserAction
 
 		string factionName = RZ_Factions.GetName(m_eFaction);
 		RZ_ETier tier = gm.GetTier(playerId, m_eFaction);
+
+		// The leader whose quartermaster this is: their traits and memory of you set the price,
+		// and a Rogue one serves people the stronghold turned away if they've helped them
+		RZ_Leaders leaders = gm.GetLeaders();
+		RZ_Leader leader;
+		if (leaders)
+			leader = leaders.FindAt(m_eFaction, pOwnerEntity.GetOrigin());
+
+		bool rogueFavour = false;
+		if (leaders)
+			rogueFavour = leaders.ShopOverride(leader, playerId);
+		if (rogueFavour)
+		{
+			if (RZ_Reputation.GetAccessRank(m_eRequiredTier) > 1)
+			{
+				gm.NotifyPlayer(playerId, factionName, string.Format("\"%1 is for people the stronghold trusts. I can do the basics for you, quietly. Not that.\"", m_sDisplayName));
+				return;
+			}
+
+			// Treated as Known, whatever the stronghold thinks
+			tier = RZ_ETier.KNOWN;
+		}
+
 		if (m_eFaction == RZ_EFaction.SURVIVORS && RZ_Reputation.IsHunted(tier))
 		{
 			gm.NotifyPlayer(playerId, factionName, "The door stays shut. Nobody here will sell you anything.");
@@ -166,19 +189,23 @@ class RZ_FactionShopAction : ScriptedUserAction
 			return;
 		}
 
-		if (!gm.SpendFavor(playerId, m_eFaction, m_iFavorCost))
+		int cost = m_iFavorCost;
+		if (leaders && leader && cost > 0)
+			cost = Math.Max(1, RZ_Util.RoundToInt(cost * leaders.PriceMult(leader, playerId)));
+
+		if (!gm.SpendFavor(playerId, m_eFaction, cost))
 		{
-			gm.NotifyPlayer(playerId, factionName, string.Format("%1 costs %2 Favor. You have %3.", m_sDisplayName, m_iFavorCost, gm.GetProfile(playerId).GetFavor(m_eFaction)));
+			gm.NotifyPlayer(playerId, factionName, string.Format("%1 costs %2 Favor here. You have %3.", m_sDisplayName, cost, gm.GetProfile(playerId).GetFavor(m_eFaction)));
 			return;
 		}
 
 		if (!RZ_QuartermasterHelper.SpawnNear(m_sItemPrefab, pOwnerEntity, pUserEntity))
 		{
-			gm.AddFavor(playerId, m_eFaction, m_iFavorCost); // refund
+			gm.AddFavor(playerId, m_eFaction, cost); // refund
 			return;
 		}
 
-		gm.NotifyPlayer(playerId, factionName, string.Format("Here's your %1. %2 Favor left.", m_sDisplayName, gm.GetProfile(playerId).GetFavor(m_eFaction)));
+		gm.NotifyPlayer(playerId, factionName, string.Format("Here's your %1, for %2 Favor. %3 Favor left.", m_sDisplayName, cost, gm.GetProfile(playerId).GetFavor(m_eFaction)));
 	}
 }
 

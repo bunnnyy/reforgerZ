@@ -17,6 +17,8 @@ class RZ_MissionRequirements
 	RZ_ETier m_eMinTier = RZ_ETier.STRANGER;
 	//! Amends contracts can also be taken while Watched by the giver.
 	bool m_bAllowWatched;
+	//! A leader's personal job: the leader's attitude replaces the tier check (RZ_Leaders.CanWorkFor).
+	bool m_bLeaderDecides;
 
 	// 2. Standing with other factions
 	ref array<ref RZ_StandingRequirement> m_aChecks = {};
@@ -105,12 +107,15 @@ class RZ_MissionRequirements
 		RZ_PlayerProfile profile = gm.GetProfile(playerId);
 		RZ_ETier giverTier = profile.GetTier(m_eGiver);
 
-		if (RZ_Reputation.IsHunted(giverTier))
-			return false;
+		if (!m_bLeaderDecides)
+		{
+			if (RZ_Reputation.IsHunted(giverTier))
+				return false;
 
-		bool watchedOk = m_bAllowWatched && giverTier == RZ_ETier.WATCHED;
-		if (!watchedOk && !RZ_Reputation.IsAtLeast(giverTier, m_eMinTier))
-			return false;
+			bool watchedOk = m_bAllowWatched && giverTier == RZ_ETier.WATCHED;
+			if (!watchedOk && !RZ_Reputation.IsAtLeast(giverTier, m_eMinTier))
+				return false;
+		}
 
 		foreach (RZ_StandingRequirement r : m_aChecks)
 		{

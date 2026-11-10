@@ -75,6 +75,8 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 		gm.AddFavor(playerId, RZ_EFaction.BANDITS, favor);
 		gm.AddInfamy(playerId, RZ_EFaction.INSTITUTE, INSTITUTE_INFAMY_PER_SAMPLE * value);
 		gm.NotifyPlayer(playerId, "The Red Hand", string.Format("Pleasure doing business. +%1 Fame, +%2 Favor with the Red Hand. Halcyon won't like it.", fame, favor));
+		if (gm.GetLeaders())
+			gm.GetLeaders().OnSamplesSold(playerId);
 
 		// One crate per sale, bigger sales get two
 		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 2, 4));

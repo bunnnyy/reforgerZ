@@ -162,6 +162,10 @@ class RZ_MissionManager
 	//------------------------------------------------------------------------------------------------
 	protected void OnStarted(RZ_Mission mission)
 	{
+		// On-book contracts are voiced and paid by the giver's nearest Loyal leader
+		if (m_GM.GetLeaders())
+			m_GM.GetLeaders().AssignVoice(mission);
+
 		RZ_Log.Info(string.Format("Mission %1 '%2' at %3 (contract %4)", mission.m_iId, mission.m_sTitle, mission.GetLocationName(m_GM), mission.m_bContract));
 
 		if (!mission.m_bContract)
@@ -178,6 +182,15 @@ class RZ_MissionManager
 		foreach (RZ_Mission m : m_aActive)
 		{
 			m.OnZombiesKilled(m_GM, settlementIdx, missionId, special, pos, count);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnPlayerShot(int playerId, vector pos)
+	{
+		foreach (RZ_Mission m : m_aActive)
+		{
+			m.OnPlayerShot(m_GM, playerId, pos);
 		}
 	}
 
@@ -250,7 +263,7 @@ class RZ_MissionManager
 
 			foreach (RZ_Mission m : m_aActive)
 			{
-				if (!m.m_bContract || m.m_aOfferedTo.Contains(playerId) || !m.IsEligible(m_GM, playerId))
+				if (!m.m_bContract || m.m_bInPersonOnly || m.m_aOfferedTo.Contains(playerId) || !m.IsEligible(m_GM, playerId))
 					continue;
 
 				Offer(m, playerId, players[i]);
@@ -272,8 +285,13 @@ class RZ_MissionManager
 		if (m.HasBonus(m_GM, playerId))
 			bonus = "\nYour background gives you an edge on this one.";
 
+		// In the voice of the leader who gives it (intro and outro by trait)
+		string brief = m.m_sBrief;
+		if (m_GM.GetLeaders())
+			brief = m_GM.GetLeaders().VoiceBrief(m, playerId);
+
 		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(m.m_Req.m_eGiver),
-			string.Format("%1\n%2\n(%3)%4", m.m_sTitle, m.m_sBrief, where, bonus));
+			string.Format("%1\n%2\n(%3)%4", m.m_sTitle, brief, where, bonus));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -284,6 +302,10 @@ class RZ_MissionManager
 		foreach (RZ_Mission m : m_aActive)
 		{
 			if (!m.m_bContract || m.m_Req.m_eGiver != faction || !m.IsEligible(m_GM, playerId))
+				continue;
+
+			// A leader's personal job is only mentioned at their own seat
+			if (!m.CanOfferAt(m_GM, player.GetOrigin()))
 				continue;
 
 			if (!m.m_aOfferedTo.Contains(playerId))
@@ -303,7 +325,7 @@ class RZ_MissionManager
 		float bestDist = float.MAX;
 		foreach (RZ_Mission m : m_aActive)
 		{
-			if (m.m_bGlobal || !m.IsEligible(m_GM, playerId))
+			if (m.m_bGlobal || m.m_bInPersonOnly || !m.IsEligible(m_GM, playerId))
 				continue;
 
 			float d = RZ_Util.DistXZ(pos, m.m_vPos);
@@ -333,7 +355,7 @@ class RZ_MissionManager
 		string contracts = "";
 		foreach (RZ_Mission c : m_aActive)
 		{
-			if (!c.m_bContract || !c.IsEligible(m_GM, playerId))
+			if (!c.m_bContract || c.m_bInPersonOnly || !c.IsEligible(m_GM, playerId))
 				continue;
 
 			if (!c.m_aOfferedTo.Contains(playerId))
@@ -382,6 +404,10 @@ class RZ_MissionManager
 			if (w <= 0)
 				continue;
 
+			// The giver's stronghold leader leans toward some kinds of work (traits, +-20%)
+			if (contract && m_GM.GetLeaders())
+				w = w * m_GM.GetLeaders().ContractWeightMult(m);
+
 			candidates.Insert(m);
 			weights.Insert(w);
 			total += w;
@@ -420,7 +446,9 @@ class RZ_MissionManager
 		m_GM.RemoveMapMarker(m.m_iMarkerId);
 		m.m_iMarkerId = -1;
 
-		if (m.m_eState == RZ_EMissionState.SUCCEEDED)
+		array<int> paid = {};
+		bool success = m.m_eState == RZ_EMissionState.SUCCEEDED;
+		if (success)
 		{
 			m.OnSuccess(m_GM);
 			foreach (int playerId : m.m_aParticipants)
@@ -432,6 +460,7 @@ class RZ_MissionManager
 				}
 
 				RewardPlayer(m, playerId);
+				paid.Insert(playerId);
 			}
 
 			if (!m.m_bContract)
@@ -442,6 +471,10 @@ class RZ_MissionManager
 			m.OnFailed(m_GM);
 			m.NotifyInterested(m_GM, "Mission failed", m.GetFailText(m_GM));
 		}
+
+		// Leader memory, loyalty drift and discovery of rogue jobs
+		if (m_GM.GetLeaders())
+			m_GM.GetLeaders().OnMissionFinished(m, success, paid);
 
 		m.Cleanup(m_GM);
 	}
@@ -461,8 +494,18 @@ class RZ_MissionManager
 			if (m.HasBonus(m_GM, playerId))
 				mult = mult * m.m_fBonusFameMult;
 
-			int fame = RZ_Util.RoundToInt(m.m_iFameReward * mult);
-			int favor = RZ_Util.RoundToInt(m.m_iFavorReward * m.m_fRewardScale);
+			// The leader who gave it: Greedy pays more Favor, a Paranoid one counts Fame for less...
+			float fameMult = 1;
+			float favorMult = 1;
+			RZ_Leaders leaders = m_GM.GetLeaders();
+			if (leaders && m.m_iLeaderId >= 0 && !m.m_bExposed)
+			{
+				fameMult = leaders.FameMult(m.m_iLeaderId, playerId, m.m_bAmends);
+				favorMult = leaders.FavorMult(m.m_iLeaderId);
+			}
+
+			int fame = RZ_Util.RoundToInt(m.m_iFameReward * mult * fameMult);
+			int favor = RZ_Util.RoundToInt(m.m_iFavorReward * m.m_fRewardScale * favorMult);
 			string giverName = RZ_Factions.GetName(m.m_eGiver);
 
 			if (m.m_bAmends && RZ_Reputation.IsWatchedOrWorse(m_GM.GetTier(playerId, m.m_eGiver)))
@@ -488,6 +531,8 @@ class RZ_MissionManager
 				int infamy = RZ_Util.RoundToInt(m.m_iRivalInfamy * m.m_fRewardScale);
 				m_GM.AddInfamy(playerId, m.m_eRival, infamy);
 				text += string.Format("\n%1 won't forget this: +%2 Infamy.", RZ_Factions.GetName(m.m_eRival), infamy);
+				if (leaders)
+					leaders.OnRivalHurt(m.m_eRival, m.m_vPos, playerId);
 			}
 		}
 

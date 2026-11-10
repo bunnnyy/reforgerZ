@@ -1221,7 +1221,7 @@ class RZ_Safehouses
 		int n = 0;
 		foreach (RZ_Mission m : m_GM.GetMissions().GetActive())
 		{
-			if (n >= 4 || m.m_bGlobal || RZ_Util.DistXZ(m.m_vPos, h.m_vPos) > 3000)
+			if (n >= 4 || m.m_bGlobal || m.m_bInPersonOnly || RZ_Util.DistXZ(m.m_vPos, h.m_vPos) > 3000)
 				continue;
 
 			string who = "anyone";

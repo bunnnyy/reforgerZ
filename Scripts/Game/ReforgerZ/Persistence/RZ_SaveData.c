@@ -43,6 +43,9 @@ class RZ_SaveData
 	ref array<ref RZ_SafehouseSave> safehouses = {};
 	ref RZ_WandererRosterSave wanderers;
 
+	// Faction leaders (names, traits, loyalty, memories) and their recent headlines
+	ref RZ_LeaderRosterSave leaders;
+
 	ref array<ref RZ_SettlementSave> settlements = {};
 	ref array<ref RZ_PlayerProfile> profiles = {};
 }

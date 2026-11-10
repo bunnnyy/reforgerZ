@@ -250,8 +250,8 @@ class RZ_PuzzleActionHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Wanderers (RZ_Wanderers.TAG) and safehouse occupants (RZ_Safehouses.TAG_OCCUPANT) reuse
-	//! the puzzle civilian. Their choice actions come here instead of to a mission.
+	//! Wanderers (RZ_Wanderers.TAG), safehouse occupants (RZ_Safehouses.TAG_OCCUPANT) and faction
+	//! leaders (RZ_Leaders.TAG) reuse the puzzle civilian. Their choice actions come here instead of to a mission.
 	//! True if `owner` is one of them (and the choice was handled).
 	static bool RouteChoice(RZ_GameModeComponent gm, IEntity owner, int playerId, int option, IEntity user)
 	{
@@ -278,6 +278,14 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		if (comp.GetMissionId() == RZ_Leaders.TAG)
+		{
+			if (gm.GetLeaders())
+				gm.GetLeaders().HandleChoice(playerId, comp.GetObjectIndex(), option, owner, user);
+
+			return true;
+		}
+
 		return false;
 	}
 
@@ -300,6 +308,14 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetSafehouses())
 				gm.GetSafehouses().HandleOccupantTalk(playerId, comp.GetClueIndex());
+
+			return true;
+		}
+
+		if (comp.GetMissionId() == RZ_Leaders.TAG)
+		{
+			if (gm.GetLeaders())
+				gm.GetLeaders().HandleTalk(playerId, comp.GetClueIndex(), owner);
 
 			return true;
 		}

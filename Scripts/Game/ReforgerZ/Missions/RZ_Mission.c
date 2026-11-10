@@ -48,6 +48,17 @@ class RZ_Mission
 	ref array<int> m_aOfferedTo = {};
 	int m_iMarkerId = -1;			// map marker handle (RZ_MapMarkers), -1 = none
 
+	// Faction leaders (Factions/RZ_Leaders.c, Missions/Leaders/)
+	int m_iLeaderId = -1;			// the leader who gives (voices and pays) this contract, -1 = none
+	bool m_bInPersonOnly;			// a leader's personal job: offered by them in person, never on the radio
+	bool m_bRogueJob;				// off the stronghold's books: may be discovered when it's done
+	bool m_bSeenByFaction;			// a rogue job seen by the leader's own people
+	bool m_bExposed;				// the player turned the rogue leader in instead
+	bool m_bNoLeaderCredit;			// done, but not the way the leader wanted: they don't remember it as help
+	int m_iJobFaction = -1;			// personal jobs: the faction and loyalty of the leaders who give them
+	int m_iJobLoyalty = -1;
+	int m_iJobTone;					// RZ_Leaders.TONE_* bits, which traits lean toward
+
 	//------------------------------------------------------------------------------------------------
 	//! Set giver, rival, rewards and requirements here. Runs before GetWeight and Setup.
 	void Configure(RZ_GameModeComponent gm)
@@ -80,6 +91,54 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Shortcut for Configure(): a leader's personal job (docs/MISSIONS.md, "Leader missions").
+	//! Only leaders of this faction and loyalty give it, in person. Their attitude, not the
+	//! giver tier, decides who may take it. Rogue jobs pay no faction Fame by default.
+	protected void SetLeaderJob(RZ_EFaction faction, RZ_ELoyalty loyalty, int tone, int fame, int favor)
+	{
+		SetContract(faction, RZ_ETier.STRANGER, fame, favor);
+		m_Req.m_bLeaderDecides = true;
+		m_bInPersonOnly = true;
+		m_bRogueJob = loyalty == RZ_ELoyalty.ROGUE;
+		m_iJobFaction = faction;
+		m_iJobLoyalty = loyalty;
+		m_iJobTone = tone;
+		m_fParticipationRadius = 0;
+		m_fTimeLeft = 2700;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Personal jobs: how much this leader wants this job done (before trait bias). 0 = can't
+	//! run here (missing prefabs, no second safehouse...). Never called for other missions.
+	float GetLeaderWeight(RZ_GameModeComponent gm, RZ_Leader leader)
+	{
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Personal jobs are only listed in person: near the leader's seat.
+	bool CanOfferAt(RZ_GameModeComponent gm, vector playerPos)
+	{
+		if (!m_bInPersonOnly)
+			return true;
+
+		if (!gm.GetLeaders())
+			return false;
+
+		RZ_Leader l = gm.GetLeaders().Get(m_iLeaderId);
+		if (!l)
+			return false;
+
+		return RZ_Util.DistXZ(l.m_vPos, playerPos) <= 80;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gunfire by a player (all missions hear it; e.g. Local Law fails on bloodshed).
+	void OnPlayerShot(RZ_GameModeComponent gm, int playerId, vector pos)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void SetRival(RZ_EFaction rival, int infamy)
 	{
 		m_bHasRival = true;
@@ -108,7 +167,14 @@ class RZ_Mission
 		if (!m_bContract)
 			return true;
 
-		return m_Req.IsEligible(gm, playerId);
+		if (!m_Req.IsEligible(gm, playerId))
+			return false;
+
+		// A leader's personal job: the leader decides who gets it
+		if (m_bInPersonOnly && m_iLeaderId >= 0 && gm.GetLeaders())
+			return gm.GetLeaders().CanWorkFor(m_iLeaderId, playerId);
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

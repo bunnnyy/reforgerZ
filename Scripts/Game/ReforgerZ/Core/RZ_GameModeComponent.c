@@ -184,6 +184,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Named wanderers: roster size, body prefab per role, Trader goods, prices, replacement time (docs/WORLD.md)", category: "ReforgerZ|Wanderers")]
 	protected ref RZ_WandererSettings m_WandererSettings;
 
+	// ---------------------------------------------------------------- Faction leaders
+	[Attribute(desc: "Named faction leaders: body prefabs per faction and role, interim outposts, replacement time, rogue-job discovery (docs/REPUTATION.md)", category: "ReforgerZ|Leaders")]
+	protected ref RZ_LeaderSettings m_LeaderSettings;
+
 	// ---------------------------------------------------------------- Survival
 	[Attribute("3", desc: "Heat per shot fired by a player (times the background noise multiplier)", category: "ReforgerZ|Survival")]
 	protected float m_fHeatPerShot;
@@ -255,6 +259,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Perimeter m_Perimeter;
 	protected ref RZ_Safehouses m_Safehouses;
 	protected ref RZ_Wanderers m_Wanderers;
+	protected ref RZ_Leaders m_Leaders;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -322,6 +327,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_WandererSettings)
 			m_WandererSettings = new RZ_WandererSettings();
 
+		if (!m_LeaderSettings)
+			m_LeaderSettings = new RZ_LeaderSettings();
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -339,6 +347,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Perimeter = new RZ_Perimeter(this, m_PerimeterSettings);
 		m_Safehouses = new RZ_Safehouses(this, m_SafehouseSettings);
 		m_Wanderers = new RZ_Wanderers(this, m_WandererSettings);
+		m_Leaders = new RZ_Leaders(this, m_LeaderSettings);
 
 		bool loaded = false;
 		if (!m_bWipeOnStart)
@@ -366,6 +375,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Safehouses anchor on the Haven quartermaster; wanderers start from safehouses
 		m_Safehouses.Setup();
 		m_Wanderers.Setup();
+		// Leaders sit at the quartermasters, the lab and the safehouses
+		m_Leaders.Setup();
 		if (m_bHasLab)
 			AddMapMarker(m_vLabPos, "Halcyon lab");
 		RefreshSpawnPoints(true);
@@ -403,6 +414,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Perks.Tick(dt, ids, players);
 		m_Safehouses.Tick(dt, ids, players);
 		m_Wanderers.Tick(dt, ids, players);
+		m_Leaders.Tick(dt, ids, players);
 		m_Broadcast.Tick(dt, m_fBroadcastMinutes);
 		RZ_GameTime.Tick(dt);
 		RZ_NoisemakerComponent.TickAll();
@@ -464,6 +476,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Perimeter GetPerimeter() { return m_Perimeter; }
 	RZ_Safehouses GetSafehouses() { return m_Safehouses; }
 	RZ_Wanderers GetWanderers() { return m_Wanderers; }
+	RZ_Leaders GetLeaders() { return m_Leaders; }
 	string GetLandmarkFallbackName() { return m_sLandmarkName; }
 	bool ScaleCountsItems() { return m_bScaleCountsItems; }
 
@@ -766,6 +779,19 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 			if (!m_Cure.IsCured())
 				NotifyPlayer(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText());
+
+			// The latest leader news (deaths, replacements, loyalty changes)
+			array<string> headlines = m_Leaders.GetHeadlines();
+			if (!headlines.IsEmpty())
+			{
+				string news = "";
+				for (int h = Math.Max(0, headlines.Count() - 3); h < headlines.Count(); h++)
+				{
+					news += headlines[h] + "\n";
+				}
+
+				NotifyPlayer(playerId, "Word on the roads", news);
+			}
 		}
 
 		// 3. What's on the radio
@@ -839,6 +865,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// House rules and wanderers who were shot at
 		m_Safehouses.OnPlayerShot(playerID, shooter.GetOrigin());
 		m_Wanderers.OnPlayerShot(playerID, shooter.GetOrigin());
+		m_Leaders.OnPlayerShot(playerID, shooter.GetOrigin());
+		m_Missions.OnPlayerShot(playerID, shooter.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -912,6 +940,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	{
 		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
 			return;
+
+		// The faction's stronghold leader sets its temper: Paranoid harsher, Merciful forgives faster
+		if (m_Leaders)
+			amount = m_Leaders.ScaleInfamy(faction, amount);
 
 		RZ_PlayerProfile profile = GetProfile(playerId);
 		RZ_ETier before = profile.GetTier(faction);
@@ -1230,6 +1262,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			SpawnSamples(pos, 1);
 
 		m_Wanderers.OnZombiesKilled(pos);
+		m_Leaders.OnZombiesKilled(pos);
 		m_Missions.OnZombiesKilled(settlementIdx, missionId, special, pos, count);
 	}
 
@@ -1488,6 +1521,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Perks.RestoreQuartermasters(data.qmX, data.qmZ, data.qmSet);
 		m_Safehouses.Restore(data.safehouses);
 		m_Wanderers.Restore(data.wanderers);
+		m_Leaders.Restore(data.leaders);
 		return true;
 	}
 
@@ -1520,6 +1554,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Wanderers)
 			data.wanderers = m_Wanderers.Save();
+
+		if (m_Leaders)
+			data.leaders = m_Leaders.Save();
 
 		foreach (RZ_Settlement s : m_aSettlements)
 		{

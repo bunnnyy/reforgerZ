@@ -185,6 +185,18 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Damage off: checkpoint guards, stronghold leaders. Does nothing without a damage manager.
+	static void MakeUntouchable(IEntity e)
+	{
+		if (!e)
+			return;
+
+		SCR_DamageManagerComponent dmg = SCR_DamageManagerComponent.Cast(e.FindComponent(SCR_DamageManagerComponent));
+		if (dmg)
+			dmg.EnableDamageHandling(false); // VERIFY: DamageManagerComponent.EnableDamageHandling(bool)
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsInVehicle(IEntity e)
 	{
 		CompartmentAccessComponent cac = CompartmentAccessComponent.Cast(e.FindComponent(CompartmentAccessComponent));

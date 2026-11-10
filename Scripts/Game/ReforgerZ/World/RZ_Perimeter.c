@@ -819,8 +819,6 @@ class RZ_Perimeter
 	//! Guards can't be killed or looted: they're out of reach, and damage is off as well.
 	protected static void MakeUntouchable(IEntity e)
 	{
-		SCR_DamageManagerComponent dmg = SCR_DamageManagerComponent.Cast(e.FindComponent(SCR_DamageManagerComponent));
-		if (dmg)
-			dmg.EnableDamageHandling(false); // VERIFY: DamageManagerComponent.EnableDamageHandling(bool)
+		RZ_Util.MakeUntouchable(e);
 	}
 }
