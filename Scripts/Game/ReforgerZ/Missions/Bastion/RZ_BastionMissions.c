@@ -701,4 +701,19 @@ class RZ_Mission_Requisition : RZ_Mission_Choice
 		m_sBrief = string.Format("Bastion is 'requisitioning' the Haven's supplies in %1. Take them to the Bastion drop at %2. Or hand them back to the Haven. Your call.", s.m_sName, b.m_sName);
 		return true;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The supplies are real: taken to Bastion, the nearest Haven safehouse loses 4 food.
+	override protected void OnChoiceMade(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction)
+	{
+		if (faction != RZ_EFaction.MILITARY || !gm.GetSafehouses())
+			return;
+
+		int idx = gm.GetSafehouses().TakeFood(m_vPos, REQUISITION_FOOD);
+		RZ_Safehouse h = gm.GetSafehouses().Get(idx);
+		if (h)
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("The safehouse in %1 has %2 food left in its stores.", h.m_sName, h.m_iFood));
+	}
+
+	protected static const int REQUISITION_FOOD = 4;
 }

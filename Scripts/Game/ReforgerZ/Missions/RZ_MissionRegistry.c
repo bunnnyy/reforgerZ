@@ -20,6 +20,12 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_TraderCaravan);
 		mgr.RegisterType(RZ_Mission_RescueTheKids);
 
+		// Haven house contracts (Missions/Haven/RZ_HavenHouseMissions.c). The Courier's
+		// job (RZ_Mission_CourierJob) isn't listed: a Courier wanderer starts it.
+		mgr.RegisterType(RZ_Mission_WalkHimOut);
+		mgr.RegisterType(RZ_Mission_TheLedger);
+		mgr.RegisterType(RZ_Mission_QuietArrangement);
+
 		// Task Force Bastion
 		mgr.RegisterType(RZ_Mission_ClearSettlement);
 		mgr.RegisterType(RZ_Mission_LastHelicopter);

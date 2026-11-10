@@ -135,6 +135,24 @@ class RZ_FactionShopAction : ScriptedUserAction
 
 		string factionName = RZ_Factions.GetName(m_eFaction);
 		RZ_ETier tier = gm.GetTier(playerId, m_eFaction);
+		if (m_eFaction == RZ_EFaction.SURVIVORS && RZ_Reputation.IsHunted(tier))
+		{
+			gm.NotifyPlayer(playerId, factionName, "The door stays shut. Nobody here will sell you anything.");
+			return;
+		}
+
+		// A Haven safehouse only stocks what its size allows (Shelter: Known, Community and
+		// Settlement: Trusted, Town: Champion). A quartermaster away from a safehouse sells everything.
+		if (m_eFaction == RZ_EFaction.SURVIVORS && gm.GetSafehouses())
+		{
+			int cap = gm.GetSafehouses().GetShopRankCap(pOwnerEntity.GetOrigin());
+			if (cap >= 0 && RZ_Reputation.GetAccessRank(m_eRequiredTier) > cap)
+			{
+				gm.NotifyPlayer(playerId, factionName, string.Format("This safehouse is too small to stock %1. A bigger one might have it.", m_sDisplayName));
+				return;
+			}
+		}
+
 		if (!RZ_Reputation.IsAtLeast(tier, m_eRequiredTier) || RZ_Reputation.IsHunted(tier))
 		{
 			gm.NotifyPlayer(playerId, factionName, string.Format("They won't sell you %1. You need to be %2 with them (you're %3).",

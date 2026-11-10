@@ -37,6 +37,9 @@ class RZ_ReadClueAction : ScriptedUserAction
 			return;
 
 		RZ_ClueComponent comp = RZ_ClueComponent.Cast(pOwnerEntity.FindComponent(RZ_ClueComponent));
+		if (RZ_PuzzleActionHelper.RouteRead(gm, pOwnerEntity, playerId, comp))
+			return;
+
 		RZ_PuzzleMission m;
 		if (comp)
 			m = RZ_PuzzleActionHelper.FindMission(gm, comp.GetMissionId());
@@ -167,6 +170,9 @@ class RZ_PuzzleChoiceAction : ScriptedUserAction
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_PuzzleActionHelper.GetPlayerId(pUserEntity);
 		if (!gm || playerId <= 0)
+			return;
+
+		if (RZ_PuzzleActionHelper.RouteChoice(gm, pOwnerEntity, playerId, m_iOption, pUserEntity))
 			return;
 
 		int objectIndex;

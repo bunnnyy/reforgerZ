@@ -172,6 +172,19 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Patch a character up fully (safehouse medic, Doctor wanderer).
+	static void HealCharacter(IEntity e)
+	{
+		ChimeraCharacter c = ChimeraCharacter.Cast(e);
+		if (!c)
+			return;
+
+		SCR_CharacterDamageManagerComponent dmg = SCR_CharacterDamageManagerComponent.Cast(c.GetDamageManager());
+		if (dmg)
+			dmg.FullHeal(); // VERIFY: FullHeal() (also stops bleeding) in your game version
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsInVehicle(IEntity e)
 	{
 		CompartmentAccessComponent cac = CompartmentAccessComponent.Cast(e.FindComponent(CompartmentAccessComponent));

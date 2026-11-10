@@ -250,6 +250,64 @@ class RZ_PuzzleActionHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Wanderers (RZ_Wanderers.TAG) and safehouse occupants (RZ_Safehouses.TAG_OCCUPANT) reuse
+	//! the puzzle civilian. Their choice actions come here instead of to a mission.
+	//! True if `owner` is one of them (and the choice was handled).
+	static bool RouteChoice(RZ_GameModeComponent gm, IEntity owner, int playerId, int option, IEntity user)
+	{
+		if (!gm || !owner)
+			return false;
+
+		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(owner.FindComponent(RZ_PuzzleObjectComponent));
+		if (!comp)
+			return false;
+
+		if (comp.GetMissionId() == RZ_Wanderers.TAG)
+		{
+			if (gm.GetWanderers())
+				gm.GetWanderers().HandleChoice(playerId, comp.GetObjectIndex(), option, owner, user);
+
+			return true;
+		}
+
+		if (comp.GetMissionId() == RZ_Safehouses.TAG_OCCUPANT)
+		{
+			if (gm.GetSafehouses())
+				gm.GetSafehouses().HandleOccupantTalk(playerId, comp.GetObjectIndex());
+
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Same for "Talk to ..." (RZ_ReadClueAction).
+	static bool RouteRead(RZ_GameModeComponent gm, IEntity owner, int playerId, RZ_ClueComponent comp)
+	{
+		if (!gm || !comp)
+			return false;
+
+		if (comp.GetMissionId() == RZ_Wanderers.TAG)
+		{
+			if (gm.GetWanderers())
+				gm.GetWanderers().HandleTalk(playerId, comp.GetClueIndex(), owner);
+
+			return true;
+		}
+
+		if (comp.GetMissionId() == RZ_Safehouses.TAG_OCCUPANT)
+		{
+			if (gm.GetSafehouses())
+				gm.GetSafehouses().HandleOccupantTalk(playerId, comp.GetClueIndex());
+
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static RZ_PuzzleMission FindForObject(RZ_GameModeComponent gm, IEntity owner, out int objectIndex)
 	{
 		objectIndex = -1;

@@ -85,6 +85,13 @@ class RZ_MissionManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True while a mission of this type runs (e.g. RZ_Event_Storm, for wanderers to shelter).
+	bool IsTypeRunning(typename t)
+	{
+		return IsTypeActive(t);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected int CountActive(bool contracts)
 	{
 		int n = 0;

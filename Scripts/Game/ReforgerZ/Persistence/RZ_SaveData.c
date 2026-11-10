@@ -39,6 +39,10 @@ class RZ_SaveData
 	ref array<float> qmZ = {};
 	ref array<int> qmSet = {};
 
+	// Haven safehouses (population, food, upkeep) and the wanderer roster (positions, memories)
+	ref array<ref RZ_SafehouseSave> safehouses = {};
+	ref RZ_WandererRosterSave wanderers;
+
 	ref array<ref RZ_SettlementSave> settlements = {};
 	ref array<ref RZ_PlayerProfile> profiles = {};
 }

@@ -23,6 +23,9 @@ class RZ_PlayerProfile
 	float m_fLifeSeconds;
 	int m_iLifeSamples;
 	int m_iLifeMissions;
+	bool m_bBiteDeclared;		// told a safehouse about the bite (slowed once, can't be caught)
+	bool m_bBiteCaught;			// caught hiding a bite in a safehouse
+	bool m_bDoctorTreated;		// a Doctor wanderer already slowed this life's infection
 
 	// Personal objective for this life (see RZ_Objectives)
 	int m_iObjType = -1;
@@ -39,6 +42,9 @@ class RZ_PlayerProfile
 		m_fLifeSeconds = 0;
 		m_iLifeSamples = 0;
 		m_iLifeMissions = 0;
+		m_bBiteDeclared = false;
+		m_bBiteCaught = false;
+		m_bDoctorTreated = false;
 		m_iObjType = -1;
 		m_iObjTarget = -1;
 		m_iObjGoal = 0;

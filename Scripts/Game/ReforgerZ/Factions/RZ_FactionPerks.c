@@ -12,6 +12,7 @@
 //! Consequences:
 //!   Hunted / Kill on Sight by Bastion or the Red Hand: hunter squads
 //!   Kill on Sight by anyone: public bounty, claimed by whoever is near when you die
+//!   Hunted by the Haven: a hungry safehouse may sell your rough location (LeakLocation)
 class RZ_FactionPerks
 {
 	protected RZ_GameModeComponent m_GM;
@@ -269,7 +270,7 @@ class RZ_FactionPerks
 				return "They're hunting you. Expect armed squads to come looking.";
 			if (faction == RZ_EFaction.INSTITUTE)
 				return "The lab will still take your samples, but you'll get nothing for them.";
-			return "Their doors are barred to you.";
+			return "Exile: the safehouse doors stay shut to you, their people warn others about you, and a hungry safehouse may sell your name.";
 		}
 
 		switch (faction)
@@ -277,7 +278,7 @@ class RZ_FactionPerks
 			case RZ_EFaction.SURVIVORS:
 			{
 				if (tier == RZ_ETier.KNOWN)
-					return "Haven safehouses will let you in. Their quartermaster sells you basic supplies.";
+					return "Haven safehouses will let you in. Their quartermaster sells you basic supplies. House rules: don't fire near a safehouse, and tell the medic if you're bitten.";
 				if (tier == RZ_ETier.TRUSTED)
 					return "Neighbours: the Haven will point you to the nearest job.";
 				break;
@@ -513,6 +514,38 @@ class RZ_FactionPerks
 	}
 
 	// ================================================================ Bounties
+	//------------------------------------------------------------------------------------------------
+	//! A safehouse short on food sells what it knows about someone the Haven turned out
+	//! (RZ_Safehouses). The Red Hand sends a hunter squad if it has one; players the
+	//! Red Hand knows hear a rough location. The target only gets a bad feeling.
+	void LeakLocation(int playerId, IEntity target, string safehouseName)
+	{
+		if (!target)
+			return;
+
+		vector at = target.GetOrigin();
+		ResourceName prefab = m_GM.GetHunterPrefab(RZ_EFaction.BANDITS);
+		if (!prefab.IsEmpty())
+			SendHunters(playerId, target, RZ_EFaction.BANDITS, prefab);
+		else
+			m_GM.NotifyPlayer(playerId, "A bad feeling", "Someone has been asking about you on the roads. Someone hungry.");
+
+		RZ_Settlement s = m_GM.GetSettlement(m_GM.FindNearestSettlement(at));
+		string where = RZ_SettlementScanner.GridReference(at);
+		if (s)
+			where = s.m_sName;
+
+		string text = string.Format("A hungry safehouse in %1 sold a name for food: %2, seen near %3. Turned out by the Haven. Nobody will mourn them.",
+			safehouseName, RZ_Util.PlayerName(playerId), where);
+		array<int> all = {};
+		GetGame().GetPlayerManager().GetPlayers(all);
+		foreach (int other : all)
+		{
+			if (other != playerId && RZ_Reputation.IsAtLeast(m_GM.GetTier(other, RZ_EFaction.BANDITS), RZ_ETier.KNOWN))
+				m_GM.NotifyPlayer(other, "Word from the Red Hand", text);
+		}
+	}
+
 	//------------------------------------------------------------------------------------------------
 	protected void AnnounceBounties(array<int> ids, array<IEntity> players)
 	{

@@ -45,7 +45,8 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 //! #2 Survivors Trapped: reach a barricaded family, then hold out through three
 //! waves until help arrives. With a survivor group prefab the survivors are real
 //! AI, and the mission fails if they all die. Amends: works off Haven Infamy.
-//! ★ Nurse: the survivors leave healthier, bonus Fame.
+//! ★ Nurse: the survivors leave healthier, bonus Fame (and one more of them makes it).
+//! The family (3, or 4 with a ★) joins the nearest Haven safehouse.
 class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 {
 	protected IEntity m_Survivors;
@@ -113,6 +114,16 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		gm.SpawnRewardCrate(m_vPos);
+
+		int rescued = 3;
+		foreach (int playerId : m_aParticipants)
+		{
+			if (HasBonus(gm, playerId))
+				rescued = 4;
+		}
+
+		if (gm.GetSafehouses())
+			gm.GetSafehouses().AddRescued(m_vPos, rescued, m_aParticipants);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -276,7 +287,18 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 		if (!home)
 			return false;
 
-		m_iSettlement = PickSettlementAway(gm, home.m_vCenter, 800, 4000, 20, 90);
+		// The drop is at a real Haven safehouse when there are any
+		vector dropPos = LandPointNear(home.m_vCenter, 0, home.m_fRadius * 0.4);
+		string homeName = home.m_sName;
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (houses && houses.Count() > 0)
+		{
+			RZ_Safehouse house = houses.Get(houses.PickRandom());
+			dropPos = LandPointNear(house.m_vPos, 2, 6);
+			homeName = house.m_sName;
+		}
+
+		m_iSettlement = PickSettlementAway(gm, dropPos, 800, 4000, 20, 90);
 		RZ_Settlement pharmacy = gm.GetSettlement(m_iSettlement);
 		if (!pharmacy)
 			return false;
@@ -285,10 +307,10 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 		if (!SpawnItem(gm, m_vPos))
 			return false;
 
-		SpawnDrop(gm, RZ_EFaction.SURVIVORS, LandPointNear(home.m_vCenter, 0, home.m_fRadius * 0.4));
+		SpawnDrop(gm, RZ_EFaction.SURVIVORS, dropPos);
 		SpawnGuards(gm, m_vPos, 3, 10, 35);
 		m_sTitle = "Medicine run";
-		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2. Bring the supplies back.", home.m_sName, pharmacy.m_sName);
+		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2. Bring the supplies back.", homeName, pharmacy.m_sName);
 		return true;
 	}
 
@@ -786,5 +808,9 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 	{
 		if (!m_bHordeSent)
 			m_fRewardScale = 1.25; // nobody noticed a thing
+
+		// Three children join the nearest Haven safehouse
+		if (gm.GetSafehouses())
+			gm.GetSafehouses().AddRescued(m_vPos, 3, m_aParticipants);
 	}
 }
