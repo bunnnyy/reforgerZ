@@ -33,7 +33,7 @@ Out of scope: sleep and time skipping.
 | Backgrounds (8, plus 5 unlockable through Legacy) | `Backgrounds/RZ_Background.c` | Written |
 | Fame, Infamy and Favor per faction per life; standing tiers; rival Infamy | `Factions/RZ_Reputation.c`, `Backgrounds/RZ_PlayerProfile.c` | Written |
 | Champion carry-over ("word gets around") and background unlocks | `Core/RZ_GameModeComponent.c` | Written |
-| Missions: 42 faction contracts + 12 world events, requirements, amends, background bonuses | `Missions/` (see [MISSIONS.md](MISSIONS.md)) | Written |
+| Missions: 42 faction contracts + 10 world events, requirements, amends, background bonuses | `Missions/` (see [MISSIONS.md](MISSIONS.md)) | Written |
 | Choice missions: hand an item to one of two factions | `Missions/RZ_MissionItems.c`, `RZ_MissionBases.c` | Written |
 | Quartermasters, Favor shops, standing check, Requisition | `Factions/RZ_Quartermaster.c` | Written |
 | Faction perks, hunter squads, Kill-on-Sight bounties | `Factions/RZ_FactionPerks.c` | Written |
@@ -55,6 +55,7 @@ Out of scope: sleep and time skipping.
 | Landmark finder (church, water tower, well... by prefab name, fallback prop), compass bearings and paces | `Puzzles/RZ_Landmarks.c` | Written |
 | Seeded note text: names, days, personal lines in the Zone's voice | `Puzzles/RZ_NoteText.c` | Written |
 | Zombie-free settlements while a mission runs (The Silent Village) | `Zombies/RZ_ZombieSpawner.c` | Written |
+| Government broadcast: a looping flavour message whose tone follows the Zone's state | `Director/RZ_Broadcast.c` | Written |
 
 **None of it has been compiled yet.** It was written outside Workbench. Calls
 marked `// VERIFY:` are engine APIs whose exact names can differ between
@@ -87,7 +88,7 @@ and change ReforgerZ systems, so they work with any other mods loaded.
 
 Two kinds, described in full in [MISSIONS.md](MISSIONS.md):
 
-- **World events** (12 in code) are announced to everyone, and anyone who takes part shares the reward.
+- **World events** (10 in code) are announced to everyone, and anyone who takes part shares the reward.
 - **Faction contracts** (42 in code, plus 17 puzzle missions) are offered only to players who meet their requirements:
   tier with the giver, standing with other factions, background, world state and player count.
   There's no "accept" button: eligible players who take part get paid, others get nothing.
@@ -139,7 +140,7 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Gunfire heat via `OnProjectileShot`
 - [x] Antidote use action (world action for now)
 - [x] Personal objective per life, Legacy points
-- [x] Survivors trapped, Evac flight, Burn the nest, Bandit dead drop
+- [x] Survivors trapped, Last Helicopter, Burn the nest, Bandit dead drop
 - [x] Missions announced with distance and direction; queued hints
 - [x] Map markers for world events and the lab (`RZ_MapMarkers`, toggle on the game mode)
 - [ ] Custom deploy-menu panel that shows each background's perk and flaw before you pick it
@@ -156,8 +157,9 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Five unlockable backgrounds
 - [x] Contract requirements (tier, standing with others, background, world state), amends, ★ bonuses
 - [x] Choice missions, delivery missions, drop points
-- [x] 42 contracts and 12 world events from MISSIONS.md
-- [x] Quartermasters with Favor shops gated by tier; Requisition; standing check
+- [x] 42 contracts and 10 world events from MISSIONS.md
+- [x] Quartermasters with Favor shops gated by tier; Requisition (half price, hourly); standing check
+- [ ] Requisition from a Bastion outpost's truck-supplied stock (WORLD.md supply trucks)
 - [x] Cheap perks: sample scanner, Halcyon research bonus, Neighbours, toll pass (message only)
 - [x] Hunter squads for Hunted players; Kill-on-Sight bounties
 - [ ] Remaining perks: Haven safehouse spawn points, Fire Mission, Fence, Bounty board, immunity booster, Halcyon medic
@@ -179,6 +181,12 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [ ] Wipe cycle tied to cure completion, or a fixed number of weeks
 - [ ] Season rule sets: Winter (ENDURE), Fog, Military Collapse, No Vehicles
 - [ ] Hall of fame: who delivered the most samples, who held the final stand
+
+### Dropped
+
+- **Airdrop and Supply Plane Crash world events:** the Zone is sealed; nothing comes in from outside.
+- **Crates from the evac helicopter:** free loot; the Last Helicopter pays Fame and Favor instead.
+- **Free hourly Requisition crate:** free loot; Requisition is now a half-price purchase.
 
 ## Any-map checklist
 

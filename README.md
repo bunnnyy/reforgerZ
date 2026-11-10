@@ -11,8 +11,8 @@ the cure.**
   are unlocked through Legacy.
 - **The Director** moves the server from Early Outbreak → Collapse → Overrun → Aftermath,
   spreads infection from town to town, and sends hordes toward noise.
-- **World events and faction contracts** in real towns on whatever map you load: 12 world
-  events anyone can join (airdrops, horde migrations, Night of the Dead) and 42 contracts
+- **World events and faction contracts** in real towns on whatever map you load: 10 world
+  events anyone can join (horde migrations, Night of the Dead, Bastion shelling) and 42 contracts
   offered only to players the faction trusts, some of which make you choose who gets the prize.
 - **Cure research**: kill special infected, take their samples to the lab, unlock
   server-wide breakthroughs, then hold the lab through the final stand.

@@ -188,7 +188,7 @@ Examples:
 1. **The Missing Courier.** A Halcyon courier stops reporting. A wanderer has seen
    Red Hand men with lab cases. A Red Hand camp suddenly sells antidotes. The arc ends with a
    lab defence, or a contract to steal the antidotes back.
-2. **The Last Convoy.** Bastion announces a big evacuation convoy. Raiders scout it.
+2. **The Last Convoy.** Bastion announces a big convoy pulling an outpost's people and stock back to its stronghold. Raiders scout it.
    Players escort it, raid it, or stay out of it. Either way, a Bastion outpost is restocked or runs dry.
 3. **The Preacher's Flock.** The Preacher rings bells in more and more towns. Hordes
    follow him. Find and stop him, protect him, or use his bells as a distraction.

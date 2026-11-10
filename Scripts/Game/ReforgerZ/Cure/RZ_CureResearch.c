@@ -241,7 +241,7 @@ class RZ_CureResearch
 			m_GM.AddFame(id, RZ_EFaction.SURVIVORS, 30);
 		}
 
-		m_GM.NotifyAll("THE CURE IS HERE", "The cure is going out over every frequency. You did it. This season is over: the next wipe starts a new outbreak.");
+		m_GM.NotifyAll("THE CURE IS HERE", "The cure is going out over every frequency, and with it the proof. The quarantine is lifted and the gates are opening. This season is over: the next wipe starts a new outbreak, in a new Zone.");
 		m_GM.OnCureCompleted();
 		m_GM.GetDirector().SetStage(RZ_EOutbreakStage.AFTERMATH);
 		m_GM.OnCureChanged();

@@ -45,6 +45,20 @@ class RZ_Director
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Rough minutes since the outbreak began: the set length of every earlier stage plus
+	//! the time in this one. Used for the broadcast's day count, so it needn't be exact.
+	float GetTotalMinutes()
+	{
+		float total = m_fStageMinutes;
+		for (int i = 0; i < m_eStage && i < m_aStages.Count(); i++)
+		{
+			total += m_aStages[i].m_fDurationMinutes;
+		}
+
+		return total;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_StageSettings GetStageSettings()
 	{
 		return m_aStages[m_eStage];

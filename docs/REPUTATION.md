@@ -74,7 +74,7 @@ total wipes:
 | Tier | Shop (Bastion requisition) | Perk / service |
 |---|---|---|
 | Known | Military rations, morphine, flares | Checkpoints let you through without being searched |
-| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition:** once an hour, draw ammo and rations from a Bastion outpost's stock at half Favor cost. It only works while that outpost has been resupplied by truck |
+| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition:** once an hour, draw ammo or rations from Bastion's stock at half the Favor cost, at the Bastion quartermaster. *(Planned: drawn from a nearby outpost's stock instead, and only while a supply truck has restocked it; see [WORLD.md](WORLD.md).)* |
 | Champion | Machine guns, grenades, military trucks | **Fire mission:** mark a horde with smoke for an artillery strike (long cooldown) |
 | Hunted | — | Checkpoints open fire; patrols get your last known position |
 
@@ -164,7 +164,7 @@ That sets the tone of the Aftermath and the next season's starting rules:
 | All tiers, Fame/Infamy/Favor, rivals, amends missions | Paying Favor to remove Infamy |
 | Word gets around, all five unlockable backgrounds | Disguises, surrendering at checkpoints |
 | Quartermaster shops (any item, any tier) | Haven safehouse spawn points, Community respawns |
-| Requisition, sample scanner, Halcyon research bonus, Neighbours | Fire Mission, Fence, Bounty board, Halcyon medic, immunity booster |
+| Requisition (half price at the quartermaster), sample scanner, Halcyon research bonus, Neighbours | Requisition from truck-supplied outpost stock; Fire Mission, Fence, Bounty board, Halcyon medic, immunity booster |
 | Toll pass (message only), Halcyon Hunted gets no Fame for samples | AI checkpoints and roadblocks reacting to standing |
 | Hunter squads (Bastion and Red Hand), Kill-on-Sight bounties | Haven AI warning other players |
 | Season winner by Fame | Next-season rules from the winner |

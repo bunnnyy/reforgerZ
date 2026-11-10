@@ -97,9 +97,8 @@ Research Data (Halcyon + Bastion).
 | `RZ_RedHandGroup.et` | an AI group on faction `BAND` (e.g. FIA or guerrilla units) | | Missions > Red Hand group | Raid the Red Hand, Trader Caravan, raiders in Lab Defence; default Red Hand hunter squad |
 | `RZ_FuelDepot.et` | fuel tanks or a fuel truck | a damage manager | Missions > Fuel depot | Arson |
 | `RZ_Relay.et` | a radio mast or antenna | a damage manager | Missions > Relay | Sabotage the Relay |
-| `RZ_Airdrop.et` | a supply crate with a parachute or smoke | | Missions > Airdrop | nicer Airdrop (the reward crate is used otherwise) |
 | `RZ_Trader.et` | a character or vehicle, e.g. with a Shop System trader | | Missions > Trader | Wandering Trader |
-| `RZ_Explosion.et` | a vanilla explosion / artillery impact effect | | Missions > Explosion | Bombing Run |
+| `RZ_Explosion.et` | a vanilla mortar or artillery impact effect | | Missions > Explosion | Bastion Shelling |
 
 ### Quartermasters (one per faction)
 
@@ -111,7 +110,7 @@ lab. Their positions are saved.
 | Prefab | Add | Slot |
 |---|---|---|
 | `RZ_QM_Haven.et` | `RZ_QuartermasterComponent` (faction SURVIVORS); actions: `RZ_StandingStatusAction`, several `RZ_FactionShopAction` | Factions > Haven quartermaster |
-| `RZ_QM_Bastion.et` | same with faction MILITARY, plus `RZ_RequisitionAction` | Factions > Bastion quartermaster |
+| `RZ_QM_Bastion.et` | same with faction MILITARY, plus one `RZ_RequisitionAction` per requisition item (ammo, rations) | Factions > Bastion quartermaster |
 | `RZ_QM_RedHand.et` | same with faction BANDITS | Factions > Red Hand quartermaster |
 | `RZ_QM_Halcyon.et` | same with faction INSTITUTE | Factions > Halcyon quartermaster |
 
@@ -124,7 +123,11 @@ Each `RZ_FactionShopAction` sells one thing. Set:
 - **Display name**: shown as "Buy <name> (<cost> Favor, <tier>)"
 
 The action is always shown. The server checks tier and Favor when it's used and tells the
-player why if they can't buy it. `RZ_StandingStatusAction` shows the player's standing
+player why if they can't buy it.
+
+`RZ_RequisitionAction` (Bastion's Requisition perk) has the same **Favor cost**, **Item prefab**
+and **Display name** attributes. The cost is the full price: a Trusted player pays half (rounded
+up), once an hour across all requisition actions. Set it up for ammo and rations only. `RZ_StandingStatusAction` shows the player's standing
 with every faction and the contracts this quartermaster has for them.
 
 A starting shop list, from REPUTATION.md:
@@ -140,7 +143,6 @@ A starting shop list, from REPUTATION.md:
 
 | Prefab | Base | Slot |
 |---|---|---|
-| `RZ_RequisitionCrate.et` | a military supply box with loot | Factions > Requisition crate (the reward crate is used if empty) |
 | `RZ_BastionHunters.et` | an AI group on faction `MIL` | Factions > Bastion hunter squad |
 | `RZ_RedHandHunters.et` | an AI group on faction `BAND` | Factions > Red Hand hunter squad (falls back to the Red Hand group) |
 
@@ -248,6 +250,8 @@ For another map, make another sub-scene with the same contents.
 
 ## 7. Server config
 
+- **Broadcast minutes** (Director, default 25): how often everyone hears the government
+  broadcast ([LORE.md](LORE.md)). Every player also hears it on their first spawn. 0 = only then.
 - Keep time acceleration modest and fixed. Don't use time-skip or sleep mods.
 - Season wipe: set `m_bWipeOnStart` for one restart, or delete
   `$profile:ReforgerZ/state.json`. The last season's winner is kept in

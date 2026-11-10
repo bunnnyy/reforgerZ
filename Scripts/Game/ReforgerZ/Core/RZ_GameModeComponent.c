@@ -43,6 +43,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Stage overrides. Leave empty to use the built-in defaults", category: "ReforgerZ|Director")]
 	protected ref array<ref RZ_StageSettings> m_aStages;
 
+	[Attribute("25", desc: "Minutes between government broadcasts to everyone (flavour only; also sent on first join). 0 = only on first join", category: "ReforgerZ|Director")]
+	protected float m_fBroadcastMinutes;
+
 	[Attribute(desc: "Zombie prefabs and density", category: "ReforgerZ|Zombies")]
 	protected ref RZ_ZombieSettings m_ZombieSettings;
 
@@ -237,6 +240,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_CureResearch m_Cure;
 	protected ref RZ_BiteDetector m_BiteDetector;
 	protected ref RZ_FactionPerks m_Perks;
+	protected ref RZ_Broadcast m_Broadcast;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -308,6 +312,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Missions = new RZ_MissionManager(this);
 		m_BiteDetector = new RZ_BiteDetector(this, m_fBiteChance, m_fBiteReach);
 		m_Perks = new RZ_FactionPerks(this);
+		m_Broadcast = new RZ_Broadcast(this);
 
 		bool loaded = false;
 		if (!m_bWipeOnStart)
@@ -363,6 +368,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Missions.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
 		m_Perks.Tick(dt, ids, players);
+		m_Broadcast.Tick(dt, m_fBroadcastMinutes);
 		RZ_GameTime.Tick(dt);
 		RZ_NoisemakerComponent.TickAll();
 		UpdateInfections(dt, ids);
@@ -694,6 +700,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 			NotifyPlayer(playerId, "Outbreak: " + RZ_StageSettings.GetStageName(m_Director.GetStage()),
 				string.Format("Cure research: %1 percent.%2", RZ_Util.RoundToInt(m_Cure.m_fProgress), lab));
+
+			if (!m_Cure.IsCured())
+				NotifyPlayer(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText());
 		}
 
 		// 3. What's on the radio
@@ -1478,7 +1487,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected bool m_bHintShowing;
 
 	protected static const int HINT_SECONDS = 9;
-	protected static const int HINT_QUEUE_MAX = 6;
+	protected static const int HINT_QUEUE_MAX = 8;
 
 	//------------------------------------------------------------------------------------------------
 	protected void QueueHint(string title, string text)

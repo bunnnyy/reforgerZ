@@ -2,8 +2,8 @@
 
 There are two kinds of missions:
 
-- **World events** (30) are announced to everyone, and anyone can take part.
-  They are what makes strangers meet: an airdrop, a horde, a downed helicopter.
+- **World events** (28) are announced to everyone, and anyone can take part.
+  They are what makes strangers meet: a horde, a helicopter wreck, a town about to be shelled.
 - **Faction contracts** (20 per faction, plus 17 puzzle missions) are offered only to players who
   qualify, by radio or at the faction's contact. A contract belongs to the
   person or group that accepts it. Others can still turn up and interfere.
@@ -84,19 +84,19 @@ while Watched by the Haven. They remove Infamy instead of adding Fame.
 | # | Contract | Needs | Bg | What you do | Result |
 |---|---|---|---|---|---|
 | 1 | Retake the Town ✅ | Any, Bastion present | ★ Police/Soldier: +25% Fame | Kill 8 × size infected in a town | Bastion Fame, infection -35 |
-| 2 | Evac Flight ✅ | Any, Collapse/Overrun | | Be at the LZ when the helicopter leaves | Fame, crates |
+| 2 | Last Helicopter ✅ | Any, Bastion still around | | Bastion's one working helicopter lands at an LZ on its run between its own bases. Keep the LZ clear and be there when it lifts off | Fame, Favor |
 | 3 | Burn the Bodies ✅ | Any | ★ Nurse: faster | Burn 5 corpse piles in a town to slow infection | Fame, spread slows there |
 | 4 | Recon ✅ | Any | ★ Hunter/Radio Op: reports count double | Visit 3 observation points and report horde sizes | Fame; the next horde is announced earlier |
 | 5 | Checkpoint Duty ✅ | Known | ★ Police | Hold a checkpoint 10 min. Let survivors pass, stop armed bandits | Fame (Red Hand Infamy for each bandit you stop) |
 | 6 | Missing Patrol ✅ | Known | | Find a squad's last position, recover dog tags, deal with the turned soldiers | Fame, military loot |
-| 7 | Crash Site ✅ | Known | ★ Mechanic: recovers the black box faster | Secure a downed helicopter and its black box | **Choice:** Bastion Fame, or sell the box to the Red Hand |
+| 7 | Crash Site ✅ | Known | ★ Mechanic: recovers the black box faster | Secure the wreck of a Bastion helicopter lost in the first week, and its black box | **Choice:** Bastion Fame, or sell the box to the Red Hand |
 | 8 | Restore Comms | Known | ★ Radio Op: needs no parts | Bring parts and repair a radio tower | Fame; Bastion intel on the radio |
 | 9 | Curfew Patrol | Known, night only | ★ Police | Patrol a town at night and keep it clear | Fame |
 | 10 | Weapons Cache | Trusted | | Retrieve weapons from an armory in an overrun base | Fame; unlocks the Bastion rifle shop |
 | 11 | Convoy Escort | Trusted | ★ Mechanic: can fix a broken-down truck | Escort supply trucks between two towns | Big Fame (Red Hand Infamy if you kill raiders) |
 | 12 | Rescue the Pilot | Trusted | ★ Nurse/Doctor | Find a downed pilot behind the lines and bring them out | Fame |
 | 13 | Quarantine Line ✅ | Trusted | | Hold the edge of a town for 10 min while it's sealed off | Fame; that town stops spreading for a while |
-| 14 | Clear the Airfield | Trusted | | Clear an airfield so evac flights can land there | Fame; evac flights appear more often |
+| 14 | Clear the Airfield | Trusted | | Clear an airfield so the Last Helicopter can land there | Fame; the Last Helicopter runs more often |
 | 15 | Raid the Red Hand ✅ | Trusted, not Trusted by the Red Hand | 🔒 not Ex-Con/Raider unless Champion with Bastion | Assault a Red Hand camp | Big Fame (big Red Hand Infamy) |
 | 16 | Hunt the Deserter | Trusted | | Track down a deserter who stole supplies. Bring him back or kill him | Fame; capture = more Fame |
 | 17 | Requisition ✅ | Trusted | 🔒 not Elder | "Collect" supplies from a Haven safehouse | Fame (Haven Infamy); a nasty choice |
@@ -170,40 +170,38 @@ Many contracts open up *because* Bastion or the Haven turned on you.
 
 ---
 
-## World events: 30 (anyone)
+## World events: 28 (anyone)
 
 | # | Event | What happens | Why it's interesting |
 |---|---|---|---|
-| 1 | Airdrop ✅ | A supply crate lands somewhere; everyone sees where | Everyone races there; PvP magnet |
-| 2 | Crashed Helicopter ✅ | A smoking wreck with military loot | The crash noise brings a horde |
-| 3 | Horde Migration ✅ | A huge horde crosses the region on a road | Get out of the way, or take advantage of it |
-| 4 | Night of the Dead ✅ | One night with double density and runners | High risk, specials everywhere |
-| 5 | Fog Bank | A region drops to low visibility for 20 min | Hiding is easy. So are ambushes. |
-| 6 | Distress Call | A survivor asks for help on the radio | Could be real, could be a Red Hand trap (see 21) |
-| 7 | Abandoned Convoy | Military trucks left on a highway | Loot, but it may be booby-trapped or watched |
-| 8 | Power Surge | A town's power comes back for 10 min | Alarms go off (heat); electronics loot |
-| 9 | Siren Test ✅ | Air-raid sirens pull every infected into one town | The towns around it are briefly safe to loot |
-| 10 | Wandering Trader ✅ | A neutral merchant parks somewhere for 20 min | Rare items; protect him or rob him |
-| 11 | Gas Station Fire | A station explodes and burns | Infection drops; loot is destroyed |
-| 12 | Prison Break | Escaped convicts roam the area | They're hostile; the Red Hand recruits them |
-| 13 | Bombing Run ✅ | Bastion strikes an infested town in 5 min | Get out, or loot fast before it hits |
-| 14 | Bell Tower | Someone rings church bells nonstop | A horde converges; who's ringing them? |
-| 15 | The Sniper | A crazed survivor shoots from a tower | Take him down; his stash is up there |
-| 16 | Stash Note ✅ | A note with coordinates turns up on a body | Treasure hunt |
-| 17 | Mass Grave ✅ | A pit full of infected bodies | Lots of samples, and a horde underneath |
-| 18 | Lost Child | A child wanders alone | Escort to the Haven (Fame) or just leave |
-| 19 | Supply Plane Crash ✅ | Cargo is scattered over 1 km | Several small contested crates |
-| 20 | Burning Town | A town burns for 15 min | Infection there drops sharply |
-| 21 | Fake Distress Call | It's a Red Hand ambush | Radio Operators are warned |
-| 22 | Storm ✅ | Rain and wind; noise carries less | Heat decays faster; good time to move |
-| 23 | Last Broadcast | A TV station is still running | Reach it and broadcast. Everyone gets a small Fame boost with the faction you name |
-| 24 | Rival Survivors | An unaligned AI group | They trade or fight depending on your overall reputation |
-| 25 | Locked Bunker | A sealed bunker, code split over 3 notes | Teamwork or a race between strangers |
-| 26 | Turned Player ✅ | A player who turned roams with their gear | Their loot is up for grabs; their friends may disagree |
-| 27 | Tunnel Rats | Infected flood out of tunnels or a subway | A town's infection spikes |
-| 28 | Military Remnant Camp | An abandoned Bastion camp with gear | Taking it gives Bastion Infamy if they're still active |
-| 29 | Wedding Party | A horde in formal wear by a church | Dark humour, good jewellery loot for trading |
-| 30 | Collapse Shelter | A town's shelter is overrun and survivors scatter | Save them before they turn (Haven Fame) |
+| 1 | Crashed Helicopter ✅ | The wreck of one of Bastion's lost helicopters, its military cargo still aboard | Infected nest around it; a horde comes when someone arrives |
+| 2 | Horde Migration ✅ | A huge horde crosses the region on a road | Get out of the way, or take advantage of it |
+| 3 | Night of the Dead ✅ | One night with double density and runners | High risk, specials everywhere |
+| 4 | Fog Bank | A region drops to low visibility for 20 min | Hiding is easy. So are ambushes. |
+| 5 | Distress Call | A survivor asks for help on the radio | Could be real, could be a Red Hand trap (see 19) |
+| 6 | Abandoned Convoy | Military trucks left on a highway | Loot, but it may be booby-trapped or watched |
+| 7 | Power Surge | A town's power comes back for 10 min | Alarms go off (heat); electronics loot |
+| 8 | Siren Test ✅ | Air-raid sirens pull every infected into one town | The towns around it are briefly safe to loot |
+| 9 | Wandering Trader ✅ | A neutral merchant parks somewhere for 20 min | Rare items; protect him or rob him |
+| 10 | Gas Station Fire | A station explodes and burns | Infection drops; loot is destroyed |
+| 11 | Prison Break | Escaped convicts roam the area | They're hostile; the Red Hand recruits them |
+| 12 | Bastion Shelling ✅ | Bastion's own mortars shell an infested town after a 5-minute warning | Get out, or loot fast before it hits. Infection there drops sharply |
+| 13 | Bell Tower | Someone rings church bells nonstop | A horde converges; who's ringing them? |
+| 14 | The Sniper | A crazed survivor shoots from a tower | Take him down; his stash is up there |
+| 15 | Stash Note ✅ | A note with coordinates turns up on a body | Treasure hunt |
+| 16 | Mass Grave ✅ | A pit full of infected bodies | Lots of samples, and a horde underneath |
+| 17 | Lost Child | A child wanders alone | Escort to the Haven (Fame) or just leave |
+| 18 | Burning Town | A town burns for 15 min | Infection there drops sharply |
+| 19 | Fake Distress Call | It's a Red Hand ambush | Radio Operators are warned |
+| 20 | Storm ✅ | Rain and wind; noise carries less | Heat decays faster; good time to move |
+| 21 | Last Broadcast | A TV station is still running | Reach it and broadcast. Everyone gets a small Fame boost with the faction you name |
+| 22 | Rival Survivors | An unaligned AI group | They trade or fight depending on your overall reputation |
+| 23 | Locked Bunker | A sealed bunker, code split over 3 notes | Teamwork or a race between strangers |
+| 24 | Turned Player ✅ | A player who turned roams with their gear | Their loot is up for grabs; their friends may disagree |
+| 25 | Tunnel Rats | Infected flood out of tunnels or a subway | A town's infection spikes |
+| 26 | Military Remnant Camp | An abandoned Bastion camp with gear | Taking it gives Bastion Infamy if they're still active |
+| 27 | Wedding Party | A horde in formal wear by a church | Dark humour, good jewellery loot for trading |
+| 28 | Collapse Shelter | A town's shelter is overrun and survivors scatter | Save them before they turn (Haven Fame) |
 
 ## Puzzle missions: 17 contracts
 
