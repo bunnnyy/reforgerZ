@@ -638,7 +638,8 @@ through different plots. An arc whose next step can't happen fizzles out quietly
 
 - **When:** one arc at a time. About every hour with players online, 60% of the time one starts:
   a random arc that hasn't run in the last four hours and can run now. Saved; an arc waiting on
-  a mission just ends at a restart.
+  a mission (or The Last Convoy's truck on the road) just ends at a restart; a convoy that
+  hadn't left yet is asked for again.
 
 | Arc | Steps (each needs the one before) |
 |---|---|

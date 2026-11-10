@@ -245,7 +245,8 @@ class RZ_StoryArcs
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Missions don't survive a restart, so an arc waiting on one isn't saved (it just ends).
+	//! Missions (and supply trucks on the road) don't survive a restart, so an arc waiting on one
+	//! isn't saved (it just ends).
 	protected bool HoldsMission()
 	{
 		if (!m_Arc)
@@ -254,6 +255,7 @@ class RZ_StoryArcs
 		switch (m_Arc.m_iKind)
 		{
 			case RZ_EArc.COURIER: return m_Arc.m_iStep == 0 || m_Arc.m_iStep == 3;
+			case RZ_EArc.CONVOY: return m_Arc.m_iStep >= 1;	// the truck on the road doesn't survive a restart
 			case RZ_EArc.MAP: return true;
 			case RZ_EArc.FEVER: return m_Arc.m_iStep >= 1;
 		}
@@ -308,6 +310,15 @@ class RZ_StoryArcs
 		}
 
 		m_Restored = null;
+
+		// The Last Convoy waiting to leave: the supply lines forget the request on a restart, so ask again
+		if (m_Arc && m_Arc.m_iKind == ARC_CONVOY && m_Arc.m_iStep == 0)
+		{
+			RZ_SupplyLines supply = m_GM.GetSupply();
+			if (!supply || !supply.RequestConvoy(RZ_EFaction.MILITARY, m_Arc.I(0), 600))
+				m_Arc = null;
+		}
+
 		string running = "none";
 		if (m_Arc)
 			running = ArcName(m_Arc.m_iKind);
