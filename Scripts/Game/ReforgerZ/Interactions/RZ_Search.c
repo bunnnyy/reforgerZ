@@ -556,8 +556,21 @@ class RZ_Search
 	//------------------------------------------------------------------------------------------------
 	//! A building's own lock, seeded from its position: the same buildings have one after a restart.
 	//! Never at a place people live or trade (safehouses, the lab, holdings, quartermasters): their
-	//! doors stay open to the people who use them.
+	//! doors stay open to the people who use them. Never within 25 m of a running mission's props
+	//! (RZ_MissionManager.IsNearMissionProp) unless the lock is part of that mission.
 	bool HasLock(vector buildingPos, string type)
+	{
+		if (!HasOwnLock(buildingPos, type))
+			return false;
+
+		// Never next to a running mission's props (unless the lock is the mission's own)
+		RZ_MissionManager missions = m_GM.GetMissions();
+		return !missions || !missions.IsNearMissionProp(buildingPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The building's seeded lock, whatever missions are running nearby (keys are cut for these).
+	bool HasOwnLock(vector buildingPos, string type)
 	{
 		if (!m_Settings.m_bLocks || type == "body" || type == "car")
 			return false;
@@ -749,25 +762,33 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A key for a random lockable kind of building in a town near pos. Returns a description.
+	//! A key for a real locked building in the town nearest pos (one with its own lock, not burned
+	//! down). Returns a description, "" if that town has no locked building: no key is given.
 	string GiveRandomKey(int playerId, vector pos)
 	{
 		int town = m_GM.FindNearestSettlement(pos);
 		RZ_Settlement s = m_GM.GetSettlement(town);
-		if (!s)
+		if (!s || !m_Settings.m_bLocks)
 			return "";
 
-		array<string> types = {"pharmacy", "garage", "house", "shop", "police"};
-		string type = types.GetRandomElement();
-		string colour = "";
-		if (type == "house")
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(s.m_vCenter, s.m_fRadius + 50, buildings, 120);
+		array<IEntity> locked = {};
+		foreach (IEntity b : buildings)
 		{
-			array<string> colours = {"Blue", "Green", "Red", "White", "Yellow"};
-			colour = colours.GetRandomElement();
+			vector bpos = b.GetOrigin();
+			if (HasOwnLock(bpos, BuildingType(RZ_ItemHelper.LowerName(b))) && !m_Hub.GetTraps().IsBurned(bpos))
+				locked.Insert(b);
 		}
 
-		string tag = KeyTag(town, type, colour);
-		GiveKey(playerId, KeyId(town, type, colour), tag);
+		if (locked.IsEmpty())
+			return "";
+
+		IEntity pick = locked.GetRandomElement();
+		vector at = pick.GetOrigin();
+		string type = BuildingType(RZ_ItemHelper.LowerName(pick));
+		string tag = KeyTagForBuilding(at, type);
+		GiveKey(playerId, KeyForBuilding(at, type), tag);
 		return string.Format("a key with a cardboard tag: \"%1\"", tag);
 	}
 
@@ -1345,7 +1366,7 @@ class RZ_Search
 		m_aStashes.Insert(stash);
 		while (m_aStashes.Count() > STASHES_KEPT)
 		{
-			m_aStashes.Remove(0);
+			m_aStashes.RemoveOrdered(0);
 		}
 
 		return string.Format("On the back, in a hurry: \"Left the good things in the house nearest %1. Grid %2. Don't let Pavel have them.\"", near, RZ_SettlementScanner.GridReference(stash.m_vPos));
@@ -1412,7 +1433,7 @@ class RZ_Search
 		if (r.m_Body)
 			SCR_EntityHelper.DeleteEntityAndChildren(r.m_Body);
 
-		m_aNotes.Remove(idx);
+		m_aNotes.RemoveOrdered(idx); // oldest first stays oldest first
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1444,7 +1465,7 @@ class RZ_Search
 		for (int j = m_aStashes.Count() - 1; j >= 0; j--)
 		{
 			if (now >= m_aStashes[j].m_fUntil)
-				m_aStashes.Remove(j);
+				m_aStashes.RemoveOrdered(j);
 		}
 	}
 }

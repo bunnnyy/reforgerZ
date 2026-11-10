@@ -50,7 +50,6 @@ class RZ_Medical
 	protected RZ_Interactions m_Hub;
 	protected RZ_InteractionSettings m_Settings;
 	protected ref map<string, float> m_mTreatedAt = new map<string, float>();
-	protected ref array<string> m_aSlowed = {};
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Medical(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_InteractionSettings settings)
@@ -61,10 +60,12 @@ class RZ_Medical
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A new life for the patient: the once-per-life slowing can happen again.
+	//! A new life for the patient: the once-per-life slowing is a profile flag (m_bMedicSlowed),
+	//! cleared by StartNewLife and saved, so a restart can't grant it twice. Only the treatment
+	//! cooldown (a few minutes) is kept here.
 	void OnPlayerSpawned(int playerId)
 	{
-		m_aSlowed.RemoveItem(m_GM.GetProfile(playerId).m_sIdentity);
+		m_mTreatedAt.Remove(m_GM.GetProfile(playerId).m_sIdentity);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -157,9 +158,9 @@ class RZ_Medical
 			return;
 
 		string extra = "";
-		if (medic && profile.HasInfectionTaken() && !m_aSlowed.Contains(profile.m_sIdentity))
+		if (medic && profile.HasInfectionTaken() && !profile.m_bMedicSlowed)
 		{
-			m_aSlowed.Insert(profile.m_sIdentity);
+			profile.m_bMedicSlowed = true;
 			profile.m_fInfectionLeft = profile.m_fInfectionLeft * m_Settings.m_fTreatSlowsInfection;
 			extra = string.Format(" You clean the bite properly. It buys them a little time: about %1 minutes. Not a cure.", RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60));
 		}

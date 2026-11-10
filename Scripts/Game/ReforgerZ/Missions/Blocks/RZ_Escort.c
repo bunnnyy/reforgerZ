@@ -14,6 +14,8 @@
 //! - **Stop and resume.** They only move while a player is within the leash (150 m), while no
 //!   infected is within 25 m of them (they hide), and while the mission hasn't stopped them.
 //! - **Capped.** At most Contracts > Max escorts run at once, server-wide (HasRoom / Begin).
+//! - **Handed over.** If the player they follow leaves or dies, they follow the nearest player
+//!   within 20 m instead (or wait for one).
 //! - **Talk to them.** With SetTalk(), the body (or the group's leader) carries the generic
 //!   object's actions for the owning puzzle mission (patch up the pilot, arrest the deserter).
 enum RZ_EEscortState
@@ -64,6 +66,13 @@ class RZ_Escort
 	protected static const float HIDE_RADIUS = 25;
 	protected static const float REORDER_DIST = 15;
 	protected static const float DESPAWN_MARGIN = 100;
+
+	//------------------------------------------------------------------------------------------------
+	//! A new game (the mission manager is made): no escort runs yet. Statics outlive a session.
+	static void ResetCount()
+	{
+		s_iRunning = 0;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Room for another escort right now (Contracts > Max escorts).
@@ -209,6 +218,9 @@ class RZ_Escort
 		if (m_eState == RZ_EEscortState.DEAD || m_eState == RZ_EEscortState.ARRIVED || !m_bStarted)
 			return;
 
+		if (m_iFollow > 0)
+			CheckFollowed(gm, ids, players);
+
 		vector target;
 		if (!GetTarget(target))
 		{
@@ -244,6 +256,35 @@ class RZ_Escort
 		m_bOrdered = false;
 		if (m_iLeg >= m_aRoute.Count())
 			Arrive();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player they follow left the server or died: they fall in behind whoever is closest
+	//! (within 20 m), so the job doesn't stall. Nobody close: they wait where they are.
+	protected void CheckFollowed(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players)
+	{
+		IEntity followed = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iFollow);
+		if (followed && RZ_Util.IsCharacterAlive(followed))
+			return;
+
+		int best = -1;
+		float bestDist = 20;
+		foreach (int i, IEntity p : players)
+		{
+			float d = RZ_Util.DistXZ(p.GetOrigin(), m_vPos);
+			if (d <= bestDist)
+			{
+				bestDist = d;
+				best = ids[i];
+			}
+		}
+
+		if (best <= 0)
+			return;
+
+		m_iFollow = best;
+		m_bOrdered = false;
+		gm.NotifyPlayer(best, "Escort", string.Format("Whoever %1 was following is gone. Now they follow you.", m_sName));
 	}
 
 	//------------------------------------------------------------------------------------------------

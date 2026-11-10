@@ -50,6 +50,7 @@ class RZ_PlayerProfile
 	bool m_bBiteDeclared;		// told a safehouse about the bite (slowed once, can't be caught)
 	bool m_bBiteCaught;			// caught hiding a bite in a safehouse
 	bool m_bDoctorTreated;		// a Doctor wanderer already slowed this life's infection
+	bool m_bMedicSlowed;		// a Nurse or Doctor player already slowed this life's infection
 	bool m_bGuideCounted;		// this life already counts as experience
 
 	// Personal objective for this life (see RZ_Objectives)
@@ -80,6 +81,7 @@ class RZ_PlayerProfile
 		m_bBiteDeclared = false;
 		m_bBiteCaught = false;
 		m_bDoctorTreated = false;
+		m_bMedicSlowed = false;
 		m_bGuideCounted = false;
 		m_iObjType = -1;
 		m_iObjTarget = -1;
@@ -98,6 +100,14 @@ class RZ_PlayerProfile
 			m_aInfamy[i] = bg.GetStartInfamy(i);
 			m_aFavor[i] = 0;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Never spawned and holds nothing that lasts (a junk entry for a player id that came and went).
+	bool IsBlank()
+	{
+		EnsureArrays();
+		return m_iLives == 0 && m_iLegacy == 0 && m_iGuideLives == 0 && m_iMissionsCompleted == 0 && m_iSamplesDelivered == 0 && m_aUnlocked.IsEmpty() && m_aChampionOf.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------

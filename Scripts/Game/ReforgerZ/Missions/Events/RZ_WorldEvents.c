@@ -33,8 +33,12 @@ class RZ_Event_CrashedHelicopter : RZ_Mission
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 100, s.m_fRadius + 700);
-		if (!RZ_Util.SpawnPrefab(gm.GetHeliWreckPrefab(), m_vPos, Math.RandomFloat(0, 360)))
+		IEntity wreck = RZ_Util.SpawnPrefab(gm.GetHeliWreckPrefab(), m_vPos, Math.RandomFloat(0, 360));
+		if (!wreck)
 			return false;
+
+		// No lasting traces: once nobody has been near it for a while, it's cleared (RZ_LooseItems)
+		RZ_GameModeComponent.TrackLooseItem(wreck);
 
 		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 6, 10));
 		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 6, 10));

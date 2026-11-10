@@ -18,6 +18,10 @@ class RZ_MissionManager
 	protected float m_fContractCooldown = 30;
 	protected float m_fClock;
 	protected ref map<int, float> m_mLastOffer = new map<int, float>();
+	protected ref array<vector> m_aPropSpots = {};		// GetPropSpots of every running mission, once per tick
+	protected float m_fSpotsAt = -1;
+
+	static const float PROP_CLEAR = 25;	// no building this close (m) to a running mission's props has a lock
 
 	protected static const float EVENT_COOLDOWN = 150;
 	protected static const float CONTRACT_COOLDOWN = 75;
@@ -28,6 +32,8 @@ class RZ_MissionManager
 	void RZ_MissionManager(RZ_GameModeComponent gm)
 	{
 		m_GM = gm;
+		RZ_Escort.ResetCount();
+		RZ_LiveCapture.ResetCount();
 		RZ_MissionRegistry.RegisterAll(this);
 	}
 
@@ -156,6 +162,7 @@ class RZ_MissionManager
 
 		m_iNextId++;
 		m_aActive.Insert(mission);
+		m_fSpotsAt = -1; // its props count from now
 		OnStarted(mission);
 		return true;
 	}
@@ -203,6 +210,49 @@ class RZ_MissionManager
 		{
 			m.OnTruckEvent(m_GM, faction, what, pos, driver);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A building at pos may not be locked: a running mission has props, items or people within
+	//! PROP_CLEAR of it, and the lock isn't part of that mission (Locked Bunker). From
+	//! RZ_Search.HasLock, so the doors, the loot and the spot pickers all agree.
+	bool IsNearMissionProp(vector pos)
+	{
+		if (m_aActive.IsEmpty())
+			return false;
+
+		if (m_fSpotsAt != m_fClock)
+		{
+			m_fSpotsAt = m_fClock;
+			m_aPropSpots.Clear();
+			foreach (RZ_Mission m : m_aActive)
+			{
+				if (m.m_eState == RZ_EMissionState.ACTIVE)
+					m.GetPropSpots(m_aPropSpots);
+			}
+		}
+
+		bool near = false;
+		foreach (vector p : m_aPropSpots)
+		{
+			if (RZ_Util.DistXZ(p, pos) <= PROP_CLEAR)
+			{
+				near = true;
+				break;
+			}
+		}
+
+		if (!near)
+			return false;
+
+		string buildingKey = RZ_Interactions.PosKey(pos, 4);
+		foreach (RZ_Mission keeper : m_aActive)
+		{
+			if (keeper.KeepsLock(buildingKey))
+				return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -45,11 +45,21 @@ class RZ_LiveCapture
 	protected float m_fWakeLeft;
 	protected int m_iCarrier = -1;
 	protected bool m_bWarnedWake;
+	protected vector m_vItemLastPos;
+	protected bool m_bItemWasCarried;
+	protected int m_iItemReturns;
 
 	protected static const float SPAWN_RADIUS = 250;
 	protected static const float HOLD_SECONDS = 30;
 	protected static const float HOLD_RADIUS = 15;
 	protected static const float RESTRAIN_REACH = 3;
+
+	//------------------------------------------------------------------------------------------------
+	//! A new game: no capture runs yet (statics outlive a session).
+	static void ResetCount()
+	{
+		s_iRunning = 0;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static bool HasRoom(RZ_GameModeComponent gm)
@@ -243,10 +253,33 @@ class RZ_LiveCapture
 	{
 		if (!m_Item)
 		{
+			// Gone with a carrier who left the server (or a body that was cleared): it's put back
+			// where it was, still sedated, a few times at most
+			if (m_bItemWasCarried && m_iItemReturns < 3)
+			{
+				m_bItemWasCarried = false;
+				m_Item = RZ_Util.SpawnPrefab(gm.GetMissionItemPrefab(), RZ_Mission.LandPointNear(m_vItemLastPos, 0, 2) + Vector(0, 0.3, 0));
+				if (m_Item)
+				{
+					m_iItemReturns++;
+					m_iCarrier = -1;
+					RZ_MissionItemComponent.Tag(m_Item, m_iMissionId);
+					NotifyNear(gm, m_vItemLastPos, 300, "The case", "Whoever carried the transport case is gone. The case is lying where they were.");
+					return;
+				}
+			}
+
 			m_eState = RZ_ECaptureState.LOST;
 			m_sLostReason = "The case is gone, and what was in it.";
 			return;
 		}
+
+		IEntity root = m_Item.GetRootParent(); // the same call RZ_Util.GetCarrierPlayerId makes (listed there)
+		m_bItemWasCarried = root && root != m_Item;
+		if (m_bItemWasCarried)
+			m_vItemLastPos = root.GetOrigin();
+		else
+			m_vItemLastPos = m_Item.GetOrigin();
 
 		int carrier = RZ_Util.GetCarrierPlayerId(m_Item);
 		if (carrier > 0)
@@ -264,13 +297,7 @@ class RZ_LiveCapture
 			return;
 
 		// It wakes: the case splits and it's loose where the case is
-		vector at = m_Item.GetOrigin();
-		if (carrier > 0)
-		{
-			IEntity holder = GetGame().GetPlayerManager().GetPlayerControlledEntity(carrier);
-			if (holder)
-				at = holder.GetOrigin();
-		}
+		vector at = m_vItemLastPos;
 
 		RZ_Util.DeleteUnit(m_Item);
 		m_Item = null;
@@ -323,6 +350,18 @@ class RZ_LiveCapture
 			if (RZ_Util.DistXZ(p.GetOrigin(), pos) <= radius)
 				gm.NotifyPlayer(ids[i], title, text);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cage and where the special is held, for the mission's GetPropSpots.
+	void GetSpots(notnull array<vector> result)
+	{
+		result.Insert(m_vCage);
+		if (m_vHeld != m_vCage)
+			result.Insert(m_vHeld);
+
+		if (m_Item && !m_bItemWasCarried)
+			result.Insert(m_Item.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------

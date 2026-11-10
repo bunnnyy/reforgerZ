@@ -764,12 +764,11 @@ class RZ_StoryArcs
 
 		RZ_Mission_LostColleague m = new RZ_Mission_LostColleague();
 		m.Configure(m_GM);
+		m.m_bCourier = true; // title and brief are set in Setup, before the offer goes out
 		int id = StartMission(m);
 		if (id < 0)
 			return false;
 
-		m.m_sTitle = "The Missing Courier";
-		m.m_sBrief = string.Format("A Halcyon courier carrying samples between the lab and %1 stopped reporting. Find him, or what's left of him.", m.GetLocationName(m_GM));
 		m_Arc.SetI(0, id);
 
 		// Where the Red Hand will turn up: one of its holdings, else a rough town

@@ -464,6 +464,13 @@ class RZ_Job_PrivateCollection : RZ_PuzzleMission
 	protected static const int EXPOSE_FAVOR = 10;
 
 	//------------------------------------------------------------------------------------------------
+	override void GetPropSpots(notnull array<vector> result)
+	{
+		super.GetPropSpots(result);
+		m_Capture.GetSpots(result);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetLeaderJob(RZ_EFaction.INSTITUTE, RZ_ELoyalty.ROGUE, RZ_Leaders.TONE_DARK, 0, 45);

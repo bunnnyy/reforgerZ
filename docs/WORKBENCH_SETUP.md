@@ -765,12 +765,12 @@ No fallback. If these are wrong, the basic game doesn't work.
 | Where | Call | If it fails |
 |---|---|---|
 | `Core/RZ_GameModeComponent.c:571` | `GetOnPlayerSpawned()` invoker (the handler is `HandlePlayerSpawned`, not an override of the base `OnPlayerSpawned`) | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:903` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
-| `Core/RZ_GameModeComponent.c:975` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
-| `Core/RZ_GameModeComponent.c:1117` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1772`, `:1773` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1783` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:2014`, `Cure/RZ_LabComponents.c:256` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Core/RZ_GameModeComponent.c:907` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
+| `Core/RZ_GameModeComponent.c:1008` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
+| `Core/RZ_GameModeComponent.c:1150` | `OnProjectileShot` event and signature | No gunfire heat |
+| `Core/RZ_GameModeComponent.c:1805`, `:1806` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1816` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:2051`, `Cure/RZ_LabComponents.c:256` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
 | `Persistence/RZ_SaveData.c:120` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:393`, `:401` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
@@ -800,8 +800,8 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Puzzles/RZ_GameTime.c:21`, `:25`, `:29` | `ChimeraWorld.CastFrom`, `GetTimeAndWeatherManager`, `GetTimeOfTheDay` | -1: night missions never appear, no night effects |
 | `Director/RZ_Environment.c:71`, `:86`, `:97`, `:108` | world cast; rain, fog and wind accessors | Make the helper return -1: only night and the Storm event apply |
 | `World/RZ_Perimeter.c:226` | `BaseWorld.GetBoundBox()` | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:725`, `:732`, `:733`, `:778`, `:782` | road network: `GetAIWorld`, `GetRoadNetworkManager`, `GetRoadsInAABB`, `GetPoints`, `GetWidth` | Empty `FindRoadExits()` and place `RZ_CheckpointMarkerEntity`s |
-| `World/RZ_Perimeter.c:633`, `:647` | `AddChild` keeps the drone on the player; `SetOrigin` replicates | Moved each tick instead (jumpier) |
+| `World/RZ_Perimeter.c:727`, `:734`, `:735`, `:780`, `:784` | road network: `GetAIWorld`, `GetRoadNetworkManager`, `GetRoadsInAABB`, `GetPoints`, `GetWidth` | Empty `FindRoadExits()` and place `RZ_CheckpointMarkerEntity`s |
+| `World/RZ_Perimeter.c:635`, `:649` | `AddChild` keeps the drone on the player; `SetOrigin` replicates | Moved each tick instead (jumpier) |
 | `Core/RZ_Util.c:196` | `EnableDamageHandling(false)` | Checkpoint guards and stronghold leaders can be shot (leaders are "wounded" and come back) |
 | `Core/RZ_Util.c:184` | `FullHeal()` | Medics and Doctors take Favor but don't heal: fix before release |
 | `Core/RZ_Util.c:281` | `TryInsertItem` | Items (the wind-up radio) land at the player's feet |
@@ -841,7 +841,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Interactions/RZ_Traps.c:666` | returning false stops a query early | The callback runs to the end; nothing breaks |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:408`, `:425` | `GetAll()`, `GetTotalWeight()` | Turn on **Scale counts items** |
 | `Puzzles/RZ_RadioStealth.c:42` | `BaseRadioComponent` class name | Radios are found by name ("radio") only |
-| `Missions/RZ_MissionBases.c:244` | damage manager `GetState()` on a target prop | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
+| `Missions/RZ_MissionBases.c:254` | damage manager `GetState()` on a target prop | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_KeyItem.c:29` | `[RplProp]` on a key item's component | "Read the tag" shows no label; keys still open their locks (the id is on the server) |
 | `Interactions/RZ_KeyItem.c:81` | `GetItems()` finds key items in every carried storage | Carried keys aren't found: leave **Key prefab** empty (data keys) |
 

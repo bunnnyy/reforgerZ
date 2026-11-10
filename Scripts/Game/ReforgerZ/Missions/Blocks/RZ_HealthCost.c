@@ -2,6 +2,8 @@
 //! player a share of their health (the Blood Drive). Reads health with the same accessor as the
 //! bite detector (RZ_Util.GetCharacterHealth) against the default hit zone's maximum, and never
 //! takes anyone below the floor: it refuses instead. The health comes back the vanilla way.
+//! Every health cost tells the bite detector to forget the old reading (ForgetBiteHealth), so
+//! the drop never counts as a bite. Any new health-taking action must go through here.
 //! Once per life per key (a giver remembers who already gave), so it can't be farmed.
 class RZ_HealthCost
 {
@@ -52,6 +54,9 @@ class RZ_HealthCost
 		float full = RZ_Util.GetCharacterMaxHealth(character);
 		if (!RZ_Util.SetCharacterHealth(character, (share - cost) * full))
 			return "Something's wrong with the kit. Not today.";
+
+		// The mode took this health itself: the bite detector must not read the drop as a bite
+		gm.ForgetBiteHealth(playerId);
 
 		if (!s_mGiven)
 			s_mGiven = new map<string, int>();

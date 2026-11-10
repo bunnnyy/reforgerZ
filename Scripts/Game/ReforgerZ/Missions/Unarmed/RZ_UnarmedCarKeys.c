@@ -131,7 +131,8 @@ class RZ_Mission_CarKeys : RZ_Mission
 			if (type != "house" && type != "farm")
 				continue;
 
-			if (RZ_LockedSpots.IsLockedBuilding(b) || hub.IsProtected(pos) || hub.GetTraps().IsBurned(pos))
+			// Never a house with its own lock, on its doors or its loot (either way the keys would sit behind it)
+			if (hub.GetSearch().HasOwnLock(pos, type) || hub.IsProtected(pos) || hub.GetTraps().IsBurned(pos))
 				continue;
 
 			options.Insert(pos);

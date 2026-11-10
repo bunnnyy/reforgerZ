@@ -123,6 +123,8 @@ class RZ_GuidanceWorld
 		if (!item)
 			return;
 
+		RZ_GameModeComponent.TrackLooseItem(item); // dropped and forgotten, it's cleaned up in time
+
 		// If it doesn't fit (or the insert call doesn't work), it lies at their feet
 		if (!RZ_Util.InsertIntoInventory(ent, item))
 			m_GM.NotifyPlayer(playerId, RZ_Guidance.RADIO_TITLE, "There's a wind-up radio at your feet. Somebody's. Yours now.");

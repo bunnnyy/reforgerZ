@@ -724,6 +724,13 @@ class RZ_Mission_PatientZero : RZ_PuzzleMission
 	protected ref array<int> m_aStepClues = {};
 
 	//------------------------------------------------------------------------------------------------
+	override void GetPropSpots(notnull array<vector> result)
+	{
+		super.GetPropSpots(result);
+		m_Chain.GetSpots(result);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.INSTITUTE, RZ_ETier.CHAMPION, 50, 40);
@@ -849,6 +856,13 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 {
 	protected ref RZ_LiveCapture m_Capture = new RZ_LiveCapture();
 	protected IEntity m_Drop;
+
+	//------------------------------------------------------------------------------------------------
+	override void GetPropSpots(notnull array<vector> result)
+	{
+		super.GetPropSpots(result);
+		m_Capture.GetSpots(result);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)

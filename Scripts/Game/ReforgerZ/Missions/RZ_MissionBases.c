@@ -187,6 +187,16 @@ class RZ_Mission_VisitPoints : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override void GetPropSpots(notnull array<vector> result)
+	{
+		super.GetPropSpots(result);
+		foreach (vector p : m_aPoints)
+		{
+			result.Insert(p);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void OnPointDone(RZ_GameModeComponent gm, int idx)
 	{
 	}
@@ -266,8 +276,13 @@ class RZ_Mission_Delivery : RZ_Mission
 	protected int m_iDeliveredTo = -1;
 	protected ref array<IEntity> m_aDrops = {};
 	protected ref array<int> m_aDropFactions = {};
+	protected ResourceName m_sItemPrefab;	// what SpawnItem made, to put it back if a carrier leaves
+	protected vector m_vItemLastPos;		// where the item (or whoever carried it) was last seen
+	protected bool m_bItemWasCarried;		// last seen in an inventory (a player, a body, a vehicle)
+	protected int m_iItemReturns;			// times it was put back after a carrier left the server
 
 	protected static const float DROP_GROUP_RADIUS = 50;
+	protected static const int MAX_ITEM_RETURNS = 3;
 
 	//------------------------------------------------------------------------------------------------
 	static bool CanRun(RZ_GameModeComponent gm, RZ_EFaction dropFaction)
@@ -288,6 +303,8 @@ class RZ_Mission_Delivery : RZ_Mission
 
 		RZ_MissionItemComponent.Tag(m_Item, m_iId);
 		m_bItemSpawned = true;
+		m_sItemPrefab = prefab;
+		m_vItemLastPos = m_Item.GetOrigin();
 		return true;
 	}
 
@@ -322,9 +339,20 @@ class RZ_Mission_Delivery : RZ_Mission
 
 		if (!m_Item)
 		{
-			m_eState = RZ_EMissionState.FAILED;
+			// The carrier left the server (or their body was cleared away) and the item went with
+			// it: put it back where it was, so one disconnect can't sink the job for everyone
+			if (!TryReturnItem(gm))
+				m_eState = RZ_EMissionState.FAILED;
+
 			return;
 		}
+
+		IEntity root = m_Item.GetRootParent(); // the same call RZ_Util.GetCarrierPlayerId makes (listed there)
+		m_bItemWasCarried = root && root != m_Item;
+		if (m_bItemWasCarried)
+			m_vItemLastPos = root.GetOrigin();
+		else
+			m_vItemLastPos = m_Item.GetOrigin();
 
 		int carrier = RZ_Util.GetCarrierPlayerId(m_Item);
 		if (carrier != m_iCarrier)
@@ -333,6 +361,33 @@ class RZ_Mission_Delivery : RZ_Mission
 			m_iCarrier = carrier;
 			OnCarrierChanged(gm, previous, carrier);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The item is gone. If it was last in an inventory (a carrier who left the server takes their
+	//! character and pack with them; a body is cleared away after a while), a new one is put on the
+	//! ground where it was. A few times at most. Lost from the ground, it stays lost.
+	protected bool TryReturnItem(RZ_GameModeComponent gm)
+	{
+		if (!m_bItemWasCarried || m_sItemPrefab.IsEmpty() || m_iItemReturns >= MAX_ITEM_RETURNS)
+			return false;
+
+		int left = m_iCarrier;
+		m_iCarrier = -1;
+		m_bItemWasCarried = false;
+		if (!SpawnItem(gm, LandPointNear(m_vItemLastPos, 0, 2), m_sItemPrefab))
+			return false;
+
+		m_iItemReturns++;
+		string who = "";
+		if (left > 0)
+			who = RZ_Util.PlayerName(left);
+
+		if (who.IsEmpty())
+			who = "Whoever had it";
+
+		NotifyInterested(gm, m_sTitle, string.Format("%1 is gone. What they carried for this job is lying where they were last seen (%2).", who, RZ_SettlementScanner.GridReference(m_vItemLastPos)));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -377,6 +432,20 @@ class RZ_Mission_Delivery : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	protected void OnDelivered(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction)
 	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void GetPropSpots(notnull array<vector> result)
+	{
+		super.GetPropSpots(result);
+		foreach (IEntity drop : m_aDrops)
+		{
+			if (drop)
+				result.Insert(drop.GetOrigin());
+		}
+
+		if (m_Item && !m_bItemWasCarried)
+			result.Insert(m_Item.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------

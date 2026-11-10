@@ -24,6 +24,7 @@ class RZ_ChainStep
 	bool m_bLive;
 	bool m_bRead;
 	IEntity m_Clue;
+	int m_iClueSpawns;					// a lost clue is put back a few times at most
 }
 
 class RZ_StepChain
@@ -102,6 +103,8 @@ class RZ_StepChain
 
 		if (!st.m_bLive && RZ_Util.NearestDistance(st.m_vPos, players) <= LIVE_RADIUS)
 			MakeLive(gm, st);
+		else if (st.m_bLive && st.m_iClue >= 0 && !st.m_bRead && !st.m_Clue && st.m_iClueSpawns < 4)
+			SpawnClue(gm, st); // the clue was lost (a fire, a cleanup): the chain mustn't stall
 
 		array<int> near = {};
 		RZ_Mission.GetPlayersNear(ids, players, st.m_vPos, st.m_fRadius, near);
@@ -138,9 +141,16 @@ class RZ_StepChain
 			gm.GetSpawner().SpawnZombie(RZ_Mission.LandPointNear(st.m_vPos, 8, 40), special, st.m_iSettlement, m_iMissionId);
 		}
 
+		SpawnClue(gm, st);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SpawnClue(RZ_GameModeComponent gm, RZ_ChainStep st)
+	{
 		if (st.m_iClue < 0)
 			return;
 
+		st.m_iClueSpawns++;
 		st.m_Clue = RZ_Util.SpawnPrefab(gm.GetPuzzlePrefab(st.m_eClueProp), st.m_vPos, Math.RandomFloat(0, 360));
 		if (st.m_Clue && !RZ_ClueComponent.Tag(st.m_Clue, m_iMissionId, st.m_iClue, st.m_sReadLabel))
 		{
@@ -205,6 +215,15 @@ class RZ_StepChain
 		}
 
 		return result.Count() >= count;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The current step (its guards and clue), for the mission's GetPropSpots.
+	void GetSpots(notnull array<vector> result)
+	{
+		RZ_ChainStep st = GetCurrent();
+		if (st)
+			result.Insert(st.m_vPos);
 	}
 
 	//------------------------------------------------------------------------------------------------

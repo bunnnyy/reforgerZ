@@ -795,6 +795,13 @@ class RZ_Mission_HuntTheDeserter : RZ_PuzzleMission
 	protected static const float ENDED_SCALE = 0.6;
 
 	//------------------------------------------------------------------------------------------------
+	override void GetPropSpots(notnull array<vector> result)
+	{
+		super.GetPropSpots(result);
+		m_Chain.GetSpots(result);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.TRUSTED, 35, 30);

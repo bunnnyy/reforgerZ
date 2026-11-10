@@ -1077,7 +1077,7 @@ class RZ_Traps
 		m_aBurns.Insert(b);
 		while (m_aBurns.Count() > 200)
 		{
-			m_aBurns.Remove(0);
+			m_aBurns.RemoveOrdered(0); // the oldest burn goes, not whichever was last
 		}
 
 		RZ_TownMemory.ReportBuildingBurned(pos);
@@ -1129,7 +1129,7 @@ class RZ_Traps
 		for (int j = m_aBurns.Count() - 1; j >= 0; j--)
 		{
 			if (now - m_aBurns[j].m_fAt >= keep)
-				m_aBurns.Remove(j);
+				m_aBurns.RemoveOrdered(j);
 		}
 	}
 }

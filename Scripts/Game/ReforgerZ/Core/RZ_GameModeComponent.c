@@ -894,8 +894,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	//! Asked for many times a tick (every standing check goes through GetProfile), so a backend
 	//! identity is remembered per player id once known. The name fallback isn't cached.
+	//! Empty for an id nobody answers to (a player who left before we ever saw them).
 	protected string GetIdentity(int playerId)
 	{
+		if (playerId <= 0)
+			return "";
+
 		string ident;
 		if (m_mIdentities.Find(playerId, ident))
 			return ident;
@@ -907,14 +911,27 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			return ident;
 		}
 
-		return "local_" + GetGame().GetPlayerManager().GetPlayerName(playerId);
+		string name = GetGame().GetPlayerManager().GetPlayerName(playerId);
+		if (name.IsEmpty())
+			return "";
+
+		return "local_" + name;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Never null. For an id with no identity (gone before we knew them) it's a blank profile
+	//! that's never stored or saved, so late callbacks (a wound described after a disconnect, a
+	//! reward to someone who left) can't create junk "local_" profiles.
 	RZ_PlayerProfile GetProfile(int playerId)
 	{
 		string ident = GetIdentity(playerId);
 		RZ_PlayerProfile profile;
+		if (ident.IsEmpty())
+		{
+			profile = new RZ_PlayerProfile();
+			return profile;
+		}
+
 		if (!m_mProfiles.Find(ident, profile))
 		{
 			profile = new RZ_PlayerProfile();
@@ -923,6 +940,22 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		return profile;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stored profile, or null: never creates one. For code that may run for a player who
+	//! has left.
+	RZ_PlayerProfile FindProfile(int playerId)
+	{
+		string ident = GetIdentity(playerId);
+		if (ident.IsEmpty())
+			return null;
+
+		RZ_PlayerProfile profile;
+		if (m_mProfiles.Find(ident, profile))
+			return profile;
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1819,7 +1852,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		foreach (RZ_PlayerProfile p : data.profiles)
 		{
-			if (!p || p.m_sIdentity.IsEmpty())
+			if (!p || p.m_sIdentity.IsEmpty() || p.m_sIdentity == "local_")
 				continue;
 
 			p.EnsureArrays(); // profiles from older saves have no Fame/Infamy/Favor yet
@@ -1935,6 +1968,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		foreach (string ident, RZ_PlayerProfile p : m_mProfiles)
 		{
+			// A profile that never lived and holds nothing lasting is noise: don't save it
+			if (p.IsBlank())
+				continue;
+
 			data.profiles.Insert(p);
 		}
 

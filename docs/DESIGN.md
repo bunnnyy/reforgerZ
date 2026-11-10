@@ -261,7 +261,8 @@ placed by hand. **Nothing is built along the edge** except the road checkpoints.
 
 - **Warning zone** (300 m from the edge): a drone appears above *you* and follows you, and a
   loudspeaker says *"You are approaching the quarantine line. Turn back."* It leaves when you
-  do. Never more than one drone per player, and none anywhere else.
+  do. Never more than one drone per player, and none anywhere else. On foot it's attached to you;
+  in a vehicle or a boat it's moved over you on each tick instead.
 - **Kill zone** (100 m): a warning shot (a sound and a near miss), then 8 seconds later you're
   shot by a sniper you never see.
 - **Sealed road checkpoints.** Where main roads reach the edge (up to 6 by default, 8 at most;
@@ -568,7 +569,10 @@ settlements above 8). Names come from a seed; roster, positions and memories are
   Standing effects are in [REPUTATION.md](REPUTATION.md).
 - **Talking** gives one piece of road news. Actions: the role's special, "Share some food"
   and "Rob".
-- **Death is permanent and makes the news.** A replacement shows up a real day later.
+- **Death is permanent and makes the news.** A replacement shows up a real day later. Who
+  killed them is read from the body where the engine records it; otherwise the player who shot
+  near them in the last 30 s is blamed, but never while the infected are on them (so nobody is
+  framed for a death to the infected).
 - **Performance.** With no player within 400 m, a wanderer is a position moving in a straight
   line on the tick. At most two bodies near each player.
 
@@ -617,12 +621,12 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
 | Block | What it does | Used by |
 |---|---|---|
-| Hold, kill tagged, visit points, destroy, deliver, choice | The base classes: hold an area (optional waves and heat), kill what the mission spawned, stand at points, destroy a prop, carry the mission item to a drop, choose whose drop gets it | most contracts |
-| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Hunt the Deserter, Bust Out, Desertion Route |
-| **Live capture** (`RZ_LiveCapture`) | A cage trap and a special, both spawned only when a player is near. Lure it into the cage and drop the door within 4 m, or wound it to a third of its health and get within 3 m to tie it. Hold it for 30 s while it fights (heat), then a transport case (the mission item) to deliver before it wakes (12 min). It leaves the world without a kill, so no sample. Killing it fails. At most 2 at once | Live Capture, Private Collection |
+| Hold, kill tagged, visit points, destroy, deliver, choice | The base classes: hold an area (optional waves and heat), kill what the mission spawned, stand at points, destroy a prop, carry the mission item to a drop, choose whose drop gets it. The first hand-in wins. If the item vanishes while it's in an inventory (the carrier left the server and took their character with them, or a body was cleared away), a new one is put on the ground where it was, up to 3 times, and everyone involved is told where; lost from the ground, it fails | most contracts |
+| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. If the player they follow leaves or dies, they follow the nearest player within 20 m instead (or wait for one). An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Hunt the Deserter, Bust Out, Desertion Route |
+| **Live capture** (`RZ_LiveCapture`) | A cage trap and a special, both spawned only when a player is near. Lure it into the cage and drop the door within 4 m, or wound it to a third of its health and get within 3 m to tie it. Hold it for 30 s while it fights (heat), then a transport case (the mission item) to deliver before it wakes (12 min). A case lost with a carrier who left is put back where they were, still sedated (up to 3 times). It leaves the world without a kill, so no sample. Killing it fails. At most 2 at once | Live Capture, Private Collection |
 | **Vehicle zone** (`RZ_VehicleZone`, `RZ_ConvoyWatch`) | A specific vehicle, or any vehicle whose prefab name has a keyword (or is one of a list), driven into a zone by a player. Works with vehicles a mission spawns, fixed cars and supply trucks. The convoy watch asks the supply system for a faction's next truck to an outpost and reports whether it arrived, was robbed, destroyed, stolen or late | Recover the Bus, Car Theft, Mobile Lab; Convoy Escort, Hijack the Convoy |
-| **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver | Blood Drive |
-| **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue | Patient Zero, Hunt the Deserter |
+| **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
+| **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Hunt the Deserter |
 | **Disguises** (`Factions/RZ_Disguise.c`) | A faction's uniform gets you past its AI; caught, the Infamy doubles ([REPUTATION.md](REPUTATION.md#disguises)) | Bust Out; anywhere a faction shoots from Watched |
 
 *Simplified:* escorted people without an AI body can't be hurt (only a body can die), and
@@ -723,7 +727,10 @@ About half of pharmacies and police stations, a third of garages, a quarter of s
 of houses are locked, seeded from the building's position so the same ones are locked after a
 restart. **The lock is on the building's outside doors**, and its Search follows it. Places people
 use are never locked: nothing within 80 m of a safehouse, the lab or an outpost, 100 m of a
-quartermaster, or 150 m of a stronghold (the same places that can't burn).
+quartermaster, or 150 m of a stronghold (the same places that can't burn). **Nothing within 25 m of
+a running mission's props is locked either** (its position, its props, items and drops, the current
+chain step, a capture's cage): its buildings open while it runs and lock again when it ends. The
+one exception is a lock that is part of the mission (the Locked Bunker's keypad).
 
 | State | How it gets there | What it means |
 |---|---|---|
@@ -749,7 +756,9 @@ quartermaster, or 150 m of a stronghold (the same places that can't burn).
   are pulled shut once nobody stands within 2.5 m.
 - **Keys** open one kind of building in one town: "Pharmacy, Lindale", "Shop, back door, Morton";
   houses and farmhouses by the colour of their door, "Blue house, Morton". They're found on bodies
-  (8%) and in readable things (one in five); car keys come from searches and the Mechanic. With a
+  (8%) and in readable things (one in five), and a key is only ever cut for a real building with
+  its own lock in the town nearest where it's found (not burned out); a town with none gives no
+  key. Car keys come from searches and the Mechanic, for fixable cars that have keys. With a
   key prefab set, **keys are real items**: they can be dropped, traded and taken off a body, the
   id stays on the server, and the tag can be read on the ground. Without one, keys are data kept
   for this life.
@@ -864,7 +873,8 @@ tablet. What drinking does belongs to the hunger and thirst mod ([MOD_STACK.md](
 
 **Treat their wounds**: a first-aid kit and 20 s next to another player for a full heal. Nurses
 (8 s) and Doctors (6 s) can do it with a bandage, and also slow a bite (×1.15 of the time left,
-once per life). Every 5 minutes per patient. On a fresh bite (the golden window) a treatment is a
+once per life, kept with the profile, so a restart doesn't grant it again). Every 5 minutes per
+patient (a new life starts fresh). On a fresh bite (the golden window) a treatment is a
 proper clean instead: 90% that it never takes. Anyone can also use the bitten player's **Clean
 the bite** spot ([The golden window](#the-golden-window)).
 
@@ -1091,7 +1101,8 @@ targets above, and adjust **Research per sample** or the season speed.
 Code: `Core/RZ_LooseItems.c`.
 
 Things the mode spawns for players are tracked: reward crates, dropped samples, key items, shop
-and requisition purchases, search finds, crafted items and treatments. One that lies untouched
+and requisition purchases, search finds, crafted items and treatments, the wind-up radio, the
+Wedding Party's jewellery and the Crashed Helicopter's wreck. One that lies untouched
 for **30 minutes** (**World > Loose item minutes**; 0 = off) with no player within 150 m is
 removed. Never removed: anything in a pack, a container or a vehicle's storage (its clock starts
 again when it's put down), vehicles (a bought car isn't litter), and anything within 300 m of a
@@ -1109,6 +1120,9 @@ Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stag
 settlement's infection and town memory, cure progress and antidote and stabiliser stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
 supply stock, faction life, the power grid and radio station, story arcs, headlines and world
-interactions. A save from another map is ignored. Player bodies, inventories and vehicles use
+interactions. A save from another map is ignored. A profile that never spawned and holds nothing
+lasting (no lives, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
+left before the server knew them (a wound described after a disconnect) gets a blank profile
+that is never stored, so no junk `local_` profiles pile up. Player bodies, inventories and vehicles use
 vanilla persistence ([MOD_STACK.md](MOD_STACK.md)). A season wipe ignores `state.json` but keeps
 `last_season.json`.

@@ -629,7 +629,9 @@ class RZ_Perimeter
 			return null;
 
 		IEntity drone = RZ_Util.SpawnPrefab(m_Settings.m_sDronePrefab, player.GetOrigin() + Vector(0, m_Settings.m_fDroneHeight, 0));
-		if (drone)
+		// In a vehicle or a boat the character hangs off its seat: don't attach to that, the
+		// tick moves the drone over them instead (KeepDroneOver)
+		if (drone && !RZ_Util.IsInVehicle(player))
 			player.AddChild(drone, -1); // VERIFY: IEntity.AddChild(child, pivot) keeps the drone's world position; it then follows the player with no polling
 
 		return drone;

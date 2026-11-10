@@ -458,6 +458,17 @@ class RZ_PuzzleMission : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override void GetPropSpots(notnull array<vector> result)
+	{
+		super.GetPropSpots(result);
+		foreach (IEntity e : m_aProps)
+		{
+			if (e)
+				result.Insert(e.GetOrigin());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		foreach (IEntity e : m_aProps)

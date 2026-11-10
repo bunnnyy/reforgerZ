@@ -173,7 +173,8 @@ class RZ_TownMemory
 		{
 			foreach (RZ_JournalSave j : m_Restored.journals)
 			{
-				m_aJournals.Insert(j);
+				if (j && !j.line.IsEmpty())
+					m_aJournals.Insert(j);
 			}
 		}
 
@@ -455,7 +456,7 @@ class RZ_TownMemory
 		m_aJournals.Insert(j);
 		while (m_aJournals.Count() > JOURNALS_KEPT)
 		{
-			m_aJournals.Remove(0);
+			m_aJournals.RemoveOrdered(0); // the oldest goes; the newest stays last (LatestJournal)
 		}
 	}
 

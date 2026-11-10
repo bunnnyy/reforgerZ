@@ -247,6 +247,9 @@ class RZ_Leader
 	//------------------------------------------------------------------------------------------------
 	void Remember(string ident, int flag)
 	{
+		if (ident.IsEmpty())
+			return; // a player id that's gone (RZ_GameModeComponent.GetProfile): nobody to remember
+
 		int idx = m_aMemIdent.Find(ident);
 		if (idx < 0)
 		{

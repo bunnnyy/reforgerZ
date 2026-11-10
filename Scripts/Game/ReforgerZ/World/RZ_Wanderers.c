@@ -221,6 +221,9 @@ class RZ_Wanderer
 	//------------------------------------------------------------------------------------------------
 	void Remember(string ident, int flag)
 	{
+		if (ident.IsEmpty())
+			return; // a player id that's gone (RZ_GameModeComponent.GetProfile): nobody to remember
+
 		int idx = m_aMemIdent.Find(ident);
 		if (idx < 0)
 		{
@@ -1600,12 +1603,28 @@ class RZ_Wanderers
 	//------------------------------------------------------------------------------------------------
 	protected void OnBodyKilled(RZ_Wanderer w)
 	{
+		// Who killed them, read from the body (as bounties do); the infected and accidents are no one
 		int killer = -1;
-		if (w.m_iLastShooter > 0 && m_fClock - w.m_fLastShotAt <= BLAME_SECONDS)
+		array<IEntity> members = {};
+		RZ_Util.GetUnitMembers(w.m_Body, members);
+		if (members.IsEmpty())
+			members.Insert(w.m_Body);
+
+		foreach (IEntity member : members)
+		{
+			killer = RZ_Util.GetKillerPlayerId(member);
+			if (killer > 0)
+				break;
+		}
+
+		// The engine didn't say: whoever shot at them lately, unless the infected were on them
+		// (shooting near a wanderer the infected then kill shouldn't hang a murder on you)
+		bool infectedNear = m_GM.GetSpawner().IsZombieNear(w.m_vPos, 20);
+		if (killer <= 0 && !infectedNear && w.m_iLastShooter > 0 && m_fClock - w.m_fLastShotAt <= BLAME_SECONDS)
 			killer = w.m_iLastShooter;
 
 		string how = "was killed";
-		if (killer < 0 && m_GM.GetSpawner().IsZombieNear(w.m_vPos, 20))
+		if (killer <= 0 && infectedNear)
 			how = "was killed by the infected";
 
 		Die(w, how, killer);

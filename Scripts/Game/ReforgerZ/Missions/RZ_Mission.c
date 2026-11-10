@@ -294,6 +294,24 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where this mission has props, items, people or crates on the ground. No building within
+	//! RZ_MissionManager.PROP_CLEAR of one has a lock while it runs (docs/DESIGN.md, "Locks and
+	//! keys"), so nothing a mission put down ends up behind a door. Default: its position.
+	void GetPropSpots(notnull array<vector> result)
+	{
+		if (!m_bGlobal && m_vPos != vector.Zero)
+			result.Insert(m_vPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A building whose lock is part of this mission (Locked Bunker's keypad): it keeps its lock
+	//! even with the mission's props beside it.
+	bool KeepsLock(string buildingKey)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Delete whatever the mission spawned. Runs after OnSuccess/OnFailed.
 	void Cleanup(RZ_GameModeComponent gm)
 	{

@@ -223,6 +223,7 @@ class RZ_Mission_LostColleague : RZ_Mission
 	protected bool m_bReached;
 	protected bool m_bTurned;
 	protected bool m_bKilled;
+	bool m_bCourier;	// The Missing Courier (Director/RZ_StoryArcs.c): set before StartMission so the offer reads right
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -250,6 +251,12 @@ class RZ_Mission_LostColleague : RZ_Mission
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius + 300);
 		m_sTitle = "Lost Colleague";
 		m_sBrief = string.Format("A Halcyon researcher stopped answering near %1. Find him. He may not be himself any more.", s.m_sName);
+		if (m_bCourier)
+		{
+			m_sTitle = "The Missing Courier";
+			m_sBrief = string.Format("A Halcyon courier carrying samples between the lab and %1 stopped reporting. Find him, or what's left of him.", s.m_sName);
+		}
+
 		return true;
 	}
 

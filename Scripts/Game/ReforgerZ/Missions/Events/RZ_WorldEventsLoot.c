@@ -177,7 +177,7 @@ class RZ_Event_AbandonedConvoy : RZ_Mission
 		if (!m_Cache.m_aCrates.IsEmpty())
 		{
 			RZ_Util.DeleteUnit(m_Cache.m_aCrates[0]);
-			m_Cache.m_aCrates.Remove(0);
+			m_Cache.m_aCrates.RemoveOrdered(0);
 		}
 
 		RZ_ContractHelp.NotifyNear(gm, m_vPos, 400, m_sTitle, "A tripwire. The tailboard goes up in a flash and half the cargo with it. That's why nobody came back. Everything for a mile heard it.");
@@ -407,6 +407,13 @@ class RZ_Event_LockedBunker : RZ_PuzzleMission
 		m_sTitle = "Locked Bunker";
 		m_sBrief = string.Format("Someone sealed %1 in %2 with a keypad and split the code over three notes before they died. Whatever they locked in there is still in there. Find the notes, or find whoever already has them.", m_sPlace, s.m_sName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The keypad's building is the point of the event: its lock stays, props or not.
+	override bool KeepsLock(string buildingKey)
+	{
+		return !m_sBuildingKey.IsEmpty() && buildingKey == m_sBuildingKey;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -690,7 +697,8 @@ class RZ_Event_WeddingParty : RZ_Mission
 			if (!special && Math.RandomFloat01() >= 0.5)
 				continue;
 
-			RZ_Util.SpawnPrefab(jewel, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(pos, 0.3, 1.2)) + Vector(0, 0.2, 0));
+			// Left lying, it's cleaned up in time (RZ_LooseItems)
+			RZ_GameModeComponent.TrackLooseItem(RZ_Util.SpawnPrefab(jewel, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(pos, 0.3, 1.2)) + Vector(0, 0.2, 0)));
 			m_iDropped++;
 		}
 	}
