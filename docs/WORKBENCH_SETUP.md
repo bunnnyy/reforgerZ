@@ -985,6 +985,15 @@ session, tick off:
   later abandoned or taken, the new leader leaves with it.
 - [ ] A supply truck leaves, is driven by its crew, and arrives.
 - [ ] A leader answers Talk, Work, News and Standing.
+- [ ] Hunted by Bastion, stay put through three hunter rounds: never more than two squads after you.
+- [ ] Kill a truck crew from 300 m, then drive the truck in: no Fame. (Known gap: a friend who
+  didn't shoot can still drive it in for Fame; watch for that pattern.)
+- [ ] Retaliation in a crossfire: a Red Hand group attacking a Bastion outpost while you shoot
+  infected 300 m away. If you get Bastion's retaliation for their hits, note it.
+- [ ] Wear a Bastion uniform and finish a Red Hand job: the rival Infamy with Bastion is doubled
+  and the disguise is blown. Decide whether that's wanted.
+- [ ] Start The Last Convoy (or wait for it), restart the server before the truck leaves: it
+  still leaves within 10 minutes. Restart while it's on the road: the arc just ends.
 
 **World**
 - [ ] Walking near the map edge: drone and loudspeaker at 300 m, warning shot at 100 m.
