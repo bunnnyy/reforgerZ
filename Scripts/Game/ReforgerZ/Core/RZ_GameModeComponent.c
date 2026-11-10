@@ -351,7 +351,26 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 				return bg;
 		}
 
-		return m_aBackgrounds[m_aBackgrounds.Count() - 1];
+		return GetDefaultBackground();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Unemployed if it exists, otherwise the first background that isn't locked.
+	RZ_Background GetDefaultBackground()
+	{
+		foreach (RZ_Background bg : m_aBackgrounds)
+		{
+			if (bg.m_sId == "unemployed")
+				return bg;
+		}
+
+		foreach (RZ_Background bg2 : m_aBackgrounds)
+		{
+			if (!bg2.m_bLocked)
+				return bg2;
+		}
+
+		return m_aBackgrounds[0];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -385,7 +404,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			}
 		}
 
-		return m_aBackgrounds[m_aBackgrounds.Count() - 1];
+		return GetDefaultBackground();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -393,6 +412,21 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	{
 		RZ_Background bg = ResolveBackground(playerId);
 		RZ_PlayerProfile profile = GetProfile(playerId);
+		OnLegacyChanged(playerId); // older profiles may already have 10 Legacy
+
+		// Locked backgrounds need an unlock. The loadout's gear stays (we can't take it back
+		// cleanly), but the perks, flaws and standing are the default background's.
+		if (bg.m_bLocked && !profile.HasUnlocked(bg.m_sUnlockId))
+		{
+			string why = bg.m_sUnlockText;
+			if (why.IsEmpty())
+				why = "You haven't unlocked it yet.";
+
+			RZ_Background fallback = GetDefaultBackground();
+			NotifyPlayer(playerId, bg.m_sName + " is locked", string.Format("%1\nYou are playing as %2 this life.", why, fallback.m_sName));
+			bg = fallback;
+		}
+
 		profile.StartNewLife(bg);
 		RZ_Objectives.Assign(this, profile, bg, controlledEntity.GetOrigin());
 
@@ -490,19 +524,161 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			playerCount, RZ_Util.RoundToInt(m_Cure.m_fProgress), m_Cure.m_iMilestone, m_Cure.IsFinalStand()));
 	}
 
+	// ================================================================ Reputation (see docs/REPUTATION.md)
 	//------------------------------------------------------------------------------------------------
-	void AddReputation(int playerId, RZ_EFaction faction, int amount)
+	RZ_ETier GetTier(int playerId, RZ_EFaction faction)
 	{
-		if (amount == 0 || playerId <= 0)
+		if (playerId <= 0)
+			return RZ_ETier.STRANGER;
+
+		return GetProfile(playerId).GetTier(faction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fame with `faction`. With applyRivals, the faction's rivals also add a little
+	//! Infamy (RZ_Reputation.GetRivalShare). Negative amounts lower Fame.
+	//! The player is only told when their tier changes, not on every point.
+	void AddFame(int playerId, RZ_EFaction faction, int amount, bool applyRivals = true)
+	{
+		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
 			return;
 
-		int rep = GetProfile(playerId).AddRep(faction, amount);
-		string sign = "+";
-		if (amount < 0)
-			sign = "";
+		RZ_PlayerProfile profile = GetProfile(playerId);
+		RZ_ETier before = profile.GetTier(faction);
+		int gained = profile.AddFame(faction, amount);
+		OnFameGained(faction, gained);
+		CheckTierChange(playerId, faction, before);
 
-		NotifyPlayer(playerId, "Reputation", string.Format("%1: %2%3 (%4)",
-			RZ_Factions.GetName(faction), sign, amount, RZ_Factions.GetStanding(rep)));
+		if (!applyRivals || amount <= 0)
+			return;
+
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			int infamy = RZ_Util.RoundToInt(amount * RZ_Reputation.GetRivalShare(faction, f));
+			if (infamy > 0)
+				AddInfamy(playerId, f, infamy);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Infamy with `faction`. Negative amounts work Infamy off (amends).
+	void AddInfamy(int playerId, RZ_EFaction faction, int amount)
+	{
+		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
+			return;
+
+		RZ_PlayerProfile profile = GetProfile(playerId);
+		RZ_ETier before = profile.GetTier(faction);
+		profile.AddInfamy(faction, amount);
+		CheckTierChange(playerId, faction, before);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void AddFavor(int playerId, RZ_EFaction faction, int amount)
+	{
+		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
+			return;
+
+		GetProfile(playerId).AddFavor(faction, amount);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes `amount` Favor if the player has it. Returns false (and takes nothing) otherwise.
+	bool SpendFavor(int playerId, RZ_EFaction faction, int amount)
+	{
+		if (playerId <= 0 || !RZ_Factions.IsValid(faction))
+			return false;
+
+		if (amount <= 0)
+			return true;
+
+		RZ_PlayerProfile profile = GetProfile(playerId);
+		if (profile.GetFavor(faction) < amount)
+			return false;
+
+		profile.AddFavor(faction, -amount);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line per faction: "The Haven: Known (Fame 20, Infamy 0, Favor 35)".
+	string DescribeStanding(int playerId)
+	{
+		RZ_PlayerProfile profile = GetProfile(playerId);
+		string text = "";
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			text += string.Format("%1: %2 (Fame %3, Infamy %4, Favor %5)\n", RZ_Factions.GetName(f),
+				RZ_Reputation.GetTierName(profile.GetTier(f)), profile.GetFame(f), profile.GetInfamy(f), profile.GetFavor(f));
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CheckTierChange(int playerId, RZ_EFaction faction, RZ_ETier before)
+	{
+		RZ_PlayerProfile profile = GetProfile(playerId);
+		RZ_ETier after = profile.GetTier(faction);
+		if (after == before)
+			return;
+
+		NotifyPlayer(playerId, RZ_Factions.GetName(faction), string.Format("Your standing is now %1 (was %2).",
+			RZ_Reputation.GetTierName(after), RZ_Reputation.GetTierName(before)));
+
+		if (after == RZ_ETier.CHAMPION && !profile.IsChampionOf(faction))
+			OnBecameChampion(playerId, faction);
+
+		OnTierChanged(playerId, faction, before, after);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hook for perks and consequences that start at a tier.
+	protected void OnTierChanged(int playerId, RZ_EFaction faction, RZ_ETier before, RZ_ETier after)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hook: Fame actually gained with a faction (after clamping), for season totals.
+	protected void OnFameGained(RZ_EFaction faction, int gained)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnBecameChampion(int playerId, RZ_EFaction faction)
+	{
+		RZ_PlayerProfile profile = GetProfile(playerId);
+		profile.m_aChampionOf.Insert(faction);
+
+		string name = GetGame().GetPlayerManager().GetPlayerName(playerId);
+		NotifyAll("Champion", string.Format("%1 is now a Champion of %2.", name, RZ_Factions.GetName(faction)));
+		TryUnlockBackground(playerId, RZ_Reputation.GetChampionUnlock(faction));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Called when a personal objective adds Legacy. 10 Legacy unlocks the Drifter.
+	void OnLegacyChanged(int playerId)
+	{
+		if (GetProfile(playerId).m_iLegacy >= DRIFTER_LEGACY)
+			TryUnlockBackground(playerId, "drifter");
+	}
+
+	protected static const int DRIFTER_LEGACY = 10;
+
+	//------------------------------------------------------------------------------------------------
+	protected void TryUnlockBackground(int playerId, string unlockId)
+	{
+		if (!GetProfile(playerId).Unlock(unlockId))
+			return;
+
+		foreach (RZ_Background bg : m_aBackgrounds)
+		{
+			if (bg.m_sUnlockId == unlockId)
+			{
+				NotifyPlayer(playerId, "Background unlocked", string.Format("%1 is now available for your next life. Pick the '%2' loadout.", bg.m_sName, bg.m_sLoadoutName));
+				return;
+			}
+		}
 	}
 
 	// ================================================================ Infection
@@ -838,6 +1014,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		foreach (RZ_PlayerProfile p : data.profiles)
 		{
+			p.EnsureArrays(); // profiles from older saves have no Fame/Infamy/Favor yet
 			m_mProfiles.Set(p.m_sIdentity, p);
 		}
 

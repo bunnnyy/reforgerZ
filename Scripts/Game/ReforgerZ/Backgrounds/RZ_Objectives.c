@@ -4,7 +4,7 @@ enum RZ_EObjective
 	SURVIVE,			// stay alive N minutes
 	DELIVER_SAMPLES,	// deliver N samples to the lab this life
 	COMPLETE_MISSIONS,	// take part in N successful missions this life
-	EARN_TRUST			// reach N reputation with a faction
+	EARN_TRUST			// become Trusted (or better) with a faction
 }
 
 //! One personal objective per life gives every character a small story of their
@@ -60,7 +60,7 @@ class RZ_Objectives
 				break;
 			case RZ_EObjective.EARN_TRUST:
 				profile.m_iObjTarget = PickTrustFaction(bg);
-				profile.m_iObjGoal = Math.Max(40, bg.GetStartRep(profile.m_iObjTarget) + 25);
+				profile.m_iObjGoal = RZ_ETier.TRUSTED;
 				break;
 		}
 	}
@@ -85,7 +85,7 @@ class RZ_Objectives
 			case RZ_EObjective.COMPLETE_MISSIONS:
 				return string.Format("Help out: be part of %1 successful missions.", profile.m_iObjGoal);
 			case RZ_EObjective.EARN_TRUST:
-				return string.Format("Earn the trust of the %1 (reputation %2).", RZ_Factions.GetName(profile.m_iObjTarget), profile.m_iObjGoal);
+				return string.Format("Earn the trust of %1: become %2 with them.", RZ_Factions.GetName(profile.m_iObjTarget), RZ_Reputation.GetTierName(RZ_ETier.TRUSTED));
 		}
 
 		return "";
@@ -118,7 +118,7 @@ class RZ_Objectives
 				complete = profile.m_iLifeMissions >= profile.m_iObjGoal;
 				break;
 			case RZ_EObjective.EARN_TRUST:
-				complete = profile.GetRep(profile.m_iObjTarget) >= profile.m_iObjGoal;
+				complete = RZ_Reputation.IsAtLeast(profile.GetTier(profile.m_iObjTarget), RZ_ETier.TRUSTED);
 				break;
 		}
 
@@ -133,7 +133,8 @@ class RZ_Objectives
 			gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(ent.GetOrigin(), 3, 6));
 
 		gm.NotifyPlayer(playerId, "Personal goal complete", string.Format("%1\nLegacy: %2", Describe(gm, profile), profile.m_iLegacy));
-		gm.AddReputation(playerId, RZ_EFaction.SURVIVORS, 10);
+		gm.AddFame(playerId, RZ_EFaction.SURVIVORS, 10);
+		gm.OnLegacyChanged(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -166,16 +167,27 @@ class RZ_Objectives
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A faction the background already leans toward, but isn't Trusted by yet.
 	protected static int PickTrustFaction(RZ_Background bg)
 	{
-		if (bg.m_iRepBandits > 0)
-			return RZ_EFaction.BANDITS;
-		if (bg.m_iRepMilitary > 0)
-			return RZ_EFaction.MILITARY;
-		if (bg.m_iRepInstitute > 0)
-			return RZ_EFaction.INSTITUTE;
+		array<int> leaning = {RZ_EFaction.BANDITS, RZ_EFaction.MILITARY, RZ_EFaction.INSTITUTE, RZ_EFaction.SURVIVORS};
+		foreach (int f : leaning)
+		{
+			int startFame = bg.GetStartFame(f);
+			if (startFame > 0 && startFame < 40)
+				return f;
+		}
 
-		array<int> options = {RZ_EFaction.SURVIVORS, RZ_EFaction.MILITARY, RZ_EFaction.INSTITUTE};
+		array<int> options = {};
+		foreach (int g : leaning)
+		{
+			if (g != RZ_EFaction.BANDITS && bg.GetStartFame(g) < 40 && bg.GetStartInfamy(g) < 15)
+				options.Insert(g);
+		}
+
+		if (options.IsEmpty())
+			return RZ_EFaction.SURVIVORS;
+
 		return options.GetRandomElement();
 	}
 

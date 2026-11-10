@@ -269,8 +269,9 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 	protected IEntity m_Drop;
 	protected int m_iSold;
 
-	protected static const int BANDIT_REP_PER_SAMPLE = 8;
-	protected static const int INSTITUTE_REP_PER_SAMPLE = -6;
+	protected static const int BANDIT_FAME_PER_SAMPLE = 8;
+	protected static const int BANDIT_FAVOR_PER_SAMPLE = 15;
+	protected static const int INSTITUTE_INFAMY_PER_SAMPLE = 6;
 
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
@@ -317,8 +318,9 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 		if (!m_aParticipants.Contains(playerId))
 			m_aParticipants.Insert(playerId);
 
-		gm.AddReputation(playerId, RZ_EFaction.BANDITS, BANDIT_REP_PER_SAMPLE * value);
-		gm.AddReputation(playerId, RZ_EFaction.INSTITUTE, INSTITUTE_REP_PER_SAMPLE * value);
+		gm.AddFame(playerId, RZ_EFaction.BANDITS, BANDIT_FAME_PER_SAMPLE * value, false);
+		gm.AddFavor(playerId, RZ_EFaction.BANDITS, BANDIT_FAVOR_PER_SAMPLE * value);
+		gm.AddInfamy(playerId, RZ_EFaction.INSTITUTE, INSTITUTE_INFAMY_PER_SAMPLE * value);
 
 		// One crate per sale, bigger sales get two
 		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 2, 4));

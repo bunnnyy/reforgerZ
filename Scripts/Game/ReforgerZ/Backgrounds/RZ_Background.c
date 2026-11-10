@@ -35,25 +35,35 @@ class RZ_Background
 	[Attribute("1", desc: "Multiplier on research points per delivered sample")]
 	float m_fResearchMult = 1;
 
-	[Attribute("1", desc: "Multiplier on reputation earned from missions")]
+	[Attribute("1", desc: "Multiplier on Fame earned from missions")]
 	float m_fMissionRewardMult = 1;
 
 	[Attribute("0", desc: "Hears horde warnings and intel from anywhere on the map")]
 	bool m_bRadioIntel;
 
-	[Attribute("0", desc: "Starting reputation: Survivors")]
+	[Attribute("0", desc: "Starting standing with the Haven. Positive = Fame, negative = Infamy")]
 	int m_iRepSurvivors;
 
-	[Attribute("0", desc: "Starting reputation: Military")]
+	[Attribute("0", desc: "Starting standing with Task Force Bastion. Positive = Fame, negative = Infamy")]
 	int m_iRepMilitary;
 
-	[Attribute("0", desc: "Starting reputation: Bandits")]
+	[Attribute("0", desc: "Starting standing with the Red Hand. Positive = Fame, negative = Infamy")]
 	int m_iRepBandits;
 
-	[Attribute("0", desc: "Starting reputation: Institute")]
+	[Attribute("0", desc: "Starting standing with Halcyon. Positive = Fame, negative = Infamy")]
 	int m_iRepInstitute;
 
+	[Attribute("0", desc: "Locked until the player unlocks it (Legacy). Picking it while locked falls back to the default background")]
+	bool m_bLocked;
+
+	[Attribute("", desc: "Unlock id saved on the player profile (e.g. soldier, doctor, raider, elder, drifter)")]
+	string m_sUnlockId;
+
+	[Attribute("", desc: "How to unlock it, shown when a player picks it while it's still locked")]
+	string m_sUnlockText;
+
 	//------------------------------------------------------------------------------------------------
+	//! Signed starting standing: positive values are Fame, negative values Infamy.
 	int GetStartRep(RZ_EFaction f)
 	{
 		switch (f)
@@ -65,6 +75,18 @@ class RZ_Background
 		}
 
 		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetStartFame(RZ_EFaction f)
+	{
+		return Math.Max(0, GetStartRep(f));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetStartInfamy(RZ_EFaction f)
+	{
+		return Math.Max(0, -GetStartRep(f));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -139,9 +161,58 @@ class RZ_Background
 		outList.Insert(b);
 
 		b = Make("unemployed", "Unemployed",
-			"Eager to prove yourself: +50% reputation from missions.",
+			"Eager to prove yourself: +50% Fame from missions.",
 			"Starts with nothing but the clothes on your back.");
 		b.m_fMissionRewardMult = 1.5;
 		outList.Insert(b);
+
+		// ---- Unlockable (Legacy). See docs/REPUTATION.md.
+		b = MakeLocked("soldier", "Soldier", "Reach Champion with Task Force Bastion in any life.",
+			"Starts with a service rifle and armour. Bastion knows you.",
+			"The Red Hand starts out watching you.");
+		b.m_iRepMilitary = 20;
+		b.m_iRepBandits = -15;
+		outList.Insert(b);
+
+		b = MakeLocked("doctor", "Doctor", "Reach Champion with Halcyon in any life.",
+			"Can treat bites: an infection takes two and a half times as long to kill you. Halcyon knows you.",
+			"Starts unarmed.");
+		b.m_fInfectionTimeMult = 2.5;
+		b.m_iRepInstitute = 20;
+		outList.Insert(b);
+
+		b = MakeLocked("raider", "Raider", "Reach Champion with the Red Hand in any life.",
+			"The Red Hand trusts you: its black market is open from the start.",
+			"The Haven and Bastion start out watching you.");
+		b.m_iRepBandits = 40;
+		b.m_iRepSurvivors = -15;
+		b.m_iRepMilitary = -15;
+		outList.Insert(b);
+
+		b = MakeLocked("elder", "Elder", "Reach Champion with the Haven in any life.",
+			"The Haven trusts you from the start.",
+			"Old and slow: draws 30% more zombie attention.");
+		b.m_iRepSurvivors = 40;
+		b.m_fNoiseMult = 1.3;
+		outList.Insert(b);
+
+		b = MakeLocked("drifter", "Drifter", "Earn 10 Legacy points (personal goals).",
+			"Every faction has heard of you: starts Known with all four.",
+			"No gear at all.");
+		b.m_iRepSurvivors = 15;
+		b.m_iRepMilitary = 15;
+		b.m_iRepBandits = 15;
+		b.m_iRepInstitute = 15;
+		outList.Insert(b);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static RZ_Background MakeLocked(string id, string name, string unlockText, string perk, string flaw)
+	{
+		RZ_Background b = Make(id, name, perk, flaw);
+		b.m_bLocked = true;
+		b.m_sUnlockId = id;
+		b.m_sUnlockText = unlockText;
+		return b;
 	}
 }

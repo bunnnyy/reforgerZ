@@ -89,7 +89,7 @@ class RZ_CureResearch
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		profile.m_iSamplesDelivered += count;
 		profile.m_iLifeSamples += count;
-		m_GM.AddReputation(playerId, RZ_EFaction.INSTITUTE, 3 * count);
+		m_GM.AddFame(playerId, RZ_EFaction.INSTITUTE, 3 * count);
 
 		string name = GetGame().GetPlayerManager().GetPlayerName(playerId);
 		m_GM.NotifyAll("Cure research", string.Format("%1 delivered %2 sample(s). Research: %3 percent.",
@@ -212,8 +212,8 @@ class RZ_CureResearch
 				continue;
 
 			int id = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(p);
-			m_GM.AddReputation(id, RZ_EFaction.INSTITUTE, 50);
-			m_GM.AddReputation(id, RZ_EFaction.SURVIVORS, 30);
+			m_GM.AddFame(id, RZ_EFaction.INSTITUTE, 50);
+			m_GM.AddFame(id, RZ_EFaction.SURVIVORS, 30);
 		}
 
 		m_GM.NotifyAll("THE CURE IS HERE", "The cure is going out over every frequency. You did it. This season is over: the next wipe starts a new outbreak.");

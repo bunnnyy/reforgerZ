@@ -182,7 +182,7 @@ class RZ_MissionManager
 			{
 				RZ_Background bg = m_GM.GetPlayerBackground(playerId);
 				int rep = RZ_Util.RoundToInt(m.m_iRepReward * bg.m_fMissionRewardMult);
-				m_GM.AddReputation(playerId, m.m_eGiver, rep);
+				m_GM.AddFame(playerId, m.m_eGiver, rep);
 				RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 				profile.m_iMissionsCompleted++;
 				profile.m_iLifeMissions++;
