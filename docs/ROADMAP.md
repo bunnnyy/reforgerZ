@@ -4,8 +4,9 @@ What's built, what's next, what to test first, and what was dropped. How each sy
 is in [DESIGN.md](DESIGN.md).
 
 **Status:** everything under "Built" is written in Enforce Script (about 62,300 lines) and
-**has never been compiled**. It needs Workbench, the 119 `VERIFY` fixes and a play-test
-before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
+**has never been compiled**. It needs Workbench, the 155 `VERIFY` fixes (119 in the game, 36 in
+the Workbench plugin) and a play-test before any of it can be called working
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
 ## Built
 
@@ -35,13 +36,15 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
 | Cure research, antidotes, the final stand, the season's winner | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
+| Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout), the Workbench plugin **ReforgerZ: Create prefabs** with a dry run and a checklist fallback (never run), and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
 
 ## Next
 
 ### Get it running
-- Set up the Workbench project, fix every `VERIFY`, and get it compiling.
-- Make the required prefabs and the factions, then play a 2-hour session on Arland
-  ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
+- Set up the Workbench project, fix every `VERIFY` in the game scripts, and get it compiling.
+- Run **ReforgerZ: Create prefabs** as a dry run, fix its `VERIFY`s until it makes prefabs, then
+  run it for real (or follow the manual checklist). Make the minimum playable subset and the
+  factions, then play a 2-hour session on Arland ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
 ### Characters and UI
 - A custom deploy-menu panel that shows each background's perk and flaw, and hides locked ones.
@@ -75,6 +78,7 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 In this order, because later ones depend on earlier ones:
 
 1. **Compile** and fix the `VERIFY` list, riskiest first ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list)).
+   Then the plugin: a dry run, then a real run; note which editor calls needed fixing.
 2. **Per-player hostility.** A player Hunted by Bastion near a Bastion AI group: does it fire?
    Do the deploy menu, chat and groups stay on `SURV`? If AI ignores the variants, switch to Outlaw.
 3. **The core loop on Arland** for 2 hours: zombie density, spread rate, cure pace. Then the

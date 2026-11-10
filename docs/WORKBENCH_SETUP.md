@@ -4,12 +4,17 @@ How to turn the scripts in this repo into a playable mod. The scripts are plain 
 Script; prefabs, configs and the `.gproj` are made in Workbench, because they need GUIDs that
 Workbench generates. **Nothing has been compiled yet.** Expect to fix the `VERIFY` list first.
 
+Everything you must create or configure is listed once, in the **prefab manifest**
+(`Configs/ReforgerZ/PrefabManifest.json`). The Workbench plugin **ReforgerZ: Create prefabs**
+reads it and makes what it can; the tables in sections 2 to 5 are generated from it and double
+as the manual checklist.
+
 Work through the sections in order:
 
-1. [Project and dependencies](#1-project-and-dependencies)
-2. [The minimum for a playable loop on Arland](#2-the-minimum-for-a-playable-loop-on-arland)
-3. [Factions](#3-factions)
-4. [Prefabs by system](#4-prefabs-by-system)
+1. [Create the prefabs](#1-create-the-prefabs)
+2. [The minimum playable subset](#2-the-minimum-playable-subset)
+3. [Factions and loadouts](#3-factions-and-loadouts)
+4. [The prefab manifest](#4-the-prefab-manifest)
 5. [Settings objects](#5-settings-objects)
 6. [The VERIFY list](#6-the-verify-list)
 7. [Log lines to check](#7-log-lines-to-check)
@@ -17,7 +22,11 @@ Work through the sections in order:
 
 How each system behaves is in [DESIGN.md](DESIGN.md); this doc only says how to set it up.
 
-## 1. Project and dependencies
+## 1. Create the prefabs
+
+Run **ReforgerZ: Create prefabs** (or follow the manual checklist). First:
+
+### 1.1 Before you start: project and dependencies
 
 1. Subscribe to the dependencies in the game ([MOD_STACK.md](MOD_STACK.md)): at minimum
    **Bacon Zombies**; Metabolism and Special Zombies are recommended.
@@ -27,29 +36,144 @@ How each system behaves is in [DESIGN.md](DESIGN.md); this doc only says how to 
 4. Project Settings → Dependencies: add Arma Reforger, Bacon Zombies and whatever else you use.
 5. Open the Script Editor and compile (**F7**). Fix errors using [the VERIFY list](#6-the-verify-list).
    Commit `addon.gproj` once it exists.
+6. Make a world as a **sub-scene of Arland** and open it in the World Editor
+   ([world steps](#the-world)).
 
 Look up classes in the Script Editor or the
 [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
 
-## 2. The minimum for a playable loop on Arland
+### 1.2 Run "ReforgerZ: Create prefabs"
 
-Every optional prefab is an attribute on `RZ_GameModeComponent` (or one of its settings
-objects). **A feature whose prefab is empty turns itself off**, so you can start with this list
-and add the rest from [section 4](#4-prefabs-by-system) over time.
+The plugin in `Scripts/WorkbenchGame/ReforgerZ/RZ_CreatePrefabsPlugin.c` reads the manifest and
+does as much of sections 2 to 4 as it can. **It has never been run**: every editor call in it is a
+guess at the Workbench API, marked `VERIFY` ([the list](#the-workbench-plugin-35)). Expect a round
+of fixes the first time, and use the [manual checklist](#13-by-hand-the-manual-checklist) for
+whatever it can't do.
 
-| Step | What | Gets you |
+1. Compile the scripts (the plugin is in the Workbench script module, so `RZ_` classes must exist).
+2. Open your Arland sub-scene in the World Editor.
+3. **Plugins → ReforgerZ: Create prefabs.** The options dialog opens with **Dry run** on. Run it
+   once like that: it changes nothing and lists what it would do in the log (search for
+   `[ReforgerZ]`).
+4. Turn **Dry run** off and run it again. Save the world afterwards.
+5. Read the summary: *done*, *skipped* (already there), *failed* (with a reason) and *manual steps
+   left*. Fix what failed, do the manual steps, and run it again: it never touches what exists.
+
+**What it does, in order:**
+
+| Step | What | Idempotent because |
 |---|---|---|
-| 1 | A world as a **sub-scene of Arland**, with a `FactionManager` and a `LoadoutManager` | — |
-| 2 | The factions `SURV`, `MIL`, `BAND`, `INST` and the zombie faction ([section 3](#3-factions)); the 15 hidden variants can wait | Spawning |
-| 3 | 13 loadouts on `SURV`, named exactly as the backgrounds ([section 3](#3-factions)) | Backgrounds |
-| 4 | `RZ_GameMode.et`: vanilla `GameMode_Plain` (or any `SCR_BaseGameMode` prefab) with `RZ_GameModeComponent`, placed in the world | The mode |
-| 5 | **World > Spawn point prefab** (`RZ_SpawnPoint.et`, a vanilla spawn point) | Spawn points in towns, safehouse spawns |
-| 6 | **Zombies:** Bacon common, special and horde group prefabs, and the vanilla `AIWaypoint_Move.et` as **Move waypoint** | The infected, hordes, many missions |
-| 7 | **Cure:** lab, sample and antidote prefabs | The cure |
-| 8 | **Missions > Reward crate** | Mission rewards |
-| 9 | The four **quartermasters** with a few shop actions, `RZ_StandingStatusAction` and the four `RZ_LeaderAction`s; the Haven one also with the six `RZ_SafehouseAction`s, Halcyon's with `RZ_TrialDoseAction` | Shops, leaders, safehouse services, the trial dose |
-| 10 | **Missions > Mission item** and the four **drop points** | Delivery and choice missions |
-| 11 | **Puzzles > Note**, **Puzzles > Puzzle object** and **Puzzles > Civilian** | Puzzles, unarmed missions, wanderers, leaders and occupants to talk to, interaction spots |
+| Prefabs | Creates each prefab at its path from its base, adds the components and actions with their values, and an `RplComponent` and `ActionsManagerComponent` (with a context) where needed. `@Antidote`-style values become that prefab's ResourceName | a prefab whose file exists is skipped |
+| Loadouts | Creates the 13 loadout characters, each with `RZ_TreatOtherAction` | as above |
+| Game mode | Creates `RZ_GameMode.et`, creates its settings objects and fills every slot it has a prefab for | only empty slots are filled; lists only when empty |
+| World | Places the game mode in the open world; checks for a FactionManager and LoadoutManager | skipped if the world already has one |
+| Factions | Adds `SURV_H1`..`SURV_H15` and `SURV_OUTLAW` (with `SURV`'s colour and name, not playable) and the missing friendly keys; reports hostile pairs that are friendly | existing keys and friends are left alone |
+| Loadout entries | Adds the 13 loadouts on `SURV` to the LoadoutManager | existing names are skipped |
+| Additions | Lists the changes to prefabs it doesn't own | — |
+
+**Options:**
+
+| Option | Default | What |
+|---|---|---|
+| Dry run | on | Only report |
+| Only the minimum playable subset | off | Just the entries marked minimum (plus the game mode, loadouts and world) |
+| Make prefabs with no known base from an empty entity | off | Off: a prefab whose base isn't known is a manual step. On: it's made from a `GenericEntity` with all its parts, and you add the mesh |
+| Set up the open world | on | The world, faction and loadout steps |
+| Manifest file | `$ReforgerZ:Configs/ReforgerZ/PrefabManifest.json` | Where the manifest is |
+| Addon prefix | `$ReforgerZ:` | Where new prefabs are saved |
+
+**Bases.** The plugin builds each prefab on the entry's `basePrefab` (a ResourceName), else on a
+search for `baseFind` (a vanilla file name), else it leaves the prefab as a manual step. Only a
+few entries have a `baseFind` (`GameMode_Plain.et`, `SpawnPoint_Base.et`, `AIWaypoint_Move.et`),
+because vanilla names change between versions. For the rest, put the base you want in
+`basePrefab` and run it again; that's the quickest way to make many prefabs at once.
+
+**The fallback.** **Plugins → ReforgerZ: Write prefab checklist** writes the whole manifest as a
+checklist to `PrefabChecklist.md` in the project folder (git ignores it), with what already
+exists ticked. If even that fails, the tables in this doc are the same checklist.
+
+**Known limitations:**
+- Never run: names of editor calls may be wrong; each is in one helper in `RZ_WB`, so a fix is one edit.
+- It can't choose meshes, fill inventories (loadout gear, the reward crate), set collision layers
+  (the interaction spot, the doorway blocker), make AI groups' members or pick vanilla bases.
+- Faction variants copy only the colour and name (with their own key): check the flag and identity
+  by hand. If the factions live in a referenced `.conf` rather than on the FactionManager entity, it
+  can't edit them. If it can't read a friendly list, it may replace it with only the new key, so check
+  the four friendly lists after the first real run.
+- It doesn't overwrite anything: to redo a prefab, delete it first.
+- Shop stock beyond the antidote, stabiliser and cut dose, requisition items and loot tables are by hand.
+
+### 1.3 By hand: the manual checklist
+
+Work down the tables: [the minimum playable subset](#2-the-minimum-playable-subset) first, then
+[factions and loadouts](#3-factions-and-loadouts), then the rest of [the manifest](#4-the-prefab-manifest)
+system by system. For each prefab:
+
+1. Find the suggested base in the Resource Browser (vanilla paths and names differ between game
+   versions, so search by description) and **Create inherited prefab** at the path in the table
+   (all under `Prefabs/ReforgerZ/`).
+2. Add the components and actions in the **Add** column, with the attribute values shown.
+   **The generic set** is `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`, `RZ_ReadClueAction`,
+   4 × `RZ_PuzzleUseAction` (Value 0–3) and 4 × `RZ_PuzzleChoiceAction` (Option 0–3).
+   **The clue set** is `RZ_ClueComponent` and `RZ_ReadClueAction`.
+3. Every prefab with an `RZ_` component needs an `RplComponent`; every prefab with an action
+   needs an `ActionsManagerComponent` with at least one action context, and each action's
+   parent context set to it.
+4. Open `RZ_GameMode.et` and set the slot (the attribute's category, then its label).
+
+Slot names are the attribute's category, then its label: **Cure > Lab prefab** is the Lab prefab
+field under the ReforgerZ|Cure category of `RZ_GameModeComponent`, and **Survival > Infection >
+Stabiliser** is a field of the Infection settings object in the Survival category.
+
+### 1.4 Changing the manifest
+
+The manifest is the one source of truth for setup. After changing a prefab attribute, a
+component or an action in the scripts, update the manifest and run:
+
+```bash
+python3 tools/prefab_manifest.py check   # every prefab field, component and action covered; plugin keys match
+python3 tools/prefab_manifest.py sync    # copy the settings objects' defaults from the scripts
+python3 tools/prefab_manifest.py docs    # regenerate the tables in this doc
+```
+
+To use a prefab you already have (or a confirmed vanilla base), put its ResourceName
+(`{GUID}path.et`) in the entry's `basePrefab`. Lists (zombies, cars, the loot pool) take several,
+comma-separated.
+
+## 2. The minimum playable subset
+
+A feature whose prefab is empty turns itself off, so you can start with this and add the rest
+over time. With the [world steps](#the-world), the [factions and loadouts](#3-factions-and-loadouts)
+(the 15 hidden variants can wait) and these prefabs, you get spawning, backgrounds, the infected,
+hordes, the cure, mission rewards, shops, leaders, safehouse services, the trial dose, delivery
+and choice missions, and puzzles:
+
+<!-- manifest:minimum -->
+| Prefab | Suggested base | Add | Slot | Gets you |
+|---|---|---|---|---|
+| `RZ_GameMode.et` | vanilla GameMode_Plain (or any SCR_BaseGameMode prefab) | `RZ_GameModeComponent` | (placed in the world) | the mode |
+| `RZ_SpawnPoint.et` | a vanilla spawn point (SCR_SpawnPoint), e.g. SpawnPoint_Base.et or SpawnPoint_US.et; confirm the name in Workbench | — | World > Spawn point prefab | spawn points in towns, safehouse spawns |
+| `RZ_Sample.et` | a small item (a vial or sample tube) | `RZ_SampleItemComponent` (Value 1) | Cure > Sample | samples from specials |
+| `RZ_Antidote.et` | vanilla morphine or saline item (keeps its consumable component) | `RZ_AntidoteItemComponent`; `RZ_InjectAntidoteAction` | Cure > Antidote | antidotes; optionally set the consumable effect to RZ_ConsumableAntidote by hand |
+| `RZ_Lab.et` | a field hospital tent or lab container prop | `RZ_LabComponent`; `RZ_DepositSamplesAction`, `RZ_LabStatusAction` | Cure > Lab prefab | the cure (spawned in a town if none is placed); a second copy is Mobile Lab's field annex for 3 hours |
+| `RZ_RewardCrate.et` | a vanilla supply box, filled with loot by hand | — | Missions > Reward crate | mission rewards |
+| `RZ_PuzzleObject.et` | a crate, sign or post prop | the generic set | Puzzles > Puzzle object | every puzzle and interaction fallback; missions relabel the actions |
+| `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | puzzles, unarmed missions, wanderers, leaders and occupants to talk to |
+| `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | every puzzle mission, scenario clues |
+| `RZ_MissionItem.et` | a small carryable item (a box or data drive) | `RZ_MissionItemComponent` | Missions > Mission item | every delivery and choice mission; tagged when it spawns |
+| `RZ_Drop_Haven.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction SURVIVORS) | Missions > Haven drop point | the drops those missions name |
+| `RZ_Drop_Bastion.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction MILITARY) | Missions > Bastion drop point | the drops those missions name |
+| `RZ_Drop_RedHand.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction BANDITS) | Missions > Red Hand drop point | the drops those missions name; also Car Theft's chop shop |
+| `RZ_Drop_Halcyon.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction INSTITUTE) | Missions > Halcyon drop point | the drops those missions name |
+| (existing prefab) | Bacon Zombies civilian and military groups | — | Zombies > Common prefabs (list) | the infected |
+| (existing prefab) | Special Zombies, or Bacon heavy, exploding and ranged | — | Zombies > Special prefabs (list) | samples, the cure |
+| (existing prefab) | a large Bacon group | — | Zombies > Horde prefabs (list) | hordes |
+| (existing prefab) | vanilla AIWaypoint_Move.et | — | Zombies > Move waypoint | hordes toward noise, unarmed missions, hunter squads, supply trucks, favourite spots |
+| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 6 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS) | Factions > Haven quartermaster | the Haven shop, leader and safehouse services |
+| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING) | Factions > Bastion quartermaster | the Bastion shop and leader |
+| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose) | Factions > Red Hand quartermaster | the Red Hand black market and leader |
+| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser) | Factions > Halcyon quartermaster | the Halcyon shop, leader, antidotes and the trial dose |
+<!-- /manifest:minimum -->
 
 No towns, spawn points or lab need placing: they're generated at start. With only this,
 these stay off: hunter squads, Perimeter checkpoints and drones (the line still works with
@@ -63,33 +187,44 @@ nothing until the loot pool is filled), fixable cars, crafting and traps, and th
 `RZ_SettlementMarkerEntity`s. Check the Perimeter rectangle, checkpoints, safehouses, territory,
 power and radio station, and whether "Search" spots appear in houses.
 
-## 3. Factions
+### The world
+
+<!-- manifest:world -->
+| Step | Plugin | Minimum |
+|---|---|---|
+| Make a world as a sub-scene of Arland (File > New World > Sub-scene, parent Arland) | manual | yes |
+| Place a FactionManager (a vanilla FactionManager prefab) and fill in the factions below | checks it | yes |
+| Place a LoadoutManager (a vanilla LoadoutManager prefab) with the 13 loadouts on SURV | checks it | yes |
+| Place RZ_GameMode.et in the world (one per world) | does it | yes |
+| Save the world; set it as the mission in a scenario config (or open it in Play mode) | manual | yes |
+| Optional: place marker entities (RZ_SettlementMarkerEntity and the others) to override automatic picks | manual | — |
+<!-- /manifest:world -->
+
+## 3. Factions and loadouts
 
 In the world's `FactionManager`:
 
+<!-- manifest:factions -->
 | Key | In game | Used for |
 |---|---|---|
-| `SURV` | The Haven, and every player | The player faction. Its loadout list holds the backgrounds |
+| `SURV` | The Haven | the player faction; its loadout list holds the 13 backgrounds; Haven AI |
 | `MIL` | Task Force Bastion | Bastion AI: guards, crews, hunter squads |
 | `BAND` | The Red Hand | Red Hand AI: mission groups, guards, crews, hunter squads |
 | `INST` | Halcyon | Halcyon AI: guards, crews |
-| Bacon Zombies' faction | The infected | Hostile to all of the above |
-
-**Loadouts.** On `SURV`, one loadout per background, named exactly: `Nurse`, `Mechanic`,
-`Hunter`, `Police Officer`, `Ex-Con`, `Lab Technician`, `Radio Operator`, `Unemployed`, and the
-five unlockable ones `Soldier`, `Doctor`, `Raider`, `Elder`, `Drifter`. Each is a civilian
-character prefab with that background's starting gear. Players who pick a locked one keep its
-gear but play as Unemployed. The log warns `No background matches loadout '...'` for a typo.
+| (the zombie mod's) | The infected | the zombie mod's own faction (Bacon Zombies): hostile to all four |
+<!-- /manifest:factions -->
 
 **Relations.** AI shoots individual players through the hidden variants below, so the base
 relations are the "nobody wants you dead" case. Set them in each faction's friendly list, both ways:
 
+<!-- manifest:relations -->
 | | SURV | MIL | BAND | INST |
 |---|---|---|---|---|
 | SURV | friendly | friendly | friendly | friendly |
-| MIL | friendly | | hostile | friendly |
-| BAND | friendly | hostile | | hostile |
-| INST | friendly | friendly | hostile | |
+| MIL | friendly |  | hostile | friendly |
+| BAND | friendly | hostile |  | hostile |
+| INST | friendly | friendly | hostile |  |
+<!-- /manifest:relations -->
 
 `SURV`–`BAND` friendly is what makes the Red Hand neutral by default.
 
@@ -110,150 +245,344 @@ relations are the "nobody wants you dead" case. Set them in each faction's frien
 If the player faction key isn't `SURV`, the variants are `<key>_H1`..`<key>_H15` and
 `<key>_OUTLAW`. Missing variants only turn the feature off for the players who'd need them.
 
-## 4. Prefabs by system
+**Loadouts.** In the world's `LoadoutManager`, on `SURV`, one loadout per background, named
+exactly as below. Each is a civilian character prefab with that background's starting gear and
+`RZ_TreatOtherAction` (so other players can treat you). Players who pick a locked one keep its
+gear but play as Unemployed. The log warns `No background matches loadout '...'` for a typo.
+The gear is a suggestion; the perks and flaws are in [DESIGN.md](DESIGN.md#backgrounds-and-personal-goals).
 
-The code has **153 prefab fields**: 40 on `RZ_GameModeComponent`, 107 in its settings objects, and
-6 in list entries and actions (shop item, requisition item, recipe output, loot table lists).
-Every prefab with an action list needs an `ActionsManagerComponent`; every prefab with an `RZ_`
-component needs an `RplComponent`. Slot names are the attribute's category, then its label.
+<!-- manifest:loadouts -->
+| Loadout name | Prefab | Unlock | Suggested gear |
+|---|---|---|---|
+| `Nurse` | `RZ_Loadout_Nurse.et` | — | medical bag, bandages, morphine, saline; no weapon |
+| `Mechanic` | `RZ_Loadout_Mechanic.et` | — | toolbox, jerrycan, wrench; work clothes |
+| `Hunter` | `RZ_Loadout_Hunter.et` | — | hunting rifle, 5 rounds, hunting jacket |
+| `Police Officer` | `RZ_Loadout_PoliceOfficer.et` | — | pistol, one magazine, police jacket |
+| `Ex-Con` | `RZ_Loadout_ExCon.et` | — | knife; plain clothes |
+| `Lab Technician` | `RZ_Loadout_LabTechnician.et` | — | lab coat, gloves; no weapon |
+| `Radio Operator` | `RZ_Loadout_RadioOperator.et` | — | handheld radio, batteries |
+| `Unemployed` | `RZ_Loadout_Unemployed.et` | — | clothes only |
+| `Soldier` | `RZ_Loadout_Soldier.et` | Legacy | service rifle, two magazines, body armour, helmet |
+| `Doctor` | `RZ_Loadout_Doctor.et` | Legacy | medical bag, morphine, bandages, gloves; no weapon |
+| `Raider` | `RZ_Loadout_Raider.et` | Legacy | pistol or sawn-off, knife, red armband or jacket |
+| `Elder` | `RZ_Loadout_Elder.et` | Legacy | walking clothes, a little food and water |
+| `Drifter` | `RZ_Loadout_Drifter.et` | Legacy | nothing |
+<!-- /manifest:loadouts -->
 
-### The generic puzzle object (used everywhere)
+## 4. The prefab manifest
 
-Many systems reuse one prefab for anything that's read, talked to or used. Make it early.
+<!-- manifest:counts -->
+The code has **154 prefab fields**: 40 on `RZ_GameModeComponent`, 108 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **158 entries**: 139 prefabs the plugin creates, 15 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 4 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 25 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+<!-- /manifest:counts -->
 
-| Prefab | Add | Slot |
-|---|---|---|
-| `RZ_PuzzleObject.et` (a crate, sign or post) | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`, `RZ_ReadClueAction`, 4 × `RZ_PuzzleUseAction` (values 0–3), 4 × `RZ_PuzzleChoiceAction` (options 0–3) | Puzzles > Puzzle object |
-| `RZ_Civilian.et` (a civilian without AI, or a seated figure prop) | the same components | Puzzles > Civilian |
-| `RZ_Note.et` (a paper or notebook prop) | `RZ_ClueComponent`, `RZ_ReadClueAction` | Puzzles > Note |
+Each manifest entry fills one or more fields. **Need:** *minimum* is the
+[minimum playable subset](#2-the-minimum-playable-subset); *optional* turns its feature off (or
+falls back) when empty. "(existing prefab)" means you
+fill the slot with a prefab you already have. All new prefabs go under `Prefabs/ReforgerZ/`.
 
-Missions label the actions ("Seal the well", "Accuse Mirek") and hide the slots they don't use.
-**Without replicated labels** (a VERIFY), every slot shows its generic label, and the actions
-still route correctly.
+<!-- manifest:prefabs -->
+#### Core and cure
 
-### Core and cure
-
-| Prefab | Base | Add | Slot | | Enables |
+| Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_GameMode.et` | `GameMode_Plain` | `RZ_GameModeComponent` | (placed) | **required** | everything |
-| `RZ_SpawnPoint.et` | vanilla spawn point | | World > Spawn point prefab | **required** | spawning |
-| `RZ_Lab.et` | a field hospital tent or lab container | `RZ_LabComponent`; `RZ_DepositSamplesAction`, `RZ_LabStatusAction` | Cure > Lab prefab | **required** | the cure (spawned in a town if none is placed); a second copy is Mobile Lab's field annex for 3 hours |
-| `RZ_Sample.et` | a small item (a vial) | `RZ_SampleItemComponent` | Cure > Sample | **required** | samples from specials |
-| `RZ_Antidote.et` | morphine or saline item | `RZ_AntidoteItemComponent`, `RZ_InjectAntidoteAction`; optionally the consumable effect `RZ_ConsumableAntidote` | Cure > Antidote | **required** | antidotes |
-| `RZ_RewardCrate.et` | a vanilla supply box, filled with loot | | Missions > Reward crate | **required** | mission rewards |
+| `RZ_SpawnPoint.et` | a vanilla spawn point (SCR_SpawnPoint), e.g. SpawnPoint_Base.et or SpawnPoint_US.et; confirm the name in Workbench | — | World > Spawn point prefab | **minimum** | spawn points in towns, safehouse spawns |
+| `RZ_Sample.et` | a small item (a vial or sample tube) | `RZ_SampleItemComponent` (Value 1) | Cure > Sample | **minimum** | samples from specials |
+| `RZ_Antidote.et` | vanilla morphine or saline item (keeps its consumable component) | `RZ_AntidoteItemComponent`; `RZ_InjectAntidoteAction` | Cure > Antidote | **minimum** | antidotes; optionally set the consumable effect to RZ_ConsumableAntidote by hand |
+| `RZ_Lab.et` | a field hospital tent or lab container prop | `RZ_LabComponent`; `RZ_DepositSamplesAction`, `RZ_LabStatusAction` | Cure > Lab prefab | **minimum** | the cure (spawned in a town if none is placed); a second copy is Mobile Lab's field annex for 3 hours |
+| `RZ_RewardCrate.et` | a vanilla supply box, filled with loot by hand | — | Missions > Reward crate | **minimum** | mission rewards. Fill its inventory with loot in the prefab editor |
 
-**Treatments** (slots under **Survival > Infection**; each is optional and turns its treatment off
-when empty). Each is a small item with `RZ_MedItemComponent` (its **Kind**) and
-`RZ_UseMedAction` ("Take ..."), and optionally the consumable effect `RZ_ConsumableMed` with the
-same kind. Names in brackets suit the keyword lists.
+#### Treatments
 
-| Prefab | Kind | Slot | Where it comes from |
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_Stabiliser.et` | an autoinjector item | `RZ_MedItemComponent` (Kind STABILISER); `RZ_UseMedAction` | Survival > Infection > Stabiliser | optional | Halcyon's quartermaster (a Known shop action; sold from the lab's stock), rare in pharmacies. Optionally set its consumable effect to RZ_ConsumableMed with the same kind |
+| `RZ_Antibiotics_Expired.et` | a pill strip item | `RZ_MedItemComponent` (Kind ANTIBIOTICS); `RZ_UseMedAction` | Survival > Infection > Antibiotics | optional | searches; every safehouse's "Ask for something for the fever". Optionally set its consumable effect to RZ_ConsumableMed with the same kind |
+| `RZ_VetAntiviral.et` | a vial item | `RZ_MedItemComponent` (Kind VET_ANTIVIRAL); `RZ_UseMedAction` | Survival > Infection > Vet antiviral | optional | farms and vet clinics. Optionally set its consumable effect to RZ_ConsumableMed with the same kind |
+| `RZ_CutDose.et` | a dirty syringe item | `RZ_MedItemComponent` (Kind CUT_DOSE); `RZ_UseMedAction` | Survival > Infection > Cut dose | optional | the Red Hand quartermaster: a Known shop action, cheap (10-15 Favor). Optionally set its consumable effect to RZ_ConsumableMed with the same kind |
+| `RZ_FeverSuppressant.et` | a pill bottle item | `RZ_MedItemComponent` (Kind SUPPRESSANT); `RZ_UseMedAction` | Survival > Infection > Suppressant | optional | pharmacies, some shops. Optionally set its consumable effect to RZ_ConsumableMed with the same kind |
+| `RZ_HomeRemedy.et` | a brown bottle item (not named vodka or herb) | `RZ_MedItemComponent` (Kind REMEDY); `RZ_UseMedAction` | Survival > Infection > Remedy | optional | brewed on a stove from alcohol and herbs. Optionally set its consumable effect to RZ_ConsumableMed with the same kind |
+
+#### Puzzles
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_PuzzleObject.et` | a crate, sign or post prop | the generic set | Puzzles > Puzzle object | **minimum** | every puzzle and interaction fallback; missions relabel the actions |
+| `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | **minimum** | puzzles, unarmed missions, wanderers, leaders and occupants to talk to |
+| `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | **minimum** | every puzzle mission, scenario clues |
+| `RZ_Keypad.et` | a keypad or wall panel prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Keypad | optional | The Last Experiment (keypad mode), Locked Bunker; keys 0-9, 10 Clear, 11 Enter |
+| `RZ_Terminal.et` | a computer prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Terminal | optional | The Last Experiment (falls back to the keypad); keys 0-9, 10 Clear, 11 Enter |
+| `RZ_PuzzleBody.et` | a body prop | the clue set | Puzzles > Body | optional | Paces, Patient Zero's Ledger, Poisoned Well, Last Experiment, The Witness, The Deserter's Map (falls back to the note) |
+| `RZ_Well.et` | a well prop | the generic set | Puzzles > Well | optional | look only (falls back to the puzzle object) |
+| `RZ_Bell.et` | a bell prop | the generic set | Puzzles > Bell | optional | look only (falls back to the puzzle object) |
+| `RZ_FuseBox.et` | an electrical box prop | the generic set | Puzzles > Fuse box | optional | look only (falls back to the puzzle object) |
+| `RZ_RadioMast.et` | an antenna prop | the generic set | Puzzles > Radio mast | optional | look only (falls back to the puzzle object) |
+| `RZ_Safe.et` | a safe prop | the generic set | Puzzles > Safe | optional | look only (falls back to the puzzle object) |
+| `RZ_ScaleCrate.et` | a crate with an inventory storage | the generic set | Puzzles > Scale crate | optional | The Weighing Vault |
+| `RZ_Landmark.et` | a wayside cross or painted mast prop | — | Puzzles > Landmark | optional | towns with no church, tower or well; set Landmark name to match |
+| `RZ_MorseLamp.et` | a lamp prop with a light | `RZ_BlinkLightComponent` | Puzzles > Morse light | optional | Lights in the Window (without the component it's spawned per flash) |
+
+#### Missions
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_MissionItem.et` | a small carryable item (a box or data drive) | `RZ_MissionItemComponent` | Missions > Mission item | **minimum** | every delivery and choice mission; tagged when it spawns |
+| `RZ_Drop_Haven.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction SURVIVORS) | Missions > Haven drop point | **minimum** | the drops those missions name |
+| `RZ_Drop_Bastion.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction MILITARY) | Missions > Bastion drop point | **minimum** | the drops those missions name |
+| `RZ_Drop_RedHand.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction BANDITS) | Missions > Red Hand drop point | **minimum** | the drops those missions name; also Car Theft's chop shop |
+| `RZ_Drop_Halcyon.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction INSTITUTE) | Missions > Halcyon drop point | **minimum** | the drops those missions name |
+| `RZ_SurvivorGroup.et` | a civilian AI group on SURV | — | Missions > Survivor group | optional | Survivors Trapped, Training Day, Harvest Guard, The Bitten Friend, Trader Caravan, Protection Racket; the fallback escort and bounty target |
+| `RZ_Nest.et` | a Zombie Hive prefab or a destructible prop with a damage manager | — | Missions > Nest | optional | Burn the Nest, Specimen from the Nest |
+| `RZ_BanditDrop.et` | a crate, barrel or car wreck prop | `RZ_SellSamplesToBanditsAction` | Missions > Dead drop | optional | Dead Drop |
+| `RZ_HeliWreck.et` | a helicopter wreck prop | the clue set | Missions > Helicopter wreck | optional | Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash |
+| `RZ_CorpsePile.et` | a body bag pile prop | — | Missions > Corpse pile | optional | look only (also Memorial's bodies) |
+| `RZ_RedHandGroup.et` | an AI group on BAND | — | Missions > Red Hand group | optional | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness; default Red Hand hunter squad |
+| `RZ_FuelDepot.et` | fuel tanks with a damage manager | — | Missions > Fuel depot | optional | Arson |
+| `RZ_Relay.et` | a radio mast with a damage manager | — | Missions > Relay | optional | Sabotage the Relay |
+| `RZ_Trader.et` | a character or vehicle (e.g. a Shop System trader) | — | Missions > Trader | optional | Wandering Trader |
+| `RZ_Explosion.et` | a mortar or shell impact effect | — | Missions > Explosion | optional | Bastion Shelling; charges in Blow the Bridge, shells in Fire Mission, Gas Station Fire's blast |
+
+#### Contracts
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route (falls back to the survivor group, then data) |
+| `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment |
+| `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Hunt the Deserter |
+| `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection (falls back to the puzzle object) |
+| `RZ_Bus.et` | a drivable bus or truck (keeps its damage manager) | — | Missions > Contracts > Bus | optional | Recover the Bus (falls back to the Haven truck, then car prefabs) |
+| `RZ_BountyTarget.et` | an armed AI group or character | — | Missions > Contracts > Bounty target | optional | Collect the Bounty (falls back to the survivor group) |
+| `RZ_BastionSquad.et` | an AI group on MIL | — | Missions > Contracts > Bastion squad | optional | the stockade guards in Bust Out (falls back to the Bastion hunters, then crew) |
+| `RZ_DroneWreck.et` | a small wreck prop | — | Missions > Contracts > Crashed drone | optional | Medical Drone (falls back to the puzzle object) |
+| `RZ_Smoke.et` | a coloured smoke effect | — | Missions > Contracts > Smoke marker | optional | Fire Mission (none: the message says it) |
+
+#### World events
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_FogEffect.et` | a low mist or fog particle effect | — | Missions > Events > Fog effect | optional | Fog Bank's look (works without) |
+| `RZ_Convicts.et` | an AI group on BAND, prison clothes, pistols and bats | — | Missions > Events > Convicts | optional | Prison Break (falls back to the Red Hand group) |
+| `RZ_Sniper.et` | a one-man AI group on BAND with a scoped rifle | — | Missions > Events > Sniper | optional | The Sniper (falls back to the bounty target; without either, never appears) |
+| `RZ_RivalGroup.et` | an armed AI group on SURV, no faction's colours | — | Missions > Events > Rival group | optional | Rival Survivors (falls back to the survivor group) |
+| `RZ_TruckWreck.et` | a military truck wreck prop, not drivable | — | Missions > Events > Truck wreck | optional | Abandoned Convoy (two are placed) |
+| `RZ_RemnantCamp.et` | a tent or small camp composition | — | Missions > Events > Camp | optional | Military Remnant Camp |
+| `RZ_Hatch.et` | a steel hatch or bunker door in the ground | the generic set | Missions > Events > Hatch | optional | Locked Bunker when no locked building is found |
+| (existing prefab) | zombie prefabs in suits and dresses from your zombie mod | — | Missions > Events > Wedding guests (list) | optional | Wedding Party (empty = common zombies) |
+| `RZ_Bride.et` | a special infected in a wedding dress (from your zombie mod) | — | Missions > Events > Bride | optional | Wedding Party (falls back to a special) |
+| `RZ_Jewellery.et` | a small item; keep "jewel" in its name | — | Missions > Events > Jewellery | optional | Wedding Party; the Trader wanderer takes one instead of Favor |
+
+#### Zombies
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| (existing prefab) | Bacon Zombies civilian and military groups | — | Zombies > Common prefabs (list) | **minimum** | the infected |
+| (existing prefab) | Special Zombies, or Bacon heavy, exploding and ranged | — | Zombies > Special prefabs (list) | **minimum** | samples, the cure |
+| (existing prefab) | a large Bacon group | — | Zombies > Horde prefabs (list) | **minimum** | hordes |
+| (existing prefab) | vanilla AIWaypoint_Move.et | — | Zombies > Move waypoint | **minimum** | hordes toward noise, unarmed missions, hunter squads, supply trucks, favourite spots |
+| (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Runner prefabs (list) | optional | the Collapse trait |
+| (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Helmet prefabs (list) | optional | the Overrun trait |
+| (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Screamer prefabs (list) | optional | the Aftermath trait |
+
+#### Quartermasters
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 6 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS) | Factions > Haven quartermaster | **minimum** | the Haven shop, leader and safehouse services. Add RZ_FactionShopAction entries for vanilla stock by hand (suggested stock below) |
+| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING) | Factions > Bastion quartermaster | **minimum** | the Bastion shop and leader. Add one RZ_RequisitionAction per ammo or rations item, and shop actions for vanilla stock, by hand |
+| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose) | Factions > Red Hand quartermaster | **minimum** | the Red Hand black market and leader |
+| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser) | Factions > Halcyon quartermaster | **minimum** | the Halcyon shop, leader, antidotes and the trial dose |
+
+#### Faction consequences
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_BastionHunters.et` | an AI group on MIL | — | Factions > Bastion hunter squad | optional | Bastion hunter squads |
+| `RZ_RedHandHunters.et` | an AI group on BAND | — | Factions > Red Hand hunter squad | optional | Red Hand hunter squads, safehouse location leaks (falls back to the Red Hand group) |
+
+#### The Perimeter
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_Drone.et` | a small quadcopter mesh with a hum and a light; no collision or physics | — | Perimeter > Drone prefab | optional | one drone over a player in the warning zone |
+| `RZ_WarningShot.et` | a gunshot sound or impact effect | — | Perimeter > Warning shot prefab | optional | the warning shot |
+| `RZ_Checkpoint.et` | concrete blocks and a closed barrier (a composition) | — | Perimeter > Barricade prefab | optional | road checkpoints (required for checkpoints) |
+| `RZ_CheckpointGuard.et` | a soldier without AI, or a figure prop | — | Perimeter > Guard prefab | optional | 0-4 per checkpoint |
+| `RZ_Smuggler.et` | a civilian without AI (the Red Hand runner) | — | Perimeter > Smuggler prefab | optional | The Blind Spot (falls back to the civilian) |
+| `RZ_Package.et` | a small box item | `RZ_MissionItemComponent` | Perimeter > Package prefab | optional | The Blind Spot, The Crossing (falls back to the mission item) |
+| `RZ_LineBody.et` | a body prop | the clue set | Perimeter > Line body prefab | optional | Shot at the Line (falls back to the puzzle body) |
+
+#### Haven safehouses and wanderers
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_SafehouseMedic.et` | a civilian without AI | 2 × `RZ_SafehouseAction` (Kind HEAL, DECLARE_BITE) | Haven > Medic prefab | optional | Settlement and up (the quartermaster's actions work without it) |
+| `RZ_SafehouseOccupant.et` | a civilian without AI, or a seated prop | the generic set | Haven > Occupant prefabs (list) | optional | 3-6 people shown (empty = the civilian); add more variants to the list by hand |
+| `RZ_SafehouseGuard.et` | an armed AI character or group on SURV | — | Haven > Guard prefab | optional | guards; they shoot armed exiles |
+| `RZ_Wanderer_Trader.et` | a civilian without AI (stands still while seen), or a one-man AI group on SURV (walks; give it a gun to fight back) | the generic set | Wanderers > Trader prefab | optional | the trader's body (falls back to the civilian) |
+| `RZ_Wanderer_Doctor.et` | a civilian without AI (stands still while seen), or a one-man AI group on SURV (walks; give it a gun to fight back) | the generic set | Wanderers > Doctor prefab | optional | the doctor's body (falls back to the civilian) |
+| `RZ_Wanderer_Scavenger.et` | a civilian without AI (stands still while seen), or a one-man AI group on SURV (walks; give it a gun to fight back) | the generic set | Wanderers > Scavenger prefab | optional | the scavenger's body (falls back to the civilian) |
+| `RZ_Wanderer_Deserter.et` | a civilian without AI (stands still while seen), or a one-man AI group on SURV (walks; give it a gun to fight back) | the generic set | Wanderers > Deserter prefab | optional | the deserter's body (falls back to the civilian) |
+| `RZ_Wanderer_Preacher.et` | a civilian without AI (stands still while seen), or a one-man AI group on SURV (walks; give it a gun to fight back) | the generic set | Wanderers > Preacher prefab | optional | the preacher's body (falls back to the civilian) |
+| `RZ_Wanderer_Courier.et` | a civilian without AI (stands still while seen), or a one-man AI group on SURV (walks; give it a gun to fight back) | the generic set | Wanderers > Courier prefab | optional | the courier's body (falls back to the civilian) |
+| `RZ_Wanderer_Kid.et` | a civilian without AI (stands still while seen), or a one-man AI group on SURV (walks; give it a gun to fight back) | the generic set | Wanderers > Kid prefab | optional | the kid's body (falls back to the civilian) |
+| `RZ_Wanderer_Mechanic.et` | a civilian without AI (stands still while seen), or a one-man AI group on SURV (walks; give it a gun to fight back) | the generic set | Wanderers > Mechanic prefab | optional | the mechanic's body (falls back to the civilian) |
+| (existing prefab) | any items | — | Wanderers > Trader goods (list) | optional | what the Trader sells |
+
+#### Faction leaders
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_Leader_Haven.et` | a character without AI (damage off) | the generic set | Leaders > Haven leader | optional | optional body next to the quartermaster |
+| `RZ_Leader_Bastion.et` | a soldier without AI (damage off) | the generic set | Leaders > Bastion leader | optional | optional body next to the quartermaster |
+| `RZ_Leader_RedHand.et` | a character without AI (damage off) | the generic set | Leaders > Red Hand leader | optional | optional body next to the quartermaster |
+| `RZ_Leader_Halcyon.et` | a character in a lab coat without AI (damage off) | the generic set | Leaders > Halcyon leader | optional | optional body next to the quartermaster |
+| `RZ_CouncilHead.et` | a civilian without AI (damage off) | the generic set | Leaders > Council head | optional | optional body per safehouse |
+| `RZ_Outpost_Bastion.et` | a soldier without AI | the generic set | Leaders > Bastion outpost commander | optional | optional outpost leader (falls back to the faction leader, then the civilian); Kill the Officer needs the Bastion one to be able to die |
+| `RZ_Outpost_RedHand.et` | a character without AI | the generic set | Leaders > Red Hand crew boss | optional | optional outpost leader (falls back to the faction leader, then the civilian); Kill the Officer needs the Bastion one to be able to die |
+| `RZ_Outpost_Halcyon.et` | a character without AI | the generic set | Leaders > Halcyon field lead | optional | optional outpost leader (falls back to the faction leader, then the civilian); Kill the Officer needs the Bastion one to be able to die |
+
+#### Territory and supply trucks
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_Guard_Haven.et` | an armed AI character or small group on SURV | — | Territory > Haven guard | optional | guards at holdings; watched for retaliation |
+| `RZ_Guard_Bastion.et` | an armed AI character or small group on MIL | — | Territory > Bastion guard | optional | guards at holdings; watched for retaliation |
+| `RZ_Guard_RedHand.et` | an armed AI character or small group on BAND | — | Territory > Red Hand guard | optional | guards at holdings; watched for retaliation |
+| `RZ_Guard_Halcyon.et` | an armed AI character or small group on INST | — | Territory > Halcyon guard | optional | guards at holdings; watched for retaliation |
+| `RZ_Occupant_Haven.et` | a character without AI in the faction's clothes | the generic set | Territory > Haven occupant | optional | the named people (empty = the civilian) |
+| `RZ_Occupant_Bastion.et` | a character without AI in the faction's clothes | the generic set | Territory > Bastion occupant | optional | the named people (empty = the civilian) |
+| `RZ_Occupant_RedHand.et` | a character without AI in the faction's clothes | the generic set | Territory > Red Hand occupant | optional | the named people (empty = the civilian) |
+| `RZ_Occupant_Halcyon.et` | a character without AI in the faction's clothes | the generic set | Territory > Halcyon occupant | optional | the named people (empty = the civilian) |
+| `RZ_Truck_Haven.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Haven truck | optional | the supply truck |
+| `RZ_Truck_Bastion.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Bastion truck | optional | the supply truck |
+| `RZ_Truck_RedHand.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Red Hand truck | optional | the supply truck |
+| `RZ_Truck_Halcyon.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Halcyon truck | optional | the supply truck; Mobile Lab's lab truck |
+| `RZ_TruckCrew_Haven.et` | an AI group of 1-2 on SURV; the first one drives | — | Supply > Haven crew | optional | the crew |
+| `RZ_TruckCrew_Bastion.et` | an AI group of 1-2 on MIL; the first one drives | — | Supply > Bastion crew | optional | the crew |
+| `RZ_TruckCrew_RedHand.et` | an AI group of 1-2 on BAND; the first one drives | — | Supply > Red Hand crew | optional | the crew |
+| `RZ_TruckCrew_Halcyon.et` | an AI group of 1-2 on INST; the first one drives | — | Supply > Halcyon crew | optional | the crew |
+
+#### New-player guidance
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction` | Guidance > Radio prefab | optional | given to every new life |
+| `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | the back-road scenario |
+| `RZ_ScratchedDoor.et` | a door or wall panel prop | the clue set | Guidance > Door prefab | optional | the basement scenario |
+| `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | the church scenario, safehouse flyers |
+| `RZ_TableRadio.et` | a radio prop | `RZ_ClueComponent`; `RZ_ReadClueAction` (Label Listen) | Guidance > Table radio prefab | optional | the farmhouse scenario |
+| `RZ_DeadRaider.et` | a body prop with a red hand on the jacket | the clue set | Guidance > Raider body prefab | optional | the attic scenario |
+| `RZ_DeadSoldier.et` | a Bastion soldier body prop | the clue set | Guidance > Soldier body prefab | optional | the barricade scenario |
+| `RZ_Barricade.et` | sandbags and a car on its side | — | Guidance > Barricade prefab | optional | barricade scenery |
+
+#### Power grid and radio station
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_PowerControl.et` | a generator or breaker cabinet | the generic set | World > Power grid > Control prefab | optional | the power station (falls back to the fuse box, then the puzzle object) |
+| `RZ_RadioConsole.et` | a radio set on a desk | the generic set | World > Radio station > Console prefab | optional | the radio station (falls back to the radio mast, then the puzzle object) |
+
+#### World interactions
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_InteractionSpot.et` | an empty GenericEntity with a small invisible collision box, off the character layer | the generic set | Interactions > General > Spot prefab | optional | every searchable thing, the Unlock/Lock/Force spot, the Clean the bite spot (falls back to the puzzle object, which is visible). Add the small collision box by hand; keep it off the character collision layer |
+| `RZ_Key.et` | a small item (a key or key ring) | `RZ_KeyItemComponent`; `RZ_ReadKeyTagAction` | Interactions > Search > Key prefab | optional | keys as real items (empty = keys are data for one life) |
+| `RZ_DoorBlocker.et` | an empty GenericEntity; add the collision-only box by hand (recipe below) | — | Interactions > Search > Doorway blocker | optional | keeps AI out of locked doorways near players. Needs only RplComponent, a collision-only MeshObject and a static RigidBody: see the doorway blocker recipe |
+| (existing prefab) | every item a search can find (vanilla and mod items) | — | Interactions > Search > Loot pool (list) | optional | searches find nothing until it's filled |
+| `RZ_CarProject.et` | a non-drivable car prop | the generic set | Interactions > Cars > Project prefab | optional | a fixable car before it runs |
+| (existing prefab) | vanilla drivable civilian cars | — | Interactions > Cars > Car prefabs (list) | optional | what a fixed car becomes (empty = no fixable cars) |
+| `RZ_CarBattery.et` | an item; keep "battery" in its name | — | Interactions > Cars > Battery | optional | car parts |
+| `RZ_Tyre.et` | an item; keep "tyre" in its name | — | Interactions > Cars > Tyre | optional | car parts |
+| `RZ_SparkPlugs.et` | an item; keep "spark" in its name | — | Interactions > Cars > Spark | optional | car parts |
+| `RZ_FuelCan_Full.et` | a full jerrycan item | — | Interactions > Cars > Fuel prefab | optional | siphoning, pumps, fuel, fire |
+| `RZ_BoardedDoorway.et` | planks across a door frame, with collision | — | Interactions > Traps > Barricade prefab | optional | the boarded doorway |
+| `RZ_TripwireSet.et` | a set tripwire prop | — | Interactions > Traps > Tripwire set | optional | look of a set tripwire (optional) |
+| `RZ_SpikeSet.et` | a set spike trap prop | — | Interactions > Traps > Spike trap set | optional | look of a set spike trap (optional) |
+| `RZ_FireEffect.et` | a fire and smoke particle | — | Interactions > Traps > Fire effect | optional | a burning building |
+| (existing prefab) | the vanilla bandage item | — | Interactions > Crafting > Bandage | optional | the workbench's bandage recipe |
+| `RZ_Molotov.et` | a throwable bottle (a vanilla grenade with the explosion removed and a bottle mesh) | `RZ_MolotovComponent` | Interactions > Crafting > Molotov | optional | fire |
+| `RZ_TinRattle.et` | a throwable tin item | `RZ_NoisemakerComponent` (Heat 12, On throw on, Delete after off) | Interactions > Crafting > Noisemaker | optional | the workbench's noisemaker recipe |
+| (existing prefab) | a melee weapon prefab (vanilla or mod) | — | Interactions > Crafting > Spear | optional | the workbench's spear recipe |
+| `RZ_TripwireKit.et` | a small item | `RZ_PlaceableComponent` (Kind TRIPWIRE); `RZ_PlaceAction` | Interactions > Crafting > Tripwire | optional | tripwires |
+| `RZ_SpikeTrapKit.et` | a small item | `RZ_PlaceableComponent` (Kind SPIKES); `RZ_PlaceAction` | Interactions > Crafting > Spike trap | optional | spike traps |
+| `RZ_Tablets.et` | a small pill tube item | — | Interactions > Crafting > Tablets | optional | water purification |
+| (existing prefab) | the survival mod's untreated water bottle | — | Interactions > General > Dirty water | optional | wells, stoves |
+| (existing prefab) | the survival mod's safe water bottle | — | Interactions > General > Clean water | optional | wells, stoves |
+
+#### Loot items
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_Planks.et` | a planks item | `RZ_PlaceableComponent` (Kind BARRICADE); `RZ_PlaceAction` | (loot or shop) | optional | barricades |
+| `RZ_PortableGenerator.et` | a generator item | `RZ_PlaceableComponent` (Kind GENERATOR); `RZ_PlaceAction`; `RZ_PlaceAction` (Refuel on) | (loot or shop) | optional | a generator |
+| `RZ_Bottle.et` | a vanilla grenade with the explosion removed and a bottle mesh | `RZ_NoisemakerComponent` (Heat 20, On throw on, Delete after on) | (loot or shop) | optional | a thrown noise |
+| `RZ_Firecracker.et` | a small item | `RZ_NoisemakerComponent` (Heat 15, Delay 5, Pulses 4, Pulse interval 3, On throw off, Delete after on, Arm label Light the fuse); `RZ_ArmNoisemakerAction` | (loot or shop) | optional | a timed noise |
+| `RZ_AlarmClock.et` | a clock prop item | `RZ_NoisemakerComponent` (Heat 10, Delay 30, Pulses 8, Pulse interval 8, On throw off, Delete after off, Arm label Wind the alarm); `RZ_ArmNoisemakerAction` | (loot or shop) | optional | a long timed noise |
+| `RZ_FuelCan_Empty.et` | an empty jerrycan item | — | (loot) | optional | siphoning, pumps |
+
+#### Hand-set list entries
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| (existing prefab) | items from the loot pool | — | Interactions > Search > Loot tables (each table's three lists) | optional | exact loot per building type (optional; empty tables are filled from the pool by keywords) |
+| (existing prefab) | any item | — | Interactions > Crafting > Extra recipes (each output) | optional | extra workbench recipes (optional) |
+| (existing prefab) | vanilla items, crates or vehicles | — | Each shop action's Item prefab | optional | quartermaster stock beyond what the plugin adds (see the suggested stock) |
+| (existing prefab) | vanilla ammo or rations | — | Each requisition action's Item prefab | optional | Bastion's Requisition (Trusted pays half, once an hour) |
+<!-- /manifest:prefabs -->
+
+### Add to prefabs you already have
+
+<!-- manifest:additions -->
+| Prefab | Add | Why | Need |
 |---|---|---|---|
-| `RZ_Stabiliser.et` (an autoinjector) | STABILISER | Stabiliser | Halcyon's quartermaster (a Known shop action; sold from the lab's stock), rare in pharmacies |
-| `RZ_Antibiotics_Expired.et` (a pill strip) | ANTIBIOTICS | Antibiotics | Searches; every safehouse's "Ask for something for the fever" |
-| `RZ_VetAntiviral.et` (a vial) | VET_ANTIVIRAL | Vet antiviral | Farms and vet clinics |
-| `RZ_CutDose.et` (a dirty syringe) | CUT_DOSE | Cut dose | The Red Hand quartermaster: a Known shop action, cheap (10–15 Favor) |
-| `RZ_FeverSuppressant.et` (a pill bottle) | SUPPRESSANT | Suppressant | Pharmacies, some shops |
-| `RZ_HomeRemedy.et` (a brown bottle; not named "vodka" or "herb") | REMEDY | Remedy | Brewed on a stove from alcohol and herbs |
+| every player character prefab used by a loadout (the plugin's RZ_Loadout_*.et get it already) | `RZ_TreatOtherAction` | other players can treat you | required |
+| any vanilla radio prefab you want crackable | `RZ_TuneRadioAction` | secure radio channels (the wind-up radio gets it already) | optional |
+| quartermasters you placed by hand (not from the manifest) | `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING) | standing and the stronghold leader (the plugin's quartermasters get these already) | optional |
+| the Haven quartermaster | `RZ_FactionShopAction` (Faction SURVIVORS, Required tier KNOWN, Favor cost 8, Item prefab `RZ_CarBattery.et`, Display name Car battery) | car parts for sale (Known), if wanted; same for tyre and spark plugs | optional |
+| the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab) | optional |
+| any quartermaster | `RZ_FactionShopAction` | vanilla stock (suggested stock table); the Item prefab is a vanilla item, crate or vehicle | optional |
+<!-- /manifest:additions -->
 
-Wound cleaning needs no prefab: it uses carried items by keyword (alcohol, antiseptic, bandages,
-first-aid kits) and the interaction spot. Make sure the loot pool has some alcohol, antiseptic
-and herbs.
+### Notes by system
 
-### Zombies
+**The generic puzzle object** is reused by many systems for anything that's read, talked to or
+used, so make it early. Missions label the actions ("Seal the well", "Accuse Mirek") and hide the
+slots they don't use. **Without replicated labels** (a VERIFY), every slot shows its generic
+label, and the actions still route correctly. The specific puzzle props only change the look;
+missions turn themselves off when a prefab they need is missing.
 
-| Prefab | Slot | | Enables |
-|---|---|---|---|
-| Bacon civilian and military groups | Zombies > Common prefabs | **required** | the infected |
-| Special Zombies or Bacon heavy, exploding and ranged | Zombies > Special prefabs | **required** | samples, the cure |
-| A large Bacon group | Zombies > Horde prefabs | **required** | hordes |
-| `AIWaypoint_Move.et` | Zombies > Move waypoint | **required** | hordes toward noise, unarmed missions, hunter squads, supply trucks, favourite spots |
-| Runner, helmet and screamer prefabs | Zombies > Adaptation | optional | the stage traits |
+**Treatments.** Each turns itself off when its slot is empty. Wound cleaning needs no prefab: it
+uses carried items by keyword (alcohol, antiseptic, bandages, first-aid kits) and the interaction
+spot. Make sure the loot pool has some alcohol, antiseptic and herbs.
 
-### Missions
+**Missions.** One mission item prefab serves everything (medicine, notes, black box, package):
+the mission tags it when it spawns. Missions spawn and remove their own drop points.
 
-| Prefab | Base | Add | Slot | Enables |
-|---|---|---|---|---|
-| `RZ_MissionItem.et` | a small carryable item | `RZ_MissionItemComponent` | Missions > Mission item | every delivery and choice mission |
-| `RZ_Drop_Haven.et` / `_Bastion` / `_RedHand` / `_Halcyon` | a crate, table or mailbox | `RZ_ChoiceDeliveryAction` with faction SURVIVORS / MILITARY / BANDITS / INSTITUTE | Missions > Haven / Bastion / Red Hand / Halcyon drop point | the drops those missions name (Medicine Run, Fence the Goods, Crash Site, Requisition, Research Data, Water Purifier, Weapons Cache, Loot the Armory, Double Agent, Cold Chain, Specimen from the Nest, Medical Drone, Live Capture, the Perimeter and leader deliveries); the Red Hand drop is also Car Theft's chop shop |
-| `RZ_SurvivorGroup.et` | a civilian AI group on `SURV` | | Missions > Survivor group | real survivors in Survivors Trapped, Training Day and Harvest Guard; The Bitten Friend; Trader Caravan; the keeper's people in Protection Racket; the fallback escort and bounty target |
-| `RZ_Nest.et` | a Zombie Hive prefab or destructible prop | a damage manager | Missions > Nest | Burn the Nest, Specimen from the Nest |
-| `RZ_BanditDrop.et` | crate, barrel or car wreck | `RZ_SellSamplesToBanditsAction` | Missions > Dead drop | Dead Drop |
-| `RZ_HeliWreck.et` | a helicopter wreck prop | optionally `RZ_ClueComponent` + `RZ_ReadClueAction` | Missions > Helicopter wreck | Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash |
-| `RZ_CorpsePile.et` | a body bag pile | | Missions > Corpse pile | visual only (also Memorial's bodies) |
-| `RZ_RedHandGroup.et` | an AI group on `BAND` | | Missions > Red Hand group | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, the camp in The Witness; default Red Hand hunter squad |
-| `RZ_FuelDepot.et` | fuel tanks | a damage manager | Missions > Fuel depot | Arson |
-| `RZ_Relay.et` | a radio mast | a damage manager | Missions > Relay | Sabotage the Relay |
-| `RZ_Trader.et` | a character or vehicle (e.g. a Shop System trader) | | Missions > Trader | Wandering Trader |
-| `RZ_Explosion.et` | a mortar impact effect | | Missions > Explosion | Bastion Shelling; the charges in Blow the Bridge and the shells in Fire Mission (look only) |
+**Contracts** (how the blocks work is in [DESIGN.md](DESIGN.md#mission-building-blocks)). An
+escort prefab that isn't an AI group (a character or prop) still works: the people then move as
+data and stand as that figure when they stop. **To talk to escorted people** (patch up the pilot,
+divert the courier, march the deserters to the stronghold), the escort characters (an AI group's
+leader) need the generic set, like the wanderers. Without it, standing beside the pilot, the
+deserter or the researcher for 10 s still gets them moving.
 
-One mission item prefab serves everything (medicine, notes, black box, package): the mission
-tags it when it spawns. Missions spawn and remove their own drop points.
-
-**Contracts** (slots under **Missions > Contracts**; how the blocks work is in
-[DESIGN.md](DESIGN.md#mission-building-blocks)). All optional, each with a fallback:
-
-| Prefab | Base | Slot (fallback) | Used for |
-|---|---|---|---|
-| `RZ_EscortCivilians.et` | an AI group of 2–4 unarmed civilians on `SURV` | Escort civilians (Missions > Survivor group, then data with Puzzles > Civilian) | people who walk with you: refugees, prisoners, deserters |
-| `RZ_EscortScientist.et` | a one-man AI group on `INST` | Escort scientist (escort civilians) | Escort the Scientist, Secure the Shipment |
-| `RZ_EscortSoldier.et` | a one-man AI group on `MIL` | Escort soldier (escort civilians) | Rescue the Pilot, Hunt the Deserter |
-| `RZ_Cage.et` | a cage or box trap with the generic puzzle object's components | Cage trap (Puzzles > Puzzle object) | Live Capture, Private Collection |
-| `RZ_Bus.et` | a drivable bus or truck with a damage manager | Bus (Supply > Haven truck, then Cars > Car prefabs) | Recover the Bus |
-| `RZ_BountyTarget.et` | an armed AI group or character | Bounty target (Missions > Survivor group) | Collect the Bounty |
-| `RZ_BastionSquad.et` | an AI group on `MIL` | Bastion squad (Factions > Bastion hunter squad, then Supply > Bastion crew) | the stockade guards in Bust Out |
-| `RZ_DroneWreck.et` | a small wreck prop | Crashed drone (Puzzles > Puzzle object) | Medical Drone |
-| `RZ_Smoke.et` | a coloured smoke effect | Smoke marker (none: the message says it) | Fire Mission |
-
-An escort prefab that isn't an AI group (a character or prop) still works: the people then
-move as data and stand as that figure when they stop. **To talk to escorted people** (patch up
-the pilot, divert the courier, march the deserters to the stronghold), the escort characters
-(an AI group's leader) need the generic puzzle object's components, like the wanderers. Without
-them, standing beside the pilot, the deserter or the researcher for 10 s still gets them moving.
-
-**World events** (slots under **Missions > Events**). All optional:
-
-| Prefab | Base | Slot (fallback) | Used for |
-|---|---|---|---|
-| `RZ_FogEffect.et` | a low mist or fog particle effect | Fog effect (none: the fog bank works without a look) | Fog Bank |
-| `RZ_Convicts.et` | an AI group on `BAND`, prison clothes, pistols and bats | Convicts (Missions > Red Hand group) | Prison Break |
-| `RZ_Sniper.et` | a one-man AI group on `BAND` with a scoped rifle | Sniper (Contracts > Bounty target) | The Sniper; without either, the event never appears |
-| `RZ_RivalGroup.et` | an armed AI group on `SURV`, no faction's colours | Rival group (Missions > Survivor group) | Rival Survivors |
-| `RZ_TruckWreck.et` | a military truck wreck, not drivable | Truck wreck (none: just the cargo) | Abandoned Convoy (two are placed) |
-| `RZ_RemnantCamp.et` | a tent or small camp composition | Camp (none: just the crates) | Military Remnant Camp |
-| `RZ_Hatch.et` | a steel hatch or bunker door in the ground | Hatch (Puzzles > Puzzle object) | Locked Bunker when no locked building is found |
-| Formal-wear infected | zombie prefabs in suits and dresses | Wedding guests, a list (Zombies > Common prefabs) | Wedding Party |
-| `RZ_Bride.et` | a special infected in a wedding dress | Bride (Zombies > Special prefabs) | Wedding Party |
-| `RZ_Jewellery.et` | a small item named with "jewel" (or another jewellery keyword) | Jewellery (a crate once the party is down) | Wedding Party; the Trader wanderer takes one instead of Favor. Add it to Shop System sell lists too if you run it |
-
-The newer events also reuse **Missions > Explosion** (Gas Station Fire's blast, optional),
+**World events** also reuse **Missions > Explosion** (Gas Station Fire's blast, optional),
 **Interactions > Traps > Fire effect** (every burning building), the power grid, and the generic
 puzzle object (Tunnel Rats' culverts, the tape in Fake Distress Call), **Puzzles > Civilian** (the
 people in Distress Call, Rival Survivors and Collapse Shelter) and **Missions > Red Hand group**
 (Fake Distress Call, the watchers at the Abandoned Convoy), **Puzzles > Keypad** and **Note** or
 **Body** (Locked Bunker). Gas Station Fire and Burning Town need **Traps > Fire** on. The convicts,
 the sniper and the Fake Distress Call's ambush fight through the hostility system's fights, so they
-must be on `BAND`.
+must be on `BAND`. The newer contracts also reuse **Cars > Car prefabs** (Car Theft), **Supply >
+Halcyon truck** (Mobile Lab's lab truck, falling back to the bus), **Supply > Haven truck** (the bus
+fallback), the four **supply trucks and crews** (Convoy Escort and Hijack the Convoy ride Bastion's
+real truck), **Leaders > Bastion outpost commander** (Kill the Officer needs a body that can die)
+and Puzzles > Fuse box, Radio mast and Civilian (generators, the relay mast, the people you talk
+to). The **unarmed missions** need no prefabs of their own.
 
-Other prefabs the newer contracts reuse: **Cars > Car prefabs** (Car Theft), **Supply > Halcyon
-truck** (Mobile Lab's lab truck, falling back to the bus), **Supply > Haven truck** (the bus
-fallback), the four **supply trucks and crews** (Convoy Escort and Hijack the Convoy ride
-Bastion's real truck), **Leaders > Bastion outpost commander** (Kill the Officer needs a body
-that can die) and Puzzles > Fuse box, Radio mast and Civilian (generators, the relay mast,
-the people you talk to).
-
-### Quartermasters and shops
-
-Place one quartermaster per faction, or set the four slots and they spawn by themselves (the
-Haven's in the safest town, Bastion's in a bigger town, the Red Hand's in a rougher town,
-Halcyon's next to the lab). Their positions are saved.
-
-| Prefab | Add | Slot |
-|---|---|---|
-| `RZ_QM_Haven.et` | `RZ_QuartermasterComponent` (SURVIVORS); `RZ_StandingStatusAction`; several `RZ_FactionShopAction`; 4 × `RZ_LeaderAction` (TALK, WORK, NEWS, STANDING); 6 × `RZ_SafehouseAction` (STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS) | Factions > Haven quartermaster |
-| `RZ_QM_Bastion.et` | the same with MILITARY (no safehouse actions), plus one `RZ_RequisitionAction` per requisition item | Factions > Bastion quartermaster |
-| `RZ_QM_RedHand.et` | the same with BANDITS | Factions > Red Hand quartermaster |
-| `RZ_QM_Halcyon.et` | the same with INSTITUTE, plus `RZ_TrialDoseAction` (the trial dose for the bitten) | Factions > Halcyon quartermaster |
+**Quartermasters and shops.** Place one quartermaster per faction, or set the four slots and they
+spawn by themselves (the Haven's in the safest town, Bastion's in a bigger town, the Red Hand's in
+a rougher town, Halcyon's next to the lab). Their positions are saved. The four `RZ_LeaderAction`s
+on every quartermaster are how players reach stronghold leaders and council heads.
 
 Each `RZ_FactionShopAction` sells one thing: **Faction**, **Required tier** (Stranger, Known,
 Trusted or Champion), **Favor cost**, **Item prefab** (an item, crate or vehicle, spawned next
@@ -265,15 +594,15 @@ You can also put `RZ_ChoiceDeliveryAction` on a quartermaster so it accepts hand
 - **Antidotes.** A shop action whose item is the **Cure > Antidote** prefab sells from a stock, not
   freely: on the Halcyon quartermaster it sells the lab's doses (from the start; one every 30
   minutes, 2 at most, down to every 10 minutes and 5 at most after 75%), anywhere else (the Red
-  Hand) only doses stolen from the lab. Give Halcyon's quartermaster one (Trusted), or the lab's
-  doses can only be stolen.
+  Hand) only doses stolen from the lab. The manifest gives Halcyon's quartermaster one (Trusted),
+  else the lab's doses can only be stolen.
 - **Stabilisers.** A Halcyon shop action whose item is the **Survival > Infection > Stabiliser**
-  prefab sells from a second, smaller stock, at double its price until research reaches 50%. Make
-  it Known, about 40 Favor. Anywhere else it's an ordinary item.
+  prefab sells from a second, smaller stock, at double its price until research reaches 50%. The
+  manifest makes it Known, 40 Favor. Anywhere else it's an ordinary item.
 - **Price food above 2 Favor.** A safehouse pays 2 Haven Favor (and a little Fame) per food item
   handed in, so food the Haven quartermaster sells for 2 or less turns Favor into free Fame.
 
-Suggested starting stock (from [REPUTATION.md](REPUTATION.md)):
+Suggested starting stock for the shop actions you add by hand (from [REPUTATION.md](REPUTATION.md)):
 
 | Faction | Known | Trusted | Champion |
 |---|---|---|---|
@@ -282,147 +611,39 @@ Suggested starting stock (from [REPUTATION.md](REPUTATION.md)):
 | Red Hand | knife, pistol, cut dose | suppressor, scoped rifle, explosives | rare military gear, a stolen antidote |
 | Halcyon | antiseptic, painkillers, stabiliser | antidote, stim kit, gas mask | — |
 
-### Faction consequences
+**Faction consequences.** Gunfire heat needs nothing: characters already have an
+`EventHandlerManagerComponent`, and suppressors are detected by attachment names containing
+"suppress" or "silenc".
 
-| Prefab | Base | Slot | Enables |
-|---|---|---|---|
-| `RZ_BastionHunters.et` | an AI group on `MIL` | Factions > Bastion hunter squad | Bastion hunter squads |
-| `RZ_RedHandHunters.et` | an AI group on `BAND` | Factions > Red Hand hunter squad (falls back to the Red Hand group) | Red Hand hunter squads, safehouse location leaks |
+**Noisemakers** aren't slots: put them in loot or shops. A noise only leads infected at 8 heat or
+more at once, so keep them at 10 or more.
 
-Gunfire heat needs nothing: characters already have an `EventHandlerManagerComponent`, and
-suppressors are detected by attachment names containing "suppress" or "silenc".
+**The Perimeter** works with no prefabs at all (loudspeaker messages, the warning shot as a
+message, the unseen shooter). Checkpoints need the barricade. Keep the drone free of collision and
+physics.
 
-### Puzzles
+**Haven safehouses and wanderers.** Safehouses need only the spawn point and the Haven
+quartermaster. Wanderers need nothing: without bodies they use Puzzles > Civilian. A body can be
+talked to only if it has the generic set (the manifest gives it to them).
 
-Slots under **Puzzles**. The specific ones only change the look; give them the generic object's
-components. Missions turn themselves off when a prefab they need is missing.
+**Faction leaders** need no prefabs: the quartermaster *is* the leader at strongholds and
+safehouses, and outpost leaders use Puzzles > Civilian. Turn damage off on leader bodies.
 
-| Prefab | Add | Slot | Needed by |
-|---|---|---|---|
-| `RZ_Keypad.et` | `RZ_PuzzleObjectComponent`, 12 × `RZ_KeypadAction` (0–9, 10 Clear, 11 Enter), optionally clue components | Puzzles > Keypad | The Last Experiment (keypad mode) |
-| `RZ_Terminal.et` | as the keypad | Puzzles > Terminal (falls back to the keypad) | The Last Experiment |
-| `RZ_PuzzleBody.et` | `RZ_ClueComponent`, `RZ_ReadClueAction` | Puzzles > Body (falls back to the note) | Paces, Patient Zero's Ledger, Poisoned Well, Last Experiment, The Witness, The Deserter's Map |
-| `RZ_Well.et`, `RZ_Bell.et`, `RZ_FuseBox.et`, `RZ_RadioMast.et`, `RZ_Safe.et` | as the generic object | Puzzles > Well / Bell / Fuse box / Radio mast / Safe | look only |
-| `RZ_ScaleCrate.et` | as the generic object, plus an inventory storage | Puzzles > Scale crate | The Weighing Vault |
-| `RZ_Landmark.et` | none | Puzzles > Landmark, plus **Landmark name** ("the old cross") | towns with no church, tower or well |
-| `RZ_MorseLamp.et` | `RZ_BlinkLightComponent` (or nothing: then spawned per flash) | Puzzles > Morse light | Lights in the Window |
+**Territory and supply trucks.** Territory is data: every prefab here only adds bodies near
+players. A faction without a truck and crew counts its places as always supplied. Turning on
+**Territory > Outpost quartermaster** puts a shop (and Bastion's Requisition) at each outpost,
+using the four quartermasters. Supply trucks also need **Zombies > Move waypoint**.
 
-**Noisemakers** aren't slots: make these items and put them in loot or shops. Each has
-`RZ_NoisemakerComponent`, and timed ones `RZ_ArmNoisemakerAction`. A noise only leads infected at
-8 heat or more at once, so keep them at 10 or more.
+**New-player guidance, the power grid and the radio station** work with no prefabs: tips use the
+people and radios that exist, scenario clues fall back to the note and body, and the control
+object and console fall back to the puzzle prefabs. **The wind-up radio's prefab name must
+contain "radio"** (or it needs a radio component), or it isn't counted as a radio.
 
-| Prefab | Base | Settings |
-|---|---|---|
-| `RZ_Bottle.et` | a vanilla grenade with the explosion removed and a bottle mesh | heat 20, on throw, deleted after |
-| `RZ_Firecracker.et` | a small item | heat 15, delay 5 s, 4 bursts 3 s apart, "Light the fuse", deleted after |
-| `RZ_AlarmClock.et` | a clock prop item | heat 10, delay 30 s, 8 bursts 8 s apart, "Wind the alarm", kept |
-
-The **unarmed missions** need no prefabs of their own: they reuse the mission item, the Haven
-drop point, the note, civilian, generic object and the Move waypoint.
-
-### The Perimeter
-
-Works with no prefabs at all (loudspeaker messages, the warning shot as a message, the unseen
-shooter). Slots are in **Perimeter**.
-
-| Prefab | Base | Slot | | Used for |
-|---|---|---|---|---|
-| `RZ_Drone.et` | a small quadcopter mesh with a hum and a light; **no collision or physics**; `RplComponent` | Drone prefab | optional | one drone over a player in the warning zone |
-| `RZ_WarningShot.et` | a gunshot sound or impact effect | Warning shot prefab | optional | the warning shot |
-| `RZ_Checkpoint.et` | concrete blocks and a closed barrier | Barricade prefab | **required for checkpoints** | road checkpoints |
-| `RZ_CheckpointGuard.et` | a soldier without AI, or a figure prop | Guard prefab | optional | 0–4 per checkpoint |
-| `RZ_Smuggler.et` | a civilian without AI (the Red Hand runner) | Smuggler prefab (falls back to Puzzles > Civilian) | optional | The Blind Spot |
-| `RZ_Package.et` | a small box item with `RZ_MissionItemComponent` | Package prefab (falls back to the mission item) | optional | The Blind Spot, The Crossing |
-| `RZ_LineBody.et` | a body with `RZ_ClueComponent`, `RZ_ReadClueAction` | Line body prefab (falls back to Puzzles > Body) | optional | Shot at the Line |
-
-### Haven safehouses and wanderers
-
-Safehouses need only the spawn point and the Haven quartermaster. Wanderers need nothing:
-without bodies they use Puzzles > Civilian. A body can be talked to only if it has the generic
-object's components.
-
-| Prefab | Base | Slot | Used for |
-|---|---|---|---|
-| `RZ_SafehouseMedic.et` | a civilian without AI with 2 × `RZ_SafehouseAction` (HEAL, DECLARE_BITE) | Haven > Medic prefab | Settlement and up (the quartermaster's actions work without it; bites can be declared at every safehouse) |
-| `RZ_SafehouseOccupant*.et` | civilians without AI or seated props, with the generic components | Haven > Occupant prefabs (a list; empty = Puzzles > Civilian) | 3–6 people shown |
-| `RZ_SafehouseGuard.et` | an armed AI character or group on `SURV` | Haven > Guard prefab | guards; they shoot armed exiles |
-| `RZ_Wanderer_Trader.et`, `_Doctor`, `_Scavenger`, `_Deserter`, `_Preacher`, `_Courier`, `_Kid`, `_Mechanic` | a civilian without AI (stands still while seen), or a one-man AI group on `SURV` (walks while seen; give it a gun to fight back) | Wanderers > one slot per role | the roster's bodies |
-| Trader goods | any items | Wanderers > Trader goods | what the Trader sells |
-
-### Faction leaders
-
-Leaders need no prefabs: the quartermaster *is* the leader at strongholds and safehouses, and
-outpost leaders use Puzzles > Civilian. **Add the four `RZ_LeaderAction`s to every quartermaster**;
-they're how players reach stronghold leaders and council heads.
-
-| Prefab | Slot | Used for |
-|---|---|---|
-| `RZ_Leader_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` (a character without AI) | Leaders > Haven / Bastion / Red Hand / Halcyon leader | optional body next to the quartermaster; damage off |
-| `RZ_CouncilHead.et` | Leaders > Council head | optional body per safehouse |
-| `RZ_Outpost_Bastion.et`, `_RedHand`, `_Halcyon` | Leaders > outpost prefabs (fall back to the faction leader, then the civilian) | optional outpost leaders |
-
-### Territory and supply trucks
-
-Territory is data: every prefab here only adds bodies near players. A faction without a truck
-and crew counts its places as always supplied.
-
-| Prefab | Base | Slot | Used for |
-|---|---|---|---|
-| `RZ_Guard_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | an armed AI character or small group on `SURV` / `MIL` / `BAND` / `INST` | Territory > ... guard | guards at holdings; watched for retaliation |
-| `RZ_Occupant_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | a character without AI in the faction's clothes, with the generic components | Territory > ... occupant (empty = Puzzles > Civilian) | the named people |
-| the four quartermasters | (existing) | Territory > **Outpost quartermaster** on | a shop at each outpost; Bastion's Requisition |
-| `RZ_Truck_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | a drivable vehicle with a damage manager | Supply > ... truck | the supply truck |
-| `RZ_TruckCrew_Haven.et`, `_Bastion`, `_RedHand`, `_Halcyon` | an AI group of 1–2 on the faction; the first drives | Supply > ... crew | the crew |
-
-Supply trucks also need **Zombies > Move waypoint**.
-
-### New-player guidance
-
-Works with no prefabs: tips use the people and radios that exist, and scenario clues fall back to
-the note and body. Slots under **Guidance**.
-
-| Prefab | Base | Slot | Used for |
-|---|---|---|---|
-| `RZ_WindupRadio.et` | a small radio item; **its prefab name must contain "radio"** (or it needs a radio component); add `RZ_TuneRadioAction` | Radio prefab | given to every new life; empty = none |
-| `RZ_CarWreck.et` | a wrecked car prop | Car wreck prefab | the back-road scenario |
-| `RZ_ScratchedDoor.et` | a door panel with clue components | Door prefab | the basement scenario |
-| `RZ_Flyer.et` | a poster with clue components | Flyer prefab | the church scenario, safehouse flyers |
-| `RZ_TableRadio.et` | a radio prop with clue components (label "Listen") | Table radio prefab | the farmhouse scenario |
-| `RZ_DeadRaider.et`, `RZ_DeadSoldier.et` | body props with clue components | Raider / Soldier body prefab | the attic and barricade scenarios |
-| `RZ_Barricade.et` | sandbags and a car on its side | Barricade prefab | barricade scenery |
-
-### Environment, the power grid and the radio station
-
-All work without prefabs: the control object and console fall back to the puzzle prefabs.
-
-| Prefab | Base | Slot | Used for |
-|---|---|---|---|
-| `RZ_PowerControl.et` | a generator or breaker cabinet with the generic components | World > Power grid > Control prefab (falls back to Puzzles > Fuse box, then the generic object) | the power station |
-| `RZ_RadioConsole.et` | a radio set on a desk with the generic components | World > Radio station > Console prefab (falls back to Puzzles > Radio mast, then the generic object) | the radio station |
-
-### World interactions
-
-Everything works without prefabs (spots fall back to the generic object, which is visible), but
-**searches find nothing until the loot pool is filled**, and each feature whose output is empty
-stays quiet. Slots under **Interactions**.
-
-| Prefab | Base | Slot | Used for |
-|---|---|---|---|
-| `RZ_InteractionSpot.et` | a `GenericEntity` with a small invisible collision box, `RplComponent`, `ActionsManagerComponent` and the generic components | General > Spot prefab | every searchable thing near players, the Unlock / Lock / Force spot outside a locked door, and the "Clean the bite" spot at a bitten player's feet (keep the box small and off the character collision layer so it never blocks a door, a doorway or a player) |
-| `RZ_Key.et` | a small item (a key or key ring) with `RplComponent`, `RZ_KeyItemComponent` and optionally `RZ_ReadKeyTagAction` | Search > Key prefab | keys as real items that can be dropped, traded and stolen (empty = keys are data for one life) |
-| `RZ_DoorBlocker.et` | a `GenericEntity` with only a thin collision box (recipe below) | Search > Doorway blocker | keeps AI out of locked doorways near players (empty = no blockers; the AI door hook and banging still work) |
-| `RZ_CarProject.et` | a non-drivable car prop with the same components | Cars > Project prefab | a fixable car before it runs |
-| Drivable cars | vanilla civilian cars | Cars > Car prefabs (empty = no fixable cars) | what a fixed car becomes |
-| `RZ_CarBattery.et`, `RZ_Tyre.et`, `RZ_SparkPlugs.et` | items named with "battery", "tyre", "spark" | Cars > Battery / Tyre / Spark | parts |
-| `RZ_FuelCan_Full.et`, `RZ_FuelCan_Empty.et` | jerrycans | Cars > Fuel prefab | siphoning, pumps, fuel, fire |
-| `RZ_Planks.et` | a planks item with `RZ_PlaceableComponent` (Barricade), `RZ_PlaceAction` | (loot) | barricades |
-| `RZ_BoardedDoorway.et` | planks across a door frame, with collision | Traps > Barricade prefab | the boarded doorway |
-| `RZ_TripwireKit.et`, `RZ_SpikeTrapKit.et` | items with `RZ_PlaceableComponent`, `RZ_PlaceAction` | Crafting > Tripwire / Spike trap | traps (optional "set" props in Traps) |
-| `RZ_PortableGenerator.et` | an item with `RZ_PlaceableComponent` (Generator) and two `RZ_PlaceAction`s (one with Refuel) | (loot or shop) | a generator |
-| `RZ_Molotov.et` | a throwable bottle with `RZ_MolotovComponent` | Crafting > Molotov | fire |
-| `RZ_FireEffect.et` | a fire and smoke particle | Traps > Fire effect | a burning building |
-| Recipe outputs | bandage, tin rattle (`RZ_NoisemakerComponent`), spear, tablets | Crafting > Bandage / Noisemaker / Spear / Tablets | the workbench |
-| Water | untreated and safe bottles (the survival mod's if it has both) | General > Dirty / Clean water | wells, stoves |
+**World interactions.** Everything works without prefabs (spots fall back to the generic object,
+which is visible), but **searches find nothing until the loot pool is filled**, and each feature
+whose output is empty stays quiet. Keep the interaction spot's box small and off the character
+collision layer, so it never blocks a door, a doorway or a player. Name parts with "battery",
+"tyre" and "spark", and the home remedy not with "vodka" or "herb".
 
 **Door locks need no prefab.** The vanilla door action is modded (`Interactions/RZ_DoorHooks.c`),
 so vanilla doors refuse players by themselves. If that file doesn't compile, see the first door
@@ -451,12 +672,6 @@ a blocker comes or goes); off, AI walk into the blocker and stop there.
 type takes the items whose prefab names contain its keywords (the lists are in
 `RZ_Search.TypeWords`). To control a type exactly, add a **Loot table** for it.
 
-### Add to existing prefabs
-
-- **The player character** (every loadout): `RZ_TreatOtherAction`, so others can treat you.
-- **The wind-up radio and any crackable radio:** `RZ_TuneRadioAction`.
-- **The Haven quartermaster:** `RZ_FactionShopAction`s for the car parts (Known), if wanted.
-
 ### Marker entities (no prefab needed)
 
 Script entities you can place to override the automatic choice. Placing any of a kind turns its
@@ -474,48 +689,51 @@ automatic picking off (power and radio station: the first one wins).
 ## 5. Settings objects
 
 `RZ_GameModeComponent` holds 25 settings objects and two lists. Every value has a working
-default; this is what each one covers. Defaults are in brackets where they matter for setup.
+default, and every default is in the manifest's `settings` (synced from the scripts). This is
+what each one covers; defaults are in brackets where they matter for setup.
 
-| Category | Object | Covers |
-|---|---|---|
-| ReforgerZ | (top level) | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1) |
-| World | (top level) | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20) |
-| World | Town memory | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
-| World | Power grid | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
-| World | Radio station | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
-| Director | Stages (list) | Per-stage overrides; empty = the built-in four (8, 16 and 24 hours played; [DESIGN.md](DESIGN.md#season-pacing)) |
-| Director | (top level) | **Broadcast minutes** (25; 0 = only on first join) |
-| Director | Environment | Night heat spread (0.25), night specials (×1.25), rain and fog thresholds, storm thresholds, storm grounds the helicopter |
-| Director | Story arcs | Minutes between (60), start chance (0.6), repeat hours (4), the dark-side arc's limits |
-| Zombies | Zombie settings | Common, special, horde prefabs, Move waypoint, per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
-| Zombies | Adaptation | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
-| Zombies | (top level) | Presence heat (0.5/tick), vehicle heat (+4/tick) |
-| Backgrounds | Backgrounds (list) | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
-| Cure | (top level) | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75) |
-| Missions | (top level) | Reward crate, mission item, drop points and the optional mission prefabs |
-| Missions | Events | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
-| Missions | Contracts | Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
-| Puzzles | (top level) | The puzzle prefabs, **Scale counts items** (off), landmark name |
-| Perimeter | Perimeter | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
-| Haven | Safehouses | **Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, caught chance (0.3 a minute in Final), declare multipliers by tier (1.15/1.25/1.4/1.5), meds cost (5), stragglers (4 h), leak chance (0.25), body prefabs |
-| Wanderers | Wanderers | **Enabled**, min and max count (6, 10), prices, spawn radius (400 m), walk speed, replace minutes (1440), bite chance, Infamy, body prefabs, Trader goods |
-| Leaders | Leaders | **Enabled**, quartermaster is leader (on), interim posts (1, territory off only), body radius (200 m), replace minutes (120), job minutes (30), danger scale, discovery, kill Infamy, body prefabs |
-| Territory | Territory | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs |
-| Territory | Supply | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
-| Territory | Faction life | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
-| Guidance | Guidance | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
-| Interactions | General | **Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
-| Interactions | Search | **Loot pool**, loot tables, chances (find 0.6, rare 0.1, electronics 0.1), locks and their shares, **Door locks** (on; off = the lock on the loot), **Key prefab**, force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
-| Interactions | Cars | Car prefabs, project prefab, per settlement (0.34), max (6), parts and keywords, hotwire and siphon timings, Mechanic part cost (12) |
-| Interactions | Crafting | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
-| Interactions | Traps | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs |
-| Interactions | Secure radio | Crack seconds (60), listen minutes (20), line minutes (4), range (3 km), interrupts, house radio keywords |
-| Survival | (top level) | Shot heat (3), suppressed mult (0.3), **Bite chance** (0.1; hardcore 0.15, casual 0.07), bite reach (2.5 m) |
-| Survival | Infection | Bite modifiers (surrounded ×2, grabbed ×1.5, tired ×1.5, hurt ×1.5, max 0.6), **protective clothing keywords** and multipliers (jacket 0.8, gloves 0.8, helmet 0.85), **Golden window** (120 s; hardcore 60, casual 180), alcohol and antiseptic keywords, clean chances (0.7, 0.9) and seconds (6), Final stage minutes (10), the six treatment prefabs, stabiliser minutes (20), med cap (30 min), trial dose cure (0.8) and Fame (3), cut dose cure (0.5), antibiotics fail (0.3), herb keywords, brew seconds (20), **Finds** (where treatments turn up; empty = the built-in list) |
-| Factions | (top level) | Quartermaster and hunter prefabs, hunter minutes (10; 0 = off), bounty minutes (10) |
-| Factions | Hostility | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
-| Map | (top level) | **Map markers** (on) |
-| Debug | (top level) | Status log every few minutes (on) |
+<!-- manifest:settings -->
+| Category | Object | Field | Covers |
+|---|---|---|---|
+| ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1) |
+| World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20) |
+| World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
+| World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
+| World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
+| Director | Stages (list) |  | Per-stage overrides; empty = the built-in four (8, 16 and 24 hours played; [DESIGN.md](DESIGN.md#season-pacing)) |
+| Director | (top level) |  | **Broadcast minutes** (25; 0 = only on first join) |
+| Director | Environment | `m_EnvironmentSettings` | Night heat spread (0.25), night specials (×1.25), rain and fog thresholds, storm thresholds, storm grounds the helicopter |
+| Director | Story arcs | `m_StorySettings` | Minutes between (60), start chance (0.6), repeat hours (4), the dark-side arc's limits |
+| Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
+| Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
+| Zombies | (top level) |  | Presence heat (0.5/tick), vehicle heat (+4/tick) |
+| Backgrounds | Backgrounds (list) |  | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
+| Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75) |
+| Missions | (top level) |  | Reward crate, mission item, drop points and the optional mission prefabs |
+| Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
+| Missions | Contracts | `m_ContractSettings` | Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
+| Puzzles | (top level) |  | The puzzle prefabs, **Scale counts items** (off), landmark name |
+| Perimeter | Perimeter | `m_PerimeterSettings` | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
+| Haven | Safehouses | `m_SafehouseSettings` | **Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, caught chance (0.3 a minute in Final), declare multipliers by tier (1.15/1.25/1.4/1.5), meds cost (5), stragglers (4 h), leak chance (0.25), body prefabs |
+| Wanderers | Wanderers | `m_WandererSettings` | **Enabled**, min and max count (6, 10), prices, spawn radius (400 m), walk speed, replace minutes (1440), bite chance, Infamy, body prefabs, Trader goods |
+| Leaders | Leaders | `m_LeaderSettings` | **Enabled**, quartermaster is leader (on), interim posts (1, territory off only), body radius (200 m), replace minutes (120), job minutes (30), danger scale, discovery, kill Infamy, body prefabs |
+| Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs |
+| Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
+| Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
+| Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
+| Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
+| Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6, rare 0.1, electronics 0.1), locks and their shares, **Door locks** (on; off = the lock on the loot), **Key prefab**, force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
+| Interactions | Cars | `m_CarSettings` | Car prefabs, project prefab, per settlement (0.34), max (6), parts and keywords, hotwire and siphon timings, Mechanic part cost (12) |
+| Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
+| Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs |
+| Interactions | Secure radio | `m_RadioCrackSettings` | Crack seconds (60), listen minutes (20), line minutes (4), range (3 km), interrupts, house radio keywords |
+| Survival | (top level) |  | Shot heat (3), suppressed mult (0.3), **Bite chance** (0.1; hardcore 0.15, casual 0.07), bite reach (2.5 m) |
+| Survival | Infection | `m_InfectionSettings` | Bite modifiers (surrounded ×2, grabbed ×1.5, tired ×1.5, hurt ×1.5, max 0.6), **protective clothing keywords** and multipliers (jacket 0.8, gloves 0.8, helmet 0.85), **Golden window** (120 s; hardcore 60, casual 180), alcohol and antiseptic keywords, clean chances (0.7, 0.9) and seconds (6), Final stage minutes (10), the six treatment prefabs, stabiliser minutes (20), med cap (30 min), trial dose cure (0.8) and Fame (3), cut dose cure (0.5), antibiotics fail (0.3), herb keywords, brew seconds (20), **Finds** (where treatments turn up; empty = the built-in list) |
+| Factions | (top level) |  | Quartermaster and hunter prefabs, hunter minutes (10; 0 = off), bounty minutes (10) |
+| Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
+| Map | (top level) |  | **Map markers** (on) |
+| Debug | (top level) |  | Status log every few minutes (on) |
+<!-- /manifest:settings -->
 
 **Keywords are guesses.** Food, water, fuel, parts, crowbars, medkits, furniture, wrecks,
 buildings, uniforms, buses, protective clothing, alcohol, antiseptic and herbs are found by
@@ -533,10 +751,12 @@ The last winner is kept in `$profile:ReforgerZ/last_season.json`, which a wipe d
 grep -rn "VERIFY" Scripts/
 ```
 
-There are **119** markers (one is the comment in `Core/RZ_Util.c` that explains them). Each is an
-engine API whose exact name or signature couldn't be confirmed. Usually the fix is a rename, and
-most are isolated in small helpers in `Core/RZ_Util.c`. They're grouped by risk; fix them in this
-order. Paths are under `Scripts/Game/ReforgerZ/`.
+There are **155** markers: 119 in the game scripts (one is the comment in `Core/RZ_Util.c` that
+explains them) and 36 in the Workbench plugin (one is its header comment). Each is an engine or
+editor API whose exact name or signature couldn't be confirmed. Usually the fix is a rename, and
+most are isolated in small helpers (`Core/RZ_Util.c`, and `RZ_WB` in the plugin). The game
+scripts' markers are grouped by risk; fix them in this order. Their paths are under
+`Scripts/Game/ReforgerZ/`. The plugin's are [last](#the-workbench-plugin-35).
 
 ### High risk: the core loop (25)
 
@@ -622,6 +842,49 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Missions/RZ_MissionBases.c:244` | damage manager `GetState()` on a target prop | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_KeyItem.c:29` | `[RplProp]` on a key item's component | "Read the tag" shows no label; keys still open their locks (the id is on the server) |
 | `Interactions/RZ_KeyItem.c:80` | `GetItems()` finds key items in every carried storage | Carried keys aren't found: leave **Key prefab** empty (data keys) |
+
+### The Workbench plugin (35)
+
+Paths are under `Scripts/WorkbenchGame/ReforgerZ/`. None of these affect the game: if the plugin
+fails, make the prefabs by hand. Riskiest first: the first eight decide whether it makes anything.
+
+| Where | Call | If it fails |
+|---|---|---|
+| `RZ_CreatePrefabsPlugin.c:238` | `Workbench.GetModule(WorldEditor)`, `GetApi()` | Nothing runs except a dry run: open a world, check the module name |
+| `RZ_CreatePrefabsPlugin.c:355` | `CreateEntity(...)`, `GetCurrentEntityLayerId()` | No prefab is made: fix the signature in `RZ_WB.CreateEntity` |
+| `RZ_CreatePrefabsPlugin.c:369` | `CreateEntityTemplate(src, absPath)` saves an inherited prefab and its `.meta` | No prefab is saved: try the World Editor's own "Create prefab" call, or make prefabs by hand |
+| `RZ_CreatePrefabsPlugin.c:437` | `CreateComponent(src, class)` | Prefabs are made without their components ("not added" in the summary) |
+| `RZ_CreatePrefabsPlugin.c:458` | `CreateObjectArrayVariableMember(...)` | No actions, action contexts, faction variants or loadout entries |
+| `RZ_CreatePrefabsPlugin.c:444` | `ContainerIdPathEntry`, `SetVariableValue(src, path, key, text)` | No attribute values or slots set ("not set" in the summary) |
+| `RZ_CreatePrefabsPlugin.c:451` | `CreateObjectVariableMember(...)` | Settings objects and action labels aren't created: create the settings objects by hand, then run again |
+| `RZ_CreatePrefabsPlugin.c:953` | API edits on a prefab loaded from its file | Slots aren't wired: wire a placed instance and apply it to the prefab, or fill the slots by hand |
+| `RZ_CreatePrefabsPlugin.c:377` | `BaseContainerTools.LoadContainer`, `ToEntitySource()` | "couldn't open RZ_GameMode.et": fill the slots by hand |
+| `RZ_CreatePrefabsPlugin.c:394` | `BaseContainerTools.SaveContainer` | "couldn't save": fill the slots by hand |
+| `RZ_CreatePrefabsPlugin.c:214` | The editor names: `ActionContexts`, `additionalActions`, `ParentContextList`, `UIInfo`, `Factions`, `FactionKey`, `m_bIsPlayable`, `m_aFriendlyFactionsIds`, `m_aPlayerLoadouts` and the rest | Actions without a context, factions or loadouts not found: compare with a vanilla `.et`/`.conf` and fix the constants |
+| `RZ_CreatePrefabsPlugin.c:465` | string arrays set as one comma-separated value | Parent contexts, list slots and friendly lists are wrong: check one in the editor |
+| `RZ_CreatePrefabsPlugin.c:554` | JSON load of nested classes and arrays | "Couldn't read the manifest": use the checklist from this doc |
+| `RZ_CreatePrefabsPlugin.c:248` | `Workbench.GetAbsolutePath`, the `$ReforgerZ:` file system | Every prefab looks missing, or nothing can be saved: fix the Addon prefix option |
+| `RZ_CreatePrefabsPlugin.c:1585` | the addon prefix default | As above |
+| `RZ_CreatePrefabsPlugin.c:280` | `ResourceManager.GetMetaFile`, `GetResourceID()` | Falls back to a search; else `@` values and slots stay empty |
+| `RZ_CreatePrefabsPlugin.c:298` | `Workbench.SearchResources` | No base is found by name: set `basePrefab` in the manifest |
+| `RZ_CreatePrefabsPlugin.c:315` | `ResourceName.GetPath()` | As above |
+| `RZ_CreatePrefabsPlugin.c:401` | component listing on an entity source | Components added twice, or actions put on the wrong manager |
+| `RZ_CreatePrefabsPlugin.c:403` | `string.ToType()`, `IsInherited` | A subclassed actions manager isn't recognised and a second one is added |
+| `RZ_CreatePrefabsPlugin.c:479` | `GetObjectArray`, `BaseContainerList` | Counts read as 0: actions overwrite index 0, factions and loadouts look missing |
+| `RZ_CreatePrefabsPlugin.c:499` | `BaseContainer.GetObject` | Settings objects look missing and are created again |
+| `RZ_CreatePrefabsPlugin.c:508` | `BaseContainer.Get(key, string)` | Filled slots look empty (it never overwrites, but may report wrongly); faction keys unreadable |
+| `RZ_CreatePrefabsPlugin.c:518` | `BaseContainer.Get(key, array)` | Lists look empty; friendly lists are rewritten with only the new key: check them |
+| `RZ_CreatePrefabsPlugin.c:526` | `GetEditorEntityCount`, `GetEditorEntity` | The world looks empty: a second game mode may be placed |
+| `RZ_CreatePrefabsPlugin.c:1177` | factions inline on the FactionManager | Variants can't be added: do it by hand |
+| `RZ_CreatePrefabsPlugin.c:1379` | loadouts inline on the LoadoutManager | Loadout entries can't be added: do it by hand |
+| `RZ_CreatePrefabsPlugin.c:343` | `BeginEntityAction`, `EndEntityAction` | No undo step; remove both calls if they don't compile |
+| `RZ_CreatePrefabsPlugin.c:362` | `DeleteEntity` | Temporary `RZ_Temp_*` entities stay in the world: delete them |
+| `RZ_CreatePrefabsPlugin.c:262` | `FileIO.MakeDirectory` | Saving into a new folder fails: make the `Prefabs/ReforgerZ/...` folders by hand |
+| `RZ_CreatePrefabsPlugin.c:1606` | `WorkbenchPluginAttribute(...)` | The menu entries don't appear |
+| `RZ_CreatePrefabsPlugin.c:546` | `Workbench.ScriptDialog` | No options dialog: it may run with the defaults (a dry run) |
+| `RZ_CreatePrefabsPlugin.c:1664` | `[ButtonAttribute]` methods | Dialog buttons missing |
+| `RZ_CreatePrefabsPlugin.c:539` | `Workbench.Dialog` | No summary box; the log still has it |
+| `RZ_CreatePrefabsPlugin.c:576` | `FileIO.OpenFile`, `WriteLine` | No checklist file: use this doc |
 
 ## 7. Log lines to check
 

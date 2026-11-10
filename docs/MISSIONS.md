@@ -3,7 +3,7 @@
 Every mission ReforgerZ has or plans, with its requirements and status. How the systems
 behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 [REPUTATION.md](REPUTATION.md); the prefabs each mission needs are in
-[WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "Prefabs by system".
+[WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "The prefab manifest".
 
 ## Counts
 

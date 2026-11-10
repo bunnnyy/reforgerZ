@@ -340,7 +340,7 @@ spawn; nearness is checked on the server tick.
 **Fallback.** If AI doesn't follow the modded check, set **Mode** to *Outlaw*: anyone any
 faction would shoot goes onto one `SURV_OUTLAW` faction, hostile to every AI faction. It's
 blunter (a Bastion-Hunted player is then shot by the Haven and Halcyon too) but uses only
-vanilla relations. Setup is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "Factions".
+vanilla relations. Setup is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "Factions and loadouts".
 
 ### Disguises
 
