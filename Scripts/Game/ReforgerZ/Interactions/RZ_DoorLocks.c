@@ -4,8 +4,8 @@
 //!   places (seeded from the building's position, so the same ones after a restart). A door
 //!   is a child entity of the building with a DoorComponent; it's an outside door when it
 //!   stands within EDGE of the building's outline (its local bounding box). Interior doors are
-//!   never locked. Doors are data: nothing is spawned per door, and a building's doors are
-//!   only looked at when a player is within the look-around radius or tries one.
+//!   never locked. Doors are data, looked at only when a player comes near (the look-around,
+//!   or the blockers' wider look) or tries one. The only thing spawned is a doorway blocker.
 //! - The vanilla door action (RZ_DoorHooks.c) refuses to open a locked outside door from
 //!   outside ("Locked"), on the client from a replicated list of locked buildings near
 //!   players, and again on the server, which decides. From inside it always opens: that turns
@@ -18,9 +18,13 @@
 //!   them. Locked doors that are found open (AI opened them) are shut the same way.
 //! - A building whose doors can't be found (no door children, no usable bounds) keeps the
 //!   old lock on its loot. With Door locks off, every building does.
+//! - Inside means anywhere in the building's box (0.5 m in from its sides), or past the door
+//!   toward the middle: a shallow closet behind a door near the outline still opens.
 //!
-//! AI and the infected path through doors without the user action, so a lock doesn't stop
-//! them; the door is only shut again afterwards.
+//! AI and the infected don't use the door action. Three layers keep them out: the AI's own
+//! door opening is hooked (RZ_AIDoorHook.c, optional, asks AiMayOpenNear); a thin invisible
+//! blocker stands in locked doorways near players and the navmesh is rebuilt around it
+//! (RZ_DoorBlockers.c); and infected pressing at a locked doorway bang on it (heat).
 
 //------------------------------------------------------------------------------------------------
 //! Door and building geometry, on any machine (the client check and the server use the same).
@@ -29,6 +33,7 @@ class RZ_DoorGeometry
 	static const float EDGE = 1.2;			// an outside door stands this close (m) to the building's outline
 	static const float INSIDE_MARGIN = 0.3;	// inside means this far (m) past the door, toward the middle
 	static const int CHILD_DEPTH = 3;
+	static const float BOX_INSIDE = 0.5;	// in the building means at least this far (m) inside its box
 
 	//------------------------------------------------------------------------------------------------
 	static DoorComponent GetDoor(IEntity e)
@@ -174,13 +179,37 @@ class RZ_DoorGeometry
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Inside: past the door toward the middle of the building, and within its width. When in
-	//! doubt this says inside, so nobody is shut in.
+	//! Anywhere inside the building's box, at least BOX_INSIDE in from its sides. Catches a
+	//! shallow closet behind an interior door that sits near the outline (which counts as an
+	//! outside door). False without a usable box.
+	static bool InBuilding(IEntity building, vector worldPos)
+	{
+		vector mins;
+		vector maxs;
+		if (!LocalBox(building, mins, maxs))
+			return false;
+
+		vector p = ToLocal(building, worldPos);
+		if (p[1] < mins[1] - 1 || p[1] > maxs[1])
+			return false;
+
+		if (p[0] < mins[0] + BOX_INSIDE || p[0] > maxs[0] - BOX_INSIDE)
+			return false;
+
+		return p[2] >= mins[2] + BOX_INSIDE && p[2] <= maxs[2] - BOX_INSIDE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Inside: anywhere in the building's box (InBuilding), or past the door toward the middle
+	//! of the building and within its width. When in doubt this says inside, so nobody is shut in.
 	static bool IsInside(IEntity building, IEntity door, vector worldPos)
 	{
 		vector mins;
 		vector maxs;
 		if (!door || !LocalBox(building, mins, maxs))
+			return true;
+
+		if (InBuilding(building, worldPos))
 			return true;
 
 		vector d = ToLocal(building, door.GetOrigin());
@@ -222,6 +251,50 @@ class RZ_DoorGeometry
 			outside = Vector(d[0], d[1], d[2] + sign * dist);
 
 		return ToWorld(building, outside);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Straight out of the door's wall, in world space (flat, length 1). Zero without a box.
+	static vector WallNormal(IEntity building, IEntity door)
+	{
+		vector mins;
+		vector maxs;
+		if (!door || !LocalBox(building, mins, maxs))
+			return vector.Zero;
+
+		vector d = ToLocal(building, door.GetOrigin());
+		int axis = WallAxis(d, mins, maxs);
+		float mid = (mins[axis] + maxs[axis]) * 0.5;
+		float sign = 1;
+		if (d[axis] < mid)
+			sign = -1;
+
+		vector mat[4];
+		building.GetWorldTransform(mat);
+		vector n = mat[axis] * sign;
+		n[1] = 0;
+		float len = n.Length();
+		if (len < 0.01)
+			return vector.Zero;
+
+		return n * (1 / len);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The middle of a shut door leaf (the doorway), from the door's own box. The door's
+	//! origin (often the hinge) if it has no usable box.
+	static vector DoorwayCentre(IEntity door)
+	{
+		vector mins;
+		vector maxs;
+		door.GetBounds(mins, maxs); // VERIFY: as for buildings, GetBounds() on a door child entity is its leaf's local box
+		if (maxs[0] - mins[0] < 0.2 && maxs[2] - mins[2] < 0.2)
+			return door.GetOrigin();
+
+		vector mat[4];
+		door.GetWorldTransform(mat);
+		vector c = (mins + maxs) * 0.5;
+		return mat[3] + mat[0] * c[0] + mat[1] * c[1] + mat[2] * c[2];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -279,7 +352,11 @@ class RZ_DoorLocks
 	protected RZ_SearchSettings m_Settings;
 	protected ref map<string, ref RZ_BuildingDoors> m_mBuildings = new map<string, ref RZ_BuildingDoors>();
 	protected ref map<int, float> m_mNoticeAt = new map<int, float>();
+	protected ref RZ_DoorBlockers m_Blockers;
 	protected string m_sList;
+
+	protected static const float AI_DOOR_REACH = 3;	// the AI hook looks for a locked door this close (m) to the AI
+	protected static const float AI_BUILDING_REACH = 40;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_DoorLocks(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_Search search, RZ_SearchSettings settings)
@@ -288,6 +365,7 @@ class RZ_DoorLocks
 		m_Hub = hub;
 		m_Search = search;
 		m_Settings = settings;
+		m_Blockers = new RZ_DoorBlockers(gm, hub, this, settings);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -338,19 +416,47 @@ class RZ_DoorLocks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! From the look-around: a building near a player. For a locked place with outside doors,
-	//! a spot at each door (at most `room`). Returns how many spots were added.
-	int OnBuildingSeen(IEntity building, string lowerName, int room)
+	//! A building with a lock (seeded, not burned): its outside doors, learned now if they
+	//! weren't. null for anything else. From the look-around and the blockers' wider look.
+	RZ_BuildingDoors LearnIfLocked(IEntity building, string lowerName)
 	{
 		if (!IsOn() || !building || RZ_DoorGeometry.GetDoor(building))
-			return 0;
+			return null;
 
 		vector pos = building.GetOrigin();
 		string type = m_Search.BuildingType(lowerName);
 		if (!m_Search.HasLock(pos, type) || m_Hub.GetTraps().IsBurned(pos))
+			return null;
+
+		return Learn(building, RZ_Interactions.PosKey(pos, 4), type);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Locked right now (not unlocked, latched or forced since the reset, not burned).
+	bool IsLockedNow(RZ_BuildingDoors b)
+	{
+		if (!b || m_Hub.GetTraps().IsBurned(b.m_vPos))
+			return false;
+
+		return m_Search.IsBuildingLocked(b.m_vPos, b.m_sKey, b.m_sType);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every learned locked place (for RZ_DoorBlockers; don't change it from outside).
+	map<string, ref RZ_BuildingDoors> GetBuildings()
+	{
+		return m_mBuildings;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! From the look-around: a building near a player. For a locked place with outside doors,
+	//! a spot at each door (at most `room`). Returns how many spots were added.
+	int OnBuildingSeen(IEntity building, string lowerName, int room)
+	{
+		RZ_BuildingDoors b = LearnIfLocked(building, lowerName);
+		if (!b)
 			return 0;
 
-		RZ_BuildingDoors b = Learn(building, RZ_Interactions.PosKey(pos, 4), type);
 		int added = 0;
 		foreach (int i, IEntity door : b.m_aDoors)
 		{
@@ -360,7 +466,7 @@ class RZ_DoorLocks
 			if (!door)
 				continue;
 
-			vector at = RZ_DoorGeometry.OutsidePoint(building, door, 0.6);
+			vector at = RZ_DoorGeometry.OutsidePoint(b.m_Building, door, 0.6);
 			if (m_Hub.AddDoorSpot(at, b.m_vPos, b.m_sKey, b.m_sType, DoorNoun(b.m_vPos, b.m_sType), i))
 				added++;
 		}
@@ -453,6 +559,47 @@ class RZ_DoorLocks
 
 		Notice(playerId, "Locked", string.Format("It won't budge. A key tagged \"%1\" would open it, or a crowbar and a lot of noise.", m_Search.KeyTagForBuilding(pos, type)));
 		return false;
+	}
+
+	// ================================================================ AI at the door
+	//------------------------------------------------------------------------------------------------
+	//! From the optional AI door hook (RZ_AIDoorHook.c), on the server: may this AI open the
+	//! door it's at? False only for a locked place's outside door, from outside. Anything not
+	//! learned (no player within the blockers' range) is allowed.
+	static bool AiMayOpenNear(IEntity ai)
+	{
+		RZ_Interactions hub = RZ_Interactions.Get();
+		if (!hub || !hub.GetDoors() || !ai)
+			return true;
+
+		return hub.GetDoors().AiAllowed(ai.GetOrigin());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool AiAllowed(vector pos)
+	{
+		if (!IsOn() || !m_Settings.m_bAiDoorHook)
+			return true;
+
+		foreach (string key, RZ_BuildingDoors b : m_mBuildings)
+		{
+			if (!b.m_Building || b.m_aDoors.IsEmpty() || RZ_Util.DistXZ(b.m_vPos, pos) > AI_BUILDING_REACH)
+				continue;
+
+			if (!IsLockedNow(b))
+				continue;
+
+			foreach (IEntity door : b.m_aDoors)
+			{
+				if (!door || RZ_Util.DistXZ(door.GetOrigin(), pos) > AI_DOOR_REACH)
+					continue;
+
+				// Inside lets them out (without turning the latch for anyone else)
+				return RZ_DoorGeometry.IsInside(b.m_Building, door, pos);
+			}
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -590,9 +737,11 @@ class RZ_DoorLocks
 
 	// ================================================================ Tick
 	//------------------------------------------------------------------------------------------------
-	//! A lock changed: the replicated list now, not on the next tick.
-	void OnLockChanged()
+	//! A lock changed: an unlocked building's blockers go at once, and the replicated list is
+	//! sent now, not on the next tick.
+	void OnLockChanged(string buildingKey)
 	{
+		m_Blockers.OnLockChanged(buildingKey);
 		array<int> ids = {};
 		array<IEntity> players = {};
 		RZ_Util.GetAlivePlayers(ids, players);
@@ -606,6 +755,7 @@ class RZ_DoorLocks
 	{
 		if (!IsOn())
 		{
+			m_Blockers.ClearAll();
 			if (!m_sList.IsEmpty())
 			{
 				m_sList = "";
@@ -654,6 +804,15 @@ class RZ_DoorLocks
 			m_sList = list;
 			m_GM.SetLockedBuildings(list);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On the 5 s tick, after Tick: blockers in locked doorways near players, the navmesh
+	//! around them, and infected banging on locked doors (RZ_DoorBlockers.c).
+	void TickBlockers(array<int> ids, array<IEntity> players)
+	{
+		if (IsOn())
+			m_Blockers.Tick(ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------

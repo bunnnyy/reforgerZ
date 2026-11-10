@@ -569,6 +569,7 @@ class RZ_Interactions
 		m_Cars.Tick(dt, players);
 		UpdateSpots(players);
 		m_Doors.Tick(players);
+		m_Doors.TickBlockers(ids, players);
 		TickTasks(dt);
 		m_Traps.Tick(dt, ids, players);
 		m_Radio.Tick(dt, ids, players);
@@ -1100,7 +1101,7 @@ class RZ_Interactions
 	void OnLockChanged(string buildingKey)
 	{
 		RelabelBuilding(buildingKey);
-		m_Doors.OnLockChanged();
+		m_Doors.OnLockChanged(buildingKey);
 	}
 
 	//------------------------------------------------------------------------------------------------

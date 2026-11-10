@@ -114,6 +114,31 @@ class RZ_SearchSettings
 	[Attribute("180", desc: "Real minutes before an unlocked, forced or latched lock is back to its default (locked, doors shut)")]
 	float m_fRelockMinutes = 180;
 
+	// ---------------------------------------------------------------- Keeping AI out (RZ_DoorBlockers.c, RZ_AIDoorHook.c)
+	[Attribute("1", desc: "AI door hook: the AI's own door opening refuses a locked outside door (RZ_AIDoorHook.c, optional file). Off = the hook lets every door open")]
+	bool m_bAiDoorHook = true;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Doorway blocker: an invisible, thin collision box that stops characters (not bullets) and counts for the navmesh. Stands in a locked outside doorway near players. Empty = no blockers (docs/WORKBENCH_SETUP.md)", "et")]
+	ResourceName m_sDoorBlockerPrefab;
+
+	[Attribute("1", desc: "Rebuild the navmesh around a doorway when its blocker comes or goes, so AI routes around a locked door. Off = blockers only (AI walk into them and stop)")]
+	bool m_bNavmeshRebuild = true;
+
+	[Attribute("150", desc: "Locked doorways this close (m) to a player get a blocker and can be banged on")]
+	float m_fBlockerRange = 150;
+
+	[Attribute("20", desc: "Most blocked doorways on the server (the nearest to players win)")]
+	int m_iBlockerCap = 20;
+
+	[Attribute("60", desc: "Seconds after a doorway's blocker came or went before it can come back (lock and unlock spam can't force rebuilds). Removing is always instant")]
+	float m_fBlockerCooldown = 60;
+
+	[Attribute("4", desc: "Heat an infected pressing at a locked doorway makes (0 = silent)")]
+	float m_fDoorBangHeat = 4;
+
+	[Attribute("15", desc: "Seconds between bangs at one doorway")]
+	float m_fDoorBangSeconds = 15;
+
 	// ---------------------------------------------------------------- Readable things and bodies
 	[Attribute("0.12", desc: "Chance a search turns up something readable (ID card, letter, receipt, photo)")]
 	float m_fReadableChance = 0.12;
@@ -269,6 +294,20 @@ class RZ_Search
 			keys = "key items";
 
 		RZ_Log.Info(string.Format("Locks: %1; keys are %2.", where, keys));
+		if (!m_Settings.m_bLocks || !m_Settings.m_bDoorLocks)
+			return;
+
+		string blockers = "off (no blocker prefab)";
+		if (!m_Settings.m_sDoorBlockerPrefab.IsEmpty() && m_Settings.m_bNavmeshRebuild)
+			blockers = string.Format("on, navmesh rebuilt, at most %1 within %2 m", m_Settings.m_iBlockerCap, RZ_Util.RoundToInt(m_Settings.m_fBlockerRange));
+		else if (!m_Settings.m_sDoorBlockerPrefab.IsEmpty())
+			blockers = string.Format("on, no navmesh rebuild, at most %1 within %2 m", m_Settings.m_iBlockerCap, RZ_Util.RoundToInt(m_Settings.m_fBlockerRange));
+
+		string hook = "off";
+		if (m_Settings.m_bAiDoorHook)
+			hook = "on";
+
+		RZ_Log.Info(string.Format("Door blockers: %1; AI door hook %2.", blockers, hook));
 	}
 
 	//------------------------------------------------------------------------------------------------
