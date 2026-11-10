@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<title>item_fuelcan</title>
+<mask id="m-item_fuelcan" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><g fill="#fff" stroke="#fff"><path stroke="none" d="M15 13 H39 L50 24 V55 A3 3 0 0 1 47 58 H18 A3 3 0 0 1 15 55 Z"/><path stroke-width="7" d="M43 17 L51 9"/></g><g fill="#000" stroke="#000"><rect x="19" y="17" width="16" height="6" rx="1" stroke="none"/><path stroke-width="3.5" d="M21 30 L44 52 M44 30 L21 52"/></g></mask><rect width="64" height="64" fill="currentColor" stroke="none" mask="url(#m-item_fuelcan)"/>
+</svg>

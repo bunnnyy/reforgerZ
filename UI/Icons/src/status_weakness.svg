@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<title>status_weakness</title>
+<clipPath id="c-status_weakness"><path d="M28 22 C20 18 9 30 9 45 C9 54 14 57 20 56 C26 55 28 51 28 46 Z M36 22 C44 18 55 30 55 45 C55 54 50 57 44 56 C38 55 36 51 36 46 Z"/></clipPath><rect fill="currentColor" stroke="none" x="0" y="44" width="64" height="20" clip-path="url(#c-status_weakness)"/><path d="M28 22 C20 18 9 30 9 45 C9 54 14 57 20 56 C26 55 28 51 28 46 Z"/><path d="M36 22 C44 18 55 30 55 45 C55 54 50 57 44 56 C38 55 36 51 36 46 Z"/><path d="M32 5 V27 M32 27 L27 33 M32 27 L37 33"/>
+</svg>

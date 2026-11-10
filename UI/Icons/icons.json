@@ -1,0 +1,362 @@
+[
+ {
+  "name": "faction_haven",
+  "category": "Faction emblems",
+  "use": "The Haven: a safehouse with a candle in it. Standing screen, notice cards, safehouse markers",
+  "plate": false
+ },
+ {
+  "name": "faction_bastion",
+  "category": "Faction emblems",
+  "use": "Task Force Bastion: a crenellated wall with one line held. Standing screen, notice cards",
+  "plate": false
+ },
+ {
+  "name": "faction_redhand",
+  "category": "Faction emblems",
+  "use": "The Red Hand: a paint handprint slapped on a wall, still running. Standing screen, notice cards",
+  "plate": false
+ },
+ {
+  "name": "faction_halcyon",
+  "category": "Faction emblems",
+  "use": "Halcyon: a sun over still water in a lab hexagon. Standing screen, notice cards, the lab",
+  "plate": false
+ },
+ {
+  "name": "faction_infected",
+  "category": "Faction emblems",
+  "use": "The infected and the outbreak: a virion with a bite taken out. Outbreak stage, infected markers, hazard signage",
+  "plate": false
+ },
+ {
+  "name": "tier_stranger",
+  "category": "Standing tiers",
+  "use": "Stranger: they don't know you. An empty tag",
+  "plate": false
+ },
+ {
+  "name": "tier_known",
+  "category": "Standing tiers",
+  "use": "Known: one mark on the tag",
+  "plate": false
+ },
+ {
+  "name": "tier_trusted",
+  "category": "Standing tiers",
+  "use": "Trusted: two marks",
+  "plate": false
+ },
+ {
+  "name": "tier_champion",
+  "category": "Standing tiers",
+  "use": "Champion: a solid tag with a star cut through",
+  "plate": false
+ },
+ {
+  "name": "tier_watched",
+  "category": "Standing tiers",
+  "use": "Watched: they have an eye on you",
+  "plate": false
+ },
+ {
+  "name": "tier_hunted",
+  "category": "Standing tiers",
+  "use": "Hunted: you're in their sights; hunter squads",
+  "plate": false
+ },
+ {
+  "name": "tier_kill_on_sight",
+  "category": "Standing tiers",
+  "use": "Kill on Sight: a crossed-out target; public bounty",
+  "plate": false
+ },
+ {
+  "name": "tier_mixed",
+  "category": "Standing tiers",
+  "use": "Uneasy, Tolerated, Respected and Wildcard: a tag half one way, half the other",
+  "plate": false
+ },
+ {
+  "name": "mission_contract",
+  "category": "Mission types",
+  "use": "A faction contract: a page with a stamp",
+  "plate": false
+ },
+ {
+  "name": "mission_event",
+  "category": "Mission types",
+  "use": "A world event, open to everyone",
+  "plate": false
+ },
+ {
+  "name": "mission_puzzle",
+  "category": "Mission types",
+  "use": "A puzzle mission: look closer, read the clues",
+  "plate": false
+ },
+ {
+  "name": "mission_leader",
+  "category": "Mission types",
+  "use": "A leader's personal job: someone wants a word",
+  "plate": false
+ },
+ {
+  "name": "mission_unarmed",
+  "category": "Mission types",
+  "use": "An unarmed mission: no guns, noise and wits",
+  "plate": false
+ },
+ {
+  "name": "mission_perimeter",
+  "category": "Mission types",
+  "use": "A Perimeter mission: the drone line at the edge of the Zone",
+  "plate": false
+ },
+ {
+  "name": "mission_arc",
+  "category": "Mission types",
+  "use": "A story arc mission: one chapter of a longer story",
+  "plate": false
+ },
+ {
+  "name": "marker_lab",
+  "category": "Map markers",
+  "use": "Halcyon's lab (hexagon plate)",
+  "plate": true
+ },
+ {
+  "name": "marker_safehouse",
+  "category": "Map markers",
+  "use": "A Haven safehouse",
+  "plate": true
+ },
+ {
+  "name": "marker_stronghold",
+  "category": "Map markers",
+  "use": "A faction's stronghold (never falls)",
+  "plate": true
+ },
+ {
+  "name": "marker_outpost",
+  "category": "Map markers",
+  "use": "A faction outpost (can change hands)",
+  "plate": true
+ },
+ {
+  "name": "marker_event",
+  "category": "Map markers",
+  "use": "A world event on the map (diamond plate)",
+  "plate": true
+ },
+ {
+  "name": "marker_quartermaster",
+  "category": "Map markers",
+  "use": "A quartermaster and the leader who runs the place",
+  "plate": true
+ },
+ {
+  "name": "marker_power",
+  "category": "Map markers",
+  "use": "The power station",
+  "plate": true
+ },
+ {
+  "name": "marker_radio",
+  "category": "Map markers",
+  "use": "The radio station",
+  "plate": true
+ },
+ {
+  "name": "marker_checkpoint",
+  "category": "Map markers",
+  "use": "A sealed Perimeter road checkpoint (octagon plate)",
+  "plate": true
+ },
+ {
+  "name": "item_key",
+  "category": "Items",
+  "use": "A key for a real lock (tagged keys)",
+  "plate": false
+ },
+ {
+  "name": "item_sample",
+  "category": "Items",
+  "use": "A cure sample for Halcyon",
+  "plate": false
+ },
+ {
+  "name": "item_antidote",
+  "category": "Items",
+  "use": "An antidote: cures the infection",
+  "plate": false
+ },
+ {
+  "name": "item_stabiliser",
+  "category": "Items",
+  "use": "A stabiliser: pauses the infection for 20 minutes",
+  "plate": false
+ },
+ {
+  "name": "item_med",
+  "category": "Items",
+  "use": "A low-grade med (antibiotics, antiviral, cut dose, suppressant, remedy): buys time",
+  "plate": false
+ },
+ {
+  "name": "item_noisemaker",
+  "category": "Items",
+  "use": "A noisemaker (wound alarm clock, tin rattle): pulls the infected toward it",
+  "plate": false
+ },
+ {
+  "name": "item_battery",
+  "category": "Items",
+  "use": "Car part: a battery",
+  "plate": false
+ },
+ {
+  "name": "item_tyre",
+  "category": "Items",
+  "use": "Car part: a tyre",
+  "plate": false
+ },
+ {
+  "name": "item_sparkplugs",
+  "category": "Items",
+  "use": "Car part: spark plugs",
+  "plate": false
+ },
+ {
+  "name": "item_fuelcan",
+  "category": "Items",
+  "use": "Car part: a fuel can (jerrycan), full or empty",
+  "plate": false
+ },
+ {
+  "name": "item_radio",
+  "category": "Items",
+  "use": "The wind-up radio every new life starts with",
+  "plate": false
+ },
+ {
+  "name": "item_molotov",
+  "category": "Items",
+  "use": "Crafted: a molotov",
+  "plate": false
+ },
+ {
+  "name": "item_bandage",
+  "category": "Items",
+  "use": "Crafted: an improvised bandage",
+  "plate": false
+ },
+ {
+  "name": "item_tripwire",
+  "category": "Items",
+  "use": "Crafted: a tin-can tripwire kit",
+  "plate": false
+ },
+ {
+  "name": "item_spiketrap",
+  "category": "Items",
+  "use": "Crafted: a spike trap kit",
+  "plate": false
+ },
+ {
+  "name": "item_tablets",
+  "category": "Items",
+  "use": "Crafted: purification tablets (clean water)",
+  "plate": false
+ },
+ {
+  "name": "item_planks",
+  "category": "Items",
+  "use": "Planks: barricades and spike traps",
+  "plate": false
+ },
+ {
+  "name": "item_jewellery",
+  "category": "Items",
+  "use": "Jewellery (the wedding and other finds)",
+  "plate": false
+ },
+ {
+  "name": "status_bitten",
+  "category": "Status and HUD",
+  "use": "Bitten: the bite mark (golden window, then the timer)",
+  "plate": false
+ },
+ {
+  "name": "status_golden",
+  "category": "Status and HUD",
+  "use": "The golden window: minutes to clean the bite before it takes",
+  "plate": false
+ },
+ {
+  "name": "status_fever",
+  "category": "Status and HUD",
+  "use": "Infection stage 1: Fever",
+  "plate": false
+ },
+ {
+  "name": "status_weakness",
+  "category": "Status and HUD",
+  "use": "Infection stage 2: Weakness (out of breath, stamina drains)",
+  "plate": false
+ },
+ {
+  "name": "status_final",
+  "category": "Status and HUD",
+  "use": "Infection stage 3: the Final stage (minutes left)",
+  "plate": false
+ },
+ {
+  "name": "status_secure_radio",
+  "category": "Status and HUD",
+  "use": "Listening on a cracked secure channel",
+  "plate": false
+ },
+ {
+  "name": "status_radio_open",
+  "category": "Status and HUD",
+  "use": "An open channel on the radio (faction chatter, the Haven, Bastion net)",
+  "plate": false
+ },
+ {
+  "name": "status_broadcast",
+  "category": "Status and HUD",
+  "use": "The government broadcast (and loudspeakers)",
+  "plate": false
+ },
+ {
+  "name": "status_noise",
+  "category": "Status and HUD",
+  "use": "Noise and heat: how much attention you're drawing",
+  "plate": false
+ },
+ {
+  "name": "status_shortage",
+  "category": "Status and HUD",
+  "use": "A shortage: short of food or supplies (prices up)",
+  "plate": false
+ },
+ {
+  "name": "status_door_locked",
+  "category": "Status and HUD",
+  "use": "A locked door (needs its key, or force it)",
+  "plate": false
+ },
+ {
+  "name": "status_door_unlocked",
+  "category": "Status and HUD",
+  "use": "An unlocked door (you have the key, or it was opened)",
+  "plate": false
+ },
+ {
+  "name": "status_door_forced",
+  "category": "Status and HUD",
+  "use": "A forced door (crowbar: noise, and the lock is broken)",
+  "plate": false
+ }
+]

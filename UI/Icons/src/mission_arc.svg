@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<title>mission_arc</title>
+<mask id="m-mission_arc" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><g fill="#fff" stroke="#fff"><path fill="none" d="M9 52 C17 14 47 14 55 52"/><circle cx="9" cy="52" r="6" stroke="none"/><circle cx="32" cy="23.5" r="8.5" stroke="none"/><path stroke="none" d="M55 41 L62 54 H48 Z"/></g><g fill="#000" stroke="#000"><circle cx="32" cy="23.5" r="3.5" stroke="none"/></g></mask><rect width="64" height="64" fill="currentColor" stroke="none" mask="url(#m-mission_arc)"/>
+</svg>

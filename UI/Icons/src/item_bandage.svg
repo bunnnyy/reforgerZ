@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<title>item_bandage</title>
+<mask id="m-item_bandage" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><g fill="#fff" stroke="#fff"><circle cx="23" cy="29" r="16" stroke="none"/><path stroke="none" d="M23 37 H58 V49 H23 Z"/></g><g fill="#000" stroke="#000"><circle cx="23" cy="29" r="9.5" stroke-width="2.5" fill="none"/><circle cx="23" cy="29" r="3.5" stroke="none"/><path stroke-width="2.5" d="M23 45 H40" fill="none"/><path stroke-width="2" stroke-dasharray="3 3" d="M42 43 H56" fill="none"/></g></mask><rect width="64" height="64" fill="currentColor" stroke="none" mask="url(#m-item_bandage)"/>
+</svg>

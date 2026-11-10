@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<title>status_secure_radio</title>
+<mask id="m-status_secure_radio" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><g fill="#fff" stroke="#fff"><rect x="22" y="31" width="20" height="18" rx="3" stroke="none"/></g><g fill="#000" stroke="#000"><circle cx="32" cy="38" r="2.6" stroke="none"/><path stroke="none" d="M30.8 39 H33.2 L34 44.5 H30 Z"/></g></mask><rect width="64" height="64" fill="currentColor" stroke="none" mask="url(#m-status_secure_radio)"/><path d="M26 31 V25 A6 6 0 0 1 38 25 V31"/><path stroke-width="3.5" d="M18.1 48.8 A17 17 0 0 1 18.1 29.2 M45.9 48.8 A17 17 0 0 0 45.9 29.2 M10.3 51.5 A25 25 0 0 1 10.3 26.5 M53.7 51.5 A25 25 0 0 0 53.7 26.5"/>
+</svg>
