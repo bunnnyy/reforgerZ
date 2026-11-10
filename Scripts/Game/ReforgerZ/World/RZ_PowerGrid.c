@@ -10,6 +10,9 @@
 //! - give an electronics loot bonus to searches (LootMult, RZ_Search),
 //! - but the generator hums: steady heat at the station, which draws hordes.
 //!
+//! A power surge (the Power Surge event) brings one town outside the region back for a few
+//! minutes: Powered, lights, and the electronics bonus, with no generator to keep running.
+//!
 //! It slowly fails (about four hours with players online) unless someone maintains it.
 //! The control object only exists while a player is near. Its state is saved.
 
@@ -144,6 +147,9 @@ class RZ_PowerGrid
 	protected RZ_PuzzleObjectComponent m_Comp;
 	protected ref array<int> m_aRegion = {};
 	protected ref map<string, float> m_mMaintained = new map<string, float>();
+	protected int m_iSurgeTown = -1;			// the Power Surge event's town, -1 = none
+	protected vector m_vSurgePos;
+	protected float m_fSurgeRadius;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_PowerGrid(RZ_GameModeComponent gm, RZ_PowerSettings settings)
@@ -182,11 +188,18 @@ class RZ_PowerGrid
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The grid only: is the town at pos in the power station's region while it runs?
+	//! The grid only: is the town at pos in the power station's region while it runs, or in a
+	//! town a power surge brought back?
 	static bool IsGridPoweredAt(vector pos)
 	{
 		RZ_PowerGrid grid = Get();
-		if (!grid || !grid.IsPowered())
+		if (!grid)
+			return false;
+
+		if (grid.m_iSurgeTown >= 0 && RZ_Util.DistXZ(pos, grid.m_vSurgePos) <= grid.m_fSurgeRadius)
+			return true;
+
+		if (!grid.IsPowered())
 			return false;
 
 		return RZ_Util.DistXZ(pos, grid.m_vPos) <= grid.m_Settings.m_fRegionRadius;
@@ -202,6 +215,40 @@ class RZ_PowerGrid
 
 		RZ_PowerGrid grid = Get();
 		return grid.m_Settings.m_fElectronicsLootMult;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! In the grid's region while it runs (a surge picks a town outside it).
+	bool IsInRegion(int townIdx)
+	{
+		return m_aRegion.Contains(townIdx);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Power Surge event: the town's power is on until EndSurge. One town at a time.
+	void StartSurge(int townIdx, vector center, float radius)
+	{
+		EndSurge();
+		m_iSurgeTown = townIdx;
+		m_vSurgePos = center;
+		m_fSurgeRadius = radius;
+		RZ_TownMemory mem = m_GM.GetTownMemory();
+		if (mem)
+			mem.SetPowered(townIdx, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The surge is over: dark again, unless the grid powers that town.
+	void EndSurge()
+	{
+		if (m_iSurgeTown < 0)
+			return;
+
+		RZ_TownMemory mem = m_GM.GetTownMemory();
+		if (mem && !(IsPowered() && m_aRegion.Contains(m_iSurgeTown)))
+			mem.SetPowered(m_iSurgeTown, false);
+
+		m_iSurgeTown = -1;
 	}
 
 	//------------------------------------------------------------------------------------------------

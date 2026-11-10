@@ -76,6 +76,10 @@ class RZ_ZombieSpawner
 	protected float m_fEventSpecialMult = 1;
 	protected float m_fEnvSpecialMult = 1;		// time and weather (RZ_Environment): night
 	protected float m_fEnvMinSpawnMult = 1;		// fog: infected may spawn a little closer
+	protected bool m_bFogBank;					// the Fog Bank event: closer still inside it
+	protected vector m_vFogPos;
+	protected float m_fFogRadius;
+	protected float m_fFogSpawnMult = 1;
 	protected int m_iFocusSettlement = -1;	// gets 1.5x density, every other town 0.4x
 	protected ref array<int> m_aSuppressed = {};	// settlements with no spawns at all (The Silent Village)
 
@@ -216,6 +220,16 @@ class RZ_ZombieSpawner
 	{
 		m_fEnvSpecialMult = specialMult;
 		m_fEnvMinSpawnMult = Math.Clamp(minSpawnMult, 0.3, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Fog Bank event (RZ_Environment): inside it, the closest spawn distance is multiplied by mult.
+	void SetFogBank(bool on, vector pos, float radius, float mult)
+	{
+		m_bFogBank = on;
+		m_vFogPos = pos;
+		m_fFogRadius = radius;
+		m_fFogSpawnMult = Math.Clamp(mult, 0.3, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -607,7 +621,11 @@ class RZ_ZombieSpawner
 			if (RZ_Util.IsWater(pos))
 				continue;
 
-			if (RZ_Util.NearestDistance(pos, players) < m_Settings.m_fMinSpawnDistance * m_fEnvMinSpawnMult)
+			float minMult = m_fEnvMinSpawnMult;
+			if (m_bFogBank && RZ_Util.DistXZ(pos, m_vFogPos) <= m_fFogRadius)
+				minMult = Math.Min(minMult, m_fFogSpawnMult);
+
+			if (RZ_Util.NearestDistance(pos, players) < m_Settings.m_fMinSpawnDistance * minMult)
 				continue;
 
 			if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))

@@ -9,6 +9,10 @@
 //! - Storms (the Storm event, or real heavy rain with strong wind): Bastion's helicopter
 //!   stays on the ground (no Last Helicopter contract), wanderers shelter.
 //!
+//! - Fog banks (the Fog Bank event): one region at a time where heat is muffled and infected
+//!   spawn closer. The engine's fog is global and is never changed; an optional effect prop
+//!   is the look.
+//!
 //! The weather accessors are engine calls in RZ_Weather; if they don't work, only the
 //! night and the Storm event apply.
 
@@ -121,6 +125,7 @@ class RZ_Environment
 	protected bool m_bRealStorm;
 	protected float m_fRainNewsAt = -10000;
 	protected float m_fFogNewsAt = -10000;
+	protected bool m_bFogBank;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Environment(RZ_GameModeComponent gm, RZ_EnvironmentSettings settings)
@@ -133,6 +138,24 @@ class RZ_Environment
 	bool IsNight() { return m_Settings.m_bEnabled && m_bNight; }
 	bool IsRaining() { return m_Settings.m_bEnabled && m_bRain; }
 	bool IsFoggy() { return m_Settings.m_bEnabled && m_bFog; }
+
+	//------------------------------------------------------------------------------------------------
+	//! The Fog Bank event: a region where heat added is multiplied by heatMult and infected may
+	//! spawn closer (the closest distance multiplied by spawnMult). One at a time.
+	void StartFogBank(vector pos, float radius, float heatMult, float spawnMult)
+	{
+		m_bFogBank = true;
+		m_GM.GetHeat().SetFogBank(true, pos, radius, heatMult);
+		m_GM.GetSpawner().SetFogBank(true, pos, radius, spawnMult);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void EndFogBank()
+	{
+		m_bFogBank = false;
+		m_GM.GetHeat().SetFogBank(false, vector.Zero, 0, 1);
+		m_GM.GetSpawner().SetFogBank(false, vector.Zero, 0, 1);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The Storm event, or real heavy rain with strong wind.
@@ -249,6 +272,9 @@ class RZ_Environment
 
 		if (m_bFog)
 			text += ", fog";
+
+		if (m_bFogBank)
+			text += ", fog bank";
 
 		if (IsStorm())
 			text += ", storm";

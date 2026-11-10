@@ -1038,8 +1038,38 @@ class RZ_Traps
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World events (Gas Station Fire, Burning Town): this one building catches. False if fire is
+	//! off, or it can't burn (a protected place) or already has. quiet = no "smoke" notice nearby.
+	bool BurnBuilding(vector buildingPos, bool quiet)
+	{
+		if (!m_Settings.m_bFire || m_Hub.IsProtected(buildingPos) || IsBurned(buildingPos))
+			return false;
+
+		Burn(buildingPos, -1, quiet);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! World events: the building nearest pos within radius catches (see BurnBuilding). False if none.
+	bool BurnNear(vector pos, float radius, bool quiet)
+	{
+		vector building;
+		if (!FindBuildingNear(pos, radius, building))
+			return false;
+
+		return BurnBuilding(building, quiet);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fire is on (Traps > Fire).
+	bool IsFireOn()
+	{
+		return m_Settings.m_bFire;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One building burns: data, plus a fire effect for a few minutes.
-	protected void Burn(vector pos, int playerId)
+	protected void Burn(vector pos, int playerId, bool quiet = false)
 	{
 		RZ_Burn b = new RZ_Burn();
 		b.m_vPos = pos;
@@ -1061,7 +1091,8 @@ class RZ_Traps
 		if (playerId > 0)
 			m_GM.NotifyPlayer(playerId, "Fire", "It catches all at once, with a sound like a breath. Nothing in there will be worth finding for a long while, and nothing will crawl out of it either.");
 
-		m_Hub.NotifyNear(pos, 800, playerId, "Smoke", "Black smoke is going up from a building nearby.");
+		if (!quiet)
+			m_Hub.NotifyNear(pos, 800, playerId, "Smoke", "Black smoke is going up from a building nearby.");
 	}
 
 	//------------------------------------------------------------------------------------------------

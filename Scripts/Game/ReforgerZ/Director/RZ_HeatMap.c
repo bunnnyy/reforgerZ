@@ -11,6 +11,10 @@ class RZ_HeatMap
 	protected float m_fAddMult = 1;
 	protected float m_fEnvAddMult = 1;	// time and weather (RZ_Environment): rain dampens noise
 	protected float m_fEnvSpread;		// night: this share also reaches the four neighbouring squares
+	protected bool m_bFogBank;			// the Fog Bank event: heat added inside it is muffled
+	protected vector m_vFogPos;
+	protected float m_fFogRadius;
+	protected float m_fFogMult = 1;
 
 	protected static const int GRID_STRIDE = 100000;
 	protected static const float NOISE_EVENT_MIN = 8;	// heat this big at once counts as a noise (bottle, firecracker, alarm clock)
@@ -56,6 +60,16 @@ class RZ_HeatMap
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The Fog Bank event (RZ_Environment): heat added within radius of pos is multiplied by mult.
+	void SetFogBank(bool on, vector pos, float radius, float mult)
+	{
+		m_bFogBank = on;
+		m_vFogPos = pos;
+		m_fFogRadius = radius;
+		m_fFogMult = Math.Clamp(mult, 0.1, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void AddHeat(vector pos, float amount)
 	{
 		// A noise leads infected however much the weather muffles the heat it leaves
@@ -64,6 +78,9 @@ class RZ_HeatMap
 
 		if (amount > 0)
 			amount = amount * m_fAddMult * m_fEnvAddMult;
+
+		if (amount > 0 && m_bFogBank && RZ_Util.DistXZ(pos, m_vFogPos) <= m_fFogRadius)
+			amount = amount * m_fFogMult;
 
 		int key = Key(pos);
 		AddToCell(key, amount);

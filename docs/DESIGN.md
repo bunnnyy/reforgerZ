@@ -199,6 +199,9 @@ The game clock's night is 20:30 to 05:00.
 - **Storms** (the Storm event, or rain 0.6+ with wind 10 m/s+) ground Bastion's helicopter
   (no Last Helicopter contract), and wanderers shelter.
 - Players hear one line when rain or fog sets in, at most every 20 minutes each.
+- **Fog banks** (the Fog Bank event): one region at a time where heat added is ×0.6 and infected
+  may spawn twice as close. The engine's fog is global, so it isn't touched; an optional mist
+  prop is the only look.
 
 *Simplified:* the weather accessors are engine calls that may need fixing (VERIFY); without
 them only night and the Storm event apply.
@@ -221,6 +224,9 @@ searches there. But the generator hums: 10 heat a minute at the station. It **sl
 over about four hours with players online (a warning at 20%). **Refuel and grease** restores
 60% with a fuel item or 25% without. When it fails, it's back to step 2. No Fame for any of
 it: the power is the reward.
+
+**Power surges** (the Power Surge event): one dark town outside the region gets power for 10
+minutes, with the same lights hook and electronics bonus, and no generator to keep running.
 
 *Simplified:* the three steps are actions on one object, not real breakers.
 
@@ -727,6 +733,9 @@ A thrown molotov (25 heat) kills infected within 3 m and burns the building with
 it alight** with a molotov or fuel. That one building burns: 30 heat, an optional fire effect, the
 town's infection −1, and for two hours nothing to search and no spawns within 30 m. Strongholds,
 outposts, safehouses, quartermasters and the lab can't burn (or be locked).
+
+The Gas Station Fire and Burning Town events ([MISSIONS.md](MISSIONS.md#world-events)) use the
+same fire, one building at a time; nothing burns a whole town at once.
 
 ### Water
 

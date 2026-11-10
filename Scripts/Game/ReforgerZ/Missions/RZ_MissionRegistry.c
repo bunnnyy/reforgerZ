@@ -150,5 +150,11 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Event_BastionShelling);
 		mgr.RegisterType(RZ_Event_MassGrave);
 		mgr.RegisterType(RZ_Event_StashNote);
+		// Events that change a town or a region (Missions/Events/RZ_WorldEventsTown.c)
+		mgr.RegisterType(RZ_Event_FogBank);
+		mgr.RegisterType(RZ_Event_PowerSurge);
+		mgr.RegisterType(RZ_Event_GasStationFire);
+		mgr.RegisterType(RZ_Event_BurningTown);
+		mgr.RegisterType(RZ_Event_TunnelRats);
 	}
 }

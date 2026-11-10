@@ -111,7 +111,7 @@ If the player faction key isn't `SURV`, the variants are `<key>_H1`..`<key>_H15`
 
 ## 4. Prefabs by system
 
-The code has **137 prefab fields**: 40 on `RZ_GameModeComponent`, 91 in its settings objects, and
+The code has **138 prefab fields**: 40 on `RZ_GameModeComponent`, 92 in its settings objects, and
 6 in list entries and actions (shop item, requisition item, recipe output, loot table lists).
 Every prefab with an action list needs an `ActionsManagerComponent`; every prefab with an `RZ_`
 component needs an `RplComponent`. Slot names are the attribute's category, then its label.
@@ -191,6 +191,16 @@ move as data and stand as that figure when they stop. **To talk to escorted peop
 the pilot, divert the courier, march the deserters to the stronghold), the escort characters
 (an AI group's leader) need the generic puzzle object's components, like the wanderers. Without
 them, standing beside the pilot, the deserter or the researcher for 10 s still gets them moving.
+
+**World events** (slots under **Missions > Events**). All optional:
+
+| Prefab | Base | Slot (fallback) | Used for |
+|---|---|---|---|
+| `RZ_FogEffect.et` | a low mist or fog particle effect | Fog effect (none: the fog bank works without a look) | Fog Bank |
+
+The newer events also reuse **Missions > Explosion** (Gas Station Fire's blast, optional),
+**Interactions > Traps > Fire effect** (every burning building), the power grid, and the generic
+puzzle object (Tunnel Rats' culverts). Gas Station Fire and Burning Town need **Traps > Fire** on.
 
 Other prefabs the newer contracts reuse: **Cars > Car prefabs** (Car Theft), **Supply > Halcyon
 truck** (Mobile Lab's lab truck, falling back to the bus), **Supply > Haven truck** (the bus
@@ -426,7 +436,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 23 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 24 settings objects and two lists. Every value has a working
 default; this is what each one covers. Defaults are in brackets where they matter for setup.
 
 | Category | Object | Covers |
@@ -446,6 +456,7 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | Backgrounds | Backgrounds (list) | Overrides; empty = the built-in 13. **Bite minutes** (20) |
 | Cure | (top level) | Lab, sample, antidote prefabs; research per sample (2%) |
 | Missions | (top level) | Reward crate, mission item, drop points and the optional mission prefabs |
+| Missions | Events | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20) |
 | Missions | Contracts | Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) | The puzzle prefabs, **Scale counts items** (off), landmark name |
 | Perimeter | Perimeter | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
@@ -492,13 +503,13 @@ No fallback. If these are wrong, the basic game doesn't work.
 
 | Where | Call | If it fails |
 |---|---|---|
-| `Core/RZ_GameModeComponent.c:545` | `GetOnPlayerSpawned()` invoker | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:856` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
-| `Core/RZ_GameModeComponent.c:925` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
-| `Core/RZ_GameModeComponent.c:1057` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1712`, `:1713` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1723` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:1941`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Core/RZ_GameModeComponent.c:551` | `GetOnPlayerSpawned()` invoker | Nothing per-player runs on spawn (backgrounds, goals, radio) |
+| `Core/RZ_GameModeComponent.c:863` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
+| `Core/RZ_GameModeComponent.c:932` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
+| `Core/RZ_GameModeComponent.c:1064` | `OnProjectileShot` event and signature | No gunfire heat |
+| `Core/RZ_GameModeComponent.c:1720`, `:1721` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1731` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:1949`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
 | `Persistence/RZ_SaveData.c:119` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:369`, `:377` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
@@ -526,7 +537,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Puzzles/RZ_Landmarks.c:56` | `QueryEntitiesBySphere(center, radius, cb, filter, flags)` | No landmarks: the fallback landmark prop |
 | `Puzzles/RZ_PuzzleComponents.c:80`, `:142`, `Puzzles/RZ_BlinkingLight.c:161` | `[RplProp]` on a `ScriptComponent` | Labels don't replicate: generic labels, all slots visible, actions still work |
 | `Puzzles/RZ_GameTime.c:21`, `:25`, `:29` | `ChimeraWorld.CastFrom`, `GetTimeAndWeatherManager`, `GetTimeOfTheDay` | -1: night missions never appear, no night effects |
-| `Director/RZ_Environment.c:67`, `:82`, `:93`, `:104` | world cast; rain, fog and wind accessors | Make the helper return -1: only night and the Storm event apply |
+| `Director/RZ_Environment.c:71`, `:86`, `:97`, `:108` | world cast; rain, fog and wind accessors | Make the helper return -1: only night and the Storm event apply |
 | `World/RZ_Perimeter.c:226` | `BaseWorld.GetBoundBox()` | Turn on **Override** and type in the corners |
 | `World/RZ_Perimeter.c:725`, `:732`, `:733`, `:778`, `:782` | road network: `GetAIWorld`, `GetRoadNetworkManager`, `GetRoadsInAABB`, `GetPoints`, `GetWidth` | Empty `FindRoadExits()` and place `RZ_CheckpointMarkerEntity`s |
 | `World/RZ_Perimeter.c:633`, `:647` | `AddChild` keeps the drone on the player; `SetOrigin` replicates | Moved each tick instead (jumpier) |
@@ -661,6 +672,12 @@ session, tick off:
   seconds after you arrive. Lead infected and a hostile AI group at it: they route to another
   door or wait outside; they don't open it. Note the server frame time when blockers come and go.
 - [ ] Infected pressed against a locked door make noise (heat), and you're told once.
+- [ ] World events (raise a weight to start one): Fog Bank muffles heat and brings spawns closer
+  only inside its radius, and both reset when it ends. Power Surge marks the town Powered for 10
+  minutes (status log, the lights hook, electronics in searches) and dark again after, unless the
+  grid powers it. Gas Station Fire goes up after 3 minutes and burns at most three buildings;
+  Burning Town burns one building at a time and stops at its cap. Tunnel Rats' culverts each
+  send infected and can be collapsed only with none within 12 m.
 - [ ] Mission spots: start a few delivery and puzzle missions in towns with locked buildings.
   No item, note, person or crate is inside a locked building or in its doorway.
 - [ ] Nobody gets trapped: unlock, force and the inside latch remove the blocker at once; climb

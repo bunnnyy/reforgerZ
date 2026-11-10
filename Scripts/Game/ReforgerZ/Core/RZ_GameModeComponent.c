@@ -145,6 +145,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Contracts: escort, live capture, vehicle delivery and health-cost limits, and the optional prefabs of the contracts built on them (docs/DESIGN.md, Mission building blocks)", category: "ReforgerZ|Missions")]
 	protected ref RZ_ContractSettings m_ContractSettings;
 
+	[Attribute(desc: "World events: the numbers and optional prefabs of the newer world events (docs/MISSIONS.md, World events)", category: "ReforgerZ|Missions")]
+	protected ref RZ_EventSettings m_EventSettings;
+
 	// ---------------------------------------------------------------- Puzzles
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Readable note: RZ_ClueComponent + RZ_ReadClueAction. Enables every puzzle mission", "et", category: "ReforgerZ|Puzzles")]
 	protected ResourceName m_sPuzzleNotePrefab;
@@ -463,6 +466,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_ContractSettings)
 			m_ContractSettings = new RZ_ContractSettings();
 
+		if (!m_EventSettings)
+			m_EventSettings = new RZ_EventSettings();
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -666,6 +672,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Interactions GetInteractions() { return m_Interactions; }
 	RZ_GuidanceSettings GetGuidanceSettings() { return m_GuidanceSettings; }
 	RZ_ContractSettings GetContractSettings() { return m_ContractSettings; }
+	RZ_EventSettings GetEventSettings() { return m_EventSettings; }
 	RZ_CarSettings GetCarSettings() { return m_CarSettings; }
 	RZ_SupplySettings GetSupplySettings() { return m_SupplySettings; }
 	ResourceName GetLabPrefab() { return m_sLabPrefab; }
@@ -1545,9 +1552,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void SpawnRewardCrate(vector pos)
+	//! The crate, or null (no prefab). Missions that may take it back (a booby trap) keep it.
+	IEntity SpawnRewardCrate(vector pos)
 	{
-		RZ_Util.SpawnPrefab(m_sRewardCratePrefab, RZ_Util.GroundPos(pos), Math.RandomFloat(0, 360));
+		return RZ_Util.SpawnPrefab(m_sRewardCratePrefab, RZ_Util.GroundPos(pos), Math.RandomFloat(0, 360));
 	}
 
 	//------------------------------------------------------------------------------------------------
