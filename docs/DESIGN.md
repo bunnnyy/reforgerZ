@@ -788,7 +788,8 @@ themselves. Three layers keep them out of a locked place.
 
 - **Rebuilds are throttled.** Requests are queued, merged per doorway and sent two per 5 s tick.
   A doorway whose blocker came or went can't get one back for 60 s, so lock and unlock spam
-  costs at most two rebuilds a minute per door.
+  costs at most two rebuilds a minute per door. A key turns (Lock or Unlock) at most once every
+  5 s per building, so spamming it can't flood the replicated locked list either.
 - **Nobody is trapped.** A blocker appears only while the door is shut and locked, with nobody
   within 2.5 m of the door and no player inside the building. It goes at once on Unlock, Force
   or the inside latch, and on the next tick when a player is inside the building or on the

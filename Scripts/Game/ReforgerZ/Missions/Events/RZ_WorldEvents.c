@@ -81,6 +81,12 @@ class RZ_Event_HordeMigration : RZ_Mission
 	protected vector m_vLastKill;
 
 	//------------------------------------------------------------------------------------------------
+	//! Its position follows the moving horde: nothing of its own stands anywhere, so no building is kept unlocked.
+	override void GetPropSpots(notnull array<vector> result)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetEvent(false);

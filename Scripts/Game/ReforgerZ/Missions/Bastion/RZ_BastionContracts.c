@@ -47,6 +47,7 @@ class RZ_Mission_RestoreComms : RZ_PuzzleMission
 	protected bool m_bFitted;
 	protected float m_fPowered;
 	protected string m_sPartsTown;
+	protected int m_iPartsSpawns;
 
 	protected static const float POWER_SECONDS = 60;
 
@@ -98,13 +99,20 @@ class RZ_Mission_RestoreComms : RZ_PuzzleMission
 			SpawnObject(gm, RZ_EPuzzleProp.RADIO_MAST, m_vMast, 0, "Fit the spare parts|Rewire it by hand (Radio Operator)", "");
 		}
 
+		// The spares went with a carrier who left (or a body that was cleared): they turn up in
+		// their crate again, a few times at most
+		if (m_bPartsSpawned && !m_Parts && !m_bFitted && m_iPartsSpawns < 4)
+			m_bPartsSpawned = false;
+
 		if (!m_bPartsSpawned && RZ_ContractHelp.AnyNear(players, m_vParts, 200))
 		{
 			m_bPartsSpawned = true;
+			m_iPartsSpawns++;
 			m_Parts = RZ_Util.SpawnPrefab(gm.GetMissionItemPrefab(), m_vParts + Vector(0, 0.3, 0));
 			RZ_MissionItemComponent.Tag(m_Parts, m_iId);
 			TrackProp(m_Parts);
-			SpawnGuards(gm, m_vParts, 3, 8, 30);
+			if (m_iPartsSpawns == 1)
+				SpawnGuards(gm, m_vParts, 3, 8, 30);
 		}
 
 		if (!m_bFitted)
@@ -366,6 +374,12 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 	protected static const float NEAR = 150;
 	protected static const float REPAIR_SECONDS = 30;
 	protected static const float MECHANIC_SECONDS = 10;
+
+	//------------------------------------------------------------------------------------------------
+	//! Its position follows the moving truck: nothing of its own stands anywhere, so no building is kept unlocked.
+	override void GetPropSpots(notnull array<vector> result)
+	{
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)

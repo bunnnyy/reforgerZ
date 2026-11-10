@@ -31,6 +31,8 @@ class RZ_Mission_PowerTheLab : RZ_PuzzleMission
 	protected bool m_bFuel;
 	protected bool m_bPart;
 	protected string m_sPartPlace;
+	protected IEntity m_Part;
+	protected int m_iPartSpawns;
 
 	protected static const float BOOST_SECONDS = 7200;
 
@@ -92,13 +94,20 @@ class RZ_Mission_PowerTheLab : RZ_PuzzleMission
 			SpawnObject(gm, RZ_EPuzzleProp.FUSEBOX, m_vGen, 0, "Pour in a jerrycan|Fit the regulator", "");
 		}
 
+		// The regulator went with a carrier who left (or a body that was cleared): it turns up
+		// where it was found again, a few times at most
+		if (m_bPartShown && !m_Part && !m_bPart && m_iPartSpawns < 4)
+			m_bPartShown = false;
+
 		if (!m_bPartShown && RZ_ContractHelp.AnyNear(players, m_vPart, 200))
 		{
 			m_bPartShown = true;
-			IEntity part = RZ_Util.SpawnPrefab(gm.GetMissionItemPrefab(), m_vPart + Vector(0, 0.3, 0));
-			RZ_MissionItemComponent.Tag(part, m_iId);
-			TrackProp(part);
-			SpawnGuards(gm, m_vPart, 2, 8, 30);
+			m_iPartSpawns++;
+			m_Part = RZ_Util.SpawnPrefab(gm.GetMissionItemPrefab(), m_vPart + Vector(0, 0.3, 0));
+			RZ_MissionItemComponent.Tag(m_Part, m_iId);
+			TrackProp(m_Part);
+			if (m_iPartSpawns == 1)
+				SpawnGuards(gm, m_vPart, 2, 8, 30);
 		}
 	}
 

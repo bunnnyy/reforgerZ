@@ -339,6 +339,8 @@ class RZ_Mission_WaterPurifier : RZ_Mission
 	protected ref array<vector> m_aSpots = {};
 	protected ref array<IEntity> m_aParts = {};
 	protected ref array<bool> m_aSpawned = {};
+	protected ref array<bool> m_aIn = {};		// handed in at the drop
+	protected ref array<int> m_aSpawns = {};
 	protected IEntity m_Drop;
 	protected int m_iDelivered;
 	protected bool m_bBonusDelivered;
@@ -384,6 +386,8 @@ class RZ_Mission_WaterPurifier : RZ_Mission
 			m_aSpots.Insert(LandPointNear(s.m_vCenter, 10, s.m_fRadius * 0.7));
 			m_aParts.Insert(null);
 			m_aSpawned.Insert(false);
+			m_aIn.Insert(false);
+			m_aSpawns.Insert(0);
 		}
 
 		m_Drop = RZ_Util.SpawnPrefab(gm.GetDropPointPrefab(RZ_EFaction.SURVIVORS), RZ_Util.GroundPos(LandPointNear(h.m_vPos, 4, 10)), Math.RandomFloat(0, 360));
@@ -401,22 +405,33 @@ class RZ_Mission_WaterPurifier : RZ_Mission
 		int lost = 0;
 		foreach (int i, vector spot : m_aSpots)
 		{
+			if (m_aIn[i])
+				continue;
+
 			if (!m_aSpawned[i])
 			{
 				if (!RZ_ContractHelp.AnyNear(players, spot, 200))
 					continue;
 
 				m_aSpawned[i] = true;
+				m_aSpawns[i] = m_aSpawns[i] + 1;
 				IEntity part = RZ_Util.SpawnPrefab(gm.GetMissionItemPrefab(), spot + Vector(0, 0.3, 0));
 				RZ_MissionItemComponent.Tag(part, m_iId);
 				m_aParts[i] = part;
-				SpawnGuards(gm, spot, 2, 8, 30);
+				if (m_aSpawns[i] == 1)
+					SpawnGuards(gm, spot, 2, 8, 30);
 				continue;
 			}
 
 			if (!m_aParts[i])
 			{
-				lost++;
+				// Gone with a carrier who left, or a body that was cleared: it turns up where it
+				// was found again (a few times); after that it's lost
+				if (m_aSpawns[i] < 4)
+					m_aSpawned[i] = false;
+				else
+					lost++;
+
 				continue;
 			}
 
@@ -425,9 +440,18 @@ class RZ_Mission_WaterPurifier : RZ_Mission
 				m_aParticipants.Insert(carrier);
 		}
 
-		// Delivered parts disappear too; anything more than that was lost
-		if (lost > m_iDelivered && m_eState == RZ_EMissionState.ACTIVE)
+		// Too many parts gone for good to finish it
+		if (lost > 0 && PARTS - lost < Needed() && m_eState == RZ_EMissionState.ACTIVE)
 			m_eState = RZ_EMissionState.FAILED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int Needed()
+	{
+		if (m_bBonusDelivered)
+			return PARTS - 1;
+
+		return PARTS;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -440,13 +464,36 @@ class RZ_Mission_WaterPurifier : RZ_Mission
 		if (!m_aParticipants.Contains(playerId))
 			m_aParticipants.Insert(playerId);
 
+		// Which part this is: the one the deliverer carries, else the nearest to the drop (so a
+		// handed-in part is never put back in the street)
+		int which = -1;
+		float bestDist = float.MAX;
+		foreach (int i, IEntity part : m_aParts)
+		{
+			if (!part || m_aIn[i])
+				continue;
+
+			if (RZ_Util.GetCarrierPlayerId(part) == playerId)
+			{
+				which = i;
+				break;
+			}
+
+			float d = RZ_Util.DistXZ(part.GetOrigin(), drop.GetOrigin());
+			if (d < bestDist)
+			{
+				bestDist = d;
+				which = i;
+			}
+		}
+
+		if (which >= 0)
+			m_aIn[which] = true;
+
 		if (HasBonus(gm, playerId))
 			m_bBonusDelivered = true;
 
-		int needed = PARTS;
-		if (m_bBonusDelivered)
-			needed = PARTS - 1;
-
+		int needed = Needed();
 		if (m_iDelivered >= needed)
 		{
 			m_eState = RZ_EMissionState.SUCCEEDED;

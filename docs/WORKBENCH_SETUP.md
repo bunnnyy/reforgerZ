@@ -1067,3 +1067,37 @@ session, tick off:
 - [ ] Take the Lab during a final stand: 90 s in the clean room ends the stand, research shows 90%,
   and the Red Hand antidote stock goes up by two.
 - [ ] Mobile Lab: the field annex takes samples and disappears after 3 hours.
+
+**Multiplayer and griefing** (two clients at least; the pass 2 sweep's open risks)
+- [ ] Two players race one choice delivery: the first hand-in wins, the second is told it isn't
+  wanted. A player who isn't eligible delivers someone else's contract: only eligible people at
+  the drop are paid.
+- [ ] Carry a delivery item (Courier letters, a Bastion case, the capture case, Water Purifier or
+  Restore Comms parts), then disconnect: the others are told and the item is back on the ground
+  where you were (or, for parts, at its first spot). Die with it and wait for the body to go: same.
+  Check the log for an item that comes back twice from one disconnect.
+- [ ] The Courier's letters taken off the one who asked and delivered by someone else pay nobody.
+- [ ] Escort: the player the pilot or scientist follows disconnects or dies; the nearest player
+  within 20 m gets "Now they follow you", and the job goes on.
+- [ ] Locks near missions: start a puzzle or delivery mission in a town with locked buildings;
+  buildings within 25 m of its props open (the vanilla Open works), and lock again (doors pulled
+  shut once nobody stands in them) when it ends. The Locked Bunker's building stays locked.
+  Watch the log and frame time with many missions running (the spot list is rebuilt once a tick).
+- [ ] Keys: search bodies and readables in a town with no locked buildings: no key turns up.
+  Every key found names a building that really is locked in that town.
+- [ ] Spam Lock and Unlock on one door: after one turn it says "The lock's stiff" for 5 s; the
+  blocker comes back no sooner than its cooldown.
+- [ ] Blood Drive while the bite detector is on: no "bitten" message from the health drop.
+- [ ] Disconnect while bitten and have a friend look at your "Clean the bite" spot: no new
+  `local_` profile appears in `state.json`. Old saves' `local_` entries with nothing in them
+  are dropped after one save.
+- [ ] A Nurse slows a friend's bite, restart the server, try again in the same life: refused.
+- [ ] Shoot near a wanderer while infected are on them and let them die: nobody is blamed. Shoot
+  one yourself: you are (the log says who).
+- [ ] Drive and boat into the Perimeter's warning zone: the drone follows over the vehicle (not
+  stuck where you entered), the kill zone still shoots, and leaving removes the drone.
+- [ ] The Missing Courier's radio offer is titled "The Missing Courier", not "Lost Colleague".
+- [ ] Ring bells, sirens and read clues repeatedly: one bell or siren per 15 minutes, no extra
+  spawns or rewards from rereading.
+- [ ] 1 player and a full server: spot cap (70) and escort (3) and capture (2) caps hold; with
+  everyone in one town some players get no interaction spots until others leave (expected).

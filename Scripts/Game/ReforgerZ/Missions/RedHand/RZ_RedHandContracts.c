@@ -369,6 +369,12 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 	protected float m_fWaiting;
 
 	//------------------------------------------------------------------------------------------------
+	//! Its position follows the moving truck: nothing of its own stands anywhere, so no building is kept unlocked.
+	override void GetPropSpots(notnull array<vector> result)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.BANDITS, RZ_ETier.TRUSTED, 40, 40);
@@ -750,6 +756,14 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 	protected float m_fTipTimer;
 
 	protected static const float CLAIM_RADIUS = 150;
+
+	//------------------------------------------------------------------------------------------------
+	//! A player target moves (nothing of the mission's stands anywhere); the hiding man's spot counts.
+	override void GetPropSpots(notnull array<vector> result)
+	{
+		if (m_iTarget <= 0)
+			super.GetPropSpots(result);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)

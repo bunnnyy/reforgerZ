@@ -345,6 +345,7 @@ class RZ_DoorLocks
 	protected static const float HOLD_CLEAR = 2.5;		// a locked door is pulled shut once nobody is this close
 	protected static const int SPOTS_PER_BUILDING = 3;
 	protected static const float NOTICE_SECONDS = 4;
+	protected static const float KEY_TURN_SECONDS = 5;	// one Lock or Unlock per building this often
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
@@ -352,6 +353,7 @@ class RZ_DoorLocks
 	protected RZ_SearchSettings m_Settings;
 	protected ref map<string, ref RZ_BuildingDoors> m_mBuildings = new map<string, ref RZ_BuildingDoors>();
 	protected ref map<int, float> m_mNoticeAt = new map<int, float>();
+	protected ref map<string, float> m_mKeyTurnedAt = new map<string, float>();	// lock and unlock spam guard
 	protected ref RZ_DoorBlockers m_Blockers;
 	protected string m_sList;
 	protected ref array<string> m_aReinforced = {};
@@ -725,6 +727,15 @@ class RZ_DoorLocks
 
 		string keyId = m_Search.KeyForBuilding(s.m_vBuilding, s.m_sType);
 		string tag = m_Search.KeyTagForBuilding(s.m_vBuilding, s.m_sType);
+
+		// Locking and unlocking resend the locked list and move blockers: not every second
+		float turned;
+		if ((option == 0 || option == 1) && m_mKeyTurnedAt.Find(s.m_sBuildingKey, turned) && m_Hub.GetClock() - turned < KEY_TURN_SECONDS && m_Hub.GetClock() >= turned)
+		{
+			m_GM.NotifyPlayer(playerId, title, "The lock's stiff. Give it a moment.");
+			return;
+		}
+
 		if (option == 0)
 		{
 			if (!locked)
@@ -733,6 +744,7 @@ class RZ_DoorLocks
 				m_GM.NotifyPlayer(playerId, title, string.Format("None of your keys fit. The one you want has a tag saying \"%1\".", tag));
 			else
 			{
+				KeyTurned(s.m_sBuildingKey);
 				m_Search.OpenBuilding(s.m_sBuildingKey, false);
 				m_GM.NotifyPlayer(playerId, title, "The key turns, quietly. It's open.");
 			}
@@ -750,6 +762,7 @@ class RZ_DoorLocks
 				m_GM.NotifyPlayer(playerId, title, string.Format("You'd need its key: a tag saying \"%1\".", tag));
 			else
 			{
+				KeyTurned(s.m_sBuildingKey);
 				m_Search.LockBuilding(s.m_sBuildingKey);
 				m_GM.NotifyPlayer(playerId, title, "You turn the key. Locked. The door pulls shut once you step away from it.");
 			}
@@ -775,6 +788,15 @@ class RZ_DoorLocks
 		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_FORCE, s.m_iId, 0, m_Settings.m_fForceSeconds, "the door", false);
 		m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fForceHeat * 0.4);
 		m_GM.NotifyPlayer(playerId, title, string.Format("You jam the crowbar into the frame and lean on it. It's loud. About %1 seconds; stay close.", RZ_Util.RoundToInt(m_Settings.m_fForceSeconds)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void KeyTurned(string buildingKey)
+	{
+		if (m_mKeyTurnedAt.Count() > 200)
+			m_mKeyTurnedAt.Clear();
+
+		m_mKeyTurnedAt.Set(buildingKey, m_Hub.GetClock());
 	}
 
 	// ================================================================ Tick

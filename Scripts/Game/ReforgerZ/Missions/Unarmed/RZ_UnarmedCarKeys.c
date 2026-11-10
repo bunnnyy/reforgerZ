@@ -64,7 +64,9 @@ class RZ_Mission_CarKeys : RZ_Mission
 	//! The job belongs to whoever asked (and whoever drives in with them).
 	override bool IsEligible(RZ_GameModeComponent gm, int playerId)
 	{
-		if (m_iFor > 0 && playerId != m_iFor && !m_aParticipants.Contains(playerId))
+		// Someone else is paid only alongside the one who asked: taking the job off them (or
+		// finishing it after they left) pays nobody
+		if (m_iFor > 0 && playerId != m_iFor && (!m_aParticipants.Contains(playerId) || !m_aParticipants.Contains(m_iFor)))
 			return false;
 
 		return super.IsEligible(gm, playerId);
