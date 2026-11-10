@@ -137,7 +137,7 @@ Code: `Zombies/RZ_ZombieSpawner.c`, `Zombies/RZ_BiteDetector.c`, `Core/RZ_GameMo
 
 Code: `Director/RZ_Adaptation.c`.
 
-Small, capped changes that keep the late game interesting without making it a wall.
+Small, capped changes that keep the late game interesting without making it unfair.
 
 - **Specials after breakthroughs.** Each cure breakthrough multiplies the stage's special
   chance by 1.05, ×1.15 at most. A relative bump: an Early Outbreak 1% becomes 1.15%.
