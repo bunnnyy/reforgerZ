@@ -83,13 +83,25 @@ class RZ_CureResearch
 			return;
 
 		RZ_Background bg = m_GM.GetPlayerBackground(playerId);
+		RZ_ETier halcyon = m_GM.GetTier(playerId, RZ_EFaction.INSTITUTE);
+
+		// Halcyon Champion perk "Lab access": deliveries count 25% more
+		float perk = 1;
+		if (halcyon == RZ_ETier.CHAMPION)
+			perk = 1.25;
+
 		float before = m_fProgress;
-		m_fProgress = Math.Min(100, m_fProgress + count * pointsPerSample * bg.m_fResearchMult);
+		m_fProgress = Math.Min(100, m_fProgress + count * pointsPerSample * bg.m_fResearchMult * perk);
 
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		profile.m_iSamplesDelivered += count;
 		profile.m_iLifeSamples += count;
-		m_GM.AddFame(playerId, RZ_EFaction.INSTITUTE, 3 * count);
+
+		// Hunted by Halcyon: the lab takes the samples, but you get nothing for them
+		if (RZ_Reputation.IsHunted(halcyon))
+			m_GM.NotifyPlayer(playerId, "Halcyon", "The guards take your samples and point you to the door. No thanks, no Fame.");
+		else
+			m_GM.AddFame(playerId, RZ_EFaction.INSTITUTE, 3 * count);
 
 		string name = GetGame().GetPlayerManager().GetPlayerName(playerId);
 		m_GM.NotifyAll("Cure research", string.Format("%1 delivered %2 sample(s). Research: %3 percent.",

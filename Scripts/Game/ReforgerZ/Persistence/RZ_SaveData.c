@@ -30,6 +30,11 @@ class RZ_SaveData
 	float labX;
 	float labZ;
 
+	// Quartermaster positions per faction (x/z, set = 1 if valid)
+	ref array<float> qmX = {};
+	ref array<float> qmZ = {};
+	ref array<int> qmSet = {};
+
 	ref array<ref RZ_SettlementSave> settlements = {};
 	ref array<ref RZ_PlayerProfile> profiles = {};
 }

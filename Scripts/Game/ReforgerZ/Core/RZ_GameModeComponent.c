@@ -134,6 +134,34 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("2.5", desc: "How close (m) a zombie must be for a health drop to count as its hit", category: "ReforgerZ|Survival")]
 	protected float m_fBiteReach;
 
+	// ---------------------------------------------------------------- Factions
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven quartermaster (RZ_QuartermasterComponent + shop actions). Spawned in the safest town if none is placed", "et", category: "ReforgerZ|Factions")]
+	protected ResourceName m_sQuartermasterHaven;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion quartermaster (also add RZ_RequisitionAction)", "et", category: "ReforgerZ|Factions")]
+	protected ResourceName m_sQuartermasterBastion;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand quartermaster (black market)", "et", category: "ReforgerZ|Factions")]
+	protected ResourceName m_sQuartermasterRedHand;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon quartermaster, spawned next to the lab", "et", category: "ReforgerZ|Factions")]
+	protected ResourceName m_sQuartermasterHalcyon;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Crate for the Bastion Requisition perk (the reward crate is used if empty)", "et", category: "ReforgerZ|Factions")]
+	protected ResourceName m_sRequisitionCratePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion hunter squad: AI group sent after players Hunted by Bastion (optional)", "et", category: "ReforgerZ|Factions")]
+	protected ResourceName m_sBastionHunterPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand hunter squad (optional; falls back to the Red Hand group prefab)", "et", category: "ReforgerZ|Factions")]
+	protected ResourceName m_sRedHandHunterPrefab;
+
+	[Attribute("10", desc: "Minutes between hunter squads for Hunted players. 0 = off", category: "ReforgerZ|Factions")]
+	protected float m_fHunterSquadMinutes;
+
+	[Attribute("10", desc: "Minutes between public bounty announcements for players at Kill on Sight", category: "ReforgerZ|Factions")]
+	protected float m_fBountyMinutes;
+
 	// ---------------------------------------------------------------- Debug
 	[Attribute("1", desc: "Log a world status summary every few minutes", category: "ReforgerZ|Debug")]
 	protected bool m_bStatusLog;
@@ -158,6 +186,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_MissionManager m_Missions;
 	protected ref RZ_CureResearch m_Cure;
 	protected ref RZ_BiteDetector m_BiteDetector;
+	protected ref RZ_FactionPerks m_Perks;
 	protected float m_fStatusTimer;
 	protected ref map<string, ref RZ_PlayerProfile> m_mProfiles = new map<string, ref RZ_PlayerProfile>();
 	protected ref array<IEntity> m_aSpawnPoints = {};
@@ -226,6 +255,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
 		m_Missions = new RZ_MissionManager(this);
 		m_BiteDetector = new RZ_BiteDetector(this, m_fBiteChance, m_fBiteReach);
+		m_Perks = new RZ_FactionPerks(this);
 
 		bool loaded = false;
 		if (!m_bWipeOnStart)
@@ -241,6 +271,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			RZ_Log.Error("No settlements found on this map. Place RZ_SettlementMarkerEntity entities in the world.");
 
 		SetupLab();
+		m_Perks.SetupQuartermasters();
 		RefreshSpawnPoints(true);
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetOwner());
@@ -272,6 +303,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Spawner.Tick(dt, players);
 		m_Missions.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
+		m_Perks.Tick(dt, ids, players);
 		UpdateInfections(dt, ids);
 
 		foreach (int i, IEntity ent : players)
@@ -325,6 +357,48 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	ResourceName GetTraderPrefab() { return m_sTraderPrefab; }
 	ResourceName GetExplosionPrefab() { return m_sExplosionPrefab; }
 	ResourceName GetAntidotePrefab() { return m_sAntidotePrefab; }
+	ResourceName GetRequisitionCratePrefab() { return m_sRequisitionCratePrefab; }
+	float GetHunterSquadMinutes() { return m_fHunterSquadMinutes; }
+	float GetBountyMinutes() { return Math.Max(1, m_fBountyMinutes); }
+	RZ_FactionPerks GetPerks() { return m_Perks; }
+
+	//------------------------------------------------------------------------------------------------
+	ResourceName GetQuartermasterPrefab(RZ_EFaction faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return m_sQuartermasterHaven;
+			case RZ_EFaction.MILITARY: return m_sQuartermasterBastion;
+			case RZ_EFaction.BANDITS: return m_sQuartermasterRedHand;
+			case RZ_EFaction.INSTITUTE: return m_sQuartermasterHalcyon;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	ResourceName GetHunterPrefab(RZ_EFaction faction)
+	{
+		if (faction == RZ_EFaction.MILITARY)
+			return m_sBastionHunterPrefab;
+
+		if (faction == RZ_EFaction.BANDITS)
+		{
+			if (m_sRedHandHunterPrefab.IsEmpty())
+				return m_sRedHandGroupPrefab;
+
+			return m_sRedHandHunterPrefab;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bastion Requisition perk, from RZ_RequisitionAction.
+	bool TryRequisition(int playerId, IEntity quartermaster)
+	{
+		return m_Perks.TryRequisition(playerId, quartermaster);
+	}
 	bool HasLab() { return m_bHasLab; }
 
 	//------------------------------------------------------------------------------------------------
@@ -529,6 +603,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// 3. What's on the radio
 		NotifyPlayer(playerId, "Radio", m_Missions.DescribeActiveFor(controlledEntity, playerId));
+		m_Perks.OnPlayerSpawned(playerId, controlledEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -723,6 +798,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! Hook for perks and consequences that start at a tier.
 	protected void OnTierChanged(int playerId, RZ_EFaction faction, RZ_ETier before, RZ_ETier after)
 	{
+		if (m_Perks)
+			m_Perks.OnTierChanged(playerId, faction, before, after);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1124,6 +1201,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_bHasLab = data.hasLab;
 		m_vLabPos = Vector(data.labX, 0, data.labZ);
+		m_Perks.RestoreQuartermasters(data.qmX, data.qmZ, data.qmSet);
 		return true;
 	}
 
@@ -1143,6 +1221,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		data.hasLab = m_bHasLab;
 		data.labX = m_vLabPos[0];
 		data.labZ = m_vLabPos[2];
+		if (m_Perks)
+			m_Perks.SaveQuartermasters(data.qmX, data.qmZ, data.qmSet);
 
 		foreach (RZ_Settlement s : m_aSettlements)
 		{
