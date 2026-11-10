@@ -111,7 +111,7 @@ If the player faction key isn't `SURV`, the variants are `<key>_H1`..`<key>_H15`
 
 ## 4. Prefabs by system
 
-The code has **141 prefab fields**: 40 on `RZ_GameModeComponent`, 95 in its settings objects, and
+The code has **147 prefab fields**: 40 on `RZ_GameModeComponent`, 101 in its settings objects, and
 6 in list entries and actions (shop item, requisition item, recipe output, loot table lists).
 Every prefab with an action list needs an `ActionsManagerComponent`; every prefab with an `RZ_`
 component needs an `RplComponent`. Slot names are the attribute's category, then its label.
@@ -200,12 +200,19 @@ them, standing beside the pilot, the deserter or the researcher for 10 s still g
 | `RZ_Convicts.et` | an AI group on `BAND`, prison clothes, pistols and bats | Convicts (Missions > Red Hand group) | Prison Break |
 | `RZ_Sniper.et` | a one-man AI group on `BAND` with a scoped rifle | Sniper (Contracts > Bounty target) | The Sniper; without either, the event never appears |
 | `RZ_RivalGroup.et` | an armed AI group on `SURV`, no faction's colours | Rival group (Missions > Survivor group) | Rival Survivors |
+| `RZ_TruckWreck.et` | a military truck wreck, not drivable | Truck wreck (none: just the cargo) | Abandoned Convoy (two are placed) |
+| `RZ_RemnantCamp.et` | a tent or small camp composition | Camp (none: just the crates) | Military Remnant Camp |
+| `RZ_Hatch.et` | a steel hatch or bunker door in the ground | Hatch (Puzzles > Puzzle object) | Locked Bunker when no locked building is found |
+| Formal-wear infected | zombie prefabs in suits and dresses | Wedding guests, a list (Zombies > Common prefabs) | Wedding Party |
+| `RZ_Bride.et` | a special infected in a wedding dress | Bride (Zombies > Special prefabs) | Wedding Party |
+| `RZ_Jewellery.et` | a small item named with "jewel" (or another jewellery keyword) | Jewellery (a crate once the party is down) | Wedding Party; the Trader wanderer takes one instead of Favor. Add it to Shop System sell lists too if you run it |
 
 The newer events also reuse **Missions > Explosion** (Gas Station Fire's blast, optional),
 **Interactions > Traps > Fire effect** (every burning building), the power grid, and the generic
 puzzle object (Tunnel Rats' culverts, the tape in Fake Distress Call), **Puzzles > Civilian** (the
 people in Distress Call, Rival Survivors and Collapse Shelter) and **Missions > Red Hand group**
-(Fake Distress Call). Gas Station Fire and Burning Town need **Traps > Fire** on. The convicts,
+(Fake Distress Call, the watchers at the Abandoned Convoy), **Puzzles > Keypad** and **Note** or
+**Body** (Locked Bunker). Gas Station Fire and Burning Town need **Traps > Fire** on. The convicts,
 the sniper and the Fake Distress Call's ambush fight through the hostility system's fights, so they
 must be on `BAND`.
 
@@ -463,7 +470,7 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | Backgrounds | Backgrounds (list) | Overrides; empty = the built-in 13. **Bite minutes** (20) |
 | Cure | (top level) | Lab, sample, antidote prefabs; research per sample (2%) |
 | Missions | (top level) | Reward crate, mission item, drop points and the optional mission prefabs |
-| Missions | Events | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs |
+| Missions | Events | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
 | Missions | Contracts | Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) | The puzzle prefabs, **Scale counts items** (off), landmark name |
 | Perimeter | Perimeter | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
@@ -514,9 +521,9 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_GameModeComponent.c:863` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
 | `Core/RZ_GameModeComponent.c:932` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
 | `Core/RZ_GameModeComponent.c:1064` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1720`, `:1721` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1731` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:1949`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Core/RZ_GameModeComponent.c:1724`, `:1725` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1735` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:1953`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
 | `Persistence/RZ_SaveData.c:119` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:369`, `:377` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
@@ -691,6 +698,12 @@ session, tick off:
   friend. The Sniper shoots everyone near him. Rival Survivors fight a Hunted player only, and
   trade a crate for food with others. Collapse Shelter's people join the safehouse when told the
   way and turn into infected when their time runs out.
+- [ ] Loot events: the Abandoned Convoy's tripwire goes off for the first player at the crates
+  unless a Mechanic got within 25 m first. The Remnant Camp gives Bastion Infamy once per player
+  at its crates while Bastion is around. Locked Bunker: the building's door refuses key and
+  crowbar with the keypad message, the right code from the three notes opens it, the crates
+  stand inside on the floor (not under it), and the door works normally after. Wedding Party
+  drops jewellery, and a Trader wanderer takes it instead of Favor.
 - [ ] Mission spots: start a few delivery and puzzle missions in towns with locked buildings.
   No item, note, person or crate is inside a locked building or in its doorway.
 - [ ] Nobody gets trapped: unlock, force and the inside latch remove the blocker at once; climb

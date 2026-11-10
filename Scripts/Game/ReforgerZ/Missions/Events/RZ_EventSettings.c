@@ -41,6 +41,31 @@ class RZ_EventSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Rival Survivors: an armed AI group on SURV, nobody's colours. Empty = Missions > Survivor group", "et")]
 	ResourceName m_sRivalGroupPrefab;
 
+	// ---------------------------------------------------------------- Loot (Abandoned Convoy, Military Remnant Camp, Locked Bunker, Wedding Party)
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Abandoned Convoy: a military truck wreck prop, not drivable (two are placed; look only). Empty = just the cargo by the road", "et")]
+	ResourceName m_sTruckWreckPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Military Remnant Camp: a tent or small camp composition (look only). Empty = just the crates", "et")]
+	ResourceName m_sCampPrefab;
+
+	[Attribute("10", desc: "Military Remnant Camp: Bastion Infamy for taking from its stores while Bastion is still around")]
+	int m_iCampInfamy = 10;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Locked Bunker: a steel hatch prop, used when no locked building with doors is found. Empty = Puzzles > Puzzle object", "et")]
+	ResourceName m_sHatchPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Wedding Party: infected in formal wear (one at random per guest). Empty = Zombies > Common prefabs", "et")]
+	ref array<ResourceName> m_aWeddingPrefabs = {};
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Wedding Party: the bride. Empty = Zombies > Special prefabs", "et")]
+	ResourceName m_sBridePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Wedding Party: a piece of jewellery (a small item whose name has one of the jewellery keywords). Empty = a crate once the party is down", "et")]
+	ResourceName m_sJewelleryPrefab;
+
+	[Attribute("jewel,necklace,bracelet,weddingring,wedding_ring", desc: "Jewellery keywords: a Trader wanderer takes one such item instead of Favor")]
+	string m_sJewelleryWords = "jewel,necklace,bracelet,weddingring,wedding_ring";
+
 	// ---------------------------------------------------------------- Tunnel Rats
 	[Attribute("20", desc: "Tunnel Rats: most infection the open culverts add to the town")]
 	float m_fTunnelInfectionCap = 20;

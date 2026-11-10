@@ -440,7 +440,7 @@ settlements above 8). Names come from a seed; roster, positions and memories are
 
 | Role | What they do | Typical reaction to you |
 |---|---|---|
-| Trader | Moves between safehouses; sells goods for Haven Favor, cheaper if you've helped them | Trades if you're not Hunted by the Haven |
+| Trader | Moves between safehouses; sells goods for Haven Favor, cheaper if you've helped them, or for a piece of jewellery | Trades if you're not Hunted by the Haven |
 | Doctor | Patches you up, or slows an infection (×1.25 of the time left, once per life) for Favor | Refuses the Red Hand's Trusted |
 | Scavenger | Sells a rumour pointing at a puzzle mission or a stash, for Favor or one food item | Swaps a rumour for food |
 | Deserter | Ex-Bastion, paranoid; tells you what Bastion is up to | Friendly if Bastion hates you, refuses if Bastion likes you, draws on Bastion's Champions |
@@ -649,7 +649,9 @@ quartermaster, or 150 m of a stronghold (the same places that can't burn).
   point inside a locked building's bounding box (plus 1.5 m, which covers its doorways) or within
   2.5 m of a doorway blocker is rejected, and the last resort is moved out past the nearest wall.
   The landmark finder skips locked buildings too. A building counts while it's unlocked as well,
-  since it locks again at the reset.
+  since it locks again at the reset. The one exception is the Locked Bunker event, where the
+  lock is the point: it turns a locked building's lock into a keypad (no key fits and no crowbar
+  forces it while the event runs; the inside latch still works) and puts its crates inside.
 - **Fallback: the lock on the loot.** A building whose doors aren't found (no door entities, or
   no usable bounding box) keeps the old lock: Search is refused, and the search spot offers "Use
   a key" and "Force the lock" (the same key, time and heat). With **Door locks** off, every

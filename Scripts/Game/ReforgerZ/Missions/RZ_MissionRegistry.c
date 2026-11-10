@@ -163,5 +163,10 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Event_TheSniper);
 		mgr.RegisterType(RZ_Event_RivalSurvivors);
 		mgr.RegisterType(RZ_Event_CollapseShelter);
+		// Events with something to take (Missions/Events/RZ_WorldEventsLoot.c)
+		mgr.RegisterType(RZ_Event_AbandonedConvoy);
+		mgr.RegisterType(RZ_Event_RemnantCamp);
+		mgr.RegisterType(RZ_Event_LockedBunker);
+		mgr.RegisterType(RZ_Event_WeddingParty);
 	}
 }

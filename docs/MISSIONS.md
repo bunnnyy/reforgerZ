@@ -10,14 +10,14 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 | Kind | In code | Designed, not built |
 |---|---|---|
 | [Faction contracts](#faction-contracts) (20 designed per faction) | 80 | — |
-| [World events](#world-events) | 21 | 4 (3 more are covered by other systems) |
+| [World events](#world-events) | 25 | — (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 17 | — |
 | [Unarmed missions](#unarmed-missions) | 10 | 1 |
 | [Perimeter missions](#perimeter-missions) | 3 | — |
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 32, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **171** | **5** |
+| **Total** | **175** | **1** |
 
 ## Who gets offered what
 
@@ -190,7 +190,7 @@ already in the Zone, and every crate is earned on the spot.
 | 3 | Night of the Dead | For 20 minutes, twice the infected and twice the specials everywhere | High risk, specials everywhere | ✅ |
 | 4 | Fog Bank | A region drops to low visibility for 20 min | Hiding is easy. So are ambushes | ✅ *the engine's fog is global and never changed: within 700 m of a town, heat is ×0.6 and infected spawn twice as close; an optional mist prop is the look* |
 | 5 | Distress Call | A survivor asks for help on the radio | Could be real, could be a trap (see 19) | ✅ *two people cornered at a town's edge; infected surround the house once someone is within 300 m. Talk them out with nothing within 20 m: they join the nearest safehouse and leave a crate. 25 min. Radio Operators hear that it's live* |
-| 6 | Abandoned Convoy | Bastion trucks left on a highway | Loot, but it may be booby-trapped or watched | planned |
+| 6 | Abandoned Convoy | Bastion trucks left on a highway | Loot, but it may be booby-trapped or watched | ✅ *Bastion's own trucks, inside the Zone since the first week, halfway between two towns (not snapped to a road); two crates and a few infected. 40% a tripwire: a Mechanic, Soldier or Police within 25 m cuts it, else the first to the crates sets it off (an explosion if the prefab is set, 80 heat) and one crate is lost. 35% a Red Hand crew watches it and fights all but its friends. The wrecks are optional props* |
 | 7 | Power Surge | A town's power comes back for 10 min | Alarms go off (heat); electronics loot | ✅ *a dark town outside the grid's region is Powered through the power grid and town memory; three alarms make heat for 90 s; the grid's electronics search bonus applies* |
 | 8 | Siren Test | Air-raid sirens pull every infected into one town for 5 minutes | The towns around it are briefly safer to loot | ✅ |
 | 9 | Wandering Trader | A neutral merchant parks somewhere for 20 min | Rare items; protect him or rob him | ✅ |
@@ -207,11 +207,11 @@ already in the Zone, and every crate is earned on the spot.
 | 20 | Storm | For 15 minutes, noise carries less and heat fades three times as fast | A good time to move | ✅ |
 | 21 | Last Broadcast | A station is still on the air | Reach it and broadcast | *covered* by the radio station: always on the map rather than an event; take it over and broadcast a preset (cosmetic, no Fame) |
 | 22 | Rival Survivors | An unaligned AI group | They trade or fight depending on your reputation | ✅ *a group on `SURV` camps outside a town for 30 min. Hunted by anyone, or Watched by two factions: they fight you (only you). Trusted by someone and Watched by nobody: a crate of their kit for 2 food; anyone else 3 food; two trades in all. Gunning them down when they'd fought nobody: +6 Haven Infamy; if they had: their kit* |
-| 23 | Locked Bunker | A sealed bunker, code split over 3 notes | Teamwork or a race between strangers | planned |
+| 23 | Locked Bunker | A sealed bunker, code split over 3 notes | Teamwork or a race between strangers | ✅ *a real locked building in a town: its door lock becomes a keypad (no key or crowbar while it runs), two crates inside, six digits on three bodies around town. The right code unlocks it for everyone; three wrong ones lock the keypad for 2 min (noise). No lockable building, or door locks off: a steel hatch and the crates come up when it opens. 40 min* |
 | 24 | Turned Player | A player who turned roams with their gear (started when someone turns) | Their loot is up for grabs | ✅ |
 | 25 | Tunnel Rats | Infected flood out of tunnels | A town's infection spikes | ✅ *three culverts at the town's edge (the generic puzzle object); each open one adds 1 infection a minute (at most +20) and sends two infected into town while a player is within 700 m. Collapse all three (no infected within 12 m) for a crate and −5 infection* |
-| 26 | Military Remnant Camp | An abandoned Bastion camp with gear | Bastion Infamy if they're still around | planned |
-| 27 | Wedding Party | A horde in formal wear by a church | Dark humour, jewellery for trading | planned |
+| 26 | Military Remnant Camp | An abandoned Bastion camp with gear | Bastion Infamy if they're still around | ✅ *outside an infested town, never within 1.5 km of a Bastion holding: two crates, turned soldiers and a special. While Bastion is still around (military presence 0.1+), coming within 4 m of a crate is taking: +10 Bastion Infamy, once per player. The camp is an optional prop* |
+| 27 | Wedding Party | A horde in formal wear by a church | Dark humour, jewellery for trading | ✅ *six guests and the bride by a town's church, there once a player is within 500 m. About half drop a piece of jewellery, the bride always (at most 6); a Trader wanderer takes one instead of Favor. No jewellery prefab: a crate once they're all down* |
 | 28 | Collapse Shelter | A town's shelter is overrun and survivors scatter | Save them before they turn (Haven Fame) | ✅ *four people hide round a town's school or church, each with infected close by; they turn after 15–22 min. Tell each the way (nothing within 15 m) and they join the nearest safehouse; the Haven's 12 Fame and 8 Favor go to the rescuers, scaled by how many were saved* |
 
 ---

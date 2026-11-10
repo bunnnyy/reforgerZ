@@ -2083,6 +2083,20 @@ class RZ_Wanderers
 		}
 
 		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+
+		// Jewellery (the Wedding Party's dead) pays instead of Favor
+		RZ_EventSettings events = m_GM.GetEventSettings();
+		if (events && !events.m_sJewelleryWords.IsEmpty() && RZ_ItemHelper.Has(user, events.m_sJewelleryWords))
+		{
+			if (!RZ_QuartermasterHelper.SpawnNear(m_Settings.m_aTraderGoods.GetRandomElement(), owner, user))
+				return;
+
+			RZ_ItemHelper.Take(user, events.m_sJewelleryWords, 1);
+			w.Remember(ident, MEM_HELPED);
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "They hold the jewellery up to the light, turn it twice, and don't ask where it came from. \"That'll do. Gold still means something to somebody.\"");
+			return;
+		}
+
 		int cost = m_Settings.m_iTradeCost;
 		if (w.Remembers(ident, MEM_HELPED) || w.Remembers(ident, MEM_SAVED))
 			cost = (cost * 3 + 3) / 4;

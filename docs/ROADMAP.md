@@ -27,7 +27,7 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 | Haven safehouses: population tiers, upkeep, rescues, house rules, exile | [Haven safehouses](DESIGN.md#haven-safehouses) |
 | Named wanderers: travel, reactions, memory, deaths in the news | [Wanderers](DESIGN.md#wanderers) |
 | Named leaders: traits, loyalty, memory, voiced briefs, deaths and replacements | [Leaders](DESIGN.md#leaders), [REPUTATION.md](REPUTATION.md#faction-leaders) |
-| 171 missions: all 80 faction contracts (on shared building blocks: escorts, live capture, vehicle zones and convoys, health cost, step chains), 21 world events, 17 puzzles, 10 unarmed, 3 Perimeter, 3 Haven house contracts and the Courier's letters, 32 leader jobs and Rein In, 3 arc missions | [MISSIONS.md](MISSIONS.md) |
+| 175 missions: all 80 faction contracts (on shared building blocks: escorts, live capture, vehicle zones and convoys, health cost, step chains), all 25 world events, 17 puzzles, 10 unarmed, 3 Perimeter, 3 Haven house contracts and the Courier's letters, 32 leader jobs and Rein In, 3 arc missions | [MISSIONS.md](MISSIONS.md) |
 | Six story arcs and session headlines | [Story arcs](DESIGN.md#story-arcs-and-headlines) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
 | World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
@@ -59,8 +59,6 @@ before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)
 - Wanderers react when their faction loses an outpost.
 
 ### Missions
-- The 4 designed world events not yet built ([MISSIONS.md](MISSIONS.md)); the mission building
-  blocks ([DESIGN.md](DESIGN.md#mission-building-blocks)) cover what most of them need.
 - **Car Keys** (unarmed): the fixable cars and keys it needs exist.
 
 ### Player to player

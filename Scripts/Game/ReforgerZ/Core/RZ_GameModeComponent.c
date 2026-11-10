@@ -1553,9 +1553,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! The crate, or null (no prefab). Missions that may take it back (a booby trap) keep it.
-	IEntity SpawnRewardCrate(vector pos)
+	//! onGround = false: exactly at pos (inside a building, on its floor).
+	IEntity SpawnRewardCrate(vector pos, bool onGround = true)
 	{
-		return RZ_Util.SpawnPrefab(m_sRewardCratePrefab, RZ_Util.GroundPos(pos), Math.RandomFloat(0, 360));
+		if (onGround)
+			pos = RZ_Util.GroundPos(pos);
+
+		return RZ_Util.SpawnPrefab(m_sRewardCratePrefab, pos, Math.RandomFloat(0, 360));
 	}
 
 	//------------------------------------------------------------------------------------------------
