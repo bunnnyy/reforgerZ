@@ -3667,7 +3667,7 @@
  },
  "world": [
   {
-   "step": "Make a world as a sub-scene of Arland (File > New World > Sub-scene, parent Arland)",
+   "step": "Make a world as a sub-scene of Arland (a new world with Arland as its parent; the menu name varies by version)",
    "plugin": "no",
    "find": "",
    "minimum": true
@@ -3686,7 +3686,7 @@
   },
   {"step": "Place RZ_GameMode.et in the world (one per world)", "plugin": "yes", "find": "", "minimum": true},
   {
-   "step": "Save the world; set it as the mission in a scenario config (or open it in Play mode)",
+   "step": "Save the world, and point a scenario (mission header) at it to play it",
    "plugin": "no",
    "find": "",
    "minimum": true

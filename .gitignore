@@ -8,3 +8,6 @@ profile/
 
 # Written by the "ReforgerZ: Write prefab checklist" Workbench plugin
 PrefabChecklist.md
+
+# Python
+__pycache__/

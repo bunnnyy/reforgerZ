@@ -192,11 +192,11 @@ power and radio station, and whether "Search" spots appear in houses.
 <!-- manifest:world -->
 | Step | Plugin | Minimum |
 |---|---|---|
-| Make a world as a sub-scene of Arland (File > New World > Sub-scene, parent Arland) | manual | yes |
+| Make a world as a sub-scene of Arland (a new world with Arland as its parent; the menu name varies by version) | manual | yes |
 | Place a FactionManager (a vanilla FactionManager prefab) and fill in the factions below | checks it | yes |
 | Place a LoadoutManager (a vanilla LoadoutManager prefab) with the 13 loadouts on SURV | checks it | yes |
 | Place RZ_GameMode.et in the world (one per world) | does it | yes |
-| Save the world; set it as the mission in a scenario config (or open it in Play mode) | manual | yes |
+| Save the world, and point a scenario (mission header) at it to play it | manual | yes |
 | Optional: place marker entities (RZ_SettlementMarkerEntity and the others) to override automatic picks | manual | — |
 <!-- /manifest:world -->
 
