@@ -128,6 +128,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("3", desc: "Heat per shot fired by a player (times the background noise multiplier)", category: "ReforgerZ|Survival")]
 	protected float m_fHeatPerShot;
 
+	[Attribute("0.3", desc: "Heat multiplier for shots from a suppressed weapon", category: "ReforgerZ|Survival")]
+	protected float m_fSuppressedHeatMult;
+
 	[Attribute("0.3", desc: "Chance that a zombie hit infects. 0 disables built-in bite detection", category: "ReforgerZ|Survival")]
 	protected float m_fBiteChance;
 
@@ -161,6 +164,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	[Attribute("10", desc: "Minutes between public bounty announcements for players at Kill on Sight", category: "ReforgerZ|Factions")]
 	protected float m_fBountyMinutes;
+
+	// ---------------------------------------------------------------- Map
+	[Attribute("1", desc: "Show world events and the lab on the map (vanilla map markers). Turn off if markers misbehave", category: "ReforgerZ|Map")]
+	protected bool m_bMapMarkers;
 
 	// ---------------------------------------------------------------- Debug
 	[Attribute("1", desc: "Log a world status summary every few minutes", category: "ReforgerZ|Debug")]
@@ -279,6 +286,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		SetupLab();
 		m_Perks.SetupQuartermasters();
+		if (m_bHasLab)
+			AddMapMarker(m_vLabPos, "Halcyon lab");
 		RefreshSpawnPoints(true);
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetOwner());
@@ -635,12 +644,16 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! Map marker for a world event or the lab. Returns a handle for RemoveMapMarker, -1 if off.
 	int AddMapMarker(vector pos, string text)
 	{
-		return -1;
+		if (!m_bMapMarkers)
+			return -1;
+
+		return RZ_MapMarkers.Add(pos, text);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void RemoveMapMarker(int handle)
 	{
+		RZ_MapMarkers.Remove(handle);
 	}
 
 	// ================================================================ Gunfire
@@ -653,15 +666,19 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Every shot is heard. Hunters are quieter, Mechanics and Radio Operators louder.
-	//! TODO: lower heat for suppressed weapons.
+	//! Every shot is heard. Hunters are quieter, Mechanics and Radio Operators louder,
+	//! and a suppressor cuts the noise (m_fSuppressedHeatMult).
 	protected void OnPlayerShot(int playerID, BaseWeaponComponent weapon, IEntity entity)
 	{
 		IEntity shooter = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerID);
 		if (!shooter)
 			return;
 
-		m_Heat.AddHeat(shooter.GetOrigin(), m_fHeatPerShot * GetPlayerBackground(playerID).m_fNoiseMult);
+		float heat = m_fHeatPerShot * GetPlayerBackground(playerID).m_fNoiseMult;
+		if (RZ_Util.IsSuppressed(weapon))
+			heat = heat * m_fSuppressedHeatMult;
+
+		m_Heat.AddHeat(shooter.GetOrigin(), heat);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -255,6 +255,45 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True if the weapon has a suppressor or silencer attached. Looks at the
+	//! weapon's child entities (attachments) up to two levels deep and checks
+	//! their prefab names, so it works with modded suppressors that follow the naming.
+	static bool IsSuppressed(BaseWeaponComponent weapon)
+	{
+		if (!weapon)
+			return false;
+
+		return HasSuppressorChild(weapon.GetOwner(), 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool HasSuppressorChild(IEntity e, int depth)
+	{
+		if (!e || depth > 2)
+			return false;
+
+		IEntity child = e.GetChildren(); // VERIFY: GetChildren()/GetSibling() walk attachments
+		while (child)
+		{
+			EntityPrefabData data = child.GetPrefabData(); // VERIFY: GetPrefabData().GetPrefabName()
+			if (data)
+			{
+				string name = data.GetPrefabName();
+				name.ToLower(); // VERIFY: ToLower() changes the string in place
+				if (name.Contains("suppress") || name.Contains("silenc"))
+					return true;
+			}
+
+			if (HasSuppressorChild(child, depth + 1))
+				return true;
+
+			child = child.GetSibling();
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int RoundToInt(float f)
 	{
 		int i = Math.Round(f);
