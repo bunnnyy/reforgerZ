@@ -232,17 +232,17 @@ class RZ_MissionManager
 			}
 		}
 
-		bool near = false;
-		foreach (vector p : m_aPropSpots)
+		bool isNear = false;
+		foreach (vector spot : m_aPropSpots)
 		{
-			if (RZ_Util.DistXZ(p, pos) <= PROP_CLEAR)
+			if (RZ_Util.DistXZ(spot, pos) <= PROP_CLEAR)
 			{
-				near = true;
+				isNear = true;
 				break;
 			}
 		}
 
-		if (!near)
+		if (!isNear)
 			return false;
 
 		string buildingKey = RZ_Interactions.PosKey(pos, 4);
