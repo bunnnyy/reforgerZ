@@ -146,7 +146,7 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 1 | Dead Drop | Any | ★ Ex-Con: 25% better pay | Sell infected samples for loot and Favor | Fame (Halcyon Infamy; the cure slows) | ✅ |
 | 2 | Fence the Goods | Any | ★ Ex-Con: +50% Fame, extra Favor | Carry stolen goods to a fence in another town | Fame, mostly Favor | ✅ |
 | 3 | Car Theft | Any | ★ Mechanic: +25% Fame | Deliver a specific vehicle to the chop shop | Fame | ✅ *a car from Cars > Car prefabs parked in a town, driven to a Red Hand drop and left there (it's stripped: it leaves the world); spawned cars aren't locked, so no hotwiring* |
-| 4 | Pharmacy Heist | Any | | Hold a pharmacy for 90 s before the Haven gets there | Fame (Haven Infamy) | ✅ |
+| 4 | Pharmacy Heist | Any | | Hold a pharmacy for 90 s before the Haven gets there | Fame (Haven Infamy) | ✅ *a real pharmacy or clinic found by prefab name; a town with none: the middle of town, and the brief names no building* |
 | 5 | Fight Pit | Known | | Survive 4 minutes of waves in a ring while the Red Hand bets | Fame; the bets pay Favor | ✅ *the bets are a fixed, larger Favor reward* |
 | 6 | Toll Road | Known | | Set up a roadblock between two towns and hold it for 10 min | Fame (Haven Infamy) | ✅ |
 | 7 | Smuggler's Run | Known | ★ Hunter: fewer location reports | Carry a package across the map. Everyone is told a courier is out | Big Favor | ✅ |
@@ -154,7 +154,7 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 9 | Loot the Armory | Known | ★ Police: knows the layout (40 s, not 60) | Break into a police station armory | Fame, mostly Favor | ✅ *the gun cage at a police station (the town centre if the map has none): cut it open (loud), carry the case to a Red Hand drop; nobody keeps the guns* |
 | 10 | Protection Racket | Trusted | 🔒 not Elder | "Collect" from a Haven safehouse. Pay or fight | Fame (Haven Infamy); the safehouse loses 3 food | ✅ *the keeper pays 55% of the time; refused, lean on them: a fight with the keeper's people if the survivor group prefab is set, else they pay and you take +5 more Haven Infamy* |
 | 11 | Hijack the Convoy | Trusted, not Trusted by Bastion | | Ambush a Bastion convoy | Big Fame (big Bastion Infamy) | ✅ *Bastion's own supply truck to an outpost: robbed, burnt or driven off counts, for anyone within 300 m when it happens. Needs supply trucks* |
-| 12 | Zombie Bait | Trusted | ★ Radio Op: twice the noise | Make enough noise at a Bastion checkpoint that a horde comes for it | Fame (Bastion Infamy) | ✅ |
+| 12 | Zombie Bait | Trusted | ★ Radio Op: twice the noise | Make enough noise right outside a Bastion outpost that a horde comes for it | Fame (Bastion Infamy) | ✅ *a random Bastion outpost (never the stronghold); with territory off or no outposts, the edge of a town Bastion passes through* |
 | 13 | Bust Out | Trusted | ★ Ex-Con: cuts the lock in 8 s, not 20 | Free Red Hand prisoners from a Bastion stockade | Fame (Bastion Infamy) | ✅ *a gate near a Bastion seat; its guards (Contracts > Bastion squad) see you unless you're in Bastion's uniform ([disguises](REPUTATION.md#disguises)); the prisoners walk with you to a Red Hand drop* |
 | 14 | Arson | Trusted | | Burn a Bastion fuel depot | Fame (Bastion Infamy) | ✅ |
 | 15 | Sabotage the Relay | Trusted, not Trusted by the Haven | | Destroy a Haven radio relay | Fame (Haven Infamy) | ✅ |
@@ -162,7 +162,7 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 17 | Double Agent | Trusted, Known by Bastion | ★ Police: Bastion believes you (caught 15%, not 35%) | Feed fake intel to Bastion | Fame with both (Bastion +5); caught = +20 Bastion Infamy | ✅ *a dossier from a Red Hand seat to a Bastion drop; believed, Bastion loses a little strength* |
 | 18 | Collect the Bounty | Champion | | Kill a player or AI with a bounty on them | Fame, Favor | ✅ *a player Kill on Sight with another faction (not a Red Hand friend), paid to the player who kills them (not for a death to the infected, a fall or suicide); else an armed AI outside a town (Contracts > Bounty target)* |
 | 19 | Kill the Officer | Champion | | Assassinate a Bastion outpost commander (the stronghold's commanding officer never dies) | Huge Fame (+75 Bastion Infamy: Kill on Sight) | ✅ *needs a killable commander body (Leaders > Bastion outpost commander or Bastion leader); a new one takes the chair after 2 hours* |
-| 20 | Take the Lab | Champion, final stand running | | Hold the lab's clean room for 90 s during the final stand while the crew steals the batch | Huge Fame (Halcyon Infamy); the final stand ends, research drops to 90%, two doses reach the black market | ✅ *reframed: the batch is stolen, which only delays the cure. The lab never falls and nobody wins the cure by taking it* |
+| 20 | Take the Lab | Champion, final stand running | | Hold the lab's clean room for 90 s during the final stand while the crew steals the batch | Huge Fame (Halcyon Infamy); the final stand ends, research drops to 90%, two doses reach the black market. The stand ends first: fails | ✅ *reframed: the batch is stolen, which only delays the cure. The lab never falls and nobody wins the cure by taking it* |
 
 **Amends:** Fence the Goods works off Red Hand Infamy; so does paying Favor ([REPUTATION.md](REPUTATION.md#working-off-infamy)).
 
@@ -175,7 +175,7 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 3 | Water Survey | Any | ★ Lab Tech: +50% Fame | Sample wells in 3 towns (10 s at each) | Fame; reveals the town most at risk | ✅ *the most infected town still under 50, anywhere on the map* |
 | 4 | Power the Lab | Any | ★ Mechanic: +50% Fame | Bring fuel and a generator part to the lab | Fame; antidote doses come twice as fast for 2 hours | ✅ *the part is the mission item at a factory, petrol station or power station in a nearby town* |
 | 5 | Lost Colleague | Known | | Find a missing researcher. Half the time he's turned | Fame, research | ✅ |
-| 6 | Research Data | Known | | Recover a hard drive from an overrun hospital (hold 45 s) | **Choice:** Halcyon research, or sell it to Bastion (Halcyon Infamy) | ✅ |
+| 6 | Research Data | Known | | Recover a hard drive from an overrun clinic or pharmacy (search 45 s) | **Choice:** Halcyon research, or sell it to Bastion (Halcyon Infamy) | ✅ *the building is found by prefab name; a town with none: where a courier fell near the middle* |
 | 7 | Install Sensors | Known | ★ Radio Op/Lab Tech: twice as fast | Place 3 sensors in infested towns | Fame; twice the specials there for 2 hours | ✅ *15 s at each spot* |
 | 8 | Blood Drive | Known | 🔒 not infected | Donate blood at the lab (costs health) | Fame, small research | ✅ *a quarter of your health, refused under 70%, once per life; amends* |
 | 9 | Cold Chain | Known, cure 50%+ | ★ Nurse/Doctor: 25 min, not 15 | Get an antidote batch to a Haven clinic before it spoils | Fame with Halcyon and the Haven | ✅ *the clock starts when it's picked up; the clinic is a Haven drop at a safehouse* |
@@ -244,21 +244,21 @@ Code: `Puzzles/`. ✅ all 17.
 
 | # | Puzzle | From | Needs | Bg | What you do | Result |
 |---|---|---|---|---|---|---|
-| 1 | The Numbers Station | Haven | Any | ★ Radio Op: hears it without the note or mast | A radio log gives a frequency. Of three radio masts, one carries a voice reading a map grid, every third number a decoy | Fame; stash at the grid |
+| 1 | The Numbers Station | Haven | Any | ★ Radio Op: hears it without the note or mast | A radio log gives a frequency. Of three radio masts, one carries a voice reading a map grid, every third number a decoy | Fame; stash at the grid. *It sits in the middle of the grid square and is found within 45 m* |
 | 2 | Two Bearings | Bastion | Any | ★ Hunter/Soldier: more Fame | Two wreck pieces have bearings scratched on them. Reach where the lines cross | Fame; the pilot's kit |
 | 3 | Paces from the Tower | Haven | Any | ★ Hunter: paces also in metres | "From the church, face the water tower, turn right, 400 paces." | Fame; stash |
-| 4 | Hot and Cold | Haven | Any | ★ Radio Op: numeric signal strength | With a radio, find a beacon in the fields by how loud it sounds, within 10 m | Fame; stash |
+| 4 | Hot and Cold | Haven | Any | ★ Radio Op: numeric signal strength | With a radio, find a beacon in the fields by how loud it sounds (five levels, the last under 100 m). Found within 45 m | Fame; stash |
 | 5 | The Rat | Red Hand | Known | ★ Police/Ex-Con: more Fame | Three suspects, exactly one lying. Point at the rat at the boss | Fame. Wrong: fails, Red Hand Infamy |
 | 6 | Patient Zero's Ledger | Halcyon | Known, a lab | ★ Lab Tech/Doctor: the method spelled out | A ledger plus hospital bracelets on three bodies. Name who was first, at the lab | Fame, research. Wrong: locked 5 min; twice: fails |
 | 7 | The Poisoned Well | Halcyon | Any | ★ Lab Tech/Nurse: can test the water | Three wells, two notes ruling one out each. Seal the poisoned one | Fame, research, that village −10 infection. Wrong: infection up; twice: fails |
 | 8 | The Smuggler's Ledger | Red Hand | Known | ★ Ex-Con: more Fame | A Caesar-shifted ledger line; the key is on a memorial plaque by the church | Fame; stash |
 | 9 | The Clockwork Horde | Haven | Any | ★ Hunter: harder to notice | A stuck siren sends a horde back and forth through a square. Take the strongbox unnoticed | Fame; the strongbox. Noticed: the horde turns on you |
 | 10 | Time-Lock Safe | Red Hand | Known | ★ Ex-Con: window twice as long | A bank safe opens only at 03:00 game time, for 20 min. Opening it is loud | Fame; the safe. Offered only when 03:00 is at most 3 real hours away |
-| 11 | The Bell Order | Haven | Known | ★ Elder: more Fame | Ring three village bells in the order on a hymn sheet, at most 15 min apart | Fame; heat and infection drop at the safehouse. Wrong: a horde, start over |
-| 12 | Lights in the Window | Bastion | Known, night | ★ Radio Op: Morse on the radio too | A lamp blinks a code word in Morse. Decode it and reach the right meeting place | Fame; a pack |
+| 11 | The Bell Order | Haven | Known | ★ Elder: more Fame | Ring three village bells in the order on a hymn sheet, at most 15 min apart | Fame; heat and infection drop at the Haven safehouse in the least infected town (with no safehouses: the safest town). Wrong: a horde, start over |
+| 12 | Lights in the Window | Bastion | Known, night | ★ Radio Op: Morse on the radio too | A lamp blinks a code word in Morse. Decode it and reach the right meeting place (the middle of a grid square, within 45 m) | Fame; a pack. A wrong meeting place first: fails |
 | 13 | Junction Boxes | Bastion | Any | ★ Mechanic: one more switch named | Four fuse boxes, two switches each, lights-out wiring. Get all eight green | Fame; the substation's contents |
 | 14 | The Weighing Vault | Haven | Known | ★ Mechanic: reads to 0.1 kg | Fill a scale crate to the weight in a riddle (±0.2 kg) | Fame; the vault. *Simplified option:* count items instead of weight (a setting) |
-| 15 | The Last Experiment | Halcyon | Trusted | ★ Lab Tech: first letter given | Each missing researcher's belongings carry one letter of a password. Type it on the keypad | Big research. Three wrong: wiped |
+| 15 | The Last Experiment | Halcyon | Trusted | ★ Lab Tech: first letter given | Each missing researcher's belongings carry one letter of a password (no password is an anagram of another word). Type it on the keypad | Big research. Three wrong: wiped |
 | 16 | The Silent Village | Haven | Trusted | ★ Elder: more Fame | A village with no infected. Find what's under the church, then **burn it**, **seal it**, or **let Halcyon study it** | Depends on the choice |
 | 17 | The Witness | Haven | Known, night | ★ Police: talks by day too | A wanderer saw a Haven courier killed. His story points to a camp. **Report it to the Haven** or **sell it to the Red Hand** | Depends on the choice |
 
@@ -288,7 +288,7 @@ leads** and **being noticed** ([DESIGN.md](DESIGN.md), "Heat and noise"). Code: 
 | 7 | Barter Chain | Haven, through three wanderers | | Each wants what the next has; the last wants food | Small Fame, Favor; all three remember you | ✅ *only the food changes hands* |
 | 8 | Distraction | Any faction | | Someone makes noise across the street while someone else searches a guarded cellar for 3 minutes | Fame, Favor, a reward crate. Doable alone with alarm clocks | ✅ |
 | 9 | Medicine Before Dark | Haven (for a Doctor wanderer) | ★ Nurse/Doctor: more Fame | Bring medicine to a bitten survivor before 20:30 | Fame, Favor; they join a safehouse. Dark first: fails | ✅ |
-| 10 | Quiet Count | Halcyon | ★ Lab Tech: more Fame | Count the specials in a town from outside and write it in a notebook | Fame, Favor, +1 research. Too close: half pay. Wrong: fails | ✅ |
+| 10 | Quiet Count | Halcyon | ★ Lab Tech: more Fame | Count the specials in a town from outside and write it in a notebook | Fame, Favor, +1 research. Too close: half pay. Wrong: fails | ✅ *the town's own infected are cleared and kept out while it runs, so the only specials there are the ones to count* |
 | 11 | Car Keys | Haven, from a Mechanic wanderer ("Ask about cars") | | A car the Mechanic fixed stands in a town 0.5–2.5 km away; its keys are in one of the 5 houses nearest it that have no lock of their own. Search them quietly and drive it back to where you met the Mechanic | Fame, Favor, for the one who asked and whoever went with them. Heat 45+ at the house when the keys turn up: a horde, ×0.7. Hotwired: half | ✅ *a fixable car that already runs (no parts); searching the right house always finds the keys; the Mechanic keeps the car (it leaves the world once nobody sits in it). One at a time, one per player per 30 min* |
 
 Four more designed ideas are covered by existing missions: The Safe Code (The Last Experiment,
@@ -304,8 +304,8 @@ is off. Code: `Missions/Perimeter/`.
 | # | Mission | From | Needs | What you do | Result | Status |
 |---|---|---|---|---|---|---|
 | 1 | The Blind Spot | Red Hand | Known, night | Ten minutes after the offer, a 250 m stretch of the edge goes uncovered for ten minutes. A Red Hand runner waits in the kill zone with a package from the cache it hides there. Take it to a Red Hand drop 500–700 m inland before the drones come back | Fame, Favor. The window closing: fails, and anyone still in the kill zone is shot | ✅ *window in real minutes; offered only if it ends before dawn* |
-| 2 | The Crossing | Haven | Any, night | A Haven runner dropped a medicine package at the waterline (or any dry edge) when a drone found her. Take it out of the warning zone before the drone locks on (45 s with the package), and deliver it | Fame, Favor. Lock-on: the package is shot, fails | ✅ |
-| 3 | Shot at the Line | Any faction | Any | A body lies in the warning zone. Search it without going further; its papers name a stash | Fame, Favor; the stash (a reward crate) | ✅ |
+| 2 | The Crossing | Haven | Any, night | A Haven runner dropped a medicine package at the waterline (or any dry edge) when a drone found her. Take it out of the warning zone before the drone locks on (45 s with the package), and deliver it to the Haven safehouse in the least infected town | Fame, Favor. Lock-on: the package is shot, fails | ✅ *with no safehouses, a Haven drop in the safest town* |
+| 3 | Shot at the Line | Any faction | Any | A body lies in the warning zone. Search it without going further; its papers name a stash | Fame, Favor; the stash (a reward crate) | ✅ *the stash sits in the middle of the grid square the papers give and is found within 45 m* |
 
 ## Haven house contracts
 
@@ -344,7 +344,7 @@ Personal jobs that Independent and Rogue leaders give **in person**, off their s
 | 8 | Hidden Stores | Haven, Rogue | Move the council head's hidden stash before the count (20 min) | Paid. Fail it: the leader is discovered. Turn it in: +5 food | ✅ |
 | 9 | Hearts and Minds | Bastion, Independent | Rations to a Haven safehouse, against orders | +4 food; Haven Fame +4 | ✅ |
 | 10 | The Real Orders | Bastion, Independent | Recover command's last orders from a dead courier (guarded) | To the commander or to the stronghold, with different loyalty effects | ✅ |
-| 11 | Training Day | Bastion, Independent | Stand with raw recruits at a town's edge for 4 min (3 waves) | Paid | ✅ *recruits are real only with the survivor group prefab* |
+| 11 | Training Day | Bastion, Independent | Stand with raw recruits at a town's edge for 4 min (3 waves) | Paid | ✅ *recruits are real only with the survivor group prefab; they turn up when a player is within 300 m. All of them killed: fails* |
 | 12 | Local Law | Bastion, Independent | Two families fight over a well. Hear both, then decide | Split: full pay. One side: 80%, the other leaves | ✅ |
 | 13 | Rifles for Sale | Bastion, Rogue | Army rifles to a Red Hand buyer | Red Hand Fame +4 | ✅ |
 | 14 | Off-Book Requisition | Bastion, Rogue | Collect a "contribution" from a village | All: +6 Haven Infamy, −4 food. Half: 60% pay. Pay it yourself: 15 Bastion Favor | ✅ |

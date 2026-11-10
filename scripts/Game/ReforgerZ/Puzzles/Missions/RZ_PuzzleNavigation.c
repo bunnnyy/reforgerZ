@@ -1,6 +1,48 @@
 //! Puzzle missions: navigation. See docs/MISSIONS.md, "Puzzle missions".
 
 //------------------------------------------------------------------------------------------------
+//! A stash with no prop of its own (Numbers Station, Hot and Cold, Shot at the Line): a grid
+//! reference only narrows it to a 100 m square, so it's found within FIND_RADIUS, and the reward
+//! crate is put a few steps in front of the finder, toward the hidden point.
+class RZ_HiddenStash
+{
+	static const float FIND_RADIUS = 45;
+	protected static const float FOUND_STEP = 8;
+
+	//------------------------------------------------------------------------------------------------
+	//! The centre of the 100 m grid square pos is in (RZ_SettlementScanner.GridReference).
+	static vector GridSquareCentre(vector pos)
+	{
+		vector c = pos;
+		c[0] = Math.Floor(pos[0] / 100) * 100 + 50;
+		c[2] = Math.Floor(pos[2] / 100) * 100 + 50;
+		return RZ_Util.GroundPos(c);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the nearest player finds it: FOUND_STEP in front of them, or the point itself.
+	static vector FoundAt(array<IEntity> players, vector target)
+	{
+		float best = -1;
+		vector from = target;
+		foreach (IEntity p : players)
+		{
+			float d = RZ_Util.DistXZ(p.GetOrigin(), target);
+			if (best >= 0 && d >= best)
+				continue;
+
+			best = d;
+			from = p.GetOrigin();
+		}
+
+		if (best < 0 || best <= FOUND_STEP)
+			return target;
+
+		return RZ_Compass.PointAt(from, RZ_Compass.Bearing(from, target), FOUND_STEP);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! #1 The Numbers Station: a note gives a frequency; only one of three radio masts
 //! carries it. The broadcast is a grid reference with every third number a decoy.
 //! ★ Radio Operator: hears the broadcast without the note or the mast.
@@ -40,7 +82,10 @@ class RZ_Mission_NumbersStation : RZ_PuzzleMission
 			return false;
 
 		m_vPos = s.m_vCenter;
-		m_vStash = LandPointNear(s.m_vCenter, s.m_fRadius + 300, s.m_fRadius + 1500);
+		// The broadcast is a grid square: the stash sits in its middle
+		m_vStash = RZ_HiddenStash.GridSquareCentre(LandPointNear(s.m_vCenter, s.m_fRadius + 300, s.m_fRadius + 1500));
+		if (RZ_Util.IsWater(m_vStash))
+			return false;
 
 		// Three masts on high ground, at different bearings from the town
 		array<string> freqs = {};
@@ -137,8 +182,11 @@ class RZ_Mission_NumbersStation : RZ_PuzzleMission
 			gm.NotifyPlayer(playerId, "On your set", "You find it yourself, between two dead channels. " + BroadcastText() + " Every third number is padding: the rhythm gives it away.");
 		}
 
-		if (ReachedBy(ids, players, m_vStash, 10))
+		if (ReachedBy(ids, players, m_vStash, RZ_HiddenStash.FIND_RADIUS))
+		{
+			m_vStash = RZ_HiddenStash.FoundAt(players, m_vStash);
 			m_eState = RZ_EMissionState.SUCCEEDED;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -186,7 +234,8 @@ class RZ_Mission_TwoBearings : RZ_PuzzleMission
 			return false;
 
 		m_vTarget = LandPointNear(s.m_vCenter, s.m_fRadius + 200, s.m_fRadius + 1200);
-		m_vPos = m_vTarget;
+		// Never the answer: the journal and map show the town; the pieces' grids are the clue
+		m_vPos = s.m_vCenter;
 
 		// Bearing from the target out to each piece; the lines cross at 55-125 degrees
 		float out1 = m_Rng.Range(0, 360);
@@ -428,17 +477,19 @@ class RZ_Mission_HotAndCold : RZ_PuzzleMission
 		m_vPos = s.m_vCenter;
 		m_vBeacon = LandPointNear(s.m_vCenter, s.m_fRadius + 300, s.m_fRadius + 900);
 		m_sTitle = "Hot and Cold";
-		m_sBrief = string.Format("A survivor's emergency beacon is chirping somewhere in the fields around %1. Carry a radio and you'll hear it: the louder it gets, the closer you are. It's small. Get within a few steps.", s.m_sName);
+		m_sBrief = string.Format("A survivor's emergency beacon is chirping somewhere in the fields around %1. Carry a radio and you'll hear it: the louder it gets, the closer you are. It's small, so follow it until it's right on top of you.", s.m_sName);
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! 0 = nothing, 1 faint, 2 clear, 3 loud, 4 very loud
+	//! 0 = nothing, 1 faint, 2 clear, 3 louder, 4 loud, 5 very close (found at FIND_RADIUS)
 	protected static int Level(float d)
 	{
-		if (d < 60)
-			return 4;
+		if (d < 100)
+			return 5;
 		if (d < 200)
+			return 4;
+		if (d < 350)
 			return 3;
 		if (d < 500)
 			return 2;
@@ -452,8 +503,9 @@ class RZ_Mission_HotAndCold : RZ_PuzzleMission
 	{
 		switch (level)
 		{
-			case 4: return "The chirp is right on top of you. Look down.";
-			case 3: return "Loud and steady. Close now.";
+			case 5: return "Very loud and sharp. It's within a stone's throw. Walk slowly and keep listening.";
+			case 4: return "Loud and steady. Close now.";
+			case 3: return "Louder. Keep going this way.";
 			case 2: return "Clear. You're heading the right way, or near it.";
 			case 1: return "Faint, under the static.";
 		}
@@ -493,15 +545,18 @@ class RZ_Mission_HotAndCold : RZ_PuzzleMission
 
 			int previous = -1;
 			m_mLastLevel.Find(playerId, previous);
-			if (previous == level && level < 3)
+			if (previous == level && level < 4)
 				continue;
 
 			m_mLastLevel.Set(playerId, level);
 			gm.NotifyPlayer(playerId, "Beacon", LevelText(level));
 		}
 
-		if (ReachedBy(ids, players, m_vBeacon, 10))
+		if (ReachedBy(ids, players, m_vBeacon, RZ_HiddenStash.FIND_RADIUS))
+		{
+			m_vBeacon = RZ_HiddenStash.FoundAt(players, m_vBeacon);
 			m_eState = RZ_EMissionState.SUCCEEDED;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

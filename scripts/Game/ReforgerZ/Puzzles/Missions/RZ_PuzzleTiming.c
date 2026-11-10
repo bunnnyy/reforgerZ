@@ -236,13 +236,15 @@ class RZ_Mission_TimeLockSafe : RZ_PuzzleMission
 
 //------------------------------------------------------------------------------------------------
 //! #11 The Bell Order (Haven): ring three village church bells in the order a
-//! hymn sheet gives. Right order: the horde around the Haven safehouse follows the
-//! sound away (heat and infection drop there). Wrong bell: a horde comes for the
+//! hymn sheet gives. Right order: the horde around the Haven safehouse (the one in the least
+//! infected town; with no safehouses, simply the safest town) follows the sound away (heat and
+//! infection drop there). Wrong bell: a horde comes for the
 //! ringer and the order starts over. Up to 15 minutes between bells, so it works
 //! solo; a group is faster. ★ Elder: more Fame.
 class RZ_Mission_BellOrder : RZ_PuzzleMission
 {
 	protected int m_iHaven = -1;
+	protected bool m_bSafehouse;		// m_iHaven has a real Haven safehouse
 	protected ref array<int> m_aOrder = {};
 	protected ref array<int> m_aVillages = {};
 	protected ref array<vector> m_aBells = {};
@@ -273,10 +275,26 @@ class RZ_Mission_BellOrder : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iHaven = PickSafestSettlement(gm);
+		vector sheetAt;
+		RZ_Safehouse house = RZ_ContractHelp.Safehouse(gm, RZ_SafehousePick.Safest(gm, true));
+		if (house)
+		{
+			m_bSafehouse = true;
+			m_iHaven = house.m_iSettlement;
+		}
+		else
+		{
+			m_iHaven = PickSafestSettlement(gm);
+		}
+
 		RZ_Settlement haven = gm.GetSettlement(m_iHaven);
 		if (!haven || gm.GetMissions().IsSettlementBusy(m_iHaven))
 			return false;
+
+		if (house)
+			sheetAt = LandPointNear(house.m_vPos, 3, 8);
+		else
+			sheetAt = LandPointNear(haven.m_vCenter, 0, haven.m_fRadius * 0.3);
 
 		m_iSettlement = m_iHaven;
 		m_vPos = haven.m_vCenter;
@@ -308,11 +326,15 @@ class RZ_Mission_BellOrder : RZ_PuzzleMission
 
 		int hymn = AddClue("Hymn sheet", string.Format("Hymn 114. Someone has pencilled new words over the old ones:\n\"Ring first in %1, so they look away,\nthen in %2, so they start walking,\nand last in %3, so they keep going.\nNever out of turn. They come to the wrong bell.\"\nUnderneath, smaller: \"Father Anselm's trick. It worked once.\"",
 			VillageName(gm, m_aOrder[0]), VillageName(gm, m_aOrder[1]), VillageName(gm, m_aOrder[2])));
-		SpawnClue(gm, RZ_EPuzzleProp.CLUE, LandPointNear(haven.m_vCenter, 0, haven.m_fRadius * 0.3), hymn, "Read the hymn sheet");
+		SpawnClue(gm, RZ_EPuzzleProp.CLUE, sheetAt, hymn, "Read the hymn sheet");
 
 		gm.GetHeat().AddHeat(haven.m_vCenter, 30);
 		m_sTitle = "The Bell Order";
-		m_sBrief = string.Format("The dead are circling the Haven safehouse in %1. The old preacher had a trick: ring three village bells in the right order and they follow the sound away. The order is on a hymn sheet at the safehouse. Ring one out of turn and they come to you instead.", haven.m_sName);
+		if (m_bSafehouse)
+			m_sBrief = string.Format("The dead are circling the Haven safehouse in %1. The old preacher had a trick: ring three village bells in the right order and they follow the sound away. The order is on a hymn sheet at the safehouse. Ring one out of turn and they come to you instead.", haven.m_sName);
+		else
+			m_sBrief = string.Format("The dead are circling %1, and there are still people holding out there. The old preacher had a trick: ring three village bells in the right order and they follow the sound away. The order is on a hymn sheet in the town. Ring one out of turn and they come to you instead.", haven.m_sName);
+
 		return true;
 	}
 
@@ -365,7 +387,11 @@ class RZ_Mission_BellOrder : RZ_PuzzleMission
 		gm.GetHeat().AddHeat(m_aBells[objIdx], 20);
 		if (m_iStep >= 3)
 		{
-			NotifyParticipants(gm, m_sTitle, "The third bell rings out. Far off, the crowd around the safehouse starts to drift after it.");
+			if (m_bSafehouse)
+				NotifyParticipants(gm, m_sTitle, "The third bell rings out. Far off, the crowd around the safehouse starts to drift after it.");
+			else
+				NotifyParticipants(gm, m_sTitle, "The third bell rings out. Far off, the crowd around the town starts to drift after it.");
+
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}
@@ -382,24 +408,31 @@ class RZ_Mission_BellOrder : RZ_PuzzleMission
 
 		gm.GetHeat().AddHeat(haven.m_vCenter, -200);
 		haven.AddInfection(-8);
-		gm.NotifyAll("The Haven", string.Format("Bells were heard across the valley tonight. The safehouse in %1 says the dead have drifted away.", haven.m_sName));
+		if (m_bSafehouse)
+			gm.NotifyAll("The Haven", string.Format("Bells were heard across the valley tonight. The safehouse in %1 says the dead have drifted away.", haven.m_sName));
+		else
+			gm.NotifyAll("The Haven", string.Format("Bells were heard across the valley tonight. People in %1 say the dead have drifted away.", haven.m_sName));
 	}
 }
 
 //------------------------------------------------------------------------------------------------
 //! #12 Lights in the Window (Bastion): at night a lamp in a distant building blinks a
 //! code word in Morse. The signal card at the scout post has the alphabet and the
-//! code words for four meeting places. Reach the right one.
+//! code words for four meeting places. Reach the right one: reaching a wrong one first fails it
+//! (the observer won't wait for someone who can't read the light). Each meeting place is the
+//! middle of the grid square the card gives (RZ_HiddenStash).
 //! ★ Radio Operator: catches the word on the radio as well.
 class RZ_Mission_LightsInTheWindow : RZ_PuzzleMission
 {
 	protected ref RZ_BlinkingLight m_Light;
 	protected vector m_vLight;
 	protected vector m_vMeeting;
+	protected ref array<vector> m_aWrongPlaces = {};
 	protected string m_sWord;
 	protected ref array<int> m_aToldOps = {};
 
 	protected static const float SEE_RANGE = 2500;
+	protected static const float MEETING_GAP = 300;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -449,12 +482,27 @@ class RZ_Mission_LightsInTheWindow : RZ_PuzzleMission
 		m_Rng.ShuffleStrings(words);
 		int right = m_Rng.Int(0, 4);
 		string book = "";
+		array<vector> places = {};
 		for (int i = 0; i < 4; i++)
 		{
-			vector place = LandPointNear(post.m_vCenter, 500, 2500);
+			// Grid square centres, on land, far enough apart that no two can be mistaken
+			vector place;
+			bool found = false;
+			for (int tries = 0; tries < 10 && !found; tries++)
+			{
+				place = RZ_HiddenStash.GridSquareCentre(LandPointNear(post.m_vCenter, 500, 2500));
+				found = !RZ_Util.IsWater(place) && !IsNearAnyPoint(place, places, MEETING_GAP);
+			}
+
+			if (!found)
+				return false;
+
+			places.Insert(place);
 			book += string.Format("%1: %2\n", words[i], PlaceText(gm, place));
 			if (i == right)
 				m_vMeeting = place;
+			else
+				m_aWrongPlaces.Insert(place);
 		}
 
 		m_sWord = words[right];
@@ -498,8 +546,40 @@ class RZ_Mission_LightsInTheWindow : RZ_PuzzleMission
 			}
 		}
 
-		if (ReachedBy(ids, players, m_vMeeting, 20))
+		// Guessing doesn't work: a player who has read the card and turns up at a wrong place first ends it
+		foreach (int j, IEntity q : players)
+		{
+			if (!m_aParticipants.Contains(ids[j]))
+				continue;
+
+			foreach (vector wrong : m_aWrongPlaces)
+			{
+				if (RZ_Util.DistXZ(q.GetOrigin(), wrong) > RZ_HiddenStash.FIND_RADIUS)
+					continue;
+
+				gm.NotifyPlayer(ids[j], m_sTitle, "Nobody here, and nobody coming. Wrong place. Somewhere out there, a lamp goes dark for good.");
+				m_eState = RZ_EMissionState.FAILED;
+				return;
+			}
+		}
+
+		if (ReachedBy(ids, players, m_vMeeting, RZ_HiddenStash.FIND_RADIUS))
+		{
+			m_vMeeting = RZ_HiddenStash.FoundAt(players, m_vMeeting);
 			m_eState = RZ_EMissionState.SUCCEEDED;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsNearAnyPoint(vector pos, array<vector> others, float dist)
+	{
+		foreach (vector o : others)
+		{
+			if (RZ_Util.DistXZ(pos, o) < dist)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -517,5 +597,41 @@ class RZ_Mission_LightsInTheWindow : RZ_PuzzleMission
 
 		m_Light = null;
 		super.Cleanup(gm);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A real Haven safehouse for missions that name one (The Bell Order, The Crossing).
+class RZ_SafehousePick
+{
+	//------------------------------------------------------------------------------------------------
+	//! The safehouse in the least infected town, -1 if there are none. skipBusy: not in a town
+	//! another mission holds.
+	static int Safest(RZ_GameModeComponent gm, bool skipBusy)
+	{
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (!houses)
+			return -1;
+
+		int best = -1;
+		float bestInfection = 1000;
+		for (int i = 0; i < houses.Count(); i++)
+		{
+			RZ_Safehouse h = houses.Get(i);
+			if (!h || h.m_iSettlement < 0)
+				continue;
+
+			if (skipBusy && gm.GetMissions().IsSettlementBusy(h.m_iSettlement))
+				continue;
+
+			RZ_Settlement s = gm.GetSettlement(h.m_iSettlement);
+			if (!s || s.m_fInfection >= bestInfection)
+				continue;
+
+			best = i;
+			bestInfection = s.m_fInfection;
+		}
+
+		return best;
 	}
 }

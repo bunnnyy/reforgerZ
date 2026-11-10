@@ -227,6 +227,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	protected bool m_bLeaned;
 	protected int m_iCollector = -1;
 	protected IEntity m_Locals;
+	protected bool m_bFight;		// the group deletes itself when its last member dies: track the fight here
 	protected float m_fFightAge;
 	protected bool m_bSeenLocals;
 	protected bool m_bExtraInfamy;
@@ -316,6 +317,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 			return;
 		}
 
+		m_bFight = true;
 		m_Locals = RZ_Util.SpawnPrefab(prefab, LandPointNear(m_vPos, 8, 15));
 		RZ_Hostility.MarkFight(RZ_EFaction.SURVIVORS, m_Locals, 120);
 		RZ_ContractHelp.NotifyNear(gm, m_vPos, 120, m_sTitle, "The keeper's people come out with whatever they could grab. They're not paying. Not while they're standing.");
@@ -338,9 +340,10 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		if (!m_Locals)
+		if (!m_bFight || m_eState != RZ_EMissionState.ACTIVE)
 			return;
 
+		// A null group (deleted when empty) counts as zero alive
 		m_fFightAge += dt;
 		int alive = RZ_Util.CountAlive(m_Locals);
 		if (alive > 0)
@@ -1080,6 +1083,8 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 //! market. No stronghold falls, and the Red Hand doesn't win the cure this way: it only delays it.
 class RZ_Mission_TakeTheLab : RZ_Mission_Hold
 {
+	protected bool m_bTaken;
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -1124,10 +1129,17 @@ class RZ_Mission_TakeTheLab : RZ_Mission_Hold
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
+	//! The batch is taken the moment the hold is done: nothing stolen (the stand had already
+	//! ended) is a failure, not an unpaid success.
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
+		super.OnUpdate(gm, dt, ids, players);
+		if (m_eState != RZ_EMissionState.SUCCEEDED || m_bTaken)
+			return;
+
+		m_bTaken = true;
 		if (!gm.GetCure().StealBatch())
-			m_fRewardScale = 0;
+			m_eState = RZ_EMissionState.FAILED;
 	}
 
 	//------------------------------------------------------------------------------------------------

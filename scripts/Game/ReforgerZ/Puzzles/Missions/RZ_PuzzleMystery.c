@@ -220,6 +220,10 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 	protected int m_iWitness = -1;
 	protected bool m_bHeard;
 	protected IEntity m_Group;
+	protected ResourceName m_sGroupPrefab;	// the killers at the camp; empty = none
+	protected bool m_bGroupSpawned;
+
+	protected static const float GROUP_SPAWN_RADIUS = 300;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -283,19 +287,26 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 		int letters = AddClue("The courier's letters", string.Format("In a crate under a tarp: the Haven post, still sealed. Letters from safehouses to families in other towns. %1 died for these.", courier));
 		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_vCamp, 1, "", "Radio the Haven|Sell what you know to the Red Hand", letters, "Search the crate");
 
-		ResourceName groupPrefab = gm.GetRedHandGroupPrefab();
-		if (!groupPrefab.IsEmpty())
-		{
-			m_Group = RZ_Util.SpawnPrefab(groupPrefab, RZ_Util.RandomPointInRing(m_vCamp, 8, 15));
-			TrackProp(m_Group);
-			// The killers shoot strangers who come close; people the Red Hand knows can deal
-			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Group, 150, true);
-		}
+		// The killers wait at the camp; they're spawned when a player comes near (OnUpdate)
+		m_sGroupPrefab = gm.GetRedHandGroupPrefab();
 
 		m_fTimeLeft = NightDuration(2400, 10800, 4800);
 		m_sTitle = "The Witness";
 		m_sBrief = string.Format("A Haven courier was killed on the road outside %1. A wanderer saw it happen, they say, but he only talks after dark, and only where she died. Find out who did it.", s.m_sName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (m_bGroupSpawned || m_sGroupPrefab.IsEmpty() || !RZ_ContractHelp.AnyNear(players, m_vCamp, GROUP_SPAWN_RADIUS))
+			return;
+
+		m_bGroupSpawned = true;
+		m_Group = RZ_Util.SpawnPrefab(m_sGroupPrefab, RZ_Util.RandomPointInRing(m_vCamp, 8, 15));
+		TrackProp(m_Group);
+		// The killers shoot strangers who come close; people the Red Hand knows can deal
+		RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Group, 150, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -329,7 +340,8 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 		m_aParticipants.Insert(playerId);
 		if (option == 0)
 		{
-			if (m_Group)
+			// The camp was a Red Hand camp whether or not its group is still standing
+			if (!m_sGroupPrefab.IsEmpty())
 				SetRival(RZ_EFaction.BANDITS, 10);
 
 			gm.NotifyPlayer(playerId, m_sTitle, "You read out the grid on the Haven channel. A long pause, then: \"Thank you. We'll come for the letters, and for her.\"");
