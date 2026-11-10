@@ -4,7 +4,7 @@ There are two kinds of missions:
 
 - **World events** (28) are announced to everyone, and anyone can take part.
   They are what makes strangers meet: a horde, a helicopter wreck, a town about to be shelled.
-- **Faction contracts** (20 per faction, plus 17 puzzle missions) are offered only to players who
+- **Faction contracts** (20 per faction, plus 17 puzzle missions and 3 Perimeter missions) are offered only to players who
   qualify, by radio or at the faction's contact. A contract belongs to the
   person or group that accepts it. Others can still turn up and interfere.
 
@@ -249,6 +249,33 @@ How they work in code:
   Clue and object positions are given as town names and grid references.
 - Missions turn themselves off when a prefab they need is missing: see
   [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "Puzzle prefabs".
+
+## Perimeter missions: 3 contracts
+
+The only links to the outside, at the edge of the map (the Perimeter, see
+[LORE.md](LORE.md)). They're rare and dangerous on purpose, and nothing is built for them:
+no fences, no towers. Each is a normal contract (requirements, Fame and Favor as above),
+works on any map (positions come from the edge rectangle, found automatically), and deletes
+what it spawned when it ends. They never appear while the Perimeter is off. Code:
+`Scripts/Game/ReforgerZ/Missions/Perimeter/`.
+
+| # | Mission | From | Needs | What you do | Result |
+|---|---|---|---|---|---|
+| 1 | The Blind Spot ✅ | Red Hand | Known, night | The drones run a rotation. Ten minutes after the offer, a 250 m stretch of the edge goes uncovered for ten minutes: no drone, no shots there. A smuggler waits just inside the line (in the kill zone). Reach him, take the package, and hand it in at the Red Hand drop 500-700 m inland before the drones come back | Fame, Favor. The window closing fails it, and anyone still in the kill zone gets the warning shot, then the fatal one |
+| 2 | The Crossing ✅ | Haven | Any, night | Someone outside left a sealed medicine package at the edge, inside the warning zone: at the waterline if the edge there is coast, else at the treeline. Take it out of the warning zone before the drone locks on, and deliver it to the Haven drop in the safest town | Fame, Favor. Lock-on: one shot destroys the package (not you) and the mission fails |
+| 3 | Shot at the Line ✅ | Any faction (picked each time) | Any | A body lies in the warning zone, 20-50 m short of the kill zone. Search it without going further: the papers name where the dead person left what they couldn't carry. Go there | Fame, Favor; the stash (reward crate) |
+
+Simplifications in code:
+
+- **Night** is the game clock's night (20:30 to 05:00). The Blind Spot is only offered when the
+  whole window fits before dawn.
+- **The Blind Spot's window** counts in real minutes from the offer, not game time.
+- **"Treeline"** is just any dry edge: trees aren't detected. The waterline is the first dry
+  ground walking in from the edge after water.
+- **Lock-on** counts the carrier's total time in the warning zone with the package (45 s),
+  not one continuous stay. Dropping it stops the count.
+- **The smuggler** is scenery: reaching him hands over the package. The first player to reach
+  him gets it, hired or not.
 
 ## Character-type summary
 

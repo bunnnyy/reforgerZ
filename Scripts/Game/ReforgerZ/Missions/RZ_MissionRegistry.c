@@ -75,6 +75,11 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_SilentVillage);
 		mgr.RegisterType(RZ_Mission_TheWitness);
 
+		// Perimeter missions (Missions/Perimeter/)
+		mgr.RegisterType(RZ_Mission_BlindSpot);
+		mgr.RegisterType(RZ_Mission_TheCrossing);
+		mgr.RegisterType(RZ_Mission_ShotAtTheLine);
+
 		// World events
 		mgr.RegisterType(RZ_Event_CrashedHelicopter);
 		mgr.RegisterType(RZ_Event_HordeMigration);

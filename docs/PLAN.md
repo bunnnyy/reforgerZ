@@ -56,6 +56,9 @@ Out of scope: sleep and time skipping.
 | Seeded note text: names, days, personal lines in the Zone's voice | `Puzzles/RZ_NoteText.c` | Written |
 | Zombie-free settlements while a mission runs (The Silent Village) | `Zombies/RZ_ZombieSpawner.c` | Written |
 | Government broadcast: a looping flavour message whose tone follows the Zone's state | `Director/RZ_Broadcast.c` | Written |
+| The Perimeter: map edge from the world bounds fitted to land, warning zone (drone, loudspeaker), kill zone (warning shot, then fatal), blind spots | `World/RZ_Perimeter.c` | Written |
+| Sealed road checkpoints from the road network, or hand-placed markers | `World/RZ_Perimeter.c`, `RZ_CheckpointMarkerEntity.c` | Written |
+| Perimeter missions: The Blind Spot, The Crossing, Shot at the Line | `Missions/Perimeter/` | Written |
 
 **None of it has been compiled yet.** It was written outside Workbench. Calls
 marked `// VERIFY:` are engine APIs whose exact names can differ between
@@ -89,7 +92,7 @@ and change ReforgerZ systems, so they work with any other mods loaded.
 Two kinds, described in full in [MISSIONS.md](MISSIONS.md):
 
 - **World events** (10 in code) are announced to everyone, and anyone who takes part shares the reward.
-- **Faction contracts** (42 in code, plus 17 puzzle missions) are offered only to players who meet their requirements:
+- **Faction contracts** (42 in code, plus 17 puzzle missions and 3 Perimeter missions) are offered only to players who meet their requirements:
   tier with the giver, standing with other factions, background, world state and player count.
   There's no "accept" button: eligible players who take part get paid, others get nothing.
   Each player gets at most one new offer a minute, by radio or at the faction's quartermaster.
@@ -151,6 +154,9 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Noisemakers and "being noticed" (WORLD.md, unarmed missions)
 - [ ] Make the puzzle prefabs (note, generic puzzle object, keypad, scale crate, Morse lamp, noisemakers) and play-test each puzzle
 - [ ] The other unarmed missions in WORLD.md (Pharmacy Lure, Silent Courier, The Safe Code...) on the puzzle framework
+- [x] The Perimeter: warning and kill zones, one drone per player, sealed road checkpoints, government broadcast
+- [x] 3 Perimeter missions: The Blind Spot, The Crossing, Shot at the Line
+- [ ] Make the Perimeter prefabs (drone, warning shot, barricade, guard, smuggler, package, body) and test the edge on an island map and a land-locked one
 
 ### Phase 3: factions with teeth
 - [x] Fame / Infamy / Favor, standing tiers, rival Infamy, Champion carry-over
@@ -197,3 +203,5 @@ Every system finds its locations from `RZ_Settlement`, so for a new map:
 3. If the map has no name labels and few buildings, place a handful of
    `RZ_SettlementMarkerEntity` entities. Placing any markers turns off auto-detection.
 4. Optionally place a lab prefab. Otherwise one spawns in a random town.
+5. Check the logged Perimeter rectangle and checkpoint count. If the edge is wrong, set the
+   override rectangle; for checkpoints on roads the scan missed, place `RZ_CheckpointMarkerEntity` entities.

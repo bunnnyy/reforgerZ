@@ -276,9 +276,13 @@ class RZ_Mission_Delivery : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool SpawnItem(RZ_GameModeComponent gm, vector pos)
+	//! The mission item, or `prefab` if given (it needs RZ_MissionItemComponent too).
+	protected bool SpawnItem(RZ_GameModeComponent gm, vector pos, ResourceName prefab = "")
 	{
-		m_Item = RZ_Util.SpawnPrefab(gm.GetMissionItemPrefab(), RZ_Util.GroundPos(pos) + Vector(0, 0.3, 0));
+		if (prefab.IsEmpty())
+			prefab = gm.GetMissionItemPrefab();
+
+		m_Item = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(pos) + Vector(0, 0.3, 0));
 		if (!m_Item)
 			return false;
 

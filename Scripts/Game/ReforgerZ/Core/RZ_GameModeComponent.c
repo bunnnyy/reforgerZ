@@ -173,6 +173,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Morse light: a lamp with RZ_BlinkLightComponent (or any light prefab: it's then spawned per flash). Enables Lights in the Window", "et", category: "ReforgerZ|Puzzles")]
 	protected ResourceName m_sBlinkLightPrefab;
 
+	// ---------------------------------------------------------------- Perimeter
+	[Attribute(desc: "The Perimeter: the edge of the map as the quarantine line (warning zone, kill zone, drones, road checkpoints) and the prefabs for its missions", category: "ReforgerZ|Perimeter")]
+	protected ref RZ_PerimeterSettings m_PerimeterSettings;
+
 	// ---------------------------------------------------------------- Survival
 	[Attribute("3", desc: "Heat per shot fired by a player (times the background noise multiplier)", category: "ReforgerZ|Survival")]
 	protected float m_fHeatPerShot;
@@ -241,6 +245,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_BiteDetector m_BiteDetector;
 	protected ref RZ_FactionPerks m_Perks;
 	protected ref RZ_Broadcast m_Broadcast;
+	protected ref RZ_Perimeter m_Perimeter;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -299,6 +304,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_ZombieSettings)
 			m_ZombieSettings = new RZ_ZombieSettings();
 
+		if (!m_PerimeterSettings)
+			m_PerimeterSettings = new RZ_PerimeterSettings();
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -313,6 +321,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_BiteDetector = new RZ_BiteDetector(this, m_fBiteChance, m_fBiteReach);
 		m_Perks = new RZ_FactionPerks(this);
 		m_Broadcast = new RZ_Broadcast(this);
+		m_Perimeter = new RZ_Perimeter(this, m_PerimeterSettings);
 
 		bool loaded = false;
 		if (!m_bWipeOnStart)
@@ -331,6 +340,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_aSettlements.IsEmpty())
 			RZ_Log.Error("No settlements found on this map. Place RZ_SettlementMarkerEntity entities in the world.");
+
+		// Before anything is placed, so missions, spawn points and quartermasters keep off the line
+		m_Perimeter.Init();
 
 		SetupLab();
 		m_Perks.SetupQuartermasters();
@@ -366,6 +378,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Director.Tick(dt);
 		m_Spawner.Tick(dt, players);
 		m_Missions.Tick(dt, ids, players);
+		m_Perimeter.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
 		m_Perks.Tick(dt, ids, players);
 		m_Broadcast.Tick(dt, m_fBroadcastMinutes);
@@ -426,6 +439,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	float GetHunterSquadMinutes() { return m_fHunterSquadMinutes; }
 	float GetBountyMinutes() { return Math.Max(1, m_fBountyMinutes); }
 	RZ_FactionPerks GetPerks() { return m_Perks; }
+	RZ_Perimeter GetPerimeter() { return m_Perimeter; }
 	string GetLandmarkFallbackName() { return m_sLandmarkName; }
 	bool ScaleCountsItems() { return m_bScaleCountsItems; }
 
@@ -449,9 +463,34 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			case RZ_EPuzzleProp.RADIO_MAST: return PuzzleFallback(m_sRadioMastPrefab, m_sPuzzleObjectPrefab);
 			case RZ_EPuzzleProp.SAFE: return PuzzleFallback(m_sSafePrefab, m_sPuzzleObjectPrefab);
 			case RZ_EPuzzleProp.CIVILIAN: return PuzzleFallback(m_sCivilianPrefab, m_sPuzzleObjectPrefab);
+			case RZ_EPuzzleProp.SMUGGLER: return PuzzleFallback(GetPerimeterPrefab(0), GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN));
+			case RZ_EPuzzleProp.LINE_BODY: return PuzzleFallback(GetPerimeterPrefab(1), GetPuzzlePrefab(RZ_EPuzzleProp.BODY));
 		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sealed package for the Perimeter missions: its own slot, else the mission item.
+	ResourceName GetPerimeterPackagePrefab()
+	{
+		return PuzzleFallback(GetPerimeterPrefab(2), m_sMissionItemPrefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! 0 smuggler, 1 body at the line, 2 package. "" if not set.
+	protected ResourceName GetPerimeterPrefab(int which)
+	{
+		if (!m_PerimeterSettings)
+			return "";
+
+		if (which == 0)
+			return m_PerimeterSettings.m_sSmugglerPrefab;
+
+		if (which == 1)
+			return m_PerimeterSettings.m_sLineBodyPrefab;
+
+		return m_PerimeterSettings.m_sPackagePrefab;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1330,7 +1369,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			guard++;
 			RZ_Settlement town = m_aSettlements[candidates.GetRandomElement()];
 			vector pos = RZ_Util.RandomPointInRing(town.m_vCenter, 0, town.m_fRadius * 0.8);
-			if (RZ_Util.IsWater(pos))
+			if (RZ_Util.IsWater(pos) || m_Perimeter.IsNearLine(pos))
 				continue;
 
 			IEntity ent = RZ_Util.SpawnPrefab(m_sSpawnPointPrefab, pos, Math.RandomFloat(0, 360));

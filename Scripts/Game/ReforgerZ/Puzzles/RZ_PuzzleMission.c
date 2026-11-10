@@ -16,7 +16,9 @@ enum RZ_EPuzzleProp
 	SCALE,			// a crate with storage + puzzle object (no fallback: needs storage)
 	CIVILIAN,		// a person to talk to (falls back to OBJECT)
 	LANDMARK,		// a distinctive prop when the town has no landmark building
-	LIGHT			// Morse light (no fallback)
+	LIGHT,			// Morse light (no fallback)
+	SMUGGLER,		// The Blind Spot's smuggler (Perimeter slot, falls back to CIVILIAN)
+	LINE_BODY		// Shot at the Line's body (Perimeter slot, falls back to BODY)
 }
 
 //! Base for puzzle missions (docs/MISSIONS.md, "Puzzle missions").

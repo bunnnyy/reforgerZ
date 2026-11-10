@@ -21,7 +21,7 @@ grep -rn "VERIFY" Scripts/
 Each one is an engine API whose exact name or signature I couldn't confirm
 for the current game version. Usually the fix is a rename. Look up the class in
 the Script Editor or in the [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
-They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 56 of them
+They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 65 of them
 (one is the comment in `RZ_Util.c` that explains them).
 
 The riskiest ones in the puzzle missions (`Puzzles/`):
@@ -42,6 +42,18 @@ The riskiest ones in the puzzle missions (`Puzzles/`):
 - **Light visibility** (`SetFlags`/`ClearFlags(EntityFlags.VISIBLE)`): if it doesn't hide the
   lamp, remove `RZ_BlinkLightComponent` from the lamp prefab; the light is then spawned and
   deleted for each flash instead (slower Morse).
+
+The riskiest ones in the Perimeter (`World/RZ_Perimeter.c`):
+
+- **Map edge** (`BaseWorld.GetBoundBox()`): if the logged rectangle is wrong, turn on
+  **Override** in the Perimeter settings and type in the corners.
+- **Road network** (`SCR_AIWorld.GetRoadNetworkManager()`, `RoadNetworkManager.GetRoadsInAABB()`,
+  `BaseRoad.GetPoints()`/`GetWidth()`): finds where roads reach the edge. If these don't compile,
+  empty the body of `FindRoadExits()` and place `RZ_CheckpointMarkerEntity` entities instead.
+- **Drone attachment** (`IEntity.AddChild()`): the drone is attached to the player so it follows
+  them. If that fails it's moved over them on each tick instead (`SetOrigin()`, jumpier).
+- **Untouchable guards** (`EnableDamageHandling(false)`): guards stand outside the playable area
+  anyway; if this fails they can be shot from inside, so use a prop or a character without AI.
 
 Two files can simply be deleted if they won't compile, because nothing else depends on them:
 
@@ -207,6 +219,44 @@ A thrown noisemaker counts when it was carried at one tick and lies at least 4 m
 the carrier stood at the next. Other mods (car alarms...) can call
 `RZ_GameModeComponent.ReportNoise(pos, heat)`.
 
+### The Perimeter
+
+The edge of the map is the quarantine line ([LORE.md](LORE.md), "The Perimeter"). It works
+with no prefabs at all (loudspeaker messages, warning shot as a message, the unseen shooter),
+and each prefab below only adds to it. Settings are on `RZ_GameModeComponent` under
+**Perimeter** (one settings object). Nothing is built along the edge except the checkpoints.
+
+| Prefab | Base | Add | Setting | Used for |
+|---|---|---|---|---|
+| `RZ_Drone.et` | a small quadcopter mesh with a hum sound and a light; **no collision or physics** | `RplComponent` | Drone prefab | hovers over a player in the warning zone, one per player |
+| `RZ_WarningShot.et` | a gunshot sound or bullet impact effect | | Warning shot prefab | the warning shot (deleted after 20 s) |
+| `RZ_Checkpoint.et` | a small composition: concrete blocks and a closed barrier across a road | | Barricade prefab | **required for checkpoints**; they're off without it |
+| `RZ_CheckpointGuard.et` | a soldier character without AI (or a figure prop) | | Guard prefab | 0-4 per checkpoint, outside the playable area, damage turned off |
+| `RZ_Smuggler.et` | a civilian character without AI, or a figure prop | | Smuggler prefab (falls back to Puzzles > Civilian) | The Blind Spot |
+| `RZ_Package.et` | a small sealed box item | `RZ_MissionItemComponent` | Package prefab (falls back to Missions > Mission item) | The Blind Spot, The Crossing |
+| `RZ_LineBody.et` | a body or body bag prop | `RZ_ClueComponent`, `RZ_ReadClueAction` | Line body prefab (falls back to Puzzles > Body, then the note) | Shot at the Line |
+
+The Blind Spot also needs the **Red Hand drop point**, and The Crossing the **Haven drop point**.
+
+**Settings** (defaults in brackets): **Enabled** (on); **Warn distance** (300 m) and
+**Kill distance** (100 m) from the edge; **Grace seconds** (8) between the warning shot and the
+fatal one, rounded up to the server tick; **Fit to land** (on) and **Sea margin** (200 m): the
+edge is pulled in to the outermost dry land plus this margin, so on island maps the line sits
+offshore and only the outer edge counts (raise the margin above the warning distance to keep
+every beach quiet; The Crossing then only uses land edges); **Override** with **Override min/max**
+(x and z of two corners) if the detected rectangle is wrong; **Drone height** (25 m);
+**Checkpoints** (on), **Guards per checkpoint** (2), **Max checkpoints** (6, at most 8),
+**Checkpoint inset** (60 m inside the edge), **Checkpoint spacing** (800 m),
+**Checkpoint warn radius** (150 m) and **Checkpoint kill radius** (60 m).
+
+**Checkpoints** are spawned once at start where roads cross the checkpoint line, widest roads
+first. Island maps often have no road reaching the edge, so no checkpoints. To choose them
+yourself, place `RZ_CheckpointMarkerEntity` entities (a script entity, no prefab needed) on the
+roads, inside the warning zone; placing any turns road detection off. The log says how many
+were built and from what.
+
+Missions, spawn points and quartermasters keep out of the warning zone and away from checkpoints.
+
 ## 4. Factions and backgrounds
 
 In the world's `FactionManager`:
@@ -243,6 +293,8 @@ points, towns or lab are needed, because they're generated at start. Check the l
 
 ```
 [ReforgerZ] Settlement scan: N named, M building clusters, took X ms.
+[ReforgerZ] Perimeter: x A to B, z C to D. Warning zone 300 m, kill zone 100 m.
+[ReforgerZ] Perimeter: N road checkpoints (from roads).
 [ReforgerZ] Started. N settlements, stage Early Outbreak, cure 0 percent ...
 ```
 

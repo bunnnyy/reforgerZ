@@ -362,13 +362,13 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A dry point in a ring (falls back to the last try).
+	//! A dry point in a ring, away from the quarantine line (falls back to the last try).
 	static vector LandPointNear(vector center, float minR, float maxR)
 	{
 		vector p = RZ_Util.RandomPointInRing(center, minR, maxR);
 		for (int i = 0; i < 8; i++)
 		{
-			if (!RZ_Util.IsWater(p))
+			if (!RZ_Util.IsWater(p) && !RZ_Perimeter.IsNearLineAt(p))
 				return p;
 
 			p = RZ_Util.RandomPointInRing(center, minR, maxR);

@@ -46,8 +46,8 @@ cordon is never seen**, only felt. Nothing is built around the edge.
   There's never more than one drone per player near the edge, and none anywhere else.
 - **Kill zone** (about 100 m): one warning shot (a sound and a near miss), then you're
   shot by a sniper you never see.
-- **Road checkpoints, fully sealed:** the only built part of the cordon. Where each
-  main road leaves the map (usually 4–8 per map), the road ends in concrete blocks
+- **Road checkpoints, fully sealed:** the only built part of the cordon. Where main
+  roads leave the map (up to 8 per map; island maps may have none), the road ends in concrete blocks
   and a closed barrier, with guards behind it. They are **not** a way through:
   - Nobody passes in either direction, ever. There are no papers, bribes, trades or talking.
   - Within about 150 m, the loudspeaker warns you. Closer than about 60 m, the guards shoot.
@@ -60,9 +60,9 @@ cordon is never seen**, only felt. Nothing is built around the edge.
 ### Missions that use the Perimeter (no fence assets)
 
 - **The Blind Spot** (Red Hand). The drones run a rotation, and for ten minutes a
-  night one stretch of the edge isn't covered. The Red Hand knows when and where. Be in that
-  stretch inside the window to meet a smuggler on the other side and bring the package
-  back before coverage returns. Arrive late or stay too long and the kill zone is live again.
+  night one stretch of the edge isn't covered. The Red Hand knows when and where. Inside the
+  window, meet a smuggler from the other side, waiting just inside the line, and get the package
+  to the Red Hand before coverage returns. Arrive late or stay too long and the kill zone is live again.
 - **The Crossing** (Haven). Someone outside is getting medicine in: at night, a sealed
   package is left at the waterline or at the treeline right at the edge. Get in, grab it and
   get out of the warning zone before the drone locks on (the "being noticed" timer).
