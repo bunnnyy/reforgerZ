@@ -1,4 +1,4 @@
-//! Infection adapts, a little (docs/WORLD.md, section 4). Small, capped nudges that keep
+//! Infection adapts, a little (docs/DESIGN.md, "Infection adapts"). Small, capped nudges that keep
 //! the late game interesting without making it a wall:
 //!
 //! - Specials: each cure breakthrough makes them slightly more common (+5% of the stage's
@@ -16,7 +16,7 @@
 [BaseContainerProps()]
 class RZ_AdaptationSettings
 {
-	[Attribute("1", desc: "Infection adapts a little: more specials after breakthroughs, one trait per stage, favourite spots (docs/WORLD.md, section 4)")]
+	[Attribute("1", desc: "Infection adapts a little: more specials after breakthroughs, one trait per stage, favourite spots (docs/DESIGN.md, Infection adapts)")]
 	bool m_bEnabled = true;
 
 	[Attribute("0.05", desc: "Specials: extra share of the stage's special chance per cure breakthrough (0.05 = +5%)")]

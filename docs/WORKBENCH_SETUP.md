@@ -126,7 +126,7 @@ The riskiest ones for time and weather (`Director/RZ_Environment.c`). Four are n
   with what the server thinks it is ("night, rain").
 - **The world cast** (`ChimeraWorld.CastFrom`), the same call as the game clock's.
 
-The riskiest ones for world interactions (`Interactions/`, [WORLD.md](WORLD.md), section 10).
+The riskiest ones for world interactions (`Interactions/`, [DESIGN.md](DESIGN.md), section 10).
 Eight markers are new: four new APIs, and four repeats of calls listed above:
 
 - **Finding furniture** (`RZ_Interactions.Scan`: `QueryEntitiesBySphere(..., EQueryEntitiesFlags.STATIC)`
@@ -466,7 +466,7 @@ object and well; each job is skipped while what it needs is missing. Training Da
 ### Territory and supply trucks
 
 Settings are under **Territory** (three settings objects: Territory, Supply, Faction life;
-[WORLD.md](WORLD.md), section 3). Territory needs no prefabs: holdings are data, and every
+[DESIGN.md](DESIGN.md), section 3). Territory needs no prefabs: holdings are data, and every
 prefab below only adds bodies near players. Supply trucks need a truck and a crew per faction,
 plus **Zombies > Move waypoint** (the waypoint they drive to); a faction without them counts its
 outposts as always supplied.
@@ -498,7 +498,7 @@ minutes** (35; 0 = off); **Truces and feuds** (on); **False rumour chance** (0.3
 
 ### New-player guidance
 
-Settings are under **Guidance** ([WORLD.md](WORLD.md), "New-player guidance"). It works with no
+Settings are under **Guidance** ([DESIGN.md](DESIGN.md), "New-player guidance"). It works with no
 prefabs of its own: tips use the leaders, safehouse occupants, wanderers and radios that already
 exist, and scenario clues fall back to **Puzzles > Note** and **Puzzles > Body**. Without those
 either, a scenario's clue text comes with its scene message. Each prefab below only adds to it.
@@ -540,7 +540,7 @@ object used as a clue (the guidance labels them all empty).
 ### Time, weather, the power grid and the radio station
 
 Settings: **Director > Environment**, **World > Power grid**, **World > Radio station**
-([WORLD.md](WORLD.md), section 5). All three work without prefabs of their own: the control
+([DESIGN.md](DESIGN.md), section 5). All three work without prefabs of their own: the control
 object and the console fall back to the puzzle prefabs.
 
 | Prefab | Base | Add | Setting | Used for |
@@ -570,7 +570,7 @@ restore** (0.25); **Electronics loot mult** (1.5, used by searches); **Chatter m
 
 ### World interactions
 
-Settings are under **Interactions** ([WORLD.md](WORLD.md), section 10), in six groups: General,
+Settings are under **Interactions** ([DESIGN.md](DESIGN.md), section 10), in six groups: General,
 Search, Cars, Crafting, Traps (with generators and fire) and Secure radio. Everything works
 without prefabs of its own (spots fall back to the generic puzzle object), but without items in
 the loot pool searches find nothing, and every feature whose output prefab is empty stays quiet.
@@ -703,7 +703,7 @@ On `RZ_GameModeComponent > Zombies`:
 - **Horde prefabs**: a large Bacon group
 - **Move waypoint**: vanilla `AIWaypoint_Move.et`
 
-**Adaptation** (one settings object under **Zombies**; [WORLD.md](WORLD.md), section 4; defaults
+**Adaptation** (one settings object under **Zombies**; [DESIGN.md](DESIGN.md), section 4; defaults
 in brackets): **Enabled** (on); **Special per breakthrough** (0.05) and **Special cap** (0.15);
 **Runner prefabs** (Collapse), **Helmet prefabs** (Overrun) and **Screamer prefabs** (Aftermath):
 zombie group or character prefabs from your zombie mod, each list optional; **Trait share** (0.15 of
@@ -733,12 +733,12 @@ points, towns or lab are needed, because they're generated at start. Check the l
 
 For another map, make another sub-scene with the same contents.
 
-**Town memory** (one settings object under **World**; [WORLD.md](WORLD.md), section 8; defaults in
+**Town memory** (one settings object under **World**; [DESIGN.md](DESIGN.md), section 8; defaults in
 brackets): **Enabled** (on); **Loot return minutes** (120); **Looted below** (0.5); **Loot floor**
 (0.2); **Burned share** (0.5); **Burn fade minutes** (60); **Journal minutes** (10). No prefabs:
 it's data only.
 
-**Story arcs** (one settings object under **Director**; [WORLD.md](WORLD.md), section 7; defaults in
+**Story arcs** (one settings object under **Director**; [DESIGN.md](DESIGN.md), section 7; defaults in
 brackets): **Enabled** (on); **Minutes between** (60); **Start chance** (0.6); **Repeat hours** (4);
 **Dark side losses** (6), **Dark side repeat hours** (12), **Dark side chance** (0.35). No prefabs:
 arcs use what the missions, wanderers, safehouses and supply trucks already need, and skip a step

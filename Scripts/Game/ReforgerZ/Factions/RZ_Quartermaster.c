@@ -189,7 +189,7 @@ class RZ_FactionShopAction : ScriptedUserAction
 			return;
 		}
 
-		// Supply lines (docs/WORLD.md): a shop whose truck didn't get through is short until the
+		// Supply lines (docs/DESIGN.md): a shop whose truck didn't get through is short until the
 		// next one does (some items out, the top tier maybe locked, dearer); a stronghold Under
 		// Pressure keeps its top tier back. Morale moves prices a little.
 		float supplyMult = 1;

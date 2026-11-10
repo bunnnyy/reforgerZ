@@ -1,0 +1,788 @@
+# Systems design
+
+How every ReforgerZ system works, organised by system. Everything here is written in code
+unless it says **planned**; *Simplified* notes say where the code does less than the idea.
+What's next and what was dropped is in [ROADMAP.md](ROADMAP.md). Factions, standing and
+AI hostility are in [REPUTATION.md](REPUTATION.md); every mission is in [MISSIONS.md](MISSIONS.md).
+Code paths are under `Scripts/Game/ReforgerZ/`.
+
+## Contents
+
+1. [Principles](#principles)
+2. [Settlements, spawn points and the map](#settlements-spawn-points-and-the-map)
+3. [The Director: outbreak stages and spread](#the-director-outbreak-stages-and-spread)
+4. [Heat and noise](#heat-and-noise)
+5. [Zombies, bites and infection](#zombies-bites-and-infection)
+6. [Infection adapts](#infection-adapts)
+7. [The Perimeter](#the-perimeter)
+8. [Time and environment](#time-and-environment)
+9. [Backgrounds and personal goals](#backgrounds-and-personal-goals)
+10. [Factions in the background](#factions-in-the-background)
+11. [Haven safehouses](#haven-safehouses)
+12. [Wanderers](#wanderers)
+13. [Leaders](#leaders)
+14. [Missions](#missions)
+15. [Story arcs and headlines](#story-arcs-and-headlines)
+16. [Town memory](#town-memory)
+17. [World interactions](#world-interactions)
+18. [New-player guidance](#new-player-guidance)
+19. [Cure research and the season's end](#cure-research-and-the-seasons-end)
+20. [Persistence](#persistence)
+
+## Principles
+
+You're a lone civilian in a sealed Quarantine Zone ([LORE.md](LORE.md)). You can survive
+alone, team up with strangers, or prey on them. The server is one shared story that moves
+from Early Outbreak to Aftermath, and the only way to win is together: research the cure.
+
+**Pillars**
+
+1. **Every life is different.** A background from the spawn menu, a random town, random
+   missions, and a world that changed since your last visit.
+2. **The world moves without you.** The Director spreads infection, moves the server
+   through stages and sends hordes toward noise.
+3. **One shared goal.** Cure research is server-wide, and also something to fight over.
+4. **Factions remember.** The Haven, Task Force Bastion, the Red Hand and Halcyon remember
+   what *this character* did ([REPUTATION.md](REPUTATION.md)).
+5. **Any map.** Everything is placed relative to settlements found at start.
+6. **Use the Workshop** for zombies and hunger ([MOD_STACK.md](MOD_STACK.md)).
+
+**Rules every system follows**
+
+- **Simulate as data, spawn bodies only near players.** Population, wanderers, leaders and
+  territory are numbers on the server. AI and props exist only within a few hundred metres
+  of a player. The one exception is supply trucks: at most one real truck per faction.
+- **Effects are capped and recover.** Nothing a player or the Director does wipes out a
+  faction, a town or a safehouse for good. Strongholds never fall.
+- **Background, not foreground.** Territory, adaptation and faction life are slow systems
+  you notice over a session, not something you manage.
+- **No physical traces.** Nothing is left lying in the world: journals, burned towns and
+  looted shelves are data.
+- **Nothing for free.** No free loot, no free Fame. No sleep and no time skip.
+
+## Settlements, spawn points and the map
+
+Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameModeComponent.c`, `Core/RZ_MapMarkers.c`.
+
+- **Settlements** come from the map's name labels plus clusters of buildings (a 300 m grid
+  cell with 8 or more buildings). Each has a centre, a size class and an infection level
+  (0–100). Placing any `RZ_SettlementMarkerEntity` turns detection off and uses the markers.
+- **Spawn points:** 6 at a time in random towns, and one is moved to a new town every
+  20 minutes. Every Haven safehouse is also a spawn point for everyone.
+- **Missions are announced** with distance and direction ("1.2 km NE"). Hints are queued
+  so they never stack. World events and the lab can show as map markers (a toggle).
+
+## The Director: outbreak stages and spread
+
+Code: `Director/RZ_Director.c`, `Director/RZ_OutbreakStage.c`.
+
+The server moves through four stages. A stage ends when its time is up or when average
+infection passes its threshold. Each stage's numbers can be overridden on the game mode.
+
+| Stage | Lasts | Or when average infection reaches | Density | Special chance | Spread / min | Missions | Bastion presence |
+|---|---|---|---|---|---|---|---|
+| Early Outbreak | 90 min | 45 | ×0.6 | 1% | 0.3 | 3 | ×1.0 |
+| Collapse | 150 min | 65 | ×1.0 | 3% | 0.6 | 4 | ×0.6 |
+| Overrun | 180 min | 85 | ×1.5 | 6% | 0.9 | 4 | ×0.25 |
+| Aftermath | until the cure | — | ×0.8 | 8% | 0.2 | 5 | ×0.1 |
+
+- **Spread.** Every town creeps up slowly. A town at 60+ infection also spreads to every
+  town within 2.5 km, in proportion to its own infection. Cure breakthroughs slow spread.
+- **Pushing back.** Each zombie kill takes 1.5 infection off its town. Missions clear,
+  burn, seal and shell towns.
+- **Missions at once:** the stage's count, plus one per 4 players. "Bastion presence"
+  scales how often Bastion's contracts appear: Bastion pulls back as things get worse.
+- Each stage change is announced to everyone in a line of the Zone's voice.
+
+## Heat and noise
+
+Code: `Director/RZ_HeatMap.c`.
+
+Heat is how much attention an area has drawn, on a 250 m grid. It decays 8 a minute and
+caps at 200 per square.
+
+| Source | Heat |
+|---|---|
+| A player being somewhere | 0.5 a tick |
+| In a vehicle | +4 a tick |
+| A shot | 3 × the background's noise multiplier; ×0.3 with a suppressor (detected by attachment name) |
+| Noisemakers, bells, sirens, generators, searches, forcing locks, fire | see [World interactions](#world-interactions) |
+
+- Heat draws extra zombies. **80** heat in one area sends a horde toward it (at most one
+  every 10 minutes).
+- **Noises that lead.** A burst of 8+ heat at once is remembered as a noise (the last 16).
+  Infected that a mission controls walk to a nearby noise and stay about 90 s. That's what
+  the unarmed missions are built on ([MISSIONS.md](MISSIONS.md), "Unarmed missions").
+- **Being noticed** (puzzles and unarmed missions): heat where you stand above a threshold,
+  or an infected within 10–12 m of you for 6–8 s.
+- Other mods can add heat with `RZ_GameModeComponent.ReportNoise(pos, heat)`.
+
+## Zombies, bites and infection
+
+Code: `Zombies/RZ_ZombieSpawner.c`, `Zombies/RZ_BiteDetector.c`, `Core/RZ_GameModeComponent.c`.
+
+- **Spawner.** Works with any zombie mod's prefabs. Towns within 600 m of a player are
+  populated (4 per size class at 100% infection), never closer than 120 m to a player, and
+  removed beyond 1.1 km. Two roaming infected stay around each player in the countryside. At most
+  60 tracked spawns on the server and 4 per tick.
+- **Specials** (the stage's chance) drop a cure sample when killed.
+- **Bites.** Works with any zombie mod: when a player's health drops with an infected
+  within 2.5 m, there's a 30% chance it was a bite.
+- **Infection timer.** 20 minutes from bite to turning (× the background's multiplier).
+  Cure breakthroughs, antidotes, safehouse medics, Doctor wanderers and Nurses slow it.
+  A player who turns becomes the **Turned Player** world event: they roam with their gear.
+- **Zombie-free settlements** while a mission needs one (The Silent Village).
+
+## Infection adapts
+
+Code: `Director/RZ_Adaptation.c`.
+
+Small, capped changes that keep the late game interesting without making it a wall.
+
+- **Specials after breakthroughs.** Each cure breakthrough multiplies the stage's special
+  chance by 1.05, ×1.15 at most. A relative bump: an Early Outbreak 1% becomes 1.15%.
+- **One new trait per stage**, and they add up: Collapse swaps 15% of common spawns for
+  **runners**, Overrun puts **helmeted** ones in the same 15% (runners or helmets at random),
+  Aftermath makes 10% of specials **screamers**. A screamer within 40 m of a player shrieks:
+  +20 heat where the player stands, at most once a minute, heard within 150 m. Each trait is
+  a prefab list; an empty list turns it off (screamers then use the ordinary specials).
+- **Favourite spots.** The map is split into 500 m squares that count player-minutes
+  (fading by a fifth every 10 minutes). Once a square reaches 60, three infected are spawned
+  out of sight 250–350 m away and walk over to look, at most once an hour per square. Never
+  within 150 m of a safehouse, and never near a brand-new player in their gentle start.
+
+*Simplified:* "sees" is distance only, with no line of sight. Runners and helmets are
+whatever the prefabs are; the code doesn't change speed or armour itself.
+
+## The Perimeter
+
+Code: `World/RZ_Perimeter.c`, `World/RZ_CheckpointMarkerEntity.c`. The story is in [LORE.md](LORE.md), "The Perimeter".
+
+The edge of the playable world is the quarantine line, on any map. It's worked out from the
+world's bounds, pulled in to the outermost dry land plus a 200 m sea margin, so nothing is
+placed by hand. **Nothing is built along the edge** except the road checkpoints.
+
+- **Warning zone** (300 m from the edge): a drone appears above *you* and follows you, and a
+  loudspeaker says *"You are approaching the quarantine line. Turn back."* It leaves when you
+  do. Never more than one drone per player, and none anywhere else.
+- **Kill zone** (100 m): a warning shot (a sound and a near miss), then 8 seconds later you're
+  shot by a sniper you never see.
+- **Sealed road checkpoints.** Where main roads reach the edge (up to 6 by default, 8 at most;
+  island maps may have none), the road ends in concrete blocks and a closed barrier, with 0–4
+  guards behind it. Nobody passes in either direction. Within 150 m the loudspeaker warns you;
+  closer than 60 m the guards shoot. The guards stand outside the playable area and can't be
+  hurt. Checkpoints come from the road network, or from placed `RZ_CheckpointMarkerEntity`s.
+- **Blind spots.** The drones run a rotation; The Blind Spot mission opens a 250 m gap for
+  ten minutes ([MISSIONS.md](MISSIONS.md), "Perimeter missions").
+- Missions, spawn points and quartermasters keep out of the warning zone.
+
+## Time and environment
+
+Code: `Director/RZ_Environment.c`, `Puzzles/RZ_GameTime.c`, `World/RZ_PowerGrid.c`, `World/RZ_RadioStation.c`, `Director/RZ_Broadcast.c`.
+
+Time is never skipped or changed. The environment is read every 30 s and nudges other systems.
+
+### Night
+
+The game clock's night is 20:30 to 05:00.
+
+- **They hear further:** a quarter of every bit of heat also reaches the four neighbouring squares.
+- **Specials** are ×1.25 as common.
+- **Human AI patrols less:** each holding shows one guard fewer (never under one), standing
+  closer to its centre; half the hunter-squad rounds are skipped.
+- Some missions only run at night ([MISSIONS.md](MISSIONS.md)).
+
+### Weather
+
+- **Rain** (0.3+) dampens noise: heat added ×0.7.
+- **Fog** (0.4+) is the engine's own fog; infected may spawn a little closer (×0.75 of the minimum distance).
+- **Storms** (the Storm event, or rain 0.6+ with wind 10 m/s+) ground Bastion's helicopter
+  (no Last Helicopter contract), and wanderers shelter.
+- Players hear one line when rain or fog sets in, at most every 20 minutes each.
+
+*Simplified:* the weather accessors are engine calls that may need fixing (VERIFY); without
+them only night and the Storm event apply.
+
+### The power grid
+
+One power station per map: a placed `RZ_PowerStationMarkerEntity`, else a real power or
+industrial building near a town, else the edge of the biggest town. Its control object
+exists while a player is within 300 m. Restoring it takes three steps:
+
+1. **Force the control room door** (loud).
+2. **Reset the breakers and start the generator:** a horde is sent at it, and someone has to
+   stay within 60 m for 90 s while it spins up (nobody there for 30 s and it dies).
+3. **Throw the main switch.**
+
+Then every town within 2.5 km is **Powered** and everyone hears it. Power gives a lights hook
+(`RZ_PowerGrid.IsPoweredAt`; no lamps are actually switched on), more radio chatter (every
+6 minutes instead of 10), faster radio station broadcasts, and electronics ×1.5 as likely in
+searches there. But the generator hums: 10 heat a minute at the station. It **slowly fails**
+over about four hours with players online (a warning at 20%). **Refuel and grease** restores
+60% with a fuel item or 25% without. When it fails, it's back to step 2. No Fame for any of
+it: the power is the reward.
+
+*Simplified:* the three steps are actions on one object, not real breakers.
+
+### The radio station
+
+One broadcast point per map: a placed `RZ_RadioStationMarkerEntity`, else a real radio mast
+near a town, else high ground near a mid-sized town. Take it over by staying at the console
+for 30 s with no infected within 15 m; it's yours until you walk 150 m away. Then send one of
+four preset messages to everyone, signed with your name and filled in with real places: a
+horde warning, food for the hungriest safehouse, meet here, and "still here". One broadcast
+every 10 minutes server-wide (5 with power). **Cosmetic and social only:** no Fame, no Favor.
+
+### The government broadcast
+
+A looping flavour message to everyone every 25 minutes and on each player's first spawn.
+Its tone follows the cure and the outbreak ([LORE.md](LORE.md), "The outside world: silent, watching").
+
+## Backgrounds and personal goals
+
+Code: `Backgrounds/RZ_Background.c`, `Backgrounds/RZ_Objectives.c`, `Backgrounds/RZ_PlayerProfile.c`.
+
+You pick a background in the vanilla deploy menu (each is a loadout). Gear comes from the
+loadout; the perk and flaw change ReforgerZ systems, so they work with any other mods.
+Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
+
+| Background | Perk | Flaw | Starting standing |
+|---|---|---|---|
+| Nurse | Medical supplies. Treats other players in 8 s, even with a bandage. Infection takes 50% longer | Unarmed | Haven +10 |
+| Mechanic | Toolbox and jerrycan. Hotwires a car in 5 s | 25% louder | — |
+| Hunter | Hunting rifle, 25% quieter | Little ammo | Bastion −10 |
+| Police Officer | Sidearm | — | Bastion +20 (Known), Red Hand −25 (Watched) |
+| Ex-Con | Knife | Infection kills 20% faster | Red Hand +25 (Known), Bastion −25 (Watched), Haven −10 |
+| Lab Technician | Samples worth double research | Unarmed, 15% louder | Halcyon +20 (Known) |
+| Radio Operator | Radio; horde warnings and intel map-wide; cracks secure channels | 20% louder | Haven +10 |
+| Unemployed | +50% Fame from missions | Starts with nothing | — |
+| **Soldier** (Champion with Bastion) | Service rifle and armour | — | Bastion +20, Red Hand −15 (Watched) |
+| **Doctor** (Champion with Halcyon) | Infection takes 2.5× as long; treats others in 6 s | Unarmed | Halcyon +20 |
+| **Raider** (Champion with the Red Hand) | Black market open from the start | — | Red Hand +40 (Trusted), Haven and Bastion −15 (Watched) |
+| **Elder** (Champion with the Haven) | Trusted by the Haven from the start | 30% louder | Haven +40 (Trusted) |
+| **Drifter** (10 Legacy points) | Known with every faction | No gear | +15 with all four |
+
+The last five are unlocked through **Legacy**, which carries across lives. A player who picks
+a locked background keeps its gear for that life but plays as Unemployed, and is told how to
+unlock it.
+
+**Personal goals.** Each life gets one goal, flavoured by background (the Hunter heads for
+their cabin, the Ex-Con digs up a stash): reach a town 1.2–4 km away, survive a while, deliver
+samples, take part in missions, or become Trusted with a faction. Completing it gives a
+**Legacy** point and a little Fame. A player's first life that lasts 10 minutes is always
+**Find the Haven**: reach a safehouse ([New-player guidance](#new-player-guidance)).
+
+## Factions in the background
+
+How the four factions hold the map, move supplies and change over a session. What they
+offer players, and how morale, needs, truces and feuds work, is in [REPUTATION.md](REPUTATION.md).
+
+### Territory
+
+Code: `Factions/RZ_Territory.c`.
+
+- **Most of the map is abandoned.** Expansion stops once about a fifth of all settlements
+  are held (strongholds included). The rest are empty, looted or infested: that's where the
+  scavenging, the missions and the danger are.
+- **One Stronghold per faction**, at its quartermaster (Halcyon's at the lab). It can never be
+  captured or destroyed. At worst it's **Under Pressure** for 25 minutes: while a faction's
+  strength is 25 or less, or its morale 20 or less, each territory tick has a 50% chance to
+  start it. No supply truck leaves, and the stronghold's Champion shop tier is locked. It ends
+  on its own (+5 strength, +5 morale), with a two-hour pause before it can happen again.
+- **Outposts, by map size:** 1 per faction under 24 settlements (Arland), 2 under 48, else 3
+  (a setting overrides it). Halcyon never has more than one: its field station. Each faction
+  can grow one past its starting count.
+- **Towns that make sense.** "On the roads" is read from how many towns lie within 1.6 km, so
+  it works on any map:
+
+  | Faction | Prefers |
+  |---|---|
+  | Bastion | towns (size 2+), hubs, names with "air", "base", "field" or "port" |
+  | Red Hand | hubs (crossroads) and small places (outskirts), some infection |
+  | Haven | quiet villages: small, low infection, few neighbours, away from the Red Hand |
+  | Halcyon | quiet, low-infection places |
+
+  Never: a town already held (or within 400 m of a holding), a safehouse town, the lab town,
+  a town at 85+ infection, or anything near the quarantine line. Not under 700 m from the
+  faction's own stronghold, and rarely over 6 km.
+- **The territory tick**, every 20–30 minutes while players are online, does at most **one**
+  thing. First the floor (a faction with no outpost founds one), then each faction in random
+  order by its strength:
+
+  | Strength | Does (first that applies) |
+  |---|---|
+  | 60+ | win back a town it lost (after 30 min, within 6 h); found an outpost near its holdings if under its count; at 65+ take the nearest outpost of a neighbour at least 10 weaker (any weaker during a feud), within 4 km |
+  | 41–59 | under its count: found one (half the time); else 20%: drop an outpost with almost no traffic that has stood 3 hours |
+  | 40 or less | 60%: drop its quietest outpost |
+
+  The Haven and Halcyon never take towns. Nobody takes or drops an outpost a player is near,
+  a faction's last outpost, a placed `RZ_OutpostMarkerEntity`, or one from a faction it has a
+  truce with.
+- **Traffic** is player-minutes within 400 m, plus 5 for each contract done for the faction
+  within 1.5 km; it fades by a quarter every tick.
+- **Faction strength** (10–90, starts at 50): +2 for the giver of a finished contract, −1 for
+  a rival it hurt, −1 for a failed one (at most 6 an hour from contracts); +1 per truck
+  delivered, −2 per truck lost; +3 / −5 when a town changes hands. It drifts 2 points an hour
+  back toward 50.
+- **Headlines only.** Every change is a headline, never a server-wide alert.
+- **Bodies only near players.** Within 300 m of a holding: its guards, two of its three
+  **named people** (the cook, the sentry, the toll man...) and, at an outpost, the faction's
+  quartermaster. Named people are saved and come back on every visit.
+- **Routines** (atmosphere only): shift change at 05:30 and 17:30, the dusk meal at 18:30,
+  night watch from 20:30. Players near a holding hear the routine change.
+
+*Simplified:* towns are judged by size, infection, name and neighbours, not real roads or
+airfields. A town "taken" changes hands as data while nobody is there: no battle to watch.
+Guards and named people stand where they're spawned.
+
+### Supply trucks
+
+Code: `Factions/RZ_SupplyLines.c`.
+
+- **A real truck does the resupplying.** Outposts and Haven safehouses only restock when a
+  real vehicle with an AI crew drives in from the faction's Stronghold and parks within 50 m.
+  At most one truck per faction is on the road. Places within 300 m of their stronghold
+  never need one.
+- **Departures** every 40–60 minutes (the first 10–40 minutes after a start), only while
+  players are online and not while the stronghold is Under Pressure. The truck goes where it's
+  needed most: a short place first, then the least stock, then the longest wait.
+- **Stuck:** a truck that hasn't moved 8 m in 90 s, with no player within 1 km, is quietly
+  moved 80–150 m on. With a player near, it stays stuck.
+- **Failure:** destroyed, robbed (its crew killed) or late. The destination is then **short**
+  until the next delivery: about 30% of its shop's items are out, prices are +25% to +50%,
+  half the time the Champion tier is locked, and an outpost's stock drops to 0. Players within
+  600 m are told.
+- **Stock:** a delivery fills an outpost to 8 units; it uses one every 45 minutes. Bastion's
+  Requisition draws one unit per item. **Haven trucks carry food:** +6 at a safehouse.
+- **Players and trucks.** Ride along within 150 m for 40% of the trip and see it arrive: +4
+  Fame and +5 Favor with the owner. Its crew dead, drive it in yourself: +8 Fame. Or drive it
+  into a rival's stronghold: +6 Fame with the receiver and +10 Infamy with the owner. Killing
+  the crew counts as shooting the faction's people ([REPUTATION.md](REPUTATION.md), "What makes AI shoot you").
+- **No traces.** A finished truck stays parked while anyone is within 300 m (up to 15
+  minutes), then it and its crew are removed. A robbed truck can be taken for 20 minutes.
+
+*Simplified:* trucks drive straight to one waypoint (the AI picks the road) and don't drive
+back. A restart takes a truck off the road with no shortage. Without a faction's truck and
+crew prefabs, or with territory off, that faction's places count as always supplied.
+
+### Faction life
+
+Code: `Factions/RZ_FactionLife.c`, `Factions/RZ_FactionVoice.c`.
+
+Capped, background and cheap. Needs, morale, truces and feuds are in
+[REPUTATION.md](REPUTATION.md), "Morale, needs, truces and feuds"; they feed the following.
+
+- **Radio chatter** with real information, every 10 minutes, one faction at a time, on its
+  open channel: the next truck leaving, where a truck is heading, a short place, a shift or
+  night watch, the Red Hand's toll hours, Halcyon's samples wanted. The Haven's channel reaches
+  everyone with a radio; the others reach players Known with that faction, Radio Operators,
+  and anyone with a radio near a running generator.
+- **Secure channels**: what Bastion, the Red Hand and Halcyon say where nobody's meant to hear
+  (`RZ_FactionLife.GetSecureTraffic`). Radio Operators crack them ([World interactions](#world-interactions)).
+- **Life events** in the headlines, one every 35 minutes or so: funerals for leaders and truck
+  crews, Bastion promotions, recruiting in a strong faction's town, a researcher walking out of
+  Halcyon when its morale is low.
+- **Remembered moments**: the night the lab nearly fell, the convoy that burned, the day
+  Bastion lost a town, the first antidote. The last 8 are saved. Leaders and named people bring
+  one up a quarter of the time ("Not since the night the lab nearly fell.").
+- **Rumours**: a leader's news and a wanderer's talk include gossip about another faction
+  (rivals twice as often). About a rival it's biased or false 35% of the time; otherwise 10%.
+  A false rumour inverts strength, invents a lost town, names the wrong truck destination or
+  invents a need.
+
+## Haven safehouses
+
+Code: `World/RZ_Safehouses.c`. Who the Haven are is in [LORE.md](LORE.md); house rules,
+exile and what they cost you are in [REPUTATION.md](REPUTATION.md), "Haven house rules and exile".
+
+A safehouse is a single Haven-held spot in an otherwise abandoned town. A rescued survivor
+isn't kept as an AI body: they become **+1 population** at the nearest safehouse.
+
+- **Where.** At the first start of a season, up to 3 safehouses (one per 8 settlements, at
+  least 1): the first at the Haven quartermaster, the rest in quiet, low-infection villages at
+  least 1.2 km apart, away from the lab and the quarantine line. Saved. Placing any
+  `RZ_SafehouseMarkerEntity` turns the picking off.
+- **Few bodies.** While a player is within 300 m, a safehouse shows 3–6 occupants (never
+  more than its population), its guards, its medic and its own quartermaster.
+- **Population tiers** (cap 30; past it, new arrivals go to the next safehouse):
+
+  | Population | Becomes | Effects |
+  |---|---|---|
+  | 0–4 | Shelter | Spawn point; shop sells Known items only; 3 occupants |
+  | 5–11 | Community | Trusted stock, one guard, 4 occupants |
+  | 12–19 | Settlement | A medic (heals for Favor, takes bite declarations) and a radio (missions within 3 km); 5 occupants |
+  | 20–30 | Town | Champion stock, two guards, 6 occupants |
+
+- **Upkeep.** Every 3 hours of real time with players online, a safehouse eats one food
+  per 5 people. Players hand food items to the quartermaster (2 Haven Favor each). Short of
+  food, 1–3 people leave, to a safehouse that can feed them or onto the roads (one may become
+  a named wanderer). Upkeep never takes a safehouse below 2 people.
+- **Food in and out.** Haven trucks bring 6. The Water Run brings 2. Bastion's Requisition
+  contract takes 4; so do some leader jobs ([MISSIONS.md](MISSIONS.md)).
+- **Rescues add population.** Survivors Trapped +3 (+4 with a ★ Nurse or Doctor), Rescue the
+  Kids +3, escorting the Kid wanderer +1, and several unarmed and leader jobs. About 1 in 10
+  rescued survivors won't stay behind walls and becomes a named wanderer instead.
+- **A notice board** for short notes between sessions is **planned**.
+
+## Wanderers
+
+Code: `World/RZ_Wanderers.c`.
+
+A small roster of named survivors travels the map: 6–10 per server (6, plus one per 6
+settlements above 8). Names come from a seed; roster, positions and memories are saved.
+
+| Role | What they do | Typical reaction to you |
+|---|---|---|
+| Trader | Moves between safehouses; sells goods for Haven Favor, cheaper if you've helped them | Trades if you're not Hunted by the Haven |
+| Doctor | Patches you up, or slows an infection (×1.25 of the time left, once per life) for Favor | Refuses the Red Hand's Trusted |
+| Scavenger | Sells a rumour pointing at a puzzle mission or a stash, for Favor or one food item | Swaps a rumour for food |
+| Deserter | Ex-Bastion, paranoid; tells you what Bastion is up to | Friendly if Bastion hates you, refuses if Bastion likes you, draws on Bastion's Champions |
+| Preacher | Walks between towns; while he rests, his bells add heat there | Harmless; stops the bells for an hour if asked |
+| Courier | Hands out an unarmed delivery job (letters to a safehouse) | Any non-Hunted player |
+| Kid | A lost child | Follows you to a safehouse if you show the way; runs from gunfire |
+| Mechanic | "Ask about cars": the nearest fixable car and what it needs; sells a part for 12 Haven Favor | Hands over that car's keys if they like you |
+
+- **Travel:** travel → rest (10–20 min at a safehouse, 3–8 min in a town) → somewhere new,
+  0.6–3.5 km away. Routes never cross water or the quarantine line.
+- **They react to the world** (every 30 s): an overrun, loud or line-side destination is
+  dropped; a horde or noise nearby makes them hide; Night of the Dead or a storm makes them
+  shelter. Rarely, an infected bites one: players within 1.5 km hear about it, the wanderer
+  heads for a safehouse, and an antidote within 20 minutes saves them. Otherwise they turn,
+  and a special appears if players are near.
+- **They react to you.** Attitude is your Haven standing (Bastion, reversed, for the Deserter)
+  plus their **memory of you**: *helped me* (better prices, warnings), *robbed or shot at me*
+  (they refuse and run, or shoot if armed), *saved my life* (a one-off gift of Favor).
+  Standing effects are in [REPUTATION.md](REPUTATION.md).
+- **Talking** gives one piece of road news. Actions: the role's special, "Share some food"
+  and "Rob".
+- **Death is permanent and makes the news.** A replacement shows up a real day later.
+- **Performance.** With no player within 400 m, a wanderer is a position moving in a straight
+  line on the tick. At most two bodies near each player.
+
+*Simplified:* routes are straight lines, not roads. A body without AI stands still while
+someone is near and walks on unseen. Only a wanderer whose body is an armed AI group fights
+back. Wanderers don't react to outposts changing hands; they only pass on the gossip.
+
+## Leaders
+
+Code: `Factions/RZ_Leaders.c`, `Factions/RZ_LeaderVoice.c`. Traits, loyalty, memory and how
+to talk to them are in [REPUTATION.md](REPUTATION.md), "Faction leaders"; their personal jobs
+are in [MISSIONS.md](MISSIONS.md), "Leader missions".
+
+| Seat | Where |
+|---|---|
+| Stronghold (one per faction) | At the faction's quartermaster; Halcyon's at the lab. Never dies, never replaced |
+| Haven safehouse | One council head per safehouse |
+| Outpost | One per territory outpost. With territory off, one **interim leader post** per faction for Bastion, the Red Hand and Halcyon instead |
+
+On Arland that's about 9–10 leaders; on Everon about 16–20.
+
+- **Data first.** A leader is a saved record. A body exists only while a player is within
+  200 m of their seat. At a stronghold or safehouse the quartermaster *is* the leader unless a
+  leader prefab is set.
+- **Off-screen deaths** (bites, raids) only with nobody within 400 m, every half hour; a new
+  leader takes the chair 2 hours later. Deaths and replacements are headlines.
+- **Personal jobs:** every two minutes, an Independent or Rogue leader with a player near and
+  no job on has a 35% chance to think of one (at most one per 30 minutes per leader).
+
+*Simplified:* interim posts (territory off) are leader seats only, with no guards or shop.
+A leader's "people" who can see a rogue job are their faction's other seats within 60 m and,
+for the Haven, its wanderers.
+
+## Missions
+
+Two kinds: **world events**, announced to everyone, and **contracts**, offered only to
+players who qualify. There's no "accept" button: eligible players who take part get paid.
+Every mission, its requirements and its status are in [MISSIONS.md](MISSIONS.md).
+
+## Story arcs and headlines
+
+Code: `Director/RZ_StoryArcs.c`, `Director/RZ_Headlines.c`.
+
+The Director strings events into short storylines. Each step only fires if the previous one
+really happened (a mission ran, a player heard a rumour, a truck left), so every server lives
+through different plots. An arc whose next step can't happen fizzles out quietly.
+
+- **When:** one arc at a time. About every hour with players online, 60% of the time one starts:
+  a random arc that hasn't run in the last four hours and can run now. Saved; an arc waiting on
+  a mission just ends at a restart.
+
+| Arc | Steps (each needs the one before) |
+|---|---|
+| **The Missing Courier** | A Halcyon courier stops reporting (the Lost Colleague contract, renamed). Once that search ends, wanderers say they saw Red Hand men with lab cases. Once a player has heard it, a headline: that camp sells antidotes in Halcyon cases. Ten minutes later the Red Hand comes for more: a **Lab Defence** |
+| **The Last Convoy** | Bastion announces a convoy to pull an outpost's people back. Its next real supply truck goes there. Red Hand lookouts are seen; the Red Hand's Known hear it's worth robbing, Bastion's Known are asked to ride along. Delivered: the post stays. Lost: it runs dry |
+| **The Preacher's Flock** | The Preacher rings his bells in every town (twice the heat). After two towns, up to three small hordes come for him while a player is within 600 m. Ends when someone asks him to stop, after an hour, or if he dies |
+| **The Deserter's Map** | A dying deserter's map piece names two wanderers. Each holds a piece; with both, the grid of a hidden Bastion bunker, guarded by four infected |
+| **Fever Town** | A safehouse's town creeps up in infection. If a player goes near: a Halcyon contract checks the water. If that succeeds: a Haven contract to get the sick out. Done: two people move and the added infection goes; failed: two die |
+| **The Quiet Congregation** (the Haven's dark side) | Rare: a safehouse that has lost 6+ people lately, with the Preacher alive. He walks there and the house prays with him: half portions, bells at the gate, and gossip that it "borrows" from other houses. Players end it by bringing 6 food or asking the Preacher to stop. Otherwise after 90 minutes he walks on and two people go with him |
+
+The missions inside arcs are in [MISSIONS.md](MISSIONS.md), "Story arc missions".
+
+**Headlines.** The last 10 headlines are kept: leader news, territory changes, life events,
+arcs, the power grid and burned towns. A player's first spawn of a session gets 3–4 lines of
+server news ("Word on the roads"): the latest headline, the last wanderer lost, the biggest
+rescue so far, now and then a dead character's journal or a line of Haven gossip, and always
+the cure percentage.
+
+*Simplified:* the "camp selling antidotes" is a headline, not a shop. The convoy is the normal
+supply truck. The flock's hordes spawn at the Preacher rather than following him from town to
+town. The congregation's "borrowing" is talk only; its half portions are real.
+
+## Town memory
+
+Code: `World/RZ_TownMemory.c`.
+
+- **Town flags:** Looted, Barricaded, Powered, Burned. Plain saved values per settlement.
+  - **Looted:** each town has a loot level (0–1). Every search takes a little, and the town
+    counts as Looted under 0.5. It never drops under 0.2 and comes back over about 2 hours.
+  - **Barricaded:** while a player's barricade stands in it.
+  - **Powered:** set by the power grid.
+  - **Burned:** once half its buildings have burned (a building count guessed by size: 12, 30
+    or 60). Each burned building stops counting after an hour, so towns recover.
+- **Hooks** for other mods: `GetLootLevel`, `ReportSearched`, `ReportBarricaded`,
+  `ReportBuildingBurned`, `ReportBuildingCount` (unused so far).
+- **Journals of the dead.** A life that lasted 10 minutes leaves one line (where, background,
+  how long, the day, a personal line). The last six are saved; they turn up in the session news
+  and in wanderers' talk. Never an object.
+
+## World interactions
+
+Code: `Interactions/`.
+
+Searching, keys, cars, crafting, water, barricades and traps, generators, fire, bells, radios
+and treating each other. Data until a player is near, capped and decaying, nothing left behind.
+
+**How it works on any map.**
+
+- **Things are recognised by name.** Every 10 s the server looks at static map objects within
+  30 m of each player and sorts them by prefab or mesh name: buildings by type, furniture, car
+  wrecks, workbenches, wells and pumps, fuel pumps, stoves, bells (every church gets one), sirens,
+  house radios and generators. A building with no furniture found gets one spot for itself.
+- **Interaction spots, only near players:** an invisible prop with labelled actions ("Search the
+  fridge"), at most 10 per player and 70 on the server.
+- **Decided on the server.** Loot is rolled when someone searches. What was searched, opened,
+  stripped or burned is remembered as positions and times, and saved.
+- **Timed actions** run on the 5 s tick: move more than 3.5 m away and they stop.
+
+### Searching
+
+| Building type (from the prefab name) | What it tends to have |
+|---|---|
+| Pharmacy (pharmacy, hospital, clinic) | Bandages, medicine, saline, purification tablets; rare: morphine, antibiotics |
+| Garage (garage, workshop, repair) | Jerrycans, tools, batteries, tyres, spark plugs, crowbars, planks, wire |
+| Farm (farm, barn, stable, shed) | Food, water, axes, rope, planks, matches; rare: hunting guns |
+| Police (police, gendarmerie) | Ammo, batons, torches, radios; rare: pistols, vests |
+| Shop (shop, store, market, kiosk) | Food, water, batteries, torches, bleach |
+| House (anything else) | Food, water, cloth, bandages, knives, torches |
+| Body (an infected killed near a player; 4 minutes) | Bandages, ammo, small things; sometimes a key or something to read |
+| Car boot (a wreck) | Jerrycans, tools, rope, batteries, tyres |
+
+A search (4 s, 1 heat) finds something 60% of the time at full town loot, scaled by the town's
+loot level, sometimes two things. 10% of finds are rare (20% behind a lock), 10% electronics
+(×1.5 in powered towns). A searched spot has nothing new for an hour.
+
+### Locks and keys
+
+About half of pharmacies and police stations, a third of garages, a quarter of shops and a tenth
+of houses are locked, seeded so the same ones stay locked after a restart. **The lock is on the
+loot, not the door:** Search is refused until it's opened. **Keys** are data, kept for this life,
+found on bodies (8%), in readable things, or from the Mechanic. Or **force it** with a crowbar
+(10 s, 25 heat). Opened locks stay open for three hours; behind a lock, finds are better.
+
+### Readable things
+
+12% of searches (30% of bodies) turn up an ID card, letter, receipt or photo in the Zone's voice
+([LORE.md](LORE.md), "Writing guide"). One in five has a key inside, about one in seven a stash
+grid on the back (two extra finds within 90 minutes), one in ten a puzzle mission circled on a map.
+
+### Cars: easy projects, kept rare
+
+One fixable car per three settlements (at most 6, one per town); every other wreck is just a wreck.
+**Inspect** says what's missing (one or two of fuel, battery, tyre, spark plugs). Parts come from
+searches, **stripping** wrecks, the Mechanic and the Haven shop. **Fuel:** siphon a wreck (60% have
+some) or a petrol station hand pump (10 heat). **Start:** hotwire (20 s, 5 s for a Mechanic, 8 heat)
+or use its keys, then **Start the engine** (15 heat): the prop becomes a real vehicle with a quarter
+tank, and from then on it's vanilla. A new project turns up elsewhere six hours later.
+
+### Light crafting
+
+At a workbench, up to eight built-in recipes (more can be added as data). A recipe whose output
+prefab isn't set is hidden.
+
+| Recipe | Takes |
+|---|---|
+| Improvised bandage | a rag or cloth |
+| Molotov | a bottle, fuel, a rag |
+| Tin rattle (noisemaker) | 2 empty tins, wire or string |
+| Spear | a knife, a pole or plank, wire |
+| Tin-can tripwire | 2 empty tins, wire |
+| Spike trap | 2 planks, nails |
+| Purification tablets | bleach or iodine |
+| Purify water | untreated water, a tablet |
+
+### Barricades, traps and generators
+
+| Kit | Per player | Lasts | What it does |
+|---|---|---|---|
+| Planks (barricade) | 3 | 60 min | Boards up a doorway. Infected against it make noise; 8 hits break it. The town counts as Barricaded |
+| Tin-can tripwire | 3 | 60 min | Rattles (20 heat) when something walks through; the owner hears it within 400 m |
+| Spike trap | 2 | 60 min | Kills an infected that walks onto it, three times. Players aren't hurt |
+| Generator | 1 running | 30 min per fuel item | 6 heat a minute; lights hook within 40 m; a radio within 30 m hears every open channel; standing near it charges your radio and torch |
+
+None of these are saved.
+
+### Fire
+
+A thrown molotov (25 heat) kills infected within 3 m and burns the building within 10 m; or **Set
+it alight** with a molotov or fuel. That one building burns: 30 heat, an optional fire effect, the
+town's infection −1, and for two hours nothing to search and no spawns within 30 m. Strongholds,
+outposts, safehouses, quartermasters and the lab can't burn.
+
+### Water
+
+Fill a bottle at a well or pump (untreated), then boil it on a stove (30 s) or purify it with a
+tablet. What drinking does belongs to the hunger and thirst mod ([MOD_STACK.md](MOD_STACK.md)).
+
+### Treating each other
+
+**Treat their wounds**: a first-aid kit and 20 s next to another player for a full heal. Nurses
+(8 s) and Doctors (6 s) can do it with a bandage, and also slow a bite (×1.15 of the time left,
+once per life). Every 5 minutes per patient.
+
+### Bells, sirens and alarms
+
+Ring a church bell (45 heat) or crank a siren (60 heat), once every 15 minutes each, to pull a
+horde somewhere else. Players within 1.2 km hear it.
+
+### Radios, open and secure
+
+- **Open channels** are faction chatter and the guidance broadcasts. A **house radio** tunes
+  every faction's open channel with power, two of them on weak batteries.
+- **Secure channels** (Bastion's command net, the Red Hand boss, Halcyon's lab): only a Radio
+  Operator can crack one, on a radio on the ground or a house radio: stand still 60 s with
+  nothing loud near. Then 20 minutes of a line every 4 minutes: truck routes, watch times, short
+  places, samples needed.
+
+*Simplified:* doors aren't locked, only the Search behind them. Spots stand on the object's
+origin. Carrying the wounded isn't added. Item names are matched by keyword. Fuel cans are full
+or empty by name. Traps check on the 5 s tick. Keys don't survive a restart or a death.
+
+## New-player guidance
+
+Code: `Guidance/`.
+
+The world teaches itself through things you find and people you hear, never tutorial pop-ups.
+Every line is in a speaker's voice ([LORE.md](LORE.md), "Writing guide").
+
+### Experience levels
+
+Each player has a **guidance level** from lives that lasted at least 10 minutes. It fades but
+never disappears.
+
+| Level | Counted lives | What they get |
+|---|---|---|
+| 0, brand new | 0 | Everything: every tip in full, the gentle start, a wanderer who comes looking, scenarios leaning toward the Haven, the radio every 12 min |
+| 1, learning | 1–2 | Every tip in full, full scenario scenes, wanderer gossip every time |
+| 2, familiar | 3–7 | Most tips; one-line scenario scenes; gossip now and then |
+| 3, veteran | 8+ | The floor: a scenario clue, the open channels (every 42 min), and critical tips as one short line |
+
+A player who comes back after 30+ real days gets two levels more guidance for two lives.
+
+### Contextual tips
+
+When something happens, the nearest plausible person says **one line**: a faction leader within
+40 m or someone at a safehouse; else a wanderer within 60 m; else a voice on your radio; else a
+plain hint. Each tip comes at most once per life, with a cooldown across lives and 90 s between
+tips (critical ones don't wait). The table is data (**Guidance > Tips**, defaults in
+`RZ_GuidanceTips.c`); more can be fired with `RZ_Guidance.Report(playerId, id)`.
+
+| Tip | Trigger | Critical |
+|---|---|---|
+| bitten | the infection starts | ✅ |
+| special | a special dies within 80 m of you | |
+| samples | samples in your pack | |
+| tier | your first rise to Known, Trusted or Champion | |
+| watched | Watched by a faction | |
+| hunted | Hunted or Kill on Sight | ✅ |
+| perimeter | near the edge or a checkpoint | |
+| loud | heat 45+ where you stand | |
+| night | the first night | |
+| safehouse | your first safehouse | |
+| shortage | at a place that's short of food or supplies | |
+| clue | your first puzzle clue | |
+| channel | a Radio Operator near a faction's chatter or starting to crack a channel | |
+| car | your first fixable car | |
+| hungry | **hook only:** waits for the hunger mod (or a bridge) to call `Report(playerId, "hungry", place)` | |
+
+### Gentle start and first-life goal
+
+For the first 15 minutes of a brand-new player's life, zombie spawns near them run at half
+density. Their first counted life gets the goal **Find the Haven**.
+
+### Spawn scenarios
+
+Every new life starts a few metres from a small clue (brand-new players lean toward the Haven):
+
+| Scenario | The clue | Points to |
+|---|---|---|
+| A back road | a car in the ditch; the dashboard note: "Gone to the safehouse in *town*." | the nearest safehouse |
+| A basement | scratched into the door: the roads out end in concrete, nobody gets out | the Perimeter |
+| Church notice | Halcyon's flyer, "Infected samples wanted. Reward." | the lab |
+| A farmhouse kitchen | a wind-up radio playing the broadcast, then the Haven's open channel | the Haven |
+| An attic | a dead raider with a red hand on his jacket and a list of toll roads | the Red Hand's boss |
+| Behind the barricade | a dead soldier's orders: "Hold the line. Await relief." | Bastion's stronghold |
+
+Clues are removed after 20 minutes once nobody is near, and after 40 minutes anyway.
+*Simplified:* you don't really wake in a basement; the scene says so, and the clue lies next to
+wherever the spawn point put you.
+
+### The wind-up radio and faction voices
+
+- Every new life gets a **wind-up radio** (unless they carry one). It picks up the **open
+  channels**: the Haven ("If you can hear this, *town* is open. Bring water if you can. Bring
+  yourself either way."), Bastion's net and the Red Hand's taunts. About every 12 minutes for a
+  brand-new player, up to 42 for a veteran.
+- **Bastion loudspeakers** near Bastion seats, **Red Hand taunts** near Red Hand seats (each at
+  most every 30 minutes), **Halcyon flyers** in every safehouse, and **wanderer gossip** about a
+  faction you haven't met.
+- **First contact** with a leader ([REPUTATION.md](REPUTATION.md), "Talking to leaders").
+
+### A wanderer finds you
+
+Two to seven minutes into a brand-new player's life, the nearest Courier or Scavenger comes
+looking for them, waves, and waits 5 minutes. Their talk includes faction gossip.
+
+## Cure research and the season's end
+
+Code: `Cure/`, `Core/RZ_GameModeComponent.c`.
+
+```
+special infected killed ─▶ sample item drops ─▶ carried to the lab ─▶ "Deliver samples"
+                                                                │
+ 25% Field antiviral   spread -15%, bites take 25% longer      ◀┘
+ 50% Bite treatment    lab produces an antidote every 15 min
+ 75% Immunity serum    spread -45% total, bites take 50% longer
+100% FINAL STAND       hold the lab 15 min against hordes every 2 min
+       win  ─▶ infection everywhere -70%, Aftermath, season over
+       lose ─▶ lab abandoned for 90 s, research drops to 90%
+```
+
+- Each sample is 2% research (×2 for a Lab Technician, +25% for Halcyon's Champions).
+- **The lab** is a placed prefab, or spawns in a random town and stays there across restarts.
+- **Antidotes** are used as a world action or from the inventory; they cure an infection.
+- **The season's end.** When the final stand is won, the cure goes to the faction the server
+  gave the most Fame this season (summed over all players). The winner is saved to
+  `last_season.json`. What each ending means is in [LORE.md](LORE.md), "Endings";
+  next-season rules from the winner are **planned**.
+
+## Persistence
+
+Code: `Persistence/RZ_SaveData.c`.
+
+Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stage, every
+settlement's infection and town memory, cure progress, player profiles (standing, Legacy,
+unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
+supply stock, faction life, the power grid and radio station, story arcs, headlines and world
+interactions. A save from another map is ignored. Player bodies, inventories and vehicles use
+vanilla persistence ([MOD_STACK.md](MOD_STACK.md)). A season wipe ignores `state.json` but keeps
+`last_season.json`.

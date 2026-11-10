@@ -1,4 +1,4 @@
-//! Session headlines (docs/WORLD.md, section 7, "Headlines"). The news itself is kept where it
+//! Session headlines (docs/DESIGN.md, "Story arcs and headlines"). The news itself is kept where it
 //! always was (RZ_Leaders.AddHeadline: leader news, territory, faction life, story arcs, the
 //! power grid, burned towns). This adds what the headlines didn't have yet and builds the
 //! 3-4 lines a player gets on their first spawn of a session ("Word on the roads"):

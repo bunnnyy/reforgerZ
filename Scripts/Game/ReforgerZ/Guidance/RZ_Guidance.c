@@ -1,4 +1,4 @@
-//! Quiet in-world guidance for new players (docs/WORLD.md, "New-player guidance").
+//! Quiet in-world guidance for new players (docs/DESIGN.md, "New-player guidance").
 //!
 //! The world teaches itself through people and things, not tutorial pop-ups:
 //! - an experience level per player (0 brand new .. 3 veteran) from lives that lasted

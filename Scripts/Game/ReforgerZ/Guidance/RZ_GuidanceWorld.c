@@ -1,4 +1,4 @@
-//! The world half of new-player guidance (docs/WORLD.md, "New-player guidance"): things
+//! The world half of new-player guidance (docs/DESIGN.md, "New-player guidance"): things
 //! you find and voices you hear.
 //! - a spawn scenario with a small clue near every new life, each nudging toward a faction;
 //! - a wind-up radio at every spawn, and the open channels it picks up;

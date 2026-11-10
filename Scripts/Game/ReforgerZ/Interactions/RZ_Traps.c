@@ -1,4 +1,4 @@
-//! Things players put down, and fire (docs/WORLD.md, "World interactions"). Everything here is
+//! Things players put down, and fire (docs/DESIGN.md, "World interactions"). Everything here is
 //! capped per player, decays on its own and isn't saved, so nothing builds up on the map.
 //!
 //! - Barricades: drop a bundle of planks in a doorway or window and board it up. It lasts

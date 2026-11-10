@@ -1,4 +1,4 @@
-//! Light crafting and water (docs/WORLD.md, "World interactions").
+//! Light crafting and water (docs/DESIGN.md, "World interactions").
 //!
 //! - Workbenches in garages and sheds (found by prefab name, or any placed prefab with
 //!   "workbench" in its name) offer a short recipe list: improvised bandages, molotovs,

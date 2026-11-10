@@ -1,4 +1,4 @@
-//! The radio station (docs/WORLD.md, section 5, "Radio station"). One broadcast point per
+//! The radio station (docs/DESIGN.md, "Time and environment"). One broadcast point per
 //! map: a placed RZ_RadioStationMarkerEntity, else a real radio mast or antenna found by
 //! prefab name near a town, else the highest ground near a mid-sized town. A player takes it
 //! over by staying at the console for a short while with no infected close, then can send
@@ -13,7 +13,7 @@
 [BaseContainerProps()]
 class RZ_RadioStationSettings
 {
-	[Attribute("1", desc: "A radio station players can take over and broadcast from (cosmetic and social only, docs/WORLD.md, section 5)")]
+	[Attribute("1", desc: "A radio station players can take over and broadcast from (cosmetic and social only, docs/DESIGN.md, Time and environment)")]
 	bool m_bEnabled = true;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Console: a radio set or desk with the generic puzzle object components (RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleChoiceAction). Empty = Puzzles > Radio mast, then the generic object", "et")]

@@ -1,4 +1,4 @@
-//! Time and environment (docs/WORLD.md, section 5). Never skips or changes time or weather;
+//! Time and environment (docs/DESIGN.md, "Time and environment"). Never skips or changes time or weather;
 //! it reads them and nudges other systems:
 //!
 //! - Night (RZ_GameTime): the infected hear further (heat also reaches the neighbouring
@@ -17,7 +17,7 @@
 [BaseContainerProps()]
 class RZ_EnvironmentSettings
 {
-	[Attribute("1", desc: "Time and weather nudge the infected and the factions (docs/WORLD.md, section 5). Time is never skipped or changed")]
+	[Attribute("1", desc: "Time and weather nudge the infected and the factions (docs/DESIGN.md, Time and environment). Time is never skipped or changed")]
 	bool m_bEnabled = true;
 
 	[Attribute("1", desc: "Read the real weather (rain, fog, wind). Off = only night and the Storm event apply")]

@@ -1,4 +1,4 @@
-//! Named wanderers (docs/WORLD.md, "Wanderers"): a small roster of survivors who
+//! Named wanderers (docs/DESIGN.md, "Wanderers"): a small roster of survivors who
 //! walk between settlements and safehouses. Simulated as data (a position moving in
 //! a straight line on the server tick, no AI pathing) and spawned as a body only
 //! within 400 m of a player, at most two per player. They remember each player

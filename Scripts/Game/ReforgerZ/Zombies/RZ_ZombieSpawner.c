@@ -117,7 +117,7 @@ class RZ_ZombieSpawner
 		bool screamer = false;
 		if (prefab.IsEmpty())
 		{
-			// Infection adapts a little (docs/WORLD.md, section 4): one trait per stage
+			// Infection adapts a little (docs/DESIGN.md, "Infection adapts"): one trait per stage
 			RZ_Adaptation adapt = m_GM.GetAdaptation();
 			if (special && adapt && adapt.RollScreamer())
 			{

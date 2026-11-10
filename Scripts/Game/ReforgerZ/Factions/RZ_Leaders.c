@@ -1,4 +1,4 @@
-//! Named faction leaders (docs/REPUTATION.md, "Faction leaders"; docs/WORLD.md, "Leaders").
+//! Named faction leaders (docs/REPUTATION.md, "Faction leaders"; docs/DESIGN.md, "Leaders").
 //!
 //! One leader per place a faction holds: a stronghold leader per faction (at its
 //! quartermaster; Halcyon's is at the lab), a council head per Haven safehouse, and a
@@ -954,7 +954,7 @@ class RZ_Leaders
 
 	// ================================================================ Hooks for other systems
 	//------------------------------------------------------------------------------------------------
-	//! Hook for territory (docs/WORLD.md, section 3): an outpost exists at pos. Returns its
+	//! Hook for territory (docs/DESIGN.md, "Factions in the background"): an outpost exists at pos. Returns its
 	//! leader's id: the saved one for this place if there is one, else a new leader. -1 if off.
 	//! announce = false: no headline (the territory writes its own).
 	int RegisterOutpost(RZ_EFaction faction, vector pos, string placeName, bool announce = true)

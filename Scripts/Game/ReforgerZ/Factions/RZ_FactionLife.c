@@ -1,4 +1,4 @@
-//! Factions feel alive (docs/WORLD.md, section 3, "Factions feel alive"; docs/REPUTATION.md,
+//! Factions feel alive (docs/DESIGN.md, "Faction life"; docs/REPUTATION.md,
 //! "Morale, needs, truces and feuds"). Everything is capped, background and cheap:
 //!
 //! - Needs: what each faction wants most right now, from the world (lost trucks, deaths,

@@ -1,4 +1,4 @@
-//! Background territory (docs/WORLD.md, section 3, "Factions in the background").
+//! Background territory (docs/DESIGN.md, "Factions in the background").
 //!
 //! Every faction has one Stronghold (where its stronghold leader sits: its quartermaster,
 //! Halcyon's lab) that can never be captured or destroyed; at worst it is Under Pressure

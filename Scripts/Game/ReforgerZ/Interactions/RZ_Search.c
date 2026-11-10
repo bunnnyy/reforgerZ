@@ -1,4 +1,4 @@
-//! Searching the world (docs/WORLD.md, "World interactions"): cupboards, fridges, desks,
+//! Searching the world (docs/DESIGN.md, "World interactions"): cupboards, fridges, desks,
 //! whole buildings, car boots (RZ_Cars) and the bodies of infected killed near players.
 //!
 //! - Loot suits the building: pharmacy, garage, farm, police, shop or house, from the prefab

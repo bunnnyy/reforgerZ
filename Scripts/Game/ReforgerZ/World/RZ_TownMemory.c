@@ -1,4 +1,4 @@
-//! Town memory (docs/WORLD.md, section 8). Plain values per settlement, never objects in the
+//! Town memory (docs/DESIGN.md, "Town memory"). Plain values per settlement, never objects in the
 //! world: Looted, Barricaded, Powered and Burned, and how much loot a town still has (it comes
 //! back over about two hours). Nothing here spawns anything; the world interactions
 //! (Interactions/: search, barricades, fire) report into it through the static hooks, and read it back.
@@ -11,7 +11,7 @@
 [BaseContainerProps()]
 class RZ_TownMemorySettings
 {
-	[Attribute("1", desc: "Town memory on: Looted, Barricaded, Powered, Burned per town, loot that returns, journals of the dead (docs/WORLD.md, section 8)")]
+	[Attribute("1", desc: "Town memory on: Looted, Barricaded, Powered, Burned per town, loot that returns, journals of the dead (docs/DESIGN.md, Town memory)")]
 	bool m_bEnabled = true;
 
 	[Attribute("120", desc: "Real minutes for a fully searched town's loot to come all the way back")]

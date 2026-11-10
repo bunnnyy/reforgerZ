@@ -123,7 +123,7 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
-		// Storms ground it (docs/WORLD.md, section 5)
+		// Storms ground it (docs/DESIGN.md, "Time and environment")
 		if (gm.GetEnvironment() && gm.GetEnvironment().IsHelicopterGrounded())
 			return 0;
 

@@ -1,4 +1,4 @@
-//! Radios, open and secure (docs/WORLD.md, "World interactions").
+//! Radios, open and secure (docs/DESIGN.md, "World interactions").
 //!
 //! - Open channels are already on the air (faction chatter in RZ_FactionLife, the Haven's open
 //!   line and Bastion's and the Red Hand's in new-player guidance). A radio found in a house can

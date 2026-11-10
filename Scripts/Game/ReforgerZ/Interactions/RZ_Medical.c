@@ -1,4 +1,4 @@
-//! Medical help between players (docs/WORLD.md, "World interactions"). "Treat" on another
+//! Medical help between players (docs/DESIGN.md, "World interactions"). "Treat" on another
 //! player's character: a first-aid kit and 20 seconds next to them, and they're patched up.
 //! Nurses and Doctors are much faster and can do it with just a bandage, and slow a bitten
 //! player's infection a little (once per life). Blood and saline are the vanilla items, given

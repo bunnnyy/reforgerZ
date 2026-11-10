@@ -1,4 +1,4 @@
-//! Cars as easy projects, kept rare (docs/WORLD.md, "World interactions"). At most one
+//! Cars as easy projects, kept rare (docs/DESIGN.md, "World interactions"). At most one
 //! fixable car per town and a small server-wide cap (about one per three settlements); every
 //! other wreck is just a wreck you can search, strip for one part or siphon.
 //!

@@ -1,4 +1,4 @@
-//! The power grid (docs/WORLD.md, section 5, "Power grid"). One power station per map: a
+//! The power grid (docs/DESIGN.md, "Time and environment"). One power station per map: a
 //! placed RZ_PowerStationMarkerEntity, else a real power or industrial building found by
 //! prefab name near a town, else the edge of the biggest town. A group restores it in a
 //! short sequence at its control object (force the door, reset the breakers and hold the
@@ -18,7 +18,7 @@
 [BaseContainerProps()]
 class RZ_PowerSettings
 {
-	[Attribute("1", desc: "A power station players can restore (docs/WORLD.md, section 5)")]
+	[Attribute("1", desc: "A power station players can restore (docs/DESIGN.md, Time and environment)")]
 	bool m_bEnabled = true;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Control object: a generator, control panel or breaker cabinet with the generic puzzle object components (RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleChoiceAction). Empty = Puzzles > Fuse box, then the generic object", "et")]

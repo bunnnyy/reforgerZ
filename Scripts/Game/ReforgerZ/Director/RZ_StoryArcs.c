@@ -1,4 +1,4 @@
-//! Story director: arcs (docs/WORLD.md, section 7). Short storylines strung together from
+//! Story director: arcs (docs/DESIGN.md, "Story arcs and headlines"). Short storylines strung together from
 //! what the mode already has: missions and events, wanderers, leaders, territory, supply
 //! trucks, safehouses and the headlines. Each step only fires if the previous one really
 //! happened in the world (a mission ran, a player heard a rumour, a truck left), so every
@@ -15,7 +15,7 @@
 [BaseContainerProps()]
 class RZ_StorySettings
 {
-	[Attribute("1", desc: "Story arcs on: short storylines made of missions, rumours and headlines (docs/WORLD.md, section 7)")]
+	[Attribute("1", desc: "Story arcs on: short storylines made of missions, rumours and headlines (docs/DESIGN.md, Story arcs and headlines)")]
 	bool m_bEnabled = true;
 
 	[Attribute("60", desc: "Average real minutes (with players online) between chances for a new arc")]

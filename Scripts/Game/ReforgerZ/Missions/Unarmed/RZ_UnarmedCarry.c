@@ -1,4 +1,4 @@
-//! Unarmed missions (docs/WORLD.md, section 2; docs/MISSIONS.md, "Unarmed missions"):
+//! Unarmed missions (docs/MISSIONS.md, "Unarmed missions"):
 //! low-level contracts about stealth, noise and thinking for new characters and unarmed
 //! backgrounds. They use the noisemakers (any loud noise: RZ_HeatMap.FindRecentNoise) and
 //! the "being noticed" check (RZ_Stealth), and pay small Fame. This file has the ones where

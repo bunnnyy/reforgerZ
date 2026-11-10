@@ -43,17 +43,14 @@ When you restructure, update the **Doc map** below and the README's doc list in 
 
 | File | Owns |
 |---|---|
-| `README.md` | What the mod is, feature summary, status, the doc list |
-| `docs/LORE.md` | Setting (the sealed Zone), tone, writing guide, endings |
-| `docs/PLAN.md` | Systems design and roadmap (built / next / dropped) |
-| `docs/WORLD.md` | Living-world design: safehouses, wanderers, territory, supply trucks, adaptation, arcs |
-| `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, unlocks |
-| `docs/MISSIONS.md` | Every contract, world event and puzzle mission, with requirements and ✅ status |
+| `README.md` | What the mod is, feature summary, status, the doc list, the code tree |
+| `docs/LORE.md` | Setting (the sealed Zone), the factions as people, tone, writing guide, endings |
+| `docs/DESIGN.md` | How every system works, organised by system (simplifications marked inline) |
+| `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
+| `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
+| `docs/MISSIONS.md` | Every contract, world event, puzzle, leader and arc mission, with requirements and ✅ status |
 | `docs/MOD_STACK.md` | Workshop dependencies and why |
-| `docs/WORKBENCH_SETUP.md` | Turning the scripts into a playable mod: prefabs, configs, VERIFY list |
-
-*(Planned consolidation: merge PLAN.md + WORLD.md into one design doc plus a
-separate roadmap. Update this map when it happens.)*
+| `docs/WORKBENCH_SETUP.md` | Turning the scripts into a playable mod: dependencies, factions, prefabs, settings, VERIFY list, log lines, play-test checklist |
 
 ## Writing style for docs
 - Plain, clear English, written for the mod author. Short sentences, tables for lists of things.

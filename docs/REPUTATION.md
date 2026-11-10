@@ -71,7 +71,7 @@ total wipes:
 
 Each safehouse's quartermaster only stocks what its size allows: a Shelter sells Known
 items, a Community or Settlement up to Trusted, a Town up to Champion
-([WORLD.md](WORLD.md), "Safehouses and population"). Every safehouse is a spawn point for everyone.
+([DESIGN.md](DESIGN.md), "Safehouses and population"). Every safehouse is a spawn point for everyone.
 
 #### Haven house rules and exile
 
@@ -85,9 +85,9 @@ items, a Community or Settlement up to Trusted, a Town up to Champion
 
 Food delivered to a safehouse pays 2 Haven Favor per item, plus 1 Fame per 3 items (at most 5).
 Wanderers' attitude is your Haven standing (Bastion, reversed, for the Deserter) plus their
-memory of you; see [WORLD.md](WORLD.md), "Wanderers". The Mechanic wanderer sells car parts for
+memory of you; see [DESIGN.md](DESIGN.md), "Wanderers". The Mechanic wanderer sells car parts for
 12 Haven Favor (a quarter off if they remember you helped) and gives a fixable car's keys to
-players they like ([WORLD.md](WORLD.md), section 10). Car parts in the quartermaster's shop are
+players they like ([DESIGN.md](DESIGN.md), section 10). Car parts in the quartermaster's shop are
 ordinary shop actions with the part prefabs.
 
 ### Task Force Bastion
@@ -95,7 +95,7 @@ ordinary shop actions with the part prefabs.
 | Tier | Shop (Bastion requisition) | Perk / service |
 |---|---|---|
 | Known | Military rations, morphine, flares | Checkpoints let you through without being searched |
-| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition:** once an hour, draw ammo or rations at half the Favor cost. While Bastion's supply trucks run, it's signed out at a Bastion outpost's quartermaster from the stock its trucks brought (one unit per item), and refused while that outpost is short or empty; the stronghold quartermaster points you to the nearest outpost with stock. Without trucks, at the Bastion quartermaster ([WORLD.md](WORLD.md), "Supply lines") |
+| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition:** once an hour, draw ammo or rations at half the Favor cost. While Bastion's supply trucks run, it's signed out at a Bastion outpost's quartermaster from the stock its trucks brought (one unit per item), and refused while that outpost is short or empty; the stronghold quartermaster points you to the nearest outpost with stock. Without trucks, at the Bastion quartermaster ([DESIGN.md](DESIGN.md), "Supply lines") |
 | Champion | Machine guns, grenades, military trucks | **Fire mission:** mark a horde with smoke for an artillery strike (long cooldown) |
 | Hunted | — | Bastion soldiers shoot on sight; hunter squads get your last known position |
 
@@ -121,13 +121,13 @@ ordinary shop actions with the part prefabs.
 
 Every place a faction holds has a named leader ([LORE.md](LORE.md), "Who's in charge"),
 and reputation is with people as well as factions. Code: `Factions/RZ_Leaders.c`,
-`Factions/RZ_LeaderVoice.c`; where they sit is in [WORLD.md](WORLD.md), "Leaders".
+`Factions/RZ_LeaderVoice.c`; where they sit is in [DESIGN.md](DESIGN.md), "Leaders".
 
 | Leader | Where | Can die? |
 |---|---|---|
 | Stronghold leader (one per faction) | at the faction's quartermaster; Halcyon's at the lab | Never; never replaced; always Loyal |
 | Council head | each Haven safehouse (the one at the Haven quartermaster is the stronghold) | Yes |
-| Commander, crew boss, lead researcher | each outpost ([WORLD.md](WORLD.md), section 3; interim leader posts with territory off) | Yes |
+| Commander, crew boss, lead researcher | each outpost ([DESIGN.md](DESIGN.md), section 3; interim leader posts with territory off) | Yes |
 
 Each has a seeded name, a title, a one-line backstory and **two traits**. They're saved.
 Only the leader at the place you're standing near has a body; at a stronghold or
@@ -218,7 +218,7 @@ the roads"); new players see the last three headlines when they first spawn.
 ## Morale, needs, truces and feuds
 
 Factions change with the world (code: `Factions/RZ_FactionLife.c`; the radio chatter, life
-events, remembered moments and rumours this feeds are in [WORLD.md](WORLD.md), section 3).
+events, remembered moments and rumours this feeds are in [DESIGN.md](DESIGN.md), section 3).
 Every effect is small, capped and recovers.
 
 **Needs.** Each faction has one need at a time, worked out every 5 minutes from the world.

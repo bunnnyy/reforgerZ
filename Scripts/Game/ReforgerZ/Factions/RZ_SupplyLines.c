@@ -1,4 +1,4 @@
-//! Supply trucks (docs/WORLD.md, "Supply lines").
+//! Supply trucks (docs/DESIGN.md, "Supply trucks").
 //!
 //! Outposts and Haven safehouses only restock when a real truck (a vehicle with an AI
 //! crew) drives in from the faction's Stronghold and parks. Each faction has at most one

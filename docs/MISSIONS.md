@@ -49,11 +49,11 @@ unlockable: Soldier, Doctor, Raider, Elder, Drifter.
   reading the bite and more Fame (Walk Him Out), more Fame (The Ledger), harder to spot
   (A Quiet Arrangement).
 - **Rescues and safehouses.** Rescued people become population at the nearest Haven safehouse
-  ([WORLD.md](WORLD.md), "People"): Survivors Trapped adds 3 (4 with a ★), Rescue the Kids adds 3.
+  ([DESIGN.md](DESIGN.md), "People"): Survivors Trapped adds 3 (4 with a ★), Rescue the Kids adds 3.
   Medicine Run's drop point is at a real safehouse when there are any. Requisition's supplies
   are real: delivered to Bastion, the nearest safehouse loses 4 food.
 - **Supply trucks aren't contracts.** Escorting one, driving one in after its crew died, or
-  stealing one to a rival's stronghold pays directly ([WORLD.md](WORLD.md), "Supply lines").
+  stealing one to a rival's stronghold pays directly ([DESIGN.md](DESIGN.md), "Supply lines").
   Convoy Escort and Hijack the Convoy are still planned. What a faction needs right now (lost
   trucks, deaths, research) makes matching contracts more likely ([REPUTATION.md](REPUTATION.md),
   "Morale, needs, truces and feuds").
@@ -95,7 +95,7 @@ while Watched by the Haven. They remove Infamy instead of adding Fame.
 | # | Contract | Needs | Bg | What you do | Result |
 |---|---|---|---|---|---|
 | 1 | Retake the Town ✅ | Any, Bastion present | ★ Police/Soldier: +25% Fame | Kill 8 × size infected in a town | Bastion Fame, infection -35 |
-| 2 | Last Helicopter ✅ | Any, Bastion still around, no storm | | Bastion's one working helicopter lands at an LZ on its run between its own bases. Keep the LZ clear and be there when it lifts off. Storms ground it ([WORLD.md](WORLD.md), section 5) | Fame, Favor |
+| 2 | Last Helicopter ✅ | Any, Bastion still around, no storm | | Bastion's one working helicopter lands at an LZ on its run between its own bases. Keep the LZ clear and be there when it lifts off. Storms ground it ([DESIGN.md](DESIGN.md), section 5) | Fame, Favor |
 | 3 | Burn the Bodies ✅ | Any | ★ Nurse: faster | Burn 5 corpse piles in a town to slow infection | Fame, spread slows there |
 | 4 | Recon ✅ | Any | ★ Hunter/Radio Op: reports count double | Visit 3 observation points and report horde sizes | Fame; the next horde is announced earlier |
 | 5 | Checkpoint Duty ✅ | Known | ★ Police | Hold a checkpoint 10 min. Let survivors pass, stop armed bandits | Fame (Red Hand Infamy for each bandit you stop) |
@@ -264,7 +264,7 @@ How they work in code:
 ## Unarmed missions: 10 contracts
 
 Low-level work for new characters, unarmed backgrounds (Nurse, Lab Tech, Unemployed) or anyone
-who'd rather not shoot ([WORLD.md](WORLD.md), section 2). All are open to anyone not Hunted by
+who'd rather not shoot ([DESIGN.md](DESIGN.md), section 2). All are open to anyone not Hunted by
 the giver, pay small Fame, and are built on **noise** and **being noticed**:
 
 - **Noise that leads:** any loud noise (a thrown bottle, a firecracker, an alarm clock, or
@@ -291,9 +291,9 @@ Code: `Scripts/Game/ReforgerZ/Missions/Unarmed/`.
 
 Simplifications in code:
 
-- **Car Keys** (WORLD.md #8) isn't built yet. The fixable cars and keys it needs now exist
-  ([WORLD.md](WORLD.md), section 10).
-- **The Safe Code, Breaker Sequence, Scout the Town and Night Lantern** (WORLD.md #3, #4, #9, #10) are
+- **Car Keys** (designed unarmed idea #8) isn't built yet. The fixable cars and keys it needs now exist
+  ([DESIGN.md](DESIGN.md), section 10).
+- **The Safe Code, Breaker Sequence, Scout the Town and Night Lantern** (designed unarmed ideas) are
   covered by existing missions: The Last Experiment's keypad and the Time-Lock Safe, Junction
   Boxes, Recon, and Lights in the Window and Signal Fires.
 - **Rooftop Rescue:** the survivor stands at the foot of the building (the ladder), not on the
@@ -337,7 +337,7 @@ Simplifications in code:
 
 ## Haven house contracts: 3 contracts, plus the Courier's job
 
-Morally grey work around the Haven's safehouses and their rules ([WORLD.md](WORLD.md),
+Morally grey work around the Haven's safehouses and their rules ([DESIGN.md](DESIGN.md),
 "House rules and the dark side"). Nobody in them is a villain. Each is a normal contract
 (requirements, ★, Fame and Favor as above) and works on any map: they need at least one
 safehouse. Walk Him Out and The Ledger need the puzzle civilian (or the generic puzzle object);
@@ -362,7 +362,7 @@ Simplifications in code:
   at the safehouse doesn't count (the keeper handed it over in private).
 
 The **bitten wanderer** (a wanderer bitten on the road, saved by an antidote) is part of the
-wanderer simulation, not a mission: see [WORLD.md](WORLD.md), "Wanderers".
+wanderer simulation, not a mission: see [DESIGN.md](DESIGN.md), "Wanderers".
 
 ## Leader missions: 32 personal jobs, plus Rein In
 
@@ -438,7 +438,7 @@ Simplifications in code:
 
 ## Story arc missions
 
-Story arcs ([WORLD.md](WORLD.md), section 7) mostly reuse the missions above as their steps:
+Story arcs ([DESIGN.md](DESIGN.md), section 7) mostly reuse the missions above as their steps:
 Lost Colleague (as "The missing courier"), Lab Defence, the supply trucks and the Preacher. Three
 missions exist only inside arcs and are never picked at random:
 

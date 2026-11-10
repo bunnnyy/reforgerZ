@@ -1,4 +1,4 @@
-//! World interactions (docs/WORLD.md, "World interactions"): searching, locks and keys,
+//! World interactions (docs/DESIGN.md, "World interactions"): searching, locks and keys,
 //! readable things, fixable cars, crafting, water, barricades and traps, generators, fire,
 //! bells and sirens, cracking secure radio channels and treating other players.
 //!
@@ -25,7 +25,7 @@
 [BaseContainerProps()]
 class RZ_InteractionSettings
 {
-	[Attribute("1", desc: "World interactions on: searching, locks, cars, crafting, water, traps, generators, fire, bells, secure radio, treating others (docs/WORLD.md, World interactions)")]
+	[Attribute("1", desc: "World interactions on: searching, locks, cars, crafting, water, traps, generators, fire, bells, secure radio, treating others (docs/DESIGN.md, World interactions)")]
 	bool m_bEnabled = true;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Interaction spot: a small invisible prop (a little collision box, no mesh) with RplComponent, ActionsManagerComponent and the generic puzzle object's components (RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleUseAction values 0-3, 4 RZ_PuzzleChoiceAction options 0-3). Empty = Puzzles > Generic object (visible)", "et")]

@@ -1,4 +1,4 @@
-//! Contextual tips (docs/WORLD.md, "New-player guidance"): when something happens to a
+//! Contextual tips (docs/DESIGN.md, "New-player guidance"): when something happens to a
 //! player, the nearest plausible person says one line about it, in their own voice.
 //!
 //! The table is data: RZ_GameModeComponent > Guidance > Tips. Leave it empty for the

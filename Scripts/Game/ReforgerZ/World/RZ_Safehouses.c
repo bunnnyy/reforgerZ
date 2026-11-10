@@ -1,4 +1,4 @@
-//! Haven safehouses (docs/WORLD.md, "People"): a single Haven-held spot in an
+//! Haven safehouses (docs/DESIGN.md, "Haven safehouses"): a single Haven-held spot in an
 //! otherwise abandoned town. Population is a number, not AI: a safehouse of 4 and
 //! one of 30 show the same few occupants, and only while a player is within 300 m.
 //! What population changes is what the safehouse offers (shop tier, guards, medic,

@@ -39,13 +39,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("20", desc: "Minutes between moving one spawn point to a new town", category: "ReforgerZ|World")]
 	protected float m_fSpawnRotateMinutes;
 
-	[Attribute(desc: "Town memory: Looted, Barricaded, Powered, Burned per town as data, loot that returns, journals of the dead (docs/WORLD.md, section 8)", category: "ReforgerZ|World")]
+	[Attribute(desc: "Town memory: Looted, Barricaded, Powered, Burned per town as data, loot that returns, journals of the dead (docs/DESIGN.md, Town memory)", category: "ReforgerZ|World")]
 	protected ref RZ_TownMemorySettings m_TownMemorySettings;
 
-	[Attribute(desc: "Power grid: a power station players can restore (control object prefab, region, noise, upkeep; docs/WORLD.md, section 5)", category: "ReforgerZ|World")]
+	[Attribute(desc: "Power grid: a power station players can restore (control object prefab, region, noise, upkeep; docs/DESIGN.md, Time and environment)", category: "ReforgerZ|World")]
 	protected ref RZ_PowerSettings m_PowerSettings;
 
-	[Attribute(desc: "Radio station: a broadcast point players can take over to send preset messages (console prefab, cooldown; cosmetic only, docs/WORLD.md, section 5)", category: "ReforgerZ|World")]
+	[Attribute(desc: "Radio station: a broadcast point players can take over to send preset messages (console prefab, cooldown; cosmetic only, docs/DESIGN.md, Time and environment)", category: "ReforgerZ|World")]
 	protected ref RZ_RadioStationSettings m_RadioStationSettings;
 
 	// ---------------------------------------------------------------- Director / zombies
@@ -55,16 +55,16 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("25", desc: "Minutes between government broadcasts to everyone (flavour only; also sent on first join). 0 = only on first join", category: "ReforgerZ|Director")]
 	protected float m_fBroadcastMinutes;
 
-	[Attribute(desc: "Time and weather: night (they hear further, more specials, fewer human patrols), rain, fog, storms grounding the helicopter (docs/WORLD.md, section 5)", category: "ReforgerZ|Director")]
+	[Attribute(desc: "Time and weather: night (they hear further, more specials, fewer human patrols), rain, fog, storms grounding the helicopter (docs/DESIGN.md, Time and environment)", category: "ReforgerZ|Director")]
 	protected ref RZ_EnvironmentSettings m_EnvironmentSettings;
 
-	[Attribute(desc: "Story arcs: short storylines made of missions, rumours and headlines, including the Haven's rare dark side (docs/WORLD.md, section 7)", category: "ReforgerZ|Director")]
+	[Attribute(desc: "Story arcs: short storylines made of missions, rumours and headlines, including the Haven's rare dark side (docs/DESIGN.md, Story arcs and headlines)", category: "ReforgerZ|Director")]
 	protected ref RZ_StorySettings m_StorySettings;
 
 	[Attribute(desc: "Zombie prefabs and density", category: "ReforgerZ|Zombies")]
 	protected ref RZ_ZombieSettings m_ZombieSettings;
 
-	[Attribute(desc: "Infection adapts a little: specials after breakthroughs, one trait per stage (runner, helmet, screamer prefabs), favourite spots (docs/WORLD.md, section 4)", category: "ReforgerZ|Zombies")]
+	[Attribute(desc: "Infection adapts a little: specials after breakthroughs, one trait per stage (runner, helmet, screamer prefabs), favourite spots (docs/DESIGN.md, Infection adapts)", category: "ReforgerZ|Zombies")]
 	protected ref RZ_AdaptationSettings m_AdaptationSettings;
 
 	[Attribute("0.5", desc: "Heat per tick each player gives off just by being somewhere", category: "ReforgerZ|Zombies")]
@@ -196,10 +196,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_PerimeterSettings m_PerimeterSettings;
 
 	// ---------------------------------------------------------------- Haven safehouses and wanderers
-	[Attribute(desc: "Haven safehouses: how many, starting population and food, occupant/guard/medic prefabs, upkeep, food keywords, house rules (docs/WORLD.md)", category: "ReforgerZ|Haven")]
+	[Attribute(desc: "Haven safehouses: how many, starting population and food, occupant/guard/medic prefabs, upkeep, food keywords, house rules (docs/DESIGN.md)", category: "ReforgerZ|Haven")]
 	protected ref RZ_SafehouseSettings m_SafehouseSettings;
 
-	[Attribute(desc: "Named wanderers: roster size, body prefab per role, Trader goods, prices, replacement time (docs/WORLD.md)", category: "ReforgerZ|Wanderers")]
+	[Attribute(desc: "Named wanderers: roster size, body prefab per role, Trader goods, prices, replacement time (docs/DESIGN.md)", category: "ReforgerZ|Wanderers")]
 	protected ref RZ_WandererSettings m_WandererSettings;
 
 	// ---------------------------------------------------------------- Faction leaders
@@ -207,21 +207,21 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_LeaderSettings m_LeaderSettings;
 
 	// ---------------------------------------------------------------- Territory, supply trucks, faction life
-	[Attribute(desc: "Background territory: strongholds and outposts, the territory tick, faction strength, outpost guards and named occupants (docs/WORLD.md, section 3)", category: "ReforgerZ|Territory")]
+	[Attribute(desc: "Background territory: strongholds and outposts, the territory tick, faction strength, outpost guards and named occupants (docs/DESIGN.md, Factions in the background)", category: "ReforgerZ|Territory")]
 	protected ref RZ_TerritorySettings m_TerritorySettings;
 
-	[Attribute(desc: "Supply trucks: truck and crew prefabs per faction, departures, unsticking, stock, shortages, escort and theft rewards (docs/WORLD.md, Supply lines)", category: "ReforgerZ|Territory")]
+	[Attribute(desc: "Supply trucks: truck and crew prefabs per faction, departures, unsticking, stock, shortages, escort and theft rewards (docs/DESIGN.md, Supply trucks)", category: "ReforgerZ|Territory")]
 	protected ref RZ_SupplySettings m_SupplySettings;
 
-	[Attribute(desc: "Faction life: needs, morale, radio chatter, life events, truces and feuds, remembered moments, rumours (docs/WORLD.md, section 3)", category: "ReforgerZ|Territory")]
+	[Attribute(desc: "Faction life: needs, morale, radio chatter, life events, truces and feuds, remembered moments, rumours (docs/DESIGN.md, Factions in the background)", category: "ReforgerZ|Territory")]
 	protected ref RZ_FactionLifeSettings m_FactionLifeSettings;
 
 	// ---------------------------------------------------------------- New-player guidance
-	[Attribute(desc: "Quiet in-world guidance: experience levels, contextual tips from nearby people, the first-life goal, the gentle start (docs/WORLD.md)", category: "ReforgerZ|Guidance")]
+	[Attribute(desc: "Quiet in-world guidance: experience levels, contextual tips from nearby people, the first-life goal, the gentle start (docs/DESIGN.md)", category: "ReforgerZ|Guidance")]
 	protected ref RZ_GuidanceSettings m_GuidanceSettings;
 
 	// ---------------------------------------------------------------- World interactions
-	[Attribute(desc: "World interactions: the interaction spot prefab, scan radius and caps, bells and sirens, water, treating other players (docs/WORLD.md, World interactions)", category: "ReforgerZ|Interactions")]
+	[Attribute(desc: "World interactions: the interaction spot prefab, scan radius and caps, bells and sirens, water, treating other players (docs/DESIGN.md, World interactions)", category: "ReforgerZ|Interactions")]
 	protected ref RZ_InteractionSettings m_InteractionSettings;
 
 	[Attribute(desc: "Searching: loot pool and tables per building type, chances, locks and keys, readable things, bodies", category: "ReforgerZ|Interactions")]
@@ -490,7 +490,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_bWipeOnStart)
 			loaded = LoadState();
 
-		// The last finished season's ending. TODO (docs/PLAN.md): next-season rules from it.
+		// The last finished season's ending. TODO (docs/ROADMAP.md): next-season rules from it.
 		RZ_SeasonRecord last = RZ_Persistence.LoadSeason();
 		if (last)
 			RZ_Log.Info(string.Format("Last season (%1) the cure went to %2.", last.world, last.winnerName));

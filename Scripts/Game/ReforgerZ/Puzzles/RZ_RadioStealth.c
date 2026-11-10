@@ -62,7 +62,7 @@ class RZ_Radio
 	}
 }
 
-//! "Being noticed" for stealth puzzles (docs/WORLD.md, unarmed missions).
+//! "Being noticed" for stealth puzzles (docs/MISSIONS.md, "Unarmed missions").
 //! A player is noticed if the heat where they stand is over a threshold, or if a
 //! zombie has stayed within a few metres of them for too long. Each mission
 //! owns one tracker, so the closeness timer is per player per mission.
