@@ -1,0 +1,40 @@
+SubScene {
+ Parent "{A9806AF617972E97}worlds/Arland/Arland.ent"
+}
+SCR_BaseGameMode RZTestGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
+ coords 1000 50 1000
+ components {
+  RZ_GameModeComponent "{6D0F1A2B3C4D5E61}" {
+   m_sLabPrefab "{A5AC0827E24C1929}Prefabs/Props/Core/SupplyBox_Base.et"
+   m_sSamplePrefab "{630FB4AD4A735264}Prefabs/Items/Equipment/Canteens/Canteen_US_01.et"
+   m_sAntidotePrefab "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
+   m_sRewardCratePrefab "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et"
+   m_sMissionItemPrefab "{630FB4AD4A735264}Prefabs/Items/Equipment/Canteens/Canteen_US_01.et"
+   m_sDropPointHaven "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et"
+   m_sDropPointBastion "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et"
+   m_sDropPointRedHand "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et"
+   m_sDropPointHalcyon "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et"
+   m_sPuzzleNotePrefab "{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et"
+   m_sPuzzleObjectPrefab "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et"
+   m_sCivilianPrefab "{8C7093AF368F496A}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_1.et"
+   m_ZombieSettings RZ_ZombieSettings "{C70E4510117600EC}" {
+    m_aCommonPrefabs {
+     "{5BEA04939D148B1D}Prefabs/Groups/INDFOR/Group_FIA_FireTeam.et"
+    }
+    m_aSpecialPrefabs {
+     "{5BEA04939D148B1D}Prefabs/Groups/INDFOR/Group_FIA_FireTeam.et"
+    }
+    m_aHordePrefabs {
+     "{CE41AF625D05D0F0}Prefabs/Groups/INDFOR/Group_FIA_RifleSquad.et"
+    }
+    m_sMoveWaypointPrefab "{750A8D1695BD6998}Prefabs/AI/Waypoints/AIWaypoint_Move.et"
+   }
+  }
+ }
+}
+SCR_FactionManager RZTestFactions : "{4A188E44289B9A50}Prefabs/MP/Managers/Factions/FactionManager_Editor.et" {
+ coords 1000 50 1010
+}
+SCR_LoadoutManager RZTestLoadouts : "{B54D08AEA74A5354}Prefabs/MP/Managers/Loadouts/LoadoutManager_Editor.et" {
+ coords 1000 50 1020
+}

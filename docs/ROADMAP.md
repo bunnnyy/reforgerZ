@@ -4,8 +4,9 @@ What's built, what's next, what to test first, and what was dropped. How each sy
 is in [DESIGN.md](DESIGN.md).
 
 **Status:** everything under "Built" is written in Enforce Script (about 71,000 lines) and the
-game scripts **compile cleanly** against Arma Reforger 1.9. None of it has run in a world yet: it
-needs prefabs, the behavioural `VERIFY` checks and a play-test before it can be called working
+game scripts **compile cleanly** against Arma Reforger 1.9. It also runs on the server in a test
+world with a fake player, with no script exceptions ([runtime test](WORKBENCH_SETUP.md#runtime-test-without-workbench)).
+It still needs prefabs, the behavioural `VERIFY` checks and a real play-test before it can be called working
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)). The Workbench plugin hasn't been compiled.
 
 ## Built

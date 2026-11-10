@@ -51,9 +51,11 @@ and one way to end it: **research the cure.**
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 That's about 71,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 29 `VERIFY` markers left in the game
+was also checked against the base game's script source; the 30 `VERIFY` markers left in the game
 scripts (and 9 in the plugin) are behaviours only a play-test can show, such as replication and
-what the AI does. There are no prefabs, layouts or configs yet, and nothing has been play-tested. The icon
+what the AI does. The game mode also **runs on the server** in a test world with a fake player
+(`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no script
+exceptions. There are no prefabs, layouts or configs yet, and nobody has played it. The icon
 set and mockups of every screen are done (`UI/`). Every prefab,
 setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
 plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run). Start with
@@ -111,5 +113,7 @@ tools/render_ui.js
                  renders the icon PNGs and the mockup previews (Node and Playwright)
 tools/compile_check.sh
                  compiles the scripts on the Linux dedicated server, no Workbench needed
+tools/runtime_test/
+                 runs the game mode on that server with a fake player (test only, not the mod)
 addon.gproj      the project file (mod ID, dependencies)
 ```

@@ -842,6 +842,27 @@ What it can't do:
 | No behaviour is tested | It only compiles. Nothing runs until there's a world with the game mode in it |
 | Folder names must be lowercase `scripts/` | The Linux server is case-sensitive and only looks there. Windows doesn't care, so keep it lowercase for Linux-hosted servers |
 
+### Runtime test without Workbench
+
+`tools/runtime_test/run.sh` runs the game mode on the same server, in a sub-scene of Arland with
+vanilla stand-ins for the minimum prefabs and a fake player (a spawned civilian the systems see as
+online). It starts every mission type one at a time and ends each, walks the player through every
+settlement, the safehouses and the lab, into the Perimeter, to death and a second life, and logs
+every notice the player is sent. It prints the script exceptions (there should be none), how many
+mission types started and which didn't. It takes about 45 minutes.
+
+```bash
+SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
+```
+
+| What it shows | What it can't |
+|---|---|
+| Script exceptions on real code paths; startup and save/load; missions' Setup, rewards and cleanup; the Perimeter; spawn and death; the text players get | Anything a client does (UI, menus, input, replication), real AI behaviour against a player, your prefabs and their components |
+
+A mission that doesn't start usually needs a world state the test doesn't create (a town at the
+right infection, an optional prefab, a faction standing). None of this is part of the mod: the
+test files are copied into a throwaway addon folder.
+
 ### The markers
 
 ```bash
@@ -870,12 +891,12 @@ No fallback. If this is wrong, nothing persists.
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Core/RZ_Util.c:488` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
-| `Core/RZ_Util.c:606` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
+| `Core/RZ_Util.c:505` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
+| `Core/RZ_Util.c:623` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:843` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
-| `Core/RZ_Util.c:634` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
+| `Core/RZ_Util.c:651` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Interactions.c:703` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
-| `Core/RZ_Util.c:437` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
+| `Core/RZ_Util.c:454` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:226` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
 | `World/RZ_Perimeter.c:677`, `:692` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Door locks** off (locks go back on the loot) |
@@ -883,8 +904,8 @@ No fallback. If this is wrong, nothing persists.
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: no door locks, the loot lock everywhere |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
-| `Core/RZ_Util.c:714` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
-| `Core/RZ_Util.c:800` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
+| `Core/RZ_Util.c:731` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:817` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
 | `Cure/RZ_Infection.c:1160` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 
 ### Low risk: contained or cosmetic (9)
@@ -895,7 +916,7 @@ No fallback. If this is wrong, nothing persists.
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:260` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: use **Set it alight** on the building instead |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
-| `Core/RZ_Util.c:400` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
+| `Core/RZ_Util.c:417` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_KeyItem.c:81` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages, or leave **Key prefab** empty (data keys) |
