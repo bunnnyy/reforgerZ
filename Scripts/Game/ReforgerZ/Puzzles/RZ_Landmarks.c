@@ -9,7 +9,8 @@ class RZ_Landmark
 
 //! Finds real landmark buildings near a point by prefab (or mesh) name keywords,
 //! so puzzles can say "from the church, face the water tower" on any map.
-//! Runs once per mission setup, over a small sphere of static entities.
+//! Runs once per mission setup, over a small sphere of static entities. Locked buildings
+//! (RZ_LockedSpots) are skipped, so nothing a mission places at a landmark is behind a lock.
 class RZ_LandmarkFinder
 {
 	protected ref array<ref RZ_Landmark> m_aFound;
@@ -67,6 +68,10 @@ class RZ_LandmarkFinder
 		{
 			if (!Matches(kind, name))
 				continue;
+
+			// Never a locked building: whatever a mission puts there would be behind its door
+			if (RZ_LockedSpots.IsLockedBuilding(e))
+				return true;
 
 			vector pos = e.GetOrigin();
 			foreach (RZ_Landmark existing : m_aFound)

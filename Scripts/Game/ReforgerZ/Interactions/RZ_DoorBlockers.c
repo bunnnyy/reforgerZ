@@ -120,6 +120,19 @@ class RZ_DoorBlockers
 		return n;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A blocker stands within radius of pos (mission spots keep clear of them, RZ_LockedSpots).
+	bool IsNear(vector pos, float radius)
+	{
+		foreach (string key, RZ_DoorBlock k : m_mBlocks)
+		{
+			if (k.m_Blocker && RZ_Util.DistXZ(k.m_vPlacedAt, pos) <= radius)
+				return true;
+		}
+
+		return false;
+	}
+
 	// ================================================================ Lock changes
 	//------------------------------------------------------------------------------------------------
 	//! A building was unlocked, latched, forced or locked. Unlocked: its blockers go now.

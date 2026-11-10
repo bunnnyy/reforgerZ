@@ -3,7 +3,7 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** everything under "Built" is written in Enforce Script (about 56,700 lines) and
+**Status:** everything under "Built" is written in Enforce Script (about 57,000 lines) and
 **has never been compiled**. It needs Workbench, the 113 `VERIFY` fixes and a play-test
 before any of it can be called working ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 

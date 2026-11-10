@@ -31,7 +31,7 @@ and one way to end it: **research the cure.**
 
 ## Status
 
-All of it is **written but has never been compiled**. It's about 56,700 lines of Enforce
+All of it is **written but has never been compiled**. It's about 57,000 lines of Enforce
 Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **113 `VERIFY`
 markers** on engine calls whose exact names need checking, no prefabs or configs yet, and
 nothing has been play-tested. Start with [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).

@@ -428,14 +428,17 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Highest of a few sampled dry points in a ring. Works on any terrain.
+	//! Highest of a few sampled dry points in a ring, never behind a lock. Works on any terrain.
 	static vector HighPointNear(vector center, float minR, float maxR, int samples = 16)
 	{
-		vector best = RZ_Util.RandomPointInRing(center, minR, maxR);
+		vector best = LandPointNear(center, minR, maxR);
 		for (int i = 0; i < samples; i++)
 		{
 			vector p = RZ_Util.RandomPointInRing(center, minR, maxR);
-			if (!RZ_Util.IsWater(p) && p[1] > best[1])
+			if (RZ_Util.IsWater(p) || p[1] <= best[1])
+				continue;
+
+			if (!RZ_LockedSpots.IsBlocked(p))
 				best = p;
 		}
 
@@ -443,17 +446,33 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A dry point in a ring, away from the quarantine line (falls back to the last try).
+	//! A dry point in a ring, away from the quarantine line and never inside a locked building or
+	//! by its doorway blocker (RZ_LockedSpots), so mission props are never behind a lock. Falls
+	//! back to the first dry point moved out past the locked building's wall, then the last try.
 	static vector LandPointNear(vector center, float minR, float maxR)
 	{
 		vector p = RZ_Util.RandomPointInRing(center, minR, maxR);
-		for (int i = 0; i < 8; i++)
+		vector dry = p;
+		bool haveDry = false;
+		for (int i = 0; i < 10; i++)
 		{
 			if (!RZ_Util.IsWater(p) && !RZ_Perimeter.IsNearLineAt(p))
-				return p;
+			{
+				if (!RZ_LockedSpots.IsBlocked(p))
+					return p;
+
+				if (!haveDry)
+				{
+					dry = p;
+					haveDry = true;
+				}
+			}
 
 			p = RZ_Util.RandomPointInRing(center, minR, maxR);
 		}
+
+		if (haveDry)
+			return RZ_LockedSpots.MoveOut(dry);
 
 		return p;
 	}

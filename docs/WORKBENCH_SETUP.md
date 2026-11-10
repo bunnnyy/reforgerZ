@@ -523,7 +523,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Interactions/RZ_Interactions.c:645` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
 | `Interactions/RZ_Interactions.c:721` | `SCR_DestructibleBuildingEntity` as the building class | Buildings aren't recognised; furniture still is |
 | `Interactions/RZ_Interactions.c:251` | `GetItems()` for keyword items | Crowbars, parts, fuel, water and medkits not found |
-| `Puzzles/RZ_Landmarks.c:55` | `QueryEntitiesBySphere(center, radius, cb, filter, flags)` | No landmarks: the fallback landmark prop |
+| `Puzzles/RZ_Landmarks.c:56` | `QueryEntitiesBySphere(center, radius, cb, filter, flags)` | No landmarks: the fallback landmark prop |
 | `Puzzles/RZ_PuzzleComponents.c:80`, `:142`, `Puzzles/RZ_BlinkingLight.c:161` | `[RplProp]` on a `ScriptComponent` | Labels don't replicate: generic labels, all slots visible, actions still work |
 | `Puzzles/RZ_GameTime.c:21`, `:25`, `:29` | `ChimeraWorld.CastFrom`, `GetTimeAndWeatherManager`, `GetTimeOfTheDay` | -1: night missions never appear, no night effects |
 | `Director/RZ_Environment.c:67`, `:82`, `:93`, `:104` | world cast; rain, fog and wind accessors | Make the helper return -1: only night and the Storm event apply |
@@ -556,7 +556,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_MapMarkers.c:14`, `:19`, `:20`, `:21`, `:22`, `:44`, `:46` | map marker manager, type, position, text, insert, remove | Empty `Add()` and `Remove()`, or turn **Map markers** off |
 | `Cure/RZ_AntidoteConsumable.c:8`, `:15` | the consumable effect class and `ApplyEffect` signature | Delete the file: the world action still works |
 | `Guidance/RZ_Guidance.c:172` | `System.GetUnixTime()` | Return 0: the 30-day refresher never fires |
-| `Puzzles/RZ_BlinkingLight.c:55`, `:72`; `Puzzles/RZ_Landmarks.c:65`; `Core/RZ_Util.c:347` | `ToUpper`, `Trim`, `ToLower` in place or as copies | Swap to the other form |
+| `Puzzles/RZ_BlinkingLight.c:55`, `:72`; `Puzzles/RZ_Landmarks.c:66`; `Core/RZ_Util.c:347` | `ToUpper`, `Trim`, `ToLower` in place or as copies | Swap to the other form |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
 | `Core/RZ_Util.c:340`, `:343` | `GetChildren()`/`GetSibling()`, attachment prefab names | Suppressors aren't detected (full gunfire heat) |
 | `Core/RZ_Util.c:203` | `IsInCompartment()` | Driving or stealing a supply truck isn't recognised; interaction scans don't skip players in vehicles |
@@ -661,6 +661,8 @@ session, tick off:
   seconds after you arrive. Lead infected and a hostile AI group at it: they route to another
   door or wait outside; they don't open it. Note the server frame time when blockers come and go.
 - [ ] Infected pressed against a locked door make noise (heat), and you're told once.
+- [ ] Mission spots: start a few delivery and puzzle missions in towns with locked buildings.
+  No item, note, person or crate is inside a locked building or in its doorway.
 - [ ] Nobody gets trapped: unlock, force and the inside latch remove the blocker at once; climb
   in through a window and walk out of the door; stand in the doorway while it relocks. Nothing
   stops you and nothing feels in the way.

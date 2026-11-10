@@ -354,6 +354,7 @@ class RZ_DoorLocks
 	protected ref map<int, float> m_mNoticeAt = new map<int, float>();
 	protected ref RZ_DoorBlockers m_Blockers;
 	protected string m_sList;
+	protected ref array<string> m_aReinforced = {};
 
 	protected static const float AI_DOOR_REACH = 3;	// the AI hook looks for a locked door this close (m) to the AI
 	protected static const float AI_BUILDING_REACH = 40;
@@ -372,6 +373,41 @@ class RZ_DoorLocks
 	bool IsOn()
 	{
 		return m_Settings.m_bEnabled && m_Settings.m_bLocks && m_Settings.m_bDoorLocks;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A doorway blocker stands within radius of pos (RZ_LockedSpots).
+	bool IsNearBlocker(vector pos, float radius)
+	{
+		return m_Blockers.IsNear(pos, radius);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A mission changed this building's lock for a keypad (Locked Bunker): no key fits it and a
+	//! crowbar won't force it while it's set. The inside latch still opens it.
+	void SetReinforced(string buildingKey, bool on)
+	{
+		if (on && !m_aReinforced.Contains(buildingKey))
+			m_aReinforced.Insert(buildingKey);
+		else if (!on)
+			m_aReinforced.RemoveItem(buildingKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsReinforced(string buildingKey)
+	{
+		return m_aReinforced.Contains(buildingKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Learn a building's doors for a mission (Locked Bunker): its outside doors if it has a lock,
+	//! null otherwise. Same as the look-around.
+	RZ_BuildingDoors LearnForMission(IEntity building)
+	{
+		if (!building)
+			return null;
+
+		return LearnIfLocked(building, RZ_ItemHelper.LowerName(building));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -681,6 +717,12 @@ class RZ_DoorLocks
 		}
 
 		bool locked = m_Search.IsLocked(s);
+		if (locked && (option == 0 || option == 2) && IsReinforced(s.m_sBuildingKey))
+		{
+			m_GM.NotifyPlayer(playerId, title, "Someone's changed this lock. A steel plate over the old keyhole, bolted through, and a keypad beside the frame. No key or crowbar will touch it. The code's out there somewhere.");
+			return;
+		}
+
 		string keyId = m_Search.KeyForBuilding(s.m_vBuilding, s.m_sType);
 		string tag = m_Search.KeyTagForBuilding(s.m_vBuilding, s.m_sType);
 		if (option == 0)

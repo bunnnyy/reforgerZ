@@ -638,6 +638,12 @@ quartermaster, or 150 m of a stronghold (the same places that can't burn).
   key prefab set, **keys are real items**: they can be dropped, traded and taken off a body, the
   id stays on the server, and the tag can be read on the ground. Without one, keys are data kept
   for this life.
+- **Mission spots stay outside.** Missions place their items, props, people and crates on random
+  ground points (the shared pickers `LandPointNear` and `HighPointNear`). With door locks on, a
+  point inside a locked building's bounding box (plus 1.5 m, which covers its doorways) or within
+  2.5 m of a doorway blocker is rejected, and the last resort is moved out past the nearest wall.
+  The landmark finder skips locked buildings too. A building counts while it's unlocked as well,
+  since it locks again at the reset.
 - **Fallback: the lock on the loot.** A building whose doors aren't found (no door entities, or
   no usable bounding box) keeps the old lock: Search is refused, and the search spot offers "Use
   a key" and "Force the lock" (the same key, time and heat). With **Door locks** off, every
