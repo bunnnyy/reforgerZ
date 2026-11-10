@@ -100,6 +100,30 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon drop point: a prop with RZ_ChoiceDeliveryAction set to INSTITUTE", "et", category: "ReforgerZ|Missions")]
 	protected ResourceName m_sDropPointHalcyon;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Helicopter wreck prop (optional, enables Crash Site and Crashed Helicopter)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sHeliWreckPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Corpse pile prop (optional, only visual: Burn the Bodies and Decontamination work without it)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sCorpsePilePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand AI group (optional, enables Raid the Red Hand and Trader Caravan, adds raiders to Lab Defence)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sRedHandGroupPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Destructible Bastion fuel depot with a damage manager (optional, enables Arson)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sFuelDepotPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Destructible Haven radio relay with a damage manager (optional, enables Sabotage the Relay)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sRelayPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Airdrop crate (optional, the reward crate is used if empty)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sAirdropPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Wandering trader: a character, vehicle or composition, e.g. with a Shop System trader (optional, enables Wandering Trader)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sTraderPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Explosion effect prefab, e.g. an artillery shell impact (optional, enables Bombing Run)", "et", category: "ReforgerZ|Missions")]
+	protected ResourceName m_sExplosionPrefab;
+
 	// ---------------------------------------------------------------- Survival
 	[Attribute("3", desc: "Heat per shot fired by a player (times the background noise multiplier)", category: "ReforgerZ|Survival")]
 	protected float m_fHeatPerShot;
@@ -292,6 +316,26 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	ResourceName GetNestPrefab() { return m_sNestPrefab; }
 	ResourceName GetDeadDropPrefab() { return m_sDeadDropPrefab; }
 	ResourceName GetMissionItemPrefab() { return m_sMissionItemPrefab; }
+	ResourceName GetHeliWreckPrefab() { return m_sHeliWreckPrefab; }
+	ResourceName GetCorpsePilePrefab() { return m_sCorpsePilePrefab; }
+	ResourceName GetRedHandGroupPrefab() { return m_sRedHandGroupPrefab; }
+	ResourceName GetFuelDepotPrefab() { return m_sFuelDepotPrefab; }
+	ResourceName GetRelayPrefab() { return m_sRelayPrefab; }
+	ResourceName GetAirdropPrefab() { return m_sAirdropPrefab; }
+	ResourceName GetTraderPrefab() { return m_sTraderPrefab; }
+	ResourceName GetExplosionPrefab() { return m_sExplosionPrefab; }
+	ResourceName GetAntidotePrefab() { return m_sAntidotePrefab; }
+	bool HasLab() { return m_bHasLab; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Index of the settlement the lab is in (or nearest to), -1 without a lab.
+	int GetLabSettlement()
+	{
+		if (!m_bHasLab)
+			return -1;
+
+		return FindNearestSettlement(m_vLabPos);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	ResourceName GetDropPointPrefab(RZ_EFaction faction)
@@ -786,8 +830,16 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		vector pos = ent.GetOrigin();
 		RZ_Util.KillCharacter(ent);
-		m_Spawner.SpawnZombie(pos, false, -1, -1);
-		NotifyAll("Turned", GetGame().GetPlayerManager().GetPlayerName(playerId) + " has turned.");
+
+		// World event: the turned player roams with their gear nearby
+		RZ_Mission_TurnedPlayer turned = new RZ_Mission_TurnedPlayer();
+		turned.Configure(this);
+		turned.Prepare(RZ_Util.PlayerName(playerId), pos);
+		if (!m_Missions.StartMission(turned))
+		{
+			m_Spawner.SpawnZombie(pos, false, -1, -1);
+			NotifyAll("Turned", RZ_Util.PlayerName(playerId) + " has turned.");
+		}
 	}
 
 	// ================================================================ Heat
@@ -864,6 +916,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		RZ_Util.SpawnPrefab(m_sAntidotePrefab, RZ_Util.RandomPointInRing(m_vLabPos, 2, 5) + Vector(0, 0.3, 0));
 		NotifyAll("Institute", "A fresh antidote dose is ready at the lab.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	IEntity SpawnAntidoteAt(vector pos)
+	{
+		return RZ_Util.SpawnPrefab(m_sAntidotePrefab, RZ_Util.GroundPos(pos) + Vector(0, 0.3, 0));
 	}
 
 	//------------------------------------------------------------------------------------------------

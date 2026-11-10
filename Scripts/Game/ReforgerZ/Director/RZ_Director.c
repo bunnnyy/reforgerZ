@@ -111,6 +111,12 @@ class RZ_Director
 
 		foreach (int i, RZ_Settlement source : list)
 		{
+			if (source.m_fNoSpreadSeconds > 0)
+			{
+				source.m_fNoSpreadSeconds = source.m_fNoSpreadSeconds - dt;
+				continue;
+			}
+
 			if (source.m_fInfection < SPREAD_SOURCE_INFECTION)
 				continue;
 

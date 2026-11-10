@@ -69,6 +69,11 @@ class RZ_ZombieSpawner
 	protected ref array<ref RZ_TrackedZombie> m_aTracked = {};
 	protected float m_fHordeCooldownLeft = 300;
 
+	// World event modifiers (Night of the Dead, Siren Test). Reset by the event when it ends.
+	protected float m_fEventDensityMult = 1;
+	protected float m_fEventSpecialMult = 1;
+	protected int m_iFocusSettlement = -1;	// gets 1.5x density, every other town 0.4x
+
 	protected static const float AMBIENT_RADIUS = 300;
 
 	//------------------------------------------------------------------------------------------------
@@ -177,6 +182,19 @@ class RZ_ZombieSpawner
 			if (spawnedOut)
 				spawnedOut.Insert(e);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetEventModifiers(float densityMult, float specialMult)
+	{
+		m_fEventDensityMult = densityMult;
+		m_fEventSpecialMult = specialMult;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetFocusSettlement(int idx)
+	{
+		m_iFocusSettlement = idx;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -321,8 +339,15 @@ class RZ_ZombieSpawner
 			if (RZ_Util.NearestDistance(s.m_vCenter, players) > m_Settings.m_fActivationRadius + s.m_fRadius)
 				continue;
 
-			float desired = s.m_iSize * m_Settings.m_fDensityPerSize * (s.m_fInfection / 100) * stage.m_fDensityMult;
+			float desired = s.m_iSize * m_Settings.m_fDensityPerSize * (s.m_fInfection / 100) * stage.m_fDensityMult * m_fEventDensityMult;
 			desired += m_GM.GetHeat().GetHeat(s.m_vCenter) / 25;
+			if (m_iFocusSettlement >= 0)
+			{
+				if (idx == m_iFocusSettlement)
+					desired = desired * 1.5;
+				else
+					desired = desired * 0.4;
+			}
 
 			int deficit = RZ_Util.RoundToInt(desired) - CountForSettlement(idx);
 			while (deficit > 0 && spawned < budget && m_aTracked.Count() < m_Settings.m_iGlobalCap)
@@ -331,7 +356,7 @@ class RZ_ZombieSpawner
 				if (!FindSpawnPos(s.m_vCenter, 0, s.m_fRadius, players, pos))
 					break;
 
-				bool special = Math.RandomFloat01() < stage.m_fSpecialChance;
+				bool special = Math.RandomFloat01() < stage.m_fSpecialChance * m_fEventSpecialMult;
 				SpawnZombie(pos, special, idx, -1);
 				deficit--;
 				spawned++;
@@ -344,7 +369,7 @@ class RZ_ZombieSpawner
 	//------------------------------------------------------------------------------------------------
 	protected void PopulateWilderness(array<IEntity> players, RZ_StageSettings stage, int budget)
 	{
-		int wanted = RZ_Util.RoundToInt(m_Settings.m_iAmbientPerPlayer * stage.m_fDensityMult);
+		int wanted = RZ_Util.RoundToInt(m_Settings.m_iAmbientPerPlayer * stage.m_fDensityMult * m_fEventDensityMult);
 		int spawned = 0;
 		foreach (IEntity player : players)
 		{
@@ -359,7 +384,7 @@ class RZ_ZombieSpawner
 			if (!FindSpawnPos(p, m_Settings.m_fMinSpawnDistance + 30, AMBIENT_RADIUS - 50, players, pos))
 				continue;
 
-			SpawnZombie(pos, Math.RandomFloat01() < stage.m_fSpecialChance * 0.5, -1, -1);
+			SpawnZombie(pos, Math.RandomFloat01() < stage.m_fSpecialChance * m_fEventSpecialMult * 0.5, -1, -1);
 			spawned++;
 		}
 	}

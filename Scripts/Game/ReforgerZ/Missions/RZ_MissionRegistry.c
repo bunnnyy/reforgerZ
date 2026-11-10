@@ -1,5 +1,6 @@
 //! Every built-in mission type, grouped by faction. Other mods can add their
-//! own through RZ_MissionManager.RegisterType().
+//! own through RZ_MissionManager.RegisterType(). RZ_Mission_TurnedPlayer is not
+//! listed: the game mode starts it directly when a player turns.
 class RZ_MissionRegistry
 {
 	//------------------------------------------------------------------------------------------------
@@ -9,17 +10,63 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_SupplyCache);
 		mgr.RegisterType(RZ_Mission_SurvivorHoldout);
 		mgr.RegisterType(RZ_Mission_RadioRelay);
+		mgr.RegisterType(RZ_Mission_MedicineRun);
+		mgr.RegisterType(RZ_Mission_BittenFriend);
 		mgr.RegisterType(RZ_Mission_TakeBackTown);
+		mgr.RegisterType(RZ_Mission_MissingScout);
+		mgr.RegisterType(RZ_Mission_ClearTheRoad);
 		mgr.RegisterType(RZ_Mission_BurnTheNest);
+		mgr.RegisterType(RZ_Mission_SignalFires);
+		mgr.RegisterType(RZ_Mission_TraderCaravan);
+		mgr.RegisterType(RZ_Mission_RescueTheKids);
 
 		// Task Force Bastion
 		mgr.RegisterType(RZ_Mission_ClearSettlement);
 		mgr.RegisterType(RZ_Mission_EvacWindow);
+		mgr.RegisterType(RZ_Mission_BurnTheBodies);
+		mgr.RegisterType(RZ_Mission_Recon);
+		mgr.RegisterType(RZ_Mission_CheckpointDuty);
+		mgr.RegisterType(RZ_Mission_MissingPatrol);
+		mgr.RegisterType(RZ_Mission_CrashSite);
+		mgr.RegisterType(RZ_Mission_QuarantineLine);
+		mgr.RegisterType(RZ_Mission_RaidRedHand);
+		mgr.RegisterType(RZ_Mission_Requisition);
 
 		// The Red Hand
 		mgr.RegisterType(RZ_Mission_BanditDeadDrop);
+		mgr.RegisterType(RZ_Mission_FenceTheGoods);
+		mgr.RegisterType(RZ_Mission_PharmacyHeist);
+		mgr.RegisterType(RZ_Mission_FightPit);
+		mgr.RegisterType(RZ_Mission_TollRoad);
+		mgr.RegisterType(RZ_Mission_SmugglersRun);
+		mgr.RegisterType(RZ_Mission_RaidTheCache);
+		mgr.RegisterType(RZ_Mission_ZombieBait);
+		mgr.RegisterType(RZ_Mission_Arson);
+		mgr.RegisterType(RZ_Mission_SabotageRelay);
+		mgr.RegisterType(RZ_Mission_StealAntidotes);
 
 		// Halcyon
 		mgr.RegisterType(RZ_Mission_SampleHunt);
+		mgr.RegisterType(RZ_Mission_FieldSamples);
+		mgr.RegisterType(RZ_Mission_WaterSurvey);
+		mgr.RegisterType(RZ_Mission_LostColleague);
+		mgr.RegisterType(RZ_Mission_ResearchData);
+		mgr.RegisterType(RZ_Mission_HuntScreamer);
+		mgr.RegisterType(RZ_Mission_QuarantineBreach);
+		mgr.RegisterType(RZ_Mission_Decontamination);
+		mgr.RegisterType(RZ_Mission_LabDefence);
+
+		// World events
+		mgr.RegisterType(RZ_Event_Airdrop);
+		mgr.RegisterType(RZ_Event_CrashedHelicopter);
+		mgr.RegisterType(RZ_Event_HordeMigration);
+		mgr.RegisterType(RZ_Event_NightOfTheDead);
+		mgr.RegisterType(RZ_Event_SirenTest);
+		mgr.RegisterType(RZ_Event_Storm);
+		mgr.RegisterType(RZ_Event_WanderingTrader);
+		mgr.RegisterType(RZ_Event_BombingRun);
+		mgr.RegisterType(RZ_Event_MassGrave);
+		mgr.RegisterType(RZ_Event_StashNote);
+		mgr.RegisterType(RZ_Event_SupplyPlaneCrash);
 	}
 }

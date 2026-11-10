@@ -7,6 +7,8 @@ class RZ_HeatMap
 	protected float m_fCell = 250;
 	protected float m_fDecayPerMinute = 8;
 	protected float m_fMaxHeat = 200;
+	protected float m_fDecayMult = 1;	// world events (Storm) change these for a while
+	protected float m_fAddMult = 1;
 
 	protected static const int GRID_STRIDE = 100000;
 
@@ -28,8 +30,18 @@ class RZ_HeatMap
 	}
 
 	//------------------------------------------------------------------------------------------------
+	void SetEventModifiers(float decayMult, float addMult)
+	{
+		m_fDecayMult = decayMult;
+		m_fAddMult = addMult;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void AddHeat(vector pos, float amount)
 	{
+		if (amount > 0)
+			amount = amount * m_fAddMult;
+
 		int key = Key(pos);
 		float v;
 		m_mHeat.Find(key, v);
@@ -47,7 +59,7 @@ class RZ_HeatMap
 	//------------------------------------------------------------------------------------------------
 	void Decay(float dt)
 	{
-		float amount = m_fDecayPerMinute * dt / 60;
+		float amount = m_fDecayPerMinute * m_fDecayMult * dt / 60;
 		array<int> keys = {};
 		foreach (int key, float v : m_mHeat)
 		{

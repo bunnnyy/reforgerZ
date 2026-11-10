@@ -17,6 +17,7 @@ class RZ_Settlement
 	int m_iSize = 1;			// 1 = village / outskirts, 2 = town, 3 = city
 	float m_fInfection = 30;	// 0..100
 	bool m_bHasLab;
+	float m_fNoSpreadSeconds;	// Quarantine Line: this town doesn't spread infection for a while (not saved)
 
 	//------------------------------------------------------------------------------------------------
 	void AddInfection(float amount)

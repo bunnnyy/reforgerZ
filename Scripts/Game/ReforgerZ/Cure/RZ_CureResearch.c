@@ -102,6 +102,19 @@ class RZ_CureResearch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Research from missions (data, readings, field samples) rather than delivered samples.
+	void AddResearch(float points, string reason)
+	{
+		if (m_bCured || points <= 0)
+			return;
+
+		m_fProgress = Math.Min(100, m_fProgress + points);
+		m_GM.NotifyAll("Cure research", string.Format("%1 Research: %2 percent.", reason, RZ_Util.RoundToInt(m_fProgress)));
+		CheckMilestones();
+		m_GM.OnCureChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Tick(float dt, array<IEntity> players)
 	{
 		if (m_bCured)
