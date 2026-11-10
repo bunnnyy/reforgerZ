@@ -343,15 +343,27 @@ players, are in [REPUTATION.md](REPUTATION.md), "Morale, needs, truces and feuds
   wanderer's gossip, 10%. A false one inverts the strength, says a town was lost that wasn't,
   names the wrong destination or invents a need.
 
-## 4. Infection adapts, a little
+## 4. Infection adapts, a little ✅ (built, `Director/RZ_Adaptation.c`)
 
 Small, capped changes that keep late game interesting without making it a wall:
 
-- With each cure breakthrough, specials become slightly more common: **+5% per breakthrough, +15% at most**.
-- **One new trait per outbreak stage**, never more. For example, Collapse brings slightly faster runners,
-  Overrun gives some zombies a helmet, and Aftermath adds the occasional screamer.
-- **Favourite spots.** If players keep returning to the same area, a small horde
-  checks it out now and then (at most once an hour per area). It's a nudge, not a punishment.
+- **Specials after breakthroughs.** Each cure breakthrough makes specials slightly more common:
+  the stage's special chance ×1.05 per breakthrough, ×1.15 at most. A relative bump, so an
+  Early Outbreak 1% becomes 1.15%, never a new floor.
+- **One new trait per outbreak stage**, never more, and they add up: Collapse swaps 15% of common
+  spawns for **runners**, Overrun puts **helmeted** ones in the same 15% (runners or helmets at
+  random), Aftermath makes 10% of specials **screamers**. A screamer that comes within 40 m of a
+  player shrieks: +20 heat where the player stands, at most once a minute per screamer, and
+  players within 150 m hear it. Each trait is a prefab list (**Zombies > Adaptation**); an empty
+  list means no runners or helmets, and screamers then use the ordinary special prefabs.
+- **Favourite spots.** The map is split into 500 m squares that count player-minutes (fading by a
+  fifth every 10 minutes). Once a square has 60, three ordinary infected are spawned out of sight
+  250–350 m away and walk over to look, at most once an hour per square. Never within 150 m of a
+  safehouse, and never around a brand-new player in their gentle first minutes. A nudge, not a
+  punishment.
+
+*Simplification:* "sees" is distance only (no line of sight). Runners and helmets are whatever
+the prefabs are; the code doesn't change speed or armour itself.
 
 ## 5. Time and environment
 
@@ -538,7 +550,7 @@ waving at them; they wait 5 minutes. Their talk includes faction gossip.
 3. Noisemakers, the "being noticed" check, and the first 6 unarmed missions
 4. ✅ Named leaders at strongholds, safehouses and outposts
 5. ✅ Strongholds and outposts, the territory tick, real supply trucks, faction life
-6. Light infection adaptation; day/night and weather modifiers
+6. Light infection adaptation (✅); day/night and weather modifiers
 7. Story arcs and headlines (leader headlines are already in)
 8. ✅ New-player guidance: experience levels, contextual tips, the gentle start, the first-life goal,
    spawn scenarios, the wind-up radio, faction voices, a wanderer who finds new players

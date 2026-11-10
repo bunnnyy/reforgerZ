@@ -557,6 +557,14 @@ On `RZ_GameModeComponent > Zombies`:
 - **Horde prefabs**: a large Bacon group
 - **Move waypoint**: vanilla `AIWaypoint_Move.et`
 
+**Adaptation** (one settings object under **Zombies**; [WORLD.md](WORLD.md), section 4; defaults
+in brackets): **Enabled** (on); **Special per breakthrough** (0.05) and **Special cap** (0.15);
+**Runner prefabs** (Collapse), **Helmet prefabs** (Overrun) and **Screamer prefabs** (Aftermath):
+zombie group or character prefabs from your zombie mod, each list optional; **Trait share** (0.15 of
+common spawns); **Screamer share** (0.1 of specials), **Screamer sight** (40 m), **Screamer heat**
+(20); **Favourite spots** (on), **Spot cell** (500 m), **Spot minutes** (60), **Spot cooldown
+minutes** (60), **Spot horde size** (3). The favourite-spot infected use the **Move waypoint**.
+
 ## 6. World
 
 Create a new world as a **sub-scene** of Arland (start small), and place the

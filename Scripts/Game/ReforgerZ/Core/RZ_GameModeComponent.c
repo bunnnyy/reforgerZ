@@ -49,6 +49,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Zombie prefabs and density", category: "ReforgerZ|Zombies")]
 	protected ref RZ_ZombieSettings m_ZombieSettings;
 
+	[Attribute(desc: "Infection adapts a little: specials after breakthroughs, one trait per stage (runner, helmet, screamer prefabs), favourite spots (docs/WORLD.md, section 4)", category: "ReforgerZ|Zombies")]
+	protected ref RZ_AdaptationSettings m_AdaptationSettings;
+
 	[Attribute("0.5", desc: "Heat per tick each player gives off just by being somewhere", category: "ReforgerZ|Zombies")]
 	protected float m_fHeatPresence;
 
@@ -268,6 +271,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Director m_Director;
 	protected ref RZ_HeatMap m_Heat;
 	protected ref RZ_ZombieSpawner m_Spawner;
+	protected ref RZ_Adaptation m_Adaptation;
 	protected ref RZ_MissionManager m_Missions;
 	protected ref RZ_CureResearch m_Cure;
 	protected ref RZ_BiteDetector m_BiteDetector;
@@ -349,6 +353,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_PerimeterSettings)
 			m_PerimeterSettings = new RZ_PerimeterSettings();
 
+		if (!m_AdaptationSettings)
+			m_AdaptationSettings = new RZ_AdaptationSettings();
+
 		if (!m_SafehouseSettings)
 			m_SafehouseSettings = new RZ_SafehouseSettings();
 
@@ -380,6 +387,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		m_Heat = new RZ_HeatMap();
+		m_Adaptation = new RZ_Adaptation(this, m_AdaptationSettings);
 		m_Cure = new RZ_CureResearch(this);
 		m_Director = new RZ_Director(this, m_aStages);
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
@@ -462,6 +470,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Heat.Decay(dt);
 		m_Director.Tick(dt);
 		m_Spawner.Tick(dt, players);
+		m_Adaptation.Tick(dt, ids, players);
 		m_Missions.Tick(dt, ids, players);
 		m_Perimeter.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
@@ -517,6 +526,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Director GetDirector() { return m_Director; }
 	RZ_HeatMap GetHeat() { return m_Heat; }
 	RZ_ZombieSpawner GetSpawner() { return m_Spawner; }
+	RZ_Adaptation GetAdaptation() { return m_Adaptation; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
 	vector GetLabPosition() { return m_vLabPos; }

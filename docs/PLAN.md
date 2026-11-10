@@ -30,6 +30,7 @@ Out of scope: sleep and time skipping.
 | Director: four outbreak stages, infection spread between towns | `Director/RZ_Director.c`, `RZ_OutbreakStage.c` | Written |
 | Heat: noise draws zombies, enough heat triggers a horde | `Director/RZ_HeatMap.c` | Written (presence, vehicles, gunfire, suppressors) |
 | Zombie spawner: near players only, despawns far away, counts kills | `Zombies/RZ_ZombieSpawner.c` | Written |
+| Infection adapts a little: specials after breakthroughs (+15% at most), one trait per stage (runners, helmets, screamers), favourite spots (see [WORLD.md](WORLD.md)) | `Director/RZ_Adaptation.c` | Written |
 | Backgrounds (8, plus 5 unlockable through Legacy) | `Backgrounds/RZ_Background.c` | Written |
 | Fame, Infamy and Favor per faction per life; standing tiers; rival Infamy | `Factions/RZ_Reputation.c`, `Backgrounds/RZ_PlayerProfile.c` | Written |
 | Champion carry-over ("word gets around") and background unlocks | `Core/RZ_GameModeComponent.c` | Written |
@@ -185,6 +186,8 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [ ] Barter chains across wanderers
 - [x] Supply trucks that carry food to safehouses (WORLD.md, "Supply lines")
 - [ ] Wanderers react when their faction loses an outpost
+- [x] Infection adapts a little: breakthrough specials, one trait per stage, favourite spots (WORLD.md, section 4)
+- [ ] Make the runner, helmet and screamer prefab lists from the zombie mod; play-test the favourite-spot rate
 
 ### Phase 3: factions with teeth
 - [x] Fame / Infamy / Favor, standing tiers, rival Infamy, Champion carry-over

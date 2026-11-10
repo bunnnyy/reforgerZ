@@ -56,6 +56,8 @@ class RZ_TrackedZombie
 	bool m_bSpecial;
 	int m_iLastAlive = 1;
 	vector m_vLastPos;
+	bool m_bScreamer;		// Aftermath trait (RZ_Adaptation): shrieks when it sees a player
+	float m_fShriekAt;		// adaptation clock time of the next allowed shriek
 }
 
 //! Spawns zombies only near players and removes them when nobody is around.
@@ -110,11 +112,24 @@ class RZ_ZombieSpawner
 	RZ_TrackedZombie SpawnZombie(vector pos, bool special, int settlementIdx, int missionId, ResourceName prefabOverride = "")
 	{
 		ResourceName prefab = prefabOverride;
+		bool screamer = false;
 		if (prefab.IsEmpty())
 		{
-			if (special && !m_Settings.m_aSpecialPrefabs.IsEmpty())
+			// Infection adapts a little (docs/WORLD.md, section 4): one trait per stage
+			RZ_Adaptation adapt = m_GM.GetAdaptation();
+			if (special && adapt && adapt.RollScreamer())
+			{
+				screamer = true;
+				prefab = adapt.ScreamerPrefab();
+			}
+			else if (!special && adapt)
+			{
+				prefab = adapt.PickTraitPrefab();
+			}
+
+			if (prefab.IsEmpty() && special && !m_Settings.m_aSpecialPrefabs.IsEmpty())
 				prefab = m_Settings.m_aSpecialPrefabs.GetRandomElement();
-			else if (!m_Settings.m_aCommonPrefabs.IsEmpty())
+			else if (prefab.IsEmpty() && !m_Settings.m_aCommonPrefabs.IsEmpty())
 				prefab = m_Settings.m_aCommonPrefabs.GetRandomElement();
 		}
 
@@ -127,6 +142,7 @@ class RZ_ZombieSpawner
 		z.m_iSettlement = settlementIdx;
 		z.m_iMissionId = missionId;
 		z.m_bSpecial = special;
+		z.m_bScreamer = screamer;
 		z.m_vLastPos = pos;
 		// Groups spawn their members a frame later, so read the real count on the next tick
 		z.m_iLastAlive = -1;
@@ -279,6 +295,29 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Living screamers (Aftermath trait, RZ_Adaptation).
+	void GetScreamers(notnull array<RZ_TrackedZombie> result)
+	{
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (z.m_bScreamer && z.m_Entity)
+				result.Insert(z);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Chance that a spawn is a special: the stage's, times world events and cure
+	//! breakthroughs (RZ_Adaptation, +15% at most).
+	float GetSpecialChance(RZ_StageSettings stage)
+	{
+		float chance = stage.m_fSpecialChance * m_fEventSpecialMult;
+		if (m_GM.GetAdaptation())
+			chance = chance * m_GM.GetAdaptation().SpecialMult();
+
+		return chance;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Lets mission zombies despawn normally again.
 	void ReleaseMission(int missionId)
 	{
@@ -412,7 +451,7 @@ class RZ_ZombieSpawner
 				if (!FindSpawnPos(s.m_vCenter, 0, s.m_fRadius, players, pos))
 					break;
 
-				bool special = Math.RandomFloat01() < stage.m_fSpecialChance * m_fEventSpecialMult;
+				bool special = Math.RandomFloat01() < GetSpecialChance(stage);
 				SpawnZombie(pos, special, idx, -1);
 				deficit--;
 				spawned++;
@@ -441,7 +480,7 @@ class RZ_ZombieSpawner
 			if (!FindSpawnPos(p, m_Settings.m_fMinSpawnDistance + 30, AMBIENT_RADIUS - 50, players, pos))
 				continue;
 
-			SpawnZombie(pos, Math.RandomFloat01() < stage.m_fSpecialChance * m_fEventSpecialMult * 0.5, -1, -1);
+			SpawnZombie(pos, Math.RandomFloat01() < GetSpecialChance(stage) * 0.5, -1, -1);
 			spawned++;
 		}
 	}
