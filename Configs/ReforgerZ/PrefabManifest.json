@@ -779,7 +779,7 @@
    "slotLabel": "Missions > Corpse pile",
    "required": false,
    "minimum": false,
-   "use": "look only (also Memorial's bodies)",
+   "use": "look only: Burn the Bodies' piles and Memorial's bodies (both fall back to the puzzle object)",
    "notes": ""
   },
   {

@@ -5,6 +5,8 @@
 //! Players race each other to it, so expect PvP.
 class RZ_Mission_SupplyCache : RZ_Mission_Hold
 {
+	protected bool m_bGuarded;
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -30,8 +32,20 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.7);
 		m_sTitle = "Supply Cache";
 		m_sBrief = string.Format("A Haven scout radioed about an untouched supply cache in %1. Secure it and hold the area for a minute.", s.m_sName);
-		SpawnGuards(gm, m_vPos, 3, 15, 40);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The guards turn up when someone comes near.
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (!m_bGuarded && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
+		{
+			m_bGuarded = true;
+			SpawnGuards(gm, m_vPos, 3, 15, 40);
+		}
+
+		super.OnUpdate(gm, dt, ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -44,12 +58,15 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 //------------------------------------------------------------------------------------------------
 //! #2 Survivors Trapped: reach a barricaded family, then hold out through three
 //! waves until help arrives. With a survivor group prefab the survivors are real
-//! AI, and the mission fails if they all die. Amends: works off Haven Infamy.
+//! AI (spawned when someone comes within 300 m), and the mission fails if they all die.
+//! Amends: works off Haven Infamy.
 //! ★ Nurse: the survivors leave healthier, bonus Fame (and one more of them makes it).
 //! The family (3, or 4 with a ★) joins the nearest Haven safehouse.
 class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 {
-	protected IEntity m_Survivors;
+	protected ref RZ_UnitWatch m_Survivors = new RZ_UnitWatch();
+	protected bool m_bShown;
+	protected bool m_bDied;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -87,15 +104,23 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.6);
 		m_sTitle = "Survivors Trapped";
 		m_sBrief = string.Format("A family is barricaded inside a house in %1 and they're running out of time. Get to them and hold until help arrives.", s.m_sName);
-		m_Survivors = RZ_Util.SpawnPrefab(gm.GetSurvivorGroupPrefab(), m_vPos);
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		if (m_Survivors && RZ_Util.CountAlive(m_Survivors) == 0)
+		// The family is only there in body once someone comes near
+		if (!m_bShown && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
 		{
+			m_bShown = true;
+			m_Survivors.Spawn(gm.GetSurvivorGroupPrefab(), m_vPos);
+		}
+
+		// A group deletes itself when the last of them dies: gone counts as dead
+		if (m_Survivors.IsDead(dt))
+		{
+			m_bDied = true;
 			m_eState = RZ_EMissionState.FAILED;
 			return;
 		}
@@ -130,7 +155,16 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		// The survivors leave with the rescue team (or they're gone)
-		RZ_Util.DeleteUnit(m_Survivors);
+		m_Survivors.Delete();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetFailText(RZ_GameModeComponent gm)
+	{
+		if (m_bDied)
+			return string.Format("Survivors Trapped (%1): the family didn't make it.", GetLocationName(gm));
+
+		return super.GetFailText(gm);
 	}
 }
 
@@ -194,11 +228,26 @@ class RZ_Mission_RadioRelay : RZ_Mission_Hold
 //! destructible nest prefab (e.g. from the Zombie Hive mod).
 class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 {
+	protected bool m_bGuarded;
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.TRUSTED, 20, 25);
 		m_fTimeLeft = 3600;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its guards turn up when someone comes near.
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (!m_bGuarded && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
+		{
+			m_bGuarded = true;
+			SpawnGuards(gm, m_vPos, 4, 10, 30);
+		}
+
+		super.OnUpdate(gm, dt, ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -225,7 +274,6 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 		m_fParticipationRadius = s.m_fRadius + 100;
 		m_sTitle = "Burn the Nest";
 		m_sBrief = string.Format("Something is breeding them in %1. Find the nest and destroy it.", s.m_sName);
-		SpawnGuards(gm, m_vPos, 4, 10, 30);
 		return true;
 	}
 
@@ -254,9 +302,32 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 //------------------------------------------------------------------------------------------------
 //! #4 Medicine Run: bring medical supplies from a pharmacy town to a Haven
 //! safehouse. Amends: works off Haven Infamy. ★ Nurse/Doctor: bonus Fame and the
-//! exact grid of the pharmacy.
+//! exact grid of the pharmacy from the start (never the rough area).
 class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 {
+	protected bool m_bGuarded;
+
+	//------------------------------------------------------------------------------------------------
+	//! ★ Nurse/Doctor: they know the pharmacy, so it's pre-marked for them.
+	override protected bool RoughByStanding(RZ_GameModeComponent gm, int playerId)
+	{
+		if (HasBonus(gm, playerId))
+			return false;
+
+		return super.RoughByStanding(gm, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pharmacy's guards turn up when someone comes near.
+	override protected void OnDeliveryTick(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (!m_bGuarded && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
+		{
+			m_bGuarded = true;
+			SpawnGuards(gm, m_vPos, 3, 10, 35);
+		}
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -307,8 +378,9 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 		if (!SpawnItem(gm, m_vPos))
 			return false;
 
-		SpawnDrop(gm, RZ_EFaction.SURVIVORS, dropPos);
-		SpawnGuards(gm, m_vPos, 3, 10, 35);
+		if (!SpawnDrop(gm, RZ_EFaction.SURVIVORS, dropPos))
+			return false;
+
 		m_sTitle = "Medicine Run";
 		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2. Bring the supplies back.", homeName, pharmacy.m_sName);
 		return true;
@@ -324,11 +396,23 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 //------------------------------------------------------------------------------------------------
 //! #5 The Bitten Friend: a Haven member is bitten. Bring an antidote before he
 //! turns, or end it yourself (mercy, half the Fame). ★ Nurse: slows his infection.
+//! He's there in body once someone comes within 300 m. *Simplified:* there's no one-person slot,
+//! so the survivor group stands in for him (all of it has to die). Mercy counts only if a player
+//! fired within 30 m of him in the 10 s before he died; anything else that kills him fails it.
+//! His clock runs from the start either way.
 class RZ_Mission_BittenFriend : RZ_Mission
 {
-	protected IEntity m_Friend;
+	protected ref RZ_UnitWatch m_Friend = new RZ_UnitWatch();
 	protected float m_fTurnIn = 900;
 	protected bool m_bSlowed;
+	protected bool m_bShown;
+	protected bool m_bKilled;		// died without a player's mercy
+	protected float m_fClock;
+	protected float m_fShotAt = -1000;
+	protected int m_iShooter = -1;
+
+	protected static const float MERCY_RADIUS = 30;
+	protected static const float MERCY_WINDOW = 10;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -357,10 +441,6 @@ class RZ_Mission_BittenFriend : RZ_Mission
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
-		m_Friend = RZ_Util.SpawnPrefab(gm.GetSurvivorGroupPrefab(), m_vPos);
-		if (!m_Friend)
-			return false;
-
 		m_fParticipationRadius = 60;
 		m_sTitle = "The Bitten Friend";
 		m_sBrief = string.Format("One of ours was bitten in %1. Bring him an antidote before he turns, or do what has to be done.", s.m_sName);
@@ -368,18 +448,50 @@ class RZ_Mission_BittenFriend : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Who fired close to him, and when (mercy).
+	override void OnPlayerShot(RZ_GameModeComponent gm, int playerId, vector pos)
+	{
+		if (!m_Friend.m_Unit || RZ_Util.DistXZ(pos, m_Friend.GetPos(m_vPos)) > MERCY_RADIUS)
+			return;
+
+		m_iShooter = playerId;
+		m_fShotAt = m_fClock;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		// Mercy: he was put down before he turned
-		if (RZ_Util.CountAlive(m_Friend) == 0)
+		m_fClock += dt;
+		if (!m_bShown && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
 		{
-			m_fRewardScale = 0.5;
-			m_eState = RZ_EMissionState.SUCCEEDED;
+			m_bShown = true;
+			if (!m_Friend.Spawn(gm.GetSurvivorGroupPrefab(), m_vPos))
+			{
+				m_eState = RZ_EMissionState.FAILED;
+				return;
+			}
+		}
+
+		// He died. A player put him down before he turned (mercy), or something else got him
+		if (m_Friend.IsDead(dt))
+		{
+			if (m_iShooter > 0 && m_fClock - m_fShotAt <= MERCY_WINDOW)
+			{
+				if (!m_aParticipants.Contains(m_iShooter))
+					m_aParticipants.Insert(m_iShooter);
+
+				m_fRewardScale = 0.5;
+				m_eState = RZ_EMissionState.SUCCEEDED;
+				return;
+			}
+
+			m_bKilled = true;
+			m_eState = RZ_EMissionState.FAILED;
 			return;
 		}
 
-		vector at = RZ_Util.GetUnitPosition(m_Friend);
-		if (!m_bSlowed && AnyBonusNear(gm, ids, players, at, 10))
+		vector at = m_Friend.GetPos(m_vPos);
+		if (m_Friend.m_Unit && !m_bSlowed && AnyBonusNear(gm, ids, players, at, 10))
 		{
 			m_bSlowed = true;
 			m_fTurnIn = m_fTurnIn + 300;
@@ -388,7 +500,7 @@ class RZ_Mission_BittenFriend : RZ_Mission
 
 		foreach (int i, IEntity p : players)
 		{
-			if (RZ_Util.DistXZ(p.GetOrigin(), at) > 4)
+			if (!m_Friend.m_Unit || RZ_Util.DistXZ(p.GetOrigin(), at) > 4)
 				continue;
 
 			if (RZ_AntidoteHelper.TakeOne(p))
@@ -404,25 +516,39 @@ class RZ_Mission_BittenFriend : RZ_Mission
 		m_fTurnIn -= dt;
 		if (m_fTurnIn <= 0)
 		{
-			gm.GetSpawner().SpawnZombie(at, true, m_iSettlement, -1);
+			// Only a body near players turns into a real one
+			if (m_Friend.m_Unit)
+				gm.GetSpawner().SpawnZombie(at, true, m_iSettlement, -1);
+
 			NotifyParticipants(gm, m_sTitle, "Too late. He's one of them now.");
 			m_eState = RZ_EMissionState.FAILED;
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override string GetFailText(RZ_GameModeComponent gm)
+	{
+		if (m_bKilled)
+			return string.Format("The Bitten Friend (%1): something got to him before anyone could help.", GetLocationName(gm));
+
+		return super.GetFailText(gm);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
-		RZ_Util.DeleteUnit(m_Friend);
+		m_Friend.Delete();
 	}
 }
 
 //------------------------------------------------------------------------------------------------
 //! #9 Missing Scout: search an area for a scout's body and bring his notes home.
-//! The notes point to a stash, which is revealed to whoever hands them in.
+//! The notes point to a stash, which is revealed to whoever hands them in. The notes go to a
+//! Haven safehouse (the safest town if there are none).
 class RZ_Mission_MissingScout : RZ_Mission_Delivery
 {
 	protected vector m_vSearchCenter;
+	protected bool m_bGuarded;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -452,19 +578,47 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 		// The body is somewhere in a 250 m area outside town; only the area is given
 		m_vSearchCenter = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 400);
 		m_vPos = LandPointNear(m_vSearchCenter, 0, 200);
+
+		// Home is a real Haven safehouse (not the town he went missing in), else the safest town
+		vector dropPos;
+		string homeName;
+		int house = RZ_ContractHelp.PickSafehouse(gm, m_vPos, 500, 100000);
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, house);
+		if (h && h.m_iSettlement != m_iSettlement)
+		{
+			dropPos = LandPointNear(h.m_vPos, 2, 6);
+			homeName = h.m_sName;
+		}
+		else
+		{
+			RZ_Settlement homeTown = gm.GetSettlement(PickSafestSettlement(gm, m_iSettlement));
+			if (!homeTown)
+				return false;
+
+			dropPos = LandPointNear(homeTown.m_vCenter, 0, homeTown.m_fRadius * 0.4);
+			homeName = homeTown.m_sName;
+		}
+
 		if (!SpawnItem(gm, m_vPos))
 			return false;
 
-		int home = PickSafestSettlement(gm, m_iSettlement);
-		RZ_Settlement homeTown = gm.GetSettlement(home);
-		if (!homeTown)
+		if (!SpawnDrop(gm, RZ_EFaction.SURVIVORS, dropPos))
 			return false;
 
-		SpawnDrop(gm, RZ_EFaction.SURVIVORS, LandPointNear(homeTown.m_vCenter, 0, homeTown.m_fRadius * 0.4));
-		SpawnGuards(gm, m_vPos, 2, 10, 30);
 		m_sTitle = "Missing Scout";
-		m_sBrief = string.Format("A Haven scout never came back from %1. Search the area, find his notes and bring them to the safehouse in %2.", s.m_sName, homeTown.m_sName);
+		m_sBrief = string.Format("A Haven scout never came back from %1. Search the area, find his notes and bring them to the safehouse in %2.", s.m_sName, homeName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whatever got him is still around: it turns up when someone comes near.
+	override protected void OnDeliveryTick(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (!m_bGuarded && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
+		{
+			m_bGuarded = true;
+			SpawnGuards(gm, m_vPos, 2, 10, 30);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -494,9 +648,13 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 //------------------------------------------------------------------------------------------------
 //! #10 Clear the Road: wrecks and infected block the road between two Haven
 //! towns. Kill everything on it. ★ Mechanic: bonus Fame (tows wrecks away).
+//! Each of the four stretches gets its infected when someone comes within 300 m of it.
 class RZ_Mission_ClearTheRoad : RZ_Mission_KillTagged
 {
 	protected int m_iOther = -1;
+	protected ref array<vector> m_aStretches = {};
+	protected ref array<bool> m_aStretchSpawned = {};
+	protected int m_iStretchesSpawned;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -526,21 +684,38 @@ class RZ_Mission_ClearTheRoad : RZ_Mission_KillTagged
 		if (!b)
 			return false;
 
-		// Spread blockers along the straight line between the two towns
+		// Blockers along the straight line between the two towns
 		vector from = a.m_vCenter;
 		vector to = b.m_vCenter;
 		m_vPos = RZ_Util.GroundPos((from + to) * 0.5);
 		m_fParticipationRadius = RZ_Util.DistXZ(from, to) * 0.5 + 100;
 		for (int i = 1; i <= 4; i++)
 		{
-			vector p = RZ_Util.GroundPos(from + (to - from) * (i / 5.0));
-			SpawnGuards(gm, p, 2, 0, 25);
+			m_aStretches.Insert(RZ_Util.GroundPos(from + (to - from) * (i / 5.0)));
+			m_aStretchSpawned.Insert(false);
 		}
 
-		m_bSpawned = true;
 		m_sTitle = "Clear the Road";
 		m_sBrief = string.Format("The road from %1 to %2 is crawling with infected. Clear every one of them, so the Haven can use it again.", a.m_sName, b.m_sName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		foreach (int i, vector p : m_aStretches)
+		{
+			if (m_aStretchSpawned[i] || !RZ_ContractHelp.AnyNear(players, p, 300))
+				continue;
+
+			m_aStretchSpawned[i] = true;
+			m_iStretchesSpawned++;
+			SpawnGuards(gm, p, 2, 0, 25);
+		}
+
+		// Cleared once every stretch has had its infected and they're all dead
+		m_bSpawned = m_iStretchesSpawned >= m_aStretches.Count();
+		super.OnUpdate(gm, dt, ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -668,13 +843,15 @@ class RZ_Mission_SignalFires : RZ_Mission
 
 //------------------------------------------------------------------------------------------------
 //! #16 Trader Caravan: defend a Haven trader at a crossroads from a Red Hand raid.
-//! Needs the survivor group and Red Hand group prefabs.
+//! Needs the survivor group and Red Hand group prefabs. The trader is there in body once someone
+//! comes within 300 m; the raid comes 90 s after someone reaches him.
 class RZ_Mission_TraderCaravan : RZ_Mission
 {
-	protected IEntity m_Trader;
-	protected IEntity m_Raiders;
+	protected ref RZ_UnitWatch m_Trader = new RZ_UnitWatch();
+	protected ref RZ_UnitWatch m_Raiders = new RZ_UnitWatch();
 	protected float m_fRaidIn = 90;
 	protected bool m_bRaidSent;
+	protected bool m_bShown;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -704,10 +881,6 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 150);
-		m_Trader = RZ_Util.SpawnPrefab(gm.GetSurvivorGroupPrefab(), m_vPos);
-		if (!m_Trader)
-			return false;
-
 		m_sTitle = "Trader Caravan";
 		m_sBrief = string.Format("A Haven trader stopped at the crossroads outside %1. The Red Hand knows. Get there and keep him alive.", s.m_sName);
 		return true;
@@ -716,7 +889,21 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		if (RZ_Util.CountAlive(m_Trader) == 0)
+		if (!m_bShown)
+		{
+			if (!RZ_ContractHelp.AnyNear(players, m_vPos, 300))
+				return;
+
+			m_bShown = true;
+			if (!m_Trader.Spawn(gm.GetSurvivorGroupPrefab(), m_vPos))
+			{
+				m_eState = RZ_EMissionState.FAILED;
+				return;
+			}
+		}
+
+		// A group deletes itself when the last of them dies: gone counts as dead
+		if (m_Trader.IsDead(dt))
 		{
 			m_eState = RZ_EMissionState.FAILED;
 			return;
@@ -734,17 +921,22 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 
 			m_bRaidSent = true;
 			vector from = LandPointNear(m_vPos, 250, 350);
-			m_Raiders = RZ_Util.SpawnPrefab(gm.GetRedHandGroupPrefab(), from);
-			RZ_Util.SendGroupTo(m_Raiders, m_vPos, gm.GetSpawner().GetMoveWaypointPrefab());
+			if (!m_Raiders.Spawn(gm.GetRedHandGroupPrefab(), from))
+			{
+				m_eState = RZ_EMissionState.FAILED;
+				return;
+			}
+
+			RZ_Util.SendGroupTo(m_Raiders.m_Unit, m_vPos, gm.GetSpawner().GetMoveWaypointPrefab());
 			// The raiders fight the players near them and go for the trader, who stays friendly to players
-			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Raiders);
+			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Raiders.m_Unit);
 			if (gm.GetHostility())
-				gm.GetHostility().MakeUnitHostileTo(m_Trader, RZ_EFaction.BANDITS);
+				gm.GetHostility().MakeUnitHostileTo(m_Trader.m_Unit, RZ_EFaction.BANDITS);
 			NotifyParticipants(gm, m_sTitle, "Red Hand raiders incoming!");
 			return;
 		}
 
-		if (RZ_Util.CountAlive(m_Raiders) == 0)
+		if (m_Raiders.IsDead(dt))
 			m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 
@@ -757,8 +949,8 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
-		RZ_Util.DeleteUnit(m_Trader);
-		RZ_Util.DeleteUnit(m_Raiders);
+		m_Trader.Delete();
+		m_Raiders.Delete();
 	}
 }
 
@@ -769,6 +961,7 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 {
 	protected bool m_bHordeSent;
+	protected bool m_bGuarded;
 
 	protected static const float LOUD_HEAT = 40;
 
@@ -797,10 +990,22 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
-		SpawnGuards(gm, m_vPos, 2, 20, 50);
 		m_sTitle = "Rescue the Kids";
 		m_sBrief = string.Format("Children are hiding in the school in %1. Get them out quietly. If it gets loud, everything in town will come.", s.m_sName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The infected around the school turn up when someone comes near.
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (!m_bGuarded && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
+		{
+			m_bGuarded = true;
+			SpawnGuards(gm, m_vPos, 2, 20, 50);
+		}
+
+		super.OnUpdate(gm, dt, ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------

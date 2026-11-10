@@ -40,7 +40,8 @@ class RZ_Mission_FuelForTheLights : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iHouse = gm.GetSafehouses().PickRandom();
+		// A safehouse whose town no other job is using
+		m_iHouse = RZ_ContractHelp.PickFreeSafehouse(gm);
 		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
 		if (!h)
 			return false;
@@ -126,9 +127,7 @@ class RZ_Mission_FuelForTheLights : RZ_PuzzleMission
 //! Pays food to the nearest safehouse.
 class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 {
-	protected IEntity m_Farmers;
-	protected float m_fFarmerAge;
-	protected bool m_bSeenFarmers;
+	protected ref RZ_UnitWatch m_Farmers = new RZ_UnitWatch();
 	protected bool m_bBonusChecked;
 
 	protected static const int FOOD = 3;
@@ -172,7 +171,7 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 	{
 		ResourceName prefab = gm.GetSurvivorGroupPrefab();
 		if (!prefab.IsEmpty())
-			m_Farmers = RZ_Util.SpawnPrefab(prefab, LandPointNear(m_vPos, 5, 20));
+			m_Farmers.Spawn(prefab, LandPointNear(m_vPos, 5, 20));
 
 		NotifyParticipants(gm, m_sTitle, "The farmers are out in the rows with sacks. Keep them working.");
 	}
@@ -189,17 +188,20 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 				NotifyParticipants(gm, m_sTitle, "You show them how to work low between the rows. Nothing notices them for a while.");
 			}
 		}
+	}
 
-		if (!m_Farmers)
-			return;
-
-		m_fFarmerAge += dt;
-		int alive = RZ_Util.CountAlive(m_Farmers);
-		if (alive > 0)
-			m_bSeenFarmers = true;
-
-		if (alive == 0 && (m_bSeenFarmers || m_fFarmerAge > 15) && m_eState == RZ_EMissionState.ACTIVE)
+	//------------------------------------------------------------------------------------------------
+	//! The farmers are watched every tick, guarded or not. A group deletes itself when the last of
+	//! them dies: once spawned, gone counts as dead.
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (m_Farmers.IsDead(dt))
+		{
 			m_eState = RZ_EMissionState.FAILED;
+			return;
+		}
+
+		super.OnUpdate(gm, dt, ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -227,7 +229,7 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
-		RZ_Util.DeleteUnit(m_Farmers);
+		m_Farmers.Delete();
 	}
 }
 
@@ -562,7 +564,8 @@ class RZ_Mission_FortifySafehouse : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, gm.GetSafehouses().PickRandom());
+		// A safehouse whose town no other job is using
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, RZ_ContractHelp.PickFreeSafehouse(gm));
 		if (!h)
 			return false;
 
@@ -590,7 +593,7 @@ class RZ_Mission_FortifySafehouse : RZ_Mission_Hold
 //------------------------------------------------------------------------------------------------
 //! #18 The Informant: wait at a Red Hand dead drop until a seller turns up, pose as a buyer, and
 //! take what you heard to any safehouse. Some sellers notice who's asking: a little Red Hand
-//! Infamy for the buyer if spotted (more likely carrying a gun). Only for players the Red Hand
+//! Infamy for the buyer the moment they're spotted (more likely carrying a gun). Only for players the Red Hand
 //! is already wary of (Watched or worse); not for Police or Soldiers (they'd be made at once).
 class RZ_Mission_TheInformant : RZ_PuzzleMission
 {
@@ -704,15 +707,12 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 		m_bSpotted = Math.RandomFloat01() < chance;
 		string text = string.Format("You pay for a bag of pills you don't want. He talks while he counts: whose crew this is (%1), where the stock comes from, when the next run goes. Take it to any safehouse.", m_sBoss);
 		if (m_bSpotted)
-			text += "\nAt the end he looks at you a moment too long. He's made you, or he will.";
+			text += "\nAt the end he looks at you a moment too long. He's made you.";
 
 		gm.NotifyPlayer(playerId, m_sTitle, text);
-	}
 
-	//------------------------------------------------------------------------------------------------
-	override void OnRewardPlayer(RZ_GameModeComponent gm, int playerId)
-	{
-		if (playerId != m_iBuyer || !m_bSpotted)
+		// Spotted: the crew hears about the buyer now, whether or not the names ever reach the Haven
+		if (!m_bSpotted)
 			return;
 
 		gm.AddInfamy(playerId, RZ_EFaction.BANDITS, SPOTTED_INFAMY);
@@ -739,6 +739,7 @@ class RZ_Mission_RecoverTheBus : RZ_Mission
 	protected bool m_bSpawned;
 	protected bool m_bTuned;
 	protected bool m_bArrived;
+	protected bool m_bBusLost;
 	protected int m_iHouse = -1;
 	protected vector m_vDepot;
 	protected ResourceName m_sPrefab;
@@ -817,27 +818,22 @@ class RZ_Mission_RecoverTheBus : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		if (!m_bSpawned)
+		// The depot's bus is there once someone comes near (any other bus, truck or van counts too)
+		if (!m_bSpawned && RZ_ContractHelp.AnyNear(players, m_vDepot, 300))
 		{
-			if (!RZ_ContractHelp.AnyNear(players, m_vDepot, 300))
-				return;
-
 			m_bSpawned = true;
 			m_Bus = RZ_Util.SpawnPrefab(m_sPrefab, m_vDepot + Vector(0, 0.5, 0), Math.RandomFloat(0, 360));
-			if (!m_Bus)
-			{
-				m_eState = RZ_EMissionState.FAILED;
-				return;
-			}
+			if (m_Bus)
+				RZ_Util.SetVehicleFuel(m_Bus, 0.1);
 
-			RZ_Util.SetVehicleFuel(m_Bus, 0.1);
 			SpawnGuards(gm, m_vDepot, 4, 10, 40);
 		}
 
-		if (!m_bArrived && (!m_Bus || RZ_Util.IsDestroyed(m_Bus)))
+		// The depot's bus is gone: any other bus, truck or van still counts, until the clock runs out
+		if (m_bSpawned && !m_bArrived && !m_bBusLost && (!m_Bus || RZ_Util.IsDestroyed(m_Bus)))
 		{
-			m_eState = RZ_EMissionState.FAILED;
-			return;
+			m_bBusLost = true;
+			NotifyInterested(gm, m_sTitle, "The bus from the depot is wrecked. Any other bus, truck or van will do, if you can find one that runs.");
 		}
 
 		if (m_Bus)
@@ -924,6 +920,7 @@ class RZ_Mission_RecoverTheBus : RZ_Mission
 //------------------------------------------------------------------------------------------------
 //! #20 Memorial: the Haven wants the names of the dead in an overrun town. Collect the ID tags
 //! from five bodies (8 s each; the infected wait there), then bring them to any safehouse.
+//! The bodies are Missions > Corpse pile, else Puzzles > Puzzle object (look only).
 class RZ_Mission_Memorial : RZ_Mission
 {
 	protected ref array<vector> m_aBodies = {};
@@ -956,7 +953,8 @@ class RZ_Mission_Memorial : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
-		if (RZ_ContractHelp.CountSafehouses(gm) == 0)
+		// The bodies need something to mark them (a corpse pile, else the puzzle object)
+		if (RZ_ContractHelp.CountSafehouses(gm) == 0 || RZ_ContractHelp.CorpsePilePrefab(gm).IsEmpty())
 			return 0;
 
 		return 0.8;
@@ -998,7 +996,7 @@ class RZ_Mission_Memorial : RZ_Mission
 			m_bShown = true;
 			foreach (vector b : m_aBodies)
 			{
-				IEntity e = RZ_Util.SpawnPrefab(gm.GetCorpsePilePrefab(), RZ_Util.GroundPos(b), Math.RandomFloat(0, 360));
+				IEntity e = RZ_Util.SpawnPrefab(RZ_ContractHelp.CorpsePilePrefab(gm), RZ_Util.GroundPos(b), Math.RandomFloat(0, 360));
 				if (e)
 					m_aProps.Insert(e);
 			}

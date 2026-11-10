@@ -580,12 +580,16 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Random settlement between minDist and maxDist from `from`, within the infection range. -1 if none.
-	static int PickSettlementAway(RZ_GameModeComponent gm, vector from, float minDist, float maxDist, float minInf, float maxInf)
+	//! Random settlement between minDist and maxDist from `from`, within the infection range, other
+	//! than `exclude`. -1 if none.
+	static int PickSettlementAway(RZ_GameModeComponent gm, vector from, float minDist, float maxDist, float minInf, float maxInf, int exclude = -1)
 	{
 		array<int> candidates = {};
 		foreach (int i, RZ_Settlement s : gm.GetSettlements())
 		{
+			if (i == exclude)
+				continue;
+
 			float d = RZ_Util.DistXZ(from, s.m_vCenter);
 			if (d < minDist || d > maxDist)
 				continue;
