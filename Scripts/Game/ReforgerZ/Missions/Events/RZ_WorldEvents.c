@@ -39,7 +39,7 @@ class RZ_Event_CrashedHelicopter : RZ_Mission
 		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 6, 10));
 		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 6, 10));
 		gm.GetHeat().AddHeat(m_vPos, 50);
-		m_sTitle = "Crashed helicopter";
+		m_sTitle = "Crashed Helicopter";
 		m_sBrief = string.Format("Survivors found one of Bastion's lost helicopters near %1, down since the first week. Its cargo is still aboard. So are the infected nesting around it.", s.m_sName);
 		return true;
 	}
@@ -107,7 +107,7 @@ class RZ_Event_HordeMigration : RZ_Mission
 		m_vPos = s.m_vCenter;
 		gm.GetSpawner().SpawnHordeAt(LandPointNear(s.m_vCenter, 0, 50), t.m_vCenter, m_iId);
 		gm.GetSpawner().SpawnHordeAt(LandPointNear(s.m_vCenter, 30, 80), t.m_vCenter, m_iId);
-		m_sTitle = "Horde migration";
+		m_sTitle = "Horde Migration";
 		m_sBrief = string.Format("A massive horde is leaving %1 and heading for %2. Stay off that road, or make them pay for it.", s.m_sName, t.m_sName);
 		return true;
 	}
@@ -236,7 +236,7 @@ class RZ_Event_SirenTest : RZ_Event_Timed
 
 		m_vPos = s.m_vCenter;
 		gm.GetSpawner().SetFocusSettlement(m_iSettlement);
-		m_sTitle = "Siren test";
+		m_sTitle = "Siren Test";
 		m_sBrief = string.Format("The air-raid sirens in %1 have started wailing. Every infected around is heading there. Everywhere else is quieter for the next five minutes.", s.m_sName);
 		return true;
 	}
@@ -338,7 +338,7 @@ class RZ_Event_WanderingTrader : RZ_Event_Timed
 		if (!m_Trader)
 			return false;
 
-		m_sTitle = "Wandering trader";
+		m_sTitle = "Wandering Trader";
 		m_sBrief = string.Format("A trader has parked outside %1 for the next 20 minutes. Rare goods. Protect him, or rob him.", s.m_sName);
 		return true;
 	}
@@ -391,7 +391,7 @@ class RZ_Event_BastionShelling : RZ_Mission
 			return false;
 
 		m_vPos = s.m_vCenter;
-		m_sTitle = "Bastion shelling";
+		m_sTitle = "Bastion Shelling";
 		m_sBrief = string.Format("Bastion's mortar crews will shell %1 in five minutes. They don't check for survivors. Get out, or loot fast.", s.m_sName);
 		return true;
 	}
@@ -402,7 +402,7 @@ class RZ_Event_BastionShelling : RZ_Mission
 		if (!m_bWarned && m_fTimeLeft <= 60)
 		{
 			m_bWarned = true;
-			gm.NotifyAll("Bastion shelling", "One minute until the mortars open up on " + GetLocationName(gm) + ".");
+			gm.NotifyAll("Bastion Shelling", "One minute until the mortars open up on " + GetLocationName(gm) + ".");
 		}
 	}
 
@@ -461,7 +461,7 @@ class RZ_Event_MassGrave : RZ_Mission
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 300);
 		gm.SpawnSamples(m_vPos, 3);
-		m_sTitle = "Mass grave";
+		m_sTitle = "Mass Grave";
 		m_sBrief = string.Format("Someone found a mass grave outside %1. There are samples in it. Something underneath is still moving.", s.m_sName);
 		return true;
 	}
@@ -518,7 +518,7 @@ class RZ_Event_StashNote : RZ_Mission
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.3, s.m_fRadius + 200);
 		gm.SpawnRewardCrate(m_vPos);
-		m_sTitle = "Stash note";
+		m_sTitle = "Stash Note";
 		m_sBrief = string.Format("A note was found on a body: 'Buried the good stuff at %1. Don't tell anyone.' Too late for that.", RZ_SettlementScanner.GridReference(m_vPos));
 		return true;
 	}

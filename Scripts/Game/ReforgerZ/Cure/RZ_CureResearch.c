@@ -8,7 +8,8 @@
 //!  75%  Immunity serum     spread slows further, bites take even longer
 //! 100%  Final stand        hold the lab against wave after wave for 15 minutes.
 //!                          Win: the cure goes out and the season ends.
-//!                          Abandon the lab: it falls and research drops back to 90%.
+//!                          Abandon the lab: the batch is ruined and research drops back to 90%
+//!                          (the lab itself never falls: it's Halcyon's stronghold).
 class RZ_CureResearch
 {
 	protected RZ_GameModeComponent m_GM;
@@ -268,7 +269,7 @@ class RZ_CureResearch
 			m_bFinalStand = false;
 			m_fProgress = 90;
 			m_iMilestone = 3;
-			m_GM.NotifyAll("The lab has fallen", "No one held the line. The batch is ruined. Research has dropped to 90 percent.");
+			m_GM.NotifyAll("The batch is lost", "Nobody held the lab. The infected got into the clean room before Halcyon could seal it, and the batch is ruined. Research has dropped to 90 percent.");
 			if (m_GM.GetFactionLife())
 				m_GM.GetFactionLife().OnFinalStandLost();
 

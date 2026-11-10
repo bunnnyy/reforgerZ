@@ -91,7 +91,7 @@ class RZ_Mission_TakeBackTown : RZ_Mission_ClearSettlement
 	//------------------------------------------------------------------------------------------------
 	override protected void SetText(RZ_Settlement s)
 	{
-		m_sTitle = "Take back " + s.m_sName;
+		m_sTitle = "Take Back " + s.m_sName;
 		m_sBrief = string.Format("The Haven wants to move back into %1. Kill %2 infected in the town.", s.m_sName, m_iKillsNeeded);
 	}
 }
@@ -140,7 +140,7 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 
 		// LZ on the edge of town where a helicopter could land
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 150);
-		m_sTitle = "Last helicopter";
+		m_sTitle = "Last Helicopter";
 		m_sBrief = string.Format("Bastion's last working helicopter is setting down at the LZ outside %1 on its run between bases. It lifts off in %2 minutes. Keep the LZ clear and be there when it goes.",
 			s.m_sName, RZ_Util.RoundToInt(COUNTDOWN / 60));
 		return true;
@@ -152,7 +152,7 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 		if (!m_bLanded && m_fTimeLeft < GROUND_TIME)
 		{
 			m_bLanded = true;
-			NotifyInterested(gm, "Last helicopter", "The helicopter is down at the LZ outside " + GetLocationName(gm) + ". Three minutes on the ground.");
+			NotifyInterested(gm, "Last Helicopter", "The helicopter is down at the LZ outside " + GetLocationName(gm) + ". Three minutes on the ground.");
 		}
 
 		// The rotors are loud
@@ -162,7 +162,7 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 		if (!m_bWarned && m_fTimeLeft < 60)
 		{
 			m_bWarned = true;
-			NotifyInterested(gm, "Last helicopter", "One minute until the helicopter lifts off from " + GetLocationName(gm) + ".");
+			NotifyInterested(gm, "Last Helicopter", "One minute until the helicopter lifts off from " + GetLocationName(gm) + ".");
 		}
 
 		if (m_fTimeLeft > 0)
@@ -230,7 +230,7 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 		m_vPos = s.m_vCenter;
 		m_fParticipationRadius = s.m_fRadius + 50;
 		PlacePiles(gm, s.m_vCenter, 0, s.m_fRadius * 0.7, 5);
-		m_sTitle = "Burn the bodies";
+		m_sTitle = "Burn the Bodies";
 		m_sBrief = string.Format("Bastion wants the corpse piles in %1 burned before they spread the infection. There are five.", s.m_sName);
 		return true;
 	}
@@ -375,7 +375,7 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.9, s.m_fRadius + 80);
-		m_sTitle = "Checkpoint duty";
+		m_sTitle = "Checkpoint Duty";
 		m_sBrief = string.Format("Man the Bastion checkpoint outside %1 for 10 minutes. Let survivors through, stop everything else.", s.m_sName);
 		return true;
 	}
@@ -411,7 +411,7 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 		SpawnGuards(gm, m_vPos, 4, 0, 20);
 		SpawnGuards(gm, m_vPos, 1, 0, 10, true);
 		m_bSpawned = true;
-		m_sTitle = "Missing patrol";
+		m_sTitle = "Missing Patrol";
 		m_sBrief = string.Format("A Bastion patrol went silent outside %1. Find their last position and put down whatever they've become.", s.m_sName);
 		return true;
 	}
@@ -479,7 +479,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 		gm.GetHeat().AddHeat(m_vPos, 40);
 
 		m_fParticipationRadius = 0;
-		m_sTitle = "Crash site";
+		m_sTitle = "Crash Site";
 		m_sBrief = string.Format("The wreck of a Bastion helicopter lost in the first week lies near %1. Secure it and recover the black box. Bastion's drop is at %2. The Red Hand would pay for it at %3.", s.m_sName, b.m_sName, r.m_sName);
 		return true;
 	}
@@ -552,7 +552,7 @@ class RZ_Mission_QuarantineLine : RZ_Mission_Hold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 60);
-		m_sTitle = "Quarantine line";
+		m_sTitle = "Quarantine Line";
 		m_sBrief = string.Format("Bastion is sealing off %1. Hold the line at the edge of town for 10 minutes while the barriers go up.", s.m_sName);
 		return true;
 	}

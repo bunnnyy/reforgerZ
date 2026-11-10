@@ -757,7 +757,7 @@ class RZ_StoryArcs
 		if (id < 0)
 			return false;
 
-		m.m_sTitle = "The missing courier";
+		m.m_sTitle = "The Missing Courier";
 		m.m_sBrief = string.Format("A Halcyon courier carrying samples between the lab and %1 stopped reporting. Find him, or what's left of him.", m.GetLocationName(m_GM));
 		m_Arc.SetI(0, id);
 

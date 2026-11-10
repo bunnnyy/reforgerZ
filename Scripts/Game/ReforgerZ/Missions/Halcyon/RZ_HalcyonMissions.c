@@ -28,7 +28,7 @@ class RZ_Mission_SampleHunt : RZ_Mission
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.8);
 		m_fParticipationRadius = s.m_fRadius + 100;
-		m_sTitle = "Alpha sighting";
+		m_sTitle = "Alpha Sighting";
 		m_sBrief = string.Format("Halcyon tracked a mutated infected to %1. Kill it and bring its samples to the lab.", s.m_sName);
 
 		RZ_TrackedZombie alpha = gm.GetSpawner().SpawnZombie(m_vPos, true, m_iSettlement, m_iId);
@@ -93,7 +93,7 @@ class RZ_Mission_FieldSamples : RZ_Mission
 
 		m_vPos = s.m_vCenter;
 		m_fParticipationRadius = s.m_fRadius;
-		m_sTitle = "Field samples";
+		m_sTitle = "Field Samples";
 		m_sBrief = string.Format("Halcyon needs tissue from regular infected. Kill %1 of them in %2 and the lab will take readings.", NEEDED, s.m_sName);
 		return true;
 	}
@@ -191,7 +191,7 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 		if (m_aPoints.Count() < 3)
 			return false;
 
-		m_sTitle = "Water survey";
+		m_sTitle = "Water Survey";
 		m_sBrief = string.Format("Halcyon wants water samples from the wells in %1 and two towns nearby. Stand at each well for 10 seconds.", s.m_sName);
 		return true;
 	}
@@ -248,7 +248,7 @@ class RZ_Mission_LostColleague : RZ_Mission
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius + 300);
-		m_sTitle = "Lost colleague";
+		m_sTitle = "Lost Colleague";
 		m_sBrief = string.Format("A Halcyon researcher stopped answering near %1. Find him. He may not be himself any more.", s.m_sName);
 		return true;
 	}
@@ -346,7 +346,7 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 		SpawnDrop(gm, RZ_EFaction.MILITARY, LandPointNear(b.m_vCenter, b.m_fRadius * 0.8, b.m_fRadius + 50));
 		SpawnGuards(gm, m_vPos, 4, 10, 40);
 		m_fParticipationRadius = 0;
-		m_sTitle = "Research data";
+		m_sTitle = "Research Data";
 		m_sBrief = string.Format("There's a hard drive with Halcyon's research in the hospital in %1. Search the building, then take it to the lab. Bastion's drop in %2 would pay for it too.", s.m_sName, b.m_sName);
 		return true;
 	}
@@ -412,7 +412,7 @@ class RZ_Mission_HuntScreamer : RZ_Mission
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.7);
 		m_fParticipationRadius = s.m_fRadius + 100;
-		m_sTitle = "Hunt the screamer";
+		m_sTitle = "Hunt the Screamer";
 		m_sBrief = string.Format("A Screamer is in %1. Kill it before it calls every infected in town. Halcyon wants what's left.", s.m_sName);
 		return gm.GetSpawner().SpawnZombie(m_vPos, true, m_iSettlement, m_iId) != null;
 	}
@@ -485,7 +485,7 @@ class RZ_Mission_QuarantineBreach : RZ_Mission_KillTagged
 		s.AddInfection(10);
 		SpawnGuards(gm, s.m_vCenter, 4 + s.m_iSize, 0, s.m_fRadius * 0.7);
 		m_bSpawned = true;
-		m_sTitle = "Quarantine breach";
+		m_sTitle = "Quarantine Breach";
 		m_sBrief = string.Format("Infection has broken out inside %1. Halcyon needs it contained in 10 minutes: kill every infected that broke in.", s.m_sName);
 		return true;
 	}
@@ -511,7 +511,7 @@ class RZ_Mission_QuarantineBreach : RZ_Mission_KillTagged
 		if (s)
 		{
 			s.AddInfection(25);
-			gm.NotifyAll("Quarantine breach", s.m_sName + " couldn't be contained.");
+			gm.NotifyAll("Quarantine Breach", s.m_sName + " couldn't be contained.");
 		}
 	}
 }
@@ -592,7 +592,7 @@ class RZ_Mission_LabDefence : RZ_Mission_Hold
 		m_iSettlement = gm.GetLabSettlement();
 		m_vPos = gm.GetLabPosition();
 		m_fParticipationRadius = 100;
-		m_sTitle = "Lab defence";
+		m_sTitle = "Lab Defence";
 		m_sBrief = "Something is coming for the Halcyon lab. Get there and hold it for four minutes.";
 		return true;
 	}

@@ -103,7 +103,7 @@ class RZ_FactionVoice
 				lines.Insert("\"Wipe your feet. Not that it matters any more. Habit.\""); lines.Insert("\"We grow what we can. Potatoes, mostly. Everyone in " + place + " is sick of potatoes.\""); lines.Insert("\"If you see my brother on the roads, he's tall, he limps. Tell him we're still here.\"");
 				break;
 			case RZ_EFaction.MILITARY:
-				lines.Insert("\"Move along, civilian. Nothing to see. That's an order, apparently.\""); lines.Insert("\"Eleven days of 'relief is on its way'. I've stopped counting. The sergeant hasn't.\""); lines.Insert("\"Keep your weapon slung near the post. Some of the lads are jumpy.\"");
+				lines.Insert("\"Move along, civilian. Nothing to see. That's an order, apparently.\""); lines.Insert("\"Every day, 'relief is on its way'. I've stopped counting. The sergeant hasn't.\""); lines.Insert("\"Keep your weapon slung near the post. Some of the lads are jumpy.\"");
 				break;
 			case RZ_EFaction.BANDITS:
 				lines.Insert("\"Nice boots. Joking. Mostly.\""); lines.Insert("\"Toll's fair. Tins, fuel, or a story we haven't heard. We've heard most of them.\""); lines.Insert("\"Bastion calls us bandits. We call it free enterprise. With knives.\"");

@@ -28,7 +28,7 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.7);
-		m_sTitle = "Supply cache";
+		m_sTitle = "Supply Cache";
 		m_sBrief = string.Format("A Haven scout radioed about an untouched supply cache in %1. Secure it and hold the area for a minute.", s.m_sName);
 		SpawnGuards(gm, m_vPos, 3, 15, 40);
 		return true;
@@ -85,7 +85,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.6);
-		m_sTitle = "Survivors trapped";
+		m_sTitle = "Survivors Trapped";
 		m_sBrief = string.Format("A family is barricaded inside a house in %1 and they're running out of time. Get to them and hold until help arrives.", s.m_sName);
 		m_Survivors = RZ_Util.SpawnPrefab(gm.GetSurvivorGroupPrefab(), m_vPos);
 		return true;
@@ -167,7 +167,7 @@ class RZ_Mission_RadioRelay : RZ_Mission_Hold
 			return false;
 
 		m_vPos = HighPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius * 2);
-		m_sTitle = "Radio relay";
+		m_sTitle = "Radio Relay";
 		m_sBrief = string.Format("Get to the high ground near %1 and keep the Haven relay broadcasting for 3 minutes. Every infected nearby will hear it.", s.m_sName);
 		return true;
 	}
@@ -223,7 +223,7 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 			return false;
 
 		m_fParticipationRadius = s.m_fRadius + 100;
-		m_sTitle = "Burn the nest";
+		m_sTitle = "Burn the Nest";
 		m_sBrief = string.Format("Something is breeding them in %1. Find the nest and destroy it.", s.m_sName);
 		SpawnGuards(gm, m_vPos, 4, 10, 30);
 		return true;
@@ -309,7 +309,7 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 
 		SpawnDrop(gm, RZ_EFaction.SURVIVORS, dropPos);
 		SpawnGuards(gm, m_vPos, 3, 10, 35);
-		m_sTitle = "Medicine run";
+		m_sTitle = "Medicine Run";
 		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2. Bring the supplies back.", homeName, pharmacy.m_sName);
 		return true;
 	}
@@ -362,7 +362,7 @@ class RZ_Mission_BittenFriend : RZ_Mission
 			return false;
 
 		m_fParticipationRadius = 60;
-		m_sTitle = "The bitten friend";
+		m_sTitle = "The Bitten Friend";
 		m_sBrief = string.Format("One of ours was bitten in %1. Bring him an antidote before he turns, or do what has to be done.", s.m_sName);
 		return true;
 	}
@@ -462,7 +462,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 
 		SpawnDrop(gm, RZ_EFaction.SURVIVORS, LandPointNear(homeTown.m_vCenter, 0, homeTown.m_fRadius * 0.4));
 		SpawnGuards(gm, m_vPos, 2, 10, 30);
-		m_sTitle = "Missing scout";
+		m_sTitle = "Missing Scout";
 		m_sBrief = string.Format("A Haven scout never came back from %1. Search the area, find his notes and bring them to the safehouse in %2.", s.m_sName, homeTown.m_sName);
 		return true;
 	}
@@ -538,7 +538,7 @@ class RZ_Mission_ClearTheRoad : RZ_Mission_KillTagged
 		}
 
 		m_bSpawned = true;
-		m_sTitle = "Clear the road";
+		m_sTitle = "Clear the Road";
 		m_sBrief = string.Format("The road from %1 to %2 is crawling with infected. Clear every one of them, so the Haven can use it again.", a.m_sName, b.m_sName);
 		return true;
 	}
@@ -602,7 +602,7 @@ class RZ_Mission_SignalFires : RZ_Mission
 			m_aLitAt.Insert(-1000);
 		}
 
-		m_sTitle = "Signal fires";
+		m_sTitle = "Signal Fires";
 		m_sBrief = string.Format("Light the three beacons on the hills around %1 within two minutes of each other, so the Haven's people know it's safe to move. One person can't do this alone.", s.m_sName);
 		return true;
 	}
@@ -655,7 +655,7 @@ class RZ_Mission_SignalFires : RZ_Mission
 				other.AddInfection(-10);
 		}
 
-		gm.NotifyAll("Signal fires", "Three beacons are burning. The towns nearby take heart.");
+		gm.NotifyAll("Signal Fires", "Three beacons are burning. The towns nearby take heart.");
 	}
 }
 
@@ -701,7 +701,7 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 		if (!m_Trader)
 			return false;
 
-		m_sTitle = "Trader caravan";
+		m_sTitle = "Trader Caravan";
 		m_sBrief = string.Format("A Haven trader stopped at the crossroads outside %1. The Red Hand knows. Get there and keep him alive.", s.m_sName);
 		return true;
 	}
@@ -791,7 +791,7 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
 		SpawnGuards(gm, m_vPos, 2, 20, 50);
-		m_sTitle = "Rescue the kids";
+		m_sTitle = "Rescue the Kids";
 		m_sBrief = string.Format("Children are hiding in the school in %1. Get them out quietly. If it gets loud, everything in town will come.", s.m_sName);
 		return true;
 	}

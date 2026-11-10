@@ -131,7 +131,7 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 		if (!SpawnDrop(gm, RZ_EFaction.BANDITS, m_vDrop))
 			return false;
 
-		m_sTitle = "The blind spot";
+		m_sTitle = "The Blind Spot";
 		m_sBrief = string.Format("Drones run a rotation, same as everyone. In %1 minutes the stretch of the line at grid %2 goes blind for ten. One of ours has been lying up in the kill zone since the last gap, sitting on the cache we keep where nobody else can reach it. Meet him, take the package, and get it to our drop at grid %3 before the drones come back. Late, or still standing there when they do? Then you were never ours.",
 			RZ_Util.RoundToInt(OPEN_IN / 60), RZ_SettlementScanner.GridReference(m_vMeet), RZ_SettlementScanner.GridReference(m_vDrop));
 		return true;
@@ -310,7 +310,7 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 		else
 			m_fTimeLeft = Math.Clamp(left, 900, 7200);
 
-		m_sTitle = "The crossing";
+		m_sTitle = "The Crossing";
 		m_sBrief = string.Format("One of our runners was carrying medicine along the line tonight, the only road the Red Hand doesn't toll. A drone found her. She dropped the package at the %1 at grid %2, right under the drones, and ran. She made it. The medicine didn't. Take it and get out of the warning zone quickly: if you carry it too long under a drone, it locks on. Please bring it to our safehouse in %3. And be careful.",
 			m_sSpotKind, RZ_SettlementScanner.GridReference(spot), s.m_sName);
 		return true;
@@ -483,7 +483,7 @@ class RZ_Mission_ShotAtTheLine : RZ_PuzzleMission
 		if (!body)
 			return false;
 
-		m_sTitle = "Shot at the line";
+		m_sTitle = "Shot at the Line";
 		m_sBrief = GetBriefFor(m_eGiver, RZ_SettlementScanner.GridReference(m_vBody));
 		return true;
 	}

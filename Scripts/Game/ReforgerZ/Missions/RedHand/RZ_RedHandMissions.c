@@ -47,7 +47,7 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 		if (!m_Drop)
 			return false;
 
-		m_sTitle = "Red Hand dead drop";
+		m_sTitle = "Dead Drop";
 		m_sBrief = string.Format("The Red Hand is paying well for infected samples. No questions asked. There's a drop near %1.", s.m_sName);
 		return true;
 	}
@@ -152,7 +152,7 @@ class RZ_Mission_FenceTheGoods : RZ_Mission_Delivery
 			return false;
 
 		SpawnDrop(gm, RZ_EFaction.BANDITS, LandPointNear(fence.m_vCenter, fence.m_fRadius * 0.7, fence.m_fRadius + 50));
-		m_sTitle = "Fence the goods";
+		m_sTitle = "Fence the Goods";
 		m_sBrief = string.Format("A Red Hand crew left a crate of stolen goods in %1. Get it to the fence in %2.", s.m_sName, fence.m_sName);
 		return true;
 	}
@@ -194,7 +194,7 @@ class RZ_Mission_PharmacyHeist : RZ_Mission_Hold
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
 		SpawnGuards(gm, m_vPos, 3, 15, 40);
-		m_sTitle = "Pharmacy heist";
+		m_sTitle = "Pharmacy Heist";
 		m_sBrief = string.Format("The Haven is sending people to the pharmacy in %1. Get there first and clean it out.", s.m_sName);
 		return true;
 	}
@@ -238,7 +238,7 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.9, s.m_fRadius + 100);
-		m_sTitle = "Fight pit";
+		m_sTitle = "Fight Pit";
 		m_sBrief = string.Format("The Red Hand runs a fight pit outside %1. Step into the ring and survive four minutes. They're betting on you.", s.m_sName);
 		return true;
 	}
@@ -286,7 +286,7 @@ class RZ_Mission_TollRoad : RZ_Mission_Hold
 			return false;
 
 		m_vPos = LandPointNear((a.m_vCenter + b.m_vCenter) * 0.5, 0, 40);
-		m_sTitle = "Toll road";
+		m_sTitle = "Toll Road";
 		m_sBrief = string.Format("Set up a Red Hand roadblock on the road between %1 and %2 and hold it for 10 minutes. Everyone pays.", a.m_sName, b.m_sName);
 		return true;
 	}
@@ -341,7 +341,7 @@ class RZ_Mission_SmugglersRun : RZ_Mission_Delivery
 			return false;
 
 		SpawnDrop(gm, RZ_EFaction.BANDITS, LandPointNear(dest.m_vCenter, dest.m_fRadius * 0.7, dest.m_fRadius + 50));
-		m_sTitle = "Smuggler's run";
+		m_sTitle = "Smuggler's Run";
 		m_sBrief = string.Format("Pick up a Red Hand package in %1 and get it to %2. Word will get out that a courier is on the road.", s.m_sName, dest.m_sName);
 		return true;
 	}
@@ -428,7 +428,7 @@ class RZ_Mission_RaidTheCache : RZ_Mission_Hold
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.6);
 		SpawnGuards(gm, m_vPos, 2, 15, 40);
-		m_sTitle = "Raid the cache";
+		m_sTitle = "Raid the Cache";
 		m_sBrief = string.Format("The Haven stashed supplies in %1. Get there before they do and hold it for a minute.", s.m_sName);
 		return true;
 	}
@@ -473,7 +473,7 @@ class RZ_Mission_ZombieBait : RZ_Mission
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.9, s.m_fRadius + 60);
-		m_sTitle = "Zombie bait";
+		m_sTitle = "Zombie Bait";
 		m_sBrief = string.Format("Bastion has a checkpoint outside %1. Make enough noise there that every infected around comes for it. Then get out.", s.m_sName);
 		return true;
 	}
@@ -582,7 +582,7 @@ class RZ_Mission_SabotageRelay : RZ_Mission_DestroyTarget
 			return false;
 
 		m_fParticipationRadius = 150;
-		m_sTitle = "Sabotage the relay";
+		m_sTitle = "Sabotage the Relay";
 		m_sBrief = string.Format("The Haven talks to its safehouses through a relay near %1. Take it down.", s.m_sName);
 		return true;
 	}
@@ -626,7 +626,7 @@ class RZ_Mission_StealAntidotes : RZ_Mission_Hold
 		m_iSettlement = gm.GetLabSettlement();
 		m_vPos = gm.GetLabPosition();
 		m_fParticipationRadius = 40;
-		m_sTitle = "Steal the antidotes";
+		m_sTitle = "Steal the Antidotes";
 		m_sBrief = "Halcyon is sitting on a batch of antidotes and selling them only to its friends. Get into the lab's store room and hold it for 90 seconds while the crew loads up. They'll be on our shelves by tonight.";
 		return true;
 	}

@@ -298,7 +298,7 @@ class RZ_FactionPerks
 			case RZ_EFaction.MILITARY:
 			{
 				if (tier == RZ_ETier.KNOWN)
-					return "Bastion checkpoints will let you through without a search.";
+					return "Bastion knows your face. Its posts will talk to you, and its quartermasters sell you the basics.";
 				if (tier == RZ_ETier.TRUSTED)
 					return "Requisition: once an hour, Bastion lets you draw ammo or rations at half the Favor cost, from an outpost the supply trucks have stocked.";
 				break;
