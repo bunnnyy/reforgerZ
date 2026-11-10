@@ -59,6 +59,10 @@ class RZ_SaveData
 	ref RZ_PowerSave power;
 	ref RZ_RadioStationSave radio;
 
+	// Story arcs (the running one, when each last ran) and the session headlines' own facts
+	ref RZ_StorySave story;
+	ref RZ_HeadlineSave news;
+
 	ref array<ref RZ_SettlementSave> settlements = {};
 	ref array<ref RZ_PlayerProfile> profiles = {};
 }

@@ -150,6 +150,10 @@ Even a win doesn't mean leaving: the next season is a new outbreak, in a new Zon
   of Levie. Good riddance."* Never mark which ones are true.
 - **Headlines** about the factions are one plain sentence with one small detail: *"Bastion buried
   Corporal Weber outside Morton. No salute: they're saving ammunition."*
+- **Haven gossip** is about food, never blame: *"The safehouse in Levie has gone to half portions.
+  The children eat first."* When a hungry house takes from a fed one, it's *"borrowed"*, in quotes.
+- **Players on the radio station** pick a preset, and it reads like a person: their name, one real
+  place, one request. *"This is Mara. There's a horde moving around Morton. Stay clear of it."*
 - **Leaders** speak in their faction's voice, coloured by their traits: a Greedy one talks
   about pay first, a Paranoid one asks who saw you come in, a Merciful one tells you to sit
   down and eat. One short line before a brief and one after, never a speech.

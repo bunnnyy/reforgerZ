@@ -1060,6 +1060,9 @@ class RZ_Wanderers
 			w.m_fStateTimer = Math.RandomFloat(600, 1200);
 		else
 			w.m_fStateTimer = Math.RandomFloat(180, 480);
+
+		if (m_GM.GetStoryArcs())
+			m_GM.GetStoryArcs().OnWandererRested(w.m_iId, w.m_vPos);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1074,6 +1077,21 @@ class RZ_Wanderers
 		float total = 0;
 
 		RZ_Safehouses safehouses = m_GM.GetSafehouses();
+
+		// A story arc can call the Preacher to one safehouse (The Quiet Congregation)
+		if (safehouses && w.m_eRole == RZ_EWandererRole.PREACHER && m_GM.GetStoryArcs())
+		{
+			int calledTo = m_GM.GetStoryArcs().PreacherHouse(w.m_iId);
+			RZ_Safehouse called = safehouses.Get(calledTo);
+			if (called)
+			{
+				w.m_vDest = called.m_vPos;
+				w.m_sDestName = "the safehouse in " + called.m_sName;
+				w.m_iDestSafehouse = calledTo;
+				return;
+			}
+		}
+
 		if (safehouses && w.m_eRole != RZ_EWandererRole.KID)
 		{
 			float houseWeight = 1;
@@ -1439,7 +1457,14 @@ class RZ_Wanderers
 
 		// The Preacher's bells draw the infected to whatever town he's resting in
 		if (w.m_eRole == RZ_EWandererRole.PREACHER && w.m_eState == RZ_EWandererState.REST && w.m_iDestSafehouse < 0 && m_fClock >= w.m_fBellsOffUntil)
-			m_GM.GetHeat().AddHeat(w.m_vPos, 6);
+		{
+			// Louder while his flock follows him (story arcs)
+			float bells = 6;
+			if (m_GM.GetStoryArcs())
+				bells = bells * m_GM.GetStoryArcs().BellMult(w.m_iId);
+
+			m_GM.GetHeat().AddHeat(w.m_vPos, bells);
+		}
 
 		if (w.m_Body && w.IsHaven())
 			WarnAboutExiles(w, ids, players);
@@ -1583,6 +1608,8 @@ class RZ_Wanderers
 		w.m_iEscortPlayer = -1;
 		w.m_iNudgePlayer = -1;
 		m_GM.NotifyAll("News from the roads", text);
+		if (m_GM.GetHeadlines())
+			m_GM.GetHeadlines().OnWandererLost(text);
 
 		if (killer > 0)
 		{
@@ -1898,6 +1925,14 @@ class RZ_Wanderers
 				text += "\n" + gossip;
 		}
 
+		// A story arc that runs through the roads: a rumour, a piece of a map
+		if (m_GM.GetStoryArcs())
+		{
+			string arcLine = m_GM.GetStoryArcs().OnWandererTalk(playerId, w.m_iId);
+			if (!arcLine.IsEmpty())
+				text += "\n" + arcLine;
+		}
+
 		if (w.IsBitten())
 			text += "\nThere's a dressing on their arm, already dark through. \"Don't. I know.\"";
 
@@ -2082,6 +2117,8 @@ class RZ_Wanderers
 	{
 		w.m_fBellsOffUntil = m_fClock + JOB_COOLDOWN;
 		m_GM.NotifyPlayer(playerId, w.GetTitle(), "He looks at you a long time. \"For you, a little while. They'll find their own way for an hour.\"");
+		if (m_GM.GetStoryArcs())
+			m_GM.GetStoryArcs().OnPreacherStopped(w.m_iId, w.m_vPos);
 	}
 
 	//------------------------------------------------------------------------------------------------

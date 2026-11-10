@@ -182,6 +182,7 @@ class RZ_SupplyTruck
 	int m_iChecks;
 	ref array<int> m_aEscortIds = {};
 	ref array<int> m_aEscortCounts = {};
+	bool m_bConvoy;			// sent by a story arc (The Last Convoy)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -207,6 +208,7 @@ class RZ_SupplyLines
 	protected ref array<ref RZ_SupplyState> m_aStates = {};
 	protected ref array<ref RZ_SupplyTruck> m_aTrucks = {};
 	protected ref array<float> m_aNextDeparture = {0, 0, 0, 0};
+	protected ref array<int> m_aConvoyTo = {-1, -1, -1, -1};	// story arcs: the next truck goes to this holding
 	protected ref RZ_SupplySave m_Restored;
 	protected ref set<string> m_aWarned = new set<string>();
 	protected float m_fClock;
@@ -312,6 +314,19 @@ class RZ_SupplyLines
 			return false;
 
 		return !TruckPrefab(f).IsEmpty() && !CrewPrefab(f).IsEmpty() && !m_GM.GetSpawner().GetMoveWaypointPrefab().IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Story arcs (The Last Convoy): the faction's next truck goes to this outpost, leaving within
+	//! delaySeconds (or when its truck on the road is done). False if its trucks don't run.
+	bool RequestConvoy(int f, int holdingId, float delaySeconds)
+	{
+		if (!m_bActive || !IsFactionRunning(f) || !m_GM.GetTerritory().GetHolding(holdingId))
+			return false;
+
+		m_aConvoyTo[f] = holdingId;
+		m_aNextDeparture[f] = Math.Min(m_aNextDeparture[f], m_fClock + delaySeconds);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -658,6 +673,15 @@ class RZ_SupplyLines
 			return;
 
 		RZ_SupplyState dest = PickDestination(f);
+		bool convoy = false;
+		RZ_Holding asked = territory.GetHolding(m_aConvoyTo[f]);
+		if (asked && asked.m_eFaction == f)
+		{
+			dest = GetState(KIND_OUTPOST, asked.m_iId, f);
+			convoy = true;
+		}
+
+		m_aConvoyTo[f] = -1;
 		if (!dest)
 			return;
 
@@ -678,7 +702,10 @@ class RZ_SupplyLines
 		t.m_fDeadline = RZ_Util.DistXZ(top.m_vPos, destPos) / TRUCK_SPEED * 2 + 900;
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		t.m_sDriver = RZ_FactionVoice.DriverName(rng, f);
+		t.m_bConvoy = convoy;
 		m_aTrucks.Insert(t);
+		if (convoy && m_GM.GetStoryArcs())
+			m_GM.GetStoryArcs().OnConvoyDeparted(f, destName);
 
 		RZ_Log.Info(string.Format("Supply: %1 truck leaves %2 for %3.", RZ_Factions.GetShortName(f), top.m_sName, destName));
 		RZ_FactionLife life = m_GM.GetFactionLife();
@@ -1015,6 +1042,8 @@ class RZ_SupplyLines
 
 		RewardEscorts(t, driver);
 		NotifyNear(t.m_vDest, factionName, RZ_FactionVoice.TruckArrives(t.m_eFaction, t.m_sDestName, t.m_sDriver), SHORTAGE_NEWS_RADIUS);
+		if (t.m_bConvoy && m_GM.GetStoryArcs())
+			m_GM.GetStoryArcs().OnConvoyResult(t.m_eFaction, t.m_sDestName, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1043,6 +1072,8 @@ class RZ_SupplyLines
 	{
 		t.m_bFailed = true;
 		ScheduleNext(t.m_eFaction);
+		if (t.m_bConvoy && m_GM.GetStoryArcs())
+			m_GM.GetStoryArcs().OnConvoyResult(t.m_eFaction, t.m_sDestName, false);
 
 		RZ_SupplyState st = GetState(t.m_iDestKind, t.m_iDestIndex, t.m_eFaction);
 		st.m_bShortage = true;
@@ -1101,6 +1132,9 @@ class RZ_SupplyLines
 		RZ_FactionLife life = m_GM.GetFactionLife();
 		if (life)
 			life.OnTruckStolen(t.m_eFaction, receiver);
+
+		if (t.m_bConvoy && m_GM.GetStoryArcs())
+			m_GM.GetStoryArcs().OnConvoyResult(t.m_eFaction, t.m_sDestName, false);
 	}
 
 	//------------------------------------------------------------------------------------------------

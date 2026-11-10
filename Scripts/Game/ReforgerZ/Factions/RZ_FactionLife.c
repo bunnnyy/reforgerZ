@@ -664,6 +664,14 @@ class RZ_FactionLife
 		string rumour = Rumour(speaker, m_Settings.m_fFalseRumourChance);
 		if (!rumour.IsEmpty())
 			lines.Insert(rumour);
+
+		// The running story arc, if there is one
+		if (m_GM.GetStoryArcs())
+		{
+			string arc = m_GM.GetStoryArcs().Rumour();
+			if (!arc.IsEmpty() && Math.RandomFloat01() < 0.5)
+				lines.Insert(arc);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -678,6 +686,21 @@ class RZ_FactionLife
 			string moment = MomentReference(-1);
 			if (!moment.IsEmpty())
 				return moment;
+		}
+
+		// The running story arc, now and then, and Haven gossip about hungry safehouses
+		if (m_GM.GetStoryArcs() && Math.RandomFloat01() < 0.3)
+		{
+			string arc = m_GM.GetStoryArcs().Rumour();
+			if (!arc.IsEmpty())
+				return arc;
+		}
+
+		if (m_GM.GetHeadlines() && Math.RandomFloat01() < 0.15)
+		{
+			string haven = m_GM.GetHeadlines().HavenFlavour();
+			if (!haven.IsEmpty())
+				return "\"" + haven + "\"";
 		}
 
 		// A dead character's journal, found on the road (town memory)

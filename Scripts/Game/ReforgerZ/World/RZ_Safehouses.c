@@ -99,6 +99,7 @@ class RZ_SafehouseSave
 	float upkeep;
 	bool anchored;
 	bool shortFood;
+	int lost;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -113,6 +114,8 @@ class RZ_Safehouse
 	float m_fUpkeepTimer;
 	bool m_bAnchored;	// sits at the Haven quartermaster, which already exists: don't spawn another
 	bool m_bShort;		// the last upkeep ran short: the safehouse is under pressure
+	int m_iLost;		// people lost lately (hunger, raids, contracts), fading by one an hour (story arcs)
+	float m_fLostFade;
 
 	// Runtime
 	ref array<IEntity> m_aBodies = {};
@@ -215,6 +218,7 @@ class RZ_Safehouse
 		s.upkeep = m_fUpkeepTimer;
 		s.anchored = m_bAnchored;
 		s.shortFood = m_bShort;
+		s.lost = m_iLost;
 		return s;
 	}
 
@@ -230,6 +234,7 @@ class RZ_Safehouse
 		h.m_fUpkeepTimer = s.upkeep;
 		h.m_bAnchored = s.anchored;
 		h.m_bShort = s.shortFood;
+		h.m_iLost = Math.Max(0, s.lost);
 		return h;
 	}
 }
@@ -714,6 +719,38 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Like AddPopulation, but never into safehouse `except` (people moved out of it).
+	int AddPopulationExcept(vector pos, int count, int except)
+	{
+		int placed = 0;
+		for (int n = 0; n < count; n++)
+		{
+			RZ_Safehouse best;
+			float bestDist = float.MAX;
+			foreach (int i, RZ_Safehouse h : m_aSafehouses)
+			{
+				if (i == except || h.m_iPopulation >= POP_CAP)
+					continue;
+
+				float d = RZ_Util.DistXZ(pos, h.m_vPos);
+				if (d < bestDist)
+				{
+					bestDist = d;
+					best = h;
+				}
+			}
+
+			if (!best)
+				break;
+
+			best.m_iPopulation = best.m_iPopulation + 1;
+			placed++;
+		}
+
+		return placed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected RZ_Safehouse NearestWithRoom(vector pos)
 	{
 		RZ_Safehouse best;
@@ -763,6 +800,9 @@ class RZ_Safehouses
 		}
 
 		RZ_Safehouse h = Get(FindNearest(pos));
+		if (h && joined > 0 && m_GM.GetHeadlines())
+			m_GM.GetHeadlines().OnRescue(joined, "the safehouse in " + h.m_sName);
+
 		if (!h || !rescuers)
 			return;
 
@@ -782,8 +822,12 @@ class RZ_Safehouses
 	void RemovePopulation(int idx, int count)
 	{
 		RZ_Safehouse h = Get(idx);
-		if (h)
-			h.m_iPopulation = Math.Max(0, h.m_iPopulation - count);
+		if (!h)
+			return;
+
+		int gone = Math.Min(count, h.m_iPopulation);
+		h.m_iPopulation = h.m_iPopulation - gone;
+		h.m_iLost = h.m_iLost + gone;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -817,6 +861,20 @@ class RZ_Safehouses
 
 		m_fClock += dt;
 		UpdateBodies(players);
+
+		// Losses fade: one an hour
+		foreach (RZ_Safehouse lossHouse : m_aSafehouses)
+		{
+			if (lossHouse.m_iLost <= 0)
+				continue;
+
+			lossHouse.m_fLostFade = lossHouse.m_fLostFade + dt;
+			if (lossHouse.m_fLostFade >= 3600)
+			{
+				lossHouse.m_fLostFade = 0;
+				lossHouse.m_iLost = lossHouse.m_iLost - 1;
+			}
+		}
 
 		// Upkeep only runs while someone is playing, so an empty server doesn't starve
 		if (!ids.IsEmpty())
@@ -854,6 +912,12 @@ class RZ_Safehouses
 	{
 		RZ_Safehouse h = m_aSafehouses[idx];
 		int need = h.FoodNeed(m_Settings.m_iPeoplePerFood);
+
+		// A safehouse gone to the Preacher's prayers eats half (story arcs)
+		RZ_StoryArcs arcs = m_GM.GetStoryArcs();
+		if (arcs && arcs.UpkeepMult(idx) < 1)
+			need = Math.Max(1, RZ_Util.RoundToInt(need * arcs.UpkeepMult(idx)));
+
 		if (h.m_iFood >= need)
 		{
 			h.m_iFood = h.m_iFood - need;
@@ -874,6 +938,7 @@ class RZ_Safehouses
 		}
 
 		h.m_iPopulation = h.m_iPopulation - leaving;
+		h.m_iLost = h.m_iLost + leaving;
 		int moved = 0;
 		int walked = 0;
 		for (int n = 0; n < leaving; n++)
@@ -1176,6 +1241,14 @@ class RZ_Safehouses
 				services += string.Format(". %1 runs the place", head.m_sName);
 		}
 
+		RZ_StoryArcs arcs = m_GM.GetStoryArcs();
+		if (arcs)
+		{
+			string prayer = arcs.HouseLine(m_aSafehouses.Find(h));
+			if (!prayer.IsEmpty())
+				mood = prayer;
+		}
+
 		m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, string.Format("%1 people live here (%2). Food for %3 more upkeeps.\nThey have %4.\n%5",
 			h.m_iPopulation, RZ_Safehouse.TierName(h.GetTier()), meals, services, mood));
 	}
@@ -1199,6 +1272,9 @@ class RZ_Safehouses
 
 		m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, string.Format("You hand over %1 bits of food. Someone writes it down in a school exercise book. +%2 Favor. The stores hold %3 now.",
 			taken, favor, h.m_iFood));
+
+		if (m_GM.GetStoryArcs())
+			m_GM.GetStoryArcs().OnFoodDelivered(m_aSafehouses.Find(h), taken);
 	}
 
 	//------------------------------------------------------------------------------------------------

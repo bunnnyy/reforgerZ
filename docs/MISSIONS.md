@@ -435,6 +435,18 @@ Simplifications in code:
   the season Rogue), then at most once an hour while they stay Rogue. The rogue leader is shown by a stand-in while it runs.
 - Rewards never include loot: Favor, Fame, research, food and population only.
 
+## Story arc missions
+
+Story arcs ([WORLD.md](WORLD.md), section 7) mostly reuse the missions above as their steps:
+Lost Colleague (as "The missing courier"), Lab Defence, the supply trucks and the Preacher. Three
+missions exist only inside arcs and are never picked at random:
+
+| Mission | Arc | Kind | What you do | Result |
+|---|---|---|---|---|
+| The Deserter's Map ✅ | The Deserter's Map | World event | Search a dead deserter's jacket for a map piece; get the other two pieces from the two wanderers it names; reach the bunker at the grid (guarded by four infected) | The bunker's stores (reward crate). A holder dies first: fails |
+| Fever Town: the water ✅ | Fever Town | Halcyon contract, Any, ★ Lab Tech | The Water Survey, starting at the sick safehouse's well | Fame, Favor; the arc goes on |
+| Fever Town: get them out ✅ | Fever Town | Haven contract, Any, ★ Nurse/Doctor: faster | Hold the safehouse gate for 2 minutes (2 waves) while the sick are carried out | Fame, Favor; two people move to another safehouse, the town's added infection goes. Fails: two die |
+
 ## Character-type summary
 
 Every background has contracts it shines at, and at least one it's shut out of.

@@ -58,6 +58,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Time and weather: night (they hear further, more specials, fewer human patrols), rain, fog, storms grounding the helicopter (docs/WORLD.md, section 5)", category: "ReforgerZ|Director")]
 	protected ref RZ_EnvironmentSettings m_EnvironmentSettings;
 
+	[Attribute(desc: "Story arcs: short storylines made of missions, rumours and headlines, including the Haven's rare dark side (docs/WORLD.md, section 7)", category: "ReforgerZ|Director")]
+	protected ref RZ_StorySettings m_StorySettings;
+
 	[Attribute(desc: "Zombie prefabs and density", category: "ReforgerZ|Zombies")]
 	protected ref RZ_ZombieSettings m_ZombieSettings;
 
@@ -288,6 +291,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Environment m_Environment;
 	protected ref RZ_PowerGrid m_PowerGrid;
 	protected ref RZ_RadioStation m_RadioStation;
+	protected ref RZ_StoryArcs m_StoryArcs;
+	protected ref RZ_Headlines m_Headlines;
 	protected ref RZ_MissionManager m_Missions;
 	protected ref RZ_CureResearch m_Cure;
 	protected ref RZ_BiteDetector m_BiteDetector;
@@ -384,6 +389,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_RadioStationSettings)
 			m_RadioStationSettings = new RZ_RadioStationSettings();
 
+		if (!m_StorySettings)
+			m_StorySettings = new RZ_StorySettings();
+
 		if (!m_SafehouseSettings)
 			m_SafehouseSettings = new RZ_SafehouseSettings();
 
@@ -420,6 +428,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Environment = new RZ_Environment(this, m_EnvironmentSettings);
 		m_PowerGrid = new RZ_PowerGrid(this, m_PowerSettings);
 		m_RadioStation = new RZ_RadioStation(this, m_RadioStationSettings);
+		m_StoryArcs = new RZ_StoryArcs(this, m_StorySettings);
+		m_Headlines = new RZ_Headlines(this);
 		m_Cure = new RZ_CureResearch(this);
 		m_Director = new RZ_Director(this, m_aStages);
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
@@ -473,6 +483,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_FactionLife.Setup();
 		m_Territory.Setup();
 		m_Supply.Setup();
+		// Arcs are made of the missions, wanderers, safehouses, territory and trucks above
+		m_StoryArcs.Setup();
 		m_Hostility.Init();
 		if (m_bHasLab)
 			AddMapMarker(m_vLabPos, "Halcyon lab");
@@ -520,6 +532,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Territory.Tick(dt, ids, players);
 		m_Supply.Tick(dt, ids, players);
 		m_FactionLife.Tick(dt, ids, players);
+		m_StoryArcs.Tick(dt, ids, players);
 		// After everything that changes standing or spawns fights this tick
 		m_Hostility.Tick(dt, ids, players);
 		m_Broadcast.Tick(dt, m_fBroadcastMinutes);
@@ -570,6 +583,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Environment GetEnvironment() { return m_Environment; }
 	RZ_PowerGrid GetPowerGrid() { return m_PowerGrid; }
 	RZ_RadioStation GetRadioStation() { return m_RadioStation; }
+	RZ_StoryArcs GetStoryArcs() { return m_StoryArcs; }
+	RZ_Headlines GetHeadlines() { return m_Headlines; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
 	vector GetLabPosition() { return m_vLabPos; }
@@ -908,18 +923,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			if (!m_Cure.IsCured())
 				NotifyPlayer(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText());
 
-			// The latest leader news (deaths, replacements, loyalty changes)
-			array<string> headlines = m_Leaders.GetHeadlines();
-			if (!headlines.IsEmpty())
-			{
-				string news = "";
-				for (int h = Math.Max(0, headlines.Count() - 3); h < headlines.Count(); h++)
-				{
-					news += headlines[h] + "\n";
-				}
-
+			// Session news: the latest headline, wanderers lost, the biggest rescue, the cure
+			string news = m_Headlines.Build();
+			if (!news.IsEmpty())
 				NotifyPlayer(playerId, "Word on the roads", news);
-			}
 		}
 
 		// 3. What's on the radio
@@ -1086,6 +1093,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_FactionLife)
 			m_FactionLife.OnContractFinished(m, success);
+
+		// A story arc waiting for this mission to happen
+		if (m_StoryArcs)
+			m_StoryArcs.OnMissionFinished(m, success);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1702,6 +1713,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_TownMemory.Restore(data.towns);
 		m_PowerGrid.Restore(data.power);
 		m_RadioStation.Restore(data.radio);
+		m_StoryArcs.Restore(data.story);
+		m_Headlines.Restore(data.news);
 		return true;
 	}
 
@@ -1755,6 +1768,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_RadioStation && m_RadioStation.IsActive())
 			data.radio = m_RadioStation.Save();
+
+		if (m_StoryArcs && m_StoryArcs.IsEnabled())
+			data.story = m_StoryArcs.Save();
+
+		if (m_Headlines)
+			data.news = m_Headlines.Save();
 
 		foreach (RZ_Settlement s : m_aSettlements)
 		{

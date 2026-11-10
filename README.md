@@ -36,6 +36,11 @@ the cure.**
   from Shelter to Town as you rescue people and bring food, with house rules (no shooting,
   declare your bite) and exile for those who break them. Named wanderers walk between them,
   remember what you did, and their deaths make the news.
+- **A world that changes, a little**: the infected adapt (more specials after each breakthrough,
+  one new trait per stage, a look at the places you keep returning to), night and weather change
+  what hears you, a power station can be brought back (lights, radios, and the noise that draws
+  hordes) and a radio station taken over. Short story arcs run through the missions, wanderers
+  and trucks, towns remember being looted or burned, and every session starts with the news.
 - **A world that teaches itself**: no tutorial pop-ups. You wake next to a note, a flyer or a
   body that points somewhere, carry a wind-up radio that picks up the Haven's open channel, and
   hear tips from whoever is nearest, in their own voice. It fades as you gain experience, but
@@ -47,7 +52,7 @@ the cure.**
 ## Docs
 
 - [docs/PLAN.md](docs/PLAN.md): design, systems and roadmap
-- [docs/WORLD.md](docs/WORLD.md): the living world: safehouses, wanderers, territory, supply trucks
+- [docs/WORLD.md](docs/WORLD.md): the living world: safehouses, wanderers, territory, supply trucks, adaptation, time and weather, arcs, town memory
 - [docs/LORE.md](docs/LORE.md): the sealed Zone, tone and writing guide
 - [docs/REPUTATION.md](docs/REPUTATION.md): factions, Fame and Infamy, perks, unlocks
 - [docs/MISSIONS.md](docs/MISSIONS.md): every contract and world event (✅ = in code)
@@ -63,13 +68,14 @@ the setup guide.
 ```
 Scripts/Game/ReforgerZ/
   Core/         game mode component (hub), helpers
-  World/        settlement detection, manual markers, the Perimeter, safehouses, wanderers
-  Director/     outbreak stages, infection spread, heat
+  World/        settlement detection, manual markers, the Perimeter, safehouses, wanderers, town memory,
+                the power grid, the radio station
+  Director/     outbreak stages, infection spread, heat, adaptation, time and weather, story arcs, headlines
   Zombies/      spawner (works with any zombie mod's prefabs)
   Backgrounds/  civilian backgrounds, player profiles
   Factions/     Fame/Infamy tiers, quartermasters and shops, perks, hunter squads, bounties, leaders, AI hostility,
                 territory, supply trucks, faction life
-  Missions/     framework, requirements, bases; Haven/ Bastion/ RedHand/ Halcyon/ Events/ Leaders/
+  Missions/     framework, requirements, bases; Haven/ Bastion/ RedHand/ Halcyon/ Events/ Leaders/ Unarmed/
   Cure/         research, lab, samples, actions
   Guidance/     new-player guidance: experience levels, contextual tips, spawn scenarios, open radio channels
   Persistence/  save/load of mode state

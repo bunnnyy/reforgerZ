@@ -638,6 +638,13 @@ brackets): **Enabled** (on); **Loot return minutes** (120); **Looted below** (0.
 (0.2); **Burned share** (0.5); **Burn fade minutes** (60); **Journal minutes** (10). No prefabs:
 it's data only.
 
+**Story arcs** (one settings object under **Director**; [WORLD.md](WORLD.md), section 7; defaults in
+brackets): **Enabled** (on); **Minutes between** (60); **Start chance** (0.6); **Repeat hours** (4);
+**Dark side losses** (6), **Dark side repeat hours** (12), **Dark side chance** (0.35). No prefabs:
+arcs use what the missions, wanderers, safehouses and supply trucks already need, and skip a step
+(or don't start) when it's missing. The Deserter's Map needs **Puzzles > Body** (or the note). The
+log says `Story arcs: on, running none.` and one line per arc started and ended.
+
 ## 7. Server config
 
 - **Broadcast minutes** (Director, default 25): how often everyone hears the government

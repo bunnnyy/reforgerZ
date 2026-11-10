@@ -69,6 +69,7 @@ Out of scope: sleep and time skipping.
 | Seeded note text: names, days, personal lines in the Zone's voice | `Puzzles/RZ_NoteText.c` | Written |
 | Zombie-free settlements while a mission runs (The Silent Village) | `Zombies/RZ_ZombieSpawner.c` | Written |
 | Government broadcast: a looping flavour message whose tone follows the Zone's state | `Director/RZ_Broadcast.c` | Written |
+| Story arcs: six storylines made of missions, rumours, trucks and headlines, each step only after the last (The Missing Courier, The Last Convoy, The Preacher's Flock, The Deserter's Map, Fever Town, the Haven's rare Quiet Congregation); session headlines on join (see [WORLD.md](WORLD.md)) | `Director/RZ_StoryArcs.c`, `RZ_Headlines.c` | Written |
 | Time and environment: night (they hear further, more specials, fewer human patrols), rain, fog, storms grounding the helicopter (see [WORLD.md](WORLD.md)) | `Director/RZ_Environment.c` | Written |
 | Power grid: a power station restored in three steps, powered towns, more radio chatter, electronics loot hook, noise, slow failure and upkeep | `World/RZ_PowerGrid.c` | Written |
 | Radio station: take it over and send preset messages server-wide (cosmetic only) | `World/RZ_RadioStation.c` | Written |
@@ -196,6 +197,8 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [ ] Make the runner, helmet and screamer prefab lists from the zombie mod; play-test the favourite-spot rate
 - [x] Day and night, rain, fog and storms as modifiers; the power grid and the radio station (WORLD.md, section 5)
 - [ ] Fix the weather VERIFYs; make the power station control object and radio console prefabs; tune the generator's noise
+- [x] Story arcs (six) and session headlines with wanderers lost, the biggest rescue, journals and Haven gossip (WORLD.md, section 7)
+- [ ] Play-test the arcs end to end (start one with `RZ_StoryArcs.Begin(kind)`); tune how often they come
 
 ### Phase 3: factions with teeth
 - [x] Fame / Infamy / Favor, standing tiers, rival Infamy, Champion carry-over
@@ -231,7 +234,7 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 
 ### Phase 4: Project Zomboid-style character creation
 - [ ] A trait-points system on top of backgrounds (positive and negative traits)
-- [x] A dead character's journal as data (a wanderer's rumour; never an object)
+- [x] A dead character's journal as data (session news or a wanderer's rumour; never an object)
 
 ### Phase 5: seasons
 - [x] The season's ending is decided by faction Fame; the winner is saved to `last_season.json`

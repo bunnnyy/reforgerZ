@@ -164,7 +164,8 @@ about 16–20.
 - **Stronghold leaders** never die and are never replaced; their bodies take no damage.
 - **Others die off-screen** (bites, raids, Bastion acting on a tip) or if a player kills them,
   and are replaced two hours later by someone new. Deaths, replacements and big loyalty
-  changes are headlines ("Word on the roads"); the last three are shown on a player's first spawn.
+  changes are headlines ("Word on the roads"); the latest is in the session news on a player's
+  first spawn (section 7).
 - **Personal jobs** come up "occasionally": every two minutes, an Independent or Rogue leader
   with a player near them and no job on has a 35% chance to think of one (at most one per
   30 minutes per leader), and asking them for work tries straight away. They're offered only
@@ -429,27 +430,41 @@ breakers.
   you're within 500 m. Radio Operators and Trusted players see it from the start. No other perks.
 - No propaganda bonuses, nothing that gives Fame for free.
 
-## 7. Story director: arcs
+## 7. Story director: arcs ✅ (built, `Director/RZ_StoryArcs.c`, `Director/RZ_Headlines.c`)
 
 The Director strings events into short storylines. Each step only fires if
-the previous one happened, so every server lives through different plots.
-Examples:
+the previous one really happened (a mission ran, a player heard a rumour, a truck left), so
+every server lives through different plots. An arc whose next step can't happen fizzles out
+quietly. Arcs reuse what the mode already has as their steps: missions and events, wanderers,
+leaders, territory, supply trucks, safehouses and the headlines.
 
-1. **The Missing Courier.** A Halcyon courier stops reporting. A wanderer has seen
-   Red Hand men with lab cases. A Red Hand camp suddenly sells antidotes. The arc ends with a
-   lab defence, or a contract to steal the antidotes back.
-2. **The Last Convoy.** Bastion announces a big convoy pulling an outpost's people and stock back to its stronghold. Raiders scout it.
-   Players escort it, raid it, or stay out of it. Either way, a Bastion outpost is restocked or runs dry.
-3. **The Preacher's Flock.** The Preacher rings bells in more and more towns. Hordes
-   follow him. Find and stop him, protect him, or use his bells as a distraction.
-4. **The Deserter's Map.** A dying deserter hands out a map piece. Two more pieces are
-   held by wanderers. Together they lead to a hidden Bastion bunker.
-5. **Fever Town.** A safehouse's infection creeps up. A Halcyon contract checks the water,
-   a Haven contract evacuates the vulnerable, and a Red Hand rumour says someone poisoned it.
+- **When:** at most one arc at a time. About every hour with players online (±25%), 60% of the
+  time one starts: a random arc that hasn't run in the last four hours and can run now.
+- **Saved:** the running arc and when each last ran. An arc waiting on a mission isn't saved
+  (missions don't survive a restart); it just ends.
 
-**Headlines:** built so far: leader news, territory changes and faction life events are kept
-(the last 10), a player's first spawn of a session shows the last three, and leaders mention the
-latest. Planned: wanderers lost, the cure percentage and the biggest rescue in them too.
+| # | Arc | Steps (each needs the one before) |
+|---|---|---|
+| 1 | **The Missing Courier** | A Halcyon courier stops reporting (headline; the Lost Colleague contract, renamed). Once that search has ended, wanderers say they saw Red Hand men with lab cases near a Red Hand outpost (or a rough town). Once a player has heard it from a wanderer (within 40 min), a headline: that camp sells antidotes in Halcyon cases. Ten minutes later the Red Hand comes for more: a **Lab Defence**. Held or lost, a closing headline |
+| 2 | **The Last Convoy** | Bastion announces a convoy to pull an outpost's people and stock back to its stronghold (headline and an alert). Its next real supply truck goes to that outpost within 10 minutes. Once it leaves: Red Hand lookouts on the ridge (headline), the Red Hand's Known hear it's worth robbing, Bastion's Known are asked to ride along. Delivered: the post is restocked and stays. Lost or stolen: it runs dry (a normal shortage). Players escort it, raid it or stay out of it, with the normal truck rewards |
+| 3 | **The Preacher's Flock** | The Preacher wanderer rings his bells in every town (twice the heat, a headline per town). After two towns, the hordes follow him: up to three small hordes at his position, only with a player within 600 m. Ends when someone asks him to stop (his "stop the bells" option), after an hour, or if he dies. A job finished within 800 m of him while it runs makes a headline: his bells were used as cover |
+| 4 | **The Deserter's Map** | A world event: a dying deserter's body by a road holds a map piece naming two living wanderers. Once it's read, talking to each of them gives their piece; with both, the grid of a hidden Bastion bunker. Reach it (four infected come when you get close): a reward crate. Fails if a holder dies before giving their piece |
+| 5 | **Fever Town** | A safehouse's town creeps up in infection (20 points at most, a headline). Only if a player goes within 300 m of it in the next 40 minutes: a Halcyon contract checks the water there and in two towns nearby (Fever Town: the water). Only if that succeeds: a headline (the well is bad; a Red Hand rumour says someone poisoned it) and a Haven contract (Fever Town: get them out, hold the gate for 2 minutes): done, two people move to another safehouse and the added infection goes away; failed, two die |
+| 6 | **The Quiet Congregation** (the Haven's dark side) | Rare: only when a safehouse has lost 6+ people lately (hunger, raids, contracts; fading by one an hour) and the Preacher is alive; at most once every 12 hours, and only 35% of the times it could start. The Preacher walks there (headline). Once he arrives (or after 30 min), the house prays with him: half portions at upkeep, bells at the gate (a little heat), its people say so, and the gossip says it "borrows" from the other safehouses. Players resolve it by bringing 6 food there, or by asking the Preacher to stop while he's there. Nobody does, and after 90 minutes he walks on and two people go with him. Always ends |
+
+**Headlines:** the news is kept with the leaders (the last 10): leader news, territory changes,
+faction life events, arcs, the power grid and burned towns. A player's first spawn of a session
+gets 3–4 lines of server news ("Word on the roads"): the latest headline, the last wanderer lost
+on the roads, the biggest rescue so far this season, now and then a dead character's journal
+(section 8) or a line of Haven gossip (a hungry safehouse on **half portions**, or **"borrowing"**
+flour from a fed one), and always the cure percentage. Leaders mention the latest headline;
+wanderers and leaders bring up the running arc, and wanderers the Haven gossip, now and then.
+
+*Simplifications:* The Missing Courier's search is the Lost Colleague contract with a new name
+and brief; the "Red Hand camp selling antidotes" is a headline, not a shop. The convoy is the
+normal supply truck sent to a chosen outpost. The flock's hordes are spawned at the Preacher,
+not walking after him from town to town. The congregation's "borrowing" is talk only; its half
+portions are real.
 
 ## 8. Town memory (data only, no lag) ✅ (built, `World/RZ_TownMemory.c`)
 
@@ -471,8 +486,8 @@ latest. Planned: wanderers lost, the cure percentage and the biggest rescue in t
 - **No physical traces.** No graffiti and no extra bodies beyond what the
   game already cleans up. Your dead character's **journal** is data: a life that lasted 10
   minutes leaves one line (where, your background, how long, the day, a personal line). The last
-  six are kept and saved; wanderers bring one up now and then in their talk ("Found a notebook
-  near Morton..."). It's never an object.
+  six are kept and saved; the newest turns up now and then in the session news (section 7), and
+  wanderers bring one up in their talk ("Found a notebook near Morton..."). It's never an object.
 
 ## 9. New-player guidance ✅ (built, `Guidance/`)
 
@@ -612,6 +627,6 @@ waving at them; they wait 5 minutes. Their talk includes faction gossip.
 4. ✅ Named leaders at strongholds, safehouses and outposts
 5. ✅ Strongholds and outposts, the territory tick, real supply trucks, faction life
 6. ✅ Light infection adaptation; day/night and weather modifiers, the power grid and the radio station
-7. Story arcs and headlines (leader headlines are already in)
+7. ✅ Story arcs and session headlines
 8. ✅ New-player guidance: experience levels, contextual tips, the gentle start, the first-life goal,
    spawn scenarios, the wind-up radio, faction voices, a wanderer who finds new players
