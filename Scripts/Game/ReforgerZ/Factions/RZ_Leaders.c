@@ -2140,7 +2140,7 @@ class RZ_Leaders
 					continue;
 
 				m.m_bSeenByFaction = true;
-				m_GM.NotifyPlayer(playerId, m.m_sTitle, string.Format("Someone from %1 saw you. They may not know what they saw. They may.", RZ_Factions.GetName(l.m_eFaction)));
+				m_GM.NotifyPlayer(playerId, m.m_sTitle, string.Format("Someone from %1 saw you. They may not know what they saw. They may.", RZ_Factions.GetNameInText(l.m_eFaction)));
 				break;
 			}
 		}

@@ -183,6 +183,7 @@ class RZ_SupplyTruck
 	ref array<int> m_aEscortIds = {};
 	ref array<int> m_aEscortCounts = {};
 	bool m_bConvoy;			// sent by a story arc (The Last Convoy)
+	ref array<int> m_aShooters = {};	// fired near it while the crew lived, with no infected about
 }
 
 //------------------------------------------------------------------------------------------------
@@ -1034,7 +1035,12 @@ class RZ_SupplyLines
 			life.OnTruckArrived(t.m_eFaction, t.m_sDestName);
 
 		string factionName = RZ_Factions.GetName(t.m_eFaction);
-		if (driver > 0)
+		// Nobody earns Fame for bringing in a truck whose crew they shot
+		bool shooter = driver > 0 && t.m_aShooters.Contains(driver);
+		if (shooter)
+			m_GM.NotifyPlayer(driver, factionName, string.Format("You brought their truck in to %1. They know who was shooting near it before its crew died. Nobody thanks you.", t.m_sDestName));
+
+		if (driver > 0 && !shooter)
 		{
 			m_GM.AddFame(driver, t.m_eFaction, m_Settings.m_iDriveFame);
 			m_GM.NotifyPlayer(driver, factionName, string.Format("You brought their truck in to %1 after its crew was killed. They won't forget it. (+%2 Fame)", t.m_sDestName, m_Settings.m_iDriveFame));
@@ -1054,7 +1060,7 @@ class RZ_SupplyLines
 		string factionName = RZ_Factions.GetName(t.m_eFaction);
 		foreach (int i, int playerId : t.m_aEscortIds)
 		{
-			if (playerId == driver || t.m_aEscortCounts[i] < needed)
+			if (playerId == driver || t.m_aEscortCounts[i] < needed || t.m_aShooters.Contains(playerId))
 				continue;
 
 			if (RZ_Reputation.IsHunted(m_GM.GetTier(playerId, t.m_eFaction)))
@@ -1112,6 +1118,24 @@ class RZ_SupplyLines
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! From the gunfire hook: a player firing within 150 m of a truck whose crew is alive, with no
+	//! infected near it, is remembered, so they can't kill the crew and then drive it in for Fame.
+	void OnPlayerShot(int playerId, vector pos)
+	{
+		foreach (RZ_SupplyTruck t : m_aTrucks)
+		{
+			if (t.m_bDone || t.m_bCrewDead || !t.m_Vehicle || t.m_aShooters.Contains(playerId) || t.m_aShooters.Count() >= 8)
+				continue;
+
+			vector at = t.m_Vehicle.GetOrigin();
+			if (RZ_Util.DistXZ(at, pos) > 150 || m_GM.GetSpawner().IsZombieNear(at, 40))
+				continue;
+
+			t.m_aShooters.Insert(playerId);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Driven into a rival's stronghold: Red Hand Fame (the receiver's, for a Red Hand truck),
 	//! the owner's Infamy, and the cargo is the receiver's now.
 	protected void Stolen(RZ_SupplyTruck t, int driver, int receiver)
@@ -1126,7 +1150,7 @@ class RZ_SupplyLines
 		m_GM.AddFame(driver, fameWith, m_Settings.m_iStealFame);
 		m_GM.AddInfamy(driver, t.m_eFaction, m_Settings.m_iStealInfamy);
 		m_GM.NotifyPlayer(driver, RZ_Factions.GetName(fameWith), string.Format("You drove %1's truck into %2's yard. They're unloading it already. (+%3 Fame with %4, +%5 Infamy with %1)",
-			RZ_Factions.GetName(t.m_eFaction), RZ_Factions.GetName(receiver), m_Settings.m_iStealFame, RZ_Factions.GetName(fameWith), m_Settings.m_iStealInfamy));
+			RZ_Factions.GetNameInText(t.m_eFaction), RZ_Factions.GetNameInText(receiver), m_Settings.m_iStealFame, RZ_Factions.GetNameInText(fameWith), m_Settings.m_iStealInfamy));
 
 		m_GM.GetTerritory().AddStrength(receiver, 1);
 		RZ_FactionLife life = m_GM.GetFactionLife();

@@ -1067,6 +1067,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Wanderers.OnPlayerShot(playerID, shooter.GetOrigin());
 		m_Leaders.OnPlayerShot(playerID, shooter.GetOrigin());
 		m_Missions.OnPlayerShot(playerID, shooter.GetOrigin());
+		if (m_Supply)
+			m_Supply.OnPlayerShot(playerID, shooter.GetOrigin());
+
 		// Retaliation: who fired, and when (a hit on a faction's AI is matched to it)
 		m_Hostility.OnPlayerShot(playerID, shooter.GetOrigin());
 	}
@@ -1344,7 +1347,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		profile.m_aChampionOf.Insert(faction);
 
 		string name = GetGame().GetPlayerManager().GetPlayerName(playerId);
-		NotifyAll("Champion", string.Format("%1 is now a Champion of %2.", name, RZ_Factions.GetName(faction)));
+		NotifyAll("Champion", string.Format("%1 is now a Champion of %2.", name, RZ_Factions.GetNameInText(faction)));
 		TryUnlockBackground(playerId, RZ_Reputation.GetChampionUnlock(faction));
 	}
 

@@ -44,6 +44,19 @@ class RZ_Factions
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The name inside a sentence: "the Haven", "Task Force Bastion", "the Red Hand", "Halcyon".
+	static string GetNameInText(RZ_EFaction f)
+	{
+		switch (f)
+		{
+			case RZ_EFaction.SURVIVORS: return "the Haven";
+			case RZ_EFaction.BANDITS: return "the Red Hand";
+		}
+
+		return GetName(f);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Short name for compact lines ("Haven", "Bastion", "Red Hand", "Halcyon").
 	static string GetShortName(RZ_EFaction f)
 	{

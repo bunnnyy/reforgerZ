@@ -448,9 +448,9 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_GameModeComponent.c:846` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
 | `Core/RZ_GameModeComponent.c:915` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
 | `Core/RZ_GameModeComponent.c:1047` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1695`, `:1696` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1706` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:1924`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Core/RZ_GameModeComponent.c:1698`, `:1699` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1709` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:1927`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
 | `Persistence/RZ_SaveData.c:119` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:369`, `:377` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
@@ -469,7 +469,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:403`, `:428` | `GetAffiliatedFaction`, `SetAffiliatedFaction` (server side, replicated, read by AI) | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:475`, `:482` | `GetWeaponsList`, `GetWeaponType` and `EWeaponType` names | Always false: armed exiles never shot, wanderers never fight back. Always true: unarmed exiles shot |
 | `Core/RZ_Util.c:546` | `MoveInVehicle(vehicle, ECompartmentType)` seats AI, `PILOT` drives | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
-| `Factions/RZ_SupplyLines.c:816` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
+| `Factions/RZ_SupplyLines.c:817` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:560` | vehicle `SCR_DamageManagerComponent.GetState()` | A burnt-out truck counts as late instead |
 | `Core/RZ_Util.c:574`, `:578` | `SetWorldTransform`, `Physics.SetVelocity` | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Interactions.c:644` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |

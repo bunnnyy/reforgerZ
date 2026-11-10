@@ -215,7 +215,7 @@ class RZ_FactionVoice
 	//------------------------------------------------------------------------------------------------
 	static string Taken(RZ_EFaction winner, RZ_EFaction loser, string place)
 	{
-		return string.Format("%1 has driven %2 out of %3.", RZ_Factions.GetName(winner), RZ_Factions.GetName(loser), place);
+		return string.Format("%1 has driven %2 out of %3.", RZ_Factions.GetName(winner), RZ_Factions.GetNameInText(loser), place);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -326,25 +326,25 @@ class RZ_FactionVoice
 	//------------------------------------------------------------------------------------------------
 	static string TruceStart(RZ_EFaction a, RZ_EFaction b)
 	{
-		return string.Format("%1 and %2 have agreed to leave each other alone, for now. Nobody expects it to last.", RZ_Factions.GetName(a), RZ_Factions.GetName(b));
+		return string.Format("%1 and %2 have agreed to leave each other alone, for now. Nobody expects it to last.", RZ_Factions.GetName(a), RZ_Factions.GetNameInText(b));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string TruceEnd(RZ_EFaction a, RZ_EFaction b)
 	{
-		return string.Format("The truce between %1 and %2 is over. Nobody expected it to last.", RZ_Factions.GetName(a), RZ_Factions.GetName(b));
+		return string.Format("The truce between %1 and %2 is over. Nobody expected it to last.", RZ_Factions.GetNameInText(a), RZ_Factions.GetNameInText(b));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string FeudStart(RZ_EFaction a, RZ_EFaction b)
 	{
-		return string.Format("Bad blood between %1 and %2. Anyone working for one of them had better stay clear of the other for a while.", RZ_Factions.GetName(a), RZ_Factions.GetName(b));
+		return string.Format("Bad blood between %1 and %2. Anyone working for one of them had better stay clear of the other for a while.", RZ_Factions.GetNameInText(a), RZ_Factions.GetNameInText(b));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string FeudEnd(RZ_EFaction a, RZ_EFaction b)
 	{
-		return string.Format("Things have cooled between %1 and %2. Back to the usual dislike.", RZ_Factions.GetName(a), RZ_Factions.GetName(b));
+		return string.Format("Things have cooled between %1 and %2. Back to the usual dislike.", RZ_Factions.GetNameInText(a), RZ_Factions.GetNameInText(b));
 	}
 
 	// ================================================================ Needs
@@ -423,13 +423,13 @@ class RZ_FactionVoice
 	//! "They say...", told as gossip, true or not.
 	static string RumourStrong(RZ_EFaction subject)
 	{
-		return string.Format("\"They say %1 is stronger than it's been in weeks. More guns, more trucks.\"", RZ_Factions.GetName(subject));
+		return string.Format("\"They say %1 is stronger than it's been in weeks. More guns, more trucks.\"", RZ_Factions.GetNameInText(subject));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string RumourWeak(RZ_EFaction subject)
 	{
-		return string.Format("\"Word is %1 is on its last legs. Pulling out of everywhere.\"", RZ_Factions.GetName(subject));
+		return string.Format("\"Word is %1 is on its last legs. Pulling out of everywhere.\"", RZ_Factions.GetNameInText(subject));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -441,7 +441,7 @@ class RZ_FactionVoice
 	//------------------------------------------------------------------------------------------------
 	static string RumourLost(RZ_EFaction subject, string place)
 	{
-		return string.Format("\"I heard %1 got thrown out of %2. Good riddance.\"", RZ_Factions.GetName(subject), place);
+		return string.Format("\"I heard %1 got thrown out of %2. Good riddance.\"", RZ_Factions.GetNameInText(subject), place);
 	}
 
 	//------------------------------------------------------------------------------------------------
