@@ -194,7 +194,7 @@ You can also put `RZ_ChoiceDeliveryAction` on a quartermaster so it accepts hand
 - **Antidotes.** A shop action whose item is the **Cure > Antidote** prefab sells from a stock, not
   freely: on the Halcyon quartermaster it sells the lab's doses (one every 15 minutes after the
   second breakthrough, 3 at most), anywhere else (the Red Hand) only doses stolen from the lab.
-  The lab no longer leaves doses on the ground, so give Halcyon's quartermaster one (Trusted).
+  Doses never lie on the ground, so give Halcyon's quartermaster one (Trusted), or the lab's doses can only be stolen.
 - **Price food above 2 Favor.** A safehouse pays 2 Haven Favor (and a little Fame) per food item
   handed in, so food the Haven quartermaster sells for 2 or less turns Favor into free Fame.
 
