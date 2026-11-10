@@ -512,9 +512,14 @@ class RZ_Search
 	// ================================================================ Locks
 	//------------------------------------------------------------------------------------------------
 	//! A building's own lock, seeded from its position: the same buildings have one after a restart.
+	//! Never at a place people live or trade (safehouses, the lab, holdings, quartermasters): their
+	//! doors stay open to the people who use them.
 	bool HasLock(vector buildingPos, string type)
 	{
 		if (!m_Settings.m_bLocks || type == "body" || type == "car")
+			return false;
+
+		if (m_Hub.IsProtected(buildingPos))
 			return false;
 
 		float share = m_Settings.m_fLockHouse;

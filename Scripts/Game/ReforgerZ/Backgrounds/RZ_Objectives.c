@@ -156,10 +156,7 @@ class RZ_Objectives
 		profile.m_bObjDone = true;
 		profile.m_iLegacy++;
 
-		// Reaching the town turns up a stash: something personal left behind
-		if (profile.m_iObjType == RZ_EObjective.REACH_TOWN)
-			gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(ent.GetOrigin(), 3, 6));
-
+		// No loot: a goal pays Legacy and a little Fame, so a fresh life can't farm crates
 		gm.NotifyPlayer(playerId, "Personal goal complete", string.Format("%1\nLegacy: %2", Describe(gm, profile), profile.m_iLegacy));
 		gm.AddFame(playerId, RZ_EFaction.SURVIVORS, 10);
 		gm.OnLegacyChanged(playerId);

@@ -1483,7 +1483,8 @@ class RZ_Interactions
 
 	// ================================================================ Shared rules
 	//------------------------------------------------------------------------------------------------
-	//! Strongholds, safehouses, the lab and faction outposts can't burn.
+	//! Strongholds, safehouses, the lab and faction outposts: they can't burn, and their buildings
+	//! are never locked.
 	bool IsProtected(vector pos)
 	{
 		RZ_Safehouses houses = m_GM.GetSafehouses();

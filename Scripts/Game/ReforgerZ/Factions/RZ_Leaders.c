@@ -1735,7 +1735,7 @@ class RZ_Leaders
 
 		if (l.m_eLoyalty == RZ_ELoyalty.ROGUE)
 		{
-			AddHeadline(string.Format("Word on the roads: %1 in %2 has stopped taking orders from %3.", l.m_sName, l.m_sPlace, stronghold));
+			AddHeadline(string.Format("%1 in %2 has stopped taking orders from %3.", l.m_sName, l.m_sPlace, stronghold));
 			l.m_fNextReinAt = m_fClock + 300;
 			return;
 		}
