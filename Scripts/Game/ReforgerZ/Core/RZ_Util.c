@@ -294,6 +294,29 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Prefab path of an entity, or its mesh path for map objects that aren't prefab
+	//! instances. "" if neither is known. Used for keyword matching (landmarks, radios).
+	static string GetPrefabName(IEntity e)
+	{
+		if (!e)
+			return "";
+
+		EntityPrefabData data = e.GetPrefabData(); // VERIFY: GetPrefabData().GetPrefabName()
+		if (data)
+		{
+			string prefab = data.GetPrefabName();
+			if (!prefab.IsEmpty())
+				return prefab;
+		}
+
+		VObject obj = e.GetVObject(); // VERIFY: GetVObject().GetResourceName() for placed map meshes
+		if (obj)
+			return obj.GetResourceName();
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int RoundToInt(float f)
 	{
 		int i = Math.Round(f);
