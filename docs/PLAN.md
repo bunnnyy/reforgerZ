@@ -68,6 +68,9 @@ Out of scope: sleep and time skipping.
 | Seeded note text: names, days, personal lines in the Zone's voice | `Puzzles/RZ_NoteText.c` | Written |
 | Zombie-free settlements while a mission runs (The Silent Village) | `Zombies/RZ_ZombieSpawner.c` | Written |
 | Government broadcast: a looping flavour message whose tone follows the Zone's state | `Director/RZ_Broadcast.c` | Written |
+| Time and environment: night (they hear further, more specials, fewer human patrols), rain, fog, storms grounding the helicopter (see [WORLD.md](WORLD.md)) | `Director/RZ_Environment.c` | Written |
+| Power grid: a power station restored in three steps, powered towns, more radio chatter, electronics loot hook, noise, slow failure and upkeep | `World/RZ_PowerGrid.c` | Written |
+| Radio station: take it over and send preset messages server-wide (cosmetic only) | `World/RZ_RadioStation.c` | Written |
 | The Perimeter: map edge from the world bounds fitted to land, warning zone (drone, loudspeaker), kill zone (warning shot, then fatal), blind spots | `World/RZ_Perimeter.c` | Written |
 | Sealed road checkpoints from the road network, or hand-placed markers | `World/RZ_Perimeter.c`, `RZ_CheckpointMarkerEntity.c` | Written |
 | Perimeter missions: The Blind Spot, The Crossing, Shot at the Line | `Missions/Perimeter/` | Written |
@@ -189,6 +192,8 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [ ] Wanderers react when their faction loses an outpost
 - [x] Infection adapts a little: breakthrough specials, one trait per stage, favourite spots (WORLD.md, section 4)
 - [ ] Make the runner, helmet and screamer prefab lists from the zombie mod; play-test the favourite-spot rate
+- [x] Day and night, rain, fog and storms as modifiers; the power grid and the radio station (WORLD.md, section 5)
+- [ ] Fix the weather VERIFYs; make the power station control object and radio console prefabs; tune the generator's noise
 
 ### Phase 3: factions with teeth
 - [x] Fame / Infamy / Favor, standing tiers, rival Infamy, Champion carry-over

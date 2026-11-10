@@ -17,7 +17,8 @@ class RZ_LandmarkFinder
 	protected float m_fMinSpacing = 25;
 
 	//------------------------------------------------------------------------------------------------
-	//! Kinds: church, watertower, tower, castle, lighthouse, school, station, fuel, well, bank, monument.
+	//! Kinds: church, watertower, tower, castle, lighthouse, school, station, fuel, well, bank, monument,
+	//! power, industrial, radio, pharmacy.
 	static void Find(vector center, float radius, array<string> kinds, notnull array<ref RZ_Landmark> result)
 	{
 		RZ_LandmarkFinder finder = new RZ_LandmarkFinder();
@@ -102,6 +103,10 @@ class RZ_LandmarkFinder
 			case "well": return name.Contains("waterwell") || name.Contains("/well") || name.Contains("_well") || name.Contains("well_0");
 			case "bank": return (name.Contains("/bank") || name.Contains("bank_")) && !name.Contains("embank");
 			case "monument": return name.Contains("monument") || name.Contains("memorial") || name.Contains("statue");
+			case "power": return name.Contains("powerplant") || name.Contains("power_plant") || name.Contains("powerstation") || name.Contains("power_station") || name.Contains("substation") || name.Contains("transformer");
+			case "industrial": return name.Contains("factory") || name.Contains("industrial") || name.Contains("warehouse") || name.Contains("sawmill");
+			case "radio": return name.Contains("radio") || name.Contains("antenna") || name.Contains("transmitter") || name.Contains("telecom");
+			case "pharmacy": return name.Contains("pharmacy") || name.Contains("hospital") || name.Contains("clinic") || name.Contains("medical");
 		}
 
 		return false;
@@ -126,6 +131,10 @@ class RZ_LandmarkFinder
 			case "well": return "the well";
 			case "bank": return "the bank";
 			case "monument": return "the monument";
+			case "power": return "the power station";
+			case "industrial": return "the factory";
+			case "radio": return "the radio mast";
+			case "pharmacy": return "the pharmacy";
 		}
 
 		return "the " + kind;

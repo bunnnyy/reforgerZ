@@ -365,15 +365,57 @@ Small, capped changes that keep late game interesting without making it a wall:
 *Simplification:* "sees" is distance only (no line of sight). Runners and helmets are whatever
 the prefabs are; the code doesn't change speed or armour itself.
 
-## 5. Time and environment
+## 5. Time and environment ✅ (built, `Director/RZ_Environment.c`, `World/RZ_PowerGrid.c`, `World/RZ_RadioStation.c`)
 
-- **Day and night, no time skip.** At night zombies hear further and specials appear, while
-  human AI patrols less. It's a good time for stealth and unarmed missions.
-- **Weather:** rain dampens noise, fog limits sight lines for everyone, and storms can
-  ground Bastion's helicopter.
-- **Power grid:** a group can restore a power station. The region gets lights, working radios
-  and electronics loot, but the noise draws hordes there. It slowly fails unless someone maintains it.
-- **Radio station:** players can take it over to broadcast news or warnings. Cosmetic and social only: no Fame bonus.
+Time is never skipped or changed. The environment is read every 30 s and nudges other systems.
+
+- **Day and night** (the game clock's night, 20:30 to 05:00, as in `RZ_GameTime`):
+  - **They hear further:** a quarter of every bit of heat also reaches the four neighbouring
+    heat squares (250 m each).
+  - **Specials** are ×1.25 as common.
+  - **Human AI patrols less:** each holding shows one guard fewer (never under one), standing
+    5–15 m from its centre instead of 15–35 m; half the hunter-squad rounds are skipped.
+  - A good time for stealth and unarmed missions.
+- **Weather:**
+  - **Rain** dampens noise: heat added ×0.7 while it rains (on top of the Storm event's own ×0.6).
+  - **Fog** limits sight lines for everyone (that's the engine's fog). Infected may spawn a
+    little closer to players in it (the closest spawn distance ×0.75).
+  - **Storms** (the Storm event, or real rain of 0.6+ with wind of 10 m/s+) ground Bastion's
+    helicopter: the Last Helicopter contract isn't offered. Wanderers shelter.
+  - Players hear one line when rain or fog sets in (at most every 20 minutes each).
+- **Power grid:** one power station per map: a placed `RZ_PowerStationMarkerEntity`, else a real
+  power or industrial building near a town (prefab names with "power station", "substation",
+  "transformer", "factory", "warehouse"...), else the edge of the biggest town. Its control
+  object (its own prefab, else the fuse box, else the generic puzzle object) exists while a
+  player is within 300 m. Restoring it takes three steps there:
+  1. **Force the control room door** (loud).
+  2. **Reset the breakers and start the generator:** a horde is sent at it, and someone has to
+     stay within 60 m for 90 s while it spins up (nobody there for 30 s and it dies).
+  3. **Throw the main switch.**
+
+  Then every town within 2.5 km is **Powered** (town memory, section 8) and everyone hears it.
+  What power does: a hook for lights (`RZ_PowerGrid.IsPoweredAt(pos)`; no lamps are switched on
+  yet), working radios (faction chatter every 6 minutes instead of 10, and the radio station
+  can broadcast twice as often), and an electronics loot bonus for the search system
+  (`RZ_PowerGrid.LootMult(pos, "electronics")`, ×1.5). But the generator hums: 10 heat a minute
+  at the station, which draws hordes. It **slowly fails**: about four hours with players online.
+  Players in the region are warned at 20%. **Refuel and grease the generator** restores 60% with
+  a fuel item (prefab name with "jerrycan" or "fuel", used up) or 25% without, once per player
+  every 10 minutes. When it fails, the lights go out and it's back to step 2. No Fame for any of
+  it: the power is the reward.
+- **Radio station:** one broadcast point per map: a placed `RZ_RadioStationMarkerEntity`, else a
+  real radio mast or antenna near a town, else high ground near a mid-sized town. Take it over
+  by staying at the console for 30 s with no infected within 15 m; it's yours until you walk 150 m
+  away. Then send one of four preset messages to everyone, signed with your name and filled in
+  with real places: a horde warning (the loudest town), food for a safehouse (the hungriest),
+  meet here (the station's grid), and "still here" (the day count). One broadcast every 10
+  minutes server-wide, 5 while the station has power. Cosmetic and social only: no Fame, no
+  Favor, nothing changes in the world.
+
+*Simplifications:* the weather accessors are engine calls that may need fixing (VERIFY); without
+them only the night and the Storm event apply. "Fog limits sight lines" is the engine's own fog;
+the code only moves spawns. The power station's stages are actions on one object, not real
+breakers.
 
 ## 6. Player-to-player (toned down)
 
@@ -564,7 +606,7 @@ waving at them; they wait 5 minutes. Their talk includes faction gossip.
 3. Noisemakers, the "being noticed" check, and the first 6 unarmed missions
 4. ✅ Named leaders at strongholds, safehouses and outposts
 5. ✅ Strongholds and outposts, the territory tick, real supply trucks, faction life
-6. Light infection adaptation (✅); day/night and weather modifiers
+6. ✅ Light infection adaptation; day/night and weather modifiers, the power grid and the radio station
 7. Story arcs and headlines (leader headlines are already in)
 8. ✅ New-player guidance: experience levels, contextual tips, the gentle start, the first-life goal,
    spawn scenarios, the wind-up radio, faction voices, a wanderer who finds new players

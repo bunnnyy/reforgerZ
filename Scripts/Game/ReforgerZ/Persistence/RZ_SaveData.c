@@ -55,6 +55,10 @@ class RZ_SaveData
 	// Town memory (loot levels, flags) and the journals of the dead
 	ref RZ_TownMemorySave towns;
 
+	// The power station (where, how far restored, its condition) and the radio station
+	ref RZ_PowerSave power;
+	ref RZ_RadioStationSave radio;
+
 	ref array<ref RZ_SettlementSave> settlements = {};
 	ref array<ref RZ_PlayerProfile> profiles = {};
 }

@@ -95,7 +95,7 @@ while Watched by the Haven. They remove Infamy instead of adding Fame.
 | # | Contract | Needs | Bg | What you do | Result |
 |---|---|---|---|---|---|
 | 1 | Retake the Town ✅ | Any, Bastion present | ★ Police/Soldier: +25% Fame | Kill 8 × size infected in a town | Bastion Fame, infection -35 |
-| 2 | Last Helicopter ✅ | Any, Bastion still around | | Bastion's one working helicopter lands at an LZ on its run between its own bases. Keep the LZ clear and be there when it lifts off | Fame, Favor |
+| 2 | Last Helicopter ✅ | Any, Bastion still around, no storm | | Bastion's one working helicopter lands at an LZ on its run between its own bases. Keep the LZ clear and be there when it lifts off. Storms ground it ([WORLD.md](WORLD.md), section 5) | Fame, Favor |
 | 3 | Burn the Bodies ✅ | Any | ★ Nurse: faster | Burn 5 corpse piles in a town to slow infection | Fame, spread slows there |
 | 4 | Recon ✅ | Any | ★ Hunter/Radio Op: reports count double | Visit 3 observation points and report horde sizes | Fame; the next horde is announced earlier |
 | 5 | Checkpoint Duty ✅ | Known | ★ Police | Hold a checkpoint 10 min. Let survivors pass, stop armed bandits | Fame (Red Hand Infamy for each bandit you stop) |

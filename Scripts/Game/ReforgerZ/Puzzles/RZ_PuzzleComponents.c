@@ -251,7 +251,8 @@ class RZ_PuzzleActionHelper
 
 	//------------------------------------------------------------------------------------------------
 	//! Wanderers (RZ_Wanderers.TAG), safehouse occupants (RZ_Safehouses.TAG_OCCUPANT), faction
-	//! leaders (RZ_Leaders.TAG) and named outpost people (RZ_Territory.TAG) reuse the puzzle civilian; guidance clues (RZ_GuidanceWorld.TAG) the note. Their choice actions come here instead of to a mission.
+	//! leaders (RZ_Leaders.TAG) and named outpost people (RZ_Territory.TAG) reuse the puzzle civilian; guidance clues (RZ_GuidanceWorld.TAG) the note;
+	//! the power station (RZ_PowerGrid.TAG) and radio station (RZ_RadioStation.TAG) the generic object. Their choice actions come here instead of to a mission.
 	//! True if `owner` is one of them (and the choice was handled).
 	static bool RouteChoice(RZ_GameModeComponent gm, IEntity owner, int playerId, int option, IEntity user)
 	{
@@ -297,6 +298,23 @@ class RZ_PuzzleActionHelper
 		// Guidance clues hide their choice slots; nothing to do if one is used anyway
 		if (comp.GetMissionId() == RZ_GuidanceWorld.TAG)
 			return true;
+
+		// The power station's control object and the radio station's console
+		if (comp.GetMissionId() == RZ_PowerGrid.TAG)
+		{
+			if (gm.GetPowerGrid())
+				gm.GetPowerGrid().HandleChoice(playerId, option, owner, user);
+
+			return true;
+		}
+
+		if (comp.GetMissionId() == RZ_RadioStation.TAG)
+		{
+			if (gm.GetRadioStation())
+				gm.GetRadioStation().HandleChoice(playerId, option, owner, user);
+
+			return true;
+		}
 
 		return false;
 	}
@@ -346,6 +364,22 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetGuidance())
 				gm.GetGuidance().HandleRead(playerId, comp.GetClueIndex(), owner);
+
+			return true;
+		}
+
+		if (comp.GetMissionId() == RZ_PowerGrid.TAG)
+		{
+			if (gm.GetPowerGrid())
+				gm.GetPowerGrid().HandleRead(playerId);
+
+			return true;
+		}
+
+		if (comp.GetMissionId() == RZ_RadioStation.TAG)
+		{
+			if (gm.GetRadioStation())
+				gm.GetRadioStation().HandleRead(playerId);
 
 			return true;
 		}

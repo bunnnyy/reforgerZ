@@ -238,8 +238,13 @@ class RZ_FactionLife
 
 		if (m_Settings.m_fChatterMinutes > 0)
 		{
+			// Working radios while the power grid runs: they talk more (RZ_PowerGrid)
+			float chatterMult = 1;
+			if (m_GM.GetPowerGrid())
+				chatterMult = m_GM.GetPowerGrid().ChatterMult();
+
 			m_fChatterTimer += dt;
-			if (m_fChatterTimer >= m_Settings.m_fChatterMinutes * 60)
+			if (m_fChatterTimer >= m_Settings.m_fChatterMinutes * 60 * chatterMult)
 			{
 				m_fChatterTimer = 0;
 				Chatter(ids, players);

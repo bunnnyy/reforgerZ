@@ -21,7 +21,7 @@ grep -rn "VERIFY" Scripts/
 Each one is an engine API whose exact name or signature I couldn't confirm
 for the current game version. Usually the fix is a rename. Look up the class in
 the Script Editor or in the [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
-They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 81 of them
+They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 85 of them
 (one is the comment in `RZ_Util.c` that explains them).
 
 The riskiest ones in the puzzle missions (`Puzzles/`):
@@ -117,6 +117,14 @@ The riskiest ones for territory, supply trucks and retaliation (`Factions/RZ_Ter
   if it doesn't change on a hit, retaliation only notices kills.
 - Not new, but worth testing: a player in the truck is "a player in a vehicle within 6 m"
   (`IsInVehicle`), used for driving a truck in or stealing it.
+
+The riskiest ones for time and weather (`Director/RZ_Environment.c`). Four are new:
+
+- **Weather** (`RZ_Weather.Rain/Fog/Wind`: `GetRainIntensity()`, `GetFogAmount()`, `GetWindSpeed()` on the
+  time and weather manager). If one doesn't compile, make that helper return -1: rain, fog or real
+  storms then never count, and the night and the Storm event still work. The status log line ends
+  with what the server thinks it is ("night, rain").
+- **The world cast** (`ChimeraWorld.CastFrom`), the same call as the game clock's.
 
 Two files can simply be deleted if they won't compile, because nothing else depends on them:
 
@@ -497,6 +505,37 @@ Two VERIFYs are new here:
 Worth testing too: a clue prop the player picks up is never deleted by the cleanup (it checks
 `GetRootParent`, an existing VERIFY), and the hidden use and choice slots on a generic puzzle
 object used as a clue (the guidance labels them all empty).
+
+### Time, weather, the power grid and the radio station
+
+Settings: **Director > Environment**, **World > Power grid**, **World > Radio station**
+([WORLD.md](WORLD.md), section 5). All three work without prefabs of their own: the control
+object and the console fall back to the puzzle prefabs.
+
+| Prefab | Base | Add | Setting | Used for |
+|---|---|---|---|---|
+| `RZ_PowerControl.et` | a generator, breaker cabinet or control panel | the generic puzzle object components (`RZ_PuzzleObjectComponent`, `RZ_ClueComponent`, `RZ_ReadClueAction`, 4 × `RZ_PuzzleChoiceAction`), `RplComponent` | Power grid > Control prefab (falls back to Puzzles > Fuse box, then the generic object) | the power station's three steps and upkeep, while a player is within 300 m |
+| `RZ_RadioConsole.et` | a radio set on a desk | the same components | Radio station > Console prefab (falls back to Puzzles > Radio mast, then the generic object) | taking the station over and the four broadcasts |
+
+**Placing them yourself:** `RZ_PowerStationMarkerEntity` and `RZ_RadioStationMarkerEntity` (script
+entities, no prefab needed, an optional name). The first of each wins over the automatic pick.
+Without them the power station is a building whose prefab name says power station, substation,
+transformer, factory, warehouse or sawmill near a town (biggest towns first), else the edge of the
+biggest town; the radio station is one whose name says radio, antenna, transmitter or telecom,
+else high ground near a town. The log says `Power grid: the power station outside Morton at grid
+047-112 (picked), 3 towns in its region, dark, locked up.` and `Radio station: ... (picked).`
+
+**Environment settings** (defaults in brackets): **Enabled** (on); **Read weather** (on);
+**Night heat spread** (0.25); **Night special mult** (1.25); **Night guard drop** (1); **Night hunter
+skip** (0.5); **Rain heat mult** (0.7); **Rain from** (0.3); **Fog from** (0.4); **Fog spawn mult**
+(0.75); **Storm rain** (0.6) and **Storm wind** (10 m/s); **Storm grounds helicopter** (on).
+
+**Power grid settings:** **Enabled** (on); **Control prefab**; **Region radius** (2500 m); **Spin-up
+seconds** (90); **Noise per minute** (10 heat); **Run hours** (4); **Fuel restore** (0.6) and **Patch
+restore** (0.25); **Electronics loot mult** (1.5, a hook for the search system); **Chatter mult** (0.6).
+
+**Radio station settings:** **Enabled** (on); **Console prefab**; **Takeover seconds** (30);
+**Cooldown minutes** (10, halved with power).
 
 ## 4. Factions and backgrounds
 

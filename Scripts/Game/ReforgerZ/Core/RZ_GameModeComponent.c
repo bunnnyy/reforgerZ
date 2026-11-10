@@ -42,12 +42,21 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Town memory: Looted, Barricaded, Powered, Burned per town as data, loot that returns, journals of the dead (docs/WORLD.md, section 8)", category: "ReforgerZ|World")]
 	protected ref RZ_TownMemorySettings m_TownMemorySettings;
 
+	[Attribute(desc: "Power grid: a power station players can restore (control object prefab, region, noise, upkeep; docs/WORLD.md, section 5)", category: "ReforgerZ|World")]
+	protected ref RZ_PowerSettings m_PowerSettings;
+
+	[Attribute(desc: "Radio station: a broadcast point players can take over to send preset messages (console prefab, cooldown; cosmetic only, docs/WORLD.md, section 5)", category: "ReforgerZ|World")]
+	protected ref RZ_RadioStationSettings m_RadioStationSettings;
+
 	// ---------------------------------------------------------------- Director / zombies
 	[Attribute(desc: "Stage overrides. Leave empty to use the built-in defaults", category: "ReforgerZ|Director")]
 	protected ref array<ref RZ_StageSettings> m_aStages;
 
 	[Attribute("25", desc: "Minutes between government broadcasts to everyone (flavour only; also sent on first join). 0 = only on first join", category: "ReforgerZ|Director")]
 	protected float m_fBroadcastMinutes;
+
+	[Attribute(desc: "Time and weather: night (they hear further, more specials, fewer human patrols), rain, fog, storms grounding the helicopter (docs/WORLD.md, section 5)", category: "ReforgerZ|Director")]
+	protected ref RZ_EnvironmentSettings m_EnvironmentSettings;
 
 	[Attribute(desc: "Zombie prefabs and density", category: "ReforgerZ|Zombies")]
 	protected ref RZ_ZombieSettings m_ZombieSettings;
@@ -276,6 +285,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_ZombieSpawner m_Spawner;
 	protected ref RZ_Adaptation m_Adaptation;
 	protected ref RZ_TownMemory m_TownMemory;
+	protected ref RZ_Environment m_Environment;
+	protected ref RZ_PowerGrid m_PowerGrid;
+	protected ref RZ_RadioStation m_RadioStation;
 	protected ref RZ_MissionManager m_Missions;
 	protected ref RZ_CureResearch m_Cure;
 	protected ref RZ_BiteDetector m_BiteDetector;
@@ -363,6 +375,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_TownMemorySettings)
 			m_TownMemorySettings = new RZ_TownMemorySettings();
 
+		if (!m_EnvironmentSettings)
+			m_EnvironmentSettings = new RZ_EnvironmentSettings();
+
+		if (!m_PowerSettings)
+			m_PowerSettings = new RZ_PowerSettings();
+
+		if (!m_RadioStationSettings)
+			m_RadioStationSettings = new RZ_RadioStationSettings();
+
 		if (!m_SafehouseSettings)
 			m_SafehouseSettings = new RZ_SafehouseSettings();
 
@@ -396,6 +417,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Heat = new RZ_HeatMap();
 		m_Adaptation = new RZ_Adaptation(this, m_AdaptationSettings);
 		m_TownMemory = new RZ_TownMemory(this, m_TownMemorySettings);
+		m_Environment = new RZ_Environment(this, m_EnvironmentSettings);
+		m_PowerGrid = new RZ_PowerGrid(this, m_PowerSettings);
+		m_RadioStation = new RZ_RadioStation(this, m_RadioStationSettings);
 		m_Cure = new RZ_CureResearch(this);
 		m_Director = new RZ_Director(this, m_aStages);
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
@@ -434,6 +458,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Before anything is placed, so missions, spawn points and quartermasters keep off the line
 		m_Perimeter.Init();
 		m_TownMemory.Setup();
+		m_PowerGrid.Setup();
+		m_RadioStation.Setup();
 
 		SetupLab();
 		m_Perks.SetupQuartermasters();
@@ -481,6 +507,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Spawner.Tick(dt, players);
 		m_Adaptation.Tick(dt, ids, players);
 		m_TownMemory.Tick(dt);
+		m_Environment.Tick(dt, ids, players);
+		m_PowerGrid.Tick(dt, ids, players);
+		m_RadioStation.Tick(dt, ids, players);
 		m_Missions.Tick(dt, ids, players);
 		m_Perimeter.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
@@ -538,6 +567,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_ZombieSpawner GetSpawner() { return m_Spawner; }
 	RZ_Adaptation GetAdaptation() { return m_Adaptation; }
 	RZ_TownMemory GetTownMemory() { return m_TownMemory; }
+	RZ_Environment GetEnvironment() { return m_Environment; }
+	RZ_PowerGrid GetPowerGrid() { return m_PowerGrid; }
+	RZ_RadioStation GetRadioStation() { return m_RadioStation; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
 	vector GetLabPosition() { return m_vLabPos; }
@@ -995,8 +1027,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			RZ_StageSettings.GetStageName(m_Director.GetStage()), RZ_Util.RoundToInt(m_Director.GetStageMinutes()),
 			RZ_Util.RoundToInt(m_Director.GetAverageInfection()), safe, contested, infested, overrun,
 			m_Spawner.GetTrackedCount(), m_Missions.GetActive().Count()));
-		RZ_Log.Info(string.Format("Status | players %1 | cure %2 percent (milestone %3, final stand %4)",
-			playerCount, RZ_Util.RoundToInt(m_Cure.m_fProgress), m_Cure.m_iMilestone, m_Cure.IsFinalStand()));
+		RZ_Log.Info(string.Format("Status | players %1 | cure %2 percent (milestone %3, final stand %4) | %5",
+			playerCount, RZ_Util.RoundToInt(m_Cure.m_fProgress), m_Cure.m_iMilestone, m_Cure.IsFinalStand(), m_Environment.Describe()));
 	}
 
 	// ================================================================ Reputation (see docs/REPUTATION.md)
@@ -1668,6 +1700,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Supply.Restore(data.supply);
 		m_FactionLife.Restore(data.factionLife);
 		m_TownMemory.Restore(data.towns);
+		m_PowerGrid.Restore(data.power);
+		m_RadioStation.Restore(data.radio);
 		return true;
 	}
 
@@ -1715,6 +1749,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_TownMemory && m_TownMemory.IsEnabled())
 			data.towns = m_TownMemory.Save();
+
+		if (m_PowerGrid && m_PowerGrid.IsActive())
+			data.power = m_PowerGrid.Save();
+
+		if (m_RadioStation && m_RadioStation.IsActive())
+			data.radio = m_RadioStation.Save();
 
 		foreach (RZ_Settlement s : m_aSettlements)
 		{

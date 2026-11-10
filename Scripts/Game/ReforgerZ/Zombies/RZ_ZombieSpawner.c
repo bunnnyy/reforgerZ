@@ -74,6 +74,8 @@ class RZ_ZombieSpawner
 	// World event modifiers (Night of the Dead, Siren Test). Reset by the event when it ends.
 	protected float m_fEventDensityMult = 1;
 	protected float m_fEventSpecialMult = 1;
+	protected float m_fEnvSpecialMult = 1;		// time and weather (RZ_Environment): night
+	protected float m_fEnvMinSpawnMult = 1;		// fog: infected may spawn a little closer
 	protected int m_iFocusSettlement = -1;	// gets 1.5x density, every other town 0.4x
 	protected ref array<int> m_aSuppressed = {};	// settlements with no spawns at all (The Silent Village)
 
@@ -209,6 +211,14 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Time and weather (RZ_Environment): specials at night, closer spawns in fog.
+	void SetEnvironmentModifiers(float specialMult, float minSpawnMult)
+	{
+		m_fEnvSpecialMult = specialMult;
+		m_fEnvMinSpawnMult = Math.Clamp(minSpawnMult, 0.3, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void SetFocusSettlement(int idx)
 	{
 		m_iFocusSettlement = idx;
@@ -306,11 +316,11 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Chance that a spawn is a special: the stage's, times world events and cure
-	//! breakthroughs (RZ_Adaptation, +15% at most).
+	//! Chance that a spawn is a special: the stage's, times world events, the night
+	//! (RZ_Environment) and cure breakthroughs (RZ_Adaptation, +15% at most).
 	float GetSpecialChance(RZ_StageSettings stage)
 	{
-		float chance = stage.m_fSpecialChance * m_fEventSpecialMult;
+		float chance = stage.m_fSpecialChance * m_fEventSpecialMult * m_fEnvSpecialMult;
 		if (m_GM.GetAdaptation())
 			chance = chance * m_GM.GetAdaptation().SpecialMult();
 
@@ -521,7 +531,7 @@ class RZ_ZombieSpawner
 			if (RZ_Util.IsWater(pos))
 				continue;
 
-			if (RZ_Util.NearestDistance(pos, players) < m_Settings.m_fMinSpawnDistance)
+			if (RZ_Util.NearestDistance(pos, players) < m_Settings.m_fMinSpawnDistance * m_fEnvMinSpawnMult)
 				continue;
 
 			if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))

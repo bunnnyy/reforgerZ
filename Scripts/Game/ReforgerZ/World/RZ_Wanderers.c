@@ -1302,6 +1302,8 @@ class RZ_Wanderers
 	{
 		RZ_MissionManager missions = m_GM.GetMissions();
 		bool shelter = missions.IsTypeRunning(RZ_Event_NightOfTheDead) || missions.IsTypeRunning(RZ_Event_Storm);
+		if (m_GM.GetEnvironment() && m_GM.GetEnvironment().IsStorm())
+			shelter = true;
 
 		foreach (RZ_Wanderer w : m_aList)
 		{

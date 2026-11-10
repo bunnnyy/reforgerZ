@@ -9,6 +9,8 @@ class RZ_HeatMap
 	protected float m_fMaxHeat = 200;
 	protected float m_fDecayMult = 1;	// world events (Storm) change these for a while
 	protected float m_fAddMult = 1;
+	protected float m_fEnvAddMult = 1;	// time and weather (RZ_Environment): rain dampens noise
+	protected float m_fEnvSpread;		// night: this share also reaches the four neighbouring squares
 
 	protected static const int GRID_STRIDE = 100000;
 
@@ -37,12 +39,36 @@ class RZ_HeatMap
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Time and weather (RZ_Environment): addMult scales heat added (rain 0.7), spread is the
+	//! share that also reaches the neighbouring squares (night: they hear further).
+	void SetEnvironmentModifiers(float addMult, float spread)
+	{
+		m_fEnvAddMult = addMult;
+		m_fEnvSpread = Math.Clamp(spread, 0, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void AddHeat(vector pos, float amount)
 	{
 		if (amount > 0)
-			amount = amount * m_fAddMult;
+			amount = amount * m_fAddMult * m_fEnvAddMult;
 
 		int key = Key(pos);
+		AddToCell(key, amount);
+
+		if (amount <= 0 || m_fEnvSpread <= 0)
+			return;
+
+		float side = amount * m_fEnvSpread;
+		AddToCell(key + 1, side);
+		AddToCell(key - 1, side);
+		AddToCell(key + GRID_STRIDE, side);
+		AddToCell(key - GRID_STRIDE, side);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void AddToCell(int key, float amount)
+	{
 		float v;
 		m_mHeat.Find(key, v);
 		m_mHeat.Set(key, Math.Clamp(v + amount, 0, m_fMaxHeat));

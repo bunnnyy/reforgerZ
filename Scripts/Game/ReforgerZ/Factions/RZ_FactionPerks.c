@@ -517,6 +517,11 @@ class RZ_FactionPerks
 			return;
 
 		m_fHunterTimer = 0;
+
+		// Night (RZ_Environment): human patrols go out less
+		if (m_GM.GetEnvironment() && m_GM.GetEnvironment().SkipHunterRound())
+			return;
+
 		array<int> hunters = {RZ_EFaction.MILITARY, RZ_EFaction.BANDITS};
 		foreach (int j, IEntity p : players)
 		{

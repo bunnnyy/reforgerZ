@@ -1537,10 +1537,22 @@ class RZ_Territory
 		h.m_bSpawned = true;
 		RZ_Hostility hostility = m_GM.GetHostility();
 
-		ResourceName guardPrefab = GuardPrefab(h.m_eFaction);
-		for (int g = 0; g < m_Settings.m_iGuardCount && !guardPrefab.IsEmpty(); g++)
+		// Night (RZ_Environment): fewer guards, and they stay closer in
+		int guards = m_Settings.m_iGuardCount;
+		float guardMin = 15;
+		float guardMax = 35;
+		RZ_Environment env = m_GM.GetEnvironment();
+		if (env && env.IsNight())
 		{
-			IEntity guard = RZ_Util.SpawnPrefab(guardPrefab, RZ_Mission.LandPointNear(h.m_vPos, 15, 35), Math.RandomFloat(0, 360));
+			guards = env.GuardCount(guards);
+			guardMin = 5;
+			guardMax = 15;
+		}
+
+		ResourceName guardPrefab = GuardPrefab(h.m_eFaction);
+		for (int g = 0; g < guards && !guardPrefab.IsEmpty(); g++)
+		{
+			IEntity guard = RZ_Util.SpawnPrefab(guardPrefab, RZ_Mission.LandPointNear(h.m_vPos, guardMin, guardMax), Math.RandomFloat(0, 360));
 			if (!guard)
 				continue;
 
