@@ -164,14 +164,14 @@ class RZ_VehicleZone
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Players riding in or standing by the vehicle that came in (everyone paid for a delivery).
+	//! Players riding in or standing by the vehicle that came in, added once each to `result`.
 	void GetCrew(array<int> ids, array<IEntity> players, float radius, notnull array<int> result)
 	{
 		vector at = m_vPos;
 		if (m_Arrived)
 			at = m_Arrived.GetOrigin();
 
-		RZ_Mission.GetPlayersNear(ids, players, at, radius, result);
+		RZ_ContractHelp.AddNear(ids, players, at, radius, result);
 	}
 }
 

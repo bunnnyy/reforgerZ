@@ -19,6 +19,15 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_SignalFires);
 		mgr.RegisterType(RZ_Mission_TraderCaravan);
 		mgr.RegisterType(RZ_Mission_RescueTheKids);
+		// Built on the mission building blocks (Missions/Haven/RZ_HavenContracts.c)
+		mgr.RegisterType(RZ_Mission_FuelForTheLights);
+		mgr.RegisterType(RZ_Mission_HarvestGuard);
+		mgr.RegisterType(RZ_Mission_RefugeeColumn);
+		mgr.RegisterType(RZ_Mission_WaterPurifier);
+		mgr.RegisterType(RZ_Mission_FortifySafehouse);
+		mgr.RegisterType(RZ_Mission_TheInformant);
+		mgr.RegisterType(RZ_Mission_RecoverTheBus);
+		mgr.RegisterType(RZ_Mission_Memorial);
 
 		// Haven house contracts (Missions/Haven/RZ_HavenHouseMissions.c). The Courier's
 		// job (RZ_Mission_CourierJob) isn't listed: a Courier wanderer starts it.
