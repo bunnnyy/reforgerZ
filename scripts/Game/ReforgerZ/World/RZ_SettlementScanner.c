@@ -3,7 +3,8 @@
 //! Order of preference:
 //!  1. RZ_SettlementMarkerEntity placed by hand (full control).
 //!  2. The map's own name labels (MapDescriptorComponent of type city/town/village).
-//!  3. Clusters of buildings with no label nearby ("outskirts", farms, industrial areas).
+//!  3. Clusters of buildings with no city/town/village label nearby: named after the nearest
+//!     local label (hamlets such as Arland's Highfield), else "Outskirts" and a grid reference.
 //!
 //! The scan touches every static entity once, so it can take a few seconds on big maps.
 //! The result is saved with the rest of the state, so it only runs on a fresh start or a new map.
@@ -13,8 +14,11 @@ class RZ_SettlementScanner
 	protected ref map<int, int> m_mGridCount = new map<int, int>();
 	protected ref map<int, vector> m_mGridSum = new map<int, vector>();
 	protected float m_fCell = 300;
+	protected ref array<string> m_aLocalNames = {};
+	protected ref array<vector> m_aLocalPos = {};
 
 	protected static const int GRID_STRIDE = 100000;
+	protected static const float LOCAL_NAME_RANGE = 400;
 
 	//------------------------------------------------------------------------------------------------
 	void Scan(float cellSize, int minBuildings, notnull array<ref RZ_Settlement> outSettlements)
@@ -76,6 +80,20 @@ class RZ_SettlementScanner
 		else if (type == EMapDescriptorType.MDT_NAME_VILLAGE || type == EMapDescriptorType.MDT_NAME_SETTLEMENT)
 			size = 1;
 
+		if (type == EMapDescriptorType.MDT_NAME_LOCAL)
+		{
+			// Hamlets and spots (Arland's Highfield, Newfield): too small to be a settlement on
+			// their own, but they name the building cluster around them.
+			string local = LabelName(descr);
+			if (!local.IsEmpty())
+			{
+				m_aLocalNames.Insert(local);
+				m_aLocalPos.Insert(e.GetOrigin());
+			}
+
+			return;
+		}
+
 		if (size == 0)
 			return;
 
@@ -86,10 +104,9 @@ class RZ_SettlementScanner
 				return;
 		}
 
-		string name = "Settlement";
-		MapItem item = descr.Item();
-		if (item && !item.GetDisplayName().IsEmpty())
-			name = item.GetDisplayName();
+		string name = LabelName(descr);
+		if (name.IsEmpty())
+			name = "Settlement";
 
 		RZ_Settlement s = new RZ_Settlement();
 		s.m_sName = name;
@@ -117,7 +134,7 @@ class RZ_SettlementScanner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Building clusters away from any named place become "outskirts" settlements.
+	//! Building clusters away from any named place become settlements of their own.
 	protected void AddBuildingClusters(int minBuildings)
 	{
 		foreach (int key, int count : m_mGridCount)
@@ -142,13 +159,68 @@ class RZ_SettlementScanner
 				continue;
 
 			RZ_Settlement cluster = new RZ_Settlement();
-			cluster.m_sName = string.Format("Outskirts %1", GridReference(center));
+			cluster.m_sName = ClusterName(center);
 			cluster.m_vCenter = center;
 			cluster.m_iSize = 1;
 			cluster.m_fRadius = m_fCell * 0.6;
 			cluster.m_fInfection = StartInfectionForSize(1);
 			m_aOut.Insert(cluster);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The label's name in English. Labels hold string-table keys (#AR-MapLocation_...), which
+	//! the server translates with its own language (English on a dedicated server).
+	protected static string LabelName(MapDescriptorComponent descr)
+	{
+		MapItem item = descr.Item();
+		if (!item)
+			return "";
+
+		return RZ_Util.Localize(item.GetDisplayName());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A cluster takes the nearest local place name within LOCAL_NAME_RANGE; a second cluster
+	//! near the same name is its outskirts; otherwise (or with no name near) the grid reference.
+	protected string ClusterName(vector center)
+	{
+		int best = -1;
+		float bestDist = LOCAL_NAME_RANGE;
+		for (int i = 0; i < m_aLocalPos.Count(); i++)
+		{
+			float d = RZ_Util.DistXZ(m_aLocalPos[i], center);
+			if (d < bestDist)
+			{
+				bestDist = d;
+				best = i;
+			}
+		}
+
+		if (best < 0)
+			return string.Format("Outskirts %1", GridReference(center));
+
+		string name = m_aLocalNames[best];
+		if (!NameTaken(name))
+			return name;
+
+		string outskirts = string.Format("%1 outskirts", name);
+		if (!NameTaken(outskirts))
+			return outskirts;
+
+		return string.Format("Outskirts %1", GridReference(center));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool NameTaken(string name)
+	{
+		foreach (RZ_Settlement other : m_aOut)
+		{
+			if (other.m_sName == name)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

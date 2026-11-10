@@ -1019,35 +1019,44 @@ fails, make the prefabs by hand. Riskiest first: the first eight decide whether 
 
 ## 7. Log lines to check
 
-Every line starts with `[ReforgerZ]`. On start you should see, in roughly this order:
+Every line starts with `[ReforgerZ]`. This is what the server printed on Arland with nothing
+but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in this order:
 
 ```
-[ReforgerZ] Last season (world, season N) the cure went to Bastion.
-[ReforgerZ] Season N (fresh). Rules: Bastion's season, Winter. Wipe: 48 h after the cure.
-[ReforgerZ] Settlement scan: N named, M building clusters, took X ms.
-[ReforgerZ] Perimeter: x A to B, z C to D. Warning zone 300 m, kill zone 100 m.
-[ReforgerZ] Perimeter: N road checkpoints (from roads).
-[ReforgerZ] Haven safehouses: N (picked).
-[ReforgerZ] Wanderers: N on the roads (new roster, seed S).
-[ReforgerZ] Faction leaders: N (new, seed S). Haven 2, Bastion 2, Red Hand 2, Halcyon 2
-[ReforgerZ] Territory: 8 holdings in 14 settlements (new, seed S). Haven 1+1, Bastion 1+1, ...
-[ReforgerZ] Supply trucks: Haven, Bastion.
+[ReforgerZ] No common zombie prefabs configured. Set them on RZ_GameModeComponent > Zombies.
+[ReforgerZ] No lab prefab set. Samples can't be delivered until one is configured or placed.
+[ReforgerZ] Hostility: bitmask mode, only 0 of 15 variant factions (SURV_H1 to SURV_H15) in the FactionManager. ...
+[ReforgerZ] Season 1 (fresh). Rules: none. Wipe: 48 h after the cure.
+[ReforgerZ] Settlement scan: 2 named, 12 building clusters, took 83 ms.
+[ReforgerZ] Perimeter: x 70 to 3913, z 488 to 3788. Warning zone 300 m, kill zone 100 m.
+[ReforgerZ] No checkpoint barricade prefab set: road checkpoints are off.
+[ReforgerZ] Power grid: the factory outside Beauregard at grid 31-27 (picked), 14 towns in its region, dark, locked up.
+[ReforgerZ] Radio station: the radio mast near Beauregard at grid 31-27 (picked).
+[ReforgerZ] Haven safehouses: 2 (picked).
+[ReforgerZ] Wanderers: 7 on the roads (new roster, seed S).
+[ReforgerZ] Faction leaders: 5 (new, seed S). Haven 2, Bastion 1, Red Hand 1, Halcyon 1
 [ReforgerZ] Faction life: morale 60/60/60/60, 0 remembered moments.
-[ReforgerZ] Power grid: the power station outside Morton at grid 047-112 (picked), 3 towns in its region, dark.
-[ReforgerZ] Radio station: the radio mast near Levie at grid 052-118 (picked).
+[ReforgerZ] Territory: 8 holdings in 14 settlements (new, seed S). Haven 1+1, Bastion 1+1, Red Hand 1+1, Halcyon 1+1
+[ReforgerZ] Supply trucks: none (no truck or crew prefabs, or no move waypoint).
+[ReforgerZ] Search: 0 items in the loot pool, 0 tables set by hand.
+[ReforgerZ] Locks: on the doors (the loot where no doors are found); keys are data for one life.
+[ReforgerZ] Door blockers: off (no blocker prefab); AI door hook on.
+[ReforgerZ] World interactions: on. 0 fixable cars on the map.
 [ReforgerZ] Story arcs: on, running none.
-[ReforgerZ] Search: N items in the loot pool, M tables set by hand.
-[ReforgerZ] Locks: on the doors (the loot where no doors are found); keys are key items.
-[ReforgerZ] Door blockers: on, navmesh rebuilt, at most 20 within 150 m; AI door hook on.
-[ReforgerZ] World interactions: on. N fixable cars on the map.
-[ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
-[ReforgerZ] Started. N settlements, stage Early Outbreak, cure 0 percent, state ...
+[ReforgerZ] Started. 14 settlements, stage Early Outbreak, cure 0 percent, state 0.
 ```
+
+On a restart the same lines say `(save)` or `(saved)` instead of `(picked)` or `(new ...)`, and the
+settlement scan doesn't run. Arland's 14 settlements: its two cities, the building clusters named
+after the nearest local place label (North Head, Angler Bluff, Sandbank, Heath Point) and the rest
+by grid reference (`Outskirts 13-29`).
 
 Warnings worth acting on:
 
 | Line | Means |
 |---|---|
+| `GUI (E): Menu preset 'RZ_StandingMenu' not found!` (and the other five) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override isn't there yet ([the UI](#setting-up-the-ui)). Harmless until then |
+| `No common zombie prefabs configured. ...` | Set Zombies > Common prefabs (logged as an error: no infected spawn) |
 | `Using N hand-placed settlement markers.` | Detection is off because markers are placed |
 | `No checkpoint barricade prefab set: road checkpoints are off.` | Set Perimeter > Barricade prefab |
 | `No road network found: place RZ_CheckpointMarkerEntity entities ...` | The road VERIFYs failed or the map has no roads |

@@ -67,9 +67,11 @@ from Early Outbreak to Aftermath, and the only way to win is together: research 
 
 Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameModeComponent.c`, `Core/RZ_MapMarkers.c`, `UI/RZ_MapIcons.c`.
 
-- **Settlements** come from the map's name labels plus clusters of buildings (a 300 m grid
-  cell with 8 or more buildings). Each has a centre, a size class and an infection level
-  (0–100). Placing any `RZ_SettlementMarkerEntity` turns detection off and uses the markers.
+- **Settlements** come from the map's city, town and village labels plus clusters of buildings
+  (a 300 m grid cell with 8 or more buildings). A cluster takes the name of the nearest local
+  place label within 400 m (a hamlet or a point), or "<name> outskirts" if that's taken, or a
+  grid reference ("Outskirts 13-29"). Label names are string-table keys, translated on the
+  server. Each has a centre, a size class and an infection level (0–100). Placing any `RZ_SettlementMarkerEntity` turns detection off and uses the markers.
 - **Spawn points:** 6 at a time in random towns, and one is moved to a new town every
   20 minutes. Every Haven safehouse is also a spawn point for everyone.
 - **Missions are announced** with distance and direction ("1.2 km NE"). Messages are queued

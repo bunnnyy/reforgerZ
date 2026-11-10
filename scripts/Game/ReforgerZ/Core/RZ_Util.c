@@ -360,6 +360,16 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A string-table key (#AR-...) in the server's language; anything else unchanged.
+	static string Localize(string text)
+	{
+		if (!text.StartsWith("#"))
+			return text;
+
+		return WidgetManager.Translate(text);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string PlayerName(int playerId)
 	{
 		return GetGame().GetPlayerManager().GetPlayerName(playerId);
