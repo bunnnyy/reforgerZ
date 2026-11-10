@@ -41,7 +41,7 @@ class RZ_FactionPerks
 	protected ref array<float> m_aHunterExpiry = {};
 	protected ref array<int> m_aHunterTarget = {};		// who each squad was sent after
 	protected ref array<bool> m_aHunterLost = {};		// lost the trail (Safe Harbour): walking away
-	protected ref set<int> m_aHarbourTold = new set<int>();
+	protected ref array<int> m_aHarbourTold = {};
 	protected float m_fHunterTimer;
 	protected float m_fBountyTimer;
 	protected ref map<int, vector> m_mLastAlivePos = new map<int, vector>();

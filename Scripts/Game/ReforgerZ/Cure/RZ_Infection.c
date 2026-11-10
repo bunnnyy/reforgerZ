@@ -182,6 +182,7 @@ class RZ_SickState
 	float m_fNextDrain;
 	float m_fNextShow;
 	float m_fNextSide;
+	float m_fTellCleanAt = -1;	// a clean worked: tell the player at this clock time
 	int m_iWoundSpot = -1;
 }
 
@@ -396,6 +397,7 @@ class RZ_Infection
 			int playerId = ids[i];
 			RZ_PlayerProfile p = m_GM.GetProfile(playerId);
 			TickSideEffect(dt, playerId, p, ent);
+			TickToldClean(playerId, p);
 			if (p.m_fSymptomsHiddenLeft > 0)
 				p.m_fSymptomsHiddenLeft = Math.Max(0, p.m_fSymptomsHiddenLeft - dt);
 
@@ -837,7 +839,7 @@ class RZ_Infection
 		{
 			// The bite never takes. The player finds out a minute later, as if the window had closed
 			p.ClearInfection();
-			GetGame().GetCallqueue().CallLater(ToldClean, 60000, false, patient);
+			State(patient).m_fTellCleanAt = m_fClock + 60;
 		}
 
 		if (helper > 0 && helper != patient)
@@ -845,13 +847,15 @@ class RZ_Infection
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void ToldClean(int patient)
+	protected void TickToldClean(int patient, RZ_PlayerProfile p)
 	{
-		RZ_PlayerProfile p = m_GM.GetProfile(patient);
-		if (!p || p.IsInfected())
+		RZ_SickState st;
+		if (!m_mStates.Find(patient, st) || st.m_fTellCleanAt < 0 || m_fClock < st.m_fTellCleanAt)
 			return;
 
-		m_GM.NotifyPlayer(patient, "The bite", "The heat's gone out of it. Just a bite now: sore, ugly, clean. It didn't take.");
+		st.m_fTellCleanAt = -1;
+		if (!p.IsInfected())
+			m_GM.NotifyPlayer(patient, "The bite", "The heat's gone out of it. Just a bite now: sore, ugly, clean. It didn't take.");
 	}
 
 	// ================================================================ Meds
@@ -1049,7 +1053,7 @@ class RZ_Infection
 	{
 		int milestone = 0;
 		if (m_GM.GetCure())
-			milestone = Math.Min(3, m_GM.GetCure().m_iMilestone);
+			milestone = Math.ClampInt(m_GM.GetCure().m_iMilestone, 0, 3);
 
 		foreach (RZ_MedFind f : m_aFinds)
 		{

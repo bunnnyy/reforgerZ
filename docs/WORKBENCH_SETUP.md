@@ -598,7 +598,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:632` | a seated character is a child entity of its vehicle (`GetParent()`) | Vehicle deliveries by type (Recover the Bus) never see who drives: switch the helper to `CompartmentAccessComponent.GetVehicleIn`. A specific vehicle still counts a player in a vehicle right beside it |
 | `Core/RZ_Util.c:643`, `:654` | `HitZone.GetMaxHealth()` and `SetHealth()` on the default hit zone (server, replicated, no knock-out above zero) | The Blood Drive refuses everyone ("health can't be read"); nothing else uses them |
 | `Core/RZ_Util.c:685` | worn clothing is attached as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
-| `Cure/RZ_Infection.c:1092`, `:1096`, `:1111` | `CharacterStaminaComponent` on the character; `AddStamina(float)` on a 0–1 scale, server side and replicated (negative drains); `GetStamina()` | No stamina effects: the Weakness and Final stages, nausea and the drunk remedy fall back to noise and a little health drain, and the "tired" bite modifier never applies. Try `SCR_CharacterStaminaComponent` |
+| `Cure/RZ_Infection.c:1096`, `:1100`, `:1115` | `CharacterStaminaComponent` on the character; `AddStamina(float)` on a 0–1 scale, server side and replicated (negative drains); `GetStamina()` | No stamina effects: the Weakness and Final stages, nausea and the drunk remedy fall back to noise and a little health drain, and the "tired" bite modifier never applies. Try `SCR_CharacterStaminaComponent` |
 | `Interactions/RZ_DoorBlockers.c:58`, `:67` | `GetAIWorld()` as `SCR_AIWorld`; `RequestNavmeshRebuildAreas(areas, redoRoads)` (what Game Master placement uses) | Doesn't compile: try `RequestNavmeshRebuildEntity(blocker)`, or empty the helper and turn **Navmesh rebuild** off (blockers only) |
 
 ### Low risk: contained or cosmetic (34)
@@ -608,7 +608,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Core/RZ_MapMarkers.c:14`, `:19`, `:20`, `:21`, `:22`, `:44`, `:46` | map marker manager, type, position, text, insert, remove | Empty `Add()` and `Remove()`, or turn **Map markers** off |
 | `Cure/RZ_AntidoteConsumable.c:8`, `:15`, `Cure/RZ_MedConsumable.c:5`, `:15` | the consumable effect class and `ApplyEffect` signature | Delete the file: the world actions ("Inject antidote", "Take ...") still work |
-| `Cure/RZ_Infection.c:1119` | no known script hook for camera sway or blur (`RZ_Symptoms.Disorient` returns false) | The home remedy's drunkenness is stumbling (stamina and noise). Wire a blur or aim-sway effect here if the game version has one |
+| `Cure/RZ_Infection.c:1123` | no known script hook for camera sway or blur (`RZ_Symptoms.Disorient` returns false) | The home remedy's drunkenness is stumbling (stamina and noise). Wire a blur or aim-sway effect here if the game version has one |
 | `Guidance/RZ_Guidance.c:172` | `System.GetUnixTime()` | Return 0: the 30-day refresher never fires |
 | `Puzzles/RZ_BlinkingLight.c:55`, `:72`; `Puzzles/RZ_Landmarks.c:66`; `Core/RZ_Util.c:347` | `ToUpper`, `Trim`, `ToLower` in place or as copies | Swap to the other form |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |

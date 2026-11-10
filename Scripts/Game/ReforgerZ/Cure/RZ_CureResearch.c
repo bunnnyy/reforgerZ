@@ -81,7 +81,7 @@ class RZ_CureResearch
 	//! Seconds between antidote doses: 30, 20, 15 and 10 minutes by breakthrough.
 	float AntidoteInterval()
 	{
-		switch (Math.Min(m_iMilestone, 3))
+		switch (Math.ClampInt(m_iMilestone, 0, 3))
 		{
 			case 0: return 1800;
 			case 1: return 1200;
@@ -95,14 +95,14 @@ class RZ_CureResearch
 	//! Most doses in the lab's stock: 2, 3, 4 and 5 by breakthrough.
 	int AntidoteCap()
 	{
-		return Math.Min(LAB_ANTIDOTE_CAP, 2 + Math.Min(m_iMilestone, 3));
+		return Math.ClampInt(2 + m_iMilestone, 2, LAB_ANTIDOTE_CAP);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Seconds between stabilisers: rare at the start, more common after 25%, plentiful after 75%.
 	float StabiliserInterval()
 	{
-		switch (Math.Min(m_iMilestone, 3))
+		switch (Math.ClampInt(m_iMilestone, 0, 3))
 		{
 			case 0: return 5400;
 			case 1: return 2700;
@@ -115,7 +115,7 @@ class RZ_CureResearch
 	//------------------------------------------------------------------------------------------------
 	int StabiliserCap()
 	{
-		switch (Math.Min(m_iMilestone, 3))
+		switch (Math.ClampInt(m_iMilestone, 0, 3))
 		{
 			case 0: return 1;
 			case 1: return 2;
@@ -387,7 +387,7 @@ class RZ_CureResearch
 		{
 			m_fWaveTimer = 0;
 			int defenders = RZ_Mission.CountPlayersNear(players, lab, LAB_DEFENCE_RADIUS);
-			int hordes = Math.Min(3, 1 + defenders / 6);
+			int hordes = Math.ClampInt(1 + defenders / 6, 1, 3);
 			for (int h = 0; h < hordes; h++)
 			{
 				m_GM.GetSpawner().SpawnHorde(lab, 350 + 50 * h);
