@@ -170,6 +170,35 @@ class RZ_HeatMap
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The hottest square whose centre is within range of one of the given entities (living players).
+	bool GetHottestNear(array<IEntity> players, float range, out vector pos, out float heat)
+	{
+		heat = 0;
+		int bestKey;
+		bool found = false;
+		foreach (int key, float v : m_mHeat)
+		{
+			if (v <= heat)
+				continue;
+
+			int gx = key / GRID_STRIDE;
+			int gz = key % GRID_STRIDE;
+			vector flat = Vector((gx + 0.5) * m_fCell, 0, (gz + 0.5) * m_fCell);
+			if (RZ_Util.NearestDistance(flat, players) > range)
+				continue;
+
+			heat = v;
+			bestKey = key;
+			found = true;
+		}
+
+		if (found)
+			pos = CellCenter(bestKey);
+
+		return found;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool GetHottest(out vector pos, out float heat)
 	{
 		heat = 0;

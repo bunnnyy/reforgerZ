@@ -15,6 +15,7 @@ class RZ_Broadcast
 	protected static const float LONG_STALL_SECONDS = 10800;	// 3 h without research: "indefinitely"
 	protected static const float BREAKTHROUGH_SECONDS = 5400;	// breakthrough news lasts 90 min
 	protected static const int FIRST_DAY = 11;					// the Zone was sealed eleven days before the season starts
+	protected static const float PLAYED_MINUTES_PER_DAY = 480;	// fallback without a real clock: 8 hours played a day
 
 	static const string TITLE = "Government broadcast";
 
@@ -55,10 +56,20 @@ class RZ_Broadcast
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Days since the gates closed, as the broadcast counts them.
+	//! Days since the gates closed, as the broadcast counts them: real days since the season
+	//! started (docs/DESIGN.md, "The government broadcast"). Without the server's clock, a day
+	//! is 8 hours played (the season pacing's hours with someone online a day).
 	int GetDay()
 	{
-		return FIRST_DAY + Math.Floor(m_GM.GetDirector().GetTotalMinutes() / 60);
+		RZ_Seasons seasons = m_GM.GetSeasons();
+		if (seasons)
+		{
+			int days = seasons.GetRealDays();
+			if (days >= 0)
+				return FIRST_DAY + days;
+		}
+
+		return FIRST_DAY + Math.Floor(m_GM.GetDirector().GetTotalMinutes() / PLAYED_MINUTES_PER_DAY);
 	}
 
 	//------------------------------------------------------------------------------------------------

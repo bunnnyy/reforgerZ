@@ -207,7 +207,8 @@ class RZ_Environment
 		if (!m_Settings.m_bEnabled)
 		{
 			m_GM.GetHeat().SetEnvironmentModifiers(1, 0);
-			m_GM.GetSpawner().SetEnvironmentModifiers(1, 1);
+			// The Fog rule set's shorter sight isn't weather: it stays with the environment off
+			m_GM.GetSpawner().SetEnvironmentModifiers(1, RZ_Seasons.Mods().m_fSightMult);
 			return;
 		}
 

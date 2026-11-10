@@ -495,14 +495,14 @@ class RZ_CureResearch
 		}
 
 		vector lab = m_GM.GetLabPosition();
+		array<int> defenders = {};
 		foreach (IEntity p : players)
 		{
 			if (RZ_Util.DistXZ(p.GetOrigin(), lab) > LAB_DEFENCE_RADIUS)
 				continue;
 
 			int id = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(p);
-			m_GM.AddFame(id, RZ_EFaction.INSTITUTE, 50);
-			m_GM.AddFame(id, RZ_EFaction.SURVIVORS, 30);
+			defenders.Insert(id);
 
 			// The hall of fame: they held the final stand
 			if (m_GM.GetHall())
@@ -513,7 +513,15 @@ class RZ_CureResearch
 		if (m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnCureDone();
 
+		// The winner is chosen on the season's Fame before the stand's own reward, so the last
+		// fight (always Halcyon and the Haven) can't decide it
 		m_GM.OnCureCompleted();
+		foreach (int defender : defenders)
+		{
+			m_GM.AddFame(defender, RZ_EFaction.INSTITUTE, 50);
+			m_GM.AddFame(defender, RZ_EFaction.SURVIVORS, 30);
+		}
+
 		m_GM.GetDirector().SetStage(RZ_EOutbreakStage.AFTERMATH);
 		m_GM.OnCureChanged();
 	}

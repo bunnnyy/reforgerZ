@@ -122,8 +122,9 @@ caps at 200 per square.
 | A shot | 3 × the background's noise multiplier; ×0.3 with a suppressor (detected by attachment name) |
 | Noisemakers, bells, sirens, generators, searches, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
 
-- Heat draws extra zombies. **80** heat in one area sends a horde toward it (at most one
-  every 10 minutes).
+- Heat draws extra zombies. **80** heat in one area within 600 m of a living player sends a
+  horde toward it (at most one every 10 minutes). A hot square nobody is near (a powered
+  station, the Preacher's bells, a running generator) draws nothing.
 - **Noises that lead.** A burst of 8+ heat at once is remembered as a noise (the last 16).
   Infected that a mission controls walk to a nearby noise and stay about 90 s. That's what
   the unarmed missions are built on ([MISSIONS.md](MISSIONS.md), "Unarmed missions").
@@ -136,8 +137,8 @@ caps at 200 per square.
 Code: `Zombies/RZ_ZombieSpawner.c`, `Zombies/RZ_BiteDetector.c`, `Core/RZ_GameModeComponent.c`.
 
 - **Spawner.** Works with any zombie mod's prefabs. Towns within 600 m of a player are
-  populated (4 per size class at 100% infection), never closer than 120 m to a player, and
-  removed beyond 1.1 km. Two roaming infected stay around each player in the countryside. At most
+  populated (4 per size class at 100% infection), at points 120–600 m from a player (so a
+  spawn is never removed straight away), and removed beyond 1.1 km. Two roaming infected stay around each player in the countryside. At most
   60 tracked spawns on the server and 4 per tick.
 - **Specials** (the stage's chance) drop a cure sample when killed.
 - **Zombie-free settlements** while a mission needs one (The Silent Village).
@@ -253,7 +254,8 @@ Small, capped changes that keep the late game interesting without making it unfa
   +20 heat where the player stands, at most once a minute, heard within 150 m. Each trait is
   a prefab list; an empty list turns it off (screamers then use the ordinary specials).
 - **Favourite spots.** The map is split into 500 m squares that count player-minutes
-  (fading by a fifth every 10 minutes). Once a square reaches 60, three infected are spawned
+  (fading by a fifth every 10 minutes). Once a square reaches 35 (about an hour of one player
+  staying put; a lone player levels off near 50), three infected are spawned
   out of sight 250–350 m away and walk over to look, at most once an hour per square. Never
   within 150 m of a safehouse, and never near a brand-new player in their gentle start.
 
@@ -350,6 +352,9 @@ every 10 minutes server-wide (5 with power). **Cosmetic and social only:** no Fa
 
 A looping flavour message to everyone every 25 minutes and on each player's first spawn.
 Its tone follows the cure and the outbreak ([LORE.md](LORE.md), "The outside world: silent, watching").
+Its day count ("Day 14") is 11 plus the real days since the season started, so a season of
+about 10 days runs from Day 11 to about Day 21; without the server's clock, a day is 8 hours
+played. Notes, journals, the radio station and Bastion's orders use the same count.
 
 ## Backgrounds and personal goals
 
@@ -676,7 +681,8 @@ really happened (a mission ran, a player heard a rumour, a truck left), so every
 through different plots. An arc whose next step can't happen fizzles out quietly.
 
 - **When:** one arc at a time. About every hour with players online, 60% of the time one starts:
-  a random arc that hasn't run in the last four hours and can run now. Saved; an arc waiting on
+  a random arc that hasn't run in the last four hours and can run now. The arcs' clock (steps,
+  timeouts, the four hours) stands still while nobody is online. Saved; an arc waiting on
   a mission (or The Last Convoy's truck on the road) just ends at a restart; a convoy that
   hadn't left yet is asked for again.
 
@@ -1057,9 +1063,11 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
   twice as fast for 2 hours; Mobile Lab opens a **field annex**, a second lab prefab in a safer
   town where samples can be handed in for 3 hours, then it packs up. The lab itself never moves.
 - **The season's end.** When the final stand is won, the cure goes to the faction the server
-  gave the most Fame this season (summed over all players). The winner is saved to
-  `last_season.json`. What each ending means is in [LORE.md](LORE.md), "Endings"; what it
-  leaves the next season, the wipe and the hall of fame are in [Seasons](#seasons).
+  gave the most Fame this season (summed over all players). It's chosen before the stand's own
+  Fame (Halcyon +50 and the Haven +30 for each player at the lab) is handed out, so the last
+  fight can't decide it. The winner is saved to `last_season.json`. What each ending means is in
+  [LORE.md](LORE.md), "Endings"; what it leaves the next season, the wipe and the hall of fame
+  are in [Seasons](#seasons).
 
 ## Season pacing
 
@@ -1204,6 +1212,9 @@ hand: **Wipe on start**, or delete `state.json`).
   outbreak starts on the same map (new settlements' infection, safehouses, leaders, wanderers,
   territory; profiles, standing and Legacy start over too). The hall of fame and the season
   record stay.
+- **By hand:** **Wipe on start** does the same on every start while it's on: the old
+  `state.json` is backed up and the new season numbers itself after it, hall of fame or not.
+  Deleting `state.json` by hand leaves only the hall of fame and the season record to count from.
 
 *Simplified:* the wipe only happens on a restart; the mode never restarts the server itself.
 Real time is the server's clock (`System.GetUnixTime`).

@@ -56,6 +56,15 @@ class RZ_BiteDetector
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The player left: drop everything kept for them.
+	void Forget(int playerId)
+	{
+		m_mLastHealth.Remove(playerId);
+		m_mLastHitAt.Remove(playerId);
+		m_mScratchToldAt.Remove(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Check()
 	{
 		m_fClock += CHECK_SECONDS;

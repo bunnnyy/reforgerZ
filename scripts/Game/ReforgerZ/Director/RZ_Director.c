@@ -50,7 +50,7 @@ class RZ_Director
 
 	//------------------------------------------------------------------------------------------------
 	//! Rough minutes since the outbreak began: the set length of every earlier stage plus
-	//! the time in this one. Used for the broadcast's day count, so it needn't be exact.
+	//! the time in this one. The broadcast's day count falls back on it, so it needn't be exact.
 	float GetTotalMinutes()
 	{
 		float total = m_fStageMinutes;

@@ -389,6 +389,21 @@ class RZ_Seasons
 
 	//------------------------------------------------------------------------------------------------
 	int GetSeason() { return m_iSeason; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Whole real days since this season started, -1 if the clock isn't known.
+	int GetRealDays()
+	{
+		int now = RZ_Guidance.UnixNow();
+		if (m_iStartUnix <= 0 || now <= 0)
+			return -1;
+
+		int elapsed = now - m_iStartUnix;
+		if (elapsed < 0)
+			return 0;
+
+		return elapsed / DAY;
+	}
 	bool IsFresh() { return m_bFresh; }
 	bool IsWipeDue() { return m_bWipeDue; }
 	RZ_HallOfFame GetHall() { return m_Hall; }
@@ -420,25 +435,41 @@ class RZ_Seasons
 
 	// ================================================================ Start
 	//------------------------------------------------------------------------------------------------
-	//! Before the state loads: a wipe that came due last time (wipe.json) is carried out now. The
-	//! old state.json is copied to state_season<N>.json first. True = start fresh.
-	static bool TakeWipeMarker()
+	//! Before the state loads: a wipe that came due last time (wipe.json), or one by hand (Wipe on
+	//! start), is carried out now. The old state.json is copied to state_season<N>.json first.
+	//! True = start fresh; wipedSeason is the wiped season's number (0 if unknown), so the next
+	//! one numbers itself after it even with the hall of fame off.
+	static bool TakeWipe(bool byHand, out int wipedSeason)
 	{
+		wipedSeason = 0;
 		RZ_WipeMarker marker = LoadMarker();
-		if (!marker || !marker.pending)
+		bool due = marker && marker.pending;
+		if (!due && !byHand)
 			return false;
+
+		string reason = "Wipe on start";
+		if (due)
+		{
+			wipedSeason = marker.season;
+			reason = marker.reason;
+		}
 
 		RZ_SaveData old = RZ_Persistence.Load();
 		if (old)
 		{
-			string backup = RZ_Persistence.BackupPath(Math.Max(marker.season, old.seasonNumber));
+			wipedSeason = Math.Max(wipedSeason, old.seasonNumber);
+			string backup = RZ_Persistence.BackupPath(wipedSeason);
 			RZ_Persistence.SaveTo(old, backup);
 			RZ_Log.Info("Season wipe: the old state was copied to " + backup + ".");
 		}
 
-		marker.pending = false;
-		SaveMarker(marker);
-		RZ_Log.Info(string.Format("Season wipe carried out (%1). A fresh outbreak starts.", marker.reason));
+		if (due)
+		{
+			marker.pending = false;
+			SaveMarker(marker);
+		}
+
+		RZ_Log.Info(string.Format("Season wipe carried out (%1). A fresh outbreak starts.", reason));
 		return true;
 	}
 
@@ -493,15 +524,16 @@ class RZ_Seasons
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! After the state loaded (or didn't). A fresh season numbers itself after the last one and
-	//! takes the last winner's rules; a loaded one keeps its own. Then the rule sets are combined.
-	void Begin(bool loaded, RZ_SeasonRecord last)
+	//! After the state loaded (or didn't). A fresh season numbers itself after the last one (the
+	//! hall of fame, the last season record or the save just wiped) and takes the last winner's
+	//! rules; a loaded one keeps its own. Then the rule sets are combined.
+	void Begin(bool loaded, RZ_SeasonRecord last, int wipedSeason)
 	{
 		m_bFresh = !loaded;
 		int now = RZ_Guidance.UnixNow();
 		if (m_bFresh)
 		{
-			int previous = m_Hall.GetSeason();
+			int previous = Math.Max(m_Hall.GetSeason(), wipedSeason);
 			if (last)
 				previous = Math.Max(previous, last.season);
 
@@ -600,6 +632,10 @@ class RZ_Seasons
 			foreach (RZ_Settlement c : list)
 			{
 				if (c.m_fInfection <= SAFE_TOWN_INFECTION || c.m_bHasLab)
+					continue;
+
+				// A lab placed in the world doesn't mark its town
+				if (m_GM.HasLab() && RZ_Util.DistXZ(c.m_vCenter, m_GM.GetLabPosition()) <= c.m_fRadius)
 					continue;
 
 				if (!best || c.m_fInfection < best.m_fInfection)
