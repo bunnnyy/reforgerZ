@@ -56,6 +56,25 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_Decontamination);
 		mgr.RegisterType(RZ_Mission_LabDefence);
 
+		// Puzzle missions (Puzzles/), each a contract from one faction
+		mgr.RegisterType(RZ_Mission_NumbersStation);
+		mgr.RegisterType(RZ_Mission_TwoBearings);
+		mgr.RegisterType(RZ_Mission_PacesFromTheTower);
+		mgr.RegisterType(RZ_Mission_HotAndCold);
+		mgr.RegisterType(RZ_Mission_TheRat);
+		mgr.RegisterType(RZ_Mission_PatientZeroLedger);
+		mgr.RegisterType(RZ_Mission_PoisonedWell);
+		mgr.RegisterType(RZ_Mission_SmugglersLedger);
+		mgr.RegisterType(RZ_Mission_ClockworkHorde);
+		mgr.RegisterType(RZ_Mission_TimeLockSafe);
+		mgr.RegisterType(RZ_Mission_BellOrder);
+		mgr.RegisterType(RZ_Mission_LightsInTheWindow);
+		mgr.RegisterType(RZ_Mission_JunctionBoxes);
+		mgr.RegisterType(RZ_Mission_WeighingVault);
+		mgr.RegisterType(RZ_Mission_LastExperiment);
+		mgr.RegisterType(RZ_Mission_SilentVillage);
+		mgr.RegisterType(RZ_Mission_TheWitness);
+
 		// World events
 		mgr.RegisterType(RZ_Event_Airdrop);
 		mgr.RegisterType(RZ_Event_CrashedHelicopter);

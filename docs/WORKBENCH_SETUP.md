@@ -21,7 +21,27 @@ grep -rn "VERIFY" Scripts/
 Each one is an engine API whose exact name or signature I couldn't confirm
 for the current game version. Usually the fix is a rename. Look up the class in
 the Script Editor or in the [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
-They're isolated in small helpers, mostly in `Core/RZ_Util.c`.
+They're isolated in small helpers, mostly in `Core/RZ_Util.c`. There are 56 of them
+(one is the comment in `RZ_Util.c` that explains them).
+
+The riskiest ones in the puzzle missions (`Puzzles/`):
+
+- **`[RplProp]` on a `ScriptComponent`** (`RZ_ClueComponent`, `RZ_PuzzleObjectComponent`,
+  `RZ_BlinkLightComponent`): replicated action labels, keypad display and Morse light state.
+  The prefab needs an `RplComponent`. If labels don't replicate, the actions fall back to
+  the labels set on the prefab and all slots stay visible, so puzzles still work, just with
+  generic labels ("Use", "Choose").
+- **Time of day** (`RZ_GameTime.GetHour()`: `ChimeraWorld.GetTimeAndWeatherManager().GetTimeOfTheDay()`).
+  If it returns -1, the three night/clock missions never appear.
+- **Landmark names** (`RZ_Util.GetPrefabName()`): the prefab name, else the mesh name, of map
+  buildings. If neither works, puzzles use the fallback landmark prop.
+- **Scale weight** (`RZ_ScaleHelper`: `BaseInventoryStorageComponent.GetAll()` and
+  `InventoryItemComponent.GetTotalWeight()`). If the weight is wrong, turn on
+  **Scale counts items** on the game mode.
+- **Horde redirect** (`RZ_Util.RedirectGroup()`: `GetWaypoints`/`RemoveWaypoint`) for The Clockwork Horde.
+- **Light visibility** (`SetFlags`/`ClearFlags(EntityFlags.VISIBLE)`): if it doesn't hide the
+  lamp, remove `RZ_BlinkLightComponent` from the lamp prefab; the light is then spawned and
+  deleted for each flash instead (slower Morse).
 
 Two files can simply be deleted if they won't compile, because nothing else depends on them:
 
@@ -132,6 +152,58 @@ Characters already have an `EventHandlerManagerComponent`, and ReforgerZ listens
 its `OnProjectileShot` event for gunfire heat. Nothing to add. Suppressors are detected by
 attachment prefab names containing "suppress" or "silenc"; **Suppressed heat mult** sets how
 much quieter they are.
+
+### Puzzle prefabs
+
+These enable the 17 puzzle missions ([MISSIONS.md](MISSIONS.md), "Puzzle missions"). Slots are
+under **Puzzles** on `RZ_GameModeComponent`. Every prefab with an action list needs an
+`ActionsManagerComponent`, and every prefab with an `RZ_` component needs an `RplComponent`.
+
+The **generic puzzle object** is the workhorse. Missions label its actions ("Seal the well",
+"Accuse Mirek", "Flip switch B2") and hide the slots they don't use, so one prefab can be a
+well, a bell, a fuse box, a radio mast, a safe, a person or a decision. The specific slots are
+optional and only change the look: give them the same components and actions.
+
+| Prefab | Base | Add | Slot | Needed by |
+|---|---|---|---|---|
+| `RZ_Note.et` | a paper or notebook prop | `RZ_ClueComponent`, `RZ_ReadClueAction` | Puzzles > Note | every puzzle except Hot and Cold (needs no prefab), The Rat, The Clockwork Horde and Time-Lock Safe |
+| `RZ_PuzzleObject.et` | a crate, sign or post | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`, `RZ_ReadClueAction`, 4 × `RZ_PuzzleUseAction` (values 0-3), 4 × `RZ_PuzzleChoiceAction` (options 0-3) | Puzzles > Puzzle object | most puzzles (fallback for the rows below marked *generic*) |
+| `RZ_Keypad.et` | a keypad or wall panel | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`, `RZ_ReadClueAction`, 12 × `RZ_KeypadAction` (keys 0-9, 10 = Clear, 11 = Enter) | Puzzles > Keypad | The Last Experiment (keypad mode) |
+| `RZ_Terminal.et` | a computer prop | same as the keypad | Puzzles > Terminal (falls back to the keypad) | The Last Experiment |
+| `RZ_PuzzleBody.et` | a body or body bag prop | `RZ_ClueComponent`, `RZ_ReadClueAction` | Puzzles > Body (falls back to the note) | Paces, Patient Zero's Ledger, Poisoned Well, Last Experiment, The Witness |
+| `RZ_Well.et` | a well | as the generic object | Puzzles > Well (*generic*) | The Poisoned Well |
+| `RZ_Bell.et` | a bell on a frame | as the generic object | Puzzles > Bell (*generic*) | The Bell Order |
+| `RZ_FuseBox.et` | an electrical box | as the generic object | Puzzles > Fuse box (*generic*) | Junction Boxes |
+| `RZ_RadioMast.et` | an antenna mast | as the generic object | Puzzles > Radio mast (*generic*) | The Numbers Station |
+| `RZ_Safe.et` | a safe | as the generic object | Puzzles > Safe (*generic*) | Time-Lock Safe |
+| `RZ_Civilian.et` | a civilian character (no AI needed) or a seated figure prop | as the generic object | Puzzles > Civilian (*generic*) | The Rat (boss and suspects), The Witness |
+| `RZ_ScaleCrate.et` | a crate with an inventory storage | as the generic object, plus the storage | Puzzles > Scale crate | The Weighing Vault |
+| `RZ_Landmark.et` | a wayside cross, shrine or painted mast | none | Puzzles > Landmark, plus **Landmark name** (default "the old cross") | fallback when a town has no church, tower or well |
+| `RZ_MorseLamp.et` | a lamp with a light | `RZ_BlinkLightComponent` (or nothing: the lamp is then spawned per flash) | Puzzles > Morse light | Lights in the Window |
+
+Also used if set: **Missions > Helicopter wreck** (Two Bearings tags it as a clue if it has
+`RZ_ClueComponent` + `RZ_ReadClueAction`; otherwise a note lies next to it) and
+**Missions > Red Hand group** (the camp in The Witness). The Clockwork Horde needs the zombie
+**Move waypoint** set.
+
+**Scale counts items** (Puzzles): The Weighing Vault counts items instead of weighing them.
+
+#### Noisemakers
+
+Not a slot: make these items and put them in loot or shops. Each has
+`RZ_NoisemakerComponent` (heat per burst, delay, number of bursts, interval, goes off when
+thrown, deleted after) and, for timed ones, `RZ_ArmNoisemakerAction`. The server checks them on
+its tick, so the noise comes up to one tick after the event.
+
+| Prefab | Base | Settings |
+|---|---|---|
+| `RZ_Bottle.et` | a vanilla grenade, with the explosion removed and a bottle mesh, so it can be thrown | heat 20, on throw, deleted after |
+| `RZ_Firecracker.et` | a small item | heat 15, delay 5 s, 4 bursts 3 s apart, arm action "Light the fuse", deleted after |
+| `RZ_AlarmClock.et` | a clock prop item | heat 10, delay 30 s, 8 bursts 8 s apart, arm action "Wind the alarm", not on throw, kept |
+
+A thrown noisemaker counts when it was carried at one tick and lies at least 4 m from where
+the carrier stood at the next. Other mods (car alarms...) can call
+`RZ_GameModeComponent.ReportNoise(pos, heat)`.
 
 ## 4. Factions and backgrounds
 

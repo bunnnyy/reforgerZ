@@ -48,6 +48,13 @@ Out of scope: sleep and time skipping.
 | Infection timer: turns you when it runs out, cure slows it | `Core/RZ_GameModeComponent.c` | Written |
 | Rotating spawn points in random towns | `Core/RZ_GameModeComponent.c` | Written |
 | Save and load of mode state | `Persistence/RZ_SaveData.c` | Written |
+| Puzzle missions: 17 contracts built on clues, answer actions and wrong-answer consequences | `Puzzles/`, `Puzzles/Missions/` | Written |
+| Readable clues and puzzle objects (keypad, choice, use) with server-side routing | `Puzzles/RZ_PuzzleComponents.c`, `RZ_PuzzleActions.c`, `RZ_PuzzleMission.c` | Written |
+| Noisemakers (thrown or timed heat) and "being noticed" (heat or a zombie too close for too long) | `Puzzles/RZ_Noisemaker.c`, `RZ_RadioStealth.c` | Written |
+| Radio checks (carries a radio or Radio Operator), Morse light, game clock and night detection | `Puzzles/RZ_RadioStealth.c`, `RZ_BlinkingLight.c`, `RZ_GameTime.c` | Written |
+| Landmark finder (church, water tower, well... by prefab name, fallback prop), compass bearings and paces | `Puzzles/RZ_Landmarks.c` | Written |
+| Seeded note text: names, days, personal lines in the Zone's voice | `Puzzles/RZ_NoteText.c` | Written |
+| Zombie-free settlements while a mission runs (The Silent Village) | `Zombies/RZ_ZombieSpawner.c` | Written |
 
 **None of it has been compiled yet.** It was written outside Workbench. Calls
 marked `// VERIFY:` are engine APIs whose exact names can differ between
@@ -81,7 +88,7 @@ and change ReforgerZ systems, so they work with any other mods loaded.
 Two kinds, described in full in [MISSIONS.md](MISSIONS.md):
 
 - **World events** (12 in code) are announced to everyone, and anyone who takes part shares the reward.
-- **Faction contracts** (42 in code) are offered only to players who meet their requirements:
+- **Faction contracts** (42 in code, plus 17 puzzle missions) are offered only to players who meet their requirements:
   tier with the giver, standing with other factions, background, world state and player count.
   There's no "accept" button: eligible players who take part get paid, others get nothing.
   Each player gets at most one new offer a minute, by radio or at the faction's quartermaster.
@@ -89,6 +96,8 @@ Two kinds, described in full in [MISSIONS.md](MISSIONS.md):
 Contracts pay Fame and Favor with the giver, and often Infamy with a rival. *Amends* contracts
 work Infamy off instead while you're Watched. ★ backgrounds get something better (faster
 holds, more Fame). Choice missions end with an item you hand to one of two factions.
+Puzzle missions are solved with clues and answer actions instead of guns; most low-tier ones
+can be done unarmed.
 
 Missions are announced to each player with distance and direction ("1.2 km NE").
 A freshly spawned player hears every world event and the contracts they qualify for.
@@ -137,6 +146,10 @@ The lab is a placed prefab if the mission maker places one. Otherwise it spawns 
 - [x] Antidote as an inventory consumable (`RZ_ConsumableAntidote`, needs checking in Workbench)
 - [x] Suppressors lower gunfire heat (detected from attachment prefab names)
 - [ ] Supply convoy mission (moving target)
+- [x] 17 puzzle missions: navigation, logic, timing and stealth, mechanisms, mysteries
+- [x] Noisemakers and "being noticed" (WORLD.md, unarmed missions)
+- [ ] Make the puzzle prefabs (note, generic puzzle object, keypad, scale crate, Morse lamp, noisemakers) and play-test each puzzle
+- [ ] The other unarmed missions in WORLD.md (Pharmacy Lure, Silent Courier, The Safe Code...) on the puzzle framework
 
 ### Phase 3: factions with teeth
 - [x] Fame / Infamy / Favor, standing tiers, rival Infamy, Champion carry-over

@@ -4,7 +4,7 @@ There are two kinds of missions:
 
 - **World events** (30) are announced to everyone, and anyone can take part.
   They are what makes strangers meet: an airdrop, a horde, a downed helicopter.
-- **Faction contracts** (20 per faction) are offered only to players who
+- **Faction contracts** (20 per faction, plus 17 puzzle missions) are offered only to players who
   qualify, by radio or at the faction's contact. A contract belongs to the
   person or group that accepts it. Others can still turn up and interfere.
 
@@ -204,6 +204,53 @@ Many contracts open up *because* Bastion or the Haven turned on you.
 | 28 | Military Remnant Camp | An abandoned Bastion camp with gear | Taking it gives Bastion Infamy if they're still active |
 | 29 | Wedding Party | A horde in formal wear by a church | Dark humour, good jewellery loot for trading |
 | 30 | Collapse Shelter | A town's shelter is overrun and survivors scatter | Save them before they turn (Haven Fame) |
+
+## Puzzle missions: 17 contracts
+
+Contracts you solve by reading, deducing and sneaking rather than shooting. Most low-tier
+ones can be done unarmed. Each is a normal contract from one faction (requirements, ★,
+Fame and Favor as above), works on any map (it's built from settlements and real landmark
+buildings it finds by prefab name, with a fallback prop), and deletes everything it
+spawned when it ends. Code: `Scripts/Game/ReforgerZ/Puzzles/`.
+
+| # | Puzzle | From | Needs | Bg | What you do | Result |
+|---|---|---|---|---|---|---|
+| 1 | The Numbers Station ✅ | Haven | Any | ★ Radio Op: hears the broadcast without the note or the mast | A radio log gives a frequency. Of three radio masts, one carries it: a voice reading a map grid, every third number a decoy | Fame; stash at the grid |
+| 2 | Two Bearings ✅ | Bastion | Any | ★ Hunter/Soldier: more Fame | Two helicopter wreck pieces have bearings scratched on them. Draw both lines; reach where they cross | Fame; the pilot's kit |
+| 3 | Paces from the Tower ✅ | Haven | Any | ★ Hunter: the paces also in metres | A dead man's note: "From the church, face the water tower, turn right, 400 paces." Built from two real landmarks in the town | Fame; stash |
+| 4 | Hot and Cold ✅ | Haven | Any | ★ Radio Op: numeric signal strength | With a radio, a beacon in the fields sounds faint, clear, loud. Find it within 10 m | Fame; stash |
+| 5 | The Rat ✅ | Red Hand | Known | ★ Police/Ex-Con: more Fame | Three suspects, exactly one lying (generated, always one solution). Point at the rat at the boss | Fame. Wrong: the rat escapes, the mission fails and you get Red Hand Infamy |
+| 6 | Patient Zero's Ledger ✅ | Halcyon | Known, lab exists | ★ Lab Tech/Doctor: the method is spelled out | Ledger (ages, admissions) plus hospital bracelets on three bodies (days of death). Adults die 4 days after the bite, children 2. Name who was first, at the lab | Fame, research. One wrong answer locks it for 5 min; two fail |
+| 7 | The Poisoned Well ✅ | Halcyon | Any | ★ Lab Tech/Nurse: can test the water | Three wells in three villages. A clinic note and a farmer's note each rule one out; a dead courier lies by the poisoned one. Seal it | Fame, small research, that village's infection -10. A wrong seal raises that village's infection; two fail |
+| 8 | The Smuggler's Ledger ✅ | Red Hand | Known | ★ Ex-Con: more Fame | One ledger line is Caesar-shifted. The key is the number on a memorial plaque by the church. The line names a landmark (or an edge) of another town | Fame; stash |
+| 9 | The Clockwork Horde ✅ | Haven | Any | ★ Hunter: harder to notice | A stuck siren wails every 2 min at alternate ends of a town; a horde walks between them through the square. Take the strongbox there without being noticed | Fame; the strongbox. Noticed: the horde turns on you and you must wait a minute |
+| 10 | Time-Lock Safe ✅ | Red Hand | Known | ★ Ex-Con: window twice as long | A bank safe opens only at 03:00 game time, for 20 min. Opening it is loud (heat and a horde) | Fame; the safe's contents. Offered only when 03:00 is at most 3 real hours away |
+| 11 | The Bell Order ✅ | Haven | Known | ★ Elder: more Fame | Ring three village church bells in the order on a hymn sheet at the safehouse, at most 15 min apart. Doable solo, faster in a group | Fame; heat and infection drop at the safehouse. Wrong bell: a horde at the ringer, start over |
+| 12 | Lights in the Window ✅ | Bastion | Known | ★ Radio Op: also gets the Morse on the radio | At night a lamp in a distant building blinks a code word in Morse. The signal card at the scout post has the alphabet and four code words with meeting places. Reach the right one | Fame; a pack at the meeting place. Offered only at or near nightfall |
+| 13 | Junction Boxes ✅ | Bastion | Any | ★ Mechanic: the note names one more switch | Four fuse boxes, two switches each; every switch flips its own lamp and one or two others (lights-out, shortest fix 3-6 presses). Each box shows its lamps and wiring. Get all eight green | Fame; the substation's contents |
+| 14 | The Weighing Vault ✅ | Haven | Known | ★ Mechanic: reads the needle to 0.1 kg | Put items in a scale crate until they match the weight in a riddle (±0.2 kg). Feedback is "too heavy / too light" | Fame; the vault's contents. *Simplified option:* if the storage weight API doesn't work, the crate counts items instead (game mode setting) |
+| 15 | The Last Experiment ✅ | Halcyon | Trusted | ★ Lab Tech: the screen gives the first letter | Each missing researcher's belongings (4-5 towns) carry one letter of the terminal password. Unscramble it and type it on the keypad (phone letters: 2 = ABC...). Without a keypad prefab, pick it from four words | Big research. Three wrong tries wipe it |
+| 16 | The Silent Village ✅ | Haven | Trusted | ★ Elder: more Fame | A village with no infected at all. Notes, a locked cellar and a list of the missing point under the church. Then choose: **burn it** (infection drops around, a fight), **seal it** (half Fame, nothing happens), or **let Halcyon study it** (Halcyon pays, big research, half the time specials and a horde come up) | Depends on the choice |
+| 17 | The Witness ✅ | Haven | Known | ★ Police: he talks by day too | A Haven courier was killed on a road. A wanderer saw it but only talks at night, at that spot. His story points to a camp (a Red Hand group if that prefab is set). At the camp, **report it to the Haven** (Fame; Red Hand Infamy if their group is there) or **sell it to the Red Hand** (Red Hand Fame, Haven Infamy) | Depends on the choice. Offered only at or near nightfall |
+
+How they work in code:
+
+- **Clues** are notes, bodies, plaques, wreck pieces or people with `RZ_ClueComponent`. Reading
+  one sends its text to that player only. The text lives on the server.
+- **Answers** go through actions on puzzle objects: a keypad (`RZ_KeypadAction`), choices
+  (`RZ_PuzzleChoiceAction`: accuse, decide) and uses (`RZ_PuzzleUseAction`: ring, seal, flip,
+  tune, take). One generic object prefab serves every puzzle; the mission sets the action labels.
+- **Wrong answers** cost something: heat, a horde, a lock-out timer, infection, Infamy or failure.
+- **Being noticed** (Clockwork Horde): heat where you stand above a threshold, or a zombie within
+  12 m of you for more than 6 s.
+- **Noisemakers** (bottle, firecracker, alarm clock) add heat where they land or when their timer
+  runs out. They're general items, not tied to one mission.
+- **Night**: missions that need the dark only appear at or near nightfall and last until dawn
+  (at most 3 hours). Time is never skipped; the clock speed is measured on the server.
+- Rewards are what you find at the end (a stash, a safe, a vault) plus Fame, Favor or research.
+  Clue and object positions are given as town names and grid references.
+- Missions turn themselves off when a prefab they need is missing: see
+  [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "Puzzle prefabs".
 
 ## Character-type summary
 

@@ -195,7 +195,7 @@ class RZ_NoteText
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "A dozen", "the fingers on one hand"... for small riddles. Returns false if no phrase.
+	//! "a dozen", "the fingers on one hand"... for small riddles; the plain number if there is no phrase.
 	static string NumberPhrase(int n)
 	{
 		switch (n)
