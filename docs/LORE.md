@@ -1,5 +1,8 @@
 # Setting: The Zone
 
+The story, the people and the voice of ReforgerZ. How the systems work is in
+[DESIGN.md](DESIGN.md); what each faction gives and takes is in [REPUTATION.md](REPUTATION.md).
+
 ## The premise
 
 Eleven days ago something got out. Within forty-eight hours the government
@@ -12,9 +15,9 @@ The official broadcast still loops on every frequency:
 > *"This area is under federal quarantine. Remain indoors. Do not approach the
 > perimeter. Aid is on its way."*
 
-Aid is not on its way. Nothing comes in, and nothing ever will. You're a civilian who was here when the gates
-closed. Everyone in the Zone is stuck in it together: the soldiers who were
-left inside, the people who used to live here, the criminals who were glad
+Aid is not on its way. Nothing comes in, and nothing ever will. You're a civilian who was
+here when the gates closed. Everyone in the Zone is stuck in it together: the soldiers who
+were left inside, the ordinary people who happened to be here, the criminals who were glad
 of the chaos, and the scientists who might be the only way out.
 
 **The only way the quarantine ends is a cure.**
@@ -24,15 +27,82 @@ of the chaos, and the scientists who might be the only way out.
 | System | In the Zone |
 |---|---|
 | Map edge | **The Perimeter.** An unseen cordon: drones, loudspeakers and snipers you never see. Get close and you're warned. Keep going and you're shot. |
-| Task Force Bastion | Soldiers who were inside when the order came. Command left them here to "hold the line", and now they're as trapped as you. Some still follow orders; some are starting to wonder whose side they're on. |
-| The Haven | Locals who refuse to give up their homes, and people helping each other because nobody outside will. |
+| Task Force Bastion | Soldiers who were inside when the order came. Command left them here to "hold the line", and now they're as trapped as you. |
+| The Haven | Ordinary people stuck in the Zone who decided to help each other, because nobody outside will. |
 | The Red Hand | People who figured out that inside the Zone there are no laws, only whoever has the guns. |
-| Halcyon | A research team that was studying the outbreak site before the lockdown. They're the only ones who can prove the Zone is safe, so the world outside will lift the quarantine. |
+| Halcyon | A research team that was studying the outbreak site before the lockdown. Only they can prove the Zone is safe, so the world outside will lift the quarantine. |
 | Outbreak stages | How long the Zone has been sealed. |
 | Last Helicopter | Bastion's one working helicopter, shuttling between its own bases *inside* the Zone. Nobody outside resupplies anyone, Bastion included. |
-| Loot | Nothing is dropped in from outside. **There are no supply drops.** Everything you have, you scavenged, earned or took. |
+| Loot | Nothing comes in from outside. Everything you have, you scavenged, earned or took. |
 | Supply trucks | Everything that moves inside the Zone moves by road. A lost truck means empty shelves. |
 | The cure | Not just a cure: it's **proof**. Deliver it and the quarantine is lifted. |
+
+## The factions, as people
+
+### The Haven
+
+The Haven are the people who happened to be here: a bus driver whose route ended at a
+roadblock, a coach of tourists, a teacher with the eleven kids from her class trip, a
+night-shift nurse, farmers, retirees. Nobody planned a faction.
+
+It started with strangers. On day two someone forced the doors of a school gym and let
+people sleep there. On day four a priest opened his church. Word went round by radio and
+by notes on doors, and more places opened. The Haven is **a network, not an army**: a
+handful of safehouses that talk to each other. The rule for getting in is simple: *you get
+in if you're willing to help.*
+
+**How a safehouse runs.** A council runs each one: whoever stepped up, usually the person
+who opened the door. Every house keeps the same rules:
+
+- You can carry and draw your weapon. **You don't fire it** near the house.
+- **Everyone works**: watch, water, cooking, burying.
+- **Declare your bite.** Say it out loud, and the house will help if it can.
+
+**The hard edges.** The Haven is kind, and it is also frightened and hungry. It has a
+little dark side that nobody talks about:
+
+| What they don't say out loud | What it means | Where it shows in play |
+|---|---|---|
+| **The List** | Every house keeps a list of names. Some are quietly crossed out, and nobody says why. | Rumours and notes |
+| **"Walking someone out"** | What happens to someone who declared a bite. It differs by house: in one they sit with you until the end; in another someone walks you to the edge of town at dusk and comes back alone. | The Walk Him Out contract |
+| **"Mouths"** | When food runs low, people who can't work become "mouths", and mouths get smaller portions. | Half portions in the news; the Quiet Congregation arc |
+| **Exile** | Break the rules badly enough and you're put out at night, without your weapon. | Exile when the Haven hunts you |
+| **Quiet arrangements** | Some houses pay the Red Hand to be left alone. Sometimes the price is a stranger: someone the house turned out, and where to find them. | A Quiet Arrangement; a hungry house selling an exile's location |
+| **"Borrowing"** | Taking from houses that weren't empty. Taking from a better-fed safehouse. Always in quotes. | Haven gossip in the news |
+
+**How they see the others:**
+
+- **Bastion** is useful and frightening. They have medicine and guns, and they have orders.
+- **The Red Hand** were ordinary people once. Some of them used to come to the same church.
+- **Halcyon** calls the infected "samples". The Haven calls them by name when it can.
+
+**Voice:** warm, worried, practical, sometimes darkly funny. *"Bring water if you can. Bring
+yourself either way."*
+
+### Task Force Bastion
+
+Soldiers who were on exercise or on guard inside the line when the order came. Command
+told them to hold the line and stopped answering. They still run checkpoints, still keep
+a duty roster, still call Command on the radio every night. Some still follow orders.
+Some are starting to wonder whose side they're on.
+
+**Voice:** clipped, procedural, tired.
+
+### The Red Hand
+
+People who stopped pretending. Some were criminals before; most were mechanics, drivers and
+bored young men who noticed that nobody was coming. They take tolls on the roads, run a
+black market and sell protection. They don't care who you were. They care who you've crossed.
+
+**Voice:** mocking and casual. They laugh at Bastion on the open channel.
+
+### Halcyon
+
+A research team that was at the outbreak site before the lockdown. They run the only lab.
+They pay for samples, they need guards, and they know more about how this started than they
+say. A cure is their way out, and everyone's.
+
+**Voice:** precise, a bit cold, sometimes guilty.
 
 ## Who's in charge
 
@@ -51,48 +121,24 @@ their own side gives them either:
 - **Rogue** ones work around or against their stronghold: side deals with rivals,
   skimming, jobs nobody is supposed to know about.
 
-No faction ever splits. The stronghold leaders are always loyal to their own cause, they
-never fall, and a rogue place is reined in, replaced or comes back on its own. Outpost
-and safehouse leaders are ordinary people: they get bitten, they die in raids, and
-someone new takes the chair. How this works in play is in [REPUTATION.md](REPUTATION.md),
-"Faction leaders".
+No faction ever splits. The stronghold leaders are always loyal to their own cause, and
+they never fall. Outpost and safehouse leaders are ordinary people: they get bitten, they
+die in raids, and someone new takes the chair. How this works in play is in
+[REPUTATION.md](REPUTATION.md), "Faction leaders".
 
 ## The Perimeter
 
-The edge of the playable world is the Perimeter on any map. It's worked out from
-the map's bounds and coastline, so nothing needs to be placed by hand. **The
-cordon is never seen**, only felt. Nothing is built around the edge.
+The edge of the map is the quarantine line. **The cordon is never seen**, only felt:
+a drone that drops down over you, a loudspeaker telling you to turn back, a warning shot,
+then a sniper you never see. Where the main roads leave the Zone, they end in concrete
+blocks and a closed barrier with guards behind it. Nobody passes, in either direction,
+ever. There are no papers, bribes or deals.
 
-- **Warning zone** (about 300 m from the edge): a drone appears above *you*,
-  follows you, and a loudspeaker voice says
-  *"You are approaching the quarantine line. Turn back."* The drone leaves when you do.
-  There's never more than one drone per player near the edge, and none anywhere else.
-- **Kill zone** (about 100 m): one warning shot (a sound and a near miss), then you're
-  shot by a sniper you never see.
-- **Road checkpoints, fully sealed:** the only built part of the cordon. Where main
-  roads leave the map (up to 8 per map; island maps may have none), the road ends in concrete blocks
-  and a closed barrier, with guards behind it. They are **not** a way through:
-  - Nobody passes in either direction, ever. There are no papers, bribes, trades or talking.
-  - Within about 150 m, the loudspeaker warns you. Closer than about 60 m, the guards shoot.
-  - They're scenery that says *the roads are closed for good*, and they're
-    sealed the same way as the rest of the line. The guards are outside the playable area,
-    so they can't be killed or looted.
-  - They can be turned off per server.
-- **No escape.** There's no "get out" win. Your character's story ends inside the Zone.
-
-### Missions that use the Perimeter (no fence assets)
-
-- **The Blind Spot** (Red Hand). The drones run a rotation, and for ten minutes a
-  night one stretch of the edge isn't covered. The Red Hand knows when and where. Inside the
-  window, meet a smuggler from the other side, waiting just inside the line, and get the package
-  to the Red Hand before coverage returns. Arrive late or stay too long and the kill zone is live again.
-- **The Crossing** (Haven). Someone outside is getting medicine in: at night, a sealed
-  package is left at the waterline or at the treeline right at the edge. Get in, grab it and
-  get out of the warning zone before the drone locks on (the "being noticed" timer).
-- **Shot at the Line** (any). A body lies in the warning zone with papers on them.
-  Recover them without crossing into the kill zone.
-
-These are the only links to the outside, and they're rare and dangerous on purpose.
+There's no escape. Your character's story ends inside the Zone. The only links to the
+outside are rare and dangerous: a gap in the drones' rotation the Red Hand knows about, a
+medicine package someone outside leaves at the waterline, a body at the line with papers on it.
+How the line works is in [DESIGN.md](DESIGN.md), "The Perimeter"; the three missions are in
+[MISSIONS.md](MISSIONS.md), "Perimeter missions".
 
 ## The outside world: silent, watching
 
@@ -111,23 +157,30 @@ the Zone. It's flavour only, with no mechanics behind it:
 | Long stall | *"The perimeter will be maintained indefinitely."* |
 | Cure breakthroughs | *"Reports of research inside the zone are being evaluated."* |
 
-## Endings (per season)
+## Endings
 
-The season ends one way: **the cure is finished**. Then the quarantine is
-lifted and the gates open. The faction with the most Fame controls how the cure
-is released (see REPUTATION.md), which sets the tone of the next season.
+A season ends one way: **the cure is finished** and the final stand at the lab is held.
+The quarantine is lifted and the gates open. The cure goes to the faction the server gave
+the most Fame this season, and that faction decides how it reaches people:
 
-Urgency comes from inside. The outbreak keeps slowly getting worse
-(stages, spread, adaptation) until the cure is done. There's no outside deadline.
+| Cure goes to | Aftermath | Next season starts with (planned) |
+|---|---|---|
+| The Haven | The cure spreads person to person. Towns rebuild. | More safe towns, more Haven safehouses |
+| Bastion | Martial law. The cure only reaches those who comply. | Strong checkpoints, curfew, more military loot |
+| The Red Hand | The cure is sold to the highest bidder. | Lawless roads, the black market everywhere |
+| Halcyon | The cure is published openly. | Lower infection everywhere, more specials (they adapt) |
 
-Even a win doesn't mean leaving: the next season is a new outbreak, in a new Zone.
+Urgency comes from inside: the outbreak keeps slowly getting worse (stages, spread,
+adaptation) until the cure is done. Even a win doesn't mean leaving: the next season is a
+new outbreak, in a new Zone.
 
 ## Tone
 
 - **Bleak but human.** The world is cruel. People are what make it worth surviving.
 - **No heroes from outside.** No one is coming. The broadcasts are lies or useless.
 - **Ordinary people.** You're a nurse, a mechanic, a kid out of work. Not a commando.
-- **Small stories.** A note on a fridge, a radio message cut off, a body near the wire.
+- **Small stories.** A note on a fridge, a radio message cut off, a body near the line.
+- **Nobody is a villain.** Every faction does something ugly for a reason you can understand.
 
 ## Writing guide
 
@@ -136,7 +189,7 @@ Even a win doesn't mean leaving: the next season is a new outbreak, in a new Zon
 - **Notes** are personal and specific: names, places in the town they're found in, and mistakes.
 - **Faction voices:**
   - **Bastion:** clipped, procedural, tired.
-  - **Haven:** warm, worried.
+  - **Haven:** warm, worried, practical, sometimes darkly funny.
   - **Red Hand:** mocking and casual.
   - **Halcyon:** precise, a bit cold, sometimes guilty.
 - **Open channels** on the radio are people, not institutions. The Haven's is a tired woman:
@@ -159,6 +212,7 @@ Even a win doesn't mean leaving: the next season is a new outbreak, in a new Zon
   Corporal Weber outside Morton. No salute: they're saving ammunition."*
 - **Haven gossip** is about food, never blame: *"The safehouse in Levie has gone to half portions.
   The children eat first."* When a hungry house takes from a fed one, it's *"borrowed"*, in quotes.
+  The Haven's dark side is always said sideways, never announced.
 - **Players on the radio station** pick a preset, and it reads like a person: their name, one real
   place, one request. *"This is Mara. There's a horde moving around Morton. Stay clear of it."*
 - **Leaders** speak in their faction's voice, coloured by their traits: a Greedy one talks
