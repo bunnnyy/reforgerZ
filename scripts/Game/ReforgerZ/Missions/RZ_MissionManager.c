@@ -169,6 +169,8 @@ class RZ_MissionManager
 			return false;
 		}
 
+		// Briefs often open with a place or a name ("the chemist's in ...")
+		mission.m_sBrief = RZ_Util.Capitalize(mission.m_sBrief);
 		m_aActive.Insert(mission);
 		m_fSpotsAt = -1; // its props count from now
 		OnStarted(mission);

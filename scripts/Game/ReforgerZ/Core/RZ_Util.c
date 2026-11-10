@@ -259,6 +259,9 @@ class RZ_Util
 		idx = idx % 8;
 
 		float dist = DistXZ(from, to);
+		if (dist < 15)
+			return "right here";
+
 		if (dist < 1000)
 			return string.Format("%1 m %2", RoundToInt(dist / 10) * 10, names[idx]);
 
@@ -378,6 +381,18 @@ class RZ_Util
 		}
 
 		return BaseContainerTools.CreateInstanceFromContainer(holder.GetResource().ToBaseContainer());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The text with its first letter upper-case (for sentences that start with a name or a place).
+	static string Capitalize(string text)
+	{
+		if (text.IsEmpty())
+			return text;
+
+		string first = text.Substring(0, 1);
+		first.ToUpper();
+		return first + text.Substring(1, text.Length() - 1);
 	}
 
 	//------------------------------------------------------------------------------------------------

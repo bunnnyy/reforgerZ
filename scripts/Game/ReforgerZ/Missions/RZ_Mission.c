@@ -406,7 +406,7 @@ class RZ_Mission
 			bool wasRough = RoughByStanding(gm, playerId);
 			m_aExactFor.Insert(playerId);
 			if (wasRough && m_aOfferedTo.Contains(playerId))
-				gm.NotifyPlayer(playerId, m_sTitle, "This is the place. " + GetWhereText(gm, p.GetOrigin()));
+				gm.NotifyPlayer(playerId, m_sTitle, "This is the place. " + RZ_Util.Capitalize(GetWhereText(gm, p.GetOrigin())));
 		}
 	}
 
@@ -558,7 +558,7 @@ class RZ_Mission
 		if (s)
 			return s.m_sName;
 
-		return RZ_SettlementScanner.GridReference(m_vPos);
+		return "grid " + RZ_SettlementScanner.GridReference(m_vPos);
 	}
 
 	// ================================================================ Helpers for mission types
