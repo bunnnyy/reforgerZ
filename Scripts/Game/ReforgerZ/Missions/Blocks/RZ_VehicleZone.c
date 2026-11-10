@@ -189,7 +189,6 @@ class RZ_ConvoyWatch
 	vector m_vResultPos;
 	string m_sFrom;
 	string m_sTo;
-	protected RZ_SupplyTruck m_Truck;
 	protected bool m_bFound;
 
 	//------------------------------------------------------------------------------------------------
@@ -228,13 +227,24 @@ class RZ_ConvoyWatch
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The truck on the road, once it has left (null before and after).
-	RZ_SupplyTruck GetTruck()
+	//! The truck on the road, once it has left (null before and after). Looked up each time:
+	//! the supply system owns it and may drop it at any tick.
+	RZ_SupplyTruck GetTruck(RZ_GameModeComponent gm)
 	{
-		if (!m_bFound || !m_Truck || m_Truck.m_bDone)
+		if (!m_bFound || m_iResult >= 0 || !gm.GetSupply())
 			return null;
 
-		return m_Truck;
+		RZ_SupplyTruck t = gm.GetSupply().GetActiveTruck(m_iFaction);
+		if (!IsOurs(t) || t.m_bDone)
+			return null;
+
+		return t;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsOurs(RZ_SupplyTruck t)
+	{
+		return t && t.m_bConvoy && t.m_iDestKind == RZ_SupplyLines.KIND_OUTPOST && t.m_iDestIndex == m_iHolding;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -249,12 +259,8 @@ class RZ_ConvoyWatch
 		if (m_bFound || !gm.GetSupply())
 			return;
 
-		RZ_SupplyTruck t = gm.GetSupply().GetActiveTruck(m_iFaction);
-		if (!t || !t.m_bConvoy || t.m_iDestKind != RZ_SupplyLines.KIND_OUTPOST || t.m_iDestIndex != m_iHolding)
-			return;
-
-		m_Truck = t;
-		m_bFound = true;
+		if (IsOurs(gm.GetSupply().GetActiveTruck(m_iFaction)))
+			m_bFound = true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -273,7 +279,7 @@ class RZ_ConvoyWatch
 	//! Where the truck is now (or where it ended up).
 	vector GetPos(RZ_GameModeComponent gm)
 	{
-		RZ_SupplyTruck t = GetTruck();
+		RZ_SupplyTruck t = GetTruck(gm);
 		if (t && t.m_Vehicle)
 			return t.m_Vehicle.GetOrigin();
 

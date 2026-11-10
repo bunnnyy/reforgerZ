@@ -418,7 +418,7 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 			return;
 		}
 
-		RZ_SupplyTruck t = m_Watch.GetTruck();
+		RZ_SupplyTruck t = m_Watch.GetTruck(gm);
 		if (!t)
 		{
 			m_fWaiting += dt;

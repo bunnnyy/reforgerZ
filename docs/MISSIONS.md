@@ -46,7 +46,8 @@ How the code does it:
 - **Needs and morale** make matching contracts more likely ([REPUTATION.md](REPUTATION.md),
   "Morale, needs, truces and feuds").
 - **Supply trucks aren't contracts.** Escorting, driving in or stealing one pays directly
-  ([DESIGN.md](DESIGN.md), "Supply trucks").
+  ([DESIGN.md](DESIGN.md), "Supply trucks"). Convoy Escort and Hijack the Convoy ask for
+  Bastion's next real truck, so those truck rewards are paid on top of the contract.
 - **Rescues** add population at the nearest Haven safehouse ([DESIGN.md](DESIGN.md), "Haven safehouses").
 
 **Reading the tables:**
@@ -145,8 +146,6 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 20 | Take the Lab | Champion, final stand running | | Hold the lab's clean room for 90 s during the final stand while the crew steals the batch | Huge Fame (Halcyon Infamy); the final stand ends, research drops to 90%, two doses reach the black market | ✅ *reframed: the batch is stolen, which only delays the cure. The lab never falls and nobody wins the cure by taking it* |
 
 **Amends:** Fence the Goods works off Red Hand Infamy. Paying the fence a Favor "tax" is planned.
-Hijack the Convoy and Convoy Escort use Bastion's real supply truck, so the truck's own escort
-and theft rewards ([DESIGN.md](DESIGN.md), "Supply trucks") are paid on top.
 
 ### Halcyon
 

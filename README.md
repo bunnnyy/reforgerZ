@@ -16,7 +16,7 @@ and one way to end it: **research the cure.**
   to town and sends hordes toward noise. The infected adapt a little as the cure advances.
 - **Four factions that remember you**: the Haven, Task Force Bastion, the Red Hand and Halcyon.
   Fame and Infamy unlock quartermaster shops and perks, or bring hunter squads, bounties and AI
-  that shoots *you* and nobody else.
+  that shoots *you* and nobody else. A faction's uniform gets you past its people, until you're caught.
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
