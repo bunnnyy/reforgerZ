@@ -12,7 +12,8 @@
 //!     around, and shot at (a few minutes' hostility) if they come on.
 //! - Surrender: a player with Bastion Infamy (Watched or Hunted) who walks up to a Bastion
 //!   checkpoint with no firearm and waits gives themselves up: searched, a little Bastion Infamy
-//!   off (once an hour), and Bastion's AI holds its fire for five minutes.
+//!   off (once an hour), and Bastion's AI holds its fire for five minutes. A Hunted player walking
+//!   up unarmed isn't shot while they come in (a short stand-down, renewed while they do).
 //! - Camps: a faction's outposts and stronghold warn off players it watches and turn them away at
 //!   the gate; armed and coming on after the warning, they're fired on for a few minutes.
 //! - Safe zones: strongholds and the lab. Entering one, you're told the rule; firing inside one
@@ -158,6 +159,7 @@ class RZ_Checkpoints
 	protected static const float GATE_GAP = 180;
 	protected static const float SHOT_GAP = 20;
 	protected static const float DEFEND_RADIUS = 40;
+	protected static const float HANDS_UP_SECONDS = 15;	// a Hunted player walking up unarmed: they hold fire this long, renewed each tick
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Checkpoints(RZ_GameModeComponent gm, RZ_CheckpointSettings settings)
@@ -492,6 +494,11 @@ class RZ_Checkpoints
 				m_GM.NotifyPlayer(playerId, title, "A loudhailer: \"Checkpoint. Walk to the barrier and wait to be searched. Leave once you're there and we'll treat it as running.\"");
 		}
 
+		// Hunted but coming in with empty hands: they hold their fire while you walk up and wait
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (hunted && canSurrender && hostility && dist <= m_Settings.m_fWarnRadius)
+			hostility.StandDown(playerId, RZ_EFaction.MILITARY, HANDS_UP_SECONDS, false);
+
 		if (dist <= m_Settings.m_fStopRadius)
 		{
 			c.m_bAtBarrier = true;
@@ -524,7 +531,6 @@ class RZ_Checkpoints
 		{
 			c.m_bPunished = true;
 			m_GM.AddInfamy(playerId, RZ_EFaction.MILITARY, m_Settings.m_iRunInfamy);
-			RZ_Hostility hostility = m_GM.GetHostility();
 			if (hostility)
 				hostility.AddGrudge(playerId, RZ_EFaction.MILITARY, post.m_vPos);
 
@@ -554,7 +560,7 @@ class RZ_Checkpoints
 		m_GM.AddInfamy(playerId, RZ_EFaction.MILITARY, -amount);
 		RZ_Hostility hostility = m_GM.GetHostility();
 		if (hostility)
-			hostility.StandDown(playerId, RZ_EFaction.MILITARY, m_Settings.m_fStandDownSeconds);
+			hostility.StandDown(playerId, RZ_EFaction.MILITARY, m_Settings.m_fStandDownSeconds, true);
 
 		m_GM.NotifyPlayer(playerId, title, string.Format("You go down on your knees with your hands where they can see them. A search, an hour's talk about the rules, a name in a book. Then they let you go. Bastion Infamy -%1. They'll hold their fire for %2 minutes: use them.",
 			amount, Math.Max(1, RZ_Util.RoundToInt(m_Settings.m_fStandDownSeconds / 60))));
@@ -680,7 +686,7 @@ class RZ_Checkpoints
 			return;
 		}
 
-		if (m_Settings.m_bSafeZones && safeZone && dist <= m_Settings.m_fSafeZoneRadius && Tell(playerId, place, "rule", TELL_GAP * 1.5))
+		if (m_Settings.m_bSafeZones && safeZone && f != RZ_EFaction.SURVIVORS && dist <= m_Settings.m_fSafeZoneRadius && Tell(playerId, place, "rule", TELL_GAP * 1.5))
 			m_GM.NotifyPlayer(playerId, title, RZ_FactionVoice.SafeZoneRule(f));
 	}
 

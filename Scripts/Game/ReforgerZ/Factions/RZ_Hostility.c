@@ -217,14 +217,22 @@ class RZ_Hostility
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A surrender (RZ_Checkpoints): the faction's AI holds its fire on this player for `seconds`,
-	//! whatever their standing, fights or grudges say. Their fights with it are forgotten.
-	void StandDown(int playerId, RZ_EFaction faction, float seconds)
+	//! The faction's AI holds its fire on this player for `seconds`, whatever their standing, fights
+	//! or grudges say (RZ_Checkpoints: walking up unarmed to surrender, then the surrender itself).
+	//! With forgive, their grudges and fights with it are dropped for good.
+	void StandDown(int playerId, RZ_EFaction faction, float seconds, bool forgive)
 	{
 		if (playerId <= 0 || !RZ_Factions.IsValid(faction))
 			return;
 
-		m_mStandDown.Set(string.Format("%1:%2", playerId, faction), m_fClock + seconds);
+		string key = string.Format("%1:%2", playerId, faction);
+		float until;
+		if (!m_mStandDown.Find(key, until) || until < m_fClock + seconds)
+			m_mStandDown.Set(key, m_fClock + seconds);
+
+		if (!forgive)
+			return;
+
 		m_Retaliation.ClearGrudge(playerId, faction);
 		for (int i = m_aZones.Count() - 1; i >= 0; i--)
 		{

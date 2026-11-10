@@ -237,8 +237,9 @@ starts again.
 At a Bastion checkpoint, a player with Bastion Infamy (15 or more: Watched or Hunted) who walks to
 the barrier **with no firearm** and waits 10 seconds gives themselves up: searched, 8 Bastion
 Infamy off, and Bastion's AI holds its fire on them for 5 minutes, whatever their standing,
-fights or grudges say. Once an hour per player; within the hour it's just a search. Armed and
-Hunted, they shoot.
+fights or grudges say (and forgets those fights). A Hunted player walking up unarmed within 150 m
+isn't shot while they come in. Once an hour per player; within the hour it's just a search.
+Armed and Hunted, they shoot.
 
 **Camps.** A faction's outposts and stronghold (and the lab, for Halcyon) warn off a player the
 faction watches (Watched) at 150 m, and at the gate
