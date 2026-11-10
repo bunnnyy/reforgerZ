@@ -1076,6 +1076,28 @@ class RZ_Leaders
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Every leader this player has talked to and who is still in the chair (the standing screen).
+	void ListMet(int playerId, notnull array<RZ_Leader> result)
+	{
+		if (playerId <= 0)
+			return;
+
+		string ident = Ident(playerId);
+		foreach (RZ_Leader l : m_aList)
+		{
+			if (l.IsPresent() && l.Remembers(ident, MEM_MET))
+				result.Insert(l);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What they think of this player, in their voice (one line, the standing screen).
+	string OpinionLine(RZ_Leader l, int playerId)
+	{
+		return RZ_LeaderVoice.Opinion(Attitude(l, playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True if this player has already talked to this leader.
 	bool HasMet(int leaderId, int playerId)
 	{

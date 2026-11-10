@@ -272,7 +272,7 @@ The gear is a suggestion; the perks and flaws are in [DESIGN.md](DESIGN.md#backg
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **154 prefab fields**: 40 on `RZ_GameModeComponent`, 108 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **158 entries**: 139 prefabs the plugin creates, 15 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 4 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 25 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **158 prefab fields**: 40 on `RZ_GameModeComponent`, 112 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **162 entries**: 139 prefabs the plugin creates, 15 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 8 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 26 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -528,6 +528,15 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | (existing prefab) | any item | — | Interactions > Crafting > Extra recipes (each output) | optional | extra workbench recipes (optional) |
 | (existing prefab) | vanilla items, crates or vehicles | — | Each shop action's Item prefab | optional | quartermaster stock beyond what the plugin adds (see the suggested stock) |
 | (existing prefab) | vanilla ammo or rations | — | Each requisition action's Item prefab | optional | Bastion's Requisition (Trusted pays half, once an hour) |
+
+#### UI
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| (existing prefab) | an imageset built from UI/Icons/png/64 (UI/LAYOUTS.md) | — | UI > Icon imageset | optional | icons on the HUD, cards and menus (empty = the images set in the layouts) |
+| (existing prefab) | the NoticeCard layout (UI/LAYOUTS.md) | — | UI > Notice layout | optional | styled notice cards (empty = the vanilla hint) |
+| (existing prefab) | the MissionRow layout (UI/LAYOUTS.md) | — | UI > Mission row layout | optional | journal rows |
+| (existing prefab) | the RadioRow layout (UI/LAYOUTS.md) | — | UI > Radio row layout | optional | radio log rows |
 <!-- /manifest:prefabs -->
 
 ### Add to prefabs you already have
@@ -541,6 +550,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | the Haven quartermaster | `RZ_FactionShopAction` (Faction SURVIVORS, Required tier KNOWN, Favor cost 8, Item prefab `RZ_CarBattery.et`, Display name Car battery) | car parts for sale (Known), if wanted; same for tyre and spark plugs | optional |
 | the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab) | optional |
 | any quartermaster | `RZ_FactionShopAction` | vanilla stock (suggested stock table); the Item prefab is a vanilla item, crate or vehicle | optional |
+| the player controller prefab the game mode uses (vanilla DefaultPlayerController.et or your copy; confirm in Workbench) | `RZ_PlayerUIComponent` | the UI's data feed: infection timer, secure radio, noise, standing, journal, backgrounds (docs/UI.md) | optional |
 <!-- /manifest:additions -->
 
 ### Notes by system
@@ -672,6 +682,28 @@ a blocker comes or goes); off, AI walk into the blocker and stop there.
 type takes the items whose prefab names contain its keywords (the lists are in
 `RZ_Search.TypeWords`). To control a type exactly, add a **Loot table** for it.
 
+### Setting up the UI
+
+Optional: without it every message is a vanilla hint, as before. How the UI works is in
+[UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md).
+
+1. **The feed.** Add `RZ_PlayerUIComponent` to the player controller prefab the game mode uses
+   (the addition in the table above). Vanilla controllers already have the `RplComponent` it needs.
+2. **The icons.** Import `UI/Icons/png/128/` as textures and build the `RZ_Icons` imageset, image
+   names = file names ([LAYOUTS.md](../UI/LAYOUTS.md#importing-the-icons)). Set **UI > Icon imageset**.
+3. **The HUD.** Build `RZ_Hud.layout` and `RZ_NoticeCard.layout`. On the player controller's
+   `SCR_HUDManagerComponent`, add an info display of class `RZ_HudDisplay` with the HUD layout.
+   Set **UI > Notice layout**.
+4. **The menus.** Build the four menu layouts and the two row layouts; set **UI > Mission row
+   layout** and **Radio row layout**. Override `chimeraMenus.conf` with the four presets
+   (`RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu`) and the input config
+   with `RZ_OpenStanding`, `RZ_OpenJournal`, `RZ_OpenRadio` and `RZ_RadioFilter`.
+5. **The deploy panel.** Override the deploy menu's layout, add `RZ_BackgroundPanel.layout` on the
+   right, and put `RZ_BackgroundPanelComponent` on its root.
+
+Each step works without the later ones: with only step 1, nothing shows; with steps 1–3, the HUD
+and styled cards work and the keys do nothing.
+
 ### Marker entities (no prefab needed)
 
 Script entities you can place to override the automatic choice. Placing any of a kind turns its
@@ -688,7 +720,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 25 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 26 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
@@ -731,6 +763,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Survival | Infection | `m_InfectionSettings` | Bite modifiers (surrounded ×2, grabbed ×1.5, tired ×1.5, hurt ×1.5, max 0.6), **protective clothing keywords** and multipliers (jacket 0.8, gloves 0.8, helmet 0.85), **Golden window** (120 s; hardcore 60, casual 180), alcohol and antiseptic keywords, clean chances (0.7, 0.9) and seconds (6), Final stage minutes (10), the six treatment prefabs, stabiliser minutes (20), med cap (30 min), trial dose cure (0.8) and Fame (3), cut dose cure (0.5), antibiotics fail (0.3), herb keywords, brew seconds (20), **Finds** (where treatments turn up; empty = the built-in list) |
 | Factions | (top level) |  | Quartermaster and hunter prefabs, hunter minutes (10; 0 = off), bounty minutes (10) |
 | Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
+| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (3), queue (8), radio log size (40), infection timer and noise meter (on), resync (60 s), **icon imageset** and the three row layouts ([UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Map | (top level) |  | **Map markers** (on) |
 | Debug | (top level) |  | Status log every few minutes (on) |
 <!-- /manifest:settings -->
@@ -751,12 +784,13 @@ The last winner is kept in `$profile:ReforgerZ/last_season.json`, which a wipe d
 grep -rn "VERIFY" Scripts/
 ```
 
-There are **158** markers: 122 in the game scripts (one is the comment in `Core/RZ_Util.c` that
-explains them) and 36 in the Workbench plugin (one is its header comment). Each is an engine or
-editor API whose exact name or signature couldn't be confirmed. Usually the fix is a rename, and
-most are isolated in small helpers (`Core/RZ_Util.c`, and `RZ_WB` in the plugin). The game
-scripts' markers are grouped by risk; fix them in this order. Their paths are under
-`Scripts/Game/ReforgerZ/`. The plugin's are [last](#the-workbench-plugin-35).
+There are **186** markers: 150 in the game scripts (one is the comment in `Core/RZ_Util.c` that
+explains them; 28 are in the UI) and 36 in the Workbench plugin (one is its header comment). Each
+is an engine or editor API whose exact name or signature couldn't be confirmed. Usually the fix is
+a rename, and most are isolated in small helpers (`Core/RZ_Util.c`, `RZ_UIW` in `UI/RZ_UIData.c`,
+and `RZ_WB` in the plugin). The game scripts' markers are grouped by risk; fix them in this order.
+Their paths are under `Scripts/Game/ReforgerZ/`. The [UI's](#the-ui-28) and the
+[plugin's](#the-workbench-plugin-35) come last.
 
 ### High risk: the core loop (25)
 
@@ -764,13 +798,13 @@ No fallback. If these are wrong, the basic game doesn't work.
 
 | Where | Call | If it fails |
 |---|---|---|
-| `Core/RZ_GameModeComponent.c:571` | `GetOnPlayerSpawned()` invoker (the handler is `HandlePlayerSpawned`, not an override of the base `OnPlayerSpawned`) | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:907` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
-| `Core/RZ_GameModeComponent.c:1008` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
-| `Core/RZ_GameModeComponent.c:1150` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1805`, `:1806` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1816` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:2051`, `Cure/RZ_LabComponents.c:256` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Core/RZ_GameModeComponent.c:577` | `GetOnPlayerSpawned()` invoker (the handler is `HandlePlayerSpawned`, not an override of the base `OnPlayerSpawned`) | Nothing per-player runs on spawn (backgrounds, goals, radio) |
+| `Core/RZ_GameModeComponent.c:918` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
+| `Core/RZ_GameModeComponent.c:1019` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
+| `Core/RZ_GameModeComponent.c:1162` | `OnProjectileShot` event and signature | No gunfire heat |
+| `Core/RZ_GameModeComponent.c:1817`, `:1818` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1828` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:2073`, `Cure/RZ_LabComponents.c:256` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
 | `Persistence/RZ_SaveData.c:120` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:393`, `:401` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
@@ -818,7 +852,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:656` | a seated character is a child entity of its vehicle (`GetParent()`) | Vehicle deliveries by type (Recover the Bus) never see who drives: switch the helper to `CompartmentAccessComponent.GetVehicleIn`. A specific vehicle still counts a player in a vehicle right beside it |
 | `Core/RZ_Util.c:667`, `:678` | `HitZone.GetMaxHealth()` and `SetHealth()` on the default hit zone (server, replicated, no knock-out above zero) | The Blood Drive refuses everyone ("health can't be read"); nothing else uses them |
 | `Core/RZ_Util.c:709` | worn clothing is attached as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
-| `Cure/RZ_Infection.c:1096`, `:1100`, `:1115` | `CharacterStaminaComponent` on the character; `AddStamina(float)` on a 0–1 scale, server side and replicated (negative drains); `GetStamina()` | No stamina effects: the Weakness and Final stages, nausea and the drunk remedy fall back to noise and a little health drain, and the "tired" bite modifier never applies. Try `SCR_CharacterStaminaComponent` |
+| `Cure/RZ_Infection.c:1102`, `:1106`, `:1121` | `CharacterStaminaComponent` on the character; `AddStamina(float)` on a 0–1 scale, server side and replicated (negative drains); `GetStamina()` | No stamina effects: the Weakness and Final stages, nausea and the drunk remedy fall back to noise and a little health drain, and the "tired" bite modifier never applies. Try `SCR_CharacterStaminaComponent` |
 | `Interactions/RZ_DoorBlockers.c:58`, `:67` | `GetAIWorld()` as `SCR_AIWorld`; `RequestNavmeshRebuildAreas(areas, redoRoads)` (what Game Master placement uses) | Doesn't compile: try `RequestNavmeshRebuildEntity(blocker)`, or empty the helper and turn **Navmesh rebuild** off (blockers only) |
 | `Core/RZ_Util.c:219` | `GetInstigator()` on the character's damage manager after death, `Instigator.GetInstigatorPlayerID()` | No killer is ever known: no bounty (public or Collect the Bounty's player target) is paid. Check a player kill pays the killer, and a death to the infected pays nobody |
 | `Core/RZ_LooseItems.c:127`, `:135` | `GetRootParent()`; `InventoryItemComponent.GetParentSlot()` set while an item is in any storage | **If both fail, carried items could be cleaned up after 30 min away from players.** Test: carry a sample 200 m from everyone for 31 min (Loose item minutes at 1 to test fast). If it vanishes, set **World > Loose item minutes** to 0 |
@@ -830,7 +864,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Core/RZ_MapMarkers.c:14`, `:19`, `:20`, `:21`, `:22`, `:44`, `:46` | map marker manager, type, position, text, insert, remove | Empty `Add()` and `Remove()`, or turn **Map markers** off |
 | `Cure/RZ_AntidoteConsumable.c:8`, `:15`, `Cure/RZ_MedConsumable.c:5`, `:15` | the consumable effect class and `ApplyEffect` signature | Delete the file: the world actions ("Inject antidote", "Take ...") still work |
-| `Cure/RZ_Infection.c:1123` | no known script hook for camera sway or blur (`RZ_Symptoms.Disorient` returns false) | The home remedy's drunkenness is stumbling (stamina and noise). Wire a blur or aim-sway effect here if the game version has one |
+| `Cure/RZ_Infection.c:1129` | no known script hook for camera sway or blur (`RZ_Symptoms.Disorient` returns false) | The home remedy's drunkenness is stumbling (stamina and noise). Wire a blur or aim-sway effect here if the game version has one |
 | `Guidance/RZ_Guidance.c:172` | `System.GetUnixTime()` | Return 0: the 30-day refresher never fires |
 | `Puzzles/RZ_BlinkingLight.c:55`, `:72`; `Puzzles/RZ_Landmarks.c:66`; `Core/RZ_Util.c:371` | `ToUpper`, `Trim`, `ToLower` in place or as copies | Swap to the other form |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
@@ -844,6 +878,29 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Missions/RZ_MissionBases.c:254` | damage manager `GetState()` on a target prop | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_KeyItem.c:29` | `[RplProp]` on a key item's component | "Read the tag" shows no label; keys still open their locks (the id is on the server) |
 | `Interactions/RZ_KeyItem.c:81` | `GetItems()` finds key items in every carried storage | Carried keys aren't found: leave **Key prefab** empty (data keys) |
+
+### The UI (28)
+
+None of these affect the game: the UI only reads. They must compile, though, because the game mode
+calls the feed and the notice hook. If the HUD or a menu misbehaves, turn **UI > Styled notices**
+off and every message goes back to the vanilla hint. How the UI is put together is in [UI.md](UI.md).
+
+| Where | Call | If it fails |
+|---|---|---|
+| `UI/RZ_PlayerUIComponent.c:139` | `RplRcver.Owner` reaches the owning client of a component on the player controller | No data reaches the client: no timer, radio indicator, noise or menu data. Check the controller prefab has the component and an `RplComponent` |
+| `UI/RZ_PlayerUIComponent.c:66`, `:87` | `PlayerManager.GetPlayerController(playerId)`; `PlayerController.GetPlayerId()` | Nothing is sent, or menu requests are ignored |
+| `UI/RZ_PlayerUIComponent.c:134` | a string RPC argument of a few KB (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_HudDisplay.c:11` | `SCR_InfoDisplay`, its `m_wRoot`, `DisplayStartDraw`/`DisplayStopDraw`/`DisplayUpdate` | No HUD and no styled cards; the vanilla hint is used |
+| `UI/RZ_Menus.c:8`, `:17` | modding `ChimeraMenuPreset`; `ChimeraMenuBase`, `GetRootWidget()`, `Close()`, the menu overrides | No menus: delete `RZ_Menus.c` and the three listeners in `RZ_HudDisplay` |
+| `UI/RZ_Menus.c:54`, `:301` | the vanilla `MenuBack`, `MenuTabLeft`, `MenuTabRight`, `MenuUp`, `MenuDown` action names | Esc, Q/E or the journal's up/down do nothing: use the names in the vanilla input config |
+| `UI/RZ_UIData.c:598`, `:614` | `AddActionListener`/`RemoveActionListener`; `MenuManager.OpenMenu` | The keys don't open the menus |
+| `UI/RZ_UIData.c:504`, `:512`, `:520`, `:528`, `:540`, `:550` | `FindAnyWidget`, `TextWidget.SetText`, `SetVisible`, `SetColor`, `ImageWidget.LoadImageFromSet`, `ProgressBarWidget` | Widgets stay as the layout made them |
+| `UI/RZ_UIData.c:561`, `:568`, `:577` | `CreateWidgets(layout, parent)`, `RemoveFromHierarchy`, `GetChildren`/`GetSibling` | No cards or rows: `PushNotice` sees no card and the vanilla hint is used |
+| `UI/RZ_UIData.c:495` | `Color.FromRGBA` | Nothing is tinted |
+| `UI/RZ_UIData.c:590` | `System.GetTickCount()` in milliseconds | Countdowns and card timing are off: use the world time instead |
+| `UI/RZ_UIData.c:117`, `:129`, `:346`; `UI/RZ_HudDisplay.c:188` | `string.Replace`, `string.Split`, `ToLower`, `ToUpper` in place | Payloads don't parse, or notices aren't classified (plain cards) |
+| `UI/RZ_UIData.c:625` | `SCR_PlayerLoadoutComponent.GetLoadout()`, `GetLoadoutName()` on the local controller | The background panel stays empty; the spawn notice still names the perk and flaw |
+| `UI/RZ_BackgroundPanel.c:8` | `ScriptedWidgetComponent`, `HandlerAttached`/`HandlerDeattached` | No background panel |
 
 ### The Workbench plugin (35)
 
@@ -970,6 +1027,15 @@ session, tick off:
 - [ ] Messages that arrive together (the three on spawn) show in the order they were sent.
 - [ ] With nobody online for a while, the stage minutes and town infection don't move; with
   **Season speed** at 4, a stage change, a territory tick and a truck come four times as often.
+
+**UI** (once the layouts exist; [Setting up the UI](#setting-up-the-ui))
+- [ ] A Haven channel message shows as an amber card with the speaker; three at once stack, the
+  rest queue; with **Styled notices** off they're vanilla hints again.
+- [ ] A bite shows the golden window counting down, then Fever with the track filling; a
+  stabiliser shows PAUSED and the clock stops; the timer matches the stage messages within seconds.
+- [ ] Cracking a secure channel shows the indicator until the codes change.
+- [ ] K, J and U open Standing, Journal and Radio with real data; Q/E switch tabs; Esc closes.
+- [ ] In the deploy menu, picking a locked background shows LOCKED and how to unlock it.
 
 **Factions**
 - [ ] Hunted by Bastion near Bastion AI: they shoot you, not a friend next to you.

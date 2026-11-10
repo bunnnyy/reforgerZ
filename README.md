@@ -33,13 +33,17 @@ and one way to end it: **research the cure.**
 - **Teaches itself**: no tutorial pop-ups, just a note where you wake, a wind-up radio and
   people who tell you things.
 - **Any map**: towns, the quarantine line and its checkpoints are found automatically.
+- **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
+  emblems, an infection timer with the golden window, styled notice cards in each faction's
+  colour, and screens for standing, missions and the radio (layouts still to be built).
 
 ## Status
 
-All of it is **written but has never been compiled**. It's about 62,300 lines of Enforce
-Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **158 `VERIFY`
-markers** on engine and editor calls whose exact names need checking (122 in the game, 36 in the
-Workbench plugin), no prefabs or configs yet, and nothing has been play-tested. Every prefab,
+All of it is **written but has never been compiled**. It's about 65,700 lines of Enforce
+Script under `Scripts/Game/ReforgerZ/`, written outside Workbench. There are **186 `VERIFY`
+markers** on engine and editor calls whose exact names need checking (150 in the game, 36 in the
+Workbench plugin), no prefabs, layouts or configs yet, and nothing has been play-tested. The icon
+set and mockups of every screen are done (`UI/`). Every prefab,
 setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
 plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run). Start with
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
@@ -54,6 +58,7 @@ plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [MOD_STACK.md](docs/MOD_STACK.md) | Which Workshop mods the server runs and why |
+| [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
 
 ## Code
@@ -79,10 +84,15 @@ Scripts/Game/ReforgerZ/
                  spots kept out of locked buildings), cars, crafting, water,
                  traps, generators, fire, secure radio, treating others
   Persistence/   save and load of mode state
+  UI/            the per-player data feed, HUD, menus, deploy-menu panel, notice styles
 Scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
 Configs/ReforgerZ/PrefabManifest.json
                  every prefab, slot, settings object, faction and loadout to set up
 tools/prefab_manifest.py
                  checks the manifest against the scripts and writes the setup doc's tables
+UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previews (Previews/),
+                 the layout guide (LAYOUTS.md)
+tools/render_ui.js
+                 renders the icon PNGs and the mockup previews (Node and Playwright)
 ```

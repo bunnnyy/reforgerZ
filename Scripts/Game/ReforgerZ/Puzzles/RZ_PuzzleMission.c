@@ -118,7 +118,11 @@ class RZ_PuzzleMission : RZ_Mission
 			return;
 
 		AddParticipant(playerId);
-		gm.NotifyPlayer(playerId, m_aClueTitles[idx], GetClueText(gm, playerId, idx));
+		string clueText = GetClueText(gm, playerId, idx);
+		gm.NotifyPlayer(playerId, m_aClueTitles[idx], clueText);
+		if (gm.GetUIFeed())
+			gm.GetUIFeed().OnClueRead(playerId, m_iId, m_aClueTitles[idx], clueText);
+
 		OnClueRead(gm, playerId, idx, source);
 	}
 

@@ -409,6 +409,27 @@ class RZ_MissionManager
 
 	//------------------------------------------------------------------------------------------------
 	//! Text for a newly spawned player: world events, plus contracts they qualify for.
+	//! What goes in a player's journal: world events, contracts they could take (as on the radio),
+	//! personal jobs offered to them, and anything they're taking part in. Marks nothing as offered.
+	void ListFor(int playerId, notnull array<RZ_Mission> result)
+	{
+		foreach (RZ_Mission m : m_aActive)
+		{
+			if (m.m_eState != RZ_EMissionState.ACTIVE)
+				continue;
+
+			bool show = !m.m_bContract || m.m_aParticipants.Contains(playerId);
+			if (!show && m.m_bInPersonOnly)
+				show = m.m_aOfferedTo.Contains(playerId);
+			else if (!show)
+				show = m.IsEligible(m_GM, playerId);
+
+			if (show)
+				result.Insert(m);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	string DescribeActiveFor(IEntity player, int playerId)
 	{
 		string text = "";

@@ -3,8 +3,8 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** everything under "Built" is written in Enforce Script (about 62,300 lines) and
-**has never been compiled**. It needs Workbench, the 158 `VERIFY` fixes (122 in the game, 36 in
+**Status:** everything under "Built" is written in Enforce Script (about 65,700 lines) and
+**has never been compiled**. It needs Workbench, the 186 `VERIFY` fixes (150 in the game, 36 in
 the Workbench plugin) and a play-test before any of it can be called working
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
@@ -37,6 +37,7 @@ the Workbench plugin) and a play-test before any of it can be called working
 | Cure research, antidotes, the final stand, the season's winner | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
+| The UI: an original icon set (60 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the standing screen, journal, radio log, map key and a deploy-menu background panel, fed per player from the server. Layouts are still to be built in Workbench | [UI.md](UI.md) |
 | Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout), the Workbench plugin **ReforgerZ: Create prefabs** with a dry run and a checklist fallback (never run), and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
 
 ## Next
@@ -48,7 +49,10 @@ the Workbench plugin) and a play-test before any of it can be called working
   factions, then play a 2-hour session on Arland ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
 ### Characters and UI
-- A custom deploy-menu panel that shows each background's perk and flaw, and hides locked ones.
+- Build the UI layouts and the icon imageset in Workbench ([UI/LAYOUTS.md](../UI/LAYOUTS.md)).
+- The deploy menu hides locked backgrounds (the panel already shows them as locked), and the
+  panel lists a loadout's gear.
+- The new marker icons on the map; mouse support in the menus.
 - A trait-points system on top of backgrounds (positive and negative traits).
 
 ### Factions
@@ -103,6 +107,8 @@ In this order, because later ones depend on earlier ones:
 11. **Guidance:** is anything too chatty for a level-0 player? Do the right speakers say it?
 12. **Story arcs** end to end (start one with `RZ_StoryArcs.Begin(kind)`) and how often they come.
 13. **Weather** accessors and the generator's noise.
+14. **The UI**, once the layouts exist: does the owner-only feed arrive, does the timer agree with
+    the stage messages, and do the menus open and fill ([UI.md](UI.md)).
 
 ## Dropped
 

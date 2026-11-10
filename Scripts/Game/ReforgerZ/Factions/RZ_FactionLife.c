@@ -837,6 +837,21 @@ class RZ_FactionLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The truces and feuds running now, with real minutes left (the standing screen).
+	int GetRelations(notnull array<int> a, notnull array<int> b, notnull array<int> kinds, notnull array<float> minutesLeft)
+	{
+		foreach (int i, int fa : m_aRelA)
+		{
+			a.Insert(fa);
+			b.Insert(m_aRelB[i]);
+			kinds.Insert(m_aRelKind[i]);
+			minutesLeft.Insert(Math.Max(0, (m_aRelUntil[i] - m_fClock) / 60));
+		}
+
+		return m_aRelA.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool HasTruce(int a, int b)
 	{
 		int i = FindRelation(a, b);

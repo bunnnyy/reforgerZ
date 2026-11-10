@@ -3430,6 +3430,78 @@
    "minimum": false,
    "use": "Bastion's Requisition (Trusted pays half, once an hour)",
    "notes": ""
+  },
+  {
+   "id": "UIIconImageset",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "an imageset built from UI/Icons/png/64 (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sIconImageset"],
+   "listSlot": false,
+   "slotLabel": "UI > Icon imageset",
+   "required": false,
+   "minimum": false,
+   "use": "icons on the HUD, cards and menus (empty = the images set in the layouts)",
+   "notes": ""
+  },
+  {
+   "id": "UINoticeLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the NoticeCard layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sNoticeLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Notice layout",
+   "required": false,
+   "minimum": false,
+   "use": "styled notice cards (empty = the vanilla hint)",
+   "notes": ""
+  },
+  {
+   "id": "UIMissionRowLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the MissionRow layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sMissionRowLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Mission row layout",
+   "required": false,
+   "minimum": false,
+   "use": "journal rows",
+   "notes": ""
+  },
+  {
+   "id": "UIRadioRowLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the RadioRow layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sRadioRowLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Radio row layout",
+   "required": false,
+   "minimum": false,
+   "use": "radio log rows",
+   "notes": ""
   }
  ],
  "additions": [
@@ -3484,6 +3556,13 @@
    "target": "any quartermaster",
    "add": [{"cls": "RZ_FactionShopAction", "values": [], "name": ""}],
    "why": "vanilla stock (suggested stock table); the Item prefab is a vanilla item, crate or vehicle",
+   "required": false,
+   "minimum": false
+  },
+  {
+   "target": "the player controller prefab the game mode uses (vanilla DefaultPlayerController.et or your copy; confirm in Workbench)",
+   "add": [{"cls": "RZ_PlayerUIComponent", "values": [], "name": ""}],
+   "why": "the UI's data feed: infection timer, secure radio, noise, standing, journal, backgrounds (docs/UI.md)",
    "required": false,
    "minimum": false
   }
@@ -3895,6 +3974,12 @@
    "object": "Hostility",
    "field": "m_HostilitySettings",
    "covers": "**Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys"
+  },
+  {
+   "category": "UI",
+   "object": "UI",
+   "field": "m_UISettings",
+   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (3), queue (8), radio log size (40), infection timer and noise meter (on), resync (60 s), **icon imageset** and the three row layouts ([UI/LAYOUTS.md](../UI/LAYOUTS.md))"
   },
   {"category": "Map", "object": "(top level)", "covers": "**Map markers** (on)"},
   {"category": "Debug", "object": "(top level)", "covers": "Status log every few minutes (on)"}
@@ -4466,6 +4551,22 @@
     "m_sBastionKey": "MIL",
     "m_sRedHandKey": "BAND",
     "m_sHalcyonKey": "INST"
+   }
+  },
+  {
+   "field": "m_UISettings",
+   "category": "UI",
+   "label": "UI",
+   "cls": "RZ_UISettings",
+   "defaults": {
+    "m_bStyledNotices": "1",
+    "m_fNoticeSeconds": "9",
+    "m_iNoticeStack": "3",
+    "m_iNoticeQueue": "8",
+    "m_iRadioLogSize": "40",
+    "m_bInfectionTimer": "1",
+    "m_bNoiseMeter": "1",
+    "m_fResyncSeconds": "60"
    }
   }
  ],

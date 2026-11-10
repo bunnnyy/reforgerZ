@@ -71,8 +71,9 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
   (0–100). Placing any `RZ_SettlementMarkerEntity` turns detection off and uses the markers.
 - **Spawn points:** 6 at a time in random towns, and one is moved to a new town every
   20 minutes. Every Haven safehouse is also a spawn point for everyone.
-- **Missions are announced** with distance and direction ("1.2 km NE"). Hints are queued
-  so they never stack. World events and the lab can show as map markers (a toggle).
+- **Missions are announced** with distance and direction ("1.2 km NE"). Messages are queued
+  so they never pile up: as styled notice cards, or vanilla hints without the UI ([UI.md](UI.md)).
+  World events and the lab can show as map markers (a toggle).
 
 ## The Director: outbreak stages and spread
 
@@ -346,7 +347,8 @@ Its tone follows the cure and the outbreak ([LORE.md](LORE.md), "The outside wor
 
 Code: `Backgrounds/RZ_Background.c`, `Backgrounds/RZ_Objectives.c`, `Backgrounds/RZ_PlayerProfile.c`.
 
-You pick a background in the vanilla deploy menu (each is a loadout). Gear comes from the
+You pick a background in the vanilla deploy menu (each is a loadout); a panel there shows its
+perk, flaw and whether it's locked ([UI.md](UI.md#screens)). Gear comes from the
 loadout; the perk and flaw change ReforgerZ systems, so they work with any other mods.
 Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 

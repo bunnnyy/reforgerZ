@@ -341,6 +341,23 @@ class RZ_SecureRadio
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The faction whose secure channel this player is listening to, or -1 (the HUD indicator).
+	int GetListening(int playerId, out float secondsLeft)
+	{
+		secondsLeft = 0;
+		foreach (RZ_Listener l : m_aListeners)
+		{
+			if (l.m_iPlayerId == playerId)
+			{
+				secondsLeft = Math.Max(0, l.m_fUntil - m_Hub.GetClock());
+				return l.m_iFaction;
+			}
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool IsListening(int playerId)
 	{
 		foreach (RZ_Listener l : m_aListeners)

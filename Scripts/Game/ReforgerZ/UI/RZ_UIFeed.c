@@ -1,0 +1,446 @@
+//! What each player's UI needs, worked out on the server and sent only to them (docs/UI.md,
+//! "Data feeds"). Owned by RZ_GameModeComponent and run on its tick, after the infection.
+//!
+//! - Pushed on change: the infection timer (plus a resync every minute), the secure channel the
+//!   player is listening to, and a noise level 0-6 from the heat where they stand.
+//! - Asked for by a menu as it opens: standing, the journal, the backgrounds (one string each,
+//!   one record per line, fields split by '|'; see BuildPayload).
+//! - Clues read in puzzle missions are remembered here per player, while the mission runs.
+//!
+//! Nothing here changes the game. If RZ_PlayerUIComponent isn't on the player controller, every
+//! send is skipped.
+
+//------------------------------------------------------------------------------------------------
+class RZ_UIFeedState
+{
+	int m_iInf = -1;
+	bool m_bPaused;
+	float m_fSinceSync;
+	int m_iListen = -2;
+	int m_iNoise = -1;
+}
+
+//------------------------------------------------------------------------------------------------
+class RZ_UIClue
+{
+	int m_iMission;
+	string m_sTitle;
+	string m_sText;
+}
+
+//------------------------------------------------------------------------------------------------
+//! One payload record: a tag, then fields split by '|' (RZ_UIText.Clean keeps them safe).
+class RZ_UILine
+{
+	protected string m_sText;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_UILine(string tag)
+	{
+		m_sText = tag;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_UILine Add(string value)
+	{
+		m_sText += RZ_UIText.SEP + RZ_UIText.Clean(value);
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_UILine AddInt(int value)
+	{
+		m_sText += RZ_UIText.SEP + value.ToString();
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string End()
+	{
+		return m_sText + "\n";
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+class RZ_UIFeed
+{
+	static const int PAYLOAD_STANDING = 0;
+	static const int PAYLOAD_JOURNAL = 1;
+	static const int PAYLOAD_BACKGROUNDS = 2;
+
+	protected static const int MAX_PAYLOAD = 6000;
+	protected static const int MAX_CLUES = 30;
+
+	protected RZ_GameModeComponent m_GM;
+	protected ref map<int, ref RZ_UIFeedState> m_mStates = new map<int, ref RZ_UIFeedState>();
+	protected ref map<int, ref array<ref RZ_UIClue>> m_mClues = new map<int, ref array<ref RZ_UIClue>>();
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_UIFeed(RZ_GameModeComponent gm)
+	{
+		m_GM = gm;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_UIFeedState State(int playerId)
+	{
+		RZ_UIFeedState st;
+		if (!m_mStates.Find(playerId, st))
+		{
+			st = new RZ_UIFeedState();
+			m_mStates.Set(playerId, st);
+		}
+
+		return st;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A new life: forget what was sent, so everything is sent fresh.
+	void OnPlayerSpawned(int playerId)
+	{
+		m_mStates.Remove(playerId);
+		m_mClues.Remove(playerId);
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		if (ui)
+			ui.SendNewLife();
+	}
+
+	// ================================================================ Pushed state
+	//------------------------------------------------------------------------------------------------
+	void Tick(float dt, array<int> ids, array<IEntity> players)
+	{
+		RZ_UISettings settings = RZ_UISettings.Get();
+		foreach (int i, IEntity ent : players)
+		{
+			int playerId = ids[i];
+			RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+			if (!ui)
+				continue;
+
+			RZ_UIFeedState st = State(playerId);
+			st.m_fSinceSync += dt;
+			PushInfection(ui, playerId, st, settings);
+			PushListening(ui, playerId, st);
+			PushNoise(ui, ent, st);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PushInfection(RZ_PlayerUIComponent ui, int playerId, RZ_UIFeedState st, RZ_UISettings settings)
+	{
+		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
+		RZ_Infection inf = m_GM.GetInfection();
+		int state = RZ_EInfectionUI.NONE;
+		float left = 0;
+		float total = 0;
+		float finalSeconds = 0;
+		if (p.IsInfected() && inf)
+		{
+			if (p.m_fWoundLeft > 0)
+			{
+				state = RZ_EInfectionUI.GOLDEN;
+				left = p.m_fWoundLeft;
+				total = Math.Max(1, inf.GetSettings().m_fGoldenSeconds);
+			}
+			else
+			{
+				RZ_EInfectionStage stage = inf.StageOf(p);
+				state = RZ_EInfectionUI.FEVER;
+				if (stage == RZ_EInfectionStage.WEAKNESS)
+					state = RZ_EInfectionUI.WEAKNESS;
+				else if (stage == RZ_EInfectionStage.FINAL)
+					state = RZ_EInfectionUI.FINAL;
+
+				left = p.m_fInfectionLeft;
+				total = Math.Max(60, p.m_fInfectionTotal);
+				finalSeconds = inf.FinalSeconds(p);
+			}
+		}
+
+		bool paused = p.m_fPauseLeft > 0;
+		bool changed = state != st.m_iInf || paused != st.m_bPaused;
+		bool resync = state != RZ_EInfectionUI.NONE && st.m_fSinceSync >= settings.m_fResyncSeconds;
+		if (!changed && !resync)
+			return;
+
+		st.m_iInf = state;
+		st.m_bPaused = paused;
+		st.m_fSinceSync = 0;
+		ui.SendInfection(state, left, total, finalSeconds, p.m_fPauseLeft);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PushListening(RZ_PlayerUIComponent ui, int playerId, RZ_UIFeedState st)
+	{
+		int faction = -1;
+		float secondsLeft = 0;
+		if (m_GM.GetInteractions() && m_GM.GetInteractions().GetRadio())
+			faction = m_GM.GetInteractions().GetRadio().GetListening(playerId, secondsLeft);
+
+		if (faction == st.m_iListen)
+			return;
+
+		st.m_iListen = faction;
+		ui.SendListening(faction, secondsLeft);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! 0 quiet .. 6 very loud, from the heat where the player stands (the "loud" tip is at 45).
+	protected void PushNoise(RZ_PlayerUIComponent ui, IEntity ent, RZ_UIFeedState st)
+	{
+		float heat = m_GM.GetHeat().GetHeat(ent.GetOrigin());
+		int level = 0;
+		if (heat >= 90)
+			level = 6;
+		else if (heat >= 70)
+			level = 5;
+		else if (heat >= 45)
+			level = 4;
+		else if (heat >= 30)
+			level = 3;
+		else if (heat >= 18)
+			level = 2;
+		else if (heat >= 8)
+			level = 1;
+
+		if (level == st.m_iNoise)
+			return;
+
+		st.m_iNoise = level;
+		ui.SendNoise(level);
+	}
+
+	// ================================================================ Clues
+	//------------------------------------------------------------------------------------------------
+	//! From RZ_PuzzleMission.HandleRead.
+	void OnClueRead(int playerId, int missionId, string title, string text)
+	{
+		array<ref RZ_UIClue> list;
+		if (!m_mClues.Find(playerId, list))
+		{
+			list = new array<ref RZ_UIClue>();
+			m_mClues.Set(playerId, list);
+		}
+
+		foreach (RZ_UIClue old : list)
+		{
+			if (old.m_iMission == missionId && old.m_sTitle == title)
+			{
+				old.m_sText = text;
+				return;
+			}
+		}
+
+		RZ_UIClue c = new RZ_UIClue();
+		c.m_iMission = missionId;
+		c.m_sTitle = title;
+		c.m_sText = text;
+		list.Insert(c);
+		if (list.Count() > MAX_CLUES)
+			list.RemoveOrdered(0);
+	}
+
+	// ================================================================ Payloads
+	//------------------------------------------------------------------------------------------------
+	string BuildPayload(int playerId, int kind)
+	{
+		string payload;
+		if (kind == PAYLOAD_STANDING)
+			payload = BuildStanding(playerId);
+		else if (kind == PAYLOAD_JOURNAL)
+			payload = BuildJournal(playerId);
+		else
+			payload = BuildBackgrounds(playerId);
+
+		if (payload.Length() > MAX_PAYLOAD)
+			payload = payload.Substring(0, MAX_PAYLOAD);
+
+		return payload;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! H|player name|background|life
+	//! F|faction|fame|infamy|favor|tier|need|need line
+	//! L|faction|name|title|what they think of you
+	//! R|kind (0 truce, 1 feud)|faction a|faction b|minutes left
+	protected string BuildStanding(int playerId)
+	{
+		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
+		RZ_Background bg = m_GM.GetBackground(p.m_sBackgroundId);
+		string bgName = "";
+		if (bg)
+			bgName = bg.m_sName;
+
+		RZ_UILine head = new RZ_UILine("H");
+		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iLives).End();
+		RZ_FactionLife life = m_GM.GetFactionLife();
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			int need = RZ_ENeed.NONE;
+			string needLine = "";
+			if (life)
+				need = life.GetNeed(f);
+			if (need != RZ_ENeed.NONE)
+				needLine = RZ_FactionVoice.NeedLine(f, need);
+
+
+			RZ_EFaction ef = f;
+			int tier = p.GetTier(ef);
+			RZ_UILine lnF = new RZ_UILine("F");
+			s += lnF.AddInt(f).AddInt(p.GetFame(ef)).AddInt(p.GetInfamy(ef)).AddInt(p.GetFavor(ef)).AddInt(tier).AddInt(need).Add(needLine).End();
+		}
+
+		RZ_Leaders leaders = m_GM.GetLeaders();
+		if (leaders)
+		{
+			array<RZ_Leader> met = {};
+			leaders.ListMet(playerId, met);
+			foreach (RZ_Leader l : met)
+			{
+				int lf = l.m_eFaction;
+				RZ_UILine lnL = new RZ_UILine("L");
+				s += lnL.AddInt(lf).Add(l.m_sName).Add(l.m_sTitle).Add(leaders.OpinionLine(l, playerId)).End();
+			}
+		}
+
+		if (life)
+		{
+			array<int> a = {};
+			array<int> b = {};
+			array<int> kinds = {};
+			array<float> minutes = {};
+			life.GetRelations(a, b, kinds, minutes);
+			foreach (int r, int fa : a)
+			{
+				RZ_UILine lnR = new RZ_UILine("R");
+				s += lnR.AddInt(kinds[r]).AddInt(fa).AddInt(b[r]).AddInt(RZ_Util.RoundToInt(minutes[r])).End();
+			}
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! M|id|kind|giver (-1 none)|title|given by|where|direction and distance|minutes left|requirements|Fame|Favor|brief|taking part (0/1)
+	//! C|mission id|clue title|clue text
+	protected string BuildJournal(int playerId)
+	{
+		RZ_MissionManager mm = m_GM.GetMissions();
+		if (!mm)
+			return "";
+
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		vector from = vector.Zero;
+		if (ent)
+			from = ent.GetOrigin();
+
+		array<RZ_Mission> list = {};
+		mm.ListFor(playerId, list);
+		string s = "";
+		array<int> shown = {};
+		foreach (RZ_Mission m : list)
+		{
+			int giver = -1;
+			if (m.m_bHasGiver)
+				giver = m.m_Req.m_eGiver;
+
+
+			string by = "";
+			if (m.m_iLeaderId >= 0 && m_GM.GetLeaders())
+			{
+				RZ_Leader l = m_GM.GetLeaders().Get(m.m_iLeaderId);
+				if (l)
+					by = l.GetHeader();
+			}
+
+			string dir = "";
+			if (!m.m_bGlobal && ent)
+				dir = RZ_Util.DirectionText(from, m.m_vPos);
+
+			string req = "";
+			if (m.m_bContract)
+				req = m.m_Req.Describe();
+
+			string part = "0";
+			if (m.m_aParticipants.Contains(playerId))
+				part = "1";
+
+			RZ_UILine lnM = new RZ_UILine("M");
+			lnM.AddInt(m.m_iId).AddInt(MissionKind(m)).AddInt(giver).Add(m.m_sTitle).Add(by).Add(m.GetLocationName(m_GM)).Add(dir);
+			lnM.AddInt(RZ_Util.RoundToInt(m.m_fTimeLeft / 60)).Add(req).AddInt(m.m_iFameReward).AddInt(m.m_iFavorReward).Add(m.m_sBrief).Add(part);
+			s += lnM.End();
+			shown.Insert(m.m_iId);
+		}
+
+		array<ref RZ_UIClue> clues;
+		if (m_mClues.Find(playerId, clues))
+		{
+			foreach (RZ_UIClue c : clues)
+			{
+				if (shown.Contains(c.m_iMission))
+				{
+					RZ_UILine lnC = new RZ_UILine("C");
+					s += lnC.AddInt(c.m_iMission).Add(c.m_sTitle).Add(c.m_sText).End();
+				}
+			}
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! G|legacy|Legacy for the Drifter
+	//! B|id|name|loadout|perk|flaw|locked (0/1)|unlock text|Haven|Bastion|Red Hand|Halcyon (signed start standing)
+	protected string BuildBackgrounds(int playerId)
+	{
+		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
+		RZ_UILine lnG = new RZ_UILine("G");
+		string s = lnG.AddInt(p.m_iLegacy).AddInt(RZ_GameModeComponent.GetDrifterLegacy()).End();
+		array<ref RZ_Background> list = m_GM.GetBackgrounds();
+		if (!list)
+			return s;
+
+		foreach (RZ_Background bg : list)
+		{
+			string locked = "0";
+			if (bg.m_bLocked && !p.HasUnlocked(bg.m_sUnlockId))
+				locked = "1";
+
+			RZ_UILine lnB = new RZ_UILine("B");
+			lnB.Add(bg.m_sId).Add(bg.m_sName).Add(bg.m_sLoadoutName).Add(bg.m_sPerk).Add(bg.m_sFlaw).Add(locked).Add(bg.m_sUnlockText);
+			lnB.AddInt(bg.GetStartRep(RZ_EFaction.SURVIVORS)).AddInt(bg.GetStartRep(RZ_EFaction.MILITARY));
+			s += lnB.AddInt(bg.GetStartRep(RZ_EFaction.BANDITS)).AddInt(bg.GetStartRep(RZ_EFaction.INSTITUTE)).End();
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The journal's type icon. Leader jobs and puzzles by flag and base class; the unarmed,
+	//! Perimeter and arc missions by class (docs/MISSIONS.md lists them).
+	static int MissionKind(RZ_Mission m)
+	{
+		if (m.m_bInPersonOnly || m.m_iJobFaction >= 0)
+			return RZ_EMissionKindUI.LEADER;
+
+		typename t = m.Type();
+		if (t == RZ_Mission_BlindSpot || t == RZ_Mission_TheCrossing || t == RZ_Mission_ShotAtTheLine)
+			return RZ_EMissionKindUI.PERIMETER;
+
+		if (t == RZ_Mission_DeserterMap || t == RZ_Mission_FeverWater || t == RZ_Mission_FeverEvacuation)
+			return RZ_EMissionKindUI.ARC;
+
+		if (t == RZ_Mission_CarKeys || t == RZ_Mission_PharmacyLure || t == RZ_Mission_SilentCourier || t == RZ_Mission_WaterRun
+			|| t == RZ_Mission_MedicineBeforeDark || t == RZ_Mission_LeadThemAway || t == RZ_Mission_RooftopRescue
+			|| t == RZ_Mission_TrailOfClues || t == RZ_Mission_BarterChain || t == RZ_Mission_Distraction || t == RZ_Mission_QuietCount)
+			return RZ_EMissionKindUI.UNARMED;
+
+		if (m.IsInherited(RZ_PuzzleMission))
+			return RZ_EMissionKindUI.PUZZLE;
+
+		if (!m.m_bContract)
+			return RZ_EMissionKindUI.EVENT;
+
+		return RZ_EMissionKindUI.CONTRACT;
+	}
+}

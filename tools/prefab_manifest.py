@@ -143,7 +143,8 @@ def all_parts(m):
             yield ("loadout " + l["name"], p, "action")
     for a in m["additions"]:
         for p in a["add"]:
-            yield ("addition: " + a["target"], p, "action")
+            kind = "component" if p["cls"].endswith("Component") else "action"
+            yield ("addition: " + a["target"], p, kind)
 
 
 def slot_type(classes, gm_field_types, slot):

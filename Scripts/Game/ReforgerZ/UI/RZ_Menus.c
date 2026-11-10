@@ -1,0 +1,533 @@
+//! The ReforgerZ menus (docs/UI.md, "Screens"): Standing, Journal, Radio and the Map key, one
+//! tab each (Q/E switch tabs, Esc closes). Layouts and widget names are in UI/LAYOUTS.md; the
+//! presets are registered in a chimeraMenus.conf override (WORKBENCH_SETUP.md).
+//!
+//! Each menu asks RZ_PlayerUIComponent for its data when it opens and redraws when a new copy
+//! arrives. They only read; nothing here changes the game.
+
+modded enum ChimeraMenuPreset // VERIFY: ChimeraMenuPreset can be modded, and the entries need matching chimeraMenus.conf entries
+{
+	RZ_StandingMenu,
+	RZ_JournalMenu,
+	RZ_RadioLogMenu,
+	RZ_MapKeyMenu
+}
+
+//------------------------------------------------------------------------------------------------
+class RZ_MenuBase : ChimeraMenuBase // VERIFY: ChimeraMenuBase, GetRootWidget(), Close() and the OnMenuOpen/OnMenuClose/OnMenuUpdate overrides
+{
+	protected static const float POLL = 0.25;
+
+	protected Widget m_wRoot;
+	protected int m_iSeen = -1;
+	protected float m_fPoll;
+
+	//------------------------------------------------------------------------------------------------
+	//! 0 Standing, 1 Journal, 2 Radio, 3 Map key
+	protected int TabIndex()
+	{
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Changes when there is something new to draw.
+	protected int DataVersion()
+	{
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnOpened()
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Redraw()
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuOpen()
+	{
+		super.OnMenuOpen();
+		m_wRoot = GetRootWidget();
+		RZ_UIW.Listen("MenuBack", OnBack); // VERIFY: the vanilla MenuBack, MenuTabLeft, MenuTabRight action names
+		RZ_UIW.Listen("MenuTabLeft", OnTabLeft);
+		RZ_UIW.Listen("MenuTabRight", OnTabRight);
+		OnOpened();
+		Redraw();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuClose()
+	{
+		RZ_UIW.Unlisten("MenuBack", OnBack);
+		RZ_UIW.Unlisten("MenuTabLeft", OnTabLeft);
+		RZ_UIW.Unlisten("MenuTabRight", OnTabRight);
+		super.OnMenuClose();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuUpdate(float tDelta)
+	{
+		super.OnMenuUpdate(tDelta);
+		m_fPoll -= tDelta;
+		if (m_fPoll > 0)
+			return;
+
+		m_fPoll = POLL;
+		int v = DataVersion();
+		if (v == m_iSeen)
+			return;
+
+		m_iSeen = v;
+		Redraw();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnBack(float value = 0, EActionTrigger reason = 0)
+	{
+		Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnTabLeft(float value = 0, EActionTrigger reason = 0)
+	{
+		SwitchTo(TabIndex() + 3);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnTabRight(float value = 0, EActionTrigger reason = 0)
+	{
+		SwitchTo(TabIndex() + 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SwitchTo(int tab)
+	{
+		int idx = tab % 4;
+		Close();
+		RZ_UIW.OpenMenu(Preset(idx));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int Preset(int tab)
+	{
+		switch (tab)
+		{
+			case 1: return ChimeraMenuPreset.RZ_JournalMenu;
+			case 2: return ChimeraMenuPreset.RZ_RadioLogMenu;
+			case 3: return ChimeraMenuPreset.RZ_MapKeyMenu;
+		}
+
+		return ChimeraMenuPreset.RZ_StandingMenu;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A payload's records, each split into fields.
+	protected static void Records(string payload, notnull array<ref array<string>> records)
+	{
+		records.Clear();
+		array<string> lines = {};
+		RZ_UIText.Split(payload, "\n", lines);
+		foreach (string ln : lines)
+		{
+			if (ln.IsEmpty())
+				continue;
+
+			array<string> f = {};
+			RZ_UIText.Split(ln, RZ_UIText.SEP, f);
+			records.Insert(f);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Fame, Infamy, Favor and tier per faction; the leaders you've met; what each faction needs;
+//! truces and feuds (docs/REPUTATION.md).
+class RZ_StandingMenu : RZ_MenuBase
+{
+	//------------------------------------------------------------------------------------------------
+	override protected int TabIndex() { return 0; }
+
+	//------------------------------------------------------------------------------------------------
+	override protected int DataVersion()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui)
+			return 0;
+
+		return ui.GetStandingVersion();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnOpened()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.Ask(RZ_UIFeed.PAYLOAD_STANDING);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void Redraw()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		bool have = false;
+		if (ui)
+			have = !ui.GetStanding().IsEmpty();
+
+		RZ_UIW.Show(m_wRoot, "Waiting", !have);
+		if (!have)
+			return;
+
+		array<ref array<string>> recs = {};
+		Records(ui.GetStanding(), recs);
+		array<string> leaders = {"", "", "", ""};
+		string relations = "";
+		foreach (array<string> f : recs)
+		{
+			string tag = RZ_UIText.Str(f, 0);
+			if (tag == "H")
+			{
+				string who = string.Format("%1 - %2 - LIFE %3", RZ_UIText.Str(f, 1), RZ_UIText.Str(f, 2), RZ_UIText.Str(f, 3));
+				who.ToUpper();
+				RZ_UIW.SetText(m_wRoot, "Header", who);
+			}
+			else if (tag == "F")
+			{
+				DrawFaction(f);
+			}
+			else if (tag == "L")
+			{
+				int lf = RZ_UIText.Int(f, 1);
+				if (lf >= 0 && lf < 4)
+					leaders[lf] = leaders[lf] + string.Format("%1\n%2\n%3\n\n", RZ_UIText.Str(f, 2), RZ_UIText.Str(f, 3), RZ_UIText.Str(f, 4));
+			}
+			else if (tag == "R")
+			{
+				string kind = "FEUD";
+				string effect = "rival Infamy x1.5";
+				if (RZ_UIText.Int(f, 1) == RZ_FactionLife.REL_TRUCE)
+				{
+					kind = "TRUCE";
+					effect = "rival Infamy halved";
+				}
+
+				relations += string.Format("%1   %2 and %3   %4 min left, %5\n", kind, RZ_Factions.GetName(RZ_UIText.Int(f, 2)),
+					RZ_Factions.GetNameInText(RZ_UIText.Int(f, 3)), RZ_UIText.Str(f, 4), effect);
+			}
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			string text = leaders[i];
+			if (text.IsEmpty())
+				text = "Nobody's given you a name yet.";
+
+			RZ_UIW.SetText(m_wRoot, "Leaders" + i.ToString(), text);
+		}
+
+		if (relations.IsEmpty())
+			relations = "No truces, no feuds. For now.";
+
+		RZ_UIW.SetText(m_wRoot, "Relations", relations);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! F|faction|fame|infamy|favor|tier|need|need line
+	protected void DrawFaction(array<string> f)
+	{
+		int fac = RZ_UIText.Int(f, 1);
+		if (fac < 0 || fac > 3)
+			return;
+
+		string n = fac.ToString();
+		int fame = RZ_UIText.Int(f, 2);
+		int infamy = RZ_UIText.Int(f, 3);
+		RZ_ETier tier = RZ_UIText.Int(f, 5);
+		Color accent = RZ_UIColor.Faction(fac);
+		Color tc = RZ_UIColor.Tier(tier);
+		RZ_UIW.SetText(m_wRoot, "FactionName" + n, RZ_Factions.GetName(fac));
+		RZ_UIW.Tint(m_wRoot, "Accent" + n, accent);
+		RZ_UIW.Tint(m_wRoot, "Emblem" + n, accent);
+		RZ_UIW.Icon(m_wRoot, "Emblem" + n, RZ_UIText.FactionIcon(fac));
+		RZ_UIW.Icon(m_wRoot, "TierIcon" + n, RZ_UIText.TierIcon(tier));
+		RZ_UIW.Tint(m_wRoot, "TierIcon" + n, tc);
+		string tierName = RZ_Reputation.GetTierName(tier);
+		tierName.ToUpper();
+		RZ_UIW.SetText(m_wRoot, "TierName" + n, tierName);
+		RZ_UIW.Tint(m_wRoot, "TierName" + n, tc);
+		RZ_UIW.SetText(m_wRoot, "TierNote" + n, RZ_UIText.TierNote(tier));
+		RZ_UIW.SetText(m_wRoot, "FameValue" + n, fame.ToString());
+		RZ_UIW.Progress(m_wRoot, "FameBar" + n, fame / 100.0);
+		RZ_UIW.Tint(m_wRoot, "FameBar" + n, accent);
+		RZ_UIW.SetText(m_wRoot, "InfamyValue" + n, infamy.ToString());
+		RZ_UIW.Progress(m_wRoot, "InfamyBar" + n, infamy / 100.0);
+		RZ_UIW.SetText(m_wRoot, "FavorValue" + n, RZ_UIText.Str(f, 4));
+		RZ_UIW.Tint(m_wRoot, "FavorValue" + n, accent);
+		string needLine = RZ_UIText.Str(f, 7);
+		RZ_UIW.Show(m_wRoot, "NeedBlock" + n, !needLine.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "NeedTitle" + n, RZ_UIText.NeedTitle(RZ_UIText.Int(f, 6)));
+		RZ_UIW.SetText(m_wRoot, "Need" + n, needLine);
+		RZ_UIW.Show(m_wRoot, "Warn" + n, RZ_Reputation.IsHunted(tier));
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Active contracts and events with type, giver, rough direction, requirements and rewards, and
+//! the puzzle clues you've read (docs/MISSIONS.md).
+class RZ_JournalMenu : RZ_MenuBase
+{
+	protected int m_iSelected;
+	protected ref array<ref array<string>> m_aMissions = {};
+	protected ref array<ref array<string>> m_aClues = {};
+
+	//------------------------------------------------------------------------------------------------
+	override protected int TabIndex() { return 1; }
+
+	//------------------------------------------------------------------------------------------------
+	override protected int DataVersion()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui)
+			return 0;
+
+		return ui.GetJournalVersion() * 100 + m_iSelected;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnOpened()
+	{
+		RZ_UIW.Listen("MenuUp", OnUp); // VERIFY: the vanilla MenuUp, MenuDown action names
+		RZ_UIW.Listen("MenuDown", OnDown);
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.Ask(RZ_UIFeed.PAYLOAD_JOURNAL);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuClose()
+	{
+		RZ_UIW.Unlisten("MenuUp", OnUp);
+		RZ_UIW.Unlisten("MenuDown", OnDown);
+		super.OnMenuClose();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnUp(float value = 0, EActionTrigger reason = 0)
+	{
+		m_iSelected = Math.Max(0, m_iSelected - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnDown(float value = 0, EActionTrigger reason = 0)
+	{
+		m_iSelected = Math.Min(Math.Max(0, m_aMissions.Count() - 1), m_iSelected + 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void Redraw()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		m_aMissions.Clear();
+		m_aClues.Clear();
+		if (ui)
+		{
+			array<ref array<string>> recs = {};
+			Records(ui.GetJournal(), recs);
+			foreach (array<string> f : recs)
+			{
+				if (RZ_UIText.Str(f, 0) == "M")
+					m_aMissions.Insert(f);
+				else if (RZ_UIText.Str(f, 0) == "C")
+					m_aClues.Insert(f);
+			}
+		}
+
+		RZ_UIW.Show(m_wRoot, "Empty", m_aMissions.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "Header", string.Format("%1 OPEN", m_aMissions.Count()));
+		DrawList();
+		if (!m_aMissions.IsEmpty())
+			DrawDetail(m_aMissions[Math.Min(m_iSelected, m_aMissions.Count() - 1)]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DrawList()
+	{
+		Widget list = RZ_UIW.Find(m_wRoot, "List");
+		RZ_UIW.ClearChildren(list);
+		ResourceName rowLayout = RZ_UISettings.Get().m_sMissionRowLayout;
+		foreach (int i, array<string> m : m_aMissions)
+		{
+			Widget row = RZ_UIW.Create(rowLayout, list);
+			if (!row)
+				return;
+
+			int giver = RZ_UIText.Int(m, 3);
+			Color accent = RZ_UIColor.Hazard();
+			string sub = RZ_UIText.Str(m, 6);
+			if (giver >= 0)
+			{
+				accent = RZ_UIColor.Faction(giver);
+				sub = RZ_Factions.GetName(giver) + " - " + sub;
+			}
+
+			RZ_UIW.Icon(row, "RowIcon", RZ_UIText.MissionIcon(RZ_UIText.Int(m, 2)));
+			RZ_UIW.Tint(row, "RowIcon", accent);
+			RZ_UIW.Tint(row, "RowAccent", accent);
+			RZ_UIW.Show(row, "RowSelected", i == m_iSelected);
+			RZ_UIW.SetText(row, "RowTitle", RZ_UIText.Str(m, 4));
+			RZ_UIW.SetText(row, "RowSub", sub);
+			RZ_UIW.SetText(row, "RowDir", RZ_UIText.Str(m, 7));
+			RZ_UIW.SetText(row, "RowTime", RZ_UIText.Str(m, 8) + " min left");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! M|id|kind|giver|title|given by|where|direction|minutes|requirements|Fame|Favor|brief|taking part
+	protected void DrawDetail(array<string> m)
+	{
+		int giver = RZ_UIText.Int(m, 3);
+		Color accent = RZ_UIColor.Hazard();
+		string icon = RZ_UIText.MissionIcon(RZ_UIText.Int(m, 2));
+		if (giver >= 0)
+		{
+			accent = RZ_UIColor.Faction(giver);
+			icon = RZ_UIText.FactionIcon(giver);
+		}
+
+		RZ_UIW.Tint(m_wRoot, "DetailAccent", accent);
+		RZ_UIW.Tint(m_wRoot, "DetailIcon", accent);
+		RZ_UIW.Icon(m_wRoot, "DetailIcon", icon);
+		RZ_UIW.SetText(m_wRoot, "DetailTitle", RZ_UIText.Str(m, 4));
+		string by = RZ_UIText.Str(m, 5);
+		if (by.IsEmpty() && giver >= 0)
+			by = RZ_Factions.GetName(giver);
+
+		RZ_UIW.SetText(m_wRoot, "DetailBy", by);
+		RZ_UIW.SetText(m_wRoot, "DetailBrief", RZ_UIText.Str(m, 12));
+		RZ_UIW.SetText(m_wRoot, "DetailWhere", string.Format("%1\n%2", RZ_UIText.Str(m, 7), RZ_UIText.Str(m, 6)));
+		string req = RZ_UIText.Str(m, 9);
+		if (req.IsEmpty())
+			req = "Open to anyone.";
+
+		RZ_UIW.SetText(m_wRoot, "DetailReq", req);
+		string rewards = "";
+		if (giver >= 0)
+			rewards = string.Format("About %1 Fame and %2 Favor with %3", RZ_UIText.Str(m, 10), RZ_UIText.Str(m, 11), RZ_Factions.GetNameInText(giver));
+
+		RZ_UIW.SetText(m_wRoot, "DetailRewards", rewards);
+
+		string id = RZ_UIText.Str(m, 1);
+		string clues = "";
+		foreach (array<string> c : m_aClues)
+		{
+			if (RZ_UIText.Str(c, 1) == id)
+				clues += string.Format("%1\n%2\n\n", RZ_UIText.Str(c, 2), RZ_UIText.Str(c, 3));
+		}
+
+		RZ_UIW.Show(m_wRoot, "CluesBlock", !clues.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "DetailClues", clues);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! What you heard this life: the broadcast, open channels and cracked secure channels, newest
+//! first. Kept on the client (RZ_PlayerUIComponent.OnNotice); F cycles the filter.
+class RZ_RadioLogMenu : RZ_MenuBase
+{
+	protected int m_iFilter;	// 0 all, 1 open, 2 secure, 3 broadcast
+
+	//------------------------------------------------------------------------------------------------
+	override protected int TabIndex() { return 2; }
+
+	//------------------------------------------------------------------------------------------------
+	override protected int DataVersion()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui)
+			return m_iFilter;
+
+		return ui.GetRadioVersion() * 10 + m_iFilter;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnOpened()
+	{
+		RZ_UIW.Listen("RZ_RadioFilter", OnFilter);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnMenuClose()
+	{
+		RZ_UIW.Unlisten("RZ_RadioFilter", OnFilter);
+		super.OnMenuClose();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnFilter(float value = 0, EActionTrigger reason = 0)
+	{
+		m_iFilter = (m_iFilter + 1) % 4;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool Passes(RZ_RadioEntry e)
+	{
+		if (m_iFilter == 1)
+			return e.m_iKind == RZ_ENoticeKind.OPEN_CHANNEL;
+		if (m_iFilter == 2)
+			return e.m_iKind == RZ_ENoticeKind.SECURE_CHANNEL;
+		if (m_iFilter == 3)
+			return e.m_iKind == RZ_ENoticeKind.BROADCAST;
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void Redraw()
+	{
+		array<string> names = {"ALL", "OPEN", "SECURE", "BROADCAST"};
+		RZ_UIW.SetText(m_wRoot, "FilterText", names[m_iFilter]);
+		Widget list = RZ_UIW.Find(m_wRoot, "Log");
+		RZ_UIW.ClearChildren(list);
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui)
+			return;
+
+		ResourceName rowLayout = RZ_UISettings.Get().m_sRadioRowLayout;
+		int shown = 0;
+		foreach (RZ_RadioEntry e : ui.GetRadioLog())
+		{
+			if (!Passes(e))
+				continue;
+
+			Widget row = RZ_UIW.Create(rowLayout, list);
+			if (!row)
+				break;
+
+			RZ_NoticeStyle st = new RZ_NoticeStyle();
+			st.m_iKind = e.m_iKind;
+			st.m_iFaction = e.m_iFaction;
+			Color accent = st.Accent();
+			RZ_UIW.Tint(row, "RowAccent", accent);
+			RZ_UIW.Tint(row, "RowIcon", accent);
+			RZ_UIW.Tint(row, "RowChannel", accent);
+			RZ_UIW.Icon(row, "RowIcon", st.Icon());
+			RZ_UIW.SetText(row, "RowTime", e.m_sTime);
+			RZ_UIW.SetText(row, "RowChannel", st.KindText());
+			RZ_UIW.SetText(row, "RowSpeaker", e.m_sTitle);
+			RZ_UIW.SetText(row, "RowText", e.m_sText);
+			shown++;
+		}
+
+		RZ_UIW.Show(m_wRoot, "Empty", shown == 0);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The map key: a static legend of the marker icons (the layout holds it all).
+class RZ_MapKeyMenu : RZ_MenuBase
+{
+	//------------------------------------------------------------------------------------------------
+	override protected int TabIndex() { return 3; }
+}

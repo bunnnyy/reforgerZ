@@ -302,6 +302,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("1", desc: "Show world events and the lab on the map (vanilla map markers). Turn off if markers misbehave", category: "ReforgerZ|Map")]
 	protected bool m_bMapMarkers;
 
+	// ---------------------------------------------------------------- UI
+	[Attribute(desc: "UI: styled notice cards (off = the vanilla hint), the infection timer, noise meter, radio log size, icon imageset and row layouts (docs/UI.md, UI/LAYOUTS.md)", category: "ReforgerZ|UI")]
+	protected ref RZ_UISettings m_UISettings;
+
 	// ---------------------------------------------------------------- Debug
 	[Attribute("1", desc: "Log a world status summary every few minutes", category: "ReforgerZ|Debug")]
 	protected bool m_bStatusLog;
@@ -350,6 +354,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_FactionLife m_FactionLife;
 	protected ref RZ_Interactions m_Interactions;
 	protected ref RZ_LooseItems m_LooseItems;
+	protected ref RZ_UIFeed m_UIFeed;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -506,6 +511,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Director = new RZ_Director(this, m_aStages);
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
 		m_Missions = new RZ_MissionManager(this);
+		m_UIFeed = new RZ_UIFeed(this);
 		m_Infection = new RZ_Infection(this, m_InfectionSettings);
 		m_BiteDetector = new RZ_BiteDetector(this, m_fBiteChance, m_fBiteReach, m_InfectionSettings);
 		m_Perks = new RZ_FactionPerks(this);
@@ -616,6 +622,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_GameTime.Tick(dt);
 		RZ_NoisemakerComponent.TickAll();
 		m_Infection.Tick(dt, ids, players);
+		m_UIFeed.Tick(dt, ids, players);
 		m_LooseItems.Tick(dt, players);
 
 		foreach (int i, IEntity ent : players)
@@ -666,6 +673,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
 	RZ_Infection GetInfection() { return m_Infection; }
+	RZ_UIFeed GetUIFeed() { return m_UIFeed; }
+	RZ_UISettings GetUISettings() { return m_UISettings; }
+	array<ref RZ_Background> GetBackgrounds() { return m_aBackgrounds; }
+	static int GetDrifterLegacy() { return DRIFTER_LEGACY; }
 	float GetMissionResearchMult() { return m_fMissionResearchMult; }
 
 	//------------------------------------------------------------------------------------------------
@@ -1055,6 +1066,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_BiteDetector.Reset(playerId);
 		m_Infection.OnPlayerSpawned(playerId);
+		m_UIFeed.OnPlayerSpawned(playerId);
 		RegisterGunfire(controlledEntity);
 		// Keys, timed actions and cracked channels belong to the last life
 		m_Interactions.OnPlayerSpawned(playerId);
@@ -2008,8 +2020,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	// ---------------------------------------------------------------- Client hint queue
-	//! The hint widget shows one hint at a time, so messages that arrive together
-	//! (e.g. the three on spawn) are queued and shown one after another.
+	//! The fallback: the vanilla hint widget shows one hint at a time, so messages that arrive
+	//! together (e.g. the three on spawn) are queued and shown one after another.
 	protected ref array<string> m_aHintTitles = {};
 	protected ref array<string> m_aHintTexts = {};
 	protected bool m_bHintShowing;
@@ -2020,6 +2032,16 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	protected void QueueHint(string title, string text)
 	{
+		// The ReforgerZ UI (UI/): the radio log keeps radio messages, and the styled card shows it
+		// if it can. Otherwise the vanilla hint below, as before.
+		RZ_NoticeStyle style = RZ_NoticeStyle.Classify(title);
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.OnNotice(title, text, style);
+
+		if (RZ_HudDisplay.PushNotice(title, text, style))
+			return;
+
 		// Under heavy traffic, drop the oldest messages rather than lag minutes behind
 		if (m_aHintTitles.Count() >= HINT_QUEUE_MAX)
 		{

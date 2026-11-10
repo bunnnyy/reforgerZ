@@ -352,6 +352,13 @@ class RZ_Infection
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! How long the Final stage lasts for this infection (seconds): the setting, at most 30% of the whole.
+	float FinalSeconds(RZ_PlayerProfile p)
+	{
+		return Math.Min(m_Settings.m_fFinalMinutes * 60, Math.Max(60, p.m_fInfectionTotal) * 0.3);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Where in the infection a player is.
 	RZ_EInfectionStage StageOf(RZ_PlayerProfile p)
 	{
@@ -359,8 +366,7 @@ class RZ_Infection
 			return RZ_EInfectionStage.NONE;
 
 		float total = Math.Max(60, p.m_fInfectionTotal);
-		float finalSeconds = Math.Min(m_Settings.m_fFinalMinutes * 60, total * 0.3);
-		if (p.m_fInfectionLeft <= finalSeconds)
+		if (p.m_fInfectionLeft <= FinalSeconds(p))
 			return RZ_EInfectionStage.FINAL;
 
 		if (p.m_fInfectionLeft <= total * 0.5)
