@@ -848,7 +848,7 @@ What it can't do:
 grep -rn "VERIFY" scripts/
 ```
 
-There are **40** lines with the tag: 30 in the game scripts (one is the comment in `Core/RZ_Util.c`
+There are **41** lines with the tag: 31 in the game scripts (one is the comment in `Core/RZ_Util.c`
 that explains them; 2 are in the UI) and 10 in the Workbench plugin (one is its header comment).
 Every name and signature question is settled: the game scripts compile on 1.9, and each call was
 checked against the base game's script source (its doc comments and how vanilla uses it). Each
@@ -874,10 +874,10 @@ No fallback. If this is wrong, nothing persists.
 | `Core/RZ_Util.c:606` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:828` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:634` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
-| `Interactions/RZ_Interactions.c:653` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
+| `Interactions/RZ_Interactions.c:703` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
 | `Core/RZ_Util.c:437` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:226` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:676`, `:691` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `World/RZ_Perimeter.c:677`, `:692` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Door locks** off (locks go back on the loot) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
@@ -885,14 +885,15 @@ No fallback. If this is wrong, nothing persists.
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:714` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:800` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
-| `Cure/RZ_Infection.c:1106` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
+| `Cure/RZ_Infection.c:1160` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 
-### Low risk: contained or cosmetic (8)
+### Low risk: contained or cosmetic (9)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
-| `Cure/RZ_AntidoteConsumable.c:8`, `Cure/RZ_MedConsumable.c:5` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
+| `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
+| `Interactions/RZ_Traps.c:260` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: use **Set it alight** on the building instead |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
 | `Core/RZ_Util.c:400` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
@@ -907,7 +908,7 @@ is in [UI.md](UI.md).
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_PlayerUIComponent.c:149` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:150` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_LoadoutLock.c:9` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still spawns a locked pick as the default background |
 
 ### The Workbench plugin (9)

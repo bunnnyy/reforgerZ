@@ -4,7 +4,8 @@
 //!  25%  Field antiviral    infection spreads slower, bites take longer to kill
 //!  50%  Bite treatment     (no world effect of its own; supply below)
 //!  75%  Immunity serum     spread slows further, bites take even longer
-//! 100%  Final stand        hold the lab against waves for 15 minutes (paused while nobody is online).
+//! 100%  Final stand        hold the lab against waves for 15 minutes (it starts once a player reaches
+//!                          the lab, also after a restart, and waits while nobody is online).
 //!                          Win: the cure goes out and the season ends.
 //!                          Abandon the lab: the batch is ruined and research drops back to 90%
 //!                          (the lab itself never falls: it's Halcyon's stronghold).
@@ -25,6 +26,7 @@ class RZ_CureResearch
 	protected bool m_bFinalStand;
 	protected float m_fFinalStandLeft;
 	protected float m_fAbandonedFor;
+	protected bool m_bStandReached;		// a player has been at the lab since the stand (re)started
 	protected float m_fWaveTimer;
 	protected float m_fAntidoteTimer;
 	protected float m_fStabiliserTimer;
@@ -219,7 +221,14 @@ class RZ_CureResearch
 		if (m_bCured)
 			return 0.2;
 
-		return 1 - 0.15 * Math.Min(m_iMilestone, 3);
+		// -15% at 25%, -45% in all at 75%; the 50% breakthrough only changes treatment supply
+		if (m_iMilestone >= 3)
+			return 0.55;
+
+		if (m_iMilestone >= 1)
+			return 0.85;
+
+		return 1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -383,6 +392,7 @@ class RZ_CureResearch
 		m_bFinalStand = true;
 		m_fFinalStandLeft = FINAL_STAND_SECONDS;
 		m_fAbandonedFor = 0;
+		m_bStandReached = false;
 		m_fWaveTimer = WAVE_INTERVAL_SECONDS;
 		m_GM.NotifyAll("THE FINAL STAND", "The cure is being synthesized. Every infected for miles can sense it. Hold the lab for 15 minutes! A handful of steady people can do it; more of you draw more of them.");
 	}
@@ -391,7 +401,19 @@ class RZ_CureResearch
 	protected void TickFinalStand(float dt, array<IEntity> players)
 	{
 		vector lab = m_GM.GetLabPosition();
-		if (RZ_Mission.CountPlayersNear(players, lab, LAB_DEFENCE_RADIUS) == 0)
+		int atLab = RZ_Mission.CountPlayersNear(players, lab, LAB_DEFENCE_RADIUS);
+
+		// The stand (its clock, waves and "abandoned") only starts once a player has reached the
+		// lab since it (re)started, so a restart doesn't lose the batch before anyone can get there
+		if (!m_bStandReached)
+		{
+			if (atLab == 0)
+				return;
+
+			m_bStandReached = true;
+		}
+
+		if (atLab == 0)
 			m_fAbandonedFor += dt;
 		else
 			m_fAbandonedFor = 0;

@@ -1434,7 +1434,8 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Choice slots: 0 the role's special, 1 give food, 2 the Mechanic's "Ask about cars", 3 rob.
+	//! Choice slots: 0 the role's special, 1 give food, 2 the Mechanic's "Ask about cars" (while
+	//! bitten, anyone's "Give them your antidote"), 3 rob.
 	protected string ChoiceLabels(RZ_Wanderer w)
 	{
 		string special = "";
@@ -1450,8 +1451,11 @@ class RZ_Wanderers
 			case RZ_EWandererRole.MECHANIC: special = string.Format("Buy a car part (%1 Haven Favor)", PartCost()); break;
 		}
 
+		// Bitten: slot 2 is the antidote (a player chooses to give theirs; it's never taken)
 		string extra = "";
-		if (w.m_eRole == RZ_EWandererRole.MECHANIC)
+		if (w.IsBitten())
+			extra = "Give them your antidote";
+		else if (w.m_eRole == RZ_EWandererRole.MECHANIC)
 			extra = "Ask about cars";
 
 		array<string> labels = {special, "Share some food", extra, "Rob " + w.GetShortName()};
@@ -1621,6 +1625,7 @@ class RZ_Wanderers
 	protected void OnBitten(RZ_Wanderer w, array<int> ids, array<IEntity> players)
 	{
 		w.m_fBittenLeft = BITE_SECONDS;
+		w.m_bTagged = false; // relabel: "Give them your antidote"
 		RZ_Safehouses houses = m_GM.GetSafehouses();
 		int idx = -1;
 		if (houses)
@@ -1660,22 +1665,6 @@ class RZ_Wanderers
 
 		w.m_fBittenLeft = w.m_fBittenLeft - dt * rate;
 
-		// Someone close with an antidote uses it
-		if (w.m_Body)
-		{
-			foreach (int i, IEntity p : players)
-			{
-				if (RZ_Util.DistXZ(p.GetOrigin(), w.m_vPos) > 4 || !RZ_AntidoteHelper.TakeOne(p))
-					continue;
-
-				w.m_fBittenLeft = -1;
-				w.Remember(m_GM.GetProfile(ids[i]).m_sIdentity, MEM_SAVED);
-				m_GM.AddFame(ids[i], RZ_EFaction.SURVIVORS, CURED_FAME);
-				m_GM.NotifyPlayer(ids[i], w.GetTitle(), "The needle goes in. A long minute, then the shaking stops. \"I owe you. I'll remember. All season, I'll remember.\"");
-				return;
-			}
-		}
-
 		if (w.m_fBittenLeft > 0)
 			return;
 
@@ -1684,6 +1673,23 @@ class RZ_Wanderers
 		Die(w, "turned", -1);
 		if (RZ_Util.NearestDistance(at, players) <= 600)
 			m_GM.GetSpawner().SpawnZombie(RZ_Util.GroundPos(at), true, m_GM.FindNearestSettlement(at), -1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Give them your antidote" on a bitten wanderer: the player's own dose, by their choice.
+	protected void GiveAntidote(RZ_Wanderer w, int playerId, IEntity user)
+	{
+		if (!RZ_AntidoteHelper.TakeOne(user))
+		{
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "You've no antidote to give. They look at your empty hands and nod.");
+			return;
+		}
+
+		w.m_fBittenLeft = -1;
+		w.m_bTagged = false; // back to the usual labels
+		w.Remember(m_GM.GetProfile(playerId).m_sIdentity, MEM_SAVED);
+		m_GM.AddFame(playerId, RZ_EFaction.SURVIVORS, CURED_FAME);
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), "The needle goes in. A long minute, then the shaking stops. \"I owe you. I'll remember. All season, I'll remember.\"");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2077,6 +2083,13 @@ class RZ_Wanderers
 		if (option == 3)
 		{
 			Rob(w, playerId, owner, user);
+			return;
+		}
+
+		// Nobody turns down an antidote, whatever they think of you
+		if (option == 2 && w.IsBitten())
+		{
+			GiveAntidote(w, playerId, user);
 			return;
 		}
 

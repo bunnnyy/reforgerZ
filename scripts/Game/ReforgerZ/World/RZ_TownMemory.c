@@ -66,9 +66,36 @@ class RZ_TownState
 	float m_fLoot = 1;			// 0..1, what's left to find
 	bool m_bBarricaded;
 	bool m_bPowered;
-	int m_iBurned;				// buildings burned (reported by a fire system), fading slowly
+	int m_iBurned;				// buildings burned (reported by a fire system) that still count
 	int m_iBuildings;			// 0 = estimate from the town's size
-	float m_fBurnFade;
+	ref array<float> m_aBurnAge = {};	// seconds since each counted burn, oldest first
+
+	//------------------------------------------------------------------------------------------------
+	//! One more burned building (the oldest stops counting if the town is full of them).
+	void AddBurn(int cap)
+	{
+		m_aBurnAge.Insert(0);
+		while (m_aBurnAge.Count() > Math.Max(0, cap))
+		{
+			m_aBurnAge.RemoveOrdered(0);
+		}
+
+		m_iBurned = m_aBurnAge.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Each burn stops counting `fadeAfter` seconds after it happened.
+	void AgeBurns(float dt, float fadeAfter)
+	{
+		for (int i = m_aBurnAge.Count() - 1; i >= 0; i--)
+		{
+			m_aBurnAge[i] = m_aBurnAge[i] + dt;
+			if (m_aBurnAge[i] >= fadeAfter)
+				m_aBurnAge.RemoveOrdered(i);
+		}
+
+		m_iBurned = m_aBurnAge.Count();
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -160,10 +187,18 @@ class RZ_TownMemory
 			{
 				RZ_TownSave ts = m_Restored.towns[i];
 				t.m_fLoot = Math.Clamp(ts.loot, 0, 1);
-				t.m_bBarricaded = ts.barricaded;
-				// Powered comes back from the power grid itself (RZ_PowerGrid), not from here
-				t.m_iBurned = Math.Max(0, ts.burned);
+				// Barricaded isn't restored: the barricades themselves aren't saved, so nothing would
+				// ever clear it. Powered comes back from the power grid itself (RZ_PowerGrid).
+				// Restored burns each count for a full fade time from the restart.
 				t.m_iBuildings = Math.Max(0, ts.buildings);
+				int cap = t.m_iBuildings;
+				if (cap <= 0)
+					cap = BuildingCount(i); // t isn't in the list yet: the guess by size
+
+				for (int b = 0; b < ts.burned; b++)
+				{
+					t.AddBurn(cap);
+				}
 			}
 
 			m_aTowns.Insert(t);
@@ -196,15 +231,8 @@ class RZ_TownMemory
 			if (t.m_fLoot < 1)
 				t.m_fLoot = Math.Min(1, t.m_fLoot + back);
 
-			if (t.m_iBurned <= 0)
-				continue;
-
-			t.m_fBurnFade = t.m_fBurnFade + dt;
-			if (t.m_fBurnFade >= fadeEvery)
-			{
-				t.m_fBurnFade = 0;
-				t.m_iBurned = t.m_iBurned - 1;
-			}
+			if (t.m_iBurned > 0)
+				t.AgeBurns(dt, fadeEvery);
 		}
 	}
 
@@ -379,8 +407,7 @@ class RZ_TownMemory
 			return;
 
 		bool wasBurned = mem.HasFlag(idx, FLAG_BURNED);
-		t.m_iBurned = Math.Min(t.m_iBurned + 1, mem.BuildingCount(idx));
-		t.m_fBurnFade = 0;
+		t.AddBurn(mem.BuildingCount(idx));
 		if (!wasBurned && mem.HasFlag(idx, FLAG_BURNED))
 			mem.OnTownBurned(idx);
 	}

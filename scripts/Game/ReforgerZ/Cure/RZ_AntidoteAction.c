@@ -32,14 +32,21 @@ class RZ_InjectAntidoteAction : ScriptedUserAction
 		if (playerId <= 0)
 			return;
 
-		// Don't waste a dose on someone who isn't sick
-		if (!gm.GetProfile(playerId).IsInfected())
+		// Don't waste a dose on someone who isn't sick (RZ_Infection.UseAntidote decides, without
+		// giving away whether a cleaned bite worked)
+		if (gm.GetInfection())
 		{
-			gm.NotifyPlayer(playerId, "Antidote", "You don't feel sick. Better save it.");
-			return;
+			if (!gm.GetInfection().UseAntidote(playerId))
+				return;
+		}
+		else
+		{
+			if (!gm.GetProfile(playerId).IsInfected())
+				return;
+
+			gm.CurePlayer(playerId);
 		}
 
-		gm.CurePlayer(playerId);
 		SCR_EntityHelper.DeleteEntityAndChildren(pOwnerEntity);
 	}
 }

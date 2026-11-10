@@ -104,7 +104,7 @@ class RZ_InteractionSettings
 	[Attribute("medkit,firstaid,first_aid,ifak", desc: "First-aid kit keywords (anyone can treat with one)")]
 	string m_sMedkitWords;
 
-	[Attribute("bandage,dressing,saline,gauze", desc: "Bandage keywords (Nurses and Doctors treat with one of these too)")]
+	[Attribute("bandage,dressing,gauze", desc: "Bandage keywords (Nurses and Doctors treat with one of these too)")]
 	string m_sBandageWords;
 
 	[Attribute("5", desc: "Real minutes before the same player can be treated again")]
@@ -182,6 +182,8 @@ class RZ_InteractionSave
 //! Inventory helpers by keyword (prefab names), shared by every interaction.
 class RZ_ItemHelper
 {
+	static const string NOT_EMPTY = ",-empty";	// appended to fuel keywords: an empty can is no fuel
+
 	//------------------------------------------------------------------------------------------------
 	//! "a,b, c" into lower-case words.
 	static void Words(string text, notnull array<string> result)
@@ -237,7 +239,36 @@ class RZ_ItemHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How many carried items match any of the words.
+	//! Whether an item's prefab name has any of the words and none of the "-word" exclusions
+	//! (fuel lists end in NOT_EMPTY: a full can, never an empty one).
+	static bool Matches(IEntity item, array<string> words)
+	{
+		if (!item)
+			return false;
+
+		string name = LowerName(item);
+		if (name.IsEmpty())
+			return false;
+
+		bool hit = false;
+		foreach (string w : words)
+		{
+			if (w.Length() > 1 && w.Substring(0, 1) == "-")
+			{
+				if (name.Contains(w.Substring(1, w.Length() - 1)))
+					return false;
+			}
+			else if (!w.IsEmpty() && name.Contains(w))
+			{
+				hit = true;
+			}
+		}
+
+		return hit;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many carried items match the words (see Matches).
 	static int Count(IEntity character, array<string> words)
 	{
 		if (!character || words.IsEmpty())
@@ -252,7 +283,7 @@ class RZ_ItemHelper
 		int n = 0;
 		foreach (IEntity item : items)
 		{
-			if (item && RZ_FoodHelper.IsFood(item, words))
+			if (Matches(item, words))
 				n++;
 		}
 
@@ -268,15 +299,34 @@ class RZ_ItemHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Takes up to n matching items. Returns how many were taken.
+	//! Takes up to n matching items (see Matches). Returns how many were taken.
 	static int Take(IEntity character, string wordList, int n)
 	{
 		array<string> words = {};
 		Words(wordList, words);
-		if (words.IsEmpty())
+		if (words.IsEmpty() || !character || n <= 0)
 			return 0;
 
-		return RZ_FoodHelper.TakeFood(character, words, n);
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return 0;
+
+		array<IEntity> items = {};
+		inv.GetItems(items);
+		int taken = 0;
+		foreach (IEntity item : items)
+		{
+			if (taken >= n)
+				break;
+
+			if (!Matches(item, words))
+				continue;
+
+			inv.TryDeleteItem(item);
+			taken++;
+		}
+
+		return taken;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -880,7 +930,8 @@ class RZ_Interactions
 	//! A spot other systems ask for (bodies, car projects). Returns its id, -1 at the cap.
 	int AddSpot(int kind, vector pos, string type, string noun, int refId, float expires)
 	{
-		if (m_aSpots.Count() >= m_Settings.m_iSpotCap)
+		// A bite spot is never refused: one per bitten player, and missing it costs a life
+		if (kind != KIND_WOUND && m_aSpots.Count() >= m_Settings.m_iSpotCap)
 			return -1;
 
 		RZ_Spot s = new RZ_Spot();
@@ -1471,7 +1522,8 @@ class RZ_Interactions
 		if (RZ_Util.DistXZ(user.GetOrigin(), t.m_vStart) > reach)
 			return "You moved away.";
 
-		if (t.m_iKind == TASK_TREAT && (!t.m_Target || !RZ_Util.IsCharacterAlive(t.m_Target) || RZ_Util.DistXZ(t.m_Target.GetOrigin(), user.GetOrigin()) > reach))
+		// Treating someone or cleaning their bite: the patient has to stay too
+		if ((t.m_iKind == TASK_TREAT || t.m_iKind == TASK_CLEAN) && (!t.m_Target || !RZ_Util.IsCharacterAlive(t.m_Target) || RZ_Util.DistXZ(t.m_Target.GetOrigin(), user.GetOrigin()) > reach))
 			return "They're not next to you any more.";
 
 		if (!t.m_bStill && t.m_iKind != TASK_TREAT)

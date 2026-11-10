@@ -739,10 +739,13 @@ class RZ_Infection
 		}
 
 		RZ_Interactions hub = RZ_Interactions.Get();
-		if (!hub)
+		IEntity patientEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(patient);
+		if (!hub || !patientEnt)
 			return;
 
-		hub.StartTask(playerId, user, RZ_Interactions.TASK_CLEAN, s.m_iId, patient * 2 + option, m_Settings.m_fCleanSeconds, "cleaning the bite", false);
+		// The patient has to stay close too (the task stops if they walk off)
+		RZ_TimedTask task = hub.StartTask(playerId, user, RZ_Interactions.TASK_CLEAN, s.m_iId, patient * 2 + option, m_Settings.m_fCleanSeconds, "cleaning the bite", false);
+		task.m_Target = patientEnt;
 		m_GM.NotifyPlayer(playerId, "The bite", string.Format("Hold still. About %1 seconds. This will hurt.", RZ_Util.RoundToInt(m_Settings.m_fCleanSeconds)));
 	}
 
@@ -843,9 +846,11 @@ class RZ_Infection
 		m_GM.NotifyPlayer(patient, "The bite", "Scrubbed raw and dressed. It burns like hell. Whatever was in it, you may have got it out in time. You'll know in a minute or two.");
 		if (Math.RandomFloat01() < chance)
 		{
-			// The bite never takes. The player finds out a minute later, as if the window had closed
+			// The bite never takes. The player finds out when the window would have closed; until
+			// then the HUD and every answer look as they would for a bite still in its window
+			float windowLeft = Math.Max(1, p.m_fWoundLeft);
 			p.ClearInfection();
-			State(patient).m_fTellCleanAt = m_fClock + 60;
+			State(patient).m_fTellCleanAt = m_fClock + windowLeft;
 		}
 
 		if (helper > 0 && helper != patient)
@@ -864,6 +869,48 @@ class RZ_Infection
 			m_GM.NotifyPlayer(patient, "The bite", "The heat's gone out of it. Just a bite now: sore, ugly, clean. It didn't take.");
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A clean that worked and the player hasn't been told yet: seconds until they are (the rest of
+	//! the window). 0 if none.
+	float CleanPendingLeft(int playerId)
+	{
+		RZ_SickState st;
+		if (!m_mStates.Find(playerId, st) || st.m_fTellCleanAt < 0 || m_GM.GetProfile(playerId).IsInfected())
+			return 0;
+
+		return Math.Max(0, st.m_fTellCleanAt - m_fClock);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Infected as far as the player can know: infected, or a clean that worked and isn't told yet.
+	bool SeemsInfected(int playerId)
+	{
+		return m_GM.GetProfile(playerId).IsInfected() || CleanPendingLeft(playerId) > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An antidote (RZ_InjectAntidoteAction or RZ_ConsumableAntidote). True if the dose was used.
+	//! A bite cleaned out in time but not told yet takes the dose too: the player can't know.
+	bool UseAntidote(int playerId)
+	{
+		if (!SeemsInfected(playerId))
+		{
+			m_GM.NotifyPlayer(playerId, "Antidote", "You don't feel sick. Better save it.");
+			return false;
+		}
+
+		if (m_GM.GetProfile(playerId).IsInfected())
+		{
+			m_GM.CurePlayer(playerId);
+			return true;
+		}
+
+		// Already clean: the dose goes, and it sounds like any cure (RZ_GameModeComponent.CurePlayer)
+		State(playerId).m_fTellCleanAt = -1;
+		m_GM.NotifyPlayer(playerId, "Cured", "The fever breaks. You'll live, for now.");
+		return true;
+	}
+
 	// ================================================================ Meds
 	//------------------------------------------------------------------------------------------------
 	//! A treatment item is used (RZ_UseMedAction or RZ_ConsumableMed). True if it was taken (the
@@ -872,15 +919,22 @@ class RZ_Infection
 	{
 		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
 		string title = MedTitle(kind);
-		if (!p.IsInfected())
+		if (!SeemsInfected(playerId))
 		{
 			m_GM.NotifyPlayer(playerId, title, "You don't feel sick. Better save it.");
 			return false;
 		}
 
-		if (p.IsWoundFresh())
+		if (p.IsWoundFresh() && !p.m_bWoundCleaned)
 		{
 			m_GM.NotifyPlayer(playerId, title, "It hasn't taken yet. Wash the bite out first; pills won't do anything for an open wound.");
+			return false;
+		}
+
+		// Cleaned and waiting: the same answer whether the clean worked or not
+		if (!p.IsInfected() || p.IsWoundFresh())
+		{
+			m_GM.NotifyPlayer(playerId, title, "It's been cleaned. Now you wait: if it takes, you'll know soon enough. Pills won't help until then.");
 			return false;
 		}
 
@@ -921,7 +975,7 @@ class RZ_Infection
 				float paused = Math.Min(1200, MedRoom(p));
 				p.m_fMedExtension = p.m_fMedExtension + paused;
 				p.m_fPauseLeft = p.m_fPauseLeft + paused;
-				StartSideEffect(p, kind, Math.Max(SIDE_EFFECT_SECONDS, paused));
+				StartSideEffect(p, kind, SIDE_EFFECT_SECONDS);
 				if (paused <= 0)
 					m_GM.NotifyPlayer(playerId, title, "Meant for cattle. It does nothing for you now except the cough.");
 				else

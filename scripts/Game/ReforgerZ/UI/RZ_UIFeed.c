@@ -18,6 +18,8 @@ class RZ_UIFeedState
 	int m_iInf = -1;
 	bool m_bPaused;
 	float m_fSinceSync;
+	float m_fLeftSent;		// what the client was last told (it counts down from these)
+	float m_fPauseSent;
 	int m_iListen = -2;
 	int m_iNoise = -1;
 }
@@ -76,6 +78,7 @@ class RZ_UIFeed
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;
+	protected static const float JUMP_SECONDS = 5;	// the infection timer is re-sent when it jumps more than this
 
 	protected RZ_GameModeComponent m_GM;
 	protected ref map<int, ref RZ_UIFeedState> m_mStates = new map<int, ref RZ_UIFeedState>();
@@ -241,16 +244,33 @@ class RZ_UIFeed
 				finalSeconds = inf.FinalSeconds(p);
 			}
 		}
+		else if (inf && inf.CleanPendingLeft(playerId) > 0)
+		{
+			// A clean that worked, not told yet: the window still shows until it would have closed
+			state = RZ_EInfectionUI.GOLDEN;
+			left = inf.CleanPendingLeft(playerId);
+			total = Math.Max(1, inf.GetSettings().m_fGoldenSeconds);
+		}
+
+		// What the client shows now, counting down from the last send (RZ_PlayerUIComponent.GetInfectionLeft)
+		float predicted = st.m_fLeftSent - st.m_fSinceSync;
+		if (st.m_fPauseSent > 0)
+			predicted = st.m_fLeftSent - Math.Max(0, st.m_fSinceSync - st.m_fPauseSent);
+
+		float predictedPause = Math.Max(0, st.m_fPauseSent - st.m_fSinceSync);
+		bool jumped = Math.AbsFloat(left - predicted) > JUMP_SECONDS || Math.AbsFloat(p.m_fPauseLeft - predictedPause) > JUMP_SECONDS;
 
 		bool paused = p.m_fPauseLeft > 0;
 		bool changed = state != st.m_iInf || paused != st.m_bPaused;
-		bool resync = state != RZ_EInfectionUI.NONE && st.m_fSinceSync >= settings.m_fResyncSeconds;
+		bool resync = state != RZ_EInfectionUI.NONE && (jumped || st.m_fSinceSync >= settings.m_fResyncSeconds);
 		if (!changed && !resync)
 			return;
 
 		st.m_iInf = state;
 		st.m_bPaused = paused;
 		st.m_fSinceSync = 0;
+		st.m_fLeftSent = left;
+		st.m_fPauseSent = p.m_fPauseLeft;
 		ui.SendInfection(state, left, total, finalSeconds, p.m_fPauseLeft);
 	}
 
@@ -343,8 +363,16 @@ class RZ_UIFeed
 		else
 			payload = BuildBackgrounds(playerId);
 
+		// Too long: cut after the last whole record that fits, never in the middle of one
 		if (payload.Length() > MAX_PAYLOAD)
+		{
 			payload = payload.Substring(0, MAX_PAYLOAD);
+			int lastBreak = payload.LastIndexOf("\n");
+			if (lastBreak >= 0)
+				payload = payload.Substring(0, lastBreak + 1);
+			else
+				payload = "";
+		}
 
 		return payload;
 	}

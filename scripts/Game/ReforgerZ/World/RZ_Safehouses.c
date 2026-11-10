@@ -1445,13 +1445,18 @@ class RZ_Safehouses
 
 	//------------------------------------------------------------------------------------------------
 	//! Telling the truth about a bite, at any safehouse: once per life it's slowed (x1.15 at a
-	//! Shelter up to x1.5 at a Town), and you can't be caught hiding it. A fresh bite (the golden
-	//! window) is washed out properly instead, which may stop it.
+	//! Shelter up to x1.5 at a Town), and you can't be caught hiding that bite. A fresh bite (the
+	//! golden window) is washed out properly instead, which may stop it. A bite that's been cleaned
+	//! already uses nothing: come back if it takes.
 	protected void DeclareBite(int playerId, RZ_Safehouse h)
 	{
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		RZ_Infection infection = m_GM.GetInfection();
 		string title = "Safehouse: " + h.m_sName;
-		if (!profile.IsInfected())
+
+		// A clean that worked but isn't told yet sounds like any cleaned bite
+		bool pending = infection && !profile.IsInfected() && infection.SeemsInfected(playerId);
+		if (!profile.IsInfected() && !pending)
 		{
 			m_GM.NotifyPlayer(playerId, title, "\"You're not bitten. Good. Keep it that way.\"");
 			return;
@@ -1463,18 +1468,32 @@ class RZ_Safehouses
 			return;
 		}
 
-		profile.m_bBiteDeclared = true;
-		RZ_Infection infection = m_GM.GetInfection();
-		if (profile.IsWoundFresh())
+		if (pending || profile.IsWoundFresh())
 		{
-			if (infection && infection.CleanAtSafehouse(playerId))
+			if (!pending && infection && infection.CleanAtSafehouse(playerId))
+			{
+				// Only a bite still there afterwards stays declared (a clean that worked ends the bite)
+				if (profile.IsInfected())
+					profile.m_bBiteDeclared = true;
+
 				m_GM.NotifyPlayer(playerId, title, "\"Just now? Sit. Bite your sleeve.\" Boiled water, a brush, the last of the iodine, and a clean dressing. \"If it was going to work, that did it.\"");
+			}
 			else
-				m_GM.NotifyPlayer(playerId, title, "\"It's been cleaned already. Then we wait, and we hope.\" Someone puts a blanket round you.");
+			{
+				m_GM.NotifyPlayer(playerId, title, "\"It's been cleaned already. Then we wait, and we hope. Come back if it takes.\" Someone puts a blanket round you.");
+			}
 
 			return;
 		}
 
+		profile.m_bBiteDeclared = true;
+		if (profile.m_bDeclareSlowed)
+		{
+			m_GM.NotifyPlayer(playerId, title, "\"Again? We've nothing left that would help, not twice. You can stay. Sit by the door, where it's cooler.\"");
+			return;
+		}
+
+		profile.m_bDeclareSlowed = true;
 		profile.m_fInfectionLeft = profile.m_fInfectionLeft * DeclareMult(h);
 		int minutes = RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60);
 		if (h.HasMedic())
@@ -1582,9 +1601,10 @@ class RZ_Safehouses
 			profile.m_bKinGreeted = true;
 			RZ_Util.HealCharacter(p);
 			string extra = "";
-			if (profile.HasInfectionTaken() && !profile.m_bBiteDeclared)
+			if (profile.HasInfectionTaken() && !profile.m_bBiteDeclared && !profile.m_bDeclareSlowed)
 			{
 				profile.m_bBiteDeclared = true;
+				profile.m_bDeclareSlowed = true;
 				profile.m_fInfectionLeft = profile.m_fInfectionLeft * m_Settings.m_fDeclareTown;
 				extra = string.Format(" She sees the bite and doesn't say a word about it, just works. About %1 minutes, now.", RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60));
 			}

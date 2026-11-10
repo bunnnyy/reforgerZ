@@ -685,10 +685,9 @@ class RZ_PowerGrid
 		}
 
 		m_mMaintained.Set(ident, m_fClock);
-		array<string> fuelWords = {"jerrycan", "jerry_can", "fuel", "canister"};
 		float amount = m_Settings.m_fPatchRestore;
 		string how = "You grease what moves and tape what leaks.";
-		if (RZ_FoodHelper.TakeFood(user, fuelWords, 1) > 0)
+		if (RZ_ItemHelper.Take(user, "jerrycan,jerry_can,fuel,canister" + RZ_ItemHelper.NOT_EMPTY, 1) > 0)
 		{
 			amount = m_Settings.m_fFuelRestore;
 			how = "You pour in the fuel and grease what moves.";

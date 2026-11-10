@@ -120,8 +120,8 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 
 | Class | Runs on | Does |
 |---|---|---|
-| `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes** (the timer also resyncs every minute; the client counts down in between). Builds the standing, journal, background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
-| `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each at most every 2 s), and the client's cache. Keeps the radio log on the client for this life. A notice board payload from the server opens the board menu |
+| `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes** (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal, background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
+| `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the radio log on the client for this life. A notice board payload from the server opens the board menu |
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/hall`, sent as commands to the server, which checks them again. Registered with the first notice |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards |
 | `RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu`, `RZ_NoticeBoardMenu`, `RZ_HallOfFameMenu` | client (`ChimeraMenuBase`) | Ask for their data on open, redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them |
@@ -132,7 +132,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_UIW`, `RZ_UIText`, `RZ_UIColor` | client | Every engine UI call in one helper; payload text; the palette |
 
 **Data is cheap.** Pushed values are a few numbers per change, to the owning player only. Menu data
-is one string (one record per line, fields split by `|`, at most 6000 characters) sent when the
+is one string (one record per line, fields split by `|`, at most 6000 characters, cut after the last whole record that fits) sent when the
 menu opens; the map's every 20 s while it's open. Each kind can be asked for at most every 2 s.
 Nothing is replicated to other players.
 

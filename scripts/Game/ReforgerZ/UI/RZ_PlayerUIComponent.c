@@ -20,7 +20,8 @@ class RZ_RadioEntry
 //! Server to client: owner-only RPCs, sent by RZ_UIFeed only when something changed (the infection
 //! timer also resyncs every minute; the client counts down between). Client to server: the
 //! menus ask for their data when they open (at most once every 2 s per player), and chat commands
-//! and the board menu send a command (/note, /noteclear, /hall; also at most every 2 s).
+//! and the board menu send a command (/note, /noteclear, /hall; each at most every 2 s, and a
+//! dropped one gets a short notice).
 //! On a listen server the owner is this machine, so calls go straight to the handler.
 class RZ_PlayerUIComponent : ScriptComponent
 {
@@ -55,7 +56,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
-	protected float m_fLastCommand = -100;
+	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100};	// per CMD_*
 
 	//! Commands from the client (RZ_ChatCommands, the board menu)
 	static const int CMD_NOTE = 0;
@@ -308,14 +309,19 @@ class RZ_PlayerUIComponent : ScriptComponent
 		if (!gm)
 			return;
 
-		float now = RZ_UIW.Now();
-		if (now - m_fLastCommand < ASK_GAP)
+		int playerId = OwnerPlayerId();
+		if (playerId <= 0 || cmd < 0 || cmd >= m_aLastCommand.Count())
 			return;
 
-		m_fLastCommand = now;
-		int playerId = OwnerPlayerId();
-		if (playerId <= 0)
+		// Each command at most every 2 s, and the player hears why one was dropped
+		float now = RZ_UIW.Now();
+		if (now - m_aLastCommand[cmd] < ASK_GAP)
+		{
+			gm.NotifyPlayer(playerId, "Wait", "One moment: that was just done. Try again in a second or two.");
 			return;
+		}
+
+		m_aLastCommand[cmd] = now;
 
 		// Notes are short; anything longer is cut on the server whatever the client sent
 		string note = text;

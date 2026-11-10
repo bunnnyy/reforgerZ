@@ -95,7 +95,7 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 12 | Refugee Column | Trusted | | Escort a group walking a road to a safe town | Big Fame; three join the safehouse | ✅ *to a safehouse 0.8–3.5 km away, in a straight line through a midpoint* |
 | 13 | Signal Fires | Trusted, 3+ players online | | Light beacons on 3 hills within 2 minutes of each other | Fame for each player; every town within 2 km −10 infection | ✅ |
 | 14 | Water Purifier | Trusted | ★ Mechanic/Lab Tech: 2 of 3 parts | Find 3 purifier parts in a town and bring them to a safehouse | Fame | ✅ *the parts are the mission item, lying in the streets with two infected each* |
-| 15 | Fortify the Safehouse | Trusted | ★ Mechanic: 1.5× faster | Hold the area for 3 min (3 waves) while barricades go up | Fame; the town counts as Barricaded | ✅ |
+| 15 | Fortify the Safehouse | Trusted | ★ Mechanic: 1.5× faster | Hold the area for 3 min (3 waves) while barricades go up | Fame; the town counts as Barricaded (until the next restart) | ✅ |
 | 16 | Trader Caravan | Trusted, not Trusted by the Red Hand | | Defend a Haven trader at a crossroads from a Red Hand raid | Fame (Red Hand Infamy) | ✅ |
 | 17 | Rescue the Kids | Trusted | ★ Hunter: quieter approach | Hold a school for 90 s without making noise. Too loud and a horde comes | Big Fame; the kids join a safehouse (+3) | ✅ |
 | 18 | The Informant | Trusted, Watched+ by the Red Hand | 🔒 not Police/Soldier | Pose as a buyer at a Red Hand dead drop and report who shows up | Fame; the Red Hand loses a little strength (+10 Red Hand Infamy for the buyer if spotted) | ✅ *wait 60 s for the seller, buy, then reach any safehouse; spotted 20%, +30% carrying a gun* |
