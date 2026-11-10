@@ -97,7 +97,7 @@ class RZ_Objectives
 			case RZ_EObjective.SURVIVE:
 				return string.Format("Stay alive for %1 minutes.", profile.m_iObjGoal);
 			case RZ_EObjective.DELIVER_SAMPLES:
-				return string.Format("Get %1 infected samples to the Institute lab.", profile.m_iObjGoal);
+				return string.Format("Get %1 infected samples to Halcyon's lab.", profile.m_iObjGoal);
 			case RZ_EObjective.COMPLETE_MISSIONS:
 				return string.Format("Help out: be part of %1 successful missions.", profile.m_iObjGoal);
 			case RZ_EObjective.EARN_TRUST:

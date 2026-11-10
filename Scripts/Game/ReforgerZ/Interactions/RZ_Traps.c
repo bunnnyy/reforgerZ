@@ -570,7 +570,7 @@ class RZ_Traps
 			cap = m_Settings.m_iBarricadesPerPlayer;
 			minutes = m_Settings.m_fBarricadeMinutes;
 			setPrefab = BarricadePrefab();
-			text = "You hammer the planks across the frame. It won't stop a crowd, but it'll hold the odd one, and you'll hear them try. Until morning, more or less.";
+			text = "You hammer the planks across the frame. It won't stop a crowd, but it'll hold the odd one, and you'll hear them try. For an hour, more or less.";
 			if (!NearBuilding(kit.GetOrigin()))
 			{
 				m_GM.NotifyPlayer(playerId, "Barricade", "There's no door or window here to board up. Put the planks down in a doorway.");

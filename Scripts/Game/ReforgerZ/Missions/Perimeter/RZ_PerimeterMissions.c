@@ -1,7 +1,7 @@
 //! Missions at the Perimeter (docs/MISSIONS.md, "Perimeter missions"). No fence assets:
 //! they're built from the edge rectangle in RZ_Perimeter, a package item, drop points
-//! and puzzle props. They're the only links to the outside, so they're rare and
-//! dangerous on purpose. All of them turn themselves off when the Perimeter is off.
+//! and puzzle props. Nothing crosses the line in either direction: these are jobs at
+//! it, rare and dangerous on purpose. All of them turn themselves off when the Perimeter is off.
 
 //------------------------------------------------------------------------------------------------
 class RZ_PerimeterMissionHelper
@@ -50,8 +50,9 @@ class RZ_PerimeterMissionHelper
 //------------------------------------------------------------------------------------------------
 //! The Blind Spot (Red Hand, Known). The drones run a rotation, and for ten minutes
 //! tonight one stretch of the edge isn't covered. In that window the cordon is off in
-//! that stretch only. A smuggler waits just inside the line (in the kill zone) with a
-//! package; reach him, take it, and hand it in at the Red Hand drop before the drones
+//! that stretch only. A Red Hand runner who has been lying up in the kill zone (where the
+//! Red Hand keeps a cache nobody else can reach) waits with a package; reach him, take
+//! it, and hand it in at the Red Hand drop before the drones
 //! come back. When the window closes the stretch is covered again: anyone still in the
 //! kill zone gets the usual warning shot, then the fatal one. Night only.
 class RZ_Mission_BlindSpot : RZ_Mission_Delivery
@@ -131,7 +132,7 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 			return false;
 
 		m_sTitle = "The blind spot";
-		m_sBrief = string.Format("Drones run a rotation, same as everyone. In %1 minutes the stretch of the line at grid %2 goes blind for ten. A friend from the other side waits just inside the line with a package. Get it to our drop at grid %3 before the drones come back. Late, or still standing there when they do? Then you were never ours.",
+		m_sBrief = string.Format("Drones run a rotation, same as everyone. In %1 minutes the stretch of the line at grid %2 goes blind for ten. One of ours has been lying up in the kill zone since the last gap, sitting on the cache we keep where nobody else can reach it. Meet him, take the package, and get it to our drop at grid %3 before the drones come back. Late, or still standing there when they do? Then you were never ours.",
 			RZ_Util.RoundToInt(OPEN_IN / 60), RZ_SettlementScanner.GridReference(m_vMeet), RZ_SettlementScanner.GridReference(m_vDrop));
 		return true;
 	}
@@ -193,7 +194,7 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 			if (!m_aParticipants.Contains(ids[i]))
 				m_aParticipants.Insert(ids[i]);
 
-			gm.NotifyPlayer(ids[i], m_sTitle, "He doesn't say a word. He sets a sealed package at your feet and walks back over the line, into the dark.");
+			gm.NotifyPlayer(ids[i], m_sTitle, "He doesn't say a word. He sets a sealed package at your feet and crawls back into the brush along the line, to wait for the next gap.");
 			RZ_Util.DeleteUnit(m_Smuggler);
 			return;
 		}
@@ -242,9 +243,9 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 }
 
 //------------------------------------------------------------------------------------------------
-//! The Crossing (Haven, Any). At night, someone outside leaves a sealed medicine
-//! package right at the edge, inside the warning zone: at the waterline where the edge
-//! is coast, else at the treeline. Grab it and get out of the warning zone before the
+//! The Crossing (Haven, Any). At night: a Haven runner carrying medicine along the edge
+//! (the one road nobody tolls) was found by a drone and dropped the sealed package inside
+//! the warning zone: at the waterline where the edge is coast, else at the treeline. Grab it and get out of the warning zone before the
 //! drone "locks on": the carrier may spend LOCK_SECONDS in total in the warning zone
 //! with it. Lock-on: one shot destroys the package (not the carrier) and the mission
 //! fails. Deliver it to the Haven drop in the safest town.
@@ -310,7 +311,7 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 			m_fTimeLeft = Math.Clamp(left, 900, 7200);
 
 		m_sTitle = "The crossing";
-		m_sBrief = string.Format("Someone on the outside is still trying to help. Tonight they left a sealed medicine package at the %1 at grid %2, right under the drones. Take it and get out of the warning zone quickly: if you carry it too long under a drone, it locks on. Please bring it to our safehouse in %3. And be careful.",
+		m_sBrief = string.Format("One of our runners was carrying medicine along the line tonight, the only road the Red Hand doesn't toll. A drone found her. She dropped the package at the %1 at grid %2, right under the drones, and ran. She made it. The medicine didn't. Take it and get out of the warning zone quickly: if you carry it too long under a drone, it locks on. Please bring it to our safehouse in %3. And be careful.",
 			m_sSpotKind, RZ_SettlementScanner.GridReference(spot), s.m_sName);
 		return true;
 	}
@@ -399,13 +400,13 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		return "The medicine from across the line reached the Haven.";
+		return "The medicine from the line reached the Haven.";
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return "The medicine from across the line never reached the Haven.";
+		return "The medicine from the line never reached the Haven.";
 	}
 }
 
@@ -496,7 +497,7 @@ class RZ_Mission_ShotAtTheLine : RZ_PuzzleMission
 			case RZ_EFaction.SURVIVORS: return string.Format("Someone tried to cross last night. They didn't make it. Their body is still in the warning zone at grid %1. Please bring back whatever they were carrying, so we know who it was. Don't go past them: the shooting starts just beyond.", grid);
 			case RZ_EFaction.MILITARY: return string.Format("Unidentified civilian, shot at the line, grid %1. Body is inside the warning zone. Recover any papers. Do not proceed beyond the body. Kill zone starts there.", grid);
 			case RZ_EFaction.BANDITS: return string.Format("Some genius tried the line last night. Guess how that went. The body's in the warning zone at grid %1, pockets still full. Go through them. Just stop where he stopped, yeah?", grid);
-			case RZ_EFaction.INSTITUTE: return string.Format("A body lies in the warning zone at grid %1, shot at the line. We need to know who they were and what they carried out of the Zone. Recover their papers. Stay short of the kill zone: it begins just past the body.", grid);
+			case RZ_EFaction.INSTITUTE: return string.Format("A body lies in the warning zone at grid %1, shot at the line. We need to know who they were and what they were carrying. Recover their papers. Stay short of the kill zone: it begins just past the body.", grid);
 		}
 
 		return string.Format("A body lies in the warning zone at grid %1, shot at the line. Recover their papers without crossing into the kill zone.", grid);

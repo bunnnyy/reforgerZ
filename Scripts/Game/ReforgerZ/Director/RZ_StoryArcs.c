@@ -855,7 +855,13 @@ class RZ_StoryArcs
 				if (m_Arc.I(8) == 1)
 					End("The lab held. Whatever happened to the Halcyon courier, the Red Hand won't sell his antidotes twice.");
 				else
+				{
+					// The raid really empties the store: up to two doses go to the black market
+					if (m_GM.GetCure())
+						m_GM.GetCure().StealLabAntidotes(2);
+
 					End("The Red Hand got into the lab's stores. The antidotes they sell now are Halcyon's own.");
+				}
 			}
 		}
 	}

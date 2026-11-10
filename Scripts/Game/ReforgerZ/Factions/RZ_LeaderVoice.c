@@ -168,7 +168,7 @@ class RZ_LeaderVoice
 			case RZ_ELeaderTrait.PARANOID: lines.Insert("Close the door. Who saw you come in?"); lines.Insert("I'll say this once, and I'll deny it after."); break;
 			case RZ_ELeaderTrait.MERCIFUL: lines.Insert("Sit down first. You look like you haven't eaten."); lines.Insert("Nobody needs to get hurt for this one."); break;
 			case RZ_ELeaderTrait.RUTHLESS: lines.Insert("I don't care how. I care that it's done."); lines.Insert("This one isn't pretty. That's why I'm asking you."); break;
-			case RZ_ELeaderTrait.IDEALIST: lines.Insert("This is how we get out of here. One job at a time."); lines.Insert("It's small. It's also the right thing."); break;
+			case RZ_ELeaderTrait.IDEALIST: lines.Insert("This is how we get through this. One job at a time."); lines.Insert("It's small. It's also the right thing."); break;
 			case RZ_ELeaderTrait.PRAGMATIST: lines.Insert("I don't like who we're dealing with. I like starving less."); lines.Insert("Everybody's somebody's rival. Business is business."); break;
 			case RZ_ELeaderTrait.VETERAN: lines.Insert("Listen carefully. I've done this before, and I've buried people who didn't."); lines.Insert("Here's the plan. Here's what goes wrong with it."); break;
 			case RZ_ELeaderTrait.TALKER: lines.Insert("You'll have heard the rumours. Here's the truth, more or less."); lines.Insert("Funny story, this. Well. Not funny."); break;
@@ -220,7 +220,7 @@ class RZ_LeaderVoice
 	{
 		switch (faction)
 		{
-			case RZ_EFaction.SURVIVORS: return "\"We're the Haven. Just people who wouldn't leave. We feed who we can, and nobody shoots in the house.\"";
+			case RZ_EFaction.SURVIVORS: return "\"We're the Haven. Just people who were here when the gates closed. We feed who we can, and nobody shoots in the house.\"";
 			case RZ_EFaction.MILITARY: return "\"Task Force Bastion. What's left of it. We hold what we were told to hold. Nobody has told us anything for days.\"";
 			case RZ_EFaction.BANDITS: return "\"The Red Hand. We're the ones who noticed the rules stopped. Don't look so worried. Yet.\"";
 			case RZ_EFaction.INSTITUTE: return "\"Halcyon. We were studying the site before the lockdown. We're the only ones who can prove the Zone is clean, and nobody outside opens the gates without proof.\"";

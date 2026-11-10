@@ -189,6 +189,26 @@ class RZ_FactionShopAction : ScriptedUserAction
 			return;
 		}
 
+		// Antidotes come only from the lab's stock (docs/DESIGN.md, "Cure research"): Halcyon sells
+		// the doses the lab has made; anyone else (the Red Hand) only the doses stolen from it
+		bool antidote = m_sItemPrefab == gm.GetAntidotePrefab();
+		bool fromLab = m_eFaction == RZ_EFaction.INSTITUTE;
+		if (antidote && gm.GetCure())
+		{
+			int doses = gm.GetCure().GetStolenAntidotes();
+			if (fromLab)
+				doses = gm.GetCure().GetLabAntidotes();
+
+			if (doses <= 0)
+			{
+				if (fromLab)
+					gm.NotifyPlayer(playerId, factionName, "\"No doses left. The lab makes one every quarter of an hour, when the research allows. Come back.\"");
+				else
+					gm.NotifyPlayer(playerId, factionName, "\"Antidotes? Fresh out. Somebody would have to fetch us some from the lab.\"");
+				return;
+			}
+		}
+
 		// Supply lines (docs/DESIGN.md): a shop whose truck didn't get through is short until the
 		// next one does (some items out, the top tier maybe locked, dearer); a stronghold Under
 		// Pressure keeps its top tier back. Morale moves prices a little.
@@ -241,6 +261,14 @@ class RZ_FactionShopAction : ScriptedUserAction
 		{
 			gm.AddFavor(playerId, m_eFaction, cost); // refund
 			return;
+		}
+
+		if (antidote && gm.GetCure())
+		{
+			if (fromLab)
+				gm.GetCure().TakeLabAntidote();
+			else
+				gm.GetCure().TakeStolenAntidote();
 		}
 
 		gm.NotifyPlayer(playerId, factionName, string.Format("Here's your %1, for %2 Favor. %3 Favor left.", m_sDisplayName, cost, gm.GetProfile(playerId).GetFavor(m_eFaction)));

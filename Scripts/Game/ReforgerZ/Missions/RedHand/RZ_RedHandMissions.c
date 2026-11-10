@@ -590,9 +590,13 @@ class RZ_Mission_SabotageRelay : RZ_Mission_DestroyTarget
 
 //------------------------------------------------------------------------------------------------
 //! #16 Steal the Antidotes: get into the lab and hold its store room for 90 s.
-//! Only once the lab is making antidotes. ★ Lab Tech: knows where they're kept (twice as fast).
+//! Only while the lab has doses in stock; up to two go to the Red Hand's black market (the
+//! Red Hand quartermaster's antidote, if one is set up, sells only those). ★ Lab Tech: knows
+//! where they're kept (twice as fast).
 class RZ_Mission_StealAntidotes : RZ_Mission_Hold
 {
+	static const int STOLEN_DOSES = 2;
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -609,7 +613,8 @@ class RZ_Mission_StealAntidotes : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
-		if (!gm.HasLab() || gm.GetAntidotePrefab().IsEmpty())
+		// Only while the lab has doses to steal (they go to the Red Hand's black market)
+		if (!gm.HasLab() || gm.GetAntidotePrefab().IsEmpty() || !gm.GetCure() || gm.GetCure().GetLabAntidotes() <= 0)
 			return 0;
 
 		return 0.8;
@@ -622,15 +627,21 @@ class RZ_Mission_StealAntidotes : RZ_Mission_Hold
 		m_vPos = gm.GetLabPosition();
 		m_fParticipationRadius = 40;
 		m_sTitle = "Steal the antidotes";
-		m_sBrief = "Halcyon is sitting on a batch of antidotes. Get into the lab's store room and hold it for 90 seconds while the crew loads up.";
+		m_sBrief = "Halcyon is sitting on a batch of antidotes and selling them only to its friends. Get into the lab's store room and hold it for 90 seconds while the crew loads up. They'll be on our shelves by tonight.";
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.SpawnAntidoteAt(RZ_Util.RandomPointInRing(m_vPos, 2, 4));
-		gm.SpawnAntidoteAt(RZ_Util.RandomPointInRing(m_vPos, 2, 4));
-		gm.NotifyAll("Halcyon", "Someone robbed the lab's antidote store. The Red Hand will be selling them soon.");
+		// The crew takes the doses to the black market; the job pays the usual Fame and Favor
+		int taken = 0;
+		if (gm.GetCure())
+			taken = gm.GetCure().StealLabAntidotes(STOLEN_DOSES);
+
+		if (taken > 0)
+			gm.NotifyAll("Halcyon", string.Format("Someone robbed the lab's antidote store: %1 doses gone. The Red Hand will be selling them.", taken));
+		else
+			gm.NotifyAll("Halcyon", "Someone broke into the lab's store room. The shelves were already empty.");
 	}
 }

@@ -539,7 +539,7 @@ class RZ_Mission_ClearTheRoad : RZ_Mission_KillTagged
 
 		m_bSpawned = true;
 		m_sTitle = "Clear the road";
-		m_sBrief = string.Format("The road from %1 to %2 is blocked by wrecks and infected. Clear every one of them.", a.m_sName, b.m_sName);
+		m_sBrief = string.Format("The road from %1 to %2 is crawling with infected. Clear every one of them, so the Haven can use it again.", a.m_sName, b.m_sName);
 		return true;
 	}
 

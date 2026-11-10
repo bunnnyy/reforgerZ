@@ -123,21 +123,21 @@ class RZ_Background
 
 		b = Make("hunter", "Hunter",
 			"Starts with a hunting rifle. Moves quietly: 25% less zombie attention.",
-			"Very little ammo. The military doesn't trust armed civilians.");
+			"Very little ammo. Bastion doesn't trust armed civilians.");
 		b.m_fNoiseMult = 0.75;
 		b.m_iRepMilitary = -10;
 		outList.Insert(b);
 
 		b = Make("police", "Police Officer",
-			"Starts with a sidearm. The military trusts you.",
-			"Bandits hate cops.");
+			"Starts with a sidearm. Bastion knows you.",
+			"The Red Hand starts out watching you: it hates cops.");
 		b.m_iRepMilitary = 20;
 		b.m_iRepBandits = -25;
 		outList.Insert(b);
 
 		b = Make("excon", "Ex-Con",
-			"Bandits treat you as one of their own. Starts with a knife.",
-			"Military and survivors are wary of you. Poor health: infection kills 20% faster.");
+			"The Red Hand treats you as one of its own. Starts with a knife.",
+			"Bastion starts out watching you, and the Haven is wary. Poor health: infection kills 20% faster.");
 		b.m_iRepBandits = 25;
 		b.m_iRepMilitary = -25;
 		b.m_iRepSurvivors = -10;
@@ -145,7 +145,7 @@ class RZ_Background
 		outList.Insert(b);
 
 		b = Make("labtech", "Lab Technician",
-			"Samples you deliver are worth double research. The Institute trusts you.",
+			"Samples you deliver are worth double research. Halcyon knows you.",
 			"Starts unarmed and draws a little extra attention.");
 		b.m_fResearchMult = 2;
 		b.m_iRepInstitute = 20;

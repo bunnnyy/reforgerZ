@@ -198,7 +198,7 @@ class RZ_Job_TrainingDay : RZ_LeaderHold
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.8, s.m_fRadius + 40);
 		m_Recruits = RZ_Util.SpawnPrefab(gm.GetSurvivorGroupPrefab(), m_vPos);
 		m_sTitle = "Training Day";
-		m_sBrief = string.Format("Six recruits. Two weeks ago they were students. Today they do their first patrol, at the edge of %1, and they are going to panic. Stand with them for four minutes. Bring them all back.",
+		m_sBrief = string.Format("Six recruits. Last week they were students. Today they do their first patrol, at the edge of %1, and they are going to panic. Stand with them for four minutes. Bring them all back.",
 			s.m_sName);
 		return true;
 	}
@@ -416,7 +416,7 @@ class RZ_Job_OffBookRequisition : RZ_LeaderPuzzle
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.4);
-		m_iTalk = AddClue("The village elder", "\"Bastion. Of course. We gave last month, to the other one. Do they not talk to each other?\" She already knows they don't.");
+		m_iTalk = AddClue("The village elder", "\"Bastion. Of course. We gave last week, to the other one. Do they not talk to each other?\" She already knows they don't.");
 		string labels = string.Format("Take the full contribution|Take half and say it was all|Pay it yourself (%1 Bastion Favor)", PAY_FAVOR);
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", labels, m_iTalk, "Talk to the elder");
 
