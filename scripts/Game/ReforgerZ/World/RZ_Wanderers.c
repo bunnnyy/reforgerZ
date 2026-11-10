@@ -2272,7 +2272,7 @@ class RZ_Wanderers
 	protected void Treat(RZ_Wanderer w, int playerId, IEntity user)
 	{
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
-		if (profile.IsInfected() && profile.m_bDoctorTreated)
+		if (m_GM.GetInfection().SeemsInfected(playerId) && profile.m_bDoctorTreated)
 		{
 			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"I've done what I can for that. I'm sorry. Find an antidote.\"");
 			return;
@@ -2282,6 +2282,17 @@ class RZ_Wanderers
 			return;
 
 		w.Remember(profile.m_sIdentity, MEM_HELPED);
+		// A bite cleaned out in time but not told yet: the doctor can't tell either, so it looks
+		// the same as a bite that took (nothing changes; the golden window ends as it would)
+		float pending = m_GM.GetInfection().CleanPendingLeft(playerId);
+		if (pending > 0)
+		{
+			profile.m_bDoctorTreated = true;
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("They clean the bite, pack it with something that smells of cloves, and don't lie to you. \"Slower now. About %1 minutes. Not a cure.\"",
+				RZ_Util.RoundToInt(pending * 1.25 / 60)));
+			return;
+		}
+
 		if (profile.IsInfected())
 		{
 			profile.m_bDoctorTreated = true;
