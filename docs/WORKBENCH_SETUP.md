@@ -111,7 +111,7 @@ If the player faction key isn't `SURV`, the variants are `<key>_H1`..`<key>_H15`
 
 ## 4. Prefabs by system
 
-The code has **127 prefab fields**: 40 on `RZ_GameModeComponent`, 81 in its settings objects, and
+The code has **128 prefab fields**: 40 on `RZ_GameModeComponent`, 82 in its settings objects, and
 6 in list entries and actions (shop item, requisition item, recipe output, loot table lists).
 Every prefab with an action list needs an `ActionsManagerComponent`; every prefab with an `RZ_`
 component needs an `RplComponent`. Slot names are the attribute's category, then its label.
@@ -326,7 +326,8 @@ stays quiet. Slots under **Interactions**.
 
 | Prefab | Base | Slot | Used for |
 |---|---|---|---|
-| `RZ_InteractionSpot.et` | a `GenericEntity` with a small invisible collision box, `RplComponent`, `ActionsManagerComponent` and the generic components | General > Spot prefab | every searchable thing near players |
+| `RZ_InteractionSpot.et` | a `GenericEntity` with a small invisible collision box, `RplComponent`, `ActionsManagerComponent` and the generic components | General > Spot prefab | every searchable thing near players, and the Unlock / Lock / Force spot outside a locked door (keep the box small and off the character collision layer so it never blocks a door or a doorway) |
+| `RZ_Key.et` | a small item (a key or key ring) with `RplComponent`, `RZ_KeyItemComponent` and optionally `RZ_ReadKeyTagAction` | Search > Key prefab | keys as real items that can be dropped, traded and stolen (empty = keys are data for one life) |
 | `RZ_CarProject.et` | a non-drivable car prop with the same components | Cars > Project prefab | a fixable car before it runs |
 | Drivable cars | vanilla civilian cars | Cars > Car prefabs (empty = no fixable cars) | what a fixed car becomes |
 | `RZ_CarBattery.et`, `RZ_Tyre.et`, `RZ_SparkPlugs.et` | items named with "battery", "tyre", "spark" | Cars > Battery / Tyre / Spark | parts |
@@ -339,6 +340,11 @@ stays quiet. Slots under **Interactions**.
 | `RZ_FireEffect.et` | a fire and smoke particle | Traps > Fire effect | a burning building |
 | Recipe outputs | bandage, tin rattle (`RZ_NoisemakerComponent`), spear, tablets | Crafting > Bandage / Noisemaker / Spear / Tablets | the workbench |
 | Water | untreated and safe bottles (the survival mod's if it has both) | General > Dirty / Clean water | wells, stoves |
+
+**Door locks need no prefab.** The vanilla door action is modded (`Interactions/RZ_DoorHooks.c`),
+so vanilla doors refuse by themselves. If that file doesn't compile, see the first door row in
+[the VERIFY list](#6-the-verify-list); turning **Search > Door locks** off puts every lock back on
+the loot.
 
 **The loot pool** (Search > Loot pool) is one list of every item a search can find. Each building
 type takes the items whose prefab names contain its keywords (the lists are in
@@ -396,7 +402,7 @@ default; this is what each one covers. Defaults are in brackets where they matte
 | Territory | Faction life | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Guidance | Guidance | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
 | Interactions | General | **Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
-| Interactions | Search | **Loot pool**, loot tables, chances (find 0.6, rare 0.1, electronics 0.1), locks and their shares, crowbar keywords, readable and body chances |
+| Interactions | Search | **Loot pool**, loot tables, chances (find 0.6, rare 0.1, electronics 0.1), locks and their shares, **Door locks** (on; off = the lock on the loot), **Key prefab**, force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances |
 | Interactions | Cars | Car prefabs, project prefab, per settlement (0.34), max (6), parts and keywords, hotwire and siphon timings, Mechanic part cost (12) |
 | Interactions | Crafting | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
 | Interactions | Traps | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs |
@@ -420,7 +426,7 @@ The last winner is kept in `$profile:ReforgerZ/last_season.json`, which a wipe d
 grep -rn "VERIFY" Scripts/
 ```
 
-There are **93** markers (one is the comment in `Core/RZ_Util.c` that explains them). Each is an
+There are **105** markers (one is the comment in `Core/RZ_Util.c` that explains them). Each is an
 engine API whose exact name or signature couldn't be confirmed. Usually the fix is a rename, and
 most are isolated in small helpers in `Core/RZ_Util.c`. They're grouped by risk; fix them in this
 order. Paths are under `Scripts/Game/ReforgerZ/`.
@@ -431,13 +437,13 @@ No fallback. If these are wrong, the basic game doesn't work.
 
 | Where | Call | If it fails |
 |---|---|---|
-| `Core/RZ_GameModeComponent.c:536` | `GetOnPlayerSpawned()` invoker | Nothing per-player runs on spawn (backgrounds, goals, radio) |
-| `Core/RZ_GameModeComponent.c:831` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
-| `Core/RZ_GameModeComponent.c:900` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
-| `Core/RZ_GameModeComponent.c:1032` | `OnProjectileShot` event and signature | No gunfire heat |
-| `Core/RZ_GameModeComponent.c:1696`, `:1697` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
-| `Core/RZ_GameModeComponent.c:1707` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
-| `Core/RZ_GameModeComponent.c:1923`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
+| `Core/RZ_GameModeComponent.c:539` | `GetOnPlayerSpawned()` invoker | Nothing per-player runs on spawn (backgrounds, goals, radio) |
+| `Core/RZ_GameModeComponent.c:846` | `GetBackendApi().GetPlayerIdentityId` | Profiles can't follow a player across lives |
+| `Core/RZ_GameModeComponent.c:915` | `SCR_LoadoutComponent.GetLoadout()` | Everyone plays as the default background |
+| `Core/RZ_GameModeComponent.c:1047` | `OnProjectileShot` event and signature | No gunfire heat |
+| `Core/RZ_GameModeComponent.c:1711`, `:1712` | `SetFactionKey`, `SetSpawnPointName` on spawn points | Spawn points unusable or unnamed |
+| `Core/RZ_GameModeComponent.c:1722` | `GetGame().GetWorldFile()` | Saves can't tell maps apart |
+| `Core/RZ_GameModeComponent.c:1938`, `Cure/RZ_LabComponents.c:253` | `SCR_HintManagerComponent.ShowCustomHint` | Players see no messages at all |
 | `Persistence/RZ_SaveData.c:117` | JSON contexts serialise plain members | Nothing is saved |
 | `World/RZ_SettlementScanner.c:59`, `:69` | building base class; `GetBaseType()` and `EMapDescriptorType` | No settlements: place `RZ_SettlementMarkerEntity`s |
 | `Core/RZ_Util.c:369`, `:377` | `GetPrefabData().GetPrefabName()`, `GetVObject().GetResourceName()` | Landmarks, building types, furniture and territory names fail; puzzles use the fallback landmark |
@@ -448,7 +454,7 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Puzzles/RZ_RadioStealth.c:36` | `GetItems()` lists every carried storage | Radio checks fail (the same call is used for food and keywords) |
 | `Puzzles/RZ_PuzzleActions.c:15` | `ScriptedUserAction.GetOwner()` | No clue can be read |
 
-### Medium risk: big features, with a fallback (39)
+### Medium risk: big features, with a fallback (49)
 
 | Where | Call | Fallback |
 |---|---|---|
@@ -459,9 +465,9 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Factions/RZ_SupplyLines.c:816` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:560` | vehicle `SCR_DamageManagerComponent.GetState()` | A burnt-out truck counts as late instead |
 | `Core/RZ_Util.c:574`, `:578` | `SetWorldTransform`, `Physics.SetVelocity` | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
-| `Interactions/RZ_Interactions.c:635` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
-| `Interactions/RZ_Interactions.c:703` | `SCR_DestructibleBuildingEntity` as the building class | Buildings aren't recognised; furniture still is |
-| `Interactions/RZ_Interactions.c:248` | `GetItems()` for keyword items | Crowbars, parts, fuel, water and medkits not found |
+| `Interactions/RZ_Interactions.c:644` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
+| `Interactions/RZ_Interactions.c:720` | `SCR_DestructibleBuildingEntity` as the building class | Buildings aren't recognised; furniture still is |
+| `Interactions/RZ_Interactions.c:251` | `GetItems()` for keyword items | Crowbars, parts, fuel, water and medkits not found |
 | `Puzzles/RZ_Landmarks.c:55` | `QueryEntitiesBySphere(center, radius, cb, filter, flags)` | No landmarks: the fallback landmark prop |
 | `Puzzles/RZ_PuzzleComponents.c:80`, `:142`, `Puzzles/RZ_BlinkingLight.c:161` | `[RplProp]` on a `ScriptComponent` | Labels don't replicate: generic labels, all slots visible, actions still work |
 | `Puzzles/RZ_GameTime.c:21`, `:25`, `:29` | `ChimeraWorld.CastFrom`, `GetTimeAndWeatherManager`, `GetTimeOfTheDay` | -1: night missions never appear, no night effects |
@@ -475,8 +481,13 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Core/RZ_Util.c:301` | `AIGroup.GetWaypoints()` / `RemoveWaypoint()` | Hordes can't be redirected (The Clockwork Horde, unarmed missions) |
 | `World/RZ_Safehouses.c:336`, `:346` | `GetItems`, `TryDeleteItem` for food | Food isn't found or taken; check the food keywords first |
 | `Core/RZ_Util.c:594` | fuel nodes: `GetFuelNodesList`, `GetMaxFuel`, `SetFuel` | Empty the helper: a fixed car has its prefab's own fuel |
+| `Interactions/RZ_DoorHooks.c:11` | `modded class SCR_DoorUserAction`: the vanilla door action's name, owned by the door entity | **Doesn't compile if the name is wrong.** Rename it to the action in the door prefabs' `ActionsManagerComponent` (maybe `DoorUserAction`); if there's no scripted one, delete the file and turn **Search > Door locks** off (locks go back on the loot) |
+| `Interactions/RZ_DoorHooks.c:22`, `:32` | `SetCannotPerformReason(string)`; the door action's `PerformAction` also runs on the server | No "Locked" reason, only a greyed action / the server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
+| `Interactions/RZ_DoorLocks.c:39`, `:49`, `:58` | `DoorComponent`; `GetControlValue()` is 0 when shut; `SetControlValue(0)` shuts it | No doors found: every building keeps the loot lock / open and shut mixed up: fix the threshold / locked doors aren't pulled shut |
+| `Interactions/RZ_DoorLocks.c:70`, `:97` | `GetParent()`; `GetChildren()`/`GetSibling()` list a building's door entities | No door belongs to a building: no door locks, the loot lock everywhere |
+| `Interactions/RZ_DoorLocks.c:118`, `:127` | `GetBounds()` is the building's local box; `GetWorldTransform()` | No box: no outside doors (the loot lock). A wrong box or transform gets inside and outside wrong: try every locked door from both sides |
 
-### Low risk: contained or cosmetic (29)
+### Low risk: contained or cosmetic (31)
 
 | Where | Call | Fallback |
 |---|---|---|
@@ -494,6 +505,8 @@ No fallback. If these are wrong, the basic game doesn't work.
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:408`, `:425` | `GetAll()`, `GetTotalWeight()` | Turn on **Scale counts items** |
 | `Puzzles/RZ_RadioStealth.c:42` | `BaseRadioComponent` class name | Radios are found by name ("radio") only |
 | `Missions/RZ_MissionBases.c:244` | damage manager `GetState()` on a target prop | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
+| `Interactions/RZ_KeyItem.c:29` | `[RplProp]` on a key item's component | "Read the tag" shows no label; keys still open their locks (the id is on the server) |
+| `Interactions/RZ_KeyItem.c:80` | `GetItems()` finds key items in every carried storage | Carried keys aren't found: leave **Key prefab** empty (data keys) |
 
 ## 7. Log lines to check
 
@@ -513,6 +526,7 @@ Every line starts with `[ReforgerZ]`. On start you should see, in roughly this o
 [ReforgerZ] Radio station: the radio mast near Levie at grid 052-118 (picked).
 [ReforgerZ] Story arcs: on, running none.
 [ReforgerZ] Search: N items in the loot pool, M tables set by hand.
+[ReforgerZ] Locks: on the doors (the loot where no doors are found); keys are key items.
 [ReforgerZ] World interactions: on. N fixable cars on the map.
 [ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
 [ReforgerZ] Started. N settlements, stage Early Outbreak, cure 0 percent, state ...
@@ -531,6 +545,7 @@ Warnings worth acting on:
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
 | `Mission item prefab has no RZ_MissionItemComponent ...` | The mission item is missing its component |
+| `Key prefab has no RZ_KeyItemComponent (or didn't spawn) ...` | Add the component to the key prefab; until then keys are data |
 | `Supply trucks are off. ...` / `Territory is off. ...` | Expected only if you turned them off |
 | `Saved state is from another map, starting a fresh outbreak.` | Expected after changing maps |
 | `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON VERIFY failed) |
@@ -570,5 +585,13 @@ session, tick off:
 - [ ] A safehouse shows occupants; you can hand in food and declare a bite.
 - [ ] A wanderer can be talked to and remembers you.
 - [ ] "Search" spots appear in a house; a search finds something from the loot pool.
+- [ ] A locked place's outside door says "Locked" from outside and opens from inside (which
+  unlocks it); its interior doors and shutting any door always work.
+- [ ] At the door: Unlock with the right key (the wrong one says which tag you need), Lock it
+  again, Force it with a crowbar (loud; it can't be locked after). Search inside follows.
+- [ ] A key item can be dropped, picked up by someone else and opens the door for them;
+  "Read the tag" shows its label on the ground.
+- [ ] With **Relock minutes** at 5: the door is locked and pulled shut again once you step away.
+- [ ] Infected or AI going through a locked door: note what happens (they aren't stopped).
 - [ ] A thrown bottle draws nearby infected; a puzzle mission can be finished.
 - [ ] Night: missions that need the dark are offered; the log says "night".

@@ -298,6 +298,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[RplProp()]
 	protected bool m_bReplCured;
 
+	[RplProp()]
+	protected string m_sReplLockedBuildings;	// ";key;key;": locked buildings near players (RZ_DoorLocks, for the door action)
+
 	// ---------------------------------------------------------------- Runtime (server)
 	protected static RZ_GameModeComponent s_Instance;
 
@@ -788,6 +791,18 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	float GetReplicatedCureProgress() { return m_fReplCureProgress; }
 	RZ_EOutbreakStage GetReplicatedStage() { return m_iReplStage; }
 	bool IsReplicatedCured() { return m_bReplCured; }
+	string GetLockedBuildings() { return m_sReplLockedBuildings; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: which buildings near players are locked, for the client side of the door action.
+	void SetLockedBuildings(string list)
+	{
+		if (list == m_sReplLockedBuildings)
+			return;
+
+		m_sReplLockedBuildings = list;
+		Replication.BumpMe();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	RZ_Settlement GetSettlement(int idx)

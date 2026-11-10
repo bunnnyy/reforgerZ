@@ -465,6 +465,13 @@ class RZ_Cars
 		return string.Format("car@%1", c.m_iId);
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! What a car key's fob says (a key item's tag).
+	protected string CarKeyTag(RZ_CarProject c)
+	{
+		return string.Format("Car keys: %1, %2", c.m_sNoun, TownName(c));
+	}
+
 	// ================================================================ The project
 	//------------------------------------------------------------------------------------------------
 	void ProjectLabels(RZ_Spot s, out string read, out string choiceLabels)
@@ -682,7 +689,7 @@ class RZ_Cars
 				return "";
 
 			c.m_bKeysFound = true;
-			m_Hub.GetSearch().GiveKey(playerId, CarKey(c));
+			m_Hub.GetSearch().GiveKey(playerId, CarKey(c), CarKeyTag(c));
 			return string.Format("car keys on a fob shaped like a fish: they'll fit %1 in %2", c.m_sNoun, TownName(c));
 		}
 
@@ -717,7 +724,7 @@ class RZ_Cars
 		if (friendly && best.m_bHasKeys && !best.m_bKeysFound)
 		{
 			best.m_bKeysFound = true;
-			m_Hub.GetSearch().GiveKey(playerId, CarKey(best));
+			m_Hub.GetSearch().GiveKey(playerId, CarKey(best), CarKeyTag(best));
 			text += " They dig in a pocket. \"Here. Found its keys in a kitchen drawer last week. Didn't have the parts.\"";
 		}
 

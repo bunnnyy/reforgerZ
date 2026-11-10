@@ -16,7 +16,8 @@
 //! - Longer actions (searching, forcing a lock, hotwiring, crafting, cracking a channel,
 //!   treating someone) are timed on the server tick: stay put until they finish.
 //!
-//! The parts live in their own files: RZ_Search.c, RZ_Cars.c, RZ_Crafting.c (and water),
+//! The parts live in their own files: RZ_Search.c, RZ_DoorLocks.c (with RZ_DoorHooks.c and
+//! RZ_KeyItem.c), RZ_Cars.c, RZ_Crafting.c (and water),
 //! RZ_Traps.c (barricades, tripwires, spike traps, generators, molotovs and fire),
 //! RZ_SecureRadio.c and RZ_Medical.c.
 
@@ -156,6 +157,7 @@ class RZ_SpotCandidate
 	vector m_vPos;
 	string m_sName;		// lower-case prefab or mesh name
 	float m_fDist;
+	IEntity m_Entity;	// buildings: their doors are looked at (RZ_DoorLocks)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -167,6 +169,7 @@ class RZ_InteractionSave
 	ref array<float> searchedAt = {};
 	ref array<string> openKey = {};
 	ref array<float> openAt = {};
+	ref array<string> forcedKey = {};
 	ref array<float> burnX = {};
 	ref array<float> burnZ = {};
 	ref array<float> burnAt = {};
@@ -359,7 +362,8 @@ enum RZ_ESpotKind
 	SIREN,
 	RADIO,
 	GENERATOR,
-	CAR
+	CAR,
+	DOOR
 }
 
 //------------------------------------------------------------------------------------------------
@@ -399,6 +403,7 @@ class RZ_Interactions
 	static const int KIND_RADIO = 10;
 	static const int KIND_GENERATOR = 11;
 	static const int KIND_CAR = 12;
+	static const int KIND_DOOR = 13;		// a locked place's outside door (RZ_DoorLocks)
 
 	static const int TASK_SEARCH = 0;
 	static const int TASK_FORCE = 1;
@@ -420,6 +425,7 @@ class RZ_Interactions
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_InteractionSettings m_Settings;
 	protected ref RZ_Search m_Search;
+	protected ref RZ_DoorLocks m_Doors;
 	protected ref RZ_Cars m_Cars;
 	protected ref RZ_Crafting m_Crafting;
 	protected ref RZ_Traps m_Traps;
@@ -452,6 +458,7 @@ class RZ_Interactions
 		m_GM = gm;
 		m_Settings = settings;
 		m_Search = new RZ_Search(gm, this, search);
+		m_Doors = new RZ_DoorLocks(gm, this, m_Search, search);
 		m_Cars = new RZ_Cars(gm, this, cars);
 		m_Crafting = new RZ_Crafting(gm, this, craft, settings);
 		m_Traps = new RZ_Traps(gm, this, traps);
@@ -465,6 +472,7 @@ class RZ_Interactions
 	int GetSeed() { return m_iSeed; }
 	RZ_InteractionSettings GetSettings() { return m_Settings; }
 	RZ_Search GetSearch() { return m_Search; }
+	RZ_DoorLocks GetDoors() { return m_Doors; }
 	RZ_Cars GetCars() { return m_Cars; }
 	RZ_Crafting GetCrafting() { return m_Crafting; }
 	RZ_Traps GetTraps() { return m_Traps; }
@@ -560,6 +568,7 @@ class RZ_Interactions
 
 		m_Cars.Tick(dt, players);
 		UpdateSpots(players);
+		m_Doors.Tick(players);
 		TickTasks(dt);
 		m_Traps.Tick(dt, ids, players);
 		m_Radio.Tick(dt, ids, players);
@@ -662,6 +671,14 @@ class RZ_Interactions
 			if (added >= m_Settings.m_iSpotsPerPlayer || m_aSpots.Count() >= m_Settings.m_iSpotCap)
 				break;
 
+			// A locked place's outside doors get a spot each (Unlock, Lock, Force)
+			if (c.m_iKind == KIND_BUILDING)
+			{
+				added += m_Doors.OnBuildingSeen(c.m_Entity, c.m_sName, m_Settings.m_iSpotsPerPlayer - added);
+				if (added >= m_Settings.m_iSpotsPerPlayer)
+					break;
+			}
+
 			if (c.m_iKind == KIND_BUILDING && HasFurnitureNear(c.m_vPos))
 				continue;
 
@@ -713,6 +730,9 @@ class RZ_Interactions
 		c.m_vPos = e.GetOrigin();
 		c.m_sName = name;
 		c.m_fDist = RZ_Util.DistXZ(c.m_vPos, m_vScanCenter);
+		if (kind == KIND_BUILDING)
+			c.m_Entity = e;
+
 		m_aCand.Insert(c);
 
 		// A church gets a bell
@@ -869,6 +889,40 @@ class RZ_Interactions
 		s.m_fExpires = expires;
 		m_aSpots.Insert(s);
 		return s.m_iId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot outside a locked place's door (RZ_DoorLocks). False if it exists already (a double
+	//! door shares one) or at the cap.
+	bool AddDoorSpot(vector pos, vector buildingPos, string buildingKey, string type, string noun, int doorIndex)
+	{
+		string key = "door_" + PosKey(pos, 1);
+		foreach (RZ_Spot o : m_aSpots)
+		{
+			if (o.m_sKey == key || (o.m_iKind == KIND_DOOR && o.m_sBuildingKey == buildingKey && RZ_Util.DistXZ(o.m_vPos, pos) < 1.8))
+			{
+				o.m_fSeen = m_fClock;
+				return false;
+			}
+		}
+
+		if (m_aSpots.Count() >= m_Settings.m_iSpotCap)
+			return false;
+
+		RZ_Spot s = new RZ_Spot();
+		s.m_iId = m_iNextSpot;
+		m_iNextSpot++;
+		s.m_iKind = KIND_DOOR;
+		s.m_sKey = key;
+		s.m_vPos = pos;
+		s.m_vBuilding = buildingPos;
+		s.m_sBuildingKey = buildingKey;
+		s.m_sType = type;
+		s.m_sNoun = noun;
+		s.m_iRef = doorIndex;
+		s.m_fSeen = m_fClock;
+		m_aSpots.Insert(s);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1042,6 +1096,14 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A building was unlocked, locked or forced: its spots' labels and the door list follow.
+	void OnLockChanged(string buildingKey)
+	{
+		RelabelBuilding(buildingKey);
+		m_Doors.OnLockChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Read label, use slots (0-3) and choice slots (0-3) for a spot, "|" separated.
 	protected void Labels(RZ_Spot s, out string read, out string useLabels, out string choiceLabels)
 	{
@@ -1056,6 +1118,11 @@ class RZ_Interactions
 
 		switch (s.m_iKind)
 		{
+			case RZ_ESpotKind.DOOR:
+			{
+				m_Doors.Labels(s, read, choiceLabels);
+				break;
+			}
 			case RZ_ESpotKind.WRECK:
 			{
 				m_Cars.WreckLabels(s, read, choiceLabels);
@@ -1140,6 +1207,7 @@ class RZ_Interactions
 
 		switch (s.m_iKind)
 		{
+			case RZ_ESpotKind.DOOR: m_Doors.Describe(playerId, s); return;
 			case RZ_ESpotKind.WRECK: m_Cars.DescribeWreck(playerId, s); return;
 			case RZ_ESpotKind.CAR: m_Cars.Inspect(playerId, s, user); return;
 			case RZ_ESpotKind.WORKBENCH: m_Crafting.DescribeBench(playerId); return;
@@ -1208,6 +1276,7 @@ class RZ_Interactions
 
 		switch (s.m_iKind)
 		{
+			case RZ_ESpotKind.DOOR: m_Doors.HandleChoice(playerId, s, option, user); return;
 			case RZ_ESpotKind.WRECK: m_Cars.HandleWreck(playerId, s, option, user); return;
 			case RZ_ESpotKind.CAR: m_Cars.HandleProject(playerId, s, option, user); return;
 			case RZ_ESpotKind.FUELPUMP: m_Cars.HandlePump(playerId, s, user); return;

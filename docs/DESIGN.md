@@ -549,7 +549,7 @@ Code: `World/RZ_TownMemory.c`.
 
 Code: `Interactions/`.
 
-Searching, keys, cars, crafting, water, barricades and traps, generators, fire, bells, radios
+Searching, locked doors and keys, cars, crafting, water, barricades and traps, generators, fire, bells, radios
 and treating each other. Data until a player is near, capped and decaying, nothing left behind.
 
 **How it works on any map.**
@@ -584,10 +584,44 @@ loot level, sometimes two things. 10% of finds are rare (20% behind a lock), 10%
 ### Locks and keys
 
 About half of pharmacies and police stations, a third of garages, a quarter of shops and a tenth
-of houses are locked, seeded so the same ones stay locked after a restart. **The lock is on the
-loot, not the door:** Search is refused until it's opened. **Keys** are data, kept for this life,
-found on bodies (8%), in readable things, or from the Mechanic. Or **force it** with a crowbar
-(10 s, 25 heat). Opened locks stay open for three hours; behind a lock, finds are better.
+of houses are locked, seeded from the building's position so the same ones are locked after a
+restart. **The lock is on the building's outside doors**, and its Search follows it.
+
+| State | How it gets there | What it means |
+|---|---|---|
+| Locked (the default) | | The vanilla Open action on an outside door says **Locked** from outside. Search inside is refused |
+| Unlocked | **Unlock** at the door with its key (quiet), or opening the door from inside (the latch) | Its doors open for anyone. Search works, and finds are better |
+| Locked again | **Lock** at the door with its key | Locked; the door pulls shut once you step away |
+| Forced | **Force the door** with a crowbar: 10 s, 10 heat at the start and 25 when it gives | Open and broken: it can't be locked until the reset |
+| Reset | Three hours after it was unlocked, latched or forced | Locked again, its outside doors pulled shut |
+
+- **Which doors.** Only outside doors: a door entity of the building that stands within 1.2 m of
+  the building's outline (its bounding box). Interior doors never lock. Doors are data: they're
+  looked at only when a player comes within 30 m of a locked place, or tries one.
+- **At the door.** Each outside door of a locked place gets an interaction spot just outside it,
+  with Unlock, Lock and Force (at most three per building; a double door shares one). Looking at
+  it, or trying the locked door, tells you what the key's tag says.
+- **Inside always opens.** Inside means past the door toward the middle of the building, and
+  within its width. Shutting a door is never refused.
+- **Enforced twice.** The client greys the action out from a replicated list of locked buildings
+  within 80 m of a player; the server refuses it again. Locked doors found open (AI opened them)
+  are pulled shut once nobody stands within 2.5 m.
+- **Keys** open one kind of building in one town: "Pharmacy, Lindale", "Shop, back door, Morton";
+  houses and farmhouses by the colour of their door, "Blue house, Morton". They're found on bodies
+  (8%) and in readable things (one in five); car keys come from searches and the Mechanic. With a
+  key prefab set, **keys are real items**: they can be dropped, traded and taken off a body, the
+  id stays on the server, and the tag can be read on the ground. Without one, keys are data kept
+  for this life.
+- **Fallback: the lock on the loot.** A building whose doors aren't found (no door entities, or
+  no usable bounding box) keeps the old lock: Search is refused, and the search spot offers "Use
+  a key" and "Force the lock" (the same key, time and heat). With **Door locks** off, every
+  building does; use it if hooking the door action doesn't work.
+
+*Limitations:* AI and the infected path through doors without the action, so a lock doesn't stop
+them; the door is only pulled shut afterwards. Buildings whose doors are part of the mesh have no
+door lock, only the loot one. An interior door within 1.2 m of the outline counts as an outside
+door, so someone standing between it and the outer wall (a very shallow closet) counts as outside.
+Key items don't survive a restart; data keys don't survive a death.
 
 ### Readable things
 
@@ -663,9 +697,9 @@ horde somewhere else. Players within 1.2 km hear it.
   nothing loud near. Then 20 minutes of a line every 4 minutes: truck routes, watch times, short
   places, samples needed.
 
-*Simplified:* doors aren't locked, only the Search behind them. Spots stand on the object's
-origin. Carrying the wounded isn't added. Item names are matched by keyword. Fuel cans are full
-or empty by name. Traps check on the 5 s tick. Keys don't survive a restart or a death.
+*Simplified:* spots stand on the object's origin (door spots just outside the door). Carrying
+the wounded isn't added. Item names are matched by keyword. Fuel cans are full or empty by name.
+Traps check on the 5 s tick.
 
 ## New-player guidance
 
