@@ -408,6 +408,158 @@ class RZ_Util
 		return current.Count();
 	}
 
+	// ================================================================ Jobs for AI groups (camp life)
+	//------------------------------------------------------------------------------------------------
+	//! Add one waypoint of any kind (move, loiter, observation post, patrol) at the end of an AI
+	//! group's list. radius > 0 sets its completion radius. Returns the waypoint, or null.
+	static IEntity AddGroupWaypoint(IEntity e, vector at, ResourceName waypointPrefab, float radius)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(e);
+		if (!group || waypointPrefab.IsEmpty())
+			return null;
+
+		IEntity spawned = SpawnPrefab(waypointPrefab, at);
+		AIWaypoint wp = AIWaypoint.Cast(spawned);
+		if (!wp)
+		{
+			if (spawned)
+				SCR_EntityHelper.DeleteEntityAndChildren(spawned);
+
+			return null;
+		}
+
+		if (radius > 0)
+			wp.SetCompletionRadius(radius);
+
+		group.AddWaypoint(wp);
+		return wp;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Send an AI group to use a smart action (a sit, lean, loiter or observation sentinel) on
+	//! `target` or one of its direct children whose tags include `tag`. Returns the waypoint, or
+	//! null (no group, no target, or the prefab isn't an SCR_SmartActionWaypoint).
+	static IEntity SetGroupSmartAction(IEntity e, IEntity target, string tag, ResourceName waypointPrefab)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(e);
+		if (!group || !target || tag.IsEmpty() || waypointPrefab.IsEmpty())
+			return null;
+
+		IEntity spawned = SpawnPrefab(waypointPrefab, target.GetOrigin());
+		SCR_SmartActionWaypoint wp = SCR_SmartActionWaypoint.Cast(spawned);
+		if (!wp)
+		{
+			if (spawned)
+				SCR_EntityHelper.DeleteEntityAndChildren(spawned);
+
+			return null;
+		}
+
+		wp.SetSmartActionEntity(target, tag); // VERIFY: a smart-action waypoint set from script sends a ReforgerZ faction group to the tagged sentinel (vanilla's SA_* behaviours run for our groups in a mod world)
+		group.AddWaypoint(wp);
+		return wp;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Give an AI group a loop: a cycle waypoint that repeats `loop` (waypoints made with
+	//! SpawnPrefab, not added to the group). The cycle puts them on the group's list itself.
+	//! Returns the cycle waypoint, or null (then the loop's waypoints are the caller's to delete).
+	static IEntity AddGroupCycle(IEntity e, notnull array<IEntity> loop, ResourceName cyclePrefab)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(e);
+		if (!group || cyclePrefab.IsEmpty() || loop.IsEmpty())
+			return null;
+
+		IEntity spawned = SpawnPrefab(cyclePrefab, loop[0].GetOrigin());
+		AIWaypointCycle cycle = AIWaypointCycle.Cast(spawned);
+		if (!cycle)
+		{
+			if (spawned)
+				SCR_EntityHelper.DeleteEntityAndChildren(spawned);
+
+			return null;
+		}
+
+		array<AIWaypoint> wps = {};
+		foreach (IEntity l : loop)
+		{
+			AIWaypoint w = AIWaypoint.Cast(l);
+			if (w)
+				wps.Insert(w);
+		}
+
+		cycle.SetWaypoints(wps); // as vanilla's patrol command: only the cycle goes on the group
+		group.AddWaypoint(cycle);
+		return cycle;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The AI group a character is in, or null.
+	static IEntity GroupOf(IEntity character)
+	{
+		if (!character)
+			return null;
+
+		AIControlComponent control = AIControlComponent.Cast(character.FindComponent(AIControlComponent));
+		if (!control)
+			return null;
+
+		AIAgent agent = control.GetControlAIAgent();
+		if (!agent)
+			return null;
+
+		return SCR_AIGroup.Cast(agent.GetParentGroup());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Put a lone AI character into a new, empty AI group on the character's own faction, so it
+	//! can take waypoints. Returns the group, or null (no prefab, no AI, or it didn't join).
+	//! Take it out again with UnwrapGroup before deleting the group.
+	static IEntity WrapInGroup(IEntity character, ResourceName groupPrefab)
+	{
+		if (!character || groupPrefab.IsEmpty() || !ChimeraCharacter.Cast(character))
+			return null;
+
+		if (!character.FindComponent(AIControlComponent))
+			return null;
+
+		IEntity spawned = SpawnPrefab(groupPrefab, character.GetOrigin());
+		SCR_AIGroup group = SCR_AIGroup.Cast(spawned);
+		if (!group)
+		{
+			if (spawned)
+				SCR_EntityHelper.DeleteEntityAndChildren(spawned);
+
+			return null;
+		}
+
+		FactionAffiliationComponent fac = FactionAffiliationComponent.Cast(character.FindComponent(FactionAffiliationComponent));
+		if (fac && fac.GetAffiliatedFaction())
+			group.SetFaction(fac.GetAffiliatedFaction());
+
+		if (!group.AddAIEntityToGroup(character)) // VERIFY: an empty group prefab (vanilla Group_Base.et) stays alive until a member joins, and a spawned lone character joins it and takes its waypoints
+		{
+			SCR_EntityHelper.DeleteEntityAndChildren(group);
+			return null;
+		}
+
+		return group;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Undo WrapInGroup: the character leaves the group (it stays where it is) and the group goes.
+	static void UnwrapGroup(IEntity character, IEntity group)
+	{
+		SCR_AIGroup g = SCR_AIGroup.Cast(group);
+		if (!g)
+			return;
+
+		if (character)
+			g.RemoveAIEntityFromGroup(character);
+
+		SCR_EntityHelper.DeleteEntityAndChildren(g);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! A new object of a [BaseContainerProps] class with its [Attribute] defaults, as a prefab would
 	//! make it. Use this instead of `new` for any class with attributes: `new` leaves every field

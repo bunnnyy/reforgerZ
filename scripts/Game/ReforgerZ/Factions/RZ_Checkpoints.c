@@ -433,11 +433,30 @@ class RZ_Checkpoints
 		RZ_Hostility hostility = m_GM.GetHostility();
 		if (hostility)
 			hostility.WatchUnit(crew, post.m_eFaction);
+
+		// Camp life: a fire barrel and a nest beside the barrier, the crew leaning on it
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (!camp)
+			return;
+
+		array<IEntity> crewBodies = {crew};
+		array<IEntity> none = {};
+		camp.Enter(PostKey(post), post.GetTitle(), post.m_eFaction, RZ_ECampPlace.ROAD_POST, post.m_vPos, post.m_fYaw, "", crewBodies, none, none);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string PostKey(RZ_RoadPost post)
+	{
+		return string.Format("p%1_%2", RZ_Util.RoundToInt(post.m_vPos[0]), RZ_Util.RoundToInt(post.m_vPos[2]));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void Despawn(RZ_RoadPost post)
 	{
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (camp)
+			camp.Leave(PostKey(post));
+
 		foreach (IEntity e : post.m_aBodies)
 		{
 			RZ_Util.DeleteUnit(e);

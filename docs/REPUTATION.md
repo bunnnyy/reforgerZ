@@ -220,7 +220,8 @@ roadblock may go up on a road 350–1,000 m from a random player, within 2.5 km 
 faction's holdings (not near the line, a safehouse, a holding or another post). It stays 45
 minutes. It's data: the barrier and its crew (the territory guard prefab unless set) exist only
 while a player is within 600 m, and its crew counts for retaliation. It needs territory and the
-road network.
+road network. Its fire barrel and nest beside the barrier, and the crew leaning there, are camp
+life's ([DESIGN.md](DESIGN.md#camp-life)); none of it changes who is waved through.
 
 | Post | You are | What happens |
 |---|---|---|

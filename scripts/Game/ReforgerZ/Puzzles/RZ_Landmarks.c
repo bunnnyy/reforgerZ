@@ -60,8 +60,9 @@ class RZ_LandmarkFinder
 	//------------------------------------------------------------------------------------------------
 	protected bool OnEntity(IEntity e)
 	{
+		// A camp's scenery (its generator, antenna, water barrel) is never a mission's landmark
 		string name = RZ_Util.GetPrefabName(e);
-		if (name.IsEmpty())
+		if (name.IsEmpty() || RZ_CampLife.IsDressing(e))
 			return true;
 
 		name.ToLower();

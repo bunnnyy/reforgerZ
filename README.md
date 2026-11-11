@@ -33,6 +33,10 @@ and one way to end it: **research the cure.**
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
+- **Camps that look lived in**: tents, fires, tables and each faction's own things round its posts,
+  camps, safehouses and field stations (scenery only: nothing to loot or use), and people who keep
+  their faction's routine: the sentry, the patrol, Bastion's shift change and the roll at 20:30, the
+  Red Hand's toll, the Haven's supper, Halcyon's courier, and the off shift asleep.
 - **Questlines** that run over many sessions: each stage is a contract or a wait, you can talk,
   persuade, sneak, fight, bribe, betray or side with another faction, and what you chose changes
   the ending, the rewards and the world. Fifteen: three per faction, two for the Long Table and
@@ -71,8 +75,8 @@ and one way to end it: **research the cure.**
 
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
-That's about 113,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 41 `VERIFY` markers left in the game
+That's about 116,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+was also checked against the base game's script source; the 47 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -132,7 +136,7 @@ scripts/Game/ReforgerZ/
   Backgrounds/   backgrounds, personal goals, player profiles
   Factions/      reputation, quartermasters and shops, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,
-                 territory, supply trucks, faction life
+                 territory, supply trucks, faction life, camp life (scenery and routines)
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/; Questlines/ (the author's base class,

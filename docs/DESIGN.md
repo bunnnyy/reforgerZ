@@ -678,15 +678,98 @@ Code: `Factions/RZ_Territory.c`.
 - **Bodies only near players.** Within 300 m of a holding: its guards, two of its three
   **named people** (the cook, the sentry, the toll man...) and, at an outpost, the faction's
   quartermaster. Named people are saved and come back on every visit.
-- **Routines** (atmosphere only): shift change at 05:30 and 17:30, the dusk meal at 18:30,
-  night watch from 20:30. Players near a holding hear the routine change.
+- **Routines:** shift change at 05:30 and 17:30, the dusk meal at 18:30, night watch from
+  20:30. Players near a holding hear the routine change, and its people act it out
+  ([Camp life](#camp-life)).
 
 *Simplified:* towns are judged by size, infection, name and neighbours, not real roads or
 airfields. A town "taken" changes hands as data while nobody is there: no battle to watch.
-Guards and named people stand where they're spawned.
 
 Bastion and the Red Hand also put temporary **road posts** on the roads near their holdings, and
 their camps warn off the people they watch: [REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps).
+
+### Camp life
+
+Code: `Factions/RZ_CampLife.c`; settings: **Territory > Camp life**. Holdings, Haven safehouses,
+Halcyon's field stations and road posts look lived in, and their people do things. It's
+scenery and behaviour only: nobody new decides who is there, and nothing is saved.
+
+**What stands there.** Each faction has a **kit** of compositions (the author builds them from
+vanilla props: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)):
+
+| Place | Built up with |
+|---|---|
+| Bastion post | a sandbag nest at the approach, tents, the roster board, a table under a tarp, a fire barrel |
+| Red Hand camp | an oil-drum fire, a card table, crates, a tarp, the toll barrier |
+| Haven safehouse and outpost | a washing line, benches, a garden bed, a water barrel, a table outside |
+| Halcyon field station | field tables, a cold box, an antenna, a generator, a canvas shelter (the lab grounds too, when Halcyon's stronghold sits at the lab) |
+| Strongholds | the faction's set, more of it (14 pieces against an outpost's 8) |
+| Road posts | 3 pieces beside the barrier: a fire barrel, a nest |
+
+- **Placement, any map.** The layout is seeded from the place's position, so the same pieces
+  stand in the same places on every visit. Pieces go on rings round the centre by role:
+  **centre** (8–12 m: fire, table, board), **inner** (12–20 m: tents), **approach** (20–30 m
+  toward the nearest road, else the next town: the nest, the barrier), **edge** (24–40 m on the
+  other sides: the line, the garden, the generator). Strongholds spread 30% wider, safehouses
+  20% tighter; road posts put everything 5–10 m beside the road. A spot is used only on flat
+  ground (under about 12°, from four ground heights), out of the water and away from the line,
+  at least 6 m from a road's centre line, outside every building's footprint (2 m margin), 4 m
+  from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece. A piece with no good
+  spot (ten tries) is left out. A place within 60 m of one already dressed (the Haven's
+  safehouse at its own stronghold) isn't dressed twice.
+- **Nothing to abuse.** `RZ_DressingGuard` checks every piece and its children as it spawns and
+  deletes any part with an arsenal, any inventory storage, a pick-up item, a support station
+  (resupply, heal, fuel, repair), supplies, fuel, a vehicle or vehicle spawner, a spawn point,
+  or any ReforgerZ component or action, with a log line. The interaction scan and the puzzles'
+  landmark finder ignore the pieces: a decor fire isn't a stove, a decor generator isn't a
+  generator, a barrel isn't a well, an antenna isn't a mission's landmark. The quartermaster and
+  a safehouse's own services stay what they are and are never scenery.
+- **Only near players.** Pieces spawn and go with the place's bodies (a player within the
+  owner's visible radius: 300 m for holdings). At most 60 pieces stand on the server.
+
+**What people do.** The bodies are the ones the built systems spawn (guards, named people,
+safehouse occupants, road-post crews); camp life gives them **jobs**. Only at the **3 places
+nearest players** (Live places); elsewhere they stand.
+
+| Job | How (vanilla AI) |
+|---|---|
+| Sentry | the nest's watch point (a smart action), else an observation post toward the approach |
+| Patrol | a loop of four points 40–80 m out (patrol waypoints in a cycle) |
+| Sit | a free seat at the fire or a table (a sit smart action) |
+| Work, lean | a free loiter or lean point at the line, the garden, the cold box, the barrel, the barrier |
+| Gather | the roster board, else the centre's table or fire: everyone stands or sits there |
+| Stroll, courier | a walk out and back: to the road, or 60–90 m to the edge |
+| Off shift | to the tents; with nobody within 80 m they **sleep**: despawned as data, back in the morning |
+
+A piece's smart actions are found by tag (`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`)
+and seats are counted, so two people never take the same chair. Without a free seat, the
+smart-action waypoint or the piece, they loiter beside it. A lone character (an occupant, a
+single guard) is put in an empty AI group of its own faction so it can take waypoints; without
+the group prefab it stands.
+
+| Faction | By day | Moments | Night |
+|---|---|---|---|
+| Bastion | the nest, two on the loop, one at the board, one at the fire, the rest at work | **05:30 and 17:30**: the watch changes hands (someone else takes the nest and the loop). **20:30, the roll**: everyone at the board for 3 minutes, the routine line read out | the nest and one at the fire; the rest asleep |
+| Red Hand | two at the barrier taking the toll, one strolling to the road and back, the rest at the fire or the table | — | one lookout, the rest drinking at the fire |
+| Haven | the lookout at the door, chores (the line, the garden, the barrel) | **18:30, the dusk meal**: everyone at the table but the lookout; a name is read (the routine line) | the lookout; the rest inside (asleep) |
+| Halcyon | a guard pair at the door, researchers at the tables, work at the cold box | the **courier** walks out to the edge and back every 20 minutes | one guard, one at the cold box; the rest asleep |
+| Road posts | the crew leaning at the barrier | — | the same |
+
+- **Every few minutes** (Shuffle minutes, 3) anyone idle goes back to work (back from an errand,
+  a fight, or a talk) and one person moves to another seat or job.
+- **Combat** is the AI's own danger behaviour; hostility is unchanged.
+- **Talking** to a named person or an occupant makes the nearest one stop their job for 45 s.
+- **Named people** stay within 15 m of the centre and never patrol, keep watch, run errands or
+  sleep, so they can always be found and talked to. **Quartermasters, leaders and the medic**
+  never get a job.
+- **Extras:** each live place may add **1** more person by day (its guard prefab, at most 6 on the
+  server), coming out of a tent while nobody is within 60 m. They join the routine like anyone
+  else, are the first pick for the courier's walk, and are removed with the place.
+- **Routine lines** are the territory's notices at the phase change (subtitles come with
+  [Subtitles and the reader](ROADMAP.md#ui), planned).
+
+*Simplified:* a guard prefab that is an AI group gets one job for the whole group. Sleep is a
+despawn, not an animation. Props spawned at run time may not cut the navmesh (the VERIFY list).
 
 ### Supply trucks
 
