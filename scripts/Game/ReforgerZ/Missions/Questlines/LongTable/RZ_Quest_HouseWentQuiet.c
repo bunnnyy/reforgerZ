@@ -223,7 +223,7 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 
 	// ================================================================ The questline
 	//------------------------------------------------------------------------------------------------
-	//! A season with a Long Table, the house open, a person and a note to use; and somebody has
+	//! A season with a Long Table, the house open, a person, a note and an object to use; and somebody has
 	//! noticed: suspicion 30 and a rumour heard, a crossing's proof, or the house found out.
 	override bool CanStart(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
@@ -231,7 +231,7 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 		if (!t || !t.IsOpen())
 			return false;
 
-		if (!RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
+		if (!RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.OBJECT))
 			return false;
 
 		RZ_Questlines q = gm.GetQuestlines();

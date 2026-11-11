@@ -754,7 +754,7 @@ Favor.
 
 C1 in [QUESTLINES.md](QUESTLINES.md#c1-the-house-that-went-quiet): seven stages, five endings. Only
 in a season with a Long Table ([DESIGN.md](DESIGN.md#the-long-table)), and never with A Place at
-the Table running. Needs Puzzles > Note and Civilian (or the generic object). Starts when someone
+the Table running. Needs Puzzles > Note and Object (Civilian too, else the object stands in). Starts when someone
 hears a wanderer talk about the missing at suspicion 30 or more, or from another line's find.
 Nobody gives its first stages: they're offered in person to whoever noticed the house (heard the
 rumour, found a tell, ate there, met the host) and to everyone who took part. Code:
