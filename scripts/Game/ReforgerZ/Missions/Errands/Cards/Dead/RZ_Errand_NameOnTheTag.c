@@ -2,7 +2,8 @@
 //! of a safehouse in the last season day (the signal ring: their background and how long they
 //! lasted, never their name). A satchel came in with no name on it. Leave it on a cairn where they
 //! fell, or bring the line to the board. Never a player's name. Either way a world record with an
-//! epilogue line on the board.
+//! epilogue line on the board. Also a story job's fallout (Distress Call, Survivors Trapped): the
+//! dead from that job, at its place, for its participants first.
 class RZ_Errand_NameOnTheTag : RZ_ErrandCard
 {
 	//------------------------------------------------------------------------------------------------
@@ -34,6 +35,21 @@ class RZ_Errand_NameOnTheTag : RZ_ErrandCard
 	//------------------------------------------------------------------------------------------------
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
 	{
+		// A failed story job's fallout first (Distress Call, Survivors Trapped): their IDs to the house
+		RZ_Fallout fo = dealer.FalloutFor(m_sKey, e.m_vGiver, e.m_iAsker);
+		if (fo)
+		{
+			e.m_bFallout = true;
+			e.m_iCap = fo.cap;
+			e.m_vSubject = RZ_Util.GroundPos(fo.at);
+			e.m_sSubject = "fell:" + RZ_SettlementScanner.GridReference(e.m_vSubject);
+			e.m_sValue = fo.who;
+			e.SetText("who", RZ_Util.Capitalize(fo.who));
+			e.SetText("where_place", RZ_Util.DirectionText(e.m_vGiver, e.m_vSubject));
+			e.SetText("subject_place", RZ_Util.DirectionText(e.m_vGiver, e.m_vSubject));
+			return true;
+		}
+
 		RZ_Signal s = FreshSignal("death", e.m_vGiver, 1500, RZ_SeasonClock.DayMinutes() / 60, e.m_iAsker);
 		if (!s)
 			return false;

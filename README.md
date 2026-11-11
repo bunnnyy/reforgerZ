@@ -59,7 +59,7 @@ and one way to end it: **research the cure.**
 - **Errands**: small, true jobs named people ask in person: the cook whose pot is thin, the
   sergeant whose relief is asleep in a car, the technician whose freezers are short of fuel, the
   Doctor on the road with a bitten stranger before dark. 24 routines at safehouses, posts, camps and
-  stations, the wanderers' asks and 16 hand-written cards; they pay little, and remember you
+  stations, the wanderers' asks and 17 hand-written cards; they pay little, and remember you
   ([ERRANDS.md](docs/ERRANDS.md)).
 - **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
   sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself only

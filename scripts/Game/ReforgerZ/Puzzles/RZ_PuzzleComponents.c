@@ -530,7 +530,19 @@ class RZ_PuzzleActionHelper
 		int objectIndex;
 		RZ_PuzzleMission m = FindForObject(gm, owner, objectIndex);
 		if (m)
+		{
 			m.HandleChoice(gm, playerId, objectIndex, option, owner);
+			return;
+		}
+
+		// A person an ordinary mission put down with choices (Survivors Trapped's family)
+		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(owner.FindComponent(RZ_PuzzleObjectComponent));
+		if (!comp || comp.GetMissionId() < 0 || !gm.GetMissions())
+			return;
+
+		RZ_Mission plain = gm.GetMissions().FindById(comp.GetMissionId());
+		if (plain && plain.m_eState == RZ_EMissionState.ACTIVE)
+			plain.HandleObjectChoice(gm, playerId, comp.GetObjectIndex(), option);
 	}
 
 	//------------------------------------------------------------------------------------------------

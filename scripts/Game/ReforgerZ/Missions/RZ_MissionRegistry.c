@@ -46,7 +46,6 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_WeaponsCache);
 		mgr.RegisterType(RZ_Mission_ConvoyEscort);
 		mgr.RegisterType(RZ_Mission_RescueThePilot);
-		mgr.RegisterType(RZ_Mission_HuntTheDeserter);
 		mgr.RegisterType(RZ_Mission_SecureTheShipment);
 		mgr.RegisterType(RZ_Mission_BlowTheBridge);
 		mgr.RegisterType(RZ_Mission_FireMission);
@@ -147,7 +146,6 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Event_TunnelRats);
 		// Events about people (Missions/Events/RZ_WorldEventsPeople.c)
 		mgr.RegisterType(RZ_Event_DistressCall);
-		mgr.RegisterType(RZ_Event_FakeDistress);
 		mgr.RegisterType(RZ_Event_PrisonBreak);
 		mgr.RegisterType(RZ_Event_TheSniper);
 		mgr.RegisterType(RZ_Event_RivalSurvivors);

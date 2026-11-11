@@ -460,7 +460,7 @@ and the UI files) need none, and seven have no base:
 |---|---|---|---|---|---|
 | `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor, the brother walked home in The Other Two (falls back to the survivor group, then data) |
 | `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment, the field lead in The Three Weeks and the courier in The Other Two |
-| `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Hunt the Deserter, Struck Off |
+| `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Struck Off |
 | `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection, The Three Weeks questline (falls back to the puzzle object) |
 | `RZ_Bus.et` | a drivable bus or truck (keeps its damage manager) | — | Missions > Contracts > Bus | optional | Recover the Bus (falls back to the Haven truck, then car prefabs) |
 | `RZ_BountyTarget.et` | an armed AI group or character on SURV (a loner, not a faction's man) | — | Missions > Contracts > Bounty target | optional | Collect the Bounty (falls back to the survivor group) |
@@ -760,12 +760,12 @@ deserter or the researcher for 10 s still gets them moving.
 
 **World events** also reuse **Missions > Explosion** (Gas Station Fire's blast, optional),
 **Interactions > Traps > Fire effect** (every burning building), the power grid, and the generic
-puzzle object (Tunnel Rats' culverts, the tape in Fake Distress Call), **Puzzles > Civilian** (the
+puzzle object (Tunnel Rats' culverts, the tape in a Distress Call loop), **Puzzles > Civilian** (the
 people in Distress Call, Rival Survivors and Collapse Shelter) and **Missions > Red Hand group**
-(Fake Distress Call, the watchers at the Abandoned Convoy), **Puzzles > Keypad** and **Note** or
-**Body** (Locked Bunker). Gas Station Fire needs **Traps > Fire** on. The convicts,
-the sniper and the Fake Distress Call's ambush fight through the hostility system's fights, so they
-must be on `BAND`. The newer contracts also reuse **Cars > Car prefabs** (Car Theft), **Supply >
+(Distress Call's crew in the trees, Crash Site's carriers, the watchers at the Abandoned Convoy),
+**Puzzles > Keypad** and **Note** or **Body** (Locked Bunker). Gas Station Fire needs **Traps > Fire**
+on. The convicts, the sniper, Distress Call's crew and Crash Site's carriers fight through the
+hostility system's fights, so they must be on `BAND`. The newer contracts also reuse **Cars > Car prefabs** (Car Theft), **Supply >
 Halcyon truck** (Mobile Lab's lab truck, falling back to the bus), **Supply > Haven truck** (the bus
 fallback), the four **supply trucks and crews** (Convoy Escort and Hijack the Convoy ride Bastion's
 real truck), **Leaders > Bastion outpost commander** (Kill the Officer needs a body that can die)
@@ -1131,10 +1131,10 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Survival | (top level) |  | Shot heat (3), suppressed mult (0.3), **Bite chance** (0.1; hardcore 0.15, casual 0.07), bite reach (2.5 m) |
 | Survival | Infection | `m_InfectionSettings` | Bite modifiers (surrounded ×2, grabbed ×1.5, tired ×1.5, hurt ×1.5, max 0.6), **protective clothing keywords** and multipliers (jacket 0.8, gloves 0.8, helmet 0.85), **Golden window** (120 s; hardcore 60, casual 180), alcohol and antiseptic keywords, clean chances (0.7, 0.9) and seconds (6), Final stage minutes (10), the six treatment prefabs, stabiliser minutes (20), med cap (30 min), trial dose cure (0.8) and Fame (3), cut dose cure (0.5), antibiotics fail (0.3), herb keywords, brew seconds (20), **Finds** (where treatments turn up; empty = the built-in list) |
 | Factions | (top level) |  | Quartermaster and hunter prefabs, hunter minutes (10; 0 = off), bounty minutes (10) |
-| Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on: claims judged by the look, [REPUTATION.md](REPUTATION.md#borrowed-kit); **uniform keywords** per faction, Halcyon's with the respirator and gas mask; **head-piece keywords** per faction; Bastion's **service weapons**; 2 pieces for colours, checked every 10 s; blown 60 min of play; 3 catches a life; impersonation 3 Infamy, 6 an hour; gate pass 10 min; **Confiscation** on; the Red Hand's fine 10 or a 20% beating; **Colours** on; **Claim in full kit** on; no disguise within 1,500 m of the lab during the stand), the three AI faction keys |
+| Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
 | Factions | Services | `m_ServiceSettings` | **Fire Mission** (on, 60 min cooldown, 6 infected, 50 m, 30 s, kills at most 25, not within 250 m of people), **Fence** (on, keywords, 3 Favor an item, 8 a sale, 30 an hour), **Bounty board** (on, 60 to post, 40 paid, 3 at once, 2 h), booster (80) and medic (20) prices, **Amends** (15 Favor, ×1.5 each time, 5 Infamy, 15 a life, never below 15, every 30 min), armband and ribbon prefabs |
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
-| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Group rules** (on: the whole car searched; "your friend waits outside"), **Parley** (on: the owed get one hearing at a gate, the Haven's knock), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day) ([REPUTATION.md](REPUTATION.md#reputations)) |
+| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit)) |
@@ -1665,7 +1665,7 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 records.` and `Shared: N callbacks waiting, N season records.`
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 26 routines and 16 cards, N players with a ledger.`; while running, `Errands:
+start, `Errands: on, 26 routines and 17 cards, N players with a ledger.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
@@ -1696,7 +1696,10 @@ with **Voice > Log** on, `voice: face <faction> <register> <id> mood=<mood> list
 players: `Dialogue: scene <key> decided <value> by <player>`, `Dialogue: scene <key> hold by <player> objected to
 by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> vouched for <player>`. Lies: `Story:
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
-`Story: lie <key> caught now by <speaker>`.
+`Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
+`Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
+`Story: colleague <name> is <truth>`, `Story: crash at <grid> is <truth>`, `Errands: fallout <card> at <grid>
+from <title> (cap N Favor, N participant(s) first)`.
 
 ## 8. Play-test checklist
 
@@ -2051,8 +2054,8 @@ call`; a Hunter is useful)
   offered while the helicopter is dry. Fuel it, choose a load, bring the black box from the warning
   zone (never the kill zone), then on separate runs talk him down, report him, help him to the far
   LZ and sell him to the Red Hand: after Grounded there's no Last Helicopter for 2 real hours
-  (times **Wait scale**) and the next one names the new pilot; after the line, a Crashed Helicopter
-  event appears near the far LZ. Failing Rescue the Pilot also grounds the helicopter.
+  (times **Wait scale**) and the next one names the new pilot; after the line, Bastion's Crash Site
+  starts at his wreck near the far LZ (the line's truth, his name in the brief). Failing Rescue the Pilot also grounds the helicopter.
 - [ ] The Three Weeks (same settings): solve Patient Zero's Ledger, then it can begin. The driver
   sits at the edge of the town nearest the site, talks to someone Known with the Haven and not
   Trusted with Halcyon (or a Radio Operator), or after two shares of food; the site is well away
@@ -2286,10 +2289,34 @@ on the talk screen says why something wasn't dealt)
 - [ ] No Reply: the operator's bearing and the mast's cross within 45 m of the source; a Radio
   Operator away from the post gets a bearing every 2 minutes; the log choices appear on the
   operator only after the source is found, and only a player Known with Bastion can pick one.
-- [ ] Struck Off (offered from broadcast Day 13, so not on a fresh season's first two days): the
-  trader (or the Deserter wanderer) gives his grid; his KIA date on the roster is between Day 11 and
-  two days ago (the day the trader saw him), and always Day 11 on Day 13; the four choices are on his
-  kit; killing him drops a tag that the roster board at the post takes ("Hang his tag on the nail").
+- [ ] Struck Off (offered from broadcast Day 13, so not on a fresh season's first two days): his
+  pack by the post, the trader (or the Deserter wanderer) gives his grid; his KIA date on the roster
+  is between Day 11 and two days ago, and always Day 11 on Day 13; talking to him tells the room the
+  truth; the stores book by the board reads only after dark (and adds "Report the stores book" when
+  the truth is written off or the gap); the five choices are on his kit, "Talk him back" is a Trust
+  check; killing him drops a tag that the roster board at the post takes ("Hang his tag on the nail").
+
+**The story jobs** (wave 3; check the log's `Story:` lines for the truth drawn)
+- [ ] Protection Racket: the storekeeper's options change when the receipt (paid twice) or the girl
+  (her cut) has been read; Press costs Haven Infamy through the threat; Cover it takes 4 food or 20
+  Red Hand Favor and the next racket at that house finds the lie (`Story: lie racket.covered found
+  out by tick`); Side with the house waits 5 s and can be objected to; a non-contractor picking a
+  deciding option hears "It's not your call". Time up: `Errands: fallout pot ...`, and the house's cook
+  offers The Pot to the participant first.
+- [ ] Lost Colleague: hiding (choose at him), turned (kill him; the notebook's two choices) and walked
+  out (the camp's note, then the new man at the house with five choices); research +2 or +1.
+- [ ] Crash Site: the wreck and cockpit appear at 400 m; the cockpit read tells the room the truth;
+  already taken: two Red Hand carriers at a fire 300–600 m off, the box by the fire once they're dead;
+  inventory taken to the Red Hand puts the manifest on the open channel. The Last Pilot's line ending
+  starts a Crash Site at his wreck. Time up without the box: Buy It Back at a Bastion post within 3 km.
+- [ ] Distress Call: answering is told within 800 m (live, a loop, or "Say it again"); a loop springs
+  at 60 m; bait has "Cut them loose" (at night, quietly), "They're mine", Buy them, Side with the crew
+  (the hold; a Haven witness or Haven-Known player within 150 m: +12 Haven Infamy at once, else a lie
+  the next Tied Down finds). People dead: The Name on the Tag at the nearest house.
+- [ ] Survivors Trapped: after the hold the mother appears with three choices (a 5 s hold); nobody in
+  90 s sends them to the nearest house; a bitten father (one time in four) is seen by a Nurse or
+  Doctor and walked out at the door.
+- [ ] A Tier 0 job failing (Walk Him Out, The Rat) sends its fallout line after the fail text.
 - [ ] Live Capture: lure the special into the cage and drop the door within 4 m; it vanishes without
   a sample, the cage area gets loud, after 30 s the case appears; deliver it at the lab drop before
   12 minutes. Killing it fails; wounding it to a third and standing over it ties it.

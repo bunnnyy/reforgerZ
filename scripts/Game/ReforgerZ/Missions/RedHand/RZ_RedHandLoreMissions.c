@@ -1306,6 +1306,7 @@ class RZ_Mission_TiedDown : RZ_PuzzleMission
 		m_aParticipants.Clear();
 		m_aParticipants.Insert(playerId);
 		RZ_LeaderJob.AddPeople(gm, m_vRefuge, 2);
+		RZ_WorldFacts.Get().Memory().Lies().Test(gm, "distress.cut", "");
 		gm.NotifyPlayer(playerId, m_sTitle, "You read the grid out on the Haven channel, very quietly. A pause. \"Thank you. Get away from there now.\" They come at first light and find two still in the shed. The rest have gone on, wherever the cargo goes.");
 		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
@@ -1372,6 +1373,7 @@ class RZ_Mission_TiedDown : RZ_PuzzleMission
 			m_aParticipants.Insert(m_Load.m_Zone.m_iDriver);
 
 		RZ_LeaderJob.AddPeople(gm, m_vRefuge, 3);
+		RZ_WorldFacts.Get().Memory().Lies().Test(gm, "distress.cut", "");	// the freed name whoever sold a distress call
 		NotifyParticipants(gm, m_sTitle, "The Haven's people come out with blankets before the engine is off. Somebody starts counting heads, and keeps having to start again.");
 		m_eState = RZ_EMissionState.SUCCEEDED;
 	}

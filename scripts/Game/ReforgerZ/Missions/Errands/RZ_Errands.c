@@ -111,6 +111,22 @@ class RZ_ErrandStats
 }
 
 //------------------------------------------------------------------------------------------------
+//! A failed story job's fallout (docs/ERRANDS.md, "Fallout"): one errand of `card` at `at`, dealt to
+//! the job's participants first for 20 minutes, then to anyone, for 3 hours, paying at most `cap`
+//! Favor. Not saved: a restart lets it go.
+class RZ_Fallout
+{
+	string card;
+	vector at;
+	string who;					// the card's {who} line
+	string source;				// the job's title
+	int cap;
+	float privateUntil;			// the dealer's clock
+	float until;
+	ref array<string> idents = {};
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_Errands
 {
 	protected static const float SLOW_TICK = 30;
@@ -129,6 +145,9 @@ class RZ_Errands
 	protected static const int MAX_LIVE = 12;
 	protected static const int AMENDS_FLOOR = 15;
 	protected static const int CALLOUTS_PER_TICK = 3;
+	protected static const float FALLOUT_PRIVATE = 1200;	// the participants' 20 minutes
+	protected static const float FALLOUT_LIFE = 10800;		// then anyone's, for 3 hours
+	protected static const float FALLOUT_RANGE = 3000;		// a giver within this of its subject
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_ErrandSettings m_Settings;
@@ -136,6 +155,7 @@ class RZ_Errands
 	protected ref RZ_Faults m_Faults;
 	protected ref array<ref RZ_ErrandDef> m_aDefs = {};
 	protected ref array<ref RZ_Errand> m_aErrands = {};
+	protected ref array<ref RZ_Fallout> m_aFallout = {};
 	protected ref map<string, ref RZ_ErrandLedger> m_mLedgers = new map<string, ref RZ_ErrandLedger>();
 	protected ref map<string, ref RZ_ErrandTalk> m_mTalks = new map<string, ref RZ_ErrandTalk>();
 	protected ref map<string, float> m_mPlaceCool = new map<string, float>();
@@ -759,6 +779,80 @@ class RZ_Errands
 	//! "Anything need doing?" on a named person: the errand they hold for you, the offer they made
 	//! you, or a new one that's true now. Asked errands skip the gaps; safety and the giver's will
 	//! still apply, and the giver says the real reason in their own voice.
+	//! A story job failed at `at` (RZ_StoryKit.Fallout): its fallout errand `card` waits there for the
+	//! participants, then anyone. One per job; a new one at the same card and place replaces it.
+	void Fallout(string card, vector at, array<int> participants, int cap, string source, string who)
+	{
+		RZ_Fallout f = new RZ_Fallout();
+		f.card = card;
+		f.at = at;
+		f.who = who;
+		f.source = source;
+		f.cap = Math.Max(0, cap);
+		f.privateUntil = m_fClock + FALLOUT_PRIVATE;
+		f.until = m_fClock + FALLOUT_LIFE;
+		if (participants)
+		{
+			foreach (int playerId : participants)
+			{
+				string ident = m_GM.GetProfile(playerId).m_sIdentity;
+				if (!ident.IsEmpty() && !f.idents.Contains(ident))
+					f.idents.Insert(ident);
+			}
+		}
+
+		for (int i = m_aFallout.Count() - 1; i >= 0; i--)
+		{
+			if (m_aFallout[i].card == card && RZ_Util.DistXZ(m_aFallout[i].at, at) < 50)
+				m_aFallout.Remove(i);
+		}
+
+		m_aFallout.Insert(f);
+		RZ_Log.Info(string.Format("Errands: fallout %1 at %2 from %3 (cap %4 Favor, %5 participant(s) first)", card,
+			RZ_SettlementScanner.GridReference(at), source, f.cap, f.idents.Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A waiting fallout of `card` that a giver at `giver` can deal to this player now; null if none.
+	RZ_Fallout FalloutFor(string card, vector giver, int playerId)
+	{
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		for (int i = m_aFallout.Count() - 1; i >= 0; i--)
+		{
+			RZ_Fallout f = m_aFallout[i];
+			if (m_fClock > f.until)
+			{
+				m_aFallout.Remove(i);
+				continue;
+			}
+
+			if (f.card != card || RZ_Util.DistXZ(f.at, giver) > FALLOUT_RANGE)
+				continue;
+
+			if (m_fClock < f.privateUntil && !f.idents.Contains(ident))
+				continue;
+
+			return f;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A fallout errand was done: it's gone.
+	protected void EndFallout(RZ_Errand e)
+	{
+		if (!e.m_bFallout)
+			return;
+
+		for (int i = m_aFallout.Count() - 1; i >= 0; i--)
+		{
+			if (m_aFallout[i].card == e.m_Def.m_sKey && RZ_Util.DistXZ(m_aFallout[i].at, e.m_vSubject) < 50)
+				m_aFallout.Remove(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Ask(int playerId, string giverKey, IEntity owner, IEntity user)
 	{
 		RZ_NamedPerson p = m_People.Get(giverKey);
@@ -1329,8 +1423,18 @@ class RZ_Errands
 				}
 				else
 				{
+					// A failed story job's fallout of this kind waits here: dealt first, at its cap
+					float score = Score(e, p, ledger);
+					RZ_Fallout fo = FalloutFor(d.m_sKey, e.m_vGiver, playerId);
+					if (fo && !e.m_bFallout)
+					{
+						e.m_bFallout = true;
+						e.m_iCap = fo.cap;
+						score *= 3;
+					}
+
 					made.Insert(e);
-					scores.Insert(Score(e, p, ledger));
+					scores.Insert(score);
 				}
 			}
 
@@ -1700,6 +1804,7 @@ class RZ_Errands
 		if (e.m_iHouse >= 0)
 			m_mCounters.Set("house." + e.m_iHouse.ToString(), Counter("house." + e.m_iHouse.ToString()) + 1);
 
+		EndFallout(e);
 		Count(e.m_Def.m_sFamily).done++;
 		RZ_Log.Info(string.Format("Errands: %1 done by %2, way %3 (%4), with %5 helper(s)", e.m_Def.m_sKey, RZ_Util.PlayerName(e.m_iAsker), w.m_iIndex, w.m_sWay, e.m_aHelpers.Count()));
 		End(e, "done");
@@ -1772,6 +1877,8 @@ class RZ_Errands
 		array<float> steps = {1.0, 1.0, 0.75, 0.5, 0.25};
 		favor *= steps[Math.Min(ledger.hourCount, steps.Count() - 1)];
 		int paid = Math.Min(RZ_Util.RoundToInt(favor), Math.Max(0, m_Settings.m_iFavorPerHour - ledger.hourFavor));
+		if (e.m_iCap >= 0)
+			paid = Math.Min(paid, e.m_iCap);	// a fallout: at most 30% of the failed job's base
 		if (paid > 0)
 		{
 			m_GM.AddFavor(playerId, f, paid);

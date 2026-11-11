@@ -263,6 +263,8 @@ class RZ_Errand
 	bool m_bStepDone;
 	bool m_bNoisy;				// a shot near it while it ran
 	bool m_bUnasked;			// a call-out, not an ask
+	bool m_bFallout;			// a failed story job's fallout (RZ_Fallout): pays at most m_iCap
+	int m_iCap = -1;			// Favor cap, -1 none
 	float m_fOfferedAt;			// the dealer's clock
 	float m_fTakenAt;
 	float m_fOfflineSince = -1;

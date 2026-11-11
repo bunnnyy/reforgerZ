@@ -519,16 +519,44 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 }
 
 //------------------------------------------------------------------------------------------------
-//! #7 Crash Site: secure a downed helicopter for 60 s, then take its black box.
-//! Choice: hand it to Bastion, or sell it to the Red Hand.
-//! ★ Mechanic: recovers the black box twice as fast.
+//! #7 Crash Site (story key `crash`): secure a downed helicopter for 60 s, then take its black box
+//! to Bastion's drop or the Red Hand's. ★ Mechanic: recovers it twice as fast and reads it. The truth,
+//! kept per wreck: weather (icing and a stall), fell off the inventory (the manifest in the cockpit
+//! lists rifles routed to a Red Hand crossroads; the box says the engines were fine), or already
+//! taken (cut straps and drag marks: two Red Hand carriers have it at their fire; kill them for it).
+//! The Last Pilot's "He flew for the line" starts it at his wreck at the line (the line shot him down).
+//! Inventory to the Red Hand: the manifest is read on the open channel (Bastion morale -3). Time up
+//! with the box not handed in: Buy It Back, for the participants first.
 class RZ_Mission_CrashSite : RZ_Mission_Choice
 {
 	protected IEntity m_Wreck;
 	protected float m_fSecured;
 	protected bool m_bGuarded;
+	protected bool m_bShown;
+	protected string m_sTruth;
+	protected vector m_vAt;
+	protected string m_sPilot;
+	protected vector m_vCamp;
+	protected ref RZ_EventGroup m_Carriers;
+	protected IEntity m_Cockpit;
+	protected ref array<int> m_aRead = {};
 
 	protected static const float SECURE_SECONDS = 60;
+	protected static const int COCKPIT = 0;		// the cockpit's read (HandleTalk)
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_CrashSite()
+	{
+		m_Story = new RZ_MissionStory("crash");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Last Pilot: his wreck at the line, before StartMission.
+	void SetWreck(vector pos, string pilot)
+	{
+		m_vAt = pos;
+		m_sPilot = pilot;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -552,15 +580,20 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 100);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
+		if (m_vAt != vector.Zero)
+		{
+			m_vPos = m_vAt;
+			m_iSettlement = gm.FindNearestSettlement(m_vAt);
+		}
+		else
+		{
+			m_iSettlement = PickSettlement(gm, 0, 100);
+			RZ_Settlement s = gm.GetSettlement(m_iSettlement);
+			if (!s)
+				return false;
 
-		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 150, s.m_fRadius + 600);
-		m_Wreck = RZ_Util.SpawnPrefab(gm.GetHeliWreckPrefab(), m_vPos, Math.RandomFloat(0, 360));
-		if (!m_Wreck)
-			return false;
+			m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 150, s.m_fRadius + 600);
+		}
 
 		int bastionTown = PickSettlementAway(gm, m_vPos, 800, 5000, 0, 60);
 		int redHandTown = PickSettlementAway(gm, m_vPos, 800, 5000, 0, 100, bastionTown);
@@ -569,25 +602,93 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 		if (!b || !r)
 			return false;
 
+		// The truth, kept per wreck; his wreck at the line is the line's doing
+		string wreckKey = "wreck:" + RZ_SettlementScanner.GridReference(m_vPos);
+		if (!m_sPilot.IsEmpty())
+		{
+			m_sTruth = "line";
+		}
+		else
+		{
+			array<string> values = {"weather", "inventory", "taken"};
+			array<float> weights = {0.45, 0.35, 0};
+			if (!gm.GetRedHandGroupPrefab().IsEmpty())
+				weights[2] = 0.2;
+
+			m_sTruth = m_Story.Truth(wreckKey, values, weights);
+		}
+
+		m_vCamp = LandPointNear(m_vPos, 300, 600);
+		if (m_sTruth == "taken")
+			m_Carriers = new RZ_EventGroup(gm.GetRedHandGroupPrefab(), m_vCamp);
+
 		SpawnDrop(gm, RZ_EFaction.MILITARY, LandPointNear(b.m_vCenter, b.m_fRadius * 0.8, b.m_fRadius + 50));
 		SpawnDrop(gm, RZ_EFaction.BANDITS, LandPointNear(r.m_vCenter, r.m_fRadius * 0.8, r.m_fRadius + 50));
-		gm.GetHeat().AddHeat(m_vPos, 40);
 
 		m_fParticipationRadius = 0;
 		m_sTitle = "Crash Site";
 		m_sDeed = "went to the crash near {town}";
-		m_sBrief = string.Format("The wreck of a Bastion helicopter lost in the first week lies near %1. Secure it and recover the black box. Bastion's drop is at %2. The Red Hand would pay for it at %3.", s.m_sName, b.m_sName, r.m_sName);
+		if (!m_sPilot.IsEmpty())
+			m_sBrief = string.Format("Bastion's last helicopter came down short of the line at grid %1. %2 was flying it. The box light's still blinking. Bastion's drop is at %3. The Red Hand would pay for it at %4.", RZ_SettlementScanner.GridReference(m_vPos), m_sPilot, b.m_sName, r.m_sName);
+		else
+			m_sBrief = string.Format("The helicopter flew over it yesterday: a Bastion wreck near %1, and the box light's still blinking. Secure it and recover the black box. Bastion's drop is at %2. The Red Hand would pay for it at %3.", GetLocationName(gm), b.m_sName, r.m_sName);
+
+		RZ_Log.Info(string.Format("Story: crash at %1 is %2", RZ_SettlementScanner.GridReference(m_vPos), m_sTruth));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string CockpitText()
+	{
+		if (m_sTruth == "inventory")
+			return "A manifest clipped to the seat: twelve rifles signed out by an outpost on Day 9, routed via a Red Hand crossroads, \"for diesel\". The flight plan ends there, not at the post.";
+
+		if (m_sTruth == "taken")
+			return "The box's bay is open and the straps are cut, not torn. Drag marks in the mud, two sets of boots, heading east.";
+
+		if (m_sTruth == "line")
+			return string.Format("Holes along the tail, all from the same side. The line. %1's seat is empty, the harness cut.", m_sPilot);
+
+		return "Frost still on the inside of the canopy. A grease-pencil note on the knee board: \"Icing. Again.\"";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a Mechanic hears on the box.
+	protected string BoxRead()
+	{
+		if (m_sTruth == "inventory")
+			return "The box says the engines were fine to the last second. He wasn't falling. He was landing, somewhere he shouldn't.";
+
+		if (m_sTruth == "line")
+			return "The box has the line's warning on the radio, twice, and the pilot answering it calmly. Then the rounds.";
+
+		return "Ice warnings, the pilot calm, then a stall he almost caught. Then nothing.";
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnDeliveryTick(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		// The infected around the wreck turn up when someone comes near
+		// The wreck, the cockpit and the infected around it turn up when someone comes near
+		if (!m_bShown && RZ_ContractHelp.AnyNear(players, m_vPos, 400))
+		{
+			m_bShown = true;
+			m_Wreck = RZ_Util.SpawnPrefab(gm.GetHeliWreckPrefab(), RZ_Util.GroundPos(m_vPos), Math.RandomFloat(0, 360));
+			if (HasPuzzleObject(gm))
+				SpawnCockpit(gm);
+
+			gm.GetHeat().AddHeat(m_vPos, 40);
+		}
+
 		if (!m_bGuarded && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
 		{
 			m_bGuarded = true;
 			SpawnGuards(gm, m_vPos, 3, 15, 40);
+		}
+
+		if (m_sTruth == "taken")
+		{
+			UpdateCarriers(gm, dt, players);
+			return;
 		}
 
 		if (m_bItemSpawned || CountPlayersNear(players, m_vPos, 25) == 0)
@@ -601,19 +702,119 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 		if (m_fSecured < SECURE_SECONDS)
 			return;
 
-		if (SpawnItem(gm, RZ_Util.RandomPointInRing(m_vPos, 2, 4)))
-			NotifyParticipantsNear(gm, players, ids, "You pull the black box out of the wreck. Now decide who gets it.");
-	}
+		if (!SpawnItem(gm, RZ_Util.RandomPointInRing(m_vPos, 2, 4)))
+			return;
 
-	//------------------------------------------------------------------------------------------------
-	protected void NotifyParticipantsNear(RZ_GameModeComponent gm, array<IEntity> players, array<int> ids, string text)
-	{
 		array<int> near = {};
 		GetPlayersNear(ids, players, m_vPos, 60, near);
 		foreach (int playerId : near)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, text);
+			gm.NotifyPlayer(playerId, m_sTitle, "You pull the black box out of the wreck. Now decide who gets it.");
+			RZ_StoryKit.Read(gm, this, playerId, "mechanic", BoxRead());
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Already taken: two carriers at their fire; the box is there once they're dead.
+	protected void UpdateCarriers(RZ_GameModeComponent gm, float dt, array<IEntity> players)
+	{
+		if (!m_Carriers || m_bItemSpawned)
+			return;
+
+		m_Carriers.Tick(dt);
+		if (!m_Carriers.m_bSpawned && RZ_ContractHelp.AnyNear(players, m_vCamp, 400))
+		{
+			if (m_Carriers.Spawn())
+				RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Carriers.m_Unit, 200, true);
+		}
+
+		if (m_Carriers.IsDead() && SpawnItem(gm, RZ_Util.RandomPointInRing(m_vCamp, 1, 3)))
+			RZ_ContractHelp.NotifyNear(gm, m_vCamp, 150, m_sTitle, "The box is by their fire, still in its cut straps. Now decide who gets it.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool HasPuzzleObject(RZ_GameModeComponent gm)
+	{
+		return !gm.GetPuzzlePrefab(RZ_EPuzzleProp.CLUE).IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SpawnCockpit(RZ_GameModeComponent gm)
+	{
+		m_Cockpit = RZ_Util.SpawnPrefab(gm.GetPuzzlePrefab(RZ_EPuzzleProp.CLUE), RZ_Util.GroundPos(RZ_Util.RandomPointInRing(m_vPos, 2, 3)) + Vector(0, 0.3, 0));
+		if (m_Cockpit)
+			RZ_ClueComponent.Tag(m_Cockpit, m_iId, COCKPIT, "Look in the cockpit");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cockpit read (an ordinary mission's tagged clue): what's there, and the truth for the room.
+	override bool HandleTalk(RZ_GameModeComponent gm, int playerId, int clueIdx)
+	{
+		if (clueIdx != COCKPIT)
+			return false;
+
+		gm.NotifyPlayer(playerId, "The cockpit", CockpitText());
+		if (!m_aRead.Contains(playerId))
+		{
+			m_aRead.Insert(playerId);
+			m_Story.m_Deciding.Step(gm, playerId);
+			m_Story.Reveal(gm, this, "wreck:" + RZ_SettlementScanner.GridReference(m_vPos), playerId, "cockpit", TruthLine());
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string TruthLine()
+	{
+		if (m_sTruth == "inventory")
+			return "The rifles on that manifest never reached the post. They fell off the inventory, and the helicopter went with them.";
+
+		if (m_sTruth == "taken")
+			return string.Format("Somebody got here first. The box went east, toward grid %1. Bastion's brief didn't say.", RZ_SettlementScanner.GridReference(m_vCamp));
+
+		if (m_sTruth == "line")
+			return "The line shot it down. Everyone at the post knows it, and nobody's going to write it.";
+
+		return "Weather. Just the weather. It still killed them.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnChoiceMade(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction)
+	{
+		string went = "bastion";
+		if (faction == RZ_EFaction.BANDITS)
+			went = "redhand";
+
+		string epilogue = "";
+		if (faction == RZ_EFaction.MILITARY && m_sTruth == "inventory")
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "The commander thanks you, takes the box into his office, and you hear the stove door open. \"Weather,\" he says when he comes out. \"Write it down.\"");
+			went = "stove";
+		}
+		else if (faction == RZ_EFaction.BANDITS && m_sTruth == "inventory")
+		{
+			RZ_Errands errands = gm.GetErrands();
+			if (errands)
+				errands.Morale(RZ_EFaction.MILITARY, -3, "the manifest on the open channel");
+
+			gm.NotifyAllAs("Open channel", "A Red Hand voice, reading slowly: \"Twelve rifles, signed correct, every one. Turns out they were signed to us.\" Laughter, then static.", RZ_ENoticeTag.EVENT);
+		}
+		else if (faction == RZ_EFaction.MILITARY)
+		{
+			epilogue = string.Format("Behind the radio at the post nearest %1, more tags on the nail. Under them, in grease pencil, the weather.", GetLocationName(gm));
+		}
+
+		array<int> who = {playerId};
+		RZ_StoryKit.Record(this, "box", "wreck:" + RZ_SettlementScanner.GridReference(m_vPos), went + ":" + m_sTruth, who, epilogue, "voice");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnFailed(RZ_GameModeComponent gm)
+	{
+		super.OnFailed(gm);
+		if (!m_bDelivered)
+			RZ_StoryKit.Fallout(gm, this, "buy_back", m_vPos, "the black box from the wreck");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -621,6 +822,9 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 	{
 		super.Cleanup(gm);
 		RZ_Util.DeleteUnit(m_Wreck);
+		RZ_Util.DeleteUnit(m_Cockpit);
+		if (m_Carriers)
+			m_Carriers.Delete();
 	}
 }
 

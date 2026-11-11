@@ -218,32 +218,66 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 }
 
 //------------------------------------------------------------------------------------------------
-//! #5 Lost Colleague: find a missing researcher. Half the time he's alive and
-//! reaching him is enough; otherwise he has turned and has to be put down.
-class RZ_Mission_LostColleague : RZ_Mission
+//! #5 Lost Colleague (story key `colleague`; also The Missing Courier arc): find a missing
+//! researcher. The truth, kept per name for 3 season days:
+//! - **Hiding, hurt:** alive with his notes and a broken ankle. He asks you not to say he went out
+//!   alone: Say nothing, or Tell the field lead. Research +2 either way.
+//! - **Turned:** he has to be put down. His notebook is on him: all of it to the lab (+2), or tear out
+//!   the last pages he asked to keep back (+1, 60% pay).
+//! - **Walked out** (a safehouse within 3 km): his camp is empty and a note points to the house, where
+//!   he works on the water under another name. Persuade him back (Trust with Halcyon 2, ★ Lab Tech),
+//!   press him (Fear 2, +4 Haven Infamy), trade the house 4 food for his notes (+1) and his tag (say he
+//!   turned: 60% pay and a lie a Halcyon-Known visitor to that house finds out, +10 Infamy), or leave
+//!   him be (no pay; the filter works).
+class RZ_Mission_LostColleague : RZ_PuzzleMission
 {
+	protected string m_sTruth;
+	protected string m_sName;
+	protected vector m_vHouse;
+	protected string m_sHouse;
 	protected bool m_bReached;
-	protected bool m_bTurned;
-	protected bool m_bKilled;
+	protected bool m_bHouseShown;
+	protected bool m_bDone;
+	protected string m_sHow;
+	protected int m_iResearch = 2;
+	protected int m_iHim = -1;
+	protected int m_iNote = -1;
+	protected int m_iBook = -1;
+	protected ref RZ_Ways m_Ways = new RZ_Ways("Lost Colleague");
 	bool m_bCourier;	// The Missing Courier (Director/RZ_StoryArcs.c): set before StartMission so the offer reads right
+
+	protected static const int OBJ_HIM = 0;
+	protected static const int OBJ_BOOK = 1;
+	protected static const int OBJ_HOUSE = 2;
+	protected static const int TRADE_FOOD = 4;
+	protected static const int PRESS_INFAMY = 4;
+	protected static const int LIE_INFAMY = 10;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_LostColleague()
+	{
+		m_Story = new RZ_MissionStory("colleague");
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.INSTITUTE, RZ_ETier.KNOWN, 20, 20);
 		m_Req.m_bNotCured = true;
-		m_bTurned = Math.RandomFloat01() < 0.5;
 		m_fParticipationRadius = 80;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
+		if (!HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN) || !HasPrefab(gm, RZ_EPuzzleProp.OBJECT))
+			return 0;
+
 		return 1;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
+	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
 		m_iSettlement = PickSettlement(gm, 20, 100);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
@@ -251,47 +285,224 @@ class RZ_Mission_LostColleague : RZ_Mission
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius + 300);
+		m_sName = "Dr " + RZ_NoteText.Surname(m_Rng);
+
+		// The truth, kept per name: walking out needs a house within 3 km
+		array<string> values = {"hiding", "turned", "walked_out"};
+		array<float> weights = {0.35, 0.3, 0};
+		int house = -1;
+		if (gm.GetSafehouses())
+			house = gm.GetSafehouses().FindNearest(m_vPos, 3000);
+
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, house);
+		if (h)
+		{
+			m_vHouse = h.m_vPos;
+			m_sHouse = h.m_sName;
+			weights[2] = 0.25;
+			if (RZ_WorldFacts.Get().Memory().FindRecord("weeks.public", "") != null)
+				weights[2] = 0.375;
+		}
+
+		m_sTruth = m_Story.Truth(m_sName, values, weights);
+		if (m_sTruth == "walked_out" && !h)
+			m_sTruth = "hiding";
+
+		if (m_sTruth == "hiding")
+		{
+			m_iHim = AddClue(m_sName, string.Format("%1, in a back room with his notes in a bin bag and his ankle the wrong shape. \"I went out alone. Against orders. Don't tell them that part. Please.\"", m_sName));
+			if (!SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, OBJ_HIM, "", "Say nothing|Tell the field lead", m_iHim, "Talk to " + m_sName))
+				return false;
+		}
+		else if (m_sTruth == "walked_out")
+		{
+			m_iNote = AddClue("An empty camp", string.Format("His bedroll, rolled. His lab badge, gone. A water-filter manual with \"%1\" written in the margin, underlined twice.", m_sHouse));
+			if (!SpawnClue(gm, RZ_EPuzzleProp.CLUE, m_vPos, m_iNote, "Look around the camp"))
+				return false;
+		}
+
+		m_iBook = AddClue("His notebook", string.Format("%1's notebook. The last twenty pages are his own turning, hour by hour, in a hand that gets worse. He was bitten a day before he left. On the last page: \"Don't give them this part.\"", m_sName));
 		m_sTitle = "Lost Colleague";
-		m_sBrief = string.Format("A Halcyon researcher stopped answering near %1. Find him. He may not be himself any more.", s.m_sName);
+		m_sBrief = string.Format("%1 stopped answering near %2. Find him. He may not be himself any more.", m_sName, s.m_sName);
 		if (m_bCourier)
 		{
 			m_sTitle = "The Missing Courier";
 			m_sBrief = string.Format("A Halcyon courier carrying samples between the lab and %1 stopped reporting. Find him, or what's left of him.", s.m_sName);
 		}
 
+		RZ_Log.Info(string.Format("Story: colleague %1 is %2", m_sName, m_sTruth));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		if (m_bReached || CountPlayersNear(players, m_vPos, 20) == 0)
+		if (m_sTruth == "walked_out" && !m_bHouseShown && RZ_ContractHelp.AnyNear(players, m_vHouse, 300))
+		{
+			m_bHouseShown = true;
+			int him = AddClue("The new man", "\"We've a new man. Good with pumps,\" they said at the door. He's at the filter, sleeves up, and he stops when he sees you look at his hands.");
+			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vHouse, 6, 14), OBJ_HOUSE, "", "[Trusted · Halcyon] Persuade him back|[Feared] Press him back|Trade the house for his notes [4 food]|Take his tag: tell them he turned|Leave him be", him, "Talk to the new man");
+		}
+
+		if (m_sTruth != "turned" || m_bReached || CountPlayersNear(players, m_vPos, 20) == 0)
 			return;
 
 		m_bReached = true;
-		if (!m_bTurned)
+		NotifyParticipants(gm, m_sTitle, "You're too late. He's turned. Put him down; his notebook is still on him.");
+		if (!gm.GetSpawner().SpawnZombie(RZ_Util.RandomPointInRing(m_vPos, 8, 15), true, m_iSettlement, m_iId))
+			ShowBook(gm, m_vPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnClueRead(RZ_GameModeComponent gm, int playerId, int idx, IEntity source)
+	{
+		if (idx == m_iNote)
 		{
-			NotifyParticipants(gm, m_sTitle, "He's alive, hiding with his notes. Halcyon will send someone for him.");
-			m_eState = RZ_EMissionState.SUCCEEDED;
-			return;
+			m_Story.Reveal(gm, this, m_sName, playerId, "camp", string.Format("He walked out. The trail leads to the Haven house in %1.", m_sHouse));
+			m_vPos = m_vHouse;
 		}
 
-		NotifyParticipants(gm, m_sTitle, "You're too late. He's turned. Put him down; his notes are still on him.");
-		if (!gm.GetSpawner().SpawnZombie(RZ_Util.RandomPointInRing(m_vPos, 8, 15), true, m_iSettlement, m_iId))
-			m_eState = RZ_EMissionState.SUCCEEDED;
+		if (idx == m_iHim)
+			RZ_StoryKit.Read(gm, this, playerId, "nurse,doctor", "A clean break, splinted badly. He'll walk on it in a week if nobody lets him try sooner.");
+
+		if (idx == m_iBook)
+			RZ_StoryKit.Read(gm, this, playerId, "nurse,doctor", "The bite on the body matches the notebook's first page. He knew before he left.");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnZombiesKilled(RZ_GameModeComponent gm, int settlementIdx, int missionId, bool special, vector pos, int count)
 	{
-		if (missionId == m_iId)
-			m_eState = RZ_EMissionState.SUCCEEDED;
+		if (missionId == m_iId && m_sTruth == "turned")
+			ShowBook(gm, pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ShowBook(RZ_GameModeComponent gm, vector pos)
+	{
+		if (m_bDone)
+			return;
+
+		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, LandPointNear(pos, 0, 2), OBJ_BOOK, "", "Take the whole notebook to the lab|Tear out the last pages", m_iBook, "Read his notebook");
+		RZ_ContractHelp.NotifyNear(gm, pos, 60, m_sTitle, "His notebook is on him. Read it before you decide what goes to the lab.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option, IEntity source)
+	{
+		if (m_bDone || !RZ_StoryKit.MayDecide(gm, this, playerId))
+			return;
+
+		if (objIdx == OBJ_HIM)
+		{
+			if (option == 0)
+				Finish(gm, playerId, 2, 1, "lab", string.Format("\"Thank you.\" Halcyon sends a stretcher for %1. The report says he was found on his rounds.", m_sName));
+			else
+				Finish(gm, playerId, 2, 1, "told", string.Format("Halcyon sends a stretcher. The field lead reads your report twice. %1 won't hold a field post again.", m_sName));
+
+			return;
+		}
+
+		if (objIdx == OBJ_BOOK)
+		{
+			if (option == 0)
+				Finish(gm, playerId, 2, 1, "turned", "The whole notebook goes to the lab, last pages and all. Someone there will read every word.");
+			else
+				Finish(gm, playerId, 1, 0.6, "torn", "You tear out the last pages and burn them. The rest goes to the lab. It's still worth something. Less than it was.");
+
+			return;
+		}
+
+		if (objIdx == OBJ_HOUSE)
+			OnHouseChoice(gm, playerId, option, source);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnHouseChoice(RZ_GameModeComponent gm, int playerId, int option, IEntity source)
+	{
+		if (option == 0)
+		{
+			if (m_Ways.TryTrust(gm, playerId, "colleague", RZ_EFaction.INSTITUTE, 2, "labtech") != RZ_ECheck.PASS)
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "\"Back to sampling? No.\" He turns back to the filter.");
+				return;
+			}
+
+			Finish(gm, playerId, 2, 1, "back", "\"As a medic. Not a sampler. You tell them that.\" He packs his tools. The house loses a pump man.");
+			return;
+		}
+
+		if (option == 1)
+		{
+			RZ_ECheck pressed = m_Ways.TryFear(gm, playerId, "colleague." + m_sName, RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE, 2, false, PRESS_INFAMY);
+			if (pressed == RZ_ECheck.REFUSED)
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "The house's people stand round him. He isn't going anywhere with you.");
+				return;
+			}
+
+			RZ_Deeds.AddLifeRecord(gm.GetProfile(playerId), "pressed_colleague", true);
+			Finish(gm, playerId, 2, 1, "pressed", "He comes, because the house saw what you'd do. Nobody waves him off.");
+			return;
+		}
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (option == 2 || option == 3)
+		{
+			if (!me || RZ_HavenQuest.CountFood(gm, me) < TRADE_FOOD || !RZ_HavenQuest.TakeFood(gm, me, TRADE_FOOD))
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "\"Four tins, and the notes are yours. We need the tins more.\"");
+				return;
+			}
+
+			if (option == 2)
+			{
+				Finish(gm, playerId, 1, 1, "notes", "\"Tell them what you like.\" The notes go to the lab. He stays at the filter.");
+				return;
+			}
+
+			// His tag: a lie to Halcyon, found when someone Halcyon knows comes to the house
+			RZ_WorldFacts.Get().Memory().Lies().Tell(gm, playerId, "colleague.turned", m_sName, RZ_EFaction.INSTITUTE, "", m_vHouse, RZ_ELieTest.VISIT, LIE_INFAMY,
+				string.Format("\"You told us he turned. He signed a Haven ration card in %1 last week.\"", m_sHouse));
+			Finish(gm, playerId, 1, 0.6, "walked", "He gives you his tag with the notes. \"Tell them I turned.\" You will.");
+			return;
+		}
+
+		// Leave him be: no pay, and the house's filter works
+		m_bDone = true;
+		array<int> who = {playerId};
+		RZ_StoryKit.Record(this, "fate", m_sName, "left", who, string.Format("%1 is on the paper as an author, deceased. In %2 he's the man who fixed the filter.", m_sName, m_sHouse), "board");
+		gm.NotifyPlayer(playerId, m_sTitle, "You leave him at the filter. Nobody pays you for that.");
+		m_eState = RZ_EMissionState.FAILED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Finish(RZ_GameModeComponent gm, int playerId, int research, float scale, string how, string text)
+	{
+		m_bDone = true;
+		m_iResearch = research;
+		m_fRewardScale = scale;
+		m_sHow = how;
+		AddParticipant(playerId);
+		gm.NotifyPlayer(playerId, m_sTitle, text);
+		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(2, "A lost researcher's notes reached the lab.");
+		if (gm.GetCure())
+			gm.GetCure().AddResearch(m_iResearch, "A lost researcher's notes reached the lab.");
+
+		RZ_StoryKit.Record(this, "fate", m_sName, m_sHow, m_aParticipants);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetFailText(RZ_GameModeComponent gm)
+	{
+		if (m_sHow.IsEmpty() && m_sTruth == "hiding")
+			return string.Format("%1: nobody came. %2 died in the back room, with his notes.", m_sTitle, m_sName);
+
+		return super.GetFailText(gm);
 	}
 }
 

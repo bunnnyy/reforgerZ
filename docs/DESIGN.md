@@ -1034,11 +1034,11 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 | Block | What it does | Used by |
 |---|---|---|
 | Hold, kill tagged, visit points, destroy, deliver, choice | The base classes: hold an area (optional waves and heat), kill what the mission spawned, stand at points, destroy a prop, carry the mission item to a drop, choose whose drop gets it. The first hand-in wins. If the item vanishes while it's in an inventory (the carrier left the server and took their character with them, or a body was cleared away), a new one is put on the ground where it was, up to 3 times, and everyone involved is told where; lost from the ground, it fails | most contracts |
-| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. If the player they follow leaves or dies, they follow the nearest player within 20 m instead (or wait for one). An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Hunt the Deserter, Struck Off, Bust Out, Desertion Route, Learning the Drones, The Pit's Debtor; questline stages in The Three Weeks and The Other Two |
+| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. If the player they follow leaves or dies, they follow the nearest player within 20 m instead (or wait for one). An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Struck Off, Bust Out, Desertion Route, Learning the Drones, The Pit's Debtor; questline stages in The Three Weeks and The Other Two |
 | **Live capture** (`RZ_LiveCapture`) | A cage trap and a special, both spawned only when a player is near. Lure it into the cage and drop the door within 4 m, or wound it to a third of its health and get within 3 m to tie it. Hold it for 30 s while it fights (heat), then a transport case (the mission item) to deliver before it wakes (12 min). A case lost with a carrier who left is put back where they were, still sedated (up to 3 times). It leaves the world without a kill, so no sample. Killing it fails. At most 2 at once | Live Capture, Private Collection; The Three Weeks (Dr Wolff) |
 | **Vehicle zone** (`RZ_VehicleZone`, `RZ_ConvoyWatch`) | A specific vehicle, or any vehicle whose prefab name has a keyword (or is one of a list), driven into a zone by a player. Works with vehicles a mission spawns, fixed cars and supply trucks. The convoy watch asks the supply system for a faction's next truck to an outpost and reports whether it arrived, was robbed, destroyed, stolen or late | Recover the Bus, Car Theft, Mobile Lab, Tied Down and the Cargo questline (one van, `RZ_CargoVan`); Convoy Escort, Hijack the Convoy; questline stages in The Three Weeks and The Other Two |
 | **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
-| **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Hunt the Deserter, The Three Weeks, Tied Down; The Book (questline) |
+| **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Struck Off (his pack), The Three Weeks, Tied Down; The Book (questline) |
 | **Borrowed kit** (`Factions/RZ_Disguise.c`, `RZ_Ways.PassAs`) | A claim in a faction's kit, judged by the fixed look (`RZ_Checks.LookScore`); a mission sets the difficulty, may give its paper as the cover detail and registers its people as watchers (`AddWatcher`). Caught: the one cost ([REPUTATION.md](REPUTATION.md#borrowed-kit)) plus the stage's own outcome. Approach `TRICK` | Bust Out (the claim at the stockade and the second look); road posts and gates |
 
 *Simplified:* escorted people without an AI body can't be hurt (only a body can die), and
@@ -1046,9 +1046,10 @@ move in a straight line. A caught special is carried as a case, not dragged in i
 
 ### Story blocks
 
-Code: `Missions/Story/` (`RZ_MissionStory.c`, `RZ_MissionReasons.c`); settings **Missions > Story**.
-The mission style's framework (wave 1 of [designs/MISSION_STYLE.md](../designs/MISSION_STYLE.md),
-which designs the rest). No mission's content changed with it.
+Code: `Missions/Story/` (`RZ_MissionStory.c`, `RZ_StoryKit.c`, `RZ_MissionReasons.c`, `RZ_Mirror.c`);
+settings **Missions > Story**. The mission style ([designs/MISSION_STYLE.md](../designs/MISSION_STYLE.md)
+designs what's left). The six story jobs on it (Protection Racket, Lost Colleague, Crash Site,
+Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
 
 - **The story kit.** A mission may carry `m_Story` (null by default: it runs exactly as before),
   with a story key that is saved in records and never renamed. The mission forwards its tick to it.
@@ -1058,7 +1059,9 @@ which designs the rest). No mission's content changed with it.
   Who may decide: someone it was offered to (anyone, for a world event) who took part. **With the
   decider**: the decider, their vanilla group within 150 m, and anyone who chose Stand with. A scene
   decision is a 5-second hold announced to the room (30 m) that any other eligible participant may
-  object to once per job (by identity); no built mission has a scene decision yet.
+  object to once per job (by identity): Protection Racket's Side with the house, Distress Call's Side
+  with the crew, Survivors Trapped's where they go. `RZ_StoryKit.MayDecide` checks it for an option
+  that decides the job, and tells anyone else *"It's not your call. You weren't hired for this."*
 - **Who benefits** (`RZ_Beneficiaries`): 2–4 parties a result can go to. The side chosen pays those
   with the decider whom it doesn't hunt; a **switch** (the result to another side than the giver)
   pays at most the base, its Fame doesn't count toward season Fame (`RZ_RepFlag.SWITCH`), the giver
@@ -1067,8 +1070,25 @@ which designs the rest). No mission's content changed with it.
   "Nobody" pays nobody. The result is a world record (`<key>.went_to`, by the town). Every built
   choice mission (`RZ_Mission_Choice`: Crash Site, Research Data, Requisition) is built on it.
 - **Truths** are the truth deck ([World memory](#world-memory)): `m_Story.Truth(subject, ...)`
-  draws, `Reveal` tells the finder and the room (30 m) and adds the line to the journal. The errand
-  Sleeve Down uses one ([ERRANDS.md](ERRANDS.md#the-cards)); the pilot wave's story jobs will.
+  draws (the same for everyone at that subject while it's kept), `Reveal` tells the finder and the
+  room (30 m) and adds the line to the journal. A background read (`RZ_StoryKit.Read`) goes to that
+  player only and to the journal. The errand Sleeve Down and the six story jobs use them.
+- **Records** (`RZ_StoryKit.Record`): how a story job ended, as a world record `<key>.<what>` about its
+  subject, with who did it and, for some, an epilogue line (`racket.<house>`, `colleague.fate`,
+  `crash.box`, `distress.saved`, `struck.fate`, `trapped.family`).
+- **Lies in a job** go to the one lie store ([Lies and witnesses](#lies-and-witnesses)): covering a
+  collection (found at the next collection there), saying a colleague turned or walking a deserter to
+  the Haven (found by a visit), selling a distress call to the crew (found when Tied Down frees a
+  truck).
+- **Failure is a branch.** A failed story job can open one **fallout errand** at its subject
+  (`RZ_StoryKit.Fallout`, `RZ_Errands.Fallout`): dealt to the job's participants first for 20 minutes,
+  then to anyone for 3 hours, by a giver within 3 km, paying at most 30% of the job's base. None after
+  a withdrawal. Protection Racket opens The Pot at the house, Crash Site Buy It Back, Distress Call and
+  Survivors Trapped The Name on the Tag ([ERRANDS.md](ERRANDS.md#fallout)). Jobs without one have a
+  **fallout line** (`RZ_MissionReasons.FalloutLine`): what the world says next, told after the fail
+  text (the Tier 0 audit's 16 jobs).
+- **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice slots
+  (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` (Survivors Trapped's mother).
 - **Reasons and the reason lane.** When the world has posted a reason ([World memory](#world-memory)),
   the mission manager may start one registered contract that answers it (`RZ_MissionReasons`: The
   Harvest Guard and Protection Racket answer a hungry house; Checkpoint Duty and Convoy Escort a
@@ -1090,7 +1110,9 @@ which designs the rest). No mission's content changed with it.
   characters): what you've found and who it went to ([UI.md](UI.md#the-notebook)).
 
 Log lines: `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`, `Story: <key>
-resolved by hand-in to <party> (...)`, `Story: reason <key> (<subject>) started <id> '<title>'`, `Mirror: <title>
+resolved by hand-in to <party> (...)`, `Story: <title> record <key> (<subject>) = <value>`, `Story:
+<title> read by <player> (<backgrounds>)`, `Story: distress at <town> is <truth>` (and `colleague`,
+`crash`), `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Story: reason <key> (<subject>) started <id> '<title>'`, `Mirror: <title>
 hinted to <faction>`, `Mirror: <title> won by <faction>` (or `by both, half each`).
 
 ### Errands

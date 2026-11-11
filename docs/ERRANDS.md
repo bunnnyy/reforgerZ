@@ -26,6 +26,7 @@ Server only, except the journal row.
 - [The routines](#the-routines)
 - [The wanderers' asks](#the-wanderers-asks)
 - [The cards](#the-cards)
+- [Fallout](#fallout)
 - [Telemetry and the admin view](#telemetry-and-the-admin-view)
 - [Saving and performance](#saving-and-performance)
 - [Simplified, and not built yet](#simplified-and-not-built-yet)
@@ -251,15 +252,30 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **The Deserter's Way Round** | line, the Deserter | he likes you, a Bastion road post within 1.5 km | Meet him past the post (10 s): 4 Haven Favor; helped. Turn him in at the post: 2 Bastion Fame, a rumour, a world record |
 | **Nothing Goes Out** | line, a Bastion named person | the perimeter sealed, a sealed checkpoint within 1.65 km, Bastion morale under 50 | Leave his letter under a stone at the warning point, 150 m short (5 s), read or not: 3 Favor; the world record `errand.letter_at_line` with its epilogue line (carrier: a prop) |
 | **His Effects** | dead, any faction's named person (Bastion: The Locker; others: The Wreck's Name) | that faction's truck lost within 1.5 km in a season day (never to whoever robbed it) | Bring his things back (15 s at the wreck): 5 Favor, 1 Fame; Bastion's boxes "for when the gates open" as an epilogue line. [Known: Red Hand] sell them to the fence: 5 Red Hand Favor, "kit lost" |
-| **The Name on the Tag** | dead, the clerk | a death within 1.5 km in a season day (the background and how long they lasted, never the name) | Leave the satchel on a cairn where they fell (10 s): 4 Favor. Or pin the line to the board. A world record with an epilogue line (carrier: the board) |
+| **The Name on the Tag** | dead, the clerk | a death within 1.5 km in a season day (the background and how long they lasted, never the name), or the fallout of a Distress Call or Survivors Trapped whose people died | Leave the satchel on a cairn where they fell (10 s): 4 Favor. Or pin the line to the board. A world record with an epilogue line (carrier: the board) |
 | **Not for the Crew** | crews, a Red Hand named person | a bite within 1 km in the last played hour, a Halcyon station within 1.5 km, before the cure | Walk him to the station: 4 Halcyon Favor, a world record. Your own antidote: 6 Red Hand Favor. Tell the book-keeper: 2 Red Hand Fame |
 | **Wildcard Money** | crews, a Red Hand named person | Wildcard or Tolerated with the Red Hand; another Red Hand holding within 1.5 km | Carry the cut there: 6 Favor; skim a little: 8 Favor; give it to a hungry house within 1.5 km: +2 food there, 2 Haven Fame, +8 Red Hand Infamy |
 | **Clean Slate** (amends) | any faction's named person | that faction Watches you | The worst shift going (a minute): amends |
+| **Buy It Back** (fallout) | aftermath, a Bastion named person; Known with Bastion | Crash Site's fallout: the box not handed in, a post within 3 km of the wreck | A fence's runner sits on the box at the wreck: five tins there, or 25 Red Hand Favor (only offered if you have it), then hand it in: 6 Favor (at most the fallout's cap); the world record `crash.box` = bought back |
+
+## Fallout
+
+`RZ_Errands.Fallout`, called by a failed story job ([DESIGN.md](DESIGN.md#story-blocks)). One errand of
+the job's kind waits at its subject for 3 hours: for the first **20 minutes** only the job's
+participants can be dealt it, then anyone. A giver within 3 km of the subject deals it first (×3 its
+score), and it pays at most **30%** of the failed job's base, whatever the way says. Done, it's gone;
+a second fallout of the same kind at the same place replaces the first. Not saved.
+
+| Failed job | Fallout errand |
+|---|---|
+| Protection Racket (time up) | The Pot, at the house |
+| Crash Site (the box not handed in) | Buy It Back |
+| Distress Call (the people died), Survivors Trapped (all dead) | The Name on the Tag, their names to the nearest house |
 
 ## Telemetry and the admin view
 
 - **Log lines**: every deal (`Errands: dealt <key> to <player> by <giver> (asked|called out)`), take,
-  done, overtake and fault; and every 30 minutes (**Telemetry**) a status line per family: dealt,
+  done, overtake and fault; every fallout (`Errands: fallout <card> at <grid> from <title> (...)`); and every 30 minutes (**Telemetry**) a status line per family: dealt,
   declined, lapsed, overtaken, done, Favor, Fame and amends paid, and the ways taken.
 - **The admin view needs no typing**: on the talk screen a server admin sees one more reply on any
   named person, wanderer or occupant, **[Admin] Errands near here**: the live count, the nearest
@@ -281,7 +297,7 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 spawner comes with strangers); the lines have two or three variants each, not always three; a card
 dealt counts toward the day's two even if declined. Not built yet, and designed in
 [designs/ERRANDS.md](../designs/ERRANDS.md): strangers at their spots and the footfall grid, locals,
-twists beyond Sleeve Down's truth, board and radio asks, found hooks and fallout errands, lies and
-the witness rule, promises, the rest of the cards (backgrounds, bad standing, traces, the margin,
+twists beyond Sleeve Down's truth, board and radio asks, found hooks, the other fallout cards (His
+Notebook), errands' own lies (the store and the witness rule are built, [DESIGN.md](DESIGN.md#lies-and-witnesses)), promises, the rest of the cards (backgrounds, bad standing, traces, the margin,
 lock and epilogue cards), callbacks and threads from errands, and the `mission_errand` icon (the
 journal uses the unarmed icon).

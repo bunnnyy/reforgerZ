@@ -941,7 +941,7 @@
    "slotLabel": "Missions > Contracts > Escort soldier",
    "required": false,
    "minimum": false,
-   "use": "Rescue the Pilot, Hunt the Deserter, Struck Off",
+   "use": "Rescue the Pilot, Struck Off",
    "notes": ""
   },
   {

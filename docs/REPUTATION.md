@@ -700,7 +700,7 @@ Known toll pass the difference between being shot and not.
 | A road post or camp | For a few minutes: a player who ran a Bastion checkpoint, came up to a Red Hand roadblock without paying, or came armed past a camp's gate after the warning ([Checkpoints](#checkpoints-roadblocks-and-camps)) |
 | The Red Hand camp in Raid the Red Hand, the raiders in Trader Caravan and Lab Defence | Every player within 350 m of them while they live |
 | The killers' camp in The Witness | Players within 150 m who aren't at least Known with the Red Hand |
-| The ambush in Fake Distress Call, the convicts in Prison Break | Players within 300 m (250 m for the convicts) who aren't at least Known with the Red Hand |
+| The crew in the trees at a Distress Call (its loop and bait truths), the carriers at a Crash Site already taken, the convicts in Prison Break | Players within 300 m (250 m for the convicts) who aren't at least Known with the Red Hand |
 | The Sniper | Every player within 500 m, Red Hand friends included |
 | Rival Survivors (an unaligned group on `SURV`) | Only a player Hunted by any faction or Watched by two, once they come within 120 m (the Haven bit, like a wanderer's grudge) |
 

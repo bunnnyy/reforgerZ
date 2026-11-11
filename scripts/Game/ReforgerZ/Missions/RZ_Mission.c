@@ -567,6 +567,12 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A choice slot on a person or thing this (non-puzzle) mission tagged with RZ_PuzzleObjectComponent.
+	void HandleObjectChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A player died (or turned) at pos.
 	void OnPlayerDied(RZ_GameModeComponent gm, int playerId, vector pos)
 	{

@@ -126,27 +126,62 @@ class RZ_Mission_CarTheft : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! #10 Protection Racket: "collect" from a Haven safehouse. Ask the keeper: they pay (the
-//! safehouse loses 3 food) or they refuse. Refused: lean on them. With the survivor group prefab
-//! set, the keeper's people stand up to you and it's a fight (they pay once it's over); without
-//! it, they pay with worse grace (+5 Haven Infamy more). Not for Elders.
+//! #10 Protection Racket (story key `racket`): "collect" from a Haven safehouse. The truth, kept per
+//! house: just late, paid twice (another crew's receipt is pinned in the stores) or the storekeeper's
+//! cut (her daughter in the doorway tells it). At the storekeeper: Ask; Persuade (Trust with the Haven
+//! 2: two food, 75% pay); Press (Fear 2: the full three food and +5 Haven Infamy, +8 when short;
+//! refused, her people come out, or the door shuts); Cover it yourself (4 food or 20 Red Hand Favor:
+//! half pay, and a lie the next collection here finds out); the receipt (full pay, the house pays
+//! nothing); her cut (keep her secret: one food; or tell the council: three food and she's put
+//! out); Side with the house (after the hold: +10 Red Hand Infamy, nobody pays). Not for Elders.
+//! Time up: the crew collects anyway, and the house's cook has The Pot for the participants first.
 class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 {
 	protected int m_iHouse = -1;
-	protected bool m_bAsked;
-	protected bool m_bRefused;
+	protected string m_sHouse;
+	protected string m_sTruth;
 	protected bool m_bLeaned;
 	protected int m_iCollector = -1;
 	protected IEntity m_Locals;
 	protected bool m_bFight;		// the group deletes itself when its last member dies: track the fight here
 	protected float m_fFightAge;
 	protected bool m_bSeenLocals;
-	protected bool m_bExtraInfamy;
+	protected bool m_bCutFound;
+	protected bool m_bReceipt;
+	protected bool m_bDone;
+	protected string m_sHow;
+	protected int m_iExtraInfamy;
+	protected int m_iFood = FOOD;
 	protected int m_iTalk = -1;
+	protected int m_iReceiptClue = -1;
+	protected int m_iDaughterClue = -1;
+	protected ref array<int> m_aActs = {};
+	protected ref RZ_Ways m_Ways = new RZ_Ways("Protection Racket");
 
 	protected static const int FOOD = 3;
-	protected static const float PAY_CHANCE = 0.55;
-	protected static const int LEAN_INFAMY = 5;
+	protected static const int COVER_FOOD = 4;
+	protected static const int COVER_FAVOR = 20;
+	protected static const int PRESS_INFAMY = 5;
+	protected static const int SHORT_INFAMY = 3;		// on top of the threat's: 8 in all
+	protected static const int SIDE_INFAMY = 10;
+	protected static const int COVER_FOUND_INFAMY = 5;
+
+	// What each keeper option does (the labels change with what's been found)
+	protected static const int ACT_ASK = 0;
+	protected static const int ACT_PERSUADE = 1;
+	protected static const int ACT_PRESS = 2;
+	protected static const int ACT_COVER = 3;
+	protected static const int ACT_RECEIPT = 4;
+	protected static const int ACT_SECRET = 5;
+	protected static const int ACT_COUNCIL = 6;
+	protected static const int ACT_SIDE = 7;
+	protected static const int ACT_LEAVE = 8;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_ProtectionRacket()
+	{
+		m_Story = new RZ_MissionStory("racket");
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -175,60 +210,229 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		if (!h)
 			return false;
 
+		m_sHouse = h.m_sName;
 		m_vPos = LandPointNear(h.m_vPos, 5, 12);
 		m_iSettlement = h.m_iSettlement;
-		m_iTalk = AddClue("The keeper", "\"I know who sent you. We've nothing to spare. We've people to feed.\"");
-		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Ask for the money|Leave it", m_iTalk, "Talk to the keeper");
+
+		// The last collection here: anyone who covered it is found out now
+		RZ_WorldFacts.Get().Memory().Lies().Test(gm, "racket.covered", HouseKey());
+
+		// The truth, kept per house: the cut never while The Ledger runs here
+		array<string> values = {"just_late", "paid_twice", "cut"};
+		array<float> weights = {0.45, 0.25, 0.2};
+		if (gm.GetMissions().IsTypeRunning(RZ_Mission_TheLedger))
+			weights[2] = 0;
+
+		m_sTruth = m_Story.Truth(HouseKey(), values, weights);
+
+		m_iTalk = AddClue("The storekeeper", "\"I know who sent you. We've nothing to spare. We've people to feed.\"");
+		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", Labels(), m_iTalk, "Talk to the storekeeper");
+		if (m_sTruth == "paid_twice")
+		{
+			m_iReceiptClue = AddClue("A receipt", "Pinned up in the stores, in a crew's hand: \"Paid in full. Protected till the month's end.\" A red hand drawn under it, but not ours.");
+			SpawnClue(gm, RZ_EPuzzleProp.CLUE, LandPointNear(h.m_vPos, 3, 8), m_iReceiptClue, "Read the paper on the wall");
+		}
+
+		if (m_sTruth == "cut")
+		{
+			m_iDaughterClue = AddClue("A girl in the doorway", "She's about nine and very serious. \"Mum says the tins are for my medicine. The man at the pit has antibiotics.\"");
+			SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(h.m_vPos, 6, 14), m_iDaughterClue, "Talk to the girl");
+		}
+
 		m_sTitle = "Protection Racket";
 		m_sDeed = "collected in {town}";
-		m_sBrief = string.Format("The safehouse in %1 is late. Go and remind the keeper what our protection is worth. They pay, or they learn.", h.m_sName);
+		m_sBrief = string.Format("The safehouse in %1 is late. Everyone's late this week. Go and remind the storekeeper what our protection is worth.", h.m_sName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string HouseKey()
+	{
+		return "house:" + m_iHouse.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The storekeeper's options, by what's been found; m_aActs maps each to what it does.
+	protected string Labels()
+	{
+		m_aActs.Clear();
+		array<string> labels = {};
+		if (m_bCutFound)
+		{
+			labels.Insert("Keep her secret");
+			m_aActs.Insert(ACT_SECRET);
+			labels.Insert("Tell the council");
+			m_aActs.Insert(ACT_COUNCIL);
+		}
+		else
+		{
+			labels.Insert("Ask");
+			m_aActs.Insert(ACT_ASK);
+			labels.Insert("[Trusted · Haven] Persuade");
+			m_aActs.Insert(ACT_PERSUADE);
+			labels.Insert("[Feared] Press");
+			m_aActs.Insert(ACT_PRESS);
+			labels.Insert("Cover it yourself [4 food | 20 Red Hand Favor]");
+			m_aActs.Insert(ACT_COVER);
+			if (m_bReceipt)
+			{
+				labels.Insert("[The receipt] Send it to the boss");
+				m_aActs.Insert(ACT_RECEIPT);
+			}
+		}
+
+		labels.Insert("Side with the house");
+		m_aActs.Insert(ACT_SIDE);
+		labels.Insert("Leave");
+		m_aActs.Insert(ACT_LEAVE);
+
+		string text = "";
+		foreach (int i, string l : labels)
+		{
+			if (i > 0)
+				text += "|";
+
+			text += l;
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnClueRead(RZ_GameModeComponent gm, int playerId, int idx, IEntity source)
+	{
+		if (idx == m_iReceiptClue && !m_bReceipt)
+		{
+			m_bReceipt = true;
+			m_Story.Reveal(gm, this, HouseKey(), playerId, "receipt", "The house already paid another crew for the same weeks. Somebody wants a fight between crews.");
+			SetObjectLabels(0, "", Labels());
+		}
+
+		if (idx == m_iDaughterClue && !m_bCutFound)
+		{
+			m_bCutFound = true;
+			m_Story.Reveal(gm, this, HouseKey(), playerId, "daughter", "The house did pay. The storekeeper kept tins back to trade for her daughter's antibiotics, and the council doesn't know.");
+			SetObjectLabels(0, "", Labels());
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option, IEntity source)
 	{
-		if (objIdx != 0 || m_bLeaned)
+		if (objIdx != 0 || m_bLeaned || m_bDone || option < 0 || option >= m_aActs.Count())
 			return;
 
-		if (option == 1)
+		int act = m_aActs[option];
+		m_Story.m_Deciding.Step(gm, playerId);
+		if (act == ACT_LEAVE)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "You walk away. The crew will hear you went soft.");
+			gm.NotifyPlayer(playerId, m_sTitle, "You walk away. Whoever else is on this can sort it out.");
+			return;
+		}
+
+		if (act == ACT_ASK)
+		{
+			Ask(gm, playerId);
+			return;
+		}
+
+		// Everything else decides the job: the contractor only
+		if (!RZ_StoryKit.MayDecide(gm, this, playerId))
+			return;
+
+		if (act == ACT_SIDE)
+		{
+			m_Story.m_Deciding.StartHold(gm, this, playerId, ACT_SIDE, "warn the council and let them hide the stores");
+			return;
+		}
+
+		m_iCollector = playerId;
+		if (act == ACT_PERSUADE)
+			Persuade(gm, playerId);
+		else if (act == ACT_PRESS)
+			Press(gm, playerId);
+		else if (act == ACT_COVER)
+			Cover(gm, playerId, source);
+		else if (act == ACT_RECEIPT)
+			Receipt(gm, playerId);
+		else if (act == ACT_SECRET)
+			Collect(gm, playerId, 1, 1, "secret", "She pays out of her hidden tins, one at a time, and doesn't thank you. Her daughter watches from the stairs.");
+		else if (act == ACT_COUNCIL)
+			Council(gm, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Ask(RZ_GameModeComponent gm, int playerId)
+	{
+		if (m_sTruth == "paid_twice")
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"We paid. Ask Janda at the pit. The receipt's on the wall in the stores, if you can read.\"");
+			RZ_StoryKit.Read(gm, this, playerId, "excon", "The red hand under the receipt is Janda's crew's. You'd know it anywhere.");
+			return;
+		}
+
+		if (m_sTruth == "cut")
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"We've nothing. That's all. Nothing.\" She doesn't look at the stairs.");
+			RZ_StoryKit.Read(gm, this, playerId, "police", "She's lying, and badly. Whatever's missing, she knows where it went.");
+			RZ_StoryKit.Read(gm, this, playerId, "nurse", "Empty antibiotic boxes in the bin by the door. Children's dose.");
+			return;
+		}
+
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("\"%1 is down to the bone. Everyone's late this week. Count the shelves yourself.\" You do. She's right.", m_sHouse));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Persuade(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_ECheck result = m_Ways.TryTrust(gm, playerId, "keeper", RZ_EFaction.SURVIVORS, 2, "nurse,police");
+		if (result == RZ_ECheck.REFUSED)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Don't you talk to me like a friend.\" She won't hear it from you again.");
+			return;
+		}
+
+		if (result == RZ_ECheck.SHORT)
+		{
+			RZ_Deeds.AddLifeRecord(gm.GetProfile(playerId), "speak_for", true);
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Fine. But you speak for us at the next collection. You.\"");
+		}
+
+		m_fRewardScale = 0.75;
+		Collect(gm, playerId, 2, 0, "persuaded", "She pays what she can, two tins short of the full count, and looks you in the eye while she does it.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Press(RZ_GameModeComponent gm, int playerId)
+	{
+		int difficulty = 2;
+		if (gm.GetQuestlines() && gm.GetQuestlines().WorldFlag("well.done") > 0)
+			difficulty = 1;		// the well story's been told
+
+		RZ_ECheck result = m_Ways.TryFear(gm, playerId, "racket.keeper." + m_iHouse.ToString(), RZ_EFaction.SURVIVORS, RZ_EFaction.BANDITS, difficulty, false, PRESS_INFAMY, "excon,raider");
+		if (result == RZ_ECheck.PASS)
+		{
+			Collect(gm, playerId, FOOD, 0, "pressed", "You say it quietly, close. She pays the full count. Nobody in that doorway will forget your face.");
+			return;
+		}
+
+		if (result == RZ_ECheck.SHORT)
+		{
+			Collect(gm, playerId, FOOD, SHORT_INFAMY, "pressed", "It takes longer than it should, and louder. She pays the full count. The whole house heard.");
+			return;
+		}
+
+		// Refused: the keeper's people come out, if there's a group and room; else the door shuts
+		ResourceName prefab = gm.GetSurvivorGroupPrefab();
+		if (prefab.IsEmpty() || !RZ_Escort.HasRoom(gm))
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"No.\" The door shuts in your face, and a bar drops behind it.");
+			m_bDone = true;
 			m_eState = RZ_EMissionState.FAILED;
 			return;
 		}
 
-		if (option != 0)
-			return;
-
-		m_iCollector = playerId;
-		if (!m_bAsked)
-		{
-			m_bAsked = true;
-			if (Math.RandomFloat01() < PAY_CHANCE)
-			{
-				Pay(gm, playerId, "The keeper counts it out in tins and batteries without looking at you. \"Get out.\"");
-				return;
-			}
-
-			m_bRefused = true;
-			SetObjectLabels(0, "", "Lean on them|Leave it");
-			gm.NotifyPlayer(playerId, m_sTitle, "\"No.\" The keeper folds their arms. People are watching from the doorways.");
-			return;
-		}
-
-		if (!m_bRefused)
-			return;
-
 		m_bLeaned = true;
-		ResourceName prefab = gm.GetSurvivorGroupPrefab();
-		if (prefab.IsEmpty())
-		{
-			m_bExtraInfamy = true;
-			Pay(gm, playerId, "You lean in close and say it quietly. The keeper pays. Nobody in that doorway will ever forget your face.");
-			return;
-		}
-
 		m_bFight = true;
 		m_Locals = RZ_Util.SpawnPrefab(prefab, LandPointNear(m_vPos, 8, 15));
 		RZ_Hostility.MarkFight(RZ_EFaction.SURVIVORS, m_Locals, 120);
@@ -236,12 +440,72 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Pay(RZ_GameModeComponent gm, int playerId, string text)
+	//! Cover it yourself: 4 food from your pack, or 20 Red Hand Favor. The house loses nothing, the boss
+	//! pays half, and it's a lie the next collection here finds out.
+	protected void Cover(RZ_GameModeComponent gm, int playerId, IEntity source)
 	{
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		bool paid = me && RZ_HavenQuest.CountFood(gm, me) >= COVER_FOOD && RZ_HavenQuest.TakeFood(gm, me, COVER_FOOD);
+		if (!paid)
+			paid = m_Ways.TryBribe(gm, playerId, RZ_EFaction.BANDITS, COVER_FAVOR);
+
+		if (!paid)
+			return;
+
+		m_fRewardScale = 0.5;
+		RZ_Deeds.AddLifeRecord(gm.GetProfile(playerId), "covered", true);
+		RZ_WorldFacts.Get().Memory().Lies().Tell(gm, playerId, "racket.covered", HouseKey(), RZ_EFaction.BANDITS, "", m_vPos, RZ_ELieTest.TICK, COVER_FOUND_INFAMY,
+			string.Format("The crew came back to %1. The storekeeper told them a friend of the crew paid last time. Now the crew knows which friend.", m_sHouse));
+		Collect(gm, playerId, 0, 0, "covered", "You count your own tins into the crew's sack. The storekeeper watches and says nothing. The boss will call it light this week.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Receipt(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_Errands errands = gm.GetErrands();
+		if (errands)
+			errands.Morale(RZ_EFaction.BANDITS, -2, "crews at odds");
+
+		Collect(gm, playerId, 0, 0, "receipt", "You send the receipt up the chain. The boss reads it twice, and goes looking for Janda's crew instead. The house pays nothing.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Council(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (houses)
+			houses.RemovePopulation(m_iHouse, 1);
+
+		Collect(gm, playerId, FOOD, 0, "council", "The council head pays from the stores and puts her out the same hour. A girl loses her mother's place by the stove.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnHoldDone(RZ_GameModeComponent gm, int decider, int option)
+	{
+		super.OnHoldDone(gm, decider, option);
+		if (option != ACT_SIDE || m_bDone)
+			return;
+
+		m_bDone = true;
+		gm.AddInfamy(decider, RZ_EFaction.BANDITS, SIDE_INFAMY, "warned a house about a collection");
+		array<int> who = {decider};
+		RZ_StoryKit.Record(this, m_iHouse.ToString(), HouseKey(), "warned", who);
+		gm.NotifyPlayer(decider, m_sTitle, "You tell the council head what's coming. By the time anyone else looks, the stores are under the floor. Nobody pays you. The boss will remember.");
+		m_eState = RZ_EMissionState.FAILED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The house pays `food`; the collector takes `extra` Haven Infamy on top; the record says how.
+	protected void Collect(RZ_GameModeComponent gm, int playerId, int food, int extra, string how, string text)
+	{
+		m_bDone = true;
+		m_iFood = food;
+		m_iExtraInfamy = extra;
+		m_sHow = how;
 		RZ_Safehouses houses = gm.GetSafehouses();
 		RZ_Safehouse h = houses.Get(m_iHouse);
 		if (h)
-			h.m_iFood = Math.Max(0, h.m_iFood - FOOD);
+			h.m_iFood = Math.Max(0, h.m_iFood - food);
 
 		m_aParticipants.Clear();
 		m_aParticipants.Insert(playerId);
@@ -262,14 +526,48 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 			m_bSeenLocals = true;
 
 		if (alive == 0 && (m_bSeenLocals || m_fFightAge > 15))
-			Pay(gm, m_iCollector, "It's over. The keeper pays with blood on the floor. You did this.");
+			Collect(gm, m_iCollector, FOOD, PRESS_INFAMY, "forced", "It's over. The keeper pays with blood on the floor. You did this.");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnRewardPlayer(RZ_GameModeComponent gm, int playerId)
 	{
-		if (m_bExtraInfamy)
-			gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, LEAN_INFAMY);
+		if (m_iExtraInfamy > 0)
+			gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, m_iExtraInfamy, "pressed a house");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnSuccess(RZ_GameModeComponent gm)
+	{
+		string epilogue = "";
+		if (m_sHow == "secret")
+			epilogue = string.Format("%1's stores still have tally marks for every tin the Red Hand took. Some are in a different pencil.", m_sHouse);
+
+		RZ_StoryKit.Record(this, m_iHouse.ToString(), HouseKey(), m_sHow, m_aParticipants, epilogue, "board");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnFailed(RZ_GameModeComponent gm)
+	{
+		if (m_bDone)
+			return;
+
+		// Time up: the crew collects without you, and the house is short again. Its cook asks for help
+		RZ_Safehouse h = gm.GetSafehouses().Get(m_iHouse);
+		if (!h)
+			return;
+
+		h.m_iFood = Math.Max(0, h.m_iFood - FOOD);
+		RZ_StoryKit.Fallout(gm, this, "pot", h.m_vPos, m_sHouse);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetFailText(RZ_GameModeComponent gm)
+	{
+		if (m_bDone)
+			return string.Format("Protection Racket (%1): nobody paid.", m_sHouse);
+
+		return string.Format("Protection Racket (%1): the crew collected without you.", m_sHouse);
 	}
 
 	//------------------------------------------------------------------------------------------------

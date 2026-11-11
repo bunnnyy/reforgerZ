@@ -64,17 +64,40 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 }
 
 //------------------------------------------------------------------------------------------------
-//! #2 Survivors Trapped: reach a barricaded family, then hold out through three
-//! waves until help arrives. With a survivor group prefab the survivors are real
-//! AI (spawned when someone comes within 300 m), and the mission fails if they all die.
-//! Amends: works off Haven Infamy.
-//! ★ Nurse: the survivors leave healthier, bonus Fame (and one more of them makes it).
-//! The family (3, or 4 with a ★) joins the nearest Haven safehouse.
+//! #2 Survivors Trapped (story key `trapped`; one real choice): reach a barricaded family, then hold
+//! out through three waves until help arrives. With a survivor group prefab the survivors are real
+//! AI (spawned when someone comes within 300 m), and the mission fails if they all die (fallout:
+//! The Name on the Tag). Amends: works off Haven Infamy, except for a Watched player who sends them
+//! to Bastion. ★ Nurse: bonus Fame, and one more of them makes it.
+//! After the third wave the mother asks where they're going (anyone who took part, after the 5 s
+//! hold): the nearest house (3, or 4 with a ★), the hungriest house (the same, and Haven morale +1),
+//! or Bastion's post (Bastion pays the base instead; the Haven pays nothing). Nobody answers in
+//! 90 s: the nearest house. One time in four the father is bitten: ★ Nurse or Doctor sees it at once;
+//! everyone else when the house checks him at the door (he's walked out at dusk: one fewer arrives).
 class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 {
 	protected ref RZ_UnitWatch m_Survivors = new RZ_UnitWatch();
 	protected bool m_bShown;
 	protected bool m_bDied;
+	protected bool m_bAsking;
+	protected bool m_bChosen;
+	protected bool m_bBitten;
+	protected float m_fAsked;
+	protected int m_iWhere = WHERE_NEAREST;
+	protected string m_sSurname;
+	protected IEntity m_Mother;
+	protected ref array<int> m_aSeenBite = {};
+
+	protected static const int WHERE_NEAREST = 0;
+	protected static const int WHERE_HUNGRY = 1;
+	protected static const int WHERE_BASTION = 2;
+	protected static const float ASK_SECONDS = 90;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_SurvivorHoldout()
+	{
+		m_Story = new RZ_MissionStory("trapped");
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -110,6 +133,9 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.6);
+		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
+		m_sSurname = RZ_NoteText.Surname(rng);
+		m_bBitten = rng.Chance(0.25);	// a fixed fact about this family, never a gotcha
 		m_sTitle = "Survivors Trapped";
 		m_sDeed = "got people out of {town}";
 		m_sBrief = string.Format("A family is barricaded inside a house in %1 and they're running out of time. Get to them and hold until help arrives.", s.m_sName);
@@ -134,7 +160,96 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 			return;
 		}
 
+		// A Nurse or Doctor sees the bite on arrival
+		if (m_bBitten && m_bShown)
+		{
+			foreach (int i, IEntity p : players)
+			{
+				if (!m_aSeenBite.Contains(ids[i]) && RZ_Util.DistXZ(p.GetOrigin(), m_vPos) <= 30)
+				{
+					m_aSeenBite.Insert(ids[i]);
+					RZ_StoryKit.Read(gm, this, ids[i], "nurse,doctor", "The father keeps his left sleeve down and his arm close. He's bitten, and he knows you know.");
+				}
+			}
+		}
+
+		if (m_bAsking)
+		{
+			m_fAsked += dt;
+			if (m_fAsked >= ASK_SECONDS && !m_bChosen)
+				Choose(gm, -1, WHERE_NEAREST);
+
+			return;
+		}
+
 		super.OnUpdate(gm, dt, ids, players);
+
+		// Held: before they go, the mother asks where
+		if (m_eState == RZ_EMissionState.SUCCEEDED && !m_bChosen)
+		{
+			m_eState = RZ_EMissionState.ACTIVE;
+			Ask(gm);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Ask(RZ_GameModeComponent gm)
+	{
+		m_bAsking = true;
+		ResourceName prefab = gm.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
+		if (!prefab.IsEmpty())
+		{
+			m_Mother = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(m_vPos, 3, 6)));
+			if (m_Mother)
+				RZ_PuzzleObjectComponent.Tag(m_Mother, m_iId, 0, "", "The nearest house|The hungriest house: \"They can work\"|Bastion's post: \"The soldiers\"");
+		}
+
+		if (!m_Mother)
+		{
+			Choose(gm, -1, WHERE_NEAREST);
+			return;
+		}
+
+		NotifyParticipants(gm, m_sTitle, string.Format("It's quiet. Mrs %1 has the kids by the hands. \"Where are we going? Tell me where.\" Talk to her.", m_sSurname));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void HandleObjectChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option)
+	{
+		if (!m_bAsking || m_bChosen || option < 0 || option > WHERE_BASTION)
+			return;
+
+		if (!RZ_StoryKit.MayDecide(gm, this, playerId))
+			return;
+
+		m_Story.m_Deciding.StartHold(gm, this, playerId, option, "decide where the family goes");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnHoldDone(RZ_GameModeComponent gm, int decider, int option)
+	{
+		super.OnHoldDone(gm, decider, option);
+		if (!m_bChosen)
+			Choose(gm, decider, option);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Choose(RZ_GameModeComponent gm, int decider, int where)
+	{
+		m_bChosen = true;
+		m_iWhere = where;
+		if (where == WHERE_BASTION)
+		{
+			m_eGiver = RZ_EFaction.MILITARY;
+			m_bAmends = false;
+			m_bNoLeaderCredit = true;
+			m_iLeaderId = -1;
+		}
+
+		if (decider > 0)
+			gm.NotifyPlayer(decider, m_sTitle, "She nods once and doesn't argue. They're ready.");
+
+		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -156,8 +271,61 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 				rescued = 4;
 		}
 
-		if (gm.GetSafehouses())
-			gm.GetSafehouses().AddRescued(m_vPos, rescued, m_aParticipants);
+		// The house checks everyone at the door: a bitten father is walked out at dusk
+		if (m_bBitten && m_iWhere != WHERE_BASTION)
+		{
+			rescued--;
+			NotifyParticipants(gm, m_sTitle, "At the door the house checks everyone, as it always does. The father's arm. He goes out at dusk with a lamp, and nobody follows him.");
+		}
+
+		RZ_Safehouses houses = gm.GetSafehouses();
+		string went = "house";
+		if (m_iWhere == WHERE_BASTION)
+		{
+			went = "bastion";
+			NotifyParticipants(gm, m_sTitle, "Bastion's truck takes them to the post. The mother wanted the soldiers. Tonight the call will say three more civilians sheltered.");
+		}
+		else if (m_iWhere == WHERE_HUNGRY && houses && houses.Count() > 0)
+		{
+			went = "hungry";
+			int hungriest = Hungriest(gm);
+			houses.AddPopulationAt(hungriest, rescued);
+			if (gm.GetErrands())
+				gm.GetErrands().Morale(RZ_EFaction.SURVIVORS, 1, "a family came to work");
+		}
+		else if (houses && houses.Count() > 0)
+		{
+			houses.AddRescued(m_vPos, rescued, m_aParticipants);
+		}
+
+		string epilogue = string.Format("The %1s' boy chalks the days on %2's gym wall.", m_sSurname, GetLocationName(gm));
+		RZ_StoryKit.Record(this, "family", m_sSurname, went, m_aParticipants, epilogue, "board");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int Hungriest(RZ_GameModeComponent gm)
+	{
+		RZ_Safehouses houses = gm.GetSafehouses();
+		int best = houses.FindNearest(m_vPos);
+		int lowest = 1000000;
+		for (int i = 0; i < houses.Count(); i++)
+		{
+			RZ_Safehouse h = houses.Get(i);
+			if (h && h.m_iFood < lowest)
+			{
+				lowest = h.m_iFood;
+				best = i;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnFailed(RZ_GameModeComponent gm)
+	{
+		if (m_bDied)
+			RZ_StoryKit.Fallout(gm, this, "name_on_tag", m_vPos, string.Format("the %1 family", m_sSurname));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -165,6 +333,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 	{
 		// The survivors leave with the rescue team (or they're gone)
 		m_Survivors.Delete();
+		RZ_Util.DeleteUnit(m_Mother);
 	}
 
 	//------------------------------------------------------------------------------------------------

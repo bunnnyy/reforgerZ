@@ -539,8 +539,8 @@ class RZ_Quest_LastPilot : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! He flew for the line: the wreck comes down at the edge of the warning zone near the far LZ,
-	//! a Crashed Helicopter world event (with the wreck prefab).
+	//! He flew for the line: the wreck comes down at the edge of the warning zone near the far LZ, and
+	//! Bastion's Crash Site starts there (with the wreck prefab): the line's truth, his name in the brief.
 	protected void StartWreck(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		RZ_Perimeter perimeter = RZ_PerimeterMissionHelper.Get(gm);
@@ -567,10 +567,10 @@ class RZ_Quest_LastPilot : RZ_Questline
 		if (!best)
 			return;
 
-		RZ_Event_LastPilotWreck evt = new RZ_Event_LastPilotWreck();
-		evt.Configure(gm);
-		evt.SetSpot(RZ_PerimeterMissionHelper.SpotAt(perimeter, best, depth, 10), run.Fill("{pilot}"));
-		gm.GetMissions().StartMission(evt);
+		RZ_Mission_CrashSite job = new RZ_Mission_CrashSite();
+		job.Configure(gm);
+		job.SetWreck(RZ_PerimeterMissionHelper.SpotAt(perimeter, best, depth, 10), run.Fill("{pilot}"));
+		gm.GetMissions().StartMission(job);
 	}
 
 	// ================================================================ Words
@@ -1954,91 +1954,5 @@ class RZ_QM_PilotBurn : RZ_QuestMission
 	{
 		super.Cleanup(gm);
 		m_Crew.Delete();
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! The Last Pilot's "He flew for the line": the Crashed Helicopter event at the edge of the warning
-//! zone, near where he went. Never picked at random (not registered); the questline starts it. As
-//! Crashed Helicopter: the wreck and a crate (spawned once a player is within 400 m), infected
-//! round it, a horde when someone reaches it.
-class RZ_Event_LastPilotWreck : RZ_Mission
-{
-	protected vector m_vWreck;
-	protected string m_sPilot;
-	protected bool m_bShown;
-
-	//------------------------------------------------------------------------------------------------
-	void SetSpot(vector pos, string pilot)
-	{
-		m_vWreck = pos;
-		m_sPilot = pilot;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetEvent(false);
-		m_fTimeLeft = 1800;
-		m_fParticipationRadius = 40;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 0;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		if (m_vWreck == vector.Zero || gm.GetHeliWreckPrefab().IsEmpty())
-			return false;
-
-		m_vPos = m_vWreck;
-		m_iSettlement = gm.FindNearestSettlement(m_vWreck);
-		m_sTitle = "Crashed Helicopter";
-		m_sBrief = string.Format("Bastion's last helicopter came down short of the line at grid %1. %2 was flying it. Whatever was aboard is still there. The infected got there first.", RZ_SettlementScanner.GridReference(m_vWreck), m_sPilot);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override string GetLocationName(RZ_GameModeComponent gm)
-	{
-		return "the quarantine line, grid " + RZ_SettlementScanner.GridReference(m_vWreck);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
-	{
-		if (!m_bShown && RZ_ContractHelp.AnyNear(players, m_vWreck, 400))
-		{
-			m_bShown = true;
-			IEntity wreck = RZ_Util.SpawnPrefab(gm.GetHeliWreckPrefab(), RZ_Util.GroundPos(m_vWreck), Math.RandomFloat(0, 360));
-
-			// No lasting traces: once nobody has been near it for a while, it's cleared (RZ_LooseItems)
-			RZ_GameModeComponent.TrackLooseItem(wreck);
-			gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vWreck, 6, 10));
-			SpawnGuards(gm, m_vWreck, 4, 15, 45);
-			gm.GetHeat().AddHeat(m_vWreck, 50);
-		}
-
-		if (!m_bShown || CountPlayersNear(players, m_vWreck, 30) == 0)
-			return;
-
-		gm.GetSpawner().SpawnHorde(m_vWreck, 300);
-		m_eState = RZ_EMissionState.SUCCEEDED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnTimeUp(RZ_GameModeComponent gm)
-	{
-		m_eState = RZ_EMissionState.SUCCEEDED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override string GetSuccessText(RZ_GameModeComponent gm)
-	{
-		return "Someone reached the last helicopter's wreck at the line. So did the infected.";
 	}
 }
