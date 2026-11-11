@@ -926,12 +926,14 @@ class RZ_LongTable
 	//------------------------------------------------------------------------------------------------
 	//! The small settlement with the fewest towns within 1.6 km, infection under 40, at least
 	//! 2 km from every holding, leader seat, safehouse and the lab, away from the quarantine line.
-	//! Small maps relax it a step at a time. With `near` set (a move), 2-5 km from there.
+	//! Small maps relax it a step at a time (down to 400 m). With `near` set (a move), 2-5 km from there.
 	protected int PickTown(vector near, float minFrom, float maxFrom)
 	{
-		array<float> gaps = {HOUSE_GAP, 1500, 1000, 700};
-		array<float> infections = {40, 50, 60, 70};
-		array<int> sizes = {1, 2, 2, 3};
+		// The last two steps are for small maps like Arland (about 4 km across), where every place
+		// has someone within 700 m: the emptiest place left, still never a lived-in town
+		array<float> gaps = {HOUSE_GAP, 1500, 1000, 700, 500, 400};
+		array<float> infections = {40, 50, 60, 70, 80, 80};
+		array<int> sizes = {1, 2, 2, 3, 2, 2};
 		for (int pass = 0; pass < gaps.Count(); pass++)
 		{
 			int best = -1;

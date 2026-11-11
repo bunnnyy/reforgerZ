@@ -566,7 +566,7 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md
 - **Where.** The small settlement (size 1) with the fewest towns within 1.6 km, infection under 40,
   at least 2 km from every holding, leader seat, quartermaster, safehouse and the lab, off the
   quarantine line, and not a town a running mission or story is using. Small maps relax it a step
-  at a time (1.5 km and infection under 50, then 1 km, then 700 m and any size); if nothing fits,
+  at a time (1.5 km and infection under 50, then 1 km, then 700 m and any size, then 500 m and 400 m for maps as small as Arland, size 2 at most); if nothing fits,
   there's no house that season. The house is the
   farthest farm building there (barn, farm, mill, stable, granary, cowshed or silo, by prefab
   name), else the building farthest out, else a point on the edge. Saved. Territory never founds or

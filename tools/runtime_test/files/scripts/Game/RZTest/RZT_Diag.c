@@ -46,7 +46,7 @@ modded class RZ_MissionManager
 		}
 		if (m_iRZTPhase == 3)
 		{
-			if (m_RZTCur && m_RZTCur.m_eState == RZ_EMissionState.ACTIVE)
+			if (m_RZTCur && m_RZTCur.m_eState == RZ_EMissionState.ACTIVE && !m_RZTCur.m_bGlobal && m_RZTCur.m_vPos != vector.Zero)
 				RZT_Fake.MoveTo(m_RZTCur.m_vPos);
 			return true;
 		}
@@ -166,7 +166,7 @@ modded class RZ_GameModeComponent
 		}
 		if (m_iRZTQuest < 0 || m_iRZTQuestSec > 900)
 		{
-			if (m_iRZTQuest >= 0)
+			if (m_iRZTQuest >= 0 && m_iRZTQuestSec < 999)
 				Print(string.Format("RZT quest %1 STUCK at stage %2 after 15 min", m_aRZTQuestKeys[m_iRZTQuest], m_iRZTQuestStage));
 			m_iRZTQuest++;
 			m_iRZTQuestSec = 0;
@@ -229,7 +229,8 @@ modded class RZ_GameModeComponent
 			Print(string.Format("RZT quest %1 stage %2 mission '%3'", qkey, run.m_iStage, m.m_sTitle));
 		}
 		m_iRZTQuestMissionSec++;
-		RZT_Fake.MoveTo(m.m_vPos);
+		if (!m.m_bGlobal && m.m_vPos != vector.Zero)
+			RZT_Fake.MoveTo(m.m_vPos);
 		if (m_iRZTQuestMissionSec >= 10 && m.m_eState == RZ_EMissionState.ACTIVE)
 		{
 			if ((m_iRZTQuestStages + m_iRZTQuest) % 3 == 2)

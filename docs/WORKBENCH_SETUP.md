@@ -1031,7 +1031,7 @@ Warnings worth acting on:
 | `Season rule set '...' doesn't exist; ignored.` | A name in **Season > Rule sets** is misspelt |
 | `Questlines: the saved questline '...' (or its stage) no longer exists; dropped.` | A questline (or a stage id) was removed or renamed in the code since the save; that one ends |
 | `Questlines: two questlines use the key '...'` / `... has no key or no stages; skipped.` | A content mistake in `Missions/Questlines/`: give each questline its own key and at least one stage |
-| `Long Table: none this season (no empty place far enough from everyone on this map).` | Every settlement is too infected or within 700 m of a holding, leader seat, safehouse or the lab: no house this season. Fewer outposts (**Territory > Outposts per faction**) leave room |
+| `Long Table: none this season (no empty place far enough from everyone on this map).` | Every settlement is too infected or within 400 m of a holding, leader seat, safehouse or the lab (the last of the small-map steps): no house this season. Fewer outposts (**Territory > Outposts per faction**) leave room |
 | `Requirements: no questline has the key '...' (docs/QUESTLINES.md lists them); the gate never closes.` | A mission's `NotWhileQuest`/`NotAfterQuest`/`NotWithQuest` names a key that is neither registered nor designed: a typo. Use the key from [QUESTLINES.md](QUESTLINES.md#the-questlines) |
 | `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON save behaviour in the VERIFY list is wrong) |
 
