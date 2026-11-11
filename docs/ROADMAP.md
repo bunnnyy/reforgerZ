@@ -76,10 +76,11 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
   crawlers, the land grid in use and the rest of the plumbing (runtime groups, a silent kill), with
   their own doc.
 - Before the tribes' code, `tools/tribe_sim.py` simulates them as data over a season on the
-  45-day pacing (`--legacy` for the old one) on Arland, Everon and a Chernarus-size map at 2, 5 and
-  10 players: tribe counts, clans, hunger, growth, first-night losses, and fights per km walked
-  by day and by night. It prints the numbers it tuned against the design, with the reason for
-  each. Run it again with the wild land the land survey measures (`--wild everon=31`).
+  45-day pacing (`--legacy` for the old one) at 2, 5 and 10 players, on the wild land the land
+  survey measured on Arland, Everon and Cain (and a Chernarus-size map), with the infected's sight
+  the zombie lab measured: tribe counts, clans, hunger, growth, first-night losses, and fights per
+  km walked by day and by night. It prints the numbers it tuned against the design, with the reason
+  for each. Arland's wild land (0.4-1.1 km²) is too small for a tribe.
 
 ### Content on the world facts
 - Switch the rest of the content to the world facts ([DESIGN.md](DESIGN.md#world-facts), the

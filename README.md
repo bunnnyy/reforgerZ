@@ -148,8 +148,9 @@ tools/render_ui.js
 tools/pacing_sim.py
                  simulates a season's research, the lab and the stages for 2, 5 and 10 players
 tools/tribe_sim.py
-                 simulates the infected tribes (planned) over a season on that pacing: Arland,
-                 Everon and a Chernarus-size map, 2, 5 and 10 players
+                 simulates the infected tribes (planned) over a season on that pacing, on the
+                 measured wild land of Arland, Everon and Cain and a Chernarus-size map, 2, 5 and
+                 10 players
 tools/compile_check.sh
                  compiles the scripts on the dedicated server, no Workbench needed (Linux,
                  or Windows in Git Bash)

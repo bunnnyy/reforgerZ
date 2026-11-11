@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """ReforgerZ tribe ecology simulator (the infected tribes design, phase 0).
 
-    python3 tools/tribe_sim.py                    # Arland, Everon, Chernarus-size; 2, 5 and 10 players
+    python3 tools/tribe_sim.py                    # Arland, Everon, Cain, Chernarus-size; 2, 5 and 10 players
+    python3 tools/tribe_sim.py --maps arland --slots 1   # Arland with the Slots override (no tribe without it)
     python3 tools/tribe_sim.py --legacy           # the same on the old 10-day pacing
     python3 tools/tribe_sim.py --maps everon --players 5 --runs 100
-    python3 tools/tribe_sim.py --wild everon=31   # the wild land the land survey measured (km2)
+    python3 tools/tribe_sim.py --wild everon=31   # another wild land (km2; the defaults are the land survey's)
     python3 tools/tribe_sim.py --design           # the design's numbers, before this tool's tuning
     python3 tools/tribe_sim.py --set split_at=22 ran_points=5   # try any number (--list shows them)
     python3 tools/tribe_sim.py --trace            # one Everon season, a line a real day
@@ -24,8 +25,9 @@ when the 75% serum, the 90% gate and the cure come). A season runs phase by phas
   - each season day (8 hours played; 1.6 on the old pacing) runs ageing, challenges, deaths of age,
     successions with their splinters, lone ones, new tribes, splits and clans, culls and lair moves.
 
-The day party is the author's change: by day each tribe keeps hunters and young out (a quarter of
-it, half when hungry, in small groups, 6 bodies at most at one player cluster), scouts stay on the
+The day party is the author's change: by day each tribe keeps hunters and young out (at most a
+quarter of it, tuned to a fifth; twice that when hungry; in small groups, 6 bodies at most at one
+player cluster), scouts stay on the
 ridges, alpha and guard rest at the lair. A scout's call by day brings at most 4 of the day party;
 day noise draws only the day party; nobody is out the day after a feed; towns by day stay the
 crawlers'. Fog counts as dusk: the hunt can come by day in fog.
@@ -37,8 +39,12 @@ sends nobody new until it passes its old level (the pitch's "players who push a 
 tribe"; as written, rule 5 banks every tick's rise and the background creep keeps every tribe near
 its cap). It makes clans depend on the server's size, and starves Arland's one tribe of young.
 
-Nothing here is measured: every number is the design's or an assumption printed at the top of the
-output. Change them with --set when play-tests or the land survey say otherwise. Simplified: the
+Measured (phase 0): the wild land, land, holdings and lair candidates of Arland, Everon and Cain
+(tools/land_survey/), and the infected's sight by day and night (tools/zombie_lab/: the chance of
+being engaged in 30 s at 25-200 m, turned into the width of ground a walker passing one infected is
+seen across). Arland's wild land is under the 1.5 km2 floor, so it has no tribe unless --slots says
+otherwise. Every other number is the design's or an assumption printed at the top of the output.
+Change them with --set when play-tests say otherwise. Simplified: the
 map is a square of towns with the wild between them; ranges are discs; rivers, valleys, habits, fear
 places, marks, the Red Hand's moat, the Long Table, tags and seasonal pull are left out; the season
 ends at the cure. No dependencies beyond Python 3.
@@ -151,8 +157,11 @@ TUNED_WHY = {
                         "(and no core) goes in that could take the night's losses past half of who set out"),
     "weak_quiet": (1, "a weakened tribe's scouts still charged and died one by one; it now posts none"),
     "cull_min": (12, "Bastion's cull contracts kept naming tribes already under 8; they name a tribe of 12+"),
+    "slot_km2": (5.0, "the land survey measured Everon's wild land at 24-26 km2 (the design estimated 24-36): at 1 "
+                      "per 6 km2 that is 4 slots with one kept for a split, so 3 tribes, and Everon was in 4-6 in only "
+                      "2-22% of seasons; 1 per 5 gives 5 slots and 4 tribes (Cain 4 slots, 3 tribes)"),
     "seed_open": (1, "slots / 3 gave Everon 2 seeds, and busy servers keep towns from going dark, so it sat at 2-3 "
-                     "tribes; every slot not kept for a split is seeded (Everon 4, Arland 1, Chernarus-size 4)"),
+                     "tribes; every slot not kept for a split is seeded (Everon 4, Cain 3, Chernarus-size 4)"),
     "hunger_night": (3, "+5 a counted night against about 0.06 takings a tribe a night: 70% of tribe-nights "
                         "Hungry and 3-4 starvations a tribe a season; +3 gives about half Hungry"),
     "hunger_decline": (5, "kept 2 above the normal rise"),
@@ -160,14 +169,20 @@ TUNED_WHY = {
     "dark_km": (2.0, "most towns lie within 3 km of some range once a few tribes exist"),
     "ran_points": (6.0, "with 4, every tribe sat at the 2-a-day cap whatever players did (27-31 points banked a "
                         "tribe a season day on Everon), and Everon had a clan in 85-95% of seasons"),
-    "split_at": (27, "with 6 points, a clan in about half of Everon seasons at 5 players (25: about 75%)"),
+    "split_at": (26, "with 6 points and the measured wild land, a clan in about half of Everon seasons at 5 "
+                     "players (25: about two in three; 27: about two in five)"),
     "day_group": ((2, 3), "the author's 2-4 kept to the small end, so a quarter of a tribe of 10-15 makes "
                           "more, smaller groups"),
+    "day_share": (0.2, "with the measured sight (210 m, not 120) a quarter of the tribe out by day made a day "
+                       "crossing as busy as a night's (1.3-1.5 fights against 1.1-1.6 hunts); a fifth keeps it "
+                       "under the night's in every row, inside the author's 'at most a quarter'"),
 }
 TUNED = {k: v[0] for k, v in TUNED_WHY.items()}
 
 # ----------------------------------------------------------------------------------- assumptions
-# Not design numbers: how players and Bacon's infected behave. None is measured yet.
+# Not design numbers: how players and Bacon's infected behave. P and trail_r are measured (the zombie
+# lab, Bacon Zombies 1.8.0 on clear lines: about 2 in 3 engaged within 30 s at 25 m, a flat 25% by day
+# and 17% by night from 50 to 200 m, none beyond about 250 m; behind a hill, never); the rest are not.
 ASSUME = {
     "time_accel": 6.0,          # a game day of 4 real hours
     "counted_minutes": 20,      # a night counts with someone online this long
@@ -179,8 +194,8 @@ ASSUME = {
     "walk_kmh": 4.0,            # on foot in the wild, with stops
     "groups": (0.45, 0.35, 0.20),   # a player plays solo, in a pair, or in a three
     "town_kill_share": 0.8,     # of the kills not made in the wild, the share in towns (1.5 infection each)
-    "P": 0.12,                  # km: Bacon's sight by day (the design's P until measured)
-    "trail_r": 0.15,            # km: a night hunt targets you this close to its trail (young 50-150 m off it)
+    "P": 0.21,                  # km: Bacon's sight by day: the width a walker passing one is seen across (measured; design 0.12)
+    "trail_r": 0.19,            # km: a night hunt's: the same at night (measured, near-full moon; design 0.15)
     "scout_day": 0.12, "scout_dusk": 0.09, "scout_night": 0.06,   # km: scouts' sight
     "overlap": 1.5,             # players walk the same tracks, field edges and woods the tribe does
     "scout_overlap": 2.0,       # scouts sit over the trails and roads
@@ -215,9 +230,16 @@ ASSUME = {
     "life_ok": 0.9,             # a player death that counts (a life of 10 minutes or more)
 }
 
+# Wild land, holdings and lair candidates as the land survey measured them (wild land: the middle of
+# what four to six starts gave; Arland 0.4-1.1, Everon 23.8-25.8, Cain 19.7-21.3 km2). The town count
+# is the synthetic map's, chosen so its land comes out near the real one (Arland 8 km2 against 6.3,
+# Everon 52 against 51, Cain 44 against 39); cands: the share of far-enough wild cells that are lair
+# candidates, chosen to land near the survey's count (Everon 34-35; Cain 77-81, more than the
+# synthetic map has room for). Chernarus-size is not measured.
 MAPS = {
-    "arland": {"label": "Arland", "wild": 6.0, "towns": 14, "holdings": 8, "safehouses": 2},
-    "everon": {"label": "Everon", "wild": 30.0, "towns": 45, "holdings": 10, "safehouses": 3},
+    "arland": {"label": "Arland", "wild": 0.75, "towns": 14, "holdings": 8, "safehouses": 2, "cands": 1.0},
+    "everon": {"label": "Everon", "wild": 24.5, "towns": 45, "holdings": 14, "safehouses": 3, "cands": 0.55},
+    "cain": {"label": "Cain", "wild": 20.5, "towns": 30, "holdings": 14, "safehouses": 3, "cands": 1.0},
     "chernarus": {"label": "Chernarus-size", "wild": 120.0, "towns": 90, "holdings": 12, "safehouses": 4},
 }
 TEMPERS = (("bold", 25), ("cautious", 20), ("cunning", 20), ("territorial", 20), ("nomadic", 15))
@@ -303,7 +325,7 @@ class Map:
                     if d < near_c or (k in self.lived and d < near_l + self.radius[k]):
                         ok = False
                         break
-                if ok and rng.random() < ASSUME["cand_share"]:
+                if ok and rng.random() < md.get("cands", ASSUME["cand_share"]):
                     self.cands.append(p)
         self.neigh = [[j for j, u in enumerate(self.towns) if j != i and dist(t, u) <= SPREAD_KM]
                       for i, t in enumerate(self.towns)]
@@ -1928,7 +1950,7 @@ def parse_value(old, text):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--maps", nargs="+", default=["arland", "everon", "chernarus"], choices=sorted(MAPS))
+    ap.add_argument("--maps", nargs="+", default=["arland", "everon", "cain", "chernarus"], choices=sorted(MAPS))
     ap.add_argument("--players", type=int, nargs="+", default=[2, 5, 10])
     ap.add_argument("--runs", type=int, default=40)
     ap.add_argument("--seed", type=int, default=11)
