@@ -147,11 +147,11 @@ class RZ_Quest_Cargo : RZ_Questline
 				witness = "A Haven lookout";
 
 			run.SetText("witness", witness);
-			run.SetText("intro", "{witness} saw the van with the canvas tied down again, and its driver, {driver}, asked them to pass a message to the Haven: he wants out. He'll be at a crossroads outside {crew_place}, at dusk.");
+			run.SetText("intro", run.Fill("{witness} saw the van with the canvas tied down again, and its driver, {driver}, asked them to pass a message to the Haven: he wants out. He'll be at a crossroads outside {crew_place}, at dusk."));
 		}
 		else
 		{
-			run.SetText("intro", "The driver of one of the Red Hand's canvas-backed vans, {driver}, wants out. He'll meet someone at a crossroads outside {crew_place}, at dusk. He didn't say what he carries.");
+			run.SetText("intro", run.Fill("The driver of one of the Red Hand's canvas-backed vans, {driver}, wants out. He'll meet someone at a crossroads outside {crew_place}, at dusk. He didn't say what he carries."));
 		}
 
 		run.SetPlace(RZ_RedHandQuest.PosOf(run, "cross"), crew.m_sPlace);
@@ -217,7 +217,7 @@ class RZ_Quest_Cargo : RZ_Questline
 
 		run.SetFlag("farm", 0);
 		vector camp = RZ_RedHandQuest.PosOf(run, "camp");
-		RZ_RedHandQuest.KeepPos(run, "drop", RZ_Mission.LandPointNear(camp, 60, 150));
+		RZ_RedHandQuest.KeepPos(run, "drop", RZ_Mission.LandPointNear(camp, 250, 400));
 		run.SetText("drop", run.Fill("the pit behind {crew_short}'s camp"));
 	}
 
@@ -238,8 +238,12 @@ class RZ_Quest_Cargo : RZ_Questline
 
 		string old = run.Text("crew");
 		RZ_Leader fresh = RZ_RedHandQuest.Successor(gm, run, "crew");
-		if (fresh)
-			run.Note(string.Format("%1 is out of the chair in %2. %3 has it now, and the vans still run.", old, fresh.m_sPlace, fresh.m_sName));
+		if (!fresh)
+			return true;
+
+		run.Note(string.Format("%1 is out of the chair in %2. %3 has it now, and the vans still run.", old, fresh.m_sPlace, fresh.m_sName));
+		if (!IsFarm(run) && RZ_RedHandQuest.HasPos(run, "drop"))
+			run.SetText("drop", run.Fill("the pit behind {crew_short}'s camp"));
 
 		return true;
 	}
@@ -307,7 +311,7 @@ class RZ_Quest_Cargo : RZ_Questline
 		switch (run.m_iBranch)
 		{
 			case OUT_PURGE: return run.Fill("The boss wants {driver_short} in the pit too, at {drop_pit}. Take his place, get him out, or let it be.");
-			case OUT_RAID: return run.Fill("Bastion is going into {crew_short}'s camp outside {crew_place}. Go in with them.");
+			case OUT_RAID: return run.Fill("Bastion goes into {crew_short}'s camp outside {crew_place} at dawn, and wants it quiet when it gets there. Go in first.");
 		}
 
 		return run.Fill("{driver_short} is at the crossroads outside {crew_place}, waiting to see what you did. Get him out to the Haven, or tell him to keep driving.");
@@ -420,6 +424,7 @@ class RZ_Quest_Cargo : RZ_Questline
 	//! What he tells you at the crossroads, with the List (H1) if the Haven's strays came off it.
 	protected string DriverStory(RZ_GameModeComponent gm, RZ_QuestRun run, bool threatened)
 	{
+		PickDrop(gm, run);
 		string text = "He's carried strays the Haven turned out, debtors from the book, a deserter or two. Most went to the pit, or to the line to learn the drones.";
 		if (IsFarm(run))
 			text += " Lately {crew_short} sends a load somewhere else: a farm past the last village, where a woman pays in jars. The driver has stopped eating meat.";
@@ -548,7 +553,7 @@ class RZ_Quest_Cargo : RZ_Questline
 		else if (outcome == OUT_RAIDED)
 		{
 			fate = DRIVER_ARRESTED;
-			line = "Bastion went into the camp, and somebody went in with them. {driver_short} is in a Bastion cell, alive.";
+			line = "Somebody cleared the camp before Bastion got there. {driver_short} is in a Bastion cell, alive.";
 		}
 		else if (run.m_iBranch == OUT_PURGE)
 		{
@@ -635,7 +640,7 @@ class RZ_Quest_Cargo : RZ_Questline
 				RZ_RedHandQuest.SetWorld(gm, "table.supplier_cut", 1);
 				SpreadRumour(gm, "\"There's a farm past the last village that's lost its butcher. That's what the Red Hand says. Then it laughs.\"", 8);
 			}
-			else
+			else if (replaced)
 			{
 				SpreadRumour(gm, "\"The boss emptied a crew boss's pit last night, and put the crew boss in it.\"", 8);
 			}
@@ -906,8 +911,13 @@ class RZ_QM_CargoLoad : RZ_QuestMission
 			return false;
 
 		vector camp = RZ_RedHandQuest.PosOf(run, "camp");
-		m_vVan = LandPointNear(camp, 60, 140);
+		// The van is parked well clear of where it's going (the crew's own pit can be close by)
 		m_vDrop = RZ_RedHandQuest.PosOf(run, "drop");
+		m_vVan = LandPointNear(camp, 60, 140);
+		for (int tries = 0; tries < 8 && RZ_Util.DistXZ(m_vVan, m_vDrop) < 150; tries++)
+		{
+			m_vVan = LandPointNear(camp, 60, 140);
+		}
 		if (!RZ_RedHandEdges.HavenRefuge(gm, m_vVan, m_vRefuge, m_sRefuge))
 			return false;
 
@@ -1607,7 +1617,7 @@ class RZ_QM_CargoFate : RZ_QuestMission
 		{
 			m_vDriver = LandPointNear(RZ_RedHandQuest.PosOf(run, "camp"), 20, 40);
 			m_sTitle = "Cargo: the raid";
-			m_sBrief = QFill(gm, "Bastion goes into {crew_short}'s camp outside {crew_place} at dawn. Go in with them. Every one of the crew who's holding a gun at the end is a problem.");
+			m_sBrief = QFill(gm, "Bastion goes into {crew_short}'s camp outside {crew_place} at dawn, and wants it quiet when it gets there. Go in first. Everyone in that crew who's holding a gun is a problem.");
 		}
 		else if (m_iBranch == RZ_Quest_Cargo.OUT_PURGE)
 		{
@@ -1782,11 +1792,11 @@ class RZ_QM_CargoFate : RZ_QuestMission
 
 		foreach (int playerId : m_aParticipants)
 		{
-			Remember(gm, playerId, RZ_EQuestApproach.FORCE, "went into the camp with Bastion");
+			Remember(gm, playerId, RZ_EQuestApproach.FORCE, "went into the camp ahead of Bastion");
 		}
 
 		NotifyParticipants(gm, m_sTitle, QFill(gm, "The camp is quiet. Bastion's section walks in behind you and starts counting. They find {driver_short} in the cab of the van, hands up, and put him in the back of their own truck."));
-		Resolve(gm, who, RZ_EQuestApproach.FORCE, RZ_Quest_Cargo.OUT_RAIDED, "went into the camp with Bastion", RZ_Quest_Cargo.IsHaven(Run(gm)));
+		Resolve(gm, who, RZ_EQuestApproach.FORCE, RZ_Quest_Cargo.OUT_RAIDED, "went into the camp ahead of Bastion", RZ_Quest_Cargo.IsHaven(Run(gm)));
 	}
 
 	//------------------------------------------------------------------------------------------------
