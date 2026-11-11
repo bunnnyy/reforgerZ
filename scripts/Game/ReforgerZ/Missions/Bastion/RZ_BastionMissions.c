@@ -130,6 +130,10 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 		if (gm.GetEnvironment() && gm.GetEnvironment().IsHelicopterGrounded())
 			return 0;
 
+		// Grounded or lost in The Last Pilot (or its pilot lost in Rescue the Pilot): no flights
+		if (RZ_Quest_LastPilot.IsHelicopterDown(gm))
+			return 0;
+
 		float w = 3 * gm.GetDirector().GetStageSettings().m_fMilitaryPresence;
 		if (gm.GetMissions().GetClock() < s_fBoostUntil)
 			w = w * 2;
@@ -164,7 +168,17 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 		m_sTitle = "Last Helicopter";
 		m_sBrief = string.Format("Bastion's last working helicopter is setting down at the LZ outside %1 on its run between bases. It lifts off in %2 minutes. Keep the LZ clear and be there when it goes.",
 			s.m_sName, RZ_Util.RoundToInt(COUNTDOWN / 60));
+
+		// The first run after a grounding says what changed (a new pilot, a patched airframe)
+		m_sBrief = RZ_Quest_LastPilot.BackLine(gm) + m_sBrief;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The last pilot notices who kept his LZ (The Last Pilot questline can start).
+	override void OnSuccess(RZ_GameModeComponent gm)
+	{
+		RZ_Quest_LastPilot.OnLzKept(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------

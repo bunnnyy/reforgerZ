@@ -591,6 +591,7 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.TRUSTED, 35, 30);
 		m_Req.Bonus("nurse");
 		m_Req.Bonus("doctor");
+		m_Req.m_fMinMilitary = RZ_Quest_LastPilot.MIN_PRESENCE;
 		m_fTimeLeft = 3600;
 		m_fParticipationRadius = 0;
 	}
@@ -599,6 +600,10 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
 		if (!RZ_Escort.HasRoom(gm) || !HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
+			return 0;
+
+		// Only while the helicopter flies, and not while The Last Pilot's story has its pilot
+		if (RZ_Quest_LastPilot.IsHelicopterDown(gm) || RZ_Quest_LastPilot.IsRunning(gm))
 			return 0;
 
 		return 1;
@@ -623,7 +628,7 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		m_Escort.m_fFollowGap = 5;
 		m_Escort.SetTalk(m_iId, 0, "Help him up (he follows you)|Patch him up (Nurse or Doctor)", m_iTalk, "Talk to the pilot");
 		m_sTitle = "Rescue the Pilot";
-		m_sBrief = string.Format("One of ours went down outside %1. The airframe's gone; the pilot may not be. Find him and walk him to %2.", s.m_sName, m_sDestName);
+		m_sBrief = string.Format("The last helicopter put down hard outside %1 on its run. The mechanics will get the airframe back; the pilot is still out there, hurt, and Bastion has nobody else to fly it. Find him and walk him to %2.", s.m_sName, m_sDestName);
 		return m_Escort.Begin(gm, LandPointNear(m_vWreck, 3, 8));
 	}
 
@@ -720,7 +725,14 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return "Rescue the Pilot: the pilot didn't make it.";
+		return "Rescue the Pilot: the pilot didn't make it. The helicopter stays on the ground until someone else can fly it.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! He was the one flying it: no Last Helicopter until a new pilot is found (The Last Pilot's flags)
+	override void OnFailed(RZ_GameModeComponent gm)
+	{
+		RZ_Quest_LastPilot.OnPilotLost(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -750,6 +762,10 @@ class RZ_Mission_ClearTheAirfield : RZ_Mission_KillTagged
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
+		// Nothing to land while the helicopter is grounded or lost (The Last Pilot)
+		if (RZ_Quest_LastPilot.IsHelicopterDown(gm))
+			return 0;
+
 		return 0.8;
 	}
 
@@ -786,6 +802,7 @@ class RZ_Mission_ClearTheAirfield : RZ_Mission_KillTagged
 	{
 		RZ_Mission_LastHelicopter.Boost(gm, BOOST_SECONDS);
 		NotifyParticipants(gm, "Task Force Bastion", "Strip's clear. The bird can set down there now: expect it more often.");
+		RZ_Quest_LastPilot.OnLzKept(gm);
 	}
 }
 
