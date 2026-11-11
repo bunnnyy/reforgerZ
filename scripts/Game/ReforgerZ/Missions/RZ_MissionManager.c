@@ -352,7 +352,7 @@ class RZ_MissionManager
 	//------------------------------------------------------------------------------------------------
 	//! A building at pos may not be locked: a running mission has props, items or people within
 	//! PROP_CLEAR of it, and the lock isn't part of that mission (Locked Bunker). From
-	//! RZ_Search.HasLock, so the doors, the loot and the spot pickers all agree.
+	//! RZ_Search.HasLock, so the doors, the loose loot and the spot pickers all agree.
 	bool IsNearMissionProp(vector pos)
 	{
 		if (m_aActive.IsEmpty())

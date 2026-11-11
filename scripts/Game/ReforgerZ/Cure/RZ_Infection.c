@@ -38,7 +38,7 @@ enum RZ_EMed
 }
 
 //------------------------------------------------------------------------------------------------
-//! One chance to find a treatment when searching a type of building (a loot table entry).
+//! One chance to find a treatment in a type of building (its loose loot) or a car boot or body search.
 [BaseContainerProps(), SCR_BaseContainerCustomTitleField("m_sType")]
 class RZ_MedFind
 {
@@ -48,7 +48,7 @@ class RZ_MedFind
 	[Attribute("1", UIWidgets.ComboBox, "What is found", "", ParamEnumArray.FromEnum(RZ_EMed))]
 	RZ_EMed m_iMed;
 
-	[Attribute("0.05", desc: "Chance per search (doubled behind a lock)")]
+	[Attribute("0.05", desc: "Chance each time a building of this type is rolled (loose loot), or per car boot or body search (doubled behind a lock)")]
 	float m_fChance;
 
 	[Attribute("0", desc: "Added to the chance per cure breakthrough (25, 50, 75 percent)")]
@@ -170,7 +170,7 @@ class RZ_InfectionSettings
 	[Attribute("20", desc: "Seconds brewing a home remedy on a stove")]
 	float m_fBrewSeconds;
 
-	[Attribute(desc: "Where treatments are found when searching (empty = the built-in list in docs/DESIGN.md)")]
+	[Attribute(desc: "Where treatments are found: in buildings (loose loot), car boots and on bodies (empty = the built-in list in docs/DESIGN.md)")]
 	ref array<ref RZ_MedFind> m_aFinds;
 }
 
@@ -1107,10 +1107,11 @@ class RZ_Infection
 
 	// ================================================================ Finds
 	//------------------------------------------------------------------------------------------------
-	//! One roll per search for a treatment in this building type (at most one). Gives it and returns
-	//! its name, or "".
-	string RollMedFind(string type, bool locked, IEntity user, vector at)
+	//! One roll for a treatment in this building type (at most one): a car boot or body search, or a
+	//! building's loose loot. The treatment's prefab and kind (RZ_EMed, -1 for none).
+	ResourceName PickMedFind(string type, bool locked, out int med)
 	{
+		med = -1;
 		int milestone = 0;
 		if (m_GM.GetCure())
 			milestone = Math.ClampInt(m_GM.GetCure().m_iMilestone, 0, 3);
@@ -1128,16 +1129,29 @@ class RZ_Infection
 				continue;
 
 			ResourceName prefab = MedPrefab(f.m_iMed);
-			if (prefab.IsEmpty() || !RZ_ItemHelper.Give(prefab, user, at))
+			if (prefab.IsEmpty())
 				continue;
 
-			if (f.m_iMed == RZ_EMed.ANTIDOTE && type == "body")
-				return "an antidote in a Halcyon courier's cold box";
-
-			return MedName(f.m_iMed);
+			med = f.m_iMed;
+			return prefab;
 		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One roll per search (car boots, bodies): gives the treatment and returns its name, or "".
+	string RollMedFind(string type, bool locked, IEntity user, vector at)
+	{
+		int med;
+		ResourceName prefab = PickMedFind(type, locked, med);
+		if (prefab.IsEmpty() || !RZ_ItemHelper.Give(prefab, user, at))
+			return "";
+
+		if (med == RZ_EMed.ANTIDOTE && type == "body")
+			return "an antidote in a Halcyon courier's cold box";
+
+		return MedName(med);
 	}
 }
 

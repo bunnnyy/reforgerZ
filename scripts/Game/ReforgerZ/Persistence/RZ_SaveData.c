@@ -95,7 +95,7 @@ class RZ_SaveData
 	// World facts (World/RZ_WorldFacts.c): the season's seed, flags, canon and gossip
 	ref RZ_WorldFactsSave facts;
 
-	// World interactions: searched spots, opened locks, burned buildings, stripped wrecks, fixable cars
+	// World interactions: searched car boots, loose loot times, opened locks, burned buildings, stripped wrecks, fixable cars
 	ref RZ_InteractionSave interactions;
 
 	// The Long Table (World/RZ_LongTable.c): this season's roll, the farm, its people, hunger,

@@ -1,13 +1,14 @@
 //! Unarmed missions, part three: Car Keys, a Mechanic wanderer's job (docs/MISSIONS.md,
 //! "Unarmed missions"). Built on the fixable cars (Interactions/RZ_Cars.c: a mission car that
-//! already runs and needs only its keys), searching (the keys turn up when someone searches the
-//! right house) and the vehicle zone block.
+//! already runs and needs only its keys), loose loot (the keys lie in the right house: RZ_Loot)
+//! and the vehicle zone block.
 
 //------------------------------------------------------------------------------------------------
 //! Car Keys (Haven, from a Mechanic wanderer): a car the Mechanic fixed stands in a town, but its
-//! keys are in one of the five houses nearest it. Search them quietly (searching the right one
-//! finds the keys; heat 45 or more at that house when they turn up means you were noticed: a
-//! horde comes and the pay is ×0.7), start it and drive it back to where the Mechanic waits.
+//! keys lie in one of the five houses nearest it, on a table or the floor like any loose loot. Go
+//! through them quietly (picking the keys up is finding them; heat 45 or more at that house when
+//! you do means you were noticed: a horde comes and the pay is ×0.7), start it and drive it back
+//! to where the Mechanic waits.
 //! Hotwiring works too, but it's loud and pays half. The Mechanic keeps the car: it leaves the
 //! world once nobody sits in it. Started by "Ask about cars", one at a time, one per player per
 //! 30 minutes.
@@ -146,7 +147,7 @@ class RZ_Mission_CarKeys : RZ_Mission
 			if (type != "house" && type != "farm")
 				continue;
 
-			// Never a house with its own lock, on its doors or its loot (either way the keys would sit behind it)
+			// Never a house with its own lock (the keys would sit behind its door)
 			if (hub.GetSearch().HasOwnLock(pos, type) || hub.IsProtected(pos) || hub.GetTraps().IsBurned(pos))
 				continue;
 

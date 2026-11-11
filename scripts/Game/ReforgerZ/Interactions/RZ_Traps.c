@@ -118,7 +118,7 @@ class RZ_TrapSettings
 	[Attribute("30", desc: "Heat a building going up makes")]
 	float m_fBurnHeat;
 
-	[Attribute("120", desc: "Real minutes a burned building has nothing to search, and keeps infected from spawning within 30 m")]
+	[Attribute("120", desc: "Real minutes a burned building has no loot, and keeps infected from spawning within 30 m")]
 	float m_fBurnMinutes;
 
 	[Attribute("1", desc: "Infection taken off the town when one of its buildings burns")]

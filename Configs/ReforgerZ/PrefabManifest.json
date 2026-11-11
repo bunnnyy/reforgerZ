@@ -2969,8 +2969,8 @@
    "slotLabel": "Interactions > Search > Key prefab",
    "required": false,
    "minimum": false,
-   "use": "keys as real items (empty = keys are data for one life)",
-   "notes": ""
+   "use": "keys: they lie in houses next to letters, car keys in their car's town, and come off bodies and from the Mechanic (empty = no keys)",
+   "notes": "It must be a real item that can be picked up: an InventoryItemComponent and vanilla's pick-up action. The notebook base may be a prop; if the key shows no pick-up prompt on the ground, rebase it on a small vanilla item."
   },
   {
    "id": "DoorBlocker",
@@ -2997,7 +2997,7 @@
    "path": "",
    "basePrefab": "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et,{50A68300B537EDFA}Prefabs/Items/Food/ArmyCrackers_Soviet_01.et,{C22A2F123CD609FC}Prefabs/Items/Food/Meat_01_Dry.et,{70BC751317551D9B}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01.et,{630FB4AD4A735264}Prefabs/Items/Equipment/Canteens/Canteen_US_01.et,{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et,{C3F1FA1E2EC2B345}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_USSR_01.et,{AF3411AAF94D18C2}Prefabs/Items/Medicine/Gauze_02/Gauze_02.et,{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et,{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et,{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et,{3A421547BC29F679}Prefabs/Items/Equipment/Flashlights/Flashlight_MX991/Flashlight_MX991.et,{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et,{243948B23D90BECB}Prefabs/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.et,{61A705D76908160C}Prefabs/Items/Equipment/Watches/Watch_Orlik38/Watch_Orlik38.et,{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et,{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et,{8B853CDD11BA916E}Prefabs/Weapons/Magazines/Magazine_9x18_PM_8rnd_Ball.et,{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et,{48720FC416263FC1}Prefabs/Weapons/Magazines/Vz58/Magazine_762x39_Vz58_30rnd_Ball.et,{BBB50A815A2F916B}Prefabs/Weapons/Magazines/Magazine_545x39_AK_30rnd_Ball.et,{2EBF60EF24B108FC}Prefabs/Weapons/Magazines/Magazine_556x45_STANAG_30rnd_M855_Ball.et,{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et,{8266820FFDE17477}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_01.et,{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et,{B0F4EAC29E9058EA}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_grey.et,{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et,{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et,{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et,{41A9C55B61F375F0}Prefabs/Items/Equipment/Backpacks/Backpack_Kolobok.et",
    "baseFind": "",
-   "baseHint": "every item a search can find (vanilla and mod items)",
+   "baseHint": "every item that can lie in a house or turn up in a car boot or on a body (vanilla and mod items)",
    "components": [],
    "actions": [],
    "slots": ["m_SearchSettings.m_aLootPool"],
@@ -3005,7 +3005,7 @@
    "slotLabel": "Interactions > Search > Loot pool (list)",
    "required": false,
    "minimum": false,
-   "use": "searches find nothing until it's filled",
+   "use": "nothing lies in houses (and boots and bodies hold nothing) until it's filled; each must be a real item with vanilla's pick-up action",
    "notes": ""
   },
   {
@@ -4122,7 +4122,13 @@
    "category": "Interactions",
    "object": "Search",
    "field": "m_SearchSettings",
-   "covers": "**Loot pool**, loot tables, chances (find 0.6, rare 0.1, electronics 0.1), locks and their shares, **Door locks** (on; off = the lock on the loot), **Key prefab**, force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
+   "covers": "**Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, and a car boot or body search; rare 0.1, electronics 0.1), car boot and body searches (4 s, 1 heat, a boot empty for 60 min), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
+  },
+  {
+   "category": "Interactions",
+   "object": "Loot",
+   "field": "m_LootSettings",
+   "covers": "**Loose loot** (on; off = nothing lies in houses), put out within 35 m, put away past 60 m (after a minute), **refill** (60 min ÷ the town's loot level), at most 220 items lying on the server, items at most per building (house 2, shop and farm 3, pharmacy, police and garage 4; locked +1), town loot per item taken (0.015) ([DESIGN.md](DESIGN.md#loot-in-houses))"
   },
   {
    "category": "Interactions",
@@ -4656,13 +4662,10 @@
     "m_fFindChance": "0.6",
     "m_fRareChance": "0.1",
     "m_fElectronicsChance": "0.1",
-    "m_fSpotShare": "0.02",
-    "m_fBuildingShare": "0.04",
     "m_fSpotReturnMinutes": "60",
     "m_fSearchSeconds": "4",
     "m_fSearchHeat": "1",
     "m_bLocks": "1",
-    "m_bDoorLocks": "1",
     "m_fLockPharmacy": "0.5",
     "m_fLockPolice": "0.5",
     "m_fLockGarage": "0.35",
@@ -4684,6 +4687,23 @@
     "m_fBodyKeyChance": "0.08",
     "m_fBodyMinutes": "4",
     "m_iBodyCap": "8"
+   }
+  },
+  {
+   "field": "m_LootSettings",
+   "category": "Interactions",
+   "label": "Loot",
+   "cls": "RZ_LootSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_fSpawnRadius": "35",
+    "m_fDespawnRadius": "60",
+    "m_fRefillMinutes": "60",
+    "m_iMaxLying": "220",
+    "m_iMaxHouse": "2",
+    "m_iMaxShop": "3",
+    "m_iMaxSpecial": "4",
+    "m_fTownLootPerItem": "0.015"
    }
   },
   {

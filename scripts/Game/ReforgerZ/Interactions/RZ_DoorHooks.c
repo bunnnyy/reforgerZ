@@ -4,7 +4,7 @@
 //! and the server refuses it again in case the client check is bypassed or out of date.
 //! Shutting a door, interior doors and opening from inside are never refused.
 
-// VERIFY: the vanilla door prefabs use SCR_DoorUserAction (else hook the action named in the door prefab's ActionsManagerComponent, or turn Interactions > Search > Door locks off)
+// VERIFY: the vanilla door prefabs use SCR_DoorUserAction (else hook the action named in the door prefab's ActionsManagerComponent, or turn Interactions > Search > Locks off)
 modded class SCR_DoorUserAction
 {
 	//------------------------------------------------------------------------------------------------

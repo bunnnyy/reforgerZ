@@ -151,7 +151,7 @@ class RZ_DoorBlockers
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Door locks off: every blocker goes.
+	//! Locks off: every blocker goes.
 	void ClearAll()
 	{
 		if (m_mBlocks.IsEmpty())

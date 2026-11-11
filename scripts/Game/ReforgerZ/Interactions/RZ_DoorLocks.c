@@ -11,13 +11,13 @@
 //!   players, and again on the server, which decides. From inside it always opens: that turns
 //!   the latch, and the building is unlocked for everyone until the reset.
 //! - At each locked building's outside doors, an interaction spot (the same invisible prop and
-//!   routing as searching) offers Unlock (its key, quiet), Lock (its key) and Force the door
-//!   (a crowbar, 10 s, loud). Forced locks are broken until the reset.
+//!   routing as the other world interactions) offers Unlock (its key, quiet), Lock (its key) and
+//!   Force the door (a crowbar, 10 s, loud). Forced locks are broken until the reset.
 //! - Reset: an unlocked, latched or forced lock is back to locked after the relock time
 //!   (Search > relock minutes), and its outside doors are pulled shut once nobody stands in
 //!   them. Locked doors that are found open (AI opened them) are shut the same way.
-//! - A building whose doors can't be found (no door children, no usable bounds) keeps the
-//!   old lock on its loot. With Door locks off, every building does.
+//! - Locks are on doors only: a building whose doors can't be found (no door children, no
+//!   usable bounds) isn't locked, and no key is cut for it.
 //! - Inside means anywhere in the building's box (0.5 m in from its sides), or past the door
 //!   toward the middle: a shallow closet behind a door near the outline still opens.
 //!
@@ -407,7 +407,7 @@ class RZ_DoorLocks
 	//------------------------------------------------------------------------------------------------
 	bool IsOn()
 	{
-		return m_Settings.m_bEnabled && m_Settings.m_bLocks && m_Settings.m_bDoorLocks;
+		return m_Settings.m_bEnabled && m_Settings.m_bLocks;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -446,14 +446,16 @@ class RZ_DoorLocks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! This building's lock is on its doors (door locks on, outside doors found), not its loot.
-	bool UsesDoors(string buildingKey)
+	//! A building with a real lock: seeded as a locked place, not burned, and with outside doors
+	//! found (learned now if they weren't). Locked or not right now. Keys are cut only for these,
+	//! and their loose loot is better (RZ_Loot).
+	bool HasDoorLock(IEntity building)
 	{
-		if (!IsOn())
+		if (!building)
 			return false;
 
-		RZ_BuildingDoors b;
-		return m_mBuildings.Find(buildingKey, b) && !b.m_aDoors.IsEmpty();
+		RZ_BuildingDoors b = LearnIfLocked(building, RZ_ItemHelper.LowerName(building));
+		return b && !b.m_aDoors.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------

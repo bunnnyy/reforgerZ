@@ -214,8 +214,8 @@ and choice missions, and puzzles:
 No towns, spawn points or lab need placing: they're generated at start. With only this,
 these stay off: hunter squads, Perimeter checkpoints and drones (the line still works with
 messages), supply trucks (places count as supplied), territory guards, adaptation traits, the
-power station's own control prefab (it falls back), world-interaction loot (searches find
-nothing until the loot pool is filled), fixable cars, crafting and traps, and the treatments other than the antidote and the trial dose
+power station's own control prefab (it falls back), world-interaction loot (nothing lies in
+houses until the loot pool is filled), fixable cars, crafting and traps, and the treatments other than the antidote and the trial dose
 (stabiliser, low-grade meds).
 
 ### The world
@@ -363,7 +363,7 @@ Players who pick a locked one keep its gear but play as Unemployed. The log warn
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 145 prefabs the plugin creates, 16 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 32 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 145 prefabs the plugin creates, 16 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 33 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -604,9 +604,9 @@ and the UI files) need none, and seven have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_InteractionSpot.et` | an empty GenericEntity with a small invisible collision box, off the character layer | the generic set | Interactions > General > Spot prefab | optional | every searchable thing, the Unlock/Lock/Force spot, the Clean the bite spot (falls back to the puzzle object, which is visible). Add the small collision box by hand; keep it off the character collision layer |
-| `RZ_Key.et` | a small item (a key or key ring) | `RZ_KeyItemComponent`; `RZ_ReadKeyTagAction` | Interactions > Search > Key prefab | optional | keys as real items (empty = keys are data for one life) |
+| `RZ_Key.et` | a small item (a key or key ring) | `RZ_KeyItemComponent`; `RZ_ReadKeyTagAction` | Interactions > Search > Key prefab | optional | keys: they lie in houses next to letters, car keys in their car's town, and come off bodies and from the Mechanic (empty = no keys). It must be a real item that can be picked up: an InventoryItemComponent and vanilla's pick-up action. The notebook base may be a prop; if the key shows no pick-up prompt on the ground, rebase it on a small vanilla item |
 | `RZ_DoorBlocker.et` | an empty GenericEntity; add the collision-only box by hand (recipe below) | — | Interactions > Search > Doorway blocker | optional | keeps AI out of locked doorways near players. Needs only RplComponent, a collision-only MeshObject and a static RigidBody: see the doorway blocker recipe |
-| (existing prefab) | every item a search can find (vanilla and mod items) | — | Interactions > Search > Loot pool (list) | optional | searches find nothing until it's filled |
+| (existing prefab) | every item that can lie in a house or turn up in a car boot or on a body (vanilla and mod items) | — | Interactions > Search > Loot pool (list) | optional | nothing lies in houses (and boots and bodies hold nothing) until it's filled; each must be a real item with vanilla's pick-up action |
 | (existing prefab) | the repo's parked copies of the Car prefabs (Prefabs/ReforgerZ/Interactions/Cars/), each with SCR_BaseLockComponent m_bIsLocked 1 | — | Interactions > Cars > Parked prefabs (list, the same order as Car prefabs) | optional | a fixable car before it runs: the same car, parked and locked. One per Car prefab, in the same order. A new car needs its own parked copy: inherit it and set its SCR_BaseLockComponent > m_bIsLocked |
 | (existing prefab) | vanilla drivable civilian cars | — | Interactions > Cars > Car prefabs (list) | optional | what a fixed car becomes (empty = no fixable cars) |
 | `RZ_CarBattery.et` | an item; keep "battery" in its name | — | Interactions > Cars > Battery | optional | car parts |
@@ -807,15 +807,15 @@ object and console fall back to the puzzle prefabs. **The wind-up radio's prefab
 contain "radio"** (or it needs a radio component), or it isn't counted as a radio.
 
 **World interactions.** Everything works without prefabs (spots fall back to the generic object,
-which is visible), but **searches find nothing until the loot pool is filled**, and each feature
+which is visible), but **nothing lies in houses until the loot pool is filled**, and each feature
 whose output is empty stays quiet. Keep the interaction spot's box small and off the character
 collision layer, so it never blocks a door, a doorway or a player. Name parts with "battery",
 "tyre" and "spark", and the home remedy not with "vodka" or "herb".
 
 **Door locks need no prefab.** The vanilla door action is modded (`Interactions/RZ_DoorHooks.c`),
 so vanilla doors refuse players by themselves. If they don't, see the door rows in
-[the VERIFY list](#6-the-verify-list); turning **Search > Door locks** off puts every lock
-back on the loot. AI need more (how it works is in [DESIGN.md](DESIGN.md#locks-and-keys)): the
+[the VERIFY list](#6-the-verify-list); turning **Search > Locks** off unlocks everything (there's
+no lock anywhere else). AI need more (how it works is in [DESIGN.md](DESIGN.md#locks-and-keys)): the
 optional `Interactions/RZ_AIDoorHook.c` and the doorway blocker.
 
 **The doorway blocker** (`RZ_DoorBlocker.et`). Players must never see or feel it, and it must
@@ -835,9 +835,18 @@ stop characters:
 Leave **Navmesh rebuild** on unless a rebuild proves too slow (watch the server frame time when
 a blocker comes or goes); off, AI walk into the blocker and stop there.
 
-**The loot pool** (Search > Loot pool) is one list of every item a search can find. Each building
-type takes the items whose prefab names contain its keywords (the lists are in
-`RZ_Search.TypeWords`). To control a type exactly, add a **Loot table** for it.
+**The loot pool** (Search > Loot pool) is one list of every item that can lie in a house or turn
+up in a car boot or on a body. Each building type takes the items whose prefab names contain its
+keywords (the lists are in `RZ_Search.TypeWords`). To control a type exactly, add a **Loot table**
+for it.
+
+**Loose loot: by hand in Workbench.** Nothing new to build: **Interactions > Loot** comes with its
+defaults. Check that everything that can lie in a house is a real item that can be picked up (an
+`InventoryItemComponent` and vanilla's pick-up action): every loot pool and loot table entry, the
+treatments (`Prefabs/ReforgerZ/Cure/`), the car parts and **the key prefab** (`RZ_Key.et`, built on a
+notebook prop: if a key lying on a table shows no pick-up prompt, rebase it on a small vanilla item
+and keep `RZ_KeyItemComponent` and `RZ_ReadKeyTagAction`). An entry that isn't an item still
+spawns, but nobody can pick it up and the building never counts as emptied.
 
 ### Setting up the UI
 
@@ -895,7 +904,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 32 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 33 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
@@ -933,7 +942,8 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
-| Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6, rare 0.1, electronics 0.1), locks and their shares, **Door locks** (on; off = the lock on the loot), **Key prefab**, force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
+| Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, and a car boot or body search; rare 0.1, electronics 0.1), car boot and body searches (4 s, 1 heat, a boot empty for 60 min), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
+| Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 35 m, put away past 60 m (after a minute), **refill** (60 min ÷ the town's loot level), at most 220 items lying on the server, items at most per building (house 2, shop and farm 3, pharmacy, police and garage 4; locked +1), town loot per item taken (0.015) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
 | Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), siphon and pump timings, Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix)) |
 | Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
 | Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs, **Fuel in your hands** (on; off = a full can anywhere on you), seconds to set it going (5) ([DESIGN.md](DESIGN.md#fire)) |
@@ -1024,7 +1034,7 @@ test files are copied into a throwaway addon folder.
 grep -rn "VERIFY" scripts/
 ```
 
-There are **40** lines with the tag, all in the game scripts (one is the comment in
+There are **42** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 2 are in the UI). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -1033,15 +1043,16 @@ play-test can show: replication, what the AI does, what a prefab carries. They'r
 check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-2)
 come last.
 
-### High risk: the core loop (1)
+### High risk: the core loop (2)
 
-No fallback. If this is wrong, nothing persists.
+No fallback. If the first is wrong, nothing persists; if the second is, loose loot piles up.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
 | `Persistence/RZ_SaveData.c:156` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (23)
+### Medium risk: big features, with a fallback (24)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1050,19 +1061,20 @@ No fallback. If this is wrong, nothing persists.
 | `Core/RZ_Util.c:725` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:971` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:753` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
-| `Interactions/RZ_Interactions.c:771` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
+| `Interactions/RZ_Loot.c:178` | furniture inside buildings is found as static entities | Loose loot lies only on up to five floor points in each building's box |
+| `Interactions/RZ_Loot.c:941` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
 | `Core/RZ_Util.c:529` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:246` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
 | `World/RZ_Perimeter.c:861`, `:876` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
-| `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Door locks** off (locks go back on the loot) |
+| `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Locks** off (nothing is locked) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
-| `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: no door locks, the loot lock everywhere |
-| `Interactions/RZ_Interactions.c:327` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
+| `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: nothing is locked and no keys are cut |
+| `Interactions/RZ_Interactions.c:332` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:861` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:947` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
-| `Cure/RZ_Infection.c:1160` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
+| `Cure/RZ_Infection.c:1174` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
@@ -1079,7 +1091,7 @@ No fallback. If this is wrong, nothing persists.
 | `Core/RZ_Util.c:492` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
-| `Interactions/RZ_KeyItem.c:81` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages, or leave **Key prefab** empty (data keys) |
+| `Interactions/RZ_KeyItem.c:95` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages |
 | `Core/RZ_Util.c:783` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
 | `Core/RZ_Util.c:770` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
@@ -1121,8 +1133,9 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Supply trucks: none (no truck or crew prefabs, or no move waypoint).
 [ReforgerZ] Long Table: the F farm past T at grid G (new), N of them, open, hunger 45, suspicion 10.
 [ReforgerZ] Search: 0 items in the loot pool, 0 tables set by hand.
-[ReforgerZ] Locks: on the doors (the loot where no doors are found); keys are data for one life.
+[ReforgerZ] Locks: on the outside doors; keys are off (no key prefab).
 [ReforgerZ] Door blockers: off (no blocker prefab); AI door hook on.
+[ReforgerZ] Loose loot: on. Put out within 35 m, put away past 60 m, at most 220 items lying, refill 60 min.
 [ReforgerZ] World interactions: on. 0 fixable cars on the map.
 [ReforgerZ] Story arcs: on, running none.
 [ReforgerZ] Questlines: on, 15 registered (Short Weight, The List, The Price of the Door, The Edge of Town, Await Relief, The Census, The Last Pilot, The Book, Cargo, The Well Story, The Three Weeks, The Other Two, Authors, The House That Went Quiet, A Place at the Table), at most 2 at once, running none.
@@ -1146,7 +1159,7 @@ checkpoints):
 [ReforgerZ] Perimeter: 0 road checkpoints (from roads).
 [ReforgerZ] Supply trucks: Haven, Bastion, Red Hand, Halcyon.
 [ReforgerZ] Search: 30 items in the loot pool, 0 tables set by hand.
-[ReforgerZ] Locks: on the doors (the loot where no doors are found); keys are key items.
+[ReforgerZ] Locks: on the outside doors; keys are key items.
 [ReforgerZ] World interactions: on. 5 fixable cars on the map.
 [ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
 [ReforgerZ] Player 1 spawned with locked loadout 'Soldier': default background
@@ -1172,7 +1185,8 @@ Warnings worth acting on:
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
 | `Mission item prefab has no RZ_MissionItemComponent ...` | The mission item is missing its component |
-| `Key prefab has no RZ_KeyItemComponent (or didn't spawn) ...` | Add the component to the key prefab; until then keys are data |
+| `Key prefab is empty, has no RZ_KeyItemComponent or didn't spawn: no keys ...` | Set **Search > Key prefab** to an item with `RZ_KeyItemComponent`; until then no keys are given or placed |
+| `Loose loot: off.` | Expected only if you turned **Loot > Loose loot** off: nothing lies in houses |
 | `Supply: ... truck at ... has nobody to drive it after 90 s (...)` | Printed once per truck, while it waits in the stronghold's yard. Its crew didn't spawn, wasn't within 30 m of the truck, or couldn't take the driver's seat: check the crew prefab (an AI group on the faction) and that the truck has a driver's seat. The truck is lost as late at its deadline |
 | `Supply trucks are off. ...` / `Territory is off. ...` / `Long Table: off.` / `Stealth: off (...)` | Expected only if you turned them off |
 | `Stealth: on. ... searching 45 s: off (no move waypoint).` | Set Zombies > Move waypoint, or infected that lose a hidden player don't go and search |
@@ -1459,8 +1473,21 @@ session, tick off:
   out, and your next character is greeted and treated free at their first safehouse.
 - [ ] A stove offers "Brew a home remedy" with alcohol and herbs in your pack.
 - [ ] A wanderer can be talked to and remembers you.
-- [ ] "Search" spots appear in a house; a search finds something from the loot pool.
-- [ ] A tyre and a bundle of planks (spawn them, or from a search) lie on the ground looking like
+- [ ] Loose loot: walk into a house and a shop. Up to 2 (3 in a shop) things from the loot pool lie
+  on worktops, desks and cupboards or the floor beside furniture, inside the walls, not floating or under the
+  floor; nothing in a building offers "Search". Pick one up with F (or from the inventory's nearby
+  list). Walk 100 m away for a minute and come back: what you left is still there. Empty a house
+  and come back after an hour (**Loot > Refill minutes** at 2 for a quick test): it has things
+  again. A pharmacy, police station or garage has up to 4; a locked one, once open, one more.
+- [ ] Loose loot and performance: walk into the middle of a town and note the server frame time
+  while the buildings around you are put out (three a tick).
+- [ ] A letter lying in a house reads with **Read it**; now and then a key with a tag lies next to
+  it and opens that kind of building in that town.
+- [ ] Car Keys: the Mechanic's keys lie in one of the five houses; picking them up starts the
+  car with its keys. Research Data: the drive lies inside the clinic, not outside it.
+- [ ] Restart the server with loot lying in a house (vanilla persistence on, if you run it): the
+  house shows only one set of loot afterwards.
+- [ ] A tyre and a bundle of planks (spawn them, or find them in a garage) lie on the ground looking like
   a tyre and planks, show the pick-up prompt, go into a backpack and show a sensible inventory
   preview. Both were built by text on vanilla `Item_Base` with the prop's mesh. If either has no
   pick-up prompt or falls through the ground, open it in Workbench next to `Prefabs/Items/Food/MRE.et`
@@ -1476,7 +1503,7 @@ session, tick off:
 - [ ] A locked place's outside door says "Locked" from outside and opens from inside (which
   unlocks it); its interior doors and shutting any door always work.
 - [ ] At the door: Unlock with the right key (the wrong one says which tag you need), Lock it
-  again, Force it with a crowbar (loud; it can't be locked after). Search inside follows.
+  again, Force it with a crowbar (loud; it can't be locked after). The loot inside is better.
 - [ ] A key item can be dropped, picked up by someone else and opens the door for them;
   "Read the tag" shows its label on the ground.
 - [ ] With **Relock minutes** at 5: the door is locked and pulled shut again once you step away.
