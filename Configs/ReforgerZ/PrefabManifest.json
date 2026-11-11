@@ -324,7 +324,7 @@
    "slotLabel": "Puzzles > Keypad",
    "required": false,
    "minimum": false,
-   "use": "The Last Experiment (keypad mode), Locked Bunker; keys 0-9, 10 Clear, 11 Enter",
+   "use": "The Last Experiment (keypad mode), Locked Bunker, The Three Weeks (without a terminal); keys 0-9, 10 Clear, 11 Enter",
    "notes": ""
   },
   {
@@ -359,7 +359,7 @@
    "slotLabel": "Puzzles > Terminal",
    "required": false,
    "minimum": false,
-   "use": "The Last Experiment (falls back to the keypad); keys 0-9, 10 Clear, 11 Enter",
+   "use": "The Last Experiment, The Three Weeks (both fall back to the keypad); keys 0-9, 10 Clear, 11 Enter",
    "notes": ""
   },
   {

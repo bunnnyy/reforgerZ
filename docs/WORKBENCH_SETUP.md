@@ -310,8 +310,8 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_PuzzleObject.et` | a crate, sign or post prop | the generic set | Puzzles > Puzzle object | **minimum** | every puzzle and interaction fallback; missions relabel the actions |
 | `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | **minimum** | puzzles, unarmed missions, wanderers, leaders and occupants to talk to |
 | `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | **minimum** | every puzzle mission, scenario clues |
-| `RZ_Keypad.et` | a keypad or wall panel prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Keypad | optional | The Last Experiment (keypad mode), Locked Bunker; keys 0-9, 10 Clear, 11 Enter |
-| `RZ_Terminal.et` | a computer prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Terminal | optional | The Last Experiment (falls back to the keypad); keys 0-9, 10 Clear, 11 Enter |
+| `RZ_Keypad.et` | a keypad or wall panel prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Keypad | optional | The Last Experiment (keypad mode), Locked Bunker, The Three Weeks (without a terminal); keys 0-9, 10 Clear, 11 Enter |
+| `RZ_Terminal.et` | a computer prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Terminal | optional | The Last Experiment, The Three Weeks (both fall back to the keypad); keys 0-9, 10 Clear, 11 Enter |
 | `RZ_PuzzleBody.et` | a body prop | the clue set | Puzzles > Body | optional | Paces, Patient Zero's Ledger, Poisoned Well, Last Experiment, The Witness, The Deserter's Map (falls back to the note) |
 | `RZ_Well.et` | a well prop | the generic set | Puzzles > Well | optional | look only (falls back to the puzzle object) |
 | `RZ_Bell.et` | a bell prop | the generic set | Puzzles > Bell | optional | look only (falls back to the puzzle object) |
@@ -1201,6 +1201,12 @@ session, tick off:
 - [ ] Take the Lab during a final stand: 90 s in the clean room ends the stand, research shows 90%,
   and the Red Hand antidote stock goes up by two.
 - [ ] Mobile Lab: the field annex takes samples and disappears after 3 hours.
+- [ ] The Three Weeks: the site is well away from every town (at a factory, mast or barracks when
+  one is near); the van, then the gate, then the store appear only as you come close; the code
+  from the gate log opens the terminal; the notes can go to the lab, the Haven or the Red Hand drop.
+- [ ] The Author List and The List: the safehouse's people and list appear when you come near; the
+  trial lead at the lab gets name choices only after both safehouse clues are read; The List's
+  last clue (cairn, bedroll, bag or person) appears only after the list and the council member.
 
 **Multiplayer and griefing** (two clients at least; the pass 2 sweep's open risks)
 - [ ] Two players race one choice delivery: the first hand-in wins, the second is told it isn't

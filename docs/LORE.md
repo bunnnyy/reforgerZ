@@ -69,7 +69,7 @@ little dark side that nobody talks about:
 
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
-| **The List** | Every house keeps a list of names. Some are quietly crossed out, and nobody says why. | Rumours and notes |
+| **The List** | Every house keeps a list of names. Some are quietly crossed out, and nobody says why. | Rumours and notes; The List contract (why one name was crossed out, and who gets told) |
 | **"Walking someone out"** | What happens to someone who declared a bite. It differs by house: in one they sit with you until the end; in another someone walks you to the edge of town at dusk and comes back alone. | The Walk Him Out contract |
 | **"Mouths"** | When food runs low, people who can't work become "mouths", and mouths get smaller portions. | Half portions in the news; the Quiet Congregation arc |
 | **Exile** | Break the rules badly enough and you're put out at night, without your weapon. | Exile when the Haven hunts you |
@@ -268,7 +268,8 @@ number has been eight in ten ever since, which the lab says is a coincidence.
 **Halcyon keeps its dead in the record.** When someone dies, the director speaks for two
 minutes and goes back to work. Their notebook is read into the record, page by page, and their
 name goes on the list of authors for the paper that will open the gates: researchers, couriers,
-guards. Volunteers who didn't walk out are on it too, by number. The Haven wants them named.
+guards. Volunteers who didn't walk out are on it too, by number. The Haven wants them named, and now and
+then somebody carries a name back up the hill.
 Status is whose initials go on a result, and who is let into the clean room. An outsider the lab
 trusts gets antidotes, a medic, and in the end a pass to the lab itself
 ([REPUTATION.md](REPUTATION.md), "Halcyon").
@@ -278,8 +279,8 @@ matter more than people, and it apologises for that, quietly:
 
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
-| **The three weeks** | The first case was three weeks before the gates closed, and the Institute was told. Nobody at the lab says what anyone did with those three weeks. | Patient Zero (the clinic records); the rumour that Halcyon made this |
-| **"The other two"** | The two in ten who don't walk out of the trial dose leave with half the time they came in with, and a page in someone's notebook. Someone sits with them with a clipboard instead of a hand. | The trial dose; Serum Trial; Unsanctioned Trial |
+| **The three weeks** | The first case was three weeks before the gates closed, and the Institute was told. Nobody at the lab says what anyone did with those three weeks. | Patient Zero (the clinic records); The Three Weeks (the closed site's gate log and the Institute's reply: "carry on, say nothing"); the rumour that Halcyon made this |
+| **"The other two"** | The two in ten who don't walk out of the trial dose leave with half the time they came in with, and a page in someone's notebook. Someone sits with them with a clipboard instead of a hand. | The trial dose; Serum Trial; Unsanctioned Trial; The Author List (one of them named, from a Haven safehouse) |
 | **"Samples first, people second"** | When a van can't take both, the cold boxes go. It's an order, and they say sorry for it on the secure channel. | Secure channels |
 | **"At the moment of turning"** | The protocol wants tissue taken as a person turns, so someone has to be there, waiting, with the kit. | Patients Not Samples |
 | **Live ones** | Specials caught alive, for the lab, and sometimes for a field lead's own notebook. People say Halcyon pays the Red Hand for live ones. | Live Capture; Private Collection; rumours |

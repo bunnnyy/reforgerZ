@@ -9,7 +9,7 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 
 | Kind | In code | Designed, not built |
 |---|---|---|
-| [Faction contracts](#faction-contracts) (20 designed per faction) | 80 | — |
+| [Faction contracts](#faction-contracts) (20 designed per faction, plus the hard edges) | 83 | — |
 | [World events](#world-events) | 25 | — (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 17 | — |
 | [Unarmed missions](#unarmed-missions) | 11 | — |
@@ -17,7 +17,7 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 32, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **176** | **—** |
+| **Total** | **179** | **—** |
 
 ## Who gets offered what
 
@@ -106,6 +106,7 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 18 | The Informant | Trusted, Watched+ by the Red Hand | 🔒 not Police/Soldier | Pose as a buyer at a Red Hand dead drop and report who shows up | Fame; the Red Hand loses a little strength (+10 Red Hand Infamy for the buyer the moment he's spotted, even if the names never arrive) | ✅ *wait 60 s for the seller, buy, then reach any safehouse; spotted 20%, +30% carrying a gun* |
 | 19 | Recover the Bus | Champion | ★ Mechanic: tunes it to half a tank | Get a bus or truck running and drive it to a safehouse | Fame | ✅ *it starts with a splash of fuel; any bus, truck or van counts, also after the depot's bus is wrecked; the Haven keeps it (it leaves the world)* |
 | 20 | Memorial | Champion | | Collect ID tags of the dead from an overrun city | Fame | ✅ *five bodies, 8 s each, then any safehouse; the bodies are the corpse pile prop (else the puzzle object), and it never appears without either* |
+| 21 | The List | Known, a safehouse | ★ Police/Elder: more Fame; the list says when the line was drawn | A name is crossed off a safehouse's list. Read the list and talk to a council member, and they point somewhere: a cairn at the edge of town (walked out after a bite), a bedroll on the road out (put out by the council), a packed bag at a landmark (left on their own), or the person, alive in another town. Then **tell the family**, **tell the council** or **keep it quiet** | Family: Fame (+3 Haven Infamy if the council put them out; alive: the family goes after them, the safehouse is one fewer). Council: 75%. Quiet: 40% | ✅ *one of the four truths at random; the living one is a Haven wanderer when one is free (they remember a council told, or a secret kept), else a generated person. Only a player the job is open to can choose. Code: `Missions/Haven/RZ_HavenLoreMissions.c`* |
 
 **Amends:** Medicine Run and Survivors Trapped work off Haven Infamy while you're Watched.
 
@@ -190,6 +191,8 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 18 | Live Capture | Champion | | Lure a special into a cage trap alive | Huge research | ✅ *or wound it and tie it; hold it 30 s, then carry the case to the lab within 12 min* |
 | 19 | Serum Trial | Champion | 🔒 infected only | Take an experimental serum while bitten: it cures you or speeds up the turn | Huge Fame; research either way | ✅ *50/50; the turn comes twice as fast. Separate from the everyday trial dose at Halcyon's quartermaster ([DESIGN.md](DESIGN.md#treatments))* |
 | 20 | Mobile Lab | Champion | | Escort the lab truck to a safer town | Fame; a field annex there takes samples for 3 hours | ✅ *the lab never moves (it's the stronghold); players drive the truck; the annex is a second lab prefab* |
+| 21 | The Three Weeks | Trusted, a lab | ★ Lab Tech: the gate log's right line is pointed out, more Fame | Recover the notes from the closed site Dr Wolff went back to. Her van at the edge of the nearest town has her notebook (the site's grid, and that the store code is the date the Institute was told); the gate log gives the dates; the store's terminal takes the code. Then hand the notes to **Halcyon**, the **Haven** or the **Red Hand** | Halcyon: Fame, small research. Haven: Haven Fame and a headline that the Institute knew (Halcyon Infamy). Red Hand: Red Hand Fame, more Favor (Halcyon Infamy) | ✅ *a step chain (van, gate), then the store. The site is a remote spot between two towns, well clear of every settlement and the lab, at a factory, mast or barracks there if there is one, else the highest ground; infected at each step and a special at the store. A wrong code is loud and locks the keypad for 2 min (a horde on the second); it never wipes. The Haven drop is at the safehouse nearest the site. Needs the terminal (or keypad). Code: `Missions/Halcyon/RZ_HalcyonLoreMissions.c`* |
+| 22 | The Author List | Known, not Hunted by the Haven, a lab and a safehouse | ★ Elder: reads the council's mark on the list | A trial volunteer who didn't walk out is on the list of authors by number. Halcyon gives the number, the day and the safehouse. There, the trial list says who went up that day and the man who walked them up says who came back. Give the trial lead at the lab the name | Small Halcyon Fame, a little Haven Fame; a quiet headline. Wrong: 5 min wait; twice: fails | ✅ *the volunteer is generated: the trial dose keeps no record of who it failed. The trial lead offers names only after both safehouse clues are read* |
 
 **Amends:** Field Samples and Blood Drive work off Halcyon Infamy while you're Watched.
 
