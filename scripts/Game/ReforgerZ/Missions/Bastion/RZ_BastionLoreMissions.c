@@ -10,8 +10,17 @@ class RZ_BastionLoreHelp
 	//! territory outpost, else the stronghold. False if Bastion has none.
 	static bool PickPost(RZ_GameModeComponent gm, out vector pos, out string name)
 	{
+		int leaderId;
+		return PickPostOf(gm, pos, name, leaderId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! PickPost, and the leader whose seat it is (-1 for a territory outpost without one).
+	static bool PickPostOf(RZ_GameModeComponent gm, out vector pos, out string name, out int leaderId)
+	{
 		array<vector> spots = {};
 		array<string> names = {};
+		array<int> seats = {};
 		RZ_Leaders leaders = gm.GetLeaders();
 		if (leaders)
 		{
@@ -20,7 +29,7 @@ class RZ_BastionLoreHelp
 			foreach (RZ_Leader l : list)
 			{
 				if (!l.IsStronghold())
-					AddPost(gm, l.m_vPos, string.Format("%1's post in %2", l.m_sShort, l.m_sPlace), spots, names);
+					AddPost(gm, l.m_vPos, string.Format("%1's post in %2", l.m_sShort, l.m_sPlace), l.m_iId, spots, names, seats);
 			}
 		}
 
@@ -31,7 +40,7 @@ class RZ_BastionLoreHelp
 			territory.GetOutposts(RZ_EFaction.MILITARY, posts);
 			foreach (RZ_Holding h : posts)
 			{
-				AddPost(gm, h.m_vPos, "the Bastion post in " + h.m_sName, spots, names);
+				AddPost(gm, h.m_vPos, "the Bastion post in " + h.m_sName, -1, spots, names, seats);
 			}
 		}
 
@@ -39,20 +48,22 @@ class RZ_BastionLoreHelp
 		{
 			RZ_Leader top = leaders.GetStronghold(RZ_EFaction.MILITARY);
 			if (top && top.IsPresent())
-				AddPost(gm, top.m_vPos, "the stronghold in " + top.m_sPlace, spots, names);
+				AddPost(gm, top.m_vPos, "the stronghold in " + top.m_sPlace, top.m_iId, spots, names, seats);
 		}
 
+		leaderId = -1;
 		if (spots.IsEmpty())
 			return false;
 
 		int pick = Math.RandomInt(0, spots.Count());
 		pos = RZ_Mission.LandPointNear(spots[pick], 4, 9);
 		name = names[pick];
+		leaderId = seats[pick];
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void AddPost(RZ_GameModeComponent gm, vector p, string label, notnull array<vector> spots, notnull array<string> names)
+	protected static void AddPost(RZ_GameModeComponent gm, vector p, string label, int leaderId, notnull array<vector> spots, notnull array<string> names, notnull array<int> seats)
 	{
 		int idx = gm.FindNearestSettlement(p);
 		if (idx >= 0 && gm.GetMissions().IsSettlementBusy(idx))
@@ -60,6 +71,7 @@ class RZ_BastionLoreHelp
 
 		spots.Insert(p);
 		names.Insert(label);
+		seats.Insert(leaderId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -100,6 +112,8 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 	protected int m_iChooser = -1;
 	protected int m_iOperatorClue = -1;
 	protected int m_iSourceClue = -1;
+	protected int m_iPostLeader = -1;
+	protected bool m_bLeadsOn;			// the tape at a post Await Relief can start from: the reel has the Day 3 burst too
 	protected ref map<int, float> m_mLastFix = new map<int, float>();
 
 	protected static const int OBJ_OPERATOR = 0;
@@ -140,7 +154,7 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		if (!RZ_BastionLoreHelp.PickPost(gm, m_vPost, m_sPost))
+		if (!RZ_BastionLoreHelp.PickPostOf(gm, m_vPost, m_sPost, m_iPostLeader))
 			return false;
 
 		m_iSettlement = gm.FindNearestSettlement(m_vPost);
@@ -159,6 +173,7 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 			return false;
 
 		m_iSource = m_Rng.Int(0, 3);
+		m_bLeadsOn = m_iSource == SOURCE_TAPE && RZ_Quest_AwaitRelief.CanFollowTape(gm, m_iPostLeader);
 		m_sOperator = "Corporal " + RZ_NoteText.Surname(m_Rng);
 		m_iOperatorClue = AddClue(m_sOperator, string.Format("He keeps his voice down. \"Last night. I read the numbers, said 'Bastion out', and somebody came back: 'Bastion, Command. Roger. Hold the line.' Then a carrier, then nothing. It's been back every hour since. Same words, same pause.\" He taps the log. \"I took a bearing off the loop. %1 from here. I need a second one. The relay mast at grid %2 has a direction loop. Take one there, draw both lines, find out what it is. Then come back and we'll decide what goes in the log.\"",
 			RZ_Compass.BearingText(RZ_Compass.Bearing(m_vPost, m_vSource)), RZ_SettlementScanner.GridReference(m_vMast)));
@@ -174,7 +189,13 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 	protected string SourceText()
 	{
 		if (m_iSource == SOURCE_TAPE)
-			return "A battery recorder in a plastic bag, wired to a dead man's manpack set and a kitchen timer. You play the tape back. The Command net on Day 1, the last clear message: \"Hold the line. Await relief.\" Somebody cut \"Bastion\" into it from another reel. The timer is set to the hour. No telling who set it, or when.";
+		{
+			string tape = "A battery recorder in a plastic bag, wired to a dead man's manpack set and a kitchen timer. You play the tape back. The Command net on Day 1, the last clear message: \"Hold the line. Await relief.\" Somebody cut \"Bastion\" into it from another reel. The timer is set to the hour. No telling who set it, or when.";
+			if (m_bLeadsOn)
+				tape += " After the voice the reel runs on: a long burst of broken signal, no voice in it at all, then hiss.";
+
+			return tape;
+		}
 
 		if (m_iSource == SOURCE_SET)
 			return "A Bastion manpack set under a groundsheet, still warm. The handset hangs off a branch. Boot prints going away, not army issue. Four cigarette ends, one still burning. Whoever was answering as Command heard you coming.";
@@ -366,6 +387,14 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 			{
 				gm.NotifyPlayer(playerId, m_sTitle, "He writes \"Command answered. Hold the line.\" and underlines it. By evening the whole post has heard. Somebody laughs for the first time in a week. He doesn't look at you when he pays.");
 			}
+		}
+
+		// The burst at the end of the reel is the Await Relief questline (Missions/Questlines/Bastion/)
+		if (m_bLeadsOn && RZ_Quest_AwaitRelief.CanFollowTape(gm, m_iPostLeader))
+		{
+			RZ_Leader cmd = RZ_BastionQuest.Leader(gm, m_iPostLeader);
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("Before you go, %1 plays the end of the reel again: the long burst after the voice. \"That one isn't on the hour. It comes after the nightly call, every night. I've been crossing it out.\" %2 will want a word about it. In person.", m_sOperator, cmd.m_sShort));
+			RZ_Quest_AwaitRelief.OnTapeFound(gm, m_iPostLeader, m_sOperator);
 		}
 
 		m_eState = RZ_EMissionState.SUCCEEDED;

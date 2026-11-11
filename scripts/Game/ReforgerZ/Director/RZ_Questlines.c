@@ -1228,6 +1228,19 @@ class RZ_Questlines
 		return true;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Start a questline now if the usual rules allow it (Max active, one per faction, not done
+	//! this season, not fizzled lately): for content that leads into one (a contract's outcome).
+	//! False if it can't; the usual schedule may still start it later.
+	bool TryBegin(string key)
+	{
+		RZ_Questline line = FindLine(key);
+		if (!m_Settings.m_bEnabled || !line || CountActive() >= Math.MaxInt(1, m_Settings.m_iMaxActive) || !CanConsider(line))
+			return false;
+
+		return Begin(key);
+	}
+
 	// ================================================================ Hooks from other systems
 	//------------------------------------------------------------------------------------------------
 	//! A mission ended (RZ_GameModeComponent.OnContractFinished, every mission).

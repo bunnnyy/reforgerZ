@@ -9,7 +9,8 @@ class RZ_QuestlineRegistry
 		// The Haven
 		q.Register(RZ_Quest_ShortWeight);
 
-		// Task Force Bastion
+		// Task Force Bastion (Missions/Questlines/Bastion/)
+		q.Register(RZ_Quest_AwaitRelief);
 
 		// The Red Hand
 
