@@ -112,6 +112,13 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 	}
 }
 
+//! One scene type per route, so the five routes' scenes can run side by side.
+class RZ_QM_SceneHaven : RZ_QM_RouteScene {}
+class RZ_QM_SceneBastion : RZ_QM_RouteScene {}
+class RZ_QM_SceneRedHand : RZ_QM_RouteScene {}
+class RZ_QM_SceneHalcyon : RZ_QM_RouteScene {}
+class RZ_QM_SceneOneEach : RZ_QM_RouteScene {}
+
 //------------------------------------------------------------------------------------------------
 //! The base for the five routes.
 class RZ_FinaleRoute : RZ_Questline
@@ -293,7 +300,17 @@ class RZ_FinaleRoute : RZ_Questline
 	//------------------------------------------------------------------------------------------------
 	override RZ_Mission MakeMission(RZ_GameModeComponent gm, RZ_QuestRun run, int stage)
 	{
-		RZ_QM_RouteScene s = new RZ_QM_RouteScene();
+		// One scene class a route: the mission manager runs one mission of each type at a time
+		RZ_QM_RouteScene s;
+		switch (m_iRoute)
+		{
+			case RZ_CureFinale.HAVEN: s = new RZ_QM_SceneHaven(); break;
+			case RZ_CureFinale.BASTION: s = new RZ_QM_SceneBastion(); break;
+			case RZ_CureFinale.REDHAND: s = new RZ_QM_SceneRedHand(); break;
+			case RZ_CureFinale.HALCYON: s = new RZ_QM_SceneHalcyon(); break;
+			default: s = new RZ_QM_SceneOneEach(); break;
+		}
+
 		s.m_iRoute = m_iRoute;
 		s.m_bSworn = IsSworn(stage);
 		return s;

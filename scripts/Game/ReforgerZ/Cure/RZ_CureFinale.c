@@ -223,6 +223,8 @@ class RZ_CureFinale
 	protected ref array<IEntity> m_aGroups = {};		// the friendly groups at the stand (never saved)
 	protected bool m_bStandPrep;						// the stand's groups and Take the Lab are due
 	protected ref array<int> m_aDesks = {-1, -1, -1, -1, -1};	// each route's desk mission
+	protected int m_iDeskTry;							// real time of the next desk and tissue hunt tries
+	protected int m_iTissueTry;
 	protected ref map<string, int> m_mKillHour = new map<string, int>();
 	protected ref map<string, int> m_mKillUsed = new map<string, int>();
 
@@ -320,6 +322,17 @@ class RZ_CureFinale
 		}
 
 		return NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A route as a season flag or record value: route + 1 (5 the Independent), 0 for nobody or the
+	//! lab alone.
+	static int RouteFlag(int r)
+	{
+		if (r < 0 || r >= ROUTES)
+			return 0;
+
+		return r + 1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -863,9 +876,11 @@ class RZ_CureFinale
 	protected void TickDesks()
 	{
 		RZ_MissionManager missions = m_GM.GetMissions();
-		if (!missions)
+		int now = RZ_SeasonClock.Now();
+		if (!missions || now < m_iDeskTry)
 			return;
 
+		m_iDeskTry = now + 60;
 		for (int r = 0; r < ROUTES; r++)
 		{
 			if (m_aDesks[r] >= 0 && missions.FindById(m_aDesks[r]))
@@ -1012,9 +1027,12 @@ class RZ_CureFinale
 		if (m_S.tissueUnix[want] == 0)
 			m_S.tissueUnix[want] = now;
 
+		// A hunt is tried at most every 2 minutes (a Setup that misses spawns and clears its drop)
 		RZ_MissionManager missions = m_GM.GetMissions();
-		if (!missions || missions.IsTypeRunning(RZ_QM_RouteTissueIndex) || missions.IsTypeRunning(RZ_QM_RouteTissueLone))
+		if (!missions || now < m_iTissueTry || missions.IsTypeRunning(RZ_QM_RouteTissueIndex) || missions.IsTypeRunning(RZ_QM_RouteTissueLone))
 			return;
+
+		m_iTissueTry = now + 120;
 
 		RZ_QM_RouteTissueIndex index = new RZ_QM_RouteTissueIndex();
 		index.m_iRoute = want;
@@ -1075,7 +1093,7 @@ class RZ_CureFinale
 			RZ_WorldFacts.Get().SetFlag("cure.slow", 1);
 		}
 
-		RZ_WorldFacts.Get().SetFlag("finale.finisher", r + 1);
+		RZ_WorldFacts.Get().SetFlag("finale.finisher", RouteFlag(r));
 		float hours = m_Settings.m_fBatchRealHours * WaitScale();
 		RZ_Log.Info(string.Format("Finale: %1 finished. Batch hold %2 real hours and %3 hours of play.", RouteName(r), hours, m_Settings.m_fBatchPlayHours * WaitScale()));
 		if (r >= 0)
@@ -1635,7 +1653,7 @@ class RZ_CureFinale
 		}
 
 		RZ_WorldFacts facts = RZ_WorldFacts.Get();
-		facts.SetFlag("finale.route", c + 1);
+		facts.SetFlag("finale.route", RouteFlag(c));
 		facts.SetFlag("finale.how", m_S.how);
 		if (m_S.partner >= 0)
 			facts.SetFlag("finale.partner", m_S.partner + 1);

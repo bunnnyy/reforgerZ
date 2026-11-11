@@ -2178,11 +2178,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!finale || !RZ_CureFinale.IsOn())
 			return;
 
-		record.route = finale.Controller() + 1;
-		record.finisher = finale.Finisher() + 1;
+		record.route = RZ_CureFinale.RouteFlag(finale.Controller());
+		record.finisher = RZ_CureFinale.RouteFlag(finale.Finisher());
 		record.how = finale.How();
 		record.terms = finale.Terms();
-		record.partner = finale.Partner() + 1;
+		record.partner = RZ_CureFinale.RouteFlag(finale.Partner());
 		record.deciders.Clear();
 		foreach (string ident : finale.GetDeciders())
 		{
