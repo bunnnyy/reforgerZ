@@ -18,6 +18,41 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 61b31e1: `World/RZ_EpilogueBoard.et`, `World/RZ_EpilogueCandle.et`, `World/RZ_EpilogueTable.et` (WBS §4, Epilogue).
 - 2026-11-11 94217f5: `Zombies/RZ_CallSound.et`, `Zombies/RZ_GreatCallSound.et`.
 
+**Traces' kit, all optional (WBS §4, Traces; do the spike first, WBS "Traces: the Workbench spike")**
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_QueueCar_A.et`, slot **World > Traces > Kit > Column car A** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_QueueCar_B.et`, slot **World > Traces > Kit > Column car B** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_QueueCar_C.et`, slot **World > Traces > Kit > Column car C** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Suitcases.et`, slot **World > Traces > Kit > Suitcases** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_GymDoor.et`, slot **World > Traces > Kit > Gym door** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Bus.et`, slot **World > Traces > Kit > Bus** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_ChurchDoor.et`, slot **World > Traces > Kit > Church door** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Roadblock_D1.et`, slot **World > Traces > Kit > Day 1 roadblock** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_NoticeWall.et`, slot **World > Traces > Kit > Notice wall** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Shutter.et`, slot **World > Traces > Kit > Rudi's shutter** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_OP.et`, slot **World > Traces > Kit > The hill** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_LastMeal.et`, slot **World > Traces > Kit > The last meal** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_HeldOut.et`, slot **World > Traces > Kit > Held out** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_EdgeChair.et`, slot **World > Traces > Kit > The chair at the edge** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_IOUs.et`, slot **World > Traces > Kit > The honest shop** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_DroppedRun.et`, slot **World > Traces > Kit > The dropped run** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_WaitingRoom.et`, slot **World > Traces > Kit > The waiting room** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_FallenPost.et`, slot **World > Traces > Kit > The fallen post** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_WaterQueue.et`, slot **World > Traces > Kit > The water queue** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Scorch.et`, slot **World > Traces > Kit > Scorch** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_TruckWreck_Bastion.et`, slot **World > Traces > Kit > Truck wreck, Bastion** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_TruckWreck_RedHand.et`, slot **World > Traces > Kit > Truck wreck, the Red Hand** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_TruckWreck_Haven.et`, slot **World > Traces > Kit > Truck wreck, the Haven** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_TruckWreck_Halcyon.et`, slot **World > Traces > Kit > Truck wreck, Halcyon** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_RoadPostRelic.et`, slot **World > Traces > Kit > Road post relic** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Crosses.et`, slot **World > Traces > Kit > Cross** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Sheets.et`, slot **World > Traces > Kit > Day 1 sheets** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Lantern_Lit.et`, slot **World > Traces > Kit > Lantern, lit** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: create `RZ_Sound_RadioHiss.et` (the plugin makes it; add the sound), slot **World > Traces > Kit > Radio hiss** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: create `RZ_Sound_GeneratorHum.et` (the plugin makes it; add the sound), slot **World > Traces > Kit > Generator hum** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: create `RZ_Sound_Dogs.et` (the plugin makes it; add the sound), slot **World > Traces > Kit > Dogs** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: create `RZ_Sound_Bell.et` (the plugin makes it; add the sound), slot **World > Traces > Kit > Bell** (WBS §4, Traces)
+- 2026-11-12 ee5f1f6: create `RZ_Sound_Loudspeaker.et` (the plugin makes it; add the sound), slot **World > Traces > Kit > Loudspeaker** (WBS §4, Traces)
+
 **Manual entries (WBS §4)**
 - 2026-11-11 55f071f: camp life. Make the smart-action waypoint `AI/RZ_WP_SmartAction.et`, the 49 compositions and the kits (WBS §4, "Camp life: the compositions and kits"). The 21 original pieces come first.
 - 2026-11-11 94217f5: tribe props: the kill-site props, the old lair, and the four faction marks on pack ground (WBS §4, Zombies).
@@ -26,6 +61,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 **Engine checks**
 - 2026-11-11 76b52d0: check all 79 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …".
+- 2026-11-12 ee5f1f6: the VERIFY list is 83 now: the new ones are Traces' loop (`World/Traces/RZ_TraceSounds.c:46`) and lit windows (`UI/RZ_TraceLightsClient.c:56`), and the door-mark decals (`UI/RZ_DoorMarkClient.c:77`, `:106`) from the merge (WBS §6).
 - 2026-11-11 76b52d0: Workbench's own script compile, the Windows compile check, then `tools/runtime_test/run.sh`. The last Linux run had 0 exceptions, 125/143 missions started and 10/15 questlines ended. On Linux, Special Zombies' `Scripts/` hides ours, so Windows is the real test (MOD_STACK).
 - 2026-11-11 76b52d0: the epilogue's Walk Out kills and deletes the character. Check that the player lands back in the deploy menu cleanly (new VERIFY).
 - 2026-11-11 76b52d0: measure a player's real run and sprint speed (m/s) and Bacon's run and sprint speed. Young infected are being tuned to about 10% faster than a sprinting player.
