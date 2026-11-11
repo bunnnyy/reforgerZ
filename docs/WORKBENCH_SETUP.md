@@ -194,7 +194,7 @@ and choice missions, and puzzles:
 | `RZ_Lab.et` | a field hospital tent or lab container prop | `RZ_LabComponent`; `RZ_DepositSamplesAction`, `RZ_LabStatusAction` | Cure > Lab prefab | the cure (spawned in a town if none is placed); a second copy is Mobile Lab's field annex for 3 hours |
 | `RZ_RewardCrate.et` | a vanilla supply box, filled with loot by hand | — | Missions > Reward crate | mission rewards |
 | `RZ_PuzzleObject.et` | a crate, sign or post prop | the generic set | Puzzles > Puzzle object | every puzzle and interaction fallback; missions relabel the actions |
-| `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | puzzles, unarmed missions, wanderers, leaders and occupants to talk to |
+| `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | puzzles, unarmed missions, wanderers, leaders and occupants to talk to, the one-choice jobs' stand-in person |
 | `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | every puzzle mission, scenario clues |
 | `RZ_MissionItem.et` | a small carryable item (a box or data drive) | `RZ_MissionItemComponent` | Missions > Mission item | every delivery and choice mission; tagged when it spawns |
 | `RZ_Drop_Haven.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction SURVIVORS) | Missions > Haven drop point | the drops those missions name |
@@ -414,7 +414,7 @@ and the UI files) need none, and seven have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_PuzzleObject.et` | a crate, sign or post prop | the generic set | Puzzles > Puzzle object | **minimum** | every puzzle and interaction fallback; missions relabel the actions |
-| `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | **minimum** | puzzles, unarmed missions, wanderers, leaders and occupants to talk to |
+| `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | **minimum** | puzzles, unarmed missions, wanderers, leaders and occupants to talk to, the one-choice jobs' stand-in person |
 | `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | **minimum** | every puzzle mission, scenario clues |
 | `RZ_Keypad.et` | a keypad or wall panel prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Keypad | optional | The Last Experiment (keypad mode), Locked Bunker, the store in The Three Weeks questline (without a terminal); keys 0-9, 10 Clear, 11 Enter |
 | `RZ_Terminal.et` | a computer prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Terminal | optional | The Last Experiment, the store in The Three Weeks questline (both fall back to the keypad); keys 0-9, 10 Clear, 11 Enter |
@@ -1842,7 +1842,9 @@ lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road
 `Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: crash at <grid> is <truth>`, `Errands: fallout <card> at <grid>
-from <title> (cap N Favor, N participant(s) first)`. Strangers: `Errands: stranger <kind> for <player> at
+from <title> (cap N Favor, N participant(s) first)`. One-choice jobs and work: `Story: <title> asks (<options>)`,
+`Story: <title> chose N (by <player>|nobody)`, `Story: route asset <title> for <route> to <player> (N of 3)`,
+`Story: tally N (<town>) = N, mark N (<key>)`. Strangers: `Errands: stranger <kind> for <player> at
 <grid> (<spot>)`, `Errands: stranger <kind> done by <player>`, `Errands: stranger <kind> killed by <player>`,
 `Errands: found hook <kind> at <grid> after <title>`; `Errands: radio ask to <player> for <name> at <house>`,
 `Errands: <key> for <player> has its twist`; locals: `Locals: <name> (<role>) made at <house> by <player>
@@ -2671,6 +2673,15 @@ on the talk screen says why something wasn't dealt)
   the second side 5 minutes in; The Cache goes to the side with more holders at the end (a draw is
   half each), The Armory to whoever hands the case in, and dropping the case down the well pays
   nobody and costs both sides. With **PvE** on, no mirror.
+- [ ] One-choice jobs (two clients): finish Harvest Guard or Lab Defence; a stand-in person appears
+  with the options (`Story: <title> asks`). The second client, not offered the job, is told "It's
+  not your call."; picking starts the 5-second hold the other may object to once; nobody for 90 s
+  takes the default. Fight Pit asks in round 3, Kill the Officer within 40 m of him (taking the
+  stores ends it paid by Bastion at half Favor). With no civilian prefab, the default is taken at once.
+- [ ] Work rows: finish Retake the Town in a town twice; the second brief there reads the town tally
+  ("cleared 1 times" is never said: "once"). A failed work job says its fallout line after the fail text.
+- [ ] Route assets (finale on, past 90%): lock one player to Bastion, then pick Steal the Antidotes'
+  Haven medic: refused with "You've picked your side. This isn't it."; an unlocked player is not.
 - [ ] The merged jobs: Take Back the Town once Bastion is gone (Overrun+), Burn the Bodies at the
   lab from Halcyon, Checkpoint Duty at an infested town pausing its spread, Medicine Run's infected
   drawn off by a noise, and the Courier's letters through an infested town paying ×1.25 when quiet.

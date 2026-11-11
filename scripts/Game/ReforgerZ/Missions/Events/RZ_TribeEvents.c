@@ -267,6 +267,13 @@ class RZ_Event_TribeMoves : RZ_Mission
 	//! 10 or more kills: its old lair's finds (a crate where it lay up, or where the last one fell).
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
+		// A horde passed: the town nearest its way posts the reason (Survivors Trapped, Retake the Town)
+		vector mid = (m_vFrom + m_vTo) * 0.5;
+		int town = gm.FindNearestSettlement(mid);
+		RZ_Settlement s = gm.GetSettlement(town);
+		if (s && RZ_Util.DistXZ(s.m_vCenter, mid) <= 1500)
+			gm.GetFacts().Memory().PostReason("horde.passed", RZ_WorldFacts.Town(town), string.Format("A horde passed through %1.", s.m_sName), s.m_vCenter, -1, 0.5);
+
 		if (m_iKills < 10)
 			return;
 

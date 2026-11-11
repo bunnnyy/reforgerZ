@@ -351,6 +351,34 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 //! It's loud, so it builds heat fast and pulls a horde. ★ Radio Op: half the hold time.
 class RZ_Mission_RadioRelay : RZ_Mission_Hold
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_RadioRelay()
+	{
+		m_Story = new RZ_MissionStory("relay");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("The relay's up. The house's radio man comes on: \"Bastion's on this band too. Do we carry their traffic? They'd send a patrol past the house for it.\" Answer him at the relay.",
+			"The Haven's alone|Bastion's too, for a patrol", "decide whose net the relay carries", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		string value = "haven";
+		if (option == 1)
+		{
+			value = "shared";
+			RZ_OneChoice.Morale(gm, RZ_EFaction.SURVIVORS, 1, "a patrol past the house");
+			m_Choice.PayWith(gm, this, RZ_EFaction.MILITARY, 5);
+			NotifyParticipants(gm, m_sTitle, "Bastion's traffic goes out on the Haven's relay now. A patrol walks past the house at dusk. The crews listen to both, and write it down.");
+		}
+		else
+		{
+			NotifyParticipants(gm, m_sTitle, "The relay carries the Haven's net and nothing else. Quieter that way. The house is on its own at dusk, as it always was.");
+		}
+
+		RZ_StoryKit.Record(this, "net", RZ_WorldFacts.Town(m_iSettlement), value, m_aParticipants);
+	}
+
 	protected bool m_bHordeSent;
 
 	//------------------------------------------------------------------------------------------------
@@ -407,6 +435,33 @@ class RZ_Mission_RadioRelay : RZ_Mission_Hold
 //! destructible nest prefab (e.g. from the Zombie Hive mod).
 class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 {
+	protected bool m_bSampled;	// the one choice: a piece left for Halcyon
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_BurnTheNest()
+	{
+		m_Story = new RZ_MissionStory("nest");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("It's burning. A Halcyon runner who followed the smoke stands off at the edge: \"Leave me a piece before it's ash. The lab can use it.\" The house that asked you wants it gone, all of it. Choose at the fire.",
+			"Burn it all|Leave a piece for Halcyon", "decide what's left of the nest", 0);
+		m_Choice.Asset(1, RZ_EFaction.INSTITUTE);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		string value = "burned";
+		if (option == 1)
+		{
+			value = "sampled";
+			m_bSampled = true;
+			RZ_OneChoice.Morale(gm, RZ_EFaction.SURVIVORS, -1, "the nest left for the lab");
+			NotifyParticipants(gm, m_sTitle, "The runner takes his piece and goes. The house that asked hears about it by supper. They don't say anything. They don't need to.");
+		}
+
+		RZ_StoryKit.Record(this, "fate", RZ_WorldFacts.Town(m_iSettlement), value, m_aParticipants);
+	}
+
 	protected bool m_bGuarded;
 
 	//------------------------------------------------------------------------------------------------
@@ -467,7 +522,11 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 			gm.NotifyAll("Nest destroyed", s.m_sName + " is breathing easier.");
 		}
 
-		gm.SpawnSamples(m_vPos, 1);
+		// Left for Halcyon: a second sample, and the research goes through the lab
+		if (m_bSampled)
+			gm.SpawnSamples(m_vPos, 2);
+		else
+			gm.SpawnSamples(m_vPos, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1019,6 +1078,35 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 //! ★ Hunter: quieter approach (hold time runs a third faster).
 class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 {
+	protected int m_iWhere;		// the one choice: 0 the nearest house, 1 their aunt at Bastion's post
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_RescueTheKids()
+	{
+		m_Story = new RZ_MissionStory("kids");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("The kids are out. The oldest one says their aunt is at Bastion's post: \"She's a cook there. She said to come if.\" Decide with them, here.",
+			"The nearest house|Their aunt at Bastion's post", "decide where the kids go", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		m_iWhere = option;
+		if (option == 1)
+		{
+			m_eGiver = RZ_EFaction.MILITARY;
+			m_bNoLeaderCredit = true;
+			m_iLeaderId = -1;
+		}
+
+		string value = "house";
+		if (option == 1)
+			value = "aunt";
+
+		RZ_StoryKit.Record(this, "went", RZ_WorldFacts.Town(m_iSettlement), value, m_aParticipants);
+	}
+
 	protected bool m_bHordeSent;
 	protected bool m_bGuarded;
 
@@ -1084,6 +1172,12 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 	{
 		if (!m_bHordeSent)
 			m_fRewardScale = 1.25; // nobody noticed a thing
+
+		if (m_iWhere == 1)
+		{
+			NotifyParticipants(gm, m_sTitle, "Bastion's truck takes them to their aunt at the post. Tonight the call will say three more civilians sheltered, and get the number right.");
+			return;
+		}
 
 		// Three children join the nearest Haven safehouse
 		if (gm.GetSafehouses())

@@ -309,6 +309,8 @@ class RZ_MissionManager
 		mission.m_sBrief = RZ_Util.Capitalize(mission.m_sBrief);
 		// The Tier 0 audit: a job that ended here before says how it went
 		RZ_MissionReasons.Tier0Read(mission);
+		// A work job: whose mark is on the wall here (the town tally)
+		RZ_WorkRows.Read(mission);
 		m_aActive.Insert(mission);
 		m_fSpotsAt = -1; // its props count from now
 		OnStarted(mission);
@@ -837,6 +839,9 @@ class RZ_MissionManager
 		else
 			RZ_MissionReasons.Tier0Ended(m, false, m.m_aParticipants);
 
+		// A work job done in a town: the town tally
+		RZ_WorkRows.Ended(m, success);
+
 		// A found hook at one site in five: a stranger or an old mark (docs/ERRANDS.md, "Strangers")
 		if (m_GM.GetErrands() && m_GM.GetErrands().IsOn() && !m.m_bWithdrawn)
 			m_GM.GetErrands().GetStrangers().JobEnded(m);
@@ -853,6 +858,9 @@ class RZ_MissionManager
 
 		if (m.m_Story)
 			m.m_Story.Cleanup();
+
+		if (m.m_Choice)
+			m.m_Choice.Cleanup();
 
 		// Whatever it held (RZ_WorldFacts claims) is free again
 		m_GM.GetFacts().ReleaseAll(RZ_WorldFacts.MissionOwner(m.m_iId));

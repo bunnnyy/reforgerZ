@@ -630,6 +630,38 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 //! happens is paid. It arrives: failed. Big Bastion Infamy.
 class RZ_Mission_HijackTheConvoy : RZ_Mission
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_HijackTheConvoy()
+	{
+		m_Story = new RZ_MissionStory("hijack");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("The driver's on his knees by the cab with his hands on his head. \"I've a wife at the post. I drive. That's all I do.\" Decide at the truck.",
+			"Let him walk|Hand him to the crew|Leave him tied for Bastion", "decide what happens to the driver", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		string value = "walked";
+		if (option == 1)
+		{
+			value = "to the crew";
+			m_Choice.BlameWith(gm, this, RZ_EFaction.MILITARY, 5, "handed a driver to the crews");
+			NotifyParticipants(gm, m_sTitle, "The crew take him with them. He drives for them now, or he doesn't drive at all. Bastion will know which by the weekend.");
+		}
+		else if (option == 2)
+		{
+			value = "tied";
+			NotifyParticipants(gm, m_sTitle, "You leave him tied to the wheel. Bastion finds him by dark. He'll tell them what he saw, and he saw you.");
+		}
+		else
+		{
+			NotifyParticipants(gm, m_sTitle, "He walks. He doesn't look back, and he doesn't take the road.");
+		}
+
+		RZ_StoryKit.Record(this, "driver", "convoy:" + RZ_SettlementScanner.GridReference(m_vPos), value, m_aParticipants);
+	}
+
 	protected ref RZ_ConvoyWatch m_Watch = new RZ_ConvoyWatch();
 	protected float m_fWaiting;
 
@@ -1341,6 +1373,35 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 //! Needs a killable body (Leaders > Bastion outpost commander or Bastion leader).
 class RZ_Mission_KillTheOfficer : RZ_Mission
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_KillTheOfficer()
+	{
+		m_Story = new RZ_MissionStory("officer");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("His aide comes out with his hands up and a key in one of them: \"The post's stores. All of it. Walk away and nobody writes anything down.\" Answer him at the post.",
+			"Take the stores, walk away|Do the job", "decide whether he lives", 1);
+		m_Choice.m_bManual = true;
+		m_Choice.m_bEnds = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		if (option != 0)
+			return;
+
+		// Bastion's Favor from him, at most the base; the Red Hand pays nothing, and the boss remembers
+		m_eGiver = RZ_EFaction.MILITARY;
+		m_bHasRival = false;
+		m_bNoLeaderCredit = true;
+		m_iLeaderId = -1;
+		m_iFameReward = 0;
+		m_fRewardScale = 0.5;
+		NotifyParticipants(gm, m_sTitle, "You take the key and walk. He's still there in the morning, running the post well. The crew's boss hears by noon.");
+		RZ_StoryKit.Record(this, "fate", RZ_WorldFacts.Leader(m_iTarget), "bought off", m_aParticipants);
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
 	protected int m_iTarget = -1;
 	protected string m_sTarget;
 
@@ -1422,6 +1483,18 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 		if (l.m_bAlive)
 		{
 			RZ_ContractHelp.AddNear(ids, players, l.m_vPos, 150, m_aParticipants);
+			if (!m_Choice.m_bDone && !m_Choice.m_bAsking)
+			{
+				foreach (int i, IEntity p : players)
+				{
+					if (RZ_Util.DistXZ(p.GetOrigin(), l.m_vPos) <= 40 && IsEligible(gm, ids[i]))
+					{
+						m_Choice.Ask(gm, this, l.m_vPos);
+						break;
+					}
+				}
+			}
+
 			return;
 		}
 

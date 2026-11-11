@@ -210,6 +210,34 @@ class RZ_Mission_FieldSamples : RZ_Mission
 //! for 10 s). Reveals the town most at risk. ★ Lab Tech: +50% Fame.
 class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 {
+	protected int m_iWhere;		// the one choice: 0 Halcyon only, 1 the Haven too
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_WaterSurvey()
+	{
+		m_Story = new RZ_MissionStory("survey");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("The samples are in. The analyst reads the strip twice: one town is next. \"Halcyon logs it. Whether the Haven hears is up to whoever carried the bottles.\" Decide at the last point.",
+			"Halcyon only|Tell the Haven too", "decide who hears about the town at risk", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool AsksChoice()
+	{
+		return super.AsksChoice() && Type() == RZ_Mission_WaterSurvey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		m_iWhere = option;
+		string value = "halcyon";
+		if (option == 1)
+			value = "haven";
+
+		RZ_StoryKit.Record(this, "warned", RZ_WorldFacts.Town(m_iSettlement), value, m_aParticipants);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -282,6 +310,34 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 
 		if (risk)
 			NotifyParticipants(gm, "Halcyon", "The samples say " + risk.m_sName + " is next. Warn anyone there.");
+
+		// The Haven heard too: someone moves out of a house there, to another
+		if (risk && m_iWhere == 1)
+			WarnHaven(gm, risk);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void WarnHaven(RZ_GameModeComponent gm, RZ_Settlement risk)
+	{
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (!houses)
+			return;
+
+		for (int i = 0; i < houses.Count(); i++)
+		{
+			RZ_Safehouse h = houses.Get(i);
+			if (!h || h.m_iPopulation <= 1 || RZ_Util.DistXZ(h.m_vPos, risk.m_vCenter) > risk.m_fRadius + 300)
+				continue;
+
+			int other = houses.FindNearest(h.m_vPos + Vector(1500, 0, 0));
+			if (other < 0 || other == i)
+				continue;
+
+			houses.RemovePopulation(i, 1);
+			houses.AddPopulationAt(other, 1);
+			NotifyParticipants(gm, m_sTitle, string.Format("The Haven hears. One family packs up and leaves %1 for %2 before dark.", h.m_sName, houses.Get(other).m_sName));
+			return;
+		}
 	}
 }
 
@@ -783,6 +839,46 @@ class RZ_Mission_HuntScreamer : RZ_TribeContract
 //! Hand group prefab is set, raiders join the attack and the Red Hand remembers.
 class RZ_Mission_LabDefence : RZ_Mission_Hold
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_LabDefence()
+	{
+		m_Story = new RZ_MissionStory("labraid");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("A raider throws his rifle out of the hedge and his hands up after it: \"Done. I'm done.\" The guard at the gate looks at you. Decide at the gate.",
+			"Bastion's stockade|Give him back to the crew|To Halcyon, for the trial", "decide what happens to the raider", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool AsksChoice()
+	{
+		return super.AsksChoice() && Type() == RZ_Mission_LabDefence;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		string value = "stockade";
+		if (option == 1)
+		{
+			value = "crew";
+			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 6);
+			NotifyParticipants(gm, m_sTitle, "He walks back to his crew with his hands in his pockets. They'll owe you for that. So will he, and he knows the gate now.");
+		}
+		else if (option == 2)
+		{
+			value = "trial";
+			m_Choice.BlameWith(gm, this, RZ_EFaction.BANDITS, 4, "gave one of theirs to the trial");
+			NotifyParticipants(gm, m_sTitle, "Halcyon takes him in by the back door, for the trial. Somebody writes his weight down. Nobody writes his name.");
+		}
+		else
+		{
+			m_Choice.PayWith(gm, this, RZ_EFaction.MILITARY, 4);
+			NotifyParticipants(gm, m_sTitle, "Bastion's truck takes him to the stockade. He'll be there when the gates open, one way or another.");
+		}
+
+		RZ_StoryKit.Record(this, "raider", "lab", value, m_aParticipants);
+	}
+
 	protected IEntity m_Raiders;
 
 	//------------------------------------------------------------------------------------------------

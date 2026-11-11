@@ -11,6 +11,20 @@
 //! look, coming from its side.
 class RZ_Mission_LeadThemAway : RZ_Mission
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_LeadThemAway()
+	{
+		m_Story = new RZ_MissionStory("lead");
+		m_Choice = new RZ_OneChoice();
+		RZ_HordeWhere.Set(m_Choice, RZ_HordeWhere.EMPTY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		RZ_HordeWhere.Apply(gm, this, option);
+	}
+
 	protected int m_iHouse = -1;
 	protected vector m_vHouse;
 	protected vector m_vQuarry;

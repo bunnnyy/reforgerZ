@@ -271,7 +271,7 @@
    "slotLabel": "Puzzles > Civilian",
    "required": true,
    "minimum": true,
-   "use": "puzzles, unarmed missions, wanderers, leaders and occupants to talk to",
+   "use": "puzzles, unarmed missions, wanderers, leaders and occupants to talk to, the one-choice jobs' stand-in person",
    "notes": ""
   },
   {

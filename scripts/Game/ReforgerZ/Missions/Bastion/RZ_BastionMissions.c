@@ -445,6 +445,31 @@ class RZ_Mission_Recon : RZ_Mission_VisitPoints
 //! ★ Police: holds faster.
 class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 {
+	protected int m_iWhere;		// the one choice: 0 turned back, 1 let through
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_CheckpointDuty()
+	{
+		m_Story = new RZ_MissionStory("barrier");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("The line held. Now a dozen people stand at the barrier with bags: \"We're not sick. Look at us.\" The sergeant says turn them back. He also says it's your call, since you're the one with the rifle on it.",
+			"Turn them back|Let them through", "decide who passes the barrier", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		m_iWhere = option;
+		string value = "turned back";
+		if (option == 1)
+		{
+			value = "let through";
+			m_bNoLeaderCredit = true;
+		}
+
+		RZ_StoryKit.Record(this, "barrier", RZ_WorldFacts.Town(m_iSettlement), value, m_aParticipants);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -491,6 +516,17 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return;
+
+		if (m_iWhere == 1)
+		{
+			// Let through: two reach a house; the seal is leakier for it
+			s.m_fNoSpreadSeconds = 900;
+			if (gm.GetSafehouses())
+				gm.GetSafehouses().AddRescued(m_vPos, 2, m_aParticipants);
+
+			gm.NotifyAll("Quarantine", s.m_sName + " has been sealed off, mostly. Some people came through first.");
+			return;
+		}
 
 		s.m_fNoSpreadSeconds = 1800;
 		gm.NotifyAll("Quarantine", s.m_sName + " has been sealed off. It won't spread the infection for a while.");
