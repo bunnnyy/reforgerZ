@@ -55,6 +55,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected int m_iBackgroundsVersion;
 	protected int m_iRadioVersion;
 	protected ref array<ref RZ_RadioEntry> m_aRadio = {};
+	protected float m_fNewLifeAt = -1;
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
@@ -242,6 +243,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_NewLife()
 	{
+		m_fNewLifeAt = RZ_UIW.Now();
 		m_aRadio.Clear();
 		m_iRadioVersion++;
 		m_iInfState = RZ_EInfectionUI.NONE;
@@ -453,12 +455,13 @@ class RZ_PlayerUIComponent : ScriptComponent
 		}
 	}
 
-	// ================================================================ Client: the radio log
+	// ================================================================ Client: the Radio tab
 	//------------------------------------------------------------------------------------------------
-	//! Every notice passes through here on the client; radio ones are kept for the log.
+	//! Every notice passes through here on the client; radio, mission, world-event and world ones
+	//! are kept for the notebook's Radio tab, newest first.
 	void OnNotice(string title, string text, RZ_NoticeStyle style)
 	{
-		if (!style || !style.IsRadio())
+		if (!style || !style.IsLogged())
 			return;
 
 		RZ_RadioEntry e = new RZ_RadioEntry();
@@ -527,5 +530,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	int GetJournalVersion() { return m_iJournalVersion; }
 	int GetBackgroundsVersion() { return m_iBackgroundsVersion; }
 	int GetRadioVersion() { return m_iRadioVersion; }
+	//! When this life began on this machine (RZ_UIW.Now), -1 before the first.
+	float GetNewLifeAt() { return m_fNewLifeAt; }
 	array<ref RZ_RadioEntry> GetRadioLog() { return m_aRadio; }
 }

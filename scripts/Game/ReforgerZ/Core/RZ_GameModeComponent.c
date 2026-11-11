@@ -1304,7 +1304,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 				why = "You haven't unlocked it yet.";
 
 			RZ_Background fallback = GetDefaultBackground();
-			NotifyPlayer(playerId, bg.m_sName + " is locked", string.Format("%1\nYou are playing as %2 this life.", why, fallback.m_sName));
+			NotifyPlayerAs(playerId, bg.m_sName + " is locked", string.Format("%1\nYou are playing as %2 this life.", why, fallback.m_sName), RZ_ENoticeTag.HIGH);
 			bg = fallback;
 		}
 
@@ -1325,7 +1325,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// 1. Who you are this life
 		string intro = string.Format("Perk: %1\nFlaw: %2\n\nYour goal: %3",
 			bg.m_sPerk, bg.m_sFlaw, RZ_Objectives.Describe(this, profile));
-		NotifyPlayer(playerId, bg.m_sName, intro);
+		NotifyPlayerAs(playerId, bg.m_sName, intro, RZ_ENoticeTag.HIGH);
 
 		// Where you wake: a small clue nearby, and the wind-up radio (new-player guidance)
 		m_Guidance.OnPlayerSpawned(playerId, controlledEntity);
@@ -1351,35 +1351,35 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			if (m_Cure.IsCured())
 				research = "The cure is out. The gates open when the season ends.";
 
-			NotifyPlayer(playerId, "Outbreak: " + RZ_StageSettings.GetStageName(m_Director.GetStage()), research + lab);
+			NotifyPlayerAs(playerId, "Outbreak: " + RZ_StageSettings.GetStageName(m_Director.GetStage()), research + lab, RZ_ENoticeTag.WORLD);
 
 			// After the cure the broadcast reads the new order (RZ_Broadcast.GetText)
-			NotifyPlayer(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText());
+			NotifyPlayerAs(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText(), RZ_ENoticeTag.WORLD);
 
 			// A final stand that was running (or restarted with the server) needs defenders
 			if (m_Cure.IsFinalStand())
-				NotifyPlayer(playerId, "THE FINAL STAND", string.Format("Halcyon is synthesizing the cure and the lab is under siege. About %1 minutes left to hold it.", m_Cure.GetFinalStandMinutesLeft()));
+				NotifyPlayerAs(playerId, "THE FINAL STAND", string.Format("Halcyon is synthesizing the cure and the lab is under siege. About %1 minutes left to hold it.", m_Cure.GetFinalStandMinutesLeft()), RZ_ENoticeTag.URGENT);
 
 			// Session news: the latest headline, wanderers lost, the biggest rescue, the cure
 			string news = m_Headlines.Build();
 			news = news.Trim();
 			if (!news.IsEmpty())
-				NotifyPlayer(playerId, "Word on the roads", news);
+				NotifyPlayerAs(playerId, "Word on the roads", news, RZ_ENoticeTag.WORLD);
 
 			// The season: its number, its rules (the last winner's, the rule sets), a coming wipe
-			NotifyPlayer(playerId, "This season", m_Seasons.DescribeForWelcome());
+			NotifyPlayerAs(playerId, "This season", m_Seasons.DescribeForWelcome(), RZ_ENoticeTag.WORLD);
 
 			// The hall of fame, so far
 			if (GetHall())
 			{
 				string hall = GetHall().BuildText();
 				if (!hall.IsEmpty())
-					NotifyPlayer(playerId, "Hall of fame", hall);
+					NotifyPlayerAs(playerId, "Hall of fame", hall, RZ_ENoticeTag.WORLD);
 			}
 		}
 
 		// 3. What's on the radio
-		NotifyPlayer(playerId, "Radio", m_Missions.DescribeActiveFor(controlledEntity, playerId));
+		NotifyPlayerAs(playerId, "Radio", m_Missions.DescribeActiveFor(controlledEntity, playerId), RZ_ENoticeTag.WORLD);
 
 		// The deploy menu can't hide a safehouse spawn point from one player, so an exile
 		// who picks one is told the door stays shut (its services refuse them)
@@ -1407,7 +1407,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			if (ent)
 				where = mission.GetWhereText(this, ent.GetOrigin());
 
-			NotifyPlayer(playerId, "World event: " + mission.m_sTitle, string.Format("%1\n(%2)", mission.GetBrief(this), where));
+			NotifyPlayerAs(playerId, "World event: " + mission.m_sTitle, string.Format("%1\n(%2)", mission.GetBrief(this), where), RZ_ENoticeTag.EVENT);
 		}
 	}
 
@@ -1650,8 +1650,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (after == before)
 			return;
 
-		NotifyPlayer(playerId, RZ_Factions.GetName(faction), string.Format("Your standing is now %1 (was %2).",
-			RZ_Reputation.GetTierName(after), RZ_Reputation.GetTierName(before)));
+		NotifyPlayerAs(playerId, RZ_Factions.GetName(faction), string.Format("Your standing is now %1 (was %2).",
+			RZ_Reputation.GetTierName(after), RZ_Reputation.GetTierName(before)), RZ_ENoticeTag.HIGH);
 
 		if (after == RZ_ETier.CHAMPION && !profile.IsChampionOf(faction))
 			OnBecameChampion(playerId, faction);
@@ -1797,7 +1797,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			if (bg.m_sUnlockId == unlockId)
 			{
-				NotifyPlayer(playerId, "Background unlocked", string.Format("%1 is now available for your next life. Pick the '%2' loadout.", bg.m_sName, bg.m_sLoadoutName));
+				NotifyPlayerAs(playerId, "Background unlocked", string.Format("%1 is now available for your next life. Pick the '%2' loadout.", bg.m_sName, bg.m_sLoadoutName), RZ_ENoticeTag.HIGH);
 				return;
 			}
 		}
@@ -1901,7 +1901,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		foreach (int i, IEntity p : players)
 		{
 			if (RZ_Util.DistXZ(p.GetOrigin(), target) < 800)
-				NotifyPlayer(ids[i], "Horde", "Something big heard you. A horde is moving in.");
+				NotifyPlayerAs(ids[i], "Horde", "Something big heard you. A horde is moving in.", RZ_ENoticeTag.URGENT);
 			else if (GetPlayerBackground(ids[i]).m_bRadioIntel)
 				NotifyPlayer(ids[i], "Radio chatter", "Someone on the open channel says a horde is moving toward " + where + ".");
 		}
@@ -2345,6 +2345,14 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Everyone, with a tag (RZ_ENoticeTag): a broadcast.
+	void NotifyAllAs(string title, string text, RZ_ENoticeTag tag)
+	{
+		RpcDo_Notify(-1, title, text, tag);
+		Rpc(RpcDo_Notify, -1, title, text, tag);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One player: a notice card (docs/UI.md, "Notices"). Its importance comes from its title.
 	void NotifyPlayer(int playerId, string title, string text)
 	{
@@ -2446,20 +2454,21 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! together (e.g. the three on spawn) are queued and shown one after another.
 	protected ref array<string> m_aHintTitles = {};
 	protected ref array<string> m_aHintTexts = {};
+	protected ref array<int> m_aHintPriority = {};
 	protected bool m_bHintShowing;
 
 	protected static const int HINT_SECONDS = 9;
-	protected static const int HINT_QUEUE_MAX = 8;
+	protected static const int HINT_QUEUE_MAX = 12;
 
 	//------------------------------------------------------------------------------------------------
 	protected void QueueHint(string title, string text, int tag)
 	{
-		// Chat commands (/note, /noteclear, /hall): registered once, here, on the client
+		// Chat commands (/note, /noteclear): registered once, here, on the client
 		RZ_ChatCommands.Register();
 
-		// The ReforgerZ UI (UI/): the radio log keeps radio messages, and the styled card shows it
-		// if it can. Otherwise the vanilla hint below, as before.
-		RZ_NoticeStyle style = RZ_NoticeStyle.Classify(title);
+		// The ReforgerZ UI (UI/): the notebook's Radio tab keeps radio, mission and world notices,
+		// and the styled card shows it if it can. Otherwise the vanilla hint below.
+		RZ_NoticeStyle style = RZ_NoticeStyle.Classify(title, tag);
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)
 			ui.OnNotice(title, text, style);
@@ -2467,15 +2476,29 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (RZ_HudDisplay.PushNotice(title, text, style))
 			return;
 
-		// Under heavy traffic, drop the oldest messages rather than lag minutes behind
-		if (m_aHintTitles.Count() >= HINT_QUEUE_MAX)
+		// The vanilla hint shows one at a time: the most important first, then the oldest. It has
+		// nowhere else to go, so nothing expires; past the cap the least important newest is dropped
+		int idx = m_aHintTitles.Count();
+		foreach (int i, int prio : m_aHintPriority)
 		{
-			m_aHintTitles.RemoveOrdered(0);
-			m_aHintTexts.RemoveOrdered(0);
+			if (prio < style.m_iPriority)
+			{
+				idx = i;
+				break;
+			}
 		}
 
-		m_aHintTitles.Insert(title);
-		m_aHintTexts.Insert(text);
+		m_aHintTitles.InsertAt(title, idx);
+		m_aHintTexts.InsertAt(text, idx);
+		m_aHintPriority.InsertAt(style.m_iPriority, idx);
+		while (m_aHintTitles.Count() > HINT_QUEUE_MAX)
+		{
+			int last = m_aHintTitles.Count() - 1;
+			m_aHintTitles.Remove(last);
+			m_aHintTexts.Remove(last);
+			m_aHintPriority.Remove(last);
+		}
+
 		if (!m_bHintShowing)
 			ShowNextHint();
 	}
@@ -2494,6 +2517,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		string text = m_aHintTexts[0];
 		m_aHintTitles.RemoveOrdered(0);
 		m_aHintTexts.RemoveOrdered(0);
+		m_aHintPriority.RemoveOrdered(0);
 
 		SCR_HintManagerComponent.ShowCustomHint(text, title, HINT_SECONDS);
 		GetGame().GetCallqueue().CallLater(ShowNextHint, HINT_SECONDS * 1000, false);

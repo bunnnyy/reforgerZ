@@ -17,7 +17,19 @@ enum RZ_ENoticeKind
 	SECURE_CHANNEL,	// a cracked secure channel
 	BROADCAST,		// the government broadcast
 	INFECTION,		// the bite, the stages, cures
-	EVENT			// world events
+	EVENT,			// world events
+	MISSION,		// contract offers, "this is the place", done, failed, refused (tagged by the server)
+	WORLD			// the state of the world at spawn: the outbreak, the news, the season, the hall
+}
+
+//------------------------------------------------------------------------------------------------
+//! How important a notice is: the HUD shows the most important first (docs/UI.md, "Notices").
+enum RZ_ENoticePriority
+{
+	LOW,		// news and welcome
+	NORMAL,		// radio and faction voices
+	HIGH,		// about you, now
+	URGENT		// danger to you, now: always first, and may cut a low card short
 }
 
 //------------------------------------------------------------------------------------------------
@@ -72,13 +84,22 @@ class RZ_UISettings
 	[Attribute("9", desc: "Seconds a notice card stays on screen")]
 	float m_fNoticeSeconds;
 
-	[Attribute("3", desc: "Notice cards shown at once (newest on top); the rest wait their turn")]
+	[Attribute("2", desc: "Notice cards at once; the rest wait their turn, the most important first")]
 	int m_iNoticeStack;
 
-	[Attribute("8", desc: "Notices waiting at most; older ones are dropped under heavy traffic")]
+	[Attribute("2", desc: "Seconds between one card and the next (urgent cards don't wait)")]
+	float m_fNoticeGap;
+
+	[Attribute("45", desc: "Seconds a low or normal notice that's in the notebook's Radio tab waits for a card before it goes to the notebook only")]
+	float m_fNoticeWait;
+
+	[Attribute("4", desc: "Calm after spawn: for this many seconds after a new life only urgent and high notices show")]
+	float m_fNoticeCalm;
+
+	[Attribute("12", desc: "Notices waiting at most; past it the least important goes to the notebook only (or is dropped if it isn't listed there)")]
 	int m_iNoticeQueue;
 
-	[Attribute("40", desc: "Radio log: messages kept on the client for this life")]
+	[Attribute("60", desc: "Radio tab: radio, mission and world notices kept on the client for this life")]
 	int m_iRadioLogSize;
 
 	[Attribute("1", desc: "Show the infection timer (golden window, stages)")]
@@ -373,9 +394,59 @@ class RZ_NoticeStyle
 {
 	int m_iKind = RZ_ENoticeKind.PLAIN;
 	int m_iFaction = -1;
+	int m_iPriority = RZ_ENoticePriority.NORMAL;
 
 	//------------------------------------------------------------------------------------------------
-	static RZ_NoticeStyle Classify(string title)
+	//! The kind from the title, then the server's tag (RZ_ENoticeTag): a mission, event or world tag
+	//! sets the kind (radio messages keep theirs), and the priority follows from both.
+	static RZ_NoticeStyle Classify(string title, int tag = RZ_ENoticeTag.AUTO)
+	{
+		RZ_NoticeStyle st = FromTitle(title);
+		bool radio = st.IsRadio();
+		if (tag == RZ_ENoticeTag.MISSION && !radio)
+			st.m_iKind = RZ_ENoticeKind.MISSION;
+		else if (tag == RZ_ENoticeTag.EVENT && !radio)
+			st.m_iKind = RZ_ENoticeKind.EVENT;
+		else if (tag == RZ_ENoticeTag.WORLD && !radio)
+			st.m_iKind = RZ_ENoticeKind.WORLD;
+
+		st.m_iPriority = PriorityFor(title, st.m_iKind, tag);
+		return st;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! docs/UI.md, "Notices": urgent is danger to you now, high is about you now, normal the radio
+	//! and faction voices, low the news and welcome. A tag decides; else the title.
+	static int PriorityFor(string title, int kind, int tag)
+	{
+		switch (tag)
+		{
+			case RZ_ENoticeTag.URGENT: return RZ_ENoticePriority.URGENT;
+			case RZ_ENoticeTag.HIGH: return RZ_ENoticePriority.HIGH;
+			case RZ_ENoticeTag.LOW: return RZ_ENoticePriority.LOW;
+			case RZ_ENoticeTag.MISSION: return RZ_ENoticePriority.HIGH;
+			case RZ_ENoticeTag.WORLD: return RZ_ENoticePriority.LOW;
+		}
+
+		if (kind == RZ_ENoticeKind.INFECTION)
+			return RZ_ENoticePriority.URGENT;
+
+		string t = title;
+		t.ToLower();
+		if (t == "horde" || t == "the final stand")
+			return RZ_ENoticePriority.URGENT;
+
+		if (t == "background unlocked" || t == "mission complete" || t == "mission failed" || Starts(t, "contract:") || t.EndsWith(" is locked"))
+			return RZ_ENoticePriority.HIGH;
+
+		if (Starts(t, "outbreak:") || t == "word on the roads" || t == "this season" || t == "hall of fame" || t == "radio")
+			return RZ_ENoticePriority.LOW;
+
+		return RZ_ENoticePriority.NORMAL;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static RZ_NoticeStyle FromTitle(string title)
 	{
 		RZ_NoticeStyle st = new RZ_NoticeStyle();
 		string t = title;
@@ -469,6 +540,14 @@ class RZ_NoticeStyle
 			}
 			case RZ_ENoticeKind.INFECTION: return "INFECTION";
 			case RZ_ENoticeKind.EVENT: return "WORLD EVENT";
+			case RZ_ENoticeKind.WORLD: return "THE ZONE";
+			case RZ_ENoticeKind.MISSION:
+			{
+				if (m_iFaction >= 0)
+					return "MISSION - " + RZ_Factions.GetShortName(m_iFaction);
+
+				return "MISSION";
+			}
 			case RZ_ENoticeKind.FACTION: return RZ_Factions.GetName(m_iFaction);
 		}
 
@@ -484,6 +563,7 @@ class RZ_NoticeStyle
 			case RZ_ENoticeKind.SECURE_CHANNEL: return "status_secure_radio";
 			case RZ_ENoticeKind.INFECTION: return "status_bitten";
 			case RZ_ENoticeKind.EVENT: return "mission_event";
+			case RZ_ENoticeKind.MISSION: return "mission_contract";
 			case RZ_ENoticeKind.OPEN_CHANNEL:
 			{
 				if (m_iFaction >= 0)
@@ -514,10 +594,16 @@ class RZ_NoticeStyle
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Goes in the radio log.
 	bool IsRadio()
 	{
 		return m_iKind == RZ_ENoticeKind.OPEN_CHANNEL || m_iKind == RZ_ENoticeKind.SECURE_CHANNEL || m_iKind == RZ_ENoticeKind.BROADCAST;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Listed in the notebook's Radio tab: radio messages, missions, world events and the world at spawn.
+	bool IsLogged()
+	{
+		return IsRadio() || m_iKind == RZ_ENoticeKind.MISSION || m_iKind == RZ_ENoticeKind.EVENT || m_iKind == RZ_ENoticeKind.WORLD;
 	}
 }
 

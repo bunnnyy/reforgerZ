@@ -77,8 +77,9 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
   server. Each has a centre, a size class and an infection level (0–100). Placing any `RZ_SettlementMarkerEntity` turns detection off and uses the markers.
 - **Spawn points:** 6 at a time in random towns, and one is moved to a new town every
   20 minutes. Every Haven safehouse is also a spawn point for everyone.
-- **Missions are announced** with distance and direction ("1.2 km NE"). Messages are queued
-  so they never pile up: as styled notice cards, or vanilla hints without the UI ([UI.md](UI.md)).
+- **Missions are announced** with distance and direction ("1.2 km NE"). Messages arrive a few at
+  a time, the most important first, as styled notice cards or vanilla hints without the UI; the
+  notebook's Radio tab keeps the radio, mission and world ones ([UI.md](UI.md#notices)).
 - **The map** shows each player what they're allowed to know, with the ReforgerZ icons: the lab,
   the safehouses (not to exiles), every stronghold, the outposts of factions that know them or that
   they've been near, the power and radio stations, the sealed checkpoints and world events.

@@ -528,7 +528,7 @@ class RZ_JournalMenu : RZ_MenuBase
 //! first. Kept on the client (RZ_PlayerUIComponent.OnNotice); F cycles the filter.
 class RZ_RadioLogMenu : RZ_MenuBase
 {
-	protected int m_iFilter;	// 0 all, 1 open, 2 secure, 3 broadcast
+	protected int m_iFilter;	// 0 all, 1 open, 2 secure, 3 broadcast, 4 missions, 5 world
 
 	//------------------------------------------------------------------------------------------------
 	override protected int TabIndex() { return 2; }
@@ -567,7 +567,7 @@ class RZ_RadioLogMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void OnFilter(float value = 0, EActionTrigger reason = 0)
 	{
-		m_iFilter = (m_iFilter + 1) % 4;
+		m_iFilter = (m_iFilter + 1) % 6;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -579,6 +579,10 @@ class RZ_RadioLogMenu : RZ_MenuBase
 			return e.m_iKind == RZ_ENoticeKind.SECURE_CHANNEL;
 		if (m_iFilter == 3)
 			return e.m_iKind == RZ_ENoticeKind.BROADCAST;
+		if (m_iFilter == 4)
+			return e.m_iKind == RZ_ENoticeKind.MISSION;
+		if (m_iFilter == 5)
+			return e.m_iKind == RZ_ENoticeKind.EVENT || e.m_iKind == RZ_ENoticeKind.WORLD;
 
 		return true;
 	}
@@ -586,7 +590,7 @@ class RZ_RadioLogMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	override protected void Redraw()
 	{
-		array<string> names = {"ALL", "OPEN", "SECURE", "BROADCAST"};
+		array<string> names = {"ALL", "OPEN CHANNEL", "SECURE", "BROADCAST", "MISSIONS", "WORLD"};
 		RZ_UIW.SetText(m_wRoot, "FilterText", names[m_iFilter]);
 		Widget list = RZ_UIW.Find(m_wRoot, "Log");
 		RZ_UIW.ClearChildren(list);

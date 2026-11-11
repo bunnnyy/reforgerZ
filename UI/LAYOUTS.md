@@ -122,7 +122,7 @@ Frame  (root, full screen)
 │  └─ Text    SeenText          mono bold 12, dim (HIDDEN, LOW, SEEN, IN PLAIN SIGHT)
 └─ VerticalLayout (NoticeArea)  460 wide, anchor top-right, offset (-96, 96)
    ├─ VerticalLayout NoticeStack  the notice cards
-   └─ Text   NoticeQueued       under the stack, right-aligned, mono 12, faint ("+2 QUEUED")
+   └─ Text   NoticeQueued       under the stack, right-aligned, mono 12, faint ("+3 in your notebook")
 ```
 
 ## Notice card: `RZ_NoticeCard.layout`
@@ -279,7 +279,7 @@ Frame (root)
 ├─ Frame  (channels panel, at (72, 168), 450 × 840): a static list of the channels, static icons and names
 └─ Frame  (log panel, at (546, 168), 1302 × 840)
    ├─ Button FilterButton   at (26, 16), 150 × 30, the bone chip; a click cycles the filter
-   │  └─ Text FilterText    mono bold 12: ALL / OPEN / SECURE / BROADCAST
+   │  └─ Text FilterText    mono bold 12: ALL / OPEN CHANNEL / SECURE / BROADCAST / MISSIONS / WORLD
    ├─ ScrollLayout (under a rule at y 62, fills the rest)
    │  └─ VerticalLayout Log   the rows, newest first
    └─ Text   Empty          centred, italic 18, "Nothing on the air yet."

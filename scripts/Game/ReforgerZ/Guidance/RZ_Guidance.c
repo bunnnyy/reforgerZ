@@ -557,7 +557,7 @@ class RZ_Guidance
 
 			if (!brief.IsEmpty())
 			{
-				m_GM.NotifyPlayer(playerId, PLAIN_TITLE, string.Format(brief, a, b));
+				m_GM.NotifyPlayerAs(playerId, PLAIN_TITLE, string.Format(brief, a, b), RZ_ENoticeTag.LOW);
 				said = true;
 			}
 		}

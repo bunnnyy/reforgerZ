@@ -1301,8 +1301,14 @@ session, tick off:
   spot in the offer. A puzzle contract always gives its own positions.
 
 **UI** ([Setting up the UI](#setting-up-the-ui); the deploy-menu and map items need its steps 5 and 6)
-- [ ] A Haven channel message shows as an amber card with the speaker; three at once stack, the
-  rest queue; with **Styled notices** off they're vanilla hints again.
+- [ ] A Haven channel message shows as an amber card with the speaker; with **Styled notices** off
+  they're vanilla hints again.
+- [ ] Spawn: the background card comes first, then the outbreak and the rest one at a time (two
+  cards at most, about 2 s apart); nothing pours in. Get bitten while the welcome cards wait: the
+  bite card shows at once. Wait a minute with cards queued: "+N in your notebook" appears under
+  them, and the notebook's Radio tab lists them (filter Missions and World).
+- [ ] On a dedicated server with two clients, a contract offer to one player never reaches the
+  other's log (owner-only notices).
 - [ ] A bite shows the golden window counting down, then Fever with the track filling; a
   stabiliser shows PAUSED and the clock stops; the timer matches the stage messages within seconds.
 - [ ] Cracking a secure channel shows the indicator until the codes change.

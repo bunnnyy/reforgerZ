@@ -74,11 +74,11 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 
 | Screen | Preview | What it shows | Script | Status |
 |---|---|---|---|---|
-| HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; up to three at once. The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer and the radio indicator not seen yet |
+| HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer and the radio indicator not seen yet |
 | Standing | `standing.png` | Per faction: tier, Fame, Infamy (with the tier bands marked), Favor, the leaders you've met and what they think of you, what the faction needs, a warning when it hunts you. Truces and feuds, and the tier grid | `RZ_StandingMenu` | Layout built, not checked in play; the tier grid is static |
 | Journal | `journal.png` | Active contracts, events, puzzles, leader jobs, arcs and questlines with type icon, giver, rough direction and distance and time left. The selected one in full: brief, where, requirements, rewards, and the puzzle clues you've read (or a questline's notes). Under the list, the lab's line: research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) | `RZ_JournalMenu` | Layout built, not checked in play; the mockup has no lab line yet |
 | Background picker | `background_picker.png` | A panel in the vanilla deploy menu: the picked background's name, perk, flaw, starting standing, starting gear, locked or available (with how to unlock), Legacy toward the Drifter. Locked loadouts are unavailable in the menu itself | `RZ_BackgroundPanelComponent`, `RZ_LoadoutLock.c` | Layout built, not in the deploy menu yet |
-| Radio log | `radio_log.png` | What you heard this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice; a filter | `RZ_RadioLogMenu` | Layout built, not checked in play; the channel list is static |
+| Radio log | `radio_log.png` | What you heard this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, and the mission and world notices; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioLogMenu` | Layout built, not checked in play; the channel list is static; the chip shows the six filter names |
 | Map key | `map_legend.png` | The marker icons the map draws, with one line each | `RZ_MapKeyMenu` | Static layout built, not checked in play |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), and a box to write one with a Post button. Opened when you read the board, with **UI > Board menus** on | `RZ_NoticeBoardMenu` | Layout built; **Board menus** is off; no mockup |
 | Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallOfFameMenu` | Layout built, not checked in play; no mockup |
@@ -105,6 +105,40 @@ the time left would be, the stage's text as the brief, "It depends on how it end
 rewards, and its notes ("what you know so far") in the clues block. Its stage missions are rows
 too, with their own time and pay. Both use the story arc icon (`mission_arc`); there's no
 questline icon of its own.
+
+### Notices
+
+Notice cards come **a few at a time, by importance**: at most **UI > Notice cards at once** (2) on
+screen, a new one at most every **Gap** (2 s). Waiting ones queue most important first, then
+oldest first.
+
+| Priority | Means | Examples |
+|---|---|---|
+| Urgent | danger to you, now | Bitten, Fever, Weakness, The end of it, Horde, THE FINAL STAND |
+| High | about you, now | your background card, a locked background, your standing changed, a background unlocked, every mission notice (offered, "this is the place", done, failed, refused) |
+| Normal | radio and faction voices | open and secure channels, the broadcast, faction notices, world events, anything with an unusual title |
+| Low | news and welcome | at spawn: the outbreak, the broadcast, word on the roads, this season, the hall of fame, the "Radio" summary; guidance reminders for veterans |
+
+- **At spawn** the background card comes first, then the state of the world, one by one. For
+  **Calm after spawn** (4 s) after a new life only urgent and high cards show.
+- **Urgent** cards skip the gap, and when the stack is full the least important card on screen is
+  cut short to make room.
+- A low or normal notice the Radio tab lists (radio, mission and world ones) that waits more than
+  **Wait** (45 s) isn't shown: it's already in the notebook. The line under the cards counts them,
+  "+3 in your notebook", until you next open the notebook or start a new life.
+- At most **Notices waiting** (12) wait; past that the least important one the Radio tab lists goes
+  to the notebook only (or, if none is listed, the least important is dropped).
+- There's no separate notification log: the notebook's Radio tab keeps the last **Radio tab
+  entries** (60) radio, mission and world notices of this life. Filters (X or F, or click the chip):
+  **All, Open channel, Secure, Broadcast, Missions, World.** Missions: offers, "this is the place",
+  done, failed, refused. World: world events and the state-of-the-world notes from your spawn.
+
+How a notice's importance is known: the server tags about twenty call sites
+(`NotifyPlayerAs`/`NotifyAllAs` with `RZ_ENoticeTag`: MISSION, EVENT, WORLD, URGENT, HIGH, LOW;
+mission messages through `RZ_Mission.NotifyParticipants` and `NotifyInterested`); every other
+notice is classified by its title on the client (`RZ_NoticeStyle.Classify`). Without the HUD the
+vanilla hint queue sorts the same way, with no expiry (it has nowhere else to go).
+*Simplified:* an odd title gets Normal; nothing is lost, it only waits.
 
 ### Opening the screens
 
