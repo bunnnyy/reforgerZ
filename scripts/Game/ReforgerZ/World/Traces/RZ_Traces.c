@@ -2,8 +2,8 @@
 //! lot as data; Traces makes some of it visible, near players only, and never leaves anything
 //! behind. Built: the door marks (their grammar, the first days, live writes, reading by level, the
 //! town summary, the journal's Read on doors, errands' old mark), the doors you can see (decals or
-//! boards, text always) and the player traces. Planned (designs/TRACES.md): the first days' scenes
-//! and the line, vignettes and live traces, sound and light, the epilogue's handover.
+//! boards, text always), the player traces, the scenes (the first days and the line, vignettes,
+//! live traces: RZ_Scenes), sound and light (RZ_TraceAmbience) and the epilogue's handover.
 //!
 //! Data first, props when set, text always. Nothing lootable, nothing blocks, nothing pays.
 //! Owned by RZ_GameModeComponent (World > Traces), reached as gm.GetTraces(). Server only, but for
@@ -67,6 +67,105 @@ class RZ_TraceKit
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Season mark, emptied (optional): flowers on a post (P5). Empty = Shared > Season mark prefab", "et")]
 	ResourceName m_sSeasonFlowers;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Column car A (optional, F1): a static civilian car wreck (a hatchback), doors open, a suitcase on the roof; no vehicle component. Empty = the column is text only", "et")]
+	ResourceName m_sQueueCarA;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Column car B (optional, F1): a static saloon wreck, doors open. Empty = car A again", "et")]
+	ResourceName m_sQueueCarB;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Column car C (optional, F1): a static estate wreck, a coat on the grass. Empty = car A again", "et")]
+	ResourceName m_sQueueCarC;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Suitcases (optional, F2): three suitcases, a holdall, a folded coat. Empty = text only", "et")]
+	ResourceName m_sSuitcases;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Gym door (optional, F3): stacked camp beds, folded blankets, a painted board GYM OPEN. Empty = text only", "et")]
+	ResourceName m_sGymDoor;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bus (optional, F3): a static bus wreck in the gym's car park. Empty = no bus", "et")]
+	ResourceName m_sBus;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Church door (optional, F4): a painted board, a kitchen chair, a folded blanket. Empty = text only", "et")]
+	ResourceName m_sChurchDoor;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Day 1 roadblock (optional, F5): a sandbag half ring, a barrier pole on the ground, a camp chair, empty tins, a field radio mesh on a plain crate. Empty = text only", "et")]
+	ResourceName m_sRoadblock;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Notice wall (optional, F6): a board on two posts with five A4 notices overlapping. Empty = text only", "et")]
+	ResourceName m_sNoticeWall;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Rudi's shutter (optional, F7): a garage shutter on two posts. Empty = text only", "et")]
+	ResourceName m_sShutter;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The hill (optional, F8): a groundsheet, a ration tin, a fence post. Empty = text only", "et")]
+	ResourceName m_sObservationPost;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The last meal (optional, V1): a garden table, four chairs, plates, a jug, a radio mesh. Empty = text only", "et")]
+	ResourceName m_sLastMeal;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Held out (optional, V2): planks for windows (static, not the barricade item), one hanging off a frame, casings. Empty = text only", "et")]
+	ResourceName m_sHeldOut;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The chair at the edge (optional, V3): a kitchen chair, a blanket, a jam jar. Empty = text only", "et")]
+	ResourceName m_sEdgeChair;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The honest shop (optional, V4): sheets pinned to a board, a tin on a plain crate (no storage). Empty = text only", "et")]
+	ResourceName m_sIOUs;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The dropped run (optional, V5): a closed sample case mesh, a gas mask with a long filter, a bicycle on its side. Empty = text only", "et")]
+	ResourceName m_sDroppedRun;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The waiting room (optional, V6): six plastic chairs in a row, a sign on an easel. Empty = text only", "et")]
+	ResourceName m_sWaitingRoom;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The fallen post (optional, V7): a roster board, a cold rusty barrel, a few sandbags. Empty = text only", "et")]
+	ResourceName m_sFallenPost;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The water queue (optional, V8): buckets and plastic bottles (meshes, never jerrycans). Empty = text only", "et")]
+	ResourceName m_sWaterQueue;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Scorch (optional, L2): an ash pile and a scorch decal for the wall. Empty = text only", "et")]
+	ResourceName m_sScorch;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Truck wreck, Bastion (optional, L5): a static burnt truck, two empty crates. Empty = text only", "et")]
+	ResourceName m_sTruckBastion;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Truck wreck, the Red Hand (optional, L5). Empty = text only", "et")]
+	ResourceName m_sTruckRedHand;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Truck wreck, the Haven (optional, L5). Empty = text only", "et")]
+	ResourceName m_sTruckHaven;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Truck wreck, Halcyon (optional, L5). Empty = text only", "et")]
+	ResourceName m_sTruckHalcyon;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Road post relic (optional, L6): sandbags in a half ring, a CHECKPOINT. HALT sign on its side. Empty = text only", "et")]
+	ResourceName m_sRoadPostRelic;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Cross (optional, N1): one fence-paling cross, placed up to 7 times in a row. Empty = text only", "et")]
+	ResourceName m_sCross;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Day 1 sheets (optional, N2): two or three paper sheets on the ground. Empty = text only", "et")]
+	ResourceName m_sSheets;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Lantern, lit (optional, S1): a kerosene lamp's lit twin, its light on LIT_ON_SPAWN and no switch action. Empty = no lanterns", "et")]
+	ResourceName m_sLantern;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Radio hiss (optional, S3): a static radio mesh with a SoundComponent and RZ_AmbientLoopComponent on a looped hiss. Empty = the broadcast's line only", "et")]
+	ResourceName m_sRadioHiss;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Generator hum (optional, S5): a SoundComponent and RZ_AmbientLoopComponent on a looped hum, no mesh needed. Empty = silent", "et")]
+	ResourceName m_sGeneratorHum;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Dogs (optional, S4): a SoundComponent and RZ_CallSoundComponent, a few barks that stop dead. Empty = the Hunter's line only", "et")]
+	ResourceName m_sDogs;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bell (optional, S6): a SoundComponent and RZ_CallSoundComponent, one stroke of a church bell that carries 1.2 km. Empty = the line only", "et")]
+	ResourceName m_sBell;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loudspeaker (optional, S7): a SoundComponent and RZ_CallSoundComponent, a chime and static. Empty = the subtitle only", "et")]
+	ResourceName m_sLoudspeaker;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -104,6 +203,30 @@ class RZ_TraceSettings
 	[Attribute("12", UIWidgets.Slider, "Props a cluster: Traces' scene props within 150 m of each other", "1 40 1")]
 	int m_iPropsCluster;
 
+	[Attribute("1", desc: "First days' scenes and the line: the column's cars, the suitcases, the gym, the church, the roadblock, the square's notices, Rudi's shutter, the hill, the crosses and the Day 1 sheets near the barriers (seeded, never saved)")]
+	bool m_bFirstDayScenes;
+
+	[Attribute("1", desc: "Vignettes: small scenes dealt where the data says something happened (the last meal, a house that held out, the chair at the edge, the honest shop, the dropped run, the waiting room, the roll at a fallen post, the water queue)")]
+	bool m_bVignettes;
+
+	[Attribute("12", UIWidgets.Slider, "Vignettes at once on the server (one a town)", "0 24 1")]
+	int m_iVignettes;
+
+	[Attribute("3", UIWidgets.Slider, "Vignettes dealt a season day", "0 10 1")]
+	int m_iVignettesPerDay;
+
+	[Attribute("1", desc: "Live traces: after a kill site, scorch, a lost truck's wreck, a pulled road post, the young come home, red hands spreading, Bastion fading")]
+	bool m_bLiveTraces;
+
+	[Attribute("24", UIWidgets.Slider, "Live traces at once on the server (the oldest goes)", "1 48 1")]
+	int m_iLiveTraces;
+
+	[Attribute("1", desc: "Sound and light: lanterns where people live, the radio's hiss, the dogs, the generator's hum, the church bell, the town loudspeaker, the candle jars (each needs its kit prefab; the lines come without)")]
+	bool m_bSoundLight;
+
+	[Attribute("0", desc: "Lit windows: a small light inside the doors of lived-in buildings after dark, drawn on each client. Off until the Workbench spike shows it at the windows and not through the walls")]
+	bool m_bLitWindows;
+
 	[Attribute("0", desc: "Debug: log every door read and the drawn list's size")]
 	bool m_bDebug;
 
@@ -137,8 +260,13 @@ class RZ_TracesSave
 	ref array<ref RZ_TownHistorySave> history = {};
 	ref array<ref RZ_MarkedDoorSave> doors = {};
 	ref array<ref RZ_PlayerTrace> players = {};
+	ref array<ref RZ_Scene> scenes = {};
 	int nextKey;
 	float rainDays;
+	int dealDay = -1;
+	int dealt;
+	int sceneKey = 1;
+	bool handed;		// the cure's handover to the epilogue is done
 }
 
 //------------------------------------------------------------------------------------------------
@@ -161,7 +289,11 @@ class RZ_Traces
 	protected ref RZ_TraceWatch m_Watch;
 	protected ref RZ_PlayerTraces m_Players;
 	protected ref RZ_TraceDraw m_Draw;
+	protected ref RZ_Scenes m_Scenes;
+	protected ref RZ_TraceAmbience m_Ambience;
 	protected ref RZ_TracesSave m_Restored;
+	protected bool m_bHanded;
+	protected ref map<int, int> m_mGoneHome = new map<int, int>();	// safehouse -> the GONE HOME count chalked
 	protected float m_fSlotTimer;
 	protected float m_fWatchTimer;
 	protected float m_fPruneTimer;
@@ -186,6 +318,8 @@ class RZ_Traces
 		m_Watch = new RZ_TraceWatch(gm, this);
 		m_Players = new RZ_PlayerTraces(gm, this);
 		m_Draw = new RZ_TraceDraw(gm, this);
+		m_Scenes = new RZ_Scenes(gm, this);
+		m_Ambience = new RZ_TraceAmbience(gm, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -209,6 +343,8 @@ class RZ_Traces
 	RZ_TownHistory History() { return m_History; }
 	RZ_PlayerTraces GetPlayers() { return m_Players; }
 	RZ_TraceDraw GetDraw() { return m_Draw; }
+	RZ_Scenes GetScenes() { return m_Scenes; }
+	RZ_TraceAmbience GetAmbience() { return m_Ambience; }
 
 	//------------------------------------------------------------------------------------------------
 	//! Season days of rain so far (0.3 or more): chalk ages twice as fast while it lasts.
@@ -251,6 +387,8 @@ class RZ_Traces
 			m_History.Restore(m_Restored.history);
 			m_Doors.Restore(m_Restored.doors, m_Restored.nextKey);
 			m_fRainDays = m_Restored.rainDays;
+			m_Scenes.Restore(m_Restored.scenes, m_Restored.dealDay, m_Restored.dealt, m_Restored.sceneKey);
+			m_bHanded = m_Restored.handed;
 		}
 
 		m_bReady = true;
@@ -260,6 +398,7 @@ class RZ_Traces
 		if (m_Restored)
 			m_Players.Restore(m_Restored.players);
 
+		m_Scenes.Seed();
 		m_Restored = null;
 		RZ_Log.Info(string.Format("Traces: %1 marked doors (%2 live layers), %3 town events, drawing %4.", m_Doors.GetDoors().Count(), m_Doors.LiveCount(), m_History.Count(), DrawingName(m_Draw.Mode())));
 	}
@@ -271,8 +410,13 @@ class RZ_Traces
 		m_History.Save(data.history);
 		m_Doors.Save(data.doors);
 		m_Players.Save(data.players);
+		m_Scenes.Save(data.scenes);
 		data.nextKey = m_Doors.NextKey();
 		data.rainDays = m_fRainDays;
+		data.dealDay = m_Scenes.DealDay();
+		data.dealt = m_Scenes.Dealt();
+		data.sceneKey = m_Scenes.NextKey();
+		data.handed = m_bHanded;
 		return data;
 	}
 
@@ -309,6 +453,7 @@ class RZ_Traces
 				m_Doors.Bind(town);
 
 			m_Draw.Tick(players);
+			m_Ambience.Tick(SLOT_SECONDS, ids, players);
 		}
 
 		m_fWatchTimer += dt;
@@ -316,6 +461,9 @@ class RZ_Traces
 		{
 			m_fWatchTimer = 0;
 			m_Watch.Look();
+			m_Scenes.Look();
+			if (!m_bHanded && RZ_WorldFacts.Get().IsCured())
+				HandOver();
 		}
 
 		m_fPruneTimer += dt;
@@ -324,14 +472,31 @@ class RZ_Traces
 			m_fPruneTimer = 0;
 			m_Doors.Prune();
 			m_Players.Prune();
+			m_Scenes.Prune();
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cure (the epilogue's commit): Traces' in-season graves come down (the epilogue places its
+	//! own from the record), the last four lost trucks' wrecks become the epilogue's for the week,
+	//! and nothing new is dealt or written but what the epilogue asks for. Once a season.
+	protected void HandOver()
+	{
+		m_bHanded = true;
+		int graves = m_Players.DropGraves();
+		int wrecks = m_Scenes.HandOver();
+		RZ_Log.Info(string.Format("Traces: handed over to the epilogue (%1 graves down, %2 wrecks kept for the week).", graves, wrecks));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Once a second: the town's summary on entry, and a door read after 2 seconds standing at it.
 	void SecondTick(array<int> ids, array<IEntity> players)
 	{
-		if (!IsOn() || !m_Settings.m_bDoorMarks)
+		if (!IsOn())
+			return;
+
+		m_Scenes.SecondTick(ids, players);
+		if (!m_Settings.m_bDoorMarks)
 			return;
 
 		foreach (int i, IEntity p : players)
@@ -436,8 +601,29 @@ class RZ_Traces
 			m_GM.NotifyPlayerAs(pid, "On a door", DoorLine(pid, d, " "), RZ_ENoticeTag.LOW);
 
 		AddJournal(pid, d.m_iTown, DoorLine(pid, d, " "));
+		YoungHeard(pid, d);
 		if (m_Settings.m_bDebug)
 			RZ_Log.Info(string.Format("Traces: player %1 read %2#%3", pid, m_Doors.TownName(d.m_iTown), d.m_iSlot));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! L4: reading the young come home's scratches makes their pack Heard of (decision 6, the one
+	//! thing reading a trace gives).
+	protected void YoungHeard(int pid, RZ_MarkedDoor d)
+	{
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (!tribes)
+			return;
+
+		foreach (RZ_DoorMark m : d.m_aLayers)
+		{
+			if (!m.Has(RZ_DoorMark.F_YOUNG) || m.m_iC <= 0)
+				continue;
+
+			RZ_Tribe t = tribes.Find(m.m_iC - 1);
+			if (t)
+				tribes.GetPeople().Learn(pid, t, RZ_EKnow.HEARD, -1);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -591,6 +777,79 @@ class RZ_Traces
 		return RZ_TraceText.SeasonMark(kind, line);
 	}
 
+	// ================================================================ The epilogue's asks (phase 7)
+	//------------------------------------------------------------------------------------------------
+	//! The census of a town's doors for the epilogue's town beats: "Four candles on the doors in
+	//! Brod, and one bear." "" with Traces off or nothing to count.
+	static string Census(int town)
+	{
+		RZ_Traces t = Get();
+		if (!t || !t.IsOn() || !t.DoorMarksOn())
+			return "";
+
+		array<RZ_MarkedDoor> doors = {};
+		t.GetDoors().TownDoors(town, doors);
+		return RZ_SceneText.Census(t.GetDoors().TownName(town), doors);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A town beat's text with the census after it (or the text as it was).
+	static string WithCensus(string text, int town)
+	{
+		string census = Census(town);
+		if (census.IsEmpty())
+			return text;
+
+		if (text.IsEmpty())
+			return census;
+
+		return text + " " + census;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The epilogue's named dead: a name chalked on the last door they rested at, as a candle with
+	//! the name under it, through the grammar (the epilogue owns the fact, Traces the drawing).
+	//! `key` keeps it to one door after a restart.
+	static void ChalkName(vector at, string name, string key)
+	{
+		RZ_Traces t = Get();
+		if (!t || !t.IsOn() || !t.DoorMarksOn() || name.IsEmpty())
+			return;
+
+		int town = RZ_TraceWriters.TownAt(at);
+		if (town < 0)
+			return;
+
+		string upper = name;
+		upper.ToUpper();
+		RZ_DoorMark m = RZ_DoorMark.Make(RZ_EDoorSymbol.CANDLE, RZ_WorldFacts.Get().Day(), 1, 0, 0, RZ_DoorMark.F_SHOWN);
+		m.m_sText = upper;
+		t.GetDoors().WriteForEpilogue(town, RZ_EDoorWant.NEAR, at, m, "the epilogue's dead", "epi." + key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A safehouse in processing: GONE HOME and how many, chalked by its door (only when it changes).
+	static void GoneHome(int house, int count)
+	{
+		RZ_Traces t = Get();
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!t || !t.IsOn() || !t.DoorMarksOn() || count <= 0 || !gm || !gm.GetSafehouses())
+			return;
+
+		int was;
+		if (t.m_mGoneHome.Find(house, was) && was == count)
+			return;
+
+		t.m_mGoneHome.Set(house, count);
+		RZ_Safehouse h = gm.GetSafehouses().Get(house);
+		if (!h || h.m_iSettlement < 0)
+			return;
+
+		RZ_DoorMark m = RZ_DoorMark.Make(RZ_EDoorSymbol.ARROW, RZ_WorldFacts.Get().Day(), 0, count, 0, RZ_DoorMark.F_SHOWN);
+		m.m_sText = string.Format("GONE HOME: %1", count);
+		t.GetDoors().WriteForEpilogue(h.m_iSettlement, RZ_EDoorWant.NEAR, h.m_vPos, m, "the epilogue's processing", RZ_FirstDays.HouseDoorKey(house));
+	}
+
 	// ================================================================ Admin and status
 	//------------------------------------------------------------------------------------------------
 	//! "Traces: doors N (drawn M), scenes S, props P/40, lights L, loops O"
@@ -601,7 +860,7 @@ class RZ_Traces
 		if (marks)
 			props = marks.Count(RZ_EMarkPool.TRACES);
 
-		return string.Format("Traces: doors %1 (drawn %2), scenes %3, props %4/%5, lights 0, loops 0", m_Doors.GetDoors().Count(), m_Draw.DrawnCount(), m_Players.Count(), props, m_Settings.m_iProps);
+		return string.Format("Traces: doors %1 (drawn %2), scenes %3, props %4/%5, lights %6, loops %7", m_Doors.GetDoors().Count(), m_Draw.DrawnCount(), m_Scenes.Count() + m_Players.Count(), props, m_Settings.m_iProps, m_Ambience.Lights(), m_Ambience.Loops());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -685,7 +944,8 @@ class RZ_Traces
 			count++;
 		}
 
-		m_GM.NotifyPlayer(playerId, "Traces", string.Format("%1 marked doors within 300 m. The list is in the server log. %2", count, StatusText()));
+		int scenes = m_Scenes.LogNear(me.GetOrigin(), 300);
+		m_GM.NotifyPlayer(playerId, "Traces", string.Format("%1 marked doors and %2 scenes within 300 m. The list is in the server log. %3", count, scenes, StatusText()));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -124,7 +124,12 @@ and one way to end it: **research the cure.**
   bears and candles, the Red Hand's hands and tallies, Halcyon's beak, residents' last words, the
   infected's scratches. Stand at one and anyone reads the gist; a Police Officer reads Bastion's code,
   a Hunter how old the scratches are. Graves, ash and candles where players died or burned the dead.
-  Nothing pays.
+  The first days frozen in place (the column's cars on the north road, the gym, the Day 4 church, the
+  cordon's roadblock with its radio still hissing, the hill where two men watched the relief go by),
+  small scenes where something happened (a table laid for four, a chair facing out at a village's
+  edge, IOUs on a shop door), wrecks, scorch and crosses that follow the season, and after dark
+  lanterns where people live, dogs that go quiet before a hunt, one stroke of a church bell and the
+  town loudspeaker. Every prop is optional: the words always come. Nothing pays.
 - **Notes between players**: a notice board at every Haven safehouse.
 - **Loot the world**: things lie loose in houses, on worktops and floors, and you pick them up;
   bodies looted like any body, car boots to search; locked doors that keep the infected out (they bang on them)
@@ -150,8 +155,8 @@ The game scripts **compile without errors or warnings** against Arma Reforger 1.
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
 Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
-That's about 215,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 93 `VERIFY` markers left in the game
+That's about 219,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+was also checked against the base game's script source; the 95 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -206,8 +211,9 @@ knockdown) and the crawlers' daily life, and the people's side
 (each faction's words and marks, knowing, skills, your dead run, the moat, 13 contracts and the
 reworked events, the cure's hooks and the last week), and the great one with its Gathering and Night of
 Many Calls, the packs' signs and call sounds, the bright moon and the map's range rings (tribes phases
-1 to 5, [INFECTED.md](docs/INFECTED.md)); and Traces' door marks, doors you can see and player traces (its phases 1, 2 and 5,
-[TRACES.md](docs/TRACES.md); the scenes, sound and light are still designed only).
+1 to 5, [INFECTED.md](docs/INFECTED.md)); and Traces' door marks, doors you can see, player traces, the scenes,
+sound and light and the epilogue's handover (its phases 1 to 7, [TRACES.md](docs/TRACES.md); its compositions and sounds
+are optional kit prefabs the author builds in Workbench).
 
 ## Docs
 
@@ -220,7 +226,7 @@ Many Calls, the packs' signs and call sounds, the bright moon and the map's rang
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
 | [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes and their life cycle, borders, memory, who they are, how they move and hunt, the crawlers' life, the people's side (words, knowing, skills, your dead run, the moat, the cure, the last week), the great one, signs and sounds, the simulator's numbers |
-| [TRACES.md](docs/TRACES.md) | Traces: door marks written by the people who were there (who wrote what, how to read them by background, where they come from), doors you can see, player traces |
+| [TRACES.md](docs/TRACES.md) | Traces: door marks written by the people who were there (who wrote what, how to read them by background, where they come from), doors you can see, player traces, the scenes (the first days, the line, vignettes, live traces), sound and light, the handover to the epilogue |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards |
 | [QUESTLINES.md](docs/QUESTLINES.md) | The four majors (one season-long story per faction) and the long questlines over many sessions, three per faction and two for the Long Table |

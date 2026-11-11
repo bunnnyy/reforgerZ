@@ -1271,6 +1271,7 @@ class RZ_SupplyLines
 		}
 
 		RZ_WorldWriters.TruckLost(t.m_eFaction, t.m_iDestKind == KIND_SAFEHOUSE, t.m_iDestIndex, t.m_sDestName, lostAt, t.m_vDest, cause);
+		RZ_TraceWriters.TruckLost(t.m_eFaction, lostAt, why, t.m_sDestName);
 		if (t.m_bConvoy && m_GM.GetStoryArcs())
 			m_GM.GetStoryArcs().OnConvoyResult(t.m_eFaction, t.m_sDestName, false);
 

@@ -9,7 +9,11 @@
 //! - Watched every 30 s (RZ_TraceWatch): holdings founded, taken and lost (hands, post codes, grey
 //!   paint), a safehouse's dead going up (candles), a town going dark (scratches inside).
 //! - Hooks: a town turned infested (scratches, smears), a safehouse emptied (its bears ringed),
-//!   a player's death (graves and candles, RZ_PlayerTraces).
+//!   a player's death (graves and candles, RZ_PlayerTraces; a cross at the line, N1), a building
+//!   burned (scorch, L2), a supply truck lost (its wreck, L5; a Halcyon run, V5).
+//! - Scenes from missions: a failed rescue (V2), a failed Halcyon run (V5), a walk-out (V3).
+//! - Watched: a Bastion outpost lost (V7), red hands spreading (L7), the young come home (L4), the
+//!   thumbprint where an exile sleeps.
 //! Server only.
 class RZ_TraceWriters
 {
@@ -95,11 +99,17 @@ class RZ_TraceWriters
 	static void MissionEnded(RZ_Mission m, bool success)
 	{
 		RZ_Traces t = Traces();
-		if (!t || !m || !success || m.m_bGlobal || m.m_vPos == vector.Zero)
+		if (!t || !m || m.m_bGlobal || m.m_vPos == vector.Zero)
 			return;
 
 		int town = TownAt(m.m_vPos, m.m_iSettlement);
 		string title = m.m_sTitle;
+		if (!success)
+		{
+			Failed(t, m, town);
+			return;
+		}
+
 		RZ_DoorMarks doors = t.GetDoors();
 		int day = Today();
 		if (TitleIs(title, {"Survivors Trapped", "Collapse Shelter", "Rescue the Kids", "Fetch the Family"}))
@@ -121,6 +131,15 @@ class RZ_TraceWriters
 
 			t.History().Add(town, "walkout", RZ_EFaction.SURVIVORS, 1, m.m_vPos);
 			doors.Write(town, RZ_EDoorWant.HOUSE, m.m_vPos, RZ_DoorMark.Make(RZ_EDoorSymbol.HATCH, day), title);
+			// V3: the chair at the edge of the village he was walked out of
+			RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+			if (gm && gm.GetSafehouses())
+			{
+				int house = gm.GetSafehouses().FindNearest(m.m_vPos, 3000);
+				if (house >= 0)
+					t.GetScenes().Chair(house, "a walk-out");
+			}
+
 			return;
 		}
 
@@ -202,6 +221,51 @@ class RZ_TraceWriters
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A job that failed: a rescue that didn't get them out leaves a house that held out (V2); a
+	//! Halcyon run lost on the road leaves its case in the ditch (V5).
+	protected static void Failed(RZ_Traces t, RZ_Mission m, int town)
+	{
+		string title = m.m_sTitle;
+		if (TitleIs(title, {"Survivors Trapped", "Collapse Shelter"}))
+		{
+			t.GetScenes().HeldOut(town, m.m_vPos, title + " failed");
+			return;
+		}
+
+		if (TitleIs(title, {"Field Samples", "Night Readings", "Live Capture", "Specimen from the Nest", "Cold Chain", "Escort the Scientist"}))
+			t.GetScenes().DroppedRun(m.m_vPos, title + " failed");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A building burned (RZ_WorldWriters.Fire): scorch at its doorway (L2).
+	static void Fire(vector pos)
+	{
+		RZ_Traces t = Traces();
+		if (t)
+			t.GetScenes().Fire(pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A supply truck was lost (RZ_SupplyLines.Fail): its wreck on the verge (L5); a Halcyon truck
+	//! is also a dropped run (V5). why: "robbed", "taken" (a pack), "destroyed", "late".
+	static void TruckLost(int faction, vector pos, string why, string dest)
+	{
+		RZ_Traces t = Traces();
+		if (!t || pos == vector.Zero || why == "late")
+			return;
+
+		int how = 0;
+		if (why == "robbed")
+			how = 1;
+		else if (why == "taken")
+			how = 2;
+
+		t.GetScenes().Truck(faction, pos, how, dest);
+		if (faction == RZ_EFaction.INSTITUTE)
+			t.GetScenes().DroppedRun(pos, "a Halcyon truck lost");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The game clock as hhmm (0 if unknown).
 	protected static int ClockNow()
 	{
@@ -270,6 +334,11 @@ class RZ_TraceWriters
 		}
 
 		t.History().Add(town, "infested", -1, 1, s.m_vCenter);
+		// V2: a barricade a player put up is still standing in a town that fell
+		RZ_TownMemory memory = gm.GetTownMemory();
+		if (memory && memory.IsEnabled() && memory.HasFlag(town, RZ_TownMemory.FLAG_BARRICADED))
+			t.GetScenes().HeldOut(town, s.m_vCenter, "town infested, a barricade standing");
+
 		int day = Today();
 		t.GetDoors().Write(town, RZ_EDoorWant.HOUSE, vector.Zero, RZ_DoorMark.Make(RZ_EDoorSymbol.SCRATCH_OUT, day, Math.RandomInt(2, 7), Math.RandomInt(0, 2)), "town infested");
 		if (s.m_fInfection >= 65)
@@ -290,6 +359,7 @@ class RZ_TraceWriters
 			return;
 
 		t.History().Add(town, "dark", -1, 1, s.m_vCenter);
+		t.GetScenes().TownDark(town);
 		array<RZ_MarkedDoor> here = {};
 		t.GetDoors().TownDoors(town, here);
 		foreach (RZ_MarkedDoor d : here)
@@ -349,8 +419,11 @@ class RZ_TraceWriters
 	static void Death(int playerId, vector pos)
 	{
 		RZ_Traces t = Traces();
-		if (t)
-			t.OnDeath(playerId, pos);
+		if (!t)
+			return;
+
+		t.GetScenes().LineDeath(pos);
+		t.OnDeath(playerId, pos);
 	}
 }
 
@@ -363,9 +436,19 @@ class RZ_TraceWatch
 	protected RZ_Traces m_Traces;
 	protected ref map<int, int> m_mHoldings = new map<int, int>();	// holding id -> faction
 	protected ref map<int, int> m_mHoldingTown = new map<int, int>();
+	protected ref map<int, vector> m_mHoldingPos = new map<int, vector>();
 	protected ref map<int, int> m_mDied = new map<int, int>();		// safehouse -> its dead, last look
 	protected ref map<int, bool> m_mDark = new map<int, bool>();		// town -> 85 or more, last look
 	protected bool m_bLooked;
+	protected int m_iSpreadDay = -1;		// L7: the season day red hands last spread
+	protected ref set<string> m_aYoungDone = new set<string>();	// "tribe|day": the young came home tonight
+	protected ref map<string, float> m_mExileAt = new map<string, float>();	// "ident|town" -> seconds seen
+	protected ref map<string, vector> m_mExilePos = new map<string, vector>();
+	protected ref map<string, int> m_mExileDue = new map<string, int>();	// "ident|town" -> real time to write
+	protected ref set<string> m_aExileDone = new set<string>();	// "ident|day"
+
+	protected static const int THUMB_SECONDS = 1200;	// an exile in a town nobody holds this long: they sleep there
+	protected static const int THUMB_DELAY = 7200;		// written 2 real hours later, never where they are now
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_TraceWatch(RZ_GameModeComponent gm, RZ_Traces traces)
@@ -382,6 +465,12 @@ class RZ_TraceWatch
 		Holdings(first);
 		Houses(first);
 		Towns(first);
+		if (first || RZ_WorldFacts.Get().IsCured() || !m_Traces.GetSettings().m_bLiveTraces)
+			return;
+
+		Spread();
+		YoungHome();
+		Exiles();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -399,6 +488,7 @@ class RZ_TraceWatch
 			bool known = m_mHoldings.Find(h.m_iId, was);
 			m_mHoldings.Set(h.m_iId, h.m_eFaction);
 			m_mHoldingTown.Set(h.m_iId, h.m_iSettlement);
+			m_mHoldingPos.Set(h.m_iId, h.m_vPos);
 			if (first || h.m_iSettlement < 0)
 				continue;
 
@@ -421,10 +511,17 @@ class RZ_TraceWatch
 			m_mHoldingTown.Find(lost, town);
 			int loser;
 			m_mHoldings.Find(lost, loser);
+			vector where;
+			m_mHoldingPos.Find(lost, where);
 			m_mHoldings.Remove(lost);
 			m_mHoldingTown.Remove(lost);
+			m_mHoldingPos.Remove(lost);
 			if (!first && town >= 0)
 				m_Traces.History().Add(town, "lost", loser, 0, vector.Zero);
+
+			// V7: the roll at a fallen Bastion post
+			if (!first && loser == RZ_EFaction.MILITARY && where != vector.Zero)
+				m_Traces.GetScenes().FallenPost(where, town);
 		}
 	}
 
@@ -438,6 +535,9 @@ class RZ_TraceWatch
 			kind = "taken";
 
 		m_Traces.History().Add(town, kind, h.m_eFaction, 0, h.m_vPos);
+		if (loser == RZ_EFaction.MILITARY && !h.m_bStronghold)
+			m_Traces.GetScenes().FallenPost(h.m_vPos, town);
+
 		int day = RZ_WorldFacts.Get().Day();
 		RZ_DoorMarks doors = m_Traces.GetDoors();
 		string cause = string.Format("%1 %2", RZ_Factions.GetName(h.m_eFaction), kind);
@@ -511,6 +611,199 @@ class RZ_TraceWatch
 			}
 
 			doors.Write(f.m_iSettlement, RZ_EDoorWant.HOUSE, f.m_vPos, candle, "a house's dead");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! L7, once a season day: with the Red Hand's strength 50 or more, a hand on one more door (shops
+	//! and garages first) in a town within 1.5 km of a crew's holding or road post; under 35, a hand
+	//! struck through (nobody's collecting).
+	protected void Spread()
+	{
+		int today = RZ_SeasonClock.Day();
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (today == m_iSpreadDay || !territory || !territory.IsActive())
+			return;
+
+		m_iSpreadDay = today;
+		float strength = territory.GetStrength(RZ_EFaction.BANDITS);
+		RZ_DoorMarks doors = m_Traces.GetDoors();
+		int day = RZ_WorldFacts.Get().Day();
+		if (strength < 35)
+		{
+			foreach (RZ_MarkedDoor d : doors.GetDoors())
+			{
+				RZ_DoorMark hand = d.Find(RZ_EDoorSymbol.HAND);
+				if (hand && !hand.Has(RZ_DoorMark.F_STRUCK) && !hand.Has(RZ_DoorMark.F_OVER) && !RZ_WorldFacts.Get().IsLivedIn(d.m_iTown))
+				{
+					doors.Write(d.m_iTown, d.m_iWant, d.m_vAnchor, RZ_DoorMark.Make(RZ_EDoorSymbol.HAND, day, hand.m_iA, 0, 0, RZ_DoorMark.F_STRUCK), "the crews stopped collecting", d.m_sKey);
+					return;
+				}
+			}
+
+			return;
+		}
+
+		if (strength < 50)
+			return;
+
+		array<vector> crews = {};
+		foreach (RZ_Holding h : territory.GetHoldings())
+		{
+			if (h.m_eFaction == RZ_EFaction.BANDITS)
+				crews.Insert(h.m_vPos);
+		}
+
+		RZ_Checkpoints checkpoints = m_GM.GetCheckpoints();
+		if (checkpoints)
+		{
+			array<RZ_RoadPost> posts = {};
+			checkpoints.PostsNear(RZ_EFaction.BANDITS, vector.Zero, float.MAX, posts);
+			foreach (RZ_RoadPost p : posts)
+			{
+				crews.Insert(p.m_vPos);
+			}
+		}
+
+		RZ_Rng rng = new RZ_Rng(RZ_WorldFacts.Get().GetSeed() + today * 271);
+		array<int> towns = {};
+		foreach (int i, RZ_Settlement s : m_GM.GetSettlements())
+		{
+			if (RZ_WorldFacts.Get().IsLivedIn(i))
+				continue;
+
+			foreach (vector c : crews)
+			{
+				if (RZ_Util.DistXZ(s.m_vCenter, c) <= 1500 + s.m_fRadius)
+				{
+					towns.Insert(i);
+					break;
+				}
+			}
+		}
+
+		if (towns.IsEmpty())
+			return;
+
+		int town = towns[rng.Int(0, towns.Count())];
+		int want = RZ_EDoorWant.SHOP;
+		if (rng.Chance(0.4))
+			want = RZ_EDoorWant.GARAGE;
+
+		doors.Write(town, want, vector.Zero, RZ_DoorMark.Make(RZ_EDoorSymbol.HAND, day, rng.Int(1, 4)), "red hands spreading");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! L4, at dusk, 3 evenings in 10 a pack: one of its named young from a town nobody lives in, its
+	//! range within 1.5 km, leaves fresh scratches outside a ringed bear there (a season day, never
+	//! saved). Reading them makes the pack Heard of.
+	protected void YoungHome()
+	{
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (!tribes || !RZ_WorldFacts.Get().IsDusk())
+			return;
+
+		int today = RZ_SeasonClock.Day();
+		RZ_WorldFacts facts = RZ_WorldFacts.Get();
+		foreach (RZ_Tribe t : tribes.GetTribeList())
+		{
+			if (!t || t.IsRover() || t.m_aNamed.IsEmpty())
+				continue;
+
+			string key = string.Format("%1|%2", t.m_iId, today);
+			if (m_aYoungDone.Contains(key))
+				continue;
+
+			m_aYoungDone.Insert(key);
+			RZ_Rng rng = new RZ_Rng(facts.GetSeed() + t.m_iId * 977 + today * 31);
+			if (!rng.Chance(0.3))
+				continue;
+
+			RZ_NamedYoung y = t.m_aNamed[rng.Int(0, t.m_aNamed.Count())];
+			int town = m_GM.FindNearestSettlement(y.m_vAt);
+			RZ_Settlement s = m_GM.GetSettlement(town);
+			if (!s || facts.IsLivedIn(town) || RZ_Util.DistXZ(s.m_vCenter, t.m_vLair) > t.m_fRadius + 1500 + s.m_fRadius)
+				continue;
+
+			array<RZ_MarkedDoor> here = {};
+			m_Traces.GetDoors().TownDoors(town, here);
+			foreach (RZ_MarkedDoor d : here)
+			{
+				// Room beside the bear: the scratches never push it (or anything) off the door
+				RZ_DoorMark bear = d.Find(RZ_EDoorSymbol.BEAR);
+				if (!bear || !bear.Has(RZ_DoorMark.F_RING) || facts.IsNearLivedIn(d.m_vPos, 60) || d.m_aLayers.Count() >= m_Traces.GetSettings().m_iLayersPerDoor)
+					continue;
+
+				RZ_DoorMark m = RZ_DoorMark.Make(RZ_EDoorSymbol.SCRATCH_OUT, facts.Day(), 1, 0, t.m_iId + 1, RZ_DoorMark.F_YOUNG | RZ_DoorMark.F_TEMP);
+				m.m_iUntil = RZ_SeasonClock.Now() + RZ_Util.RoundToInt(RZ_SeasonClock.DayMinutes() * 60);
+				m_Traces.GetDoors().Write(town, d.m_iWant, d.m_vAnchor, m, "the young come home", d.m_sKey);
+				RZ_Log.Info(string.Format("Traces: the young come home to %1#%2 (%3)", s.m_sName, d.m_iSlot, t.m_sPlace));
+				break;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The thumbprint: an exile (Hunted by the Haven) who stays 20 minutes in a town nobody holds
+	//! sleeps there; 2 real hours later, if they aren't within 300 m, the crews' small red print goes
+	//! low on a house's frame there. One a season day an exile. Only an Ex-Con reads it.
+	protected void Exiles()
+	{
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (!houses)
+			return;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		RZ_WorldFacts facts = RZ_WorldFacts.Get();
+		foreach (int i, IEntity p : players)
+		{
+			if (!p || !houses.IsExiled(ids[i]))
+				continue;
+
+			RZ_PlayerProfile profile = m_GM.GetProfile(ids[i]);
+			int town = RZ_TraceWriters.TownAt(p.GetOrigin());
+			if (!profile || town < 0 || facts.IsLivedIn(town))
+				continue;
+
+			string key = profile.m_sIdentity + "|" + town.ToString();
+			float seen;
+			m_mExileAt.Find(key, seen);
+			seen += 30;
+			m_mExileAt.Set(key, seen);
+			m_mExilePos.Set(key, p.GetOrigin());
+			if (seen >= THUMB_SECONDS && !m_mExileDue.Contains(key))
+				m_mExileDue.Set(key, RZ_SeasonClock.Now() + THUMB_DELAY);
+		}
+
+		array<string> written = {};
+		foreach (string due, int at : m_mExileDue)
+		{
+			if (RZ_SeasonClock.Now() < at)
+				continue;
+
+			vector pos;
+			m_mExilePos.Find(due, pos);
+			if (RZ_Util.NearestDistance(pos, players) <= 300)
+				continue;	// never where someone is now
+
+			written.Insert(due);
+			array<string> parts = {};
+			due.Split("|", parts, false);
+			string done = parts[0] + "|" + RZ_SeasonClock.Day().ToString();
+			if (parts.Count() < 2 || m_aExileDone.Contains(done))
+				continue;
+
+			m_aExileDone.Insert(done);
+			int where = parts[1].ToInt();
+			m_Traces.GetDoors().Write(where, RZ_EDoorWant.HOUSE, pos, RZ_DoorMark.Make(RZ_EDoorSymbol.THUMB, facts.Day()), "an exile sleeps here");
+		}
+
+		foreach (string w : written)
+		{
+			m_mExileDue.Remove(w);
+			m_mExileAt.Remove(w);
 		}
 	}
 

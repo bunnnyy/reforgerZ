@@ -8,7 +8,7 @@
 //! |          |         | Table's tells                                                        |
 //! | SIGNS    | 30      | the tribes' signs                                                    |
 //! | DOORS    | 24      | Traces' boards beside marked doors (8 a cluster; up within 60 m)     |
-//! | TRACES   | 40      | Traces' scene props: graves, ash, candles (World > Traces; 12 a      |
+//! | TRACES   | 40      | Traces' props: graves, ash, candles, the scenes (World > Traces; 12 a|
 //! |          |         | cluster)                                                             |
 //!
 //! A mark is data: a place (on the verge, 6-10 m off a road's centre line, when it asks for it),
@@ -26,7 +26,7 @@ enum RZ_EMarkPool
 	PROPS,
 	SIGNS,
 	DOORS,		// Traces' boards beside marked doors
-	TRACES		// Traces' scene props
+	TRACES		// Traces' props: the player traces and the scenes
 }
 
 //------------------------------------------------------------------------------------------------

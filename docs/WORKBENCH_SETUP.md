@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **224 prefab fields**: 40 on `RZ_GameModeComponent`, 177 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **229 entries**: 155 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 41 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **257 prefab fields**: 40 on `RZ_GameModeComponent`, 210 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **262 entries**: 160 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 69 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -461,6 +461,39 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | a stencilled board (`RZ_SeasonMark_Stencil.et`) | — | World > Traces > Kit > Season mark, taken | optional | P5, the season mark for an outpost taken. Empty = Shared > Season mark prefab |
 | (existing prefab) | tape between two posts (`RZ_SeasonMark_Tape.et`) | — | World > Traces > Kit > Season mark, sealed | optional | P5, the season mark's look for a sealed place (no town log kind uses it yet). Empty = Shared > Season mark prefab |
 | (existing prefab) | flowers tied to a post (`RZ_SeasonMark_Flowers.et`) | — | World > Traces > Kit > Season mark, emptied | optional | P5, the season mark for a safehouse emptied. Empty = Shared > Season mark prefab |
+| (existing prefab) | a static civilian car wreck, a hatchback, doors open, a suitcase on the roof; no vehicle component (`RZ_Trace_QueueCar_A.et`) | — | World > Traces > Kit > Column car A | optional | F1, the column's tail: 4-8 cars nose to tail on the verge of the road in from the north barrier; empty = text only. An empty root with an RplComponent and vanilla meshes as children, nothing with physics. Check the log for no Dressing: removed line and that AI aren't trapped on the verge (VERIFY 7) |
+| (existing prefab) | a static saloon wreck, doors open (`RZ_Trace_QueueCar_B.et`) | — | World > Traces > Kit > Column car B | optional | F1; empty = car A again. As car A |
+| (existing prefab) | a static estate wreck, a coat on the grass (`RZ_Trace_QueueCar_C.et`) | — | World > Traces > Kit > Column car C | optional | F1; empty = car A again. As car A |
+| (existing prefab) | three suitcases, a holdall, a folded coat (`RZ_Trace_Suitcases.et`) | — | World > Traces > Kit > Suitcases | optional | F2, where they turned back, 360 m in from the north barrier; empty = text only. As car A |
+| (existing prefab) | stacked camp beds, folded blankets, a painted board GYM OPEN (`RZ_Trace_GymDoor.et`) | — | World > Traces > Kit > Gym door | optional | F3, the Day 2 gym; empty = text only. As car A |
+| (existing prefab) | a static bus wreck (`RZ_Trace_Bus.et`) | — | World > Traces > Kit > Bus | optional | F3, the bus in the gym's car park; empty = no bus. As car A |
+| (existing prefab) | a painted board, a kitchen chair, a folded blanket (`RZ_Trace_ChurchDoor.et`) | — | World > Traces > Kit > Church door | optional | F4, the Day 4 church; the jars are Kit > Candle jars (S8); empty = text only. As car A |
+| (existing prefab) | a sandbag half ring (`Sandbag_Barricade_USSR_04.et` or loose sandbags), a barrier pole on the ground, a camp chair, empty tins, a field radio mesh on `CrateWooden_01_plain.et` (`RZ_Trace_Roadblock_D1.et`) | — | World > Traces > Kit > Day 1 roadblock | optional | F5, the cordon's Day 1 roadblock; empty = text only. As car A; the crate with no storage |
+| (existing prefab) | a board on two posts with five `Notice_A4_Vertical_V1.et` sheets overlapping (`RZ_Trace_NoticeWall.et`) | — | World > Traces > Kit > Notice wall | optional | F6, the square's notices in one town in five nobody lives in; empty = text only. As car A |
+| (existing prefab) | a garage door or shutter mesh on two posts (`RZ_Trace_Shutter.et`) | — | World > Traces > Kit > Rudi's shutter | optional | F7, Rudi's shutter by the crossroads; empty = text only. As car A |
+| (existing prefab) | a groundsheet, a ration tin, a fence post (`RZ_Trace_OP.et`) | — | World > Traces > Kit > The hill | optional | F8, the hill over the north road; empty = text only. As car A |
+| (existing prefab) | `PicnicTable_01` or a garden table, four chairs, plates, a jug, a radio mesh (`RZ_Trace_LastMeal.et`) | — | World > Traces > Kit > The last meal | optional | V1, a town gone dark; empty = text only. As car A |
+| (existing prefab) | planks for windows (static, not the barricade item), one hanging off a frame, casings (`RZ_Trace_HeldOut.et`) | — | World > Traces > Kit > Held out | optional | V2, a house that held out; empty = text only. As car A; never across a doorway |
+| (existing prefab) | a kitchen chair, a blanket, a jam jar (`RZ_Trace_EdgeChair.et`) | — | World > Traces > Kit > The chair at the edge | optional | V3, a walk-out; empty = text only. As car A |
+| (existing prefab) | sheets pinned to a board, a tin on `CrateWooden_01_plain.et` (`RZ_Trace_IOUs.et`) | — | World > Traces > Kit > The honest shop | optional | V4, IOUs on a shop door; empty = text only. As car A; the crate with no storage |
+| (existing prefab) | a closed sample case mesh, a gas mask with a long filter, a bicycle on its side (`RZ_Trace_DroppedRun.et`) | — | World > Traces > Kit > The dropped run | optional | V5, a Halcyon run lost on the road; empty = text only. As car A; no storage, no item |
+| (existing prefab) | six plastic chairs in a row, a sign on an easel (`RZ_Trace_WaitingRoom.et`) | — | World > Traces > Kit > The waiting room | optional | V6, outside one clinic in a town nobody holds; empty = text only. As car A |
+| (existing prefab) | the roster board from `RZ_Dress_RosterBoard`, a cold `BarrelMetal_01_rust.et`, a few sandbags (`RZ_Trace_FallenPost.et`) | — | World > Traces > Kit > The fallen post | optional | V7, the roll at a lost Bastion outpost; empty = text only. As car A |
+| (existing prefab) | buckets and plastic water bottles, meshes, never jerrycans (`RZ_Trace_WaterQueue.et`) | — | World > Traces > Kit > The water queue | optional | V8, a queue at a short house's pump; empty = text only. As car A |
+| (existing prefab) | an ash pile and a scorch decal for the wall (`RZ_Trace_Scorch.et`) | — | World > Traces > Kit > Scorch | optional | L2, a building burned; empty = text only. As car A |
+| (existing prefab) | a static burnt truck wreck, two empty crates (`RZ_Trace_TruckWreck_Bastion.et`) | — | World > Traces > Kit > Truck wreck, Bastion | optional | L5, a lost Bastion truck on the verge; empty = text only. As car A; never a fixable car |
+| (existing prefab) | as the Bastion wreck, the crews' colours (`RZ_Trace_TruckWreck_RedHand.et`) | — | World > Traces > Kit > Truck wreck, the Red Hand | optional | L5; empty = text only. As car A |
+| (existing prefab) | as the Bastion wreck, a civilian lorry (`RZ_Trace_TruckWreck_Haven.et`) | — | World > Traces > Kit > Truck wreck, the Haven | optional | L5; empty = text only. As car A |
+| (existing prefab) | as the Bastion wreck, a white van (`RZ_Trace_TruckWreck_Halcyon.et`) | — | World > Traces > Kit > Truck wreck, Halcyon | optional | L5; empty = text only. As car A |
+| (existing prefab) | sandbags in a half ring, a CHECKPOINT. HALT sign on its side (`RZ_Trace_RoadPostRelic.et`) | — | World > Traces > Kit > Road post relic | optional | L6, where a Bastion road post stood; empty = text only. As car A |
+| (existing prefab) | one fence-paling cross (`RZ_Trace_Crosses.et`) | — | World > Traces > Kit > Cross | optional | N1, the crosses outside the warning zone, placed up to 7 times in a row; empty = text only. As car A |
+| (existing prefab) | two or three paper sheets on the ground, a decal or a flat mesh (`RZ_Trace_Sheets.et`) | — | World > Traces > Kit > Day 1 sheets | optional | N2, the Day 1 sheets near every barrier; empty = text only. As car A |
+| (existing prefab) | `LampKerosene_01_green.et`'s lit twin, its light on LIT_ON_SPAWN, no switch action (`RZ_Trace_Lantern_Lit.et`) | — | World > Traces > Kit > Lantern, lit | optional | S1, a lantern at the lived-in places nearest players after dark; empty = no lanterns. VERIFY 4 of the Traces spike: it lights on clients that stream it in |
+| `RZ_Sound_RadioHiss.et` | a new GenericEntity prefab with an RplComponent, a static radio mesh (no radio actions) and a SoundComponent whose project (.acp) has a looped static hiss on the event SOUND_LOOP | `RZ_AmbientLoopComponent` (Event SOUND_LOOP) | World > Traces > Kit > Radio hiss | optional | S3, the hiss at the last meal and the Day 1 roadblock, 2 at most; empty = the broadcast's line only. Manual: the sound itself. VERIFY 6: the loop plays until the entity goes |
+| `RZ_Sound_GeneratorHum.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has a looped generator hum on the event SOUND_LOOP; no mesh needed | `RZ_AmbientLoopComponent` (Event SOUND_LOOP) | World > Traces > Kit > Generator hum | optional | S5, at the lab and Halcyon's outposts; empty = silent. Manual: the sound itself. As the radio |
+| `RZ_Sound_Dogs.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has a few dogs barking that stop dead on the event SOUND_CALL | `RZ_CallSoundComponent` (Event SOUND_CALL) | World > Traces > Kit > Dogs | optional | S4, 5 minutes before a pack's hunt, at a town by its lair; empty = the Hunter's line only. Manual: the sound itself. As the tribes' call sound |
+| `RZ_Sound_Bell.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has one stroke of a church bell (carrying 1.2 km) on the event SOUND_CALL | `RZ_CallSoundComponent` (Event SOUND_CALL) | World > Traces > Kit > Bell | optional | S6, at the Day 4 church at 18:30 after a Remembered name; empty = the line only. Manual: the sound itself. VERIFY 9: it carries to 1.2 km |
+| `RZ_Sound_Loudspeaker.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has a loudspeaker's chime and static on the event SOUND_CALL | `RZ_CallSoundComponent` (Event SOUND_CALL) | World > Traces > Kit > Loudspeaker | optional | S7, at Bastion's holdings at 05:30 and 17:30; empty = the subtitle only. Manual: the sound itself. As the tribes' call sound |
 
 #### Missions
 
@@ -1105,6 +1138,16 @@ boards only if the spike fails). One evening, in this order. The prefab rows are
 `RplComponent`, vanilla props as children, nothing with physics, no storage, ammo, supplies, fuel,
 wells, pumps or radios with actions).
 
+| # | Check | If it fails |
+|---|---|---|
+| 1-3 | Decals: one on the right building beside the door, the atlas cell and the age's alpha (steps 3-5) | Boards, else text |
+| 4 | A lit lantern or candle-jar prefab spawned at run time lights on clients that stream it in | No lanterns: empty **Kit > Lantern, lit** |
+| 5 | Lit windows: a client light 1.5 m inside a door shows at the windows, not through the walls | Leave **Lit windows** off (the default) |
+| 6 | A looped sound started on stream-in plays until the prop goes, and stops with it | Empty **Kit > Radio hiss** and **Generator hum** |
+| 7 | Static wrecks, sandbags and planks spawned at run time don't trap AI on a verge | Smaller props; empty the column's cars (F1 is text only) |
+| 8 | The dressing guard passes every Traces prefab (no `Dressing: removed` line) | A plain mesh copy of the prefab |
+| 9 | The bell's one stroke carries to 1.2 km | A shorter sound; the line goes to players within 1.2 km anyway |
+
 1. **A test atlas.** Make `RZ_DoorMarks_atlas.edds` as a 4 × 4 grid of plain shapes (a number in each
    cell is enough for the test), and a decal material `RZ_DoorMarks.emat` on it (copy a vanilla decal
    material, e.g. a bullet hole's, and swap its texture). Set it as **World > Traces > Kit > Door marks
@@ -1126,9 +1169,17 @@ wells, pumps or radios with actions).
 7. **The other kit items, once each.** Place the grave, the pyre and the candle jars (P2, P3, P3b)
    through play (die after 2 hours near a safehouse, finish Burn the Bodies, die as a Haven Champion),
    or spawn each prefab by hand once: the log has no `Dressing: removed` line, nothing on them has a
-   prompt, and AI walk round them (VERIFY 7 and 8 of the design). The lit candle jars light on a
-   second client that streams them in (VERIFY 4).
-8. **Decide.** Decals pass: draw the real atlas and the overlays (`RZ_DoorMarks_overlays.emat`: ring,
+   prompt, and AI walk round them (VERIFY 8). The lit candle jars light on a second client that
+   streams them in (VERIFY 4).
+8. **The scenes and the sounds, once each** (the compositions are optional; check the ones you made).
+   Walk the north road in from the barrier: the column's cars stand on the verge, 6 m or more off the
+   centre line, and AI drive and walk past them (VERIFY 7: no wreck, sandbag or plank cuts the navmesh
+   so AI are trapped on a verge). After dark at a holding, the lit lantern lights on a second client
+   (VERIFY 4). At the Day 1 roadblock the radio's hiss loops while you stand there and stops when you
+   walk off past 120 m (VERIFY 6). With **Lit windows** on, the light inside a safehouse's door shows
+   at its windows and not through its walls (VERIFY 5; off again if it bleeds). The bell carries to
+   1.2 km (VERIFY 9; spawn `RZ_Sound_Bell.et` by hand and walk away from it).
+9. **Decide.** Decals pass: draw the real atlas and the overlays (`RZ_DoorMarks_overlays.emat`: ring,
    tick, strike, PAID, scratches outside, scratches inside, smears, thumbprint, grey overpaint) in the
    UI's art direction. Decals fail: set **Door drawing** to *Boards* and make the five boards. Turn
    **Debug** off again; write the result in [TRACES.md](TRACES.md) and the VERIFY list.
@@ -1233,7 +1284,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
 | World | Long Table | `m_LongTableSettings` | **Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table)) |
-| World | Traces | `m_TraceSettings` | **Enabled** (on), **Door marks** (on), doors a town (6, 8 in a stronghold's town), layers a door (3), live writes a season day (20, 2 a town), **First days** (on), **Player traces** (on), **Door drawing** (Decals: from the kit's atlas, boards without it, else text; Boards; Text), props on the server (40) and a cluster (12), **Debug** (off: logs every door read; lets admins write a mark), and the **Kit** of optional prefabs and materials ([TRACES.md](TRACES.md)) |
+| World | Traces | `m_TraceSettings` | **Enabled** (on), **Door marks** (on), doors a town (6, 8 in a stronghold's town), layers a door (3), live writes a season day (20, 2 a town), **First days** (on), **Player traces** (on), **First days' scenes** (on: the column, the gym, the church, the roadblock, the squares' notices, Rudi's shutter, the hill, the crosses and the Day 1 sheets), **Vignettes** (on), at once (12) and dealt a season day (3), **Live traces** (on) at once (24), **Sound and light** (on), **Lit windows** (off until the spike), **Door drawing** (Decals: from the kit's atlas, boards without it, else text; Boards; Text), props on the server (40) and a cluster (12), **Debug** (off: logs every door read; lets admins write a mark), and the **Kit** of optional prefabs and materials ([TRACES.md](TRACES.md)) |
 | Director | Stages (list) |  | Per-stage overrides; empty = the built-in four (40, 80 and 120 hours played, spread 0.01 to 0.02 a minute; [DESIGN.md](DESIGN.md#the-director-outbreak-stages-and-spread)) |
 | Director | (top level) |  | **Broadcast minutes** (25; 0 = only on first join) |
 | Director | Environment | `m_EnvironmentSettings` | Night heat spread (0.25), night specials (×1.25), rain and fog thresholds, storm thresholds, storm grounds the helicopter |
@@ -1576,7 +1627,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **93** lines with the tag, all in the game scripts (one is the comment in
+There are **95** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 14 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1597,7 +1648,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:202` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (59)
+### Medium risk: big features, with a fallback (61)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1642,15 +1693,17 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_PlayerEffects.c:329` | the vanilla custom hint with its timer shows the hold's prompt over the HUD (on a pad too) | The hold still ends on its own after **Hold seconds**; Jump still kicks free |
 | `Zombies/Behaviour/RZ_Doors.c:211` | a Bacon group with a target inside a house follows a move waypoint round to another, open door (another way in, for groups the layer doesn't drive) | They wait at the locked door until the siege cap, as before |
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
-| `Factions/RZ_CampLife.c:768` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:772` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:943` | a stranger is placed at the spot itself, 150–350 m ahead of the player (or 60–90 m from a stopped car), with no line-of-sight test for the design's out-of-sight point 60–90 m off | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Zombies/RZ_TribeProps.c:68`, `:350` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
 | `Cure/RZ_CureFinale.c:1429` | the cure finale's clean room: the lab prefab has no named child entity to read, so a land point 15–25 m from the lab stands in; check it's somewhere players can stand and fight | Move the lab, or a lab prefab with the room as a child entity (planned) |
 | `Cure/RZ_CureFinale.c:1531` | an unconscious player still counts in the clean room (only alive is read) | A downed player holds the room until killed: fine for a first play-test; reading the unconscious state is planned |
 | `Cure/RZ_CureFinale.c:1936` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
+| `UI/RZ_DoorMarkClient.c:77`, `:106` | Traces' door marks as decals: a small sphere query on a client at a door's mark point finds the same static building the server resolved the door from, and `World.CreateDecal` with lifetime 0 projects a static decal from the door atlas (the cell by `atlasNum`, the age by the colour's alpha) onto its wall, removed again with `RemoveDecal` ([the spike](#traces-the-workbench-spike-phase-0), VERIFY 1–3) | Set **World > Traces > Door drawing** to *Boards* and fill the kit's boards, or *Text*: the words come either way |
+| `World/Traces/RZ_TraceSounds.c:46` | Traces' loops (the radio's hiss, the generator's hum): `RZ_AmbientLoopComponent` starts its looped event with `SoundComponent.SoundEvent` on each client that streams the prop in, and `Terminate` stops it when the server deletes the prop past 120 m (the spike's VERIFY 6) | Empty **World > Traces > Kit > Radio hiss** and **Generator hum**: the radio's line still comes as a subtitle |
+| `UI/RZ_TraceLightsClient.c:56` | Lit windows (S2): a client-side `LightEntity.CreateLight` point light 1.5 m inside a lived-in building's door shows at its windows and doesn't bleed through the walls (the spike's VERIFY 5) | Leave **World > Traces > Lit windows** off (the default); the lanterns (S1) don't need it |
 | `Director/Epilogue/RZ_EpilogueClosing.c:951` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the deploy menu, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
-| `UI/RZ_DoorMarkClient.c:77`, `:106` | Traces' door marks as decals: a small sphere query on a client at a door's mark point finds the same static building the server resolved the door from, and `World.CreateDecal` with lifetime 0 projects a static decal from the door atlas (the cell by `atlasNum`, the age by the colour's alpha) onto its wall, removed again with `RemoveDecal` ([the spike](#traces-the-workbench-spike-phase-0), VERIFY 1–3) | Set **World > Traces > Door drawing** to *Boards* and fill the kit's boards, or *Text*: the words come either way |
 
 ### Low risk: contained or cosmetic (20)
 
@@ -1672,9 +1725,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:1172` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
 | `Zombies/Behaviour/RZ_HuntPlan.c:2168` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
-| `Factions/RZ_CampLife.c:963` | the road network's points follow every drivable road near a camp | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
-| `Factions/RZ_CampLife.c:1519` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
-| `Factions/RZ_CampLife.c:1586` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `Factions/RZ_CampLife.c:967` | the road network's points follow every drivable road near a camp | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
+| `Factions/RZ_CampLife.c:1523` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
+| `Factions/RZ_CampLife.c:1590` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
 ### The UI (12)
 
@@ -1862,7 +1915,7 @@ Warnings worth acting on:
 | `Requisition '...' (...) isn't Trusted stock here ...: refused` | A requisition action hands out something its quartermaster doesn't sell at Trusted or below: point it at a Trusted (or lower) shop item, or add one |
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `Dressing: no kit for <faction> (<KIND>); those places stay bare.` | Printed once per faction and kind of place, the first time one is dressed: fill **Camp life > Kits** ([the compositions and kits](#camp-life-the-compositions-and-kits)). Road posts only take a kit made for them |
-| `Dressing: removed <part> from <prefab> (<why>)` | A composition carries something a player could use (an arsenal, storage, an item, a support station, supplies, fuel, a vehicle or spawner, a spawn point, a ReforgerZ part): the guard deleted it (or the whole piece, if its root has it). Take that prop out of the composition |
+| `Dressing: removed <part> from <prefab> (<why>)` | A composition carries something a player could use (an arsenal, storage, an item, a support station, supplies, fuel, a vehicle or spawner, a spawn point, a ReforgerZ part but the look-only sound components `RZ_AmbientLoopComponent` and `RZ_CallSoundComponent`): the guard deleted it (or the whole piece, if its root has it). Take that prop out of the composition |
 | `Camp life: ... smart actions off, lone characters stand.` | Set **Camp life > Smart action waypoint** (people loiter beside the pieces until then) and **Group prefab** (lone occupants and guards don't move until then) |
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
@@ -2036,14 +2089,20 @@ from <title> (cap N Favor, N participant(s) first)`. One-choice jobs and work: `
 
 Traces ([TRACES.md](TRACES.md)): at start, `Traces: first days seeded (gym <town>, church <town>,
 roadblock <grid>, N towns swept)`, `Canon: day2.gym = ...` (and the other new keys, once a season), then
-`Traces: N marked doors (N live layers), N town events, drawing decals|boards|text.` (or `Traces: off.`);
-while running, `Traces: door <town>#<slot> <author> <symbol> D<day> (<cause>)` for each live write
-(`#-1` while the town's doors aren't resolved yet), `Traces: overpaint <town>#<slot> by <author>`,
-`Traces: scene grave|pyre at <grid> (a player's)`, `Traces: scene <kind> gone (its days are up|made
-room)`; every 5 minutes `Status | Traces: doors N (drawn M), scenes S, props P/40, lights 0, loops 0`;
-`/traces` writes `Traces: <town>#<slot> <key> at <grid>: [<author> <symbol> D<day> <first days|live|old
-mark>] | <the line>` and `Traces: <town> history: Day N <kind> (<faction>) xN`; with **Debug** on, `Traces:
-player N read <town>#<slot>`.
+`Traces: N marked doors (N live layers), N town events, drawing decals|boards|text.` (or `Traces: off.`),
+`Traces: scene <key> at <grid> (first days)` for each first-days scene, and `Traces: N scenes seeded, N
+back from the save.`; while running, `Traces: door <town>#<slot> <author> <symbol> D<day> (<cause>)` for
+each live write (`#-1` while the town's doors aren't resolved yet), `Traces: overpaint <town>#<slot> by
+<author>`, `Traces: scene grave|pyre at <grid> (a player's)`, `Traces: scene <key> at <grid> (<trigger>)`
+for each vignette and live trace (`town gone dark`, `a bite declared`, `a truck lost`, `a death at the
+line: N crosses`...), `Traces: scene <key> gone (its days are up|made room)`, `Traces: no anchor for
+<kind> in <town>`, `Traces: prop budget full (<grid>)`, `Traces: the young come home to <town>#<slot>
+(<pack>)`, and once at the cure `Traces: handed over to the epilogue (N graves down, N wrecks kept for
+the week).`; every 5 minutes `Status | Traces: doors N (drawn M), scenes S, props P/40, lights L, loops
+O`; `/traces` writes `Traces: <town>#<slot> <key> at <grid>: [<author> <symbol> D<day> <first days|live|old
+mark>] | <the line>`, `Traces: scene <key> (<kind>) at <grid>, stage N, props|text | <the line>` and
+`Traces: <town> history: Day N <kind> (<faction>) xN`; with **Debug** on, `Traces: player N read
+<town>#<slot>`.
 
 ## 8. Play-test checklist
 
@@ -2777,6 +2836,27 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   description (your name only on **Named**). Die briefly in a town far from any house: no grave.
 - [ ] Errands' old mark: its line reads at your level and is in the journal; no old mark in the
   Long Table's ground (no marks at all within 2 km of its farm but residents' Day 1–3 words).
+- [ ] The first days' scenes: the log names each `f1`-`f8` it placed. Drive in from the north barrier:
+  the column's cars on the verge (or their line once, **On the verge**), the suitcases nearer the
+  barrier, then the crosses; nothing blocks the road. As a Police Officer the column's line adds the
+  ticket numbers. Stand 2 s by a car on foot: the dashboard sheet opens in the reader (B closes it).
+- [ ] The gym, the church, the roadblock (its radio says the broadcast's line as a subtitle within
+  12 m), Rudi's shutter, the hill and a square's notices (`/traces` near each lists the scene): one
+  line each a session, the paper where there is one. Restart: the same places, the same words.
+- [ ] A vignette: let a town nobody holds go dark (or fail Survivors Trapped, declare a bite at a
+  safehouse): `Traces: scene v1.N` in the log, its line once within 40 m; no more than 3 dealt a
+  season day, never two in a town, none within 300 m of a running job.
+- [ ] Live traces: lose a supply truck (its wreck on the verge with the destination's stencil), burn a
+  building (scorch at its doorway), let a Bastion road post go (sandbags and the HALT sign). Die in
+  the kill zone near a barrier: one more cross outside the warning zone.
+- [ ] After dark at a lived-in place: a lit lantern (with the kit's lantern); at 05:30 and 17:30 near a
+  Bastion holding the loudspeaker's line; as a Hunter near a pack's town before its hunt, *"The dogs
+  in ... have stopped."*; after a Haven Champion's death, one bell at 18:30 and the church's jars.
+- [ ] Status line: lights and loops count up and down as you come and go; nothing stays up after you
+  leave. With **Sound and light** off, nothing at all.
+- [ ] The cure: `Traces: handed over to the epilogue`; the graves come down; no new scene or mark but
+  the epilogue's (a name chalked as a candle at a safehouse, GONE HOME by its door); the epilogue's
+  town beats end with the census (*"Four candles on the doors in Brod, and one bear."*).
 - [ ] Nothing pays: Fame, Favor and items stay the same through all of the above.
 
 **World**

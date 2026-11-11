@@ -240,6 +240,8 @@ class RZ_PlayerTraces
 	//! P3b: a Haven Champion died: candles on every safehouse's step for a season day.
 	void Candles()
 	{
+		// S6: one stroke of the church bell at 18:30, and the church's jars that evening
+		m_Traces.GetAmbience().RingBell();
 		RZ_Safehouses houses = m_GM.GetSafehouses();
 		RZ_Marks marks = RZ_Marks.Get();
 		if (!houses || !marks)
@@ -334,6 +336,29 @@ class RZ_PlayerTraces
 		}
 
 		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cure's handover: the in-season graves come down (the epilogue places its own from the
+	//! record). How many.
+	int DropGraves()
+	{
+		int n = 0;
+		for (int i = m_aTraces.Count() - 1; i >= 0; i--)
+		{
+			if (m_aTraces[i].kind != "grave")
+				continue;
+
+			RZ_Marks marks = RZ_Marks.Get();
+			if (marks)
+				marks.Remove(Key(m_aTraces[i]));
+
+			RZ_Log.Info("Traces: scene grave gone (the epilogue's now)");
+			m_aTraces.RemoveOrdered(i);
+			n++;
+		}
+
+		return n;
 	}
 
 	//------------------------------------------------------------------------------------------------
