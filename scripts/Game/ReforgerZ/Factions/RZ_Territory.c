@@ -1300,6 +1300,7 @@ class RZ_Territory
 		AddStrength(taker, 3);
 
 		Headline(RZ_FactionVoice.Taken(taker, loser, h.m_sName));
+		RZ_WorldWriters.HoldingTaken(h.m_iSettlement, RZ_Factions.GetName(taker), RZ_Factions.GetNameInText(loser), h.m_sName);
 		RZ_FactionLife life = m_GM.GetFactionLife();
 		if (life)
 		{
@@ -1637,6 +1638,11 @@ class RZ_Territory
 		array<IEntity> personBodies = {};
 		array<IEntity> keeperBodies = {};
 
+		// A missing relief this shift (the faults table) is one guard fewer at the gate
+		RZ_Errands errands = m_GM.GetErrands();
+		if (errands)
+			guards = errands.GetFaults().Guards(h.m_iId, guards);
+
 		ResourceName guardPrefab = GuardPrefab(h.m_eFaction);
 		for (int g = 0; g < guards && !guardPrefab.IsEmpty(); g++)
 		{
@@ -1659,8 +1665,14 @@ class RZ_Territory
 				continue;
 
 			int code = h.m_iId * 10 + p;
-			RZ_PuzzleObjectComponent.Tag(person, TAG, code, "", "Ask how things are");
+			string labels = "Ask how things are";
+			if (errands && errands.IsOn())
+				labels = RZ_NamedPeople.LABELS;
+
+			RZ_PuzzleObjectComponent.Tag(person, TAG, code, "", labels);
 			RZ_ClueComponent.Tag(person, TAG, code, "Talk to " + h.m_aPeople[p]);
+			if (errands)
+				errands.GetPeople().NoteBody(RZ_NamedPeople.HoldingKey(h.m_iId, p), person);
 			h.m_aBodies.Insert(person);
 			personBodies.Insert(person);
 			if (hostility)

@@ -196,6 +196,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Contracts: escort, live capture, vehicle delivery and health-cost limits, and the optional prefabs of the contracts built on them (docs/DESIGN.md, Mission building blocks)", category: "ReforgerZ|Missions")]
 	protected ref RZ_ContractSettings m_ContractSettings;
 
+	[Attribute(desc: "Errands: the small, personal jobs named people at safehouses, posts, camps and stations (and the wanderers) ask, each true right now; the offer gap, held errands, cards a day, pay and its caps, faults, call-outs, telemetry (docs/ERRANDS.md)", category: "ReforgerZ|Missions")]
+	protected ref RZ_ErrandSettings m_ErrandSettings;
+
+	[Attribute(desc: "The mission style's framework: the story kit, who decides and who benefits (a switched side pays at most the base), the reason lane and its gap, the one weight clamp (docs/DESIGN.md, Story blocks)", category: "ReforgerZ|Missions")]
+	protected ref RZ_MissionStorySettings m_MissionStorySettings;
+
 	[Attribute(desc: "World events: the numbers and optional prefabs of the newer world events (docs/MISSIONS.md, World events)", category: "ReforgerZ|Missions")]
 	protected ref RZ_EventSettings m_EventSettings;
 
@@ -439,6 +445,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected bool m_bClockSet;			// the day length and the saved time of day were applied
 	protected float m_fSavedHour = -1;	// the time of day from state.json, -1 none
 	protected ref RZ_Interactions m_Interactions;
+	protected ref RZ_Errands m_Errands;
 	protected ref RZ_LooseItems m_LooseItems;
 	protected ref RZ_UIFeed m_UIFeed;
 	protected ref RZ_ScreenGuard m_ScreenGuard;
@@ -517,6 +524,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_RepWatch)
 			m_RepWatch.Forget(playerId);
+
+		if (m_Errands)
+			m_Errands.OnDisconnect(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -641,6 +651,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_EventSettings)
 			m_EventSettings = RZ_EventSettings.Cast(RZ_Util.NewWithDefaults("RZ_EventSettings"));
 
+		if (!m_ErrandSettings)
+			m_ErrandSettings = RZ_ErrandSettings.Cast(RZ_Util.NewWithDefaults("RZ_ErrandSettings"));
+
+		if (!m_MissionStorySettings)
+			m_MissionStorySettings = RZ_MissionStorySettings.Cast(RZ_Util.NewWithDefaults("RZ_MissionStorySettings"));
+
 		if (!m_InfectionSettings)
 			m_InfectionSettings = RZ_InfectionSettings.Cast(RZ_Util.NewWithDefaults("RZ_InfectionSettings"));
 
@@ -707,6 +723,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Land = new RZ_Land(this, m_TribeSettings);
 		m_Tribes = new RZ_Tribes(this, m_TribeSettings);
 		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_LootSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
+		m_Errands = new RZ_Errands(this, m_ErrandSettings);
 
 		// A wipe that came due last run (the wipe cycle) or one by hand is carried out now:
 		// backup, then fresh
@@ -772,6 +789,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_StoryArcs.Setup();
 		// Questlines too, and they come back from the save with their stage, flags and people
 		m_Questlines.Setup();
+		// Errands stand on the safehouses, holdings, wanderers, trucks and the world memory above
+		m_Errands.Setup();
 		m_Hostility.Init();
 		if (m_bHasLab)
 			AddMapMarker(m_vLabPos, "Halcyon lab");
@@ -819,6 +838,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_RadioStation.Tick(dt, ids, players);
 		m_Interactions.Tick(dt, ids, players);
 		m_Missions.Tick(dt, ids, players);
+		m_Errands.Tick(dt, ids, players);
 		m_Perimeter.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
 		m_Perks.Tick(dt, ids, players);
@@ -1009,6 +1029,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Interactions GetInteractions() { return m_Interactions; }
 	RZ_GuidanceSettings GetGuidanceSettings() { return m_GuidanceSettings; }
 	RZ_ContractSettings GetContractSettings() { return m_ContractSettings; }
+	//! Server: the errands (Missions/Errands/RZ_Errands.c), the named people and the faults table.
+	RZ_Errands GetErrands() { return m_Errands; }
+	RZ_ErrandSettings GetErrandSettings() { return m_ErrandSettings; }
+	RZ_MissionStorySettings GetMissionStorySettings() { return m_MissionStorySettings; }
 	RZ_EventSettings GetEventSettings() { return m_EventSettings; }
 	RZ_CarSettings GetCarSettings() { return m_CarSettings; }
 	RZ_TrapSettings GetTrapSettings() { return m_TrapSettings; }
@@ -1585,6 +1609,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Wanderers.OnPlayerShot(playerID, shooter.GetOrigin());
 		m_Leaders.OnPlayerShot(playerID, shooter.GetOrigin());
 		m_Missions.OnPlayerShot(playerID, shooter.GetOrigin());
+		if (m_Errands)
+			m_Errands.OnPlayerShot(playerID, shooter.GetOrigin());
 		if (m_Supply)
 			m_Supply.OnPlayerShot(playerID, shooter.GetOrigin());
 
@@ -1708,9 +1734,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_ETier before = profile.GetTier(faction);
 		int gained = profile.AddFame(faction, amount);
 		bool smallPay = (flags & RZ_RepFlag.SMALL) != 0;
+		bool switched = (flags & RZ_RepFlag.SWITCH) != 0;
 		if (!smallPay)
 		{
-			OnFameGained(faction, gained);
+			// A switched side's Fame never counts toward the season's (who benefits)
+			if (!switched)
+				OnFameGained(faction, gained);
+
 			if (gained > 0 && GetHall())
 				GetHall().NoteFame(playerId, faction, profile.GetFame(faction));
 
@@ -2108,6 +2138,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		profile.m_fInfectionLeft = seconds;
 		profile.m_fInfectionTotal = seconds;
 		m_Infection.OnBite(playerId, profile);
+
+		// The signal ring: a bite here (where and how, never who)
+		IEntity bitten = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (bitten)
+			RZ_WorldWriters.Bite(playerId, bitten.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2522,6 +2557,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Questlines.Restore(data.questlines);
 		m_Headlines.Restore(data.news);
 		m_Interactions.Restore(data.interactions);
+		m_Errands.Restore(data.errands);
 		if (m_Spawner.GetCrawlers())
 			m_Spawner.GetCrawlers().Restore(data.crawlers);
 
@@ -2610,6 +2646,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Interactions && m_Interactions.IsActive())
 			data.interactions = m_Interactions.Save();
+
+		if (m_Errands)
+			data.errands = m_Errands.Save();
 
 		if (m_Spawner && m_Spawner.CrawlersOn())
 			data.crawlers = m_Spawner.GetCrawlers().Save();

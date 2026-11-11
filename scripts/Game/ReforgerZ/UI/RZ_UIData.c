@@ -69,7 +69,8 @@ enum RZ_EMissionKindUI
 	UNARMED,
 	PERIMETER,
 	ARC,
-	QUESTLINE	// a questline's entry and its stage missions (the arc icon)
+	QUESTLINE,	// a questline's entry and its stage missions (the arc icon)
+	ERRAND		// an errand you hold (Missions/Errands): the unarmed icon until mission_errand is drawn
 }
 
 //------------------------------------------------------------------------------------------------
@@ -451,6 +452,7 @@ class RZ_UIText
 			case RZ_EMissionKindUI.PERIMETER: return "mission_perimeter";
 			case RZ_EMissionKindUI.ARC: return "mission_arc";
 			case RZ_EMissionKindUI.QUESTLINE: return "mission_arc";
+			case RZ_EMissionKindUI.ERRAND: return "mission_unarmed";
 		}
 
 		return "mission_contract";

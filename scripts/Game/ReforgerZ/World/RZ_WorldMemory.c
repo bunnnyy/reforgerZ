@@ -11,8 +11,9 @@
 //!   identities who did something there this season.
 //! - World records: one per story key and subject, 160 in all, evicted by importance (lowest, then
 //!   oldest), each with an optional epilogue line and its carrier.
-//! Writers come with each system's phase (the town log and records from phase 3); the store,
-//! its limits and its save are built.
+//! - The truth deck: what is really going on behind a story job or a card, per story key and
+//!   subject, drawn once from the season's seed and kept 3 season days or until used up.
+//! The systems that own the facts write them (docs/DESIGN.md, "World memory": the writers).
 //! Server only.
 
 //------------------------------------------------------------------------------------------------
@@ -75,8 +76,20 @@ class RZ_WorldRecord
 }
 
 //------------------------------------------------------------------------------------------------
+//! One drawn truth: what is really going on with `subject` in the story `key`.
+class RZ_Truth
+{
+	string key;
+	string subject;
+	string value;		// the drawn truth ("bite", "flu", "as_said")
+	float day;			// season day it was drawn
+	ref array<string> found = {};	// how it has been found ("clue", "nurse", "talk"), for the journal
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_WorldMemorySave
 {
+	ref array<ref RZ_Truth> truths = {};
 	ref array<ref RZ_Reason> reasons = {};
 	ref array<ref RZ_Signal> signals = {};
 	ref array<ref RZ_TownLog> towns = {};
@@ -96,6 +109,10 @@ class RZ_WorldMemory
 	static const int NAMED_ENTRIES = 6;
 	static const int MAX_RECORDS = 160;
 	static const int RECORD_PLAYERS = 4;
+	static const int MAX_TRUTHS = 64;
+	static const float TRUTH_DAYS = 3;
+	//! The truth "it's as they said" is never drawn below this share of the deck.
+	static const float AS_SAID_FLOOR = 0.3;
 
 	//! Importance: where a record comes from
 	static const int SOURCE_STORY = 3;
@@ -106,6 +123,7 @@ class RZ_WorldMemory
 	protected ref array<ref RZ_Signal> m_aSignals = {};
 	protected ref map<int, ref RZ_TownLog> m_mTowns = new map<int, ref RZ_TownLog>();
 	protected ref array<ref RZ_WorldRecord> m_aRecords = {};
+	protected ref array<ref RZ_Truth> m_aTruths = {};
 	protected ref array<string> m_aKindsSeen = {};		// record keys written this season (first of its kind)
 	protected ref map<string, int> m_mPins = new map<string, int>();	// "key|subject" -> readers holding it (runtime)
 
@@ -179,6 +197,16 @@ class RZ_WorldMemory
 
 			if (RZ_Util.DistXZ(pos, Vector(r.x, 0, r.z)) <= radius)
 				result.Insert(r);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every live reason, oldest first.
+	void AllReasons(notnull array<RZ_Reason> result)
+	{
+		foreach (RZ_Reason r : m_aReasons)
+		{
+			result.Insert(r);
 		}
 	}
 
@@ -313,7 +341,49 @@ class RZ_WorldMemory
 			t.worst = e;
 
 		RZ_Log.Info(string.Format("World memory: town %1 %2 %3 (salience %4)", settlement, kind, text, score));
+		PlaceSeasonMark(settlement, best, e);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The town log's season mark (World/RZ_Marks.c, the season pool): an entry of salience 3 or
+	//! more marks its town, on the verge of the road into it, with the entry's line. The prop is
+	//! Shared > Season mark prefab (optional; without it the mark is text only, an approach line).
+	//! Marks aren't saved: PlaceSeasonMarks puts them back after a restart.
+	protected void PlaceSeasonMark(int settlement, bool best, RZ_TownEntry e)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		RZ_Marks marks = RZ_Marks.Get();
+		if (!gm || !marks || !e)
+			return;
+
+		string key = string.Format("town.%1.%2", settlement, best);
+		if (e.salience < 3)
+		{
+			marks.Remove(key);
+			return;
+		}
+
+		RZ_Settlement s = gm.GetSettlement(settlement);
+		if (!s)
+			return;
+
+		vector at = RZ_Util.GroundPos(s.m_vCenter + Vector(s.m_fRadius * 0.6, 0, 0));
+		marks.Place(RZ_EMarkPool.SEASON, key, at, RZ_SharedSettings.Get().m_sSeasonMarkPrefab, e.text, e.salience, -1, e.salience >= 5);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After a restart (marks aren't saved): every kept town entry puts its season mark back.
+	void PlaceSeasonMarks()
+	{
+		foreach (int idx, RZ_TownLog t : m_mTowns)
+		{
+			if (t.best)
+				PlaceSeasonMark(idx, true, t.best);
+
+			if (t.worst)
+				PlaceSeasonMark(idx, false, t.worst);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -520,6 +590,117 @@ class RZ_WorldMemory
 		return m_aRecords.Count();
 	}
 
+	// ================================================================ The truth deck
+	//------------------------------------------------------------------------------------------------
+	//! The truth behind `key` at `subject`: drawn once, weighted, from the season's seed, the key and
+	//! the subject, so a job offered again at the same subject (after a restart or a time-out) gets the
+	//! same truth. values[0] is "it's as they said" and never weighs under 30% of the deck. Kept 3
+	//! season days or until UseTruth. Gates are the caller's: pass only the truths whose gate holds.
+	string DrawTruth(string key, string subject, notnull array<string> values, notnull array<float> weights)
+	{
+		RZ_Truth kept = FindTruth(key, subject);
+		if (kept)
+		{
+			RZ_Log.Info(string.Format("Story: truth %1.%2 = %3 (kept)", key, subject, kept.value));
+			return kept.value;
+		}
+
+		if (values.IsEmpty())
+			return "";
+
+		float total = 0;
+		for (int i = 0; i < values.Count(); i++)
+		{
+			if (i < weights.Count())
+				total += Math.Max(0, weights[i]);
+		}
+
+		float first = 0;
+		if (!weights.IsEmpty())
+			first = Math.Max(0, weights[0]);
+
+		// The floor for "as they said": raise its weight until it's 30% of the deck
+		float rest = total - first;
+		if (rest > 0 && first < AS_SAID_FLOOR * (first + rest))
+			first = rest * AS_SAID_FLOOR / (1 - AS_SAID_FLOOR);
+
+		total = first + rest;
+		RZ_Rng rng = new RZ_Rng(RZ_WorldFacts.Get().GetSeed() + key.Hash() * 31 + subject.Hash());
+		float roll = rng.Float01() * total;
+		string pick = values[values.Count() - 1];
+		for (int v = 0; v < values.Count(); v++)
+		{
+			float w = first;
+			if (v > 0 && v < weights.Count())
+				w = Math.Max(0, weights[v]);
+			else if (v > 0)
+				w = 0;
+
+			roll -= w;
+			if (roll <= 0)
+			{
+				pick = values[v];
+				break;
+			}
+		}
+
+		RZ_Truth t = new RZ_Truth();
+		t.key = key;
+		t.subject = subject;
+		t.value = pick;
+		t.day = RZ_SeasonClock.Days();
+		if (m_aTruths.Count() >= MAX_TRUTHS)
+			m_aTruths.RemoveOrdered(0);
+
+		m_aTruths.Insert(t);
+		RZ_Log.Info(string.Format("Story: truth %1.%2 = %3 (new)", key, subject, pick));
+		return pick;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_Truth FindTruth(string key, string subject)
+	{
+		foreach (RZ_Truth t : m_aTruths)
+		{
+			if (t.key == key && t.subject == subject)
+				return t;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The truth was found (a clue, a background read, a talk check, a third party): noted once per
+	//! way, for the journal's "What you've found". Logged.
+	void FoundTruth(string key, string subject, string how)
+	{
+		RZ_Truth t = FindTruth(key, subject);
+		if (!t)
+			return;
+
+		if (!t.found.Contains(how))
+			t.found.Insert(how);
+
+		RZ_Log.Info(string.Format("Story: truth %1.%2 = %3; found by %4", key, subject, t.value, how));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The job used it up, or its subject is gone: the next job there draws again.
+	void UseTruth(string key, string subject)
+	{
+		for (int i = m_aTruths.Count() - 1; i >= 0; i--)
+		{
+			if (m_aTruths[i].key == key && m_aTruths[i].subject == subject)
+				m_aTruths.RemoveOrdered(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int TruthCount()
+	{
+		return m_aTruths.Count();
+	}
+
 	// ================================================================ Tick and save
 	//------------------------------------------------------------------------------------------------
 	//! Reasons past their season day go.
@@ -530,6 +711,12 @@ class RZ_WorldMemory
 		{
 			if (m_aReasons[i].untilDay <= now)
 				m_aReasons.Remove(i);
+		}
+
+		for (int t = m_aTruths.Count() - 1; t >= 0; t--)
+		{
+			if (now - m_aTruths[t].day > TRUTH_DAYS)
+				m_aTruths.RemoveOrdered(t);
 		}
 	}
 
@@ -555,6 +742,11 @@ class RZ_WorldMemory
 		foreach (RZ_WorldRecord rec : m_aRecords)
 		{
 			data.records.Insert(rec);
+		}
+
+		foreach (RZ_Truth truth : m_aTruths)
+		{
+			data.truths.Insert(truth);
 		}
 
 		data.kindsSeen.Copy(m_aKindsSeen);
@@ -621,6 +813,20 @@ class RZ_WorldMemory
 
 		if (data.kindsSeen)
 			m_aKindsSeen.Copy(data.kindsSeen);
+
+		if (data.truths)
+		{
+			foreach (RZ_Truth truth : data.truths)
+			{
+				if (!truth)
+					continue;
+
+				if (!truth.found)
+					truth.found = new array<string>();
+
+				m_aTruths.Insert(truth);
+			}
+		}
 
 		RZ_Log.Info(string.Format("World memory: %1 reasons, %2 signals, %3 town logs, %4 world records.", m_aReasons.Count(), m_aSignals.Count(), m_mTowns.Count(), m_aRecords.Count()));
 	}

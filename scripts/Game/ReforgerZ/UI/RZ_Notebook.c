@@ -639,7 +639,7 @@ class RZ_JournalPage : RZ_NotebookPage
 		if (!ui)
 			return m_iSelected;
 
-		return ui.GetJournalVersion() * 100 + m_iSelected;
+		return ui.GetJournalVersion() * 10000 + ui.GetDetailVersion() * 100 + m_iSelected;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -805,6 +805,28 @@ class RZ_JournalPage : RZ_NotebookPage
 
 		string id = RZ_UIText.Str(m, 1);
 		string clues = "";
+
+		// The row's detail, asked for when it's selected (what they told you, what you've found,
+		// who it went to)
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+		{
+			ui.AskDetail(RZ_UIText.Int(m, 1));
+			array<ref array<string>> detail = {};
+			RZ_MenuBase.Records(ui.GetDetail(), detail);
+			foreach (array<string> d : detail)
+			{
+				if (RZ_UIText.Str(d, 0) != "D" || RZ_UIText.Str(d, 1) != id)
+					continue;
+
+				if (!RZ_UIText.Str(d, 3).IsEmpty())
+					clues += "What you've found\n" + RZ_UIText.Str(d, 3) + "\n\n";
+
+				if (!RZ_UIText.Str(d, 4).IsEmpty())
+					clues += "Who it went to\n" + RZ_UIText.Str(d, 4) + "\n\n";
+			}
+		}
+
 		foreach (array<string> c : m_aClues)
 		{
 			if (RZ_UIText.Str(c, 1) == id)

@@ -93,6 +93,8 @@ class RZ_TalkSpeaker
 //! their Talk action; the replies are their visible choice slots (ids 0-7) and use slots (10-17).
 class RZ_TalkGeneric : RZ_TalkSpeaker
 {
+	static const int ADMIN_ERRANDS = 30;	// a server admin's view of the errands here
+
 	protected IEntity m_Owner;
 
 	//------------------------------------------------------------------------------------------------
@@ -276,6 +278,10 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 			if (!use.IsEmpty())
 				replies.Insert(Reply(10 + u, use));
 		}
+
+		// Server admins: the errands' view for this place, without typing (docs/ERRANDS.md, Telemetry)
+		if (gm.GetErrands() && comp.GetMissionId() < 0 && RZ_NoticeBoard.IsAdmin(playerId))
+			replies.Insert(Reply(ADMIN_ERRANDS, "[Admin] Errands near here"));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -283,6 +289,14 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	{
 		if (!m_Owner)
 			return;
+
+		if (replyId == ADMIN_ERRANDS)
+		{
+			if (gm.GetErrands() && RZ_NoticeBoard.IsAdmin(playerId) && user)
+				s.m_aNew.Insert(gm.GetErrands().AdminText(playerId, user.GetOrigin()));
+
+			return;
+		}
 
 		if (replyId >= 10)
 			RZ_PuzzleActionHelper.DoUse(gm, m_Owner, playerId, replyId - 10, user);

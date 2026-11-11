@@ -472,6 +472,8 @@ class RZ_Safehouses
 	int Count() { return m_aSafehouses.Count(); }
 	RZ_NoticeBoard GetBoard() { return m_Board; }
 	array<string> GetFoodKeywords() { return m_aFoodWords; }
+	//! People one food unit feeds at an upkeep (Haven > People per food).
+	int PeoplePerFood() { return m_Settings.m_iPeoplePerFood; }
 
 	//------------------------------------------------------------------------------------------------
 	RZ_Safehouse Get(int idx)
@@ -901,6 +903,9 @@ class RZ_Safehouses
 		if (h && joined > 0 && m_GM.GetHeadlines())
 			m_GM.GetHeadlines().OnRescue(joined, "the safehouse in " + h.m_sName);
 
+		if (h && joined > 0)
+			RZ_WorldWriters.Rescued(h.m_vPos, joined, rescuers);
+
 		// The hall of fame counts everyone brought in, safehouse or road
 		if (m_GM.GetHall() && rescuers)
 			m_GM.GetHall().AddRescues(rescuers, count);
@@ -1075,9 +1080,11 @@ class RZ_Safehouses
 		{
 			h.m_iFood = h.m_iFood - need;
 			h.m_bShort = false;
+			RZ_WorldWriters.HouseFood(idx, h.m_sName, h.m_vPos, h.m_iFood < need);
 			return;
 		}
 
+		RZ_WorldWriters.HouseFood(idx, h.m_sName, h.m_vPos, true);
 		int missing = need - h.m_iFood;
 		h.m_iFood = 0;
 		h.m_bShort = true;
@@ -1187,6 +1194,10 @@ class RZ_Safehouses
 				personBodies.Insert(occupant);
 			}
 		}
+
+		// The house's named people wear the first two occupants (World/RZ_NamedPeople.c)
+		if (m_GM.GetErrands() && m_GM.GetErrands().IsOn())
+			m_GM.GetErrands().GetPeople().DressHouse(idx, personBodies);
 
 		for (int g = 0; g < h.GuardCount(); g++)
 		{
@@ -1455,6 +1466,14 @@ class RZ_Safehouses
 			string prayer = arcs.HouseLine(m_aSafehouses.Find(h));
 			if (!prayer.IsEmpty())
 				mood = prayer;
+		}
+
+		// What's wrong this shift (the faults table): the generator, the barrels
+		if (m_GM.GetErrands())
+		{
+			string fault = m_GM.GetErrands().GetFaults().HouseLine(m_aSafehouses.Find(h));
+			if (!fault.IsEmpty())
+				mood += "\n" + fault;
 		}
 
 		m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, string.Format("%1 people live here (%2). Food for %3 more upkeeps.\nThey have %4.\n%5",

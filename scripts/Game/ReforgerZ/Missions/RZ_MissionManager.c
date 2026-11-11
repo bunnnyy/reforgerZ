@@ -20,6 +20,8 @@ class RZ_MissionManager
 	protected ref map<int, float> m_mLastOffer = new map<int, float>();
 	protected ref array<vector> m_aPropSpots = {};		// GetPropSpots of every running mission, once per tick
 	protected float m_fSpotsAt = -1;
+	protected float m_fReasonLaneAt = 300;				// the reason lane's next look (the first after 5 minutes)
+	protected ref array<string> m_aReasonsUsed = {};	// "key|subject" reasons that already started a contract
 
 	static const float PROP_CLEAR = 25;	// no building this close (m) to a running mission's props has a lock
 
@@ -262,6 +264,7 @@ class RZ_MissionManager
 			CreateRandom(true, ids);
 		}
 
+		ReasonLane(ids);
 		OfferContracts(ids, players);
 	}
 
@@ -286,7 +289,13 @@ class RZ_MissionManager
 				claimed = false;
 		}
 
-		if (!claimed || !mission.Setup(m_GM))
+		bool placed = claimed && mission.Setup(m_GM);
+
+		// A reason-started contract must land near its reason, or it isn't that reason's
+		if (placed && mission.m_vReasonAt != vector.Zero && RZ_Util.DistXZ(mission.m_vPos, mission.m_vReasonAt) > RZ_MissionStorySettings.Get().m_fReasonRange)
+			placed = false;
+
+		if (!placed)
 		{
 			// Whatever it spawned or claimed before it gave up goes again
 			mission.m_eState = RZ_EMissionState.FAILED;
@@ -634,13 +643,11 @@ class RZ_MissionManager
 			if (w <= 0)
 				continue;
 
-			// The giver's stronghold leader leans toward some kinds of work (traits, +-20%)
-			if (contract && m_GM.GetLeaders())
-				w = w * m_GM.GetLeaders().ContractWeightMult(m);
-
-			// ...and so does what the faction needs right now (lost trucks, deaths, research)
-			if (contract && m_GM.GetFactionLife())
-				w = w * m_GM.GetFactionLife().ContractWeightMult(m);
+			// The giver's stronghold leader leans toward some kinds of work (traits, +-20%), so does
+			// what the faction needs right now (lost trucks, deaths, research), and the majors' season
+			// weights; their product is clamped once (Missions > Story > Weight clamp)
+			if (contract)
+				w = w * WeightMult(m);
 
 			candidates.Insert(m);
 			weights.Insert(w);
@@ -670,6 +677,81 @@ class RZ_MissionManager
 			candidates.Remove(pick);
 			weights.Remove(pick);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The one clamp on a contract's weight multipliers: leader traits x faction needs x the majors'
+	//! season weights, together within x0.75-1.3 (Missions > Story).
+	float WeightMult(RZ_Mission m)
+	{
+		float mult = 1;
+		if (m_GM.GetLeaders())
+			mult = mult * m_GM.GetLeaders().ContractWeightMult(m);
+
+		if (m_GM.GetFactionLife())
+			mult = mult * m_GM.GetFactionLife().ContractWeightMult(m);
+
+		RZ_Shared shared = m_GM.GetShared();
+		if (shared)
+			mult = mult * shared.GetBudget().ContractWeight(m.Type().ToString());
+
+		RZ_MissionStorySettings ss = RZ_MissionStorySettings.Get();
+		return Math.Clamp(mult, ss.m_fWeightMin, Math.Max(ss.m_fWeightMin, ss.m_fWeightMax));
+	}
+
+	// ================================================================ The reason lane
+	//------------------------------------------------------------------------------------------------
+	//! Reasons (World/RZ_WorldMemory.c) start contracts (designs/MISSION_STYLE.md): when the world has
+	//! posted a reason, one registered contract that answers it (RZ_MissionReasons) may start near its
+	//! subject, at most one every Reason lane gap server-wide, inside the contract cap and every check
+	//! (CanRunNow, someone online eligible, claims). Its brief opens with the reason's line. Random
+	//! picks stay for variety.
+	protected void ReasonLane(array<int> ids)
+	{
+		RZ_MissionStorySettings ss = RZ_MissionStorySettings.Get();
+		if (!ss.m_bEnabled || !ss.m_bReasonLane || m_fClock < m_fReasonLaneAt)
+			return;
+
+		int contractTarget = Math.Min(MAX_CONTRACTS, 2 + ids.Count() / 3);
+		if (CountActive(true) >= contractTarget)
+			return;
+
+		RZ_WorldMemory mem = m_GM.GetFacts().Memory();
+		array<RZ_Reason> reasons = {};
+		mem.AllReasons(reasons);
+		for (int r = reasons.Count() - 1; r >= 0; r--)
+		{
+			RZ_Reason reason = reasons[r];
+			if (m_aReasonsUsed.Contains(reason.key + "|" + reason.subject))
+				continue;
+
+			foreach (typename t : m_aTypes)
+			{
+				if (IsTypeActive(t) || !RZ_MissionReasons.Answers(t, reason.key))
+					continue;
+
+				RZ_Mission m = RZ_Mission.Cast(t.Spawn());
+				if (!m)
+					continue;
+
+				m.Configure(m_GM);
+				if (!m.m_bContract || !CanRunNow(m, ids.Count()) || !m.AnyEligible(m_GM, ids))
+					continue;
+
+				m.m_sWhyNow = reason.text;
+				m.m_vReasonAt = Vector(reason.x, 0, reason.z);
+				if (!StartMission(m))
+					continue;
+
+				m_aReasonsUsed.Insert(reason.key + "|" + reason.subject);
+				m_fReasonLaneAt = m_fClock + ss.m_fReasonGapMinutes * 60;
+				RZ_Log.Info(string.Format("Story: reason %1 (%2) started %3 '%4' at %5", reason.key, reason.subject, m.m_iId, m.m_sTitle, m.GetLocationName(m_GM)));
+				return;
+			}
+		}
+
+		// Nothing answered now: look again in a minute
+		m_fReasonLaneAt = m_fClock + 60;
 	}
 
 	// ================================================================ Finishing and rewards
@@ -730,6 +812,19 @@ class RZ_MissionManager
 		// Faction strength and morale
 		m_GM.OnContractFinished(m, success);
 
+		// The town log: what was done here, and by whom (World/RZ_WorldWriters.c)
+		if (success)
+			RZ_WorldWriters.MissionEnded(m, true, paid);
+		else
+			RZ_WorldWriters.MissionEnded(m, false, m.m_aParticipants);
+
+		// Who benefits: the others who did the work, when it went another way
+		if (success && m.m_Story)
+			m.m_Story.m_Parties.PayOthers(m_GM, m);
+
+		if (m.m_Story)
+			m.m_Story.Cleanup();
+
 		// Whatever it held (RZ_WorldFacts claims) is free again
 		m_GM.GetFacts().ReleaseAll(RZ_WorldFacts.MissionOwner(m.m_iId));
 		m.Cleanup(m_GM);
@@ -766,6 +861,15 @@ class RZ_MissionManager
 			int favor = RZ_Util.RoundToInt(m.m_iFavorReward * m.m_fRewardScale * favorMult);
 			string giverName = RZ_Factions.GetName(m.m_eGiver);
 
+			// A switch (who benefits) pays at most the base, and its Fame doesn't count toward season Fame
+			int fameFlags = 0;
+			if (m.m_bSwitched)
+			{
+				fame = Math.Min(fame, m.m_iFameReward);
+				favor = Math.Min(favor, m.m_iFavorReward);
+				fameFlags = RZ_RepFlag.SWITCH;
+			}
+
 			// Amends work Infamy off through the one forgiveness budget (30 a life); once it's spent,
 			// the job pays ordinary Fame, rival shares and all
 			bool forgiven = false;
@@ -786,7 +890,7 @@ class RZ_MissionManager
 			if (!forgiven && fame > 0)
 			{
 				// An explicit rival replaces the general rival table, so it isn't counted twice
-				m_GM.AddFame(playerId, m.m_eGiver, fame, !m.m_bHasRival, 0, m.DeedPhrase(m_GM));
+				m_GM.AddFame(playerId, m.m_eGiver, fame, !m.m_bHasRival, fameFlags, m.DeedPhrase(m_GM));
 				text += string.Format("\n+%1 Fame with %2.", fame, giverName);
 			}
 

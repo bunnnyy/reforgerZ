@@ -608,6 +608,30 @@ class RZ_FactionPerks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A squad now, after a player who is Hunted by Bastion or the Red Hand (the errand Wanted Poster:
+	//! someone sold where they are). Nothing if neither hunts them or there's no squad prefab.
+	void SendHuntersNow(int playerId)
+	{
+		IEntity target = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!target)
+			return;
+
+		array<int> hunters = {RZ_EFaction.MILITARY, RZ_EFaction.BANDITS};
+		foreach (int f : hunters)
+		{
+			if (!RZ_Reputation.IsHunted(m_GM.GetTier(playerId, f)))
+				continue;
+
+			ResourceName prefab = m_GM.GetHunterPrefab(f);
+			if (prefab.IsEmpty())
+				continue;
+
+			SendHunters(playerId, target, f, prefab);
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void SendHunters(int playerId, IEntity target, RZ_EFaction faction, ResourceName prefab)
 	{
 		// Squads only go when nobody is near them, so a target who keeps fighting could gather
@@ -897,6 +921,9 @@ class RZ_FactionPerks
 		m_iDeathKiller = killer;
 		RememberKiller(victim, killer);
 		m_GM.GetMissions().OnPlayerDied(victim, at);
+		RZ_WorldWriters.Death(victim, at);
+		if (m_GM.GetErrands())
+			m_GM.GetErrands().OnPlayerDied(victim);
 
 		// A life that lasted leaves a journal: a headline or a wanderer's rumour, never an object
 		if (m_GM.GetTownMemory())

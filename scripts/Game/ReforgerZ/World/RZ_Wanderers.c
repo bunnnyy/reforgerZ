@@ -1709,6 +1709,8 @@ class RZ_Wanderers
 			extra = "Give them your antidote";
 		else if (w.m_eRole == RZ_EWandererRole.MECHANIC)
 			extra = "Ask about cars";
+		else if (m_GM.GetErrands() && m_GM.GetErrands().AsksOn() && w.m_eRole != RZ_EWandererRole.KID)
+			extra = "Need a hand?";
 
 		array<string> labels = {special, "Share some food", extra, "Rob " + w.GetShortName()};
 		return RZ_PuzzleLabels.Join(labels);
@@ -1878,6 +1880,7 @@ class RZ_Wanderers
 	{
 		w.m_fBittenLeft = BITE_SECONDS;
 		w.m_bTagged = false; // relabel: "Give them your antidote"
+		RZ_WorldWriters.WandererBitten(w.m_iId, w.GetShortName(), w.m_vPos);
 		RZ_Safehouses houses = m_GM.GetSafehouses();
 		int idx = -1;
 		if (houses)
@@ -2404,6 +2407,13 @@ class RZ_Wanderers
 		if (option == 2 && w.m_eRole == RZ_EWandererRole.MECHANIC)
 		{
 			AskAboutCars(w, playerId, user, attitude);
+			return;
+		}
+
+		// "Need a hand?": the wanderers' asks (Missions/Errands, docs/ERRANDS.md)
+		if (option == 2 && m_GM.GetErrands())
+		{
+			m_GM.GetErrands().AskWanderer(playerId, w, owner, user);
 			return;
 		}
 

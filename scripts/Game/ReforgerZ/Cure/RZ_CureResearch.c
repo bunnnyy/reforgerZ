@@ -906,6 +906,7 @@ class RZ_CureResearch
 	//! since the lab also works with nobody online. The final stand has its own first-spawn notice.
 	protected void OnMilestone(int milestone)
 	{
+		RZ_WorldWriters.CureMilestone(milestone * 25, m_GM.GetLabPosition());
 		if (milestone < 4 && m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnBreakthrough(milestone);
 

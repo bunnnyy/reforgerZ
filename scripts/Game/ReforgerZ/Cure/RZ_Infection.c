@@ -1097,7 +1097,9 @@ class RZ_Infection
 
 		p.m_bTrialDoseTaken = true;
 		m_GM.AddFame(playerId, RZ_EFaction.INSTITUTE, m_Settings.m_iTrialFame);
-		if (Math.RandomFloat01() < m_Settings.m_fTrialCureChance)
+		bool took = Math.RandomFloat01() < m_Settings.m_fTrialCureChance;
+		RZ_WorldWriters.Dose(m_GM.GetLabPosition(), took);
+		if (took)
 		{
 			m_GM.CurePlayer(playerId);
 			m_GM.NotifyPlayer(playerId, title, "A signature, a needle, an hour on a cot with a researcher writing down your pulse. Then the fever breaks. \"Eight in ten,\" she says. \"You were one of the eight.\"");

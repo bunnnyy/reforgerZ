@@ -138,6 +138,7 @@ ASSIGN_FACTIONS = {"m_sHaven": "Haven", "m_sBastion": "Bastion", "m_sRedHand": "
 # By function name, in the voice files (first match wins).
 FUNCTION_CHANNELS = [
     (r"VoiceDefaults\.c$", r".", "ambient"),
+    (r"/Errands/", r".", "speech"),
     (r"RepVoice\.c$", r"Picture", "rumour"),
     (r"RepVoice\.c$", r".", "leader"),
     (r"Broadcast\.c$", r".", "broadcast"),

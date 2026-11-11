@@ -21,10 +21,8 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_TraderCaravan);
 		mgr.RegisterType(RZ_Mission_RescueTheKids);
 		// Built on the mission building blocks (Missions/Haven/RZ_HavenContracts.c)
-		mgr.RegisterType(RZ_Mission_FuelForTheLights);
 		mgr.RegisterType(RZ_Mission_HarvestGuard);
 		mgr.RegisterType(RZ_Mission_RefugeeColumn);
-		mgr.RegisterType(RZ_Mission_WaterPurifier);
 		mgr.RegisterType(RZ_Mission_FortifySafehouse);
 		mgr.RegisterType(RZ_Mission_TheInformant);
 		mgr.RegisterType(RZ_Mission_RecoverTheBus);
@@ -141,10 +139,7 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_LeadThemAway);
 		mgr.RegisterType(RZ_Mission_RooftopRescue);
 		mgr.RegisterType(RZ_Mission_TrailOfClues);
-		mgr.RegisterType(RZ_Mission_WaterRun);
-		mgr.RegisterType(RZ_Mission_BarterChain);
 		mgr.RegisterType(RZ_Mission_Distraction);
-		mgr.RegisterType(RZ_Mission_MedicineBeforeDark);
 		mgr.RegisterType(RZ_Mission_QuietCount);
 
 		// Perimeter missions (Missions/Perimeter/)

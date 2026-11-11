@@ -1,0 +1,438 @@
+//! The mission style's framework (docs/DESIGN.md, "Story blocks"; wave 1 of designs/MISSION_STYLE.md):
+//! a story kit any mission can carry (m_Story, null by default: a mission without one runs exactly as
+//! before), who took part and who may decide, who benefits (RZ_Mission_Choice is built on it), truths
+//! (the truth deck in RZ_WorldMemory), world records, and reasons: why a contract is offered now
+//! (the reason lane, in RZ_MissionManager). No mission's content changes in this wave.
+//! Server only.
+
+//------------------------------------------------------------------------------------------------
+//! Settings on RZ_GameModeComponent > Missions > Story.
+[BaseContainerProps()]
+class RZ_MissionStorySettings
+{
+	[Attribute("1", desc: "The story kit: who took part and who decides, who benefits (choice missions pay a switched side at most the base), truths and world records (docs/DESIGN.md, Story blocks)")]
+	bool m_bEnabled;
+
+	[Attribute("1", desc: "The reason lane: when the world posts a reason (a hungry house, a lost truck, a town gone bad), one contract that answers it may start near it, its brief opening with the reason's line. Inside the contract cap and every check")]
+	bool m_bReasonLane;
+
+	[Attribute("30", UIWidgets.Slider, "Reason lane gap: real minutes between two reason-started contracts, server-wide", "5 240 5")]
+	float m_fReasonGapMinutes;
+
+	[Attribute("3000", UIWidgets.Slider, "A reason-started contract must land within this many metres of the reason's place", "500 8000 100")]
+	float m_fReasonRange;
+
+	[Attribute("0.75", UIWidgets.Slider, "The one weight clamp: a contract's leader, faction-need and season multipliers together never go under this", "0.1 1 0.05")]
+	float m_fWeightMin;
+
+	[Attribute("1.3", UIWidgets.Slider, "...or over this", "1 3 0.05")]
+	float m_fWeightMax;
+
+	protected static ref RZ_MissionStorySettings s_Defaults;
+
+	//------------------------------------------------------------------------------------------------
+	static RZ_MissionStorySettings Get()
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm && gm.GetMissionStorySettings())
+			return gm.GetMissionStorySettings();
+
+		if (!s_Defaults)
+			s_Defaults = RZ_MissionStorySettings.Cast(RZ_Util.NewWithDefaults("RZ_MissionStorySettings"));
+
+		return s_Defaults;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The story kit a mission may carry. Its key is saved in records: never rename it once shipped.
+class RZ_MissionStory
+{
+	string m_sKey;
+	ref RZ_Deciding m_Deciding = new RZ_Deciding();
+	ref RZ_Beneficiaries m_Parties = new RZ_Beneficiaries();
+	ref array<string> m_aReads = {};		// "key|subject": world records it holds while it runs
+	ref array<string> m_aFound = {};		// "What you've found", for the journal
+	string m_sTold;							// "What they told you": the brief as given
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_MissionStory(string key)
+	{
+		m_sKey = key;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On every tick the mission runs (RZ_Mission.Update): who took part.
+	void Update(RZ_Mission m, RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		m_Deciding.Track(gm, m, dt, ids, players);
+		int done = m_Deciding.TickHold(gm, m, dt);
+		if (done >= 0)
+			m.OnHoldDone(gm, m_Deciding.Holder(), done);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A record this story reads: held (never evicted) until the mission ends.
+	void Reads(string key, string subject)
+	{
+		RZ_WorldFacts.Get().Memory().Pin(key, subject, true);
+		m_aReads.Insert(key + "|" + subject);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The truth behind this job at `subject` (the deck: kept 3 season days, same for everyone).
+	string Truth(string subject, notnull array<string> values, notnull array<float> weights)
+	{
+		return RZ_WorldFacts.Get().Memory().DrawTruth(m_sKey, subject, values, weights);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A truth found (a clue, a background read, a talk check, a third party, a radio line): the
+	//! finder and the room (30 m) get the line, and the journal's "What you've found" keeps it for
+	//! everyone the job was offered to.
+	void Reveal(RZ_GameModeComponent gm, RZ_Mission m, string subject, int playerId, string how, string line)
+	{
+		RZ_WorldFacts.Get().Memory().FoundTruth(m_sKey, subject, how);
+		if (!m_aFound.Contains(line))
+			m_aFound.Insert(line);
+
+		IEntity finder = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!finder)
+			return;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			if (ids[i] == playerId || RZ_Util.DistXZ(p.GetOrigin(), finder.GetOrigin()) <= RZ_Deciding.ROOM)
+				gm.NotifyPlayerAs(ids[i], m.m_sTitle, line, m.NoticeTag());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The mission ended: its reads are let go.
+	void Cleanup()
+	{
+		foreach (string read : m_aReads)
+		{
+			int bar = read.IndexOf("|");
+			if (bar > 0)
+				RZ_WorldFacts.Get().Memory().Pin(read.Substring(0, bar), read.Substring(bar + 1, read.Length() - bar - 1), false);
+		}
+
+		m_aReads.Clear();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Participation and deciding (shared by missions, dialogue scenes, errands, the epilogue's grey
+//! choices and the finale): who took part (60 s within 150 m, or a step done), who may decide (took
+//! part and was offered it), the 5-second hold announced to the room (30 m) that anyone eligible may
+//! object to once per job, Stand with, and who is "with the decider".
+class RZ_Deciding
+{
+	static const float PART_RANGE = 150;
+	static const float PART_SECONDS = 60;
+	static const float ROOM = 30;
+	static const float HOLD_SECONDS = 5;
+
+	protected ref map<string, float> m_mTime = new map<string, float>();	// identity -> seconds within 150 m
+	protected ref array<string> m_aStepped = {};
+	protected ref array<string> m_aObjected = {};
+	protected ref array<int> m_aStoodWith = {};
+	protected int m_iHolder = -1;
+	protected int m_iHoldOption = -1;
+	protected float m_fHoldLeft;
+	protected vector m_vRoom;
+
+	//------------------------------------------------------------------------------------------------
+	void Track(RZ_GameModeComponent gm, RZ_Mission m, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (m.m_bGlobal)
+			return;
+
+		foreach (int i, IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), m.m_vPos) > PART_RANGE)
+				continue;
+
+			string ident = gm.GetProfile(ids[i]).m_sIdentity;
+			float t;
+			m_mTime.Find(ident, t);
+			m_mTime.Set(ident, t + dt);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player did one of the job's steps (picked up the item, talked to its person).
+	void Step(RZ_GameModeComponent gm, int playerId)
+	{
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		if (!m_aStepped.Contains(ident))
+			m_aStepped.Insert(ident);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool TookPart(RZ_GameModeComponent gm, int playerId)
+	{
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		float t;
+		m_mTime.Find(ident, t);
+		return t >= PART_SECONDS || m_aStepped.Contains(ident);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone the job was offered to (eligible; anyone, for a world event) who took part.
+	bool MayDecide(RZ_GameModeComponent gm, RZ_Mission m, int playerId)
+	{
+		return m.IsEligible(gm, playerId) && TookPart(gm, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! With the decider: the decider, their vanilla group within 150 m of `at`, and anyone who chose
+	//! Stand with during the hold.
+	void WithDecider(RZ_GameModeComponent gm, int decider, vector at, notnull array<int> result)
+	{
+		result.Insert(decider);
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			int other = ids[i];
+			if (result.Contains(other))
+				continue;
+
+			if ((RZ_Util.SameGroup(decider, other) && RZ_Util.DistXZ(p.GetOrigin(), at) <= PART_RANGE) || m_aStoodWith.Contains(other))
+				result.Insert(other);
+		}
+	}
+
+	// ================================================================ The hold
+	//------------------------------------------------------------------------------------------------
+	//! A scene decision: a 5 s hold, announced to the room. False if one is already running.
+	bool StartHold(RZ_GameModeComponent gm, RZ_Mission m, int playerId, int option, string what)
+	{
+		if (m_iHolder >= 0)
+			return false;
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!me)
+			return false;
+
+		m_iHolder = playerId;
+		m_iHoldOption = option;
+		m_fHoldLeft = HOLD_SECONDS;
+		m_vRoom = me.GetOrigin();
+		m_aStoodWith.Clear();
+		TellRoom(gm, m, string.Format("%1 is about to %2. You can object once, or stand with them.", RZ_Util.PlayerName(playerId), what));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Another eligible participant in the room objects, once per job by identity: the hold is
+	//! cancelled. True if it was.
+	bool Object(RZ_GameModeComponent gm, RZ_Mission m, int playerId)
+	{
+		if (m_iHolder < 0 || playerId == m_iHolder || !MayDecide(gm, m, playerId))
+			return false;
+
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		if (m_aObjected.Contains(ident))
+			return false;
+
+		m_aObjected.Insert(ident);
+		TellRoom(gm, m, string.Format("%1 objects. Nothing is decided yet.", RZ_Util.PlayerName(playerId)));
+		RZ_Log.Info(string.Format("Story: %1 hold by %2 objected to by %3", m.m_sTitle, RZ_Util.PlayerName(m_iHolder), RZ_Util.PlayerName(playerId)));
+		m_iHolder = -1;
+		m_iHoldOption = -1;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void StandWith(int playerId)
+	{
+		if (m_iHolder >= 0 && !m_aStoodWith.Contains(playerId))
+			m_aStoodWith.Insert(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int Holder()
+	{
+		return m_iHolder;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hold runs out: the option it decided, -1 while none.
+	int TickHold(RZ_GameModeComponent gm, RZ_Mission m, float dt)
+	{
+		if (m_iHolder < 0)
+			return -1;
+
+		m_fHoldLeft -= dt;
+		if (m_fHoldLeft > 0)
+			return -1;
+
+		int option = m_iHoldOption;
+		m_iHoldOption = -1;
+		return option;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hold is over (OnHoldDone ran): the holder is free.
+	void EndHold()
+	{
+		m_iHolder = -1;
+		m_iHoldOption = -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void TellRoom(RZ_GameModeComponent gm, RZ_Mission m, string text)
+	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), m_vRoom) <= ROOM)
+				gm.NotifyPlayerAs(ids[i], m.m_sTitle, text, m.NoticeTag());
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One party a job's result can go to.
+class RZ_Party
+{
+	int m_iFaction = -1;		// RZ_EFaction, -1 for nobody or a house
+	string m_sName;
+	int m_iRivalInfamy;			// Infamy with the giver for those with the decider, when it's a switch
+	bool m_bNobody;				// pays nobody; a world record only
+}
+
+//------------------------------------------------------------------------------------------------
+//! Who benefits (designs/MISSION_STYLE.md): 2-4 parties. The side you chose pays anyone with you whom
+//! it doesn't hunt; a switch pays at most the base and its Fame doesn't count toward season Fame;
+//! the giver adds Infamy and its leader doesn't count it as help; everyone else who did the work is
+//! paid half the Favor by the giver, with no Fame and no Infamy. "Nobody" pays nobody.
+class RZ_Beneficiaries
+{
+	ref array<ref RZ_Party> m_aParties = {};
+	int m_iChosen = -1;
+	int m_iDecider = -1;
+	int m_iOriginal = -1;		// the giver the job was offered for
+	ref array<int> m_aWith = {};
+	ref array<int> m_aOthers = {};
+
+	//------------------------------------------------------------------------------------------------
+	RZ_Party Add(int faction, string name, int rivalInfamy)
+	{
+		RZ_Party p = new RZ_Party();
+		p.m_iFaction = faction;
+		p.m_sName = name;
+		p.m_iRivalInfamy = rivalInfamy;
+		m_aParties.Insert(p);
+		return p;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_Party AddNobody(string name)
+	{
+		RZ_Party p = Add(-1, name, 0);
+		p.m_bNobody = true;
+		return p;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int Find(int faction)
+	{
+		foreach (int i, RZ_Party p : m_aParties)
+		{
+			if (p.m_iFaction == faction)
+				return i;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsSwitch()
+	{
+		if (m_iChosen < 0)
+			return false;
+
+		return m_aParties[m_iChosen].m_iFaction != m_iOriginal;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The decider gave the result to party `idx` at `at`: the mission now pays that side (and
+	//! sets the giver's Infamy as its rival when it's a switch); who is with the decider; who did the
+	//! work otherwise. The participants become those with the decider whom the side doesn't hunt.
+	void Choose(RZ_GameModeComponent gm, RZ_Mission m, int decider, int idx, vector at)
+	{
+		if (idx < 0 || idx >= m_aParties.Count())
+			return;
+
+		m_iChosen = idx;
+		m_iDecider = decider;
+		m_iOriginal = m.m_Req.m_eGiver;
+		RZ_Party p = m_aParties[idx];
+		RZ_MissionStory story = m.m_Story;
+
+		m_aWith.Clear();
+		story.m_Deciding.WithDecider(gm, decider, at, m_aWith);
+		m_aOthers.Clear();
+		foreach (int part : m.m_aParticipants)
+		{
+			if (!m_aWith.Contains(part) && story.m_Deciding.TookPart(gm, part) && m.IsEligible(gm, part))
+				m_aOthers.Insert(part);
+		}
+
+		array<int> paid = {};
+		if (!p.m_bNobody)
+		{
+			foreach (int w : m_aWith)
+			{
+				if (!RZ_Reputation.IsHunted(gm.GetTier(w, p.m_iFaction)))
+					paid.Insert(w);
+			}
+		}
+
+		m.m_aParticipants.Clear();
+		m.m_aParticipants.InsertAll(paid);
+		if (p.m_bNobody)
+		{
+			m.m_bHasGiver = false;
+		}
+		else if (IsSwitch())
+		{
+			m.m_eGiver = p.m_iFaction;
+			m.m_bNoLeaderCredit = true;
+			m.m_iLeaderId = -1;
+			m.m_bSwitched = true;
+			m.SetRivalPublic(m_iOriginal, p.m_iRivalInfamy);
+		}
+
+		string subject = RZ_WorldFacts.Town(m.m_iSettlement);
+		RZ_WorldFacts.Get().Memory().Record(story.m_sKey + ".went_to", subject, p.m_sName, RZ_WorldMemory.SOURCE_CHOICE, false, m_aWith);
+		RZ_Log.Info(string.Format("Story: %1 resolved by hand-in to %2 (base Fame %3, Favor %4; with %5, others %6; switch %7)", story.m_sKey, p.m_sName,
+			m.m_iFameReward, m.m_iFavorReward, m_aWith.Count(), m_aOthers.Count(), IsSwitch()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Everyone else who did the work, when the result went another way: half the Favor from the giver,
+	//! no Fame, no Infamy.
+	void PayOthers(RZ_GameModeComponent gm, RZ_Mission m)
+	{
+		if (m_iChosen < 0 || !IsSwitch() || !RZ_Factions.IsValid(m_iOriginal))
+			return;
+
+		int favor = Math.Max(1, m.m_iFavorReward / 2);
+		foreach (int other : m_aOthers)
+		{
+			gm.AddFavor(other, m_iOriginal, favor);
+			gm.NotifyPlayerAs(other, m.m_sTitle, string.Format("\"You held it. Someone else sold it.\" +%1 %2 Favor for the work.", favor, RZ_Factions.GetName(m_iOriginal)), RZ_ENoticeTag.MISSION);
+		}
+	}
+}

@@ -194,6 +194,19 @@ The parley, the knock, settling up, the company you keep and the season record a
 [REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md).
 
 
+### Small pay and switched sides
+
+Two kinds of Fame don't count toward the season's Fame (the hall of fame's "Zone's Fame", who the
+cure goes to with nobody in the room, next season's rules), through flags on `AddFame`:
+
+- **Errands** pay small (`RZ_RepFlag.SMALL`): at most 2 an errand, never taking Fame with a faction
+  above 39 (they can make you Known, never Trusted), at most 10 a faction a season day, no rival
+  shares, and left out of the hall of fame's Fame lines and the best deed too. Errand Favor is at
+  most 40 an hour, with diminishing returns ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)).
+- **A switched side** in a choice mission (`RZ_RepFlag.SWITCH`): the side that got the result pays
+  at most the mission's base; its Fame counts for you and your tier but not for the season
+  ([DESIGN.md](DESIGN.md#story-blocks)).
+
 ### Favor (currency)
 
 Every faction pays in its own **Favor**, earned from its missions and spent at its
@@ -359,6 +372,7 @@ count ×1.2, never the total), then what's left of the budget:
 | **Amends contracts** | Watched with the giver: the contract works Infamy off instead of paying Fame ([MISSIONS.md](MISSIONS.md)) | the contract's Fame, as Infamy off | — |
 | **Paying** | "Pay to make amends" at any quartermaster, in that faction's own Favor | 5 Infamy for 15 Favor; each payment this life costs ×1.5 more | at most 15 of the 30, once every 30 minutes, never below 15 (the Watched line). Kill on Sight: refused |
 | **Surrender** | Bastion only, at one of its checkpoints ([below](#checkpoints-roadblocks-and-camps)) | 8 Bastion Infamy | once an hour, by identity |
+| **Errand amends** | At 15+ Infamy with the faction, an errand pays amends instead of Fame; the amends family (Make It Right, the Latrine, Clean Slate) is for the Watched ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)) | 2 Infamy | at most 8 a life per faction from errands, never below 15 |
 
 **When the budget is spent:**
 - An amends contract pays its Fame as ordinary Fame, rival shares and all: "Bastion has forgiven you
@@ -368,8 +382,8 @@ count ×1.2, never the total), then what's left of the budget:
 
 So a little trouble (up to 30) can be cleaned completely, and more can only be softened. A Watched
 player and a mixed one are treated the same. Every forgiveness is logged. The later routes (the
-parley, settling up in Fame, Make it right, errand amends, the epilogue's Come In and the finale's
-Hand it in) are planned and will draw on the same budget
+parley, settling up in Fame, the epilogue's Come In and the finale's Hand it in) are planned and
+will draw on the same budget
 ([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)).
 
 ## Checkpoints, roadblocks and camps

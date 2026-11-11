@@ -515,6 +515,17 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The road posts of `faction` (-1 any) standing now, nearest first within `radius` of pos.
+	void PostsNear(int faction, vector pos, float radius, notnull array<RZ_RoadPost> result)
+	{
+		foreach (RZ_RoadPost post : m_aPosts)
+		{
+			if ((faction < 0 || post.m_eFaction == faction) && RZ_Util.DistXZ(post.m_vPos, pos) <= radius)
+				result.Insert(post);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_RoadPost FindPost(int id)
 	{
 		foreach (RZ_RoadPost post : m_aPosts)

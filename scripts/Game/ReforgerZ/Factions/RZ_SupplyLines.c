@@ -1250,6 +1250,18 @@ class RZ_SupplyLines
 			lostHow = TRUCK_ROBBED;
 
 		m_GM.GetMissions().OnTruckEvent(t.m_eFaction, lostHow, lostAt, -1);
+
+		// The signal ring and a reason at the destination; who robbed it stays on the server
+		string cause = "";
+		foreach (int shooter : t.m_aShooters)
+		{
+			if (!cause.IsEmpty())
+				cause += ",";
+
+			cause += shooter.ToString();
+		}
+
+		RZ_WorldWriters.TruckLost(t.m_eFaction, t.m_iDestKind == KIND_SAFEHOUSE, t.m_iDestIndex, t.m_sDestName, lostAt, t.m_vDest, cause);
 		if (t.m_bConvoy && m_GM.GetStoryArcs())
 			m_GM.GetStoryArcs().OnConvoyResult(t.m_eFaction, t.m_sDestName, false);
 

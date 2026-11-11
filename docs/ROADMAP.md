@@ -3,7 +3,7 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** the systems under "Built" are written in Enforce Script (about 116,000 lines) and the
+**Status:** the systems under "Built" are written in Enforce Script (about 121,000 lines) and the
 game scripts **compile cleanly** against Arma Reforger 1.9. The game mode runs with no script
 exceptions on the server, in a test world with a fake player
 ([runtime test](WORKBENCH_SETUP.md#runtime-test-without-workbench)), and in Workbench play on Arland
@@ -37,7 +37,10 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Haven safehouses: population tiers, upkeep, rescues, house rules, exile, notice boards (notes between sessions, `/note`) | [Haven safehouses](DESIGN.md#haven-safehouses) |
 | Named wanderers: travel, reactions, memory, deaths in the news, lost outposts (rerouting, rumours, mood) | [Wanderers](DESIGN.md#wanderers) |
 | Named leaders: traits, loyalty, memory, voiced briefs, deaths and replacements | [Leaders](DESIGN.md#leaders), [REPUTATION.md](REPUTATION.md#faction-leaders) |
-| 182 missions (every one designed so far): all 80 faction contracts and 3 hard-edge contracts (No Reply, Struck Off, The List) (on shared building blocks: escorts, live capture, vehicle zones and convoys, health cost, step chains), 3 Red Hand hard edges (Learning the Drones, The Pit's Debtor, Tied Down), all 25 world events, 17 puzzles, 11 unarmed, 3 Perimeter, 3 Haven house contracts and the Courier's letters, 32 leader jobs and Rein In, 3 arc missions | [MISSIONS.md](MISSIONS.md) |
+| 178 missions: 78 faction contracts and 3 hard-edge contracts (No Reply, Struck Off, The List) (on shared building blocks: escorts, live capture, vehicle zones and convoys, health cost, step chains), 3 Red Hand hard edges (Learning the Drones, The Pit's Debtor, Tied Down), all 25 world events, 17 puzzles, 9 unarmed, 3 Perimeter, 3 Haven house contracts and the Courier's letters, 32 leader jobs and Rein In, 3 arc missions (four more became errands) | [MISSIONS.md](MISSIONS.md) |
+| Errands, phase 3 of [the plan](../designs/PLAN.md#phases-18): named people at safehouses (four each, two shown) and holdings (territory's) answer **Anything need doing?** and wave passing players over (inside the interruption budget); the wanderers answer **Need a hand?**; the dealer (asked and unasked rules, anchored candidates checked cheapest first, scored, the top three), soft holds and overtaking, the faults table, 24 routines at the four holding kinds, the wanderers' asks (Before Dark, Wanted Poster, Barter Chain as an ask), 16 cards, the small-pay ledger (Fame at most 2, never above 39, 10 a faction a season day, small pay; Favor inside 40 an hour, diminishing; amends at 15+ Infamy), the "Most people helped" hall line, the journal rows, telemetry and an admin view on the talk screen | [ERRANDS.md](ERRANDS.md) |
+| The mission style's framework (wave 1): the story kit, who took part and who decides (the 5 s hold, Object, Stand with), who benefits (the choice missions built on it: a switch pays at most the base and leaves season Fame alone; half the Favor to the others who did the work), the truth deck, the reason lane and the one weight clamp, the journal's per-row detail | [Story blocks](DESIGN.md#story-blocks) |
+| The world memory's writers: bites, deaths, lost trucks, shells, fires and trial doses in the signal ring; reasons from upkeep, trucks, towns, leaders, wanderers and the lab; the town log from missions, rescues, burned towns and taken outposts, with season marks on the verge; world records from errands and choice missions | [World memory](DESIGN.md#world-memory) |
 | Six story arcs and session headlines | [Story arcs](DESIGN.md#story-arcs-and-headlines) |
 | Questlines: long storylines over many sessions, in stages (a contract or a wait for time and the world), with approaches (talk, persuade, sneak, force, bribe, betray, side with another faction) that set the outcome, capped endings through the existing systems, the journal, saved across restarts. Fifteen built, about 90 stage missions: The List, The Price of the Door, The Edge of Town (the Haven); Await Relief, The Census, The Last Pilot (Bastion); The Book, Cargo, The Well Story (the Red Hand); The Three Weeks, The Other Two, Authors (Halcyon); the Long Table's two; and the example Short Weight. They cross through shared flags | [Questlines](DESIGN.md#questlines), [MISSIONS.md](MISSIONS.md#questlines) |
 | The Long Table: some seasons, one small family in a farmhouse past the emptiest village; data with bodies only near players, capped takings (never from a safehouse, a holding or a player) and their tells, suspicion and rumours, the host on the road, the guest rule, dealings (eat, a jar, declare a bite), found out with each faction's reaction, moving once, broken up; its two questlines, The House That Went Quiet and A Place at the Table | [The Long Table](DESIGN.md#the-long-table), [REPUTATION.md](REPUTATION.md#the-long-table) |
@@ -107,8 +110,11 @@ The build-review fixes are done. Everything below is approved. The order of the 
   the cure's finale, the epilogue week, dialogue, errands, the mission style, reputation names,
   disguise and tone) are in [designs/](../designs/README.md). Their build order, from step 0 (now)
   to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
-- Already built for them: phase 2, talk ([DIALOGUE.md](DIALOGUE.md), reputation's voice and tone's
-  mood and voice bank; play-test it with **Dialogue > Trees** on before it's turned on by default);
+- Already built for them: phase 3, small things everywhere ([ERRANDS.md](ERRANDS.md), the mission
+  style's [story blocks](DESIGN.md#story-blocks) and the world memory's writers; play-test the
+  errands' pay per player-hour with the telemetry line); phase 2, talk ([DIALOGUE.md](DIALOGUE.md),
+  reputation's voice and tone's mood and voice bank; play-test it with **Dialogue > Trees** on
+  before it's turned on by default);
   phase 1, the shared engine and reputation's names
   ([DESIGN.md](DESIGN.md#the-shared-engine), [REPUTATION.md](REPUTATION.md#reputations)), with one
   body budget shared with the tribes' agent budget; the cure's 90% hook (`IsCureFinale`,

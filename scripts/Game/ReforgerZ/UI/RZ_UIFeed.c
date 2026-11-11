@@ -81,6 +81,9 @@ class RZ_UIFeed
 	static const int PAYLOAD_KINDS = 6;		// the kinds a client may ask for; the ones below are only sent
 	static const int PAYLOAD_TALK = 6;		// the talk screen: one node, or X|reason to close (Dialogue/RZ_Dialogue.c)
 	static const int PAYLOAD_READER = 7;	// the reader: P|title|how, then the text; "" closes it (UI/RZ_Reader.c)
+	static const int PAYLOAD_DETAIL = 8;	// one journal row's detail, asked when it's selected (BuildDetail)
+	static const int DETAIL_MAX = 1500;
+	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;
@@ -587,6 +590,7 @@ class RZ_UIFeed
 		}
 
 		s += BuildQuestlines(playerId, ent, from);
+		s += BuildErrands(playerId, ent, from);
 
 		array<ref RZ_UIClue> clues;
 		if (m_mClues.Find(playerId, clues))
@@ -602,6 +606,84 @@ class RZ_UIFeed
 		}
 
 		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errands this player holds (Missions/Errands), as journal records: the giver as "by", the
+	//! exact place, the real minutes left, what you said you'd do. Never on the map.
+	protected string BuildErrands(int playerId, IEntity ent, vector from)
+	{
+		RZ_Errands errands = m_GM.GetErrands();
+		if (!errands)
+			return "";
+
+		array<RZ_Errand> held = {};
+		errands.ForJournal(playerId, held);
+		string s = "";
+		foreach (RZ_Errand e : held)
+		{
+			string dir = "";
+			if (ent)
+				dir = RZ_Util.DirectionText(from, e.m_vPlace);
+
+			if (e.m_bStepDone && ent)
+				dir = RZ_Util.DirectionText(from, e.m_vGiver);
+
+			RZ_UILine lnE = new RZ_UILine("M");
+			lnE.AddInt(-(ERRAND_ID_BASE + e.m_iId)).AddInt(RZ_EMissionKindUI.ERRAND).AddInt(e.m_iFaction).Add(e.Fill(e.m_Def.m_sTitle)).Add(e.m_sGiverTitle).Add(e.GetText("here")).Add(dir);
+			lnE.AddInt(errands.MinutesLeft(e)).Add("Asked of you").AddInt(0).AddInt(0).Add(errands.JournalText(e)).Add("1");
+			s += lnE.End();
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One journal row's detail, sent when the row is selected (at most 1,500 characters, so the
+	//! list's 6,000 is never cut for it): D|id|what they told you|what you've found|who it went to.
+	string BuildDetail(int playerId, int id)
+	{
+		string told = "";
+		string found = "";
+		string went = "";
+		if (id <= -ERRAND_ID_BASE && m_GM.GetErrands())
+		{
+			RZ_Errand e = m_GM.GetErrands().FindById(-id - ERRAND_ID_BASE);
+			if (!e || e.m_iAsker != playerId)
+				return "";
+
+			told = e.Fill(e.m_Def.m_sTitle) + ": " + m_GM.GetErrands().JournalText(e);
+		}
+		else if (id > 0 && m_GM.GetMissions())
+		{
+			RZ_Mission m = m_GM.GetMissions().FindById(id);
+			if (!m)
+				return "";
+
+			told = m.GetBrief(m_GM);
+			if (m.m_Story)
+			{
+				foreach (string line : m.m_Story.m_aFound)
+				{
+					found += line + "\n";
+				}
+
+				RZ_Beneficiaries parties = m.m_Story.m_Parties;
+				if (parties.m_iChosen >= 0)
+					went = parties.m_aParties[parties.m_iChosen].m_sName;
+			}
+		}
+		else
+		{
+			return "";
+		}
+
+		RZ_UILine ln = new RZ_UILine("D");
+		string payload = ln.AddInt(id).Add(told).Add(found.Trim()).Add(went).End();
+		if (payload.Length() > DETAIL_MAX)
+			payload = payload.Substring(0, DETAIL_MAX);
+
+		return payload;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -778,8 +860,8 @@ class RZ_UIFeed
 		if (t == RZ_Mission_DeserterMap || t == RZ_Mission_FeverWater || t == RZ_Mission_FeverEvacuation)
 			return RZ_EMissionKindUI.ARC;
 
-		if (t == RZ_Mission_CarKeys || t == RZ_Mission_PharmacyLure || t == RZ_Mission_SilentCourier || t == RZ_Mission_WaterRun
-			|| t == RZ_Mission_MedicineBeforeDark || t == RZ_Mission_LeadThemAway || t == RZ_Mission_RooftopRescue
+		if (t == RZ_Mission_CarKeys || t == RZ_Mission_PharmacyLure || t == RZ_Mission_SilentCourier
+			|| t == RZ_Mission_LeadThemAway || t == RZ_Mission_RooftopRescue
 			|| t == RZ_Mission_TrailOfClues || t == RZ_Mission_BarterChain || t == RZ_Mission_Distraction || t == RZ_Mission_QuietCount)
 			return RZ_EMissionKindUI.UNARMED;
 
