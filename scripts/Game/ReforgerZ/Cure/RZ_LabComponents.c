@@ -248,6 +248,13 @@ class RZ_SellSamplesToBanditsAction : RZ_SampleDeliveryActionBase
 		if (playerId <= 0)
 			return false;
 
+		// After the cure nobody pays for samples, not even the Red Hand
+		if (gm.GetFacts().IsCured())
+		{
+			gm.NotifyPlayer(playerId, "The Red Hand", "Nobody comes out to meet you. The cure is out: samples aren't worth anything to anyone now.");
+			return false;
+		}
+
 		return gm.GetMissions().CanSellToBandits(playerId, receiver);
 	}
 

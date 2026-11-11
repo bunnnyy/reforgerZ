@@ -213,7 +213,12 @@ class RZ_GuidanceText
 			case RZ_EFaction.BANDITS:
 				return string.Format("\"The Red Hand runs %1 these days. They'll sell you anything, including your own boots back.\"", place);
 			case RZ_EFaction.INSTITUTE:
+			{
+				if (RZ_WorldFacts.Get().IsCured())
+					return string.Format("\"The scientists in %1 got their cure out. Now they wait for the gates like the rest of us.\"", place);
+
 				return string.Format("\"The scientists are in %1. They want samples from the big ones. Say it's for a cure. I hope they're right.\"", place);
+			}
 		}
 
 		return "";

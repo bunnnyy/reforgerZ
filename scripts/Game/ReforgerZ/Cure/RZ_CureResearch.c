@@ -535,6 +535,11 @@ class RZ_CureResearch
 		if (m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnCureDone();
 
+		// Work that ends with the cure (research, the jobs at the line) is called off now, not
+		// left running for its remaining time
+		if (m_GM.GetMissions())
+			m_GM.GetMissions().OnCured();
+
 		// The winner is chosen on the season's Fame before the stand's own reward, so the last
 		// fight (always Halcyon and the Haven) can't decide it
 		m_GM.OnCureCompleted();

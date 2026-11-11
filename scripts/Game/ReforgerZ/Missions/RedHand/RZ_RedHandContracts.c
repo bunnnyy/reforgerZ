@@ -430,6 +430,13 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 			return;
 		}
 
+		// The post it was for changed hands: there's no truck to take (and nothing to pay for)
+		if (result == RZ_SupplyLines.TRUCK_CALLED_OFF)
+		{
+			Withdraw(string.Format("Called off. Bastion lost its post in %1, and the truck turned round before it reached the road.", m_Watch.m_sTo));
+			return;
+		}
+
 		if (result == RZ_SupplyLines.TRUCK_ARRIVED || result == RZ_SupplyLines.TRUCK_LATE)
 		{
 			m_eState = RZ_EMissionState.FAILED;

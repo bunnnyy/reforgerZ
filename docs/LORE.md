@@ -437,7 +437,8 @@ the Zone. It's flavour only, with no mechanics behind it:
 A season is won one way: **the cure is finished** and the final stand at the lab is held.
 The quarantine is lifted. The line stands down at once: the drones go home, nobody at the edge
 fires again, and the loudspeakers read a new order about processing at the road checkpoints.
-The barriers stay closed until the season ends, and the gates open with it. Until then (the
+The barriers stay closed until the season ends, and the gates open with it: whoever walks up to
+the line is told to turn around by a voice they never see, and walks back. Until then (the
 epilogue) the research is over: the lab takes no more samples and nobody pays for them. The cure
 goes to the faction the server gave the most Fame this season, and that faction decides how it
 reaches people:

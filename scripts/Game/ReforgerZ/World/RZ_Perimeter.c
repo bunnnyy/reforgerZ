@@ -122,7 +122,8 @@ class RZ_ShorePoint
 //! - Blind spots: a stretch where nothing happens for a while (The Blind Spot mission).
 //! - After the cure (RZ_WorldFacts.IsCured) the line stands down: the drones go home, nobody
 //!   shoots, and the loudspeakers read the new order. The barriers stay closed: the gates open
-//!   with the wipe (docs/LORE.md, "Endings").
+//!   with the wipe (docs/LORE.md, "Endings"). Anyone who walks into the kill zone is turned back
+//!   to the warning zone (no shot, no drone): the line is not open.
 //!
 //! Server only, polled on the game mode's tick.
 class RZ_Perimeter
@@ -150,6 +151,7 @@ class RZ_Perimeter
 	protected ref map<string, bool> m_mSpotFound = new map<string, bool>();
 
 	protected static const float LEAVE_MARGIN = 25;		// leave the zone by this much before the drone goes (no flicker)
+	protected static const float TURN_BACK_MARGIN = 40;	// after the cure: turned back this far inside the kill zone's edge
 	protected static const float WARN_REPEAT = 30;		// seconds before the loudspeaker repeats itself on re-entry
 	protected static const float EFFECT_LIFETIME = 20;
 	protected static const float CORNER_MARGIN = 500;	// missions keep away from the corners
@@ -667,6 +669,16 @@ class RZ_Perimeter
 		}
 
 		c.m_fSinceShot = -1;
+
+		// Nobody shoots any more, but the line isn't open: whoever walks into the kill zone (or up
+		// to a barrier) is turned back
+		if (zone == RZ_EPerimeterZone.KILL)
+		{
+			TurnBack(playerId, pos);
+			c.m_eZone = RZ_EPerimeterZone.WARNING;
+			return;
+		}
+
 		if (c.m_eZone == RZ_EPerimeterZone.NONE)
 		{
 			float last;
@@ -678,6 +690,32 @@ class RZ_Perimeter
 		}
 
 		c.m_eZone = zone;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the cure: back to the warning zone, TURN_BACK_MARGIN inside the kill zone's edge (or up
+	//! the road from a checkpoint), with a voice from past the line. No shot and no drone.
+	protected void TurnBack(int playerId, vector pos)
+	{
+		vector back;
+		string text;
+		vector checkpoint;
+		if (GetCheckpointDistance(pos) < m_Settings.m_fCheckpointKillRadius && GetNearestCheckpoint(pos, checkpoint))
+		{
+			back = checkpoint + InwardAt(checkpoint) * (m_Settings.m_fCheckpointKillRadius + TURN_BACK_MARGIN);
+			text = "\"Back behind the barrier. You will be called for processing.\" Nobody raises a rifle, and nobody lets you closer either. You walk back up the road.";
+		}
+		else
+		{
+			back = pos + InwardAt(pos) * (m_fKill + TURN_BACK_MARGIN - EdgeDistance(pos));
+			text = "\"Stop. Turn around.\" The voice comes from past the line, close, from someone you never see. \"The quarantine is lifted. The line is not open. Processing will begin at the road checkpoints.\" You walk back to the trees.";
+		}
+
+		if (!RZ_Util.MovePlayer(playerId, back))
+			return;
+
+		m_GM.NotifyPlayer(playerId, LOUDSPEAKER, text);
+		RZ_Log.Info(string.Format("Perimeter (stood down): player %1 turned back from the line.", playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------

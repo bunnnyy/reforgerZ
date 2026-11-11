@@ -417,6 +417,13 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 	{
 		m_Watch.Update(gm);
 		m_vPos = m_Watch.GetPos(gm);
+		if (m_Watch.m_iResult == RZ_SupplyLines.TRUCK_CALLED_OFF)
+		{
+			// Nobody's fault: the post changed hands before the truck got there
+			Withdraw(string.Format("Called off. The post in %1 isn't ours any more, so the truck turned round.", m_Watch.m_sTo));
+			return;
+		}
+
 		if (m_Watch.m_iResult >= 0)
 		{
 			if (m_Watch.m_iResult == RZ_SupplyLines.TRUCK_ARRIVED)

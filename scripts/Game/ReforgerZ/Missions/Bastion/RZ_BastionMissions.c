@@ -745,7 +745,7 @@ class RZ_Mission_Requisition : RZ_Mission_Choice
 	{
 		m_iSettlement = PickSafestSettlement(gm);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s || gm.GetMissions().IsSettlementBusy(m_iSettlement))
+		if (!s || IsTownBusy(gm, m_iSettlement))
 			return false;
 
 		int bastionTown = PickSettlementAway(gm, s.m_vCenter, 800, 5000, 0, 100);

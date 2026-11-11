@@ -54,10 +54,17 @@ class RZ_MissionRequirements
 
 	// 5. World facts (docs/DESIGN.md, "World facts"), checked with the world state above
 	RZ_ETimeGate m_eTime = RZ_ETimeGate.ANY;
+	bool m_bNeedsHeli;							// Bastion's helicopter can fly (RZ_WorldFacts.HeliAvailable)
 	ref array<string> m_aFlagsSet = {};			// season flags that must be set (HasFlag)
 	ref array<string> m_aFlagsUnset = {};		// season flags that must not be set
+	ref array<string> m_aFlagsWithin = {};		// day-number flags set no more than m_aWithinDays days ago
+	ref array<int> m_aWithinDays = {};
+	ref array<string> m_aFlagsNotWithin = {};	// day-number flags not set in the last m_aNotWithinDays days
+	ref array<int> m_aNotWithinDays = {};
 	ref array<string> m_aNotWhileQuest = {};	// questline keys that mustn't be running
 	ref array<string> m_aNotAfterQuest = {};	// questline keys that mustn't have reached an ending
+
+	protected static ref array<string> s_aWarnedKeys;	// unknown questline keys already logged
 
 	//------------------------------------------------------------------------------------------------
 	void Need(RZ_EFaction faction, RZ_EStandingCheck check)
@@ -107,6 +114,23 @@ class RZ_MissionRequirements
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Only while a flag that holds a day number (RZ_WorldFacts.Changed sets one) was set no more
+	//! than `days` days ago: 0 = today.
+	void NeedFlagWithin(string key, int days)
+	{
+		m_aFlagsWithin.Insert(key);
+		m_aWithinDays.Insert(days);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Not while a day-number flag was set in the last `days` days (never set passes).
+	void NeedFlagNotWithin(string key, int days)
+	{
+		m_aFlagsNotWithin.Insert(key);
+		m_aNotWithinDays.Insert(days);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Not while this questline runs (its stages tell the same story).
 	void NotWhileQuest(string questKey)
 	{
@@ -129,18 +153,42 @@ class RZ_MissionRequirements
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The world facts part of IsWorldOk: cure, time of day, season flags, questlines.
+	//! Work that ends with the cure: m_bNotCured, or Halcyon's (research) unless m_bAfterCure. Not
+	//! started after it, and called off if it's running when the cure comes out.
+	bool StopsWithCure()
+	{
+		return m_bNotCured || (m_eGiver == RZ_EFaction.INSTITUTE && !m_bAfterCure);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The world facts part of IsWorldOk: cure, time of day, the helicopter, season flags,
+	//! questlines.
 	bool AreFactsOk(RZ_GameModeComponent gm)
 	{
 		RZ_WorldFacts facts = gm.GetFacts();
 		if (!facts)
 			return true;
 
-		if (facts.IsCured() && (m_bNotCured || (m_eGiver == RZ_EFaction.INSTITUTE && !m_bAfterCure)))
+		if (facts.IsCured() && StopsWithCure())
 			return false;
 
 		if (!IsTimeOk(facts))
 			return false;
+
+		if (m_bNeedsHeli && !facts.HeliAvailable())
+			return false;
+
+		foreach (int w, string within : m_aFlagsWithin)
+		{
+			if (!facts.HasFlag(within) || w >= m_aWithinDays.Count() || facts.DaysSince(facts.Flag(within)) > m_aWithinDays[w])
+				return false;
+		}
+
+		foreach (int nw, string notWithin : m_aFlagsNotWithin)
+		{
+			if (nw < m_aNotWithinDays.Count() && facts.HasFlag(notWithin) && facts.DaysSince(facts.Flag(notWithin)) <= m_aNotWithinDays[nw])
+				return false;
+		}
 
 		foreach (string need : m_aFlagsSet)
 		{
@@ -159,18 +207,38 @@ class RZ_MissionRequirements
 		{
 			foreach (string running : m_aNotWhileQuest)
 			{
+				WarnUnknownKey(quests, running);
 				if (quests.IsRunning(running))
 					return false;
 			}
 
 			foreach (string ended : m_aNotAfterQuest)
 			{
+				WarnUnknownKey(quests, ended);
 				if (quests.HasEnded(ended))
 					return false;
 			}
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A questline key that is neither registered nor one of the designed keys (docs/QUESTLINES.md)
+	//! is a typo: the gate would never close. Logged once per key.
+	protected void WarnUnknownKey(RZ_Questlines quests, string key)
+	{
+		if (quests.IsKnownKey(key))
+			return;
+
+		if (!s_aWarnedKeys)
+			s_aWarnedKeys = {};
+
+		if (s_aWarnedKeys.Contains(key))
+			return;
+
+		s_aWarnedKeys.Insert(key);
+		RZ_Log.Warn("Requirements: no questline has the key '" + key + "' (docs/QUESTLINES.md lists them); the gate never closes.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -281,6 +349,9 @@ class RZ_MissionRequirements
 			case RZ_ETimeGate.DUSK_OR_NIGHT: text += ", from dusk"; break;
 			case RZ_ETimeGate.DAY: text += ", by day"; break;
 		}
+
+		if (m_bNeedsHeli)
+			text += ", while Bastion's helicopter can fly";
 
 		return text;
 	}

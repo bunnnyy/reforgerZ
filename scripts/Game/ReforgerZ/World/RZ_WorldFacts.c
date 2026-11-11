@@ -65,8 +65,24 @@ class RZ_HouseFacts
 	bool m_bShort;			// the last meal ran short
 	bool m_bHasMedic;		// a Settlement (12 people) or bigger
 	bool m_bHasRadio;
-	int m_iLost;			// people lost lately (fades by one an hour)
+	int m_iLost;			// people gone lately, for any reason: left, moved, taken or dead (fades by one an hour)
+	int m_iDied;			// of those, the dead (fades the same way): "buried" only means these
+	bool m_bEmpty;			// nobody lives there now (the house stands, its tier is the lowest)
 	string m_sTier;			// Shelter, Community, Settlement, Town
+}
+
+//------------------------------------------------------------------------------------------------
+//! Which towns a pick may use (RZ_WorldFacts.CollectTowns, PickTown). The defaults take any town
+//! no mission or story is using; set only what the job needs.
+class RZ_TownFilter
+{
+	float m_fMinInfection = 0;
+	float m_fMaxInfection = 100;
+	int m_iHeldBy = -2;			// -2 any; -1 nobody lives there (IsLivedIn false); else held by this faction
+	int m_iNotHeldBy;			// RZ_Factions.Bit(f) of factions whose towns are skipped (an enemy of the giver)
+	int m_iKinds;				// RZ_WorldFacts.KindBit(RZ_ETownKind...) bits; 0 = any kind
+	int m_iMinSize;				// the settlement's size, 0 any (RZ_Settlement.m_iSize: 2+ is a town or city)
+	int m_iExclude = -1;		// a settlement to leave out (the job's own start)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -122,6 +138,7 @@ class RZ_WorldFacts
 	protected float m_fClock;		// play clock: runs only while someone is online (rumours)
 	protected ref map<string, int> m_mFlags = new map<string, int>();
 	protected ref map<string, string> m_mCanon = new map<string, string>();
+	protected ref array<string> m_aMaking = {};		// canon keys being made right now (CanonText)
 	protected ref map<string, string> m_mClaims = new map<string, string>();	// subject -> owner
 	protected ref array<string> m_aRumours = {};
 	protected ref array<float> m_aRumourUntil = {};
@@ -493,10 +510,95 @@ class RZ_WorldFacts
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A bit for RZ_TownFilter.m_iKinds.
+	static int KindBit(RZ_ETownKind kind)
+	{
+		return 1 << kind;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every settlement the filter allows that no other mission or story is using (with `asker`,
+	//! what it or the story that started it holds counts as free). Filter here, not after a random
+	//! pick: on a map where most towns are held, a pick-then-check fails.
+	void CollectTowns(RZ_TownFilter filter, notnull array<int> result, RZ_Mission asker = null)
+	{
+		if (!m_GM || !filter)
+			return;
+
+		RZ_MissionManager missions = m_GM.GetMissions();
+		foreach (int i, RZ_Settlement s : m_GM.GetSettlements())
+		{
+			if (i == filter.m_iExclude || s.m_iSize < filter.m_iMinSize)
+				continue;
+
+			if (s.m_fInfection < filter.m_fMinInfection || s.m_fInfection > filter.m_fMaxInfection)
+				continue;
+
+			if (missions && missions.IsSettlementBusy(i, asker))
+				continue;
+
+			RZ_TownOwner o = TownOwner(i);
+			if (filter.m_iHeldBy == -1 && o.IsHeld())
+				continue;
+
+			if (filter.m_iHeldBy >= 0 && !o.IsHeldBy(filter.m_iHeldBy))
+				continue;
+
+			if (filter.m_iNotHeldBy != 0 && o.IsHeld() && RZ_Factions.IsValid(o.m_iFaction) && (filter.m_iNotHeldBy & RZ_Factions.Bit(o.m_iFaction)) != 0)
+				continue;
+
+			if (filter.m_iKinds != 0 && (filter.m_iKinds & KindBit(o.m_eKind)) == 0)
+				continue;
+
+			result.Insert(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A random settlement from CollectTowns, -1 if there's none.
+	int PickTown(RZ_TownFilter filter, RZ_Mission asker = null)
+	{
+		array<int> towns = {};
+		CollectTowns(filter, towns, asker);
+		if (towns.IsEmpty())
+			return -1;
+
+		return towns.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Lights at pos: the power grid's region, a power surge, or a running generator close by.
 	bool IsPowered(vector pos)
 	{
 		return RZ_PowerGrid.IsPoweredAt(pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! People live within `radius` of pos: a Haven safehouse, a faction holding, or the lab. What
+	//! shelling, fire and other harm keep away from (Bastion's Fire Mission).
+	bool IsNearLivedIn(vector pos, float radius)
+	{
+		if (!m_GM)
+			return false;
+
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (houses && houses.FindNearest(pos, radius) >= 0)
+			return true;
+
+		if (m_GM.HasLab() && RZ_Util.DistXZ(pos, m_GM.GetLabPosition()) < radius)
+			return true;
+
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (territory && territory.IsActive())
+		{
+			foreach (RZ_Holding h : territory.GetHoldings())
+			{
+				if (RZ_Util.DistXZ(h.m_vPos, pos) < radius)
+					return true;
+			}
+		}
+
+		return false;
 	}
 
 	// ================================================================ People
@@ -523,6 +625,8 @@ class RZ_WorldFacts
 		f.m_bHasMedic = h.HasMedic();
 		f.m_bHasRadio = h.HasRadio();
 		f.m_iLost = h.m_iLost;
+		f.m_iDied = h.m_iDied;
+		f.m_bEmpty = h.m_iPopulation <= 0;
 		f.m_sTier = RZ_Safehouse.TierName(h.GetTier());
 		return f;
 	}
@@ -651,38 +755,43 @@ class RZ_WorldFacts
 
 	//------------------------------------------------------------------------------------------------
 	//! The fact as text: made once (by `rule`, else the built-in rule for the key), then the same
-	//! all season. "" if it can't be made yet.
+	//! all season. "" if it can't be made yet. A rule that asks for the fact it is making (directly
+	//! or through another fact) gets "" instead of going round for ever.
 	string CanonText(string key, RZ_CanonRule rule = null)
 	{
 		string v;
 		if (m_mCanon.Find(key, v))
 			return v;
 
+		if (m_aMaking.Contains(key))
+			return "";
+
+		m_aMaking.Insert(key);
 		RZ_Rng rng = KeyRng(key);
 		if (rule)
 			v = rule.Make(m_GM, this, rng);
 		else
 			v = DefaultRule(key, rng);
 
+		m_aMaking.RemoveItem(key);
 		SetCanon(key, v);
 		return v;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A number from min to max (both included), the same all season.
+	//! A number from min to max (both included), the same all season. A built-in fact keeps its
+	//! own range (origin.told is 3-24) and a value made earlier is kept, but what comes back is
+	//! always inside min..max.
 	int CanonInt(string key, int min, int max)
 	{
-		string v;
-		if (!m_mCanon.Find(key, v))
+		string v = CanonText(key);
+		if (v.IsEmpty())
 		{
-			v = DefaultRule(key, KeyRng(key));
-			if (v.IsEmpty())
-				v = KeyRng(key).Int(min, max + 1).ToString();
-
+			v = KeyRng(key).Int(min, max + 1).ToString();
 			SetCanon(key, v);
 		}
 
-		return v.ToInt(min);
+		return Math.ClampInt(v.ToInt(min), min, max);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -783,11 +892,16 @@ class RZ_WorldFacts
 			case "origin.site": return OriginSite(rng);
 			case "origin.site.town":
 			{
-				vector site = CanonPos("origin.site");
-				if (site == vector.Zero)
+				// Read the site as text: CanonPos would fall back to this very key
+				string siteText = CanonText("origin.site");
+				if (siteText.IsEmpty())
 					return "";
 
-				return m_GM.FindNearestSettlement(site).ToString();
+				int siteTown = m_GM.FindNearestSettlement(ParsePos(siteText));
+				if (siteTown < 0)
+					return "";
+
+				return siteTown.ToString();
 			}
 			case "origin.clinic": return OriginClinic(rng);
 			case "origin.patient": return RZ_NoteText.Surname(rng);
@@ -800,7 +914,29 @@ class RZ_WorldFacts
 
 				return "relief";
 			}
-			case "redhand.pit": return RedHandPitTown(rng);
+			case "redhand.pit": return RedHandPit(rng);
+			case "redhand.pit.seat":
+			{
+				// Made with the pit; -1 when the pit isn't behind a crew boss's seat
+				CanonText("redhand.pit");
+				string seat;
+				if (m_mCanon.Find("redhand.pit.seat", seat))
+					return seat;
+
+				return "-1";
+			}
+			case "redhand.pit.town":
+			{
+				string pitText = CanonText("redhand.pit");
+				if (pitText.IsEmpty())
+					return "";
+
+				int pitTown = m_GM.FindNearestSettlement(ParsePos(pitText));
+				if (pitTown < 0)
+					return "";
+
+				return pitTown.ToString();
+			}
 		}
 
 		return "";
@@ -808,13 +944,20 @@ class RZ_WorldFacts
 
 	//------------------------------------------------------------------------------------------------
 	//! The closed site in the hills: a high, dry spot between two towns, well clear of every
-	//! settlement and the lab. Falls back to high ground outside the town farthest from the lab.
+	//! settlement and the lab, at a real factory, mast or barracks there if there is one, and never
+	//! nearest the lab's own town (The Three Weeks' rules). Falls back to high ground outside the
+	//! town farthest from the lab, checked the same way where it can be.
 	protected string OriginSite(RZ_Rng rng)
 	{
 		array<ref RZ_Settlement> all = m_GM.GetSettlements();
 		int n = all.Count();
 		if (n == 0)
 			return "";
+
+		array<string> kinds = {"military", "industrial", "radio", "power", "tower"};
+		int labTown = -1;
+		if (m_GM.HasLab())
+			labTown = m_GM.GetLabSettlement();
 
 		for (int t = 0; t < 40; t++)
 		{
@@ -837,8 +980,19 @@ class RZ_WorldFacts
 			vector side = Vector(-line[2], 0, line[0]) * (1 / gap);
 			vector mid = ca + line * rng.Range(0.4, 0.6) + side * rng.Range(-gap * 0.2, gap * 0.2);
 			vector p = RZ_Mission.HighPointNear(RZ_Util.GroundPos(mid), 0, 200, 12);
-			if (IsRemote(p, need))
-				return PosText(p);
+			if (!IsRemote(p, need))
+				continue;
+
+			// A real building to have been the site, if one stands out there
+			RZ_Landmark mark = RZ_LandmarkFinder.FindNearest(p, 400, kinds);
+			if (mark && IsRemote(mark.m_vPos, need - 100))
+				p = RZ_Mission.LandPointNear(mark.m_vPos, 4, 10);
+
+			int nearest = m_GM.FindNearestSettlement(p);
+			if (nearest < 0 || nearest == labTown)
+				continue;
+
+			return PosText(p);
 		}
 
 		int farthest = -1;
@@ -858,14 +1012,33 @@ class RZ_WorldFacts
 		if (!edge)
 			return "";
 
-		return PosText(RZ_Mission.HighPointNear(edge.m_vCenter, edge.m_fRadius + 400, edge.m_fRadius + 900));
+		// Remote if it can be, else at least dry, inside the line and not nearest the lab's town
+		vector fallback = vector.Zero;
+		for (int f = 0; f < 12; f++)
+		{
+			vector q = RZ_Mission.HighPointNear(edge.m_vCenter, edge.m_fRadius + 400, edge.m_fRadius + 900);
+			if (m_GM.FindNearestSettlement(q) == labTown)
+				continue;
+
+			if (IsRemote(q, 300))
+				return PosText(q);
+
+			if (fallback == vector.Zero && !RZ_Util.IsWater(q) && !RZ_Perimeter.IsNearLineAt(q))
+				fallback = q;
+		}
+
+		if (fallback == vector.Zero)
+			fallback = RZ_Mission.LandPointNear(edge.m_vCenter, edge.m_fRadius + 400, edge.m_fRadius + 900);
+
+		return PosText(fallback);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Dry, inside the line, at least `gap` past every settlement's edge and 1.5 km from the lab.
+	//! Dry, inside the line, not behind a lock, at least `gap` past every settlement's edge and
+	//! 1.5 km from the lab.
 	protected bool IsRemote(vector p, float gap)
 	{
-		if (RZ_Util.IsWater(p) || RZ_Perimeter.IsNearLineAt(p))
+		if (RZ_Util.IsWater(p) || RZ_Perimeter.IsNearLineAt(p) || RZ_LockedSpots.IsBlocked(p))
 			return false;
 
 		if (m_GM.HasLab() && RZ_Util.DistXZ(p, m_GM.GetLabPosition()) < 1500)
@@ -920,28 +1093,53 @@ class RZ_WorldFacts
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The Red Hand's fight pit: in its stronghold's town (strongholds never fall), else an
-	//! outpost's, else a quiet town. One pit all season.
-	protected string RedHandPitTown(RZ_Rng rng)
+	//! The Red Hand's fight pit, a spot: in the garages behind the boss's seat at the stronghold
+	//! (strongholds never fall), else behind a crew boss's seat, else outside the Red Hand's
+	//! stronghold or one of its outposts, else outside a quiet town. Also keeps redhand.pit.seat
+	//! (that seat's leader id, -1 if none). One pit all season.
+	protected string RedHandPit(RZ_Rng rng)
 	{
+		RZ_Leaders leaders = m_GM.GetLeaders();
+		if (leaders)
+		{
+			RZ_Leader seat = leaders.GetStronghold(RZ_EFaction.BANDITS);
+			if (!seat)
+			{
+				array<RZ_Leader> crews = {};
+				leaders.GetFactionLeaders(RZ_EFaction.BANDITS, crews);
+				if (!crews.IsEmpty())
+					seat = crews[rng.Int(0, crews.Count())];
+			}
+
+			if (seat)
+			{
+				SetCanon("redhand.pit.seat", seat.m_iId.ToString());
+				return PosText(RZ_Mission.LandPointNear(seat.m_vPos, 60, 150));
+			}
+		}
+
+		SetCanon("redhand.pit.seat", "-1");
 		RZ_Territory territory = m_GM.GetTerritory();
 		if (territory && territory.IsActive())
 		{
 			RZ_Holding top = territory.GetStronghold(RZ_EFaction.BANDITS);
-			if (top)
-				return m_GM.FindNearestSettlement(top.m_vPos).ToString();
+			if (!top)
+			{
+				array<RZ_Holding> posts = {};
+				territory.GetOutposts(RZ_EFaction.BANDITS, posts);
+				if (!posts.IsEmpty())
+					top = posts[rng.Int(0, posts.Count())];
+			}
 
-			array<RZ_Holding> posts = {};
-			territory.GetOutposts(RZ_EFaction.BANDITS, posts);
-			if (!posts.IsEmpty())
-				return m_GM.FindNearestSettlement(posts[rng.Int(0, posts.Count())].m_vPos).ToString();
+			if (top)
+				return PosText(RZ_Mission.LandPointNear(top.m_vPos, 60, 150));
 		}
 
-		RZ_Leaders leaders = m_GM.GetLeaders();
-		if (leaders && leaders.GetStronghold(RZ_EFaction.BANDITS))
-			return m_GM.FindNearestSettlement(leaders.GetStronghold(RZ_EFaction.BANDITS).m_vPos).ToString();
+		RZ_Settlement quiet = m_GM.GetSettlement(AnyQuietTown(rng));
+		if (!quiet)
+			return "";
 
-		return "";
+		return PosText(RZ_Mission.LandPointNear(quiet.m_vCenter, quiet.m_fRadius * 0.9, quiet.m_fRadius + 100));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1099,12 +1297,13 @@ class RZ_WorldFacts
 	//------------------------------------------------------------------------------------------------
 	protected void ExpireRumours()
 	{
+		// RemoveOrdered keeps the oldest-first order AddRumour trims by
 		for (int i = m_aRumours.Count() - 1; i >= 0; i--)
 		{
 			if (m_fClock >= m_aRumourUntil[i])
 			{
-				m_aRumours.Remove(i);
-				m_aRumourUntil.Remove(i);
+				m_aRumours.RemoveOrdered(i);
+				m_aRumourUntil.RemoveOrdered(i);
 			}
 		}
 	}
@@ -1144,8 +1343,9 @@ class RZ_WorldFacts
 	//! Fills the world's tokens into player-facing text, so no brief, rumour or line hard-codes a
 	//! fact: {day} (14), {day_text} (Day 14), {days_since_command} (11) and {days_since_command_words}
 	//! (eleven), {cure_state}, {cure_percent}, {stage}, {stage_tone}, {time_of_day}, {lab_town},
-	//! {stolen_doses}, {town:N}, {owner:N}, {flag:key}, {canon:key}. Unknown tokens are left alone
-	//! (a questline fills its own first).
+	//! {stolen_doses}, {town:N}, {owner:N}, {flag:key}, {canon:key}, {canon_town:key},
+	//! {leader:id}, {leader_short:id}, {leader_place:id}. Unknown tokens are left alone (a
+	//! questline fills its own first). Mission briefs are filled when shown (RZ_Mission.GetBrief).
 	string Fill(string text)
 	{
 		if (text.IsEmpty() || !text.Contains("{"))
@@ -1222,10 +1422,71 @@ class RZ_WorldFacts
 			}
 			case "owner": value = OwnerText(arg.ToInt(-1)); return true;
 			case "flag": value = Flag(arg).ToString(); return true;
-			case "canon": value = CanonText(arg); return true;
+			case "canon":
+			{
+				// Text never invents a fact: only one already made, or a built-in one
+				if (!HasCanon(arg) && !IsBuiltInCanon(arg))
+					return false;
+
+				value = CanonText(arg);
+				return !value.IsEmpty();
+			}
+			case "canon_town":
+			{
+				if (!HasCanon(arg) && !IsBuiltInCanon(arg))
+					return false;
+
+				int canonTown = CanonSettlement(arg);
+				if (!m_GM || !m_GM.GetSettlement(canonTown))
+					return false;
+
+				value = m_GM.GetSettlement(canonTown).m_sName;
+				return true;
+			}
+			case "leader": return LeaderText(arg.ToInt(-1), 0, value);
+			case "leader_short": return LeaderText(arg.ToInt(-1), 1, value);
+			case "leader_place": return LeaderText(arg.ToInt(-1), 2, value);
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The built-in canon keys (DefaultRule knows them).
+	static bool IsBuiltInCanon(string key)
+	{
+		array<string> keys = {"origin.site", "origin.site.town", "origin.clinic", "origin.patient", "origin.told", "origin.told.month",
+			"bastion.orders", "redhand.pit", "redhand.pit.town", "redhand.pit.seat"};
+		return keys.Contains(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A seat's live text for {leader:id} (what 0: the name; 1: the short name; 2: the place). An
+	//! empty seat reads as its title ("the outpost commander in Morton"). False if there's no seat.
+	protected bool LeaderText(int leaderId, int what, out string value)
+	{
+		RZ_Leader l = FindLeader(leaderId);
+		if (!l)
+			return false;
+
+		if (what == 2)
+		{
+			value = l.m_sPlace;
+			return true;
+		}
+
+		if (!l.IsPresent())
+		{
+			value = "the " + l.m_sTitle;
+			return true;
+		}
+
+		if (what == 1)
+			value = l.m_sShort;
+		else
+			value = l.m_sName;
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -443,7 +443,7 @@ class RZ_Job_OffBookRequisition : RZ_LeaderPuzzle
 			m_iSettlement = PickSettlementAway(gm, l.m_vPos, 800, 3000, 0, 60);
 
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s || gm.GetMissions().IsSettlementBusy(m_iSettlement))
+		if (!s || IsTownBusy(gm, m_iSettlement))
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.4);

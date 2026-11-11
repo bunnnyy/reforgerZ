@@ -198,6 +198,9 @@ class RZ_SupplyLines
 	static const int TRUCK_ROBBED = 2;
 	static const int TRUCK_LATE = 3;
 	static const int TRUCK_STOLEN = 4;
+	//! The post it was for changed hands or was abandoned: a request that never left, or a truck
+	//! that turned back. OnTruckEvent's `driver` is that holding's id instead of a player.
+	static const int TRUCK_CALLED_OFF = 5;
 
 	protected static const float CHECK_INTERVAL = 30;
 	protected static const float ARRIVE_RADIUS = 50;
@@ -424,6 +427,13 @@ class RZ_SupplyLines
 			m_aConvoyTo[f] = -1;
 			if (arcs && post)
 				arcs.OnConvoyCalledOff(f, holdingId, post.m_sName);
+
+			// A mission waiting for that truck (Convoy Escort, Hijack the Convoy) hears it too
+			vector at = vector.Zero;
+			if (post)
+				at = post.m_vPos;
+
+			m_GM.GetMissions().OnTruckEvent(f, TRUCK_CALLED_OFF, at, holdingId);
 		}
 
 		foreach (RZ_SupplyTruck t : m_aTrucks)
@@ -435,6 +445,11 @@ class RZ_SupplyLines
 			t.m_bDone = true;
 			t.m_fDoneAt = t.m_fAge;
 			RZ_Log.Info(string.Format("Supply: %1 truck to %2 called off (the outpost changed hands or was abandoned).", RZ_Factions.GetShortName(t.m_eFaction), t.m_sDestName));
+			vector truckAt = t.m_vDest;
+			if (t.m_Vehicle)
+				truckAt = t.m_Vehicle.GetOrigin();
+
+			m_GM.GetMissions().OnTruckEvent(t.m_eFaction, TRUCK_CALLED_OFF, truckAt, holdingId);
 			if (t.m_bConvoy && arcs && arcs.OnConvoyCalledOff(t.m_eFaction, holdingId, t.m_sDestName))
 				continue;
 

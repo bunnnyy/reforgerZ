@@ -1223,17 +1223,25 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			m_aWelcomed.Insert(playerId);
 			string lab = "";
-			if (m_bHasLab)
+			if (m_bHasLab && m_Cure.IsCured())
+			{
+				lab = string.Format("\nHalcyon's lab: %1. The cure is out; it takes no more samples.",
+					RZ_Util.DirectionText(controlledEntity.GetOrigin(), m_vLabPos));
+			}
+			else if (m_bHasLab)
 			{
 				lab = string.Format("\nHalcyon's lab: %1. Bring it samples from special infected.",
 					RZ_Util.DirectionText(controlledEntity.GetOrigin(), m_vLabPos));
 			}
 
-			NotifyPlayer(playerId, "Outbreak: " + RZ_StageSettings.GetStageName(m_Director.GetStage()),
-				string.Format("Cure research: %1 percent.%2", RZ_Util.RoundToInt(m_Cure.m_fProgress), lab));
+			string research = string.Format("Cure research: %1 percent.", RZ_Util.RoundToInt(m_Cure.m_fProgress));
+			if (m_Cure.IsCured())
+				research = "The cure is out. The gates open when the season ends.";
 
-			if (!m_Cure.IsCured())
-				NotifyPlayer(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText());
+			NotifyPlayer(playerId, "Outbreak: " + RZ_StageSettings.GetStageName(m_Director.GetStage()), research + lab);
+
+			// After the cure the broadcast reads the new order (RZ_Broadcast.GetText)
+			NotifyPlayer(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText());
 
 			// A final stand that was running (or restarted with the server) needs defenders
 			if (m_Cure.IsFinalStand())
@@ -1286,7 +1294,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			if (ent)
 				where = mission.GetWhereText(this, ent.GetOrigin());
 
-			NotifyPlayer(playerId, "World event: " + mission.m_sTitle, string.Format("%1\n(%2)", mission.m_sBrief, where));
+			NotifyPlayer(playerId, "World event: " + mission.m_sTitle, string.Format("%1\n(%2)", mission.GetBrief(this), where));
 		}
 	}
 
@@ -1803,6 +1811,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	void SpawnSamples(vector pos, int count)
 	{
+		// After the cure nothing takes samples (the lab, the Red Hand): none drop
+		if (m_Cure && m_Cure.IsCured())
+			return;
+
 		for (int i = 0; i < count; i++)
 		{
 			TrackLooseItem(RZ_Util.SpawnPrefab(m_sSamplePrefab, RZ_Util.RandomPointInRing(pos, 0.3, 1.5) + Vector(0, 0.3, 0)));

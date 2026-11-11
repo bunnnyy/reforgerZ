@@ -308,9 +308,11 @@ placed by hand. **Nothing is built along the edge** except the road checkpoints.
   nobody fires a warning shot or a sniper round, at the edge or at a checkpoint. In the warning
   zone the loudspeaker reads the new order instead (*"The quarantine order for this area has been
   lifted. Remain where you are. Processing will begin at the road checkpoints."*), once per
-  approach. The checkpoint barriers and their guards stay: the gates open with the wipe. The
-  Perimeter missions, Learning the Drones, the basement spawn scene and the perimeter tip stop
-  with it (`RZ_WorldFacts.PerimeterSealed`).
+  approach. The checkpoint barriers and their guards stay: the gates open with the wipe. The line
+  isn't open either: whoever walks into the kill zone, or up to a barrier, is turned back to the
+  warning zone, 40 m clear of it (a voice from past the line, no shot, no drone). The Perimeter
+  missions, Learning the Drones, the basement spawn scene and the perimeter tip stop with it
+  (`RZ_WorldFacts.PerimeterSealed`); one running when the cure comes out is called off.
 
 ## Time and environment
 
@@ -506,7 +508,9 @@ Code: `Factions/RZ_SupplyLines.c`.
 - **Destination lost:** if the outpost changes hands or is abandoned while a truck is on its
   way, the run is called off: no delivery, no reward, no shortage, and the truck is removed like
   a finished one. The outpost's stock and shortage go with its old owner. The roads hear about
-  it: a headline and a rumour ("Bastion's truck for Morton turned round on the road").
+  it: a headline and a rumour ("Bastion's truck for Morton turned round on the road"). A mission
+  waiting for that truck, or for one asked for and not yet gone, is called off
+  (`TRUCK_CALLED_OFF`, [World facts](#world-facts)).
 - **Stock:** a delivery fills an outpost to 8 units; it uses one every 45 minutes. Bastion's
   Requisition draws one unit per item. **Haven trucks carry food:** +6 at a safehouse.
 - **Players and trucks.** Ride along within 150 m for 40% of the trip and see it arrive: +4
@@ -763,12 +767,12 @@ Longer storylines, over many sessions and with choices, are [questlines](#questl
 
 | Arc | Steps (each needs the one before) |
 |---|---|
-| **The Missing Courier** | A Halcyon courier stops reporting (the Lost Colleague contract, renamed). Once that search ends, wanderers say they saw Red Hand men with lab cases. Once a player has heard it, a headline: that camp sells antidotes in Halcyon cases. Ten minutes later the Red Hand comes for more: a **Lab Defence** |
+| **The Missing Courier** | A Halcyon courier stops reporting (the Lost Colleague contract, renamed). Once that search ends, wanderers say they saw Red Hand men with lab cases. Once a player has heard it, a headline: that camp sells antidotes in Halcyon cases (if the outpost isn't the Red Hand's any more by then, they've moved to another one). Ten minutes later the Red Hand comes for more: a **Lab Defence**, whose brief says whether stolen doses are still on the market |
 | **The Last Convoy** | Bastion announces a convoy to pull an outpost's people back. Its next real supply truck goes there. Red Hand lookouts are seen; the Red Hand's Known hear it's worth robbing, Bastion's Known are asked to ride along. Delivered: the post stays. Lost: it runs dry. The post falls or is abandoned first: the arc ends with a headline ("Morton fell before Bastion's convoy arrived") and a rumour |
 | **The Preacher's Flock** | The Preacher rings his bells in every town (twice the heat). After two towns, up to three small hordes come for him while a player is within 600 m. Ends when someone asks him to stop, after an hour, or if he dies |
 | **The Deserter's Map** | A dying deserter's map piece names two wanderers. Each holds a piece; with both, the grid of a hidden Bastion bunker, guarded by four infected |
 | **Fever Town** | A safehouse's town creeps up in infection. If a player goes near: a Halcyon contract checks the water. If that succeeds: a Haven contract to get the sick out. Done: two people move and the added infection goes; failed: two die |
-| **The Quiet Congregation** (the Haven's dark side) | Rare: a safehouse that has lost 6+ people lately, with the Preacher alive. He walks there and the house prays with him: half portions, bells at the gate, and gossip that it "borrows" from other houses. Players end it by bringing 6 food or asking the Preacher to stop. Otherwise after 90 minutes he walks on and two people go with him |
+| **The Quiet Congregation** (the Haven's dark side) | Rare: a safehouse that has lost 6+ people lately (to hunger, raids or worse: `m_iLost`), with the Preacher alive. He walks there and the house prays with him: half portions, bells at the gate, and gossip that it "borrows" from other houses. Players end it by bringing 6 food or asking the Preacher to stop. Otherwise after 90 minutes he walks on and two people go with him |
 
 The missions inside arcs are in [MISSIONS.md](MISSIONS.md), "Story arc missions".
 
@@ -844,7 +848,9 @@ missions in the same file, registered with one line in `RZ_QuestlineRegistry.Reg
 example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
 
 1. **Define()**: `Info("haven_short_weight", "Short Weight", RZ_EFaction.SURVIVORS)` (the key is
-   saved: never change it once it has run), then the stages, the first one is where it starts:
+   saved: never change it once it has run; a questline designed in
+   [QUESTLINES.md](QUESTLINES.md#the-questlines) uses the key given there, which content may
+   already gate on), then the stages, the first one is where it starts:
    `MissionStage(S_ASK, "Where the food goes", "...{town}...")` or
    `WaitStage(S_WAIT, "The next handover", "...")`. Tune a stage on the object it returns:
    `.Wait(playMinutes, realHours, both)`, `.GiveUp(playHours, "fizzle line")`, `.Visits(n)`.
@@ -853,22 +859,26 @@ example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
    `run.SetFlag("house", idx)`, `run.SetText("town", name)`, `run.SetPlace(pos, name)`.
    Hold what the story uses so no other story takes it meanwhile:
    `run.Claim(RZ_WorldFacts.Safehouse(idx))` (false if someone else has it; kept with the run,
-   held again after a restart, let go when the run ends). Return false if the world isn't right
-   yet; spawn nothing here. Every `{key}` in a stage's text, a note or a line is filled in from
-   the run's texts, then from the world's own tokens (`{day}`, `{cure_state}`...).
+   held again after a restart, let go when the run ends; a claimed house makes its town busy for
+   every other mission). Return false if the world isn't right yet; spawn nothing here. Every
+   `{key}` in a stage's text, a note or a line is filled in from the run's texts, then from the
+   world's own tokens (`{day}`, `{cure_state}`, `{leader:id}`...).
 3. **IsReady(gm, run, stage)**: world gates on top of the wait, with the helpers
    `IsLeaderAlive`, `LeaderNear`, `IsTownHeldBy`, `GetMorale`, `GetHouse`, or a flag. For
    anything else the world knows (the cure, the day, night, who holds a town, a safehouse's
    food, a leader's live name, a fixed fact of the setting) use the [world facts](#world-facts):
    `gm.GetFacts()`. **Crossings between questlines** use the world facts' season flags:
    `gm.GetQuestlines().WorldFlag("key.flag")`, `SetWorldFlag`, `HasWorldFlag` (the same store as
-   `gm.GetFacts().Flag`, so contracts, arcs and voice read them too), named
-   `<questline key>.<flag>`. Every ending sets `<key>.ending` by itself.
+   `gm.GetFacts().Flag`, so contracts, arcs and voice read them too). A flag only your questline
+   reads is `<questline key>.<flag>`; a flag another line reads uses its name from the
+   [Crossings](QUESTLINES.md#crossings) table (short names such as `list.to_bastion`, reserved for
+   those lines). Every ending sets `<key>.ending` by itself.
 4. **MakeMission(gm, run, stage)**: `return new RZ_QM_MyStage();`. The engine sets its
    `m_iQuestRun`, runs `Configure` and starts it if it can run now (the mission manager's shared
    check: world gates, one of each type, claims; [World facts](#world-facts)). A stage mission may
-   use what its questline holds. Halcyon's stage missions stop after the cure unless
-   `m_Req.m_bAfterCure` is set.
+   use what its questline holds: check its own town with `IsTownBusy(gm, idx)` and pass `this` to
+   the shared pickers. Halcyon's stage missions stop after the cure unless `m_Req.m_bAfterCure` is
+   set (one running then is called off).
 5. **The stage mission** extends `RZ_QuestMission` (a puzzle mission that is never picked at
    random). `Configure` sets the giver and pay as usual (`SetContract`). `SetupPuzzle` reads the
    run (`QFlag`, `QText`, `QFill`) and picks the spot; `SpawnScene` puts people and props down
@@ -900,9 +910,10 @@ example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
    `return Finish(run, ending, "line for everyone who took part")` or
    `return Fizzle(run, "line")`.
 7. **OnEnding(gm, run, ending)**: the consequences, through `NudgeMorale`, `NudgeStrength`,
-   `NudgeInfection`, `ChangeFood`, `ChangePopulation`, `ReplaceLeader`, `HandOutpost` (both
-   return false if they can't happen: then don't claim they did), `Headline`, `SpreadRumour`,
-   `RememberWanderer` and `ChangeStanding`.
+   `NudgeInfection`, `ChangeFood`, `ChangePopulation` (never below 2 people),
+   `ReplaceLeader(gm, id, headline, run)` (pass the run to move a leader it claimed itself),
+   `HandOutpost` (both return false if they can't happen: then don't claim they did), `Headline`,
+   `SpreadRumour`, `RememberWanderer` and `ChangeStanding`.
 8. Optional: `OnBegin` and `OnStageBegin` (an opening headline, a first note), `Rumour` (gossip
    while it runs), `OnWandererTalk` and `OnLeaderTalk` (a line when a wanderer or leader is talked
    to, which can also set a flag a wait stage waits for), `JournalText` (a brief that changes
@@ -936,9 +947,11 @@ keeps four small things of its own: **season flags**, **canon**, **claims** and 
 | The line is up and shooting | `PerimeterSealed()` (not after the cure) | the Perimeter |
 | Bastion's helicopter can fly | `HeliAvailable()`; `SetHeliDown(days)` (days < 0: for good) | storms, the season flags `heli.down_until` (a day) and `heli.lost` |
 | Who holds a town | `TownOwner(idx)`: faction and kind (lab, stronghold, outpost, safehouse, none); `IsLivedIn(idx)`; `OwnerText(idx)` | the lab, territory, safehouses |
+| A town for a job | `PickTown(filter, asker)`, `CollectTowns(filter, result, asker)`: an `RZ_TownFilter` (infection, held by a faction or by nobody, not held by some factions, kind of holder, size, one to leave out), busy towns skipped | the queries above |
+| People live near a spot | `IsNearLivedIn(pos, radius)`: a safehouse, a holding or the lab (what shelling keeps away from) | safehouses, territory, the lab |
 | Lights | `IsPowered(pos)` | the power grid, surges, generators |
-| A safehouse now | `House(idx)`: people, food, short, medic, radio, lost lately, tier | safehouses |
-| A leader now | `LeaderName(id)`, `LeaderAlive(id, generation)`, `LeaderGeneration(id)`, `LeaderFree(id)` | leaders: a seat keeps its id when someone new sits down, so read the name when the line is shown |
+| A safehouse now | `House(idx)`: people, food, short, medic, radio, lost lately (`m_iLost`: left, moved, taken or dead), died lately (`m_iDied`, only the dead), empty, tier | safehouses |
+| A leader now | `LeaderName(id)`, `LeaderAlive(id, generation)`, `LeaderGeneration(id)`, `LeaderFree(id)` | leaders: a seat keeps its id when someone new sits down, so write `{leader:id}` in text (filled when it's shown) |
 | A wanderer is free | `WandererFree(id)` (alive, not held, not claimed) | wanderers |
 | Doses on the black market | `StolenDoses()` | cure research |
 
@@ -952,19 +965,22 @@ time anything asks, so a mission never re-rolls the story: `CanonText(key, rule)
 `CanonInt(key, min, max)`, `CanonPick(key, options)`, `CanonSettlement(key, rule)`,
 `CanonPos(key, rule)`, `HasCanon`, `SetCanon` (the first value wins). Without a rule a key gets
 its built-in rule below, else a seeded default (a number in the range, one of the options, a
-town nobody lives in, a dry spot just outside it). A rule is a small `RZ_CanonRule` subclass
-whose `Make(gm, facts, rng)` returns the value as text (`RZ_WorldFacts.PosText(pos)` for a
-spot). Saved; a new season makes new ones. A canon town can change hands during the season: read
-`TownOwner` when you use it.
+town nobody lives in, a dry spot just outside it). `CanonInt` always answers inside its range,
+even for a built-in or earlier value. A rule is a small `RZ_CanonRule` subclass whose
+`Make(gm, facts, rng)` returns the value as text (`RZ_WorldFacts.PosText(pos)` for a spot); a
+rule that asks for the fact it is making gets "" back. Saved; a new season makes new ones. A
+canon town can change hands during the season: read `TownOwner` when you use it.
 
-| Key | The fact | Built-in rule |
-|---|---|---|
-| `origin.site` (a spot), `origin.site.town` | the closed site in the hills | a high dry spot between two towns 1.4–6 km apart, at least 450 m past every settlement and 1.5 km from the lab; else high ground beyond the town farthest from the lab |
-| `origin.clinic` | the clinic the first patient was brought to | the town or city nearest the site, not the lab's |
-| `origin.patient` | his surname | a surname |
-| `origin.told`, `origin.told.month` | the date the Institute was told | day 3–24, month 1–12 |
-| `bastion.orders` | what the last orders said | `expended` (60%) or `relief` |
-| `redhand.pit` | where the Red Hand's fight pit is | the Red Hand stronghold's town, else one of its outposts' |
+| Key | Kind | The fact | Built-in rule |
+|---|---|---|---|
+| `origin.site` | spot (`CanonPos`) | the closed site in the hills | The Three Weeks' rules: a high dry spot between two towns 1.4–6 km apart, at least 450 m past every settlement, 1.5 km from the lab, not behind a lock and not nearest the lab's town, moved onto a factory, mast or barracks within 400 m if one is as remote; else high ground beyond the town farthest from the lab, as remote as it can be |
+| `origin.site.town` | town (`CanonSettlement`) | the town nearest the site | |
+| `origin.clinic` | town | the clinic the first patient was brought to | the town or city nearest the site, not the lab's or the site's own |
+| `origin.patient` | words | his surname | a surname |
+| `origin.told`, `origin.told.month` | number (`CanonInt`) | the date the Institute was told | day 3–24, month 1–12 |
+| `bastion.orders` | words | what the last orders said | `expended` (60%) or `relief` |
+| `redhand.pit` | spot | where the Red Hand's fight pit is | 60–150 m behind the boss's seat at the Red Hand stronghold, else a crew boss's seat, else its stronghold or an outpost, else outside a quiet town |
+| `redhand.pit.town`, `redhand.pit.seat` | town; number | the pit's town; the seat it's behind (a leader id, -1 none: `LeaderName(id)` names whoever sits there now) | made with the pit |
 
 **Claims.** Who is using a subject right now, so two stories don't use the same house, leader or
 wanderer at once. `Claim(subject, owner)` (true if it was free or already that owner's),
@@ -979,20 +995,34 @@ wanderer at once. `Claim(subject, owner)` (true if it was free or already that o
   it picks in `Setup` it holds with `ClaimSubject(gm, subject)`. A mission started by an arc or
   a questline may use what that story holds (`m_sClaimParent`).
 - **Story arcs** and **questline runs** (`run.Claim`) hold theirs until they end.
-- **Who respects them:** a claimed town is busy (`IsSettlementBusy`, so the shared town pickers
-  `PickSettlement`, `PickSettlementAway` and `PickEmptyTown` skip it), `PickFreeSafehouse` skips
-  claimed houses, `FindForMission` claimed wanderers, and a
-  claimed leader isn't killed off-screen (the danger roll, `KillOffscreen`) or moved from the
-  seat by anyone else.
+- **Who respects them:** a town is busy (`IsSettlementBusy(idx, asker)`) while another running
+  mission uses it or a story holds the town, a safehouse in it, or the lab (the final stand).
+  With the asking mission, what it or its own story holds counts as free, so a stage mission can
+  use its questline's house. The shared pickers take the mission as their last argument:
+  `PickSettlement`, `PickSettlementAway`, `RZ_EventHelp.PickEmptyTown`, `PickFreeSafehouse`
+  (also skips claimed houses), `FindForMission` (claimed wanderers) and `PickTown`. A mission
+  checks its own town with `IsTownBusy(gm, idx)`. A claimed leader isn't killed off-screen (the
+  danger roll, `KillOffscreen`, which returns false then) or moved from the seat by anyone else
+  (`RZ_Questline.ReplaceLeader(gm, id, headline, run)` may move one its own run claimed).
 - **Runtime only.** Claims aren't saved. After a restart the content that is still running claims
   again: missions are offered again from the start, arcs and questline runs take theirs back.
 
 **Can it run now?** `RZ_MissionManager.CanRunNow(m, players, checkWeight)` (`WhyNot` says why
 not, `StartIfCan` checks and starts) is the one check every starter uses: the requirements'
 world gates and facts, the season's No Vehicles rule, the mission's weight if the manager also
-picks its type at random, one of each type at a time, and its claims free. The random picks,
-story arcs, questline stages, leaders' personal jobs and the Mechanic's and Courier's jobs all
-use it. The Turned Player event and a leader's Rein In are systems and start directly.
+picks its type at random, one of each type at a time (a leader's personal jobs: one per leader,
+so two leaders can each offer the same kind), and its claims free. The random picks, story arcs,
+questline stages, leaders' personal jobs and the Mechanic's and Courier's jobs all use it. The
+Turned Player event and a leader's Rein In are systems and start directly.
+
+**Called off.** `m.Withdraw(why)` ends a running mission that the world made pointless: at the
+next tick, with `why` told to everyone it was offered to, and nobody paid, blamed or penalised
+(no Fame, Infamy, strength, morale or leader memory); its arc or questline hears it as a
+failure. When the cure comes out, every running mission that stops with it is called off
+(`RZ_MissionManager.OnCured`: `m_bNotCured`, and Halcyon's work unless `m_bAfterCure`). When a
+supply truck's post changes hands, missions get `RZ_SupplyLines.TRUCK_CALLED_OFF` (with the
+holding's id as `driver`, before or after the truck left): Convoy Escort and Hijack the Convoy
+are called off with it.
 
 **Requirements' world facts** (`RZ_MissionRequirements`, checked with the stage and cure):
 
@@ -1001,11 +1031,16 @@ use it. The Turned Player event and a leader's Rein In are systems and start dir
 | `m_bNotCured` | stops once the cure is out. **Halcyon's work does by default** (it's all research); `m_bAfterCure` keeps one going |
 | `m_fMinMilitary`, `m_fMaxMilitary` | Bastion presence within this range |
 | `m_eTime` | `RZ_ETimeGate`: `ANY`, `NIGHT`, `DUSK_OR_NIGHT`, `DAY` (with no game clock every value passes) |
+| `m_bNeedsHeli` | Bastion's helicopter can fly (`HeliAvailable`: no storm, not down) |
 | `NeedFlag(key)`, `NeedNoFlag(key)` | a season flag set, or not set |
-| `NotWhileQuest(key)`, `NotAfterQuest(key)`, `NotWithQuest(key)` | not while a questline runs, not once it reached an ending, or neither |
+| `NeedFlagWithin(key, days)`, `NeedFlagNotWithin(key, days)` | a flag that holds a day (what `Changed` sets) set no more than `days` days ago (0 = today), or not |
+| `NotWhileQuest(key)`, `NotAfterQuest(key)`, `NotWithQuest(key)` | not while a questline runs, not once it reached an ending, or neither. Keys are fixed in [QUESTLINES.md](QUESTLINES.md#the-questlines); one that is neither registered nor designed is logged once as a warning |
 
 **Text.** `Fill(text)` fills the world's tokens, so no brief, rumour or line hard-codes a fact.
-Unknown tokens are left alone; a questline's own `{keys}` are filled first.
+Unknown tokens are left alone; a questline's own `{keys}` are filled first. **Mission briefs are
+filled when they're shown** (`RZ_Mission.GetBrief`: offers, the journal, world-event notices,
+leaders' and wanderers' jobs), so `m_sBrief` may hold tokens. Any other line (a drop's name, a
+notice) is filled only where you call `Fill` on it.
 
 | Token | Gives |
 |---|---|
@@ -1014,7 +1049,9 @@ Unknown tokens are left alone; a questline's own `{keys}` are filled first.
 | `{cure_state}`, `{cure_percent}` | "the cure is at 40 percent" (or "is out", "the lab is holding its final stand"), 40 |
 | `{stage}`, `{stage_tone}` | Collapse; "the towns are going dark" (one phrase per stage, and one after the cure) |
 | `{time_of_day}`, `{lab_town}`, `{stolen_doses}` | night, dusk or day; the lab's town; the black market's doses |
-| `{town:N}`, `{owner:N}`, `{flag:key}`, `{canon:key}` | a settlement's name, who holds it ("the Haven", "nobody"), a season flag, a canon fact |
+| `{town:N}`, `{owner:N}`, `{flag:key}` | a settlement's name, who holds it ("the Haven", "nobody"), a season flag |
+| `{canon:key}`, `{canon_town:key}` | a canon fact as words (for the *words* and *number* kinds), the name of a canon *town*. Text never makes a new fact: only a built-in key or one already made is filled |
+| `{leader:id}`, `{leader_short:id}`, `{leader_place:id}` | who sits in that seat now ("Major Weber", "Weber"), and the seat's place; an empty seat reads as its title ("the outpost commander in Morton") |
 
 **World changes and gossip.** `Changed(key, headline, rumour, moment, rumourHours, announce)`
 tells the world in one call: the headline goes to the server news (to everyone too with
@@ -1029,24 +1066,29 @@ endings use it too). Saved.
 | You want to | Use |
 |---|---|
 | say what day it is, or how long Command has been silent | `{day}`, `{days_since_command_words}` in `Fill`, or `Day()`, `DaysSinceCommand()` |
-| stop a job once the cure is out | `m_Req.m_bNotCured = true` (Halcyon's already stop; `m_bAfterCure` to keep one) |
+| stop a job once the cure is out | `m_Req.m_bNotCured = true` (Halcyon's already stop; `m_bAfterCure` to keep one); a running one is called off by itself |
 | a job only at night, or only while Bastion is about | `m_Req.m_eTime = RZ_ETimeGate.NIGHT`; `m_Req.m_fMinMilitary = 0.3` |
-| a contract that tells a questline's story | `m_Req.NotWithQuest("<key>")` |
-| a town that nobody lives in, or one a faction really holds | `RZ_EventHelp.PickEmptyTown`, or `TownOwner(idx)` / `IsLivedIn(idx)` on a pick |
-| name a leader in text | `LeaderName(id)` when the line is shown; `LeaderAlive(id, generation)` before you count on them |
-| say how a safehouse is doing | `House(idx)` |
-| mention a fixed fact of the setting | `CanonSettlement("origin.clinic")`, `CanonText("bastion.orders")`... |
-| keep a house, leader or wanderer for your story | `GetClaims`/`ClaimSubject` (missions), `run.Claim` (questlines) |
+| a job that needs Bastion's helicopter | `m_Req.m_bNeedsHeli = true`; `SetHeliDown(days)` when it crashes (days < 0: for good) |
+| a job only in the days after something changed | `m_Req.NeedFlagWithin("<the Changed key>", 2)` |
+| a contract that tells a questline's story | `m_Req.NotWithQuest("<key>")`, with the key from [QUESTLINES.md](QUESTLINES.md#the-questlines) |
+| a town that nobody lives in, or one a faction really holds | `RZ_EventHelp.PickEmptyTown(gm, min, max, this)`, or `PickTown` with an `RZ_TownFilter` (`m_iHeldBy`, `m_iNotHeldBy`, `m_iKinds`) |
+| keep shells, fire or a horde away from people | `IsNearLivedIn(pos, radius)` |
+| name a leader in text | `{leader:id}` in the brief (or `Fill` the line where you show it); `LeaderAlive(id, generation)` before you count on them |
+| say how a safehouse is doing | `House(idx)` (`m_iDied` for the dead; `m_iLost` counts everyone who left) |
+| mention a fixed fact of the setting | `CanonSettlement("origin.clinic")`, `CanonPos("redhand.pit")`, `CanonText("bastion.orders")`, or `{canon_town:origin.clinic}` in text |
+| keep a house, leader or wanderer for your story | `GetClaims`/`ClaimSubject` (missions), `run.Claim` (questlines); pass the mission (`this`) to the pickers and use `IsTownBusy` for its own town |
 | start a mission from your own code | `gm.GetMissions().StartIfCan(m, players)` |
+| end a mission the world made pointless | `Withdraw("why")` |
 | record an outcome other content reads | `SetFlag("<you>.<what>", value)` |
 | tell everyone something in the world changed | `Changed(...)` |
 
 *Simplified:* the layer is built, and the epilogue, the Perimeter, guidance, the voice lines named
 above and the arcs use it. **Planned:** switching the rest of the content to it (contract town
-pickers to `TownOwner`, Bastion contracts and road posts to Bastion presence, the hard-coded days
-in briefs to `Fill`, The Three Weeks, Patient Zero, The Real Orders, Fight Pit and The Pit's
-Debtor to canon, the lab and the helicopter as claims, missions that duplicate a questline's
-premise to `NotWithQuest`, research jobs outside Halcyon to `m_bNotCured`).
+pickers to `PickTown`, Bastion contracts and road posts to Bastion presence, the hard-coded days
+and copied leader names in briefs to tokens, The Three Weeks, Patient Zero, The Real Orders,
+Fight Pit, House Rules and The Pit's Debtor to canon, the lab and the helicopter as claims and
+`m_bNeedsHeli`, missions that duplicate a questline's premise to `NotWithQuest`, research jobs
+outside Halcyon to `m_bNotCured`, Bastion Shelling to `IsNearLivedIn`).
 
 ## Town memory
 
@@ -1411,11 +1453,13 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
 - **Contracts that touch the lab** (not saved across a restart): Power the Lab makes doses come
   twice as fast for 2 hours; Mobile Lab opens a **field annex**, a second lab prefab in a safer
   town where samples can be handed in for 3 hours, then it packs up. The lab itself never moves.
-- **After the cure** (the epilogue, until the wipe): research is over. Specials drop no
-  samples, the lab refuses them (and says so), the sample tips stop, the lab makes no more doses,
-  and Halcyon gives no more work by default ([World facts](#world-facts)). The Perimeter stands
-  down ([The Perimeter](#the-perimeter)); the broadcast stops its loop, and a first spawn hears
-  the new order instead.
+- **After the cure** (the epilogue, until the wipe): research is over. Nothing drops samples
+  (specials or mission rewards), the lab and the Red Hand's dead drop refuse them (and say so),
+  the sample tips stop, the lab makes no more doses, and Halcyon gives no more work by default
+  ([World facts](#world-facts)). Work that stops with the cure and is running when it comes out is
+  called off at once, with no pay and no penalty. The Perimeter stands down
+  ([The Perimeter](#the-perimeter)); the broadcast stops its loop, and a first spawn and the
+  wind-up radio give the new order instead.
 - **The season's end.** When the final stand is won, the cure goes to the faction the server
   gave the most Fame this season (summed over all players). It's chosen before the stand's own
   Fame (Halcyon +50 and the Haven +30 for each player at the lab) is handed out, so the last

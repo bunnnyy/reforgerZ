@@ -1460,7 +1460,7 @@ class RZ_Leaders
 	{
 		RZ_Leader l = Get(m.m_iLeaderId);
 		if (!l || !l.IsPresent())
-			return m.m_sBrief;
+			return m.GetBrief(m_GM);
 
 		RZ_Rng rng = new RZ_Rng(m_iSeed + m.m_iId * 131 + l.m_iId);
 		int lead = l.m_iTraitA;
@@ -1473,7 +1473,7 @@ class RZ_Leaders
 		else
 			outro = RZ_LeaderVoice.SignOff(rng, l.m_eFaction);
 
-		return string.Format("%1, %2:\n\"%3\" %4 \"%5\"", l.m_sName, l.m_sTitle, RZ_LeaderVoice.Intro(rng, lead), m.m_sBrief, outro);
+		return string.Format("%1, %2:\n\"%3\" %4 \"%5\"", l.m_sName, l.m_sTitle, RZ_LeaderVoice.Intro(rng, lead), m.GetBrief(m_GM), outro);
 	}
 
 	//------------------------------------------------------------------------------------------------

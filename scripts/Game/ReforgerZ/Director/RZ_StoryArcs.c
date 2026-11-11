@@ -619,6 +619,7 @@ class RZ_StoryArcs
 
 		if (m_Arc.m_iKind == ARC_COURIER && m_Arc.m_iStep == 1)
 		{
+			CheckCourierCamp();
 			m_Arc.SetI(3, 1);	// someone heard it
 			return string.Format("\"You know the Halcyon courier who went missing? I saw Red Hand men near %1 carrying lab cases. White ones, with the stickers.\"", m_Arc.S(1));
 		}
@@ -685,12 +686,18 @@ class RZ_StoryArcs
 		if (!m_Arc || m_Arc.m_bDone || m_Arc.m_iKind != ARC_CONVOY || m_Arc.I(0) != holdingId)
 			return false;
 
+		// The rumour says what the headline says: it never left, or it came back
 		if (m_Arc.m_iStep == 0)
+		{
 			End(string.Format("%1 fell before Bastion's convoy could leave. There's nobody left there to pull back.", dest));
+			RZ_WorldFacts.Get().AddRumour(string.Format("\"Bastion was going to pull %1 back. Too late: there's nobody left there to pull.\"", dest), 4);
+		}
 		else
+		{
 			End(string.Format("%1 fell before Bastion's convoy arrived. The truck turned round on the road and came home full.", dest));
+			RZ_WorldFacts.Get().AddRumour(string.Format("\"Bastion's big convoy for %1 came back full. Nothing left to pull out by the time it got close.\"", dest), 4);
+		}
 
-		RZ_WorldFacts.Get().AddRumour(string.Format("\"Bastion's big convoy for %1 came back full. Nothing left to pull out by the time it got close.\"", dest), 4);
 		return true;
 	}
 
@@ -846,7 +853,8 @@ class RZ_StoryArcs
 	}
 
 	// ================================================================ 1. The Missing Courier
-	// ints: 0 mission id, 8 last mission success, 9 mission ran, 3 rumour heard. strs: 1 camp town.
+	// ints: 0 mission id, 4 camp holding (-1 a rough town), 8 last mission success, 9 mission ran,
+	// 3 rumour heard. strs: 1 camp town.
 	//------------------------------------------------------------------------------------------------
 	protected bool StartCourier()
 	{
@@ -861,16 +869,29 @@ class RZ_StoryArcs
 			return false;
 
 		m_Arc.SetI(0, id);
+		PickCourierCamp();
+		Headline("A Halcyon courier stopped reporting on the road from the lab. The lab is asking anyone who'll listen.");
+		return true;
+	}
 
-		// Where the Red Hand will turn up: one of its holdings, else a rough town
+	//------------------------------------------------------------------------------------------------
+	//! Where the Red Hand turns up with the courier's cases: one of its outposts (kept by id, so
+	//! the arc can tell if it falls), else a rough town.
+	protected void PickCourierCamp()
+	{
 		string camp = "";
+		m_Arc.SetI(4, -1);
 		RZ_Territory territory = m_GM.GetTerritory();
 		if (territory && territory.IsActive())
 		{
 			array<RZ_Holding> posts = {};
 			territory.GetOutposts(RZ_EFaction.BANDITS, posts);
 			if (!posts.IsEmpty())
-				camp = posts.GetRandomElement().m_sName;
+			{
+				RZ_Holding post = posts.GetRandomElement();
+				camp = post.m_sName;
+				m_Arc.SetI(4, post.m_iId);
+			}
 		}
 
 		if (camp.IsEmpty())
@@ -884,8 +905,24 @@ class RZ_StoryArcs
 			camp = "the crossroads";
 
 		m_Arc.SetS(1, camp);
-		Headline("A Halcyon courier stopped reporting on the road from the lab. The lab is asking anyone who'll listen.");
-		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Before anyone names the camp: if the outpost isn't the Red Hand's any more, they've moved on
+	//! to another one.
+	protected void CheckCourierCamp()
+	{
+		int holding = m_Arc.I(4);
+		if (holding < 0)
+			return;
+
+		RZ_Territory territory = m_GM.GetTerritory();
+		RZ_Holding post;
+		if (territory)
+			post = territory.GetHolding(holding);
+
+		if (!post || post.m_eFaction != RZ_EFaction.BANDITS)
+			PickCourierCamp();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -912,6 +949,7 @@ class RZ_StoryArcs
 				// Someone has to hear the rumour from a wanderer
 				if (m_Arc.I(3) == 1)
 				{
+					CheckCourierCamp();
 					NextStep();
 					Headline(string.Format("A Red Hand camp near %1 is selling antidotes. In Halcyon cases.", m_Arc.S(1)));
 					NotifyKnown(RZ_EFaction.INSTITUTE, "Halcyon", string.Format("\"Our cases. Our antidotes. Near %1. Whatever they took from our courier, they'll be back for more.\"", m_Arc.S(1)));
@@ -937,7 +975,11 @@ class RZ_StoryArcs
 					return;
 				}
 
-				defence.m_sBrief = "The Red Hand ran out of stolen antidotes. Now they're coming to the lab for more. Hold it for four minutes.";
+				// What the black market holds right now decides the brief
+				if (m_GM.GetFacts().StolenDoses() > 0)
+					defence.m_sBrief = "The Red Hand is still selling our stolen antidotes, and it wants more to sell. Now it's coming to the lab for them. Hold it for four minutes.";
+				else
+					defence.m_sBrief = "The Red Hand ran out of stolen antidotes. Now they're coming to the lab for more. Hold it for four minutes.";
 				m_Arc.SetI(0, id);
 				m_Arc.SetI(9, 0);
 				NextStep();
@@ -1260,7 +1302,7 @@ class RZ_StoryArcs
 		m_Arc.SetS(0, h.m_sName);
 		m_Arc.SetS(1, m_GM.GetWanderers().GetName(preacher));
 		h.m_iLost = 0;
-		Headline(string.Format("The safehouse in %1 has buried too many this week. People there have started waiting for %2 by the gate.", h.m_sName, m_Arc.S(1)));
+		Headline(string.Format("The safehouse in %1 has lost too many people this week. Those left have started waiting for %2 by the gate.", h.m_sName, m_Arc.S(1)));
 		return true;
 	}
 
@@ -1482,6 +1524,14 @@ class RZ_Mission_FeverWater : RZ_Mission_WaterSurvey
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A Halcyon job, but checking a well is not cure research: it still runs after the cure.
+	override void Configure(RZ_GameModeComponent gm)
+	{
+		super.Configure(gm);
+		m_Req.m_bAfterCure = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
 		return 0;
@@ -1601,8 +1651,9 @@ class RZ_Mission_FeverEvacuation : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override void OnFailed(RZ_GameModeComponent gm)
 	{
+		// "Two of them didn't make it": the dead, not people who walked
 		RZ_Safehouses houses = gm.GetSafehouses();
 		if (houses)
-			houses.RemovePopulation(m_iHouse, 2);
+			houses.RemoveDead(m_iHouse, 2);
 	}
 }

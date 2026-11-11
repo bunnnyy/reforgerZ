@@ -34,8 +34,9 @@ these missions as stages are in [QUESTLINES.md](QUESTLINES.md) (designed, not bu
    get a better outcome (★).
 4. **World state.** Outbreak stage, cure progress, whether Bastion is still around, night. Once
    the cure is out, Halcyon's contracts and events stop (its work is research), and so does any
-   mission at the line. A mission can also wait on a season flag or stay away while a questline
-   tells its story ([DESIGN.md](DESIGN.md#world-facts)).
+   mission at the line; one running when the cure comes out is called off (no pay, no penalty). A
+   mission can also wait on a season flag or stay away while a questline tells its story
+   ([DESIGN.md](DESIGN.md#world-facts)).
 
 How the code does it:
 
@@ -67,7 +68,9 @@ How the code does it:
   "Morale, needs, truces and feuds").
 - **Supply trucks aren't contracts.** Escorting, driving in or stealing one pays directly
   ([DESIGN.md](DESIGN.md), "Supply trucks"). Convoy Escort and Hijack the Convoy ask for
-  Bastion's next real truck, so those truck rewards are paid on top of the contract.
+  Bastion's next real truck, so those truck rewards are paid on top of the contract. If the post
+  it's going to changes hands first, the truck turns back and both are called off (no pay, no
+  penalty).
 - **Rescues** add population at the nearest Haven safehouse ([DESIGN.md](DESIGN.md), "Haven safehouses").
 - **Bodies on approach.** A contract's guards, AI people and raiders are spawned when a player
   comes within about 300 m of them; until then the job is data. A spawned AI group that is gone
@@ -356,8 +359,8 @@ Personal jobs that Independent and Rogue leaders give **in person**, off their s
   with the other faction involved. Rewards never include loot.
 - **Rogue jobs can be discovered**, and most rogue deliveries have a second drop at the stronghold
   where you can **turn the leader in** instead.
-- **The same world rules as any contract:** a job's requirements, one of each job at a time, and
-  Halcyon's jobs stop once the cure is out ([DESIGN.md](DESIGN.md#world-facts)).
+- **The same world rules as any contract:** a job's requirements, one of each job per leader at a
+  time, and Halcyon's jobs stop once the cure is out ([DESIGN.md](DESIGN.md#world-facts)).
 
 | # | Job | From | What you do | Result | Status |
 |---|---|---|---|---|---|
@@ -383,7 +386,7 @@ Personal jobs that Independent and Rogue leaders give **in person**, off their s
 | 20 | Debt Collection | Red Hand, Independent | Collect from a debtor (a real wanderer if free): talk, threaten or pay | Talk: 60%. Threaten: full, +3 Haven Infamy. Pay it: 15 Red Hand Favor | ✅ |
 | 21 | The Soft Touch | Red Hand, Rogue | Secret medicine to a Haven safehouse | Haven Fame +5; infection −5 | ✅ |
 | 22 | Coup Talk | Red Hand, Rogue | Carry a word to two other crews | Never fully works: laughed off, or a purge | ✅ |
-| 23 | Sell Out a Rival Crew | Red Hand, Rogue | A map of another crew's camp, to Bastion | Bastion Fame +4; another crew boss dies | ✅ |
+| 23 | Sell Out a Rival Crew | Red Hand, Rogue | A map of another crew's camp, to Bastion | Bastion Fame +4; another crew boss dies (never one a mission or story is using; if a story takes them up before the raid, the camp is found empty) | ✅ |
 | 24 | Skim the Toll | Red Hand, Rogue | Take the boss's toll on the road for 5 min | Paid; +3 Haven Infamy | ✅ |
 | 25 | Field Station | Halcyon, Independent | Hold a house in a quiet village for 3 min | Research +1 | ✅ |
 | 26 | Second Opinion | Halcyon, Independent | Notes to a Haven medic | Research +1; Haven Fame +3 | ✅ |
@@ -409,7 +412,7 @@ missions exist only inside arcs and are never picked at random:
 | Mission | Arc | Kind | What you do | Result | Status |
 |---|---|---|---|---|---|
 | The Deserter's Map | The Deserter's Map | World event | Take a map piece from a dead deserter; get the other two from the wanderers it names; reach the bunker (four infected) | The bunker's stores (a reward crate). A holder dies first: fails | ✅ |
-| Fever Town: the water | Fever Town | Halcyon contract, Any, ★ Lab Tech | The Water Survey, starting at the sick safehouse's well | Fame, Favor; the arc goes on | ✅ |
+| Fever Town: the water | Fever Town | Halcyon contract, Any, ★ Lab Tech | The Water Survey, starting at the sick safehouse's well (not research: it still runs after the cure) | Fame, Favor; the arc goes on | ✅ |
 | Fever Town: get them out | Fever Town | Haven contract, Any, ★ Nurse/Doctor: faster | Hold the safehouse gate for 2 minutes (2 waves) | Fame, Favor; two people move, the added infection goes. Fails: two die | ✅ |
 
 ## Questlines

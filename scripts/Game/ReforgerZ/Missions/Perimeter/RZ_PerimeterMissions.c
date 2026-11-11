@@ -521,8 +521,9 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 		if (carrier <= 0)
 			return;
 
+		// A line that has stood down (the cure) locks on to nothing
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(carrier);
-		RZ_Perimeter perimeter = gm.GetPerimeter();
+		RZ_Perimeter perimeter = RZ_PerimeterMissionHelper.Get(gm);
 		if (!ent || !perimeter || perimeter.GetZone(ent.GetOrigin()) == RZ_EPerimeterZone.NONE)
 			return;
 

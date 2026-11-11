@@ -12,22 +12,26 @@ missions the stages reuse are in [MISSIONS.md](MISSIONS.md).
 
 ## The questlines
 
-| # | Questline | Giver | Needs | Spans | Crosses |
-|---|---|---|---|---|---|
-| H1 | [The List](#h1-the-list) | Haven | Known; Trusted by the end | 6 stages, 3–5 sessions | B2, R2, C1 |
-| H2 | [The Price of the Door](#h2-the-price-of-the-door) | Haven or Red Hand | Known with either | 5 stages, 3–4 sessions | R1, R2, R3, B2, C1 |
-| H3 | [The Edge of Town](#h3-the-edge-of-town) | Haven | Known | 5 stages, 3–5 sessions | HC1, HC2, R1 |
-| B1 | [No Reply](#b1-no-reply) | Bastion | Known; Trusted for the stove | 5 stages, 3–5 sessions | R1, B2, H2 |
-| B2 | [The Census](#b2-the-census) | Bastion | Known | 6 stages, 4–6 sessions | H1, H2, R3 |
-| B3 | [The Last Pilot](#b3-the-last-pilot) | Bastion | Known; Trusted to talk him down | 5 stages, 3–5 sessions | HC3, R1 |
-| R1 | [The Book](#r1-the-book) | Red Hand | Known; Trusted to return it | 5 stages, 3–5 sessions | H2, H3, B1 |
-| R2 | [Cargo](#r2-cargo) | Red Hand (or Haven) | Known with either | 5 stages, 3–5 sessions | H1, H2, C1 |
-| R3 | [The Well Story](#r3-the-well-story) | Red Hand | Known; Trusted at the end | 5 stages, 3–4 sessions | H2, B2 |
-| HC1 | [The Three Weeks](#hc1-the-three-weeks) | Halcyon | Known | 5 stages, 3–5 sessions | H3, HC3 |
-| HC2 | [The Other Two](#hc2-the-other-two) | Halcyon or Haven | Known with either | 5 stages, 3–4 sessions | H3 |
-| HC3 | [Authors](#hc3-authors) | Halcyon | Trusted, cure 50%+ | 6 stages, to the final stand | B3, HC1, H3 |
-| C1 | [The House That Went Quiet](#c1-the-house-that-went-quiet) | Nobody (the world) | Any | 5 stages, 2–4 sessions | H1, H2, R2 |
-| C2 | [A Place at the Table](#c2-a-place-at-the-table) | The host | Ate with them twice | 4 stages, 2–3 sessions | C1 |
+| # | Questline | Key | Giver | Needs | Spans | Crosses |
+|---|---|---|---|---|---|---|
+| H1 | [The List](#h1-the-list) | `haven_the_list` | Haven | Known; Trusted by the end | 6 stages, 3–5 sessions | B2, R2, C1 |
+| H2 | [The Price of the Door](#h2-the-price-of-the-door) | `haven_price_of_the_door` | Haven or Red Hand | Known with either | 5 stages, 3–4 sessions | R1, R2, R3, B2, C1 |
+| H3 | [The Edge of Town](#h3-the-edge-of-town) | `haven_edge_of_town` | Haven | Known | 5 stages, 3–5 sessions | HC1, HC2, R1 |
+| B1 | [No Reply](#b1-no-reply) | `bastion_no_reply` | Bastion | Known; Trusted for the stove | 5 stages, 3–5 sessions | R1, B2, H2 |
+| B2 | [The Census](#b2-the-census) | `bastion_the_census` | Bastion | Known | 6 stages, 4–6 sessions | H1, H2, R3 |
+| B3 | [The Last Pilot](#b3-the-last-pilot) | `bastion_last_pilot` | Bastion | Known; Trusted to talk him down | 5 stages, 3–5 sessions | HC3, R1 |
+| R1 | [The Book](#r1-the-book) | `redhand_the_book` | Red Hand | Known; Trusted to return it | 5 stages, 3–5 sessions | H2, H3, B1 |
+| R2 | [Cargo](#r2-cargo) | `redhand_cargo` | Red Hand (or Haven) | Known with either | 5 stages, 3–5 sessions | H1, H2, C1 |
+| R3 | [The Well Story](#r3-the-well-story) | `redhand_well_story` | Red Hand | Known; Trusted at the end | 5 stages, 3–4 sessions | H2, B2 |
+| HC1 | [The Three Weeks](#hc1-the-three-weeks) | `halcyon_three_weeks` | Halcyon | Known | 5 stages, 3–5 sessions | H3, HC3 |
+| HC2 | [The Other Two](#hc2-the-other-two) | `halcyon_other_two` | Halcyon or Haven | Known with either | 5 stages, 3–4 sessions | H3 |
+| HC3 | [Authors](#hc3-authors) | `halcyon_authors` | Halcyon | Trusted, cure 50%+ | 6 stages, to the final stand | B3, HC1, H3 |
+| C1 | [The House That Went Quiet](#c1-the-house-that-went-quiet) | `table_house_went_quiet` | Nobody (the world) | Any | 5 stages, 2–4 sessions | H1, H2, R2 |
+| C2 | [A Place at the Table](#c2-a-place-at-the-table) | `table_place_at_the_table` | The host | Ate with them twice | 4 stages, 2–3 sessions | C1 |
+
+The **key** is fixed now, before the questline is written: it's what the code saves and what
+contracts gate on (`NotWithQuest`, [DESIGN.md](DESIGN.md#world-facts)), and each ending sets
+`<key>.ending`. The code knows these keys already (`RZ_QuestlineRegistry.IsDesigned`).
 
 A session is a few hours of play. A questline usually takes 2–5 real days, because of its
 waits and because some stages only open at dusk, at night or at a cure percentage.
@@ -532,7 +536,9 @@ ask the Haven's friends). ★ Police: anything you learn counts as proof.
 ## Crossings
 
 The flags other lines read. They're the season flags of the world facts
-([DESIGN.md](DESIGN.md#world-facts)), so contracts, arcs and voice can read them too.
+([DESIGN.md](DESIGN.md#world-facts)), so contracts, arcs and voice can read them too. They use
+the short names below (named for what they're about, not for the questline's key), and these
+names are reserved for them. A flag only its own questline reads is `<key>.<flag>`.
 
 | Flag | Set in | Read in | What it does there |
 |---|---|---|---|

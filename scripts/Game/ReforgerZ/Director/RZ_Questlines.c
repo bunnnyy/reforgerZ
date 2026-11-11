@@ -710,6 +710,13 @@ class RZ_Questlines
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A registered questline's key, or one designed and not built yet (RZ_QuestlineRegistry).
+	bool IsKnownKey(string key)
+	{
+		return FindLine(key) != null || RZ_QuestlineRegistry.IsDesigned(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The wait scale, 0.05 to 10.
 	float WaitScale()
 	{

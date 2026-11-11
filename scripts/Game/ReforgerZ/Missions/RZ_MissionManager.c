@@ -65,19 +65,46 @@ class RZ_MissionManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A running mission uses this town, or a story has claimed it (RZ_WorldFacts.Town).
-	bool IsSettlementBusy(int idx)
+	//! A running mission other than `asker` uses this town, or a story holds it: the town itself
+	//! (RZ_WorldFacts.Town), a safehouse in it, or the lab (the cure holds it during the final
+	//! stand). With `asker`, what the asker or the story that started it holds doesn't count, so
+	//! a mission can use its own town and its questline's house (RZ_Mission.IsTownBusy).
+	bool IsSettlementBusy(int idx, RZ_Mission asker = null)
 	{
 		if (idx < 0)
 			return false;
 
 		foreach (RZ_Mission m : m_aActive)
 		{
-			if (m.m_iSettlement == idx)
+			if (m != asker && m.m_iSettlement == idx)
 				return true;
 		}
 
-		return m_GM.GetFacts().IsClaimed(RZ_WorldFacts.Town(idx));
+		if (IsHeldAgainst(RZ_WorldFacts.Town(idx), asker))
+			return true;
+
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (houses)
+		{
+			for (int i = 0; i < houses.Count(); i++)
+			{
+				RZ_Safehouse h = houses.Get(i);
+				if (h && h.m_iSettlement == idx && IsHeldAgainst(RZ_WorldFacts.Safehouse(i), asker))
+					return true;
+			}
+		}
+
+		return m_GM.HasLab() && m_GM.GetLabSettlement() == idx && IsHeldAgainst(RZ_WorldFacts.LAB, asker);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Claimed, and not by `asker` or its story (any claim without an asker).
+	protected bool IsHeldAgainst(string subject, RZ_Mission asker)
+	{
+		if (!m_GM.GetFacts().IsClaimed(subject))
+			return false;
+
+		return !asker || !asker.IsSubjectFree(m_GM, subject);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -106,7 +133,9 @@ class RZ_MissionManager
 		if (!m.m_Req.IsWorldOk(m_GM, playerCount))
 			return "the world isn't right (requirements)";
 
-		if (IsTypeActive(m.Type()))
+		// A leader's personal job: one per leader (RZ_Leaders.FindJob), but two leaders may each
+		// offer their own of the same kind
+		if (!m.m_bInPersonOnly && IsTypeActive(m.Type()))
 			return "one of this type is already running";
 
 		array<string> subjects = {};
@@ -127,6 +156,26 @@ class RZ_MissionManager
 	bool CanRunNow(RZ_Mission m, int playerCount, bool checkWeight = true)
 	{
 		return WhyNot(m, playerCount, checkWeight).IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cure is out (RZ_CureResearch): every running mission that stops with it (m_bNotCured,
+	//! and Halcyon's research unless m_bAfterCure) is called off, with nobody paid or blamed. The
+	//! drones have gone home, so nothing at the line goes on shooting.
+	void OnCured()
+	{
+		int count = 0;
+		foreach (RZ_Mission m : m_aActive)
+		{
+			if (m.m_eState != RZ_EMissionState.ACTIVE || !m.m_Req.StopsWithCure())
+				continue;
+
+			m.Withdraw("Called off. The cure is out, and nobody needs this done any more.");
+			count++;
+		}
+
+		if (count > 0)
+			RZ_Log.Info(string.Format("The cure is out: %1 running mission(s) called off.", count));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -180,8 +229,11 @@ class RZ_MissionManager
 
 		for (int i = m_aActive.Count() - 1; i >= 0; i--)
 		{
+			// A mission the world called off doesn't get one more update (it could still pay out)
 			RZ_Mission m = m_aActive[i];
-			m.Update(m_GM, dt, ids, players);
+			if (!m.m_bWithdrawn)
+				m.Update(m_GM, dt, ids, players);
+
 			if (m.m_eState != RZ_EMissionState.ACTIVE)
 			{
 				Finish(m);
@@ -441,7 +493,7 @@ class RZ_MissionManager
 			bonus = "\nYour background gives you an edge on this one.";
 
 		// In the voice of the leader who gives it (intro and outro by trait)
-		string brief = m.m_sBrief;
+		string brief = m.GetBrief(m_GM);
 		if (m_GM.GetLeaders())
 			brief = m_GM.GetLeaders().VoiceBrief(m, playerId);
 
@@ -630,6 +682,23 @@ class RZ_MissionManager
 
 		array<int> paid = {};
 		bool success = m.m_eState == RZ_EMissionState.SUCCEEDED;
+		if (m.m_bWithdrawn)
+		{
+			// Called off by the world: no pay, no blame, no strength or morale change, no leader
+			// memory. Only the story that started it hears that it's over
+			m.NotifyInterested(m_GM, m.m_sTitle, m.m_sWithdrawText);
+			RZ_Log.Info(string.Format("Mission %1 '%2' called off: %3", m.m_iId, m.m_sTitle, m.m_sWithdrawText));
+			if (m_GM.GetStoryArcs())
+				m_GM.GetStoryArcs().OnMissionFinished(m, false);
+
+			if (m_GM.GetQuestlines())
+				m_GM.GetQuestlines().OnMissionFinished(m, false);
+
+			m_GM.GetFacts().ReleaseAll(RZ_WorldFacts.MissionOwner(m.m_iId));
+			m.Cleanup(m_GM);
+			return;
+		}
+
 		if (success)
 		{
 			m.OnSuccess(m_GM);

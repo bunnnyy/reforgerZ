@@ -611,14 +611,15 @@ class RZ_GuidanceWorld
 	//------------------------------------------------------------------------------------------------
 	//! Open channels only: the Haven every other time, Bastion or the Red Hand in between.
 	//! The government broadcast already reaches everyone; the radio only adds it when the
-	//! server's broadcast loop is off.
+	//! server's broadcast loop is off, or after the cure (the loop has stopped and the radio is
+	//! where people hear the new order).
 	protected void PlayRadio(int playerId, vector pos, int step)
 	{
 		RZ_Rng rng = NewRng();
 		RZ_Leaders leaders = m_GM.GetLeaders();
 		string havenTown = m_Guide.SafehouseText(pos);
 
-		if (step % 4 == 3 && m_GM.GetBroadcastMinutes() <= 0 && !m_GM.GetCure().IsCured())
+		if (step % 4 == 3 && (m_GM.GetBroadcastMinutes() <= 0 || m_GM.GetCure().IsCured()))
 		{
 			m_GM.NotifyPlayer(playerId, RZ_Guidance.RADIO_TITLE, m_GM.GetBroadcast().GetText());
 			return;

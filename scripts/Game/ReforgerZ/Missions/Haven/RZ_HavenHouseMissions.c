@@ -158,7 +158,7 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 
 		m_iSettlement = h.m_iSettlement;
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s || gm.GetMissions().IsSettlementBusy(m_iSettlement))
+		if (!s || IsTownBusy(gm, m_iSettlement))
 			return false;
 
 		float dir = m_Rng.Int(0, 8) * 45;
@@ -457,7 +457,7 @@ class RZ_Mission_QuietArrangement : RZ_Mission_Delivery
 		RZ_Safehouses houses = gm.GetSafehouses();
 		m_iHouse = houses.PickRandom();
 		RZ_Safehouse h = houses.Get(m_iHouse);
-		if (!h || gm.GetMissions().IsSettlementBusy(h.m_iSettlement))
+		if (!h || IsTownBusy(gm, h.m_iSettlement))
 			return false;
 
 		m_iSettlement = h.m_iSettlement;
