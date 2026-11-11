@@ -331,7 +331,13 @@ class RZ_TraceText
 			}
 			case RZ_EDoorSymbol.HATCH: return string.Format("Hatching across the door frame, like a gate. D%1.", m.m_iDay);
 			case RZ_EDoorSymbol.RING_DOT: return string.Format("A chalk ring with a dot in it. D%1.", m.m_iDay);
-			case RZ_EDoorSymbol.ARROW: return string.Format("A chalk arrow and a letter: → %1.", ArrowLetter(m.m_iA));
+			case RZ_EDoorSymbol.ARROW:
+			{
+				if (m.Has(RZ_DoorMark.F_SHOWN) && !m.m_sText.IsEmpty())
+					return string.Format("Chalk by the door: %1.", m.m_sText);
+
+				return string.Format("A chalk arrow and a letter: → %1.", ArrowLetter(m.m_iA));
+			}
 			case RZ_EDoorSymbol.DROP: return string.Format("A drop in chalk on the post by the pump. D%1.", m.m_iDay);
 			case RZ_EDoorSymbol.HAND:
 			{
@@ -357,7 +363,13 @@ class RZ_TraceText
 
 				return string.Format("A plague doctor stencilled on white primer: S-%1 · d%2 · %3.", Series(m.m_iA), m.m_iDay, m.m_iB);
 			}
-			case RZ_EDoorSymbol.SCRATCH_OUT: return "Gouges in the wood at hand height, on the outside.";
+			case RZ_EDoorSymbol.SCRATCH_OUT:
+			{
+				if (m.Has(RZ_DoorMark.F_YOUNG))
+					return "Scratches on the door with the bear. Fresh.";
+
+				return "Gouges in the wood at hand height, on the outside.";
+			}
 			case RZ_EDoorSymbol.SCRATCH_IN: return "Gouges on the inside of the open door.";
 			case RZ_EDoorSymbol.SMEARS: return "Low grey smears along the sill.";
 			case RZ_EDoorSymbol.THUMB: return "A small red print, low on the frame.";
@@ -434,7 +446,13 @@ class RZ_TraceText
 			}
 			case RZ_EDoorSymbol.HATCH: return string.Format("Haven chalk, Day %1. They never write what the hatching is for.", m.m_iDay);
 			case RZ_EDoorSymbol.RING_DOT: return string.Format("Haven chalk: checked on Day %1, nobody here.", m.m_iDay);
-			case RZ_EDoorSymbol.ARROW: return string.Format("Haven chalk: gone to the house at %1.", TownName(m.m_iA - 1));
+			case RZ_EDoorSymbol.ARROW:
+			{
+				if (m.Has(RZ_DoorMark.F_SHOWN))
+					return string.Format("Haven chalk: how many from this house went home through the gates. %1.", m.m_sText);
+
+				return string.Format("Haven chalk: gone to the house at %1.", TownName(m.m_iA - 1));
+			}
 			case RZ_EDoorSymbol.DROP: return string.Format("Haven chalk: the pump here works. Checked on Day %1.", m.m_iDay);
 			case RZ_EDoorSymbol.HAND:
 			{
@@ -525,6 +543,10 @@ class RZ_TraceText
 			case RZ_EDoorSymbol.BEAK: return string.Format("S-%1 is the lab's own series, not a field team's.", Series(m.m_iA));
 			case RZ_EDoorSymbol.SCRATCH_OUT:
 			{
+				// The young come home (L4): never who
+				if (m.Has(RZ_DoorMark.F_YOUNG))
+					return "One of them. Not tall. It stood here a long time.";
+
 				string many = "One of them";
 				if (m.m_iA > 1)
 					many = CapNum(m.m_iA) + " of them";
@@ -536,6 +558,13 @@ class RZ_TraceText
 				return string.Format("Outside, at hand height. %1%2. %3", many, tall, ScratchAge(ageDays));
 			}
 			case RZ_EDoorSymbol.SCRATCH_IN: return "Someone turned in that room. " + ScratchAge(ageDays);
+			case RZ_EDoorSymbol.THUMB:
+			{
+				if (r.Is("excon"))
+					return "A crew's thumb. Someone the Haven put out sleeps here, and the crews know where.";
+
+				return "";
+			}
 			case RZ_EDoorSymbol.SMEARS: return "The slow ones lay against it for a long time. " + ScratchAge(ageDays);
 			case RZ_EDoorSymbol.WORDS: return WordsFit(m, d);
 		}
@@ -710,6 +739,7 @@ class RZ_TraceText
 				case RZ_EDoorSymbol.RING_DOT: chalk++; break;
 				case RZ_EDoorSymbol.ARROW: chalk++; break;
 				case RZ_EDoorSymbol.DROP: chalk++; break;
+				case RZ_EDoorSymbol.THUMB: break;	// too small to see from the street
 				default: stencils++; break;
 			}
 		}

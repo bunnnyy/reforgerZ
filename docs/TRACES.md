@@ -5,20 +5,24 @@ who died in a house, where a pack took someone. Traces makes some of that visibl
 only, and never leaves anything behind. How player text is written is in [WRITING.md](WRITING.md);
 the town log and the season marks Traces dresses are in [DESIGN.md](DESIGN.md#world-memory).
 
-**Status.** Phases 1, 2 and 5 of the [Traces design](../designs/TRACES.md) are built: **door marks**
+**Status.** Phases 1 to 7 of the Traces design are built, simplified where marked: **door marks**
 (the grammar of six authors, the first days seeded from canon, live writes from what happens, reading
-by level and background, the town's summary, the journal's **Read on doors**, errands' old mark),
-**doors you can see** (decals drawn on each client, or boards beside the door, or text only) and
-**player traces** (P1 to P5). Phase 0, the Workbench spike that settles decals, is the author's
-([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#traces-the-workbench-spike-phase-0)). Planned: the first
-days' scenes and the line, vignettes and live traces, sound and light, and the epilogue's handover
-([designs/TRACES.md](../designs/TRACES.md)). Nothing here has been play-tested.
+by level and background, the town's summary, the journal's **Read on doors**, errands' old mark, the
+thumbprint, the young come home, Bastion fading), **doors you can see** (decals drawn on each client,
+or boards beside the door, or text only), **player traces** (P1 to P5), **scenes** (the first days
+F1–F8 and the line N1–N2, vignettes V1–V8, live traces L1–L8), **sound and light** (S1–S8) and the
+**handover to the epilogue**. Every prop and sound is an optional kit prefab; with the kit empty every
+trace still tells its story as text. Phase 0, the Workbench spike that settles decals, lights, loops
+and wrecks, is the author's ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#traces-the-workbench-spike-phase-0)).
+What's left is in [designs/TRACES.md](../designs/TRACES.md). Nothing here has been play-tested.
 
-Code: `World/Traces/` (`RZ_Traces.c` the owner, settings and kit; `RZ_DoorMarks.c` the grammar;
-`RZ_DoorSlots.c` doors on the map; `RZ_FirstDays.c` Days 1–10 and the new canon; `RZ_TraceWriters.c`
-the hooks and the watch; `RZ_TownHistory.c`; `RZ_TraceText.c` every line; `RZ_TraceDraw.c` decals' list
-and boards; `RZ_PlayerTraces.c`), and `UI/RZ_DoorMarkClient.c` (decals on clients). Settings:
-**World > Traces** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#5-settings-objects)).
+Code: `World/Traces/` (`RZ_Traces.c` the owner, settings and kit, the epilogue's asks; `RZ_DoorMarks.c`
+the grammar; `RZ_DoorSlots.c` doors on the map; `RZ_FirstDays.c` Days 1–10 and the new canon;
+`RZ_TraceWriters.c` the hooks and the watch; `RZ_TownHistory.c`; `RZ_TraceText.c` every door line;
+`RZ_TraceDraw.c` decals' list and boards; `RZ_PlayerTraces.c`; `RZ_Scenes.c` and `RZ_SceneText.c` the
+scenes and their lines; `RZ_TraceSounds.c` sound and light), and `UI/RZ_DoorMarkClient.c` (decals on
+clients), `UI/RZ_TraceLightsClient.c` (lit windows on clients). Settings: **World > Traces**
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#5-settings-objects)).
 
 ## Contents
 
@@ -31,10 +35,14 @@ and boards; `RZ_PlayerTraces.c`), and `UI/RZ_DoorMarkClient.c` (decals on client
 - [Doors on the map](#doors-on-the-map)
 - [Doors you can see](#doors-you-can-see)
 - [Player traces](#player-traces)
+- [Scenes](#scenes)
+- [Sound and light](#sound-and-light)
+- [The cure and the epilogue](#the-cure-and-the-epilogue)
 - [Errands' old mark](#errands-old-mark)
 - [The Long Table: absence](#the-long-table-absence)
 - [Caps](#caps)
 - [Admin, saving and the log](#admin-saving-and-the-log)
+- [Decisions](#decisions)
 - [Simplified and not built](#simplified-and-not-built)
 
 ## Principles
@@ -104,6 +112,7 @@ marks are written live, saved, and written only by the server from data.
 | **Scratches outside** | The infected | They wanted in | How many, one tall, age |
 | **Scratches inside** | The infected | Someone turned in that room | Age |
 | **Smears** | The infected | The slow ones lay against it | Age |
+| **The thumbprint** | The Red Hand | Someone the Haven put out sleeps here | Day |
 | **Residents' words** | Residents | Whatever they needed to say | The line |
 
 **SEAL is true.** The X's hazard reads *"SEAL"* exactly on buildings the lock system locked, so a Police
@@ -132,9 +141,9 @@ access rank does: **Known** or better counts ([REPUTATION.md](REPUTATION.md)).
 |---|---|---|
 | Bastion's | ★ Police Officer, ★ Soldier, Known with Bastion | ★ Police Officer, ★ Soldier: the ring, the slash, which sweep, what C and ATT mean |
 | The Haven's | ★ Nurse, ★ Elder, ★ Police Officer, Known with the Haven | ★ Elder: the names under a candle. ★ Nurse: what the hatching means |
-| The Red Hand's | ★ Ex-Con, ★ Raider, ★ Police Officer, Known with the Red Hand | ★ Ex-Con: a struck hand, and PAID on an empty house |
+| The Red Hand's | ★ Ex-Con, ★ Raider, ★ Police Officer, Known with the Red Hand | ★ Ex-Con: a struck hand, PAID on an empty house, and what the thumbprint is |
 | Halcyon's | ★ Lab Technician, ★ Doctor, ★ Police Officer, Known with Halcyon | ★ Lab Technician: the series is the lab's own |
-| The infected's | Everyone at a glance | ★ Hunter: how many, one tall, how old (they grey, they don't fade) |
+| The infected's | Everyone at a glance | ★ Hunter: how many, one tall, how old (they grey, they don't fade); at a ringed bear, *"One of them. Not tall. It stood here a long time."* and never who |
 | Residents' words | Everyone | ★ Police Officer: whether the day fits the rest of the door |
 | Any written mark's age | | ★ Hunter: *"The chalk's a day old."* |
 
@@ -161,8 +170,9 @@ changed since; and these spots:
 | `day2.gym`, `day2.gym.town` | The school within 3 km of the Haven's stronghold house, preferring one between it and `day2.checkpoint`; else the middle of the nearest town to the north road nobody holds |
 | `day4.church`, `day4.church.town` | A church in another town from the gym's, within 4 km of it, in a town nobody holds; else any church within 6 km; else the gym's town's middle |
 | `day1.roadblock` | A road point 1.5–3 km from `origin.site` toward the lab, off the line |
-| `day2.queue` | The road point about 400 m back from `day2.checkpoint`, inward (for the column's scenes, planned) |
-| `day4.hill` | High ground 500–900 m from `day2.checkpoint`, off the line, terrain clear to the barrier; `none` when nothing qualifies (planned scene) |
+| `day2.queue` | The road point about 400 m back from `day2.checkpoint`, inward (the column, F1 and F2) |
+| `day4.hill` | High ground 500–900 m from `day2.checkpoint`, off the line, terrain clear to the barrier; `none` when nothing qualifies (the hill, F8) |
+| `traces.v6` | The waiting room's clinic (V6): a pharmacy or clinic in a town nobody holds, never the first patient's town; `none` when there's none |
 
 **Live writes** (`RZ_TraceWriters`, from Day 11). Each event goes into the town's history (8 events a
 town, saved) and may write one door. After the cure nothing new is written.
@@ -183,7 +193,14 @@ town, saved) and may write one door. After the cure nothing new is written.
 | A town turns infested | The world memory's writer | Scratches outside on a door, smears at 65 (once) |
 | A town nobody holds goes dark (85) | The watch | Scratches inside one door that has residents' words, no bear, and isn't the gym line |
 | A player's death | The world memory's writer | A candle with the description ([P4](#player-traces)) |
+| Red hands spreading (L7) | The watch, once a season day | Red Hand strength 50 or more: a hand on a shop or garage in a town within 1.5 km of a crew's holding or road post. Under 35: one hand struck through (nobody's collecting) |
+| The young come home (L4, decision 6) | The watch, at dusk | 3 evenings in 10 a pack with named young: fresh scratches outside a ringed bear in the town one of them came from (its range within 1.5 km), never at a lived-in house and only with room beside the bear; a season day, never saved. Reading them makes the pack **Heard of**, the one thing reading a trace gives |
+| An exile sleeps here | The watch | A player Hunted by the Haven (the door stays shut) who spends 20 minutes in a town nobody holds: 2 real hours later, if they aren't within 300 m, the thumbprint low on a house's frame there. One a season day an exile |
+| The epilogue asks | The epilogue | [Below](#the-cure-and-the-epilogue) |
 | Errands' old mark | Errands | [Below](#errands-old-mark) |
+
+**Bastion fading** (with **Live traces** on): while Bastion's presence on the roads is under 0.25 (the
+stage table's), no new Bastion mark goes up outside the towns it holds.
 
 A write asks for a kind of building (a shop, a clinic, a farm or barn, a garage, a house, or the one
 nearest a point). It goes on the door that already has the same mark by the same writer (a rewrite),
@@ -262,6 +279,127 @@ Graves, ash and candles go through the marks spawner's TRACES pool (**Props on t
 cluster** 12): the kit's prefab near players, through the dressing guard; without one, the trace is its
 approach line. Graves and ash are saved and come back after a restart.
 
+## Scenes
+
+A scene is a record: a kind, a place, a made day, how long it lasts and a few fields. Its words always
+come; its props, when the kit has them, come through the marks spawner's TRACES pool near players only.
+At most 3 scenes have props within 300 m of each other; the rest are text.
+
+### The first days and the line
+
+Seeded at every start from the season's seed and the canon spots (made once a season), the same after
+a restart, never saved (**World > Traces > First days' scenes**).
+
+| # | Scene | Where | Its words (and the paper) | Reads more |
+|---|---|---|---|---|
+| F1 | **The column's tail**: 4–8 cars nose to tail on the verge, all facing the barrier | Back from `day2.queue`, 400 m in from the north barrier | *"Cars on the verge, all pointing the same way, all the doors open."* Collapse: one burnt out; Overrun: grass through the wheels. The dashboard sheet: *"NUMBER 31. PROCEED TO NORTH ROAD CHECKPOINT..."* | ★ Police Officer: the ticket numbers. ★ Hunter: old scratches on the last car |
+| F2 | **Where they turned back**: suitcases across the verge | 360 m in from the barrier, outside the warning zone | Set down neatly; from Collapse, two opened | ★ Soldier: *"...the men behind it, in our badge."* |
+| F3 | **The gym**: camp beds, blankets, GYM OPEN, the bus | `day2.gym` (no props if its town is lived in now: camp life owns it) | The bear with a patch on its belly; the list: eleven first names, ticked, *"All at the house. Lock up after you."* | ★ Elder: *"They all made it."* |
+| F4 | **The Day 4 church**: a chair, a blanket, the board | `day4.church` | The board: *"CHURCH OPEN. ALL WELCOME. DECLARE YOUR BITE."* | ★ Nurse: whoever sat here watched somebody inside |
+| F5 | **The cordon's Day 1 roadblock**: sandbags, the pole, a field radio | `day1.roadblock` | The log sheet, ending *"Leaving the pole down."* The radio hisses until Overrun (S3) | ★ Soldier, ★ Radio Operator |
+| F6 | **The square's notices**, pasted over each other | One town in five nobody lives in, near its centre | The paper, newest on top: *"AID IS ON ITS WAY"*, the crews' diesel (3 km of the crossroads), Halcyon's flyer (4 km of the lab), GYM OPEN (5 km of the gym), the Day 2 order (*"TURNED BACK 1400"* within 4 km of the north road), the Day 1 order | ★ Police Officer: signed Lt H. Sedlak |
+| F7 | **Rudi's shutter** | By `redhand.crossroads` | *"...The crews call it Rudi's."* Nothing more, ever | ★ Ex-Con: *"Nobody parks in front of it."* |
+| F8 | **The hill over the north road** | `day4.hill` (none when no point qualifies) | *"On the post, cut with a knife: 05:41."* | ★ Soldier; Known with Bastion |
+| N1 | **Crosses** of fence palings, up to 7 | Just outside the warning zone, 320–420 m in from a barrier | Two at the north road from the start (D4, D6); one more for each death in the kill zone within 1 km of a barrier. Saved | — |
+| N2 | **The Day 1 sheets** in the hedges | 350–700 m in from every barrier (decision 3) | *"BY ORDER. THIS AREA IS UNDER QUARANTINE..."* | — |
+
+The new canon keys they stand on are in [Where marks come from](#where-marks-come-from).
+
+### Vignettes
+
+Dealt where the data says something happened (**Vignettes**: 12 at once, 3 dealt a season day, one a
+town). Once placed a vignette lives its days even if the town changes: it's history. Saved.
+
+| # | Scene | Trigger | Where | Lasts |
+|---|---|---|---|---|
+| V1 | **The last meal**: a table laid for four | A town nobody holds goes dark (85) | A garden 6 m in front of a house's door (the town's middle if its doors aren't known) | 3 days |
+| V2 | **Someone held out**: planks, casings, a tally of 19 on the door; the note on the step | Survivors Trapped or Collapse Shelter failed, or a town went infested with a player's barricade standing | Before the house nearest the job | 3 days |
+| V3 | **The chair at the edge**, facing out | A bite declared at a safehouse (`house.bitten`), or Walk Him Out done | 150 m out from the house, toward the nearest pack | 2 days; its jars lit its first two evenings (S8) |
+| V4 | **The honest shop**: IOUs on the door | A town nobody holds whose doors are known, with a shop, a Haven house within 2 km and no Red Hand holding within 1.5 km (tried once a town a run, about a third deal) | Before the shop's door | The season; when the crews take ground within 1.5 km, *"PAID"* across them in red, then 3 days |
+| V5 | **The dropped run**: an empty sample case in the ditch; the notebook page | A Halcyon sample or escort job failed, or a Halcyon truck lost | The verge where it happened | 2 days |
+| V6 | **The waiting room**: six chairs, *"DOCTOR BACK 1400"*, ticket 31 | Once a season (canon `traces.v6`) | A clinic in a town nobody holds, never the first patient's town | The season |
+| V7 | **The roll at a fallen post**: the roster board | A Bastion outpost lost or taken | Where its centre was | 3 days |
+| V8 | **The water queue**: buckets with names | A safehouse short of food with a pump within 400 m | Beside the pump | Until the house is fed, then 1 day |
+
+### Live traces
+
+Following the simulation as it runs (**Live traces**: 24 at once, the oldest goes). A player's deed
+makes at most one of a kind a town a season day.
+
+| # | Trace | Trigger | Where | Lasts |
+|---|---|---|---|---|
+| L1 | **After a kill site**: a candle chalked on a gatepost with who (the Haven), or *"CONTACT P-n · 1 LOST · Dn"* (Bastion) | A tribes' kill site ends (its second dawn) within 3 km of a Haven house with people, else of a Bastion holding; with nobody knowing, nothing | The verge by the site | 2 days |
+| L2 | **Scorch** from the doorway, the Haven's *"WE CHECKED"* chalk when a Haven job was running there | A building burned (the fire system's report) | The doorway | 2 days |
+| L3 | **Overpainted** | A holding taken or founded | The town's doors ([layers](#door-marks)) | As door marks |
+| L4 | **The young come home** | [Above](#where-marks-come-from) | A ringed bear's door | A season day |
+| L5 | **The truck**: a wreck on its side with the destination stencilled, a red hand on the door if robbed, gouges on the cab if a pack took it | A supply truck lost (robbed, destroyed or taken) | The verge where it was lost | 2 days; at the cure the last four stay for the week |
+| L6 | **Bastion fading**: sandbags and a HALT sign on its side | A Bastion road post pulled; and no new Bastion marks under 0.25 presence | Where the post stood | 2 days |
+| L7 | **Red hands spreading** | [Above](#where-marks-come-from) | Shops and garages first | As door marks |
+| L8 | **Halcyon's beaks** | Halcyon's sample jobs ([above](#where-marks-come-from)) | As door marks | As door marks |
+
+### How a reader meets a scene
+
+No action, no button, no typing: the same with a pad.
+
+- **The approach line**: within 40 m (on foot or in a car), once a session a scene, a low notice on the
+  Ambient lane titled by the place (**On the verge**, **At the church**...), with the one more line the
+  reader's background or standing gives (the ★ reads above).
+- **The paper**: stand 2 s within 6 m on foot and it opens in the reader (**UI > Reader**), else a notice.
+  Once a session.
+- **The radio** (S3): within 12 m of the last meal or the Day 1 roadblock (until Overrun), the
+  broadcast's current line as a subtitle, once a session; a Radio Operator gets one line more.
+
+### Where scenes stand
+
+Never in the warning zone or the kill zone, within 2 km of the Long Table's farm, within 300 m of the
+closed site (`origin.site`) or within 60 m of a lived-in place. Vignettes and live traces also keep
+300 m off a running job, 600 m off a lair (the chair and the kill site's chalk aside: they're about
+packs) and off the evening's set piece (`IsQuietAt`). A point is dry, flat (under about 12°) and out of
+every building's footprint (2 m); verge points are 6–10 m off the road's centre line, so nothing blocks
+a truck (decision 11). When nothing fits: `Traces: no anchor for <kind> in <town>`, and nothing is dealt.
+
+### How scenes age
+
+Worked out when shown; nothing ticks. The first days by the outbreak's stage (Early, Collapse, Overrun,
+Aftermath: the column, the suitcases and the radio change their words); vignettes and live traces by
+thirds of their life (fresh, weathered, old: the last meal's jug knocked over, then its chairs
+fallen); a season-long one by its days. A scene whose stage changes is shown again.
+
+## Sound and light
+
+**World > Traces > Sound and light** (on). Each needs its kit prefab; the lines come without.
+
+| # | What | Where and when | Text |
+|---|---|---|---|
+| S1 | **Lanterns where people live**: a lit lantern (light on spawn) | The 4 lived-in places (holdings, safehouses with people) nearest players within 200 m, 20:30–05:00, from 18:30 in rain or fog. Never in a town nobody holds | — |
+| S2 | **Lit windows**: a small warm light 1.5 m inside the outside doors of lived-in buildings, drawn on each client | **Lit windows** (off until the spike shows it at the windows, not through the walls; decision 9). As S1, 12 at most | — |
+| S3 | **A radio in an empty house**: the hiss loops | The last meal and the Day 1 roadblock (until Overrun), 2 at most | The broadcast's line, [above](#how-a-reader-meets-a-scene) |
+| S4 | **Dogs, then nothing**: a few barks that stop dead | 5 real minutes before a pack's set-out hour, at the town nearest its lair (within 1.5 km), one a pack a night, players within 800 m | ★ Hunter: *"The dogs in Levie have stopped."* |
+| S5 | **A generator's hum** | The lab and Halcyon's outposts | — |
+| S6 | **One stroke of the bell** (decision 8) | At the Day 4 church, the next 18:30 after a Haven Champion dies (P3b); 10 heat there; never at night | *"One stroke of a church bell, from the direction of ..."* to everyone within 1.2 km |
+| S7 | **The town loudspeaker**: a chime and static | Bastion's holdings, 05:30 and 17:30, within 300 m; silent after the cure | A subtitle: presence 0.25 or more *"Remain indoors. Relief is on its way."*, under it *"Remain indoors."* ★ Soldier: one line more |
+| S8 | **Jars on the step** (the kit's candle jars) | The Day 4 church on the bell's evening, and a walk-out's chair its first two evenings, dusk to 22:00 | — |
+
+Lights: 12 on the server within 200 m of a player. Loops (`RZ_AmbientLoopComponent` on the prefab): 4,
+up within 80 m, down past 120 m. One-shots (`RZ_CallSoundComponent`): 4 at once, gone after 40 s. Every
+prop goes through the dressing guard, which lets these two look-only components through. The tribes
+keep their own calls ([INFECTED.md](INFECTED.md#signs-and-sounds)); Traces adds no infected sound.
+
+## The cure and the epilogue
+
+[EPILOGUE.md](EPILOGUE.md) owns the week; Traces owns how its marks look.
+
+- **The handover**, once, when the cure is out: Traces' in-season graves come down (the epilogue places
+  its own from the record), the last four lost-truck wrecks stay standing for the week, and nothing new
+  is dealt or written but what the epilogue asks for. Running vignettes and live traces finish their
+  days; the first days stay. Log: `Traces: handed over to the epilogue (...)`.
+- **The census**: each of the epilogue's town beats ends with its doors counted, at a glance:
+  *"Four candles on the doors in Brod, and one bear."* (candles by their number, bears ringed or not,
+  hands and tallies, beaks, gouged doors; painted-over layers don't count).
+- **Writes on request**, through the grammar and its door caps, after the cure and past the daily caps:
+  a wanderer's name chalked as a candle on the last door they rested at (their safehouse), and *"GONE
+  HOME: n"* by a safehouse's door in processing (written only when the number changes).
+
 ## Errands' old mark
 
 Errands' found hook *"an old mark"* (decision 15, [ERRANDS.md](ERRANDS.md#strangers)) comes from the
@@ -274,7 +412,9 @@ no old mark is made at that site.
 ## The Long Table: absence
 
 No marks within 2 km of the Long Table's farm, but residents' words from Days 1–3. Bastion's sweep never
-came within 1.5 km. No graves or candles for deaths within 2 km of it (decision 5: absence only).
+came within 1.5 km. No graves or candles for deaths within 2 km of it, and no scenes, vignettes or live
+traces (decision 5: absence only). A player who walks every village notices one stretch of country with
+no writing on any door. Nothing says why.
 
 ## Caps
 
@@ -287,19 +427,47 @@ came within 1.5 km. No graves or candles for deaths within 2 km of it (decision 
 | Live layers | 600 on the server, saved; the oldest goes past it |
 | Drawn list | 48 doors within 80 m of players |
 | Player traces | 16, 8 of them graves |
-| Lookups | One town's doors a tick; reading checks only players inside a town, against its marked doors, once a second |
+| Scenes | The first days and the line about 10 plus one town in five's notices, not saved; vignettes 12 at once, 3 dealt a season day, one a town; live traces 24 |
+| Scene props | The TRACES pool (40 on the server, 12 a cluster, shared with the player traces); 3 scenes with props within 300 m |
+| Lights, loops, one-shots | 12 lights within 200 m of a player; 4 loops within 80 m; 4 one-shots at once |
+| Lookups | One town's doors a tick; reading checks only players inside a town, against its marked doors, once a second; scenes once a second within 40 m |
 
 ## Admin, saving and the log
 
-- **`/traces`** (server admins): every marked door within 300 m with its layers and their source (first
-  days, live, old mark) to the server log, and the status line as a notice. **`/traces town <name>`**: the
+- **`/traces`** (server admins): every marked door and every scene within 300 m (its kind, stage and
+  whether it has props) to the server log, and the status line as a notice. **`/traces town <name>`**: the
   town's history and doors. **`/traces write <symbol>`** (with **Debug** on): a mark at the nearest door for
   an hour. **`/traces clear <town>`**: the town's marks and history (first-days marks come back at the next
   start). A pad player's admin needs no chat command for play: these are play-test aids only.
-- **Saved** in `state.json`: the town history, live door marks with their slot, the rain counter and the
-  player traces. Not saved: first-days marks, door slots, the drawn list, props, what each player has read.
+- **Saved** in `state.json`: the town history, live door marks with their slot, the rain counter, the
+  player traces, the vignettes, live traces and crosses, the day's deal count and whether the cure's
+  handover is done. Not saved: first-days marks and scenes, door slots, the drawn list, props, lights,
+  sounds, the young come home's scratches, the exiles' minutes, what each player has read.
 - **Log lines**, the status line and the play-test checks are in
   [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check).
+
+## Decisions
+
+The author approved all 16 as recommended (2026-11-11).
+
+| # | Decision | Decided |
+|---|---|---|
+| 1 | How door marks look | Text first, spike decals, then decals; boards only if the spike fails |
+| 2 | Where the design lives | Its own doc, this one |
+| 3 | Where the Day 1 sheets near the line came from | Bastion's sheets with Command's words: the outside stays silent but for the broadcast |
+| 4 | Candles where a town was rescued | One meaning a symbol: the candle is the dead; a rescue is ticked bears, arrows and the sheet |
+| 5 | The Long Table | Absence only |
+| 6 | Scratches at a ringed bear | Yes: only outside, only at a ringed bear, never at a lived-in house; the Hunter never says who |
+| 7 | Names on in-season graves and candles | Follow Your dead run (described by default) |
+| 8 | The bell at the Day 4 church | One stroke, 10 heat, at 18:30, never at night |
+| 9 | Lit windows and the map's own lamps | Lanterns first; lit windows behind a setting after the spike; the map's lamps left alone |
+| 10 | Scenes indoors | Outdoor and doorway by default; indoor later, behind a setting, after a play-test |
+| 11 | The column's cars | On the verge, 6 m off the centre line |
+| 12 | What the radio in an empty house plays | The hiss and the broadcast's line, never music |
+| 13 | First-days places each season | Re-seeded each season |
+| 14 | Does reading pay | Nothing; only a pack Heard of from L4 |
+| 15 | Errands' old mark | Through the grammar |
+| 16 | The Red Hand and the bears | They leave the bears |
 
 ## Simplified and not built
 
@@ -308,7 +476,15 @@ came within 1.5 km. No graves or candles for deaths within 2 km of it (decision 
 | Who sees a town's summary and a door line | A character on foot within the town's radius (+30 m); standing 2 s means two one-second checks within 5 m, not a speed test |
 | The first days' sweep | "Within 3 km of the roads into `origin.site`" is within 3 km of the line from the site to the roadblock; at most 12 towns nearest first |
 | P3's notable death | A life of 2 hours or more, or dying at a running job's site; the stand and a pack's kill aren't told apart. The Digger stranger doesn't dig graves yet |
-| The thumbprint | Not written: no system keeps who the Haven turned out (wanderers have no exile record). It has its overlay cell and words for when one does |
-| L4, the young come home (scratches at a ringed bear) | Planned with the live traces ([design](../designs/TRACES.md#live-traces)) |
-| Bastion fading (no new Bastion marks under presence 0.25) | Planned with L6 |
-| Writes on request for the epilogue, the census | Planned (phase 7) |
+| The thumbprint | Exiles are players Hunted by the Haven; their minutes in a town are kept in memory only (a restart starts them again). The Long Table's exile isn't one |
+| Scene placement | Traces' own ground test (dry, flat, off the line, out of footprints); camp life's placer isn't shared. Most scenes are one composition at one point (the column's cars, the crosses, the sheets and the gym's bus aside), so old scenes age in their words, not by dropping pieces. Nothing checks for a player or car on the spot, or an active clue 1 km away |
+| The column (F1) | 4–8 cars 9 m apart back from the queue's point, not spread to 1.2 km |
+| The gym, the church, the shutter (F3, F4, F7) | Beside the canon spot, not on the building's own door; F7's red hand isn't a door layer on a garage. F4's jars are only the lit ones (S8) |
+| The square's notices (F6) | One town in five nobody lives in, near its centre (no square looked for) |
+| Vignettes' triggers | V3 on any walk-out (not only *walk on*); V5 from failed Halcyon jobs and trucks, not a pack taking a runner; V4 tried once a town a run; "not the same player's trigger twice a day" is one a town |
+| L1 after a kill site | Its chalk is a scene on the verge by the site, not on the nearest door; Bastion's stencil when a Bastion holding is within 3 km |
+| L3, L8 | The door writes built in phase 1 (overpaint on a take, beaks from sample jobs); no beaks at a nest under study |
+| L6 | From the road posts that go between two looks (30 s), not a saved list of the last six |
+| S1, S5, S7 | The lantern and the hum stand near the place's middle, not on camp life's pieces (its table lamp isn't swapped, the hum isn't quieter at night); no loudspeaker pole: the chime comes from the holding's middle |
+| S4 | Before the pack's set-out hour each night, whether or not it hunts; the town nearest the lair, not one on the night's first trail; the Hunter's line comes with the barking |
+| The handover | Fallen posts (V7) finish their days rather than passing to the epilogue's outpost boards; the epilogue's props are its own slots, not Traces' kit |

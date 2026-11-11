@@ -423,6 +423,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[RplProp()]
 	protected string m_sReplDoorMarks;			// marked doors near players, for the clients' decals (World/Traces/RZ_TraceDraw.c)
 
+	[RplProp()]
+	protected string m_sReplTraceLights;		// lit windows near players, for the clients' lights (World/Traces/RZ_TraceSounds.c)
+
 	// ---------------------------------------------------------------- Runtime (server)
 	protected static RZ_GameModeComponent s_Instance;
 
@@ -1254,6 +1257,18 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	bool IsReplicatedCured() { return m_bReplCured; }
 	string GetLockedBuildings() { return m_sReplLockedBuildings; }
 	string GetDoorMarks() { return m_sReplDoorMarks; }
+	string GetTraceLights() { return m_sReplTraceLights; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the lit windows near players, for the clients' lights (RZ_TraceAmbience, S2).
+	void SetTraceLights(string list)
+	{
+		if (list == m_sReplTraceLights)
+			return;
+
+		m_sReplTraceLights = list;
+		Replication.BumpMe();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the marked doors near players, for the clients' decals (RZ_TraceDraw).

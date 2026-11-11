@@ -64,7 +64,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
 | Cure research, antidotes, the final stand, the season's winner; the pace by play (research ×0.25 to ×2.5 for the last week's player-hours); the lab's capacity (a backlog worked through at 3% a real day, capped at 4 days of work as a backstop: samples refused and mission research lost while it's full, +25% on what fills a near-empty backlog to half a day); breakthrough news held until someone is online | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | The cure's finale, phase 6 of [the plan](../designs/PLAN.md#phases-18), simplified: the controller (saved) with six tracks (five routes and the lab alone), the 90% gate holding research until one `AddFinaleResearch` at the seal; the lock per identity for the season at each route's desk (two steps, price doors, `CanSideWith`), active locks; the five routes as questlines in their own lane, four acts each (open and sworn), their scenes, items with cold clocks and carriers, the people as season canon; live tissue through the tribes' hunts; pacts by tally, fighting routes, Last Mile, war Infamy for kills; the finish with the route's capped Fame chunk, the batch hold and the seal calls; the stand as a fight for the clean room (Force or Tally, take times, overtime, groups and the stand's hostility bits, the safe-zone exemption); Take the Lab as the Red Hand route's holder change and the Coat Run; the release's terms and deciders; control as the winner rule, season Fame as the fallback and the hall of fame's line; next season by controller, terms and one half rule set; the pitches at 75, 80 and 85%; the commit node through the dialogue engine ([Point of no return] confirm nodes, `always` topics at stronghold and Loyal seat leaders, the Doctor or Courier for the Independent; the desks as the fallback with Trees off); route assets from story records, played once after the lock; each route's ways (talk, persuade, threaten, trade, bribe, sneak, trick, force, betray) and the subjects' branches (What She Left and Twice, Processing Again, The Book Without Her, second best); the moves (spoil the case, custody, drain, ransom and spoil a find, sell the plan) and subjects killed on-screen; routes pausing with no active lock for 3 days; the stand's HUD line under the noise meter and `finale.came` | [FINALE.md](FINALE.md) |
-| Traces, phases 1, 2 and 5 of [its design](../designs/TRACES.md): door marks in a grammar of six authors (Bastion's search code, the Haven's bears, candles and chalk, the Red Hand's hands and tallies, Halcyon's beaks, residents' words, the infected's scratches), Days 1–10 seeded from the season's seed and five new canon spots, live writes from missions, holdings, safehouses and towns, layers and overpaint, ageing (chalk washes in rain), reading by standing 2 s at a door at your background's level, the town's summary, the journal's Read on doors, errands' old mark through the grammar; decals drawn on clients or boards beside the door (text always); player traces (ticked bears, ash, graves, the memorial candles, a candle where you died, the season mark's look by kind); `/traces` and its [Admin] reply. Simplified: [TRACES.md](TRACES.md#simplified-and-not-built) | [TRACES.md](TRACES.md) |
+| Traces, phases 1 to 7 of its design: door marks in a grammar of six authors (Bastion's search code, the Haven's bears, candles and chalk, the Red Hand's hands, tallies and the thumbprint where an exile sleeps, Halcyon's beaks, residents' words, the infected's scratches), Days 1–10 seeded from the season's seed and five new canon spots, live writes from missions, holdings, safehouses and towns, layers and overpaint, ageing (chalk washes in rain), reading by standing 2 s at a door at your background's level, the town's summary, the journal's Read on doors, errands' old mark through the grammar, red hands spreading, the young come home (a pack Heard of, the one thing reading gives), Bastion fading; decals drawn on clients or boards beside the door (text always); player traces (ticked bears, ash, graves, the memorial candles, a candle where you died, the season mark's look by kind); the first days frozen in place (the column, where they turned back, the gym, the Day 4 church, the cordon's roadblock, the squares' notices, Rudi's shutter, the hill) and the line (crosses, the Day 1 sheets); vignettes (12 at once, 3 a day: the last meal, held out, the chair at the edge, the honest shop, the dropped run, the waiting room, a fallen post's roll, the water queue); live traces (after a kill site, scorch, a lost truck's wreck, a pulled road post); a scene's approach line, its ★ reads and its paper in the reader; sound and light (lanterns where people live, lit windows behind a setting, the radio's hiss with the broadcast's line, dogs before a hunt, a generator's hum, the bell, the town loudspeaker, candle jars); the handover to the epilogue (graves down, the last four wrecks kept, the census in town beats, names and GONE HOME chalked through the grammar); every prop an optional kit prefab; `/traces` and its [Admin] reply. Simplified: [TRACES.md](TRACES.md#simplified-and-not-built) | [TRACES.md](TRACES.md) |
 | Seasons: next-season rules from the last winner, rule sets (Winter, Fog, Military Collapse, No Vehicles, or your own), the wipe cycle (only on the cure after an epilogue by default; a timed wipe after N weeks for admins who pick it; backup and announcements), the hall of fame | [Seasons](DESIGN.md#seasons) |
 | Contracts that give a rough area (a 500 m circle) until you're close; Radio Operators and Trusted players get the spot | [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
@@ -97,10 +97,12 @@ The build-review fixes are done. Everything below is approved. The order of the 
   edits and need a play-test.
 - **Camp life in Workbench:** the 49 compositions, the smart-action waypoint and the kits (four
   evenings; [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)).
-- **Traces' spike in Workbench** (its phase 0, one evening): a decal at a door from a client, then the
-  door atlas or the boards, and the grave, pyre and candle jars once each
+- **Traces' spike and kit in Workbench** (its phase 0, one evening, then two or three for the kit): a
+  decal at a door from a client, then the door atlas or the boards; the grave, pyre and candle jars;
+  a lit lantern, a loop, a wreck through the guard and the navmesh; then the 27 scene compositions and
+  the 5 sound prefabs, all optional
   ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#traces-the-workbench-spike-phase-0)). Until then door marks
-  are words only.
+  and scenes are words only.
 - **Play it with a game client** on a local server, then a 2-hour session on Arland
   ([PC_SETUP.md](PC_SETUP.md#6-play-testing)).
 
@@ -118,9 +120,8 @@ The build-review fixes are done. Everything below is approved. The order of the 
   the cure's finale, the epilogue week, dialogue, errands, the mission style, reputation names,
   disguise, tone and Traces) are in [designs/](../designs/README.md). Their build order, from step 0 (now)
   to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
-  Traces runs in its own phases alongside: 1, 2 and 5 are built ([TRACES.md](TRACES.md)); the first
-  days' scenes and the line, vignettes and live traces, sound and light and the epilogue's handover
-  are next ([designs/TRACES.md](../designs/TRACES.md#phases-and-rough-sizes)).
+  Traces' own phases 1 to 7 are built ([TRACES.md](TRACES.md)); what's left of it waits on other
+  systems ([designs/TRACES.md](../designs/TRACES.md)).
 - Already built for them: phase 7, the epilogue week, simplified ([EPILOGUE.md](EPILOGUE.md); what's left
   of it is in [designs/EPILOGUE.md](../designs/EPILOGUE.md): the epilogue deck, route marks, the
   evening's own set pieces, titles from the best life, truth beats, the factions' jobs on the ridges,
@@ -271,7 +272,9 @@ In this order, because later ones depend on earlier ones:
 20. **Traces:** do players stop at doors (the town's summary, the journal), does reading feel like a
     reward of its own with nothing paid, and are towns sparse enough (most with none to three marked
     doors)? Is the first days' sweep where the column's story says it was? Do the decals land on the
-    right walls ([the checklist](WORKBENCH_SETUP.md#8-play-test-checklist), *Traces*)?
+    right walls? Do the scenes read as history and stay sparse (3 vignettes a day, 3 with props within
+    300 m), and are the sounds after dark heard and not tiring
+    ([the checklist](WORKBENCH_SETUP.md#8-play-test-checklist), *Traces*)?
 
 ## Dropped
 

@@ -310,6 +310,10 @@ class RZ_DressingGuard
 		e.FindComponents(ScriptComponent, comps);
 		foreach (Managed c : comps)
 		{
+			// Look-only sounds (Traces' loops and one-shots) are allowed: they only play
+			if (RZ_AmbientLoopComponent.Cast(c) || RZ_CallSoundComponent.Cast(c))
+				continue;
+
 			if (c && c.ClassName().IndexOf("RZ_") == 0)
 				return true;
 		}

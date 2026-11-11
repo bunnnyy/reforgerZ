@@ -133,6 +133,8 @@ class RZ_WorldWriters
 	//! A building burned at pos (RZ_TownMemory.ReportBuildingBurned).
 	static void Fire(vector pos)
 	{
+		// Traces (docs/TRACES.md): scorch at the doorway (L2)
+		RZ_TraceWriters.Fire(pos);
 		RZ_WorldMemory mem = Memory();
 		if (mem)
 			mem.Signal("fire", pos, "a fire near " + Where(pos));

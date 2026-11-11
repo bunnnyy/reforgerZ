@@ -39,7 +39,7 @@ enum RZ_EDoorSymbol
 	SCRATCH_OUT,	// the infected: they wanted in
 	SCRATCH_IN,		// the infected: someone turned in there
 	SMEARS,			// the infected: the slow ones lay against it
-	THUMB,			// the Red Hand: a stray sleeps here (no data feeds it yet)
+	THUMB,			// the Red Hand: someone the Haven put out sleeps here (an exile, RZ_TraceWatch)
 	WORDS			// residents: whatever they needed to say
 }
 
@@ -82,6 +82,8 @@ class RZ_DoorMark
 	static const int F_BAR = 128;		// a barred beak
 	static const int F_SHOWN = 256;		// a candle's words show at a glance (a player's description)
 	static const int F_TEMP = 512;		// errands' old mark: two hours, never saved
+	static const int F_YOUNG = 1024;	// the young come home (L4): c is the pack's id + 1
+	static const int F_ASKED = 2048;	// written for the epilogue: after the cure, past the daily caps
 
 	int m_iSymbol;
 	int m_iAuthor;
@@ -435,10 +437,14 @@ class RZ_DoorMarks
 		bool seeded = m.IsSeeded();
 		if (!seeded && !m.Has(RZ_DoorMark.F_TEMP))
 		{
-			if (RZ_WorldFacts.Get().IsCured())
+			bool asked = m.Has(RZ_DoorMark.F_ASKED);
+			if (RZ_WorldFacts.Get().IsCured() && !asked)
 				return null;	// after the cure only what the epilogue asks for
 
-			if (!MayWriteLive(town))
+			if (!asked && Fading(town, m))
+				return null;
+
+			if (!asked && !MayWriteLive(town))
 				return null;
 
 			m.m_fMade = RZ_SeasonClock.Days();
@@ -470,6 +476,27 @@ class RZ_DoorMarks
 
 		m_Traces.DoorChanged(d);
 		return d;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The epilogue's asks (GONE HOME, a wanderer's name): through the grammar and its door caps,
+	//! after the cure and past the daily caps (RZ_Traces.ChalkName, GoneHome).
+	RZ_MarkedDoor WriteForEpilogue(int town, int want, vector anchor, RZ_DoorMark m, string cause, string doorKey)
+	{
+		m.m_iFlags = m.m_iFlags | RZ_DoorMark.F_ASKED;
+		return Write(town, want, anchor, m, cause, doorKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bastion fading (L6): with its presence on the roads under 0.25, no new Bastion mark outside
+	//! the towns it holds (with World > Traces > Live traces on).
+	protected bool Fading(int town, RZ_DoorMark m)
+	{
+		if (m.m_iAuthor != RZ_EDoorAuthor.BASTION || !m_Traces.GetSettings().m_bLiveTraces)
+			return false;
+
+		RZ_WorldFacts facts = RZ_WorldFacts.Get();
+		return facts.BastionPresence() < 0.25 && !facts.TownOwner(town).IsHeldBy(RZ_EFaction.MILITARY);
 	}
 
 	//------------------------------------------------------------------------------------------------

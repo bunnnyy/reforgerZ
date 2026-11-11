@@ -82,6 +82,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		super.DisplayUpdate(owner, timeSlice);
 		// Door marks as decals near you (docs/TRACES.md, Doors you can see)
 		RZ_DoorMarkClient.Tick(timeSlice);
+		RZ_TraceLightsClient.Tick(timeSlice);
 		m_fRefresh -= timeSlice;
 		if (m_fRefresh > 0)
 			return;

@@ -262,7 +262,8 @@ class RZ_EpiBeats
 				echo = string.Format("There's something on the road into %1. The town behind it has another story.", st.m_sName);
 
 			vector at = RZ_Util.GroundPos(st.m_vCenter + Vector(st.m_fRadius * 0.6, 0, 0));
-			RZ_EpiBeat b = Add("town." + town.ToString(), "place", st.m_sName, at, e.text, echo);
+			// Traces' census of the town's doors after the town log's line (docs/TRACES.md)
+			RZ_EpiBeat b = Add("town." + town.ToString(), "place", st.m_sName, at, RZ_Traces.WithCensus(e.text, town), echo);
 			b.weight = e.salience;
 			foreach (int k, string id : e.idents)
 			{
@@ -348,6 +349,7 @@ class RZ_EpiBeats
 			}
 
 			Add("dead." + i.ToString(), "people", door, at, string.Format("A name chalked on a door at %1: %2. %3.", door, d.name, RZ_Util.Capitalize(d.role)), string.Format("Somebody chalked a name on a door at %1.", door));
+			RZ_Traces.ChalkName(at, d.name, "dead." + i.ToString());
 			n++;
 		}
 	}
@@ -712,7 +714,10 @@ class RZ_EpiBeats
 		{
 			int gone = m_Epi.GetClosing().GoneHome(b.subjId);
 			if (gone > 0)
+			{
 				text = (text + string.Format(" Chalked by the door: GONE HOME: %1.", gone)).Trim();
+				RZ_Traces.GoneHome(b.subjId, gone);
+			}
 		}
 
 		string door = m_Epi.GetOutlets().HouseNotice(b.subjId);

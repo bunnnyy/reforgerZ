@@ -94,6 +94,12 @@ W)`, `... dropped (<why>)`, `... since (<why>)`.
 | Side stories | World records with an epilogue line (6), by importance, at their subject's town or house |
 | Since the cure | A loose end closed live, a name brought home, a town taken back (a candle): **Epilogue > Since-the-cure beats** (20) |
 
+**Traces' part** ([TRACES.md](TRACES.md#the-cure-and-the-epilogue)): a town beat ends with Traces' census
+of its doors (*"Four candles on the doors in Brod, and one bear."*); a named wanderer's name is also
+chalked as a candle on that safehouse's door, and a house's *GONE HOME* by its door, through the door
+marks; at the cure Traces takes its own graves down (these beats are the graves now) and keeps the
+last four lost trucks' wrecks for the week.
+
 Weight: base × people (1 + 0.25 a named player, ×2 at most) × known (3 or more visitors, ×1.25).
 *Simplified:* one beat per place, no change or choice factor, no faction slot of its own (the leaders
 say it), no route marks (the finale's are planned), no Since beats for a house that ran dry.

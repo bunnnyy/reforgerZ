@@ -1884,7 +1884,7 @@ Code: `World/RZ_Marks.c`. One prop spawner for every physical thing that marks t
 pools: **season** marks 40 (the town log's, memorials), **epilogue** 100, **props** 30 (missions'
 props and chalk, the ambient notice prop, the Long Table's tells), **signs** 30 (the tribes'), **doors**
 24 (Traces' boards, 8 a cluster, up within 60 m and down past 90 m) and **traces** 40 (Traces' graves,
-ash and candles, **World > Traces > Props**, 12 a cluster; [TRACES.md](TRACES.md)). Traces' two pools
+ash and candles and its scenes' props, **World > Traces > Props**, 12 a cluster; [TRACES.md](TRACES.md)). Traces' two pools
 put every prop through the dressing guard and count it as scenery; a caller may give the facing. A mark
 is data: a place (on the verge, 6–10 m off the nearest road's centre line within 80 m, on the side the
 place is on), a prefab, a line of text, a salience, how many season days it lasts. Its prop is spawned

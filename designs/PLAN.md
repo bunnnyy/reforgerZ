@@ -676,9 +676,9 @@ today's tree, and `docs/WRITING.md` (the writing guide moved out of LORE.md, eve
 | **7. The epilogue week** | **Built, simplified** ([docs/EPILOGUE.md](../docs/EPILOGUE.md); the rest in [EPILOGUE.md](EPILOGUE.md): the epilogue deck, route marks, the evening's own set pieces, titles and the season record, truth beats, the factions' jobs on the ridges, the Walk Out's escorts, the scenes' movement). The plan as written: The record snapshot at the cure; beats checked on every showing; every carrier (leaders' epilogue topics, residents, wanderers, radio and the reel, boards, readables, news, the journal); the dose-outlet table reading `finale.terms`; the queue and lab-gate scenes with their safety rules; the four stronghold grey choices on the decide hold; the hall of fame freeze and "The season" block; `IsLastDay` and the late-cure push-back. **The closure set** (decision 12): Last Rounds on the calendar, Loose Ends for every built questline, Bring Them Home and the wall of names, Quiet the Ridges and Take Back a Town on the tribes' run-down, the Long Table's last week, the Walk Out, Settle Accounts, the Last Broadcast, Personal Goals, the Last Entry; the epilogue deck through errands' dealer. Reputation's season record and `TitleFor`; disguise's epilogue lines; tone's variants for every ending, including the slow cure and no cure | Phase 6's interface; the town log from phase 3 | About 8,000, plus about 900 lines of text (this plan's estimate: the 72-hour design's 6,000 and 530, plus the closure set) | When the cure is out, the whole Zone reacts for a week, and every story can be finished |
 | **8. Growth, as play-tests allow** | Missions' wave 5 (16 one-choice jobs and 67 work rows); disguise's phases 2 and 3 (again-looks with the sight trace, roll call, word gets round, the Rogue's price, a dead man's kit and kit off the turned, signed-for kit, confiscation, the remaining side jobs); errands to about 60 cards; dialogue's strangers and radio speakers in full | Play-tests after phases 3 and 4 | About 6,000 or more | — |
 
-**Traces** ([TRACES.md](TRACES.md), approved with all 16 of its recommended decisions) runs alongside the phases in its own
-phases 0–7: phase 0 is the author's Workbench spike; phases 1, 2 and 5 are built ([docs/TRACES.md](../docs/TRACES.md));
-3, 4 and 6 need only built systems; phase 7 goes in with the epilogue (phase 7 here).
+**Traces**, approved with all 16 of its recommended decisions, ran alongside the phases in its own
+phases 0–7: phase 0 is the author's Workbench spike; phases 1 to 7 are built ([docs/TRACES.md](../docs/TRACES.md));
+what waits on other systems is in [TRACES.md](TRACES.md).
 
 **In all:** roughly 77,000–82,000 lines (about two thirds of today's code), plus about 4,600 lines of player text.
 The game is whole after phase 4; phases 5–7 are the season's story; phase 8 is optional. If the author wants the
@@ -888,7 +888,7 @@ system is built, and each with CLAUDE.md's Doc map and the README's doc list in 
 | [ERRANDS.md](ERRANDS.md) | DESIGN.md ("Errands"), MISSIONS.md ("Errands") |
 | [MAJORS.md](MAJORS.md) | QUESTLINES.md (no new doc), DESIGN.md (questlines, the fallbacks, the budget), LORE.md |
 | [EPILOGUE.md](EPILOGUE.md) | docs/EPILOGUE.md (added in phase 7: it outgrew DESIGN.md), MISSIONS.md (the closing work), QUESTLINES.md (Loose Ends), LORE.md's Endings |
-| [TRACES.md](TRACES.md) | `docs/TRACES.md` (its decision 2; added with its phase 1), WORKBENCH_SETUP.md, UI.md |
+| [TRACES.md](TRACES.md) | `docs/TRACES.md` (its decision 2; phases 1 to 7 built there), EPILOGUE.md (Traces' part), WORKBENCH_SETUP.md, UI.md |
 | This plan | ROADMAP.md ("Next", play-test priorities, and the Dropped list) and README.md (status) |
 
 **Every phase also updates** UI.md and UI/LAYOUTS.md for any screen or widget a script looks up, WORKBENCH_SETUP.md
