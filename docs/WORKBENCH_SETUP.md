@@ -446,7 +446,7 @@ and the UI files) need none, and seven have no base:
 | `RZ_SurvivorGroup.et` | a civilian AI group on SURV | — | Missions > Survivor group | optional | Survivors Trapped, Training Day, Harvest Guard, The Bitten Friend, Trader Caravan, Protection Racket, the keeper's people in The Well Story; the fallback escort and bounty target |
 | `RZ_Nest.et` | a destructible hive (Special Zombies' ZombieHive_Minor) or a prop with a damage manager | — | Missions > Nest | optional | Burn the Nest, Specimen from the Nest |
 | `RZ_BanditDrop.et` | a crate, barrel or car wreck prop | `RZ_SellSamplesToBanditsAction` | Missions > Dead drop | optional | Dead Drop |
-| `RZ_HeliWreck.et` | a helicopter wreck prop | the clue set | Missions > Helicopter wreck | optional | Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash and of The Last Pilot's Day 3 wreck; the last helicopter's crash in The Last Pilot |
+| `RZ_HeliWreck.et` | a helicopter wreck prop | the clue set | Missions > Helicopter wreck | optional | Crash Site, Two Bearings; the look of Rescue the Pilot's crash and of The Last Pilot's Day 3 wreck; the last helicopter's crash in The Last Pilot |
 | `RZ_CorpsePile.et` | a body bag pile prop | — | Missions > Corpse pile | optional | look only: Burn the Bodies' piles and Memorial's bodies (both fall back to the puzzle object) |
 | `RZ_RedHandGroup.et` | an AI group on BAND | — | Missions > Red Hand group | optional | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness, the crews in Learning the Drones and The Pit's Debtor, the guards in Tied Down; in the questlines the thief's friends (The Book), the van's guards and the raided camp (Cargo) and the crew at the well (The Well Story), the toll and the raid (The Census), the crews (The Last Pilot); default Red Hand hunter squad |
 | `RZ_FuelDepot.et` | fuel tanks with a damage manager | — | Missions > Fuel depot | optional | Arson; the look of The Last Pilot's Red Hand depot |
@@ -763,7 +763,7 @@ deserter or the researcher for 10 s still gets them moving.
 puzzle object (Tunnel Rats' culverts, the tape in Fake Distress Call), **Puzzles > Civilian** (the
 people in Distress Call, Rival Survivors and Collapse Shelter) and **Missions > Red Hand group**
 (Fake Distress Call, the watchers at the Abandoned Convoy), **Puzzles > Keypad** and **Note** or
-**Body** (Locked Bunker). Gas Station Fire and Burning Town need **Traps > Fire** on. The convicts,
+**Body** (Locked Bunker). Gas Station Fire needs **Traps > Fire** on. The convicts,
 the sniper and the Fake Distress Call's ambush fight through the hostility system's fights, so they
 must be on `BAND`. The newer contracts also reuse **Cars > Car prefabs** (Car Theft), **Supply >
 Halcyon truck** (Mobile Lab's lab truck, falling back to the bus), **Supply > Haven truck** (the bus
@@ -1103,9 +1103,9 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Backgrounds | Backgrounds (list) |  | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
 | Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
 | Missions | (top level) |  | Reward crate, mission item, drop points and the optional mission prefabs |
-| Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
+| Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
 | Missions | Errands | `m_ErrandSettings` | **Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), the "Most people helped" line (on), telemetry (30 min), debug log (off) |
-| Missions | Story | `m_MissionStorySettings` | **Enabled** (the story kit: who decides, who benefits), the **reason lane** (on, 30 min apart, within 3 km of the reason), the one weight clamp (x0.75-1.3) |
+| Missions | Story | `m_MissionStorySettings` | **Enabled** (the story kit: who decides, who benefits), the **reason lane** (on, 30 min apart, within 3 km of the reason), the one weight clamp (x0.75-1.3), **Mirror chance** (0.1: The Cache and The Armory also offered to a second giver), **PvE** (off; on turns mirrors off) |
 | Missions | Contracts | `m_ContractSettings` | **Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) |  | The puzzle prefabs, **Scale counts items** (off), landmark name |
 | Perimeter | Perimeter | `m_PerimeterSettings` | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
@@ -1667,7 +1667,8 @@ dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by
 declined N, lapsed N, overtaken N, done N, Favor N, Fame N (amends N), ways ...`, and `Errands admin
 view: ...`; `Story: truth <key>.<subject> = <truth> (kept|new)` and `...; found by <how>`, `Story:
 errand.<key> talk pass|short|refused by <player>`, `Story: <key> resolved by hand-in to <party>
-(...)`, `Story: reason <key> (<subject>) started N '<title>' at <town>`, `Story: <title> hold by
+(...)`, `Story: reason <key> (<subject>) started N '<title>' at <town>`, `Mirror: <title> hinted to
+<faction>`, `Mirror: <title> won by <faction>` (or `won by both, half each`), `Story: <title> hold by
 <player> objected to by <player>`.
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
@@ -2179,8 +2180,8 @@ editor's time of day)
 - [ ] World events (raise a weight to start one): Fog Bank muffles heat and brings spawns closer
   only inside its radius, and both reset when it ends. Power Surge marks the town Powered for 10
   minutes (status log, the lights hook, electronics in searches) and dark again after, unless the
-  grid powers it. Gas Station Fire goes up after 3 minutes and burns at most three buildings;
-  Burning Town burns one building at a time and stops at its cap. Tunnel Rats' culverts each
+  grid powers it. Gas Station Fire goes up after 3 minutes and burns at most three buildings.
+  Tunnel Rats' culverts each
   send infected and can be collapsed only with none within 12 m.
 - [ ] People events: a Radio Operator gets a private line on both distress calls (live or a tape);
   the fake's two groups appear within 400 m, close in at 60 m and leave a Red Hand Known player
@@ -2268,12 +2269,19 @@ on the talk screen says why something wasn't dealt)
   wanted. A player who isn't eligible delivers someone else's contract: only eligible people at
   the drop are paid. Take a choice item to the other side: it pays everyone with you whom that
   side doesn't hunt, and the giver's leader neither remembers it as help nor scales the pay.
+- [ ] Mirror offers (set **Missions > Story > Mirror chance** to 1): The Cache and The Armory tell
+  the second side 5 minutes in; The Cache goes to the side with more holders at the end (a draw is
+  half each), The Armory to whoever hands the case in, and dropping the case down the well pays
+  nobody and costs both sides. With **PvE** on, no mirror.
+- [ ] The merged jobs: Take Back the Town once Bastion is gone (Overrun+), Burn the Bodies at the
+  lab from Halcyon, Checkpoint Duty at an infested town pausing its spread, Medicine Run's infected
+  drawn off by a noise, and the Courier's letters through an infested town paying ×1.25 when quiet.
 - [ ] A personal notice (a mission brief, a tier change) shows only on its player's screen: with
   a second client watching its radio log, nothing of yours appears there. Broadcasts still reach
   both.
-- [ ] Carry a delivery item (Courier letters, a Bastion case, the capture case or
-  Restore Comms parts), then disconnect: the others are told and the item is back on the ground
-  where you were (or, for parts, at its first spot). Die with it and wait for the body to go: same.
+- [ ] Carry a delivery item (Courier letters, a Bastion case or the capture case), then
+  disconnect: the others are told and the item is back on the ground
+  where you were. Die with it and wait for the body to go: same.
   Check the log for an item that comes back twice from one disconnect.
 - [ ] The Courier's letters taken off the one who asked and delivered by someone else pay nobody.
 - [ ] Escort: the player the pilot or scientist follows disconnects or dies; the nearest player

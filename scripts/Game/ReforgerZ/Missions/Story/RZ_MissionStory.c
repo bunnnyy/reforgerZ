@@ -28,6 +28,12 @@ class RZ_MissionStorySettings
 	[Attribute("1.3", UIWidgets.Slider, "...or over this", "1 3 0.05")]
 	float m_fWeightMax;
 
+	[Attribute("0.1", UIWidgets.Slider, "Mirror chance: The Cache and The Armory are also offered to a second giver this often (its people hear 5 minutes later, with a rough area twice as wide). 0 = never", "0 1 0.05")]
+	float m_fMirrorChance;
+
+	[Attribute("0", desc: "A PvE server: mirror offers are off (they turn into races between players)")]
+	bool m_bPvE;
+
 	protected static ref RZ_MissionStorySettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------

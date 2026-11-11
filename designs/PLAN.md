@@ -710,7 +710,7 @@ plan's "Decisions for you", which the author answered by number.
 | Route marks after 90% | Private: every route with an active lock gets the same share of places (`finale.marks_public` 0) |
 | The infected | Tribes and crawlers, not Grounds, with its own 16 decisions ([INFECTED.md](INFECTED.md#decisions)) |
 | The four stronghold grey choices | Shared, with the hold and one objection per player |
-| Mirror offers | 10%, off on PvE servers ([MISSION_STYLE.md](MISSION_STYLE.md#mirror-offers)) |
+| Mirror offers | 10%, off on PvE servers (built: [DESIGN.md](../docs/DESIGN.md#story-blocks)) |
 | Route Fame | Decided by decision 4: the finale's capped chunk stays, and the earlier draft's route Fame bonus is gone |
 
 ---

@@ -201,7 +201,7 @@ Underneath the discipline, it does things nobody puts in the log:
 | **"Contribution"** | Food taken from civilians "for their protection", so that every name on the roster eats. It's never called a tax, and on a bad week it's never written down. | Requisition; Off-Book Requisition; The Census |
 | **"Signed correct"** | A post covers for its own, and the stronghold covers for its posts. A civilian a patrol hurt goes in the log as infected. Rations "spoil", diesel "evaporates", and rifles fall off the inventory and come back as the Red Hand's fuel and fresh food: a hungry post arming the crews that killed one of its own, to feed the rest. Most of the stronghold's counters look at the thin faces and let it stand. Not all. | Burn the Ledger (the ledger before the audit); Rifles for Sale ("You'll see those rifles again"); the sergeant in Struck Off who rubs out a KIA and doesn't ask where the man has been |
 | **The bunker** | Stores the stronghold never told anyone about, not even its own posts: food kept back for the day the roster can't be fed. Bastion kept it from Bastion. | The Deserter's Map arc |
-| **Containment** | Bastion does to a town what was done to Bastion, to keep the infection off its own: barriers across the roads, nobody in or out. Or the guns, after five minutes' warning, whoever is still inside. | Quarantine Line; Bastion Shelling; the Fire Mission perk |
+| **Containment** | Bastion does to a town what was done to Bastion, to keep the infection off its own: barriers across the roads, nobody in or out. Or the guns, after five minutes' warning, whoever is still inside. | Checkpoint Duty; Bastion Shelling; the Fire Mission perk |
 
 **How they see the others:**
 

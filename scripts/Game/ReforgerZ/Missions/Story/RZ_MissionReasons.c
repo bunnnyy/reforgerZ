@@ -41,7 +41,7 @@ class RZ_MissionReasons
 			result.Insert("post.truck_lost");
 
 		// A town gone bad, or shelled
-		if (t == RZ_Mission_ClearSettlement || t == RZ_Mission_TakeBackTown)
+		if (t == RZ_Mission_ClearSettlement)
 			result.Insert("town.infested");
 
 		if (t == RZ_Mission_BurnTheBodies)

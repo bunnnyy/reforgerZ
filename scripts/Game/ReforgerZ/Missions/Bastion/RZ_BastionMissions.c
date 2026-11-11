@@ -1,8 +1,9 @@
 //! Task Force Bastion (Military) contracts. See docs/MISSIONS.md, "Task Force Bastion".
 
 //------------------------------------------------------------------------------------------------
-//! #1 Retake the Town: kill enough zombies inside an infested town. Only while
-//! Bastion is still around. ★ Police/Soldier: +25% Fame.
+//! #1 Retake the Town (Take Back the Town merged in): kill enough zombies inside an infested town.
+//! The giver depends on Bastion's presence: Bastion (anyone) while it's around, the Haven (Known)
+//! after it pulls out. ★ Police/Soldier: +25% Fame. Its fallout line: "The town stays theirs."
 class RZ_Mission_ClearSettlement : RZ_Mission
 {
 	protected int m_iKillsNeeded;
@@ -11,17 +12,29 @@ class RZ_Mission_ClearSettlement : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
-		SetContract(RZ_EFaction.MILITARY, RZ_ETier.STRANGER, 15, 15);
-		m_Req.m_fMinMilitary = 0.3;
-		m_Req.Bonus("police");
-		m_Req.Bonus("soldier");
-		m_fBonusFameMult = 1.25;
+		if (gm.GetDirector().GetStageSettings().m_fMilitaryPresence >= 0.3)
+		{
+			SetContract(RZ_EFaction.MILITARY, RZ_ETier.STRANGER, 15, 15);
+			m_Req.m_fMinMilitary = 0.3;
+			m_Req.Bonus("police");
+			m_Req.Bonus("soldier");
+			m_fBonusFameMult = 1.25;
+		}
+		else
+		{
+			SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.KNOWN, 15, 15);
+			m_Req.m_fMaxMilitary = 0.29;
+		}
+
 		m_fTimeLeft = 3600;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
+		if (m_eGiver == RZ_EFaction.SURVIVORS)
+			return 2;
+
 		return 2 * gm.GetDirector().GetStageSettings().m_fMilitaryPresence + 0.5;
 	}
 
@@ -43,8 +56,21 @@ class RZ_Mission_ClearSettlement : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	protected void SetText(RZ_Settlement s)
 	{
+		if (m_eGiver == RZ_EFaction.SURVIVORS)
+		{
+			m_sTitle = "Take Back " + s.m_sName;
+			m_sBrief = string.Format("The Haven wants to move back into %1. Kill %2 infected in the town.", s.m_sName, m_iKillsNeeded);
+			return;
+		}
+
 		m_sTitle = "Retake " + s.m_sName;
 		m_sBrief = string.Format("Bastion command wants %1 cleared. Kill %2 infected in the town.", s.m_sName, m_iKillsNeeded);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetFailText(RZ_GameModeComponent gm)
+	{
+		return "The town stays theirs.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -71,32 +97,6 @@ class RZ_Mission_ClearSettlement : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! Haven #7 Take Back the Town: the same job once Bastion has pulled out (Known with the Haven).
-class RZ_Mission_TakeBackTown : RZ_Mission_ClearSettlement
-{
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.KNOWN, 15, 15);
-		m_Req.m_fMaxMilitary = 0.29;
-		m_fTimeLeft = 3600;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 2;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void SetText(RZ_Settlement s)
-	{
-		m_sTitle = "Take Back " + s.m_sName;
-		m_sBrief = string.Format("The Haven wants to move back into %1. Kill %2 infected in the town.", s.m_sName, m_iKillsNeeded);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 //! #2 Last Helicopter: Bastion's one working helicopter shuttles people and stock
 //! between its own bases inside the Zone. It sets down at an LZ outside a town and
 //! lifts off at a fixed time. Everyone at the LZ when it leaves is paid for keeping it
@@ -111,7 +111,7 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 	protected static const float COUNTDOWN = 720;
 	protected static const float GROUND_TIME = 180;	// it lands this long before it leaves
 
-	//! Clear the Airfield: the helicopter runs twice as often until this mission-manager clock time
+	//! The Last Pilot's ending: the helicopter runs twice as often until this mission-manager clock time
 	protected static float s_fBoostUntil;
 
 	//------------------------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Clear the Airfield: more runs for a while (not saved).
+	//! More runs for a while (not saved).
 	static void Boost(RZ_GameModeComponent gm, float seconds)
 	{
 		s_fBoostUntil = Math.Max(s_fBoostUntil, gm.GetMissions().GetClock() + seconds);
@@ -231,17 +231,32 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 //! each pile for 10 s. Amends: works off Bastion Infamy. ★ Nurse: faster.
 //! The piles are Missions > Corpse pile, else Puzzles > Puzzle object (look only): without
 //! either nobody could find them, so it never appears.
+//! Decontamination merged in: the giver depends on the place. One time in three, while the lab
+//! stands, it's Halcyon's (Trusted): four piles round the lab, the lab's town -15 infection.
+//! The Authors questline's stage 5 forces the lab's version.
 class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 {
 	protected ref array<IEntity> m_aPiles = {};
 	protected float m_fInfectionDrop = 10;
+	protected bool m_bAtLab;
+	protected bool m_bForceLab;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
-		SetContract(RZ_EFaction.MILITARY, RZ_ETier.STRANGER, 15, 15);
-		m_bAmends = true;
-		m_Req.m_bAllowWatched = true;
+		m_bAtLab = gm.HasLab() && (m_bForceLab || Math.RandomInt(0, 3) == 0);
+		if (m_bAtLab)
+		{
+			SetContract(RZ_EFaction.INSTITUTE, RZ_ETier.TRUSTED, 20, 20);
+			m_fInfectionDrop = 15;
+		}
+		else
+		{
+			SetContract(RZ_EFaction.MILITARY, RZ_ETier.STRANGER, 15, 15);
+			m_bAmends = true;
+			m_Req.m_bAllowWatched = true;
+		}
+
 		m_Req.Bonus("nurse");
 		m_Req.Bonus("doctor");
 		m_fBonusVisitSpeed = 1.5;
@@ -262,6 +277,18 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
+		if (m_bAtLab)
+		{
+			m_iSettlement = gm.GetLabSettlement();
+			m_vPos = gm.GetLabPosition();
+			m_fParticipationRadius = 150;
+			PlacePiles(gm, m_vPos, 20, 100, 4);
+			m_sTitle = "Burn the Bodies";
+			m_sDeed = "burnt the dead round the lab";
+			m_sBrief = "Infected corpses are piling up around the Halcyon lab. Burn the four piles before they draw more.";
+			return true;
+		}
+
 		m_iSettlement = PickSettlement(gm, 30, 90);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
@@ -382,8 +409,9 @@ class RZ_Mission_Recon : RZ_Mission_VisitPoints
 }
 
 //------------------------------------------------------------------------------------------------
-//! #5 Checkpoint Duty: hold a checkpoint at a town's edge for 10 minutes against
-//! waves. The Red Hand notices. ★ Police: holds faster.
+//! #5 Checkpoint Duty (Quarantine Line merged in): hold a checkpoint at an infested town's edge for
+//! 10 minutes against waves; the town stops spreading for 30 minutes. The Red Hand notices.
+//! ★ Police: holds faster.
 class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 {
 	//------------------------------------------------------------------------------------------------
@@ -411,7 +439,7 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 60);
+		m_iSettlement = PickSettlement(gm, 55, 95);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -419,8 +447,20 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.9, s.m_fRadius + 80);
 		m_sTitle = "Checkpoint Duty";
 		m_sDeed = "stood a shift at the checkpoint near {town}";
-		m_sBrief = string.Format("Man the Bastion checkpoint outside %1 for 10 minutes. Let survivors through, stop everything else.", s.m_sName);
+		m_sBrief = string.Format("Bastion is sealing off %1. Man the checkpoint at the edge of town for 10 minutes while the barriers go up. Let survivors through, stop everything else.", s.m_sName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Quarantine Line's result: the town is sealed off and stops spreading for 30 minutes.
+	override void OnSuccess(RZ_GameModeComponent gm)
+	{
+		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
+		if (!s)
+			return;
+
+		s.m_fNoSpreadSeconds = 1800;
+		gm.NotifyAll("Quarantine", s.m_sName + " has been sealed off. It won't spread the infection for a while.");
 	}
 }
 
@@ -581,54 +621,6 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 	{
 		super.Cleanup(gm);
 		RZ_Util.DeleteUnit(m_Wreck);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! #13 Quarantine Line: hold the edge of an infested town for 10 minutes while
-//! it's sealed off. That town stops spreading infection for 30 minutes.
-class RZ_Mission_QuarantineLine : RZ_Mission_Hold
-{
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetContract(RZ_EFaction.MILITARY, RZ_ETier.TRUSTED, 30, 30);
-		m_fHoldNeeded = 600;
-		m_fHoldRadius = 40;
-		m_fWaveInterval = 150;
-		m_iMaxWaves = 3;
-		m_fTimeLeft = 2400;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 1.2;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 55, 95);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 60);
-		m_sTitle = "Quarantine Line";
-		m_sBrief = string.Format("Bastion is sealing off %1. Hold the line at the edge of town for 10 minutes while the barriers go up.", s.m_sName);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
-	{
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return;
-
-		s.m_fNoSpreadSeconds = 1800;
-		gm.NotifyAll("Quarantine", s.m_sName + " has been sealed off. It won't spread the infection for a while.");
 	}
 }
 

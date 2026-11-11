@@ -50,7 +50,7 @@ and one way to end it: **research the cure.**
   persuade, sneak, fight, bribe, betray or side with another faction, and what you chose changes
   the ending, the rewards and the world. Fifteen: three per faction, two for the Long Table and
   the example Short Weight, crossing each other through shared flags ([QUESTLINES.md](docs/QUESTLINES.md)).
-- **178 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
+- **151 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
   events, puzzle missions, unarmed stealth jobs, missions at the quarantine line, morally grey
   Haven and Red Hand work and leaders' off-book jobs. Contracts
   name a rough area until you're close, unless you're a Radio Operator or trusted by the giver.

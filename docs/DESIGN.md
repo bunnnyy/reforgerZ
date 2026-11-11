@@ -1072,7 +1072,7 @@ which designs the rest). No mission's content changed with it.
 - **Reasons and the reason lane.** When the world has posted a reason ([World memory](#world-memory)),
   the mission manager may start one registered contract that answers it (`RZ_MissionReasons`: The
   Harvest Guard and Protection Racket answer a hungry house; Checkpoint Duty and Convoy Escort a
-  post's lost truck; Retake the Town and Take Back the Town a town gone bad; Struck Off a dead
+  post's lost truck; Retake the Town a town gone bad; Struck Off a dead
   leader; Trail of Clues and Medicine Run a bitten wanderer; Cold Chain and Power the Lab the cure's
   milestones; Burn the Bodies a shelled town). At most one every **Reason lane gap** (30 min)
   server-wide, inside the contract cap and every check (`CanRunNow`, someone online eligible,
@@ -1080,11 +1080,18 @@ which designs the rest). No mission's content changed with it.
   Its brief opens with the reason's line (*"Levie's on half portions."*). Random picks stay.
 - **One weight clamp.** A contract's leader traits (±20%), its faction's needs (×0.85–1.2) and the
   majors' season weights multiply, and the product is clamped once to ×0.75–1.3.
+- **Mirror offers** (`RZ_Mirror`): one class with two givers, rolled once when the job is set up
+  (**Mirror chance**, 10%; never on a server with **PvE** on). The second side's eligible players
+  hear 5 minutes later with a rough area twice as wide, and only from then can they take part. A
+  hold mirror (The Cache) goes to the side with more eligible holders inside when the hold ends; a
+  draw is half each (each side pays 50%, neither leader counts it). A carry mirror (The Armory) goes
+  to whoever hands the case in, through who benefits. The losing side gets a line, never a fallout.
 - **The journal's detail**: selecting a row asks the server for that row's detail (at most 1,500
   characters): what you've found and who it went to ([UI.md](UI.md#the-notebook)).
 
 Log lines: `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`, `Story: <key>
-resolved by hand-in to <party> (...)`, `Story: reason <key> (<subject>) started <id> '<title>'`.
+resolved by hand-in to <party> (...)`, `Story: reason <key> (<subject>) started <id> '<title>'`, `Mirror: <title>
+hinted to <faction>`, `Mirror: <title> won by <faction>` (or `by both, half each`).
 
 ### Errands
 
@@ -1949,7 +1956,7 @@ That one building burns: 30 heat, an optional fire effect, the town's infection 
 hours no loot there and no spawns within 30 m. Strongholds, outposts, safehouses, quartermasters
 and the lab can't burn (or be locked), and never show the prompt.
 
-The Gas Station Fire and Burning Town events ([MISSIONS.md](MISSIONS.md#world-events)) use the
+The Gas Station Fire event ([MISSIONS.md](MISSIONS.md#world-events)) uses the
 same fire, one building at a time; nothing burns a whole town at once.
 
 ### Water
@@ -2417,7 +2424,7 @@ Code: `Core/RZ_LooseItems.c`.
 
 Things the mode spawns for players are tracked: reward crates, dropped samples, key items, shop
 and requisition purchases, search finds, what infected bodies carry, loot taken from houses, crafted items and treatments, the wind-up radio, the
-Wedding Party's jewellery and the Crashed Helicopter's wreck. One that lies untouched
+Wedding Party's jewellery and The Last Pilot's wreck. One that lies untouched
 for **30 minutes** (**World > Loose item minutes**; 0 = off) with no player within 150 m is
 removed. Never removed: anything in a pack, a container or a vehicle's storage (its clock starts
 again when it's put down), vehicles (a fixed car isn't litter), and anything within 300 m of a

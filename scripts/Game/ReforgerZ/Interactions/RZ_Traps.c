@@ -1251,7 +1251,7 @@ class RZ_Traps
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! World events (Gas Station Fire, Burning Town): this one building catches. False if fire is
+	//! World events (Gas Station Fire): this one building catches. False if fire is
 	//! off, or it can't burn (a protected place) or already has. quiet = no "smoke" notice nearby.
 	bool BurnBuilding(vector buildingPos, bool quiet)
 	{

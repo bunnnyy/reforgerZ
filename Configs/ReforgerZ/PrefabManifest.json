@@ -5029,8 +5029,6 @@
     "m_fFogSpawnMult": "0.5",
     "m_fSurgeMinutes": "10",
     "m_fStationInfectionDrop": "8",
-    "m_iBurnMax": "8",
-    "m_fBurnInfectionDrop": "3",
     "m_iCampInfamy": "10",
     "m_sJewelleryWords": "jewel,necklace,bracelet,weddingring,wedding_ring",
     "m_fTunnelInfectionCap": "20"
@@ -5071,7 +5069,9 @@
     "m_fReasonGapMinutes": "30",
     "m_fReasonRange": "3000",
     "m_fWeightMin": "0.75",
-    "m_fWeightMax": "1.3"
+    "m_fWeightMax": "1.3",
+    "m_fMirrorChance": "0.1",
+    "m_bPvE": "0"
    }
   },
   {

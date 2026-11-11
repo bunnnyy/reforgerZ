@@ -240,3 +240,15 @@ In this order, because later ones depend on earlier ones:
 | The infected dragging a player | The server can't move a player smoothly against their own machine's prediction; a grab that holds you in place is the planned alternative |
 | A trait-points system on top of backgrounds | Not wanted; backgrounds, personal goals and Legacy unlocks carry character choice |
 | Danger money on shop prices for mixed reputations | A name opens and costs nothing; the Wildcard tier pays at the posts (the search, the double toll) instead |
+| Clear the Road | Kills along a straight line; the tribes' Clear the Trail clears roads for a reason |
+| Signal Fires | Needs three players online at once, and has no story in it |
+| Restore Comms | A parts fetch and a hold at a mast; Radio Relay is the same job |
+| Clear the Airfield | Existed only to make the helicopter run more often, on a field that isn't an airfield |
+| Toll Road | The Red Hand's built roadblocks are the toll roads; Skim the Toll keeps the grey part |
+| Quarantine Breach | Ten minutes of killing in a safe town, with no choice in it |
+| Crashed Helicopter | The same wreck as Crash Site; The Last Pilot's ending starts Crash Site instead |
+| Burning Town | The second fire event; Gas Station Fire keeps the set piece |
+| Paces from the Tower | A third stash hunt beside Stash Note and Two Bearings |
+| Hot and Cold | A radio stash hunt; The Numbers Station keeps the radio puzzle |
+| The Old Clinic | A generic hold |
+| Field Station | A three-minute hold for one research point |

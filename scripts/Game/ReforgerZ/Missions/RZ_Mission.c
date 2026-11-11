@@ -68,6 +68,8 @@ class RZ_Mission
 	//! The story kit (Missions/Story/RZ_MissionStory.c): who took part and who decides, who benefits,
 	//! truths, records. Null: the mission runs exactly as before.
 	ref RZ_MissionStory m_Story;
+	//! A mirror offer (Missions/Story/RZ_Mirror.c): a second giver for the same job. Null: one giver.
+	ref RZ_Mirror m_Mirror;
 	bool m_bSwitched;				// its result went to another side than the giver's: pays at most the base
 	string m_sWhyNow;				// the reason it was started for ("Levie's on half portions."): the brief opens with it
 	vector m_vReasonAt;				// where that reason is: a reason-started contract must land near it
@@ -288,7 +290,7 @@ class RZ_Mission
 			return true;
 
 		if (!m_Req.IsEligible(gm, playerId))
-			return false;
+			return m_Mirror && m_Mirror.IsSide(gm, playerId);
 
 		// A leader's personal job: the leader decides who gets it
 		if (m_bInPersonOnly && m_iLeaderId >= 0 && gm.GetLeaders())
@@ -349,6 +351,9 @@ class RZ_Mission
 		RevealNear(gm, ids, players);
 		if (m_Story)
 			m_Story.Update(this, gm, dt, ids, players);
+
+		if (m_Mirror)
+			m_Mirror.Tick(gm, this, dt, ids);
 
 		OnUpdate(gm, dt, ids, players);
 

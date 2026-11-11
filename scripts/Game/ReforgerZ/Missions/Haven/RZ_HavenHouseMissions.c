@@ -102,7 +102,86 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 		m_sTitle = "Letters for " + destName;
 		m_sBrief = string.Format("%1 puts a bundle of letters tied with string at your feet. \"For %2. You won't need a gun. Stay off the main road, keep quiet, don't stop for anyone.\"",
 			m_sCourier, destName);
+
+		// Silent Courier merged in: the quiet way, through an infested town on the way
+		m_iQuietTown = QuietTown(gm, m_vStart, dest);
+		RZ_Settlement quiet = gm.GetSettlement(m_iQuietTown);
+		if (quiet)
+			m_sBrief += string.Format(" \"The short way is straight through %1. Quiet in there pays better. Loud, and you'd better hope the letters are worth it.\"", quiet.m_sName);
+
+		// Who the letter is really for (a truth, kept per destination for 3 season days)
+		array<string> truths = {"as_said", "the_writer"};
+		array<float> weights = {0.7, 0.3};
+		m_sTruth = RZ_WorldFacts.Get().Memory().DrawTruth("letters", RZ_WorldFacts.Town(m_iSettlement), truths, weights);
 		return true;
+	}
+
+	protected int m_iQuietTown = -1;
+	protected bool m_bThrough;
+	protected bool m_bLoud;
+	protected string m_sTruth;
+	protected static const float QUIET_HEAT = 35;
+	protected static const float QUIET_HEAT_HUNTER = 45;
+
+	//------------------------------------------------------------------------------------------------
+	//! An infested town (infection 40+) whose middle is within 400 m of the straight way: -1 if none.
+	protected int QuietTown(RZ_GameModeComponent gm, vector from, vector to)
+	{
+		foreach (int i, RZ_Settlement s : gm.GetSettlements())
+		{
+			if (s.m_fInfection < 40)
+				continue;
+
+			if (RZ_Util.DistXZ(s.m_vCenter, from) < 200 || RZ_Util.DistXZ(s.m_vCenter, to) < 200)
+				continue;
+
+			if (RZ_Util.DistToSegmentXZ(s.m_vCenter, from, to) <= 400)
+				return i;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Carried through the infested town: heat where the carrier stands under 35 (★ Hunter 45) is
+	//! the quiet way.
+	override protected void OnDeliveryTick(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		RZ_Settlement town = gm.GetSettlement(m_iQuietTown);
+		if (!town || m_iCarrier <= 0 || m_bLoud)
+			return;
+
+		IEntity carrier = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iCarrier);
+		if (!carrier || RZ_Util.DistXZ(carrier.GetOrigin(), town.m_vCenter) > town.m_fRadius)
+			return;
+
+		m_bThrough = true;
+		float limit = QUIET_HEAT;
+		if (RZ_QuestApproach.HasBackground(gm, m_iCarrier, "hunter"))
+			limit = QUIET_HEAT_HUNTER;
+
+		if (gm.GetHeat().GetHeat(carrier.GetOrigin()) >= limit)
+		{
+			m_bLoud = true;
+			gm.NotifyPlayer(m_iCarrier, m_sTitle, "Too loud. Doors are shutting all along the street. The letters will still get there, the quiet way's gone.");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnDelivered(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction)
+	{
+		if (m_bThrough && !m_bLoud)
+		{
+			m_fRewardScale = 1.25;
+			RZ_Log.Info(string.Format("Story: letters sneak pass by %1", RZ_Util.PlayerName(playerId)));
+		}
+
+		if (m_sTruth == "the_writer")
+		{
+			string line = "The woman at the door reads the top letter and laughs, once. \"This one's to him from him. He writes to himself so someone brings him the post.\"";
+			gm.NotifyPlayerAs(playerId, m_sTitle, line, RZ_ENoticeTag.MISSION);
+			RZ_WorldFacts.Get().Memory().FoundTruth("letters", RZ_WorldFacts.Town(m_iSettlement), "delivery");
+		}
 	}
 }
 

@@ -30,6 +30,21 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Distance from p to the segment a-b, on the ground plane.
+	static float DistToSegmentXZ(vector p, vector a, vector b)
+	{
+		float abx = b[0] - a[0];
+		float abz = b[2] - a[2];
+		float len2 = abx * abx + abz * abz;
+		if (len2 < 0.01)
+			return DistXZ(p, a);
+
+		float t = Math.Clamp(((p[0] - a[0]) * abx + (p[2] - a[2]) * abz) / len2, 0, 1);
+		vector q = Vector(a[0] + abx * t, p[1], a[2] + abz * t);
+		return DistXZ(p, q);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static vector GroundPos(vector pos)
 	{
 		pos[1] = GetGame().GetWorld().GetSurfaceY(pos[0], pos[2]);

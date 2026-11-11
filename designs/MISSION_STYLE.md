@@ -5,7 +5,7 @@ described in [docs/DESIGN.md](../docs/DESIGN.md#story-blocks): the story kit, wh
 decides (the hold, Object, Stand with), who benefits with `RZ_Mission_Choice` rebuilt on it (the
 switch-pay fix), the truth deck, world records and their writers, the reason lane and the one weight
 clamp, the journal's per-row detail. This file keeps the rest: route assets, talk scenes, tricks and
-trade, lies, failure as a branch and fallout errands, mirror offers, the conversion of every mission
+trade, lies, failure as a branch and fallout errands, the conversion of every mission
 (waves 2 to 4), and the parts of wave 1 still listed below.
 
 ## What changed in review
@@ -616,24 +616,6 @@ Relevance comes from what starts a job, not from a line in front of the brief. R
 **Any map.** Truths, options and places are found relative to settlements, landmarks, leader seats and
 canon places. An option or truth whose prefab or place is missing is never offered or drawn.
 
-## Mirror offers
-
-- A mirror offer is one mission class with two givers. There are two:
-  - **The Cache:** the Haven, and the Red Hand for players the Haven Watches;
-  - **The Armory:** Bastion (Trusted) and the Red Hand (Known).
-
-  Convoy Escort and Hijack the Convoy already pair up through Bastion's real truck.
-- The last draft's other pairs (the relay, the lab doses, the pharmacy, the bus) were two classes
-  claiming one place, and claims block that, so they're left out.
-- A setting controls the chance: **10% by default, and off on PvE servers.**
-- The second side hears about it 5 minutes later, with a rough area twice as wide, so it can't camp the
-  first side's drop.
-- If both sides hold at once, the side with more eligible holders inside wins. If that's equal, whoever
-  entered first.
-- "[Talk] Half each", when both sides are there: each side pays 50%, and neither giver's leader counts it
-  as help.
-- The losing side gets a line, not a fallout errand.
-
 ## Teaching it
 
 New guidance tips (the contextual tips system), each shown once:
@@ -781,69 +763,27 @@ For example, **Retake the Town**:
 Power Surge, Siren Test, Gas Station Fire, Bastion Shelling, Storm, Turned Player. They post reasons (a
 horde passed, a town was shelled) and answer none.
 
-**Merges (9):**
+**Merges still to build (2 of 9; the rest are built, [MISSIONS.md](../docs/MISSIONS.md)):**
 
 | Merged away | Into | Why | How |
 |---|---|---|---|
 | Fake Distress Call | Distress Call | The same announcement. A lie works better as a truth than as a second event | Worked example 4 |
 | Hunt the Deserter | Struck Off | The same man and the same hard edge, and they already never run together | Worked example 5 |
-| Raid the Cache | Supply Cache, renamed **The Cache** | The same cache, seen from both sides | One class with two givers (a mirror). Hold it for 60 s; whoever holds it last decides |
-| Take Back the Town | Retake the Town | The same job; only the giver differs | The giver depends on Bastion's presence. The town tally says whose it is |
-| Decontamination | Burn the Bodies | The same corpse piles (its class already extends Burn the Bodies) | The giver depends on the place: Halcyon in the lab's town, Bastion elsewhere. Authors' stage 5 (`RZ_QM_AuthorsDecon`) extends Burn the Bodies, with the lab as giver |
-| Loot the Armory | Weapons Cache, renamed **The Armory** | The same gun cage and the same case | A mirror. "Nobody": drop the case down a well (both sides are angry and nobody pays; a world record). ★ Police knows the layout |
-| Pharmacy Lure | Medicine Run | The lure is a way of doing a medicine run | Medicine Run gets [Sneak] draw them out with noise. It stays open to anyone, unarmed |
-| Silent Courier | Letters | Both are the Courier's letters | Going quietly through the infested town becomes a way (heat under 35: pay ×1.25). New truth: who the letter is really for |
-| Quarantine Line | Checkpoint Duty | The same ten-minute hold at an infested town's edge | Checkpoint Duty moves to an infested town's edge. Success pauses the town's spread for 30 minutes (Quarantine Line's result). Its choice is about the people at the barrier |
 
-**Out of the pool (24).**
+**Out of the pool, still to do:** Rooftop Rescue leaves the pool when the stranger routine Up on the
+Roof lands ([ERRANDS.md](ERRANDS.md)). The 12 dropped, the other 6 that became errands and the 5
+stage-only missions are done (the roadmap's Dropped list, [MISSIONS.md](../docs/MISSIONS.md)).
 
-*Dropped (12). Each goes on the roadmap's Dropped list with this line:*
-- **Clear the Road:** kills along a straight line. The tribes' Clear the Trail clears roads for a reason.
-- **Signal Fires:** needs three players online at once, and has no story in it.
-- **Restore Comms:** a parts fetch and a hold at a mast. Radio Relay is the same job.
-- **Clear the Airfield:** exists only to make the helicopter run more often, on a field that isn't an
-  airfield.
-- **Toll Road:** the Red Hand roadblocks already built are the toll roads. Skim the Toll keeps the grey
-  part.
-- **Quarantine Breach:** ten minutes of killing in a safe town, with no choice in it.
-- **Crashed Helicopter:** the same wreck as Crash Site. B3's ending starts Crash Site instead.
-- **Burning Town:** the second fire event. Gas Station Fire keeps the set piece.
-- **Paces from the Tower:** a third stash hunt beside Stash Note and Two Bearings.
-- **Hot and Cold:** a radio stash hunt. The Numbers Station keeps the radio puzzle.
-- **The Old Clinic:** a generic hold.
-- **Field Station:** a three-minute hold for one research point.
-
-*Become errand routines (7):*
-
-| Mission | Errand ([ERRANDS.md](ERRANDS.md)) |
-|---|---|
-| Fuel for the Lights | Lights |
-| Water Purifier | Filter Parts |
-| Water Run | Water for {house} |
-| Medicine Before Dark | Before Dark |
-| Rooftop Rescue | Up on the Roof |
-| Barter Chain | Barter Chain |
-| Car Keys | Ask About Cars |
-
-*Questline stages only (5):* Fortify the Safehouse (H2 stage 5), House Rules (H2 stage 5), Curfew
-Patrol (B2 stage 3), Our Crossroads (the Red Hand's major, acts 1 and 4: its hold and stand-ins) and
-Coup Talk (the Red Hand's major, act 4: "laughed off or purged"). They leave the random pool, and each
-class stays where its stage uses it.
-
-**References to fix:**
+**References still to fix:**
 
 | Where | Fix |
 |---|---|
-| `RZ_MissionRegistry.c` | Take out of the random pool the 9 merged, 12 dropped, 7 errand and 5 stage-only types. Rename Supply Cache and Weapons Cache. Take the Lab leaves the pool |
-| `RZ_LeaderJobsHaven.c` | "Bring Them Home" is retitled Fetch the Family. Our Crossroads and Coup Talk leave the leader-job pools |
-| `RZ_UIFeed.c` (the unarmed icon list) | Remove Pharmacy Lure, Silent Courier, Water Run and Car Keys |
 | `RZ_BastionLoreMissions.c` | Remove Struck Off's "never with Hunt the Deserter" check |
-| `RZ_Quest_Authors.c` | Stage 5's Decontamination extends Burn the Bodies, with the lab as giver. Stage 4's Take the Lab follows [FINALE.md](FINALE.md) and [MAJORS.md](MAJORS.md) |
-| QUESTLINES.md | **B1** stages 2 and 5 and **R1** stage 2: "Hunt the Deserter's trail" becomes Struck Off's trail (the step chain). **H3** stage 3 and **HC2** stage 1: Silent Courier becomes Letters' quiet way. **HC3** stage 5: Decontamination becomes Burn the Bodies. **B3**: starts after Last Helicopter only (`pilot.lz_kept`), "as Clear the Airfield" is reworded, and "He flew for the line" starts Crash Site instead of Crashed Helicopter. **H2** stage 5 and **B2** stage 3 keep their stage classes |
-| LORE.md | "Struck off" row: Struck Off and Desertion Route. "Containment": Checkpoint Duty and Bastion Shelling. "The pit": Fight Pit and The Pit's Debtor. "Crews eat crews" and "He was bitten": Coup Talk is named as the Red Hand major's settling-day stage |
+| QUESTLINES.md | **B1** stages 2 and 5 and **R1** stage 2: "Hunt the Deserter's trail" becomes Struck Off's trail (the step chain). **B3**: "He flew for the line" starts Crash Site instead of Crashed Helicopter |
+| LORE.md | "Struck off" row: Struck Off and Desertion Route. "The pit": Fight Pit and The Pit's Debtor. "Crews eat crews" and "He was bitten": Coup Talk is named as the Red Hand major's settling-day stage |
 | REPUTATION.md | "What makes AI shoot you": the Fake Distress Call ambush becomes Distress Call's crew (the A loop and Bait truths) |
-| DESIGN.md | Escort and step chain "Used by": Struck Off instead of Hunt the Deserter. The Mechanic wanderer's Car Keys job becomes an errand. The safehouse food line "The Water Run brings 2" becomes Water for {house}. Town memory: a town counts as Barricaded through Fortify the Safehouse only by H2's stage. Fire: Burning Town goes. Loose items: the Crashed Helicopter's wreck becomes Crash Site's |
-| WORKBENCH_SETUP.md | The prefab "used by" rows: the escort soldier (remove Hunt the Deserter); the corpse pile (Decontamination becomes Burn the Bodies); the puzzle object and the Red Hand groups (Fake Distress Call becomes Distress Call); and the rows for Restore Comms, Water Purifier, Burning Town, Car Keys and Crashed Helicopter |
+| DESIGN.md | Escort and step chain "Used by": Struck Off instead of Hunt the Deserter |
+| WORKBENCH_SETUP.md | The prefab "used by" rows: the escort soldier (remove Hunt the Deserter); the puzzle object and the Red Hand groups (Fake Distress Call becomes Distress Call) |
 | MISSIONS.md | The Counts table and every mission table |
 
 ## Worked examples
@@ -1473,9 +1413,6 @@ journal's detail payload. Still to build:
   ±5 per job and −10 per leader per season day, never below 30, counted in the seat ledger; story groups
   at most 4 server-wide and 2 per job, each option with a written fallback; people in scenes plus askers,
   at most 16.
-- **Mirror offers:** `AlsoOfferTo(faction, tier, rules)` for one class (The Cache, The Armory). A
-  setting: 10% by default, off on PvE. The second side gets a hint 5 minutes later with a rough area twice
-  as wide; the more-holders tiebreak; "Half each" pays 50/50.
 - **Finale interface:** `RZ_Finale.RouteOf(identity)`; `Asset(route, kind, identity, key)`, at most one
   per outcome and 3 per player per route per season; options whose asset belongs to another route refuse
   a locked player when picked, with a line.
@@ -1500,7 +1437,6 @@ journal's detail payload. Still to build:
 - `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`
 - `Story: lie <key> found out by <visit|road news|tick|rumour>`
 - `Callback: <key> fired|expired|left on the board`
-- `Mirror: <key> won by <side>`
 - An hourly summary: Fame and Favor per player-hour by way; how often switches and "nobody" are picked
   per job; food spent on trades; fallout starts and their pay.
 

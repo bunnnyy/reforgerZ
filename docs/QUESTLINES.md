@@ -210,7 +210,7 @@ finished Walk Him Out.
 |---|---|---|---|
 | 1 | **One more walk** | A bitten member waits at the edge of town at dusk. **End it** or **let him walk on**, as in the contract (`walk.walked`). **Take him to the lab** for the trial dose before he turns (escort; 8 in 10 he walks out and joins a safehouse, `walk.lab_saved`; else `walk.lab_lost`) | Walk Him Out; escort |
 | 2 | **The walker's tally** | The graves at the edge of town (three points) and his notebook. **Talk** (Known): he says every name. **Sneak**: read the notebook while he's on watch. ★ Elder: he asks you to walk the next one with him | Visit points |
-| 3 | **The lab's numbers** | What happens to "the other two". **Talk** to a field lead (Trusted with Halcyon, or ★ Lab Tech/Doctor). **Sneak** into the records on the night shift when the lights go dim (a heat limit; seen: +8 Halcyon Infamy). **Bribe** a courier: 20 Halcyon Favor. Sets `walk.knows_other_two` *(you)*: HC2 opens at stage 2 | Silent Courier; talk |
+| 3 | **The lab's numbers** | What happens to "the other two". **Talk** to a field lead (Trusted with Halcyon, or ★ Lab Tech/Doctor). **Sneak** into the records on the night shift when the lights go dim (a heat limit; seen: +8 Halcyon Infamy). **Bribe** a courier: 20 Halcyon Favor. Sets `walk.knows_other_two` *(you)*: HC2 opens at stage 2 | Letters' quiet way; talk |
 | 4 | **Wait; two offers** | One session. The research director offers, on the secure channel, to take every bitten Haven member and sell doses to Haven clinics at Known prices (Radio Operators hear it; others hear it from the nurse). The Red Hand offers the cut dose, cheap, for every house. **Broker the lab road** (Known with Halcyon). **Refuse both**. **Side with the Red Hand** (Trusted with the Red Hand) | Wait; talk |
 | 5 | **Make it real** | Lab road: an antidote batch to a Haven clinic before it spoils. The walks stay: the walker's last walk, with you. The cut dose: a crate from a Red Hand drop to a safehouse, unseen by Halcyon's courier | Cold Chain; Walk Him Out; delivery |
 
@@ -346,7 +346,7 @@ people what it looks like from the ground.
 
 **Needs:** Known with Bastion; Trusted (or ★ Soldier) to talk him down. ★ Mechanic, ★ Radio Op,
 ★ Soldier. No storm for the flights.
-**Starts:** the pilot, after any player finishes Last Helicopter or Clear the Airfield.
+**Starts:** the pilot, after any player finishes Last Helicopter.
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
@@ -358,14 +358,14 @@ people what it looks like from the ground.
 
 | Ending | You get | The world |
 |---|---|---|
-| **He stays** | Bastion Fame +20, 30 Favor | Last Helicopter runs twice as often for 2 hours (as Clear the Airfield); Bastion morale +5 |
+| **He stays** | Bastion Fame +20, 30 Favor | Last Helicopter runs twice as often for 2 hours; Bastion morale +5 |
 | **Grounded** | Bastion Fame +10 | No Last Helicopter for 2 real hours, until a new pilot (a named person) is found |
 | **He flew for the line** | Nothing | No Last Helicopter for 2 real days, until Bastion's mechanics patch up a grounded airframe; Bastion morale −10; a Crashed Helicopter event at the edge of the warning zone. Headline: *"Bastion's last pilot flew for the line at dawn. The line shot him down short of it, like the one before."* |
 | **Burnt for the Red Hand** | Red Hand Fame +15, 40 Red Hand Favor; Bastion Infamy +25 | No Last Helicopter for 2 real days; Bastion morale −10, Red Hand morale +5; a Bastion–Red Hand feud |
 
 **Built, with these changes** (key `pilot`; the numbers are in [MISSIONS.md](MISSIONS.md#the-last-pilot-task-force-bastion)):
 
-- It starts as soon as someone finishes Last Helicopter or Clear the Airfield, if Bastion's
+- It starts as soon as someone finishes Last Helicopter, if Bastion's
   questline slot is free (later otherwise). It needs the Perimeter (the wreck is at the line), and
   never starts if its pilot already died in Rescue the Pilot.
 - There's no helicopter prop, as in Last Helicopter: the pad is by Bastion's stronghold, the pilot
@@ -382,7 +382,7 @@ people what it looks like from the ground.
   the Airfield or Rescue the Pilot until then, and the first Last Helicopter after says who flies
   it now. Last Helicopter also waits while the story has the helicopter (stages 1, 2 and 5), and
   Rescue the Pilot while the line runs. Losing Rescue the Pilot's pilot grounds it for 2 real hours.
-- "Twice as often" isn't saved across a restart, as with Clear the Airfield.
+- "Twice as often" isn't saved across a restart.
 
 ---
 
@@ -566,7 +566,7 @@ as `walk.knows_other_two` and `walk.lab_road`.
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
-| 1 | **His number** | **Talk** at the lab (Known with Halcyon): a number and a date. **Sneak**: the volunteers' ledger on the night shift (a heat limit; seen: +8 Halcyon Infamy). **Bribe** a courier: 20 Halcyon Favor. ★ Lab Tech reads the ledger's codes | Silent Courier; talk |
+| 1 | **His number** | **Talk** at the lab (Known with Halcyon): a number and a date. **Sneak**: the volunteers' ledger on the night shift (a heat limit; seen: +8 Halcyon Infamy). **Bribe** a courier: 20 Halcyon Favor. ★ Lab Tech reads the ledger's codes | Letters' quiet way; talk |
 | 2 | **The back room** | **Get in as a courier**: walk a cold case there with Halcyon's courier. **Talk**: the field lead's leave (Trusted with Halcyon). **Sneak**: at night, unseen. Inside: three people in the Final stage, and a chair with a clipboard by each | Escort; sneak |
 | 3 | **Her brother** | He has a few minutes left. **Sit with him** (`brother.sat`). **Take him to his sister** before he turns (`brother.home`). **Take the sample** at the moment of turning (research +1, `brother.sample` *(you)*). **End it** | Patients Not Samples; escort |
 | 4 | **The field lead** | **Talk** (Trusted with Halcyon, or ★ Doctor): she closes the room (`ward.closed`). **Report her** to the director: she's replaced and the room moves to the lab (`ward.lab`). **Keep quiet**: 25 Halcyon Favor (`ward.kept`). **Side with the Red Hand** (Trusted with them): one of the other two goes to a crew as a "live one", for 40 Red Hand Favor (`ward.sold` *(you)*) | Talk |
@@ -609,7 +609,7 @@ as `pilot.flew_for`, the faction the pilot flew for (Halcyon: the samples).
 | 2 | **The field lead's plan** | She wants the method at a Haven clinic first. **Carry it**, cold, before it's missed (`authors.haven_copy`). **Report her** to the director (`authors.reported`). **Side with the Red Hand**: sell it (Sell the Formula) | Cold Chain; Sell the Formula |
 | 3 | **The CO's answer** | One session. The CO wants a locked crate, a key and a guard on the clean room. **Agree** for the director. **Bargain** (Trusted with both): two guards at the gate, no key. **Refuse** for the lab (+5 Bastion Infamy) | Wait; talk |
 | 4 | **The Red Hand's offer** | The boss offers to buy the batch, and to leave the lab alone during the stand. **Take it to the director**: she refuses. **Betray**: take the money (60 Red Hand Favor); Take the Lab is offered during the stand. **Side with Bastion**: tell the CO, and a Bastion checkpoint goes up on the lab's road | Talk |
-| 5 | **Ready the lab** | One of Power the Lab, Decontamination or Lab Defence, picked by the director from your flags | Power the Lab; Decontamination; Lab Defence |
+| 5 | **Ready the lab** | One of Power the Lab, Burn the Bodies at the lab or Lab Defence, picked by the director from your flags | Power the Lab; Burn the Bodies; Lab Defence |
 | 6 | **The final stand** | The stand itself. With `pilot.flew_for` samples (B3), Halcyon's people remember who flew for them, and one Halcyon guard more stands at the gate | Final stand |
 
 | Ending | You get | The world |
@@ -765,8 +765,8 @@ events and rumours. A flag is 1 when set, unless its row gives other values.
 | `census.spared`, `census.pressed` | B2 | Requisition | Safehouses (one bit per safehouse index) Requisition never visits, or visits first and ×1.2 as often |
 | `census.forged` (1 high, 2 low), `census.found_out`, `census.raided` (house + 1) | B2 | (facts) | How the count went to Command, and which house the Red Hand raided |
 | `pilot.flew_for` (the faction the flight was for: Halcyon's samples, the Haven's wounded, Bastion's ammunition) | B3 | HC3 | Halcyon: one more Halcyon guard at the final stand |
-| `pilot.lz_kept` | Last Helicopter, Clear the Airfield | B3 | Someone kept an LZ: B3 can start |
-| `pilot.down_until` (Unix time), `pilot.down_reason` (1 new pilot, 2 airframe), `pilot.new_pilot`, `pilot.back_told` | B3; Rescue the Pilot | Last Helicopter, Clear the Airfield, Rescue the Pilot | The helicopter is grounded or lost until then; the first run after says why (`new_pilot` seeds the new pilot's name, `back_told` marks it said) |
+| `pilot.lz_kept` | Last Helicopter | B3 | Someone kept an LZ: B3 can start |
+| `pilot.down_until` (Unix time), `pilot.down_reason` (1 new pilot, 2 airframe), `pilot.new_pilot`, `pilot.back_told` | B3; Rescue the Pilot | Last Helicopter, Rescue the Pilot | The helicopter is grounded or lost until then; the first run after says why (`new_pilot` seeds the new pilot's name, `back_told` marks it said) |
 | `pilot.stays`, `pilot.grounded`, `pilot.line`, `pilot.redhand`, `pilot.heli_lost`, `pilot.dead` | B3; Rescue the Pilot (`dead`) | B3 (`dead`); (facts) | How the last pilot's story ended; the helicopter lost; its pilot dead (B3 never starts) |
 | `book.bastion` | R1 | B1, Bust Out | Bastion knows which of its commanders sold rifles: B1's outpost commander is that one, if they're still in the chair (value: that commander's leader seat id + 1; 0 if nobody on the page is still in the chair). Bust Out ×1.2 |
 | `book.returned`, `book.kept`, `book.burnt` | R1 | — | What became of the page (or `book.bastion`) |

@@ -3,9 +3,9 @@
 //! wingman to the pilot who flew the wounded for the line and was shot down short of it. Lately he
 //! asks people what the line looks like from the ground.
 //!
-//! It starts after any player finishes Last Helicopter or Clear the Airfield (OnLzKept), and it
+//! It starts after any player finishes Last Helicopter (OnLzKept), and it
 //! publishes what happens to the helicopter as world flags that the ordinary contracts read
-//! (IsHelicopterDown): Last Helicopter, Clear the Airfield and Rescue the Pilot stay off while
+//! (IsHelicopterDown): Last Helicopter and Rescue the Pilot stay off while
 //! it's grounded or lost; Rescue the Pilot also waits while this questline runs.
 //!
 //! 1. Fuel (mission): two jerrycans to the pad (★ Mechanic: one), or the Red Hand's fuel: siphoned
@@ -95,7 +95,7 @@ class RZ_Quest_LastPilot : RZ_Questline
 
 	// ================================================================ The helicopter, for other content
 	//------------------------------------------------------------------------------------------------
-	//! Last Helicopter or Clear the Airfield finished: the pilot notices who kept the LZ. Starts this
+	//! Last Helicopter finished: the pilot notices who kept the LZ. Starts this
 	//! questline now if the rules allow; otherwise it can start later.
 	static void OnLzKept(RZ_GameModeComponent gm)
 	{
@@ -108,7 +108,7 @@ class RZ_Quest_LastPilot : RZ_Questline
 
 	//------------------------------------------------------------------------------------------------
 	//! Bastion's helicopter is grounded or lost right now (pilot.down_until, real time): no Last
-	//! Helicopter, no Clear the Airfield, no Rescue the Pilot.
+	//! Helicopter, no Rescue the Pilot.
 	static bool IsHelicopterDown(RZ_GameModeComponent gm)
 	{
 		int until = RZ_BastionQuest.World(gm, KEY + ".down_until");
