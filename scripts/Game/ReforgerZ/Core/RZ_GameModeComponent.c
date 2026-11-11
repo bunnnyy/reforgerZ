@@ -29,6 +29,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("1", UIWidgets.Slider, "Season speed: everything that moves the season along runs this many times as fast: research and the lab's work, outbreak stages and spread, territory, supply trucks, safehouse upkeep, the Long Table. 1 = the design point, about 45 real days (Cure > Pace by play fits the research to how much the server plays); 1.5 for about a month, 2 for about three and a half weeks. Cure > Cure pace changes only the research (docs/DESIGN.md, Season pacing)", "0.25 4 0.05", category: "ReforgerZ")]
 	protected float m_fSeasonSpeed;
 
+	[Attribute("4", UIWidgets.Slider, "Day length: real hours a whole game day takes (the engine's day duration; 4 = x6, a night of about 85 minutes; at most x12, so 2 hours or more). The infected's design assumes about 4 (docs/INFECTED.md). 0 = leave the server's own clock", "0 24 0.5", category: "ReforgerZ")]
+	protected float m_fDayLengthHours;
+
+	[Attribute("1", desc: "Keep the time of day across restarts: saved in state.json and set again at start (the engine's clock goes back to the scenario's start on a restart). Not a time skip: the day carries on where it stopped", category: "ReforgerZ")]
+	protected bool m_bKeepTimeOfDay;
+
 	// ---------------------------------------------------------------- World
 	[Attribute("300", desc: "Grid cell (m) used to find building clusters without a map label", category: "ReforgerZ|World")]
 	protected float m_fScanCellSize;
@@ -85,8 +91,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Stealth: each player's visibility (stance, speed, light, weather, noise), the infected near them seeing the most visible one, losing a hidden player, the missions' sight and notice rules (docs/DESIGN.md, Stealth)", category: "ReforgerZ|Zombies")]
 	protected ref RZ_StealthSettings m_StealthSettings;
 
-	[Attribute(desc: "Tribes (planned). For now only the land survey: the land grid of water, height, trees, roads, bridges and wild land, read once and cached (off by default; docs/DESIGN.md, The land grid)", category: "ReforgerZ|Zombies")]
+	[Attribute(desc: "Tribes (docs/INFECTED.md): the land grid (wild land, read once and cached), the agent budget, the engine's active-AI limit, loose ones walking somewhere and heat hordes from towns. The tribes themselves are planned", category: "ReforgerZ|Zombies")]
 	protected ref RZ_TribeSettings m_TribeSettings;
+
+	[Attribute(desc: "Crawlers (docs/INFECTED.md): the towns' slow infected, placed by the time of day, drifting to noise, the kill ledger, reinforcements from the buildings, stir, scavengers and sieges. Off: towns as before", category: "ReforgerZ|Zombies")]
+	protected ref RZ_CrawlerSettings m_CrawlerSettings;
 
 	[Attribute("0.5", desc: "Heat per tick each player gives off just by being somewhere", category: "ReforgerZ|Zombies")]
 	protected float m_fHeatPresence;
@@ -416,6 +425,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_CampLife m_CampLife;
 	protected ref RZ_LongTable m_LongTable;
 	protected ref RZ_Land m_Land;
+	protected ref RZ_Tribes m_Tribes;
+	protected bool m_bClockSet;			// the day length and the saved time of day were applied
+	protected float m_fSavedHour = -1;	// the time of day from state.json, -1 none
 	protected ref RZ_Interactions m_Interactions;
 	protected ref RZ_LooseItems m_LooseItems;
 	protected ref RZ_UIFeed m_UIFeed;
@@ -523,6 +535,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_TribeSettings)
 			m_TribeSettings = RZ_TribeSettings.Cast(RZ_Util.NewWithDefaults("RZ_TribeSettings"));
+
+		if (!m_CrawlerSettings)
+			m_CrawlerSettings = RZ_CrawlerSettings.Cast(RZ_Util.NewWithDefaults("RZ_CrawlerSettings"));
 
 		if (!m_TownMemorySettings)
 			m_TownMemorySettings = RZ_TownMemorySettings.Cast(RZ_Util.NewWithDefaults("RZ_TownMemorySettings"));
@@ -636,7 +651,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Headlines = new RZ_Headlines(this);
 		m_Cure = new RZ_CureResearch(this);
 		m_Director = new RZ_Director(this, m_aStages);
-		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
+		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings, m_CrawlerSettings, m_TribeSettings);
 		m_Stealth = new RZ_Stealth(this, m_StealthSettings);
 		m_Missions = new RZ_MissionManager(this);
 		m_UIFeed = new RZ_UIFeed(this);
@@ -660,6 +675,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_FactionLife = new RZ_FactionLife(this, m_FactionLifeSettings);
 		m_LongTable = new RZ_LongTable(this, m_LongTableSettings);
 		m_Land = new RZ_Land(this, m_TribeSettings);
+		m_Tribes = new RZ_Tribes(this, m_TribeSettings);
 		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_LootSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
 
 		// A wipe that came due last run (the wipe cycle) or one by hand is carried out now:
@@ -712,10 +728,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Supply.Setup();
 		// The Long Table: once a season, a farm far from every holding, safehouse and the lab
 		m_LongTable.Setup();
-		// The land grid (off by default): its wild land keeps clear of the towns, holdings, safehouses,
+		// The land grid (Zombies > Tribes): its wild land keeps clear of the towns, holdings, safehouses,
 		// the lab, the Long Table's farm and the line, so after all of them. Loads its cache or starts
 		// reading the map, a few squares a second from the one-second tick
 		m_Land.Setup();
+		// The engine's active-AI limit, raised for the infected's budget
+		m_Tribes.Setup();
 		// Searching, cars, crafting, traps, fire, radios: keep off safehouses, holdings and the lab
 		m_Interactions.Setup();
 		// Arcs are made of the missions, wanderers, safehouses, territory and trucks above
@@ -753,6 +771,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		array<int> ids = {};
 		array<IEntity> players = {};
 		RZ_Util.GetAlivePlayers(ids, players);
+
+		// The day length and the saved time of day, once the world's clock is running
+		if (!m_bClockSet)
+			ApplyClock();
 
 		UpdatePlayerHeat(ids, players);
 		m_Heat.Decay(dt);
@@ -937,6 +959,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! The land grid (docs/DESIGN.md, The land grid). Check IsReady(): off by default, and read over
 	//! the first minutes of the first start.
 	RZ_Land GetLand() { return m_Land; }
+	RZ_Tribes GetTribes() { return m_Tribes; }
+	RZ_BiteDetector GetBiteDetector() { return m_BiteDetector; }
 	RZ_Interactions GetInteractions() { return m_Interactions; }
 	RZ_GuidanceSettings GetGuidanceSettings() { return m_GuidanceSettings; }
 	RZ_ContractSettings GetContractSettings() { return m_ContractSettings; }
@@ -1540,6 +1564,49 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Once, on the first server tick: the engine's day length from Day length (phase 0: the default
+	//! is real time, x1; SetDayDuration works, capped at x12), and the time of day from state.json
+	//! (the clock otherwise goes back to the scenario's start on a restart).
+	protected void ApplyClock()
+	{
+		m_bClockSet = true;
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world)
+			return;
+
+		TimeAndWeatherManagerEntity tm = world.GetTimeAndWeatherManager();
+		if (!tm)
+		{
+			RZ_Log.Info("Clock: no time and weather manager in the world; every hour reads as day.");
+			return;
+		}
+
+		if (m_fDayLengthHours > 0)
+		{
+			float seconds = Math.Clamp(m_fDayLengthHours, 2, 24) * 3600;
+			tm.SetDayDuration(seconds);
+		}
+
+		if (m_bKeepTimeOfDay && m_fSavedHour >= 0)
+			tm.SetTimeOfTheDay(m_fSavedHour, true);
+
+		RZ_Log.Info(string.Format("Clock: a game day takes %1 real minutes; the time of day is %2 (saved %3).",
+			RZ_Util.RoundToInt(tm.GetDayDuration() / 60), RZ_GameTime.Clock(tm.GetTimeOfTheDay()), RZ_GameTime.Clock(m_fSavedHour)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "clock 21:40, day 240 min"
+	protected string ClockText()
+	{
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world || !world.GetTimeAndWeatherManager())
+			return "no clock";
+
+		TimeAndWeatherManagerEntity tm = world.GetTimeAndWeatherManager();
+		return string.Format("clock %1, day %2 min", RZ_GameTime.Clock(tm.GetTimeOfTheDay()), RZ_Util.RoundToInt(tm.GetDayDuration() / 60));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void LogStatus(int playerCount)
 	{
 		int safe, contested, infested, overrun;
@@ -1558,6 +1625,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			RZ_StageSettings.GetStageName(m_Director.GetStage()), RZ_Util.RoundToInt(m_Director.GetStageMinutes()),
 			RZ_Util.RoundToInt(m_Director.GetAverageInfection()), safe, contested, infested, overrun,
 			m_Spawner.GetTrackedCount(), m_Missions.GetActive().Count()) + " | move waypoints " + RZ_GroupOrders.CountWaypoints().ToString());
+		// The infected (docs/INFECTED.md, Admin visibility): the budget, crawlers, the land, the engine's AI
+		if (m_Spawner.IsPlumbingOn())
+			RZ_Log.Info("Status | " + m_Spawner.StatusText() + " | " + RZ_Tribes.ActiveAIText() + " | " + m_Tribes.LandText() + " | " + ClockText());
 		RZ_Log.Info(string.Format("Status | players %1 | cure %2 percent (milestone %3, final stand %4, waiting %5, lab full %6, at the 90 gate %7, pace by play %8 percent) | %9",
 			playerCount, RZ_Util.RoundToInt(m_Cure.m_fProgress), m_Cure.m_iMilestone, m_Cure.IsFinalStand(),
 			RZ_Util.RoundToInt(m_Cure.GetBacklog()), m_Cure.IsLabFull(), m_Cure.IsAtFinaleGate(),
@@ -1972,6 +2042,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (s)
 			s.AddInfection(-m_ZombieSettings.m_fInfectionDropPerKill * count);
 
+		// The kill ledger: one fewer crawler there until it halves away (Zombies > Crawlers)
+		if (s && m_Spawner.GetCrawlers())
+			m_Spawner.GetCrawlers().OnKilled(settlementIdx, count);
+
 		// After the cure nothing needs their tissue: no samples, no tip about them
 		if (special && !m_Cure.IsCured())
 		{
@@ -2243,6 +2317,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			s.m_iSize = ss.size;
 			s.m_fInfection = ss.infection;
 			s.m_bHasLab = ss.lab;
+			s.m_fLedger = Math.Max(0, ss.ledger);
+			s.m_fStir = Math.Clamp(ss.stir, 0, 100);
 			m_aSettlements.Insert(s);
 		}
 
@@ -2287,6 +2363,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Questlines.Restore(data.questlines);
 		m_Headlines.Restore(data.news);
 		m_Interactions.Restore(data.interactions);
+		if (m_Spawner.GetCrawlers())
+			m_Spawner.GetCrawlers().Restore(data.crawlers);
+
+		if (data.hasTimeOfDay)
+			m_fSavedHour = data.timeOfDay;
+
 		return true;
 	}
 
@@ -2366,6 +2448,17 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_Interactions && m_Interactions.IsActive())
 			data.interactions = m_Interactions.Save();
 
+		if (m_Spawner && m_Spawner.CrawlersOn())
+			data.crawlers = m_Spawner.GetCrawlers().Save();
+
+		// The time of day, so a restart carries on where the day stopped (Keep time of day)
+		float hour = RZ_GameTime.GetHour();
+		if (m_bKeepTimeOfDay && hour >= 0)
+		{
+			data.hasTimeOfDay = true;
+			data.timeOfDay = hour;
+		}
+
 		foreach (RZ_Settlement s : m_aSettlements)
 		{
 			RZ_SettlementSave ss = new RZ_SettlementSave();
@@ -2377,6 +2470,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			ss.size = s.m_iSize;
 			ss.infection = s.m_fInfection;
 			ss.lab = s.m_bHasLab;
+			ss.ledger = s.m_fLedger;
+			ss.stir = s.m_fStir;
 			data.settlements.Insert(ss);
 		}
 

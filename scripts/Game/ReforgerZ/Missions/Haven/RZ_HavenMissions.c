@@ -273,7 +273,7 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 
 		m_fParticipationRadius = s.m_fRadius + 100;
 		m_sTitle = "Burn the Nest";
-		m_sBrief = string.Format("Something is breeding them in %1. Find the nest and destroy it.", s.m_sName);
+		m_sBrief = string.Format("The slow ones lie up thick in %1, all in one place. Find it and burn it out.", s.m_sName);
 		return true;
 	}
 

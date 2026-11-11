@@ -12,6 +12,9 @@ class RZ_SettlementSave
 	int size;
 	float infection;
 	bool lab;
+	// The crawlers' kill ledger and stir (Zombies/RZ_Crawlers.c). Older saves have 0: none
+	float ledger;
+	float stir;
 }
 
 class RZ_SaveData
@@ -101,6 +104,12 @@ class RZ_SaveData
 	// The Long Table (World/RZ_LongTable.c): this season's roll, the farm, its people, hunger,
 	// suspicion, what it took, its tells on the road and what it remembers of each character
 	ref RZ_LongTableSave longTable;
+
+	// The crawlers' kill sites (Zombies/RZ_Crawlers.c), and the time of day so a restart carries on
+	// where the day stopped (Core/RZ_GameModeComponent.c, Keep time of day). Older saves have none
+	ref RZ_CrawlerSave crawlers;
+	bool hasTimeOfDay;
+	float timeOfDay;
 
 	ref array<ref RZ_SettlementSave> settlements = {};
 	ref array<ref RZ_PlayerProfile> profiles = {};

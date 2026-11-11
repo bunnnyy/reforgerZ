@@ -37,6 +37,15 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
      "{813B0F968868FA48}622120A5448725E3/Prefabs/Groups/Group_Zombies_CIV_Large.et" "{6AEA65C9E88BB0B2}622120A5448725E3/Prefabs/Groups/Group_Zombies_Horde.et"
     }
     m_sMoveWaypointPrefab "{750A8D1695BD6998}Prefabs/AI/Waypoints/AIWaypoint_Move.et"
+    m_sEmptyGroupPrefab "{E15B91D284F1ED15}622120A5448725E3/Prefabs/Groups/Group_Zombies_Base.et"
+   }
+   m_CrawlerSettings RZ_CrawlerSettings "{084EF510E01C3F9A}" {
+    m_aPrefabs {
+     "{1228A830F9454F4B}622120A5448725E3/Prefabs/Characters/Zombie_CIV.et" "{6734045E1A07091D}622120A5448725E3/Prefabs/Characters/Variants/Variant_CIV_Regular1.et"
+    }
+    m_aBloatedPrefabs {
+     "{84862F078179934E}622120A5448725E3/Prefabs/Characters/Variants/Variant_Exploder1.et"
+    }
    }
    m_AdaptationSettings RZ_AdaptationSettings "{6AD67DC2B0E9A642}" {
     m_aRunnerPrefabs {

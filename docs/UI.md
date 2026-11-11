@@ -93,8 +93,10 @@ The notice board isn't a notebook tab: it opens when you read a safehouse board,
 the close button close it.
 
 **Chat commands** (`RZ_ChatCommands`, client): `/note <text>` pins a note on the board you're at,
-`/noteclear` and `/noteclear all` clear boards (server admins). They work without any layout.
-Without the board menu, reading the board is a notice and notes are written with `/note`.
+`/noteclear` and `/noteclear all` clear boards (server admins); `/tribes` (server admins) writes the
+infected to the server log (`/tribes stir` and `/tribes site` are play-test aids; the status log prints
+the summary anyway, so nothing needs typing: [INFECTED.md](INFECTED.md#admin-visibility)). They work
+without any layout. Without the board menu, reading the board is a notice and notes are written with `/note`.
 
 **Rough areas in the journal.** A contract's "where" and direction are the rough circle ("around
 Morton (within 500 m)", "about 1.2 km NE") until the player knows the spot
@@ -331,7 +333,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_TalkMenu` | client (`ChimeraMenuBase`) | The talk screen ([The talk screen](#the-talk-screen)) |
 | `RZ_Reader`, `RZ_ReaderMenu` | server, client | The reader: one player's paper, a page at a time ([Subtitles and the reader](#subtitles-and-the-reader)) |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk screens and readers and closes them in danger (below) |
-| `RZ_ChatCommands` | client | `/note`, `/noteclear`, sent as commands to the server, which checks them again. Registered with the first notice |
+| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, sent as commands to the server, which checks them again. Registered with the first notice |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards and the subtitles |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
 | `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookGadgetComponent` | client | Open the notebook: N, the pause menu's button, the notebook item |

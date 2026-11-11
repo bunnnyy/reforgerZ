@@ -64,6 +64,7 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `README.md` | What the mod is, feature summary, status, the doc list, the code tree |
 | `docs/LORE.md` | Setting (the sealed Zone), the factions as people, tone, writing guide, endings |
 | `docs/DESIGN.md` | How every system works, organised by system (simplifications marked inline) |
+| `docs/INFECTED.md` | The infected: the spawner, the towns' crawlers, loose ones, heat hordes, infection adapts, the land grid, bodies and the agent budget, the tribes (planned) |
 | `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
 | `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
 | `docs/MISSIONS.md` | Every contract, world event, puzzle, leader and arc mission, with requirements and ✅ status |

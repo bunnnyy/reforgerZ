@@ -19,6 +19,8 @@ class RZ_Settlement
 	bool m_bHasLab;
 	float m_fNoSpreadSeconds;	// Quarantine Line: this town doesn't spread infection for a while (not saved)
 	float m_fSensorSeconds;		// Install Sensors: twice the specials here for a while (not saved)
+	float m_fLedger;			// crawlers killed here lately, halving every 30 played minutes (Zombies/RZ_Crawlers.c; saved)
+	float m_fStir;				// 0-100: stirred at 50, falling 20 an hour played (Zombies/RZ_Crawlers.c; saved)
 
 	//------------------------------------------------------------------------------------------------
 	void AddInfection(float amount)

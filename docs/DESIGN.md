@@ -95,69 +95,10 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
   layer ([UI.md](UI.md#the-map)); without it, world events and the lab are vanilla text markers
   for everyone (a toggle).
 
-### The land grid
-
-Code: `World/RZ_Land.c`. **Off by default** (**Zombies > Tribes > Land survey**), and nothing uses it
-yet: it's the ground the infected tribes will live on. The tribes are planned; their design and the
-land grid's full description come with their own doc, `docs/INFECTED.md` (planned).
-
-- **What it holds.** The heat map's 250 m squares. Each has its height (five samples), how much of
-  it is sea, river or lake (the engine's water query at those samples), whether a river runs
-  through it (the map's river entities, with their widths), how many trees (tree prefabs only, not
-  bushes) and buildings it has, any barn, mill, silo, quarry, culvert, shed or ruin, its widest
-  road, and any bridge or ford.
-- **Bridges are inferred.** Road points sit on the ground even at a bridge, so a bridge shows only
-  as the straight line between two road points running 3 m or more above the ground. Over a river
-  or pond it's a bridge over water; a road through river water with no deck is a ford.
-- **Worked out from it:** ridges (25 m above the land around, or the highest within 1 km), valley
-  floors (15 m below both squares across them, 250 or 500 m away; three or more touching make a
-  valley line), forests (600 or more trees in a square, in groups of three), fields (open, flat
-  and near a town), lair candidates (forest, or one of the landmarks above, 600 m from every town
-  centre and 800 m from where people live; 400 and 600 m on maps under 25 km² of land), and **wild
-  land**: dry squares outside every settlement's radius + 100 m, 300 m round every lived-in place
-  (a lived-in town's edge, or 100 m round a holding, safehouse or the lab), 700 m round the Long
-  Table's farm, and the Perimeter's warning zone + 200 m.
-- **Reading it.** At the first start on a map, from the game mode's one-second tick: up to 20 land
-  squares a second, stopping after 8 ms. It's cached in `$profile:ReforgerZ/land_<map>_<number>.json`
-  (the number comes from 64 terrain heights) and loads in milliseconds after that. Wild land, fields
-  and lair candidates are worked out again on every load, from where people live then. Roads come
-  from the world's `SCR_AIWorld`; without one there are no roads and no bridges.
-- **Tribe slots** (for the planned tribes): 1 per 6 km² of wild land, rounded, 1 to 15; none under
-  1.5 km² of wild land or with no lair candidate.
-
-**Measured** (`tools/land_survey/`, four to six starts on each map; the wild land changes a little
-with the holdings, safehouses and Long Table of the season):
-
-| | Arland | Everon | Cain |
-|---|---|---|---|
-| Squares | 289 (17 × 17) | 2,652 (51 × 52) | 2,756 (52 × 53) |
-| Land / wild | 6.3 / 0.4–1.1 km² | 51.0 / 23.8–25.8 km² | 39.0 / 19.7–21.3 km² |
-| Tribe slots at 1 per 4 / 6 / 9 km² | 0 / 0 / 0 | 6 / 4 / 3 | 5 / 3–4 / 2 |
-| First reading | 39 s (0.3 s of work) | 4.5 min (2.0 s of work) | 4.8 min (2.4 s of work) |
-| Longest second | 12 ms | 14 ms | 23 ms (one dense square) |
-| Cache | 6 KB, loads in 1 ms | 51 KB, 3 ms | 53 KB, 3 ms |
-| Rivers, lakes | 3 (0.9 km), none | 28 (14.9 km), 2 | 7 (4.3 km), none |
-| Bridges inferred (real), fords | 4 (4), 0 | 22 (19), 2 | 15 (14), 3 |
-| Ridge posts, valley lines | 3, 1 | 71, 10 | 51, 6 |
-| Lair candidates | 2–8 | 34–35 | 77–81 |
-
-- **Arland has almost no wild land.** The margins of its 14 settlements leave 2.6 of its 5.9 km² of
-  dry land, lived-in places 1.0–1.3, and the Long Table's farm and the line take most of the rest.
-  It gets no tribe without the planned **Slots** override.
-- **Everon gets 4 tribes and Cain 3 or 4** at 1 per 6 km², each with one slot kept for a split.
-- **What eats the wild land** is the settlements, not the line: on Everon their margins take 19 of
-  its 49 km² of dry land, lived-in places 5 more, the Long Table and the line under 1 each.
-- **The server's memory** doesn't move measurably (Everon +4 MB, Cain +15 MB over the reading, in
-  the noise): the grid is about 75 KB.
-
-**What it can't see:** ponds and streams smaller than about 100 m between the samples; rivers made
-any other way than as river entities; bridges whose deck is under 3 m above the ground, or that no
-road crosses (castle and pier bridges). Of the bridge prefabs a road crosses it finds 4 of 5 on
-Arland, 20 of 33 on Everon and 14 of 22 on Cain (some misses are other parts of a bridge it found).
-Three 4 m tracks over gullies on Everon read as bridges, and one low castle bridge as a ford. Nor
-does it see cliffs, banks and forest edges inside a square; trees whose prefab path doesn't say
-"tree" (a Workshop map's own trees read as open land); or a map update that adds objects but leaves
-the terrain alone (delete the cache).
+**The land grid** (`World/RZ_Land.c`): what each 250 m square of the map is like (water, height,
+trees, roads, bridges) and which squares are wild land, read once and cached. Crawlers stand in its
+fields and loose ones walk to its lair candidates; the infected tribes (planned) will live in its wild
+land. It's described in [INFECTED.md](INFECTED.md#the-land).
 
 ## The Director: outbreak stages and spread
 
@@ -202,12 +143,10 @@ caps at 200 per square.
 | A shot | 3 × the background's noise multiplier; ×0.3 with a suppressor (detected by attachment name) |
 | Noisemakers, bells, sirens, generators, car boot and body searches, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
 
-- Heat draws extra zombies. **80** heat in one area within 600 m of a living player sends a
-  horde toward it (at most one every 10 minutes). A hot square nobody is near (a powered
-  station, the Preacher's bells, a running generator) draws nothing.
-- **Noises that lead.** A burst of 8+ heat at once is remembered as a noise (the last 16).
-  Infected that a mission controls walk to a nearby noise and stay about 90 s. That's what
-  the unarmed missions are built on ([MISSIONS.md](MISSIONS.md), "Unarmed missions").
+- **What the infected do with it:** heat draws extra infected to a town, 80 heat near a player
+  sends a horde (from the nearest town, with Tribes on), and a burst of 8+ heat at once is
+  remembered as a noise that crawlers and mission infected walk to. All of that is in
+  [INFECTED.md](INFECTED.md#heat-hordes).
 - **Being noticed** (puzzles and unarmed missions): heat where you stand above a threshold,
   or an infected within 10–12 m of you for 6–8 s (slower while you're hard to see:
   [Stealth](#stealth)).
@@ -253,7 +192,9 @@ Every update, for the infected the spawner tracks (groups and their members) wit
 
 > its own factor × the base for its kind × a factor from the **most visible** player within 150 m of any member of its group, never more than ×1.2 on top of its own
 
-- **Base by kind:** common ×1, special ×1.2 (sharper), horde member ×0.9 (a crowd on the move
+- **Base by kind** (with the infected's roles, [INFECTED.md](INFECTED.md#plumbing-for-the-tribes):
+  a tribe's leader and guard count as specials, a hunt on its trail as a horde that must keep
+  coming, crawlers and loose ones as common): common ×1, special ×1.2 (sharper), horde member ×0.9 (a crowd on the move
   looks ahead).
 - **From the player:** ×0.3 for someone fully hidden, rising to ×1 at 0.6 visibility. From 0.6 to
   0.9 (standing or walking in daylight) it's ×1, as without stealth. Only above 0.9 (running or
@@ -339,12 +280,9 @@ never searches, because it has no waypoints.
 
 Code: `Zombies/RZ_ZombieSpawner.c`, `Zombies/RZ_BiteDetector.c`, `Core/RZ_GameModeComponent.c`.
 
-- **Spawner.** Works with any zombie mod's prefabs. Towns within 600 m of a player are
-  populated (4 per size class at 100% infection), at points 120–600 m from a player (so a
-  spawn is never removed straight away), and removed beyond 1.1 km. Two roaming infected stay around each player in the countryside. At most
-  60 tracked spawns on the server and 4 per tick.
-- **Specials** (the stage's chance) drop a cure sample when killed.
-- **Zombie-free settlements** while a mission needs one (The Silent Village).
+Where the infected come from, how many there are, the towns' crawlers, the countryside's loose ones,
+the agent budget and how bodies are counted are in [INFECTED.md](INFECTED.md). Specials (the stage's
+chance) drop a cure sample when killed. This section is about what they do to you.
 
 A bite is survivable if you act on it. Code: `Zombies/RZ_BiteDetector.c`, `Cure/RZ_Infection.c`, `Cure/RZ_Meds.c`.
 
@@ -451,25 +389,10 @@ fallback. The side effects use health, stamina and noise, not animations.
 
 ## Infection adapts
 
-Code: `Director/RZ_Adaptation.c`.
-
-Small, capped changes that keep the late game interesting without making it unfair.
-
-- **Specials after breakthroughs.** Each cure breakthrough multiplies the stage's special
-  chance by 1.05, ×1.15 at most. A relative bump: an Early Outbreak 1% becomes 1.15%.
-- **One new trait per stage**, and they add up: Collapse swaps 15% of common spawns for
-  **runners**, Overrun puts **helmeted** ones in the same 15% (runners or helmets at random),
-  Aftermath makes 10% of specials **screamers**. A screamer within 40 m of a player shrieks:
-  +20 heat where the player stands, at most once a minute, heard within 150 m. Each trait is
-  a prefab list; an empty list turns it off (screamers then use the ordinary specials).
-- **Favourite spots.** The map is split into 500 m squares that count player-minutes
-  (fading by a fifth every 10 minutes). Once a square reaches 35 (about an hour of one player
-  staying put; a lone player levels off near 50), three infected are spawned
-  out of sight 250–350 m away and walk over to look, at most once an hour per square. Never
-  within 150 m of a safehouse, and never near a brand-new player in their gentle start.
-
-*Simplified:* "sees" is distance only, with no line of sight. Runners and helmets are
-whatever the prefabs are; the code doesn't change speed or armour itself.
+Code: `Director/RZ_Adaptation.c`. Small, capped changes over the season: a few more specials after
+each breakthrough (×1.15 at most), one new trait per stage (runners, helmets, screamers), and
+infected that come to look at a spot players never leave. The rules are in
+[INFECTED.md](INFECTED.md#infection-adapts).
 
 ## The Perimeter
 
@@ -516,7 +439,21 @@ placed by hand. **Nothing is built along the edge** except the road checkpoints.
 
 Code: `Director/RZ_Environment.c`, `Puzzles/RZ_GameTime.c`, `World/RZ_PowerGrid.c`, `World/RZ_RadioStation.c`, `Director/RZ_Broadcast.c`.
 
-Time is never skipped or changed. The environment is read every 30 s and nudges other systems.
+Time is never skipped. The environment is read every 30 s and nudges other systems.
+
+### The clock
+
+Code: `Core/RZ_GameModeComponent.c`, `Puzzles/RZ_GameTime.c`.
+
+- **Day length** (top level, 4): a whole game day takes this many real hours, set with the engine's
+  day duration at start (×6: a night of about 85 real minutes, dusk about 20). The engine caps it at
+  ×12, so 2 hours or more. 0 leaves the server's own clock (phase 0 measured the default as real time,
+  ×1). The infected's design assumes about 4 ([INFECTED.md](INFECTED.md#tribes-planned)).
+- **Keep time of day** (on): the time of day is saved in `state.json` and set again at start, because
+  the engine's clock goes back to the scenario's start on a restart. The day carries on where it
+  stopped; nothing is skipped.
+- The log says both at start: *"Clock: a game day takes 240 real minutes; the time of day is 21:40
+  (saved 21:40)."* With no time and weather manager in the world, every hour reads as day.
 
 ### Night
 
@@ -2242,7 +2179,8 @@ Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stag
 settlement's infection and town memory, cure progress, the lab's backlog and clock, breakthrough news nobody has heard yet, the pace by play's player-hours of the last week, antidote and stabiliser stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
 supply stock, faction life, the Long Table, the power grid and radio station, story arcs, questlines,
-headlines, world interactions and the world facts (the season's seed, flags, canon and gossip;
+headlines, world interactions, the crawlers' ledgers, stir and kill sites, the time of day
+([The clock](#the-clock)) and the world facts (the season's seed, flags, canon and gossip;
 claims aren't saved). A save from another map is ignored. A profile that never spawned and holds nothing
 lasting (no lives, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
 left before the server knew them (a wound described after a disconnect) gets a blank profile

@@ -1,7 +1,8 @@
-//! The land grid (docs/DESIGN.md, "The land grid"): what each 250 m square of the map is like
-//! (water, height, trees, buildings, roads, bridges) and which squares are wild, read from the
-//! engine once and cached in the profile. The infected tribes (planned) will live in the wild it
-//! finds. Off unless Zombies > Tribes > Land survey is on. Server only; nothing is spawned.
+//! The land grid (docs/INFECTED.md, "The land"): what each 250 m square of the map is like (water,
+//! height, trees, buildings, roads, bridges) and which squares are wild, read from the engine once
+//! and cached in the profile. The infected tribes (planned, phase 2) will live in the wild it finds;
+//! loose ones already walk to its lair candidates and crawlers stand in its fields. On with
+//! Zombies > Tribes > Enabled. Server only; nothing is spawned.
 //!
 //! The squares are the heat map's: square (gx, gz) covers x from gx * 250 and z from gz * 250.
 //! Reading a square: five terrain samples (height, sea, river or pond), one query of the square's
@@ -9,19 +10,6 @@
 //! segments whose middle lies in them (roads, and bridges inferred where a segment runs 3 m or more
 //! above the ground between its points). Rivers come from the map's river entities. Then, from the
 //! grid: ridges, valley floors, forests, fields, lair candidates and the wild flag.
-
-//------------------------------------------------------------------------------------------------
-//! Settings on RZ_GameModeComponent > Zombies > Tribes. The tribes themselves are planned; for now
-//! this holds only what the land grid needs.
-[BaseContainerProps()]
-class RZ_TribeSettings
-{
-	[Attribute("0", desc: "Land survey: read the map into the land grid at the first start (water, height, trees, buildings, roads, bridges, wild land), cache it in the profile and log what it found (docs/DESIGN.md, The land grid). Off by default: nothing uses it yet (the tribes are planned)")]
-	bool m_bLandSurvey;
-
-	[Attribute("20", UIWidgets.Slider, "Land survey: land squares (250 m) read a second while the grid is first built. Sea squares cost almost nothing, and a second's reading stops after 8 ms whatever this says", "1 100 1")]
-	int m_iLandCellsPerSecond;
-}
 
 //------------------------------------------------------------------------------------------------
 //! What the land grid caches: only what was read from the engine. Everything worked out from it
@@ -170,7 +158,7 @@ class RZ_Land
 	}
 
 	//------------------------------------------------------------------------------------------------
-	bool IsEnabled() { return m_Settings && m_Settings.m_bLandSurvey; }
+	bool IsEnabled() { return m_Settings && m_Settings.m_bEnabled; }
 	//! The grid is read (or loaded) and worked out. Nothing about the land is known before.
 	bool IsReady() { return m_bReady; }
 	bool IsBuilding() { return m_bBuilding; }
@@ -367,14 +355,64 @@ class RZ_Land
 
 	// ================================================================ Tribe slots
 	//------------------------------------------------------------------------------------------------
-	//! Tribes the wild land holds at one per `divisor` km2 (the design's 6), rounded, 1 to 15. None
-	//! under 1.5 km2 of wild land or with no lair candidate.
+	//! Tribes the wild land holds at one per `divisor` km2 (5 since phase 0 measured the land),
+	//! rounded, 1 to 15. None under 1.5 km2 of wild land or with no lair candidate.
 	int SlotsAt(float divisor)
 	{
 		if (!m_bReady || divisor <= 0 || m_fWildKm2 < 1.5 || m_iLairs <= 0)
 			return 0;
 
 		return Math.ClampInt(RZ_Util.RoundToInt(m_fWildKm2 / divisor), 1, 15);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This map's tribe slots: Zombies > Tribes > Slots if set (any map, 1 to 15), else from the wild
+	//! land at Wild km2 per slot.
+	int Slots()
+	{
+		if (!m_Settings)
+			return 0;
+
+		if (m_Settings.m_iSlots > 0)
+			return Math.ClampInt(m_Settings.m_iSlots, 1, 15);
+
+		return SlotsAt(m_Settings.m_fWildKm2PerSlot);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The centre of the nearest square with `bit` (BIT_LAIR, BIT_FIELD, ...) between minDist and
+	//! maxDist of pos. False before the grid is ready or if there's none.
+	bool NearestCellWith(vector pos, int bit, float minDist, float maxDist, out vector found)
+	{
+		if (!m_bReady)
+			return false;
+
+		int reach = maxDist / CELL;
+		reach++;
+		int cgx = Math.Floor(pos[0] / CELL) - m_iX0;
+		int cgz = Math.Floor(pos[2] / CELL) - m_iZ0;
+		float best = maxDist;
+		bool any = false;
+		for (int gz = cgz - reach; gz <= cgz + reach; gz++)
+		{
+			for (int gx = cgx - reach; gx <= cgx + reach; gx++)
+			{
+				int idx = CellIndex(gx, gz);
+				if (idx < 0 || !HasBit(idx, bit))
+					continue;
+
+				vector c = CellCenter(idx);
+				float d = RZ_Util.DistXZ(c, pos);
+				if (d < minDist || d > best)
+					continue;
+
+				best = d;
+				found = c;
+				any = true;
+			}
+		}
+
+		return any;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1249,6 +1287,19 @@ class RZ_Land
 			Stamp(near, p, peopleGap, 4);
 		}
 
+		// No-lair land (docs/INFECTED.md, "The land"): 300 m round the finale's lower store and
+		// Bastion's held store, once those canon spots are decided. An overlay, so the cache never
+		// needs a rebuild
+		if (facts)
+		{
+			array<string> noLair = {"origin.site.lower", "held.store"};
+			foreach (string key : noLair)
+			{
+				if (facts.HasCanon(key))
+					Stamp(near, facts.CanonPos(key), 300, 4);
+			}
+		}
+
 		RZ_LongTable table = m_GM.GetLongTable();
 		if (table)
 		{
@@ -1538,9 +1589,33 @@ class RZ_Land
 		if (kinds.IsEmpty())
 			kinds = "none";
 
-		int slots = SlotsAt(6);
-		RZ_Log.Info(string.Format("Land: lair candidates %1 (%2). Tribe slots at 1 per 6 km2 of wild: %3 (%4 kept for a split).",
-			m_iLairs, kinds, slots, KeptForSplits(slots)));
+		RZ_Log.Info(string.Format("Land: lair candidates %1 (%2).", m_iLairs, kinds));
+		LogSlots();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Tribes: 24.4 km2 of wild land, 5 slots (1 kept for a split), 1 clan possible. Override: none."
+	void LogSlots()
+	{
+		int slots = Slots();
+		int kept = KeptForSplits(slots);
+		string over = "none";
+		if (m_Settings && m_Settings.m_iSlots > 0)
+			over = string.Format("Slots %1", m_Settings.m_iSlots);
+
+		string clans = string.Format("%1 clans possible", kept);
+		if (kept == 1)
+			clans = "1 clan possible";
+
+		if (slots <= 0)
+		{
+			RZ_Log.Info(string.Format("Tribes: %1 km2 of wild land and %2 lair candidates: under the floor (1.5 km2 and a lair), so no tribes here, crawlers only. Override: %3.",
+				Tenths(m_fWildKm2), m_iLairs, over));
+			return;
+		}
+
+		RZ_Log.Info(string.Format("Tribes: %1 km2 of wild land, %2 slots (%3 kept for a split), %4. Override: %5. The tribes themselves are planned (docs/INFECTED.md).",
+			Tenths(m_fWildKm2), slots, kept, clans, over));
 	}
 
 	//------------------------------------------------------------------------------------------------

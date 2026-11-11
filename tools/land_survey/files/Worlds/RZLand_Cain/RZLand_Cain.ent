@@ -7,7 +7,7 @@ SCR_BaseGameMode RZLandGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/Game
   RZ_GameModeComponent "{6D0F1A2B3C4D5E61}" {
    m_sLabPrefab "{A5AC0827E24C1929}Prefabs/Props/Core/SupplyBox_Base.et"
    m_TribeSettings RZ_TribeSettings "{5A2B3C4D5E6F7081}" {
-    m_bLandSurvey 1
+    m_bEnabled 1
    }
   }
  }

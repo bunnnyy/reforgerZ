@@ -5,7 +5,7 @@
 #   CACHE_RUN=0 ...                                                      # skip the second (cached) boot
 #
 # For each map it boots a sub-scene of the base map with RZ_GameModeComponent on GameMode_Plain,
-# the map's SCR_AIWorld (the road network comes with it) and Zombies > Tribes > Land survey on. A
+# the map's SCR_AIWorld (the road network comes with it) and Zombies > Tribes > Enabled on. A
 # test-only script (files/scripts/Game/RZLandSurvey/RZL_Diag.c) waits for the land grid, prints
 # what it found as "RZL ..." lines (cell size, read time, memory, wild km2, tribe slots at 1 per
 # 4, 6 and 9 km2, rivers, lakes, bridges checked against the bridge prefabs on the map, ridge posts,

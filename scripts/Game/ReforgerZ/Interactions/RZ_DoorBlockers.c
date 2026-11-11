@@ -469,6 +469,8 @@ class RZ_DoorBlockers
 			return;
 
 		m_GM.GetHeat().AddHeat(at, m_Settings.m_fDoorBangHeat);
+		// The siege clock: after Crawlers > Siege minutes they give up and the door holds
+		m_GM.GetSpawner().OnDoorBang(at);
 		k.m_fNextBang = now + Math.Max(1, m_Settings.m_fDoorBangSeconds);
 		if (now < k.m_fNextNotice)
 			return;
