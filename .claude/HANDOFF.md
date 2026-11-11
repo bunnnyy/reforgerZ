@@ -75,20 +75,23 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 34ab931: **World > Traces > Kit > Season mark, sealed** (WBS §4, Traces).
 - 2026-11-12 34ab931: **World > Traces > Kit > Season mark, emptied** (WBS §4, Traces).
 
+**From the cloud's spawn screen and map key (2026-11-12)**
+- 2026-11-12 6924ec7: open `UI/layouts/ReforgerZ/RZ_SpawnMenu.layout` and `RZ_SpawnRow.layout` (written as text) in Workbench, then set **UI > Spawn row layout** to `RZ_SpawnRow.layout` (WBS §4, "Setting up the UI", step 5). Check the `RZ_SpawnMenu` preset the cloud added as text to `Configs/System/chimeraMenus.conf` loads, then play the spawn screen with a pad only (WBS §8, UI) and report the hook's VERIFY (`UI/RZ_SpawnMenu.c:19`).
+- 2026-11-12 b41848a: open `UI/layouts/ReforgerZ/RZ_MapLegend.layout` (written as text), set **UI > Map legend layout** to it, and check the `RZ_MapLegend` input the cloud added as text to `Configs/System/chimeraInputCommon.conf` (I, pad Y, `MapContext`). Play: the key fades as you zoom in (tune **UI > Legend full zoom** and **Legend gone zoom** by eye) and doesn't cover vanilla's map widgets (WBS §8, UI; VERIFY `UI/RZ_MapIcons.c:189`).
+- 2026-11-12 b41848a: remove `m_sMapKeyPage` from `RZ_GameMode.et`'s `m_UISettings`: the attribute and `RZ_MapKeyPage.layout` are gone (the notebook has five tabs).
+
 **Manual entries (WBS §4)**
 - 2026-11-11 76b52d0: optional lists: loot tables, extra recipes, shop items, Requisition items (WBS §4, "Hand-set list entries").
 - 2026-11-11 76b52d0: stand-in bases still left: `RZ_Explosion.et` (a real HE round) and `RZ_Nest.et` (spawns its own) — both need a design call from the cloud (is shelling meant to hurt? should the nest spawn?).
 
 **Engine checks**
-- 2026-11-12 2990171: check all 95 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers.
+- 2026-11-12 2990171: check all 97 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers.
 - 2026-11-11 76b52d0: Workbench's own script compile, the Windows compile check, then `tools/runtime_test/run.sh`. The last Linux run had 0 exceptions, 125/143 missions started and 10/15 questlines ended. On Linux, Special Zombies' `Scripts/` hides ours, so Windows is the real test (MOD_STACK).
-- 2026-11-11 76b52d0: the epilogue's Walk Out kills and deletes the character. Check that the player lands back in the deploy menu cleanly (new VERIFY).
+- 2026-11-11 76b52d0: the epilogue's Walk Out kills and deletes the character. Check that the player lands back on the spawn screen cleanly (new VERIFY).
 - 2026-11-12 b0b0090: measure a player's real run and sprint speed in m/s (the code assumes about 4 and 5.5: VERIFY) and Bacon's run and sprint speed; the young's sprint is tuned to about 10% faster than a sprinting player (WBS §6).
 
 ## For the cloud
 
-- 2026-11-12 (author's decision, via PC): **no vanilla deploy/loadout screen at all.** The author: "Shouldn't have the default load out screen at all. Should match our UI plan." Build our own spawn screen in the ReforgerZ style (the background picker: the 13 backgrounds as the list, the panel's name, perk, flaw, gear, starting standing, locked/available and Legacy, a Deploy button; pad first, no mouse needed) that opens instead of vanilla's `RoleSelectionMenu` and spawns through the vanilla respawn requests, so `RZ_LoadoutLock` still applies. Update `UI/Mockups/background_picker.html` (drop the "vanilla deploy menu (stand-in)" half), UI.md, UI/LAYOUTS.md and WBS. Faction is already forced to SURV (`m_sForcedFaction`), so no faction or group step is needed. This replaces the deploy-panel layout-override item. The PC will check it in play when it's pushed.
-- 2026-11-12 (author's decision, via PC): **move the map key onto the map and drop the notebook's Map key tab.** A compact legend in the full-screen map's bottom-left, shown when zoomed out and fading as you zoom in, with one show/hide input that has a gamepad binding (CLAUDE.md, Controllers). Remove the Map key tab (`RZ_MapKeyPage.layout`, `RZ_MapKeyPage`, **UI > Map key page**, the notebook's tab row: four tabs) and update UI.md, UI/LAYOUTS.md, WBS and the manifest. The PC adds the legend's slot to the game mode and checks it in play once it's built.
 - 2026-11-12 (PC): **script fixes (one-liners, compile check OK):** negative seeds indexed arrays. `RZ_Tribes.c` CallPattern and AlphaWho, `RZ_TribePeople.c` CrewName now use `Math.AbsInt(...) % Count()` (each threw "Index out of bounds" in Workbench play on Everon); `RZ_SupplyLines.c` out-of-stock hash too (a negative seed made every item out of stock). Please scan for the same pattern in new code.
 - 2026-11-12 212e575 (cloud): Everon boots with 0 road checkpoints; cloud to investigate
 
@@ -98,5 +101,6 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## Status
 
+- Cloud, 2026-11-12 6924ec7: the spawn screen (in place of vanilla's deploy menu) and the map key on the map are built as code and text; both need their slots set and a play (under "For the PC").
 - Cloud, 2026-11-12 0fbc1e2: all the build branches are merged and pushed (finale, missions and errands, dialogue and reputation, disguise, tribes and attacks, Traces phases 1 to 7, majors and epilogue); their prefab work is under "For the PC". Docs match the PC's builds of 2026-11-12.
 - PC, 2026-11-12: Everon world built; QM and notebook actions added (text, from the manifest); plugin made SeasonMark, TribeTag, CallBox, IdCard and filled 15 slots. Next: the remaining missing prefabs, camp life, Workbench Play test.
