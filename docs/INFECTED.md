@@ -331,7 +331,7 @@ they stand on their own.
 - **Per-member tracking.** Each tracked unit knows its members. A member missing from its group's
   living agents has died (phase 0: the count drops within a second; the group deletes itself when its
   last member dies; the bodies stay). Each death is a kill **at that member's spot**: a special's
-  sample drops where it fell, a body to search lies there, the town's infection and ledger and any
+  sample drops where it fell, the body carries its loot ([DESIGN.md](DESIGN.md#bodies-and-car-boots)), the town's infection and ledger and any
   mission's count follow.
 - **Roles** on each tracked unit: crawler, loose one, scavenger (and alpha, guard, hunter, scout, young
   and day party for the tribes). Stealth reads them: the alpha and guard as specials, a hunt on its
@@ -341,7 +341,7 @@ they stand on their own.
   to an order, and a group's centre covers about 3.5 m/s). While it has bodies, each tick writes their
   position and their dead back to it, so nothing snaps back when the bodies go. The scavengers use it
   now; tribes will.
-- **The silent kill** (`KillSilently`): no samples, no infection change, no ledger, no body to search
+- **The silent kill** (`KillSilently`): no samples, no infection change, no ledger, no loot on the body
   and no mission credit. Two ways, both measured in phase 0: **delete** (out of sight: no body, no
   loose item) and **kill and mark** (a body a player can find). Built for the tribes' border fights
   (planned).

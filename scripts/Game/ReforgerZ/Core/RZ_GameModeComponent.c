@@ -2213,7 +2213,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_Wanderers.OnZombiesKilled(pos);
 		m_Leaders.OnZombiesKilled(pos);
-		// A body to search, for a few minutes, if a player saw it die
+		// The body carries some loot (its inventory, or beside it), if a player saw it die
 		m_Interactions.OnZombiesKilled(pos, count);
 		m_Missions.OnZombiesKilled(settlementIdx, missionId, special, pos, count);
 	}

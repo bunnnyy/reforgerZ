@@ -1144,16 +1144,13 @@ class RZ_Infection
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One roll per search (car boots, bodies): gives the treatment and returns its name, or "".
+	//! One roll per car boot search: gives the treatment and returns its name, or "" (bodies use PickMedFind).
 	string RollMedFind(string type, bool locked, IEntity user, vector at)
 	{
 		int med;
 		ResourceName prefab = PickMedFind(type, locked, med);
 		if (prefab.IsEmpty() || !RZ_ItemHelper.Give(prefab, user, at))
 			return "";
-
-		if (med == RZ_EMed.ANTIDOTE && type == "body")
-			return "an antidote in a Halcyon courier's cold box";
 
 		return MedName(med);
 	}

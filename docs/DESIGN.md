@@ -142,7 +142,7 @@ caps at 200 per square.
 | A player being somewhere | 0.5 a tick |
 | In a vehicle | +4 a tick |
 | A shot | 3 × the background's noise multiplier; ×0.3 with a suppressor (detected by attachment name) |
-| Noisemakers, bells, sirens, generators, car boot and body searches, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
+| Noisemakers, bells, sirens, generators, car boot searches, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
 
 - **What the infected do with it:** heat draws extra infected to a town, 80 heat near a player
   sends a horde (from the nearest town, with Tribes on), and a burst of 8+ heat at once is
@@ -1603,7 +1603,7 @@ Code: `World/RZ_TownMemory.c`.
 
 Code: `Interactions/`.
 
-Loot lying in houses, car boots and bodies to search, locked doors and keys, cars, crafting,
+Loot lying in houses and on bodies, car boots to search, locked doors and keys, cars, crafting,
 water, barricades and traps, generators, fire, bells, radios and treating each other. Data until a
 player is near, capped and decaying, nothing left behind.
 
@@ -1616,7 +1616,7 @@ player is near, capped and decaying, nothing left behind.
 - **Interaction spots, only near players:** an invisible prop with labelled actions ("Search the
   boot"), at most 10 per player and 70 on the server. Buildings and furniture get none.
 - **Decided on the server.** Loot lies in houses only while a player is near and is data
-  otherwise; a car boot or body is rolled when it's searched. What was searched, opened, stripped
+  otherwise; a car boot is rolled when it's searched, a body when it dies. What was searched, opened, stripped
   or burned is remembered as positions and times, and saved.
 - **Timed actions** run on the 5 s tick: move more than 3.5 m away and they stop.
 
@@ -1667,19 +1667,29 @@ are no search prompts in buildings and no timers.
   the building nearest it, the first time it's put out.
 
 *Simplified:* the furniture names are guesses, and spots are traced once per building, so an item
-can float on a high shelf or sit in a corner. Car boots and bodies are still searched (below).
+can float on a high shelf or sit in a corner. Car boots are still searched; bodies carry their
+things (below).
 
-### Car boots and bodies
+### Bodies and car boots
 
 | What | What it tends to have |
 |---|---|
-| Body (an infected killed near a player; 4 minutes) | Bandages, ammo, small things; sometimes a key or something to read |
+| Body (an infected killed within 60 m of a player) | Bandages, ammo, small things; sometimes a key or something to read |
 | Car boot (a wreck) | Jerrycans, tools, rope, batteries, tyres |
 
-**Search the boot** or **Search the body** (4 s, 1 heat) finds something 60% of the time (a boot
-scaled by the town's loot level), sometimes two things, plus the treatment roll; the things go
-into your pack. A searched boot has nothing new for an hour; a body is gone once searched. A car
-boot's finds take 0.015 each off the town's loot level.
+**Bodies are looted with the vanilla inventory.** There's no prompt: when an infected dies within
+60 m of a player, what it carries is rolled at once: something 60% of the time, sometimes two
+things, plus the treatment roll; a key 8% of the time; something to read 30% of the time. The
+items go into the body's own inventory (open it as you would any body's), or lie loose beside it
+when the body has none or nothing fits. A note lies beside the body and is read where it lies; a
+key taped inside lies next to it. A special's sample drops where it fell, as before. At most
+**Body cap** (8) bodies a minute get anything, so a horde shot down at once doesn't cover the
+ground. Loose, the things are cleaned up like any [loose item](#loose-items); in the body, they go
+with it. Bodies don't use up the town's loot.
+
+**Search the boot** (4 s, 1 heat) finds something 60% of the time (scaled by the town's loot
+level), sometimes two things, plus the treatment roll; the things go into your pack. A searched
+boot has nothing new for an hour. Its finds take 0.015 each off the town's loot level.
 
 ### Locks and keys
 
@@ -1716,7 +1726,8 @@ one exception is a lock that is part of the mission (the Locked Bunker's keypad)
   are pulled shut once nobody stands within 2.5 m.
 - **Keys** open one kind of building in one town: "Pharmacy, Lindale", "Shop, back door, Morton";
   houses and farmhouses by the colour of their door, "Blue house, Morton". One lies next to one
-  readable thing in five (it was taped inside), and bodies carry one 8% of the time. A key is only
+  readable thing in five (it was taped inside), and bodies carry one 8% of the time (in the body or
+  beside it). A key is only
   ever cut for a real building with its own lock on outside doors that were found, in the town
   nearest where it turns up (not burned out); a town with none gives no key. Car keys lie in houses
   in their car's town, or come from the Mechanic. **Keys are real items** (the key prefab): they
@@ -1769,8 +1780,9 @@ survive a restart.
 12% of buildings' loot (and of car boot searches, 30% of bodies) includes an ID card, letter,
 receipt or photo in the Zone's voice ([WRITING.md](WRITING.md#the-voices)). In a building it lies
 like the rest of the loot, as a note prop read where it lies, and goes with the building's loot;
-one a search turns up is left beside the boot or body for half an hour. One in five had a key
-taped inside: in a building the key lies next to it, from a search it goes into your pack. About
+one a search turns up is left beside the boot for half an hour, and a body's lies beside the body
+as long. One in five had a key taped inside: in a building or by a body the key lies next to it,
+from a boot search it goes into your pack. About
 one in seven has a stash grid on the back (two good finds in the building nearest it, or a car
 boot searched there, within 90 minutes), one in ten a puzzle mission circled on a map.
 Reading one opens it in the reader, a sheet of paper you page through, as do puzzle notes, letters
@@ -2326,7 +2338,7 @@ played under; at most 500 records are kept per list (the emptiest go first).
 Code: `Core/RZ_LooseItems.c`.
 
 Things the mode spawns for players are tracked: reward crates, dropped samples, key items, shop
-and requisition purchases, search finds, loot taken from houses, crafted items and treatments, the wind-up radio, the
+and requisition purchases, search finds, what infected bodies carry, loot taken from houses, crafted items and treatments, the wind-up radio, the
 Wedding Party's jewellery and the Crashed Helicopter's wreck. One that lies untouched
 for **30 minutes** (**World > Loose item minutes**; 0 = off) with no player within 150 m is
 removed. Never removed: anything in a pack, a container or a vehicle's storage (its clock starts

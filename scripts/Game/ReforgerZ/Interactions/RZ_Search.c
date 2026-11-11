@@ -1,14 +1,15 @@
-//! Loot rules, locks and keys, readable things, and the searches that are left: car boots
-//! (RZ_Cars) and the bodies of infected killed near players (docs/DESIGN.md, "World
-//! interactions"). Loot in houses lies loose (RZ_Loot.c) and is rolled here (PickHouseLoot).
+//! Loot rules, locks and keys, readable things, the one search that's left (car boots, RZ_Cars)
+//! and what the bodies of infected killed near players carry (docs/DESIGN.md, "World
+//! interactions"). Loot in houses lies loose (RZ_Loot.c) and is rolled here (PickHouseLoot);
+//! bodies are looted with vanilla's inventory (OnZombiesKilled).
 //!
 //! - Loot suits the building: pharmacy, garage, farm, police, shop or house, from the prefab
 //!   name of the building. Tables are configurable per type; anything left empty is filled from
 //!   one flat loot pool by keywords (bandage words for pharmacies, tool and fuel words for
 //!   garages...). Scaled by the town's loot level (RZ_TownMemory.GetLootLevel); electronics get
 //!   the power grid's multiplier (RZ_PowerGrid.LootMult).
-//! - A car boot or a body is searched (a few seconds), rolled then, and remembered as searched
-//!   for an hour.
+//! - A car boot is searched (a few seconds), rolled then, and remembered as searched for an hour.
+//!   A body is rolled when it dies and its things go into its inventory (or beside it).
 //! - Locks: some pharmacies, garages, police stations, shops and houses are locked (seeded
 //!   from the building's position, so the same ones stay locked). The lock is on the building's
 //!   outside doors (RZ_DoorLocks.c); a building whose doors aren't found isn't locked. A key
@@ -42,7 +43,7 @@ class RZ_LootTable
 [BaseContainerProps()]
 class RZ_SearchSettings
 {
-	[Attribute("1", desc: "Searching car boots and infected bodies, locks and keys, readable things (loot in houses: Interactions > Loot)")]
+	[Attribute("1", desc: "Searching car boots, what infected bodies carry, locks and keys, readable things (loot in houses: Interactions > Loot)")]
 	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot pool: every item that can lie in a house or turn up in a car boot or on a body. Tables left empty are filled from it by keywords in the prefab names (see docs/WORKBENCH_SETUP.md). Each must be a real item with vanilla's pick-up action", "et")]
@@ -51,7 +52,7 @@ class RZ_SearchSettings
 	[Attribute(desc: "Loot tables per building type (optional; empty lists use the pool)")]
 	ref array<ref RZ_LootTable> m_aTables;
 
-	[Attribute("0.6", desc: "At full town loot (scaled by what the town has left): the chance each of a building's item slots holds something (loose loot), and that a car boot or body search finds anything")]
+	[Attribute("0.6", desc: "At full town loot (scaled by what the town has left): the chance each of a building's item slots holds something (loose loot), and that a car boot search finds anything; on a body, the chance it carries anything")]
 	float m_fFindChance;
 
 	[Attribute("0.1", desc: "Chance a find is rare (doubled behind a lock)")]
@@ -63,10 +64,10 @@ class RZ_SearchSettings
 	[Attribute("60", desc: "Real minutes before a searched car boot has anything again")]
 	float m_fSpotReturnMinutes;
 
-	[Attribute("4", desc: "Seconds a car boot or body search takes (stay close)")]
+	[Attribute("4", desc: "Seconds a car boot search takes (stay close)")]
 	float m_fSearchSeconds;
 
-	[Attribute("1", desc: "Heat a car boot or body search makes")]
+	[Attribute("1", desc: "Heat a car boot search makes")]
 	float m_fSearchHeat;
 
 	// ---------------------------------------------------------------- Locks and keys
@@ -138,10 +139,7 @@ class RZ_SearchSettings
 	[Attribute("0.08", desc: "Chance an infected body has a key on it")]
 	float m_fBodyKeyChance;
 
-	[Attribute("4", desc: "Real minutes an infected body can be searched (players within 60 m when it died)")]
-	float m_fBodyMinutes;
-
-	[Attribute("8", desc: "Most searchable bodies at once")]
+	[Attribute("8", desc: "Most infected bodies a minute that get loot (killed within 60 m of a player): a horde shot down at once doesn't cover the ground")]
 	int m_iBodyCap;
 }
 
@@ -176,6 +174,7 @@ class RZ_Search
 	protected static const float STASH_MINUTES = 90;
 	protected static const int STASHES_KEPT = 6;
 	protected static const float BODY_WITNESS = 60;
+	protected static const float BODY_REACH = 3;	// a dead body this close to where the infected fell is theirs
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
@@ -189,6 +188,8 @@ class RZ_Search
 	protected ref array<string> m_aElectronicsWords = {};
 	protected int m_iNextNote = 1;
 	protected bool m_bKeyPrefabWarned;
+	protected float m_fBodyMinuteAt = -100;
+	protected int m_iBodiesThisMinute;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Search(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_SearchSettings settings)
@@ -729,23 +730,14 @@ class RZ_Search
 		return false;
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! A key (see PickRandomKey) straight into their inventory: a body. Returns a description, ""
-	//! if none.
-	string GiveRandomKey(int playerId, vector pos)
-	{
-		string keyId;
-		string tag;
-		if (!PickRandomKey(pos, keyId, tag))
-			return "";
-
-		GiveKey(playerId, keyId, tag);
-		return string.Format("a key with a cardboard tag: \"%1\"", tag);
-	}
-
 	// ================================================================ Bodies
 	//------------------------------------------------------------------------------------------------
-	//! Infected that die with a player close by leave a body to search for a few minutes.
+	//! Infected that die with a player close by (within 60 m) carry what a search used to find: a
+	//! roll from the body table (sometimes two things), the treatment roll, sometimes a key and
+	//! sometimes something to read. There's no prompt: the items go into the body's own inventory,
+	//! looted with vanilla's inventory, or lie loose beside it when it has none (or none fits). A
+	//! note is read where it lies; a key taped inside lies by it. Loose, they're cleaned up like
+	//! any loose item; on the body, they go with it. At most Body cap bodies a minute get any.
 	void OnZombiesKilled(vector pos, int count)
 	{
 		if (!m_Settings.m_bEnabled || count <= 0)
@@ -757,35 +749,115 @@ class RZ_Search
 		if (RZ_Util.NearestDistance(pos, players) > BODY_WITNESS)
 			return;
 
-		if (m_Hub.CountKind(RZ_Interactions.KIND_BODY) >= m_Settings.m_iBodyCap)
+		float now = m_Hub.GetClock();
+		if (now - m_fBodyMinuteAt >= 60)
+		{
+			m_fBodyMinuteAt = now;
+			m_iBodiesThisMinute = 0;
+		}
+
+		array<IEntity> corpses = {};
+		RZ_CorpseQuery.FindDead(pos, BODY_REACH, corpses);
+		for (int i = 0; i < count && m_iBodiesThisMinute < m_Settings.m_iBodyCap; i++)
+		{
+			m_iBodiesThisMinute++;
+			IEntity corpse;
+			if (i < corpses.Count())
+				corpse = corpses[i];
+
+			vector at = pos;
+			if (corpse)
+				at = corpse.GetOrigin();
+
+			LootBody(RZ_Util.GroundPos(at), corpse);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Rolls a body's things and puts them on it (or beside it).
+	protected void LootBody(vector pos, IEntity corpse)
+	{
+		array<ResourceName> picks = {};
+		RollBody(pos, picks);
+
+		// Treatments (docs/DESIGN.md, "Treatments"): one roll
+		RZ_Infection infection = m_GM.GetInfection();
+		if (infection)
+		{
+			int med;
+			ResourceName medPrefab = infection.PickMedFind("body", false, med);
+			if (!medPrefab.IsEmpty())
+				picks.Insert(medPrefab);
+		}
+
+		foreach (ResourceName prefab : picks)
+		{
+			PutOnBody(RZ_Util.SpawnPrefab(prefab, RZ_Util.RandomPointInRing(pos, 0.4, 1) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360)), corpse);
+		}
+
+		// A key
+		string keyId;
+		string keyTag;
+		if (Math.RandomFloat01() < m_Settings.m_fBodyKeyChance && PickRandomKey(pos, keyId, keyTag))
+			PutOnBody(RZ_KeyItemComponent.Spawn(m_Settings.m_sKeyPrefab, RZ_Util.RandomPointInRing(pos, 0.4, 1) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360), keyId, keyTag), corpse);
+
+		// Something to read: beside the body, for anyone to read, with a key taped inside by it
+		if (Math.RandomFloat01() >= m_Settings.m_fBodyReadableChance)
 			return;
 
-		m_Hub.AddSpot(RZ_Interactions.KIND_BODY, RZ_Util.GroundPos(pos), "body", "the body", -1, m_Hub.GetClock() + m_Settings.m_fBodyMinutes * 60);
+		string noteKey;
+		string noteTag;
+		string line;
+		int note = CreateReadable(pos, true, false, noteKey, noteTag, line);
+		if (note < 0)
+			return;
+
+		vector notePos = RZ_Util.RandomPointInRing(pos, 0.5, 1.2);
+		SpawnNote(note, notePos + Vector(0, 0.2, 0), Math.RandomFloat(0, 360));
+		if (!noteKey.IsEmpty())
+			PutOnBody(RZ_KeyItemComponent.Spawn(m_Settings.m_sKeyPrefab, notePos + Vector(0.2, 0.3, 0), Math.RandomFloat(0, 360), noteKey, noteTag), null);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A body's spot: Look at the body, Search the body.
-	void Labels(RZ_Spot s, out string read, out string choiceLabels)
+	//! A spawned item into the body's inventory if it has one with room, else left where it was
+	//! spawned, beside it. Tracked as a loose item either way (cleaned up once it lies abandoned).
+	//! VERIFY: a dead infected character from the zombie mod keeps an inventory that
+	//! TryInsertItem fills and vanilla's inventory shows as the body's.
+	protected void PutOnBody(IEntity item, IEntity corpse)
 	{
-		read = "Look at the body";
-		choiceLabels = "Search the body";
+		if (!item)
+			return;
+
+		if (corpse)
+			RZ_Util.InsertIntoInventory(corpse, item);
+
+		RZ_GameModeComponent.TrackLooseItem(item);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void Describe(int playerId, RZ_Spot s)
+	//! What a body carries from the body table: one thing Find chance of the time, sometimes two.
+	protected void RollBody(vector pos, notnull array<ResourceName> picks)
 	{
-		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "It was someone, once. Pockets, a bag, a wallet maybe. Be quick: they don't lie still for long out here.");
+		RZ_LootTable t = TableFor("body");
+		if (!t || Math.RandomFloat01() >= Math.Clamp(m_Settings.m_fFindChance, 0, 0.95))
+			return;
+
+		int count = 1;
+		if (Math.RandomFloat01() < 0.2)
+			count = 2;
+
+		float rare;
+		float electronics;
+		Odds("body", pos, false, true, rare, electronics);
+		for (int i = 0; i < count; i++)
+		{
+			ResourceName pick = PickFrom(t, rare, electronics);
+			if (!pick.IsEmpty())
+				picks.Insert(pick);
+		}
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! A body's one choice: search it.
-	void HandleChoice(int playerId, RZ_Spot s, int option, IEntity user)
-	{
-		if (m_Settings.m_bEnabled && option == 0)
-			StartSearch(playerId, s, user);
-	}
-
-	// ================================================================ Searching (car boots, bodies)
+	// ================================================================ Searching car boots
 	//------------------------------------------------------------------------------------------------
 	protected bool WasSearched(string key)
 	{
@@ -794,7 +866,7 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A search of a car boot or a body: a few seconds, then the roll.
+	//! A search of a car boot: a few seconds, then the roll.
 	void StartSearch(int playerId, RZ_Spot s, IEntity user)
 	{
 		if (WasSearched(s.m_sKey))
@@ -825,26 +897,25 @@ class RZ_Search
 			return;
 
 		string title = m_Hub.Title(s);
-		bool body = s.m_iKind == RZ_Interactions.KIND_BODY;
 		m_mSearched.Set(s.m_sKey, m_Hub.GetClock());
 		PruneSearched();
 		m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fSearchHeat);
 
 		array<string> found = {};
-		int items = RollLoot(s.m_sType, s.m_vPos, false, body, user, s.m_vPos, found);
+		int items = RollLoot(s.m_sType, s.m_vPos, false, user, s.m_vPos, found);
 
 		// A stash someone wrote about
-		if (!body && TakeStashNear(s.m_vPos))
+		if (TakeStashNear(s.m_vPos))
 		{
 			for (int i = 0; i < 2; i++)
 			{
-				items += RollLoot(s.m_sType, s.m_vPos, true, false, user, s.m_vPos, found);
+				items += RollLoot(s.m_sType, s.m_vPos, true, user, s.m_vPos, found);
 			}
 
 			found.Insert("the stash from the note, wrapped in a bin bag");
 		}
 
-		if (!body && items > 0)
+		if (items > 0)
 			RZ_TownMemory.ReportSearched(s.m_vPos, m_Hub.GetLoot().GetTownLootPerItem() * items);
 
 		// Treatments (docs/DESIGN.md, "Treatments"): one roll
@@ -856,30 +927,18 @@ class RZ_Search
 				found.Insert(med);
 		}
 
-		// A key on a body
-		if (body && Math.RandomFloat01() < m_Settings.m_fBodyKeyChance)
-		{
-			string key = GiveRandomKey(playerId, s.m_vPos);
-			if (!key.IsEmpty())
-				found.Insert(key);
-		}
-
 		string text = "";
 		if (found.IsEmpty())
-			text = EmptyText(body, RZ_TownMemory.GetLootLevel(s.m_vPos));
+			text = EmptyText(RZ_TownMemory.GetLootLevel(s.m_vPos));
 		else
 			text = "You find " + ListText(found) + ".";
 
-		float readChance = m_Settings.m_fReadableChance;
-		if (body)
-			readChance = m_Settings.m_fBodyReadableChance;
-
-		if (Math.RandomFloat01() < readChance)
+		if (Math.RandomFloat01() < m_Settings.m_fReadableChance)
 		{
 			string keyId;
 			string keyTag;
 			string line;
-			int note = CreateReadable(s.m_vPos, body, false, keyId, keyTag, line);
+			int note = CreateReadable(s.m_vPos, false, false, keyId, keyTag, line);
 			if (note >= 0)
 			{
 				// A search leaves the readable thing where it was, for others to read too
@@ -892,8 +951,6 @@ class RZ_Search
 		}
 
 		m_GM.NotifyPlayer(playerId, title, text);
-		if (body)
-			m_Hub.RemoveSpot(s.m_iId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -972,17 +1029,14 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Rolls what a car boot or body search finds and gives it. Returns how many items. Names go
-	//! into `found`.
-	protected int RollLoot(string type, vector pos, bool locked, bool body, IEntity user, vector at, notnull array<string> found)
+	//! Rolls what a car boot search finds and gives it. Returns how many items. Names go into `found`.
+	protected int RollLoot(string type, vector pos, bool locked, IEntity user, vector at, notnull array<string> found)
 	{
 		RZ_LootTable t = TableFor(type);
 		if (!t)
 			return 0;
 
-		float level = 1;
-		if (!body)
-			level = RZ_TownMemory.GetLootLevel(pos);
+		float level = RZ_TownMemory.GetLootLevel(pos);
 
 		float chance = m_Settings.m_fFindChance * level;
 		if (locked)
@@ -1001,7 +1055,7 @@ class RZ_Search
 
 		float rare;
 		float electronics;
-		Odds(type, pos, locked, body, rare, electronics);
+		Odds(type, pos, locked, false, rare, electronics);
 		int given = 0;
 		for (int i = 0; i < count; i++)
 		{
@@ -1056,11 +1110,8 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static string EmptyText(bool body, float level)
+	protected static string EmptyText(float level)
 	{
-		if (body)
-			return "Nothing but a bus ticket and a photo too stained to make out.";
-
 		if (level < 0.4)
 			return "Empty. Somebody beat you to it, and somebody beat them.";
 
@@ -1072,7 +1123,8 @@ class RZ_Search
 	//! An ID card, a letter, a receipt or a photo, in the Zone's voice. Sometimes a key is taped
 	//! inside (keyId and keyTag set: the caller places or gives the key), a stash is written on the
 	//! back, or a town is circled. Registers it and returns its id (-1 if none); `line` is
-	//! "Title: text" for a search message. loose = it lies in a building's loose loot.
+	//! "Title: text" for a search message. loose = it lies in a building's loose loot; body = on an
+	//! infected body (more often an ID card; a key taped inside lies by it, as in a building).
 	int CreateReadable(vector pos, bool body, bool loose, out string keyId, out string keyTag, out string line)
 	{
 		keyId = "";
@@ -1133,7 +1185,7 @@ class RZ_Search
 		{
 			if (PickRandomKey(pos, keyId, keyTag))
 			{
-				if (loose)
+				if (loose || body)
 					text += string.Format(" A key was taped inside, with a cardboard tag: \"%1\". It's lying where it fell.", keyTag);
 				else
 					text += string.Format(" Taped inside: a key with a cardboard tag: \"%1\". You keep it.", keyTag);
@@ -1353,5 +1405,44 @@ class RZ_Search
 			if (now >= m_aStashes[j].m_fUntil)
 				m_aStashes.RemoveOrdered(j);
 		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Dead characters near a point (the infected who just fell there), nearest first. Dynamic
+//! entities only; one query per kill near a player.
+class RZ_CorpseQuery
+{
+	protected ref array<IEntity> m_aFound = {};
+
+	//------------------------------------------------------------------------------------------------
+	static void FindDead(vector center, float radius, notnull array<IEntity> result)
+	{
+		RZ_CorpseQuery q = new RZ_CorpseQuery();
+		GetGame().GetWorld().QueryEntitiesBySphere(center, radius, q.OnEntity, null, EQueryEntitiesFlags.DYNAMIC);
+		while (!q.m_aFound.IsEmpty())
+		{
+			int best = 0;
+			for (int i = 1; i < q.m_aFound.Count(); i++)
+			{
+				if (RZ_Util.DistXZ(q.m_aFound[i].GetOrigin(), center) < RZ_Util.DistXZ(q.m_aFound[best].GetOrigin(), center))
+					best = i;
+			}
+
+			result.Insert(q.m_aFound[best]);
+			q.m_aFound.Remove(best);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool OnEntity(IEntity e)
+	{
+		if (m_aFound.Count() >= 8)
+			return false;
+
+		if (ChimeraCharacter.Cast(e) && !RZ_Util.IsCharacterAlive(e) && GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(e) <= 0)
+			m_aFound.Insert(e);
+
+		return true;
 	}
 }

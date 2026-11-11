@@ -12,7 +12,7 @@
 //!   puzzle object's components) is put on each thing, with replicated labels ("Search the
 //!   boot"). The puzzle actions route here (TAG). Spots are removed when everyone leaves.
 //! - What happens is decided on the server. Loot lies in houses only near players and is
-//!   kept as data otherwise; a car boot or body is rolled when it's searched. What was searched,
+//!   kept as data otherwise; a car boot is rolled when it's searched, a body when it dies. What was searched,
 //!   opened or burned is remembered as data (positions and times) and saved; town loot comes
 //!   back through RZ_TownMemory.
 //! - Longer actions (searching, forcing a lock, hotwiring, crafting, cracking a channel,
@@ -126,9 +126,9 @@ class RZ_Spot
 	vector m_vPos;
 	vector m_vBuilding;		// the building it belongs to (locks, fire, building type)
 	string m_sBuildingKey;
-	string m_sType;			// building type: pharmacy, garage, farm, police, shop, house; or body, car
-	string m_sNoun;			// "the blue door", "the wreck", "the body"
-	int m_iRef = -1;		// car project id, body index...
+	string m_sType;			// building type: pharmacy, garage, farm, police, shop, house; or car
+	string m_sNoun;			// "the blue door", "the wreck"
+	int m_iRef = -1;		// car project id...
 	float m_fSeen;			// hub clock when a player last saw it
 	float m_fExpires = -1;	// bodies: gone after this
 	IEntity m_Body;
@@ -517,7 +517,7 @@ class RZ_Interactions
 	static const int TAG_NOTE = -10;		// readable things (lying in a house, or left by a search)
 
 	static const int KIND_BUILDING = 0;		// a look-around candidate only (doors, loot, church bells): never a spot
-	static const int KIND_BODY = 1;
+	static const int KIND_BODY = 1;		// unused: bodies are looted with vanilla's inventory (RZ_Search.OnZombiesKilled); kept for the enum's order
 	static const int KIND_WRECK = 2;
 	static const int KIND_WORKBENCH = 3;
 	static const int KIND_WELL = 4;
@@ -726,7 +726,7 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! From the game mode: infected died here. A body to search for a few minutes, near players.
+	//! From the game mode: infected died here. Near a player, the body carries some loot.
 	void OnZombiesKilled(vector pos, int count)
 	{
 		if (m_bActive)
@@ -1198,16 +1198,10 @@ class RZ_Interactions
 			bool expired = s.m_fExpires >= 0 && m_fClock >= s.m_fExpires;
 			float nearest = RZ_Util.NearestDistance(s.m_vPos, players);
 			bool far = nearest > m_Settings.m_fScanRadius + DESPAWN_MARGIN;
-			if (expired || (far && s.m_iKind != KIND_BODY))
+			if (expired || far)
 			{
 				DespawnSpot(s);
 				m_aSpots.Remove(i);
-				continue;
-			}
-
-			if (far)
-			{
-				DespawnSpot(s);
 				continue;
 			}
 
@@ -1288,12 +1282,6 @@ class RZ_Interactions
 		read = "Look at " + s.m_sNoun;
 		useLabels = "";
 		choiceLabels = "";
-		if (s.m_iKind == KIND_BODY)
-		{
-			m_Search.Labels(s, read, choiceLabels);
-			return;
-		}
-
 		switch (s.m_iKind)
 		{
 			case RZ_ESpotKind.DOOR:
@@ -1390,12 +1378,6 @@ class RZ_Interactions
 			return;
 		}
 
-		if (s.m_iKind == KIND_BODY)
-		{
-			m_Search.Describe(playerId, s);
-			return;
-		}
-
 		switch (s.m_iKind)
 		{
 			case RZ_ESpotKind.DOOR: m_Doors.Describe(playerId, s); return;
@@ -1457,12 +1439,6 @@ class RZ_Interactions
 		if (HasTask(playerId))
 		{
 			m_GM.NotifyPlayer(playerId, Title(s), "You're already busy with something. Finish it first, or step away to stop.");
-			return;
-		}
-
-		if (s.m_iKind == KIND_BODY)
-		{
-			m_Search.HandleChoice(playerId, s, option, user);
 			return;
 		}
 

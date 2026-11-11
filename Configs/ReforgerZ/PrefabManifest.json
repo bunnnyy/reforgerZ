@@ -5136,7 +5136,6 @@
     "m_fReadableChance": "0.12",
     "m_fBodyReadableChance": "0.3",
     "m_fBodyKeyChance": "0.08",
-    "m_fBodyMinutes": "4",
     "m_iBodyCap": "8"
    }
   },
