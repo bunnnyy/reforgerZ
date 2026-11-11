@@ -30,10 +30,10 @@ trefoil:
 
 | Mark | What it is |
 |---|---|
-| The Haven | A house with a candle in it: every safehouse lights one for the dead ([LORE.md](LORE.md#the-haven)) |
+| The Haven | The kids' bear: a battered teddy, patched, one eye stitched shut, stencilled on every safehouse door with children behind it ([LORE.md](LORE.md#the-haven)) |
 | Task Force Bastion | A helmet with the days without relief chalked on as a tally: every night the call to Command ends *"Requesting relief"*, the log says *"No reply"*, and the sergeant chalks up a day ([LORE.md](LORE.md#task-force-bastion)) |
 | The Red Hand | A red handprint slapped on at an angle, fingers splayed, the paint still running: the hand the boss painted over Rudi's marks on the shutter ([LORE.md](LORE.md#the-red-hand)). Deliberately not an upright heraldic hand |
-| Halcyon | A sun over still water inside a lab hexagon (the halcyon days that a cure would bring) |
+| Halcyon | The plague doctor: a hooded head with a brimmed hat, one goggle and a long beak, bowed politely. The Zone calls Halcyon's people "the beaks" ([LORE.md](LORE.md#halcyon)) |
 | The infected | A virion, slightly out of round, its spikes ending in knobs, with a bite taken out of it |
 | The Long Table | A preserving jar with a cloth tied over it, labelled only "9". The family labels its jars by the day, not by what's in them, and Day 9 was the first soup ([LORE.md](LORE.md#the-long-table)). It isn't a faction and it's a secret, so the mark is never on the map or the standing screen: it's for the journal and the hall of fame once a player has found the family out, and scratched somewhere at the farm (planned: no script uses it yet) |
 

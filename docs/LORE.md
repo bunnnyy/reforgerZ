@@ -64,6 +64,11 @@ later with the same look about them is fed, and seen by the medic, for nothing. 
 Haven has come to trust is given an amber ribbon, to wear or not as they like
 ([REPUTATION.md](REPUTATION.md), "Reputation clues").
 
+**The bear.** On Day 2 the teacher's eleven kids slept in the gym, and somebody stencilled a
+teddy bear on its doors so that nobody would shoot through them. Every safehouse with children
+in it has the bear on its door now, and the Haven uses it as its mark. It has been touched up so
+often that it has a patch on its belly and one eye stitched shut.
+
 **The hard edges.** The Haven is kind, and it is also frightened and hungry. It has a
 little dark side that nobody talks about:
 
@@ -374,6 +379,11 @@ then somebody carries a name back up the hill.
 Status is whose initials go on a result, and who is let into the clean room. An outsider the lab
 trusts gets antidotes, a medic, and in the end a pass to the lab itself
 ([REPUTATION.md](REPUTATION.md), "Halcyon").
+
+**The beaks.** Outside the clean room Halcyon's people wear hoods and respirators with long
+filters, and the Zone calls them the beaks. Somebody at the lab stencilled a plague doctor on the
+sample cases as a joke. By the time anyone senior noticed, it was on every case, door and van,
+and nobody could think of a reason to scrub it off.
 
 **The hard edges.** Halcyon is careful, polite and very tired. It has decided some things
 matter more than people, and it apologises for that, quietly:
