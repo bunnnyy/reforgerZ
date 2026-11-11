@@ -706,7 +706,19 @@ class RZ_FactionPerks
 
 		int target = m_aHunterTarget[i];
 		int idx = ids.Find(target);
-		if (idx < 0 || !IsHarboured(target, players[idx]))
+		if (idx < 0)
+			return;
+
+		// Nobody follows anyone into a pack's ground after dark (docs/INFECTED.md, People)
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (tribes && tribes.GetPeople().IsOn() && tribes.GetPhase() == RZ_ETribePhase.NIGHT && tribes.GetPeople().InRange(players[idx].GetOrigin()))
+		{
+			GiveUpTrail(i, players[idx].GetOrigin());
+			m_GM.NotifyPlayer(target, "Behind you", "Whoever was following you stops at the edge of the trees. Nobody follows anyone in there after dark.");
+			return;
+		}
+
+		if (!IsHarboured(target, players[idx]))
 			return;
 
 		GiveUpTrail(i, players[idx].GetOrigin());

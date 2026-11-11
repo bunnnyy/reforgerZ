@@ -177,7 +177,10 @@ so it works at any season speed, and adds no simulation. The ladder, first match
 line). The single-line pools people say face to face, as data: leaders' greetings (`greeting`),
 their openings by manner (`opener`, said with Dialogue > Trees on), named people at holdings
 (`person`) and their routine asides at the meal, the night watch and shift change (`aside_meal`,
-`aside_night`, `aside_shift`). Each line has a stable id, a faction, a kind, a manner, a register
+`aside_night`, `aside_shift`), and each faction's lines about the packs (`infected`, by manner: `warn`,
+`roads`, `furious` and `moved` for the Haven, `contact` and `cull` for Bastion, `crew` for the Red Hand,
+`index`, `sorry` and `lost` for Halcyon; `{place}` is the speaker's name for the pack with its place,
+[INFECTED.md](INFECTED.md#voices)). Each line has a stable id, a faction, a kind, a manner, a register
 (PLAIN, WRY, JOKE, TAUNT, BLEAK, SILENCE), the moods it's said in, the leader traits it suits, an
 optional condition in the conversation syntax (`cure>=50`), a weight and the text (with `{place}`).
 

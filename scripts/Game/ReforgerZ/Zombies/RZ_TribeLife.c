@@ -251,6 +251,15 @@ class RZ_TribeLife
 		if (t.m_bHasAlpha)
 			return;
 
+		// After the cure nobody takes up the call: the rest scatter and die out (the last week)
+		if (Cured())
+		{
+			m_Tribes.Tell(t.m_vLair, 2000, "First light", string.Format("Nothing calls from %1 this morning. What was left of it has gone off into the trees to lie down.", t.m_sPlace));
+			RZ_Log.Info(string.Format("Tribes: %1 lost its leader after the cure, and ends.", t.m_sPlace));
+			RemoveTribe(t, false);
+			return;
+		}
+
 		int guards = t.Count(RZ_ETribePart.GUARD);
 		if (guards <= 0)
 		{
@@ -305,6 +314,10 @@ class RZ_TribeLife
 	//! Under 4 members (never in its first 3 season days), a tribe breaks up.
 	void CheckBreakUp(RZ_Tribe t)
 	{
+		// After the cure a tribe keeps its lair and its leader however small it gets
+		if (Cured())
+			return;
+
 		if (t.Members() < 4 && RZ_SeasonClock.DaysSince(t.m_fFounded) >= 3 && m_Tribes.GetTribeList().Find(t) >= 0)
 			BreakUp(t, "under 4 members");
 	}
@@ -1030,7 +1043,8 @@ class RZ_TribeLife
 
 		foreach (RZ_Tribe t : m_Tribes.GetTribeList())
 		{
-			if (t.Members() < at)
+			// The Red Hand's fed tribe stays settled and doesn't split (rule 19); a held one waits
+			if (t.Members() < at || t.m_bMoat || RZ_TribeContract.IsHeld(m_GM, t))
 			{
 				t.m_bRestless = false;
 				continue;
@@ -1472,6 +1486,10 @@ class RZ_TribeLife
 		if (t.m_iMovedDay == today)
 			return;
 
+		// A running job or questline stage holds its pack still (its claim, "tribe:N")
+		if (RZ_TribeContract.IsHeld(m_GM, t))
+			return;
+
 		if (m_iSeasonDay != today)
 			m_iMovesToday = 0;
 
@@ -1536,7 +1554,11 @@ class RZ_TribeLife
 		if (outOfRange && t.m_eTemper != RZ_ETemperament.NOMADIC)
 			AddVacuum(t.RangeCentre(), was);
 
+		vector from = t.m_vLair;
 		RelocateLair(t, lair);
+		if (outOfRange && m_Tribes.GetPeople().IsOn())
+			RZ_Event_TribeMoves.Start(m_GM, t, from, t.m_vLair, was);
+
 		string why = "disturbed";
 		if (cause >= 0)
 			why = "driven off by " + RZ_Factions.GetShortName(cause);
@@ -1646,7 +1668,7 @@ class RZ_TribeLife
 	//! leaves no vacuum and no fear places.
 	protected void NomadMove(RZ_Tribe t)
 	{
-		if (t.m_eTemper != RZ_ETemperament.NOMADIC || RZ_SeasonClock.Days() < t.m_fNextMove)
+		if (t.m_eTemper != RZ_ETemperament.NOMADIC || RZ_SeasonClock.Days() < t.m_fNextMove || RZ_TribeContract.IsHeld(m_GM, t))
 			return;
 
 		t.m_fNextMove = RZ_SeasonClock.Days() + Math.RandomFloat(2, 4);

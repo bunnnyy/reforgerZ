@@ -106,7 +106,14 @@ enum RZ_EFactionService
 	BOUNTY_BOARD,	// Red Hand Champion
 	BOOSTER,		// Halcyon Champion
 	MEDIC,			// Halcyon Trusted
-	AMENDS			// any faction: the quartermaster's own
+	AMENDS,			// any faction: the quartermaster's own
+	// The packs (Zombies/RZ_TribePeople.c; docs/INFECTED.md, "Knowing")
+	ROADS,			// Haven Known: ask about the roads (the three nearest packs, their names and mood)
+	CONTACT_BOARD,	// Bastion Known: the contact board
+	CREW_MAP,		// Red Hand Known: the map of the crews, for Favor
+	FREQUENCIES,	// Red Hand Trusted: Halcyon's tag frequencies (and a stolen tag), for Favor
+	RANGE_MAP,		// Halcyon Known, from 25%: the range map
+	CALL_BOX		// Halcyon Trusted, from 50%: the call box
 }
 
 //------------------------------------------------------------------------------------------------
@@ -232,7 +239,7 @@ class RZ_FireMissionSmokeComponent : ScriptComponent
 //! Amends uses the quartermaster's own faction. The server checks tier and Favor on use.
 class RZ_FactionServiceAction : ScriptedUserAction
 {
-	[Attribute("0", UIWidgets.ComboBox, "Which service: Fence and Bounty board on the Red Hand, Booster and Medic on Halcyon, Amends on any quartermaster", "", ParamEnumArray.FromEnum(RZ_EFactionService))]
+	[Attribute("0", UIWidgets.ComboBox, "Which service: Fence, Bounty board, Crew map and Frequencies on the Red Hand; Booster, Medic, Range map and Call box on Halcyon; Roads on the Haven; Contact board on Bastion; Amends on any quartermaster", "", ParamEnumArray.FromEnum(RZ_EFactionService))]
 	protected RZ_EFactionService m_eService;
 
 	//------------------------------------------------------------------------------------------------
@@ -245,6 +252,12 @@ class RZ_FactionServiceAction : ScriptedUserAction
 			case RZ_EFactionService.BOOSTER: outName = "Take the immunity booster (Halcyon Champion)"; break;
 			case RZ_EFactionService.MEDIC: outName = "See the Halcyon medic (Halcyon Trusted)"; break;
 			case RZ_EFactionService.AMENDS: outName = "Pay to make amends (Favor)"; break;
+			case RZ_EFactionService.ROADS: outName = "Ask about the roads (Haven Known)"; break;
+			case RZ_EFactionService.CONTACT_BOARD: outName = "Read the contact board (Bastion Known)"; break;
+			case RZ_EFactionService.CREW_MAP: outName = "Buy the map of the crews (Favor)"; break;
+			case RZ_EFactionService.FREQUENCIES: outName = "Buy Halcyon's tag frequencies (Favor)"; break;
+			case RZ_EFactionService.RANGE_MAP: outName = "Ask for the range map (Halcyon Known)"; break;
+			case RZ_EFactionService.CALL_BOX: outName = "Borrow the call box (Halcyon Trusted)"; break;
 		}
 
 		return true;
@@ -363,6 +376,14 @@ class RZ_FactionServices
 			case RZ_EFactionService.BOOSTER: Booster(playerId); break;
 			case RZ_EFactionService.MEDIC: Medic(playerId, user); break;
 			case RZ_EFactionService.AMENDS: Amends(playerId, owner); break;
+			default:
+			{
+				RZ_Tribes tribes = m_GM.GetTribes();
+				if (tribes)
+					tribes.GetPeople().Service(playerId, service, user);
+
+				break;
+			}
 		}
 	}
 

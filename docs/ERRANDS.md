@@ -198,7 +198,7 @@ Some routines answer a small real fault at a place (`RZ_Faults`), rolled at most
 | **Lights** | safehouse, the storekeeper | the house's fuel fault, dusk within 20 real min (or dusk) | A fuel can, or [Mechanic] a car battery: 5 Favor, the fault fixed. Writes `errand.lit` |
 | **Water for {house}** | safehouse, the lookout | the house's water fault | Fetch water from the next town (20 s): 5 Favor (×1.3 quiet), +2 food, fixed |
 | **Filter Parts** | safehouse, the storekeeper | the water fault, 8+ people, Known | The pump house part at the next town (25 s; [Mechanic or Lab Tech] 12 s): 8 Favor, fixed |
-| **The Gate at Dusk** | safehouse, the lookout | dusk near, one guard or none, a town at 60+ infection within 1.5 km, not Night of the Dead | Stand at the gate 10 real min: 5 Favor |
+| **The Gate at Dusk** | safehouse, the lookout | dusk near, one guard or none, a town at 60+ infection within 1.5 km, not Every Ridge Calls | Stand at the gate 10 real min: 5 Favor |
 | **The Burying** | safehouse, the clerk | someone died at the house lately | Dig at the edge of town (30 s): 3 Favor; a world record |
 | **The Round** | safehouse, the clerk | [Nurse or Doctor], no medic, 4+ people | A minute at each bed (2 min): 4 Favor |
 | **The Newcomer** | safehouse, the clerk | the house took someone in this season day | A coat from the next town (20 s), or [Nurse or Doctor] check him over (30 s): 4 Favor |

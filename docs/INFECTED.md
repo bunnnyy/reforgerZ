@@ -5,20 +5,24 @@ hordes, the land they live on, and how their bodies are spawned, counted and rem
 infection are in [DESIGN.md](DESIGN.md#zombies-bites-and-infection), noise and heat in
 [DESIGN.md](DESIGN.md#heat-and-noise), and how hidden a player is in [DESIGN.md](DESIGN.md#stealth).
 
-**Status.** Phases 1 to 3 of the tribes design are built: crawlers, loose ones, heat hordes from
+**Status.** Phases 1 to 4 of the tribes design are built: crawlers, loose ones, heat hordes from
 towns, the land grid, the agent budget and its plumbing; **the tribes** on every slot of the map
 (lairs, scouts, day parties, the dusk call, night hunts by placement, the dawn count, hunger, the taken,
 the ones who ran, the vigil); **their life cycle** (successions, lone ones and splinters, ageing and
 the Clash, borders, splits and clans, lair moves, vacuums, new tribes, burned land, starvation,
 memory and who they are); and **the behaviour layer** driving their bodies beyond striking range,
-with every hunt strategy and the crawlers' daily life. The people's side is planned
-([below](#planned)). Nothing here has been play-tested with a game client yet
-([ROADMAP.md](ROADMAP.md)).
+with every hunt strategy and the crawlers' daily life; and **the people's side** ([People](#people):
+each faction's words, voices and marks, knowing and the ways to learn, skills, your dead run, the
+dark corners, the moat, the packs' contracts and events, the cure's milestones, the final stand's
+waves and the last week). What's left is [planned](#planned). Nothing here has been play-tested
+with a game client yet ([ROADMAP.md](ROADMAP.md)).
 
 Code: `Zombies/RZ_ZombieSpawner.c` (spawning, counting, removing), `Zombies/RZ_Crawlers.c` (towns),
 `Zombies/RZ_InfectedBodies.c` (roles, data parts, the sight rule, the agent budget, runtime
 groups), `Zombies/RZ_Tribes.c`, `RZ_TribeData.c` and `RZ_TribeBodies.c` (the tribes, `/tribes`),
 `Zombies/RZ_TribeLife.c`, `RZ_TribeBorders.c` and `RZ_TribeWays.c` (the life cycle),
+`Zombies/RZ_TribePeople.c` and `RZ_TribeItems.c` (the people's side), `Missions/Tribes/` and
+`Missions/Events/RZ_TribeEvents.c` (the packs' contracts and events),
 `Zombies/Behaviour/` (the behaviour layer and the crawlers' life), `World/RZ_Land.c` (the land grid),
 `Director/RZ_Adaptation.c` (infection adapts).
 
@@ -40,6 +44,7 @@ groups), `Zombies/RZ_Tribes.c`, `RZ_TribeData.c` and `RZ_TribeBodies.c` (the tri
 - [Who they are](#who-they-are)
 - [The signs](#the-signs)
 - [How they move and hunt](#how-they-move-and-hunt)
+- [People](#people)
 - [Planned](#planned)
 
 ## Two switches
@@ -49,6 +54,7 @@ groups), `Zombies/RZ_Tribes.c`, `RZ_TribeData.c` and `RZ_TribeBodies.c` (the tri
 | **Zombies > Crawlers > Enabled** | Towns hold crawlers: placed by the time of day, drifting to noise, refilled from the buildings, remembered by the kill ledger, giving up on locked doors | Towns are populated exactly as before |
 | **Zombies > Tribes > Enabled** | The land grid is read, tribes live in the wild land, the engine's active-AI limit is raised, the countryside's roamers are loose ones walking somewhere, heat hordes come from the nearest town | No land grid, no tribes; roamers and heat hordes as before |
 | **Zombies > Tribes > Life cycle** | Successions, borders, splits, lair moves, new tribes, memory ([The life cycle](#the-life-cycle)) | Tribes as in phase 2: one of the guard takes the call at dawn, and a tribe that dies out leaves its slot free |
+| **Zombies > Tribes > People** | Each faction's words, voices and marks, knowing, skills, your dead run's named young, the moat, the packs' contracts and events, the call box, the stand's waves from the lab's neighbours, the last week ([People](#people)) | Tribes as in phase 3; Every Ridge Calls and The Tribe Moves fall back to the old events |
 | **Zombies > Behaviour > Enabled** | Our code drives the tribes' bodies beyond striking range, and the crawlers lie up, wake and herd ([How they move and hunt](#how-they-move-and-hunt)) | Tribe groups take held waypoints, with Bacon's own senses and stealth; crawlers are Bacon's own |
 | Either on | Bodies are counted in agents inside a budget shared by player clusters, tracked member by member, and never spawned in a player's sight within 300 m | |
 | Both off | The spawner is exactly as it was before phase 1 | |
@@ -411,8 +417,8 @@ Every rule shows: a call, a track, a line, always with the place's name. Code:
   Rising alpha 2–5 season days into leading. More come later: from the taken, from towns gone dark,
   round lone ones and from splits ([New tribes](#new-tribes)).
 - **The place** every line carries: *"the woods north of Levie"*, *"the quarry by Morton"* (the lair's
-  kind from the land grid, the nearest settlement and the compass). The four factions' own words for a
-  tribe are planned (phase 4); player text never says "alpha", "tribe" or "crawler".
+  kind from the land grid, the nearest settlement and the compass). Each faction has its own word for
+  it, always with the place ([People](#the-words)); player text never says "alpha", "tribe" or "crawler".
 - **The range:** 500–1,000 m round the lair by the wild land near it (350–700 m on maps under 25 km²).
 - **Hunting grounds** (up to 4): the edges of towns within 2 km that face the lair (not lived-in
   towns), bridges and fords in the range, and the nearest field.
@@ -484,7 +490,8 @@ light, and fewer answers than at dusk."* or *"The same answers"*, within 2 km), 
 silence** (*"The calling from … stops. Then nothing at all."*). A dusk call also carries its border's
 answer, two voices when it's restless, and its drift toward people late in the season
 ([The life cycle](#the-life-cycle)); a vacuum's silence reaches players who heard no call.
-*Planned:* the Radio Operator's relays along the ridges (phase 4).
+A Radio Operator hears the calls pass ridge to ridge ([Skills](#skills)). After the cure the call
+thins out, and on the last dusk nothing answers ([The last week](#the-last-week)).
 
 ### Hunger and the night
 
@@ -549,7 +556,8 @@ and it never switches.
 - **Your dead run** (Described by default): a player's character counts as a young only after a life of
   10 minutes or more, once per player a season day, 3 players' young per tribe at most; public text
   describes them (*"someone who'd been a hunter"*), or names them with **Named**; **Off** makes no young
-  from players. *Planned:* the opt-out, the name filter, the ID card, the journal (phase 4).
+  from players. The opt-out, the name filter, the ID card and the journal: [Your dead run](#your-dead-run).
+  From the 75% serum a person taken comes back as a young only half the time; after the cure, never.
 - **The ones who ran** (rule 5): each played minute, a town's rise in infection is banked to the nearest
   tribe whose range comes within 1.5 km; every 4 points is a young at the next dusk, 2 a season day per
   tribe at most, 8 points banked at most; halved from the 75% serum, none after the cure.
@@ -753,8 +761,9 @@ At 100 the lair moves (once a tribe and twice on the server a season day): to an
 in its range 400 m or more away, else to a new range 1.5-4 km off in free wild land. **Displaced:**
 when one faction caused more than half of it, the new lair is 2 km or more from that faction's
 holdings and never within 1.2 km of a safehouse or a holding, 2 a season per faction (then it just
-moves within its range). Today Bastion's shells are the only faction cause; its culls and contracts
-are planned (phase 4). Players within 2.5 km of the new lair: *"Something big is moving through the
+moves within its range). Bastion's shells and its Cull and Clear the Trail
+([MISSIONS.md](MISSIONS.md#the-packs-contracts)) are the faction causes; a pack a job holds never
+moves. A move out of its range starts **The Tribe Moves** ([MISSIONS.md](MISSIONS.md#world-events)). Players within 2.5 km of the new lair: *"Something big is moving through the
 trees from the quarry by Morton toward the woods north of Levie, a lot of them."* Its parts walk
 there as data (bodies near players walk too), and its place, trails and posts are worked out again.
 
@@ -904,7 +913,7 @@ Code: `Zombies/RZ_TribeWays.c`.
   carry them, always with the place: a leader falls (*"The calling at the quarry by Morton stopped
   tonight. Josef Hruby led them, and doesn't any more. Josef Hruby won the bridge off the woods north
   of Levie."*), a guard fight, a challenge won, a death of age, a split, a town gone dark, a truck
-  taken. *Planned:* the factions' own words for them (phase 4).
+  taken. The factions speak of them in their own words ([People](#people)).
 
 ## The signs
 
@@ -935,9 +944,8 @@ Every rule above was checked against the design's signs table: each shows within
 
 **Waiting** (no sign of their own yet, or another phase): the clans' relay along the ridges, a range
 that moves as its border does (the border's offset is data only), hunting grounds following the prey,
-the stragglers after a bad night, tracks always fresh in snow, Haven-allied wanderers and the Haven
-truck going round hungry ranges (phase 4), the moat and the Long Table's hunger (phase 4), culls and
-contracts (phase 4), the great alpha, frenzy nights and the Gathering (phases 4-5).
+the stragglers after a bad night, tracks always fresh in snow, the great alpha and the Gathering
+(phase 5). The people's side shows through its own lines, marks and the journal ([People](#people)).
 
 ## How they move and hunt
 
@@ -1077,16 +1085,223 @@ groups near players; 100 agents with half steered measured p99 11.93 ms on the l
 12.5). The status log's behaviour line counts bodies per mode, hunts, releases, take-backs, unsticks,
 moves landed, hand-offs, leaps and charges (with stumbles), and the crawlers asleep, woken and herded.
 
+## People
+
+How the Zone's people live with the packs (**Zombies > Tribes > People**, on by default). Code:
+`Zombies/RZ_TribePeople.c` (words, voices, marks, knowing, skills, your dead run, the dark corners,
+the moat, frenzies, the cure, the last week), `Zombies/RZ_TribeItems.c` (the tag, the call box,
+the notebook's opt-out), `Missions/Tribes/RZ_TribeContracts.c` and
+`Missions/Events/RZ_TribeEvents.c` ([MISSIONS.md](MISSIONS.md#the-packs-contracts)). How the lines
+are written: [WRITING.md](WRITING.md#writing-the-infected); who the factions are:
+[LORE.md](LORE.md#what-the-infected-do).
+
+### The words
+
+Every speaker has its own word, and every line carries the place, so players can tell four names
+are one pack.
+
+| Speaker | A pack | With the place | The leader | The young | The towns' slow ones | A lone one |
+|---|---|---|---|---|---|---|
+| **The Haven** | "the Quarry lot" (the lair's kind), or "Josef's lot" when it knew the leader | "the Quarry lot, up at the quarry by Morton" | by name when it knew them (about 1 in 3, never a soldier or the column), else "the big one" | by name | stay-at-homes | "the one on his own" |
+| **Bastion** | "Contact Papa-two", numbered as found on its contact board | "Contact Papa-two, the quarry by Morton" | the heavy | new contacts | statics | a single |
+| **The Red Hand** | a crew's nickname, after something it would rather forget: the Commuters (the column), the Postmen (a soldier's echo: always on time), the Farmhands, the Choir (bold or restless: loud at dusk), else one of eight seeded | "the Postmen up the quarry by Morton" | the boss | new hires | the furniture | a boss who lost |
+| **Halcyon** | "Pack P-02", in the order the packs formed | "Pack P-02 (the quarry by Morton)" | the index | recent conversions | sessile cases | an isolate |
+| **The Long Table** | the neighbours | — | — | — | — | — |
+
+The journal keeps, under the place, every name the character has heard: *"The quarry by Morton: the
+Quarry lot (Haven), Contact Papa-two (Bastion), the Postmen (Red Hand), Pack P-02 (Halcyon)."*
+
+### Voices
+
+- **At dusk**, once a game evening, each faction tells its Known one line about one pack, in its own
+  word, through the voice bank (kind `infected`, [WRITING.md](WRITING.md#the-voice-bank)) when it has a
+  line for the manner, else the built one. They've Heard of it, in that word.
+
+  | Faction | Which pack | Line |
+  |---|---|---|
+  | Bastion | one it has just put on its board: a pack whose ground lies within 3 km of a Bastion holding, while its presence is 0.2 or more | *"Contact Papa-two, the quarry by Morton, twenty plus, one heavy. Cull pending. Bastion out."* (*"No cull. No reply."* under 0.2) |
+  | The Haven | the hungriest hungry pack within 3 km of a house | *"Nobody on the roads by the quarry by Morton after seven. The Quarry lot are out."* |
+  | Halcyon | a tagged pack | *"Pack P-02 (the quarry by Morton): the index is in its third week as lead. Please don't shoot it."* |
+  | The Red Hand | its fed crew, 3 evenings in 10 | *"The Postmen up the quarry by Morton. Same as us: the boss is whoever's got something on the rest."* |
+
+- **Other lines:** Halcyon's *"P-02 took Marta. The index is in good condition. We're sorry."* (a tagged
+  pack takes someone named, half the time) and *"Its tag has stopped moving. That was a year of data."*;
+  the Haven's *"Whatever they took from …, they want it back."* (Furious); Bastion's *"… culled. Not our
+  sector now."* (Cull); wanderers' road news ([below](#the-factions-sides)).
+- **The Red Hand's night rate.** At night, within 1.5 km of a road a pack hunts at its hour (a road
+  habit), the Red Hand's toll is one Favor more: *"Night rate. The Postmen are out."*
+  ([REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps)).
+
+### Marks
+
+Each faction writes its mark where a road enters a range it knows: the road square on the range's
+edge nearest the nearest town, else the edge toward it. The Haven marks packs within 3 km of a house,
+Bastion the ones on its board, the Red Hand its fed crew and packs within 3 km of its camps, Halcyon
+tagged ones. A mark is rewritten every 3 season days while the faction still knows the pack, so an old
+mark can be wrong.
+
+| Faction | Mark |
+|---|---|
+| Haven | *Haven chalk on a post: QUARRY LOT. NOT AFTER 7.* |
+| Bastion | *A Bastion stencil: P-2 · QUARRY · 20+ · HVY · 1930* (count, the leader, its set-out hour) |
+| Red Hand | *A red hand with a line through it, and POSTMEN.* |
+| Halcyon | *A Halcyon plate with the plague doctor stencilled on it: P-02 · I d19* (days its index has led) |
+
+*Simplified:* marks are text today (the props are planned). A player within 25 m reads each mark once
+a version: *"… Written on day 12."*, and the range is Read.
+
+### Knowing
+
+Per character, like the outposts you've seen: lost with the life, saved in `state.json`.
+
+| Level | How you get it | What the journal shows |
+|---|---|---|
+| **Heard of** | A faction's line or service, a wanderer's road news, a call heard within 3 km | The place, the names heard, a rough area (a point 250 m off its range's centre: half a kilometre either way) |
+| **Read** | Its call heard from within its range plus 300 m, a mark read, the contact board, the map of the crews, Halcyon's range map, a Radio Operator's relays, a Lab Technician's sample | Its range (centre and radius by grid) |
+| **Mapped** | Seeing its lair by day (150 m) or its leader (80 m), Contact Report, Track Them Home, a tag you planted | Its lair by grid, its size and leader's stage, its temperament |
+
+**Ways to learn** (each a service on a quartermaster, [REPUTATION.md](REPUTATION.md#what-each-faction-gives-you)):
+
+| Service | Where, who | What |
+|---|---|---|
+| **Ask about the roads** | The Haven, Known | The three nearest packs within 4 km, Heard of with the Haven's names and their mood (*"hungry. Nobody out after seven."*) |
+| **The contact board** | Bastion, Known | Every pack on the board, Read (four read out) |
+| **The map of the crews** | The Red Hand, Known, 15 Favor | Every pack, Read, with its crew name; which crew is fed |
+| **The tag frequencies** | The Red Hand, Trusted, 25 Favor | Every tagged leader's rough area, and a stolen tag when the server has the tag item |
+| **The range map** | Halcyon, Known, from 25% | The ranges Halcyon has read (within 4 km of the lab) or tagged, Read; also given to its Known at the breakthrough and on spawn |
+
+Each pack is a journal row (the place as its title, the level, a direction to its rough area), with the
+detail on select. *Planned:* the range rings on the map (phase 5).
+
+### Skills
+
+| Background | Reads |
+|---|---|
+| ★ **Hunter** | Tracks and the scout's warning ([Tracks](#tracks), [Scouts](#scouts)) |
+| ★ **Radio Operator** | **The relays:** at dusk, with two packs calling within 5 km, *"Calls passing east, ridge to ridge, from the quarry by Morton toward the woods north of Levie."*; both Read. The calling contests are the call's own ([Borders](#borders)) |
+| ★ **Lab Technician** | **Tags:** a tagged leader's rough area (300 m), stage and lean or fed in the journal. **Samples** (from 50%): a pack body's samples dropped within 150 m: which pack, and how long its index has led; Read |
+| ★ **Soldier** | **The contact board** from spawn: every pack on it, Read |
+| ★ **Police Officer** | **The column**, Read from spawn |
+| ★ **Elder** | **Who they were:** the Haven-known leaders Heard of from spawn; the journal gives the leader's name and who they were, and the named young (not players) running with each pack |
+| ★ **Ex-Con** (Raider) | **The crews:** every pack Heard of in the Red Hand's word from spawn, and which crew is fed |
+
+Halcyon's Trusted read tags like a Lab Technician.
+
+### Your dead run
+
+The setting is **Zombies > Tribes > Your dead run** (Off, Described, Named; Described by default), and
+the taking rules are [above](#the-taken-and-the-ones-who-ran).
+- **A named young.** A player's character taken as a young is kept by name (3 players' characters and
+  6 named in all a pack, the oldest going first), and so is a named wanderer taken, or a walk-out.
+- **The name** shows on the ID card, in the dead player's own journal (*"Your last character, …, runs
+  with the Quarry lot now."*) and to their group. Public text (headlines, the Haven's lines, road news,
+  Bring Them Home's brief) uses the description (*"someone who'd been a hunter"*) unless the server is on
+  **Named**, the player hasn't opted out, and the name passes the **Name filter** (words; a name
+  containing one is described instead).
+- **The opt-out**, without typing: the notebook item's action *"If I die: say my name, or don't"*
+  (a toggle, with a gamepad from the action menu); on PC also `/mydead hidden` or `/mydead shown`. Saved
+  by identity.
+- **Put down.** When one of a pack's young is killed with a player within 100 m, it's a named one about
+  as often as they are a share of its young (always the one a running Bring Them Home wants): the ID card
+  (**ID card prefab** if set, a loose item) and its text to everyone within 100 m: *"In a pocket, an ID
+  card: Pavel Novak. Driver. Died on day 12, near Morton."*
+- **Road news.** Wanderers say *"… runs with the Quarry lot now."* Bring Them Home
+  ([MISSIONS.md](MISSIONS.md#the-packs-contracts)) carries the card home, with its exclusions.
+
+### The dark corners
+
+All said sideways.
+- **The fat moat** (rule 19). Once a season day, the pack nearest a Red Hand camp whose ground lies
+  between the camp (within 3 km) and Bastion's nearest holding is the Red Hand's: its hunger rises at most
+  3 a counted night and never past 40, it gains a member a season day up to 22, it stays settled and
+  never splits. Only an Ex-Con's journal and the map of the crews say so.
+- **The old wall.** A pack whose ground comes within 1 km of the Long Table's farm gains at most 3
+  hunger a counted night; its trails stop 1 km short of the farm, and its day walks keep 1 km off it.
+- **The walk-outs.** A walk-out (Walk Him Out's "walk on", within 2 km of a pack) is a named young. Some
+  evenings (3 in 10) a pack fed walk-outs sends its young to wait at the nearest house's wire, and the
+  Haven's Known hear only gossip: *"Somebody saw … at the wire last night. Nobody went out."*
+- **Good condition.** Halcyon lets a tagged index hunt, and apologises ([Voices](#voices)).
+
+### The factions' sides
+
+- **The moat rule.** When the territory tick would take an outpost whose straight line from the taker's
+  nearest holding crosses the ground of a pack whose leader is in its prime or older, the take waits;
+  the third time it's held up, it goes through (*"they found a way round"*, in the log). The Red Hand
+  scores a camp town ×1.3 when its fed pack lies between the town and Bastion.
+- **A tagged leader** in its prime or older killed: +2 Halcyon Infamy to the nearest player within
+  150 m, *"a year of data"* ([REPUTATION.md](REPUTATION.md)).
+- **The Haven goes round.** At dusk and night, Haven-allied wanderers don't pick a destination whose
+  straight way crosses a hungry pack's ground, and the Haven truck waits for dawn when its road does
+  (it tries again at its next departure).
+- **Hunter squads** stop at the edge of a pack's ground at night: *"Nobody follows anyone in there
+  after dark."*
+- **Spawn points** never go within 1 km of a lair. The gentle start's rules are the packs' own
+  ([Day parties](#day-parties), [How a hunt comes for you](#how-a-hunt-comes-for-you)).
+- **Road news.** A wanderer's news can name the nearest pack within 4 km in the Haven's words, with the
+  place, and whoever hears it has Heard of it.
+
+### Contracts and events
+
+The packs' twelve contracts, The Lone One, the changed missions and the events are in
+[MISSIONS.md](MISSIONS.md#the-packs-contracts). The rules they share:
+- **Claims.** A job holds its pack (`tribe:N`): no lair move, nomad's move, split, merge or absorption
+  while it runs. A succession still happens. HC1's site stages hold the site's pack, and its parts keep
+  150 m off the store ([QUESTLINES.md](QUESTLINES.md)).
+- **Frenzy nights** (Every Ridge Calls everywhere, Red Dusk within 3 km of one point): one at a time,
+  never in the first 2 season days, one every 3 at most (Red Dusk one every 7). A frenzied pack hunts with
+  its range ×2 (×1.75) whatever its temperament, on three trails (the wire first), until dawn.
+  *Simplified:* fear places and borders still hold.
+- **Furious** (its leader caught alive, Capture the Index): for 2 counted nights its one trail runs
+  toward the lab and stops at the lab's no man's land plus P (250 m). The most recently Furious pack
+  still Furious comes with the final stand's last wave.
+
+### The cure
+
+| Research | The packs |
+|---|---|
+| 25% | **Halcyon's range map** for its Known ([Knowing](#knowing)) |
+| 50% | **The call box** (Halcyon's quartermaster, Trusted; 2 a real day on the server, one per player a real day; **Call box prefab**): put down and played, 90 s of a recorded dusk call, +25 heat, and the nearest pack within 1.5 km sends its hunters and young to it at dusk and night (as data, so it works with no bodies near; never its leader or guard), its walkers by day (within 1.5 km). Never in no man's land, or within 150 m of another player who isn't in your group. Lab Technicians read samples |
+| 75% | Each person taken comes back as a young only half the time; the ones who ran are halved (built before) |
+| 90% | The finale's live tissue: planned, with the finale ([designs/FINALE.md](../designs/FINALE.md)) |
+| 100%, the final stand | Each wave's hordes come from the crawler towns within 3 km of the lab and the nearest pack within 3 km (its hunters drawn too), alternating, 350–450 m out on the line they come from. Their number is the built waves' × 0.7–1.3 by the neighbours' average infection (carried over between waves, at least one), so clearing them helps but never trivialises it. The last wave adds the most recently Furious pack. With neither near: the built waves |
+| Lost | The packs that came go home, and the lab's nearest pack is kept Hungry (hunger 60 or more) for a season day |
+
+### The last week
+
+From the cure to the wipe (Seasons > Epilogue hours, 168 by default), on real hours, so a quiet
+server's ridges go quiet too:
+- **Nobody new turns.** No young (taken or ran), no new packs, no splits, no named young; a pack still
+  eats (−25 hunger).
+- **Hunger** rises 15 every 12 real hours (counted nights add nothing). A starving pack loses a fifth
+  (at least 1) every 12 real hours: the young first, then hunters and scouts, the guard last; they lie
+  down where they are and never join the crawlers.
+- **No break-ups and no lone ones.** However small, a pack keeps its lair and its leader. A leader killed
+  after the cure ends its pack: the vigil until dawn, then *"Nothing calls from … this morning. What was
+  left of it has gone off into the trees to lie down."*
+- **The calls thin:** *"The quarry by Morton still calls. There's hardly anyone left to come."* Under 8
+  it sends no walkers (the weakened rule).
+- **The last call.** At the dusk before the wipe falls due (when it's under a game day away), every
+  leader calls once: *"A call from …, long and slow. Nothing answers it."* At dawn every pack lies down
+  at its lair and is gone.
+- **Towns stay cleared.** The kill ledger stops halving (built before), and nothing raises a town's
+  infection in the epilogue.
+- **Beats for the epilogue:** still calling (each leader alive at the cure), brought home, taken alive
+  for the lab, culled, burned out: kept in `state.json` (40 at most) and shown by `/tribes`, for the
+  epilogue's closing work when it's built ([designs/EPILOGUE.md](../designs/EPILOGUE.md)).
+
 ## Planned
 
 What's left of the design, in [designs/INFECTED.md](../designs/INFECTED.md) and
 [designs/BEHAVIOUR.md](../designs/BEHAVIOUR.md):
 - **The life cycle's rest:** what [waits](#the-signs) for a sign of its own (the clans' relay, the
   border moving the ranges, hunting grounds following the prey, stragglers, snow tracks).
-- **Phase 4, people and content:** the factions' words and marks, skills, the three knowledge levels and
-  the journal's names under the place, the contracts and events, the changed missions, truck takings,
-  Your dead run's opt-out, name filter and ID card, the last week.
-- **Phase 5:** the great alpha, props, call sounds, Red Dusk, the bright moon, the range ring icon.
+- **Phase 4's rest:** the `{tribe:N}`, `{alpha:N}` and `{young:N}` tokens; Stock the Pit; the changed
+  Live Capture (a guard or a young), Lead Them Away, Blow the Bridge, Missing Patrol and the Military
+  Remnant Camp; the Haven's warnings about day parties in the fields; the frenzy ignoring fear places
+  and borders; trucks taken on any road a trail crosses; the finale's live tissue (it goes in with the
+  finale, [designs/FINALE.md](../designs/FINALE.md)); the epilogue reading the beats.
+- **Phase 5:** the great alpha, props (marks, kill sites, the ID card's look), call sounds, the bright
+  moon, the range ring icon and the journal's list of packs by level.
 - **The behaviour layer's rest:** shrieks passed between groups; blood scent; the hearing table beyond
   shots; doors (another way in, weak doors); the reactions table; the regroup; the ankle grab and the
   client effects (hold, stagger, knockdown) after a client test; forest edge points in the land cache.

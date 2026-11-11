@@ -402,6 +402,33 @@ class RZ_TribeBorders
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where two bordering packs meet (Bait the Crew). False if they don't border.
+	bool BorderPoint(RZ_Tribe a, RZ_Tribe b, out vector at)
+	{
+		RZ_Border br = FindBorder(a.m_iId, b.m_iId);
+		if (!br)
+			return false;
+
+		at = br.m_vAt;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bait the Crew: noise on the line brings one side's hunters over, a Border Night with the
+	//! player in it (within the night's 2 staged fights). False if it can't be staged now.
+	bool Provoke(RZ_Tribe a, RZ_Tribe b)
+	{
+		RZ_Border br = FindBorder(a.m_iId, b.m_iId);
+		if (!br || br.m_bStaged || m_iStagedTonight >= 2 || a.m_bVigil || b.m_bVigil)
+			return false;
+
+		br.m_iFoughtNight = m_Tribes.CountedNights();
+		m_iFights++;
+		Stage(br, a, b);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A Border Night: both sides' hunter groups go to the border point and mill there with calls
 	//! and shrieks, 5-20 minutes, then it's settled.
 	protected void Stage(RZ_Border br, RZ_Tribe a, RZ_Tribe b)
@@ -524,6 +551,7 @@ class RZ_TribeBorders
 			}
 		}
 
+		RZ_TribeContract.OnBorder(m_GM, winner, loser);
 		RZ_Log.Info(string.Format("Tribes: %1 won a border fight at %2 against %3 (%4 lost, %5 found dead).", winner.m_sPlace, RZ_SettlementScanner.GridReference(br.m_vAt), loser.m_sPlace, losses, dead));
 		if (loser.Members() < 8 && (!loser.m_bHasAlpha || loser.Stage() == 2) && m_aAbsorbLoser.Find(loser.m_iId) < 0)
 		{
@@ -581,6 +609,9 @@ class RZ_TribeBorders
 			if (!loser || !winner || loser.IsRover() || winner.IsRover() || HasBodies(loser))
 				continue;
 
+			if (RZ_TribeContract.IsHeld(m_GM, loser) || RZ_TribeContract.IsHeld(m_GM, winner))
+				continue;
+
 			if (loser.Members() >= 8 || (loser.m_bHasAlpha && loser.Stage() < 2))
 				continue;
 
@@ -593,6 +624,9 @@ class RZ_TribeBorders
 			RZ_Tribe a = m_Tribes.Find(br.m_iA);
 			RZ_Tribe b = m_Tribes.Find(br.m_iB);
 			if (!a || !b || a.Members() >= 10 || b.Members() >= 10 || HasBodies(a) || HasBodies(b))
+				continue;
+
+			if (RZ_TribeContract.IsHeld(m_GM, a) || RZ_TribeContract.IsHeld(m_GM, b))
 				continue;
 
 			if (a.m_bHasAlpha == b.m_bHasAlpha)

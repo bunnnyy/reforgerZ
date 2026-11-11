@@ -25,6 +25,10 @@ class RZ_Settlement
 	//------------------------------------------------------------------------------------------------
 	void AddInfection(float amount)
 	{
+		// A town cleared after the cure stays cleared: nothing raises infection in the epilogue
+		if (amount > 0 && RZ_WorldFacts.Get() && RZ_WorldFacts.Get().IsEpilogue())
+			return;
+
 		m_fInfection = Math.Clamp(m_fInfection + amount, 0, 100);
 	}
 

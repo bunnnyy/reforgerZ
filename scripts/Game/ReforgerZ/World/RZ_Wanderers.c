@@ -25,7 +25,7 @@ enum RZ_EWandererState
 {
 	TRAVEL,		// walking to m_vDest
 	REST,		// resting at a safehouse, or trading and talking in a town
-	SHELTER,	// Night of the Dead or a storm: waiting it out
+	SHELTER,	// Every Ridge Calls or a storm: waiting it out
 	HIDE		// a horde or too much noise nearby: keeping still
 }
 
@@ -1445,7 +1445,7 @@ class RZ_Wanderers
 			{
 				RZ_Safehouse house = safehouses.Get(h);
 				float hd = RZ_Util.DistXZ(w.m_vPos, house.m_vPos);
-				if (hd < 300 || hd > 4500 || !IsRouteClear(w.m_vPos, house.m_vPos) || IsUnrest(house.m_vPos))
+				if (hd < 300 || hd > 4500 || !IsRouteClear(w.m_vPos, house.m_vPos) || IsUnrest(house.m_vPos) || HungryWay(w, house.m_vPos))
 					continue;
 
 				points.Insert(house.m_vPos);
@@ -1467,7 +1467,7 @@ class RZ_Wanderers
 				continue;
 
 			vector at = RZ_Mission.LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
-			if (!IsRouteClear(w.m_vPos, at) || IsUnrest(at))
+			if (!IsRouteClear(w.m_vPos, at) || IsUnrest(at) || HungryWay(w, at))
 				continue;
 
 			points.Insert(at);
@@ -1506,6 +1506,17 @@ class RZ_Wanderers
 		w.m_eState = RZ_EWandererState.TRAVEL;
 		if (w.m_Body)
 			RZ_Util.RedirectGroup(w.m_Body, w.m_vDest, m_GM.GetSpawner().GetMoveWaypointPrefab());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Haven's own go round a hungry pack's ground at night (docs/INFECTED.md, The factions).
+	protected bool HungryWay(RZ_Wanderer w, vector to)
+	{
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (!w.IsHaven() || !tribes || !tribes.GetPeople().IsOn() || tribes.GetPhase() == RZ_ETribePhase.DAY)
+			return false;
+
+		return tribes.GetPeople().CrossesHungry(w.m_vPos, to);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1745,7 +1756,7 @@ class RZ_Wanderers
 	protected void ReactAll(array<int> ids, array<IEntity> players)
 	{
 		RZ_MissionManager missions = m_GM.GetMissions();
-		bool shelter = missions.IsTypeRunning(RZ_Event_NightOfTheDead) || missions.IsTypeRunning(RZ_Event_Storm);
+		bool shelter = missions.IsTypeRunning(RZ_Event_EveryRidgeCalls) || missions.IsTypeRunning(RZ_Event_Storm);
 		if (m_GM.GetEnvironment() && m_GM.GetEnvironment().IsStorm())
 			shelter = true;
 
@@ -1761,7 +1772,7 @@ class RZ_Wanderers
 	//------------------------------------------------------------------------------------------------
 	protected void React(RZ_Wanderer w, bool shelter, array<int> ids, array<IEntity> players)
 	{
-		// Night of the Dead or a storm: find a doorway and wait
+		// Every Ridge Calls or a storm: find a doorway and wait
 		if (shelter && w.m_eState != RZ_EWandererState.SHELTER && !w.IsBitten())
 		{
 			w.m_eState = RZ_EWandererState.SHELTER;
@@ -2283,6 +2294,18 @@ class RZ_Wanderers
 		if (!w.m_sDestName.IsEmpty())
 			lines.Insert(string.Format("\"I'm heading for %1. If you're going that way, it's quiet enough.\"", w.m_sDestName));
 
+		// Road news about the packs, always with the place (the Haven's words)
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (tribes && tribes.IsEnabled())
+		{
+			string packs = tribes.GetPeople().RoadNews(from);
+			if (!packs.IsEmpty())
+			{
+				lines.Insert(packs);
+				lines.Insert(packs);
+			}
+		}
+
 		// A lost outpost is the talk of the road for an hour
 		if (m_fClock < m_fRumourUntil && !m_sLossRumour.IsEmpty())
 		{
@@ -2345,6 +2368,9 @@ class RZ_Wanderers
 		}
 
 		string text = MoodLine(w) + IntroText(w) + "\n" + IntelText(w, player.GetOrigin());
+		if (m_GM.GetTribes() && m_GM.GetTribes().GetPeople().IsOn())
+			m_GM.GetTribes().GetPeople().OnRoadNews(playerId, player.GetOrigin());
+
 		if (attitude >= 2)
 			text += "\n" + WarningText(player.GetOrigin());
 

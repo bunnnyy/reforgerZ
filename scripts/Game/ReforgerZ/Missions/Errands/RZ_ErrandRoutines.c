@@ -861,7 +861,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 			case "lights": return DuskSoon(hour);
 			case "water": return true;
 			case "filter_parts": return HouseFacts(e).m_iPeople >= 8;
-			case "gate_dusk": return DuskSoon(hour) && HouseGuards(gm, e.m_iHouse) <= 1 && LoudTownNear(dealer, e, 60) && !gm.GetMissions().IsTypeRunning(RZ_Event_NightOfTheDead);
+			case "gate_dusk": return DuskSoon(hour) && HouseGuards(gm, e.m_iHouse) <= 1 && LoudTownNear(dealer, e, 60) && !gm.GetMissions().IsTypeRunning(RZ_Event_EveryRidgeCalls);
 			case "burying": return HouseFacts(e).m_iDied > 0;
 			case "round": return !HouseFacts(e).m_bHasMedic && HouseFacts(e).m_iPeople >= 4;
 			case "newcomer": return dealer.TookSomeoneIn(e.m_iHouse);

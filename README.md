@@ -27,7 +27,10 @@ and one way to end it: **research the cure.**
   you, breaks off when it loses too many, and walks home at dawn. They live: leaders age, are
   challenged and die, guards fight for the call, packs split, quarrel over bridges, move when
   disturbed, starve, form from towns gone dark, and remember where they died, where they fed and who
-  hurt them. Our code moves them; the zombie mod fights.
+  hurt them. Our code moves them; the zombie mod fights. Every faction has its own name for each
+  pack, always with the place (the Haven's "Quarry lot" is Bastion's "Contact Papa-two" and the Red
+  Hand's "Postmen"); you learn them, from a rumour to a mapped lair, and your own dead character may
+  run with one until somebody brings them home.
 - **Stealth**: stance, speed, light, weather and noise make you more or less visible. The
   infected near you see the most visible of you, lose a player who lies low, search where they
   last had them and give up; the HUD shows how visible you are.
@@ -53,7 +56,7 @@ and one way to end it: **research the cure.**
   persuade, sneak, fight, bribe, betray or side with another faction, and what you chose changes
   the ending, the rewards and the world. Fifteen: three per faction, two for the Long Table and
   the example Short Weight, crossing each other through shared flags ([QUESTLINES.md](docs/QUESTLINES.md)).
-- **178 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
+- **191 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
   events, puzzle missions, unarmed stealth jobs, missions at the quarantine line, morally grey
   Haven and Red Hand work and leaders' off-book jobs. Contracts
   name a rough area until you're close, unless you're a Radio Operator or trusted by the giver.
@@ -140,9 +143,10 @@ writers, [ERRANDS.md](docs/ERRANDS.md)); talk
 (phase 2: conversation trees, reputation's voice, the season mood and the voice bank,
 [DIALOGUE.md](docs/DIALOGUE.md)); the towns' crawlers, the loose ones, heat hordes from towns, the
 land grid, the tribes' daily life and hunts, their life cycle (succession, borders, splits, lair
-moves, new tribes, memory), the behaviour layer and the crawlers' daily life (tribes phases 1 to 3,
-[INFECTED.md](docs/INFECTED.md)). The infected's people's side (the factions' words, skills, contracts
-and events) is next.
+moves, new tribes, memory), the behaviour layer and the crawlers' daily life, and the people's side
+(each faction's words and marks, knowing, skills, your dead run, the moat, 12 contracts and the
+reworked events, the cure's hooks and the last week; tribes phases 1 to 4,
+[INFECTED.md](docs/INFECTED.md)). The great alpha and the packs' signs (tribes phase 5) are next.
 
 ## Docs
 
@@ -154,7 +158,7 @@ and events) is next.
 | [DIALOGUE.md](docs/DIALOGUE.md) | Talking to people: the talk screen, conversation trees, checks, memory, the `.rzd` format and its tools |
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
-| [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes and their life cycle, borders, memory, who they are, how they move and hunt, the crawlers' life, the simulator's numbers |
+| [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes and their life cycle, borders, memory, who they are, how they move and hunt, the crawlers' life, the people's side (words, knowing, skills, your dead run, the moat, the cure, the last week), the simulator's numbers |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards |
 | [QUESTLINES.md](docs/QUESTLINES.md) | Long questlines over many sessions, three per faction and two for the Long Table |
@@ -184,7 +188,8 @@ scripts/Game/ReforgerZ/
   Zombies/       spawner (any zombie mod's prefabs), the towns' crawlers, bodies and the agent
                  budget (roles, data parts, the sight rule, runtime groups), the tribes (seeds,
                  the daily rhythm, hunts, scouts, their bodies), their life cycle, borders and
-                 memory, bite detection, stealth
+                 memory, the people's side (words, knowing, your dead run, the moat, the last
+                 week; the tag and the call box), bite detection, stealth
                  (visibility, the infected's senses, losing them)
     Behaviour/   the behaviour layer: Bacon's hooks, steering modes, senses, formations,
                  hunt strategies, navigation, the kinds' attacks, the crawlers' daily life
@@ -196,7 +201,7 @@ scripts/Game/ReforgerZ/
                  reputation's voice (the word for you, crew names, the picture), the voice bank
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
-                 Events/ Leaders/ Unarmed/ Perimeter/; the shared checks (Trust, Fear, prices) and
+                 Events/ Leaders/ Unarmed/ Perimeter/ Tribes/ (the packs' contracts); the shared checks (Trust, Fear, prices) and
                  ways through a job; Story/ (the story kit, who decides, who benefits, reasons);
                  Errands/ (the dealer, the routines, Cards/); Questlines/ (the author's base class,
                  approach helpers, the registry, one folder per faction and one for the Long Table)

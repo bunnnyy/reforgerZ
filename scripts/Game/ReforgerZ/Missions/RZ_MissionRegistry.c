@@ -133,6 +133,20 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_SilentVillage);
 		mgr.RegisterType(RZ_Mission_TheWitness);
 
+		// The packs' contracts (Missions/Tribes/RZ_TribeContracts.c); The Lone One is RZ_Mission_SampleHunt
+		mgr.RegisterType(RZ_Mission_NotTonight);
+		mgr.RegisterType(RZ_Mission_BringThemHome);
+		mgr.RegisterType(RZ_Mission_EscortAtDawn);
+		mgr.RegisterType(RZ_Mission_ContactReport);
+		mgr.RegisterType(RZ_Mission_ClearTheTrail);
+		mgr.RegisterType(RZ_Mission_Cull);
+		mgr.RegisterType(RZ_Mission_BurnTheLair);
+		mgr.RegisterType(RZ_Mission_BreakTheHabit);
+		mgr.RegisterType(RZ_Mission_BaitTheCrew);
+		mgr.RegisterType(RZ_Mission_PlantATag);
+		mgr.RegisterType(RZ_Mission_TrackThemHome);
+		mgr.RegisterType(RZ_Mission_CaptureTheIndex);
+
 		// Unarmed missions (Missions/Unarmed/): stealth, noise and thinking, small Fame
 		mgr.RegisterType(RZ_Mission_PharmacyLure);
 		mgr.RegisterType(RZ_Mission_SilentCourier);
@@ -149,8 +163,9 @@ class RZ_MissionRegistry
 
 		// World events
 		mgr.RegisterType(RZ_Event_CrashedHelicopter);
-		mgr.RegisterType(RZ_Event_HordeMigration);
-		mgr.RegisterType(RZ_Event_NightOfTheDead);
+		mgr.RegisterType(RZ_Event_TribeMoves);
+		mgr.RegisterType(RZ_Event_EveryRidgeCalls);
+		mgr.RegisterType(RZ_Event_RedDusk);
 		mgr.RegisterType(RZ_Event_SirenTest);
 		mgr.RegisterType(RZ_Event_Storm);
 		mgr.RegisterType(RZ_Event_WanderingTrader);

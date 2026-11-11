@@ -397,6 +397,16 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The walks stop: the pack that learned that edge of town goes hungry (+20) and tests the
+	//! house's wire for a few nights (docs/QUESTLINES.md, H3's hooks).
+	protected void WalksStop(RZ_GameModeComponent gm, RZ_QuestRun run)
+	{
+		RZ_Safehouse house = RZ_HavenQuest.LiveHouse(gm, run.Flag("walkhouse", -1));
+		if (house && gm.GetTribes())
+			gm.GetTribes().GetPeople().EdgeStops(house.m_vPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void OnEnding(RZ_GameModeComponent gm, RZ_QuestRun run, int ending)
 	{
 		RZ_Questlines q = gm.GetQuestlines();
@@ -405,6 +415,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 			case E_LAB_ROAD:
 			{
 				q.SetWorldFlag("walk.lab_road", 1);
+				WalksStop(gm, run);
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 5, 0);
 				ChangeStanding(gm, run, RZ_EFaction.INSTITUTE, 5, 0);
 				gm.GetCure().AddResearch(2, run.Fill("The first of the Haven's bitten came to the lab of their own accord."));
@@ -438,6 +449,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 			case E_CUT:
 			{
 				q.SetWorldFlag("walk.cut_dose", 1);
+				WalksStop(gm, run);
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 0, 10, RZ_EQuestApproach.SIDE);
 				RZ_HavenQuest.TakePeople(gm, run.Flag("walkhouse", -1), 2);
 				Headline(gm, "Half of them walked out. The Red Hand calls that a good rate.");

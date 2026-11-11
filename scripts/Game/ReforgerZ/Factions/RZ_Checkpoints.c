@@ -580,7 +580,23 @@ class RZ_Checkpoints
 		if (m_GM.GetTier(playerId, RZ_EFaction.BANDITS) == RZ_ETier.WILDCARD && rs.m_bWildcardPosts)
 			toll = RZ_Util.RoundToInt(toll * Math.Max(1, rs.m_fWildcardTollMult));
 
+		// The night rate: one more on a road one of the crews in the woods hunts at night
+		if (!NightRate(playerId).IsEmpty())
+			toll++;
+
 		return toll;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Night rate. The Postmen are out." at night on a road a pack hunts at its hour, else "".
+	protected string NightRate(int playerId)
+	{
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (!ent || !tribes || !tribes.IsEnabled())
+			return "";
+
+		return tribes.GetPeople().NightRate(ent.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -841,16 +857,13 @@ class RZ_Checkpoints
 		}
 
 		bool known = RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN);
-		int toll = Math.Max(0, m_Settings.m_iToll);
-		// The Wildcard tier pays danger money: the toll times Reputation > Wildcard toll
-		RZ_ReputationSettings rs = RZ_ReputationSettings.Get();
-		if (tier == RZ_ETier.WILDCARD && rs.m_bWildcardPosts)
-			toll = RZ_Util.RoundToInt(toll * Math.Max(1, rs.m_fWildcardTollMult));
+		// The Wildcard tier pays danger money, and there's a night rate (TollFor)
+		int toll = TollFor(playerId);
 		if (!c.m_bWarned && dist <= m_Settings.m_fWarnRadius)
 		{
 			c.m_bWarned = true;
 			if (known)
-				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, string.Format("\"Toll road. %1 Favor and you're a friend. Walk up slow.\"", toll));
+				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, string.Format("\"Toll road. %1 Favor and you're a friend. Walk up slow.\" %2", toll, NightRate(playerId)).Trim());
 			else
 				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"This road's ours. Turn around. Come any closer and we start shooting.\"");
 		}

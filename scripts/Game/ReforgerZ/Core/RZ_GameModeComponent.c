@@ -1546,6 +1546,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			NotifyPlayer(playerId, "The Haven", "You come to outside the safehouse door. It stays shut. Nobody inside will look at you, and if you're carrying a gun, the guards will in a minute. Move on.");
 		m_Perks.OnPlayerSpawned(playerId, controlledEntity);
 		m_Services.OnPlayerSpawned(playerId, controlledEntity);
+		if (m_Tribes)
+			m_Tribes.GetPeople().OnPlayerSpawned(playerId);
 		m_Checkpoints.OnPlayerSpawned(playerId);
 
 		// The new life's standing decides which hidden variant the character goes on
@@ -2463,6 +2465,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			RZ_Settlement town = m_aSettlements[candidates.GetRandomElement()];
 			vector pos = RZ_Util.RandomPointInRing(town.m_vCenter, 0, town.m_fRadius * 0.8);
 			if (RZ_Util.IsWater(pos) || m_Perimeter.IsNearLine(pos))
+				continue;
+
+			// Never within 1 km of a pack's lair (docs/INFECTED.md, People)
+			if (m_Tribes && m_Tribes.GetPeople().IsOn() && m_Tribes.GetPeople().NearLair(pos, 1000))
 				continue;
 
 			IEntity ent = SpawnNamedSpawnPoint(pos, town.m_sName);
