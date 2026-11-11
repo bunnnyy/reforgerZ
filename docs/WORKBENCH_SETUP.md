@@ -11,11 +11,12 @@ Everything you must create or configure is listed once, in the **prefab manifest
 reads it and makes what it can; the tables in sections 2 to 5 are generated from it and double
 as the manual checklist.
 
-A first pass is done, in Workbench 1.9 on Arland: the repo holds the plugin's prefabs, the
-faction and loadout managers, the worlds (Everon, the main one, and Arland) and their scenarios,
-and most of the UI. Many prefabs are
-built on stand-ins ([what that means](#stand-in-bases)), and the deploy panel and the map's icons
-aren't set up yet ([the UI](#setting-up-the-ui)). This doc says how it was done, what's left, and
+A first pass is done, in Workbench 1.9 on Arland and Everon: the repo holds the plugin's prefabs
+(the quartermasters' and the notebook's actions among them), camp life's 49 compositions, its
+smart-action waypoint and six kits, the faction and loadout managers, the worlds (Everon, the main
+one, and Arland) and their scenarios, and most of the UI. Many prefabs are built on stand-ins
+([what that means](#stand-in-bases)), and the deploy panel isn't set up yet
+([the UI](#setting-up-the-ui)); the map's icons and the car picture are. This doc says how it was done, what's left, and
 how to do it again on another map.
 
 Work through the sections in order:
@@ -231,7 +232,7 @@ houses until the loot pool is filled), fixable cars, crafting and traps, and the
 | Place the map's AI world (vanilla Prefabs/AI/SCR_AIWorld_Arland.et, _Eden or _Cain) and set its Soldiers and BTRlike navmesh files (on Everon Navmesh_GM_Eden_Soldier.conf and GM_Eden_vehicles.nmn; on Arland worlds/GameMaster/Navmeshes/GM_Arland.nmn and GM_Arland_vehicles.nmn): without it no AI group gets members and there is no road network | manual | yes |
 | Place the vanilla world managers every game-mode world has: Prefabs/World/Game/PerceptionManager.et (without it the game crashes in the first frame after the first AI spawns), Prefabs/Systems/Radio/RadioManager.et (radios), Prefabs/MP/ScriptedChatEntity.et (text chat) and Prefabs/World/Game/ItemPreviewManager.et (inventory previews) | manual | yes |
 | Place RZ_GameMode.et in the world (one per world) | does it | yes |
-| Keep RZ_GameMode.et's spawn logic on SCR_MenuSpawnLogic (the deploy menu): GameMode_Plain's SCR_AutoSpawnLogic picks a random faction from all of them | manual | yes |
+| Keep RZ_GameMode.et's spawn logic on SCR_MenuSpawnLogic (the deploy menu) with Forced faction SURV, so the menu opens on the loadout picker: GameMode_Plain's SCR_AutoSpawnLogic picks a random faction from all of them | manual | yes |
 | Save the world, and point a scenario (mission header) at it to play it | manual | yes |
 | Optional: place marker entities (RZ_SettlementMarkerEntity and the others) to override automatic picks | manual | — |
 <!-- /manifest:world -->
@@ -789,12 +790,14 @@ still to do:
 |---|---|---|
 | The 23 AI groups | Vanilla FIA and US soldier groups (FIA fire team, sentry team, medical section, sharpshooter team; US sentry and light fire teams). Their faction (`m_faction`) was set by hand, as their names say | Members wear soldiers' kit and carry rifles: the escort civilians are armed FIA riflemen, the convicts carry rifles. Sizes are only roughly right. Give each group its own members |
 | Single characters: quartermasters, leaders, occupants, wanderers | Vanilla civilian, US and FIA characters. Their faction affiliation was set afterwards, as their names say | They keep their vanilla kits: set them by hand. Halcyon's people are FIA medics; the kid is an adult |
-| `RZ_Antidote.et`; `RZ_Stabiliser.et` and `RZ_CutDose.et` | Saline; morphine | They still apply the vanilla effect until their consumable effect is set by hand to `RZ_ConsumableAntidote` or `RZ_ConsumableMed` |
-| `RZ_PortableGenerator.et`, `RZ_AlarmClock.et` | Props | No inventory item, so they can't be carried: base them on items, as `RZ_Tyre.et` and `RZ_Planks.et` are (vanilla `Item_Base` with the prop's mesh, a RigidBody and the item's weight, volume and size) |
-| `RZ_Molotov.et`, `RZ_Bottle.et`, `RZ_TinRattle.et` | Smoke grenades | Still smoke grenades: remove the smoke and give them a bottle or tin mesh |
+| `RZ_Antidote.et`; `RZ_Stabiliser.et` and `RZ_CutDose.et` | Saline; morphine, with their consumable effects set to `RZ_ConsumableAntidote` and `RZ_ConsumableMed` | They look like saline and morphine |
+| `RZ_Molotov.et`, `RZ_Bottle.et`, `RZ_TinRattle.et` | Smoke grenades with the beer bottle mesh (the tin can mesh for the tin), the smoke cleared, their own names | They throw as grenades do; a real throwable item is the fix |
 | `RZ_Explosion.et` | The vanilla mortar effect module | A real HE round: it damages what's near it |
 | `RZ_Nest.et` | Special Zombies' `ZombieHive_Minor` | It spawns its own infected |
 | `RZ_Lab.et` | A vanilla US tent | It can be destroyed (1000 HP) |
+| The packs' signs | Kill sites: suitcases, a UAZ tyre, a folded blanket; the old lair: a bunk-bed mattress; the marks: a stone verge post (the Haven), the minefield sign (Bastion), the FIA graffiti decal (the Red Hand), a no-entry sign (Halcyon) | Close enough to read; swap in better props when there are any |
+| Camp life's compositions | Vanilla props only: the barrel fire is `Particles/Campfire_burning.et`, the cooler a small crate and an autoclave drum, Halcyon's tent `TentSmall_03_white` with a medical table, the civilian tents `TentSmall_02_red` and `TentBig_01_orange` | No new meshes or decals (the red hand, the bear, the plague doctor, chalk, the ball, vegetables, boots, the axe, tubes): those spots are left out or are a plank |
+| Halcyon's shop | A clean dressing (Known), a saline bag and a tourniquet (Trusted) stand in for the antiseptic and the stim kit | Vanilla has no gas mask or stim |
 | Looks only | Five items share the aspirin bottle (sample, vet antiviral, fever suppressant, home remedy, tablets); six are food packets (antibiotics, car battery, spark plugs, the tripwire and spike trap kits, firecracker); the fog is white smoke; the Red Hand armband and Haven ribbon are knitted hats; the bus is a UAZ van | Real models, from a mod or your own. The manifest's `basePrefab` says what every other one is |
 
 ### Add to prefabs you already have
@@ -832,7 +835,8 @@ by default; with both off the spawner is as it was. The first start on a map rea
 **The packs' signs and sounds** ([INFECTED.md](INFECTED.md#signs-and-sounds)) are all by hand and all
 optional: the plugin can't pick props or record a call. For **Kill-site prefabs**, **Abandoned lair
 prefab** and the four **mark prefabs**, pick static props (no inventory item, no physics that rolls)
-and put their names in the slots; nothing about them is scripted. For the two **call sound** prefabs,
+and put their names in the slots; nothing about them is scripted. They're set on `RZ_GameMode.et`
+with stand-ins ([Stand-in bases](#stand-in-bases)). For the two **call sound** prefabs,
 make a new entity prefab with an `RplComponent`, a `SoundComponent` with a sound project that has the
 call on the event `SOUND_CALL` (the base game has nothing that sounds right: record or license one), and
 `RZ_CallSoundComponent` (its **Event** names the event if you used another). The server deletes it after
@@ -1010,9 +1014,9 @@ spawns, but nobody can pick it up and the building never counts as emptied.
 How camp life works is in [DESIGN.md](DESIGN.md#camp-life). It needs nothing to run: with no
 kits every place stays bare, and with no waypoint slots its people walk to their spots with the
 **Zombies > Move waypoint** and stand there. The plugin fills the four vanilla waypoint slots and
-the group prefab (section 4, *Camp life*). By hand: the smart-action waypoint, the 49
-compositions and the kits. Plan four evenings: the 21 original pieces first (a camp that works),
-then the 28 that make it look lived in.
+the group prefab (section 4, *Camp life*). The smart-action waypoint, the 49 compositions and the
+six kits are in the repo, built as text and loading in Workbench (their stand-ins are in
+[Stand-in bases](#stand-in-bases)); the steps below say how, to redo or add to them.
 
 **1. The smart-action waypoint.** Vanilla ships the class `SCR_SmartActionWaypoint` but no prefab.
 Create a new entity of that class in the World Editor, leave its tag and entity name empty (the
@@ -1196,8 +1200,7 @@ wells, pumps or radios with actions).
 
 Optional: without it every message is a vanilla hint, as before. How the UI works is in
 [UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md). Steps 1 to 4
-are done in the repo (step 4's menus written as text: check them in Workbench, 4a, and import the
-car picture, 4a.4); 5 and 6 aren't. The layouts are in `UI/layouts/ReforgerZ/`.
+and 6 are done in the repo (step 4's menus written as text: check them in Workbench, 4a); 5 isn't. The layouts are in `UI/layouts/ReforgerZ/`.
 
 1. **The feed** (done). `Prefabs/Characters/Core/RZ_PlayerController.et` inherits vanilla
    `DefaultPlayerControllerMP.et` and adds `RZ_PlayerUIComponent` (vanilla controllers already
@@ -1234,11 +1237,10 @@ car picture, 4a.4); 5 and 6 aren't. The layouts are in `UI/layouts/ReforgerZ/`.
       car repair screen is on. The same for `RZ_ShopMenu.layout` and `RZ_ShopItem.layout` (**UI >
       Shop item layout** is set, so the shop screen is on), and open one quartermaster prefab to
       see **Trade** (`RZ_ShopOpenAction`) at the top of its actions.
-   4. **The car picture** (to do, two minutes). In the Resource Browser, import
-      `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on transparent, 1,440 × 480) with
-      the vanilla **TextureUIAtlas** preset, as the icon atlas was; it becomes `RZ_CarSide.edds`.
-      Set **UI > Car picture** on `RZ_GameMode.et` to it. Until then the repair screen's markers
-      sit on a plain dark panel. After changing `src/RZ_CarSide.svg`, run
+   4. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
+      transparent, 1,440 × 480) is imported with the vanilla **TextureUIAtlas** preset as
+      `RZ_CarSide.edds`, and **UI > Car picture** is set. Without it the repair screen's markers sit
+      on a plain dark panel. After changing `src/RZ_CarSide.svg`, run
       `node tools/render_ui.js textures` and import again.
    5. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
       with the pad); after spawning, find the notebook in the inventory and take it in hand. If
@@ -1246,14 +1248,17 @@ car picture, 4a.4); 5 and 6 aren't. The layouts are in `UI/layouts/ReforgerZ/`.
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
       it's there.
 5. **The deploy panel** (to do). `RZ_BackgroundPanel.layout` is built, and its root already
-   carries `RZ_BackgroundPanelComponent`. Find the vanilla deploy menu's layout in the Resource
-   Browser (in 1.9 the log shows it opening `UI/layouts/Menus/DeployMenu/RoleSelectionMenu.layout`),
-   save an override of it in the addon, and add the panel as a child on the right. Locked loadouts
-   are refused by the server (`UI/RZ_LoadoutLock.c`) with nothing to set up (**UI > Lock loadouts**).
-6. **The map** (to do). `RZ_MapIcon.layout` is built, but **UI > Map icon layout** isn't set:
-   setting it turns the vanilla text markers for world events and the lab off, so set it together
-   with the map config. Override the full-screen map's configuration (search the Resource Browser
-   for the map config the game mode uses) and add `RZ_MapIconsUI` to its components.
+   carries `RZ_BackgroundPanelComponent`. It can't go in as an override of vanilla's
+   `RoleSelectionMenu.layout`: one saved from the packed vanilla file breaks the menu (joining a
+   faction never updates its right panel). The author wants our own spawn screen in its place
+   (planned). Until then the vanilla deploy menu stays: `RZ_GameMode.et`'s `SCR_MenuSpawnLogic`
+   forces the `SURV` faction (**Forced faction**), so it opens straight on the spawn map with the
+   loadout picker. Locked loadouts are refused by the server (`UI/RZ_LoadoutLock.c`) with nothing
+   to set up (**UI > Lock loadouts**).
+6. **The map** (done; not seen in play yet). `Configs/Map/MapFullscreen.conf` overrides vanilla's
+   full-screen map config (same GUID, `{1B8AC767E06A0ACD}`) with `RZ_MapIconsUI` added to its
+   `m_aUIComponents`, and **UI > Map icon layout** is set to `RZ_MapIcon.layout`, which turns the
+   vanilla text markers for world events and the lab off.
 
 Also to do: default images for the icons the scripts never swap (the legend icons and the like).
 Set each such `Image` from the imageset in the layout editor.

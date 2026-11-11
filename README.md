@@ -167,10 +167,11 @@ run there yet. A **zombie lab** (`tools/zombie_lab/`) measures Bacon Zombies' ow
 server, on Everon: what it sees and hears, speeds, groups and waypoints, and server frame time with
 up to 140 agents.
 
-The **first Workbench build** is in the repo. The plugin **ReforgerZ: Create prefabs** made 156
-prefabs from the **prefab manifest**, on vanilla, Bacon Zombies and Special Zombies bases; many are
-stand-ins for now, and four more have no base yet, so they aren't made. With the player controller
-and the faction and loadout managers, that's 159 prefabs. The main world is **Everon** (a
+The **first Workbench build** is in the repo: 178 prefabs from the **prefab manifest** (most made
+by the plugin **ReforgerZ: Create prefabs**, a few written as text), on vanilla, Bacon Zombies and Special Zombies bases; many are
+stand-ins for now, and a few entries have no base yet, so they aren't made. Camp life's 49
+compositions and its smart-action waypoint were built as text. With the player controller and the
+faction and loadout managers, that's 231 prefabs. The main world is **Everon** (a
 sub-scene of Eden, `Missions/RZ_Everon.conf`), and Arland stays as the small test world; each holds
 the game mode, the four factions with their hidden variants and the 13 background loadouts, and a
 scenario plays it. Everon boots on the dedicated server with no script exceptions, 96 settlements
@@ -309,7 +310,10 @@ scripts/Game/ReforgerZ/
                  the car repair and shop screens, the screen guard, the notice board, deploy-menu panel and loadout lock, the
                  map's icon layer, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
-                 the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
+                 the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist
+                 (RZ_CreatePrefabsPlugin.c); the PC's helpers for building prefabs as text:
+                 Write resource index, Dump prefabs and classes, Register or rebuild resources
+                 (RZ_ResourceIndexPlugin.c)
 Worlds/RZ_Everon/
                  the main world: a sub-scene of Eden with the game mode, the faction and
                  loadout managers, Eden's AI world and vanilla's world managers

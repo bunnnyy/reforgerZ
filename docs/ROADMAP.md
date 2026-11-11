@@ -7,7 +7,7 @@ is in [DESIGN.md](DESIGN.md).
 game scripts **compile cleanly** against Arma Reforger 1.9. The game mode runs with no script
 exceptions on the server, in a test world with a fake player
 ([runtime test](WORKBENCH_SETUP.md#runtime-test-without-workbench)), and in Workbench play on Arland
-with the first Workbench build. Before it can be called working it still needs proper prefabs in
+and Everon with the first Workbench build. Before it can be called working it still needs proper prefabs in
 place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a game client
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
@@ -76,7 +76,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Talk's rest, with **Dialogue > Trees** still off by default: lies you're told (`~lie` and `~truth` lines, the [Evidence] call-out, a [Lie] that's true while its `truth` holds, a found-out lie said at the next greeting), promises (3 open, on your own play, kept or broken with regard and a greeting) and callbacks (`later:`/`due:`), claims in someone else's kit as conversation lines (the look as a check, the word at the wire as a choice, kit greets, passing counts 0 at persuade, a change of clothes ends the talk), a conversation picked up within 60 s after danger, a caught lie barring lies there for a day, barks (one line within 6 m, owner-only, rate-limited), strangers as speakers with their own words, the open channel on a radio (no names on air), the majors' sittings swayed by talk through the vote's own rules, 6 conversations a person; 90 conversations in all. Reputation: the season record and titles (by identity across lives, its own file), the owed word and greeting, the lock's word, who you work for, kin, the kill tally and the best-deed callback in the opening, the change notice in the faction's voice. Tone: route lines face to face after the lock, look lines, dry lines, feud and truce lines, no jokes from a leader who refuses you | [DIALOGUE.md](DIALOGUE.md), [REPUTATION.md](REPUTATION.md#the-season-record), [WRITING.md](WRITING.md#the-race-and-the-lock) |
 | Text tools: `tools/strings_inventory.py` lists every line of player text in the scripts (channel, faction, a register guess, repeats), and one text lint, `tools/voice_lint.py`, checks it against the writing rules, with a baseline of today's findings so only new or changed text fails | [WRITING.md](WRITING.md#checking-text), [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint) |
 | Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout, with a vanilla or Workshop prefab for 152 of its entries and the 13 loadouts), the Workbench plugin **ReforgerZ: Create prefabs** (run for real; a second run changes nothing) with a dry run and a checklist fallback, `tools/icon_atlas.py` for the icon atlas and imageset, and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
-| The first Workbench build: 159 prefabs (156 the plugin made from the manifest, many of them on stand-in bases, plus the player controller with the HUD and the faction and loadout managers), the Arland world with the game mode, the four factions and their hidden variants and the 13 background loadouts, its scenario, the 12 UI layouts, the icon atlas and imageset, and the screens and their keys in the menu and input configs. It starts in Workbench play with no script exceptions | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), [UI.md](UI.md) |
+| The first Workbench build: 231 prefabs (178 from the manifest, most made by the plugin, many of them on stand-in bases, among them the epilogue's board, candle and table, the season mark, the tribes' tag, call box and ID card, and the quartermasters' and the notebook's actions; camp life's 49 compositions and its smart-action waypoint, built as text; the player controller with the HUD and the faction and loadout managers), the Everon world (the main one) and the Arland test world with the game mode, the four factions and their hidden variants and the 13 background loadouts, their scenarios, the map config with the icon layer, the car picture, the 12 UI layouts, the icon atlas and imageset, and the screens and their keys in the menu and input configs. It starts in Workbench play with no script exceptions | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), [UI.md](UI.md) |
 
 ## Next
 
@@ -93,20 +93,23 @@ The build-review fixes are done. Everything below is approved. The order of the 
   items (built by text on vanilla `Item_Base`), and the unarmed zombie groups
   (`Prefabs/ReforgerZ/Zombies/`).
 - **Refine the stand-in prefabs.** Many bases are stand-ins (five items share the aspirin bottle,
-  the molotov is a smoke grenade, the drone is a radio box), and none is checked in play yet
+  the molotov is a smoke grenade with a bottle's mesh, the drone is a radio box; the generator and
+  the alarm clock are real items now), and none is checked in play yet
   ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#4-the-prefab-manifest)).
 - **The manual steps** the plugin still lists ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); the
   loadouts' gear, shop stock, the consumable effects and the reward crate were filled in by text
   edits and need a play-test.
-- **Camp life in Workbench:** the 49 compositions, the smart-action waypoint and the kits (four
-  evenings; [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)).
+- **Camp life in play:** the 49 compositions, the smart-action waypoint and the six kits are built
+  (on vanilla props, simplified:
+  [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)); see them at an
+  outpost of each faction in Workbench play.
 - **Traces' spike and kit in Workbench** (its phase 0, one evening, then two or three for the kit): a
   decal at a door from a client, then the door atlas or the boards; the grave, pyre and candle jars;
   a lit lantern, a loop, a wreck through the guard and the navmesh; then the 27 scene compositions and
   the 5 sound prefabs, all optional
   ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#traces-the-workbench-spike-phase-0)). Until then door marks
   and scenes are words only.
-- **Play it with a game client** on a local server, then a 2-hour session on Arland
+- **Play it with a game client** on a local server, then a 2-hour session on Everon
   ([PC_SETUP.md](PC_SETUP.md#6-play-testing)).
 
 ### UI
@@ -114,9 +117,10 @@ The build-review fixes are done. Everything below is approved. The order of the 
   editor where text grew to 18 ([UI.md](UI.md#controllers), "What needs Workbench").
 
 ### World interactions (from play-testing)
-- **The deploy panel and the map's icon layer:** the deploy-menu override that adds the background
-  panel, the map config override with `RZ_MapIconsUI` and the map icon layout (until it's set, the
-  vanilla text markers stay), and textures for the icons the scripts never swap ([UI.md](UI.md)).
+- **The deploy panel:** an override of the vanilla deploy menu's layout breaks the menu, so the
+  author wants our own spawn screen in its place; and textures for the icons the scripts never swap
+  ([UI.md](UI.md)). The map's icon layer is set (the map config override and its layout): see it in
+  play.
 
 ### The season's designs
 - The approved designs for the rest of the game (the infected tribes and crawlers, the four majors,

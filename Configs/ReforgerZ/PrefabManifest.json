@@ -5648,7 +5648,7 @@
   },
   {"step": "Place RZ_GameMode.et in the world (one per world)", "plugin": "yes", "find": "", "minimum": true},
   {
-   "step": "Keep RZ_GameMode.et's spawn logic on SCR_MenuSpawnLogic (the deploy menu): GameMode_Plain's SCR_AutoSpawnLogic picks a random faction from all of them",
+   "step": "Keep RZ_GameMode.et's spawn logic on SCR_MenuSpawnLogic (the deploy menu) with Forced faction SURV, so the menu opens on the loadout picker: GameMode_Plain's SCR_AutoSpawnLogic picks a random faction from all of them",
    "plugin": "no",
    "find": "",
    "minimum": true
