@@ -14,7 +14,10 @@ class RZ_QuestlineRegistry
 
 		// Task Force Bastion
 
-		// The Red Hand
+		// The Red Hand (Missions/Questlines/RedHand/)
+		q.Register(RZ_Quest_TheBook);
+		q.Register(RZ_Quest_Cargo);
+		q.Register(RZ_Quest_WellStory);
 
 		// Halcyon
 		q.Register(RZ_Quest_ThreeWeeks);

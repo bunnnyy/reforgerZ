@@ -797,26 +797,187 @@ class RZ_Mission_PitsDebtor : RZ_PuzzleMission
 }
 
 //------------------------------------------------------------------------------------------------
-//! Cargo (Haven, Known). A Red Hand truck carries people, not tins. A step chain (RZ_StepChain):
+//! The Red Hand's people-truck (docs/LORE.md, "Cargo") parked with its back padlocked: Tied Down's
+//! shed, and the crew camp in the Cargo questline (Missions/Questlines/RedHand/RZ_Quest_Cargo.c).
+//! The van is Supply > Red Hand truck, parked with no fuel so nobody drives it off before the
+//! story says; its guards are the Red Hand group, else the truck crew (neither = none). Cutting
+//! the lock: someone stays within DOOR_REACH of the door for CUT_SECONDS, and guards who are
+//! alive see it. The owning mission spawns its own people and objects at the door and ticks this.
+class RZ_CargoVan
+{
+	IEntity m_Van;
+	IEntity m_Guards;
+	vector m_vDoor;
+	bool m_bOpen;
+	bool m_bAlarm;
+	int m_iCutter = -1;
+	ref RZ_VehicleZone m_Zone = new RZ_VehicleZone();
+	protected float m_fCut;
+
+	static const float CUT_SECONDS = 12;
+	static const float DOOR_REACH = 4;
+
+	//------------------------------------------------------------------------------------------------
+	//! Supply > Red Hand truck. "" = no van (the missions that need one never run).
+	static ResourceName VanPrefab(RZ_GameModeComponent gm)
+	{
+		RZ_SupplySettings ss = gm.GetSupplySettings();
+		if (!ss)
+			return "";
+
+		return ss.m_sRedHandTruck;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Supply > Red Hand crew, else the Red Hand group. "" = no crew.
+	static ResourceName CrewPrefab(RZ_GameModeComponent gm)
+	{
+		RZ_SupplySettings ss = gm.GetSupplySettings();
+		if (ss && !ss.m_sRedHandCrew.IsEmpty())
+			return ss.m_sRedHandCrew;
+
+		return gm.GetRedHandGroupPrefab();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The guards: the Red Hand group, else the truck crew.
+	static ResourceName GuardPrefab(RZ_GameModeComponent gm)
+	{
+		ResourceName prefab = gm.GetRedHandGroupPrefab();
+		if (prefab.IsEmpty())
+			prefab = CrewPrefab(gm);
+
+		return prefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Parks the van at pos with no fuel, its guards 8-18 m off (onGuard: they fight at once) and its
+	//! door a few metres away. False if the van can't be spawned.
+	bool Park(RZ_GameModeComponent gm, vector pos, float yaw, bool onGuard)
+	{
+		m_Van = RZ_Util.SpawnPrefab(VanPrefab(gm), pos + Vector(0, 0.5, 0), yaw);
+		if (!m_Van)
+			return false;
+
+		RZ_Util.SetVehicleFuel(m_Van, 0);
+		m_Zone.SetVehicle(m_Van);
+		m_Guards = RZ_RedHandEdges.SpawnCrew(gm, GuardPrefab(gm), pos, 8, 18);
+		if (onGuard && m_Guards)
+			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Guards, 150, true);
+
+		m_vDoor = RZ_Mission.LandPointNear(pos, 6, 10);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player starts on the padlock; guards who are alive see it (once). The line for them, ""
+	//! if they were already cutting.
+	string StartCut(int playerId)
+	{
+		if (m_bOpen || m_iCutter == playerId)
+			return "";
+
+		m_iCutter = playerId;
+		m_fCut = 0;
+		if (!m_bAlarm && RZ_Util.CountAlive(m_Guards) > 0)
+		{
+			m_bAlarm = true;
+			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Guards, 150);
+			return "A shout from the truck: the guards have seen you. Cut fast.";
+		}
+
+		return "You get the cutters on the padlock. Stay at the door.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The guards see something they shouldn't (once): they fight.
+	void Alarm()
+	{
+		if (m_bAlarm || RZ_Util.CountAlive(m_Guards) == 0)
+			return;
+
+		m_bAlarm = true;
+		RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Guards, 150);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsCutting()
+	{
+		return m_iCutter > 0 && !m_bOpen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Once per tick: true on the tick the lock gives. Walking away from the door starts it over.
+	bool UpdateCut(float dt)
+	{
+		if (m_bOpen || m_iCutter <= 0)
+			return false;
+
+		IEntity cutter = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iCutter);
+		if (!cutter || RZ_Util.DistXZ(cutter.GetOrigin(), m_vDoor) > DOOR_REACH)
+		{
+			m_iCutter = -1;
+			m_fCut = 0;
+			return false;
+		}
+
+		m_fCut += dt;
+		if (m_fCut < CUT_SECONDS)
+			return false;
+
+		m_bOpen = true;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Fuel(float share)
+	{
+		RZ_Util.SetVehicleFuel(m_Van, share);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The van is gone or burnt out (false before it was parked).
+	bool IsLost()
+	{
+		return m_Zone.IsLost();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The guards go; the van stays only if someone sits in it.
+	void Cleanup()
+	{
+		RZ_Util.DeleteUnit(m_Guards);
+		m_Guards = null;
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		if (m_Van && RZ_VehicleZone.DriverOf(m_Van, ids, players) < 0)
+			RZ_Util.DeleteUnit(m_Van);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Tied Down (Haven, Known). A Red Hand truck carries people, not tins. A step chain (RZ_StepChain):
 //! a Haven lookout's note at a roadside outside one town names the next; there the truck is parked
 //! (watch it from within WATCH_RADIUS for WATCH_SECONDS without coming within SPOT_RADIUS: seen,
 //! its crew fights and it leaves at once); then it drives on to a shed outside a third town and
 //! stops there. The truck is data while it moves: a parked vehicle (Supply > Red Hand truck, no
 //! fuel) and its crew (Supply > Red Hand crew) appear only when a player is within 300 m.
-//! At the shed: **cut the lock** (CUT_SECONDS; the guards fight) and drive the truck with them in
+//! At the shed (RZ_CargoVan): **cut the lock** (the guards fight) and drive the truck with them in
 //! the back to the Haven (RZ_VehicleZone): full pay, +3 at the safehouse, Red Hand Infamy;
 //! **radio the Haven**: REPORT_SCALE, +2 at the safehouse, a little Red Hand Infamy; or ask the
 //! driver for **a cut**: the Red Hand pays anyone it doesn't hunt, Haven Infamy.
-//! ★ Hunter: the crew only sees you within BONUS_SPOT_RADIUS.
-class RZ_Mission_Cargo : RZ_PuzzleMission
+//! ★ Hunter: the crew only sees you within BONUS_SPOT_RADIUS. Reaching the shed tells the Cargo
+//! questline (world flag cargo.truck_seen) that the Haven knows what these trucks are; while that
+//! questline runs, this contract isn't offered.
+class RZ_Mission_TiedDown : RZ_PuzzleMission
 {
 	protected ref RZ_StepChain m_Chain = new RZ_StepChain();
-	protected ref RZ_VehicleZone m_Zone = new RZ_VehicleZone();
+	protected ref RZ_CargoVan m_Load = new RZ_CargoVan();
 	protected vector m_vStop;
 	protected vector m_vPen;
 	protected vector m_vTruckAt;
 	protected vector m_vRefuge;
-	protected vector m_vDoor;
 	protected string m_sStop;
 	protected string m_sPen;
 	protected string m_sRefuge;
@@ -825,12 +986,8 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 	protected bool m_bStopShown;
 	protected IEntity m_Truck;
 	protected IEntity m_Crew;
-	protected IEntity m_Guards;
 	protected bool m_bPenShown;
 	protected bool m_bSpotted;
-	protected bool m_bAlarm;
-	protected int m_iCutter = -1;
-	protected float m_fCut;
 	protected int m_iChoice;
 	protected int m_iDoorTalk = -1;
 	protected int m_iDriverTalk = -1;
@@ -852,7 +1009,6 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 	protected static const float SHOW_RADIUS = 300;
 	protected static const float TRUCK_SPEED = 8;
 	protected static const float MAX_DRIVE = 300;
-	protected static const float CUT_SECONDS = 12;
 	protected static const float REPORT_SCALE = 0.6;
 	protected static const int FREE_INFAMY = 15;
 	protected static const int REPORT_INFAMY = 8;
@@ -879,42 +1035,14 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
-		if (TruckPrefab(gm).IsEmpty() || !HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !HasPrefab(gm, RZ_EPuzzleProp.OBJECT) || !HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
+		if (RZ_CargoVan.VanPrefab(gm).IsEmpty() || !HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !HasPrefab(gm, RZ_EPuzzleProp.OBJECT) || !HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
+			return 0;
+
+		// The Cargo questline tells the long version of this story; not both at once
+		if (gm.GetQuestlines() && gm.GetQuestlines().FindRunByKey("cargo"))
 			return 0;
 
 		return 0.7;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static ResourceName TruckPrefab(RZ_GameModeComponent gm)
-	{
-		RZ_SupplySettings ss = gm.GetSupplySettings();
-		if (!ss)
-			return "";
-
-		return ss.m_sRedHandTruck;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Supply > Red Hand crew, else the Red Hand group. "" = no crew.
-	protected static ResourceName CrewPrefab(RZ_GameModeComponent gm)
-	{
-		RZ_SupplySettings ss = gm.GetSupplySettings();
-		if (ss && !ss.m_sRedHandCrew.IsEmpty())
-			return ss.m_sRedHandCrew;
-
-		return gm.GetRedHandGroupPrefab();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The shed's guards: the Red Hand group, else the truck crew.
-	protected static ResourceName GuardPrefab(RZ_GameModeComponent gm)
-	{
-		ResourceName prefab = gm.GetRedHandGroupPrefab();
-		if (prefab.IsEmpty())
-			prefab = CrewPrefab(gm);
-
-		return prefab;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -924,6 +1052,9 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 		m_Chain.GetSpots(result);
 		if (m_Truck)
 			result.Insert(m_Truck.GetOrigin());
+
+		if (m_Load.m_Van)
+			result.Insert(m_Load.m_Van.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -961,7 +1092,7 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 		m_iTruck = TRUCK_STOP;
 		m_vTruckAt = m_vStop;
 		m_vPos = note.m_vPos;
-		m_sTitle = "Cargo";
+		m_sTitle = "Tied Down";
 		m_sBrief = string.Format("People keep going missing on the roads. Twice now someone's seen a Red Hand truck with the canvas tied down tight, and nobody ties it down like that for tins. One of our lookouts saw it again outside %1 and left us a note there. Please follow it and find out where it goes. Don't let them see you. Then do what you can.",
 			s.m_sName);
 		return true;
@@ -1067,9 +1198,9 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 	protected void ShowStop(RZ_GameModeComponent gm)
 	{
 		m_bStopShown = true;
-		m_Truck = RZ_Util.SpawnPrefab(TruckPrefab(gm), m_vStop + Vector(0, 0.5, 0), RZ_Compass.Bearing(m_vStop, m_vPen));
+		m_Truck = RZ_Util.SpawnPrefab(RZ_CargoVan.VanPrefab(gm), m_vStop + Vector(0, 0.5, 0), RZ_Compass.Bearing(m_vStop, m_vPen));
 		RZ_Util.SetVehicleFuel(m_Truck, 0);
-		m_Crew = RZ_RedHandEdges.SpawnCrew(gm, CrewPrefab(gm), m_vStop, 4, 10);
+		m_Crew = RZ_RedHandEdges.SpawnCrew(gm, RZ_CargoVan.CrewPrefab(gm), m_vStop, 4, 10);
 		TrackProp(m_Crew);
 	}
 
@@ -1123,25 +1254,21 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 	protected void ShowPen(RZ_GameModeComponent gm)
 	{
 		m_bPenShown = true;
-		m_Truck = RZ_Util.SpawnPrefab(TruckPrefab(gm), m_vPen + Vector(0, 0.5, 0), Math.RandomFloat(0, 360));
-		if (!m_Truck)
+		if (!m_Load.Park(gm, m_vPen, Math.RandomFloat(0, 360), m_bSpotted))
 		{
-			m_sFail = "Cargo: the truck never came.";
+			m_sFail = "Tied Down: the truck never came.";
 			m_eState = RZ_EMissionState.FAILED;
 			return;
 		}
 
-		RZ_Util.SetVehicleFuel(m_Truck, 0);
-		m_Zone.SetVehicle(m_Truck);
-		m_Zone.SetZone(m_vRefuge, 30);
+		TrackProp(m_Load.m_Guards);
+		m_Load.m_Zone.SetZone(m_vRefuge, 30);
 
-		m_Guards = RZ_RedHandEdges.SpawnCrew(gm, GuardPrefab(gm), m_vPen, 8, 18);
-		TrackProp(m_Guards);
-		if (m_bSpotted && m_Guards)
-			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Guards, 150, true);
+		// The Haven has seen where these trucks unload: the Cargo questline's way in for the Haven
+		if (gm.GetQuestlines())
+			gm.GetQuestlines().SetWorldFlag("cargo.truck_seen", 1);
 
-		m_vDoor = LandPointNear(m_vPen, 6, 10);
-		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_vDoor, 0, "", "Cut the lock|Radio the Haven", m_iDoorTalk, "Listen at the door");
+		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_Load.m_vDoor, 0, "", "Cut the lock|Radio the Haven", m_iDoorTalk, "Listen at the door");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vPen, 3, 5), 1, "", "Ask for a cut", m_iDriverTalk, "Talk to the driver");
 	}
 
@@ -1162,24 +1289,14 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 
 		if (option == 0)
 		{
-			if (m_iCutter == playerId)
-				return;
+			string text = m_Load.StartCut(playerId);
+			if (!text.IsEmpty())
+				gm.NotifyPlayer(playerId, m_sTitle, text);
 
-			m_iCutter = playerId;
-			m_fCut = 0;
-			string text = "You get the cutters on the padlock. Stay at the door.";
-			if (!m_bAlarm && RZ_Util.CountAlive(m_Guards) > 0)
-			{
-				m_bAlarm = true;
-				RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Guards, 150);
-				text = "A shout from the truck: the guards have seen you. Cut fast.";
-			}
-
-			gm.NotifyPlayer(playerId, m_sTitle, text);
 			return;
 		}
 
-		if (option != 1 || m_iCutter > 0)
+		if (option != 1 || m_Load.m_iCutter > 0)
 			return;
 
 		m_iChoice = CHOICE_REPORT;
@@ -1188,7 +1305,7 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 		m_aParticipants.Clear();
 		m_aParticipants.Insert(playerId);
 		RZ_LeaderJob.AddPeople(gm, m_vRefuge, 2);
-		gm.NotifyPlayer(playerId, m_sTitle, "You read the grid out on the Haven channel, very quietly. A pause. \"Thank you. Get away from there now.\" They come at first light and find two still in the shed. The rest have gone on, wherever Cargo goes.");
+		gm.NotifyPlayer(playerId, m_sTitle, "You read the grid out on the Haven channel, very quietly. A pause. \"Thank you. Get away from there now.\" They come at first light and find two still in the shed. The rest have gone on, wherever the cargo goes.");
 		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 
@@ -1196,7 +1313,7 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 	//! A cut: the Red Hand pays instead, if it deals with you at all (checked before anything is paid).
 	protected void OnDriver(RZ_GameModeComponent gm, int playerId)
 	{
-		if (m_iCutter > 0 || m_bAlarm)
+		if (m_Load.m_iCutter > 0 || m_Load.m_bAlarm)
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "The driver isn't talking to you now.");
 			return;
@@ -1224,46 +1341,34 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	protected void UpdateCutting(RZ_GameModeComponent gm, float dt)
 	{
-		if (m_iCutter <= 0)
-			return;
-
-		IEntity cutter = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iCutter);
-		if (!cutter || RZ_Util.DistXZ(cutter.GetOrigin(), m_vDoor) > 4)
-		{
-			m_iCutter = -1;
-			m_fCut = 0;
-			return;
-		}
-
-		m_fCut += dt;
-		if (m_fCut < CUT_SECONDS)
+		if (!m_Load.UpdateCut(dt))
 			return;
 
 		m_iChoice = CHOICE_FREE;
 		SetRival(RZ_EFaction.BANDITS, FREE_INFAMY);
-		RZ_Util.SetVehicleFuel(m_Truck, 0.4);
+		m_Load.Fuel(0.4);
 		RZ_ContractHelp.NotifyNear(gm, m_vPen, 80, m_sTitle, string.Format("The lock gives. Nine people come out of the dark, holding on to each other. Get them into the back of the truck and drive them to %1.", m_sRefuge));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void UpdateDrive(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players)
 	{
-		if (m_Zone.IsLost())
+		if (m_Load.IsLost())
 		{
 			m_sFail = "The truck is finished. They scatter on foot into the dark, and you'll never know how many made it.";
 			m_eState = RZ_EMissionState.FAILED;
 			return;
 		}
 
-		m_vPos = m_Truck.GetOrigin();
+		m_vPos = m_Load.m_Van.GetOrigin();
 		RZ_ContractHelp.AddNear(ids, players, m_vPos, 8, m_aParticipants);
-		if (!m_Zone.Check(ids, players))
+		if (!m_Load.m_Zone.Check(ids, players))
 			return;
 
 		m_aParticipants.Clear();
-		m_Zone.GetCrew(ids, players, 30, m_aParticipants);
-		if (m_Zone.m_iDriver > 0 && !m_aParticipants.Contains(m_Zone.m_iDriver))
-			m_aParticipants.Insert(m_Zone.m_iDriver);
+		m_Load.m_Zone.GetCrew(ids, players, 30, m_aParticipants);
+		if (m_Load.m_Zone.m_iDriver > 0 && !m_aParticipants.Contains(m_Load.m_Zone.m_iDriver))
+			m_aParticipants.Insert(m_Load.m_Zone.m_iDriver);
 
 		RZ_LeaderJob.AddPeople(gm, m_vRefuge, 3);
 		NotifyParticipants(gm, m_sTitle, "The Haven's people come out with blankets before the engine is off. Somebody starts counting heads, and keeps having to start again.");
@@ -1286,7 +1391,7 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 		if (!m_sFail.IsEmpty())
 			return m_sFail;
 
-		return "Cargo: the truck is gone, and the people in it.";
+		return "Tied Down: the truck is gone, and the people in it.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1302,5 +1407,7 @@ class RZ_Mission_Cargo : RZ_PuzzleMission
 		RZ_Util.GetAlivePlayers(ids, players);
 		if (m_Truck && RZ_VehicleZone.DriverOf(m_Truck, ids, players) < 0)
 			RZ_Util.DeleteUnit(m_Truck);
+
+		m_Load.Cleanup();
 	}
 }

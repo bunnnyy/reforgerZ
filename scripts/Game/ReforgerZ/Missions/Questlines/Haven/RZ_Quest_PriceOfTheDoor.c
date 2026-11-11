@@ -430,6 +430,7 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 			case E_STANDS:
 			{
 				q.SetWorldFlag("door.shut", 1);
+				q.SetWorldFlag("door.house", house + 1);	// which house (R3 The Well Story reads it)
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 10, 0);
 				ChangeStanding(gm, run, RZ_EFaction.BANDITS, 0, 10);
 				RZ_HavenQuest.LeaderRemembers(gm, run, RZ_HavenQuest.KeptLeader(gm, run, "boss"), RZ_Leaders.MEM_CROSSED);
@@ -441,6 +442,7 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 			{
 				q.SetWorldFlag("door.bastion", 1);
 				q.SetWorldFlag("door.shut", 1);
+				q.SetWorldFlag("door.house", house + 1);
 				ChangeStanding(gm, run, RZ_EFaction.MILITARY, 10, 0);
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 8, 0);
 				Headline(gm, run.Fill("Bastion patrols the road to {house} now, and has the house on its census."));
