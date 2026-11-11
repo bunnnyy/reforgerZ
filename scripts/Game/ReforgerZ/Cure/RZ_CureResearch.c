@@ -9,14 +9,16 @@
 //! it's full the lab refuses samples and mission research beyond the cap is lost. The part of a
 //! delivery that fills a near-empty backlog counts more (Empty lab bonus). The milestones fire on
 //! worked research, and their news waits until someone is in the world to hear it.
-//! Only while a cure finale questline is registered, research stops at 90 percent until a finale
-//! takes it on (AddFinaleResearch); after a week at the gate the lab inches up by itself (Finale fallback).
+//! While the cure finale runs (its five routes registered, docs/FINALE.md), research stops at 90
+//! percent: the routes race to finish the batch (RZ_CureFinale), and one AddFinaleResearch call at the
+//! seal takes it to 100. After a week at the gate the built fallback feeds the finale's lab-alone track.
 //!
 //!  25%  Field antiviral    infection spreads slower, bites take longer to kill
 //!  50%  Bite treatment     (no world effect of its own; supply below)
 //!  75%  Immunity serum     spread slows further, bites take even longer
 //! 100%  Final stand        hold the lab against waves for 15 minutes (it starts once a player reaches
 //!                          the lab, also after a restart, and waits while nobody is online).
+//!                          With the finale it's also the fight for the clean room (RZ_CureFinale).
 //!                          Win: the cure goes out and the season ends.
 //!                          Abandon the lab: the batch is ruined and research drops back to 90%
 //!                          (the lab itself never falls: it's Halcyon's stronghold).
@@ -132,8 +134,9 @@ class RZ_CureResearch
 		m_iStolenAntidotes = Math.ClampInt(stolenAntidotes, 0, STOLEN_ANTIDOTE_CAP + BLACK_MARKET_EXTRA);
 		m_iLabStabilisers = Math.ClampInt(labStabilisers, 0, StabiliserCap());
 
-		// A restart in the middle of the final stand starts it again from the beginning
-		if (m_iMilestone >= 4 && !m_bCured)
+		// A restart in the middle of the final stand starts it again from the beginning (with the
+		// finale, unless the batch still waits for its seal)
+		if (m_iMilestone >= 4 && !m_bCured && !FinaleHolds())
 			StartFinalStand();
 	}
 
@@ -461,8 +464,19 @@ class RZ_CureResearch
 		float grace = GATE_GRACE_DAYS * DAY_SECONDS / m_GM.GetSeasonSpeed();
 		float past = Math.Max(0, m_fGateSeconds + waited - Math.Max(grace, m_fGateSeconds));
 		m_fGateSeconds += waited;
-		if (past > 0)
-			m_fProgress = Math.Min(100, m_fProgress + m_GM.GetFinaleFallbackPerDay() * m_GM.GetSeasonSpeed() * past / DAY_SECONDS);
+		if (past <= 0)
+			return;
+
+		// The finale runs: the fallback is the lab-alone track (1 percent = 1 point), never research
+		float points = m_GM.GetFinaleFallbackPerDay() * m_GM.GetSeasonSpeed() * past / DAY_SECONDS;
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale && RZ_CureFinale.IsOn())
+		{
+			finale.AddLabAlone(points);
+			return;
+		}
+
+		m_fProgress = Math.Min(100, m_fProgress + points);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -489,6 +503,8 @@ class RZ_CureResearch
 			// Heard when someone is in the world (FlushNews)
 			RZ_Log.Info("Cure: research reached the finale's 90 percent gate.");
 			m_iNews = m_iNews | NEWS_GATE;
+			if (RZ_CureFinale.Get())
+				RZ_CureFinale.Get().OnGate();
 		}
 
 		int milestone = m_iMilestone;
@@ -521,10 +537,53 @@ class RZ_CureResearch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The finale holds the stand: the batch waits for its seal (RZ_CureFinale).
+	protected bool FinaleHolds()
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		return finale && HasFinale() && finale.HoldsTheStand();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The seal (RZ_CureFinale): research to 100 in one AddFinaleResearch call, credited to the
+	//! finisher's faction (-1 for the Independent or the lab alone), and the stand starts.
+	void Seal(int faction)
+	{
+		if (m_bCured || m_bFinalStand)
+			return;
+
+		if (m_fProgress < 100)
+		{
+			AddFinaleResearch(100 - m_fProgress, faction, "The batch is sealed.");
+			return;
+		}
+
+		m_iMilestone = 4;
+		StartFinalStand();
+		m_GM.OnCureChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cure percent everyone sees: with the finale's routes open, 90 plus the furthest track (at
+	//! most 99 until the seal); else the lab's own.
+	float ShownProgress()
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale && !m_bCured && !m_bFinalStand)
+		{
+			float shown = finale.ShownPercent();
+			if (shown >= 0)
+				return shown;
+		}
+
+		return m_fProgress;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! This server's line for the lab: "Research 63 percent. Waiting: 14 samples' worth, about 4 days of work."
 	string Describe()
 	{
-		return DescribeLab(m_fProgress, m_fBacklog, SampleWorth(0, m_GM.GetResearchPerSample()), LabPerDay(), IsLabFull(), IsAtFinaleGate(), m_bCured);
+		return DescribeLab(ShownProgress(), m_fBacklog, SampleWorth(0, m_GM.GetResearchPerSample()), LabPerDay(), IsLabFull(), IsAtFinaleGate(), m_bCured);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -921,7 +980,17 @@ class RZ_CureResearch
 			MakeAntidote();
 
 		if (milestone == 4)
+		{
+			// The finale: research at 100 from the backlog after a lost stand makes the batch ready,
+			// and the stand waits for its seal
+			if (FinaleHolds())
+			{
+				RZ_CureFinale.Get().OnBacklogBatch();
+				return;
+			}
+
 			StartFinalStand();
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -956,7 +1025,7 @@ class RZ_CureResearch
 		}
 
 		if ((news & NEWS_GATE) != 0 && IsAtFinaleGate())
-			m_GM.NotifyAll("Cure research", "The lab has gone as far as samples can take it: 90 percent. What's missing isn't in a special's blood, and every faction in the Zone thinks it knows where it is.");
+			m_GM.NotifyAll("Cure research", "The lab has gone as far as samples can take it: 90 percent. What's missing isn't in a sample case, and every faction in the Zone thinks it knows where it is.");
 
 		// The broadcast's "Reports of research inside the zone" run from when people heard it
 		if (told && m_GM.GetBroadcast())
@@ -993,6 +1062,16 @@ class RZ_CureResearch
 		m_fAbandonedFor = 0;
 		m_bStandReached = false;
 		m_fWaveTimer = WAVE_INTERVAL_SECONDS;
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale && HasFinale())
+			finale.OnStandStarted();
+
+		if (finale && HasFinale() && finale.IsOpen())
+		{
+			m_GM.NotifyAllAs("THE FINAL STAND", "The cure is being synthesized. Every infected for miles can sense it. Hold the lab for 15 minutes. Whoever holds the clean room when it's done controls the cure.", RZ_ENoticeTag.URGENT);
+			return;
+		}
+
 		m_GM.NotifyAllAs("THE FINAL STAND", "The cure is being synthesized. Every infected for miles can sense it. Hold the lab for 15 minutes! A handful of steady people can do it; more of you draw more of them.", RZ_ENoticeTag.URGENT);
 	}
 
@@ -1045,9 +1124,20 @@ class RZ_CureResearch
 			}
 		}
 
+		// The finale: who holds the clean room, and overtime while a challenger is counting
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		bool contest = finale && HasFinale();
+		if (contest)
+			finale.StandTick(dt, players);
+
 		m_fFinalStandLeft -= dt;
-		if (m_fFinalStandLeft <= 0)
-			CompleteCure(players);
+		if (m_fFinalStandLeft > 0)
+			return;
+
+		if (contest && finale.WantsOvertime(dt))
+			return;
+
+		CompleteCure(players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1059,6 +1149,9 @@ class RZ_CureResearch
 		m_iMilestone = 3;
 		m_iBatchesLost++;
 		m_GM.NotifyAll(title, text);
+		if (RZ_CureFinale.Get() && HasFinale())
+			RZ_CureFinale.Get().OnStandLost();
+
 		if (m_GM.GetTribes())
 			m_GM.GetTribes().GetPeople().OnStandLost(m_GM.GetLabPosition());
 		if (m_GM.GetFactionLife())
@@ -1073,7 +1166,8 @@ class RZ_CureResearch
 	//! the black market, within its cap. Nobody wins the cure this way. False if no stand runs.
 	bool StealBatch()
 	{
-		if (!m_bFinalStand)
+		// Under a finale Take the Lab changes who holds the clean room instead (RZ_CureFinale)
+		if (!m_bFinalStand || HasFinale())
 			return false;
 
 		m_iStolenAntidotes = Math.Min(StolenCap(), m_iStolenAntidotes + 2);
@@ -1127,11 +1221,17 @@ class RZ_CureResearch
 			s.m_fInfection = s.m_fInfection * 0.3;
 		}
 
+		// The finale: whoever holds the clean room controls the cure (before the winner is chosen)
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		bool contest = finale && HasFinale();
+		if (contest)
+			finale.OnStandWon();
+
 		vector lab = m_GM.GetLabPosition();
 		array<int> defenders = {};
 		foreach (IEntity p : players)
 		{
-			if (RZ_Util.DistXZ(p.GetOrigin(), lab) > LAB_DEFENCE_RADIUS)
+			if (contest || RZ_Util.DistXZ(p.GetOrigin(), lab) > LAB_DEFENCE_RADIUS)
 				continue;
 
 			int id = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(p);
@@ -1151,9 +1251,13 @@ class RZ_CureResearch
 		if (m_GM.GetMissions())
 			m_GM.GetMissions().OnCured();
 
-		// The winner is chosen on the season's Fame before the stand's own reward, so the last
-		// fight (always Halcyon and the Haven) can't decide it
+		// The winner is chosen before the stand's own reward, so the stand's Fame can't decide it:
+		// with the finale, whoever holds the clean room (nobody: the season's Fame leader); without
+		// it, the season's Fame leader
 		m_GM.OnCureCompleted();
+		if (contest)
+			finale.PayStandFame();
+
 		foreach (int defender : defenders)
 		{
 			m_GM.AddFame(defender, RZ_EFaction.INSTITUTE, 50);

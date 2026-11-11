@@ -96,6 +96,11 @@ class RZ_Parley
 		if (RZ_SeasonClock.Now() - profile.m_aParleyUnix[f] < LIMIT_SECONDS)
 			return "too soon";
 
+		// The cure finale: closed with a faction whose route is fighting yours
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale && finale.ParleyClosed(playerId, f))
+			return "fighting routes";
+
 		return "";
 	}
 

@@ -17,7 +17,10 @@
 #     its waits, goes to each stage mission and ends it as won (with the outcome that moves the
 #     story on), and reports which reached an ending, fizzled or got stuck;
 #   - walks the player through every settlement, the safehouses, the lab, then into the
-#     Perimeter's warning and kill zones; kills them if the Perimeter didn't; respawns them.
+#     Perimeter's warning and kill zones; kills them if the Perimeter didn't; respawns them;
+#   - last, a scripted cure finale at Wait scale 0.1 (RZT_Finale.c): a commit refused below the
+#     gate, the slow finish, two routes racing and a pact, a stand lost and remade, a scripted
+#     take and overtime, the release's terms ("RZT finale check: ...", "RZT finale done: ...").
 # Every notice sent to the fake player is logged as "RZT notify [title] text".
 # Nothing here is part of the mod: the files are copied into a throwaway addon folder, and the
 # patches (patch.py) only touch that copy. The world's prefab GUIDs are Arma Reforger 1.9's.
@@ -65,5 +68,6 @@ grep -E 'RZT all mission types tried' "$LOG" | sed 's/.*RZT //'
 grep -E 'RZT mission .* started=0' "$LOG" | sed -E 's/.*RZT mission ([A-Za-z_]+).*/  did not start: \1/'
 grep -E 'RZT (fake player already dead|killing|fake player died)' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (questlines:|all questlines tried|quest .* (ENDED|STUCK|fizzled|did not start))' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -q 'Virtual Machine Exception' "$LOG" && exit 1
 exit 0

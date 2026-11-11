@@ -989,8 +989,12 @@ class RZ_Infection
 			case RZ_EMed.CUT_DOSE:
 			{
 				StartSideEffect(p, kind, SIDE_EFFECT_SECONDS);
+				// The cook's book (docs/FINALE.md, the Cook): every cut dose taken is a line
+				RZ_WorldFacts book = RZ_WorldFacts.Get();
+				book.SetFlag("cook.lines", book.Flag("cook.lines") + 1);
 				if (Math.RandomFloat01() < m_Settings.m_fCutDoseCureChance)
 				{
+					book.SetFlag("cook.paid", book.Flag("cook.paid") + 1);
 					m_GM.CurePlayer(playerId);
 					m_GM.NotifyPlayer(playerId, title, "Whatever they cut it with, there was antidote in it. The grey goes out of the bite. The fever stays for a while.");
 					RZ_RepVoice.CrewEvent(m_GM, playerId, RZ_RepVoice.CREW_LUCKY);

@@ -38,6 +38,7 @@ class RZ_HallData
 	ref array<ref RZ_HallPlayer> seasonPlayers = {};
 	ref array<ref RZ_HallPlayer> allTime = {};
 	ref array<string> standNames = {};		// who held this season's winning stand
+	string seasonLine;						// "The cure: the Haven, by force. The Zone's Fame: Bastion, 1640."
 	ref array<ref RZ_HallPast> past = {};
 }
 
@@ -143,6 +144,19 @@ class RZ_HallOfFame
 		m_Data.ended = false;
 		m_Data.seasonPlayers.Clear();
 		m_Data.standNames.Clear();
+		m_Data.seasonLine = "";
+		m_bDirty = true;
+		SaveIfChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cure finale's season line (who controls the cure, how, and the season's Fame leader).
+	void SetSeasonLine(string line)
+	{
+		if (!m_bEnabled || line.IsEmpty())
+			return;
+
+		m_Data.seasonLine = line;
 		m_bDirty = true;
 		SaveIfChanged();
 	}
@@ -184,6 +198,8 @@ class RZ_HallOfFame
 		p.world = m_Data.world;
 		p.winner = winner;
 		p.lines = BuildLines(m_Data.seasonPlayers, m_Data.standNames);
+		if (!m_Data.seasonLine.IsEmpty())
+			p.lines = m_Data.seasonLine + "\n" + p.lines;
 		m_Data.past.InsertAt(p, 0);
 		while (m_Data.past.Count() > PAST_KEEP)
 		{
@@ -524,6 +540,9 @@ class RZ_HallOfFame
 
 		string text = "";
 		string seasonLines = BuildLines(m_Data.seasonPlayers, m_Data.standNames);
+		if (!m_Data.seasonLine.IsEmpty())
+			seasonLines = m_Data.seasonLine + "\n" + seasonLines;
+
 		if (!seasonLines.IsEmpty())
 			text += string.Format("Season %1:\n%2", m_Data.season, seasonLines);
 

@@ -238,7 +238,8 @@ hand, so it works on any map.
   round a holding, safehouse or the lab), 700 m round the Long Table's farm, and the Perimeter's
   warning zone + 200 m.
 - **No-lair land:** 300 m round the finale's lower store and Bastion's held store, once those canon
-  spots exist (the finale, planned). An overlay, so the cache never needs a rebuild.
+  spots exist (they're seeded at the 90% gate, [FINALE.md](FINALE.md#items-and-people); the overlay
+  reading them is planned). An overlay, so the cache never needs a rebuild.
 - **Reading it.** At the first start on a map, from the game mode's one-second tick: up to 20 land
   squares a second, stopping after 8 ms (about 5 minutes on Everon and Cain; tribes stay dormant
   meanwhile, and the log says so). It's cached in `$profile:ReforgerZ/land_<map>_<number>.json` (the
@@ -1285,7 +1286,7 @@ The packs' thirteen contracts, The Lone One, the changed missions and the events
 | 25% | **Halcyon's range map** for its Known ([Knowing](#knowing)) |
 | 50% | **The call box** (Halcyon's quartermaster, Trusted; 2 a real day on the server, one per player a real day; **Call box prefab**): put down and played, 90 s of a recorded dusk call, +25 heat, and the nearest pack within 1.5 km sends its hunters and young to it at dusk and night (as data, so it works with no bodies near; never its leader or guard), its walkers by day (within 1.5 km). Never in no man's land, or within 150 m of another player who isn't in your group. Lab Technicians read samples |
 | 75% | Each person taken comes back as a young only half the time; the ones who ran are halved (built before) |
-| 90% | The finale's live tissue: planned, with the finale ([designs/FINALE.md](../designs/FINALE.md)) |
+| 90% | The finale's live tissue: each route's Act III is a hunt for a leader taken alive (Capture the Index's rules, +2 on the route's track at once) or one of its guard or young (Live Capture's, +2 after 12 real hours) ([FINALE.md](FINALE.md#live-tissue)) |
 | 100%, the final stand | Each wave's hordes come from the crawler towns within 3 km of the lab and the nearest pack within 3 km (its hunters drawn too), alternating, 350–450 m out on the line they come from. Their number is the built waves' × 0.7–1.3 by the neighbours' average infection (carried over between waves, at least one), so clearing them helps but never trivialises it. The last wave adds the most recently Furious pack. With neither near: the built waves |
 | Lost | The packs that came go home, and the lab's nearest pack is kept Hungry (hunger 60 or more) for a season day |
 
@@ -1339,8 +1340,8 @@ text never names it: it's *"the deep voice"*, the call every ridge answers.
   reopens for 2 counted nights (border fights twice as likely), told as a world event. Its fall is an
   epilogue beat.
 - **Losing its clan** (a break-up, a merge) makes it an ordinary leader again.
-- **Caught alive** it would count +3 on a finale route's track: that goes in with the finale's live
-  tissue ([designs/FINALE.md](../designs/FINALE.md)).
+- **Caught alive** it would count +3 on a finale route's track: planned ([designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules));
+  today a leader counts +2 ([FINALE.md](FINALE.md#live-tissue)).
 
 ## Signs and sounds
 
@@ -1375,8 +1376,9 @@ What's left of the design, in [designs/INFECTED.md](../designs/INFECTED.md) and
   a trail crosses; the jobs' rest (Clear the Trail on a truck road and the others the design lists);
   the questline hooks still to write; the epilogue reading the beats; Lead Them Away's crowd as a pack
   on the move.
-- **The finale's live tissue** goes in with the finale ([designs/FINALE.md](../designs/FINALE.md)), with
-  the great one's +3.
+- **The finale's live tissue's rest** ([designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules)):
+  the great one's +3, best first within reach, the same pack never twice in 6 season days, and
+  Fury's road toward the lab.
 - **The behaviour layer's rest:** shrieks passed between groups; blood scent; the hearing table beyond
   shots; doors (another way in, weak doors); the reactions table; the regroup; the ankle grab and the
   client effects (hold, stagger, knockdown) after a client test; forest edge points in the land cache.

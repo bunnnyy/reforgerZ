@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **206 prefab fields**: 40 on `RZ_GameModeComponent`, 159 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **211 entries**: 152 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 26 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 44 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **206 prefab fields**: 40 on `RZ_GameModeComponent`, 159 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **211 entries**: 152 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 26 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 45 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -1102,7 +1102,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 39 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 40 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
@@ -1122,6 +1122,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Director | Story arcs | `m_StorySettings` | Minutes between (60), start chance (0.6), repeat hours (4), the dark-side arc's limits |
 | Director | Questlines | `m_QuestlineSettings` | **Enabled**, max active (2, one per faction), minutes between (30), start chance (0.5), retry hours (6), once per season (on), **Wait scale** (1; 0.1 for a quick test) ([DESIGN.md](DESIGN.md#questlines)) |
 | Director | Majors | `m_MajorSettings` | **Enabled** (on; needs Questlines on), lead points (5), grace sessions (1), hold limit (1), stall points (1), between beats (4), slots (2) ([DESIGN.md](DESIGN.md#the-majors)) |
+| Director | Finale | `m_FinaleSettings` | **Enabled** (on; needs Questlines on; off: research runs to 100 and the cure goes to the most season Fame), route worth (0.25), floor (150), ceiling (0: none), soft line (1.1), batch real hours (12) and play hours (2), seal call minutes (60), seal hour (-1: off), take seconds (90), take per point (5), take floor (45), overtime (180 s), clean room radius (10 m), bay seconds (120), **Contest** (Auto, Force, Tally), Coat Run, Take the Lab, pacts (on), groups at the lab (2), fight memory days (2), active lock days (2) and hours (2), Fame leader rule (on) ([FINALE.md](FINALE.md)) |
 | Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, **Empty group** (runtime groups), per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | Stealth | `m_StealthSettings` | **Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth)) |
@@ -1300,6 +1301,17 @@ would loop, the test reports the outcome that moves the story on. The majors are
 mission and questline phases (The Book and Await Relief run there as their built questlines, and
 nothing starts by itself).
 
+**The cure finale.** Last, after the route walk (the cure stands the line down), the questlines'
+**Wait scale** goes to 0.1 and a scripted finale runs: a commit refused below the gate; the slow
+finish (the lab-alone track to 10, nobody holding the room), then a fresh finale; the gate opening the
+five routes; the tester locked to the Haven and stand-in identities to Bastion and the Red Hand, with
+a Bastion–Red Hand pact by tally; the Haven and Bastion racing, the Haven finishing and the others
+freezing; the seal and a stand lost, the Haven's remake step making the batch again; the second stand
+with a scripted take by the pact's side and the tester in the clean room running it into overtime
+(20 s); the win, the controller, the winner rule and the route's chunk; and the release's terms
+(`RZT finale check: <name>: OK|FAILED (...)`, then `RZT finale done: N checks OK, N FAILED`). The
+five routes are left out of the questlines' phase: they only start at the gate.
+
 **The majors.** Then the majors go on (Collapse's second evening forced): each major starts, The
 Book's send-off runs live once (its scene is ended as won), and every act is walked through its
 default to an ending (`RZT major <key> act <n> ...`, `RZT major <key> ENDED: ending <n>`). Then the
@@ -1431,7 +1443,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **74** lines with the tag, all in the game scripts (one is the comment in
+There are **77** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 14 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1449,10 +1461,10 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:179` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:194` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (40)
+### Medium risk: big features, with a fallback (43)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1477,7 +1489,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:1113`, `:1235` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
 | `Factions/RZ_Disguise.c:641`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken) |
 | `Core/RZ_Util.c:1199` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
-| `Cure/RZ_Infection.c:1177` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
+| `Cure/RZ_Infection.c:1181` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
@@ -1491,6 +1503,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:678` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:967` | a stranger is placed at the spot itself, 150–350 m ahead of the player (or 60–90 m from a stopped car), with no line-of-sight test for the design's out-of-sight point 60–90 m off | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Zombies/RZ_TribeProps.c:68`, `:350` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
+| `Cure/RZ_CureFinale.c:1270` | the cure finale's clean room: the lab prefab has no named child entity to read, so a land point 15–25 m from the lab stands in; check it's somewhere players can stand and fight | Move the lab, or a lab prefab with the room as a child entity (planned) |
+| `Cure/RZ_CureFinale.c:1372` | an unconscious player still counts in the clean room (only alive is read) | A downed player holds the room until killed: fine for a first play-test; reading the unconscious state is planned |
+| `Cure/RZ_CureFinale.c:1723` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
 
 ### Low risk: contained or cosmetic (20)
 
@@ -1732,7 +1747,20 @@ the lab's backlog, whether it's full, whether research waits at the finale's gat
 play in percent),
 `Cure: the lab's backlog is full; N of N research from a mission was lost.`,
 `Cure: research reached the finale's 90 percent gate.` and `Cure: finale research +N (faction N),
-now N percent.` (both only once a finale questline is registered),
+now N percent.` (with the finale on), the cure finale's (`Finale: the gate. Five routes open; the
+route's worth is N season Fame (leader N).`, `Finale: people seeded (N); the cold store at ...`,
+`Finale: <route> locked: N (active N).`, `Finale: <route> +N (<why>), track N.`, `Finale: Last Mile on
+<route> (track 8).`, `Finale: <route> proposes a pact with <route>.`, `Finale: pact <route> + <route>
+(tally N-N).`, `Finale: <route> finished. Batch hold N real hours and N hours of play.`, `Finale: <why>
+paid N season Fame (N full, N half). Season Fame: ...`, `Season Fame: <faction> +N (<why>), now N.`,
+`Finale: the batch is ready (<how>). Holder <route>.`, `Finale: the stand starts. Clean room: <route>.`,
+`Finale: <faction>'s group stands at the lab.`, `Finale: Take the Lab is offered to the Red Hand
+route.`, `Finale: clean room <route> -> <route> (force|theft) with N of the stand left.`, `Finale:
+the stand was lost (N this season). Remake from <route> or the backlog.`, `Finale: controller <route>,
+how <how>, partner <route>.`, `Finale: controller <route>, how <how>, terms N, deciders N.`, `Finale:
+item N (...) for <route> to <ident>.` and its drops, returns, spoils and hand-ins, `Finale: the rota
+moved the woman to house N.`, `Finale: a price door paid for <route>.`, `Finale: the Coat Run passed.`
+or `... was caught.`, `Finale: <route> broke its pact with <route> (...).`),
 `Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...`, `... goes with N of N crew aboard; the rest follow on foot.` and `... lost (...)`,
 `Story arc started: ...`, `Questline started: ...`, `Questline ...: stage '...'.` and
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
@@ -2256,6 +2284,20 @@ when it happens)
   research to 49 percent with a fast pace (a sample run): a squeezed act's last call shows as a
   headline and in the journal, and its default follows a session later. Set **Lead points** 0 and
   stall research at 48: settling day doesn't open until 50.
+- [ ] The cure finale ([FINALE.md](FINALE.md); Questlines on, **Wait scale** 0.1, research brought to
+  90 with samples): the gate news and the lab's line come once; the cure shows 90; the five routes'
+  opening lines are heard and each route's desk stands by its stronghold leader (the Independent's at
+  the lab gate). "Write me down" without "What would it mean?" is refused; with it, within 30 s, you're
+  locked, and another desk refuses you. Do the Haven's Act I by the chair: the track readout says
+  "The Haven's work is at two" and a tissue hunt is offered. Hunted by Bastion, Bastion's desk refuses
+  you until you hand over a firearm at the price door. Two players on different routes: one kills the
+  other away from the lab (+3 Infamy with the victim's route faction; a fourth and fifth kill in the
+  hour cost nothing more). Finish a route: the others' stage work is called off, the seal calls come at
+  60, 30 and 10 minutes, the stand starts with your route holding the room. Stand in the clean room
+  (15–25 m from the lab) on a rival route: the "CLEAN ROOM" notice counts you up; take it; let the 15
+  minutes run out with a count going (overtime). After the win the release scene at the lab takes the
+  terms; the cure's notice names the route and the terms; the hall of fame shows "The cure: ...". Check
+  the groups at the lab (two at most) and that they only fire on rival-route players.
 - [ ] The List (same settings; finish the contract The List first, or let a safehouse run short; with
   **Director > Majors** off, or as Every Name's act III):
   a free council head asks; the husband's trail ends at him (bring him home: +1 person) or his

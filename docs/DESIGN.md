@@ -1215,6 +1215,12 @@ time and the world, and how players did each stage decides where it goes and how
 - **Saved.** The stage, flags, texts, notes, timers, branch, visits and every participant are
   saved and restored. A stage mission doesn't survive a restart: its stage stays, and the mission
   is offered again from the start. A season wipe ends every questline.
+- **The finale's lane.** The cure finale's five routes ([FINALE.md](FINALE.md#how-a-route-runs)) run
+  outside Max active and the faction slots, start at the 90% gate, never fizzle (a stage that can't
+  happen waits, one that fails is offered again) and freeze at another route's finish. Their stages
+  are **open** (anyone not locked to another route) or **sworn** (only the route's locked players);
+  sworn stages aren't offered on the radio, the route's players are told, and the route is in their
+  journal.
 
 *Simplified:* the "persuade" check is a fixed score, not a roll: the same player with the same
 standing always gets the same answer (once per player per mission, kept by identity, so leaving
@@ -1503,7 +1509,7 @@ wanderer at once. `Claim(subject, owner)` (true if it was free or already that o
 
 | Subjects | Owners |
 |---|---|
-| `lab`, `heli`, `pit`; `Town(idx)` "town:7", `Safehouse(idx)` "safehouse:2", `Leader(id)` "leader:12", `Wanderer(id)` "wanderer:5", `Truck(faction)` "truck:1" | `MissionOwner(id)` "mission:12", `ArcOwner(kind)` "arc:4", `QuestOwner(key)` "quest:haven_short_weight"; the cure holds `lab` during the final stand |
+| `lab`, `heli`, `pit`; `Town(idx)` "town:7", `Safehouse(idx)` "safehouse:2", `Leader(id)` "leader:12", `Wanderer(id)` "wanderer:5", `Truck(faction)` "truck:1" | `MissionOwner(id)` "mission:12", `ArcOwner(kind)` "arc:4", `QuestOwner(key)` "quest:haven_short_weight"; the cure holds `lab` during the final stand and the finale's batch hold (its route stages never claim it); the finale's routes claim their subjects as `person:<key>` ([FINALE.md](FINALE.md#how-a-route-runs)) |
 
 Who holds which today: `lab` Lab Defence, Steal the Antidotes and Burn the Bodies at the lab (on
 their own; a story that runs one holds the lab itself, `IsStandalone`); `heli` Last Helicopter and
@@ -1868,7 +1874,7 @@ is logged (`Budget: <lane> morale <n> for <faction> clipped to <n>`) and becomes
 |---|---|---|---|
 | Majors | ±20 per faction a season; ±15 per major; ±10 a call | ±8; ±5 per major; ±5 a call | the majors ([The majors](#the-majors)) |
 | Contracts and errands | ±10 per faction a season day | ±4 per faction a season day | every contract's morale and strength today; errands (planned) |
-| The finale | ±10 per faction, never clipped by the majors | ±5 per faction | the finale (planned) |
+| The finale | ±10 per faction, never clipped by the majors | ±5 per faction | the finale's terms ([FINALE.md](FINALE.md#the-release-terms-and-deciders)) |
 | The epilogue | ±5 per faction, inside the majors lane | — | the epilogue week (planned) |
 
 Also kept: **the seat ledger** (contracts never take a leader's loyalty below 30, wired today; a
@@ -2316,8 +2322,8 @@ research missions (data, readings, live specimens) ─────────�
  25% Field antiviral   spread -15%, bites take 25% longer                                ◀┘
  50% Bite treatment    (antidotes and stabilisers cheaper and more plentiful)
  75% Immunity serum    spread -45% total, bites take 50% longer
-(90% the finale's gate: only while a cure finale questline is registered; none is built yet)
-100% FINAL STAND       hold the lab 15 min against waves every 2.5 min
+ 90% the finale's gate: five routes race to finish the batch (FINALE.md); the seal takes it to 100
+100% FINAL STAND       hold the lab 15 min against waves every 2.5 min; the clean room decides control
        win  ─▶ infection everywhere -70%, Aftermath, season over
        lose ─▶ nobody at the lab for 90 s: the batch is ruined, research drops to 90%
 ```
@@ -2363,16 +2369,19 @@ research missions (data, readings, live specimens) ─────────�
   work." (and "The cold store is full" while it is). Every delivery's line to everyone ends with it.
   Halcyon's secure chatter about the samples still needed says when the cold store is full or the
   work has stopped at the gate instead.
-- **The finale's gate** (built as a hook; the finale questlines are planned). Research stops at
-  **90%** only while a cure finale questline is registered (`RZ_Questline.IsCureFinale`, with
-  questlines on). None is yet, so research runs to 100% as before. A finale takes research past
-  the gate with `RZ_CureResearch.AddFinaleResearch(amount, faction, reason)`: straight into the
+- **The finale's gate.** Research stops at **90%** while the cure finale's five routes are
+  registered (`RZ_Questline.IsCureFinale`) and **Director > Finale** and questlines are on. The last
+  tenth is the finale's: the routes, the lock, the batch, the seal and the stand as a fight for the
+  clean room are in [FINALE.md](FINALE.md). The cure percent everyone sees is 90 plus the furthest
+  route's track (`ShownProgress`). Research passes the gate only through one
+  `RZ_CureResearch.AddFinaleResearch(amount, faction, reason)` call at the seal: straight into the
   worked research, not through the backlog, the Cure pace, the pace by play or the season speed,
-  and each faction's share is kept (saved) for the ending. Meanwhile the backlog still fills (and
-  then refuses). After **a real week at the gate** (÷ season speed) the lab inches up **1% a real
-  day** by itself (**Finale fallback**, × season speed; with or without the lab's capacity), so a
-  season whose finale nobody finishes still ends, about 17 days after reaching 90%. Once research
-  has reached 100% the gate stays open: a lost batch goes back to the lab's normal work.
+  credited to the finisher's faction (saved for the ending). Meanwhile the backlog still fills (and
+  then refuses). After **a real week at the gate** (÷ season speed) the built fallback, **1% a real
+  day** (**Finale fallback**, × season speed), feeds the finale's lab-alone track instead of research,
+  so a season whose routes nobody finishes still ends, about 17 days after reaching 90%. Once
+  research has reached 100% the gate stays open: after a lost stand the backlog can make the next
+  batch, which then waits for its seal.
 - **The lab** is a placed prefab, or spawns in a random town and stays there across restarts.
 - **Antidotes** are used as a world action or from the inventory; they cure an infection. The
   lab makes doses into a **stock** from the first day, faster with each breakthrough
@@ -2387,9 +2396,10 @@ research missions (data, readings, live specimens) ─────────�
   it's running. After the breakthrough or a restart, the stand (its clock, its waves and the 90 s
   "nobody at the lab" rule) only starts once a player reaches the lab.
 - **The lab never falls.** It's Halcyon's stronghold; losing the final stand ruins the batch, not the lab.
-  The Red Hand's **Take the Lab** can steal the batch during the stand instead (hold the clean room
-  for 90 s): the same result, research back to 90 percent, plus two doses on the black market
-  (within its cap). It delays the cure; the Red Hand doesn't win it that way.
+  With the finale, the stand is also a fight for the **clean room** and **Take the Lab** is the Red
+  Hand route's once-a-season holder change at the loading bay ([FINALE.md](FINALE.md#take-the-lab-and-the-coat-run)).
+  With the finale off, Take the Lab steals the batch during the stand (hold the clean room for 90 s):
+  research back to 90 percent, plus two doses on the black market (within its cap).
 - **Contracts that touch the lab** (not saved across a restart): Power the Lab makes doses come
   twice as fast for 2 hours; Mobile Lab opens a **field annex**, a second lab prefab in a safer
   town where samples can be handed in for 3 hours, then it packs up. The lab itself never moves.
@@ -2400,12 +2410,17 @@ research missions (data, readings, live specimens) ─────────�
   called off at once, with no pay and no penalty. The Perimeter stands down
   ([The Perimeter](#the-perimeter)); the broadcast stops its loop, and a first spawn and the
   wind-up radio give the new order instead.
-- **The season's end.** When the final stand is won, the cure goes to the faction the server
-  gave the most Fame this season (summed over all players). It's chosen before the stand's own
-  Fame (Halcyon +50 and the Haven +30 for each player at the lab) is handed out, so the last
-  fight can't decide it. The winner is saved to `last_season.json`. What each ending means is in
-  [LORE.md](LORE.md), "Endings"; what it leaves the next season, the wipe and the hall of fame
-  are in [Seasons](#seasons).
+- **The season's end.** When the final stand is won, **whoever holds the clean room controls the
+  cure** ([FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)): the faction whose rules apply
+  in full is the controller's (the Independent's only by its "one side" terms). **Season Fame** (the
+  Fame the server gave each faction this season, summed over all players, plus the finisher's capped
+  chunk) is the fallback: when nobody holds the room (the slow finish with no take) the cure is handed
+  over to the faction with the most, and with the finale off it picks the winner as before. The winner
+  is chosen before the stand's own Fame is handed out (with the finale: +30 for the controller's
+  holders and +20 Halcyon for everyone who held the lab; without: Halcyon +50 and the Haven +30), so
+  the last fight's pay can't decide it. The result, the route, how it was won and the terms are saved
+  to `last_season.json`. What each ending means is in [LORE.md](LORE.md), "Endings"; what it leaves
+  the next season, the wipe and the hall of fame are in [Seasons](#seasons).
 
 ## Season pacing
 
@@ -2437,7 +2452,7 @@ stretched for the longer season:
 | Samples that reach the lab | about 60% (deaths, the Red Hand's dead drop, pockets) |
 | Research missions finished | 0.14 per player-hour (about 1.7 a day), 2.5 named points each |
 | Lab Technicians and Halcyon Champions | about +20% on samples |
-| A finale (planned) | about 5 days from 90% to 100% |
+| The finale | about 5 days from 90% to 100% (an uncontested route: 4–5 days and the batch hold) |
 
 **How research adds up for 5 players** (a sample is 1% × 0.3 Cure pace; missions ×0.75 × 0.3;
 the pace by play is ×1):
@@ -2500,7 +2515,7 @@ the lab: six hordes for five defenders, so about five steady players can win it.
 | Outbreak stages | 40, 80 and 120 hours played (÷ season speed) | Collapse about day 6, Overrun day 16, Aftermath day 31 |
 | Infection creep | a quarter of the stage's spread a minute: 0.15–0.3 a played hour | as much per stage as the old 10-day tuning: +60 or so by Aftermath if nobody pushes back (1.5 per kill) |
 | The lab's work | 3% a real day, online or not (× season speed) | 90% in 30 days at the very least |
-| The finale fallback | 1% a real day after a week at the 90% gate (only with a finale registered) | the cure about 17 days after 90% if nobody finishes a finale |
+| The finale fallback | 1% a real day after a week at the 90% gate, into the finale's lab-alone track | the cure about 17 days after 90% if no route finishes |
 | Territory tick | 45–75 min (÷ season speed) | about 8 a day, at most one change each |
 | Supply trucks | 60–90 min per faction (÷ season speed) | about 6 a day per faction |
 | Safehouse upkeep | 3 h (÷ season speed) | about 2–3 meals a day |
@@ -2565,6 +2580,14 @@ hall of fame knows (a wipe by hand after a season without one).
 | The Red Hand | 1 more road post, 70% of posts are Red Hand roadblocks, the **black market everywhere** (the fence opens at Known instead of Trusted and holds two more stolen doses), Red Hand strength +5 |
 | Halcyon | Starting infection ×0.8, spread ×0.9, specials ×1.15, Halcyon strength +5 |
 
+With the cure finale ([FINALE.md](FINALE.md#endings-and-next-season)) the winner is the controller.
+An **Independent** cure goes by its terms instead: open, half the Haven's and half Halcyon's rules;
+one side, that faction's at half; sold, only the Red Hand's black market; kept back, nothing. Then
+**at most one half rule set** goes on top: a deal partner's, else the season's Fame leader's when it
+isn't the winner (**Finale > Fame leader rule**). A half rule set moves every number half-way to
+neutral and leaves its switches off (`RZ_SeasonRuleSet.Half`). Everything is combined and capped as
+below.
+
 ### Rule sets
 
 **Season > Rule sets** names the rule sets for this season, comma-separated (empty = none). Each
@@ -2628,13 +2651,15 @@ Saved to `hall_of_fame.json`, which no wipe touches. **Season > Hall of fame** (
 | Record | Counted when |
 |---|---|
 | Most samples delivered | samples handed in at the lab or an annex |
-| Held the final stand | at the lab when the final stand is won (everyone there is listed) |
+| Held the final stand | at the lab when the final stand is won (everyone there is listed); with the finale, the controller's holders and the bystanders who held the lab half the stand, never a rival side |
 | Most people rescued | a rescue brings people in (to a safehouse or onto the roads), for each rescuer |
 | Longest life | a life's clock, checked every minute (lives over 10 minutes) |
 | Most missions | each mission a player is paid for |
 | Champion of each faction | the most Fame anyone reached with that faction in one life |
 
 It's kept for **this season** and **all time**, plus a few lines for each of the last 10 seasons.
+With the finale the season's lines open with who controls the cure and the season's Fame leader:
+*"The cure: the Haven, by force. The Zone's Fame: Bastion, 1640."*
 Players get it on their first spawn of a session, after the news, and the notebook's Hall of
 fame tab shows it in full ([UI.md](UI.md#the-notebook)).
 

@@ -277,8 +277,12 @@ class RZ_WorldFacts
 			m_Mood.Tick(dt);
 		}
 
+		// The lab is held during the stand, and by the cure finale's controller during the batch
+		// hold (its route stages never claim it; docs/FINALE.md)
 		RZ_CureResearch cure = m_GM.GetCure();
-		if (cure && cure.IsFinalStand())
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		bool hold = finale && finale.IsOpen() && finale.IsFrozen();
+		if (cure && (cure.IsFinalStand() || hold))
 			Claim(LAB, CURE_OWNER);
 		else
 			Release(LAB, CURE_OWNER);
@@ -348,7 +352,8 @@ class RZ_WorldFacts
 		if (!m_GM || !m_GM.GetCure())
 			return 0;
 
-		return m_GM.GetCure().m_fProgress;
+		// With the finale's routes open: 90 plus the furthest track (RZ_CureResearch.ShownProgress)
+		return m_GM.GetCure().ShownProgress();
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -61,7 +61,8 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | The land grid (on with Zombies > Tribes): water, height, trees, buildings, roads and inferred bridges in 250 m squares, ridges, valleys, forests, fields, lair candidates, wild land and no-lair overlays, read once and cached, tribe slots at 1 per 5 km² with an override; measured on Arland, Everon and Cain (`tools/land_survey/`) | [The land](INFECTED.md#the-land) |
 | World interactions: loose loot in houses (rolled as data, put out on furniture and floors only near players, taken with vanilla's Pick up, refilled after an hour; keys, letters and mission items lie loose too), bodies looted with the vanilla inventory (what they carry goes into the body, or beside it; no search prompt), searching car boots, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars (only ever found: two or three missing parts, a wrench or toolkit to fit them, long loud hotwiring that can fail, rare keys; the tyre and planks are carryable items), crafting, traps, generators, fire (a thrown molotov, or a full fuel can in your hands at the doorway), water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
-| Cure research, antidotes, the final stand, the season's winner; the pace by play (research ×0.25 to ×2.5 for the last week's player-hours); the lab's capacity (a backlog worked through at 3% a real day, capped at 4 days of work as a backstop: samples refused and mission research lost while it's full, +25% on what fills a near-empty backlog to half a day); breakthrough news held until someone is online; the finale's 90% gate as a hook, used only once a finale questline is registered, with a fallback of 1% a real day after a week there | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
+| Cure research, antidotes, the final stand, the season's winner; the pace by play (research ×0.25 to ×2.5 for the last week's player-hours); the lab's capacity (a backlog worked through at 3% a real day, capped at 4 days of work as a backstop: samples refused and mission research lost while it's full, +25% on what fills a near-empty backlog to half a day); breakthrough news held until someone is online | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
+| The cure's finale, phase 6 of [the plan](../designs/PLAN.md#phases-18), simplified: the controller (saved) with six tracks (five routes and the lab alone), the 90% gate holding research until one `AddFinaleResearch` at the seal; the lock per identity for the season at each route's desk (two steps, price doors, `CanSideWith`), active locks; the five routes as questlines in their own lane, four acts each (open and sworn), their scenes, items with cold clocks and carriers, the people as season canon; live tissue through the tribes' hunts; pacts by tally, fighting routes, Last Mile, war Infamy for kills; the finish with the route's capped Fame chunk, the batch hold and the seal calls; the stand as a fight for the clean room (Force or Tally, take times, overtime, groups and the stand's hostility bits, the safe-zone exemption); Take the Lab as the Red Hand route's holder change and the Coat Run; the release's terms and deciders; control as the winner rule, season Fame as the fallback and the hall of fame's line; next season by controller, terms and one half rule set | [FINALE.md](FINALE.md) |
 | Seasons: next-season rules from the last winner, rule sets (Winter, Fog, Military Collapse, No Vehicles, or your own), the wipe cycle (only on the cure after an epilogue by default; a timed wipe after N weeks for admins who pick it; backup and announcements), the hall of fame | [Seasons](DESIGN.md#seasons) |
 | Contracts that give a rough area (a 500 m circle) until you're close; Radio Operators and Trusted players get the spot | [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
@@ -111,7 +112,9 @@ The build-review fixes are done. Everything below is approved. The order of the 
   the cure's finale, the epilogue week, dialogue, errands, the mission style, reputation names,
   disguise and tone) are in [designs/](../designs/README.md). Their build order, from step 0 (now)
   to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
-- Already built for them: phase 5, the four majors, simplified ([QUESTLINES.md](QUESTLINES.md#the-majors);
+- Already built for them: phase 6, the cure's finale, simplified ([FINALE.md](FINALE.md); what's left of
+  it is in [designs/FINALE.md](../designs/FINALE.md): the subjects' branches, the moves, route assets and
+  pitches, the rest of each route's ways, the dialogue commit node); phase 5, the four majors, simplified ([QUESTLINES.md](QUESTLINES.md#the-majors);
   what's left of it is in [designs/MAJORS.md](../designs/MAJORS.md): next-season story rules, the
   codas' standing versions and hall lines, the journal's own season tab, the stand inputs for the
   finale, Before the stand, and the approaches each major lists as not built); phase 4, the mission style in full (the six story jobs, reputation's
@@ -125,14 +128,13 @@ The build-review fixes are done. Everything below is approved. The order of the 
   before it's turned on by default);
   phase 1, the shared engine and reputation's names
   ([DESIGN.md](DESIGN.md#the-shared-engine), [REPUTATION.md](REPUTATION.md#reputations)), with one
-  body budget shared with the tribes' agent budget; the cure's 90% hook (`IsCureFinale`,
-  `AddFinaleResearch`; [Cure research](DESIGN.md#cure-research-and-the-seasons-end)), phase 1 of the
+  body budget shared with the tribes' agent budget; phase 1 of the
   tribes (the towns' crawlers, the land grid in use, the agent budget and the plumbing), its
   phase 2 (the tribes and the behaviour layer), its phase 3 (the life cycle, the behaviour layer's
   other strategies and the crawlers' life), its phase 4 (people and content: words, knowing,
   contracts and events, the moat, the cure's hooks, the last week, [INFECTED.md](INFECTED.md#people))
   and its phase 5 (the great one, signs and sounds, the range rings,
-  [INFECTED.md](INFECTED.md#the-great-one); the finale's live tissue goes in with the finale), one held
+  [INFECTED.md](INFECTED.md#the-great-one)), one held
   waypoint per group,
   and `tools/tribe_sim.py`, which simulates the tribes as data over a season at 2, 5 and 10 players on
   the wild land the land survey measured, on the code's rules ([its numbers](INFECTED.md#the-simulator)).
@@ -259,6 +261,9 @@ In this order, because later ones depend on earlier ones:
 | Idea | Why |
 |---|---|
 | Supply drops, airdrops, the Supply Plane Crash event | The Zone is sealed: nothing comes in from outside |
+| The earlier finale draft's any-side switching | Replaced by the lock: one route per identity for the season |
+| The most-Fame winner | Replaced by control of the clean room; season Fame is only the fallback |
+| Take the Lab stealing the batch under a finale | Replaced by the Red Hand route's holder change |
 | A visible wall, fence and watchtowers at the map edge | The cordon is felt, not seen: drones, loudspeakers, unseen snipers and sealed checkpoints |
 | Sterilisation, "Patience" and other outside deadlines | The outside never acts; urgency comes from inside (stages, spread, adaptation) |
 | Evac as an escape or a way to win | Nobody leaves the Zone; the only ending is the cure |

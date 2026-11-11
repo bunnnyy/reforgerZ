@@ -219,6 +219,10 @@ class RZ_Quest_Authors : RZ_Questline
 	//! The boss was paid: his crew is offered Take the Lab during this stand (unless one runs already).
 	protected void OfferTakeTheLab(RZ_GameModeComponent gm)
 	{
+		// Under the cure finale the controller offers it to the Red Hand route (docs/FINALE.md)
+		if (RZ_CureFinale.Get() && RZ_CureFinale.IsOn())
+			return;
+
 		RZ_MissionManager missions = gm.GetMissions();
 		if (missions.IsTypeRunning(RZ_Mission_TakeTheLab) || missions.IsTypeRunning(RZ_QM_AuthorsTakeTheLab))
 			return;
