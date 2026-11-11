@@ -72,8 +72,19 @@ class RZ_DumpPlugin : WorkbenchPlugin
 				Resource res = BaseContainerTools.LoadContainer(entry);
 				if (!res || !res.IsValid())
 					continue;
-				if (BaseContainerTools.SaveContainer(res.GetResource().ToBaseContainer(), "", outFile))
-					done++;
+				// The prefab, then each ancestor (i.txt, i_1.txt, i_2.txt ...), so inherited parts can be read too
+				BaseContainer level = res.GetResource().ToBaseContainer();
+				int depth = 0;
+				while (level && depth < 10)
+				{
+					string levelFile = outFile;
+					if (depth > 0)
+						levelFile = m_sOutDir + i.ToString() + "_" + depth.ToString() + ".txt";
+					BaseContainerTools.SaveContainer(level, "", levelFile);
+					level = level.GetAncestor();
+					depth++;
+				}
+				done++;
 			}
 			else
 			{

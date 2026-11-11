@@ -18,7 +18,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 **Manual entries (WBS §4)**
 - 2026-11-11 76b52d0: optional lists: loot tables, extra recipes, shop items, Requisition items (WBS §4, "Hand-set list entries").
-- 2026-11-11 76b52d0: replace the stand-in bases, worst first: drugs' consumable effects, `RZ_Explosion.et` (a real HE round), `RZ_Nest.et` (spawns its own), the carryable generator and alarm clock, the molotov, bottle and tin (WBS §4, "Stand-in bases").
+- 2026-11-11 76b52d0: stand-in bases still left: `RZ_Explosion.et` (a real HE round) and `RZ_Nest.et` (spawns its own) — both need a design call from the cloud (is shelling meant to hurt? should the nest spawn?).
 
 **Engine checks**
 - 2026-11-11 76b52d0: check all 79 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …".
@@ -28,6 +28,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
+- 2026-11-12 (PC): stand-ins replaced: `RZ_PortableGenerator.et` and `RZ_AlarmClock.et` are now real items (vanilla `Item_Base` with the generator / alarm clock mesh, 20 kg 2x2 / 0.3 kg 1x1, their RZ components and actions on the default context). `RZ_Molotov.et` and `RZ_Bottle.et` use the beer bottle mesh, `RZ_TinRattle.et` the tin can mesh; all three have the smoke particle cleared and their own names. The drugs' consumable effects were already set. Please update WBS "Stand-in bases".
 - 2026-11-12 (PC): **script fixes (one-liners, compile check OK):** negative seeds indexed arrays. `RZ_Tribes.c` CallPattern and AlphaWho, `RZ_TribePeople.c` CrewName now use `Math.AbsInt(...) % Count()` (each threw "Index out of bounds" in Workbench play on Everon); `RZ_SupplyLines.c` out-of-stock hash too (a negative seed made every item out of stock). Please scan for the same pattern in new code.
 - 2026-11-12 (PC): **deploy panel (UI step 5) can't be a layout override.** An override of `RoleSelectionMenu.layout` saved from the packed vanilla file breaks the menu (faction join never updates the right panel; without it the menu works). Suggest: `RZ_BackgroundPanelComponent` (or a modded deploy menu class) creates `RZ_BackgroundPanel.layout` into the open menu's root at runtime. Nothing committed for step 5.
 - 2026-11-12 (PC): **UI step 6 (map) and 4a.4 (car picture) done:** `Configs/Map/MapFullscreen.conf` overrides vanilla (same GUID `{1B8AC767E06A0ACD}`) with `RZ_MapIconsUI` added to `m_aUIComponents`; **UI > Map icon layout** set. `RZ_CarSide.edds` imported with TextureUIAtlas, **UI > Car picture** set. Map not yet seen in play (the deploy menu needs a pad/keyboard walk-through; mouse clicks on Join/Continue don't register in Workbench play, Enter does).

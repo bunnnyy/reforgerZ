@@ -1,6 +1,36 @@
-GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
  ID "F0DBA538AC2A0552"
  components {
+  MeshObject "{160812B62D0095B4}" {
+   Object "{5424C2637479A43D}Assets/Props/Civilian/AlarmClock_01/AlarmClock_01.xob"
+  }
+  RigidBody "{0E7ECD65E94C8F76}" {
+   Mass 0.3
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Alarm clock"
+     Description "A wind-up alarm clock. Wind it, put it down, and walk away before it rings."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.3
+     SizeSetupStrategy Manual
+     ItemVolume 600
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{BF3F236359EAE724}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 1.2
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
   RZ_NoisemakerComponent "{6AD67DC2A805E42E}" {
    m_fHeat 10
    m_fDelay 30
@@ -10,23 +40,18 @@ GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClo
    m_bDeleteAfter 0
    m_sArmLabel "Wind the alarm"
   }
-  ActionsManagerComponent "{6AD67DC2A805D3D4}" {
+  ActionsManagerComponent "{508AB5952B584B2E}" {
    ActionContexts {
-    UserActionContext "{6AD67DC2A805DE79}" {
-     ContextName "default"
-     Position PointInfo "{3289903EFC10C4F2}" {
-      Offset 0 0.1 0
-     }
-     Radius 0.6
-     Omnidirectional 1
+    UserActionContext "{508AC2ABEC97066C}" {
+     Radius 0.4
     }
    }
    additionalActions {
-    RZ_ArmNoisemakerAction "{6AD67DC2A805DAD4}" {
+    RZ_ArmNoisemakerAction "{6E08AB98E44BB459}" {
      ParentContextList {
       "default"
      }
-     UIInfo UIInfo "{6AD67DC2A805C75F}" {
+     UIInfo UIInfo "{CD296833D987D6A0}" {
       Name "Wind the alarm"
      }
     }

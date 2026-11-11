@@ -1,24 +1,59 @@
-GenericEntity : "{4F6BB0502ED3EFBB}Prefabs/Props/Military/Generators/GeneratorPortable_US_01_Off.et" {
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
  ID "F0DBA538AC2A0552"
  components {
+  MeshObject "{577A9D14BA1154D0}" {
+   Object "{0D05BFA780907E16}Assets/Props/Military/Generators/GeneratorPortable_US_01/GeneratorPortable_US_01.xob"
+  }
+  RigidBody "{7432DA8520627F04}" {
+   Mass 20
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Portable generator"
+     Description "A small petrol generator. Heavy, loud, and it runs a few lamps for a while."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 20
+     SizeSetupStrategy Manual
+     ItemVolume 15000
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{2345CEB22C406D20}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 1.2
+     }
+    }
+    m_Size SLOT_2x2
+   }
+  }
   RZ_PlaceableComponent "{6AD67DC2A80E195A}" {
    m_eKind GENERATOR
   }
-  ActionsManagerComponent "{5298C80DC0D5555E}" {
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     Radius 0.8
+    }
+   }
    additionalActions {
-    RZ_PlaceAction "{6AD67DC2A80E022F}" {
+    RZ_PlaceAction "{E19E969550CC868F}" {
      ParentContextList {
-      "powerswitch"
+      "default"
      }
-     UIInfo UIInfo "{6AD67DC2A80E00D9}" {
+     UIInfo UIInfo "{FE299E73C6AB21E5}" {
       Name "Set it down"
      }
     }
-    RZ_PlaceAction "{6AD67DC2A80E0F02}" {
+    RZ_PlaceAction "{6A04B0F32D6581C8}" {
      ParentContextList {
-      "powerswitch"
+      "default"
      }
-     UIInfo UIInfo "{6AD67DC2A80E0D28}" {
+     UIInfo UIInfo "{8FC49B17DC98AF00}" {
       Name "Refuel"
      }
      m_bRefuel 1
