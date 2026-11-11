@@ -758,6 +758,10 @@ class RZ_Event_WeddingParty : RZ_Mission
 	{
 		if (m_bCleared && RZ_EventHelp.Settings(gm).m_sJewelleryPrefab.IsEmpty())
 			gm.SpawnRewardCrate(LandPointNear(m_vPos, 1, 4));
+
+		// The Zone made something: a ring on the market (the errand The Market reads it)
+		if (m_bCleared)
+			gm.GetFacts().Memory().Signal("wedding", m_vPos, "a wedding party, a ring that came off a finger, near " + GetLocationName(gm));
 	}
 
 	//------------------------------------------------------------------------------------------------

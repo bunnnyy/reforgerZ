@@ -4,11 +4,11 @@ The small, personal jobs one named person asks of one player, each true because 
 world is true right now, and over the moment it stops being true. Contracts are the factions' work
 on the radio ([MISSIONS.md](MISSIONS.md)); questlines are the long stories
 ([QUESTLINES.md](QUESTLINES.md)); errands are everything in between. What's still to build (the
-margin, lock and epilogue cards, promises and threads, the rest of the cards and routines) is
+epilogue cards, promises and threads, His Effects in full) is
 designed in [designs/ERRANDS.md](../designs/ERRANDS.md).
 
 Code: `Missions/Errands/` (`RZ_Errands.c` the dealer and the small-pay ledger, `RZ_Errand.c` the
-parts, `RZ_ErrandRoutines.c` and `RZ_ErrandRoutinesPeople.c` the routines, `RZ_ErrandRegistry.c`
+parts, `RZ_ErrandRoutines.c`, `RZ_ErrandRoutinesPeople.c` and `RZ_ErrandRoutinesLate.c` the routines, `RZ_ErrandRegistry.c`
 the list and the cards' base, `Cards/<Family>/` one class per card, `RZ_Strangers.c` the stranger
 spots and visits, `RZ_StrangerKinds.c` the stranger routines), `World/RZ_NamedPeople.c` (the givers),
 `World/RZ_Locals.c` (the locals), `World/RZ_Faults.c` (the faults table). Settings: **Missions > Errands** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
@@ -49,10 +49,11 @@ Server only, except the journal row.
 Two layers:
 
 - **Routines** repeat, on cooldowns: per player per place a real day, per player anywhere 3 real
-  hours, per place server-wide 20 minutes. 31 at the four holding kinds, the wanderers' asks, and
+  hours, per place server-wide 20 minutes. 34 at the four holding kinds, the wanderers' asks, and
   18 stranger routines.
 - **Cards** are hand-written, **once per player per season** (keyed to the identity, not the
-  character), at most **2 a real day**. 39 so far.
+  character), at most **2 a real day**. 61, every one true only while its reason is (a world fact, a
+  place, your standing or background, the season's stage, a major's wait or the finale's lock).
 
 Errands are never stages and never on the map. Every one has a way without a gun. They spawn no
 AI, no crates and no items. Nobody in the Zone calls them errands: the Haven asks you to "do us a
@@ -232,9 +233,12 @@ Some routines answer a small real fault at a place (`RZ_Faults`), rolled at most
 | **Sandbags** | Bastion post | a death or shells within 400 m in 3 played hours | Fill and stack sandbags at the gap (2 min at the gate): 5 Favor |
 | **Rent's Due** | Red Hand camp | the infected's ground within 1.2 km, dusk within 20 real min | Count them past from 200–400 m out, unseen (2 min): 6 Favor. Make a number up: 3 Favor, and a lie found by rumour (+3 Red Hand Infamy) |
 | **The Number** | Halcyon station or the lab | night, a trial dose that didn't take today | Sit with the night shift (90 s). No pay |
+| **His Lighter** (the dead) | Red Hand camp, a crewman or the cook | a death within 1 km in the last season day (never to whoever caused it) | Sell it to the fence: 6 Favor. Take it to his mother at a house within 1.5 km (5 s): 1 Haven Fame, a local (what he owed is in the book against her now). [Known: Bastion] sell it to Bastion's post as proof of one less: 5 Bastion Favor and a lie the rumour round finds (+4 Red Hand Infamy) |
+| **The Market** | Red Hand camp, the fence | a Wedding Party cleared within 3 km in the last season day (its signal `wedding`) | Find the ring (20 s) and sell it to him: 8 Favor. Give it to the groom's mother at a house (5 s there): 2 Haven Fame, and the fence calls you soft. Sell it to her for two of the house's tins: 4 Favor, the house −2 food |
+| **The Receiver** | Halcyon station or the lab, the technician | a tagged pack within 6 km, and the receiver down today (half the days, by the season's seed) | A battery at the mast 200–400 m out (10 s), or [Lab Tech] re-seat the cable (15 s): 5 Favor. Never near the pack |
 
-*Not built yet* (designed): His Lighter and The Market (they need the effects as a carried item and
-the Wedding Party's ring), and The Receiver (the tag receiver comes with the tribes' tags).
+*Simplified:* His Lighter's "crewman" is anyone who died near the camp, and The Market's ring is found
+at the party's spot as a step, not as an item.
 
 Four missions left the random pool for these and are gone from the code: Fuel for the Lights
 (Lights), Water Purifier (Filter Parts), Water Run (Water for {house}) and Medicine Before Dark
@@ -295,6 +299,28 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **Shoes in a Row** (the infected) | the clerk | by day, a lair within 1.5 km whose leader the Haven knew by name | Count the shoes from about 110 m unseen (30 s; [Hunter] from 150 m): 5 Favor, the count in the book (`errand.shoes`). Make a number up: 3 Favor, read as "about", and a lie |
 | **Not Past the Chapel** (the infected) | a Haven named person | dusk within 20 real min, a hungry lot's ground within 1 km | Bring the old man in before half past eight (+1 person): 5 Favor. Board his doors: 4 Favor. Or leave him. He's rude whichever |
 | **Buy It Back** (fallout) | aftermath, a Bastion named person; Known with Bastion | Crash Site's fallout: the box not handed in, a post within 3 km of the wreck | A fence's runner sits on the box at the wreck: five tins there, or 25 Red Hand Favor (only offered if you have it), then hand it in: 6 Favor (at most the fallout's cap); the world record `crash.box` = bought back |
+| **Notebook 31** (the dead; fallout) | a Halcyon named person | Lost Colleague's fallout: he died where he hid | Bring back the coat and the notebook (15 s where he fell): 5 Favor, 2 Fame, the record `errand.notebook31` with an epilogue line (the authors' list). [Known: Red Hand] sell the notebook to the fence: 6 Red Hand Favor and a lie (+5 Halcyon Infamy when found). Keep it (a life record: its number is something to say at Halcyon's gate) |
+| **Paint** (the crews) | a Red Hand named person; Known with the Red Hand | at night, a Bastion road post within 2.5 km | Paint a red hand on the barrier, unseen (20 s hidden there): 5 Favor, 2 Fame, a life record. Say you did: 2 Favor and a lie |
+| **Wrong Way Round** (the crews) | a Red Hand named person; Trusted with the Red Hand | a Haven house within 1.5 km, in a town the crews don't hold | Watch the gate and tell the boss who (15 s): 4 Favor, 2 Fame; the house −1 person, +5 Haven Infamy. Warn the lads off (10 s): 2 Haven Fame. Take a cut: 3 Favor and a lie the house's next count finds (+5 Haven Infamy) |
+| **Spot the Tells** (Bastion) | a Bastion named person; Known with Bastion; disguises on | a Red Hand camp within 2 km | Watch the gate and name the scout (45 s; [Police or Ex-Con] 15 s): 5 Favor, 2 Fame. Take his money and point at Private Hollis: 6 Red Hand Favor and a lie found by a visit (+5 Bastion Infamy) |
+| **Masks Off** (Halcyon) | a Halcyon named person; Known with Halcyon | a house within 2 km declared a bite (the reason `house.bitten`) | Find the man in the lab coat (15 s at the house): turn him in (4 Favor, 2 Fame), let him go (2 Haven Fame), or take his coat (number 17, signed out to Dr Brandt: no use at any gate) |
+| **Civvies** (help across lines) | a Haven named person | the Deserter wanderer within 1.5 km | Find him clothes in the next town (20 s): 4 Favor, 2 Fame, the record `errand.civvies`. Sell where he sleeps to the crews: 6 Red Hand Favor, he's off the roads, and a lie (+6 Haven Infamy when found) |
+| **Laundry Day** (help across lines) | a Haven named person; Known with the Haven | a Haven–Bastion truce, a Bastion holding and a Red Hand road post each within 1.5 km | Carry the sack to the post round the roadblock (5 s there): 4 Favor, 2 Haven Fame, 1 Bastion Fame, +2 food at the house. Sell it to the fence: 6 Red Hand Favor, the house −2 food, a lie its next count finds (+3 Haven Infamy) |
+| **The Other Half** (help across lines) | any holding's named person; Known with their rival (the Red Hand's: Bastion; everyone else's: the Red Hand) | a holding of that rival within 1.5 km | Carry the threat word for word (5 s at their gate): 4 Favor, +2 Infamy with the rival. Soften it (Trust 2 with the rival): 4 Favor |
+| **The Drawing** (the Long Table) | the clerk; Known with the Haven | the Long Table broken up and the boy not lost (`table.broken`, not `table.boy_lost`) | Put it in the drawer, keep it, or burn it on the stove. No pay; the flag `errand.drawing` (1, 2, 3) and a record |
+| **Is She Gone?** (the infected) | a Haven named person | a pack within 1.5 km standing its vigil for a leader the house knew by name | Watch from the lair's edge, unseen (15 s): 4 Favor. [Elder] sit at supper while they say her name (a minute): 3 Favor, a record with an epilogue line |
+| **Boarded Up** (players' traces) | a Haven named person | a town within 1.5 km that nobody holds, at 30+ infection, with a player's barricade standing | Bring the family out (10 s): +1 at the house, 4 Favor. Leave a tin there: 3 Favor. *"Whoever boarded this, tell them it held."* (never the builder's name) |
+| **Old Habits** (backgrounds: Ex-Con) | a Bastion named person | a Red Hand camp within 1.5 km | Walk the wire and say where you'd come in (a minute at the gate): 5 Favor, 1 Fame. Tell him the wrong place: 3 Favor and a lie (+3 Bastion Infamy when found) |
+| **Names on the Call** (Bastion) | the radio operator | civilians sheltered at Bastion's posts this season (`bastion.sheltered`), a house within 1.5 km | Pin the list on the house's board (5 s there): 4 Favor |
+| **The Chalk on the Door** (the house) | the clerk | a town within 1.5 km with a work tally ([MISSIONS.md](MISSIONS.md#one-choice-jobs-and-work)) | Go and read the wall (15 s): 3 Favor. Say it's still true: 2 Favor and a lie |
+| **After the Noise** (aftermath) | the lookout | a horde passed a town within 1.5 km (the reason `horde.passed`) | Walk the edge unseen (20 s): 5 Favor. [Hunter] read the ground (10 s): 5 Favor |
+| **Last Orders** (the dead) | any holding's named person | one of their own leaders died within 3 km (the reason `leader.died`) | Bring his order book in unread (10 s at his seat): 4 Favor. [Known] read it on the way: 3 Favor and his last page, in his faction's voice |
+| **The New Number** (Halcyon) | a Halcyon named person | a cure milestone in the last season day (the reason `cure.<percent>`) | Paint the new number on the board at the gate (10 s): 3 Favor |
+| **The Last Apples** (the house) | the cook | Overrun or later, the house under two upkeeps, an empty village within 1.2 km | Pick the last of the orchard (30 s): 4 Favor, +2 food |
+| **Clean Glasses** (margin: The Book Has to Balance) | a Red Hand named person | the major waits for its settling day or its last page; not 16:00–21:00 | Six unbroken glasses from an empty village (30 s): 5 Favor |
+| **Count for the Sitting** (margin: Every Name) | the clerk | the major waits for a sitting; before 17:00; another house within 1.5 km | Carry the count before half past six (5 s there): 3 Favor; or carry it and say the house is hungrier than it says: 3 Favor, a record. It changes no vote |
+| **Hand to Hand** (margin: the Independent) | a Haven named person | the finale's routes are open, you've locked to none, a local at this house knows you | Promise: no pay, the local pinned, the record `errand.hands` with an epilogue line; six a player a season. Or don't. A promise moves no track |
+| **They Say You're With …** (lock card) | a Haven named person | you've locked to a route that isn't the Haven's, a local at this house knows you | Titled by your route (Bastion, the Red Hand, Halcyon; the Independent's: *They Say You're Doing It Yourself*). Talk it through; walk them to the next town, out of the stand's way; or carry one true word to your side. No pay; the local remembers |
 
 ## Fallout
 
@@ -309,6 +335,7 @@ a second fallout of the same kind at the same place replaces the first. Not save
 | Protection Racket (time up) | The Pot, at the house |
 | Crash Site (the box not handed in) | Buy It Back |
 | Distress Call (the people died), Survivors Trapped (all dead) | The Name on the Tag, their names to the nearest house |
+| Lost Colleague (time up while he hid) | Notebook 31 |
 
 ## Strangers
 
@@ -461,8 +488,8 @@ found by events (a visit, a road, a rumour round, the next real reading).
 *Simplified:* a step's place is a point, with no scene person or prop at it (strangers are the only
 scene people); the lines have two or three variants each, not always three; a card dealt counts toward
 the day's two even if declined; pay in kind is an effect (errands hand out no items; a stranger's gift
-is one common find). Not built yet, and designed in [designs/ERRANDS.md](../designs/ERRANDS.md): the
-margin, lock and epilogue cards, promises and callbacks from errands, threads, the rest of the cards
-and routines (His Lighter, The Market, The Receiver, The Other Half, The Drawing, Is She Gone?, Boarded
-Up, His Effects in full), chore slots per holding, and the `mission_errand` icon (the journal uses the
-unarmed icon).
+is one common find). The margin cards read the majors' waits (the run's stage), and the lock cards read
+the finale's lock (`RouteOfPlayer`). Not built yet, and designed in
+[designs/ERRANDS.md](../designs/ERRANDS.md): the epilogue cards, the other majors' margin cards, promises
+and callbacks from errands, threads, His Effects in full (the effects as an item, a body near a post),
+chore slots per holding, and the `mission_errand` icon (the journal uses the unarmed icon).

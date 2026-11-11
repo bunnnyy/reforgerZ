@@ -1808,7 +1808,7 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 records.` and `Shared: N callbacks waiting, N season records.`
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 33 routines and 39 cards, N players with a ledger.`; while running, `Errands:
+start, `Errands: on, 36 routines and 61 cards, N players with a ledger.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
@@ -2618,6 +2618,19 @@ on the talk screen says why something wasn't dealt)
 - [ ] The bed by the stove (Dialogue > Trees on, a short house): someone Known with the Haven decides;
   a Stranger sees the choices dimmed ("only someone ... trusts"); the room hears it. Leave a talk open
   with another player standing beside the person: it closes after 45 s.
+
+**Phase 8's errands** (the admin reply's "why not" list names each card's reason when it isn't dealt)
+- [ ] Each new card is offered only while its reason holds and lapses when it stops (`Errands: <key> for
+  <player> overtaken`): Masks Off after a bite at a house, After the Noise after The Tribe Moves, The New
+  Number after a cure milestone, Names on the Call after people went to Bastion's post, The Chalk on the
+  Door after a work job's tally, Last Orders after a leader died, The Market after a Wedding Party, His
+  Lighter after a death near a crew camp, The Receiver with a tagged pack near a station.
+- [ ] The margin cards: Clean Glasses while The Book Has to Balance waits for its settling day, never
+  16:00–21:00; Count for the Sitting while Every Name waits for a sitting, before 17:00. The lock card
+  (finale on, past 90%): lock to Bastion, help a local at a house, then ask there: *They Say You're With
+  Bastion*. Hand to Hand only while unlocked.
+- [ ] Lost Colleague failed while he hid: Notebook 31 is dealt at a Halcyon station within 3 km,
+  participants first.
 
 **Strangers** (Missions > Errands > Strangers; the admin reply names the spot kinds where you stand)
 - [ ] Walk a road you've used a lot (by day), toward a safehouse's approach, past a road post, along a

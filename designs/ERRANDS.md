@@ -1,13 +1,14 @@
 # Errands
 
-**Status: designed; phase 3 (the core) and phase 4 built.** Approved by the author on 2026-11-11.
+**Status: designed; phases 3, 4 and 8 built.** Approved by the author on 2026-11-11.
 Built and described in [docs/ERRANDS.md](../docs/ERRANDS.md): the givers, the dealer's asked and
-called-out offers, soft holds and overtaking, the faults table, the small-pay ledger, 31 routines, the
-wanderers' asks, 39 cards, fallout errands, strangers at every spot kind (18 stranger routines and
-found hooks), locals, twists, and board and radio asks; the lie store and the witness rule are in
-[docs/DESIGN.md](../docs/DESIGN.md#lies-and-witnesses). This file keeps what's still to build: the
-margin, lock and epilogue cards, promises, callbacks and threads from errands, the remaining routines
-and cards, chore slots, and the parts of the built pieces listed as still to build below.
+called-out offers, soft holds and overtaking, the faults table, the small-pay ledger, 34 routines, the
+wanderers' asks, 61 cards (with the first margin cards and the lock card), fallout errands, strangers
+at every spot kind (18 stranger routines and found hooks), locals, twists, and board and radio asks;
+the lie store and the witness rule are in [docs/DESIGN.md](../docs/DESIGN.md#lies-and-witnesses). This
+file keeps what's still to build: the epilogue cards, the other majors' margin cards, promises,
+callbacks and threads from errands, His Effects in full, chore slots, and the parts of the built pieces
+listed as still to build below.
 
 ## What changed in review
 
@@ -607,10 +608,8 @@ kind with their own clock (2 hours of the promiser's play, at most 3 real days).
      and to anyone not locked elsewhere (decision 8);
    - route errands for its **sworn acts** (II and IV) only to that route's locked players
      ([FINALE.md](FINALE.md), §5).
-7. **Lock cards.** Each of the five routes has one: people on other sides react to your choice, and old
-   locals stand with someone else.
-8. **Hand to Hand** (the Independent, before 90%). An Independent margin card lets a player promise a few
-   locals they'll be among the first: at most 6 per player, pinned, flag `errand.hands`. In the finale a
+7. **Lock cards** are built (one card, titled by your route: [docs/ERRANDS.md](../docs/ERRANDS.md#the-cards)).
+8. **Hand to Hand** is built as a card ([docs/ERRANDS.md](../docs/ERRANDS.md#the-cards)). In the finale a
    promise does only two things ([FINALE.md](FINALE.md), §2):
    - a promised local living in the same house as one of the eight makes that person's yes one step
      easier;
@@ -724,198 +723,29 @@ and one still waiting on the last day becomes a board note. Unresolved lie recor
 
 ## The catalogue
 
-Every routine and card, with where it came from. "Pays" is within §14's rules everywhere: Fame at most 2,
-Favor 3–10, or amends. ★ marks a background read.
-
-### Routines at a Haven safehouse
-
-The built ones are in [docs/ERRANDS.md](../docs/ERRANDS.md#the-routines); still to build:
-
-| Routine | Giver | Why | Ways and pay |
-|---|---|---|---|
-
-### Routines at a Bastion post
-
-| Routine | Giver | Why | Ways and pay |
-|---|---|---|---|
-| **The Locker** | the operator | a Bastion crew lost within 1.5 km today | See His Effects, below |
-
-### Routines at a Red Hand camp or roadblock
-
-| Routine | Giver | Why | Ways and pay |
-|---|---|---|---|
-| **His Lighter** | a crewman | a crewman died near a Red Hand holding today | See His Effects, below |
-| **The Market** | the fence | the Zone just made something: a ring after a Wedding Party, a satchel after a never-arrived | He wants it. The twist (rolled): the groom's mother at a Haven house wants the ring too. Give it to her (+2 Haven Fame; the fence calls you soft), sell it to her for 2 food, or sell it to him (8 Favor). Inside the ring: a date and *"for ever"*. Nobody laughs except the fence |
-
-### Routines at a Halcyon station or the lab
-
-| Routine | Giver | Why | Ways and pay |
-|---|---|---|---|
-| **The Receiver** (The Tag, re-angled) | a technician | the station's tag receiver is down (a cable or a mast, 200–400 m out) while a tagged alpha's signal is unread | Fix it with a part, or ★ Lab Tech re-seats it: 5 Favor. Never goes near the alpha or its tag |
-
-### Wanderers' asks
-
-All five are built ([docs/ERRANDS.md](../docs/ERRANDS.md#the-wanderers-asks)).
-
-### Stranger routines
-
-All built ([docs/ERRANDS.md](../docs/ERRANDS.md#strangers)), with the found hooks and old marks.
-
-### Cards
-
-Once per player per season. Grouped by family. The 39 built cards are in
-[docs/ERRANDS.md](../docs/ERRANDS.md#the-cards) (His Effects as The Locker and The Wreck's Name, The Name on
-the Tag as its satchel variant, Clean Slate); still to build:
+Every routine and card still to build, with where it came from. "Pays" is within §14's rules
+everywhere: Fame at most 2, Favor 3–10, or amends. The built ones, 34 routines and 61 cards, are in
+[docs/ERRANDS.md](../docs/ERRANDS.md#the-routines).
 
 **The dead**
-- **His Effects** (one family, a variant per faction; The Name on the Tape, The Locker, His Lighter, The
-  Tags and The Wreck's Name merged; a simpler Locker and Wreck's Name on a lost truck are built,
-  [docs/ERRANDS.md](../docs/ERRANDS.md#the-cards): still to build are the effects as a mission item, a
-  body near a post, the jacket and photo frame at the fence, the witness rule and His Lighter). The effects are a mission item. A kit piece off a man you killed is
-  refused (*"You'd know. You were there."*, +3 Infamy with his faction). Once per dead man, 3 times a life.
-  - *Bastion: The Locker* (the operator). Why: a Bastion crew lost within 1.5 km today, or one of
-    Bastion's people died near a post this season day and his body is still out there (the body is a
-    prop, removed afterwards). Bring his effects (a photo and a letter; his jacket with its name tape) to
-    the post. His tag goes on the nail, and the operator boxes the rest with the others *"for when the
-    gates open"*: 5 Favor, +1 Fame, and his name on the nightly call. [Betray] the fence buys the photo frame (3 RH Favor), or the jacket (10 RH Favor,
-    *"A name the army can't check twice"*), and the post lists him as "kit lost"; witness rule.
-    Epilogue: the boxes are stacked by the radio, labelled.
-  - *The Red Hand: His Lighter* (a crewman). Why: a crewman died near a Red Hand holding today. His kit
-    is on the market before the horns stop, and the lighter is the last of it. Sell it to the fence (6
-    RH Favor; *"Bought fair. It's in the book."*). Or take it to his mother at a Haven house (a local; +1
-    Haven Fame); the crew says nothing, because you didn't rat. What he owed is in the book against her
-    now, and the lighter won't pay it. Or sell it to Bastion as proof of one less (5 Bastion Favor;
-    witness rule).
-  - *Any faction that lost a truck: The Wreck's Name.* Why: a lost-truck signal. Visit the wreck, read
-    the driver's papers, and take them to that faction's nearest outpost: 4 Favor, and the driver's name
-    is read on the faction's channel.
-  - *After the cure: The Tags* is part of Bring Them Home ([EPILOGUE.md](EPILOGUE.md)).
-- **The Name on the Tag** (a found hook; Whose Satchel merged in; the satchel variant is built, from a
-  death in the signal ring: still to build is the named body at a job's site). Why: a named body at a job's site, or
-  a journal of the dead within 1.5 km from the last real day. Carry the ID to the house or post it names:
-  4 Favor from that faction. Red Hand crews don't bury their dead, so it's thanks only. *The satchel
-  variant:* a satchel came in with no name, *"a mechanic, nine days in, near the mill."* Take it to the
-  place and leave it on the grave cairn, or bring the line to the board. Never a player's name. *"Nine
-  days. That's a long time, now."* Writes a world record with an epilogue line. Distress Call's and
-  Survivors Trapped's fallout.
-- **Notebook 31** (Halcyon; His Notebook and the epilogue's Into the Record merged in).
-  Why: a Halcyon courier or researcher died this season (The Missing Courier, Lost Colleague, a field
-  lead's death). His numbered coat and notebook are where he fell (a prop). Return both: +2 Halcyon Fame,
-  and his name goes on the authors' list at the change of shift. Sell the notebook to the fence: 10 RH
-  Favor (a lie record, found when Proof's author list is read with his name missing). Keep the notebook:
-  its number is a real cover detail for one Halcyon look. The coat is a dead man's coat, so it's no good
-  at Halcyon's looks. Lost Colleague's fallout (His Notebook). After the cure, its variant Into the Record takes the
-  notebook to Proof's table ([EPILOGUE.md](EPILOGUE.md)).
+- **His Effects in full** (a simpler Locker and Wreck's Name on a lost truck, and His Lighter as a
+  routine, are built). Still to build: the effects as a mission item; *The Locker*'s other why (one of
+  Bastion's people died near a post this season day and his body is still out there, a prop removed
+  afterwards), his tag on the nail and his name on the nightly call; the jacket and the photo frame at
+  the fence (3 and 10 RH Favor, *"A name the army can't check twice"*) under the witness rule; a kit piece
+  off a man you killed refused (*"You'd know. You were there."*, +3 Infamy with his faction); once per
+  dead man, 3 times a life. *After the cure: The Tags* is part of Bring Them Home ([EPILOGUE.md](EPILOGUE.md)).
+- **The Name on the Tag**'s named body at a job's site (the satchel variant is built). Carry the ID to
+  the house or post it names: 4 Favor from that faction. Red Hand crews don't bury their dead, so it's
+  thanks only.
+- **Notebook 31**'s other whys: a Halcyon courier or field lead who died this season (The Missing
+  Courier, a field lead's death), and the coat and notebook as props. After the cure, its variant Into
+  the Record takes the notebook to Proof's table ([EPILOGUE.md](EPILOGUE.md)).
 
-**Hidden truths and the crews**
-- **Paint** (the Red Hand, Known; Name Day's Brush merged in). Why: at night, a Bastion checkpoint within
-  2.5 km of a Red Hand camp. *"New faces paint a red hand on."* Paint one on the barrier, or on a Bastion
-  sign in sight of the checkpoint without being searched: 20 s at the prop. The post comes down within
-  45 minutes, so nothing stays. Trick: in Bastion kit, ask the crew for a light (a claim at the barrier).
-  Sneak: from the back, unseen. Force: it's a fight. The crew names you for it, after something you'd
-  rather they forgot (`book.named`, the same flag the pit gives), and +2 RH Fame. The post's incident
-  sheet: *"Civilian with a paint tin. Day 14."*
-- **Wrong Way Round** (the Red Hand, Trusted). Why: a Haven house on a road the Red Hand doesn't hold.
-  The house's lads take tolls under painted red hands to keep raiders off, and they painted them the
-  wrong way round. Tell the boss: they're "settled", the house loses 1 person, +2 RH Fame, +5 Haven
-  Infamy. Take a cut: 6 Haven Favor from the lads' takings, once (a lie record, found when the house
-  counts at its next upkeep: +5 Haven Infamy). Warn them off: +2 Haven Fame. Or recruit them: +2 RH Fame,
-  and the house loses 1 person.
-- **Clean Glasses** (a crew lad; a margin card for The Book Has to Balance). Why: the crews meet tomorrow
-  night (not tonight), and the boss wants glasses. Find six unbroken glasses in an empty town (search
-  spots): 5 RH Favor. *"He wants it to look civilised. Then he'll read out who owes."*
-
-**Bastion**
-- **Spot the Tells** (Bastion, Known). Why: two or more different players were caught in Bastion kit near
-  a post in the last 2 season days. A Red Hand scout in Bastion kit stands among the post's three named
-  people. Talk to each and find him by his tells: the wrong boots, an AK, no cap. Right: +2 Fame, 5 Favor,
-  and he goes to the stockade (Bust Out runs a little more often). Wrong: *"Private Hollis spends the night
-  in the stockade for wearing the wrong boots. He's furious. He's also, technically, out of uniform."* No
-  pay. Or take the scout's 10 Red Hand Favor to point at Hollis (a lie record, found when Hollis is let out
-  and the scout is still on the gate: +5 Bastion Infamy).
-
-**Halcyon**
-- **Masks Off** (Halcyon, Known). Why: a safehouse took a bite declaration in the last season day. A man
-  in a lab coat and a beak's respirator has been taking "samples" from the bitten. He's a Haven orderly
-  selling them to the Red Hand for his daughter's antidote. Turn him in: +2 Halcyon Fame, and the coat
-  goes back in the record. Let him go: +2 Haven Fame. Or take his coat: *"It's a good coat. It's also
-  number 17, and number 17 is signed out to Dr Brandt."* It's useless at Halcyon's looks (signed-for kit
-  fails at once).
-
-**Help across lines**
-- **Civvies** (a Haven occupant; re-angled). Why: a deserter struck off Bastion's strength as KIA, his
-  name still on the board, is sheltering at a safehouse (a Deserter wanderer resting there, or a man made
-  for the card; never the finale's canon deserter). The disguise in reverse: he wants to stop looking like
-  a soldier. Bring him civilian clothes (nothing with a faction's keywords): +2 Haven Fame, and he stays
-  as one of the house. What happens to him after that is Struck Off's story, not this card's: if a player
-  takes his tag to a Bastion post, Struck Off opens with him as its subject, and Bastion's way ends with
-  him handing his tag to the sergeant and answering *"Here"* at the roll. Sell where he sleeps to the Red
-  Hand (6 RH Favor), and he's gone by morning (a headline). It never overlaps Desertion Route, which is
-  about the men a commander lets go.
-- **Laundry Day** (the Haven, Known). Why: a Haven and Bastion truce, a house near a Bastion post, and a
-  Red Hand roadblock in between. The house washes Bastion's uniforms for bread. Get the sack (a mission
-  item, not wearable) past the roadblock. Wear a uniform from it on top: that's Bastion colours, so
-  you're turned round, and during a feud you get the grudge. Or go round, more than 150 m from the
-  roadblock. Or pay the toll twice (20 Red Hand Favor). Or sell the sack to the fence for 10 Red Hand
-  Favor: the house loses its bread (−2 food), and a lie record is found when the house counts at its next
-  upkeep (+3 Haven Infamy). Delivered: +2 Haven Fame, +1 Bastion Fame, and the house gets +2 food.
-- **The Other Half** (anyone; owed by one faction, Known with its rival). Carry a message to the people
-  who want you dead. The parley is the delivery. The message is a threat.
-
-**The Long Table**
-- **The Drawing** (the Kid; horror). Why: the Long Table was broken up and the boy got out; you're Known
-  with the Haven. A long table, one more chair than people, a row of boots in too many sizes. Nobody says
-  more. Take it to the clerk, who puts it in the drawer (`errand.drawing` 1); keep it (2); or burn it on
-  the stove (3). Pays nothing. The epilogue reads which.
-
-**The tribes**
-- **Is She Gone?** (a Haven occupant). Why: a tribe's alpha went down in the last 2 played hours, and the
-  occupant knew who it had been. *"Ilse ran the bakery. Is it true?"* Go to the lair's edge (15 s) and see
-  whether the tribe still gathers there (the vigil, or a new leader calling): tell them, 4 Favor. No
-  keepsake: that's Bring Them Home's. Or point them to whoever paid for it. [★ Elder] sit at supper: the
-  house reads her name.
-
-**Players' traces**
-- **Boarded Up** (a family). Why: a player's barricade stands in a town nobody holds, and the infected
-  are near. A family has been sheltering behind it. Walk them to the nearest house (≤ 600 m), or leave
-  them food. *"Whoever boarded this: tell them it held."* (a line to you only, never the builder's name).
-- **The Name on the Tag**'s satchel variant (above) and **The Truck Didn't Come** (above) also read
-  traces.
-
-**Champions and backgrounds**
-- Every background has at least two built cards or routines that read it ([docs/ERRANDS.md](../docs/ERRANDS.md)),
-  except the Ex-Con (Vouch, Short Change and My Sister at Morton read it; **Old Habits** is still to write)
-  and the Elder (The Burying and The Digger; Is She Gone? waits for the tribes' "leader down" fact).
-
-**The amends family** (The Latrine, Make It Right, Clean Slate and Come In merged). All pay amends
-through `Forgive()`: 2 Infamy off at a time, at most 8 a life per faction from errands, never below 15,
-inside reputation's 30. Amends need clean hands.
-- *The Haven:* Make It Right (above).
-- *Bastion:* The Latrine (above).
-- *Any faction's outpost:* **Clean Slate**, for the Watched: the dirtiest local job (the burial pit,
-  scrubbing cages). *"Nobody watches the man with the shovel."* It puts you next to what they hide (a
-  truth hint for a running story job).
-- *After the cure:* **Come In** ([EPILOGUE.md](EPILOGUE.md)).
-
-**Margin cards** (2–4 per major, in its voice; never on its set-piece evenings or inside its 600 m)
-- **Count for the Sitting** (the house's clerk; Every Name). Why: the summons is out, this head stays home
-  on watch, and it's not a sitting evening. The clerk can't leave either. Carry the count to the
-  stronghold house before supper (regard with the clerk only). Read it on the way: the house is hungrier
-  than it says. Tell nobody, or tell the stronghold clerk (both remember, differently). It changes no
-  vote.
-- **Clean Glasses** (The Book Has to Balance; above).
-- Await Relief and Proof each get 2–4 written with their phase-5 build ([MAJORS.md](MAJORS.md)).
-- **Hand to Hand** (a Haven local; the Independent's margin card, before 90%). Why: the 90% stall, before
-  the lock. The local asks you, not a faction, to bring theirs when it's made. Promise (pinned,
-  `errand.hands`; at most 6) or don't. A promise moves no track (§20). Epilogue under route 5: they wait
-  at their house; elsewhere: *"You meant it. That counts for something."*
-
-**Lock cards** (one per route)
-- **They Say You're With Bastion** (a pinned local). Why: you're locked to a route after 90%, and a local
-  you helped stands with another side. Talk it through (nothing unlocks, nothing locks for them); walk
-  them home, out of the stand's way; or carry one true word to their side's channel. Pays nothing.
-  Variants for each of the five routes: the Independent's says *"You're doing it yourself? Then do it
-  properly."*
+**Margin cards** (2–4 per major, in its voice; never on its set-piece evenings or inside its 600 m).
+Clean Glasses (The Book Has to Balance), Count for the Sitting (Every Name) and Hand to Hand (the
+Independent) are built. Await Relief and Proof each get 2–4, written with their remaining build
+([MAJORS.md](MAJORS.md)). Hand to Hand's promises in the finale (§20) are the finale's to read.
 
 **The epilogue** (also listed in [EPILOGUE.md](EPILOGUE.md)'s deck)
 - **Processing** (a pinned local). Why: the cure is out, and a checkpoint is within 1.5 km. Walk them to
@@ -930,6 +760,7 @@ inside reputation's 30. Amends need clean hands.
   on their line in the book (the Red Hand's terms) or [Trusted: RH] haggle; or, where no outlet serves
   them, sit with them. Where the terms reach them, it's a thank-you instead. They tell people who brought
   it.
+- *After the cure:* **Come In** (the amends family's last card, [EPILOGUE.md](EPILOGUE.md)).
 
 ## One evening in Levie
 
@@ -985,12 +816,11 @@ test is to force each Why true then false and check the Overtake, and place one 
 
 **Phases** (the plan's numbering):
 - **Phase 3, the core:** built.
-- **Phase 4, people:** built. Left over from it: the routines and cards still listed in the catalogue
-  (His Lighter, The Market, The Receiver; The Other Half, The Drawing, Is She Gone?, Boarded Up).
-- **Phase 5:** the majors' margin cards.
-- **Phase 6:** the five lock cards and Hand to Hand.
+- **Phase 4, people:** built.
+- **Phase 5:** Await Relief's and Proof's margin cards (the others are built).
+- **Phase 6:** the finale reading Hand to Hand's promises (the lock card and Hand to Hand are built).
 - **Phase 7:** the epilogue deck and the ending contract, with [EPILOGUE.md](EPILOGUE.md).
-- **Phase 8:** the remaining cards, up to about 60, and dialogue's strangers and radio speakers in full.
+- **Phase 8:** built (to 61 cards); dialogue's strangers and radio speakers in full are dialogue's.
 
 ## 28. Engine needs
 
