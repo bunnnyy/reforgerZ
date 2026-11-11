@@ -310,8 +310,8 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_PuzzleObject.et` | a crate, sign or post prop | the generic set | Puzzles > Puzzle object | **minimum** | every puzzle and interaction fallback; missions relabel the actions |
 | `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | **minimum** | puzzles, unarmed missions, wanderers, leaders and occupants to talk to |
 | `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | **minimum** | every puzzle mission, scenario clues |
-| `RZ_Keypad.et` | a keypad or wall panel prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Keypad | optional | The Last Experiment (keypad mode), Locked Bunker, The Three Weeks (without a terminal); keys 0-9, 10 Clear, 11 Enter |
-| `RZ_Terminal.et` | a computer prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Terminal | optional | The Last Experiment, The Three Weeks (both fall back to the keypad); keys 0-9, 10 Clear, 11 Enter |
+| `RZ_Keypad.et` | a keypad or wall panel prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Keypad | optional | The Last Experiment (keypad mode), Locked Bunker, the store in The Three Weeks questline (without a terminal); keys 0-9, 10 Clear, 11 Enter |
+| `RZ_Terminal.et` | a computer prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Terminal | optional | The Last Experiment, the store in The Three Weeks questline (both fall back to the keypad); keys 0-9, 10 Clear, 11 Enter |
 | `RZ_PuzzleBody.et` | a body prop | the clue set | Puzzles > Body | optional | Paces, Patient Zero's Ledger, Poisoned Well, Last Experiment, The Witness, The Deserter's Map (falls back to the note) |
 | `RZ_Well.et` | a well prop | the generic set | Puzzles > Well | optional | look only (falls back to the puzzle object) |
 | `RZ_Bell.et` | a bell prop | the generic set | Puzzles > Bell | optional | look only (falls back to the puzzle object) |
@@ -346,10 +346,10 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor (falls back to the survivor group, then data) |
-| `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment |
+| `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor, the brother walked home in The Other Two (falls back to the survivor group, then data) |
+| `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment, the field lead in The Three Weeks and the courier in The Other Two |
 | `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Hunt the Deserter, Struck Off |
-| `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection (falls back to the puzzle object) |
+| `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection, The Three Weeks questline (falls back to the puzzle object) |
 | `RZ_Bus.et` | a drivable bus or truck (keeps its damage manager) | — | Missions > Contracts > Bus | optional | Recover the Bus (falls back to the Haven truck, then car prefabs) |
 | `RZ_BountyTarget.et` | an armed AI group or character | — | Missions > Contracts > Bounty target | optional | Collect the Bounty (falls back to the survivor group) |
 | `RZ_BastionSquad.et` | an AI group on MIL | — | Missions > Contracts > Bastion squad | optional | the stockade guards in Bust Out, the arrest squad in Await Relief (falls back to the Bastion hunters, then crew) |
@@ -458,9 +458,9 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_Guard_Haven.et` | an armed AI character or small group on SURV | — | Territory > Haven guard | optional | guards at holdings; watched for retaliation |
-| `RZ_Guard_Bastion.et` | an armed AI character or small group on MIL | — | Territory > Bastion guard | optional | guards at holdings; watched for retaliation |
+| `RZ_Guard_Bastion.et` | an armed AI character or small group on MIL | — | Territory > Bastion guard | optional | guards at holdings; watched for retaliation; Bastion's squads at the lab during the final stand in Authors |
 | `RZ_Guard_RedHand.et` | an armed AI character or small group on BAND | — | Territory > Red Hand guard | optional | guards at holdings; watched for retaliation |
-| `RZ_Guard_Halcyon.et` | an armed AI character or small group on INST | — | Territory > Halcyon guard | optional | guards at holdings; watched for retaliation |
+| `RZ_Guard_Halcyon.et` | an armed AI character or small group on INST | — | Territory > Halcyon guard | optional | guards at holdings; watched for retaliation; the extra guard at the lab gate during the final stand in Authors |
 | `RZ_Occupant_Haven.et` | a character without AI in the faction's clothes | the generic set | Territory > Haven occupant | optional | the named people (empty = the civilian) |
 | `RZ_Occupant_Bastion.et` | a character without AI in the faction's clothes | the generic set | Territory > Bastion occupant | optional | the named people (empty = the civilian) |
 | `RZ_Occupant_RedHand.et` | a character without AI in the faction's clothes | the generic set | Territory > Red Hand occupant | optional | the named people (empty = the civilian) |
@@ -847,10 +847,12 @@ What it can't do:
 
 `tools/runtime_test/run.sh` runs the game mode on the same server, in a sub-scene of Arland with
 vanilla stand-ins for the minimum prefabs and a fake player (a spawned civilian the systems see as
-online). It starts every mission type one at a time and ends each, walks the player through every
-settlement, the safehouses and the lab, into the Perimeter, to death and a second life, and logs
-every notice the player is sent. It prints the script exceptions (there should be none), how many
-mission types started and which didn't. It takes about 45 minutes.
+online). It starts every mission type one at a time and ends each. Then it begins every questline
+in turn, skips its waits, goes to each stage mission and ends it, and follows the questline to an
+ending (or reports where it fizzled or got stuck). Last, it walks the player through every
+settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
+every notice the player is sent, and prints the script exceptions (there should be none), how many
+mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes. If the fake player dies outside the Perimeter test (a mission or the line got him), it says where and respawns him.
 
 ```bash
 SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
@@ -858,7 +860,7 @@ SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
 
 | What it shows | What it can't |
 |---|---|
-| Script exceptions on real code paths; startup and save/load; missions' Setup, rewards and cleanup; the Perimeter; spawn and death; the text players get | Anything a client does (UI, menus, input, replication), real AI behaviour against a player, your prefabs and their components |
+| Script exceptions on real code paths; startup and save/load; missions' Setup, rewards and cleanup; questline stages, branches and endings (by success and failure only, not every approach); the Perimeter; spawn and death; the text players get | Anything a client does (UI, menus, input, replication), real AI behaviour against a player, your prefabs and their components |
 
 A mission that doesn't start usually needs a world state the test doesn't create (a town at the
 right infection, an optional prefab, a faction standing). None of this is part of the mod: the
@@ -1122,6 +1124,22 @@ session, tick off:
   is back at the same stage with the same names. At the handover, warn the runner on one run and
   take the crate back unseen on another: the endings differ (Haven food and morale, headline,
   rumour). A second player who joins late sees it in the journal only once they're offered a stage.
+- [ ] The List (same settings; finish the contract The List first, or let a safehouse run short):
+  a free council head asks; the husband's trail ends at him (bring him home: +1 person) or his
+  letter. Talk to a Loyal council head while Known (refused), read a house's list in its stores
+  after dark next to a lookout (+8 Haven Infamy), solve the copies at the asking house, look round
+  the empty farm, and at the chair's table read it out and hold the gate (two waves); on another run,
+  carry the copies past a lookout (taken back: Buried).
+- [ ] The Price of the Door (a safehouse short of food or that lost people lately, a Red Hand crew
+  within 6 km): open the envelope (name and grid), get seen by a lookout (+12 Haven Infamy), deliver
+  it; at the barn bring the exile home and speak for him at the vote (+1 person). Another run: leave
+  the envelope, then at the gate tell the crew boss no (with the Red Hand group prefab) and hold
+  it, and put the barricades up (the town is Barricaded); or take the debt and pay it in the pit.
+- [ ] The Edge of Town (finish Walk Him Out first; the lab placed): at dusk take the bitten man to the
+  lab (he follows; most of the time he walks out and the house gains one); read the walker's
+  notebook beside him (taken back), then ask him instead; read the trial records after dark;
+  broker the lab road at the nurse's and carry the Cold Chain batch; on another run refuse both and
+  walk the last one out with the walker at dusk.
 - [ ] Await Relief (**Wait scale** 0.1): at night an Independent Bastion commander offers the
   operator's tape in person; take it (or copy it, unseen, with a radio), play it at the relay and
   hold 3 min through the horde; walk the runner's three towns; on separate runs give the page to
@@ -1138,6 +1156,25 @@ session, tick off:
   LZ and sell him to the Red Hand: after Grounded there's no Last Helicopter for 2 real hours
   (times **Wait scale**) and the next one names the new pilot; after the line, a Crashed Helicopter
   event appears near the far LZ. Failing Rescue the Pilot also grounds the helicopter.
+- [ ] The Three Weeks (same settings): solve Patient Zero's Ledger, then it can begin. The driver
+  sits at the edge of the town nearest the site, talks to someone Known with the Haven and not
+  Trusted with Halcyon (or a Radio Operator), or after two shares of food; the site is well away
+  from every town; the three bodies give the code for the terminal (without one, reading all three
+  opens the lock); Dr Wolff can be killed, caged (the case to the lab drop) or left while you take
+  the notebook unseen. At stage 4 the duty officer turns away someone the director doesn't trust;
+  each seat gives its branch (the raid, the field lead walking out, or Bastion's file) and its
+  ending's headline.
+- [ ] The Other Two (same settings): the clerk refuses a stranger; the ledger only opens at night;
+  the courier follows you to the station (or hands you his case); the brother's clock starts when
+  you reach the room, and walking him home ends at the sister's safehouse; the sample kit gets him
+  up as an infected; selling ends the line; the sister's name choices appear only after the list
+  and the man who walked them up; the names go to the director, the chair, or nowhere.
+- [ ] Authors (same settings, and Cure > Research per sample raised so a few samples reach 50%):
+  it doesn't start at 90% or more; the letter can be read and copied onto the field lead's desk;
+  the cold case goes warm after 20 minutes; bargaining needs Trusted with both; stage 5 waits for
+  75%. At the final stand, with Territory > Bastion guard set and the terms agreed, a Bastion squad
+  stands at the gate; with the boss paid, a player Known with the Red Hand is offered Take the Lab.
+  The ending comes after the stand, and the season's winner in the log is chosen before it.
 - [ ] With **Post minutes** at 1, a road post goes up on a road ahead of you. At a Bastion
   checkpoint: Known, you're waved through; a stranger is searched at the barrier (a suppressor is
   taken); walking off mid-search costs 3 Infamy and they fire. Unarmed with Bastion Infamy, wait at
@@ -1234,12 +1271,8 @@ session, tick off:
 - [ ] Take the Lab during a final stand: 90 s in the clean room ends the stand, research shows 90%,
   and the Red Hand antidote stock goes up by two.
 - [ ] Mobile Lab: the field annex takes samples and disappears after 3 hours.
-- [ ] The Three Weeks: the site is well away from every town (at a factory, mast or barracks when
-  one is near); the van, then the gate, then the store appear only as you come close; the code
-  from the gate log opens the terminal; the notes can go to the lab, the Haven or the Red Hand drop.
-- [ ] The Author List and The List: the safehouse's people and list appear when you come near; the
-  trial lead at the lab gets name choices only after both safehouse clues are read; The List's
-  last clue (cairn, bedroll, bag or person) appears only after the list and the council member.
+- [ ] The List: the safehouse's people and list appear when you come near; its last clue (cairn,
+  bedroll, bag or person) appears only after the list and the council member.
 
 **Multiplayer and griefing** (two clients at least; the pass 2 sweep's open risks)
 - [ ] Two players race one choice delivery: the first hand-in wins, the second is told it isn't

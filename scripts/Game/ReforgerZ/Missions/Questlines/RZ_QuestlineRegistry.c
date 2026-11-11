@@ -8,6 +8,9 @@ class RZ_QuestlineRegistry
 	{
 		// The Haven
 		q.Register(RZ_Quest_ShortWeight);
+		q.Register(RZ_Quest_TheList);
+		q.Register(RZ_Quest_PriceOfTheDoor);
+		q.Register(RZ_Quest_EdgeOfTown);
 
 		// Task Force Bastion (Missions/Questlines/Bastion/)
 		q.Register(RZ_Quest_AwaitRelief);
@@ -17,6 +20,9 @@ class RZ_QuestlineRegistry
 		// The Red Hand
 
 		// Halcyon
+		q.Register(RZ_Quest_ThreeWeeks);
+		q.Register(RZ_Quest_OtherTwo);
+		q.Register(RZ_Quest_Authors);
 
 		// Unaligned groups
 	}

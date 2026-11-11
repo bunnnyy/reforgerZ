@@ -567,7 +567,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 			return tape;
 		}
 
-		RZ_Leader book = RZ_BastionQuest.Leader(gm, RZ_BastionQuest.World(gm, "book.bastion"));
+		RZ_Leader book = RZ_BastionQuest.Leader(gm, RZ_BastionQuest.World(gm, "book.bastion") - 1);	// R1: the leader id + 1
 		if (IsCandidate(book))
 		{
 			run.SetFlag("rifles", 1);

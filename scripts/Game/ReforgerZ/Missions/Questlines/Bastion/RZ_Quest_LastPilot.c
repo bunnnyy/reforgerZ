@@ -12,7 +12,8 @@
 //!    unseen from a depot by one of their seats (sneak; seen: +8 Red Hand Infamy) or bought (bribe,
 //!    25 Red Hand Favor: the boss hears Bastion is buying, and a crew comes to look at the flight).
 //! 2. Whose flight (mission, no storm): keep the LZ clear until lift-off, and choose the load at the
-//!    pilot: Halcyon's samples, the Haven's wounded or Bastion's ammunition (pilot.flew_for).
+//!    pilot: Halcyon's samples, the Haven's wounded or Bastion's ammunition (pilot.flew_for: the
+//!    faction it flew for, an RZ_EFaction).
 //! 3. His friend's wreck (mission, needs the Perimeter): the Day 3 wreck in the warning zone, short
 //!    of the kill zone. Secure it 60 s (★ Mechanic: twice as fast), carry the black box to him.
 //!    ★ Radio Op: play it at the wreck; then he hears it too.
@@ -191,6 +192,19 @@ class RZ_Quest_LastPilot : RZ_Questline
 	}
 
 	// ================================================================ Starting
+	//------------------------------------------------------------------------------------------------
+	//! pilot.flew_for, for other lines (HC3 reads it): the faction the flight was for.
+	static int FlewFor(int load)
+	{
+		if (load == LOAD_SAMPLES)
+			return RZ_EFaction.INSTITUTE;
+
+		if (load == LOAD_WOUNDED)
+			return RZ_EFaction.SURVIVORS;
+
+		return RZ_EFaction.MILITARY;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! A run position kept in two int flags (metres; saved with the run).
 	static void SetPos(RZ_QuestRun run, string key, vector pos)
@@ -1049,13 +1063,12 @@ class RZ_QM_PilotFlight : RZ_QM_PilotLZ
 			m_iLoad = RZ_Quest_LastPilot.LOAD_AMMO;
 
 		run.SetFlag("load", m_iLoad);
-		RZ_BastionQuest.SetWorld(gm, RZ_Quest_LastPilot.KEY + ".flew_for", m_iLoad);
+		RZ_BastionQuest.SetWorld(gm, RZ_Quest_LastPilot.KEY + ".flew_for", RZ_Quest_LastPilot.FlewFor(m_iLoad));
 		string text = "It's up and gone, low over the trees, with Bastion's ammunition.";
 		switch (m_iLoad)
 		{
 			case RZ_Quest_LastPilot.LOAD_SAMPLES:
 			{
-				RZ_BastionQuest.SetWorld(gm, RZ_Quest_LastPilot.KEY + ".samples", 1);
 				run.Reward(gm, m_iChooser, RZ_EFaction.INSTITUTE, 6, 0, "Halcyon's people will remember who flew for them.");
 				gm.GetCure().AddResearch(1, "Samples flown in on Bastion's last helicopter.");
 				text = "It's up and gone, low over the trees, toward the lab.";

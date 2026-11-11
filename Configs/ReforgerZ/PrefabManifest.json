@@ -324,7 +324,7 @@
    "slotLabel": "Puzzles > Keypad",
    "required": false,
    "minimum": false,
-   "use": "The Last Experiment (keypad mode), Locked Bunker, The Three Weeks (without a terminal); keys 0-9, 10 Clear, 11 Enter",
+   "use": "The Last Experiment (keypad mode), Locked Bunker, the store in The Three Weeks questline (without a terminal); keys 0-9, 10 Clear, 11 Enter",
    "notes": ""
   },
   {
@@ -359,7 +359,7 @@
    "slotLabel": "Puzzles > Terminal",
    "required": false,
    "minimum": false,
-   "use": "The Last Experiment, The Three Weeks (both fall back to the keypad); keys 0-9, 10 Clear, 11 Enter",
+   "use": "The Last Experiment, the store in The Three Weeks questline (both fall back to the keypad); keys 0-9, 10 Clear, 11 Enter",
    "notes": ""
   },
   {
@@ -887,7 +887,7 @@
    "slotLabel": "Missions > Contracts > Escort civilians",
    "required": false,
    "minimum": false,
-   "use": "Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor (falls back to the survivor group, then data)",
+   "use": "Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor, the brother walked home in The Other Two (falls back to the survivor group, then data)",
    "notes": ""
   },
   {
@@ -905,7 +905,7 @@
    "slotLabel": "Missions > Contracts > Escort scientist",
    "required": false,
    "minimum": false,
-   "use": "Escort the Scientist, Secure the Shipment",
+   "use": "Escort the Scientist, Secure the Shipment, the field lead in The Three Weeks and the courier in The Other Two",
    "notes": ""
   },
   {
@@ -954,7 +954,7 @@
    "slotLabel": "Missions > Contracts > Cage trap",
    "required": false,
    "minimum": false,
-   "use": "Live Capture, Private Collection (falls back to the puzzle object)",
+   "use": "Live Capture, Private Collection, The Three Weeks questline (falls back to the puzzle object)",
    "notes": ""
   },
   {
@@ -2410,7 +2410,7 @@
    "slotLabel": "Territory > Bastion guard",
    "required": false,
    "minimum": false,
-   "use": "guards at holdings; watched for retaliation",
+   "use": "guards at holdings; watched for retaliation; Bastion's squads at the lab during the final stand in Authors",
    "notes": ""
   },
   {
@@ -2446,7 +2446,7 @@
    "slotLabel": "Territory > Halcyon guard",
    "required": false,
    "minimum": false,
-   "use": "guards at holdings; watched for retaliation",
+   "use": "guards at holdings; watched for retaliation; the extra guard at the lab gate during the final stand in Authors",
    "notes": ""
   },
   {

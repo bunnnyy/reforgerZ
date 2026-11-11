@@ -7,7 +7,7 @@
 //!    list.to_bastion) it goes straight to the curfew.
 //! 1. Count a safehouse (mission): ask its council head (Known with the Haven), or count it from a
 //!    watch point outside, unnoticed (sneak). ★ Police: the count is exact either way. A house H2
-//!    put on Bastion's census (door.bastion) counts itself.
+//!    put on Bastion's census (door.bastion; door.house names it) counts itself.
 //! 2. Ration cards (mission): a crate each for two houses. Skim one (15 Bastion Favor; 25% the
 //!    quartermaster notices), or give extra from your own pack (Haven Fame).
 //! 3. The curfew (mission, at night): walk the beat in the first house's town (the second's if it
@@ -122,9 +122,11 @@ class RZ_Quest_Census : RZ_Questline
 		if (!co || !houses || houses.Count() < 2)
 			return false;
 
-		// The house H2 put on Bastion's census (door.bastion: its index + 1) counts itself
+		// The house H2 put on Bastion's census (door.bastion; door.house is its index + 1) counts itself
 		int first = -1;
-		int door = RZ_BastionQuest.World(gm, "door.bastion") - 1;
+		int door = -1;
+		if (RZ_BastionQuest.World(gm, "door.bastion") > 0)
+			door = RZ_BastionQuest.World(gm, "door.house") - 1;
 		if (IsCountable(gm, door))
 		{
 			first = door;
