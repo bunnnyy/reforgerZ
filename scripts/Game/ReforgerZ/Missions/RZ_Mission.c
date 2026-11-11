@@ -59,6 +59,9 @@ class RZ_Mission
 	int m_iJobLoyalty = -1;
 	int m_iJobTone;					// RZ_Leaders.TONE_* bits, which traits lean toward
 
+	// Questlines (Director/RZ_Questlines.c): the run that started this mission as one of its stages
+	int m_iQuestRun = -1;			// -1 = not part of a questline
+
 	// Rough areas (docs/MISSIONS.md, "Who gets offered what"): contracts name a circle, not a spot
 	ref array<int> m_aExactFor = {};	// players who came close: they know the spot now
 	protected vector m_vRoughOffset;	// the circle's centre, from the real spot (follows it if it moves)

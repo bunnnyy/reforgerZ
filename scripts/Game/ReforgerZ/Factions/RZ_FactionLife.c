@@ -672,6 +672,14 @@ class RZ_FactionLife
 			if (!arc.IsEmpty() && Math.RandomFloat01() < 0.5)
 				lines.Insert(arc);
 		}
+
+		// ...and the running questlines (Director/RZ_Questlines.c)
+		if (m_GM.GetQuestlines() && Math.RandomFloat01() < 0.5)
+		{
+			string quest = m_GM.GetQuestlines().Rumour();
+			if (!quest.IsEmpty())
+				lines.Insert(quest);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -694,6 +702,13 @@ class RZ_FactionLife
 			string arc = m_GM.GetStoryArcs().Rumour();
 			if (!arc.IsEmpty())
 				return arc;
+		}
+
+		if (m_GM.GetQuestlines() && Math.RandomFloat01() < 0.3)
+		{
+			string quest = m_GM.GetQuestlines().Rumour();
+			if (!quest.IsEmpty())
+				return quest;
 		}
 
 		if (m_GM.GetHeadlines() && Math.RandomFloat01() < 0.15)

@@ -70,6 +70,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Story arcs: short storylines made of missions, rumours and headlines, including the Haven's rare dark side (docs/DESIGN.md, Story arcs and headlines)", category: "ReforgerZ|Director")]
 	protected ref RZ_StorySettings m_StorySettings;
 
+	[Attribute(desc: "Questlines: long faction storylines in stages (contracts and waits) where how you do each stage changes the ending, saved across restarts (docs/DESIGN.md, Questlines)", category: "ReforgerZ|Director")]
+	protected ref RZ_QuestlineSettings m_QuestlineSettings;
+
 	[Attribute(desc: "Zombie prefabs and density", category: "ReforgerZ|Zombies")]
 	protected ref RZ_ZombieSettings m_ZombieSettings;
 
@@ -345,6 +348,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_PowerGrid m_PowerGrid;
 	protected ref RZ_RadioStation m_RadioStation;
 	protected ref RZ_StoryArcs m_StoryArcs;
+	protected ref RZ_Questlines m_Questlines;
 	protected ref RZ_Headlines m_Headlines;
 	protected ref RZ_MissionManager m_Missions;
 	protected ref RZ_CureResearch m_Cure;
@@ -468,6 +472,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_StorySettings)
 			m_StorySettings = RZ_StorySettings.Cast(RZ_Util.NewWithDefaults("RZ_StorySettings"));
 
+		if (!m_QuestlineSettings)
+			m_QuestlineSettings = RZ_QuestlineSettings.Cast(RZ_Util.NewWithDefaults("RZ_QuestlineSettings"));
+
 		if (!m_SafehouseSettings)
 			m_SafehouseSettings = RZ_SafehouseSettings.Cast(RZ_Util.NewWithDefaults("RZ_SafehouseSettings"));
 
@@ -544,6 +551,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_PowerGrid = new RZ_PowerGrid(this, m_PowerSettings);
 		m_RadioStation = new RZ_RadioStation(this, m_RadioStationSettings);
 		m_StoryArcs = new RZ_StoryArcs(this, m_StorySettings);
+		m_Questlines = new RZ_Questlines(this, m_QuestlineSettings);
 		m_Headlines = new RZ_Headlines(this);
 		m_Cure = new RZ_CureResearch(this);
 		m_Director = new RZ_Director(this, m_aStages);
@@ -617,6 +625,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Interactions.Setup();
 		// Arcs are made of the missions, wanderers, safehouses, territory and trucks above
 		m_StoryArcs.Setup();
+		// Questlines too, and they come back from the save with their stage, flags and people
+		m_Questlines.Setup();
 		m_Hostility.Init();
 		if (m_bHasLab)
 			AddMapMarker(m_vLabPos, "Halcyon lab");
@@ -667,6 +677,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Supply.Tick(dt, ids, players);
 		m_FactionLife.Tick(dt, ids, players);
 		m_StoryArcs.Tick(dt, ids, players);
+		m_Questlines.Tick(dt, ids, players);
 		m_Checkpoints.Tick(dt, ids, players);
 		// After everything that changes standing or spawns fights this tick
 		m_Hostility.Tick(dt, ids, players);
@@ -722,6 +733,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_PowerGrid GetPowerGrid() { return m_PowerGrid; }
 	RZ_RadioStation GetRadioStation() { return m_RadioStation; }
 	RZ_StoryArcs GetStoryArcs() { return m_StoryArcs; }
+	RZ_Questlines GetQuestlines() { return m_Questlines; }
 	RZ_Headlines GetHeadlines() { return m_Headlines; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
@@ -1416,6 +1428,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// A story arc waiting for this mission to happen
 		if (m_StoryArcs)
 			m_StoryArcs.OnMissionFinished(m, success);
+
+		// A questline stage this mission was
+		if (m_Questlines)
+			m_Questlines.OnMissionFinished(m, success);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2056,6 +2072,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_PowerGrid.Restore(data.power);
 		m_RadioStation.Restore(data.radio);
 		m_StoryArcs.Restore(data.story);
+		m_Questlines.Restore(data.questlines);
 		m_Headlines.Restore(data.news);
 		m_Interactions.Restore(data.interactions);
 		return true;
@@ -2120,6 +2137,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_StoryArcs && m_StoryArcs.IsEnabled())
 			data.story = m_StoryArcs.Save();
+
+		if (m_Questlines && m_Questlines.IsEnabled())
+			data.questlines = m_Questlines.Save();
 
 		if (m_Headlines)
 			data.news = m_Headlines.Save();

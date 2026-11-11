@@ -748,6 +748,15 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Like RememberPlayer, by identity: also for players who are offline (a questline's ending).
+	void RememberIdentity(int id, string ident, int flag)
+	{
+		RZ_Wanderer w = Find(id);
+		if (w && !ident.IsEmpty())
+			w.Remember(ident, flag);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A Haven wanderer's body within radius of pos (A Quiet Arrangement: "seen").
 	//! Returns their name, "" if nobody saw.
 	string SeenByHaven(vector pos, float radius)
@@ -2064,6 +2073,14 @@ class RZ_Wanderers
 			string arcLine = m_GM.GetStoryArcs().OnWandererTalk(playerId, w.m_iId);
 			if (!arcLine.IsEmpty())
 				text += "\n" + arcLine;
+		}
+
+		// A questline that runs through this person (Director/RZ_Questlines.c)
+		if (m_GM.GetQuestlines())
+		{
+			string questLine = m_GM.GetQuestlines().OnWandererTalk(playerId, w.m_iId);
+			if (!questLine.IsEmpty())
+				text += "\n" + questLine;
 		}
 
 		if (w.IsBitten())

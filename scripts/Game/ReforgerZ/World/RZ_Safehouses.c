@@ -829,6 +829,22 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! `count` people join safehouse `idx` itself (a questline's ending), up to the cap. Returns how many.
+	int AddPopulationAt(int idx, int count)
+	{
+		RZ_Safehouse h = Get(idx);
+		if (!h || count <= 0)
+			return 0;
+
+		int placed = Math.MinInt(count, POP_CAP - h.m_iPopulation);
+		if (placed <= 0)
+			return 0;
+
+		h.m_iPopulation = h.m_iPopulation + placed;
+		return placed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected RZ_Safehouse NearestWithRoom(vector pos)
 	{
 		RZ_Safehouse best;

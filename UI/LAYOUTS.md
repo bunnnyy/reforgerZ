@@ -188,7 +188,7 @@ Frame (root)
    ├─ Text   (label "REWARDS")      │ Text DetailRewards  mono bold 13
    ├─ Text   (label "REQUIREMENTS") │ Text DetailReq      16, multi-line
    └─ Frame  CluesBlock
-      ├─ Text  (label "CLUES YOU'VE READ")
+      ├─ Text  (label "WHAT YOU KNOW": puzzle clues read, or a questline's notes)
       └─ Text  DetailClues     serif 16 on a paper-coloured panel #E4DDC8 with dark text #23211C
 ```
 

@@ -273,7 +273,7 @@ The gear is a suggestion; the perks and flaws are in [DESIGN.md](DESIGN.md#backg
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 146 prefabs the plugin creates, 15 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 29 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 146 prefabs the plugin creates, 15 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 30 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -753,7 +753,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 29 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 30 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
@@ -770,6 +770,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Director | (top level) |  | **Broadcast minutes** (25; 0 = only on first join) |
 | Director | Environment | `m_EnvironmentSettings` | Night heat spread (0.25), night specials (×1.25), rain and fog thresholds, storm thresholds, storm grounds the helicopter |
 | Director | Story arcs | `m_StorySettings` | Minutes between (60), start chance (0.6), repeat hours (4), the dark-side arc's limits |
+| Director | Questlines | `m_QuestlineSettings` | **Enabled**, max active (2, one per faction), minutes between (30), start chance (0.5), retry hours (6), once per season (on), **Wait scale** (1; 0.1 for a quick test) ([DESIGN.md](DESIGN.md#questlines)) |
 | Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | (top level) |  | Presence heat (0.5/tick), vehicle heat (+4/tick) |
@@ -977,6 +978,7 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Door blockers: off (no blocker prefab); AI door hook on.
 [ReforgerZ] World interactions: on. 0 fixable cars on the map.
 [ReforgerZ] Story arcs: on, running none.
+[ReforgerZ] Questlines: on, 1 registered (Short Weight), at most 2 at once, running none.
 [ReforgerZ] Started. 14 settlements, stage Early Outbreak, cure 0 percent, state 0.
 ```
 
@@ -1008,11 +1010,15 @@ Warnings worth acting on:
 | `Saved state is from another map, starting a fresh outbreak.` | Expected after changing maps |
 | `Season wipe carried out (...). A fresh outbreak starts.` | The wipe cycle ran on this start; the old state is in `state_season<N>.json` |
 | `Season rule set '...' doesn't exist; ignored.` | A name in **Season > Rule sets** is misspelt |
+| `Questlines: the saved questline '...' (or its stage) no longer exists; dropped.` | A questline (or a stage id) was removed or renamed in the code since the save; that one ends |
+| `Questlines: two questlines use the key '...'` / `... has no key or no stages; skipped.` | A content mistake in `Missions/Questlines/`: give each questline its own key and at least one stage |
 | `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON save behaviour in the VERIFY list is wrong) |
 
 While running: `Status | ...` lines every few minutes (stage, infection, zombies, missions, cure),
 `Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...` and `... lost (...)`,
-`Story arc started: ...`, `Bastion checkpoint up near ...` / `Red Hand roadblock up near ...`,
+`Story arc started: ...`, `Questline started: ...`, `Questline ...: stage '...'.` and
+`... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
+`Bastion checkpoint up near ...` / `Red Hand roadblock up near ...`,
 `Fire Mission perk: player N, M infected killed.`, `Note at ... by ...: ...`, `Season over. Cure goes to ...`,
 and `Season N is over (...). The wipe happens at the next restart.`
 
@@ -1110,6 +1116,12 @@ session, tick off:
   and the disguise is blown. Decide whether that's wanted.
 - [ ] Start The Last Convoy (or wait for it), restart the server before the truck leaves: it
   still leaves within 10 minutes. Restart while it's on the road: the arc just ends.
+- [ ] Questlines (**Wait scale** 0.1, **Minutes between** 5, **Once per season** off): Short Weight starts and its first
+  contract is offered; it's in the journal with its notes once you've done something. Read the
+  ledger next to the storekeeper (caught), then restart the server during the wait: the questline
+  is back at the same stage with the same names. At the handover, warn the runner on one run and
+  take the crate back unseen on another: the endings differ (Haven food and morale, headline,
+  rumour). A second player who joins late sees it in the journal only once they're offered a stage.
 - [ ] With **Post minutes** at 1, a road post goes up on a road ahead of you. At a Bastion
   checkpoint: Known, you're waved through; a stranger is searched at the barrier (a suppressor is
   taken); walking off mid-search costs 3 Infamy and they fire. Unarmed with Bastion Infamy, wait at

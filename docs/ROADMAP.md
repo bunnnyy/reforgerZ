@@ -3,7 +3,7 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** everything under "Built" is written in Enforce Script (about 71,000 lines) and the
+**Status:** everything under "Built" is written in Enforce Script (about 76,000 lines) and the
 game scripts **compile cleanly** against Arma Reforger 1.9. It also runs on the server in a test
 world with a fake player, with no script exceptions ([runtime test](WORKBENCH_SETUP.md#runtime-test-without-workbench)).
 It still needs prefabs, the behavioural `VERIFY` checks and a real play-test before it can be called working
@@ -31,8 +31,9 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 | Haven safehouses: population tiers, upkeep, rescues, house rules, exile, notice boards (notes between sessions, `/note`) | [Haven safehouses](DESIGN.md#haven-safehouses) |
 | Named wanderers: travel, reactions, memory, deaths in the news, lost outposts (rerouting, rumours, mood) | [Wanderers](DESIGN.md#wanderers) |
 | Named leaders: traits, loyalty, memory, voiced briefs, deaths and replacements | [Leaders](DESIGN.md#leaders), [REPUTATION.md](REPUTATION.md#faction-leaders) |
-| 184 missions (every one designed so far): all 80 faction contracts and 5 hard-edge contracts (No Reply, Struck Off, The Three Weeks, The Author List, The List) (on shared building blocks: escorts, live capture, vehicle zones and convoys, health cost, step chains), 3 Red Hand hard edges (Learning the Drones, The Pit's Debtor, Cargo), all 25 world events, 17 puzzles, 11 unarmed, 3 Perimeter, 3 Haven house contracts and the Courier's letters, 32 leader jobs and Rein In, 3 arc missions | [MISSIONS.md](MISSIONS.md) |
+| 186 missions (every one designed so far): all 80 faction contracts and 5 hard-edge contracts (No Reply, Struck Off, The Three Weeks, The Author List, The List) (on shared building blocks: escorts, live capture, vehicle zones and convoys, health cost, step chains), 3 Red Hand hard edges (Learning the Drones, The Pit's Debtor, Cargo), all 25 world events, 17 puzzles, 11 unarmed, 3 Perimeter, 2 questline stage missions (Short Weight), 3 Haven house contracts and the Courier's letters, 32 leader jobs and Rein In, 3 arc missions | [MISSIONS.md](MISSIONS.md) |
 | Six story arcs and session headlines | [Story arcs](DESIGN.md#story-arcs-and-headlines) |
+| Questlines: long storylines over many sessions, in stages (a contract or a wait for time and the world), with approaches (talk, persuade, sneak, force, bribe, betray, side with another faction) that set the outcome, capped endings through the existing systems, the journal, saved across restarts; one example, Short Weight (the Haven) | [Questlines](DESIGN.md#questlines), [MISSIONS.md](MISSIONS.md#questlines) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
 | World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
@@ -57,7 +58,7 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 
 ### Designed, not built
 - **Questlines:** twelve faction questlines and two for the Long Table, over many sessions
-  ([QUESTLINES.md](QUESTLINES.md)).
+  ([QUESTLINES.md](QUESTLINES.md)), on the questline engine ([DESIGN.md](DESIGN.md#writing-a-questline)).
 - **The Long Table:** a tiny cannibal family in one farmhouse; no reputation tree, a few
   dealings, exposed and broken up through its questlines ([DESIGN.md](DESIGN.md#the-long-table-planned)).
 
@@ -90,6 +91,8 @@ In this order, because later ones depend on earlier ones:
 10. **Leaders:** loyalty drift and rogue-job discovery rates.
 11. **Guidance:** is anything too chatty for a level-0 player? Do the right speakers say it?
 12. **Story arcs** end to end (start one with `RZ_StoryArcs.Begin(kind)`) and how often they come.
+    **Questlines** end to end with **Wait scale** at 0.1 (`RZ_Questlines.Begin(key)`): a restart
+    mid-way, two approaches to the same stage, a player who joins late.
 13. **Weather** accessors and the generator's noise.
 14. **Road posts and camps:** do posts go up on real roads ahead of players, and do the search,
     the toll, running and surrender fire at the right distances? Is the timed grudge enough to

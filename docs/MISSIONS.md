@@ -19,7 +19,8 @@ these missions as stages are in [QUESTLINES.md](QUESTLINES.md) (designed, not bu
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 32, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **184** | **—** |
+| [Questlines](#questlines) (stage missions) | 2, in 1 questline | — |
+| **Total** | **186** | **—** |
 
 ## Who gets offered what
 
@@ -405,6 +406,46 @@ missions exist only inside arcs and are never picked at random:
 | The Deserter's Map | The Deserter's Map | World event | Take a map piece from a dead deserter; get the other two from the wanderers it names; reach the bunker (four infected) | The bunker's stores (a reward crate). A holder dies first: fails | ✅ |
 | Fever Town: the water | Fever Town | Halcyon contract, Any, ★ Lab Tech | The Water Survey, starting at the sick safehouse's well | Fame, Favor; the arc goes on | ✅ |
 | Fever Town: get them out | Fever Town | Haven contract, Any, ★ Nurse/Doctor: faster | Hold the safehouse gate for 2 minutes (2 waves) | Fame, Favor; two people move, the added infection goes. Fails: two die | ✅ |
+
+## Questlines
+
+Long storylines over many sessions, in stages: each stage offers one mission or waits for time
+and the world, and how players did a stage (talk, persuade, sneak, force, bribe, betray, side
+with another faction) decides what comes next and how it ends. How the engine works and how to
+write one: [DESIGN.md](DESIGN.md#questlines). Code: `Missions/Questlines/<Faction>/`.
+
+- **Who gets offered what.** Each stage mission is a normal contract from the questline's
+  faction, offered like any other. Anyone who did something at a stage is part of the questline
+  from then on: it's in their journal, and they hear when the next stage opens.
+- **Pay.** A stage mission pays its Fame and Favor as usual; approaches can add personal standing
+  (siding with another faction) or a small reward. The ending's world consequences are shared,
+  and its standing goes to everyone who took part.
+- **At most 2 at once, one per faction.** A stage that can't happen waits, then fizzles with a
+  line of text.
+
+Every questline's stage missions are counted in [Counts](#counts).
+
+### Short Weight (the Haven)
+
+The example questline: four stages, two branches, two endings. Needs a safehouse with at least
+3 people, the note prefab and a person to talk to (Puzzles > Note and Civilian, or the generic
+object). Text keys: the safehouse's town, the storekeeper, the Red Hand runner and a sick girl,
+all picked at the start. Code: `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **Where the food goes** | Haven contract, Any, ★ Police; 40 min; 8 Fame, 10 Favor | At the safehouse: *talk* to the storekeeper (a hint), *persuade* him (difficulty 2; Police, Ex-Con, Elder +1), *bribe*: cover the shortfall (15 Haven Favor, +2 food), or *sneak*: read his ledger nearby (seen if he's within 12 m or you've been noticed: he'll be harder to talk round later). Any of them: you learn he trades tins to the Red Hand for antibiotics for a sick girl | Learned: stage 2. Time up: stage 1 again, once; then it fizzles | ✅ |
+| 2 | **The next handover** | Wait | 30 minutes of play or 12 real hours, whichever comes first. The safehouse's council head has a word if you talk to them | Stage 3 | ✅ |
+| 3 | **The handover** | Haven contract, Any, ★ Nurse; 45 min; 12 Fame, 12 Favor | 350–600 m outside town: the storekeeper, the runner and the crate. The Haven's branch: *talk*: turn him in; *persuade* him (difficulty 2, 3 if he caught someone reading his ledger; Nurse, Doctor, Elder +1; +3 Haven Fame and 5 Favor on top); *force*: run the runner off (you must be armed; +5 Red Hand Infamy), or kill his lookouts (only with the Red Hand group prefab set); *bribe* the runner (15 Red Hand Favor); *sneak*: take the crate back unseen (no shots within 150 m, not noticed; seen: +4 Red Hand Infamy). The Red Hand's branch: *side with the Red Hand*: warn the runner (+6 Red Hand Fame, +8 Haven Infamy; the contract pays nothing); or nobody comes in time | Stage 4, on its branch | ✅ |
+| 4 | **Word gets round** | Wait | 15 minutes of play or 6 real hours | The ending | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **Full Weight** | The Haven's | Haven morale +5, Red Hand morale −3, the safehouse +4 food; Red Hand strength −2 if the runner was run off by force; turned in: the storekeeper is put out (the safehouse −1 person). Everyone who took part: +4 Haven Fame. A headline and a rumour (6 hours) | ✅ |
+| **Short Weight** | The Red Hand's | Red Hand morale +4, Haven morale −3, the safehouse −3 food; whoever warned the runner: +3 Red Hand Fame. A headline and a rumour (6 hours) | ✅ |
+
+*Simplified:* the storekeeper, the runner and the crate are standing props with talk, choice and
+use actions; only the optional lookouts are AI. The sick girl is in the text, not in the world.
 
 ## Backgrounds at a glance
 

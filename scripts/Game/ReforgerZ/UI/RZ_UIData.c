@@ -41,7 +41,8 @@ enum RZ_EMissionKindUI
 	LEADER,
 	UNARMED,
 	PERIMETER,
-	ARC
+	ARC,
+	QUESTLINE	// a questline's entry and its stage missions (the arc icon)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -274,6 +275,7 @@ class RZ_UIText
 			case RZ_EMissionKindUI.UNARMED: return "mission_unarmed";
 			case RZ_EMissionKindUI.PERIMETER: return "mission_perimeter";
 			case RZ_EMissionKindUI.ARC: return "mission_arc";
+			case RZ_EMissionKindUI.QUESTLINE: return "mission_arc";
 		}
 
 		return "mission_contract";

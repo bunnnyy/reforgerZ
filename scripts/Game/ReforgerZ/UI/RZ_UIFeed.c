@@ -464,6 +464,9 @@ class RZ_UIFeed
 	//------------------------------------------------------------------------------------------------
 	//! M|id|kind|giver (-1 none)|title|given by|where|direction and distance|minutes left|requirements|Fame|Favor|brief|taking part (0/1)
 	//! C|mission id|clue title|clue text
+	//! A questline the player is part of is an M record too: a negative id, kind QUESTLINE, its
+	//! title, the stage as "given by", minutes -1 (no clock), Fame and Favor 0 (they depend on
+	//! the ending), the stage's text as the brief; its notes ("what you know so far") are C records.
 	protected string BuildJournal(int playerId)
 	{
 		RZ_MissionManager mm = m_GM.GetMissions();
@@ -514,6 +517,8 @@ class RZ_UIFeed
 			shown.Insert(m.m_iId);
 		}
 
+		s += BuildQuestlines(playerId, ent, from);
+
 		array<ref RZ_UIClue> clues;
 		if (m_mClues.Find(playerId, clues))
 		{
@@ -524,6 +529,50 @@ class RZ_UIFeed
 					RZ_UILine lnC = new RZ_UILine("C");
 					s += lnC.AddInt(c.m_iMission).Add(c.m_sTitle).Add(c.m_sText).End();
 				}
+			}
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The questlines this player is part of, as journal records (see BuildJournal).
+	protected string BuildQuestlines(int playerId, IEntity ent, vector from)
+	{
+		RZ_Questlines q = m_GM.GetQuestlines();
+		if (!q || !q.IsEnabled())
+			return "";
+
+		string s = "";
+		foreach (RZ_QuestRun run : q.GetRuns())
+		{
+			if (!q.IsVisibleTo(run, playerId))
+				continue;
+
+			RZ_QuestStage st = run.m_Line.GetStage(run.m_iStage);
+			string stageTitle = "";
+			if (st)
+				stageTitle = run.Fill(st.m_sTitle);
+
+			string where = run.m_sPlaceName;
+			string dir = "";
+			if (run.m_bHasPlace && ent)
+				dir = RZ_Util.DirectionText(from, run.m_vPlace);
+
+			string part = "0";
+			if (run.PlayerTookPart(m_GM, playerId))
+				part = "1";
+
+			int id = -run.m_iId;
+			RZ_UILine lnQ = new RZ_UILine("M");
+			lnQ.AddInt(id).AddInt(RZ_EMissionKindUI.QUESTLINE).AddInt(run.m_Line.m_iFaction).Add(run.m_Line.m_sTitle).Add(stageTitle).Add(where).Add(dir);
+			lnQ.AddInt(-1).Add("Whoever takes the next step").AddInt(0).AddInt(0).Add(run.m_Line.JournalText(m_GM, run)).Add(part);
+			s += lnQ.End();
+
+			foreach (int n, string note : run.m_aNotes)
+			{
+				RZ_UILine lnN = new RZ_UILine("C");
+				s += lnN.AddInt(id).Add(run.m_aNoteTitles[n]).Add(note).End();
 			}
 		}
 
@@ -647,6 +696,9 @@ class RZ_UIFeed
 	//! Perimeter and arc missions by class (docs/MISSIONS.md lists them).
 	static int MissionKind(RZ_Mission m)
 	{
+		if (m.m_iQuestRun >= 0)
+			return RZ_EMissionKindUI.QUESTLINE;
+
 		if (m.m_bInPersonOnly || m.m_iJobFaction >= 0)
 			return RZ_EMissionKindUI.LEADER;
 
