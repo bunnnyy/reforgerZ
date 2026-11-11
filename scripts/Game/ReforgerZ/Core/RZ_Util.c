@@ -671,6 +671,19 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Puts a player somewhere else (with their vehicle, if they're in one), on the ground at pos,
+	//! or at sea level over water (a swimmer or a boat stays afloat). The Perimeter turns people
+	//! back from the line with it after the cure. False if it couldn't.
+	static bool MovePlayer(int playerId, vector pos)
+	{
+		vector at = GroundPos(pos);
+		if (IsWater(at))
+			at[1] = 0;
+
+		return SCR_Global.TeleportPlayer(playerId, at); // VERIFY: SCR_Global.TeleportPlayer on the dedicated server moves the player's character (or their vehicle) for every client, as it does from the editor
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Sets a vehicle's fuel to a share of its tanks (a freshly fixed car). Does nothing without
 	//! a fuel manager.
 	static void SetVehicleFuel(IEntity vehicle, float share)

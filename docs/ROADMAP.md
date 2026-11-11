@@ -34,6 +34,8 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 | 186 missions (every one designed so far): all 80 faction contracts and 5 hard-edge contracts (No Reply, Struck Off, The Three Weeks, The Author List, The List) (on shared building blocks: escorts, live capture, vehicle zones and convoys, health cost, step chains), 3 Red Hand hard edges (Learning the Drones, The Pit's Debtor, Tied Down), all 25 world events, 17 puzzles, 11 unarmed, 3 Perimeter, 2 questline stage missions (Short Weight), 3 Haven house contracts and the Courier's letters, 32 leader jobs and Rein In, 3 arc missions | [MISSIONS.md](MISSIONS.md) |
 | Six story arcs and session headlines | [Story arcs](DESIGN.md#story-arcs-and-headlines) |
 | Questlines: long storylines over many sessions, in stages (a contract or a wait for time and the world), with approaches (talk, persuade, sneak, force, bribe, betray, side with another faction) that set the outcome, capped endings through the existing systems, the journal, saved across restarts; one example, Short Weight (the Haven) | [Questlines](DESIGN.md#questlines), [MISSIONS.md](MISSIONS.md#questlines) |
+| World facts: one layer content reads (the cure and the epilogue, stage, Bastion presence, the day, night, who holds a town and a filtered town pick, safehouses, live leader names), season flags shared with the questlines, canon facts made once a season, claims so two stories don't use the same house, leader or wanderer, `Fill` tokens for text (briefs filled when shown), `Changed` for news, one "can it run now" check every mission starter uses, and missions called off when the world makes them pointless | [World facts](DESIGN.md#world-facts) |
+| The epilogue after the cure: the Perimeter stands down (no shots; whoever walks up to the line is turned back; the gates open with the wipe), research stops and running research and line jobs are called off, and the broadcast, guidance and the factions' lines follow | [The Perimeter](DESIGN.md#the-perimeter), [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
 | World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
@@ -55,6 +57,15 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 
 ### Characters and UI
 - Build the UI layouts and the icon imageset in Workbench ([UI/LAYOUTS.md](../UI/LAYOUTS.md)).
+
+### Content on the world facts
+- Switch the rest of the content to the world facts ([DESIGN.md](DESIGN.md#world-facts), the
+  *Planned* line): contract town pickers by who holds a town (`PickTown`), Bastion contracts and
+  road posts by Bastion presence (a balance call to play-test: Aftermath's presence is 0.1),
+  briefs' days and copied leader names as tokens, the origin story, the last orders and the pit
+  as canon, the lab and the helicopter as claims, standalone contracts that share a questline's
+  premise kept out while it runs (the keys are in [QUESTLINES.md](QUESTLINES.md#the-questlines)),
+  research jobs outside Halcyon off after the cure, Bastion Shelling kept off lived-in places.
 
 ### Designed, not built
 - **Questlines:** twelve faction questlines and two for the Long Table, over many sessions
@@ -91,6 +102,8 @@ In this order, because later ones depend on earlier ones:
 10. **Leaders:** loyalty drift and rogue-job discovery rates.
 11. **Guidance:** is anything too chatty for a level-0 player? Do the right speakers say it?
 12. **Story arcs** end to end (start one with `RZ_StoryArcs.Begin(kind)`) and how often they come.
+    **After the cure:** the line stands down (no drone, no shots, the new loudspeaker line), no
+    samples drop, the lab refuses them, no Perimeter or Halcyon jobs appear.
     **Questlines** end to end with **Wait scale** at 0.1 (`RZ_Questlines.Begin(key)`): a restart
     mid-way, two approaches to the same stage, a player who joins late.
 13. **Weather** accessors and the generator's noise.

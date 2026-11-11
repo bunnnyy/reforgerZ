@@ -37,8 +37,13 @@ and one way to end it: **research the cure.**
   name a rough area until you're close, unless you're a Radio Operator or trusted by the giver.
 - **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
   sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself after
-  the cure's epilogue or a set number of weeks, and a hall of fame remembers who carried samples,
-  held the final stand and rescued the most, season after season.
+  the cure's epilogue (the line stands down, the gates open with the wipe) or a set number of
+  weeks, and a hall of fame remembers who carried samples, held the final stand and rescued the
+  most, season after season.
+- **One world, one story**: missions, arcs, questlines and voices read the same world facts
+  (the cure, the day, who holds a town, fixed facts of the setting), so the line doesn't shoot
+  after the cure and two stories don't use the same safehouse at once. Most mission content is
+  still to be switched over to them.
 - **Notes between players**: a notice board at every Haven safehouse.
 - **Search the world**: cupboards, car boots and bodies, locked doors that keep the infected
   out (they bang on them) and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting, traps, fire, water and
@@ -91,7 +96,8 @@ scripts/Game/ReforgerZ/
   Core/          game mode component (the hub), helpers, map markers, loose-item cleanup,
                  seasons (the winner's rules, rule sets, the wipe cycle)
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
-                 town memory, the power grid, the radio station
+                 town memory, the power grid, the radio station, the world facts (what content
+                 reads: season flags, canon, claims, text tokens)
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, story arcs, the questline engine, headlines
   Zombies/       spawner (any zombie mod's prefabs), bite detection

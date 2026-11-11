@@ -7,11 +7,12 @@
 class RZ_PerimeterMissionHelper
 {
 	//------------------------------------------------------------------------------------------------
-	//! The Perimeter if it's running, else null.
+	//! The Perimeter if it's running and sealed, else null: after the cure the line stands down
+	//! (RZ_WorldFacts.PerimeterSealed), and every job at it stops with it.
 	static RZ_Perimeter Get(RZ_GameModeComponent gm)
 	{
 		RZ_Perimeter perimeter = gm.GetPerimeter();
-		if (!perimeter || !perimeter.IsActive())
+		if (!perimeter || !perimeter.IsActive() || !gm.GetFacts().PerimeterSealed())
 			return null;
 
 		return perimeter;
@@ -147,6 +148,8 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.BANDITS, RZ_ETier.KNOWN, 20, 30);
+		m_Req.m_bNotCured = true;	// the line stands down after the cure
+		m_Req.m_eTime = RZ_ETimeGate.NIGHT;
 		m_fTimeLeft = OPEN_IN + WINDOW + 30;
 		m_fParticipationRadius = 0;
 	}
@@ -372,6 +375,8 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.STRANGER, 15, 20);
+		m_Req.m_bNotCured = true;	// the line stands down after the cure
+		m_Req.m_eTime = RZ_ETimeGate.NIGHT;
 		m_fParticipationRadius = 0;
 	}
 
@@ -516,8 +521,9 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 		if (carrier <= 0)
 			return;
 
+		// A line that has stood down (the cure) locks on to nothing
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(carrier);
-		RZ_Perimeter perimeter = gm.GetPerimeter();
+		RZ_Perimeter perimeter = RZ_PerimeterMissionHelper.Get(gm);
 		if (!ent || !perimeter || perimeter.GetZone(ent.GetOrigin()) == RZ_EPerimeterZone.NONE)
 			return;
 
@@ -577,6 +583,7 @@ class RZ_Mission_ShotAtTheLine : RZ_PuzzleMission
 	{
 		RZ_EFaction giver = Math.RandomInt(0, RZ_Factions.COUNT);
 		SetContract(giver, RZ_ETier.STRANGER, 12, 15);
+		m_Req.m_bNotCured = true;	// the line stands down after the cure
 		m_fTimeLeft = 2700;
 		m_fParticipationRadius = 0;
 	}

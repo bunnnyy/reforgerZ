@@ -223,16 +223,31 @@ class RZ_LeaderVoice
 			case RZ_EFaction.SURVIVORS: return "\"We're the Haven. Just people who were here when the gates closed. We feed who we can, and nobody shoots in the house.\"";
 			case RZ_EFaction.MILITARY: return "\"Task Force Bastion. What's left of it. We hold what we were told to hold. Nobody has told us anything for days.\"";
 			case RZ_EFaction.BANDITS: return "\"The Red Hand. We're the ones who noticed the rules stopped. Don't look so worried. Yet.\"";
-			case RZ_EFaction.INSTITUTE: return "\"Halcyon. We were studying the site before the lockdown. We're the only ones who can prove the Zone is clean, and nobody outside opens the gates without proof.\"";
+			case RZ_EFaction.INSTITUTE:
+			{
+				// After the cure the proof is out: the gates wait on the outside now
+				if (RZ_WorldFacts.Get().IsCured())
+					return "\"Halcyon. We were studying the site before the lockdown. The proof went out with the cure. Now we wait for the gates, like everyone else.\"";
+
+				return "\"Halcyon. We were studying the site before the lockdown. We're the only ones who can prove the Zone is clean, and nobody outside opens the gates without proof.\"";
+			}
 		}
 
 		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What `speaker` says about `other`, in the speaker's voice.
+	//! What `speaker` says about `other`, in the speaker's voice. After the cure the lines about
+	//! samples and the cure as a hope have their own words.
 	static string HintAbout(RZ_EFaction speaker, RZ_EFaction other)
 	{
+		if (RZ_WorldFacts.Get().IsCured())
+		{
+			string after = HintAfterCure(speaker, other);
+			if (!after.IsEmpty())
+				return after;
+		}
+
 		switch (speaker)
 		{
 			case RZ_EFaction.SURVIVORS:
@@ -264,6 +279,26 @@ class RZ_LeaderVoice
 				break;
 			}
 		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The epilogue's lines for the hints that spoke of samples or of the cure to come. "" keeps
+	//! the usual line.
+	protected static string HintAfterCure(RZ_EFaction speaker, RZ_EFaction other)
+	{
+		if (speaker == RZ_EFaction.SURVIVORS && other == RZ_EFaction.INSTITUTE)
+			return "\"The scientists did it. The cure's out. Now we just have to still be here when the gates open.\"";
+
+		if (speaker == RZ_EFaction.BANDITS && other == RZ_EFaction.INSTITUTE)
+			return "\"The cure's out. Nobody's buying samples now, not even us. The eggheads finally paid in something real.\"";
+
+		if (speaker == RZ_EFaction.INSTITUTE && other == RZ_EFaction.BANDITS)
+			return "\"The Red Hand used to buy samples. It doesn't matter now. Nothing they took can take the cure back.\"";
+
+		if (speaker == RZ_EFaction.INSTITUTE && other == RZ_EFaction.MILITARY)
+			return "\"Bastion wanted the cure in a locked crate. It went out over every frequency instead. They're still deciding how they feel about that.\"";
 
 		return "";
 	}

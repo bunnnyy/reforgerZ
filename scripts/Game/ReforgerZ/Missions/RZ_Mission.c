@@ -61,6 +61,12 @@ class RZ_Mission
 
 	// Questlines (Director/RZ_Questlines.c): the run that started this mission as one of its stages
 	int m_iQuestRun = -1;			// -1 = not part of a questline
+	//! The story (arc or questline) that started it: subjects that story claimed count as free
+	//! for this mission (RZ_WorldFacts claims). "" = none.
+	string m_sClaimParent;
+	//! Called off by the world, not failed by anyone (Withdraw): no pay, no blame, no penalty.
+	bool m_bWithdrawn;
+	string m_sWithdrawText;
 
 	// Rough areas (docs/MISSIONS.md, "Who gets offered what"): contracts name a circle, not a spot
 	ref array<int> m_aExactFor = {};	// players who came close: they know the spot now
@@ -181,6 +187,70 @@ class RZ_Mission
 	bool Setup(RZ_GameModeComponent gm)
 	{
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Subjects this mission needs for its whole run (docs/DESIGN.md, "World facts"): "lab", "heli",
+	//! "pit", RZ_WorldFacts.Town(idx)... Known after Configure. The mission manager starts it only
+	//! while they're all free, holds them from before Setup until it ends, and lets go if Setup
+	//! fails. Subjects picked in Setup are claimed there with ClaimSubject.
+	void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! In Setup: hold one more subject (a safehouse, a leader, a wanderer it just picked) until the
+	//! mission ends. False if someone else holds it: pick another, or return false from Setup.
+	protected bool ClaimSubject(RZ_GameModeComponent gm, string subject)
+	{
+		return gm.GetFacts().ClaimFor(subject, RZ_WorldFacts.MissionOwner(m_iId), m_sClaimParent);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Free for this mission: nobody holds it but this mission or the story that started it.
+	bool IsSubjectFree(RZ_GameModeComponent gm, string subject)
+	{
+		RZ_WorldFacts facts = gm.GetFacts();
+		string holder = facts.ClaimedBy(subject);
+		if (holder.IsEmpty())
+			return true;
+
+		return holder == RZ_WorldFacts.MissionOwner(m_iId) || (!m_sClaimParent.IsEmpty() && holder == m_sClaimParent);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! In Setup: another mission uses this town, or a story holds it (the town, a safehouse in it,
+	//! the lab) and it isn't this mission's or its own story's. Use it for the mission's own town;
+	//! the shared pickers take the mission as `asker` for the same rule.
+	protected bool IsTownBusy(RZ_GameModeComponent gm, int idx)
+	{
+		return gm.GetMissions().IsSettlementBusy(idx, this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The brief as players read it: the world's tokens ({day}, {leader:id}...) filled in now, so
+	//! a name or a day in it is never stale (RZ_WorldFacts.Fill). Every place that shows a brief
+	//! calls this; m_sBrief is the template.
+	string GetBrief(RZ_GameModeComponent gm)
+	{
+		if (!gm || !gm.GetFacts())
+			return m_sBrief;
+
+		return gm.GetFacts().Fill(m_sBrief);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The world called it off (the cure came out, the post it served changed hands): it ends at
+	//! the next tick with `why` told to everyone it was offered to, and nobody is paid, blamed or
+	//! penalised. Its arc or questline hears it as a failure.
+	void Withdraw(string why)
+	{
+		if (m_eState != RZ_EMissionState.ACTIVE)
+			return;
+
+		m_bWithdrawn = true;
+		m_sWithdrawText = why;
+		m_eState = RZ_EMissionState.FAILED;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -453,7 +523,9 @@ class RZ_Mission
 
 	//------------------------------------------------------------------------------------------------
 	//! A supply truck arrived or was lost (RZ_SupplyLines.TRUCK_*). driver: the player who drove
-	//! it in or away, -1 if none. Convoy missions (Missions/Blocks/RZ_VehicleZone.c) use it.
+	//! it in or away, -1 if none; for TRUCK_CALLED_OFF (its post changed hands or was abandoned,
+	//! before or after it left), the id of that holding. Convoy missions
+	//! (Missions/Blocks/RZ_VehicleZone.c) use it.
 	void OnTruckEvent(RZ_GameModeComponent gm, int faction, int what, vector pos, int driver)
 	{
 	}
@@ -566,13 +638,15 @@ class RZ_Mission
 
 	// ================================================================ Helpers for mission types
 	//------------------------------------------------------------------------------------------------
-	//! Random settlement whose infection is within [minInf, maxInf]. -1 if none.
-	static int PickSettlement(RZ_GameModeComponent gm, float minInf, float maxInf)
+	//! Random settlement whose infection is within [minInf, maxInf] that no mission or story is
+	//! using (with `asker`, what it or its story holds counts as free). -1 if none. To filter by
+	//! who holds a town, RZ_WorldFacts.PickTown.
+	static int PickSettlement(RZ_GameModeComponent gm, float minInf, float maxInf, RZ_Mission asker = null)
 	{
 		array<int> candidates = {};
 		foreach (int i, RZ_Settlement s : gm.GetSettlements())
 		{
-			if (s.m_fInfection >= minInf && s.m_fInfection <= maxInf && !gm.GetMissions().IsSettlementBusy(i))
+			if (s.m_fInfection >= minInf && s.m_fInfection <= maxInf && !gm.GetMissions().IsSettlementBusy(i, asker))
 				candidates.Insert(i);
 		}
 
@@ -584,8 +658,8 @@ class RZ_Mission
 
 	//------------------------------------------------------------------------------------------------
 	//! Random settlement between minDist and maxDist from `from`, within the infection range, other
-	//! than `exclude`. -1 if none.
-	static int PickSettlementAway(RZ_GameModeComponent gm, vector from, float minDist, float maxDist, float minInf, float maxInf, int exclude = -1)
+	//! than `exclude`, not busy (as PickSettlement, with `asker`). -1 if none.
+	static int PickSettlementAway(RZ_GameModeComponent gm, vector from, float minDist, float maxDist, float minInf, float maxInf, int exclude = -1, RZ_Mission asker = null)
 	{
 		array<int> candidates = {};
 		foreach (int i, RZ_Settlement s : gm.GetSettlements())
@@ -597,7 +671,7 @@ class RZ_Mission
 			if (d < minDist || d > maxDist)
 				continue;
 
-			if (s.m_fInfection < minInf || s.m_fInfection > maxInf || gm.GetMissions().IsSettlementBusy(i))
+			if (s.m_fInfection < minInf || s.m_fInfection > maxInf || gm.GetMissions().IsSettlementBusy(i, asker))
 				continue;
 
 			candidates.Insert(i);

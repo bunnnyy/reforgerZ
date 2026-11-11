@@ -872,7 +872,7 @@ test files are copied into a throwaway addon folder.
 grep -rn "VERIFY" scripts/
 ```
 
-There are **41** lines with the tag: 31 in the game scripts (one is the comment in `Core/RZ_Util.c`
+There are **42** lines with the tag: 32 in the game scripts (one is the comment in `Core/RZ_Util.c`
 that explains them; 2 are in the UI) and 10 in the Workbench plugin (one is its header comment).
 Every name and signature question is settled: the game scripts compile on 1.9, and each call was
 checked against the base game's script source (its doc comments and how vanilla uses it). Each
@@ -887,31 +887,31 @@ No fallback. If this is wrong, nothing persists.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:131` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:138` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 
 ### Medium risk: big features, with a fallback (19)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Core/RZ_Util.c:505` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
-| `Core/RZ_Util.c:623` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
-| `Factions/RZ_SupplyLines.c:843` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
-| `Core/RZ_Util.c:651` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
+| `Core/RZ_Util.c:520` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
+| `Core/RZ_Util.c:638` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
+| `Factions/RZ_SupplyLines.c:898` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
+| `Core/RZ_Util.c:666` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Interactions.c:703` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
-| `Core/RZ_Util.c:454` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
-| `World/RZ_Perimeter.c:241` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:759`, `:774` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `Core/RZ_Util.c:469` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
+| `World/RZ_Perimeter.c:246` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
+| `World/RZ_Perimeter.c:861`, `:876` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Door locks** off (locks go back on the loot) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: no door locks, the loot lock everywhere |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
-| `Core/RZ_Util.c:731` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
-| `Core/RZ_Util.c:817` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
+| `Core/RZ_Util.c:759` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:845` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
 | `Cure/RZ_Infection.c:1160` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 
-### Low risk: contained or cosmetic (9)
+### Low risk: contained or cosmetic (10)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -919,10 +919,11 @@ No fallback. If this is wrong, nothing persists.
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:260` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: use **Set it alight** on the building instead |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
-| `Core/RZ_Util.c:417` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
+| `Core/RZ_Util.c:432` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_KeyItem.c:81` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages, or leave **Key prefab** empty (data keys) |
+| `Core/RZ_Util.c:683` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 
 ### The UI (2)
 
@@ -964,6 +965,7 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] No lab prefab set. Samples can't be delivered until one is configured or placed.
 [ReforgerZ] Hostility: bitmask mode, only 0 of 15 variant factions (SURV_H1 to SURV_H15) in the FactionManager. ...
 [ReforgerZ] Season 1 (fresh). Rules: none. Wipe: 48 h after the cure.
+[ReforgerZ] World facts: season seed S, 0 canon facts, 0 season flags.
 [ReforgerZ] Settlement scan: 2 named, 12 building clusters, took 83 ms.
 [ReforgerZ] Perimeter: x 70 to 3913, z 488 to 3788. Warning zone 300 m, kill zone 100 m.
 [ReforgerZ] No checkpoint barricade prefab set: road checkpoints are off.
@@ -984,8 +986,9 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Started. 14 settlements, stage Early Outbreak, cure 0 percent, state 0.
 ```
 
-On a restart the same lines say `(save)` or `(saved)` instead of `(picked)` or `(new ...)`, and the
-settlement scan doesn't run. Arland's 14 settlements: its two cities, the building clusters named
+On a restart the same lines say `(save)` or `(saved)` instead of `(picked)` or `(new ...)`, the
+world facts keep their seed and count what the season has made so far, and the settlement scan
+doesn't run. Arland's 14 settlements: its two cities, the building clusters named
 after the nearest local place label (North Head, Angler Bluff, Sandbank, Heath Point) and the rest
 by grid reference (`Outskirts 13-29`).
 
@@ -1014,6 +1017,7 @@ Warnings worth acting on:
 | `Season rule set '...' doesn't exist; ignored.` | A name in **Season > Rule sets** is misspelt |
 | `Questlines: the saved questline '...' (or its stage) no longer exists; dropped.` | A questline (or a stage id) was removed or renamed in the code since the save; that one ends |
 | `Questlines: two questlines use the key '...'` / `... has no key or no stages; skipped.` | A content mistake in `Missions/Questlines/`: give each questline its own key and at least one stage |
+| `Requirements: no questline has the key '...' (docs/QUESTLINES.md lists them); the gate never closes.` | A mission's `NotWhileQuest`/`NotAfterQuest`/`NotWithQuest` names a key that is neither registered nor designed: a typo. Use the key from [QUESTLINES.md](QUESTLINES.md#the-questlines) |
 | `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON save behaviour in the VERIFY list is wrong) |
 
 While running: `Status | ...` lines every few minutes (stage, infection, zombies, missions, cure),
@@ -1022,7 +1026,12 @@ While running: `Status | ...` lines every few minutes (stage, infection, zombies
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
 `Bastion checkpoint up near ...` / `Red Hand roadblock up near ...`,
 `Fire Mission perk: player N, M infected killed.`, `Note at ... by ...: ...`, `Season over. Cure goes to ...`,
-and `Season N is over (...). The wipe happens at the next restart.`
+`Canon: <key> = <value>.` (a fixed fact of the setting, made the first time content asks, once a
+season; [DESIGN.md](DESIGN.md#world-facts)), `World change: <key>. <headline>` (for example
+`supply.1.called_off` when a truck turns back), `Mission N '...' called off: ...` (the world made it
+pointless: the cure, or its truck's post changed hands), `The cure is out: N running mission(s)
+called off.`, `Perimeter (stood down): player N turned back from the line.`, and `Season N is
+over (...). The wipe happens at the next restart.`
 
 ## 8. Play-test checklist
 

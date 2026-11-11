@@ -441,12 +441,13 @@ class RZ_Job_SellOutRivalCrew : RZ_LeaderDelivery
 		if (!RZ_LeaderJob.MeetingPoint(gm, RZ_EFaction.MILITARY, l.m_vPos, meet, meetName))
 			return false;
 
-		// Another crew boss to sell out, if there is one; otherwise squatters in a rough town
+		// Another crew boss to sell out, if there is one no mission or story is using (else the raid
+		// couldn't touch them); otherwise squatters in a rough town
 		array<RZ_Leader> crews = {};
 		gm.GetLeaders().GetFactionLeaders(RZ_EFaction.BANDITS, crews);
 		foreach (RZ_Leader c : crews)
 		{
-			if (c != l && !c.IsStronghold())
+			if (c != l && !c.IsStronghold() && gm.GetFacts().LeaderFree(c.m_iId))
 			{
 				m_iRival = c.m_iId;
 				m_sRivalPlace = c.m_sPlace;
@@ -476,9 +477,14 @@ class RZ_Job_SellOutRivalCrew : RZ_LeaderDelivery
 	//------------------------------------------------------------------------------------------------
 	override protected void OnJobDelivered(RZ_GameModeComponent gm, int playerId, int dropIndex)
 	{
-		gm.NotifyPlayer(playerId, m_sTitle, string.Format("A lieutenant studies the map, then you. \"Tonight,\" is all he says. You hear the trucks leave for %1 an hour later.", m_sRivalPlace));
-		if (m_iRival >= 0)
-			gm.GetLeaders().KillOffscreen(m_iRival, string.Format("was killed when Bastion raided the camp at %1", m_sRivalPlace));
+		// The rival may have been taken up by a story since (KillOffscreen refuses then): the raid
+		// finds the camp empty instead of a death nobody hears about
+		bool missed = m_iRival >= 0 && !gm.GetLeaders().KillOffscreen(m_iRival, string.Format("was killed when Bastion raided the camp at %1", m_sRivalPlace));
+		string text = string.Format("A lieutenant studies the map, then you. \"Tonight,\" is all he says. You hear the trucks leave for %1 an hour later.", m_sRivalPlace);
+		if (missed)
+			text += " They come back before dawn, empty-handed. Whoever slept there had moved on.";
+
+		gm.NotifyPlayer(playerId, m_sTitle, text);
 	}
 
 	//------------------------------------------------------------------------------------------------

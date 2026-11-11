@@ -409,25 +409,8 @@ class RZ_FactionServices
 	//------------------------------------------------------------------------------------------------
 	protected bool IsNearPeople(vector pos)
 	{
-		float safe = m_Settings.m_fFireMissionSafeDistance;
-		RZ_Safehouses houses = m_GM.GetSafehouses();
-		if (houses && houses.FindNearest(pos, safe) >= 0)
-			return true;
-
-		if (m_GM.HasLab() && RZ_Util.DistXZ(pos, m_GM.GetLabPosition()) < safe)
-			return true;
-
-		RZ_Territory territory = m_GM.GetTerritory();
-		if (territory && territory.IsActive())
-		{
-			foreach (RZ_Holding h : territory.GetHoldings())
-			{
-				if (RZ_Util.DistXZ(h.m_vPos, pos) < safe)
-					return true;
-			}
-		}
-
-		return false;
+		// The world facts own the rule (safehouses, holdings, the lab), so shelling events use it too
+		return m_GM.GetFacts().IsNearLivedIn(pos, m_Settings.m_fFireMissionSafeDistance);
 	}
 
 	//------------------------------------------------------------------------------------------------

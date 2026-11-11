@@ -121,11 +121,12 @@ class RZ_GuidanceText
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The dead soldier's orders: hold the line, await relief. Nobody came.
+	//! The dead soldier's orders: hold the line, await relief. Nobody came. Day 2's order had no
+	//! "Task Force Bastion" on it: the name came on the radio the night of Day 3 (docs/LORE.md).
 	static string OrdersText(RZ_Rng rng, int day, string fellBackTo)
 	{
 		string name = RZ_NoteText.Surname(rng);
-		return string.Format("TASK FORCE BASTION. Day 2. To all posts: Hold the line. Await relief.\nUnderneath, in pencil, the writing smaller each time:\n\"Day 5. Holding.\" \"Day 8. Holding. Radio quiet.\" \"%1. No relief. Nobody is coming. The others fell back to %2. Tell them %3 held.\"", RZ_NoteText.Day(day), fellBackTo, name);
+		return string.Format("CORDON DETAIL. Day 2, evening. To all units inside the line: Hold the line. Await relief.\nUnderneath, in pencil, the writing smaller each time:\n\"Day 5. Holding.\" \"Day 8. Holding. Radio quiet.\" \"%1. No relief. Nobody is coming. The others fell back to %2. Tell them %3 held.\"", RZ_NoteText.Day(day), fellBackTo, name);
 	}
 
 	// ================================================================ Open radio channels
@@ -158,9 +159,12 @@ class RZ_GuidanceText
 	{
 		array<string> lines = {
 			"\"Bastion, Bastion, come in. Still waiting for relief? We'll keep the kettle on.\" Laughter, and the channel goes dead.",
-			"\"Anyone with samples from the big ones: we pay faster than Halcyon. Ask for %1 in %2. No questions. Well. Some questions.\"",
 			"\"Toll's due on every road out of %2. Tins, fuel or manners. Mostly tins.\""
 		};
+
+		// Nobody buys samples once the cure is out
+		if (!RZ_WorldFacts.Get().IsCured())
+			lines.Insert("\"Anyone with samples from the big ones: we pay faster than Halcyon. Ask for %1 in %2. No questions. Well. Some questions.\"");
 
 		return string.Format(rng.Pick(lines), boss, place);
 	}
@@ -181,9 +185,13 @@ class RZ_GuidanceText
 	static string RedHandShout(RZ_Rng rng, string boss)
 	{
 		array<string> lines = {
-			"Someone on a rooftop calls down, laughing: \"Lost, are we? Bastion's still waiting for relief, you know. Any day now. Got samples? We pay faster than Halcyon. Ask for %1.\"",
 			"A whistle from a window above you. \"New face! Tolls are fair, %1 is fairer, and Bastion's on a radio nobody answers. Come and say hello.\""
 		};
+
+		if (RZ_WorldFacts.Get().IsCured())
+			lines.Insert("Someone on a rooftop calls down, laughing: \"Cure's out and you're still here? Gates won't open till they're ready, friend. Ask for %1 in the meantime.\"");
+		else
+			lines.Insert("Someone on a rooftop calls down, laughing: \"Lost, are we? Bastion's still waiting for relief, you know. Any day now. Got samples? We pay faster than Halcyon. Ask for %1.\"");
 
 		return string.Format(rng.Pick(lines), boss);
 	}
@@ -199,13 +207,18 @@ class RZ_GuidanceText
 				return string.Format("\"The Haven's holding out in %1. Soup, a medic, a bed if you're lucky. Don't fire a gun near the door.\"", place);
 			case RZ_EFaction.MILITARY:
 				if (role == RZ_EWandererRole.DESERTER)
-					return string.Format("\"Bastion's dug in at %1, still waiting for relief. I waited eleven days. Nobody's coming. Tell them I said so.\"", place);
+					return RZ_WorldFacts.Get().Fill(string.Format("\"Bastion's dug in at %1, still waiting for relief. I waited {days_since_command_words} days for Command to call back. Nobody's coming. Tell them I said so.\"", place));
 
 				return string.Format("\"Bastion holds %1. Follow their rules and they'll leave you alone. Their rules change.\"", place);
 			case RZ_EFaction.BANDITS:
 				return string.Format("\"The Red Hand runs %1 these days. They'll sell you anything, including your own boots back.\"", place);
 			case RZ_EFaction.INSTITUTE:
+			{
+				if (RZ_WorldFacts.Get().IsCured())
+					return string.Format("\"The scientists in %1 got their cure out. Now they wait for the gates like the rest of us.\"", place);
+
 				return string.Format("\"The scientists are in %1. They want samples from the big ones. Say it's for a cure. I hope they're right.\"", place);
+			}
 		}
 
 		return "";

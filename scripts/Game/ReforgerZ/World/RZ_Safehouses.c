@@ -140,6 +140,7 @@ class RZ_SafehouseSave
 	bool anchored;
 	bool shortFood;
 	int lost;
+	int died;
 	float straggle;
 	ref array<ref RZ_Note> notes = {};
 }
@@ -156,7 +157,8 @@ class RZ_Safehouse
 	float m_fUpkeepTimer;
 	bool m_bAnchored;	// sits at the Haven quartermaster, which already exists: don't spawn another
 	bool m_bShort;		// the last upkeep ran short: the safehouse is under pressure
-	int m_iLost;		// people lost lately (hunger, raids, contracts), fading by one an hour (story arcs)
+	int m_iLost;		// people gone lately for any reason (left hungry, moved, taken, dead), fading by one an hour (story arcs)
+	int m_iDied;		// of those, the dead (RemoveDead), fading the same way
 	float m_fLostFade;
 	float m_fStraggleTimer;	// stragglers: one more person every few hours while fed
 	ref array<ref RZ_Note> m_aNotes = {};	// the notice board, oldest first (RZ_NoticeBoard)
@@ -263,6 +265,7 @@ class RZ_Safehouse
 		s.anchored = m_bAnchored;
 		s.shortFood = m_bShort;
 		s.lost = m_iLost;
+		s.died = m_iDied;
 		s.straggle = m_fStraggleTimer;
 		foreach (RZ_Note n : m_aNotes)
 		{
@@ -285,6 +288,7 @@ class RZ_Safehouse
 		h.m_bAnchored = s.anchored;
 		h.m_bShort = s.shortFood;
 		h.m_iLost = Math.Max(0, s.lost);
+		h.m_iDied = Math.Max(0, s.died);
 		h.m_fStraggleTimer = Math.Max(0, s.straggle);
 		if (s.notes)
 		{
@@ -916,7 +920,8 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Someone leaves (a contract took them, the Red Hand came collecting). Never below 0.
+	//! Someone leaves (a contract took them, the Red Hand came collecting, they moved on). Counts
+	//! as lost (m_iLost), not as dead. Never below 0.
 	void RemovePopulation(int idx, int count)
 	{
 		RZ_Safehouse h = Get(idx);
@@ -926,6 +931,19 @@ class RZ_Safehouses
 		int gone = Math.Min(count, h.m_iPopulation);
 		h.m_iPopulation = h.m_iPopulation - gone;
 		h.m_iLost = h.m_iLost + gone;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone died: lost and dead (m_iDied), so a line about the buried counts only these.
+	void RemoveDead(int idx, int count)
+	{
+		RZ_Safehouse h = Get(idx);
+		if (!h)
+			return;
+
+		int dead = Math.Min(count, h.m_iPopulation);
+		RemovePopulation(idx, dead);
+		h.m_iDied = h.m_iDied + dead;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -961,17 +979,18 @@ class RZ_Safehouses
 		UpdateBodies(players);
 		m_Board.Tick(dt);
 
-		// Losses fade: one an hour
+		// Losses fade: one an hour (the dead among them too)
 		foreach (RZ_Safehouse lossHouse : m_aSafehouses)
 		{
-			if (lossHouse.m_iLost <= 0)
+			if (lossHouse.m_iLost <= 0 && lossHouse.m_iDied <= 0)
 				continue;
 
 			lossHouse.m_fLostFade = lossHouse.m_fLostFade + dt;
 			if (lossHouse.m_fLostFade >= 3600)
 			{
 				lossHouse.m_fLostFade = 0;
-				lossHouse.m_iLost = lossHouse.m_iLost - 1;
+				lossHouse.m_iLost = Math.Max(0, lossHouse.m_iLost - 1);
+				lossHouse.m_iDied = Math.Max(0, lossHouse.m_iDied - 1);
 			}
 		}
 

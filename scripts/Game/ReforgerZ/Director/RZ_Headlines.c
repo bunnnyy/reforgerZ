@@ -155,7 +155,7 @@ class RZ_Headlines
 
 		RZ_CureResearch cure = m_GM.GetCure();
 		if (cure && cure.IsCured())
-			lines.Insert("The cure is out. The gates are opening.");
+			lines.Insert("The cure is out. The line has stopped shooting, and the checkpoints open when the season ends.");
 		else if (cure)
 			lines.Insert(string.Format("Halcyon says the cure is at %1 percent.", RZ_Util.RoundToInt(cure.m_fProgress)));
 
