@@ -386,12 +386,19 @@ class RZ_QuestCarry
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The user hands it over: taken from their inventory. False if they haven't got it.
+	//! The user hands it over: this very item is taken from their inventory (a stage with two of
+	//! them, the ration crates, tells them apart). False if they haven't got it.
 	bool TakeFrom(IEntity user)
 	{
-		if (m_bDelivered || !RZ_ContractHelp.CarriesItemOf(user, m_iMission, true))
+		if (m_bDelivered || !user || !m_Item)
 			return false;
 
+		array<IEntity> items = {};
+		RZ_MissionItemHelper.FindItems(user, items);
+		if (!items.Contains(m_Item))
+			return false;
+
+		RZ_MissionItemHelper.RemoveItem(user, m_Item);
 		m_bDelivered = true;
 		m_Item = null;
 		return true;
