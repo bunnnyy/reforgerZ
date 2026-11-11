@@ -111,17 +111,28 @@ council finding out who's asking. The answer is the Haven's oldest shame. In the
 week the council sent its "mouths" to a farmhouse past the last village that said it could feed
 them. The farmhouse went quiet, and the council crossed the whole house off.
 
+**Built** ([MISSIONS.md](MISSIONS.md#the-list-the-haven)). The contract The List is one crossed-out
+name ([MISSIONS.md](MISSIONS.md#the-haven), #21); this questline asks whose pencil it was. Changes
+from the design: it also opens once that contract has been done this season, and "lost people to
+upkeep" is read as "ran short, or lost people lately"; the council head asks on the radio, in their
+voice; the asking house's own list is the first copy (fewer copies on a map without the houses);
+the reading is held at the gate on the road in. The Long Table isn't built, so stage 4 always finds
+the empty farm and its branch waits for it (`list.found_table` isn't set yet); The names read
+doesn't raise the Long Table's suspicion and Sold doesn't change the exile-leak chance: both
+publish flags instead (`list.read`, `list.to_redhand`). *(you)* choices are season-wide flags and
+the record of who took part.
+
 **Needs:** Known with the Haven; Trusted (or ★ Elder) to win the last stage by talk. Not while
 exiled. ★ Radio Op, ★ Police, ★ Elder.
-**Starts:** an Independent or Rogue council head, in person, once any safehouse has lost people
-to upkeep this season.
+**Starts:** an Independent or Rogue council head, once the contract The List has been done this
+season or any safehouse has run short or lost people lately.
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
 | 1 | **Find the husband** | **Follow his trail**: a note, his pack, a third clue. Half the time he's alive: he walked off when he saw his name crossed out, and comes home (+1 person, `list.husband_alive`). **Ask the wanderers**: a Scavenger sells his last sighting for 1 food. ★ Radio Op: hears his last call on the Haven channel, grid included | Trail of Clues |
 | 2 | **Get three copies of the List** | **Talk** to council heads: a Merciful one hands it over; a Loyal one asks the chair first and refuses unless you're Trusted; a Paranoid one won't. **Sneak**: read it in the stores at night past two lookouts (seen: +8 Haven Infamy, `list.stolen` *(you)*). **Bribe**: deliver 3 food to that house. **Side with the Red Hand**: their list of strays counts as one copy, for 15 Red Hand Favor | A Quiet Arrangement's lookouts; delivery |
 | 3 | **Read the pattern** | **Work it out** at a safehouse: the names crossed out in the same week on all three copies, against the ration notes, point to one farmhouse. Wrong: locked 5 min; twice: you only learn "a farm out that way" (`list.half_truth`). ★ Elder or Police: the method spelled out. **Ask the chair** (Trusted): she tells you half and asks you to stop (`list.chair_asked`) | Patient Zero's Ledger (a deduction) |
-| 4 | **Go and look** | If the Long Table lives there this season, it's their house: the host meets you at the gate and sets a place (C1 starts at stage 2, `table.found_by_haven`). If not, an empty farm: nine graves, and one too few. **Look round** (three points, 10 s each). **Sit down and eat** (the guest rule applies, [REPUTATION.md](REPUTATION.md#the-long-table-planned)). **Leave and report** | Visit points |
+| 4 | **Go and look** | If the Long Table lives there this season, it's their house: the host meets you at the gate and sets a place (C1 starts at stage 2, `list.found_table`). If not, an empty farm: nine graves, and one too few. **Look round** (three points, 10 s each). **Sit down and eat** (the guest rule applies, [REPUTATION.md](REPUTATION.md#the-long-table-planned)). **Leave and report** | Visit points |
 | 5 | **Wait** | One session (2 real hours with players online). Gossip in the news: *"Someone's been asking about the List."* Then the chair of the council asks to see you | Wait |
 | 6 | **The chair's decision** | **Talk: read it out**, every house, crossed names too (Trusted, ★ Elder, or Known with `list.husband_alive` as proof): then hold the reading at the stronghold safehouse while the bells bring the infected (3 min, 2 waves). **Keep it quiet**: give the copies to the chair (`list.buried`). **Side with Bastion**: deliver them to a Bastion seat for its census (`list.to_bastion`). **Side with the Red Hand**: sell them to a crew boss (`list.to_redhand`). Either delivery must pass two Haven lookouts unseen | Hold; delivery |
 
@@ -143,6 +154,15 @@ tins. He wants a stranger: a man the house put out at night for stealing from th
 where he sleeps now. The council head would rather not know what she's selling. Someone has to
 carry the envelope.
 
+**Built** ([MISSIONS.md](MISSIONS.md#the-price-of-the-door-the-haven-or-the-red-hand)). Stage 1 is
+A Quiet Arrangement's walk, with its lookouts. Changes from the design: "short" means hungry, or it
+has lost people lately, and never the chair's house or one at the Preacher's prayers; stage 4 is a
+wait, then the vote; Bastion's checkpoint for the night is in words, and Under Bastion doesn't make
+road posts likelier (`door.bastion` is published); Paid in tins is −4 food once and `door.tins`,
+not a cost at every second upkeep; the cook takes the chair in words (the leaders' usual successor
+fills the seat). `cargo.exile` is now `door.exile_sold`, set whenever he's walked to the crew
+(being sold on waits for the Long Table).
+
 **Needs:** Known with the Haven or with the Red Hand (each side gives its own version). ★ Ex-Con,
 ★ Elder.
 **Starts:** an Independent or Rogue council head of a short safehouse; or the crew boss at the
@@ -160,7 +180,7 @@ nearest Red Hand outpost.
 |---|---|---|
 | **Stands alone** | Haven Fame +20; Red Hand Infamy +10 | The town counts as Barricaded (until the next restart, as Fortify); the council head is replaced if the vote went that way; the crew boss remembers you crossed him; `door.shut` |
 | **Under Bastion** | Bastion Fame +12, Haven Fame +8 | Bastion checkpoints are twice as likely on the roads near that town for the season (within the road-post caps); the house is on Bastion's census (`door.bastion`) |
-| **Paid in tins** | Red Hand Fame +10, 30 Red Hand Favor; Haven Fame +5 | The house loses 1 food at every second upkeep for the season and is never raided by that crew. With `exile.sold` and the Long Table active: the crew sells him on (`cargo.exile`), and *"never arrived"* is in the news |
+| **Paid in tins** | Red Hand Fame +10, 30 Red Hand Favor; Haven Fame +5 | The house loses 1 food at every second upkeep for the season and is never raided by that crew. With `exile.sold` and the Long Table active: the crew sells him on (`door.exile_sold`), and *"never arrived"* is in the news |
 | **The debt is yours** | Red Hand Fame +15, Haven Fame +15 | Nobody was sold; R1's page has your name on it |
 
 ### H3. The Edge of Town
@@ -170,6 +190,14 @@ comes back alone. He has walked eleven people out. A nurse at another house says
 them could have walked out of Halcyon's lab instead. The walker says the lab writes down the
 other two, and at least at the edge of town somebody holds your hand. Both of them are right.
 The houses want someone to settle it.
+
+**Built** ([MISSIONS.md](MISSIONS.md#the-edge-of-town-the-haven)). Stages 1 and 5 ("the walks
+stay") are the contract Walk Him Out at the walker's house; the lab road is the contract Cold
+Chain. Changes from the design: the nurse's house has a medic when one does (else any other
+house); Cold Chain here has no cure threshold; the cut dose's "a session later" is a sixth stage (a
+wait); the walker isn't a named person the world keeps (a headline and `walk.walks_stay`). Brokering
+the lab road needs Known with Halcyon and Trusted with the Haven: a saved man makes it Known,
+`weeks.public` makes it Trusted again.
 
 **Needs:** Known with the Haven. Talking to Halcyon at stage 3 needs Trusted with Halcyon.
 ★ Nurse, ★ Doctor, ★ Elder, ★ Lab Tech.
@@ -537,12 +565,17 @@ The flags other lines read.
 |---|---|---|---|
 | `list.to_bastion` | H1 | B2 | B2 starts at stage 3: the count is done |
 | `list.to_redhand` | H1 | R2 | The driver's strays came off the List; exiles are sold more often |
-| `table.found_by_haven` | H1 | C1 | C1 starts at stage 2 |
+| `list.found_table` | H1 (not set until the Long Table is built) | C1 | C1 starts at stage 2 |
 | `door.debt_yours` | H2 | R1 | Your name is on the page |
 | `door.shut`, `door.bastion` | H2 | R3, B2 | That house is the one that won't pay; it's on Bastion's census |
-| `cargo.exile` | H2 | R2, C1 | The exile is one of the people who never arrived |
+| `door.exile_sold` | H2 | R2, C1 | The exile was walked to the crew: he can be one of the people who never arrived |
 | `walk.knows_other_two` | H3 | HC2 | HC2 starts at stage 2 |
 | `walk.lab_road` | H3 | HC2 | The back room holds Haven people: stage 1's talk needs only Known with the Haven |
+| `walk.cut_dose` | H3 | R1 | The Haven owes the Red Hand for the cut dose |
+| `list.contract`, `walk.contract` | The contracts The List and Walk Him Out, when done | H1, H3 | They can start (`list.contract` holds the safehouse, + 1) |
+| `list.read`, `list.buried`, `list.sold_known`, `list.husband_home`, `list.head_replaced` | H1 | (none yet) | What happened, for contracts, events and rumours: the List was read at every house, or put back in the drawer; who sold it is known; the husband came home; a council head stepped down |
+| `door.paid`, `door.knows`, `door.tins`, `door.exile_home`, `door.exile_warned`, `door.head_replaced` | H2 | (none yet) | The envelope was carried, or opened; the house pays in tins; the exile came home, or took to the roads; the house voted its council head out |
+| `walk.lab_saved`, `walk.walks_stay`, `walk.truce` | H3 | (none yet) | A bitten man walked out of the lab; the walks stay; the lab road began with a truce |
 | `other_two.numbers` | HC2 | H3 | The lab road's headline gives numbers, not names |
 | `orders.mocked` | B1 | R1 | The boss owes you: returning the page needs only Known |
 | `orders.haven` | B1 | B2 | The chair's house is never asked for a contribution |

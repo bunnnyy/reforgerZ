@@ -69,11 +69,11 @@ little dark side that nobody talks about:
 
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
-| **The List** | Every house keeps a list of names. Some are quietly crossed out, and nobody says why. | Rumours and notes; The List contract (why one name was crossed out, and who gets told) |
-| **"Walking someone out"** | What happens to someone who declared a bite. It differs by house: in one they sit with you until the end; in another someone walks you to the edge of town at dusk and comes back alone. | The Walk Him Out contract |
+| **The List** | Every house keeps a list of names. Some are quietly crossed out, and nobody says why. | Rumours and notes; The List contract (why one name was crossed out, and who gets told); the questline The List (whose pencil it is) |
+| **"Walking someone out"** | What happens to someone who declared a bite. It differs by house: in one they sit with you until the end; in another someone walks you to the edge of town at dusk and comes back alone. | The Walk Him Out contract; the questline The Edge of Town (the walks against the lab) |
 | **"Mouths"** | When food runs low, people who can't work become "mouths", and mouths get smaller portions. | Half portions in the news; the Quiet Congregation arc |
 | **Exile** | Break the rules badly enough and you're put out at night, without your weapon. | Exile when the Haven hunts you |
-| **Quiet arrangements** | Some houses pay the Red Hand to be left alone. Sometimes the price is a stranger: someone the house turned out, and where to find them. | A Quiet Arrangement; a hungry house selling an exile's location |
+| **Quiet arrangements** | Some houses pay the Red Hand to be left alone. Sometimes the price is a stranger: someone the house turned out, and where to find them. | A Quiet Arrangement; a hungry house selling an exile's location; the questline The Price of the Door |
 | **"Borrowing"** | Taking from houses that weren't empty. Taking from a better-fed safehouse. Always in quotes. | Haven gossip in the news |
 
 **How they see the others:**

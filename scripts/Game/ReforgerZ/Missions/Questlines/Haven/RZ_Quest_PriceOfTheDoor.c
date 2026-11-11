@@ -429,7 +429,6 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 10, 0);
 				ChangeStanding(gm, run, RZ_EFaction.BANDITS, 0, 10);
 				RZ_HavenQuest.LeaderRemembers(gm, run, RZ_HavenQuest.KeptLeader(gm, run, "boss"), RZ_Leaders.MEM_CROSSED);
-				NudgeMorale(gm, RZ_EFaction.SURVIVORS, 4);
 				Headline(gm, run.Fill("The safehouse in {house} has stopped paying the Red Hand. It has boards on its windows instead."));
 				SpreadRumour(gm, run.Fill("\"{house} told the Red Hand no. To their faces. I'd have liked to see that.\""), 6);
 				return;
@@ -712,6 +711,9 @@ class RZ_QM_DoorEnvelope : RZ_HavenQM
 		{
 			outcome = RZ_Quest_PriceOfTheDoor.OUT_TINS;
 			text = QFill(gm, "The runner counts the tins twice. \"Tell {house} we'll see them next month.\"");
+			RZ_QuestRun run = Run(gm);
+			if (run)
+				run.Reward(gm, playerId, RZ_EFaction.BANDITS, 5, 15, "The crew remembers who brings the tins.");
 		}
 
 		gm.NotifyPlayer(playerId, m_sTitle, text);
@@ -786,7 +788,6 @@ class RZ_QM_DoorExile : RZ_HavenQM
 			giver = RZ_EFaction.BANDITS;
 
 		SetContract(giver, RZ_ETier.KNOWN, 12, 12);
-		m_Req.Bonus("elder");
 		m_fTimeLeft = 3600;
 		m_fParticipationRadius = 0;
 	}
@@ -1385,7 +1386,6 @@ class RZ_QM_DoorInstalment : RZ_HavenQM
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.BANDITS, RZ_ETier.STRANGER, 6, 10);
-		m_Req.Bonus("excon");
 		m_fTimeLeft = 2700;
 		m_fParticipationRadius = 0;
 	}
@@ -1424,6 +1424,7 @@ class RZ_QM_DoorInstalment : RZ_HavenQM
 			return;
 
 		NotifyParticipants(gm, m_sTitle, "The bell. The crew pays out on you, grudgingly. First instalment: paid.");
+		Paid(gm, m_iFighter);
 		Resolve(gm, m_iFighter, RZ_EQuestApproach.FORCE, RZ_Quest_PriceOfTheDoor.OUT_INSTALMENT, "paid in the pit");
 	}
 
@@ -1445,8 +1446,18 @@ class RZ_QM_DoorInstalment : RZ_HavenQM
 		if (option == 1 && TryBribe(gm, playerId, RZ_EFaction.BANDITS, INSTALMENT_FAVOR))
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "The pit boss writes it in the ledger with a stub of pencil. \"Paid. Boring, but paid.\"");
+			Paid(gm, playerId);
 			Resolve(gm, playerId, RZ_EQuestApproach.BRIBE, RZ_Quest_PriceOfTheDoor.OUT_INSTALMENT, "paid the instalment");
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The house hears who's paying its debt.
+	protected void Paid(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_QuestRun run = Run(gm);
+		if (run && playerId > 0)
+			run.Reward(gm, playerId, RZ_EFaction.SURVIVORS, 5, 0, QFill(gm, "{house} knows who is paying its debt."));
 	}
 
 	//------------------------------------------------------------------------------------------------

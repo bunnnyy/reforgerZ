@@ -307,6 +307,9 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 				if (outcome == OUT_TALLY || outcome == OUTCOME_DONE)
 				{
 					run.Note("{count} graves at the edge of {walkhouse}, and the same names in {walker}'s notebook, with the day and what they asked for last.");
+					if (run.Flag("elder_asked") == 1)
+						run.Note("{walker} has asked someone old enough to know how it's done to walk the next one with him.");
+
 					return S_NUMBERS;
 				}
 
@@ -437,7 +440,6 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 				q.SetWorldFlag("walk.cut_dose", 1);
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 0, 10, RZ_EQuestApproach.SIDE);
 				RZ_HavenQuest.TakePeople(gm, run.Flag("walkhouse", -1), 2);
-				NudgeMorale(gm, RZ_EFaction.SURVIVORS, -3);
 				Headline(gm, "Half of them walked out. The Red Hand calls that a good rate.");
 				SpreadRumour(gm, "\"The Red Hand's dose works half the time. The houses owe them for every one of it.\"", 8);
 			}
@@ -686,7 +688,7 @@ class RZ_QM_EdgeWalk : RZ_Mission_WalkHimOut
 }
 
 //------------------------------------------------------------------------------------------------
-//! The Edge of Town, stage 2 (Haven contract, Known): the walker's tally, at the edge of the
+//! The Edge of Town, stage 2 (Haven contract, Known, ★ Elder): the walker's tally, at the edge of the
 //! walker's town. Three graves to stand at (5 s each) and the tally itself: ask {walker} for the
 //! names, or read his notebook by the graves while he's on watch (more than 15 m from him, nothing
 //! has noticed you; seen, he takes it back and won't talk to you). Both the graves and the tally
@@ -715,7 +717,6 @@ class RZ_QM_EdgeTally : RZ_HavenQM
 	{
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.KNOWN, 10, 10);
 		m_Req.Bonus("elder");
-		m_Req.Bonus("nurse");
 		m_fTimeLeft = 3600;
 		m_fParticipationRadius = 0;
 	}
@@ -1185,7 +1186,7 @@ class RZ_QM_EdgeColdChain : RZ_Mission_ColdChain
 //------------------------------------------------------------------------------------------------
 //! The Edge of Town, stage 5 on the cut dose (Red Hand contract, Known): the crate at the nearest
 //! Red Hand seat, carried by one player to the nurse's house, past Halcyon's courier on the road
-//! (within 35 m: +8 Halcyon Infamy, and the lab knows). The carrier hands it over.
+//! (within 35 m, 25 m for ★ Ex-Con: +8 Halcyon Infamy, and the lab knows). The carrier hands it over.
 class RZ_QM_EdgeCutDose : RZ_HavenQM
 {
 	protected vector m_vCrate;
@@ -1197,6 +1198,7 @@ class RZ_QM_EdgeCutDose : RZ_HavenQM
 	protected static const int OBJ_CRATE = 0;
 	protected static const int OBJ_CLINIC = 1;
 	protected static const float SEEN_RADIUS = 35;
+	protected static const float SEEN_RADIUS_BONUS = 25;
 	protected static const int SEEN_INFAMY = 8;
 
 	//------------------------------------------------------------------------------------------------
@@ -1264,7 +1266,11 @@ class RZ_QM_EdgeCutDose : RZ_HavenQM
 		if (m_bSeen)
 			return;
 
-		string who = m_Courier.SeenBy(gm, ent.GetOrigin(), SEEN_RADIUS, false);
+		float radius = SEEN_RADIUS;
+		if (HasBonus(gm, carrier))
+			radius = SEEN_RADIUS_BONUS;
+
+		string who = m_Courier.SeenBy(gm, ent.GetOrigin(), radius, false);
 		if (who.IsEmpty())
 			return;
 

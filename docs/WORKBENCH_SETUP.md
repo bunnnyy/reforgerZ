@@ -1124,6 +1124,22 @@ session, tick off:
   is back at the same stage with the same names. At the handover, warn the runner on one run and
   take the crate back unseen on another: the endings differ (Haven food and morale, headline,
   rumour). A second player who joins late sees it in the journal only once they're offered a stage.
+- [ ] The List (same settings; finish the contract The List first, or let a safehouse run short):
+  a free council head asks; the husband's trail ends at him (bring him home: +1 person) or his
+  letter. Talk to a Loyal council head while Known (refused), read a house's list in its stores
+  after dark next to a lookout (+8 Haven Infamy), solve the copies at the asking house, look round
+  the empty farm, and at the chair's table read it out and hold the gate (two waves); on another run,
+  carry the copies past a lookout (taken back: Buried).
+- [ ] The Price of the Door (a safehouse short of food or that lost people lately, a Red Hand crew
+  within 6 km): open the envelope (name and grid), get seen by a lookout (+12 Haven Infamy), deliver
+  it; at the barn bring the exile home and speak for him at the vote (+1 person). Another run: leave
+  the envelope, then at the gate tell the crew boss no (with the Red Hand group prefab) and hold
+  it, and put the barricades up (the town is Barricaded); or take the debt and pay it in the pit.
+- [ ] The Edge of Town (finish Walk Him Out first; the lab placed): at dusk take the bitten man to the
+  lab (he follows; most of the time he walks out and the house gains one); read the walker's
+  notebook beside him (taken back), then ask him instead; read the trial records after dark;
+  broker the lab road at the nurse's and carry the Cold Chain batch; on another run refuse both and
+  walk the last one out with the walker at dusk.
 - [ ] With **Post minutes** at 1, a road post goes up on a road ahead of you. At a Bastion
   checkpoint: Known, you're waved through; a stranger is searched at the barrier (a suppressor is
   taken); walking off mid-search costs 3 Infamy and they fire. Unarmed with Bastion Infamy, wait at

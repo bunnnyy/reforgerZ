@@ -675,7 +675,7 @@ class RZ_QM_ListHusband : RZ_HavenQM
 	protected string Where(RZ_GameModeComponent gm, int playerId, int i)
 	{
 		string text = m_aTowns[i];
-		if (HasBonus(gm, playerId))
+		if (RZ_QuestApproach.HasBackground(gm, playerId, "police"))
 			text += " (grid " + RZ_HavenQuest.Grid(m_aSpots[i]) + ")";
 
 		return text;
@@ -809,7 +809,7 @@ class RZ_QM_ListHusband : RZ_HavenQM
 //------------------------------------------------------------------------------------------------
 //! The List, stage 2 (Haven contract, Known): copies of the List. The asking house's own is the
 //! first. At each other safehouse: its council head (talked to: Merciful hands it over, Loyal only
-//! to someone Trusted, Paranoid never, anyone else to someone Known or a ★ Elder; the chair gives
+//! to someone Trusted or a Known ★ Elder, Paranoid never, anyone else to someone Known; the chair gives
 //! nothing and now knows someone's asking), and its stores, with two lookouts (read the list there
 //! after dark: seen, +8 Haven Infamy and "stolen"; or leave 3 food for the stores). At the nearest
 //! Red Hand seat, its tally man sells the crew's list of strays for 15 Red Hand Favor. Copies are
@@ -1023,7 +1023,7 @@ class RZ_QM_ListCopies : RZ_HavenQM
 		string answer = string.Format("%1 takes the list down from its nail and lets you copy it. \"Whatever you're looking for, I hope it's not there.\"", l.m_sShort);
 		if (!yes && l.m_eLoyalty == RZ_ELoyalty.LOYAL)
 		{
-			yes = RZ_Reputation.IsAtLeast(gm.GetTier(playerId, RZ_EFaction.SURVIVORS), RZ_ETier.TRUSTED);
+			yes = RZ_QuestApproach.Persuade(gm, playerId, RZ_EFaction.SURVIVORS, 2, "elder");
 			if (!yes)
 			{
 				Remember(gm, playerId, RZ_EQuestApproach.TALK, "was sent to the chair in " + town);
