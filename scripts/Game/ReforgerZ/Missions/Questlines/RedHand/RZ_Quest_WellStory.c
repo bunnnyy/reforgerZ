@@ -5,7 +5,7 @@
 //! works best untold: you don't kill the cow you milk.
 //!
 //! The village: the safehouse H2 left standing alone (door.shut) or on Bastion's census
-//! (door.bastion), else the Haven safehouse nearest the crew boss, else a quiet village under 30
+//! (door.bastion), named by door.house, else the Haven safehouse nearest the crew boss, else a quiet village under 30
 //! infection. Its well: a real one if the town has one, else the well prop (Puzzles > Well).
 //!
 //! 1. Collect (mission): the keeper won't pay. Ask, or lean on them (+5 Haven Infamy; their people
@@ -107,7 +107,7 @@ class RZ_Quest_WellStory : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! H2's house (door.shut, door.bastion: its safehouse index + 1), else the Haven safehouse
+	//! H2's house (door.house, when door.shut or door.bastion is set), else the Haven safehouse
 	//! nearest the crew boss, else a quiet village under 30 infection 0.6-4 km away.
 	protected bool PickVillage(RZ_GameModeComponent gm, RZ_QuestRun run, RZ_Leader crew)
 	{
@@ -116,17 +116,17 @@ class RZ_Quest_WellStory : RZ_Questline
 		string shelter = "";
 		if (houses)
 		{
-			int shut = RZ_RedHandQuest.World(gm, "door.shut") - 1;
-			int counted = RZ_RedHandQuest.World(gm, "door.bastion") - 1;
-			if (houses.Get(shut))
+			// H2's house (door.house: its safehouse index + 1) when it stood alone or went to Bastion
+			int door = RZ_RedHandQuest.World(gm, "door.house") - 1;
+			if (houses.Get(door) && RZ_RedHandQuest.HasWorld(gm, "door.bastion"))
 			{
-				house = shut;
-				shelter = " The house there stood up to the Red Hand once already, and put its barricades up.";
-			}
-			else if (houses.Get(counted))
-			{
-				house = counted;
+				house = door;
 				shelter = " The house there is on Bastion's census now, and pays Bastion instead.";
+			}
+			else if (houses.Get(door) && RZ_RedHandQuest.HasWorld(gm, "door.shut"))
+			{
+				house = door;
+				shelter = " The house there stood up to the Red Hand once already, and put its barricades up.";
 			}
 			else
 			{
@@ -644,7 +644,7 @@ class RZ_QM_WellWhy : RZ_RedHandQuestMission
 		// Why: short of food, or paying Bastion now (H2's door.bastion, or a Bastion seat close by)
 		RZ_Safehouse h = RZ_Quest_WellStory.House(gm, run);
 		int reason = 1;
-		if (RZ_RedHandQuest.World(gm, "door.bastion") - 1 == run.Flag("house", -1) && h)
+		if (h && RZ_RedHandQuest.HasWorld(gm, "door.bastion") && RZ_RedHandQuest.World(gm, "door.house") - 1 == run.Flag("house", -1))
 			reason = 2;
 		else if (h && h.m_bShort)
 			reason = 1;

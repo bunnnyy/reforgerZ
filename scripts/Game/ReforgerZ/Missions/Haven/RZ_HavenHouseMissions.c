@@ -107,12 +107,103 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 }
 
 //------------------------------------------------------------------------------------------------
+//! Haven lookouts: people of a safehouse sitting on walls by a road, or standing about a yard (A
+//! Quiet Arrangement's walk; the Haven questlines' "past two lookouts"). Props, not AI: they see
+//! whoever comes within a radius of them, and so does a Haven wanderer who happens to be near.
+class RZ_HavenLookouts
+{
+	string m_sWho = "A Haven lookout on a wall by the road";
+	protected ref array<IEntity> m_aBodies = {};
+
+	//------------------------------------------------------------------------------------------------
+	//! `count` lookouts along the way from `from` to `to`, a little off the straight line, as people
+	//! of safehouse `house` (-1: nobody's). Returns how many stand.
+	int SpawnAlong(RZ_GameModeComponent gm, vector from, vector to, int house, int count)
+	{
+		vector line = to - from;
+		vector side = Vector(-line[2], 0, line[0]);
+		float sideLen = side.Length();
+		if (sideLen > 1)
+			side = side * (1 / sideLen);
+
+		for (int i = 0; i < count; i++)
+		{
+			float share = Math.Min(0.85, 0.35 * (i + 1));
+			vector at = from + line * share + side * Math.RandomFloat(-40, 40);
+			Put(gm, RZ_Mission.LandPointNear(at, 0, 10), house);
+		}
+
+		return m_aBodies.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `count` lookouts minR-maxR from center (a yard, a store room's door).
+	int SpawnAround(RZ_GameModeComponent gm, vector center, float minR, float maxR, int house, int count)
+	{
+		for (int i = 0; i < count; i++)
+		{
+			Put(gm, RZ_Mission.LandPointNear(center, minR, maxR), house);
+		}
+
+		return m_aBodies.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Put(RZ_GameModeComponent gm, vector pos, int house)
+	{
+		IEntity lookout = RZ_Util.SpawnPrefab(gm.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN), pos, Math.RandomFloat(0, 360));
+		if (!lookout)
+			return;
+
+		if (house >= 0)
+			RZ_Safehouses.TagOccupant(lookout, house);
+
+		m_aBodies.Insert(lookout);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who sees someone standing at pos: a lookout within radius (m_sWho), a Haven wanderer's name
+	//! (with `wanderers`), or "" if nobody does.
+	string SeenBy(RZ_GameModeComponent gm, vector pos, float radius, bool wanderers)
+	{
+		foreach (IEntity lookout : m_aBodies)
+		{
+			if (lookout && RZ_Util.DistXZ(lookout.GetOrigin(), pos) <= radius)
+				return m_sWho;
+		}
+
+		if (!wanderers || !gm.GetWanderers())
+			return "";
+
+		return gm.GetWanderers().SeenByHaven(pos, radius);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int Count()
+	{
+		return m_aBodies.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Cleanup()
+	{
+		foreach (IEntity e : m_aBodies)
+		{
+			RZ_Util.DeleteUnit(e);
+		}
+
+		m_aBodies.Clear();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! Grey contract: Walk Him Out. A bitten Haven member told the council himself. At dusk
 //! he walks out past the edge of town so nobody has to watch what comes after; you walk
 //! with him. At the edge you choose: end it, or let him walk on. Both are allowed.
 //! End it: full Fame. Walk on: less Fame, and the town's infection rises a little.
 //! If nobody comes before his time runs out, he turns there. ★ Nurse: can read the bite.
-//! ★ Elder: more Fame.
+//! ★ Elder: more Fame. Done once, the Edge of Town questline can start (world flag
+//! "walk.contract"); its stages reuse this scene (Missions/Questlines/Haven/RZ_Quest_EdgeOfTown.c).
 class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 {
 	protected int m_iHouse = -1;
@@ -151,7 +242,7 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
 		RZ_Safehouses houses = gm.GetSafehouses();
-		m_iHouse = houses.PickRandom();
+		m_iHouse = PickHouse(gm);
 		RZ_Safehouse h = houses.Get(m_iHouse);
 		if (!h || h.m_iPopulation < 3)
 			return false;
@@ -165,13 +256,11 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 		vector edge = LandPointNear(RZ_Compass.PointAt(s.m_vCenter, dir, s.m_fRadius + 60), 0, 20);
 		m_vPos = edge;
 		m_sTown = s.m_sName;
-
-		array<string> names = {"Pavel", "Henri", "Tomas", "Emil", "Anton", "Viktor", "Karel", "Oskar", "Milan", "Jakub", "Bruno", "Leon"};
-		m_sMan = m_Rng.Pick(names);
+		m_sMan = PickName(gm);
 
 		m_iTalk = AddClue(m_sMan, string.Format("\"I told them myself. I didn't want anyone finding out the other way.\" He rolls his sleeve up to show you, like it's a splinter. \"I'd like to keep walking from here. Or I'd like you to make sure I don't. I can't decide. You can.\" He looks back at %1 once, and then doesn't again.",
 			m_sTown));
-		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, edge, 0, "", "End it here|Let him walk on", m_iTalk, "Talk to " + m_sMan);
+		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, edge, 0, "", ChoiceLabels(gm), m_iTalk, "Talk to " + m_sMan);
 
 		// He's left the safehouse for good, whatever happens next
 		houses.RemovePopulation(m_iHouse, 1);
@@ -180,6 +269,35 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 		m_sBrief = string.Format("%1 was bitten on a supply run. He told the council himself. At dusk he walks out past the %2 edge of %3, so the children don't have to see what comes after. Walk with him. At the edge he'll ask you for one last thing.",
 			m_sMan, RZ_Compass.DirectionWord(dir), m_sTown);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Which safehouse he comes from (a questline stage picks its own house).
+	protected int PickHouse(RZ_GameModeComponent gm)
+	{
+		return gm.GetSafehouses().PickRandom();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string PickName(RZ_GameModeComponent gm)
+	{
+		array<string> names = {"Pavel", "Henri", "Tomas", "Emil", "Anton", "Viktor", "Karel", "Oskar", "Milan", "Jakub", "Bruno", "Leon"};
+		return m_Rng.Pick(names);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! His choices (a questline stage can add one).
+	protected string ChoiceLabels(RZ_GameModeComponent gm)
+	{
+		return "End it here|Let him walk on";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone walked him out: the Edge of Town questline may start now (docs/QUESTLINES.md, H3).
+	override void OnSuccess(RZ_GameModeComponent gm)
+	{
+		if (gm.GetQuestlines())
+			gm.GetQuestlines().SetWorldFlag("walk.contract", 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -420,12 +538,13 @@ class RZ_Mission_TheLedger : RZ_PuzzleMission
 //! the safehouse to a Red Hand drop without a Haven lookout or wanderer seeing you with it.
 //! Small Red Hand Fame; Haven Infamy if you're seen. If it never arrives, the Red Hand
 //! comes to collect in person (the safehouse loses two people). ★ Ex-Con: harder to spot.
-//! Needs the mission item and the Red Hand drop point.
+//! Needs the mission item and the Red Hand drop point. The Price of the Door's first stage is
+//! this walk, with the same lookouts (Missions/Questlines/Haven/RZ_Quest_PriceOfTheDoor.c).
 class RZ_Mission_QuietArrangement : RZ_Mission_Delivery
 {
 	protected int m_iHouse = -1;
 	protected string m_sHouse;
-	protected ref array<IEntity> m_aLookouts = {};
+	protected ref RZ_HavenLookouts m_Lookouts = new RZ_HavenLookouts();
 	protected bool m_bSeen;
 
 	protected static const float SEEN_RADIUS = 35;
@@ -479,23 +598,7 @@ class RZ_Mission_QuietArrangement : RZ_Mission_Delivery
 		}
 
 		// Two Haven lookouts sit along the way, a little off the straight line
-		vector line = drop - h.m_vPos;
-		vector side = Vector(-line[2], 0, line[0]);
-		float sideLen = side.Length();
-		if (sideLen > 1)
-			side = side * (1 / sideLen);
-
-		array<float> stops = {0.35, 0.7};
-		foreach (float f : stops)
-		{
-			vector at = h.m_vPos + line * f + side * Math.RandomFloat(-40, 40);
-			IEntity lookout = RZ_Util.SpawnPrefab(gm.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN), LandPointNear(at, 0, 10), Math.RandomFloat(0, 360));
-			if (!lookout)
-				continue;
-
-			RZ_Safehouses.TagOccupant(lookout, m_iHouse);
-			m_aLookouts.Insert(lookout);
-		}
+		m_Lookouts.SpawnAlong(gm, h.m_vPos, drop, m_iHouse, 2);
 
 		m_sTitle = "A Quiet Arrangement";
 		m_sBrief = string.Format("The keeper at the Haven safehouse in %1 pays us so nobody burns it down. Sweet arrangement. Trouble is, he can't be seen walking it over, and you can. The envelope's under the loose board by the door. Bring it to our drop outside %2. If his own people see you with it, that's your problem, not ours.",
@@ -521,20 +624,7 @@ class RZ_Mission_QuietArrangement : RZ_Mission_Delivery
 		if (RZ_Util.DistXZ(carrier.GetOrigin(), m_vPos) < 40)
 			return;
 
-		string who = "";
-		foreach (IEntity lookout : m_aLookouts)
-		{
-			if (lookout && RZ_Util.DistXZ(lookout.GetOrigin(), carrier.GetOrigin()) <= radius)
-				who = "A Haven lookout on a wall by the road";
-		}
-
-		if (who.IsEmpty() && gm.GetWanderers())
-		{
-			string name = gm.GetWanderers().SeenByHaven(carrier.GetOrigin(), radius);
-			if (!name.IsEmpty())
-				who = name;
-		}
-
+		string who = m_Lookouts.SeenBy(gm, carrier.GetOrigin(), radius, true);
 		if (who.IsEmpty())
 			return;
 
@@ -568,11 +658,6 @@ class RZ_Mission_QuietArrangement : RZ_Mission_Delivery
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
-		foreach (IEntity e : m_aLookouts)
-		{
-			RZ_Util.DeleteUnit(e);
-		}
-
-		m_aLookouts.Clear();
+		m_Lookouts.Cleanup();
 	}
 }

@@ -147,8 +147,22 @@ class RZ_Quest_TheBook : RZ_Questline
 		run.SetText("inno2", names[2]);
 		run.SetText("sister", RZ_RedHandQuest.WomanName(rng));
 		run.SetFlag("turned", -1);
+		CountCutDose(gm, run);
 		run.SetPlace(boss.m_vPos, boss.m_sPlace);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! H3's cut dose (walk.cut_dose): the Haven owes for it too, on the Haven name's line (once).
+	static void CountCutDose(RZ_GameModeComponent gm, RZ_QuestRun run)
+	{
+		int haven = run.Flag("haven", -1);
+		if (haven < 0 || run.Flag("cut_dose") == 1 || !RZ_RedHandQuest.HasWorld(gm, "walk.cut_dose"))
+			return;
+
+		string key = Key(haven);
+		run.SetFlag("cut_dose", 1);
+		run.SetText(key + "_what", run.Text(key + "_what") + ", and the Haven's bill for the cut dose");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -269,6 +283,7 @@ class RZ_Quest_TheBook : RZ_Questline
 			}
 			case S_READ:
 			{
+				CountCutDose(gm, run);
 				UpdateNames(gm, run);
 				break;
 			}
