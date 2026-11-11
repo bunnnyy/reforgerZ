@@ -4,6 +4,9 @@ A zombie survival game mode for Arma Reforger (Enfusion engine, Enforce Script),
 set in a sealed government Quarantine Zone. Scripts live in `scripts/Game/ReforgerZ/`,
 and design and setup docs in `docs/`.
 
+**On the author's PC:** when asked to set up, compile, test or play-test there, follow
+`docs/PC_SETUP.md` (also `/pc-setup`), starting with its rules.
+
 ## Docs must always match the project
 
 Docs are part of every change, not an afterthought. **No commit that changes
@@ -17,6 +20,8 @@ behaviour, design, content or setup is complete until the docs match it.**
    - New or changed **screen, icon or widget name** a script looks up → `docs/UI.md` and `UI/LAYOUTS.md`
    - New, changed or removed **Workshop dependency** → `docs/MOD_STACK.md`
    - Change to **setting, tone or factions** → `docs/LORE.md` / `docs/REPUTATION.md`
+   - New or changed **tool, test script, Steam app, install step, folder or anything else the
+     author's PC needs** → `docs/PC_SETUP.md` (and settle its "Not yet confirmed" rows when a session confirms them)
    - Anything that changes the **big picture** (features, status, doc list) → `README.md`
 2. **Remove outdated content; don't mark it as outdated.** If a design was dropped
    (e.g. supply drops), delete it everywhere. Mention it only in the roadmap's
@@ -39,6 +44,7 @@ When you restructure, update the **Doc map** below and the README's doc list in 
 - [ ] No broken relative links (`grep -o '([^)]*\.md)' -r README.md docs/`).
 - [ ] The Doc map below lists exactly the files in `docs/`.
 - [ ] `VERIFY` count and prefab list in `docs/WORKBENCH_SETUP.md` are current.
+- [ ] `docs/PC_SETUP.md` still matches the tools, scripts and setup steps you touched.
 
 ## Doc map
 
@@ -52,6 +58,7 @@ When you restructure, update the **Doc map** below and the README's doc list in 
 | `docs/MISSIONS.md` | Every contract, world event, puzzle, leader and arc mission, with requirements and ✅ status |
 | `docs/QUESTLINES.md` | The long questlines (three per faction, two for the Long Table): stages, approaches, endings, crossings |
 | `docs/MOD_STACK.md` | Workshop dependencies and why |
+| `docs/PC_SETUP.md` | The author's Windows PC, run by Claude Code: rules, Steam apps and paths, the repo, opening Workbench, local compile check and runtime test, play-testing, logs |
 | `docs/UI.md` | Art direction, the icon set, the screens, the UI scripts and data feeds, built vs planned (layout trees: `UI/LAYOUTS.md`) |
 | `docs/WORKBENCH_SETUP.md` | Turning the scripts into a playable mod: dependencies, factions, prefabs, settings, VERIFY list, log lines, play-test checklist |
 

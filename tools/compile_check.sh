@@ -7,7 +7,9 @@
 # Installs SteamCMD and the Arma Reforger dedicated server (app 1874900, anonymous login, ~12 GB)
 # on first run, copies this repo into a test addon folder and starts the server just long enough
 # to compile every script module. Exit code 0 = the Game module compiled, 1 = it didn't.
-# Needs Linux with 32-bit libs for SteamCMD (lib32gcc-s1, lib32stdc++6).
+# Linux: needs 32-bit libs for SteamCMD (lib32gcc-s1, lib32stdc++6).
+# Windows (Git Bash): install Arma Reforger Server from Steam (Library > Tools) and set SERVER_DIR
+# to its folder; the script doesn't install it there (docs/PC_SETUP.md).
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 WORK="${WORK_DIR:-$HOME/rz_check}"
@@ -17,7 +19,11 @@ LOG="$WORK/compile.log"
 GUID="$(sed -n 's/^ *GUID "\([0-9A-F]*\)".*/\1/p' "$ROOT/addon.gproj" | head -1)"
 
 mkdir -p "$WORK"
-if [ ! -x "$SERVER/ArmaReforgerServer" ]; then
+if [ ! -f "$SERVER/ArmaReforgerServer" ] && [ ! -f "$SERVER/ArmaReforgerServer.exe" ]; then
+	if [ "$(uname -s)" != "Linux" ]; then
+		echo "No server in $SERVER. Install Arma Reforger Server from Steam (Library > Tools) and set SERVER_DIR to its folder."
+		exit 2
+	fi
 	if [ ! -x "$WORK/steamcmd/steamcmd.sh" ]; then
 		mkdir -p "$WORK/steamcmd"
 		curl -sSL https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz | tar xz -C "$WORK/steamcmd"
@@ -37,9 +43,11 @@ for d in scripts Configs UI Prefabs Worlds Missions Layouts; do
 	[ -d "$ROOT/$d" ] && cp -r "$ROOT/$d" "$ADDONS/ReforgerZ/"
 done
 
+BIN="./ArmaReforgerServer"
+[ -f "$SERVER/ArmaReforgerServer.exe" ] && BIN="./ArmaReforgerServer.exe"
 cd "$SERVER"
 # -listScenarios compiles everything, prints the scenarios and exits; the timeout is a safety net.
-timeout "${TIMEOUT:-180}" ./ArmaReforgerServer -addonsDir "$ADDONS" -addons "$GUID" \
+timeout "${TIMEOUT:-180}" "$BIN" -addonsDir "$ADDONS" -addons "$GUID" \
 	-profile "$WORK/profile" -listScenarios -logStats 0 > "$LOG" 2>&1
 
 grep -E "\((E|W)\).*scripts/Game/ReforgerZ/|Can't compile" "$LOG"

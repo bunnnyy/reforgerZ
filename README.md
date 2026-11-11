@@ -73,6 +73,7 @@ exceptions. There are no prefabs, layouts or configs yet, and nobody has played 
 set and mockups of every screen are done (`UI/`). Every prefab,
 setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
 plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run). Start with
+[PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
 **Designed, not built yet:** the content pass onto the world facts (see the roadmap's *Next*).
@@ -88,6 +89,7 @@ plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [QUESTLINES.md](docs/QUESTLINES.md) | Long questlines over many sessions, three per faction and two for the Long Table |
 | [MOD_STACK.md](docs/MOD_STACK.md) | Which Workshop mods the server runs and why |
+| [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
 
@@ -131,8 +133,11 @@ UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previe
 tools/render_ui.js
                  renders the icon PNGs and the mockup previews (Node and Playwright)
 tools/compile_check.sh
-                 compiles the scripts on the Linux dedicated server, no Workbench needed
+                 compiles the scripts on the dedicated server, no Workbench needed (Linux,
+                 or Windows in Git Bash)
 tools/runtime_test/
                  runs the game mode on that server with a fake player (test only, not the mod)
+.claude/skills/pc-setup/
+                 /pc-setup for Claude Code on your PC: points it at docs/PC_SETUP.md
 addon.gproj      the project file (mod ID, dependencies)
 ```

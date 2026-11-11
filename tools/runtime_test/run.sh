@@ -16,6 +16,7 @@
 # Every notice sent to the fake player is logged as "RZT notify [title] text".
 # Nothing here is part of the mod: the files are copied into a throwaway addon folder, and the
 # patches (patch.py) only touch that copy. The world's prefab GUIDs are Arma Reforger 1.9's.
+# Windows (Git Bash): set SERVER_DIR to the Steam server folder; needs Python 3 (docs/PC_SETUP.md).
 set -u
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HERE="$ROOT/tools/runtime_test"
@@ -24,16 +25,26 @@ SERVER="${SERVER_DIR:-$WORK/server}"
 ADDON="$WORK/runtime_addons/ReforgerZ"
 PROFILE="$WORK/runtime_profile"
 GUID="$(sed -n 's/^ *GUID "\([0-9A-F]*\)".*/\1/p' "$ROOT/addon.gproj" | head -1)"
-[ -x "$SERVER/ArmaReforgerServer" ] || { echo "No server in $SERVER: run tools/compile_check.sh first"; exit 2; }
+BIN="./ArmaReforgerServer"
+[ -f "$SERVER/ArmaReforgerServer.exe" ] && BIN="./ArmaReforgerServer.exe"
+[ -f "$SERVER/$BIN" ] || { echo "No server in $SERVER: run tools/compile_check.sh first (on Windows, install it from Steam and set SERVER_DIR)"; exit 2; }
+# Python 3: python3 on Linux; on Windows usually python or py (the Store's python3 shortcut fails the check).
+PY="${PYTHON:-}"
+if [ -z "$PY" ]; then
+	for p in python3 python py; do
+		"$p" -c 'import sys; sys.exit(sys.version_info[0] != 3)' > /dev/null 2>&1 && { PY="$p"; break; }
+	done
+fi
+[ -n "$PY" ] || { echo "No Python 3 found (set PYTHON=...)"; exit 2; }
 
 rm -rf "$ADDON" "$PROFILE/profile/ReforgerZ" && mkdir -p "$ADDON"
 cp "$ROOT/addon.gproj" "$ADDON/"
 cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
 cp -r "$HERE/files/." "$ADDON/"
-python3 "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
+"$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
 
 cd "$SERVER"
-timeout "${1:-5400}" ./ArmaReforgerServer -addonsDir "$(dirname "$ADDON")" -addons "$GUID" -profile "$PROFILE" \
+timeout "${1:-5400}" "$BIN" -addonsDir "$(dirname "$ADDON")" -addons "$GUID" -profile "$PROFILE" \
 	-server "{7A1C2E3F4B5D6E71}Missions/RZTest.conf" -bindPort 2001 -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1
 LOG="$(ls -td "$PROFILE"/logs/logs_* | head -1)/console.log"
 

@@ -23,6 +23,8 @@ Work through the sections in order:
 8. [Play-test checklist](#8-play-test-checklist)
 
 How each system behaves is in [DESIGN.md](DESIGN.md); this doc only says how to set it up.
+Getting the PC ready first (Steam apps, the repo, opening the project, local tests) is in
+[PC_SETUP.md](PC_SETUP.md).
 
 ## 1. Create the prefabs
 
@@ -845,6 +847,9 @@ commit that touches scripts.
 ```bash
 tools/compile_check.sh
 ```
+
+On Windows it runs in Git Bash with `SERVER_DIR` pointing at the Steam server
+([PC_SETUP.md](PC_SETUP.md#5-compile-check-and-runtime-test)).
 
 What it can't do:
 
