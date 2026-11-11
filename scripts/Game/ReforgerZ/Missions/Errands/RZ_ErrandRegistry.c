@@ -7,6 +7,14 @@ class RZ_ErrandRegistry
 	static void Build(notnull array<ref RZ_ErrandDef> list)
 	{
 		RZ_ErrandRoutine.Build(list);
+		// The routines phase 4 added (RZ_ErrandRoutinesPeople.c)
+		list.Insert(new RZ_Routine_WhosAtTheGate());
+		list.Insert(new RZ_Routine_SitWithHim());
+		list.Insert(new RZ_Routine_FreshChalk());
+		list.Insert(new RZ_Routine_FellOff());
+		list.Insert(new RZ_Routine_Sandbags());
+		list.Insert(new RZ_Routine_RentsDue());
+		list.Insert(new RZ_Routine_TheNumber());
 
 		// The house
 		list.Insert(new RZ_Errand_SleeveDown());
@@ -35,6 +43,29 @@ class RZ_ErrandRegistry
 		list.Insert(new RZ_Errand_BuyItBack());
 		// Disguises
 		list.Insert(new RZ_Errand_DressRehearsal());
+		list.Insert(new RZ_Errand_OfficersCoat());
+		// Phase 4: the house, the lost, the crews, Bastion, help across lines, bad standing, the Long
+		// Table, the infected, champions and backgrounds
+		list.Insert(new RZ_Errand_Vouch());
+		list.Insert(new RZ_Errand_YoureTheOne());
+		list.Insert(new RZ_Errand_PayPacket());
+		list.Insert(new RZ_Errand_RedDoor());
+		list.Insert(new RZ_Errand_SomebodyTell());
+		list.Insert(new RZ_Errand_BothHands());
+		list.Insert(new RZ_Errand_NameDay());
+		list.Insert(new RZ_Errand_Courtesy());
+		list.Insert(new RZ_Errand_DebtGoneQuiet());
+		list.Insert(new RZ_Errand_OffTheReport());
+		list.Insert(new RZ_Errand_DressUniform());
+		list.Insert(new RZ_Errand_BorrowedGreen());
+		list.Insert(new RZ_Errand_BothDoors());
+		list.Insert(new RZ_Errand_CharacterReference());
+		list.Insert(new RZ_Errand_UnknownFace());
+		list.Insert(new RZ_Errand_Stray());
+		list.Insert(new RZ_Errand_WhosAsking());
+		list.Insert(new RZ_Errand_JarRun());
+		list.Insert(new RZ_Errand_ShoesInARow());
+		list.Insert(new RZ_Errand_NotPastChapel());
 	}
 }
 
@@ -66,6 +97,60 @@ class RZ_ErrandCard : RZ_ErrandDef
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The infected's nearest ground (a tribe) whose lair is within `range` of pos; null without tribes.
+	static RZ_Tribe TribeNear(RZ_GameModeComponent gm, vector pos, float range)
+	{
+		RZ_Tribes tribes = gm.GetTribes();
+		if (!tribes)
+			return null;
+
+		return tribes.NearestTribe(pos, range);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What this player is called by a faction now (the sixteen names).
+	static RZ_ERep RepOf(RZ_GameModeComponent gm, int playerId, int f)
+	{
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		return RZ_RepNames.GetRep(p.GetFame(f), p.GetInfamy(f));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest holding of `faction` (-1 any) within `radius` of pos, outside 100 m; null if none.
+	static RZ_Holding HoldingNear(RZ_GameModeComponent gm, int faction, vector pos, float radius)
+	{
+		RZ_Territory territory = gm.GetTerritory();
+		if (!territory)
+			return null;
+
+		RZ_Holding best;
+		float bestDist = radius;
+		foreach (RZ_Holding h : territory.GetHoldings())
+		{
+			float d = RZ_Util.DistXZ(h.m_vPos, pos);
+			if ((faction < 0 || h.m_eFaction == faction) && d >= 100 && d <= bestDist)
+			{
+				best = h;
+				bestDist = d;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The card's own place and its words ({subject_place}).
+	static void Place(RZ_Errand e, vector at, string words)
+	{
+		e.m_vSubject = at;
+		string w = words;
+		if (w.IsEmpty())
+			w = RZ_Util.DirectionText(e.m_vGiver, at);
+
+		e.SetText("subject_place", w);
 	}
 
 	//------------------------------------------------------------------------------------------------

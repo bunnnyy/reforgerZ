@@ -121,6 +121,15 @@ class RZ_NoticeBoard
 			return;
 
 		string text = "";
+		array<string> asks = {};
+		if (m_GM.GetErrands())
+			m_GM.GetErrands().BoardAsks(playerId, idx, asks);
+
+		foreach (string ask : asks)
+		{
+			text += string.Format("%1 asks: %2\n", h.m_sName, ask);
+		}
+
 		for (int n = h.m_aNotes.Count() - 1; n >= 0; n--)
 		{
 			RZ_Note note = h.m_aNotes[n];
@@ -189,8 +198,19 @@ class RZ_NoticeBoard
 		if (m_Houses.IsExiled(playerId))
 			canWrite = "0";
 
+		// The house's own asks first (errands' board asks), signed with its name, apart from the notes
+		array<string> asks = {};
+		if (m_GM.GetErrands())
+			m_GM.GetErrands().BoardAsks(playerId, BoardAt(playerId), asks);
+
 		RZ_UILine head = new RZ_UILine("B");
-		string s = head.Add(h.m_sName).AddInt(h.m_aNotes.Count()).AddInt(m_Settings.m_iNoteLength).Add(canWrite).End();
+		string s = head.Add(h.m_sName).AddInt(h.m_aNotes.Count() + asks.Count()).AddInt(m_Settings.m_iNoteLength).Add(canWrite).End();
+		foreach (string ask : asks)
+		{
+			RZ_UILine askLine = new RZ_UILine("N");
+			s += askLine.Add(h.m_sName + " asks").Add("today").Add(ask).End();
+		}
+
 		for (int n = h.m_aNotes.Count() - 1; n >= 0; n--)
 		{
 			RZ_Note note = h.m_aNotes[n];

@@ -296,6 +296,15 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		// A local on a house's occupant (World/RZ_Locals.c)
+		if (comp.GetMissionId() == RZ_Locals.TAG)
+		{
+			if (gm.GetErrands())
+				gm.GetErrands().GetLocals().Talk(playerId, comp.GetObjectIndex());
+
+			return true;
+		}
+
 		if (comp.GetMissionId() == RZ_Safehouses.TAG_OCCUPANT)
 		{
 			if (gm.GetSafehouses())
@@ -428,6 +437,15 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetTerritory())
 				gm.GetTerritory().HandlePersonTalk(playerId, comp.GetClueIndex());
+
+			return true;
+		}
+
+		// A local (World/RZ_Locals.c): their line about you
+		if (comp.GetMissionId() == RZ_Locals.TAG)
+		{
+			if (gm.GetErrands())
+				gm.GetErrands().GetLocals().Talk(playerId, comp.GetClueIndex());
 
 			return true;
 		}

@@ -133,6 +133,19 @@ class RZ_NamedPeople
 			m_mBodies.Set(HouseKey(idx, dressed), body);
 			dressed++;
 		}
+
+		// The plain occupants after them may wear the house's locals (World/RZ_Locals.c)
+		RZ_Errands errands = m_GM.GetErrands();
+		if (!errands || dressed >= occupants.Count())
+			return;
+
+		array<IEntity> spare = {};
+		for (int i = dressed; i < occupants.Count(); i++)
+		{
+			spare.Insert(occupants[i]);
+		}
+
+		errands.GetLocals().Dress(idx, spare);
 	}
 
 	//------------------------------------------------------------------------------------------------

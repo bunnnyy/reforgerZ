@@ -108,8 +108,9 @@ The build-review fixes are done. Everything below is approved. The order of the 
   to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
 - Already built for them: most of phase 4, the mission style in full (the six story jobs, reputation's
   parley and settling up, lies and witnesses, dialogue's scenes for several players, borrowed kit,
-  fallout errands and strangers at their spots: [MISSIONS.md](MISSIONS.md), [ERRANDS.md](ERRANDS.md#strangers);
-  locals, twists, board and radio asks and the other cards are still to build); phase 3, small things everywhere ([ERRANDS.md](ERRANDS.md), the mission
+  fallout errands, strangers at every spot kind (18 stranger routines and found hooks), locals,
+  twists, board and radio asks, 7 more routines and 21 more cards: [MISSIONS.md](MISSIONS.md),
+  [ERRANDS.md](ERRANDS.md#strangers)); phase 3, small things everywhere ([ERRANDS.md](ERRANDS.md), the mission
   style's [story blocks](DESIGN.md#story-blocks) and the world memory's writers; play-test the
   errands' pay per player-hour with the telemetry line); phase 2, talk ([DIALOGUE.md](DIALOGUE.md),
   reputation's voice and tone's mood and voice bank; play-test it with **Dialogue > Trees** on

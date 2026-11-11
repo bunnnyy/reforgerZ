@@ -564,6 +564,24 @@ class RZ_WorldMemory
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The newest record whose key starts with `prefix`, written within `days` season days; null if none.
+	RZ_WorldRecord NewestRecord(string prefix, float days)
+	{
+		RZ_WorldRecord best;
+		float now = RZ_SeasonClock.Days();
+		foreach (RZ_WorldRecord r : m_aRecords)
+		{
+			if (r.key.IndexOf(prefix) != 0 || now - r.day > days)
+				continue;
+
+			if (!best || r.day > best.day)
+				best = r;
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_WorldRecord FindRecord(string key, string subject)
 	{
 		foreach (RZ_WorldRecord r : m_aRecords)

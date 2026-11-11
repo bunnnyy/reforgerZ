@@ -1,14 +1,13 @@
 # Errands
 
-**Status: designed; phase 3 (the core) and part of phase 4 built.** Approved by the author on 2026-11-11.
-Built and described in [docs/ERRANDS.md](../docs/ERRANDS.md): the givers (named people at the four holding
-kinds and the wanderers' asks), the dealer's asked and called-out offers, soft holds and overtaking, the
-faults table, the small-pay ledger, 24 routines, the wanderers' asks, 18 cards (Buy It Back and Dress
-Rehearsal new), fallout errands, and strangers at four spot kinds with the footfall grid (decision 14:
-Up on the Roof and The Last Tin); the lie store and the witness rule are built in
-[docs/DESIGN.md](../docs/DESIGN.md#lies-and-witnesses). This file keeps what's still to build: the other
-spot kinds and stranger routines, locals, twists, board and radio asks, found hooks, promises and
-callbacks, the other routines and cards (Borrowed Green among them), the margin, lock and epilogue cards.
+**Status: designed; phase 3 (the core) and phase 4 built.** Approved by the author on 2026-11-11.
+Built and described in [docs/ERRANDS.md](../docs/ERRANDS.md): the givers, the dealer's asked and
+called-out offers, soft holds and overtaking, the faults table, the small-pay ledger, 31 routines, the
+wanderers' asks, 39 cards, fallout errands, strangers at every spot kind (18 stranger routines and
+found hooks), locals, twists, and board and radio asks; the lie store and the witness rule are in
+[docs/DESIGN.md](../docs/DESIGN.md#lies-and-witnesses). This file keeps what's still to build: the
+margin, lock and epilogue cards, promises, callbacks and threads from errands, the remaining routines
+and cards, chore slots, and the parts of the built pieces listed as still to build below.
 
 ## What changed in review
 
@@ -219,16 +218,15 @@ person.
 
 ## 5. Givers
 
-Built ([docs/ERRANDS.md](../docs/ERRANDS.md#givers)). Still to build: locals dressed onto unclaimed occupants
-(§19), and leaders *saying* a line read from a thread (*"The cook says you brought turnips."*).
+Built ([docs/ERRANDS.md](../docs/ERRANDS.md#givers), locals: [Locals](../docs/ERRANDS.md#locals)). Still to
+build: leaders *saying* a line read from a thread (*"The cook says you brought turnips."*).
 
 ## 6. The dealer
 
-Built for holdings and wanderers ([docs/ERRANDS.md](../docs/ERRANDS.md#the-dealer)). Still to build with
-strangers (phase 4): the per-player context cache (the nearest plausible stranger spot, the tribe's range,
-the route lock), the freshness and nearness factors and the place factor, round-robin dealing of unasked
-offers that aren't call-outs (strangers, board asks, radio asks, locals coming to you), radio contract
-offers taking priority, and a 10-minute first-life wait after Find the Haven's first leg.
+Built for holdings, wanderers, strangers (with the place factor) and radio asks
+([docs/ERRANDS.md](../docs/ERRANDS.md#the-dealer)). Still to build: the per-player context cache (the
+route lock), the freshness and nearness factors, locals coming to you, radio contract offers taking
+priority over a radio ask, and a 10-minute first-life wait after Find the Haven's first leg.
 
 ## 7. Facts, reasons and signals
 
@@ -394,6 +392,10 @@ answer. A failed check says what would work: *"Not from you. Maybe from someone 
 | It's a test | the faction is checking you | doing it straight |
 | The giver's own | the giver did the thing they ask you to fix | the right question |
 
+The budget below, the same replies either way and the truth-deck draws are built
+([docs/ERRANDS.md](../docs/ERRANDS.md#twists)); the twist kinds in this table are for the cards still to
+write.
+
 - **Twists vary per deal.** A card's twist is true only some of the time: Sleeve Down's occupant is
   bitten 6 deals in 10, and otherwise it's a fever. My Sister at Morton's man is a crew lad 1 in 2. The
   wiki can say "it might be a trap", never "it's always a trap".
@@ -538,109 +540,24 @@ still to build are in [The catalogue](#the-catalogue).
 
 ## 18. Strangers
 
-A **passer-by** is data until spawned, and spawned for one player (and their group).
-
-### Where a stranger can find you
-
-The author's rule (decision 14): **players are never barraged.** A stranger finds you only where it would
-make sense for one to be: never in the empty middle of nowhere, and never because a timer ran out.
-
-**The places and moments.** A stranger routine can be dealt only at one of these **spots**:
-
-| Spot | What makes a place one (from world facts) | When it's plausible |
-|---|---|---|
-| **A road people use** | A road segment on a supply-truck route, a wanderer's route, the road between two lived-in places within 3 km, the queue road after the cure, or one the footfall grid (below) shows players used in the last real day | By day. At night only within 300 m of a fire, a lit window or a held place |
-| **A crossroads people use** | A junction of two such roads, a Red Hand crossroads or roadblock's approach, or a road post's approach | Any hour while the crossroads is held or lit; otherwise by day |
-| **A wanderer's route** | Within 300 m of the next leg a built wanderer is walking or will walk | While that leg is live |
-| **Near a safehouse or outpost** | The approach: the last 100–800 m of road into a holding, outside its wire. At the gate and inside, it's the holding's own people (§17), never strangers | Any hour; dusk most of all |
-| **A campfire** | A lit fire: a player's own (the built fire), a wanderer's camp, a crew's brazier at a roadblock's edge, or a stranger's own fire by a road | After dark, or within 30 min of being lit |
-| **A stopped car** | A vehicle stopped for 20 s or more within 20 m of a road people use: a player's own car, or a wreck the world has placed there | Wrecks by day; a player's stopped car at any hour |
-| **A fresh event or a body** | Within 400 m of a signal in the ring from the last 2 played hours (a bite, a death, a truck lost, shelling, a fire), a journal of the dead from the last real day, or a job's site just after it ends (the found hooks) | While fresh |
-| **A town edge at dusk** | The edge (±100 m of the radius) of a settlement, lived-in or empty | From 30 min before dusk to an hour after. **Fog counts as dusk**, as for the infected ([INFECTED.md](INFECTED.md)) |
-| **Their own place** | The place a card's Why names as that person's own (his farm, the house behind a player's barricade), when you're within 150 m of it and heading its way | By day only |
-| **The line** | The 150 m warning point on a road into a sealed checkpoint (line cards only) | While `PerimeterSealed()` |
-
-**How the game picks them.**
-1. **Spots are data.** `RZ_StrangerSpots` builds them from facts the server already has: settlements and
-   their radius, holdings, the road grid, supply-truck and wanderer routes, lit fires, vehicles, the
-   signal ring, journals of the dead, job sites, and the line. Nothing scans the map at runtime.
-2. **One new, cheap fact: the footfall grid.** A coarse grid of 250 m cells, each holding a count of
-   player, wanderer and truck passes that halves every 6 real hours. It's updated on the 30 s context
-   tick from positions already known. It tells a road people use from a road nobody walks. It isn't
-   saved; a restart rebuilds it within a day.
-3. **Looking ahead.** On the context refresh (every 30 s), for each player, the dealer finds the nearest
-   spot of each kind 60–400 m along the player's heading that is plausible *now* (the hour, the weather,
-   fog as dusk).
-4. **Matching.** Each stranger routine lists the spot kinds it fits and its Why. It's a candidate only
-   when both hold: a plausible spot ahead, and a live fact for its Why.
-5. **Scoring.** The usual score (§6), with the place factor: ×1.5 at a fresh event or a body, ×1.3 at a
-   crossroads, an approach or a town edge at dusk, ×1 on a road people use.
-6. **Placing.** The stranger is spawned *at the spot itself*: by the car, at the fire's edge, at the
-   junction, in the doorway at the town edge, at the grave. That's 60–90 m from the player, out of sight,
-   preferring a building door or a hedge line, else a road bend (VERIFY: the out-of-sight spawn). If the
-   spot has no out-of-sight point, there's no stranger.
-7. **Passing by.** If you turn away before you reach the spot, nothing is lost: the stranger is never
-   spawned, or is removed out of sight.
-
-**What never triggers one:**
-- **The empty middle of nowhere:** open fields, forest interiors, ridges, a range's interior, any point
-  more than 150 m from a spot.
-- **A timer.** The gap running out deals nothing by itself. A player crossing empty country meets nobody,
-  however long it's been.
-- **Inside a holding's wire or at its gate** (its named people ask there), a tribe's lair within 600 m, a day party
-  within 300 m, a range's trail at night, or a tribe's range at night away from a fire or a held place.
-- **Within 2 km of the Long Table's farm**, so a stranger is never mistaken for the host. A stranger
-  never carries a flask or offers food.
-- **Another player outside your vanilla group within 300 m**, so a stranger never gives away where
-  someone else is.
-- **The unsafe and the busy:** a fight (a shot within 60 m in 60 s, infected within 30 m), driving, the
-  first minutes of a life, a running mission's 300 m, a running set piece's 600 m on its evening, the
-  lab's 1 km during the final stand.
-- **Weather:** a storm (everyone's indoors); in rain, only approaches and fires.
-- **The same spot twice** for the same player in a real day, or a spot that gave anyone a stranger in the last 2 real hours.
-- **No anchor, no stranger.** A spot alone never deals one: the routine's Why must be true.
-
-**The ceiling.** Even where every spot fits, a player meets at most:
-- one stranger every 15–25 minutes of play (drawn per player);
-- inside the interruption budget: one unasked contact every 4 minutes across systems, errands last;
-- and the server shows at most 6 spawned strangers at once (the one body budget).
-
-The ceiling only ever stops a stranger; it never starts one. A player who walks the Levie road at dusk
-may meet strangers as often as the ceiling allows. One who crosses the hills meets none.
-
-**Examples.**
-- **The Levie road at 18:10.** A supply route, at dusk, 600 m from the house's gate: an approach. Levie is
-  short of food (`house.hungry`). At the bend, a man with an empty sack: The Last Tin.
-- **Forty minutes through the forest between two ridges at noon.** No spot within 150 m of the walk the
-  whole way. Nobody. The ceiling has long since passed, and still nobody.
-- **You stop on the Morton road to siphon a wreck.** A stopped car on a road people use, by day: a man
-  walks up from the verge. It was his wife's car (The Funeral for the Car).
-- **Twenty minutes after a wanderer died on the crossroads road.** A death in the ring, 300 m off: a
-  woman digging by the verge (The Digger). An hour and a half later the spot isn't fresh any more.
-- **Your fire, outside Morton, after dark.** A campfire: a voice from the dark, *"Mind if I sit? I'm not
-  armed."* (Warm Hands).
-- **A grey noon in fog, at the edge of an empty village.** Fog counts as dusk: someone behind a door wants
-  out before the crawlers stir (Behind the Door).
-- **Two friends walking the same road.** They're in one vanilla group, so a stranger can find them; one
-  of them is the asker, the other a helper. A third player 200 m behind in another group means no
-  stranger for either.
-
-### How a stranger behaves
-
-- **They call out once** and wait 5 minutes or until you're 150 m away. They stand still, and lines are
-  written for a still figure (*"Go on, then. I'll be here."*). The one exception is Warm Hands: the
-  stranger walks in to the fire, once, and sits. When left, they're removed once out of sight.
-- **A real anchor, always,** filled from the facts.
-- **Harm:** under the wanderer house rules (shot at +4, robbed +8, killed +15 Haven Infamy). A stranger
-  with a red hand counts as the Red Hand's people. **They carry nothing but their gift**, and robbing one
-  stops strangers for that player for a real day.
-- **Pay:** strangers pay nothing, a line that points at something real, or one common find from their own
-  pocket. Where they reach a house, the house may pay its usual few Favor.
-- A stranger you help can become a local.
-
-The stranger routines themselves are in [The catalogue](#stranger-routines).
+Built ([docs/ERRANDS.md](../docs/ERRANDS.md#strangers)): the spots (every kind, the footfall grid),
+the never rules, the ceiling, how they behave, the 18 stranger routines and found hooks. Still to build:
+- **Out of sight:** spawned at a point 60–90 m from the player that they can't see (a building door, a
+  hedge line, a road bend), removed out of sight when passed by (VERIFY: the out-of-sight spawn).
+- **Every crossroads:** junctions of two used roads from the road network, not only road posts.
+- **Players' own campfires** as a fire spot, once players can build one.
+- **Harm beyond killing:** shot at +4, robbed +8 Haven Infamy (the wanderer house rules), and robbing
+  one stops strangers for that player for a real day.
+- **Their own place** for more routines (the house behind a player's barricade).
+- **The run-ups the routines left as words:** Still Walking's board note at his house when he got the
+  dose; The Last Tin's watch as a real watch.
 
 ## 19. Locals, callbacks and threads
+
+**Locals** are built ([docs/ERRANDS.md](../docs/ERRANDS.md#locals)). Still to build for them: shown only
+while a player who knows them is within 100 m; three lines a memo; a local's spot used as a place
+(the gate at dusk, the stove at supper); Hand to Hand's promises; their epilogue scenes. The rest of
+this section is the design they follow.
 
 **Locals** are the people the season remembers (the earlier draft called them faces).
 - **What's kept:** a seeded name and role; one line; a **home that's always a place** (a safehouse,
@@ -816,23 +733,17 @@ The built ones are in [docs/ERRANDS.md](../docs/ERRANDS.md#the-routines); still 
 
 | Routine | Giver | Why | Ways and pay |
 |---|---|---|---|
-| **Who's at the Gate** | the gate guard | a stranger is waiting at the gate (or a found hook's bitten stranger was sent here) | Let him in, turn him away, or walk him to Bastion's post. ★ Nurse reads a bite; ★ Police reads his story. No pay; +1 person if let in. The house checks everyone at the door, so nobody is blamed for a bite they didn't know about |
-| **Sit With Him** | a resident | a bitten resident at the house | Sit with him for 2 minutes (★ Nurse, Doctor ease it). He tells you where his tins are buried (+1 food for the house), or something true about another job (a truth hint). No pay. A world record, often with an epilogue line |
-| **Fresh Chalk** | the gate guard | a tribe's range edge within 1.5 km, the Haven's reading 2+ season days old, by day | Watch the range's edge for 30 s unnoticed, and chalk today's date on the Haven's mark (*QUARRY LOT. NOT AFTER 7.*): the reading really is fresh, 6 Favor. Chalk without looking: ×0.6 pay, the reading is *not* refreshed, and a lie record checks at the next reading by anyone. ★ Hunter or Radio Op: read it by its call from 300 m at dusk. Haven chalk only |
 
 ### Routines at a Bastion post
 
 | Routine | Giver | Why | Ways and pay |
 |---|---|---|---|
 | **The Locker** | the operator | a Bastion crew lost within 1.5 km today | See His Effects, below |
-| **Fell Off the Inventory** (Spare Magazine merged in) | a private | the shift change within 20 real min, and a fence within 1.5 km | *"It's not lost. I know exactly where it is."* Buy it back [Known: Red Hand] (8 RH Favor); hand him a service rifle from your pack (6 Favor; the rifle goes to the post's stock, refused if it's tagged); or report him (+1 Fame; the fence remembers who sent Bastion asking). **Spare Magazine variant** (you're Known with both Bastion and the Red Hand, and the post's morale is low): he asks you, quietly, to sell his spare magazine to a crew lookout for him: 6 Bastion Favor. If a Bastion body witnesses the sale, +5 Bastion Infamy |
-| **Sandbags** | the sergeant | the post lost a fight today | Fill and stack sandbags at the gap the fight opened (2 real min): 5 Favor |
 
 ### Routines at a Red Hand camp or roadblock
 
 | Routine | Giver | Why | Ways and pay |
 |---|---|---|---|
-| **Rent's Due** | the toll lad | a roadblock within 1.2 km of a tribe's range, dusk within 20 real min | *"Every crossroads pays somebody. At dusk it's the Postmen."* (1) Count the hunting party's pass from the lorry roof (2 real min, 150–250 m off): 6 RH Favor. (2) [Lie] make up a number: ×0.6 pay; if the party reaches the toll tonight, the lie's found (+3 RH Infamy; the lad's bitten under the wanderer bite rules if he's a local) |
 | **His Lighter** | a crewman | a crewman died near a Red Hand holding today | See His Effects, below |
 | **The Market** | the fence | the Zone just made something: a ring after a Wedding Party, a satchel after a never-arrived | He wants it. The twist (rolled): the groom's mother at a Haven house wants the ring too. Give it to her (+2 Haven Fame; the fence calls you soft), sell it to her for 2 food, or sell it to him (8 Favor). Inside the ring: a date and *"for ever"*. Nobody laughs except the fence |
 
@@ -841,7 +752,6 @@ The built ones are in [docs/ERRANDS.md](../docs/ERRANDS.md#the-routines); still 
 | Routine | Giver | Why | Ways and pay |
 |---|---|---|---|
 | **The Receiver** (The Tag, re-angled) | a technician | the station's tag receiver is down (a cable or a mast, 200–400 m out) while a tagged alpha's signal is unread | Fix it with a part, or ★ Lab Tech re-seats it: 5 Favor. Never goes near the alpha or its tag |
-| **The Number** | the night shift | after the cure too; a dose didn't walk out today | A quiet hour with the night shift. Never the name onto the paper. No pay |
 
 ### Wanderers' asks
 
@@ -849,66 +759,13 @@ All five are built ([docs/ERRANDS.md](../docs/ERRANDS.md#the-wanderers-asks)).
 
 ### Stranger routines
 
-Each lists the spots it fits ([Where a stranger can find you](#where-a-stranger-can-find-you)).
-
-| Stranger | Spots | Why | Ways and pay |
-|---|---|---|---|
-| **The Last Tin** | a road people use; an approach | you carry 2+ food, and his house is short or lost its truck | Give him one: he becomes a local on his gate who tells you which way the hunting party walks. Trade two food for his watch (a common find). Refuse: *"I'd eat a Bastion ration. That's how bad it is."* Never to the face on the notice |
-| **The Funeral for the Car** | a stopped car (a wreck) | by day, a wreck outside a town nobody lives in | His wife's car. Push it into the ditch (10 s, 8 heat): 3 Haven Favor, a few words. Siphon it first; he lets you. ★ Mechanic: *"It's not dead. It needs a battery."* He goes to tell the Mechanic wanderer, whose Ask About Cars may now find it. No keys from him |
-| **Which Way's Morton** | a road people use | she's walking to a house ≤ 1.5 km on, and a road post or a tribe's range sits between | Point her round (a pointer at a waypoint), or walk her (≤ 600 m escort), or tell her the toll's cheap. *"It's not cheap."* (a lie; found if the post's still up when she reaches it) |
-| **Up on the Roof** (replaces Rooftop Rescue) | a fresh event; a town edge | a horde or a tribe's splinters passed through a town | Talk them down when nothing is within 25 m. They go to the nearest house: 4 Haven Favor from the house; +1 person |
-| **Behind the Door** (dialogue's "hiding") | a town edge at dusk (or in fog) | a town the crawlers hold | Someone behind a door wants out before the crawlers stir. Walk them to the nearest house (≤ 600 m; +1 person) while the crawlers are drawn the other way (a noise on the far side, under the noise-that-leads rules), or come back at dawn (a callback: they're there, if nothing changed), or leave them food |
-| **Two in the Back** (dialogue's "roadside") | a stopped car (a broken one) | by day, a family's broken car on a road people use | Two kids in the back and a father under the bonnet. ★ Mechanic fixes it in 2 min; anyone can give a battery from their pack, or push-start it downhill (30 s, 6 heat). They drive on to their own house, and the father becomes a local there: 3 Haven Favor. *"The kids think it's an adventure. Don't tell them otherwise."* |
-| **The Digger** (dialogue's "grave") | a fresh event or a body | a death on a road within 400 m in the last 2 played hours | A woman digging by the verge for whoever died there. Help dig (30 s, 4 heat; ★ Elder says the words): 3 Haven Favor, and she becomes a local at the nearest house. Or tell her who it was, if you know (the journal's description, never a player's name). Or take the dead's things before she does (she's the giver, so she always sees). *"Nobody should lie by a road. Not even a road this quiet."* |
-| **Still Walking** (dialogue's "walk_out") | an approach, at dusk | Walk Him Out ended "walked on" (`walked.<name>`) within a season day, and he hasn't turned. Never while H3 runs | He's on the road out of the house that walked him out, asking the way to the lab where they give the shot. Point him there (he goes as data; the lab gate lets a bitten, unarmed man through for the trial dose); walk him toward it (≤ 600 m); or sit with him until dark (★ Nurse eases it). Pays nothing. If he got the dose, a board note at his house later |
-| **Warm Hands** | a campfire, after dark | your fire, a wanderer's camp or a crew's brazier, with nobody else within 300 m | A voice from the dark: *"Mind if I sit? I'm not armed."* He walks in and sits. Let him sit 5 real min, and he tells you one true thing from the road (a tribe's habit, a real rumour); give him a tin, and he becomes a local at his house; or send him off. Pays nothing |
-| **Seed Potatoes** | their own place (his farm) | by day, a farm building in an empty village within 1 km of a tribe's range | He buried a sack on Day 2. Dig it along the fringe (10 s, 6 heat): +2 food at his house, 4 Favor. Keep it and say it was gone: 2 food in your pack as tagged items, and a lie found if he goes to look (a callback). He believes you, because people always say that now. His tip: *"Go the day after they've fed. Nobody's out then."* |
-| **Checkpoint Manners** | an approach (a Bastion checkpoint's) | a Haven family with a Bastion checkpoint between them and their house, carrying a wrapped bundle (a mission item: their father's rifle part *"for the rabbits"*) | [Known: Bastion] *"They're with me"* waves you through, once; the family is still searched on its own terms. Or walk them round (≤ 500 m). Or hand the bundle in at the barrier. Later: a rumour says the Red Hand bought something used for rabbits. They sold it for tins |
-| **My Sister at Morton** | a road people use | upkeep put someone on the roads in the last 6 h | Half the time he's her brother; half the time a crew lad (a red hand on the wrist, named to ★ Police/Ex-Con or Known RH). Find her in a barn (≤ 1.5 km) and tell him; warn her on to another house (+1 there, a local); or call him out. If he's real, the call-out costs. If he's a crew lad and you knowingly told him, she never arrives, 6 RH Favor, and the Haven sale rule applies |
-| **Wrong Side of the Toll** (a dark card) | a road people use; a crossroads | a Haven stranger with a Red Hand roadblock between her and her house | Pay her toll (10 RH Favor) or [Trusted: RH] *"She's with me."* Walk her round (≤ 600 m). Or sell her to the toll (knowing): 6 RH Favor; she never arrives. That house's fit for you is ×0.5 for the season; +12 Haven Infamy if any Haven body or wanderer witnessed you walking with her. Nobody says where she went |
-| **She Waves at the Line** (a dark card) | the line | Perimeter sealed, a land edge within 1.5 km. Never on sea-only edges | She stops at the warning zone's edge to wave at a husband she thinks is outside; she never goes in. [Known: Haven or ★ Nurse] talk her back to the nearest house (+1). Walk into the warning zone with her and the drone comes for you alone (the line's rules apply to you). Or leave her: a headline in the Haven's voice, and no morale change |
-| **The Face on the Notice** | an approach; a road people use | you're Kill on Sight with someone, on foot, alone | A desperate man wants his landlord's debt book taken from a crew's hut ≤ 1 km off: *"Someone with nothing to lose."* Sneak it (8 RH Infamy if seen), or burn it, or turn him down. Pays one common find. The only stranger who doesn't run from you |
-| **Found hooks** (from missions) | a fresh event: a job's site | one site in five, after its job | *Someone hiding:* Up on the Roof at ground level: talk them out, and they go to the nearest house. *Someone got here first* (a Scavenger wanderer, if one is free): share, trade or leave, talk only. *A bite on a stranger:* Who's at the Gate, at the nearest house. (A body with a name is The Name on the Tag; an old mark is read, below.) Each hook has a text pool for each faction voice and each kind of place (house, post, camp, field, road), at least four lines each before it ships |
-
-**An old mark** (a found hook with no errand): Haven chalk, a Bastion stencil, a crossed-out hand or a
-Halcyon plate at the job's site. Read it: the tribe's name and size as someone knew them on some day,
-maybe wrong now (the faction marks, [INFECTED.md](INFECTED.md)).
+All built ([docs/ERRANDS.md](../docs/ERRANDS.md#strangers)), with the found hooks and old marks.
 
 ### Cards
 
-Once per player per season. Grouped by family. The 16 built cards are in
+Once per player per season. Grouped by family. The 39 built cards are in
 [docs/ERRANDS.md](../docs/ERRANDS.md#the-cards) (His Effects as The Locker and The Wreck's Name, The Name on
 the Tag as its satchel variant, Clean Slate); still to build:
-
-**The house**
-- **Vouch** (the two Vouch cards merged; one vouch mechanic, §12).
-  - *At a Haven door* (Known with the Haven): a newcomer needs someone Known to speak for them. If they
-    steal within a real day, +5 Haven Infamy is yours. They will, a bit. Their kid's hungry.
-  - *At a Red Hand camp* (Trusted with the Red Hand; ★ Ex-Con knows him from inside): a new man at the
-    camp. Vouch, or don't. No pay. Writes `vouched.<name>`. One time in three he's selling to Bastion,
-    found out by events (a raid, Sell Out a Rival Crew), and the crew remembers who vouched for him.
-- **The Officer's Coat** (a Haven mother; a disguise card). Why: you wear Bastion kit as a disguise
-  (below Known) within 40 m of her. She asks after her son in the stockade. Tell her you're not Bastion
-  (she remembers you were honest). Play the soldier and take a tin "for the paperwork": a lie, found when
-  she asks at a post. Or go out of uniform and ask [Known: Bastion]: *"He's on the roster as KIA, or struck
-  off."*
-
-**Aftermath**
-
-**The lost**
-- **Behind the Red Door** (the Kid; a callback). Why: the Kid at a safehouse, and you walked him there (a
-  thread) or you're Known with the Haven. Never if the Kid came out of the Long Table (see The Drawing).
-  He draws a house with a red door, a real lockable house ≤ 1.5 km off. Find his mother's note there.
-  Tell him the truth (another house, or "she runs with the Quarry lot", sideways), bring him something
-  from his room, or tell him she's coming: his local spot becomes the gate at dusk, every dusk you pass,
-  to the epilogue.
-- **Somebody Should Tell Them** (a resident; re-angled from the epilogue's card and dialogue's
-  "walking with" ask). Why: someone in the house lost family, and the Haven thinks they run with a tribe
-  now. Read the faction marks at the range's edge, ask a Hunter, or check the Haven's book of names, and
-  come back with which tribe. It posts a reason that Bring Them Home answers. No keepsake, never a
-  player's character, no pay but regard. It runs in the season and in the epilogue week.
-
-**Road posts and the line**
 
 **The dead**
 - **His Effects** (one family, a variant per faction; The Name on the Tape, The Locker, His Lighter, The
@@ -949,18 +806,8 @@ the Tag as its satchel variant, Clean Slate); still to build:
   its number is a real cover detail for one Halcyon look. The coat is a dead man's coat, so it's no good
   at Halcyon's looks. Lost Colleague's fallout (His Notebook). After the cure, its variant Into the Record takes the
   notebook to Proof's table ([EPILOGUE.md](EPILOGUE.md)).
-- **Buy It Back** (Bastion, Known; Crash Site's fallout). Buy the black box from the fence for 25 Red
-  Hand Favor or 5 food, then hand it in. Bastion pays 25% of Crash Site's base. If nobody buys it back
-  within a season day and the truth was Inventory, the Red Hand reads it on the air.
 
 **Hidden truths and the crews**
-- **Both Hands** (anyone; Mixed Bag, Useful Trouble or Favourite Rascal). Someone needs you *because*
-  you're liked and feared: talk a brother out of a crew, or an informer out of a post. He doesn't want to
-  come, and his crew doesn't want him to go.
-- **Name Day** (a crew's book-keeper; Known with the Red Hand, no crew name; once a real day). Two
-  dares: fetch the clock from the infested church tower (Belfry), or one round in the pit (Ringside). The
-  third, painting a red hand in sight of a checkpoint, is the **Paint** card (below). Stupid on purpose.
-  The name you get is whatever went wrong.
 - **Paint** (the Red Hand, Known; Name Day's Brush merged in). Why: at night, a Bastion checkpoint within
   2.5 km of a Red Hand camp. *"New faces paint a red hand on."* Paint one on the barrier, or on a Bastion
   sign in sight of the checkpoint without being searched: 20 s at the prop. The post comes down within
@@ -968,24 +815,12 @@ the Tag as its satchel variant, Clean Slate); still to build:
   Sneak: from the back, unseen. Force: it's a fight. The crew names you for it, after something you'd
   rather they forgot (`book.named`, the same flag the pit gives), and +2 RH Fame. The post's incident
   sheet: *"Civilian with a paint tin. Day 14."*
-- **Dress Rehearsal** (the Red Hand; Known with the Red Hand and below Known with Bastion; once per life).
-  Why: a Bastion checkpoint within 2 km of a Red Hand holding. Walk through in Bastion kit, ask the sentry
-  when the shift changes (a disguise line), and walk back: +2 RH Fame, 10 Favor. Caught: the catch, and
-  the open channel laughs at you, without your name.
 - **Wrong Way Round** (the Red Hand, Trusted). Why: a Haven house on a road the Red Hand doesn't hold.
   The house's lads take tolls under painted red hands to keep raiders off, and they painted them the
   wrong way round. Tell the boss: they're "settled", the house loses 1 person, +2 RH Fame, +5 Haven
   Infamy. Take a cut: 6 Haven Favor from the lads' takings, once (a lie record, found when the house
   counts at its next upkeep: +5 Haven Infamy). Warn them off: +2 Haven Fame. Or recruit them: +2 RH Fame,
   and the house loses 1 person.
-- **Professional Courtesy** (a Red Hand lad; Raider). A rival crew lad wants your opinion on his ambush
-  spot. Give it straight (+1 RH Fame); give it wrong so his crew walks into a tribe's trail at dusk (a
-  lie; +3 RH Infamy if found); or tell Bastion where it is (+2 Bastion Fame, +6 RH Infamy if a crew body
-  sees).
-- **A Debt Gone Quiet** (a crew's book-keeper; Collections, re-angled; Feared band 2+ with anyone). Not a
-  collection: a man in the book has stopped paying and stopped answering. Find out why before the crew
-  does. Threaten him (Fear), pay it yourself, or tell the book-keeper he's dead. He's alive, and paying for
-  medicine. Saying he's dead is a lie record, found when he's seen at the next toll.
 - **Clean Glasses** (a crew lad; a margin card for The Book Has to Balance). Why: the crews meet tomorrow
   night (not tonight), and the boss wants glasses. Find six unbroken glasses in an empty town (search
   spots): 5 RH Favor. *"He wants it to look civilised. Then he'll read out who owes."*
@@ -998,13 +833,6 @@ the Tag as its satchel variant, Clean Slate); still to build:
   in the stockade for wearing the wrong boots. He's furious. He's also, technically, out of uniform."* No
   pay. Or take the scout's 10 Red Hand Favor to point at Hollis (a lie record, found when Hollis is let out
   and the scout is still on the gate: +5 Bastion Infamy).
-- **Off the Report** (a private; Known or better with Bastion, with any Bastion Infamy; was "Keep Me Off
-  the Board", renamed because the board is the roster). A private wants his name off a duty report. The
-  report's true.
-- **Dress Uniform** (a Bastion private; Soldier). Why: Soldier and Known with Bastion. The sergeant wants
-  a dead lad's dress uniform folded for the locker. ★ Soldier folds it right (the private watches and
-  learns). *"Regulation fold. Regulation nothing else."* 4 Favor. In your own kit you're a soldier, not a
-  disguise.
 
 **Halcyon**
 - **Masks Off** (Halcyon, Known). Why: a safehouse took a bite declaration in the last season day. A man
@@ -1015,13 +843,6 @@ the Tag as its satchel variant, Clean Slate); still to build:
   fails at once).
 
 **Help across lines**
-- **Borrowed Green** (the Haven, Any). Why: a bitten person at a house, and a Bastion checkpoint between
-  the house and the lab. Walk the family to the lab for the trial dose. In this card, Bastion turns the
-  visibly bitten back at its barrier (containment). Trick: in Bastion kit, *"Casualty for the lab,
-  sergeant's orders"* (difficulty 2). Sneak: round the post, more than 150 m from it. Trade: 15 Bastion
-  Favor. Talk: ask the sergeant straight (persuade 1 with Bastion; one step easier under a Merciful CO or
-  after the majors' All Stations ending). +2 Haven Fame, 8 Favor. If they're cured, they stay at the house
-  (+1 person).
 - **Civvies** (a Haven occupant; re-angled). Why: a deserter struck off Bastion's strength as KIA, his
   name still on the board, is sheltering at a safehouse (a Deserter wanderer resting there, or a man made
   for the card; never the finale's canon deserter). The disguise in reverse: he wants to stop looking like
@@ -1038,29 +859,14 @@ the Tag as its satchel variant, Clean Slate); still to build:
   roadblock. Or pay the toll twice (20 Red Hand Favor). Or sell the sack to the fence for 10 Red Hand
   Favor: the house loses its bread (−2 food), and a lie record is found when the house counts at its next
   upkeep (+3 Haven Infamy). Delivered: +2 Haven Fame, +1 Bastion Fame, and the house gets +2 food.
-- **Both Doors** (a go-between; Drifter). Why: Drifter (Known with all four), a Bastion post and a Red
-  Hand camp within 1.5 km. Each wants the other's shift times. Carry true ones both ways (5 Favor each, +1
-  Fame each); carry one side false (a lie found at the next shift); or carry nothing and say so. *"Nobody
-  trusts a man everyone trusts. Except everyone, apparently."*
-- **Character Reference** (anyone; Known with two factions). One asks what the other is really like.
-  Your answer becomes a rumour their people repeat. Lie, and the callback finds you.
 - **The Other Half** (anyone; owed by one faction, Known with its rival). Carry a message to the people
   who want you dead. The parley is the delivery. The message is a threat.
-- **Unknown Face** (a guard; Stranger with a faction, at its seat; was reputation's "Who's Asking",
-  renamed so it doesn't share the exile card's name). A guard needs a letter carried into a
-  rival's camp, because nobody there knows your face. Read it first. Deliver it, swap it, or sell it to
-  the camp.
 
 **The Long Table**
 - **The Drawing** (the Kid; horror). Why: the Long Table was broken up and the boy got out; you're Known
   with the Haven. A long table, one more chair than people, a row of boots in too many sizes. Nobody says
   more. Take it to the clerk, who puts it in the drawer (`errand.drawing` 1); keep it (2); or burn it on
   the stove (3). Pays nothing. The epilogue reads which.
-- **The Jar Run** (a Red Hand lad). Why: the farm exists, unexposed, its buyer not purged, this the
-  nearest crew, the farm ≤ 1.5 km. Never while C1, C2 or Cargo runs, or if you're family or crossed. Buy
-  a jar (the house's own Trade): 6 RH Favor, and the lads say nothing at all. Or say nobody was home. Or
-  ask where the farmer gets his meat: the lad tells you not to, and it counts as a rumour heard (C1 may
-  start). Never described.
 
 **The tribes**
 - **Is She Gone?** (a Haven occupant). Why: a tribe's alpha went down in the last 2 played hours, and the
@@ -1068,15 +874,6 @@ the Tag as its satchel variant, Clean Slate); still to build:
   whether the tribe still gathers there (the vigil, or a new leader calling): tell them, 4 Favor. No
   keepsake: that's Bring Them Home's. Or point them to whoever paid for it. [★ Elder] sit at supper: the
   house reads her name.
-- **Shoes in a Row** (the Haven clerk). Why: by day, a tribe's lair within 1.5 km whose alpha the Haven
-  knows by name. Count the shoes by the lair from 80 m unnoticed, outside the resting ring (★ Hunter
-  150 m): the clerk writes the number in the book (5 Favor). Take one pair: a name inside goes in the
-  council's book of names (no living local). A made-up number is read at supper as "about", never sent on.
-- **Not Past the Chapel** (a Haven occupant; re-angled). Why: dusk within 20 real min, and a hungry
-  tribe's trail crosses the road to an old man's farmhouse ≤ 1 km off. Bring him in (≤ 600 m escort; +1
-  person); board his doors with two planks (the barricade kit: the boards take 8 hits); or leave him.
-  He's rude to you whichever.
-- **Seed Potatoes** is a stranger routine (above).
 
 **Players' traces**
 - **Boarded Up** (a family). Why: a player's barricade stands in a town nobody holds, and the infected
@@ -1085,29 +882,10 @@ the Tag as its satchel variant, Clean Slate); still to build:
 - **The Name on the Tag**'s satchel variant (above) and **The Truck Didn't Come** (above) also read
   traces.
 
-**The bad-standing deck**
-- **Who's Asking** (a Rogue outpost leader's corporal; the exile deck). Why: a Haven exile, a Rogue leader
-  within 2 km. *"The boss doesn't care what the Haven thinks of you. Neither do I."* Carry a crate of tins
-  to a Haven house's back door, unseen (the house +2 food, 6 of the Rogue's faction Favor). Seen: +4 Haven
-  Infamy. The exile stays an exile; no Haven Fame.
-- **Nobody Looks at a Stray** (a crew's book-keeper; a Haven exile). *"Strays are useful. Nobody looks at
-  a stray."* Carry this to the crossroads: 6 RH Favor. What's in it is grey.
-- **The Face on the Notice** is a stranger routine, and **Wanted Poster** a wanderer's ask (above).
-
 **Champions and backgrounds**
-- **You're the One** (a Haven local; Champion). Why: Champion with the Haven. People queue at the gate: a
-  man wants his daughter's name in the council book, written by you. Write it (a readable on the board),
-  or say you're no one. *"That's what the last one said."* Pays nothing. Hall of fame line if your name's
-  there: *"My brother saw your name on the list at the lab."* One Champion card per faction.
-- **Pay Packet** (an Unemployed's card). Why: Unemployed. A Haven clerk has a job going: hand the payroll
-  of tins out at a Shelter, 6 people, 1 real min each. *"First pay packet in nine weeks, is it? Don't
-  spend it all at once. There's nothing to spend it on."* 4 Favor; your +50% Fame applies within the
-  ceiling.
-- Background cards elsewhere in this list: Old Habits (Ex-Con), Professional Courtesy (Raider), Dress
-  Uniform (Soldier), I'd Rather Be Wrong (Doctor, Lab Tech), Both Doors (Drifter), The Round and Sit With
-  Him (Nurse, Doctor), Lights and Two in the Back (Mechanic), Fresh Chalk and Shoes in a Row (Hunter),
-  Fresh Chalk and Night Readings (Radio Op, Lab Tech), The Burying and Is She Gone? (Elder), Filter Parts
-  (Lab Tech), Who's at the Gate and Short Change (Police).
+- Every background has at least two built cards or routines that read it ([docs/ERRANDS.md](../docs/ERRANDS.md)),
+  except the Ex-Con (Vouch, Short Change and My Sister at Morton read it; **Old Habits** is still to write)
+  and the Elder (The Burying and The Digger; Is She Gone? waits for the tribes' "leader down" fact).
 
 **The amends family** (The Latrine, Make It Right, Clean Slate and Come In merged). All pay amends
 through `Forgive()`: 2 Infamy off at a time, at most 8 a life per faction from errands, never below 15,
@@ -1195,11 +973,10 @@ at dusk, 2 Infamy off). The storekeeper wouldn't have waved.
 
 ## 27. Settings, telemetry, writing, phases
 
-**Missions > Errands** is built with the core's settings ([docs/ERRANDS.md](../docs/ERRANDS.md)). Still to
-add: Stranger gap (15–25 min, a ceiling only), Strangers on the server (6), Footfall half-life (6 real
-hours), Twist chance (0.2), Found hook chance (one site in five), Pinned / unpinned locals (30 / 20), Board
-asks, Radio asks, Dark cards, Majors read errand memory (off). Telemetry still to add: lies told against
-lies found, twists, strangers dealt by spot kind; and `/errands spots`.
+**Missions > Errands** is built with the core's and phase 4's settings ([docs/ERRANDS.md](../docs/ERRANDS.md)).
+Still to add: Stranger gap, Strangers on the server, Footfall half-life and Pinned / unpinned locals as
+settings (they're fixed today: 15–25 min, 6, 6 real hours, 30 / 20), and Majors read errand memory (off).
+Telemetry still to add: lies told against lies found, and twists.
 
 **Writing a card.** One class per card, `Cards/<Family>/RZ_Errand_<Name>.c` (built: the base
 `RZ_ErrandCard`). Three variants of every line, in the giver's voice ([../docs/WRITING.md](../docs/WRITING.md)),
@@ -1208,9 +985,8 @@ test is to force each Why true then false and check the Overtake, and place one 
 
 **Phases** (the plan's numbering):
 - **Phase 3, the core:** built.
-- **Phase 4, people:** strangers (the stranger spots and the footfall grid, and the stranger routines),
-  locals and the pinned rule, twists, board and radio asks, 24 more cards (backgrounds, bad standing,
-  traces), and disguise's Borrowed Green and Dress Rehearsal; the routines still listed below.
+- **Phase 4, people:** built. Left over from it: the routines and cards still listed in the catalogue
+  (His Lighter, The Market, The Receiver; The Other Half, The Drawing, Is She Gone?, Boarded Up).
 - **Phase 5:** the majors' margin cards.
 - **Phase 6:** the five lock cards and Hand to Hand.
 - **Phase 7:** the epilogue deck and the ending contract, with [EPILOGUE.md](EPILOGUE.md).
@@ -1222,12 +998,6 @@ The dealer, the routines, named people, soft holds, the faults table, clock conv
 errand ledger are built ([docs/ERRANDS.md](../docs/ERRANDS.md)). Still to build:
 
 - **The signal ring** with per-kind quotas, a per-player flood guard and a server-only cause.
-- **`RZ_StrangerSpots`:** builds spot candidates from settlements, holdings, the road grid, truck and
-  wanderer routes, lit fires, vehicles, the ring, journals of the dead, job sites and the line; finds the
-  nearest plausible spot of each kind 60–400 m ahead of a player on the 30 s context tick; applies the
-  never list. **The footfall grid:** 250 m cells, a decaying count of passes, not saved. VERIFY: the
-  out-of-sight spawn at a spot; road width for "within 20 m of a road"; reading lit fires and stopped
-  vehicles cheaply.
 - **A per-player context cache,** refreshed every 30 s: settlement and owner, holding within 600 m,
   tribe's range within 1.5 km, road, vehicle (moving or stopped), fight, near a mission or set piece,
   near the farm, minutes into the life, the nearest plausible spot, tiers, title halves, route lock.
@@ -1243,17 +1013,6 @@ errand ledger are built ([docs/ERRANDS.md](../docs/ERRANDS.md)). Still to build:
   list: disguise keywords, vehicles and keys, Trusted and Champion shelves, rare finds.
 - **Group rules:** choices only by the asker and helpers (vanilla group, within 50 m, present for a step
   or 2 min); helpers get half Favor, three paid at most; in kind to the asker only.
-- **Locals** (`World/RZ_Locals.c`): pinned (up to 30, 4 per house, kept to the epilogue) and unpinned
-  (20, oldest unmet for 3 real days first). Home is always a place; each has a spot field (stove, gate,
-  bench, barrier); per-player memory for the season. Dressed onto unclaimed occupant bodies near a player
-  who knows them, inside the house's population. News is a personal line only.
-- **Passers-by:** spawned for one player and their group at the chosen spot, 60–90 m off (VERIFY), only
-  with no player outside the group within 300 m, never within 2 km of the Long Table's farm, standing
-  still (Warm Hands walks in once), removed out of sight. They carry only their gift; robbing one stops
-  strangers for that player for a real day; harm uses the wanderer house rules.
-- **Board asks:** a separate strip of 2 system asks per safehouse board, outside the 8 player notes,
-  removed when taken or when the Why fails, and shown struck through in the epilogue. **Radio asks**
-  through `RZ_FactionVoice` as a personal line to the one player the dealer picked.
 - **Disguise reads** from [DISGUISE.md](DISGUISE.md): own colours, `IsPassing`, the look for claims.
   Disguises never clear escorted people or errand items at posts.
 - **Finale and majors reads,** read-only: `finale.route`, `finale.finisher`, `finale.terms`,

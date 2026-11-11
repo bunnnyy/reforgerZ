@@ -394,6 +394,10 @@ class RZ_Crafting
 		}
 
 		m_GM.GetHeat().AddHeat(s.m_vPos, 2);
+		// A fire lit: a campfire spot for strangers for half an hour (docs/ERRANDS.md, "Strangers")
+		if (m_GM.GetErrands())
+			m_GM.GetErrands().GetStrangers().NoteFire(s.m_vPos);
+
 		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_BOIL, s.m_iId, 0, m_Water.m_fBoilSeconds, "the boiling", false);
 		m_GM.NotifyPlayer(playerId, title, string.Format("You get a small fire going under the pot. About %1 seconds. The smoke goes up the chimney, and someone may see it.", RZ_Util.RoundToInt(m_Water.m_fBoilSeconds)));
 	}

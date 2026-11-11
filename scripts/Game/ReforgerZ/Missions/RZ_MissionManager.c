@@ -815,6 +815,10 @@ class RZ_MissionManager
 		// Faction strength and morale
 		m_GM.OnContractFinished(m, success);
 
+		// A found hook at one site in five: a stranger or an old mark (docs/ERRANDS.md, "Strangers")
+		if (m_GM.GetErrands() && m_GM.GetErrands().IsOn() && !m.m_bWithdrawn)
+			m_GM.GetErrands().GetStrangers().JobEnded(m);
+
 		// The town log: what was done here, and by whom (World/RZ_WorldWriters.c)
 		if (success)
 			RZ_WorldWriters.MissionEnded(m, true, paid);

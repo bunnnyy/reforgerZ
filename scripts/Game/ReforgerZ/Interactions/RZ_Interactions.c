@@ -1123,6 +1123,28 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The nearest spot of `kind` within `radius` of pos (strangers' wrecks), null if none.
+	RZ_Spot NearestSpot(int kind, vector pos, float radius)
+	{
+		RZ_Spot best;
+		float bestDist = radius;
+		foreach (RZ_Spot s : m_aSpots)
+		{
+			if (s.m_iKind != kind)
+				continue;
+
+			float d = RZ_Util.DistXZ(s.m_vPos, pos);
+			if (d <= bestDist)
+			{
+				best = s;
+				bestDist = d;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected int CountSpotsNear(vector pos, float radius)
 	{
 		int n = 0;

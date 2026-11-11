@@ -21,7 +21,7 @@ people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md).
 | [Leader missions](#leader-missions) | 27, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
 | **Total** | **148** | **—** |
-| [Errands](ERRANDS.md) (not missions: asked in person) | 24 routines, 2 wanderers' asks, 2 strangers, 18 cards | about 42 more cards, the other strangers ([designs/ERRANDS.md](../designs/ERRANDS.md)) |
+| [Errands](ERRANDS.md) (not missions: asked in person) | 31 routines, 2 wanderers' asks, 18 strangers, 39 cards | the margin, lock and epilogue cards and about 20 more ([designs/ERRANDS.md](../designs/ERRANDS.md)) |
 | [Questlines](#questlines) | 15 questlines, about 90 stage missions (not counted above) | — |
 
 ## Who gets offered what
