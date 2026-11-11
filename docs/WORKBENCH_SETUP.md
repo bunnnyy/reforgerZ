@@ -1815,7 +1815,7 @@ start) and the active-AI limit; once the clock runs, the day length; about 40 s 
 [ReforgerZ] Tribes: the engine's active-AI limit raised from 128 to 160 (it covers faction AI, wanderers and trucks too).
 [ReforgerZ] Clock: a game day takes 240 real minutes; the time of day is 12:00 (saved --:--).
 [ReforgerZ] Land: 289 squares of 250 m (17 x 17), 6.3 km2 of land, 0.8 km2 wild; read in 39 s (...). File $profile:ReforgerZ/land_<map>_<number>.json.
-[ReforgerZ] Land: the sea, 3 rivers (0.9 km), 0 lakes. ... Ridge posts 3, valley lines 1, forests 3, fields 0.
+[ReforgerZ] Land: the sea, 3 rivers (0.9 km), 0 lakes. ... Ridge posts 3, valley lines 1, forests 3 (N edge points), fields 0.
 [ReforgerZ] Land: lair candidates N (forest N, barn N, ...).
 [ReforgerZ] Tribes: 0.8 km2 of wild land and N lair candidates: under the floor (1.5 km2 and a lair), so no tribes here, crawlers only. Override: none.
 ```
@@ -2020,7 +2020,10 @@ or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squ
 bodies N agents, hordes from towns N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
 doors N | active AI N/160 | land: ... | clock ..., day N min` (with Crawlers or Tribes on: agents near the
 budget all the time, or the active AI at its limit, means the budget is too high for the server),
-`Heat horde: N units out of <town>, from its side of <grid>.`, `Crawlers: <town> is stirred (N).`,
+`Heat horde: N units out of <town>, from its side of <grid>.`, `Pack horde: N groups of the pack at
+<place> sent to the heat at <grid> (day, its day party | night, its hunters).`, `Pack lookers: young
+of the pack at <place> sent to look at a busy spot at <grid>.`, `Lookers: N of <town>'s own sent to
+look at a busy spot at <grid>.`, `Tribes: R1's rumour of the crew in the woods (...)`, `Crawlers: <town> is stirred (N).`,
 `Crawlers: a kill site at <grid> (...); the slow ones from <town> come out to it at night.`,
 `Crawlers: N from <town> are walking out to the kill site at <grid>.`, `Tribes dump | ...` (an admin's
 `/tribes`: every town with crawlers, a ledger or stir, kill sites, parts, tracked units, last hits),
@@ -2295,6 +2298,10 @@ call`; a Hunter is useful)
   strings out. Not in your gentle start.
 - [ ] **The young's stagger:** let a young leap at you and land a hit: you slow for under a second,
   at most once in 6 s.
+- [ ] **The young's stare:** near a pack's young by day in a village, watch one walk to a house's door
+  and stand facing it for a few seconds. **The ETA:** in a pincer at night, the nearer group holds
+  still until the further one is on its way; both strike together. **Forest edges:** a stalking group's
+  shadow point sits just inside the trees on the open side, not deep in the wood.
 - [ ] **Hearing:** sprint past a pack's day party at 30 m out of its sight: it turns and walks toward
   where you were (not to you). Crouch-walk past at 10 m: nothing. A noisemaker or a forced lock pulls
   the nearest group to look. Bleeding, walk a field: a group comes along your trail behind you.
@@ -2366,7 +2373,11 @@ when it happens)
 - [ ] **Every Ridge Calls** at dusk: every pack hunts three trails, its range doubled, straight through its
   fear places, and a border with a frenzied side is fought more often (2 Border Nights at most); **The
   Tribe Moves** when a lair moves out of its range ("On the Move", two groups near you); **Red Dusk** at a
-  clear dusk.
+  clear dusk. The towns inside the frenzy hold twice their crawlers until dawn, not just its first 20
+  minutes.
+- [ ] **The packs' hordes:** make 80 heat inside a pack's range by day: its day party walks over (`Pack
+  horde:`), no town's crawlers come; at night, its hunters on their trails. Stay put an hour at night
+  in a range: a young group comes to look (`Pack lookers:`).
 - [ ] **Stock the Pit** (Red Hand Known, a camp within 6 km of a pack): lure one young into the cage at
   the lair's edge and drop the door (the second: tie it instead), hold it 30 s, the case to the drop by
   the camp, then the second; the next Fight Pit's brief says *"Fresh hires tonight,

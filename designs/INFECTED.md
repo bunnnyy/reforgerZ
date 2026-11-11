@@ -17,6 +17,7 @@ build. Approved by the author on 2026-11-11. The finale's live tissue's rest is
 - [Towns and the land](#towns-and-the-land)
 - [Bodies](#bodies)
 - [People](#people)
+- [The behaviour layer's rest](#the-behaviour-layers-rest)
 - [After the cure: the last week](#after-the-cure-the-last-week)
 - [From Grounds to tribes: the rename table](#from-grounds-to-tribes-the-rename-table)
 - [Phase 0 results](#phase-0-results)
@@ -56,10 +57,6 @@ A Furious pack's day parties walking the capture road.
 
 - **Giving way, in placement:** while a pack's part is in a town, the crawlers' placement shifts half
   indoors and to the side away from the trail (crawler life's night herds already step aside).
-- **Hordes and lookers from the packs:** by day inside a range, a heat horde from that pack's day party
-  only (inside its 6-body cap); at night, from its hunters along its trail (inside the hunt's
-  commitment); favourite-spot lookers from the young at night inside a range.
-- **Frenzy nights:** the crawlers' ×2 at a frenzy's height lasting the night.
 - **Chain reactions:** Siren Test's other packs keeping away from that town that night.
 
 ## Bodies
@@ -79,12 +76,19 @@ A Furious pack's day parties walking the capture road.
   Bait the Crew's Zombie Bait Infamy when either side lands on a faction's people; Track Them Home's
   "not closer than 80 m"; couriers and columns needing an escort.
 - **Trucks taken** on any road a trail crosses (decision 15).
-- **Questline hooks:** B1 Await Relief (the Day 3 runner's road crosses the column's range, and his page
-  can be at an old kill site); R1 The Book (a page for "the crew in the woods", the moat's feeding, as a
-  rumour); HC3 Authors (tagged leaders numbered in the paper's appendix); the finale routes' live tissue
-  and The Lower Store claiming the site pack in Act II ([FINALE.md](FINALE.md)); seeds for later
-  questlines (the Haven's Bring Them Home chain, Bastion's Not Our Sector, the Red Hand's The Moat,
-  Halcyon's Index).
+
+## The behaviour layer's rest
+
+The layer is built ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)), with the zombie
+lab's B1–B20 results in [docs/WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#zombie-lab-bacons-real-ai-measured).
+What's left waits on a test; the levers the lab disproved are in the roadmap's Dropped list.
+
+| Part | Still designed | Why it waits |
+|---|---|---|
+| Sight | Calibrate **Notice rate** to phase 0's ladder in a play-test and re-run `tools/tribe_sim.py` with it | Needs a play-test |
+| Crawlers | A forced prone pose (lever L6, `ForceStance`: a prone `SetStanceChange` didn't hold, B12); crawlers steered into a fight within 12 m | Untested lever: needs a lab check on a client first |
+| Pathing | Lever L23: a straight-path cost per kind (×1 young, ×3 hunters) in `SCR_CreateAIExtraMoveParams`, so a chase curves | The hook loads and fires (B2); its effect needs a client check |
+| Danger events | Lever L16: a scripted `AIDangerEventWeaponFire` to pull engaged bodies the way a shot does | Untested lever: needs a client check, and hearing's leads cover it so far |
 
 ## After the cure: the last week
 

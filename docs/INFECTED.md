@@ -24,7 +24,8 @@ Code: `Zombies/RZ_ZombieSpawner.c` (spawning, counting, removing), `Zombies/RZ_C
 groups), `Zombies/RZ_Tribes.c`, `RZ_TribeData.c` and `RZ_TribeBodies.c` (the tribes, `/tribes`),
 `Zombies/RZ_TribeLife.c`, `RZ_TribeBorders.c` and `RZ_TribeWays.c` (the life cycle),
 `Zombies/RZ_TribePeople.c` and `RZ_TribeItems.c` (the people's side), `Zombies/RZ_TribeGreat.c` (the
-great one), `Zombies/RZ_TribeProps.c` (props, call sounds, the moon), `Missions/Tribes/` and
+great one), `Zombies/RZ_TribeProps.c` (props, call sounds, the moon), `Zombies/RZ_PackHordes.c`
+(the packs' heat hordes and lookers), `Zombies/RZ_TribeQuests.c` (the questline hooks), `Missions/Tribes/` and
 `Missions/Events/RZ_TribeEvents.c` (the packs' contracts and events),
 `Zombies/Behaviour/` (the behaviour layer and the crawlers' life), `World/RZ_Land.c` (the land grid),
 `Director/RZ_Adaptation.c` (infection adapts).
@@ -186,8 +187,13 @@ are warned; Radio Operators hear it anywhere.
   crawlers (up to 12 in 4 groups, or a Horde prefab with Crawlers off), spawned 300–450 m out on that
   town's side, out of sight. They're lent out of the town ([above](#towns-the-crawlers)). It waits
   for room in the agent budget rather than come thin. The log says which town.
+- **Inside a pack's range** (`Zombies/RZ_PackHordes.c`) the horde is the pack's own, and no town's
+  comes: by day its day party only (its cap of 6 bodies near a player cluster stands, as nothing new
+  is spawned), at night its hunters and young out on their trails within 1.5 km of the heat. They walk
+  there as if they'd heard it and wait 4 minutes. Inside the night's commitment: a pack holding a vigil,
+  weakened, already hunting, or deaf to that spot after a hunt lost someone there sends nobody (and the
+  horde's wait still runs). The log says `Pack horde:`.
 - **With no town that near, or Tribes off,** as before: a Horde prefab 360–540 m out in any direction.
-- *Planned:* by day inside a tribe's range from its day party only, at night from its hunters.
 
 Remembered noises (8+ heat at once, the last 16) also lead infected that a mission controls: they walk
 to a nearby noise and stay about 90 s. The unarmed missions are built on that
@@ -211,9 +217,13 @@ without making it unfair.
   out of sight 250–350 m away and walk over to look, at most once an hour per square. Never
   within 150 m of a safehouse, and never near a brand-new player in their gentle start.
 
+- **Whose lookers** (with Tribes on): at night inside a pack's range, one of its young groups out on
+  its trails walks over (`Pack lookers:`); otherwise the nearest town's own crawlers within 1.5 km,
+  spawned 250–350 m out on its side, out of sight and lent out of the town (`Lookers:`). With no town
+  that near, the old three.
+
 *Simplified:* "sees" is distance only, with no line of sight. Runners and helmets are whatever the
-prefabs are; the code doesn't change speed or armour itself. *Planned:* favourite-spot lookers from
-the nearest town's crawlers by day, and from a tribe's young at night inside its range.
+prefabs are; the code doesn't change speed or armour itself.
 
 ## The land
 
@@ -278,8 +288,11 @@ with the holdings, safehouses and Long Table of the season):
 any other way than as river entities; bridges whose deck is under 3 m above the ground, or that no
 road crosses (castle and pier bridges). Of the bridge prefabs a road crosses it finds 4 of 5 on
 Arland, 20 of 33 on Everon and 14 of 22 on Cain (some misses are other parts of a bridge it found).
-Three 4 m tracks over gullies on Everon read as bridges, and one low castle bridge as a ford. Nor
-does it see cliffs, banks and forest edges inside a square; trees whose prefab path doesn't say
+Three 4 m tracks over gullies on Everon read as bridges, and one low castle bridge as a ford.
+**Forest edge points** are worked out from the cached tree counts (so the cache doesn't change): each
+wooded square with dry open squares beside it (of its four) has a point inside the trees, 100 m from
+its middle toward the open side; the land log counts them. Nor does it see cliffs, banks and the
+edge's real line inside a square; trees whose prefab path doesn't say
 "tree" (a Workshop map's own trees read as open land); or a map update that adds objects but leaves
 the terrain alone (delete the cache).
 
@@ -1092,7 +1105,12 @@ cap; Bacon opens shut, unlocked doors itself, B10):
 **Formations** (slots written every second near players, every 3 s beyond 300 m): file on a night trail
 and going home, a loose line by day, a wedge for the core, flanking pairs, a ring at the lair, the kill
 site and the vigil. Spacing widens as the group nears its target (4 m at 200 m to 20 m within 40 m), and
-a strike fans out on an arc round the target, closing. Slots are kept 3 m apart (**Spacing**) and 8 m
+a strike fans out on an arc round the target, closing. **The re-plan:** the strategies plan round the
+target's last-known spot as it was, and move it only when the target has gone 25 m from there, so flank,
+shadow and ring points don't jitter (the strike always runs at the last-known spot itself). **The
+ETA:** in a pincer, an encircle or a herd, each element works out its time to its place (its route
+over its gait: walk-stop 0.6 m/s, march 2, run 3.7), and one that would arrive more than 5 s before the
+slowest holds where it is, so the slower element starts first and they arrive together. Slots are kept 3 m apart (**Spacing**) and 8 m
 off the alpha, enforced in code (B20). Walk-stop takes the group's waypoint off its list so Bacon walks
 to slots under 25 m (B7); a march puts the held waypoint at the goal, at most every **Order gap** (5 s) unless the goal moved 15 m, and the
 whole layer moves at most **Orders per 5 s** (40) waypoints in 5 s (the rest wait a tick).
@@ -1117,6 +1135,9 @@ with a sound from the leader a second before the release. By day only rush, stal
 in a tribe's two weak days no pincer, encircle or herd. Lone ones and splinters hunt alone, by day's rules.
 
 **Navigation.**
+- **Cover points** (a stalk's shadow point, a flank point, an ambush's lie): five points round the
+  wanted one and the forest edge points of their squares, preferring one the terrain hides from the
+  target (+3), then an edge point (+2), then a wooded square (+1); on a tie the lower ground wins.
 - **Water** (B16): a slot, and the straight line to it, is pulled back short of any water; the land grid
   says where that check can be skipped. Trails cross rivers only at the grid's crossings.
 - **Fences** (B8): the young, hunters and scouts vault grab points up to 1.4 m (**Climb limit**), the
@@ -1137,7 +1158,10 @@ in a tribe's two weak days no pincer, encircle or herd. Lone ones and splinters 
 
 **Releases and tells.** A release comes 0.2–1.2 s after its cause, each body its own (a hit or a player
 within 3 m: at once). Not hunting, hunters freeze 3–5 s when a player within 120 m looks their way
-(at most every 20 s), and the young jump between places in their group every 6–12 s (3–7 m).
+(at most every 20 s), and the young jump between places in their group every 6–12 s (3–7 m). One jump
+in three, with a learned building's outside door within 40 m, is a **stare** instead: facing isn't set
+by script, so the stare is walked: the young goes to a spot 4 m out from the door, then to one 1.5 m
+out, arriving face to the door, and stands there for the rest of 14–20 s.
 
 **Attacks.** Bacon's melee stays the hit and its damage; each kind adds one move, and its effect is
 status (a hold, a stagger, a knockdown, a light bleed), never extra damage. One special move lands on a
@@ -1359,7 +1383,9 @@ The packs' thirteen contracts, The Lone One, the changed missions and the events
   150 m off the store ([QUESTLINES.md](QUESTLINES.md)).
 - **Frenzy nights** (Every Ridge Calls everywhere, Red Dusk within 3 km of one point): one at a time,
   never in the first 2 season days, one every 3 at most (Red Dusk one every 7). A frenzied pack hunts with
-  its range ×2 (×1.75) whatever its temperament, on three trails (the wire first), until dawn. It
+  its range ×2 (×1.75) whatever its temperament, on three trails (the wire first), until dawn. The
+  towns inside the frenzy (everywhere, or Red Dusk's 3 km) hold **twice their crawlers until dawn**
+  (the event's own first 20 minutes of ×2 isn't doubled again; the agent budget still caps them). It
   ignores fear places (its trails are worked out again through them at dusk, and back round them at
   dawn) and borders: a border with a frenzied side always has a cause to fight, twice as likely, still
   2 Border Nights staged a night at most. The great one's clan gathers on a frenzy night ([The great
@@ -1372,6 +1398,21 @@ The packs' thirteen contracts, The Lone One, the changed missions and the events
 - **Furious** (its leader caught alive, Capture the Index): for 2 counted nights its one trail runs
   toward the lab and stops at the lab's no man's land plus P (250 m). The most recently Furious pack
   still Furious comes with the final stand's last wave.
+
+### Questline hooks
+
+`Zombies/RZ_TribeQuests.c`: small read-only helpers the questlines call, and seeds for questlines not
+written yet. Player text never says alpha, tribe or crawler.
+
+| Questline | The packs' part |
+|---|---|
+| **B1 Await Relief**, the runner | When the column's range lies across the runner's last road (the second town to the last), his body lies at an old kill site within 800 m of that road inside the range, else on the road where it passes nearest the range's middle. Otherwise his body is where the questline puts it |
+| **R1 The Book** | Once the page is being read, if the Red Hand feeds a pack (the moat), a rumour for a day: *"there's a line on the Red Hand's missing page that isn't a person at all: "the crew in the woods", by …"*. Once a run |
+| **HC3 Authors** | The paper's line ends with its appendix: the leaders Halcyon has tagged, numbered in tag order, four at most (*"Appendix C lists the index by number: I-1, the quarry by Morton."*) |
+| **Seeds** | Once a season day the packs set world flags for later questlines ([QUESTLINES.md](QUESTLINES.md#crossings)): `packs.moat`, `packs.index`, `packs.contact`; `packs.home` counts named ones brought home |
+
+The finale routes' live tissue and The Lower Store's site pack are [FINALE.md](FINALE.md#live-tissue)'s and
+[QUESTLINES.md](QUESTLINES.md)'s.
 
 ### The cure
 
@@ -1463,14 +1504,12 @@ always told.
 
 ## Planned
 
-What's left is in [designs/INFECTED.md](../designs/INFECTED.md) and
-[designs/BEHAVIOUR.md](../designs/BEHAVIOUR.md): the model's small rules (prey-scored trails, the
-border moving the ranges, snow tracks, the clans' relay), the call's and the hunt's rest (stragglers,
-two callers, a cunning pack on your back trail), crawlers giving way in their placement and heat hordes
-from a pack's own groups, scouts' posts over the night's trails, the jobs' rest and the questline hooks,
-the epilogue's beats from the other tribe beats (brought home, culled, burned out) and the factions'
-jobs on the ridges; the behaviour layer's few small rules (the notice rate's
-calibration, the formations' re-plan, forest edge points) and its untested levers. The finale's live
+What's left is in [designs/INFECTED.md](../designs/INFECTED.md): the model's small rules (prey-scored
+trails, the border moving the ranges, snow tracks, the clans' relay), the call's and the hunt's rest
+(stragglers, two callers, a cunning pack on your back trail), crawlers giving way in their placement,
+scouts' posts over the night's trails, the jobs' rest, the epilogue's beats from the other tribe beats
+(brought home, culled, burned out) and the factions' jobs on the ridges; and the behaviour layer's
+notice-rate calibration and untested levers. The finale's live
 tissue's rest is [designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules)'s.
 
 ## The simulator

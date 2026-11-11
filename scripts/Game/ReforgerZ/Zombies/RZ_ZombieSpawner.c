@@ -1469,6 +1469,7 @@ class RZ_ZombieSpawner
 			}
 
 			entries = entries * GentleMult(s.m_vCenter, m_Settings.m_fActivationRadius + s.m_fRadius);
+			entries = entries * m_Crawlers.FrenzyMult(s, m_fEventDensityMult);
 			float target = m_Crawlers.TargetAgents(idx, s, entries);
 			int present = CountAgentsForSettlement(idx);
 			if (present >= target - 0.5)
@@ -1729,6 +1730,20 @@ class RZ_ZombieSpawner
 		if (!m_GM.GetHeat().GetHottestNear(players, HORDE_PLAYER_RANGE, hotPos, heat) || heat < m_Settings.m_fHordeHeatThreshold)
 			return;
 
+		// Inside a pack's range the horde is the pack's own (Zombies/RZ_PackHordes.c)
+		int packSent;
+		if (RZ_PackHordes.HeatHorde(m_GM, hotPos, packSent))
+		{
+			m_fHordeCooldownLeft = m_Settings.m_fHordeCooldown;
+			if (packSent > 0)
+			{
+				m_GM.GetHeat().AddHeat(hotPos, -heat * 0.5);
+				m_GM.NotifyHorde(hotPos);
+			}
+
+			return;
+		}
+
 		int idx = m_GM.FindNearestSettlement(hotPos);
 		RZ_Settlement s = m_GM.GetSettlement(idx);
 		if (!s || RZ_Util.DistXZ(s.m_vCenter, hotPos) > s.m_fRadius + HORDE_TOWN_RANGE)
@@ -1805,6 +1820,75 @@ class RZ_ZombieSpawner
 		m_iHordesFromTowns++;
 		RZ_Log.Info(string.Format("Heat horde: %1 units out of %2, from its side of %3.", horde.Count(), s.m_sName, RZ_SettlementScanner.GridReference(hotPos)));
 		m_GM.NotifyHorde(hotPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Favourite-spot lookers (Director/RZ_Adaptation.c asks first; docs/INFECTED.md, "Hordes and
+	//! lookers from the packs"): with the tribes on, at night inside a pack's range its young look;
+	//! by day (or outside every range) the nearest town's crawlers within 1.5 km, spawned 250-350 m
+	//! out on its side, out of sight, and lent out of the town. True: handled here (the adaptation
+	//! spawns nothing); false: no town near, the old lookers.
+	bool SendSpotLookers(vector target, int count)
+	{
+		if (!TribesOn())
+			return false;
+
+		if (RZ_PackHordes.Lookers(m_GM, target))
+			return true;
+
+		if (!CrawlersOn())
+			return false;
+
+		int idx = m_GM.FindNearestSettlement(target);
+		RZ_Settlement s = m_GM.GetSettlement(idx);
+		if (!s || RZ_Util.DistXZ(s.m_vCenter, target) > s.m_fRadius + HORDE_TOWN_RANGE)
+			return false;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		vector dir = s.m_vCenter - target;
+		dir[1] = 0;
+		if (dir.Length() < 1)
+			dir = Vector(1, 0, 0);
+
+		dir.Normalize();
+		float baseYaw = Math.Atan2(dir[0], dir[2]);
+		vector from;
+		bool found = false;
+		for (int i = 0; i < 6; i++)
+		{
+			float yaw = baseYaw + Math.RandomFloat(-0.6, 0.6);
+			from = RZ_Util.GroundPos(target + Vector(Math.Sin(yaw), 0, Math.Cos(yaw)) * Math.RandomFloat(250, 350));
+			if (RZ_Util.IsWater(from) || RZ_Util.NearestDistance(from, players) < 150 || RZ_InfectedBodies.InSight(from, players, false))
+				continue;
+
+			found = true;
+			break;
+		}
+
+		// Nowhere out of sight: nobody comes this time (still handled, so no stranger spawns in view)
+		if (!found)
+			return true;
+
+		int left = Math.Min(Math.Min(m_Budget.RoomAt(target), count), TickRoom());
+		int sentLookers = 0;
+		while (left > 0)
+		{
+			int size = Math.Min(m_Crawlers.RollGroupSize(), left);
+			RZ_TrackedZombie unit = SpawnUnit(RZ_Util.GroundPos(RZ_Util.RandomPointInRing(from, 0, 15)), m_Crawlers.PickPrefab(s), size, idx, RZ_EInfectedRole.CRAWLER);
+			if (!unit)
+				break;
+
+			left -= unit.Agents();
+			sentLookers += unit.Agents();
+			unit.m_vGoal = target;
+			unit.m_bHasGoal = true;
+			RZ_Util.SendGroupTo(unit.m_Entity, target, m_Settings.m_sMoveWaypointPrefab);
+		}
+
+		RZ_Log.Info(string.Format("Lookers: %1 of %2's own sent to look at a busy spot at %3.", sentLookers, s.m_sName, RZ_SettlementScanner.GridReference(target)));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

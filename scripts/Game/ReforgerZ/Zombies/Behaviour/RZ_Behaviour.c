@@ -202,6 +202,10 @@ class RZ_BodyState
 	vector m_vBrokeOffAt;
 	bool m_bWentHome;				// a wounded alpha took its group home
 	float m_fJumpAt;				// a young's next erratic slot jump
+	vector m_vStareFrom;			// a young's stare at a house: first this spot, 4 m out from the door,
+	vector m_vStare;				// then this one, 1.5 m out, so it arrives facing the door
+	float m_fStareUntil = -1;
+	bool m_bStareClose;
 }
 
 //------------------------------------------------------------------------------------------------

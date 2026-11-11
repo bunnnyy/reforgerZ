@@ -592,10 +592,12 @@ class RZ_Quest_Authors : RZ_Questline
 	//------------------------------------------------------------------------------------------------
 	protected static string PaperLine(RZ_QuestRun run)
 	{
+		// The packs' hook: the tagged leaders numbered in the appendix (Zombies/RZ_TribeQuests.c)
+		string appendix = RZ_TribeQuests.Appendix(RZ_GameModeComponent.GetInstance());
 		if (run.Text("authors").IsEmpty())
-			return "";
+			return appendix;
 
-		return " Standing at the lab when it mattered: {authors}.";
+		return " Standing at the lab when it mattered: {authors}." + appendix;
 	}
 
 	//------------------------------------------------------------------------------------------------

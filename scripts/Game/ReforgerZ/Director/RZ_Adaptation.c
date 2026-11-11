@@ -319,6 +319,10 @@ class RZ_Adaptation
 	protected void SendLookers(vector target)
 	{
 		RZ_ZombieSpawner spawner = m_GM.GetSpawner();
+		// With the tribes on, a pack's young or the nearest town's own (Zombies/RZ_ZombieSpawner.c)
+		if (spawner.SendSpotLookers(target, m_Settings.m_iSpotHordeSize))
+			return;
+
 		array<int> ids = {};
 		array<IEntity> players = {};
 		RZ_Util.GetAlivePlayers(ids, players);

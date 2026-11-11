@@ -1094,7 +1094,7 @@ class RZ_TribeBodies
 	//------------------------------------------------------------------------------------------------
 	//! Heat near where a hunt lost its target tonight doesn't start another (a siege's banging never
 	//! brings the pack back).
-	protected static bool DeafTo(RZ_Tribe t, vector at)
+	static bool DeafTo(RZ_Tribe t, vector at)
 	{
 		foreach (vector lost : t.m_aDeafTo)
 		{

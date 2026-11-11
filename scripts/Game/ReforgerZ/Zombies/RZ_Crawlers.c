@@ -104,6 +104,7 @@ class RZ_Crawlers
 	static const float PART_SPAWN_RANGE = 600;
 	static const float HELD_DOOR_RADIUS = 150;
 	static const float NOISE_MAX_AGE = 300;
+	static const float FRENZY_TOWNS = 2;		// a frenzy night: the towns' crawlers x2 until dawn
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_CrawlerSettings m_Settings;
@@ -326,6 +327,19 @@ class RZ_Crawlers
 	{
 		float target = entries * GroupAverage() - s.m_fLedger - DataOut(idx);
 		return Math.Max(0, target);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Frenzy nights (docs/INFECTED.md, Contracts and events): a town inside tonight's frenzy holds
+	//! twice its crawlers until dawn. The event's own first 20 minutes of x2 (eventMult) isn't doubled
+	//! again. The agent budget still caps them.
+	float FrenzyMult(RZ_Settlement s, float eventMult)
+	{
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (!s || !tribes || !tribes.GetPeople() || !tribes.GetPeople().FrenzyAt(s.m_vCenter))
+			return 1;
+
+		return Math.Max(1, FRENZY_TOWNS / Math.Max(1, eventMult));
 	}
 
 	//------------------------------------------------------------------------------------------------

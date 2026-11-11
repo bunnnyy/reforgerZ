@@ -88,6 +88,8 @@ class RZ_TribePeople
 	protected bool m_bLastCall;
 	protected bool m_bLastCallDue;
 	protected int m_iLastFrenzyDay = -100;
+	protected vector m_vFrenzyAt;		// tonight's frenzy: its point (Red Dusk) and reach; 0 everywhere
+	protected float m_fFrenzyRadius;
 	protected int m_iLastRedDuskDay = -100;
 	protected int m_iPitStock;				// Stock the Pit: young caged for the next Fight Pit
 	protected string m_sPitCrew;
@@ -1703,6 +1705,9 @@ class RZ_TribePeople
 		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
 		if (p)
 			m_mDelivered.Set(p.m_sIdentity, RZ_SeasonClock.Day());
+
+		// The seed for a later questline (Zombies/RZ_TribeQuests.c)
+		RZ_TribeQuests.BroughtHome(m_GM);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2374,6 +2379,9 @@ class RZ_TribePeople
 		if (redDusk)
 			m_iLastRedDuskDay = m_iLastFrenzyDay;
 
+		m_vFrenzyAt = pos;
+		m_fFrenzyRadius = radius;
+
 		int n = 0;
 		foreach (RZ_Tribe t : m_Tribes.GetTribeList())
 		{
@@ -2391,6 +2399,30 @@ class RZ_TribePeople
 		// The great one's clan gathers on a frenzy night
 		m_Tribes.GetGreat().OnFrenzy();
 		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A frenzy night is on at pos (until dawn, when the tribes clear it): any pack is frenzied, and
+	//! pos is inside the frenzy's reach (Red Dusk's 3 km, or everywhere).
+	bool FrenzyAt(vector pos)
+	{
+		if (!IsOn())
+			return false;
+
+		bool any = false;
+		foreach (RZ_Tribe t : m_Tribes.GetTribeList())
+		{
+			if (t.m_fFrenzy > 0)
+			{
+				any = true;
+				break;
+			}
+		}
+
+		if (!any)
+			return false;
+
+		return m_fFrenzyRadius <= 0 || RZ_Util.DistXZ(pos, m_vFrenzyAt) <= m_fFrenzyRadius;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2705,6 +2737,7 @@ class RZ_TribePeople
 		{
 			m_iVoiceDay = day;
 			Moat();
+			RZ_TribeQuests.Daily(m_GM);
 			WriteMarks();
 			foreach (RZ_Tribe t : m_Tribes.GetTribeList())
 			{
