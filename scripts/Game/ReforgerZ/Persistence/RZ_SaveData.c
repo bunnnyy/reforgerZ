@@ -21,6 +21,9 @@ class RZ_SaveData
 
 	int stage;
 	float stageMinutes;
+	// Minutes played since the outbreak began (the season day, Core/RZ_Clocks.c). Older saves have 0
+	// here: it's then counted from the stages' set lengths
+	float playedMinutes;
 
 	float cureProgress;
 	int cureMilestone;
@@ -94,6 +97,10 @@ class RZ_SaveData
 
 	// World facts (World/RZ_WorldFacts.c): the season's seed, flags, canon and gossip
 	ref RZ_WorldFactsSave facts;
+
+	// The shared engine (Core/RZ_Shared.c): waiting callbacks, the season budget and its lanes, the
+	// set-piece calendar, the season's deeds by identity. Older saves have none: they start empty
+	ref RZ_SharedSave shared;
 
 	// World interactions: searched car boots, loose loot times, opened locks, burned buildings, stripped wrecks, fixable cars
 	ref RZ_InteractionSave interactions;

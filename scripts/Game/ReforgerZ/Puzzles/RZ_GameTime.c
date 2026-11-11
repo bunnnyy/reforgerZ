@@ -2,6 +2,8 @@
 //! or changes time; night missions just wait for it. The speed is measured by
 //! sampling the clock on the server tick, so it works with any time acceleration
 //! the server config sets, without needing an API for it.
+//! Shared clock helper (docs/DESIGN.md, "Clocks"): game-clock windows in real minutes go through
+//! RealMinutesFor and RealMinutesUntil, which assume 1:1 time until the rate is measured.
 class RZ_GameTime
 {
 	static const float NIGHT_START = 20.5;	// hours; rough, depends on map latitude and date
@@ -13,6 +15,7 @@ class RZ_GameTime
 	protected static float s_fSampleHours;
 
 	protected static const float SAMPLE_WINDOW = 60;
+	protected static bool s_bLogged;
 
 	//------------------------------------------------------------------------------------------------
 	//! Hour of the day, 0..24. -1 if the world has no time manager.
@@ -62,7 +65,45 @@ class RZ_GameTime
 
 			s_fSampleSeconds = 0;
 			s_fSampleHours = 0;
+			// VERIFY: the server's time acceleration matches this measurement (one log line, once)
+			if (!s_bLogged && s_fRate > 0)
+			{
+				s_bLogged = true;
+				RZ_Log.Info(string.Format("Clocks: the game clock runs x%1 (a game day is %2 real minutes).", s_fRate * 3600, RZ_Util.RoundToInt(24 / s_fRate / 60)));
+			}
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Game hours per real second: the measured rate, or 1:1 time until it's measured.
+	static float Rate()
+	{
+		if (s_fRate > 0)
+			return s_fRate;
+
+		return 1.0 / 3600;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real minutes a span of `hours` game hours takes (1:1 until measured).
+	static float RealMinutesFor(float hours)
+	{
+		return Math.Max(0, hours) / Rate() / 60;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real minutes until the clock next shows `hour` (1:1 until measured). -1 without a clock.
+	static float RealMinutesUntil(float hour)
+	{
+		float now = GetHour();
+		if (now < 0)
+			return -1;
+
+		float ahead = hour - now;
+		if (ahead < 0)
+			ahead += 24;
+
+		return RealMinutesFor(ahead);
 	}
 
 	//------------------------------------------------------------------------------------------------

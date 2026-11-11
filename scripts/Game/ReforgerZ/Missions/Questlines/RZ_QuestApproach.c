@@ -6,7 +6,9 @@
 //! - RZ_QuestApproach: static checks any mission can use (persuade score, bribe, siding).
 //! - RZ_QuestStealth: "not seen, no shots near" for one place.
 //! - RZ_QuestMission: a puzzle-mission base for stage missions, with people to talk to, the
-//!   checks above wrapped once per player, and Resolve() to end the stage with an outcome.
+//!   checks above wrapped once per player through the shared ways (Missions/RZ_Ways.c, keyed by
+//!   identity), the quiet threat (TryMenace), and Resolve() to end the stage with an outcome.
+//! The shared checks (Trust, Fear, the price table) are RZ_Checks (Missions/RZ_Checks.c).
 //! Force needs nothing new: RZ_UnitWatch (Missions/Blocks/RZ_ContractHelp.c) for a spawned
 //! unit, SpawnGuards and OnZombiesKilled for the infected, RZ_Util.IsArmed for a threat.
 
@@ -89,7 +91,7 @@ class RZ_QuestApproach
 			gm.AddFame(playerId, with, Math.MinInt(fame, RZ_Questline.MAX_FAME), false);
 
 		if (RZ_Factions.IsValid(against) && infamy > 0)
-			gm.AddInfamy(playerId, against, Math.MinInt(infamy, RZ_Questline.MAX_INFAMY), true, true);
+			gm.AddInfamy(playerId, against, Math.MinInt(infamy, RZ_Questline.MAX_INFAMY), "sided against", RZ_RepFlag.SHARE);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -104,6 +106,10 @@ class RZ_QuestApproach
 			case RZ_EQuestApproach.BRIBE: return "bribe";
 			case RZ_EQuestApproach.BETRAY: return "betray";
 			case RZ_EQuestApproach.SIDE: return "side";
+			case RZ_EQuestApproach.PRESS: return "press";
+			case RZ_EQuestApproach.TRADE: return "trade";
+			case RZ_EQuestApproach.TRICK: return "trick";
+			case RZ_EQuestApproach.LEAVE: return "leave";
 		}
 
 		return "none";
@@ -210,8 +216,10 @@ class RZ_QuestStealth
 //! call Resolve() with the approach and outcome that decided the stage.
 class RZ_QuestMission : RZ_PuzzleMission
 {
+	// The shared ways through a job (Missions/RZ_Ways.c), keyed by identity: one try per person per
+	// identity, who did what, the quiet threat
+	protected ref RZ_Ways m_Ways = new RZ_Ways();
 	protected ref RZ_QuestStealth m_Quiet = new RZ_QuestStealth();
-	protected ref array<string> m_aPersuaded = {};	// identities that tried a persuade check here (once each; a rejoin keeps it)
 	protected bool m_bResolved;
 	protected bool m_bSceneUp;
 	protected float m_fSceneRadius = 400;
@@ -285,6 +293,7 @@ class RZ_QuestMission : RZ_PuzzleMission
 	protected void Remember(RZ_GameModeComponent gm, int playerId, int approach, string what)
 	{
 		AddParticipant(playerId);
+		m_Ways.Remember(gm, playerId, approach);
 		RZ_QuestRun run = Run(gm);
 		if (run)
 			run.Did(gm, playerId, approach, what);
@@ -313,28 +322,28 @@ class RZ_QuestMission : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A persuade check, once per player in this mission. False when it fails or was tried.
+	//! A persuade check, once per player in this mission (by identity: leaving and rejoining gives a
+	//! new id, never a second try). False when it fails or was tried.
 	protected bool TryPersuade(RZ_GameModeComponent gm, int playerId, int faction, int difficulty, string favoured)
 	{
-		// By identity, not session id: leaving and rejoining gives a new id, never a second try
-		string who = gm.GetProfile(playerId).m_sIdentity;
-		if (who.IsEmpty())
-			who = "id:" + playerId;
-
-		if (m_aPersuaded.Contains(who))
-		{
-			gm.NotifyPlayer(playerId, m_sTitle, "You've said your piece. Saying it again won't help.");
-			return false;
-		}
-
-		m_aPersuaded.Insert(who);
-		return RZ_QuestApproach.Persuade(gm, playerId, faction, difficulty, favoured);
+		m_Ways.m_sTitle = m_sTitle;
+		return m_Ways.TryPersuade(gm, playerId, faction, difficulty, favoured);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected bool TryBribe(RZ_GameModeComponent gm, int playerId, int faction, int cost)
 	{
-		return RZ_QuestApproach.Bribe(gm, playerId, faction, cost, m_sTitle);
+		m_Ways.m_sTitle = m_sTitle;
+		return m_Ways.TryBribe(gm, playerId, faction, cost);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The quiet threat on a FORCE option: set m_Ways.m_iMenaceDifficulty in the stage's Setup, then
+	//! call this before the fight. True when the threat worked (Fear at that difficulty).
+	protected bool TryMenace(RZ_GameModeComponent gm, int playerId, string person, int listener, bool stronghold)
+	{
+		m_Ways.m_sTitle = m_sTitle;
+		return m_Ways.TryMenace(gm, playerId, person, listener, m_eGiver, stronghold);
 	}
 
 	//------------------------------------------------------------------------------------------------

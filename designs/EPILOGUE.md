@@ -146,7 +146,8 @@ squeezed.
 ### All season: the town log and season marks
 
 **The town log** (part of `RZ_WorldMemory`) keeps two entries per settlement: **the best thing** that happened there,
-and **the worst**.
+and **the worst**. Its store is built (the slots, salience, replacing, naming and visits:
+[DESIGN.md](../docs/DESIGN.md#world-memory)); its writers and readers below are not.
 
 | Slot | Kinds (each has a base salience, 1–5) |
 |---|---|

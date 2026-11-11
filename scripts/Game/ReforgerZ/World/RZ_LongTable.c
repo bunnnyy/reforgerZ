@@ -2265,6 +2265,11 @@ class RZ_LongTable
 			if (!alone || Math.RandomFloat01() > 0.2)
 				continue;
 
+			// An unasked contact: the interruption budget may hold it for now (UI/RZ_NoticeLanes.c)
+			RZ_NoticeLanes lanes = RZ_NoticeLanes.Get();
+			if (lanes && !lanes.TryContact(playerId, RZ_EContact.HOST))
+				continue;
+
 			// He steps out ahead of them, toward the farm
 			vector toward = m_vHouse - p.GetOrigin();
 			toward[1] = 0;

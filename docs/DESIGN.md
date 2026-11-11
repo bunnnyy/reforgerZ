@@ -27,14 +27,15 @@ Code paths are under `scripts/Game/ReforgerZ/`.
 17. [Story arcs and headlines](#story-arcs-and-headlines)
 18. [Questlines](#questlines)
 19. [World facts](#world-facts)
-20. [Town memory](#town-memory)
-21. [World interactions](#world-interactions)
-22. [New-player guidance](#new-player-guidance)
-23. [Cure research and the season's end](#cure-research-and-the-seasons-end)
-24. [Season pacing](#season-pacing)
-25. [Seasons](#seasons)
-26. [Loose items](#loose-items)
-27. [Persistence](#persistence)
+20. [The shared engine](#the-shared-engine)
+21. [Town memory](#town-memory)
+22. [World interactions](#world-interactions)
+23. [New-player guidance](#new-player-guidance)
+24. [Cure research and the season's end](#cure-research-and-the-seasons-end)
+25. [Season pacing](#season-pacing)
+26. [Seasons](#seasons)
+27. [Loose items](#loose-items)
+28. [Persistence](#persistence)
 
 ## Principles
 
@@ -1324,7 +1325,8 @@ without a game mode every query gives its default). Server only.
 One place where content (missions, events, arcs, questlines, rumours, voice, guidance) reads what
 is true in the world right now, so a brief, a rumour or a leader's line never says something the
 world contradicts. It adds no simulation: every query reads the system that owns the fact. It
-keeps four small things of its own: **season flags**, **canon**, **claims** and **gossip**.
+keeps four small things of its own: **season flags**, **canon**, **claims** and **gossip**, and
+holds the shared engine's [world memory](#world-memory).
 
 **Queries**
 
@@ -1484,6 +1486,193 @@ and copied leader names in briefs to tokens, The Three Weeks, Patient Zero, The 
 Fight Pit, House Rules and The Pit's Debtor to canon, the lab and the helicopter as claims and
 `m_bNeedsHeli`, missions that duplicate a questline's premise to `NotWithQuest`, research jobs
 outside Halcyon to `m_bNotCured`, Bastion Shelling to `IsNearLivedIn`).
+
+## The shared engine
+
+Code: `Core/RZ_Shared.c` (`gm.GetShared()`, **Shared** settings), and the files named below. Server
+only.
+
+The pieces every later system stands on (errands, the mission style, dialogue's trees, the majors,
+the finale, the epilogue week: [designs/PLAN.md](../designs/PLAN.md#the-shared-engine)), built once
+so no system keeps its own copy. Each is built and has its limits and save; most of their writers
+and readers come with the phases that use them, and each part says which are wired today.
+
+*Not built here:* the one body budget (scene people, errand scenes, strangers, epilogue scenes, post
+speakers, and the AI-group budget shared with the tribes' 100 agents) belongs to the tribes' agent
+budget and comes with tribes phase 1. Until then `RZ_Shared.CanSpawnBody(kind, pos)` allows
+everything, so callers can already ask.
+
+### Clocks
+
+Code: `Core/RZ_Clocks.c` (`RZ_SeasonClock`), `Puzzles/RZ_GameTime.c`. One table says which clock each
+rule uses:
+
+| Clock | What it is | Used for |
+|---|---|---|
+| **Season days** | The first three stages' set lengths ÷ 30 of minutes played: 480 minutes (8 hours with someone online) with the built-in stages, about one real day at the 45-day pacing, ÷ the season speed. Counted only while someone plays (`RZ_Director.GetPlayedMinutes`, saved; an older save starts from the stages' set lengths). `RZ_SeasonClock.Days()` (a fraction), `Day()` (from 1), `DaysSince` | World rhythms: how long reasons, signals and callbacks last, the contracts lane of the season budget, pinned life records |
+| **Played time** | The life's `m_fLifeSeconds` | Personal pacing: when a callback comes |
+| **Real time** | `RZ_SeasonClock.Now()`, unix seconds | Anti-abuse limits (a failed threat's bar), the epilogue week (a callback's 24 hours) |
+| **The game clock** | `RZ_GameTime`: the hour, night and dusk, and `RealMinutesFor(hours)` / `RealMinutesUntil(hour)` turning game-clock windows into real minutes | Evenings (the set-piece calendar), windows |
+
+The game clock's rate is measured, not read (sampled over a minute of the tick). Until it's measured
+`RealMinutesFor` assumes 1:1 time. One log line when it's first measured: `Clocks: the game clock runs
+x<rate> (a game day is <n> real minutes).`
+
+### Checks and ways
+
+Code: `Missions/RZ_Checks.c`, `Missions/RZ_Ways.c`. One helper for every check, one set of ways
+through a job. Scores are fixed, never rolled, so an option's tag can say what it needs before you
+pick it. Tags show costs and requirements, never outcomes.
+
+**Trust** (the persuade score, `RZ_Checks.TrustScore`):
+
+| Part | Value |
+|---|---|
+| Your access rank with the listener's faction (mixed tiers one lower, as built) | Stranger, Uneasy 0 · Known, Tolerated, Wildcard 1 · Trusted, Respected 2 · Champion 3 |
+| A background the option lists | +1 |
+| From dialogue (remembered help, or a vouch) | at most +1 (the caller passes it; dialogue's trees are planned) |
+| A lie found out, or a questline you worked against them (the life records `lied.<f>`, `crossed.<f>`) | −1 each (nothing writes them yet) |
+
+Hunted or worse: they won't be persuaded. People with no faction read your score with the Haven, at
+most 2. The built `RZ_QuestApproach.PersuadeScore`, which questline stages use, is untouched.
+
+**Fear** (the one threat score, `RZ_Checks.FearScore`): the higher of your **Feared band** (Infamy
+earned this life with the listener's faction: 15–39 gives 1, 40+ gives 2) and your **backing**
+(Earned Fame with the giver, when the giver isn't the listener: 15–39 gives 1, 40+ gives 2), +1 for a
+listed background (Ex-Con, Raider, Soldier by default). Carrying a gun adds nothing. People with no
+faction read your highest earned Infamy with anyone, at most 2. ([REPUTATION.md](REPUTATION.md#reputations)
+explains Earned Fame and Feared.)
+
+**A threat** (`RZ_Checks.Threaten`): Fear against the difficulty, and always +3 Infamy with the
+listener's faction (a scene may name up to 8) and the life record "pressed". Refused without a check:
+a stronghold leader; a person already threatened this season, by anyone; a speaker this player
+failed to threaten in the last real day; and past three threats a life with that faction
+(**Reputation > Threats per life**), which still costs the Infamy. A refused threat bars that speaker
+for a real day. Saved in the season flags (`threat.<person>`, `threatbar.<ident>.<person>`).
+
+**Results.** Difficulty 1 (easy), 2 (normal) or 3 (hard): at or over it **Pass**; one under
+**Short** (a halfway deal at the price the option names); two or more under **Refused** (that person
+won't hear that approach from you again this job).
+
+**The price table.** One value is 5 Favor; food is 1, medical 2, a car part 3 (`ValueOf`,
+`FavorFor`). Tags: `TrustTag` "[Trusted - Haven]", `FearTag` "[Feared | +3 Infamy]" (with "you'd be
+Hunted" when the cost would take you there), `PriceTag` "[4 food | 20 Favor]".
+
+**Ways** (`RZ_Ways`, one per job, keyed by identity so a rejoin keeps everything): one try per person
+per job per identity for every check (`TryTrust`, `TryPersuade`, `TryFear`); someone you threatened
+or who refused you won't talk to you for the rest of the job; who took which approach (`Remember`,
+`Did`); bribes (`TryBribe`); the quiet threat on a built FORCE option (`m_iMenaceDifficulty`,
+`TryMenace`); a place's stealth (`m_Quiet`). Questline stage missions (`RZ_QuestMission`) hand their
+`TryPersuade`, `TryBribe`, `Remember` and `TryMenace` to theirs. The approach enum
+(`RZ_EQuestApproach`) has **PRESS, TRADE, TRICK and LEAVE** appended once, in that order, so saved
+questline runs keep their numbers; built threat stages keep recording FORCE. The disguise look
+(TRICK's claims, `PassAs`) is planned with disguise's phase 1.
+
+### Deeds
+
+Code: `Core/RZ_Deeds.c`. One store, two scopes:
+
+| Scope | Keyed by | Holds | Ends |
+|---|---|---|---|
+| **Life** | the character (on the profile) | per faction: the best deed (the phrase of the biggest single Fame gain, with its season day), the worst (the biggest direct Infamy gain), their people killed, contracts done; up to 32 life records ("pressed"), bad ones pinned 3 season days | with the life |
+| **Season** | identity (`RZ_SeasonDeeds`) | per faction: the best and worst reputation cell, the biggest deeds, kills, jobs, the Infamy forgiven; a ledger of the last 24 jobs (what, for whom, against whom) | with the wipe |
+
+A bigger deed replaces a smaller one; an equal one keeps the first. The worst deed reads as the kill
+tally ("put 9 of ours down") once three times the kills outweigh it. Written today: kills (retaliation
+kills, leaders), jobs and the ledger (every paid contract), the cells (every reputation change), the
+Infamy forgiven, "pressed" (threats), and a leader's killing ("shot Vlasak"). Each contract's own
+phrase comes with reputation's voices (planned).
+
+### World memory
+
+Code: `World/RZ_WorldMemory.c`, in the world facts (`facts.Memory()`), saved with them. Four
+timescales:
+
+| Part | What | Limits |
+|---|---|---|
+| **Reasons** | Live facts with a subject and a place (`house.hungry` at Levie), posted by the system that owns the fact: why a job is offered now. `PostReason`, `ClearReason`, `FindReason`, `ReasonsNear` | 32; each lasts at most a season day, or until cleared |
+| **The signal ring** | Recent events (a shot near a farm, a body on a road) with a cause that stays on the server. `Signal`, `RecentSignals` | 48; 8 of a kind |
+| **The town log** | Per settlement the best and the worst thing that happened there, each with its kind, salience (1–5, +1 when three or more took part), day and up to 2 names frozen at the deed; and up to 16 identities who did something there. `LogTown`, `Visit`, `TownBest`, `TownWorst` | a higher salience replaces, ties keep the older; an identity is named in one entry a town and 6 in all, then written unnamed |
+| **World records** | One per story key and subject: a value, the day, up to 4 players with frozen names, an optional epilogue line and its carrier. `Record`, `FindRecord`, `Pin` | 160; evicted by importance (the source: story 3, one-choice 2, errand 1; +2 a named person; +2 first of its kind; +1 a player, 3 at most; +1 an epilogue line), lowest then oldest, never one a reader holds |
+
+Nothing writes them yet: the systems that own the facts post reasons with errands and the mission
+style (phase 3), and the town log and records start recording there too. Log lines:
+`World memory: reason <key> (<subject>) <text>`, `World memory: town <idx> <kind> <text>`.
+
+### Callbacks
+
+Code: `Core/RZ_Callbacks.c`. One queue for missions' echoes, errands' follow-ups and dialogue's
+"later". A callback is words only: no check bonuses, discounts or gifts.
+
+- **A character's:** `Queue(player, title, text, subject, hours, boardNote)`: due 2–6 hours of that
+  life's play later (or the hours given), told while the character is within 1 km of the subject, at
+  most one per hour of play. 10 waiting per player.
+- **The system pool:** `QueueWorld(title, text, subject, days)`: told to the first player near the
+  subject once the season days have passed. 100 waiting.
+- **Expiry:** 3 season days; in the epilogue, 24 real hours.
+- **At death** (or expiry) a waiting one with a board line becomes an unsigned note on the nearest
+  safehouse board, filtered like any note.
+
+Saved with the season (**Shared > Callbacks** and the numbers above). Nothing queues one yet.
+
+### Notice lanes
+
+Code: `UI/RZ_NoticeLanes.c`. Per player, on the server, on top of the client's notice pacing
+([UI.md](UI.md#notices)): pacing decides how a notice is shown, the lanes decide whether something
+that speaks unasked may speak now.
+
+| Lane | Rule |
+|---|---|
+| Critical | Urgent notices: always shown |
+| Talk | Owner-only, at once: the talk screen, answers to what you asked |
+| Contact | Unasked contacts: at most one every 4 minutes for a player across radio offers, leaders' pings, wanderers, the Long Table's host and errands, with errands last (they wait a minute longer, so any other due contact wins) |
+| Bark | One a minute, one per speaker per 10 minutes |
+| Ambient | Approach and ambient lines: once per place per session |
+
+**The budget is a ceiling only:** it can stop a contact, never start one. A caller asks
+(`TryContact`, `TryBark`, `TryAmbient`) and stays quiet to try again later. Wired today: a leader
+catching your eye about work, and the Long Table's host stepping out on the road. Runtime only.
+(**Shared > Lanes**, contact gap 4 min, bark gap 60 s, speaker gap 10 min.)
+
+### Marks
+
+Code: `World/RZ_Marks.c`. One prop spawner for every physical thing that marks the world, in separate
+pools: **season** marks 40 (the town log's, memorials), **epilogue** 100, **props** 30 (missions'
+props and chalk, the ambient notice prop, the Long Table's tells), **signs** 30 (the tribes'). A mark
+is data: a place (on the verge, 6–10 m off the nearest road's centre line within 80 m, on the side the
+place is on), a prefab, a line of text, a salience, how many season days it lasts. Its prop is spawned
+only while a player is within 150 m, stays up at least 10 minutes, and goes once nobody is within
+200 m. A full pool gives up its oldest lowest-salience mark that isn't protected; with no room, or no
+prefab, a mark is text only (`TextNear`, an approach line). Nothing is saved: owners put their marks
+back. Nothing places one yet.
+
+### The season budget
+
+Code: `Director/RZ_MajorBudget.c` (`RZ_MajorBudget`). How far anything outside the built background
+simulation may move a faction, in lanes. "±20" is a band on the season's net change. Anything clipped
+is logged (`Budget: <lane> morale <n> for <faction> clipped to <n>`) and becomes words only.
+
+| Lane | Morale | Strength | Draws on it |
+|---|---|---|---|
+| Majors | ±20 per faction a season; ±15 per major; ±10 a call | ±8; ±5 per major; ±5 a call | the majors (planned) |
+| Contracts and errands | ±10 per faction a season day | ±4 per faction a season day | every contract's morale and strength today; errands (planned) |
+| The finale | ±10 per faction, never clipped by the majors | ±5 per faction | the finale (planned) |
+| The epilogue | ±5 per faction, inside the majors lane | — | the epilogue week (planned) |
+
+Also kept: **the seat ledger** (contracts never take a leader's loyalty below 30, wired today; a
+major swings at most two seats and a faction three a season, never a stronghold), the one outpost a
+season that may change hands through the majors, research +3 per major, and the **season weights**
+(`SetContractWeight`, combined and clamped to ×0.8–1.2). Saved with the season (**Shared > Season
+budget**).
+
+### The set-piece calendar
+
+Code: `Director/RZ_MajorBudget.c` (`RZ_SetPieceCalendar`). The one calendar. An **evening** is a game
+dusk window (18:30–20:30) entered with a player online. One set piece an evening, server-wide:
+`Hold(key, pos)` holds the evening until `Release(key)`; a set piece that finds it held waits for the
+next free one, and after two waits (**Shared > Set piece waits**) `MustRun` says it runs at the next
+free hour. Errands deal nothing within 600 m of the set piece holding the evening (`IsQuietAt`).
+Saved with the season. The majors and the epilogue's pieces book it (planned).
 
 ## Town memory
 
@@ -2242,8 +2431,9 @@ Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stag
 settlement's infection and town memory, cure progress, the lab's backlog and clock, breakthrough news nobody has heard yet, the pace by play's player-hours of the last week, antidote and stabiliser stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
 supply stock, faction life, the Long Table, the power grid and radio station, story arcs, questlines,
-headlines, world interactions and the world facts (the season's seed, flags, canon and gossip;
-claims aren't saved). A save from another map is ignored. A profile that never spawned and holds nothing
+headlines, world interactions, the world facts (the season's seed, flags, canon, gossip and world
+memory; claims aren't saved) and the shared engine (waiting callbacks, the season budget, the
+set-piece calendar, the season's deeds; notice lanes and marks aren't saved). A save from another map is ignored. A profile that never spawned and holds nothing
 lasting (no lives, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
 left before the server knew them (a wound described after a disconnect) gets a blank profile
 that is never stored, so no junk `local_` profiles pile up. Player bodies, inventories and vehicles use

@@ -138,7 +138,7 @@ Every converted mission answers five questions in its MISSIONS.md block:
 | Clock | What runs on it |
 |---|---|
 | **Your play**: the life's played time (`m_fLifeSeconds`) | Callbacks, a giver's sulk |
-| **Season days**: the first three stages' hours played ÷ 30 (about one real day at the built 45-day pacing), built once in the plan's phase 1 | How long truths are kept, pinned bad records, the contract budget, mission tricks, loyalty changes from contracts, reasons |
+| **Season days** (built: [DESIGN.md](../docs/DESIGN.md#clocks)) | How long truths are kept, pinned bad records, the contract budget, mission tricks, loyalty changes from contracts, reasons |
 | **The mission's own clock**, as built | Time limits, holds, windows |
 | **Real time**, for anti-abuse limits only | A failed threat's bar at that speaker (a real day) |
 
@@ -151,8 +151,8 @@ where it's per life. That covers:
 - the threat count, tricks and fallout priority;
 - callbacks.
 
-Today `RZ_QuestMission.m_aPersuaded` holds session ids, so rejoining resets it. Moving it into the
-shared helper (`RZ_Ways`) fixes that, and a rejoin keeps everything.
+The shared helper (`RZ_Ways`, built: [DESIGN.md](../docs/DESIGN.md#checks-and-ways)) keys tries, threats and who
+did what by identity, so a rejoin keeps everything.
 
 **What survives a death:**
 
@@ -169,80 +169,33 @@ people in a scene) remembers the character.
 
 ## Checks: persuade and Fear
 
-Both live in one helper shared by every piece (`RZ_Checks`). [DIALOGUE.md](DIALOGUE.md) owns the
-persuade score; this design owns how missions use it and owns Fear.
+**Built:** the one helper (`RZ_Checks`) with Trust (the persuade score, decision 11), Fear, a threat's cost and limits,
+Pass / Short / Refused and the tags: [DESIGN.md](../docs/DESIGN.md#checks-and-ways). What this design adds on top, for
+missions:
 
-**Persuade** (decision 11):
-
-| Part | Value |
-|---|---|
-| Your access rank with the listener's faction (built: mixed tiers count one lower) | Stranger, Uneasy 0 · Known, Tolerated, Wildcard 1 · Trusted, Respected 2 · Champion 3 |
-| A background the option lists | +1 |
-| From dialogue (remembered help, or a vouch) | at most +1 |
-| Dialogue's liar count with them | −1 |
-| Crossing lines (a questline ending you worked against them, as built) | −1 |
-
-- If they hunt you or worse, you can't persuade them.
-- This is the built `PersuadeScore`'s rank, which stays untouched. Questline checks don't change.
-- People with no faction (the Distress Call pair, a trapped family, a stranger on a roof) read your
-  persuade score with the Haven, at most 2. They've heard the Haven's channel.
-
-**Fear** (one threat score for missions, dialogue and reputation's quiet threat):
-- **Your Feared band:** the Infamy you earned this life with the listener's faction. 15–39 gives 1, and
-  40–74 gives 2.
-- **Who backs you:** your earned Fame with the giver, when the giver isn't the listener's faction. 15–39
-  gives 1, and 40+ gives 2. A Red Hand Champion collecting from a Haven storekeeper has Fear 2.
-- Fear is the higher of the two. A listed background (Ex-Con, Raider or Soldier) adds 1.
-- Carrying a gun adds nothing, because in Arma everyone carries one.
-- People with no faction read your highest earned Infamy with anyone, at most 2. At Kill on Sight they
-  shoot you instead of listening.
-
-**What a threat costs, and its limits:**
-- **+3 Infamy** with the listener's faction, as the built FORCE threat costs. A scene may name more, up
-  to 8. Plus the life record "pressed".
-- **Once per person, by anyone.** A person who has been threatened can't be threatened again this
-  season, by you or by anyone else.
-- **Three per life per faction.** After that it's always Refused (*"They're past scared."*) and still
-  costs its Infamy. Taking cheap Infamy to unlock threats doesn't pay.
-- **A failed threat** bars threats at that speaker for a real day.
-- **Never on stronghold leaders.**
-- A free-standing talk threat is never offered in a safe zone or a safehouse. A threat a mission writes
-  into its scene, such as Protection Racket's, stays.
-- Built questline stages that threaten keep recording FORCE.
+- People with no faction (the Distress Call pair, a trapped family, a stranger on a roof) read your persuade score
+  with the Haven, at most 2 (built); at Kill on Sight they shoot you instead of listening.
+- A threat a mission writes into its scene (Protection Racket's) may name more Infamy, up to 8, and stays even in a
+  safe zone. Built questline stages that threaten keep recording FORCE.
+- **One try per person per job per identity** (built, in `RZ_Ways`). A failed check changes things only for the
+  player who failed; nobody can fail on purpose to raise the price for others.
+- A check's extra (a better price, a bonus) goes only to the player who chose it. A squad's Champion can do the
+  talking, but the pay doesn't multiply.
+- **Short** is a halfway deal at a price the option names (Favor, food, a promise written as a life record, or a
+  smaller result); a refused threat makes them call their people out, or bar the door.
+- **Tags (New Vegas's "[Speech 50]")**, for example: "[Trusted · Haven] Say the Haven will vouch for them", "[Nurse]
+  Look at his arm", "[Feared] Lean on her", "[4 food | 20 Favor] Pay it yourself", "[The receipt] Show him",
+  "[Bastion kit + flight order] That's ours, lads." Action labels are the same for every viewer.
 
 **Mixed reputation.** A Wildcard has high Fame and high Infamy, so persuade 1 and Fear 2: people trust
 you a little and fear you more, New Vegas's "Merciful Thug". The mixed-reputation design supplies the
 title, and a scene's opening line may use it. Checks never read the title.
 
-**Results.** Difficulty is 1 (easy), 2 (normal) or 3 (hard).
-
-| Your score | Result |
-|---|---|
-| at or over the difficulty | **Pass** |
-| one under | **Short**: a halfway deal at a price the option names (Favor, food, a promise written as a life record, or a smaller result) |
-| two or more under | **Refused**: that person won't hear that approach from you again this job. A refused threat makes them call their people out, or bar the door |
-
-- The tag shows what the option needs, and scores are fixed, so you know the result before you pick.
-  Picking an option you're short on is a choice: you get the halfway deal or the refusal. That is the
-  failure branch.
-- One try per person per job per identity.
-- A failed check changes things only for the player who failed. Nobody can fail on purpose to raise the
-  price for others.
-- A check's extra (a better price, a bonus) goes only to the player who chose it. A squad's Champion can
-  do the talking, but the pay doesn't multiply.
-
-**Tags (New Vegas's "[Speech 50]").** For example: "[Trusted · Haven] Say the Haven will vouch for
-them", "[Nurse] Look at his arm", "[Feared] Lean on her", "[4 food | 20 Favor] Pay it yourself", "[The
-receipt] Show him", "[Bastion kit + flight order] That's ours, lads." Tags show costs and requirements,
-never outcomes. Action labels are the same for every viewer. That's fine, because a tag only says what
-the option needs.
-
 ## Ways
 
-`RZ_EQuestApproach` today has NONE plus seven values: TALK, PERSUADE, SNEAK, FORCE, BRIBE, BETRAY, SIDE.
-Four new values go on the end, once, in this order, so saved questline records keep their numbers:
-**PRESS, TRADE, TRICK, LEAVE**. That makes NONE plus eleven, used by missions, questlines, the majors,
-the finale's stages and errands.
+`RZ_EQuestApproach` has NONE plus eleven values; PRESS, TRADE, TRICK and LEAVE were appended once (built:
+[DESIGN.md](../docs/DESIGN.md#checks-and-ways)). Missions, questlines, the majors, the finale's stages and errands use
+them.
 
 | Way | What it is | Check | Cost or risk |
 |---|---|---|---|
@@ -563,38 +516,18 @@ author can tune them and the runtime test can trigger them.
 
 ## Records, callbacks and the epilogue
 
-**Records** are small entries: a key (`<story key>.<what>`), a subject (a house, town, leader, wanderer
-or a person's name), a value, the season day, up to four players (identity, and the character name
-frozen at the deed), and optionally an epilogue line with its carrier.
+**Records.** The stores are built ([DESIGN.md](../docs/DESIGN.md#deeds) for life records,
+[DESIGN.md](../docs/DESIGN.md#world-memory) for world records: one per key and subject, 160, evicted by importance,
+never while a reader holds one). What missions add:
 
-| Kind | Belongs to | How many kept | Saved in |
-|---|---|---|---|
-| Life records | the character | 32 per life | the profile (`RZ_Deeds`, life scope) |
-| World records | the season | 160 | the world facts (`RZ_WorldMemory`) |
-| Town tally | a town | one per town: who cleared it last, and how often | town memory |
-
-**Storage rules:**
-- **One record per key and subject.** A repeat overwrites the value and the day, and adds players up to
-  four. Retaking the same town updates one tally; it doesn't add rows.
-- **Bad life records are pinned** for 3 season days, or until the life ends if that comes first. Running
-  cheap jobs can't push "hid a bite" off the list.
-- **A record is never evicted while a check reads it.** Each story job lists the records it reads, and
-  those are pinned while it runs.
-- **World records are evicted by importance**, lowest first, then oldest. Importance adds up as follows:
-  - the source: a story job +3, a one-choice job +2, an errand +1;
-  - a named person +2;
-  - the first of its kind this season +2;
-  - each player in it +1 (up to 3);
-  - an epilogue line +1.
-
-  So early stories with names and players in them outlast late, anonymous ones.
-- **Quotas:** a story job writes at most 2 world records, and a one-choice job 1. An errand writes 1 only
-  when it's about a named person. Work jobs (Tier C) write only the town tally.
+- **Quotas:** a story job writes at most 2 world records, and a one-choice job 1. An errand writes 1 only when it's
+  about a named person. Work jobs (Tier C) write only the town tally (one per town: who cleared it last, and how
+  often, in town memory).
+- **Each story job lists the records it reads**, and pins them while it runs.
 - **Records are for people and places; season flags are for outcomes.** Questlines keep their flags.
 - **Names** follow the epilogue's and tone's policy: frozen at the deed, passed through the note filter,
-  `/anonymous` and the admin strike honoured, never a joke's butt, never on air except a player's own
-  broadcasts and honour lines. Face to face, a speaker may use a player's name (filtered, unless
-  they're anonymous).
+  `/anonymous` and the admin strike honoured, never a joke's butt, never on air except a player's own broadcasts and
+  honour lines. Face to face, a speaker may use a player's name (filtered, unless they're anonymous).
 
 **What reads records.** A record can:
 - make a check one step easier or harder, never impossible;
@@ -603,15 +536,9 @@ frozen at the deed), and optionally an epilogue line with its carrier.
 - fill a voice's first line or a board note;
 - choose an epilogue line.
 
-**Callbacks** (the one callback queue, shared with errands' follow-ups and dialogue's `later:`):
-- They come 2–6 hours of that character's play later, while the character is within 1 km of the
-  subject.
-- They're words only: a line, a person at the door (a stand-in within 300 m), a note on that house's
-  board signed with a name, or an errand (which pays like any errand). There are no check bonuses, no
-  discounts and no gifts beyond the built "saved my life" wanderer gift.
-- At most one per hour of play. The queue holds 10 per player and a system pool of 100. Each expires
-  after 3 season days.
-- On death, a waiting one becomes an unsigned note on the board at its subject.
+**Callbacks** go through the one callback queue (built: [DESIGN.md](../docs/DESIGN.md#callbacks)). What missions
+add: a callback is a line, a person at the door (a stand-in within 300 m), a note on that house's board signed with a
+name, or an errand (which pays like any errand), beyond the built "saved my life" wanderer gift nothing else.
 
 **The epilogue (in-game endings).** Every world record with an epilogue line names its **carrier**:
 
@@ -630,7 +557,7 @@ epilogue. Nothing it shows is saved as an object.
 ## Reasons: why a job is offered now
 
 Relevance comes from what starts a job, not from a line in front of the brief. Reasons live in
-`RZ_WorldMemory`, and errands read them as their Why.
+`RZ_WorldMemory` (the store is built: [DESIGN.md](../docs/DESIGN.md#world-memory)), and errands read them as their Why.
 
 - **A reason** is a world change with a subject and a place: `house.hungry` at Levie, `post.pressure`
   at the crossroads post, `tribe.hungry` for the Quarry lot, `wanderer.bitten`. The systems that own the
@@ -1543,19 +1470,12 @@ approach helpers all 15 questlines use.
   today). When it's set, `Update`, `OnPlayerShot`, `OnSuccess`/`OnFailed`, `OnRewardPlayer`, `GetBrief`
   and `Cleanup` forward to it. Each converted mission gets a story key that is never renamed once
   shipped.
-- **`RZ_Ways`:** move `TryPersuade`, `TryBribe`, the use of `RZ_QuestStealth`, `Remember`, `Resolve`, the
-  quiet threat (`m_iMenaceDifficulty`) and `PassAs` out of `RZ_QuestMission` into a helper the mission
-  owns, keyed by identity. `RZ_QuestMission` forwards to it. Append PRESS, TRADE, TRICK and LEAVE after
-  SIDE in `RZ_EQuestApproach`, once, giving NONE plus eleven.
-- **`RZ_Checks`** (shared):
-  - the persuade score (dialogue's): access rank, mixed one lower, ★ +1, at most +1 from dialogue, minus
-    the liar count and crossing lines; Hunted or worse means no; no faction reads the Haven, at most 2.
-    The built `PersuadeScore` is untouched;
-  - Fear: the Feared band (Infamy earned this life) or backing, at most 2, +1 for a listed background; no
-    armed bonus; once per person by anyone, three per life per faction, a real day's bar after a
-    failure, never a stronghold leader;
-  - the look ([DISGUISE.md](DISGUISE.md));
-  - `Result`, returning PASS, SHORT or REFUSED; one try per person per job per identity.
+- **Built in phase 1** ([DESIGN.md](../docs/DESIGN.md#the-shared-engine)): `RZ_Ways` (keyed by identity, the
+  approach enum appended), `RZ_Checks` (Trust, Fear, threats, `Result`, the price table, tags), the stores for
+  life and world records, the callback queue, and reasons in `RZ_WorldMemory`. Still to add to them: `PassAs` and
+  the look ([DISGUISE.md](DISGUISE.md)); `Resolve` for jobs that aren't questline stages; the liar count's and
+  crossing lines' writers; the notice board accepting system notes signed with a person's name (unsigned notes are
+  built).
 - **`RZ_SceneProps`** inside the one scene-people spawner: the spawning and label helpers move out of
   `RZ_PuzzleMission`, which keeps its API. `RZ_PuzzleActionHelper` routes choices and uses to new
   `RZ_Mission.HandleChoice` and `HandleUse` methods for missions that aren't puzzles.
@@ -1583,18 +1503,10 @@ approach helpers all 15 questlines use.
   used up, dropped if the subject goes; `Reveal(gm, playerId, how)` tells the room and the journal.
 - **The lie store** (shared): each record with its exposing condition; events first (a visit, road news,
   the owning system's tick), the rumour tick only for claims with no world test; a log line for each.
-- **Records:** life records in `RZ_Deeds` (32 per life, one per key and subject, bad ones pinned for 3
-  season days); world records in `RZ_WorldMemory` (160, evicted by importance, never while a check reads
-  them, with quotas per tier); the town tally in `RZ_TownMemory`; fields for an epilogue line and its
-  carrier.
-- **The callback queue** (shared with errands and dialogue): 10 per player and a pool of 100, words only,
-  2–6 hours of play later within 1 km, at most one per hour, each expiring after 3 season days; at death a
-  waiting one becomes an unsigned board note. The notice board must accept system notes signed with a
-  person's name.
-- **Reasons** in `RZ_WorldMemory`: post, clear and query, each with a subject and a place; posters in
-  safehouse upkeep, supply lines, territory, leaders, wanderers, cure research, the Director, the tribes
-  and the majors; the reason lane (one reason-started contract every 30 minutes server-wide, inside
-  `MAX_CONTRACTS` and `CanRunNow`); the why-now line from the reason; jobs ordered per player.
+- **Records:** the quotas per tier, each story job's pinned reads, and the epilogue line and carrier filled in.
+- **Reasons:** their posters in safehouse upkeep, supply lines, territory, leaders, wanderers, cure research, the
+  Director, the tribes and the majors; the reason lane (one reason-started contract every 30 minutes server-wide,
+  inside `MAX_CONTRACTS` and `CanRunNow`); the why-now line from the reason; jobs ordered per player.
 - **One clamp** on contract weights in `RZ_MissionManager.CreateRandom`: leader traits × faction-life
   needs × the majors' season weights, clamped together to ×0.75–1.3.
 - **`RZ_MissionReasons.c`:** one data row per mission type (the reasons it answers, the town tally it

@@ -542,10 +542,17 @@ class RZ_FactionLife
 		if (!m_bActive || !m || !m.m_bContract || !m.m_bHasGiver)
 			return;
 
+		// The contracts and errands lane of the season budget (Director/RZ_MajorBudget.c)
+		float delta = -1;
 		if (success)
-			AddMorale(m.m_eGiver, 1);
-		else
-			AddMorale(m.m_eGiver, -1);
+			delta = 1;
+
+		RZ_MajorBudget budget = RZ_MajorBudget.Get();
+		if (budget)
+			delta = budget.TakeMorale(RZ_EBudgetLane.CONTRACTS, m.m_eGiver, delta, "", m.m_sTitle);
+
+		if (delta != 0)
+			AddMorale(m.m_eGiver, delta);
 	}
 
 	//------------------------------------------------------------------------------------------------

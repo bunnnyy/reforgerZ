@@ -259,6 +259,50 @@ class RZ_NoticeBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! An unsigned note on the board of the safehouse nearest `pos` (a callback whose character died,
+	//! Core/RZ_Callbacks.c). Filtered and cut like any note; nobody's name on it. False with no board.
+	bool PostUnsigned(vector pos, string raw)
+	{
+		if (!IsEnabled() || m_Houses.Count() == 0)
+			return false;
+
+		RZ_Safehouse best = null;
+		float bestDist = float.MAX;
+		for (int i = 0; i < m_Houses.Count(); i++)
+		{
+			RZ_Safehouse h = m_Houses.Get(i);
+			if (!h)
+				continue;
+
+			float d = RZ_Util.DistXZ(pos, h.m_vPos);
+			if (d < bestDist)
+			{
+				bestDist = d;
+				best = h;
+			}
+		}
+
+		string text = RZ_UIText.Clean(Filter(raw), Math.Max(20, m_Settings.m_iNoteLength));
+		if (!best || text.IsEmpty())
+			return false;
+
+		RZ_Note note = new RZ_Note();
+		note.author = "Unsigned";
+		note.ident = "";
+		note.text = text;
+		note.unix = RZ_Guidance.UnixNow();
+		best.m_aNotes.Insert(note);
+		int cap = Math.Max(1, m_Settings.m_iBoardNotes);
+		while (best.m_aNotes.Count() > cap)
+		{
+			best.m_aNotes.RemoveOrdered(0);
+		}
+
+		RZ_Log.Info(string.Format("Note at %1, unsigned: %2", best.m_sName, text));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Real-world time of this player's newest note on any board, 0 if none.
 	protected int LastNoteBy(string ident)
 	{

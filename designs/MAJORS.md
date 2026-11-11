@@ -178,49 +178,27 @@ small capped rules for the next Zone. Nobody behind the concrete ever answers.
 - Every act has a default. Defaults read the stronghold leader's traits or the rule in force, and
   **pay nobody**. When a default fires is the next section's job.
 
-**The set-piece calendar.** The majors own the one calendar, shared by their codas, the
-epilogue's pieces and the errands' quiet rule.
-- An **evening** is a game dusk window with a player online. A stage marked as a set piece holds
-  the evening, from its offer hour until it resolves, for one major server-wide.
-- A set piece that falls due on a held evening, or while that faction's stronghold is Under
-  Pressure, waits for the next free one, at most twice, then runs at the next free hour. Nothing
-  is skipped or slept through.
-- A set piece runs live on the first free evening with a player online who qualifies for it. It
-  runs as data only by the rules in [Dynamic fallbacks](#dynamic-fallbacks).
-- Errands deal nothing at a set piece's place, or within 600 m, on its evening. Dialogue's public
-  scenes hold up to 16 people for a sitting.
-- Game-clock windows are turned into real minutes with the shared `RZ_GameTime` (VERIFY: the
-  server's time acceleration).
+**The set-piece calendar and the season budget** are built (`RZ_SetPieceCalendar` and `RZ_MajorBudget`, with
+their lanes, the seat ledger, the one outpost, research +3 per major and the season weights):
+[DESIGN.md](../docs/DESIGN.md#the-set-piece-calendar), [DESIGN.md](../docs/DESIGN.md#the-season-budget). What the
+majors add on top:
+- A stage marked as a set piece holds the evening from its offer hour until it resolves (`Hold`, `Release`). One that
+  falls due on a held evening, or while that faction's stronghold is Under Pressure, waits for the next free one, at
+  most twice (`MustRun`), then runs at the next free hour. Nothing is skipped or slept through.
+- A set piece runs live on the first free evening with a player online who qualifies for it. It runs as data only by
+  the rules in [Dynamic fallbacks](#dynamic-fallbacks).
+- Dialogue's public scenes hold up to 16 people for a sitting.
+- **The seat ledger's majors part:** each outpost or safehouse seat is replaced or swung by at most one major a season
+  (`TakeSeat` counts two per major and three per faction).
+- **Truces and feuds** go through faction life's caps: one per pair, and a second start extends the first.
+- **Safehouses:** food and people ±2 at up to three houses per call, never below the floor of 2 or past the cap of 30.
+- **Standing.** A major's endings pay above the engine's per-call 10 Fame / 15 Infamy through a major-only path, up to
+  25 Fame, 40 Infamy and 60 Favor per player per faction over one major. Across all majors in a season: at most 40
+  Fame, 40 Infamy and 80 Favor per player per faction. This Fame counts toward season Fame like any other (decision 4).
 
-**The season budget** (`RZ_MajorBudget`, saved and wiped with the season). Anything clipped is
-logged and becomes words only. Everything recovers or drifts back as usual.
-
-| Lane | Morale | Strength | Who draws on it |
-|---|---|---|---|
-| **Majors** | ±20 per faction a season across all four; ±15 per major; ±10 per call | ±8 per faction a season; ±5 per major; ±5 per call | The acts, endings and codas here |
-| **Contracts and errands** | ±10 per faction a season day | ±4 per faction a season day | Mission extras and errands ([MISSIONS.md](../docs/MISSIONS.md), [ERRANDS.md](ERRANDS.md)) |
-| **The epilogue** | ±5 per faction | — | The epilogue's choices and closing work ([EPILOGUE.md](EPILOGUE.md)) |
-| **The finale** (conflict 17) | ±10 per faction | ±5 per faction | The finale's world effects ([FINALE.md](FINALE.md), §13) |
-
-The budget also holds:
-- **The seat ledger.** Each outpost or safehouse seat is replaced or swung by at most one major a
-  season, at most two seats per major and three per faction in all. Never a stronghold leader,
-  never past one Rogue per faction. Contracts never take a leader below 30 loyalty.
-- **Territory.** One outpost changes hands through the majors in the whole season, by the usual
-  territory rules, never a stronghold or a last outpost.
-- **Truces and feuds** go through faction life's caps: one per pair, and a second start extends
-  the first.
-- **Research:** +3 per major, inner lines included.
-- **Safehouses:** food and people ±2 at up to three houses per call, never below the floor of 2 or
-  past the cap of 30.
-- **Standing.** A major's endings pay above the engine's per-call 10 Fame / 15 Infamy through a
-  major-only path, up to 25 Fame, 40 Infamy and 60 Favor per player per faction over one major.
-  Across all majors in a season: at most 40 Fame, 40 Infamy and 80 Favor per player per faction.
-  This Fame counts toward season Fame like any other (decision 4).
-
-**Season weights.** One helper, `SetContractWeight(type, mult)`, saved with the season. Every
-major's multiplier on a contract, a leader job or Requisition combines into one value, clamped to
-×0.8–1.2. Requisition keeps one weight per house, shared by `haven.rule`, B2's `census.pressed` and
+**Season weights.** The helper is built (`RZ_MajorBudget.SetContractWeight(type, mult)`, saved with the season,
+combined and clamped to ×0.8–1.2); every major's multiplier on a contract, a leader job or Requisition goes through it,
+and the mission manager will read it with the one weight clamp (phase 3). Requisition keeps one weight per house, shared by `haven.rule`, B2's `census.pressed` and
 `orders.stance`. A curfew from any source (Counted, Bastion, Command) is one curfew. At most three
 season weights per major.
 
@@ -2689,13 +2667,10 @@ Each major's own needs are under it. These are shared.
   and R1). `ActLine` / `WaitLine` / `ActOnly` run inner lines under their own keys (HC1, HC3).
   `NudgeMorale` and the other helpers called from Next() go through the budget. `<key>.ending` is set only
   at the major's real end.
-- **The set-piece calendar** ([Rules every major keeps](#rules-every-major-keeps)), shared with the
-  codas, the epilogue's pieces and the errands' quiet rule, with `RZ_GameTime` for game-clock windows.
-- **The season budget,** `RZ_MajorBudget`, with its four lanes (majors, contracts and errands, the
-  epilogue, the finale), the seat ledger, territory, research, safehouses and standing; saved and wiped
-  with the season.
-- **Season weights:** `SetContractWeight(type, mult)`, saved with the season, clamped to ×0.8–1.2, one
-  Requisition weight per house, one curfew, at most three weights per major.
+- **Built in phase 1:** the set-piece calendar, the season budget with its four lanes, the seat ledger, the one
+  outpost, research +3 per major and `SetContractWeight` ([DESIGN.md](../docs/DESIGN.md#the-season-budget)). Still to
+  add: the budget's safehouse and standing limits, one Requisition weight per house, one curfew, at most three
+  weights per major, and the majors booking the calendar.
 - **Shared season flags and their readers:**
   - `haven.rule`, `haven.counted` and `haven.paying`: safehouses, supply lines, Requisition, racket and
     raids, exile leak, road posts;
