@@ -162,7 +162,26 @@ class RZ_PlayerUIComponent : ScriptComponent
 			Rpc(RpcDo_Visibility, level, hidden);
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A personal notice (RZ_GameModeComponent.NotifyPlayer), to this player's machine only.
+	void SendNotice(string title, string text)
+	{
+		if (IsLocalOwner())
+			RpcDo_Notice(title, text);
+		else
+			Rpc(RpcDo_Notice, title, text);
+	}
+
 	// ================================================================ Client: receive
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_Notice(string title, string text)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm)
+			gm.ShowNotice(title, text);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_Infection(int state, float left, float total, float finalSeconds, float pauseLeft)

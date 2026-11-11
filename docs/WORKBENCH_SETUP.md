@@ -1013,7 +1013,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Category | Object | Field | Covers |
 |---|---|---|---|
 | ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)) |
-| ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (48 h), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
+| ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
 | World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off) |
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
@@ -1300,7 +1300,7 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Camp life: dressing on, routines on, 0 kits, smart actions off, lone characters stand.
 [ReforgerZ] No lab prefab set. Samples can't be delivered until one is configured or placed.
 [ReforgerZ] Hostility: bitmask mode, only 0 of 15 variant factions (SURV_H1 to SURV_H15) in the FactionManager. ...
-[ReforgerZ] Season 1 (fresh). Rules: none. Wipe: 48 h after the cure.
+[ReforgerZ] Season 1 (fresh). Rules: none. Wipe: 168 h after the cure.
 [ReforgerZ] World facts: season seed S, 0 canon facts, 0 season flags.
 [ReforgerZ] Settlement scan: 2 named, 12 building clusters, took 83 ms.
 [ReforgerZ] Perimeter: x 70 to 3913, z 488 to 3788. Warning zone 300 m, kill zone 100 m.
@@ -1549,8 +1549,8 @@ session, tick off:
   didn't shoot can still drive it in for Fame; watch for that pattern.)
 - [ ] Retaliation in a crossfire: a Red Hand group attacking a Bastion outpost while you shoot
   infected 300 m away. If you get Bastion's retaliation for their hits, note it.
-- [ ] Wear a Bastion uniform and finish a Red Hand job: the rival Infamy with Bastion is doubled
-  and the disguise is blown. Decide whether that's wanted.
+- [ ] Wear a Bastion uniform and finish a Red Hand job: the rival Infamy with Bastion is not
+  doubled and the disguise isn't blown (shares never double). Kill a Bastion guard in it: doubled.
 - [ ] Start The Last Convoy (or wait for it), restart the server before the truck leaves: it
   still leaves within 10 minutes. Restart while it's on the road: the arc just ends.
 - [ ] Questlines (**Wait scale** 0.1, **Minutes between** 5, **Once per season** off): Short Weight starts and its first
@@ -1648,10 +1648,14 @@ session, tick off:
   checkpoint: Known, you're waved through; a stranger is searched at the barrier (a suppressor is
   taken); walking off mid-search costs 3 Infamy and they fire. Unarmed with Bastion Infamy, wait at
   the barrier: you surrender, lose 8 Infamy, and Hunted, they stop shooting for 5 minutes.
+  Hunted and unarmed, stand still 100 m out: within about 15 s they shoot again (they hold
+  fire only while you walk in, 90 s at most). With a hunter squad after you within 1 km, they
+  don't hold it at all.
 - [ ] At a Red Hand roadblock: Known pays 10 Favor and passes, a stranger is warned then fired on,
   Trusted is waved through.
 - [ ] Watched by Bastion, walk at an outpost armed: warned at 150 m, fired on past 50 m. Fire a
-  shot inside the lab's safe zone: 2 Halcyon Infamy and the guards turn.
+  shot inside the lab's safe zone: 2 Halcyon Infamy and the guards turn. Watched by Halcyon and
+  bitten (taken), walk up to the lab unarmed: let in for the trial dose, not turned away.
 - [ ] As a Bastion Champion, throw the signal smoke at a horde: shells 30 s later; again at once:
   refused (cooldown); next to a safehouse: refused.
 - [ ] The fence buys a watch but not an item just bought at a quartermaster; the hourly cap holds.
@@ -1799,7 +1803,11 @@ editor's time of day)
 **Multiplayer and griefing** (two clients at least; the pass 2 sweep's open risks)
 - [ ] Two players race one choice delivery: the first hand-in wins, the second is told it isn't
   wanted. A player who isn't eligible delivers someone else's contract: only eligible people at
-  the drop are paid.
+  the drop are paid. Take a choice item to the other side: it pays everyone with you whom that
+  side doesn't hunt, and the giver's leader neither remembers it as help nor scales the pay.
+- [ ] A personal notice (a mission brief, a tier change) shows only on its player's screen: with
+  a second client watching its radio log, nothing of yours appears there. Broadcasts still reach
+  both.
 - [ ] Carry a delivery item (Courier letters, a Bastion case, the capture case, Water Purifier or
   Restore Comms parts), then disconnect: the others are told and the item is back on the ground
   where you were (or, for parts, at its first spot). Die with it and wait for the body to go: same.

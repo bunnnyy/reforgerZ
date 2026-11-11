@@ -13,7 +13,9 @@
 //! - Surrender: a player with Bastion Infamy (Watched or Hunted) who walks up to a Bastion
 //!   checkpoint with no firearm and waits gives themselves up: searched, a little Bastion Infamy
 //!   off (once an hour), and Bastion's AI holds its fire for five minutes. A Hunted player walking
-//!   up unarmed isn't shot while they come in (a short stand-down, renewed while they do).
+//!   up unarmed isn't shot while they come in (a short stand-down, renewed while they get closer
+//!   or wait at the barrier: at most 90 s an approach, never while a Bastion squad after them
+//!   is within 1 km).
 //! - Camps: a faction's outposts and stronghold warn off players it watches and turn them away at
 //!   the gate; armed and coming on after the warning, they're fired on for a few minutes.
 //! - Safe zones: strongholds and the lab. Entering one, you're told the rule; firing inside one
@@ -117,6 +119,8 @@ class RZ_PostContact
 	bool m_bAtBarrier;		// reached the barrier (leaving now is running it)
 	bool m_bPunished;
 	float m_fWaited;		// seconds at the barrier
+	float m_fHandsUp;		// seconds a Hunted player has walked in unarmed (the hold has a limit)
+	float m_fLastDist = -1;	// distance at the last tick, to tell coming in from loitering
 }
 
 //------------------------------------------------------------------------------------------------
@@ -160,6 +164,8 @@ class RZ_Checkpoints
 	protected static const float SHOT_GAP = 20;
 	protected static const float DEFEND_RADIUS = 40;
 	protected static const float HANDS_UP_SECONDS = 15;	// a Hunted player walking up unarmed: they hold fire this long, renewed each tick
+	protected static const float HANDS_UP_MAX = 90;		// ...for at most this long an approach
+	protected static const float HANDS_UP_SQUAD_RADIUS = 1000;	// ...and never while a Bastion squad after them is this close
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Checkpoints(RZ_GameModeComponent gm, RZ_CheckpointSettings settings)
@@ -522,10 +528,20 @@ class RZ_Checkpoints
 				m_GM.NotifyPlayer(playerId, title, "A loudhailer: \"Checkpoint. Walk to the barrier and wait to be searched. Leave once you're there and we'll treat it as running.\"");
 		}
 
-		// Hunted but coming in with empty hands: they hold their fire while you walk up and wait
+		// Hunted but coming in with empty hands: they hold their fire while you walk up and wait.
+		// Only while you come in (closer each tick, or waiting at the barrier), for at most
+		// HANDS_UP_MAX seconds an approach, with your surrender hour free, and not while a Bastion
+		// squad after you is near: a post is no place to sit out a hunt
 		RZ_Hostility hostility = m_GM.GetHostility();
 		if (hunted && canSurrender && hostility && dist <= m_Settings.m_fWarnRadius)
-			hostility.StandDown(playerId, RZ_EFaction.MILITARY, HANDS_UP_SECONDS, false);
+		{
+			bool closing = c.m_fLastDist < 0 || dist < c.m_fLastDist - 0.3 || dist <= m_Settings.m_fStopRadius;
+			c.m_fHandsUp = c.m_fHandsUp + dt;
+			if (closing && c.m_fHandsUp <= HANDS_UP_MAX && CanSurrenderNow(playerId) && !hostility.IsFightFor(playerId, RZ_EFaction.MILITARY, ent.GetOrigin(), HANDS_UP_SQUAD_RADIUS))
+				hostility.StandDown(playerId, RZ_EFaction.MILITARY, HANDS_UP_SECONDS, false);
+		}
+
+		c.m_fLastDist = dist;
 
 		if (dist <= m_Settings.m_fStopRadius)
 		{
@@ -569,6 +585,17 @@ class RZ_Checkpoints
 	//------------------------------------------------------------------------------------------------
 	//! Unarmed, with Bastion Infamy, waiting at the barrier: they take you in, search you, and let you
 	//! go with a talking-to. False (and an ordinary search) if it's too soon since the last time.
+	//! The surrender hour: false while this player (by identity) surrendered too recently.
+	protected bool CanSurrenderNow(int playerId)
+	{
+		float last;
+		if (!m_mSurrenderAt.Find(m_GM.GetProfile(playerId).m_sIdentity, last))
+			return true;
+
+		return m_fClock - last >= m_Settings.m_fSurrenderCooldownMinutes * 60;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool Surrender(int playerId, IEntity ent, RZ_RoadPost post)
 	{
 		string title = post.GetTitle();
@@ -697,6 +724,17 @@ class RZ_Checkpoints
 		// The Haven's own holdings follow the house rules instead (RZ_Safehouses)
 		if (m_Settings.m_bCamps && f != RZ_EFaction.SURVIVORS && RZ_Reputation.IsWatchedOrWorse(tier))
 		{
+			// The lab still gives the bitten their trial dose (RZ_Infection.TrialDose refuses only
+			// the Hunted): an unarmed bitten player who hasn't had it is let in, not turned away
+			RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+			if (place == "lab" && profile.IsInfected() && !profile.m_bTrialDoseTaken && !RZ_Util.IsArmed(ent))
+			{
+				if (Tell(playerId, place, "trial", TELL_GAP))
+					m_GM.NotifyPlayer(playerId, title, "The guard looks at the bite before he looks at your face. \"Trial's inside. Hands where I can see them.\"");
+
+				return;
+			}
+
 			if (Tell(playerId, place, "warn", TELL_GAP))
 				m_GM.NotifyPlayer(playerId, title, RZ_FactionVoice.CampWarning(f));
 

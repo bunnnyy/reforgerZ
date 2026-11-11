@@ -115,7 +115,7 @@ class RZ_FactionVoice
 				RZ_WorldFacts facts = RZ_WorldFacts.Get();
 				if (facts.IsCured())
 				{
-					lines.Insert("\"It's done. I keep checking the numbers anyway. Habit.\"");
+					lines.Insert("\"It's done. I keep checking the numbers anyway. Nobody has asked me to stop.\"");
 				}
 				else
 				{
@@ -148,7 +148,7 @@ class RZ_FactionVoice
 			{
 				case RZ_EFaction.SURVIVORS: return "\"Sit, eat. There's always a bowl for whoever's at the door.\"";
 				case RZ_EFaction.MILITARY: return "\"Mess is open. Rations, same as yesterday. Help yourself, we're not checking.\"";
-				case RZ_EFaction.BANDITS: return "\"Dinner's on. Don't ask what it was.\"";
+				case RZ_EFaction.BANDITS: return "\"Dinner's on. Tins. Someone's written prices on them, so don't eat the expensive ones.\"";
 				case RZ_EFaction.INSTITUTE: return "\"We eat in shifts. Somebody always has to watch the incubators.\"";
 			}
 		}

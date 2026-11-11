@@ -515,9 +515,20 @@ class RZ_Mission_Delivery : RZ_Mission
 
 //------------------------------------------------------------------------------------------------
 //! A choice mission: the item can go to m_eGiver or to m_eChoiceOther. Whoever
-//! gets it pays Fame; the side you double-crossed adds Infamy.
+//! gets it pays Fame; the side you double-crossed adds Infamy. Taken to the other side, it pays
+//! anyone with you whom that side doesn't hunt, and the leader who gave the job neither counts it
+//! as help nor scales its pay (as RZ_RedHandEdges.PaidByHaven).
 class RZ_Mission_Choice : RZ_Mission_Delivery
 {
+	//------------------------------------------------------------------------------------------------
+	override bool IsEligible(RZ_GameModeComponent gm, int playerId)
+	{
+		if (m_eGiver != m_Req.m_eGiver && m_eState != RZ_EMissionState.ACTIVE)
+			return !RZ_Reputation.IsHunted(gm.GetTier(playerId, m_eGiver));
+
+		return super.IsEligible(gm, playerId);
+	}
+
 	protected RZ_EFaction m_eChoiceOther = RZ_EFaction.BANDITS;
 	protected int m_iDoubleCrossInfamy = 15;
 
@@ -538,6 +549,12 @@ class RZ_Mission_Choice : RZ_Mission_Delivery
 		// Rewards go to whoever received it; the other side remembers
 		m_eGiver = faction;
 		SetRival(crossed, m_iDoubleCrossInfamy);
+		if (faction != original)
+		{
+			m_bNoLeaderCredit = true;
+			m_iLeaderId = -1;
+		}
+
 		OnChoiceMade(gm, playerId, faction);
 	}
 

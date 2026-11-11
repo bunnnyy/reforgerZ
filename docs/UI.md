@@ -182,8 +182,11 @@ is one string (one record per line, fields split by `|`, at most 6000 characters
 menu opens; the map's every 20 s while it's open. Each kind can be asked for at most every 2 s.
 Nothing is replicated to other players.
 
-**Notices.** Every message still goes through `RZ_GameModeComponent.NotifyPlayer` and its
-broadcast RPC. On the client, `QueueHint` classifies it, adds radio messages to the radio log, and
+**Notices.** Every message still goes through `RZ_GameModeComponent.NotifyPlayer` (one player) or
+`NotifyAll` (everyone). A personal notice goes owner-only, through the player's
+`RZ_PlayerUIComponent` (`SendNotice`), so no other client receives it; only without the component
+does it fall back to the broadcast RPC that each client filters for itself. `NotifyAll` is that
+broadcast. On the client, `QueueHint` classifies it, adds radio messages to the radio log, and
 offers it to the HUD. If **UI > Styled notices** is off, or the HUD layout or the card layout is
 missing, the vanilla hint queue shows it exactly as before.
 
@@ -191,7 +194,8 @@ missing, the vanilla hint queue shows it exactly as before.
 `RZ_PlayerUIComponent` off the player controller (`Prefabs/Characters/Core/RZ_PlayerController.et`)
 stops all sending. To remove the UI entirely, delete the `UI/` code folder and the lines that use
 it: the `m_UISettings` attribute, `m_UIFeed` (creation, tick, spawn,
-`RecordGearSoon` and accessors), the `UsesMapIcons` check in `AddMapMarker` and the block at the
+`RecordGearSoon` and accessors), the `UsesMapIcons` check in `AddMapMarker`, the owner-only
+branch at the top of `NotifyPlayer` and the block at the
 top of `QueueHint` (with the chat commands' registration) in `Core/RZ_GameModeComponent.c`, the
 board menu call in `World/RZ_NoticeBoard.c` (`SendMenu`), and the `OnClueRead` call in
 `Puzzles/RZ_PuzzleMission.c`. `RZ_LoadoutLock.c` and `RZ_MapIcons.c` can each be deleted on their

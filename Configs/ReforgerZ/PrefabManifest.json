@@ -4071,7 +4071,7 @@
    "category": "ReforgerZ",
    "object": "Season",
    "field": "m_SeasonSettings",
-   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (48 h), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
+   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
   },
   {
    "category": "World",
@@ -4336,7 +4336,7 @@
     "m_bWinnerRules": "1",
     "m_sRuleSets": "",
     "m_eWipeMode": "1",
-    "m_fEpilogueHours": "48",
+    "m_fEpilogueHours": "168",
     "m_iWipeWeeks": "10",
     "m_fWarnHours": "24",
     "m_bHallOfFame": "1"

@@ -788,7 +788,7 @@ class RZ_MissionManager
 			{
 				// A truce halves it, a feud makes it worse (docs/REPUTATION.md, "Truces and feuds")
 				int infamy = Math.Max(1, RZ_Util.RoundToInt(m.m_iRivalInfamy * m.m_fRewardScale * m_GM.RivalMult(m.m_eGiver, m.m_eRival)));
-				m_GM.AddInfamy(playerId, m.m_eRival, infamy);
+				m_GM.AddInfamy(playerId, m.m_eRival, infamy, true, true);
 				text += string.Format("\n%1 won't forget this: +%2 Infamy.", RZ_Factions.GetName(m.m_eRival), infamy);
 				if (leaders)
 					leaders.OnRivalHurt(m.m_eRival, m.m_vPos, playerId);
