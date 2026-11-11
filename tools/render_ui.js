@@ -20,15 +20,16 @@ const SRC = path.join(UI, 'Icons', 'src');
 const PNG = path.join(UI, 'Icons', 'png');
 const PREVIEWS = path.join(UI, 'Previews');
 
-// One accent per faction, plus hazard yellow for infection and the Perimeter (docs/UI.md).
+// One accent per faction, the Long Table's wood brown, plus hazard yellow for infection and the
+// Perimeter (docs/UI.md).
 const C = {
-  haven: '#E3A33B', bastion: '#9AA35E', redhand: '#C8352B', halcyon: '#4FB8B0',
+  haven: '#E3A33B', bastion: '#9AA35E', redhand: '#C8352B', halcyon: '#4FB8B0', longtable: '#B07A5A',
   hazard: '#F2C230', bone: '#E8E2D0', dark: '#16181B',
 };
 // Colour variants: [icon, variant suffix, colour]
 const VARIANTS = [
   ['faction_haven', '', C.haven], ['faction_bastion', '', C.bastion], ['faction_redhand', '', C.redhand],
-  ['faction_halcyon', '', C.halcyon], ['faction_infected', '', C.hazard],
+  ['faction_halcyon', '', C.halcyon], ['faction_infected', '', C.hazard], ['faction_longtable', '', C.longtable],
   ['marker_lab', '', C.halcyon], ['marker_safehouse', '', C.haven], ['marker_event', '', C.hazard],
   ['marker_power', '', C.hazard], ['marker_radio', '', C.bone], ['marker_checkpoint', '', C.hazard],
 ];

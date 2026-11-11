@@ -21,6 +21,7 @@ a map. No gradients or glows in the icons; the HUD uses only a dark panel, one a
 | Task Force Bastion | `#9AA35E` olive | old paint on a checkpoint |
 | The Red Hand | `#C8352B` red | wet paint |
 | Halcyon | `#4FB8B0` clinical teal | the lab |
+| The Long Table | `#B07A5A` muted brown | the table's wood |
 | Hazard | `#F2C230` on `#141414` | infection, the broadcast, the Perimeter, world events |
 | Bone, dim, panel | `#E8E2D0`, `#A39E90`, `#121416` | text and backgrounds |
 
@@ -30,10 +31,11 @@ trefoil:
 | Mark | What it is |
 |---|---|
 | The Haven | A house with a candle in it: every safehouse lights one for the dead ([LORE.md](LORE.md#the-haven)) |
-| Task Force Bastion | A crenellated wall with one bar across it: *hold the line* |
-| The Red Hand | A paint handprint slapped on a wall at an angle, still running. Deliberately not an upright heraldic hand |
+| Task Force Bastion | A helmet with the days without relief chalked on as a tally: every night the call to Command ends *"Requesting relief"*, the log says *"No reply"*, and the sergeant chalks up a day ([LORE.md](LORE.md#task-force-bastion)) |
+| The Red Hand | A red handprint slapped on at an angle, fingers splayed, the paint still running: the hand the boss painted over Rudi's marks on the shutter ([LORE.md](LORE.md#the-red-hand)). Deliberately not an upright heraldic hand |
 | Halcyon | A sun over still water inside a lab hexagon (the halcyon days that a cure would bring) |
-| The infected | A spiked virion with a bite taken out of it |
+| The infected | A virion, slightly out of round, its spikes ending in knobs, with a bite taken out of it |
+| The Long Table | A preserving jar with a cloth tied over it, labelled only "9". The family labels its jars by the day, not by what's in them, and Day 9 was the first soup ([LORE.md](LORE.md#the-long-table)). It isn't a faction and it's a secret, so the mark is never on the map or the standing screen: it's for the journal and the hall of fame once a player has found the family out, and scratched somewhere at the farm (planned: no script uses it yet) |
 
 **Type.** Headings in a condensed bold, upper case with wide spacing (stencil-like); timers,
 distances and channel names in a mono face; body text in a plain sans. In the game, use the
@@ -41,13 +43,13 @@ vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
 
 ## The icon set
 
-60 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
+61 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
 transparent background, so the game can tint them. Every icon with its intended use is listed in
 [UI/Icons/README.md](../UI/Icons/README.md); the contact sheet is `UI/Previews/icons_sheet.png`.
 
 | Category | Count | Icons |
 |---|---|---|
-| Faction emblems | 5 | the Haven, Bastion, the Red Hand, Halcyon, the infected |
+| Faction emblems | 6 | the Haven, Bastion, the Red Hand, Halcyon, the infected, the Long Table |
 | Standing tiers | 8 | Stranger, Known, Trusted, Champion (dog tags with 0–3 marks), Watched (an eye), Hunted (a crosshair), Kill on Sight (a crossed-out target), and one mixed mark for Uneasy, Tolerated, Respected and Wildcard |
 | Mission types | 7 | contract, world event, puzzle, leader job, unarmed, Perimeter, story arc |
 | Map markers | 9 | lab, safehouse, stronghold, outpost, world event, quartermaster and leader, power station, radio station, checkpoint. Each sits on a plate whose shape says what it is: square for places factions hold, hexagon for the lab, diamond for events, circle for infrastructure, octagon for the sealed checkpoints |
@@ -55,7 +57,7 @@ transparent background, so the game can tint them. Every icon with its intended 
 | Status and HUD | 13 | bitten, golden window, Fever, Weakness, Final, secure radio, open channel, broadcast, noise, shortage, locked, unlocked and forced door |
 
 **Files.** Sources in `UI/Icons/src/`. White PNGs at 64 and 128 px in `UI/Icons/png/64/` and
-`png/128/`. Coloured map and emblem variants (23, with a dark backing behind the plated markers'
+`png/128/`. Coloured map and emblem variants (24, with a dark backing behind the plated markers'
 cut-out glyphs, and one per faction for strongholds, outposts and quartermasters) in
 `png/color/`. Re-render after editing: `node tools/render_ui.js icons` (needs Node and Playwright's
 Chromium, nothing else).
@@ -170,4 +172,4 @@ static parts of the layouts.
 |---|---|
 | Built | The icon set and its renderer; six mockups and previews; the feed, the HUD, six menus with mouse support (four tabs, the notice board, the hall of fame), chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback, the radio log (all compile, never run) |
 | Workbench | The layouts, the imageset, the menu and input config entries, adding the component, the info display and the map component ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui)) |
-| Planned | A sound on new notices; mockups of the notice board and the hall of fame |
+| Planned | A sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm |
