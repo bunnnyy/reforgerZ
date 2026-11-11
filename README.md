@@ -27,7 +27,10 @@ and one way to end it: **research the cure.**
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
-- **176 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
+- **Questlines** that run over many sessions: each stage is a contract or a wait, you can talk,
+  persuade, sneak, fight, bribe, betray or side with another faction, and what you chose changes
+  the ending, the rewards and the world. One so far (Short Weight, for the Haven); more to come.
+- **178 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
   missions at the quarantine line, morally grey Haven work and leaders' off-book jobs. Contracts
   name a rough area until you're close, unless you're a Radio Operator or trusted by the giver.
 - **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
@@ -50,7 +53,7 @@ and one way to end it: **research the cure.**
 
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
-That's about 71,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+That's about 76,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
 was also checked against the base game's script source; the 30 `VERIFY` markers left in the game
 scripts (and 9 in the plugin) are behaviours only a play-test can show, such as replication and
 what the AI does. The game mode also **runs on the server** in a test world with a fake player
@@ -83,7 +86,7 @@ scripts/Game/ReforgerZ/
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
                  town memory, the power grid, the radio station
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
-                 the broadcast, story arcs, headlines
+                 the broadcast, story arcs, the questline engine, headlines
   Zombies/       spawner (any zombie mod's prefabs), bite detection
   Backgrounds/   backgrounds, personal goals, player profiles
   Factions/      reputation, quartermasters and shops, perks, services, hunter squads, bounties,
@@ -91,7 +94,8 @@ scripts/Game/ReforgerZ/
                  territory, supply trucks, faction life
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
-                 Events/ Leaders/ Unarmed/ Perimeter/
+                 Events/ Leaders/ Unarmed/ Perimeter/; Questlines/ (the author's base class,
+                 approach helpers, the registry, one folder per faction)
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
   Cure/          research, lab, samples, antidotes, infection stages, treatments and meds
   Guidance/      experience levels, tips, spawn scenarios, open radio channels

@@ -1979,6 +1979,19 @@ class RZ_Leaders
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A story moves a leader out of their seat (a questline's ending): replaced like a death,
+	//! with this headline. Never a stronghold leader. False if they can't be moved.
+	bool RemoveFromSeat(int leaderId, string headline)
+	{
+		RZ_Leader l = Get(leaderId);
+		if (!l || !l.IsPresent() || l.IsStronghold() || l.m_iHeldBy >= 0)
+			return false;
+
+		Dismiss(l, headline);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Dismissed by the stronghold: gone from the seat, replaced like a death.
 	protected void Dismiss(RZ_Leader l, string headline)
 	{
@@ -2513,6 +2526,14 @@ class RZ_Leaders
 			string extra = m_GM.GetFactionLife().TalkExtra(l.m_eFaction, l.m_vPos);
 			if (!extra.IsEmpty())
 				text += "\n" + extra;
+		}
+
+		// A questline that runs through this leader (Director/RZ_Questlines.c)
+		if (m_GM.GetQuestlines())
+		{
+			string quest = m_GM.GetQuestlines().OnLeaderTalk(playerId, l.m_iId);
+			if (!quest.IsEmpty())
+				text += "\n" + quest;
 		}
 
 		RZ_Mission job = FindJob(l);

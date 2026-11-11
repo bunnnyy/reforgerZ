@@ -1,0 +1,1353 @@
+//! Questlines (docs/DESIGN.md, "Questlines"): long faction storylines that span many sessions.
+//! A questline is a graph of stages written as one class (Missions/Questlines/). Each stage
+//! either offers one mission (a normal RZ_Mission started through the mission manager) or
+//! waits for time to pass and the world to be right. How a stage was done (the approach and
+//! its outcome) decides the next stage, and the ending changes the world through the systems
+//! that already exist, a little and capped.
+//!
+//! This file is the engine: settings, saved form, one running questline (RZ_QuestRun) and the
+//! manager (RZ_Questlines) that starts, ticks, saves and ends them. The author's base class,
+//! the stage table and the consequence helpers are in Missions/Questlines/RZ_Questline.c; the
+//! approach helpers in Missions/Questlines/RZ_QuestApproach.c; registration in
+//! Missions/Questlines/RZ_QuestlineRegistry.c.
+//!
+//! Unlike story arcs (Director/RZ_StoryArcs.c, short, one at a time, gone at a restart), a
+//! questline survives restarts: its stage, flags, notes, timers and who did what are saved, and a
+//! stage mission that was running is offered again. A season wipe ends them all.
+
+//------------------------------------------------------------------------------------------------
+//! Settings on RZ_GameModeComponent > Director > Questlines.
+[BaseContainerProps()]
+class RZ_QuestlineSettings
+{
+	[Attribute("1", desc: "Questlines on: long faction storylines in stages, each a contract or a wait, where how you do a stage changes the ending (docs/DESIGN.md, Questlines)")]
+	bool m_bEnabled;
+
+	[Attribute("2", desc: "At most this many questlines run at once, server-wide (never two for one faction)")]
+	int m_iMaxActive;
+
+	[Attribute("30", desc: "Average real minutes (with players online) between chances for a new questline")]
+	float m_fMinutesBetween;
+
+	[Attribute("0.5", desc: "Chance that one starts when one is considered")]
+	float m_fStartChance;
+
+	[Attribute("6", desc: "Hours of play before a questline that fizzled out can start again")]
+	float m_fRetryHours;
+
+	[Attribute("1", desc: "A questline that reached an ending doesn't come back this season")]
+	bool m_bOncePerSeason;
+
+	[Attribute("1", desc: "Every wait between stages, and how long a stage waits before it fizzles, is multiplied by this (0.05 to 10; 0.1 for a quick test)")]
+	float m_fWaitScale;
+}
+
+//------------------------------------------------------------------------------------------------
+//! What approach a player took at a stage. Saved as an int.
+enum RZ_EQuestApproach
+{
+	NONE,		// was there (a participant of the stage mission who did nothing in particular)
+	TALK,		// asked, listened, told the truth
+	PERSUADE,	// a check on background and standing
+	SNEAK,		// done unseen, with no shots near
+	FORCE,		// killed or drove someone off
+	BRIBE,		// paid Favor
+	BETRAY,		// turned on the people who asked
+	SIDE		// took another faction's side
+}
+
+//------------------------------------------------------------------------------------------------
+class RZ_QuestPartSave
+{
+	string ident;
+	string name;
+	int stage;
+	int approach;
+	string did;
+}
+
+//------------------------------------------------------------------------------------------------
+class RZ_QuestRunSave
+{
+	string key;
+	int stage = -1;
+	float startedAt;
+	int startUnix;
+	float stageAt;
+	int stageUnix;
+	float readyAt = -1;
+	int branch = -1;
+	bool hasPlace;
+	float x;
+	float z;
+	string placeName;
+	ref array<string> flagKeys = {};
+	ref array<int> flagValues = {};
+	ref array<string> textKeys = {};
+	ref array<string> textValues = {};
+	ref array<int> visitStages = {};
+	ref array<int> visitCounts = {};
+	ref array<string> noteTitles = {};
+	ref array<string> notes = {};
+	ref array<ref RZ_QuestPartSave> parts = {};
+}
+
+//------------------------------------------------------------------------------------------------
+class RZ_QuestlinesSave
+{
+	float clock;
+	float nextChance;
+	ref array<ref RZ_QuestRunSave> runs = {};
+	ref array<string> doneKeys = {};
+	ref array<string> lastKeys = {};
+	ref array<float> lastAt = {};
+	ref array<string> rumours = {};
+	ref array<float> rumourUntil = {};
+}
+
+//------------------------------------------------------------------------------------------------
+//! One player's part in one stage, kept by identity (players come and go).
+class RZ_QuestPart
+{
+	string m_sIdent;
+	string m_sName;
+	int m_iStage;
+	int m_iApproach;
+	string m_sDid;
+}
+
+//------------------------------------------------------------------------------------------------
+//! One running questline: everything about it that changes, all of it saved. The questline
+//! class (RZ_Questline) holds no state; it reads and writes this.
+class RZ_QuestRun
+{
+	int m_iId;						// runtime id (missions point at it with m_iQuestRun); not saved
+	string m_sKey;
+	RZ_Questline m_Line;			// the questline's definition (owned by the manager)
+	RZ_Questlines m_Owner;
+
+	int m_iStage = -1;
+	float m_fStartedAt;				// play clock (seconds, runs only while someone plays)
+	int m_iStartUnix;				// real time
+	float m_fStageAt;
+	int m_iStageUnix;
+	float m_fReadyAt = -1;			// when the stage's wait was over (its give-up timer starts there)
+	int m_iBranch = -1;				// the author's branch number, -1 until one is taken
+
+	int m_iMissionId = -1;			// the stage's running mission, -1 = none (never saved)
+	float m_fNextTry;
+	int m_iOutcome = -1;			// set by a stage mission's approach; -1 = take success or failure
+	int m_iEnding = -1;
+	string m_sEndText;
+	bool m_bDone;
+
+	bool m_bHasPlace;
+	vector m_vPlace;
+	string m_sPlaceName;
+
+	ref map<string, int> m_mFlags = new map<string, int>();
+	ref map<string, string> m_mTexts = new map<string, string>();
+	ref map<int, int> m_mVisits = new map<int, int>();
+	ref array<string> m_aNoteTitles = {};
+	ref array<string> m_aNotes = {};
+	ref array<ref RZ_QuestPart> m_aParts = {};
+
+	static const int MAX_NOTES = 12;
+	static const int MAX_PARTS = 120;
+	static const int MAX_FAME = 15;		// one personal reward
+	static const int MAX_FAVOR = 40;
+
+	// ================================================================ Flags and texts
+	//------------------------------------------------------------------------------------------------
+	//! An int flag set earlier ("house", "confessed", "sided"), `def` if never set.
+	int Flag(string key, int def = 0)
+	{
+		int v;
+		if (m_mFlags.Find(key, v))
+			return v;
+
+		return def;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetFlag(string key, int value)
+	{
+		m_mFlags.Set(key, value);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasFlag(string key)
+	{
+		return m_mFlags.Contains(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A text set earlier ("town", "keeper"), "" if never set.
+	string Text(string key)
+	{
+		string v;
+		m_mTexts.Find(key, v);
+		return v;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetText(string key, string value)
+	{
+		m_mTexts.Set(key, value);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `text` with every {key} replaced by that text: "Talk to {keeper} in {town}".
+	string Fill(string text)
+	{
+		string s = text;
+		foreach (string key, string value : m_mTexts)
+		{
+			s.Replace("{" + key + "}", value);
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the story is now (the journal's place and direction). Saved.
+	void SetPlace(vector pos, string name)
+	{
+		m_bHasPlace = true;
+		m_vPlace = pos;
+		m_sPlaceName = name;
+	}
+
+	// ================================================================ The story so far
+	//------------------------------------------------------------------------------------------------
+	//! A line for the journal's "what you know so far", under the current stage's title. {keys}
+	//! are filled in. The same line twice is kept once.
+	void Note(string text)
+	{
+		string filled = Fill(text);
+		if (filled.IsEmpty() || m_aNotes.Contains(filled))
+			return;
+
+		string title = "";
+		if (m_Line)
+		{
+			RZ_QuestStage st = m_Line.GetStage(m_iStage);
+			if (st)
+				title = Fill(st.m_sTitle);
+		}
+
+		m_aNoteTitles.Insert(title);
+		m_aNotes.Insert(filled);
+		while (m_aNotes.Count() > MAX_NOTES)
+		{
+			m_aNotes.RemoveOrdered(0);
+			m_aNoteTitles.RemoveOrdered(0);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The branch the story took (the author's numbers). Saved.
+	void SetBranch(int branch)
+	{
+		m_iBranch = branch;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A stage mission reports how its stage came out (the author's outcome numbers, >= 10 by
+	//! convention; RZ_Questline.OUTCOME_FAILED and OUTCOME_DONE are the engine's).
+	void SetOutcome(int outcome)
+	{
+		m_iOutcome = outcome;
+	}
+
+	// ================================================================ Who took part
+	//------------------------------------------------------------------------------------------------
+	//! This player did `what` at the current stage, by `approach` (RZ_EQuestApproach). Kept by
+	//! identity. A second call for the same player and stage replaces the first, unless the new
+	//! one is NONE ("was there") and they already did something.
+	void Did(RZ_GameModeComponent gm, int playerId, int approach, string what)
+	{
+		if (!gm || playerId <= 0)
+			return;
+
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		if (ident.IsEmpty())
+			return;
+
+		foreach (RZ_QuestPart p : m_aParts)
+		{
+			if (p.m_sIdent != ident || p.m_iStage != m_iStage)
+				continue;
+
+			if (approach == RZ_EQuestApproach.NONE && p.m_iApproach != RZ_EQuestApproach.NONE)
+				return;
+
+			p.m_iApproach = approach;
+			p.m_sDid = what;
+			return;
+		}
+
+		if (m_aParts.Count() >= MAX_PARTS)
+			m_aParts.RemoveOrdered(0);
+
+		RZ_QuestPart part = new RZ_QuestPart();
+		part.m_sIdent = ident;
+		part.m_sName = RZ_Util.PlayerName(playerId);
+		part.m_iStage = m_iStage;
+		part.m_iApproach = approach;
+		part.m_sDid = what;
+		m_aParts.Insert(part);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool TookPart(string ident)
+	{
+		if (ident.IsEmpty())
+			return false;
+
+		foreach (RZ_QuestPart p : m_aParts)
+		{
+			if (p.m_sIdent == ident)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool PlayerTookPart(RZ_GameModeComponent gm, int playerId)
+	{
+		if (!gm || playerId <= 0)
+			return false;
+
+		return TookPart(gm.GetProfile(playerId).m_sIdentity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True if this identity ever took `approach` in this questline (any stage).
+	bool IdentDid(string ident, int approach)
+	{
+		foreach (RZ_QuestPart p : m_aParts)
+		{
+			if (p.m_sIdent == ident && p.m_iApproach == approach)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True if anybody took `approach` at `stage` (-1 = any stage).
+	bool AnyDid(int approach, int stage = -1)
+	{
+		foreach (RZ_QuestPart p : m_aParts)
+		{
+			if (p.m_iApproach == approach && (stage < 0 || p.m_iStage == stage))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Everyone who took part, once each.
+	void GetIdents(notnull array<string> result)
+	{
+		foreach (RZ_QuestPart p : m_aParts)
+		{
+			if (!result.Contains(p.m_sIdent))
+				result.Insert(p.m_sIdent);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Mara (talked him round), Jonas (was there)" for one stage, "" if nobody.
+	string WhoDid(int stage)
+	{
+		string text = "";
+		foreach (RZ_QuestPart p : m_aParts)
+		{
+			if (p.m_iStage != stage)
+				continue;
+
+			if (!text.IsEmpty())
+				text += ", ";
+
+			text += string.Format("%1 (%2)", p.m_sName, p.m_sDid);
+		}
+
+		return text;
+	}
+
+	// ================================================================ Personal rewards
+	//------------------------------------------------------------------------------------------------
+	//! A personal reward for the player who did a step, on top of the stage mission's own pay:
+	//! Fame (negative lowers it; at most 15 either way) and Favor (0 to 40) with `faction`.
+	void Reward(RZ_GameModeComponent gm, int playerId, int faction, int fame, int favor, string why)
+	{
+		if (!gm || playerId <= 0 || !RZ_Factions.IsValid(faction))
+			return;
+
+		fame = Math.ClampInt(fame, -MAX_FAME, MAX_FAME);
+		favor = Math.ClampInt(favor, 0, MAX_FAVOR);
+		string text = why;
+		if (fame != 0)
+		{
+			gm.AddFame(playerId, faction, fame, false);
+			text += string.Format("\n%1 Fame with %2.", Signed(fame), RZ_Factions.GetName(faction));
+		}
+
+		if (favor > 0)
+		{
+			gm.AddFavor(playerId, faction, favor);
+			text += string.Format("\n+%1 Favor.", favor);
+		}
+
+		string title = "";
+		if (m_Line)
+			title = m_Line.m_sTitle;
+
+		gm.NotifyPlayer(playerId, title, text.Trim());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string Signed(int v)
+	{
+		if (v > 0)
+			return "+" + v.ToString();
+
+		return v.ToString();
+	}
+
+	// ================================================================ Time
+	//------------------------------------------------------------------------------------------------
+	//! Minutes of play (someone online) since this stage began.
+	float StageMinutes()
+	{
+		if (!m_Owner)
+			return 0;
+
+		return (m_Owner.GetClock() - m_fStageAt) / 60;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real hours since this stage began (0 if the clock isn't known).
+	float StageRealHours()
+	{
+		int now = RZ_Guidance.UnixNow();
+		if (now <= 0 || m_iStageUnix <= 0)
+			return 0;
+
+		float secs = now - m_iStageUnix;
+		return secs / 3600;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hours of play since the questline began.
+	float PlayHours()
+	{
+		if (!m_Owner)
+			return 0;
+
+		return (m_Owner.GetClock() - m_fStartedAt) / 3600;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real days since the questline began.
+	float RealDays()
+	{
+		int now = RZ_Guidance.UnixNow();
+		if (now <= 0 || m_iStartUnix <= 0)
+			return 0;
+
+		float secs = now - m_iStartUnix;
+		return secs / 86400;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int Visits(int stage)
+	{
+		int v;
+		m_mVisits.Find(stage, v);
+		return v;
+	}
+
+	// ================================================================ Save
+	//------------------------------------------------------------------------------------------------
+	RZ_QuestRunSave ToSave()
+	{
+		RZ_QuestRunSave s = new RZ_QuestRunSave();
+		s.key = m_sKey;
+		s.stage = m_iStage;
+		s.startedAt = m_fStartedAt;
+		s.startUnix = m_iStartUnix;
+		s.stageAt = m_fStageAt;
+		s.stageUnix = m_iStageUnix;
+		s.readyAt = m_fReadyAt;
+		s.branch = m_iBranch;
+		s.hasPlace = m_bHasPlace;
+		s.x = m_vPlace[0];
+		s.z = m_vPlace[2];
+		s.placeName = m_sPlaceName;
+		foreach (string fk, int fv : m_mFlags)
+		{
+			s.flagKeys.Insert(fk);
+			s.flagValues.Insert(fv);
+		}
+
+		foreach (string tk, string tv : m_mTexts)
+		{
+			s.textKeys.Insert(tk);
+			s.textValues.Insert(tv);
+		}
+
+		foreach (int vs, int vc : m_mVisits)
+		{
+			s.visitStages.Insert(vs);
+			s.visitCounts.Insert(vc);
+		}
+
+		foreach (int i, string n : m_aNotes)
+		{
+			s.notes.Insert(n);
+			s.noteTitles.Insert(m_aNoteTitles[i]);
+		}
+
+		foreach (RZ_QuestPart p : m_aParts)
+		{
+			RZ_QuestPartSave ps = new RZ_QuestPartSave();
+			ps.ident = p.m_sIdent;
+			ps.name = p.m_sName;
+			ps.stage = p.m_iStage;
+			ps.approach = p.m_iApproach;
+			ps.did = p.m_sDid;
+			s.parts.Insert(ps);
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void FromSave(RZ_QuestRunSave s)
+	{
+		m_sKey = s.key;
+		m_iStage = s.stage;
+		m_fStartedAt = s.startedAt;
+		m_iStartUnix = s.startUnix;
+		m_fStageAt = s.stageAt;
+		m_iStageUnix = s.stageUnix;
+		m_fReadyAt = s.readyAt;
+		m_iBranch = s.branch;
+		m_bHasPlace = s.hasPlace;
+		m_vPlace = Vector(s.x, 0, s.z);
+		m_sPlaceName = s.placeName;
+		if (s.flagKeys && s.flagValues)
+		{
+			for (int i = 0; i < s.flagKeys.Count() && i < s.flagValues.Count(); i++)
+			{
+				m_mFlags.Set(s.flagKeys[i], s.flagValues[i]);
+			}
+		}
+
+		if (s.textKeys && s.textValues)
+		{
+			for (int j = 0; j < s.textKeys.Count() && j < s.textValues.Count(); j++)
+			{
+				m_mTexts.Set(s.textKeys[j], s.textValues[j]);
+			}
+		}
+
+		if (s.visitStages && s.visitCounts)
+		{
+			for (int k = 0; k < s.visitStages.Count() && k < s.visitCounts.Count(); k++)
+			{
+				m_mVisits.Set(s.visitStages[k], s.visitCounts[k]);
+			}
+		}
+
+		if (s.notes && s.noteTitles)
+		{
+			for (int n = 0; n < s.notes.Count() && n < s.noteTitles.Count(); n++)
+			{
+				m_aNotes.Insert(s.notes[n]);
+				m_aNoteTitles.Insert(s.noteTitles[n]);
+			}
+		}
+
+		if (s.parts)
+		{
+			foreach (RZ_QuestPartSave ps : s.parts)
+			{
+				if (!ps || ps.ident.IsEmpty())
+					continue;
+
+				RZ_QuestPart p = new RZ_QuestPart();
+				p.m_sIdent = ps.ident;
+				p.m_sName = ps.name;
+				p.m_iStage = ps.stage;
+				p.m_iApproach = ps.approach;
+				p.m_sDid = ps.did;
+				m_aParts.Insert(p);
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The questline manager, on RZ_GameModeComponent's tick.
+class RZ_Questlines
+{
+	protected RZ_GameModeComponent m_GM;
+	protected RZ_QuestlineSettings m_Settings;
+	protected ref array<ref RZ_Questline> m_aLines = {};
+	protected ref array<ref RZ_QuestRun> m_aRuns = {};
+	protected ref RZ_QuestlinesSave m_Restored;
+	protected ref array<string> m_aDone = {};
+	protected ref array<string> m_aLastKeys = {};
+	protected ref array<float> m_aLastAt = {};
+	protected ref array<string> m_aRumours = {};
+	protected ref array<float> m_aRumourUntil = {};
+	protected float m_fClock;
+	protected float m_fNextChance;
+	protected float m_fCheck;
+	protected int m_iNextRunId = 1;
+
+	protected static const float CHECK_SECONDS = 10;
+	protected static const float RETRY_SECONDS = 180;	// a stage mission that couldn't start tries again after this
+	protected static const int MAX_RUMOURS = 6;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Questlines(RZ_GameModeComponent gm, RZ_QuestlineSettings settings)
+	{
+		m_GM = gm;
+		m_Settings = settings;
+		RZ_QuestlineRegistry.RegisterAll(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsEnabled() { return m_Settings.m_bEnabled; }
+	float GetClock() { return m_fClock; }
+	array<ref RZ_QuestRun> GetRuns() { return m_aRuns; }
+
+	//------------------------------------------------------------------------------------------------
+	//! The wait scale, 0.05 to 10.
+	float WaitScale()
+	{
+		return Math.Clamp(m_Settings.m_fWaitScale, 0.05, 10);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Add a questline (a subclass of RZ_Questline). Other mods can call this too.
+	void Register(typename type)
+	{
+		RZ_Questline line = RZ_Questline.Cast(type.Spawn());
+		if (!line)
+		{
+			RZ_Log.Warn("Questlines: " + type.ToString() + " isn't an RZ_Questline.");
+			return;
+		}
+
+		line.Define();
+		if (line.m_sKey.IsEmpty() || line.StageCount() == 0)
+		{
+			RZ_Log.Warn("Questlines: " + type.ToString() + " has no key or no stages; skipped.");
+			return;
+		}
+
+		if (FindLine(line.m_sKey))
+		{
+			RZ_Log.Warn("Questlines: two questlines use the key '" + line.m_sKey + "'; the second is skipped.");
+			return;
+		}
+
+		m_aLines.Insert(line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_Questline FindLine(string key)
+	{
+		foreach (RZ_Questline line : m_aLines)
+		{
+			if (line.m_sKey == key)
+				return line;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_QuestRun FindRun(int id)
+	{
+		if (id < 0)
+			return null;
+
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (run.m_iId == id && !run.m_bDone)
+				return run;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The run a stage mission belongs to, null if none.
+	RZ_QuestRun RunOf(RZ_Mission m)
+	{
+		if (!m)
+			return null;
+
+		return FindRun(m.m_iQuestRun);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_QuestRun FindRunByKey(string key)
+	{
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (run.m_sKey == key && !run.m_bDone)
+				return run;
+		}
+
+		return null;
+	}
+
+	// ================================================================ Save / load
+	//------------------------------------------------------------------------------------------------
+	void Restore(RZ_QuestlinesSave saved)
+	{
+		m_Restored = saved;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_QuestlinesSave Save()
+	{
+		RZ_QuestlinesSave data = new RZ_QuestlinesSave();
+		data.clock = m_fClock;
+		data.nextChance = m_fNextChance;
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (!run.m_bDone)
+				data.runs.Insert(run.ToSave());
+		}
+
+		foreach (string done : m_aDone)
+		{
+			data.doneKeys.Insert(done);
+		}
+
+		foreach (int i, string key : m_aLastKeys)
+		{
+			data.lastKeys.Insert(key);
+			data.lastAt.Insert(m_aLastAt[i]);
+		}
+
+		foreach (int r, string rumour : m_aRumours)
+		{
+			data.rumours.Insert(rumour);
+			data.rumourUntil.Insert(m_aRumourUntil[r]);
+		}
+
+		return data;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Setup()
+	{
+		if (!m_Settings.m_bEnabled)
+		{
+			m_Restored = null;
+			RZ_Log.Info("Questlines are off.");
+			return;
+		}
+
+		m_fNextChance = Math.Max(10, m_Settings.m_fMinutesBetween * 0.5) * 60;
+		if (m_Restored)
+			LoadRestored();
+
+		m_Restored = null;
+
+		string keys = "";
+		foreach (RZ_Questline line : m_aLines)
+		{
+			if (!keys.IsEmpty())
+				keys += ", ";
+
+			keys += line.m_sTitle;
+		}
+
+		if (keys.IsEmpty())
+			keys = "none";
+
+		string running = "";
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (!running.IsEmpty())
+				running += ", ";
+
+			running += run.m_Line.m_sTitle;
+			RZ_QuestStage st = run.m_Line.GetStage(run.m_iStage);
+			if (st)
+				running += " (" + run.Fill(st.m_sTitle) + ")";
+		}
+
+		if (running.IsEmpty())
+			running = "none";
+
+		RZ_Log.Info(string.Format("Questlines: on, %1 registered (%2), at most %3 at once, running %4.", m_aLines.Count(), keys, Math.MaxInt(1, m_Settings.m_iMaxActive), running));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LoadRestored()
+	{
+		m_fClock = m_Restored.clock;
+		m_fNextChance = m_Restored.nextChance;
+		if (m_Restored.doneKeys)
+		{
+			foreach (string done : m_Restored.doneKeys)
+			{
+				m_aDone.Insert(done);
+			}
+		}
+
+		if (m_Restored.lastKeys && m_Restored.lastAt)
+		{
+			for (int i = 0; i < m_Restored.lastKeys.Count() && i < m_Restored.lastAt.Count(); i++)
+			{
+				m_aLastKeys.Insert(m_Restored.lastKeys[i]);
+				m_aLastAt.Insert(m_Restored.lastAt[i]);
+			}
+		}
+
+		if (m_Restored.rumours && m_Restored.rumourUntil)
+		{
+			for (int r = 0; r < m_Restored.rumours.Count() && r < m_Restored.rumourUntil.Count(); r++)
+			{
+				m_aRumours.Insert(m_Restored.rumours[r]);
+				m_aRumourUntil.Insert(m_Restored.rumourUntil[r]);
+			}
+		}
+
+		if (!m_Restored.runs)
+			return;
+
+		foreach (RZ_QuestRunSave s : m_Restored.runs)
+		{
+			if (!s)
+				continue;
+
+			RZ_Questline line = FindLine(s.key);
+			if (!line || !line.GetStage(s.stage))
+			{
+				RZ_Log.Warn("Questlines: the saved questline '" + s.key + "' (or its stage) no longer exists; dropped.");
+				continue;
+			}
+
+			RZ_QuestRun run = NewRun(line);
+			run.FromSave(s);
+			m_aRuns.Insert(run);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_QuestRun NewRun(RZ_Questline line)
+	{
+		RZ_QuestRun run = new RZ_QuestRun();
+		run.m_iId = m_iNextRunId;
+		m_iNextRunId++;
+		run.m_sKey = line.m_sKey;
+		run.m_Line = line;
+		run.m_Owner = this;
+		return run;
+	}
+
+	// ================================================================ Tick
+	//------------------------------------------------------------------------------------------------
+	void Tick(float dt, array<int> ids, array<IEntity> players)
+	{
+		// Like the arcs, the questlines' clock only runs while someone plays
+		if (!m_Settings.m_bEnabled || ids.IsEmpty())
+			return;
+
+		m_fClock += dt;
+		m_fCheck += dt;
+		if (m_fCheck < CHECK_SECONDS)
+			return;
+
+		m_fCheck = 0;
+		for (int i = m_aRuns.Count() - 1; i >= 0; i--)
+		{
+			RZ_QuestRun run = m_aRuns[i];
+			if (!run.m_bDone)
+				TickRun(run, ids.Count());
+
+			if (run.m_bDone)
+				m_aRuns.Remove(i);
+		}
+
+		ExpireRumours();
+
+		if (m_fClock < m_fNextChance)
+			return;
+
+		float mean = Math.Max(5, m_Settings.m_fMinutesBetween) * 60;
+		m_fNextChance = m_fClock + Math.RandomFloat(mean * 0.75, mean * 1.25);
+		if (Math.RandomFloat01() >= m_Settings.m_fStartChance)
+			return;
+
+		TryStartAny();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void TickRun(RZ_QuestRun run, int playerCount)
+	{
+		RZ_QuestStage st = run.m_Line.GetStage(run.m_iStage);
+		if (!st)
+		{
+			EndRun(run);
+			return;
+		}
+
+		// A stage mission is out there: its end comes through OnMissionFinished
+		if (run.m_iMissionId >= 0)
+		{
+			if (!m_GM.GetMissions().FindById(run.m_iMissionId))
+				StageResult(run, RZ_Questline.OUTCOME_FAILED);
+
+			return;
+		}
+
+		float scale = WaitScale();
+		if (run.m_fReadyAt < 0)
+		{
+			if (!IsWaitOver(run, st, scale))
+				return;
+
+			run.m_fReadyAt = m_fClock;
+		}
+
+		// The wait is over, but the stage can't happen: it waits, then fizzles
+		if (st.m_fGiveUpHours > 0 && m_fClock - run.m_fReadyAt >= st.m_fGiveUpHours * 3600 * scale)
+		{
+			run.m_iEnding = -1;
+			run.m_sEndText = run.Fill(st.m_sFizzle);
+			EndRun(run);
+			return;
+		}
+
+		if (!run.m_Line.IsReady(m_GM, run, st.m_iId))
+			return;
+
+		if (!st.m_bMission)
+		{
+			StageResult(run, RZ_Questline.OUTCOME_DONE);
+			return;
+		}
+
+		if (m_fClock < run.m_fNextTry)
+			return;
+
+		run.m_fNextTry = m_fClock + RETRY_SECONDS;
+		StartStageMission(run, st, playerCount);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Play minutes, or real hours, or both (the stage says), times the wait scale.
+	protected bool IsWaitOver(RZ_QuestRun run, RZ_QuestStage st, float scale)
+	{
+		bool hasPlay = st.m_fWaitMinutes > 0;
+		bool hasReal = st.m_fWaitRealHours > 0;
+		if (!hasPlay && !hasReal)
+			return true;
+
+		bool playOver = run.StageMinutes() >= st.m_fWaitMinutes * scale;
+		bool realOver = hasReal && run.StageRealHours() >= st.m_fWaitRealHours * scale;
+		if (!hasPlay)
+			return realOver;
+
+		if (!hasReal)
+			return playOver;
+
+		if (st.m_bWaitBoth)
+			return playOver && realOver;
+
+		return playOver || realOver;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StartStageMission(RZ_QuestRun run, RZ_QuestStage st, int playerCount)
+	{
+		RZ_Mission m = run.m_Line.MakeMission(m_GM, run, st.m_iId);
+		if (!m)
+			return;
+
+		m.m_iQuestRun = run.m_iId;
+		m.Configure(m_GM);
+		if (m.NeedsVehicle() && RZ_Seasons.Mods().m_bNoVehicles)
+			return;
+
+		if (!m.m_Req.IsWorldOk(m_GM, playerCount))
+			return;
+
+		if (!m_GM.GetMissions().StartMission(m))
+			return;
+
+		run.m_iMissionId = m.m_iId;
+		run.m_iOutcome = -1;
+		run.m_fReadyAt = m_fClock;	// a restart while it runs gives the stage a fresh give-up window
+		RZ_Log.Info(string.Format("Questline %1: stage '%2' is on (mission %3).", run.m_Line.m_sTitle, run.Fill(st.m_sTitle), m.m_iId));
+
+		// Whoever was part of the story hears it goes on
+		RZ_Questline.TellParticipants(m_GM, run, run.m_Line.m_sTitle, run.Fill(st.m_sTitle) + ": " + run.m_Line.JournalText(m_GM, run));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The current stage came out as `outcome`: the questline decides what's next.
+	protected void StageResult(RZ_QuestRun run, int outcome)
+	{
+		int from = run.m_iStage;
+		run.m_iMissionId = -1;
+		int next = run.m_Line.Next(m_GM, run, from, outcome);
+		if (next == RZ_Questline.END || !run.m_Line.GetStage(next))
+		{
+			EndRun(run);
+			return;
+		}
+
+		EnterStage(run, next);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void EnterStage(RZ_QuestRun run, int stage)
+	{
+		RZ_QuestStage st = run.m_Line.GetStage(stage);
+		int visits = run.Visits(stage) + 1;
+		if (visits > Math.MaxInt(1, st.m_iMaxVisits))
+		{
+			// A loop that keeps failing ends here, cleanly
+			run.m_iEnding = -1;
+			run.m_sEndText = run.Fill(st.m_sFizzle);
+			EndRun(run);
+			return;
+		}
+
+		run.m_mVisits.Set(stage, visits);
+		run.m_iStage = stage;
+		run.m_fStageAt = m_fClock;
+		run.m_iStageUnix = RZ_Guidance.UnixNow();
+		run.m_fReadyAt = -1;
+		run.m_fNextTry = 0;
+		run.m_iOutcome = -1;
+		RZ_Log.Info(string.Format("Questline %1: stage '%2'.", run.m_Line.m_sTitle, run.Fill(st.m_sTitle)));
+		run.m_Line.OnStageBegin(m_GM, run, stage);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An ending (m_iEnding >= 0) applies its consequences; otherwise the questline fizzles with
+	//! its line of text. Either way the participants online are told.
+	protected void EndRun(RZ_QuestRun run)
+	{
+		if (run.m_bDone)
+			return;
+
+		run.m_bDone = true;
+
+		// A stage mission still out there goes with it
+		if (run.m_iMissionId >= 0)
+		{
+			RZ_Mission m = m_GM.GetMissions().FindById(run.m_iMissionId);
+			if (m && m.m_eState == RZ_EMissionState.ACTIVE)
+				m.m_eState = RZ_EMissionState.FAILED;
+
+			run.m_iMissionId = -1;
+		}
+
+		string title = run.m_Line.m_sTitle;
+		if (run.m_iEnding >= 0)
+		{
+			run.m_Line.OnEnding(m_GM, run, run.m_iEnding);
+			if (!m_aDone.Contains(run.m_sKey))
+				m_aDone.Insert(run.m_sKey);
+
+			RZ_Log.Info(string.Format("Questline ended: %1 (ending %2, branch %3).", title, run.m_iEnding, run.m_iBranch));
+		}
+		else
+		{
+			if (run.m_sEndText.IsEmpty())
+				run.m_sEndText = string.Format("Nobody followed it up. %1 went quiet.", title);
+
+			RZ_Questline.Headline(m_GM, run.m_sEndText, false);
+			RZ_Log.Info(string.Format("Questline fizzled: %1.", title));
+		}
+
+		NoteRun(run.m_sKey);
+		if (!run.m_sEndText.IsEmpty())
+			RZ_Questline.TellParticipants(m_GM, run, title, run.m_sEndText);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void NoteRun(string key)
+	{
+		int idx = m_aLastKeys.Find(key);
+		if (idx >= 0)
+		{
+			m_aLastAt[idx] = m_fClock;
+			return;
+		}
+
+		m_aLastKeys.Insert(key);
+		m_aLastAt.Insert(m_fClock);
+	}
+
+	// ================================================================ Starting
+	//------------------------------------------------------------------------------------------------
+	protected void TryStartAny()
+	{
+		if (CountActive() >= Math.MaxInt(1, m_Settings.m_iMaxActive))
+			return;
+
+		array<int> order = {};
+		for (int i = 0; i < m_aLines.Count(); i++)
+		{
+			order.Insert(i);
+		}
+
+		for (int k = order.Count() - 1; k > 0; k--)
+		{
+			int j = Math.RandomInt(0, k + 1);
+			int tmp = order[k];
+			order[k] = order[j];
+			order[j] = tmp;
+		}
+
+		foreach (int idx : order)
+		{
+			if (CanConsider(m_aLines[idx]) && Begin(m_aLines[idx].m_sKey))
+				return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int CountActive()
+	{
+		int n = 0;
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (!run.m_bDone)
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Not running, its slot (faction) free, not done this season, not fizzled lately.
+	protected bool CanConsider(RZ_Questline line)
+	{
+		if (FindRunByKey(line.m_sKey))
+			return false;
+
+		if (m_Settings.m_bOncePerSeason && m_aDone.Contains(line.m_sKey))
+			return false;
+
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (!run.m_bDone && run.m_Line.GetSlot() == line.GetSlot())
+				return false;
+		}
+
+		int idx = m_aLastKeys.Find(line.m_sKey);
+		if (idx >= 0 && m_fClock - m_aLastAt[idx] < m_Settings.m_fRetryHours * 3600)
+			return false;
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Start a questline now (also for testing from other code). False if it can't run.
+	bool Begin(string key)
+	{
+		RZ_Questline line = FindLine(key);
+		if (!m_Settings.m_bEnabled || !line || FindRunByKey(key))
+			return false;
+
+		RZ_QuestRun run = NewRun(line);
+		run.m_fStartedAt = m_fClock;
+		run.m_iStartUnix = RZ_Guidance.UnixNow();
+		if (!line.CanStart(m_GM, run))
+			return false;
+
+		m_aRuns.Insert(run);
+		RZ_Log.Info("Questline started: " + line.m_sTitle);
+		line.OnBegin(m_GM, run);
+		EnterStage(run, line.FirstStage());
+		return true;
+	}
+
+	// ================================================================ Hooks from other systems
+	//------------------------------------------------------------------------------------------------
+	//! A mission ended (RZ_GameModeComponent.OnContractFinished, every mission).
+	void OnMissionFinished(RZ_Mission m, bool success)
+	{
+		if (!m || m.m_iQuestRun < 0)
+			return;
+
+		RZ_QuestRun run = FindRun(m.m_iQuestRun);
+		if (!run || run.m_iMissionId != m.m_iId)
+			return;
+
+		// Everyone who was there counts as part of the story
+		foreach (int playerId : m.m_aParticipants)
+		{
+			run.Did(m_GM, playerId, RZ_EQuestApproach.NONE, "was there");
+		}
+
+		int outcome = run.m_iOutcome;
+		if (outcome < 0)
+		{
+			outcome = RZ_Questline.OUTCOME_FAILED;
+			if (success)
+				outcome = RZ_Questline.OUTCOME_DONE;
+		}
+
+		StageResult(run, outcome);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A wanderer is talked to: a questline may add a line. "" if none.
+	string OnWandererTalk(int playerId, int wandererId)
+	{
+		string text = "";
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (run.m_bDone)
+				continue;
+
+			string line = run.m_Line.OnWandererTalk(m_GM, run, playerId, wandererId);
+			if (line.IsEmpty())
+				continue;
+
+			if (!text.IsEmpty())
+				text += "\n";
+
+			text += run.Fill(line);
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A leader is talked to: a questline may add a line. "" if none.
+	string OnLeaderTalk(int playerId, int leaderId)
+	{
+		string text = "";
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (run.m_bDone)
+				continue;
+
+			string line = run.m_Line.OnLeaderTalk(m_GM, run, playerId, leaderId);
+			if (line.IsEmpty())
+				continue;
+
+			if (!text.IsEmpty())
+				text += "\n";
+
+			text += run.Fill(line);
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gossip for wanderers and leaders: a running questline's rumour or an ending's, "" if none.
+	string Rumour()
+	{
+		array<string> options = {};
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (run.m_bDone)
+				continue;
+
+			string line = run.m_Line.Rumour(m_GM, run);
+			if (!line.IsEmpty())
+				options.Insert(run.Fill(line));
+		}
+
+		foreach (string r : m_aRumours)
+		{
+			options.Insert(r);
+		}
+
+		if (options.IsEmpty())
+			return "";
+
+		return options.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line wanderers and leaders repeat for `hours` of play (an ending's aftermath).
+	void AddRumour(string text, float hours)
+	{
+		if (text.IsEmpty() || hours <= 0)
+			return;
+
+		m_aRumours.Insert(text);
+		m_aRumourUntil.Insert(m_fClock + hours * 3600);
+		while (m_aRumours.Count() > MAX_RUMOURS)
+		{
+			m_aRumours.RemoveOrdered(0);
+			m_aRumourUntil.RemoveOrdered(0);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ExpireRumours()
+	{
+		for (int i = m_aRumours.Count() - 1; i >= 0; i--)
+		{
+			if (m_fClock >= m_aRumourUntil[i])
+			{
+				m_aRumours.Remove(i);
+				m_aRumourUntil.Remove(i);
+			}
+		}
+	}
+
+	// ================================================================ Journal
+	//------------------------------------------------------------------------------------------------
+	//! Does this player see the questline in their journal? Anyone who took part (by identity),
+	//! and anyone the current stage's mission was offered to or who is taking part in it.
+	bool IsVisibleTo(RZ_QuestRun run, int playerId)
+	{
+		if (!run || run.m_bDone || playerId <= 0)
+			return false;
+
+		if (run.PlayerTookPart(m_GM, playerId))
+			return true;
+
+		RZ_Mission m = m_GM.GetMissions().FindById(run.m_iMissionId);
+		if (!m)
+			return false;
+
+		return m.m_aOfferedTo.Contains(playerId) || m.m_aParticipants.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player id for an identity that's online, -1 if they aren't.
+	int OnlineId(string ident)
+	{
+		if (ident.IsEmpty())
+			return -1;
+
+		array<int> all = {};
+		GetGame().GetPlayerManager().GetPlayers(all);
+		foreach (int playerId : all)
+		{
+			if (m_GM.GetProfile(playerId).m_sIdentity == ident)
+				return playerId;
+		}
+
+		return -1;
+	}
+}

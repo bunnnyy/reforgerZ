@@ -1247,6 +1247,26 @@ class RZ_Territory
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A story hands an outpost to another faction (a questline's ending). The same rules as the
+	//! territory tick: never a stronghold or a placed marker, never the owner's last outpost, not
+	//! during a truce, and only while no player is watching. False if it can't happen now.
+	bool HandOver(int holdingId, RZ_EFaction taker)
+	{
+		RZ_Holding h = GetHolding(holdingId);
+		if (!m_bActive || !h || !RZ_Factions.IsValid(taker))
+			return false;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		if (!CanChangeHands(h, taker, players))
+			return false;
+
+		TakeOver(h, taker);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void TakeOver(RZ_Holding h, RZ_EFaction taker)
 	{
 		RZ_EFaction loser = h.m_eFaction;

@@ -447,7 +447,12 @@ class RZ_JournalMenu : RZ_MenuBase
 			RZ_UIW.SetText(row, "RowTitle", RZ_UIText.Str(m, 4));
 			RZ_UIW.SetText(row, "RowSub", sub);
 			RZ_UIW.SetText(row, "RowDir", RZ_UIText.Str(m, 7));
-			RZ_UIW.SetText(row, "RowTime", RZ_UIText.Str(m, 8) + " min left");
+			// A questline has no clock (minutes -1)
+			string rowTime = RZ_UIText.Str(m, 8) + " min left";
+			if (RZ_UIText.Int(m, 8) < 0)
+				rowTime = "Questline";
+
+			RZ_UIW.SetText(row, "RowTime", rowTime);
 			RZ_UIW.SetTag(row, i);
 			RZ_UIW.OnClick(row, "", m_Click);
 		}
@@ -492,7 +497,9 @@ class RZ_JournalMenu : RZ_MenuBase
 
 		RZ_UIW.SetText(m_wRoot, "DetailReq", req);
 		string rewards = "";
-		if (giver >= 0)
+		if (RZ_UIText.Int(m, 8) < 0)
+			rewards = "It depends on how it ends.";
+		else if (giver >= 0)
 			rewards = string.Format("About %1 Fame and %2 Favor with %3", RZ_UIText.Str(m, 10), RZ_UIText.Str(m, 11), RZ_Factions.GetNameInText(giver));
 
 		RZ_UIW.SetText(m_wRoot, "DetailRewards", rewards);

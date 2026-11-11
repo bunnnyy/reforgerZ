@@ -23,14 +23,15 @@ Code paths are under `scripts/Game/ReforgerZ/`.
 13. [Leaders](#leaders)
 14. [Missions](#missions)
 15. [Story arcs and headlines](#story-arcs-and-headlines)
-16. [Town memory](#town-memory)
-17. [World interactions](#world-interactions)
-18. [New-player guidance](#new-player-guidance)
-19. [Cure research and the season's end](#cure-research-and-the-seasons-end)
-20. [Season pacing](#season-pacing)
-21. [Seasons](#seasons)
-22. [Loose items](#loose-items)
-23. [Persistence](#persistence)
+16. [Questlines](#questlines)
+17. [Town memory](#town-memory)
+18. [World interactions](#world-interactions)
+19. [New-player guidance](#new-player-guidance)
+20. [Cure research and the season's end](#cure-research-and-the-seasons-end)
+21. [Season pacing](#season-pacing)
+22. [Seasons](#seasons)
+23. [Loose items](#loose-items)
+24. [Persistence](#persistence)
 
 ## Principles
 
@@ -696,6 +697,7 @@ Code: `Director/RZ_StoryArcs.c`, `Director/RZ_Headlines.c`.
 The Director strings events into short storylines. Each step only fires if the previous one
 really happened (a mission ran, a player heard a rumour, a truck left), so every server lives
 through different plots. An arc whose next step can't happen fizzles out quietly.
+Longer storylines, over many sessions and with choices, are [questlines](#questlines).
 
 - **When:** one arc at a time. About every hour with players online, 60% of the time one starts:
   a random arc that hasn't run in the last four hours and can run now. The arcs' clock (steps,
@@ -723,6 +725,125 @@ the cure percentage.
 *Simplified:* the "camp selling antidotes" is a headline, not a shop. The convoy is the normal
 supply truck. The flock's hordes spawn at the Preacher rather than following him from town to
 town. The congregation's "borrowing" is talk only; its half portions are real.
+
+## Questlines
+
+Code: `Director/RZ_Questlines.c` (the engine), `Missions/Questlines/` (the author's base class
+`RZ_Questline.c`, the approach helpers `RZ_QuestApproach.c`, the registry
+`RZ_QuestlineRegistry.c`, and one folder per faction for the questlines themselves). Settings:
+**Director > Questlines**. Every questline and its stages are in [MISSIONS.md](MISSIONS.md#questlines).
+
+Long storylines in the New Vegas style, much longer than [story arcs](#story-arcs-and-headlines):
+a questline runs over many sessions, through stages that each offer one mission or wait for
+time and the world, and how players did each stage decides where it goes and how it ends.
+
+- **Stages.** A *mission stage* offers one mission, a normal `RZ_Mission` started through the
+  mission manager, so offers, rough areas, eligibility, payment and cleanup work as for any
+  contract. A *wait stage* waits for play time, real time or both ("a day later"), and for the
+  world (a leader alive, a town held, morale, a flag set earlier). A stage whose wait is over
+  but which can't happen (its world gate is false, or its mission finds no place) keeps
+  waiting, then fizzles after its give-up time (3 hours of play unless the stage says
+  otherwise) with one line of text. A stage the story keeps coming back to (a retry after a
+  failure) fizzles after its visit limit (3).
+- **Approaches.** A stage mission can be done several ways: talk, persuade (background and
+  standing), sneak (unseen, no shots near), force, bribe (Favor), betray, or side with another
+  faction. The approach that decides the stage sets an *outcome*, and the questline picks the
+  next stage from it. A side approach can end the mission as failed for its giver (no pay)
+  while still moving the story on.
+- **Who took part.** Every player who did something at a stage is recorded by identity with
+  their approach and a few words ("talked him out of it"), so players can come and go across
+  sessions. Personal rewards go at once to whoever did the step: the stage mission's own pay,
+  standing from siding, a small extra reward. World consequences at the end are shared.
+- **Endings** change the world only through existing systems, each capped per call: faction
+  morale (±10), strength (±5), a town's infection (±15), a safehouse's food (±6) and people
+  (±3), a leader replaced (never a stronghold's), an outpost handed over (the territory's own
+  rules: never a stronghold, never the owner's last, no truce, nobody watching), a headline, a
+  rumour wanderers and leaders repeat for some hours, a wanderer who remembers everyone who
+  took part, and standing for everyone who took part (Fame ±10, Infamy up to 15; optionally only
+  those who took one approach). Players who are offline get their standing on their saved
+  profile.
+- **How many.** At most **Max active** questlines at once (2), never two for the same faction
+  (a group that isn't one of the four factions has its own slot). Every 30 minutes or so with
+  players online, half the time, a questline that can start does. One that reached an ending
+  doesn't come back this season; one that fizzled can start again after 6 hours of play.
+- **Time.** The questlines' clock runs only while someone is online. Real-time waits use the
+  server's clock, so "12 real hours" passes overnight with the server empty. **Wait scale**
+  multiplies every wait and give-up time (0.1 for a quick test).
+- **The journal.** A questline appears in the journal of everyone who took part and of anyone
+  its current stage mission was offered to: its title, the stage, the stage's text and "what you
+  know so far" (notes added as it goes). Its stage missions show the same type icon
+  ([UI.md](UI.md#screens)).
+- **Saved.** The stage, flags, texts, notes, timers, branch, visits and every participant are
+  saved and restored. A stage mission doesn't survive a restart: its stage stays, and the mission
+  is offered again from the start. A season wipe ends every questline.
+
+*Simplified:* the "persuade" check is a fixed score, not a roll: the same player with the same
+standing always gets the same answer (once per player per mission). A stage's people stand
+still (props with talk and choice actions), apart from optional AI groups.
+
+### Writing a questline
+
+One class in its own file, `Missions/Questlines/<Faction>/RZ_Quest_<Name>.c`, plus its stage
+missions in the same file, registered with one line in `RZ_QuestlineRegistry.RegisterAll`. The
+example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
+
+1. **Define()**: `Info("haven_short_weight", "Short Weight", RZ_EFaction.SURVIVORS)` (the key is
+   saved: never change it once it has run), then the stages, the first one is where it starts:
+   `MissionStage(S_ASK, "Where the food goes", "...{town}...")` or
+   `WaitStage(S_WAIT, "The next handover", "...")`. Tune a stage on the object it returns:
+   `.Wait(playMinutes, realHours, both)`, `.GiveUp(playHours, "fizzle line")`, `.Visits(n)`.
+   A group that isn't an `RZ_EFaction` passes faction -1 and calls `Slot("cannibals")`.
+2. **CanStart(gm, run)**: pick the places and people and keep them on the run:
+   `run.SetFlag("house", idx)`, `run.SetText("town", name)`, `run.SetPlace(pos, name)`.
+   Return false if the world isn't right yet; spawn nothing here. Every `{key}` in a stage's
+   text, a note or a line is filled in from the run's texts.
+3. **IsReady(gm, run, stage)**: world gates on top of the wait, with the helpers
+   `IsLeaderAlive`, `LeaderNear`, `IsTownHeldBy`, `GetMorale`, `GetHouse`, or a flag.
+4. **MakeMission(gm, run, stage)**: `return new RZ_QM_MyStage();`. The engine sets its
+   `m_iQuestRun`, runs `Configure`, checks the world and starts it.
+5. **The stage mission** extends `RZ_QuestMission` (a puzzle mission that is never picked at
+   random). `Configure` sets the giver and pay as usual (`SetContract`). `SetupPuzzle` reads the
+   run (`QFlag`, `QText`, `QFill`) and picks the spot; `SpawnScene` puts people and props down
+   when the first player is within 400 m: `SpawnPerson(gm, pos, objIdx, talkClue, "Talk to
+   ...", "Ask|Press him|Pay him")` (up to four choices), `SpawnClue`, `SpawnObject`. Approaches
+   in `OnChoice`, `OnUse` and `OnClueRead`:
+   - talk: `Remember(gm, playerId, RZ_EQuestApproach.TALK, "asked about the stores")`;
+   - persuade: `TryPersuade(gm, playerId, faction, difficulty, "police,excon")`: the standing's
+     rank with that faction (Stranger 0, Known 1, Trusted 2, Champion 3, mixed tiers one less,
+     Watched -1, Hunted -2) plus 1 for a listed background must reach the difficulty; once per
+     player;
+   - sneak: `m_Quiet.Watch(pos, radius)`, then `m_Quiet.IsQuiet(gm, playerId)` (no shots in the
+     radius since, not noticed by heat or the infected), `m_Quiet.Spot(playerId)` when someone in
+     the scene sees them;
+   - force: `RZ_UnitWatch` for a spawned group, `SpawnGuards` and `OnZombiesKilled` for the
+     infected, `RZ_Util.IsArmed` for a threat;
+   - bribe: `TryBribe(gm, playerId, faction, cost)` (spends Favor, says so if they're short);
+   - side with another faction: `RZ_QuestApproach.SideWith(gm, playerId, with, against, fame, infamy)`;
+   - the approach that decides the stage: `Resolve(gm, playerId, approach, outcome, "what they
+     did", success)`. success = false ends the mission as failed for its giver (no pay), but the
+     outcome still goes to the questline.
+   Flags for later stages: `SetQFlag(gm, "caught", 1)`; journal notes: `QNote(gm, "...")`;
+   a personal extra: `Run(gm).Reward(gm, playerId, faction, fame, favor, "why")` (Fame up to
+   15, Favor up to 40).
+6. **Next(gm, run, stage, outcome)**: return the next stage's id. The outcome is yours (10 and
+   up), or `OUTCOME_DONE` (the mission succeeded without one, or a wait is over) or
+   `OUTCOME_FAILED` (it failed or ran out of time). Add notes (`run.Note`), set the branch
+   (`run.SetBranch`), check who did what (`run.AnyDid(approach, stage)`, `run.Flag`). End with
+   `return Finish(run, ending, "line for everyone who took part")` or
+   `return Fizzle(run, "line")`.
+7. **OnEnding(gm, run, ending)**: the consequences, through `NudgeMorale`, `NudgeStrength`,
+   `NudgeInfection`, `ChangeFood`, `ChangePopulation`, `ReplaceLeader`, `HandOutpost` (both
+   return false if they can't happen: then don't claim they did), `Headline`, `SpreadRumour`,
+   `RememberWanderer` and `ChangeStanding`.
+8. Optional: `OnBegin` and `OnStageBegin` (an opening headline, a first note), `Rumour` (gossip
+   while it runs), `OnWandererTalk` and `OnLeaderTalk` (a line when a wanderer or leader is talked
+   to, which can also set a flag a wait stage waits for), `JournalText` (a brief that changes
+   with the flags).
+9. Add it to [MISSIONS.md](MISSIONS.md#questlines) (stages, approaches, endings, ✅ only when
+   it's in code) and run `tools/compile_check.sh`. To try it quickly, set **Wait scale** to 0.1
+   and call `GetQuestlines().Begin("your_key")` from a test.
+
+Player-facing text follows the writing guide in [LORE.md](LORE.md#writing-guide).
 
 ## Town memory
 
@@ -1287,7 +1408,7 @@ Code: `Persistence/RZ_SaveData.c`.
 Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stage, every
 settlement's infection and town memory, cure progress and antidote and stabiliser stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
-supply stock, faction life, the power grid and radio station, story arcs, headlines and world
+supply stock, faction life, the power grid and radio station, story arcs, questlines, headlines and world
 interactions. A save from another map is ignored. A profile that never spawned and holds nothing
 lasting (no lives, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
 left before the server knew them (a wound described after a disconnect) gets a blank profile
