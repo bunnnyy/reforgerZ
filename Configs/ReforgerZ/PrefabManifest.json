@@ -797,7 +797,7 @@
    "slotLabel": "Missions > Red Hand group",
    "required": false,
    "minimum": false,
-   "use": "Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness; default Red Hand hunter squad",
+   "use": "Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness, the crews in Learning the Drones and The Pit's Debtor, Cargo's guards; default Red Hand hunter squad",
    "notes": ""
   },
   {
@@ -887,7 +887,7 @@
    "slotLabel": "Missions > Contracts > Escort civilians",
    "required": false,
    "minimum": false,
-   "use": "Refugee Column, Bust Out, Desertion Route (falls back to the survivor group, then data)",
+   "use": "Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor (falls back to the survivor group, then data)",
    "notes": ""
   },
   {
@@ -2624,7 +2624,7 @@
    "slotLabel": "Supply > Red Hand truck",
    "required": false,
    "minimum": false,
-   "use": "the supply truck",
+   "use": "the supply truck; the truck in Cargo (needed for it)",
    "notes": ""
   },
   {
@@ -2696,7 +2696,7 @@
    "slotLabel": "Supply > Red Hand crew",
    "required": false,
    "minimum": false,
-   "use": "the crew",
+   "use": "the crew; the truck crew in Cargo",
    "notes": ""
   },
   {

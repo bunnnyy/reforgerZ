@@ -11,6 +11,7 @@ these missions as stages are in [QUESTLINES.md](QUESTLINES.md) (designed, not bu
 | Kind | In code | Designed, not built |
 |---|---|---|
 | [Faction contracts](#faction-contracts) (20 designed per faction, plus five hard edges) | 85 | — |
+| [The Red Hand's hard edges](#the-red-hands-hard-edges) | 3 | — |
 | [World events](#world-events) | 25 | — (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 17 | — |
 | [Unarmed missions](#unarmed-missions) | 11 | — |
@@ -18,7 +19,7 @@ these missions as stages are in [QUESTLINES.md](QUESTLINES.md) (designed, not bu
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 32, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **181** | **—** |
+| **Total** | **184** | **—** |
 
 ## Who gets offered what
 
@@ -56,7 +57,7 @@ How the code does it:
   contracts add (drop points, grids) also wait until you're close; a contract's own progress
   messages may still give directions.
 - **No Vehicles** (a season rule set, [DESIGN.md](DESIGN.md#seasons)) takes out Recover the Bus,
-  Car Theft, Mobile Lab and the car keys job.
+  Car Theft, Mobile Lab, Cargo and the car keys job.
 - **Missions that need an optional prefab** never appear until it's set.
 - **Needs and morale** make matching contracts more likely ([REPUTATION.md](REPUTATION.md),
   "Morale, needs, truces and feuds").
@@ -169,6 +170,20 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 | 20 | Take the Lab | Champion, final stand running | | Hold the lab's clean room for 90 s during the final stand while the crew steals the batch | Huge Fame (Halcyon Infamy); the final stand ends, research drops to 90%, two doses reach the black market. The stand ends first: fails | ✅ *reframed: the batch is stolen, which only delays the cure. The lab never falls and nobody wins the cure by taking it* |
 
 **Amends:** Fence the Goods works off Red Hand Infamy; so does paying Favor ([REPUTATION.md](REPUTATION.md#working-off-infamy)).
+
+### The Red Hand's hard edges
+
+What the crews don't say out loud ([LORE.md](LORE.md), "The Red Hand"), as jobs with a choice in
+them. In the Red Hand's two, choosing against it makes the Haven the payer: anyone the Haven
+doesn't hunt is paid, the Red Hand adds Infamy, and the crew boss who gave the job doesn't count
+it as help. Cargo is the Haven's, and taking a cut makes the Red Hand the payer the same way.
+Code: `Missions/RedHand/RZ_RedHandLoreMissions.c`.
+
+| # | Contract | From | Needs | Bg | What you do | Result | Status |
+|---|---|---|---|---|---|---|---|
+| 1 | Learning the Drones | Red Hand | Known, Perimeter on | ★ Radio Op: counts twice as fast, so he's out there half as long (shot 35%, not 55%) | A crew waits with a debtor 120–200 m outside the warning zone. **Walk him to the line**: he walks with you to a marker 20 m short of the kill zone, then on alone; stay within 50 m of the marker for 90 s and count. A warning shot, then maybe the second one. **Get him away**: he follows you to the nearest Haven safehouse (the crew fights you) | Walk: Fame, Favor, whether he lives or not (shot 55% of the time). Away: Haven Fame, Favor, he joins the safehouse (+15 Red Hand Infamy) | ✅ *spots from the Perimeter helper, so it works on land and sea edges (on a sea edge he wades out from the shore); never where the coast lies past the drones' reach. He is data out past the marker: the shots are effects, not a body. The crew is real only with the Red Hand group prefab* |
+| 2 | The Pit's Debtor | Red Hand | Known | ★ Ex-Con: caught rigging 10% (not 25%), half the chance of being seen walking him out | Nobody volunteered for the pit (the one Fight Pit and House Rules use), so a debtor goes in, and you're his second. **Pay what he owes** (25 Red Hand Favor), **rig the pens**, or **get him out** | Pay: half pay. Rig: caught, +10 Red Hand Infamy and failed; else keep him standing in the ring for 150 s (two rounds of three infected): full pay. Out: walk him to the Haven; seen near the pit (30% a check by day, 12% by night, every 5 s within 60 m): +8 Red Hand Infamy at once and the pit crew fights. Arrives: Haven Fame, Favor, he joins the safehouse (+15 Red Hand Infamy). Nobody chooses in 40 min: he goes in alone, failed | ✅ *only a player the Red Hand hired can pay, checked before the Favor is taken. The pit crew is real only with the Red Hand group prefab* |
+| 3 | Cargo | Haven | Known | ★ Hunter: the crew sees you within 15 m, not 30 | A Red Hand truck carries people. Three steps: a lookout's note outside one town names the next; there the truck is parked (watch it from within 80 m for 20 s; seen, its crew fights and it leaves at once); then it drives on to a shed outside a third town. At the shed: **cut the lock** (12 s, the guards fight) and drive them to the Haven in the truck, **radio the Haven**, or ask the driver for **a cut** | Free: Fame, Favor, +3 at the safehouse (+15 Red Hand Infamy). Radio: 60% pay, +2 at the safehouse (+8 Red Hand Infamy). Cut: the Red Hand pays anyone it doesn't hunt, 10 Fame and 40 Favor (+15 Haven Infamy) | ✅ *the truck is Supply > Red Hand truck (needed); it's data while it moves and only parked trucks are seen, with no fuel until the lock is cut. It waits at the stop until someone has watched it. Its crew is Supply > Red Hand crew, the shed's guards the Red Hand group (each falls back to the other; neither = none). Freeing them needs a vehicle, so No Vehicles takes it out* |
 
 ### Halcyon
 
@@ -399,10 +414,10 @@ Every background has contracts it shines at, and some it's shut out of.
 |---|---|---|
 | Nurse | Medicine Run, Bitten Friend, Walk Him Out, Pharmacy Lure, Medicine Before Dark, Rescue the Pilot, Cold Chain | — |
 | Mechanic | Clear the Road, Crash Site, Junction Boxes, Rooftop Rescue, Fuel for the Lights, Water Purifier, Fortify the Safehouse, Recover the Bus, Convoy Escort, Blow the Bridge, Car Theft | — |
-| Hunter | Rescue the Kids, Smuggler's Run, Hunt the Screamer, Silent Courier, Harvest Guard | — |
+| Hunter | Rescue the Kids, Smuggler's Run, Hunt the Screamer, Silent Courier, Harvest Guard, Cargo | — |
 | Police | Checkpoint Duty, Trail of Clues, The Rat, Curfew Patrol, Loot the Armory, Double Agent | The Informant |
-| Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, Bust Out | Raid the Red Hand (until Champion with Bastion) |
+| Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, Bust Out, The Pit's Debtor | Raid the Red Hand (until Champion with Bastion) |
 | Lab Tech | Field Samples, Water Survey, Quiet Count, Steal the Antidotes, Water Purifier, Install Sensors, Patient Zero | — |
-| Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, Restore Comms, No Reply, Install Sensors, Medical Drone | — |
+| Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, Restore Comms, No Reply, Install Sensors, Medical Drone, Learning the Drones | — |
 | Unemployed | +50% Fame from every contract (and Infamy worked off by amends) | — |
 | Elder (unlock) | Walk Him Out, The Ledger, The Bell Order, The Silent Village | Requisition, Protection Racket |

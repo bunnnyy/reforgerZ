@@ -209,9 +209,9 @@ red armband ([REPUTATION.md](REPUTATION.md), "Reputation clues").
 | **The cut dose** | Antidote stretched with whatever was in the bag. They know it works half the time. They sell it to outsiders, never to the crew. | The cut dose on the black market |
 | **"The well story"** | What happens to a place that doesn't pay is never said. Somebody tells the story about the well instead, and lets you finish it yourself. | Protection Racket; the poisoned-well rumours, Fever Town's among them |
 | **Strays** | Crews keep track of the people the Haven turned out, and where they sleep. A hungry safehouse will sometimes sell one. | A hungry house selling an exile's location; A Quiet Arrangement |
-| **Learning the drones** | The gap in the drones' rotation was found by sending people toward the line and timing what happened. Most of the ones they sent were in the book. | The Blind Spot (the gap). How they found it: lore only |
-| **The pit** | A ring of infected and bets on who stays standing. When nobody volunteers, someone in the book goes in. | Fight Pit and House Rules (the pit). The debtors: lore only |
-| **"Cargo"** | Trucks that carry people, not tins. Where to, nobody says. | Rumours |
+| **Learning the drones** | The gap in the drones' rotation was found by sending people toward the line and timing what happened. Most of the ones they sent were in the book. | The Blind Spot (the gap); Learning the Drones (how they found it) |
+| **The pit** | A ring of infected and bets on who stays standing. When nobody volunteers, someone in the book goes in. | Fight Pit and House Rules (the pit); The Pit's Debtor |
+| **"Cargo"** | Trucks that carry people, not tins. Where to, nobody says. | Cargo (the Haven follows a truck to a shed); rumours |
 | **Crews eat crews** | Out loud there's one Red Hand. Quietly, crews sell each other's camps to Bastion, and the boss purges any crew that talks about a new boss. | Sell Out a Rival Crew; Coup Talk |
 
 **How they see the others:**

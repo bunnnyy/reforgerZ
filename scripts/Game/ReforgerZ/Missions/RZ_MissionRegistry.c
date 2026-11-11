@@ -84,6 +84,10 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_CollectTheBounty);
 		mgr.RegisterType(RZ_Mission_KillTheOfficer);
 		mgr.RegisterType(RZ_Mission_TakeTheLab);
+		// The Red Hand's hard edges (Missions/RedHand/RZ_RedHandLoreMissions.c); Cargo is the Haven's
+		mgr.RegisterType(RZ_Mission_LearningTheDrones);
+		mgr.RegisterType(RZ_Mission_PitsDebtor);
+		mgr.RegisterType(RZ_Mission_Cargo);
 
 		// Halcyon
 		mgr.RegisterType(RZ_Mission_SampleHunt);
