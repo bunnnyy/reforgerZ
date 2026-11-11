@@ -6,11 +6,12 @@ feed them, and what's built. The layouts' widget trees and the icon atlas are in
 [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui). The setting and the voices used in every line of
 text are in [LORE.md](LORE.md).
 
-**Status:** the icon set, the mockups, the 12 layouts, the icon atlas and its imageset, and the
+**Status:** the icon set, the mockups, the layouts, the icon atlas and its imageset, and the
 menu and input config overrides are built. In Workbench play the HUD works: the styled notice
-cards, the stealth visibility bars and the noise meter show. The menus haven't been checked in
-play, the background panel and the map icons aren't in the game yet, and the menu keys clash with
-vanilla keys ([Built and planned](#built-and-planned)).
+cards, the stealth visibility bars and the noise meter show. The notebook, the talk screen, the
+reader, the subtitles and notice pacing are written (their layouts as text) and compile, but
+haven't been played; the background panel and the map icons aren't in the game yet
+([Built and planned](#built-and-planned)).
 
 ## Art direction
 
@@ -308,9 +309,12 @@ N is free in play (vanilla uses it only in the group menu and the map's pencil t
 contexts). The pad has no free button in play, so Start (the pause menu) and the notebook item are
 its way into the notebook.
 
-**Status.** The screens, the HUD and the chat commands were built for keyboard and mouse and
-haven't been checked with a gamepad yet. A check of the whole mod, and the fixes it finds, are
-planned ([ROADMAP.md](ROADMAP.md)).
+**Status.** The notebook, the talk screen, the reader and the subtitles were built for the pad
+as well: every action they need has a pad binding or route, each sets the focus, the footers
+show prompts by device, and the new screens follow the TV sizes and the safe area. None of it
+has been played with a pad yet (the VERIFY list's UI part). The older screens' content (the
+notebook's pages, the notice board) keeps text under 18 px. A check of the whole mod with a
+gamepad, and the fixes it finds, are planned ([ROADMAP.md](ROADMAP.md)).
 
 ## How the scripts fit
 
@@ -319,7 +323,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | Class | Runs on | Does |
 |---|---|---|
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes**; with Stealth on, stealth's own update (every second) hands it each player's visibility, sent the same way as a level 0–5 and whether it counts as hidden (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal (with the questlines the player is part of and the lab's line), background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
-| `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the radio log on the client for this life. A notice board payload from the server opens the board menu |
+| `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the Radio tab's notices on the client for this life and the notebook's unread counts. A notice board payload from the server opens the board menu; a reader or talk payload opens those screens. Carries talk picks and closed screens back |
 | `RZ_Dialogue`, `RZ_TalkSpeaker` (`RZ_TalkGeneric`, `RZ_TalkLeader`), `RZ_TalkNeeds` | server | Conversations: sessions, capture, replies and their needs, picks ([DESIGN.md](DESIGN.md#talking-to-people)) |
 | `RZ_TalkMenu` | client (`ChimeraMenuBase`) | The talk screen ([The talk screen](#the-talk-screen)) |
 | `RZ_Reader`, `RZ_ReaderMenu` | server, client | The reader: one player's paper, a page at a time ([Subtitles and the reader](#subtitles-and-the-reader)) |
@@ -331,7 +335,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_BackgroundPanelComponent` | client (widget handler) | Watches the picked loadout in the deploy menu and shows its background and gear |
 | `SCR_BasePlayerLoadout` (modded, `RZ_LoadoutLock.c`) | server and client | Makes a locked background's loadout unavailable |
 | `RZ_MapIconsUI` | client (map component) | The icon layer on the map |
-| `RZ_NoticeStyle` | client | Classifies a notice by its title (faction names, leader titles, channel names) into a kind and a faction for its card and the radio log. The 600-odd `NotifyPlayer` calls are unchanged |
+| `RZ_NoticeStyle` | client | Classifies a notice by its title (faction names, leader titles, channel names) into a kind, a faction and a priority for its card and the Radio tab; a server tag (`RZ_ENoticeTag`) decides where there is one. The 600-odd plain `NotifyPlayer` calls are unchanged |
 | `RZ_UIW`, `RZ_UIText`, `RZ_UIColor` | client | Every engine UI call in one helper; payload text; the palette |
 
 **Data is cheap.** Pushed values are a few numbers per change, to the owning player only. Menu data
@@ -344,7 +348,7 @@ Nothing is replicated to other players.
 owner-only RPC on their `RZ_PlayerUIComponent` (`RpcDo_Notice`; spoken lines `RpcDo_Say`). Only a
 controller without the component gets the old broadcast that each client filters for itself; the
 server picks one of the two per message, never both. `NotifyAll` stays a broadcast. On the client,
-`QueueHint` classifies it, adds radio messages to the radio log, and offers it to the HUD. If **UI
+`QueueHint` classifies it, keeps radio, mission and world notices for the Radio tab, and offers it to the HUD. If **UI
 > Styled notices** is off, or the HUD layout or the card layout is missing, the vanilla hint queue
 shows it exactly as before.
 
@@ -381,9 +385,9 @@ static parts of the layouts.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; six mockups and previews. In code: the feed, the HUD, six menus with mouse support (four tabs, the notice board, the hall of fame), chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback, the radio log |
-| Workbench files | The 12 layouts ([LAYOUTS.md](../UI/LAYOUTS.md)); the icon atlas and the `RZ_Icons` imageset; the menu and input config overrides in `Configs/System/` (Workbench finds the six menu presets); the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, all but the map icon layout. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
+| Built | The icon set and its renderer; nine mockups and previews (with the talk screen, the reader and a subtitle). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item), the talk screen and its engine, the reader, the screen guard, the notice board menu, chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback |
+| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's and reader's written as text; the icon atlas and the `RZ_Icons` imageset; the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader and talk presets; N, 1–7 and the filter's X); the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, all but the map icon layout. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter |
-| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); the menus, their keys and their mouse clicks; the notice board menu (**UI > Board menus** is off); the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |
-| Not done | The override of the vanilla deploy menu's layout that holds the background panel, so the panel doesn't show. The map configuration override with `RZ_MapIconsUI`, and **UI > Map icon layout** (empty: set, it turns the vanilla text markers off), so the map shows the vanilla markers. Images for the icons the scripts never swap (the map key's, the radio log's channel list, the HUD's radio, noise and paused icons, the background panel's): they draw as flat squares in their colour |
+| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the subtitles; mouse clicks and the pad; the notice board menu (**UI > Board menus** is off); the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |
+| Not done | The override of the vanilla deploy menu's layout that holds the background panel, so the panel doesn't show. The map configuration override with `RZ_MapIconsUI`, and **UI > Map icon layout** (empty: set, it turns the vanilla text markers off), so the map shows the vanilla markers. Images for the icons the scripts never swap (the map key's, the radio channel list, the HUD's radio, noise and paused icons, the background panel's): they draw as flat squares in their colour |
 | Planned | A sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm |

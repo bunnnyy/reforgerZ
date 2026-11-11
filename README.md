@@ -63,16 +63,19 @@ and one way to end it: **research the cure.**
 - **Any map**: towns, the quarantine line and its checkpoints are found automatically.
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
   emblems, an infection timer with the golden window, styled notice cards in each faction's
-  colour, screens for standing, missions and the radio, and on the map only what you know
-  (the HUD and notice cards show in Workbench play; the map icons, and opening the screens from
-  the map, are still to do).
+  colour that come a few at a time by importance, a notebook (standing, journal, radio, map key,
+  hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
+  for everyone who talks, spoken lines as subtitles, notes on a paper reader, and on the map only
+  what you know. Gamepad and console as well as keyboard and mouse (the HUD and notice cards show
+  in Workbench play; the notebook, talk screen, reader and subtitles are written and not yet
+  played; the map icons are still to do).
 
 ## Status
 
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 That's about 113,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 36 `VERIFY` markers left in the game
+was also checked against the base game's script source; the 43 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -139,8 +142,12 @@ scripts/Game/ReforgerZ/
                  spots kept out of locked buildings), cars, crafting, water,
                  traps, generators, fire, secure radio, treating others
   Persistence/   save and load of mode state, the hall of fame
-  UI/            the per-player data feed, HUD, menus, deploy-menu panel and loadout lock,
-                 the map's icon layer, notice styles, chat commands
+  Dialogue/      the talk screen's engine: conversations, adapters for each kind of person,
+                 what a reply needs
+  UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
+                 pages, the pause menu button and notebook item, the talk screen, the reader,
+                 the screen guard, the notice board, deploy-menu panel and loadout lock, the
+                 map's icon layer, notice styles, chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
 Worlds/RZ_Arland/

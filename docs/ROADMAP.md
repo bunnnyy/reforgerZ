@@ -177,8 +177,10 @@ In this order, because later ones depend on earlier ones:
 16. **Seasons:** a wipe end to end (backup, fresh start, the winner's rules, the hall of fame
     kept), and whether the rule sets feel different enough without being unfair. Are rough
     contract areas fun to search, or too vague at 500 m?
-17. **The UI** with a game client: does the owner-only feed arrive, does the timer agree with
-    the stage messages, do the menus open, fill and take clicks, do the map icons sit on their
+17. **The UI** with a game client and a gamepad: does the owner-only feed arrive, do notices come
+    a few at a time, does the timer agree with the stage messages, do the notebook (N, the pause
+    menu, the item), the talk screen and the reader open, fill, take clicks and the pad, and close
+    in danger, do the map icons sit on their
     spots while panning and zooming (once the map layer is set up), and does the deploy menu grey
     out locked loadouts ([UI.md](UI.md))?
 

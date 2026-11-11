@@ -31,7 +31,7 @@ mockup, its section says so.
 - **Icons** are `Image` widgets, and no layout sets an image yet. An icon a script swaps gets its
   image by name from **UI > Icon imageset**, and its tint. An icon marked *static* below draws as
   a flat square in its colour until it's given its image from the `RZ_Icons` imageset in the
-  layout editor (not done yet). The map key's and the radio log's static icons are named after
+  layout editor (not done yet). The map key's and the Radio page's static icons are named after
   their icon (`Key2_marker_safehouse`, `Chan6_status_secure_radio`).
 - **Fonts.** The game's UI fonts (`UI/Fonts/` in 1.9) have no mono or serif face. Where the trees
   say *mono* (and the clue paper's *serif*), the layouts use Roboto:
