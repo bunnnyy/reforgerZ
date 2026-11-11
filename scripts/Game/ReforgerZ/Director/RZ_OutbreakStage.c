@@ -20,13 +20,13 @@ class RZ_StageSettings
 	[Attribute("0.015", desc: "Chance that a spawned zombie is a special (drops research samples)")]
 	float m_fSpecialChance;
 
-	[Attribute("0.08", desc: "Infection points per minute (while players are online, x season speed) that an infested town spreads to its neighbours; a quarter of it creeps up everywhere")]
+	[Attribute("0.016", desc: "Infection points per minute (while players are online, x season speed) that an infested town spreads to its neighbours; a quarter of it creeps up everywhere")]
 	float m_fSpreadPerMinute;
 
 	[Attribute("3", desc: "Concurrent missions (plus one per 4 players)")]
 	int m_iBaseMissions;
 
-	[Attribute("960", desc: "Minutes with players online (divided by season speed) before advancing to the next stage. 0 = only advance on infection level")]
+	[Attribute("4800", desc: "Minutes with players online (divided by season speed) before advancing to the next stage. 0 = only advance on infection level")]
 	float m_fDurationMinutes;
 
 	[Attribute("1", desc: "How often Bastion missions show up (Bastion pulls back to its bases as things get worse)")]
@@ -39,19 +39,21 @@ class RZ_StageSettings
 		s.m_eStage = stage;
 		switch (stage)
 		{
-			// Paced for a season of about 10 days (docs/DESIGN.md, "Season pacing"): 8, 16 and 24
-			// hours with players online, about day 1, days 2-3 and days 4-6
+			// Paced for a season of about 45 real days with 5 regulars (docs/DESIGN.md, "Season
+			// pacing"; tools/pacing_sim.py): 40, 80 and 120 hours with players online, about days
+			// 1-5, 6-15 and 16-30, Aftermath from about day 31. Spread is a fifth of the old 10-day
+			// tuning, so each stage creeps as much as it did
 			case RZ_EOutbreakStage.EARLY_OUTBREAK:
-				s.Set(0.6, 0.01, 0.05, 3, 480, 1.0);
+				s.Set(0.6, 0.01, 0.01, 3, 2400, 1.0);
 				break;
 			case RZ_EOutbreakStage.COLLAPSE:
-				s.Set(1.0, 0.015, 0.08, 4, 960, 0.6);
+				s.Set(1.0, 0.015, 0.016, 4, 4800, 0.6);
 				break;
 			case RZ_EOutbreakStage.OVERRUN:
-				s.Set(1.5, 0.02, 0.1, 4, 1440, 0.25);
+				s.Set(1.5, 0.02, 0.02, 4, 7200, 0.25);
 				break;
 			case RZ_EOutbreakStage.AFTERMATH:
-				s.Set(0.8, 0.025, 0.03, 5, 0, 0.1);
+				s.Set(0.8, 0.025, 0.006, 5, 0, 0.1);
 				break;
 		}
 

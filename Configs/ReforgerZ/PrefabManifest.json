@@ -3947,13 +3947,13 @@
   {
    "category": "ReforgerZ",
    "object": "(top level)",
-   "covers": "Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1)"
+   "covers": "Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days with 5 regulars; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing))"
   },
   {
    "category": "ReforgerZ",
    "object": "Season",
    "field": "m_SeasonSettings",
-   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure; Off, After weeks, or the first of both), epilogue (48 h), weeks (4), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
+   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (48 h), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
   },
   {
    "category": "World",
@@ -3987,7 +3987,7 @@
   {
    "category": "Director",
    "object": "Stages (list)",
-   "covers": "Per-stage overrides; empty = the built-in four (8, 16 and 24 hours played; [DESIGN.md](DESIGN.md#season-pacing))"
+   "covers": "Per-stage overrides; empty = the built-in four (40, 80 and 120 hours played, spread 0.01 to 0.02 a minute; [DESIGN.md](DESIGN.md#the-director-outbreak-stages-and-spread))"
   },
   {"category": "Director", "object": "(top level)", "covers": "**Broadcast minutes** (25; 0 = only on first join)"},
   {
@@ -4029,7 +4029,7 @@
   {
    "category": "Cure",
    "object": "(top level)",
-   "covers": "Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75)"
+   "covers": "Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.32: about 45 days with 5 regulars; about 1.6 ÷ regulars above that), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25), **Finale fallback** (1% a real week past 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end))"
   },
   {
    "category": "Missions",
@@ -4195,7 +4195,7 @@
     "m_sRuleSets": "",
     "m_eWipeMode": "1",
     "m_fEpilogueHours": "48",
-    "m_iWipeWeeks": "4",
+    "m_iWipeWeeks": "10",
     "m_fWarnHours": "24",
     "m_bHallOfFame": "1"
    }
@@ -4908,6 +4908,11 @@
   "m_fInfectionMinutes": "60",
   "m_fResearchPerSample": "1",
   "m_fMissionResearchMult": "0.75",
+  "m_fCurePace": "0.32",
+  "m_fLabPerDay": "3",
+  "m_fLabBacklogDays": "4",
+  "m_fEmptyLabBonus": "0.25",
+  "m_fFinaleFallbackPerWeek": "1",
   "m_bScaleCountsItems": "0",
   "m_sLandmarkName": "the old cross",
   "m_fHeatPerShot": "3",

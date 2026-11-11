@@ -95,12 +95,24 @@ class RZ_LabHelper
 		int total = 0;
 		foreach (IEntity item : items)
 		{
-			RZ_SampleItemComponent s = RZ_SampleItemComponent.Cast(item.FindComponent(RZ_SampleItemComponent));
-			if (s)
-				total += s.GetValue();
+			total += ItemValue(item);
 		}
 
 		return total;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many samples one item counts as (0 if it isn't one).
+	static int ItemValue(IEntity item)
+	{
+		if (!item)
+			return 0;
+
+		RZ_SampleItemComponent s = RZ_SampleItemComponent.Cast(item.FindComponent(RZ_SampleItemComponent));
+		if (s)
+			return s.GetValue();
+
+		return 0;
 	}
 }
 
@@ -156,16 +168,46 @@ class RZ_SampleDeliveryActionBase : ScriptedUserAction
 		if (!CanAccept(gm, playerId, pOwnerEntity))
 			return;
 
+		// How many the receiver takes now (the lab: what fits in its backlog); the rest stay
+		int want = TakeCount(gm, playerId, value, pOwnerEntity);
+		if (want <= 0)
+			return;
+
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(pUserEntity.FindComponent(SCR_InventoryStorageManagerComponent));
 		if (!inv)
 			return;
 
+		int taken = 0;
 		foreach (IEntity item : items)
 		{
+			if (taken >= want)
+				break;
+
+			// As before the lab had a capacity: the item counts once it's asked to go (its value
+			// read first, while it still exists)
+			taken += RZ_LabHelper.ItemValue(item);
 			inv.TryDeleteItem(item);
 		}
 
-		Deliver(gm, playerId, value, pOwnerEntity);
+		if (taken <= 0)
+			return;
+
+		Deliver(gm, playerId, taken, pOwnerEntity);
+		if (taken < value)
+			OnPartlyTaken(gm, playerId, taken, value);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On the server, after CanAccept: how many of the player's samples (by value) to take. Default: all.
+	protected int TakeCount(RZ_GameModeComponent gm, int playerId, int value, IEntity receiver)
+	{
+		return value;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Only some were taken (TakeCount); the rest are still on the player.
+	protected void OnPartlyTaken(RZ_GameModeComponent gm, int playerId, int taken, int offered)
+	{
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -199,7 +241,8 @@ class RZ_DepositSamplesAction : RZ_SampleDeliveryActionBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! After the cure the lab takes no more samples (the replicated flag, so clients agree).
+	//! After the cure, or while the lab's backlog is full, the lab takes no samples (the replicated
+	//! flags, so clients agree).
 	override protected bool CanTakeNow()
 	{
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
@@ -209,11 +252,18 @@ class RZ_DepositSamplesAction : RZ_SampleDeliveryActionBase
 			return false;
 		}
 
+		if (gm && gm.IsReplicatedLabFull())
+		{
+			SetCannotPerformReason("The cold store is full");
+			return false;
+		}
+
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! On the server, before anything is taken: the cure is out, so the samples stay with you.
+	//! On the server, before anything is taken: the cure is out, or the cold store is full, so the
+	//! samples stay with you (no Fame for them).
 	override protected bool CanAccept(RZ_GameModeComponent gm, int playerId, IEntity receiver)
 	{
 		if (playerId <= 0)
@@ -225,7 +275,30 @@ class RZ_DepositSamplesAction : RZ_SampleDeliveryActionBase
 			return false;
 		}
 
+		if (gm.GetCure().IsLabFull())
+		{
+			if (gm.GetCure().IsAtFinaleGate())
+				gm.NotifyPlayer(playerId, "Halcyon", "\"The cold store is full, and the work has stopped at the last step. Samples won't finish it. Keep them.\"");
+			else
+				gm.NotifyPlayer(playerId, "Halcyon", "\"The cold store is full. We can't take another sample until the lab works through what's waiting. Come back tomorrow.\"");
+
+			return false;
+		}
+
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! As many as fit in the lab's backlog.
+	override protected int TakeCount(RZ_GameModeComponent gm, int playerId, int value, IEntity receiver)
+	{
+		return gm.GetCure().AcceptsSamples(playerId, value, gm.GetResearchPerSample());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnPartlyTaken(RZ_GameModeComponent gm, int playerId, int taken, int offered)
+	{
+		gm.NotifyPlayer(playerId, "Halcyon", string.Format("\"We can take %1 of them. The cold store is full after that: keep the other %2 and come back tomorrow.\"", taken, offered - taken));
 	}
 }
 
@@ -289,12 +362,9 @@ class RZ_LabStatusAction : ScriptedUserAction
 		if (!gm)
 			return;
 
-		string text = string.Format("Research: %1 percent\nOutbreak stage: %2",
-			RZ_Util.RoundToInt(gm.GetReplicatedCureProgress()),
+		// "Research 63 percent. Waiting: 14 samples' worth, about 4 days of work."
+		string text = string.Format("%1\nOutbreak stage: %2", gm.DescribeLabReplicated(),
 			RZ_StageSettings.GetStageName(gm.GetReplicatedStage()));
-
-		if (gm.IsReplicatedCured())
-			text = "The cure is complete.\n" + text;
 
 		SCR_HintManagerComponent.ShowCustomHint(text, "Halcyon lab", 8);
 	}

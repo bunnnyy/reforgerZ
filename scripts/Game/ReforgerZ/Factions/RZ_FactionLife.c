@@ -1312,9 +1312,14 @@ class RZ_FactionLife
 		if (cure.m_iMilestone >= 4)
 			return "\"Director, lab. Every result is in. Now we have to hold this building long enough to finish. Pray they don't hear us.\"";
 
+		// What the next result still needs beyond what already waits in the cold store
 		float next = (cure.m_iMilestone + 1) * 25;
-		float per = Math.Max(0.5, m_GM.GetResearchPerSample());
-		int needed = Math.Max(1, Math.Ceil((next - cure.m_fProgress) / per));
+		float per = Math.Max(0.01, cure.SampleWorth(0, m_GM.GetResearchPerSample()));
+		float missing = next - cure.m_fProgress - cure.GetBacklog();
+		if (missing <= 0)
+			return string.Format("\"Director, lab. We are %1 percent there, and everything for the next result is in the cold store. It's hours now, not samples. Don't put that in the log.\"", RZ_Util.RoundToInt(cure.m_fProgress));
+
+		int needed = Math.Max(1, RZ_Util.RoundToInt(Math.Ceil(missing / per)));
 		return string.Format("\"Director, lab. We are %1 percent there. Roughly %2 more samples for the next result. Whatever it costs. Don't put that in the log.\"", RZ_Util.RoundToInt(cure.m_fProgress), needed);
 	}
 }

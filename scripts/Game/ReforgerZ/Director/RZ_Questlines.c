@@ -656,6 +656,7 @@ class RZ_Questlines
 	protected float m_fNextChance;
 	protected float m_fCheck;
 	protected int m_iNextRunId = 1;
+	protected bool m_bHasCureFinale;	// a registered questline is a cure finale route (RZ_Questline.IsCureFinale)
 
 	protected static const float CHECK_SECONDS = 10;
 	protected static const float RETRY_SECONDS = 180;	// a stage mission that couldn't start tries again after this
@@ -748,6 +749,16 @@ class RZ_Questlines
 		}
 
 		m_aLines.Insert(line);
+		if (line.IsCureFinale())
+			m_bHasCureFinale = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A cure finale questline is registered and questlines are on: research then stops at 90
+	//! percent until a finale takes it further (RZ_CureResearch.IsAtFinaleGate).
+	bool HasCureFinale()
+	{
+		return m_bHasCureFinale && m_Settings.m_bEnabled;
 	}
 
 	//------------------------------------------------------------------------------------------------

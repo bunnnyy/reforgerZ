@@ -342,8 +342,8 @@ class RZ_StandingMenu : RZ_MenuBase
 }
 
 //------------------------------------------------------------------------------------------------
-//! Active contracts and events with type, giver, rough direction, requirements and rewards, and
-//! the puzzle clues you've read (docs/MISSIONS.md).
+//! Active contracts and events with type, giver, rough direction, requirements and rewards, the
+//! puzzle clues you've read (docs/MISSIONS.md), and the lab's line (research and its backlog).
 class RZ_JournalMenu : RZ_MenuBase
 {
 	protected int m_iSelected;
@@ -399,6 +399,7 @@ class RZ_JournalMenu : RZ_MenuBase
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		m_aMissions.Clear();
 		m_aClues.Clear();
+		string lab = "";
 		if (ui)
 		{
 			array<ref array<string>> recs = {};
@@ -409,9 +410,14 @@ class RZ_JournalMenu : RZ_MenuBase
 					m_aMissions.Insert(f);
 				else if (RZ_UIText.Str(f, 0) == "C")
 					m_aClues.Insert(f);
+				else if (RZ_UIText.Str(f, 0) == "S")
+					lab = RZ_UIText.Str(f, 1);
 			}
 		}
 
+		// The lab's line: research, what waits in its backlog and how long that takes
+		RZ_UIW.Show(m_wRoot, "LabStatus", !lab.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "LabStatus", lab);
 		RZ_UIW.Show(m_wRoot, "Empty", m_aMissions.IsEmpty());
 		RZ_UIW.SetText(m_wRoot, "Header", string.Format("%1 OPEN", m_aMissions.Count()));
 		DrawList();

@@ -28,6 +28,13 @@ class RZ_SaveData
 	int labAntidotes;		// doses in the lab's stock
 	int stolenAntidotes;	// doses on the Red Hand's black market
 	int labStabilisers;		// stabilisers in Halcyon's stock
+	// The lab's backlog: research delivered and not yet worked through, the real time the lab last
+	// worked, whether a finale has opened the 90 percent gate, and finale research by faction
+	// (Cure/RZ_CureResearch.c). Older saves have 0 here: an empty backlog, the clock from now.
+	float cureBacklog;
+	int labUnix;
+	bool finaleGateOpen;
+	ref array<float> finaleResearch = {};
 
 	// Season: Fame given to each faction by all players, and who got the cure (-1 = not yet)
 	ref array<int> seasonFame = {};
