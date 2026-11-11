@@ -11,6 +11,7 @@ class RZ_QuestlineRegistry
 
 		// Task Force Bastion (Missions/Questlines/Bastion/)
 		q.Register(RZ_Quest_AwaitRelief);
+		q.Register(RZ_Quest_Census);
 
 		// The Red Hand
 

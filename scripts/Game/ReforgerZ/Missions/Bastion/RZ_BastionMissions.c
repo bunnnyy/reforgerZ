@@ -737,13 +737,15 @@ class RZ_Mission_Requisition : RZ_Mission_Choice
 		if (!CanRunChoice(gm, RZ_EFaction.MILITARY, RZ_EFaction.SURVIVORS))
 			return 0;
 
-		return 0.8;
+		// A refused census sends it back more often (The Census, Missions/Questlines/Bastion/)
+		return 0.8 * RZ_Quest_Census.RequisitionWeight(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSafestSettlement(gm);
+		// The safest town, but never a house Bastion's questlines spared, and refused houses first
+		m_iSettlement = RZ_Quest_Census.RequisitionTown(gm);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s || gm.GetMissions().IsSettlementBusy(m_iSettlement))
 			return false;

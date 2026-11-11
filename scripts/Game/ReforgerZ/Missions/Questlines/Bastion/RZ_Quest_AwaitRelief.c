@@ -188,6 +188,49 @@ class RZ_BastionQuest
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! "two hundred and eleven", for what the radio reads out (0 to 999; digits above).
+	static string NumberWords(int n)
+	{
+		array<string> ones = {"no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
+		array<string> tens = {"", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
+		if (n < 0)
+			n = 0;
+
+		if (n < 20)
+			return ones[n];
+
+		if (n < 100)
+		{
+			string t = tens[n / 10];
+			if (n % 10 != 0)
+				t += "-" + ones[n % 10];
+
+			return t;
+		}
+
+		if (n < 1000)
+		{
+			string h = ones[n / 100] + " hundred";
+			if (n % 100 != 0)
+				h += " and " + NumberWords(n % 100);
+
+			return h;
+		}
+
+		return n.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A safehouse index as a bit, for flags that hold a set of houses (0 past the 31st house).
+	static int HouseBit(int house)
+	{
+		if (house < 0 || house > 30)
+			return 0;
+
+		return 1 << house;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A stage that runs this many real hours (a consequence that lasts), times the wait scale.
 	static int RealSecondsFrom(RZ_GameModeComponent gm, float hours)
 	{
