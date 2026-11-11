@@ -6,6 +6,10 @@
 #   ONLY=a,b     only these experiments (clock, groups, leak, waypoint, speeds, perception, share,
 #                noise, health, perf; perception-core = one more sample of the stances by day and
 #                night, about 13 minutes); the restart boot runs only with the clock
+#   ONLY=behaviour  the behaviour tests B1-B20 of the infected behaviour addendum instead (about 30
+#                minutes; QUICK=1 about 16; or name some of them, e.g. ONLY=b1,b6). They mod a few of
+#                Bacon's scripted nodes and character methods (files/.../RZL_Hooks.c, test only)
+#   SVG_DIR=dir  draw the behaviour run's B20 tracks (a fan and a pincer, top-down) there
 #   MAX_FPS=240  the server's frame cap (frame times under 1000/MAX_FPS ms read as the cap)
 #   ISOLATE=0    don't run the server in its own network namespace (see below)
 #
@@ -49,6 +53,9 @@ rm -rf "$ADDON" "$PROFILE/profile" "$PROFILE/logs" && mkdir -p "$ADDON" "$PROFIL
 cp "$ROOT/addon.gproj" "$ADDON/"
 sed -i 's/ *"69BD721866937F85"//' "$ADDON/addon.gproj"	# Special Zombies' "Scripts/" hides ours on Linux (see compile_check.sh)
 grep -q "$BACON" "$ADDON/addon.gproj" || sed -i "s/^\( *\)\"58D0FB3206B6F859\"/&\n\1\"$BACON\"/" "$ADDON/addon.gproj"
+# Bacon only: with Special Zombies (69BD721866937F85) among the dependencies, the 1.9 server compiles
+# none of this addon's scripts (the Game module loses them without an error)
+sed -i 's/ *"69BD721866937F85"//' "$ADDON/addon.gproj"
 cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
 cp -r "$HERE/files/." "$ADDON/"
 [ "${QUICK:-0}" = 1 ] && touch "$PROFILE/profile/zlab_quick.txt"
