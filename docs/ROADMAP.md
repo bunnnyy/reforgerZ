@@ -3,7 +3,7 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** the systems under "Built" are written in Enforce Script (about 116,000 lines) and the
+**Status:** the systems under "Built" are written in Enforce Script (about 137,000 lines) and the
 game scripts **compile cleanly** against Arma Reforger 1.9. The game mode runs with no script
 exceptions on the server, in a test world with a fake player
 ([runtime test](WORKBENCH_SETUP.md#runtime-test-without-workbench)), and in Workbench play on Arland
@@ -45,6 +45,8 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | The epilogue after the cure: the Perimeter stands down (no shots; whoever walks up to the line is turned back; the gates open with the wipe), research stops and running research and line jobs are called off, and the broadcast, guidance and the factions' lines follow | [The Perimeter](DESIGN.md#the-perimeter), [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | The shared engine (phase 1 of [the plan](../designs/PLAN.md#phases-18)): the clocks (season days, `RZ_GameTime` windows in real minutes), one check helper (Trust, Fear, threats, the price table, Pass / Short / Refused) and the ways through a job keyed by identity (the approach enum with PRESS, TRADE, TRICK and LEAVE), the deeds store (life and season), world memory (reasons, the signal ring, the town log, world records), the callback queue, notice lanes and the interruption budget, the marks spawner, the season budget in lanes with the seat ledger, and the set-piece calendar. Contracts already draw on the budget and leaders' pings and the Long Table's host on the lanes; most writers and readers come with the later phases | [The shared engine](DESIGN.md#the-shared-engine) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
+| The infected tribes, phase 2: seeds on every slot (the column, the site tribe), ranges, hunting grounds, trails and scout posts from the land grid; the daily rhythm (day parties of a fifth in twos and threes with hop and hold, hungry ones to the town-edge fields; the dusk call as one status line per player; the set-out, testing the wire when hungry; the dawn walk and count); hunts by placement (the young ahead, flankers, the core held back) with the night's commitment, the long call and the hide rule; hunger per counted night, the taken with attribution and Your dead run's caps, the ones who ran, wanderers taken and noises heard as data, post-feed sleep, weakened tribes; kill sites in feeding order, the vigil, the alpha's body with saved health, samples with the town specials scaled; the scout rule on stealth's sight radius and scouts' packs; the Hunter's tracks; tribes stir towns and leave kill sites; `/tribes hunt` and `/tribes call` | [Tribes](INFECTED.md#tribes) |
+| The infected behaviour layer: Bacon hooks (slots, stance, intake and share gates, the climb gate, mute), blind steering with release at reach or on contact and take-back, per-member slots in formations with the 3 m minimum enforced, the notice meter on stealth's visibility, shot leads, rush, stalk (along cover from the land grid), flanking pairs and encircle by temperament, give up; the water line check, stairs as wait below, the unstick ladder, speed caps per kind, LOD bands; the hunter's lunge and bite. Built only on the lab's B1-B20 verdicts | [How they move and hunt](INFECTED.md#how-they-move-and-hunt) |
 | The land grid (on with Zombies > Tribes): water, height, trees, buildings, roads and inferred bridges in 250 m squares, ridges, valleys, forests, fields, lair candidates, wild land and no-lair overlays, read once and cached, tribe slots at 1 per 5 km² with an override; measured on Arland, Everon and Cain (`tools/land_survey/`) | [The land](INFECTED.md#the-land) |
 | World interactions: loose loot in houses (rolled as data, put out on furniture and floors only near players, taken with vanilla's Pick up, refilled after an hour; keys, letters and mission items lie loose too), searching car boots and bodies, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars (only ever found: two or three missing parts, a wrench or toolkit to fit them, long loud hotwiring that can fail, rare keys; the tyre and planks are carryable items), crafting, traps, generators, fire (a thrown molotov, or a full fuel can in your hands at the doorway), water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
@@ -110,8 +112,9 @@ The build-review fixes are done. Everything below is approved. The order of the 
   ([DESIGN.md](DESIGN.md#the-shared-engine), [REPUTATION.md](REPUTATION.md#reputations)), with one
   body budget shared with the tribes' agent budget; the cure's 90% hook (`IsCureFinale`,
   `AddFinaleResearch`; [Cure research](DESIGN.md#cure-research-and-the-seasons-end)), phase 1 of the
-  tribes (the towns' crawlers, the land grid in use, the agent budget and the plumbing,
-  [INFECTED.md](INFECTED.md)), one held waypoint per group, and `tools/tribe_sim.py`,
+  tribes (the towns' crawlers, the land grid in use, the agent budget and the plumbing) and its
+  phase 2 (the tribes and the behaviour layer, [INFECTED.md](INFECTED.md)), one held waypoint per
+  group, and `tools/tribe_sim.py`,
   which simulates the tribes as data over a season at 2, 5 and 10 players on the wild land the land
   survey measured, and prints the numbers it tuned against the design.
 
@@ -185,6 +188,13 @@ In this order, because later ones depend on earlier ones:
     and 100 on the server enough with several groups out? Does the sight rule (the physics trace's
     cost, the status line's frame) keep spawns out of view without starving towns near players? Do
     loose ones lead somewhere worth following, and does a siege's end feel fair?
+    **The tribes** (phase 2, the checklist's "The tribes and how they move"): a solo night crossing,
+    a squad at night and a day pass by the lair. Is a careful crossing survivable, does day stay the
+    lighter danger (lower **Day party share** if days feel like nights), is every strike heard before
+    it lands, do blind bodies ever look broken, do formations and flanks read as a pack, does the
+    notice rate match Bacon's ladder (a walker at 100 m in about 20 s; then re-run
+    `tools/tribe_sim.py` with it), and can a new player name the place a call came from after one
+    evening?
 15. **Road posts and camps:** do posts go up on real roads ahead of players, and do the search,
     the toll, running and surrender fire at the right distances? Is the timed grudge enough to
     make the crew shoot, and does a surrender's stand-down stop them? Is a Fire Mission's horde
@@ -226,5 +236,6 @@ In this order, because later ones depend on earlier ones:
 | DarcMissions | Its convoys, occupations and crash sites assume forces from outside; they don't fit the sealed Zone |
 | Ambient Zombies | Overlaps the ReforgerZ spawner |
 | Sleep and time skip | Out of scope by design |
+| The infected dragging a player | The server can't move a player smoothly against their own machine's prediction; a grab that holds you in place is the planned alternative |
 | A trait-points system on top of backgrounds | Not wanted; backgrounds, personal goals and Legacy unlocks carry character choice |
 | Danger money on shop prices for mixed reputations | A name opens and costs nothing; the Wildcard tier pays at the posts (the search, the double toll) instead |

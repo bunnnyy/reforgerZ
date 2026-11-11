@@ -46,6 +46,7 @@ class RZ_TribePart : RZ_InfectedPart
 	float m_fHoldUntil;					// the tribe clock (played seconds)
 	bool m_bHop;						// a day party: legs of 100-200 m, held 4-6 minutes between
 	float m_fLegLeft;					// metres left of this leg
+	vector m_vLastStep;					// where it was at the last data tick (a hop's progress)
 	vector m_vRest;						// its spot at the lair by day
 	int m_iPost = -1;					// a scout's post
 	bool m_bOut;						// on a trail or a day walk (not at the lair)

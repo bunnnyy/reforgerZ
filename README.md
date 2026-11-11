@@ -21,8 +21,10 @@ and one way to end it: **research the cure.**
 - **Two kinds of infected** ([INFECTED.md](docs/INFECTED.md)): the towns hold many slow ones
   that lie up by day, come out at night, drift to noise, remember what you killed and give up on a
   locked door; the countryside's few walk somewhere, and a horde comes from a town's side. Bodies
-  only near players, counted in a fixed budget, never spawned in your sight. Infected tribes in the
-  wild land are designed and next.
+  only near players, counted in a fixed budget, never spawned in your sight. The wild land belongs to
+  **tribes**: packs with a lair, scouts on the ridges, two or three out by day, a call at dusk that
+  tells you how they are, and a hunt at night that flanks, stalks and rings you, breaks off when it
+  loses too many, and walks home at dawn. Our code moves them; the zombie mod fights.
 - **Stealth**: stance, speed, light, weather and noise make you more or less visible. The
   infected near you see the most visible of you, lose a player who lies low, search where they
   last had them and give up; the HUD shows how visible you are.
@@ -88,7 +90,7 @@ The game scripts **compile without errors or warnings** against Arma Reforger 1.
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
 Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
-That's about 129,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+That's about 137,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
 was also checked against the base game's script source; the 59 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
@@ -115,8 +117,9 @@ yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do i
 **Not built yet:** the content pass onto the world facts (see the roadmap's *Next*), and the
 approved designs for the rest of the season: the infected tribes and crawlers, the four majors, the
 cure's finale, the epilogue week, dialogue, errands and more, built in the order of
-[designs/PLAN.md](designs/PLAN.md). The towns' crawlers, the loose ones, heat hordes from towns, the land grid
-and the rest of what the tribes stand on are built (phase 1, [INFECTED.md](docs/INFECTED.md)).
+[designs/PLAN.md](designs/PLAN.md). The towns' crawlers, the land grid, the tribes' daily life and hunts
+and the behaviour layer are built (phases 1 and 2, [INFECTED.md](docs/INFECTED.md)); the tribes' life
+cycle (succession, borders, splits) and the people's side are next.
 
 ## Docs
 
@@ -127,7 +130,7 @@ and the rest of what the tribes stand on are built (phase 1, [INFECTED.md](docs/
 | [DESIGN.md](docs/DESIGN.md) | How every system works, by system |
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
-| [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, tribes (planned) |
+| [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes, and how they move and hunt |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [QUESTLINES.md](docs/QUESTLINES.md) | Long questlines over many sessions, three per faction and two for the Long Table |
 | [MOD_STACK.md](docs/MOD_STACK.md) | Which Workshop mods the server runs and why |
@@ -153,8 +156,11 @@ scripts/Game/ReforgerZ/
                  the broadcast, story arcs, the questline engine, headlines, the season budget
                  and the set-piece calendar
   Zombies/       spawner (any zombie mod's prefabs), the towns' crawlers, bodies and the agent
-                 budget (roles, data parts, the sight rule, runtime groups), the tribes' settings,
-                 bite detection, stealth (visibility, the infected's senses, losing them)
+                 budget (roles, data parts, the sight rule, runtime groups), the tribes (seeds,
+                 the daily rhythm, hunts, scouts, their bodies), bite detection, stealth
+                 (visibility, the infected's senses, losing them)
+    Behaviour/   the behaviour layer: Bacon's hooks, steering modes, senses, formations,
+                 hunt strategies, navigation, the hunter's lunge
   Backgrounds/   backgrounds, personal goals, player profiles
   Factions/      reputation and its 16 names, quartermasters and shops, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,
@@ -200,7 +206,7 @@ tools/icon_atlas.py
 tools/pacing_sim.py
                  simulates a season's research, the lab and the stages for 2, 5 and 10 players
 tools/tribe_sim.py
-                 simulates the infected tribes (planned) over a season on that pacing, on the
+                 simulates the infected tribes as data over a season on that pacing, on the
                  measured wild land of Arland, Everon and Cain and a Chernarus-size map, 2, 5 and
                  10 players
 tools/strings_inventory.py

@@ -718,13 +718,20 @@ class RZ_TribeBodies
 			if (t.m_eTemper == RZ_ETemperament.CAUTIOUS && t.Band() < 2)
 				continue;
 
-			Target(t, core, playerId, 1);
 			core.m_bHeldBack = t.m_eTemper != RZ_ETemperament.BOLD;
+			Target(t, core, playerId, 1);
+		}
+
+		if (used <= 0)
+		{
+			// Nothing free to send: no hunt
+			EndHunt(t, false);
+			return false;
 		}
 
 		m_iHunts++;
 		RZ_Log.Info(string.Format("Tribes: %1 hunts player %2 (%3 in the first wave, %4).", t.m_sPlace, playerId, used, typename.EnumToString(RZ_EStrategy, hunt.m_eStrategy)));
-		return used > 0;
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -762,7 +769,7 @@ class RZ_TribeBodies
 			return;
 
 		p.m_Body.m_bHunting = true;
-		if (p.m_Body.m_Plan)
+		if (p.m_Body.m_Plan && !p.m_bHeldBack)
 			JoinHunt(t, p, p.m_Body.m_Plan);
 	}
 
@@ -872,8 +879,12 @@ class RZ_TribeBodies
 		{
 			foreach (RZ_TribePart core : t.m_aParts)
 			{
-				if (core.m_iTarget == hunt.m_iTarget && core.m_bHeldBack)
-					core.m_bHeldBack = false;
+				if (core.m_iTarget != hunt.m_iTarget || !core.m_bHeldBack)
+					continue;
+
+				core.m_bHeldBack = false;
+				if (core.HasBody() && core.m_Body.m_Plan)
+					JoinHunt(t, core, core.m_Body.m_Plan);
 			}
 		}
 
@@ -982,6 +993,16 @@ class RZ_TribeBodies
 				p.m_Body.m_bHunting = false;
 				if (p.m_Body.m_Plan)
 					p.m_Body.m_Plan.OrderHome(p.m_vRest);
+			}
+
+			// It took them: everyone near comes to feed (Orders puts the bodies in feeding order)
+			if (t.m_fFeedUntil > Clock() && RZ_Util.DistXZ(p.m_vPos, t.m_vFeedAt) < 1000)
+			{
+				array<vector> toFeed = {p.m_vPos, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(t.m_vFeedAt, 5, 40))};
+				p.SetPath(toFeed);
+				p.m_iStep = 1;
+				p.m_vTarget = toFeed[1];
+				continue;
 			}
 
 			if (broke || m_Tribes.GetPhase() != RZ_ETribePhase.NIGHT)

@@ -1709,11 +1709,12 @@ class RZ_Tribes
 		if (RZ_Util.DistXZ(p.m_vPos, p.m_vTarget) <= reach)
 			NextStep(t, p);
 
-		float before = RZ_Util.DistXZ(p.m_vPos, p.m_vTarget);
 		p.MoveAsData(dt);
-		if (p.m_bHop && !p.HasBody())
+		if (p.m_bHop)
 		{
-			p.m_fLegLeft -= Math.Max(0, before - RZ_Util.DistXZ(p.m_vPos, p.m_vTarget));
+			// Bodies write their own position back, so the leg counts what it really walked
+			p.m_fLegLeft -= RZ_Util.DistXZ(p.m_vPos, p.m_vLastStep);
+			p.m_vLastStep = p.m_vPos;
 			if (p.m_fLegLeft <= 0)
 			{
 				// Hop and hold: a leg of 100-200 m, then 4-6 minutes still
