@@ -42,7 +42,7 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static bool IsOpen()
+	static bool IsShowing()
 	{
 		return s_Open != null;
 	}

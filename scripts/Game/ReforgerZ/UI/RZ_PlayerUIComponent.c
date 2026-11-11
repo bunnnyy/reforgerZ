@@ -325,7 +325,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 		m_sReader = payload;
 		m_iReaderVersion++;
-		if (RZ_ReaderMenu.IsOpen())
+		if (RZ_ReaderMenu.IsShowing())
 			return;
 
 		if (RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_ReaderMenu))

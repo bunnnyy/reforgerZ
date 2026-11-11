@@ -47,6 +47,7 @@ fi
 
 rm -rf "$ADDON" "$PROFILE/profile" "$PROFILE/logs" && mkdir -p "$ADDON" "$PROFILE/profile"
 cp "$ROOT/addon.gproj" "$ADDON/"
+sed -i 's/ *"69BD721866937F85"//' "$ADDON/addon.gproj"	# Special Zombies' "Scripts/" hides ours on Linux (see compile_check.sh)
 grep -q "$BACON" "$ADDON/addon.gproj" || sed -i "s/^\( *\)\"58D0FB3206B6F859\"/&\n\1\"$BACON\"/" "$ADDON/addon.gproj"
 cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
 cp -r "$HERE/files/." "$ADDON/"

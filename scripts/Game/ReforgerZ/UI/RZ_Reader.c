@@ -58,7 +58,7 @@ class RZ_ReaderMenu : RZ_MenuBase
 	protected bool m_bServerClosed;
 
 	//------------------------------------------------------------------------------------------------
-	static bool IsOpen()
+	static bool IsShowing()
 	{
 		return s_Open != null;
 	}
