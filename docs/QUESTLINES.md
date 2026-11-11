@@ -23,9 +23,9 @@ missions the stages reuse are in [MISSIONS.md](MISSIONS.md).
 | R1 | [The Book](#r1-the-book) | Red Hand | Known; Trusted to return it | 5 stages, 3–5 sessions | H2, H3, B1 |
 | R2 | [Cargo](#r2-cargo) | Red Hand (or Haven) | Known with either | 5 stages, 3–5 sessions | H1, H2, C1 |
 | R3 | [The Well Story](#r3-the-well-story) | Red Hand | Known; Trusted at the end | 5 stages, 3–4 sessions | H2, B2 |
-| HC1 | [The Three Weeks](#hc1-the-three-weeks) | Halcyon | Known | 5 stages, 3–5 sessions | H3, HC3 |
-| HC2 | [The Other Two](#hc2-the-other-two) | Halcyon or Haven | Known with either | 5 stages, 3–4 sessions | H3 |
-| HC3 | [Authors](#hc3-authors) | Halcyon | Trusted, cure 50%+ | 6 stages, to the final stand | B3, HC1, H3 |
+| HC1 | [The Three Weeks](#hc1-the-three-weeks) ✅ | Halcyon | Known | 5 stages, 3–5 sessions | H3, HC3 |
+| HC2 | [The Other Two](#hc2-the-other-two) ✅ | Halcyon or Haven | Known with either | 5 stages, 3–4 sessions | H3 |
+| HC3 | [Authors](#hc3-authors) ✅ | Halcyon | Trusted, cure 50%+ | 6 stages, to the final stand | B3, HC1, H3 |
 | C1 | [The House That Went Quiet](#c1-the-house-that-went-quiet) | Nobody (the world) | Any | 5 stages, 2–4 sessions | H1, H2, R2 |
 | C2 | [A Place at the Table](#c2-a-place-at-the-table) | The host | Ate with them twice | 4 stages, 2–3 sessions | C1 |
 
@@ -344,6 +344,13 @@ the faction's Rogue leaders where there are any, else Independent ones.
 | **Bastion's file** | Bastion Fame +20; Red Hand Infamy +25 | The Bastion commander on the page is pulled into line (loyalty +25); Red Hand strength −3; Bastion keeps Red Hand prisoners longer (Bust Out a little more often, ×1.2) |
 | **Burnt** | Haven Fame +5 if the thief lived; Red Hand Infamy +25 (a debt is a debt) | The debts die with the page; Red Hand morale −5; the three leaders remember you saved them |
 
+**Built** ✅ (stages, numbers and simplifications: [MISSIONS.md](MISSIONS.md#the-book-the-red-hand)).
+Changes from the design: the thief goes in the boss's own pit; turning a name in means carrying its
+line to that faction's stronghold; a name whose leader leaves the chair drops off the page (the debt
+was theirs); the fourth line from `door.debt_yours` is text only (the flag doesn't say whose debt it
+is), and `orders.mocked` lets anyone Known give the page back; the crew name is in the ending's
+headline and rumour only.
+
 ### R2. Cargo
 
 Some trucks carry people, not tins, and where to, nobody says. The driver of one of them wants
@@ -370,6 +377,17 @@ this season, the van goes to the pit, and stage 3 ends there.
 | **The cut** | 20 Red Hand Favor a session for three sessions; if the Long Table is exposed while you're on it, Haven Infamy +20 | The vans keep running; one more *"never arrived"* in the news |
 | **Bastion's raid** | Bastion Fame +20; Red Hand Infamy +25 | The crew's outpost goes to Bastion if Bastion is strong enough by the usual margin, else the Red Hand drops it; Bastion knows the farm (`table.bastion_knows`) |
 | **Freed and told** | Haven Fame +15; Red Hand Infamy +10 | The safehouse +3 people, and the driver; C1 starts with the Haven |
+
+**Built** ✅ ([MISSIONS.md](MISSIONS.md#cargo-the-red-hand-or-the-haven)). It's the long version of
+the Haven's contract Tied Down ([MISSIONS.md](MISSIONS.md#the-red-hands-hard-edges)) and shares its
+van and padlock: the Haven's version starts only once Tied Down has reached its shed this season
+(`cargo.truck_seen`), and Tied Down isn't offered while Cargo runs. Changes from the design: the van
+is the Red Hand supply truck, so No Vehicles takes Cargo out; the farm is wherever the Long Table
+says it is (`table.town`), and without it the loads go to the crew boss's own pit (stage 3 ends
+there: no proof for C1); stage 3 is skipped when you drove the van to the drop yourself; Bastion's
+raid is the crew at its camp, with no Bastion soldiers on the ground, and a Bastion too weak to take
+the outpost costs the Red Hand strength instead; a session's cut is paid only if its taker is on;
+"Freed and told" is the Haven's ending whether or not the load was freed.
 
 ### R3. The Well Story
 
@@ -400,6 +418,12 @@ is the nearest Haven safehouse town, or a quiet village under 30 infection. With
 | **Faked** | Red Hand Fame +10; Haven Fame +8 if you told the council after; 25% the crew boss finds out: Red Hand Infamy +10 | The village −1 food once; the story spreads anyway |
 | **Stood up** | Haven Fame +15; Halcyon Fame +8 if tested; Red Hand Infamy +10 | Infection −10 there if tested; the crew boss's loyalty swings toward Rogue; `well.stood` |
 
+**Built** ✅ ([MISSIONS.md](MISSIONS.md#the-well-story-the-red-hand)). Changes from the design: H2's
+house is the one `door.house` names (set with `door.shut` or `door.bastion`); a warned well can't be
+done unseen; if nobody stands in the way, the crew does it themselves; telling the council after a
+fake is talking to their council head during the session's wait; paying the dues yourself isn't
+refunded; the poisoned well doesn't start Fever Town.
+
 ---
 
 ## Halcyon
@@ -414,6 +438,17 @@ knows is the driver who came back alone from the site on Day 3, and he won't say
 
 This line is about the past. It never makes the outside act: the Institute's last call on Day 2
 is still the last.
+
+**Built** ✅: the stages as they are in code are in [MISSIONS.md](MISSIONS.md#the-three-weeks-halcyon).
+It replaces the old Three Weeks contract, whose remote site and keypad store are stage 2. Changes
+from the design: the driver waits at the edge of the town nearest the site, and a Radio Operator
+can also talk him round (they heard his call on Day 3). The notebook is carried as data; stage 4's
+people are stand-ins at each seat, and reaching the director needs Trusted, or Known as a Lab
+Tech or Doctor. Stage 5 is a wait that also waits out a final stand, then the raid or the walk-out as
+missions.
+The personal rewards ("Fame +15 with whoever you gave it to") are paid at the choice, within the
+engine's caps. It opens on `halcyon_three_weeks.records`, which Patient Zero and Patient Zero's
+Ledger set when they're solved.
 
 **Needs:** Known with Halcyon. ★ Lab Tech, ★ Doctor, ★ Radio Op.
 **Starts:** an Independent or Rogue field lead at the field station, after any player has
@@ -446,6 +481,16 @@ the moment of turning.
 **Starts:** the sister (a Haven named person) at a safehouse. With `walk.knows_other_two` (H3),
 at stage 2.
 
+**Built** ✅: in [MISSIONS.md](MISSIONS.md#the-other-two-halcyon). It replaces The Author List
+contract: stage 5's names come from its deduction (the trial list by the door and the man who
+walked them up; ★ Elder reads the council's pencil). Changes from the design: the stages are the
+sister's (Haven) contracts, offered to anyone Known with either; her house is picked within
+3.5 km of the field station when it can be, and the brother has long enough to be walked home
+rather than a few minutes. Stage 2's courier is an escort. Sold ends the line at stage 4; the
+names to the chair is Brought home; leaving the numbers, or nobody naming them, is The work goes
+on. Sold's Haven Infamy is the engine's 15. It doesn't start after the cure. It reads H3's flags
+as `haven_edge_of_town.knows_other_two` and `haven_edge_of_town.lab_road`.
+
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
 | 1 | **His number** | **Talk** at the lab (Known with Halcyon): a number and a date. **Sneak**: the volunteers' ledger on the night shift (a heat limit; seen: +8 Halcyon Infamy). **Bribe** a courier: 20 Halcyon Favor. ★ Lab Tech reads the ledger's codes | Silent Courier; talk |
@@ -473,6 +518,17 @@ goes is still the season's Fame; this line is about who is standing at the lab w
 ★ Doctor, ★ Soldier.
 **Starts:** the research director's radio contract when research reaches 50%. With
 `weeks.bastion` (HC1), stage 1 is done: Bastion already has terms.
+
+**Built** ✅: in [MISSIONS.md](MISSIONS.md#authors-halcyon). It adds no research and never changes
+the stand; the endings are paid after it, so after the winner is chosen when it's won. Changes
+from the design: it starts only below 90% research (later it would only fizzle), and every stage
+waits out a stand and never runs after the cure. Stage 3 is a wait, then a mission at Bastion's
+adjutant; stage 5 waits for 75% research; stage 6 waits for the stand, then lasts as long as it.
+The Bastion checkpoint on the lab's road is a Bastion group there during the stand. With the boss
+paid, Take the Lab is offered to anyone Known with the Red Hand, not only Champions. The endings
+are taken in the order the Red Hand's batch, Bastion's guard, open doors, the lab alone. The money
+is the engine's 40 Favor, and the endings' Fame and Infamy are within its caps. It reads B3's flag
+as `bastion_last_pilot.flew_for`, the faction the pilot flew for (Halcyon: the samples).
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
@@ -602,7 +658,8 @@ ask the Haven's friends). ★ Police: anything you learn counts as proof.
 
 ## Crossings
 
-The flags other lines read.
+The flags other lines read, and the facts (read in: facts) an ending publishes for ordinary
+contracts, events and rumours to read later.
 
 | Flag | Set in | Read in | What it does there |
 |---|---|---|---|
@@ -611,6 +668,7 @@ The flags other lines read.
 | `list.found_table` | H1 | C1 | The Haven found the farm lived in: C1 starts at stage 2 |
 | `door.debt_yours` | H2 | R1 | Your name is on the page |
 | `door.shut`, `door.bastion` | H2 | R3, B2 | That house is the one that won't pay; it's on Bastion's census |
+| `door.house` | H2 | R3 | Which house that is: its safehouse index + 1 (set with `door.shut` / `door.bastion`) |
 | `door.exile_sold` | H2 | R2, the Long Table | The exile was walked to the crew: he is one of the people who never arrived |
 | `walk.knows_other_two` | H3 | HC2 | HC2 starts at stage 2 |
 | `walk.lab_road` | H3 | HC2 | The back room holds Haven people: stage 1's talk needs only Known with the Haven |
@@ -621,23 +679,37 @@ The flags other lines read.
 | `door.paid`, `door.knows`, `door.tins`, `door.exile_home`, `door.exile_warned`, `door.head_replaced` | H2 | (none yet) | The envelope was carried, or opened; the house pays in tins; the exile came home, or took to the roads; the house voted its council head out |
 | `walk.lab_saved`, `walk.walks_stay`, `walk.truce` | H3 | (none yet) | A bitten man walked out of the lab; the walks stay; the lab road began with a truce |
 | `other_two.numbers` | HC2 | H3 | The lab road's headline gives numbers, not names |
+| `halcyon_other_two.numbers` | HC2 | H3 | The lab road's headline gives numbers, not names |
 | `orders.mocked` | B1 | R1 | The boss owes you: returning the page needs only Known |
 | `orders.haven` | B1 | B2 | The chair's house is never asked for a contribution |
 | `census.refused` | B2 | H1 | The chair trusts you: the last stage's talk needs only Known |
 | `pilot.flew_for` | B3 | HC3 | Samples: one more Halcyon guard at the final stand |
-| `book.bastion` | R1 | B1, B2 | Bastion knows which of its commanders sold rifles: B1's outpost commander is that one, if he's still in the chair |
-| `cargo.buyer_known`, `table.supplier_cut` | R2 | C1 | C1's proof is done; the house takes people half as often |
-| `well.stood` | R3 | H2 | The house stands: H2's "Stands alone" needs no barricades |
-| `weeks.public` | HC1 | H3 | Brokering the lab road needs Trusted with the Haven |
-| `weeks.bastion` | HC1 | HC3 | HC3 starts at stage 2 |
+| `book.bastion` | R1 | B1, B2, Bust Out | Bastion knows which of its commanders sold rifles: B1's outpost commander is that one, if they're still in the chair (value: that commander's leader seat id + 1; 0 if nobody on the page is still in the chair). Bust Out ×1.2 |
+| `book.returned`, `book.kept`, `book.burnt` | R1 | — | What became of the page (or `book.bastion`) |
+| `book.thief` | R1 | — | The thief: 1 went in the pit, 2 someone took his place, 3 his debt was paid, 4 walked to the Haven, 5 ran |
+| `book.wrong_man`, `book.turned_in` | R1 | — | The wrong man went in the pit; a name on the page was turned in to its own people (that faction + 1) |
+| `cargo.buyer_known`, `table.supplier_cut` | R2 | C1, the Long Table | C1's proof is done (C1 starts at stage 4); the house takes people half as often (both only when the loads went to the farm) |
+| `cargo.told_haven`, `table.bastion_knows` | R2 | the Long Table | The Haven's chair knows where the strays go: with the farm as the buyer (`cargo.buyer` 1), the house is found out, to the Haven, and C1 starts at stage 4. Bastion knows the farm: found out, to Bastion |
+| `cargo.truck_seen` | Tied Down | R2 | The Haven has followed a truck to its shed: R2's Haven version can start |
+| `cargo.freed`, `cargo.delivered`, `cargo.bastion` | R2 | — | What happened to the load at stage 2 |
+| `cargo.buyer`, `cargo.purge`, `cargo.cut`, `cargo.bastion_raid` | R2 | the Long Table (`cargo.buyer`, with `cargo.told_haven`) | Who buys (1 the farm, 2 the crew boss's pit); who heard it at stage 4 |
+| `cargo.driver` | R2 | — | The driver: 1 at the Haven, 2 still driving, 3 in the pit, 4 in a Bastion cell |
+| `well.stood` | R3 | H2 | The house stands: H2's "Stands alone" needs no barricades (which house: `well.house`) |
+| `well.town`, `well.house` | R3 | — | R3's village (settlement index + 1) and its safehouse (index + 1; 0 if it has none) |
+| `well.paid`, `well.warned`, `well.done`, `well.faked`, `well.tested` | R3 | — | What happened at the well |
+| `halcyon_three_weeks.public` | HC1 | H3 | Brokering the lab road needs Trusted with the Haven |
+| `halcyon_three_weeks.bastion` | HC1 | HC3 | HC3 starts at stage 2 |
+| `halcyon_three_weeks.records` | Patient Zero, Patient Zero's Ledger | HC1 | HC1 can start: the clinic records are out |
+| `halcyon_three_weeks.record`, `.captured`, `.lead_left` | HC1 | (facts) | The notebook is in the lab's record; Dr Wolff is in the lab's isolation room; the field lead left her station |
+| `halcyon_other_two.named`, `.haven_names`, `.ward`, `.sold` | HC2 | (facts) | The lab named its volunteers; the Haven did instead; the back room (1 closed, 2 at the lab, 3 kept, 4 sold from, 5 gone); one of the other two is in the Red Hand's pit |
+| `halcyon_authors.bastion_key`, `.guard`, `.open`, `.lead_first`, `.batch_sold`, `.formula_sold` | HC3 | (facts) | Bastion holds a key to the clean room; a Bastion squad held the lab gate; the method went to the Haven's clinics; the field lead's name is first on the paper; the boss paid for the batch; the method was sold to the Red Hand |
 | `place.undercover` | C2 | C1 | C1's proof is done: it starts at stage 4; the undercover guest gets +5 Fame on top when they tell |
 | `place.proof` | C2 | C1 | Got up from grace (or a ★ Police guest walked away) with the proof: C1 starts at stage 4 |
 | `place.family`, `place.by_hand` | C2 | any | Someone sat at the long table and said a name; the house was finished at its own table |
-| `table.exists`, `table.town` | the Long Table | R2, any | There's a house this season, past this settlement (its index; -1 none). Without one, R2's van goes to the pit |
-| `table.exposed`, `table.exposed_to` | the Long Table | R2, any | The house was found out (by the faction told; -1 everyone). R2's "The cut" holds it against its player |
-| `table.broken`, `table.burnt`, `table.moved`, `table.suspicion` | the Long Table | any | Gone for the season; burnt by Bastion; moved once; how suspected (0–100) |
+| `table.exists`, `table.town` | the Long Table, from the season's start | R2, any | There's a house this season (0 once it's broken up); the settlement it's past, as its index + 1 (0: no house, or none near). R2's loads go there, else to a crew boss's pit |
+| `table.exposed`, `table.exposed_to` | the Long Table, once the house is found out | R2, any | Found out (to the faction told; -1 everyone), for the rest of the season. R2: the cut stops, and the Haven holds it against whoever took it or delivered a load |
+| `table.broken`, `table.burnt`, `table.moved`; `table.suspicion` | the Long Table (the first three only once true) | any | Gone for the season; burnt by Bastion; moved once; how suspected (0–100) |
 | `table.suspicion_add` | any line | the Long Table | Added to its suspicion, then cleared |
-| `table.bastion_knows` | R2 | the Long Table | Bastion knows the farm: the house is found out, to Bastion |
 | `table.haven`, `table.bastion`, `table.halcyon`, `table.redhand` | C1 | any | Who was told |
 | `table.walked_out`, `table.studied`, `table.host_wanders`, `table.paid`, `table.by_hand`, `table.boy_lost` | C1 (`table.by_hand` also C2) | any | How the house ended: walked out; the mother at the lab; the host on the roads as a Scavenger; paid to move; by your own hand; the boy not got out |
 

@@ -589,7 +589,8 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md
   [C1](QUESTLINES.md#c1-the-house-that-went-quiet). Past 80 with neither questline running, the
   house moves. At 100 it's found out.
 - **Found out** when a questline's proof reaches a faction, at suspicion 100, or by R2's
-  `table.bastion_knows`: a headline, each faction's reaction
+  `table.bastion_knows` (to Bastion) or `cargo.told_haven` with the farm as the buyer (to the
+  Haven): a headline, each faction's reaction
   ([REPUTATION.md](REPUTATION.md#the-long-table)), and no more takings. If nobody ends it within a
   real day (C1's last stage holds that clock), Bastion burns it while Bastion is around (its
   stronghold stands): Missions > Explosion at the farm if a player is within 600 m, as data if not.
@@ -606,10 +607,12 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md
   it's gone for the season. Burnt: its town counts as Burned (town memory) and loses 15 infection.
   The boy, if he got out, becomes the Kid wanderer (or one more at the nearest safehouse if a Kid is
   already on the roads); the host may become a Scavenger wanderer.
-- **World flags** (season-wide, for any content): `table.exists`, `table.town` (its settlement,
-  -1 none), `table.exposed`, `table.exposed_to` (the faction, -1 everyone), `table.broken`,
-  `table.burnt`, `table.moved`, `table.suspicion`; `table.supplier_cut` once the Red Hand purges
-  its buyer. What it reads from other lines is in [QUESTLINES.md](QUESTLINES.md#crossings).
+- **World flags** (season-wide, for any content): `table.exists`, `table.town` (its settlement's
+  index + 1; 0 none), `table.suspicion`; and, written only once true, `table.exposed`,
+  `table.exposed_to` (the faction, -1 everyone), `table.broken`, `table.burnt`, `table.moved`;
+  `table.supplier_cut` once the Red Hand purges its buyer. What it reads from other lines is in
+  [QUESTLINES.md](QUESTLINES.md#crossings). The Haven's The List finds its house through the code
+  (`MouthsFarm`, `LivesAt`): it was the farm the mouths were sent to.
 - **Next season** is wiped like everything else, and rolls again.
 
 *Simplified:* the takings and the family are data; a taken wanderer just isn't on the roads any
@@ -763,11 +766,11 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 | Block | What it does | Used by |
 |---|---|---|
 | Hold, kill tagged, visit points, destroy, deliver, choice | The base classes: hold an area (optional waves and heat), kill what the mission spawned, stand at points, destroy a prop, carry the mission item to a drop, choose whose drop gets it. The first hand-in wins. If the item vanishes while it's in an inventory (the carrier left the server and took their character with them, or a body was cleared away), a new one is put on the ground where it was, up to 3 times, and everyone involved is told where; lost from the ground, it fails | most contracts |
-| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. If the player they follow leaves or dies, they follow the nearest player within 20 m instead (or wait for one). An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Hunt the Deserter, Struck Off, Bust Out, Desertion Route, Learning the Drones, The Pit's Debtor |
-| **Live capture** (`RZ_LiveCapture`) | A cage trap and a special, both spawned only when a player is near. Lure it into the cage and drop the door within 4 m, or wound it to a third of its health and get within 3 m to tie it. Hold it for 30 s while it fights (heat), then a transport case (the mission item) to deliver before it wakes (12 min). A case lost with a carrier who left is put back where they were, still sedated (up to 3 times). It leaves the world without a kill, so no sample. Killing it fails. At most 2 at once | Live Capture, Private Collection |
-| **Vehicle zone** (`RZ_VehicleZone`, `RZ_ConvoyWatch`) | A specific vehicle, or any vehicle whose prefab name has a keyword (or is one of a list), driven into a zone by a player. Works with vehicles a mission spawns, fixed cars and supply trucks. The convoy watch asks the supply system for a faction's next truck to an outpost and reports whether it arrived, was robbed, destroyed, stolen or late | Recover the Bus, Car Theft, Mobile Lab, Cargo; Convoy Escort, Hijack the Convoy |
+| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. If the player they follow leaves or dies, they follow the nearest player within 20 m instead (or wait for one). An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Hunt the Deserter, Struck Off, Bust Out, Desertion Route, Learning the Drones, The Pit's Debtor; questline stages in The Three Weeks and The Other Two |
+| **Live capture** (`RZ_LiveCapture`) | A cage trap and a special, both spawned only when a player is near. Lure it into the cage and drop the door within 4 m, or wound it to a third of its health and get within 3 m to tie it. Hold it for 30 s while it fights (heat), then a transport case (the mission item) to deliver before it wakes (12 min). A case lost with a carrier who left is put back where they were, still sedated (up to 3 times). It leaves the world without a kill, so no sample. Killing it fails. At most 2 at once | Live Capture, Private Collection; The Three Weeks (Dr Wolff) |
+| **Vehicle zone** (`RZ_VehicleZone`, `RZ_ConvoyWatch`) | A specific vehicle, or any vehicle whose prefab name has a keyword (or is one of a list), driven into a zone by a player. Works with vehicles a mission spawns, fixed cars and supply trucks. The convoy watch asks the supply system for a faction's next truck to an outpost and reports whether it arrived, was robbed, destroyed, stolen or late | Recover the Bus, Car Theft, Mobile Lab, Tied Down and the Cargo questline (one van, `RZ_CargoVan`); Convoy Escort, Hijack the Convoy; questline stages in The Three Weeks and The Other Two |
 | **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
-| **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Hunt the Deserter, The Three Weeks, Cargo |
+| **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Hunt the Deserter, The Three Weeks, Tied Down; The Book (questline) |
 | **Disguises** (`Factions/RZ_Disguise.c`) | A faction's uniform gets you past its AI; caught, the Infamy doubles ([REPUTATION.md](REPUTATION.md#disguises)) | Bust Out; anywhere a faction shoots from Watched |
 
 *Simplified:* escorted people without an AI body can't be hurt (only a body can die), and

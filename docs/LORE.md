@@ -207,11 +207,11 @@ red armband ([REPUTATION.md](REPUTATION.md), "Reputation clues").
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
 | **The cut dose** | Antidote stretched with whatever was in the bag. They know it works half the time. They sell it to outsiders, never to the crew. | The cut dose on the black market |
-| **"The well story"** | What happens to a place that doesn't pay is never said. Somebody tells the story about the well instead, and lets you finish it yourself. | Protection Racket; the poisoned-well rumours, Fever Town's among them |
+| **"The well story"** | What happens to a place that doesn't pay is never said. Somebody tells the story about the well instead, and lets you finish it yourself. | Protection Racket; The Well Story questline; the poisoned-well rumours, Fever Town's among them |
 | **Strays** | Crews keep track of the people the Haven turned out, and where they sleep. A hungry safehouse will sometimes sell one. | A hungry house selling an exile's location; A Quiet Arrangement |
 | **Learning the drones** | The gap in the drones' rotation was found by sending people toward the line and timing what happened. Most of the ones they sent were in the book. | The Blind Spot (the gap); Learning the Drones (how they found it) |
 | **The pit** | A ring of infected and bets on who stays standing. When nobody volunteers, someone in the book goes in. | Fight Pit and House Rules (the pit); The Pit's Debtor |
-| **"Cargo"** | Trucks that carry people, not tins. Where to, nobody says. | Cargo (the Haven follows a truck to a shed); rumours |
+| **"Cargo"** | Trucks that carry people, not tins. Where to, nobody says. | Tied Down (the Haven follows a truck to a shed); the Cargo questline (a driver who wants out); rumours |
 | **Crews eat crews** | Out loud there's one Red Hand. Quietly, crews sell each other's camps to Bastion, and the boss purges any crew that talks about a new boss. | Sell Out a Rival Crew; Coup Talk |
 
 **How they see the others:**
@@ -279,11 +279,11 @@ matter more than people, and it apologises for that, quietly:
 
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
-| **The three weeks** | The first case was three weeks before the gates closed, and the Institute was told. Nobody at the lab says what anyone did with those three weeks. | Patient Zero (the clinic records); The Three Weeks (the closed site's gate log and the Institute's reply: "carry on, say nothing"); the rumour that Halcyon made this |
-| **"The other two"** | The two in ten who don't walk out of the trial dose leave with half the time they came in with, and a page in someone's notebook. Someone sits with them with a clipboard instead of a hand. | The trial dose; Serum Trial; Unsanctioned Trial; The Author List (one of them named, from a Haven safehouse) |
+| **The three weeks** | The first case was three weeks before the gates closed, and the Institute was told. Nobody at the lab says what anyone did with those three weeks. | Patient Zero (the clinic records); the questline The Three Weeks (the driver who came back alone, the closed site, Dr Wolff's notebook and the Institute's one-word reply, "Continue."); the rumour that Halcyon made this |
+| **"The other two"** | The two in ten who don't walk out of the trial dose leave with half the time they came in with, and a page in someone's notebook. Someone sits with them with a clipboard instead of a hand. | The trial dose; Serum Trial; Unsanctioned Trial; the questline The Other Two (a back room at a field station, a Haven woman's brother, and names for the numbers) |
 | **"Samples first, people second"** | When a van can't take both, the cold boxes go. It's an order, and they say sorry for it on the secure channel. | Secure channels |
-| **"At the moment of turning"** | The protocol wants tissue taken as a person turns, so someone has to be there, waiting, with the kit. | Patients Not Samples |
-| **Live ones** | Specials caught alive, for the lab, and sometimes for a field lead's own notebook. People say Halcyon pays the Red Hand for live ones. | Live Capture; Private Collection; rumours |
+| **"At the moment of turning"** | The protocol wants tissue taken as a person turns, so someone has to be there, waiting, with the kit. | Patients Not Samples; The Other Two (the sample kit by the bed) |
+| **Live ones** | Specials caught alive, for the lab, and sometimes for a field lead's own notebook. People say Halcyon pays the Red Hand for live ones. | Live Capture; Private Collection; The Three Weeks (Dr Wolff, brought down alive); rumours |
 | **Pages in the stove** | A dead researcher's notebook belongs to the lab. The pages about the director don't always get there. | The Notebook |
 | **Lazarus** | A locked terminal from a team that went into the field and didn't come back. Nobody at the lab will say what the project was. | The Last Experiment |
 

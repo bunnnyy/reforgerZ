@@ -1092,18 +1092,29 @@ class RZ_LongTable
 		if (!q)
 			return;
 
+		// The town as its settlement index + 1 (0: no house, or one past no settlement). The facts
+		// below are written only once true, since a line may test them with HasWorldFlag
 		q.SetWorldFlag("table.exists", BoolInt(Exists()));
-		int town = -1;
-		if (Exists())
-			town = m_iSettlement;
+		int town = 0;
+		if (Exists() && m_iSettlement >= 0)
+			town = m_iSettlement + 1;
 
 		q.SetWorldFlag("table.town", town);
-		q.SetWorldFlag("table.exposed", BoolInt(m_bEverExposed));
-		q.SetWorldFlag("table.exposed_to", m_iExposedTo);
-		q.SetWorldFlag("table.broken", BoolInt(m_eState == RZ_ETableState.BROKEN));
-		q.SetWorldFlag("table.burnt", BoolInt(m_bBurnt));
-		q.SetWorldFlag("table.moved", BoolInt(m_bMoved));
 		q.SetWorldFlag("table.suspicion", RZ_Util.RoundToInt(m_fSuspicion));
+		if (m_bEverExposed)
+		{
+			q.SetWorldFlag("table.exposed", 1);
+			q.SetWorldFlag("table.exposed_to", m_iExposedTo);
+		}
+
+		if (m_eState == RZ_ETableState.BROKEN)
+			q.SetWorldFlag("table.broken", 1);
+
+		if (m_bBurnt)
+			q.SetWorldFlag("table.burnt", 1);
+
+		if (m_bMoved)
+			q.SetWorldFlag("table.moved", 1);
 		m_bPublished = true;
 	}
 
@@ -1326,6 +1337,11 @@ class RZ_LongTable
 		// R2's Bastion raid: Bastion knows the farm
 		if (TakeCrossing("table.bastion_knows") || TakeCrossing("cargo.bastion_knows"))
 			Expose(RZ_EFaction.MILITARY, -1);
+
+		// R2 told the Haven's chair where the strays go: with the farm as the buyer (cargo.buyer 1),
+		// the house is found out, to the Haven (C1 from "Who to tell")
+		if (TakeCrossing("cargo.told_haven") && q.WorldFlag("cargo.buyer") == 1 && m_eState == RZ_ETableState.ACTIVE)
+			Expose(RZ_EFaction.SURVIVORS, -1);
 
 		// Other lines' finds start the questline: H1 at the guest stage, R2 and C2 at "Who to tell"
 		bool found = q.WorldFlag("list.found_table") > 0;

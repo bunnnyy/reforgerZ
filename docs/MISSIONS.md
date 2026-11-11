@@ -58,7 +58,7 @@ How the code does it:
   contracts add (drop points, grids) also wait until you're close; a contract's own progress
   messages may still give directions.
 - **No Vehicles** (a season rule set, [DESIGN.md](DESIGN.md#seasons)) takes out Recover the Bus,
-  Car Theft, Mobile Lab, Cargo and the car keys job.
+  Car Theft, Mobile Lab, Tied Down, the car keys job and the Cargo questline.
 - **Missions that need an optional prefab** never appear until it's set.
 - **Needs and morale** make matching contracts more likely ([REPUTATION.md](REPUTATION.md),
   "Morale, needs, truces and feuds").
@@ -177,14 +177,14 @@ The Red Hand doesn't care who you were, but it does care who you've crossed.
 What the crews don't say out loud ([LORE.md](LORE.md), "The Red Hand"), as jobs with a choice in
 them. In the Red Hand's two, choosing against it makes the Haven the payer: anyone the Haven
 doesn't hunt is paid, the Red Hand adds Infamy, and the crew boss who gave the job doesn't count
-it as help. Cargo is the Haven's, and taking a cut makes the Red Hand the payer the same way.
+it as help. Tied Down is the Haven's, and taking a cut makes the Red Hand the payer the same way.
 Code: `Missions/RedHand/RZ_RedHandLoreMissions.c`.
 
 | # | Contract | From | Needs | Bg | What you do | Result | Status |
 |---|---|---|---|---|---|---|---|
 | 1 | Learning the Drones | Red Hand | Known, Perimeter on | ★ Radio Op: counts twice as fast, so he's out there half as long (shot 35%, not 55%) | A crew waits with a debtor 120–200 m outside the warning zone. **Walk him to the line**: he walks with you to a marker 20 m short of the kill zone, then on alone; stay within 50 m of the marker for 90 s and count. A warning shot, then maybe the second one. **Get him away**: he follows you to the nearest Haven safehouse (the crew fights you) | Walk: Fame, Favor, whether he lives or not (shot 55% of the time). Away: Haven Fame, Favor, he joins the safehouse (+15 Red Hand Infamy) | ✅ *spots from the Perimeter helper, so it works on land and sea edges (on a sea edge he wades out from the shore); never where the coast lies past the drones' reach. He is data out past the marker: the shots are effects, not a body. The crew is real only with the Red Hand group prefab* |
 | 2 | The Pit's Debtor | Red Hand | Known | ★ Ex-Con: caught rigging 10% (not 25%), half the chance of being seen walking him out | Nobody volunteered for the pit (the one Fight Pit and House Rules use), so a debtor goes in, and you're his second. **Pay what he owes** (25 Red Hand Favor), **rig the pens**, or **get him out** | Pay: half pay. Rig: caught, +10 Red Hand Infamy and failed; else keep him standing in the ring for 150 s (two rounds of three infected): full pay. Out: walk him to the Haven; seen near the pit (30% a check by day, 12% by night, every 5 s within 60 m): +8 Red Hand Infamy at once and the pit crew fights. Arrives: Haven Fame, Favor, he joins the safehouse (+15 Red Hand Infamy). Nobody chooses in 40 min: he goes in alone, failed | ✅ *only a player the Red Hand hired can pay, checked before the Favor is taken. The pit crew is real only with the Red Hand group prefab* |
-| 3 | Cargo | Haven | Known | ★ Hunter: the crew sees you within 15 m, not 30 | A Red Hand truck carries people. Three steps: a lookout's note outside one town names the next; there the truck is parked (watch it from within 80 m for 20 s; seen, its crew fights and it leaves at once); then it drives on to a shed outside a third town. At the shed: **cut the lock** (12 s, the guards fight) and drive them to the Haven in the truck, **radio the Haven**, or ask the driver for **a cut** | Free: Fame, Favor, +3 at the safehouse (+15 Red Hand Infamy). Radio: 60% pay, +2 at the safehouse (+8 Red Hand Infamy). Cut: the Red Hand pays anyone it doesn't hunt, 10 Fame and 40 Favor (+15 Haven Infamy) | ✅ *the truck is Supply > Red Hand truck (needed); it's data while it moves and only parked trucks are seen, with no fuel until the lock is cut. It waits at the stop until someone has watched it. Its crew is Supply > Red Hand crew, the shed's guards the Red Hand group (each falls back to the other; neither = none). Freeing them needs a vehicle, so No Vehicles takes it out* |
+| 3 | Tied Down | Haven | Known | ★ Hunter: the crew sees you within 15 m, not 30 | A Red Hand truck carries people. Three steps: a lookout's note outside one town names the next; there the truck is parked (watch it from within 80 m for 20 s; seen, its crew fights and it leaves at once); then it drives on to a shed outside a third town. At the shed: **cut the lock** (12 s, the guards fight) and drive them to the Haven in the truck, **radio the Haven**, or ask the driver for **a cut** | Free: Fame, Favor, +3 at the safehouse (+15 Red Hand Infamy). Radio: 60% pay, +2 at the safehouse (+8 Red Hand Infamy). Cut: the Red Hand pays anyone it doesn't hunt, 10 Fame and 40 Favor (+15 Haven Infamy) | ✅ *the truck is Supply > Red Hand truck (needed); it's data while it moves and only parked trucks are seen, with no fuel until the lock is cut. It waits at the stop until someone has watched it. Its crew is Supply > Red Hand crew, the shed's guards the Red Hand group (each falls back to the other; neither = none). Freeing them needs a vehicle, so No Vehicles takes it out. Reaching the shed sets `cargo.truck_seen`, the Haven's way into the [Cargo questline](#cargo-the-red-hand-or-the-haven), which tells the long version with the same van and padlock; while it runs, Tied Down isn't offered* |
 
 ### Halcyon
 
@@ -206,12 +206,10 @@ Code: `Missions/RedHand/RZ_RedHandLoreMissions.c`.
 | 14 | Decontamination | Trusted | ★ Nurse: faster | Burn four corpse piles around the lab | Fame; the lab's town less infected | ✅ |
 | 15 | Lab Defence | Trusted | | Hold the lab for 4 minutes against waves (and Red Hand raiders if their prefab is set) | Fame (Red Hand Infamy if raiders) | ✅ |
 | 16 | Medical Drone | Trusted | ★ Mechanic/Radio Op: the exact grid within 600 m | Recover a crashed prototype drone | Fame, a little research | ✅ *somewhere within 250 m of its last ping; carry its core to the lab* |
-| 17 | Patient Zero | Champion | ★ Lab Tech: clues also give the grid | Follow clues through 4 towns to the outbreak's origin | Huge research | ✅ *a body in each town names the next; at the last, 45 s searching the clinic while infected come* |
+| 17 | Patient Zero | Champion | ★ Lab Tech: clues also give the grid | Follow clues through 4 towns to the outbreak's origin | Huge research; solved, it opens [The Three Weeks](#the-three-weeks-halcyon) | ✅ *a body in each town names the next; at the last, 45 s searching the clinic while infected come* |
 | 18 | Live Capture | Champion | | Lure a special into a cage trap alive | Huge research | ✅ *or wound it and tie it; hold it 30 s, then carry the case to the lab within 12 min* |
 | 19 | Serum Trial | Champion | 🔒 infected only | Take an experimental serum while bitten: it cures you or speeds up the turn | Huge Fame; research either way | ✅ *50/50; the turn comes twice as fast. Separate from the everyday trial dose at Halcyon's quartermaster ([DESIGN.md](DESIGN.md#treatments))* |
 | 20 | Mobile Lab | Champion | | Escort the lab truck to a safer town | Fame; a field annex there takes samples for 3 hours | ✅ *the lab never moves (it's the stronghold); players drive the truck; the annex is a second lab prefab* |
-| 21 | The Three Weeks | Trusted, a lab | ★ Lab Tech: the gate log's right line is pointed out, more Fame | Recover the notes from the closed site Dr Wolff went back to. Her van at the edge of the nearest town has her notebook (the site's grid, and that the store code is the date the Institute was told); the gate log gives the dates; the store's terminal takes the code. Then hand the notes to **Halcyon**, the **Haven** or the **Red Hand** | Halcyon: Fame, small research. Haven: Haven Fame and a headline that the Institute knew (Halcyon Infamy). Red Hand: Red Hand Fame, more Favor (Halcyon Infamy) | ✅ *a step chain (van, gate), then the store. The site is a remote spot between two towns, well clear of every settlement and the lab, at a factory, mast or barracks there if there is one, else the highest ground; infected at each step and a special at the store. A wrong code is loud and locks the keypad for 2 min (a horde on the second); it never wipes. The Haven drop is at the safehouse nearest the site. Needs the terminal (or keypad). Code: `Missions/Halcyon/RZ_HalcyonLoreMissions.c`* |
-| 22 | The Author List | Known, not Hunted by the Haven, a lab and a safehouse | ★ Elder: reads the council's mark on the list | A trial volunteer who didn't walk out is on the list of authors by number. Halcyon gives the number, the day and the safehouse. There, the trial list says who went up that day and the man who walked them up says who came back. Give the trial lead at the lab the name | Small Halcyon Fame, a little Haven Fame; a quiet headline. Wrong: 5 min wait; twice: fails | ✅ *the volunteer is generated: the trial dose keeps no record of who it failed. The trial lead offers names only after both safehouse clues are read* |
 
 **Amends:** Field Samples and Blood Drive work off Halcyon Infamy while you're Watched.
 
@@ -271,7 +269,7 @@ Code: `Puzzles/`. ✅ all 17.
 | 3 | Paces from the Tower | Haven | Any | ★ Hunter: paces also in metres | "From the church, face the water tower, turn right, 400 paces." | Fame; stash |
 | 4 | Hot and Cold | Haven | Any | ★ Radio Op: numeric signal strength | With a radio, find a beacon in the fields by how loud it sounds (five levels, the last under 100 m). Found within 45 m | Fame; stash |
 | 5 | The Rat | Red Hand | Known | ★ Police/Ex-Con: more Fame | Three suspects, exactly one lying. Point at the rat at the boss | Fame. Wrong: fails, Red Hand Infamy |
-| 6 | Patient Zero's Ledger | Halcyon | Known, a lab | ★ Lab Tech/Doctor: the method spelled out | A ledger plus hospital bracelets on three bodies. Name who was first, at the lab | Fame, research. Wrong: locked 5 min; twice: fails |
+| 6 | Patient Zero's Ledger | Halcyon | Known, a lab | ★ Lab Tech/Doctor: the method spelled out | A ledger plus hospital bracelets on three bodies. Name who was first, at the lab | Fame, research; solved, it opens [The Three Weeks](#the-three-weeks-halcyon). Wrong: locked 5 min; twice: fails |
 | 7 | The Poisoned Well | Halcyon | Any | ★ Lab Tech/Nurse: can test the water | Three wells, two notes ruling one out each. Seal the poisoned one | Fame, research, that village −10 infection. Wrong: infection up; twice: fails |
 | 8 | The Smuggler's Ledger | Red Hand | Known | ★ Ex-Con: more Fame | A Caesar-shifted ledger line; the key is on a memorial plaque by the church | Fame; stash |
 | 9 | The Clockwork Horde | Haven | Any | ★ Hunter: harder to notice | A stuck siren sends a horde back and forth through a square. Take the strongbox unnoticed | Fame; the strongbox. Noticed: the horde turns on you |
@@ -501,8 +499,8 @@ exile and the town by his barn. Code: `Missions/Questlines/Haven/RZ_Quest_PriceO
 
 | Ending | Branch | Consequences | Status |
 |---|---|---|---|
-| **Stands alone** | The gate held | Everyone who took part +10 Haven Fame, +10 Red Hand Infamy, and the crew boss remembers them as having crossed him; the council head leaves the chair if the vote went that way; `door.shut`. A headline and a rumour | ✅ |
-| **Under Bastion** | Bastion's patrol | Everyone +10 Bastion Fame, +8 Haven Fame; the council head as above; `door.bastion`, `door.shut`. A headline and a rumour | ✅ *Bastion's road posts aren't more likely near the town: the flags are published instead* |
+| **Stands alone** | The gate held | Everyone who took part +10 Haven Fame, +10 Red Hand Infamy, and the crew boss remembers them as having crossed him; the council head leaves the chair if the vote went that way; `door.shut`, `door.house`. A headline and a rumour | ✅ |
+| **Under Bastion** | Bastion's patrol | Everyone +10 Bastion Fame, +8 Haven Fame; the council head as above; `door.bastion`, `door.shut`, `door.house` (which house). A headline and a rumour | ✅ *Bastion's road posts aren't more likely near the town: the flags are published instead* |
 | **Paid in tins** | Paid, bought off, collected, sold; every fallback | Everyone +5 Red Hand Fame, +5 Haven Fame (whoever carried the tins: +5 Red Hand Fame, 15 Favor more); the house −4 food; `door.tins`. A quiet headline and a rumour | ✅ *a one-off −4 food stands in for "1 food every second upkeep, never raided by that crew"* |
 | **The debt is yours** | The debt | Everyone +10 Red Hand Fame, +10 Haven Fame (whoever paid the instalment: +5 Haven Fame more); `door.debt_yours` (R1). A quiet headline and a rumour | ✅ |
 
@@ -542,6 +540,215 @@ house, the nurse and hers, the bitten man, the research director. Code:
 standing figures; the man taken to the lab is an escort (data, a figure, or the survivor group). The
 director's offer reaches Radio Operators as a message. Dusk is 16:30 to 21:00 game time, as for Walk
 Him Out (any time if the clock isn't known).
+
+### The Three Weeks (Halcyon)
+
+HC1 in [QUESTLINES.md](QUESTLINES.md#hc1-the-three-weeks): what the lab did with the three weeks
+before the gates closed. It replaces the old contract of the same name (its remote site and keypad
+store are stage 2 now). It starts once Patient Zero or Patient Zero's Ledger has been solved this
+season, with an Independent or Rogue field lead (she voices and pays its contracts while she's
+still in her chair), a living Scavenger wanderer (the driver) and a site: a remote spot on high
+ground between two towns, well clear of every settlement and the lab, at a mast, factory or
+barracks there if there is one. Needs a lab, the note, a civilian and the puzzle object. Code: `Missions/Questlines/Halcyon/RZ_Quest_ThreeWeeks.c`; the Halcyon lines share a scene base,
+`RZ_QuestHalcyonScene.c` (people at several places, each put down only when a player comes near).
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **The driver** | Halcyon contract, Known, ★ Radio Op; 60 min; 10 Fame, 10 Favor | The driver (held by the mission) sits at the edge of the town nearest the site. *Talk*: needs Known with the Haven and below Trusted with Halcyon, or a Radio Operator (he heard you on the net on Day 3); share food twice (one food item each time, anyone's; he remembers who); *force*: threaten him, armed (+3 Haven Infamy, he remembers). He names the site: "She stayed because she wanted to." | Stage 2. Time up: stage 1 again, once | ✅ |
+| 2 | **The site** | Halcyon contract, Known, ★ Lab Tech; 60 min; 15 Fame, 15 Favor | Three of her team lie 30–110 m around the site, each with two digits of the store's six; an infected by each, three by the store. The store's terminal (or keypad) takes the code; wrong, a flat buzz, and the third wrong, dead for 2 minutes and loud (a horde). Without either prefab it's a combination lock that opens for whoever has read all three pages. Lab Tech: the door's text gives the first digit | Stage 3. Time up: again, once | ✅ |
+| 3 | **The team lead** | Halcyon contract, Known; 60 min; 15 Fame, 15 Favor | Dr Wolff is a special in the store. *Force*: kill her (mercy: the notebook is in her coat), or catch her alive (`RZ_LiveCapture`: the cage outside, then the case to the lab drop before it wakes; research +2). *Sneak*: take the notebook unseen (no shots within 60 m, not noticed) and leave her. Caught, then lost on the way: she's loose, the notebook is safe. No room for a capture (or no mission item or lab drop): no cage | Stage 4. Time up: again, once | ✅ |
+| 4 | **Who reads it** | Halcyon contract, Known, ★ Lab Tech/Doctor; 90 min; 12 Fame, 20 Favor | People at the seats that exist: *persuade* the duty officer at the lab for the director (difficulty 2: Trusted, or Known as a Lab Tech or Doctor; +8 Fame and 10 Favor on top); *talk*: the field lead at her station (held while it runs; +3 Halcyon Fame, +10 Halcyon Infamy); *side with* Bastion (its adjutant: +20 Bastion Fame, +15 Halcyon Infamy), the Haven (its council clerk: +15 Haven Fame, +10 Halcyon Infamy) or the Red Hand (the boss's man: +15 Red Hand Fame, 40 Favor, +10 Halcyon Infamy). Siding: the contract pays nothing | The director: in the record. The field lead, the Haven, the Red Hand: public. Bastion: Bastion's file. Time up: again, once | ✅ |
+| 5 | **The lab answers** | Wait | 2 hours of play or a real day, and not during a final stand | Public: stage 6 (after the cure, the ending). In the record: stage 7 if the field lead is still in her chair, else the ending. Bastion: the ending | ✅ |
+| 6 | **The raid** | Halcyon contract, Known; 30 min; 20 Fame, 20 Favor | Lab Defence: hold the lab 4 minutes against waves (Red Hand raiders too, with their prefab). Not during a final stand | The ending, held or not | ✅ |
+| 7 | **The field lead walks out** | Halcyon contract, Known; 60 min; 10 Fame, 10 Favor | She (held) follows whoever answers her (an escort) to the nearest safehouse or back to the lab. With no room for another escort she goes on her own. Her escort body killed: she's dead | The ending | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **In the record** | The director's | Halcyon morale +3, research +1; everyone who took part +4 Halcyon Fame; the field lead leaves her station (replaced; walked to a safehouse: +1 person there); a rumour (8 hours); `halcyon_three_weeks.record`, `halcyon_three_weeks.lead_left` | ✅ |
+| **Out on the open channel** | Public | Halcyon morale −10; a headline by who read it (and a quiet one if the raid wasn't held); the rumour "Halcyon made this" for 48 hours (the engine's longest); `halcyon_three_weeks.public` (H3's lab road is harder) | ✅ |
+| **Bastion's file** | Bastion's | Bastion strength +3; a headline and a rumour (12 hours); `halcyon_three_weeks.bastion` (Authors starts with Bastion's terms on the table) | ✅ |
+| *(any)* **She's at the lab** | caught at stage 3 | Research +2 at stage 3; a headline: the director spoke about her for two minutes on the open channel; `halcyon_three_weeks.captured` | ✅ |
+
+*Simplified:* the notebook is carried as data, not an item: anyone who was part of the story can
+hand it over at stage 4. The people at the seats are stand-ins (the duty officer, the adjutant,
+the council clerk, the boss's man), never the stronghold leaders' own bodies; the field lead's
+stand-in replaces her body while a stage needs her. "Fame +15 with whoever you gave it to" and the
+like are paid at once to whoever chose, within the engine's caps; the endings' shared standing is
+small. The pages about the director going in the stove is text.
+
+### The Other Two (Halcyon)
+
+HC2 in [QUESTLINES.md](QUESTLINES.md#hc2-the-other-two): what happens to the two in ten who don't
+walk out of the trial dose. It replaces The Author List contract (its deduction is stage 5 now).
+The sister and her brother are generated, at a safehouse with at least 3 people within 3.5 km of
+a Halcyon field station when one is that close (the back room is at the station). Its stages are
+the sister's (Haven) contracts, offered to anyone Known with the Haven or with Halcyon and Hunted
+by neither. It doesn't start after the cure; with H3's `knows_other_two` it starts at stage 2.
+Needs a lab, the note, a civilian and the puzzle object. Code:
+`Missions/Questlines/Halcyon/RZ_Quest_OtherTwo.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **His number** | Haven contract, ★ Lab Tech; 60 min; 8 Fame, 10 Favor | At the lab: *talk*: the trial clerk (Known with Halcyon; Known with the Haven once H3 opened the lab road); *sneak*: the volunteers' ledger in the records room, only at night and unseen (seen: +8 Halcyon Infamy and no number; a Lab Tech also learns where F2 is and which door it uses); *bribe*: a courier, 20 Halcyon Favor | Stage 2 (the field lead gone: stage 5). Time up: again, once | ✅ |
+| 2 | **The back room** | Haven contract, ★ Doctor; 60 min; 10 Fame, 10 Favor | At the field station, the field lead held: *talk*: walk in with the lab's courier and his cold case (he follows you from the lab; with no room for an escort, carry his case to the side door yourself); *persuade* the field lead (difficulty 2: Trusted, or Known as a Doctor); *sneak*: the side door at night (a Lab Tech who read the codes: any time), unseen (seen: +5 Halcyon Infamy). Inside: three beds in the Final stage, a chair with a clipboard by each | Stage 3. Time up: again, once | ✅ |
+| 3 | **Her brother** | Haven contract, ★ Nurse; 90 min; 10 Fame, 15 Favor | From the first player's arrival he has long enough to be walked home at a steady pace (10–60 minutes). *Talk*: sit with him (90 s beside him), or walk him home (an escort to the sister's safehouse; a Nurse buys half as long again); *betray*: wait with the sample kit (90 s beside him: research +1, and he gets up as an infected); *force*: end it (armed). Out of time, in the bed or on the road: he turns (an infected where he is) | Stage 4 (the field lead gone: stage 5) | ✅ |
+| 4 | **The field lead** | Haven contract, ★ Doctor; 60 min; 8 Fame, 10 Favor | The field lead at her station (held) and the duty officer at the lab: *persuade* her to close the room (Trusted, or Known as a Doctor); *betray*: report her (she remembers it); *bribe*: say nothing (25 Halcyon Favor; the contract pays nothing); *side with* the Red Hand: sell one of the other two (Trusted with them: +15 Red Hand Fame, 40 Favor; the contract pays nothing). She's gone mid-stage: the room went with her | Sold: the ending. Else stage 5. Time up: again, once | ✅ |
+| 5 | **Names** | Haven contract, ★ Elder; 70 min; 12 Fame, 15 Favor | At the sister's safehouse: the lab's paper has another number from the house; the trial list by the door (who went up which day) and the man who walked them up (who came back) give the name (an Elder sees the council's pencil). Tell the sister: wrong, 5 minutes; twice, numbers. Then *talk*: the names to the director through the duty officer (Trusted with Halcyon; or Known with it after he came home, with the sister beside you); *side with* the Haven: the council clerk at its seat (+10 Haven Fame, +5 Halcyon Infamy); or *betray*: let them stay numbers (+10 Halcyon Fame, 25 Favor; the contract pays nothing) | The ending | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **Named** | the names to the director | Everyone who took part +8 Haven and +8 Halcyon Fame; Haven morale +5; the headline "The lab put fourteen names on its paper last night. The Haven read them at supper." (the number is generated); a Haven–Halcyon truce if faction life allows one now (only then a rumour says so); `halcyon_other_two.named` | ✅ |
+| **Brought home** | the names to the Haven | Everyone +10 Haven Fame; Halcyon morale −3; a headline that says what became of the room; `halcyon_other_two.haven_names` | ✅ |
+| **The work goes on** | numbers (also when nobody names them in time) | Everyone +5 Halcyon Fame; research +2; Haven morale −3; a quiet headline; `halcyon_other_two.numbers` (H3's headline gives numbers) | ✅ |
+| **Sold** | stage 4 | A headline about something new in the Red Hand's pit; 35% the Haven finds out: +15 Haven Infamy for whoever sold (the engine's cap; the design says 25); `halcyon_other_two.sold` | ✅ |
+
+Every ending also sets `halcyon_other_two.ward` (1 closed, 2 moved to the lab, 3 kept, 4 sold from,
+5 gone with the field lead) and spreads a rumour (8 hours); reported, the field lead is replaced.
+
+*Simplified:* the people are stand-ins, and the brother is a standing figure until he's walked
+home (an escort). The other twelve or so names come from the other houses' lists once one is
+named, in text. Naming a single volunteer, once a repeatable contract, is now this stage. "A few
+minutes left" became time enough to walk him home.
+
+### Authors (Halcyon)
+
+HC3 in [QUESTLINES.md](QUESTLINES.md#hc3-authors): whose names go on the paper, and who stands at
+the lab when the cure is made. It starts between 50% and 90% research, never during or after the
+final stand, with Halcyon's director and Bastion's commanding officer in their seats, a field lead
+and a Haven safehouse for the clinic (one with a medic if there is). Needs a lab, the note, a
+civilian and the puzzle object. Its stages are Halcyon
+contracts for players Trusted with it (stage 2 from the field lead). It adds no research and never
+changes the stand: the stand keeps its own rules, the season's winner is still chosen on Fame the
+moment it's won, and the endings are paid after the stand. Its stages wait out a stand and never
+run after the cure. It holds Halcyon's questline slot until the stand. Code:
+`Missions/Questlines/Halcyon/RZ_Quest_Authors.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **The director's letter** | Halcyon contract, Trusted, cure 50%+, ★ Soldier (+25% Fame); 60 min; 15 Fame, 20 Favor | The duty officer at the lab hands over the sealed letter; *sneak*: take it and read it on the way; *talk*: whoever carries it hands it to Bastion's adjutant. Read, it can be copied onto the field lead's desk at her station, unseen (seen: no copy, +5 Halcyon Infamy) | Stage 2 (skipped with HC1's Bastion's file; the field lead gone: stage 3). Time up: again, once | ✅ |
+| 2 | **The field lead's plan** | Halcyon contract from the field lead (held), Trusted, ★ Nurse/Doctor; 60 min; 15 Fame, 15 Favor | Take her cold case: from then 20 minutes (Nurse or Doctor 30) to the medic at the clinic (*talk*: +5 Haven Fame); *talk*: report her to the duty officer at the lab (she remembers it); *side with* the Red Hand: sell it to a buyer near a Red Hand seat (+10 Red Hand Fame, 30 Favor, +15 Halcyon Infamy; the contract pays nothing). It goes warm: missed | Stage 3 | ✅ |
+| 3 | **The CO's answer** | Wait, then a Halcyon contract, Trusted, ★ Soldier; 60 min; 10 Fame, 15 Favor | 2 hours of play or a real day; then at Bastion's adjutant: *talk*: agree for the director; *persuade*: bargain for two guards at the gate and no key (Trusted with Halcyon and with Bastion); refuse (+5 Bastion Infamy). Nobody answers: Bastion takes it as no | Stage 4 (no Red Hand seat: stage 5) | ✅ |
+| 4 | **The Red Hand's offer** | Halcyon contract, Trusted; 60 min; 10 Fame, 10 Favor | The boss's man at a meeting place near a Red Hand seat: *talk*: turn him down (the director refuses); *betray*: take the money (40 Red Hand Favor, the engine's cap; the contract pays nothing): Take the Lab is offered during the stand; *side with* Bastion once he's been heard: tell the adjutant (+6 Bastion Fame): a Bastion group on the lab's road during the stand | Stage 5 | ✅ |
+| 5 | **Ready the lab** | From 75% research: one of Power the Lab, Decontamination or Lab Defence (each with its own rules, as a Halcyon contract for the Trusted) | Picked from the flags: Bastion's terms, power; the Haven's copy, decontamination; else defence. One that can't run, or already runs as an ordinary contract, gives way to the next | Stage 6 | ✅ |
+| 6 | **The final stand** | Wait for the stand, then a Halcyon contract (Trusted; 5 Fame, 10 Favor) that lasts as long as it; everyone within 150 m of the lab takes part | With players near: a Bastion group at the gate (Bastion's terms; Territory > Bastion guard), one on the road toward the Red Hand (Bastion was told; same prefab), and one more Halcyon guard (B3's pilot flew for the samples; Territory > Halcyon guard). The boss was paid: Take the Lab is offered to anyone Known with the Red Hand, not only Champions, with its usual result | The ending: won, lost or stolen | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **The Red Hand's batch** | took the money | Whoever took it: +10 Red Hand Fame, +15 Halcyon Infamy (the engine's caps); Halcyon morale −10; a headline that says what happened (stolen, held, or lost to the infected); `halcyon_authors.batch_sold` | ✅ |
+| **Under Bastion's guard** | agreed or bargained | Everyone who took part +10 Bastion and +10 Halcyon Fame; Bastion strength +3; Haven morale −3; a headline (a key in the CO's pocket, or two guards and no key; the squad at the gate only if one stood there); `halcyon_authors.bastion_key` (agreed), `halcyon_authors.guard` (a squad held the gate) | ✅ |
+| **Open doors** | the method reached the clinic, and nobody reported her | Everyone +10 Halcyon and +10 Haven Fame; infection −3 in every safehouse town (as Leak the Data); a headline: the field lead's name is first on the paper; `halcyon_authors.open`, `halcyon_authors.lead_first` | ✅ |
+| **The lab alone** | anything else | Everyone +10 Halcyon Fame; a headline on how the stand went | ✅ |
+
+The endings are taken in that order. Each tells those who took part who stood at the lab (up to
+four names). Sold at stage 2: `halcyon_authors.formula_sold`.
+
+*Simplified:* the letter and the cold case are carried as data. "A Bastion checkpoint goes up on
+the lab's road" is a Bastion group on that road during the stand, not a road post. Fame +25 and
+Infamy +30 are within the engine's caps. A stand that comes early is waited out; after a cure the
+line fizzles, with a journal line that says so.
+
+### The Book (the Red Hand)
+
+R1 in [QUESTLINES.md](QUESTLINES.md#r1-the-book): somebody tore a page out of the Red Hand's book,
+the one with who outside the Red Hand owes it. Five stages and a wait, four endings. Needs the
+boss (the Red Hand's stronghold leader), leaders of at least two other factions for the page (one
+each: a Bastion outpost commander, a Halcyon field lead, a Haven council head; Rogue ones first,
+then Independent, then any), and the note and puzzle object prefabs (the civilian falls back to the
+object). From the second real day of the season. Text keys: the boss, the names, the thief, his
+sister and the two other suspects, the trail's towns. Code:
+`Missions/Questlines/RedHand/RZ_Quest_TheBook.c`; the three Red Hand lines share
+`RZ_RedHandQuestHelp.c` (leaders kept by seat and generation, places put down on approach).
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **Who tore it** | Red Hand contract, Known, ★ Police/Ex-Con; 40 min; 12 Fame, 15 Favor | At the boss's camp, the book-keeper and three of the crew, exactly one lying (as The Rat); the liar is the thief. ★: the night book clears one of the other two. Only someone Known with the Red Hand may point. *Talk*: the right one, or the wrong one (+5 Red Hand Infamy, no pay, `book.wrong_man`) | Stage 2 either way: the thief runs. Time up: stage 1 again, once | ✅ |
+| 2 | **Find him** | Red Hand contract, Known, ★ Ex-Con; 60 min; 15 Fame, 20 Favor | His trail: a jacket in one town, a cold fire in the next (two infected), a barn outside it. *Persuade*: talk him out, unarmed (difficulty 1: Known with the Red Hand, or ★); *force*: take him (his two friends fight, with the Red Hand group prefab; without it, at gunpoint); *bribe*: pay him to run (20 Red Hand Favor, half pay, `book.thief_ran`). He says why: his sister's house is on the page | Stage 3; every name already off the page: stage 4 | ✅ |
+| 3 | **Read the page** | Red Hand contract, Known; 90 min; 12 Fame, 30 Favor, times the share collected | Each name at their own seat (held while a stand-in speaks for them). *Talk*: ask (60%, once a name); *force*: lean on them (+3 Infamy with their faction); *bribe*: pay it yourself (15 Red Hand Favor; they remember you helped); let it lie; *side with their faction*: take one line (one in all) to their own stronghold: that leader is replaced (if the leaders' rules allow), their faction's morale −3, +10 Fame with it, +15 Red Hand Infamy. A name whose leader left the chair drops off the page | Stage 4 once every name is seen to, or at time up if any was (the rest are let lie); nothing done: stage 3 again, once | ✅ |
+| 4 | **The page** | Red Hand contract, Known; 60 min; 10 Fame, 20 Favor | *Talk*: give it back to the book-keeper (Trusted with the Red Hand; Known with B1's `orders.mocked`): +20 Red Hand Favor. At the barn's fire, *betray*: keep it (each faction collected from pays the keeper 20 Favor, once) or burn it (+15 Red Hand Infamy). *Side with Bastion*: the whole page to its duty officer (+20 Bastion Fame, +15 Red Hand Infamy). Only giving it back pays | Stage 5 on that branch; if he ran, the ending (kept: stage 6) | ✅ |
+| 5 | **The thief** | Red Hand contract, Known, ★ Ex-Con; 40 min; 10 Fame, 20 Favor | At the boss's own pit: let it happen; *force*: take his place (4 min in the ring, four rounds of three infected); *bribe*: pay his debt (30 Red Hand Favor, half pay); *sneak*: get him out (he follows you to a safehouse: +1 there, +5 Haven Fame and 10 Favor, no Red Hand pay; near the pit the crowd may see, 30% a check by day, 12% by night, halved for ★: +10 Red Hand Infamy and the pit crew fights). Nobody comes: he goes in | The ending (`book.thief`); kept: stage 6 | ✅ |
+| 6 | **The boss hears** | Wait | Only after the page was kept: 2 hours of play | Held over them | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **The book balances** | Given back | Red Hand morale +5; everyone who took part +10 Red Hand Fame; each leader collected from remembers who collected (crossed). A headline with the crew name the returner is given, and a rumour (8 hours) | ✅ |
+| **Held over them** | Kept | +15 Red Hand Infamy for the keeper, once the boss hears; the leader leaned on (else the first collected from) swings 25 toward Rogue. A quiet headline and a rumour | ✅ |
+| **Bastion's file** | To Bastion | The Bastion commander on the page, if still in the chair, +25 loyalty; Red Hand strength −3; +10 Red Hand Infamy for whoever sided against it; Bust Out ×1.2 for the season (it reads `book.bastion`). A headline and a rumour | ✅ |
+| **Burnt** | Burnt | Red Hand morale −5; +10 Red Hand Infamy more for the burner; +5 Haven Fame for everyone if the thief lived; every leader still on the page remembers everyone as having saved them. A headline and a rumour | ✅ |
+
+*Simplified:* the people are standing props with talk and choice actions; only the thief's friends
+and the pit crew are AI. The crew name is in the headline and the rumour, and isn't kept for the
+rest of the life. H2's `door.debt_yours` only adds a fourth line to the page's text: the world flag
+doesn't say whose debt it is. H3's `walk.cut_dose` adds the cut dose to the Haven name's debt (text). B1's `orders.mocked` lets anyone Known give the page back.
+
+### Cargo (the Red Hand, or the Haven)
+
+R2 in [QUESTLINES.md](QUESTLINES.md#r2-cargo), the long version of [Tied Down](#the-red-hands-hard-edges):
+the driver of a Red Hand van that carries people wants out. Five stages and up to three waits,
+four endings. Needs Supply > Red Hand truck (the van; vehicles allowed, so No Vehicles takes it
+out), a Red Hand crew boss who isn't the boss, and the note and puzzle object prefabs. Two
+versions: the Red Hand's (its contracts are the Red Hand's, Known, voiced by no leader: it's the
+driver's own business), and, half the time once Tied Down has reached its shed this season
+(`cargo.truck_seen`), the Haven's (Haven contracts, Known). The loads go to the Long Table's farm
+while the house publishes where it is (`table.town`), else to the crew boss's own pit, 250–400 m
+from the camp. Tied Down isn't offered while Cargo runs. Code:
+`Missions/Questlines/RedHand/RZ_Quest_Cargo.c`; the van and its padlock are Tied Down's
+(`RZ_CargoVan`, `Missions/RedHand/RZ_RedHandLoreMissions.c`).
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **Meet the driver** | Contract, Known, ★ Ex-Con; offered only 16:00–21:00 game time; 45 min; 6 Fame, 10 Favor | At a crossroads between the camp and the Haven. *Talk*: hear him out (stay within 8 m for 40 s; ★ 10 s); *force*: threaten him (at once; he tells his crew). He tells you where the loads go (with H1's `list.to_redhand`: half came off a Haven list) | Stage 2 (threatened: the camp is on guard). Time up: once more | ✅ |
+| 2 | **The load** | Contract, Known, ★ Mechanic; 60 min; 14 Fame, 20 Favor | The van at the camp, no fuel, three people padlocked in the back, its guards (the Red Hand group, else the truck crew; fighting at once if he was threatened). *Sneak*: cut the lock (12 s at the door; living guards see it) and walk them to a safehouse: +3 people, +10 Red Hand Infamy (the Red Hand's version: no pay, +5 Haven Fame and 10 Favor instead). Or get the engine going (30 s at the bonnet, ★ at once; the guards hear it) and drive it, still locked, to the Haven (the same as freeing them); *betray*: to the drop (`cargo.delivered`; the Haven's version: no pay, +8 Red Hand Fame, +10 Haven Infamy); *side with Bastion*: to a Bastion seat (`cargo.bastion`: three civilians sheltered, the driver arrested; +8 Bastion Fame, +10 Red Hand Infamy, no pay) | Freed or Bastion: stage 3. Delivered: the buyer is known, stage 4. Nothing: once more | ✅ |
+| 3 | **Who buys** | Contract, Known, ★ Police; 90 min; 10 Fame, 15 Favor | *Sneak*: after dark, watch the drop from 60–150 m for 2 minutes, unseen (★ 1 minute; closer than 60 m spoils it); *talk*: the fence at the Red Hand stronghold (persuade 2 with the Red Hand: Trusted); *bribe*: the driver at the crossroads, 10 Red Hand Favor (not while he's in a Bastion cell). At the farm: `cargo.buyer_known` (C1's proof); with H2's `door.exile_sold`, the exile was one of the ones who never arrived | Stage 4 | ✅ |
+| 4 | **Tell someone** | Contract, Known; 70 min; 10 Fame, 15 Favor | *Talk*: the boss's second (Trusted with the Red Hand; +15 Red Hand Favor): a purge (`cargo.purge`). *Betray*: keep quiet for a cut, at the crew boss (held while a stand-in talks; `cargo.cut`). *Side with Bastion*: its duty officer gets the camp, and the farm's grid (`cargo.bastion_raid`, `table.bastion_knows`; +10 Bastion Fame, +15 Red Hand Infamy). *Side with the Haven*: the chair's table (`cargo.told_haven`; +5 Haven Fame, +10 Red Hand Infamy). The Red Hand pays only for the purge; the Haven for all but the cut (Bastion at half) | Stage 5 on that branch; while the driver is in a Bastion cell, or for the raid without the Red Hand group prefab: the ending | ✅ |
+| 5 | **The driver** | Contract, Known; 50 min; 8 Fame, 10 Favor | At the crossroads: *sneak*: get him out (he follows you to a safehouse: +1 there), or tell him to keep driving. After a purge, at the boss's pit: get him out, let it be, or *force*: take his place (4 min in the ring, four rounds). After Bastion's raid: clear the crew's camp (the Red Hand group, hostile) before Bastion gets there | The ending (`cargo.driver`: his fate); the cut: stage 6 | ✅ |
+| 6–8 | **The cut** | Wait ×3 | Only after the cut: 2 hours of play each, and each pays the cut-taker 20 Red Hand Favor if they're on (else that session's cut goes unpaid). At the farm, once the house is exposed (`table.exposed`): +15 Haven Infamy for whoever took the cut or delivered a load, and the cut stops | The cut | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **Purged** | The boss | The crew boss is replaced (if the leaders' rules allow; else a headline that the boss had words); Red Hand morale −3; everyone +10 Red Hand Fame; at the farm, `table.supplier_cut`. A rumour | ✅ |
+| **The cut** | The crew boss | The three sessions' cut; another *"never arrived"* headline | ✅ |
+| **Bastion's raid** | Bastion | The crew's outpost goes to Bastion if Bastion's strength beats the Red Hand's by 10 and the territory's rules allow it, else Red Hand strength −3; +10 Bastion Fame and +10 Red Hand Infamy for whoever sided with Bastion. A headline | ✅ |
+| **Told** (Freed and told) | The Haven | Everyone +10 Haven Fame; whoever was freed at stage 2 and the driver are already at the safehouse; with the farm, C1 can start at stage 4 with the Haven (`cargo.told_haven`). A headline and a rumour | ✅ |
+
+*Simplified:* the three in the van are data until the lock is cut (then an escort); the driver,
+the fence and the stand-ins are standing props. Nobody from the farm is spawned here: what's seen at
+the drop is told, not shown. Without the Long Table's `table.town` the loads go to the crew boss's
+pit, so `cargo.buyer_known`, `table.supplier_cut` and `table.bastion_knows` aren't set and C1 isn't
+started (and `cargo.told_haven` doesn't find the house out). Bastion's raid has no Bastion soldiers on the ground. "The Red Hand drops it" (Bastion too
+weak) is Red Hand strength −3 rather than an abandoned outpost.
+
+### The Well Story (the Red Hand)
+
+R3 in [QUESTLINES.md](QUESTLINES.md#r3-the-well-story): a crew boss's village has stopped paying.
+Five stages and a wait, four endings. Needs a Red Hand crew boss who isn't the boss (Ruthless and
+Greedy ones twice as likely), the boss, and the note and puzzle object prefabs. The village: H2's
+house when `door.shut` or `door.bastion` is set (`door.house` names it), else the Haven
+safehouse nearest the crew boss (within 6 km), else a quiet village under 30 infection 0.6–4 km
+away; its well is a real one if the town has one, else Puzzles > Well (or the puzzle object). It
+fizzles if the village reaches 75 infection, or the crew's camp is lost, before the order. A new
+crew boss in the chair keeps the grudge. Code: `Missions/Questlines/RedHand/RZ_Quest_WellStory.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **Collect** | Red Hand contract, Known, 🔒 not Elder, voiced by the crew boss; 40 min; 8 Fame, 10 Favor | The keeper at the house won't pay. *Talk*: ask; *force*: lean on them (+5 Haven Infamy; with the survivor group prefab their people fight, and still say no) | Stage 2. Time up: once more | ✅ |
+| 2 | **Why they stopped** | Red Hand contract, Known, 🔒 not Elder; 40 min; 8 Fame, 10 Favor | The council head (held while a stand-in speaks; the keeper without one). *Talk*: ask why (Known with the Haven): they're short, or they pay Bastion now (`door.bastion`, or a Bastion seat within 1.5 km); *bribe*: pay their dues yourself (20 Red Hand Favor, `well.paid`) | Asked, or nobody did: stage 3. Paid: The story worked | ✅ |
+| 3 | **Tell the story** | Red Hand contract, Known, 🔒 not Elder, ★ Ex-Con; offered only 16:00–21:00 game time; 45 min; 10 Fame, 15 Favor | At the well, the woman drawing water. *Talk*: tell the story: 60% they pay (40% after someone leaned on them; ★ always; +15 Red Hand Favor, `well.paid`). *Side with the Haven*: warn them instead (+5 Haven Fame, no pay, `well.warned`: two people on the well) | Paid: The story worked. Otherwise stage 4 | ✅ |
+| 4 | **The crew boss's order** | Red Hand contract, Known, 🔒 not Elder, ★ Lab Tech/Nurse; 90 min; 10 Fame, 15 Favor | At the well. *Sneak*: put something in it, after dark only (`well.done`; seen while they're warned, once noticed, or with shots within 80 m: +15 Haven Infamy at once). *Betray*: fake it (`well.faked`; ★ knows what's harmless, anyone else gets it wrong 35% of the time: +5 infection there). *Side with Halcyon*: a water sample (20 s, ★ at once) to the nearest Halcyon seat (`well.tested`; +8 Halcyon Fame, +5 Haven Fame, no pay). *Force*: stand guard (with the Red Hand group prefab: the crew comes a minute later and has to be put down; +5 Haven Fame and +10 Red Hand Infamy for the one standing guard, no pay). Sealed or held: `well.stood` | Stage 5. Time up: the crew does it themselves (the well was done; nobody's standing changes) | ✅ |
+| 5 | **A session later** | Wait | 2 hours of play. After a fake, someone who took part can talk to the village's council head and tell them the truth (+8 Haven Fame, once) | Stage 6 | ✅ |
+| 6 | **The boss hears** | Red Hand contract, Trusted; 60 min; 8 Fame, 15 Favor | At the boss's camp, the boss's second; only someone Trusted may answer. *Talk*: own it; *persuade*: blame the crew boss (he goes in the pit: replaced); say nothing | The ending | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **The story worked** | Paid (stage 2 or 3) | Everyone +10 Red Hand Fame; the boss remembers everyone as having helped; the house −2 food (not when a player paid the dues). A rumour (8 hours) | ✅ |
+| **The well was done** | Done, or nobody stood in the way | Town infection +15; the safehouse −3 people (never below 2); the crew boss is replaced for a bad deal. Whoever did it: +5 Red Hand Fame, +10 Red Hand Infamy (none after blaming the crew boss) and, if seen, +15 Haven Infamy more. Headline: *"Nobody in [the village] is drinking from the well."* A rumour (12 hours) | ✅ |
+| **Faked** | Faked | The house −1 food; the faker +10 Red Hand Fame, and 25% the crew boss finds out (+10 Red Hand Infamy; never after owning it or blaming him); blamed: the crew boss is replaced. A rumour | ✅ |
+| **Stood up** | Tested, or held | Everyone +10 Haven Fame; +10 Red Hand Infamy for whoever sided with the Haven or Halcyon (warned them, took the sample); tested: infection −10 there; the crew boss swings 25 toward Rogue (blamed: replaced instead). A headline and a rumour | ✅ |
+
+*Simplified:* the keeper, the council head's stand-in and the villagers are standing props; only the
+keeper's people and the crew are AI. The two people on a warned well see everything, so a warned well
+can't be done unseen. The poisoned well doesn't start Fever Town there (the infection is real; the arc
+picks its own safehouse). Paying the dues yourself ends at The story worked without a refund of the
+Favor.
 
 ### The House That Went Quiet (the Long Table)
 
@@ -607,7 +814,7 @@ Every background has contracts it shines at, and some it's shut out of.
 |---|---|---|
 | Nurse | Medicine Run, Bitten Friend, Walk Him Out, Pharmacy Lure, Medicine Before Dark, Rescue the Pilot, Cold Chain | — |
 | Mechanic | Clear the Road, Crash Site, Junction Boxes, Rooftop Rescue, Fuel for the Lights, Water Purifier, Fortify the Safehouse, Recover the Bus, Convoy Escort, Blow the Bridge, Car Theft | — |
-| Hunter | Rescue the Kids, Smuggler's Run, Hunt the Screamer, Silent Courier, Harvest Guard, Cargo | — |
+| Hunter | Rescue the Kids, Smuggler's Run, Hunt the Screamer, Silent Courier, Harvest Guard, Tied Down | — |
 | Police | Checkpoint Duty, Trail of Clues, The Rat, Curfew Patrol, Loot the Armory, Double Agent | The Informant |
 | Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, Bust Out, The Pit's Debtor | Raid the Red Hand (until Champion with Bastion) |
 | Lab Tech | Field Samples, Water Survey, Quiet Count, Steal the Antidotes, Water Purifier, Install Sensors, Patient Zero | — |

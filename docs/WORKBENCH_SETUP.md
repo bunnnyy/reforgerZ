@@ -310,10 +310,10 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_PuzzleObject.et` | a crate, sign or post prop | the generic set | Puzzles > Puzzle object | **minimum** | every puzzle and interaction fallback; missions relabel the actions |
 | `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | **minimum** | puzzles, unarmed missions, wanderers, leaders and occupants to talk to |
 | `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | **minimum** | every puzzle mission, scenario clues |
-| `RZ_Keypad.et` | a keypad or wall panel prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Keypad | optional | The Last Experiment (keypad mode), Locked Bunker, The Three Weeks (without a terminal); keys 0-9, 10 Clear, 11 Enter |
-| `RZ_Terminal.et` | a computer prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Terminal | optional | The Last Experiment, The Three Weeks (both fall back to the keypad); keys 0-9, 10 Clear, 11 Enter |
+| `RZ_Keypad.et` | a keypad or wall panel prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Keypad | optional | The Last Experiment (keypad mode), Locked Bunker, the store in The Three Weeks questline (without a terminal); keys 0-9, 10 Clear, 11 Enter |
+| `RZ_Terminal.et` | a computer prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Terminal | optional | The Last Experiment, the store in The Three Weeks questline (both fall back to the keypad); keys 0-9, 10 Clear, 11 Enter |
 | `RZ_PuzzleBody.et` | a body prop | the clue set | Puzzles > Body | optional | Paces, Patient Zero's Ledger, Poisoned Well, Last Experiment, The Witness, The Deserter's Map (falls back to the note) |
-| `RZ_Well.et` | a well prop | the generic set | Puzzles > Well | optional | look only (falls back to the puzzle object) |
+| `RZ_Well.et` | a well prop | the generic set | Puzzles > Well | optional | look only (falls back to the puzzle object): The Poisoned Well, and The Well Story where the town has no real well |
 | `RZ_Bell.et` | a bell prop | the generic set | Puzzles > Bell | optional | look only (falls back to the puzzle object) |
 | `RZ_FuseBox.et` | an electrical box prop | the generic set | Puzzles > Fuse box | optional | look only (falls back to the puzzle object) |
 | `RZ_RadioMast.et` | an antenna prop | the generic set | Puzzles > Radio mast | optional | look only (falls back to the puzzle object) |
@@ -331,12 +331,12 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_Drop_Bastion.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction MILITARY) | Missions > Bastion drop point | **minimum** | the drops those missions name |
 | `RZ_Drop_RedHand.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction BANDITS) | Missions > Red Hand drop point | **minimum** | the drops those missions name; also Car Theft's chop shop |
 | `RZ_Drop_Halcyon.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction INSTITUTE) | Missions > Halcyon drop point | **minimum** | the drops those missions name |
-| `RZ_SurvivorGroup.et` | a civilian AI group on SURV | — | Missions > Survivor group | optional | Survivors Trapped, Training Day, Harvest Guard, The Bitten Friend, Trader Caravan, Protection Racket; the fallback escort and bounty target |
+| `RZ_SurvivorGroup.et` | a civilian AI group on SURV | — | Missions > Survivor group | optional | Survivors Trapped, Training Day, Harvest Guard, The Bitten Friend, Trader Caravan, Protection Racket, the keeper's people in The Well Story; the fallback escort and bounty target |
 | `RZ_Nest.et` | a Zombie Hive prefab or a destructible prop with a damage manager | — | Missions > Nest | optional | Burn the Nest, Specimen from the Nest |
 | `RZ_BanditDrop.et` | a crate, barrel or car wreck prop | `RZ_SellSamplesToBanditsAction` | Missions > Dead drop | optional | Dead Drop |
 | `RZ_HeliWreck.et` | a helicopter wreck prop | the clue set | Missions > Helicopter wreck | optional | Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash |
 | `RZ_CorpsePile.et` | a body bag pile prop | — | Missions > Corpse pile | optional | look only: Burn the Bodies' piles and Memorial's bodies (both fall back to the puzzle object) |
-| `RZ_RedHandGroup.et` | an AI group on BAND | — | Missions > Red Hand group | optional | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness, the crews in Learning the Drones and The Pit's Debtor, Cargo's guards; default Red Hand hunter squad |
+| `RZ_RedHandGroup.et` | an AI group on BAND | — | Missions > Red Hand group | optional | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness, the crews in Learning the Drones and The Pit's Debtor, the guards in Tied Down; in the questlines the thief's friends (The Book), the van's guards and the raided camp (Cargo) and the crew at the well (The Well Story); default Red Hand hunter squad |
 | `RZ_FuelDepot.et` | fuel tanks with a damage manager | — | Missions > Fuel depot | optional | Arson |
 | `RZ_Relay.et` | a radio mast with a damage manager | — | Missions > Relay | optional | Sabotage the Relay |
 | `RZ_Trader.et` | a character or vehicle (e.g. a Shop System trader) | — | Missions > Trader | optional | Wandering Trader |
@@ -346,10 +346,10 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor (falls back to the survivor group, then data) |
-| `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment |
+| `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor, the brother walked home in The Other Two (falls back to the survivor group, then data) |
+| `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment, the field lead in The Three Weeks and the courier in The Other Two |
 | `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Hunt the Deserter, Struck Off |
-| `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection (falls back to the puzzle object) |
+| `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection, The Three Weeks questline (falls back to the puzzle object) |
 | `RZ_Bus.et` | a drivable bus or truck (keeps its damage manager) | — | Missions > Contracts > Bus | optional | Recover the Bus (falls back to the Haven truck, then car prefabs) |
 | `RZ_BountyTarget.et` | an armed AI group or character | — | Missions > Contracts > Bounty target | optional | Collect the Bounty (falls back to the survivor group) |
 | `RZ_BastionSquad.et` | an AI group on MIL | — | Missions > Contracts > Bastion squad | optional | the stockade guards in Bust Out (falls back to the Bastion hunters, then crew) |
@@ -458,20 +458,20 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_Guard_Haven.et` | an armed AI character or small group on SURV | — | Territory > Haven guard | optional | guards at holdings; watched for retaliation |
-| `RZ_Guard_Bastion.et` | an armed AI character or small group on MIL | — | Territory > Bastion guard | optional | guards at holdings; watched for retaliation |
+| `RZ_Guard_Bastion.et` | an armed AI character or small group on MIL | — | Territory > Bastion guard | optional | guards at holdings; watched for retaliation; Bastion's squads at the lab during the final stand in Authors |
 | `RZ_Guard_RedHand.et` | an armed AI character or small group on BAND | — | Territory > Red Hand guard | optional | guards at holdings; watched for retaliation |
-| `RZ_Guard_Halcyon.et` | an armed AI character or small group on INST | — | Territory > Halcyon guard | optional | guards at holdings; watched for retaliation |
+| `RZ_Guard_Halcyon.et` | an armed AI character or small group on INST | — | Territory > Halcyon guard | optional | guards at holdings; watched for retaliation; the extra guard at the lab gate during the final stand in Authors |
 | `RZ_Occupant_Haven.et` | a character without AI in the faction's clothes | the generic set | Territory > Haven occupant | optional | the named people (empty = the civilian) |
 | `RZ_Occupant_Bastion.et` | a character without AI in the faction's clothes | the generic set | Territory > Bastion occupant | optional | the named people (empty = the civilian) |
 | `RZ_Occupant_RedHand.et` | a character without AI in the faction's clothes | the generic set | Territory > Red Hand occupant | optional | the named people (empty = the civilian) |
 | `RZ_Occupant_Halcyon.et` | a character without AI in the faction's clothes | the generic set | Territory > Halcyon occupant | optional | the named people (empty = the civilian) |
 | `RZ_Truck_Haven.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Haven truck | optional | the supply truck |
 | `RZ_Truck_Bastion.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Bastion truck | optional | the supply truck |
-| `RZ_Truck_RedHand.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Red Hand truck | optional | the supply truck; the truck in Cargo (needed for it) |
+| `RZ_Truck_RedHand.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Red Hand truck | optional | the supply truck; the truck in Tied Down and the van in the Cargo questline (needed for both) |
 | `RZ_Truck_Halcyon.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Halcyon truck | optional | the supply truck; Mobile Lab's lab truck |
 | `RZ_TruckCrew_Haven.et` | an AI group of 1-2 on SURV; the first one drives | — | Supply > Haven crew | optional | the crew |
 | `RZ_TruckCrew_Bastion.et` | an AI group of 1-2 on MIL; the first one drives | — | Supply > Bastion crew | optional | the crew |
-| `RZ_TruckCrew_RedHand.et` | an AI group of 1-2 on BAND; the first one drives | — | Supply > Red Hand crew | optional | the crew; the truck crew in Cargo |
+| `RZ_TruckCrew_RedHand.et` | an AI group of 1-2 on BAND; the first one drives | — | Supply > Red Hand crew | optional | the crew; the truck crew in Tied Down |
 | `RZ_TruckCrew_Halcyon.et` | an AI group of 1-2 on INST; the first one drives | — | Supply > Halcyon crew | optional | the crew |
 
 #### New-player guidance
@@ -1159,6 +1159,42 @@ session, tick off:
   notebook beside him (taken back), then ask him instead; read the trial records after dark;
   broker the lab road at the nurse's and carry the Cold Chain batch; on another run refuse both and
   walk the last one out with the walker at dusk.
+- [ ] The Three Weeks (same settings): solve Patient Zero's Ledger, then it can begin. The driver
+  sits at the edge of the town nearest the site, talks to someone Known with the Haven and not
+  Trusted with Halcyon (or a Radio Operator), or after two shares of food; the site is well away
+  from every town; the three bodies give the code for the terminal (without one, reading all three
+  opens the lock); Dr Wolff can be killed, caged (the case to the lab drop) or left while you take
+  the notebook unseen. At stage 4 the duty officer turns away someone the director doesn't trust;
+  each seat gives its branch (the raid, the field lead walking out, or Bastion's file) and its
+  ending's headline.
+- [ ] The Other Two (same settings): the clerk refuses a stranger; the ledger only opens at night;
+  the courier follows you to the station (or hands you his case); the brother's clock starts when
+  you reach the room, and walking him home ends at the sister's safehouse; the sample kit gets him
+  up as an infected; selling ends the line; the sister's name choices appear only after the list
+  and the man who walked them up; the names go to the director, the chair, or nowhere.
+- [ ] Authors (same settings, and Cure > Research per sample raised so a few samples reach 50%):
+  it doesn't start at 90% or more; the letter can be read and copied onto the field lead's desk;
+  the cold case goes warm after 20 minutes; bargaining needs Trusted with both; stage 5 waits for
+  75%. At the final stand, with Territory > Bastion guard set and the terms agreed, a Bastion squad
+  stands at the gate; with the boss paid, a player Known with the Red Hand is offered Take the Lab.
+  The ending comes after the stand, and the season's winner in the log is chosen before it.
+- [ ] The Book (`Begin("book")`, from the season's second real day): point at the wrong suspect once
+  (+5 Red Hand Infamy, the trail still opens); at the barn, talking him out armed is refused. At the
+  page, each name is met at their own seat (their own body goes while the stand-in talks); turn one in
+  at their stronghold (replaced, morale down) and a second is refused; let a debtor's leader die
+  first and they drop off the page. Keep the page on one run: Favor from each faction collected
+  from, and +15 Red Hand Infamy a session later.
+- [ ] Cargo (Supply > Red Hand truck set): the driver only at dusk; threaten him and the van's guards
+  fight at once. Cut the lock and the three follow you to a safehouse (+3); on another run start the
+  van (a Mechanic at once) and drive it to the drop or to Bastion. With world flag `table.town` set
+  to a settlement index + 1 the drop is below that farm and `cargo.buyer_known` is set at stage 3;
+  without it, the crew boss's pit. Tied Down isn't offered while Cargo runs, and after Tied Down's
+  shed Cargo sometimes starts as the Haven's.
+- [ ] The Well Story: the keeper always refuses; the council head answers only someone Known with the
+  Haven; the story only at dusk (an Ex-Con always gets paid). Warn them, then try the well after
+  dark: always seen (+15 Haven Infamy). Fake it as a Nurse (harmless) and as someone else
+  (sometimes +5 infection); take a sample to Halcyon; stand guard (the crew comes a minute later).
+  The boss's verdict a session later takes Trusted; blaming the crew boss replaces them.
 - [ ] The Long Table (**Chance** 1, a fresh season): the log names the farm; within 300 m its people
   stand there and talk. Eat (grace reads the last name taken, the boots show once), trade a jar for a
   magazine, declare a bite while infected. Alone, eat at 20:00 and wait past 20:30 by the door: the
@@ -1272,12 +1308,8 @@ session, tick off:
 - [ ] Take the Lab during a final stand: 90 s in the clean room ends the stand, research shows 90%,
   and the Red Hand antidote stock goes up by two.
 - [ ] Mobile Lab: the field annex takes samples and disappears after 3 hours.
-- [ ] The Three Weeks: the site is well away from every town (at a factory, mast or barracks when
-  one is near); the van, then the gate, then the store appear only as you come close; the code
-  from the gate log opens the terminal; the notes can go to the lab, the Haven or the Red Hand drop.
-- [ ] The Author List and The List: the safehouse's people and list appear when you come near; the
-  trial lead at the lab gets name choices only after both safehouse clues are read; The List's
-  last clue (cairn, bedroll, bag or person) appears only after the list and the council member.
+- [ ] The List: the safehouse's people and list appear when you come near; its last clue (cairn,
+  bedroll, bag or person) appears only after the list and the council member.
 
 **Multiplayer and griefing** (two clients at least; the pass 2 sweep's open risks)
 - [ ] Two players race one choice delivery: the first hand-in wins, the second is told it isn't

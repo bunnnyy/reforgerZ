@@ -84,10 +84,10 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_CollectTheBounty);
 		mgr.RegisterType(RZ_Mission_KillTheOfficer);
 		mgr.RegisterType(RZ_Mission_TakeTheLab);
-		// The Red Hand's hard edges (Missions/RedHand/RZ_RedHandLoreMissions.c); Cargo is the Haven's
+		// The Red Hand's hard edges (Missions/RedHand/RZ_RedHandLoreMissions.c); Tied Down is the Haven's
 		mgr.RegisterType(RZ_Mission_LearningTheDrones);
 		mgr.RegisterType(RZ_Mission_PitsDebtor);
-		mgr.RegisterType(RZ_Mission_Cargo);
+		mgr.RegisterType(RZ_Mission_TiedDown);
 
 		// Halcyon
 		mgr.RegisterType(RZ_Mission_SampleHunt);
@@ -112,9 +112,8 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_SerumTrial);
 		mgr.RegisterType(RZ_Mission_MobileLab);
 
-		// Hard edges as contracts (Missions/Halcyon/RZ_HalcyonLoreMissions.c, Missions/Haven/RZ_HavenLoreMissions.c)
-		mgr.RegisterType(RZ_Mission_TheThreeWeeks);
-		mgr.RegisterType(RZ_Mission_TheAuthorList);
+		// Hard edges as contracts (Missions/Haven/RZ_HavenLoreMissions.c). Halcyon's two are questlines
+		// now: The Three Weeks and The Other Two (Missions/Questlines/Halcyon/)
 		mgr.RegisterType(RZ_Mission_TheList);
 
 		// Puzzle missions (Puzzles/), each a contract from one faction
