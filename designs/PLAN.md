@@ -73,7 +73,7 @@ Checked against the code on 2026-11-11 (branch `claude/sleepy-volta-nwm433`).
 | The build-review fixes (shops, people, tablets, the server-side loadout lock) and the retaliation watch fix | commits cfbcff4, 00ff654 |
 
 **One honest caveat.** The last runtime test started none of the 15 questlines, because their start conditions
-weren't forced (`/root/rz_tools/runtime_pacing.txt`). Convoy Escort, Hijack the Convoy, Mobile Lab and the
+weren't forced. Convoy Escort, Hijack the Convoy, Mobile Lab and the
 Locked Bunker didn't start either. The majors and the finale are built on that engine and reuse those
 missions, so that test comes first (step 0.4).
 
@@ -573,7 +573,7 @@ Built once, in phase 1 unless noted, and used by every piece. No piece builds it
 
 ## Built alongside: the work in ROADMAP "Next"
 
-ROADMAP's "Next" items are approved and being built now (`/root/rz_tools/next_plan.md`): notice pacing, the
+ROADMAP's "Next" items are approved and being built now: notice pacing, the
 notebook, subtitles and the reader, talking to people, burning with fuel in your hands (built: commit 86432ae),
 loose loot, and lived-in outposts and camps. They're not part of this plan's phases, but several are the first
 layer of a shared piece, so the plan builds on them instead of beside them.

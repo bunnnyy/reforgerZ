@@ -25,6 +25,7 @@ the four majors, the cure's finale, the epilogue week and the infected. None of 
 | [ERRANDS.md](ERRANDS.md) | Small side jobs from what's true right now: routines and cards, givers, the dealer, strangers only where one would find you | Phase 3 (core); phase 4 (strangers, locals, twists); phase 5 (margin cards); phase 7 (the epilogue deck); phase 8 (to about 60 cards) |
 | [DISGUISE.md](DISGUISE.md) | Borrowed kit and faction colours: looks, caught and held, tricks, the side jobs | Phase 4 (disguise phase 1); phase 8 (phases 2 and 3) |
 | [INFECTED.md](INFECTED.md) | Tribes in the wild and crawlers in the towns: lairs, ranges, alphas, day parties, hunts, the land, the last week | Steps 0.2 and 0.3; tribes phases 1–5, in parallel with phases 1–5 |
+| [BEHAVIOUR.md](BEHAVIOUR.md) | How the infected move and hunt, on top of Bacon's AI: our code drives them except at striking range; gait and senses per kind, formations and flanking, stalking in bush, vaulting low fences, navigation, hunt strategies, attacks per kind | Tribes phases 1–2 |
 | [MAJORS.md](MAJORS.md) | One season-long story per faction, climaxes on cure milestones, dynamic fallbacks from what's happening on the server | Phase 5 |
 | [FINALE.md](FINALE.md) | The fight for control of the cure at 90%: five routes, the lock, the race, the stand as a control fight, terms | Phase 6 |
 | [EPILOGUE.md](EPILOGUE.md) | The week after the cure (168 hours): the Zone remembers the season, and closing work lets every story finish | Phase 7 (records from phase 3) |
