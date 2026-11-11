@@ -3,7 +3,8 @@
 **Status: designed, not built.** The layer itself is built ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)
 owns it): Bacon's hooks, the four modes, the kinds' profiles, sight, the shot as a lead, memory,
 hand-offs, formations and flanking, every hunt strategy, navigation and the climb gate, LOD, the
-hunter's lunge, the young's leap and the alpha's charge as the lab allows them, and the crawlers' daily
+hunter's lunge, the young's leap and sprint, the alpha's charge, the ankle grab, stagger and knockdown on
+the player's machine (`RZ_PlayerEffectsComponent`), and the crawlers' daily
 life ([crawler life](../docs/INFECTED.md#crawler-life)). The zombie lab's B1–B20 results are in
 [docs/WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#zombie-lab-bacons-real-ai-measured). This file
 keeps only what's still to build. Approved by the author on 2026-11-11.
@@ -23,11 +24,10 @@ range Bacon's own attack is used, and each kind may add one special move on top.
 5. [Shrieks](#5-shrieks)
 6. [Doors](#6-doors)
 7. [Reactions](#7-reactions)
-8. [The ankle grab and the client effects](#8-the-ankle-grab-and-the-client-effects)
-9. [Settings](#9-settings)
-10. [Build steps](#10-build-steps)
-11. [Risks](#11-risks)
-12. [Decisions for the author](#12-decisions-for-the-author)
+8. [Settings](#8-settings)
+9. [Build steps](#9-build-steps)
+10. [Risks](#10-risks)
+11. [Decisions for the author](#11-decisions-for-the-author)
 
 ---
 
@@ -43,7 +43,6 @@ The levers the unbuilt parts need, with the lab's verdicts (B tests, 2026-11-11)
 | L14 | **Sleep** | `AIAgent.DeactivateAI()` / `ActivateAI()` | **Works with limits** (B12): built for crawlers; the resting ring isn't asleep yet |
 | L16 | **Our danger events** | A scripted `AIDangerEventWeaponFire` pulls engaged bodies the way a shot does | Feasible |
 | L18 | **Navmesh snap** | `AIPathfindingComponent.GetClosestPositionOnNavmesh` | **Doesn't work as written** (B9: not on Bacon's bodies). A vanilla group's or the AI world's navmesh is untested |
-| L21 | **Player effects, client side** | `RZ_PlayerEffectsComponent` on the player controller, owner-only RPCs: `SetSpeedLimit` on the player's own character, `ForceStance`, `SetDisableMovementControls` for a moment. A player's movement is predicted on their own machine, so these must run there | Spike (needs a real client) |
 | L23 | **Pathing bias** | Mod `SCR_CreateAIExtraMoveParams` for Bacon bodies: straight-path cost per kind (×1 young, ×3 hunters), so a chase curves | Spike: the hook loads and fires (B2); its effect isn't tested |
 
 ---
@@ -58,7 +57,7 @@ The levers the unbuilt parts need, with the lab's verdicts (B tests, 2026-11-11)
 | Formations | A re-plan only when the target moves 25 m (the code re-plans each second); an ETA so the slower element starts first |
 | Navigation | **Forest edge points** in the land cache (the code uses the square's tree class and its open neighbours); low ground preferred on a leg; the navmesh snap (L18) |
 | Strategies | A **regroup** 60–100 m back in cover once per target; at most 3 elements and 2 strategies near one player cluster |
-| Crawlers | A forced prone pose (L6); the crawler steered into a fight within 12 m; the ankle grab (section 8) |
+| Crawlers | A forced prone pose (L6); the crawler steered into a fight within 12 m |
 | Performance | The resting ring asleep with its AI off (L14) |
 
 ---
@@ -121,40 +120,12 @@ hunt at night can break a weak door (decision 1).
 
 ---
 
-## 8. The ankle grab and the client effects
-
-A move runs as the built ones do: the gate on an ENGAGE body, the wind-up behind the melee gate, Bacon's
-melee, the bite detector's attribution, then the effect. Limits for every move stay as built: one special
-move landing on a player every 10 s from all infected together, none in the gentle start, and **Own
-attacks** off gives plain Bacon melee.
-
-| Move | Kind | Trigger | Effect on a hit | Counterplay | Cooldown and caps |
-|---|---|---|---|---|---|
-| **Ankle grab** | Crawler | Target within 2 m, and the crawler is low (stance 0.6) or the target is prone or crouched; Bacon's crouch melee | **Held:** the player's speed capped at 0.25 for 1.5 s. A second hit within 4 s already counts as "grabbed" (×1.5 bite chance, built). *"Something has your ankle."* | Kill it, step back before it's in reach, don't go prone among crawlers | 20 s per crawler; one hold on a player at a time; never two in a row from different crawlers within 5 s |
-| **Stagger** (on the built leap) | Young | A hit after the leap's sprint burst | Speed capped at 0.6 for 0.8 s | Sidestep: the leap goes straight | At most one stagger per player per 6 s |
-| **Knockdown** (on the built charge) | Alpha | The charge reaches within 1.6 m | The player forced prone, movement off for 1.2 s, then Bacon's swing | Sidestep at the last moment, or get an obstacle between you | **Never** while 3 or more other infected are within 10 m of the player; at most once per player per 30 s |
-
-**The client component.** `RZ_PlayerEffectsComponent` goes on the player controller prefab, next to
-`RZ_PlayerUIComponent`, with owner-only RPCs:
-- `Hold(seconds, speedFraction)`, through `SetSpeedLimit` on the player's own character;
-- `Knockdown(seconds)`, through `ForceStance` prone and `SetDisableMovementControls`.
-
-Every effect ends on a timer on the client and is cleared on death or respawn. Without the component,
-hold, stagger and knockdown stay off, and the line and the built grab chance stay. It becomes a
-WORKBENCH_SETUP item when built. Dragging a player is dropped ([ROADMAP](../docs/ROADMAP.md)).
-
-**The play-test after the client test** (through the pc-setup skill): a crawler street's ankle grab, an
-alpha charge and knockdown, and a young's stagger, each checking that the tell is heard before the
-strike.
-
----
-
-## 9. Settings
+## 8. Settings
 
 Still to add under **Zombies > Behaviour**: **Weak door words**; Order gap and Orders per 5 s (now fixed
 at 5 s a group).
 
-## 10. Build steps
+## 9. Build steps
 
 Each ends with `tools/compile_check.sh` (exit 0, no ReforgerZ warnings) and docs in the same commit.
 
@@ -163,25 +134,19 @@ Each ends with `tools/compile_check.sh` (exit 0, no ReforgerZ warnings) and docs
 | **A. Senses' rest** | The hearing table (section 3), blood (4), shrieks (5), the 2 s sight cache | 300 |
 | **B. Doors** | Another way in and weak doors (6), **Weak door words** | 200 |
 | **C. Reactions and the regroup** | The reactions table (7), the regroup and the element caps (2) | 300 |
-| **D. Client effects** | `RZ_PlayerEffectsComponent`, the ankle grab, stagger and knockdown (8), after the client test | 300 |
 | **E. The small rules** | Section 2's rest: the release delay, the kinds' tells, forest edge points, the resting ring asleep | 300 |
 
 ---
 
-## 11. Risks
+## 10. Risks
 
-1. **Speed caps look like slow motion.** B7: under a cap the animation stays "run". The hold and the
-   stagger need a client check before they ship.
-2. **A knockdown in a crowd is a death sentence.** Hence the "3 or more others within 10 m" rule and
-   one special per player per 10 s. Watch deaths by cause.
-3. **Weak doors take away the last safe room.** Protected buildings and the word list keep it rare;
+1. **Weak doors take away the last safe room.** Protected buildings and the word list keep it rare;
    play-test the word list on each map.
-4. **Hearing everything makes them omniscient.** Every sound gives a lead with error, never a fix;
+2. **Hearing everything makes them omniscient.** Every sound gives a lead with error, never a fix;
    tune the radii in play.
 
-## 12. Decisions for the author
+## 11. Decisions for the author
 
 | # | Decision | Recommended |
 |---|---|---|
 | 1 | Weak doors break, but only for an alpha or a bold night hunt | **Yes**, with the word list and protected buildings. Or no, and hiding behind a *locked* door stays absolute |
-| 2 | The alpha's knockdown | **Yes**, with its caps, after the client test (its charge can't break fences: B17) |

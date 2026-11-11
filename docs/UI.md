@@ -451,6 +451,14 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 | `RZ_Reply1` … `RZ_Reply7` | 1 … 7 | none: the D-pad and A pick a reply | `MenuContext` |
 | `RZ_CarStart` | T | Y | `MenuContext` |
 | `RZ_TurnPreview` | none: left/right (`MenuLeft`/`MenuRight`) or a click | right stick (horizontal) | `MenuContext` |
+| Kick free of a hold (vanilla `CharacterJump`, listened to only while held) | Space | the pad's jump button (A) | `IngameContext` |
+
+**Breaking a hold** ([INFECTED.md](INFECTED.md#how-they-move-and-hunt), Attacks). When something has
+your ankle, `RZ_PlayerEffectsComponent` listens to the base game's Jump for the hold's few seconds:
+**Hold kicks** (3) presses kick you free. It needs no binding of ours, so it is the same button on a
+pad and a console. The prompt is the base game's hint with its timer ("Something has your ankle" /
+"Kick free: press Jump 3 times."), shown for the hold and hidden when it ends; it has no widget of
+ours. The stagger and the knockdown have no prompt, only a line.
 
 N is free in play (vanilla uses it only in the group menu and the map's pencil tool, other
 contexts). The pad has no free button in play, so Start (the pause menu) and the notebook item are
@@ -494,6 +502,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_ShopScreen`, `RZ_ShopOpenAction`, `RZ_ShopMenu` | server, server, client | The shop screen ([above](#the-shop-screen)) |
 | `RZ_ScreenCapture` | server | While a screen acts for its player, catches what would have been that player's notice for the screen's status line |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair and shop screens and closes them in danger (below) |
+| `RZ_PlayerEffectsComponent` | on the player controller | The infected's close moves on the owner's machine: a hold (with the hint and Jump to kick free), a stagger, a knockdown; the server decides each one ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/rep`, `/talkdebug`, `/mydead`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)) |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards and the subtitles |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |

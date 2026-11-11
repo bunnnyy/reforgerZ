@@ -3,6 +3,8 @@ SCR_PlayerController : "{225E51284CC95CFA}Prefabs/Characters/Core/DefaultPlayerC
  components {
   RZ_PlayerUIComponent "{13FECE5761EA6985}" {
   }
+  RZ_PlayerEffectsComponent "{5C2E7A91D3F04B68}" {
+  }
   SCR_HUDManagerComponent "{2FDC275D9EBCDB8B}" {
    InfoDisplays {
     RZ_HudDisplay "{E9CDEFC50B3DE278}" {

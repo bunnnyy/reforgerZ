@@ -1765,7 +1765,8 @@ class RZ_GroupPlan
 	{
 		float now = bh.Now();
 		RZ_KindProfile kp = bh.Kind(b.m_eKind);
-		RZ_Behaviour.WantMove(b.m_Body, EMovementType.RUN);
+		if (!bh.IsSprinting(b.m_Body))
+			RZ_Behaviour.WantMove(b.m_Body, EMovementType.RUN);
 		if (!foe || !RZ_Util.IsCharacterAlive(foe))
 		{
 			if (now - b.m_fModeAt >= RZ_Behaviour.MIN_ENGAGED && !PlayerInSight(pos, players, RZ_Behaviour.NEVER_TAKE_BACK))
@@ -1776,7 +1777,7 @@ class RZ_GroupPlan
 
 		vector fp = foe.GetOrigin();
 		float d = RZ_Util.DistXZ(pos, fp);
-		bh.TryBurst(b);
+		bh.TryBurst(b, foe, d);
 		int foeId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(foe);
 		bh.TryLunge(b, foe, foeId);
 		bh.TryLeap(b, foe);

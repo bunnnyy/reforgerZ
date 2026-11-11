@@ -71,6 +71,9 @@ class RZ_BiteDetector
 		m_mHitRole.Remove(playerId);
 		m_mHitTribe.Remove(playerId);
 		m_mHitTown.Remove(playerId);
+		RZ_Behaviour bh = m_GM.GetBehaviour();
+		if (bh)
+			bh.GetEffects().Forget(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -108,10 +111,17 @@ class RZ_BiteDetector
 		bool grabbed = m_mLastHitAt.Find(playerId, lastHit) && m_fClock - lastHit <= GRAB_SECONDS;
 		m_mLastHitAt.Set(playerId, m_fClock);
 
-		// A hunter's lunge that landed (the behaviour layer): the bite chance x1.5, still capped at 0.6
+		// The kinds' special moves (the behaviour layer): a hunter's lunge that landed makes the bite
+		// chance x1.5, still capped at 0.6; a slow one's ankle grab or a young's stagger is an effect
+		// on the player. A hit while held counts as grabbed.
 		float lunge = 1;
-		if (RZ_Behaviour.IsOn())
-			lunge = m_GM.GetBehaviour().OnPlayerHit(playerId, ent);
+		RZ_Behaviour bh = m_GM.GetBehaviour();
+		if (bh)
+		{
+			lunge = bh.OnPlayerHit(playerId, ent);
+			if (bh.GetEffects().IsHeld(playerId))
+				grabbed = true;
+		}
 
 		if (m_GM.GetProfile(playerId).IsInfected())
 			return;

@@ -64,6 +64,24 @@ class RZ_BehaviourSettings
 	[Attribute("1", desc: "Own attacks: a hunter's lunge from 6-10 m out of your view, then Bacon's swing; landing it makes the bite chance x1.5 (never over 0.6) and opens a light bleed. Off: plain Bacon melee")]
 	bool m_bOwnAttacks;
 
+	[Attribute("1", desc: "Client effects: a slow one's ankle grab holds a player (speed capped, kicked free with Jump), a young's hit after its leap staggers them and a big one's charge knocks them down. The server decides; the player's client plays it, so it needs RZ_PlayerEffectsComponent on the player controller (without it, the lines only). Needs Own attacks")]
+	bool m_bClientEffects;
+
+	[Attribute("3", desc: "Hold seconds: how long an ankle grab holds a player at most (speed capped at 0.25), unless they kick free or the one holding dies or is left 3 m behind")]
+	float m_fHoldSeconds;
+
+	[Attribute("3", desc: "Hold kicks: presses of Jump (Space, or the pad's jump button) that kick a player free of a hold")]
+	int m_iHoldKicks;
+
+	[Attribute("1", desc: "Young sprint: the young chase at a sprint (about 6 m/s, a little faster than a sprinting player) for Young sprint seconds, then run for Young rest seconds, and again; only with their target within 35 m, never in the gentle start. A door, a fence over 1.4 m, a car or a broken line of sight still loses them. Off: short bursts (2-4 s every 8-15 s)")]
+	bool m_bYoungSprint;
+
+	[Attribute("7", desc: "Young sprint seconds: how long a young sprints before it runs out of breath (6-8 with the random part)")]
+	float m_fYoungSprintSeconds;
+
+	[Attribute("5", desc: "Young rest seconds: how long it runs at a run between sprints (4-6 with the random part)")]
+	float m_fYoungRestSeconds;
+
 	[Attribute("10", desc: "Special move gap (s): at most one special move lands on one player in this long, from all the infected together")]
 	float m_fSpecialMoveGap;
 
@@ -164,6 +182,7 @@ class RZ_BodyState
 	float m_fLungeAt = -100;
 	float m_fBurstAt;
 	float m_fLeapReady;
+	float m_fLeapAt = -100;			// its last leap began (the stagger on a hit within 3 s)
 	float m_fChargeReady;
 	float m_fChargeUntil = -1;		// charging until (the alpha)
 	float m_fStumbleUntil = -1;		// a missed charge: capped low until
@@ -209,8 +228,10 @@ class RZ_Behaviour
 	protected int m_iLeaps;
 	protected int m_iCharges;
 	protected int m_iStumbles;
+	protected int m_iSprints;
 	protected ref map<int, float> m_mChargedAt = new map<int, float>();
 	protected ref RZ_CrawlerLife m_Crawlers;
+	protected ref RZ_AttackEffects m_Effects;
 
 	static const float CONTACT_BLIND = 3;		// any player this close releases a body, sight or not
 	static const float SHOT_CONTACT = 30;		// an unsuppressed shot this close releases it
@@ -235,6 +256,7 @@ class RZ_Behaviour
 		BuildKinds();
 		ParseLodBands();
 		m_Crawlers = new RZ_CrawlerLife(gm, this);
+		m_Effects = new RZ_AttackEffects(gm, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -248,6 +270,7 @@ class RZ_Behaviour
 	static RZ_Behaviour Get() { return s_Instance; }
 	RZ_BehaviourSettings GetSettings() { return m_Settings; }
 	float Now() { return m_fNow; }
+	RZ_AttackEffects GetEffects() { return m_Effects; }
 	bool IsNight() { return m_bNight; }
 
 	//------------------------------------------------------------------------------------------------
@@ -457,6 +480,7 @@ class RZ_Behaviour
 		}
 
 		m_Crawlers.Tick(players);
+		m_Effects.Tick(ids, players);
 
 		if (m_Settings.m_bDebugLog)
 		{
@@ -641,6 +665,12 @@ class RZ_Behaviour
 			m_bFastRunning = true;
 			GetGame().GetCallqueue().CallLater(FastTick, 250, true);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsSprinting(IEntity body)
+	{
+		return m_aSprinting.Find(body) >= 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -931,36 +961,68 @@ class RZ_Behaviour
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A young's bursts in a chase: 2-4 s of sprint every 8-15 s.
-	void TryBurst(RZ_BodyState b)
+	//! A young in a chase (docs/INFECTED.md, The kinds). With Young sprint on: at SPRINT (set every
+	//! 0.25 s, lab B7: about 6 m/s, a little faster than a sprinting player) for Young sprint seconds
+	//! (+-1), then Young rest seconds (+-1) at a run, and again; only with its target within its reach
+	//! (35 m) and never in the gentle start. Its speed factor (0.88-1) scales the sprint's length, so a
+	//! group strings out (a cap above 0.7 doesn't slow a body, B7). Off: bursts of 2-4 s every 8-15 s.
+	void TryBurst(RZ_BodyState b, IEntity foe, float d)
 	{
 		if (!Kind(b.m_eKind).m_bBursts || m_fNow < b.m_fBurstAt)
 			return;
 
-		b.m_fBurstAt = m_fNow + Math.RandomFloat(8, 15);
-		Sprint(b.m_Body, Math.RandomFloat(2, 4));
+		if (!m_Settings.m_bYoungSprint)
+		{
+			b.m_fBurstAt = m_fNow + Math.RandomFloat(8, 15);
+			Sprint(b.m_Body, Math.RandomFloat(2, 4));
+			return;
+		}
+
+		if (!foe || d > Kind(b.m_eKind).m_fEngage || RZ_Util.IsInVehicle(foe))
+			return;
+
+		RZ_Guidance guide = m_GM.GetGuidance();
+		if (guide && guide.GetDensityMult(foe.GetOrigin(), 5) < 1)
+			return;
+
+		float run = Math.Max(1, m_Settings.m_fYoungSprintSeconds + Math.RandomFloat(-1, 1)) * b.m_fSpeedFactor;
+		float rest = Math.Max(1, m_Settings.m_fYoungRestSeconds + Math.RandomFloat(-1, 1));
+		b.m_fBurstAt = m_fNow + run + rest;
+		m_iSprints++;
+		Sprint(b.m_Body, run);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The bite detector saw this player hit (RZ_BiteDetector): if a hunter's lunge landed it (a body
-	//! whose melee test passed within 1 s and 2.2 m, or the nearest within 2.5 m, that lunged in the
-	//! last 3 s), the bite chance is x1.5 and a light bleed opens on an arm or a leg (once a player
-	//! in 30 s). One special move a player in Special move gap. Returns the bite multiplier.
+	//! The bite detector saw this player hit (RZ_BiteDetector). One special move a player in Special
+	//! move gap, from all the infected together. A hunter's lunge that landed it (a body whose melee
+	//! test passed within 1 s and 2.2 m, or the nearest within 2.5 m, that lunged in the last 3 s)
+	//! makes the bite chance x1.5 and opens a light bleed on an arm or a leg (once a player in 30 s);
+	//! else a slow one's ankle grab or a young's stagger (RZ_AttackEffects). Returns the bite multiplier.
 	float OnPlayerHit(int playerId, IEntity player)
 	{
 		if (!m_Settings.m_bOwnAttacks || !player)
 			return 1;
 
 		float now = RZ_BaconBody.Now();
-		float last;
-		if (m_mSpecialAt.Find(playerId, last) && now - last < m_Settings.m_fSpecialMoveGap)
+		if (!SpecialFree(playerId, now))
 			return 1;
 
-		RZ_BodyState lunger = FindLunger(player.GetOrigin(), now);
+		RZ_BodyState lunger;
+		if (IsOn())
+			lunger = FindLunger(player.GetOrigin(), now);
+
 		if (!lunger)
-			return 1;
+		{
+			if (m_Effects.OnHit(playerId, player, now))
+			{
+				MarkSpecial(playerId, now);
+				m_iMovesLanded++;
+			}
 
-		m_mSpecialAt.Set(playerId, now);
+			return 1;
+		}
+
+		MarkSpecial(playerId, now);
 		m_iMovesLanded++;
 		float bled;
 		if (!m_mBleedAt.Find(playerId, bled) || now - bled >= 30)
@@ -977,6 +1039,40 @@ class RZ_Behaviour
 		}
 
 		return 1.5;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No special move has landed on this player in the last Special move gap.
+	bool SpecialFree(int playerId, float now)
+	{
+		float last;
+		return !m_mSpecialAt.Find(playerId, last) || now - last >= m_Settings.m_fSpecialMoveGap;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void MarkSpecial(int playerId, float now)
+	{
+		m_mSpecialAt.Set(playerId, now);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A young that leapt in the last 3 s and is within 2.5 m of at (the stagger).
+	RZ_BodyState FindLeaper(vector at, float now)
+	{
+		array<ref RZ_TrackedZombie> tracked = m_GM.GetSpawner().GetTracked();
+		foreach (RZ_TrackedZombie z : tracked)
+		{
+			if (!z.m_Plan || RZ_Util.DistXZ(z.m_vLastPos, at) > 80)
+				continue;
+
+			foreach (RZ_BodyState b : z.m_Plan.GetBodies())
+			{
+				if (b.m_Body && b.m_eKind == RZ_EBodyKind.YOUNG && now - b.m_fLeapAt <= 3 && RZ_Util.DistXZ(b.m_Body.GetOrigin(), at) <= 2.5)
+					return b;
+			}
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1043,6 +1139,7 @@ class RZ_Behaviour
 			return;
 
 		b.m_fLeapReady = m_fNow + 15;
+		b.m_fLeapAt = m_fNow;
 		m_iLeaps++;
 		Sprint(b.m_Body, 1);
 	}
@@ -1063,7 +1160,9 @@ class RZ_Behaviour
 		{
 			if (d <= 1.6)
 			{
+				// It reached its target: the knockdown, if the target's client can play it
 				b.m_fChargeUntil = -1;
+				m_Effects.TryKnockdown(targetId, target);
 				return;
 			}
 
@@ -1230,7 +1329,8 @@ class RZ_Behaviour
 		}
 
 		string text = string.Format("behaviour: steer %1, engage %2, recover %3, by waypoint %4; hunts %5 (started %6)", steer, engage, recover, undriven, m_aLinks.Count(), m_iHuntsStarted);
-		text += string.Format(", releases %1, take-backs %2, unsticks %3, moves landed %4, hand-offs %5, leaps %6, charges %7 (stumbles %8)", m_iReleases, m_iTakeBacks, m_iUnsticks, m_iMovesLanded, m_iHandOffs, m_iLeaps, m_iCharges, m_iStumbles);
+		text += string.Format(", releases %1, take-backs %2, unsticks %3, moves landed %4, hand-offs %5, leaps %6, charges %7 (stumbles %8), young sprints %9", m_iReleases, m_iTakeBacks, m_iUnsticks, m_iMovesLanded, m_iHandOffs, m_iLeaps, m_iCharges, m_iStumbles, m_iSprints);
+		text += ", " + m_Effects.StatusText();
 		text += " | " + m_Crawlers.StatusText();
 		return text;
 	}

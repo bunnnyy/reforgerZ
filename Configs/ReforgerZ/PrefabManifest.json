@@ -4458,6 +4458,13 @@
    "why": "the UI's data feed: infection timer, secure radio, noise, standing, journal, backgrounds (docs/UI.md)",
    "required": false,
    "minimum": false
+  },
+  {
+   "target": "the player controller prefab the game mode uses (the repo's Prefabs/Characters/Core/RZ_PlayerController.et has it, next to RZ_PlayerUIComponent)",
+   "add": [{"cls": "RZ_PlayerEffectsComponent", "values": [], "name": ""}],
+   "why": "the infected's close moves on the player's own machine: a hold kicked free with Jump, a stagger, a knockdown (docs/INFECTED.md, Attacks); without it those effects stay off and only their lines come",
+   "required": false,
+   "minimum": false
   }
  ],
  "loadouts": [
@@ -5317,6 +5324,12 @@
     "m_fStalkNight": "75",
     "m_bStrategies": "1",
     "m_bOwnAttacks": "1",
+    "m_bClientEffects": "1",
+    "m_fHoldSeconds": "3",
+    "m_iHoldKicks": "3",
+    "m_bYoungSprint": "1",
+    "m_fYoungSprintSeconds": "7",
+    "m_fYoungRestSeconds": "5",
     "m_fSpecialMoveGap": "10",
     "m_bCrawlerLife": "1",
     "m_bSleepLying": "1",

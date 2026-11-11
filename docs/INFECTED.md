@@ -996,7 +996,7 @@ melee test passes (for hit attribution; B14 found the melee read itself doesn't 
 |---|---|---|---|---|---|
 | Walking (walk-stop: 0.45–0.8 m/s on average) | Bacon's walk | Bacon's walk | Still on its post | Bacon's walk | Capped about 1.4 m/s |
 | Marching (held waypoint) | Bacon's run | Capped about 2 m/s | — | About 2 m/s | About 2 m/s |
-| In a fight | Run, sprint bursts of 2–4 s every 8–15 s | Run, the lunge | Run | Run | Bacon's heavy run |
+| In a fight | **Sprint** (about 6 m/s) for 6–8 s, then run (about 3.7 m/s) for 4–6 s, and again (**Young sprint**) | Run, the lunge | Run | Run | Bacon's heavy run |
 | Stance | 0.85–0.95 | 0.72–0.82 (silent while stalking) | 0.9 | Bacon's | Bacon's |
 | Sight by day / night | 180 / 156 m | 220 / 190 m (**Hunter sight**) | The scout rule | 200 / 173 m | 160 / 139 m |
 | Memory | 30 s | 90 s | 10 s | 60 s | 120 s |
@@ -1005,6 +1005,16 @@ melee test passes (for hit attribution; B14 found the melee read itself doesn't 
 
 Each body also gets a speed factor of 0.88–1 on its caps, ±0.04 on its stance and 1–3 m of slot
 jitter, so a group strings out and no two move alike.
+
+**The young are a little faster than you.** A player runs at about 4 m/s and sprints at about 5.5 m/s
+(the base game's soldier; VERIFY in play); Bacon's bodies run at about 3.7 m/s, and a sprint set every
+0.25 s gives about 6 m/s (lab B7). So with **Young sprint** on, an engaged young within its reach (35 m)
+of its target chases at a sprint for **Young sprint seconds** (7, ±1), then runs for **Young rest
+seconds** (5, ±1): it catches a sprinting player in the open within about 10 s, and a door, a fence
+over 1.4 m, a car or a broken line of sight still loses it. Never in the gentle start. Its speed factor
+scales the sprint's length rather than its speed (a cap above 0.7 doesn't slow a body, B7), so a group
+strings out. Off: bursts of 2–4 s every 8–15 s. Hunters, guards and scouts run at Bacon's run or their
+caps, the alpha's only sprint is its charge, and crawlers are unchanged.
 
 **Senses** (steered groups with a player within 250 m, once a second, the leader's eye): a notice meter
 per player rises by **Notice rate** (0.15) × stealth's visibility × facing (1 within 70°, else 0.25) ×
@@ -1059,21 +1069,28 @@ in a tribe's two weak days no pincer, encircle or herd. Lone ones and splinters 
 - **LOD** (B12): bodies think every loop within 60 m of a player, then at LOD 2, 4 and 6 beyond 150 and
   300 m (**LOD bands**).
 
-**Attacks.** Bacon's melee stays the hit and its damage. Built, of the kinds' own moves, only what the
-lab says works: the **hunter's lunge and bite** (from 6–10 m, more than 60° out of its target's view, a
-1.5 s sprint with SPRINT set every 0.25 s (B7), into Bacon's swing; 20 s apart per hunter). If it lands
-(a hit within 3 s, the body whose melee test passed within 1 s and 2.2 m, else the nearest lunger within
-2.5 m), the bite chance is ×1.5 (never over 0.6) and a light bleed opens on an arm or a leg (once a
-player in 30 s). One special move lands on a player every **Special move gap** (10 s) at most, none in the
-gentle start; **Own attacks** off gives plain Bacon melee.
-- **The young's leap**, as the lab allows it (B14: a scripted jump goes up, not forward): a young running
-  at 3 m/s or more with its target 3–6 m ahead (within 25°) sprints the last of it into Bacon's swing,
-  15 s apart per young. The stagger on a hit needs a client and waits.
-- **The alpha's charge**, without the knockdown (it needs a client): its target 12–30 m away, on foot,
-  in its sight, and never with 3 or more other infected within 10 m of them; a roar, then a straight
-  sprint of up to 4 s (B7: about 6 m/s set every 0.25 s). If it doesn't get within 1.6 m it overruns and
-  stumbles, capped at 0.2 for 2.5 s: the window to hurt it. 30 s apart per alpha and per player; never
-  in the gentle start. It goes round fences (B17).
+**Attacks.** Bacon's melee stays the hit and its damage; each kind adds one move, and its effect is
+status (a hold, a stagger, a knockdown, a light bleed), never extra damage. One special move lands on a
+player every **Special move gap** (10 s) at most, from all the infected together, none in the gentle
+start; **Own attacks** off gives plain Bacon melee.
+
+| Move | Kind | How | Effect on the player | Caps |
+|---|---|---|---|---|
+| **The lunge** | Hunter | From 6–10 m, more than 60° out of its target's view, a 1.5 s sprint (SPRINT set every 0.25 s, B7) into Bacon's swing | If it lands (a hit within 3 s: the body whose melee test passed within 1 s and 2.2 m, else the nearest lunger within 2.5 m): the bite chance ×1.5 (never over 0.6) and a light bleed on an arm or a leg (once a player in 30 s) | 20 s per hunter |
+| **The ankle grab** | Crawler | Any hit from a town's own within 2 m while it's hunched (stance 0.7 or less, as they lie up) or the player is crouched or prone | **Held:** speed capped at 0.25 for up to **Hold seconds** (3). **Hold kicks** (3) presses of Jump kick you free; it ends too if the one holding dies or is left 3 m behind. A hit while held counts as grabbed (×1.5 bite chance). *"Something has your ankle."* | 20 s per crawler (and after you kick free); one hold on a player at a time; never two within 5 s |
+| **The leap and stagger** | Young | Running at 3 m/s or more with its target 3–6 m ahead (within 25°), it sprints the last of it into Bacon's swing (B14: a scripted jump goes up, not forward) | A hit within 3 s of the leap, from it within 2.5 m: **staggered**, speed capped at 0.6 for 0.8 s | 15 s per young; one stagger a player per 6 s |
+| **The charge and knockdown** | Alpha | Its target 12–30 m away, on foot and in its sight, never with 3 or more other infected within 10 m of them: a roar, then a straight sprint of up to 4 s (about 6 m/s) | Reaching within 1.6 m: **knocked down**, forced prone (the stance's own animation) and movement off for 1.2 s, then Bacon's swing. *"It hit you like a car door..."* Missing it: it overruns and stumbles, capped at 0.2 for 2.5 s, the window to hurt it | 30 s per alpha and per player; the knockdown never with 3 or more others within 10 m |
+
+**The effects run on the player's machine** (`Zombies/Behaviour/RZ_AttackEffects.c` decides on the
+server; `Zombies/RZ_PlayerEffects.c`, `RZ_PlayerEffectsComponent` on the player controller, plays
+it), because a player's movement is predicted there: owner-only RPCs for a hold, a stagger, a
+knockdown or clear, and one back, "kicked free", which the server checks against the hold it gave.
+Every effect ends on a timer on the client and is cleared on death or a respawn. Breaking a hold is
+the base game's Jump (Space, the pad's jump button), so it needs no new binding, and its prompt is the
+base game's hint with a timer ([UI.md](UI.md#controllers)). Each effect has one line, at most one
+every 45 s a player. **Client effects** off, or no component on the player controller: no hold,
+stagger or knockdown, and the lines and the lunge stay. The effects' calls are VERIFY items until a
+client has seen them ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list)).
 
 ### Crawler life
 
@@ -1094,7 +1111,8 @@ somewhere, in a stirred town or with a player within 150 m is left alone.
 
 groups near players; 100 agents with half steered measured p99 11.93 ms on the lab box (the target is
 12.5). The status log's behaviour line counts bodies per mode, hunts, releases, take-backs, unsticks,
-moves landed, hand-offs, leaps and charges (with stumbles), and the crawlers asleep, woken and herded.
+moves landed, hand-offs, leaps and charges (with stumbles), young sprints, holds (kicked free),
+staggers and knockdowns, and the crawlers asleep, woken and herded.
 
 ## People
 
@@ -1380,8 +1398,8 @@ What's left of the design, in [designs/INFECTED.md](../designs/INFECTED.md) and
   the great one's +3, best first within reach, the same pack never twice in 6 season days, and
   Fury's road toward the lab.
 - **The behaviour layer's rest:** shrieks passed between groups; blood scent; the hearing table beyond
-  shots; doors (another way in, weak doors); the reactions table; the regroup; the ankle grab and the
-  client effects (hold, stagger, knockdown) after a client test; forest edge points in the land cache.
+  shots; doors (another way in, weak doors); the reactions table; the regroup;
+  forest edge points in the land cache.
 - **Heat hordes and lookers** from a tribe's day party by day and its hunters at night; crawlers'
   placement shifting indoors when a pack passes; members crossing between ranges.
 
