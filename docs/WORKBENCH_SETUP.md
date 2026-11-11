@@ -887,6 +887,40 @@ A mission that doesn't start usually needs a world state the test doesn't create
 right infection, an optional prefab, a faction standing). None of this is part of the mod: the
 test files are copied into a throwaway addon folder.
 
+### Zombie lab: Bacon's real AI, measured
+
+`tools/zombie_lab/run.sh` measures what Bacon Zombies' own AI does, on the same server, in a
+sub-scene of Everon with Bacon loaded. It finds open fields and wood edges far apart on the map and
+runs its experiments at once, each at its own place:
+
+| Experiment | What it measures |
+|---|---|
+| Runtime groups | An empty Bacon group filled with `AddAIEntityToGroup` (4 members, and 1): faction, waypoints, survival, deleting itself when its members die; a Bacon group prefab for comparison |
+| Waypoints | The leak in `RZ_Util.SendGroupTo`, `RedirectGroup` and `DeleteUnit`; one group for 30 minutes: a long order, 5 minutes idle, a fight on the way to a second waypoint, then one held waypoint moved and re-added for each order |
+| Perception | One infected placed 25 to 200 m from a target that is still (standing, crouched, prone) or running: within 30 s, does it see it, count it an enemy, charge? By day, night and fog, in the open and at a wood edge, with perception factors 0.25 to 2; how far a standing man is seen; a target behind a hill as the control |
+| Sharing, memory, gunfire | Whether Bacon's shared target brings infected that can't see you (listeners beyond a crest from one that can); how long and where a chaser keeps going after you vanish; who comes to a gunshot (a weapon-fire danger event from script, and a real shot) |
+| Speeds | Move-order and chase speeds of the civilian, military, exploder, heavy and bomber prefabs |
+| Health | Reading and setting health, regeneration, and what each way of removing an infected leaves (body, loose items, the group, an exploder's blast) |
+| Clock | The day's real length, `SetDayDuration`, and (a second short boot) the clock after a restart |
+| Frame time | The server's frame time with 0, 60, 100 and 140 agents at AI LOD 0 (half walking), then at their natural LOD |
+
+```bash
+SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder holding BaconZombies_622120A5448725E3> tools/zombie_lab/run.sh
+```
+
+It takes about 55 minutes (`QUICK=1`: about 12, one trial of each kind) and prints every result as a
+table, plus any script exceptions. The infected are held at AI LOD 0 as if a player were near, since
+a server with no players runs them at the lowest LOD. Started with `-server`, the server always
+listens on UDP 2001 (it ignores `-bindPort`), so on Linux the lab runs it in its own network namespace
+(`unshare -n`) and it can sit beside another server; on Windows, stop any other server first.
+
+| What it shows | What it can't |
+|---|---|
+| Bacon's sight, sharing, hearing, speeds and idle behaviour against a spawned character; group and waypoint plumbing; health; server cost per agent | A real player (a client's movement, noise, camera), Bacon's behaviour under the mod's own spawner and settings, other zombie mods |
+
+None of this is part of the mod: the lab's files are copied into a throwaway addon folder whose
+`addon.gproj` gains Bacon Zombies as a dependency.
+
 ### The markers
 
 ```bash
