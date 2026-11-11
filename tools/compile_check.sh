@@ -22,8 +22,13 @@ GUID="$(sed -n 's/^ *GUID "\([0-9A-F]*\)".*/\1/p' "$ROOT/addon.gproj" | head -1)
 mkdir -p "$WORK"
 # The conversation packs are generated from dialogue/**/*.rzd: the dialogue lint runs first and the
 # packs must be up to date (docs/DIALOGUE.md, "Tools").
-PY=""
-if command -v python3 > /dev/null 2>&1; then PY="python3"; elif command -v py > /dev/null 2>&1; then PY="py -3"; fi
+# Probe each name: on Windows, python3 and python can be the Store shortcut, which exists but fails.
+PY="${PYTHON:-}"
+if [ -z "$PY" ]; then
+	for p in python3 python py; do
+		"$p" -c 'import sys; sys.exit(sys.version_info[0] != 3)' > /dev/null 2>&1 && { PY="$p"; break; }
+	done
+fi
 if [ -n "$PY" ]; then
 	$PY "$ROOT/tools/dialogue_pack.py" --check || { echo "FAILED: the dialogue lint (python3 tools/dialogue_pack.py)"; exit 1; }
 else

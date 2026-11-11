@@ -37,7 +37,8 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
-(empty)
+- 2026-11-12 (PC): `tools/compile_check.sh` picked the Store's `python3` shortcut on Windows and failed the dialogue lint; patched it to probe python3/python/py like the runtime test (one-line fix, pushed). Windows compile check: OK, 0 ReforgerZ warnings.
+- 2026-11-12 (PC): the author wants the build on **Everon** now. PC is making `Worlds/RZ_Everon/RZ_Everon.ent` (sub-scene of Eden, `SCR_AIWorld_Eden`) and `Missions/RZ_Everon.conf`; Arland stays as the small test world. Please make the docs (WBS "The world", README, PC_SETUP play-test row) name Everon as the main world once the PC reports the scenario GUID here.
 
 ## Claims
 
@@ -46,4 +47,4 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 ## Status
 
 - Cloud, 2026-11-11 76b52d0: merging 7 build branches still running: finale, missions and errands, dialogue and reputation, disguise, tribes and attacks, traces phases 1/2/5, majors and epilogue. Each one adds manifest entries, and those land here when merged.
-- PC: (not started)
+- PC, 2026-11-12: compile check OK on Windows. Next: Workbench, Everon world, then the minimum-subset QM actions and missing prefabs.
