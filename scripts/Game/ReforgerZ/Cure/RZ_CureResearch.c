@@ -531,7 +531,7 @@ class RZ_CureResearch
 				m_GM.GetHall().AddStand(id);
 		}
 
-		m_GM.NotifyAll("THE CURE IS HERE", "The cure is going out over every frequency, and with it the proof. The quarantine is lifted and the gates are opening. This season is over: the next wipe starts a new outbreak, in a new Zone.");
+		m_GM.NotifyAll("THE CURE IS HERE", "The cure is going out over every frequency, and with it the proof. The quarantine is lifted: the drones have gone home and the line has stopped shooting. The checkpoints open for processing when the season ends: the next wipe starts a new outbreak, in a new Zone.");
 		if (m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnCureDone();
 
@@ -544,7 +544,8 @@ class RZ_CureResearch
 			m_GM.AddFame(defender, RZ_EFaction.SURVIVORS, 30);
 		}
 
-		m_GM.GetDirector().SetStage(RZ_EOutbreakStage.AFTERMATH);
+		// Aftermath, quietly: the cure news is the line everyone hears, not the stage's
+		m_GM.GetDirector().SetStage(RZ_EOutbreakStage.AFTERMATH, false);
 		m_GM.OnCureChanged();
 	}
 }

@@ -1780,7 +1780,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (s)
 			s.AddInfection(-m_ZombieSettings.m_fInfectionDropPerKill * count);
 
-		if (special)
+		// After the cure nothing needs their tissue: no samples, no tip about them
+		if (special && !m_Cure.IsCured())
 		{
 			SpawnSamples(pos, 1);
 			m_Guidance.OnSpecialKilled(pos);

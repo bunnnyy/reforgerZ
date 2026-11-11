@@ -162,7 +162,8 @@ class RZ_GuidanceWorld
 			Offer(pool, RZ_EGuideScenario.FARMHOUSE, 3, level, last);
 		}
 
-		if (perimeter && perimeter.IsActive())
+		// The basement's "NOBODY GETS OUT" is only true while the line is sealed (not after the cure)
+		if (perimeter && perimeter.IsActive() && m_GM.GetFacts().PerimeterSealed())
 			Offer(pool, RZ_EGuideScenario.BASEMENT, 2, level, last);
 
 		if (m_GM.HasLab())

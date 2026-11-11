@@ -120,6 +120,9 @@ class RZ_ShorePoint
 //!   playable area. Found from the road network or RZ_CheckpointMarkerEntity. Spawned
 //!   once at start. Loudspeaker near them, lethal close to them.
 //! - Blind spots: a stretch where nothing happens for a while (The Blind Spot mission).
+//! - After the cure (RZ_WorldFacts.IsCured) the line stands down: the drones go home, nobody
+//!   shoots, and the loudspeakers read the new order. The barriers stay closed: the gates open
+//!   with the wipe (docs/LORE.md, "Endings").
 //!
 //! Server only, polled on the game mode's tick.
 class RZ_Perimeter
@@ -619,10 +622,71 @@ class RZ_Perimeter
 			Release(goneId);
 		}
 
+		// The cure is out: the line has stood down
+		bool standDown = RZ_WorldFacts.Get().IsCured();
 		foreach (int i, IEntity p : players)
 		{
-			UpdatePlayer(ids[i], p, dt);
+			if (standDown)
+				UpdateStoodDown(ids[i], p);
+			else
+				UpdatePlayer(ids[i], p, dt);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the cure: no drone and no shots, only the loudspeaker's new order, once per approach.
+	protected void UpdateStoodDown(int playerId, IEntity player)
+	{
+		vector pos = player.GetOrigin();
+		RZ_PerimeterContact c;
+		bool known = m_mContacts.Find(playerId, c);
+		float extra = 0;
+		if (known)
+			extra = LEAVE_MARGIN;
+
+		RZ_EPerimeterZone zone = GetZone(pos, extra);
+		if (zone == RZ_EPerimeterZone.NONE)
+		{
+			if (known)
+				Release(playerId);
+
+			return;
+		}
+
+		if (!known)
+		{
+			c = new RZ_PerimeterContact();
+			m_mContacts.Insert(playerId, c);
+		}
+
+		// A drone still up from before the cure goes home
+		if (c.m_Drone)
+		{
+			RZ_Util.DeleteUnit(c.m_Drone);
+			c.m_Drone = null;
+		}
+
+		c.m_fSinceShot = -1;
+		if (c.m_eZone == RZ_EPerimeterZone.NONE)
+		{
+			float last;
+			if (!m_mLastWarned.Find(playerId, last) || m_fClock - last >= WARN_REPEAT)
+			{
+				m_mLastWarned.Set(playerId, m_fClock);
+				m_GM.NotifyPlayer(playerId, LOUDSPEAKER, GetStoodDownText(pos));
+			}
+		}
+
+		c.m_eZone = zone;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string GetStoodDownText(vector pos)
+	{
+		if (GetCheckpointDistance(pos) < m_Settings.m_fCheckpointWarnRadius + LEAVE_MARGIN)
+			return "\"Attention. The quarantine order for this area has been lifted. This checkpoint will open for processing. Remain behind the barrier until you are called.\"\nNobody behind the concrete raises a rifle. Nobody opens the barrier either.";
+
+		return "\"Attention. The quarantine order for this area has been lifted. Remain where you are. Processing will begin at the road checkpoints.\"\nNo drone comes down. Somewhere out past the line, an engine starts and drives away.";
 	}
 
 	//------------------------------------------------------------------------------------------------

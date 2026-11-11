@@ -109,8 +109,25 @@ class RZ_FactionVoice
 				lines.Insert("\"Nice boots. Joking. Mostly.\""); lines.Insert("\"Toll's fair. Tins, fuel, or a story we haven't heard. We've heard most of them.\""); lines.Insert("\"Bastion calls us bandits. We call it free enterprise. With knives.\"");
 				break;
 			case RZ_EFaction.INSTITUTE:
-				lines.Insert("\"Don't touch anything labelled. Don't touch anything unlabelled either.\""); lines.Insert("\"Bring us a sample from one of the big ones and you'll be more useful than half the people here.\""); lines.Insert("\"We're close. We've been close for a while.\"");
+			{
+				lines.Insert("\"Don't touch anything labelled. Don't touch anything unlabelled either.\"");
+				// What they say about the work follows the work (RZ_WorldFacts)
+				RZ_WorldFacts facts = RZ_WorldFacts.Get();
+				if (facts.IsCured())
+				{
+					lines.Insert("\"It's done. I keep checking the numbers anyway. Habit.\"");
+				}
+				else
+				{
+					lines.Insert("\"Bring us a sample from one of the big ones and you'll be more useful than half the people here.\"");
+					if (facts.CurePercent() >= 50)
+						lines.Insert("\"We're close. We've been close for a while.\"");
+					else
+						lines.Insert("\"We're nowhere near. Don't repeat that.\"");
+				}
+
 				break;
+			}
 		}
 
 		string line = rng.Pick(lines);

@@ -732,6 +732,9 @@ class RZ_Seasons
 	//------------------------------------------------------------------------------------------------
 	protected string WarningText(int hoursLeft)
 	{
+		if (m_GM.GetFacts() && m_GM.GetFacts().IsCured())
+			return string.Format("Processing at the road checkpoints begins in about %1 hour(s). Remain where you are.\n(This season ends then: the gates open and the server starts a new outbreak at its next restart. The hall of fame is kept.)", hoursLeft);
+
 		return string.Format("Residents are advised that the zone will be reprocessed in about %1 hour(s). Remain indoors.\n(This season ends then: the server starts a new outbreak at its next restart. The hall of fame is kept.)", hoursLeft);
 	}
 
@@ -793,6 +796,9 @@ class RZ_Seasons
 		marker.reason = m_sWipeReason;
 		SaveMarker(marker);
 		RZ_Log.Info(string.Format("Season %1 is over (%2). The wipe happens at the next restart.", m_iSeason, m_sWipeReason));
-		m_GM.NotifyAll(RZ_Broadcast.TITLE, "The perimeter will be maintained.\n(This season is over. The Zone resets at the next restart; the hall of fame is kept.)");
+		if (m_iCureUnix > 0)
+			m_GM.NotifyAll(RZ_Broadcast.TITLE, "Processing begins. Proceed to the nearest road checkpoint.\n(This season is over: the gates open and the Zone resets at the next restart; the hall of fame is kept.)");
+		else
+			m_GM.NotifyAll(RZ_Broadcast.TITLE, "The perimeter will be maintained.\n(This season is over. The Zone resets at the next restart; the hall of fame is kept.)");
 	}
 }

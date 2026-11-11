@@ -363,8 +363,9 @@ class RZ_Guidance
 	{
 		vector pos = ent.GetOrigin();
 
+		// "Nobody gets through" holds only while the line is sealed (it stands down after the cure)
 		RZ_Perimeter perimeter = m_GM.GetPerimeter();
-		if (perimeter && perimeter.IsActive())
+		if (perimeter && perimeter.IsActive() && m_GM.GetFacts().PerimeterSealed())
 		{
 			if (perimeter.EdgeDistance(pos) < perimeter.GetWarnDistance() + PERIMETER_AHEAD || perimeter.GetCheckpointDistance(pos) < CHECKPOINT_AHEAD)
 				Fire(playerId, "perimeter");
@@ -389,7 +390,7 @@ class RZ_Guidance
 		}
 
 		st.m_fSampleTimer = st.m_fSampleTimer + POLL_SECONDS;
-		if (st.m_fSampleTimer >= SAMPLE_CHECK && m_GM.HasLab() && !st.m_aLifeTips.Contains("samples"))
+		if (st.m_fSampleTimer >= SAMPLE_CHECK && m_GM.HasLab() && !m_GM.GetFacts().IsCured() && !st.m_aLifeTips.Contains("samples"))
 		{
 			st.m_fSampleTimer = 0;
 			array<IEntity> samples = {};
@@ -412,7 +413,7 @@ class RZ_Guidance
 	//! A special died at pos: players close by hear what its sample is for.
 	void OnSpecialKilled(vector pos)
 	{
-		if (!m_Settings.m_bEnabled || !m_GM.HasLab())
+		if (!m_Settings.m_bEnabled || !m_GM.HasLab() || m_GM.GetFacts().IsCured())
 			return;
 
 		array<int> ids = {};
