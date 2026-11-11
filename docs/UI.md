@@ -369,7 +369,8 @@ closes one (`RpcAsk_ScreenClosed`).
 `RZ_PlayerUIComponent` off the player controller (`Prefabs/Characters/Core/RZ_PlayerController.et`)
 stops all sending. To remove the UI entirely, delete the `UI/` code folder and the lines that use
 it: the `m_UISettings` attribute, `m_UIFeed` (creation, tick, spawn,
-`RecordGearSoon` and accessors), the `UsesMapIcons` check in `AddMapMarker` and the block at the
+`RecordGearSoon` and accessors), the `UsesMapIcons` check in `AddMapMarker`, the owner-only
+branch at the top of `NotifyPlayer` and the block at the
 top of `QueueHint` (with the chat commands' registration) in `Core/RZ_GameModeComponent.c`, the
 board menu call in `World/RZ_NoticeBoard.c` (`SendMenu`), and the `OnClueRead` call in
 `Puzzles/RZ_PuzzleMission.c`. `RZ_LoadoutLock.c` and `RZ_MapIcons.c` can each be deleted on their

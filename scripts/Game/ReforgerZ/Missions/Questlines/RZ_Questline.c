@@ -472,7 +472,7 @@ class RZ_Questline
 			if (playerId > 0)
 			{
 				gm.AddFame(playerId, faction, fame, false);
-				gm.AddInfamy(playerId, faction, infamy);
+				gm.AddInfamy(playerId, faction, infamy, true, true);
 				continue;
 			}
 

@@ -1598,7 +1598,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			int infamy = RZ_Util.RoundToInt(amount * RZ_Reputation.GetRivalShare(faction, f) * RivalMult(faction, f));
 			if (infamy > 0)
-				AddInfamy(playerId, f, infamy);
+				AddInfamy(playerId, f, infamy, true, true);
 		}
 	}
 
@@ -1635,13 +1635,16 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! Infamy with `faction`. Negative amounts work Infamy off (amends).
 	//! scaled = false: the caller already applied the disguise and leader scaling (paid amends,
 	//! which clamp the scaled amount to their floor and life cap).
-	void AddInfamy(int playerId, RZ_EFaction faction, int amount, bool scaled = true)
+	//! share = true: a share, not something the faction saw you do (the rival share of Fame,
+	//! a mission's rival Infamy, a questline's standing): a uniform you wear neither doubles it
+	//! nor is blown by it.
+	void AddInfamy(int playerId, RZ_EFaction faction, int amount, bool scaled = true, bool share = false)
 	{
 		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
 			return;
 
 		// Caught in a faction's uniform: Infamy with it doubles (RZ_Disguise)
-		if (scaled && m_Hostility && amount > 0)
+		if (scaled && !share && m_Hostility && amount > 0)
 			amount = m_Hostility.ScaleInfamyForDisguise(playerId, faction, amount);
 
 		// The faction's stronghold leader sets its temper: Paranoid harsher, Merciful forgives faster

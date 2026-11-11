@@ -175,7 +175,9 @@ visit the medic; calling one out isn't built.
   [bounty board](#the-red-hand) can. *The killer is the last attacker the body's damage manager
   recorded; if that wasn't a player, no bounty is paid.*
 - **Choice missions** ✅: you decide which faction's drop point gets the item. The winner gives
-  Fame; the one you double-crossed gives Infamy.
+  Fame; the one you double-crossed gives Infamy. Taken to the other side, it pays everyone with
+  you whom that side doesn't hunt, and the leader who gave the job neither counts it as help nor
+  scales its pay.
 - **Disguises** ✅: a faction's uniform gets you past its AI while you're not Hunted by it;
   caught, your Infamy gain doubles ([Disguises](#disguises)).
 
@@ -242,12 +244,15 @@ At a Bastion checkpoint, a player with Bastion Infamy (15 or more: Watched or Hu
 the barrier **with no firearm** and waits 10 seconds gives themselves up: searched, 8 Bastion
 Infamy off, and Bastion's AI holds its fire on them for 5 minutes, whatever their standing,
 fights or grudges say (and forgets those fights). A Hunted player walking up unarmed within 150 m
-isn't shot while they come in. Once an hour per player; within the hour it's just a search.
+isn't shot while they come in: only while they get closer (or wait at the barrier), until they've
+hung back for 30 s in one approach, with their surrender hour free, and not while a Bastion squad sent after them
+is within 1 km. A post is no place to sit out a hunt. Once an hour per player; within the hour it's just a search.
 Armed and Hunted, they shoot.
 
 **Camps.** A faction's outposts and stronghold (and the lab, for Halcyon) warn off a player the
 faction watches (Watched) at 150 m, and at the gate
 (50 m) turn them away: unarmed, the gate stays shut; armed, they open fire for a few minutes.
+The lab lets a bitten player in unarmed for the trial dose, Watched or not, until they've had it.
 Hunted players are simply shot. The Haven's holdings follow its house rules instead.
 
 **Safe zones.** Strongholds and the lab: within 80 m you're told the rule as you come in
@@ -512,7 +517,9 @@ where a faction is set to shoot from Watched or Strangers, or in a mission that 
 - **What counts** is read from the prefab names of what the character wears, every 10 seconds,
   against keyword lists per faction (Bastion, the Red Hand, Halcyon; the Haven has no uniform).
 - **Caught:** any Infamy you earn with that faction while wearing its uniform is doubled, and the
-  disguise stops working for 15 minutes ("they know your face now").
+  disguise stops working for 15 minutes ("they know your face now"). Shares don't count, since
+  nobody saw you: the rival share of Fame from another faction's job, a mission's rival Infamy
+  and a questline's standing are never doubled and never blow the disguise.
 - **It doesn't hide a fight.** Mission fights, hunter squads and retaliation still shoot you.
 - *Simplified:* one faction at a time, nothing partial, nothing saved.
 

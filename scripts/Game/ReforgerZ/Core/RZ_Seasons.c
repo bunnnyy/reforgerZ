@@ -196,7 +196,7 @@ class RZ_SeasonSettings
 	[Attribute("1", UIWidgets.ComboBox, "Wipe: On cure (the default: only after the cure and its epilogue), Off (by hand), After weeks or whichever comes first (timed, cure or not; not used unless you pick them). A wipe backs up state.json and starts fresh on the next restart", "", ParamEnumArray.FromEnum(RZ_EWipeMode))]
 	RZ_EWipeMode m_eWipeMode;
 
-	[Attribute("48", desc: "Epilogue: real hours the world stays open after the cure before the wipe is due")]
+	[Attribute("168", desc: "Epilogue: real hours the world stays open after the cure before the wipe is due (168 = one week)")]
 	float m_fEpilogueHours;
 
 	[Attribute("10", desc: "Only with Wipe on After weeks or whichever comes first: real weeks from the season's start until the wipe is due (a season to the cure takes about 6-7 weeks with 5 regulars)")]
