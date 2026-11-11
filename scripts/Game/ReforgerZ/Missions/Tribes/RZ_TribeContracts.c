@@ -1771,10 +1771,11 @@ class RZ_Mission_CaptureTheIndex : RZ_TribeContract
 
 //------------------------------------------------------------------------------------------------
 //! Stock the Pit (Red Hand, Known): two of a pack's young alive, one after the other, for the next
-//! Fight Pit ("Fresh hires, from the Postmen."). Live Capture's rules: bring it down without killing
-//! it and tie it, hold it 30 s while it fights, then the case to the Red Hand's drop by their nearest
-//! camp (within 6 km of the lair) before it wakes. Each one caught leaves the pack. Needs the drop
-//! point and mission item prefabs, and a pack with two young.
+//! Fight Pit ("Fresh hires, from the Postmen."). Live Capture's rules in full: lure it into the cage
+//! at the lair's edge and drop the door (the cage's choice is routed here), or bring it down without
+//! killing it and tie it; hold it 30 s while it fights, then the case to the Red Hand's drop by their
+//! nearest camp (within 6 km of the lair) before it wakes. Each one caught leaves the pack. Needs the
+//! drop point and mission item prefabs, and a pack with two young.
 class RZ_Mission_StockThePit : RZ_TribeContract
 {
 	protected ref RZ_LiveCapture m_Capture = new RZ_LiveCapture();
@@ -1855,8 +1856,17 @@ class RZ_Mission_StockThePit : RZ_TribeContract
 			return false;
 
 		m_Capture.UsePrefab(m_sYoung);
+		m_Capture.m_sCageLine = "The door drops. It throws itself at the bars, over and over, and the whole cage jumps. Sit tight till the dose takes.";
 		m_bTookOne = false;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cage's choice: "Drop the cage door" (object 0).
+	override void HandleObjectChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option)
+	{
+		if (objIdx == 0)
+			m_Capture.TryCloseCage(gm, playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -225,7 +225,7 @@ class RZ_CrawlerLife
 	//------------------------------------------------------------------------------------------------
 	//! L14: AIAgent.DeactivateAI / ActivateAI. VERIFY: a deactivated agent stays in its group's agent
 	//! list (the spawner counts living members by the character, so it isn't taken for dead either way)
-	protected static void SetAI(IEntity body, bool on)
+	static void SetAI(IEntity body, bool on)
 	{
 		if (!body)
 			return;

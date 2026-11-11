@@ -723,6 +723,10 @@ class RZ_TribeBodies
 
 		RZ_TribeHunt hunt = new RZ_TribeHunt();
 		hunt.m_iTarget = playerId;
+		RZ_PlayerProfile prof = m_GM.GetProfile(playerId);
+		if (prof)
+			hunt.m_sIdentity = prof.m_sIdentity;
+
 		hunt.m_fStartedAt = Clock();
 		hunt.m_iSetOut = Math.Max(1, t.Members());
 		hunt.m_eTemper = t.m_eTemper;
@@ -956,12 +960,20 @@ class RZ_TribeBodies
 	{
 		RZ_TribeHunt hunt = t.m_Hunt;
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(hunt.m_iTarget);
+		if (!GetGame().GetPlayerManager().GetPlayerController(hunt.m_iTarget) && !hunt.m_sIdentity.IsEmpty())
+		{
+			// Logged out: the hunt waits 10 minutes where it is; back in time, it comes on again
+			if (WaitForReturn(t, hunt))
+				return;
+		}
+
 		if (!ent || !RZ_Util.IsCharacterAlive(ent))
 		{
 			EndHunt(t, false);
 			return;
 		}
 
+		hunt.m_fGoneAt = -1;
 		vector at = ent.GetOrigin();
 		float now = Clock();
 		int wave = 0;
@@ -1021,6 +1033,8 @@ class RZ_TribeBodies
 		if (anyBody && anyLink && lostFor > HIDE_LOST && (far || m_GM.GetLand().InNoMansLand(at)))
 		{
 			RZ_Log.Info(string.Format("Tribes: %1 lost player %2 and goes home.", t.m_sPlace, hunt.m_iTarget));
+			// Heat within 300 m of where it lost them is ignored for the rest of the night
+			t.m_aDeafTo.Insert(at);
 			EndHunt(t, false);
 			return;
 		}
@@ -1075,6 +1089,47 @@ class RZ_TribeBodies
 
 		if (broke)
 			BreakOff(t);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Heat near where a hunt lost its target tonight doesn't start another (a siege's banging never
+	//! brings the pack back).
+	protected static bool DeafTo(RZ_Tribe t, vector at)
+	{
+		foreach (vector lost : t.m_aDeafTo)
+		{
+			if (RZ_Util.DistXZ(lost, at) < 300)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hunted player logged out: the hunt holds 10 minutes (the tribe clock); if the same
+	//! character comes back in that time, a fresh hunt starts on them. True while it waits.
+	protected bool WaitForReturn(RZ_Tribe t, RZ_TribeHunt hunt)
+	{
+		float now = Clock();
+		if (hunt.m_fGoneAt < 0)
+			hunt.m_fGoneAt = now;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int id : ids)
+		{
+			RZ_PlayerProfile prof = m_GM.GetProfile(id);
+			if (id == hunt.m_iTarget || !prof || prof.m_sIdentity != hunt.m_sIdentity)
+				continue;
+
+			EndHunt(t, false);
+			StartHunt(t, id, true);
+			RZ_Log.Info(string.Format("Tribes: %1's hunt picks player %2 up again.", t.m_sPlace, id));
+			return true;
+		}
+
+		return now - hunt.m_fGoneAt < 600;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1174,7 +1229,7 @@ class RZ_TribeBodies
 		foreach (int i, IEntity p : players)
 		{
 			vector at = p.GetOrigin();
-			if (RZ_Util.DistXZ(at, t.RangeCentre()) <= t.HuntRadius() && heat.GetHeat(at) >= 30)
+			if (RZ_Util.DistXZ(at, t.RangeCentre()) <= t.HuntRadius() && heat.GetHeat(at) >= 30 && !DeafTo(t, at))
 			{
 				if (StartHunt(t, ids[i], false))
 					return;

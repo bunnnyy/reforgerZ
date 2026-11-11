@@ -220,6 +220,8 @@ class RZ_TribeHunt
 	int m_iLost;
 	int m_iWaves;
 	float m_fLeashAt = -1;	// a body first within 150 m of the target
+	float m_fGoneAt = -1;	// the target logged out (the tribe clock): the hunt waits 10 minutes
+	string m_sIdentity;		// the target's character, to pick them up again if they come back
 	float m_fLostAt = -1;	// the target lost since
 	RZ_ETemperament m_eTemper;
 	RZ_EStrategy m_eStrategy;
@@ -286,6 +288,8 @@ class RZ_Tribe
 	int m_iDayPacks;
 	float m_fLastCall = -10000;	// the tribe clock
 	ref array<vector> m_aBlocked = {};	// player clusters a hunt broke off from tonight
+	ref array<vector> m_aDeafTo = {};	// where a hunt lost its target tonight: heat within 300 m is ignored
+	int m_iEmptyNights;					// nights running it set out and took nobody
 	bool m_bVigil;
 	vector m_vVigilAt;
 	float m_fVigilBodiesUntil;	// world seconds: bodies stand the vigil 30 real minutes at most

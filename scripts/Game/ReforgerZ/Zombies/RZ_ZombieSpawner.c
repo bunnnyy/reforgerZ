@@ -1881,6 +1881,11 @@ class RZ_ZombieSpawner
 	//! A locked door is being banged on (RZ_DoorBlockers): the infected at it are on the clock.
 	void OnDoorBang(vector at)
 	{
+		// Another way in, and a weak door breaking (Zombies/Behaviour/RZ_Doors.c)
+		RZ_Behaviour bh = m_GM.GetBehaviour();
+		if (bh)
+			bh.GetDoors().OnBang(at);
+
 		if (!CrawlersOn())
 			return;
 
