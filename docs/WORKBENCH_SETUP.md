@@ -852,7 +852,7 @@ in turn, skips its waits, goes to each stage mission and ends it, and follows th
 ending (or reports where it fizzled or got stuck). Last, it walks the player through every
 settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
 every notice the player is sent, and prints the script exceptions (there should be none), how many
-mission types started and which didn't, and how far each questline got. It takes about an hour.
+mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes. If the fake player dies outside the Perimeter test (a mission or the line got him), it says where and respawns him.
 
 ```bash
 SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
