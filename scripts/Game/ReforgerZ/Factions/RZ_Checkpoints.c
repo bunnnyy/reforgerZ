@@ -119,7 +119,7 @@ class RZ_PostContact
 	bool m_bAtBarrier;		// reached the barrier (leaving now is running it)
 	bool m_bPunished;
 	float m_fWaited;		// seconds at the barrier
-	float m_fHandsUp;		// seconds a Hunted player has walked in unarmed (the hold has a limit)
+	float m_fHandsUp;		// seconds a Hunted player has hung back while unarmed in range (the hold has a limit)
 	float m_fLastDist = -1;	// distance at the last tick, to tell coming in from loitering
 }
 
@@ -164,7 +164,7 @@ class RZ_Checkpoints
 	protected static const float SHOT_GAP = 20;
 	protected static const float DEFEND_RADIUS = 40;
 	protected static const float HANDS_UP_SECONDS = 15;	// a Hunted player walking up unarmed: they hold fire this long, renewed each tick
-	protected static const float HANDS_UP_MAX = 90;		// ...for at most this long an approach
+	protected static const float HANDS_UP_MAX = 30;		// ...until they've hung back (not coming closer) this long in one approach
 	protected static const float HANDS_UP_SQUAD_RADIUS = 1000;	// ...and never while a Bastion squad after them is this close
 
 	//------------------------------------------------------------------------------------------------
@@ -529,14 +529,17 @@ class RZ_Checkpoints
 		}
 
 		// Hunted but coming in with empty hands: they hold their fire while you walk up and wait.
-		// Only while you come in (closer each tick, or waiting at the barrier), for at most
-		// HANDS_UP_MAX seconds an approach, with your surrender hour free, and not while a Bastion
-		// squad after you is near: a post is no place to sit out a hunt
+		// Only while you come in (closer each tick, or waiting at the barrier, which the surrender
+		// wait bounds), until you've hung back HANDS_UP_MAX seconds in one approach, with your
+		// surrender hour free, and not while a Bastion squad after you is near: a post is no place
+		// to sit out a hunt. A slow walk in never uses the limit up
 		RZ_Hostility hostility = m_GM.GetHostility();
 		if (hunted && canSurrender && hostility && dist <= m_Settings.m_fWarnRadius)
 		{
 			bool closing = c.m_fLastDist < 0 || dist < c.m_fLastDist - 0.3 || dist <= m_Settings.m_fStopRadius;
-			c.m_fHandsUp = c.m_fHandsUp + dt;
+			if (!closing)
+				c.m_fHandsUp = c.m_fHandsUp + dt;
+
 			if (closing && c.m_fHandsUp <= HANDS_UP_MAX && CanSurrenderNow(playerId) && !hostility.IsFightFor(playerId, RZ_EFaction.MILITARY, ent.GetOrigin(), HANDS_UP_SQUAD_RADIUS))
 				hostility.StandDown(playerId, RZ_EFaction.MILITARY, HANDS_UP_SECONDS, false);
 		}
@@ -583,8 +586,6 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Unarmed, with Bastion Infamy, waiting at the barrier: they take you in, search you, and let you
-	//! go with a talking-to. False (and an ordinary search) if it's too soon since the last time.
 	//! The surrender hour: false while this player (by identity) surrendered too recently.
 	protected bool CanSurrenderNow(int playerId)
 	{
@@ -596,6 +597,8 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Unarmed, with Bastion Infamy, waiting at the barrier: they take you in, search you, and let you
+	//! go with a talking-to. False (and an ordinary search) if it's too soon since the last time.
 	protected bool Surrender(int playerId, IEntity ent, RZ_RoadPost post)
 	{
 		string title = post.GetTitle();
@@ -725,9 +728,11 @@ class RZ_Checkpoints
 		if (m_Settings.m_bCamps && f != RZ_EFaction.SURVIVORS && RZ_Reputation.IsWatchedOrWorse(tier))
 		{
 			// The lab still gives the bitten their trial dose (RZ_Infection.TrialDose refuses only
-			// the Hunted): an unarmed bitten player who hasn't had it is let in, not turned away
+			// the Hunted): an unarmed bitten player who hasn't had it is let in, not turned away.
+			// By position, not place: Halcyon's stronghold seated at the lab is a holding here
 			RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
-			if (place == "lab" && profile.IsInfected() && !profile.m_bTrialDoseTaken && !RZ_Util.IsArmed(ent))
+			bool atLab = f == RZ_EFaction.INSTITUTE && m_GM.HasLab() && RZ_Util.DistXZ(pos, m_GM.GetLabPosition()) <= m_Settings.m_fCampWarnRadius;
+			if (atLab && profile.IsInfected() && !profile.m_bTrialDoseTaken && !RZ_Util.IsArmed(ent))
 			{
 				if (Tell(playerId, place, "trial", TELL_GAP))
 					m_GM.NotifyPlayer(playerId, title, "The guard looks at the bite before he looks at your face. \"Trial's inside. Hands where I can see them.\"");

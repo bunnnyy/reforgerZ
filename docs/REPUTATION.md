@@ -244,8 +244,8 @@ At a Bastion checkpoint, a player with Bastion Infamy (15 or more: Watched or Hu
 the barrier **with no firearm** and waits 10 seconds gives themselves up: searched, 8 Bastion
 Infamy off, and Bastion's AI holds its fire on them for 5 minutes, whatever their standing,
 fights or grudges say (and forgets those fights). A Hunted player walking up unarmed within 150 m
-isn't shot while they come in: only while they get closer (or wait at the barrier), for at most
-90 s an approach, with their surrender hour free, and not while a Bastion squad sent after them
+isn't shot while they come in: only while they get closer (or wait at the barrier), until they've
+hung back for 30 s in one approach, with their surrender hour free, and not while a Bastion squad sent after them
 is within 1 km. A post is no place to sit out a hunt. Once an hour per player; within the hour it's just a search.
 Armed and Hunted, they shoot.
 

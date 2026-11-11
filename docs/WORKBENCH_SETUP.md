@@ -1649,7 +1649,8 @@ session, tick off:
   taken); walking off mid-search costs 3 Infamy and they fire. Unarmed with Bastion Infamy, wait at
   the barrier: you surrender, lose 8 Infamy, and Hunted, they stop shooting for 5 minutes.
   Hunted and unarmed, stand still 100 m out: within about 15 s they shoot again (they hold
-  fire only while you walk in, 90 s at most). With a hunter squad after you within 1 km, they
+  fire only while you walk in; 30 s of hanging back ends it). Walk in slowly from 150 m: they
+  hold fire all the way and you surrender. With a hunter squad after you within 1 km, they
   don't hold it at all.
 - [ ] At a Red Hand roadblock: Known pays 10 Favor and passes, a stranger is warned then fired on,
   Trusted is waved through.
