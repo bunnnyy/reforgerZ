@@ -119,9 +119,9 @@ class RZ_MissionManager
 	//------------------------------------------------------------------------------------------------
 	//! The one check every starter uses before it starts a configured mission (random picks, story
 	//! arcs, questline stages, leaders' jobs; docs/DESIGN.md, "World facts"): the requirements'
-	//! world gates and facts (stage, cure, Bastion presence, time of day, flags, questlines), the
-	//! season's No Vehicles rule, its weight if the manager also picks this type at random
-	//! (checkWeight), one of each type at a time, and its claims free. "" if it can, else why not.
+	//! world gates and facts (stage, cure, Bastion presence, the day, time of day, flags,
+	//! questlines), the season's No Vehicles rule, its weight if the manager also picks this type at
+	//! random (checkWeight), one of each type at a time, and its claims free. "" if it can, else why not.
 	string WhyNot(RZ_Mission m, int playerCount, bool checkWeight = true)
 	{
 		if (!m)

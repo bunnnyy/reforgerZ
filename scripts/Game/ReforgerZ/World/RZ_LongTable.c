@@ -891,7 +891,7 @@ class RZ_LongTable
 		array<string> sons = {"Pavel", "Karel", "Josef", "Milan", "Viktor", "Emil", "Anton", "Oskar", "Jakub", "Bruno"};
 		array<string> boys = {"Tomik", "Jiri", "Petr", "Ondra", "Lukas", "Filip", "Matej", "Vit"};
 		// A cousin, an uncle, a lodger who stayed (men: whoever keeps the road is "he")
-		array<string> others = {"Bohus", "Stan", "Rudi", "Ota", "Lev", "Hynek", "Ales", "Dusan"};
+		array<string> others = {"Bohus", "Stan", "Kamil", "Ota", "Lev", "Hynek", "Ales", "Dusan"};
 		rng.ShuffleStrings(sons);
 		rng.ShuffleStrings(others);
 

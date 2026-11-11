@@ -54,6 +54,7 @@ class RZ_MissionRequirements
 
 	// 5. World facts (docs/DESIGN.md, "World facts"), checked with the world state above
 	RZ_ETimeGate m_eTime = RZ_ETimeGate.ANY;
+	int m_iMinDay;								// the broadcast's day (RZ_WorldFacts.Day) is at least this; 0 = any
 	bool m_bNeedsHeli;							// Bastion's helicopter can fly (RZ_WorldFacts.HeliAvailable)
 	ref array<string> m_aFlagsSet = {};			// season flags that must be set (HasFlag)
 	ref array<string> m_aFlagsUnset = {};		// season flags that must not be set
@@ -161,7 +162,7 @@ class RZ_MissionRequirements
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The world facts part of IsWorldOk: cure, time of day, the helicopter, season flags,
+	//! The world facts part of IsWorldOk: cure, the day, time of day, the helicopter, season flags,
 	//! questlines.
 	bool AreFactsOk(RZ_GameModeComponent gm)
 	{
@@ -170,6 +171,9 @@ class RZ_MissionRequirements
 			return true;
 
 		if (facts.IsCured() && StopsWithCure())
+			return false;
+
+		if (m_iMinDay > 0 && facts.Day() < m_iMinDay)
 			return false;
 
 		if (!IsTimeOk(facts))

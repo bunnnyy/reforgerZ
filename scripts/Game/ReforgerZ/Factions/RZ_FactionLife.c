@@ -1257,7 +1257,7 @@ class RZ_FactionLife
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return string.Format("\"Command, Logistics. Vehicle en route to %1, crew of two. If contact, hold position and wait. Nobody is coming, but wait.\"", dest);
+			case RZ_EFaction.MILITARY: return string.Format("\"Command, Logistics. Vehicle en route to %1, crew of two. If contact, hold position. We'll come and get you.\"", dest);
 			case RZ_EFaction.BANDITS: return string.Format("\"Boss, the truck's going to %1. Two lads in it. If anyone stops it, I want names.\"", dest);
 			case RZ_EFaction.INSTITUTE: return string.Format("\"Courier vehicle to %1. Cold boxes on board. Do not open them for anyone.\"", dest);
 		}

@@ -1084,6 +1084,7 @@ are called off with it.
 | `m_bNotCured` | stops once the cure is out. **Halcyon's work does by default** (it's all research); `m_bAfterCure` keeps one going |
 | `m_fMinMilitary`, `m_fMaxMilitary` | Bastion presence within this range |
 | `m_eTime` | `RZ_ETimeGate`: `ANY`, `NIGHT`, `DUSK_OR_NIGHT`, `DAY` (with no game clock every value passes) |
+| `m_iMinDay` | the broadcast's day (`Day()`) is at least this; 0 = any (Struck Off waits for Day 13) |
 | `m_bNeedsHeli` | Bastion's helicopter can fly (`HeliAvailable`: no storm, not down) |
 | `NeedFlag(key)`, `NeedNoFlag(key)` | a season flag set, or not set |
 | `NeedFlagWithin(key, days)`, `NeedFlagNotWithin(key, days)` | a flag that holds a day (what `Changed` sets) set no more than `days` days ago (0 = today), or not |
@@ -1121,6 +1122,7 @@ endings use it too). Saved.
 | say what day it is, or how long Command has been silent | `{day}`, `{days_since_command_words}` in `Fill`, or `Day()`, `DaysSinceCommand()` |
 | stop a job once the cure is out | `m_Req.m_bNotCured = true` (Halcyon's already stop; `m_bAfterCure` to keep one); a running one is called off by itself |
 | a job only at night, or only while Bastion is about | `m_Req.m_eTime = RZ_ETimeGate.NIGHT`; `m_Req.m_fMinMilitary = 0.3` |
+| a job only once the season has run a few days | `m_Req.m_iMinDay = 13` |
 | a job that needs Bastion's helicopter | `m_Req.m_bNeedsHeli = true`; `SetHeliDown(days)` when it crashes (days < 0: for good) |
 | a job only in the days after something changed | `m_Req.NeedFlagWithin("<the Changed key>", 2)` |
 | a contract that tells a questline's story | `m_Req.NotWithQuest("<key>")`, with the key from [QUESTLINES.md](QUESTLINES.md#the-questlines) |

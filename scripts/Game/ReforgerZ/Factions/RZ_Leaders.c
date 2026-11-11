@@ -1945,13 +1945,33 @@ class RZ_Leaders
 			float roll = Math.RandomFloat01();
 			if (roll < bite)
 			{
-				Die(l, "was bitten and walked out of " + l.m_sPlace + " before it took hold", -1);
+				Die(l, BittenHow(l), -1);
 				continue;
 			}
 
 			if (roll < bite + raid)
 				Die(l, "was killed in a raid on " + l.m_sPlace, -1);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How an off-screen bite is told, each faction its own way (docs/LORE.md): nobody at Bastion
+	//! turns alone, and the Red Hand says "bitten" about anyone. Ends without a full stop (the title
+	//! already names the place).
+	protected string BittenHow(RZ_Leader l)
+	{
+		if (l.m_eFaction == RZ_EFaction.MILITARY)
+		{
+			if (m_GM.HasLab())
+				return "was bitten. A friend from the post went to the lab with them, and came back alone";
+
+			return "was bitten. A friend from the post sat with them to the end";
+		}
+
+		if (l.m_eFaction == RZ_EFaction.BANDITS)
+			return "was bitten, the crew says";
+
+		return "was bitten and walked out of " + l.m_sPlace + " before it took hold";
 	}
 
 	//------------------------------------------------------------------------------------------------
