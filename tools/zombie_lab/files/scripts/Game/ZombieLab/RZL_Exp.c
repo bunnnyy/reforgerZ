@@ -389,7 +389,9 @@ class RZL_ExpGroups : RZL_Exp
 }
 
 //------------------------------------------------------------------------------------------------
-//! 2b. The waypoint leak (design VERIFY 2): RZ_Util.SendGroupTo, RedirectGroup and DeleteUnit.
+//! 2b. The waypoint leak (design VERIFY 2): RZ_Util.SendGroupTo, RedirectGroup and DeleteUnit. Since
+//! the fix they share one held waypoint per group (RZ_GroupOrders): expect 1 distinct waypoint, the
+//! same entity after a redirect, and none left after DeleteUnit.
 class RZL_ExpLeak : RZL_Exp
 {
 	protected SCR_AIGroup m_G;
@@ -444,7 +446,7 @@ class RZL_ExpLeak : RZL_Exp
 			}
 			if (m_iOrders >= 3)
 			{
-				RZL.Row("leak", string.Format("case=3 SendGroupTo orders, each completed|created=3|stillInWorld=%1|inGroupList=%2", RZL.CountAlive(m_aWps), RZL.WaypointCount(m_G)));
+				RZL.Row("leak", string.Format("case=3 SendGroupTo orders, each completed|orders=3|distinctWaypoints=%1|stillInWorld=%2|inGroupList=%3", m_aWps.Count(), RZL.CountAlive(m_aWps), RZL.WaypointCount(m_G)));
 				Next(now);
 				return;
 			}
@@ -454,7 +456,8 @@ class RZL_ExpLeak : RZL_Exp
 				dist = 80;
 			RZ_Util.SendGroupTo(m_G, m_Site.Along(dist), RZL.WAYPOINT);
 			m_Cur = LastWaypoint();
-			m_aWps.Insert(m_Cur);
+			if (!m_aWps.Contains(m_Cur))
+				m_aWps.Insert(m_Cur);
 			m_iOrders++;
 			m_fStepAt = now - 2;
 			return;
@@ -473,7 +476,7 @@ class RZL_ExpLeak : RZL_Exp
 		{
 			IEntity nw = RZ_Util.RedirectGroup(m_G, m_Site.Along(200), RZL.WAYPOINT);
 			m_Cur = AIWaypoint.Cast(nw);
-			RZL.Row("leak", string.Format("case=RedirectGroup over a pending waypoint|oldStillInWorld=%1|newInList=%2|listCount=%3|waypointHasRplComponent=%4", m_Old != null, RZL.HasWaypoint(m_G, m_Cur), RZL.WaypointCount(m_G), m_Cur && m_Cur.FindComponent(RplComponent)));
+			RZL.Row("leak", string.Format("case=RedirectGroup over a pending waypoint|oldStillInWorld=%1|sameEntity=%2|newInList=%3|listCount=%4|waypointHasRplComponent=%5", m_Old != null, m_Old == m_Cur, RZL.HasWaypoint(m_G, m_Cur), RZL.WaypointCount(m_G), m_Cur && m_Cur.FindComponent(RplComponent)));
 			Next(now);
 			return;
 		}

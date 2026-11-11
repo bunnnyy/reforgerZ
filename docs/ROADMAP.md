@@ -17,6 +17,7 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 | The Director: four outbreak stages, infection spread, paced for a season of about 45 real days from about 2 to 20 regulars (research scaled to the last week's player-hours; season speed and cure pace for other season lengths; `tools/pacing_sim.py` checks the tuning) | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread), [Season pacing](DESIGN.md#season-pacing) |
 | Heat from presence, vehicles, gunfire (suppressors quieter), noisemakers; hordes toward noise | [Heat and noise](DESIGN.md#heat-and-noise) |
 | Stealth: each player's visibility (stance, speed, light, weather, noise), the infected near them seeing the most visible player, losing a hidden player (search, then give up), gentler mission sight and notice checks for someone lying low, visibility on the HUD; any zombie mod (perception, or by distance) | [Stealth](DESIGN.md#stealth) |
+| One move waypoint per AI group: every order moves the same waypoint (no order leaves one in the world), deleted with the group; checked on the server with Bacon Zombies | [Principles](DESIGN.md#principles) |
 | Zombie spawner for any zombie mod, bite detection (scratches and bites, protective clothing), the golden window and wound cleaning, staged infection, the Turned Player | [Zombies](DESIGN.md#zombies-bites-and-infection) |
 | Treatments from day one: antidote and stabiliser stocks scaled by research, Halcyon's trial dose, safehouse bite declarations, five low-grade meds with side effects | [Treatments](DESIGN.md#treatments) |
 | Light adaptation: specials after breakthroughs, one trait per stage, favourite spots | [Infection adapts](DESIGN.md#infection-adapts) |
@@ -71,8 +72,9 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 - Designed, not built: tribes of infected in the wild land, each with a lair, a range and an
   alpha, out by day too but lighter (a small day party on its trails; the full hunt only at
   night); town crawlers drawn from each town's infection. The land grid they need is built and
-  measured ([DESIGN.md](DESIGN.md#the-land-grid)). Next: the crawlers, the land grid in use and the
-  plumbing (runtime groups, one held waypoint per group, a silent kill), with their own doc.
+  measured ([DESIGN.md](DESIGN.md#the-land-grid)), and so is one held waypoint per group. Next: the
+  crawlers, the land grid in use and the rest of the plumbing (runtime groups, a silent kill), with
+  their own doc.
 - Before the tribes' code, `tools/tribe_sim.py` simulates them as data over a season on the
   45-day pacing (`--legacy` for the old one) on Arland, Everon and a Chernarus-size map at 2, 5 and
   10 players: tribe counts, clans, hunger, growth, first-night losses, and fights per km walked

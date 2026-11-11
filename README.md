@@ -108,7 +108,8 @@ and measured on the base maps, off by default.
 ```
 scripts/Game/ReforgerZ/
   Core/          game mode component (the hub), helpers, map markers, loose-item cleanup,
-                 seasons (the winner's rules, rule sets, the wipe cycle)
+                 seasons (the winner's rules, rule sets, the wipe cycle), AI groups' move
+                 orders (one held waypoint each)
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
                  town memory, the power grid, the radio station, the world facts (what content
                  reads: season flags, canon, claims, text tokens), the Long Table, the land grid

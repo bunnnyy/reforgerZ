@@ -140,7 +140,8 @@ class RZL_ExpWaypoint : RZL_Exp
 			m_vGoal = m_Site.Along(300);
 			RZ_Util.SendGroupTo(m_G, m_vGoal, RZL.WAYPOINT);
 			m_Wp = LastWaypoint();
-			m_aWps.Insert(m_Wp);
+			if (!m_aWps.Contains(m_Wp))
+				m_aWps.Insert(m_Wp);
 			Next(now);
 			return;
 		}
@@ -196,7 +197,8 @@ class RZL_ExpWaypoint : RZL_Exp
 			m_vGoal2 = m_Site.Along(10);
 			RZ_Util.SendGroupTo(m_G, m_vGoal2, RZL.WAYPOINT);
 			m_Wp = LastWaypoint();
-			m_aWps.Insert(m_Wp);
+			if (!m_aWps.Contains(m_Wp))
+				m_aWps.Insert(m_Wp);
 			m_Target = RZL.Spawn(RZL.TARGET, m_Site.Along(220), m_Site.m_fYaw);
 			m_aChars.Insert(m_Target);
 			m_fCompleted = -1;

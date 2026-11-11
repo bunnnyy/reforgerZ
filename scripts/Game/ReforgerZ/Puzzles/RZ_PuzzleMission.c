@@ -156,7 +156,7 @@ class RZ_PuzzleMission : RZ_Mission
 	//! Track something spawned elsewhere (crate, AI group) so Cleanup() removes it.
 	protected void TrackProp(IEntity e)
 	{
-		if (e)
+		if (e && !m_aProps.Contains(e))
 			m_aProps.Insert(e);
 	}
 

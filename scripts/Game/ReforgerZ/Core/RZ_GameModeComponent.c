@@ -753,6 +753,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Broadcast.Tick(dt, m_fBroadcastMinutes, !ids.IsEmpty());
 		RZ_GameTime.Tick(dt);
 		RZ_NoisemakerComponent.TickAll();
+		// Move waypoints of groups that died out by themselves this tick (RZ_GroupOrders)
+		RZ_GroupOrders.Sweep();
 		m_Infection.Tick(dt, ids, players);
 		m_UIFeed.Tick(dt, ids, players);
 		m_LooseItems.Tick(dt, players);
@@ -1503,7 +1505,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_Log.Info(string.Format("Status | %1 (%2 min) | avg infection %3 | towns safe/contested/infested/overrun %4/%5/%6/%7 | zombies %8 | missions %9",
 			RZ_StageSettings.GetStageName(m_Director.GetStage()), RZ_Util.RoundToInt(m_Director.GetStageMinutes()),
 			RZ_Util.RoundToInt(m_Director.GetAverageInfection()), safe, contested, infested, overrun,
-			m_Spawner.GetTrackedCount(), m_Missions.GetActive().Count()));
+			m_Spawner.GetTrackedCount(), m_Missions.GetActive().Count()) + " | move waypoints " + RZ_GroupOrders.CountWaypoints().ToString());
 		RZ_Log.Info(string.Format("Status | players %1 | cure %2 percent (milestone %3, final stand %4, waiting %5, lab full %6, at the 90 gate %7, pace by play %8 percent) | %9",
 			playerCount, RZ_Util.RoundToInt(m_Cure.m_fProgress), m_Cure.m_iMilestone, m_Cure.IsFinalStand(),
 			RZ_Util.RoundToInt(m_Cure.GetBacklog()), m_Cure.IsLabFull(), m_Cure.IsAtFinaleGate(),

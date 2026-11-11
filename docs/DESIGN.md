@@ -64,6 +64,13 @@ from Early Outbreak to Aftermath, and the only way to win is together: research 
   you notice over a session, not something you manage.
 - **No physical traces.** Nothing is left lying in the world: journals, burned towns and
   looted shelves are data.
+- **One move waypoint per AI group.** Every order the mod gives a group (a horde toward noise, a
+  wanderer's walk, a truck's route, a mission's crew) moves the same waypoint and puts it back on
+  the group's list, after any waypoints of the group's own. It's deleted with the group, or on the
+  next tick when a group dies out by itself. Code: `Core/RZ_GroupOrders.c`. Measured with Bacon
+  Zombies (`tools/zombie_lab/`): a finished waypoint drops off the group's list but stays in the
+  world, and moving one that's still on the list does nothing until it's added again. So before
+  this, every order left a waypoint behind. The status line counts the waypoints in the world.
 - **Nothing for free.** No free loot, no free Fame. No sleep and no time skip.
 
 ## Settlements, spawn points and the map
