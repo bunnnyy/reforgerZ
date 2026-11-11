@@ -99,6 +99,8 @@ class RZ_QuestlinesSave
 	float nextChance;
 	ref array<ref RZ_QuestRunSave> runs = {};
 	ref array<string> doneKeys = {};
+	ref array<string> worldKeys = {};
+	ref array<int> worldValues = {};
 	ref array<string> lastKeys = {};
 	ref array<float> lastAt = {};
 	ref array<string> rumours = {};
@@ -603,6 +605,7 @@ class RZ_Questlines
 	protected ref array<ref RZ_QuestRun> m_aRuns = {};
 	protected ref RZ_QuestlinesSave m_Restored;
 	protected ref array<string> m_aDone = {};
+	protected ref map<string, int> m_mWorld = new map<string, int>();	// flags every questline can read (the crossings)
 	protected ref array<string> m_aLastKeys = {};
 	protected ref array<float> m_aLastAt = {};
 	protected ref array<string> m_aRumours = {};
@@ -628,6 +631,31 @@ class RZ_Questlines
 	bool IsEnabled() { return m_Settings.m_bEnabled; }
 	float GetClock() { return m_fClock; }
 	array<ref RZ_QuestRun> GetRuns() { return m_aRuns; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Flags shared by every questline for this season (the crossings between questlines, see
+	//! docs/QUESTLINES.md). Saved, and wiped with the season. Name them "<questline key>.<flag>".
+	//! Every ending sets "<key>.ending" to its ending number by itself.
+	int WorldFlag(string key, int def = 0)
+	{
+		int value;
+		if (m_mWorld.Find(key, value))
+			return value;
+
+		return def;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasWorldFlag(string key)
+	{
+		return m_mWorld.Contains(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetWorldFlag(string key, int value)
+	{
+		m_mWorld.Set(key, value);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The wait scale, 0.05 to 10.
@@ -736,6 +764,12 @@ class RZ_Questlines
 			data.doneKeys.Insert(done);
 		}
 
+		foreach (string wkey, int wvalue : m_mWorld)
+		{
+			data.worldKeys.Insert(wkey);
+			data.worldValues.Insert(wvalue);
+		}
+
 		foreach (int i, string key : m_aLastKeys)
 		{
 			data.lastKeys.Insert(key);
@@ -807,6 +841,14 @@ class RZ_Questlines
 			foreach (string done : m_Restored.doneKeys)
 			{
 				m_aDone.Insert(done);
+			}
+		}
+
+		if (m_Restored.worldKeys && m_Restored.worldValues)
+		{
+			for (int wi = 0; wi < m_Restored.worldKeys.Count() && wi < m_Restored.worldValues.Count(); wi++)
+			{
+				m_mWorld.Set(m_Restored.worldKeys[wi], m_Restored.worldValues[wi]);
 			}
 		}
 
@@ -1065,6 +1107,8 @@ class RZ_Questlines
 		string title = run.m_Line.m_sTitle;
 		if (run.m_iEnding >= 0)
 		{
+			// Other questlines can read how this one ended: WorldFlag("<key>.ending")
+			SetWorldFlag(run.m_sKey + ".ending", run.m_iEnding);
 			run.m_Line.OnEnding(m_GM, run, run.m_iEnding);
 			if (!m_aDone.Contains(run.m_sKey))
 				m_aDone.Insert(run.m_sKey);

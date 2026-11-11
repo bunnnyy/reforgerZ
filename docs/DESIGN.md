@@ -838,6 +838,10 @@ example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
    text, a note or a line is filled in from the run's texts.
 3. **IsReady(gm, run, stage)**: world gates on top of the wait, with the helpers
    `IsLeaderAlive`, `LeaderNear`, `IsTownHeldBy`, `GetMorale`, `GetHouse`, or a flag.
+   **Crossings between questlines** use season-wide world flags on the manager:
+   `gm.GetQuestlines().WorldFlag("key.flag")`, `SetWorldFlag`, `HasWorldFlag`, named
+   `<questline key>.<flag>`. Every ending sets `<key>.ending` by itself. They're saved and wiped
+   with the season.
 4. **MakeMission(gm, run, stage)**: `return new RZ_QM_MyStage();`. The engine sets its
    `m_iQuestRun`, runs `Configure`, checks the world and starts it.
 5. **The stage mission** extends `RZ_QuestMission` (a puzzle mission that is never picked at
