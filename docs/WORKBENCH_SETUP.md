@@ -336,7 +336,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_BanditDrop.et` | a crate, barrel or car wreck prop | `RZ_SellSamplesToBanditsAction` | Missions > Dead drop | optional | Dead Drop |
 | `RZ_HeliWreck.et` | a helicopter wreck prop | the clue set | Missions > Helicopter wreck | optional | Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash |
 | `RZ_CorpsePile.et` | a body bag pile prop | — | Missions > Corpse pile | optional | look only: Burn the Bodies' piles and Memorial's bodies (both fall back to the puzzle object) |
-| `RZ_RedHandGroup.et` | an AI group on BAND | — | Missions > Red Hand group | optional | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness; default Red Hand hunter squad |
+| `RZ_RedHandGroup.et` | an AI group on BAND | — | Missions > Red Hand group | optional | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness, the crews in Learning the Drones and The Pit's Debtor, Cargo's guards; default Red Hand hunter squad |
 | `RZ_FuelDepot.et` | fuel tanks with a damage manager | — | Missions > Fuel depot | optional | Arson |
 | `RZ_Relay.et` | a radio mast with a damage manager | — | Missions > Relay | optional | Sabotage the Relay |
 | `RZ_Trader.et` | a character or vehicle (e.g. a Shop System trader) | — | Missions > Trader | optional | Wandering Trader |
@@ -346,7 +346,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route (falls back to the survivor group, then data) |
+| `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor (falls back to the survivor group, then data) |
 | `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment |
 | `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Hunt the Deserter |
 | `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection (falls back to the puzzle object) |
@@ -467,11 +467,11 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_Occupant_Halcyon.et` | a character without AI in the faction's clothes | the generic set | Territory > Halcyon occupant | optional | the named people (empty = the civilian) |
 | `RZ_Truck_Haven.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Haven truck | optional | the supply truck |
 | `RZ_Truck_Bastion.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Bastion truck | optional | the supply truck |
-| `RZ_Truck_RedHand.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Red Hand truck | optional | the supply truck |
+| `RZ_Truck_RedHand.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Red Hand truck | optional | the supply truck; the truck in Cargo (needed for it) |
 | `RZ_Truck_Halcyon.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Halcyon truck | optional | the supply truck; Mobile Lab's lab truck |
 | `RZ_TruckCrew_Haven.et` | an AI group of 1-2 on SURV; the first one drives | — | Supply > Haven crew | optional | the crew |
 | `RZ_TruckCrew_Bastion.et` | an AI group of 1-2 on MIL; the first one drives | — | Supply > Bastion crew | optional | the crew |
-| `RZ_TruckCrew_RedHand.et` | an AI group of 1-2 on BAND; the first one drives | — | Supply > Red Hand crew | optional | the crew |
+| `RZ_TruckCrew_RedHand.et` | an AI group of 1-2 on BAND; the first one drives | — | Supply > Red Hand crew | optional | the crew; the truck crew in Cargo |
 | `RZ_TruckCrew_Halcyon.et` | an AI group of 1-2 on INST; the first one drives | — | Supply > Halcyon crew | optional | the crew |
 
 #### New-player guidance
