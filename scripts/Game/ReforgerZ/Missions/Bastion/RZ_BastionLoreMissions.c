@@ -194,7 +194,7 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 	{
 		if (m_iSource == SOURCE_TAPE)
 		{
-			string tape = "A battery recorder in a plastic bag, wired to a dead man's manpack set and a kitchen timer. You play the tape back. The Command net on Day 1, the last clear message: \"Hold the line. Await relief.\" Somebody cut \"Bastion\" into it from another reel. The timer is set to the hour. No telling who set it, or when.";
+			string tape = "A battery recorder in a plastic bag, wired to a dead man's manpack set and a kitchen timer. You play the tape back. The Command net on Day 2, the last clear message: \"Hold the line. Await relief.\" Somebody cut \"Bastion\" into it from another reel. The timer is set to the hour. No telling who set it, or when.";
 			if (m_bLeadsOn)
 				tape += " After the voice the reel runs on: a long burst of broken signal, no voice in it at all, then hiss.";
 
@@ -212,7 +212,7 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 	protected string TruthText()
 	{
 		if (m_iSource == SOURCE_TAPE)
-			return "\"Signal traced to grid %1. Recording on a timer. Day 1 traffic. Not Command.\"";
+			return "\"Signal traced to grid %1. Recording on a timer. Day 2 traffic. Not Command.\"";
 
 		if (m_iSource == SOURCE_SET)
 			return "\"Signal traced to grid %1. Our own set, someone else's hand. Not Command.\"";
@@ -425,13 +425,15 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 //! #22 Struck Off: a soldier on a post's roster as killed in action has been seen alive. A Haven
 //! trader in a nearby town saw him (the Deserter wanderer, asked about Bastion, knows exactly
 //! where he sleeps). Find him and decide, at his kit or by talking to him:
-//! - **Back on the roster:** he walks with you to the post. 80% pay, Bastion morale +3 and
-//!   strength +1.
+//! - **Back on duty:** the KIA is rubbed out; he walks with you to the post. 80% pay, Bastion
+//!   morale +3 and strength +1.
 //! - **Arrest him:** he walks with you to the post and the stockade. Full pay.
 //! - **The Haven:** walk him to a safehouse (it gains one). The Haven pays instead (12 Fame,
 //!   15 Favor); 25% the post hears of it (+15 Bastion Infamy).
 //! - **Bastion's way:** he stays struck off. Carry his tag to the empty nail at the post: 60%.
 //! If he dies any other way, his tag is all that's left: the same 60% at the nail.
+//! In ten days only one soldier walked out (docs/LORE.md, Private Fiala on Day 7), so his KIA is
+//! dated from Day 11 to yesterday, and the trader saw him two days ago: never before Day 13.
 class RZ_Mission_StruckOff : RZ_PuzzleMission
 {
 	protected ref RZ_Escort m_Escort = new RZ_Escort();
@@ -475,11 +477,14 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	protected static const float FOUND_OUT_CHANCE = 0.25;
 	protected static const int FOUND_OUT_INFAMY = 15;
 	protected static const int MAX_TAG_SPAWNS = 4;
+	protected static const int FIRST_KIA_DAY = 11;	// after the first ten days (Fiala, Day 7, was the only one)
+	protected static const int MIN_DAY = 13;		// the trader saw him two days ago, after Day 11
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.TRUSTED, 35, 30);
+		m_Req.m_iMinDay = MIN_DAY;
 		m_fTimeLeft = 4200;
 		m_fParticipationRadius = 0;
 	}
@@ -519,7 +524,12 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		m_vWitness = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
 		m_sSurname = RZ_NoteText.Surname(m_Rng);
 		m_sName = "Private " + m_sSurname;
-		string day = RZ_NoteText.Day(m_Rng.Int(4, 15));
+		// Struck off from Day 11 to yesterday (Int's max is exclusive)
+		int today = MIN_DAY;
+		if (gm.GetFacts())
+			today = Math.Max(MIN_DAY, gm.GetFacts().Day());
+
+		string day = RZ_NoteText.Day(m_Rng.Int(FIRST_KIA_DAY, today));
 
 		m_iWitnessClue = AddClue("A Haven trader", string.Format("\"Your lot's uniform, patch cut off. Paid me in rifle rounds for two tins of fish and asked if the Haven takes soldiers.\" She points past the last houses. \"He sleeps rough out there, grid %1. He jumps at every sound. Don't tell him it was me.\"",
 			RZ_SettlementScanner.GridReference(m_vHide)));
@@ -540,7 +550,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	protected string ChoiceLabels()
 	{
-		return "Bring him back (his name goes back on the roster)|Arrest him|Walk him to the Haven|Settle it Bastion's way";
+		return "Bring him back (the KIA is rubbed out)|Arrest him|Walk him to the Haven|Settle it Bastion's way";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -750,7 +760,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		{
 			m_iMode = MODE_ROSTER;
 			m_fRewardScale = ROSTER_SCALE;
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("\"Back on the board. Just like that.\" He shoulders his kit. \"They'll have to rub out the KIA.\" Walk him to %1.", m_sPost));
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("\"Back on duty. Just like that.\" He shoulders his kit. \"They'll have to rub out the KIA.\" Walk him to %1.", m_sPost));
 			return;
 		}
 

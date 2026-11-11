@@ -94,7 +94,7 @@ class RZ_Job_HonourAmongThieves : RZ_LeaderPuzzle
 		{
 			if (m_bTalker || Math.RandomFloat01() < 0.6)
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, string.Format("You talk about loyalty and old times and what happens to people who don't come back. %1 sighs and unlaces the boots.", m_sThief));
+				gm.NotifyPlayer(playerId, m_sTitle, string.Format("You talk about what he owes, who he owes it to, and who'd be sent next time. %1 sighs and unlaces the boots.", m_sThief));
 				m_eState = RZ_EMissionState.SUCCEEDED;
 				return;
 			}

@@ -659,7 +659,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 			}
 			case BRANCH_READ:
 			{
-				Headline(gm, run.Fill("Two men walked off the Bastion post in {post} after the shift change. They left their tags on the nail."));
+				Headline(gm, run.Fill("Two men walked off the Bastion post in {post} after the shift change. At the roll that night, nobody answered for them."));
 				run.Note("Two of {cmd}'s men walked off {post} before dawn. The stronghold will have heard by now.");
 				break;
 			}

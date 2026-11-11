@@ -17,8 +17,8 @@ The official broadcast still loops on every frequency:
 
 Aid is not on its way. Nothing comes in, and nothing ever will. You're a civilian who was
 here when the gates closed. Everyone in the Zone is stuck in it together: the soldiers who
-were left inside, the ordinary people who happened to be here, the criminals who were glad
-of the chaos, and the scientists who might be the only way it ends.
+were left inside, the ordinary people who happened to be here, the people who saw their chance
+in it, and the scientists who might be the only way it ends.
 
 **The only way the quarantine ends is a cure.**
 
@@ -27,9 +27,9 @@ of the chaos, and the scientists who might be the only way it ends.
 | System | In the Zone |
 |---|---|
 | Map edge | **The Perimeter.** An unseen cordon: drones, loudspeakers and snipers you never see. Get close and you're warned. Keep going and you're shot. |
-| Task Force Bastion | Soldiers who were inside when the order came. Command left them here to "hold the line", and now they're as trapped as you. |
+| Task Force Bastion | Soldiers who were inside when the order came. Command left them here to "hold the line". By Day 5 they knew nobody was coming, and they closed ranks: they're all they have. |
 | The Haven | Ordinary people stuck in the Zone who decided to help each other, because nobody outside will. |
-| The Red Hand | People who figured out that inside the Zone there are no laws, only whoever has the guns. |
+| The Red Hand | People who saw the broken world as their chance. Every man for himself, and everyone knows anyone would sell them. |
 | Halcyon | A research team that was studying the outbreak site before the lockdown. Only they can prove the Zone is safe, so the world outside will lift the quarantine. |
 | Outbreak stages | How long the Zone has been sealed. |
 | Last Helicopter | Bastion's one working helicopter, shuttling between its own bases *inside* the Zone. Nobody outside resupplies anyone, Bastion included. |
@@ -89,9 +89,10 @@ yourself either way."*
 
 Soldiers who were inside the line when the order came: a battalion on exercise in the hills,
 the first cordon detail sent in to "contain an incident", reservists, a few men on leave who
-reported for duty anyway. Command told them to hold the line and stopped answering. They still
-run checkpoints, still keep a duty roster, still call Command on the radio every night. Some
-still follow orders. Some are starting to wonder whose side they're on.
+reported for duty anyway. Command told them to hold the line and stopped answering. By Day 5
+they knew nobody was coming. The people they love are on the other side of the line, and the
+people on the roster are all they have. Bastion closed ranks around them, and whatever that
+costs, somebody else usually pays.
 
 It started with orders that made sense. On Day 1 the cordon detail put roadblocks round an
 "incident" in the hills and was told it was a two-week posting. At six on the morning of Day 2
@@ -110,120 +111,220 @@ call them. Command never used it. The same night a pilot flew for the line with 
 aboard. The line shot him down short of it. Nobody has flown toward the edge since, and of
 the helicopters Bastion came in with, only one still flies.
 
-**How a post runs.** A commander runs each post: an officer if there's one left, a sergeant
-if not. Every post keeps the same routine:
+On Day 4 they were still waiting, and Sedlak put two men with binoculars on the hill over the
+north road. At 05:30 on Day 5 Corporal Radek Vrana watched four trucks with his own badge on the
+doors come up the far side of the barrier. Fresh men took over the sandbags, the men who had
+turned Sedlak's column back climbed aboard, and the trucks drove away: a relief in place, by the
+manual, in eleven minutes. Nobody on the far side looked up the hill. Sedlak wrote in the log:
+*"05:41. Relief observed, north road barrier. Not for us."* That night the major read it to
+Command with the numbers. Signaller Alena Holub waited a long time, then wrote *"No reply"*. At
+the shift change on Day 6 the major, who is still Bastion's commanding officer, spoke to every
+post, and the operators wrote it down word for word:
 
-- **The roster.** Every name, every duty, in grease pencil on a board. The shift changes at
-  05:30 and 17:30, and the night watch starts at 20:30.
-- **The nightly call.** After the night watch is set, the radio operator reads the numbers to
-  Command: effective strength, rounds, fuel, civilians sheltered. Then they wait. Then they
-  write *"No reply"* in the log, and the sergeant chalks up one more day.
-- **Inside the wire,** weapons are slung and nobody fires. Outside it, civilians are searched
-  at the checkpoints and there's a curfew at dusk.
+> *"All stations, Bastion. Yesterday at 05:41 the north road barrier was relieved in place.
+> Nobody came for us. Nobody is coming. From now on we feed our own, we look for our own, and we
+> bring our own home, one way or the other. Nobody walks out on the rest. The roster stands. The
+> call stands. Bastion out."*
+
+That evening Sedlak, who keeps the roster at the stronghold, wrote onto it the families from her
+Day 2 column who had stayed with the soldiers: *"Civilians, attached."* They stand no watch, and
+when one of them doesn't come back, the stronghold goes looking, the same as for a soldier.
+
+Sergeant Bohdan Zeman had eleven men at a post past the hills, three days of rations and a truck
+that hadn't come. On Day 7 they took the first "contribution" from the village below. A farmer
+who wouldn't open his barn was knocked down and didn't get up, and the log says *"Infected,
+engaged at the wire."* That night Private Marek Fiala, who had been at the barn, walked out with a
+week of what came out of it, and two men from his section went after him. On Day 8 a Red Hand toll
+on the hill road left Private Ivo Brabec dead in the ditch. After dark a man from the next crew's
+road brought the toll crew's camp to the wire on a cigarette packet, and the post went out without
+orders. By morning the lorry was burning and three of its crew were in the stockade.
+
+On Day 9 a squad came from the stronghold to count Zeman's books. Its sergeant read the log,
+looked at the thin faces and the new tag on the nail, left half his squad's rations behind and
+signed it all correct. That evening Fiala's section came back with the rations and without him,
+and the board says *"Private Fiala. KIA Day 7. Body not recovered."* In ten days he was the only
+one to walk out. On Day 10 the stronghold took a contribution too, and Zeman was bitten on a
+contribution run. There was no diesel to get him to the lab, so his corporal sat with him. Every
+post since has run somewhere between Sedlak's roster and Zeman's barn, and its commander's traits
+say which way it leans ([REPUTATION.md](REPUTATION.md#traits)).
+
+**How a post runs.** A commander runs each post: an officer if there's one left, a sergeant
+if not ([Who's in charge](#whos-in-charge)). Every post keeps the same routine:
+
+- **The roster.** Every name, every duty, in grease pencil on a board. The shift changes at 05:30
+  and 17:30, and the night watch starts at 20:30. A name on it eats, stands a watch if it can, and
+  is looked for if it doesn't come back (Missing Patrol, Rescue the Pilot). Anyone can be signed
+  on: a recruit (Training Day), a mechanic, a family. The dead stay on it. The only thing anyone
+  rubs out is a KIA, when a man comes back (Struck Off).
+- **The roll.** Since Day 6, when the night watch is set, the sergeant reads the whole roster out
+  loud. The living answer *"Here."* For each of the dead, the whole post answers together. The
+  roll gets longer every week.
+- **The nightly call.** Then the operator reads the numbers to Command: effective strength,
+  rounds, fuel, civilians sheltered, and last, *"Requesting relief."* It's how the call has always
+  ended, and no post wants to be the first to stop. Every post hears the others and knows it isn't
+  the last one left, and a post that reads *"rations, one day"* usually has a truck from the
+  stronghold by morning. Then the operator writes *"No reply"*, and the sergeant chalks up a day.
+- **Inside the wire,** weapons are slung and nobody fires. Outside it, civilians are searched at
+  the checkpoints and there's a curfew at dusk.
 - **Everything is signed for.** Ammunition, rations, fuel, people.
 
-On the secure net, the stronghold answers to "Command" now. Someone had to.
+No post breaks away, even one that has stopped taking the stronghold's orders: on its own is the
+one thing Bastion is afraid of. On the secure net, the stronghold answers to "Command" now.
+Someone had to.
 
 **Bastion counts its dead.** They're buried outside the post with no salute, because they're
-saving ammunition. One tag stays with the body. The other goes on a nail behind the radio, and
-that night the operator reads the new names to Command along with the numbers. Promotions
-come off the dead too: the new corporal's stripes were cut from a dead man's sleeve, and
-nobody thinks less of them for it. A civilian who has earned Bastion's trust is waved
+saving ammunition. One tag stays with the body. The other goes on a nail behind the radio, under
+the name, and the name gets a "KIA". That night the operator reads the new names to Command.
+Promotions come off the dead too: the new corporal's stripes were cut from a dead man's sleeve,
+and nobody thinks less of them for it. **Nobody turns alone.** A bitten soldier goes to the lab for
+the trial dose with one friend. If it doesn't take, or there's no diesel to get there, that friend
+sits with them and is the one who ends it. A civilian who has earned Bastion's trust is waved
 through at the checkpoints, and a few are trusted to throw the smoke the guns answer to
 ([REPUTATION.md](REPUTATION.md), "Task Force Bastion").
 
-**The hard edges.** Bastion is disciplined, and the discipline is all that holds it together.
-Underneath, it is doing things nobody would put in a report:
+**The hard edges.** Bastion looks after its own, and it doesn't ask what that costs anyone else.
+Underneath the discipline, it does things nobody puts in the log:
 
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
-| **"No reply"** | Every night the log says the same thing. Some operators swear they've heard something on the net. Nobody writes that down. | The nightly call on Bastion's open channel; the rumour that Bastion has a radio to the outside; No Reply, where something answers on the Command net and you decide what the log says (it is never Command, and who it was is never said); the Await Relief questline, where the broken burst after the call turns out to be Bastion's own Day 3 signal, still looping off a relay nobody acknowledged ([QUESTLINES.md](QUESTLINES.md#b1-await-relief)) |
-| **"Expended"** | Nobody knows what the last orders said. Some posts think "relief is coming". Others have heard a word they don't repeat. Any copy that reaches the stronghold goes into the stove. | The Real Orders; the Day 3 runner's page in Await Relief |
-| **"Struck off"** | A deserter's name is struck off the roster and written up as killed in action, so the numbers add up when relief comes. Then someone is sent to find him. | Hunt the Deserter; Desertion Route; Struck Off, where a man on the roster as killed in action turns up alive (the Deserter wanderer knows where he sleeps); the rumour that Bastion shoots its own deserters |
-| **The bunker** | Stores that Bastion never told anyone about, not even its own posts. | The Deserter's Map arc |
-| **"Contribution"** | Food taken from civilians "for their protection". It's never called a tax, and on a bad week it's never written down. | Requisition; Off-Book Requisition |
-| **"Fell off the inventory"** | Rifles that went to the Red Hand for fuel and fresh food. Ledgers where rations "spoil" and diesel "evaporates". | Rifles for Sale; Burn the Ledger |
-| **Containment** | Bastion does to a town what was done to Bastion: barriers across the roads, nobody in or out. Or the guns, after five minutes' warning, whoever is still inside. | Quarantine Line; Bastion Shelling; the Fire Mission perk |
+| **"No reply"** | Every night the log says the same thing, and everyone knows it will. Some operators swear they've heard something on the net after the call. Nobody leaves that written down: a post that starts waiting again stops looking after itself. | The nightly call on Bastion's open channel; the rumour that Bastion has a radio to the outside; No Reply, where something answers on the Command net and you decide what the log says (it is never Command, and who it was is never said); the Await Relief questline, where the broken burst after the call turns out to be Bastion's own Day 3 signal, still looping off a relay nobody acknowledged ([QUESTLINES.md](QUESTLINES.md#b1-await-relief)) |
+| **"Expended"** | Nobody at the posts knows what the last orders said. Some think Command meant to come and couldn't. Others have heard a word they don't repeat. Any copy that reaches the stronghold goes into the stove: the roster can carry "nobody is coming", and nobody wants to find out if it can carry "nobody ever meant to". | The Real Orders; the Day 3 runner's page in Await Relief |
+| **"Relief is on its way"** | What the loudspeakers still tell the towns, like the government's broadcast. Nobody at Bastion believes it, and no soldier says it to your face except as a joke. A town that thinks it's waiting keeps the curfew. | The loudspeaker at a Bastion post ("The man reading it has stopped believing it"); a soldier's "Every day, 'relief is on its way'. I've stopped counting." |
+| **"Struck off"** | Walking out on the rest is the worst thing a soldier can do, and it's rare. A deserter is struck off the strength as "KIA. Body not recovered", because nobody will say the other word on the net. His name stays on the board, his nail stays empty, and at the roll nobody answers for him. Then someone is sent to bring him home, one way or the other. | Hunt the Deserter ("You don't know what they're doing out there"); Struck Off, where a man on the roster as killed in action turns up alive (the Deserter wanderer knows where he sleeps), and Bastion's way is his tag on the empty nail; Desertion Route, where a commander lets two go and tells nobody; the two who walk off in Await Relief; the rumour that Bastion shoots its own deserters |
+| **"One of ours"** | Hurt one of theirs and you've hurt all of them. Bastion doesn't ask who started it. It keeps a list, it sends people, and it has a stockade. You come off the list by working it off, by paying, or by walking up to a checkpoint with empty hands. | Hit one of Bastion's people and its guns nearby turn on you ([shooting back](REPUTATION.md#what-makes-ai-shoot-you)); Bastion's Revenge need in a feud; Hunted by Bastion (its AI shoots you; hunter squads get your last position); Kill the Officer (Kill on Sight); "You're on a list here" at a camp gate; the stockade in Bust Out; amends (Burn the Bodies, Recon), paying, and Surrender ([REPUTATION.md](REPUTATION.md#working-off-infamy)) |
+| **"Contribution"** | Food taken from civilians "for their protection", so that every name on the roster eats. It's never called a tax, and on a bad week it's never written down. | Requisition; Off-Book Requisition; The Census |
+| **"Signed correct"** | A post covers for its own, and the stronghold covers for its posts. A civilian a patrol hurt goes in the log as infected. Rations "spoil", diesel "evaporates", and rifles fall off the inventory and come back as the Red Hand's fuel and fresh food: a hungry post arming the crews that killed one of its own, to feed the rest. Most of the stronghold's counters look at the thin faces and let it stand. Not all. | Burn the Ledger (the ledger before the audit); Rifles for Sale ("You'll see those rifles again"); the sergeant in Struck Off who rubs out a KIA and doesn't ask where the man has been |
+| **The bunker** | Stores the stronghold never told anyone about, not even its own posts: food kept back for the day the roster can't be fed. Bastion kept it from Bastion. | The Deserter's Map arc |
+| **Containment** | Bastion does to a town what was done to Bastion, to keep the infection off its own: barriers across the roads, nobody in or out. Or the guns, after five minutes' warning, whoever is still inside. | Quarantine Line; Bastion Shelling; the Fire Mission perk |
 
 **How they see the others:**
 
-- **The Haven** are the people Bastion walked to the line and back on Day 2. Every post feeds
-  them a little and resents it a little.
-- **The Red Hand** are looters with a logo. Bastion keeps a few of them in a stockade, and the rest
-  keep trying to get them out. They laugh at Bastion on the open channel, and Bastion keeps a list.
-- **Halcyon** has the lab Command wanted secured. Bastion thinks Halcyon knew what was coming
-  before anyone, and would like the cure somewhere it can count it.
+- **The Haven** are the people Bastion walked to the line and back on Day 2. The Haven takes in
+  anyone willing to help; Bastion feeds its own first, and each thinks the other's way gets people
+  killed. Every post takes a little from the Haven, and some send a crate back against orders
+  (Hearts and Minds).
+- **The Red Hand** are looters with a logo, and worse: people who'd sell the one next to them. A
+  crew that kills a soldier is sold to Bastion by the crew next door, and Bastion takes the map
+  and despises whoever brought it. They laugh at Bastion on the open channel; Bastion keeps a list.
+- **Halcyon** has the lab Command wanted secured, and Bastion thinks it knew what was coming
+  before anyone. The cure is the one thing that opens the gates, and everyone Bastion loves is on
+  the other side of them. The major wants it in a locked crate, so that Bastion's own are dosed
+  first ([Authors](QUESTLINES.md#hc3-authors)). Then the roster will have to say who they are: it
+  carries civilians, attached, and the two men who stayed at the lab on Day 5, detached. Nobody
+  says what happens to the roster when the gates open.
 
-**Voice:** clipped, procedural, tired. *"Command, Bastion. Effective strength thirty-eight.
-Civilians sheltered, two hundred and eleven. Requesting relief. Over."* A long hiss. *"Bastion out."*
+**Voice:** clipped, procedural, tired, and close with its own. *"Command, Bastion. Effective
+strength thirty-eight. Civilians sheltered, two hundred and eleven. Requesting relief. Over."* A
+long hiss. *"Bastion out."* At a checkpoint: *"Hands where I can see them. I don't know you, so
+you get searched."*
 
 ### The Red Hand
 
-People who stopped pretending. Some were criminals before; most were mechanics, drivers and
-bored young men who noticed that nobody was coming. They take tolls on the roads, run a
-black market and sell protection. They don't care who you were. They care who you've crossed.
+People who looked at the broken world and saw their chance. Some were criminals before; most were
+mechanics, drivers, a used-car salesman, a bailiff, whoever ran the card games behind the bowling
+alley, and bored young men who worked out first that nobody was coming and nothing taken would ever
+have to be given back. They take tolls on the roads, run a black market and sell protection, mostly
+from themselves. It's every man for himself, and they're the ones who say so.
 
-It started with a tank of diesel. On Day 1 the guards at the prison went home to their
-families, and by morning the cells were open. On Day 2 the cars that had been turned back from
-the line queued at every petrol station, and the pumps ran dry. Rudi Kasper drove the tow
-truck for a garage at a crossroads, and he had the key to the tank under the forecourt. He sold
-diesel for money, until money stopped meaning anything. Then he sold it for tins.
+It started with a lie. On Day 2 the cars that had been turned back from the line queued at every
+petrol station, and the pumps ran dry. Rudi Kasper owned a garage at a crossroads, and the key to
+the tank under its forecourt. He told the queue it was empty, and that night sold it round the back
+to the same people, by the can: for money, then tins, then wedding rings. One of them had been at
+the front of that queue all day, and had nothing left to pay with. Rudi let them have ten litres on
+tick and wrote it in the back of his order book. That was the boss, and it's the first line in the
+book.
 
-On Day 4 the Janda brothers parked an articulated lorry across the crossroads. Rudi put his hand
-in the red paint they used for the forecourt lines and slapped it on the trailer. *"Red hand.
-Like at the lights. Means stop."* The first toll was one tin a car. On Day 5 a Bastion truck
-came to clear the road. The driver looked at the lorry, at the lads on top of it and at his
-fuel gauge, and paid in diesel. It's the Red Hand's favourite story. Bastion says it never
-happened.
+From Day 3 the boss kept Rudi's tally, and wrote down more than diesel: who came round the back,
+what they paid with, and whose it had been. Rudi gave his new partner a bed in the office. On Day 4
+the Janda brothers, his mechanics, parked an articulated lorry across the crossroads with two
+shotguns on top, and the first toll was one tin a car. The four of them shook on it: Rudi's key,
+the brothers' lorry, the boss's book.
 
-The convicts drifted in that week, and then the rest. Other crossroads got lorries and painted
-hands. Rudi was bitten on Day 8. He sat on the lorry with a bottle and asked them to do it
-before dark, and they did. The crews argued for two days about who was boss. The boss is the
-one who won.
+The convicts, out since the guards went home on Day 1, drifted in that week, and then anyone who'd
+noticed that taking was quicker than queueing. Rudi's share was the biggest, because the diesel was
+his, and he still let people he knew pay later. On Day 7 the boss told the brothers that Rudi had
+been bitten and was hiding it. He hadn't been. He rolled up his sleeves and asked them to look, and
+nobody looked: they'd been given a reason they could live with, and a bigger share. They took the
+tank key and his boots, put him out of his own garage at dusk and held the shutter down. He
+hammered on it for a long time. By morning it was true.
 
-**How it runs.** A crew holds a camp and a stretch of road, and a crew boss runs it. Every
-crew pays **the boss** a cut, and the boss doesn't get a say in anything else. The boss runs
-**the market** at the stronghold: stolen kit, a fence who buys watches and jewellery by the
-handful, and the cut dose. On the roads there's **the toll**: tins, fuel or manners, mostly
-tins. Everything owed is in **the book**, and the book has to balance.
+The boss painted one red hand over the marks Rudi's hands had left on the shutter, said it meant
+stop, and wrote *"Paid"* against the first line in the book. The tank key went on a new belt, and
+from then on diesel went only to lorries with a red hand on them, for a cut of the toll. The lorry
+on the hill road had its hand by noon. By Day 10 every crossroads that wanted diesel had one.
 
-The code is short, and everyone knows it:
+The brothers had held the shutter down together. On Day 9 the boss told each of them, alone, that
+the other had offered to sell him. The younger believed it first and said his brother had been
+skimming the toll, and on Day 10 the older Janda went into the first pit for what the book said he
+owed. Nobody checked the book. By then half a dozen crew bosses had argued for two days about who
+was in charge. The boss read each of them their own line, quietly: what they'd paid with, and whose
+it had been. The arguing stopped. The younger Janda runs the pit now, and doesn't drink with
+anyone.
 
-- **Pay your cut.** Crews that skim get found out, eventually.
-- **A debt is a debt.** It stays in the book until it's paid, by someone.
-- **Guns stay quiet in camp.** You want to shoot someone, do it outside.
-- **Nobody rats.** Not to Bastion, not to anyone.
-- **They don't care who you were.** They care who you've crossed, and they remember.
+**How it runs.** A crew holds a camp and a stretch of road, and a crew boss runs it. Every crew
+pays **the boss** a cut. The boss hardly needs to give orders, because the boss holds **the book**:
+everything owed, who owes it and what for, and under some debts what somebody did and who saw. The
+boss also runs **the market** at the stronghold (stolen kit, the cut dose, a fence who buys watches
+and rings by the handful). On the roads there's **the toll**: tins, fuel or something worth
+knowing, mostly tins. The book has to balance, which isn't the same as anyone being paid up.
 
-**The Red Hand sends its own off loud.** Horns, music, shots in the air, whatever's left in
-the bottle. More than once a horde has come to see what the fuss was. The dead man's boots go
-to whoever carried him home. What he owed dies with him; what he was owed, the crew collects
-in his name. Status is a **name**: you don't pick your own, the crew gives you one, usually
-after something stupid. New faces paint a red hand on, and the ones the crews trust get the
-red armband ([REPUTATION.md](REPUTATION.md), "Reputation clues").
+**What holds it together** is that anyone in the Red Hand would sell anyone, and everyone knows it,
+so everyone keeps something on everyone else. A crew boss with a page in the book holds the boss's
+line; one who thinks there's no page on them runs the road their own way; and there's always one
+selling the boss to somebody ([Who's in charge](#whos-in-charge)).
 
-**The hard edges.** The Red Hand jokes about everything. That's how it avoids saying anything:
+**The code** has five rules, and nobody thinks they're about honour:
+
+- **Pay your cut.** Crews that skim get found out, usually because another crew sold them.
+- **A debt is a debt.** It stays in the book until it's paid, by someone. Dying doesn't pay it.
+- **Guns stay quiet in camp.** Shots bring the infected, and witnesses. Do it outside.
+- **Nobody rats.** Everybody does. The rule is for whoever gets caught.
+- **Who you were doesn't matter.** Who you've crossed does, and the book remembers.
+
+**The Red Hand sends its own off loud:** horns, music, shots in the air, whatever's left in the
+bottle, and more than once a horde has come to see what the fuss was. The louder the send-off, the
+fewer people ask how he died. His kit is on the market before the horns stop, and what he owed goes
+in the book against whoever he left: his crew, his brother, a woman in a safehouse. Rudi was never
+sent off at all.
+
+Status is a **name**, and the crew picks it, usually after something you'd rather they forgot. New
+faces paint a red hand on, and look pleased about it. Once the book has something on them, somebody
+tells them what's under the first one. It isn't a secret: it's a warning, and nobody can sell the
+boss what everybody knows. The red armband goes to the ones the crews trust, which means the crew
+has something on you ([REPUTATION.md](REPUTATION.md), "Reputation clues").
+
+**The hard edges.** The Red Hand jokes about everything and says the worst of it out loud. What it
+never says is who paid:
 
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
-| **The cut dose** | Antidote stretched with whatever was in the bag. They know it works half the time. They sell it to outsiders, never to the crew. | The cut dose on the black market |
+| **"He was bitten"** | What the Red Hand says about Rudi, and about anyone else it needed gone. Everyone inside knows Rudi wasn't; outside, it's only a rumour. The only debt ever marked paid that nobody paid is the boss's. | Every painted hand and red armband; the book (The Book); purges where nobody says what for (Coup Talk; Cargo's Purged); rumours that Rudi wasn't bitten (planned) |
+| **Owing** | Nobody is ever out of the book, and that's on purpose: a man who owes nothing can walk away. Crew bosses lend at rates nobody can pay, and debts are sold between crews and handed down. | Debt Collection; The Book (the thief who wanted one house in the Zone to owe nobody); The Price of the Door (a debt is a debt, but it can be yours) |
+| **Family** | Half the crews have a mother or a kid sister in a safehouse. Some crew bosses quietly send medicine there. The boss knows which house. | The Soft Touch (a crew boss's secret medicine to a safehouse); The Book (the thief's sister's house is on the page) |
+| **The cut dose** | Antidote stretched with whatever was in the bag. They know it works half the time. They sell it to outsiders, and to their own once a man is worth less than a real dose. | The cut dose on the black market; The Edge of Town (the cut dose for every house) |
 | **"The well story"** | What happens to a place that doesn't pay is never said. Somebody tells the story about the well instead, and lets you finish it yourself. | Protection Racket; The Well Story questline; the poisoned-well rumours, Fever Town's among them |
-| **Strays** | Crews keep track of the people the Haven turned out, and where they sleep. A hungry safehouse will sometimes sell one. | A hungry house selling an exile's location; A Quiet Arrangement |
+| **Strays** | Crews keep track of the people the Haven turned out, and where they sleep. Nobody comes looking for a stray, so a stray is stock. A hungry safehouse will sometimes sell one. | A hungry house selling an exile's location; A Quiet Arrangement; the crews' list of strays in The List |
 | **Learning the drones** | The gap in the drones' rotation was found by sending people toward the line and timing what happened. Most of the ones they sent were in the book. | The Blind Spot (the gap); Learning the Drones (how they found it) |
-| **The pit** | A ring of infected and bets on who stays standing. When nobody volunteers, someone in the book goes in. | Fight Pit and House Rules (the pit); The Pit's Debtor |
-| **"Cargo"** | Trucks that carry people, not tins. Where to, nobody says. | Tied Down (the Haven follows a truck to a shed); the Cargo questline (a driver who wants out); rumours |
-| **Crews eat crews** | Out loud there's one Red Hand. Quietly, crews sell each other's camps to Bastion, and the boss purges any crew that talks about a new boss. | Sell Out a Rival Crew; Coup Talk |
+| **The pit** | A ring of infected and bets on who stays standing. When nobody volunteers, someone in the book goes in. The first one in was the older Janda. | Fight Pit and House Rules (the pit); The Pit's Debtor; The Book (the wrong man, or the thief, goes in) |
+| **"Cargo"** | Trucks that carry people, not tins. Where to, nobody says, and the driver is paid not to ask. | Tied Down (the Haven follows a truck to a shed); the Cargo questline (a driver who wants out); rumours |
+| **Crews eat crews** | Out loud there's one Red Hand. Quietly, crews sell each other's camps to Bastion, men walk off with their crew boss's boots, and the boss purges any crew that talks about a new boss, usually on a tip from the crew next door. | Sell Out a Rival Crew; Honour Among Thieves; Coup Talk; Skim the Toll; a Rogue crew boss selling the boss's plan for the batch at the final stand (planned) |
 
 **How they see the others:**
 
-- **The Haven:** lovely people, lots of tins, terrible locks. Half the crews have a mother or a
-  kid sister in a safehouse, and some crew bosses quietly send medicine.
-- **Bastion** is still saluting a radio that stopped talking. Bastion paid the first toll.
-- **Halcyon** pays in hope; the Red Hand pays in cash. The lab's doses sell better with the
-  lab's stickers still on.
+- **The Haven:** lovely people, lots of tins, terrible locks. They share and go hungry. Some houses
+  pay to be left alone, and a house that pays is in the book.
+- **Bastion** is the one crew in the Zone nobody can buy a name from: its posts sell rifles off the
+  inventory, never a soldier. Kill one of theirs and all of Bastion is at your door (the hill road
+  found out on Day 8), so the crews hand Bastion the man who did it before it comes. They break out
+  of its stockade only the ones who owe them, and can't work out why soldiers hardly ever sell each
+  other.
+- **Halcyon** pays in hope; the Red Hand pays in cash, and the lab's doses sell better with its
+  stickers on. The cure is worth more than every tin in the Zone, and the boss means to buy the
+  batch, or steal it if the lab won't sell ([Authors](QUESTLINES.md#hc3-authors)).
 
-**Voice:** mocking and casual. They laugh at Bastion on the open channel. *"Red hand means stop.
-Stop means pay. Pay means we're friends. See? Easy."*
+**Voice:** mocking, casual, always counting. They laugh at Bastion on the open channel. *"Red hand
+means stop. Stop means pay. Pay means we're friends. See? Easy."* The boss, asked about Rudi: *"He
+let people pay later. You can't run a road like that."*
 
 ### Halcyon
 
@@ -465,7 +566,7 @@ new outbreak, in a new Zone.
 - **No heroes from outside.** No one is coming. The broadcasts are lies or useless.
 - **Ordinary people.** You're a nurse, a mechanic, a kid out of work. Not a commando.
 - **Small stories.** A note on a fridge, a radio message cut off, a body near the line.
-- **Nobody is a villain.** Every faction does something ugly for a reason you can understand.
+- **Nobody is a villain in their own story.** Every faction does something ugly for a reason you can understand.
 
 ## Writing guide
 
@@ -473,9 +574,9 @@ new outbreak, in a new Zone.
   *"Day 14. Residents are reminded that the perimeter is for your protection."*
 - **Notes** are personal and specific: names, places in the town they're found in, and mistakes.
 - **Faction voices:**
-  - **Bastion:** clipped, procedural, tired.
+  - **Bastion:** clipped, procedural, tired; close with its own.
   - **Haven:** warm, worried, practical, sometimes darkly funny.
-  - **Red Hand:** mocking and casual.
+  - **Red Hand:** mocking, casual, always counting.
   - **Halcyon:** precise, a bit cold, sometimes guilty.
   - **The Long Table:** homely, attentive, a little too interested in you.
 - **Open channels** on the radio are people, not institutions. The Haven's is a tired woman:

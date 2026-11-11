@@ -630,7 +630,7 @@ class RZ_Quest_Cargo : RZ_Questline
 			RZ_Leader crew = RZ_RedHandQuest.Seat(gm, run, "crew");
 			bool replaced = false;
 			if (crew && crew.IsPresent())
-				replaced = ReplaceLeader(gm, crew.m_iId, string.Format("The boss has purged %1's crew in %2. Nobody says what for, and nobody needs to.", crew.m_sName, crew.m_sPlace));
+				replaced = ReplaceLeader(gm, crew.m_iId, string.Format("The boss has purged %1's crew in %2. Nobody says what for, and nobody needs to. The Red Hand says %3 was bitten.", crew.m_sName, crew.m_sPlace, crew.m_sShort));
 
 			if (!replaced)
 				Headline(gm, run.Fill("The boss has had words with the crew outside {crew_place}. Its vans have stopped running."));

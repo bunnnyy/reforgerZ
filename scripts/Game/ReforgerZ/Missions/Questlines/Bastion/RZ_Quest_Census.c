@@ -1,7 +1,7 @@
 //! The Census (Task Force Bastion; B2 in docs/QUESTLINES.md). The nightly call reads "civilians
-//! sheltered" to Command, and the numbers have to add up when relief comes. The commanding officer
-//! wants a real count: every safehouse, every name, for ration cards, a curfew and a
-//! "contribution". The Haven remembers what Bastion's lists were for on Day 2.
+//! sheltered" to Command, and everything Bastion looks after is signed for, people too. The
+//! commanding officer wants a real count: every safehouse, every name, for ration cards, a curfew
+//! and a "contribution". The Haven remembers what Bastion's lists were for on Day 2.
 //!
 //! 0. The count begins (no wait): with the Haven's List already in Bastion's hands (H1's
 //!    list.to_bastion) it goes straight to the curfew.
@@ -62,7 +62,7 @@ class RZ_Quest_Census : RZ_Questline
 	{
 		Info(KEY, "The Census", RZ_EFaction.MILITARY);
 
-		WaitStage(S_START, "The commanding officer's count", "{co} wants a real count: every safehouse, every name, for ration cards, a curfew and a \"contribution\". The numbers have to add up when relief comes.");
+		WaitStage(S_START, "The commanding officer's count", "{co} wants a real count: every safehouse, every name, for ration cards, a curfew and a \"contribution\". Everything is signed for. People too.");
 
 		RZ_QuestStage count = MissionStage(S_COUNT, "Count a safehouse", "Count the safehouse in {town_a}: people, food, names. Ask its council head, or count it from outside without being seen.");
 		count.GiveUp(4, "Nobody counted {town_a}. At {stronghold} the old number goes out every night.");

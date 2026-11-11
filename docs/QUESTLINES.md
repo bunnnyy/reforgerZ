@@ -288,9 +288,9 @@ the line starts at that post.
 ✅ Built ([MISSIONS.md](MISSIONS.md#the-census-task-force-bastion)); the changes from this design
 are listed under its endings.
 
-The nightly call reads "civilians sheltered" to Command, and the numbers have to add up when
-relief comes. The commanding officer wants a real count: every safehouse, every name, for ration
-cards, a curfew and a "contribution". The Haven won't give names. It remembers what Bastion's
+The nightly call reads "civilians sheltered" to Command, and everything Bastion looks after is
+signed for, people too. The commanding officer wants a real count: every safehouse, every name, for
+ration cards, a curfew and a "contribution". The Haven won't give names. It remembers what Bastion's
 lists were for on Day 2. A civilian who can walk into both is useful to everyone.
 
 **Needs:** Known with Bastion. 🔒 not Elder for stage 4's collection (as Requisition). ★ Police,
@@ -607,7 +607,7 @@ as `pilot.flew_for`, the faction the pilot flew for (Halcyon: the samples).
 |---|---|---|---|
 | 1 | **The director's letter** | Carry her terms to the commanding officer. **Read it first** (`authors.read` *(you)*): the method for Bastion alone, in return for guards. **Sneak** a copy to the field lead | Delivery |
 | 2 | **The field lead's plan** | She wants the method at a Haven clinic first. **Carry it**, cold, before it's missed (`authors.haven_copy`). **Report her** to the director (`authors.reported`). **Side with the Red Hand**: sell it (Sell the Formula) | Cold Chain; Sell the Formula |
-| 3 | **The CO's answer** | One session. He wants a locked crate, a key and a guard on the clean room. **Agree** for the director. **Bargain** (Trusted with both): two guards at the gate, no key. **Refuse** for the lab (+5 Bastion Infamy) | Wait; talk |
+| 3 | **The CO's answer** | One session. The CO wants a locked crate, a key and a guard on the clean room. **Agree** for the director. **Bargain** (Trusted with both): two guards at the gate, no key. **Refuse** for the lab (+5 Bastion Infamy) | Wait; talk |
 | 4 | **The Red Hand's offer** | The boss offers to buy the batch, and to leave the lab alone during the stand. **Take it to the director**: she refuses. **Betray**: take the money (60 Red Hand Favor); Take the Lab is offered during the stand. **Side with Bastion**: tell the CO, and a Bastion checkpoint goes up on the lab's road | Talk |
 | 5 | **Ready the lab** | One of Power the Lab, Decontamination or Lab Defence, picked by the director from your flags | Power the Lab; Decontamination; Lab Defence |
 | 6 | **The final stand** | The stand itself. With `pilot.flew_for` samples (B3), Halcyon's people remember who flew for them, and one Halcyon guard more stands at the gate | Final stand |

@@ -126,7 +126,7 @@ class RZ_LeaderVoice
 			}
 			case RZ_EFaction.MILITARY:
 			{
-				lines.Insert("Logistics, before. Signed for every crate in the Zone. Has stopped signing for anything.");
+				lines.Insert("Logistics, before. Signed for every crate in the Zone. Still does, and signs it correct.");
 				lines.Insert("Came in with the first cordon detail. Was told it was a two-week posting.");
 				lines.Insert("Reservist. Was a surveyor in civilian life and still measures everything twice.");
 				lines.Insert("Twenty years in. Has buried more of the platoon than the outbreak has.");
@@ -221,7 +221,7 @@ class RZ_LeaderVoice
 		switch (faction)
 		{
 			case RZ_EFaction.SURVIVORS: return "\"We're the Haven. Just people who were here when the gates closed. We feed who we can, and nobody shoots in the house.\"";
-			case RZ_EFaction.MILITARY: return "\"Task Force Bastion. What's left of it. We hold what we were told to hold. Nobody has told us anything for days.\"";
+			case RZ_EFaction.MILITARY: return "\"Task Force Bastion. What's left of it. Nobody's coming for us, so we look after our own. Stay on the right side of that.\"";
 			case RZ_EFaction.BANDITS: return "\"The Red Hand. We're the ones who noticed the rules stopped. Don't look so worried. Yet.\"";
 			case RZ_EFaction.INSTITUTE:
 			{
@@ -267,7 +267,7 @@ class RZ_LeaderVoice
 			case RZ_EFaction.BANDITS:
 			{
 				if (other == RZ_EFaction.SURVIVORS) return "\"The Haven? Lovely people. Lots of tins. Terrible locks.\"";
-				if (other == RZ_EFaction.MILITARY) return "\"Bastion's still saluting a radio that stopped talking. Stay off their roads, or pay toll on ours.\"";
+				if (other == RZ_EFaction.MILITARY) return "\"Bastion? The one crew we can't buy a name from. Stay off their roads, or pay toll on ours.\"";
 				if (other == RZ_EFaction.INSTITUTE) return "\"The eggheads pay in hope. We pay in cash. Samples sell both ways, mind.\"";
 				break;
 			}

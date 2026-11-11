@@ -1529,7 +1529,7 @@ class RZ_QM_PilotDecide : RZ_QuestMission
 		if (objIdx == OBJ_OFFICER && option == 0)
 		{
 			m_iChosen = OBJ_OFFICER;
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "The duty officer writes it down word for word and takes it straight in to {co}. Within the hour {pilot} is off the roster."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "The duty officer writes it down word for word and takes it straight in to {co}. Within the hour, the board by {pilot}'s name says \"Grounded\"."));
 			Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_LastPilot.OUT_GROUNDED, "reported him to the commanding officer");
 			return;
 		}

@@ -555,7 +555,7 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 0);
 		m_Escort.SetDestination(m_vMeet);
 		m_sTitle = "Bust Out";
-		m_sBrief = string.Format("Bastion is holding some of ours in a stockade near %1. Cut them out and walk them to %2. In one of their uniforms, the guards won't look twice.", postName, m_sMeetName);
+		m_sBrief = string.Format("Bastion is holding some of ours in a stockade near %1. They owe us, and nobody pays from a stockade. Cut them out and walk them to %2. In one of their uniforms, the guards won't look twice.", postName, m_sMeetName);
 		return m_Escort.Begin(gm, LandPointNear(m_vGate, 3, 6));
 	}
 
