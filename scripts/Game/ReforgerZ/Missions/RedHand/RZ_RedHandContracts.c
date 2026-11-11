@@ -518,6 +518,10 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		if (!RZ_Escort.HasRoom(gm) || !HasPrefab(gm, RZ_EPuzzleProp.OBJECT))
 			return 0;
 
+		// After The Book went to Bastion (world flag book.bastion), Bastion keeps Red Hand prisoners longer
+		if (gm.GetQuestlines() && gm.GetQuestlines().HasWorldFlag("book.bastion"))
+			return 1.2;
+
 		return 1;
 	}
 

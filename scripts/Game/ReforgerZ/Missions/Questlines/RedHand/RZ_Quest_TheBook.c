@@ -317,17 +317,18 @@ class RZ_Quest_TheBook : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The pit (the one Fight Pit and House Rules use), and the nearest way out to the Haven.
+	//! The boss's own pit, behind the garages at his camp (a stronghold never falls).
 	protected bool PickPit(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (RZ_RedHandQuest.HasPos(run, "pit"))
 			return true;
 
-		vector pit;
-		string pitName;
-		if (!RZ_RedHandEdges.FindPit(gm, pit, pitName))
+		RZ_Leader boss = RZ_RedHandQuest.Seat(gm, run, "boss");
+		if (!boss)
 			return false;
 
+		vector pit = RZ_Mission.LandPointNear(boss.m_vPos, 60, 150);
+		string pitName = string.Format("the garages behind %1's camp in %2", boss.m_sShort, boss.m_sPlace);
 		RZ_RedHandQuest.KeepPos(run, "pit", pit);
 		run.SetText("pit", pitName);
 		run.SetPlace(pit, pitName);
@@ -407,8 +408,9 @@ class RZ_Quest_TheBook : RZ_Questline
 					run.Note("{thief} is back at {boss_place} with his hands tied, and the page is out of his boot.");
 				}
 
-				run.Note(SisterLine(run));
-				if (UpdateNames(gm, run) == 0)
+				int open = UpdateNames(gm, run);
+				run.Note(SisterLine(gm, run));
+				if (open == 0)
 				{
 					run.Note("Every name on the page is out of the chair already. Only the page is left.");
 					return S_PAGE;
@@ -527,8 +529,9 @@ class RZ_Quest_TheBook : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Why he tore it out: his sister's house is on the page.
-	static string SisterLine(RZ_QuestRun run)
+	//! Why he tore it out: his sister's house is on the page (said as it stands now: a council head
+	//! who has left the chair since is spoken of in the past).
+	static string SisterLine(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (!run)
 			return "";
@@ -537,6 +540,9 @@ class RZ_Quest_TheBook : RZ_Questline
 		if (haven >= 0)
 		{
 			string key = Key(haven);
+			if (!Name(gm, run, haven))
+				return string.Format("He says why. His sister {sister} lives at the Haven house in %1, and its council head was on the page. He wanted one house in the Zone to owe nobody.", run.Text(key + "_place"));
+
 			return string.Format("He says why. His sister {sister} lives at the Haven house in %1, and %2, its council head, is on the page. He wanted one house in the Zone to owe nobody.", run.Text(key + "_place"), run.Text(key));
 		}
 
@@ -577,7 +583,15 @@ class RZ_Quest_TheBook : RZ_Questline
 		{
 			// The boss has heard; the one squeezed hardest has stopped answering anyone's calls
 			ChangeStanding(gm, run, RZ_EFaction.BANDITS, 0, 15, RZ_EQuestApproach.BETRAY);
+
+			// The one leaned on, else the first one collected from
 			int hardest = run.Flag("squeezed", -1);
+			for (int k = 0; k < count && hardest < 0; k++)
+			{
+				if (IsCollected(State(run, k)))
+					hardest = k;
+			}
+
 			RZ_Leader squeezed = Name(gm, run, hardest);
 			if (squeezed)
 				RZ_RedHandQuest.SwingLoyalty(gm, squeezed, -RZ_RedHandQuest.SWING);
@@ -990,7 +1004,7 @@ class RZ_QM_BookFind : RZ_QuestMission
 		if (taker <= 0)
 			return;
 
-		NotifyParticipants(gm, m_sTitle, QFill(gm, "{thief_short} puts his hands up and takes the page out of his boot. \"All right. All right.\" " + RZ_Quest_TheBook.SisterLine(Run(gm))));
+		NotifyParticipants(gm, m_sTitle, QFill(gm, "{thief_short} puts his hands up and takes the page out of his boot. \"All right. All right.\" " + RZ_Quest_TheBook.SisterLine(gm, Run(gm))));
 		Resolve(gm, taker, RZ_EQuestApproach.FORCE, RZ_Quest_TheBook.OUT_CAUGHT, "took him by force");
 	}
 
@@ -1037,7 +1051,7 @@ class RZ_QM_BookFind : RZ_QuestMission
 				if (HasBonus(gm, playerId))
 					text = "He sees the tattoos on your hands and stops being afraid of you. \"You've done time. You know how this goes.\" He does too.";
 
-				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, text + " " + RZ_Quest_TheBook.SisterLine(Run(gm))));
+				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, text + " " + RZ_Quest_TheBook.SisterLine(gm, Run(gm))));
 				Resolve(gm, playerId, RZ_EQuestApproach.PERSUADE, RZ_Quest_TheBook.OUT_CAUGHT, "talked him out");
 				return;
 			}
@@ -1070,7 +1084,7 @@ class RZ_QM_BookFind : RZ_QuestMission
 			}
 
 			gm.GetHeat().AddHeat(m_vBarn, 10);
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "At gunpoint he comes, and the page comes out of his boot. " + RZ_Quest_TheBook.SisterLine(Run(gm))));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "At gunpoint he comes, and the page comes out of his boot. " + RZ_Quest_TheBook.SisterLine(gm, Run(gm))));
 			Resolve(gm, playerId, RZ_EQuestApproach.FORCE, RZ_Quest_TheBook.OUT_CAUGHT, "took him at gunpoint");
 			return;
 		}
@@ -1078,7 +1092,7 @@ class RZ_QM_BookFind : RZ_QuestMission
 		if (option == 2 && TryBribe(gm, playerId, RZ_EFaction.BANDITS, RUN_FAVOR))
 		{
 			m_fRewardScale = RUN_SCALE;
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "He stares at what you're offering, then hands over the page and goes out of the back of the barn at a run. " + RZ_Quest_TheBook.SisterLine(Run(gm))));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "He stares at what you're offering, then hands over the page and goes out of the back of the barn at a run. " + RZ_Quest_TheBook.SisterLine(gm, Run(gm))));
 			Resolve(gm, playerId, RZ_EQuestApproach.BRIBE, RZ_Quest_TheBook.OUT_RAN, "paid him to run");
 		}
 	}
