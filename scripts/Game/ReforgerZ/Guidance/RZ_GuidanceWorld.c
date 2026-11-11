@@ -166,7 +166,8 @@ class RZ_GuidanceWorld
 		if (perimeter && perimeter.IsActive() && m_GM.GetFacts().PerimeterSealed())
 			Offer(pool, RZ_EGuideScenario.BASEMENT, 2, level, last);
 
-		if (m_GM.HasLab())
+		// "Infected samples wanted": not once the cure is out
+		if (m_GM.HasLab() && !m_GM.GetFacts().IsCured())
 			Offer(pool, RZ_EGuideScenario.CHURCH, 2, level, last);
 
 		if (leaders && leaders.GetStronghold(RZ_EFaction.BANDITS))

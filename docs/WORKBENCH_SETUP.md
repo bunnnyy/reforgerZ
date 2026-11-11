@@ -964,6 +964,7 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] No lab prefab set. Samples can't be delivered until one is configured or placed.
 [ReforgerZ] Hostility: bitmask mode, only 0 of 15 variant factions (SURV_H1 to SURV_H15) in the FactionManager. ...
 [ReforgerZ] Season 1 (fresh). Rules: none. Wipe: 48 h after the cure.
+[ReforgerZ] World facts: season seed S, 0 canon facts, 0 season flags.
 [ReforgerZ] Settlement scan: 2 named, 12 building clusters, took 83 ms.
 [ReforgerZ] Perimeter: x 70 to 3913, z 488 to 3788. Warning zone 300 m, kill zone 100 m.
 [ReforgerZ] No checkpoint barricade prefab set: road checkpoints are off.
@@ -984,8 +985,9 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Started. 14 settlements, stage Early Outbreak, cure 0 percent, state 0.
 ```
 
-On a restart the same lines say `(save)` or `(saved)` instead of `(picked)` or `(new ...)`, and the
-settlement scan doesn't run. Arland's 14 settlements: its two cities, the building clusters named
+On a restart the same lines say `(save)` or `(saved)` instead of `(picked)` or `(new ...)`, the
+world facts keep their seed and count what the season has made so far, and the settlement scan
+doesn't run. Arland's 14 settlements: its two cities, the building clusters named
 after the nearest local place label (North Head, Angler Bluff, Sandbank, Heath Point) and the rest
 by grid reference (`Outskirts 13-29`).
 
@@ -1022,7 +1024,10 @@ While running: `Status | ...` lines every few minutes (stage, infection, zombies
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
 `Bastion checkpoint up near ...` / `Red Hand roadblock up near ...`,
 `Fire Mission perk: player N, M infected killed.`, `Note at ... by ...: ...`, `Season over. Cure goes to ...`,
-and `Season N is over (...). The wipe happens at the next restart.`
+`Canon: <key> = <value>.` (a fixed fact of the setting, made the first time content asks, once a
+season; [DESIGN.md](DESIGN.md#world-facts)), `World change: <key>. <headline>` (for example
+`supply.1.called_off` when a truck turns back), and `Season N is over (...). The wipe happens at
+the next restart.`
 
 ## 8. Play-test checklist
 

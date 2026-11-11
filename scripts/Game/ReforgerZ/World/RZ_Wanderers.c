@@ -2206,7 +2206,8 @@ class RZ_Wanderers
 		if (!job.IsEligible(m_GM, playerId) || !job.Prepare(m_GM, w.m_vPos, w.GetShortName(), playerId))
 			return;
 
-		if (!missions.StartMission(job))
+		// The same check as any mission (RZ_MissionManager.CanRunNow)
+		if (!missions.StartIfCan(job, GetGame().GetPlayerManager().GetPlayerCount()))
 			return;
 
 		m_mJobAt.Set(ident, m_fClock);
@@ -2441,7 +2442,8 @@ class RZ_Wanderers
 			return;
 		}
 
-		if (!missions.StartMission(job))
+		// The same check as any mission (RZ_MissionManager.CanRunNow)
+		if (!missions.StartIfCan(job, GetGame().GetPlayerManager().GetPlayerCount()))
 		{
 			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"I've letters, but nowhere they can go today. Ask me tomorrow.\"");
 			return;
