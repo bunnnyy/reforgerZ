@@ -13,6 +13,7 @@ class RZ_QuestlineRegistry
 
 		// The Red Hand (Missions/Questlines/RedHand/)
 		q.Register(RZ_Quest_TheBook);
+		q.Register(RZ_Quest_Cargo);
 
 		// Halcyon
 

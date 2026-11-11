@@ -12,6 +12,7 @@
 class RZ_RedHandQuest
 {
 	static const int SWING = 25;			// an ending's one loyalty swing, at most (as Rein In)
+	static const int NO_VOICE = 1000000;	// m_iLeaderId for a contract no leader voices or remembers (no seat has this id)
 
 	//------------------------------------------------------------------------------------------------
 	//! Keep `l` on the run as `key`: flags key_id and key_gen, texts key (the name), key_short and
