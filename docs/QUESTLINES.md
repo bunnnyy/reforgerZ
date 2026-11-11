@@ -5,7 +5,8 @@ Long Table. Each stage can be done several ways. Choices set flags that later st
 questlines and the ending read. Every ending pays the player and moves the world a little,
 always through systems that already exist.
 
-**Status: designed, not built.** How a questline runs (stages, waits, conditions, flags, who
+**Status: all fourteen are built** (each section notes how the code differs from the design; the example Short Weight is in [MISSIONS.md](MISSIONS.md#questlines)).
+How a questline runs (stages, waits, conditions, flags, who
 takes part, saving) is in [DESIGN.md](DESIGN.md), "Questlines". Who the people are is in
 [LORE.md](LORE.md); standing, tiers and leaders are in [REPUTATION.md](REPUTATION.md); the
 missions the stages reuse are in [MISSIONS.md](MISSIONS.md).

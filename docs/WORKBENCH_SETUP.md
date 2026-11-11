@@ -994,7 +994,7 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Door blockers: off (no blocker prefab); AI door hook on.
 [ReforgerZ] World interactions: on. 0 fixable cars on the map.
 [ReforgerZ] Story arcs: on, running none.
-[ReforgerZ] Questlines: on, 1 registered (Short Weight), at most 2 at once, running none.
+[ReforgerZ] Questlines: on, 15 registered (Short Weight, The List, The Price of the Door, The Edge of Town, Await Relief, The Census, The Last Pilot, The Book, Cargo, The Well Story, The Three Weeks, The Other Two, Authors, The House That Went Quiet, A Place at the Table), at most 2 at once, running none.
 [ReforgerZ] Started. 14 settlements, stage Early Outbreak, cure 0 percent, state 0.
 ```
 

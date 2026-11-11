@@ -29,9 +29,9 @@ and one way to end it: **research the cure.**
   loyalties of their own, story arcs and session headlines.
 - **Questlines** that run over many sessions: each stage is a contract or a wait, you can talk,
   persuade, sneak, fight, bribe, betray or side with another faction, and what you chose changes
-  the ending, the rewards and the world. One built so far (Short Weight, for the Haven); fourteen more designed
-  ([QUESTLINES.md](docs/QUESTLINES.md)).
-- **186 missions**: faction contracts (a few about what a faction would rather not say), world
+  the ending, the rewards and the world. Fifteen: three per faction, two for the Long Table and
+  the example Short Weight, crossing each other through shared flags ([QUESTLINES.md](docs/QUESTLINES.md)).
+- **182 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
   events, puzzle missions, unarmed stealth jobs, missions at the quarantine line, morally grey
   Haven and Red Hand work and leaders' off-book jobs. Contracts
   name a rough area until you're close, unless you're a Radio Operator or trusted by the giver.
@@ -75,8 +75,7 @@ setting, faction and loadout to make is listed in one **prefab manifest**, and a
 plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run). Start with
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Designed, not built yet:** fourteen long questlines in the New Vegas style, with choices that
-cross between factions ([QUESTLINES.md](docs/QUESTLINES.md)).
+**Designed, not built yet:** the content pass onto the world facts (see the roadmap's *Next*).
 
 ## Docs
 
@@ -87,7 +86,7 @@ cross between factions ([QUESTLINES.md](docs/QUESTLINES.md)).
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
-| [QUESTLINES.md](docs/QUESTLINES.md) | Long questlines over many sessions, three per faction and two for the Long Table (designed, not built) |
+| [QUESTLINES.md](docs/QUESTLINES.md) | Long questlines over many sessions, three per faction and two for the Long Table |
 | [MOD_STACK.md](docs/MOD_STACK.md) | Which Workshop mods the server runs and why |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |

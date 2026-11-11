@@ -4,13 +4,13 @@ Every mission ReforgerZ has or plans, with its requirements and status. How the 
 behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 [REPUTATION.md](REPUTATION.md); the prefabs each mission needs are in
 [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "The prefab manifest". The long questlines that reuse
-these missions as stages are in [QUESTLINES.md](QUESTLINES.md) (designed, not built).
+these missions as stages are in [QUESTLINES.md](QUESTLINES.md).
 
 ## Counts
 
 | Kind | In code | Designed, not built |
 |---|---|---|
-| [Faction contracts](#faction-contracts) (20 designed per faction, plus five hard edges) | 85 | — |
+| [Faction contracts](#faction-contracts) (20 designed per faction, plus three hard edges) | 83 | — |
 | [The Red Hand's hard edges](#the-red-hands-hard-edges) | 3 | — |
 | [World events](#world-events) | 25 | — (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 17 | — |
@@ -19,8 +19,8 @@ these missions as stages are in [QUESTLINES.md](QUESTLINES.md) (designed, not bu
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 32, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| [Questlines](#questlines) (stage missions) | 2, in 1 questline | — |
-| **Total** | **186** | **—** |
+| **Total** | **182** | **—** |
+| [Questlines](#questlines) | 15 questlines, about 90 stage missions (not counted above) | — |
 
 ## Who gets offered what
 
