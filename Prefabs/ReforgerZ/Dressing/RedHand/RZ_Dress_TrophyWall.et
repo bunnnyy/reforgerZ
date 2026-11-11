@@ -1,0 +1,36 @@
+GenericEntity {
+ ID "65DBA352BE424548"
+ components {
+  RplComponent "{7C46869F27204305}" {
+  }
+  Hierarchy "{1943CF0D6F47B60E}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{F55802C087BC218D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_6m_A.et" {
+   ID "6DB391C59E40D128"
+   components {
+    Hierarchy "{F53669B463CD4FA0}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{BC3EEB0F1E36272F}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_board.et" {
+   ID "632FAC0FA2464B95"
+   components {
+    Hierarchy "{CF84FD8020859493}" {
+    }
+   }
+   coords -1.0 1.6 0.1
+  }
+  GenericEntity : "{BC3EEB0F1E36272F}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_board.et" {
+   ID "BE9F7C13C08CE051"
+   components {
+    Hierarchy "{68863631FD7AFFA1}" {
+    }
+   }
+   coords 1.2 1.5 0.1
+  }
+ }
+}

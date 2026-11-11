@@ -1,0 +1,28 @@
+GenericEntity {
+ ID "45A84BF1E93C5BDF"
+ components {
+  RplComponent "{D849577FDC2CB4BD}" {
+  }
+  Hierarchy "{1A0731B97B71F3FA}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{FEB4961C91993C22}Prefabs/Structures/Civilian/DogHouse_01.et" {
+   ID "4B4AB8F598F97000"
+   components {
+    Hierarchy "{1E7DB1B80ECD38D5}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
+   ID "D2E549C3FBFCF397"
+   components {
+    Hierarchy "{F58CF2D8A300D99B}" {
+    }
+   }
+   coords 0.6 0 0.8
+  }
+ }
+}

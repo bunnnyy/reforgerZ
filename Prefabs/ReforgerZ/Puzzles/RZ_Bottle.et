@@ -1,6 +1,24 @@
 GenericEntity : "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et" {
  ID "1F80A73AAE197BBE"
  components {
+  MeshObject "{51EC93F29BA5F234}" {
+   Object "{93805DF1EFA4F212}Assets/Props/Civilian/BeerBottle_01/BeerBottle_01_Empty.xob"
+  }
+  TimerTriggerComponent "{5934C8C5C9FDF999}" {
+   PROJECTILE_EFFECTS {
+    SpawnParticleEffect "{5CAADB9AD0C61F3F}" {
+     ParticleEffect ""
+    }
+   }
+  }
+  InventoryItemComponent "{51FAA3E3CF6F087A}" {
+   Attributes SCR_ItemAttributeCollection "{51FAA3E3C2D19BD4}" {
+    ItemDisplayName WeaponUIInfo "{56CA88CA4203CB8F}" {
+     Name "Empty bottle"
+     Description "Throw it and it breaks loud. Everything nearby turns to look."
+    }
+   }
+  }
   RZ_NoisemakerComponent "{6AD67DC2A8005F89}" {
    m_fHeat 20
    m_bOnThrow 1

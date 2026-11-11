@@ -1,0 +1,68 @@
+GenericEntity : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
+ ID "6093E737D38D6C5A"
+ components {
+  RZ_ClueComponent "{6AD760988CB48F58}" {
+  }
+  RZ_PuzzleObjectComponent "{6AD760988CB48285}" {
+  }
+  ActionsManagerComponent "{6AD760988CB48CE9}" {
+   ActionContexts {
+    UserActionContext "{6AD760988CB48B07}" {
+     ContextName "default"
+     Position PointInfo "{6AD760988CB77454}" {
+      Offset 0 0.5 0
+     }
+     Radius 1.2
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{6AD760988CB772FF}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD760988CB77154}" {
+      Name "Read"
+     }
+    }
+    RZ_PuzzleChoiceAction "{6AD760988CB77F84}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD760988CB77A12}" {
+      Name "Choice 0"
+     }
+     m_iOption 0
+    }
+    RZ_PuzzleChoiceAction "{6AD760988CB77944}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD760988CB76752}" {
+      Name "Choice 1"
+     }
+     m_iOption 1
+    }
+    RZ_PuzzleChoiceAction "{6AD760988CB7627C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD760988CB76086}" {
+      Name "Choice 2"
+     }
+     m_iOption 2
+    }
+    RZ_PuzzleChoiceAction "{6AD760988CB76FB1}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD760988CB76A19}" {
+      Name "Choice 3"
+     }
+     m_iOption 3
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

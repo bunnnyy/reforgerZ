@@ -1,0 +1,115 @@
+GenericEntity {
+ ID "73BB4443EE379D5F"
+ components {
+  RplComponent "{E034756A345A32FB}" {
+  }
+  Hierarchy "{2C6BC7554D996DA1}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "CB220063AAE1CB3D"
+   components {
+    Hierarchy "{E39BE3E96732D437}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
+   ID "09B002ABAF9C6802"
+   components {
+    Hierarchy "{E4F9E964D00C36D1}" {
+    }
+   }
+   coords 0 0 1.0
+   angles 0 180 0
+  }
+  GenericEntity : "{4A4B245D7CAC341B}Prefabs/Props/Furniture/ChairOld_02.et" {
+   ID "4A9B8A5756D48A36"
+   components {
+    Hierarchy "{DD7DD8DDDDA686E5}" {
+    }
+   }
+   coords 1.0 0 -0.4
+   angles 0 250 0
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "E5B845605CFC9780"
+   components {
+    Hierarchy "{7EB22B2AEF139DAA}" {
+    }
+   }
+   coords -1.0 0 -0.4
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "4170AEB059BD192A"
+   components {
+    Hierarchy "{14064EF1F1C2AECD}" {
+    }
+   }
+   coords 0 0.62 0
+  }
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "C53C815F431FBB43"
+   components {
+    Hierarchy "{66DC361F1E6D8795}" {
+    }
+   }
+   coords 2.0 0 1.2
+  }
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "03C5448D21331A04"
+   components {
+    Hierarchy "{E4995FAA8C5665C9}" {
+    }
+   }
+   coords -2.0 0 1.2
+  }
+  GenericEntity {
+   ID "9587039DA7B16A7E"
+   components {
+    SCR_AISmartActionSentinelComponent "{725B17BACAC38304}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0 1.6 -1.0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{4E89F83E21DCE6F2}" {
+    }
+   }
+   coords 0 0 1.0
+  }
+  GenericEntity {
+   ID "B971AB317F877439"
+   components {
+    SCR_AISmartActionSentinelComponent "{47AE5A57E692075A}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -1.0 1.6 0.4
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{9F1BEFC1DC14BB2C}" {
+    }
+   }
+   coords 1.0 0 -0.4
+  }
+  GenericEntity {
+   ID "4D69C2801848A019"
+   components {
+    SCR_AISmartActionSentinelComponent "{6F46B12FD7AB4C97}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 1.0 1.6 0.4
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{235C834D43E1AC45}" {
+    }
+   }
+   coords -1.0 0 -0.4
+  }
+ }
+}

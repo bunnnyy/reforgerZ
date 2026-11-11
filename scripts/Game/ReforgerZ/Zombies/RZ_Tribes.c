@@ -885,7 +885,7 @@ class RZ_Tribes
 	static string Pattern(int seed)
 	{
 		array<string> calls = {"three short and a long", "two long", "one long and two short", "a long rising call", "four short", "a long and a short", "two short, a pause, two short"};
-		return calls[seed % calls.Count()];
+		return calls[Math.AbsInt(seed) % calls.Count()];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -902,7 +902,7 @@ class RZ_Tribes
 			return "a driver from the Day 2 column";
 
 		array<string> kinds = {"a farmer", "a driver", "a runner", "a soldier", "a courier", "someone"};
-		return string.Format("%1 from %2", kinds[t.m_iSeed % kinds.Count()], town);
+		return string.Format("%1 from %2", kinds[Math.AbsInt(t.m_iSeed) % kinds.Count()], town);
 	}
 
 	//------------------------------------------------------------------------------------------------

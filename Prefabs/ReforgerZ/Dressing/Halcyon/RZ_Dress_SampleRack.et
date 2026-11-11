@@ -1,0 +1,51 @@
+GenericEntity {
+ ID "1234D6A6F2CDFF47"
+ components {
+  RplComponent "{17847AF2A9D938BC}" {
+  }
+  Hierarchy "{B9DE230D1B6D4250}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{1E84244AFD39A88E}Prefabs/Props/Commercial/ShelfUniversal_01_narrow.et" {
+   ID "DE060B33E3E8E15E"
+   components {
+    Hierarchy "{11AAB0A7345906D1}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{452C9FF31AAF2B82}Prefabs/Props/Services/Healthcare/CabinetMedical_01.et" {
+   ID "B25FAE9DA4F3AD92"
+   components {
+    Hierarchy "{88BD4E33F722404E}" {
+    }
+   }
+   coords 1.2 0 0
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "4DB6E194FAF7B2D2"
+   components {
+    Hierarchy "{EA768894D000FD2E}" {
+    }
+   }
+   coords 1.2 0.95 0
+  }
+  GenericEntity {
+   ID "10653B05C9ABA5E3"
+   components {
+    SCR_AISmartActionSentinelComponent "{F1C9691D2C9B74BA}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 -1.0
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{9D4C3E7B0ADC4D67}" {
+    }
+   }
+   coords 0.5 0 1.0
+  }
+ }
+}

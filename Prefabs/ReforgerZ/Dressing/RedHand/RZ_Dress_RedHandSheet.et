@@ -1,0 +1,36 @@
+GenericEntity {
+ ID "E9B0CB93ED4580A6"
+ components {
+  RplComponent "{DE23EA96432A4473}" {
+  }
+  Hierarchy "{D22A0436FF40AB38}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+   ID "93C7AF25D5787F98"
+   components {
+    Hierarchy "{EB338076504FEAAB}" {
+    }
+   }
+   coords -1.0 0 0
+  }
+  GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+   ID "1BDBD0C8B4B80475"
+   components {
+    Hierarchy "{A6F6558F70A4E97F}" {
+    }
+   }
+   coords 1.0 0 0
+  }
+  SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
+   ID "0AED94CB698F74CA"
+   components {
+    Hierarchy "{BA8A586E5B63AF61}" {
+    }
+   }
+   coords 0 0.6 0
+  }
+ }
+}

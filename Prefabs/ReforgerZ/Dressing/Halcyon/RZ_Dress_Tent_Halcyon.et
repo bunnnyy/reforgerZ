@@ -1,0 +1,43 @@
+GenericEntity {
+ ID "257718BAADA811CA"
+ components {
+  RplComponent "{BE54B6768AFA606C}" {
+  }
+  Hierarchy "{B76FBAD4839ECBC4}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{908E3B090C2438E9}Prefabs/Props/Recreation/Camp/TentSmall_03/TentSmall_03_white.et" {
+   ID "99D8AD8AAEBA5F85"
+   components {
+    Hierarchy "{4BC01E31AEEA014B}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{7E4A4D680FAD3461}Prefabs/Props/Medical/TableMedical_01/TableMedical_01.et" {
+   ID "278C81E9260D2C56"
+   components {
+    Hierarchy "{38B76308368E0AE9}" {
+    }
+   }
+   coords 0 0 -2.0
+  }
+  GenericEntity {
+   ID "6596A984F85C04A1"
+   components {
+    SCR_AISmartActionSentinelComponent "{B37C9999E907D2B3}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 -0.8
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{18642C0096FED967}" {
+    }
+   }
+   coords 0 0 -1.2
+  }
+ }
+}

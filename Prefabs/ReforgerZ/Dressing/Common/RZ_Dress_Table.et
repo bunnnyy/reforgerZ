@@ -1,0 +1,88 @@
+GenericEntity {
+ ID "A08ADEF5D1790979"
+ components {
+  RplComponent "{D50B2E575C988438}" {
+  }
+  Hierarchy "{36D3ACC0B69F1783}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{C8A5C92E74ABB5EA}Prefabs/Props/Civilian/PicnicTable/PicnicTable_01.et" {
+   ID "074C1A3201D85B13"
+   components {
+    Hierarchy "{F87235C227032E12}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+   ID "3FD31AE248E6DF3B"
+   components {
+    Hierarchy "{8609958E89B8FD1E}" {
+    }
+   }
+   coords 0.3 0.78 0
+  }
+  GenericEntity {
+   ID "B67BC12000D6586F"
+   components {
+    SCR_AISmartActionSentinelComponent "{ED13AA13B71E7691}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -0.5 1.6 0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{52ABAEB49F322236}" {
+    }
+   }
+   coords -0.5 0 0.75
+  }
+  GenericEntity {
+   ID "5E39825538AD08AD"
+   components {
+    SCR_AISmartActionSentinelComponent "{FB22BAE5B040375A}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0.5 1.6 0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{651A19D8F5220579}" {
+    }
+   }
+   coords 0.5 0 0.75
+  }
+  GenericEntity {
+   ID "A66994A2249FD82A"
+   components {
+    SCR_AISmartActionSentinelComponent "{A7F30F168B50B96D}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -0.5 1.6 0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{45E50D0F4691265D}" {
+    }
+   }
+   coords -0.5 0 -0.75
+  }
+  GenericEntity {
+   ID "8543FB94988D1710"
+   components {
+    SCR_AISmartActionSentinelComponent "{3E93E7DF5C823CD3}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0.5 1.6 0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{592B3E2C85C64920}" {
+    }
+   }
+   coords 0.5 0 -0.75
+  }
+ }
+}

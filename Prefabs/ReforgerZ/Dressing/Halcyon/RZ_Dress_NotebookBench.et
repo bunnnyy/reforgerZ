@@ -1,0 +1,75 @@
+GenericEntity {
+ ID "7BC56199B7398908"
+ components {
+  RplComponent "{E64C7F7FD7E4B0DA}" {
+  }
+  Hierarchy "{5E85B963674EE3E6}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D63716E01EF9AC74}Prefabs/Props/Forest/ForestBench_01/ForestBench_01.et" {
+   ID "E0CD3810C196511A"
+   components {
+    Hierarchy "{B93B0F227ACA6CE0}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
+   ID "7CEA1EEBE084699A"
+   components {
+    Hierarchy "{7523D6A3A773A560}" {
+    }
+   }
+   coords 0.7 0.45 0
+   angles 0 10 0
+  }
+  GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+   ID "BFD22E295E0B10BB"
+   components {
+    Hierarchy "{D6282810FA85E517}" {
+    }
+   }
+   coords -0.7 0.45 0
+  }
+  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+   ID "BC345B263ADB7435"
+   components {
+    Hierarchy "{8D8588508882A59A}" {
+    }
+   }
+   coords 1.1 0 0.3
+  }
+  GenericEntity {
+   ID "A5D38F73BE3A0887"
+   components {
+    SCR_AISmartActionSentinelComponent "{521B8F5753DA199A}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0 1.6 2.0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{0BA24208D5C9D9A7}" {
+    }
+   }
+   coords -0.35 0 0.3
+  }
+  GenericEntity {
+   ID "60AF7CAA6A3E5A39"
+   components {
+    SCR_AISmartActionSentinelComponent "{A3E2D875B3906C95}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0 1.6 2.0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{FBBCA85543DE248D}" {
+    }
+   }
+   coords 0.35 0 0.3
+  }
+ }
+}

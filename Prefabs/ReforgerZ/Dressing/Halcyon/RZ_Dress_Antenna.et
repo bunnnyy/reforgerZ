@@ -1,0 +1,35 @@
+GenericEntity {
+ ID "985F9B58FFE0AE23"
+ components {
+  RplComponent "{9C964F22A8BEA5FB}" {
+  }
+  Hierarchy "{E3668453C4DB8608}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{5B8922E61D8DF345}Prefabs/Props/Military/Antennas/Antenna_R161_01.et" {
+   ID "B15B33CB3E2419D9"
+   components {
+    Hierarchy "{B3DE305343DAAB41}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity {
+   ID "23431D1DE2CAC7F8"
+   components {
+    SCR_AISmartActionSentinelComponent "{0D7F093E97C0F912}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition -1.0 1.6 -0.8
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{4035909648B6933A}" {
+    }
+   }
+   coords 1.0 0 0.8
+  }
+ }
+}

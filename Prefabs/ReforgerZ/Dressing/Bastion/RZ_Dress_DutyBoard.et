@@ -1,0 +1,59 @@
+GenericEntity {
+ ID "3AA42CC69A56378E"
+ components {
+  RplComponent "{14408881D6E40B96}" {
+  }
+  Hierarchy "{5F1B71D76BA44737}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
+   ID "D449F02A82F61C78"
+   components {
+    Hierarchy "{337A70D8F79F9BDB}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "4A5A4AF2BBCD2B02"
+   components {
+    Hierarchy "{AD81A69A51277353}" {
+    }
+   }
+   coords -0.3 1.3 -0.04
+   angles 0 180 0
+  }
+  GenericEntity {
+   ID "C8BFEDE03C148CB0"
+   components {
+    SCR_AISmartActionSentinelComponent "{CBCE6F6EAE890E5D}" {
+     Tags {
+      "RZ_Gather"
+     }
+     m_vLookPosition 0.5 1.6 1.6
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{1F13661FE320ECD0}" {
+    }
+   }
+   coords -0.5 0 -1.6
+  }
+  GenericEntity {
+   ID "19290DB3FAEEF8CA"
+   components {
+    SCR_AISmartActionSentinelComponent "{ACBCD46032CA1C1F}" {
+     Tags {
+      "RZ_Gather"
+     }
+     m_vLookPosition -0.5 1.6 1.6
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{5A709B4B9E5F6CF1}" {
+    }
+   }
+   coords 0.5 0 -1.6
+  }
+ }
+}

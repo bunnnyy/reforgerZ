@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{D490D2E9A0478D9C}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_ChildrensCorner.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

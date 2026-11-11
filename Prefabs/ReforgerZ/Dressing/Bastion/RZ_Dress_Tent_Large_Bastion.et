@@ -1,0 +1,20 @@
+GenericEntity {
+ ID "361805EE7FC2C24D"
+ components {
+  RplComponent "{CC293F412E96D5CA}" {
+  }
+  Hierarchy "{BEFACBACA0D3F506}" {
+  }
+ }
+ coords 0 0 0
+ {
+  StaticModelEntity : "{095874B519DCF161}Prefabs/Structures/Military/Camps/TentUS_01/TentUS_01_Assembled.et" {
+   ID "47C81DA8DE8E604B"
+   components {
+    Hierarchy "{A30AF8053ADC773F}" {
+    }
+   }
+   coords 0 0 0
+  }
+ }
+}

@@ -1,0 +1,46 @@
+GenericEntity {
+ ID "9AAF1A692B6495DD"
+ components {
+  RplComponent "{7235C55017FE4A1F}" {
+  }
+  Hierarchy "{25B486F9A3708896}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{A3B70E75E3769FB4}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_4m.et" {
+   ID "01ACE050D23070E7"
+   components {
+    Hierarchy "{0963A3E2CB7004D4}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "8BAEF143DA0CB34B"
+   components {
+    Hierarchy "{1A76086B0F060DD4}" {
+    }
+   }
+   coords 2.3 0.6 0
+   angles 0 90 0
+  }
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "FF1BBE41373391C1"
+   components {
+    Hierarchy "{FE1BFC0827CA82F7}" {
+    }
+   }
+   coords 2.3 0.6 0.3
+   angles 0 95 0
+  }
+  GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+   ID "BBE50206373795CA"
+   components {
+    Hierarchy "{A23A3F030E258CB4}" {
+    }
+   }
+   coords -2.6 0 0.6
+  }
+ }
+}

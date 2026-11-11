@@ -1,0 +1,54 @@
+GenericEntity {
+ ID "F7BFA7150B3053CC"
+ components {
+  RplComponent "{507F4EBA94982C48}" {
+  }
+  Hierarchy "{751D030BC38824B6}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+   ID "2F2E8F8D3CFE459B"
+   components {
+    Hierarchy "{391F7672383B447A}" {
+    }
+   }
+   coords -1.0 0 0.8
+   angles 0 20 0
+  }
+  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
+   ID "A6A07D7845DF3B3D"
+   components {
+    Hierarchy "{0787FEBE73B1800E}" {
+    }
+   }
+   coords 0.3 0 1.2
+  }
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "D1D82FC58B42215C"
+   components {
+    Hierarchy "{8C60FFD8B95D5DE0}" {
+    }
+   }
+   coords 1.2 0.4 0.5
+   angles 0 -60 0
+  }
+  GenericEntity {
+   ID "8E135C9E62E6AC04"
+   components {
+    SCR_AISmartActionSentinelComponent "{F1390DBC67328BCE}" {
+     Tags {
+      "RZ_Watch"
+     }
+     m_vLookPosition 0 1.6 10
+     m_fLookDirectionRange 120
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{310A7197BF121A77}" {
+    }
+   }
+   coords 0 0 0
+  }
+ }
+}

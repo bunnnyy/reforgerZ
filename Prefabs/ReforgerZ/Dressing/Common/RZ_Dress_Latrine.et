@@ -1,0 +1,45 @@
+GenericEntity {
+ ID "EEDDE7E63A85CF68"
+ components {
+  RplComponent "{43476AAEAF5AE137}" {
+  }
+  Hierarchy "{D85970574139873B}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
+   ID "A240F78F5784EACC"
+   components {
+    Hierarchy "{1B525BAFC0FDB605}" {
+    }
+   }
+   coords 0 0 1.5
+  }
+  SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
+   ID "406768E95F98850A"
+   components {
+    Hierarchy "{878916F0E33B0EDB}" {
+    }
+   }
+   coords -1.5 0 0
+   angles 0 90 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "24256F30A558B4F5"
+   components {
+    Hierarchy "{4EA1FAC64E8431DC}" {
+    }
+   }
+   coords -0.6 0 0.8
+  }
+  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+   ID "86921AC0277D176C"
+   components {
+    Hierarchy "{CA5D75C660D9A194}" {
+    }
+   }
+   coords -0.6 0.35 0.8
+  }
+ }
+}

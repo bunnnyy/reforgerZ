@@ -1,6 +1,24 @@
 GenericEntity : "{9DB69176CEF0EE97}Prefabs/Weapons/Grenades/Smoke_ANM8HC.et" {
  ID "1F80A73AAE197BBE"
  components {
+  MeshObject "{51EC93F29BA5F234}" {
+   Object "{FACB1ED350C087F9}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_TinCan_01.xob"
+  }
+  TimerTriggerComponent "{5934C8C5C9FDF999}" {
+   PROJECTILE_EFFECTS {
+    SpawnParticleEffect "{5CAADB9AD0C61F3F}" {
+     ParticleEffect ""
+    }
+   }
+  }
+  InventoryItemComponent "{51FAA3E3CF6F087A}" {
+   Attributes SCR_ItemAttributeCollection "{51FAA3E3C2D19BD4}" {
+    ItemDisplayName WeaponUIInfo "{56CA8ED293FE862B}" {
+     Name "Tin rattle"
+     Description "A tin with stones in it. Throw it and it clatters for a while."
+    }
+   }
+  }
   RZ_NoisemakerComponent "{6AD67DC2A8163827}" {
    m_fHeat 12
    m_bOnThrow 1

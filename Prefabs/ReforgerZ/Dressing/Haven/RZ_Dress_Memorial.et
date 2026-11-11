@@ -1,0 +1,92 @@
+GenericEntity {
+ ID "987D0A74BB8DBF2B"
+ components {
+  RplComponent "{E99A0EE14E1EC3A3}" {
+  }
+  Hierarchy "{90BEF1DF1DC8CAFF}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{8FB2845D48F4E02A}Prefabs/Props/Furniture/TableOld_01/TableOld_01_white.et" {
+   ID "350EEFE58CAE0445"
+   components {
+    Hierarchy "{FA8B675B19176BAA}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+   ID "B1920CD0E57B21AA"
+   components {
+    Hierarchy "{1838627A62F330E8}" {
+    }
+   }
+   coords -0.4 0.78 0
+  }
+  GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+   ID "BE78A218280A303D"
+   components {
+    Hierarchy "{6A139977E3011285}" {
+    }
+   }
+   coords 0 0.78 0.1
+  }
+  GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+   ID "1FFCC23A59FA03D8"
+   components {
+    Hierarchy "{E228D5988623A3EB}" {
+    }
+   }
+   coords 0.4 0.78 0
+  }
+  GenericEntity : "{D8EF213A192382E0}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01.et" {
+   ID "AEEBBC36654C29C5"
+   components {
+    Hierarchy "{CDBF228F84A4EC39}" {
+    }
+   }
+   coords 0.2 0.78 -0.2
+   angles 0 180 0
+  }
+  GenericEntity : "{2AEAA31471171A50}Prefabs/Props/Military/Photos/Photo_Square_01/Photo_Square_01_V1.et" {
+   ID "3381755825497D57"
+   components {
+    Hierarchy "{1F237F78D1C8011F}" {
+    }
+   }
+   coords -0.2 0.79 -0.2
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "6243B7508405932F"
+   components {
+    Hierarchy "{F7E87CF3C83D8895}" {
+    }
+   }
+   coords 0 0.79 0.25
+  }
+  SCR_DestructibleEntity : "{9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et" {
+   ID "CA6239BC2C705792"
+   components {
+    Hierarchy "{8817CFBF90962F9E}" {
+    }
+   }
+   coords 0.7 0 0.3
+  }
+  GenericEntity {
+   ID "CFB20AE337E9C7DB"
+   components {
+    SCR_AISmartActionSentinelComponent "{0449EB27E9464E1B}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 -1.0
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{C8038AD95065C14D}" {
+    }
+   }
+   coords 0 0 1.0
+  }
+ }
+}

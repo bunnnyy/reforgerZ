@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{1893A854370DF417}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Small_Civilian.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

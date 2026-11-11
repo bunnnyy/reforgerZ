@@ -1,0 +1,52 @@
+GenericEntity {
+ ID "83B20F5619283548"
+ components {
+  RplComponent "{B46EC85EDF5F35ED}" {
+  }
+  Hierarchy "{86FFF5C9E94D6DFD}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
+   ID "45C257158DADEE09"
+   components {
+    Hierarchy "{9494324EE3B13CE8}" {
+    }
+   }
+   coords -2.0 0 0
+  }
+  GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
+   ID "4B6F9373EA50F564"
+   components {
+    Hierarchy "{2C18BCA558F3D2FA}" {
+    }
+   }
+   coords 2.0 0 0
+  }
+  GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" {
+   ID "B2F0E51BCCDF2662"
+   components {
+    Hierarchy "{FD07C410521651A8}" {
+    }
+   }
+   coords 0.6 0 0.6
+   angles 0 20 0
+  }
+  GenericEntity {
+   ID "5836E989569C6F24"
+   components {
+    SCR_AISmartActionSentinelComponent "{26AE03AC62CF24E6}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 -0.8
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{44D29F052BD64780}" {
+    }
+   }
+   coords 0 0 0.8
+  }
+ }
+}

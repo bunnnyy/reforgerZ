@@ -80,6 +80,8 @@ Claude Code on Windows runs **Git Bash**. Things that trip it up, in the shell a
 | **Assertion failed ... Resources are leaking** | Workbench (the Diag build) can stop on this when a world unloads; seen from a vanilla tool, `PacejkaPlotTool`. Click **Ignore** to carry on. **Abort** kills Workbench and any unsaved work: leave that to the author |
 | Scripts change on disk while Workbench is open (a `git pull`, a script edit) | Workbench reloads them and the open world, and first asks whether to save the world. Let the author answer: not saving throws away the world's unsaved edits |
 | Checking a Workbench result | Read its log instead of asking the author to copy text ([Logs](#logs)) |
+| Building prefabs as text | Most prefab work needs no clicking: `.et`, `.conf`, `.layout` and `.meta` files are text. Three PC-side plugins in `scripts/WorkbenchGame/ReforgerZ/RZ_ResourceIndexPlugin.c` (in the main window's **Plugins** menu) feed it: **Write resource index** lists every resource with its GUID in `$profile:RZ_ResourceIndex.txt` (the vanilla `.pak` files are compressed, so this is the only way to look names up); **Dump prefabs and classes** reads `$profile:RZ_DumpList.txt` (ResourceNames and class names, one per line) and writes each packed prefab as text, or a class's properties with types and defaults, to `$profile:RZ_Dump/`; **Register or rebuild resources** imports the addon paths listed in `$profile:RZ_RegisterList.txt` (a PNG becomes an `.edds`) or rebuilds them after a `.meta` change. `$profile` is `Documents\My Games\ArmaReforgerWorkbench\profile`. A dumped vanilla layout is not a safe override: saved back, `RoleSelectionMenu.layout` broke the deploy menu |
+| New scripts in `WorkbenchGame` | **Game → Reload Game Scripts** doesn't recompile the Workbench module: restart Workbench (stop it and start it as in [5](#5-workbench)) to load a new or changed plugin |
 
 ## 1. The repo
 
@@ -211,7 +213,7 @@ Needs the saved world and the scenario (mission header) from
 
 | Test | How |
 |---|---|
-| Quick single-player | Open the world in Workbench's World Editor and press **Play** (the green triangle in its toolbar). **Escape** stops it |
+| Quick single-player | Open the world in Workbench's World Editor and press **Play** (the green triangle in its toolbar). **Escape** stops it (so it can't close a menu). With **Game → Play Game Options → Play from Camera Position** on, you spawn at the camera with the first loadout; off, the deploy menu opens. In the deploy menu mouse clicks on **Join** and **Continue** don't register: focus the row with a click and press **Enter** |
 | Local multiplayer | Workbench's peer-client tool (Workbench calls it the Peer Tool) |
 | Full server | Run in the background: `"<server folder>/ArmaReforgerServer.exe" -addonsDir 'C:\Mods,<Documents in Windows form>\My Games\ArmaReforger\addons' -addons <GUID in addon.gproj> -server "{933D8C91F1C91F38}Missions/RZ_Everon.conf" -profile "$HOME/rz_check/server_profile" -bindPort 2001`. Everon is the main world; for the small test world use `"{3487FFB701729EC7}Missions/RZ_Arland.conf"`. `-addonsDir` takes a comma-separated list: the folder holding the repo, then the downloaded dependencies. The author joins from the game: **Multiplayer → Direct Join → 127.0.0.1:2001** |
 

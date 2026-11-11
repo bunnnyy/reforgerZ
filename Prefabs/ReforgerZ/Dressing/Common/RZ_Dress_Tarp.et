@@ -1,0 +1,59 @@
+GenericEntity {
+ ID "14C2A02CF34E7781"
+ components {
+  RplComponent "{D53BBD39BA50E483}" {
+  }
+  Hierarchy "{FCB5C2A5263FC528}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{70F4AEC6D6641173}Prefabs/Structures/Military/CamoNets/US/CamoNet_Small_US.et" {
+   ID "D9407266C639E49B"
+   components {
+    Hierarchy "{CC2C81DD7EC6D9B8}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "C81445AC413AF320"
+   components {
+    Hierarchy "{383900C40082217D}" {
+    }
+   }
+   coords 0.6 0 0.3
+   angles 0 15 0
+  }
+  GenericEntity {
+   ID "7A1C54CF9CA0D8CD"
+   components {
+    SCR_AISmartActionSentinelComponent "{583670877D7DE265}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0.6 1.6 0.3
+     m_eLoiterAnimation SMOKING
+    }
+    Hierarchy "{CC21D034D1E35CD1}" {
+    }
+   }
+   coords -0.8 0 0.6
+  }
+  GenericEntity {
+   ID "000A169911143CA8"
+   components {
+    SCR_AISmartActionSentinelComponent "{8FAF3845BF559F10}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0.6 1.6 0.3
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{EAC09C40344324B8}" {
+    }
+   }
+   coords 0.9 0 -0.7
+  }
+ }
+}
