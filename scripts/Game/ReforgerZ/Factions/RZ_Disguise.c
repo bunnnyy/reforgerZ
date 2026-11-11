@@ -14,7 +14,9 @@
 //! The Hunted and Kill on Sight can't claim. Leaders, everyone inside a stronghold's or the lab's
 //! wire, and anything within the stand radius of the lab during the final stand see through it.
 //! Fights (hunter squads, mission groups, grudges) are never fooled: only standing bits are cleared.
-//! Server only.
+//! Phase 2 (again looks, roll call, word gets round, vouching, the Rogue's price, held) is in
+//! RZ_DisguiseWatch; phase 3 (kit that remembers whose it was, the nail list, the board) in
+//! RZ_DisguiseMarks. Server only.
 class RZ_Disguise
 {
 	static const float KNOW_RADIUS = 150;	// "near their people or holdings": doubling and firing
@@ -42,6 +44,10 @@ class RZ_Disguise
 	protected ref map<string, int> m_mHourInfamy = new map<string, int>();		// "ident|f" -> impersonation Infamy this hour
 	protected ref array<IEntity> m_aWatchers = {};		// a mission's own people (AddWatcher), weak
 	protected ref array<int> m_aWatcherFaction = {};
+	protected ref map<string, int> m_mNotebook = new map<string, int>();		// ident -> a dead researcher's notebook number (one Halcyon look)
+	protected ref map<string, int> m_mKnownAt = new map<string, int>();		// "ident|f" -> real time last seen Known or better (issued kit)
+	protected ref RZ_DisguiseMarks m_Marks;
+	protected ref RZ_DisguiseWatch m_Watch;
 	protected float m_fClock;
 	protected float m_fCheckTimer;
 
@@ -65,6 +71,29 @@ class RZ_Disguise
 		RZ_ItemHelper.Words(settings.m_sRedHandHeadWords, m_aHeadWords[RZ_EFaction.BANDITS]);
 		RZ_ItemHelper.Words(settings.m_sHalcyonHeadWords, m_aHeadWords[RZ_EFaction.INSTITUTE]);
 		RZ_ItemHelper.Words(settings.m_sServiceWeaponWords, m_aServiceWords);
+		m_Marks = new RZ_DisguiseMarks(gm, this);
+		m_Watch = new RZ_DisguiseWatch(gm, this, settings);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Phase 3: kit marks, the nail list, the board.
+	RZ_DisguiseMarks GetMarks()
+	{
+		return m_Marks;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Phase 2: again looks, roll call, word gets round, vouching, the Rogue's price.
+	RZ_DisguiseWatch GetWatch()
+	{
+		return m_Watch;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Kit remembers whose it was (Hostility > Kit marks).
+	bool MarksOn()
+	{
+		return IsOn() && m_Settings.m_bKitMarks;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -88,17 +117,26 @@ class RZ_Disguise
 			return;
 
 		m_fCheckTimer += dt;
-		if (m_fCheckTimer < Math.Max(2, m_Settings.m_fDisguiseCheckSeconds))
+		bool kitRead = m_fCheckTimer >= Math.Max(2, m_Settings.m_fDisguiseCheckSeconds);
+		m_Watch.Tick(dt, ids, players, kitRead);
+		if (!kitRead)
 			return;
 
 		m_fCheckTimer = 0;
+		int unix = RZ_SeasonClock.Now();
 		foreach (int i, IEntity p : players)
 		{
 			int before = Wearing(ids[i]);
 			Read(ids[i], p);
 			int now = Wearing(ids[i]);
 			if (now >= 0 && now != before)
-				OnPutOn(ids[i], now);
+				OnPutOn(ids[i], now, p);
+
+			for (int f = 0; f < RZ_Factions.COUNT; f++)
+			{
+				if (RZ_Reputation.GetAccessRank(m_GM.GetTier(ids[i], f)) >= 1)
+					m_mKnownAt.Set(Ident(ids[i]) + "|" + f.ToString(), unix);
+			}
 
 			Breakers(ids[i], p);
 		}
@@ -204,10 +242,24 @@ class RZ_Disguise
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The first time you wear their kit this life: the rule of thumb, once.
-	protected void OnPutOn(int playerId, int f)
+	//! Their kit goes on: what the kit itself says (a dead man's, off the turned, signed out to
+	//! someone), whether one of theirs saw it go on, and the first time this life the rule of thumb.
+	protected void OnPutOn(int playerId, int f, IEntity me)
 	{
-		if (IsOwnColours(playerId, f) || !Tell(playerId, "puton" + f.ToString(), 3600))
+		if (IsOwnColours(playerId, f))
+			return;
+
+		if (MarksOn())
+		{
+			RZ_KitMark mark;
+			int kind = m_Marks.KindOf(me, playerId, f, mark);
+			string line = RZ_DisguiseMarks.PutOnLine(mark);
+			if (kind >= RZ_DisguiseMarks.KIT_SIGNED_OTHER && !line.IsEmpty())
+				m_GM.NotifyPlayer(playerId, "Borrowed kit", line + " Their people will know it at a look.");
+		}
+
+		m_Watch.OnPutOn(playerId, f, me);
+		if (!Tell(playerId, "puton" + f.ToString(), 3600))
 			return;
 
 		string text = string.Format("In %1's kit, their people look at your face up close. Don't run, sling your rifle, keep away from officers and never go inside the wire.", RZ_Factions.GetNameInText(f));
@@ -275,9 +327,66 @@ class RZ_Disguise
 
 	//------------------------------------------------------------------------------------------------
 	//! Their kit while you're Known or better with them (mixed tiers by access): just your gear.
+	//! Also issued kit (signed out to you by their quartermaster) for a real day after your standing
+	//! slips below Known (Hostility > Issued grace hours), never while Hunted.
 	bool IsOwnColours(int playerId, int f)
 	{
-		return RZ_Reputation.GetAccessRank(m_GM.GetTier(playerId, f)) >= 1;
+		RZ_ETier tier = m_GM.GetTier(playerId, f);
+		if (RZ_Reputation.GetAccessRank(tier) >= 1)
+			return true;
+
+		if (!MarksOn() || RZ_Reputation.IsHunted(tier))
+			return false;
+
+		int at;
+		if (!m_mKnownAt.Find(Ident(playerId) + "|" + f.ToString(), at) || RZ_SeasonClock.Now() - at > m_Settings.m_fIssuedGraceHours * 3600)
+			return false;
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		RZ_KitMark mark;
+		return me && m_Marks.KindOf(me, playerId, f, mark) == RZ_DisguiseMarks.KIT_ISSUED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The worn pieces of `f`'s kit (uniform and head pieces), from the loadout slots.
+	void WornPieces(IEntity character, int f, notnull array<IEntity> result)
+	{
+		if (!character || !RZ_Factions.IsValid(f) || m_aWords[f].IsEmpty())
+			return;
+
+		array<IEntity> pieces = {};
+		RZ_Util.GetWornMatching(character, m_aWords[f], pieces);
+		RZ_Util.GetWornMatching(character, m_aHeadWords[f], pieces);
+		foreach (IEntity piece : pieces)
+		{
+			if (!result.Contains(piece))
+				result.Insert(piece);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An item whose prefab name matches `f`'s uniform or head-piece keywords.
+	bool IsKitOf(IEntity item, int f)
+	{
+		if (!item || !RZ_Factions.IsValid(f) || m_aWords[f].IsEmpty())
+			return false;
+
+		string name = RZ_Util.GetPrefabName(item);
+		name.ToLower();
+		return RZ_ItemHelper.NameHas(name, m_aWords[f]) || RZ_ItemHelper.NameHas(name, m_aHeadWords[f]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The faction whose kit this item is, -1 none.
+	int KitFactionOf(IEntity item)
+	{
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			if (IsKitOf(item, f))
+				return f;
+		}
+
+		return -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -326,10 +435,22 @@ class RZ_Disguise
 	//! radius of the lab during the final stand.
 	bool Covers(int playerId, int f)
 	{
-		if (!IsPassing(playerId, f) || RZ_Reputation.IsHunted(m_GM.GetTier(playerId, f)))
+		if (!IsOn() || RZ_Reputation.IsHunted(m_GM.GetTier(playerId, f)))
 			return false;
 
-		return !InStandRadius(playerId);
+		if (InStandRadius(playerId))
+		{
+			if (IsPassing(playerId, f) && Tell(playerId, "standlog" + f.ToString(), 600))
+				RZ_Log.Info(string.Format("Disguise: %1's pass with %2 counts for nothing near the lab during the stand", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f)));
+
+			return false;
+		}
+
+		if (IsPassing(playerId, f))
+			return true;
+
+		// A strict stance: in their kit, beyond 35 m of their people, they hold fire without a claim
+		return m_Watch.StrictCover(playerId, f, GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -352,7 +473,12 @@ class RZ_Disguise
 
 		RZ_ETier tier = m_GM.GetTier(playerId, f);
 		if (RZ_Reputation.IsHunted(tier))
+		{
+			if (KitLevel(playerId, f) > 0 && Tell(playerId, "huntedlog" + f.ToString(), 600))
+				RZ_Log.Info(string.Format("Disguise: %1 in %2's kit can't claim: Hunted", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f)));
+
 			return "They know a Hunted face. The kit buys you nothing.";
+		}
 
 		if (KitLevel(playerId, f) <= 0)
 			return "You're not in their kit.";
@@ -387,6 +513,8 @@ class RZ_Disguise
 	void LearnWord(int playerId)
 	{
 		m_mWord.Set(Ident(playerId), RZ_SeasonClock.Day());
+		if (Tell(playerId, "wordlog", 3600))
+			RZ_Log.Info(string.Format("Disguise: %1 heard the word at the wire (day %2)", RZ_Util.PlayerName(playerId), RZ_SeasonClock.Day()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -407,6 +535,16 @@ class RZ_Disguise
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		if (f == RZ_EFaction.BANDITS && !profile.m_sCrewName.IsEmpty())
 			return "Crew name: " + profile.m_sCrewName;
+
+		// A dead researcher's notebook number (Notebook 31): one Halcyon look
+		int notebook;
+		if (f == RZ_EFaction.INSTITUTE && m_mNotebook.Find(Ident(playerId), notebook))
+			return "Notebook " + notebook.ToString();
+
+		// A dead man's name heard on the nightly call
+		string dead = m_Watch.HeardName(playerId);
+		if (f == RZ_EFaction.MILITARY && !dead.IsEmpty())
+			return "Name: " + RZ_DisguiseMarks.Surname(dead);
 
 		RZ_Leaders leaders = m_GM.GetLeaders();
 		if (leaders)
@@ -479,6 +617,7 @@ class RZ_Disguise
 		int n;
 		m_mPointed.Find(key, n);
 		m_mPointed.Set(key, Math.Min(2, n + 1));
+		RZ_Log.Info(string.Format("Disguise: %1 pointed out to %2 (%3 at this look, at most 2)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), Math.Min(2, n + 1)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -491,8 +630,8 @@ class RZ_Disguise
 
 	//------------------------------------------------------------------------------------------------
 	//! A look by `f` at this player (RZ_Checks.LookScore) at `place`, against `difficulty`. Pass: they
-	//! pass for `seconds` (0: while the place stands). Fail: caught. Returns the result (Short counts
-	//! as a fail: there's no halfway at a look).
+	//! pass for `seconds` (0: while the place stands; -1: keep the pass they had, for an again look or
+	//! roll call). Fail: caught. Returns the result (Short counts as a fail: there's no halfway).
 	bool Look(int playerId, int f, int difficulty, string place, string paper, float seconds)
 	{
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
@@ -503,11 +642,25 @@ class RZ_Disguise
 		bool instant;
 		int score = RZ_Checks.LookScore(m_GM, playerId, f, place, paper, tags, instant);
 		bool pass = !instant && score >= difficulty;
-		RZ_Log.Info(string.Format("Disguise: %1 look by %2 at %3: %4 of %5 (%6)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), place, score, difficulty, Pass(pass)));
+		RZ_Log.Info(string.Format("Disguise: %1 look by %2 at %3: %4 of %5 (%6) %7", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), place, score, difficulty, Pass(pass), tags));
 		m_mPointed.Remove(Ident(playerId) + "|" + f.ToString());
+		// A notebook number is good for one Halcyon look
+		if (f == RZ_EFaction.INSTITUTE && paper.IsEmpty())
+			m_mNotebook.Remove(Ident(playerId));
+
 		if (!pass)
 		{
-			Caught(playerId, f, me, "They look at you a moment too long.");
+			string why = "They look at you a moment too long.";
+			RZ_KitMark mark;
+			int kind = RZ_DisguiseMarks.KIT_NONE;
+			if (MarksOn())
+				kind = m_Marks.KindOf(me, playerId, f, mark);
+
+			string kitLine = RZ_DisguiseMarks.FailLine(kind, mark, f);
+			if (!kitLine.IsEmpty())
+				why = kitLine;
+
+			CaughtAt(playerId, f, me, why, paper);
 			return false;
 		}
 
@@ -515,12 +668,123 @@ class RZ_Disguise
 		int n;
 		m_mPassed.Find(key, n);
 		m_mPassed.Set(key, n + 1);
+		string passKey = Ident(playerId) + "|" + f.ToString();
 		float until = m_fClock + 86400;
 		if (seconds > 0)
 			until = m_fClock + seconds;
 
-		m_mPassUntil.Set(Ident(playerId) + "|" + f.ToString(), until);
+		float had;
+		if (seconds < 0 && m_mPassUntil.Find(passKey, had))
+			until = had;
+
+		m_mPassUntil.Set(passKey, until);
+		m_Marks.OnPassed(playerId);
+		if (seconds >= 0)
+			m_Watch.OnPassed(playerId, f, place);
+
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Notebook 31: a dead researcher's notebook number, a cover detail for one Halcyon look.
+	void GiveNotebook(int playerId, int number)
+	{
+		m_mNotebook.Set(Ident(playerId), number);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A mission's watchers of `f` (weak), for the nearness query.
+	void WatchersOf(int f, notnull array<IEntity> result)
+	{
+		foreach (int i, IEntity w : m_aWatchers)
+		{
+			if (w && m_aWatcherFaction[i] == f)
+				result.Insert(w);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The look's extra tags (RZ_Checks.LookScore): kit that remembers whose it was (an instant fail),
+	//! a dead man's name at his own post (an instant fail), word gets round, seen putting it on,
+	//! running, a gun in your hands, a red armband the Red Hand gave someone else. The score change.
+	int MoreTags(int playerId, int f, string place, IEntity me, out string tags, out bool instant)
+	{
+		tags = "";
+		instant = false;
+		if (!me)
+			return 0;
+
+		int score = 0;
+		if (MarksOn())
+		{
+			RZ_KitMark mark;
+			int kind = m_Marks.KindOf(me, playerId, f, mark);
+			if (kind == RZ_DisguiseMarks.KIT_DEAD)
+			{
+				instant = true;
+				tags += " [A dead man's kit]";
+			}
+			else if (kind == RZ_DisguiseMarks.KIT_TURNED)
+			{
+				instant = true;
+				tags += " [Off the turned]";
+			}
+			else if (kind == RZ_DisguiseMarks.KIT_SIGNED_OTHER)
+			{
+				instant = true;
+				tags += " [Signed out to someone else]";
+			}
+
+			if (f == RZ_EFaction.BANDITS && m_Marks.WearsGivenOther(me, playerId, f))
+			{
+				score--;
+				tags += " [Not your armband -1]";
+			}
+		}
+
+		// A dead man's name, given at his own post
+		string dead = m_Watch.HeardName(playerId);
+		if (f == RZ_EFaction.MILITARY && !dead.IsEmpty() && place.IndexOf("h") == 0)
+		{
+			int holding = m_Marks.HoldingOfName(f, dead);
+			if (holding >= 0 && place == "h" + holding.ToString())
+			{
+				instant = true;
+				tags += " [His own post]";
+			}
+		}
+
+		if (m_Watch.WordRound(f, me.GetOrigin()))
+		{
+			score--;
+			tags += " [Word's round -1]";
+		}
+
+		if (m_Watch.SeenPuttingOn(playerId, f, me.GetOrigin()))
+		{
+			score--;
+			tags += " [Seen putting it on -1]";
+		}
+
+		ChimeraCharacter c = ChimeraCharacter.Cast(me);
+		CharacterControllerComponent ctrl;
+		if (c)
+			ctrl = c.GetCharacterController();
+
+		// VERIFY: a player's sprint and raised weapon are known to the server
+		if (ctrl && ctrl.IsSprinting())
+		{
+			score--;
+			tags += " [Running -1]";
+		}
+
+		if (ctrl && ctrl.IsWeaponRaised())
+		{
+			score--;
+			tags += " [A gun in your hands -1]";
+		}
+
+		return score;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -540,6 +804,13 @@ class RZ_Disguise
 		if (!Tell(playerId, "coming" + place, NOTICE_GAP))
 			return;
 
+		ShowComingNow(playerId, f, difficulty, place, paper, title, "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The coming look now (an again look's 10 s notice), after a lead-in ("" none).
+	void ShowComingNow(int playerId, int f, int difficulty, string place, string paper, string title, string lead)
+	{
 		string tags;
 		bool instant;
 		int score = RZ_Checks.LookScore(m_GM, playerId, f, place, paper, tags, instant);
@@ -547,7 +818,11 @@ class RZ_Disguise
 		if (instant)
 			result = "Pass as one of them: they'd see through it.";
 
-		m_GM.Say(playerId, title, f, tags + " " + result);
+		string text = tags + " " + result;
+		if (!lead.IsEmpty())
+			text = lead + " " + text;
+
+		m_GM.Say(playerId, title, f, text);
 	}
 
 	// ================================================================ Caught, exposed, held
@@ -557,7 +832,26 @@ class RZ_Disguise
 	//! their fights or grudges is on you: then it's their grudge, and the fight carries on).
 	void Caught(int playerId, int f, IEntity me, string line)
 	{
+		CaughtAt(playerId, f, me, line, "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Caught, with the look's paper (so the name given goes on Bastion's board, never a paper's).
+	void CaughtAt(int playerId, int f, IEntity me, string line, string paper)
+	{
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		string kitText = BoardKit(playerId, f);
+		string named = "";
+		if (paper.IsEmpty())
+			named = CoverDetail(playerId, f, "");
+
+		if (named.IndexOf("Name: ") == 0)
+			named = named.Substring(6, named.Length() - 6);
+		else if (named.IndexOf("Crew name: ") == 0)
+			named = named.Substring(11, named.Length() - 11);
+		else
+			named = "";
+
 		string ident = profile.m_sIdentity;
 		m_mPassUntil.Remove(ident + "|" + f.ToString());
 		profile.m_aBlownUntil[f] = profile.m_fLifeSeconds + Math.Max(1, m_Settings.m_fDisguiseBlownMinutes) * 60;
@@ -588,6 +882,10 @@ class RZ_Disguise
 
 		string taken = TakeKit(me, f);
 		string text = line + " " + CaughtLine(f);
+		string face = FaceLine(playerId, f);
+		if (!face.IsEmpty())
+			text = face + " " + text;
+
 		if (!taken.IsEmpty())
 			text += " " + taken;
 
@@ -606,8 +904,67 @@ class RZ_Disguise
 
 		text += Penalty(playerId, f, me);
 		m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), text);
-		Public(f);
+		string where = "on the road";
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (me && territory && territory.IsActive())
+		{
+			RZ_Holding near = territory.FindHolding(f, me.GetOrigin(), Math.Max(100, m_Settings.m_fWordRoundRadius));
+			if (near)
+				where = near.m_sName;
+		}
+
+		m_Marks.OnCaught(playerId, f, where, kitText, named);
+		// Held, the voucher answers, and word gets round (its line, else the open channel's)
+		if (!m_Watch.OnCaught(playerId, f, me))
+			Public(f);
+
+		RunningJoke(f);
 		RZ_Log.Info(string.Format("Disguise: %1 caught by %2 (catch %3 this life)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), catches));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For Bastion's board: what the impostor wore and how many things were wrong. Never a name.
+	protected string BoardKit(int playerId, int f)
+	{
+		string kit = "their colours";
+		if (KitLevel(playerId, f) >= 2)
+			kit = "full kit";
+
+		int tells = Tells(playerId);
+		if (tells == 1)
+			kit += ", one thing wrong";
+		else if (tells > 1)
+			kit += ", several things wrong";
+
+		return kit;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Face to face, the name they know you by (a mixed name, Reputation > Names on), "" none.
+	protected string FaceLine(int playerId, int f)
+	{
+		if (!RZ_ReputationSettings.Get().m_bNames)
+			return "";
+
+		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
+		RZ_ERep rep = RZ_RepNames.GetRep(p.GetFame(f), p.GetInfamy(f));
+		if (!RZ_RepNames.IsMixed(rep))
+			return "";
+
+		return string.Format("\"Hang on. You're that %1.\"", RZ_RepNames.GetName(rep));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Red Hand's running joke at Bastion's expense, every third Bastion catch of the season.
+	protected void RunningJoke(int f)
+	{
+		int n = m_Marks.Catches(f);
+		if (f != RZ_EFaction.MILITARY || n <= 0 || n % 3 != 0)
+			return;
+
+		RZ_FactionLife life = m_GM.GetFactionLife();
+		if (life)
+			life.OpenChannelLine(RZ_EFaction.BANDITS, string.Format("\"That's %1 this season caught in Bastion green. We should open a tailor's.\"", n));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -616,6 +973,7 @@ class RZ_Disguise
 	{
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		m_mPassUntil.Remove(profile.m_sIdentity + "|" + f.ToString());
+		m_Watch.OnPassEnded(playerId, f);
 		if (IsBlown(playerId, f))
 			return;
 
@@ -726,6 +1084,55 @@ class RZ_Disguise
 			life.OpenChannelLine(f, line);
 	}
 
+	// ================================================================ Colours: refusals
+	//------------------------------------------------------------------------------------------------
+	//! A quartermaster (or the fence) of `shop` won't deal with you in its enemy's colours: the Red
+	//! Hand in Bastion's, Bastion in the Red Hand's. Their line, "" if it deals.
+	string ShopRefusal(int playerId, int shop)
+	{
+		if (shop == RZ_EFaction.BANDITS && WearsColours(playerId, RZ_EFaction.MILITARY))
+			return "\"Take the costume off, soldier. Then we'll talk prices.\"";
+
+		if (shop == RZ_EFaction.MILITARY && WearsColours(playerId, RZ_EFaction.BANDITS))
+			return "\"Not in those colours. Take the red off and come back.\"";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Haven won't talk to you in the Red Hand's colours, or in a ribbon given to someone else;
+	//! the Deserter won't talk to anyone in Bastion's jacket. Their line, "" if they talk.
+	string TalkRefusal(int playerId, bool haven, bool deserter)
+	{
+		if (!IsOn())
+			return "";
+
+		if (deserter && WearsColours(playerId, RZ_EFaction.MILITARY))
+			return "\"Not in that jacket. I walked away from that jacket. Take it off or walk on.\"";
+
+		if (!haven)
+			return "";
+
+		if (WearsColours(playerId, RZ_EFaction.BANDITS))
+			return "\"Not in red. Not here. Take it off out of sight of the children and we'll talk.\"";
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (MarksOn() && m_Marks.WearsOthersRibbon(me, playerId))
+			return "\"Where did you get that ribbon? We know who we gave them to.\"";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bastion's search: a dead man's kit and kit signed out to someone else are taken. The line.
+	string TakeMarkedAtSearch(IEntity character, int playerId)
+	{
+		if (!MarksOn())
+			return "";
+
+		return m_Marks.TakeAtSearch(character, playerId);
+	}
+
 	// ================================================================ Breakers
 	//------------------------------------------------------------------------------------------------
 	//! While passing: a leader of theirs within 15 m, or inside a stronghold's or the lab's wire,
@@ -744,6 +1151,10 @@ class RZ_Disguise
 
 			if (l && l.m_eFaction == f)
 			{
+				// A Rogue plays along for his price (RZ_DisguiseWatch); every other leader sees through you
+				if (m_Watch.RoguePrice(playerId, f, l))
+					continue;
+
 				Caught(playerId, f, me, "\"I know every face under my command, and yours isn't one of them.\"");
 				continue;
 			}

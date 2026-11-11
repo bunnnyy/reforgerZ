@@ -244,7 +244,9 @@ two players at one speaker can see different choices.
 - **Vouch.** Trusted or better with the speaker's faction, within 8 m of someone talking to them:
   "[Vouch] '{name}'s with me.'" For 5 minutes, while you stay within 8 m, their persuade and lie
   checks there get +1 (inside the dialogue +1). A lie told under the vouch, found out, costs you +5
-  Infamy with that faction and regard *vouched_liar*. Once per pair per hour.
+  Infamy with that faction and regard *vouched_liar*, and 2 hours without vouching. Once per pair per
+  hour. At a road post's barrier or Halcyon's gate, Known with Bastion or Halcyon in your own colours is
+  enough, and the vouch also signs them through ([REPUTATION.md](REPUTATION.md#borrowed-kit), "Vouching").
 - **Call it out.** For 20 s after someone near you picks a choice that tells the speaker something (a
   claim or a lie): "[Call it out] '{name}'s lying.'" A lie: caught at once. True: regard *slander* for
   you. Once per pair per hour; the caller gets nothing either way.

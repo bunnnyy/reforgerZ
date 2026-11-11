@@ -295,6 +295,15 @@ class RZ_Checks
 			tags += " [Hurt -1]";
 		}
 
+		// Kit that remembers whose it was, word gets round, seen putting it on, running, a gun in
+		// your hands (RZ_Disguise.MoreTags)
+		string more;
+		bool fails;
+		score += d.MoreTags(playerId, f, place, me, more, fails);
+		tags += more;
+		if (fails)
+			instant = true;
+
 		if (profile.m_iInfectionStage >= RZ_EInfectionStage.WEAKNESS)
 		{
 			if (f == RZ_EFaction.INSTITUTE)

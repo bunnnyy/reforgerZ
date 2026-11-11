@@ -152,6 +152,33 @@ class RZ_HostilitySettings
 	[Attribute("1500", desc: "Disguises: within this distance (m) of the lab during the final stand no disguise works")]
 	float m_fStandRadius;
 
+	[Attribute("3", desc: "Disguises: minutes between the again looks while you pass and one of theirs within 15 m can see you (each one step harder)")]
+	float m_fAgainLookMinutes;
+
+	[Attribute("1", desc: "Disguises: roll call. Anyone passing at a holding of theirs at the shift change (05:30, 17:30; the Red Hand's dusk meal at 18:30) gets a look")]
+	bool m_bRollCall;
+
+	[Attribute("30", desc: "Disguises: word gets round. Minutes that a catch or a kill of one of theirs makes every look at that holding and its road posts one step harder")]
+	float m_fWordRoundMinutes;
+
+	[Attribute("1500", desc: "Disguises: word gets round reaches this far (m) from the holding: its road posts")]
+	float m_fWordRoundRadius;
+
+	[Attribute("1", desc: "Disguises: vouching. Known (Bastion, Halcyon) or Trusted (the Red Hand), in your own colours, you can sign one friend through a barrier or gate; you answer for them for 30 minutes")]
+	bool m_bVouching;
+
+	[Attribute("5", desc: "Disguises: Infamy for the voucher when the one they vouched for is caught or hurts their people (once per vouch; then 2 hours without vouching)")]
+	int m_iVouchInfamy;
+
+	[Attribute("20", desc: "Disguises: the Rogue's price. A Rogue leader plays along for this much of his faction's Favor; everyone who paid is named if he's found out. 0: Rogues see through you like everyone else")]
+	int m_iRoguePrice;
+
+	[Attribute("1", desc: "Disguises: kit remembers whose it was. A dead man's kit, kit off the turned and kit signed out to someone else fail at their look; Bastion's search takes them")]
+	bool m_bKitMarks;
+
+	[Attribute("24", desc: "Disguises: issued kit. Real hours your own faction's kit, bought by you, still counts as your own colours after your standing slips below Known")]
+	float m_fIssuedGraceHours;
+
 	[Attribute("MIL", desc: "FactionManager key of Bastion's AI")]
 	string m_sBastionKey;
 

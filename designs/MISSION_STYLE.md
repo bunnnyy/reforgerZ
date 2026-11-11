@@ -29,7 +29,7 @@ alternatives that were not chosen are gone.
   three a life per faction, barred at that speaker for a real day after a failure, and never on a
   stronghold leader.
 - **Tricks are the disguise look** (plan §5). The trick score and wariness are gone. A trick is a claim
-  judged by the fixed look in [DISGUISE.md](DISGUISE.md), and the job's paper is its cover detail.
+  judged by the fixed look in [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit), and the job's paper is its cover detail.
   Missions' fixed +10 when found out is dropped: a catch costs +3 Infamy, the kit and one of three
   catches a life. Halcyon's full kit is a coat plus a hood or mask with a respirator (conflict 35).
 - **Words** (plan §5): "leans" are **route assets**; missions' world marks are **world records** and
@@ -212,7 +212,7 @@ them.
 | **Press** | Threaten | Fear | +3 Infamy with the listener's faction (a scene may name up to 8), plus a life record. The limits above |
 | **Trade** | Give items or a service | You have it (the price table) | The items, worth the same as the matching bribe |
 | **Bribe** | Pay Favor | You have it | Favor |
-| **Trick** | A claim: you're one of theirs, or you're carrying their paper | The look ([DISGUISE.md](DISGUISE.md)) | Caught: the catch's costs, and the scene turns |
+| **Trick** | A claim: you're one of theirs, or you're carrying their paper | The look ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) | Caught: the catch's costs, and the scene turns |
 | **Sneak** | Do it unseen, within a window (before the first wave, or at night) | `RZ_QuestStealth`, as built, which reads built stealth | Seen: the loud version starts at once, and whatever was in the open is exposed. It pays the same as the plain way, with no extras |
 | **Force** | Kill what the mission spawned | — | Infamy, noise, heat |
 | **Betray** | Take the job, then hand the result to someone else | Through who benefits | Infamy with the giver. Their leader remembers |
@@ -268,7 +268,7 @@ never the only way to find a truth. A mission never writes a read for a backgrou
 ## Tricks: the look
 
 A trick is a lie that rests on something real. It's a **claim**, and the disguise design's look judges
-it ([DISGUISE.md](DISGUISE.md), "Looks"): a fixed score, shown with its tags before you commit. The
+it ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit), "Looks"): a fixed score, shown with its tags before you commit. The
 mission sets the difficulty (1–3) through `RZ_QuestApproach.PassAs(gm, playerId, faction, difficulty,
 coverKey)` and registers its people as watchers (`RZ_Disguise.AddWatcher`).
 
@@ -290,10 +290,10 @@ coverKey)` and registers its people as watchers (`RZ_Disguise.AddWatcher`).
 - While you're passing as a faction, your persuade score with it counts as 0, and you can't threaten its
   people.
 - **Your own colours aren't a disguise.** At Known or better with a faction (mixed tiers by access),
-  its kit is just your gear, and you're treated by your real standing ([DISGUISE.md](DISGUISE.md),
+  its kit is just your gear, and you're treated by your real standing ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit),
   "Kit").
 
-**Caught** (one cost, owned by [DISGUISE.md](DISGUISE.md)):
+**Caught** (one cost, owned by [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)):
 - +3 Infamy with that faction, never taking you into Watched on its own;
 - the kit is taken;
 - one of your 3 catches with that faction this life;
@@ -676,7 +676,7 @@ The first errand's tip is [ERRANDS.md](ERRANDS.md)'s.
 **Dialogue, reputation, disguise and the epilogue** need only four things from this design's partners:
 - the node table ([DIALOGUE.md](DIALOGUE.md));
 - the mixed-reputation title;
-- the look and the own-colours rule ([DISGUISE.md](DISGUISE.md));
+- the look and the own-colours rule ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit));
 - the carrier list above ([EPILOGUE.md](EPILOGUE.md)).
 
 ## The conversion
@@ -884,7 +884,7 @@ journal's detail payload. Still to build:
 - **Built in phase 1** ([DESIGN.md](../docs/DESIGN.md#the-shared-engine)): `RZ_Ways` (keyed by identity, the
   approach enum appended), `RZ_Checks` (Trust, Fear, threats, `Result`, the price table, tags), the stores for
   life and world records, the callback queue, and reasons in `RZ_WorldMemory`. Still to add to them: `PassAs` and
-  the look ([DISGUISE.md](DISGUISE.md)); `Resolve` for jobs that aren't questline stages; the liar count's and
+  the look ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)); `Resolve` for jobs that aren't questline stages; the liar count's and
   crossing lines' writers; the notice board accepting system notes signed with a person's name (unsigned notes are
   built).
 - **`RZ_SceneProps`** inside the one scene-people spawner: the spawning and label helpers move out of
@@ -897,7 +897,7 @@ journal's detail payload. Still to build:
 - **`RZ_Trade`:** take items by the price table through `RZ_Safehouses.TakeFood`'s keywords, plus
   background services as timed stand-bys. Mission goods are tagged and refused for pay (VERIFY: how to
   tag an item).
-- **Disguise hooks** (owned by [DISGUISE.md](DISGUISE.md)): `PassAs`, `IsPassing`, `AddWatcher`; the
+- **Disguise hooks** (owned by [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)): `PassAs`, `IsPassing`, `AddWatcher`; the
   own-colours rule; the mission's extra see-through list (a wanderer who remembers you, a life record
   about you, hunter squads); one mission trick per life per faction per season day.
 - **The lie store** (shared): each record with its exposing condition; events first (a visit, road news,

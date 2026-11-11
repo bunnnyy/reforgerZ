@@ -4962,7 +4962,7 @@
    "category": "Factions",
    "object": "Hostility",
    "field": "m_HostilitySettings",
-   "covers": "**Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys"
+   "covers": "**Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform**, head-piece and service-weapon **keywords** per faction, 2 pieces, checked every 10 s, blown 60 min of play, 3 catches a life, impersonation 3 Infamy (6 an hour), gate pass 10 min, **Confiscation** (on), the Red Hand's fine 10 and beating 0.2, **Colours** (on), claim in full kit (on), stand radius 1,500 m, **again looks** every 3 min, **roll call** (on), **word gets round** 30 min within 1,500 m, **vouching** (on, 5 Infamy), **the Rogue's price** (20), **kit marks** (on), issued grace 24 real hours), the three AI faction keys"
   },
   {
    "category": "Factions",
@@ -5905,6 +5905,15 @@
     "m_bColours": "1",
     "m_bClaimInFullKit": "1",
     "m_fStandRadius": "1500",
+    "m_fAgainLookMinutes": "3",
+    "m_bRollCall": "1",
+    "m_fWordRoundMinutes": "30",
+    "m_fWordRoundRadius": "1500",
+    "m_bVouching": "1",
+    "m_iVouchInfamy": "5",
+    "m_iRoguePrice": "20",
+    "m_bKitMarks": "1",
+    "m_fIssuedGraceHours": "24",
     "m_sBastionKey": "MIL",
     "m_sRedHandKey": "BAND",
     "m_sHalcyonKey": "INST"

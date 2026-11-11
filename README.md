@@ -161,7 +161,9 @@ writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, sim
 jobs with truths, lies and fallout, reputation's parley and settling up, lies and witnesses,
 dialogue's scenes for several players, borrowed kit, strangers at their spots, locals, twists,
 board and radio asks and errands' phase 4 cards,
-[MISSIONS.md](docs/MISSIONS.md)); talk
+[MISSIONS.md](docs/MISSIONS.md)); borrowed kit's phases 2 and 3 (phase 8 in part: again looks, roll
+call, word gets round, vouching at barriers, the Rogue's price, kit that remembers whose it was, the
+nail list and Bastion's board, [REPUTATION.md](docs/REPUTATION.md#borrowed-kit)); talk
 (phase 2: conversation trees, reputation's voice, the season mood and the voice bank,
 [DIALOGUE.md](docs/DIALOGUE.md)); the towns' crawlers, the loose ones, heat hordes from towns, the
 land grid, the tribes' daily life and hunts, their life cycle (succession, borders, splits, lair

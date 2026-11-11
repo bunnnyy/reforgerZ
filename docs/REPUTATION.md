@@ -420,15 +420,16 @@ life's ([DESIGN.md](DESIGN.md#camp-life)); none of it changes who is waved throu
 | Post | You are | What happens |
 |---|---|---|
 | Bastion checkpoint | Known or better, not the Wildcard tier, not in Red Hand colours, not in a searched car | Waved through, unsearched |
-| | In a vanilla group arriving together (within 50 m) where one member would be searched | **The company you keep:** "We search the whole car." Everyone there is searched, before any look (**Reputation > Group rules**). Running is still per player |
+| | In a vanilla group arriving together (within 50 m) where one member would be searched (a member in Bastion's kit stands their own look) | **The company you keep:** "We search the whole car." Everyone there is searched, and nobody in the car gets a look (**Reputation > Group rules**). Running is still per player |
 | | In Red Hand colours (or a worn red armband) | Searched whatever your tier; the worn red is taken: "Evidence." |
 | | In Bastion's kit, below Known | A claim: the look at the barrier ([Borrowed kit](#borrowed-kit)). Pass: waved through as one of theirs, unsearched. Caught: held and searched |
+| | Signed through by a friend ([vouching](#borrowed-kit)), not in Red Hand colours | Waved through, unsearched; the friend answers for you |
 | | The Wildcard tier (Wildcard, Necessary Evil, Wild Child) | Searched like a stranger: "Arms out." They search you because they don't trust you, so running this search costs +6 Bastion Infamy, not +3 (**Reputation > Wildcard at posts**, **Wildcard run Infamy**) |
-| | Anyone else | Told at 150 m to walk to the barrier. At the barrier (35 m) for 15 s: searched, and up to three contraband items taken (suppressors, explosives: a setting). Leave the barrier before it's done and you've **run** it: +3 Bastion Infamy and the post fires on you for a few minutes |
+| | Anyone else | Told at 150 m to walk to the barrier. At the barrier (35 m) for 15 s: searched, and up to three contraband items taken (suppressors, explosives: a setting), plus any worn dead man's kit or kit signed out to someone else ([whose kit it was](#whose-kit-it-was)). Leave the barrier before it's done and you've **run** it: +3 Bastion Infamy and the post fires on you for a few minutes |
 | | Hunted | Shot (as everywhere); or [surrender](#surrender) |
 | Red Hand roadblock | In Bastion's colours | Turned round at 150 m whatever your tier ("We don't sell passes to the army."), fired on at the barrier |
 | | Trusted or better | Waved through |
-| | Known | Pay the **toll** at the barrier (10 Red Hand Favor) and pass. Can't pay: treated as a stranger. The Wildcard tier pays danger money: 20 (**Reputation > Wildcard toll**, ×2). In Halcyon's colours the toll doubles to 20 ("Beaks pay double."); with both, the higher, never both. The **night rate**: at night within 1.5 km of a road a pack hunts at its hour, one Favor more (*"Night rate. The Postmen are out."*, [INFECTED.md](INFECTED.md#voices)) |
+| | Known, or signed through by a Trusted friend ([vouching](#borrowed-kit)) | Pay the **toll** at the barrier (10 Red Hand Favor) and pass. Can't pay: treated as a stranger. The Wildcard tier pays danger money: 20 (**Reputation > Wildcard toll**, ×2). In Halcyon's colours the toll doubles to 20 ("Beaks pay double."); with both, the higher, never both. The **night rate**: at night within 1.5 km of a road a pack hunts at its hour, one Favor more (*"Night rate. The Postmen are out."*, [INFECTED.md](INFECTED.md#voices)) |
 | | In the Red Hand's kit, below Known | A claim: the look at the barrier. Pass: waved through like crew. Caught: the toll for liars |
 | | Anyone else | Told at 150 m to turn around. At the barrier: fired on for a few minutes |
 | | Hunted | Shot |
@@ -747,10 +748,12 @@ vanilla relations. Setup is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "Factio
 
 ### Borrowed kit
 
-Code: `Factions/RZ_Disguise.c`, the look in `RZ_Checks.LookScore`. ✅ (disguise phase 1; settings
-**Factions > Hostility > Disguises**). Wearing a faction's kit does nothing by itself: you **claim**
-to be one of them, and they look at you. A pass buys passage and a moment, never goods, standing,
-services, contracts or the cure.
+Code: `Factions/RZ_Disguise.c` (kit, claims, caught), `Factions/RZ_DisguiseWatch.c` (while you pass,
+word gets round, vouching), `Factions/RZ_DisguiseMarks.c` (whose kit it was, the nail list, the
+board); the look in `RZ_Checks.LookScore`. ✅ (disguise phases 1 to 3; settings **Factions >
+Hostility > Disguises**). Wearing a faction's kit does nothing by itself: you **claim** to be one of
+them, and they look at you. A pass buys passage and a moment, never goods, standing, services,
+contracts or the cure.
 
 **Kit**, read from the loadout slots every 10 s (never from a pack; VERIFY on a player character):
 
@@ -759,6 +762,7 @@ services, contracts or the cure.
 | Their colours | 2 pieces matching a faction's keywords (Bastion, the Red Hand, Halcyon; the Haven has no uniform) |
 | Full kit | 3 pieces, one on the head: a helmet, cap or beret (Bastion), a bandana (the Red Hand), the beak (Halcyon: a hood or mask with a respirator, plus the coat; the mask is never a tell) |
 | Own colours | Their kit while you're Known or better with them (access rank 1+): just your gear, never a disguise |
+| Issued kit | Their kit signed out to you by their own quartermaster: still your own colours for a real day after your standing slips below Known (**Issued grace hours**, 24), never while Hunted |
 | In their kit | Their colours while below Known with them. Nothing happens until you claim |
 | Tells (−1 each; two and you can't claim) | another faction's colours worn at the same time; the wrong weapon (Bastion: any firearm that isn't a service weapon, by keyword; Halcyon: any long gun) |
 
@@ -768,23 +772,45 @@ post's speaker in their colours; at an outpost's gate while Watched; a mission's
 season day). The Hunted and Kill on Sight can't claim. At 150 m you're shown what they'll see as one
 notice: "[Full kit +2] [Background +1] [They know your face −1] Pass as one of them: 2 of 2."
 
-**The look** (difficulty 2 at barriers and gates; a mission sets 1–3):
+**The look** (difficulty 2 at barriers, gates, again looks and roll call; a mission sets 1–3):
 
 | Plus | Minus (each) |
 |---|---|
 | Their colours +1, full kit +2 | They know your face: Watched or Uneasy, or a leader of theirs met this life |
 | A matching background +1: Soldier or Police (Bastion), Ex-Con or Raider (Red Hand), Lab Tech or Doctor (Halcyon) | Caught by them earlier this life |
-| One cover detail +1: Bastion's **word at the wire** (changes daily, read on Bastion's secure net when a Radio Operator cracks it), a crew name (Red Hand), a name you've heard (a leader of theirs you've met), a mission's paper | On the bounty notices (Kill on Sight with anyone) |
+| One cover detail +1: Bastion's **word at the wire** (changes daily, read on Bastion's secure net when a Radio Operator cracks it), a crew name (Red Hand), a name you've heard (a leader of theirs you've met, or a dead man's from Bastion's nightly call), a dead researcher's notebook number (Halcyon, one look), a mission's paper | On the bounty notices (Kill on Sight with anyone) |
 | Dark or fog +1 (your light level as stealth reads it, else 20:30–05:00) | Each look already passed at this place; each tell; each point-out (two at most); under half health; the infection showing |
+| | **Word's round** there; **seen putting it on** (below); running; a gun in your hands (both VERIFY); a red armband the Red Hand gave someone else |
 
 Instant fail: the infection showing at Halcyon's look ("They see bites for a living."), three
-catches this life ("Your description is on the board at every post."), blown. *Simplified:* the word
-is +1 when you've heard it; picking among three words (a wrong one fails at once) comes with claim
-lines in conversations.
+catches this life ("Your description is on the board at every post."), blown, kit that remembers
+whose it was ([below](#whose-kit-it-was)), and a dead man's name given at his own post.
+*Simplified:* the word is +1 when you've heard it; picking among three words (a wrong one fails at
+once) comes with claim lines in conversations ([DIALOGUE.md](../designs/DIALOGUE.md#12-claims-in-someone-elses-kit)).
 
 **Passing.** At a barrier: cleared for that post while it stands. At a gate: 10 minutes inside. While
 passing, that faction's AI looks past what it holds against you (not a fight's bit), your persuade
 score with them counts as 0, and you can't threaten their people.
+
+**While you pass** ✅ (`RZ_DisguiseWatch`):
+- **Again looks.** Every 3 minutes (**Again look minutes**) that one of theirs within 15 m can see you
+  (one sight trace from their eyes to your chest, VERIFY), they look again, one step harder each time
+  (the looks passed at this place). A notice comes 10 s before: "Someone's looking at you again." If
+  nobody of theirs sees you when it's due, the look is **owed** for 30 minutes: claim again and it
+  comes 10 s after the claim. The state is kept by identity, so logging out doesn't clear it.
+- **Roll call** (**Roll call**). At the shift change (05:30 and 17:30; the Red Hand's dusk meal at
+  18:30) everyone passing within 150 m of one of their holdings (or the lab) is looked at.
+- **Seen putting it on.** When their kit goes on with one of theirs within 30 m who can see you,
+  every look within 150 m of there is one step harder for an hour.
+- **Leaders and the wire.** A leader of theirs within 15 m, or being inside a stronghold's or the
+  lab's wire, is a catch. **The Rogue's price** (**Rogue's price**, 20): a Rogue outpost or safehouse
+  leader says "Nice jacket. Twenty Favor and I never saw it." Still within 15 m at the next check,
+  you pay his faction's Favor and pass at his seat for 10 minutes; walk off first and nothing happens;
+  can't pay and you're caught. He writes it down: if his rogue work is found out
+  ([Loyalty](#loyalty)), everyone who paid takes +5 Infamy (offline: when they're next on). Loyal and
+  Independent leaders never play along.
+- **A hit on their people** (retaliation sees it) always gives you away, with only an infected within
+  3 m of the victim as an excuse: within 35 m of their people it's a catch, else you're exposed.
 
 **Caught** (face to face: a failed look, a leader of theirs within 15 m, inside a stronghold's or
 the lab's wire): blown with them for 60 minutes of play; one of 3 catches per faction per life;
@@ -792,10 +818,60 @@ the lab's wire): blown with them for 60 minutes of play; one of 3 catches per fa
 the kit taken (**Confiscation**; VERIFY deleting worn items); held for a moment (a short stand-down,
 never over one of their fights, which carries on). Then Bastion searches you, the Red Hand takes the
 toll for liars (10 Favor, else a beating: 20% of your health, never below the floor; with infected
-near, +2 Infamy instead), and Halcyon walks you off the gate politely. Their open channel tells it
-without a name. **Exposed** at range (firing within 150 m of their people with no infected within
-40 m of you): blown, nothing else. Surrender comes first: a player who qualifies for surrender at a
+near, +2 Infamy instead), and Halcyon walks you off the gate politely. With a mixed name they say
+it to your face ("Hang on. You're that Merciful Thug."). **Walking off while held** at a Bastion
+barrier (30 m before the hold ends) is running the checkpoint: its Infamy and the post's fire.
+**Exposed** at range (firing within 150 m of their people with no infected within 40 m of you, or
+a hit on them): blown, nothing else. Surrender comes first: a player who qualifies for surrender at a
 Bastion barrier is never caught there.
+
+**Word gets round** ✅ (**Word round minutes**, **Word round radius**). A catch, or a kill of one of
+theirs that retaliation counts (never a hit or gunfire), makes every look at that faction's nearest
+holding within 1.5 km, and anywhere within 1.5 km of it (its road posts), one step harder for
+everyone for 30 minutes. One per holding: another trigger restarts it and never queues. The first
+trigger is said on their open channel, without a name (*"All stations: civilian in our kit at
+Morton. Check faces. Bastion out."*; the Red Hand: *"Someone's wearing hands we didn't paint. Ask
+names at the toll."*; Halcyon reads a security notice), and leaders and wanderers repeat it as a
+rumour for an hour. With no holding in reach, the open channel tells the catch as before.
+
+**Vouching** ✅ (**Vouching**). The one vouch ([DIALOGUE.md](DIALOGUE.md#several-players)'s "Vouch", with its
+lie liability) also signs a friend through: Known with Bastion or Halcyon
+(Trusted with the Red Hand), not Wildcard, in your own colours, at a road post's barrier or
+Halcyon's field station or lab gate, with your friend (not Hunted) within 10 m. Bastion waves them
+through unsearched; the Red Hand charges them the Known toll instead of turning them round; Halcyon
+lets a Watched visitor in for 10 minutes. You **answer for them** for 30 minutes and 1 km: if
+they're caught in that faction's kit, or hit or kill its people, you take +5 Infamy with it
+(**Vouch Infamy**, once per vouch) and can't vouch for anyone for 2 hours. A lie found out under a
+vouch bans you for 2 hours too. Without a vouch everyone is checked on their own.
+
+#### Whose kit it was
+
+✅ (`RZ_DisguiseMarks`, **Kit marks**). Kit remembers whose it was. The marks are runtime (at most
+200, weak references): a restart forgets which pieces were which.
+
+| Kind | How a piece gets it | At their look | Elsewhere |
+|---|---|---|---|
+| A dead man's | Worn by one of their people when he died (any death retaliation sees; VERIFY the clothes stay on the body) | Fails: *"Kral? Kral went on the nail on Day 12. Hands on the barrier."* The Red Hand's passes only if bought fair | Put on: *"The name tape says KRAL."* Taken at any Bastion search |
+| Off the turned | Worn by an infected whose kill the spawner counts (VERIFY) | Fails: *"That's off one of ours. Where is he?"* | Put on: *"Bastion green, burnt at the cuff. Off one of the turned."* Only good as armour |
+| Signed for | Their kit, sold by their own quartermaster: signed out to the buyer | Someone else's fails: *"Signed out to Mara. You're not Mara."* The buyer's own is issued kit | Taken at any Bastion search; the buyer is told it came back |
+| Bought fair | Anything the Red Hand's quartermaster sells | Clean kit | The clean way in: the Red Hand's Trusted shelf, one Bastion set and one Halcyon set a life, 40 Favor each (shop actions with **Once per life**) |
+| Given | The Red Hand's armband and the Haven's ribbon, to whoever reached Trusted | A red armband the Red Hand gave someone else: −1 at its look | A ribbon given to someone else: Haven people won't talk to you ("Where did you get that ribbon?"; VERIFY a worn piece's parent is the character) |
+
+**The nail list** (saved). Every Bastion, Red Hand or Halcyon person retaliation sees die gets a
+seeded name (never LORE's or the finale's canon people) and goes on the list: Bastion's nail, the
+Red Hand's book, Halcyon's authors (with a coat number). The last 30 per faction are kept, with where
+and when, and whether a player killed him. At 20:30 Bastion's open channel reads the names that went
+on the nail since the last call; whoever hears it (a radio, and Known with Bastion or a Radio
+Operator) has a dead man's name to give at a look. At the change of shift Halcyon reads the coat
+count (*"Coats returned: 7 of 9."*) and the new authors. The cards that bring a man's tag home mark
+him "home" or "kit lost" ([ERRANDS.md](ERRANDS.md#the-cards)).
+
+**Bastion's board** (saved, the last 20). Each Bastion catch goes on it: the day, the place, the
+kit and how many things were wrong, and the name given (a crew name or a dead man's), never the
+player's. Its newest line is read at the barrier's speaker and in a Bastion leader's news. Every
+third Bastion catch of the season, the Red Hand's channel laughs about tailoring. The season's counts
+(catches per faction, jackets home, coats out and back, looks passed by identity and who was ever
+caught) are saved for the hall of fame.
 
 **Doubling only for what they saw:** Infamy done in sight (not a share) while passing, within 150 m
 of their people or holdings, doubles; within 35 m it's a catch, otherwise you're exposed. Rival
@@ -804,11 +880,46 @@ shares never double. **Never fooled:** fights (hunter squads, mission groups, gr
 
 **Colours** (**Colours**): their enemies react to anyone in a faction's colours, friends included,
 at their posts and camps ([Checkpoints](#checkpoints-roadblocks-and-camps)): refusals and the timed
-grudge only, never a standing bit.
+grudge only, never a standing bit. Also: the Red Hand's quartermaster and fence won't deal with
+anyone in Bastion colours (*"Take the costume off, soldier."*), and Bastion's won't in the Red Hand's;
+the Haven's people, council heads and wanderers won't talk to anyone in Red Hand colours, and the
+Deserter not to anyone in Bastion's jacket; during a Bastion and Red Hand feud, a Red Hand crew
+within 150 m that can see you in Bastion colours opens up (the timed grudge). Under a strict stance
+(**Shoots from** Watched or Strangers) a faction's AI holds its fire on someone in its kit who is
+more than 35 m from its people, without a claim, until they come closer.
 
-Planned (disguise phases 2 and 3, [DISGUISE.md](../designs/DISGUISE.md)): again-looks with a sight
-trace, roll call, word gets round, vouching at barriers, the Rogue's price, kit that remembers whose
-it was (a dead man's, off the turned, signed for), confiscation at searches, the nail list.
+#### Why it can't be abused
+
+The author's rule: disguises and faction armour are fine, but very hard to abuse. Each attempt, the
+rule that stops it, and what the log shows ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check)):
+
+| Attempt | The rule | Log |
+|---|---|---|
+| Walk in and help yourself | Nothing a claim buys pays: shops, services, leaders and hand-ins go by real standing. The wire is a catch | `caught by` |
+| Kill one of them and wear his kit | It's a dead man's kit: told when you put it on, an instant fail at their look, taken at a Bastion search | `marked as <name>'s (a dead man's)`, the look's `[A dead man's kit]` |
+| Loot uniforms off military infected | Kit off the turned: an instant fail | `kit off the turned marked`, `[Off the turned]` |
+| A friend buys kit for you | Signed out to them: an instant fail, taken at a Bastion search | `signed out to them`, `search took` |
+| Guess the word at the wire | The word counts only once you've heard it on the secure net (or been told) | `heard the word at the wire` |
+| Farm standing | No Fame or Favor ever comes from a disguise; Infamy is always yours | the look's line |
+| Retry until it works | The check is fixed and shown first. Catches count: three a life, then no claim | `caught by ... (catch N this life)` |
+| Stay inside | A gate pass is 10 minutes, each again look is one step harder, roll call at the shift change, leaders within 15 m | `again look at`, `roll call for` |
+| Friends take turns | Word gets round at the holding, for everyone | `word gets round at` |
+| Grief a friend's plan | Only catches and kills spread word, one per holding, restarted and never queued. A point-out is −1, twice at most, and a wrong one costs the pointer regard | `word gets round ... restarted`, `pointed out to` |
+| Shoot guards from inside a horde | A hit always gives you away; only an infected within 3 m excuses it | `exposed to`, `caught by` |
+| A Hunted team's opening volley | The Hunted can't claim: they're seen through | `can't claim: Hunted` |
+| Log out before a look | Passes, owed looks and looks passed are kept by identity; catches and blown time are saved with the life | `owed a look` |
+| Swap kits to reset | Blown time, catches and word round belong to you and the place, not the kit | the look's tags (`[Caught before -1]`) |
+| Walk behind a friend at a barrier | Everyone is checked on their own unless signed through, and the voucher answers for them | `signed ... through`, `voucher ... answers` |
+| Hide in a searched car | "We search the whole car" comes before any look: nobody in a searched car claims | `searched with the whole car` |
+| Get intel from lines | A pass says nothing their open channel doesn't | the look's line |
+| Farm the cards | Card pay is the errands' small-pay ledger; The Name on the Tape refuses sold kit and a man you killed, once per dead man, 3 a life | the errands' lines |
+| Use colours as a licence to kill | Colours are refusals and timed grudges, never standing bits: retaliation still counts every kill | retaliation's lines |
+| Hide Infamy behind Fame | Tolerated and Wildcard players aren't disguised: they're treated by their real standing | — |
+| Use it on the cure | Nothing is cleared within 1.5 km of the lab during the stand | `counts for nothing near the lab` |
+| Keep issued kit after going bad | A real day's grace, then it's a disguise like any other; never while Hunted | the look's line |
+| Pay the Rogue and keep going | 10 minutes at his seat only; everyone who paid is named if he's found out | `paid Rogue`, `Rogue ... found out` |
+| Walk off while held | Running the checkpoint | `walked off while held` |
+| Dump Infamy on a voucher | +5 once per vouch, then 2 hours without vouching; the voucher chooses whom to vouch for | `voucher ... answers` |
 
 ## The cure finale: locks and war
 
@@ -848,7 +959,8 @@ opens at Known, and in Bastion's its checkpoints keep a curfew ([DESIGN.md](DESI
   persistent Champion list and background unlocks. Per life also: Fame gained and direct Infamy
   gained (`EarnedFame`, `Feared`), the budget used (`m_aForgiven`, `ForgiveLeft`), threats used, the
   name last told, and the life's deeds (`Core/RZ_Deeds.c`). Borrowed kit's catches and blown time
-  (`m_aCatches`, `m_aBlownUntil`, per life), and the parley's and settling's server times.
+  (`m_aCatches`, `m_aBlownUntil`, per life), and the parley's and settling's server times. Borrowed
+  kit's nail list, Bastion's board and the season's counts are `RZ_DisguiseSave` in the world save.
 - `RZ_Reputation`: the tier table, access ranks, standing checks, the rival table, display names.
   `RZ_RepNames` (`Factions/RZ_RepNames.c`): the 16 names (`RZ_ERep`, append-only), "counts as", the
   card's note, notoriety; `RZ_RepWatch`, the debounced change notice and `/rep`;

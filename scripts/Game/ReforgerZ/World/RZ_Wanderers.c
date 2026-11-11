@@ -2373,6 +2373,17 @@ class RZ_Wanderers
 			return;
 		}
 
+		// Colours: the Haven's wanderers won't talk to you in red, the Deserter not in Bastion's jacket
+		if (m_GM.GetHostility())
+		{
+			string kit = m_GM.GetHostility().GetDisguise().TalkRefusal(playerId, w.IsHaven(), w.m_eRole == RZ_EWandererRole.DESERTER);
+			if (!kit.IsEmpty())
+			{
+				m_GM.Say(playerId, w.GetTitle(), -1, kit);
+				return;
+			}
+		}
+
 		// A barter chain (unarmed mission) or a story arc step that runs through this person
 		if (RZ_Mission_BarterChain.OnWandererTalk(m_GM, playerId, w.m_iId, w.GetTitle(), player))
 		{

@@ -66,7 +66,7 @@ today's epilogue (the line stands down, research stops, the gates open with the 
 once they exist: the finale ([FINALE.md](FINALE.md)), the majors ([MAJORS.md](MAJORS.md)), tribes and crawlers
 ([INFECTED.md](INFECTED.md)), the reputation names ([REPUTATION_NAMES.md](REPUTATION_NAMES.md)), dialogue
 ([DIALOGUE.md](DIALOGUE.md)), errands ([ERRANDS.md](ERRANDS.md)), mission style's records
-([MISSION_STYLE.md](MISSION_STYLE.md)) and disguise ([DISGUISE.md](DISGUISE.md)). Each has a fallback, so the
+([MISSION_STYLE.md](MISSION_STYLE.md)) and disguise ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)). Each has a fallback, so the
 epilogue can ship on what's built and grow as the others land. [TONE.md](TONE.md) owns how every line here sounds.
 
 ## In short

@@ -126,6 +126,9 @@ class RZ_SaveData
 	ref RZ_TribesSave tribes;
 	// The cure finale (Cure/RZ_CureFinale.c). Older saves have none
 	ref RZ_FinaleSave finale;
+	// Borrowed kit (Factions/RZ_DisguiseMarks.c): the nail list, Bastion's board, the season's counts.
+	// Older saves have none: they start empty
+	ref RZ_DisguiseSave disguise;
 	bool hasTimeOfDay;
 	float timeOfDay;
 

@@ -57,7 +57,7 @@ reads.
   two Vouch cards are one vouch; Clean Slate joins the amends family; Name Day's Brush joins Paint; Collections is
   re-angled away from Debt Collection; "Who's Asking" is renamed "Unknown Face" (errands has its own). The
   Collections worked example is gone.
-- **Disguise is owned by [DISGUISE.md](DISGUISE.md).** This file only lists what the look reads from reputation.
+- **Disguise is owned by [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit).** This file only lists what the look reads from reputation.
   Checkpoints: "search the whole car" applies before any look, and the Wildcard toll and the lab-coat toll take the
   higher of the two (20), never both.
 - **The names policy** applies: names are frozen at the deed and filtered; `/anonymous` and the admin strike are
@@ -109,7 +109,7 @@ reads.
   The same rules close the hole in the built Bastion approach.
 - **Settling up:** banked Fame for Infamy, 2 for 1, from the budget ([§7](#7-settling-up)).
 - **Cut for good:** danger money on shop prices; leader job weights by manner; Call it square; background crew
-  names. Disguise exposure rules belong to [DISGUISE.md](DISGUISE.md).
+  names. Disguise exposure rules belong to [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit).
 - **Crew names** follow LORE: what the crew holds on you, given for something you'd rather they forgot
   ([§9](#9-the-factions-word-for-you)).
 - **Face and name** ([§12](#12-face-and-name-one-scope-rule)): this life versus this season. Leader and wanderer
@@ -382,7 +382,7 @@ and nothing in it is free:
 | A Kill on Sight bounty | Leave Kill on Sight, through the parley's amends or settling up | The bounty comes down as built when you leave Kill on Sight |
 | Infamy with a faction you can still visit | Amends, paying, settling up, the knock, Come In | All through `Forgive()`. The budget doesn't reset for the week |
 | A line in the Red Hand's book (the price door's 60 Favor, a crew name's debt) | Pay it in Red Hand Favor at the boss's table | The book marks it paid. Nothing else changes |
-| Borrowed kit (signed out to someone else) | Return it to its buyer's quartermaster ([DISGUISE.md](DISGUISE.md#13-the-world-tells-it)) | No catch, no Infamy |
+| Borrowed kit (signed out to someone else) | Return it to its buyer's quartermaster ([DISGUISE.md](DISGUISE.md#the-last-week)) | No catch, no Infamy |
 | A leader at −2 | Make it right | Through `Forgive()`, once a season per leader |
 
 **Square.** At the end of the week, a player is **square** with a faction if their Infamy with it is under 15 and they
@@ -413,7 +413,7 @@ see. They're weighted toward the cells players live in, each has a grey side, an
 | **Vouch** (the one vouch card) | Known with the Haven, at a safehouse door | A newcomer needs someone Known to speak for them. Vouch, and you answer for them: +5 Haven Infamy once if they steal within a real day, then 2 hours without vouching | They will, a bit. Their kid's hungry |
 | **Clean Slate** (in the amends family) | Watched, at that faction's outpost | The dirtiest local job (latrines, the burial pit, scrubbing cages) as an amends job, from the budget | "Nobody watches the man with the shovel." It puts you next to what they hide |
 | **Both Hands** | Mixed Bag, Useful Trouble or Favourite Rascal | Someone needs you *because* you're liked and feared: talk a brother out of a crew, or an informer out of a post | He doesn't want to come, and his crew doesn't want him to go |
-| **Name Day** | Known with the Red Hand, no crew name; once a real day | A crew boss offers two dares: fetch the clock from the infested church tower (Belfry), or one round in the pit (Ringside). The third dare, painting a red hand in sight of a checkpoint, is the Paint card ([DISGUISE.md](DISGUISE.md#12-cards-for-the-errands-deck)) | Stupid on purpose. The name you get is whatever went wrong |
+| **Name Day** | Known with the Red Hand, no crew name; once a real day | A crew boss offers two dares: fetch the clock from the infested church tower (Belfry), or one round in the pit (Ringside). The third dare, painting a red hand in sight of a checkpoint, is the Paint card ([DISGUISE.md](DISGUISE.md#cards-for-the-errands-deck)) | Stupid on purpose. The name you get is whatever went wrong |
 | **A Debt Gone Quiet** (Collections, re-angled) | Feared band 2+ with anyone, from a Red Hand crew boss | Not a collection: a man in the book has stopped paying and stopped answering. Find out why before the crew does. Threaten (Fear), pay it yourself, or tell the boss he's dead | He's alive and paying for medicine. The book finds the lie later (a callback) |
 | **Keep Me Off the Board** | Known or better with Bastion, with any Bastion Infamy | A private wants his name off a duty report | The report's true |
 | **A Word for Me** | Champion with the Haven | Speak for someone at the council. The head listens because it's you | Two families want one room |
@@ -423,7 +423,7 @@ see. They're weighted toward the cells players live in, each has a grey side, an
 
 ## 16. What the disguise look reads
 
-[DISGUISE.md](DISGUISE.md) owns every detection rule. The look reads these from reputation:
+[REPUTATION.md](../docs/REPUTATION.md#borrowed-kit) owns every detection rule. The look reads these from reputation:
 - your **tier** with the faction: Known or better in its kit is your own colours, never a disguise; Hunted or Kill on
   Sight can't claim at all;
 - **Watched or Uneasy** (−1: they know your face), and `KnowsFace(identity, f, pos)` for having talked to their people

@@ -525,6 +525,17 @@ class RZ_FactionServices
 		if (!Allowed(playerId, RZ_EFaction.BANDITS, fenceTier, "The fence"))
 			return;
 
+		// Colours: the fence doesn't deal with anyone in Bastion's (RZ_Disguise)
+		if (m_GM.GetHostility())
+		{
+			string colours = m_GM.GetHostility().GetDisguise().ShopRefusal(playerId, RZ_EFaction.BANDITS);
+			if (!colours.IsEmpty())
+			{
+				m_GM.NotifyPlayer(playerId, title, colours);
+				return;
+			}
+		}
+
 		string ident = Ident(playerId);
 		float window;
 		if (!m_mFenceWindow.Find(ident, window) || m_fClock - window >= 3600)
@@ -798,6 +809,10 @@ class RZ_FactionServices
 			return;
 
 		p.m_iCluesGiven = p.m_iCluesGiven | bit;
+		// Given to you: a red armband the Red Hand gave someone else is a tell, a ribbon that isn't yours closes Haven doors
+		if (m_GM.GetHostility())
+			m_GM.GetHostility().GetDisguise().GetMarks().OnGiven(item, playerId, f);
+
 		if (!RZ_Util.InsertIntoInventory(ent, item))
 			RZ_GameModeComponent.TrackLooseItem(item);
 

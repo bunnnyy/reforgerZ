@@ -36,7 +36,7 @@ all conversations in this one engine. Nobody builds a second talk system.
   [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit), shown before you commit. Dialogue's random challenge odds, its
   suspicion counter, its blown-for-15-minutes and its doubled caught-lie cost are gone. The word at the
   wire, a real name, a crew name and a notebook number are **cover details** (+1 at the look; a wrong word
-  fails at once). Kit kinds follow DISGUISE.md: own, issued, in their kit, signed for, a dead man's, off
+  fails at once). Kit kinds follow [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit): own, issued, in their kit, signed for, a dead man's, off
   the turned. Point-out is now a −1 at the look.
 - **One vouch, one lie store, one callback queue.** The vouch has one liability everywhere. Lies are
   found out by events first; the two 15% discovery rolls become the **rumour tick**, only for claims with
@@ -269,7 +269,7 @@ Still to build, with scenes and the systems that own them:
 | `reward` | `reward:haven:5:20:"walked them home"` | `Run.Reward` | quest conversations only |
 | `call` | `call:work`, `call:rob`, `call:search`, `call:declare_bite`, `call:table_bite` | named calls for the built behaviours (today's `slot:N` covers them) | its own rules |
 | `hostile`, `flee` | `hostile:3` | a timed grudge; the wanderer runs | grudges restart |
-| `pass`, `catch` | `pass:post`, `catch:bastion` | a passed or caught look's result | DISGUISE.md's rules |
+| `pass`, `catch` | `pass:post`, `catch:bastion` | a passed or caught look's result | the borrowed-kit rules |
 | `commit` | `commit:bastion` | the finale route lock | a confirm node, and `CanCommit` |
 
 **Personal and world.** Season, run and scene flags, `resolve`, `start` and `commit` change the world: they're
@@ -366,7 +366,7 @@ It's per player, like the journal. Evidence keys (up to 96) last with their run 
 
 ## 12. Claims in someone else's kit
 
-[DISGUISE.md](DISGUISE.md) owns kit, colours, the look, catches, word gets round and vouching at barriers.
+[REPUTATION.md](../docs/REPUTATION.md#borrowed-kit) owns kit, colours, the look, catches, word gets round and vouching at barriers.
 Dialogue is where a claim is spoken. The built AI behaviour doesn't change.
 
 1. **Kit has a kind**, read by the disguise system (`kit:` in [section 7](#7-conditions)): `own`, `issued`,
@@ -376,7 +376,7 @@ Dialogue is where a claim is spoken. The built AI behaviour doesn't change.
 2. **A disguise needs intent.** You're claiming only when you pick a claim line ("[Look · Bastion] 'I'm one
    of yours.'") or answer as one of them at a barrier. Nobody is ever "pretending" by accident. Your own kit,
    worn at Known or better, is never a disguise.
-3. **The look decides it.** A claim runs DISGUISE.md's fixed look, with its tags on the choice before you
+3. **The look decides it.** A claim runs borrowed kit's fixed look, with its tags on the choice before you
    pick: "[Full kit +2] [Name: Sgt Hruby +1] [Watched −1] 2 of 2". There are no random challenge odds and no
    suspicion meter. The Hunted can't claim at all, so the claim line doesn't show for them.
 4. **Cover details are things you can say.** A choice that speaks one carries `cover:<key>` and adds +1 at
@@ -395,13 +395,13 @@ Dialogue is where a claim is spoken. The built AI behaviour doesn't change.
    contracts offered. The lint refuses `reveal`, `offer`, `begin`, `learn`, `errand` and Favor on anything
    reachable only through a claim. All a claim can get you is lines, `pass:`, and a stage's own trick branch.
    While you're passing as a faction, your persuade score with it counts as 0 and you can't threaten its people.
-6. **Passage is small**, as DISGUISE.md sets it: a passed look at a road post clears you there while it
+6. **Passage is small**, as borrowed kit sets it: a passed look at a road post clears you there while it
    stands (no search at a Bastion checkpoint, no turning back at a Red Hand roadblock); a passed look at an
    outpost gate gives 10 minutes inside. Camp services and safe zones still go by your real standing.
 7. **Leaders and home ground see through it.** Stronghold and seat leaders of that faction, everyone inside a
    stronghold's or the lab's wire, and the Red Hand camp at the dusk meal catch any claim at once. The one
-   exception is a Rogue leader's price (DISGUISE.md, section 10).
-8. **Caught** is DISGUISE.md's one cost: +3 Infamy (never taking you into Watched on its own), the kit taken,
+   exception is a Rogue leader's price ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)).
+8. **Caught** is borrowed kit's one cost: +3 Infamy (never taking you into Watched on its own), the kit taken,
    one of three catches per life per faction, and word gets round at that holding. A conversation does this
    with `catch:<faction>`.
 9. **Signed for.** Kit a quartermaster sold is signed out to its buyer. Worn by anyone else, it fails the
@@ -1478,7 +1478,7 @@ Strangers' settings (on, the 15-minute ceiling, the places) belong to Missions >
 | Point-of-no-return scope | Per identity for the season, so dying isn't a way out. It ends at the cure |
 | The Independent route's speaker | The open radio channel, which every player can reach whatever their standing |
 | Disguise intent | A disguise only when you claim one; kit in their colours is noticed but never a disguise on its own |
-| Disguise passage | Whatever DISGUISE.md's look buys: one passage at a road post, or 10 minutes at a gate |
+| Disguise passage | Whatever borrowed kit's look buys: one passage at a road post, or 10 minutes at a gate |
 | The word at the wire | The word itself is a cover detail, so a friend can tell you; a wrong word fails at once |
 | Social layer | Vouch, call-outs and point-out all on; overheard lines at 8 m |
 | Small shared moments | Missions' 5-second hold, one objection per player per job, Stand with. Anything that matters to the season is a tally |

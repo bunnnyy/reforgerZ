@@ -52,7 +52,7 @@ alternatives that were not chosen are gone.
 - **Shared pieces replace errands' own copies:** the owner-only personal payload replaces the "talk lane
   in `NotifyPlayer`" (and fixes the built leak); follow-ups go into the one callback queue; lies go into
   the one lie store; "if seen" is the one witness helper; vouching is the one vouch; amends go through
-  `Forgive()`; disguises follow [DISGUISE.md](DISGUISE.md).
+  `Forgive()`; disguises follow [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit).
 - **The Long Table:** The Jar Run's joke becomes silence; no stranger within 2 km of the farm;
   Processing ends at the queue, never at the barrier.
 - **Lore fixes:** a dead Red Hand man's kit goes to the fence (conflict 33); crew names are what the crew
@@ -63,7 +63,7 @@ alternatives that were not chosen are gone.
   300 m, so friends travelling together still meet them.
 - **Card names match the sibling designs:** Notebook 31 (with His Notebook and Into the Record), Unknown
   Face, A Debt Gone Quiet (Collections, re-angled), Civvies (re-angled to the clothes only), Paint (with
-  Name Day's Brush), as in [DISGUISE.md](DISGUISE.md) and [REPUTATION_NAMES.md](REPUTATION_NAMES.md). The
+  Name Day's Brush), as in [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit) and [REPUTATION_NAMES.md](REPUTATION_NAMES.md). The
   Bastion private's card is **Off the Report**, because "the board" is the roster and names never leave
   it.
 
@@ -358,7 +358,7 @@ Names follow the epilogue's and tone's policy: frozen at the deed, passed throug
 | **Sneak** | done unseen and unheard | `m_Quiet`, built stealth |
 | **Press** | a threat | Fear, with its limits ([MISSION_STYLE.md](MISSION_STYLE.md)): +3 Infamy, once per person by anyone, three a life per faction. Never at a safehouse or in a safe zone |
 | **Force** | a few infected | `SpawnGuards` (4 at most) |
-| **Claim** | you're one of theirs | the look ([DISGUISE.md](DISGUISE.md)) |
+| **Claim** | you're one of theirs | the look ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) |
 | **Lie** | say it's done, or say something false | the lie store (§12) |
 | **Betray** | take it to someone else | drops |
 | **Walk away** | say no, or leave | Without you |
@@ -515,7 +515,7 @@ The ledger is built ([docs/ERRANDS.md](../docs/ERRANDS.md#pay-nothing-for-free))
 
 ## 16. Disguises
 
-[DISGUISE.md](DISGUISE.md) owns what a disguise is. For errands:
+[REPUTATION.md](../docs/REPUTATION.md#borrowed-kit) owns what a disguise is. For errands:
 1. **Who's disguised** is the disguise design's rule: a faction's kit while you're below Known with it
    (mixed tiers by access). At Known or better it's just your gear ("own colours"), and you're treated by
    your real standing. The Haven has no disguise.
@@ -1013,7 +1013,7 @@ errand ledger are built ([docs/ERRANDS.md](../docs/ERRANDS.md)). Still to build:
   list: disguise keywords, vehicles and keys, Trusted and Champion shelves, rare finds.
 - **Group rules:** choices only by the asker and helpers (vanilla group, within 50 m, present for a step
   or 2 min); helpers get half Favor, three paid at most; in kind to the asker only.
-- **Disguise reads** from [DISGUISE.md](DISGUISE.md): own colours, `IsPassing`, the look for claims.
+- **Disguise reads** from [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit): own colours, `IsPassing`, the look for claims.
   Disguises never clear escorted people or errand items at posts.
 - **Finale and majors reads,** read-only: `finale.route`, `finale.finisher`, `finale.terms`,
   `RZ_Finale.RouteOf(identity)`, the open and sworn acts, and the majors' set-piece calendar. A

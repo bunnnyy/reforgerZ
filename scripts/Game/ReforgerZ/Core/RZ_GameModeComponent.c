@@ -2505,6 +2505,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_Wanderers.OnZombiesKilled(pos);
 		m_Leaders.OnZombiesKilled(pos);
+		// Kit still on the body is off the turned (RZ_DisguiseMarks)
+		if (m_Hostility && m_Hostility.GetDisguise().MarksOn())
+			m_Hostility.GetDisguise().GetMarks().OnInfectedKilled(pos);
+
 		// The body carries some loot (its inventory, or beside it), if a player saw it die
 		m_Interactions.OnZombiesKilled(pos, count);
 		m_Missions.OnZombiesKilled(settlementIdx, missionId, special, pos, count);
@@ -2825,6 +2829,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			m_Spawner.GetCrawlers().Restore(data.crawlers);
 
 		m_Tribes.Restore(data.tribes);
+		m_Hostility.GetDisguise().GetMarks().Restore(data.disguise);
 
 		if (data.hasTimeOfDay)
 			m_fSavedHour = data.timeOfDay;
@@ -2923,6 +2928,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Tribes && m_Tribes.IsEnabled())
 			data.tribes = m_Tribes.Save();
+
+		if (m_Hostility && m_Hostility.GetDisguise().IsOn())
+			data.disguise = m_Hostility.GetDisguise().GetMarks().Save();
 
 		// Dialogue memory has its own file, written only when something changed
 		if (m_Dialogue)

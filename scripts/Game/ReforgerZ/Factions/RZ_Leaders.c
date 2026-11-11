@@ -1704,6 +1704,10 @@ class RZ_Leaders
 			}
 		}
 
+		// Everyone who paid the Rogue's price to keep a borrowed jacket quiet is named too
+		if (m_GM.GetHostility())
+			m_GM.GetHostility().GetDisguise().GetWatch().OnRogueFound(l);
+
 		if (l.IsStronghold())
 			return;
 
@@ -2687,6 +2691,17 @@ class RZ_Leaders
 			return;
 		}
 
+		// A council head won't talk to you in red, or in someone else's ribbon (RZ_Disguise)
+		if (m_GM.GetHostility())
+		{
+			string kit = m_GM.GetHostility().GetDisguise().TalkRefusal(playerId, l.m_eFaction == RZ_EFaction.SURVIVORS, false);
+			if (!kit.IsEmpty())
+			{
+				m_GM.Say(playerId, l.GetHeader(), l.m_eFaction, kit);
+				return;
+			}
+		}
+
 		string text;
 		if (!l.Remembers(Ident(playerId), MEM_MET))
 		{
@@ -2886,6 +2901,14 @@ class RZ_Leaders
 		// Territory and faction news: the latest quiet headline, a rumour (true or not)
 		if (m_GM.GetFactionLife())
 			m_GM.GetFactionLife().AddNewsLines(l.m_eFaction, from, lines);
+
+		// Bastion's board at the wire: the season's impostors (RZ_DisguiseMarks), never by name
+		if (l.m_eFaction == RZ_EFaction.MILITARY && m_GM.GetHostility() && m_GM.GetHostility().GetDisguise().IsOn())
+		{
+			string board = m_GM.GetHostility().GetDisguise().GetMarks().BoardLine();
+			if (!board.IsEmpty())
+				lines.Insert(board);
+		}
 
 		if (lines.IsEmpty())
 			return "\"Nothing worth repeating. That's news too, these days.\"";
