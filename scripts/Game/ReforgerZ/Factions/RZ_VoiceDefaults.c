@@ -34,6 +34,30 @@ class RZ_VoiceDefaults
 		Openers(lines);
 		People(lines);
 		Asides(lines);
+		RunningJokes(lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The running jokes on the majors' flags (docs/WRITING.md, "Running jokes"): people's lines that
+	//! run while a stance, a rule or the book stands, and stop when it changes. Never on a day.
+	protected static void RunningJokes(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+		RZ_ERegister J = RZ_ERegister.JOKE;
+
+		Line(lines, "redhand.person.kettle", REDHAND, "person", "", J, 0, "flag:orders.stance<=1", "\"Bastion still calls Command every night. We keep a kettle on for whoever answers.\"");
+		Line(lines, "redhand.person.expended", REDHAND, "person", "", J, 0, "flag:orders.stance=4", "\"Ask a Bastion boy what he is. Expended. We taught him the word, and he says it better than we do.\"");
+		Line(lines, "bastion.person.call", BASTION, "person", "", W, 0, "flag:orders.stance<=1", "\"The call goes out at half eight. The operator writes the same two words after it, every night.\"");
+		Line(lines, "bastion.person.stations", BASTION, "person", "", P, 0, "flag:orders.stance=2", "\"The CO reads the call to everyone now. Civilians first. Feels odd, saying it out loud.\"");
+		Line(lines, "bastion.person.command", BASTION, "person", "", W, 0, "flag:orders.stance=3", "\"Command answers now. It sounds a lot like the CO, if you listen.\"");
+		Line(lines, "haven.person.pot", HAVEN, "person", "", P, 0, "flag:haven.rule=1", "\"Everyone eats. It's written on the stores door, in the chair's handwriting.\"");
+		Line(lines, "haven.person.workers", HAVEN, "person", "", P, 0, "flag:haven.rule=2", "\"Houses that work, eat. The rest go where there's room. We don't talk about where that is.\"");
+		Line(lines, "haven.person.cards", HAVEN, "person", "", W, 0, "flag:haven.rule=3", "\"Bastion gave us cards with our names on. The children trade them like football stickers.\"");
+		Line(lines, "haven.person.tins", HAVEN, "person", "", P, 0, "flag:haven.rule=4", "\"The tins come on Thursdays. Nobody asks who brings them.\"");
+		Line(lines, "redhand.person.book", REDHAND, "person", "", J, 0, "flag:book.debts_dead=0", "\"Everything's in the book. Your name too, probably. Spelt wrong, but it's in.\"");
+		Line(lines, "redhand.person.nobook", REDHAND, "person", "", P, 0, "flag:book.debts_dead=1", "\"No book now. People still pay at the toll. Nobody's told them they don't have to.\"");
+		Line(lines, "halcyon.person.pages", HALCYON, "person", "", P, 0, "flag:majors.pages_open>=1", "\"The other strongholds have started reading their pages out loud. The director has noticed.\"");
 	}
 
 	//------------------------------------------------------------------------------------------------

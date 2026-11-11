@@ -119,6 +119,13 @@ class RZ_Quest_Authors : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! An inner line of Proof (Halcyon's major) while the majors run: only Proof starts it.
+	override bool StartsOnItsOwn()
+	{
+		return !RZ_Majors.IsOn();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanStart(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		RZ_CureResearch cure = gm.GetCure();
@@ -488,6 +495,8 @@ class RZ_Quest_Authors : RZ_Questline
 			}
 		}
 
+		// Published for Proof's reading (docs/QUESTLINES.md, "Proof"): 1 agreed, 2 bargained, 3 refused
+		gm.GetQuestlines().SetWorldFlag("authors.terms", run.Flag("terms"));
 		return ToOffer(gm, run);
 	}
 

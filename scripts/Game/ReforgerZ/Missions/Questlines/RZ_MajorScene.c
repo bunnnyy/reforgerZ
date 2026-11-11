@@ -25,6 +25,9 @@ class RZ_SceneChoice
 	int m_iBribe;					// Favor it costs
 	int m_iBribeFaction = -1;
 	int m_iVote = -1;				// sways this spot's voter to this option
+	int m_iTable = -1;				// tables an option in the scene's vote
+	int m_iSwingTo = -1;			// swings voters (any lean) to this option
+	int m_iSwingCount;
 	string m_sFlag = "";			// a run flag it sets ("world:key" for a world flag)
 	int m_iFlagValue = 1;
 	string m_sNeed = "";			// a run flag it needs ("world:key"; "!flag": must not be set)
@@ -36,6 +39,10 @@ class RZ_SceneChoice
 	string m_sRefused = "\"No.\"";
 	string m_sWhat = "";			// for the journal: "spoke for the shared pot"
 	bool m_bHold;					// starts the scene's hold
+	vector m_vHoldAt;				// its own hold (HoldAt): where, and the outcomes
+	float m_fHoldFor;
+	int m_iHoldWin = -1;
+	int m_iHoldLost = -1;
 	bool m_bSneak;					// needs to be unseen (the scene's quiet watch)
 
 	//------------------------------------------------------------------------------------------------
@@ -88,6 +95,21 @@ class RZ_SceneChoice
 	}
 
 	//------------------------------------------------------------------------------------------------
+	RZ_SceneChoice Tables(int option)
+	{
+		m_iTable = option;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_SceneChoice Swings(int option, int count)
+	{
+		m_iSwingTo = option;
+		m_iSwingCount = count;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_SceneChoice Sets(string flag, int value = 1)
 	{
 		m_sFlag = flag;
@@ -135,6 +157,18 @@ class RZ_SceneChoice
 	{
 		m_bHold = true;
 		m_iApproach = RZ_EQuestApproach.FORCE;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A hold of its own (after its checks pass): `pos` for `seconds`, win and lost the outcomes.
+	RZ_SceneChoice HoldAt(vector pos, float seconds, int win, int lost)
+	{
+		m_bHold = true;
+		m_vHoldAt = pos;
+		m_fHoldFor = seconds;
+		m_iHoldWin = win;
+		m_iHoldLost = lost;
 		return this;
 	}
 
@@ -440,6 +474,16 @@ class RZ_QM_MajorScene : RZ_QM_HalcyonScene
 			}
 		}
 
+		if (!m_sVote.IsEmpty() && (c.m_iTable >= 0 || c.m_iSwingTo >= 0))
+		{
+			RZ_QuestVote tabled = new RZ_QuestVote(run, m_sVote);
+			if (c.m_iTable >= 0)
+				tabled.Table(c.m_iTable);
+
+			if (c.m_iSwingTo >= 0)
+				tabled.Swing(-1, c.m_iSwingTo, c.m_iSwingCount);
+		}
+
 		string what = c.m_sWhat;
 		if (what.IsEmpty())
 			what = c.m_sLabel;
@@ -449,6 +493,9 @@ class RZ_QM_MajorScene : RZ_QM_HalcyonScene
 
 		if (c.m_bHold)
 		{
+			if (c.m_fHoldFor > 0 && !m_bHolding)
+				SetHold(c.m_vHoldAt, c.m_fHoldFor, c.m_iHoldWin, c.m_iHoldLost);
+
 			StartHold(gm, playerId);
 			Remember(gm, playerId, RZ_EQuestApproach.FORCE, what);
 			return;

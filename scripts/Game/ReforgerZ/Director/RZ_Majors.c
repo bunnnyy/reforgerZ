@@ -211,6 +211,7 @@ class RZ_QuestVote
 {
 	protected RZ_QuestRun m_Run;
 	protected string m_sKey;
+	protected string m_sName;
 
 	static const int MAX_OPTIONS = 8;
 
@@ -218,7 +219,43 @@ class RZ_QuestVote
 	void RZ_QuestVote(RZ_QuestRun run, string name)
 	{
 		m_Run = run;
+		m_sName = name;
 		m_sKey = "vote." + name + ".";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The options' words for dialogue's tallies: a conversation's `sway:<major key>.<vote>.<word>`
+	//! (tally.<...> in the world facts) swings one voter to that option per contribution at the tally.
+	void Words(notnull array<string> words)
+	{
+		foreach (int i, string w : words)
+		{
+			m_Run.SetText(m_sKey + "w" + i.ToString(), w);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Dialogue's sways (Dialogue > Trees on) since the last tally, applied once.
+	protected void TakeDialogue()
+	{
+		RZ_WorldFacts facts = RZ_WorldFacts.Get();
+		if (!facts)
+			return;
+
+		for (int o = 0; o < MAX_OPTIONS; o++)
+		{
+			string word = m_Run.Text(m_sKey + "w" + o.ToString());
+			if (word.IsEmpty() || !IsTabled(o))
+				continue;
+
+			string key = string.Format("tally.%1.%2.%3", m_Run.m_sKey, m_sName, word);
+			int n = facts.Flag(key);
+			if (n <= 0)
+				continue;
+
+			Swing(-1, o, n);
+			facts.SetFlag(key, 0);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -345,6 +382,7 @@ class RZ_QuestVote
 	//! option. Kept as the vote's result.
 	int Tally(int tieBreak)
 	{
+		TakeDialogue();
 		int best = -1;
 		int bestVotes = -1;
 		bool tieHasBreak = false;
