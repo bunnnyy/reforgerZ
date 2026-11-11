@@ -57,10 +57,22 @@ class RZ_ImpostorSave
 }
 
 //------------------------------------------------------------------------------------------------
+//! A recent catch, by identity and place (Spot the Tells counts different players over 2 days).
+class RZ_CatchSave
+{
+	string ident;
+	int f;
+	int day;
+	float x;
+	float z;
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_DisguiseSave
 {
 	ref array<ref RZ_NailSave> nails = {};
 	ref array<ref RZ_ImpostorSave> board = {};
+	ref array<ref RZ_CatchSave> recent = {};	// the last 40 catches
 	ref array<int> catches = {};		// per faction, this season
 	int nailId;
 	int jacketsHome;
@@ -150,6 +162,9 @@ class RZ_DisguiseMarks
 
 		if (!m_Data.caughtIdents)
 			m_Data.caughtIdents = {};
+
+		if (!m_Data.recent)
+			m_Data.recent = {};
 
 		EnsureCounts();
 	}
@@ -500,7 +515,7 @@ class RZ_DisguiseMarks
 			if (f == RZ_EFaction.INSTITUTE)
 				return string.Format("\"That coat is signed out to %1, and %1 isn't coming back.\"", m.m_sName);
 
-			return "\"That's his jacket. It hasn't been through the market.\"";
+			return "\"That jacket's one of ours, and it hasn't been through the market.\"";
 		}
 
 		if (kind == KIT_SIGNED_OTHER && m)
@@ -595,8 +610,6 @@ class RZ_DisguiseMarks
 		n.id = m_Data.nailId;
 		n.f = f;
 		n.name = SeededName(f, n.id);
-		if (f == RZ_EFaction.INSTITUTE)
-			n.name = string.Format("%1, coat %2", n.name, 10 + n.id % 40);
 
 		n.day = RZ_SeasonClock.Day();
 		n.x = at[0];
@@ -782,9 +795,55 @@ class RZ_DisguiseMarks
 		if (!m_Data.caughtIdents.Contains(ident) && m_Data.caughtIdents.Count() < MAX_LOOKERS)
 			m_Data.caughtIdents.Insert(ident);
 
-		if (f != RZ_EFaction.MILITARY)
-			return;
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (me)
+		{
+			RZ_CatchSave c = new RZ_CatchSave();
+			c.ident = ident;
+			c.f = f;
+			c.day = RZ_SeasonClock.Day();
+			c.x = me.GetOrigin()[0];
+			c.z = me.GetOrigin()[2];
+			m_Data.recent.Insert(c);
+			while (m_Data.recent.Count() > 40)
+			{
+				m_Data.recent.RemoveOrdered(0);
+			}
+		}
 
+		if (f == RZ_EFaction.MILITARY)
+			AddBoard(f, place, kit, named);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Different players caught by `f` within `radius` of pos in the last `days` season days.
+	int DistinctCaught(int f, vector pos, float radius, int days)
+	{
+		array<string> who = {};
+		int today = RZ_SeasonClock.Day();
+		foreach (RZ_CatchSave c : m_Data.recent)
+		{
+			if (c.f == f && today - c.day <= days && !who.Contains(c.ident) && RZ_Util.DistXZ(Vector(c.x, 0, c.z), pos) <= radius)
+				who.Insert(c.ident);
+		}
+
+		return who.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A coat's (and its notebook's) number, for one of Halcyon's dead.
+	static int CoatNumber(RZ_NailSave n)
+	{
+		if (!n)
+			return 0;
+
+		return 10 + n.id % 40;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line on Bastion's board (a catch; Paint's civilian with a paint tin).
+	void AddBoard(int f, string place, string kit, string named)
+	{
 		RZ_ImpostorSave b = new RZ_ImpostorSave();
 		b.f = f;
 		b.day = RZ_SeasonClock.Day();

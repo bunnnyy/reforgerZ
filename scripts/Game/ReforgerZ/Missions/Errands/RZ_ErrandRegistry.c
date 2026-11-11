@@ -44,6 +44,15 @@ class RZ_ErrandRegistry
 		// Disguises
 		list.Insert(new RZ_Errand_DressRehearsal());
 		list.Insert(new RZ_Errand_OfficersCoat());
+		// Disguise phases 2 and 3: the side jobs (docs/ERRANDS.md, the cards)
+		list.Insert(new RZ_Errand_NameOnTheTape());
+		list.Insert(new RZ_Errand_SpotTheTells());
+		list.Insert(new RZ_Errand_Paint());
+		list.Insert(new RZ_Errand_WrongWayRound());
+		list.Insert(new RZ_Errand_LaundryDay());
+		list.Insert(new RZ_Errand_Civvies());
+		list.Insert(new RZ_Errand_MasksOff());
+		list.Insert(new RZ_Errand_Notebook31());
 		// Phase 4: the house, the lost, the crews, Bastion, help across lines, bad standing, the Long
 		// Table, the infected, champions and backgrounds
 		list.Insert(new RZ_Errand_Vouch());

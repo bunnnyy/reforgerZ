@@ -3,7 +3,7 @@
 **Status: designed; phase 3 (the core) and phase 4 built.** Approved by the author on 2026-11-11.
 Built and described in [docs/ERRANDS.md](../docs/ERRANDS.md): the givers, the dealer's asked and
 called-out offers, soft holds and overtaking, the faults table, the small-pay ledger, 31 routines, the
-wanderers' asks, 39 cards, fallout errands, strangers at every spot kind (18 stranger routines and
+wanderers' asks, 47 cards, fallout errands, strangers at every spot kind (18 stranger routines and
 found hooks), locals, twists, and board and radio asks; the lie store and the witness rule are in
 [docs/DESIGN.md](../docs/DESIGN.md#lies-and-witnesses). This file keeps what's still to build: the
 margin, lock and epilogue cards, promises, callbacks and threads from errands, the remaining routines
@@ -763,15 +763,15 @@ All built ([docs/ERRANDS.md](../docs/ERRANDS.md#strangers)), with the found hook
 
 ### Cards
 
-Once per player per season. Grouped by family. The 39 built cards are in
+Once per player per season. Grouped by family. The 47 built cards are in
 [docs/ERRANDS.md](../docs/ERRANDS.md#the-cards) (His Effects as The Locker and The Wreck's Name, The Name on
-the Tag as its satchel variant, Clean Slate); still to build:
+the Tag as its satchel variant, Clean Slate, and the disguise side jobs: The Name on the Tape, Spot the Tells,
+Paint, Wrong Way Round, Laundry Day, Civvies, Masks Off, Notebook 31); still to build:
 
 **The dead**
-- **His Effects** (one family, a variant per faction; The Name on the Tape, The Locker, His Lighter, The
+- **His Effects** (one family, a variant per faction; The Locker, His Lighter, The
   Tags and The Wreck's Name merged; a simpler Locker and Wreck's Name on a lost truck are built,
-  [docs/ERRANDS.md](../docs/ERRANDS.md#the-cards): still to build are the effects as a mission item, a
-  body near a post, the jacket and photo frame at the fence, the witness rule and His Lighter). The effects are a mission item. A kit piece off a man you killed is
+  [docs/ERRANDS.md](../docs/ERRANDS.md#the-cards), and so is The Name on the Tape, Bastion's body near a post: still to build are the effects as a mission item, the jacket and photo frame at the fence, the witness rule and His Lighter). The effects are a mission item. A kit piece off a man you killed is
   refused (*"You'd know. You were there."*, +3 Infamy with his faction). Once per dead man, 3 times a life.
   - *Bastion: The Locker* (the operator). Why: a Bastion crew lost within 1.5 km today, or one of
     Bastion's people died near a post this season day and his body is still out there (the body is a
@@ -798,67 +798,13 @@ the Tag as its satchel variant, Clean Slate); still to build:
   place and leave it on the grave cairn, or bring the line to the board. Never a player's name. *"Nine
   days. That's a long time, now."* Writes a world record with an epilogue line. Distress Call's and
   Survivors Trapped's fallout.
-- **Notebook 31** (Halcyon; His Notebook and the epilogue's Into the Record merged in).
-  Why: a Halcyon courier or researcher died this season (The Missing Courier, Lost Colleague, a field
-  lead's death). His numbered coat and notebook are where he fell (a prop). Return both: +2 Halcyon Fame,
-  and his name goes on the authors' list at the change of shift. Sell the notebook to the fence: 10 RH
-  Favor (a lie record, found when Proof's author list is read with his name missing). Keep the notebook:
-  its number is a real cover detail for one Halcyon look. The coat is a dead man's coat, so it's no good
-  at Halcyon's looks. Lost Colleague's fallout (His Notebook). After the cure, its variant Into the Record takes the
-  notebook to Proof's table ([EPILOGUE.md](EPILOGUE.md)).
 
 **Hidden truths and the crews**
-- **Paint** (the Red Hand, Known; Name Day's Brush merged in). Why: at night, a Bastion checkpoint within
-  2.5 km of a Red Hand camp. *"New faces paint a red hand on."* Paint one on the barrier, or on a Bastion
-  sign in sight of the checkpoint without being searched: 20 s at the prop. The post comes down within
-  45 minutes, so nothing stays. Trick: in Bastion kit, ask the crew for a light (a claim at the barrier).
-  Sneak: from the back, unseen. Force: it's a fight. The crew names you for it, after something you'd
-  rather they forgot (`book.named`, the same flag the pit gives), and +2 RH Fame. The post's incident
-  sheet: *"Civilian with a paint tin. Day 14."*
-- **Wrong Way Round** (the Red Hand, Trusted). Why: a Haven house on a road the Red Hand doesn't hold.
-  The house's lads take tolls under painted red hands to keep raiders off, and they painted them the
-  wrong way round. Tell the boss: they're "settled", the house loses 1 person, +2 RH Fame, +5 Haven
-  Infamy. Take a cut: 6 Haven Favor from the lads' takings, once (a lie record, found when the house
-  counts at its next upkeep: +5 Haven Infamy). Warn them off: +2 Haven Fame. Or recruit them: +2 RH Fame,
-  and the house loses 1 person.
 - **Clean Glasses** (a crew lad; a margin card for The Book Has to Balance). Why: the crews meet tomorrow
   night (not tonight), and the boss wants glasses. Find six unbroken glasses in an empty town (search
   spots): 5 RH Favor. *"He wants it to look civilised. Then he'll read out who owes."*
 
-**Bastion**
-- **Spot the Tells** (Bastion, Known). Why: two or more different players were caught in Bastion kit near
-  a post in the last 2 season days. A Red Hand scout in Bastion kit stands among the post's three named
-  people. Talk to each and find him by his tells: the wrong boots, an AK, no cap. Right: +2 Fame, 5 Favor,
-  and he goes to the stockade (Bust Out runs a little more often). Wrong: *"Private Hollis spends the night
-  in the stockade for wearing the wrong boots. He's furious. He's also, technically, out of uniform."* No
-  pay. Or take the scout's 10 Red Hand Favor to point at Hollis (a lie record, found when Hollis is let out
-  and the scout is still on the gate: +5 Bastion Infamy).
-
-**Halcyon**
-- **Masks Off** (Halcyon, Known). Why: a safehouse took a bite declaration in the last season day. A man
-  in a lab coat and a beak's respirator has been taking "samples" from the bitten. He's a Haven orderly
-  selling them to the Red Hand for his daughter's antidote. Turn him in: +2 Halcyon Fame, and the coat
-  goes back in the record. Let him go: +2 Haven Fame. Or take his coat: *"It's a good coat. It's also
-  number 17, and number 17 is signed out to Dr Brandt."* It's useless at Halcyon's looks (signed-for kit
-  fails at once).
-
 **Help across lines**
-- **Civvies** (a Haven occupant; re-angled). Why: a deserter struck off Bastion's strength as KIA, his
-  name still on the board, is sheltering at a safehouse (a Deserter wanderer resting there, or a man made
-  for the card; never the finale's canon deserter). The disguise in reverse: he wants to stop looking like
-  a soldier. Bring him civilian clothes (nothing with a faction's keywords): +2 Haven Fame, and he stays
-  as one of the house. What happens to him after that is Struck Off's story, not this card's: if a player
-  takes his tag to a Bastion post, Struck Off opens with him as its subject, and Bastion's way ends with
-  him handing his tag to the sergeant and answering *"Here"* at the roll. Sell where he sleeps to the Red
-  Hand (6 RH Favor), and he's gone by morning (a headline). It never overlaps Desertion Route, which is
-  about the men a commander lets go.
-- **Laundry Day** (the Haven, Known). Why: a Haven and Bastion truce, a house near a Bastion post, and a
-  Red Hand roadblock in between. The house washes Bastion's uniforms for bread. Get the sack (a mission
-  item, not wearable) past the roadblock. Wear a uniform from it on top: that's Bastion colours, so
-  you're turned round, and during a feud you get the grudge. Or go round, more than 150 m from the
-  roadblock. Or pay the toll twice (20 Red Hand Favor). Or sell the sack to the fence for 10 Red Hand
-  Favor: the house loses its bread (−2 food), and a lie record is found when the house counts at its next
-  upkeep (+3 Haven Infamy). Delivered: +2 Haven Fame, +1 Bastion Fame, and the house gets +2 food.
 - **The Other Half** (anyone; owed by one faction, Known with its rival). Carry a message to the people
   who want you dead. The parley is the delivery. The message is a threat.
 

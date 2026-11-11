@@ -2697,6 +2697,13 @@ on the talk screen says why something wasn't dealt)
   Row by day near a lair. A lie (Fresh Chalk without looking) is found later and costs a little Infamy.
 - [ ] Dress Rehearsal (Known with the Red Hand, a Bastion post within 2 km, disguises on): at the
   barrier not passing as Bastion, it's over and the open channel laughs.
+- [ ] The disguise side jobs: kill nothing, let a Bastion guard near a post die to the infected, and
+  a Bastion named person (Known) offers The Name on the Tape; bring the tag home and the nightly call
+  reads the name with "jacket home". The player who shot that guard is never offered it. Two
+  different players caught at a Bastion post: Spot the Tells. At night near a Bastion post: Paint
+  (the trick ends at the barrier if you're not passing; plain sight brings the post's fire). A
+  Halcyon death: Notebook 31; keep the notebook and the next Halcyon look shows "[Notebook N +1]"
+  once. Laundry Day ends if you walk within 150 m of the roadblock.
 - [ ] Live Capture: lure the special into the cage and drop the door within 4 m; it vanishes without
   a sample, the cage area gets loud, after 30 s the case appears; deliver it at the lab drop before
   12 minutes. Killing it fails; wounding it to a third and standing over it ties it.

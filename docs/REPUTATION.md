@@ -912,7 +912,7 @@ rule that stops it, and what the log shows ([WORKBENCH_SETUP.md](WORKBENCH_SETUP
 | Walk behind a friend at a barrier | Everyone is checked on their own unless signed through, and the voucher answers for them | `signed ... through`, `voucher ... answers` |
 | Hide in a searched car | "We search the whole car" comes before any look: nobody in a searched car claims | `searched with the whole car` |
 | Get intel from lines | A pass says nothing their open channel doesn't | the look's line |
-| Farm the cards | Card pay is the errands' small-pay ledger; The Name on the Tape refuses sold kit and a man you killed, once per dead man, 3 a life | the errands' lines |
+| Farm the cards | Card pay is the errands' small-pay ledger, each card once a season; The Name on the Tape and Notebook 31 are never dealt to whoever killed the dead, once per name; Spot the Tells needs two different players caught over 2 days | `Errands: <card> taken by` |
 | Use colours as a licence to kill | Colours are refusals and timed grudges, never standing bits: retaliation still counts every kill | retaliation's lines |
 | Hide Infamy behind Fame | Tolerated and Wildcard players aren't disguised: they're treated by their real standing | — |
 | Use it on the cure | Nothing is cleared within 1.5 km of the lab during the stand | `counts for nothing near the lab` |
