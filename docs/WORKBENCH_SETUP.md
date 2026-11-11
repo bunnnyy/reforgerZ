@@ -812,7 +812,7 @@ on every quartermaster are how players reach stronghold leaders and council head
 
 Each `RZ_FactionShopAction` sells one thing: **Faction**, **Required tier** (Stranger, Known,
 Trusted or Champion), **Favor cost**, **Item prefab** (an item or crate, spawned next to the
-quartermaster) and **Display name**. The action is always shown (or, with the shop screen on, is a
+quartermaster), **Display name** and **Once per life** (off; on: each player can buy it once a life). The action is always shown (or, with the shop screen on, is a
 row on it); the server checks tier and Favor when it's used. The four quartermaster prefabs carry
 `RZ_ShopOpenAction` (**Trade**, first in the list), which opens the shop screen while **UI > Shop
 item layout** is set; then the Buy, Requisition and service actions hide from the action menu. A
@@ -860,7 +860,11 @@ keywords** against your loot. The armband's prefab name should keep a Red Hand u
 Check **Hostility > Disguises**' uniform, head-piece and service-weapon keywords against your
 faction loadouts and loot: they decide colours (2 pieces), full kit (3, one on the head) and the
 wrong-weapon tell. Halcyon's must match the coat and the beak (a hood or mask with a respirator),
-and should not match ordinary dust masks. Road
+and should not match ordinary dust masks. Keep those keywords rare in loot and on the infected's
+loadouts: kit marks make a dead man's and the turned's kit fail, but a restart forgets the marks.
+For the one clean way in, give the Red Hand quartermaster two `RZ_FactionShopAction`s at Trusted,
+40 Favor each, **Once per life** on: a Bastion green set and a Halcyon coat and beak (a bag with the
+pieces in it); anything the Red Hand sells is bought fair. Bastion's and Halcyon's own shop kit is signed out to its buyer. Road
 posts need territory, the road network and a crew: their own slot, else the territory guard
 (else the Red Hand group). Check the **contraband keywords** against your Red Hand stock.
 
@@ -1214,7 +1218,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Survival | (top level) |  | Shot heat (3), suppressed mult (0.3), **Bite chance** (0.1; hardcore 0.15, casual 0.07), bite reach (2.5 m) |
 | Survival | Infection | `m_InfectionSettings` | Bite modifiers (surrounded ×2, grabbed ×1.5, tired ×1.5, hurt ×1.5, max 0.6), **protective clothing keywords** and multipliers (jacket 0.8, gloves 0.8, helmet 0.85), **Golden window** (120 s; hardcore 60, casual 180), alcohol and antiseptic keywords, clean chances (0.7, 0.9) and seconds (6), Final stage minutes (10), the six treatment prefabs, stabiliser minutes (20), med cap (30 min), trial dose cure (0.8) and Fame (3), cut dose cure (0.5), antibiotics fail (0.3), herb keywords, brew seconds (20), **Finds** (where treatments turn up; empty = the built-in list) |
 | Factions | (top level) |  | Quartermaster and hunter prefabs, hunter minutes (10; 0 = off), bounty minutes (10) |
-| Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
+| Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform**, head-piece and service-weapon **keywords** per faction, 2 pieces, checked every 10 s, blown 60 min of play, 3 catches a life, impersonation 3 Infamy (6 an hour), gate pass 10 min, **Confiscation** (on), the Red Hand's fine 10 and beating 0.2, **Colours** (on), claim in full kit (on), stand radius 1,500 m, **again looks** every 3 min, **roll call** (on), **word gets round** 30 min within 1,500 m, **vouching** (on, 5 Infamy), **the Rogue's price** (20), **kit marks** (on), issued grace 24 real hours), the three AI faction keys |
 | Factions | Services | `m_ServiceSettings` | **Fire Mission** (on, 60 min cooldown, 6 infected, 50 m, 30 s, kills at most 25, not within 250 m of people), **Fence** (on, keywords, 3 Favor an item, 8 a sale, 30 an hour), **Bounty board** (on, 60 to post, 40 paid, 3 at once, 2 h), booster (80) and medic (20) prices, **Amends** (15 Favor, ×1.5 each time, 5 Infamy, 15 a life, never below 15, every 30 min), armband and ribbon prefabs |
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
 | Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations)) |
@@ -1514,7 +1518,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **85** lines with the tag, all in the game scripts (one is the comment in
+There are **91** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 14 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1532,15 +1536,15 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:196` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:199` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (51)
+### Medium risk: big features, with a fallback (57)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Factions/RZ_Checkpoints.c:529` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
+| `Factions/RZ_Checkpoints.c:531` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
 | `Core/RZ_Util.c:749` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:894` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:980` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
@@ -1558,7 +1562,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1030` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1113`, `:1235` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
-| `Factions/RZ_Disguise.c:641`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken) |
+| `Factions/RZ_Disguise.c:999`, `Factions/RZ_DisguiseMarks.c:567`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
+| `Factions/RZ_DisguiseWatch.c:185` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
+| `Factions/RZ_DisguiseMarks.c:228`, `:277` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
+| `Factions/RZ_Disguise.c:774` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
+| `Factions/RZ_DisguiseMarks.c:431` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
 | `Core/RZ_Util.c:1199` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
 | `Cure/RZ_Infection.c:1181` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
@@ -1905,7 +1913,7 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 records.` and `Shared: N callbacks waiting, N season records.`
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines and 61 cards, N players with a ledger.`; while running, `Errands:
+start, `Errands: on, 36 routines and 63 cards, N players with a ledger.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
@@ -1918,9 +1926,24 @@ errand.<key> talk pass|short|refused by <player>`, `Story: <key> resolved by han
 <player> objected to by <player>`.
 
 Borrowed kit and the parley ([REPUTATION.md](REPUTATION.md#borrowed-kit)): `Disguise: <player> look
-by <faction> at <place>: N of D (pass|caught)`, `Disguise: <player> caught by <faction> (catch N this
-life)`, `Disguise: <player> exposed to <faction> (<why>)`, `Story: <title> trick pass|refused by
-<identity>`; `Parley: <player> at <place> (<faction>) opened`, `Parley: <player> heard by <faction>
+by <faction> at <place>: N of D (pass|caught) <tags>`, `Disguise: <player> caught by <faction> (catch N
+this life)`, `Disguise: <player> exposed to <faction> (<why>)`, `Story: <title> trick pass|refused by
+<identity>`; while passing, `Disguise: again look at <player> by <faction> at <place>`, `Disguise:
+<player> owed a look by <faction>: it comes in 10 s`, `Disguise: roll call for <player> by <faction> at
+<place>`, `Disguise: <player> seen putting on <faction>'s kit`, `Disguise: <player> walked off while
+held: ran the checkpoint`, `Disguise: Rogue <name> asked <player> for his price`, `Disguise: <player>
+paid Rogue <name> N Favor (10 minutes at his seat)`, `Disguise: Rogue <name> found out: N payers
+named`; `Disguise: word gets round at <holding> (a catch|a kill, new|restarted)`; `Disguise: <player>
+signed <player> through for <faction>`, `Disguise: voucher <identity> answers for <player> with
+<faction> (<what>)`, `Disguise: <player> pointed out to <faction> (N at this look, at most 2)`;
+`Disguise: N pieces of <faction>'s kit marked as <name>'s (a dead man's)`, `Disguise: N pieces of kit
+off the turned marked`, `Disguise: N pieces sold by <faction> to <player> (signed out to them|bought
+fair)`, `Disguise: Bastion's search took N marked pieces from <player>`, `Disguise: <name> on
+<faction>'s list (<place>, day N)`, `Disguise: <name> marked home|kit lost`, `Disguise: the nightly call
+read N names`; `Disguise: <player> heard the word at the wire (day N)`, `Disguise: <player> in
+<faction>'s kit can't claim: Hunted`, `Disguise: <player>'s pass with <faction> counts for nothing near
+the lab during the stand`, `Disguise: <player> in Bastion colours seen by the Red Hand during a feud`,
+`Checkpoints: <player> searched with the whole car at <place> (before any look)`; `Parley: <player> at <place> (<faction>) opened`, `Parley: <player> heard by <faction>
 (offer: true|false)`, `Parley: <title> reserved for <player>`, `Parley: <player> at <place> broken`,
 `Parley: <player> knocked at <house>`; `Reputation: <player> settled up with <faction>: -10 Fame, -N
 Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger and Debt Collection
@@ -2423,7 +2446,35 @@ when it happens)
   the red armband at a Bastion checkpoint you're searched and the armband taken; a beak at a
   roadblock pays 20. Watched at an outpost gate in its kit: the look lets you in for 10 minutes,
   and a leader of theirs within 15 m catches you. Within 1.5 km of the lab during the stand no
-  disguise clears anything.
+  disguise clears anything. The Red Hand's quartermaster and fence refuse you in Bastion green; a
+  Haven safehouse's people and wanderers won't talk to you in red.
+- [ ] While passing (disguise phase 2): stay inside an outpost's gate on a pass near a guard. About
+  3 minutes in, "Someone's looking at you again" with "[Looked at already -1]", and 10 s later the
+  look (`again look at`). Walk out of sight before it's due and claim again within 30 minutes: the
+  look comes 10 s after the claim (`owed a look`). At 05:30 or 17:30 inside their wire's 150 m:
+  `roll call for`. Put the kit on in front of a guard: the next looks there show "[Seen putting it
+  on -1]".
+- [ ] Word gets round: get caught at a barrier near a holding; the open channel names the place, and a
+  friend arriving within 30 minutes sees "[Word's round -1]". A second catch there only restarts it
+  (`restarted`, no second line).
+- [ ] Vouching: Known with Bastion in your own green, talk to the checkpoint's corporal with a
+  Watched friend within 10 m and pick "Vouch": your friend walks through unsearched (`signed ...
+  through`). Your friend then gets caught in Bastion kit or shoots a Bastion guard within 30 minutes:
+  you get +5 Bastion Infamy once, and "Vouch" doesn't show for 2 hours.
+- [ ] The Rogue's price: passing near a Rogue outpost leader in his faction's kit, "Nice jacket.
+  Twenty Favor..."; walk off within 10 s and nothing happens; stay and 20 Favor goes (`paid Rogue`).
+  With no Favor, you're caught. Turn him in: the payers take +5 (`found out`).
+- [ ] Whose kit it was (phase 3): shoot a Bastion guard and put on his jacket and cap: "The name tape
+  says ..." and the look shows "[A dead man's kit]" and fails (`marked as`). Kill a helmeted
+  infected and wear its kit: "[Off the turned]". Buy Bastion kit as Known and hand it to a Stranger
+  friend: "[Signed out to someone else]", and Bastion's search takes it, telling you it came back.
+  Buy kit, drop below Known: it stays your own colours for a real day. At 20:30 the nightly call
+  reads the dead man's name, and the corporal's talk reads the board's newest line (no player name).
+- [ ] Abuse attempts, each refused with its log line: a Hunted player in full kit (`can't claim:
+  Hunted`), a disguised friend in a car with a stranger (`searched with the whole car`), walking off
+  while held at a barrier (`walked off while held`), shooting a guard while passing with infected
+  10 m away (`exposed to` or `caught by`), relogging during a pass (the owed look still comes),
+  swapping to fresh kit after a catch (the look still shows "[Caught before -1]").
 - [ ] The parley: Hunted by Bastion with 15+ Earned Fame and a best deed, walk to a checkpoint
   empty-handed and alone: the shout at 150 m, no fire while you close, 10 s at the barrier, the
   leader's line and a reserved amends job (Burn the Bodies or Recon) you can take though Hunted.
@@ -2867,6 +2918,13 @@ on the talk screen says why something wasn't dealt)
   Row by day near a lair. A lie (Fresh Chalk without looking) is found later and costs a little Infamy.
 - [ ] Dress Rehearsal (Known with the Red Hand, a Bastion post within 2 km, disguises on): at the
   barrier not passing as Bastion, it's over and the open channel laughs.
+- [ ] The disguise side jobs: kill nothing, let a Bastion guard near a post die to the infected, and
+  a Bastion named person (Known) offers The Name on the Tape; bring the tag home and the nightly call
+  reads the name with "jacket home". The player who shot that guard is never offered it. Two
+  different players caught at a Bastion post: Spot the Tells. At night near a Bastion post: Paint
+  (the trick ends at the barrier if you're not passing; plain sight brings the post's fire). A
+  Halcyon death: Notebook 31; keep the notebook and the next Halcyon look shows "[Notebook N +1]"
+  once. Laundry Day ends if you walk within 150 m of the roadblock.
 - [ ] Live Capture: lure the special into the cage and drop the door within 4 m; it vanishes without
   a sample, the cage area gets loud, after 30 s the case appears; deliver it at the lab drop before
   12 minutes. Killing it fails; wounding it to a third and standing over it ties it.

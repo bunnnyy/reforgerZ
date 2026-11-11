@@ -134,7 +134,13 @@ class RZ_DialogueScenes
 			return;
 
 		int other = near[0];
-		if (RZ_Factions.IsValid(f) && RZ_Reputation.IsAtLeast(m_GM.GetTier(me, f), RZ_ETier.TRUSTED) && PairFree("vouch", me, other) && !m_mVoucher.Contains(other))
+		// The one vouch (docs/REPUTATION.md, "Vouching"): Trusted here, or at a barrier or Halcyon's gate
+		// Known in your own colours (signing them through); never while banned after a vouch went wrong
+		RZ_Hostility vouchHostility = m_GM.GetHostility();
+		bool trusted = RZ_Factions.IsValid(f) && RZ_Reputation.IsAtLeast(m_GM.GetTier(me, f), RZ_ETier.TRUSTED);
+		bool signIn = vouchHostility && vouchHostility.GetDisguise().GetWatch().CanSignIn(me, other, f, s.m_Speaker);
+		bool banned = vouchHostility && vouchHostility.GetDisguise().GetWatch().VouchBanned(me);
+		if ((trusted || signIn) && !banned && PairFree("vouch", me, other) && !m_mVoucher.Contains(other))
 			replies.Insert(Verb(VOUCH, string.Format("\"%1's with me.\"", RZ_Util.PlayerName(other)), "Vouch: you answer for them"));
 
 		RZ_DClaimSeen claim;
@@ -212,6 +218,14 @@ class RZ_DialogueScenes
 			s.m_aNew.Insert(string.Format("\"%1's with me.\" A nod. You answer for them now.", RZ_Util.PlayerName(other)));
 			m_GM.NotifyPlayer(other, s.m_sHeader, string.Format("%1 vouches for you here.", RZ_Util.PlayerName(me)));
 			RZ_Log.Info(string.Format("Dialogue: %1 vouched for %2", RZ_Util.PlayerName(me), RZ_Util.PlayerName(other)));
+			// At a barrier or Halcyon's gate it also signs them through (RZ_DisguiseWatch)
+			if (m_GM.GetHostility())
+			{
+				string signed = m_GM.GetHostility().GetDisguise().GetWatch().SignIn(me, other, f, s.m_Speaker);
+				if (!signed.IsEmpty())
+					s.m_aNew.Insert(signed);
+			}
+
 			return;
 		}
 

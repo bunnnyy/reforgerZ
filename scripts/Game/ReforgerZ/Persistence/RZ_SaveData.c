@@ -128,6 +128,9 @@ class RZ_SaveData
 	ref RZ_FinaleSave finale;
 	// The epilogue week (Director/Epilogue/RZ_Epilogue.c). Older saves have none
 	ref RZ_EpilogueSave epilogue;
+	// Borrowed kit (Factions/RZ_DisguiseMarks.c): the nail list, Bastion's board, the season's counts.
+	// Older saves have none: they start empty
+	ref RZ_DisguiseSave disguise;
 	bool hasTimeOfDay;
 	float timeOfDay;
 

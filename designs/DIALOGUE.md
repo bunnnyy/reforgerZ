@@ -37,7 +37,7 @@ all conversations in this one engine. Nobody builds a second talk system.
   [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit), shown before you commit. Dialogue's random challenge odds, its
   suspicion counter, its blown-for-15-minutes and its doubled caught-lie cost are gone. The word at the
   wire, a real name, a crew name and a notebook number are **cover details** (+1 at the look; a wrong word
-  fails at once). Kit kinds follow DISGUISE.md: own, issued, in their kit, signed for, a dead man's, off
+  fails at once). Kit kinds follow [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit): own, issued, in their kit, signed for, a dead man's, off
   the turned. Point-out is now a −1 at the look.
 - **One vouch, one lie store, one callback queue.** The vouch has one liability everywhere. Lies are
   found out by events first; the two 15% discovery rolls become the **rumour tick**, only for claims with
@@ -255,7 +255,7 @@ Still to build, with scenes and the systems that own them:
 | `reward` | `reward:haven:5:20:"walked them home"` | `Run.Reward` | quest conversations only |
 | `call` | `call:work`, `call:rob`, `call:search`, `call:declare_bite`, `call:table_bite` | named calls for the built behaviours (today's `slot:N` covers them) | its own rules |
 | `hostile`, `flee` | `hostile:3` | a timed grudge; the wanderer runs | grudges restart |
-| `pass`, `catch` | `pass:post`, `catch:bastion` | a passed or caught look's result | DISGUISE.md's rules |
+| `pass`, `catch` | `pass:post`, `catch:bastion` | a passed or caught look's result | the borrowed-kit rules |
 
 **Personal and world.** Season, run and scene flags, `resolve`, `start` and `commit` change the world: they're
 allowed only in a scene, so they run once ([section 14](#14-multiplayer)). **Talk resolves talk:** anything
@@ -307,22 +307,20 @@ Still to build:
 **Built:** kit greets (`kit:own`, `kit:in_kit`), claims as `look` choices with the look's tags, a pass waving you
 through a post, passing counting 0 at persuade and no threats, leaders and home ground seeing through it, the lint
 refusing rewards behind a claim, and a change of clothes ending the session
-([docs/DIALOGUE.md](../docs/DIALOGUE.md#claims-in-someone-elses-kit)).
-[DISGUISE.md](DISGUISE.md) owns kit, colours, the look, catches, word gets round and vouching at barriers.
+([docs/DIALOGUE.md](../docs/DIALOGUE.md#claims-in-someone-elses-kit)). The disguise system's kit kinds, signed-for
+kit, a dead man's name and the Rogue's price are built too ([docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit),
+which owns kit, colours, the look, catches, word gets round and vouching at barriers).
 
 Still to build:
-- **The other kit kinds** (`issued`, `signed_other`, `dead_mans`, `off_turned`), read by the disguise system, with
-  their reactions: "You're still in our kit. Take it off before someone asks why." (issued). Kit a quartermaster
-  sold is signed out to its buyer: worn by anyone else it fails the look at once ("That's Weber's jacket. Signed
-  for.").
+- **The other kit kinds as `kit:` words** (`issued`, `signed_other`, `dead_mans`, `off_turned`) in conversations,
+  with their reactions: "You're still in our kit. Take it off before someone asks why." (issued).
 - **Cover details spoken as choices**, each `cover:<key>`, +1 at the look (Bastion's word at the wire is built
   as `wire:N`):
-  - **a real name you've heard:** a dead man's name at his own post fails at once;
+  - **a real name you've heard;**
   - **a crew name** at the Red Hand ("What do they call you?"), your own or one heard on the open channel;
   - **a notebook number** at Halcyon, only from a dead researcher's notebook;
   - **a mission's paper**, where the stage provides one.
 - **A post speaker opening the claim** at 35 m (section 4), and an outpost gate's look giving 10 minutes inside.
-- The one exception to home ground seeing through it: a Rogue leader's price (DISGUISE.md, section 10).
 
 ## 13. Infection, time and items
 
@@ -1060,7 +1058,7 @@ Strangers' settings (on, the 15-minute ceiling, the places) belong to Missions >
 | Point-of-no-return scope | Per identity for the season, so dying isn't a way out. It ends at the cure |
 | The Independent route's speaker | The open radio channel, which every player can reach whatever their standing |
 | Disguise intent | A disguise only when you claim one; kit in their colours is noticed but never a disguise on its own |
-| Disguise passage | Whatever DISGUISE.md's look buys: one passage at a road post, or 10 minutes at a gate |
+| Disguise passage | Whatever borrowed kit's look buys: one passage at a road post, or 10 minutes at a gate |
 | The word at the wire | The word itself is a cover detail, so a friend can tell you; a wrong word fails at once |
 | Social layer | Vouch, call-outs and point-out all on; overheard lines at 8 m |
 | Small shared moments | Missions' 5-second hold, one objection per player per job, Stand with. Anything that matters to the season is a tally |

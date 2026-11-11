@@ -48,6 +48,15 @@ class RZ_ErrandRegistry
 		// Disguises
 		list.Insert(new RZ_Errand_DressRehearsal());
 		list.Insert(new RZ_Errand_OfficersCoat());
+		// Disguise phases 2 and 3: the side jobs (docs/ERRANDS.md, the cards)
+		list.Insert(new RZ_Errand_NameOnTheTape());
+		list.Insert(new RZ_Errand_SpotTheTells());
+		list.Insert(new RZ_Errand_Paint());
+		list.Insert(new RZ_Errand_WrongWayRound());
+		list.Insert(new RZ_Errand_LaundryDay());
+		list.Insert(new RZ_Errand_Civvies());
+		list.Insert(new RZ_Errand_MasksOff());
+		list.Insert(new RZ_Errand_Notebook31());
 		// Phase 4: the house, the lost, the crews, Bastion, help across lines, bad standing, the Long
 		// Table, the infected, champions and backgrounds
 		list.Insert(new RZ_Errand_Vouch());
@@ -70,14 +79,8 @@ class RZ_ErrandRegistry
 		list.Insert(new RZ_Errand_JarRun());
 		list.Insert(new RZ_Errand_ShoesInARow());
 		list.Insert(new RZ_Errand_NotPastChapel());
-		// Phase 8: to about 60 cards, every one with a live reason
-		list.Insert(new RZ_Errand_Notebook31());
-		list.Insert(new RZ_Errand_Paint());
-		list.Insert(new RZ_Errand_WrongWayRound());
-		list.Insert(new RZ_Errand_SpotTheTells());
-		list.Insert(new RZ_Errand_MasksOff());
-		list.Insert(new RZ_Errand_Civvies());
-		list.Insert(new RZ_Errand_LaundryDay());
+		// Phase 8: to about 60 cards, every one with a live reason (the disguise side jobs are above)
+		list.Insert(new RZ_Errand_Notebook31Fallout());
 		list.Insert(new RZ_Errand_OtherHalf());
 		list.Insert(new RZ_Errand_TheDrawing());
 		list.Insert(new RZ_Errand_IsSheGone());

@@ -187,13 +187,32 @@ class RZ_Retaliation
 				continue;
 
 			vector at = member.GetOrigin();
+			int shooter = FindShooter(at, ids, players);
+
+			// Borrowed kit (RZ_Disguise): a death puts his name on the nail and marks his kit a dead
+			// man's; a hit while passing gives you away (only an infected within 3 m excuses it)
+			RZ_Disguise disguise;
+			if (m_GM.GetHostility() && m_GM.GetHostility().GetDisguise().IsOn())
+				disguise = m_GM.GetHostility().GetDisguise();
+
+			if (disguise)
+			{
+				int killer = -1;
+				if (!m_GM.GetSpawner().IsZombieNear(at, MELEE_RADIUS))
+					killer = shooter;
+
+				if (killed)
+					disguise.GetMarks().OnPersonDied(member, w.m_eFaction, at, killer);
+
+				disguise.GetWatch().OnTheirsHit(killer, w.m_eFaction, killed, at);
+			}
+
 			if (m_GM.GetSpawner().IsZombieNear(at, DEFEND_RADIUS))
 				continue; // the infected did it, or the player was fighting them off
 
 			if (m_GM.GetHostility() && m_GM.GetHostility().IsFightNear(at, FIGHT_RADIUS))
 				continue; // a mission fight or a hunter squad nearby: a crossfire, not a provocation
 
-			int shooter = FindShooter(at, ids, players);
 			if (shooter <= 0)
 				continue;
 
@@ -207,7 +226,11 @@ class RZ_Retaliation
 
 			Trigger(shooter, w.m_eFaction, at);
 			if (killed)
+			{
 				KillInfamy(shooter, w.m_eFaction);
+				if (disguise)
+					disguise.GetWatch().OnKillCounted(w.m_eFaction, at);
+			}
 		}
 	}
 

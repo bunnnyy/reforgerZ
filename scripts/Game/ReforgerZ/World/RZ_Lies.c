@@ -237,6 +237,10 @@ class RZ_Lies
 		// Whoever vouched for the liar answers for it, once per vouch
 		if (!lie.voucher.IsEmpty() && RZ_Factions.IsValid(lie.faction))
 		{
+			// The one vouch's liability: 2 hours without vouching (RZ_DisguiseWatch)
+			if (gm.GetHostility())
+				gm.GetHostility().GetDisguise().GetWatch().BanVoucher(lie.voucher);
+
 			int voucher = gm.FindPlayerByIdentity(lie.voucher);
 			if (voucher > 0)
 			{

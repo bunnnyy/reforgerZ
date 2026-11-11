@@ -1438,6 +1438,17 @@ class RZ_Safehouses
 			return;
 		}
 
+		// Colours: not in red, and not in a ribbon given to someone else (RZ_Disguise)
+		if (m_GM.GetHostility())
+		{
+			string kit = m_GM.GetHostility().GetDisguise().TalkRefusal(playerId, true, false);
+			if (!kit.IsEmpty())
+			{
+				m_GM.Say(playerId, "The Haven", RZ_EFaction.SURVIVORS, kit);
+				return;
+			}
+		}
+
 		TellStatus(playerId, h);
 
 		// They stop what they're doing while you talk

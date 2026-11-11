@@ -65,7 +65,7 @@ Where it meets the other designs, it owns the **voice**, and they own the mechan
 | Infected ([INFECTED.md](INFECTED.md)) | The marks at a range's edge, "Read the mark", each faction's words for the infected | Its word list joins the lint (6), and its rules for writing the infected move into WRITING.md |
 | Mission style ([MISSION_STYLE.md](MISSION_STYLE.md)) | Approaches by mission kind: one table in DESIGN.md | Two columns for that table: who pays, and what to watch for (4.6) |
 | Dialogue ([DIALOGUE.md](DIALOGUE.md)) | Nodes, checks, the vanilla fallback | Dry lines and their limits (3.7) |
-| Disguise ([DISGUISE.md](DISGUISE.md)) | The look, being caught | Lines that follow the look's results (3.9) |
+| Disguise ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) | The look, being caught | Lines that follow the look's results (3.9) |
 | Reputation ([REPUTATION_NAMES.md](REPUTATION_NAMES.md)) | The names, the faction's word for you, crew names | The rules for saying them (3.8) |
 | Errands ([ERRANDS.md](ERRANDS.md)) | The dealer, the spots where strangers can be, the pay | The rules for how a small ask sounds (4.6b) |
 

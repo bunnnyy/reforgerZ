@@ -206,6 +206,9 @@ class RZ_FactionShopAction : ScriptedUserAction
 	[Attribute("", desc: "Name shown in the action menu")]
 	protected string m_sDisplayName;
 
+	[Attribute("0", desc: "Sold once a life to each player (the Red Hand's clean kit sets on the Trusted shelf)")]
+	protected bool m_bOncePerLife;
+
 	static const int STATE_OPEN = 0;	// for sale to this player
 	static const int STATE_LOCKED = 1;	// not at their standing
 	static const int STATE_OUT = 2;		// nobody can have it here right now
@@ -303,6 +306,30 @@ class RZ_FactionShopAction : ScriptedUserAction
 
 			// Treated as Known, whatever the stronghold thinks
 			tier = RZ_ETier.KNOWN;
+		}
+
+		// Colours: not to anyone in their enemy's colours, friends of theirs included (RZ_Disguise)
+		RZ_Hostility hostility = gm.GetHostility();
+		if (hostility && hostility.GetDisguise().IsOn())
+		{
+			string colours = hostility.GetDisguise().ShopRefusal(playerId, m_eFaction);
+			if (!colours.IsEmpty())
+			{
+				refusal = colours;
+				need = "Not in those colours";
+				state = STATE_LOCKED;
+				return -1;
+			}
+		}
+
+		// Once a life (the Red Hand's clean kit sets on the Trusted shelf)
+		RZ_WorldFacts facts = gm.GetFacts();
+		if (m_bOncePerLife && facts && facts.Flag(OnceKey(gm, playerId)) > 0)
+		{
+			refusal = string.Format("\"One %1 a life. You've had yours.\"", m_sDisplayName);
+			need = "Once a life: you've had it";
+			state = STATE_LOCKED;
+			return -1;
 		}
 
 		if (m_eFaction == RZ_EFaction.SURVIVORS && RZ_Reputation.IsHunted(tier))
@@ -434,6 +461,14 @@ class RZ_FactionShopAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The world flag a once-a-life item sets, by identity and life (saved with the world facts).
+	protected string OnceKey(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		return string.Format("shop.once.%1.%2.%3", p.m_sIdentity, p.m_iLives, m_sItemPrefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The antidote, which only the lab's (or the stolen) stock sells.
 	protected bool IsAntidote(RZ_GameModeComponent gm)
 	{
@@ -476,11 +511,19 @@ class RZ_FactionShopAction : ScriptedUserAction
 			return false;
 		}
 
-		if (!RZ_QuartermasterHelper.SpawnNear(m_sItemPrefab, owner, user))
+		IEntity bought = RZ_QuartermasterHelper.SpawnNear(m_sItemPrefab, owner, user);
+		if (!bought)
 		{
 			gm.AddFavor(playerId, m_eFaction, cost); // refund
 			return false;
 		}
+
+		// Borrowed kit: their own kit is signed out to the buyer; anything the Red Hand sells is bought fair
+		if (gm.GetHostility() && gm.GetHostility().GetDisguise().MarksOn())
+			gm.GetHostility().GetDisguise().GetMarks().OnSold(bought, playerId, m_eFaction);
+
+		if (m_bOncePerLife && gm.GetFacts())
+			gm.GetFacts().SetFlag(OnceKey(gm, playerId), 1);
 
 		bool fromLab = m_eFaction == RZ_EFaction.INSTITUTE;
 		if (IsAntidote(gm))

@@ -144,8 +144,8 @@ The game scripts **compile without errors or warnings** against Arma Reforger 1.
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
 Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
-That's about 207,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 85 `VERIFY` markers left in the game
+That's about 210,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+was also checked against the base game's script source; the 91 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -184,9 +184,12 @@ writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, sim
 jobs with truths, lies and fallout, reputation's parley and settling up, lies and witnesses,
 dialogue's scenes for several players, borrowed kit, strangers at their spots, locals, twists,
 board and radio asks and errands' phase 4 cards; and phase 8's growth: the worked examples'
-remaining ways, the 16 one-choice jobs and 68 work rows, errands to 61 cards with the margin and lock
+remaining ways, the 16 one-choice jobs and 68 work rows, errands to 63 cards with the margin and lock
 cards,
-[MISSIONS.md](docs/MISSIONS.md)); talk
+[MISSIONS.md](docs/MISSIONS.md)); borrowed kit's phases 2 and 3 (phase 8 in part: again looks, roll
+call, word gets round, vouching at barriers, the Rogue's price, kit that remembers whose it was, the
+nail list and Bastion's board, and the eight side jobs as errand cards,
+[REPUTATION.md](docs/REPUTATION.md#borrowed-kit)); talk
 (phase 2: conversation trees, reputation's voice, the season mood and the voice bank, and talk's
 rest: lies you're told, promises, claims in kit, barks, strangers, the open channel, the season
 record and titles, [DIALOGUE.md](docs/DIALOGUE.md)); the towns' crawlers, the loose ones, heat hordes from towns, the

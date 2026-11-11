@@ -1,8 +1,8 @@
-//! Notebook 31 (docs/ERRANDS.md, the dead; His Notebook merged in): a Halcyon researcher died where he
+//! Notebook 31 after Lost Colleague (docs/ERRANDS.md, the dead; fallout; the nail list's Notebook 31 is RZ_Errand_Notebook31): a Halcyon researcher died where he
 //! hid (Lost Colleague's fallout). His numbered coat and notebook are where he fell. Return both (the
 //! authors' list gets his name), sell the notebook to the fence (a lie the rumour round finds), or keep
 //! it: its number is a real cover detail for one Halcyon look, and the coat is no good to anyone.
-class RZ_Errand_Notebook31 : RZ_ErrandCard
+class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 {
 	//------------------------------------------------------------------------------------------------
 	override void Define()

@@ -118,6 +118,7 @@ class RZ_PostContact
 	bool m_bCleared;		// waved through, searched or paid
 	bool m_bAtBarrier;		// reached the barrier (leaving now is running it)
 	bool m_bPunished;
+	bool m_bVouched;		// signed through by a friend in their own colours (RZ_DisguiseWatch.SignIn)
 	float m_fWaited;		// seconds at the barrier
 	float m_fHandsUp;		// seconds a Hunted player has hung back while unarmed in range (the hold has a limit)
 	float m_fLastDist = -1;	// distance at the last tick, to tell coming in from loitering
@@ -176,6 +177,7 @@ class RZ_Checkpoints
 	protected bool m_bToldNoRoads;
 	protected ref RZ_Parley m_Parley;
 	protected ref map<string, float> m_mGatePass = new map<string, float>();		// "player:place" -> clock a gate look let them in until
+	protected ref map<string, float> m_mSignedIn = new map<string, float>();		// "player:place" -> clock a vouch let them in until (Halcyon's gates)
 
 	protected static const float TELL_GAP = 600;
 	protected static const float GATE_GAP = 180;
@@ -604,6 +606,14 @@ class RZ_Checkpoints
 			m_GM.Say(playerId, title, post.m_eFaction, "\"Cleared. You don't need to talk to me. Nobody needs to talk to me.\"");
 		else
 			m_GM.Say(playerId, title, post.m_eFaction, "\"Checkpoint. Hands on the barrier, a search, and you're through. Fifteen seconds if you don't argue.\"");
+
+		// Bastion's board: the season's impostors, never by name
+		if (disguise)
+		{
+			string board = disguise.GetMarks().BoardLine();
+			if (!board.IsEmpty())
+				m_GM.Say(playerId, title, post.m_eFaction, board);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -683,6 +693,29 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Vouching (RZ_DisguiseWatch.SignIn): signed through this post by a friend. Bastion waves them
+	//! through unsearched; the Red Hand charges them the Known toll instead of turning them round.
+	void SignInAtPost(RZ_RoadPost post, int playerId)
+	{
+		if (post)
+			GetContact(post, playerId).m_bVouched = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Vouching at Halcyon's field station or the lab: a Watched visitor in for `seconds`.
+	void SignInAtGate(int playerId, string place, float seconds)
+	{
+		m_mSignedIn.Set(playerId.ToString() + ":" + place, m_fClock + seconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Running a checkpoint's Infamy (walking off while held counts as running it).
+	int RunInfamy()
+	{
+		return m_Settings.m_iRunInfamy;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static string PostKey(RZ_RoadPost post)
 	{
 		return string.Format("p%1_%2", RZ_Util.RoundToInt(post.m_vPos[0]), RZ_Util.RoundToInt(post.m_vPos[2]));
@@ -751,6 +784,20 @@ class RZ_Checkpoints
 		bool wildcard = tier == RZ_ETier.WILDCARD && rs.m_bWildcardPosts;
 		bool redColours = disguise && disguise.WearsColours(playerId, RZ_EFaction.BANDITS);
 		bool wholeCar = rs.m_bGroupRules && GroupSearched(post, playerId, ent);
+
+		// Signed through by a friend in their own colours (vouching): waved through unsearched. The
+		// friend answers for them (RZ_DisguiseWatch)
+		if (c.m_bVouched && !hunted && !redColours)
+		{
+			if (dist <= m_Settings.m_fStopRadius)
+			{
+				c.m_bCleared = true;
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "Your name's in the book under your friend's. The pole goes up without a search.");
+			}
+
+			return;
+		}
+
 		if (!hunted && !wildcard && !redColours && !wholeCar && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
 		{
 			if (dist <= m_Settings.m_fWarnRadius)
@@ -763,7 +810,8 @@ class RZ_Checkpoints
 		}
 
 		// In Bastion's kit and below Known: a claim, judged by the look. Surrender comes first
-		bool claim = disguise && !hunted && !canSurrender && disguise.InTheirKit(playerId, RZ_EFaction.MILITARY);
+		// "We search the whole car" comes first: nobody in a searched car gets a look
+		bool claim = disguise && !hunted && !canSurrender && !wholeCar && disguise.InTheirKit(playerId, RZ_EFaction.MILITARY);
 		if (!c.m_bWarned && dist <= m_Settings.m_fWarnRadius)
 		{
 			c.m_bWarned = true;
@@ -773,6 +821,9 @@ class RZ_Checkpoints
 				disguise.ShowComing(playerId, RZ_EFaction.MILITARY, 2, PostKey(post), "", title);
 			else if (wholeCar && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
 				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "The sentry knows your face, then looks at who you came with. \"We search the whole car.\"");
+
+			if (wholeCar)
+				RZ_Log.Info(string.Format("Checkpoints: %1 searched with the whole car at %2 (before any look)", RZ_Util.PlayerName(playerId), post.m_sNear));
 			else if (redColours)
 				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "The sentry looks at the red on you, then at you. \"Arms out. We search everyone in those colours.\"");
 			else if (wildcard)
@@ -832,6 +883,10 @@ class RZ_Checkpoints
 
 			int taken = Search(ent);
 			string evidence = TakeArmband(ent, playerId);
+			// A dead man's kit, and kit signed out to someone else, go in the crate too
+			if (disguise)
+				evidence += disguise.TakeMarkedAtSearch(ent, playerId);
+
 			if (taken >= 3)
 				RZ_RepVoice.CrewEvent(m_GM, playerId, RZ_RepVoice.CREW_POCKETS);
 
@@ -916,6 +971,10 @@ class RZ_Checkpoints
 
 			RZ_ETier tier = m_GM.GetTier(other, RZ_EFaction.MILITARY);
 			bool searched = !RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN) || tier == RZ_ETier.WILDCARD;
+			// A friend in Bastion's kit stands their own look rather than having the car searched
+			if (disguise && disguise.InTheirKit(other, RZ_EFaction.MILITARY) && !RZ_Reputation.IsHunted(tier))
+				searched = false;
+
 			if (disguise && disguise.WearsColours(other, RZ_EFaction.BANDITS))
 				searched = true;
 
@@ -1022,7 +1081,8 @@ class RZ_Checkpoints
 			return;
 		}
 
-		bool known = !armyColours && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN);
+		// Signed through by a Trusted friend (vouching): the friends' rate, never a turn-round
+		bool known = !armyColours && (RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN) || c.m_bVouched);
 		// The Wildcard tier pays danger money, and there's a night rate (TollFor)
 		int toll = TollFor(playerId);
 		if (!c.m_bWarned && dist <= m_Settings.m_fWarnRadius)
@@ -1162,6 +1222,16 @@ class RZ_Checkpoints
 			float until;
 			if (m_mGatePass.Find(passKey, until) && m_fClock < until && disguise && disguise.IsPassing(playerId, f))
 				return;
+
+			// Signed in as a visitor by a friend (vouching, Halcyon's gates): in for the pass, unarmed or not
+			float signedUntil;
+			if (!redColours && m_mSignedIn.Find(passKey, signedUntil) && m_fClock < signedUntil)
+			{
+				if (Tell(playerId, place, "visitor", GATE_GAP))
+					m_GM.Say(playerId, title, f, "\"Visitor. Your friend's name is on your pass.\" The gate opens.");
+
+				return;
+			}
 
 			if (!redColours && disguise && disguise.InTheirKit(playerId, f))
 			{
