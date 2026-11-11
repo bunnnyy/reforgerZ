@@ -141,6 +141,9 @@ tools/render_ui.js
                  renders the icon PNGs and the mockup previews (Node and Playwright)
 tools/pacing_sim.py
                  simulates a season's research, the lab and the stages for 2, 5 and 10 players
+tools/tribe_sim.py
+                 simulates the infected tribes (planned) over a season on that pacing: Arland,
+                 Everon and a Chernarus-size map, 2, 5 and 10 players
 tools/compile_check.sh
                  compiles the scripts on the dedicated server, no Workbench needed (Linux,
                  or Windows in Git Bash)

@@ -115,7 +115,7 @@ installed and what's missing.
    `cygpath -u "$(powershell -NoProfile -Command '[Environment]::GetFolderPath("MyDocuments")' | tr -d '\r')"`
 5. **Python 3:** there only if `py -3 -c 'import sys; print(sys.version)'` (or the same with `python`)
    prints 3.x. "Python was not found" is Windows' Microsoft Store shortcut, not Python. It's needed
-   by `tools/prefab_manifest.py`, `tools/pacing_sim.py` and the runtime test.
+   by `tools/prefab_manifest.py`, `tools/pacing_sim.py`, `tools/tribe_sim.py` and the runtime test.
 6. **Workshop mods** the game has downloaded: folders named like `BaconZombies_622120A5448725E3`
    under `<Documents>/My Games/ArmaReforger/addons`. Which mods ReforgerZ needs is in
    [MOD_STACK.md](MOD_STACK.md).
@@ -132,8 +132,8 @@ Ask first (one batch), then:
 | Python 3 | `winget install --id Python.Python.3.12 -e --source winget --scope user --accept-package-agreements --accept-source-agreements` (when asking, say this accepts Python's licence and winget's terms). The running shell won't see it until Claude Code restarts: ask the author to restart it, or pass `PYTHON=<its python.exe>` to the runtime test |
 | Workshop mods | The author subscribes in the game (**Workshop** tab, search, **Subscribe**) to the mods in [MOD_STACK.md](MOD_STACK.md) |
 
-On this PC, run the Python tools as `py tools/prefab_manifest.py ...` and `py tools/pacing_sim.py ...`
-(the docs write `python3`).
+On this PC, run the Python tools as `py tools/prefab_manifest.py ...`, `py tools/pacing_sim.py ...` and
+`py tools/tribe_sim.py ...` (the docs write `python3`).
 
 ## 4. Compile check and runtime test
 

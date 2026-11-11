@@ -66,6 +66,15 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
   research at 90% until a finale adds research with `RZ_CureResearch.AddFinaleResearch`
   ([Cure research](DESIGN.md#cure-research-and-the-seasons-end)).
 
+### The infected's ecology (planned)
+- Infected tribes in the wild and slow town infected, with wild infected out by day too, in small
+  parties so the day stays the lighter danger: designed, not built. Its doc comes with the first
+  code. Before any code, `tools/tribe_sim.py` simulates the tribes as data over a season on the
+  45-day pacing (`--legacy` for the old one) on Arland, Everon and a Chernarus-size map at 2, 5 and
+  10 players: tribe counts, clans, hunger, growth, first-night losses, and fights per km walked
+  by day and by night. It prints the numbers it tuned against the design, with the reason for
+  each. Run it again with the wild land the land survey measures (`--wild everon=31`).
+
 ### Content on the world facts
 - Switch the rest of the content to the world facts ([DESIGN.md](DESIGN.md#world-facts), the
   *Planned* line): contract town pickers by who holds a town (`PickTown`), Bastion contracts and
