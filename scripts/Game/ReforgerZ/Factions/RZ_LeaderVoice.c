@@ -223,7 +223,14 @@ class RZ_LeaderVoice
 			case RZ_EFaction.SURVIVORS: return "\"We're the Haven. Just people who were here when the gates closed. We feed who we can, and nobody shoots in the house.\"";
 			case RZ_EFaction.MILITARY: return "\"Task Force Bastion. What's left of it. We hold what we were told to hold. Nobody has told us anything for days.\"";
 			case RZ_EFaction.BANDITS: return "\"The Red Hand. We're the ones who noticed the rules stopped. Don't look so worried. Yet.\"";
-			case RZ_EFaction.INSTITUTE: return "\"Halcyon. We were studying the site before the lockdown. We're the only ones who can prove the Zone is clean, and nobody outside opens the gates without proof.\"";
+			case RZ_EFaction.INSTITUTE:
+			{
+				// After the cure the proof is out: the gates wait on the outside now
+				if (RZ_WorldFacts.Get().IsCured())
+					return "\"Halcyon. We were studying the site before the lockdown. The proof went out with the cure. Now we wait for the gates, like everyone else.\"";
+
+				return "\"Halcyon. We were studying the site before the lockdown. We're the only ones who can prove the Zone is clean, and nobody outside opens the gates without proof.\"";
+			}
 		}
 
 		return "";

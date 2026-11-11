@@ -65,6 +65,7 @@ class RZ_MissionManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A running mission uses this town, or a story has claimed it (RZ_WorldFacts.Town).
 	bool IsSettlementBusy(int idx)
 	{
 		if (idx < 0)
@@ -76,7 +77,67 @@ class RZ_MissionManager
 				return true;
 		}
 
-		return false;
+		return m_GM.GetFacts().IsClaimed(RZ_WorldFacts.Town(idx));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The manager also picks this type at random (registered), so its weight says whether the
+	//! world allows it now. Story-only missions (questline stages, arc-only events) aren't.
+	bool IsRegistered(typename t)
+	{
+		return m_aTypes.Contains(t);
+	}
+
+	// ================================================================ Can it run now?
+	//------------------------------------------------------------------------------------------------
+	//! The one check every starter uses before it starts a configured mission (random picks, story
+	//! arcs, questline stages, leaders' jobs; docs/DESIGN.md, "World facts"): the requirements'
+	//! world gates and facts (stage, cure, Bastion presence, time of day, flags, questlines), the
+	//! season's No Vehicles rule, its weight if the manager also picks this type at random
+	//! (checkWeight), one of each type at a time, and its claims free. "" if it can, else why not.
+	string WhyNot(RZ_Mission m, int playerCount, bool checkWeight = true)
+	{
+		if (!m)
+			return "no mission";
+
+		if (m.NeedsVehicle() && RZ_Seasons.Mods().m_bNoVehicles)
+			return "no vehicles this season";
+
+		if (!m.m_Req.IsWorldOk(m_GM, playerCount))
+			return "the world isn't right (requirements)";
+
+		if (IsTypeActive(m.Type()))
+			return "one of this type is already running";
+
+		array<string> subjects = {};
+		m.GetClaims(m_GM, subjects);
+		foreach (string subject : subjects)
+		{
+			if (!m.IsSubjectFree(m_GM, subject))
+				return subject + " is in use by " + m_GM.GetFacts().ClaimedBy(subject);
+		}
+
+		if (checkWeight && IsRegistered(m.Type()) && m.GetWeight(m_GM) <= 0)
+			return "its weight is 0 now";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool CanRunNow(RZ_Mission m, int playerCount, bool checkWeight = true)
+	{
+		return WhyNot(m, playerCount, checkWeight).IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! CanRunNow, then StartMission. What story arcs, questlines and leaders call.
+	bool StartIfCan(RZ_Mission m, int playerCount)
+	{
+		string why = WhyNot(m, playerCount);
+		if (!why.IsEmpty())
+			return false;
+
+		return StartMission(m);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -160,11 +221,25 @@ class RZ_MissionManager
 		// Every attempt gets its own id: guards a failed setup spawned are never mistaken for a later mission's
 		mission.m_iId = m_iNextId;
 		m_iNextId++;
-		if (!mission.Setup(m_GM))
+
+		// What it said it needs is held from before Setup (Setup may claim more)
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		string owner = RZ_WorldFacts.MissionOwner(mission.m_iId);
+		array<string> subjects = {};
+		mission.GetClaims(m_GM, subjects);
+		bool claimed = true;
+		foreach (string subject : subjects)
 		{
-			// Whatever it spawned before it gave up goes again
+			if (!facts.ClaimFor(subject, owner, mission.m_sClaimParent))
+				claimed = false;
+		}
+
+		if (!claimed || !mission.Setup(m_GM))
+		{
+			// Whatever it spawned or claimed before it gave up goes again
 			mission.m_eState = RZ_EMissionState.FAILED;
 			m_GM.GetSpawner().ReleaseMission(mission.m_iId);
+			facts.ReleaseAll(owner);
 			mission.Cleanup(m_GM);
 			return false;
 		}
@@ -494,11 +569,9 @@ class RZ_MissionManager
 			if (m.m_bContract != contract)
 				continue;
 
-			// Season rules (No Vehicles): nothing that hands players a vehicle
-			if (m.NeedsVehicle() && RZ_Seasons.Mods().m_bNoVehicles)
-				continue;
-
-			if (!m.m_Req.IsWorldOk(m_GM, ids.Count()))
+			// The shared check (world gates and facts, No Vehicles, one of each type, claims); the
+			// weight comes next, with the leader and faction-life multipliers
+			if (!CanRunNow(m, ids.Count(), false))
 				continue;
 
 			// A contract nobody online could take would just sit there
@@ -588,6 +661,8 @@ class RZ_MissionManager
 		// Faction strength and morale
 		m_GM.OnContractFinished(m, success);
 
+		// Whatever it held (RZ_WorldFacts claims) is free again
+		m_GM.GetFacts().ReleaseAll(RZ_WorldFacts.MissionOwner(m.m_iId));
 		m.Cleanup(m_GM);
 	}
 

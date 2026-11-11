@@ -32,7 +32,10 @@ these missions as stages are in [QUESTLINES.md](QUESTLINES.md) (designed, not bu
    the Haven*. Some open *because* someone hates you.
 3. **Background.** Some contracts are locked to or from backgrounds (🔒), and some backgrounds
    get a better outcome (★).
-4. **World state.** Outbreak stage, cure progress, whether Bastion is still around, night.
+4. **World state.** Outbreak stage, cure progress, whether Bastion is still around, night. Once
+   the cure is out, Halcyon's contracts and events stop (its work is research), and so does any
+   mission at the line. A mission can also wait on a season flag or stay away while a questline
+   tells its story ([DESIGN.md](DESIGN.md#world-facts)).
 
 How the code does it:
 
@@ -182,7 +185,7 @@ Code: `Missions/RedHand/RZ_RedHandLoreMissions.c`.
 
 | # | Contract | From | Needs | Bg | What you do | Result | Status |
 |---|---|---|---|---|---|---|---|
-| 1 | Learning the Drones | Red Hand | Known, Perimeter on | ★ Radio Op: counts twice as fast, so he's out there half as long (shot 35%, not 55%) | A crew waits with a debtor 120–200 m outside the warning zone. **Walk him to the line**: he walks with you to a marker 20 m short of the kill zone, then on alone; stay within 50 m of the marker for 90 s and count. A warning shot, then maybe the second one. **Get him away**: he follows you to the nearest Haven safehouse (the crew fights you) | Walk: Fame, Favor, whether he lives or not (shot 55% of the time). Away: Haven Fame, Favor, he joins the safehouse (+15 Red Hand Infamy) | ✅ *spots from the Perimeter helper, so it works on land and sea edges (on a sea edge he wades out from the shore); never where the coast lies past the drones' reach. He is data out past the marker: the shots are effects, not a body. The crew is real only with the Red Hand group prefab* |
+| 1 | Learning the Drones | Red Hand | Known, Perimeter on and sealed (not after the cure) | ★ Radio Op: counts twice as fast, so he's out there half as long (shot 35%, not 55%) | A crew waits with a debtor 120–200 m outside the warning zone. **Walk him to the line**: he walks with you to a marker 20 m short of the kill zone, then on alone; stay within 50 m of the marker for 90 s and count. A warning shot, then maybe the second one. **Get him away**: he follows you to the nearest Haven safehouse (the crew fights you) | Walk: Fame, Favor, whether he lives or not (shot 55% of the time). Away: Haven Fame, Favor, he joins the safehouse (+15 Red Hand Infamy) | ✅ *spots from the Perimeter helper, so it works on land and sea edges (on a sea edge he wades out from the shore); never where the coast lies past the drones' reach. He is data out past the marker: the shots are effects, not a body. The crew is real only with the Red Hand group prefab* |
 | 2 | The Pit's Debtor | Red Hand | Known | ★ Ex-Con: caught rigging 10% (not 25%), half the chance of being seen walking him out | Nobody volunteered for the pit (the one Fight Pit and House Rules use), so a debtor goes in, and you're his second. **Pay what he owes** (25 Red Hand Favor), **rig the pens**, or **get him out** | Pay: half pay. Rig: caught, +10 Red Hand Infamy and failed; else keep him standing in the ring for 150 s (two rounds of three infected): full pay. Out: walk him to the Haven; seen near the pit (30% a check by day, 12% by night, every 5 s within 60 m): +8 Red Hand Infamy at once and the pit crew fights. Arrives: Haven Fame, Favor, he joins the safehouse (+15 Red Hand Infamy). Nobody chooses in 40 min: he goes in alone, failed | ✅ *only a player the Red Hand hired can pay, checked before the Favor is taken. The pit crew is real only with the Red Hand group prefab* |
 | 3 | Cargo | Haven | Known | ★ Hunter: the crew sees you within 15 m, not 30 | A Red Hand truck carries people. Three steps: a lookout's note outside one town names the next; there the truck is parked (watch it from within 80 m for 20 s; seen, its crew fights and it leaves at once); then it drives on to a shed outside a third town. At the shed: **cut the lock** (12 s, the guards fight) and drive them to the Haven in the truck, **radio the Haven**, or ask the driver for **a cut** | Free: Fame, Favor, +3 at the safehouse (+15 Red Hand Infamy). Radio: 60% pay, +2 at the safehouse (+8 Red Hand Infamy). Cut: the Red Hand pays anyone it doesn't hunt, 10 Fame and 40 Favor (+15 Haven Infamy) | ✅ *the truck is Supply > Red Hand truck (needed); it's data while it moves and only parked trucks are seen, with no fuel until the lock is cut. It waits at the stop until someone has watched it. Its crew is Supply > Red Hand crew, the shed's guards the Red Hand group (each falls back to the other; neither = none). Freeing them needs a vehicle, so No Vehicles takes it out* |
 
@@ -321,7 +324,7 @@ Time-Lock Safe), Breaker Sequence (Junction Boxes), Scout the Town (Recon) and N
 
 Jobs at the quarantine line ([DESIGN.md](DESIGN.md), "The Perimeter"). Nothing crosses the line in
 either direction; these happen at it. Rare and dangerous on purpose; nothing is built for them. They never appear while the Perimeter
-is off, and one that finds nowhere to happen on a map is never offered there ("Missions at the line" in [DESIGN.md](DESIGN.md), "The Perimeter"). Code: `Missions/Perimeter/`.
+is off or after the cure (the line has stood down), and one that finds nowhere to happen on a map is never offered there ("Missions at the line" in [DESIGN.md](DESIGN.md), "The Perimeter"). Code: `Missions/Perimeter/`.
 
 | # | Mission | From | Needs | What you do | Result | Status |
 |---|---|---|---|---|---|---|
@@ -353,6 +356,8 @@ Personal jobs that Independent and Rogue leaders give **in person**, off their s
   with the other faction involved. Rewards never include loot.
 - **Rogue jobs can be discovered**, and most rogue deliveries have a second drop at the stronghold
   where you can **turn the leader in** instead.
+- **The same world rules as any contract:** a job's requirements, one of each job at a time, and
+  Halcyon's jobs stop once the cure is out ([DESIGN.md](DESIGN.md#world-facts)).
 
 | # | Job | From | What you do | Result | Status |
 |---|---|---|---|---|---|

@@ -61,6 +61,9 @@ class RZ_Mission
 
 	// Questlines (Director/RZ_Questlines.c): the run that started this mission as one of its stages
 	int m_iQuestRun = -1;			// -1 = not part of a questline
+	//! The story (arc or questline) that started it: subjects that story claimed count as free
+	//! for this mission (RZ_WorldFacts claims). "" = none.
+	string m_sClaimParent;
 
 	// Rough areas (docs/MISSIONS.md, "Who gets offered what"): contracts name a circle, not a spot
 	ref array<int> m_aExactFor = {};	// players who came close: they know the spot now
@@ -181,6 +184,35 @@ class RZ_Mission
 	bool Setup(RZ_GameModeComponent gm)
 	{
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Subjects this mission needs for its whole run (docs/DESIGN.md, "World facts"): "lab", "heli",
+	//! "pit", RZ_WorldFacts.Town(idx)... Known after Configure. The mission manager starts it only
+	//! while they're all free, holds them from before Setup until it ends, and lets go if Setup
+	//! fails. Subjects picked in Setup are claimed there with ClaimSubject.
+	void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! In Setup: hold one more subject (a safehouse, a leader, a wanderer it just picked) until the
+	//! mission ends. False if someone else holds it: pick another, or return false from Setup.
+	protected bool ClaimSubject(RZ_GameModeComponent gm, string subject)
+	{
+		return gm.GetFacts().ClaimFor(subject, RZ_WorldFacts.MissionOwner(m_iId), m_sClaimParent);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Free for this mission: nobody holds it but this mission or the story that started it.
+	bool IsSubjectFree(RZ_GameModeComponent gm, string subject)
+	{
+		RZ_WorldFacts facts = gm.GetFacts();
+		string holder = facts.ClaimedBy(subject);
+		if (holder.IsEmpty())
+			return true;
+
+		return holder == RZ_WorldFacts.MissionOwner(m_iId) || (!m_sClaimParent.IsEmpty() && holder == m_sClaimParent);
 	}
 
 	//------------------------------------------------------------------------------------------------

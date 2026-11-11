@@ -531,7 +531,8 @@ ask the Haven's friends). ★ Police: anything you learn counts as proof.
 
 ## Crossings
 
-The flags other lines read.
+The flags other lines read. They're the season flags of the world facts
+([DESIGN.md](DESIGN.md#world-facts)), so contracts, arcs and voice can read them too.
 
 | Flag | Set in | Read in | What it does there |
 |---|---|---|---|

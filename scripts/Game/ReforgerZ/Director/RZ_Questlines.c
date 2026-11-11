@@ -99,10 +99,11 @@ class RZ_QuestlinesSave
 	float nextChance;
 	ref array<ref RZ_QuestRunSave> runs = {};
 	ref array<string> doneKeys = {};
-	ref array<string> worldKeys = {};
-	ref array<int> worldValues = {};
 	ref array<string> lastKeys = {};
 	ref array<float> lastAt = {};
+	// Older saves only: world flags and rumours live in the world facts now (RZ_WorldFactsSave)
+	ref array<string> worldKeys = {};
+	ref array<int> worldValues = {};
 	ref array<string> rumours = {};
 	ref array<float> rumourUntil = {};
 }
@@ -198,6 +199,49 @@ class RZ_QuestRun
 		m_mTexts.Set(key, value);
 	}
 
+	// ================================================================ Claims
+	//------------------------------------------------------------------------------------------------
+	//! Who this questline is to the world facts' claims: "quest:<key>".
+	string Owner()
+	{
+		return RZ_WorldFacts.QuestOwner(m_sKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hold a subject (RZ_WorldFacts.Safehouse(idx), Leader(id), Wanderer(id), "lab"...) until the
+	//! questline ends, so no other story uses it meanwhile. Kept with the run and held again after
+	//! a restart. Its own stage missions may use it. False if someone else holds it.
+	bool Claim(string subject)
+	{
+		if (!RZ_WorldFacts.Get().Claim(subject, Owner()))
+			return false;
+
+		m_mTexts.Set(CLAIM_PREFIX + subject, "1");
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Let go of one subject before the end.
+	void Unclaim(string subject)
+	{
+		RZ_WorldFacts.Get().Release(subject, Owner());
+		m_mTexts.Remove(CLAIM_PREFIX + subject);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After a restart: hold again what the run held (claims aren't saved, the run's list is).
+	void Reclaim()
+	{
+		RZ_WorldFacts facts = RZ_WorldFacts.Get();
+		foreach (string key, string value : m_mTexts)
+		{
+			if (key.StartsWith(CLAIM_PREFIX))
+				facts.Claim(key.Substring(CLAIM_PREFIX.Length(), key.Length() - CLAIM_PREFIX.Length()), Owner());
+		}
+	}
+
+	protected static const string CLAIM_PREFIX = "claim:";
+
 	//------------------------------------------------------------------------------------------------
 	//! `text` with every {key} replaced by that text: "Talk to {keeper} in {town}".
 	string Fill(string text)
@@ -208,7 +252,8 @@ class RZ_QuestRun
 			s.Replace("{" + key + "}", value);
 		}
 
-		return s;
+		// Then the world's own tokens ({day}, {cure_state}...; RZ_WorldFacts.Fill)
+		return RZ_WorldFacts.Get().Fill(s);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -605,11 +650,8 @@ class RZ_Questlines
 	protected ref array<ref RZ_QuestRun> m_aRuns = {};
 	protected ref RZ_QuestlinesSave m_Restored;
 	protected ref array<string> m_aDone = {};
-	protected ref map<string, int> m_mWorld = new map<string, int>();	// flags every questline can read (the crossings)
 	protected ref array<string> m_aLastKeys = {};
 	protected ref array<float> m_aLastAt = {};
-	protected ref array<string> m_aRumours = {};
-	protected ref array<float> m_aRumourUntil = {};
 	protected float m_fClock;
 	protected float m_fNextChance;
 	protected float m_fCheck;
@@ -617,7 +659,6 @@ class RZ_Questlines
 
 	protected static const float CHECK_SECONDS = 10;
 	protected static const float RETRY_SECONDS = 180;	// a stage mission that couldn't start tries again after this
-	protected static const int MAX_RUMOURS = 6;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Questlines(RZ_GameModeComponent gm, RZ_QuestlineSettings settings)
@@ -634,27 +675,38 @@ class RZ_Questlines
 
 	//------------------------------------------------------------------------------------------------
 	//! Flags shared by every questline for this season (the crossings between questlines, see
-	//! docs/QUESTLINES.md). Saved, and wiped with the season. Name them "<questline key>.<flag>".
-	//! Every ending sets "<key>.ending" to its ending number by itself.
+	//! docs/QUESTLINES.md): the season flags of the world facts (RZ_WorldFacts.Flag), so missions,
+	//! arcs and voice read and write the same ones. Saved, and wiped with the season. Name them
+	//! "<questline key>.<flag>". Every ending sets "<key>.ending" to its ending number by itself.
 	int WorldFlag(string key, int def = 0)
 	{
-		int value;
-		if (m_mWorld.Find(key, value))
-			return value;
-
-		return def;
+		return RZ_WorldFacts.Get().Flag(key, def);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	bool HasWorldFlag(string key)
 	{
-		return m_mWorld.Contains(key);
+		return RZ_WorldFacts.Get().HasFlag(key);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void SetWorldFlag(string key, int value)
 	{
-		m_mWorld.Set(key, value);
+		RZ_WorldFacts.Get().SetFlag(key, value);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A questline that hasn't ended is running now (by key).
+	bool IsRunning(string key)
+	{
+		return FindRunByKey(key) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A questline reached one of its endings this season (fizzling doesn't count).
+	bool HasEnded(string key)
+	{
+		return HasWorldFlag(key + ".ending");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -764,22 +816,10 @@ class RZ_Questlines
 			data.doneKeys.Insert(done);
 		}
 
-		foreach (string wkey, int wvalue : m_mWorld)
-		{
-			data.worldKeys.Insert(wkey);
-			data.worldValues.Insert(wvalue);
-		}
-
 		foreach (int i, string key : m_aLastKeys)
 		{
 			data.lastKeys.Insert(key);
 			data.lastAt.Insert(m_aLastAt[i]);
-		}
-
-		foreach (int r, string rumour : m_aRumours)
-		{
-			data.rumours.Insert(rumour);
-			data.rumourUntil.Insert(m_aRumourUntil[r]);
 		}
 
 		return data;
@@ -844,11 +884,14 @@ class RZ_Questlines
 			}
 		}
 
+		// Saves from before the world facts kept their world flags and rumours here: hand them over
+		RZ_WorldFacts facts = RZ_WorldFacts.Get();
 		if (m_Restored.worldKeys && m_Restored.worldValues)
 		{
 			for (int wi = 0; wi < m_Restored.worldKeys.Count() && wi < m_Restored.worldValues.Count(); wi++)
 			{
-				m_mWorld.Set(m_Restored.worldKeys[wi], m_Restored.worldValues[wi]);
+				if (!facts.HasFlag(m_Restored.worldKeys[wi]))
+					facts.SetFlag(m_Restored.worldKeys[wi], m_Restored.worldValues[wi]);
 			}
 		}
 
@@ -865,8 +908,7 @@ class RZ_Questlines
 		{
 			for (int r = 0; r < m_Restored.rumours.Count() && r < m_Restored.rumourUntil.Count(); r++)
 			{
-				m_aRumours.Insert(m_Restored.rumours[r]);
-				m_aRumourUntil.Insert(m_Restored.rumourUntil[r]);
+				facts.AdoptRumour(m_Restored.rumours[r], (m_Restored.rumourUntil[r] - m_fClock) / 3600);
 			}
 		}
 
@@ -888,6 +930,7 @@ class RZ_Questlines
 			RZ_QuestRun run = NewRun(line);
 			run.FromSave(s);
 			m_aRuns.Insert(run);
+			run.Reclaim();
 		}
 	}
 
@@ -926,8 +969,6 @@ class RZ_Questlines
 			if (run.m_bDone)
 				m_aRuns.Remove(i);
 		}
-
-		ExpireRumours();
 
 		if (m_fClock < m_fNextChance)
 			return;
@@ -1024,14 +1065,14 @@ class RZ_Questlines
 			return;
 
 		m.m_iQuestRun = run.m_iId;
+		// What the questline holds (its house, its leader) is the stage mission's to use
+		m.m_sClaimParent = run.Owner();
 		m.Configure(m_GM);
-		if (m.NeedsVehicle() && RZ_Seasons.Mods().m_bNoVehicles)
-			return;
 
-		if (!m.m_Req.IsWorldOk(m_GM, playerCount))
-			return;
-
-		if (!m_GM.GetMissions().StartMission(m))
+		// The same check as any mission (RZ_MissionManager.CanRunNow): world gates and facts, No
+		// Vehicles, one of each type, its claims free. Stage missions are never picked at random,
+		// so their weight doesn't count
+		if (!m_GM.GetMissions().StartIfCan(m, playerCount))
 			return;
 
 		run.m_iMissionId = m.m_iId;
@@ -1093,6 +1134,9 @@ class RZ_Questlines
 			return;
 
 		run.m_bDone = true;
+
+		// Whatever it held (RZ_WorldFacts claims) is free again
+		m_GM.GetFacts().ReleaseAll(run.Owner());
 
 		// A stage mission still out there goes with it
 		if (run.m_iMissionId >= 0)
@@ -1219,7 +1263,11 @@ class RZ_Questlines
 		run.m_fStartedAt = m_fClock;
 		run.m_iStartUnix = RZ_Guidance.UnixNow();
 		if (!line.CanStart(m_GM, run))
+		{
+			// Anything it claimed while looking goes back
+			m_GM.GetFacts().ReleaseAll(run.Owner());
 			return false;
+		}
 
 		m_aRuns.Insert(run);
 		RZ_Log.Info("Questline started: " + line.m_sTitle);
@@ -1318,11 +1366,8 @@ class RZ_Questlines
 				options.Insert(run.Fill(line));
 		}
 
-		foreach (string r : m_aRumours)
-		{
-			options.Insert(r);
-		}
-
+		// The world's gossip: endings, world changes (RZ_WorldFacts.Changed)
+		RZ_WorldFacts.Get().GetRumours(options);
 		if (options.IsEmpty())
 			return "";
 
@@ -1330,32 +1375,11 @@ class RZ_Questlines
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A line wanderers and leaders repeat for `hours` of play (an ending's aftermath).
+	//! A line wanderers and leaders repeat for `hours` of play (an ending's aftermath). Kept with
+	//! the world's gossip (RZ_WorldFacts.AddRumour), so it's saved even with questlines off.
 	void AddRumour(string text, float hours)
 	{
-		if (text.IsEmpty() || hours <= 0)
-			return;
-
-		m_aRumours.Insert(text);
-		m_aRumourUntil.Insert(m_fClock + hours * 3600);
-		while (m_aRumours.Count() > MAX_RUMOURS)
-		{
-			m_aRumours.RemoveOrdered(0);
-			m_aRumourUntil.RemoveOrdered(0);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void ExpireRumours()
-	{
-		for (int i = m_aRumours.Count() - 1; i >= 0; i--)
-		{
-			if (m_fClock >= m_aRumourUntil[i])
-			{
-				m_aRumours.Remove(i);
-				m_aRumourUntil.Remove(i);
-			}
-		}
+		RZ_WorldFacts.Get().AddRumour(text, hours);
 	}
 
 	// ================================================================ Journal

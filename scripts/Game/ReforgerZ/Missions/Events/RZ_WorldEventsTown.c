@@ -26,18 +26,11 @@ class RZ_EventHelp
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A town where people live or a faction holds ground: a safehouse, a holding, the lab.
+	//! A town where people live or a faction holds ground: a safehouse, a holding, the lab
+	//! (RZ_WorldFacts.IsLivedIn, which owns the rule).
 	static bool IsLivedIn(RZ_GameModeComponent gm, int idx)
 	{
-		RZ_Safehouses houses = gm.GetSafehouses();
-		if (houses && houses.IsSafehouseTown(idx))
-			return true;
-
-		RZ_Territory territory = gm.GetTerritory();
-		if (territory && territory.IsActive() && territory.FindInTown(idx))
-			return true;
-
-		return gm.HasLab() && gm.GetLabSettlement() == idx;
+		return gm.GetFacts().IsLivedIn(idx);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -88,7 +88,8 @@ class RZ_Director
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void SetStage(RZ_EOutbreakStage stage)
+	//! announce = false: no line to everyone (the cure moves the stage on with its own news).
+	void SetStage(RZ_EOutbreakStage stage, bool announce = true)
 	{
 		if (stage == m_eStage)
 			return;
@@ -96,7 +97,9 @@ class RZ_Director
 		m_eStage = stage;
 		m_fStageMinutes = 0;
 		RZ_Log.Info("Outbreak stage -> " + RZ_StageSettings.GetStageName(stage));
-		m_GM.NotifyAll(RZ_StageSettings.GetStageName(stage), RZ_StageSettings.GetStageAnnouncement(stage));
+		if (announce)
+			m_GM.NotifyAll(RZ_StageSettings.GetStageName(stage), RZ_StageSettings.GetStageAnnouncement(stage));
+
 		m_GM.OnStageChanged(stage);
 	}
 
