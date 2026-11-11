@@ -87,11 +87,14 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 	protected string m_sSurname;
 	protected IEntity m_Mother;
 	protected ref array<int> m_aSeenBite = {};
+	protected int m_iHidBite = -1;		// the Nurse who knew, dressed his arm and said nothing
 
 	protected static const int WHERE_NEAREST = 0;
 	protected static const int WHERE_HUNGRY = 1;
 	protected static const int WHERE_BASTION = 2;
 	protected static const float ASK_SECONDS = 90;
+	protected static const int HIDE_OPTION = 3;
+	protected static const int HID_INFAMY = 8;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Mission_SurvivorHoldout()
@@ -201,7 +204,13 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		{
 			m_Mother = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(m_vPos, 3, 6)));
 			if (m_Mother)
-				RZ_PuzzleObjectComponent.Tag(m_Mother, m_iId, 0, "", "The nearest house|The hungriest house: \"They can work\"|Bastion's post: \"The soldiers\"");
+			{
+				string labels = "The nearest house|The hungriest house: \"They can work\"|Bastion's post: \"The soldiers\"";
+				if (m_bBitten)
+					labels += "|[Nurse] Dress his arm, say nothing";
+
+				RZ_PuzzleObjectComponent.Tag(m_Mother, m_iId, 0, "", labels);
+			}
 		}
 
 		if (!m_Mother)
@@ -216,7 +225,24 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override void HandleObjectChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option)
 	{
-		if (!m_bAsking || m_bChosen || option < 0 || option > WHERE_BASTION)
+		if (!m_bAsking || m_bChosen || option < 0)
+			return;
+
+		// [Nurse] who saw the bite: dress it and say nothing; the house won't see it at the door
+		if (option == HIDE_OPTION)
+		{
+			if (!m_bBitten || !m_aSeenBite.Contains(playerId) || !RZ_QuestApproach.HasBackground(gm, playerId, "nurse"))
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "There's nothing for you to dress.");
+				return;
+			}
+
+			m_iHidBite = playerId;
+			gm.NotifyPlayer(playerId, m_sTitle, "You dress his arm under the sleeve, tight and clean. He doesn't thank you. The mother doesn't see.");
+			return;
+		}
+
+		if (option > WHERE_BASTION)
 			return;
 
 		if (!RZ_StoryKit.MayDecide(gm, this, playerId))
@@ -271,8 +297,15 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 				rescued = 4;
 		}
 
-		// The house checks everyone at the door: a bitten father is walked out at dusk
-		if (m_bBitten && m_iWhere != WHERE_BASTION)
+		// The house checks everyone at the door: a bitten father is walked out at dusk. Hidden by a Nurse
+		// who knew: he comes in, and turns within a season day; the house names her (+8 Haven Infamy)
+		if (m_bBitten && m_iWhere != WHERE_BASTION && m_iHidBite > 0)
+		{
+			RZ_Deeds.AddLifeRecord(gm.GetProfile(m_iHidBite), "hid_bite", true);
+			gm.GetFacts().Memory().Lies().Tell(gm, m_iHidBite, "trapped.bite", m_sSurname, RZ_EFaction.SURVIVORS, "", m_vPos, RZ_ELieTest.TICK, HID_INFAMY,
+				string.Format("Mr %1 turned in the night. The house found the dressing under his sleeve, and knows whose knots those are.", m_sSurname));
+		}
+		else if (m_bBitten && m_iWhere != WHERE_BASTION)
 		{
 			rescued--;
 			NotifyParticipants(gm, m_sTitle, "At the door the house checks everyone, as it always does. The father's arm. He goes out at dusk with a lamp, and nobody follows him.");
@@ -283,7 +316,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		if (m_iWhere == WHERE_BASTION)
 		{
 			went = "bastion";
-			NotifyParticipants(gm, m_sTitle, "Bastion's truck takes them to the post. The mother wanted the soldiers. Tonight the call will say three more civilians sheltered.");
+			RZ_StoryKit.Sheltered(gm, this, rescued);
 		}
 		else if (m_iWhere == WHERE_HUNGRY && houses && houses.Count() > 0)
 		{
@@ -1175,7 +1208,8 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 
 		if (m_iWhere == 1)
 		{
-			NotifyParticipants(gm, m_sTitle, "Bastion's truck takes them to their aunt at the post. Tonight the call will say three more civilians sheltered, and get the number right.");
+			NotifyParticipants(gm, m_sTitle, "Their aunt meets the truck at the gate with her apron still on.");
+			RZ_StoryKit.Sheltered(gm, this, 3);
 			return;
 		}
 

@@ -358,32 +358,9 @@ count it as help, a switch pays at most the base and leaves season Fame alone, "
 
 ### Route assets and the 90% lock
 
-[FINALE.md](FINALE.md), §2, owns what an asset is worth in its route. The missions' side:
-
-| Asset | For example |
-|---|---|
-| **Ally** | A scientist who walked out (Independent); a deserter the Haven hid (the Haven) |
-| **Proof** | The manifest read on the open channel (Independent); the fence holding it (the Red Hand) |
-| **Standing** | The black box burnt in the stove (Bastion) |
-
-- Most jobs have no assets. A story job's result adds at most one. A player holds at most 3 for any one
-  route in a season (`Asset(route, kind, identity, key)`).
-- An asset does nothing until its owner locks to that route. Assets for other routes go dormant at the
-  lock and lapse at the cure.
-- The Independent route's assets come from the open channel, from "nobody", from letting people go, and
-  from giving things to people rather than to factions.
-- **Before 90%, nothing is ever locked:**
-  - an asset tilts a route and never closes one;
-  - a record makes a check at most one step harder;
-  - a sulk lasts at most 2 hours of your play;
-  - Infamy works off as usual.
-- **After you lock a route**, an option whose asset belongs to another route refuses you: *"You've
-  picked your side. This isn't it."* You can still do the work, and anyone not locked can still decide
-  it. The label doesn't change (labels are shared); the refusal comes when you pick it.
-- Everything without an asset is offered to locked players as usual. The finale's Acts I and III are open
-  to anyone not locked elsewhere (decision 8); its sworn acts and route work belong to the route's
-  locked players ([FINALE.md](FINALE.md), §5).
-- The lock is read with `RZ_Finale.RouteOf(identity)`: no route, or one of five.
+Built in missions ([DESIGN.md](../docs/DESIGN.md#story-blocks)): the assets are counted (three a season) and
+the lock's refusal works. Still to build: the finale reading them ([FINALE.md](FINALE.md), §2, owns what an
+asset is worth in its route), and assets going dormant at the lock and lapsing at the cure.
 
 ## Who decides
 
@@ -731,50 +708,10 @@ Roof) and the 5 stage-only missions are done ([MISSIONS.md](../docs/MISSIONS.md)
 
 ## Worked examples
 
-**Built** (wave 3 and phase 4's second pass, [MISSIONS.md](../docs/MISSIONS.md)): Protection Racket, Lost Colleague, Crash Site,
-Distress Call (Fake Distress Call merged in), Struck Off (Hunt the Deserter merged in) and Survivors
-Trapped, each with its truths, the main ways, a world record, its lies and its fallout, as each row
-there says, simplified. What the six worked examples still add:
-
-| Job | Still to build |
-|---|---|
-| Protection Racket | Off the book (a Rogue boss; Rein In's drop pays the stronghold); the council head's regard; R3's season weight on time-up |
-| Lost Colleague | Sold (his sister, the fence); the step chain and shortcuts to him; the escort (or ★ Nurse patching him); the Haven medic for the notebook; the Doctor wanderer slot and the filter's water need; His Notebook (Notebook 31) as the hiding truth's fallout; the arc's ×3 |
-| Crash Site | The recovery team at minute 15; the sneak lift; the carriers' ways other than force (persuade, bribe, the trick with the flight order); the quiet commander's pay and loyalty; the nail (tags, 70%); the open channel by hand at the radio station; the 90% lock |
-| Distress Call | The Sneak out the back; the Nurse's dress-and-hide; "My sister's in {town}" and Bastion's post as destinations; the named young in a tribe's range |
-| Struck Off | Press and Trade at a Haven door; the commander's loyalty for the stores book; ★ Hunter and ★ Soldier finding shortcuts; let him go as a Deserter wanderer; the epilogue roll on the majors' coda |
-| Survivors Trapped | The Nurse's dress-and-hide and the "hid a bite" life record; reasons (`horde.passed`); civilians sheltered on Bastion's call; the Watched amends rule's exception for Bastion is built |
-
-### 7. After the lock
-
-(A contract in the last 10%.)
-
-Research is at 93%. Anna has locked herself to Bastion's route. Her friend Petr hasn't locked to any
-route.
-
-**The job.** A Crash Site is offered to both of them, and the truth is Inventory.
-
-**Anna:**
-- The stove (asset: Bastion) and the nail (no asset) work for her as usual.
-- If she picks "read it on the open channel" (asset: Independent) or carries the box to the fence (asset:
-  the Red Hand), she's refused: *"You've picked your side. This isn't it."*
-- The labels are the same for everyone. The refusal only comes when she picks.
-- She can still fight the horde, read the manifest and do the work.
-
-**Petr** can carry the box to the radio station and air it.
-- He decides. It's a hand-in, so it resolves at once.
-- Anna isn't in his vanilla group, so she isn't with him. She gets half the Favor from Bastion for
-  holding the wreck, with no Fame and no Infamy.
-- Petr gets a proof asset for the Independent route, one of his three for the season. It does nothing
-  unless he locks to the Independent route.
-
-**Errands:** Anna still gets house and post errands (they're not route work), and her own route's
-errands ([FINALE.md](FINALE.md)). Petr, unsided, can also do any route's open-act errands.
-
-**Before 90%:** neither of them could have been refused anything. Every asset only tilts a route, and
-nothing closes one.
-
-Errands' own worked example (one evening in Levie) is in [ERRANDS.md](ERRANDS.md).
+**Built** ([MISSIONS.md](../docs/MISSIONS.md)): the six worked examples with their remaining ways, simplified as
+each row there says. Still to build: Lost Colleague's escort and step chain to him, the Haven trader and the
+Scavenger's shortcuts; Crash Site's recovery squad as real AI (the team is text only); the "hid a bite" life
+record read by that house's people (+1 difficulty there).
 
 ## The MISSIONS.md block format
 

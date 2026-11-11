@@ -544,6 +544,11 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 		if (fallback)
 			line = "The CO read the last call alone. At dawn Sedlak walked whoever was left to the north road and read the roll. The box of tags is back on the nail.";
 
+		// Struck Off's men: walked home this season, or still out (Missions/Bastion/RZ_BastionLoreMissions.c)
+		string roll = RZ_Mission_StruckOff.LastRoll();
+		if (!roll.IsEmpty())
+			line += " " + roll;
+
 		return Finish(run, run.Flag("ending", E_M_CALL), line);
 	}
 

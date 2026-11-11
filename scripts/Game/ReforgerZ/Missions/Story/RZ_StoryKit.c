@@ -59,4 +59,93 @@ class RZ_StoryKit
 		int cap = RZ_Util.RoundToInt(m.m_iFavorReward * 0.3);
 		errands.Fallout(card, at, m.m_aParticipants, cap, m.m_sTitle, who);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest present leader of `faction` within `range` of pos remembers this player (MEM_HELPED,
+	//! MEM_CROSSED). The leader, or null.
+	static RZ_Leader Remember(RZ_GameModeComponent gm, int faction, vector pos, float range, int playerId, int flag)
+	{
+		RZ_Leaders leaders = gm.GetLeaders();
+		if (!leaders || playerId <= 0)
+			return null;
+
+		RZ_Leader l = leaders.FindNearest(faction, pos, range);
+		if (l)
+			leaders.Remember(l.m_iId, playerId, flag);
+
+		return l;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A story job moves one leader's loyalty, at most 5 either way, never below the seat ledger's
+	//! floor (30) and never a stronghold's.
+	static void Loyalty(RZ_GameModeComponent gm, RZ_Leader l, int delta)
+	{
+		RZ_Leaders leaders = gm.GetLeaders();
+		if (!leaders || !l || l.IsStronghold())
+			return;
+
+		int shift = Math.ClampInt(delta, -5, 5);
+		RZ_MajorBudget budget = RZ_MajorBudget.Get();
+		if (budget)
+			shift = budget.ContractLoyalty(l.m_iScore, false, shift);
+
+		leaders.ShiftLoyalty(l, shift, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A present Rogue leader of `faction` within `range` of pos, not a stronghold's; null if none.
+	static RZ_Leader RogueNear(RZ_GameModeComponent gm, int faction, vector pos, float range)
+	{
+		RZ_Leaders leaders = gm.GetLeaders();
+		if (!leaders)
+			return null;
+
+		array<RZ_Leader> list = {};
+		leaders.GetFactionLeaders(faction, list);
+		foreach (RZ_Leader l : list)
+		{
+			if (l.m_eLoyalty == RZ_ELoyalty.ROGUE && l.IsPresent() && !l.IsStronghold() && RZ_Util.DistXZ(l.m_vPos, pos) <= range)
+				return l;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Scale a contract type's weight for the season (the majors' season-weight helper, inside the one
+	//! clamp).
+	static void SeasonWeight(typename t, float mult)
+	{
+		RZ_MajorBudget budget = RZ_MajorBudget.Get();
+		if (budget)
+			budget.SetContractWeight(t.ToString(), mult);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! People taken to Bastion's post: civilians sheltered goes up on that night's call (the season
+	//! flag `bastion.sheltered`), and those with the job hear the number read.
+	static void Sheltered(RZ_GameModeComponent gm, RZ_Mission m, int people)
+	{
+		RZ_WorldFacts facts = gm.GetFacts();
+		if (!facts || people <= 0)
+			return;
+
+		int total = facts.Flag("bastion.sheltered") + people;
+		facts.SetFlag("bastion.sheltered", total);
+		m.NotifyParticipants(gm, m.m_sTitle, string.Format("Bastion's truck takes them to the post. On the nightly call: \"Civilians sheltered, %1.\" It's %2 more than last night.", total, people));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player within `range` of pos with one of these backgrounds, -1 if none.
+	static int WithBackground(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players, vector pos, float range, string backgrounds)
+	{
+		foreach (int i, IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), pos) <= range && RZ_QuestApproach.HasBackground(gm, ids[i], backgrounds))
+				return ids[i];
+		}
+
+		return -1;
+	}
 }

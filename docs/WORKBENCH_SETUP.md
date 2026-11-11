@@ -2678,6 +2678,13 @@ on the talk screen says why something wasn't dealt)
   not your call."; picking starts the 5-second hold the other may object to once; nobody for 90 s
   takes the default. Fight Pit asks in round 3, Kill the Officer within 40 m of him (taking the
   stores ends it paid by Bastion at half Favor). With no civilian prefab, the default is taken at once.
+- [ ] The worked examples' remaining ways: Crash Site's sneak lift (hidden within 8 m in the first
+  90 s), the recovery team at minute 15 (Trusted / Known / Watched), the carriers' fire (persuade, pay,
+  "That's ours, lads" in Bastion kit) and the open channel at the radio station (10 s with the box);
+  Lost Colleague's Sold truth (the fence's table at night, unseen) and the Haven medic; Distress
+  Call's Sneak out the back and the three destinations; Struck Off's Press and Trade at a Haven door,
+  the Hunter's tracks and the Soldier's shortcut, and let go becoming the Deserter; Protection Racket's
+  runner (Off the book) with a Rogue crew boss near. Each new outcome logs `Story: <title> record`.
 - [ ] Work rows: finish Retake the Town in a town twice; the second brief there reads the town tally
   ("cleared 1 times" is never said: "once"). A failed work job says its fallout line after the fail text.
 - [ ] Route assets (finale on, past 90%): lock one player to Bastion, then pick Steal the Antidotes'

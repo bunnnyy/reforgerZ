@@ -473,6 +473,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	protected int m_iWitnessClue = -1;
 	protected int m_iTalk = -1;
 	protected int m_iRosterClue = -1;
+	protected ref array<int> m_aTracked = {};	// ★ Hunter and ★ Soldier: told their shortcut once
 
 	protected static const int OBJ_BOARD = 0;
 	protected static const int OBJ_KIT = 1;
@@ -492,6 +493,9 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	protected static const int MAX_TAG_SPAWNS = 4;
 	protected static const int FIRST_KIA_DAY = 11;	// after the first ten days (Fiala, Day 7, was the only one)
 	protected static const int MIN_DAY = 13;		// the trader saw him two days ago, on Day 11 or later
+	protected static const int TRADE_FOOD = 4;
+	protected static const int PRESS_INFAMY = 3;
+	protected static const int BOOK_LOYALTY = 5;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Mission_StruckOff()
@@ -597,7 +601,42 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	protected string ChoiceLabels()
 	{
-		return "[Trusted · Bastion] Talk him back|Arrest him|Walk him to the Haven|Settle it Bastion's way|Let him go";
+		string labels = "[Trusted · Bastion] Talk him back|Arrest him|Walk him to the Haven|Settle it Bastion's way|Let him go";
+		if (m_sTruth == "haven_door")
+			labels += "|[Feared] Press him, in front of the kids|Leave the kids four tins, for him [4 food]";
+
+		return labels;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The last roll in Bastion's coda (the majors): the struck-off men brought home this season answer
+	//! "Here", and for each one still out, nobody answers. "" if none.
+	static string LastRoll()
+	{
+		RZ_WorldFacts facts = RZ_WorldFacts.Get();
+		if (!facts)
+			return "";
+
+		int home = facts.Flag("struck.home");
+		int away = facts.Flag("struck.out");
+		if (home <= 0 && away <= 0)
+			return "";
+
+		string line = "";
+		if (home == 1)
+			line = "One struck-off man, walked home this season, answers \"Here\".";
+		else if (home > 1)
+			line = string.Format("%1 struck-off men, walked home this season, answer \"Here\".", home);
+
+		if (away > 0)
+		{
+			if (!line.IsEmpty())
+				line += " ";
+
+			line += string.Format("For %1 still out there, nobody answers, and Sedlak reads the next name.", away);
+		}
+
+		return line;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -719,6 +758,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
+		Shortcuts(gm, ids, players);
 		if (!m_bPostShown && RZ_ContractHelp.AnyNear(players, m_vPost, 300))
 		{
 			m_bPostShown = true;
@@ -779,6 +819,38 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		{
 			m_Escort.Arrive();
 			m_eState = RZ_EMissionState.SUCCEEDED;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ★ Hunter: his tracks from the pack lead straight to where he sleeps. ★ Soldier: within 200 m of
+	//! it, he shows himself to a soldier. Each once per player.
+	protected void Shortcuts(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players)
+	{
+		if (m_bFound || m_iMode != MODE_NONE)
+			return;
+
+		foreach (int i, IEntity p : players)
+		{
+			int pid = ids[i];
+			if (m_aTracked.Contains(pid))
+				continue;
+
+			float toHide = RZ_Util.DistXZ(p.GetOrigin(), m_vHide);
+			if (toHide <= 200 && RZ_StoryKit.Read(gm, this, pid, "soldier", string.Format("A man steps out of the trees with his hands where you can see them. \"You walk like a soldier. %1. You came for me.\"", m_sSurname)))
+			{
+				m_aTracked.Insert(pid);
+				m_bTold = true;
+				m_vPos = m_vHide;
+				continue;
+			}
+
+			if (RZ_Util.DistXZ(p.GetOrigin(), m_vPost) <= 600 && RZ_StoryKit.Read(gm, this, pid, "hunter", string.Format("Army boots, one heel worn down, a week old and heading out. They don't wander: grid %1, and he's sleeping rough.", RZ_SettlementScanner.GridReference(m_vHide))))
+			{
+				m_aTracked.Insert(pid);
+				m_bTold = true;
+				m_vPos = m_vHide;
+			}
 		}
 	}
 
@@ -844,7 +916,10 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 			return;
 		}
 
-		if (objIdx != OBJ_KIT || m_iMode != MODE_NONE || option < 0 || option > 4)
+		if (objIdx != OBJ_KIT || m_iMode != MODE_NONE || option < 0 || option > 6)
+			return;
+
+		if (option > 4 && m_sTruth != "haven_door")
 			return;
 
 		if (!IsEligible(gm, playerId))
@@ -866,6 +941,43 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 			}
 		}
 
+		// [Feared] Press him, at a Haven door: a threat the mission writes; he comes, under arrest
+		if (option == 5)
+		{
+			if (m_Ways.TryFear(gm, playerId, "deserter." + m_sSurname, RZ_EFaction.SURVIVORS, RZ_EFaction.MILITARY, 2, false, PRESS_INFAMY, "excon,raider") == RZ_ECheck.REFUSED)
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "The kids stand in front of him. He isn't going anywhere with you, not like this.");
+				return;
+			}
+
+			option = 1;
+		}
+
+		// Leave the kids four tins: the rations stay with them, and he goes back with you
+		if (option == 6)
+		{
+			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+			if (!me || RZ_HavenQuest.CountFood(gm, me) < TRADE_FOOD || !RZ_HavenQuest.TakeFood(gm, me, TRADE_FOOD))
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "\"Four tins. For them, not me. Then I'll come.\"");
+				return;
+			}
+
+			if (gm.GetSafehouses())
+				gm.GetSafehouses().AddFood(m_iHouse, 2);
+
+			m_Escort.Follow(playerId);
+			m_Escort.Go();
+			m_bFound = true;
+			m_bTold = true;
+			AddParticipant(playerId);
+			SetObjectLabels(OBJ_KIT, "", "");
+			m_iMode = MODE_ROSTER;
+			m_fRewardScale = ROSTER_SCALE;
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("He watches the tins go into the kids' cupboard and picks up his kit. \"Right. Back on duty.\" Walk him to %1.", m_sPost));
+			return;
+		}
+
 		if (option == 4)
 		{
 			m_bFound = true;
@@ -873,6 +985,13 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 			SetObjectLabels(OBJ_KIT, "", "");
 			array<int> chooser = {playerId};
 			RZ_StoryKit.Record(this, "fate", m_sName, "gone", chooser);
+			// He takes to the roads as the Deserter, if there's a free place on them
+			if (gm.GetWanderers())
+				gm.GetWanderers().AddWithRole(RZ_EWandererRole.DESERTER, m_sSurname, m_vHide);
+
+			if (gm.GetFacts())
+				gm.GetFacts().SetFlag("struck.out", gm.GetFacts().Flag("struck.out") + 1);
+
 			gm.NotifyPlayer(playerId, m_sTitle, "You step aside. He looks at you a long moment, then he's gone into the trees. On the board he's still dead. Nobody pays for this.");
 			m_Escort.Cleanup();
 			m_eState = RZ_EMissionState.FAILED;
@@ -927,6 +1046,12 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		m_bReported = true;
 		SetObjectLabels(OBJ_BOARD, "Hang his tag on the nail", "");
 		gm.AddFame(playerId, RZ_EFaction.MILITARY, REPORT_FAME, false, RZ_RepFlag.SMALL);
+		// The post's commander answers for his book: his loyalty, and he remembers who reported it
+		if (m_sTruth == "written_off" || m_sTruth == "qm_gap")
+		{
+			RZ_Leader commander = RZ_StoryKit.Remember(gm, RZ_EFaction.MILITARY, m_vPost, 1500, playerId, RZ_Leaders.MEM_CROSSED);
+			RZ_StoryKit.Loyalty(gm, commander, -BOOK_LOYALTY);
+		}
 		array<int> chooser = {playerId};
 		RZ_StoryKit.Record(this, "book", m_sPost, m_sTruth, chooser);
 		gm.NotifyPlayer(playerId, m_sTitle, string.Format("The duty officer reads the page twice and closes the book on his thumb. \"Leave it with me.\" +%1 Bastion Fame.", REPORT_FAME));
@@ -957,6 +1082,9 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		if (m_iMode == MODE_ROSTER)
 		{
 			RZ_BastionLoreHelp.Morale(gm, ROSTER_MORALE);
+			if (gm.GetFacts())
+				gm.GetFacts().SetFlag("struck.home", gm.GetFacts().Flag("struck.home") + 1);
+
 			if (gm.GetTerritory() && gm.GetTerritory().IsActive())
 				gm.GetTerritory().AddStrength(RZ_EFaction.MILITARY, 1);
 

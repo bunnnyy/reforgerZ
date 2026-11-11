@@ -180,7 +180,17 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 	protected ref array<int> m_aSpared = {};
 	protected ref array<int> m_aAnswered = {};
 	protected ref array<int> m_aHunted = {};
+	protected ref array<int> m_aSeenBite = {};
 	protected ref RZ_Ways m_Ways = new RZ_Ways("Distress Call");
+	protected bool m_bBitten;		// Real: the woman's "fall" is a bite (one time in four), a fixed fact
+	protected int m_iHidBite = -1;	// the Nurse who dressed it and said nothing
+	protected int m_iWhere;			// where they go: WHERE_*
+	protected int m_iSister = -1;	// "My sister's in {town}": another house
+
+	protected static const int WHERE_NEAREST = 0;
+	protected static const int WHERE_SISTER = 1;
+	protected static const int WHERE_BASTION = 2;
+	protected static const int HID_INFAMY = 8;
 
 	protected static const float CLEAR_RADIUS = 20;
 	protected static const float SPAWN_RADIUS = 400;
@@ -264,8 +274,22 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 		else
 		{
 			int talk = AddClue(m_sCaller, string.Format("%1, through a barricaded door, very quietly: \"Are they gone? Tell me when they're gone. She can't run.\"", m_sCaller));
-			if (!SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vSpot, 0, "", "Tell them it's clear", talk, "Talk to " + m_sCaller))
+			if (!SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vSpot, 0, "", "Tell them it's clear|[Sneak] Out the back, now|[Nurse] Dress her leg, say nothing", talk, "Talk to " + m_sCaller))
 				return false;
+
+			// Real: where they go is one choice when they're out; her leg is a fixed fact
+			m_bBitten = m_Rng.Chance(0.25);
+			m_iSister = SisterHouse(gm);
+			string sister = "Bastion's post: \"the soldiers\"";
+			string labels = "The nearest house";
+			if (m_iSister >= 0)
+				labels += "|" + string.Format("\"My sister's in %1\"", gm.GetSafehouses().Get(m_iSister).m_sName);
+			else
+				labels += "|The nearest house, the long way";
+
+			labels += "|" + sister;
+			m_Choice = new RZ_OneChoice();
+			m_Choice.Set(string.Format("They're out. %1 holds the woman up and looks at you: \"Where now? My sister's house is further, but she's there. Or the soldiers.\" Answer him here.", m_sCaller), labels, "decide where they go", WHERE_NEAREST);
 		}
 
 		if (m_sTruth != REAL)
@@ -352,8 +376,61 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! "My sister's in {town}": a lived-in house 1.2-4 km off that isn't the nearest; -1 if none.
+	protected int SisterHouse(RZ_GameModeComponent gm)
+	{
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (!houses)
+			return -1;
+
+		int nearest = houses.FindNearest(m_vSpot);
+		for (int i = 0; i < houses.Count(); i++)
+		{
+			RZ_Safehouse h = houses.Get(i);
+			float d = 0;
+			if (h)
+				d = RZ_Util.DistXZ(h.m_vPos, m_vSpot);
+
+			if (h && i != nearest && h.m_iPopulation > 0 && d >= 1200 && d <= 4000)
+				return i;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		return m_vSpot;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		m_iWhere = option;
+		if (option == WHERE_SISTER && m_iSister < 0)
+			m_iWhere = WHERE_NEAREST;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void UpdateReal(RZ_GameModeComponent gm, array<IEntity> players)
 	{
+		// ★ Nurse or Doctor: her leg isn't a fall
+		if (m_bBitten)
+		{
+			foreach (int i, IEntity p : players)
+			{
+				PlayerManager pm = GetGame().GetPlayerManager();
+				int pid = pm.GetPlayerIdFromControlledEntity(p);
+				if (pid > 0 && !m_aSeenBite.Contains(pid) && RZ_Util.DistXZ(p.GetOrigin(), m_vSpot) <= 30)
+				{
+					m_aSeenBite.Insert(pid);
+					RZ_StoryKit.Read(gm, this, pid, "nurse,doctor", "The woman's leg isn't a fall. It's a bite, two days old, and he's wrapped it in a tea towel.");
+				}
+			}
+		}
+
 		if (m_bStirred || CountPlayersNear(players, m_vSpot, 300) == 0)
 			return;
 
@@ -433,12 +510,55 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 			return;
 		}
 
+		// The one choice: where they go (Missions/Blocks/RZ_OneChoice.c)
+		if (objIdx == RZ_OneChoice.OBJECT_INDEX)
+		{
+			if (m_Choice)
+				m_Choice.Handle(gm, this, playerId, option);
+
+			return;
+		}
+
+		if (m_bFreed)
+			return;
+
+		// [Nurse] dress her leg and say nothing: the house won't see it at the door
+		if (option == 2)
+		{
+			if (!m_bBitten || !RZ_QuestApproach.HasBackground(gm, playerId, "nurse"))
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "\"She's fine. She fell.\" There's nothing for you to dress.");
+				return;
+			}
+
+			m_iHidBite = playerId;
+			gm.NotifyPlayer(playerId, m_sTitle, "You dress the bite tight and clean and pull her trouser leg down over it. She looks at you. You don't say anything. Neither does she.");
+			return;
+		}
+
+		// [Sneak] out the back while the infected are at the front: unseen, whatever's at the door
+		if (option == 1)
+		{
+			if (!RZ_Stealth.IsHidden(playerId))
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "\"Not with them looking this way.\" Get out of sight first, then come round the back.");
+				return;
+			}
+
+			m_bFreed = true;
+			AddParticipant(playerId);
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("Through the kitchen window and out the back, one at a time, while the infected stand at the front door. %1 carries the woman to the edge of town. \"There's a bag under the stairs. Take it.\"", m_sCaller));
+			m_eState = RZ_EMissionState.SUCCEEDED;
+			return;
+		}
+
 		if (gm.GetSpawner().IsZombieNear(m_vSpot, CLEAR_RADIUS))
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "\"Not yet! I can hear them!\" The door stays shut. Clear them away from the house first.");
 			return;
 		}
 
+		m_bFreed = true;
 		gm.NotifyPlayer(playerId, m_sTitle, string.Format("The barricade comes down a plank at a time. %1 comes out with a woman on his arm, grey and limping. \"There's a bag under the stairs. Take it. We won't need it where we're going.\"", m_sCaller));
 		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
@@ -577,9 +697,15 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 
 		SpawnRewardAt(gm, m_vSpot);
 		RZ_Safehouses houses = gm.GetSafehouses();
-		if (houses && houses.Count() > 0)
+		if (m_sTruth == REAL && !Delivered(gm, houses))
 		{
-			houses.AddRescued(m_vSpot, 2, m_aParticipants);
+			RZ_StoryKit.Record(this, "saved", m_sCaller, "bastion", m_aParticipants, string.Format("In %1's school, a radio with the batteries taken out, and a note: \"In case we need to call again. We won't.\"", GetLocationName(gm)), "board");
+			return;
+		}
+
+		if (houses && houses.Count() > 0 && m_iWhere != WHERE_SISTER)
+		{
+			houses.AddRescued(m_vSpot, Rescued(gm), m_aParticipants);
 			// The callback at her house: some hours of each rescuer's play later, near it
 			RZ_Safehouse home = houses.Get(houses.FindNearest(m_vSpot));
 			RZ_Shared shared = gm.GetShared();
@@ -596,10 +722,70 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where they went, when it's not the nearest house. False: they went to Bastion's post (no house).
+	protected bool Delivered(RZ_GameModeComponent gm, RZ_Safehouses houses)
+	{
+		if (m_iWhere == WHERE_BASTION)
+		{
+			// The soldiers: Bastion's thanks to those with the decider, and the sheltered count
+			if (m_Choice)
+				m_Choice.PayWith(gm, this, RZ_EFaction.MILITARY, 5);
+
+			RZ_StoryKit.Sheltered(gm, this, 2);
+			return false;
+		}
+
+		if (m_iWhere == WHERE_SISTER && houses && m_iSister >= 0)
+		{
+			RZ_Safehouse sister = houses.Get(m_iSister);
+			houses.AddPopulationAt(m_iSister, Rescued(gm));
+			RZ_Shared shared = gm.GetShared();
+			if (sister && shared)
+			{
+				foreach (int rescuer : m_aParticipants)
+				{
+					shared.GetCallbacks().Queue(rescuer, "At " + sister.m_sName, string.Format("Two women on the bench by the door, one with a limp, both talking at once. \"%1 said you'd come by. He said you'd walk us all the way. You did.\"", m_sCaller), sister.m_vPos);
+				}
+			}
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Two walk in, unless the house finds her bite at the door (then one). Hidden by a Nurse who knew:
+	//! both, and it's found by the house within a season day (+8 Haven Infamy, to her only).
+	protected int Rescued(RZ_GameModeComponent gm)
+	{
+		if (!m_bBitten)
+			return 2;
+
+		if (m_iHidBite > 0)
+		{
+			RZ_Deeds.AddLifeRecord(gm.GetProfile(m_iHidBite), "hid_bite", true);
+			gm.GetFacts().Memory().Lies().Tell(gm, m_iHidBite, "distress.bite", m_sCaller, RZ_EFaction.SURVIVORS, "", m_vSpot, RZ_ELieTest.TICK, HID_INFAMY,
+				"The woman with the limp turned in the night. The house found the dressing, and knows whose knots those are.");
+			return 2;
+		}
+
+		NotifyParticipants(gm, m_sTitle, "At the door the house checks everyone, as it always does. Her leg. She goes out at dusk with a lamp, and he goes with her as far as the gate.");
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void OnFailed(RZ_GameModeComponent gm)
 	{
 		if (m_sTruth == LOOP || m_bSold)
 			return;
+
+		// Inside a pack's range, the dead run with it now, by name (Bring Them Home can find them)
+		RZ_Tribes tribes = gm.GetTribes();
+		RZ_Tribe t = null;
+		if (tribes && tribes.GetPeople().IsOn())
+			t = tribes.NearestTribe(m_vSpot, 3000);
+
+		if (t && RZ_Util.DistXZ(t.RangeCentre(), m_vSpot) <= t.m_fRadius)
+			tribes.GetPeople().OnNamedTaken(t, m_sCaller, m_vSpot, false);
 
 		RZ_StoryKit.Record(this, "dead", m_sCaller, m_sTruth, m_aParticipants, "", "");
 		RZ_StoryKit.Fallout(gm, this, "name_on_tag", m_vSpot, string.Format("%1 and the woman from the distress call", m_sCaller));

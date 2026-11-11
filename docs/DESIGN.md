@@ -1082,7 +1082,15 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
 - **Lies in a job** go to the one lie store ([Lies and witnesses](#lies-and-witnesses)): covering a
   collection (found at the next collection there), saying a colleague turned or walking a deserter to
   the Haven (found by a visit), selling a distress call to the crew (found when Tied Down frees a
-  truck).
+  truck), a Nurse hiding a bite at a house's door (found within a season day), the commander's stove
+  (found by the rumour round).
+- **Season counts the story jobs keep** (season flags): Bastion's civilians sheltered
+  (`bastion.sheltered`, read on the call to those who brought them), and Struck Off's men walked home
+  or still out (`struck.home`, `struck.out`), read at the last roll in Bastion's coda
+  ([QUESTLINES.md](QUESTLINES.md#the-majors)).
+- **Leaders in a story job** (`RZ_StoryKit.Remember`, `Loyalty`): a story job may make one leader
+  remember a player as helped or crossed, and move one leader's loyalty at most 5 (never a
+  stronghold's, never below the seat ledger's floor of 30).
 - **Failure is a branch.** A failed story job can open one **fallout errand** at its subject
   (`RZ_StoryKit.Fallout`, `RZ_Errands.Fallout`): dealt to the job's participants first for 20 minutes,
   then to anyone for 3 hours, by a giver within 3 km, paying at most 30% of the job's base. None after
