@@ -600,7 +600,7 @@ class RZ_Mission_TurnedPlayer : RZ_Mission_KillTagged
 
 		m_bSpawned = true;
 		m_sTitle = "Turned: " + m_sName;
-		m_sBrief = string.Format("%1 has turned. They're still wandering around with all their gear. Their friends might have something to say about who gets it.", m_sName);
+		m_sBrief = string.Format("%1 has turned, still carrying everything they had. Whoever reaches them first decides what happens to it.", m_sName);
 		return true;
 	}
 

@@ -441,6 +441,23 @@ class RZ_Hostility
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A fight of `faction` that is after this player (a hunter squad sent for them, or a mission
+	//! group fighting everyone near it) within radius of pos.
+	bool IsFightFor(int playerId, RZ_EFaction faction, vector pos, float radius)
+	{
+		foreach (RZ_HostileZone z : m_aZones)
+		{
+			if (z.m_eFaction != faction || (z.m_iPlayerId > 0 && z.m_iPlayerId != playerId))
+				continue;
+
+			if (RZ_Util.DistXZ(z.m_vPos, pos) <= radius)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void UpdateZones()
 	{
 		for (int i = m_aZones.Count() - 1; i >= 0; i--)

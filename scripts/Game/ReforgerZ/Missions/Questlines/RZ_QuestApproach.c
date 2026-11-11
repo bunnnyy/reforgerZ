@@ -89,7 +89,7 @@ class RZ_QuestApproach
 			gm.AddFame(playerId, with, Math.MinInt(fame, RZ_Questline.MAX_FAME), false);
 
 		if (RZ_Factions.IsValid(against) && infamy > 0)
-			gm.AddInfamy(playerId, against, Math.MinInt(infamy, RZ_Questline.MAX_INFAMY));
+			gm.AddInfamy(playerId, against, Math.MinInt(infamy, RZ_Questline.MAX_INFAMY), true, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -211,7 +211,7 @@ class RZ_QuestStealth
 class RZ_QuestMission : RZ_PuzzleMission
 {
 	protected ref RZ_QuestStealth m_Quiet = new RZ_QuestStealth();
-	protected ref array<int> m_aPersuaded = {};		// players who tried a persuade check here (once each)
+	protected ref array<string> m_aPersuaded = {};	// identities that tried a persuade check here (once each; a rejoin keeps it)
 	protected bool m_bResolved;
 	protected bool m_bSceneUp;
 	protected float m_fSceneRadius = 400;
@@ -316,13 +316,18 @@ class RZ_QuestMission : RZ_PuzzleMission
 	//! A persuade check, once per player in this mission. False when it fails or was tried.
 	protected bool TryPersuade(RZ_GameModeComponent gm, int playerId, int faction, int difficulty, string favoured)
 	{
-		if (m_aPersuaded.Contains(playerId))
+		// By identity, not session id: leaving and rejoining gives a new id, never a second try
+		string who = gm.GetProfile(playerId).m_sIdentity;
+		if (who.IsEmpty())
+			who = "id:" + playerId;
+
+		if (m_aPersuaded.Contains(who))
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "You've said your piece. Saying it again won't help.");
 			return false;
 		}
 
-		m_aPersuaded.Insert(playerId);
+		m_aPersuaded.Insert(who);
 		return RZ_QuestApproach.Persuade(gm, playerId, faction, difficulty, favoured);
 	}
 

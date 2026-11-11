@@ -1174,7 +1174,8 @@ time and the world, and how players did each stage decides where it goes and how
   is offered again from the start. A season wipe ends every questline.
 
 *Simplified:* the "persuade" check is a fixed score, not a roll: the same player with the same
-standing always gets the same answer (once per player per mission). A stage's people stand
+standing always gets the same answer (once per player per mission, kept by identity, so leaving
+and rejoining doesn't give a second try). A stage's people stand
 still (props with talk and choice actions), apart from optional AI groups.
 
 ### Writing a questline
@@ -1228,7 +1229,7 @@ example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
    - persuade: `TryPersuade(gm, playerId, faction, difficulty, "police,excon")`: the standing's
      rank with that faction (Stranger 0, Known 1, Trusted 2, Champion 3, mixed tiers one less,
      Watched -1, Hunted -2) plus 1 for a listed background must reach the difficulty; once per
-     player;
+     player (by identity, so a rejoin doesn't reset it);
    - sneak: `m_Quiet.Watch(pos, radius)`, then `m_Quiet.IsQuiet(gm, playerId)` (no shots in the
      radius since, not noticed by heat or the infected), `m_Quiet.Spot(playerId)` when someone in
      the scene sees them; a person who sees anyone within N m checks
@@ -2063,7 +2064,7 @@ season; the rest apply at once and follow the setting if it's changed.
 hand: **Wipe on start**, or delete `state.json`). Only *On cure* is on by default: the two timed
 modes stay available for admins who want a fixed calendar, and are never used unless picked.
 
-- **On cure:** the world stays open for an **epilogue** of 48 real hours (Aftermath, with the
+- **On cure:** the world stays open for an **epilogue** of one week, 168 real hours (Aftermath, with the
   ending, the line stood down) after the final stand is won. Its warnings and its last line speak
   of processing at the checkpoints; the gates open with the wipe.
 - **After weeks** (off unless picked): 10 real weeks after the season started (**Weeks**), cure or

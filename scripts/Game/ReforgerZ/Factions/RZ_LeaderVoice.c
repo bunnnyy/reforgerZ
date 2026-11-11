@@ -297,8 +297,22 @@ class RZ_LeaderVoice
 		if (speaker == RZ_EFaction.INSTITUTE && other == RZ_EFaction.BANDITS)
 			return "\"The Red Hand used to buy samples. It doesn't matter now. Nothing they took can take the cure back.\"";
 
+		// Who got the cure (the season's winner) decides which of these is true
 		if (speaker == RZ_EFaction.INSTITUTE && other == RZ_EFaction.MILITARY)
-			return "\"Bastion wanted the cure in a locked crate. It went out over every frequency instead. They're still deciding how they feel about that.\"";
+		{
+			RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+			int winner = -1;
+			if (gm)
+				winner = gm.GetSeasonWinner();
+
+			if (winner == RZ_EFaction.MILITARY)
+				return "\"Bastion has the cure in its locked crate, as it wanted. We wrote the method. They decide who gets it. We're told that's temporary.\"";
+
+			if (winner == RZ_EFaction.INSTITUTE)
+				return "\"Bastion wanted the cure in a locked crate. It went out over every frequency instead. They're still deciding how they feel about that.\"";
+
+			return "\"Bastion wanted the cure in a locked crate. It didn't end up in one. They're still deciding how they feel about that.\"";
+		}
 
 		return "";
 	}
