@@ -112,8 +112,8 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_SerumTrial);
 		mgr.RegisterType(RZ_Mission_MobileLab);
 
-		// Hard edges as contracts (Missions/Halcyon/RZ_HalcyonLoreMissions.c, Missions/Haven/RZ_HavenLoreMissions.c)
-		mgr.RegisterType(RZ_Mission_TheAuthorList);
+		// Hard edges as contracts (Missions/Haven/RZ_HavenLoreMissions.c). Halcyon's two are questlines
+		// now: The Three Weeks and The Other Two (Missions/Questlines/Halcyon/)
 		mgr.RegisterType(RZ_Mission_TheList);
 
 		// Puzzle missions (Puzzles/), each a contract from one faction
