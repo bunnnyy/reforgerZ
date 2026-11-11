@@ -130,6 +130,8 @@ UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previe
                  the layout guide (LAYOUTS.md)
 tools/render_ui.js
                  renders the icon PNGs and the mockup previews (Node and Playwright)
+tools/pacing_sim.py
+                 simulates a season's research, the lab and the stages for 2, 5 and 10 players
 tools/compile_check.sh
                  compiles the scripts on the Linux dedicated server, no Workbench needed
 tools/runtime_test/
