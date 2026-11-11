@@ -231,10 +231,10 @@ Frame StandingPage (root)
 │     ├─ Text    FactionNameN    at (92, 30), condensed bold 24
 │     ├─ Frame   (tier box, 387 × 66 at (22, 88), background white 3.5%, border)
 │     │  ├─ Image  TierIconN     42 × 42                           tier_* icon
-│     │  ├─ Text   TierNameN     condensed bold 26
-│     │  └─ Text   TierNoteN     mono 13, dim
+│     │  ├─ Text   TierNameN     condensed bold 26: the reputation's name (Mixed Bag, Wildcard...)
+│     │  └─ Text   TierNoteN     mono 13, dim: what it counts as, at most 42 characters
 │     ├─ Text    FameValueN      right, mono bold 14     │ ProgressBar FameBarN   387 × 10
-│     ├─ Text    InfamyValueN    right, mono bold 14     │ ProgressBar InfamyBarN 387 × 10, fill #D2553F
+│     ├─ Text    InfamyValueN    right, mono bold 14 ("36 - 12 TO FORGIVE") │ ProgressBar InfamyBarN 387 × 10, fill #D2553F
 │     │   (three 2-unit dark ticks over both bars at 15%, 40% and 75%: the tier bands)
 │     ├─ Text    FavorValueN     mono bold 24, faction colour
 │     ├─ Text    (label "LEADERS YOU'VE MET") │ Text LeadersN  wraps, 15, in a ScrollLayout
@@ -246,7 +246,11 @@ Frame StandingPage (root)
 │        └─ Text  (WarnTextN)    mono 13, "HUNTER SQUADS ARE OUT FOR YOU"
 ├─ Frame  (between the factions, at (72, 798), 880 × 196, label "BETWEEN THE FACTIONS")
 │  └─ Text   Relations          wraps, 16
-├─ Frame  (tier grid, at (970, 798), 874 × 196): a static 5 × 5 grid of the tier names
+├─ Frame  TierGrid (the reputation grid, at (970, 798), 874 × 196): a 5 × 5 grid, labels on the
+│  top row and the left column; the 16 cells are Text RepCell_<fame band>_<infamy band> (0-3 each,
+│  so RepCell_3_0 is Champion, top left), each over an Image TierGridCell<row><col>. Code writes each
+│  cell's name, upper case, and the initials of the factions that put you there, bright where you
+│  stand and dim elsewhere: no static names
 └─ Text   Waiting              centred, italic 22, "Asking around..." (shown until the data arrives)
 ```
 

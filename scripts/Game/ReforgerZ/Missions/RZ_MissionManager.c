@@ -766,12 +766,24 @@ class RZ_MissionManager
 			int favor = RZ_Util.RoundToInt(m.m_iFavorReward * m.m_fRewardScale * favorMult);
 			string giverName = RZ_Factions.GetName(m.m_eGiver);
 
-			if (m.m_bAmends && RZ_Reputation.IsWatchedOrWorse(m_GM.GetTier(playerId, m.m_eGiver)))
+			// Amends work Infamy off through the one forgiveness budget (30 a life); once it's spent,
+			// the job pays ordinary Fame, rival shares and all
+			bool forgiven = false;
+			if (m.m_bAmends && fame > 0 && RZ_Reputation.IsWatchedOrWorse(m_GM.GetTier(playerId, m.m_eGiver)))
 			{
-				m_GM.AddInfamy(playerId, m.m_eGiver, -fame);
-				text += string.Format("\n%1 is willing to forget a little: -%2 Infamy.", giverName, fame);
+				int off = m_GM.Forgive(playerId, m.m_eGiver, fame, "amends contract");
+				if (off > 0)
+				{
+					forgiven = true;
+					text += string.Format("\n%1 is willing to forget a little: -%2 Infamy.", giverName, off);
+				}
+				else
+				{
+					text += "\n" + m_GM.ForgiveSpentText(m.m_eGiver) + " The work counts as Fame instead.";
+				}
 			}
-			else if (fame > 0)
+
+			if (!forgiven && fame > 0)
 			{
 				// An explicit rival replaces the general rival table, so it isn't counted twice
 				m_GM.AddFame(playerId, m.m_eGiver, fame, !m.m_bHasRival);
@@ -788,11 +800,21 @@ class RZ_MissionManager
 			{
 				// A truce halves it, a feud makes it worse (docs/REPUTATION.md, "Truces and feuds")
 				int infamy = Math.Max(1, RZ_Util.RoundToInt(m.m_iRivalInfamy * m.m_fRewardScale * m_GM.RivalMult(m.m_eGiver, m.m_eRival)));
-				m_GM.AddInfamy(playerId, m.m_eRival, infamy, true, true);
+				m_GM.AddInfamy(playerId, m.m_eRival, infamy, "mission rival", RZ_RepFlag.SHARE);
 				text += string.Format("\n%1 won't forget this: +%2 Infamy.", RZ_Factions.GetName(m.m_eRival), infamy);
 				if (leaders)
 					leaders.OnRivalHurt(m.m_eRival, m.m_vPos, playerId);
 			}
+		}
+
+		// The deeds store: a job done for the giver, against the rival
+		if (m.m_bHasGiver)
+		{
+			int against = -1;
+			if (m.m_bHasRival)
+				against = m.m_eRival;
+
+			RZ_Deeds.AddJob(m_GM, playerId, m.m_eGiver, against, m.m_sTitle);
 		}
 
 		m.OnRewardPlayer(m_GM, playerId);

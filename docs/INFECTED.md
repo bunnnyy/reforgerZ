@@ -292,6 +292,30 @@ Mission infected count toward the budget but are never removed for it. Nothing i
 budget only stops new spawns. Group prefabs count the members they had the last time one spawned (4
 until then).
 
+### The one body budget
+
+The agent budget is the one body budget for everything the shared engine spawns, not only the
+infected ([DESIGN.md](DESIGN.md#the-shared-engine)). Such a body asks
+`RZ_Shared.CanSpawnBody(kind, pos)` first and is entered with `RZ_Shared.AddBody(kind, entity)`
+(`RZ_BodyBudget`, `Zombies/RZ_InfectedBodies.c`). Each tick, every body still alive in the ledger is
+counted in agents on its nearest player's cluster, so the infected near it leave room; a body that's
+deleted or dead drops out. With both switches off there's no agent budget, and only the kinds' own
+caps apply.
+
+| Kind | Rule | Callers |
+|---|---|---|
+| `story` | A mission's people: always allowed, so no job stalls, but counted | The escort block (`Missions/Blocks/RZ_Escort.c`): every escort, rescue and walk-along |
+| `wanderer` | Needs room in the server's 100 agents; refused, the wanderer stays data and tries again next tick | Wanderers (`World/RZ_Wanderers.c`) |
+| `scene`, `asker` | 16 agents together, and room in the budget | *Planned:* dialogue's scenes and askers |
+| `errand` | 10, and room | *Planned:* errand scenes |
+| `stranger` | 6, and room | *Planned:* strangers |
+| `epilogue` | 18 (3 scenes of 6), and room | *Planned:* the epilogue's scenes |
+| `speaker` | Only within 100 m of a player, and room | *Planned:* post speakers |
+
+Faction AI, leaders, camp life, supply trucks and the Long Table keep their own limits; they share only
+the engine's active-AI limit ([above](#the-agent-budget)). The status line shows the ledger as
+`other bodies N agents`.
+
 ### Runtime groups
 
 A Bacon character on its own takes no waypoints and stays inactive. Crawlers and loose ones made
@@ -329,7 +353,8 @@ they stand on their own.
 ## Admin visibility
 
 - **The status log** (every 5 minutes, with Crawlers or Tribes on) adds a line: agents against the
-  budget, units, crawlers and loose ones, the clusters and their shares, hordes from towns, loose ones
+  budget, units, crawlers and loose ones, the clusters and their shares, the other bodies in the one
+  body budget, hordes from towns, loose ones
   that arrived, the ledgers, stirred towns, scavengers out, kill sites, held doors, the engine's active
   AI against its limit, the land, and the clock. So nothing needs typing.
 - **`/tribes`** (server admins, in chat) writes everything to the server log: every town with crawlers,

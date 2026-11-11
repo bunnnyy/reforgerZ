@@ -53,7 +53,12 @@ enum RZ_EQuestApproach
 	FORCE,		// killed or drove someone off
 	BRIBE,		// paid Favor
 	BETRAY,		// turned on the people who asked
-	SIDE		// took another faction's side
+	SIDE,		// took another faction's side
+	// Appended once (docs/DESIGN.md, "Checks and ways"): saved runs keep their numbers
+	PRESS,		// threatened (the Fear check)
+	TRADE,		// gave items or a service (the price table)
+	TRICK,		// a claim: passed as one of theirs, or carried their paper
+	LEAVE		// walked away: no pay, no blame
 }
 
 //------------------------------------------------------------------------------------------------

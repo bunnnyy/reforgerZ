@@ -471,6 +471,13 @@ class RZ_StandingPage : RZ_NotebookPage
 		RZ_MenuBase.Records(ui.GetStanding(), recs);
 		array<string> leaders = {"", "", "", ""};
 		string relations = "";
+		// The reputation grid: which factions put you in each of the 16 cells (RepCell_<fame>_<infamy>)
+		array<string> cells = {};
+		for (int c = 0; c < 16; c++)
+		{
+			cells.Insert("");
+		}
+
 		foreach (array<string> f : recs)
 		{
 			string tag = RZ_UIText.Str(f, 0);
@@ -483,6 +490,13 @@ class RZ_StandingPage : RZ_NotebookPage
 			else if (tag == "F")
 			{
 				DrawFaction(f);
+				int fac = RZ_UIText.Int(f, 1);
+				int cell = RZ_UIText.Int(f, 8);
+				if (f.Count() > 8 && cell >= 0 && fac >= 0 && fac < 4)
+				{
+					int idx = RZ_Reputation.Band(RZ_UIText.Int(f, 2)) * 4 + RZ_Reputation.Band(RZ_UIText.Int(f, 3));
+					cells[idx] = cells[idx] + RZ_RepNames.Initial(fac);
+				}
 			}
 			else if (tag == "L")
 			{
@@ -518,10 +532,37 @@ class RZ_StandingPage : RZ_NotebookPage
 			relations = "No truces, no feuds. For now.";
 
 		RZ_UIW.SetText(m_wRoot, "Relations", relations);
+		DrawGrid(cells);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! F|faction|fame|infamy|favor|tier|need|need line
+	//! The 16 cells, code-filled: each cell's name, and the initials of the factions that put you
+	//! there (H the Haven, B Bastion, R the Red Hand, C Halcyon), brighter where you are.
+	protected void DrawGrid(array<string> cells)
+	{
+		for (int fame = 0; fame < 4; fame++)
+		{
+			for (int infamy = 0; infamy < 4; infamy++)
+			{
+				string here = cells[fame * 4 + infamy];
+				string text = RZ_RepNames.GetName(RZ_RepNames.CellAt(fame, infamy));
+				text.ToUpper();
+				Color tc = RZ_UIColor.Dim();
+				if (!here.IsEmpty())
+				{
+					text = text + "  " + here;
+					tc = RZ_UIColor.Bone();
+				}
+
+				string name = string.Format("RepCell_%1_%2", fame, infamy);
+				RZ_UIW.SetText(m_wRoot, name, text);
+				RZ_UIW.Tint(m_wRoot, name, tc);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! F|faction|fame|infamy|favor|tier|need|need line|rep|notoriety|word|note|left to forgive|owed
 	protected void DrawFaction(array<string> f)
 	{
 		int fac = RZ_UIText.Int(f, 1);
@@ -540,15 +581,30 @@ class RZ_StandingPage : RZ_NotebookPage
 		RZ_UIW.Icon(m_wRoot, "Emblem" + n, RZ_UIText.FactionIcon(fac));
 		RZ_UIW.Icon(m_wRoot, "TierIcon" + n, RZ_UIText.TierIcon(tier));
 		RZ_UIW.Tint(m_wRoot, "TierIcon" + n, tc);
+		// The reputation's name (Reputation > Names), else the tier word; the note says what it counts
+		// as (docs/REPUTATION.md, "Reputations")
 		string tierName = RZ_Reputation.GetTierName(tier);
+		int rep = RZ_UIText.Int(f, 8);
+		if (f.Count() > 8 && rep >= 0)
+			tierName = RZ_RepNames.GetName(rep);
+
 		tierName.ToUpper();
 		RZ_UIW.SetText(m_wRoot, "TierName" + n, tierName);
 		RZ_UIW.Tint(m_wRoot, "TierName" + n, tc);
-		RZ_UIW.SetText(m_wRoot, "TierNote" + n, RZ_UIText.TierNote(tier));
+		string note = RZ_UIText.Str(f, 11);
+		if (note.IsEmpty())
+			note = RZ_UIText.TierNote(tier);
+
+		RZ_UIW.SetText(m_wRoot, "TierNote" + n, note);
 		RZ_UIW.SetText(m_wRoot, "FameValue" + n, fame.ToString());
 		RZ_UIW.Progress(m_wRoot, "FameBar" + n, fame / 100.0);
 		RZ_UIW.Tint(m_wRoot, "FameBar" + n, accent);
-		RZ_UIW.SetText(m_wRoot, "InfamyValue" + n, infamy.ToString());
+		// The forgiveness budget left, when there's Infamy to forgive: "36 - 12 TO FORGIVE"
+		string infamyText = infamy.ToString();
+		if (f.Count() > 12 && infamy > 0 && RZ_UIText.Int(f, 12) >= 0)
+			infamyText = string.Format("%1 - %2 TO FORGIVE", infamy, RZ_UIText.Int(f, 12));
+
+		RZ_UIW.SetText(m_wRoot, "InfamyValue" + n, infamyText);
 		RZ_UIW.Progress(m_wRoot, "InfamyBar" + n, infamy / 100.0);
 		RZ_UIW.SetText(m_wRoot, "FavorValue" + n, RZ_UIText.Str(f, 4));
 		RZ_UIW.Tint(m_wRoot, "FavorValue" + n, accent);

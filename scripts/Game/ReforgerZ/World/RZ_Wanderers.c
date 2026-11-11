@@ -1532,9 +1532,17 @@ class RZ_Wanderers
 		if (RZ_Util.IsWater(pos))
 			pos = RZ_Mission.LandPointNear(pos, 5, 40);
 
+		// The one body budget: with the agent budget full the wanderer stays data and tries again
+		RZ_Shared shared = m_GM.GetShared();
+		if (shared && !shared.CanSpawnBody(RZ_BodyBudget.WANDERER, pos))
+			return;
+
 		IEntity e = RZ_Util.SpawnPrefab(GetPrefab(w.m_eRole), pos, Math.RandomFloat(0, 360));
 		if (!e)
 			return;
+
+		if (shared)
+			shared.AddBody(RZ_BodyBudget.WANDERER, e);
 
 		w.m_Body = e;
 		w.m_bHasBody = true;

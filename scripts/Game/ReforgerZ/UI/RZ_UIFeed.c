@@ -447,7 +447,9 @@ class RZ_UIFeed
 
 	//------------------------------------------------------------------------------------------------
 	//! H|player name|background|life
-	//! F|faction|fame|infamy|favor|tier|need|need line
+	//! F|faction|fame|infamy|favor|tier|need|need line|rep (RZ_ERep)|notoriety|word|note|left to forgive (-1 no budget)|owed (0/1)
+	//! The fields after the need line are new (docs/REPUTATION.md, "Reputations"): older layouts
+	//! read the first eight and ignore the rest. word and owed come with reputation's later phases.
 	//! L|faction|name|title|what they think of you
 	//! R|kind (0 truce, 1 feud)|faction a|faction b|minutes left
 	protected string BuildStanding(int playerId)
@@ -473,8 +475,20 @@ class RZ_UIFeed
 
 			RZ_EFaction ef = f;
 			int tier = p.GetTier(ef);
+			int fame = p.GetFame(ef);
+			int infamy = p.GetInfamy(ef);
+			int rep = RZ_RepNames.GetRep(fame, infamy);
+			if (!RZ_ReputationSettings.Get().m_bNames)
+				rep = -1;
+
+			int left = -1;
+			if (RZ_ReputationSettings.Get().m_iForgiveBudget > 0)
+				left = p.ForgiveLeft(ef);
+
 			RZ_UILine lnF = new RZ_UILine("F");
-			s += lnF.AddInt(f).AddInt(p.GetFame(ef)).AddInt(p.GetInfamy(ef)).AddInt(p.GetFavor(ef)).AddInt(tier).AddInt(need).Add(needLine).End();
+			lnF.AddInt(f).AddInt(fame).AddInt(infamy).AddInt(p.GetFavor(ef)).AddInt(tier).AddInt(need).Add(needLine);
+			lnF.AddInt(rep).AddInt(RZ_RepNames.Notoriety(fame, infamy)).Add("").Add(RZ_RepNames.Note(fame, infamy)).AddInt(left).AddInt(0);
+			s += lnF.End();
 		}
 
 		RZ_Leaders leaders = m_GM.GetLeaders();

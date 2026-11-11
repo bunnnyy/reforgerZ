@@ -164,6 +164,15 @@ class RZ_GuidanceTips
 		t.m_sWanderer = "\"Word gets round. %1 calls you %2 now. Their shop will treat you better.\"";
 		t.m_sPlain = "%1 calls you %2 now. Their quartermaster has more for you.";
 
+		// The first mixed name (docs/REPUTATION.md, "Reputations"): once ever
+		t = Add(list, "mixed", false, 3, true, 0);
+		t.m_sHaven = "\"Funny thing. Half the house would hug you and half would lock the door. %1 calls you %2. Your notebook says what that means for the shelves.\"";
+		t.m_sBastion = "\"Mixed file. %1 has you down as %2. Read your standing page: it says what you count as.\"";
+		t.m_sRedHand = "\"%2. Ha. That's what %1 calls you. Liked and feared. Best way to be.\"";
+		t.m_sHalcyon = "\"%1 classifies you as %2. Both columns at once. Your standing page has what it counts as.\"";
+		t.m_sWanderer = "\"People can like you and fear you at once. %1 calls you %2 now.\"";
+		t.m_sPlain = "People can like you and fear you at once. %1 calls you %2. Your notebook's Standing page shows what that counts as.";
+
 		t = Add(list, "watched", false, 2, false, 30);
 		t.m_sHaven = "\"%1 has your name on a list. It happens. Do something for them, the amends jobs, and it comes off. Don't make it worse.\"";
 		t.m_sBastion = "\"You've been flagged by %1. Watched status. Amends contracts work it off. I'd take them.\"";

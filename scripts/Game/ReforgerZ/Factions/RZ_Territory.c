@@ -1029,6 +1029,14 @@ class RZ_Territory
 			return;
 
 		float applied = Math.Clamp(delta, -room, room);
+		// The contracts and errands lane of the season budget (Director/RZ_MajorBudget.c)
+		RZ_MajorBudget budget = RZ_MajorBudget.Get();
+		if (budget)
+			applied = budget.TakeStrength(RZ_EBudgetLane.CONTRACTS, f, applied, "", "contract");
+
+		if (applied == 0)
+			return;
+
 		m_aContractSum[f] = m_aContractSum[f] + applied;
 		AddStrength(f, applied);
 	}

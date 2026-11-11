@@ -105,7 +105,7 @@ squeezed.
 | Set pieces' second airing | At least 8 real hours after the first | — |
 | Test scale | Multiplies every real-time clock here | 0.008 runs the week in about 81 minutes |
 
-**A typical week** at the built time acceleration of 1:1 (the calendar adapts to faster servers):
+**A typical week** (evenings come from the clock's real rate: at the default Day length, 4 real hours a game day, about six a real day; the calendar adapts to slower servers):
 
 | When | What usually happens |
 |---|---|
@@ -146,7 +146,8 @@ squeezed.
 ### All season: the town log and season marks
 
 **The town log** (part of `RZ_WorldMemory`) keeps two entries per settlement: **the best thing** that happened there,
-and **the worst**.
+and **the worst**. Its store is built (the slots, salience, replacing, naming and visits:
+[DESIGN.md](../docs/DESIGN.md#world-memory)); its writers and readers below are not.
 
 | Slot | Kinds (each has a base salience, 1–5) |
 |---|---|
@@ -246,9 +247,9 @@ The server's time acceleration decides when that falls in real time. So:
 - **One set piece an evening**, server-wide, on the one set-piece calendar the majors own. An evening is a game dusk
   (18:30–20:30) with a player online.
 - **At the commit**, the epilogue works out how many evenings phase B holds, from the server's time acceleration
-  (VERIFY: reading it; if it can't be read, assume 1:1). **Last Rounds go first** (the majors' codas, in their order),
-  then the epilogue's own pieces. Over a week at 1:1 there are about six evenings, so everything fits; on a faster
-  server there are more.
+  (`RZ_GameTime` reads it from the time manager; the Day length setting if it can't). **Last Rounds go first** (the
+  majors' codas, in their order), then the epilogue's own pieces. Over a week at the default Day length there are
+  about 42 evenings; even at real time (Day length 24) there are about six, so everything fits.
 - **The Haven's supper reading** (once the Gate has run) takes the evening only if nothing else has it. On other
   evenings the names go out on the Haven channel, with no scene.
 - **Bastion's 20:30.** The first evening's 20:30 is the majors' last call. Every 20:30 after it is the operator's
@@ -1354,7 +1355,7 @@ else carries over:
 
 ### A week, three ways
 
-- **A busy server** (12 regulars, 1:1 time). The Gate and the last call on the first evening, the walk at dawn, the paper
+- **A busy server** (12 regulars, Day length 24: real time). The Gate and the last call on the first evening, the walk at dawn, the paper
   and the last line by the third evening, all live. Loose Ends are taken in the first days; two packs are culled by Bastion
   players and one is brought home by name. Nine towns are cleared: eight candles stand, and the ninth is text. The tally
   at the station goes to the names on day 5. In processing the queue walks at 05:30 and 17:30, and seven players walk out.
@@ -1445,7 +1446,7 @@ standing, the phase. Each is built on existing blocks, sets `m_bAfterCure`, and 
   was won, up to 4 deciders), the Zone's Fame line from season Fame (*"The cure: the Haven, by force. The Zone's Fame:
   Bastion, 1,640."*), the season's stories (the majors' lines), up to 8 names with epithets, and the week's lines
   ([above](#what-the-week-adds-to-the-hall-of-fame)). It replaces separate "Named in the Zone", "At the barrier" and "On
-  the paper" lists. It's shown in `/hall` and the hall menu.
+  the paper" lists. It's shown in the notebook's Hall of fame tab.
 - **`last_season.json`:** the route, how it was won, the terms, the deciders, the majors' endings, the Last Broadcast's
   version, and the 10 strongest beats as plain lines.
 - **Next season** belongs to Seasons, the finale's next-season rules and the majors' story rules (their first-days rumour
@@ -1722,8 +1723,8 @@ plain lines for the week are counted in TONE.md.
   qualifies; engaged items wait.
 - **Props:** two pools (marks 30, the tribes' props 30) through one spawner. Measure frame time at 60 props. A busy evening
   near the north road may show fewer marks than designed; the reserved home marks and the text fallback keep it readable.
-- **Time acceleration:** if it can't be read (VERIFY), the calendar assumes 1:1, and players with fixed hours rely on the
-  standing versions.
+- **Time acceleration:** read from the time manager's day duration (built); if it can't be read, the calendar uses the
+  Day length setting, and players with fixed hours rely on the standing versions.
 - **Verge placement on unknown road widths:** a board too close to a narrow road, or a queue where players park. The
   clearance checks and the slide-along rule help; play-test on Everon and Arland with a supply truck driving past the
   queue.

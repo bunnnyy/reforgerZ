@@ -1,18 +1,14 @@
 //! In-game time of day, and how fast it runs on this server. ReforgerZ never skips time; it sets
-//! the day's length at start (docs/DESIGN.md, The clock); night missions just wait. The speed is measured by
-//! sampling the clock on the server tick, so it works with any time acceleration
-//! the server config sets, without needing an API for it.
+//! the day's length at start from the Day length setting (docs/DESIGN.md, The clock); night
+//! missions just wait. The rate is read from the time manager's day duration, as the base game's
+//! own clock does, so it follows Day length, the scenario's day and night acceleration and an
+//! admin's change alike.
+//! Shared clock helper (docs/DESIGN.md, "Clocks"): game-clock windows in real minutes go through
+//! RealMinutesFor and RealMinutesUntil, at the rate the clock runs now.
 class RZ_GameTime
 {
 	static const float NIGHT_START = 20.5;	// hours; rough, depends on map latitude and date
 	static const float NIGHT_END = 5.0;
-
-	protected static float s_fRate;			// game hours per real second, 0 = not measured yet
-	protected static float s_fLastHour = -1;
-	protected static float s_fSampleSeconds;
-	protected static float s_fSampleHours;
-
-	protected static const float SAMPLE_WINDOW = 60;
 
 	//------------------------------------------------------------------------------------------------
 	//! Hour of the day, 0..24. -1 if the world has no time manager.
@@ -30,45 +26,69 @@ class RZ_GameTime
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Called from the game mode's server tick.
-	static void Tick(float dt)
+	//! Game hours per real second the clock runs at now: 24 / the time manager's day duration.
+	//! 0 if the world has no time manager or its day doesn't advance.
+	static float ClockRate()
 	{
-		float h = GetHour();
-		if (h < 0)
-			return;
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world)
+			return 0;
 
-		if (s_fLastHour >= 0)
-		{
-			float dh = h - s_fLastHour;
-			if (dh < -12)
-				dh += 24;	// past midnight
+		TimeAndWeatherManagerEntity tm = world.GetTimeAndWeatherManager();
+		if (!tm || !tm.GetIsDayAutoAdvanced())
+			return 0;
 
-			if (dh >= 0 && dh < 6)
-			{
-				s_fSampleSeconds += dt;
-				s_fSampleHours += dh;
-			}
-		}
+		float seconds = tm.GetDayDuration();
+		if (seconds <= 0)
+			return 0;
 
-		s_fLastHour = h;
-
-		if (s_fSampleSeconds >= SAMPLE_WINDOW)
-		{
-			float measured = s_fSampleHours / s_fSampleSeconds;
-			if (s_fRate <= 0)
-				s_fRate = measured;
-			else
-				s_fRate = s_fRate * 0.7 + measured * 0.3;
-
-			s_fSampleSeconds = 0;
-			s_fSampleHours = 0;
-		}
+		return 24 / seconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Game hours per real second for turning windows into real time: the clock's rate, or the
+	//! Day length setting's (default 4 real hours a game day) when the clock can't be read.
+	static float Rate()
+	{
+		float rate = ClockRate();
+		if (rate > 0)
+			return rate;
+
+		float hours = 4;
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm && gm.GetDayLengthHours() > 0)
+			hours = gm.GetDayLengthHours();
+
+		return 24 / (Math.Clamp(hours, 2, 24) * 3600);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real minutes a span of `hours` game hours takes.
+	static float RealMinutesFor(float hours)
+	{
+		return Math.Max(0, hours) / Rate() / 60;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real minutes until the clock next shows `hour`. -1 without a clock.
+	static float RealMinutesUntil(float hour)
+	{
+		float now = GetHour();
+		if (now < 0)
+			return -1;
+
+		float ahead = hour - now;
+		if (ahead < 0)
+			ahead += 24;
+
+		return RealMinutesFor(ahead);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the clock exists and runs, so its windows can be timed.
 	static bool IsCalibrated()
 	{
-		return s_fRate > 0;
+		return ClockRate() > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -99,29 +119,31 @@ class RZ_GameTime
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Real seconds until the clock next shows `hour`. -1 if unknown (not measured yet,
-	//! or time doesn't move on this server).
+	//! Real seconds until the clock next shows `hour`. -1 if unknown (no clock, or time doesn't
+	//! move on this server).
 	static float RealSecondsUntil(float hour)
 	{
 		float now = GetHour();
-		if (now < 0 || s_fRate <= 0)
+		float rate = ClockRate();
+		if (now < 0 || rate <= 0)
 			return -1;
 
 		float ahead = hour - now;
 		if (ahead < 0)
 			ahead += 24;
 
-		return ahead / s_fRate;
+		return ahead / rate;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Real seconds a span of game hours takes. -1 if unknown.
 	static float RealSecondsFor(float hours)
 	{
-		if (s_fRate <= 0)
+		float rate = ClockRate();
+		if (rate <= 0)
 			return -1;
 
-		return hours / s_fRate;
+		return hours / rate;
 	}
 
 	//------------------------------------------------------------------------------------------------

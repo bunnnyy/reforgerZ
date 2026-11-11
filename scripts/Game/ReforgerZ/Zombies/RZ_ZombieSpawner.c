@@ -136,6 +136,7 @@ class RZ_ZombieSpawner
 	protected ref RZ_Crawlers m_Crawlers;
 	protected RZ_TribeSettings m_TribeSettings;
 	protected ref RZ_InfectedBudget m_Budget = new RZ_InfectedBudget();
+	protected ref RZ_BodyBudget m_Bodies;	// the one body budget: everything else's bodies, inside m_Budget
 	protected ref map<string, int> m_mPrefabAgents = new map<string, int>();	// group prefabs: members seen
 	protected float m_fClock;
 	protected int m_iTickAgents;
@@ -153,6 +154,7 @@ class RZ_ZombieSpawner
 		m_GM = gm;
 		m_Settings = settings;
 		m_TribeSettings = tribes;
+		m_Bodies = new RZ_BodyBudget(m_Budget);
 		if (crawlers)
 			m_Crawlers = new RZ_Crawlers(gm, crawlers);
 
@@ -168,11 +170,13 @@ class RZ_ZombieSpawner
 	bool IsPlumbingOn() { return CrawlersOn() || TribesOn(); }
 	RZ_Crawlers GetCrawlers() { return m_Crawlers; }
 	RZ_InfectedBudget GetBudget() { return m_Budget; }
+	RZ_BodyBudget GetBodies() { return m_Bodies; }
 	float GetDensityPerSize() { return m_Settings.m_fDensityPerSize; }
 
 	//------------------------------------------------------------------------------------------------
 	void Tick(float dt, array<IEntity> players)
 	{
+		m_Bodies.Tick(players, IsPlumbingOn());
 		if (IsPlumbingOn())
 		{
 			TickInfected(dt, players);
@@ -1009,6 +1013,7 @@ class RZ_ZombieSpawner
 		}
 
 		m_Budget.Begin(players, m_aTracked, budget, share);
+		m_Bodies.AddTo(m_Budget);
 		m_iTickAgents = 0;
 		if (m_Crawlers)
 			m_Crawlers.Tick(dt, players);
@@ -1894,7 +1899,7 @@ class RZ_ZombieSpawner
 
 		string text = string.Format("infected %1/%2 agents (%3 entries; crawlers %4, loose %5), clusters %6 share %7 [%8]",
 			agents, m_Budget.GetBudget(), m_aTracked.Count(), crawlers, loose, m_Budget.GetClusterCount(), m_Budget.GetShare(), m_Budget.DescribeClusters());
-		text += string.Format(", hordes from towns %1, loose ones arrived %2", m_iHordesFromTowns, m_iLooseArrived);
+		text += string.Format(", other bodies %1 agents, hordes from towns %2, loose ones arrived %3", m_Bodies.Count(""), m_iHordesFromTowns, m_iLooseArrived);
 		if (m_Crawlers)
 			text += " | " + m_Crawlers.StatusText();
 

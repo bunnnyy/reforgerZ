@@ -389,3 +389,171 @@ class RZ_InfectedBudget
 		return text;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! One body in the body budget's ledger.
+class RZ_BodyEntry
+{
+	string m_sKind;
+	IEntity m_Entity;		// weak: gone when the body is deleted
+	int m_iAgents = -1;		// living members once read, -1 until then
+	vector m_vPos;
+
+	//------------------------------------------------------------------------------------------------
+	//! Agents for the budget: members once read, else 4 for a group and 1 for a character.
+	int Agents()
+	{
+		if (m_iAgents >= 0)
+			return m_iAgents;
+
+		if (SCR_AIGroup.Cast(m_Entity))
+			return 4;
+
+		return 1;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The one body budget (docs/INFECTED.md, "The one body budget"): every body that isn't an infected
+//! and comes from the shared pieces (the people of a mission, wanderers, and later scenes, errands,
+//! strangers, epilogue scenes and post speakers) asks RZ_Shared.CanSpawnBody(kind, pos) first and is
+//! entered with RZ_Shared.AddBody(kind, entity). They count in agents inside the infected's agent
+//! budget (RZ_InfectedBudget), so the infected leave room for them; each kind has its own cap.
+//! Owned by the spawner. Server only.
+class RZ_BodyBudget
+{
+	static const string STORY = "story";		// a mission's people (escorts): always allowed, counted
+	static const string WANDERER = "wanderer";	// wanderers: need room in the agent budget
+	static const string SCENE = "scene";		// scene people and askers: 16 together
+	static const string ASKER = "asker";
+	static const string ERRAND = "errand";		// errand scenes: 10
+	static const string STRANGER = "stranger";	// strangers: 6
+	static const string EPILOGUE = "epilogue";	// epilogue scenes: 3 scenes of 6 people
+	static const string SPEAKER = "speaker";	// post speakers: only within 100 m of a player
+
+	static const int SCENE_CAP = 16;
+	static const int ERRAND_CAP = 10;
+	static const int STRANGER_CAP = 6;
+	static const int EPILOGUE_CAP = 18;
+	static const float SPEAKER_RANGE = 100;
+
+	protected ref array<ref RZ_BodyEntry> m_aBodies = {};
+	protected ref array<IEntity> m_aPlayers = {};
+	protected RZ_InfectedBudget m_Budget;		// weak: the spawner's
+	protected bool m_bCounted;					// the agent budget is recounted (Crawlers or Tribes on)
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_BodyBudget(RZ_InfectedBudget budget)
+	{
+		m_Budget = budget;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Each spawner tick, before the agent budget's recount: drop bodies that are gone or dead.
+	void Tick(array<IEntity> players, bool counted)
+	{
+		m_bCounted = counted;
+		m_aPlayers.Clear();
+		foreach (IEntity p : players)
+		{
+			m_aPlayers.Insert(p);
+		}
+
+		for (int i = m_aBodies.Count() - 1; i >= 0; i--)
+		{
+			RZ_BodyEntry b = m_aBodies[i];
+			if (!b.m_Entity)
+			{
+				m_aBodies.Remove(i);
+				continue;
+			}
+
+			int alive = RZ_Util.CountAlive(b.m_Entity);
+			if (alive > 0)
+			{
+				b.m_iAgents = alive;
+				b.m_vPos = RZ_Util.GetUnitPosition(b.m_Entity);
+			}
+			else if (b.m_iAgents >= 0 || !SCR_AIGroup.Cast(b.m_Entity))
+			{
+				// Dead, or a group that had members and lost them all
+				m_aBodies.Remove(i);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the agent budget's recount: every body in the ledger takes its agents near its spot.
+	void AddTo(RZ_InfectedBudget budget)
+	{
+		foreach (RZ_BodyEntry b : m_aBodies)
+		{
+			budget.Add(b.m_vPos, b.Agents());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a body of this kind may spawn at pos now. Without the agent budget (Crawlers and
+	//! Tribes off) only the kinds' own caps apply.
+	bool CanSpawn(string kind, vector pos)
+	{
+		if (kind == STORY)
+			return true;
+
+		if (kind == SPEAKER && (m_aPlayers.IsEmpty() || RZ_Util.NearestDistance(pos, m_aPlayers) > SPEAKER_RANGE))
+			return false;
+
+		if (kind == SCENE || kind == ASKER)
+		{
+			if (Count(SCENE) + Count(ASKER) >= SCENE_CAP)
+				return false;
+		}
+		else if (kind == ERRAND && Count(ERRAND) >= ERRAND_CAP)
+			return false;
+		else if (kind == STRANGER && Count(STRANGER) >= STRANGER_CAP)
+			return false;
+		else if (kind == EPILOGUE && Count(EPILOGUE) >= EPILOGUE_CAP)
+			return false;
+
+		if (!m_bCounted || !m_Budget)
+			return true;
+
+		return m_Budget.GetTotal() < m_Budget.GetBudget();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Enter a body that was just spawned, so it counts from now on.
+	void Add(string kind, IEntity e)
+	{
+		if (!e)
+			return;
+
+		foreach (RZ_BodyEntry known : m_aBodies)
+		{
+			if (known.m_Entity == e)
+				return;
+		}
+
+		RZ_BodyEntry b = new RZ_BodyEntry();
+		b.m_sKind = kind;
+		b.m_Entity = e;
+		b.m_vPos = e.GetOrigin();
+		m_aBodies.Insert(b);
+		if (m_bCounted && m_Budget)
+			m_Budget.Add(b.m_vPos, b.Agents());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Agents of one kind in the ledger; "" counts them all.
+	int Count(string kind)
+	{
+		int n = 0;
+		foreach (RZ_BodyEntry b : m_aBodies)
+		{
+			if (kind.IsEmpty() || b.m_sKind == kind)
+				n += b.Agents();
+		}
+
+		return n;
+	}
+}

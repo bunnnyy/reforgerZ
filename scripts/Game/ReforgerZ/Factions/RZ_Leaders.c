@@ -1508,10 +1508,16 @@ class RZ_Leaders
 		if (!local || local.IsStronghold())
 			return;
 
+		// The seat ledger (Director/RZ_MajorBudget.c): contracts never take a leader below 30
+		int shift = -2;
 		if (success)
-			ShiftLoyalty(local, 1, false);
-		else
-			ShiftLoyalty(local, -2, false);
+			shift = 1;
+
+		RZ_MajorBudget budget = RZ_MajorBudget.Get();
+		if (budget)
+			shift = budget.ContractLoyalty(local.m_iScore, local.IsStronghold(), shift);
+
+		ShiftLoyalty(local, shift, false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1990,7 +1996,8 @@ class RZ_Leaders
 
 		if (killer > 0)
 		{
-			m_GM.AddInfamy(killer, l.m_eFaction, m_Settings.m_iKillInfamy);
+			RZ_Deeds.AddKill(m_GM, killer, l.m_eFaction);
+			m_GM.AddInfamy(killer, l.m_eFaction, m_Settings.m_iKillInfamy, "killed a leader", RZ_RepFlag.ACT, "shot " + l.m_sName);
 			m_GM.NotifyPlayer(killer, RZ_Factions.GetName(l.m_eFaction), string.Format("Everyone will know who killed %1. (+%2 Infamy)", l.m_sName, m_Settings.m_iKillInfamy));
 		}
 	}
@@ -2202,6 +2209,11 @@ class RZ_Leaders
 				string key = string.Format("%1:%2", l.m_iId, playerId);
 				float last;
 				if (m_mGreeted.Find(key, last) && m_fClock - last < GREET_COOLDOWN)
+					continue;
+
+				// An unasked contact: the interruption budget may hold it for now (UI/RZ_NoticeLanes.c)
+				RZ_NoticeLanes lanes = RZ_NoticeLanes.Get();
+				if (lanes && !lanes.TryContact(playerId, RZ_EContact.LEADER))
 					continue;
 
 				m_mGreeted.Set(key, m_fClock);
@@ -2427,7 +2439,8 @@ class RZ_Leaders
 			if (killer > 0)
 			{
 				l.Remember(Ident(killer), MEM_CROSSED);
-				m_GM.AddInfamy(killer, l.m_eFaction, m_Settings.m_iKillInfamy);
+				RZ_Deeds.AddKill(m_GM, killer, l.m_eFaction);
+				m_GM.AddInfamy(killer, l.m_eFaction, m_Settings.m_iKillInfamy, "killed a leader", RZ_RepFlag.ACT, "shot " + l.m_sName);
 			}
 
 			AddHeadline(string.Format("%1 was wounded in %2. They're still in charge.", l.m_sName, l.m_sPlace));

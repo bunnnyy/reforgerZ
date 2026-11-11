@@ -241,14 +241,10 @@ these hold:
 - fewer than 2 errands held, no open offer;
 - the shared **interruption budget** has room (below).
 
-**The interruption budget.** One per player across systems. At most one *unasked* contact every 4
-minutes from:
-- radio contract offers (already one a minute: they take priority);
-- leaders' personal-job pings, a wanderer coming to you, and the Long Table host on the road;
-- errand offers, which come last.
-
-Critical guidance tips ignore it. A second errand offer waits at least 8 minutes. The budget only ever
-stops an offer; it never makes one.
+**The interruption budget** is built, as the notice lanes' Contact lane (one unasked contact every 4 minutes,
+errands last, a ceiling only): [DESIGN.md](../docs/DESIGN.md#notice-lanes). Errands ask it with
+`TryContact(player, ERRAND)`. On top of it, for errands: radio contract offers take priority, critical guidance tips
+ignore it, and a second errand offer waits at least 8 minutes.
 
 **Asked errands** ("Anything need doing?", "Need a hand?") skip the gaps and the open-offer rule. They
 still respect safety, and the giver says the real reason in their own voice:

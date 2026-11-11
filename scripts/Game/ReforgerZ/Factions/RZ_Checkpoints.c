@@ -507,8 +507,11 @@ class RZ_Checkpoints
 		bool armed = RZ_Util.IsArmed(ent);
 		bool canSurrender = m_Settings.m_bSurrender && m_GM.GetProfile(playerId).GetInfamy(RZ_EFaction.MILITARY) >= 15 && !armed;
 
-		// Known perk: waved through unsearched
-		if (!hunted && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
+		// Known perk: waved through unsearched. Not the Wildcard tier: they're searched like a
+		// stranger, because they don't trust you (Reputation > Wildcard at posts)
+		RZ_ReputationSettings rs = RZ_ReputationSettings.Get();
+		bool wildcard = tier == RZ_ETier.WILDCARD && rs.m_bWildcardPosts;
+		if (!hunted && !wildcard && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
 		{
 			if (dist <= m_Settings.m_fWarnRadius)
 			{
@@ -524,6 +527,8 @@ class RZ_Checkpoints
 			c.m_bWarned = true;
 			if (hunted)
 				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"We know who you are. Drop your weapons and walk to the barrier, slowly, if you want to talk. Otherwise turn around.\"");
+			else if (wildcard)
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "The sentry knows your face, and doesn't like what he knows. \"Arms out. Walk to the barrier. We search you today.\"");
 			else
 				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "A loudhailer: \"Checkpoint. Walk to the barrier and wait to be searched. Leave once you're there and we'll treat it as running.\"");
 		}
@@ -577,7 +582,12 @@ class RZ_Checkpoints
 		if (c.m_bAtBarrier && !hunted && dist > m_Settings.m_fStopRadius + 25)
 		{
 			c.m_bPunished = true;
-			m_GM.AddInfamy(playerId, RZ_EFaction.MILITARY, m_Settings.m_iRunInfamy);
+			// Running a Wildcard's search proves them right: more Infamy
+			int runInfamy = m_Settings.m_iRunInfamy;
+			if (wildcard)
+				runInfamy = rs.m_iWildcardRunInfamy;
+
+			m_GM.AddInfamy(playerId, RZ_EFaction.MILITARY, runInfamy, "ran a checkpoint", RZ_RepFlag.ACT);
 			if (hostility)
 				hostility.AddGrudge(playerId, RZ_EFaction.MILITARY, post.m_vPos);
 
@@ -612,16 +622,23 @@ class RZ_Checkpoints
 		}
 
 		m_mSurrenderAt.Set(ident, m_fClock);
-		int infamy = m_GM.GetProfile(playerId).GetInfamy(RZ_EFaction.MILITARY);
-		int amount = Math.Min(m_Settings.m_iSurrenderInfamy, infamy);
 		RZ_FoodHelper.TakeFood(ent, m_aContraband, 3);
-		m_GM.AddInfamy(playerId, RZ_EFaction.MILITARY, -amount);
+		// From the one forgiveness budget: once it's spent, surrender is the search and the hold
+		int amount = m_GM.Forgive(playerId, RZ_EFaction.MILITARY, m_Settings.m_iSurrenderInfamy, "surrender");
 		RZ_Hostility hostility = m_GM.GetHostility();
 		if (hostility)
 			hostility.StandDown(playerId, RZ_EFaction.MILITARY, m_Settings.m_fStandDownSeconds, true);
 
+		int minutes = Math.Max(1, RZ_Util.RoundToInt(m_Settings.m_fStandDownSeconds / 60));
+		if (amount <= 0)
+		{
+			m_GM.NotifyPlayer(playerId, title, string.Format("You go down on your knees with your hands where they can see them. A search, a long look, a name in a book, and nothing crossed out. %1 They'll hold their fire for %2 minutes: use them.",
+				m_GM.ForgiveSpentText(RZ_EFaction.MILITARY), minutes));
+			return true;
+		}
+
 		m_GM.NotifyPlayer(playerId, title, string.Format("You go down on your knees with your hands where they can see them. A search, an hour's talk about the rules, a name in a book. Then they let you go. Bastion Infamy -%1. They'll hold their fire for %2 minutes: use them.",
-			amount, Math.Max(1, RZ_Util.RoundToInt(m_Settings.m_fStandDownSeconds / 60))));
+			amount, minutes));
 		return true;
 	}
 
@@ -646,6 +663,10 @@ class RZ_Checkpoints
 
 		bool known = RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN);
 		int toll = Math.Max(0, m_Settings.m_iToll);
+		// The Wildcard tier pays danger money: the toll times Reputation > Wildcard toll
+		RZ_ReputationSettings rs = RZ_ReputationSettings.Get();
+		if (tier == RZ_ETier.WILDCARD && rs.m_bWildcardPosts)
+			toll = RZ_Util.RoundToInt(toll * Math.Max(1, rs.m_fWildcardTollMult));
 		if (!c.m_bWarned && dist <= m_Settings.m_fWarnRadius)
 		{
 			c.m_bWarned = true;

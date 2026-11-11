@@ -23,12 +23,12 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Zombie spawner for any zombie mod, bite detection (scratches and bites, protective clothing), the golden window and wound cleaning, staged infection, the Turned Player | [Zombies](DESIGN.md#zombies-bites-and-infection) |
 | Treatments from day one: antidote and stabiliser stocks scaled by research, Halcyon's trial dose, safehouse bite declarations, five low-grade meds with side effects | [Treatments](DESIGN.md#treatments) |
 | Light adaptation: specials after breakthroughs, one trait per stage, favourite spots | [Infection adapts](INFECTED.md#infection-adapts) |
-| The infected, phase 1 of the tribes design: the towns' crawlers (placed by the time of day, drifting to noise, the kill ledger, reinforcements from the buildings, stir and scavengers as data, giving up on locked doors), loose ones that walk to a town or a lair, heat hordes from the nearest town, the agent budget (100 agents, a share per player cluster, 8 a tick, the engine's active-AI limit at 160), no spawn in a player's sight within 300 m, runtime groups, per-member tracking (samples where a special fell), data parts with write-back, the silent kill, hit attribution, `/tribes` and the status line; both switches off gives the old spawner | [INFECTED.md](INFECTED.md) |
+| The infected, phase 1 of the tribes design: the towns' crawlers (placed by the time of day, drifting to noise, the kill ledger, reinforcements from the buildings, stir and scavengers as data, giving up on locked doors), loose ones that walk to a town or a lair, heat hordes from the nearest town, the agent budget (100 agents, a share per player cluster, 8 a tick, the engine's active-AI limit at 160; also the one body budget, with escorts and wanderers counted in it), no spawn in a player's sight within 300 m, runtime groups, per-member tracking (samples where a special fell), data parts with write-back, the silent kill, hit attribution, `/tribes` and the status line; both switches off gives the old spawner | [INFECTED.md](INFECTED.md) |
 | The Perimeter: warning and kill zones, one drone per player, sealed road checkpoints | [The Perimeter](DESIGN.md#the-perimeter) |
 | Night, rain, fog, fog banks and storms; the day's length (4 real hours by default) and the time of day kept across restarts; the power grid and power surges; the radio station; the government broadcast | [Time and environment](DESIGN.md#time-and-environment) |
 | 13 backgrounds (5 unlocked through Legacy), personal goals, Legacy points | [Backgrounds](DESIGN.md#backgrounds-and-personal-goals) |
-| Fame, Infamy and Favor; tiers; rivals; amends (contracts, paying Favor, surrender); quartermaster shops; every perk (Requisition, Fire Mission, the fence, the bounty board, Halcyon's medic and immunity booster, the Haven Champion's Safe Harbour and Remembered...); hunter squads; bounties; reputation clues | [REPUTATION.md](REPUTATION.md) |
-| Bastion checkpoints and Red Hand roadblocks inside the Zone (unsearched passage, tolls, searches), surrender, camps that warn and refuse, safe zones | [REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps) |
+| Fame, Infamy and Favor; tiers; the 16 reputation names with what each counts as (the card, the debounced change notice, `/rep` for admins); Earned Fame and Feared; the credit rule at 75 Fame; rivals; amends (contracts, paying Favor, surrender) from one forgiveness budget of 30 a life; quartermaster shops; every perk (Requisition, Fire Mission, the fence, the bounty board, Halcyon's medic and immunity booster, the Haven Champion's Safe Harbour and Remembered...); hunter squads; bounties; reputation clues | [REPUTATION.md](REPUTATION.md) |
+| Bastion checkpoints and Red Hand roadblocks inside the Zone (unsearched passage, tolls, searches; the Wildcard tier searched and tolled double), surrender, camps that warn and refuse, safe zones | [REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps) |
 | Per-player AI hostility (hidden faction variants), retaliation, disguises, Outlaw fallback | [REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you) |
 | Territory: strongholds, outposts, the territory tick, faction strength | [Territory](DESIGN.md#territory) |
 | Camp life: each faction's scenery round its holdings, safehouses, field stations and road posts (seeded, any map, only near players, nothing saved; a guard deletes anything usable and the scans ignore it), and its people's routines at the 3 places nearest players (sentry, patrol, sit, work, gather, stroll, the courier, sleep as a despawn; Bastion's shift change and roll, the Haven's supper), with one extra person per live place. The 21 compositions and the kits are still to build in Workbench | [Camp life](DESIGN.md#camp-life), [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits) |
@@ -43,6 +43,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | The Long Table: some seasons, one small family in a farmhouse past the emptiest village; data with bodies only near players, capped takings (never from a safehouse, a holding or a player) and their tells, suspicion and rumours, the host on the road, the guest rule, dealings (eat, a jar, declare a bite), found out with each faction's reaction, moving once, broken up; its two questlines, The House That Went Quiet and A Place at the Table | [The Long Table](DESIGN.md#the-long-table), [REPUTATION.md](REPUTATION.md#the-long-table) |
 | World facts: one layer content reads (the cure and the epilogue, stage, Bastion presence, the day, night, who holds a town and a filtered town pick, safehouses, live leader names), season flags shared with the questlines, canon facts made once a season, claims so two stories don't use the same house, leader or wanderer, `Fill` tokens for text (briefs filled when shown), `Changed` for news, one "can it run now" check every mission starter uses, and missions called off when the world makes them pointless | [World facts](DESIGN.md#world-facts) |
 | The epilogue after the cure: the Perimeter stands down (no shots; whoever walks up to the line is turned back; the gates open with the wipe), research stops and running research and line jobs are called off, and the broadcast, guidance and the factions' lines follow | [The Perimeter](DESIGN.md#the-perimeter), [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
+| The shared engine (phase 1 of [the plan](../designs/PLAN.md#phases-18)): the clocks (season days, `RZ_GameTime` windows in real minutes), one check helper (Trust, Fear, threats, the price table, Pass / Short / Refused) and the ways through a job keyed by identity (the approach enum with PRESS, TRADE, TRICK and LEAVE), the deeds store (life and season), world memory (reasons, the signal ring, the town log, world records), the callback queue, notice lanes and the interruption budget, the marks spawner, the season budget in lanes with the seat ledger, and the set-piece calendar. Contracts already draw on the budget and leaders' pings and the Long Table's host on the lanes; most writers and readers come with the later phases | [The shared engine](DESIGN.md#the-shared-engine) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
 | The land grid (on with Zombies > Tribes): water, height, trees, buildings, roads and inferred bridges in 250 m squares, ridges, valleys, forests, fields, lair candidates, wild land and no-lair overlays, read once and cached, tribe slots at 1 per 5 km² with an override; measured on Arland, Everon and Cain (`tools/land_survey/`) | [The land](INFECTED.md#the-land) |
 | World interactions: loose loot in houses (rolled as data, put out on furniture and floors only near players, taken with vanilla's Pick up, refilled after an hour; keys, letters and mission items lie loose too), searching car boots and bodies, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars (only ever found: two or three missing parts, a wrench or toolkit to fit them, long loud hotwiring that can fail, rare keys; the tyre and planks are carryable items), crafting, traps, generators, fire (a thrown molotov, or a full fuel can in your hands at the doorway), water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
@@ -100,9 +101,12 @@ The build-review fixes are done. Everything below is approved. The order of the 
   the cure's finale, the epilogue week, dialogue, errands, the mission style, reputation names,
   disguise and tone) are in [designs/](../designs/README.md). Their build order, from step 0 (now)
   to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
-- Already built for them: the cure's 90% hook (`IsCureFinale`, `AddFinaleResearch`;
-  [Cure research](DESIGN.md#cure-research-and-the-seasons-end)), phase 1 of the tribes (the towns' crawlers, the land grid in use, the agent budget and the
-  plumbing, [INFECTED.md](INFECTED.md)), one held waypoint per group, and `tools/tribe_sim.py`,
+- Already built for them: phase 1, the shared engine and reputation's names
+  ([DESIGN.md](DESIGN.md#the-shared-engine), [REPUTATION.md](REPUTATION.md#reputations)), with one
+  body budget shared with the tribes' agent budget; the cure's 90% hook (`IsCureFinale`,
+  `AddFinaleResearch`; [Cure research](DESIGN.md#cure-research-and-the-seasons-end)), phase 1 of the
+  tribes (the towns' crawlers, the land grid in use, the agent budget and the plumbing,
+  [INFECTED.md](INFECTED.md)), one held waypoint per group, and `tools/tribe_sim.py`,
   which simulates the tribes as data over a season at 2, 5 and 10 players on the wild land the land
   survey measured, and prints the numbers it tuned against the design.
 
@@ -191,6 +195,11 @@ In this order, because later ones depend on earlier ones:
     in danger, do the map icons sit on their
     spots while panning and zooming (once the map layer is set up), and does the deploy menu grey
     out locked loadouts ([UI.md](UI.md))?
+18. **Reputation names and the forgiveness budget:** do new players still understand "needs
+    Trusted" when the card says Favourite Rascal? Does 30 a life feel fair to a long-lived loyalist
+    whose rival shares pile up, and does the credit rule's Fame cost read as fair at Champion? Does
+    the Wildcard search feel like the company you keep, or a nuisance? Does the contracts lane of
+    the season budget ever clip on a busy evening (the `Budget:` log lines)?
 
 ## Dropped
 
@@ -212,3 +221,4 @@ In this order, because later ones depend on earlier ones:
 | Ambient Zombies | Overlaps the ReforgerZ spawner |
 | Sleep and time skip | Out of scope by design |
 | A trait-points system on top of backgrounds | Not wanted; backgrounds, personal goals and Legacy unlocks carry character choice |
+| Danger money on shop prices for mixed reputations | A name opens and costs nothing; the Wildcard tier pays at the posts (the search, the double toll) instead |

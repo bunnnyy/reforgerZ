@@ -11,6 +11,7 @@ class RZ_Director
 	protected ref array<ref RZ_StageSettings> m_aStages = {};
 	protected RZ_EOutbreakStage m_eStage = RZ_EOutbreakStage.EARLY_OUTBREAK;
 	protected float m_fStageMinutes;
+	protected float m_fPlayedMinutes = -1;	// minutes played since the outbreak began (the season day reads it); -1 = not known yet
 
 	protected static const float NEIGHBOUR_DISTANCE = 2500;
 	protected ref array<ref array<int>> m_aNeighbours = {};	// per settlement, the others within NEIGHBOUR_DISTANCE
@@ -64,16 +65,47 @@ class RZ_Director
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Minutes played since the outbreak began, counted on the tick (only while someone plays). An
+	//! older save without the count starts from GetTotalMinutes (docs/DESIGN.md, "Clocks").
+	float GetPlayedMinutes()
+	{
+		if (m_fPlayedMinutes < 0)
+			return GetTotalMinutes();
+
+		return m_fPlayedMinutes;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Played minutes in one season day: the first three stages' set lengths / 30 (/ season speed),
+	//! 480 with the built-in stages (about one real day at the 45-day pacing).
+	float GetSeasonDayMinutes()
+	{
+		float total = 0;
+		for (int i = 0; i < RZ_EOutbreakStage.AFTERMATH && i < m_aStages.Count(); i++)
+		{
+			total += m_aStages[i].m_fDurationMinutes;
+		}
+
+		if (total <= 0)
+			total = 14400;
+
+		return Math.Max(1, total / 30 / m_GM.GetSeasonSpeed());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_StageSettings GetStageSettings()
 	{
 		return m_aStages[m_eStage];
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void Restore(RZ_EOutbreakStage stage, float minutes)
+	void Restore(RZ_EOutbreakStage stage, float minutes, float played = -1)
 	{
 		m_eStage = Math.ClampInt(stage, RZ_EOutbreakStage.EARLY_OUTBREAK, RZ_EOutbreakStage.AFTERMATH);
 		m_fStageMinutes = Math.Max(0, minutes);
+		m_fPlayedMinutes = played;
+		if (played <= 0)
+			m_fPlayedMinutes = -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -83,7 +115,11 @@ class RZ_Director
 		if (!online)
 			return;
 
+		if (m_fPlayedMinutes < 0)
+			m_fPlayedMinutes = GetTotalMinutes();
+
 		m_fStageMinutes += dt / 60;
+		m_fPlayedMinutes += dt / 60;
 		SpreadInfection(dt);
 		CheckStageAdvance();
 	}

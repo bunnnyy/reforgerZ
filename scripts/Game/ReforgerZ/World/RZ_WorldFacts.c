@@ -13,6 +13,8 @@
 //!   wanderer at once. Runtime only: after a restart, running content claims again.
 //! - Gossip: rumours wanderers and leaders repeat for some hours (Changed(), questline endings).
 //!   Saved.
+//! - World memory (Memory(), World/RZ_WorldMemory.c): reasons, the signal ring, the town log and
+//!   world records. Saved, wiped with the season.
 //!
 //! Server only. Reached as gm.GetFacts() or RZ_WorldFacts.Get() (never null: without a game mode
 //! every query answers with its default).
@@ -108,6 +110,9 @@ class RZ_WorldFactsSave
 	ref array<string> canonValues = {};
 	ref array<string> rumours = {};
 	ref array<float> rumourUntil = {};
+	// World memory (World/RZ_WorldMemory.c): reasons, the signal ring, the town log, world records.
+	// Older saves have none: it starts empty
+	ref RZ_WorldMemorySave memory;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -143,11 +148,19 @@ class RZ_WorldFacts
 	protected ref array<string> m_aRumours = {};
 	protected ref array<float> m_aRumourUntil = {};
 	protected ref RZ_WorldFactsSave m_Restored;
+	protected ref RZ_WorldMemory m_Memory = new RZ_WorldMemory();
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_WorldFacts(RZ_GameModeComponent gm)
 	{
 		m_GM = gm;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the Zone remembers this season: reasons, the signal ring, the town log, world records.
+	RZ_WorldMemory Memory()
+	{
+		return m_Memory;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -203,6 +216,8 @@ class RZ_WorldFacts
 					m_aRumourUntil.Insert(m_Restored.rumourUntil[r]);
 				}
 			}
+
+			m_Memory.Restore(m_Restored.memory);
 		}
 
 		m_Restored = null;
@@ -236,6 +251,7 @@ class RZ_WorldFacts
 			data.rumourUntil.Insert(m_aRumourUntil[i]);
 		}
 
+		data.memory = m_Memory.Save();
 		return data;
 	}
 
@@ -251,6 +267,7 @@ class RZ_WorldFacts
 		{
 			m_fClock += dt;
 			ExpireRumours();
+			m_Memory.Tick();
 		}
 
 		RZ_CureResearch cure = m_GM.GetCure();

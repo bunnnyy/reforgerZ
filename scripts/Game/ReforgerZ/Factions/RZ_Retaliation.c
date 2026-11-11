@@ -295,6 +295,8 @@ class RZ_Retaliation
 	//! A little Infamy for a kill, at most the hourly cap per player and faction.
 	protected void KillInfamy(int playerId, RZ_EFaction f)
 	{
+		// The kill tally counts every kill, capped Infamy or not (Core/RZ_Deeds.c)
+		RZ_Deeds.AddKill(m_GM, playerId, f);
 		int amount = m_Settings.m_iRetaliationKillInfamy;
 		if (amount <= 0)
 			return;

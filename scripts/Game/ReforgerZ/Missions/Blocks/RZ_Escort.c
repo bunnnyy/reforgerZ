@@ -487,9 +487,18 @@ class RZ_Escort
 		if (RZ_Util.IsWater(at))
 			at = RZ_Mission.LandPointNear(at, 3, 30);
 
+		// The one body budget: a mission's people are always allowed, and counted so the infected
+		// leave room for them
+		RZ_Shared shared = gm.GetShared();
+		if (shared && !shared.CanSpawnBody(RZ_BodyBudget.STORY, at))
+			return;
+
 		IEntity e = RZ_Util.SpawnPrefab(prefab, at, Math.RandomFloat(0, 360));
 		if (!e)
 			return;
+
+		if (shared)
+			shared.AddBody(RZ_BodyBudget.STORY, e);
 
 		m_Body = e;
 		m_bHasBody = true;

@@ -71,6 +71,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_NOTE = 0;
 	static const int CMD_CLEAR_BOARD = 1;
 	static const int CMD_CLEAR_ALL = 2;
+	static const int CMD_REP = 3;		// "/rep <name>": an admin's reputation read-out (Factions/RZ_RepNames.c)
 	static const int CMD_TRIBES = 4;	// /tribes (admins): the infected, to the server log
 
 	//------------------------------------------------------------------------------------------------
@@ -506,6 +507,12 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				if (board)
 					board.Clear(playerId, true);
+				break;
+			}
+			case CMD_REP:
+			{
+				if (gm.GetRepWatch())
+					gm.GetRepWatch().Readout(playerId, note);
 				break;
 			}
 			case CMD_TRIBES:
