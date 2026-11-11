@@ -212,6 +212,33 @@ class RZ_RedHandQuest
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Any present leader of `faction` but the stronghold, whatever their loyalty; `preferTraits`
+	//! (RZ_ELeaderTrait bits) twice as likely. Null if none.
+	static RZ_Leader PickAny(RZ_GameModeComponent gm, int faction, int preferTraits)
+	{
+		if (!gm.GetLeaders() || !RZ_Factions.IsValid(faction))
+			return null;
+
+		array<RZ_Leader> all = {};
+		gm.GetLeaders().GetFactionLeaders(faction, all);
+		array<RZ_Leader> options = {};
+		foreach (RZ_Leader l : all)
+		{
+			if (l.IsStronghold() || l.m_iHeldBy >= 0)
+				continue;
+
+			options.Insert(l);
+			if (preferTraits != 0 && HasAnyTrait(l, preferTraits))
+				options.Insert(l);
+		}
+
+		if (options.IsEmpty())
+			return null;
+
+		return options.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static bool HasAnyTrait(RZ_Leader l, int traitBits)
 	{
 		for (int t = 0; t < RZ_Leaders.TRAIT_COUNT; t++)
