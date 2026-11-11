@@ -1,0 +1,528 @@
+// Test-only (not part of the mod): the world state the runtime test forces so that every built
+// questline starts and ends once, and so that Convoy Escort, Hijack the Convoy, Mobile Lab and the
+// Locked Bunker can start in a fresh test world (designs/PLAN.md, step 0.4). Each forced change is
+// logged as "RZT forced: ...".
+
+modded class RZ_Questlines
+{
+	//! No questline starts by itself: the test begins each one in turn.
+	void RZT_NoAutoStart()
+	{
+		m_Settings.m_fStartChance = 0;
+	}
+
+	//! Ends every running questline (anything the mission phase or a stuck test left behind).
+	void RZT_EndAll()
+	{
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (run.m_bDone)
+				continue;
+
+			run.m_iEnding = -1;
+			run.m_sEndText = "";
+			EndRun(run);
+		}
+	}
+
+	//! Ends one running questline, if it still runs.
+	void RZT_End(string key)
+	{
+		RZ_QuestRun run = FindRunByKey(key);
+		if (!run || run.m_bDone)
+			return;
+
+		run.m_iEnding = -1;
+		run.m_sEndText = "";
+		EndRun(run);
+	}
+}
+
+modded class RZ_Seasons
+{
+	//! The season started `days` real days earlier (The Book waits for the first real day).
+	void RZT_Age(int days)
+	{
+		if (m_iStartUnix > 0)
+			m_iStartUnix = m_iStartUnix - days * DAY;
+	}
+}
+
+modded class RZ_FactionLife
+{
+	void RZT_SetNeed(int f, int need)
+	{
+		if (RZ_Factions.IsValid(f))
+			m_aNeed[f] = need;
+	}
+}
+
+modded class RZ_LongTable
+{
+	//! A house this season, whatever the roll said. False if the Long Table is off or the map has
+	//! no place for one.
+	bool RZT_Ensure()
+	{
+		if (!m_Settings || !m_Settings.m_bEnabled)
+			return false;
+
+		if (!Exists())
+		{
+			Found();
+			Publish();
+		}
+
+		return Exists();
+	}
+
+	//! The host has fed this player twice and offers them a place (A Place at the Table).
+	bool RZT_Offer(int playerId)
+	{
+		RZ_TableMemory mem = Memory(playerId);
+		if (!mem)
+			return false;
+
+		mem.m_iMeals = 2;
+		mem.m_iFlags = 0;
+		m_sOfferIdent = mem.m_sIdent;
+		return true;
+	}
+
+	void RZT_ClearOffer()
+	{
+		m_sOfferIdent = "";
+	}
+}
+
+modded class RZ_Wanderers
+{
+	//! A living, free wanderer of this role: one is given it if none has it.
+	bool RZT_EnsureRole(RZ_EWandererRole role)
+	{
+		RZ_Wanderer pick;
+		foreach (RZ_Wanderer w : m_aList)
+		{
+			if (!w.m_bAlive || w.m_iHeldBy >= 0)
+				continue;
+
+			if (w.m_eRole == role)
+				return true;
+
+			if (!pick)
+				pick = w;
+		}
+
+		if (!pick)
+			return false;
+
+		pick.m_eRole = role;
+		return true;
+	}
+}
+
+modded class RZ_CureResearch
+{
+	void RZT_SetProgress(float progress)
+	{
+		m_fProgress = progress;
+		m_GM.OnCureChanged();
+	}
+
+	void RZT_StartStand()
+	{
+		if (!m_bFinalStand && !m_bCured)
+			StartFinalStand();
+	}
+
+	//! Ends a stand the test started, and puts research back where it was.
+	void RZT_StopStand(float progress)
+	{
+		m_bFinalStand = false;
+		m_bGateOpen = false;
+		m_fProgress = progress;
+		m_GM.OnCureChanged();
+	}
+}
+
+class RZT_Prep
+{
+	// Vanilla stand-ins, as the mod's own supply prefabs use (Prefabs/ReforgerZ/Supply/)
+	static const string BASTION_TRUCK = "{81FDAD5EB644CC3D}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport_covered.et";
+	static const string BASTION_CREW = "{3BF36BDEEB33AEC9}Prefabs/Groups/BLUFOR/Group_US_SentryTeam.et";
+	static const string REDHAND_TRUCK = "{C75DAB159B434B77}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_cargo_CIV_grey.et";
+	static const string HALCYON_TRUCK = "{43C4AF1EEBD001CE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_ambulance.et";
+	static const string KEYPAD = "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et";
+
+	// The hour the questline phase holds: dusk (The Edge of Town), night (Await Relief's tape, the
+	// Census's curfew), the nightly call (19:00-22:30) and supper at the Long Table all at once
+	static const float HOUR = 20.75;
+
+	protected static float s_fCureBefore = -1;
+
+	// ================================================================ The mission phase
+	//------------------------------------------------------------------------------------------------
+	//! Before the mission phase starts a mission of type t: what it needs that a fresh test world lacks.
+	static void BeforeMission(RZ_GameModeComponent gm, typename t)
+	{
+		string name = t.ToString();
+		if (name == "RZ_Mission_ConvoyEscort" || name == "RZ_Mission_HijackTheConvoy")
+		{
+			// Both ride Bastion's next supply truck: Bastion's trucks must run
+			RZ_SupplySettings ss = gm.GetSupplySettings();
+			if (ss && ss.m_sBastionTruck.IsEmpty())
+				ss.m_sBastionTruck = BASTION_TRUCK;
+			if (ss && ss.m_sBastionCrew.IsEmpty())
+				ss.m_sBastionCrew = BASTION_CREW;
+
+			Print("RZT forced: Bastion supply truck and crew for " + name);
+			return;
+		}
+
+		if (name == "RZ_Mission_MobileLab")
+		{
+			// A quiet town 1-4 km from the lab, and a truck to drive there
+			RZ_SupplySettings labSupply = gm.GetSupplySettings();
+			if (labSupply && labSupply.m_sHalcyonTruck.IsEmpty())
+				labSupply.m_sHalcyonTruck = HALCYON_TRUCK;
+
+			int calmed = 0;
+			if (gm.HasLab())
+			{
+				vector lab = gm.GetLabPosition();
+				foreach (RZ_Settlement s : gm.GetSettlements())
+				{
+					float d = RZ_Util.DistXZ(lab, s.m_vCenter);
+					if (d >= 1000 && d <= 4000 && s.m_fInfection > 25)
+					{
+						s.m_fInfection = 15;
+						calmed++;
+					}
+				}
+			}
+
+			Print(string.Format("RZT forced: Halcyon truck, %1 towns 1-4 km from the lab at infection 15, for %2", calmed, name));
+			return;
+		}
+
+		if (name == "RZ_Event_LockedBunker")
+		{
+			// The keypad prop, and an empty town that isn't overrun
+			gm.RZT_SetKeypad(KEYPAD);
+			foreach (RZ_Settlement town : gm.GetSettlements())
+			{
+				if (town.m_fInfection > 90)
+					town.m_fInfection = 60;
+			}
+
+			Print("RZT forced: a keypad prefab and no town above 90 infection, for " + name);
+		}
+	}
+
+	// ================================================================ The questline phase
+	//------------------------------------------------------------------------------------------------
+	//! Once, before the first questline: the conditions most of them share.
+	static void BeforeQuestlines(RZ_GameModeComponent gm)
+	{
+		RZ_Questlines q = gm.GetQuestlines();
+		q.RZT_NoAutoStart();
+		q.RZT_EndAll();
+
+		// No town overrun (The Well Story's village, The List's farm, every stage's town)
+		foreach (RZ_Settlement s : gm.GetSettlements())
+		{
+			s.m_fInfection = 20;
+		}
+
+		// A real day into the season (The Book)
+		if (gm.GetSeasons())
+			gm.GetSeasons().RZT_Age(2);
+
+		// Every safehouse full enough and hungry (The List, The Price of the Door, Short Weight,
+		// The Edge of Town, The Census, The Other Two)
+		RZ_Safehouses houses = gm.GetSafehouses();
+		int houseCount = 0;
+		if (houses)
+		{
+			for (int i = 0; i < houses.Count(); i++)
+			{
+				RZ_Safehouse h = houses.Get(i);
+				if (!h)
+					continue;
+
+				h.m_iPopulation = Math.Max(h.m_iPopulation, 6);
+				h.m_bShort = true;
+				h.m_iLost = Math.Max(h.m_iLost, 1);
+				houseCount++;
+			}
+		}
+
+		// Every seat but the strongholds Independent: free council heads (The List), a commander
+		// with his own agenda (Await Relief), a field lead (The Three Weeks)
+		int seats = 0;
+		RZ_Leaders leaders = gm.GetLeaders();
+		if (leaders)
+		{
+			for (int f = 0; f < RZ_Factions.COUNT; f++)
+			{
+				array<RZ_Leader> list = {};
+				leaders.GetFactionLeaders(f, list);
+				foreach (RZ_Leader l : list)
+				{
+					if (l.IsStronghold())
+						continue;
+
+					l.m_iScore = 40;
+					l.m_eLoyalty = RZ_ELoyalty.INDEPENDENT;
+					seats++;
+				}
+			}
+		}
+
+		// A Long Table this season (its two questlines), a scavenger on the roads (The Three Weeks)
+		bool table = false;
+		if (gm.GetLongTable())
+			table = gm.GetLongTable().RZT_Ensure();
+
+		bool scavenger = false;
+		if (gm.GetWanderers())
+			scavenger = gm.GetWanderers().RZT_EnsureRole(RZ_EWandererRole.SCAVENGER);
+
+		// A Red Hand van (Cargo)
+		RZ_SupplySettings ss = gm.GetSupplySettings();
+		if (ss && ss.m_sRedHandTruck.IsEmpty())
+			ss.m_sRedHandTruck = REDHAND_TRUCK;
+
+		HoldHour();
+		Print(string.Format("RZT forced: questlines by the test only, towns at infection 20, season aged 2 days, %1 safehouses full and hungry, %2 seats Independent, Long Table %3, scavenger %4, Red Hand van, %5:00 or so",
+			houseCount, seats, table, scavenger, HOUR));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The order the test runs them in: A Place at the Table before The House That Went Quiet
+	//! (which exposes the house), and Authors last (it needs the final stand).
+	static void Order(notnull array<string> keys)
+	{
+		array<string> last = {"table", "authors"};
+		foreach (string key : last)
+		{
+			int idx = keys.Find(key);
+			if (idx >= 0)
+			{
+				keys.RemoveOrdered(idx);
+				keys.Insert(key);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Right before Begin(key): what its CanStart reads that the shared conditions don't cover.
+	static void BeforeQuest(RZ_GameModeComponent gm, string key)
+	{
+		RZ_Questlines q = gm.GetQuestlines();
+		HoldHour();
+		switch (key)
+		{
+			case "walk":
+			{
+				// The Walk Him Out contract was done (its CanStart's flag)
+				q.SetWorldFlag("walk.contract", 1);
+				Print("RZT forced: walk.contract");
+				break;
+			}
+			case "census":
+			{
+				// Bastion short of supplies
+				if (gm.GetFactionLife())
+					gm.GetFactionLife().RZT_SetNeed(RZ_EFaction.MILITARY, RZ_ENeed.SUPPLIES);
+				Print("RZT forced: Bastion needs supplies");
+				break;
+			}
+			case "pilot":
+			{
+				// Someone kept the LZ on a Last Helicopter run, the pilot lives, the helicopter is up
+				q.SetWorldFlag("pilot.lz_kept", 1);
+				q.SetWorldFlag("pilot.dead", 0);
+				q.SetWorldFlag("pilot.down_until", 0);
+				Print("RZT forced: pilot.lz_kept");
+				break;
+			}
+			case "weeks":
+			{
+				// Patient Zero's ledger was solved
+				q.SetWorldFlag("weeks.records", 1);
+				Print("RZT forced: weeks.records");
+				break;
+			}
+			case "place":
+			{
+				// The host has fed the tester twice and offers a place
+				bool offered = false;
+				if (gm.GetLongTable())
+					offered = gm.GetLongTable().RZT_Offer(RZT_Fake.ID);
+				Print(string.Format("RZT forced: the Long Table's offer to the tester (%1)", offered));
+				break;
+			}
+			case "table":
+			{
+				// The List found the farm
+				q.SetWorldFlag("list.found_table", 1);
+				Print("RZT forced: list.found_table");
+				break;
+			}
+			case "authors":
+			{
+				// Research past half (and past three quarters, for Ready the lab)
+				if (gm.GetCure())
+				{
+					s_fCureBefore = gm.GetCure().m_fProgress;
+					gm.GetCure().RZT_SetProgress(80);
+				}
+				Print("RZT forced: research at 80 percent");
+				break;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void AfterBegin(RZ_GameModeComponent gm, string key)
+	{
+		if (key == "place" && gm.GetLongTable())
+			gm.GetLongTable().RZT_ClearOffer();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every second while the questline runs.
+	static void Tick(RZ_GameModeComponent gm, string key, RZ_QuestRun run)
+	{
+		HoldHour();
+		// Authors' last stages wait for the final stand
+		if (key == "authors" && run.m_iStage == RZ_Quest_Authors.S_STAND_WAIT && gm.GetCure() && !gm.GetCure().IsFinalStand())
+		{
+			gm.GetCure().RZT_StartStand();
+			Print("RZT forced: the final stand, for Authors");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the questline ended, fizzled or was given up on.
+	static void AfterQuest(RZ_GameModeComponent gm, string key)
+	{
+		if (key == "authors" && gm.GetCure() && s_fCureBefore >= 0)
+		{
+			gm.GetCure().RZT_StopStand(s_fCureBefore);
+			Print(string.Format("RZT forced: the stand stopped, research back to %1 percent", s_fCureBefore));
+			s_fCureBefore = -1;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The outcome the test reports for a stage mission it ends as won, where "done" alone loops
+	//! the stage. -1: none (OUTCOME_DONE moves the story on). Read from each questline's Next().
+	static int Outcome(string key, int stage)
+	{
+		switch (key)
+		{
+			case "haven_short_weight":
+			{
+				if (stage == RZ_Quest_ShortWeight.S_ASK)
+					return RZ_Quest_ShortWeight.OUT_LEARNED;
+				if (stage == RZ_Quest_ShortWeight.S_HANDOVER)
+					return RZ_Quest_ShortWeight.OUT_STOPPED;
+				break;
+			}
+			case "orders":
+			{
+				if (stage == RZ_Quest_AwaitRelief.S_TAPE)
+					return RZ_Quest_AwaitRelief.OUT_LOOP;
+				if (stage == RZ_Quest_AwaitRelief.S_RUNNER)
+					return RZ_Quest_AwaitRelief.OUT_PAGE;
+				if (stage == RZ_Quest_AwaitRelief.S_WHO)
+					return RZ_Quest_AwaitRelief.OUT_STOVE;
+				break;
+			}
+			case "census":
+			{
+				if (stage == RZ_Quest_Census.S_COUNT)
+					return RZ_Quest_Census.OUT_COUNTED;
+				if (stage == RZ_Quest_Census.S_CARDS)
+					return RZ_Quest_Census.OUT_CARDS;
+				if (stage == RZ_Quest_Census.S_CURFEW)
+					return RZ_Quest_Census.OUT_ENFORCED;
+				if (stage == RZ_Quest_Census.S_RAID)
+					return RZ_Quest_Census.OUT_DEFENDED;
+				if (stage == RZ_Quest_Census.S_CALL)
+					return RZ_Quest_Census.OUT_TRUE;
+				break;
+			}
+			case "pilot":
+			{
+				if (stage == RZ_Quest_LastPilot.S_FUEL)
+					return RZ_Quest_LastPilot.OUT_FUELLED;
+				if (stage == RZ_Quest_LastPilot.S_FLIGHT)
+					return RZ_Quest_LastPilot.OUT_FLOWN;
+				if (stage == RZ_Quest_LastPilot.S_WRECK)
+					return RZ_Quest_LastPilot.OUT_BOX;
+				if (stage == RZ_Quest_LastPilot.S_DECIDE)
+					return RZ_Quest_LastPilot.OUT_GROUNDED;
+				break;
+			}
+			case "book":
+			{
+				if (stage == RZ_Quest_TheBook.S_WHO)
+					return RZ_Quest_TheBook.OUT_NAMED;
+				if (stage == RZ_Quest_TheBook.S_FIND)
+					return RZ_Quest_TheBook.OUT_CAUGHT;
+				if (stage == RZ_Quest_TheBook.S_READ)
+					return RZ_Quest_TheBook.OUT_READ;
+				if (stage == RZ_Quest_TheBook.S_PAGE)
+					return RZ_Quest_TheBook.OUT_RETURNED;
+				break;
+			}
+			case "cargo":
+			{
+				if (stage == RZ_Quest_Cargo.S_DRIVER)
+					return RZ_Quest_Cargo.OUT_MET;
+				if (stage == RZ_Quest_Cargo.S_LOAD)
+					return RZ_Quest_Cargo.OUT_DELIVERED;
+				if (stage == RZ_Quest_Cargo.S_BUYS)
+					return RZ_Quest_Cargo.OUT_KNOWN;
+				if (stage == RZ_Quest_Cargo.S_TELL)
+					return RZ_Quest_Cargo.OUT_PURGE;
+				break;
+			}
+			case "well":
+			{
+				if (stage == RZ_Quest_WellStory.S_COLLECT)
+					return RZ_Quest_WellStory.OUT_REFUSED;
+				if (stage == RZ_Quest_WellStory.S_WHY)
+					return RZ_Quest_WellStory.OUT_DUES;
+				break;
+			}
+			case "authors":
+			{
+				if (stage == RZ_Quest_Authors.S_STAND)
+					return RZ_Quest_Authors.OUT_WON;
+				break;
+			}
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keeps the clock at HOUR, give or take ten minutes (test only: the mod never moves time).
+	static void HoldHour()
+	{
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world)
+			return;
+
+		TimeAndWeatherManagerEntity tm = world.GetTimeAndWeatherManager();
+		if (!tm)
+			return;
+
+		float h = tm.GetTimeOfTheDay();
+		if (h < HOUR - 0.15 || h > HOUR + 0.2)
+			tm.SetTimeOfTheDay(HOUR); // VERIFY: the server's clock follows (base game: SCR_FPS_Autotest)
+	}
+}

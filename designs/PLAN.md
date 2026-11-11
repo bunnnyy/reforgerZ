@@ -72,10 +72,10 @@ Checked against the code on 2026-11-11 (branch `claude/sleepy-volta-nwm433`).
 | Today's epilogue: the line stands down, research stops, the gates open with the wipe. Its default is 48 hours (`Core/RZ_Seasons.c`, the **Epilogue** attribute) | `Core/RZ_Seasons.c` |
 | The build-review fixes (shops, people, tablets, the server-side loadout lock) and the retaliation watch fix | commits cfbcff4, 00ff654 |
 
-**One honest caveat.** The last runtime test started none of the 15 questlines, because their start conditions
-weren't forced. Convoy Escort, Hijack the Convoy, Mobile Lab and the
-Locked Bunker didn't start either. The majors and the finale are built on that engine and reuse those
-missions, so that test comes first (step 0.4).
+**One honest caveat.** The last runtime test started six of the 15 questlines and ended two, because their start
+conditions weren't forced. Convoy Escort, Hijack the Convoy, Mobile Lab and the Locked Bunker didn't start either.
+The majors and the finale are built on that engine and reuse those missions, so that test comes first (step 0.4:
+the forcing is now in the test, and waits for its next server run).
 
 ---
 
@@ -609,7 +609,7 @@ runtime test after cross-system changes, and the docs in the same commit.**
 | 0.1 | **Get it running** (ROADMAP "Get it playable"): the Workbench project, prefabs from the generator, a 2-hour Arland session. Every VERIFY spike and play-test below needs it | Under way on the author's PC | Workbench evenings, no code |
 | 0.2 | **Tribes phase 0** (the zombie lab): runtime groups, Bacon speeds, frame time at 60/100/140 agents, silent kills, the land survey, the tribe simulator | Done on its branch (`worktree-wf_34724fc3-3cf-4`), not merged. Left: the day-party test (a group of 2–3 hopping and holding past a player at each stance with stealth on), the player-killed event, a second hostile faction, the sight trace, facing, replication. The proposed retunes wait for the author ([INFECTED.md](INFECTED.md#phase-0-results)) | Tests and tools |
 | 0.3 | **One group-waypoint helper** (`RZ_GroupOrders`): the tribes' held waypoint, the `DeleteUnit` leak, stealth's push and pop, in one commit (conflict 47) | Done on the phase 0 branch except stealth's push and pop | About 200 |
-| 0.4 | **Runtime test with questline preconditions forced** (task 37): every built questline starts and ends once, and Convoy Escort, Hijack the Convoy, Mobile Lab and the Locked Bunker start (conflict 20). The majors and the finale stand on these | Planned | About 300 test code |
+| 0.4 | **Runtime test with questline preconditions forced** (task 37): every built questline starts and ends once, and Convoy Escort, Hijack the Convoy, Mobile Lab and the Locked Bunker start (conflict 20). The majors and the finale stand on these | Built in the test (`tools/runtime_test/`, [WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#runtime-test-without-workbench)); compiles; not yet run on the server | About 500 test code |
 | 0.5 | **The built bug fixes**, listed below, plus the VERIFY spikes | Being done now | About 1,500 with the lint |
 | 0.6 | **A text pass on the design files** (old lore, names, prices, keys) and the author's lore confirmations | Done: these design files carry the fixes. The confirmed lore goes into LORE.md in the finale's commit (conflict 10) | No code |
 
