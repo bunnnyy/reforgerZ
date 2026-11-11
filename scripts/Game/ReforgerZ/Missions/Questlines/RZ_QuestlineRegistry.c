@@ -16,5 +16,7 @@ class RZ_QuestlineRegistry
 		// Halcyon
 
 		// Unaligned groups
+		// The Long Table (World/RZ_LongTable.c; only in a season that has one)
+		q.Register(RZ_Quest_HouseWentQuiet);
 	}
 }

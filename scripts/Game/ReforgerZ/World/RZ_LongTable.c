@@ -1202,7 +1202,7 @@ class RZ_LongTable
 
 		// The farm's town fell to the infected: they leave, once a season, while nobody's after them
 		RZ_Settlement s = m_GM.GetSettlement(m_iSettlement);
-		if (m_eState == RZ_ETableState.ACTIVE && s && s.m_fInfection >= 85 && !m_bMoved && !IsC1Running())
+		if (m_eState == RZ_ETableState.ACTIVE && s && s.m_fInfection >= 85 && !m_bMoved && !IsLineRunning())
 			StartMove(false, "The farm past " + GetTownName() + " has gone dark. The infected are thick round there now.");
 
 		Publish();
@@ -1228,7 +1228,7 @@ class RZ_LongTable
 		if (m_fSuspicion >= RUMOUR_SUSPICION && m_bHeard)
 			TryBeginC1();
 
-		if (m_fSuspicion > MOVE_SUSPICION && !m_bMoved && !IsC1Running())
+		if (m_fSuspicion > MOVE_SUSPICION && !m_bMoved && !IsLineRunning())
 			StartMove(false, "");
 	}
 
@@ -1271,7 +1271,18 @@ class RZ_LongTable
 		if (TakeCrossing("cargo.exile") && m_eState == RZ_ETableState.ACTIVE)
 		{
 			RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
-			Taken(RZ_NoteText.FirstName(rng), "a barn the Haven put him out to", "anywhere", vector.Zero, -1, true);
+			string exile = RZ_NoteText.FirstName(rng);
+			string town = GetTownName();
+			RZ_Safehouses houses = m_GM.GetSafehouses();
+			RZ_Safehouse h;
+			if (houses)
+				h = houses.Get(houses.FindNearest(m_vHouse));
+
+			if (h)
+				town = h.m_sName;
+
+			Taken(exile, town, "wherever the Red Hand's van was going", vector.Zero, -1,
+				string.Format("%1, put out of the safehouse in %2 for stealing from the stores, went off in a Red Hand van. Nobody has seen him since.", exile, town));
 		}
 
 		// R2's Bastion raid: Bastion knows the farm
@@ -1337,7 +1348,7 @@ class RZ_LongTable
 					if (dest.IsEmpty())
 						dest = "the next town";
 
-					Taken(title, from, dest, at, role, true);
+					Taken(title, from, dest, at, role, "");
 					return;
 				}
 			}
@@ -1352,16 +1363,18 @@ class RZ_LongTable
 			lv.m_iCount = lv.m_iCount - 1;
 			RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 			string name = RZ_NoteText.FirstName(rng);
-			Taken(string.Format("%1, who left the safehouse in %2 when the food ran out,", name, lv.m_sHouse), lv.m_sHouse, "anywhere they'd be fed", vector.Zero, -1, true);
+			Taken(name, lv.m_sHouse, "the next safehouse", vector.Zero, -1,
+				string.Format("%1 walked out of the safehouse in %2 when the food ran out, to find a house that could feed them. They never arrived anywhere.", name, lv.m_sHouse));
 			return;
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Someone never arrived (a taking, here or from a questline): hunger down, suspicion up, and
-	//! one tell: the news, a boot on the road, a satchel at a Red Hand fence. `role` is a wanderer
-	//! role, -1 for anyone else. `news` = false keeps it out of the headlines (a questline says it).
-	void Taken(string who, string from, string dest, vector at, int role, bool news)
+	//! the tells: the news, a boot on the road, sometimes a satchel at a Red Hand fence. `who` is a
+	//! name or a wanderer's title, `from` a place; `role` a wanderer role, -1 for anyone else.
+	//! `news` is the headline ("" = "<who> left <from> for <dest>, and never arrived.").
+	void Taken(string who, string from, string dest, vector at, int role, string news)
 	{
 		if (!Exists())
 			return;
@@ -1386,12 +1399,12 @@ class RZ_LongTable
 		// A boot on the verge where they were last seen (a prop only while someone is near)
 		AddTell(RZ_Mission.LandPointNear(spot, 2, 12), string.Format("A walking boot on the verge, good leather, laced tight, the size of a grown man's foot. Nobody walks on with one boot. The road from here goes on toward %1.", GetTownName()));
 
-		if (news)
-		{
-			string text = string.Format("%1 left %2 for %3. They never arrived.", RZ_Util.Capitalize(who), from, dest);
-			RZ_Questline.Headline(m_GM, text, false);
-			NotifyHaven(text + " The house there has stopped waiting up.");
-		}
+		string text = news;
+		if (text.IsEmpty())
+			text = string.Format("%1 left %2 for %3, and never arrived.", RZ_Util.Capitalize(who), from, dest);
+
+		RZ_Questline.Headline(m_GM, text, false);
+		NotifyHaven(text + " Somebody has stopped waiting up.");
 
 		// Couriers and traders carry bags: the satchel turns up at a Red Hand fence
 		if (role == RZ_EWandererRole.COURIER || role == RZ_EWandererRole.TRADER || Math.RandomFloat01() < 0.3)
@@ -1670,6 +1683,31 @@ class RZ_LongTable
 		}
 
 		BreakIfFinished();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of the family was killed in a questline's scene (its own body at the farm): as here.
+	void MemberKilled(int role, int killer, vector at)
+	{
+		RZ_TableMember m = Find(role);
+		if (!m)
+			return;
+
+		m.m_bAlive = false;
+		RZ_Log.Info(string.Format("Long Table: %1 (%2) was killed.", m.m_sName, role));
+		if (killer > 0 && !m_GM.GetSpawner().IsZombieNear(at, 30))
+			Blame(killer, m.m_sName);
+
+		BreakIfFinished();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of the family left the farm for good without a death (ran off, walked out).
+	void MemberGone(int role)
+	{
+		RZ_TableMember m = Find(role);
+		if (m)
+			m.m_bAlive = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2444,6 +2482,14 @@ class RZ_LongTable
 	{
 		RZ_Questlines q = m_GM.GetQuestlines();
 		return q && q.FindRunByKey(C1_KEY) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone is after them, or dealing with them: either Long Table questline is running.
+	bool IsLineRunning()
+	{
+		RZ_Questlines q = m_GM.GetQuestlines();
+		return q && (q.FindRunByKey(C1_KEY) != null || q.FindRunByKey(C2_KEY) != null);
 	}
 
 	//------------------------------------------------------------------------------------------------
