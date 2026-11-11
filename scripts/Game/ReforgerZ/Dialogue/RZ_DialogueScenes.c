@@ -305,9 +305,20 @@ class RZ_DialogueScenes
 		if (!me)
 			return;
 
+		// On air: everyone within the channel's reach, no name, no tags (nothing personal on air)
+		bool onAir = RZ_TalkRadio.Cast(s.m_Adapter) != null;
+		float reach = HEAR;
 		string text = "";
-		if (!label.IsEmpty())
+		if (onAir)
+		{
+			reach = RZ_TalkRadio.REACH;
+			if (!label.IsEmpty())
+				text = "On the open channel, someone: " + StripTags(label);
+		}
+		else if (!label.IsEmpty())
+		{
 			text = string.Format("%1, to %2: %3", RZ_Util.PlayerName(s.m_iPlayer), s.m_sName, StripTags(label));
+		}
 
 		foreach (string l : lines)
 		{
@@ -326,7 +337,7 @@ class RZ_DialogueScenes
 		foreach (int i, IEntity p : players)
 		{
 			int other = ids[i];
-			if (other == s.m_iPlayer || RZ_Util.DistXZ(p.GetOrigin(), me.GetOrigin()) > HEAR)
+			if (other == s.m_iPlayer || RZ_Util.DistXZ(p.GetOrigin(), me.GetOrigin()) > reach)
 				continue;
 
 			float last;
@@ -335,7 +346,10 @@ class RZ_DialogueScenes
 				continue;
 
 			m_mHeard.Set(key, m_fClock);
-			m_GM.NotifyPlayer(other, "Overheard", text);
+			if (onAir)
+				m_GM.NotifyPlayer(other, "The open channel", text);
+			else
+				m_GM.NotifyPlayer(other, "Overheard", text);
 		}
 	}
 

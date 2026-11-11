@@ -22,6 +22,8 @@ class RZ_DTalk
 	ref array<string> m_aHubSaid = {};	// what they said at the hub, to show again
 	int m_iFavorPaid;				// this conversation (10 at most)
 	float m_fNodeAt;
+	string m_sLabel;				// the choice being landed (a promise's words)
+	int m_iKit;						// what the player wore when it opened (a change ends it)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -40,6 +42,8 @@ class RZ_DialogueTrees
 	protected RZ_GameModeComponent m_GM;
 	protected ref RZ_DialogueDB m_DB;
 	protected ref RZ_DialogueMemory m_Memory;
+	protected ref RZ_RepSeason m_Record;
+	protected ref RZ_DialogueBarks m_Barks;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_DialogueTrees(RZ_GameModeComponent gm)
@@ -47,6 +51,8 @@ class RZ_DialogueTrees
 		m_GM = gm;
 		m_DB = new RZ_DialogueDB();
 		m_Memory = new RZ_DialogueMemory(gm);
+		m_Record = new RZ_RepSeason(gm);
+		m_Barks = new RZ_DialogueBarks(gm, this);
 		s_Instance = this;
 	}
 
@@ -69,7 +75,27 @@ class RZ_DialogueTrees
 	{
 		m_DB.Load();
 		m_Memory.Load();
+		m_Record.Load();
 		RZ_Log.Info(string.Format("Dialogue: trees %1", OnOff(IsOn())));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On the server tick (RZ_Dialogue.Tick): the season record always; with Trees on, the promise
+	//! and callback clocks of the players online, and the barks.
+	void Tick(float dt)
+	{
+		m_Record.Tick(dt);
+		if (!IsOn())
+			return;
+
+		array<int> ids = {};
+		GetGame().GetPlayerManager().GetPlayers(ids);
+		foreach (int id : ids)
+		{
+			m_Memory.TickPlayer(id, dt);
+		}
+
+		m_Barks.Tick(dt);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -87,6 +113,7 @@ class RZ_DialogueTrees
 	void SaveIfChanged()
 	{
 		m_Memory.SaveIfChanged();
+		m_Record.SaveIfChanged();
 	}
 
 	// ================================================================ A session
@@ -98,6 +125,28 @@ class RZ_DialogueTrees
 		if (!IsOn() || !s.m_Adapter)
 			return null;
 
+		RZ_DCtx ctx = DescribeFor(s, user);
+		if (!ctx)
+			return null;
+
+		RZ_DTalk t = new RZ_DTalk();
+		t.m_Ctx = ctx;
+		t.m_iKit = KitNow(s.m_iPlayer);
+
+		// Talking to their people undisguised: they know your face this life
+		if (RZ_Factions.IsValid(ctx.m_iFaction) && !InTheirKit(s.m_iPlayer, ctx.m_iFaction))
+			m_Memory.NoteFace(s.m_iPlayer, ctx.m_iFaction);
+
+		// A promise to come back is kept by coming back
+		m_Memory.KeepVisits(s.m_iPlayer, ctx.m_sKey);
+		return t;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The speaker as conditions see them (the adapter's Describe, the town and place filled in), or
+	//! null when the adapter can't say who it is. Also used for barks.
+	RZ_DCtx DescribeFor(RZ_TalkSession s, IEntity user)
+	{
 		RZ_DCtx ctx = new RZ_DCtx();
 		ctx.m_GM = m_GM;
 		ctx.m_iPlayer = s.m_iPlayer;
@@ -114,15 +163,57 @@ class RZ_DialogueTrees
 		if (ctx.m_sPlace.IsEmpty() && town)
 			ctx.m_sPlace = town.m_sName;
 
-		RZ_DTalk t = new RZ_DTalk();
-		t.m_Ctx = ctx;
-
-		// Talking to their people undisguised: they know your face this life
-		if (RZ_Factions.IsValid(ctx.m_iFaction))
-			m_Memory.NoteFace(s.m_iPlayer, ctx.m_iFaction);
-
-		return t;
+		return ctx;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the player wears, as one number (the faction whose kit and its level): a change ends a
+	//! conversation, so nobody opens it in one outfit and picks in another.
+	int KitNow(int playerId)
+	{
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (!hostility || !hostility.GetDisguise().IsOn())
+			return -1;
+
+		RZ_Disguise d = hostility.GetDisguise();
+		int f = d.Wearing(playerId);
+		if (f < 0)
+			return -1;
+
+		return f * 10 + d.KitLevel(playerId, f);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player changed clothes since the conversation opened (or since the last pick that changed
+	//! them). A catch taking the kit isn't a change of clothes: that's accepted as the new kit.
+	bool KitChanged(RZ_TalkSession s)
+	{
+		RZ_DTalk t = s.m_Tree;
+		int now = KitNow(s.m_iPlayer);
+		if (!t || now == t.m_iKit)
+			return false;
+
+		RZ_Hostility hostility = m_GM.GetHostility();
+		int was = t.m_iKit / 10;
+		if (t.m_iKit >= 0 && hostility && hostility.GetDisguise().IsBlown(s.m_iPlayer, was))
+		{
+			t.m_iKit = now;
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool InTheirKit(int playerId, int f)
+	{
+		RZ_Hostility hostility = m_GM.GetHostility();
+		return hostility && hostility.GetDisguise().InTheirKit(playerId, f);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_DialogueBarks GetBarks() { return m_Barks; }
+	RZ_RepSeason GetRecord() { return m_Record; }
 
 	//------------------------------------------------------------------------------------------------
 	//! A greet whose `when` holds: its lines go before the built greeting.
@@ -141,11 +232,38 @@ class RZ_DialogueTrees
 				best = c;
 		}
 
-		if (!best || best.m_aNodes.IsEmpty())
-			return;
+		if (best && !best.m_aNodes.IsEmpty())
+		{
+			NoteTopic(t, best);
+			Lines(t, best.m_aNodes[0], lines);
+		}
 
-		NoteTopic(t, best);
-		Lines(t, best.m_aNodes[0], lines);
+		// What's still promised to this speaker, with the play left
+		m_Memory.OpenLines(s.m_iPlayer, t.m_Ctx.m_sKey, lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Back into a node a moment after danger or distance ended the conversation (no entry effects
+	//! run again). False if the conversation no longer holds.
+	bool Resume(RZ_TalkSession s, string convId, string nodeId, notnull array<string> lines)
+	{
+		RZ_DTalk t = s.m_Tree;
+		RZ_DConv c = m_DB.Find(convId);
+		if (!t || !c || !RZ_DialogueCond.Holds(t.m_Ctx, c.m_When) || Refuses(t.m_Ctx))
+			return false;
+
+		RZ_DNode node = c.GetNode(nodeId);
+		if (!node)
+			return false;
+
+		t.m_Conv = c;
+		t.m_Node = node;
+		t.m_bInNode = true;
+		t.m_sPrev = "";
+		t.m_fNodeAt = RZ_UIW.Now();
+		t.m_Ctx.m_sScene = RZ_DialogueScenes.SceneKey(c, t.m_Ctx);
+		LinesFor(t.m_Ctx, node, lines);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -220,7 +338,7 @@ class RZ_DialogueTrees
 				if (refuses && (c.m_iFlags & RZ_DConv.FLAG_ALWAYS) == 0)
 					continue;
 
-				if (c.m_iPrio == prio && !c.IsGreet() && TopicFree(t, c) && RZ_DialogueCond.Holds(t.m_Ctx, c.m_When))
+				if (c.m_iPrio == prio && !c.IsGreet() && !c.IsBark() && TopicFree(t, c) && RZ_DialogueCond.Holds(t.m_Ctx, c.m_When))
 					band.Insert(c);
 			}
 
@@ -263,10 +381,16 @@ class RZ_DialogueTrees
 	//! Once: never again this life at this speaker. Daily: once a real day.
 	protected bool TopicFree(RZ_DTalk t, RZ_DConv c)
 	{
+		return FreeFor(t.m_Ctx, c);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool FreeFor(RZ_DCtx ctx, RZ_DConv c)
+	{
 		if ((c.m_iFlags & (RZ_DConv.FLAG_ONCE | RZ_DConv.FLAG_DAILY)) == 0)
 			return true;
 
-		int at = m_Memory.TopicAt(t.m_Ctx.m_iPlayer, t.m_Ctx.m_sKey + "|" + c.m_sId);
+		int at = m_Memory.TopicAt(ctx.m_iPlayer, ctx.m_sKey + "|" + c.m_sId);
 		if (at <= 0)
 			return true;
 
@@ -279,8 +403,14 @@ class RZ_DialogueTrees
 	//------------------------------------------------------------------------------------------------
 	protected void NoteTopic(RZ_DTalk t, RZ_DConv c)
 	{
+		NoteFor(t.m_Ctx, c);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void NoteFor(RZ_DCtx ctx, RZ_DConv c)
+	{
 		if ((c.m_iFlags & (RZ_DConv.FLAG_ONCE | RZ_DConv.FLAG_DAILY)) != 0)
-			m_Memory.NoteTopic(t.m_Ctx.m_iPlayer, t.m_Ctx.m_sKey + "|" + c.m_sId);
+			m_Memory.NoteTopic(ctx.m_iPlayer, ctx.m_sKey + "|" + c.m_sId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -310,7 +440,7 @@ class RZ_DialogueTrees
 
 		foreach (int i, RZ_DChoice c : t.m_Node.m_aChoices)
 		{
-			if (!RZ_DialogueCond.Holds(t.m_Ctx, c.m_If))
+			if (!RZ_DialogueCond.Holds(t.m_Ctx, c.m_If) || !CalloutOpen(t.m_Ctx, c))
 				continue;
 
 			RZ_TalkReply r = new RZ_TalkReply();
@@ -322,6 +452,16 @@ class RZ_DialogueTrees
 			if (replies.Count() >= MAX_REPLIES)
 				break;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! [Evidence]: a call-out shows only to a player who was told that lie and knows the truth.
+	protected bool CalloutOpen(RZ_DCtx ctx, RZ_DChoice c)
+	{
+		if (c.m_sCallout.IsEmpty())
+			return true;
+
+		return m_Memory.HeardLie(ctx.m_iPlayer, c.m_sCallout) && m_Memory.Knows(ctx.m_iPlayer, c.m_sCallout);
 	}
 
 	// ================================================================ Picks
@@ -387,7 +527,7 @@ class RZ_DialogueTrees
 		int pid = s.m_iPlayer;
 
 		// The live world again: the choice's own condition and the conversation's
-		if (!RZ_DialogueCond.Holds(ctx, c.m_If) || !RZ_DialogueCond.Holds(ctx, t.m_Conv.m_When))
+		if (!RZ_DialogueCond.Holds(ctx, c.m_If) || !RZ_DialogueCond.Holds(ctx, t.m_Conv.m_When) || !CalloutOpen(ctx, c))
 		{
 			s.m_aNew.Insert("They didn't catch that.");
 			s.m_aNew.InsertAll(s.m_aSaid);
@@ -450,6 +590,13 @@ class RZ_DialogueTrees
 		}
 		else if (c.m_sCheck == "threaten")
 		{
+			if (Passing(pid, c.m_iCheckFaction))
+			{
+				s.m_aNew.Insert("(You can't lean on them while you're passing as one of them.)");
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+
 			RZ_WorldFacts facts = m_GM.GetFacts();
 			if (facts && facts.Flag("threat." + ctx.m_sKey) > 0)
 			{
@@ -474,10 +621,30 @@ class RZ_DialogueTrees
 			m_Memory.AddRegard(pid, ctx.m_sKey, "threatened");
 			verdict = FearVerdict(result);
 		}
-		else if (c.m_sCheck == "lie")
+		else if (c.m_sCheck == "lie" && !IsTrue(ctx, c))
 		{
+			if (LieBarred(ctx))
+			{
+				s.m_aNew.Insert("\"Not again. Not today.\"");
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+
 			result = TellLie(s, c);
 			verdict = LieVerdict(result);
+		}
+		else if (c.m_sCheck == "look")
+		{
+			string cannot = CannotLook(ctx, c);
+			if (!cannot.IsEmpty())
+			{
+				s.m_aNew.Insert("(" + cannot + ")");
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+
+			result = Look(s, c);
+			verdict = LookVerdict(ctx, c, result);
 		}
 
 		// A deciding pick in a scene waits 5 s for objections before it lands
@@ -578,8 +745,9 @@ class RZ_DialogueTrees
 			return result;
 		}
 
-		// Caught now
+		// Caught now: no more lies at this speaker for a real day
 		m_Memory.AddRegard(pid, ctx.m_sKey, "lied", LieWeight(ctx));
+		m_Memory.NoteTopic(pid, ctx.m_sKey + "|lie_caught");
 		if (RZ_Factions.IsValid(c.m_iCheckFaction))
 		{
 			m_GM.AddInfamy(pid, c.m_iCheckFaction, 2, "a lie, caught", RZ_RepFlag.ACT);
@@ -609,6 +777,103 @@ class RZ_DialogueTrees
 		}
 
 		return m_Memory.HasPrefix(ctx.m_iPlayer, RZ_DialogueMemory.CLAIMS, ctx.m_sKey + "|");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A [Lie] whose `truth` holds isn't a lie: no tag, no check, nothing stored.
+	protected bool IsTrue(RZ_DCtx ctx, RZ_DChoice c)
+	{
+		return c.m_Truth && !c.m_Truth.IsEmpty() && RZ_DialogueCond.Holds(ctx, c.m_Truth);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This speaker caught a lie from this player in the last real day.
+	protected bool LieBarred(RZ_DCtx ctx)
+	{
+		int at = m_Memory.TopicAt(ctx.m_iPlayer, ctx.m_sKey + "|lie_caught");
+		return at > 0 && RZ_SeasonClock.Now() - at < RZ_DialogueMemory.DAY;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Passing as `f` (a look passed): talk can't lean on them, and persuading them counts 0.
+	protected bool Passing(int playerId, int f)
+	{
+		RZ_Hostility hostility = m_GM.GetHostility();
+		return RZ_Factions.IsValid(f) && hostility && hostility.GetDisguise().IsPassing(playerId, f);
+	}
+
+	// ================================================================ Claims in someone else's kit
+	//------------------------------------------------------------------------------------------------
+	//! Why this player can't claim to be one of them here ("" if they can): the disguise rules, and
+	//! leaders and home ground, who see through any claim.
+	protected string CannotLook(RZ_DCtx ctx, RZ_DChoice c)
+	{
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (!hostility || !RZ_Factions.IsValid(c.m_iCheckFaction))
+			return "Nobody here would believe it.";
+
+		string why = hostility.GetDisguise().CannotClaim(ctx.m_iPlayer, c.m_iCheckFaction);
+		if (why == "Off")
+			return "Nobody here would believe it.";
+
+		return why;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The look (RZ_Disguise.Look, the fixed score shown before you pick). A leader of theirs or
+	//! anyone inside their wire sees through it: caught. Passed at a road post: while it stands;
+	//! elsewhere 10 minutes.
+	protected RZ_ECheck Look(RZ_TalkSession s, RZ_DChoice c)
+	{
+		RZ_DCtx ctx = s.m_Tree.m_Ctx;
+		RZ_Disguise d = m_GM.GetHostility().GetDisguise();
+		int f = c.m_iCheckFaction;
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(ctx.m_iPlayer);
+		if ((ctx.m_Leader && ctx.m_Leader.m_eFaction == f) || (ctx.m_bStronghold && ctx.m_iFaction == f))
+		{
+			if (me)
+				d.Caught(ctx.m_iPlayer, f, me, "\"Nice try. I know my own.\"");
+
+			return RZ_ECheck.REFUSED;
+		}
+
+		float seconds = 600;
+		if (ctx.m_iPost >= 0)
+			seconds = 0;
+
+		if (d.Look(ctx.m_iPlayer, f, Difficulty(ctx, c), ctx.m_sKey, "", seconds))
+			return RZ_ECheck.PASS;
+
+		return RZ_ECheck.REFUSED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A passed look often goes without a word (one time in three at least, the server's pick);
+	//! otherwise a line in their voice from the bank, else a plain one.
+	protected string LookVerdict(RZ_DCtx ctx, RZ_DChoice c, RZ_ECheck result)
+	{
+		string kind = "look_caught";
+		if (result == RZ_ECheck.PASS)
+		{
+			if (Math.RandomFloat01() < 0.34)
+				return "[Passed]";
+
+			kind = "look_pass";
+		}
+
+		string line = RZ_VoiceBank.PickFor(m_GM, kind, c.m_iCheckFaction, "", ctx.m_Leader, ctx.m_iPlayer, ctx.Pos(), ctx.m_sPlace);
+		if (result == RZ_ECheck.PASS)
+		{
+			if (line.IsEmpty())
+				return "[Passed]";
+
+			return "[Passed] " + line;
+		}
+
+		if (line.IsEmpty())
+			return "[Caught]";
+
+		return "[Caught] " + line;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -646,6 +911,7 @@ class RZ_DialogueTrees
 		// The effects, then the next node. Lines the effects say (a built reply's answer, a
 		// payment) come after the node's own.
 		s.m_aNew.Clear();
+		t.m_sLabel = RZ_DialogueText.Fill(t.m_Ctx, c.m_sLabel);
 		if (result == RZ_ECheck.PASS)
 			RunEffects(s, c.m_aDo, user);
 		else if (result == RZ_ECheck.SHORT)
@@ -655,6 +921,9 @@ class RZ_DialogueTrees
 
 		if (!s.m_Tree)
 			return false;
+
+		// Kit the conversation itself changed (a catch takes it) doesn't end the conversation
+		t.m_iKit = KitNow(s.m_iPlayer);
 
 		array<string> extra = {};
 		if (!verdict.IsEmpty())
@@ -752,7 +1021,14 @@ class RZ_DialogueTrees
 	//! A node's lines: a say? whose condition holds replaces the next plain say.
 	protected void Lines(RZ_DTalk t, RZ_DNode node, notnull array<string> lines)
 	{
-		string pending;
+		LinesFor(t.m_Ctx, node, lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The same for any speaker as conditions see them (barks too).
+	void LinesFor(RZ_DCtx ctx, RZ_DNode node, notnull array<string> lines)
+	{
+		RZ_DSay pending;
 		bool hasPending;
 		foreach (RZ_DSay item : node.m_aItems)
 		{
@@ -761,9 +1037,9 @@ class RZ_DialogueTrees
 
 			if (!item.m_Cond.IsEmpty())
 			{
-				if (!hasPending && RZ_DialogueCond.Holds(t.m_Ctx, item.m_Cond))
+				if (!hasPending && RZ_DialogueCond.Holds(ctx, item.m_Cond))
 				{
-					pending = item.m_sText;
+					pending = item;
 					hasPending = true;
 				}
 
@@ -771,15 +1047,39 @@ class RZ_DialogueTrees
 			}
 
 			if (hasPending)
-				lines.Insert(RZ_DialogueText.Fill(t.m_Ctx, pending));
+				SayLine(ctx, pending, lines);
 			else
-				lines.Insert(RZ_DialogueText.Fill(t.m_Ctx, item.m_sText));
+				SayLine(ctx, item, lines);
 
 			hasPending = false;
 		}
 
 		if (hasPending)
-			lines.Insert(RZ_DialogueText.Fill(t.m_Ctx, pending));
+			SayLine(ctx, pending, lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line said: a lie the player is told (~lie) or the truth (~truth) is noted as it's heard.
+	protected void SayLine(RZ_DCtx ctx, RZ_DSay item, notnull array<string> lines)
+	{
+		lines.Insert(RZ_DialogueText.Fill(ctx, item.m_sText));
+		if (!item.m_sLie.IsEmpty())
+			m_Memory.NoteHeardLie(ctx.m_iPlayer, Scoped(ctx, item.m_sLie));
+
+		if (!item.m_sTruth.IsEmpty())
+			m_Memory.Learn(ctx.m_iPlayer, Scoped(ctx, item.m_sTruth));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A key bound to this speaker: "@here" becomes "@<speaker key>" (a promise or a lie at one house).
+	static string Scoped(RZ_DCtx ctx, string key)
+	{
+		if (!key.Contains("@here"))
+			return key;
+
+		string s = key;
+		s.Replace("@here", "@" + ctx.m_sKey);
+		return s;
 	}
 
 	// ================================================================ The finale's commit
@@ -824,6 +1124,10 @@ class RZ_DialogueTrees
 	//! helped or saved bit this life. The Long Table's rank counts 0.
 	int TrustScore(RZ_DCtx ctx, RZ_DChoice c)
 	{
+		// Passing as one of them: no rewards through a claim, so persuading them counts 0
+		if (Passing(ctx.m_iPlayer, c.m_iCheckFaction))
+			return 0;
+
 		int bonus = 0;
 		if (m_Memory.Regard(ctx.m_iPlayer, ctx.m_sKey) >= 2 || HelpedThisLife(ctx))
 			bonus = 1;
@@ -916,9 +1220,23 @@ class RZ_DialogueTrees
 				r.m_sNeed = "you've tried that";
 			}
 		}
+		else if (c.m_sCheck == "lie" && IsTrue(ctx, c))
+		{
+			// The truth: no [Lie] tag (a tag never gives a lie away, and this isn't one)
+		}
+		else if (c.m_sCheck == "look")
+		{
+			tag = LookTag(ctx, c, r);
+		}
 		else if (c.m_sCheck == "lie")
 		{
 			int lieScore = RZ_Checks.TrustScore(m_GM, ctx.m_iPlayer, c.m_iCheckFaction, "", 0);
+			if (LieBarred(ctx))
+			{
+				r.m_bEnabled = false;
+				r.m_sNeed = "they caught you lying today";
+			}
+
 			if (HasTell(ctx))
 				tag = "[Lie - they'd see through it]";
 			else
@@ -976,6 +1294,9 @@ class RZ_DialogueTrees
 			}
 		}
 
+		if (!c.m_sCallout.IsEmpty())
+			tag = Join("[Evidence]", tag);
+
 		// Who may decide: a deciding choice in a scene with `who` is dimmed for everyone else
 		if (r.m_bEnabled && t.m_Conv && t.m_Conv.m_SceneWho && HasEffect(c.m_aDo, "decide") && !RZ_DialogueCond.Holds(ctx, t.m_Conv.m_SceneWho))
 		{
@@ -984,6 +1305,29 @@ class RZ_DialogueTrees
 		}
 
 		r.m_sTag = tag;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! [Look - Bastion - 2 of 2] with the look's own tags ([Full kit +2] [Watched -1]), or dimmed with
+	//! why they can't claim at all.
+	protected string LookTag(RZ_DCtx ctx, RZ_DChoice c, RZ_TalkReply r)
+	{
+		int f = c.m_iCheckFaction;
+		string cannot = CannotLook(ctx, c);
+		if (!cannot.IsEmpty())
+		{
+			r.m_bEnabled = false;
+			r.m_sNeed = cannot;
+			return string.Format("[Look - %1]", RZ_Factions.GetName(f));
+		}
+
+		string tags;
+		bool instant;
+		int score = RZ_Checks.LookScore(m_GM, ctx.m_iPlayer, f, ctx.m_sKey, "", tags, instant);
+		if (instant || (ctx.m_Leader && ctx.m_Leader.m_eFaction == f) || (ctx.m_bStronghold && ctx.m_iFaction == f))
+			return string.Format("[Look - %1 - they'd see through it]", RZ_Factions.GetName(f));
+
+		return Join(tags, string.Format("[Look - %1 - %2 of %3]", RZ_Factions.GetName(f), Math.Max(0, score), Difficulty(ctx, c)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1124,8 +1468,41 @@ class RZ_DialogueTrees
 				case "call":
 					Call(s, e.m_sArg, user);
 					break;
+				case "promise":
+					Promise(s, e.m_sArg);
+					break;
+				case "keep":
+					m_Memory.Keep(pid, Scoped(ctx, e.m_sArg));
+					break;
+				case "wire":
+				{
+					// Bastion's word at the wire: right, it counts at the next look; wrong, caught
+					if (RZ_DialogueWire.Say(m_GM, pid, e.m_sArg.ToInt(), user))
+						s.m_aNew.Insert("(A nod at the word.)");
+
+					break;
+				}
+				case "later":
+				{
+					// later:6h:key: due:key once this player has played that long (words only)
+					int colon = e.m_sArg.IndexOf(":");
+					if (colon > 1)
+						m_Memory.Later(pid, Scoped(ctx, e.m_sArg.Substring(colon + 1, e.m_sArg.Length() - colon - 1)), e.m_sArg.Substring(0, colon - 1).ToFloat());
+
+					break;
+				}
 				case "sway":
 				{
+					// A major's sitting: its own vote, one sway per player per sitting
+					string swayed;
+					if (RZ_DialogueVotes.Sway(m_GM, pid, e.m_sArg, ctx.m_Leader, swayed))
+					{
+						if (!swayed.IsEmpty())
+							s.m_aNew.Insert(swayed);
+
+						break;
+					}
+
 					// One contribution per player to a count its owner reads
 					RZ_WorldFacts tally = m_GM.GetFacts();
 					string mine = "tally." + e.m_sArg + "." + m_GM.GetProfile(pid).m_sIdentity;
@@ -1176,6 +1553,38 @@ class RZ_DialogueTrees
 			if (!s.m_Tree)
 				return;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! promise:<key>[:<hours>h]: a promise to this speaker, in the words of the choice that made it.
+	//! Two hours of the promiser's own play by default, three real days at most, three open a player.
+	protected void Promise(RZ_TalkSession s, string arg)
+	{
+		RZ_DTalk t = s.m_Tree;
+		string key = arg;
+		float hours = 2;
+		int colon = arg.IndexOf(":");
+		if (colon > 0)
+		{
+			key = arg.Substring(0, colon);
+			string h = arg.Substring(colon + 1, arg.Length() - colon - 1);
+			h.Replace("h", "");
+			hours = Math.Clamp(h.ToFloat(), 0.25, 72);
+		}
+
+		string words = t.m_sLabel;
+		if (words.IsEmpty())
+			words = "to come back";
+
+		string why = m_Memory.Promise(s.m_iPlayer, Scoped(t.m_Ctx, key), t.m_Ctx.m_sKey, words, hours);
+		if (!why.IsEmpty())
+		{
+			s.m_aNew.Insert("(" + why + ")");
+			return;
+		}
+
+		s.m_aNew.Insert(string.Format("(A promise: %1 hours of your play to keep it.)", RZ_Util.RoundToInt(hours)));
+		RZ_Log.Info(string.Format("Dialogue: promise %1 made by %2", Scoped(t.m_Ctx, key), RZ_Util.PlayerName(s.m_iPlayer)));
 	}
 
 	//------------------------------------------------------------------------------------------------

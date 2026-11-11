@@ -1,0 +1,110 @@
+# Barks (docs/DIALOGUE.md, "Barks"): one line to a player passing within 6 m, without Talk. One a
+# minute per player, one per speaker per player every 10 minutes. A bark never names a player who
+# is in someone else's kit, never jokes about who eats, and never gives away anything the player
+# couldn't see. `once` barks are said once a life per speaker.
+
+conv bark.occupant.short
+for occupant
+when house:short & !house:died
+bark
+voice haven
+
+node start
+  say? promise:house.tins@here :: "Tins? No? Later, then. We're good at later."
+  say? kept:house.tins@here :: "You're the one who brought the tins. The children call you the tin one. It's a compliment."
+  say "Mind the stores. We're counting."
+
+conv bark.occupant.died
+for occupant
+when house:died
+bark
+voice haven
+
+node start
+  say "Hat off, if you're coming in. We lost someone."
+
+conv bark.occupant.dusk
+for occupant
+when dusk & !house:died
+bark
+voice haven
+
+node start
+  say "Light's going. In or out, love. Not on the step."
+
+conv bark.named.redhand.crew
+for named:redhand
+when crew & !kit:in_kit & !hunted:redhand
+bark
+voice redhand
+
+node start
+  say? tier:redhand>=trusted :: "Oi, {crew}! Still breathing? The book's thrilled."
+  say "Oi, {crew}! Don't go far. You owe us a story."
+
+conv bark.named.redhand.toll
+for named:redhand/toll_man
+when !crew & !hunted:redhand
+bark
+voice redhand
+
+node start
+  say "Toll's {toll}. Don't make me say it twice. I charge for twice."
+
+conv bark.named.bastion.shift
+for named:bastion
+when hour>=17 & hour<18 & !hunted:bastion
+bark
+voice bastion
+
+node start
+  say "Shift change at half five. Two minutes. Don't stand there."
+
+conv bark.named.bastion.word
+for named:bastion
+when setword:bastion & !kit:in_kit & !hunted:bastion
+bark
+once
+voice bastion
+
+node start
+  say "{word}. As you were."
+
+conv bark.named.halcyon.rota
+for named:halcyon
+when !kit:in_kit & !hunted:halcyon
+bark
+voice halcyon
+
+node start
+  say? night :: "Lights out at the lab is a suggestion. Nobody follows it. Nobody sleeps."
+  say "Mind the samples. They're labelled. You aren't."
+
+conv bark.wanderer.kid
+for wanderer:kid
+when kidlost
+bark
+voice plain
+
+node start
+  say "Are you going to the house? Can I come? I won't talk. Much."
+
+conv bark.wanderer.scavenger.back
+for wanderer:scavenger
+when due:scav.came_back & !nmem:honest
+bark
+once
+voice plain
+
+node start
+  say "Oh. You. How was the chemist's? Don't answer. Your face says it all."
+
+conv bark.named.bastion.back
+for named:bastion/sentry
+when kept:sentry.road@here.visit
+bark
+once
+voice bastion
+
+node start
+  say "Road's logged as walked. Your name's on it. In pencil, but it's on it."

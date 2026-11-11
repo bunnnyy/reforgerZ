@@ -58,6 +58,8 @@ class RZ_DSay
 	bool m_bJump;			// a jump: m_sText is the target node
 	bool m_bDo;				// node entry effects: m_aDo
 	ref array<ref RZ_DEffect> m_aDo;
+	string m_sLie;			// ~lie:<key>: a lie the player is told (heard_lie:<key> once shown)
+	string m_sTruth;		// ~truth:<key>: the truth (knows:<key> once shown)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -68,7 +70,7 @@ class RZ_DChoice
 	string m_sPass;
 	string m_sShort;
 	string m_sRefused;
-	string m_sCheck;			// "", "persuade", "threaten"
+	string m_sCheck;			// "", "persuade", "threaten", "lie", "look"
 	int m_iCheckFaction = -1;
 	int m_iDifficulty;
 	string m_sEasier;			// a trait that makes it one easier
@@ -78,6 +80,8 @@ class RZ_DChoice
 	int m_iCostFaction = -1;
 	int m_iCost;
 	ref RZ_DCond m_If;
+	ref RZ_DCond m_Truth;		// a [Lie] that's true while this holds: no lie, no check
+	string m_sCallout;			// [Evidence]: shown only to a player who heard this lie and knows the truth
 	ref array<ref RZ_DEffect> m_aDo = {};
 	ref array<ref RZ_DEffect> m_aShort = {};
 	ref array<ref RZ_DEffect> m_aElse = {};
@@ -113,6 +117,7 @@ class RZ_DConv
 	static const int FLAG_DAILY = 2;
 	static const int FLAG_GREET = 4;
 	static const int FLAG_ALWAYS = 8;	// shows even when the speaker refuses you (the finale's route topics)
+	static const int FLAG_BARK = 16;
 
 	string m_sId;
 	ref array<string> m_aFor = {};
@@ -142,6 +147,13 @@ class RZ_DConv
 	bool IsGreet()
 	{
 		return (m_iFlags & FLAG_GREET) != 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line said to a player passing by, no choices (RZ_DialogueBarks).
+	bool IsBark()
+	{
+		return (m_iFlags & FLAG_BARK) != 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -176,6 +188,19 @@ class RZ_DialogueDB
 	int Count()
 	{
 		return m_aConvs.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int CountBarks()
+	{
+		int n = 0;
+		foreach (RZ_DConv c : m_aConvs)
+		{
+			if (c.IsBark())
+				n++;
+		}
+
+		return n;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -297,6 +322,23 @@ class RZ_DialogueDB
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The last line said is a lie the player is told (kind "lie") or the truth (kind "truth").
+	void Mark(string kind, string key)
+	{
+		if (!m_Node || m_Node.m_aItems.IsEmpty())
+		{
+			m_iBad++;
+			return;
+		}
+
+		RZ_DSay s = m_Node.m_aItems[m_Node.m_aItems.Count() - 1];
+		if (kind == "lie")
+			s.m_sLie = key;
+		else
+			s.m_sTruth = key;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Jump(string cond, string target)
 	{
 		if (!m_Node)
@@ -351,6 +393,24 @@ class RZ_DialogueDB
 		ReadCheck(c, check);
 		ReadCost(c, cost);
 		m_Node.m_aChoices.Insert(c);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The last choice's options beyond the check and cost: `truth <conditions>` (a [Lie] that's true
+	//! while they hold) and `callout <lie key>` ([Evidence]).
+	void ChoiceExtra(string truth, string callout)
+	{
+		if (!m_Node || m_Node.m_aChoices.IsEmpty())
+		{
+			m_iBad++;
+			return;
+		}
+
+		RZ_DChoice c = m_Node.m_aChoices[m_Node.m_aChoices.Count() - 1];
+		if (!truth.IsEmpty())
+			c.m_Truth = Compile(truth);
+
+		c.m_sCallout = callout;
 	}
 
 	// ================================================================ Compiling

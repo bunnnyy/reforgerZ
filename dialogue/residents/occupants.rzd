@@ -28,8 +28,9 @@ voice haven
 node start
   say "Half portions since the truck didn't come. The children eat first. Don't tell the council head I said."
   say "The soup's mostly water. We've started calling it tea."
-  > @give "Put two tins in the stores." -> given   cost item:food*2   do call:hand_in:2; regard:thanks
+  > @give "Put two tins in the stores." -> given   cost item:food*2   do call:hand_in:2; regard:thanks; keep:house.tins@here
   > @what "What are you short of most?" -> what
+  > @promise "I'll bring two tins. Two hours." -> promised   if !promise:house.tins@here   do promise:house.tins@here:2h
   > @sorry "I've nothing to give." -> nothing
 
 node given
@@ -38,8 +39,12 @@ node given
 
 node what
   say "Anything in a tin. Bread doesn't last the walk. And somebody to fix the stove, but that's another story."
-  > @give2 "Put two tins in the stores." -> given   cost item:food*2   do call:hand_in:2; regard:thanks
+  > @give2 "Put two tins in the stores." -> given   cost item:food*2   do call:hand_in:2; regard:thanks; keep:house.tins@here
   > @back3 "Something else." -> hub
+
+node promised
+  say "I'll tell the children. No, I won't. I'll tell them when the tins are on the shelf."
+  > @back5 "Something else." -> hub
 
 node nothing
   say "Nobody has. Come back if that changes. We'll still be here, most likely."
@@ -60,6 +65,7 @@ node start
 
 node stay
   say "Sit at the end. Hat off. Nobody eats before the name."
+  do later:6h:house.stayed@here
   > @back5 "Something else." -> hub
 
 node leave
@@ -115,3 +121,38 @@ node chosen public
 node settled
   say "Somebody settled the bed by the stove already. Nobody argues about it now. Out loud."
   > @back2 "Something else." -> hub
+
+# Promises and callbacks (docs/DIALOGUE.md, "Promises and callbacks"): a promise is kept by doing it
+# (keep:) or broken when its play runs out; the next greeting says which. Greets show once a life.
+conv occupant.house.tins_kept
+for occupant
+when kept:house.tins@here
+greet
+once
+prio reaction
+voice haven
+
+node start
+  say "You're the one who brought the tins. The children asked if you're coming back. I said I'd ask."
+
+conv occupant.house.tins_broken
+for occupant
+when broke:house.tins@here
+greet
+once
+prio reaction
+voice haven
+
+node start
+  say "You said you'd bring tins. I told the children. That part's on me, not you."
+
+conv occupant.house.stayed
+for occupant
+when due:house.stayed@here & !house:died
+greet
+once
+prio reaction
+voice haven
+
+node start
+  say "You stayed for the name, the other night. People noticed. Nobody will say so, so I'm saying it."

@@ -633,7 +633,7 @@ and the UI files) need none, and seven have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction` | Guidance > Radio prefab | optional | given to every new life |
+| `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction` | Guidance > Radio prefab | optional | given to every new life |
 | `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | the back-road scenario |
 | `RZ_ScratchedDoor.et` | a door or wall panel prop | the clue set | Guidance > Door prefab | optional | the basement scenario |
 | `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | the church scenario, safehouse flyers |
@@ -742,7 +742,7 @@ still to do:
 | Prefab | Add | Why | Need |
 |---|---|---|---|
 | every player character prefab used by a loadout (the plugin's RZ_Loadout_*.et get it already) | `RZ_TreatOtherAction` | other players can treat you | required |
-| any vanilla radio prefab you want crackable | `RZ_TuneRadioAction` | secure radio channels (the wind-up radio gets it already) | optional |
+| any vanilla radio prefab you want crackable | `RZ_TuneRadioAction`, `RZ_RadioCallAction` | secure radio channels, and calling on the open channel with Dialogue > Trees on (the wind-up radio gets both already) | optional |
 | quartermasters you placed by hand (not from the manifest) | `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE) | standing, the stronghold leader and amends (the plugin's quartermasters get these already; also add the faction's services: Fence and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon) | optional |
 | the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab to one this quartermaster sells at Trusted or below; anything else is refused) | optional |
 | any quartermaster | `RZ_FactionShopAction` | vanilla stock (suggested stock table); the Item prefab is a vanilla item or crate, never a vehicle or a car part (refused: cars are only found) | optional |
@@ -1620,7 +1620,7 @@ quartermaster's Buy actions, **UI > Reader** and **Subtitles** off for cards. Ho
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_UIData.c:945` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `Dialogue/RZ_Dialogue.c:494` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `Dialogue/RZ_Dialogue.c:650` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:174` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
@@ -1919,15 +1919,19 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 46 conversations, 124 nodes`, `Dialogue: memory for N players` (or `Dialogue:
-memory from season N dropped (season M)` after a wipe) and `Dialogue: trees off` (on with **Dialogue >
-Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
+`Dialogue: loaded 106 conversations, 236 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
+`Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
+**Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
 season mood <mood> (was <mood>)`, `Dialogue: budget reached <player> <faction>` (talk Favor for the
 day), `Reputation: crew name <name> for <player>`, `Dialogue debug: ...` (an admin's `/talkdebug`), and
 with **Voice > Log** on, `voice: face <faction> <register> <id> mood=<mood> listener=<identity>`. Several
 players: `Dialogue: scene <key> decided <value> by <player>`, `Dialogue: scene <key> hold by <player> objected to
-by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> vouched for <player>`. The finale's
-commit: `Dialogue: <player> committed to <route> at <speaker>`. Lies: `Story:
+by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> vouched for <player>`,
+`Dialogue: sway <major>.<vote>.<word> by <player> (voter N)` (a sitting), `Dialogue: session cap at <speaker>`.
+The finale's commit: `Dialogue: <player> committed to <route> at <speaker>`.
+Promises and barks: `Dialogue: promise <key> made|kept|broken by <player>`, `Dialogue: bark <conv> to <player>`.
+The season record: `Reputation: season record: <player> locked to <route>`. Lies: `Story:
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
 `Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
@@ -2269,6 +2273,35 @@ when it happens)
   personal job and the next greeting is "You're the one who ..."; "What do you make of me?" gives
   the faction's template with your best and worst deeds and the rule in brackets. A Red Hand crew
   name comes with its notice (pay a toll with exactly the Favor you have, while Known).
+- [ ] Trees on, lies you're told: ask the Scavenger where's worth looking (the chemist's), then the
+  Doctor wanderer about it ("I cleared it myself"); back at the Scavenger, "[Evidence] Picked clean
+  on Day 3." shows and opens the honest answer. As a Hunter it shows "[Hunter]" from the start.
+- [ ] Trees on, a promise: at a short safehouse "I'll bring two tins. Two hours." gives "(A promise:
+  2 hours of your play to keep it.)"; the next Talk there lists it with the play left; handing in two
+  tins says "Kept"; letting it run out (or dying) says "Broken", and the house's next greeting says
+  so once. The Bastion sentry's "I'll check the road and come back." is kept by talking to them again.
+- [ ] Trees on, in Bastion kit you aren't Known in, at a checkpoint's speaker: "Answer as one of
+  theirs." shows the look's tags and "[Look - Bastion - N of 2]" before you pick; a pass waves you
+  through, a catch takes the kit (and the conversation carries on). "Give the word at the wire."
+  offers three words: today's (heard on Bastion's secure net) adds a cover detail to the look; a wrong
+  one is caught at once. Change your jacket mid-conversation: it ends ("Didn't you just
+  change?"). Named Bastion people greet you with "Where did you get that jacket?".
+- [ ] Trees on, walk past a short safehouse's occupants, a Red Hand crewman (with a crew name) and the
+  lost Kid: each barks one line as a subtitle, at most one a minute, and the same person not again for
+  10 minutes; nothing while you're talking to someone. The log has `Dialogue: bark ...`.
+- [ ] Trees on, a stranger: Talk repeats their call-out; their ways are there as before, and "Ask
+  who they are" style topics fill in their own words (the house, the town, the name).
+- [ ] Trees on, the wind-up radio on the ground: "Call on the open channel" opens the talk screen.
+  "Call in what you've seen" puts a rumour on the roads, and a second player within 1.5 km gets "On
+  the open channel, someone: ..." with no name.
+- [ ] Trees on, Every Name's first sitting seated: a council head's "Talk about the sitting." shows
+  the options on the table as persuades; a pass leans that head's vote (the log's `Dialogue: sway
+  every_name.first.pot by ...`), and the topic goes for you until the second sitting.
+- [ ] After the 90% lock, a leader of your route greets you with an in-group line on the first visit
+  of the real day, another faction's with a cool one ("Civilian."); the word in "What do you make of
+  me?" is the lock's ("attached", "the other crew"). `season_record.json` is in `$profile:ReforgerZ`
+  after the 2-minute save; die and come back, and a leader who never met the new face says "Don't
+  know the face. Know the name." once.
 - [ ] Die and come back: a leader who remembered you crossing them now counts it at half (the
   attitude words in the talk screen's sub-line), says "There was a ... who crossed me once" once, and
   topics marked once show again. `dialogue.json` is in `$profile:ReforgerZ` after the 2-minute save;

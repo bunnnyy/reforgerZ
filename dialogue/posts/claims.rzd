@@ -1,0 +1,96 @@
+# Claims in someone else's kit (docs/DIALOGUE.md, "Claims in someone else's kit"): you're claiming
+# only when you pick the claim. The look decides it (its score is shown before you pick); a passed
+# look waves you through this post, and buys nothing else. The true answer costs nothing.
+
+conv post.bastion.claim
+for post:bastion
+when kit:in_kit & !caught
+topic "Answer as one of theirs."
+prio quest
+voice bastion
+
+node start
+  say "You. Which unit? I don't know your face."
+  > @claim "One of yours. Let me through." -> passed | caught   check look bastion 2
+  > @truth "Off a dead man. I'm not one of yours." -> honest
+  > @leave "Never mind." -> hub
+
+node passed
+  say "Fine. Go on. Keep your head down, we're short of heads."
+  do call:post_wave
+  > @back1 "Something else." -> hub
+
+node caught
+  say "Hands on the barrier. That kit goes back where it came from."
+  > @back2 "Understood." -> hub
+
+node honest
+  say "At least you said so. Take it off before somebody less patient asks."
+  > @back3 "Something else." -> hub
+
+# Bastion's word at the wire: three words, one of them today's (changed at the 05:30 shift and read
+# on Bastion's secure net). The right one counts at the next look; a wrong one is caught at once.
+# Not knowing it is no crime: the look runs without it.
+conv post.bastion.word
+for post:bastion
+when kit:in_kit & !caught
+topic "Give the word at the wire."
+prio quest
+voice bastion
+
+node start
+  say "Word?"
+  > @w1 "{wire:1}." -> said   do wire:1
+  > @w2 "{wire:2}." -> said   do wire:2
+  > @w3 "{wire:3}." -> said   do wire:3
+  > @none "Haven't had it today." -> without
+
+node said
+  jump caught -> wrong
+  say "Right. Name your unit."
+  > @claim "One of yours. Let me through." -> passed | refused   check look bastion 2
+  > @leave "I'll wait." -> hub
+
+node without
+  say "Then you had better have a face I know. Unit?"
+  > @claim2 "One of yours. Let me through." -> passed | refused   check look bastion 2
+  > @leave2 "I'll wait." -> hub
+
+node passed
+  say "Go on. Keep the word to yourself. It changes at half five."
+  do call:post_wave
+  > @back1 "Something else." -> hub
+
+node refused
+  say "No. Hands on the barrier. That kit goes back where it came from."
+  > @back2 "Understood." -> hub
+
+node wrong
+  say "Wrong word. Wrong kit. Hands on the barrier."
+  > @back3 "Understood." -> hub
+
+conv post.redhand.claim
+for post:redhand
+when kit:in_kit & !caught
+topic "Say you're crew."
+prio quest
+voice redhand
+
+node start
+  say "Crew? Funny. I know all the crew. What do they call you?"
+  > @claim "One of yours. Wave me on." -> passed | caught   check look redhand 2
+  > @truth "Found the armband. Thought it'd help." -> honest
+  > @leave "Never mind." -> hub
+
+node passed
+  say "Huh. Must be new. Go on, then, and pay next time like everyone."
+  do call:post_wave
+  > @back1 "Something else." -> hub
+
+node caught
+  say "Lads! Dress-up day. Armband off, if you please."
+  > @back2 "Fair enough." -> hub
+
+node honest
+  say "It might, too. Not here. Here we count the armbands."
+  > @back3 "Something else." -> hub

@@ -32,6 +32,7 @@ node start
   say "For each of the dead, the whole post answers together. It gets longer every week."
   > @hear "Can I listen tonight?" -> hear
   > @how "How long does it take now?" -> how
+  > @road "I'll check the road and come back." -> road   if !promise:sentry.road@here.visit   do promise:sentry.road@here.visit:2h
   > @other2 "Something else." -> hub
 
 node hear
@@ -39,7 +40,33 @@ node hear
   say "Half past eight. Stand outside the wire. Don't answer for anyone."
   > @back3 "Understood." -> hub
 
+node road
+  say "Nobody comes back and says. Prove me wrong. Two hours, then I log you as gone."
+  > @back5 "Something else." -> hub
+
 node how
   say "Longer than the call to Command. Shorter than it should be. We lost the count of the dead around Day nine."
   say "No. That's not true. We know the count. We just don't say it."
   > @back4 "Something else." -> hub
+
+conv named.bastion.sentry_back
+for named:bastion/sentry
+when kept:sentry.road@here.visit
+greet
+once
+prio reaction
+voice bastion
+
+node start
+  say "You came back. Most don't. I'll log the road as walked."
+
+conv named.bastion.sentry_gone
+for named:bastion/sentry
+when broke:sentry.road@here.visit
+greet
+once
+prio reaction
+voice bastion
+
+node start
+  say "Logged you as gone, two hours after you said. Glad to rub it out. It's the only rubbing out we get to do."

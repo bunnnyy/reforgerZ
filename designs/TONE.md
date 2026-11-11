@@ -1,7 +1,7 @@
 # Grey choices and dark humour
 
-**Status: designed; the standard, the lint, the season mood and the voice bank built.** Approved by the author
-on 2026-11-11.
+**Status: designed; the standard, the lint, the season mood, the voice bank, route lines face to face, look
+lines, dry lines and saying a set word built.** Approved by the author on 2026-11-11.
 
 This piece decides how the existing voices speak, and sets the standard every choice is written to. It
 adds only small, data-only helpers.
@@ -128,15 +128,14 @@ Still to build:
   read it once they're in the bank). The Red Hand's own send-off lines are exempt.
 - **A short house** jokes about the soup, the potatoes and the chores *more*, never about who eats, and not at
   all in the 30 minutes after a death there. The narrator never jokes about a shortage.
-- **Feud or truce:** a feud sharpens the Red Hand's taunts and Bastion's lists; a truce allows a joke across the
-  line: *"Bastion and the Red Hand shared a fire last night. Both counted the matches."*
+- **Feud or truce** on the channels (face to face is built: [WRITING.md](../docs/WRITING.md#the-voice-bank)).
 - **The infected.** [INFECTED.md](INFECTED.md#people) owns the marks and each faction's words for them. Only the
   Red Hand jokes about the infected, in its own words ("the furniture", a crew nickname for a pack, "the boss"
   for its leader); the Haven names a pack's leader fondly, by who it was ("the big one" when nobody knew);
   Halcyon never says "him" or "her" about them; near a pack's range at dusk (or in fog) the Haven's people go
   quiet.
-- **A player they won't talk to:** nobody at a seat whose leader refuses a player jokes with them; wanderers who
-  were robbed don't joke with the robber.
+- **A player they won't talk to:** wanderers who were robbed don't joke with the robber (a refusing leader's seat
+  is built: [WRITING.md](../docs/WRITING.md#the-voice-bank)).
 - **Stronghold pages** (majors): a stronghold leader never jokes about their own page; once a page is in the
   open (`majors.pages_open`) rivals may gossip about it plainly, never as a joke in the first real day.
 
@@ -175,35 +174,10 @@ lock, never held back for after it. Nobody locks blind:
 | Halcyon | Published, fast, checked, with every author named | The paper starts on Day 1. The three weeks are on page one, or not at all |
 | Independent | For everyone, on nobody's terms | Nobody guards it and nobody counts it, and every faction remembers who took it from them |
 
-**After the lock: face to face only.** Shared channels never single out a player's route; their race lines are
-about factions, never about who backs them. That way the radio can't be used to find a route's backers in the
-fight. The Independent's commit on air is said without a name: *"This is nobody. The cure goes to everyone."*
-
-| The listener is | Lines said to them | Shared channels |
-|---|---|---|
-| **In-group** (locked into this faction's route) | Their name if this leader remembers them (helped or saved); otherwise the faction's word for them, with the lock's overlay ([REPUTATION_NAMES.md](REPUTATION_NAMES.md#9-the-factions-word-for-you)). Gallows humour *with* them, as one of their own. On a new life: *"Somebody said you're with us."* | Unchanged |
-| **Out-group** (locked into another route) | Cool: no in-jokes with them, and their word, not their name. The Haven stays kind and may make one joke at its own expense (it shuts its door over exile, never over a route). The Red Hand jokes *at* them, as at everyone. Halcyon is exact and disappointed. Bastion says "Civilian." | Unchanged |
-| **Independent** | Everyone is a little afraid of them. Jokes are *about* them, said to their face, never on air | Unchanged |
-| **Unsided** (late joiners, the undecided) | Courted once a visit: the Red Hand has an offer, Bastion a form, the Haven a bowl and a question, Halcyon a pen. Otherwise normal | Unchanged |
-
-**Coldness fades.**
-- It covers the opener only, not every line.
-- The first visit after the lock is cool. Later visits that real day are civil.
-- After two real days the leader is back to their normal register, with at most one route line a visit.
-- Ambient lines and radio never change.
-
-So a player on a minority route or the Independent route hears a normal Zone for the 4–17 days the gate may stay
-open.
-
-**When a route loses** (another route controls the cure):
-- **The loser's own leaders** give one plain line, with no blame on the player, and are back to their usual
-  register the next day.
-- **The winners, to a loser:**
-  - The Haven is gracious.
-  - Bastion files them with everyone else.
-  - The Red Hand: *"No hard feelings. Some soft ones."*
-  - Halcyon lists objections on page two.
-- **Never on air, never with a name.**
+**After the lock: face to face only.** Built: the route lines for the in-group, out-group, Independent, unsided
+and a lost route, with coldness fading after two real days ([WRITING.md](../docs/WRITING.md#the-race-and-the-lock)).
+The Independent's commit on air is said without a name: *"This is nobody. The cure goes to everyone."* Still to
+build: on a new life, *"Somebody said you're with us."*; at most one route line a visit after the first.
 
 **After the lock, the grey moves inside the route:** who goes first in Bastion's queue, which house the Haven serves
 first, what the Red Hand charges the Haven, whose name heads Halcyon's paper, and who the Independent route leaves to
@@ -259,34 +233,23 @@ Built: [WRITING.md](../docs/WRITING.md#the-voices).
 
 ### 3.7 Player lines in dialogue trees
 
-**Built:** the rules for conversation lines and choices ([WRITING.md](../docs/WRITING.md#conversations)).
-
-Still to build: a node's one **dry line**, which leads to the same result as the plain line it shadows (only the
-reply changes), and is never the only kind option or the only way to say no.
+Built, with dry lines: [WRITING.md](../docs/WRITING.md#conversations).
 
 ### 3.8 The faction's word for you, and crew names
 
-**Built:** saying the word and crew names ([WRITING.md](../docs/WRITING.md#conversations)). Still to build: a set
-word ("Sergeant {name}") said as each faction says rank (Bastion plainly, the Haven with a smile, the Red Hand as
-a reminder); at Champion the boss says the crew name, as the book being polite; a disguise never changes the word
-anyone uses for you once they know who you are.
+Built, with a set word said as each faction says rank and the crew name at Champion:
+[WRITING.md](../docs/WRITING.md#conversations), [REPUTATION.md](../docs/REPUTATION.md#what-people-call-you).
 
 ### 3.9 Faction kit and disguises
 
-**Earned clues and bought kit** (the amber ribbon, the red armband, faction armour bought at Trusted or Champion)
-say whose you are. The red armband means the crew has something on you.
-- A guard who sees a rival's clue makes one plain remark, at most once a visit.
-- The remark says only what the hostility state already does.
-- It never hints at a consequence that doesn't happen, and never at safety where there's danger.
+**Built:** the voice following the look's result in conversations ([WRITING.md](../docs/WRITING.md#faction-kit-and-disguises)).
 
-**Disguises.** [DISGUISE.md](DISGUISE.md) owns the look: one fixed check, shown before you commit, with no suspicion
-meter. The voice follows its results and has **no fixed count**:
-- A pass can come with no line at all, at least one time in three, chosen by the server.
-- A failed look at a hostile post can go straight to the guns.
-- A noticing line plays only when the look is actually being made: the guard turns to watch you. Walking away and
-  back never gives a free early warning.
-- The first noticing line may be dry (*"Nice uniform. Whose was it?"*), but only while the guard turns to watch
-  you. Never while nothing changes.
+Still to build: **earned clues and bought kit** (the amber ribbon, the red armband, faction armour bought at
+Trusted or Champion) say whose you are. A guard who sees a rival's clue makes one plain remark, at most once a
+visit, saying only what the hostility state already does: never a consequence that doesn't happen, never safety
+where there's danger. The red armband means the crew has something on you. And the look lines at barriers outside
+a conversation (disguise's): a failed look at a hostile post can go straight to the guns, and a noticing line plays
+only while the guard turns to watch you.
 
 ### 3.10 Running jokes and the majors' states
 
@@ -517,7 +480,7 @@ Built: [WRITING.md](../docs/WRITING.md#dark-humour-not-edginess) (5.1–5.5) and
 | **3. The voice bank** | Bank, `SeasonMood()`, temper, grief, joke memory, picker. Move the top-ranked pools (3.13) and tag their registers. The broadcast reads the mood and gains its two lines. Loudspeakers, the wipe line and guidance tips get the lint and a review, but stay out of the bank (few lines, or their own attribute class). `tools/voice_sim.py` | `Factions/RZ_FactionVoice.c`, `Factions/RZ_LeaderVoice.c`, `Factions/RZ_FactionLife.c` (chatter, secure channels), `Guidance/RZ_GuidanceText.c` (newcomer open channels), `World/RZ_Wanderers.c` (road news), `World/RZ_Safehouses.c`, `Director/RZ_Broadcast.c`; review only: `World/RZ_Perimeter.c`, `Core/RZ_Seasons.c`, `Guidance/RZ_GuidanceTips.c` | The simulator shows each mood's share inside 3.2 and no repeats inside the windows at the fastest cadence; the compile check passes. WRITING.md and DESIGN.md gain the mood, temper, grief and joke memory |
 | **4. Choice missions** | The grey test on every choice. Each cost line gets a world change behind it: a flag plus at least one reader. The three-beat outcome and system line. Who can choose; the clever way closes the honest one. Labels shortened. Honour Among Thieves' "let him keep it" becomes a branch. Then: Local Law, Shut the Door, The Ledger, Requisition, Protection Racket, Struck Off, No Reply, the three hard edges, Patients Not Samples, The Notebook, Private Collection, The Silent Village, The Witness, Rein In | `Missions/`, `Puzzles/` | Every choice passes 4.1; MISSIONS.md's Result text matches |
 | **5. Givers who lie** | About 12 briefs, each with 2–3 omissions plus an honest version, picked once a season: Learning the Drones, A Quiet Arrangement, Requisition, Names for Bastion, Off-Book Requisition, Rifles for Sale, The Real Orders, Unsanctioned Trial, Private Collection, Sell the Formula, The Pit's Debtor, Debt Collection. For each: the truth-finding approach open to everyone, the checks, the outcome lines, and the morale cap | Missions | No gotchas (4.3); no tag gives a lie away |
-| **6. State variants** | Majors' running jokes (3.10). Race lines and pitches. Route lines face to face. Lost-route and unsided lines. Saying the word and crew names. Disguise look lines. Epilogue lines with [EPILOGUE.md](EPILOGUE.md), for every ending including the slow cure, handed over and no cure, and the plain lines for a week. Every after-cure line made ending-aware | Voice bank | Every variant meets the minimum pool size (3.12) |
+| **6. State variants** | Majors' running jokes on the channels (3.10). Race lines and pitches. Epilogue lines with [EPILOGUE.md](EPILOGUE.md), for every ending including the slow cure, handed over and no cure, and the plain lines for a week. Every after-cure line made ending-aware. (Built: route lines face to face, lost-route and unsided lines, saying the word and crew names, disguise look lines) | Voice bank | Every variant meets the minimum pool size (3.12) |
 | **7. Check** | `voice_sim.py` over three scripted seasons: season speed 1, season speed 2, and a gate that runs to the slow finish. The runtime test with the voice log on and Voice > Force mood cycling the moods, to catch script exceptions and confirm the in-game picker matches the simulator. The author reads one player's radio log for an hour | `tools/`, `tools/runtime_test/` | No exceptions; the shares and repeats in the simulator are inside the targets |
 
 **Order.**
@@ -539,8 +502,9 @@ Built: [WRITING.md](../docs/WRITING.md#dark-humour-not-edginess) (5.1–5.5) and
 
 - **Built in phase 2:** the voice bank (`RZ_VoiceLine`, `RZ_VoiceDefaults.c`, **Voice > Lines** and **Disabled**) for
   face-to-face pools, `SeasonMood()` and temper with the broadcast reading it, `RZ_ToneGuard` face to face, the
-  players' joke memory, `tools/voice_sim.py`, the voice log and **Voice > Force mood**. Still needed below: the
-  bank's route and ending fields and the radio's pools, the shared channels' memory, grief's other feeds.
+  players' joke memory, `tools/voice_sim.py`, the voice log and **Voice > Force mood**; the route relation through
+  the bank's conditions (`route:in`, `route:out`...). Still needed below: the bank's ending field and the radio's
+  pools, the shared channels' memory, grief's other feeds.
 - **Voice bank (the design in full):** an `RZ_VoiceLine` attribute class made with `RZ_Util.NewWithDefaults`, with no field initialisers.
   Fields: a stable id; channel; faction; kind (aside, chatter tail, rumour, opener, closer, reaction, notice hand,
   epilogue, race, pitch, route, word); register (PLAIN, WRY, JOKE, TAUNT, BLEAK, SILENCE); a mood mask; a trait mask;

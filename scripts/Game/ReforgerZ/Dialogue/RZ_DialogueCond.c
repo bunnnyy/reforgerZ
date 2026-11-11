@@ -25,6 +25,8 @@ class RZ_DCtx
 	bool m_bStronghold;				// a stronghold leader, or inside a stronghold or the lab: no threats
 	int m_iTown = -1;				// the nearest settlement
 	string m_sScene;				// the open topic's scene record key ("" none)
+	RZ_StrangerVisit m_Stranger;	// weak: a stranger (errands), for {their:...} and stranger:<kind>
+	bool m_bRadio;					// the open channel: no body, nothing personal on air
 
 	//------------------------------------------------------------------------------------------------
 	vector Pos()
@@ -188,7 +190,7 @@ class RZ_DialogueCond
 			case "claim":
 				return mem.Has(pid, RZ_DialogueMemory.CLAIMS, ctx.m_sKey + "|" + t.m_sArg);
 			case "knows":
-				return mem.Knows(pid, t.m_sArg);
+				return mem.Knows(pid, RZ_DialogueTrees.Scoped(ctx, t.m_sArg));
 			case "item":
 			{
 				int star = t.m_sArg.IndexOf("*");
@@ -241,7 +243,14 @@ class RZ_DialogueCond
 				return facts.Flag("scene." + ctx.m_sScene + "." + t.m_sArg) > 0;
 			}
 			case "swayed":
+			{
+				// A major's sitting (every_name.first): its own one sway per player; else a tally's
+				int vote = RZ_DialogueVotes.Swayed(gm, pid, t.m_sArg);
+				if (vote >= 0)
+					return vote > 0;
+
 				return facts && facts.Flag("tally." + t.m_sArg + "." + profile.m_sIdentity) > 0;
+			}
 			case "mood":
 				return facts && RZ_SeasonMood.Name(facts.SeasonMood()) == t.m_sArg;
 			case "met":
@@ -273,9 +282,76 @@ class RZ_DialogueCond
 			case "stronghold":
 				return ctx.m_Leader && ctx.m_Leader.IsStronghold();
 			case "route":
-				return RZ_CureFinale.RouteTerm(t.m_sArg, pid);
+				return RouteTerm(ctx, t.m_sArg);
 			case "finale":
 				return RZ_CureFinale.FinaleTerm(t.m_sArg, pid, ctx.m_Wanderer);
+			case "lockdays":
+			{
+				RZ_RepSeason rec = RZ_RepSeason.Get();
+				return rec && Cmp(rec.LockDays(profile.m_sIdentity), OpOr(t), t.m_iVal);
+			}
+			case "heard_lie":
+				return mem.HeardLie(pid, RZ_DialogueTrees.Scoped(ctx, t.m_sArg));
+			case "promise":
+				return mem.PromiseState(pid, RZ_DialogueTrees.Scoped(ctx, t.m_sArg)) == RZ_DialogueMemory.OPEN;
+			case "kept":
+				return mem.PromiseState(pid, RZ_DialogueTrees.Scoped(ctx, t.m_sArg)) == RZ_DialogueMemory.KEPT;
+			case "broke":
+				return mem.PromiseState(pid, RZ_DialogueTrees.Scoped(ctx, t.m_sArg)) == RZ_DialogueMemory.BROKEN;
+			case "due":
+				return mem.Due(pid, RZ_DialogueTrees.Scoped(ctx, t.m_sArg));
+			case "kit":
+				return KitTerm(ctx, t.m_sArg);
+			case "passing":
+			{
+				RZ_Disguise passing = Disguise(gm);
+				return passing && RZ_Factions.IsValid(ctx.m_iFaction) && passing.IsPassing(pid, ctx.m_iFaction);
+			}
+			case "caught":
+			{
+				RZ_Disguise blown = Disguise(gm);
+				return blown && RZ_Factions.IsValid(ctx.m_iFaction) && blown.IsBlown(pid, ctx.m_iFaction);
+			}
+			case "sitting":
+				return RZ_DialogueVotes.Sitting(gm, t.m_sArg);
+			case "tabled":
+				return RZ_DialogueVotes.Tabled(gm, t.m_sArg);
+			case "title":
+			{
+				RZ_RepSeason titles = RZ_RepSeason.Get();
+				if (!titles || !RZ_Factions.IsValid(t.m_iFaction))
+					return false;
+
+				string title = titles.TitleFor(profile.m_sIdentity, t.m_iFaction);
+				title.ToLower();
+				title.Replace(" ", "_");
+				title.Replace("-", "_");
+				if (t.m_sOp.IsEmpty())
+					return !title.IsEmpty();
+
+				return title == t.m_sVal;
+			}
+			case "seasoned":
+			{
+				RZ_RepSeason seasoned = RZ_RepSeason.Get();
+				return seasoned && RZ_Factions.IsValid(t.m_iFaction) && seasoned.KnownByName(profile.m_sIdentity, t.m_iFaction, profile.m_iLives);
+			}
+			case "owed":
+			{
+				RZ_Checkpoints posts = gm.GetCheckpoints();
+				return RZ_Factions.IsValid(t.m_iFaction) && posts && posts.GetParley() && posts.GetParley().IsOwed(pid, t.m_iFaction);
+			}
+			case "setword":
+			{
+				profile.EnsureArrays();
+				return RZ_Factions.IsValid(t.m_iFaction) && !profile.m_aSetWord[t.m_iFaction].IsEmpty();
+			}
+			case "radio":
+				return ctx.m_bRadio;
+			case "truce":
+				return RelationTerm(ctx, t, true);
+			case "feud":
+				return RelationTerm(ctx, t, false);
 		}
 
 		// Keys of designs not built yet (tribes, the majors, disguise, errands): quiet
@@ -485,6 +561,101 @@ class RZ_DialogueCond
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! truce:<f>, feud:<f>: the speaker's faction and the one named, now (faction life).
+	protected static bool RelationTerm(RZ_DCtx ctx, RZ_DTerm t, bool truce)
+	{
+		RZ_FactionLife life = ctx.m_GM.GetFactionLife();
+		if (!life || !RZ_Factions.IsValid(ctx.m_iFaction) || !RZ_Factions.IsValid(t.m_iFaction))
+			return false;
+
+		if (truce)
+			return life.HasTruce(ctx.m_iFaction, t.m_iFaction);
+
+		return life.HasFeud(ctx.m_iFaction, t.m_iFaction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static RZ_Disguise Disguise(RZ_GameModeComponent gm)
+	{
+		RZ_Hostility hostility = gm.GetHostility();
+		if (!hostility)
+			return null;
+
+		return hostility.GetDisguise();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! kit:own (the speaker faction's kit, worn as your own colours), kit:in_kit (their kit, below
+	//! Known with them), kit:full (their full kit), kit:other (another faction's colours), kit:any.
+	protected static bool KitTerm(RZ_DCtx ctx, string what)
+	{
+		RZ_Disguise d = Disguise(ctx.m_GM);
+		if (!d || !d.IsOn())
+			return false;
+
+		int pid = ctx.m_iPlayer;
+		int f = ctx.m_iFaction;
+		if (what == "any")
+			return d.Wearing(pid) >= 0;
+
+		if (what == "other")
+		{
+			for (int o = 0; o < RZ_Factions.COUNT; o++)
+			{
+				if (o != f && d.KitLevel(pid, o) > 0)
+					return true;
+			}
+
+			return false;
+		}
+
+		if (!RZ_Factions.IsValid(f))
+			return false;
+
+		switch (what)
+		{
+			case "own": return d.KitLevel(pid, f) > 0 && d.IsOwnColours(pid, f);
+			case "in_kit": return d.InTheirKit(pid, f);
+			case "full": return d.KitLevel(pid, f) >= 2;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player's route at the 90% lock (docs/FINALE.md): none, any, in (the speaker's faction's
+	//! route), out (another faction's route), independent, unsided (no route while the routes are
+	//! open), won and lost (after the cure, the route that controls it or not), or a route by name.
+	protected static bool RouteTerm(RZ_DCtx ctx, string what)
+	{
+		RZ_CureFinale fin = ctx.m_GM.GetFinale();
+		int r = RZ_CureFinale.NONE;
+		if (fin && RZ_CureFinale.IsOn())
+			r = fin.RouteOfPlayer(ctx.m_iPlayer);
+
+		bool cured = ctx.m_GM.GetCure() && ctx.m_GM.GetCure().IsCured();
+		switch (what)
+		{
+			case "none": return r == RZ_CureFinale.NONE;
+			case "any": return r != RZ_CureFinale.NONE;
+			// The lock ends at the cure: in, out and independent are the locked weeks only
+			case "in": return !cured && r != RZ_CureFinale.NONE && r != RZ_CureFinale.INDEP && r == ctx.m_iFaction;
+			case "out": return !cured && r != RZ_CureFinale.NONE && r != RZ_CureFinale.INDEP && r != ctx.m_iFaction;
+			case "independent": return !cured && r == RZ_CureFinale.INDEP;
+			case "unsided": return r == RZ_CureFinale.NONE && fin && fin.IsOpen();
+			case "won": return cured && fin && r != RZ_CureFinale.NONE && fin.Controller() == r;
+			case "lost": return cured && fin && r != RZ_CureFinale.NONE && fin.Controller() != r;
+			case "haven": return r == RZ_CureFinale.HAVEN;
+			case "bastion": return r == RZ_CureFinale.BASTION;
+			case "redhand": return r == RZ_CureFinale.REDHAND;
+			case "halcyon": return r == RZ_CureFinale.HALCYON;
+			case "indep": return r == RZ_CureFinale.INDEP;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Other players within 8 m.
 	static int OthersNear(RZ_DCtx ctx)
 	{
@@ -527,6 +698,14 @@ class RZ_DialogueText
 		s.Replace("{here}", ctx.m_sPlace);
 		s.Replace("{player}", RZ_Util.PlayerName(ctx.m_iPlayer));
 		s.Replace("{faction}", RZ_Factions.GetName(ctx.m_iFaction));
+		if (ctx.m_Stranger && s.Contains("{their:"))
+			s = TheirText(ctx.m_Stranger, s);
+
+		if (s.Contains("{title:"))
+			s = Titles(ctx, s);
+
+		if (s.Contains("{wire:"))
+			s = RZ_DialogueWire.Fill(ctx.m_GM, s);
 		if (s.Contains("{toll}"))
 			s.Replace("{toll}", ctx.m_GM.GetCheckpoints().TollFor(ctx.m_iPlayer).ToString());
 
@@ -548,6 +727,46 @@ class RZ_DialogueText
 		s = RZ_RepVoice.FillFor(ctx.m_GM, ctx.m_iPlayer, ctx.m_iFaction, s);
 		if (ctx.m_GM.GetFacts())
 			s = ctx.m_GM.GetFacts().Fill(s);
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! {their:town}: a stranger's own words (the errand routine's texts: town, house, name...).
+	protected static string TheirText(RZ_StrangerVisit v, string text)
+	{
+		string s = text;
+		foreach (string key, string value : v.m_mText)
+		{
+			s.Replace("{their:" + key + "}", value);
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! {title:bastion}: the name this player's best life earned with that faction this season.
+	protected static string Titles(RZ_DCtx ctx, string text)
+	{
+		RZ_RepSeason rec = RZ_RepSeason.Get();
+		string ident = ctx.m_GM.GetProfile(ctx.m_iPlayer).m_sIdentity;
+		string s = text;
+		array<string> words = {"haven", "bastion", "redhand", "halcyon"};
+		foreach (string w : words)
+		{
+			string token = "{title:" + w + "}";
+			if (!s.Contains(token))
+				continue;
+
+			string title = "";
+			if (rec)
+				title = rec.TitleFor(ident, RZ_DialogueDB.FactionKey(w));
+
+			if (title.IsEmpty())
+				title = "a stranger";
+
+			s.Replace(token, title);
+		}
 
 		return s;
 	}

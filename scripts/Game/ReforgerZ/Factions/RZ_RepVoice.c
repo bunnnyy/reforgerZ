@@ -75,6 +75,9 @@ class RZ_RepVoice
 			faction = RZ_EFaction.SURVIVORS;
 
 		string manner = Manner(p.GetFame(faction), p.GetInfamy(faction));
+		if (manner == "hostile" && IsOwed(gm, playerId, faction))
+			return "owed";
+
 		if (manner != "hostile" || !leader || !gm.GetLeaders())
 			return manner;
 
@@ -87,11 +90,20 @@ class RZ_RepVoice
 		return manner;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Hunted or worse with `faction`, and still owed a hearing (the parley, RZ_Parley.IsOwed).
+	static bool IsOwed(RZ_GameModeComponent gm, int playerId, int faction)
+	{
+		RZ_Checkpoints posts = gm.GetCheckpoints();
+		return RZ_Factions.IsValid(faction) && posts && posts.GetParley() && posts.GetParley().IsOwed(playerId, faction);
+	}
+
 	// ================================================================ The word for you
 	//------------------------------------------------------------------------------------------------
 	//! What `faction` calls this player to their face this life (docs/REPUTATION.md, "The word").
 	//! A set word (the majors, questlines) wins unless they're hostile. The Red Hand uses your crew
-	//! name once you have one ("new face" until then).
+	//! name once you have one ("new face" until then). The owed get their own word; after the 90%
+	//! lock and until the cure, a locked player is called by the lock's word instead.
 	static string Word(RZ_GameModeComponent gm, int playerId, int faction)
 	{
 		if (!RZ_Factions.IsValid(faction))
@@ -100,6 +112,13 @@ class RZ_RepVoice
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
 		p.EnsureArrays();
 		string manner = Manner(p.GetFame(faction), p.GetInfamy(faction));
+		if (manner == "hostile" && IsOwed(gm, playerId, faction))
+			return OwedWord(faction);
+
+		string locked = LockOverlay(gm, playerId, faction);
+		if (manner != "hostile" && !locked.IsEmpty())
+			return locked;
+
 		if (manner != "hostile" && !p.m_aSetWord[faction].IsEmpty())
 			return p.m_aSetWord[faction];
 
@@ -183,6 +202,62 @@ class RZ_RepVoice
 		}
 
 		return "excluded from the study";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The word for the owed (Hunted, with a hearing still owed).
+	static string OwedWord(int faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return "put out, prayed for";
+			case RZ_EFaction.MILITARY: return "on the list, with a note";
+			case RZ_EFaction.BANDITS: return "in the book, both pages";
+		}
+
+		return "excluded, with thanks";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the 90% lock and until the cure (docs/FINALE.md, "The lock"): what `faction` calls a
+	//! locked player. With them, on a rival route, or on the Independent route. "" not locked.
+	static string LockOverlay(RZ_GameModeComponent gm, int playerId, int faction)
+	{
+		RZ_CureFinale fin = gm.GetFinale();
+		if (!fin || (gm.GetCure() && gm.GetCure().IsCured()))
+			return "";
+
+		int r = fin.RouteOfPlayer(playerId);
+		if (r == RZ_CureFinale.NONE)
+			return "";
+
+		int rel = 1;
+		if (r == faction)
+			rel = 0;
+		else if (r == RZ_CureFinale.INDEP)
+			rel = 2;
+
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS:
+			{
+				array<string> haven = {"with the house", "the other lot's", "nobody's"};
+				return haven[rel];
+			}
+			case RZ_EFaction.MILITARY:
+			{
+				array<string> bastion = {"attached", "hostile element", "unaffiliated"};
+				return bastion[rel];
+			}
+			case RZ_EFaction.BANDITS:
+			{
+				array<string> redhand = {"in on it", "the other crew", "freelance"};
+				return redhand[rel];
+			}
+		}
+
+		array<string> halcyon = {"signed on", "a confound", "an uncontrolled variable"};
+		return halcyon[rel];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -544,13 +619,142 @@ class RZ_RepVoice
 			}
 		}
 
+		// After the lock (and the unsided while routes are open): the first visit each real day
+		string route = RouteLine(gm, playerId, l, seat);
+		if (!route.IsEmpty())
+			return FillFor(gm, playerId, l.m_eFaction, route);
+
 		string manner = VoiceManner(gm, playerId, l.m_eFaction, l);
+		if (manner != "hostile" && manner != "owed")
+		{
+			// Kin of a fallen Haven Champion, at the Haven's seats, once a life per leader
+			string kinKey = seat + "|kin";
+			if (p.m_bFallenKin && l.m_eFaction == RZ_EFaction.SURVIVORS && trees && !trees.GetMemory().Has(playerId, RZ_DialogueMemory.NOTES, kinKey))
+			{
+				trees.GetMemory().Add(playerId, RZ_DialogueMemory.NOTES, kinKey);
+				return "\"Family. Sit by me. We read the name every supper, you know. We haven't stopped.\"";
+			}
+
+			string aside = WhoYouWorkFor(gm, playerId, l);
+			if (!aside.IsEmpty())
+				return aside;
+
+			// One time in three, the best thing they know you did
+			string best = p.m_aBestDeed[l.m_eFaction];
+			if (!best.IsEmpty() && Math.RandomInt(0, 3) == 0)
+				return string.Format("\"You're the one who %1.\"", best);
+		}
+
+		// One time in four, a tally standing in for the worst deed: how many of theirs you've put down
+		string tally = KillsLine(p, l.m_eFaction);
+		if (!tally.IsEmpty() && Math.RandomInt(0, 4) == 0)
+			return tally;
+
 		string line = RZ_VoiceBank.PickFor(gm, "opener", l.m_eFaction, manner, l, playerId, l.m_vPos);
 		if (!line.IsEmpty())
-			return line;
+			return FillFor(gm, playerId, l.m_eFaction, line);
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		return RZ_LeaderVoice.Greeting(rng, l.m_eFaction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "You've put 4 of ours down." in their voice, when the tally is 3 or more and no worst deed says it.
+	protected static string KillsLine(RZ_PlayerProfile p, int faction)
+	{
+		int kills = p.m_aKills[faction];
+		if (kills < 3 || !RZ_Deeds.WorstText(p, faction).IsEmpty())
+			return "";
+
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return string.Format("\"You've put %1 of ours in the ground. I count. Somebody has to.\"", kills);
+			case RZ_EFaction.MILITARY: return string.Format("\"%1 of ours, by your hand. It's in the log. So are you.\"", kills);
+			case RZ_EFaction.BANDITS: return string.Format("\"%1 of the crew. The book has a page just for you. It's a long page.\"", kills);
+		}
+
+		return string.Format("\"%1 of our people. We recorded each one. We record everything.\"", kills);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A route line (the voice bank's `route` kind) the first visit to this leader each real day,
+	//! once routes are open or someone has locked; "" otherwise.
+	protected static string RouteLine(RZ_GameModeComponent gm, int playerId, RZ_Leader l, string seat)
+	{
+		RZ_CureFinale fin = gm.GetFinale();
+		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
+		if (!fin || !trees || (!fin.IsOpen() && fin.RouteOfPlayer(playerId) == RZ_CureFinale.NONE))
+			return "";
+
+		RZ_DialogueMemory mem = trees.GetMemory();
+		string key = seat + "|route";
+		int at = mem.TopicAt(playerId, key);
+		if (at > 0 && RZ_SeasonClock.Now() - at < RZ_DialogueMemory.DAY)
+			return "";
+
+		string line = RZ_VoiceBank.PickFor(gm, "route", l.m_eFaction, "", l, playerId, l.m_vPos);
+		if (!line.IsEmpty())
+			mem.NoteTopic(playerId, key);
+
+		return line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The change notice in the faction's voice (the voice bank's `change` lines, by manner), then
+	//! the rule in brackets: "(Hunted: their people shoot you. They still owe you a hearing at a
+	//! gate.)". "" with Trees off or no line: the plain notice stays.
+	static string ChangeLine(RZ_GameModeComponent gm, int playerId, int faction)
+	{
+		if (!TreesOn() || !RZ_Factions.IsValid(faction))
+			return "";
+
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		int fame = p.GetFame(faction);
+		int infamy = p.GetInfamy(faction);
+		string manner = VoiceManner(gm, playerId, faction, null);
+		string line = RZ_VoiceBank.PickFor(gm, "change", faction, manner, null, playerId, vector.Zero);
+		if (line.IsEmpty())
+			return "";
+
+		line = FillFor(gm, playerId, faction, line);
+		RZ_ETier tier = gm.GetTier(playerId, faction);
+		string rule = string.Format("(%1)", RZ_RepNames.NameWithRule(fame, infamy));
+		if (RZ_Reputation.IsHunted(tier) && IsOwed(gm, playerId, faction))
+			rule = "(Hunted: their people shoot you. They still owe you a hearing at a gate.)";
+		else if (RZ_Reputation.IsHunted(tier))
+			rule = "(Hunted: their people shoot you.)";
+
+		return line + " " + rule;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One time in four: who you work for, when it's another faction and they know it (the faction
+	//! you've given the most Fame this life, 15 or more).
+	protected static string WhoYouWorkFor(RZ_GameModeComponent gm, int playerId, RZ_Leader l)
+	{
+		if (Math.RandomInt(0, 4) != 0)
+			return "";
+
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		int best = -1;
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			if (best < 0 || p.GetFame(f) > p.GetFame(best))
+				best = f;
+		}
+
+		if (best < 0 || best == l.m_eFaction || p.GetFame(best) < 15)
+			return "";
+
+		string who = RZ_Factions.GetName(best);
+		switch (l.m_eFaction)
+		{
+			case RZ_EFaction.SURVIVORS: return string.Format("\"You run for %1 these days, I hear. Eat first. Then tell me about it.\"", who);
+			case RZ_EFaction.MILITARY: return string.Format("\"You run for %1. Noted. Arms out.\"", who);
+			case RZ_EFaction.BANDITS: return string.Format("\"Running for %1 now? Whatever they pay you, it's in our book too.\"", who);
+		}
+
+		return string.Format("\"You work for %1, mostly. We've adjusted for it.\"", who);
 	}
 
 	// ================================================================ Local deeds

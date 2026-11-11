@@ -8,21 +8,46 @@ class RZ_DialoguePack_residents
 
 	protected static void Add0(RZ_DialogueDB db)
 	{
+		db.Conv("named.bastion.kit_own", "named:bastion", "kit:own", "", 4, 6, "bastion");
+		db.Node("start");
+		db.Say("", "\"Kit suits you. Mind the collar. The sergeant notices collars.\"");
+		db.Conv("named.bastion.kit_theirs", "named:bastion", "kit:in_kit & !passing", "", 4, 6, "bastion");
+		db.Node("start");
+		db.Say("", "\"Where did you get that jacket? Don't answer. I'd have to write it down.\"");
 		db.Conv("named.bastion.sentry", "named:bastion/sentry", "", "Ask about the roll.", 2, 0, "bastion");
 		db.Node("start");
 		db.Say("", "\"When the night watch is set, the sergeant reads the whole roster out loud. The living answer: here.\"");
 		db.Say("", "\"For each of the dead, the whole post answers together. It gets longer every week.\"");
 		db.Choice("hear", "\"Can I listen tonight?\"", "hear", "", "", "", "", "", "", "", "");
 		db.Choice("how", "\"How long does it take now?\"", "how", "", "", "", "", "", "", "", "");
+		db.Choice("road", "\"I'll check the road and come back.\"", "road", "", "", "", "", "!promise:sentry.road@here.visit", "promise:sentry.road@here.visit:2h", "", "");
 		db.Choice("other2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("hear");
 		db.Say("night", "\"You're hearing it. Stand still and keep your mouth shut.\"");
 		db.Say("", "\"Half past eight. Stand outside the wire. Don't answer for anyone.\"");
 		db.Choice("back3", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("road");
+		db.Say("", "\"Nobody comes back and says. Prove me wrong. Two hours, then I log you as gone.\"");
+		db.Choice("back5", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("how");
 		db.Say("", "\"Longer than the call to Command. Shorter than it should be. We lost the count of the dead around Day nine.\"");
 		db.Say("", "\"No. That's not true. We know the count. We just don't say it.\"");
 		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("named.bastion.sentry_back", "named:bastion/sentry", "kept:sentry.road@here.visit", "", 3, 5, "bastion");
+		db.Node("start");
+		db.Say("", "\"You came back. Most don't. I'll log the road as walked.\"");
+		db.Conv("named.bastion.sentry_gone", "named:bastion/sentry", "broke:sentry.road@here.visit", "", 3, 5, "bastion");
+		db.Node("start");
+		db.Say("", "\"Logged you as gone, two hours after you said. Glad to rub it out. It's the only rubbing out we get to do.\"");
+		db.Conv("named.halcyon.kit_theirs", "named:halcyon", "kit:in_kit & !passing", "", 4, 6, "halcyon");
+		db.Node("start");
+		db.Say("", "\"That coat has somebody's initials in the collar. They aren't yours.\"");
+		db.Conv("named.redhand.kit_own", "named:redhand", "kit:own", "", 4, 6, "redhand");
+		db.Node("start");
+		db.Say("", "\"Wearing the red. Good. Now everyone knows who to blame.\"");
+		db.Conv("named.redhand.kit_theirs", "named:redhand", "kit:in_kit & !passing", "", 4, 6, "redhand");
+		db.Node("start");
+		db.Say("", "\"Nice armband. Whose was it before? Doesn't matter. Everything was somebody's before.\"");
 		db.Conv("named.redhand.tollman", "named:redhand/toll_man", "", "Ask who painted the hand.", 2, 0, "redhand");
 		db.Node("start");
 		db.Say("", "\"The boss. On Rudi's shutter, the day the garage changed hands.\"");
@@ -61,6 +86,7 @@ class RZ_DialoguePack_residents
 		db.Choice("leave", "\"I'll leave you to it.\"", "leave", "", "", "", "", "", "", "", "");
 		db.Node("stay");
 		db.Say("", "\"Sit at the end. Hat off. Nobody eats before the name.\"");
+		db.Do("later:6h:house.stayed@here");
 		db.Choice("back5", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("leave");
 		db.Say("", "\"Thank you for asking. Most people walk past the candle.\"");
@@ -69,19 +95,26 @@ class RZ_DialoguePack_residents
 		db.Node("start");
 		db.Say("", "\"Half portions since the truck didn't come. The children eat first. Don't tell the council head I said.\"");
 		db.Say("", "\"The soup's mostly water. We've started calling it tea.\"");
-		db.Choice("give", "\"Put two tins in the stores.\"", "given", "", "", "", "item:food*2", "", "call:hand_in:2; regard:thanks", "", "");
+		db.Choice("give", "\"Put two tins in the stores.\"", "given", "", "", "", "item:food*2", "", "call:hand_in:2; regard:thanks; keep:house.tins@here", "", "");
 		db.Choice("what", "\"What are you short of most?\"", "what", "", "", "", "", "", "", "", "");
+		db.Choice("promise", "\"I'll bring two tins. Two hours.\"", "promised", "", "", "", "", "!promise:house.tins@here", "promise:house.tins@here:2h", "", "");
 		db.Choice("sorry", "\"I've nothing to give.\"", "nothing", "", "", "", "", "", "", "", "");
 		db.Node("given");
 		db.Say("", "\"That's two suppers for somebody. I won't say who.\"");
 		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("what");
 		db.Say("", "\"Anything in a tin. Bread doesn't last the walk. And somebody to fix the stove, but that's another story.\"");
-		db.Choice("give2", "\"Put two tins in the stores.\"", "given", "", "", "", "item:food*2", "", "call:hand_in:2; regard:thanks", "", "");
+		db.Choice("give2", "\"Put two tins in the stores.\"", "given", "", "", "", "item:food*2", "", "call:hand_in:2; regard:thanks; keep:house.tins@here", "", "");
 		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("promised");
+		db.Say("", "\"I'll tell the children. No, I won't. I'll tell them when the tins are on the shelf.\"");
+		db.Choice("back5", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("nothing");
 		db.Say("", "\"Nobody has. Come back if that changes. We'll still be here, most likely.\"");
 		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("occupant.house.stayed", "occupant", "due:house.stayed@here & !house:died", "", 3, 5, "haven");
+		db.Node("start");
+		db.Say("", "\"You stayed for the name, the other night. People noticed. Nobody will say so, so I'm saying it.\"");
 		db.Conv("occupant.house.stove_bed", "occupant", "house:short & !house:died", "Ask who gets the bed by the stove.", 2, 0, "haven");
 		db.Scene("stove_bed", "speaker", "tier:haven>=known");
 		db.Node("start");
@@ -101,5 +134,11 @@ class RZ_DialoguePack_residents
 		db.Node("settled");
 		db.Say("", "\"Somebody settled the bed by the stove already. Nobody argues about it now. Out loud.\"");
 		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("occupant.house.tins_broken", "occupant", "broke:house.tins@here", "", 3, 5, "haven");
+		db.Node("start");
+		db.Say("", "\"You said you'd bring tins. I told the children. That part's on me, not you.\"");
+		db.Conv("occupant.house.tins_kept", "occupant", "kept:house.tins@here", "", 3, 5, "haven");
+		db.Node("start");
+		db.Say("", "\"You're the one who brought the tins. The children asked if you're coming back. I said I'd ask.\"");
 	}
 }

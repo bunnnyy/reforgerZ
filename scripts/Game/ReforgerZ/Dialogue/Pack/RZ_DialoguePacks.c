@@ -3,16 +3,19 @@ class RZ_DialoguePacks
 {
 	static void AddAll(RZ_DialogueDB db)
 	{
+		RZ_DialoguePack_barks.Add(db);
 		RZ_DialoguePack_finale.Add(db);
 		RZ_DialoguePack_leaders.Add(db);
 		RZ_DialoguePack_posts.Add(db);
+		RZ_DialoguePack_radio.Add(db);
 		RZ_DialoguePack_residents.Add(db);
+		RZ_DialoguePack_strangers.Add(db);
 		RZ_DialoguePack_table.Add(db);
 		RZ_DialoguePack_wanderers.Add(db);
 	}
 
 	static int Count()
 	{
-		return 46;
+		return 106;
 	}
 }
