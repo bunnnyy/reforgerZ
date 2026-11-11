@@ -1097,6 +1097,22 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   draws (the same for everyone at that subject while it's kept), `Reveal` tells the finder and the
   room (30 m) and adds the line to the journal. A background read (`RZ_StoryKit.Read`) goes to that
   player only and to the journal. The errand Sleeve Down and the six story jobs use them.
+- **Background reads.** Each background reads one kind of thing, the same in every story job, so
+  players learn it once; a read is never the only way to a truth, and a job never writes one for a
+  background it locks out:
+
+  | Background | Reads | Never reads |
+  |---|---|---|
+  | Nurse, Doctor | bodies and bites: who's bitten, how long ago, what killed them | papers |
+  | Mechanic | machines: engines, wrecks, black boxes, rigged locks | people |
+  | Hunter | the ground: tracks, how many, how old, which way | papers |
+  | Police | whether someone in a scene is lying (that they are, not what about) | numbers |
+  | Ex-Con, Raider | crews: marks, prices, who's really in charge | Bastion |
+  | Lab Tech | numbers: ledgers, manifests, readings | people |
+  | Radio Op | channels: live or a loop; at most one secure-net line a job | bodies |
+  | Elder | families: names, who's kin to whom, a house's own story | crews |
+  | Soldier | Bastion: rosters, unit codes, orders | crews |
+  | Drifter | road news: one extra hint from wanderers | — |
 - **Records** (`RZ_StoryKit.Record`): how a story job ended, as a world record `<key>.<what>` about its
   subject, with who did it and, for some, an epilogue line (`racket.<house>`, `colleague.fate`,
   `crash.box`, `distress.saved`, `struck.fate`, `trapped.family`).

@@ -3,9 +3,9 @@
 The small, personal jobs one named person asks of one player, each true because something in the
 world is true right now, and over the moment it stops being true. Contracts are the factions' work
 on the radio ([MISSIONS.md](MISSIONS.md)); questlines are the long stories
-([QUESTLINES.md](QUESTLINES.md)); errands are everything in between. What's still to build (the
-the epilogue deck's last six, the other margin cards, promises and threads, His Effects in full) is
-designed in [designs/ERRANDS.md](../designs/ERRANDS.md). In the epilogue week a few of the epilogue
+([QUESTLINES.md](QUESTLINES.md)); errands are everything in between. What's still to build is
+designed in [designs/ERRANDS.md](../designs/ERRANDS.md) (the epilogue deck's last cards in
+[designs/EPILOGUE.md](../designs/EPILOGUE.md#the-epilogue-deck-last-errands)). In the epilogue week a few of the epilogue
 deck's asks stand at the week's places instead of on the dealer: *Bring a cup* at the queue, *Read
 the names at supper* at a house, taking a name home ([EPILOGUE.md](EPILOGUE.md#places-and-scenes)).
 

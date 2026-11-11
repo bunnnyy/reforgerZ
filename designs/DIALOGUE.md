@@ -29,7 +29,7 @@ all conversations in this one engine. Nobody builds a second talk system.
   background, at most +1 from dialogue, −1 for the liar count, −1 for crossing lines. Missions' Pass /
   Short / Refused results sit on top of it. The built `PersuadeScore` is untouched.
 - **One threat score.** Dialogue's own `threaten` score (Infamy band, +1 armed) is gone. Every threat
-  uses the shared Fear score ([MISSION_STYLE.md](MISSION_STYLE.md#checks-persuade-and-fear) owns it;
+  uses the shared Fear score ([docs/DESIGN.md](../docs/DESIGN.md#checks-and-ways) owns it;
   [REPUTATION_NAMES.md](REPUTATION_NAMES.md#the-fear-check-one-threat-score) supplies its numbers):
   +3 Infamy, once per person by anyone for the season, three per life per faction, never on stronghold
   leaders, never free-standing in safe zones or safehouses.

@@ -179,7 +179,7 @@ and nothing in the week changes them.
 |---|---|---|---|
 | **Last Rounds** | Each faction's closing arc, playable: the Haven reads the List at the north road; Bastion's last call and last roll at the barrier; Halcyon's paper goes out; the Red Hand closes the book, paid or not | [MAJORS.md](MAJORS.md#last-rounds-the-codas-in-the-epilogue-week) (the scenes), EPILOGUE.md (the calendar) | Live on its first free evening with a player who could take part; if it still hasn't run when processing begins, it runs as data and its standing version goes up |
 | **Loose Ends** | Every questline still unfinished at the cure gets a short closing stage, so every story reaches an ending, even a rushed or bitter one | EPILOGUE.md, on the built questlines ([QUESTLINES.md](../docs/QUESTLINES.md)) | One stage, then the ending; at processing it closes as data. The majors never need one (every climax is settled by the gate); "A Week On" closes with its ending's line. Errands are never loose ends |
-| **Bring Them Home** | The tags, ID cards and keepsakes of the named dead (players' dead who ran with tribes among them) carried back to their houses and posts. A wall of names fills | EPILOGUE.md, with [INFECTED.md](INFECTED.md#after-the-cure-the-last-week) (the named young), [ERRANDS.md](ERRANDS.md#after-the-cure-the-epilogue-week) (His Effects) and MAJORS.md (Sedlak's box) | Each delivery is one trip. What nobody carries is listed on the wall as "not brought home" at processing |
+| **Bring Them Home** | The tags, ID cards and keepsakes of the named dead (players' dead who ran with tribes among them) carried back to their houses and posts. A wall of names fills | EPILOGUE.md, with [INFECTED.md](INFECTED.md#after-the-cure-the-last-week) (the named young), [ERRANDS.md](ERRANDS.md#the-catalogue) (His Effects) and MAJORS.md (Sedlak's box) | Each delivery is one trip. What nobody carries is listed on the wall as "not brought home" at processing |
 | **Quiet the Ridges** | Nobody new turns after the cure. The last alphas call with fewer answering. Hunt them, or let them die out | INFECTED.md (the run-down), EPILOGUE.md (the work) | Starving tribes lose a fifth every 12 real hours; on the last dusk every living alpha calls once, nothing answers, and it lies down at dawn |
 | **Take Back a Town** | Crawlers no longer refill, so a town cleared stays cleared. A candle in a window for each | INFECTED.md (no refill, no rise), EPILOGUE.md (the candles) | Each town is its own small finish. At most 8 towns get an epilogue mark |
 | **The Long Table** | If it was never exposed: the family's last week. Find it out, or watch them pack the jars and leave | EPILOGUE.md, on the built Long Table | Found, or gone by processing. Never described; no ambient line hints at it |
@@ -454,7 +454,7 @@ and every faction in the Zone thinks it knows where it is."* (conflict 11).
 wanderer's route, the approach to a safehouse or outpost, a campfire, a stopped car, near a fresh event or a body,
 a town edge at dusk (fog counts as dusk), their own place, or the line. Never in the empty middle of nowhere, never
 because a timer ran out, never with another player outside your group within 300 m. The old "one every 15–25
-minutes" stays only as a ceiling: it can stop a stranger, never start one. [ERRANDS.md](ERRANDS.md#18-strangers)
+minutes" stays only as a ceiling: it can stop a stranger, never start one. [docs/ERRANDS.md](../docs/ERRANDS.md#strangers)
 owns the rules.
 
 ---

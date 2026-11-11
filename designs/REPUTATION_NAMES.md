@@ -29,7 +29,7 @@ reads.
 - **One threat score** (the plan's section 5). Reputation's quiet threat, missions' Press and dialogue's `threaten`
   are one **Fear** check: the higher of your Feared band and your backing (at most 2), +1 for a listed background,
   no bonus for being armed, +3 Infamy, once per person by anyone, three per life per faction, a failed threat barred
-  for a real day, never on stronghold leaders. [MISSION_STYLE.md](MISSION_STYLE.md#checks-persuade-and-fear) owns it;
+  for a real day, never on stronghold leaders. [docs/DESIGN.md](../docs/DESIGN.md#checks-and-ways) owns it;
   this file keeps the reputation numbers it reads and the quiet success on built FORCE stages. `PRESS`, `TRADE`,
   `TRICK` and `LEAVE` are appended to the enum once; built threat stages keep recording FORCE
   ([The Fear check](#the-fear-check-one-threat-score)).
