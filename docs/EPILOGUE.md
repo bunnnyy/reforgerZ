@@ -256,8 +256,10 @@ escorts, the census and the column, leaders' topics as a notice, Loose Ends' hal
 reward and their endings' world effects as built (not at half), Personal Goals on epilogue deeds,
 the Long Table's family as text at the queue.
 
-**Planned** ([designs/EPILOGUE.md](../designs/EPILOGUE.md)): the epilogue deck (the last errands on
-errands' dealer), route marks, the evening calendar's own set pieces (the supper reading, the 20:30
+**The epilogue deck**, the last errands on errands' dealer, is
+[ERRANDS.md](ERRANDS.md#the-epilogue-deck)'s: 13 cards built.
+
+**Planned** ([designs/EPILOGUE.md](../designs/EPILOGUE.md)): the deck's last six cards, route marks, the evening calendar's own set pieces (the supper reading, the 20:30
 watch, second airings), titles from the season's best life, the truth beats and "What you didn't tell
 me", the factions' jobs on the ridges (Cull, the last reading, the bet), Take Back a Town's givers,
 graves for deaths before this shipped, the Long Table's family as bodies, the Walk Out's escorts and
