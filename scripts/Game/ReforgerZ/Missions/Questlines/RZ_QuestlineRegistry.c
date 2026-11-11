@@ -10,6 +10,7 @@ class RZ_QuestlineRegistry
 		q.Register(RZ_Quest_ShortWeight);
 		q.Register(RZ_Quest_TheList);
 		q.Register(RZ_Quest_PriceOfTheDoor);
+		q.Register(RZ_Quest_EdgeOfTown);
 
 		// Task Force Bastion
 
