@@ -600,7 +600,7 @@ layer of a shared piece, so the plan builds on them instead of beside them.
 |---|---|---|
 | Owner-only notices (`RpcDo_Notice`, `RpcDo_Payload` on `RZ_PlayerUIComponent`) | The owner-only payload | Step 0.5's leak fix is this change. Dialogue's `PAYLOAD_DIALOGUE` and the talk screen's `PAYLOAD_TALK` are both kind 6: they're one payload, named once |
 | Notice pacing (cards by importance) | Notice lanes and the interruption budget | The lanes extend it; importance becomes the lane |
-| The notebook (Standing, Journal, Radio, Map key, Hall of fame tabs) | The journal and UI feeds | New row kinds and the season tab go into the notebook's tabs |
+| The notebook (Standing, Journal, Radio, Hall of fame and The season tabs) | The journal and UI feeds | New row kinds and the season tab go into the notebook's tabs |
 | Talking to people: `RZ_Dialogue`, sessions, the talk screen, needs shown before you choose, no dice | Dialogue's engine | DIALOGUE.md's trees, checks, regard, lies and scenes are built on this `RZ_Dialogue`, never a second one. The approved modal screen replaces dialogue's earlier HUD panel idea; today's slots stay the fallback |
 | Subtitles and the reader | Barks and readables | Barks, spoken asks and the epilogue's lines become subtitles; notes open in the reader |
 | Lived-in outposts and camps (people with routines) | Named people and routines at holdings | Errands' chores and named people stand on these routines |

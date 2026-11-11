@@ -142,10 +142,10 @@ and one way to end it: **research the cure.**
 - **Any map**: towns, the quarantine line and its checkpoints are found automatically.
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
   emblems, an infection timer with the golden window, styled notice cards in each faction's
-  colour that come a few at a time by importance, a notebook (standing, journal, radio, map key,
+  colour that come a few at a time by importance, a notebook (standing, journal, radio,
   hall of fame, the season) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks, a repair screen for the cars and a shop screen at the quartermasters,
-  spoken lines as subtitles, notes on a paper reader, and on the map only what you know. Gamepad
+  spoken lines as subtitles, notes on a paper reader, and on the map only what you know, with its key in the corner. Gamepad
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
   or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play; the
   notebook, talk, repair and shop screens, reader and subtitles are written and not yet played; the
@@ -308,7 +308,7 @@ scripts/Game/ReforgerZ/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
                  the car repair and shop screens, the screen guard, the notice board, deploy-menu panel and loadout lock, the
-                 map's icon layer, notice styles, notice lanes (the interruption budget), chat commands
+                 map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist
                  (RZ_CreatePrefabsPlugin.c); the PC's helpers for building prefabs as text:

@@ -5174,6 +5174,24 @@
    "notes": "Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI)."
   },
   {
+   "id": "UIMapLegendLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the MapLegend layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sMapLegendLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Map legend layout",
+   "required": false,
+   "minimum": false,
+   "use": "the map key in the full-screen map's bottom-left, shown zoomed out (empty = no legend; needs the map icon layout)",
+   "notes": ""
+  },
+  {
    "id": "NotebookItem",
    "kind": "create",
    "system": "UI",
@@ -5247,24 +5265,6 @@
    "required": false,
    "minimum": false,
    "use": "the Radio tab (empty = Nothing here yet)",
-   "notes": ""
-  },
-  {
-   "id": "UIMapKeyPage",
-   "kind": "manual",
-   "system": "UI",
-   "path": "",
-   "basePrefab": "",
-   "baseFind": "",
-   "baseHint": "the Map key page layout (UI/LAYOUTS.md)",
-   "components": [],
-   "actions": [],
-   "slots": ["m_UISettings.m_sMapKeyPage"],
-   "listSlot": false,
-   "slotLabel": "UI > Map key page",
-   "required": false,
-   "minimum": false,
-   "use": "the Map key tab (empty = Nothing here yet)",
    "notes": ""
   },
   {
@@ -7082,6 +7082,8 @@
     "m_bNoiseMeter": "1",
     "m_fResyncSeconds": "60",
     "m_fMapRefreshSeconds": "20",
+    "m_fLegendFullZoom": "150",
+    "m_fLegendGoneZoom": "450",
     "m_bLockLoadouts": "1",
     "m_bBoardMenus": "1",
     "m_bSubtitles": "1",

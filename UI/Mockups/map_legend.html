@@ -7,28 +7,23 @@
 <script src="common/zone.js"></script>
 <style>
   body { background: #1d2a2e; }
-  .mapwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform: translate(14px, 128px) scale(.765); transform-origin: 0 0; }
+  .mapwrap { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
   .mk { position: absolute; width: 48px; height: 48px; transform: translate(-50%, -50%); filter: drop-shadow(0 2px 2px rgba(0,0,0,.6)); }
   .mk.sm { width: 38px; height: 38px; }
   .you { position: absolute; width: 0; height: 0; border-left: 11px solid transparent; border-right: 11px solid transparent; border-bottom: 26px solid #fff; transform: translate(-50%, -50%) rotate(35deg); filter: drop-shadow(0 0 3px #000); }
   .ring { position: absolute; border: 2px dashed rgba(242,194,48,.8); border-radius: 50%; transform: translate(-50%, -50%); }
-  .maphead { position: absolute; left: 24px; top: 52px; width: 1440px; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--line2); padding-bottom: 14px; }
-  .maphead .stencil { font-size: 40px; }
-  .maphead .mono { font-size: 15px; color: var(--dim); letter-spacing: .1em; }
-  .mapwrap::after { content: ''; position: absolute; inset: 0; border: 2px solid var(--line2); }
   .tagline { position: absolute; font: 700 16px 'JetBrains Mono'; color: #15171a; background: rgba(232,226,208,.9); padding: 3px 6px; transform: translate(-50%, 0); white-space: nowrap; letter-spacing: .06em; }
-  .legend { position: absolute; right: 40px; width: 410px; height: 826px; top: 128px; background: var(--panel); border: 1px solid var(--line); border-top: 5px solid var(--bone); padding: 20px 24px; }
-  .legend h2 { margin: 0 0 4px; font: 800 26px 'Inter Display', Inter; letter-spacing: .14em; text-transform: uppercase; }
-  .legend .sub { font: 500 13px 'JetBrains Mono'; color: var(--dim); margin-bottom: 8px; }
-  .lg { margin-top: 14px; }
-  .li { display: flex; align-items: center; gap: 14px; margin: 9px 0; }
-  .li .ic { width: 32px; height: 32px; }
-  .li .sw { display: flex; gap: 4px; }
-  .li .sw .ic { width: 24px; height: 24px; }
-  .li b { display: block; font: 700 15px Inter; }
-  .li span { font: 400 13px Inter; color: var(--dim); }
-  .li > .ic, .li > .perim { margin-right: 48px; }
-  .perim { width: 32px; height: 0; border-top: 3px dashed var(--hazard); flex: none; }
+  .mk.plated, .mk { z-index: 1; }
+  .mapkey { position: absolute; left: 96px; bottom: 54px; width: 540px; height: 316px; background: var(--panel); border: 1px solid var(--line); border-top: 5px solid var(--bone); padding: 14px 20px; }
+  .mapkey .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .mapkey h2 { margin: 0; font: 800 26px 'Inter Display', Inter; letter-spacing: .14em; text-transform: uppercase; }
+  .mapkey .sub { font: 700 13px 'JetBrains Mono'; color: var(--dim); letter-spacing: .12em; }
+  .mapkey .cols { display: flex; gap: 20px; margin-top: 14px; }
+  .mapkey .col { width: 240px; }
+  .mapkey .li { display: flex; align-items: center; gap: 10px; height: 36px; font: 700 18px Inter; }
+  .mapkey .li .ic { width: 28px; height: 28px; }
+  .mapkey .foot { position: absolute; left: 20px; bottom: 14px; font: 600 13px 'JetBrains Mono'; color: var(--dim); letter-spacing: .08em; }
+  .callout { position: absolute; font: 600 12px 'JetBrains Mono'; color: rgba(242,194,48,.85); letter-spacing: .1em; }
 </style>
 </head>
 <body>
@@ -59,34 +54,35 @@
   <!-- world -->
   <i class="mk plated" data-i="marker_power" style="left:700px;top:480px;color:var(--hazard)"></i>
   <i class="mk plated" data-i="marker_radio" style="left:640px;top:360px;color:var(--bone)"></i>
-  <i class="mk plated" data-i="marker_checkpoint" style="left:206px;top:880px;color:var(--hazard)"></i>
+  <i class="mk plated" data-i="marker_checkpoint" style="left:140px;top:470px;color:var(--hazard)"></i>
   <i class="mk plated" data-i="marker_checkpoint" style="left:1610px;top:200px;color:var(--hazard)"></i>
   <div class="ring" style="left:1600px;top:760px;width:190px;height:190px"></div>
   <i class="mk plated" data-i="marker_event" style="left:1600px;top:760px;color:var(--hazard)"></i>
   <div class="tagline" style="left:1600px;top:796px">FOG BANK · 18 MIN</div>
-  <i class="mk plated" data-i="marker_event" style="left:300px;top:820px;color:var(--hazard)"></i>
-  <div class="tagline" style="left:300px;top:856px">FEVER WATER</div>
+  <i class="mk plated" data-i="marker_event" style="left:330px;top:560px;color:var(--hazard)"></i>
+  <div class="tagline" style="left:330px;top:596px">FEVER WATER</div>
   <div class="you" style="left:930px;top:600px"></div>
 </div></div>
 <div class="layer">
-  <div class="maphead"><span class="stencil">Zone map</span><span class="mono">DAY 14 · 19:48 · GRID 400 M</span></div>
-  <div class="legend">
-    <h2>Map key</h2>
-    <div class="sub">Markers you can see now. The Zone is wider than any map.</div>
-    <div class="lg"><div class="label">Who holds what</div>
-      <div class="li"><div class="sw"><i class="plated" data-i="marker_stronghold" style="color:var(--haven)"></i><i class="plated" data-i="marker_stronghold" style="color:var(--bastion)"></i><i class="plated" data-i="marker_stronghold" style="color:var(--redhand)"></i></div><div><b>Stronghold</b><span>A faction's seat. It never falls.</span></div></div>
-      <div class="li"><div class="sw"><i class="plated" data-i="marker_outpost" style="color:var(--bastion)"></i><i class="plated" data-i="marker_outpost" style="color:var(--redhand)"></i><i class="plated" data-i="marker_outpost" style="color:var(--halcyon)"></i></div><div><b>Outpost</b><span>Held for now. Towns change hands.</span></div></div>
-      <div class="li"><i class="plated" data-i="marker_safehouse" style="color:var(--haven)"></i><div><b>Haven safehouse</b><span>Don't fire near it. Declare your bite.</span></div></div>
-      <div class="li"><i class="plated" data-i="marker_quartermaster" style="color:var(--bone)"></i><div><b>Quartermaster</b><span>Shop and leader, in the faction's colour.</span></div></div>
-      <div class="li"><i class="plated" data-i="marker_lab" style="color:var(--halcyon)"></i><div><b>Halcyon's lab</b><span>Samples, the trial dose, the cure.</span></div></div>
+  <div class="callout" style="left:96px;bottom:384px">THE MAP KEY, ZOOMED OUT. IT FADES AS YOU ZOOM IN; Y HIDES IT ▼</div>
+  <div class="mapkey">
+    <div class="top"><h2>Map key</h2><span class="sub">COLOUR: WHOSE IT IS</span></div>
+    <div class="cols">
+      <div class="col"><div class="label">Who holds what</div>
+        <div class="li"><i class="plated" data-i="marker_stronghold" style="color:var(--bastion)"></i>Stronghold</div>
+        <div class="li"><i class="plated" data-i="marker_outpost" style="color:var(--redhand)"></i>Outpost</div>
+        <div class="li"><i class="plated" data-i="marker_safehouse" style="color:var(--haven)"></i>Haven safehouse</div>
+        <div class="li"><i class="plated" data-i="marker_lab" style="color:var(--halcyon)"></i>Halcyon's lab</div>
+      </div>
+      <div class="col"><div class="label">The world</div>
+        <div class="li"><i class="plated" data-i="marker_event" style="color:var(--hazard)"></i>World event</div>
+        <div class="li"><i class="plated" data-i="marker_checkpoint" style="color:var(--hazard)"></i>Sealed checkpoint</div>
+        <div class="li"><i class="plated" data-i="marker_power" style="color:var(--bone)"></i>Power station</div>
+        <div class="li"><i class="plated" data-i="marker_radio" style="color:var(--bone)"></i>Radio station</div>
+        <div class="li"><i data-i="marker_range" style="color:var(--hazard)"></i>A pack's ground</div>
+      </div>
     </div>
-    <div class="lg"><div class="label">The world</div>
-      <div class="li"><i class="plated" data-i="marker_event" style="color:var(--hazard)"></i><div><b>World event</b><span>Open to anyone. The ring is roughly where.</span></div></div>
-      <div class="li"><i class="plated" data-i="marker_power" style="color:var(--hazard)"></i><div><b>Power station</b><span>Restore it for light, and noise.</span></div></div>
-      <div class="li"><i class="plated" data-i="marker_radio" style="color:var(--bone)"></i><div><b>Radio station</b><span>Hold the mast, speak to everyone.</span></div></div>
-      <div class="li"><i class="plated" data-i="marker_checkpoint" style="color:var(--hazard)"></i><div><b>Perimeter checkpoint</b><span>Sealed. Nobody passes, either way.</span></div></div>
-      <div class="li"><div class="perim"></div><div><b>The Perimeter</b><span>Drones, loudspeakers, unseen snipers.</span></div></div>
-    </div>
+    <div class="foot"><span class="key">I</span>/ <span class="key">Y</span> HIDE THE KEY</div>
   </div>
 </div>
 </body>

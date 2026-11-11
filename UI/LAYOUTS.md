@@ -2,7 +2,7 @@
 
 The ReforgerZ layouts are in `UI/layouts/ReforgerZ/`: the HUD, the notice card, the notebook's
 frame and its five pages, the notice board, the journal and radio rows, the talk screen, the
-reader, the car repair and shop screens, the map icon and the background panel. They were written as text
+reader, the car repair and shop screens, the map icon, the map legend and the background panel. They were written as text
 from the trees below and checked against every widget
 name and type the UI scripts look up.
 This file is their reference: the widget trees, the **names the scripts look up**, sizes, anchors,
@@ -36,8 +36,8 @@ mockup, its section says so.
 - **Icons** are `Image` widgets, and no layout sets an image yet. An icon a script swaps gets its
   image by name from **UI > Icon imageset**, and its tint. An icon marked *static* below draws as
   a flat square in its colour until it's given its image from the `RZ_Icons` imageset in the
-  layout editor (not done yet). The map key's and the Radio page's static icons are named after
-  their icon (`Key2_marker_safehouse`, `Chan6_status_secure_radio`).
+  layout editor (not done yet). The Radio page's static icons are named after their icon
+  (`Chan6_status_secure_radio`).
 - **Fonts.** The game's UI fonts (`UI/Fonts/` in 1.9) have no mono or serif face. Where the trees
   say *mono* (and the clue paper's *serif*), the layouts use Roboto:
   `UI/Fonts/Roboto/Roboto_Bold.fnt` or `Roboto_Regular.fnt`. Everything else is RobotoCondensed:
@@ -184,7 +184,7 @@ Frame (root, full screen)
 ├─ Text    Heading         at (96, 54), condensed bold 46: the tab's name (set by the script)
 ├─ Text    Header          at (96, 112), 840 wide, mono 18, dim: the sub-line (set by each page)
 ├─ Image   HeadRule        stretched from 96 to -96 at y 150, 2 high
-├─ Button  Tab0 … Tab5     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Journal, Radio, Map key, Hall of fame, The season
+├─ Button  Tab0 … Tab4     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Journal, Radio, Hall of fame, The season
 │  └─ Overlay TabNBox
 │     ├─ Image  TabNBg      the open tab bone, the others #1A1D20 (tinted by the script)
 │     ├─ Panel  TabNLine    border, hidden on the open tab
@@ -200,7 +200,7 @@ The pages are the old menus' layouts with the frame parts (overlay, heading, hea
 close button, footer) taken out, and their content moved into the 90% safe area: every horizontal
 position and width scaled by 0.973 from the left margin, which moves from 72 to 96. Each page's
 root is a full-screen `Frame` named after it (`StandingPage`, `JournalPage`, `RadioPage`,
-`MapKeyPage`, `HallPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
+`HallPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
 
 **Mouse.** The tabs, `CloseButton`, the journal row's root (`MissionRow`), the radio filter chip
 (`FilterButton`) and the notice board's `PostButton` are `Button`s. Long text sits in a
@@ -223,7 +223,8 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `RZ_RadioFilter`
 (**F**, pad **X**), `RZ_CarStart` (**T**, pad **Y**), `RZ_TurnPreview` (the pad's right stick) and
-`RZ_Reply1` to `RZ_Reply7` (**1** to **7**) in `MenuContext`. The list with
+`RZ_Reply1` to `RZ_Reply7` (**1** to **7**) in `MenuContext`, and `RZ_MapLegend` (**I**, pad **Y**) in
+`MapContext`. The list with
 the pad routes is in [UI.md](../docs/UI.md#controllers). Esc, Q/E, up/down and Enter use the
 vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
 
@@ -346,19 +347,6 @@ Overlay (root)
       ├─ Text   RowSpeaker    after RowChannel, 18, dim
       └─ Text   RowText       under them, 18, wraps
 ```
-
-### Map key page: `RZ_MapKeyPage.layout`
-
-Static: no names are looked up (the script sets only the frame's `Header`). It holds a
-legend panel at (72, 168), 640 × 840 before the scale, with one row per marker the map draws: the icon in its colour
-(32 × 32; the stronghold and outpost rows show three 24 × 24 icons in faction colours), the name
-in bold 18 and one line in 18, dim. Under WHO HOLDS WHAT: stronghold, outpost, Haven safehouse,
-Halcyon's lab. Under THE WORLD: world event and sealed checkpoint in hazard yellow, power station
-and radio station in bone. The icons are static.
-
-Unlike the mockup (`UI/Mockups/map_legend.html`), it has no Quartermaster or Perimeter rows,
-because `RZ_UIFeed.BuildMap` sends neither, and the power station is bone, as on the map, not
-hazard.
 
 ### Notice board: `RZ_NoticeBoardMenu.layout`
 
@@ -640,6 +628,38 @@ Frame (root, 28 × 28, top-left anchor, ignores the cursor)
 ├─ Image  Icon       28 × 28, a marker_* icon (white; the script sets the image and tints it)
 └─ Text   Label      under the icon, offset (-60, 30), 148 wide, centred, 18, bone, a dark shadow offset by 1
 ```
+
+## Map legend: `RZ_MapLegend.layout`
+
+The map key on the full-screen map (**UI > Map legend layout**), created into the map's root by
+`RZ_MapIconsUI` when the map opens, with the icon layer. Written as text. The script sets each
+`Key_<icon>` image from the imageset and tints it as the map does (the stronghold in Bastion's
+olive and the outpost in the Red Hand's red, as examples; the safehouse amber, the lab teal, the
+event, the checkpoint and the range ring hazard yellow, the stations bone), and fades the root
+with the zoom (`SetOpacity`; hidden at 0). Positions are from the root's top left.
+
+```
+Frame MapLegend (root, 540 × 316, anchor bottom-left, offset (96, -54): inside the safe area)
+├─ Image  (LegendBg)       #121416 at 90%
+├─ Image  (LegendAccent)   full width × 5, top edge, bone
+├─ Panel  (LegendLine)     border #2A2E31
+├─ Text   (LegendTitle)    at (20, 16), condensed bold 26, "MAP KEY"
+├─ Text   (LegendSub)      right-aligned, ending at (520, 22), mono bold 18, dim, "COLOUR: WHOSE IT IS"
+├─ Text   (label "WHO HOLDS WHAT") at (20, 60)        ├─ Text (label "THE WORLD") at (280, 60)
+├─ Image  Key_marker_stronghold   28 × 28 at (20, 92)  ├─ Image Key_marker_event       at (280, 92)
+├─ Image  Key_marker_outpost      at (20, 128)         ├─ Image Key_marker_checkpoint  at (280, 128)
+├─ Image  Key_marker_safehouse    at (20, 164)         ├─ Image Key_marker_power       at (280, 164)
+├─ Image  Key_marker_lab          at (20, 200)         ├─ Image Key_marker_radio       at (280, 200)
+│                                                     └─ Image Key_marker_range       at (280, 236)
+├─ Text   (KeyName_<icon>) beside each icon, 10 to its right, condensed bold 18, bone: Stronghold,
+│         Outpost, Haven safehouse, Halcyon's lab; World event, Sealed checkpoint, Power station,
+│         Radio station, A pack's ground
+├─ HorizontalLayout LegendPrompt   bottom left at (20, -14): the script makes the RZ_MapLegend prompt ("Hide the key")
+└─ Text   LegendPromptText         the same place, mono bold 18, dim, "I / Y  HIDE THE KEY": hidden once the prompt is made
+```
+
+Unlike the mockup (`UI/Mockups/map_legend.html`), it has no Quartermaster or Perimeter rows,
+because `RZ_UIFeed.BuildMap` sends neither.
 
 ## Background panel: `RZ_BackgroundPanel.layout`
 

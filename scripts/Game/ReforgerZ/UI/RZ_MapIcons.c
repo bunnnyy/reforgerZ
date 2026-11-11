@@ -4,12 +4,21 @@
 //! stations, the sealed checkpoints, world events; never contracts, which give a rough area only)
 //! and sends it to this player alone when the map opens, then every 20 s while it's open.
 //!
+//! The map key sits on the map too: a compact legend in the bottom-left (UI > Map legend layout),
+//! shown while the map is zoomed out and faded as you zoom in. RZ_MapLegend (I, pad Y) shows or
+//! hides it; the choice lasts the session.
+//!
 //! Add RZ_MapIconsUI to the components of the map configuration the game uses (the full-screen map
 //! config; WORKBENCH_SETUP.md, "Setting up the UI") and set UI > Map icon layout. Without the
-//! layout, the layer does nothing and the vanilla text markers stay.
+//! layout, the layer does nothing and the vanilla text markers stay (and there's no legend).
 class RZ_MapIconsUI : SCR_MapUIBaseComponent
 {
 	protected static const float HALF = 14;	// half the icon's size, to centre it on the spot
+	protected static const string LEGEND_ACTION = "RZ_MapLegend";
+
+	protected static bool s_bLegendHidden;	// the player hid the legend (this session)
+
+	protected Widget m_wLegend;
 
 	protected ref array<Widget> m_aIcons = {};
 	protected ref array<float> m_aX = {};
@@ -27,6 +36,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		m_iSeen = -1;
 		m_fAsk = 0;
 		Ask();
+		MakeLegend();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -34,6 +44,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 	{
 		m_bOpen = false;
 		Clear();
+		RemoveLegend();
 		super.OnMapClose(config);
 	}
 
@@ -60,6 +71,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		}
 
 		Place();
+		FadeLegend(settings);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -145,5 +157,87 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 
 			RZ_UIW.SetPos(w, sx - half, sy - half);
 		}
+	}
+
+	// ================================================================ The legend
+	//------------------------------------------------------------------------------------------------
+	//! The map key in the bottom-left, with its show/hide input. Nothing without both layouts.
+	protected void MakeLegend()
+	{
+		RemoveLegend();
+		RZ_UISettings settings = RZ_UISettings.Get();
+		if (!m_RootWidget || !settings.UsesMapIcons())
+			return;
+
+		m_wLegend = RZ_UIW.Create(settings.m_sMapLegendLayout, m_RootWidget);
+		if (!m_wLegend)
+			return;
+
+		// Its icons, in the colours the map draws them in (a stronghold and an outpost in two
+		// factions' colours, as examples: the colour says whose it is)
+		LegendIcon("marker_stronghold", RZ_UIColor.Faction(RZ_EFaction.MILITARY));
+		LegendIcon("marker_outpost", RZ_UIColor.Faction(RZ_EFaction.BANDITS));
+		LegendIcon("marker_safehouse", RZ_UIColor.Faction(RZ_EFaction.SURVIVORS));
+		LegendIcon("marker_lab", RZ_UIColor.Faction(RZ_EFaction.INSTITUTE));
+		LegendIcon("marker_event", RZ_UIColor.Hazard());
+		LegendIcon("marker_checkpoint", RZ_UIColor.Hazard());
+		LegendIcon("marker_power", RZ_UIColor.Bone());
+		LegendIcon("marker_radio", RZ_UIColor.Bone());
+		LegendIcon("marker_range", RZ_UIColor.Hazard());
+		bool prompt = RZ_UIW.AddPrompt(m_wLegend, "LegendPrompt", LEGEND_ACTION, "Hide the key");
+		RZ_UIW.Show(m_wLegend, "LegendPromptText", !prompt);
+		// VERIFY: RZ_MapLegend (MapContext) fires while the full-screen map is open, and pad Y there
+		// does nothing else (vanilla binds Y in the map only with D-pad left, held, to dismiss a hint)
+		GetGame().GetInputManager().AddActionListener(LEGEND_ACTION, EActionTrigger.DOWN, OnToggleLegend);
+		FadeLegend(settings);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of the legend's icons (Key_<icon> in the layout): its image from the imageset, and its colour.
+	protected void LegendIcon(string icon, Color c)
+	{
+		RZ_UIW.Icon(m_wLegend, "Key_" + icon, icon);
+		RZ_UIW.Tint(m_wLegend, "Key_" + icon, c);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RemoveLegend()
+	{
+		if (m_wLegend)
+			GetGame().GetInputManager().RemoveActionListener(LEGEND_ACTION, EActionTrigger.DOWN, OnToggleLegend);
+
+		RZ_UIW.Remove(m_wLegend);
+		m_wLegend = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnToggleLegend(float value = 0, EActionTrigger reason = 0)
+	{
+		s_bLegendHidden = !s_bLegendHidden;
+		FadeLegend(RZ_UISettings.Get());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shown in full while the map is zoomed out, fading as you zoom in, gone when zoomed in close
+	//! (UI > Map legend full and gone zooms: how wide a kilometre of map is on screen).
+	protected void FadeLegend(RZ_UISettings settings)
+	{
+		if (!m_wLegend)
+			return;
+
+		float alpha = 0;
+		if (!s_bLegendHidden)
+		{
+			float sx, sy, ex, ey;
+			float km = 0;
+			if (RZ_UIW.MapToScreen(m_MapEntity, 0, 0, sx, sy) && RZ_UIW.MapToScreen(m_MapEntity, 1000, 0, ex, ey))
+				km = Math.AbsFloat(ex - sx);
+
+			float full = Math.Max(1, settings.m_fLegendFullZoom);
+			float gone = Math.Max(full + 1, settings.m_fLegendGoneZoom);
+			alpha = Math.Clamp((gone - km) / (gone - full), 0, 1);
+		}
+
+		RZ_UIW.Fade(m_wLegend, alpha);
 	}
 }

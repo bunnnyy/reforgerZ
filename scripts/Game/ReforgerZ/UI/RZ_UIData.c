@@ -132,6 +132,15 @@ class RZ_UISettings
 	[Attribute("20", desc: "Map icons: seconds between refreshes while the map is open")]
 	float m_fMapRefreshSeconds;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Map legend: the map key in the full-screen map's bottom-left (UI/LAYOUTS.md, MapLegend), shown zoomed out and faded as you zoom in; the RZ_MapLegend input (I, pad Y) shows or hides it. Needs the map icon layout. Empty = no legend", "layout")]
+	ResourceName m_sMapLegendLayout;
+
+	[Attribute("150", desc: "Map legend: fully shown while a kilometre of map is at most this many units across on screen (zoomed out)")]
+	float m_fLegendFullZoom;
+
+	[Attribute("450", desc: "Map legend: gone once a kilometre of map is this many units across on screen (zoomed in); it fades in between")]
+	float m_fLegendGoneZoom;
+
 	[Attribute("1", desc: "The deploy menu refuses background loadouts the player hasn't unlocked (UI/RZ_LoadoutLock.c). Off: picking one plays as the default background with its gear")]
 	bool m_bLockLoadouts;
 
@@ -176,9 +185,6 @@ class RZ_UISettings
 
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Radio page layout (UI/LAYOUTS.md)", "layout")]
 	ResourceName m_sRadioPage;
-
-	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Map key page layout (UI/LAYOUTS.md)", "layout")]
-	ResourceName m_sMapKeyPage;
 
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Hall of fame page layout (UI/LAYOUTS.md)", "layout")]
 	ResourceName m_sHallPage;
@@ -1022,6 +1028,17 @@ class RZ_UIW
 	{
 		if (w)
 			FrameSlot.SetPos(w, x, y);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A widget's opacity, 0 to 1; hidden at 0 (the map legend's fade).
+	static void Fade(Widget w, float alpha)
+	{
+		if (!w)
+			return;
+
+		w.SetOpacity(Math.Clamp(alpha, 0, 1));
+		w.SetVisible(alpha > 0.01);
 	}
 
 	//------------------------------------------------------------------------------------------------
