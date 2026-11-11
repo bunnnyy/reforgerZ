@@ -2,7 +2,8 @@
 //! "Data feeds"). Owned by RZ_GameModeComponent and run on its tick, after the infection.
 //!
 //! - Pushed on change: the infection timer (plus a resync every minute), the secure channel the
-//!   player is listening to, and a noise level 0-6 from the heat where they stand.
+//!   player is listening to, a noise level 0-6 from the heat where they stand, and (with Stealth
+//!   on) how visible they are, 0-5, from stealth's own update (RZ_Stealth, every second).
 //! - Asked for by a menu as it opens: standing, the journal, the backgrounds, and by the map's
 //!   icon layer: what this player knows the place of (one string each, one record per line,
 //!   fields split by '|'; see BuildPayload).
@@ -22,6 +23,8 @@ class RZ_UIFeedState
 	float m_fPauseSent;
 	int m_iListen = -2;
 	int m_iNoise = -1;
+	int m_iSeen = -1;		// visibility level last sent (-1: none yet, the client hides it)
+	bool m_bSeenHidden;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -313,6 +316,25 @@ class RZ_UIFeed
 
 		st.m_iNoise = level;
 		ui.SendNoise(level);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! From RZ_Stealth's update: how visible this player is (0..1) and whether that counts as
+	//! hidden. Sent as a level 0 (hidden) to 5 (in plain sight), only when it changes.
+	void PushVisibility(int playerId, float vis, bool hidden)
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		if (!ui)
+			return;
+
+		int level = Math.ClampInt(RZ_Util.RoundToInt(vis * 5), 0, 5);
+		RZ_UIFeedState st = State(playerId);
+		if (level == st.m_iSeen && hidden == st.m_bSeenHidden)
+			return;
+
+		st.m_iSeen = level;
+		st.m_bSeenHidden = hidden;
+		ui.SendVisibility(level, hidden);
 	}
 
 	// ================================================================ Clues

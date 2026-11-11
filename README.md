@@ -15,6 +15,9 @@ and one way to end it: **research the cure.**
 - **The Director** moves the server through four outbreak stages over a season of about ten
   days (a season speed setting fits it to the server's size), spreads infection from town
   to town and sends hordes toward noise. The infected adapt a little as the cure advances.
+- **Stealth**: stance, speed, light, weather and noise make you more or less visible. The
+  infected near you see the most visible of you, lose a player who lies low out of sight, search
+  where they last saw them and give up; the HUD shows how visible you are.
 - **Bites you can survive**: most hits are scratches, a bite can be cleaned in its first two
   minutes, and the infection runs through fever, weakness and a final stage. Antidotes, Halcyon's
   trial dose, stabilisers and five low-grade meds with side effects exist from day one; research
@@ -64,8 +67,8 @@ and one way to end it: **research the cure.**
 
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
-That's about 76,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 30 `VERIFY` markers left in the game
+That's about 112,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+was also checked against the base game's script source; the 36 `VERIFY` markers left in the game
 scripts (and 9 in the plugin) are behaviours only a play-test can show, such as replication and
 what the AI does. The game mode also **runs on the server** in a test world with a fake player
 (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no script
@@ -102,7 +105,8 @@ scripts/Game/ReforgerZ/
                  reads: season flags, canon, claims, text tokens), the Long Table
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, story arcs, the questline engine, headlines
-  Zombies/       spawner (any zombie mod's prefabs), bite detection
+  Zombies/       spawner (any zombie mod's prefabs), bite detection, stealth (visibility, the
+                 infected's senses, losing them)
   Backgrounds/   backgrounds, personal goals, player profiles
   Factions/      reputation, quartermasters and shops, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,

@@ -1130,7 +1130,7 @@ class RZ_QM_ListCopies : RZ_HavenQM
 		IEntity ent = PlayerEnt(playerId);
 		string who = "";
 		if (ent)
-			who = m_aLookouts[slot].SeenBy(gm, ent.GetOrigin(), SEEN_RADIUS, false);
+			who = m_aLookouts[slot].SeenBy(gm, ent.GetOrigin(), SEEN_RADIUS, false, playerId);
 
 		if (who.IsEmpty() && !m_aQuiet[slot].IsQuiet(gm, playerId))
 			who = "Somebody in the yard";
@@ -1879,7 +1879,7 @@ class RZ_QM_ListChair : RZ_HavenQM
 		if (RZ_Util.DistXZ(ent.GetOrigin(), m_vTable) < 40)
 			return;
 
-		string who = m_Lookouts.SeenBy(gm, ent.GetOrigin(), SEEN_RADIUS, true);
+		string who = m_Lookouts.SeenBy(gm, ent.GetOrigin(), SEEN_RADIUS, true, carrier);
 		if (who.IsEmpty())
 			return;
 

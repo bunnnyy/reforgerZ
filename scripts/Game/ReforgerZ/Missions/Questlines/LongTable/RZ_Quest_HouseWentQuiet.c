@@ -1173,6 +1173,7 @@ class RZ_QM_TableProof : RZ_QM_TableBase
 		if (QFlag(gm, "wary") == 1)
 			radius = SEEN_RADIUS * 1.5;
 
+		radius = RZ_Stealth.SightRadius(playerId, radius);
 		foreach (IEntity e : m_aFamilyBodies)
 		{
 			if (e && RZ_Util.DistXZ(e.GetOrigin(), ent.GetOrigin()) <= radius)
