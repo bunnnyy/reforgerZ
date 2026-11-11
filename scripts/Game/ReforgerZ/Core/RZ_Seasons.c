@@ -225,6 +225,9 @@ class RZ_SeasonSettings
 	[Attribute("168", desc: "Epilogue: real hours the world stays open after the cure before the wipe is due (168 = one week)")]
 	float m_fEpilogueHours;
 
+	[Attribute("56", desc: "Minimum epilogue: a cure that comes less than this many real hours before an After-weeks wipe pushes the wipe back to the cure plus this (and says so). Also in whichever comes first (docs/EPILOGUE.md)")]
+	float m_fMinEpilogueHours;
+
 	[Attribute("10", desc: "Only with Wipe on After weeks or whichever comes first: real weeks from the season's start until the wipe is due (a season to the cure takes about 6-7 weeks with 5 regulars)")]
 	int m_iWipeWeeks;
 
@@ -743,22 +746,74 @@ class RZ_Seasons
 		if (m_iCureUnix <= 0)
 			m_iCureUnix = RZ_Guidance.UnixNow();
 
+		// A late cure: an After-weeks wipe under the minimum epilogue away is pushed back, and said
+		int weeks = WeeksWipeAt();
+		if (weeks > 0 && weeks < m_iCureUnix + MinEpilogueSeconds())
+		{
+			m_GM.NotifyAll(RZ_Broadcast.TITLE, string.Format("Processing is put back. The Zone resets in about %1 hour(s), not sooner.", RZ_Util.RoundToInt(MinEpilogueSeconds() / HOUR)));
+			RZ_Log.Info("Seasons: a late cure pushes the wipe back to the minimum epilogue.");
+		}
+
 		if (m_Hall)
 			m_Hall.OnSeasonWon();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Real-world time the wipe comes due, 0 if never.
+	//! The epilogue's length in real hours (Season > Epilogue hours x Epilogue > Test scale).
+	float EpilogueHours()
+	{
+		float scale = 1;
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		if (epi && RZ_Epilogue.IsOn())
+			scale = epi.Scale();
+
+		return Math.Max(0, m_Settings.m_fEpilogueHours) * scale;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	float WarnHours()
+	{
+		return m_Settings.m_fWarnHours;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int MinEpilogueSeconds()
+	{
+		float scale = 1;
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		if (epi && RZ_Epilogue.IsOn())
+			scale = epi.Scale();
+
+		return RZ_Util.RoundToInt(Math.Max(0, m_Settings.m_fMinEpilogueHours) * scale * HOUR);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An After-weeks wipe's time, 0 if none.
+	protected int WeeksWipeAt()
+	{
+		RZ_EWipeMode mode = m_Settings.m_eWipeMode;
+		if ((mode == RZ_EWipeMode.AFTER_WEEKS || mode == RZ_EWipeMode.FIRST_OF_BOTH) && m_Settings.m_iWipeWeeks > 0 && m_iStartUnix > 0)
+			return m_iStartUnix + m_Settings.m_iWipeWeeks * 7 * DAY;
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real-world time the wipe comes due, 0 if never. A cure under the minimum epilogue before an
+	//! After-weeks wipe pushes that wipe back to the cure plus the minimum.
 	int WipeAt()
 	{
 		RZ_EWipeMode mode = m_Settings.m_eWipeMode;
 		int at = 0;
 		if ((mode == RZ_EWipeMode.ON_CURE || mode == RZ_EWipeMode.FIRST_OF_BOTH) && m_iCureUnix > 0)
-			at = m_iCureUnix + RZ_Util.RoundToInt(Math.Max(0, m_Settings.m_fEpilogueHours) * HOUR);
+			at = m_iCureUnix + RZ_Util.RoundToInt(EpilogueHours() * HOUR);
 
-		if ((mode == RZ_EWipeMode.AFTER_WEEKS || mode == RZ_EWipeMode.FIRST_OF_BOTH) && m_Settings.m_iWipeWeeks > 0 && m_iStartUnix > 0)
+		int weeks = WeeksWipeAt();
+		if (weeks > 0)
 		{
-			int weeks = m_iStartUnix + m_Settings.m_iWipeWeeks * 7 * DAY;
+			if (m_iCureUnix > 0 && weeks < m_iCureUnix + MinEpilogueSeconds())
+				weeks = m_iCureUnix + MinEpilogueSeconds();
+
 			if (at <= 0 || weeks < at)
 				at = weeks;
 		}
@@ -767,13 +822,25 @@ class RZ_Seasons
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! No cure, and the wipe is under Warn hours away (the Unsigned last day: RZ_WorldFacts.IsLastDay).
+	bool IsLastDay()
+	{
+		if (m_iCureUnix > 0 || m_bWipeDue)
+			return false;
+
+		int at = WipeAt();
+		int now = RZ_Guidance.UnixNow();
+		return at > 0 && now > 0 && at - now <= m_Settings.m_fWarnHours * HOUR;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected string DescribeWipe()
 	{
 		switch (m_Settings.m_eWipeMode)
 		{
-			case RZ_EWipeMode.ON_CURE: return string.Format("%1 h after the cure", RZ_Util.RoundToInt(m_Settings.m_fEpilogueHours));
+			case RZ_EWipeMode.ON_CURE: return string.Format("%1 h after the cure", RZ_Util.RoundToInt(EpilogueHours()));
 			case RZ_EWipeMode.AFTER_WEEKS: return string.Format("after %1 weeks", m_Settings.m_iWipeWeeks);
-			case RZ_EWipeMode.FIRST_OF_BOTH: return string.Format("%1 h after the cure or after %2 weeks", RZ_Util.RoundToInt(m_Settings.m_fEpilogueHours), m_Settings.m_iWipeWeeks);
+			case RZ_EWipeMode.FIRST_OF_BOTH: return string.Format("%1 h after the cure or after %2 weeks", RZ_Util.RoundToInt(EpilogueHours()), m_Settings.m_iWipeWeeks);
 		}
 
 		return "by hand";
@@ -852,6 +919,10 @@ class RZ_Seasons
 	//! archive, the marker for the next start, and word to everyone.
 	protected void MarkWipeDue()
 	{
+		// The epilogue's last words and its lines for the season block, before the hall archives
+		if (RZ_Epilogue.Get())
+			RZ_Epilogue.Get().OnWipeDue();
+
 		m_bWipeDue = true;
 		m_sWipeReason = "the cure and its epilogue";
 		if (m_iCureUnix <= 0)

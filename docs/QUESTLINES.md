@@ -1013,9 +1013,36 @@ The Long Table also accepts the setter's own spelling for flags the table names 
 
 | Flag | Set in | Read in | What it does there |
 |---|---|---|---|
-| `finale.open`, `finale.finisher`, `finale.route`, `finale.how`, `finale.terms`, `finale.condition`, `finale.partner` | the controller | the epilogue (planned) | The routes are open; who finished (route + 1, 0 the lab alone); who controls (0 nobody: handed over); how it was won (1 held, 2 force, 3 deal, 4 betrayal, 5 theft, 6 handed over); the terms (1–4); the condition and the pact partner (route + 1) |
-| `route.<n>.state` | the controller, at the cure | the epilogue (planned) | Each route (n = route + 1): 0 not worked, 1 worked, 3 finished |
+| `finale.open`, `finale.finisher`, `finale.route`, `finale.how`, `finale.terms`, `finale.condition`, `finale.partner` | the controller | the epilogue's record and outlets ([EPILOGUE.md](EPILOGUE.md)) | The routes are open; who finished (route + 1, 0 the lab alone); who controls (0 nobody: handed over); how it was won (1 held, 2 force, 3 deal, 4 betrayal, 5 theft, 6 handed over); the terms (1–4); the condition and the pact partner (route + 1) |
+| `route.<n>.state` | the controller, at the cure | (facts; the epilogue's route lines are planned) | Each route (n = route + 1): 0 not worked, 1 worked, 3 finished |
 | `cure.slow`, `finale.taken`, `finale.coat_run` | the controller | (facts) | The lab alone made the batch; the season day Take the Lab and the Coat Run passed |
 | `held.rh_knows`, `held.named`, `held.processed` | Held for Collection | (facts) | The Red Hand knows the cold store; the four ledgers named the tubes; Twice was brought home |
 | `cook.heard`, `cook.still_known`, `cook.line_paid`; `cook.lines`, `cook.paid` | The Cook; every cut dose taken | The Cook's terms | Someone heard the cook's terms; found the still; her line marked paid. The cut doses written in her book, and those that held |
 | `finale.plan_sold` | (planned: Sell the Plan) | Take the Lab | The bay hold is 150 s |
+
+## Loose Ends
+
+✅ Built with the epilogue week ([EPILOGUE.md](EPILOGUE.md#the-closing-work)). Every questline run
+still open at the cure gets one **closing stage**, so every story reaches an ending inside the week,
+even a rushed or bitter one. It's offered by the questline's person at its place (else its faction's
+stronghold seat): a person standing there with two or three ways, each ending on one of the
+questline's built endings (`<key>.ending` set, its `OnEnding` world effect as built, and the world
+settles). Whoever chooses is paid half a stage: Fame 3 and Favor 5 with the questline's faction, once.
+If nobody does it, the last call comes in the person's voice when the week runs short of room, then
+a session's grace, then the default ending as data, with no pay, said plainly. Processing is the hard
+stop. The majors never need one (their codas are Last Rounds); the Long Table's two have their own
+week; a questline with no row below ends as data at processing (*"... ended with the season,
+unfinished."*). Each ending's line goes into the season block. *Simplified:* the ways are choices
+with no checks or holds (but the Well Story's tin), the pay is fixed, and the world effect isn't
+halved.
+
+| Questline | The closing stage | The ways (ending) | Default (nobody did it) |
+|---|---|---|---|
+| H2 The Price of the Door | The Last Envelope | Carry the last envelope (Paid in tins); bring the exile home first (The debt is yours); tell the chair (Stands alone) | Paid in tins: *"The head sent a resident with the last envelope. Nobody asked who carried it."* |
+| H3 The Edge of Town | The Last Walk | Get them to a dose (The lab road); let the walker walk them (The walks stay); sit with them, let the nurse decide (The lab road) | The walks stay: *"The walker walked one more and read twelve names at supper. The nearest dose was four kilometres away."* |
+| Short Weight | Count the Stores | Count it honestly (Full Weight); cover for him (Short Weight); let the head find it at supper (Full Weight) | Full Weight: *"The head found the short weight at supper. The storekeeper eats last."* |
+| B2 The Census | The Last Count | Bring the real count (Counted); forge it (Forged); burn the cards (Refused) | Counted: *"The count stays as last reported. A clerk files it unsigned."* |
+| B3 The Last Pilot | The Last Flight | Fly with him, bring him back (He stays); talk him into walking instead (Grounded); sell the aircraft for parts (Burnt for the Red Hand) | Grounded: *"He didn't fly. The aircraft sits on the pad with its doors open."* |
+| R2 Cargo | The Last Load | Drive the van to the queue (Told); hand the van to the crew (The cut); follow it (Told) | The cut: *"The van went, and came back empty. The driver walked to the queue alone."* |
+| R3 The Well Story | The Last Toll | Pay it yourself, 15 Red Hand Favor (The story worked); stand with the village (Stood up); tell the story one last time (Faked) | The story worked: *"The village paid in its last tins and walked out lighter."* |
+| HC2 The Other Two | His Coat | Carry the coat to his sister (Brought home); take his number to her board (Named); leave it on the hook (The work goes on) | The work goes on: *"The coat stays on the hook. Nobody came for it. The lab labelled it."* |

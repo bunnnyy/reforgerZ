@@ -20,7 +20,11 @@
 #     Perimeter's warning and kill zones; kills them if the Perimeter didn't; respawns them;
 #   - last, a scripted cure finale at Wait scale 0.1 (RZT_Finale.c): a commit refused below the
 #     gate, the slow finish, two routes racing and a pact, a stand lost and remade, a scripted
-#     take and overtime, the release's terms ("RZT finale check: ...", "RZT finale done: ...").
+#     take and overtime, the release's terms ("RZT finale check: ...", "RZT finale done: ...");
+#   - then the epilogue week at Epilogue > Test scale 0.02 (RZT_Epilogue.c): the commit and the
+#     hall's freeze, a dose, loose ends live and as data, a name brought home, the Last Entry, a
+#     grey choice, a town taken back, processing, the walk-out and the wipe's lines, every closing
+#     item reaching its end ("RZT epilogue check: ...", "RZT epilogue done: ...").
 # Every notice sent to the fake player is logged as "RZT notify [title] text".
 # Nothing here is part of the mod: the files are copied into a throwaway addon folder, and the
 # patches (patch.py) only touch that copy. The world's prefab GUIDs are Arma Reforger 1.9's.
@@ -69,5 +73,6 @@ grep -E 'RZT mission .* started=0' "$LOG" | sed -E 's/.*RZT mission ([A-Za-z_]+)
 grep -E 'RZT (fake player already dead|killing|fake player died)' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (questlines:|all questlines tried|quest .* (ENDED|STUCK|fizzled|did not start))' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -q 'Virtual Machine Exception' "$LOG" && exit 1
 exit 0

@@ -69,7 +69,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
-	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100, -100, -100};	// per CMD_*
+	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100};	// per CMD_*
 	protected float m_fLastPick = -100;		// the last car job or purchase (PICK_GAP)
 	protected static const float PICK_GAP = 0.5;
 
@@ -81,6 +81,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_TRIBES = 4;	// /tribes (admins): the infected, to the server log
 	static const int CMD_TALKDEBUG = 5;	// /talkdebug (admins): the conversation trees for the person you're talking to
 	static const int CMD_MYDEAD = 6;	// /mydead hidden|shown: your name in public text if you die out there (also the notebook item's action)
+	static const int CMD_EPILOGUE = 7;	// /epilogue ... (admins): the epilogue week's tools (Director/Epilogue/RZ_Epilogue.c)
+	static const int CMD_SEASON = 8;	// /season: the journal's season view as a notice (also the notebook item's action)
+	static const int CMD_ANON = 9;		// /anonymous [off]: keep your name out of the world's text, the reel and the hall
+	static const int CMD_LASTENTRY = 10;	// /lastentry <text>: your line on the Names board (a pad writes one without typing)
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -641,6 +645,33 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				if (gm.GetTribes())
 					gm.GetTribes().Command(playerId, note);
+				break;
+			}
+			case CMD_EPILOGUE:
+			{
+				if (gm.GetEpilogue())
+					gm.GetEpilogue().Command(playerId, note);
+				break;
+			}
+			case CMD_SEASON:
+			{
+				if (gm.GetEpilogue())
+					gm.NotifyPlayer(playerId, "The season", gm.GetEpilogue().SeasonText(playerId));
+				break;
+			}
+			case CMD_ANON:
+			{
+				int anon = 1;
+				if (note.Contains("off"))
+					anon = 0;
+
+				RZ_EpiActions.Anonymous(gm, playerId, anon);
+				break;
+			}
+			case CMD_LASTENTRY:
+			{
+				if (gm.GetEpilogue())
+					RZ_EpiActions.LastEntry(gm, playerId, note);
 				break;
 			}
 			case CMD_MYDEAD:

@@ -278,6 +278,15 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		// The epilogue's places (Director/Epilogue/RZ_EpilogueSpots.c)
+		if (comp.GetMissionId() == RZ_Epilogue.TAG)
+		{
+			if (gm.GetEpilogue())
+				gm.GetEpilogue().GetSpots().HandleChoice(playerId, comp.GetObjectIndex(), option, user);
+
+			return true;
+		}
+
 		// A safehouse's named person (World/RZ_NamedPeople.c)
 		// A stranger at a spot (Missions/Errands/RZ_Strangers.c)
 		if (comp.GetMissionId() == RZ_Strangers.TAG)
@@ -412,6 +421,14 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetWanderers())
 				gm.GetWanderers().HandleTalk(playerId, comp.GetClueIndex(), owner);
+
+			return true;
+		}
+
+		if (comp.GetMissionId() == RZ_Epilogue.TAG)
+		{
+			if (gm.GetEpilogue())
+				gm.GetEpilogue().GetSpots().HandleRead(playerId, comp.GetClueIndex());
 
 			return true;
 		}

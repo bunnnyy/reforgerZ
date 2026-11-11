@@ -122,6 +122,7 @@ modded class RZ_GameModeComponent
 	protected bool m_bRZTQuestsDone;
 	protected bool m_bRZTMajorsDone;
 	protected bool m_bRZTFinaleDone;
+	protected bool m_bRZTEpilogueDone;
 	protected ref array<string> m_aRZTQuestKeys;
 	protected int m_iRZTQuest = -1;
 	protected int m_iRZTQuestSec;
@@ -404,6 +405,9 @@ modded class RZ_GameModeComponent
 		// Last, the cure finale's phase (RZT_Finale.c): it ends with the cure, which stands the line down
 		if (rel > 20 * 17 + 160 && !m_bRZTFinaleDone)
 			m_bRZTFinaleDone = RZT_Finale.Tick(this);
+		// Then the epilogue week at Test scale 0.02 (RZT_Epilogue.c): every closing item to its end
+		else if (m_bRZTFinaleDone && !m_bRZTEpilogueDone)
+			m_bRZTEpilogueDone = RZT_Epilogue.Tick(this);
 		if (m_iRZTSec % 60 == 0)
 			Print(string.Format("RZT t=%1 active missions=%2 alive=%3", m_iRZTSec, GetMissions().RZT_Active(), RZ_Util.IsCharacterAlive(RZT_Fake.s_Ent)));
 	}

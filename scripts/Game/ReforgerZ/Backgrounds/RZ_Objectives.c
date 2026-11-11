@@ -5,7 +5,8 @@ enum RZ_EObjective
 	DELIVER_SAMPLES,	// deliver N samples to the lab this life
 	COMPLETE_MISSIONS,	// take part in N successful missions this life
 	EARN_TRUST,			// become Trusted (or better) with a faction
-	FIND_HAVEN			// first meaningful life (new-player guidance): reach a Haven safehouse
+	FIND_HAVEN,			// first meaningful life (new-player guidance): reach a Haven safehouse
+	LAST_GOAL			// the epilogue week: the background's last goal (Director/Epilogue/RZ_EpilogueClosing.c)
 }
 
 //! One personal objective per life gives every character a small story of their
@@ -32,6 +33,17 @@ class RZ_Objectives
 				profile.m_bObjDone = false;
 				return;
 			}
+		}
+
+		// The epilogue week: the background's last goal, finished through the closing work
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		if (epi && epi.GetClosing().WantsLastGoal(profile, bg.m_sId))
+		{
+			profile.m_iObjType = RZ_EObjective.LAST_GOAL;
+			profile.m_iObjTarget = -1;
+			profile.m_iObjGoal = 0;
+			profile.m_bObjDone = false;
+			return;
 		}
 
 		array<int> pool = {
@@ -102,6 +114,8 @@ class RZ_Objectives
 				return string.Format("Help out: be part of %1 successful missions.", profile.m_iObjGoal);
 			case RZ_EObjective.EARN_TRUST:
 				return string.Format("Earn the trust of %1: become %2 with them.", RZ_Factions.GetNameInText(profile.m_iObjTarget), RZ_Reputation.GetTierName(RZ_ETier.TRUSTED));
+			case RZ_EObjective.LAST_GOAL:
+				return RZ_EpiText.LastGoal(profile.m_sBackgroundId);
 			case RZ_EObjective.FIND_HAVEN:
 			{
 				RZ_Safehouse goal = gm.GetSafehouses().Get(profile.m_iObjTarget);

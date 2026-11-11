@@ -397,9 +397,12 @@ count ×1.2, never the total), then what's left of the budget:
 - Paying is refused with the same line.
 
 So a little trouble (up to 30) can be cleaned completely, and more can only be softened. A Watched
-player and a mixed one are treated the same. Every forgiveness is logged. The later routes (the
-epilogue's Come In and the finale's Hand it in) are planned and will draw on the same budget
-([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)).
+player and a mixed one are treated the same. Every forgiveness is logged. The epilogue week's
+*Pay into the book* at Rudi's crossroads works off 5 Red Hand Infamy through it, and **square** with
+all four (Infamy under 15 with each, no unpaid line in the book) is checked at processing and the
+wipe for the hall's line ([EPILOGUE.md](EPILOGUE.md#the-closing-work)); its dose outlets read standing,
+never clothes. The later routes (the epilogue's Come In and the finale's Hand it in) are planned and
+will draw on the same budget ([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)).
 
 ## Checkpoints, roadblocks and camps
 

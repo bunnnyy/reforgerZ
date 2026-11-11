@@ -126,6 +126,8 @@ class RZ_SaveData
 	ref RZ_TribesSave tribes;
 	// The cure finale (Cure/RZ_CureFinale.c). Older saves have none
 	ref RZ_FinaleSave finale;
+	// The epilogue week (Director/Epilogue/RZ_Epilogue.c). Older saves have none
+	ref RZ_EpilogueSave epilogue;
 	bool hasTimeOfDay;
 	float timeOfDay;
 

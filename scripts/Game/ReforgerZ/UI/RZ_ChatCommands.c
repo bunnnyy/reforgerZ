@@ -2,6 +2,7 @@
 //! "/noteclear" and "/noteclear all" clear boards (server admins), "/tribes" writes the infected to
 //! the server log (admins), "/talkdebug" reads the conversation trees of the person you're talking
 //! to (admins), "/mydead hidden|shown" keeps your name out of public text if you die out there,
+//! "/season", "/anonymous [off]" and "/lastentry <text>" (the epilogue week), "/epilogue ..." (admins),
 //! "/rep <name>" reads a player's reputation (server admins;
 //! docs/REPUTATION.md, "Reputations"). The hall of fame is the notebook's Hall of fame tab.
 //! Each is sent to the server through RZ_PlayerUIComponent.SendCommand; the server checks
@@ -28,6 +29,10 @@ class RZ_ChatCommands
 		chat.GetCommandInvoker("rep").Insert(s_Instance.OnRep);
 		chat.GetCommandInvoker("talkdebug").Insert(s_Instance.OnTalkDebug);
 		chat.GetCommandInvoker("mydead").Insert(s_Instance.OnMyDead);
+		chat.GetCommandInvoker("epilogue").Insert(s_Instance.OnEpilogue);
+		chat.GetCommandInvoker("season").Insert(s_Instance.OnSeason);
+		chat.GetCommandInvoker("anonymous").Insert(s_Instance.OnAnonymous);
+		chat.GetCommandInvoker("lastentry").Insert(s_Instance.OnLastEntry);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -65,6 +70,37 @@ class RZ_ChatCommands
 		string arg = data;
 		arg.ToLower();
 		Send(RZ_PlayerUIComponent.CMD_MYDEAD, arg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "/epilogue ..." (admins): the epilogue week's tools (docs/EPILOGUE.md, Admin tools).
+	protected void OnEpilogue(SCR_ChatPanel panel, string data)
+	{
+		Send(RZ_PlayerUIComponent.CMD_EPILOGUE, data);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "/season": the season as the Zone tells it (the notebook item's action does the same).
+	protected void OnSeason(SCR_ChatPanel panel, string data)
+	{
+		Send(RZ_PlayerUIComponent.CMD_SEASON, data);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "/anonymous" or "/anonymous off" (the notebook item's action switches it).
+	protected void OnAnonymous(SCR_ChatPanel panel, string data)
+	{
+		string arg = data;
+		arg.ToLower();
+		Send(RZ_PlayerUIComponent.CMD_ANON, arg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "/lastentry your line": your line on the Names board (at the board, "Write your line" does it
+	//! without typing).
+	protected void OnLastEntry(SCR_ChatPanel panel, string data)
+	{
+		Send(RZ_PlayerUIComponent.CMD_LASTENTRY, data);
 	}
 
 	//------------------------------------------------------------------------------------------------

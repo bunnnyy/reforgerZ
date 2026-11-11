@@ -72,6 +72,14 @@ and one way to end it: **research the cure.**
   the season; the first to finish makes the batch and earns its faction a capped chunk of season
   Fame; and the final stand is a fight for the clean room: whoever holds it when the stand is won
   controls the cure and chooses its terms. Season Fame decides only when nobody holds the room.
+- **The epilogue week** ([EPILOGUE.md](docs/EPILOGUE.md)): for a week after the cure the Zone tells
+  its season in the world, not in slides: a board by the lab gate with the names of who held it,
+  candles on a safehouse step with a number chalked beside them, a queue on the north road that
+  doesn't move until the last day. The cure is given on the spot, the way the winner would give it
+  (Bastion's roster and a firearm, the Red Hand's two tins, Halcyon's order on the door). Every
+  story still open can end inside the week (loose ends, names brought home, towns taken back, the
+  last broadcast, your own line on the Names board), and on the last day your character can walk
+  out at the north road, one name at a time.
 - **164 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
   events, puzzle missions, unarmed stealth jobs, missions at the quarantine line, morally grey
   Haven and Red Hand work and leaders' off-book jobs. Contracts
@@ -86,9 +94,10 @@ and one way to end it: **research the cure.**
   asks, and 39 hand-written cards; they pay little, and remember you ([ERRANDS.md](docs/ERRANDS.md)).
 - **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
   sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself only
-  after the cure's epilogue (the line stands down, the gates open with the wipe; a timed wipe is
-  there for admins who pick it, off by default), and a hall of fame remembers who carried samples, held the final stand and rescued the
-  most, season after season.
+  after the cure's epilogue week (the line stands down, the gates open with the wipe; a timed wipe is
+  there for admins who pick it, off by default), and a hall of fame, frozen at the cure, remembers who
+  carried samples, held the final stand and rescued the most, season after season, with the week's
+  lines.
 - **One world, one story**: missions, arcs, questlines and voices read the same world facts
   (the cure, the day, who holds a town, fixed facts of the setting), so the line doesn't shoot
   after the cure and two stories don't use the same safehouse at once. Contracts pick their towns
@@ -129,12 +138,13 @@ The game scripts **compile without errors or warnings** against Arma Reforger 1.
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
 Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
-That's about 167,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 76 `VERIFY` markers left in the game
+That's about 195,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+was also checked against the base game's script source; the 79 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
-script exceptions. A **zombie lab** (`tools/zombie_lab/`) measures Bacon Zombies' own AI on the same
+script exceptions; its newest phase, the epilogue week at Test scale 0.02, compiles but hasn't
+run there yet. A **zombie lab** (`tools/zombie_lab/`) measures Bacon Zombies' own AI on the same
 server, on Everon: what it sees and hears, speeds, groups and waypoints, and server frame time with
 up to 140 agents.
 
@@ -153,9 +163,11 @@ Arland's AI world and vanilla's world managers now; AI in play is still to test
 yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Not built yet:** the approved designs for the rest of the season: the rest of the four majors
-and of the cure's finale, the epilogue week, errands' margin, lock and epilogue cards and more,
-built in the order of [designs/PLAN.md](designs/PLAN.md). Built so far: the cure's finale (phase 6,
+**Not built yet:** the approved designs for the rest of the season: the rest of the four majors,
+of the cure's finale and of the epilogue week, errands' margin, lock and epilogue cards and more,
+built in the order of [designs/PLAN.md](designs/PLAN.md). Built so far: the epilogue week (phase 7,
+simplified: the record and the hall's freeze, beats and carriers, the dose outlets, the queue and
+the lab gate, the grey choices, the closure set, [EPILOGUE.md](docs/EPILOGUE.md)); the cure's finale (phase 6,
 simplified: the controller, the lock, the five routes, live tissue, pacts, the stand as a fight for
 the clean room, Take the Lab and the Coat Run, terms, [FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified,
 [QUESTLINES.md](docs/QUESTLINES.md#the-majors)); the shared engine (phase 1); small
@@ -189,11 +201,12 @@ Many Calls, the packs' signs and call sounds, the bright moon and the map's rang
 | [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards |
 | [QUESTLINES.md](docs/QUESTLINES.md) | The four majors (one season-long story per faction) and the long questlines over many sessions, three per faction and two for the Long Table |
 | [FINALE.md](docs/FINALE.md) | The cure's finale: the five routes, the lock, the race, the stand as a fight for the clean room, terms, Fame and fallbacks |
+| [EPILOGUE.md](docs/EPILOGUE.md) | The week after the cure: its phases, beats and carriers, the dose outlets, the queue and the lab gate, the grey choices, the closing work, the hall's freeze, names |
 | [MOD_STACK.md](docs/MOD_STACK.md) | Which Workshop mods the server runs and why |
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
-| [designs/](designs/README.md) | Approved designs not built yet (the rest of the four majors and the cure's finale, the epilogue week, infected tribes, dialogue, errands, the mission style, reputation names, disguise, tone) and the build plan. Each moves into `docs/` as it's built |
+| [designs/](designs/README.md) | Approved designs not built yet (the rest of the four majors, the cure's finale and the epilogue week, infected tribes, dialogue, errands, the mission style, reputation names, disguise, tone) and the build plan. Each moves into `docs/` as it's built |
 
 ## Code
 
@@ -213,7 +226,9 @@ scripts/Game/ReforgerZ/
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, the season mood and grief, story arcs, the questline engine,
                  the majors' engine (acts, votes, the dynamic fallbacks, the season story),
-                 headlines, the season budget and the set-piece calendar
+                 headlines, the season budget and the set-piece calendar; Epilogue/: the
+                 epilogue week (the record, beats, the dose outlets, its places and scenes,
+                 the closing work)
   Zombies/       spawner (any zombie mod's prefabs), the towns' crawlers, bodies and the agent
                  budget (roles, data parts, the sight rule, runtime groups), the tribes (seeds,
                  the daily rhythm, hunts, scouts, their bodies), their life cycle, borders and

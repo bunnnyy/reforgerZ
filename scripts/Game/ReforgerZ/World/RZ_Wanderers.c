@@ -2004,6 +2004,16 @@ class RZ_Wanderers
 		if (m_GM.GetTribes())
 			m_GM.GetTribes().OnWandererDied(w.m_vPos, w.GetTitle(), how, killer);
 
+		// The epilogue's named dead: a name to chalk on a door and bring home
+		if (RZ_Epilogue.Get())
+		{
+			string killerIdent = "";
+			if (killer > 0)
+				killerIdent = m_GM.GetProfile(killer).m_sIdentity;
+
+			RZ_Epilogue.Get().AddNamed(w.m_sName, "the things they carried", -1, w.m_vPos, killerIdent, "", "the " + w.GetRoleName());
+		}
+
 		DespawnBody(w);
 		w.m_bAlive = false;
 		w.m_fDiedAt = m_fClock;
@@ -2381,6 +2391,13 @@ class RZ_Wanderers
 		}
 
 		string text = MoodLine(w) + IntroText(w) + "\n" + IntelText(w, player.GetOrigin());
+		// The epilogue week: road news about the season, by role
+		if (RZ_Epilogue.Get())
+		{
+			string week = RZ_Epilogue.Get().WandererLine(w.m_eRole, player.GetOrigin());
+			if (!week.IsEmpty())
+				text += "\n" + week;
+		}
 		if (m_GM.GetTribes() && m_GM.GetTribes().GetPeople().IsOn())
 			m_GM.GetTribes().GetPeople().OnRoadNews(playerId, player.GetOrigin());
 

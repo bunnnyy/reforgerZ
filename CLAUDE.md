@@ -73,6 +73,7 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `docs/ERRANDS.md` | Errands: the givers (named people, the wanderers' asks), the dealer, keeping them true, ways and steps, pay, the faults table, every routine and card with ✅, telemetry |
 | `docs/QUESTLINES.md` | The four majors (acts, defaults, endings) and the long questlines (three per faction, two for the Long Table): stages, approaches, endings, crossings |
 | `docs/FINALE.md` | The cure's finale: the gate, the lock and price doors, the five routes, live tissue, pacts and kills between routes, the finish, the batch and the seal, the stand as a fight for the clean room, Take the Lab and the Coat Run, terms, the route Fame, fallbacks, items and people |
+| `docs/EPILOGUE.md` | The epilogue week after the cure: its phases, the record and the hall's freeze, beats and carriers, the dose outlets, places and scenes, the grey choices, the closing work (the closure set), names, edge cases, admin tools |
 | `docs/MOD_STACK.md` | Workshop dependencies and why |
 | `docs/PC_SETUP.md` | The author's Windows PC, run by Claude Code: rules, Steam apps and paths, the repo, opening Workbench, local compile check and runtime test, play-testing, logs |
 | `docs/UI.md` | Art direction, the icon set, the screens, the UI scripts and data feeds, built vs planned (layout trees: `UI/LAYOUTS.md`) |

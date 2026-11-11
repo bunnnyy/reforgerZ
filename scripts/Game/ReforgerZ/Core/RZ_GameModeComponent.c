@@ -88,6 +88,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "The cure finale (docs/FINALE.md): at 90 percent five routes race to finish the batch, a lock per player for the season, the stand as a fight for the clean room, the finisher's capped Fame chunk, terms", category: "ReforgerZ|Director")]
 	protected ref RZ_FinaleSettings m_FinaleSettings;
 
+	[Attribute(desc: "The epilogue week (docs/EPILOGUE.md): after the cure the world tells the season for Season > Epilogue hours: the record, beats at places, the dose outlets, the queue at the north road, leaders' season topics, the grey choices and the closing work, the hall of fame frozen at the cure", category: "ReforgerZ|Director")]
+	protected ref RZ_EpilogueSettings m_EpilogueSettings;
+
 	[Attribute(desc: "Zombie prefabs and density", category: "ReforgerZ|Zombies")]
 	protected ref RZ_ZombieSettings m_ZombieSettings;
 
@@ -465,6 +468,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Shared m_Shared;
 	protected ref RZ_RepWatch m_RepWatch;
 	protected ref RZ_CureFinale m_Finale;
+	protected ref RZ_Epilogue m_Epilogue;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -532,6 +536,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Shared)
 			m_Shared.Forget(playerId);
+
+		if (m_Epilogue)
+			m_Epilogue.Forget(playerId);
 
 		if (m_RepWatch)
 			m_RepWatch.Forget(playerId);
@@ -607,6 +614,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_FinaleSettings)
 			m_FinaleSettings = RZ_FinaleSettings.Cast(RZ_Util.NewWithDefaults("RZ_FinaleSettings"));
+
+		if (!m_EpilogueSettings)
+			m_EpilogueSettings = RZ_EpilogueSettings.Cast(RZ_Util.NewWithDefaults("RZ_EpilogueSettings"));
 
 		if (!m_SafehouseSettings)
 			m_SafehouseSettings = RZ_SafehouseSettings.Cast(RZ_Util.NewWithDefaults("RZ_SafehouseSettings"));
@@ -716,6 +726,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Questlines = new RZ_Questlines(this, m_QuestlineSettings);
 		// The cure finale's controller, before the cure (its Restore reads whether the stand waits)
 		m_Finale = new RZ_CureFinale(this, m_FinaleSettings);
+		// The epilogue week (Director/Epilogue/): built at the cure, saved with the season
+		m_Epilogue = new RZ_Epilogue(this, m_EpilogueSettings);
 		m_Headlines = new RZ_Headlines(this);
 		m_Cure = new RZ_CureResearch(this);
 		m_Director = new RZ_Director(this, m_aStages);
@@ -895,6 +907,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Seasons.Tick(dt, ids);
 		m_Facts.Tick(dt, ids);
 		m_Shared.Tick(dt, ids, players);
+		// The epilogue week: after the shared engine (its marks) and every system it reads
+		m_Epilogue.Tick(dt, ids, players);
 		m_RepWatch.Tick(dt);
 
 		foreach (int i, IEntity ent : players)
@@ -945,6 +959,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Questlines GetQuestlines() { return m_Questlines; }
 	RZ_MajorSettings GetMajorSettings() { return m_MajorSettings; }
 	RZ_CureFinale GetFinale() { return m_Finale; }
+	RZ_Epilogue GetEpilogue() { return m_Epilogue; }
 	RZ_Headlines GetHeadlines() { return m_Headlines; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
@@ -1354,6 +1369,17 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	//! The stored profile for an identity, or null: never creates one. Works for players who are
 	//! offline (profiles are kept by identity).
+	//! Every saved profile (the epilogue's record).
+	void GetAllProfiles(notnull array<RZ_PlayerProfile> result)
+	{
+		foreach (string ident, RZ_PlayerProfile p : m_mProfiles)
+		{
+			if (p)
+				result.Insert(p);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_PlayerProfile FindProfileByIdentity(string ident)
 	{
 		if (ident.IsEmpty())
@@ -1575,6 +1601,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// 3. What's on the radio
 		NotifyPlayerAs(playerId, "Radio", m_Missions.DescribeActiveFor(controlledEntity, playerId), RZ_ENoticeTag.WORLD);
 
+		// The epilogue week: the cure line and your own first line, its news, your last goal
+		m_Epilogue.OnSpawn(playerId, controlledEntity);
+
 		// The deploy menu can't hide a safehouse spawn point from one player, so an exile
 		// who picks one is told the door stays shut (its services refuse them)
 		if (m_Safehouses.FindAt(controlledEntity.GetOrigin()) >= 0 && m_Safehouses.IsExiled(playerId))
@@ -1668,6 +1697,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// Safe zones: firing inside a stronghold or the lab
 		m_Checkpoints.OnPlayerShot(playerID, shooter.GetOrigin());
+		// The epilogue's scenes: the queue and the lab gate are safe ground
+		m_Epilogue.OnPlayerShot(playerID, shooter.GetOrigin());
 
 		// Retaliation: who fired, and when (a hit on a faction's AI is matched to it)
 		m_Hostility.OnPlayerShot(playerID, shooter.GetOrigin());
@@ -2166,6 +2197,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// The epilogue starts: the wipe cycle counts from now (RZ_Seasons)
 		m_Seasons.OnCureCompleted();
+		// The epilogue week: the record is taken over the next ticks, then the story commits
+		m_Epilogue.OnCure();
 		SaveState();
 	}
 
@@ -2508,6 +2541,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// The body carries some loot (its inventory, or beside it), if a player saw it die
 		m_Interactions.OnZombiesKilled(pos, count);
 		m_Missions.OnZombiesKilled(settlementIdx, missionId, special, pos, count);
+		if (m_Epilogue)
+			m_Epilogue.OnZombiesKilled(settlementIdx, pos);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2788,6 +2823,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Director.Restore(data.stage, data.stageMinutes, data.playedMinutes);
 		// The finale first: whether the batch waits for its seal decides if a saved stand restarts
 		m_Finale.Restore(data.finale);
+		m_Epilogue.Restore(data.epilogue);
 		m_Cure.Restore(data.cureProgress, data.cureMilestone, data.cured, data.labAntidotes, data.stolenAntidotes, data.labStabilisers);
 		m_Cure.RestoreLab(data);
 		if (data.seasonFame)
@@ -2830,6 +2866,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			m_fSavedHour = data.timeOfDay;
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A save now (the epilogue's commit asks for one).
+	void SaveNow()
+	{
+		SaveState();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2902,6 +2945,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Finale && RZ_CureFinale.IsOn())
 			data.finale = m_Finale.Save();
+
+		if (m_Epilogue && RZ_Epilogue.IsOn())
+			data.epilogue = m_Epilogue.Save();
 
 		if (m_Facts)
 			data.facts = m_Facts.Save();

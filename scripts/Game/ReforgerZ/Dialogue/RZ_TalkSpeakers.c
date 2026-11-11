@@ -463,11 +463,31 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 		replies.Insert(Reply(0, "Ask for work"));
 		replies.Insert(Reply(1, "Heard anything?"));
 		replies.Insert(Reply(2, "What do you make of me?"));
+
+		// The epilogue week: About the season, Where should I look?, the stronghold's question
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		if (epi && m_Leader)
+		{
+			array<string> labels = {};
+			array<int> ids = {};
+			epi.LeaderReplies(m_Leader, playerId, labels, ids);
+			foreach (int i, string label : labels)
+			{
+				replies.Insert(Reply(ids[i], label));
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Pick(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
+		// The epilogue week's replies (40-43)
+		if (replyId >= 40 && replyId <= 43 && m_Leader && gm.GetLeaders())
+		{
+			gm.GetLeaders().SeasonPick(playerId, m_Leader, replyId);
+			return;
+		}
+
 		// Dialogue > Trees: what they make of you is said in their faction's voice (RZ_RepVoice)
 		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
 		if (replyId == 2 && trees && trees.IsOn() && m_Leader && gm.GetLeaders() && gm.GetLeaders().Attitude(m_Leader, playerId) > -2)

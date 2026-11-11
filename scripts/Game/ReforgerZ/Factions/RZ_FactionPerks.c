@@ -899,6 +899,14 @@ class RZ_FactionPerks
 			m_mLastAliveEnt.Find(deadId, body);
 			m_mLastAlivePos.Remove(deadId);
 			m_mLastAliveEnt.Remove(deadId);
+			// A character who walked out at the barrier didn't die (docs/EPILOGUE.md, The Walk Out)
+			RZ_Epilogue epi = RZ_Epilogue.Get();
+			if (epi && epi.IsWalking(deadId))
+			{
+				epi.DoneWalking(deadId);
+				continue;
+			}
+
 			if (connected.Contains(deadId))
 				OnPlayerDied(deadId, at, body, ids, players);
 		}
@@ -938,6 +946,9 @@ class RZ_FactionPerks
 			finale.OnPlayerKilled(victim, killer, at);
 
 		m_GM.GetMissions().OnPlayerDied(victim, at);
+		if (RZ_Epilogue.Get())
+			RZ_Epilogue.Get().OnPlayerDied(victim, killer, at);
+
 		// Killed by a tribe's body in the open: that tribe took them (docs/INFECTED.md, the taken)
 		if (killer < 0 && m_GM.GetTribes())
 			m_GM.GetTribes().OnPlayerDied(victim, at);

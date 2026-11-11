@@ -697,9 +697,19 @@ What it says at each stage, and how it's written, is in [WRITING.md](WRITING.md#
 A season is won one way: **the cure is finished** and the final stand at the lab is held.
 The quarantine is lifted. The line stands down at once: the drones go home, nobody at the edge
 fires again, and the loudspeakers read a new order about processing at the road checkpoints.
-The barriers stay closed until the season ends, and the gates open with it: whoever walks up to
-the line is told to turn around by a voice they never see, and walks back. Until then (the
-epilogue) the research is over: the lab takes no more samples and nobody pays for them.
+The barriers stay closed until processing, and whoever walks up to the line is told to turn around
+by a voice they never see, and walks back. For a week (the epilogue) the research is over: the lab
+takes no more samples and nobody pays for them. The Zone tells its season instead, in the world: a
+board by the lab gate with the names of the people who held it, candles on a safehouse step with a
+number chalked beside them, a queue on the verge of the north road that doesn't move, the cure given
+on the spot the way the winner would give it ([EPILOGUE.md](EPILOGUE.md)).
+
+In the last day, processing, **only the north road opens, outward, one name at a time.** The queue
+walks up at the change of shift; an unarmed person on the road who walks up to the barrier hears
+one word from a speaker on a post, *"Name?"*, and goes through. Nothing comes back in, nobody comes
+back, and nothing past the barrier is ever shown or said. The outside never answers and never
+changes its words because of what anyone did. Every other barrier stays shut, and the gates open
+with the wipe.
 
 At 90% the lab's batch is missing one thing, and every faction thinks it knows what: the woman who
 didn't turn, the captain's tubes, the cook's still, the lower store, or the eight who walked out.

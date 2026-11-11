@@ -205,10 +205,10 @@ and choice missions, and puzzles:
 | (existing prefab) | Special Zombies, or Bacon heavy, exploding and ranged | — | Zombies > Special prefabs (list) | samples, the cure |
 | (existing prefab) | a large Bacon group | — | Zombies > Horde prefabs (list) | hordes |
 | (existing prefab) | vanilla AIWaypoint_Move.et | — | Zombies > Move waypoint | hordes toward noise, unarmed missions, hunter squads, supply trucks, favourite spots |
-| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), 3 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE, ROADS) | Factions > Haven quartermaster | the Haven shop, leader and safehouse services |
-| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke), `RZ_FactionServiceAction` (Service CONTACT_BOARD) | Factions > Bastion quartermaster | the Bastion shop and leader |
-| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 6 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS, SETTLE, CREW_MAP, FREQUENCIES) | Factions > Red Hand quartermaster | the Red Hand black market and leader |
-| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 6 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS, SETTLE, RANGE_MAP, CALL_BOX) | Factions > Halcyon quartermaster | the Halcyon shop, leader, antidotes and the trial dose |
+| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), 3 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE, ROADS), 4 × `RZ_LeaderAction` (Kind SEASON, LOOK, ANSWER_FIRST, ANSWER_OTHER) | Factions > Haven quartermaster | the Haven shop, leader and safehouse services |
+| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke), `RZ_FactionServiceAction` (Service CONTACT_BOARD), 4 × `RZ_LeaderAction` (Kind SEASON, LOOK, ANSWER_FIRST, ANSWER_OTHER) | Factions > Bastion quartermaster | the Bastion shop and leader |
+| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 6 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS, SETTLE, CREW_MAP, FREQUENCIES), 4 × `RZ_LeaderAction` (Kind SEASON, LOOK, ANSWER_FIRST, ANSWER_OTHER) | Factions > Red Hand quartermaster | the Red Hand black market and leader |
+| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 6 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS, SETTLE, RANGE_MAP, CALL_BOX), 4 × `RZ_LeaderAction` (Kind SEASON, LOOK, ANSWER_FIRST, ANSWER_OTHER) | Factions > Halcyon quartermaster | the Halcyon shop, leader, antidotes and the trial dose |
 <!-- /manifest:minimum -->
 
 No towns, spawn points or lab need placing: they're generated at start. With only this,
@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **206 prefab fields**: 40 on `RZ_GameModeComponent`, 159 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **211 entries**: 152 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 26 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 45 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **209 prefab fields**: 40 on `RZ_GameModeComponent`, 162 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **214 entries**: 155 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 26 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 46 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -433,6 +433,14 @@ and the UI files) need none, and seven have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_SeasonMark.et` | a small wayside cross, a cairn or flowers on a post | — | Shared > Season mark prefab | optional | look only: the town log's season marks on the verge (without it they're text only, an approach line) |
+
+#### Epilogue
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_EpilogueBoard.et` | a free-standing board or sign on posts (a notice board, a road sign); confirm the name in Workbench | — | Director > Epilogue > Board prefab | optional | look only: the epilogue's marks (the stand board, the Names board, the price board, notices, posters, graves) on the verge; without it they're text only, an approach line |
+| `RZ_EpilogueCandle.et` | a candle or a jar lantern on the ground; confirm the name in Workbench | — | Director > Epilogue > Candle prefab | optional | look only: a town taken back after the cure, the candles on a safehouse step (else the board, else text) |
+| `RZ_EpilogueTable.et` | a folding or trestle table (or a crate) with the generic puzzle object's components (RZ_PuzzleObjectComponent, RZ_ClueComponent, an RplComponent) and its read and four choice actions | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; `RZ_ReadClueAction`, 4 × `RZ_PuzzleChoiceAction` (Option 0-3) | Director > Epilogue > Table prefab | optional | the tables, boards and crates players use at the epilogue's places (the dose, the Names board, the nail, the book); without it Puzzles > Object stands in |
 
 #### Missions
 
@@ -534,10 +542,10 @@ and the UI files) need none, and seven have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), 3 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE, ROADS) | Factions > Haven quartermaster | **minimum** | the Haven shop, leader and safehouse services. Add RZ_FactionShopAction entries for vanilla stock by hand (suggested stock below) |
-| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke), `RZ_FactionServiceAction` (Service CONTACT_BOARD) | Factions > Bastion quartermaster | **minimum** | the Bastion shop and leader. Add one RZ_RequisitionAction per ammo or rations item, and shop actions for vanilla stock, by hand |
-| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 6 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS, SETTLE, CREW_MAP, FREQUENCIES) | Factions > Red Hand quartermaster | **minimum** | the Red Hand black market and leader |
-| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 6 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS, SETTLE, RANGE_MAP, CALL_BOX) | Factions > Halcyon quartermaster | **minimum** | the Halcyon shop, leader, antidotes and the trial dose |
+| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), 3 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE, ROADS), 4 × `RZ_LeaderAction` (Kind SEASON, LOOK, ANSWER_FIRST, ANSWER_OTHER) | Factions > Haven quartermaster | **minimum** | the Haven shop, leader and safehouse services. Add RZ_FactionShopAction entries for vanilla stock by hand (suggested stock below) |
+| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke), `RZ_FactionServiceAction` (Service CONTACT_BOARD), 4 × `RZ_LeaderAction` (Kind SEASON, LOOK, ANSWER_FIRST, ANSWER_OTHER) | Factions > Bastion quartermaster | **minimum** | the Bastion shop and leader. Add one RZ_RequisitionAction per ammo or rations item, and shop actions for vanilla stock, by hand |
+| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 6 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS, SETTLE, CREW_MAP, FREQUENCIES), 4 × `RZ_LeaderAction` (Kind SEASON, LOOK, ANSWER_FIRST, ANSWER_OTHER) | Factions > Red Hand quartermaster | **minimum** | the Red Hand black market and leader |
+| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 6 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS, SETTLE, RANGE_MAP, CALL_BOX), 4 × `RZ_LeaderAction` (Kind SEASON, LOOK, ANSWER_FIRST, ANSWER_OTHER) | Factions > Halcyon quartermaster | **minimum** | the Halcyon shop, leader, antidotes and the trial dose |
 
 #### Faction consequences
 
@@ -698,7 +706,7 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | the MissionRow layout (UI/LAYOUTS.md) | — | UI > Mission row layout | optional | journal rows |
 | (existing prefab) | the RadioRow layout (UI/LAYOUTS.md) | — | UI > Radio row layout | optional | rows of the notebook's Radio tab |
 | (existing prefab) | the MapIcon layout (UI/LAYOUTS.md) | — | UI > Map icon layout | optional | the ReforgerZ icons on the map, per player (empty = vanilla text markers for events and the lab). Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI) |
-| `RZ_Notebook.et` | a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg | `RZ_NotebookGadgetComponent`; `RZ_DeadNameAction` | UI > Notebook prefab | optional | given to every new life; taken into the hand it opens the notebook (the pad's way in besides the pause menu). Built as text in the repo; check in Workbench that it can be taken into the hand and put in a quick slot |
+| `RZ_Notebook.et` | a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg | `RZ_NotebookGadgetComponent`; `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given to every new life; taken into the hand it opens the notebook (the pad's way in besides the pause menu). Built as text in the repo; check in Workbench that it can be taken into the hand and put in a quick slot |
 | (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
 | (existing prefab) | the Journal page layout (UI/LAYOUTS.md) | — | UI > Journal page | optional | the Journal tab (empty = Nothing here yet) |
 | (existing prefab) | the Radio page layout (UI/LAYOUTS.md) | — | UI > Radio page | optional | the Radio tab (empty = Nothing here yet) |
@@ -1157,7 +1165,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Category | Object | Field | Covers |
 |---|---|---|---|
 | ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)), **Day length** (4 real hours a game day, x6; 0 = the server's own clock; [DESIGN.md](DESIGN.md#the-clock)), **Keep time of day** (on: saved in state.json and set again at start) |
-| ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
+| ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), minimum epilogue (56 h: a late cure pushes an After-weeks wipe back), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
 | World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off) |
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
@@ -1170,6 +1178,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Director | Questlines | `m_QuestlineSettings` | **Enabled**, max active (2, one per faction), minutes between (30), start chance (0.5), retry hours (6), once per season (on), **Wait scale** (1; 0.1 for a quick test) ([DESIGN.md](DESIGN.md#questlines)) |
 | Director | Majors | `m_MajorSettings` | **Enabled** (on; needs Questlines on), lead points (5), grace sessions (1), hold limit (1), stall points (1), between beats (4), slots (2) ([DESIGN.md](DESIGN.md#the-majors)) |
 | Director | Finale | `m_FinaleSettings` | **Enabled** (on; needs Questlines on; off: research runs to 100 and the cure goes to the most season Fame), route worth (0.25), floor (150), ceiling (0: none), soft line (1.1), batch real hours (12) and play hours (2), seal call minutes (60), seal hour (-1: off), take seconds (90), take per point (5), take floor (45), overtime (180 s), clean room radius (10 m), bay seconds (120), **Contest** (Auto, Force, Tally), Coat Run, Take the Lab, pacts (on), groups at the lab (2), fight memory days (2), active lock days (2) and hours (2), Fame leader rule (on) ([FINALE.md](FINALE.md)) |
+| Director | Epilogue | `m_EpilogueSettings` | **Enabled** (on), **Names** (Full, Titles only, Off), notables (12), towns (8), since-the-cure beats (20), the reel (on), **The world settles** (on), **Closing work** (on; off below 24 epilogue hours), **Walk Out** (on), empty server ends early (on), archive last entries (off), people per scene (6), **Test scale** (1; 0.008 runs a week in about 81 minutes), and the optional board, candle and table prefabs ([EPILOGUE.md](EPILOGUE.md)) |
 | Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, **Empty group** (runtime groups), per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | Stealth | `m_StealthSettings` | **Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth)) |
@@ -1359,6 +1368,17 @@ with a scripted take by the pact's side and the tester in the clean room running
 (`RZT finale check: <name>: OK|FAILED (...)`, then `RZT finale done: N checks OK, N FAILED`). The
 five routes are left out of the questlines' phase: they only start at the gate.
 
+**The epilogue week.** Then, from the finale's cure, **Epilogue > Test scale** goes to 0.02 and the
+week runs scripted (`RZT_Epilogue.c`): the commit, the hall's freeze, beats and phase A; phase B;
+the tester bitten and dosed at the first outlet, and refused a second; two questlines begun and
+listed as loose ends, one closed live by a way and one as data; a named dead person's keepsake taken
+and handed in at a house, and the Last Entry; the chair's grey choice through its hold and a say at
+the station; a town with crawlers cleared and taken back, the ridges and the Long Table's week
+closed; processing, the broadcast's tally, the tester walking out at the barrier (then a new life);
+and the wipe's lines, the names not brought home, every closing item at its end (`RZT epilogue check:
+<name>: OK|FAILED (...)`, then `RZT epilogue done: N checks OK, N FAILED`). Steps the test world can't
+supply (no outlet under the terms, no town with crawlers) are logged as skipped.
+
 **The majors.** Then the majors go on (Collapse's second evening forced): each major starts, The
 Book's send-off runs live once (its scene is ended as won), and every act is walked through its
 default to an ending (`RZT major <key> act <n> ...`, `RZT major <key> ENDED: ending <n>`). Then the
@@ -1490,7 +1510,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **77** lines with the tag, all in the game scripts (one is the comment in
+There are **79** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 14 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1511,7 +1531,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:194` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (43)
+### Medium risk: big features, with a fallback (45)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1553,6 +1573,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Cure/RZ_CureFinale.c:1270` | the cure finale's clean room: the lab prefab has no named child entity to read, so a land point 15–25 m from the lab stands in; check it's somewhere players can stand and fight | Move the lab, or a lab prefab with the room as a child entity (planned) |
 | `Cure/RZ_CureFinale.c:1372` | an unconscious player still counts in the clean room (only alive is read) | A downed player holds the room until killed: fine for a first play-test; reading the unconscious state is planned |
 | `Cure/RZ_CureFinale.c:1723` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
+| `Director/Epilogue/RZ_EpilogueClosing.c:951` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the deploy menu, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
+| `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
 ### Low risk: contained or cosmetic (20)
 
@@ -1811,6 +1833,17 @@ or `... was caught.`, `Finale: <route> broke its pact with <route> (...).`),
 `Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...`, `... goes with N of N crew aboard; the rest follow on foot.` and `... lost (...)`,
 `Story arc started: ...`, `Questline started: ...`, `Questline ...: stage '...'.` and
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
+the epilogue week's (`Epilogue: the cure is out; the record is taken on the next ticks.`, `Hall of
+fame: the records froze at the cure.`, `Epilogue: the record: route N, how N, terms N, faction N, N
+players, N towns with crawlers, N packs calling.`, `Epilogue: beat <key> at <place> (weight W)`,
+`Epilogue: N dose outlets (row N, terms N, condition N).`, `Epilogue: story built (N beats, N
+players, N open items)`, `Epilogue: phase B`, `Epilogue: phase C`, `Epilogue: beat <key> since (<why>)`
+and `... dropped (<why>)`, `Epilogue: last call <item>`, `Epilogue: closed <item> (live|default)`,
+`Epilogue: a dose at <outlet> (N left).`, `Epilogue: brought home <name> to <place>.`, `Epilogue:
+<town> taken back.`, `Epilogue: grey choice N decided (...).`, `Epilogue: walked out (N in all)`,
+`Epilogue: a last entry by <name>: ...`, `Epilogue: admin <name>: ...`, `Epilogue: the Unsigned last
+day (N beats).`, `Seasons: a late cure pushes the wipe back to the minimum epilogue.`, `Territory:
+<holding> stays as it is (the world settles in the epilogue).`),
 the majors' (`Majors: <key> act N (...) opens.`, `Majors: <key> act N squeezed (room N h, need N h). Last call.`
 or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squeezed|patience|nobody qualifies|hard stop).`,
 `Majors: <key> act N held its anchor as long as it may; the default comes anyway.`,
@@ -2149,6 +2182,31 @@ when it happens)
   last season's names.
 - [ ] Win a final stand, then restart with **Epilogue hours** at 0: the next season starts with
   the winner's rules (the log and the first-spawn "This season" notice say which).
+
+**The epilogue week** ([EPILOGUE.md](EPILOGUE.md); **Epilogue > Test scale** 0.008 runs it in about
+81 minutes, `/epilogue phase B|C` moves it on)
+- [ ] Within a minute of the cure everyone online gets *The cure* with their own line and where to
+  look; a player who joins later gets it at spawn. The hall of fame stops counting (deliver a sample:
+  no record).
+- [ ] The lab gate's board, the stand board's names, the queue's sign and table at the north road, a
+  safehouse's candles: a prop with **Board prefab** set, else the line when you pass within 40 m. A
+  leader on the talk screen has **About the season** and **Where should I look?**; without the screen,
+  the quartermaster's *Ask about the season* action.
+- [ ] Bitten, ask for the dose at the route's outlet: cured on the spot, the price taken (Bastion: a
+  firearm or 15 Favor), a second this life refused, an empty outlet says when the next comes.
+- [ ] Fire a shot by the queue with nothing infected near: +2 Infamy and the guards' grudge; kill one
+  of its people: +15 Haven Infamy, and the queue's line has the gap until the next step.
+- [ ] The chair's *"Whose names do we read tonight?"*: answer *All of them*, have a second player
+  object within 5 s (nothing decided), answer again (decided; every board pins the note).
+- [ ] A questline running at the cure: its person stands at its place with two or three ways; pick one
+  (its ending, Fame 3 and Favor 5); leave another until its last call and default.
+- [ ] Take a wanderer's keepsake where they died and hand it in at a house: the Names board lists it;
+  die carrying one and it lies where you fell.
+- [ ] In processing, walk up the north road unarmed: *"Name?"* instead of being turned back; *Give your
+  name* at the barrier returns you to the deploy menu with no death screen (VERIFY) and puts you in the
+  hall's *Walked out*; armed, you're turned back as before.
+- [ ] `/season` (or the notebook's action) lists the beats you've met, And you and Unfinished;
+  `/anonymous` turns your name into *a survivor* on boards and in the hall.
 - [ ] **Rule sets** `Winter, Fog` on a fresh season: both are named on first spawn; at night more
   specials; Fog Banks come more often. `No Vehicles`: no fixable cars, no trucks, no Recover the Bus.
 - [ ] The hall of fame shows on first spawn and on the notebook's Hall of fame tab; a delivered sample and a finished

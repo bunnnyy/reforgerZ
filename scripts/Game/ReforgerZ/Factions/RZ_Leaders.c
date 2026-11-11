@@ -48,7 +48,12 @@ enum RZ_ELeaderAction
 	TALK,
 	WORK,
 	NEWS,
-	STANDING
+	STANDING,
+	// The epilogue week (docs/EPILOGUE.md): the season topics and a stronghold's grey choice
+	SEASON,
+	LOOK,
+	ANSWER_FIRST,
+	ANSWER_OTHER
 }
 
 //------------------------------------------------------------------------------------------------
@@ -2779,7 +2784,28 @@ class RZ_Leaders
 			case RZ_ELeaderAction.WORK: HandleChoice(playerId, l.m_iId, 0, owner, user); break;
 			case RZ_ELeaderAction.NEWS: HandleChoice(playerId, l.m_iId, 1, owner, user); break;
 			case RZ_ELeaderAction.STANDING: HandleChoice(playerId, l.m_iId, 2, owner, user); break;
+			case RZ_ELeaderAction.SEASON: SeasonPick(playerId, l, 40); break;
+			case RZ_ELeaderAction.LOOK: SeasonPick(playerId, l, 41); break;
+			case RZ_ELeaderAction.ANSWER_FIRST: SeasonPick(playerId, l, 42); break;
+			case RZ_ELeaderAction.ANSWER_OTHER: SeasonPick(playerId, l, 43); break;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The epilogue's topics and grey choices (RZ_Epilogue.LeaderPick: 40 the season, 41 where to
+	//! look, 42/43 the stronghold's question). Refused at attitude -2 or below.
+	void SeasonPick(int playerId, RZ_Leader l, int reply)
+	{
+		if (!l || !RZ_Epilogue.Get())
+			return;
+
+		if (Attitude(l, playerId) <= -2)
+		{
+			m_GM.Say(playerId, l.GetHeader(), l.m_eFaction, RZ_LeaderVoice.Refuse(l.m_eFaction));
+			return;
+		}
+
+		RZ_Epilogue.Get().LeaderPick(l, playerId, reply);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2930,6 +2956,10 @@ class RZ_LeaderAction : ScriptedUserAction
 			case RZ_ELeaderAction.WORK: outName = "Ask for work"; break;
 			case RZ_ELeaderAction.NEWS: outName = "Ask for news"; break;
 			case RZ_ELeaderAction.STANDING: outName = "Ask what they think of you"; break;
+			case RZ_ELeaderAction.SEASON: outName = "Ask about the season"; break;
+			case RZ_ELeaderAction.LOOK: outName = "Ask where to look"; break;
+			case RZ_ELeaderAction.ANSWER_FIRST: outName = "Answer their question: the usual way"; break;
+			case RZ_ELeaderAction.ANSWER_OTHER: outName = "Answer their question: the other way"; break;
 		}
 
 		return true;

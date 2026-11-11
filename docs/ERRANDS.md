@@ -5,7 +5,9 @@ world is true right now, and over the moment it stops being true. Contracts are 
 on the radio ([MISSIONS.md](MISSIONS.md)); questlines are the long stories
 ([QUESTLINES.md](QUESTLINES.md)); errands are everything in between. What's still to build (the
 margin, lock and epilogue cards, promises and threads, the rest of the cards and routines) is
-designed in [designs/ERRANDS.md](../designs/ERRANDS.md).
+designed in [designs/ERRANDS.md](../designs/ERRANDS.md). In the epilogue week a few of the epilogue
+deck's asks stand at the week's places instead of on the dealer: *Bring a cup* at the queue, *Read
+the names at supper* at a house, taking a name home ([EPILOGUE.md](EPILOGUE.md#places-and-scenes)).
 
 Code: `Missions/Errands/` (`RZ_Errands.c` the dealer and the small-pay ledger, `RZ_Errand.c` the
 parts, `RZ_ErrandRoutines.c` and `RZ_ErrandRoutinesPeople.c` the routines, `RZ_ErrandRegistry.c`

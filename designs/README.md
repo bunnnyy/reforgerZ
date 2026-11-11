@@ -1,6 +1,6 @@
 # Designs
 
-**Status: designed; phases 1 to 4, phases 5 and 6 in part and tribes phases 1 to 5 built.** Approved by the author on 2026-11-11.
+**Status: designed; phases 1 to 4, phases 5, 6 and 7 in part and tribes phases 1 to 5 built.** Approved by the author on 2026-11-11.
 
 This folder holds the approved designs for the rest of the game: who you are, what you do, how it sounds,
 the four majors, the cure's finale, the epilogue week and the infected. Phases 1 to 4 of the plan (the shared engine,
@@ -34,4 +34,4 @@ live in `docs/`.
 | [BEHAVIOUR.md](BEHAVIOUR.md) | What's left of how the infected move and hunt (the layer is built: [docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): hearing beyond shots, blood, shrieks, doors, the reactions table, the regroup, the ankle grab and the client effects, the small rules | Tribes phases 1–3 built; the rest not yet scheduled, the client effects after a client test |
 | [MAJORS.md](MAJORS.md) | What's left of the four majors (the engine and the four stories' acts, defaults, endings and codas are built: [docs/QUESTLINES.md](../docs/QUESTLINES.md#the-majors)): story rules, hall lines, the season tab, the stand's inputs, Before the stand, the remaining approaches and crossings | Phase 5 built in part |
 | [FINALE.md](FINALE.md) | What's left of the cure's finale (the controller, the lock, the five routes' acts, live tissue, pacts, the stand as a control fight, Take the Lab, the Coat Run and terms are built: [docs/FINALE.md](../docs/FINALE.md)): route assets, pitches and seeds, the lock's other pieces, each route's remaining ways, the subjects' branches, the moves and notes, the majors' remaining inputs, the epilogue's carriers | Phase 6 built in part |
-| [EPILOGUE.md](EPILOGUE.md) | The week after the cure (168 hours): the Zone remembers the season, and closing work lets every story finish | Phase 7 (records from phase 3) |
+| [EPILOGUE.md](EPILOGUE.md) | What's left of the epilogue week (the record, beats, carriers, the outlets, the queue and lab gate, the grey choices and the closure set are built: [docs/EPILOGUE.md](../docs/EPILOGUE.md)): the fuller record and titles, beats' slots, route marks, the evening's own set pieces, scenes that move, the truth, each closing item's rest, the epilogue deck | Phase 7 built in part |

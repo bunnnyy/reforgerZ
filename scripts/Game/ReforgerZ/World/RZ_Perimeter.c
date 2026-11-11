@@ -685,6 +685,15 @@ class RZ_Perimeter
 		// to a barrier) is turned back
 		if (zone == RZ_EPerimeterZone.KILL)
 		{
+			// The Walk Out (docs/EPILOGUE.md): in processing, an unarmed person on the north road
+			// hears "Name?" at the barrier instead
+			RZ_Epilogue epi = RZ_Epilogue.Get();
+			if (epi && epi.GetClosing().LetThrough(playerId, player, pos))
+			{
+				c.m_eZone = RZ_EPerimeterZone.KILL;
+				return;
+			}
+
 			TurnBack(playerId, pos);
 			c.m_eZone = RZ_EPerimeterZone.WARNING;
 			return;
