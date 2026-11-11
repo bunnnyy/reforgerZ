@@ -128,6 +128,53 @@ def perception_summary(rows):
     return out
 
 
+def perception_rates(rows, keyf, title_key):
+    """Share of trials (within 30 s) in which the infected saw / engaged (enemy or charge) the target,
+    and the median seconds to engage, grouped by keyf(row)."""
+    groups = OrderedDict()
+    for r in rows:
+        if r.get("note") or num(r.get("dist")) is None:
+            continue
+        k = keyf(r)
+        if k is None:
+            continue
+        groups.setdefault(k, []).append(r)
+    def sort_key(k):
+        parts = []
+        for part in str(k).replace(",", " ").split():
+            try:
+                parts.append((1, float(part)))
+            except ValueError:
+                parts.append((0, part))
+        return parts
+    out = []
+    for k in sorted(groups, key=sort_key):
+        rs = groups[k]
+        n = len(rs)
+        seen = sum(1 for r in rs if num(r.get("seenAfter"), -1) >= 0)
+        times = sorted(min(t for t in (num(r.get("enemyAfter"), -1), num(r.get("chargedAfter"), -1)) if t >= 0)
+                       for r in rs if num(r.get("enemyAfter"), -1) >= 0 or num(r.get("chargedAfter"), -1) >= 0)
+        charged = sum(1 for r in rs if num(r.get("chargedAfter"), -1) >= 0)
+        engaged_seen = sum(1 for r in rs if num(r.get("seenAfter"), -1) >= 0 and
+                           (num(r.get("enemyAfter"), -1) >= 0 or num(r.get("chargedAfter"), -1) >= 0))
+        med = "%.0f" % times[len(times) // 2] if times else "-"
+        when_seen = "%d%%" % (100 * engaged_seen // seen) if seen else "-"
+        out.append(OrderedDict([(title_key, k), ("trials", str(n)), ("seen", "%d%%" % (100 * seen // n)),
+                                ("engaged (enemy or charge)", "%d%%" % (100 * len(times) // n)),
+                                ("engaged when seen", when_seen),
+                                ("charged", "%d%%" % (100 * charged // n)), ("median s to engage", med)]))
+    return out
+
+
+def rung_of(r):
+    d = num(r.get("dist"))
+    if "hidden" in (r.get("stance") or ""):
+        return None
+    if d > 200:
+        return "line (300-450 m)"
+    return "%.0f m" % d
+
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
@@ -149,6 +196,16 @@ def main():
             table(title, by[t])
             if t == "perc":
                 table("3. Perception ladder: within 30 s, C = charged, E = enemy, S = only seen, - = nothing (seconds after the target appeared)", perception_summary(by[t]))
+                f1 = [r for r in by[t] if r.get("factor") == "1.00"]
+                table("3. Perception by light and distance (factor 1, all stances and terrain)",
+                      perception_rates(f1, lambda r: "%s, %s" % (r.get("light"), rung_of(r)) if rung_of(r) else None, "light, distance"))
+                table("3. Perception by stance (factor 1, 25-200 m, all light and terrain)",
+                      perception_rates(f1, lambda r: r.get("stance") if num(r.get("dist")) <= 200 else None, "stance"))
+                table("3. Perception by terrain (factor 1, 25-200 m)",
+                      perception_rates(f1, lambda r: "%s, %s" % (r.get("light"), r.get("terrain")) if num(r.get("dist")) <= 200 and "hidden" not in r.get("stance", "") else None, "light, terrain"))
+                table("3. Perception by factor (open, standing and prone, 25-200 m)",
+                      perception_rates([r for r in by[t] if r.get("terrain") == "open" and r.get("stance") in ("standing", "prone")],
+                                       lambda r: "%s, %s, factor %s" % (r.get("light"), r.get("stance"), r.get("factor")) if num(r.get("dist")) <= 200 else None, "light, stance, factor"))
     for t in by:
         if t not in TITLES:
             table(t, by[t])

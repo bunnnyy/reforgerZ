@@ -104,6 +104,20 @@ class RZL_PercPlan
 			return;
 		}
 
+		// "perception-core" (ONLY=perception-core): one more sample of the stances, day and night
+		if (!RZL_LabComponent.Wanted("perception"))
+		{
+			if (b == "fog")
+				return;
+
+			for (int st = 0; st < 4; st++)
+			{
+				Ladder(st, 1, false);
+				Ladder(st, 1, true);
+			}
+			return;
+		}
+
 		if (b == "fog")
 		{
 			Ladder(0, 1, false);
@@ -493,8 +507,8 @@ class RZL_ExpShare : RZL_Exp
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Along some direction from T: the last spot (20-120 m out) that sees T, then spots beyond the
-	//! crest that don't. Returns false if this site has no such crest.
+	//! Along some direction from T: the crest (the last spot 20-160 m out that sees T), then spots
+	//! beyond it that don't. Returns false if this site has no such crest.
 	protected bool FindCrest(vector t, out vector seer, notnull array<vector> beyond, notnull array<float> fromSeer)
 	{
 		for (float yaw = 0; yaw < 360; yaw += 15)
@@ -522,7 +536,8 @@ class RZL_ExpShare : RZL_Exp
 			if (lastSeen < 20 || hiddenAt < 0)
 				continue;
 
-			seer = RZL.At(t, yaw, lastSeen);
+			// The seer stands 35 m from the target (or at the crest if that's nearer), in plain sight
+			seer = RZL.At(t, yaw, Math.Min(lastSeen, 35));
 			beyond.Clear();
 			fromSeer.Clear();
 			array<float> steps = {5, 15, 30, 45, 60, 80, 110, 150};

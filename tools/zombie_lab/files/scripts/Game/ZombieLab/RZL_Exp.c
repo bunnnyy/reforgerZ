@@ -100,6 +100,15 @@ class RZL_ExpClock : RZL_Exp
 			return;
 		}
 
+		if (m_iStep == 0 && !RZL_LabComponent.Wanted("clock"))
+		{
+			// Only here to freeze noon for the perception trials
+			tm.SetTimeOfTheDay(12, true);
+			tm.SetIsDayAutoAdvanced(false);
+			m_bDone = true;
+			return;
+		}
+
 		if (m_iStep == 0)
 		{
 			RZL.Row("clock", State("at start"));
@@ -150,6 +159,7 @@ class RZL_ExpGroups : RZL_Exp
 	protected SCR_AIGroup m_G2;
 	protected SCR_AIGroup m_G3;
 	protected ref array<IEntity> m_aG1 = {};
+	protected ref array<IEntity> m_aG3 = {};
 	protected IEntity m_Solo;
 	protected AIWaypoint m_Wp1;
 	protected AIWaypoint m_Wp2;
@@ -347,7 +357,10 @@ class RZL_ExpGroups : RZL_Exp
 			{
 				lodsG3 += ag.GetLOD().ToString() + " ";
 				if (ag.GetControlledEntity())
+				{
 					m_aChars.Insert(ag.GetControlledEntity());
+					m_aG3.Insert(ag.GetControlledEntity());
+				}
 			}
 			RZL.Row("groups", string.Format("case=Bacon group prefab, 45 s after spawn|agents=%1|naturalLOD=%2", c45, lodsG3));
 			ZLab_DeleteUnit(m_G3);
@@ -358,7 +371,7 @@ class RZL_ExpGroups : RZL_Exp
 		if (m_iStep == 9 && s >= 3)
 		{
 			int left;
-			foreach (IEntity e : m_aChars)
+			foreach (IEntity e : m_aG3)
 			{
 				if (e)
 					left++;
@@ -423,7 +436,12 @@ class RZL_ExpLeak : RZL_Exp
 				return;
 
 			if (m_Cur)
-				RZL.Log(string.Format("leak: order %1 done after %2 s, in list=%3", m_iOrders, RZL.F(s), RZL.HasWaypoint(m_G, m_Cur)));
+			{
+				float moved = -1;
+				if (m_Ch)
+					moved = RZL.DistXZ(m_Ch.GetOrigin(), m_Cur.GetOrigin());
+				RZL.Log(string.Format("leak: order %1 done after %2 s, in list=%3, character %4 m from it", m_iOrders, RZL.F(s), RZL.HasWaypoint(m_G, m_Cur), RZL.F(moved)));
+			}
 			if (m_iOrders >= 3)
 			{
 				RZL.Row("leak", string.Format("case=3 SendGroupTo orders, each completed|created=3|stillInWorld=%1|inGroupList=%2", RZL.CountAlive(m_aWps), RZL.WaypointCount(m_G)));

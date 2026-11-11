@@ -908,9 +908,10 @@ runs its experiments at once, each at its own place:
 SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder holding BaconZombies_622120A5448725E3> tools/zombie_lab/run.sh
 ```
 
-It takes about 55 minutes (`QUICK=1`: about 12, one trial of each kind) and prints every result as a
-table, plus any script exceptions. The infected are held at AI LOD 0 as if a player were near, since
-a server with no players runs them at the lowest LOD. Started with `-server`, the server always
+It takes about 45 minutes (`QUICK=1`: about 12, one trial of each kind; `ONLY=share,perception-core`
+runs only the experiments named, listed in `run.sh`) and prints every result as a table, plus any
+script exceptions. The infected are held at AI LOD 0, as near a player (on the 1.9 server they stay
+at LOD 0 with no player at all, so this changes nothing yet). Started with `-server`, the server always
 listens on UDP 2001 (it ignores `-bindPort`), so on Linux the lab runs it in its own network namespace
 (`unshare -n`) and it can sit beside another server; on Windows, stop any other server first.
 

@@ -1,8 +1,9 @@
 // Test-only (not part of the mod): the zombie lab. Placed on the game mode of the lab world
 // (tools/zombie_lab/files/Worlds/ZLab/ZLab.ent). Finds sites on the map, runs the experiments at
 // places far apart, prints "RZL R|table|..." rows for tools/zombie_lab/report.py, then closes.
-// "$profile:zlab_quick.txt" makes a short debug run; "$profile:zlab_restart.txt" only reports the
-// clock after a restart (run.sh's second boot).
+// "$profile:zlab_quick.txt" makes a short debug run; "$profile:zlab_only.txt" (a comma-separated list
+// of experiment names) runs only those; "$profile:zlab_restart.txt" only reports the clock after a
+// restart (run.sh's second boot).
 class RZL_LabComponentClass : ScriptComponentClass
 {
 }
@@ -10,6 +11,7 @@ class RZL_LabComponentClass : ScriptComponentClass
 class RZL_LabComponent : ScriptComponent
 {
 	static bool s_bQuick;
+	static string s_sOnly;
 
 	protected ref array<ref RZL_Exp> m_aExps = {};
 	protected ref RZL_Sites m_Sites;
@@ -73,7 +75,18 @@ class RZL_LabComponent : ScriptComponent
 		}
 
 		s_bQuick = FileIO.FileExists("$profile:zlab_quick.txt");
-		RZL.Log(string.Format("zombie lab starts (quick=%1)", s_bQuick));
+		s_sOnly = "";
+		if (FileIO.FileExists("$profile:zlab_only.txt"))
+		{
+			FileHandle f = FileIO.OpenFile("$profile:zlab_only.txt", FileMode.READ);
+			if (f)
+			{
+				f.ReadLine(s_sOnly);
+				f.Close();
+			}
+			s_sOnly.TrimInPlace();
+		}
+		RZL.Log(string.Format("zombie lab starts (quick=%1, only='%2')", s_bQuick, s_sOnly));
 		LogFactions();
 
 		AIWorld aiw = GetGame().GetAIWorld();
@@ -135,8 +148,22 @@ class RZL_LabComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Is this experiment in the run? (all of them unless zlab_only.txt names some)
+	static bool Wanted(string name)
+	{
+		if (s_sOnly == "")
+			return true;
+
+		string list = "," + s_sOnly + ",";
+		return list.Contains("," + name + ",");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void AddExp(RZL_Exp e, float startAt, bool wood)
 	{
+		if (!Wanted(e.m_sName))
+			return;
+
 		e.m_fStartAt = startAt;
 		e.m_Site = TakeSite(wood, e.m_sName);
 		if (!e.m_Site)
@@ -161,7 +188,8 @@ class RZL_LabComponent : ScriptComponent
 		m_Plan = new RZL_PercPlan();
 		m_Clock = new RZL_ExpClock();
 		m_Clock.m_fStartAt = 0;
-		m_aExps.Insert(m_Clock);
+		if (Wanted("clock") || Wanted("perception") || Wanted("perception-core"))
+			m_aExps.Insert(m_Clock);
 
 		// By priority, in case the map is short of sites
 		AddExp(new RZL_ExpWaypoint(), 25, false);
@@ -176,9 +204,12 @@ class RZL_LabComponent : ScriptComponent
 		AddPerc(false);
 		AddPerc(false);
 		AddPerc(true);
-		m_Perf = new RZL_ExpPerf();
-		m_Perf.m_fStartAt = 1000000;
-		m_Perf.m_Site = TakeSite(false, "perf");
+		if (Wanted("perf"))
+		{
+			m_Perf = new RZL_ExpPerf();
+			m_Perf.m_fStartAt = 1000000;
+			m_Perf.m_Site = TakeSite(false, "perf");
+		}
 		m_Plan.m_bHasOpen = m_iOpenRunners > 0;
 		m_Plan.m_bHasWood = m_iWoodRunners > 0;
 		RZL.Log(string.Format("perception runners: %1 open, %2 wood edge", m_iOpenRunners, m_iWoodRunners));
@@ -187,6 +218,9 @@ class RZL_LabComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected void AddPerc(bool wood)
 	{
+		if (!Wanted("perception") && !Wanted("perception-core"))
+			return;
+
 		RZL_Site s = m_Sites.Take(wood);
 		if (!s)
 		{
