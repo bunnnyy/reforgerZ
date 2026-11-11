@@ -3,7 +3,8 @@
 //! and by researching the cure.
 //!
 //! Its clock only runs while someone is playing, and the season speed scales it
-//! (docs/DESIGN.md, "Season pacing"): stage lengths are divided by it, spread multiplied.
+//! (docs/DESIGN.md, "Season pacing"): stage lengths are divided by it, spread multiplied. The
+//! built-in stages (RZ_StageSettings.CreateDefault) fit a season of about 45 real days.
 class RZ_Director
 {
 	protected RZ_GameModeComponent m_GM;

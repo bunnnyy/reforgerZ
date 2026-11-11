@@ -295,13 +295,43 @@ class RZ_WorldFacts
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Research, 0 to 100.
+	//! Research the lab has worked through, 0 to 100 (the milestones follow it).
 	float CurePercent()
 	{
 		if (!m_GM || !m_GM.GetCure())
 			return 0;
 
 		return m_GM.GetCure().m_fProgress;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Research delivered and still waiting in the lab's backlog, in percent.
+	float LabWaiting()
+	{
+		if (!m_GM || !m_GM.GetCure())
+			return 0;
+
+		return m_GM.GetCure().GetBacklog();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lab's backlog is full: it refuses samples, and mission research beyond it is lost.
+	bool LabFull()
+	{
+		if (!m_GM || !m_GM.GetCure())
+			return false;
+
+		return m_GM.GetCure().IsLabFull();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Research waits at 90 percent for a cure finale (only while a finale questline is registered).
+	bool AtFinaleGate()
+	{
+		if (!m_GM || !m_GM.GetCure())
+			return false;
+
+		return m_GM.GetCure().IsAtFinaleGate();
 	}
 
 	//------------------------------------------------------------------------------------------------

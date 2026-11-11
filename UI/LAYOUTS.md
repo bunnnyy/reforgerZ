@@ -176,8 +176,10 @@ Frame (root)
 Frame (root)
 ├─ (menu frame: heading "JOURNAL", Text Header, tabs, footer)
 ├─ Frame  (list panel, at (72, 168), 660 × 840)
-│  ├─ VerticalLayout List      fills the panel (inside a ScrollLayout if you like)
-│  └─ Text  Empty              "The radio is quiet." centred
+│  ├─ VerticalLayout List      fills the panel above LabStatus (inside a ScrollLayout if you like)
+│  ├─ Text  Empty              "The radio is quiet." centred
+│  └─ Text  LabStatus          bottom of the panel, mono 13, dim, two lines: the lab's line
+│                              ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work."); hidden without a lab
 └─ Frame  (detail panel, at (750, 168), 1098 × 840)
    ├─ Image  DetailAccent      full width × 5, top
    ├─ Image  DetailIcon        56 × 56

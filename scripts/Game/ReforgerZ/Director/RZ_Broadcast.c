@@ -8,8 +8,7 @@ class RZ_Broadcast
 	protected float m_fTimer;
 	protected float m_fLastProgress = -1;
 	protected float m_fStallSeconds;			// real seconds since cure research last moved
-	protected int m_iLastMilestone = -1;
-	protected float m_fSinceBreakthrough = -1;	// real seconds since the last breakthrough, -1 = none this session
+	protected float m_fSinceBreakthrough = -1;	// seconds online since players heard the last breakthrough, -1 = none this session
 
 	protected static const float STALL_SECONDS = 2700;			// 45 min without research: "stalled"
 	protected static const float LONG_STALL_SECONDS = 10800;	// 3 h without research: "indefinitely"
@@ -26,23 +25,33 @@ class RZ_Broadcast
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server tick. intervalMinutes <= 0 turns the looping broadcast off (first-join still works).
-	void Tick(float dt, float intervalMinutes)
+	//! The cure's breakthrough news was just told (RZ_CureResearch.FlushNews, once someone is in the
+	//! world to hear it). For the next 90 minutes online the broadcast evaluates "reports of research".
+	void OnBreakthrough()
 	{
+		m_fSinceBreakthrough = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server tick. intervalMinutes <= 0 turns the looping broadcast off (first-join still works).
+	//! online: a player is in the world (the breakthrough window only runs then).
+	void Tick(float dt, float intervalMinutes, bool online)
+	{
+		// The lab works research through a little at a time (RZ_CureResearch.Work), so "moved" is
+		// measured from where it stood when it last moved, not from the last tick
 		RZ_CureResearch cure = m_GM.GetCure();
-		if (m_fLastProgress < 0 || cure.m_fProgress > m_fLastProgress + 0.01)
+		if (m_fLastProgress < 0 || cure.m_fProgress > m_fLastProgress + 0.01 || cure.m_fProgress < m_fLastProgress)
+		{
 			m_fStallSeconds = 0;
+			m_fLastProgress = cure.m_fProgress;
+		}
 		else
+		{
 			m_fStallSeconds += dt;
+		}
 
-		m_fLastProgress = cure.m_fProgress;
-
-		if (m_iLastMilestone >= 0 && cure.m_iMilestone > m_iLastMilestone)
-			m_fSinceBreakthrough = 0;
-		else if (m_fSinceBreakthrough >= 0)
+		if (m_fSinceBreakthrough >= 0 && online)
 			m_fSinceBreakthrough += dt;
-
-		m_iLastMilestone = cure.m_iMilestone;
 
 		if (intervalMinutes <= 0 || cure.IsCured())
 			return;

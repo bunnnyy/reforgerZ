@@ -14,7 +14,7 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 | System | Design |
 |---|---|
 | Settlement detection, rotating spawn points, mission announcements, per-player map icons (vanilla text markers without them) | [Settlements](DESIGN.md#settlements-spawn-points-and-the-map) |
-| The Director: four outbreak stages, infection spread, paced for a season of about 10 days (season speed for other server sizes) | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread), [Season pacing](DESIGN.md#season-pacing) |
+| The Director: four outbreak stages, infection spread, paced for a season of about 45 real days from about 2 to 20 regulars (research scaled to the last week's player-hours; season speed and cure pace for other season lengths; `tools/pacing_sim.py` checks the tuning) | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread), [Season pacing](DESIGN.md#season-pacing) |
 | Heat from presence, vehicles, gunfire (suppressors quieter), noisemakers; hordes toward noise | [Heat and noise](DESIGN.md#heat-and-noise) |
 | Zombie spawner for any zombie mod, bite detection (scratches and bites, protective clothing), the golden window and wound cleaning, staged infection, the Turned Player | [Zombies](DESIGN.md#zombies-bites-and-infection) |
 | Treatments from day one: antidote and stabiliser stocks scaled by research, Halcyon's trial dose, safehouse bite declarations, five low-grade meds with side effects | [Treatments](DESIGN.md#treatments) |
@@ -40,8 +40,8 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
 | World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
-| Cure research, antidotes, the final stand, the season's winner | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
-| Seasons: next-season rules from the last winner, rule sets (Winter, Fog, Military Collapse, No Vehicles, or your own), the wipe cycle (on cure after an epilogue, or after N weeks; backup and announcements), the hall of fame | [Seasons](DESIGN.md#seasons) |
+| Cure research, antidotes, the final stand, the season's winner; the pace by play (research ×0.25 to ×2.5 for the last week's player-hours); the lab's capacity (a backlog worked through at 3% a real day, capped at 4 days of work as a backstop: samples refused and mission research lost while it's full, +25% on what fills a near-empty backlog to half a day); breakthrough news held until someone is online; the finale's 90% gate as a hook, used only once a finale questline is registered, with a fallback of 1% a real day after a week there | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
+| Seasons: next-season rules from the last winner, rule sets (Winter, Fog, Military Collapse, No Vehicles, or your own), the wipe cycle (only on the cure after an epilogue by default; a timed wipe after N weeks for admins who pick it; backup and announcements), the hall of fame | [Seasons](DESIGN.md#seasons) |
 | Contracts that give a rough area (a 500 m circle) until you're close; Radio Operators and Trusted players get the spot | [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
@@ -58,6 +58,12 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 
 ### Characters and UI
 - Build the UI layouts and the icon imageset in Workbench ([UI/LAYOUTS.md](../UI/LAYOUTS.md)).
+
+### The cure's finale
+- One finale route per faction, opening at 90% research, that players can follow working for
+  either faction: designed separately. The hook is built: registering one (`IsCureFinale`) stops
+  research at 90% until a finale adds research with `RZ_CureResearch.AddFinaleResearch`
+  ([Cure research](DESIGN.md#cure-research-and-the-seasons-end)).
 
 ### Content on the world facts
 - Switch the rest of the content to the world facts ([DESIGN.md](DESIGN.md#world-facts), the
@@ -79,7 +85,11 @@ In this order, because later ones depend on earlier ones:
    Do the deploy menu, chat and groups stay on `SURV`? If AI ignores the variants, switch to Outlaw.
 3. **The core loop on Arland** for 2 hours: zombie density, spread rate, cure pace. Then the
    season's first days: are kills, specials and research per player-hour near the assumptions
-   in [Season pacing](DESIGN.md#season-pacing)? Adjust research per sample or the season speed.
+   in [Season pacing](DESIGN.md#season-pacing)? Run `tools/pacing_sim.py` with what you saw and
+   adjust the Cure pace. Over the first weeks: does the status log's pace by play match how much
+   the server plays, and does a small group still feel its deliveries count? Is the lab's backlog
+   a fair wait, or does a "come back tomorrow" feel like a wall? Do towns players work in clean up
+   too easily over the longer season (Zombies > Kill infection)?
 4. **Supply trucks:** one truck from stronghold to outpost. Is the crew seated, and does it drive?
 5. **Noise:** how far a thrown bottle really leads infected; the favourite-spot rate.
 6. **Puzzles** one by one, and whether replicated action labels work.

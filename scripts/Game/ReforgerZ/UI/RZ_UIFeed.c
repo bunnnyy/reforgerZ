@@ -464,6 +464,7 @@ class RZ_UIFeed
 	//------------------------------------------------------------------------------------------------
 	//! M|id|kind|giver (-1 none)|title|given by|where|direction and distance|minutes left|requirements|Fame|Favor|brief|taking part (0/1)
 	//! C|mission id|clue title|clue text
+	//! S|the lab's line ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.")
 	//! A questline the player is part of is an M record too: a negative id, kind QUESTLINE, its
 	//! title, the stage as "given by", minutes -1 (no clock), Fame and Favor 0 (they depend on
 	//! the ending), the stage's text as the brief; its notes ("what you know so far") are C records.
@@ -473,6 +474,14 @@ class RZ_UIFeed
 		if (!mm)
 			return "";
 
+		// The lab's state first, so a long journal never cuts it off (RZ_CureResearch.Describe)
+		string lab = "";
+		if (m_GM.HasLab() && m_GM.GetCure())
+		{
+			RZ_UILine lnS = new RZ_UILine("S");
+			lab = lnS.Add(m_GM.GetCure().Describe()).End();
+		}
+
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		vector from = vector.Zero;
 		if (ent)
@@ -480,7 +489,7 @@ class RZ_UIFeed
 
 		array<RZ_Mission> list = {};
 		mm.ListFor(playerId, list);
-		string s = "";
+		string s = lab;
 		array<int> shown = {};
 		foreach (RZ_Mission m : list)
 		{
