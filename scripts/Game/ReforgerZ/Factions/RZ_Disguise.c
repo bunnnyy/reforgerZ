@@ -744,7 +744,7 @@ class RZ_Disguise
 
 		// A dead man's name, given at his own post
 		string dead = m_Watch.HeardName(playerId);
-		if (f == RZ_EFaction.MILITARY && !dead.IsEmpty() && place.IndexOf("h") == 0)
+		if (f == RZ_EFaction.MILITARY && !dead.IsEmpty() && place.IndexOf("h") == 0 && CoverDetail(playerId, f, "") == "Name: " + RZ_DisguiseMarks.Surname(dead))
 		{
 			int holding = m_Marks.HoldingOfName(f, dead);
 			if (holding >= 0 && place == "h" + holding.ToString())
