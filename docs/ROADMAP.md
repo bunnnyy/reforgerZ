@@ -32,7 +32,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Per-player AI hostility (hidden faction variants), retaliation, Outlaw fallback | [REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you) |
 | Borrowed kit, disguise phase 1: kit read from the loadout slots (colours, full kit, tells, own colours), claims judged by one fixed look shown before you commit (cover details: the word at the wire, a crew name, a name you've heard, a mission's paper), passage and a moment only, caught (the kit, +3 Infamy, 3 catches per life per faction, blown an hour, held), colours at posts and camps, leaders, the wire and the stand see through it, doubling only for acts seen while passing; `PassAs` and the TRICK way; Bust Out's claim and second look, Double Agent's colours rule | [REPUTATION.md](REPUTATION.md#borrowed-kit) |
 | Territory: strongholds, outposts, the territory tick, faction strength | [Territory](DESIGN.md#territory) |
-| Camp life: each faction's scenery round its holdings, safehouses, field stations and road posts (seeded, any map, only near players, nothing saved; a guard deletes anything usable and the scans ignore it), and its people's routines at the 3 places nearest players (sentry, patrol, sit, work, gather, stroll, the courier, sleep as a despawn; Bastion's shift change and roll, the Haven's supper), with one extra person per live place. The 21 compositions and the kits are still to build in Workbench | [Camp life](DESIGN.md#camp-life), [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits) |
+| Camp life: each faction's scenery round its holdings, safehouses, field stations and road posts, an outpost laid out as a small compound (perimeter, working area, sleeping area, cooking area; seeded, any map, only near players, spawned a few per tick, nothing saved; a guard deletes anything usable and the scans ignore it), and its people's routines at the 3 places nearest players (sentry, patrol, sit, work, gather, stroll, the courier, the morning wash, chopping wood, cooking before the meal, sleep as a despawn; Bastion's shift change and roll, the Haven's supper), with one extra person per live place. The 49 compositions and the kits are still to build in Workbench | [Camp life](DESIGN.md#camp-life), [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits) |
 | Real supply trucks with AI crews (the truck leaves its yard once the whole crew has spawned and got in), shortages, escort, drive-in and theft | [Supply trucks](DESIGN.md#supply-trucks) |
 | Faction life: needs, morale, chatter, life events, truces and feuds, moments, rumours | [Faction life](DESIGN.md#faction-life), [REPUTATION.md](REPUTATION.md#morale-needs-truces-and-feuds) |
 | Haven safehouses: population tiers, upkeep, rescues, house rules, exile, notice boards (notes between sessions, `/note`) | [Haven safehouses](DESIGN.md#haven-safehouses) |
@@ -93,7 +93,7 @@ The build-review fixes are done. Everything below is approved. The order of the 
 - **The manual steps** the plugin still lists ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); the
   loadouts' gear, shop stock, the consumable effects and the reward crate were filled in by text
   edits and need a play-test.
-- **Camp life in Workbench:** the 21 compositions, the smart-action waypoint and the kits (two
+- **Camp life in Workbench:** the 49 compositions, the smart-action waypoint and the kits (four
   evenings; [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)).
 - **Play it with a game client** on a local server, then a 2-hour session on Arland
   ([PC_SETUP.md](PC_SETUP.md#6-play-testing)).
@@ -235,8 +235,8 @@ In this order, because later ones depend on earlier ones:
     make the crew shoot, and does a surrender's stand-down stop them? Is a Fire Mission's horde
     check too strict or too loose; does the fence take the right things?
     **Camp life:** do our groups use the compositions' smart actions and loop their patrol, do lone
-    characters join a group, do AI walk through run-time tents, and what do 3 live places cost in
-    server frame time?
+    characters join a group, do AI walk through run-time tents, and what do 3 live places and a
+    20-piece stronghold cost in server frame time?
 16. **Seasons:** a wipe end to end (backup, fresh start, the winner's rules, the hall of fame
     kept), and whether the rule sets feel different enough without being unfair. Are rough
     contract areas fun to search, or too vague at 500 m?

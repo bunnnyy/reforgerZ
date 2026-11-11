@@ -651,19 +651,29 @@ vanilla props: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-composition
 
 | Place | Built up with |
 |---|---|
-| Bastion post | a sandbag nest at the approach, tents, the roster board, a table under a tarp, a fire barrel |
-| Red Hand camp | an oil-drum fire, a card table, crates, a tarp, the toll barrier |
-| Haven safehouse and outpost | a washing line, benches, a garden bed, a water barrel, a table outside |
-| Halcyon field station | field tables, a cold box, an antenna, a generator, a canvas shelter (the lab grounds too, when Halcyon's stronghold sits at the lab) |
-| Strongholds | the faction's set, more of it (14 pieces against an outpost's 8) |
-| Road posts | 3 pieces beside the barrier: a fire barrel, a nest |
+| Bastion post | a sandbag nest and sandbag runs at the approach, tents, the roster board, a flagless pole, a fire pit, a table, a cook pot and a woodpile, a shaving stand, ammo-crate seats |
+| Red Hand camp | the toll barrier, a scrappy nest, a scrap barricade and the red hand painted on corrugated iron at the approach, an oil-drum fire, a card table, a stolen sofa, a cook pot and a woodpile, tents and a scrap shelter, bags and bottles |
+| Haven safehouse and outpost | a table outside, a cook pot and a woodpile, a water barrel and a wash stand, a washing line, a garden bed, the bear stencil on a door board; an outpost adds a candle memorial with names, a tent, a children's corner, a fence and a vegetable stall |
+| Halcyon field station | field tables, a cold box, a canvas shelter, a decon shower, sample racks behind glass, a generator, an antenna, the plague-doctor stencil board (the lab grounds too, when Halcyon's stronghold sits at the lab) |
+| Strongholds | the faction's set, more of it (20 pieces against an outpost's 13): more tents, bags and bottles, a drying line, a latrine screen, and each faction's extras (Bastion's duty board, the Red Hand's trophy wall and kennel, the Haven's fire pit and chairs round a crate, Halcyon's bench of notebooks and radio table) |
+| Road posts | 4 pieces beside the barrier: a fire barrel, a nest or a card table, a tarp, a barricade |
+
+The full list of compositions, and each faction's kit, is in
+[WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits).
 
 - **Placement, any map.** The layout is seeded from the place's position, so the same pieces
-  stand in the same places on every visit. Pieces go on rings round the centre by role:
-  **centre** (8–12 m: fire, table, board), **inner** (12–20 m: tents), **approach** (20–30 m
-  toward the nearest road, else the next town: the nest, the barrier), **edge** (24–40 m on the
-  other sides: the line, the garden, the generator). Strongholds spread 30% wider, safehouses
-  20% tighter; road posts put everything 5–10 m beside the road. A spot is used only on flat
+  stand in the same places on every visit. An outpost is laid out as a small compound, its pieces
+  on rings round the centre by role:
+
+  | Ring | Distance | What goes there |
+  |---|---|---|
+  | **Centre**, the working area | 8–14 m, all round | fire, tables, boards, seats, the flag pole, the memorial |
+  | **Inner** | 14–22 m, all round but the approach | the **sleeping area** at the back (tents and shelters, the wash stand just behind them) and the **cooking area** to one side, left or right by the seed (the cook pot, the woodpile) |
+  | **Approach**, the perimeter | 24–34 m, a 90° arc toward the nearest road (else the next town) | the nest, the barrier, barricade segments, the faction's sign, facing out |
+  | **Edge** | 28–46 m, the other sides | the line, the garden, the generator, the latrine, the kennel |
+
+  Strongholds spread 30% wider, safehouses 20% tighter; road posts put everything 5–11 m beside
+  the road. A spot is used only on flat
   ground (under about 12°, from four ground heights), out of the water and away from the line,
   at least 6 m from a road's centre line, outside every building's footprint (2 m margin), 4 m
   from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece. A piece with no good
@@ -674,10 +684,14 @@ vanilla props: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-composition
   (resupply, heal, fuel, repair), supplies, fuel, a vehicle or vehicle spawner, a spawn point,
   or any ReforgerZ component or action, with a log line. The interaction scan and the puzzles'
   landmark finder ignore the pieces: a decor fire isn't a stove, a decor generator isn't a
-  generator, a barrel isn't a well, an antenna isn't a mission's landmark. The quartermaster and
+  generator, a barrel, a wash stand or a shower isn't water, a radio on a table is only a
+  shape, an antenna isn't a mission's landmark. The quartermaster and
   a safehouse's own services stay what they are and are never scenery.
 - **Only near players.** Pieces spawn and go with the place's bodies (a player within the
-  owner's visible radius: 300 m for holdings). At most 60 pieces stand on the server.
+  owner's visible radius: 300 m for holdings). The layout is worked out at once, but the pieces
+  spawn **4 per server tick** for all places together (a 20-piece stronghold is up in about 25 s
+  at the 5 s tick); when a place's last piece is up, its people are given their jobs again. At
+  most **90** pieces stand or wait to spawn on the server.
 
 **What people do.** The bodies are the ones the built systems spawn (guards, named people,
 safehouse occupants, road-post crews); camp life gives them **jobs**. Only at the **3 places
@@ -690,28 +704,32 @@ nearest players** (Live places); elsewhere they stand.
 | Sit | a free seat at the fire or a table (a sit smart action) |
 | Work, lean | a free loiter or lean point at the line, the garden, the cold box, the barrel, the barrier |
 | Gather | the roster board, else the centre's table or fire: everyone stands or sits there |
+| Wash (mornings, 05:30–07:00) | the wash stand, the shaving stand or the decon shower |
+| Chop (by day) | the chopping block at the woodpile |
+| Cook (17:30–18:30, before the meal) | the cook pot |
 | Stroll, courier | a walk out and back: to the road, or 60–90 m to the edge |
 | Off shift | to the tents; with nobody within 80 m they **sleep**: despawned as data, back in the morning |
 
-A piece's smart actions are found by tag (`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`)
-and seats are counted, so two people never take the same chair. Without a free seat, the
-smart-action waypoint or the piece, they loiter beside it. A lone character (an occupant, a
+A piece's smart actions are found by tag (`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`,
+`RZ_Cook`, `RZ_Wash`, `RZ_Chop`) and seats are counted, so two people never take the same chair.
+A chore with no piece of its own (no cook pot in the kit) falls back to a seat, a work or a lean
+point. Without a free seat, the smart-action waypoint or the piece, they loiter beside it. A lone character (an occupant, a
 single guard) is put in an empty AI group of its own faction so it can take waypoints; without
 the group prefab it stands.
 
 | Faction | By day | Moments | Night |
 |---|---|---|---|
-| Bastion | the nest, two on the loop, one at the board, one at the fire, the rest at work | **05:30 and 17:30**: the watch changes hands (someone else takes the nest and the loop). **20:30, the roll**: everyone at the board for 3 minutes, the routine line read out | the nest and one at the fire; the rest asleep |
-| Red Hand | two at the barrier taking the toll, one strolling to the road and back, the rest at the fire or the table | — | one lookout, the rest drinking at the fire |
-| Haven | the lookout at the door, chores (the line, the garden, the barrel) | **18:30, the dusk meal**: everyone at the table but the lookout; a name is read (the routine line) | the lookout; the rest inside (asleep) |
-| Halcyon | a guard pair at the door, researchers at the tables, work at the cold box | the **courier** walks out to the edge and back every 20 minutes | one guard, one at the cold box; the rest asleep |
+| Bastion | the nest, two on the loop, one at the board, one chopping wood, one at the fire, the rest at work | **05:30 and 17:30**: the watch changes hands (someone else takes the nest and the loop); one shaves in the morning, one cooks from 17:30. **20:30, the roll**: everyone at the board for 3 minutes, the routine line read out | the nest and one at the fire; the rest asleep |
+| Red Hand | two at the barrier taking the toll, one strolling to the road and back, one chopping wood, the rest at the fire, the table or the sofa | one cooks from 17:30 (nobody washes) | one lookout, the rest drinking at the fire |
+| Haven | the lookout at the door, one chopping wood, chores (the line, the garden, the barrel, the stall) | one washes in the morning; one cooks from 17:30; **18:30, the dusk meal**: everyone at the table but the lookout; a name is read (the routine line) | the lookout; the rest inside (asleep) |
+| Halcyon | a guard pair at the door, researchers at the tables, work at the cold box and the racks | one through the decon shower in the morning; the **courier** walks out to the edge and back every 20 minutes | one guard, one at the cold box; the rest asleep |
 | Road posts | the crew leaning at the barrier | — | the same |
 
 - **Every few minutes** (Shuffle minutes, 3) anyone idle goes back to work (back from an errand,
   a fight, or a talk) and one person moves to another seat or job.
 - **Combat** is the AI's own danger behaviour; hostility is unchanged.
 - **Talking** to a named person or an occupant makes the nearest one stop their job for 45 s.
-- **Named people** stay within 15 m of the centre and never patrol, keep watch, run errands or
+- **Named people** stay within 20 m of the centre (they may cook, wash and chop) and never patrol, keep watch, run errands or
   sleep, so they can always be found and talked to. **Quartermasters, leaders and the medic**
   never get a job.
 - **Extras:** each live place may add **1** more person by day (its guard prefab, at most 6 on the

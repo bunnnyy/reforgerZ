@@ -2,14 +2,17 @@
 //!
 //! While a place's bodies exist (territory holdings, Haven safehouses, road posts: a player is
 //! near), its faction's scenery stands around it: compositions from Camp life > Kits, laid out
-//! from a seed (the place's position) on rings around its centre, on flat open ground, off
-//! roads and out of buildings. Nothing is saved: the same seed gives the same layout on every
+//! from a seed (the place's position) as a small compound round its centre (a working area in
+//! the middle, a sleeping area at the back, a cooking area to one side, a perimeter toward the
+//! approach), on flat open ground, off roads and out of buildings. Pieces spawn a few per tick.
+//! Nothing is saved: the same seed gives the same layout on every
 //! visit, and the pieces go with the bodies. RZ_DressingGuard strips anything a player could
 //! use for gain, and the interaction scan ignores the pieces (IsDressing).
 //!
 //! At the Live places nearest players, the people get jobs from their faction's routine:
-//! the sentry, the patrol, sitting at the fire, work at the line or the cold box, gathering for
-//! the roll or the meal, sleeping (off-shift bodies despawn while nobody is close). Jobs are
+//! the sentry, the patrol, sitting at the fire, work at the line or the cold box, washing in the
+//! morning, chopping wood by day, cooking before the meal, gathering for the roll or the meal,
+//! sleeping (off-shift bodies despawn while nobody is close). Jobs are
 //! vanilla waypoints and smart actions; combat is the AI's own. Elsewhere, bodies stand.
 
 //------------------------------------------------------------------------------------------------
@@ -25,10 +28,10 @@ enum RZ_ECampPlace
 //------------------------------------------------------------------------------------------------
 enum RZ_EDressRole
 {
-	CENTRE,		// 8-12 m out: the fire, the table, the roster board
-	INNER,		// 12-20 m: tents and shelters
-	APPROACH,	// 20-30 m toward the nearest road (or the next town): the sentry nest, the toll barrier
-	EDGE		// 24-40 m on the other sides: the washing line, the garden, the generator
+	CENTRE,		// 8-14 m out, the working area: the fire, the table, the roster board
+	INNER,		// 14-22 m: tents at the back (the sleeping area), the cook pot to one side (the cooking area)
+	APPROACH,	// 24-34 m toward the nearest road (or the next town), the perimeter: the nest, the barrier, barricades
+	EDGE		// 28-46 m on the other sides: the washing line, the garden, the generator, the latrine
 }
 
 //------------------------------------------------------------------------------------------------
@@ -40,7 +43,10 @@ enum RZ_EDressUse
 	WATCH,		// an observation sentinel facing out (RZ_Watch): the sentry nest
 	GATHER,		// where people stand for the roll or one at a time by day (RZ_Gather): the roster board
 	LEAN,		// lean points (RZ_Lean): the fire barrel, the toll barrier
-	SLEEP		// tents: off-shift people sleep here (as data); extras come out of them
+	SLEEP,		// tents: off-shift people sleep here (as data); extras come out of them
+	COOK,		// a cook point (RZ_Cook): the cook pot; someone cooks before the meal
+	WASH,		// a wash point (RZ_Wash): the wash stand, the shaving stand, the decon shower; mornings
+	CHOP		// a chop point (RZ_Chop): the chopping block; someone chops wood by day
 }
 
 //------------------------------------------------------------------------------------------------
@@ -51,10 +57,10 @@ class RZ_DressingPiece
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "A composition from Prefabs/ReforgerZ/Dressing/ (docs/WORKBENCH_SETUP.md, Camp life): scenery only. Anything a player could use is deleted when it spawns", "et")]
 	ResourceName m_sPrefab;
 
-	[Attribute("0", UIWidgets.ComboBox, "Where it stands: Centre (8-12 m), Inner (12-20 m), Approach (20-30 m toward the road), Edge (24-40 m elsewhere). Road posts put everything beside the road", "", ParamEnumArray.FromEnum(RZ_EDressRole))]
+	[Attribute("0", UIWidgets.ComboBox, "Where it stands: Centre (8-14 m, the working area), Inner (14-22 m: tents at the back, cook and chop pieces to one side), Approach (24-34 m toward the road, the perimeter), Edge (28-46 m elsewhere). Road posts put everything beside the road", "", ParamEnumArray.FromEnum(RZ_EDressRole))]
 	RZ_EDressRole m_eRole;
 
-	[Attribute("0", UIWidgets.ComboBox, "What people do at it (its sentinels carry the matching tag: RZ_Sit, RZ_Work, RZ_Watch, RZ_Gather, RZ_Lean). Sleep: a tent", "", ParamEnumArray.FromEnum(RZ_EDressUse))]
+	[Attribute("0", UIWidgets.ComboBox, "What people do at it (its sentinels carry the matching tag: RZ_Sit, RZ_Work, RZ_Watch, RZ_Gather, RZ_Lean, RZ_Cook, RZ_Wash, RZ_Chop). Sleep: a tent. None: scenery only", "", ParamEnumArray.FromEnum(RZ_EDressUse))]
 	RZ_EDressUse m_eUse;
 
 	[Attribute("1", UIWidgets.Slider, "How many of it (a place stops at its piece count, in list order)", "1 4 1")]
@@ -63,7 +69,7 @@ class RZ_DressingPiece
 	[Attribute("2", UIWidgets.Slider, "People who use one at once: the number of sentinels with its tag", "1 6 1")]
 	int m_iSeats;
 
-	[Attribute("", desc: "Smart-action tag on its sentinels if not the use's own (RZ_Sit, RZ_Work, RZ_Watch, RZ_Gather, RZ_Lean)")]
+	[Attribute("", desc: "Smart-action tag on its sentinels if not the use's own (RZ_Sit, RZ_Work, RZ_Watch, RZ_Gather, RZ_Lean, RZ_Cook, RZ_Wash, RZ_Chop)")]
 	string m_sTag;
 }
 
@@ -90,25 +96,25 @@ class RZ_CampLifeSettings
 	[Attribute("1", desc: "Dress holdings, Haven safehouses, field stations and road posts with their faction's scenery (Kits) while their people are there. Nothing is saved")]
 	bool m_bDressing;
 
-	[Attribute("1", desc: "Give their people jobs from their faction's routine (sentry, patrol, sit, work, gather, sleep) at the Live places nearest players")]
+	[Attribute("1", desc: "Give their people jobs from their faction's routine (sentry, patrol, sit, work, wash, chop, cook, gather, sleep) at the Live places nearest players")]
 	bool m_bRoutines;
 
-	[Attribute("14", UIWidgets.Slider, "Pieces at a stronghold", "0 30 1")]
+	[Attribute("20", UIWidgets.Slider, "Pieces at a stronghold", "0 30 1")]
 	int m_iPiecesStronghold;
 
-	[Attribute("8", UIWidgets.Slider, "Pieces at an outpost", "0 20 1")]
+	[Attribute("13", UIWidgets.Slider, "Pieces at an outpost", "0 20 1")]
 	int m_iPiecesOutpost;
 
-	[Attribute("5", UIWidgets.Slider, "Pieces at a Haven safehouse", "0 15 1")]
+	[Attribute("8", UIWidgets.Slider, "Pieces at a Haven safehouse", "0 15 1")]
 	int m_iPiecesSafehouse;
 
-	[Attribute("6", UIWidgets.Slider, "Pieces at a Halcyon field station (its outposts)", "0 15 1")]
+	[Attribute("9", UIWidgets.Slider, "Pieces at a Halcyon field station (its outposts)", "0 15 1")]
 	int m_iPiecesFieldStation;
 
-	[Attribute("3", UIWidgets.Slider, "Pieces at a road post (beside the barrier)", "0 8 1")]
+	[Attribute("4", UIWidgets.Slider, "Pieces at a road post (beside the barrier)", "0 8 1")]
 	int m_iPiecesRoadPost;
 
-	[Attribute("60", desc: "Pieces standing on the whole server at most")]
+	[Attribute("90", desc: "Pieces standing (or waiting to spawn) on the whole server at most. They spawn a few per tick")]
 	int m_iPiecesMax;
 
 	[Attribute("3", UIWidgets.Slider, "Places nearest players whose people do their routine (elsewhere they stand)", "0 8 1")]
@@ -150,6 +156,8 @@ class RZ_CampLifeSettings
 class RZ_CampPiece
 {
 	IEntity m_Entity;
+	ResourceName m_sPending;	// not spawned yet (a few spawn per tick); cleared once it's tried
+	float m_fYaw;
 	vector m_vPos;
 	RZ_EDressRole m_eRole;
 	RZ_EDressUse m_eUse;
@@ -189,6 +197,7 @@ class RZ_CampPlace
 	vector m_vRoad;				// the nearest road point (Red Hand strolls), if m_bHasRoad
 	bool m_bHasRoad;
 	int m_iSeed;
+	float m_fCookSide;			// +90 or -90 from the approach: the cooking area's side
 	ResourceName m_sExtraPrefab;
 	ref array<ref RZ_CampPiece> m_aPieces = {};
 	ref array<ref RZ_CampWorker> m_aWorkers = {};
@@ -339,7 +348,11 @@ class RZ_CampLife
 	static const int JOB_STROLL = 7;
 	static const int JOB_COURIER = 8;
 	static const int JOB_OFF = 9;
+	static const int JOB_COOK = 10;		// the cook pot, before the meal
+	static const int JOB_WASH = 11;		// the wash stand (the decon shower), in the morning
+	static const int JOB_CHOP = 12;		// the chopping block, by day
 
+	protected static const int SPAWN_PER_TICK = 4;			// pieces spawned per server tick, all places together
 	protected static const float CHECK_INTERVAL = 10;
 	protected static const float LIVE_INTERVAL = 30;
 	protected static const float ROLL_SECONDS = 180;		// the roll at 20:30, before the night watch
@@ -347,7 +360,7 @@ class RZ_CampLife
 	protected static const float SLEEP_CLEAR = 80;			// nobody this close sees anyone vanish or appear
 	protected static const float EXTRA_CLEAR = 60;
 	protected static const float HOLD_SECONDS = 45;			// someone talked to stands still
-	protected static const float PERSON_RADIUS = 15;		// named people stay this close to the centre
+	protected static const float PERSON_RADIUS = 20;		// named people stay this close to the centre
 	protected static const float KEEP_CLEAR = 4;			// metres from a quartermaster, the medic, the barrier
 	protected static const float LEADER_CLEAR = 6;			// from a leader's seat (the body stands 2-5 m from it)
 	protected static const float PIECE_GAP = 5.5;
@@ -422,6 +435,7 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pieces standing and waiting to spawn, on the whole server.
 	int CountPieces()
 	{
 		for (int i = s_aPieces.Count() - 1; i >= 0; i--)
@@ -430,7 +444,17 @@ class RZ_CampLife
 				s_aPieces.Remove(i);
 		}
 
-		return s_aPieces.Count();
+		int n = s_aPieces.Count();
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			foreach (RZ_CampPiece piece : p.m_aPieces)
+			{
+				if (!piece.m_sPending.IsEmpty())
+					n++;
+			}
+		}
+
+		return n;
 	}
 
 	// ================================================================ Places come and go with their bodies
@@ -454,6 +478,11 @@ class RZ_CampLife
 		p.m_fYaw = yaw;
 		p.m_sExtraPrefab = extraPrefab;
 		p.m_iSeed = Seed(pos, faction, kind);
+		p.m_fCookSide = 90;
+		RZ_Rng sideRng = new RZ_Rng(p.m_iSeed + 11);
+		if (sideRng.Chance(0.5))
+			p.m_fCookSide = -90;
+
 		AddWorkers(p, guards, ROLE_GUARD);
 		AddWorkers(p, persons, ROLE_PERSON);
 		AddWorkers(p, keepers, ROLE_KEEPER);
@@ -657,7 +686,7 @@ class RZ_CampLife
 				array<vector> spots = {};
 				for (int t = 0; t < TRIES; t++)
 				{
-					spots.Insert(Candidate(p, piece.m_eRole, rng));
+					spots.Insert(Candidate(p, piece.m_eRole, piece.m_eUse, rng));
 				}
 
 				vector spot;
@@ -675,12 +704,10 @@ class RZ_CampLife
 				if (!found)
 					continue;
 
-				IEntity e = RZ_Util.SpawnPrefab(piece.m_sPrefab, spot, PieceYaw(p, piece.m_eRole, spot)); // VERIFY: a spawned composition (root with an RplComponent) shows on clients, and props spawned at run time block AI paths (else AI walk through tents)
-				if (!e || !RZ_DressingGuard.Strip(e, piece.m_sPrefab))
-					continue;
-
+				// Laid out now, spawned a few per tick (SpawnPending)
 				RZ_CampPiece cp = new RZ_CampPiece();
-				cp.m_Entity = e;
+				cp.m_sPending = piece.m_sPrefab;
+				cp.m_fYaw = PieceYaw(p, piece.m_eRole, spot);
 				cp.m_vPos = spot;
 				cp.m_eRole = piece.m_eRole;
 				cp.m_eUse = piece.m_eUse;
@@ -690,9 +717,49 @@ class RZ_CampLife
 					cp.m_sTag = UseTag(piece.m_eUse);
 
 				p.m_aPieces.Insert(cp);
-				s_aPieces.Insert(e);
 				placed++;
 			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A few laid-out pieces spawn each tick, places in the order they came. A place whose last piece is up
+	//! hands out its jobs again, so people use the pieces that weren't there yet.
+	protected void SpawnPending()
+	{
+		int budget = SPAWN_PER_TICK;
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			if (budget <= 0)
+				return;
+
+			bool spawned = false;
+			bool waiting = false;
+			foreach (RZ_CampPiece cp : p.m_aPieces)
+			{
+				if (cp.m_sPending.IsEmpty())
+					continue;
+
+				if (budget <= 0)
+				{
+					waiting = true;
+					break;
+				}
+
+				ResourceName prefab = cp.m_sPending;
+				cp.m_sPending = "";
+				budget--;
+				spawned = true;
+				IEntity e = RZ_Util.SpawnPrefab(prefab, cp.m_vPos, cp.m_fYaw); // VERIFY: a spawned composition (root with an RplComponent) shows on clients, and props spawned at run time block AI paths (else AI walk through tents)
+				if (!e || !RZ_DressingGuard.Strip(e, prefab))
+					continue;
+
+				cp.m_Entity = e;
+				s_aPieces.Insert(e);
+			}
+
+			if (spawned && !waiting && p.m_bLive)
+				p.m_iPhase = -2;
 		}
 	}
 
@@ -706,6 +773,9 @@ class RZ_CampLife
 			case RZ_EDressUse.WATCH: return "RZ_Watch";
 			case RZ_EDressUse.GATHER: return "RZ_Gather";
 			case RZ_EDressUse.LEAN: return "RZ_Lean";
+			case RZ_EDressUse.COOK: return "RZ_Cook";
+			case RZ_EDressUse.WASH: return "RZ_Wash";
+			case RZ_EDressUse.CHOP: return "RZ_Chop";
 		}
 
 		return "";
@@ -713,7 +783,11 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! A spot on the piece's ring. Always three draws, whatever the role.
-	protected vector Candidate(RZ_CampPlace p, RZ_EDressRole role, RZ_Rng rng)
+	//! The layout is a small compound: the working area in the middle (Centre), the perimeter
+	//! toward the approach (Approach), and on the inner ring a sleeping area at the back (tents,
+	//! the wash stand just behind them) and a cooking area to one side (the cook pot, the
+	//! firewood); everything else on the edge.
+	protected vector Candidate(RZ_CampPlace p, RZ_EDressRole role, RZ_EDressUse use, RZ_Rng rng)
 	{
 		float a = rng.Float01();
 		float b = rng.Float01();
@@ -725,7 +799,7 @@ class RZ_CampLife
 			if (side)
 				sideBearing = p.m_fYaw - 90;
 
-			return RZ_Compass.PointAt(p.m_vPos, sideBearing - 35 + a * 70, 5 + b * 5);
+			return RZ_Compass.PointAt(p.m_vPos, sideBearing - 35 + a * 70, 5 + b * 6);
 		}
 
 		float scale = 1;
@@ -734,23 +808,42 @@ class RZ_CampLife
 		else if (p.m_eKind == RZ_ECampPlace.SAFEHOUSE)
 			scale = 0.8;
 
-		// Centre: anywhere round, close in
+		// Centre, the working area: anywhere round, close in
 		float bearing = a * 360;
-		float radius = 8 + b * 4;
+		float radius = 8 + b * 6;
 		if (role == RZ_EDressRole.INNER)
 		{
-			bearing = p.m_fApproach + 30 + a * 300;
-			radius = 12 + b * 8;
+			bearing = p.m_fApproach + 40 + a * 280;
+			radius = 14 + b * 8;
 		}
 		else if (role == RZ_EDressRole.APPROACH)
 		{
-			bearing = p.m_fApproach - 30 + a * 60;
-			radius = 20 + b * 10;
+			// The perimeter: spread across the approach side
+			bearing = p.m_fApproach - 45 + a * 90;
+			radius = 24 + b * 10;
 		}
 		else if (role == RZ_EDressRole.EDGE)
 		{
-			bearing = p.m_fApproach + 50 + a * 260;
-			radius = 24 + b * 16;
+			bearing = p.m_fApproach + 60 + a * 240;
+			radius = 28 + b * 18;
+		}
+
+		// The areas (not on the perimeter): sleeping at the back, cooking to one side
+		if (role != RZ_EDressRole.APPROACH)
+		{
+			if (use == RZ_EDressUse.SLEEP)
+			{
+				bearing = p.m_fApproach + 125 + a * 110;
+			}
+			else if (use == RZ_EDressUse.WASH)
+			{
+				bearing = p.m_fApproach + 110 + a * 140;
+				radius = radius + 4;
+			}
+			else if (use == RZ_EDressUse.COOK || use == RZ_EDressUse.CHOP)
+			{
+				bearing = p.m_fApproach + p.m_fCookSide - 35 + a * 70;
+			}
 		}
 
 		return RZ_Compass.PointAt(p.m_vPos, bearing, radius * scale);
@@ -912,7 +1005,11 @@ class RZ_CampLife
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		m_fClock += dt;
-		if (!m_Settings.m_bRoutines || m_aPlaces.IsEmpty())
+		if (m_aPlaces.IsEmpty())
+			return;
+
+		SpawnPending();
+		if (!m_Settings.m_bRoutines)
 			return;
 
 		m_fLiveTimer += dt;
@@ -1105,11 +1202,12 @@ class RZ_CampLife
 				return JOB_SIT;
 			}
 
-			// The nest, two on the loop, one at the board, one at the fire
+			// The nest, two on the loop, one at the board, the phase's chore, one at the fire
 			slots.Insert(JOB_WATCH);
 			slots.Insert(JOB_PATROL);
 			slots.Insert(JOB_PATROL);
 			slots.Insert(JOB_GATHER);
+			AddChore(slots, phase, true, true, true);
 			slots.Insert(JOB_SIT);
 			return JOB_WORK;
 		}
@@ -1123,10 +1221,12 @@ class RZ_CampLife
 				return JOB_SIT;
 			}
 
-			// Two at the barrier taking the toll, one strolling to the road and back
+			// Two at the barrier taking the toll, one strolling to the road and back; wood by day,
+			// the pot before the meal (nobody washes)
 			slots.Insert(JOB_LEAN);
 			slots.Insert(JOB_LEAN);
 			slots.Insert(JOB_STROLL);
+			AddChore(slots, phase, false, true, true);
 			slots.Insert(JOB_SIT);
 			return JOB_SIT;
 		}
@@ -1141,14 +1241,16 @@ class RZ_CampLife
 			if (phase == RZ_Territory.PHASE_MEAL)
 				return JOB_GATHER;
 
+			// The phase's chore first (the wash, the wood, the cooking for the meal), then the rest
+			AddChore(slots, phase, true, true, true);
 			slots.Insert(JOB_WORK);
 			slots.Insert(JOB_WORK);
 			slots.Insert(JOB_WORK);
 			return JOB_SIT;
 		}
 
-		// Halcyon: a guard pair at the door, researchers at the tables; at night one guard and
-		// one at the cold box
+		// Halcyon: a guard pair at the door, researchers at the tables, the decon shower in the
+		// morning; at night one guard and one at the cold box
 		slots.Insert(JOB_WATCH);
 		if (night)
 		{
@@ -1157,6 +1259,7 @@ class RZ_CampLife
 		}
 
 		slots.Insert(JOB_WATCH);
+		AddChore(slots, phase, true, false, false);
 		slots.Insert(JOB_SIT);
 		slots.Insert(JOB_SIT);
 		slots.Insert(JOB_WORK);
@@ -1164,10 +1267,22 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The phase's one chore: a wash in the morning, wood by day, the pot before the meal.
+	protected static void AddChore(notnull array<int> slots, int phase, bool wash, bool chop, bool cook)
+	{
+		if (wash && phase == RZ_Territory.PHASE_MORNING)
+			slots.Insert(JOB_WASH);
+		else if (chop && phase == RZ_Territory.PHASE_DAY)
+			slots.Insert(JOB_CHOP);
+		else if (cook && phase == RZ_Territory.PHASE_EVENING)
+			slots.Insert(JOB_COOK);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Named people never walk away: no watch, patrol, stroll, errand or bed.
 	protected static bool PersonMay(int job)
 	{
-		return job == JOB_SIT || job == JOB_WORK || job == JOB_GATHER || job == JOB_LEAN;
+		return job == JOB_SIT || job == JOB_WORK || job == JOB_GATHER || job == JOB_LEAN || job == JOB_COOK || job == JOB_WASH || job == JOB_CHOP;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1286,6 +1401,12 @@ class RZ_CampLife
 			AtPiece(p, w, group, RZ_EDressUse.WORK, person);
 		else if (job == JOB_LEAN)
 			AtPiece(p, w, group, RZ_EDressUse.LEAN, person);
+		else if (job == JOB_COOK)
+			AtPiece(p, w, group, RZ_EDressUse.COOK, person);
+		else if (job == JOB_WASH)
+			AtPiece(p, w, group, RZ_EDressUse.WASH, person);
+		else if (job == JOB_CHOP)
+			AtPiece(p, w, group, RZ_EDressUse.CHOP, person);
 		else if (job == JOB_GATHER)
 			Gather(p, w, group);
 		else if (job == JOB_STROLL)
@@ -1334,7 +1455,8 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Sit, work or lean at a piece: the use asked for, else the others, else a spot near the centre.
+	//! Sit, work, lean, cook, wash or chop at a piece: the use asked for, else a seat, work or lean
+	//! point, else a spot near the centre.
 	protected void AtPiece(RZ_CampPlace p, RZ_CampWorker w, IEntity group, RZ_EDressUse use, bool person)
 	{
 		int idx = FreePiece(p, use, person);

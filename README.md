@@ -49,10 +49,13 @@ and one way to end it: **research the cure.**
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
-- **Camps that look lived in**: tents, fires, tables and each faction's own things round its posts,
-  camps, safehouses and field stations (scenery only: nothing to loot or use), and people who keep
-  their faction's routine: the sentry, the patrol, Bastion's shift change and the roll at 20:30, the
-  Red Hand's toll, the Haven's supper, Halcyon's courier, and the off shift asleep.
+- **Camps that look lived in**: an outpost is a small compound (barricades on the approach, a
+  working area, tents at the back, a cooking corner) with tents, fires, tables, washing, firewood,
+  clutter and each faction's own things round its posts, camps, safehouses and field stations
+  (scenery only: nothing to loot or use), and people who keep their faction's routine: the sentry,
+  the patrol, the morning wash, chopping wood, cooking before the meal, Bastion's shift change and
+  the roll at 20:30, the Red Hand's toll, the Haven's supper, Halcyon's courier, and the off shift
+  asleep.
 - **Questlines** that run over many sessions: each stage is a contract or a wait, you can talk,
   persuade, sneak, fight, bribe, betray or side with another faction, and what you chose changes
   the ending, the rewards and the world. Fifteen: three per faction, two for the Long Table and

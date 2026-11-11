@@ -619,7 +619,7 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | vanilla AIWaypoint_ObservationPost.et | — | Territory > Camp life > Observation waypoint | optional | a sentry with no nest (empty = the loiter waypoint) |
 | (existing prefab) | vanilla Group_Base.et (an AI group with no members) | — | Territory > Camp life > Group prefab | optional | lone characters (occupants, single guards) join one so they can take jobs (empty = they stand) |
 | (existing prefab) | a new prefab of class SCR_SmartActionWaypoint, saved as Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et (vanilla ships the class, not a prefab) | — | Territory > Camp life > Smart action waypoint | optional | people use a piece's sit, lean, work and watch points (empty = they loiter beside it) |
-| (existing prefab) | the 21 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab) | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
+| (existing prefab) | the 49 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab) | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
 
 #### New-player guidance
 
@@ -936,8 +936,9 @@ spawns, but nobody can pick it up and the building never counts as emptied.
 How camp life works is in [DESIGN.md](DESIGN.md#camp-life). It needs nothing to run: with no
 kits every place stays bare, and with no waypoint slots its people walk to their spots with the
 **Zombies > Move waypoint** and stand there. The plugin fills the four vanilla waypoint slots and
-the group prefab (section 4, *Camp life*). By hand: the smart-action waypoint, the 21
-compositions and the kits. Plan two evenings.
+the group prefab (section 4, *Camp life*). By hand: the smart-action waypoint, the 49
+compositions and the kits. Plan four evenings: the 21 original pieces first (a camp that works),
+then the 28 that make it look lived in.
 
 **1. The smart-action waypoint.** Vanilla ships the class `SCR_SmartActionWaypoint` but no prefab.
 Create a new entity of that class in the World Editor, leave its tag and entity name empty (the
@@ -952,7 +953,18 @@ children, one level down) with `SCR_AISmartActionSentinelComponent`: its **Tags*
 its action offset is where the person stands or sits, **Look position** points where they face,
 and **Loiter animation** is the pose. If a vanilla chair or bench you use already carries a
 sentinel, add the tag to its list instead. Keep footprints small (under about 4 × 4 m, a large
-tent 6 × 4 m) and nothing with physics.
+tent 6 × 4 m) and nothing with physics. A **Ring** in the tables is the piece's **Role**; on the
+inner ring a Sleep or Wash piece goes to the sleeping area at the back and a Cook or Chop piece to
+the cooking area at one side, by itself ([DESIGN.md](DESIGN.md#camp-life)). A piece facing out
+(the perimeter) has its front on the root's +Z.
+
+**Plain mesh copy** means a new prefab that has only the model (a `MeshObject` and its collision)
+of a vanilla thing that would be a real item or have an action: no inventory, no pick-up, no
+user action. Use it for the boots, the axe, the ammo boxes, the door leaf, the sample tubes and
+anything the guard's log names. **A new decal** is a flat texture on a plane (a decal or a
+painted-sheet material): the red hand, the bear stencil, the plague doctor, chalk marks.
+
+*The 21 original pieces:*
 
 | Composition (folder) | Props to use | Seats (tag, pose) | Use, role in the kit |
 |---|---|---|---|
@@ -978,6 +990,39 @@ tent 6 × 4 m) and nothing with physics.
 | `RZ_Dress_Antenna` (Halcyon) | `Antenna_FIA_02.et` or `Antenna_R161_01.et` on a stand, a cable | 1 × `RZ_Work`, Loitering | Work, Edge |
 | `RZ_Dress_Generator` (Halcyon) | `GeneratorPortable_US_01_Off.et`, a cable run | 1 × `RZ_Work`, Loitering | Work, Edge |
 
+*The 28 lived-in pieces* (paths under `Prefabs/`; tags `RZ_Cook`, `RZ_Wash` and `RZ_Chop` are new: set the piece's **Use** to Cook, Wash or Chop):
+
+| Composition (folder) | Props to use | Seats (tag, pose) | Use, ring |
+|---|---|---|---|
+| `RZ_Dress_Firewood` (Common) | `Props/Forest/WoodPile/WoodPile_01_A.et`, `Props/Civilian/LogChopping_01.et` as the chopping block, two `Props/Forest/WoodPile/WoodLog_01_A.et`, an axe in the block (plain mesh copy: a real axe is an item) | 1 × `RZ_Chop`, Loitering, facing the block | Chop, Inner (the cooking area) |
+| `RZ_Dress_CookPot` (Common) | `Props/Civilian/Fireplace_01.et` with a small campfire particle, a tripod of three `Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et` leaned together, `Props/Civilian/Bucket_01.et` hung as the pot, `Props/Furniture/SkewerGrill_01/SkewerGrill_01.et`, `LitterInterior_USSR_01_bowl.et` and `_mug.et` (`Props/Garbage/Generic/LitterInterior_01/Single/`) | 1 × `RZ_Cook`, Loitering, facing the pot | Cook, Inner (the cooking area) |
+| `RZ_Dress_WashStand` (Common) | a pole with `Props/Furniture/MirrorBathroom_01.et`, `Props/Furniture/SinkOld_01.et` on a `Props/Crates/CrateWooden_01_plain.et` (or `Props/Civilian/Bucket_02.et` on `Props/Furniture/Stool_01.et`), `Props/Furniture/TowelRack_01.et` | 1 × `RZ_Wash`, Loitering, facing the mirror | Wash, Inner (behind the tents) |
+| `RZ_Dress_Latrine` (Common) | two `Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et` as an L-shaped screen, `Props/Civilian/Bucket_01.et`, a plank seat (`Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et`). Not `Latrine_01.et`: its door is a real door | none | None, Edge |
+| `RZ_Dress_DryingLine` (Common) | two `Structures/Civilian/ClotheslinePole_01.et`, shirts and a pair of boots hung on it (plain mesh copies: clothes are items), `Props/Furniture/BasketLaundry_01.et` | 1 × `RZ_Work`, Loitering | Work, Edge |
+| `RZ_Dress_CrateChairs` (Common) | `Props/Crates/CrateWooden_01_plain.et` as the table, `Props/Furniture/ChairOld_01.et`, `ChairOld_02.et`, `Stool_01.et`, `Props/Military/Camps/LanternMilitary_US_01.et` on the crate and two more hung from poles (vanilla has no string lights) | 3 × `RZ_Sit`, Sit, facing the crate | Sit, Centre |
+| `RZ_Dress_Clutter` (Common) | `Props/Civilian/SackUniversal_01.et`, `Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et`, `Props/Civilian/Guitar_01/Guitar_01.et` leaned on a sack, `LitterInterior_USSR_01_tincan_V1.et` and `_V2.et`, `Props/Civilian/BeerBottle_01_empty_brown.et`, a deck of cards (plain mesh copy, or leave it out), `Props/Civilian/Wheelbarrow_01.et` against a crate (vanilla has no bicycle) | none | None, Inner |
+| `RZ_Dress_RadioTable` (Common) | `Props/Furniture/TableOld_01/TableOld_01.et`, `Props/Civilian/RadioSmall_01_black.et` (if it shows a prompt in play, a plain mesh copy), `Props/Furniture/ChairOld_01.et`, `Props/Civilian/LampKerosene_01/LampKerosene_01_green.et`. Never a radio station | 1 × `RZ_Sit`, Sit, facing the radio | Sit, Centre |
+| `RZ_Dress_ScrapShelter` (Common) | two `Props/Industrial/Pallets/Pallet_01.et` stood up as walls, a `TinWall_01_3m.et` sheet laid across as the roof, `Props/Garbage/Generic/Junk_01/Junk_01_single_mattress.et`, `BlanketBeach_01_brown.et` inside | none | Sleep, Inner (the sleeping area) |
+| `RZ_Dress_Barricade_Fence` (Common) | `Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_4m.et`, two `Props/Industrial/Pallets/Pallet_01.et` stood up at its end, `Pallet_01_Pile.et` | none | None, Approach (a perimeter segment) |
+| `RZ_Dress_Kennel` (Common) | `Structures/Civilian/DogHouse_01.et`, a bowl (`LitterInterior_USSR_01_bowl.et`), a short chain (plain mesh), no dog | none | None, Edge |
+| `RZ_Dress_Barricade_Sandbag` (Bastion) | `Props/Military/Sandbags/Sandbag_01_long_burlap.et` and `Sandbag_01_end_burlap.et` in a straight run of about 4 m | none | None, Approach (a perimeter segment) |
+| `RZ_Dress_FlagPole` (Bastion) | `Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et`, no flag (the Zone flies none), `Sandbag_01_single_burlap.et` round its foot | none | None, Centre |
+| `RZ_Dress_ShavingStand` (Bastion) | a pole with `Props/Furniture/MirrorBathroom_01.et`, `Props/Civilian/Bucket_02.et` on `Props/Furniture/Stool_01.et`, `Props/Furniture/TowelRack_01.et` | 1 × `RZ_Wash`, Loitering, facing the mirror | Wash, Inner (behind the tents) |
+| `RZ_Dress_CrateSeats` (Bastion) | four ammo-crate-shaped seats round `Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et`: plain mesh copies of an ammo box's model, **never** a vanilla ammo box | 4 × `RZ_Sit`, Sit | Sit, Centre |
+| `RZ_Dress_DutyBoard` (Bastion) | `Props/Services/ChalkBoard_01/ChalkBoard_01.et` (or `Structures/Civilian/BoardMap_01/BoardMap_01.et`) with `Notice_A4_Vertical_V1.et` sheets: the duty rota | 2 × `RZ_Gather`, Loitering, facing the board | Gather, Centre |
+| `RZ_Dress_Barricade_Scrap` (Red Hand) | `TinWall_01_3m.et` sheets, `Props/Garbage/Tires/TirePile_01_small.et`, `Props/Garbage/Generic/Junk_01/Junk_01_pile_small.et`, a `Pallet_01.et` | none | None, Approach (a perimeter segment) |
+| `RZ_Dress_RedHandSheet` (Red Hand) | one `TinWall_01_3m.et` sheet stood on two `TirePile_01_small.et`, the red hand painted on it (a new decal) | none | None, Approach |
+| `RZ_Dress_TrophyWall` (Red Hand) | `Structures/Walls/Metal/TinWall_01/TinWall_01_6m_A.et` hung with `Props/Forest/DeerSkull_01/DeerSkull_01_board.et`, helmets, a Bastion armband and number plates (plain mesh copies: never real items) | none | None, Edge |
+| `RZ_Dress_Sofa` (Red Hand) | `Props/Furniture/Sofa_02/Sofa_02_green.et`, `Props/Furniture/Armchair_01.et`, `Props/Civilian/BeerBottle_01_group.et` on a `BarrelMetal_01_rust.et` side table | 3 × `RZ_Sit`, Sit | Sit, Centre |
+| `RZ_Dress_BearDoor` (Haven) | a door leaf leaned on a `WoodenFenceOld_01_pole.et` (plain mesh copy: a real door has its open action), the bear stencil painted on it (a new decal) | none | None, Approach |
+| `RZ_Dress_Memorial` (Haven) | `Props/Furniture/TableOld_01/TableOld_01_white.et`, three `Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et`, `Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01.et`, `Props/Military/Photos/Photo_Square_01/Photo_Square_01_V1.et`, `Props/Commercial/Posters/Notice_A4_Vertical_V1.et` sheets with names, `Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et` | 1 × `RZ_Work`, Loitering, facing the table | Work, Centre |
+| `RZ_Dress_ChildrensCorner` (Haven) | `Props/Services/ChalkBoard_01/ChalkBoard_01.et` propped low, `Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et`, chalk drawings on the ground (a new decal), a ball (plain mesh copy: vanilla has no loose ball), two `Stool_01.et` | none | None, Inner |
+| `RZ_Dress_VegStall` (Haven) | `Props/Commercial/MarketStand_01.et`, two `CrateWooden_01_plain.et`, `Props/Civilian/SackUniversal_01_Pile.et`, `Bucket_01.et`; vegetables as plain mesh copies (food is an item) or leave the sacks | 1 × `RZ_Work`, Loitering, behind the stall | Work, Edge |
+| `RZ_Dress_SampleRack` (Halcyon) | `Props/Commercial/ShelfUniversal_01_narrow.et` behind a pane of glass (a plain glass plane), `Props/Services/Healthcare/CabinetMedical_01.et`, `Props/Medical/ToolsSurgical_01_autoclavedrum.et`, sample tubes (plain mesh copies: never the sample items) | 1 × `RZ_Work`, Loitering, facing the rack | Work, Inner |
+| `RZ_Dress_DeconShower` (Halcyon) | `Structures/Recreation/Beach/ShowerBeach_01.et` on a `Pallet_01.et` floor, `Props/Furniture/ShowerCurtains_01_straight.et`, `Bucket_02.et` | 1 × `RZ_Wash`, Loitering, under the shower | Wash, Inner (behind the tents) |
+| `RZ_Dress_PlagueBoard` (Halcyon) | a plywood sheet on two `WoodenFenceOld_01_pole.et`, the plague-doctor stencil on it (a new decal) | none | None, Approach |
+| `RZ_Dress_NotebookBench` (Halcyon) | `Props/Forest/ForestBench_01/ForestBench_01.et`, `Props/Civilian/Notebook_01_Stack.et` and `Props/Civilian/FileOffice_01_Stack.et` on it, `LampKerosene_01_green.et` | 2 × `RZ_Sit`, Sit | Sit, Centre |
+
 **Never use** anything from `Prefabs/Props/Military/AmmoBoxes`, `.../SupplyBox`, `.../Arsenal` or
 `Prefabs/Props/EmptyStorages/` (`USSR_AmmoBox_empty.et`), vanilla subcompositions with "Ammo",
 "Supply", "Fuel" or "Arsenal" in the name (`CamoNet_PalletFuel_US.et`), Conflict base compositions
@@ -985,7 +1030,7 @@ tent 6 × 4 m) and nothing with physics.
 station, fuel tanks, pumps and jerrycans, wells and water pumps (`Well_01.et`), radio stations
 and relays with actions (`Table_RadioStation_FIA_01.et`, `RadioStation_ANPRC77_01.et`), the
 crafting `Workbench_01.et`, and any ReforgerZ prefab (the notice board, the generator, the
-lab). The guard deletes any part with an arsenal, inventory storage, a pick-up item, a support
+lab). Not the crafting `Props/Industrial/Workbench_01.et` as a bench either. The guard deletes any part with an arsenal, inventory storage, a pick-up item, a support
 station, supplies, fuel, a vehicle or vehicle spawner, a spawn point or a ReforgerZ component or
 action, and logs `Dressing: removed ...`. A generator or crate whose **root** has one is refused
 whole. Check `GeneratorPortable_US_01_Off.et` and the crate: if the log names them, use a plain
@@ -994,19 +1039,21 @@ mesh copy.
 **3. The kits** (**Camp life > Kits**). One kit per faction for **Any** place, and one each for
 Bastion's and the Red Hand's **Road post**s (road posts take only a kit made for them). A kind's
 own kit wins over Any, so a stronghold kit is optional. List the pieces most important first: a
-place takes them in order until its piece count (14 / 8 / 5 / 6 / 3). Set each piece's **Use**,
-**Role** and **Seats** as in the table (Seats = the number of sentinels with its tag).
+place takes them in order until its piece count (stronghold 20, outpost 13, safehouse 8, field
+station 9, road post 4). Set each piece's **Use**, **Role** and **Seats** as in the tables (Seats
+= the number of sentinels with its tag; 1 for a piece with none). The ring is in brackets.
 
-| Kit | Pieces in order (count) |
+| Kit | Pieces in order (count, ring) |
 |---|---|
-| Bastion, Any | SentryNest_Bastion (1), RosterBoard (1), FirePit (1), Tent_Small_Bastion (2), Table (1), Tarp (1), Tent_Large_Bastion (1), FireBarrel (1), Tent_Small_Bastion (2 more) |
-| Red Hand, Any | TollBarrier (1), FireBarrel (1), CardTable (1), Tent_Small_Civilian (2), SentryNest_RedHand (1), Tarp (1), FirePit (1), Tent_Large_Civilian (1) |
-| Haven, Any | Table (1), WaterBarrel (1), WashingLine (1), Garden (1), Tent_Small_Civilian (1), FirePit (1), Tent_Large_Civilian (1), Tarp (1) |
-| Halcyon, Any | FieldTable (2), ColdBox (1), Tent_Halcyon (1), Generator (1), Antenna (1), Tarp (1), Tent_Large_Civilian (1) |
-| Bastion, Road post | FireBarrel (1), SentryNest_Bastion (1), Tarp (1) |
-| Red Hand, Road post | FireBarrel (1), CardTable (1), Tarp (1) |
+| Bastion, Any | SentryNest_Bastion (1, approach), RosterBoard (1, centre), FirePit (1, centre), Tent_Small_Bastion (2, inner), CookPot (1, inner), Barricade_Sandbag (2, approach), Table (1, centre), Firewood (1, inner), ShavingStand (1, inner), FlagPole (1, centre), CrateSeats (1, centre) · *an outpost stops here (13)* · Tent_Large_Bastion (1, inner), DutyBoard (1, centre), Tarp (1, inner), DryingLine (1, edge), Latrine (1, edge), Clutter (1, inner), Tent_Small_Bastion (1 more, inner) |
+| Red Hand, Any | TollBarrier (1, approach), FireBarrel (1, centre), CardTable (1, centre), Tent_Small_Civilian (2, inner), SentryNest_RedHand (1, approach), CookPot (1, inner), Sofa (1, centre), RedHandSheet (1, approach), Barricade_Scrap (1, approach), Firewood (1, inner), Clutter (1, inner), ScrapShelter (1, inner) · *13* · TrophyWall (1, edge), Kennel (1, edge), FirePit (1, centre), Tarp (1, inner), Tent_Large_Civilian (1, inner), Latrine (1, edge), DryingLine (1, edge) |
+| Haven, Any | Table (1, centre), CookPot (1, inner), WaterBarrel (1, inner), WashStand (1, inner), WashingLine (1, edge), Garden (1, edge), BearDoor (1, approach), Firewood (1, inner) · *a safehouse stops here (8)* · Memorial (1, centre), Tent_Small_Civilian (1, inner), ChildrensCorner (1, inner), Barricade_Fence (1, approach), VegStall (1, edge) · *13* · FirePit (1, centre), CrateChairs (1, centre), Tent_Large_Civilian (1, inner), Kennel (1, edge), Latrine (1, edge), Clutter (1, inner), Tarp (1, inner) |
+| Halcyon, Any | FieldTable (2, centre), ColdBox (1, inner), Tent_Halcyon (1, inner), DeconShower (1, inner), Generator (1, edge), SampleRack (1, inner), PlagueBoard (1, approach), Antenna (1, edge) · *a field station stops here (9)* · NotebookBench (1, centre), Barricade_Fence (2, approach), Tarp (1, inner), Tent_Large_Civilian (1, inner), RadioTable (1, centre), Latrine (1, edge), DryingLine (1, edge), Clutter (1, inner), CrateChairs (1, centre), Tent_Halcyon (1 more, inner) |
+| Bastion, Road post | FireBarrel (1), SentryNest_Bastion (1), Tarp (1), Barricade_Sandbag (1) |
+| Red Hand, Road post | FireBarrel (1), CardTable (1), Tarp (1), Barricade_Scrap (1) |
 
-A safehouse takes the Haven's first five; a field station Halcyon's first six.
+Each Any kit holds 20 pieces, a stronghold's count. A place loses a piece that finds no good spot,
+so a cramped outpost can show fewer.
 
 **4. Test it.** Place each composition once in a test world and check the log is silent (no
 `Dressing: removed` lines); then walk up to an outpost of each faction in Workbench play (the
@@ -1145,7 +1192,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs |
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
-| Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (14 / 8 / 5 / 6 / 3), pieces at most (60), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)) |
+| Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, and a car boot or body search; rare 0.1, electronics 0.1), car boot and body searches (4 s, 1 heat, a boot empty for 60 min), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
@@ -1500,7 +1547,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:555` | an empty group prefab (vanilla `Group_Base.et`) stays alive until a member joins, takes the character's faction, and a spawned lone character joins it and takes its waypoints | Lone occupants and single guards stand where they spawn, as before: empty **Camp life > Group prefab**. Guards that are AI groups still take jobs |
 | `Zombies/Behaviour/RZ_CrawlerLife.c:226` | a crawler group's agent switched off with `DeactivateAI` (lying up by day) stays in its group and wakes with `ActivateAI` (lab B12: awake in 0.2 s, moving in 6.5 s), and a sleeping body hit by a player is woken by the player near it | Sleeping crawlers drop out of their groups or don't wake: set **Behaviour > Sleep lying crawlers** off (they stand hunched instead) |
 | `Zombies/Behaviour/RZ_Behaviour.c:975` | a light bleed opened from the server on a player's arm or leg (`AddParticularBleeding`) replicates and bleeds at the usual rate (a hunter's lunge that lands) | The lunge still makes the bite chance x1.5; with no bleed, set **Behaviour > Own attacks** off if it misbehaves |
-| `Factions/RZ_CampLife.c:678` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:753` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:967` | a stranger is placed at the spot itself, 150–350 m ahead of the player (or 60–90 m from a stopped car), with no line-of-sight test for the design's out-of-sight point 60–90 m off | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Zombies/RZ_TribeProps.c:68`, `:350` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
 | `Cure/RZ_CureFinale.c:1270` | the cure finale's clean room: the lab prefab has no named child entity to read, so a land point 15–25 m from the lab stands in; check it's somewhere players can stand and fight | Move the lab, or a lab prefab with the room as a child entity (planned) |
@@ -1527,9 +1574,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:1172` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
 | `Zombies/Behaviour/RZ_HuntPlan.c:1745` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
-| `Factions/RZ_CampLife.c:855` | the road network's points follow every drivable road near a camp | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
-| `Factions/RZ_CampLife.c:1382` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
-| `Factions/RZ_CampLife.c:1449` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `Factions/RZ_CampLife.c:948` | the road network's points follow every drivable road near a camp | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
+| `Factions/RZ_CampLife.c:1504` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
+| `Factions/RZ_CampLife.c:1571` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
 ### The UI (12)
 
@@ -2410,22 +2457,29 @@ when it happens)
 
 **Camp life** ([DESIGN.md](DESIGN.md#camp-life); the kits filled, set the game clock with the
 editor's time of day)
-- [ ] Walk up to an outpost of each faction: its pieces stand on flat ground round it, none on a
-  road, in a building or on the quartermaster; the log has no `Dressing: removed` line. Leave
-  (past 350 m) and come back: the same pieces in the same places.
-- [ ] No piece gives anything: no search, water, boil, generator or crafting prompt on them, no
-  inventory, no heal or resupply, no vehicle, no respawn on them.
+- [ ] Walk up to an outpost of each faction: its pieces appear over about 20 s and stand on flat
+  ground round it, none on a road, in a building or on the quartermaster; the log has no
+  `Dressing: removed` line. Leave (past 350 m) and come back: the same pieces in the same places.
+- [ ] It reads as a compound: barricades, the nest and the faction's sign across the approach, the
+  fire and tables in the middle, the tents together at the back, the cook pot and the woodpile
+  together on one side, the latrine and the line out at the edge.
+- [ ] No piece gives anything: no search, water, boil, generator, radio or crafting prompt on
+  them (the wash stand, the shower, the radio table included), no inventory, no heal or resupply,
+  no vehicle, no respawn on them.
 - [ ] Bastion by day: one in the nest, two walking a loop, one at the board, one at the fire. At
   17:30 someone else takes the nest. At 20:30 everyone gathers at the board for about 3 minutes,
   then only the nest and the fire are manned; walk 100 m off and back: the rest are gone (asleep)
   and come back after 05:30.
 - [ ] Red Hand by day: two leaning at the barrier, one walks to the road and back. Haven at 18:30:
   everyone at the table but the lookout. Halcyon: a courier walks out and back within 20 minutes.
-- [ ] Named people stay within 15 m of the centre; talk to one: they stop, and go back to work a
+- [ ] The chores: after 05:30 someone at the wash stand (Bastion's shaving stand, Halcyon's decon
+  shower); by day someone at the chopping block (Bastion, Red Hand, Haven); from 17:30 someone at
+  the cook pot until the meal.
+- [ ] Named people stay within 20 m of the centre; talk to one: they stop, and go back to work a
   minute later. Quartermasters and leaders never move.
 - [ ] Shoot near a camp (when Hunted): they fight as before, then go back to their jobs.
 - [ ] Do AI walk through the tents (the navmesh VERIFY)? Is one more person per camp and the server
-  frame time fine with 3 live places?
+  frame time fine with 3 live places and a stronghold's 20 pieces?
 
 **World**
 - [ ] Walking near the map edge: drone and loudspeaker at 300 m, warning shot at 100 m.
