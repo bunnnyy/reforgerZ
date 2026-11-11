@@ -2,8 +2,8 @@
 //! the people in them, routines, supply trucks, radio chatter, life events, truces and feuds,
 //! remembered moments and rumours. Small tables, one voice per faction:
 //!   Haven     warm, worried
-//!   Bastion   clipped, procedural, tired
-//!   Red Hand  mocking, casual
+//!   Bastion   clipped, procedural, tired, close with its own
+//!   Red Hand  mocking, casual, always counting
 //!   Halcyon   precise, a bit cold, sometimes guilty
 
 //! What a faction needs most right now (RZ_FactionLife), from the state of the world.
@@ -546,7 +546,7 @@ class RZ_FactionVoice
 		if (night)
 			return string.Format("\"Toll's up on the road out of %1 tonight. Pay or walk round. Walking round is slower. And it's dark.\"", place);
 
-		return string.Format("\"Road past %1 is tolled till dusk. Tins, fuel or manners. Mostly tins.\"", place);
+		return string.Format("\"Road past %1 is tolled till dusk. Tins, fuel or something worth knowing. Mostly tins.\"", place);
 	}
 
 	//------------------------------------------------------------------------------------------------

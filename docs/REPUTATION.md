@@ -15,8 +15,8 @@ in [LORE.md](LORE.md); how they hold territory and move supplies is in [DESIGN.m
 | Faction | Who they are | Wants | Rival of |
 |---|---|---|---|
 | **The Haven** | A network of safehouses run by ordinary people stuck in the Zone | Food, medicine, safe towns, people | The Red Hand. Uneasy with Bastion |
-| **Task Force Bastion** | Soldiers left inside the line, still holding a few posts | Order, control, the cure as a strategic asset | The Red Hand. Distrusts Halcyon |
-| **The Red Hand** | Raiders and opportunists who think the old rules are dead | Loot, territory, fear | Everyone, Bastion most of all |
+| **Task Force Bastion** | Soldiers abandoned inside the line, who look after their own and hold a few posts | Their own first; order, control, the cure as a strategic asset | The Red Hand. Distrusts Halcyon |
+| **The Red Hand** | Opportunists who saw their chance when the world broke | Profit, leverage, fear | Everyone, Bastion most of all |
 | **Halcyon** | The researchers running the only lab | Samples, data, protection, the cure going public | Wary of Bastion seizing it |
 
 The code uses the enum names `SURVIVORS`, `MILITARY`, `BANDITS` and `INSTITUTE`, and the

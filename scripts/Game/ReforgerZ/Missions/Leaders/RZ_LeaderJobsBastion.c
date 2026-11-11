@@ -1,5 +1,5 @@
 //! Task Force Bastion leader jobs (docs/MISSIONS.md, "Leader missions"): from outpost
-//! commanders who interpret their orders (Independent) or have stopped waiting for any (Rogue).
+//! commanders who interpret their orders (Independent) or run their post their own way (Rogue).
 
 //------------------------------------------------------------------------------------------------
 //! Independent. Rations to a Haven safehouse against orders: that safehouse +4 food, a little
@@ -38,7 +38,7 @@ class RZ_Job_HeartsAndMinds : RZ_LeaderDelivery
 			return false;
 
 		m_sTitle = "Hearts and Minds";
-		m_sBrief = string.Format("Rations stay in Bastion hands. That's the order. Command also hasn't called in nine days. There's a Haven safehouse in %1 with children in it. Take them a crate. Don't sign for it.",
+		m_sBrief = string.Format("Rations stay in Bastion hands. That's the order. Command also hasn't called in {days_since_command_words} days. There's a Haven safehouse in %1 with children in it. Take them a crate. Don't sign for it.",
 			h.m_sName);
 		return true;
 	}

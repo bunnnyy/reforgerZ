@@ -1508,7 +1508,9 @@ session, tick off:
 - [ ] No Reply: the operator's bearing and the mast's cross within 45 m of the source; a Radio
   Operator away from the post gets a bearing every 2 minutes; the log choices appear on the
   operator only after the source is found, and only a player Known with Bastion can pick one.
-- [ ] Struck Off: the trader (or the Deserter wanderer) gives his grid; the four choices are on his
+- [ ] Struck Off (offered from broadcast Day 13, so not on a fresh season's first two days): the
+  trader (or the Deserter wanderer) gives his grid; his KIA date on the roster is between Day 11 and
+  two days ago (the day the trader saw him), and always Day 11 on Day 13; the four choices are on his
   kit; killing him drops a tag that the roster board at the post takes ("Hang his tag on the nail").
 - [ ] Live Capture: lure the special into the cage and drop the door within 4 m; it vanishes without
   a sample, the cage area gets loud, after 30 s the case appears; deliver it at the lab drop before

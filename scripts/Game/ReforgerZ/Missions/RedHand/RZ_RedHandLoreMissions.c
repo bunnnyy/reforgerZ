@@ -659,7 +659,7 @@ class RZ_Mission_PitsDebtor : RZ_PuzzleMission
 			m_fRewardScale = PAY_SCALE;
 			m_aParticipants.Clear();
 			m_aParticipants.Insert(playerId);
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You pay it out of your own Favor. The pit boss crosses %1 out of the book and shrugs. \"Your money.\" %1 sits down in the crowd and watches somebody else go in.", m_sDebtor));
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You pay it out of your own Favor. The pit boss writes \"Paid\" against that line of %1's and shrugs. \"Your money.\" %1 sits down in the crowd and watches somebody else go in.", m_sDebtor));
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}

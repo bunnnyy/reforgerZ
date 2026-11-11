@@ -1,6 +1,6 @@
 # ReforgerZ icons
 
-The icon set for the ReforgerZ UI: 60 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
+The icon set for the ReforgerZ UI: 61 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
 
 - **Sources:** `src/<name>.svg`, hand-written, 64×64 viewBox, one colour (`currentColor`), 4-unit strokes, transparent background.
 - **Mono exports:** `png/64/` and `png/128/`, white on transparent so the game can tint them (`ImageWidget.SetColor`).
@@ -10,15 +10,16 @@ The icon set for the ReforgerZ UI: 60 icons. Art direction, colours and how the 
 
 Importing them into Workbench (`.edds` and an imageset) is in [UI/LAYOUTS.md](../LAYOUTS.md#importing-the-icons).
 
-## Faction emblems (5)
+## Faction emblems (6)
 
 | Icon | Name | Use |
 |---|---|---|
-| <img src="src/faction_haven.svg" width="32"> | `faction_haven` | The Haven: a safehouse with a candle in it. Standing screen, notice cards, safehouse markers |
-| <img src="src/faction_bastion.svg" width="32"> | `faction_bastion` | Task Force Bastion: a crenellated wall with one line held. Standing screen, notice cards |
-| <img src="src/faction_redhand.svg" width="32"> | `faction_redhand` | The Red Hand: a paint handprint slapped on a wall, still running. Standing screen, notice cards |
-| <img src="src/faction_halcyon.svg" width="32"> | `faction_halcyon` | Halcyon: a sun over still water in a lab hexagon. Standing screen, notice cards, the lab |
-| <img src="src/faction_infected.svg" width="32"> | `faction_infected` | The infected and the outbreak: a virion with a bite taken out. Outbreak stage, infected markers, hazard signage |
+| <img src="src/faction_haven.svg" width="32"> | `faction_haven` | The Haven: the kids' bear, patched, one eye stitched shut, as stencilled on safehouse doors. Standing screen, notice cards, the journal |
+| <img src="src/faction_bastion.svg" width="32"> | `faction_bastion` | Task Force Bastion: a helmet with the days without relief chalked on as a tally. Standing screen, notice cards |
+| <img src="src/faction_redhand.svg" width="32"> | `faction_redhand` | The Red Hand: a red handprint slapped on at an angle, still running. Standing screen, notice cards |
+| <img src="src/faction_halcyon.svg" width="32"> | `faction_halcyon` | Halcyon: the plague doctor ("the beaks"), hat, goggle and long beak. Standing screen, notice cards, the journal |
+| <img src="src/faction_infected.svg" width="32"> | `faction_infected` | The infected and the outbreak: a virion with a bite taken out of it. Outbreak stage, infected markers, hazard signage |
+| <img src="src/faction_longtable.svg" width="32"> | `faction_longtable` | The Long Table (not a faction, and a secret): a preserving jar labelled only "9". The journal and the hall of fame once a player has found the family out, and scratched at the farm (planned). Never on the map or the standing screen |
 
 ## Standing tiers (8)
 

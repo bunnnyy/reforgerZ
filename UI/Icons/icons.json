@@ -8,13 +8,13 @@
  {
   "name": "faction_bastion",
   "category": "Faction emblems",
-  "use": "Task Force Bastion: a crenellated wall with one line held. Standing screen, notice cards",
+  "use": "Task Force Bastion: a helmet with the days without relief chalked on as a tally. Standing screen, notice cards",
   "plate": false
  },
  {
   "name": "faction_redhand",
   "category": "Faction emblems",
-  "use": "The Red Hand: a paint handprint slapped on a wall, still running. Standing screen, notice cards",
+  "use": "The Red Hand: a red handprint slapped on at an angle, still running. Standing screen, notice cards",
   "plate": false
  },
  {
@@ -26,7 +26,13 @@
  {
   "name": "faction_infected",
   "category": "Faction emblems",
-  "use": "The infected and the outbreak: a virion with a bite taken out. Outbreak stage, infected markers, hazard signage",
+  "use": "The infected and the outbreak: a virion with a bite taken out of it. Outbreak stage, infected markers, hazard signage",
+  "plate": false
+ },
+ {
+  "name": "faction_longtable",
+  "category": "Faction emblems",
+  "use": "The Long Table (not a faction, and a secret): a preserving jar labelled only \"9\". The journal and the hall of fame once a player has found the family out, and scratched at the farm (planned). Never on the map or the standing screen",
   "plate": false
  },
  {

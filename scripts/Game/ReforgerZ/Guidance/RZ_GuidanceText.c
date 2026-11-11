@@ -159,7 +159,7 @@ class RZ_GuidanceText
 	{
 		array<string> lines = {
 			"\"Bastion, Bastion, come in. Still waiting for relief? We'll keep the kettle on.\" Laughter, and the channel goes dead.",
-			"\"Toll's due on every road out of %2. Tins, fuel or manners. Mostly tins.\""
+			"\"Toll's due on every road out of %2. Tins, fuel or something worth knowing. Mostly tins.\""
 		};
 
 		// Nobody buys samples once the cure is out
@@ -191,7 +191,7 @@ class RZ_GuidanceText
 		if (RZ_WorldFacts.Get().IsCured())
 			lines.Insert("Someone on a rooftop calls down, laughing: \"Cure's out and you're still here? Gates won't open till they're ready, friend. Ask for %1 in the meantime.\"");
 		else
-			lines.Insert("Someone on a rooftop calls down, laughing: \"Lost, are we? Bastion's still waiting for relief, you know. Any day now. Got samples? We pay faster than Halcyon. Ask for %1.\"");
+			lines.Insert("Someone on a rooftop calls down, laughing: \"Lost, are we? Bastion only looks after its own, you know. We look after anyone who pays. Got samples? We pay faster than Halcyon. Ask for %1.\"");
 
 		return string.Format(rng.Pick(lines), boss);
 	}
@@ -207,7 +207,7 @@ class RZ_GuidanceText
 				return string.Format("\"The Haven's holding out in %1. Soup, a medic, a bed if you're lucky. Don't fire a gun near the door.\"", place);
 			case RZ_EFaction.MILITARY:
 				if (role == RZ_EWandererRole.DESERTER)
-					return RZ_WorldFacts.Get().Fill(string.Format("\"Bastion's dug in at %1, still waiting for relief. I waited {days_since_command_words} days for Command to call back. Nobody's coming. Tell them I said so.\"", place));
+					return RZ_WorldFacts.Get().Fill(string.Format("\"Bastion's dug in at %1. Every night they read the roster out loud. When they get to my name, nobody answers. Don't tell them where you saw me.\"", place));
 
 				return string.Format("\"Bastion holds %1. Follow their rules and they'll leave you alone. Their rules change.\"", place);
 			case RZ_EFaction.BANDITS:

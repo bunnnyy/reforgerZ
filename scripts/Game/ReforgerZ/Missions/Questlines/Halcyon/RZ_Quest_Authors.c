@@ -102,10 +102,10 @@ class RZ_Quest_Authors : RZ_Questline
 		RZ_QuestStage wait = WaitStage(S_ANSWER_WAIT, "The CO's answer", "{co} has the director's terms. Bastion takes its time.");
 		wait.Wait(120, 24);
 
-		RZ_QuestStage answer = MissionStage(S_ANSWER, "The CO's answer", "{co} wants a locked crate, a key, and a guard on the clean room. Somebody has to answer him for the lab.");
+		RZ_QuestStage answer = MissionStage(S_ANSWER, "The CO's answer", "{co} wants a locked crate, a key, and a guard on the clean room. Somebody has to take {co} the lab's answer.");
 		answer.GiveUp(4, "Nobody answered {co} for the lab. Bastion took the silence as no.");
 
-		RZ_QuestStage offer = MissionStage(S_OFFER, "The Red Hand's offer", "{boss} has heard what the lab is cooking. He'll buy the batch outright, and leave the lab alone during the final stand.");
+		RZ_QuestStage offer = MissionStage(S_OFFER, "The Red Hand's offer", "{boss} has heard what the lab is cooking, and will buy the batch outright, and leave the lab alone during the final stand.");
 		offer.GiveUp(4, "Nobody went to hear the Red Hand's offer. It stands, they say, the way their offers do.");
 
 		RZ_QuestStage ready = MissionStage(S_READY, "Ready the lab", "Past three quarters, the final push is close. {director} wants the lab ready for it.");
@@ -315,7 +315,7 @@ class RZ_Quest_Authors : RZ_Questline
 				if (gm.GetQuestlines().WorldFlag(RZ_Quest_ThreeWeeks.FLAG_BASTION) == 1)
 				{
 					run.SetFlag("early_terms", 1);
-					run.Note("{co} has Dr Wolff's notebook in Bastion's file, and named his price before {director} could write a letter.");
+					run.Note("{co} has Dr Wolff's notebook in Bastion's file, and named a price before {director} could write a letter.");
 					return ToPlan(gm, run);
 				}
 
@@ -533,7 +533,7 @@ class RZ_Quest_Authors : RZ_Questline
 		if (terms == TERMS_AGREE || terms == TERMS_BARGAIN)
 		{
 			run.SetBranch(E_BASTION);
-			return Finish(run, E_BASTION, "Under Bastion's guard. {co} has his terms, and Bastion's name is on the lab's door." + PaperLine(run));
+			return Finish(run, E_BASTION, "Under Bastion's guard. {co} got Bastion's terms, and Bastion's name is on the lab's door." + PaperLine(run));
 		}
 
 		if (run.Flag("haven_copy") == 1 && run.Flag("reported") != 1)
@@ -850,7 +850,7 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 			return;
 		}
 
-		string text = "The adjutant takes it in to the CO. He comes back without it. \"The CO will answer the lab. In his own time.\"";
+		string text = "The adjutant takes it in to the CO, and comes back without it. \"The CO will answer the lab. In good time.\"";
 		if (HasBonus(gm, playerId))
 			text = "The adjutant sees a soldier and takes you straight in. The CO reads it twice, the second time slowly. \"Tell your director she'll have an answer.\"";
 
@@ -1161,12 +1161,12 @@ class RZ_QM_AuthorsAnswer : RZ_QM_HalcyonScene
 		m_iSettlement = gm.FindNearestSettlement(co.m_vPos);
 		string demand = "\"A locked crate for the batch. A key, in my pocket. A Bastion guard on the clean room through the stand.\" The adjutant reads it out flat, the way he reads everything. \"The CO considers that generous.\"";
 		if (QFlag(gm, "early_terms") == 1)
-			demand = "\"The CO has read the dead woman's notebook. He knows what the lab sat on for three weeks. His terms: a locked crate, a key in his pocket, and a Bastion guard on the clean room.\"";
+			demand = "\"The CO has read the dead woman's notebook, and knows what the lab sat on for three weeks. The terms: a locked crate, a key in the CO's own pocket, and a Bastion guard on the clean room.\"";
 
 		int talk = AddClue("The adjutant", demand);
 		AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_ADJUTANT, talk, "Talk to the adjutant", "Agree, for the director|Bargain: two guards at the gate, no key|Refuse, for the lab", "the commanding officer's adjutant");
 		m_sTitle = "Authors: the CO's answer";
-		m_sBrief = QFill(gm, "{co} has answered my letter, and he wants more than I offered. Go and hear it, and answer him for the lab. You know what we can live with.");
+		m_sBrief = QFill(gm, "{co} has answered my letter, and wants more than I offered. Go and hear it, and give Bastion the lab's answer. You know what we can live with.");
 		return true;
 	}
 
@@ -1253,7 +1253,7 @@ class RZ_QM_AuthorsOffer : RZ_QM_HalcyonScene
 
 		m_vPos = meet;
 		m_iSettlement = gm.FindNearestSettlement(meet);
-		m_iOfferClue = AddClue("The boss's man", QFill(gm, "\"{boss} wants the batch. All of it, the moment it's made. He'll pay like nobody's ever paid for anything in here, and his crews will leave the lab alone while the dead come for it. Or they won't.\" He smiles. \"Up to you.\""));
+		m_iOfferClue = AddClue("The boss's man", QFill(gm, "\"{boss} wants the batch. All of it, the moment it's made. Pays like nobody's ever paid for anything in here, and the crews will leave the lab alone while the dead come for it. Or they won't.\" He smiles. \"Up to you.\""));
 		AddSpot(meet, RZ_EPuzzleProp.CIVILIAN, OBJ_MAN, m_iOfferClue, "Talk to the boss's man", string.Format("Turn him down and tell the director|Take the money (%1 Red Hand Favor)", MONEY_FAVOR), meetName);
 
 		RZ_Leader co = Top(gm, RZ_EFaction.MILITARY);
