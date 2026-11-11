@@ -69,8 +69,8 @@ SizeLayoutWidgetClass "{CDCA8B79A2AD6D88}" {
          }
          Color 0.639 0.62 0.565 1
          Text "OPEN CHANNEL - HAVEN"
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{681B97E9A25F4AA2}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
@@ -83,8 +83,8 @@ SizeLayoutWidgetClass "{CDCA8B79A2AD6D88}" {
          }
          Color 0.431 0.416 0.376 1
          Text "19:42"
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          "Horizontal Alignment" Right
          FontProperties FontProperties "{9D3B8DF1E81BF6B0}" {
           Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
@@ -101,8 +101,8 @@ SizeLayoutWidgetClass "{CDCA8B79A2AD6D88}" {
        }
        Color 0.91 0.886 0.816 1
        Text "Ines Calder, council head in Morton"
-       "Font Size" 17
-       "Min Font Size" 17
+       "Font Size" 18
+       "Min Font Size" 18
        Wrap 1
        FontProperties FontProperties "{45D867AD09F1508A}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
@@ -116,8 +116,8 @@ SizeLayoutWidgetClass "{CDCA8B79A2AD6D88}" {
        }
        Color 0.851 0.824 0.745 1
        Text "If you can hear this, Morton is open. Bring water if you can. Bring yourself either way."
-       "Font Size" 16
-       "Min Font Size" 16
+       "Font Size" 18
+       "Min Font Size" 18
        Wrap 1
        FontProperties FontProperties "{DDF358F1C06D8F56}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"

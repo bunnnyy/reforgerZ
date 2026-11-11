@@ -920,10 +920,10 @@ isn't kept as an AI body: they become **+1 population** at the nearest safehouse
   [REPUTATION.md](REPUTATION.md), "Haven house rules and exile".
 - **A notice board** at every safehouse (`World/RZ_NoticeBoard.c`): short notes players leave
   for each other between sessions. Cosmetic and social only.
-  - **Read** it with "Read the notice board" at the safehouse's quartermaster. **Write** by typing
-    `/note` and the message in chat while at a safehouse (within 60 m); "Leave a note on the
-    board" says how. With **UI > Board menus** on, reading opens the board menu, which has a box
-    to write in ([UI.md](UI.md)).
+  - **Read** it with "Read the notice board" at the safehouse's quartermaster. With **UI > Board
+    menus** on (the default), reading opens the board menu: a box to write in, and ready-made notes
+    a pad pins up without typing ([UI.md](UI.md#controllers)). **Write** also by typing `/note` and
+    the message in chat while at a safehouse (within 60 m); "Leave a note on the board" says how.
   - The newest 8 notes per board, 160 characters at most, one note per player every 10 minutes
     (on any board), the author's name on each, and notes come down by themselves after 3 real
     days. A **note filter** (Haven settings) blanks listed words out with asterisks. Exiles can't

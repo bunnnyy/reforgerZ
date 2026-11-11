@@ -56,14 +56,14 @@ FrameWidgetClass "{432BCEDB0507C337}" {
       OffsetTop 20
       SizeX 518
       OffsetRight -541
-      SizeY 16
-      OffsetBottom -36
+      SizeY 22
+      OffsetBottom -42
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "THIS SEASON"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{45C7623E5E416C63}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -84,8 +84,8 @@ FrameWidgetClass "{432BCEDB0507C337}" {
      }
      Color 0.91 0.886 0.816 1
      Text ""
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      Wrap 1
      FontProperties FontProperties "{54AF6C46CD6552BA}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -135,14 +135,14 @@ FrameWidgetClass "{432BCEDB0507C337}" {
       OffsetTop 20
       SizeX 518
       OffsetRight -541
-      SizeY 16
-      OffsetBottom -36
+      SizeY 22
+      OffsetBottom -42
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "ALL TIME"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{A3653E56EAD20F10}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -163,8 +163,8 @@ FrameWidgetClass "{432BCEDB0507C337}" {
      }
      Color 0.91 0.886 0.816 1
      Text ""
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      Wrap 1
      FontProperties FontProperties "{DFD3DE5E733E1F9B}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -214,14 +214,14 @@ FrameWidgetClass "{432BCEDB0507C337}" {
       OffsetTop 20
       SizeX 518
       OffsetRight -541
-      SizeY 16
-      OffsetBottom -36
+      SizeY 22
+      OffsetBottom -42
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "PAST SEASONS"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{FA3F9202ED0062D9}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -260,8 +260,8 @@ FrameWidgetClass "{432BCEDB0507C337}" {
          }
          Color 0.639 0.62 0.565 1
          Text ""
-         "Font Size" 14
-         "Min Font Size" 14
+         "Font Size" 18
+         "Min Font Size" 18
          Wrap 1
          FontProperties FontProperties "{267C25FB068F7185}" {
           Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"

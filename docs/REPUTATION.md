@@ -98,7 +98,8 @@ their own (**Reputation > Names**, on; off shows the tier words only).
   stand in ([UI.md](UI.md#the-notebook)). Without the layouts, **Ask what they think of you** at a
   quartermaster gives the same, one line a faction: "The Haven: Useful Trouble (counts as Known;
   Fame 46, Infamy 22, 30 of 30 left to forgive; Favor 30)".
-- **The admin read-out:** `/rep <name>` in chat (server admins; empty for yourself) prints a
+- **The admin read-out:** `/rep <name>` in chat (server admins; empty for yourself), or the
+  **[Admin] Standing of the nearest player** reply when an admin talks to anyone, prints a
   player's cells, Earned Fame and Feared, what's left to forgive, deeds, tallies and threats used,
   to the admin and to the log.
 

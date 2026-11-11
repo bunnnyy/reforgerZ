@@ -167,6 +167,24 @@ class RZ_MenuBase : ChimeraMenuBase
 class RZ_NoticeBoardMenu : RZ_MenuBase
 {
 	protected static bool s_bOpen;
+	protected int m_iPreset = -1;			// the ready-made note in the box, -1 none yet
+	protected bool m_bFocusSet;				// the first redraw gave the focus (PIN IT UP when you can write)
+	protected bool m_bCanClear;				// a server admin: X / Delete clears this board
+	protected bool m_bClearPrompt;
+
+	//------------------------------------------------------------------------------------------------
+	//! Ready-made notes, so a pad (or anyone) can pin one up without typing (docs/UI.md, "Controllers").
+	//! Left and right put one in the box; the box can still be edited with a keyboard.
+	static void GetPresets(notnull array<string> result)
+	{
+		result.Insert("Gone out for food. Back before dark.");
+		result.Insert("Looking for my family. Ask for me at the door.");
+		result.Insert("The east streets are thick with them. Go round.");
+		result.Insert("Need medicine. Will trade for it.");
+		result.Insert("Slept here safe. Thank you, whoever keeps this place.");
+		result.Insert("Car by the road out of town. Runs, just. Take it if you need it.");
+		result.Insert("If you see a girl in a red coat, tell her her dad is here.");
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static bool IsBoardOpen()
@@ -188,10 +206,19 @@ class RZ_NoticeBoardMenu : RZ_MenuBase
 	override protected void OnOpened()
 	{
 		s_bOpen = true;
-		GetGame().GetInputManager().AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
-		GetGame().GetInputManager().AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
+		InputManager input = GetGame().GetInputManager();
+		input.AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
+		input.AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
+		input.AddActionListener("MenuLeft", EActionTrigger.DOWN, OnPresetPrev);
+		input.AddActionListener("MenuRight", EActionTrigger.DOWN, OnPresetNext);
+		input.AddActionListener("RZ_BoardClear", EActionTrigger.DOWN, OnClear);
 		RZ_UIW.OnClick(m_wRoot, "PostButton", m_Click);
 		RZ_UIW.Focus(m_wRoot, "CloseButton");
+		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuSelect", "Pin it up");
+		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuRight", "Ready-made note") && prompts;
+		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuDown", "Scroll") && prompts;
+		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Close") && prompts;
+		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)
 			ui.Ask(RZ_UIFeed.PAYLOAD_BOARD);
@@ -201,8 +228,12 @@ class RZ_NoticeBoardMenu : RZ_MenuBase
 	override void OnMenuClose()
 	{
 		s_bOpen = false;
-		GetGame().GetInputManager().RemoveActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
-		GetGame().GetInputManager().RemoveActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
+		InputManager input = GetGame().GetInputManager();
+		input.RemoveActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
+		input.RemoveActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
+		input.RemoveActionListener("MenuLeft", EActionTrigger.DOWN, OnPresetPrev);
+		input.RemoveActionListener("MenuRight", EActionTrigger.DOWN, OnPresetNext);
+		input.RemoveActionListener("RZ_BoardClear", EActionTrigger.DOWN, OnClear);
 		super.OnMenuClose();
 	}
 
@@ -220,11 +251,57 @@ class RZ_NoticeBoardMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Left / right: the previous or next ready-made note into the box. Not while the box is being
+	//! typed in (the keyboard's arrows move the cursor there).
+	protected void OnPresetPrev(float value = 0, EActionTrigger reason = 0)
+	{
+		StepPreset(-1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnPresetNext(float value = 0, EActionTrigger reason = 0)
+	{
+		StepPreset(1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StepPreset(int dir)
+	{
+		Widget box = RZ_UIW.Find(m_wRoot, "NoteInput");
+		WorkspaceWidget ws = GetGame().GetWorkspace();
+		if (!box || !box.IsVisible() || (ws && ws.GetFocusedWidget() == box))
+			return;
+
+		array<string> presets = {};
+		GetPresets(presets);
+		int count = presets.Count();
+		if (m_iPreset < 0 && dir < 0)
+			m_iPreset = 0;
+
+		m_iPreset = (m_iPreset + dir + count) % count;
+		RZ_UIW.SetEditText(m_wRoot, "NoteInput", presets[m_iPreset]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! X / Delete (server admins): clear this board, what "/noteclear" does, without typing.
+	protected void OnClear(float value = 0, EActionTrigger reason = 0)
+	{
+		if (!m_bCanClear)
+			return;
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.SendCommand(RZ_PlayerUIComponent.CMD_CLEAR_BOARD, "");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected void OnClickOther(Widget w, string name)
 	{
 		if (name != "PostButton")
 			return;
 
+		// VERIFY: on a console the note box (an EditBoxWidget) opens the platform's on-screen keyboard;
+		// the ready-made notes (left and right) need no keyboard either way
 		string text = RZ_UIW.GetEditText(m_wRoot, "NoteInput");
 		if (text.IsEmpty())
 			return;
@@ -237,7 +314,7 @@ class RZ_NoticeBoardMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! B|safehouse|notes|longest note|can write, then N|author|age|text newest first
+	//! B|safehouse|notes|longest note|can write|can clear, then N|author|age|text newest first
 	override protected void Redraw()
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
@@ -259,6 +336,7 @@ class RZ_NoticeBoardMenu : RZ_MenuBase
 				RZ_UIW.SetText(m_wRoot, "Header", head);
 				limit = RZ_UIText.Int(f, 3);
 				canWrite = RZ_UIText.Int(f, 4) == 1;
+				m_bCanClear = RZ_UIText.Int(f, 5) == 1;
 			}
 			else if (tag == "N")
 			{
@@ -269,6 +347,20 @@ class RZ_NoticeBoardMenu : RZ_MenuBase
 		RZ_UIW.Show(m_wRoot, "Empty", notes.IsEmpty());
 		RZ_UIW.SetText(m_wRoot, "Notes", notes);
 		RZ_UIW.Show(m_wRoot, "WriteBlock", canWrite);
-		RZ_UIW.SetText(m_wRoot, "NoteLimit", string.Format("%1 characters at most. Everyone who comes by can read it.", limit));
+		RZ_UIW.SetText(m_wRoot, "NoteLimit", string.Format("%1 characters at most. Everyone who comes by can read it. Left and right: a ready-made note.", limit));
+
+		// The pad's way in: A pins up what's in the box (a ready-made note needs no typing)
+		if (!m_bFocusSet)
+		{
+			m_bFocusSet = true;
+			if (canWrite)
+				RZ_UIW.Focus(m_wRoot, "PostButton");
+		}
+
+		if (m_bCanClear && !m_bClearPrompt)
+		{
+			m_bClearPrompt = true;
+			RZ_UIW.AddPrompt(m_wRoot, "Prompts", "RZ_BoardClear", "Clear board (admin)");
+		}
 	}
 }

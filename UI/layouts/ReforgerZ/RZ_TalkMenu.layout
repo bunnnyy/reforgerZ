@@ -239,7 +239,7 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
       Alignment 0 0
      }
      Color 0.427 0.416 0.384 1
-     Text "KEYS 1-7 PICK A REPLY, ESC LEAVES"
+     Text "1-7 OR D-PAD AND A: A REPLY. ESC / B LEAVES"
      "Font Size" 18
      "Min Font Size" 18
      Wrap 1

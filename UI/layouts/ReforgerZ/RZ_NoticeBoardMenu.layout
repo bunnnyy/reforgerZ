@@ -69,8 +69,8 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
    }
    Color 0.639 0.62 0.565 1
    Text "NOTICE BOARD"
-   "Font Size" 17
-   "Min Font Size" 17
+   "Font Size" 18
+   "Min Font Size" 18
    FontProperties FontProperties "{986F6DF3738C45AC}" {
     Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
    }
@@ -152,22 +152,37 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
     }
    }
   }
+  HorizontalLayoutWidgetClass "{2C074C2CC1A895E6}" {
+   Name "Prompts"
+   Slot FrameWidgetSlot "{5174100605203C51}" {
+    Anchor 0 1 0 1
+    PositionX 96
+    OffsetLeft 96
+    PositionY -54
+    OffsetTop -54
+    SizeX 1100
+    OffsetRight -1196
+    SizeY 40
+    OffsetBottom 14
+    Alignment 0 1
+   }
+  }
   TextWidgetClass "{385406EA6FBB07FC}" {
-   Name "FooterKeys"
+   Name "PromptsText"
    Slot FrameWidgetSlot "{6625C853C439E917}" {
     Anchor 0 1 0 1
     PositionX 96
     OffsetLeft 96
     PositionY -54
     OffsetTop -54
-    SizeX 700
-    OffsetRight -796
+    SizeX 1100
+    OffsetRight -1196
     SizeY 26
     OffsetBottom 28
     Alignment 0 1
    }
    Color 0.639 0.62 0.565 1
-   Text "ESC / B  CLOSE      UP / DOWN  SCROLL"
+   Text "ESC / B  CLOSE      UP / DOWN  SCROLL      LEFT / RIGHT  READY-MADE NOTE"
    "Font Size" 18
    "Min Font Size" 18
    FontProperties FontProperties "{4ADFF6F601EA85B9}" {
@@ -344,14 +359,14 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
       OffsetTop 18
       SizeX 584
       OffsetRight -607
-      SizeY 16
-      OffsetBottom -34
+      SizeY 22
+      OffsetBottom -40
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "LEAVE A NOTE"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{6275A61B315F5EC1}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -406,7 +421,7 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
      }
      Color 0.91 0.886 0.816 1
      style blank
-     "Font Size" 16
+     "Font Size" 18
      "Placeholder color" 0.431 0.416 0.376 1
      FontProperties FontProperties "{35C77D6FCE51877A}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -430,8 +445,8 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
      }
      Color 0.639 0.62 0.565 1
      Text ""
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      Wrap 1
      FontProperties FontProperties "{6FBB34208A232386}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -477,8 +492,8 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
          }
          Color 0.078 0.078 0.078 1
          Text "PIN IT UP"
-         "Font Size" 13
-         "Min Font Size" 13
+         "Font Size" 18
+         "Min Font Size" 18
          "Horizontal Alignment" Center
          FontProperties FontProperties "{358C386DD29A5702}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"

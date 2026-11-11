@@ -89,8 +89,8 @@ ButtonWidgetClass "{1B03E97B54B5C5B4}" {
              }
              Color 0.89 0.639 0.231 1
              Text "1"
-             "Font Size" 17
-             "Min Font Size" 17
+             "Font Size" 18
+             "Min Font Size" 18
              "Horizontal Alignment" Center
              FontProperties FontProperties "{FB0B36AD0DC2D0D6}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"

@@ -90,8 +90,8 @@ ButtonWidgetClass "{6E0C75F1B1B95AB8}" {
        }
        Color 0.91 0.886 0.816 1
        Text "The Bitten Friend"
-       "Font Size" 17
-       "Min Font Size" 17
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{C94B876C213206C7}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
@@ -106,14 +106,14 @@ ButtonWidgetClass "{6E0C75F1B1B95AB8}" {
         OffsetTop 34
         SizeX -250
         OffsetRight 180
-        SizeY 18
-        OffsetBottom -52
+        SizeY 22
+        OffsetBottom -56
         Alignment 0 0
        }
        Color 0.639 0.62 0.565 1
        Text "The Haven - Ines Calder"
-       "Font Size" 13
-       "Min Font Size" 13
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{375F7B9C37A9D142}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
        }
@@ -128,14 +128,14 @@ ButtonWidgetClass "{6E0C75F1B1B95AB8}" {
         OffsetTop 10
         SizeX 150
         OffsetRight -128
-        SizeY 20
-        OffsetBottom -30
+        SizeY 22
+        OffsetBottom -32
         Alignment 1 0
        }
        Color 0.91 0.886 0.816 1
        Text "NE 1.2 km"
-       "Font Size" 14
-       "Min Font Size" 14
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{8E3B0D1C09AE74B1}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -151,14 +151,14 @@ ButtonWidgetClass "{6E0C75F1B1B95AB8}" {
         OffsetTop 34
         SizeX 150
         OffsetRight -128
-        SizeY 18
-        OffsetBottom -52
+        SizeY 22
+        OffsetBottom -56
         Alignment 1 0
        }
        Color 0.431 0.416 0.376 1
        Text "31 min left"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{F13EB699EA678AE9}" {
         Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"

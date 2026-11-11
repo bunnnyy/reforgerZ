@@ -73,14 +73,14 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
       OffsetTop 28
       SizeX 576
       OffsetRight -599
-      SizeY 16
-      OffsetBottom -44
+      SizeY 22
+      OffsetBottom -50
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "WHO HOLDS WHAT"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{EE0556D29C642839}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -152,8 +152,8 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Stronghold"
-     "Font Size" 15
-     "Min Font Size" 15
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{F5F16C6768F531C4}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -168,14 +168,14 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
       OffsetTop 74
       SizeX 451
       OffsetRight -599
-      SizeY 18
-      OffsetBottom -92
+      SizeY 22
+      OffsetBottom -96
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "A faction's seat. It never falls."
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{DC45F20BD4A836BB}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
      }
@@ -247,8 +247,8 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Outpost"
-     "Font Size" 15
-     "Min Font Size" 15
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{D260E03D59714BF1}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -263,14 +263,14 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
       OffsetTop 130
       SizeX 451
       OffsetRight -599
-      SizeY 18
-      OffsetBottom -148
+      SizeY 22
+      OffsetBottom -152
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "Held for now. Towns change hands."
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{73D6FEB8B359ACD2}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
      }
@@ -308,8 +308,8 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Haven safehouse"
-     "Font Size" 15
-     "Min Font Size" 15
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{1C6710812CD36E3A}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -324,14 +324,14 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
       OffsetTop 186
       SizeX 451
       OffsetRight -599
-      SizeY 18
-      OffsetBottom -204
+      SizeY 22
+      OffsetBottom -208
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "Don't fire near it. Declare your bite."
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{A3D767AC07ADCC1C}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
      }
@@ -369,8 +369,8 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Halcyon's lab"
-     "Font Size" 15
-     "Min Font Size" 15
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{9B225CD4C03DE238}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -385,14 +385,14 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
       OffsetTop 242
       SizeX 451
       OffsetRight -599
-      SizeY 18
-      OffsetBottom -260
+      SizeY 22
+      OffsetBottom -264
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "Samples, the trial dose, the cure."
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{8CCD6BF59ABBFFE3}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
      }
@@ -407,14 +407,14 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
       OffsetTop 296
       SizeX 576
       OffsetRight -599
-      SizeY 16
-      OffsetBottom -312
+      SizeY 22
+      OffsetBottom -318
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "THE WORLD"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{67359E9AC1BA8778}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -452,8 +452,8 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      }
      Color 0.91 0.886 0.816 1
      Text "World event"
-     "Font Size" 15
-     "Min Font Size" 15
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{5AE5FB41F7006005}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -468,14 +468,14 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
       OffsetTop 342
       SizeX 451
       OffsetRight -599
-      SizeY 18
-      OffsetBottom -360
+      SizeY 22
+      OffsetBottom -364
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "Open to anyone, while it lasts."
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{1C853A24584BCD50}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
      }
@@ -513,8 +513,8 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Power station"
-     "Font Size" 15
-     "Min Font Size" 15
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{47FB7DC79AB2C75E}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -529,14 +529,14 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
       OffsetTop 398
       SizeX 451
       OffsetRight -599
-      SizeY 18
-      OffsetBottom -416
+      SizeY 22
+      OffsetBottom -420
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "Restore it for light, and noise."
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{F658BB5E7C3E308E}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
      }
@@ -574,8 +574,8 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Radio station"
-     "Font Size" 15
-     "Min Font Size" 15
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{E6A8B2BB72294D8E}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -590,14 +590,14 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
       OffsetTop 454
       SizeX 451
       OffsetRight -599
-      SizeY 18
-      OffsetBottom -472
+      SizeY 22
+      OffsetBottom -476
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "Hold the mast, speak to everyone."
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{44CA90F23C53346B}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
      }
@@ -635,8 +635,8 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Sealed checkpoint"
-     "Font Size" 15
-     "Min Font Size" 15
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{D895A462EFAF5DEA}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -651,14 +651,14 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
       OffsetTop 510
       SizeX 451
       OffsetRight -599
-      SizeY 18
-      OffsetBottom -528
+      SizeY 22
+      OffsetBottom -532
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "Sealed. Nobody passes, either way."
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{D2C57F335A7132FC}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
      }

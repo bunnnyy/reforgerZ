@@ -185,7 +185,7 @@ class RZ_NoticeBoard
 
 	//------------------------------------------------------------------------------------------------
 	//! For the board menu (RZ_UIFeed, PAYLOAD_BOARD), the board the player stands at:
-	//! B|safehouse name|notes|longest note|can write (0/1)
+	//! B|safehouse name|notes|longest note|can write (0/1)|can clear (0/1: a server admin)
 	//! N|author|age|text                newest first
 	string BuildPayload(int playerId)
 	{
@@ -204,7 +204,11 @@ class RZ_NoticeBoard
 			m_GM.GetErrands().BoardAsks(playerId, BoardAt(playerId), asks);
 
 		RZ_UILine head = new RZ_UILine("B");
-		string s = head.Add(h.m_sName).AddInt(h.m_aNotes.Count() + asks.Count()).AddInt(m_Settings.m_iNoteLength).Add(canWrite).End();
+		string canClear = "0";
+		if (IsAdmin(playerId))
+			canClear = "1";
+
+		string s = head.Add(h.m_sName).AddInt(h.m_aNotes.Count() + asks.Count()).AddInt(m_Settings.m_iNoteLength).Add(canWrite).Add(canClear).End();
 		foreach (string ask : asks)
 		{
 			RZ_UILine askLine = new RZ_UILine("N");
@@ -383,7 +387,8 @@ class RZ_NoticeBoard
 
 	// ================================================================ Admins
 	//------------------------------------------------------------------------------------------------
-	//! "/noteclear" (the board the admin stands at, or the nearest within 1 km) or "/noteclear all".
+	//! "/noteclear" (the board the admin stands at, or the nearest within 1 km), or the board
+	//! screen's Clear (X / Delete), or "/noteclear all".
 	void Clear(int playerId, bool all)
 	{
 		if (!IsAdmin(playerId))

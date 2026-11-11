@@ -85,7 +85,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Notebook: Radio | `radio_log.png` | What you heard and were told this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, and the mission and world notices; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
 | Notebook: Map key | `map_legend.png` | The marker icons the map draws, with one line each | `RZ_MapKeyPage` | Static page built, not checked in play |
 | Notebook: Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallPage` | Page built, not checked in play; no mockup |
-| Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), and a box to write one with a Post button. Opened when you read the board, with **UI > Board menus** on | `RZ_NoticeBoardMenu` | Layout built; **Board menus** is off; no mockup |
+| Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), a box to write one with a Pin it up button, and seven ready-made notes for a pad. Opened when you read the board, with **UI > Board menus** on (the default) | `RZ_NoticeBoardMenu` | Layout built, not checked in play; no mockup |
 | Talk | `talk.png` | A person's name and who they are, what they say in large type, your replies with what each needs ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play |
 | Subtitles | `hud.png` | What people say outside the talk screen, at the bottom centre: the speaker in their faction colour, the line in bright bone ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
@@ -94,16 +94,20 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | The map | — | The marker icons on the vanilla map, per player ([below](#the-map)) | `RZ_MapIconsUI` | Layout built, not on the map yet |
 
 The notice board isn't a notebook tab: it opens when you read a safehouse board, and Esc, B or
-the close button close it.
+the close button close it. Left and right put a ready-made note in its box and A pins it up, so
+a pad writes a note without typing; a server admin clears the board with X (Delete), as
+`/noteclear` does.
 
-**Chat commands** (`RZ_ChatCommands`, client): `/note <text>` pins a note on the board you're at,
-`/noteclear` and `/noteclear all` clear boards (server admins); `/tribes` (server admins) writes the
-infected to the server log (`/tribes stir` and `/tribes site` are play-test aids; the status log prints
-the summary anyway, so nothing needs typing: [INFECTED.md](INFECTED.md#admin-visibility)); `/rep <name>`
-(server admins) reads a player's reputation ([REPUTATION.md](REPUTATION.md#reputations)); `/mydead
-hidden` or `/mydead shown` keeps your name out of public text if you die out there, which the notebook
-item's action *"If I die: say my name, or don't"* also does, without typing
-([INFECTED.md](INFECTED.md#your-dead-run)). They work without any layout. Without the board menu, reading the board is a notice and notes are written with `/note`.
+**Chat commands** (`RZ_ChatCommands`, client) are extras; each has a way without typing
+([Controllers](#controllers)). `/note <text>` pins a note on the board you're at (the board menu);
+`/noteclear` and `/noteclear all` clear boards (server admins; the board menu's X clears one);
+`/tribes` (server admins) writes the infected to the server log (`/tribes stir` and `/tribes site`
+are play-test aids; the status log prints the summary anyway: [INFECTED.md](INFECTED.md#admin-visibility));
+`/rep <name>` (server admins) reads a player's reputation ([REPUTATION.md](REPUTATION.md#reputations));
+`/talkdebug` (server admins) reads the conversation trees of the person you're talking to; `/mydead
+hidden` or `/mydead shown` keeps your name out of public text if you die out there
+([INFECTED.md](INFECTED.md#your-dead-run)). They work without any layout. With **Board menus** off,
+reading the board is a notice and notes are written with `/note` only.
 
 **Rough areas in the journal.** A contract's "where" and direction are the rough circle ("around
 Morton (within 500 m)", "about 1.2 km NE") until the player knows the spot
@@ -214,7 +218,7 @@ direction to its rough area, and the names you've heard under the place with wha
 brief and detail; the rewards line says what each level shows. Your last character's fate is a row
 too ([INFECTED.md](INFECTED.md#knowing)). On the map each is a range ring ([below](#the-map)).
 
-The notice board opens when you read a safehouse board, with **UI > Board menus** on.
+The notice board opens when you read a safehouse board, with **UI > Board menus** on (the default).
 
 ### The talk screen
 
@@ -443,20 +447,37 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 |---|---|---|---|
 | `RZ_OpenNotebook` | N | none: the pause menu's **Notebook** button, or the notebook item | `IngameContext` |
 | `RZ_RadioFilter` | F | X | `MenuContext` |
+| `RZ_BoardClear` | Delete | X | `MenuContext`: the notice board's Clear, server admins only |
 | `RZ_Reply1` … `RZ_Reply7` | 1 … 7 | none: the D-pad and A pick a reply | `MenuContext` |
 | `RZ_CarStart` | T | Y | `MenuContext` |
 | `RZ_TurnPreview` | none: left/right (`MenuLeft`/`MenuRight`) or a click | right stick (horizontal) | `MenuContext` |
 
 N is free in play (vanilla uses it only in the group menu and the map's pencil tool, other
 contexts). The pad has no free button in play, so Start (the pause menu) and the notebook item are
-its way into the notebook.
+its way into the notebook. X is free in the board menu, so the radio filter and the board's Clear
+share it, each only in its own screen.
 
-**Status.** The notebook, the talk screen, the reader, the car repair screen, the shop screen and
-the subtitles were built for the pad as well: every action they need has a pad binding or route, each sets the focus, the footers
-show prompts by device, and the new screens follow the TV sizes and the safe area. None of it
-has been played with a pad yet (the VERIFY list's UI part). The older screens' content (the
-notebook's pages, the notice board) keeps text under 18 px. A check of the whole mod with a
-gamepad, and the fixes it finds, are planned ([ROADMAP.md](ROADMAP.md)).
+**The check** (done in the files; not yet played with a pad, the VERIFY list's UI part):
+
+| Part | Checked | Fixed |
+|---|---|---|
+| Input actions | Every `RZ_` action in `chimeraInputCommon.conf` has a pad binding or a route (the table above) | `RZ_BoardClear` added with its pad button |
+| The screens | The notebook, the notice board, the talk screen, the reader, the car repair screen and the shop each open from something a pad reaches (an action, the pause menu, the notebook item, a talk), close with B, set the focus and move with the D-pad and shoulders. The HUD, the subtitles, the map icons and the deploy panel only show | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
+| Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-7 or D-pad and A") |
+| Hover, typing, chat | No screen uses hover or a tooltip. The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead` the notebook item, `/tribes`, `/talkdebug` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all` and `/rep` for a named player far away stay typed admin extras |
+| Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The reputation grid's headers now read "FAME" and "INFAMY UNDER 15" and so on, and its cells are condensed bold so the longest names fit. The vanilla deploy menu's own footer (15–16) is vanilla's |
+
+**What needs Workbench** (it can't be checked as text):
+- Open each page in the layout editor at 1920×1080 and look for text that now runs past its slot:
+  the Standing page's labels over their bars (FAME, INFAMY, LEADERS YOU'VE MET, WHAT THEY NEED: 6
+  units over 16-unit slots), the reputation grid's header row (4 over), the HUD's infection stage
+  above its clock and the map key's names over their lines (2 over). Where it touches, move the
+  widget below down a few units or shorten the label.
+- Play every screen with a pad on PC (and on a console build when there is one): the focus, the
+  prompts' glyphs, the notice board's ready-made notes (A on Pin it up, and that left and right
+  don't fire while you type in the box with a keyboard), X on the board as an admin and as a player.
+- Check that the console's on-screen keyboard opens for the board's note box (VERIFY); the
+  ready-made notes work without it either way.
 
 ## How the scripts fit
 
@@ -473,7 +494,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_ShopScreen`, `RZ_ShopOpenAction`, `RZ_ShopMenu` | server, server, client | The shop screen ([above](#the-shop-screen)) |
 | `RZ_ScreenCapture` | server | While a screen acts for its player, catches what would have been that player's notice for the screen's status line |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair and shop screens and closes them in danger (below) |
-| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/rep`, `/mydead`, sent as commands to the server, which checks them again. Registered with the first notice |
+| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/rep`, `/talkdebug`, `/mydead`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)) |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards and the subtitles |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
 | `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookGadgetComponent` | client | Open the notebook: N, the pause menu's button, the notebook item |
@@ -540,6 +561,6 @@ reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
 | Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and the shop). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the journal's errand rows and per-row detail), the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the screen guard, the notice board menu, chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair and shop screens' written as text; the icon atlas and the `RZ_Icons` imageset; the car picture's PNG (to import: **UI > Car picture** is empty); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car and shop presets; N, 1–7, T, the right stick and the filter's X); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, all but the map icon layout. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter |
-| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the subtitles; mouse clicks and the pad; the notice board menu (**UI > Board menus** is off); the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |
+| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the subtitles; mouse clicks and the pad; the notice board menu and its ready-made notes; the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |
 | Not done | The override of the vanilla deploy menu's layout that holds the background panel, so the panel doesn't show. The map configuration override with `RZ_MapIconsUI`, and **UI > Map icon layout** (empty: set, it turns the vanilla text markers off), so the map shows the vanilla markers. Images for the icons the scripts never swap (the map key's, the radio channel list, the HUD's radio, noise and paused icons, the background panel's): they draw as flat squares in their colour |
 | Planned | The `mission_errand` icon (errand rows use `mission_unarmed`); a sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm |

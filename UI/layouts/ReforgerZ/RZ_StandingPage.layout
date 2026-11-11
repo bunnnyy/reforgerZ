@@ -215,14 +215,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetTop 40
           SizeX 295
           OffsetRight -363
-          SizeY 18
-          OffsetBottom -58
+          SizeY 22
+          OffsetBottom -62
           Alignment 0 0
          }
          Color 0.639 0.62 0.565 1
          Text ""
-         "Font Size" 13
-         "Min Font Size" 13
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{62BE53AAC5BF4ECB}" {
           Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
          }
@@ -245,8 +245,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "FAME"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{36693099FDAA4339}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -261,14 +261,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 166
         SizeX 146
         OffsetRight -398
-        SizeY 18
-        OffsetBottom -184
+        SizeY 22
+        OffsetBottom -188
         Alignment 0 0
        }
        Color 0.91 0.886 0.816 1
        Text ""
-       "Font Size" 14
-       "Min Font Size" 14
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{6ACFA7744CA60B7A}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -395,8 +395,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "INFAMY"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{7AD9F0AD025B63C3}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -411,14 +411,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 206
         SizeX 146
         OffsetRight -398
-        SizeY 18
-        OffsetBottom -224
+        SizeY 22
+        OffsetBottom -228
         Alignment 0 0
        }
        Color 0.91 0.886 0.816 1
        Text ""
-       "Font Size" 14
-       "Min Font Size" 14
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{6C9211D60F4FF3B8}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -539,14 +539,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 256
         SizeX 78
         OffsetRight -99
-        SizeY 16
-        OffsetBottom -272
+        SizeY 22
+        OffsetBottom -278
         Alignment 0 0
        }
        Color 0.639 0.62 0.565 1
        Text "FAVOR"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{B0D48E5E35C24165}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -606,8 +606,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "LEADERS YOU'VE MET"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{354A2F42AEF906D1}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -646,8 +646,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
            }
            Color 0.91 0.886 0.816 1
            Text ""
-           "Font Size" 15
-           "Min Font Size" 15
+           "Font Size" 18
+           "Min Font Size" 18
            Wrap 1
            FontProperties FontProperties "{FE7405ABF7DFAA4A}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -706,8 +706,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.639 0.62 0.565 1
          Text "WHAT THEY NEED"
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{DE287846767B545E}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
@@ -728,8 +728,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.89 0.639 0.231 1
          Text ""
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{90E7F20C85DDE054}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
@@ -750,8 +750,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.851 0.824 0.745 1
          Text ""
-         "Font Size" 14
-         "Min Font Size" 14
+         "Font Size" 18
+         "Min Font Size" 18
          Wrap 1
          FontProperties FontProperties "{11B632692B34C99D}" {
           Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -803,8 +803,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.894 0.51 0.435 1
          Text "HUNTER SQUADS ARE OUT FOR YOU"
-         "Font Size" 13
-         "Min Font Size" 13
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{1868A509B19A40B6}" {
           Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
          }
@@ -999,14 +999,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetTop 40
           SizeX 295
           OffsetRight -363
-          SizeY 18
-          OffsetBottom -58
+          SizeY 22
+          OffsetBottom -62
           Alignment 0 0
          }
          Color 0.639 0.62 0.565 1
          Text ""
-         "Font Size" 13
-         "Min Font Size" 13
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{9D0D70314B292AD5}" {
           Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
          }
@@ -1029,8 +1029,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "FAME"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{A8D48E2818492FC6}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -1045,14 +1045,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 166
         SizeX 146
         OffsetRight -398
-        SizeY 18
-        OffsetBottom -184
+        SizeY 22
+        OffsetBottom -188
         Alignment 0 0
        }
        Color 0.91 0.886 0.816 1
        Text ""
-       "Font Size" 14
-       "Min Font Size" 14
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{C06D03281B575691}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -1179,8 +1179,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "INFAMY"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{105BAED11369B7BE}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -1195,14 +1195,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 206
         SizeX 146
         OffsetRight -398
-        SizeY 18
-        OffsetBottom -224
+        SizeY 22
+        OffsetBottom -228
         Alignment 0 0
        }
        Color 0.91 0.886 0.816 1
        Text ""
-       "Font Size" 14
-       "Min Font Size" 14
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{E01B81F071E22CE9}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -1323,14 +1323,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 256
         SizeX 78
         OffsetRight -99
-        SizeY 16
-        OffsetBottom -272
+        SizeY 22
+        OffsetBottom -278
         Alignment 0 0
        }
        Color 0.639 0.62 0.565 1
        Text "FAVOR"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{83FCC1E6B63C22BD}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -1390,8 +1390,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "LEADERS YOU'VE MET"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{EF93224B4DE10D92}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -1430,8 +1430,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
            }
            Color 0.91 0.886 0.816 1
            Text ""
-           "Font Size" 15
-           "Min Font Size" 15
+           "Font Size" 18
+           "Min Font Size" 18
            Wrap 1
            FontProperties FontProperties "{71F920A493638BB3}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -1490,8 +1490,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.639 0.62 0.565 1
          Text "WHAT THEY NEED"
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{AE8DDBBB78F1AB34}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
@@ -1512,8 +1512,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.604 0.639 0.369 1
          Text ""
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{906D7F4B03021639}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
@@ -1534,8 +1534,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.851 0.824 0.745 1
          Text ""
-         "Font Size" 14
-         "Min Font Size" 14
+         "Font Size" 18
+         "Min Font Size" 18
          Wrap 1
          FontProperties FontProperties "{E8A32ED48F957DC9}" {
           Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -1587,8 +1587,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.894 0.51 0.435 1
          Text "HUNTER SQUADS ARE OUT FOR YOU"
-         "Font Size" 13
-         "Min Font Size" 13
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{29363270CD30FF2C}" {
           Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
          }
@@ -1783,14 +1783,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetTop 40
           SizeX 295
           OffsetRight -363
-          SizeY 18
-          OffsetBottom -58
+          SizeY 22
+          OffsetBottom -62
           Alignment 0 0
          }
          Color 0.639 0.62 0.565 1
          Text ""
-         "Font Size" 13
-         "Min Font Size" 13
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{549A8F6357D3CFEF}" {
           Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
          }
@@ -1813,8 +1813,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "FAME"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{A39E9D9591B8E50C}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -1829,14 +1829,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 166
         SizeX 146
         OffsetRight -398
-        SizeY 18
-        OffsetBottom -184
+        SizeY 22
+        OffsetBottom -188
         Alignment 0 0
        }
        Color 0.91 0.886 0.816 1
        Text ""
-       "Font Size" 14
-       "Min Font Size" 14
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{B16BE02A03B5030E}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -1963,8 +1963,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "INFAMY"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{5BF834259A53607C}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -1979,14 +1979,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 206
         SizeX 146
         OffsetRight -398
-        SizeY 18
-        OffsetBottom -224
+        SizeY 22
+        OffsetBottom -228
         Alignment 0 0
        }
        Color 0.91 0.886 0.816 1
        Text ""
-       "Font Size" 14
-       "Min Font Size" 14
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{518DF608060A9E88}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -2107,14 +2107,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 256
         SizeX 78
         OffsetRight -99
-        SizeY 16
-        OffsetBottom -272
+        SizeY 22
+        OffsetBottom -278
         Alignment 0 0
        }
        Color 0.639 0.62 0.565 1
        Text "FAVOR"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{93E26182E7C130BC}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -2174,8 +2174,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "LEADERS YOU'VE MET"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{5F66E17D24368450}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -2214,8 +2214,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
            }
            Color 0.91 0.886 0.816 1
            Text ""
-           "Font Size" 15
-           "Min Font Size" 15
+           "Font Size" 18
+           "Min Font Size" 18
            Wrap 1
            FontProperties FontProperties "{B21C2BA4FCC5C5B1}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -2274,8 +2274,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.639 0.62 0.565 1
          Text "WHAT THEY NEED"
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{3D01923710BCACC9}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
@@ -2296,8 +2296,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.784 0.208 0.169 1
          Text ""
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{D32BA98F03E53E7D}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
@@ -2318,8 +2318,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.851 0.824 0.745 1
          Text ""
-         "Font Size" 14
-         "Min Font Size" 14
+         "Font Size" 18
+         "Min Font Size" 18
          Wrap 1
          FontProperties FontProperties "{410426F7929A8A83}" {
           Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -2371,8 +2371,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.894 0.51 0.435 1
          Text "HUNTER SQUADS ARE OUT FOR YOU"
-         "Font Size" 13
-         "Min Font Size" 13
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{DBABC88A37C198AF}" {
           Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
          }
@@ -2567,14 +2567,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetTop 40
           SizeX 295
           OffsetRight -363
-          SizeY 18
-          OffsetBottom -58
+          SizeY 22
+          OffsetBottom -62
           Alignment 0 0
          }
          Color 0.639 0.62 0.565 1
          Text ""
-         "Font Size" 13
-         "Min Font Size" 13
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{1D9E469BE67943E4}" {
           Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
          }
@@ -2597,8 +2597,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "FAME"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{7F873EA38F36CA8C}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -2613,14 +2613,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 166
         SizeX 146
         OffsetRight -398
-        SizeY 18
-        OffsetBottom -184
+        SizeY 22
+        OffsetBottom -188
         Alignment 0 0
        }
        Color 0.91 0.886 0.816 1
        Text ""
-       "Font Size" 14
-       "Min Font Size" 14
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{31726A9E9E64F9EC}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -2747,8 +2747,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "INFAMY"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{F3DE6E905677FB20}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -2763,14 +2763,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 206
         SizeX 146
         OffsetRight -398
-        SizeY 18
-        OffsetBottom -224
+        SizeY 22
+        OffsetBottom -228
         Alignment 0 0
        }
        Color 0.91 0.886 0.816 1
        Text ""
-       "Font Size" 14
-       "Min Font Size" 14
+       "Font Size" 18
+       "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{543780EE8C298ED6}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -2891,14 +2891,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
         OffsetTop 256
         SizeX 78
         OffsetRight -99
-        SizeY 16
-        OffsetBottom -272
+        SizeY 22
+        OffsetBottom -278
         Alignment 0 0
        }
        Color 0.639 0.62 0.565 1
        Text "FAVOR"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{49B814C539B496CE}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -2958,8 +2958,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
        }
        Color 0.639 0.62 0.565 1
        Text "LEADERS YOU'VE MET"
-       "Font Size" 12
-       "Min Font Size" 12
+       "Font Size" 18
+       "Min Font Size" 18
        FontProperties FontProperties "{75A952D2E3FBCE81}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
@@ -2998,8 +2998,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
            }
            Color 0.91 0.886 0.816 1
            Text ""
-           "Font Size" 15
-           "Min Font Size" 15
+           "Font Size" 18
+           "Min Font Size" 18
            Wrap 1
            FontProperties FontProperties "{600BCBBCCCF8F0E0}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -3058,8 +3058,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.639 0.62 0.565 1
          Text "WHAT THEY NEED"
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{634F8A12B943C2C7}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
@@ -3080,8 +3080,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.31 0.722 0.69 1
          Text ""
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{89B8AB8AAAE439BF}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
@@ -3102,8 +3102,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.851 0.824 0.745 1
          Text ""
-         "Font Size" 14
-         "Min Font Size" 14
+         "Font Size" 18
+         "Min Font Size" 18
          Wrap 1
          FontProperties FontProperties "{AC8B2979DE0AC1C3}" {
           Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -3155,8 +3155,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
          }
          Color 0.894 0.51 0.435 1
          Text "HUNTER SQUADS ARE OUT FOR YOU"
-         "Font Size" 13
-         "Min Font Size" 13
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{883A1BD8C59037FA}" {
           Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
          }
@@ -3209,14 +3209,14 @@ FrameWidgetClass "{5FB84287E2908342}" {
       OffsetTop 16
       SizeX 813
       OffsetRight -834
-      SizeY 16
-      OffsetBottom -32
+      SizeY 22
+      OffsetBottom -38
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "BETWEEN THE FACTIONS"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{A75BE47971FB6DB6}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -3237,8 +3237,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.91 0.886 0.816 1
      Text ""
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      Wrap 1
      FontProperties FontProperties "{AD907816243D9AD8}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -3293,9 +3293,9 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.431 0.416 0.376 1
-     Text "FAME / INFAMY"
-     "Font Size" 11
-     "Min Font Size" 11
+     Text "FAME"
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{CC36CB26A4E315FD}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -3316,9 +3316,9 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.431 0.416 0.376 1
-     Text "UNDER 15"
-     "Font Size" 11
-     "Min Font Size" 11
+     Text "INFAMY UNDER 15"
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{9BFF3023FD443549}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -3339,9 +3339,9 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.431 0.416 0.376 1
-     Text "15-39"
-     "Font Size" 11
-     "Min Font Size" 11
+     Text "INFAMY 15-39"
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{BC1373A308AB1492}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -3362,9 +3362,9 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.431 0.416 0.376 1
-     Text "40-74"
-     "Font Size" 11
-     "Min Font Size" 11
+     Text "INFAMY 40-74"
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{7BC01C424BE17132}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -3385,9 +3385,9 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.431 0.416 0.376 1
-     Text "75+"
-     "Font Size" 11
-     "Min Font Size" 11
+     Text "INFAMY 75+"
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{D998F2EE2646302A}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -3409,8 +3409,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.431 0.416 0.376 1
      Text "75+"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{33AFDAA0BA5731FD}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -3449,11 +3449,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.749 0.827 0.608 1
      Text "CHAMPION"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{4D8C5F3EA65877C1}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{972C72A854F64430}" {
@@ -3489,11 +3489,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.639 0.62 0.565 1
      Text "FAVOURITE RASCAL"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{72BA9E75AA73A76F}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{9D3C4B52BDF29817}" {
@@ -3529,11 +3529,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.639 0.62 0.565 1
      Text "NECESSARY EVIL"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{CAA06650EB1EEAA4}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{27896E1E9373F90B}" {
@@ -3569,11 +3569,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.639 0.62 0.565 1
      Text "WILD CHILD"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{435CFB2033CDB911}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     TextWidgetClass "{C1C5B3B7D8D602DC}" {
@@ -3592,8 +3592,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.431 0.416 0.376 1
      Text "40-74"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{584371004FC6DCB3}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -3632,11 +3632,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.749 0.827 0.608 1
      Text "TRUSTED"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{1494EE626CCA726E}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{C119070970186E5A}" {
@@ -3672,11 +3672,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.639 0.62 0.565 1
      Text "USEFUL TROUBLE"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{C12C44F54098697A}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{E89CC1497176702B}" {
@@ -3712,11 +3712,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.639 0.62 0.565 1
      Text "WILDCARD"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{120AABB3762E73F2}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{E32F77B574540AE4}" {
@@ -3752,11 +3752,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.894 0.51 0.435 1
      Text "SOFT-HEARTED DEVIL"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{7DB7DDF152CA671B}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     TextWidgetClass "{A50CA6B9A0A22018}" {
@@ -3775,8 +3775,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.431 0.416 0.376 1
      Text "15-39"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{80AD6ED16412C66C}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -3815,11 +3815,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.749 0.827 0.608 1
      Text "KNOWN"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{A4256787AB3CE626}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{8E9BF1449DF0C0F7}" {
@@ -3855,11 +3855,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.639 0.62 0.565 1
      Text "MIXED BAG"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{1B91C0DE13040A4F}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{14E6AAACEE30939D}" {
@@ -3895,11 +3895,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.894 0.51 0.435 1
      Text "BAD NEWS"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{18B69B0C26438634}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{B58285B1B90491C6}" {
@@ -3935,11 +3935,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.894 0.51 0.435 1
      Text "MERCIFUL THUG"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{77B7206B7D139685}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     TextWidgetClass "{2FE9BF2D25063A73}" {
@@ -3958,8 +3958,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.431 0.416 0.376 1
      Text "UNDER 15"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{A7D1213A66504FA3}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -3998,11 +3998,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.639 0.62 0.565 1
      Text "STRANGER"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{5BBCFB4E9CCC4F0C}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{3CE79F45F8853130}" {
@@ -4038,11 +4038,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.894 0.51 0.435 1
      Text "WATCHED"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{F5F66879C0C5A0FB}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{455092EDD348ED77}" {
@@ -4078,11 +4078,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.894 0.51 0.435 1
      Text "HUNTED"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{BA3627B635B2DD70}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     ImageWidgetClass "{3BBF67330B8D9F6B}" {
@@ -4118,11 +4118,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
      }
      Color 0.894 0.51 0.435 1
      Text "KILL ON SIGHT"
-     "Font Size" 11
-     "Min Font Size" 11
+     "Font Size" 18
+     "Min Font Size" 18
      "Vertical Alignment" Center
      FontProperties FontProperties "{3D3B1F6494B21D37}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
    }

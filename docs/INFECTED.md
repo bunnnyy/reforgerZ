@@ -388,7 +388,8 @@ they stand on their own.
   body budget, hordes from towns, loose ones
   that arrived, the ledgers, stirred towns, scavengers out, kill sites, held doors, the engine's active
   AI against its limit, the land, and the clock. So nothing needs typing.
-- **`/tribes`** (server admins, in chat) writes everything to the server log: every town with crawlers,
+- **`/tribes`** (server admins, in chat, or the **[Admin] The infected, to the server log** reply
+  when an admin talks to anyone) writes everything to the server log: every town with crawlers,
   a ledger or stir, every kill site and part, every tracked unit, each player's last hit, the slots.
   Play-test aids: `/tribes stir` and `/tribes site` ([above](#towns-the-crawlers)), `/tribes hunt` (the
   nearest tribe within 5 km hunts you, any time of day) and `/tribes call` (every tribe calls now).

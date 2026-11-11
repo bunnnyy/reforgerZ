@@ -94,6 +94,11 @@ class RZ_TalkSpeaker
 class RZ_TalkGeneric : RZ_TalkSpeaker
 {
 	static const int ADMIN_ERRANDS = 30;	// a server admin's view of the errands here
+	// The admins' chat commands without typing (docs/UI.md, "Controllers"): /talkdebug, /tribes,
+	// and /rep for the nearest player
+	static const int ADMIN_TREES = 31;
+	static const int ADMIN_TRIBES = 32;
+	static const int ADMIN_REP = 33;
 
 	protected IEntity m_Owner;
 
@@ -282,6 +287,73 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 		// Server admins: the errands' view for this place, without typing (docs/ERRANDS.md, Telemetry)
 		if (gm.GetErrands() && comp.GetMissionId() < 0 && RZ_NoticeBoard.IsAdmin(playerId))
 			replies.Insert(Reply(ADMIN_ERRANDS, "[Admin] Errands near here"));
+
+		// Server admins: what /talkdebug, /tribes and /rep do, for a pad (no typing)
+		if (!RZ_NoticeBoard.IsAdmin(playerId))
+			return;
+
+		if (gm.GetDialogue())
+			replies.Insert(Reply(ADMIN_TREES, "[Admin] Read this person's conversations"));
+
+		if (gm.GetTribes())
+			replies.Insert(Reply(ADMIN_TRIBES, "[Admin] The infected, to the server log"));
+
+		if (gm.GetRepWatch())
+			replies.Insert(Reply(ADMIN_REP, "[Admin] Standing of the nearest player"));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The admin replies (none of them changes the game). True if replyId was one.
+	protected bool PickAdmin(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
+	{
+		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP)
+			return false;
+
+		if (!RZ_NoticeBoard.IsAdmin(playerId))
+			return true;
+
+		if (replyId == ADMIN_TREES && gm.GetDialogue())
+			gm.GetDialogue().GetTrees().Debug(playerId, s);
+		else if (replyId == ADMIN_TRIBES && gm.GetTribes())
+			gm.GetTribes().Command(playerId, "");
+		else if (replyId == ADMIN_REP && gm.GetRepWatch())
+			gm.GetRepWatch().Readout(playerId, NearestPlayerName(playerId, user, 50));
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The name of the nearest other player within `radius` m of `user`; "" (the admin's own) if none.
+	protected string NearestPlayerName(int playerId, IEntity user, float radius)
+	{
+		if (!user)
+			return "";
+
+		array<int> ids = {};
+		GetGame().GetPlayerManager().GetPlayers(ids);
+		int best = -1;
+		float bestDist = radius;
+		foreach (int other : ids)
+		{
+			if (other == playerId)
+				continue;
+
+			IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(other);
+			if (!ent)
+				continue;
+
+			float d = RZ_Util.DistXZ(ent.GetOrigin(), user.GetOrigin());
+			if (d < bestDist)
+			{
+				bestDist = d;
+				best = other;
+			}
+		}
+
+		if (best < 0)
+			return "";
+
+		return RZ_Util.PlayerName(best);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -297,6 +369,9 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 			return;
 		}
+
+		if (PickAdmin(gm, s, playerId, replyId, user))
+			return;
 
 		if (replyId >= 10)
 			RZ_PuzzleActionHelper.DoUse(gm, m_Owner, playerId, replyId - 10, user);

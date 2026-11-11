@@ -1420,8 +1420,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **73** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 13 are in the UI, the talk screen and the server's loadout
+There are **74** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 14 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -1429,7 +1429,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-11)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-12)
 come last.
 
 ### High risk: the core loop (2)
@@ -1505,7 +1505,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1382` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
 | `Factions/RZ_CampLife.c:1449` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
-### The UI (11)
+### The UI (12)
 
 None of these affect the game: the UI only reads, and the talk, repair and shop screens run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -1526,6 +1526,7 @@ quartermaster's Buy actions, **UI > Reader** and **Subtitles** off for cards. Ho
 | `UI/RZ_PlayerUIComponent.c:168` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
+| `UI/RZ_Menus.c:303` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
 
 ## 7. Log lines to check
@@ -2127,8 +2128,21 @@ when it happens)
   hand (inventory or quick slot) opens it and is put away when it closes.
 - [ ] A new contract offer shows a count on the Journal tab, a radio message one on Radio; looking
   at the tab clears it.
-- [ ] With **Board menus** on, reading a board opens the board menu, and typing in its box and
-  pressing Post pins the note (the list refreshes); up/down scroll the notes.
+- [ ] With **Board menus** on (the default), reading a board opens the board menu, and typing in
+  its box and pressing Pin it up pins the note (the list refreshes); up/down scroll the notes.
+- [ ] **With a gamepad** ([UI.md](UI.md#controllers)): the notice board opens with Pin it up in
+  focus; right and left put a ready-made note in the box (not while you type in it with a
+  keyboard) and A pins it; B closes. As a server admin, X clears the board ("Cleared (n notes)"),
+  as a player X does nothing.
+- [ ] With a gamepad, open and close every screen (the notebook from the pause menu and from the
+  notebook item, a talk, the reader, the car repair screen, the shop) using only the pad: each has
+  a focused widget, footer prompts in pad glyphs, and B closes it.
+- [ ] As a server admin, talk to anyone (a wanderer, a safehouse occupant): the **[Admin]** replies
+  read their conversations, write the infected to the server log, and read the nearest player's
+  standing (yours with nobody within 50 m).
+- [ ] On a TV or at 1920×1080 from a couch: every page of the notebook, the notice board, the
+  notice cards and the HUD are readable; nothing runs into what's below it (the Standing page's
+  labels, the reputation grid's header row, the map key).
 - [ ] In the deploy menu, a locked background shows LOCKED and how to unlock it, and the server
   refuses to spawn it, with the mouse and with a gamepad (the log says `asked to spawn with locked
   loadout`); after one life as Nurse the panel lists the Nurse's real gear.

@@ -56,14 +56,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 20
       SizeX 395
       OffsetRight -416
-      SizeY 16
-      OffsetBottom -36
+      SizeY 22
+      OffsetBottom -42
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "EVERY FREQUENCY"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{60244C467074D461}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -101,8 +101,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Government broadcast"
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{9FF645B8EA2D5E56}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -117,14 +117,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 72
       SizeX 354
       OffsetRight -416
-      SizeY 18
-      OffsetBottom -90
+      SizeY 22
+      OffsetBottom -94
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "ON EVERY SET, ON A LOOP"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{AA366B2E3D275944}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -139,14 +139,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 112
       SizeX 395
       OffsetRight -416
-      SizeY 16
-      OffsetBottom -128
+      SizeY 22
+      OffsetBottom -134
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "OPEN CHANNELS"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{2176A52E4111EBFA}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -184,8 +184,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
      }
      Color 0.91 0.886 0.816 1
      Text "The Haven"
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{6F4E6FD2D8E8EA64}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -200,14 +200,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 164
       SizeX 354
       OffsetRight -416
-      SizeY 18
-      OffsetBottom -182
+      SizeY 22
+      OffsetBottom -186
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "THE SAFEHOUSES"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{ADE9443CEA9938A0}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -245,8 +245,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Bastion net"
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{E1D6C1CD30C0B3DC}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -261,14 +261,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 216
       SizeX 354
       OffsetRight -416
-      SizeY 18
-      OffsetBottom -234
+      SizeY 22
+      OffsetBottom -238
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "THE OUTPOSTS, CALLING COMMAND"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{112B81CE488AF408}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -306,8 +306,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Open channel"
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{5F14FAFE7273EFEE}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -322,14 +322,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 268
       SizeX 354
       OffsetRight -416
-      SizeY 18
-      OffsetBottom -286
+      SizeY 22
+      OffsetBottom -290
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "THE RED HAND, LAUGHING"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{1C2C4868B6ECC8D2}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -367,8 +367,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Halcyon"
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{D921E60D1BB0FAA4}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -383,14 +383,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 320
       SizeX 354
       OffsetRight -416
-      SizeY 18
-      OffsetBottom -338
+      SizeY 22
+      OffsetBottom -342
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "FIELD STATION NOTICES"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{55CBDD01B0B7368C}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -428,8 +428,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Radio station"
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{5E1099DF5B1F297E}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -444,14 +444,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 372
       SizeX 354
       OffsetRight -416
-      SizeY 18
-      OffsetBottom -390
+      SizeY 22
+      OffsetBottom -394
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "WHOEVER HOLDS THE MAST"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{E8F8FB539C28E198}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -466,14 +466,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 412
       SizeX 395
       OffsetRight -416
-      SizeY 16
-      OffsetBottom -428
+      SizeY 22
+      OffsetBottom -434
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "SECURE CHANNELS"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{2BBB01B7CBF27059}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -511,8 +511,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Bastion command net"
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{24CA218321661C8B}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -527,14 +527,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 464
       SizeX 354
       OffsetRight -416
-      SizeY 18
-      OffsetBottom -482
+      SizeY 22
+      OffsetBottom -486
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "SCRAMBLED UNTIL YOU CRACK IT"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{845D7AC27F12B0F6}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -572,8 +572,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
      }
      Color 0.91 0.886 0.816 1
      Text "The Red Hand boss's channel"
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{3EAAA31AFCDD67B0}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -588,14 +588,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 516
       SizeX 354
       OffsetRight -416
-      SizeY 18
-      OffsetBottom -534
+      SizeY 22
+      OffsetBottom -538
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "SCRAMBLED UNTIL YOU CRACK IT"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{F4C4090E695F8F6E}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -633,8 +633,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
      }
      Color 0.91 0.886 0.816 1
      Text "Halcyon's lab channel"
-     "Font Size" 16
-     "Min Font Size" 16
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{2AEB79EA235AC1DA}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
@@ -649,14 +649,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 568
       SizeX 354
       OffsetRight -416
-      SizeY 18
-      OffsetBottom -586
+      SizeY 22
+      OffsetBottom -590
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "SCRAMBLED UNTIL YOU CRACK IT"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{9FE956D10F3D2241}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -735,8 +735,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
          }
          Color 0.078 0.078 0.078 1
          Text "ALL"
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          "Horizontal Alignment" Center
          FontProperties FontProperties "{8EEA1763C20646BC}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -756,14 +756,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 22
       SizeX 584
       OffsetRight -769
-      SizeY 18
-      OffsetBottom -40
+      SizeY 22
+      OffsetBottom -44
       Alignment 0 0
      }
      Color 0.431 0.416 0.376 1
-     Text "F OR CLICK: ALL, OPEN, SECURE, BROADCAST"
-     "Font Size" 12
-     "Min Font Size" 12
+     Text "F / X OR CLICK: ALL, OPEN, SECURE, BROADCAST"
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{9F833856F804A253}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -778,14 +778,14 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       OffsetTop 22
       SizeX 389
       OffsetRight -364
-      SizeY 18
-      OffsetBottom -40
+      SizeY 22
+      OffsetBottom -44
       Alignment 1 0
      }
      Color 0.431 0.416 0.376 1
      Text "NEWEST FIRST"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      "Horizontal Alignment" Right
      FontProperties FontProperties "{7EF84DD3D630097F}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"

@@ -103,7 +103,8 @@ and one way to end it: **research the cure.**
   hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks, a repair screen for the cars and a shop screen at the quartermasters,
   spoken lines as subtitles, notes on a paper reader, and on the map only what you know. Gamepad
-  and console as well as keyboard and mouse (the HUD and notice cards show in Workbench play; the
+  and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
+  or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play; the
   notebook, talk, repair and shop screens, reader and subtitles are written and not yet played; the
   map icons are still to do).
 
