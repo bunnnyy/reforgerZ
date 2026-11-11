@@ -35,6 +35,75 @@ enum RZ_ETribePhase
 }
 
 //------------------------------------------------------------------------------------------------
+//! What a record in the tribes' lists is: a tribe, or a rover (a lone one, a splinter).
+enum RZ_ETribeKind
+{
+	TRIBE,
+	LONE,		// an alpha or a challenger with no tribe (docs/INFECTED.md, Lone ones)
+	SPLINTER	// a loose pack after a succession or a break-up
+}
+
+//------------------------------------------------------------------------------------------------
+//! Who the alpha was: it sets the tribe's echo (docs/INFECTED.md, Echoes).
+enum RZ_EAlphaKind
+{
+	RESIDENT,	// no echo
+	SOLDIER,	// sets out on the 17:30 shift change, home at 05:30, a guard at the lair's edge at 20:30
+	FARMER,		// home at first light the long way round, by the fields; prefers barns
+	DRIVER,		// hunts along the roads first
+	RUNNER,		// a runner or a courier: the young wait at a house's wire at dusk
+	COLUMN		// the Day 2 column: at dawn it walks toward the line and stops short
+}
+
+//------------------------------------------------------------------------------------------------
+//! A habit (docs/INFECTED.md, Habits): learned where it took people, faded by nights without.
+enum RZ_EHabit
+{
+	ROAD,		// it took a truck's crew or a driver on a road: it hunts that road at that hour
+	CROSSING,	// it took someone at a bridge or a ford: a hunter group waits there from dusk
+	BACKDOOR,	// it took someone at the wire of a lived-in place: the young wait there at dusk
+	SHOTS,		// it took someone after a firefight: it comes to gunfire from 1.5 times as far
+	BELLS		// it took someone after a loud noise: it comes to noise from 1.5 times as far
+}
+
+//------------------------------------------------------------------------------------------------
+//! A tribe's look, from where it grew up (docs/INFECTED.md, Looks).
+enum RZ_ELook
+{
+	CIVILIAN,
+	MILITARY,
+	WORK,		// farm valleys (Zombies > Tribes > Work clothes prefabs)
+	DUST,		// a quarry or a depot (Dust-grey prefabs)
+	OUTDOOR		// forest and hills (Outdoor prefabs)
+}
+
+//------------------------------------------------------------------------------------------------
+//! Where many of a tribe died in one counted night: its trails and day walks go round (rule 20).
+class RZ_FearPlace
+{
+	vector m_vPos;
+	int m_iUntil;			// the counted night it lasts until
+}
+
+//------------------------------------------------------------------------------------------------
+class RZ_TribeHabit
+{
+	RZ_EHabit m_eKind;
+	vector m_vPos;
+	float m_fHour;			// game hour it was learned at (the road hour)
+	float m_fStrength;		// 0-100: sets that night's trail at 50 or more, gone under 10
+}
+
+//------------------------------------------------------------------------------------------------
+//! A character a tribe knows (rule 20): it killed its leader or a guard, or burned its lair.
+class RZ_TribeMark
+{
+	int m_iPlayer;
+	int m_iLife;			// the player's life number (RZ_PlayerProfile.m_iLives): a new life is a new character
+	float m_fStrength;		// 100, falling 25 a counted night
+}
+
+//------------------------------------------------------------------------------------------------
 //! One group of a tribe as data: a count at a position, walking a path or holding.
 class RZ_TribePart : RZ_InfectedPart
 {
@@ -60,6 +129,8 @@ class RZ_TribePart : RZ_InfectedPart
 	int m_iWave;
 	int m_iSide = 1;					// a flanker's side
 	bool m_bStirred;					// stirred a town tonight
+	int m_iTrail = -1;					// the trail it walks tonight (worn trails)
+	bool m_bWaits;						// holds at the end of its path until it's sent home (a crossing, a wire, a border)
 
 	//------------------------------------------------------------------------------------------------
 	//! The role its bodies carry (stealth reads it).
@@ -155,6 +226,7 @@ class RZ_TribeHunt
 	RZ_HuntLink m_Young;
 	RZ_HuntLink m_Core;
 	int m_iFlankers;
+	ref RZ_HuntContext m_Context;	// the target's ground (flush, bait, herd, ambush)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -220,6 +292,104 @@ class RZ_Tribe
 	float m_fFeedUntil = -1;	// the tribe clock
 	float m_fToldBirdsAt = -10000;
 	ref RZ_TribeHunt m_Hunt;
+	// The life cycle (docs/INFECTED.md, "The life cycle")
+	RZ_ETribeKind m_eKind;		// a tribe, or a rover (a lone one, a splinter)
+	vector m_vGoal;				// a rover: where it's walking
+	float m_fRoverUntil;		// a rover: season day it ends (a splinter's fate, a lone one's death)
+	int m_iFrom = -1;			// a rover: the tribe it came from
+	string m_sAlphaName;		// "Josef Hruby"
+	RZ_EAlphaKind m_eAlphaKind;
+	ref array<string> m_aHistory = {};	// its alpha's last 6 events, newest first
+	bool m_bChallenged;			// its alpha has been challenged (no death of age)
+	RZ_ELook m_eLook;
+	float m_fMilitaryShare;		// of its members, those who were soldiers (its look mixes)
+	float m_fDisturb;			// 0-100: at 100 the lair moves (rule 10)
+	ref array<float> m_aDisturbBy = {0, 0, 0, 0, 0};	// by faction (RZ_EFaction), and [4] everyone else
+	int m_iMovedDay = -1;		// season day of its last lair move
+	float m_fWeakUntil;			// season days: the two weak days after a succession
+	bool m_bNoDayParty;			// the morning of a succession: the splinters are on the roads instead
+	bool m_bRestless;			// at Split at with no slot or no room
+	bool m_bSplitDue;			// splits at the next dusk
+	vector m_vSplitTo;
+	int m_iSplitHost = -1;		// the weak neighbour whose wood the daughter takes
+	int m_iMother = -1;
+	int m_iClan;				// clan id (0 none)
+	int m_iClanHold;			// season days both halves held 8 or more
+	ref array<ref RZ_FearPlace> m_aFear = {};
+	ref array<ref RZ_FearPlace> m_aFearGone = {};	// expired: no new one within 500 m until m_iUntil
+	ref array<ref RZ_TribeHabit> m_aHabits = {};
+	ref array<ref RZ_TribeMark> m_aMarks = {};
+	ref array<int> m_aWear = {};				// per trail, 0-10
+	ref array<int> m_aTrailsTonight = {};
+	ref array<vector> m_aDeadTonight = {};		// where its members died this night (fear, habits)
+	vector m_vDrift;			// the range's centre off the lair (vacuums, seasonal pull)
+	ref array<vector> m_aLoop = {};			// a nomad's lairs
+	int m_iLoopAt;
+	float m_fNextMove;			// season days: a nomad's next move
+	int m_iStarveNights;
+	int m_iBonds;				// pairs taken together at one kill site, among its young
+	float m_fLastTakenAt = -10000;	// the tribe clock
+	vector m_vLastTaken;
+	bool m_bClashDue;
+	bool m_bClash;				// the Clash at the lair, now
+	float m_fClashUntil;		// the tribe clock
+	bool m_bLateHome;			// an echo walks it home late (soldier 05:30, farmer by the fields at 06:00)
+	int m_iNoHuntToward = -1;	// a tribe it lost a border fight to...
+	int m_iNoHuntUntil;			// ...it doesn't hunt toward until this counted night
+	bool m_bShortNight;			// the night after a border fight: one trail
+	int m_iDisturbNoise;		// the last remembered noise that disturbed the lair
+
+	//------------------------------------------------------------------------------------------------
+	bool IsRover()
+	{
+		return m_eKind != RZ_ETribeKind.TRIBE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The range's centre: the lair, drifted (into a vacuum, toward people late in the season).
+	vector RangeCentre()
+	{
+		return m_vLair + m_vDrift;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its echo shows 3 season days into the alpha's lead (docs/INFECTED.md, Echoes).
+	bool Echo(RZ_EAlphaKind kind)
+	{
+		return m_bHasAlpha && m_eAlphaKind == kind && RZ_SeasonClock.DaysSince(m_fLedSince) >= 3;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The two weak season days after a succession: one trail, no flank, half a day party.
+	bool IsWeakDays()
+	{
+		return RZ_SeasonClock.Days() < m_fWeakUntil;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The strongest habit of a kind at 50 or more, or null.
+	RZ_TribeHabit StrongHabit(RZ_EHabit kind)
+	{
+		RZ_TribeHabit best;
+		foreach (RZ_TribeHabit h : m_aHabits)
+		{
+			if (h.m_eKind == kind && h.m_fStrength >= 50 && (!best || h.m_fStrength > best.m_fStrength))
+				best = h;
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An event in its alpha's history (6 kept, newest first).
+	void AddHistory(string line)
+	{
+		m_aHistory.InsertAt(line, 0);
+		while (m_aHistory.Count() > 6)
+		{
+			m_aHistory.Remove(m_aHistory.Count() - 1);
+		}
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Every member, from the parts (the alpha counts one).
@@ -335,6 +505,10 @@ class RZ_Tribe
 	//! The range for hunting tonight: x1.25 hungry, x1.5 desperate or worse.
 	float HuntRadius()
 	{
+		// A territorial tribe never hunts beyond its range
+		if (m_eTemper == RZ_ETemperament.TERRITORIAL)
+			return m_fRadius;
+
 		int band = Band();
 		if (band >= 3)
 			return m_fRadius * 1.5;
@@ -434,6 +608,87 @@ class RZ_TribeSave
 	int hunters;
 	int scouts;
 	int young;
+	// The life cycle
+	int kind;
+	float goalX;
+	float goalZ;
+	float roverUntil;
+	int fromTribe;
+	string alphaName;
+	int alphaKind;
+	ref array<string> history = {};
+	bool challenged;
+	int look;
+	float militaryShare;
+	float disturb;
+	ref array<float> disturbBy = {};
+	int movedDay;
+	float weakUntil;
+	bool restless;
+	int mother;
+	int clan;
+	int clanHold;
+	ref array<float> fearX = {};
+	ref array<float> fearZ = {};
+	ref array<int> fearUntil = {};
+	ref array<int> habitKind = {};
+	ref array<float> habitX = {};
+	ref array<float> habitZ = {};
+	ref array<float> habitHour = {};
+	ref array<float> habitStrength = {};
+	ref array<int> markPlayer = {};
+	ref array<int> markLife = {};
+	ref array<float> markStrength = {};
+	ref array<int> wear = {};
+	float driftX;
+	float driftZ;
+	ref array<float> loopX = {};
+	ref array<float> loopZ = {};
+	int loopAt;
+	float nextMove;
+	int starveNights;
+	int bonds;
+	int noHuntToward;
+	int noHuntUntil;
+}
+
+//------------------------------------------------------------------------------------------------
+//! Two bordering tribes (docs/INFECTED.md, Borders), in state.json.
+class RZ_BorderSave
+{
+	int a;
+	int b;
+	float offset;
+	float lastFight;
+	int reopenUntil;
+}
+
+//------------------------------------------------------------------------------------------------
+//! The life cycle's lists in state.json: burned land, vacuums, the taken in the open, abandoned
+//! lairs, towns gone dark, the displacement counts.
+class RZ_TribeLifeSave
+{
+	ref array<float> burnX = {};
+	ref array<float> burnZ = {};
+	ref array<float> burnUntil = {};
+	ref array<int> burnTrailUntil = {};
+	ref array<float> vacX = {};
+	ref array<float> vacZ = {};
+	ref array<float> vacUntil = {};
+	ref array<string> vacPlace = {};
+	ref array<float> openX = {};
+	ref array<float> openZ = {};
+	ref array<float> openDay = {};
+	ref array<string> openWho = {};
+	ref array<float> lairX = {};
+	ref array<float> lairZ = {};
+	ref array<float> lairUntil = {};
+	ref array<string> lairFinds = {};
+	ref array<float> darkSince = {};
+	ref array<int> displaced = {};
+	int lastTruckNight;
+	int lastSplitDay;
+	int lastNewDay;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -448,4 +703,8 @@ class RZ_TribesSave
 	ref array<float> lastInfection = {};
 	float tribeSamples;
 	float allSamples;
+	int countedNights;
+	ref array<ref RZ_TribeSave> rovers = {};
+	ref array<ref RZ_BorderSave> borders = {};
+	ref RZ_TribeLifeSave life;
 }

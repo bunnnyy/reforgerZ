@@ -23,8 +23,11 @@ and one way to end it: **research the cure.**
   locked door; the countryside's few walk somewhere, and a horde comes from a town's side. Bodies
   only near players, counted in a fixed budget, never spawned in your sight. The wild land belongs to
   **tribes**: packs with a lair, scouts on the ridges, two or three out by day, a call at dusk that
-  tells you how they are, and a hunt at night that flanks, stalks and rings you, breaks off when it
-  loses too many, and walks home at dawn. Our code moves them; the zombie mod fights.
+  tells you how they are, and a hunt at night that flanks, stalks, rings, flushes, baits or ambushes
+  you, breaks off when it loses too many, and walks home at dawn. They live: leaders age, are
+  challenged and die, guards fight for the call, packs split, quarrel over bridges, move when
+  disturbed, starve, form from towns gone dark, and remember where they died, where they fed and who
+  hurt them. Our code moves them; the zombie mod fights.
 - **Stealth**: stance, speed, light, weather and noise make you more or less visible. The
   infected near you see the most visible of you, lose a player who lies low, search where they
   last had them and give up; the HUD shows how visible you are.
@@ -104,8 +107,8 @@ The game scripts **compile without errors or warnings** against Arma Reforger 1.
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
 Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
-That's about 151,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 65 `VERIFY` markers left in the game
+That's about 157,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+was also checked against the base game's script source; the 66 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -136,9 +139,10 @@ things everywhere (phase 3: errands' core, the mission style's framework and the
 writers, [ERRANDS.md](docs/ERRANDS.md)); talk
 (phase 2: conversation trees, reputation's voice, the season mood and the voice bank,
 [DIALOGUE.md](docs/DIALOGUE.md)); the towns' crawlers, the loose ones, heat hordes from towns, the
-land grid, the tribes' daily life and hunts and the behaviour layer (tribes phases 1 and 2,
-[INFECTED.md](docs/INFECTED.md)). The tribes' life cycle (succession, borders, splits) and the
-people's side are next.
+land grid, the tribes' daily life and hunts, their life cycle (succession, borders, splits, lair
+moves, new tribes, memory), the behaviour layer and the crawlers' daily life (tribes phases 1 to 3,
+[INFECTED.md](docs/INFECTED.md)). The infected's people's side (the factions' words, skills, contracts
+and events) is next.
 
 ## Docs
 
@@ -150,7 +154,7 @@ people's side are next.
 | [DIALOGUE.md](docs/DIALOGUE.md) | Talking to people: the talk screen, conversation trees, checks, memory, the `.rzd` format and its tools |
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
-| [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes, and how they move and hunt |
+| [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes and their life cycle, borders, memory, who they are, how they move and hunt, the crawlers' life, the simulator's numbers |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards |
 | [QUESTLINES.md](docs/QUESTLINES.md) | Long questlines over many sessions, three per faction and two for the Long Table |
@@ -179,10 +183,11 @@ scripts/Game/ReforgerZ/
                  headlines, the season budget and the set-piece calendar
   Zombies/       spawner (any zombie mod's prefabs), the towns' crawlers, bodies and the agent
                  budget (roles, data parts, the sight rule, runtime groups), the tribes (seeds,
-                 the daily rhythm, hunts, scouts, their bodies), bite detection, stealth
+                 the daily rhythm, hunts, scouts, their bodies), their life cycle, borders and
+                 memory, bite detection, stealth
                  (visibility, the infected's senses, losing them)
     Behaviour/   the behaviour layer: Bacon's hooks, steering modes, senses, formations,
-                 hunt strategies, navigation, the hunter's lunge
+                 hunt strategies, navigation, the kinds' attacks, the crawlers' daily life
   Backgrounds/   backgrounds, personal goals, player profiles
   Factions/      reputation and its 16 names, quartermasters, shops and the shop screen's server
                  side, perks, services, hunter squads, bounties,
@@ -233,8 +238,8 @@ tools/pacing_sim.py
                  simulates a season's research, the lab and the stages for 2, 5 and 10 players
 tools/tribe_sim.py
                  simulates the infected tribes as data over a season on that pacing, on the
-                 measured wild land of Arland, Everon and Cain and a Chernarus-size map, 2, 5 and
-                 10 players
+                 code's rules and the measured wild land of Arland, Everon and Cain and a
+                 Chernarus-size map, 2, 5 and 10 players
 dialogue/        the conversations as .rzd text (leaders, wanderers, residents, posts, table)
                  and shipped.lock, the ids that have shipped
 tools/dialogue_pack.py, tools/dialogue_sim.py

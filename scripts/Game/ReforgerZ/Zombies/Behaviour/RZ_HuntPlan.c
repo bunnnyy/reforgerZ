@@ -1,8 +1,9 @@
 //! A tribe group's plan in the behaviour layer (docs/INFECTED.md, "How they move and hunt"): its
 //! owner's order (hold a ring, walk somewhere, go home), its senses (the notice meter, leads from
 //! shots, memory of the last-known spot), its formation and slots (spacing enforced, dry, off stuck
-//! marks), and its part in a hunt (RZ_HuntLink: rush, stalk, flank, encircle, give up). Each body's
-//! mode is switched here (release to Bacon, take back, wait below stairs, the unstick ladder).
+//! marks), and its part in a hunt (RZ_HuntLink: rush, stalk, flank, encircle, flush, bait, herd,
+//! ambush, give up with a hand-off). Each body's mode is switched here (release to Bacon, take
+//! back, wait below stairs, the unstick ladder).
 
 //------------------------------------------------------------------------------------------------
 enum RZ_EStrategy
@@ -11,7 +12,27 @@ enum RZ_EStrategy
 	RUSH,		// straight in, fanned out
 	STALK,		// shadow from cover, strike at a moment
 	PINCER,		// two groups to flank points either side, strike together
-	ENCIRCLE	// a ring with a gap, closing
+	ENCIRCLE,	// a ring with a gap, closing
+	FLUSH,		// one pushes in noisily, the rest wait on the far side
+	BAIT,		// the young go in loud, the hunters come up the target's back trail
+	HERD,		// a ring whose gap faces a crawler town: pressed toward its edge
+	AMBUSH		// one group lies still by a crossing or a habit place ahead
+}
+
+//------------------------------------------------------------------------------------------------
+//! What a hunt's owner knows about its target's ground, for the strategies that need it
+//! (docs/INFECTED.md, Hunt strategies). Built by the tribes (RZ_TribeBodies.Context).
+class RZ_HuntContext
+{
+	bool m_bHidden;				// in a wood or a building: flush
+	bool m_bYoung;				// the hunt has young with it: bait
+	int m_iHerdTown = -1;		// a crawler town within 500 m: herd
+	vector m_vHerdTown;
+	float m_fHerdRadius;
+	bool m_bAmbush;				// a crossing or a habit place within 300 m ahead: ambush
+	vector m_vAmbush;
+	bool m_bHabit;				// ...and it's a habit place (+2)
+	bool m_bNoFlank;			// the two weak days after a succession: no pincer, ring or herd
 }
 
 //------------------------------------------------------------------------------------------------
@@ -70,6 +91,14 @@ class RZ_HuntLink
 	bool m_bStrike;
 	bool m_bOver;
 	ref array<RZ_GroupPlan> m_aPlans = {};	// weak
+	// Flush, bait, herd, ambush
+	vector m_vFlushFrom;			// where the target was when the flush began
+	bool m_bFlushSet;
+	int m_iHerdTown = -1;
+	vector m_vHerdTown;
+	float m_fHerdRadius;
+	bool m_bHerdStirred;
+	vector m_vAmbush;
 
 	//------------------------------------------------------------------------------------------------
 	bool IsAlive()
@@ -100,6 +129,19 @@ class RZ_HuntLink
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The plan that is this hunt's element i, or null.
+	RZ_GroupPlan ElementPlan(int element)
+	{
+		foreach (RZ_GroupPlan p : m_aPlans)
+		{
+			if (p && p.GetLink() == this && p.GetElement() == element)
+				return p;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Every element of the hunt is in position.
 	bool AllSet()
 	{
@@ -115,9 +157,10 @@ class RZ_HuntLink
 	//------------------------------------------------------------------------------------------------
 	//! Picks a strategy by temperament (docs/INFECTED.md, Hunt strategies): a strategy whose needs
 	//! aren't met weighs 0, and the roll picks the top two 70/30. By day only rush, stalk and a
-	//! two-group pincer; a Rising alpha's tribe hunts with the cautious weights.
+	//! two-group pincer; a Rising alpha's tribe hunts with the cautious weights; in the weak days no
+	//! flank. A habit place ahead adds 2 to the ambush.
 	//! temper: RZ_ETemperament (0 bold, 1 cautious, 2 cunning, 3 territorial, 4 nomadic).
-	static RZ_EStrategy Choose(int temper, int groups, int bodies, bool day, bool rising)
+	static RZ_EStrategy Choose(int temper, int groups, int bodies, bool day, bool rising, RZ_HuntContext ctx = null)
 	{
 		RZ_Behaviour bh = RZ_Behaviour.Get();
 		if (!bh || !bh.GetSettings().m_bStrategies)
@@ -131,18 +174,44 @@ class RZ_HuntLink
 		array<float> stalk = {1, 3, 2, 1, 2};
 		array<float> pincer = {2, 1, 2, 3, 1};
 		array<float> ring = {3, 0.5, 1, 2, 1};
+		array<float> flush = {2, 1, 1, 2, 1};
+		array<float> bait = {0, 0, 3, 0, 1};
+		array<float> herd = {1, 1, 2, 0, 2};
+		array<float> ambush = {0, 2, 3, 2, 0};
 		t = Math.ClampInt(t, 0, 4);
-		array<float> w = {rush[t], stalk[t], pincer[t], ring[t]};
+		array<float> w = {rush[t], stalk[t], pincer[t], ring[t], flush[t], bait[t], herd[t], ambush[t]};
 		if (groups < 2)
 			w[2] = 0;
 
 		if (bodies < 5 || day)
 			w[3] = 0;
 
+		// Night-only, each needing its ground
+		if (day || !ctx || !ctx.m_bHidden || groups < 2)
+			w[4] = 0;
+
+		if (day || !ctx || !ctx.m_bYoung)
+			w[5] = 0;
+
+		if (day || !ctx || ctx.m_iHerdTown < 0 || bodies < 5)
+			w[6] = 0;
+
+		if (day || !ctx || !ctx.m_bAmbush)
+			w[7] = 0;
+		else if (ctx.m_bHabit)
+			w[7] = w[7] + 2;
+
+		if (ctx && ctx.m_bNoFlank)
+		{
+			w[2] = 0;
+			w[3] = 0;
+			w[6] = 0;
+		}
+
 		// The top two, 70/30
 		int best = -1;
 		int second = -1;
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 8; i++)
 		{
 			if (w[i] <= 0)
 				continue;
@@ -170,15 +239,42 @@ class RZ_HuntLink
 			case 1: return RZ_EStrategy.STALK;
 			case 2: return RZ_EStrategy.PINCER;
 			case 3: return RZ_EStrategy.ENCIRCLE;
+			case 4: return RZ_EStrategy.FLUSH;
+			case 5: return RZ_EStrategy.BAIT;
+			case 6: return RZ_EStrategy.HERD;
+			case 7: return RZ_EStrategy.AMBUSH;
 		}
 
 		return RZ_EStrategy.RUSH;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The ground a context gives this hunt (the herd's town and its gap, the ambush's place).
+	void Apply(RZ_HuntContext ctx)
+	{
+		if (!ctx)
+			return;
+
+		m_iHerdTown = ctx.m_iHerdTown;
+		m_vHerdTown = ctx.m_vHerdTown;
+		m_fHerdRadius = ctx.m_fHerdRadius;
+		m_vAmbush = ctx.m_vAmbush;
+		if (m_eStrategy == RZ_EStrategy.HERD)
+		{
+			vector gap = m_vHerdTown - m_vLastKnown;
+			gap[1] = 0;
+			if (gap.Length() > 1)
+			{
+				gap.Normalize();
+				m_vGap = gap;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A hunt on one player by these groups (a strategy picked unless one is given). Null with no
 	//! group or no layer.
-	static RZ_HuntLink Start(array<RZ_GroupPlan> plans, int playerId, RZ_EStrategy strategy, int temper, bool rising, bool day, bool relentless)
+	static RZ_HuntLink Start(array<RZ_GroupPlan> plans, int playerId, RZ_EStrategy strategy, int temper, bool rising, bool day, bool relentless, RZ_HuntContext ctx = null)
 	{
 		RZ_Behaviour bh = RZ_Behaviour.Get();
 		if (!bh || plans.IsEmpty())
@@ -192,9 +288,10 @@ class RZ_HuntLink
 
 		RZ_EStrategy chosen = strategy;
 		if (chosen == RZ_EStrategy.NONE)
-			chosen = Choose(temper, plans.Count(), bodies, day, rising);
+			chosen = Choose(temper, plans.Count(), bodies, day, rising, ctx);
 
 		RZ_HuntLink link = bh.NewLink(playerId, chosen, relentless, day);
+		link.Apply(ctx);
 		foreach (int i, RZ_GroupPlan p : plans)
 		{
 			p.JoinHunt(link, i, plans.Count());
@@ -230,6 +327,7 @@ class RZ_GroupPlan
 	int m_iTemper;
 	bool m_bRising;
 	IEntity m_KeepClear;			// weak: the alpha; this group's slots keep 8 m off it
+	float m_fHearMult = 1;			// its tribe's shots habit: it hears shots from 1.5 times as far
 
 	// The hunt
 	protected RZ_HuntLink m_Link;	// weak: owned by RZ_Behaviour
@@ -241,6 +339,8 @@ class RZ_GroupPlan
 	protected float m_fFreezeUntil;
 	protected bool m_bRoared;
 	protected float m_fSearchUntil;
+	protected float m_fSaidAt;
+	protected bool m_bAmbushSet;
 
 	// Senses
 	protected ref array<int> m_aMeterIds = {};
@@ -277,6 +377,7 @@ class RZ_GroupPlan
 	bool Arrived() { return m_bArrived; }
 	bool IsHunting() { return m_Link != null && !m_Link.m_bOver; }
 	RZ_EPlanOrder GetOrder() { return m_eOrder; }
+	int GetElement() { return m_iElement; }
 
 	//------------------------------------------------------------------------------------------------
 	int Living()
@@ -370,8 +471,64 @@ class RZ_GroupPlan
 		m_fHuntAt = Now();
 		m_bLeg2 = false;
 		m_bRoared = false;
+		m_bAmbushSet = false;
 		if (link.m_eStrategy == RZ_EStrategy.RUSH)
 			m_eHunt = RZ_EHuntState.STRIKE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hand-off (docs/INFECTED.md, Hunt strategies): another group of its tribe lost the target; this
+	//! one is nearer its last-known spot, so it walks to look there, primed to notice them. The same
+	//! target only: a hand-off never switches players.
+	void TakeHandOff(RZ_Behaviour bh, int playerId, vector lastKnown, vector heading)
+	{
+		if (m_Link)
+			return;
+
+		m_vLead = RZ_Util.GroundPos(lastKnown + heading * 20);
+		m_fLeadUntil = bh.Now() + 90;
+		SetMeter(playerId, Math.Max(Meter(playerId), 0.6));
+		for (int i = m_aGaveUpIds.Count() - 1; i >= 0; i--)
+		{
+			if (m_aGaveUpIds[i] == playerId)
+			{
+				m_aGaveUpIds.Remove(i);
+				m_aGaveUpUntil.Remove(i);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This group gives up: the nearest group of its tribe that's closer to the last-known spot, and
+	//! not hunting, takes the hand-off.
+	protected void HandOff(RZ_Behaviour bh, RZ_HuntLink link)
+	{
+		RZ_TrackedZombie me = Owner();
+		if (!me || me.m_iTribe < 0 || link.m_iTarget <= 0)
+			return;
+
+		float myDist = RZ_Util.DistXZ(m_vCentre, link.m_vLastKnown);
+		RZ_GroupPlan best;
+		float bestDist = myDist;
+		array<ref RZ_TrackedZombie> tracked = RZ_GameModeComponent.GetInstance().GetSpawner().GetTracked();
+		foreach (RZ_TrackedZombie z : tracked)
+		{
+			if (z == me || z.m_iTribe != me.m_iTribe || !z.m_Plan || !z.m_Plan.IsDriven() || z.m_Plan.IsHunting())
+				continue;
+
+			float d = RZ_Util.DistXZ(z.m_Plan.Centre(), link.m_vLastKnown);
+			if (d < bestDist && d < 600)
+			{
+				bestDist = d;
+				best = z.m_Plan;
+			}
+		}
+
+		if (!best)
+			return;
+
+		best.TakeHandOff(bh, link.m_iTarget, link.m_vLastKnown, link.m_vMoving);
+		bh.CountHandOff();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -748,7 +905,7 @@ class RZ_GroupPlan
 		if (m_bDeaf || m_Link || !leader)
 			return;
 
-		if (d > radius * bh.Kind(leader.m_eKind).m_fHearing)
+		if (d > radius * bh.Kind(leader.m_eKind).m_fHearing * m_fHearMult)
 			return;
 
 		m_vLead = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(at, 0, d * 0.15 + 2));
@@ -919,6 +1076,7 @@ class RZ_GroupPlan
 				if (link.CountPlans() <= 1)
 					link.m_bOver = true;
 
+				HandOff(bh, link);
 				LeaveHunt(true);
 				Order(bh);
 				return;
@@ -949,6 +1107,10 @@ class RZ_GroupPlan
 			case RZ_EStrategy.STALK: Stalk(bh, link, target, d); break;
 			case RZ_EStrategy.PINCER: Pincer(bh, link, target, d); break;
 			case RZ_EStrategy.ENCIRCLE: Encircle(bh, link, target, d); break;
+			case RZ_EStrategy.FLUSH: Flush(bh, link, target, d); break;
+			case RZ_EStrategy.BAIT: Bait(bh, link, target, d); break;
+			case RZ_EStrategy.HERD: Herd(bh, link, target, d); break;
+			case RZ_EStrategy.AMBUSH: Ambush(bh, link, target, d); break;
 			default: m_eHunt = RZ_EHuntState.STRIKE; break;
 		}
 
@@ -1137,6 +1299,167 @@ class RZ_GroupPlan
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Flush (a target in a wood or a building, 2 groups): the first pushes in noisily from its side,
+	//! the rest wait 40-60 m off on the far side; all strike when the target moves 8 m or breaks
+	//! cover, or after 90 s.
+	protected void Flush(RZ_Behaviour bh, RZ_HuntLink link, IEntity target, float d)
+	{
+		if (link.CountPlans() < 2)
+		{
+			Stalk(bh, link, target, d);
+			return;
+		}
+
+		float now = bh.Now();
+		if (!link.m_bFlushSet)
+		{
+			link.m_bFlushSet = true;
+			link.m_vFlushFrom = link.m_vLastKnown;
+		}
+
+		if (RZ_Util.DistXZ(link.m_vLastKnown, link.m_vFlushFrom) > 8 || now - m_fHuntAt > 90)
+		{
+			link.m_bStrike = true;
+			m_eHunt = RZ_EHuntState.STRIKE;
+			return;
+		}
+
+		RZ_GroupPlan pusher = link.ElementPlan(0);
+		if (m_iElement == 0 || !pusher)
+		{
+			// Noisy, straight in at a walk
+			if (now - m_fSaidAt > 6)
+			{
+				m_fSaidAt = now;
+				RZ_BodyState leader = Leader();
+				if (leader)
+					RZ_BaconBody.Say(leader.m_Body, "SOUND_IDLE");
+			}
+
+			vector toward = Dir(m_vCentre, link.m_vLastKnown);
+			m_vAnchor = RZ_Util.GroundPos(link.m_vLastKnown - toward * 10);
+			m_eFormation = RZ_EFormation.LINE;
+			SetWaypoint(RZ_EGait.WALKSTOP, m_vAnchor);
+			return;
+		}
+
+		vector farSide = Dir(pusher.Centre(), link.m_vLastKnown);
+		vector wait = RZ_Util.GroundPos(link.m_vLastKnown + farSide * Math.RandomFloat(40, 60));
+		if (m_eHunt == RZ_EHuntState.APPROACH && RZ_Util.DistXZ(m_vCentre, wait) < 20)
+			m_eHunt = RZ_EHuntState.SET;
+
+		m_vAnchor = wait;
+		m_eFormation = RZ_EFormation.LINE;
+		SetWaypoint(RZ_EGait.MARCH, wait);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bait (cunning, with young): the young go in loud (their own rush); the hunters come up the
+	//! target's back trail at a walk, quiet, and strike when it turns to the young, when the young are
+	//! in a fight with it, or after 90 s.
+	protected void Bait(RZ_Behaviour bh, RZ_HuntLink link, IEntity target, float d)
+	{
+		float now = bh.Now();
+		bool engaged = bh.EngagedNear(link.m_vLastKnown, 15);
+		bool turned = RZ_Behaviour.AngleOff(target, m_vCentre) > 100;
+		if (m_eHunt == RZ_EHuntState.APPROACH && (engaged || (turned && d < 60) || now - m_fHuntAt > 90))
+		{
+			link.m_bStrike = true;
+			m_eHunt = RZ_EHuntState.STRIKE;
+			return;
+		}
+
+		vector behind = link.m_vMoving;
+		if (behind.Length() < 0.5)
+			behind = RZ_Behaviour.Facing(target);
+
+		vector trail = RZ_Util.GroundPos(link.m_vLastKnown - behind * Math.Max(25, Math.Min(d, 60)));
+		m_vAnchor = trail;
+		m_eFormation = RZ_EFormation.FILE;
+		SetWaypoint(RZ_EGait.WALKSTOP, trail);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Herd (a crawler town within 500 m, 5+ bodies): a ring whose gap faces the town, closing; the
+	//! young press from the far side. Strike at the town's edge, at 35 m, or after 4 minutes; the town
+	//! is stirred (+20).
+	protected void Herd(RZ_Behaviour bh, RZ_HuntLink link, IEntity target, float d)
+	{
+		float now = bh.Now();
+		if (m_iElement == 0)
+		{
+			if (link.m_fArrivedAt < 0 && (d < link.m_fRing + 30 || now - m_fHuntAt > 60))
+				link.m_fArrivedAt = now;
+
+			if (link.m_fArrivedAt > 0)
+				link.m_fRing = Math.Max(30, link.m_fRing - 0.7);
+
+			bool atEdge = RZ_Util.DistXZ(link.m_vLastKnown, link.m_vHerdTown) <= link.m_fHerdRadius + 20;
+			if (atEdge || link.m_fRing <= 35 || now - m_fHuntAt > 240)
+			{
+				link.m_bStrike = true;
+				if (!link.m_bHerdStirred)
+				{
+					link.m_bHerdStirred = true;
+					RZ_Crawlers crawlers = RZ_GameModeComponent.GetInstance().GetSpawner().GetCrawlers();
+					if (crawlers && crawlers.IsEnabled())
+						crawlers.AddStir(link.m_vHerdTown, 20);
+				}
+			}
+		}
+
+		m_vAnchor = link.m_vLastKnown;
+		m_eFormation = RZ_EFormation.RING;
+		SetWaypoint(RZ_EGait.WALKSTOP, link.m_vLastKnown);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ambush (a crossing or a habit place within 300 m ahead): the first group lies still 20-40 m off
+	//! it, behind terrain or trees, quiet; it strikes when the target passes within 30 m, and after 5
+	//! minutes it stalks instead. Other groups stalk.
+	protected void Ambush(RZ_Behaviour bh, RZ_HuntLink link, IEntity target, float d)
+	{
+		if (m_iElement != 0)
+		{
+			Stalk(bh, link, target, d);
+			return;
+		}
+
+		float now = bh.Now();
+		if (now - m_fHuntAt > 300)
+		{
+			link.m_eStrategy = RZ_EStrategy.STALK;
+			return;
+		}
+
+		if (m_bAmbushSet && d <= 30)
+		{
+			link.m_bStrike = true;
+			m_eHunt = RZ_EHuntState.STRIKE;
+			return;
+		}
+
+		vector away = Dir(link.m_vLastKnown, link.m_vAmbush);
+		vector lie = CoverPoint(bh, link.m_vAmbush, away, Math.RandomFloat(20, 40));
+		if (!m_bAmbushSet && RZ_Util.DistXZ(m_vCentre, lie) < 15)
+		{
+			m_bAmbushSet = true;
+			m_eHunt = RZ_EHuntState.SET;
+		}
+
+		if (m_bAmbushSet)
+			m_fFreezeUntil = now + 2;
+
+		m_vAnchor = lie;
+		m_eFormation = RZ_EFormation.CLUSTER;
+		RZ_EGait gait = RZ_EGait.MARCH;
+		if (m_bAmbushSet)
+			gait = RZ_EGait.WALKSTOP;
+
+		SetWaypoint(gait, lie);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static vector Dir(vector from, vector to)
 	{
 		vector d = to - from;
@@ -1198,7 +1521,8 @@ class RZ_GroupPlan
 		Slots(bh, slots);
 		bool freeze = now < m_fFreezeUntil;
 		bool striking = m_Link && m_eHunt == RZ_EHuntState.STRIKE && now - m_fHuntAt >= 1;
-		bool stalking = m_Link && m_eHunt == RZ_EHuntState.APPROACH && m_Link.m_eStrategy == RZ_EStrategy.STALK;
+		bool quiet = m_Link && (m_Link.m_eStrategy == RZ_EStrategy.STALK || m_Link.m_eStrategy == RZ_EStrategy.BAIT || m_Link.m_eStrategy == RZ_EStrategy.AMBUSH);
+		bool stalking = m_Link && m_eHunt != RZ_EHuntState.STRIKE && quiet;
 		IEntity target;
 		if (m_Link)
 			target = m_Link.m_TargetEnt;
@@ -1455,6 +1779,8 @@ class RZ_GroupPlan
 		bh.TryBurst(b);
 		int foeId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(foe);
 		bh.TryLunge(b, foe, foeId);
+		bh.TryLeap(b, foe);
+		bh.TryCharge(b, foe, foeId, d);
 
 		// Stairs: they don't climb them reliably (lab B11), so they wait below
 		float up = fp[1] - pos[1];
@@ -1681,7 +2007,7 @@ class RZ_GroupPlan
 	{
 		float fi = i;
 		float fn = Math.Max(1, n);
-		if (m_Link && m_Link.m_eStrategy == RZ_EStrategy.ENCIRCLE)
+		if (m_Link && (m_Link.m_eStrategy == RZ_EStrategy.ENCIRCLE || m_Link.m_eStrategy == RZ_EStrategy.HERD))
 		{
 			int elements = Math.Max(1, m_iElements);
 			float share = 300.0 / elements;

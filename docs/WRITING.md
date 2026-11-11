@@ -21,6 +21,7 @@ and the epilogue's variants are designed in [designs/TONE.md](../designs/TONE.md
 - [Dark humour, not edginess](#dark-humour-not-edginess)
 - [Template rules](#template-rules)
 - [Names in shared text](#names-in-shared-text)
+- [Writing the infected](#writing-the-infected)
 - [Checking text](#checking-text)
 
 ## Tone
@@ -367,6 +368,26 @@ Headlines name no players. These exceptions stand:
 - the Turned Player event's title (its point is whose gear and whose friend);
 - the Long Table's headlines that name online family members ([REPUTATION.md](REPUTATION.md#the-long-table));
 - players' own radio station presets (they sign their own).
+
+## Writing the infected
+
+The setting is in [LORE.md](LORE.md#what-the-infected-do); these are the rules for their lines (the
+call, tracks, the life cycle's lines and headlines, [INFECTED.md](INFECTED.md)).
+- **Never explain how it works.** Never "alpha", "tribe" or "crawler" (the lint checks): the speaker's
+  word, and always the place (*"the quarry by Morton"*), so players can tell four names mean one pack.
+- **Show them through ordinary things:** calls at dusk, birds gone quiet in a wood, crows going up off
+  a hedge at noon, a gate swinging, tracks across a field all going one way, a path worn through the
+  bracken, two voices at each other, one call where there used to be two.
+- **Kill sites and lairs are understated:** a bicycle on its side, a rucksack with its zip open, one
+  shoe, somebody's things at the back of a culvert. No gore beyond what a note would say.
+- **Inspired by "alpha infected" films, with nothing copied:** no named film characters, no signature
+  kills, no trophies, no rituals with bodies. A pack is just people who still go out together at dusk.
+- **The young are someone.** Use their names gently; a player's character is described in public text
+  unless the server allows the name. Leaders' names are seeded: no pronouns for them (the template
+  rules), so a line uses the name again.
+- Only the Red Hand jokes about them. Halcyon never says "him" or "her". The Haven never puts "walked
+  out" and "taken" in the same sentence. At the dusk meal the Haven reads its dead, and at the same
+  hour the leaders call theirs: writers can use that, but never say it.
 
 ## Checking text
 

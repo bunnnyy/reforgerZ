@@ -50,6 +50,8 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
 | The infected tribes, phase 2: seeds on every slot (the column, the site tribe), ranges, hunting grounds, trails and scout posts from the land grid; the daily rhythm (day parties of a fifth in twos and threes with hop and hold, hungry ones to the town-edge fields; the dusk call as one status line per player; the set-out, testing the wire when hungry; the dawn walk and count); hunts by placement (the young ahead, flankers, the core held back) with the night's commitment, the long call and the hide rule; hunger per counted night, the taken with attribution and Your dead run's caps, the ones who ran, wanderers taken and noises heard as data, post-feed sleep, weakened tribes; kill sites in feeding order, the vigil, the alpha's body with saved health, samples with the town specials scaled; the scout rule on stealth's sight radius and scouts' packs; the Hunter's tracks; tribes stir towns and leave kill sites; `/tribes hunt` and `/tribes call` | [Tribes](INFECTED.md#tribes) |
 | The infected behaviour layer: Bacon hooks (slots, stance, intake and share gates, the climb gate, mute), blind steering with release at reach or on contact and take-back, per-member slots in formations with the 3 m minimum enforced, the notice meter on stealth's visibility, shot leads, rush, stalk (along cover from the land grid), flanking pairs and encircle by temperament, give up; the water line check, stairs as wait below, the unstick ladder, speed caps per kind, LOD bands; the hunter's lunge and bite. Built only on the lab's B1-B20 verdicts | [How they move and hunt](INFECTED.md#how-they-move-and-hunt) |
+| The infected tribes, phase 3, the life cycle: successions with the guard fight, splinters and two weak days; lone ones; ageing, challenges and the Clash, death of age; young coming of age and the guard refilled; new tribes from a town gone dark, from the taken and round a lone one, with the kept slot and its room; splits, restless tribes and clans; borders with calling contests, old and reopened borders, fights and Border Nights (heard, then found), absorbing and merging; disturbance, lair moves, displacement with its caps, nomads' loops, abandoned lairs; vacuums; the season's pull and Winter's barns; burned land from the fire system; starvation into a town's crawlers; supply trucks taken as data; fear places, habits, marks, worn trails and bonds; leaders' names, echoes, looks that mix and histories in the headlines. Every rule checked against its sign; `tools/tribe_sim.py` re-run on the code's rules and tuned (hunger 3 a counted night, the commitment's cap at half, Split at 24) | [The life cycle](INFECTED.md#the-life-cycle) |
+| The behaviour layer's rest: flush, bait, herd and ambush, the hand-off when a group gives up; the young's leap and the alpha's charge (with its stumble) as the lab allows them; the crawlers' daily life (lying up asleep by day, waking with a groan, herds at dusk and night that give way to a pack) | [How they move and hunt](INFECTED.md#how-they-move-and-hunt) |
 | The land grid (on with Zombies > Tribes): water, height, trees, buildings, roads and inferred bridges in 250 m squares, ridges, valleys, forests, fields, lair candidates, wild land and no-lair overlays, read once and cached, tribe slots at 1 per 5 km² with an override; measured on Arland, Everon and Cain (`tools/land_survey/`) | [The land](INFECTED.md#the-land) |
 | World interactions: loose loot in houses (rolled as data, put out on furniture and floors only near players, taken with vanilla's Pick up, refilled after an hour; keys, letters and mission items lie loose too), bodies looted with the vanilla inventory (what they carry goes into the body, or beside it; no search prompt), searching car boots, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars (only ever found: two or three missing parts, a wrench or toolkit to fit them, long loud hotwiring that can fail, rare keys; the tyre and planks are carryable items), crafting, traps, generators, fire (a thrown molotov, or a full fuel can in your hands at the doorway), water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
@@ -112,11 +114,13 @@ The build-review fixes are done. Everything below is approved. The order of the 
   ([DESIGN.md](DESIGN.md#the-shared-engine), [REPUTATION.md](REPUTATION.md#reputations)), with one
   body budget shared with the tribes' agent budget; the cure's 90% hook (`IsCureFinale`,
   `AddFinaleResearch`; [Cure research](DESIGN.md#cure-research-and-the-seasons-end)), phase 1 of the
-  tribes (the towns' crawlers, the land grid in use, the agent budget and the plumbing) and its
-  phase 2 (the tribes and the behaviour layer, [INFECTED.md](INFECTED.md)), one held waypoint per
-  group, and `tools/tribe_sim.py`,
-  which simulates the tribes as data over a season at 2, 5 and 10 players on the wild land the land
-  survey measured, and prints the numbers it tuned against the design.
+  tribes (the towns' crawlers, the land grid in use, the agent budget and the plumbing), its
+  phase 2 (the tribes and the behaviour layer) and its phase 3 (the life cycle, the behaviour layer's
+  other strategies and the crawlers' life, [INFECTED.md](INFECTED.md)), one held waypoint per group,
+  and `tools/tribe_sim.py`, which simulates the tribes as data over a season at 2, 5 and 10 players on
+  the wild land the land survey measured, on the code's rules ([its numbers](INFECTED.md#the-simulator)).
+  Phase 0's other proposed retunes (seeds on every unkept slot, the ones who ran at 6 points, weakened
+  tribes posting no scouts) still wait for the author: `python3 tools/tribe_sim.py --proposed`.
 
 ### Content on the world facts
 - Switch the rest of the content to the world facts ([DESIGN.md](DESIGN.md#world-facts), the
@@ -195,6 +199,13 @@ In this order, because later ones depend on earlier ones:
     notice rate match Bacon's ladder (a walker at 100 m in about 20 s; then re-run
     `tools/tribe_sim.py` with it), and can a new player name the place a call came from after one
     evening?
+    **The life cycle** (phase 3, the checklist's "The tribes' life cycle"): does a succession read
+    (the shrieks, splinters on the roads, a new voice)? Do borders show in the calls, and does a Border
+    Night read as a fight that happened? Do the flush, bait, herd and ambush read as tactics, and is the
+    alpha's charge fair (heard first, a stumble to punish)? Do sleeping crawlers stay in their groups
+    and wake in time (the new VERIFY), and do night herds read as slow herds? Watch the status log's
+    hunger, starvation and tribes over a few real days against [the simulator's
+    numbers](INFECTED.md#the-simulator).
 15. **Road posts and camps:** do posts go up on real roads ahead of players, and do the search,
     the toll, running and surrender fire at the right distances? Is the timed grudge enough to
     make the crew shoot, and does a surrender's stand-down stop them? Is a Fire Mission's horde

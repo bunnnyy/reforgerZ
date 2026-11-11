@@ -111,6 +111,11 @@ class RZ_WorldWriters
 	//! Shells landed at pos (RZ_Artillery: the Fire Mission perk and contract). cause: who called them.
 	static void Shell(vector pos, string cause)
 	{
+		// The tribes: a lair under the shells is disturbed (docs/INFECTED.md, Lair moves)
+		RZ_GameModeComponent gmTribes = RZ_GameModeComponent.GetInstance();
+		if (gmTribes && gmTribes.GetTribes())
+			gmTribes.GetTribes().OnShell(pos);
+
 		RZ_WorldMemory mem = Memory();
 		if (!mem)
 			return;

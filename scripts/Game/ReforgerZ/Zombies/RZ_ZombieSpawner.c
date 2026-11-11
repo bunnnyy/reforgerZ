@@ -95,6 +95,11 @@ class RZ_TrackedZombie
 	float m_fSiegeSince;
 	float m_fSiegeLast;
 	vector m_vSiegeAt;
+	// Crawler life (Zombies/Behaviour/RZ_CrawlerLife.c)
+	bool m_bAsleep;			// lying up with its AI off
+	float m_fWokeAt;
+	bool m_bHerdSlots;		// its members walk to herd slots
+	bool m_bCapped;			// the crawler speed cap is on its members
 
 	//------------------------------------------------------------------------------------------------
 	//! Living agents for the budget: members once read, else an estimate.

@@ -1204,6 +1204,9 @@ class RZ_Traps
 		}
 
 		SpawnFire(pos);
+		if (m_GM.GetTribes())
+			m_GM.GetTribes().OnFire(pos, playerId);
+
 		if (!m_Settings.m_bFire)
 			return;
 
@@ -1294,6 +1297,9 @@ class RZ_Traps
 		}
 
 		RZ_TownMemory.ReportBuildingBurned(pos);
+		if (m_GM.GetTribes())
+			m_GM.GetTribes().OnFire(pos, playerId);
+
 		RZ_Settlement s = m_GM.GetSettlement(m_GM.FindNearestSettlement(pos));
 		if (s && RZ_Util.DistXZ(s.m_vCenter, pos) <= s.m_fRadius + 100)
 			s.AddInfection(-m_Settings.m_fBurnInfectionDrop);

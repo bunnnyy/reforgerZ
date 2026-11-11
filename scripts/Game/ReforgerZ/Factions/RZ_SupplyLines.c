@@ -1244,7 +1244,7 @@ class RZ_SupplyLines
 			lostAt = t.m_Vehicle.GetOrigin();
 
 		int lostHow = TRUCK_LATE;
-		if (why == "destroyed")
+		if (why == "destroyed" || why == "taken")
 			lostHow = TRUCK_DESTROYED;
 		else if (why == "robbed")
 			lostHow = TRUCK_ROBBED;
@@ -1299,6 +1299,41 @@ class RZ_SupplyLines
 			m_GM.NotifyPlayer(ids[i], RZ_Factions.GetName(t.m_eFaction), RZ_FactionVoice.TruckLost(t.m_eFaction, t.m_sDestName));
 			RZ_Guidance.Report(ids[i], "shortage", t.m_sDestName);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tribes take a truck as data (docs/INFECTED.md, Trucks taken as data): a truck on the road
+	//! within radius of pos, with no player within playerFree of it, is lost the way any truck is (the
+	//! shortage where it was going), its crew and the truck gone. False if none. Out: who drove it and
+	//! where.
+	bool TakeByInfected(vector pos, float radius, float playerFree, out string driver, out vector at)
+	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (RZ_SupplyTruck t : m_aTrucks)
+		{
+			if (t.m_bDone || t.m_bFailed || !t.m_bBoarded || t.m_bCrewDead || !t.m_Vehicle)
+				continue;
+
+			vector p = t.m_Vehicle.GetOrigin();
+			if (RZ_Util.DistXZ(p, pos) > radius || RZ_Util.NearestDistance(p, players) < playerFree)
+				continue;
+
+			at = p;
+			driver = string.Format("the driver of the %1 truck for %2", RZ_Factions.GetShortName(t.m_eFaction), t.m_sDestName);
+			Fail(t, "taken");
+			RZ_Util.DeleteUnit(t.m_Crew);
+			SCR_EntityHelper.DeleteEntityAndChildren(t.m_Vehicle);
+			t.m_Vehicle = null;
+			t.m_Crew = null;
+			t.m_bDone = true;
+			t.m_fDoneAt = t.m_fAge;
+			RZ_Log.Info(string.Format("Supply: the %1 truck to %2 was taken by the infected at night, out of sight.", RZ_Factions.GetShortName(t.m_eFaction), t.m_sDestName));
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

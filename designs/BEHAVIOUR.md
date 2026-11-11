@@ -1,6 +1,6 @@
 # The infected behaviour layer
 
-**Status: designed; the phase 2 parts are built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): the hooks, modes, the five kinds' profiles, sight, formations, rush, stalk, pincer, encircle and give up, navigation (water, stairs, the climb gate, the ladder), LOD and the hunter's lunge. What's left here is designed. Approved by the author on 2026-11-11 (the behaviour ideas). Lab tests B1–B20 have run; their verdicts are in each lever below and in the zombie lab section of [docs/WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md).
+**Status: designed; most of it is built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): the hooks, modes, the five kinds' profiles, sight, formations, every hunt strategy (rush, stalk, pincer, encircle, flush, bait, herd, ambush, give up and the hand-off), navigation (water, stairs, the climb gate, the ladder), LOD, the hunter's lunge, the young's leap and the alpha's charge as the lab allows them, and the crawlers' daily life. What's left here is designed. Approved by the author on 2026-11-11 (the behaviour ideas). Lab tests B1–B20 have run; their verdicts are in each lever below and in the zombie lab section of [docs/WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md).
 
 
 An addendum to the approved tribes design ([INFECTED.md](INFECTED.md)). It uses phase 0's measurements
@@ -225,8 +225,7 @@ it pulls them along your trail. *"It's following the blood."*
   day or 300 m at night get a lead (±20 m). A group passes a shriek on at most once every 30 s, so it
   never chains across the map. The built Aftermath screamers keep their heat; they're the town
   version.
-- **Hand-off.** A group that loses you passes its last-known spot and heading to the nearest group of
-  its tribe that is closer to that spot, which then makes its own approach.
+- **Hand-off:** built ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)).
 
 ### 5.5 Line of sight without seeing through walls
 
@@ -269,21 +268,10 @@ break a weak door. That trade-off is one of the decisions for the author (sectio
 
 ## 8. Hunt strategies
 
-**Built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): the state machine (approach, set, strike, search, give up), a
-moment, Rush, Stalk, Pincer, Encircle and Give up, the temperament weights for those four, the day's
-limits and the Rising alpha's cautious weights. Still designed:
-
-| Strategy | Needs | Approach | Strike | Timeout |
-|---|---|---|---|---|
-| **Flush** | Target hidden in bush, a wood or a building | 1–2 bodies push in noisily from one side; the rest wait 40–60 m off on the far side | When the target moves or runs out | 90 s |
-| **Bait** | A young plus a hunter group. Cunning only | The young goes noisily at the front (released early). The hunters come blind up the target's back trail | When the target engages the bait, or turns to it | 90 s |
-| **Herd** | A crawler town within 500 m | An encircle whose gap faces the town. The young press from the far side | At the town's edge; the town is stirred (+20) | 4 min |
-| **Ambush** | A crossing or a habit place within 300 m ahead of the target's heading | One group holds still 20–40 m off it, behind terrain or trees | When the target passes within 30 m | 5 min, then stalk |
-| **Hand-off** | Another group of the tribe closer to the last-known spot | Passes last-known and heading | (theirs) | — |
-
-Their weights (bold, cautious, cunning, territorial, nomadic): Flush 2/1/1/2/1, Bait 0/0/3/0/1, Herd
-1/1/2/0/2, Ambush 0/2/3/2/0; a habit place within 300 m adds 2 to Ambush. Also designed: a regroup
-60–100 m back in cover once per target, at most 3 elements and 2 strategies near one player cluster.
+**Built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): the state machine, a moment, Rush, Stalk, Pincer, Encircle, Flush,
+Bait, Herd, Ambush, Give up and the hand-off, with the temperament weights and their needs. Still
+designed: a regroup 60–100 m back in cover once per target, and at most 3 elements and 2 strategies
+near one player cluster.
 
 ---
 
@@ -304,8 +292,10 @@ Their weights (bold, cautious, cunning, territorial, nomadic): Flush 2/1/1/2/1, 
 
 ## 10. Attacks
 
-**Built:** the hunter's lunge and bite, the attribution of a hit, and the per-player limits
-([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)). The rest below is designed.
+**Built:** the hunter's lunge and bite, the young's leap as the lab allows it (a sprint burst into the
+swing, no stagger), the alpha's charge with its stumble (no knockdown), the attribution of a hit, and
+the per-player limits ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)). The rest below is designed: the ankle grab, and the
+client effects (hold, stagger, knockdown) after a client test.
 
 **The rule.** Bacon's melee stays the hit and its damage stays the damage. Each kind adds one special
 move, made from animations Bacon already uses (melee, jump, crouch, sprint, the heavy's contact) and
@@ -347,27 +337,12 @@ hold, stagger and knockdown turn off, and bleeding and bite chance stay. It's a 
 
 ## 11. Crawler daily life
 
-The approved crawler placement (rests, streets and fields by time of day; drift to noise; stir;
-scavenging) gets bodies that behave it.
-
-| When | What they do | Levers |
-|---|---|---|
-| **Day** | Lying up in doorways and back rooms: forced prone or crouched at their building rest, AI asleep (L14) beyond 40 m of a player. They wake (stand, AI on) on a lead within their hearing, or a player within 40 m. **B12:** AI off and on works (awake in 0.2 s, moving in 6.5 s), but a prone stance change didn't hold; the pose needs `ForceStance` (untested) | L6, L14 |
-| **Waking** | Up over 2–4 s (forced stance up), a groan, then walk-stop toward the lead. Waking takes time, and that's the player's warning | L6, L15 |
-| **Dusk** | Standing in yards and doorways, a herd blob round the rest with a 6 m loiter radius | L2 |
-| **Night** | Herds drift the streets: an anchor walks a slow loop between the town's squares (0.5 m/s average), each crawler in its blob slot. Drift to remembered noises (approved), at walk-stop | L1–L4 |
-| **Stirred** | Herds out into the streets, anchors moving toward the last noise | Approved stir |
-| **After a hunt** | 2–4 walk out to the kill site and stand round it until dawn (approved scavenging) | L2 |
-| **A tribe passing** | Herds give way: anchors move to the side away from the trail (approved) | L1 |
-| **In a fight** | ENGAGE within 12 m. Capped at 1.6–2.2 m/s. Ankle grab. Bacon's swing | Sections 3, 10 |
-
-**What players learn.** Crawlers are slow, they're many, they hear well and see badly. A town by day
-is a street of figures lying in doorways. Walk past quietly and they stay down. Shoot, and the whole
-street gets up.
-
-**Honest note.** The speed cap makes crawlers slow whatever the prefab is (B7: a cap of 0.2 gives
-0.85 m/s). But the animation's movement state stays "run" under a cap, so they probably run in slow
-motion. Until a client confirms how it looks, the approved design's slow prefab stays in the stack.
+**Built** ([docs/INFECTED.md](../docs/INFECTED.md#crawler-life)): lying up with the AI off beyond 40 m
+(L14), waking with a groan, the dusk herd round the doorway, the night herds after an anchor's loop,
+stirred anchors toward the noise, giving way to a pack, and the crawler speed cap as a setting (off
+until a client has seen it). Still designed: a forced prone pose (`ForceStance` untested; a prone
+stance change didn't hold in B12), the crawler steered into a fight within 12 m, and the ankle grab
+(section 10).
 
 ---
 
@@ -390,13 +365,14 @@ motion. Until a client confirms how it looks, the approved design's slow prefab 
 
 ## 13. Settings
 
-**Built** as **Zombies > Behaviour** (docs/WORKBENCH_SETUP.md, Settings objects). Still designed, with
-their parts: Order gap and Orders per 5 s (fixed at 5 s a group), Weak door words, Sleep lying crawlers.
+**Built** as **Zombies > Behaviour** (docs/WORKBENCH_SETUP.md, Settings objects), Sleep lying crawlers
+among them. Still designed, with their parts: Order gap and Orders per 5 s (fixed at 5 s a group), Weak
+door words.
 
 ## 14. Performance budget
 
-**Built** within the lab's measured budget ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)). Still designed: crawlers and the
-resting ring asleep with their AI off beyond 40 m (L14).
+**Built** within the lab's measured budget ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)), crawlers asleep beyond 40 m
+among it. Still designed: the resting ring asleep with its AI off (L14).
 
 ---
 
@@ -451,10 +427,10 @@ ReforgerZ warnings), and the runtime test where the phase says so. Docs go in th
 | **0b. The behaviour spike** | Before phase 1 | **Done 2026-11-11**: B1–B20 in `tools/zombie_lab/` (B14's client part waits for a play-test). Lab scripts only, nothing in `scripts/Game/ReforgerZ` | Lab: about 4,900 |
 | **1a. Hooks and modes** | Phase 1, with the plumbing | `Zombies/Behaviour/RZ_BaconHooks.c` (the modded Bacon character and nodes: L2, L6, L8, L9, L11, L12, L15; the lab's `RZL_Hooks.c` is the tested starting point). `RZ_Behaviour.c`: modes, the control rule (releases set the movement type), kind profiles, individual variation, gait levers, LOD bands through `SetPermanentLOD`. Stealth told about modes | 900 |
 | **1b. Navigation** | Phase 1 | `RZ_Unstick.c`: stuck checks, the ladder, stuck marks. The climb limit. Doors: find another way, weak doors. Water checks on slots. Land survey edge points | 500 |
-| **1c. Crawler life** | Phase 1, with crawlers | Lying up, waking, herd blobs, night drift loops, scavenging bodies, giving way, the crawler's speed cap | 350 |
+| **1c. Crawler life** (built, with tribes phase 3) | Phase 1, with crawlers | Lying up, waking, herd blobs, night drift loops, scavenging bodies, giving way, the crawler's speed cap | 350 |
 | **2a. Senses and formations** (built, but blood, shrieks, hand-offs and the full hearing table) | Phase 2 slice | `RZ_BehaviourSenses.c` (meters, hearing table, blood scent, memory, shrieks, line-of-sight cache). `RZ_Formations.c` (slots, spread, fan, flank points with cover, stalk shadow) | 750 |
 | **2b. The first strategies** (built, but the alpha's charge) | Phase 2 slice | `RZ_HuntPlan.c`: the state machine, Rush, Stalk, Pincer, Give up. The hunter lunge and the alpha charge (server effects only: bleed, the miss stumble). Play-test the slice (the approved list, plus a stalk and a pincer) | 700 |
-| **2c. Everything else** | Phase 2, all tribes | Encircle, Flush, Bait, Herd, Ambush, Hand-off; temperament weights; reactions table. `RZ_PlayerEffectsComponent` and the hold, stagger and knockdown after the client test. Re-run `tools/tribe_sim.py` with our sight model | 900 |
+| **2c. Everything else** (built, with tribes phase 3, but the reactions table and the client component) | Phase 2, all tribes | Encircle, Flush, Bait, Herd, Ambush, Hand-off; temperament weights; reactions table. `RZ_PlayerEffectsComponent` and the hold, stagger and knockdown after the client test. Re-run `tools/tribe_sim.py` with our sight model | 900 |
 
 Total about 4,100 lines of game code on top of the approved estimate. The lab scripts (about 4,900
 lines with the hooks) are written.

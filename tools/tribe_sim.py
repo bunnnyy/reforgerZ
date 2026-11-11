@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""ReforgerZ tribe ecology simulator (the infected tribes design, phase 0).
+"""ReforgerZ tribe ecology simulator (the infected tribes, on the rules the code runs).
 
     python3 tools/tribe_sim.py                    # Arland, Everon, Cain, Chernarus-size; 2, 5 and 10 players
+    python3 tools/tribe_sim.py --maps arland everon chernarus --slots 2   # the three map sizes (Arland needs Slots)
+    python3 tools/tribe_sim.py --proposed         # with phase 0's proposed retunes (waiting for the author)
     python3 tools/tribe_sim.py --maps arland --slots 1   # Arland with the Slots override (no tribe without it)
     python3 tools/tribe_sim.py --legacy           # the same on the old 10-day pacing
     python3 tools/tribe_sim.py --maps everon --players 5 --runs 100
@@ -108,7 +110,7 @@ DESIGN = {
     "breakup_under": 4,         # under this (never in its first 3 season days) it breaks up
     "never_break_days": 3,
     "first_wave": 8,            # bodies in a hunt's first wave (x the cluster share / 28)
-    "commit_cap": 0,            # a hunt never sends in what could cost it more than this share of who set out (0: no cap)
+    "commit_cap": 0.0,          # a hunt never sends in what could cost it more than this share of who set out (0: no cap)
     "weak_quiet": 0,            # 1: a weakened tribe posts no scouts (0: its scouts call, with no pack)
     "cull_min": 0,              # Bastion's cull contracts only name a tribe of this many or more
     "presence": 14,             # one tribe at one cluster
@@ -178,6 +180,25 @@ TUNED_WHY = {
                        "under the night's in every row, inside the author's 'at most a quarter'"),
 }
 TUNED = {k: v[0] for k, v in TUNED_WHY.items()}
+
+# What the game's code runs (scripts/Game/ReforgerZ/Zombies: RZ_Tribes, RZ_TribeLife, RZ_TribeBorders),
+# where it differs from the design: the default. Of phase 0's proposals the code took the slot divisor
+# and the day party's share and groups; the rest wait for the author (--proposed runs them).
+BUILT_WHY = {
+    "slot_km2": (5.0, "Zombies > Tribes > Wild km2 per slot (phase 0's land survey)"),
+    "day_share": (0.2, "Zombies > Tribes > Day party share"),
+    "day_group": ((2, 3), "Zombies > Tribes > Day party group"),
+    "hunger_night": (3, "Zombies > Tribes > Hunger a counted night (phase 3's run: at 5, Everon's tribes were hungry "
+                        "60-70% of the time and starved 8-13 times a season; 3 gives 36-38%, about 3)"),
+    "hunger_decline": (5, "2 above Hunger a counted night"),
+    "commit_cap": (0.5, "the night's commitment as coded: no wave (and no core) goes in that could take the night's "
+                        "losses past half of who set out (without it the worst first hunt lost 64-75%, and 1-2 tribes a "
+                        "season were wiped)"),
+    "dark_days": (3, "a town gone dark founds after 3 season days (phase 3's run: at 5, Everon sat at 3 tribes)"),
+    "dark_km": (2.0, "...with no range within 2 km (at 3 km most towns are near some range once a few tribes exist)"),
+    "split_at": (24, "Zombies > Tribes > Split at (phase 3's run: a clan in about half of Everon seasons at 2-5 players; 26: a quarter at 5)"),
+}
+BUILT = {k: v[0] for k, v in BUILT_WHY.items()}
 
 # ----------------------------------------------------------------------------------- assumptions
 # Not design numbers: how players and Bacon's infected behave. P and trail_r are measured (the zombie
@@ -1955,7 +1976,8 @@ def main():
     ap.add_argument("--runs", type=int, default=40)
     ap.add_argument("--seed", type=int, default=11)
     ap.add_argument("--legacy", action="store_true", help="the old 10-day pacing (pacing_sim --legacy)")
-    ap.add_argument("--design", action="store_true", help="the design's numbers, without this tool's tuning")
+    ap.add_argument("--design", action="store_true", help="the design's numbers, as written")
+    ap.add_argument("--proposed", action="store_true", help="phase 0's proposed retunes on top of the code's numbers")
     ap.add_argument("--wild", nargs="+", default=[], metavar="MAP=KM2", help="wild land per map, e.g. everon=31")
     ap.add_argument("--slots", type=int, default=None, help="the Slots override (0 = from the land)")
     ap.add_argument("--set", nargs="+", default=[], metavar="NAME=VALUE", help="change a design number or an assumption")
@@ -1964,8 +1986,13 @@ def main():
     args = ap.parse_args()
 
     P = dict(DESIGN)
+    base = dict(DESIGN)
     if not args.design:
+        P.update(BUILT)
+        base.update(BUILT)
+    if args.proposed:
         P.update(TUNED)
+        base.update(TUNED)
     A = dict(ASSUME)
     if args.list:
         for name, value in sorted(P.items()):
@@ -1992,12 +2019,16 @@ def main():
     pace = "the old 10-day pacing" if args.legacy else "the 45-day pacing"
     print("Tribe ecology on %s, %d runs a row (seed %d)." % (pace, args.runs, args.seed))
     if args.design:
-        print("Numbers: the design's, untuned.")
+        print("Numbers: the design's, as written.")
     else:
-        print("Numbers: the design's, with this tool's tuning (--design for the design's own):")
+        print("Numbers: the code's (--design for the design's own):")
+        for name, (value, why) in BUILT_WHY.items():
+            print("  %-15s %-7s (design %s): %s" % (name, value, DESIGN[name], why))
+    if args.proposed:
+        print("With phase 0's proposed retunes (waiting for the author):")
         for name, (value, why) in TUNED_WHY.items():
             print("  %-15s %-7s (design %s): %s" % (name, value, DESIGN[name], why))
-    changed = [n for n in P if P[n] != (TUNED.get(n, DESIGN[n]) if not args.design else DESIGN[n])]
+    changed = [n for n in P if P[n] != base[n]]
     changed += [n for n in A if A[n] != ASSUME[n]]
     if changed:
         print("Changed with --set: " + ", ".join("%s=%s" % (n, P.get(n, A.get(n))) for n in changed))

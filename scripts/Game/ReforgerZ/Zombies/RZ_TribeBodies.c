@@ -65,6 +65,23 @@ class RZ_TribeBodies
 
 			NightTargets(t, ids, players);
 		}
+
+		// Lone ones and splinters: bodies near players as a tribe's, no hunts of their own
+		foreach (RZ_Tribe r : m_Tribes.GetRovers())
+		{
+			foreach (RZ_TribePart rp : r.m_aParts)
+			{
+				if (rp.HasBody())
+				{
+					Orders(r, rp);
+					Noticed(r, rp, players);
+				}
+				else if (!players.IsEmpty())
+				{
+					TrySpawn(r, rp, players);
+				}
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -221,7 +238,7 @@ class RZ_TribeBodies
 			return;
 
 		RZ_ZombieSettings zs = spawner.GetSettings();
-		RZ_TrackedZombie z = spawner.SpawnTribeUnit(pos, m_Tribes.PrefabsFor(p.m_eKind, zs), m_Tribes.YoungPrefabs(zs), p.m_iCount, p.m_iYoung, p.Role(), t.m_iId, p.BodyKind());
+		RZ_TrackedZombie z = spawner.SpawnTribeUnit(pos, m_Tribes.PrefabsForTribe(t, p.m_eKind, zs), m_Tribes.PrefabsForTribe(t, RZ_ETribePart.YOUNG, zs), p.m_iCount, p.m_iYoung, p.Role(), t.m_iId, p.BodyKind());
 		if (!z)
 			return;
 
@@ -238,6 +255,7 @@ class RZ_TribeBodies
 		plan.m_bRising = t.Stage() == 0;
 		plan.m_bDay = !night;
 		plan.m_bSenses = p.m_eKind != RZ_ETribePart.SCOUT;
+		plan.m_fHearMult = m_Tribes.GetWays().HearingMult(t, p);
 		z.m_Plan = plan;
 		if (p.m_eKind == RZ_ETribePart.ALPHA && t.m_fAlphaHealth < 1)
 			SetHealth(RZ_Tribe.FirstMember(z.m_Entity), t.m_fAlphaHealth);
@@ -472,6 +490,17 @@ class RZ_TribeBodies
 		if (p.m_eKind == RZ_ETribePart.GUARD)
 			plan.m_KeepClear = t.AlphaBody();
 
+		// The Clash: the ring stands 20-40 m round the lair while the two meet at its front
+		if (t.m_bClash && !p.m_bOut && p.m_eKind != RZ_ETribePart.SCOUT)
+		{
+			if (p.IsCore())
+				plan.OrderHold(t.m_vLair, 0, 6);
+			else
+				plan.OrderHold(t.m_vLair, 20, 40);
+
+			return;
+		}
+
 		// Feeding: in order round the kill site (docs/INFECTED.md, Group behaviour)
 		if (t.m_fFeedUntil > now && p.m_eKind != RZ_ETribePart.SCOUT && RZ_Util.DistXZ(p.m_vPos, t.m_vFeedAt) < 400)
 		{
@@ -537,6 +566,17 @@ class RZ_TribeBodies
 	protected void LairRing(RZ_GroupPlan plan, RZ_TribePart p, RZ_Tribe t)
 	{
 		plan.m_bDeaf = m_Tribes.GetPhase() == RZ_ETribePhase.DAY;
+		// A soldier's tribe (its echo): a guard stands at the lair's edge at 20:30, like a night watch
+		float h = RZ_GameTime.GetHour();
+		if (p.m_eKind == RZ_ETribePart.GUARD && t.Echo(RZ_EAlphaKind.SOLDIER) && h >= 20.5 && h < 21.5)
+		{
+			int deg = t.m_iSeed % 360;
+			float a = deg;
+			vector edge = t.m_vLair + Vector(Math.Sin(a * Math.DEG2RAD), 0, Math.Cos(a * Math.DEG2RAD)) * 30;
+			plan.OrderHold(RZ_Util.GroundPos(edge), 0, 3);
+			return;
+		}
+
 		switch (p.m_eKind)
 		{
 			case RZ_ETribePart.ALPHA: plan.OrderHold(t.m_vLair, 0, 3); return;
@@ -599,6 +639,14 @@ class RZ_TribeBodies
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(id);
 		if (!ent || Gentle(ent.GetOrigin(), 50))
 			return;
+
+		// A lone one or a splinter fights alone, as its temperament says
+		if (t.IsRover())
+		{
+			array<RZ_GroupPlan> alone = {plan};
+			RZ_HuntLink.Start(alone, id, RZ_EStrategy.NONE, t.m_eTemper, false, true, false);
+			return;
+		}
 
 		RZ_ETribePhase phase = m_Tribes.GetPhase();
 		if (phase == RZ_ETribePhase.NIGHT && p.m_bOut)
@@ -684,6 +732,8 @@ class RZ_TribeBodies
 		// The first wave: up to 3 young and hunter groups up to 8 (less when the server binds)
 		int share = m_GM.GetSpawner().GetBudget().GetShare();
 		int cap = Math.Max(3, RZ_Util.RoundToInt(8.0 * share / 28));
+		// No wave goes in that could take the night's losses past half of who set out
+		cap = Math.Min(cap, Math.Max(2, hunt.m_iSetOut / 2 - t.m_iLostTonight));
 		int used = 0;
 		int groups = 0;
 		RZ_TribePart young = t.FindPart(RZ_ETribePart.YOUNG);
@@ -708,7 +758,8 @@ class RZ_TribeBodies
 			groups++;
 		}
 
-		hunt.m_eStrategy = RZ_HuntLink.Choose(t.m_eTemper, groups, used, false, t.Stage() == 0);
+		hunt.m_Context = Context(t, ent, young != null && young.m_iTarget == playerId);
+		hunt.m_eStrategy = RZ_HuntLink.Choose(t.m_eTemper, groups, used, false, t.Stage() == 0, hunt.m_Context);
 		// The core, held back until the first wave is down to 2 (a bold alpha comes at once)
 		foreach (RZ_TribePart core : t.m_aParts)
 		{
@@ -716,6 +767,9 @@ class RZ_TribeBodies
 				continue;
 
 			if (t.m_eTemper == RZ_ETemperament.CAUTIOUS && t.Band() < 2)
+				continue;
+
+			if (used + core.m_iCount > hunt.m_iSetOut / 2)
 				continue;
 
 			core.m_bHeldBack = t.m_eTemper != RZ_ETemperament.BOLD;
@@ -816,7 +870,81 @@ class RZ_TribeBodies
 		}
 
 		hunt.m_iFlankers = 0;
-		hunt.m_Hunters = RZ_HuntLink.Start(one, p.m_iTarget, hunt.m_eStrategy, t.m_eTemper, false, false, true);
+		hunt.m_Hunters = RZ_HuntLink.Start(one, p.m_iTarget, hunt.m_eStrategy, t.m_eTemper, false, false, true, hunt.m_Context);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The target's ground for the strategies (docs/INFECTED.md, Hunt strategies): in a wood or a
+	//! building (flush), the young in the hunt (bait), a crawler town within 500 m (herd), a crossing
+	//! or one of its habit places within 300 m ahead (ambush); and the weak days (no flank).
+	RZ_HuntContext Context(RZ_Tribe t, IEntity target, bool hasYoung)
+	{
+		RZ_HuntContext ctx = new RZ_HuntContext();
+		ctx.m_bYoung = hasYoung;
+		ctx.m_bNoFlank = t.IsWeakDays();
+		if (!target || !m_Tribes.GetSettings().m_bLifeCycle)
+			return ctx;
+
+		vector at = target.GetOrigin();
+		RZ_Land land = m_GM.GetLand();
+		int idx = land.CellAt(at);
+		if (idx >= 0 && land.GetTreeClass(idx) == RZ_Land.TREES_FOREST)
+			ctx.m_bHidden = true;
+
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(at, 6, buildings, 1);
+		if (!buildings.IsEmpty())
+			ctx.m_bHidden = true;
+
+		RZ_Crawlers crawlers = m_GM.GetSpawner().GetCrawlers();
+		int town = m_GM.FindNearestSettlement(at);
+		RZ_Settlement s = m_GM.GetSettlement(town);
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		if (s && crawlers && crawlers.IsEnabled() && s.m_fInfection >= 20 && !(facts && facts.IsLivedIn(town)) && RZ_Util.DistXZ(s.m_vCenter, at) <= s.m_fRadius + 500)
+		{
+			ctx.m_iHerdTown = town;
+			ctx.m_vHerdTown = s.m_vCenter;
+			ctx.m_fHerdRadius = s.m_fRadius;
+		}
+
+		vector ahead = RZ_Behaviour.Facing(target);
+		for (int c = 0; c < land.GetCrossingCount(); c++)
+		{
+			vector cp = land.GetCrossing(c);
+			if (Ahead(at, ahead, cp))
+			{
+				ctx.m_bAmbush = true;
+				ctx.m_vAmbush = cp;
+				break;
+			}
+		}
+
+		foreach (RZ_TribeHabit hb : t.m_aHabits)
+		{
+			if (hb.m_fStrength >= 50 && Ahead(at, ahead, hb.m_vPos))
+			{
+				ctx.m_bAmbush = true;
+				ctx.m_bHabit = true;
+				ctx.m_vAmbush = hb.m_vPos;
+				break;
+			}
+		}
+
+		return ctx;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! pos is within 300 m of at and within 60 degrees of heading.
+	protected static bool Ahead(vector at, vector heading, vector pos)
+	{
+		vector d = pos - at;
+		d[1] = 0;
+		float len = d.Length();
+		if (len > 300 || len < 20)
+			return false;
+
+		d.Normalize();
+		return vector.Dot(d, heading) >= 0.5;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -929,6 +1057,9 @@ class RZ_TribeBodies
 			else
 			{
 				RZ_TribePart more = NearestFree(t, at);
+				if (more && hunt.m_iLost + more.m_iCount > hunt.m_iSetOut / 2)
+					more = null;
+
 				if (more)
 				{
 					hunt.m_iWaves++;
@@ -1031,10 +1162,19 @@ class RZ_TribeBodies
 			return;
 
 		RZ_HeatMap heat = m_GM.GetHeat();
+		RZ_TribeWays ways = m_Tribes.GetWays();
+		// A character it knows (its mark), inside its range, comes first; its fear places still win
+		foreach (int k, IEntity mp : players)
+		{
+			vector mat = mp.GetOrigin();
+			if (ways.Knows(t, ids[k], mat) && !ways.FearAvoids(t, mat) && StartHunt(t, ids[k], false))
+				return;
+		}
+
 		foreach (int i, IEntity p : players)
 		{
 			vector at = p.GetOrigin();
-			if (RZ_Util.DistXZ(at, t.m_vLair) <= t.HuntRadius() && heat.GetHeat(at) >= 30)
+			if (RZ_Util.DistXZ(at, t.RangeCentre()) <= t.HuntRadius() && heat.GetHeat(at) >= 30)
 			{
 				if (StartHunt(t, ids[i], false))
 					return;
@@ -1092,6 +1232,10 @@ class RZ_TribeBodies
 					bool hunter = bg && bg.m_sId == "hunter";
 					if (hunter)
 						radius = radius * 0.75;
+
+					// A character this tribe knows is seen from 1.5 times as far
+					if (m_Tribes.GetWays().Knows(t, id, pl.GetOrigin()))
+						radius = radius * 1.5;
 
 					bool inSight = d <= radius && !RZ_InfectedBodies.TerrainBlocks(sp, pl.GetOrigin());
 					if (inSight && d <= 80 && bh)

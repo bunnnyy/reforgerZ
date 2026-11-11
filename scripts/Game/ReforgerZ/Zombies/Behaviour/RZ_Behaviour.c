@@ -67,6 +67,15 @@ class RZ_BehaviourSettings
 	[Attribute("10", desc: "Special move gap (s): at most one special move lands on one player in this long, from all the infected together")]
 	float m_fSpecialMoveGap;
 
+	[Attribute("1", desc: "Crawler life: a town's crawlers lie up by day (asleep beyond 40 m of a player with Sleep lying crawlers on), wake to a player or a noise near them, stand in herds round their doorways at dusk and drift the streets in slow herds at night, giving way to a pack passing through. Off: Bacon's own (with the placement, drift and stir that are built)")]
+	bool m_bCrawlerLife;
+
+	[Attribute("1", desc: "Sleep lying crawlers: a crawler group lying up by day with no player within 40 m has its AI switched off, and back on when a player or a noise comes near (lab B12: awake in 0.2 s, moving in 6.5 s). Fewer active AI, but a sleeping body doesn't turn until it wakes")]
+	bool m_bSleepLying;
+
+	[Attribute("0", desc: "Crawler speed cap: a fraction of a body's sprint speed for crawlers (0.4 = about 1.8 m/s, 0.5 about 2.2). 0 = Bacon's own speed. Lab B7: the cap works, but the body probably runs in slow motion; set it once a client has seen how it looks")]
+	float m_fCrawlerSpeedCap;
+
 	[Attribute("1.4", desc: "Climb limit (m of grab height) for the young, hunters and scouts; the guard 0.2 less; alphas never climb. Lab B8: a 1.2 m limit refused a 1.39 m fence every time, and a tall rail fence is climbed at its low rail")]
 	float m_fClimbLimit;
 
@@ -154,6 +163,10 @@ class RZ_BodyState
 	float m_fLungeReady;
 	float m_fLungeAt = -100;
 	float m_fBurstAt;
+	float m_fLeapReady;
+	float m_fChargeReady;
+	float m_fChargeUntil = -1;		// charging until (the alpha)
+	float m_fStumbleUntil = -1;		// a missed charge: capped low until
 }
 
 //------------------------------------------------------------------------------------------------
@@ -192,6 +205,12 @@ class RZ_Behaviour
 	protected int m_iUnsticks;
 	protected int m_iMovesLanded;
 	protected int m_iHuntsStarted;
+	protected int m_iHandOffs;
+	protected int m_iLeaps;
+	protected int m_iCharges;
+	protected int m_iStumbles;
+	protected ref map<int, float> m_mChargedAt = new map<int, float>();
+	protected ref RZ_CrawlerLife m_Crawlers;
 
 	static const float CONTACT_BLIND = 3;		// any player this close releases a body, sight or not
 	static const float SHOT_CONTACT = 30;		// an unsuppressed shot this close releases it
@@ -215,6 +234,7 @@ class RZ_Behaviour
 		s_Instance = this;
 		BuildKinds();
 		ParseLodBands();
+		m_Crawlers = new RZ_CrawlerLife(gm, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -255,7 +275,7 @@ class RZ_Behaviour
 	protected void BuildKinds()
 	{
 		m_aKinds.Clear();
-		// CRAWLER: not driven yet; its numbers are kept for the planned crawler life
+		// CRAWLER: not steered (crawler life only sets its herd slots, its sleep and its cap)
 		RZ_KindProfile crawler = new RZ_KindProfile();
 		crawler.m_fWalkCap = 0.24;
 		crawler.m_fMarchCap = 0.45;
@@ -435,6 +455,8 @@ class RZ_Behaviour
 
 			z.m_Plan.Tick(this, z, ids, players);
 		}
+
+		m_Crawlers.Tick(players);
 
 		if (m_Settings.m_bDebugLog)
 		{
@@ -990,10 +1012,164 @@ class RZ_Behaviour
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The young's leap, as the lab allows it (B14: a scripted jump goes up, not forward): a young
+	//! running at 3 m/s or more with its target 3-6 m ahead (within 25 degrees) sprints the last of it
+	//! into Bacon's swing. 15 s apart per young. The stagger needs a client and waits.
+	void TryLeap(RZ_BodyState b, IEntity target)
+	{
+		if (!m_Settings.m_bOwnAttacks || b.m_eKind != RZ_EBodyKind.YOUNG || !target || m_fNow < b.m_fLeapReady)
+			return;
+
+		vector pos = b.m_Body.GetOrigin();
+		vector to = target.GetOrigin() - pos;
+		to[1] = 0;
+		float d = to.Length();
+		if (d < 3 || d > 6 || !b.m_Body.GetPhysics())
+			return;
+
+		vector vel = b.m_Body.GetPhysics().GetVelocity();
+		vel[1] = 0;
+		float speed = vel.Length();
+		if (speed < 3)
+			return;
+
+		vel.Normalize();
+		to.Normalize();
+		if (Math.Acos(Math.Clamp(vector.Dot(vel, to), -1, 1)) * Math.RAD2DEG > 25)
+			return;
+
+		RZ_Guidance guide = m_GM.GetGuidance();
+		if (guide && guide.GetDensityMult(target.GetOrigin(), 5) < 1)
+			return;
+
+		b.m_fLeapReady = m_fNow + 15;
+		m_iLeaps++;
+		Sprint(b.m_Body, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The alpha's charge, as the lab allows it (B7: the sprint holds when set every 0.25 s; the
+	//! knockdown needs a client and waits): its target 12-30 m away on foot, in sight, and never with
+	//! 3 or more other infected within 10 m of them; a roar, then a straight sprint of up to 4 s. If
+	//! it doesn't get within 1.6 m it overruns and stumbles (capped low 2.5 s): that's the window to
+	//! hurt it. 30 s apart per alpha and per player; never in the gentle start.
+	void TryCharge(RZ_BodyState b, IEntity target, int targetId, float d)
+	{
+		if (b.m_eKind != RZ_EBodyKind.ALPHA)
+			return;
+
+		// A charge running, or its stumble
+		if (b.m_fChargeUntil > 0)
+		{
+			if (d <= 1.6)
+			{
+				b.m_fChargeUntil = -1;
+				return;
+			}
+
+			if (m_fNow >= b.m_fChargeUntil)
+			{
+				b.m_fChargeUntil = -1;
+				b.m_fStumbleUntil = m_fNow + 2.5;
+				m_iStumbles++;
+				SetCap(b, 0.2);
+			}
+
+			return;
+		}
+
+		if (b.m_fStumbleUntil > 0)
+		{
+			if (m_fNow >= b.m_fStumbleUntil)
+			{
+				b.m_fStumbleUntil = -1;
+				SetCap(b, 1);
+				WantMove(b.m_Body, EMovementType.RUN);
+			}
+
+			return;
+		}
+
+		if (!m_Settings.m_bOwnAttacks || !target || m_fNow < b.m_fChargeReady || d < 12 || d > 30 || RZ_Util.IsInVehicle(target))
+			return;
+
+		float last;
+		if (m_mChargedAt.Find(targetId, last) && m_fNow - last < 30)
+			return;
+
+		RZ_Guidance guide = m_GM.GetGuidance();
+		if (guide && guide.GetDensityMult(target.GetOrigin(), 5) < 1)
+			return;
+
+		// Never into a crowd: 3 or more others within 10 m of the player
+		if (m_GM.GetSpawner().CountZombiesNear(target.GetOrigin(), 10, 3) >= 3)
+			return;
+
+		if (!LineOfSight(b.m_Body, target))
+			return;
+
+		b.m_fChargeReady = m_fNow + 30;
+		b.m_fChargeUntil = m_fNow + 4;
+		m_mChargedAt.Set(targetId, m_fNow);
+		m_iCharges++;
+		RZ_BaconBody.Say(b.m_Body, "SOUND_TARGET");
+		Sprint(b.m_Body, 4);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A bonded young (docs/INFECTED.md, Bonds): its other half was put down, so it runs reckless:
+	//! released at once with a long sprint. False if the group has no young body the layer drives.
+	bool Reckless(RZ_TrackedZombie z, vector at)
+	{
+		if (!IsOn() || !z || !z.m_Plan || !z.m_Plan.IsDriven())
+			return false;
+
+		foreach (RZ_BodyState b : z.m_Plan.GetBodies())
+		{
+			if (!b.m_Body || b.m_eKind != RZ_EBodyKind.YOUNG || RZ_Util.DistXZ(b.m_Body.GetOrigin(), at) > 120)
+				continue;
+
+			Release(b);
+			Sprint(b.m_Body, 4);
+			b.m_fBurstAt = m_fNow + 4;
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A body Bacon is fighting with within radius of pos (bait: the young have the target busy).
+	bool EngagedNear(vector pos, float radius)
+	{
+		array<ref RZ_TrackedZombie> tracked = m_GM.GetSpawner().GetTracked();
+		foreach (RZ_TrackedZombie z : tracked)
+		{
+			if (!z.m_Plan || RZ_Util.DistXZ(z.m_vLastPos, pos) > radius + 60)
+				continue;
+
+			foreach (RZ_BodyState b : z.m_Plan.GetBodies())
+			{
+				if (b.m_Body && b.m_eMode == RZ_EBodyMode.ENGAGE && RZ_Util.DistXZ(b.m_Body.GetOrigin(), pos) <= radius)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void CountHandOff()
+	{
+		m_iHandOffs++;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A player fired (the game mode): steered groups get a lead (170 m x the kind, suppressed 30 m),
 	//! and a steered body within 30 m of an unsuppressed shot is released at once.
 	void OnShot(int playerId, vector at, bool suppressed)
 	{
+		m_Crawlers.OnShot(at, suppressed);
 		if (!IsOn())
 			return;
 
@@ -1054,7 +1230,8 @@ class RZ_Behaviour
 		}
 
 		string text = string.Format("behaviour: steer %1, engage %2, recover %3, by waypoint %4; hunts %5 (started %6)", steer, engage, recover, undriven, m_aLinks.Count(), m_iHuntsStarted);
-		text += string.Format(", releases %1, take-backs %2, unsticks %3, moves landed %4", m_iReleases, m_iTakeBacks, m_iUnsticks, m_iMovesLanded);
+		text += string.Format(", releases %1, take-backs %2, unsticks %3, moves landed %4, hand-offs %5, leaps %6, charges %7 (stumbles %8)", m_iReleases, m_iTakeBacks, m_iUnsticks, m_iMovesLanded, m_iHandOffs, m_iLeaps, m_iCharges, m_iStumbles);
+		text += " | " + m_Crawlers.StatusText();
 		return text;
 	}
 

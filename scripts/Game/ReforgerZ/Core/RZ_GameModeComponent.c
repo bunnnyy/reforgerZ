@@ -1615,6 +1615,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// A shot gives you away at once (docs/DESIGN.md, Stealth), and closes a talk or a note
 		m_Stealth.OnPlayerShot(playerID, suppressed);
 		m_Behaviour.OnShot(playerID, shooter.GetOrigin(), suppressed);
+		if (!suppressed)
+			m_Tribes.OnShot(shooter.GetOrigin());
 		m_ScreenGuard.OnShot(playerID);
 
 		// House rules and wanderers who were shot at

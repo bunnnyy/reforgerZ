@@ -488,6 +488,103 @@ are, from them or from the narrator. The horror is in ordinary things: the extra
 the names, the jars labelled by the day and not by what's in them. Other people may joke (the Red
 Hand says "pork"); the writing never does.
 
+## What the infected do
+
+The setting behind the infected. How they work in the game is in [INFECTED.md](INFECTED.md); how
+they're written is in [WRITING.md](WRITING.md#writing-the-infected). The docs and the code call the slow ones
+crawlers, the packs tribes and their leaders alphas; the game never does.
+
+### What is true
+
+This is for the author. The game never says all of it.
+
+It spreads by bite, and the bitten turn. How someone turns decides what they become:
+
+| How they turned | What they become | Why |
+|---|---|---|
+| Lying still: in bed with the fever, in a cellar, in a locked bathroom, in a car with the doors shut | **One of the slow ones.** Swollen, in the town where it turned, in the house or the street next to it | The infection builds whatever the body was doing when it took. Lying still, it builds weight. They drift to noise because noise was always people |
+| Running: bitten on a road, caught in a field, walked out to the edge of town at dusk, or got up and ran when the fever broke | **One of a pack.** Fast and lean, and never far from others | Running, it builds legs and lungs, and something in them wants a lead to follow |
+| Running, early, and kept feeding | **A leader.** Big and heavy, slower to tire than to anger | It gets bigger every week it leads and feeds. It calls at dusk, and the ones in earshot come to it |
+
+That one fact explains the rest:
+
+| What players see | Why |
+|---|---|
+| Towns full of slow ones, the wild full of fast ones | The same sickness, taking two kinds of people |
+| A pack gets bigger next to a town that's going quiet | Not everyone who turned in a town turned lying down. The ones who ran went where the calling was |
+| A few of them out by day, in twos and threes | The young and the hungry can't lie still all day. They walk the paths the pack walks at night, and come back before the call |
+| The dusk call | The leader calls its people in before the hunt. A pack in earshot answers from its own ridge |
+| The call changes | Hungry ones call long. Fed ones sleep. An old one's voice goes ragged. After a death there are many voices and no lead |
+| Borders | Two calls that answer each other mark where one pack's land ends. Sound carries badly over water and down a valley, so rivers and valley floors are borders, and bridges are fought over |
+| The same trails every night | They go where they found people before |
+| The dawn walk home | Home is wherever the leader lies up |
+| The young are erratic | They're new. Some still go toward the houses they lived in |
+| The vigil | When the call stops, they wait by it |
+| Succession | The next strongest starts calling. The rest decide whether to follow |
+| Splits | Twenty-five can't all hear one voice, so somebody at the far end starts calling |
+| Fear of a place | They don't go back where a lot of them died, for a while |
+| One long call in the night | The leader calling them off |
+| The slow ones come out after a hunt | There was a lot of noise first, and something is left |
+| Nothing near the line | The snipers shoot whatever walks into it. *"Even they don't go near the line."* |
+
+### Nothing is born
+
+No breeding, and nothing from outside. Every infected was somebody inside the Zone: a resident, a
+soldier, a driver, a volunteer, a Haven runner, a player's character.
+- A pack grows only from people: those it takes, and those who ran when their town went quiet. So a
+  pack is a map of where people went.
+- A nest of the slow ones (Burn the Nest, Specimen from the Nest) is where a town's slow ones lie up
+  thickest, breathing in time. The Silent Village's *"It hums. You can hear it in your teeth."* is a
+  nest.
+
+### Echoes
+
+A pack keeps a little of whoever leads it, and nobody explains it.
+- A pack led by a soldier sets out on the 17:30 shift change. At 20:30 one of its guard stands at the
+  lair's edge like a night watch.
+- When a farmer takes over, the pack starts coming home at first light the long way round, by the
+  fields.
+- The pack of the Day 2 column still walks toward the line at dawn, and stops short of it.
+
+### The site's own
+
+The oldest pack in the Zone ranges round the closed site in the hills. Who its leader was is a canon
+key the lab never says (`tribe.site.who`). Dr Wolff stays exactly as The Three Weeks has her: one
+turned researcher, alone in the store. The driver's *"she stayed because she wanted to"* still reads
+either way.
+
+### Ordinary people, small stories
+
+- **The column.** Not everyone Sedlak turned round on Day 2 made it back, and the first pack was made
+  on that road. On an island with no road out, the north road ends at the water: the column waited on
+  the slipway, and the loudspeaker was on a boat.
+- **Bastion's lost posts** don't empty. Their men are still on the roster, the post still answers for
+  them at the roll, and they still keep the shift change.
+- **A runner's bicycle** lies in the ditch on the Levie road, its back wheel still turning.
+- **The young come home.** Sometimes they stand at the edge of town at dusk and look at the door with
+  the bear on it.
+- **A town going quiet.** *"Half of Levie went quiet this week. Not all of them stayed."*
+
+### What people say
+
+Players only ever get guesses, and nobody is marked right. Every line names the place, so players can
+tell four names mean one pack. The factions' own words for them are planned in the game
+([designs/INFECTED.md](../designs/INFECTED.md#people)); as people:
+
+| Who | How they see them |
+|---|---|
+| Halcyon | Numbered packs and an "index" it wants alive, because the tissue gets better with age. Its notebooks name the behaviour, never the cause |
+| The Haven | The slow ones stayed home; the quick ones went with whoever called. It uses a leader's name when someone knew him |
+| Bastion | Contacts, counted and culled near its posts, and what it pushes away is "not our sector" |
+| The Red Hand | Every crew's got a boss. The boss is whoever's got something on the rest. Same as them |
+| The Long Table | *"The neighbours came past on Tuesday. We stayed in."* |
+
+**Hard edges, always said sideways:** the Haven walks people to the edge of town at dusk, and a pack
+has learned the hour; Bastion's culls push the packs into Haven country; a Red Hand crew keeps one pack
+fat between its camp and Bastion, and nobody says what with; Halcyon asks people not to kill its tagged
+leaders, and says sorry afterwards; the tracks round the Long Table's farm come up to the old wall and
+turn back, and nobody says why; and your dead run with the pack that took them.
+
 ## Who's in charge
 
 Every place a faction holds has someone in charge, with a name, a past and opinions:

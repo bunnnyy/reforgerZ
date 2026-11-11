@@ -1,8 +1,9 @@
 # Infected: tribes and crawlers
 
-**Status: designed; phases 1 and 2 are built** ([docs/INFECTED.md](../docs/INFECTED.md)): crawlers, the
-land, bodies and the budget, and the tribes' daily life and hunts. What's left here is designed (the
-life cycle, people and content, the great alpha and signs). Approved by the author on 2026-11-11.
+**Status: designed; phases 1, 2 and 3 are built** ([docs/INFECTED.md](../docs/INFECTED.md)): crawlers, the
+land, bodies and the budget, the tribes' daily life and hunts, and their life cycle. What's left here is
+designed: people and content (phase 4), the great alpha and signs (phase 5), and the few life-cycle
+rules still waiting for a sign. Approved by the author on 2026-11-11.
 
 ## What changed in review
 
@@ -182,122 +183,11 @@ Your own dead character may run with one.
 
 ## What the infected do (lore)
 
-A new LORE.md section, **"What the infected do"**, goes after The Long Table. The mechanics stay in
-`docs/INFECTED.md`.
-
-**What is true** (for the author; the game never says all of it)
-
-It spreads by bite, and the bitten turn. How someone turns decides what they become:
-
-| How they turned | What they become | Why |
-|---|---|---|
-| Lying still: in bed with the fever, in a cellar, in a locked bathroom, in a car with the doors shut | **A crawler.** Slow and swollen, in the town where it turned, in the house or the street next to it | The infection builds whatever the body was doing when it took. Lying still, it builds weight. Crawlers drift to noise because noise was always people |
-| Running: bitten on a road, caught in a field, walked out to the edge of town at dusk, or got up and ran when the fever broke | **One of a tribe.** Fast and lean, and never far from others | Running, it builds legs and lungs, and something in them wants a lead to follow |
-| Running, early, and kept feeding | **An alpha.** Big and heavy, slower to tire than to anger | It gets bigger every week it leads and feeds. It calls at dusk, and the ones in earshot come to it |
-
-That one fact explains the rest:
-
-| What players see | Why |
-|---|---|
-| Towns full of slow ones, the wild full of fast ones | The same sickness, taking two kinds of people |
-| A tribe gets bigger next to a town that's going quiet | Not everyone who turned in a town turned lying down. The ones who ran went where the calling was |
-| A few of them out by day, in twos and threes | The young and the hungry can't lie still all day. They walk the paths the tribe walks at night, and come back to the lair before the call |
-| The dusk call | The alpha calls its people in before the hunt. A tribe in earshot answers from its own ridge |
-| The call changes | Hungry ones call long. Fed ones sleep. An old one's voice goes ragged. After a death there are many voices and no lead |
-| Borders | Two calls that answer each other mark where one tribe's land ends. Sound carries badly over water and down a valley, so rivers and valley floors are borders, and bridges are fought over |
-| The same trails every night | They go where they found people before |
-| The dawn walk home | Home is wherever the alpha lies up |
-| The young are erratic | They're new. Some still go toward the houses they lived in |
-| The vigil | When the call stops, they wait by it |
-| Succession | The next strongest starts calling. The rest decide whether to follow |
-| Splits | Twenty-five can't all hear one voice, so somebody at the far end starts calling |
-| Fear of a place | They don't go back where a lot of them died, for a while |
-| One long call in the night | The alpha calling them off |
-| Crawlers come out after a hunt | There was a lot of noise first, and something is left |
-| Nothing near the line | The snipers shoot whatever walks into it. *"Even they don't go near the line."* |
-
-**Nothing is born.** No breeding, and nothing from outside. Every infected was somebody inside the
-Zone: a resident, a soldier, a driver, a volunteer, a Haven runner, a player's character.
-- A tribe grows only from people: those it takes, and those who ran when their town went quiet. So a
-  tribe is a map of where people went.
-- A crawler nest (Burn the Nest, Specimen from the Nest) is where a town's crawlers lie up thickest,
-  breathing in time.
-- The Silent Village's *"It hums. You can hear it in your teeth."* is a nest.
-
-**Echoes.** A tribe keeps a little of whoever leads it, and nobody explains it:
-- A tribe led by a soldier sets out on the 17:30 shift change. At 20:30 one of its guard stands at the
-  lair's edge like a night watch.
-- When a farmer takes over, the tribe starts coming home at first light the long way round, by the
-  fields.
-- The tribe of the Day 2 column still walks toward the line at dawn, and stops short of it.
-
-**The site tribe.** The oldest tribe in the Zone ranges round the closed site in the hills.
-- Who its alpha was is a canon key the lab never says (`tribe.site.who`, from options).
-- Dr Wolff stays exactly as The Three Weeks has her: one turned researcher, alone in the store.
-- The driver's *"she stayed because she wanted to"* still reads either way.
-
-**Ordinary people, small stories.**
-- **The column.** Not everyone Sedlak turned round on Day 2 made it back, and the first tribe was made
-  on that road. On an island with no road out, the north road ends at the water: the column waited on
-  the slipway, and the loudspeaker was on a boat. The canon key `origin.column` holds where it turned
-  back ([The model](#the-model)).
-- **Bastion's lost posts.** They don't empty. Their men are still on the roster, the post still
-  answers for them at the roll, and they still keep the shift change.
-- **A runner's bicycle.** A Haven runner's bicycle lies in the ditch on the Levie road, its back wheel
-  still turning.
-- **The young come home.** Sometimes they stand at the edge of town at dusk and look at the door with
-  the bear on it.
-- **A town going quiet.** *"Half of Levie went quiet this week. Not all of them stayed."*
-
-**What people say.** Players only ever get guesses. Never mark who's right. Every line names the
-place, so players can tell four names mean one tribe.
-
-| Who | What they say |
-|---|---|
-| Halcyon | *"Pack P-02, the quarry. The index case is in its third week as lead. Respiration synchronises at the call. We don't know why. Please don't shoot it."* The notebooks name the behaviour, never the cause |
-| The Haven | *"The slow ones stayed home. The quick ones went with whoever called."* They use the alpha's name when someone knew him |
-| Bastion | *"Contact Papa-two, the quarry, twenty plus, one heavy. Statics in Levie. Cull pending."* |
-| The Red Hand | *"Every crew's got a boss. The boss is whoever's got something on the rest. Same as us."* |
-| The Long Table | *"The neighbours came past on Tuesday. We stayed in."* |
-
-**Hard edges, always said sideways:**
-- The Haven walks people to the edge of town at dusk, and a tribe has learned the hour. *"They say Mrs
-  Novak's boy runs with the Quarry lot now. They say that about everyone."*
-- Bastion culls the woods near its posts, and the tribes go somewhere else. The log says *"Contact
-  displaced. Not our sector."* Somewhere else is usually Haven country.
-- A Red Hand crew keeps one tribe fat, so that it sits between the crew's camp and Bastion. Nobody
-  says what with.
-- Halcyon tags alphas and asks people not to kill them, because the tissue gets better with age. When
-  a tagged one takes a courier, the secure channel says the index is in good condition, and then says
-  sorry. The Haven says *"the beaks want that one alive"*.
-- The tracks round the Long Table's farm come up to the old wall and turn back. Never say why.
-- Your dead run. A character who dies on a tribe's land runs with it afterwards.
-
-**Writing them** (an addition to [WRITING.md](../docs/WRITING.md); its word rule is already there and in the lint):
-- Never explain how it works. Player text never says "alpha", "tribe" or "crawler": it uses the
-  speaker's word, and names the place.
-- Inspired by modern "alpha infected" films, with nothing copied: no named film characters, no
-  signature kills, no trophies, no rituals with bodies. A tribe is just people who still go out
-  together at dusk.
-- Kill sites are understated: a bicycle on its side, a rucksack with its zip open, a car door left
-  open, one shoe. No gore beyond what a note would say.
-- Show them through ordinary things: calls at dusk, birds gone quiet in a wood, crows going up off a
-  hedge at noon, a gate swinging, tracks across a field all going one way, a path worn through the
-  bracken.
-- The young are someone. Use their names gently. A player's character is described in public text
-  (*"a man in a blue jacket"*) unless the server and the player allow the name ([People](#people)).
-- Only the Red Hand jokes. Halcyon never says "him" or "her". The Haven never puts "walked out" and
-  "taken" in the same sentence.
-- At the dusk meal the Haven reads its dead, and at the same hour the alphas call theirs. Writers can
-  use that, but never say it.
-
-**Built text that changes in the same commit:**
-- **Burn the Nest.** The brief *"Something is breeding them in %1. Find the nest and destroy it."*
-  (`Missions/Haven/RZ_HavenMissions.c`) becomes *"The slow ones lie up thick in %1, all in one place.
-  Find it and burn it out."*
-- **Alpha Sighting** (`Missions/Halcyon/RZ_HalcyonMissions.c`) becomes **The Lone One** (decision 13,
-  option b): it targets a lone one when there is one, else today's special, and its brief never says
-  "alpha".
+**Moved:** the setting is in [LORE.md](../docs/LORE.md#what-the-infected-do), the writing rules in
+[WRITING.md](../docs/WRITING.md#writing-the-infected), and the faction words are under
+[People](#people). Still designed from it: **Alpha Sighting** (`Missions/Halcyon/RZ_HalcyonMissions.c`)
+becomes **The Lone One** (decision 13, option b): it targets a lone one when there is one, else today's
+special, and its brief never says "alpha" (phase 4).
 
 ## The model
 
@@ -442,127 +332,20 @@ from before tribes existed seeds them on load, as at a season's start.
    - **The override:** **Zombies > Tribes > Slots** (0 = from the land) replaces the count on any map.
      The runtime test sets 2 on Arland, to exercise the code only.
    - The log line gives the measured values ([Scaling by map](#scaling-by-map)).
-2. **New tribes.** At most one a season day, into a free slot that isn't kept.
-   - **At season start:** seeds = slots ÷ 3, rounded up, at most 4. In order:
-     - the **column**, at the canon spot `origin.column`: the main road 1–3 km inside the sealed
-       checkpoint on the northernmost main road. With no checkpoint (island maps), it's on the main
-       road from the largest town toward the nearest point of the line, 1–3 km short of the warning
-       zone;
-     - the **site tribe** at `origin.site`, if that's wild land;
-     - then the best lair candidates far from the lab.
-
-     Each seed starts with 10–14 members and a Rising alpha 2–5 season days into leading.
-   - **From the taken:** 5 people taken (rule 4) within 1.5 km of each other in 3 season days, outside
-     every range, become a tribe. The first of them becomes its alpha (Rising). In a vacuum (rule 18),
-     3 are enough.
-   - **From a town gone dark:** a town at 70 or more infection, with no range within 3 km for 5 season
-     days, sends its runners out. A tribe of 6 forms at the nearest free lair candidate, named after the
-     town (*"the Levie lot"*).
-   - **Around a lone one:** a lone one that comes within 1 km of 6 or more splinter members gathers them
-     into a tribe, with itself as alpha.
-   - **A split** (rule 11) uses a slot kept for splits first.
-   - **Room kept for a split:** while a kept slot is free, no new tribe (except from a split) founds
-     within 3 km of a tribe of 18 or more.
+2. **New tribes:** **built** ([New tribes](../docs/INFECTED.md#new-tribes)).
 3. **Roles, the taken, the ones who ran, hunger, hunts as data, the night's commitment, post-feed
-   sleep** (rules 3–9): **built** ([Tribes](../docs/INFECTED.md#tribes)). Still designed from them: the guard place
-   going to the oldest hunter; the young coming of age; bonds (two taken at one kill site within 10
-   minutes); the taken counting toward a new tribe; a Haven walk-out, a supply truck's crew, a leader's
-   off-screen bite or a Bastion patrol as the taken; Haven-allied wanderers going round Hungry ranges;
-   supply trucks taken as data (15%, one on the server every 3 counted nights, with a road habit);
-   **Starving** (100 for 2 counted nights: a fifth walks into the nearest town, +2 infection each,
-   +10 per town a season day at most, then hunger 70); trail scoring by habits, prey, wear and echo;
-   empty nights (three running: drop the worst trail); the hunger rises for a fed moat or near the Long
-   Table (rule 19); "never broken early" (rule 15).
-10. **Disturbance and moving the lair** (0–100). It falls 10 a season day, and gains count ×0.6 for a
-    territorial tribe.
-
-    | Cause | Disturbance |
-    |---|---|
-    | A player within 150 m of the lair by day | +2 a minute |
-    | A noise (8+ heat) within 200 m | +5 |
-    | A guard killed at the lair | +15 |
-    | Shelling or a Fire Mission on it | +50 |
-    | Fire within 50 m | +60 |
-    | The lair burned | +100 |
-
-    At 100 the lair moves to another candidate in the range, 400 m or more away. With none, the tribe
-    moves: a new range in free wild land 1.5–4 km away, in the direction rule 17 picks. Each tribe moves
-    at most once a season day, and at most two on the server. The old lair is **abandoned** (rule 21).
-11. **Splitting.** A tribe at **Split at** (25) or more splits when there's a free slot (a kept one
-    first) and room:
-    - **room** is a lair candidate 1.5–3 km away, outside every range;
-    - **or the daughter takes the wood:** a candidate inside a bordering tribe's range, if that tribe
-      has under 10 members. That tribe is displaced (rule 17).
-
-    At the next dusk, its strongest guard leads 40% of the tribe there: one guard, one scout, and
-    hunters and young in proportion. That guard becomes the daughter's alpha (Rising). The daughter
-    keeps the mother's look, her call pattern with one note different, and her habits at half strength.
-
-    With no slot or no room, the tribe is **restless**: two callers at dusk, hunger rising 2 more a
-    counted night, border fights twice as likely, and its alpha twice as likely to be challenged.
-12. **Borders and rivals.** Two tribes border where their ranges come within 150 m of each other with
-    no river or valley floor between, or where they meet at a crossing (the bridge is the border).
-    - **Calling contests.** Each dusk, bordering tribes compare strength. The border moves 50 m toward
-      the weaker, at most 300 m from where it started. The Radio Operator hears it: *"The Hollow
-      answered weaker tonight."*
-    - **Old borders.** A border with no fight for 5 season days is old. Fights there are half as likely,
-      and the calls answer quieter. A succession or split on either side reopens it, and fights are
-      twice as likely for 2 counted nights: *"a new voice testing the river."*
-    - **A fight** happens on a counted night when both tribes hunt toward the border and one of these
-      holds: either tribe is Hungry or worse, it's a crossing, it reopened, or it's a frenzy night.
-    - **Strength** = (hunters + guard) × the alpha's stage (Rising 0.8, Prime 1.2, Decline 0.9). ×1.3
-      for a territorial tribe on its own side.
-    - **The loser** loses 2–4 members, pulls its range back 150 m from that border, and doesn't hunt
-      toward it for 3 counted nights.
-    - **The winner's** hunger falls 10.
-    - **Near players:** with a player within 800 m, it's staged as a Border Night ([Bodies](#bodies):
-      heard, then found).
-    - **Clans:** tribes of one clan never fight each other.
-13. **Absorbing and merging.** Either way a slot frees, and the Radio Operator hears one call where
-    there were two.
-    - **Absorbing:** a loser under 8 members, with no alpha or a Declining one, joins the winner, up to
-      the cap. 30% of its members splinter off instead.
-    - **Merging:** two bordering tribes under 10 members each, one with no alpha, merge under the other's
-      alpha.
-14. **Ageing.** Season days as alpha decide its stage: **Rising** 0–5, **Prime** 6–20, **Decline** 21+.
-    The call shows it: steady in Prime, ragged in Decline.
-    - **Challenges.** In Decline there's a 15% chance a season day of a challenge (×2 while restless).
-    - **Who wins.** The challenger, the strongest guard, wins 50% of the time, plus 5% for each season
-      day of Decline, up to 85%.
-    - **The loser** leaves as a **lone one**, or dies if it's under 30% health.
-    - **Near players:** with a player within 1 km, the challenge is the Clash.
-    - **Death of age.** An alpha 15 season days into Decline that was never challenged dies at the lair,
-      which starts a succession.
-15. **Succession** (the alpha killed, caught alive, or dead of age):
-    1. **The vigil.** No hunt that night. The tribe holds where the alpha fell until dawn, or at the lair
-       if it fell outside the range. Bodies stand it for 30 real minutes at most ([Bodies](#bodies)).
-    2. **The guard fight, at dawn.** The strongest guard becomes the new alpha (Rising), named in each
-       faction's voice. One other guard dies, or leaves as a lone one 25% of the time. A new voice calls
-       at the next dusk. That day there's no day party: the splinters are on the roads instead.
-    3. **The splinter.** 30–40% of the members break off as 1–2 loose packs of 3–6. Each wanders for 1–2
-       season days. Then it rejoins (50%), joins the nearest tribe (25%), or breaks into loose ones that
-       end up with the crawlers (25%; after the cure they just die out).
-    4. **Two weak season days.** The tribe hunts one trail, doesn't flank, and its day party is half
-       size. After 3 season days the alpha's echo takes over ([Individuality](#individuality)).
-
-    With no guard alive, the whole tribe splinters and its slot frees. A tribe that falls under 4
-    members (never in its first 3 season days) breaks up the same way, and its alpha becomes a lone one.
-16. **Lone ones** (2 at most) are defeated challengers, and alphas deposed or starved out. A lone one
-    walks between ranges along their edges by night and lies up alone by day. It can gather splinters
-    into a new tribe (rule 2). Otherwise it dies after 6 season days alone.
-17. **Displacement.** When one faction caused most of a tribe's disturbance (its contracts, shelling,
-    Fire Missions, culls), the new lair is at least 2 km from that faction's holdings.
-    - **Limits:** never within 1.2 km of a safehouse or a holding, and at most 2 displacements a season
-      caused by each faction. Then the tribe just moves within its range.
-    - **In practice,** Bastion's culls push tribes toward the Haven's quiet villages.
-18. **Vacuums.** A range left empty (its tribe moved, absorbed or broken up) is a **vacuum** for 3
-    season days:
-    - neighbouring tribes within 3 km drift their ranges 200 m into it;
-    - a new tribe forms there from 3 taken instead of 5;
-    - lone ones head for it.
-
-    Its old trails stay as data. A tribe that settles there reuses them, and splinters and crawlers
-    drift along them. Bastion's contact board says *"Papa-four: no contact."*
+   sleep** (rules 3–9) and their life-cycle parts (the guard's place, the young coming of age, bonds,
+   trucks taken as data, starving, trail scoring by wear, habits and echoes): **built**
+   ([Tribes](../docs/INFECTED.md#tribes), [The life cycle](../docs/INFECTED.md#the-life-cycle)). Still designed: a Haven walk-out, a
+   leader's off-screen bite or a Bastion patrol as the taken; Haven-allied wanderers going round Hungry
+   ranges and the Haven truck waiting for dawn; trail scoring by prey; empty nights (three running:
+   drop the worst trail); the hunger rises for a fed moat or near the Long Table (rule 19).
+10. **Disturbance, splitting, borders, absorbing and merging, ageing, succession, lone ones,
+    displacement and vacuums** (rules 10–18): **built** ([The life cycle](../docs/INFECTED.md#the-life-cycle),
+    [Borders](../docs/INFECTED.md#borders)). Still designed: contracts, culls and Fire Missions on a lair as causes (only
+    shells are, today), Bastion's *"Not our sector"* and *"Papa-four: no contact"*, frenzy nights as a
+    border-fight cause, a caught alpha's succession (with the finale's live tissue), and the border's
+    offset moving the ranges.
 19. **Fed by people** (said only sideways; see [People](#people)):
     - **The Red Hand's fat moat.** A Red Hand camp within 3 km feeds one tribe that lies between it and
       Bastion's nearest holding. That tribe's hunger rises 3 a counted night and never goes above 40. It
@@ -571,72 +354,16 @@ from before tribes existed seeds them on load, as at a season's start.
       tribe until its succession ([FINALE.md](FINALE.md)).
     - **The Long Table.** A tribe whose range comes within 1 km of the Long Table's farm also gains only
       3 hunger a counted night, and its trails and day walks turn back 1 km short of the farm.
-20. **Memory** (the effects are in [Tribes](#tribes)):
-    - **Marks.** Kill an alpha or a guard, or burn a lair, and that tribe marks the *character*: strength
-      100, falling 25 a counted night, cleared when that character dies. At most 4 per tribe, and they
-      count only inside its range.
-    - **Fear.** 8 or more members killed within 300 m in one counted night make a **fear place**, 250 m
-      across. It lasts 3 counted nights (5 for cautious and cunning tribes, 1 for bold ones). Trails and
-      day walks go round it, except on frenzy nights. At most 4 per tribe.
-    - **Getting used to it.** Kills inside an existing fear place don't extend it. Once a fear place has
-      expired, the tribe can't make a new one within 500 m for 3 counted nights.
-    - **Habits** (up to 3). Strength rises 40 for each person taken there, and falls 10 a counted night.
-      It falls 30 on a counted night when 2 or more of the tribe die there, and the habit is gone under
-      10. At 50 or more it sets that night's trail and hour.
-    - **Worn trails.** A trail's wear rises 1 for each counted night it's used and falls 1 for each night
-      it isn't (0–10). Hunters read it.
-    - **History.** Each alpha keeps its last 6 events as short lines: took a truck, won a bridge, split,
-      survived a cull, took a named person.
-    - **Bonds.** People taken from one kill spawn in the same group. When one dies, the other runs
-      reckless, like the young, until dawn.
-21. **Abandoned lairs and kill sites.**
-    - **An abandoned lair** stays a search spot for 2 season days. It holds the things of the people the
-      tribe took: one find per person, 3 at most, from the search table's bag and body loot. It holds a
-      sample only if a Halcyon courier was among the taken, one at most. A line reads it: *"Somebody's
-      things, from the Day 2 column, at the back of a culvert."*
-    - **A kill site** (6 on the server) records where it is, which tribe made it and who died: a name or
-      a description, and one line. It lasts until the second dawn. Crawlers come to it
-      ([Towns](#towns-the-crawlers)), and Hunters can read it.
-22. **Seasonal pull.**
-    - From Overrun, lair candidates nearer prey score higher.
-    - From Aftermath, each range's centre drifts 100 m a season day toward the nearest lived-in place,
-      and stops at its no man's land plus P.
-    - With the **Winter** rule set, from Overrun, lairs move into the barns and edge buildings of empty
-      villages, and tribes and crawlers share those villages at night.
-23. **Burned land.**
-    - **Event fires** (Burning Town, Gas Station Fire, a Fire Mission, a burned lair): the cells get no
-      lair and no trail for 3 season days.
-    - **A player's fire** (the fire system): no lair for 3 season days, and trails avoid it for one
-      counted night only. So nobody keeps a corridor open with matches.
+20. **Memory, abandoned lairs, seasonal pull and burned land** (rules 20–23): **built**
+    ([Memory](../docs/INFECTED.md#memory), [The life cycle](../docs/INFECTED.md#the-life-cycle)). Still designed: an abandoned lair's
+    finds as items from the search table (a line today), and tracks always fresh in snow.
 24. **After the cure.** Nobody new turns, and the tribes run down over the epilogue's week. The rules
     are in [After the cure: the last week](#after-the-cure-the-last-week).
-25. **Day parties:** **built** ([Day parties](../docs/INFECTED.md#day-parties)). Still designed: where each
-    temperament's day party walks (phase 3), the Furious tribe's walking the capture road.
+25. **Day parties:** **built** ([Day parties](../docs/INFECTED.md#day-parties)). Still designed: the Furious
+    tribe's walking the capture road.
 
-**Caps**
-- **Tribes:** 0–15 by wild land; 30 members each.
-- **Bodies:** a tribe's presence at one player cluster is 14 at most, scaled down when the server's
-  budget binds ([Bodies](#bodies)). Day parties: 6 bodies near one player cluster at most.
-- **Growth:**
-  - the ones who ran: 2 young a season day per tribe;
-  - players' young: 3 per tribe at once, and once per player a season day.
-- **Day parties:** a quarter of the tribe at most (a fifth by default), about twice that when hungry
-  and never more than half; groups of 2–4.
-- **Life-cycle pace:**
-  - at most one new tribe and one split a season day on the server;
-  - lair moves: one per tribe and two on the server a season day;
-  - at most two life-cycle changes per tick, in this order: succession, break-up, split, absorption or
-    merge, lair move, new tribe.
-- **Displacements:** 2 a season per causing faction.
-- **Clans and great alphas:** clans at most as many as the slots kept for splits; one great alpha per
-  map.
-- **Small records:** 2 lone ones, 4 splinters and 6 kill sites on the server. Per tribe: 4 fear places,
-  4 marks and 3 habits.
-- **Taken as data:** a wanderer per tribe every 3 counted nights; a truck per server every 3 counted
-  nights. Never by day.
-- **Infection:** starvation adds at most +10 per town a season day. Every infection change goes through
-  `AddInfection`, ±15 per event.
-- **Frenzy nights:** one at a time, at most one every 3 season days, and none in the first 2.
+**Caps:** **built** ([docs/INFECTED.md](../docs/INFECTED.md)) but for: one great alpha per map (phase 5); frenzy nights
+(one at a time, at most one every 3 season days, none in the first 2); props (30 on the server).
 
 ### Scaling by map
 
@@ -653,34 +380,14 @@ none."*
 | Chernarus-size (about 15 km) | 80–120 km² (estimate) | 15 | 12–14 | 3 | up to 3 | possible from Overrun | Real politics in the woods: clans, and some seasons a great alpha |
 | A small custom map | under 1.5 km² | 0 | — | — | — | — | Crawlers only. Tribes are off, and the log says so |
 
-**How Everon gets its clan.** New tribes never fill the kept slot, and while it's free nobody founds
-within 3 km of a tribe of 18 or more (rule 2). A clan needs:
-- **a tribe that reaches 25.** One next to towns that are going quiet (the ones who ran), on a busy truck
-  road, or near a safehouse whose walk-outs it has learned, gets there around days 18–30;
-- **room:** a free lair candidate 1.5–3 km away, or a weak neighbour's wood (rule 11);
-- **both halves holding 8 or more** for 3 season days.
-
-The target is a clan in roughly half of Everon seasons. It doesn't always happen, and that's the
-ecosystem:
-- the hill tribe's towns may be pushed back by players, so it never grows;
-- Bastion may cull it below 20;
-- the woods may stay taken.
-
-When it does happen: *"There's two of them up there now. Same call, one note different."*
+**How Everon gets its clan:** built (the kept slot, the room kept round a big tribe, the daughter
+taking a weak neighbour's wood); the simulator gives a clan in about half of Everon seasons at 2–5
+players ([its numbers](../docs/INFECTED.md#the-simulator)).
 
 ### Clans
 
-- **What a clan is:** two or more tribes of one line (a mother and her daughters, or daughters of
-  daughters) whose lairs are within 4 km of each other.
-- **Within a clan:**
-  - the tribes never fight each other;
-  - they answer each other's calls in the same pattern, as a relay that players hear pass along the
-    ridges;
-  - they share fear places;
-  - they take in each other's splinters first;
-  - on frenzy nights they all hunt toward the same hunting ground.
-- **When it starts and ends:** a daughter counts as clan once both halves have held 8 or more for 3
-  season days. A clan ends when only one tribe is left, or when their lairs drift apart.
+**Built** ([Splits and clans](../docs/INFECTED.md#splits-and-clans)). Still designed: the relay players hear pass along
+the ridges, and all of a clan hunting toward one ground on frenzy nights.
 
 ### The great alpha
 
@@ -741,9 +448,9 @@ They're used only if the mod stack has such prefabs, and an empty list falls bac
 
 ### Samples
 
-**Built** ([Samples](../docs/INFECTED.md#kill-sites-the-vigil-and-the-alpha)). Still designed: lone ones (2, once each),
-the cap of 4 guard samples per played hour on the server, staged fights dropping nothing (with the
-staged fights), and the status log's samples per player-hour by source.
+**Built** ([Samples](../docs/INFECTED.md#kill-sites-the-vigil-and-the-alpha), lone ones and staged fights too). Still
+designed: the cap of 4 guard samples per played hour on the server, and the status log's samples per
+player-hour by source.
 
 ### The daily rhythm, the call and the hunt
 
@@ -754,174 +461,19 @@ the nearest call; two callers when restless; *"a short-handed call after a quiet
 putting a group on your back trail; heat that a hunt lost you at ignored within 300 m for the rest of
 that night; a hunted player who logs out (the hunt waits 10 real minutes).
 
-### Temperament
+### Temperament, habits, memory, who they are
 
-It's set when the tribe forms. The founding place tilts the roll: uniforms lean territorial, the column
-nomadic, farm valleys cautious, quarries cunning. While its alpha is Rising, every tribe hunts
-cautiously. In Prime its temperament shows fully. In Decline its hunts are shorter (home by 02:00) and
-the alpha stays home more.
-
-| Temperament | How it hunts | At home | How to beat it | Share |
-|---|---|---|---|---|
-| **Bold** | The alpha comes with the first wave. Comes to gunfire, hunts in light rain. Breaks off only at half its losses | Disturbed easily (×1.2) | It comes to you, so pick the ground. Its alphas die young | 25% |
-| **Cautious** | Hunters only. The alpha stays at the lair with its guard unless the tribe is Hungry. Breaks off at a quarter, or after one wave | Keeps fear places 5 counted nights | The lair is the only place to find its alpha, and its alphas live long | 20% |
-| **Cunning** | Sends a young to the noise as bait while a hunter group appears on your own back trail, out of sight. Waits at its habits. Learns habits ×1.5 faster | Keeps fear places 5 counted nights | Break its habits. Once you know them, it's predictable | 20% |
-| **Territorial** | Never hunts beyond its range. Wins border fights and calling contests. Hits anything inside its range hard, worst near the lair | Disturbance ×0.6; rarely moves | Go round it: its edge is honest | 20% |
-| **Nomadic** | Follows prey along truck and wanderer routes | No fixed lair: it moves every 2–4 season days round a loop of 3–4 lairs. Leaves no fear places and no vacuum | Its tracks never lead to the same place twice | 15% |
-
-**By day, no temperament brings the alpha or a guard out.** What changes is where the day party walks: a
-territorial tribe's walks its range edge, a nomadic tribe's walks ahead on the next leg of its loop, a
-cautious tribe's keeps to the forest edges, and a bold tribe's turns to gunfire from 1.5 times as far.
-
-### Habits
-
-The numbers are in model rule 20. Only a few per tribe. They're reinforced by success, and they fade.
-
-| Habit | Learned when | Then |
-|---|---|---|
-| **The road hour** | It took a truck crew or a driver on a road | Hunts that road at that hour, give or take 30 minutes |
-| **The crossing** | It took someone at a bridge or a ford | A hunter group waits there from dusk |
-| **The back door** | Walk-outs, or people taken at the edge of a lived-in place | The young wait at that wire at dusk |
-| **The shots** | It took someone after a firefight | Comes to gunfire from 1.5 times as far away |
-| **The bells** | It took someone after bells, a siren or a Red Hand send-off | Comes to bells, sirens and send-offs |
-
-To break a habit:
-- kill 4 of the tribe's hunters at that place at its hour (−60; usually it takes two nights);
-- or take its prey away: reroute the trucks, or stop the walks.
-
-### The life cycle, as players see it
-
-Rule: **every rule ships only with a sign players can meet within one session.** A rule with no sign
-waits.
-
-| Moment | What players see | Rule |
-|---|---|---|
-| A tribe forms | A wild patch where several people died lately, or near a town gone dark: birds gone from a wood, two or three quick ones on its paths by day, and a voice at dusk | model 2 |
-| It grows | More voices at dusk. Named young in Haven gossip. *"Half of Levie went quiet."* Its look gets mixed | 3, 4, 5 |
-| Its day party | Two or three quick ones along a hedge at noon, walking a stretch and stopping. Tracks in pairs and threes on a path. Crows going up off a field edge | 25 |
-| It goes hungry | A long call. Two trails a night. Hunters at the nearest outpost's wire, and twice as many out by day, in the fields at a town's edge | 6, 25 |
-| It starves | Some of it walks into the nearest town, and there are more slow ones there | 6 |
-| It feeds | The next day is quiet: nobody on its paths, no scouts, no call, birds back over the lair. That's the lair window | 9 |
-| It loses a hunt | The long call, the pack pulling back, fewer answers at dawn | 8 |
-| It's weakened | A short call, nobody out by day, and a quiet range. *"Don't trust it."* | 8 |
-| It's disturbed | It moves, and the old lair is a find | 10, 21 |
-| It splits | Two callers for a while, then a guard leads some of it to the next wood. Same call, one note different | 11 |
-| It meets a neighbour | Calls answer each other at dusk, one weaker each night. Fights at the bridges when they're hungry. An old border goes quiet | 12 |
-| It's beaten | One call where there were two | 13 |
-| Its alpha ages | Rising: careful. Prime: itself. Decline: a ragged call, shorter nights, more often at home, then challenged | 14 |
-| The Clash | At dusk at the lair, a guard faces the old alpha. One of them walks away alone | 14 |
-| Its alpha dies | The vigil, the guard fight at first light (shrieks from the lair), nobody on its paths that day, splinters on the roads for a day or two, then a voice nobody knows | 15 |
-| A lone one | A big one alone on a ridge. It may gather splinters into a new tribe | 16 |
-| It's culled | The Tribe Moves, and *"Not our sector."* It turns up somewhere else, usually in Haven country | 17 |
-| It's gone | A silent ridge at dusk. Neighbours move in, or something new forms from whoever dies there next | 18 |
-| It drifts toward people, late | *"They're coming closer to Morton every night."* Tracks nearer the wire | 22 |
-| It forgets a fear place | A Hunter: *"They're coming through here again."* | 20 |
-| An echo | The timing itself, and a Soldier's or a Police Officer's line: *"They set out on the shift change."* | individuality |
-| A bond | Haven gossip about the pair. A Hunter: *"That one came straight at us, after we put down the other."* | 20 |
-| A nomad's loop | A Hunter: *"Never the same place twice."* Bastion's contact board moves the contact | temperament |
-
-### Memory
-
-- **Marks.** Kill an alpha or a guard, or burn a lair, and that tribe's scouts know you, the character.
-  - They see you from 1.5 times as far.
-  - On a night you're inside its range, its hunt goes for you first. It never switches to another player
-    if you die or leave, and fear places still beat marks.
-  - The mark fades over 4 counted nights, counts only inside its range, and is gone when the character
-    dies.
-  - You're told once: *"They know you in the Hollow."*
-- **Fear places become safe corridors, for a while.** Where many of a tribe died, its trails and day
-  walks go round for a few nights. A Hunter reads it: *"They don't come through here any more."* The
-  tribe gets used to it: kills there don't extend it, and once it's over the place can't frighten them
-  again for a while.
-- **Worn trails.** A trail used most nights is worn, and the Hunter reads it: *"A path worn through the
-  bracken. Most nights."* A new trail is faint. That's how players learn which trails matter.
-- **Named alphas with histories.** Each alpha's last six events become headlines and lines in each
-  faction's voice, always with the place:
-  - Haven: *"The Quarry lot are Josef Hruby's now. He drove the school bus."*
-  - Bastion: *"Contact Papa-two, the quarry, lost its heavy at 2310. New heavy assessed at dawn.
-    Papa-two remains active. No reply."*
-  - Red Hand: *"The Postmen up the quarry got a new boss. Same as us."*
-  - Halcyon: *"P-02 (quarry) index lost. Succession observed at dawn. Successor tagged at 0640."*
-  - A Haven elder on the road: *"That's the one that took the Levie truck on Day 23 and won the bridge
-    off the Mill lot. Mind him."*
-
-### Individuality
-
-- **Looks from where they grew.** The founding place picks the tribe's look:
-  - a lost Bastion post, a barracks, a checkpoint or a military camp: military;
-  - everywhere else: civilian;
-  - farm valleys: work clothes, when that list is set;
-  - a quarry, factory or depot: dust-grey, when set;
-  - forest and hills: outdoor, when set.
-
-  The young keep their own clothes, because their prefab is picked from where they were taken: military
-  for a soldier, civilian otherwise. So a tribe's look slowly mixes, and you can read where it has been
-  hunting.
-- **Echoes of who the alpha was.** The echo comes from the alpha's kind. So a succession changes the
-  tribe's habits of timing after 3 season days: *"The Quarry lot come by the fields now. Josef farmed."*
-  - **soldier:** sets out at 17:30 and starts home at 05:30, on the shift change. A guard stands at the
-    lair's edge at 20:30;
-  - **farmer:** comes home at first light by way of the fields (06:00–07:00), and prefers barns;
-  - **driver:** hunts along roads first;
-  - **the column** (the seed's first alpha, and whoever comes after it while the tribe is a column
-    tribe): at dawn it walks toward `origin.column`'s line and stops 600 m short of the warning zone for
-    a few minutes;
-  - **runner or courier:** the back door. The young wait at a house's wire;
-  - **resident:** no echo.
-- **Where it lies up** follows the founding place: dust-grey tribes under cover (culverts, quarries,
-  sheds), outdoor tribes with the widest range and the highest scout posts.
-- **The call pattern.** Each tribe calls in its own pattern, from its seed: *"three short and a long."*
-  A daughter's differs by one note. The Radio Operator and the Hunter name the tribe from it.
-- **Names.** A tribe takes a place name from its lair: the nearest landmark or village (*the Quarry*,
-  *the Hollow above Levie*). Each faction then has its own word for it, always with that place
-  ([People](#people)).
-- **Settled or nomad.** Four temperaments keep a home, and nomads don't. Displacement and hunger can
-  make a settled tribe move, but it settles again.
-
-### Group behaviour
-
-- **Feeding order.** At a kill site the alpha is at the site, the guard 8–15 m out, the hunters 20–40 m
-  out and the young 40–70 m out. Walk up to one and you meet the young first, which tells you the alpha
-  is in the middle.
-- **Relayed calls.** The dusk call passes ridge to ridge between tribes that hear each other. A frenzy
-  or a gathering is heard coming before it arrives.
-- **Reckless young.** The young go to any noise within 400 m at once, ahead of the hunt (by day, only
-  the young in the day party). A tribe with many young is easy to bait and easy to thin, and it's
-  growing.
-- **The vigil.** When the alpha dies, the tribe stays where it fell until dawn.
-- **Learned fear, and forgetting.** Places where many of them died are avoided for a few nights, and
-  then they come back.
-- **Stragglers.** After a night with losses, one or two come home late (06:00–07:30), alone on the
-  trail. Follow them.
-
-### New in this pass
-
-Beyond the agreed list; each is cheap data with a sign:
-- **Day parties** (the author's change). The wild is never empty by day, but the tribe never comes in
-  full until dusk.
-- **The ones who ran.** Tribes grow from the towns going quiet near them, so player pressure on a town
-  shapes the tribe next door.
-- **The call tells you how it is:** hungry, fed, restless, old, new, beaten.
-- **A hunt can lose.** The long call, and the tribe going home, so players can see that they won.
-- **Weakened tribes go quiet** and rebuild instead of dying in one night.
-- **Borders settle and reopen.** Calling contests move them a little each dusk, and old borders go quiet
-  until a new voice tests them.
-- **Who the alpha was shapes the tribe**, and a succession changes it.
-- **Worn trails.** The land remembers where they go, and Hunters read it.
-- **They get used to things.** Fear fades and can't be kept up forever.
-- **The dawn count.** You hear how many came home.
-- **Bonds.** People taken together run together.
-- **A wounded alpha** (under 50% health) stays home with its guard while the hunters hunt without it,
-  until it heals (0.1 an hour played at the lair, scripted: infected don't heal by themselves). Wounding
-  an alpha and getting out buys a quieter night or two, with a denser lair.
-- **Coming of age.** A young's first hunt that takes someone makes it a hunter.
-- **The young come home.** A named young that was a walk-out or a player's character stands at the wire
-  where it lived (a safehouse's no man's land) at dusk, for 10 minutes. This happens at most once per
-  house every 3 counted nights, and only with a player near; otherwise it's a line of Haven gossip.
-  *"Someone saw Pavel at the edge of town last night. Just standing, looking at the bear on the door."*
-- **Hunting grounds follow the prey.** When a safehouse empties or a truck route changes, the trails
-  change with it, slowly.
-- **The kept slot and its room** let a clan happen on Everon only when a tribe earns it.
+**Built** ([Tribes](../docs/INFECTED.md#seeds-and-places), [Memory](../docs/INFECTED.md#memory), [Who they are](../docs/INFECTED.md#who-they-are),
+[The signs](../docs/INFECTED.md#the-signs)). The signs table now lives in the docs. Still designed:
+- the factions' voices for an alpha's history (the Haven's *"The Quarry lot are Josef Hruby's now. He
+  drove the school bus."*, Bastion's contact log, the Red Hand's new boss, Halcyon's tag time, a Haven
+  elder's warning on the road) and their names for a tribe ([People](#people), phase 4);
+- where it lies up by its look (dust-grey under cover, outdoor with the widest range and highest
+  posts); the Radio Operator and the Hunter naming a tribe from its call pattern;
+- relayed calls ridge to ridge, the stragglers after a bad night (06:00–07:30), the reckless young
+  going to any noise within 400 m ahead of a hunt;
+- the young coming home to the wire (phase 4), hunting grounds following the prey;
+- breaking a habit by taking its prey away (rerouting trucks, stopping the walks), which needs those.
 
 ## Day parties
 
@@ -1087,21 +639,9 @@ fog and storms lower a player's visibility. The table says only what tribes and 
   - *"The sun's going down red over the hills, and they're all calling."*
   - *Simplified:* the engine's sky isn't changed. The event only runs when the real sunset is visible.
 
-**Chain reactions** (each goes one step and is capped, so nothing runs away)
-
-| Cause | Effect | Cap |
-|---|---|---|
-| A hunt passes through a town | The town stirs: crawlers come out and drift, and its square makes heat | Stir heat stops at 60, and stir never spreads town to town |
-| A town goes quiet near a range | The tribe gains the ones who ran | 2 young a season day per tribe |
-| A kill site near a town | 2–4 of its crawlers walk out to it the next night | 6 kill sites |
-| A scout calls | +20 heat at the scout, and +10 stir in towns within 600 m | One call per tribe every 10 minutes |
-| A border fight | Both tribes call, the nearest towns stir (+20), and both hunt short the next night, leaving the rest of their trails quiet | 2 staged per night |
-| An alpha dies | The vigil, then splinters on the roads: loose ones within 2 km ×1.5 for a season day | 4 splinters |
-| A tribe starves | Its walkers become a town's crawlers | +10 infection per town a season day |
-| Bastion culls | The tribe moves away from Bastion and lands in Haven country | Two displacements a season per faction |
-| A lair or land burns | Trails shift off it, often onto a road | 3 season days (event fires) |
-| A tribe takes a truck | A shortage at the truck's destination (the existing rule), and a road habit | One truck every 3 counted nights |
-| Siren Test | Crawlers within 2 km converge. Tribes with a bells habit come; the others keep away from that town that night | As the event |
+**Chain reactions:** built ([docs/INFECTED.md](../docs/INFECTED.md)) but for: Siren Test (crawlers within 2 km converge,
+tribes with a bells habit come, the others keep away from that town that night) and Bastion's culls
+(phase 4).
 
 **Animal tells** (text only; once per range an hour, at most one a minute per player):
 - over a lair by day: *"No birds in this wood."*
@@ -1234,44 +774,13 @@ building query (a player inside never seen; the code uses its sight trace within
 after 20 s (the behaviour layer follows the last-known spot instead); the corpse kept from the
 engine's cleanup.
 
-**Kill sites, the vigil and staged fights** (kill sites in feeding order and the vigil are built,
-[docs/INFECTED.md](../docs/INFECTED.md#kill-sites-the-vigil-and-the-alpha); props and staged fights are designed)
-- **Kill sites** near players: bodies stand in the feeding order ([Tribes](#group-behaviour)). Props are
-  the taken's things (a bicycle, a rucksack, a car door open), only within 200 m of a player, removed
-  beyond 250 m, never saved.
-- **The vigil.** Up to 8 of the tribe's bodies near players stand 10–30 m round where the alpha fell,
-  facing it, unsteered. It lasts until dawn or 30 real minutes, whichever comes first; the rest of the
-  night it's data. The samples lie by the spot, kept from the loose-item cleanup while it lasts. Keeping
-  the corpse from the engine's garbage cleanup is optional (VERIFY 15). Without it, they stand round the
-  spot.
-- **Staged fights are heard, then found** (decision 3). Bacon's infected share one faction, so they won't
-  fight each other, and a body dropping dead every 20 s looks like a glitch. So:
-  - **A Border Night.** Both sides' hunters get one waypoint each to the border point and mill there, with
-    calls and shrieks, for 5–20 minutes. Then the loser's groups go home. Its 2–4 losses are counted off
-    as data. If no player is within 150 m of the point, the script kills that many losers there with
-    `KillSilently`'s kill-and-mark mode, so a player who walks up finds them; otherwise they simply
-    *"didn't come home"*.
-  - **The Clash and the guard fight.** The two meet at the lair's front for up to 3 minutes. Then the
-    loser walks away alone (a waypoint out of the range), as a lone one, and the ring follows the winner.
-    Nobody needs to drop dead. If the loser should die (under 30% health), it dies later, off-screen.
-  - **Player kills** inside a staged fight count as normal kills and decide it.
-  - A second infected faction, hostile to the first, would let fights be seen. Phase 0 didn't test it, so
-    it stays a later option behind a setting.
-
-**Loose ones** replace today's two ring roamers per player, with the same count (2 × stage density).
-They're:
-- splinter members;
-- starving walkers;
-- members crossing between ranges at night;
-- crawlers drifted into the fields by day.
-
-Each spawns 250–300 m out and walks somewhere (toward a town, a lair or a vacuum), so following one leads
-somewhere. With no tribe or town within 3 km, they spawn as today.
-
-**Moving tribes** (The Tribe Moves, splinters, a caught alpha's tribe following the case) are data herds
-moving in a straight line over land, crossing water only at crossings. Within 600 m of a player they show
-as two groups, appearing out of sight 150 m or more back along the path. Beyond 1.1 km they go back to
-data, with the survivors counted.
+**Kill sites, the vigil, staged fights, splinters and moving tribes:** **built**
+([docs/INFECTED.md](../docs/INFECTED.md#kill-sites-the-vigil-and-the-alpha), [Borders](../docs/INFECTED.md#borders), [The life
+cycle](../docs/INFECTED.md#the-life-cycle)). Still designed: the props (a bicycle, a rucksack, a car door open; only
+within 200 m of a player, removed beyond 250 m, never saved); the samples kept from the loose-item
+cleanup during the vigil; the corpse kept from the engine's cleanup (VERIFY 15); a second infected
+faction hostile to the first, so fights could be seen (behind a setting); loose ones as starving
+walkers and members crossing between ranges at night; the capture case's tribe following it.
 
 **Leaving the server**
 - **A hunted player who logs out.** The hunt's data waits at the spot for 10 real minutes. If they come
@@ -1824,7 +1333,7 @@ Docs: INFECTED (tribes, day parties), LORE (What the infected do), WORKBENCH (VE
 13), MOD_STACK (which Bacon and Special Zombies prefabs fill each role and look; civilian, military and
 heavy promised, the rest optional; a slow prefab for crawlers), README.
 
-**Phase 3, the life cycle** (about 1,500 lines). Succession and splinters. Lone ones. Ageing and the Clash
+**Phase 3, the life cycle** (about 1,500 lines; **built**, [docs/INFECTED.md](../docs/INFECTED.md#the-life-cycle)). Succession and splinters. Lone ones. Ageing and the Clash
 (the loser walks away). Borders: calling contests, old and reopened borders, Border Nights heard then
 found, absorption and merging. Splits, the kept slot and its room, the daughter taking the wood, clans.
 Lair moves, abandoned lairs, displacement with its caps, vacuums. Seasonal pull, Winter, burned land
