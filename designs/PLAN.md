@@ -98,7 +98,7 @@ missions, so that test comes first (step 0.4).
 |---|---|---|
 | Who you are | Reputation ([REPUTATION_NAMES.md](REPUTATION_NAMES.md)), disguise ([DISGUISE.md](DISGUISE.md)) | A name with each faction ("Merciful Thug"), deeds people quote back to you, and borrowed kit that buys a moment, never a living |
 | What you do | Missions ([MISSION_STYLE.md](MISSION_STYLE.md)), errands ([ERRANDS.md](ERRANDS.md)), dialogue ([DIALOGUE.md](DIALOGUE.md)) | Several ways through every job; small jobs that come out of what's true right now; conversations with checks, lies and memory |
-| How it sounds | Tone ([TONE.md](TONE.md), becomes `docs/WRITING.md`) | One standard for grey choices and dark humour, a season mood, one voice bank and one lint |
+| How it sounds | Tone (the standard and the lint built in [WRITING.md](../docs/WRITING.md); the rest in [TONE.md](TONE.md)) | One standard for grey choices and dark humour, a season mood, one voice bank and one lint |
 | What the Zone remembers | World memory (shared by missions, errands and the epilogue), the epilogue ([EPILOGUE.md](EPILOGUE.md)) | Callbacks all season, and an ending told by places and people, not slides |
 
 **Dialogue is the delivery layer for almost everything.** All of these are conversations in one engine:
@@ -192,7 +192,7 @@ an initialiser (step 0.5).
 | Conversations, sessions, owner-only delivery, regard, claims, knowledge, scenes, sways into tallies, the commit node | Dialogue ([DIALOGUE.md](DIALOGUE.md)) | Everything that talks |
 | The story kit: ways, the persuade and Fear checks, who benefits, who decides, truths, fallout, route assets, reasons, the price table | Missions ([MISSION_STYLE.md](MISSION_STYLE.md)) | Errands, the majors' stages, the finale's stages |
 | Small jobs: the dealer, routines, cards, named people, locals, strangers and their spots, the footfall grid, the interruption budget | Errands ([ERRANDS.md](ERRANDS.md)) | Missions' odd jobs and found hooks, reputation's and disguise's side jobs, and the epilogue's last errands all become errands |
-| The text standard, season mood, temper, grief, joke memory, the voice bank, the lint | Tone ([TONE.md](TONE.md), becomes `docs/WRITING.md`) | Every line |
+| The text standard, season mood, temper, grief, joke memory, the voice bank, the lint | Tone ([WRITING.md](../docs/WRITING.md) built; [TONE.md](TONE.md) designed) | Every line |
 | The epilogue week and its closing work, the town log, the record, beats, carriers, the dose-outlet table, epilogue scenes, the hall of fame freeze, the names policy | Epilogue ([EPILOGUE.md](EPILOGUE.md)) | Everyone |
 | The season budget and its lanes, the set-piece calendar, votes (`RZ_QuestVote`), pages, `SeasonStory`, the dynamic fallbacks, the codas' scenes | Majors ([MAJORS.md](MAJORS.md)) | Missions, errands, the epilogue, tone, the finale |
 | Routes, the lock, the doors, live tissue's order, the stand, how it was won, terms, the Fame chunk | Finale ([FINALE.md](FINALE.md)) | Everyone |
@@ -635,8 +635,8 @@ out-of-sight spawn (strangers, day parties); road width; decals; Bacon Zombies f
 yes, always at a run).
 
 **Docs and tools in step 0:** `tools/strings_inventory.py` and one text lint with a baseline file, so it passes on
-today's tree: built ([WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#text-lint)). `docs/WRITING.md` (the writing guide moved out of LORE.md, every link fixed) is added in the same
-commit as the lint, not before (decision 16).
+today's tree, and `docs/WRITING.md` (the writing guide moved out of LORE.md, every link fixed): built
+([WRITING.md](../docs/WRITING.md), [WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#text-lint)).
 
 *Playable: today's game, fixed.*
 
@@ -851,7 +851,7 @@ system is built, and each with CLAUDE.md's Doc map and the README's doc list in 
 
 | New doc | Added in | Owns |
 |---|---|---|
-| `docs/WRITING.md` | Step 0 (with the lint) | The writing guide, moved out of LORE.md, and tone's rules |
+| `docs/WRITING.md` | Step 0 (with the lint): built | The writing guide, moved out of LORE.md, and tone's rules |
 | `docs/INFECTED.md` | Tribes phase 1 | Crawlers, tribes, day parties, the land, bodies |
 | `docs/DIALOGUE.md` | Phase 2 | Conversations, checks, tags, memory, lies, scenes |
 | `docs/FINALE.md` | Phase 6 | Routes, the lock, the stand as a control fight, terms |

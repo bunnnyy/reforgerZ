@@ -1141,11 +1141,9 @@ What it can't do:
 
 ### Text lint
 
-`tools/voice_lint.py` checks every line of player text in the scripts against the writing rules
-(lengths by channel, `!`, `%1`–`%9`, tokens, the never list, the Long Table and infected word lists,
-pronouns for seeded people, information lines keeping their token, clues, seeded names, repeated
-punchlines). It reads the list that `tools/strings_inventory.py` makes. Python 3 only, no server,
-about a second. Run it before every commit that changes player text; it must print `voice_lint: OK`.
+`tools/voice_lint.py` checks every line of player text in the scripts against the writing rules;
+what each check looks for is in [WRITING.md](WRITING.md#checking-text). It reads the list that
+`tools/strings_inventory.py` makes. Python 3 only, no server, about a second. Run it before every commit that changes player text; it must print `voice_lint: OK`.
 
 ```bash
 python3 tools/voice_lint.py                    # new findings only; exit 1 if any

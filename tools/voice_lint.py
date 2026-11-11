@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ReforgerZ text lint (docs/WORKBENCH_SETUP.md, "Text lint").
+"""ReforgerZ text lint (docs/WRITING.md, "Checking text"; how to run it: docs/WORKBENCH_SETUP.md, "Text lint").
 
     python3 tools/voice_lint.py                     # check; exit 1 on any finding not in the baseline
     python3 tools/voice_lint.py --all               # also list the findings the baseline holds
@@ -7,7 +7,8 @@
     python3 tools/voice_lint.py --update-baseline   # write today's findings to the baseline
     python3 tools/voice_lint.py --self-test         # plant bad lines and check that each check fails
 
-Checks every player-facing literal that tools/strings_inventory.py finds against the writing rules:
+Checks every player-facing literal that tools/strings_inventory.py finds against the rules in
+docs/WRITING.md:
 
     length       radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers and
                  talk-screen lines: 200 characters or fewer. Labels and choices: the action part

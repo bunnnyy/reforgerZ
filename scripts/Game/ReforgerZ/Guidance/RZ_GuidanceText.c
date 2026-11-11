@@ -1,6 +1,6 @@
 //! What the world says to new players: spawn scenario notes, the open radio channels,
 //! Bastion's loudspeakers, Red Hand taunts, Halcyon's flyers and wanderer gossip.
-//! Written to the voices in docs/LORE.md: Bastion clipped and tired, the Haven warm and
+//! Written to the voices in docs/WRITING.md: Bastion clipped and tired, the Haven warm and
 //! worried, the Red Hand mocking, Halcyon precise and a little guilty.
 class RZ_GuidanceText
 {

@@ -128,6 +128,5 @@ punchline	scripts/Game/ReforgerZ/World/RZ_Perimeter.c	f4dc755a3a0f  # "This road
 seed-name	scripts/Game/ReforgerZ/Missions/Haven/RZ_HavenHouseMissions.c	5fad2aa041dd  # Tomas
 seed-name	scripts/Game/ReforgerZ/Missions/Questlines/Haven/RZ_HavenQuestHelp.c	5fad2aa041dd  # Tomas
 seed-name	scripts/Game/ReforgerZ/Missions/RedHand/RZ_RedHandLoreMissions.c	5fad2aa041dd  # Tomas
-seed-name	scripts/Game/ReforgerZ/Puzzles/RZ_NoteText.c	4bdba3d7565a  # Weber
 seed-name	scripts/Game/ReforgerZ/Puzzles/RZ_NoteText.c	5fad2aa041dd  # Tomas
 seed-name	scripts/Game/ReforgerZ/World/RZ_LongTable.c	5fad2aa041dd  # Tomas

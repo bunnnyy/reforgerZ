@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ReforgerZ strings inventory (docs/WORKBENCH_SETUP.md, "Text lint").
+"""ReforgerZ strings inventory (docs/WRITING.md, "Checking text"; how to run it: docs/WORKBENCH_SETUP.md, "Text lint").
 
     python3 tools/strings_inventory.py                  # every player-facing literal, as a table
     python3 tools/strings_inventory.py --summary        # counts by channel and faction

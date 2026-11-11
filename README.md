@@ -113,7 +113,8 @@ maps, off by default.
 
 | Doc | What's in it |
 |---|---|
-| [LORE.md](docs/LORE.md) | The sealed Zone, the factions as people, tone, writing guide, endings |
+| [LORE.md](docs/LORE.md) | The sealed Zone, the factions as people, endings |
+| [WRITING.md](docs/WRITING.md) | How player text is written: tone, the voices, grey choices, the humour line, the text lint's rules |
 | [DESIGN.md](docs/DESIGN.md) | How every system works, by system |
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |

@@ -1,4 +1,4 @@
-//! What the factions say in the background (docs/LORE.md, "Writing guide"): their outposts and
+//! What the factions say in the background (docs/WRITING.md, "The voices"): their outposts and
 //! the people in them, routines, supply trucks, radio chatter, life events, truces and feuds,
 //! remembered moments and rumours. Small tables, one voice per faction:
 //!   Haven     warm, worried

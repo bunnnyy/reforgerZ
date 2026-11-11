@@ -19,7 +19,7 @@ behaviour, design, content or setup is complete until the docs match it.**
    - New **prefab, component, action or attribute** the user must set up → `docs/WORKBENCH_SETUP.md`
    - New or changed **screen, icon or widget name** a script looks up → `docs/UI.md` and `UI/LAYOUTS.md`
    - New, changed or removed **Workshop dependency** → `docs/MOD_STACK.md`
-   - Change to **setting, tone or factions** → `docs/LORE.md` / `docs/REPUTATION.md`
+   - Change to **setting or factions** → `docs/LORE.md` / `docs/REPUTATION.md`; to **tone or how text is written** → `docs/WRITING.md`
    - New or changed **tool, test script, Steam app, install step, folder or anything else the
      author's PC needs** → `docs/PC_SETUP.md` (and settle its "Not yet confirmed" rows when a session confirms them)
    - Anything that changes the **big picture** (features, status, doc list) → `README.md`
@@ -62,7 +62,7 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | File | Owns |
 |---|---|
 | `README.md` | What the mod is, feature summary, status, the doc list, the code tree |
-| `docs/LORE.md` | Setting (the sealed Zone), the factions as people, tone, writing guide, endings |
+| `docs/LORE.md` | Setting (the sealed Zone), the factions as people, endings |
 | `docs/DESIGN.md` | How every system works, organised by system (simplifications marked inline) |
 | `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
 | `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
@@ -71,11 +71,12 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `docs/MOD_STACK.md` | Workshop dependencies and why |
 | `docs/PC_SETUP.md` | The author's Windows PC, run by Claude Code: rules, Steam apps and paths, the repo, opening Workbench, local compile check and runtime test, play-testing, logs |
 | `docs/UI.md` | Art direction, the icon set, the screens, the UI scripts and data feeds, built vs planned (layout trees: `UI/LAYOUTS.md`) |
-| `docs/WORKBENCH_SETUP.md` | Turning the scripts into a playable mod: dependencies, factions, prefabs, settings, VERIFY list, log lines, play-test checklist |
+| `docs/WORKBENCH_SETUP.md` | Turning the scripts into a playable mod: dependencies, factions, prefabs, settings, VERIFY list, the compile check, text lint and test tools, log lines, play-test checklist |
+| `docs/WRITING.md` | How player text is written: tone, the voices, by channel, grey choices, phrasing, the humour line, template rules, and what the text lint checks |
 
 ## Writing style for docs
 - Plain, clear English, written for the mod author. Short sentences, tables for lists of things.
-- Player-facing text (broadcasts, notes, mission briefs) follows the writing guide in `docs/LORE.md`.
+- Player-facing text (broadcasts, notes, mission briefs) follows `docs/WRITING.md`.
 - Say honestly what's built, what's simplified and what's only designed.
 
 ## Code rules (Enforce Script)
@@ -99,7 +100,7 @@ Write conservatively:
   must exit 0 with no ReforgerZ errors or warnings.
 - Script folders are lowercase `scripts/` (the Linux server is case-sensitive).
 - Run `python3 tools/voice_lint.py` after changing player text: it must print `voice_lint: OK`
-  (the text lint; see `docs/WORKBENCH_SETUP.md`, "Text lint").
+  (the text lint: what it checks is in `docs/WRITING.md`, how to run it in `docs/WORKBENCH_SETUP.md`).
 - After changes to missions or cross-system logic, run `tools/runtime_test/run.sh` (60–90 min)
   and fix any script exception it reports.
 

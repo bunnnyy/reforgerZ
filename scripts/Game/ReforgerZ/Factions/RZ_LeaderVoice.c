@@ -1,4 +1,4 @@
-//! Everything a faction leader says (docs/LORE.md, "Writing guide"; docs/REPUTATION.md,
+//! Everything a faction leader says (docs/WRITING.md, "The voices"; docs/REPUTATION.md,
 //! "Faction leaders"). Kept as small tables so the same contract reads differently from a
 //! Greedy crew boss and a Merciful council head. Faction voices:
 //!   Haven     warm, worried

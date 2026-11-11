@@ -93,7 +93,7 @@ class RZ_Rng
 	}
 }
 
-//! Templated text in the LORE voice: personal, specific, a little wrong.
+//! Templated text in the notes voice (docs/WRITING.md): personal, specific, a little wrong.
 //! Everything takes an RZ_Rng so a mission's notes stay consistent with each other.
 class RZ_NoteText
 {

@@ -1420,8 +1420,7 @@ spot"); `/errands stats` shows the totals; `/errands spots` lists the spots near
    kinds, windows, Premise, Size, needs.
 3. `Why` fills slots and spawns nothing; `Still` re-checks; then `Scene`, `Talk`, `Resolve`, `Without`
    and `Twists`.
-4. Three variants of every line, in the giver's voice (the writing guide: [../docs/LORE.md](../docs/LORE.md)
-   today, WRITING.md once it exists), written for a figure standing still. One specific detail per line.
+4. Three variants of every line, in the giver's voice ([../docs/WRITING.md](../docs/WRITING.md)), written for a figure standing still. One specific detail per line.
    Never explain a system. Dark humour belongs to the Haven (said sideways) and the Red Hand, never to the
    Long Table. Every line passes the one lint.
 5. Add it to MISSIONS.md, run `tools/compile_check.sh`. The runtime test forces each Why true then false
