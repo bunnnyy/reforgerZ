@@ -1048,7 +1048,7 @@ SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder holding BaconZombies_62212
 ```
 
 It takes about 45 minutes (`QUICK=1`: about 12, one trial of each kind; `ONLY=share,perception-core`
-runs only the experiments named, listed in `run.sh`) and prints every result as a table, plus any
+runs only the experiments named, listed in `run.sh`; `ONLY=behaviour` runs the behaviour tests below) and prints every result as a table, plus any
 script exceptions. The infected are held at AI LOD 0, as near a player (on the 1.9 server they stay
 at LOD 0 with no player at all, so this changes nothing yet). Started with `-server`, the server always
 listens on UDP 2001 (it ignores `-bindPort`), so on Linux the lab runs it in its own network namespace
@@ -1059,7 +1059,41 @@ listens on UDP 2001 (it ignores `-bindPort`), so on Linux the lab runs it in its
 | Bacon's sight, sharing, hearing, speeds and idle behaviour against a spawned character; group and waypoint plumbing; health; server cost per agent | A real player (a client's movement, noise, camera), Bacon's behaviour under the mod's own spawner and settings, other zombie mods |
 
 None of this is part of the mod: the lab's files are copied into a throwaway addon folder whose
-`addon.gproj` gains Bacon Zombies as a dependency.
+`addon.gproj` gains Bacon Zombies as a dependency. The lab drops Special Zombies from that copy: with
+it among the dependencies, the 1.9 server compiles none of the addon's scripts, without an error
+(the lab tests Bacon only).
+
+**Behaviour tests (B1-B20).** `ONLY=behaviour` runs, instead of the experiments above, the lab tests
+for the planned infected behaviour layer (our code driving the infected beyond attack range; its
+design isn't in the repo until the author approves it). They run in lanes at places far apart,
+about 30 minutes in all (`QUICK=1`: about 16), and the frame-time tests run last, alone.
+`ONLY=b1,b6` runs only those.
+The tests mod a few of Bacon's scripted nodes and character methods (`RZL_Hooks.c`); each hook only
+reads fields a test set on the character, so with none set Bacon behaves as before.
+
+| Test | What it measures |
+|---|---|
+| B1 | A body spawned after its target is in reach, blind from its spawn frame (perception factor 0, Bacon's target intake closed), at 150/50/15/6 m: does it notice within 30 s? At 6 m it's then released. Control: factor 1 |
+| B2 | Every hook's calls, cumulative, each minute |
+| B3 | A group of 4 in a file, line and wedge, steered by per-member slots, with and without a held waypoint: how close each body gets to its slot |
+| B4 | A new waypoint 150 m away during a fight; how soon they take it after the kill |
+| B5 | What keeps a chase alive after the target vanishes, every 2 s; and a take-back 10 s in |
+| B6 | Releasing a steered body 30 m from a target: factor back, with and without an injected share event |
+| B7 | Speed caps (0.2-1) on a run order and in a chase, per prefab; SPRINT wanted in a chase; walk-and-stop with slots 10-30 m ahead; dynamic stance 0.6/0.7 |
+| B8 | Spawned walls 0.85-2.4 m high: Bacon's own climb, then the climb gate at 1.4 and 1.2 m |
+| B9 | A tall-walled yard (navmesh not rebuilt, then rebuilt) and a long wall, with the unstick ladder; the cost of a navmesh snap |
+| B10, B11 | A target in a house with its doors shut (then opened), and upstairs: does the infected open doors and climb stairs? |
+| B12 | AI LOD 2/4/6 and a 1 s think-loop wait on all agents: loops a second and order latency; AI off and on for lying bodies: wake time |
+| B13 | 1,000 terrain line checks and 1,000 80 m physics traces among houses, timed |
+| B14 | `SetJump`, `SetMeleeAttack` and `IsMeleeAttack` on an AI body; the melee gate; a sprint-and-jump |
+| B15 | Server frame time at 0/60/100/140 agents, with half the groups steered in walking formations |
+| B16 | Slots across a river and at its edge: does any body enter the water? |
+| B17 | The heavy run into destructible wooden fences |
+| B18 | A scripted shot at 100/170/230 m, heard by steered bodies (intake closed) and engaged ones |
+| B19 | A target inside a house, an infected outside at 10-30 m: does Bacon's sight go through walls? |
+| B20 | A fan of 5 and a pincer of two pairs closing on a target, written as tracks (`SVG_DIR=dir` draws them) |
+
+They need no client, so the player effects (a hold, a stagger, a knockdown) stay untested.
 
 ### Land survey without Workbench
 
