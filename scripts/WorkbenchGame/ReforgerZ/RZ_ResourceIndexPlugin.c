@@ -122,3 +122,57 @@ class RZ_DumpPlugin : WorkbenchPlugin
 		Workbench.ScriptDialog("ReforgerZ: Dump prefabs and classes", "", this);
 	}
 }
+
+//! Registers (imports) files listed one per line, as addon paths ("UI/Textures/ReforgerZ/X.png"),
+//! building their runtime resource; with Rebuild on it rebuilds already registered ones instead
+//! (after their .meta was edited, e.g. to the TextureUIAtlas preset).
+[WorkbenchPluginAttribute(name: "ReforgerZ: Register or rebuild resources", description: "Import listed files (PNG and the like) or rebuild them after a .meta change", wbModules: {"ResourceManager"}, awesomeFontCode: 0xF093)]
+class RZ_RegisterPlugin : WorkbenchPlugin
+{
+	[Attribute("$profile:RZ_RegisterList.txt", desc: "The list: addon paths, one per line")]
+	protected string m_sListPath;
+
+	[Attribute("0", desc: "Rebuild already registered files instead of registering")]
+	protected bool m_bRebuild;
+
+	override void Run()
+	{
+		ResourceManager rm = Workbench.GetModule(ResourceManager);
+		FileHandle list = FileIO.OpenFile(m_sListPath, FileMode.READ);
+		if (!rm || !list)
+			return;
+		string line;
+		int done;
+		while (list.ReadLine(line) >= 0)
+		{
+			line.Trim();
+			if (line.IsEmpty())
+				continue;
+			string absPath;
+			if (!RZ_WB.AbsolutePath("$ReforgerZ:" + line, absPath, true))
+			{
+				Print("[ReforgerZ] Register: not found " + line, LogLevel.WARNING);
+				continue;
+			}
+			// Already registered (registering fails): rebuild it, so a changed .meta (a preset) takes effect.
+			if (m_bRebuild || !rm.RegisterResourceFile(absPath, true))
+			{
+				foreach (string config : {"PC", "XBOX_ONE", "XBOX_SERIES", "PS4", "PS5", "HEADLESS"})
+				{
+					rm.RebuildResourceFile(absPath, config, false);
+				}
+			}
+			done++;
+		}
+		list.Close();
+		string verb = "registered";
+		if (m_bRebuild)
+			verb = "rebuilt";
+		Print("[ReforgerZ] Register: " + done.ToString() + " files " + verb);
+	}
+
+	override void Configure()
+	{
+		Workbench.ScriptDialog("ReforgerZ: Register or rebuild resources", "", this);
+	}
+}

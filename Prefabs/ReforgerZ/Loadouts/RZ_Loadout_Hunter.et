@@ -26,6 +26,9 @@ SCR_ChimeraCharacter : "{2CDFBF355F3410DD}Prefabs/Characters/Factions/CIV/Dockwo
    InitialInventoryItems {
     ItemsInitConfigurationItem "{60DCBCECAC6C6E65}" {
      TargetStorage "Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_green.et"
+     PrefabsToSpawn {
+      "{77595CB9F596E6AC}Prefabs/Weapons/Magazines/Magazine_762x54_SVD_10rnd_LPS.et"
+     }
     }
    }
   }

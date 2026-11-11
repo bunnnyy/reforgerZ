@@ -125,6 +125,45 @@ SCR_ChimeraCharacter : "{4E29194BA809DF32}Prefabs/Characters/Factions/INDFOR/FIA
      m_sItemPrefab "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
      m_sDisplayName "Painkillers"
     }
+    RZ_FactionShopAction "{2C21F3090D20F322}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{EC9F8EC5CE240936}" {
+      Name "Buy"
+     }
+     m_eFaction INSTITUTE
+     m_eRequiredTier KNOWN
+     m_iFavorCost 4
+     m_sItemPrefab "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
+     m_sDisplayName "Clean dressing"
+    }
+    RZ_FactionShopAction "{CDB86C83E3489ABC}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{DFF3F97C351BAF83}" {
+      Name "Buy"
+     }
+     m_eFaction INSTITUTE
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 15
+     m_sItemPrefab "{527D7C5D2E476BDC}Prefabs/Items/Medicine/SalineBag_01/SalineBag_USSR_01.et"
+     m_sDisplayName "Saline bag"
+    }
+    RZ_FactionShopAction "{698C7A9E4E211085}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{D92239505B2DD8B3}" {
+      Name "Buy"
+     }
+     m_eFaction INSTITUTE
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 8
+     m_sItemPrefab "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
+     m_sDisplayName "Tourniquet"
+    }
     RZ_FactionServiceAction "{6AD67DC2A3425409}" {
      ParentContextList {
       "default"
