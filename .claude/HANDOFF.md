@@ -76,11 +76,11 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 34ab931: **World > Traces > Kit > Season mark, emptied** (WBS §4, Traces).
 
 **From the cloud's missions and errands pass of 2026-11-12 (all optional; WBS §4, "Missions")**
-- 2026-11-12 HASH1: prop `RZ_ErrandProp_Effects.et`, slot **Missions > Errands > Props > Effects** (WBS §4).
-- 2026-11-12 HASH1: prop `RZ_ErrandProp_Crate.et`, slot **Missions > Errands > Props > Crate** (WBS §4).
-- 2026-11-12 HASH1: prop `RZ_ErrandProp_Papers.et`, slot **Missions > Errands > Props > Papers** (WBS §4).
-- 2026-11-12 HASH1: prop `RZ_ErrandProp_Parts.et`, slot **Missions > Errands > Props > Parts** (WBS §4).
-- 2026-11-12 HASH1: play-test Crash Site's recovery team (a real squad from **Missions > Contracts > Bastion squad**) and Lost Colleague's search and walk-in (WBS §8, the story jobs).
+- 2026-11-12 3e8f53a: prop `RZ_ErrandProp_Effects.et`, slot **Missions > Errands > Props > Effects** (WBS §4).
+- 2026-11-12 3e8f53a: prop `RZ_ErrandProp_Crate.et`, slot **Missions > Errands > Props > Crate** (WBS §4).
+- 2026-11-12 3e8f53a: prop `RZ_ErrandProp_Papers.et`, slot **Missions > Errands > Props > Papers** (WBS §4).
+- 2026-11-12 3e8f53a: prop `RZ_ErrandProp_Parts.et`, slot **Missions > Errands > Props > Parts** (WBS §4).
+- 2026-11-12 3e8f53a: play-test Crash Site's recovery team (a real squad from **Missions > Contracts > Bastion squad**) and Lost Colleague's search and walk-in (WBS §8, the story jobs).
 
 **Manual entries (WBS §4)**
 - 2026-11-11 76b52d0: optional lists: loot tables, extra recipes, shop items, Requisition items (WBS §4, "Hand-set list entries").
