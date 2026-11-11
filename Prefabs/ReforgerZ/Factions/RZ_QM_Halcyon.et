@@ -152,6 +152,69 @@ SCR_ChimeraCharacter : "{4E29194BA809DF32}Prefabs/Characters/Factions/INDFOR/FIA
      }
      m_eService AMENDS
     }
+    RZ_FactionServiceAction "{1011D34AAB533367}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8496F787BDAABBA2}" {
+      Name "Settle up"
+     }
+     m_eService SETTLE
+    }
+    RZ_FactionServiceAction "{FCDFE50951B80EF2}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{75AE35B3E01F8DCD}" {
+      Name "Range map"
+     }
+     m_eService RANGE_MAP
+    }
+    RZ_FactionServiceAction "{208904C4FBA5F955}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8A19600CE20C6E1E}" {
+      Name "Call box"
+     }
+     m_eService CALL_BOX
+    }
+    RZ_LeaderAction "{8E3F26A175D93F0A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{AC9B98A0ED9D1598}" {
+      Name "Ask about the season"
+     }
+     m_eKind SEASON
+    }
+    RZ_LeaderAction "{0C363CDD179F0EA8}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{60D2C807F233B90F}" {
+      Name "Ask where to look"
+     }
+     m_eKind LOOK
+    }
+    RZ_LeaderAction "{C00C23973722E570}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8085B530046E4574}" {
+      Name "Answer: the usual way"
+     }
+     m_eKind ANSWER_FIRST
+    }
+    RZ_LeaderAction "{DDDDB3A8A1392FD7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{9BEAC8AF9593195A}" {
+      Name "Answer: the other way"
+     }
+     m_eKind ANSWER_OTHER
+    }
    }
   }
  }

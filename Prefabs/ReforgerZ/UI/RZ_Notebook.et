@@ -3,6 +3,36 @@ GenericEntity : "{59E8CDFB824DE3B9}Prefabs/Props/Civilian/Notebook_01_Single_Mar
  components {
   RZ_NotebookGadgetComponent "{6C1F4A7B92D3E05A}" {
   }
+  ActionsManagerComponent "{59827E6AEB7B5731}" {
+   additionalActions {
+    RZ_DeadNameAction "{71E0E2394BE9939E}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{D7D65FE242B15DD8}" {
+      Name "If I die: say my name, or don't"
+     }
+    }
+    RZ_EpiNotebookAction "{1886AC1460712815}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{EDCA2FF0C97373FD}" {
+      Name "The season, as the Zone tells it"
+     }
+     m_eKind SEASON
+    }
+    RZ_EpiNotebookAction "{ED25E32D704E2387}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{DF6CAE1578704714}" {
+      Name "My name in the world"
+     }
+     m_eKind ANONYMOUS
+    }
+   }
+  }
   InventoryItemComponent "{59827E686F66AA7D}" {
    Attributes SCR_ItemAttributeCollection "{59827E680A4F5131}" {
     ItemDisplayName UIInfo "{59827E68154045CB}" {

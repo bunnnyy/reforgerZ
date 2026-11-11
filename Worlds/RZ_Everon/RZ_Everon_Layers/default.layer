@@ -1,0 +1,39 @@
+SCR_AIWorld : "{70CCCF16487C927F}Prefabs/AI/SCR_AIWorld_Eden.et" {
+ components {
+  NavmeshWorldComponent "{5584F30E67F617AD}" {
+   NavmeshSettings NavmeshWorld "{50FC63BEBE3973C5}" {
+    NavmeshFilesConfig BaseNavmeshFilesConfig "{60B8A2995A7E8BC2}" : "{8BBC73472092902E}Configs/Navmesh/Navmesh_GM_Eden_Soldier.conf" {
+    }
+   }
+  }
+  NavmeshWorldComponent "{5584F30EEFEE1223}" {
+   NavmeshSettings ChimeraNavmeshWorld "{50FC63BEBE3973C5}" {
+    NavmeshFilesConfig BaseNavmeshFilesConfig "{60B8A299509CF377}" {
+     NavmeshFile "{C35ECF3276824654}worlds/GameMaster/Navmeshes/GM_Eden_vehicles.nmn"
+    }
+   }
+  }
+ }
+ coords 4800 30 6600
+}
+PerceptionManager "6AD75E0A1043A3B0" : "{028DAEAD63E056BE}Prefabs/World/Game/PerceptionManager.et" {
+ coords 4805 30 6600
+}
+SCR_FactionManager RZ_FactionManager1 : "{0DBAC7BFBF8129CA}Prefabs/MP/Managers/Factions/RZ_FactionManager.et" {
+ coords 4825 30 6600
+}
+SCR_BaseGameMode RZ_GameMode : "{73258179898F3E70}Prefabs/ReforgerZ/Core/RZ_GameMode.et" {
+ coords 4830 30 6600
+}
+RadioManagerEntity : "{B8E09FAB91C4ECCD}Prefabs/Systems/Radio/RadioManager.et" {
+ coords 4810 30 6600
+}
+ScriptedChatEntity : "{F69BC912AC8236F9}Prefabs/MP/ScriptedChatEntity.et" {
+ coords 4815 30 6600
+}
+ItemPreviewManagerEntity "6AD75E0A1043AE6D" : "{9F18C476AB860F3B}Prefabs/World/Game/ItemPreviewManager.et" {
+ coords 4820 30 6600
+}
+SCR_LoadoutManager : "{E15E0AF459B21E24}Prefabs/MP/Managers/Loadouts/RZ_LoadoutManager.et" {
+ coords 4835 30 6600
+}

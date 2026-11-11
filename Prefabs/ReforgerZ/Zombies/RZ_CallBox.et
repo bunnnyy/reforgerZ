@@ -1,0 +1,18 @@
+GenericEntity : "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    RZ_CallBoxAction "{6AD75E0A341D378A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD75E0A341D0102}" {
+      Name "Play the recorded call"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -254,6 +254,60 @@ SCR_ChimeraCharacter : "{3AE3C1A509298D9D}Prefabs/Characters/Factions/CIV/Generi
      m_sItemPrefab "{527D7C5D2E476BDC}Prefabs/Items/Medicine/SalineBag_01/SalineBag_USSR_01.et"
      m_sDisplayName "Saline bag"
     }
+    RZ_FactionServiceAction "{83DF684E3A4A2E28}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{EF51C6971A740A77}" {
+      Name "Settle up"
+     }
+     m_eService SETTLE
+    }
+    RZ_FactionServiceAction "{D1B6D9C505CC39B7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{0DDB36EDEB9E75F9}" {
+      Name "Ask about the roads"
+     }
+     m_eService ROADS
+    }
+    RZ_LeaderAction "{C51804829FC34D7A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2941A048B1858358}" {
+      Name "Ask about the season"
+     }
+     m_eKind SEASON
+    }
+    RZ_LeaderAction "{CCA56F9833B0C4AE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{9F5D91151BF2FF9F}" {
+      Name "Ask where to look"
+     }
+     m_eKind LOOK
+    }
+    RZ_LeaderAction "{2E4F35357B9CB274}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A93FF8E15399B8A}" {
+      Name "Answer: the usual way"
+     }
+     m_eKind ANSWER_FIRST
+    }
+    RZ_LeaderAction "{3210730BABCDD697}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7DB3F4D9460C3FE4}" {
+      Name "Answer: the other way"
+     }
+     m_eKind ANSWER_OTHER
+    }
    }
   }
  }

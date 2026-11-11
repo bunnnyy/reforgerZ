@@ -8,8 +8,6 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 ## For the PC
 
 **Minimum playable subset first (WBS §2)**
-- 2026-11-11 61b31e1: `RZ_QM_Haven.et`, `RZ_QM_Bastion.et`, `RZ_QM_RedHand.et`, `RZ_QM_Halcyon.et` each lack 4 × `RZ_LeaderAction` (Kind SEASON, LOOK, ANSWER_FIRST, ANSWER_OTHER). Add them by hand (the plugin skips existing prefabs). WBS §2 table.
-- 2026-11-11 10f83ce: the same quartermasters lack `RZ_FactionServiceAction`s. Haven needs SETTLE and ROADS; Bastion needs SETTLE and CONTACT_BOARD; Red Hand and Halcyon need 3 more each (check the Service values against WBS §2).
 - 2026-11-11 76b52d0: play the minimum subset on `Missions/RZ_Arland.conf`. Check the log lines in WBS §7, report every script exception and missing log line here, and run the play-test checklist in WBS §8.
 
 **UI (WBS §4, "Setting up the UI")**
@@ -17,11 +15,8 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 98c9c51: step 5, the deploy panel (`RZ_BackgroundPanel.layout`); step 6, the map (set **UI > Map icon layout** to `RZ_MapIcon.layout`). Then turn **UI > Board menus** on once the board's menu works.
 
 **Prefabs missing from `Prefabs/` (run "ReforgerZ: Create prefabs", then finish by hand; WBS §4)**
-- 2026-11-11 9584a6a: `World/RZ_SeasonMark.et`.
 - 2026-11-11 61b31e1: `World/RZ_EpilogueBoard.et`, `World/RZ_EpilogueCandle.et`, `World/RZ_EpilogueTable.et` (WBS §4, Epilogue).
-- 2026-11-11 10f83ce: `Zombies/RZ_TribeTag.et`, `Zombies/RZ_CallBox.et`, `Zombies/RZ_IdCard.et`.
 - 2026-11-11 94217f5: `Zombies/RZ_CallSound.et`, `Zombies/RZ_GreatCallSound.et`.
-- 2026-11-11 61b31e1: `UI/RZ_Notebook.et` lacks `RZ_DeadNameAction` (10f83ce) and 2 × `RZ_EpiNotebookAction` (61b31e1).
 
 **Manual entries (WBS §4)**
 - 2026-11-11 55f071f: camp life. Make the smart-action waypoint `AI/RZ_WP_SmartAction.et`, the 49 compositions and the kits (WBS §4, "Camp life: the compositions and kits"). The 21 original pieces come first.
@@ -38,7 +33,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 ## For the cloud
 
 - 2026-11-12 (PC): `tools/compile_check.sh` picked the Store's `python3` shortcut on Windows and failed the dialogue lint; patched it to probe python3/python/py like the runtime test (one-line fix, pushed). Windows compile check: OK, 0 ReforgerZ warnings.
-- 2026-11-12 (PC): the author wants the build on **Everon** now. PC is making `Worlds/RZ_Everon/RZ_Everon.ent` (sub-scene of Eden, `SCR_AIWorld_Eden`) and `Missions/RZ_Everon.conf`; Arland stays as the small test world. Please make the docs (WBS "The world", README, PC_SETUP play-test row) name Everon as the main world once the PC reports the scenario GUID here.
+- 2026-11-12 (PC): the author wants the build on **Everon** now. PC is making `Worlds/RZ_Everon/RZ_Everon.ent` (sub-scene of Eden, `SCR_AIWorld_Eden`) and `Missions/RZ_Everon.conf`; Arland stays as the small test world. Done on the PC: world `{4A535A0DE93773EA}Worlds/RZ_Everon/RZ_Everon.ent` (sub-scene of Eden; AI world `SCR_AIWorld_Eden` with `Navmesh_GM_Eden_Soldier.conf` + `GM_Eden_vehicles.nmn`, the same managers as Arland), scenario `{933D8C91F1C91F38}Missions/RZ_Everon.conf`. Loads cleanly in Workbench and boots on the dedicated server (0 exceptions; 96 settlements, 14 holdings, 0 road checkpoints). Please update the docs (WBS "The world", README, PC_SETUP) to name Everon as the main world.
 
 ## Claims
 
@@ -47,4 +42,4 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 ## Status
 
 - Cloud, 2026-11-11 76b52d0: merging 7 build branches still running: finale, missions and errands, dialogue and reputation, disguise, tribes and attacks, traces phases 1/2/5, majors and epilogue. Each one adds manifest entries, and those land here when merged.
-- PC, 2026-11-12: compile check OK on Windows. Next: Workbench, Everon world, then the minimum-subset QM actions and missing prefabs.
+- PC, 2026-11-12: Everon world built; QM and notebook actions added (text, from the manifest); plugin made SeasonMark, TribeTag, CallBox, IdCard and filled 15 slots. Next: the remaining missing prefabs, camp life, Workbench Play test.

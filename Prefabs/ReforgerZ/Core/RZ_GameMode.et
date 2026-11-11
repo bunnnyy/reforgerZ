@@ -1,26 +1,7 @@
 SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
  ID "56B2B479C6B96951"
  components {
-  SCR_RespawnSystemComponent "{56B2B4793051E7C9}" {
-   m_SpawnLogic SCR_MenuSpawnLogic "{5D36888CC966608A}" {
-   }
-  }
   RZ_GameModeComponent "{6AD67DC2A8FD39B3}" {
-   m_UISettings RZ_UISettings "{4054E5A3C0EBB38F}" {
-    m_sIconImageset "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-    m_sNoticeLayout "{9DDD3521A90DB6BA}UI/layouts/ReforgerZ/RZ_NoticeCard.layout"
-    m_sMissionRowLayout "{D3B8F2E9CFE9954B}UI/layouts/ReforgerZ/RZ_MissionRow.layout"
-    m_sRadioRowLayout "{A9D709D45AF2C174}UI/layouts/ReforgerZ/RZ_RadioRow.layout"
-    m_sStandingPage "{C712EC69C8D01A1F}UI/layouts/ReforgerZ/RZ_StandingPage.layout"
-    m_sJournalPage "{47813396177D0DFF}UI/layouts/ReforgerZ/RZ_JournalPage.layout"
-    m_sRadioPage "{F10998E808395B7F}UI/layouts/ReforgerZ/RZ_RadioPage.layout"
-    m_sMapKeyPage "{82B0514CC2F0D006}UI/layouts/ReforgerZ/RZ_MapKeyPage.layout"
-    m_sHallPage "{FCD5A2E4F7512EFF}UI/layouts/ReforgerZ/RZ_HallPage.layout"
-    m_sTalkReplyLayout "{187F52CB9738023F}UI/layouts/ReforgerZ/RZ_TalkReply.layout"
-    m_sCarJobLayout "{CE4B7C77AA100CFB}UI/layouts/ReforgerZ/RZ_CarJob.layout"
-    m_sShopItemLayout "{73145BE069067DCE}UI/layouts/ReforgerZ/RZ_ShopItem.layout"
-    m_sNotebookPrefab "{6C1F4A7B92D3E0C1}Prefabs/ReforgerZ/UI/RZ_Notebook.et"
-   }
    m_sSpawnPointPrefab "{BAFE0A6ECC397363}Prefabs/ReforgerZ/Core/RZ_SpawnPoint.et"
    m_PowerSettings RZ_PowerSettings "{6AD67DC2B93AE26F}" {
     m_sControlPrefab "{9C7B3BF76C03455E}Prefabs/ReforgerZ/World/RZ_PowerControl.et"
@@ -41,14 +22,6 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sMoveWaypointPrefab "{750A8D1695BD6998}Prefabs/AI/Waypoints/AIWaypoint_Move.et"
     m_sEmptyGroupPrefab "{E15B91D284F1ED15}622120A5448725E3/Prefabs/Groups/Group_Zombies_Base.et"
    }
-   m_CrawlerSettings RZ_CrawlerSettings "{084EF510E01C3F9A}" {
-    m_aPrefabs {
-     "{1228A830F9454F4B}622120A5448725E3/Prefabs/Characters/Zombie_CIV.et" "{6734045E1A07091D}622120A5448725E3/Prefabs/Characters/Variants/Variant_CIV_Regular1.et"
-    }
-    m_aBloatedPrefabs {
-     "{84862F078179934E}622120A5448725E3/Prefabs/Characters/Variants/Variant_Exploder1.et"
-    }
-   }
    m_AdaptationSettings RZ_AdaptationSettings "{6AD67DC2B0E9A642}" {
     m_aRunnerPrefabs {
      "{84862F078179934E}622120A5448725E3/Prefabs/Characters/Variants/Variant_Exploder1.et" "{E8D21BE73DBD1C60}622120A5448725E3/Prefabs/Characters/Variants/Variant_Exploder2.et"
@@ -58,6 +31,37 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     }
     m_aScreamerPrefabs {
      "{C07242B84C36EBE9}Prefabs/Characters/Factions/INFECTED_CIV/Special/Infected_Character_Special_Exploder_Hazmat.et"
+    }
+   }
+   m_TribeSettings RZ_TribeSettings "{6AD75E0A35501EE0}" {
+    m_aAlphaPrefabs {
+     "{7F6C5AD53D6B039D}622120A5448725E3/Prefabs/Characters/Heavy/Zombie_Heavy_Tank.et"
+    }
+    m_aGuardPrefabs {
+     "{2A5BF0C801520AE5}622120A5448725E3/Prefabs/Characters/Variants/Variant_US_Rifleman.et" "{FAF1350A99D893E7}622120A5448725E3/Prefabs/Characters/Variants/Variant_USSR_Rifleman.et"
+    }
+    m_aHunterPrefabs {
+     "{1228A830F9454F4B}622120A5448725E3/Prefabs/Characters/Zombie_CIV.et" "{6734045E1A07091D}622120A5448725E3/Prefabs/Characters/Variants/Variant_CIV_Regular1.et" "{2A5BF0C801520AE5}622120A5448725E3/Prefabs/Characters/Variants/Variant_US_Rifleman.et" "{FAF1350A99D893E7}622120A5448725E3/Prefabs/Characters/Variants/Variant_USSR_Rifleman.et"
+    }
+    m_aScoutPrefabs {
+     "{1228A830F9454F4B}622120A5448725E3/Prefabs/Characters/Zombie_CIV.et" "{6734045E1A07091D}622120A5448725E3/Prefabs/Characters/Variants/Variant_CIV_Regular1.et"
+    }
+    m_aYoungPrefabs {
+     "{1228A830F9454F4B}622120A5448725E3/Prefabs/Characters/Zombie_CIV.et" "{6734045E1A07091D}622120A5448725E3/Prefabs/Characters/Variants/Variant_CIV_Regular1.et"
+    }
+    m_aMilitaryPrefabs {
+     "{2A5BF0C801520AE5}622120A5448725E3/Prefabs/Characters/Variants/Variant_US_Rifleman.et" "{FAF1350A99D893E7}622120A5448725E3/Prefabs/Characters/Variants/Variant_USSR_Rifleman.et"
+    }
+    m_sIdCardPrefab "{9B7E24A83266BD0B}Prefabs/ReforgerZ/Zombies/RZ_IdCard.et"
+    m_sTagPrefab "{67764A46B22A9E9C}Prefabs/ReforgerZ/Zombies/RZ_TribeTag.et"
+    m_sCallBoxPrefab "{4D96DFDB98A9C365}Prefabs/ReforgerZ/Zombies/RZ_CallBox.et"
+   }
+   m_CrawlerSettings RZ_CrawlerSettings "{084EF510E01C3F9A}" {
+    m_aPrefabs {
+     "{1228A830F9454F4B}622120A5448725E3/Prefabs/Characters/Zombie_CIV.et" "{6734045E1A07091D}622120A5448725E3/Prefabs/Characters/Variants/Variant_CIV_Regular1.et"
+    }
+    m_aBloatedPrefabs {
+     "{84862F078179934E}622120A5448725E3/Prefabs/Characters/Variants/Variant_Exploder1.et"
     }
    }
    m_sLabPrefab "{0B09C9D0D94EBFA0}Prefabs/ReforgerZ/Cure/RZ_Lab.et"
@@ -177,6 +181,13 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sRedHandCrew "{ECB246D273480AAE}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_RedHand.et"
     m_sHalcyonCrew "{A43CF9781613D2D1}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Halcyon.et"
    }
+   m_CampLifeSettings RZ_CampLifeSettings "{6AD75E0A3906EE0C}" {
+    m_sPatrolWaypoint "{22A875E30470BD4F}Prefabs/AI/Waypoints/AIWaypoint_Patrol.et"
+    m_sCycleWaypoint "{35BD6541CBB8AC08}Prefabs/AI/Waypoints/AIWaypoint_Cycle.et"
+    m_sLoiterWaypoint "{4ECD14650D82F5CA}Prefabs/AI/Waypoints/AIWaypoint_Loiter_CO.et"
+    m_sObservationWaypoint "{97FB527ECC7CA49E}Prefabs/AI/Waypoints/AIWaypoint_ObservationPost.et"
+    m_sGroupPrefab "{000CD338713F2B5A}Prefabs/AI/Groups/Group_Base.et"
+   }
    m_GuidanceSettings RZ_GuidanceSettings "{6AD67DC2B8040E09}" {
     m_sRadioPrefab "{6F4EF5D0232D4827}Prefabs/ReforgerZ/Guidance/RZ_WindupRadio.et"
     m_sCarWreckPrefab "{02AC434CE3C3B56A}Prefabs/ReforgerZ/Guidance/RZ_CarWreck.et"
@@ -247,8 +258,30 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sBastionCrewPrefab "{C02A0C68FB9A45BD}Prefabs/ReforgerZ/Factions/RZ_BastionPostCrew.et"
     m_sRedHandCrewPrefab "{3790F412BF585C32}Prefabs/ReforgerZ/Factions/RZ_RedHandPostCrew.et"
    }
+   m_SharedSettings RZ_SharedSettings "{6AD75E0A340B85EE}" {
+    m_sSeasonMarkPrefab "{84CF52BC897D197C}Prefabs/ReforgerZ/World/RZ_SeasonMark.et"
+   }
+   m_UISettings RZ_UISettings "{4054E5A3C0EBB38F}" {
+    m_sIconImageset "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+    m_sNoticeLayout "{9DDD3521A90DB6BA}UI/layouts/ReforgerZ/RZ_NoticeCard.layout"
+    m_sMissionRowLayout "{D3B8F2E9CFE9954B}UI/layouts/ReforgerZ/RZ_MissionRow.layout"
+    m_sRadioRowLayout "{A9D709D45AF2C174}UI/layouts/ReforgerZ/RZ_RadioRow.layout"
+    m_sTalkReplyLayout "{187F52CB9738023F}UI/layouts/ReforgerZ/RZ_TalkReply.layout"
+    m_sCarJobLayout "{CE4B7C77AA100CFB}UI/layouts/ReforgerZ/RZ_CarJob.layout"
+    m_sShopItemLayout "{73145BE069067DCE}UI/layouts/ReforgerZ/RZ_ShopItem.layout"
+    m_sStandingPage "{C712EC69C8D01A1F}UI/layouts/ReforgerZ/RZ_StandingPage.layout"
+    m_sJournalPage "{47813396177D0DFF}UI/layouts/ReforgerZ/RZ_JournalPage.layout"
+    m_sRadioPage "{F10998E808395B7F}UI/layouts/ReforgerZ/RZ_RadioPage.layout"
+    m_sMapKeyPage "{82B0514CC2F0D006}UI/layouts/ReforgerZ/RZ_MapKeyPage.layout"
+    m_sHallPage "{FCD5A2E4F7512EFF}UI/layouts/ReforgerZ/RZ_HallPage.layout"
+    m_sNotebookPrefab "{6C1F4A7B92D3E0C1}Prefabs/ReforgerZ/UI/RZ_Notebook.et"
+   }
+  }
+  SCR_RespawnSystemComponent "{56B2B4793051E7C9}" {
+   m_SpawnLogic SCR_MenuSpawnLogic "{5D36888CC966608A}" {
+   }
   }
  }
- PlayerControllerPrefab "{413BFD5621B68ECE}Prefabs/Characters/Core/RZ_PlayerController.et"
  coords 0 0 0
+ PlayerControllerPrefab "{413BFD5621B68ECE}Prefabs/Characters/Core/RZ_PlayerController.et"
 }

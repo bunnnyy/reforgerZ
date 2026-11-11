@@ -1,0 +1,18 @@
+GenericEntity : "{59E8CDFB824DE3B9}Prefabs/Props/Civilian/Notebook_01_Single_MarbleBlack_CP.et" {
+ ID "5256876588C6DFCB"
+ components {
+  ActionsManagerComponent "{59827E6AEB7B5731}" {
+   additionalActions {
+    RZ_TagAction "{6AD75E0A341B4294}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD75E0A341B4F97}" {
+      Name "Tag it"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -274,6 +274,69 @@ SCR_ChimeraCharacter : "{B4977616CD19191A}Prefabs/Characters/Factions/INDFOR/FIA
      }
      m_eService AMENDS
     }
+    RZ_FactionServiceAction "{0EBEC4014178144F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{CC1E98CE7F0550E0}" {
+      Name "Settle up"
+     }
+     m_eService SETTLE
+    }
+    RZ_FactionServiceAction "{2FC72FC1F3F24282}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{52E4C6D2BC9B54DB}" {
+      Name "Map of the crews"
+     }
+     m_eService CREW_MAP
+    }
+    RZ_FactionServiceAction "{BFBAD63D99AC9BC0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{710BEA497FBCFA45}" {
+      Name "Tag frequencies"
+     }
+     m_eService FREQUENCIES
+    }
+    RZ_LeaderAction "{7CD05D6DC887FFF4}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B3379476F372F817}" {
+      Name "Ask about the season"
+     }
+     m_eKind SEASON
+    }
+    RZ_LeaderAction "{D238B658D2D08468}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E10C0B7C02CEE1B1}" {
+      Name "Ask where to look"
+     }
+     m_eKind LOOK
+    }
+    RZ_LeaderAction "{B7EF5928D5CF0A3A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{9EB5E416464CBD51}" {
+      Name "Answer: the usual way"
+     }
+     m_eKind ANSWER_FIRST
+    }
+    RZ_LeaderAction "{3347E86B5CF75D9E}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E215841514F081BF}" {
+      Name "Answer: the other way"
+     }
+     m_eKind ANSWER_OTHER
+    }
    }
   }
  }
