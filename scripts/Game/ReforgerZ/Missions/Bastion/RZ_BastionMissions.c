@@ -454,6 +454,7 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The line held. Now a dozen people stand at the barrier with bags: \"We're not sick. Look at us.\" The sergeant says turn them back. He also says it's your call, since you're the one with the rifle on it.",
 			"Turn them back|Let them through", "decide who passes the barrier", 0);
+		m_Choice.Asset(1, RZ_CureFinale.INDEP);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -310,6 +310,7 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The truck's in. The driver catches your sleeve by the tailgate: \"Two crates fell off on the way. Raiders. You saw them. A hungry house is going to find them on its step tonight.\" Answer him at the truck.",
 			"Don't. They go in the store|Let him. Raiders took them", "decide what happened to two crates", 0);
+		m_Choice.Asset(1, RZ_CureFinale.INDEP);
 	}
 
 	//------------------------------------------------------------------------------------------------

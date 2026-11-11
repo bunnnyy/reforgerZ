@@ -76,5 +76,8 @@ class RZ_Errand_AWordTo : RZ_ErrandCard
 		array<int> who = {playerId};
 		string subject = string.Format("%1|%2", RZ_WorldFacts.Safehouse(e.m_iHouse), e.m_sSubject);
 		RZ_WorldFacts.Get().Memory().Record("errand.word", subject, how[w.m_iIndex], RZ_WorldMemory.SOURCE_ERRAND, false, who);
+		// A threat in it: the two houses fall out (the reason house.feud, which The Ledger answers)
+		if (w.m_iIndex == 2 && e.m_iValue >= 0)
+			RZ_ReasonPosts.Feud(dealer.GetGM(), e.m_iHouse, e.m_iValue);
 	}
 }

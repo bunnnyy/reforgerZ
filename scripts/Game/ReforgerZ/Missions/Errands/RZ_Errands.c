@@ -261,6 +261,59 @@ class RZ_Errands
 	RZ_Strangers GetStrangers() { return m_Strangers; }
 	RZ_Locals GetLocals() { return m_Locals; }
 
+	// ================================================================ Hand to Hand, for the finale
+	//------------------------------------------------------------------------------------------------
+	//! Hand to Hand's promises (docs/ERRANDS.md, the cards), read-only for the finale: the living
+	//! locals of safehouse `house` promised by hand, by anyone or, with `ident`, by that identity.
+	int PromisedAt(int house, string ident = "")
+	{
+		if (!m_Locals || house < 0)
+			return 0;
+
+		array<RZ_Local> here = {};
+		m_Locals.AtHouse(house, here);
+		int n = 0;
+		foreach (RZ_Local l : here)
+		{
+			if (l.alive && Promised(l, ident))
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The living promised locals whose house is within `radius` of pos (by anyone, or by `ident`):
+	//! the ones who'd be there at a gate or a sit-in near it.
+	int PromisedNear(vector pos, float radius, string ident = "")
+	{
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (!houses)
+			return 0;
+
+		int n = 0;
+		for (int i = 0; i < houses.Count(); i++)
+		{
+			RZ_Safehouse h = houses.Get(i);
+			if (h && RZ_Util.DistXZ(h.m_vPos, pos) <= radius)
+				n += PromisedAt(i, ident);
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool Promised(RZ_Local l, string ident)
+	{
+		foreach (int i, string who : l.idents)
+		{
+			if (l.memos[i] == "promised" && (ident.IsEmpty() || who == ident))
+				return true;
+		}
+
+		return false;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! A player's shot within `radius` of pos in the last `seconds` (strangers' "a fight" rule).
 	bool RecentShot(vector pos, float radius, float seconds)
@@ -468,6 +521,8 @@ class RZ_Errands
 			m_fSlow = 0;
 			// The world memory's town reasons are written whether errands are on or not
 			RZ_WorldWriters.WatchTowns(m_GM);
+			// The reasons read from other systems' facts (faults, holdings, leaders)
+			RZ_ReasonPosts.Watch(m_GM, m_Faults);
 			// The lie store's events (visits, road news, the rumour rounds), errands on or not
 			RZ_WorldFacts lieFacts = m_GM.GetFacts();
 			if (lieFacts)

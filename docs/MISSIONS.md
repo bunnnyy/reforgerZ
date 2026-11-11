@@ -146,6 +146,16 @@ takes the default. Each writes one world record, answers reasons, and has a fall
 is in each row's Status above. Never as a questline's stage (the stage's story decides), and never in
 the questlines' raids that reuse Lab Defence or the arc that reuses Water Survey.
 
+**Route assets.** Some options give the decider an ally for one of the finale's routes
+([FINALE.md](FINALE.md#before-the-gate-pitches-and-route-assets)): Bastion for Radio Relay's shared net,
+Rescue the Kids' aunt at the post, Lab Defence's stockade and Kill the Officer's stores; the Haven for
+Harvest Guard's hungriest house, Water Survey's "tell the Haven too" and Steal the Antidotes' medic; the
+Red Hand for Lab Defence's and Hijack the Convoy's "back to the crew"; Halcyon for Burn the Nest's sample
+and Lab Defence's trial; the Independent for letting people go or giving to people rather than to a
+faction (Fight Pit's going down, Hijack the Convoy's "let him walk", Convoy Escort's crates, Checkpoint
+Duty's "let them through"). After a player locks to a route, an option whose asset is another route's
+refuses them. The horde's drift gives none.
+
 **Where the horde drifts** (Blow the Bridge, Zombie Bait, Lead Them Away): an empty town (default
 for two of them: +5 infection in an empty town 0.4–3 km off), past Bastion's nearest post, or past the
 Red Hand's nearest camp within 3 km (that side's morale −2, +4 Infamy with it to those with the

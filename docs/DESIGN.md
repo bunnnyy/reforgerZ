@@ -1166,9 +1166,19 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
 - **Reasons and the reason lane.** When the world has posted a reason ([World memory](#world-memory)),
   the mission manager may start one registered contract that answers it (`RZ_MissionReasons`: The
   Harvest Guard and Protection Racket answer a hungry house; Checkpoint Duty and Convoy Escort a
-  post's lost truck; Retake the Town a town gone bad; Struck Off a dead
-  leader; Trail of Clues and Medicine Run a bitten wanderer; Cold Chain and Power the Lab the cure's
-  milestones; Burn the Bodies a shelled town). At most one every **Reason lane gap** (30 min)
+  post's lost truck or a post with the infected on its doorstep; Retake the Town a town gone bad; Struck
+  Off a dead leader; Rein In a Rogue leader or a skimmed toll; Trail of Clues and Medicine Run a bitten
+  wanderer; Water Survey a house's low barrels; Lost Colleague and Cold Chain a Halcyon sensor gone
+  quiet; Cold Chain and Power the Lab the cure's milestones and a station's freezers low on fuel; The
+  Ledger two houses fallen out and a house the crew just collected from; Burn the Bodies a shelled town).
+  **The reasons read from other systems** (`Missions/Story/RZ_ReasonPosts.c`, every 30 s, errands on or
+  not, cleared when the fact stops): `house.water` and `house.dark` (a safehouse's water and fuel faults),
+  `post.pressure` (a Bastion holding with a town the infected hold within 1.5 km), `leader.rogue`,
+  `lab.short` and `lab.power` (a Halcyon station's sensor and fuel faults), `tribe.hungry` (a pack in its
+  second hunger band or higher: Not Tonight and Lead Them Away answer it); left by a finished job:
+  `racket.ran` (Protection Racket collected), `crew.skimmed` (Skim the Toll), `house.feud` (A Word to
+  {house} carried with a threat), `horde.passed` (Every Ridge Calls, the Siren Test, Red Dusk), `lab.power`
+  (a Power Surge). At most one every **Reason lane gap** (30 min)
   server-wide, inside the contract cap and every check (`CanRunNow`, someone online eligible,
   claims), and only if it lands within 3 km of the reason; each reason starts one contract at most.
   Its brief opens with the reason's line (*"Levie's on half portions."*). Random picks stay.

@@ -697,6 +697,8 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The driver's on his knees by the cab with his hands on his head. \"I've a wife at the post. I drive. That's all I do.\" Decide at the truck.",
 			"Let him walk|Hand him to the crew|Leave him tied for Bastion", "decide what happens to the driver", 0);
+		m_Choice.Asset(0, RZ_CureFinale.INDEP);
+		m_Choice.Asset(1, RZ_EFaction.BANDITS);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1440,6 +1442,7 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("His aide comes out with his hands up and a key in one of them: \"The post's stores. All of it. Walk away and nobody writes anything down.\" Answer him at the post.",
 			"Take the stores, walk away|Do the job", "decide whether he lives", 1);
+		m_Choice.Asset(0, RZ_EFaction.MILITARY);
 		m_Choice.m_bManual = true;
 		m_Choice.m_bEnds = false;
 	}

@@ -399,6 +399,7 @@ class RZ_Mission_RadioRelay : RZ_Mission_Hold
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The relay's up. The house's radio man comes on: \"Bastion's on this band too. Do we carry their traffic? They'd send a patrol past the house for it.\" Answer him at the relay.",
 			"The Haven's alone|Bastion's too, for a patrol", "decide whose net the relay carries", 0);
+		m_Choice.Asset(1, RZ_EFaction.MILITARY);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1128,6 +1129,7 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The kids are out. The oldest one says their aunt is at Bastion's post: \"She's a cook there. She said to come if.\" Decide with them, here.",
 			"The nearest house|Their aunt at Bastion's post", "decide where the kids go", 0);
+		m_Choice.Asset(1, RZ_EFaction.MILITARY);
 	}
 
 	//------------------------------------------------------------------------------------------------

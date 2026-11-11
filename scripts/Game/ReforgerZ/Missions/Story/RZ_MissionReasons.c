@@ -79,6 +79,34 @@ class RZ_MissionReasons
 		if (t == RZ_Mission_LabDefence)
 			result.Insert("cure.*");
 
+		// The reasons read from other systems' facts (RZ_ReasonPosts)
+		if (t == RZ_Mission_CheckpointDuty || t == RZ_Mission_ConvoyEscort)
+			result.Insert("post.pressure");
+
+		if (t == RZ_Mission_WaterSurvey)
+			result.Insert("house.water");
+
+		if (t == RZ_Mission_ReinIn)
+		{
+			result.Insert("leader.rogue");
+			result.Insert("crew.skimmed");
+		}
+
+		if (t == RZ_Mission_LostColleague || t == RZ_Mission_ColdChain)
+			result.Insert("lab.short");
+
+		if (t == RZ_Mission_PowerTheLab || t == RZ_Mission_ColdChain)
+			result.Insert("lab.power");
+
+		if (t == RZ_Mission_NotTonight || t == RZ_Mission_LeadThemAway)
+			result.Insert("tribe.hungry");
+
+		if (t == RZ_Mission_TheLedger)
+		{
+			result.Insert("house.feud");
+			result.Insert("racket.ran");
+		}
+
 		// The work rows (RZ_WorkRows.c)
 		RZ_WorkRows.Reasons(t, result);
 	}

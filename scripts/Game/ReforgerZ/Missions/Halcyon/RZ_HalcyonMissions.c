@@ -219,6 +219,7 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The samples are in. The analyst reads the strip twice: one town is next. \"Halcyon logs it. Whether the Haven hears is up to whoever carried the bottles.\" Decide at the last point.",
 			"Halcyon only|Tell the Haven too", "decide who hears about the town at risk", 0);
+		m_Choice.Asset(1, RZ_EFaction.SURVIVORS);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1244,6 +1245,9 @@ class RZ_Mission_LabDefence : RZ_Mission_Hold
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("A raider throws his rifle out of the hedge and his hands up after it: \"Done. I'm done.\" The guard at the gate looks at you. Decide at the gate.",
 			"Bastion's stockade|Give him back to the crew|To Halcyon, for the trial", "decide what happens to the raider", 0);
+		m_Choice.Asset(0, RZ_EFaction.MILITARY);
+		m_Choice.Asset(1, RZ_EFaction.BANDITS);
+		m_Choice.Asset(2, RZ_EFaction.INSTITUTE);
 	}
 
 	//------------------------------------------------------------------------------------------------

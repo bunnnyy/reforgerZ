@@ -67,10 +67,7 @@ never pays the Haven by default. Each has one darkly funny line, spoken by the l
 
 ## Reasons
 
-- **Still to post:** `house.water`, `house.dark`, `house.feud`, `house.borrowed`, `post.pressure`,
-  `leader.rogue`, `leader.bitten`, `wanderer.owes`, `wanderer.lost`, `crew.skimmed`, `racket.ran`,
-  `lab.power`, `lab.short`, the tribes' and the majors'; the conditions (Every Ridge Calls, Fog Bank, Power
-  Surge, Siren Test, Gas Station Fire, Bastion Shelling, Storm, Turned Player) post theirs.
+- **Still to post:** the majors' `major.<act>` (by the majors, for their stage missions and margin cards).
 - **Order per player:** the journal and the quartermaster's list put first the jobs near you, those
   answering a reason where you have a record, and those from a giver you've helped. Only the order
   changes, never the odds.

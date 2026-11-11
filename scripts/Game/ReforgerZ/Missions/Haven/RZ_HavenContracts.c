@@ -18,6 +18,7 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The sacks are filled. The farmer leans on his spade: \"They're promised to our own house. I hear there's a hungrier one down the road. Your call, you stood the field.\" Answer him at the field.",
 			"The farm's own house|The hungriest house", "decide which house gets the food", 0);
+		m_Choice.Asset(1, RZ_EFaction.SURVIVORS);
 	}
 
 	//------------------------------------------------------------------------------------------------

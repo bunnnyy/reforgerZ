@@ -854,6 +854,8 @@ class RZ_MissionManager
 		else
 			RZ_WorldWriters.MissionEnded(m, false, m.m_aParticipants);
 
+		RZ_ReasonPosts.Ended(m_GM, m, success);
+
 		// Who benefits: the others who did the work, when it went another way
 		if (success && m.m_Story)
 			m.m_Story.m_Parties.PayOthers(m_GM, m);

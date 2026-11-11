@@ -331,3 +331,5 @@ In this order, because later ones depend on earlier ones:
 | Hot and Cold | A radio stash hunt; The Numbers Station keeps the radio puzzle |
 | The Old Clinic | A generic hold |
 | Field Station | A three-minute hold for one research point |
+| The reasons `house.borrowed`, `leader.bitten`, `wanderer.owes` and `wanderer.lost` | No system holds the fact: houses don't lend food, leaders aren't bitten, wanderers have no debts and don't go missing |
+| Reasons from Fog Bank, Storm, Gas Station Fire and Turned Player | None of them changes a fact any job answers; the conditions that move the infected post `horde.passed` |

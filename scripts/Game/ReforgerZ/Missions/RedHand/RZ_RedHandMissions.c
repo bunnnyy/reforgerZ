@@ -233,6 +233,7 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("Between rounds a man you don't know grabs the rope: \"I've my whole debt on you going down in this round. Go down and I'm out of the book. You'll get half. Please.\" Answer him at the rope.",
 			"Fight it out|Go down this round", "decide how the round ends", 0);
+		m_Choice.Asset(1, RZ_CureFinale.INDEP);
 		m_Choice.m_bManual = true;
 		m_Choice.m_bEnds = false;
 	}

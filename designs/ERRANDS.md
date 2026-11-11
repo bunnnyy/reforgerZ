@@ -57,9 +57,6 @@ Chore slots per holding: 1 + 1 per 5 players online, 3 at most, and one chore pe
 - **Callbacks from errands** through the one callback queue (words only, on played time, near the subject).
 - **Threads:** up to 12 per player-season tags that lines read, and leaders *saying* one (*"The cook says
   you brought turnips."*).
-- **Hand to Hand's promises read by the finale** (a promised local in the same house as one of the eight
-  makes that yes one step easier; each promised local at the Independent's lab-gate sit-in takes a minute
-  off it). The finale owns the reading ([FINALE.md](FINALE.md)).
 
 ## The catalogue
 
