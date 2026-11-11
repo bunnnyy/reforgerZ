@@ -839,7 +839,7 @@ class RZ_Mission_Distraction : RZ_PuzzleMission
 //! notebook at an observation post outside it. Getting within 50 m of one of them halves the
 //! pay (and they come for you); a wrong count fails it. The answer is how many are alive when
 //! you answer. A right count is also a little research. ★ Lab Tech: more Fame. With Stealth on,
-//! the 50 m shrinks while you're hard to see (about 33 m lying still in the dark, RZ_Stealth.SightRadius).
+//! the 50 m shrinks while you're hard to see (about 36 m lying still in the dark, RZ_Stealth.SightRadius).
 //! *Simplified:* the town's own infected are cleared and kept out while it runs (the spawner's
 //! suppression, as in The Silent Village), so the only specials there are the ones being counted.
 class RZ_Mission_QuietCount : RZ_PuzzleMission

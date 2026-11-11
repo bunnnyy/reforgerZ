@@ -19,8 +19,8 @@ and one way to end it: **research the cure.**
   the lab, which works through about 3% a day even with nobody online and refuses more when its
   cold store is full, so no server can rush the cure.
 - **Stealth**: stance, speed, light, weather and noise make you more or less visible. The
-  infected near you see the most visible of you, lose a player who lies low out of sight, search
-  where they last saw them and give up; the HUD shows how visible you are.
+  infected near you see the most visible of you, lose a player who lies low, search where they
+  last had them and give up; the HUD shows how visible you are.
 - **Bites you can survive**: most hits are scratches, a bite can be cleaned in its first two
   minutes, and the infection runs through fever, weakness and a final stage. Antidotes, Halcyon's
   trial dose, stabilisers and five low-grade meds with side effects exist from day one; research

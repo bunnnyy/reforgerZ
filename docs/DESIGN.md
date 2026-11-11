@@ -153,90 +153,114 @@ missions work exactly as before.
 
 ### Visibility
 
-Every living player has a visibility from 0 (hidden) to 1 (in plain sight). It's the stance,
-speed, light and weather multiplied together, plus recent noise, capped at 1.
+Every living player has a visibility from 0 (hidden) to 1 (in plain sight). It's the stance and
+speed times the surroundings (light and weather), plus recent noise, capped at 1.
 
 | Input | Default |
 |---|---|
-| Stance | standing ×1, crouched ×0.6, prone ×0.3 |
+| Stance | standing ×1, crouched ×0.6, prone ×0.5 (stealth can't see cover, so lying in the open in daylight isn't hidden on its own) |
 | Speed (how far you moved since the last update) | still (under 0.4 m/s) ×0.7, walking (under 2.6) ×0.85, running (under 5) ×1, sprinting ×1.25 |
 | Light | 60% the engine's light on you (sun, moon, lamps, your own torch) and 40% the clock (day 1, dusk 0.6, night 0.25). Turned into a multiplier from ×0.4 in the dark to ×1 in daylight. If the engine's light can't be read, the clock alone |
 | Weather | fog or a fog bank ×0.75; rain ×0.85, or a storm ×0.7 instead; the Fog rule set's shorter sight (×0.85) |
-| Noise | +0.5 right after a shot (a suppressed one +0.18), fading over 10 s; +0.35 for a loud noise within 15 m (a bell, a forced lock, a noisemaker at your feet) |
+| Surroundings floor | light × weather never counts for less than ×0.55, so darkness and bad weather alone never hide someone moving upright: only getting low and keeping still do |
+| Noise | each shot adds to your noise and shots add up: one shot fills it, a suppressed one adds 0.35 (so about three in a row fill it too), times your background's noise (Hunters quieter). Full noise is +0.5 visibility, fading over 10 s. A loud noise within 15 m (a bell, a forced lock, a noisemaker at your feet) sets it to at least 0.7. While any noise is left, the infected can't lose you |
 | In a vehicle | always 1 |
 
-Some results: walking in daylight 0.85; crouched and still in daylight 0.42; prone in daylight
-0.21; walking at night 0.41; prone and still at night 0.1. Under **0.3** counts as hidden. Other
+Some results: walking in daylight 0.85; crouched and still in daylight 0.42; prone and still in
+daylight 0.35 (in rain 0.3); walking at night about 0.47 (never less, whatever the weather);
+crouched and walking at night 0.28; prone and still at night 0.19. Under **0.35** counts as
+hidden: that's the HUD's HIDDEN, and the only state in which the infected can lose you. Other
 systems ask `RZ_Stealth.GetVisibility(playerId)` (1 with Stealth off) and
 `RZ_Stealth.IsHidden(playerId, threshold)` (always false with Stealth off). A new life starts at 1.
 
 ### The infected near you
 
-Every update, for the infected the spawner tracks (groups and their members) within **60 m** of a
-player, each member's perception factor is set to:
+Every update, for the infected the spawner tracks (groups and their members) with a player within
+**60 m** of a member, each member's perception factor is set to:
 
-> its own factor × the base for its kind × a factor from the **most visible** player within 60 m of any member of its group
+> its own factor × the base for its kind × a factor from the **most visible** player within 150 m of any member of its group, never more than ×1.2 on top of its own
 
 - **Base by kind:** common ×1, special ×1.2 (sharper), horde member ×0.9 (a crowd on the move
-  looks ahead). The coming kinds (crawlers, scouts, alphas) get their own base in the same place.
-- **From the player:** ×0.3 for someone fully hidden, up to ×1.2 for someone in plain sight. Walking
-  in daylight gives about ×1.07, prone in daylight ×0.49, walking at night ×0.67, prone and still
-  at night ×0.39.
-- **The most visible player counts.** A friend lying prone can't hide you while you stand next to
-  him.
+  looks ahead).
+- **From the player:** ×0.3 for someone fully hidden, rising to ×1 at 0.6 visibility. From 0.6 to
+  0.9 (standing or walking in daylight) it's ×1, as without stealth. Only above 0.9 (running or
+  sprinting in daylight, just after a shot, a vehicle: the HUD's IN PLAIN SIGHT) does it rise, to
+  ×1.2. Prone and still at night gives about ×0.52, crouched and walking at night ×0.63, prone and
+  still in daylight ×0.71, walking at night ×0.85.
+- **The most visible player counts**, out to 150 m, not just the ones within 60 m. A friend lying
+  prone close to them can't hide you while you stand further off.
 - With nobody within 60 m, a group goes back to its base. At most 40 infected are touched an
   update; the rest wait their turn.
-- **Never lowered for infected that must keep coming:** a mission's horde (holds and waves), and
-  everything within 1.5 km of the lab during the final stand. They keep their own factor. The two
-  stealth missions' hordes (Lead Them Away, The Clockwork Horde) are the exception, because
-  staying unseen is the job there.
+- **Never lowered for infected that must keep coming:** every horde tied to a mission (the holds
+  and waves, and most event and questline hordes), and everything within 1.5 km of the lab during
+  the final stand. They keep their own factor. Three hordes are the exception, because staying out
+  of sight is the point there: Lead Them Away, The Clockwork Horde and the Horde Migration event.
 - With the vanilla `SCR_AICombatComponent` on the infected, the factor is set as its multiplier.
   The AI's own update applies it on top of its alert state, and would overwrite a factor set
-  straight on the perception. Without that component, the factor goes on the
-  `PerceptionComponent`. Without either, nothing changes (logged once).
+  straight on the perception. If that component has no vanilla utility AI behind it (a mod's own
+  agent), nothing else updates the perception, so the factor goes straight on the
+  `PerceptionComponent`, as it does without the component. Without a `PerceptionComponent` nothing
+  changes. Perception that still refuses the factor after 5 updates in a row counts as none. Each
+  case is logged once.
 - The factor only changes how fast they recognise what they see. Hearing is the engine's own. The
   engine already sees stance and light, so stealth's factor comes on top, which is why it never
   goes below ×0.3.
 
 ### Losing them
 
-A group that has a player as its target can lose them:
+A group that is after a player can lose them:
 
-1. **Who it has:** the player among its members' engine targets (enemy or detected) seen or heard
-   most recently. For infected without engine perception, a member within 20 m of a player it
-   could see (not hidden), or within 4 m of anyone, is on that player.
-2. **Lost:** that player has stayed under **0.35** visibility, unseen and unheard, for **8 s**.
-3. **Search:** the group walks to where it last had them and looks about for **45 s**. If it sees
-   or hears anyone in that time, its own AI takes over.
-4. **Give up:** a horde goes on to where it was sent; anything else goes back toward where it
-   spawned.
+1. **Who it has:** the player among its members' engine targets it has recognised as an enemy
+   (not just a hint of someone), seen or heard most recently. For infected without engine
+   perception: a member touching a player (4 m), a member within 20 m of a player who has just made
+   noise, or the group coming at a player within 20 m at a run (2 m/s or more, faster than toward
+   where a horde is headed, and not while walking where stealth sent it). It stays on that player
+   for up to 53 s (8 + 45) after.
+2. **Lost:** that player has stayed hidden (under **0.35**), unseen, unheard and with no noise left
+   for **8 s**, counted from when the group last had them. A group that had a player a while ago
+   and isn't after them now has nothing to lose, and a contact it has already searched from is
+   never lost twice.
+3. **Search:** the group walks to where it last had them. A group with nothing else to do then
+   looks about for **45 s**, a new spot 5–20 m away every 10–15 s. A group with waypoints of its
+   own (a horde on its way) carries on with them once it has been there. If it sees or hears
+   anyone in that time, its own AI takes over.
+4. **Give up:** stealth's waypoint goes, and the group carries on with its own. One with none left
+   goes back: a horde to where it was sent, anything else toward where it spawned.
 
-Never for mission infected (their mission steers them) or the final stand. It needs a group and
-the move waypoint (**Zombies > Move waypoint**); without them only the senses change. The waypoint
-stealth gives a group is deleted with the group.
+Stealth's waypoint is put in front of the group's own and taken back afterwards: nothing of the
+group's (a zombie mod's wander or patrol, a busy-spot visit) is removed. Never for mission infected
+(their mission steers them) or the final stand. It needs a group and the move waypoint (**Zombies
+> Move waypoint**); without them only the senses change. The waypoint stealth gives a group is
+deleted with the group.
 
 ### Stealth in missions
 
 Missions use the score only to go easier on someone lying low, never harder. A player at
-visibility 0.6 or more (standing in daylight, even keeping still) is seen exactly as before.
+visibility 0.6 or more (standing in daylight, even keeping still) is seen exactly as before, by
+these checks and by common infected (who only see better than before someone in plain sight).
 
 | Check | With Stealth on |
 |---|---|
-| Being noticed ([Heat and noise](#heat-and-noise)): puzzles, unarmed missions, the questlines' sneak | The heat limit is unchanged. The "infected close to you for 6–8 s" timer runs at full speed at 0.6 visibility and up, down to 0.35 of it for someone fully hidden: about half as fast lying still in the dark |
-| People who see anyone within N m: Haven lookouts and the Haven wanderers near them, the storekeeper, the walker, Halcyon's courier, the Long Table's family, Quiet Count's specials (50 m) | N at 0.6 visibility and up, down to 0.6 × N for someone fully hidden: Quiet Count's 50 m is about 33 m lying still in the dark |
+| Being noticed ([Heat and noise](#heat-and-noise)): puzzles, unarmed missions, the questlines' sneak | The heat limit is unchanged. The "infected close to you for 6–8 s" timer runs at full speed at 0.6 visibility and up, down to 0.35 of it for someone fully hidden: a little over half as fast lying still in the dark |
+| People who see anyone within N m: Haven lookouts and the Haven wanderers near them, the storekeeper, the walker, Halcyon's courier, the Long Table's family, Quiet Count's specials (50 m) | N at 0.6 visibility and up, down to 0.6 × N for someone fully hidden: Quiet Count's 50 m is about 36 m lying still in the dark |
 
 Shots nearby still spoil a sneak. In a questline stage, a person who sees anyone within N m checks
 `RZ_Stealth.SightRadius(playerId, N)` (see [Writing a questline](#writing-a-questline)).
 
 ### The HUD
 
-Above the noise meter, five segments and a word: **HIDDEN** (under 0.3), **LOW**, **SEEN**, **IN PLAIN
-SIGHT**. It's sent only when it changes, and not shown with Stealth off ([UI.md](UI.md#screens)).
+Above the noise meter, five segments and a word: **HIDDEN** (under 0.35: the infected can lose
+you), **LOW**, **SEEN**, **IN PLAIN SIGHT** (0.9 and up: the infected see you better than before).
+It's sent only when it changes, and not shown with Stealth off ([UI.md](UI.md#screens)). There's no
+cue when a group loses you or gives up: you see them go.
 
 *Simplified:* speed is how far you moved between updates, so a sprint that stops just before an
 update reads as still. The stance and the engine's light are read on the server (both on the
-VERIFY list). Infected without engine perception are judged "on you" by distance. A lone infected
-character that isn't in a group never searches, because it has no waypoints.
+VERIFY list). Stealth has no cover input: a wall or a hedge only counts through the engine's own
+sight. Infected without engine perception are judged "on you" by distance and by how they move,
+so a group that runs at you along its own path (a horde coming straight down the road you're on)
+isn't counted as chasing, and never loses you. A lone infected character that isn't in a group
+never searches, because it has no waypoints.
 
 ## Zombies, bites and infection
 

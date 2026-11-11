@@ -66,8 +66,8 @@ class RZ_Radio
 //! A player is noticed if the heat where they stand is over a threshold, or if a
 //! zombie has stayed within a few metres of them for too long. Each mission
 //! owns one tracker, so the closeness timer is per player per mission. With Stealth on, the
-//! timer runs slower while the player is hard to see (RZ_Stealth.NoticeRate: about half as fast
-//! lying still in the dark).
+//! timer runs slower while the player is hard to see (RZ_Stealth.NoticeRate: a little over half
+//! as fast lying still in the dark).
 class RZ_NoticeTracker
 {
 	float m_fHeatThreshold = 45;

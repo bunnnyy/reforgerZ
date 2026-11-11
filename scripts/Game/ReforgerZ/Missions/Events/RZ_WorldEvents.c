@@ -115,8 +115,9 @@ class RZ_Event_HordeMigration : RZ_Mission
 			return false;
 
 		m_vPos = s.m_vCenter;
-		gm.GetSpawner().SpawnHordeAt(LandPointNear(s.m_vCenter, 0, 50), t.m_vCenter, m_iId);
-		gm.GetSpawner().SpawnHordeAt(LandPointNear(s.m_vCenter, 30, 80), t.m_vCenter, m_iId);
+		// Passing through, not coming for anyone: lying low in a ditch as it goes by works (Stealth)
+		gm.GetSpawner().SpawnHordeAt(LandPointNear(s.m_vCenter, 0, 50), t.m_vCenter, m_iId, null, false);
+		gm.GetSpawner().SpawnHordeAt(LandPointNear(s.m_vCenter, 30, 80), t.m_vCenter, m_iId, null, false);
 		m_sTitle = "Horde Migration";
 		m_sBrief = string.Format("A massive horde is leaving %1 and heading for %2. Stay off that road, or make them pay for it.", s.m_sName, t.m_sName);
 		return true;

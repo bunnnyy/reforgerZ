@@ -235,7 +235,7 @@ already in the Zone, and every crate is earned on the spot.
 | # | Event | What happens | Why it's interesting | Status |
 |---|---|---|---|---|
 | 1 | Crashed Helicopter | The wreck of one of Bastion's lost helicopters, its cargo still aboard | Infected nest around it; a horde comes when someone arrives | ✅ |
-| 2 | Horde Migration | A huge horde walks from one town to another | Get out of the way, or thin it out: 10+ kills leaves a crate | ✅ |
+| 2 | Horde Migration | A huge horde walks from one town to another | Get out of the way (lying low as it passes works: its senses drop with [Stealth](DESIGN.md#the-infected-near-you)), or thin it out: 10+ kills leaves a crate | ✅ |
 | 3 | Night of the Dead | For 20 minutes, twice the infected and twice the specials everywhere | High risk, specials everywhere | ✅ |
 | 4 | Fog Bank | A region drops to low visibility for 20 min | Hiding is easy. So are ambushes | ✅ *the engine's fog is global and never changed: within 700 m of a town, heat is ×0.6 and infected spawn twice as close; an optional mist prop is the look* |
 | 5 | Distress Call | A survivor asks for help on the radio | Could be real, could be a trap (see 19) | ✅ *two people cornered at a town's edge; infected surround the house once someone is within 300 m. Talk them out with nothing within 20 m: they join the nearest safehouse and leave a crate. 25 min. Radio Operators hear that it's live* |

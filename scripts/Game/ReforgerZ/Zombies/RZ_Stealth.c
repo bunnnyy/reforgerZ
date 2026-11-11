@@ -1,15 +1,17 @@
 //! Stealth (docs/DESIGN.md, "Stealth"): how visible each living player is, and what the infected
 //! near them make of it. Server only, once a second on the game mode's fast loop, never per frame.
 //!
-//! - Visibility, 0 (hidden) to 1 (in plain sight), per player: stance x speed x light x weather,
-//!   plus recent noise (their own shots, loud noises where they stand). In a vehicle: 1.
+//! - Visibility, 0 (hidden) to 1 (in plain sight), per player: stance x speed x the surroundings
+//!   (light x weather, never below Surroundings floor), plus recent noise (their own shots add up,
+//!   loud noises where they stand). In a vehicle: 1.
 //! - The infected near players: each tracked unit's members get a perception factor from their
-//!   kind's base times one from the MOST visible player within the radius (a prone friend never
-//!   hides a standing one). Back to the base once nobody is near. Never lowered for infected that
-//!   must keep coming (mission hordes, the final stand).
-//! - Losing them: a group whose player has stayed hidden and unseen for a while walks to where it
-//!   last had them, looks about, and gives up (back to its spot, or on to where a horde was sent).
-//!   Never for mission infected (their mission steers them) or the final stand.
+//!   kind's base times one from the MOST visible player they could see (a prone friend never
+//!   hides a standing one). x1 at normal visibility, lower for someone lying low, higher only in
+//!   plain sight; never above Max factor. Back to the base once nobody is near. Never lowered for
+//!   infected that must keep coming (most mission hordes, the final stand).
+//! - Losing them: a group that was after a player who is now hidden, unseen and unheard for a
+//!   while walks to where it last had them, looks about, and gives up. Never for mission infected
+//!   (their mission steers them) or the final stand.
 //!
 //! Works with any zombie mod. With the engine's perception (a PerceptionComponent, and the vanilla
 //! SCR_AICombatComponent if the mod uses it) the factor changes how fast they recognise a player
@@ -39,7 +41,7 @@ class RZ_StealthSettings
 	[Attribute("0.6", desc: "Visibility: crouched")]
 	float m_fCrouchMult;
 
-	[Attribute("0.3", desc: "Visibility: prone")]
+	[Attribute("0.5", desc: "Visibility: prone (stealth has no cover input: lying in the open in daylight isn't hidden)")]
 	float m_fProneMult;
 
 	[Attribute("0.7", desc: "Visibility: keeping still (under 0.4 m/s)")]
@@ -78,13 +80,16 @@ class RZ_StealthSettings
 	[Attribute("0.7", desc: "Visibility in a storm (instead of rain)")]
 	float m_fStormMult;
 
-	[Attribute("0.5", desc: "Noise: visibility added right after a shot (fades over Noise seconds)")]
+	[Attribute("0.55", desc: "Surroundings floor: light x weather x fog never counts for less than this, so bad weather at night alone never hides someone moving upright (only getting low does)")]
+	float m_fEnvFloor;
+
+	[Attribute("0.5", desc: "Noise: visibility added at full noise (one shot, or a few suppressed ones; fades over Noise seconds)")]
 	float m_fNoiseWeight;
 
-	[Attribute("10", desc: "Noise: seconds a shot or a loud noise where you stand keeps you visible")]
+	[Attribute("10", desc: "Noise: seconds a full noise (a shot, a loud noise where you stand) takes to fade. While any is left, infected can't lose you")]
 	float m_fNoiseSeconds;
 
-	[Attribute("0.35", desc: "Noise: a suppressed shot counts this much of a shot")]
+	[Attribute("0.35", desc: "Noise: a suppressed shot adds this much (a shot adds 1, times the background's noise; shots add up to 1)")]
 	float m_fSuppressedNoise;
 
 	[Attribute("1", desc: "Base perception factor: common infected")]
@@ -96,17 +101,14 @@ class RZ_StealthSettings
 	[Attribute("0.9", desc: "Base perception factor: horde members (a crowd on the move looks ahead, not around)")]
 	float m_fBaseHorde;
 
-	[Attribute("0.3", desc: "Perception factor from a fully hidden player (x the base). The engine already sees stance and light, so this is on top: keep it well above 0")]
+	[Attribute("0.3", desc: "Perception factor from a fully hidden player (x the base), rising to 1 at normal visibility (0.6). The engine already sees stance and light, so this is on top: keep it well above 0")]
 	float m_fMinFactor;
 
-	[Attribute("1.2", desc: "Perception factor from a player in plain sight (x the base)")]
+	[Attribute("1.2", desc: "Perception factor from a player in plain sight (visibility over 0.9: running or sprinting in daylight, just after a shot, a vehicle); 1 between 0.6 and 0.9. Base x player factor never goes above this")]
 	float m_fMaxFactor;
 
-	[Attribute("0.3", desc: "A player counts as hidden under this visibility (the HUD, missions asking IsHidden)")]
+	[Attribute("0.35", desc: "A player counts as hidden under this visibility: the HUD's HIDDEN, missions asking IsHidden, and infected can lose them only while they're under it")]
 	float m_fHiddenBelow;
-
-	[Attribute("0.35", desc: "Losing them: the player must stay under this visibility")]
-	float m_fLoseBelow;
 
 	[Attribute("8", desc: "Losing them: seconds hidden and unseen before they go and look")]
 	float m_fLoseSeconds;
@@ -114,7 +116,7 @@ class RZ_StealthSettings
 	[Attribute("45", desc: "Losing them: seconds they search where they last had you before they give up")]
 	float m_fSearchSeconds;
 
-	[Attribute("20", desc: "Losing them, for infected without engine perception (an aggro radius): one this close to a player it can see is on them")]
+	[Attribute("20", desc: "Losing them, for infected without engine perception (an aggro radius): a group coming at a player within this distance (or one that just made noise in it) is on them")]
 	float m_fContactRadius;
 
 	[Attribute("0.6", desc: "Missions: a watcher's sight radius (lookouts, Quiet Count's specials) against a fully hidden player, as a share (1 at normal visibility)")]
@@ -125,8 +127,8 @@ class RZ_StealthSettings
 }
 
 //------------------------------------------------------------------------------------------------
-//! What kind of infected a tracked unit is, for its base senses (Stealth > Base factors). The coming
-//! kinds (crawlers, scouts, alphas) go here, with a base in RZ_Stealth.KindBase.
+//! What kind of infected a tracked unit is, for its base senses (Stealth > Base factors). A new kind
+//! goes here, with a base in RZ_Stealth.KindBase.
 enum RZ_EInfectedKind
 {
 	COMMON,
@@ -155,13 +157,20 @@ class RZ_SenseState
 	bool m_bOwnRead;
 	int m_iMembers;				// living members it was last set on
 	float m_fSinceSet;
-	bool m_bNoPerception;		// nothing took the factor: contact is guessed by distance
+	bool m_bNoPerception;		// no perception, or it never took the factor: contact is guessed by distance
+	int m_iTries;				// updates in a row its perception didn't take the factor
 	float m_fLastAt;			// stealth clock when this unit was last looked at
 	int m_iTarget = -1;			// the player it has
-	float m_fHiddenFor;			// seconds that player has stayed hidden and unseen
+	float m_fHiddenFor;			// seconds that player has stayed hidden, unseen and unheard
 	float m_fSearchLeft;		// > 0: searching where it last had them
-	float m_fNearAt = -1;		// no perception: stealth clock when a member was last on the player
+	vector m_vSearchAt;			// where it last had them
+	float m_fNextLook;			// seconds to the next look about while searching
+	float m_fLostContactAt = -1;	// stealth clock of the contact it last went searching from: older contact is never lost again
+	float m_fNearAt = -1;		// no perception: stealth clock when it was last on the player
 	vector m_vNearPos;
+	vector m_vCenter;			// no perception: where its living members were on the last look, to tell a chase
+	int m_iCenterCount = -1;
+	float m_fCenterAt;
 	IEntity m_Waypoint;			// the last move waypoint stealth gave it (deleted with it: nothing is left lying)
 
 	//------------------------------------------------------------------------------------------------
@@ -214,12 +223,10 @@ class RZ_Senses
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The AI has senses stealth can change: the vanilla combat component or a PerceptionComponent.
+	//! The AI has engine senses: a PerceptionComponent (without one there's no factor to set and no
+	//! targets to read, whatever else it has).
 	static bool HasPerception(IEntity member)
 	{
-		if (member.FindComponent(SCR_AICombatComponent))
-			return true;
-
 		return member.FindComponent(PerceptionComponent) != null;
 	}
 
@@ -237,8 +244,8 @@ class RZ_Senses
 	//------------------------------------------------------------------------------------------------
 	//! How quickly this AI recognises what it sees (1 = normal). With the vanilla combat component,
 	//! through its multiplier (the AI's own update puts it on top of its alert state, and would
-	//! overwrite a factor set straight on the perception); without, on its PerceptionComponent.
-	//! False if neither took it.
+	//! overwrite a factor set straight on the perception); without it, or without the vanilla
+	//! utility AI behind it, on its PerceptionComponent. False if nothing took it.
 	static bool SetFactor(IEntity member, float value)
 	{
 		SCR_AICombatComponent combat = SCR_AICombatComponent.Cast(member.FindComponent(SCR_AICombatComponent));
@@ -254,9 +261,9 @@ class RZ_Senses
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The player in `players` this AI has as a target (an enemy or a detected one) that it had most
-	//! recently: its index, seconds since it last saw or heard them, and where. False if it has no
-	//! perception or no player among its targets.
+	//! The player in `players` this AI has as an enemy target (recognised, not just a hint of
+	//! someone) that it had most recently: its index, seconds since it last saw or heard them, and
+	//! where. False if it has no perception or no player among its enemies.
 	static bool FindPlayerTarget(IEntity member, array<IEntity> players, out int playerIdx, out float since, out vector lastPos)
 	{
 		PerceptionComponent perception = PerceptionComponent.Cast(member.FindComponent(PerceptionComponent));
@@ -264,13 +271,7 @@ class RZ_Senses
 			return false;
 
 		array<BaseTarget> enemies = {};
-		array<BaseTarget> detected = {};
-		perception.GetTargetsList(enemies, ETargetCategory.ENEMY); // VERIFY: the zombie mod's infected list players as ENEMY (or DETECTED) targets, with the time since seen and the last seen position
-		perception.GetTargetsList(detected, ETargetCategory.DETECTED);
-		foreach (BaseTarget t : detected)
-		{
-			enemies.Insert(t);
-		}
+		perception.GetTargetsList(enemies, ETargetCategory.ENEMY); // VERIFY: the zombie mod's infected list players as ENEMY targets once they recognise them, with the time since seen and the last seen position
 
 		bool found = false;
 		foreach (BaseTarget target : enemies)
@@ -302,15 +303,28 @@ class RZ_Senses
 }
 
 //------------------------------------------------------------------------------------------------
-//! Stealth needs to set the vanilla AI's perception multiplier only once the AI is set up:
-//! SetPerceptionFactor reaches into the agent's utility component and the character's perception.
+//! Stealth sets the vanilla AI's perception multiplier. SetPerceptionFactor reaches into the agent's
+//! utility component and the character's perception, which EOnInit finds once and for all.
 modded class SCR_AICombatComponent
 {
 	//------------------------------------------------------------------------------------------------
-	//! SetPerceptionFactor, if this AI is ready for it. False = not yet (try again later).
+	//! SetPerceptionFactor, if this AI is ready for it. The multiplier is kept either way, for the AI's
+	//! own update (it puts it on top of its alert state). Set up without the vanilla utility AI (a mod's
+	//! own agent): nothing else ever updates the perception, so the factor goes straight on it.
+	//! False = not set up yet, or no perception (try again later).
 	bool RZ_TrySetPerceptionFactor(float value)
 	{
-		if (!m_Utility || !m_Utility.m_ThreatSystem || !m_Perception)
+		m_fPerceptionFactor = Math.Max(0, value);
+		if (!m_Perception)
+			return false;
+
+		if (!m_Utility)
+		{
+			m_Perception.SetPerceptionFactor(m_fPerceptionFactor);
+			return true;
+		}
+
+		if (!m_Utility.m_ThreatSystem)
 			return false;
 
 		SetPerceptionFactor(value);
@@ -331,6 +345,7 @@ class RZ_Stealth
 	protected int m_iCursor;
 	protected bool m_bToldPerception;
 	protected bool m_bToldNoPerception;
+	protected bool m_bToldNeverTook;
 
 	protected static const float SPEED_STILL = 0.4;
 	protected static const float SPEED_WALK = 2.6;
@@ -339,11 +354,18 @@ class RZ_Stealth
 	protected static const float GROUP_SPREAD = 90;		// a group's members are never this far beyond its last known position
 	protected static const float AREA_NOISE_RADIUS = 15;	// a loud noise this close counts as the player's own
 	protected static const float AREA_NOISE_LEVEL = 0.7;
-	protected static const float NORMAL_VIS = 0.6;		// missions see a player at this visibility and above as before
+	protected static const float NORMAL_VIS = 0.6;		// at this visibility and above, missions and the infected see a player as before
+	protected static const float PLAIN_SIGHT_VIS = 0.9;	// above this (the HUD's IN PLAIN SIGHT) the infected see a player better than before
 	protected static const float REAPPLY_SECONDS = 10;	// the factor is set again this often (new members, an AI that wasn't ready)
 	protected static const float FACTOR_STEP = 0.02;
+	protected static const int MAX_TRIES = 5;			// updates a unit's perception may refuse the factor before it counts as having none
 	protected static const float SEEN_AGAIN = 2;		// a target seen this recently is found: the search ends
+	protected static const float LOST_SLACK = 5;		// seconds of clock drift allowed when matching a contact to the one given up on
 	protected static const float TOUCH_RADIUS = 4;		// without perception: this close, they have you whatever you do
+	protected static const float CHASE_SPEED = 2;		// without perception: coming at a player this fast (m/s), more than at its goal, is a chase (a walk isn't)
+	protected static const float CHASE_GAP = 6;			// longer than this between looks, a chase can't be told
+	protected static const float LOOK_MIN = 10;			// while searching, a new spot near the last known position every 10-15 s
+	protected static const float LOOK_MAX = 15;
 	protected static const float FINAL_STAND_RADIUS = 1500;
 
 	//------------------------------------------------------------------------------------------------
@@ -443,9 +465,21 @@ class RZ_Stealth
 		return floor + (1 - floor) * Math.Clamp(vis / NORMAL_VIS, 0, 1);
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! The player's noise left, 0..1 (0 with Stealth off or unknown). While any is left they can't be lost.
+	protected float NoiseOf(int playerId)
+	{
+		RZ_StealthPlayer st;
+		if (!m_mPlayers.Find(playerId, st))
+			return 0;
+
+		return st.m_fNoise;
+	}
+
 	// ================================================================ Hooks
 	//------------------------------------------------------------------------------------------------
-	//! From RZ_GameModeComponent.OnPlayerShot: a shot gives you away at once.
+	//! From RZ_GameModeComponent.OnPlayerShot: a shot gives you away at once, and shots add up (a few
+	//! suppressed ones as much as one that isn't). Times the background's noise.
 	void OnPlayerShot(int playerId, bool suppressed)
 	{
 		if (!m_Settings.m_bEnabled)
@@ -455,8 +489,12 @@ class RZ_Stealth
 		if (suppressed)
 			level = Math.Clamp(m_Settings.m_fSuppressedNoise, 0, 1);
 
+		RZ_Background bg = m_GM.GetPlayerBackground(playerId);
+		if (bg)
+			level = level * Math.Max(0, bg.m_fNoiseMult);
+
 		RZ_StealthPlayer st = Player(playerId);
-		st.m_fNoise = Math.Max(st.m_fNoise, level);
+		st.m_fNoise = Math.Clamp(st.m_fNoise + level, 0, 1);
 		st.m_fVis = Math.Clamp(st.m_fBase + m_Settings.m_fNoiseWeight * st.m_fNoise, 0, 1);
 	}
 
@@ -546,11 +584,13 @@ class RZ_Stealth
 			}
 			else
 			{
-				float vis = StanceMult(RZ_Senses.GetStance(ent)) * MoveMult(speed) * LightMult(ent, clockLight) * weather;
+				// The surroundings never hide someone on their own: only getting low and keeping still do
+				float around = LightMult(ent, clockLight) * weather;
 				if (env && env.IsInFog(pos))
-					vis = vis * m_Settings.m_fFogMult;
+					around = around * m_Settings.m_fFogMult;
 
-				st.m_fBase = Math.Clamp(vis, 0, 1);
+				around = Math.Max(Math.Clamp(m_Settings.m_fEnvFloor, 0, 1), around);
+				st.m_fBase = Math.Clamp(StanceMult(RZ_Senses.GetStance(ent)) * MoveMult(speed) * around, 0, 1);
 			}
 
 			st.m_fVis = Math.Clamp(st.m_fBase + m_Settings.m_fNoiseWeight * st.m_fNoise, 0, 1);
@@ -699,12 +739,25 @@ class RZ_Stealth
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The factor from the most visible player near: Min factor (hidden) to Max factor (in plain sight).
+	//! The factor from the most visible player they could see: Min factor (hidden) rising to 1 at
+	//! normal visibility, 1 up to PLAIN_SIGHT_VIS (as without stealth), then up to Max factor.
 	protected float PlayerFactor(float vis)
 	{
 		float low = Math.Clamp(m_Settings.m_fMinFactor, 0.05, 1);
-		float high = Math.Clamp(m_Settings.m_fMaxFactor, low, 3);
-		return low + (high - low) * Math.Clamp(vis, 0, 1);
+		if (vis < NORMAL_VIS)
+			return low + (1 - low) * Math.Clamp(vis / NORMAL_VIS, 0, 1);
+
+		if (vis <= PLAIN_SIGHT_VIS)
+			return 1;
+
+		return 1 + (MaxFactor() - 1) * Math.Clamp((vis - PLAIN_SIGHT_VIS) / (1 - PLAIN_SIGHT_VIS), 0, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The most stealth ever raises the infected's senses (Max factor, never below 1).
+	protected float MaxFactor()
+	{
+		return Math.Clamp(m_Settings.m_fMaxFactor, 1, 3);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -720,8 +773,11 @@ class RZ_Stealth
 			s.m_fLastAt = m_fClock;
 		}
 
+		// Radius: a player this close to a member touches its senses at all. Reach: as far as it
+		// could see a player (the most visible one within it counts)
 		float radius = Math.Max(5, m_Settings.m_fRadius);
-		bool far = RZ_Util.NearestDistance(z.m_vLastPos, players) > radius + GROUP_SPREAD;
+		float reach = radius + GROUP_SPREAD;
+		bool far = RZ_Util.NearestDistance(z.m_vLastPos, players) > reach;
 
 		// Must keep coming, or nobody near: nothing to do unless it was touched before
 		if (!s && (held || far))
@@ -736,8 +792,10 @@ class RZ_Stealth
 				living.Insert(m);
 		}
 
-		// The most visible player within the radius of any member
+		// The most visible player any member could see, once one is within the radius: a friend lying
+		// low next to them never hides someone standing further off
 		float most = -1;
+		bool near = false;
 		if (!far && !held)
 		{
 			foreach (IEntity member : living)
@@ -745,11 +803,18 @@ class RZ_Stealth
 				vector at = member.GetOrigin();
 				foreach (int j, IEntity p : players)
 				{
-					if (vis[j] > most && RZ_Util.DistXZ(at, p.GetOrigin()) <= radius)
+					float d = RZ_Util.DistXZ(at, p.GetOrigin());
+					if (d <= radius)
+						near = true;
+
+					if (d <= reach && vis[j] > most)
 						most = vis[j];
 				}
 			}
 		}
+
+		if (!near)
+			most = -1;
 
 		if (!s)
 		{
@@ -768,13 +833,16 @@ class RZ_Stealth
 		}
 
 		// Held: back to what it had before we touched it. Otherwise its kind's base, times the most
-		// visible player near (none near: the base)
+		// visible player it could see (none near: the base), never above Max factor
 		float factor = s.m_fOwn;
 		if (!held)
-			factor = s.m_fOwn * KindBase(KindOf(z));
+		{
+			float senses = KindBase(KindOf(z));
+			if (most >= 0)
+				senses = senses * PlayerFactor(most);
 
-		if (most >= 0)
-			factor = factor * PlayerFactor(most);
+			factor = s.m_fOwn * Math.Min(senses, MaxFactor());
+		}
 
 		int touched = 0;
 		s.m_fSinceSet += elapsed;
@@ -785,7 +853,9 @@ class RZ_Stealth
 		// Their mission steers them, or they must keep coming: they never lose anyone
 		if (held || z.m_iMissionId != -1)
 		{
-			s.m_fSearchLeft = 0;
+			if (s.m_fSearchLeft > 0)
+				EndSearch(z, s, false);
+
 			s.m_fHiddenFor = 0;
 			return touched;
 		}
@@ -801,8 +871,9 @@ class RZ_Stealth
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Sets the factor on every living member. One that has perception but isn't set up yet (just
-	//! spawned) is tried again next update.
+	//! Sets the factor on every living member. Perception that refuses it (just spawned, not set up
+	//! yet) is tried again next update; after MAX_TRIES updates in a row the unit counts as having
+	//! none, so contact goes by distance.
 	protected int Apply(RZ_SenseState s, array<IEntity> living, float factor)
 	{
 		int took = 0;
@@ -823,8 +894,18 @@ class RZ_Stealth
 			return 0;
 
 		s.m_bNoPerception = !senses;
-		if (senses && took == 0)
-			s.m_fFactor = -1;
+		if (took > 0)
+		{
+			s.m_iTries = 0;
+		}
+		else if (senses)
+		{
+			s.m_iTries++;
+			if (s.m_iTries < MAX_TRIES)
+				s.m_fFactor = -1;
+			else
+				s.m_bNoPerception = true;
+		}
 
 		if (took > 0 && !m_bToldPerception)
 		{
@@ -836,13 +917,18 @@ class RZ_Stealth
 			m_bToldNoPerception = true;
 			RZ_Log.Info(string.Format("Stealth: some infected take no perception factor (%1): their senses stay as they are, and losing them goes by distance.", RZ_Util.PrettyPrefabName(RZ_Util.GetPrefabName(living[0]))));
 		}
+		else if (senses && took == 0 && s.m_iTries >= MAX_TRIES && !m_bToldNeverTook)
+		{
+			m_bToldNeverTook = true;
+			RZ_Log.Info(string.Format("Stealth: some infected have perception that never took the factor (%1): their senses stay as they are, and losing them goes by distance.", RZ_Util.PrettyPrefabName(RZ_Util.GetPrefabName(living[0]))));
+		}
 
 		return living.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Losing them: who this group has, whether that player has stayed hidden and unseen long
-	//! enough, the search, and giving up.
+	//! Losing them: who this group has, whether that player has stayed hidden, unseen and unheard
+	//! long enough since it was last after them, the search, and giving up.
 	protected void FollowContact(RZ_TrackedZombie z, RZ_SenseState s, array<IEntity> living, float elapsed, array<int> ids, array<IEntity> players, array<float> vis)
 	{
 		if (!SCR_AIGroup.Cast(z.m_Entity) || living.IsEmpty() || m_GM.GetSpawner().GetMoveWaypointPrefab().IsEmpty())
@@ -870,15 +956,14 @@ class RZ_Stealth
 		}
 
 		if (!has && s.m_bNoPerception)
-			has = NearContact(s, living, ids, players, vis, idx, since, lastPos);
+			has = NearContact(z, s, living, ids, players, idx, since, lastPos);
 
 		if (s.m_fSearchLeft > 0)
 		{
 			// Found again (seen or heard just now): their own AI takes over from here
 			if (has && since <= SEEN_AGAIN)
 			{
-				s.m_fSearchLeft = 0;
-				s.m_fHiddenFor = 0;
+				EndSearch(z, s, false);
 				return;
 			}
 
@@ -899,12 +984,24 @@ class RZ_Stealth
 			s.m_fHiddenFor = 0;
 		}
 
-		if (vis[idx] < m_Settings.m_fLoseBelow && since >= SEEN_AGAIN)
+		// Nothing newer than the contact it last went searching from: the engine keeps a target it
+		// has lost listed for a while, and that one is never lost twice
+		float contactAt = m_fClock - since;
+		if (s.m_fLostContactAt >= 0 && contactAt <= s.m_fLostContactAt + LOST_SLACK)
+		{
+			s.m_fHiddenFor = 0;
+			return;
+		}
+
+		// Hidden, unseen and unheard. The count only starts while the contact is fresh: a group that
+		// had them a while ago and isn't after them now has nothing to lose
+		float loseAfter = Math.Max(2, m_Settings.m_fLoseSeconds);
+		bool quiet = vis[idx] < m_Settings.m_fHiddenBelow && since >= SEEN_AGAIN && NoiseOf(ids[idx]) <= 0;
+		if (quiet && (s.m_fHiddenFor > 0 || since <= 2 * loseAfter))
 			s.m_fHiddenFor += elapsed;
 		else
 			s.m_fHiddenFor = 0;
 
-		float loseAfter = Math.Max(2, m_Settings.m_fLoseSeconds);
 		if (s.m_fHiddenFor < loseAfter || since < loseAfter)
 			return;
 
@@ -912,36 +1009,74 @@ class RZ_Stealth
 		if (!Send(z, s, lastPos))
 			return;
 
+		s.m_vSearchAt = lastPos;
+		s.m_fNextLook = Math.RandomFloat(LOOK_MIN, LOOK_MAX);
+		s.m_fLostContactAt = contactAt;
 		s.m_fSearchLeft = Math.Max(5, m_Settings.m_fSearchSeconds);
 		s.m_fHiddenFor = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Infected without engine perception: one within Contact radius of a player it could see (not
-	//! hidden), or touching them, is on that player; it stays on them, from where it last was, until
-	//! they've been hidden long enough.
-	protected bool NearContact(RZ_SenseState s, array<IEntity> living, array<int> ids, array<IEntity> players, array<float> vis, out int idx, out float since, out vector lastPos)
+	//! Infected without engine perception: a group is on a player when a member touches them, when a
+	//! member is within Contact radius of a player who has just made noise, or when the group is
+	//! coming at a player within Contact radius (CHASE_SPEED or more, faster than toward a horde's
+	//! goal, and not on stealth's own waypoint). It stays on them, from where they last were, for
+	//! Lose + Search seconds after.
+	protected bool NearContact(RZ_TrackedZombie z, RZ_SenseState s, array<IEntity> living, array<int> ids, array<IEntity> players, out int idx, out float since, out vector lastPos)
 	{
+		// Where the group is, and how far it moved since the last look (can't tell if a member died)
+		vector center = vector.Zero;
+		foreach (IEntity m : living)
+		{
+			center = center + m.GetOrigin();
+		}
+
+		center = center * (1.0 / living.Count());
+		float gap = m_fClock - s.m_fCenterAt;
+		bool canTell = s.m_iCenterCount == living.Count() && gap > 0 && gap <= CHASE_GAP;
+		if (s.m_fSearchLeft > 0 || RZ_Util.GroupHasWaypoint(z.m_Entity, s.m_Waypoint))
+			canTell = false; // walking where stealth sent it is no chase
+
+		vector moved = center - s.m_vCenter;
+		s.m_vCenter = center;
+		s.m_iCenterCount = living.Count();
+		s.m_fCenterAt = m_fClock;
+
+		float toGoal = 0;
+		if (canTell && z.m_bHasGoal)
+			toGoal = Approach(moved, center, z.m_vGoal) / gap;
+
 		float contact = Math.Max(TOUCH_RADIUS, m_Settings.m_fContactRadius);
 		foreach (int j, IEntity p : players)
 		{
 			vector at = p.GetOrigin();
-			foreach (IEntity m : living)
-			{
-				float d = RZ_Util.DistXZ(m.GetOrigin(), at);
-				if (d > TOUCH_RADIUS && (d > contact || vis[j] < m_Settings.m_fLoseBelow))
-					continue;
+			float d = RZ_Util.NearestDistance(at, living);
+			if (d > contact)
+				continue;
 
-				s.m_fNearAt = m_fClock;
-				s.m_vNearPos = at;
-				idx = j;
-				since = 0;
-				lastPos = at;
-				return true;
+			bool onThem = d <= TOUCH_RADIUS || NoiseOf(ids[j]) > 0;
+			if (!onThem && canTell)
+			{
+				float toPlayer = Approach(moved, center, at) / gap;
+				onThem = toPlayer >= CHASE_SPEED && toPlayer - toGoal >= CHASE_SPEED / 2;
 			}
+
+			if (!onThem)
+				continue;
+
+			s.m_fNearAt = m_fClock;
+			s.m_vNearPos = at;
+			idx = j;
+			since = 0;
+			lastPos = at;
+			return true;
 		}
 
+		// On them a little while ago: still on them, from where they were
 		if (s.m_fNearAt < 0 || s.m_iTarget < 0)
+			return false;
+
+		if (m_fClock - s.m_fNearAt > Math.Max(2, m_Settings.m_fLoseSeconds) + Math.Max(5, m_Settings.m_fSearchSeconds))
 			return false;
 
 		int still = ids.Find(s.m_iTarget);
@@ -955,21 +1090,61 @@ class RZ_Stealth
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The search counts down; at the end they give up: a horde goes on to where it was sent,
-	//! anything else back toward where it spawned.
+	//! How far `moved` went toward `target` from `from`, on the ground (negative: away).
+	protected static float Approach(vector moved, vector from, vector target)
+	{
+		vector dir = target - from;
+		dir[1] = 0;
+		float len = dir.Length();
+		if (len < 0.5)
+			return 0;
+
+		return (moved[0] * dir[0] + moved[2] * dir[2]) / len;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The search counts down. A group with nothing else to do looks about: every 10-15 s a new spot
+	//! near where it last had them (one with waypoints of its own carries on with them once it has
+	//! been there). At the end they give up.
 	protected void TickSearch(RZ_TrackedZombie z, RZ_SenseState s, float elapsed)
 	{
 		if (s.m_fSearchLeft <= 0)
 			return;
 
 		s.m_fSearchLeft -= elapsed;
-		if (s.m_fSearchLeft > 0)
+		if (s.m_fSearchLeft <= 0)
+		{
+			EndSearch(z, s, true);
+			return;
+		}
+
+		s.m_fNextLook -= elapsed;
+		if (s.m_fNextLook > 0)
 			return;
 
+		s.m_fNextLook = Math.RandomFloat(LOOK_MIN, LOOK_MAX);
+		if (RZ_Util.CountGroupWaypoints(z.m_Entity) == 0)
+			Send(z, s, RZ_Util.RandomPointInRing(s.m_vSearchAt, 5, 20));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The search is over: stealth's waypoint is taken back, so the group carries on with its own.
+	//! Given up, a group with none left goes back: a horde on to where it was sent, anything else
+	//! toward where it spawned.
+	protected void EndSearch(RZ_TrackedZombie z, RZ_SenseState s, bool gaveUp)
+	{
 		s.m_fSearchLeft = 0;
 		s.m_fHiddenFor = 0;
+		bool ownLeft = RZ_Util.PopGroupWaypoint(z.m_Entity, s.m_Waypoint);
+		s.m_Waypoint = null;
+		if (!gaveUp)
+			return;
+
 		s.m_iTarget = -1;
 		s.m_fNearAt = -1;
+		if (ownLeft)
+			return;
+
 		vector back = z.m_vHome;
 		if (z.m_bHasGoal)
 			back = z.m_vGoal;
@@ -978,16 +1153,13 @@ class RZ_Stealth
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The group's waypoints replaced by one move waypoint to pos. The one stealth gave it before is
-	//! deleted too, even if the group already finished it. False if none could be made.
+	//! A move waypoint to pos in front of the group's own: it goes there first, then carries on with
+	//! them. The one stealth gave it before is taken back and deleted, even if the group already
+	//! finished it. False if none could be made.
 	protected bool Send(RZ_TrackedZombie z, RZ_SenseState s, vector pos)
 	{
-		IEntity before = s.m_Waypoint;
-		IEntity made = RZ_Util.RedirectGroup(z.m_Entity, pos, m_GM.GetSpawner().GetMoveWaypointPrefab()); // VERIFY: the zombie mod's group walks to a move waypoint once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints)
-		if (before && before != made)
-			SCR_EntityHelper.DeleteEntityAndChildren(before);
-
-		s.m_Waypoint = made;
-		return made != null;
+		RZ_Util.PopGroupWaypoint(z.m_Entity, s.m_Waypoint);
+		s.m_Waypoint = RZ_Util.PushGroupWaypoint(z.m_Entity, pos, m_GM.GetSpawner().GetMoveWaypointPrefab()); // VERIFY: the zombie mod's group walks to a move waypoint once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints)
+		return s.m_Waypoint != null;
 	}
 }
