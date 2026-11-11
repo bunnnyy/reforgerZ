@@ -26,7 +26,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Seasons: the last winner's starting rules, rule sets (Winter, Fog, Military Collapse, No Vehicles, your own), the wipe cycle and the hall of fame (docs/DESIGN.md, Seasons)", category: "ReforgerZ")]
 	protected ref RZ_SeasonSettings m_SeasonSettings;
 
-	[Attribute("1", UIWidgets.Slider, "Season speed: research, outbreak stages, infection spread, territory, supply trucks and safehouse upkeep run this many times as fast. 1 = about 10 days with 5-10 players; 2 for 2-4 players, 0.5 for 15-20 (docs/DESIGN.md, Season pacing)", "0.25 4 0.05", category: "ReforgerZ")]
+	[Attribute("1", UIWidgets.Slider, "Season speed: everything that moves the season along runs this many times as fast: research and the lab's work, outbreak stages and spread, territory, supply trucks, safehouse upkeep, the Long Table. 1 = the design point, about 45 real days (Cure > Pace by play fits the research to how much the server plays); 1.5 for about a month, 2 for about three and a half weeks. Cure > Cure pace changes only the research (docs/DESIGN.md, Season pacing)", "0.25 4 0.05", category: "ReforgerZ")]
 	protected float m_fSeasonSpeed;
 
 	// ---------------------------------------------------------------- World
@@ -82,6 +82,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Infection adapts a little: specials after breakthroughs, one trait per stage (runner, helmet, screamer prefabs), favourite spots (docs/DESIGN.md, Infection adapts)", category: "ReforgerZ|Zombies")]
 	protected ref RZ_AdaptationSettings m_AdaptationSettings;
 
+	[Attribute(desc: "Stealth: each player's visibility (stance, speed, light, weather, noise), the infected near them seeing the most visible one, losing a hidden player, the missions' sight and notice rules (docs/DESIGN.md, Stealth)", category: "ReforgerZ|Zombies")]
+	protected ref RZ_StealthSettings m_StealthSettings;
+
 	[Attribute("0.5", desc: "Heat per tick each player gives off just by being somewhere", category: "ReforgerZ|Zombies")]
 	protected float m_fHeatPresence;
 
@@ -105,11 +108,29 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Antidote item. From the start the lab makes doses into a stock (faster with each breakthrough); quartermaster shop actions selling this prefab draw on it. Rare finds in pharmacies and on bodies", "et", category: "ReforgerZ|Cure")]
 	protected ResourceName m_sAntidotePrefab;
 
-	[Attribute("1", desc: "Research percent per sample (x the background and Halcyon Champion multipliers, x2 at most together; x season speed)", category: "ReforgerZ|Cure")]
+	[Attribute("1", desc: "Research percent per sample (x the background and Halcyon Champion multipliers, x2 at most together; x Cure pace and season speed)", category: "ReforgerZ|Cure")]
 	protected float m_fResearchPerSample;
 
-	[Attribute("0.75", desc: "Research from missions (data, readings, live specimens) is multiplied by this (x season speed)", category: "ReforgerZ|Cure")]
+	[Attribute("0.75", desc: "Research from missions (data, readings, live specimens) is multiplied by this (x Cure pace and season speed)", category: "ReforgerZ|Cure")]
 	protected float m_fMissionResearchMult;
+
+	[Attribute("0.3", desc: "Cure pace: research from samples and missions counts this many times. 0.3 = about 45 real days to the cure (tools/pacing_sim.py); with Pace by play on, that holds from about 2 to 20 regulars. Lower for a longer season, higher for a shorter one. Only the research: the outbreak and everything else keep their pace (docs/DESIGN.md, Season pacing)", category: "ReforgerZ|Cure")]
+	protected float m_fCurePace;
+
+	[Attribute("12.5", desc: "Pace by play: the player-hours a day the research pace is set for (12.5 = 5 regulars at 2.5 hours). Research counts x (this / the player-hours really played a day over the last 7 whole real days), x0.25 to x2.5, so a quiet server isn't held back and a busy one doesn't fill the lab. x1 for the season's first two days. 0 = off: research follows Cure pace alone", category: "ReforgerZ|Cure")]
+	protected float m_fPlayPaceHours;
+
+	[Attribute("3", desc: "Lab research per day: delivered research waits in the lab's backlog and is worked through at this many percent a real day (x season speed), also while nobody is online. Milestones fire on worked research. 0 = no limit: research counts at once", category: "ReforgerZ|Cure")]
+	protected float m_fLabPerDay;
+
+	[Attribute("4", desc: "Lab backlog days: the backlog holds at most this many days of the lab's work, a backstop for spikes. While it's full the lab refuses samples (no Fame or Favor; players keep them) and mission research beyond it is lost. 0 = no cap", category: "ReforgerZ|Cure")]
+	protected float m_fLabBacklogDays;
+
+	[Attribute("0.25", desc: "Empty lab bonus: the part of a delivery that fills the backlog up to half a day of the lab's work counts this much more (0.25 = +25%), so an idle lab doesn't waste its days (0 to 1)", category: "ReforgerZ|Cure")]
+	protected float m_fEmptyLabBonus;
+
+	[Attribute("1", desc: "Finale fallback: only with a cure finale questline registered (none is built yet), research stops at 90% until a finale takes it on. After a real week at the gate (/ season speed) the lab inches up this many percent a real day by itself (x season speed), so a season whose finale nobody finishes still ends. 0 = never", category: "ReforgerZ|Cure")]
+	protected float m_fFinaleFallbackPerDay;
 
 	// ---------------------------------------------------------------- Rewards
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot crate spawned as a mission reward", "et", category: "ReforgerZ|Missions")]
@@ -328,6 +349,14 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	// ---------------------------------------------------------------- Replicated summary
 	[RplProp()]
 	protected float m_fReplCureProgress;
+	[RplProp()]
+	protected float m_fReplCureBacklog;		// research waiting at the lab
+	[RplProp()]
+	protected bool m_bReplLabFull;			// the backlog is at its cap: the lab refuses samples
+	[RplProp()]
+	protected bool m_bReplAtGate;			// research waits at 90 percent for a cure finale
+	[RplProp()]
+	protected float m_fReplPlayPace;		// the pace by play (RZ_CureResearch.PlayPace), for a sample's worth
 
 	[RplProp()]
 	protected int m_iReplStage;
@@ -345,6 +374,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Director m_Director;
 	protected ref RZ_HeatMap m_Heat;
 	protected ref RZ_ZombieSpawner m_Spawner;
+	protected ref RZ_Stealth m_Stealth;
 	protected ref RZ_Adaptation m_Adaptation;
 	protected ref RZ_TownMemory m_TownMemory;
 	protected ref RZ_Environment m_Environment;
@@ -431,6 +461,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_aWelcomed.RemoveItem(playerId);
 		if (m_BiteDetector)
 			m_BiteDetector.Forget(playerId);
+
+		if (m_Stealth)
+			m_Stealth.Forget(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -442,7 +475,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_bServerRunning && GetGame() && GetGame().GetCallqueue())
 		{
 			GetGame().GetCallqueue().Remove(ServerTick);
-			GetGame().GetCallqueue().Remove(BiteCheck);
+			GetGame().GetCallqueue().Remove(SecondTick);
 			SaveState();
 		}
 
@@ -461,6 +494,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_AdaptationSettings)
 			m_AdaptationSettings = RZ_AdaptationSettings.Cast(RZ_Util.NewWithDefaults("RZ_AdaptationSettings"));
+
+		if (!m_StealthSettings)
+			m_StealthSettings = RZ_StealthSettings.Cast(RZ_Util.NewWithDefaults("RZ_StealthSettings"));
 
 		if (!m_TownMemorySettings)
 			m_TownMemorySettings = RZ_TownMemorySettings.Cast(RZ_Util.NewWithDefaults("RZ_TownMemorySettings"));
@@ -566,6 +602,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Cure = new RZ_CureResearch(this);
 		m_Director = new RZ_Director(this, m_aStages);
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
+		m_Stealth = new RZ_Stealth(this, m_StealthSettings);
 		m_Missions = new RZ_MissionManager(this);
 		m_UIFeed = new RZ_UIFeed(this);
 		m_Infection = new RZ_Infection(this, m_InfectionSettings);
@@ -651,11 +688,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (gameMode)
 			gameMode.GetOnPlayerSpawned().Insert(HandlePlayerSpawned);
 
+		// What the lab did while the server was down, now that every system its milestones touch
+		// is set up, so the first replicated state (the backlog, the cold store) is current
+		m_Cure.CatchUp();
 		UpdateReplicated();
 		m_bServerRunning = true;
 		GetGame().GetCallqueue().CallLater(ServerTick, m_fTickSeconds * 1000, true);
-		// Bites need a faster check than the main tick to catch individual hits
-		GetGame().GetCallqueue().CallLater(BiteCheck, 1000, true);
+		// Bites need a faster check than the main tick to catch individual hits, and stealth a
+		// faster update for the infected near players
+		GetGame().GetCallqueue().CallLater(SecondTick, 1000, true);
 
 		RZ_Log.Info(string.Format("Started. %1 settlements, stage %2, cure %3 percent, state %4.",
 			m_aSettlements.Count(), RZ_StageSettings.GetStageName(m_Director.GetStage()),
@@ -697,7 +738,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Checkpoints.Tick(dt, ids, players);
 		// After everything that changes standing or spawns fights this tick
 		m_Hostility.Tick(dt, ids, players);
-		m_Broadcast.Tick(dt, m_fBroadcastMinutes);
+		m_Broadcast.Tick(dt, m_fBroadcastMinutes, !ids.IsEmpty());
 		RZ_GameTime.Tick(dt);
 		RZ_NoisemakerComponent.TickAll();
 		m_Infection.Tick(dt, ids, players);
@@ -744,6 +785,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Director GetDirector() { return m_Director; }
 	RZ_HeatMap GetHeat() { return m_Heat; }
 	RZ_ZombieSpawner GetSpawner() { return m_Spawner; }
+	RZ_Stealth GetStealth() { return m_Stealth; }
 	RZ_Adaptation GetAdaptation() { return m_Adaptation; }
 	RZ_TownMemory GetTownMemory() { return m_TownMemory; }
 	RZ_Environment GetEnvironment() { return m_Environment; }
@@ -776,8 +818,33 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	float GetMissionResearchMult() { return m_fMissionResearchMult; }
 
 	//------------------------------------------------------------------------------------------------
-	//! Season speed (docs/DESIGN.md, Season pacing), 0.25 to 4. Research gains and the season's
-	//! clocks (stages, spread, territory, trucks, upkeep) are scaled by it.
+	//! Cure pace (docs/DESIGN.md, Season pacing), 0.02 to 10: research from samples and missions
+	//! counts this many times. Nothing else follows it.
+	float GetCurePace() { return Math.Clamp(m_fCurePace, 0.02, 10); }
+
+	//------------------------------------------------------------------------------------------------
+	//! Pace by play: the player-hours a day the research pace is set for (RZ_CureResearch.PlayPace). 0 = off.
+	float GetPlayPaceHours() { return Math.Max(0, m_fPlayPaceHours); }
+
+	//------------------------------------------------------------------------------------------------
+	//! Percent of research the lab works through in a real day, before the season speed. 0 = no limit.
+	float GetLabPerDay() { return Math.Max(0, m_fLabPerDay); }
+
+	//------------------------------------------------------------------------------------------------
+	//! Days of the lab's work its backlog holds. 0 = no cap.
+	float GetLabBacklogDays() { return Math.Max(0, m_fLabBacklogDays); }
+
+	//------------------------------------------------------------------------------------------------
+	//! The part of a delivery that fills the backlog up to half a day of work counts 1 + this (0 to 1).
+	float GetEmptyLabBonus() { return Math.Clamp(m_fEmptyLabBonus, 0, 1); }
+
+	//------------------------------------------------------------------------------------------------
+	//! Percent a real day the lab gains by itself after a week at the finale's 90 percent gate. 0 = never.
+	float GetFinaleFallbackPerDay() { return Math.Max(0, m_fFinaleFallbackPerDay); }
+
+	//------------------------------------------------------------------------------------------------
+	//! Season speed (docs/DESIGN.md, Season pacing), 0.25 to 4. Research gains, the lab's work and the
+	//! season's clocks (stages, spread, territory, trucks, upkeep, the Long Table) are scaled by it.
 	float GetSeasonSpeed()
 	{
 		if (m_fSeasonSpeed <= 0)
@@ -951,6 +1018,23 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	float GetReplicatedCureProgress() { return m_fReplCureProgress; }
+	float GetReplicatedCureBacklog() { return m_fReplCureBacklog; }
+	bool IsReplicatedLabFull() { return m_bReplLabFull; }
+	bool IsReplicatedAtGate() { return m_bReplAtGate; }
+
+	//------------------------------------------------------------------------------------------------
+	//! The lab's line ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.") from
+	//! the replicated values, on any machine. The settings it reads are the same everywhere; the pace
+	//! by play is measured on the server and replicated.
+	string DescribeLabReplicated()
+	{
+		float pace = 1;
+		if (m_fReplPlayPace > 0)
+			pace = m_fReplPlayPace;
+
+		return RZ_CureResearch.DescribeLab(m_fReplCureProgress, m_fReplCureBacklog, m_fResearchPerSample * GetCurePace() * pace * GetSeasonSpeed(),
+			GetLabPerDay() * GetSeasonSpeed(), m_bReplLabFull, m_bReplAtGate, m_bReplCured);
+	}
 	RZ_EOutbreakStage GetReplicatedStage() { return m_iReplStage; }
 	bool IsReplicatedCured() { return m_bReplCured; }
 	string GetLockedBuildings() { return m_sReplLockedBuildings; }
@@ -1215,6 +1299,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_Objectives.Assign(this, profile, bg, controlledEntity.GetOrigin());
 
 		m_BiteDetector.Reset(playerId);
+		m_Stealth.Forget(playerId);
 		m_Infection.OnPlayerSpawned(playerId);
 		m_UIFeed.OnPlayerSpawned(playerId);
 		m_UIFeed.RecordGearSoon(playerId, GetPickedLoadoutName(playerId));
@@ -1246,7 +1331,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 					RZ_Util.DirectionText(controlledEntity.GetOrigin(), m_vLabPos));
 			}
 
-			string research = string.Format("Cure research: %1 percent.", RZ_Util.RoundToInt(m_Cure.m_fProgress));
+			// "Research 63 percent. Waiting: 14 samples' worth, about 4 days of work."
+			string research = m_Cure.Describe();
 			if (m_Cure.IsCured())
 				research = "The cure is out. The gates open when the season ends.";
 
@@ -1346,10 +1432,14 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			return;
 
 		float heat = m_fHeatPerShot * GetPlayerBackground(playerID).m_fNoiseMult;
-		if (RZ_Util.IsSuppressed(weapon))
+		bool suppressed = RZ_Util.IsSuppressed(weapon);
+		if (suppressed)
 			heat = heat * m_fSuppressedHeatMult;
 
 		m_Heat.AddHeat(shooter.GetOrigin(), heat);
+
+		// A shot gives you away at once (docs/DESIGN.md, Stealth)
+		m_Stealth.OnPlayerShot(playerID, suppressed);
 
 		// House rules and wanderers who were shot at
 		m_Safehouses.OnPlayerShot(playerID, shooter.GetOrigin());
@@ -1367,9 +1457,14 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void BiteCheck()
+	//! Once a second: bites, and stealth (which updates at its own pace, Stealth > Update seconds).
+	protected void SecondTick()
 	{
-		m_BiteDetector.Check();
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		m_BiteDetector.Check(ids, players);
+		m_Stealth.Tick(1, ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1391,8 +1486,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			RZ_StageSettings.GetStageName(m_Director.GetStage()), RZ_Util.RoundToInt(m_Director.GetStageMinutes()),
 			RZ_Util.RoundToInt(m_Director.GetAverageInfection()), safe, contested, infested, overrun,
 			m_Spawner.GetTrackedCount(), m_Missions.GetActive().Count()));
-		RZ_Log.Info(string.Format("Status | players %1 | cure %2 percent (milestone %3, final stand %4) | %5",
-			playerCount, RZ_Util.RoundToInt(m_Cure.m_fProgress), m_Cure.m_iMilestone, m_Cure.IsFinalStand(), m_Environment.Describe()));
+		RZ_Log.Info(string.Format("Status | players %1 | cure %2 percent (milestone %3, final stand %4, waiting %5, lab full %6, at the 90 gate %7, pace by play %8 percent) | %9",
+			playerCount, RZ_Util.RoundToInt(m_Cure.m_fProgress), m_Cure.m_iMilestone, m_Cure.IsFinalStand(),
+			RZ_Util.RoundToInt(m_Cure.GetBacklog()), m_Cure.IsLabFull(), m_Cure.IsAtFinaleGate(),
+			RZ_Util.RoundToInt(m_Cure.PlayPace() * 100), m_Environment.Describe()));
 	}
 
 	// ================================================================ Reputation (see docs/REPUTATION.md)
@@ -1875,6 +1972,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected void UpdateReplicated()
 	{
 		m_fReplCureProgress = m_Cure.m_fProgress;
+		m_fReplCureBacklog = m_Cure.GetBacklog();
+		m_bReplLabFull = m_Cure.IsLabFull();
+		m_bReplAtGate = m_Cure.IsAtFinaleGate();
+		m_fReplPlayPace = m_Cure.PlayPace();
 		m_bReplCured = m_Cure.IsCured();
 		m_iReplStage = m_Director.GetStage();
 		Replication.BumpMe();
@@ -2081,6 +2182,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_Director.Restore(data.stage, data.stageMinutes);
 		m_Cure.Restore(data.cureProgress, data.cureMilestone, data.cured, data.labAntidotes, data.stolenAntidotes, data.labStabilisers);
+		m_Cure.RestoreLab(data);
 		if (data.seasonFame)
 		{
 			for (int f = 0; f < data.seasonFame.Count() && f < RZ_Factions.COUNT; f++)
@@ -2129,6 +2231,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		data.labAntidotes = m_Cure.GetLabAntidotes();
 		data.stolenAntidotes = m_Cure.GetStolenAntidotes();
 		data.labStabilisers = m_Cure.GetLabStabilisers();
+		m_Cure.SaveLab(data);
 		data.seasonWinner = m_iSeasonWinner;
 		foreach (int fame : m_aSeasonFame)
 		{

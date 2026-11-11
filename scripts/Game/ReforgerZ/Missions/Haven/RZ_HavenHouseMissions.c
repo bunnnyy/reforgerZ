@@ -163,19 +163,21 @@ class RZ_HavenLookouts
 
 	//------------------------------------------------------------------------------------------------
 	//! Who sees someone standing at pos: a lookout within radius (m_sWho), a Haven wanderer's name
-	//! (with `wanderers`), or "" if nobody does.
-	string SeenBy(RZ_GameModeComponent gm, vector pos, float radius, bool wanderers)
+	//! (with `wanderers`), or "" if nobody does. With the player's id, the radius shrinks while
+	//! they're hard to see (Stealth, RZ_Stealth.SightRadius).
+	string SeenBy(RZ_GameModeComponent gm, vector pos, float radius, bool wanderers, int playerId = -1)
 	{
+		float reach = RZ_Stealth.SightRadius(playerId, radius);
 		foreach (IEntity lookout : m_aBodies)
 		{
-			if (lookout && RZ_Util.DistXZ(lookout.GetOrigin(), pos) <= radius)
+			if (lookout && RZ_Util.DistXZ(lookout.GetOrigin(), pos) <= reach)
 				return m_sWho;
 		}
 
 		if (!wanderers || !gm.GetWanderers())
 			return "";
 
-		return gm.GetWanderers().SeenByHaven(pos, radius);
+		return gm.GetWanderers().SeenByHaven(pos, reach);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -624,7 +626,7 @@ class RZ_Mission_QuietArrangement : RZ_Mission_Delivery
 		if (RZ_Util.DistXZ(carrier.GetOrigin(), m_vPos) < 40)
 			return;
 
-		string who = m_Lookouts.SeenBy(gm, carrier.GetOrigin(), radius, true);
+		string who = m_Lookouts.SeenBy(gm, carrier.GetOrigin(), radius, true, m_iCarrier);
 		if (who.IsEmpty())
 			return;
 

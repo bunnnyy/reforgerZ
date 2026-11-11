@@ -12,27 +12,28 @@ Code paths are under `scripts/Game/ReforgerZ/`.
 2. [Settlements, spawn points and the map](#settlements-spawn-points-and-the-map)
 3. [The Director: outbreak stages and spread](#the-director-outbreak-stages-and-spread)
 4. [Heat and noise](#heat-and-noise)
-5. [Zombies, bites and infection](#zombies-bites-and-infection)
-6. [Infection adapts](#infection-adapts)
-7. [The Perimeter](#the-perimeter)
-8. [Time and environment](#time-and-environment)
-9. [Backgrounds and personal goals](#backgrounds-and-personal-goals)
-10. [Factions in the background](#factions-in-the-background)
-11. [Haven safehouses](#haven-safehouses)
-12. [Wanderers](#wanderers)
-13. [Leaders](#leaders)
-14. [Missions](#missions)
-15. [Story arcs and headlines](#story-arcs-and-headlines)
-16. [Questlines](#questlines)
-17. [World facts](#world-facts)
-18. [Town memory](#town-memory)
-19. [World interactions](#world-interactions)
-20. [New-player guidance](#new-player-guidance)
-21. [Cure research and the season's end](#cure-research-and-the-seasons-end)
-22. [Season pacing](#season-pacing)
-23. [Seasons](#seasons)
-24. [Loose items](#loose-items)
-25. [Persistence](#persistence)
+5. [Stealth](#stealth)
+6. [Zombies, bites and infection](#zombies-bites-and-infection)
+7. [Infection adapts](#infection-adapts)
+8. [The Perimeter](#the-perimeter)
+9. [Time and environment](#time-and-environment)
+10. [Backgrounds and personal goals](#backgrounds-and-personal-goals)
+11. [Factions in the background](#factions-in-the-background)
+12. [Haven safehouses](#haven-safehouses)
+13. [Wanderers](#wanderers)
+14. [Leaders](#leaders)
+15. [Missions](#missions)
+16. [Story arcs and headlines](#story-arcs-and-headlines)
+17. [Questlines](#questlines)
+18. [World facts](#world-facts)
+19. [Town memory](#town-memory)
+20. [World interactions](#world-interactions)
+21. [New-player guidance](#new-player-guidance)
+22. [Cure research and the season's end](#cure-research-and-the-seasons-end)
+23. [Season pacing](#season-pacing)
+24. [Seasons](#seasons)
+25. [Loose items](#loose-items)
+26. [Persistence](#persistence)
 
 ## Principles
 
@@ -89,18 +90,19 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
 
 Code: `Director/RZ_Director.c`, `Director/RZ_OutbreakStage.c`.
 
-The server moves through four stages over a season of about ten days ([Season pacing](#season-pacing)).
+The server moves through four stages over a season of about 45 real days ([Season pacing](#season-pacing)).
 A stage ends when its time is up or when average infection passes its threshold. **The
 outbreak's clock only runs while someone is playing**: stage time and spread stand still on an
 empty server. Stage lengths are divided by the **season speed** and spread is multiplied by it.
-Each stage's numbers can be overridden on the game mode.
+Each stage's numbers can be overridden on the game mode. The days below are for 5 regulars
+(about 8 hours a day with someone online).
 
 | Stage | Lasts (hours played) | Or when average infection reaches | Density | Special chance | Spread / min | Missions | Bastion presence |
 |---|---|---|---|---|---|---|---|
-| Early Outbreak | 8 h (about day 1) | 45 | ×0.6 | 1% | 0.05 | 3 | ×1.0 |
-| Collapse | 16 h (days 2–3) | 65 | ×1.0 | 1.5% | 0.08 | 4 | ×0.6 |
-| Overrun | 24 h (days 4–6) | 85 | ×1.5 | 2% | 0.1 | 4 | ×0.25 |
-| Aftermath | until the cure | — | ×0.8 | 2.5% | 0.03 | 5 | ×0.1 |
+| Early Outbreak | 40 h (about days 1–5) | 45 | ×0.6 | 1% | 0.01 | 3 | ×1.0 |
+| Collapse | 80 h (days 6–15) | 65 | ×1.0 | 1.5% | 0.016 | 4 | ×0.6 |
+| Overrun | 120 h (days 16–30) | 85 | ×1.5 | 2% | 0.02 | 4 | ×0.25 |
+| Aftermath | until the cure (from about day 31) | — | ×0.8 | 2.5% | 0.006 | 5 | ×0.1 |
 
 - **Spread.** Every town creeps up slowly. A town at 60+ infection also spreads to every
   town within 2.5 km, in proportion to its own infection. Cure breakthroughs slow spread.
@@ -134,8 +136,131 @@ caps at 200 per square.
   Infected that a mission controls walk to a nearby noise and stay about 90 s. That's what
   the unarmed missions are built on ([MISSIONS.md](MISSIONS.md), "Unarmed missions").
 - **Being noticed** (puzzles and unarmed missions): heat where you stand above a threshold,
-  or an infected within 10–12 m of you for 6–8 s.
+  or an infected within 10–12 m of you for 6–8 s (slower while you're hard to see:
+  [Stealth](#stealth)).
 - Other mods can add heat with `RZ_GameModeComponent.ReportNoise(pos, heat)`.
+
+## Stealth
+
+Code: `Zombies/RZ_Stealth.c`. Settings: **Zombies > Stealth**.
+
+How visible each living player is, worked out on the server once a second (not per frame), and
+what the infected near them make of it. It works with any zombie mod. If the mod's infected use
+the engine's perception, stealth changes how fast they recognise a player and reads who they're
+after. If they use a plain aggro radius, their senses don't change and losing them goes by
+distance. **Stealth off:** infected perception is never touched, nobody counts as hidden, and
+missions work exactly as before.
+
+### Visibility
+
+Every living player has a visibility from 0 (hidden) to 1 (in plain sight). It's the stance and
+speed times the surroundings (light and weather), plus recent noise, capped at 1.
+
+| Input | Default |
+|---|---|
+| Stance | standing ×1, crouched ×0.6, prone ×0.5 (stealth can't see cover, so lying in the open in daylight isn't hidden on its own) |
+| Speed (how far you moved since the last update) | still (under 0.4 m/s) ×0.7, walking (under 2.6) ×0.85, running (under 5) ×1, sprinting ×1.25 |
+| Light | 60% the engine's light on you (sun, moon, lamps, your own torch) and 40% the clock (day 1, dusk 0.6, night 0.25). Turned into a multiplier from ×0.4 in the dark to ×1 in daylight. If the engine's light can't be read, the clock alone |
+| Weather | fog or a fog bank ×0.75; rain ×0.85, or a storm ×0.7 instead; the Fog rule set's shorter sight (×0.85) |
+| Surroundings floor | light × weather never counts for less than ×0.55, so darkness and bad weather alone never hide someone moving upright: only getting low and keeping still do |
+| Noise | each shot adds to your noise and shots add up: one shot fills it, a suppressed one adds 0.35 (so about three in a row fill it too), times your background's noise (Hunters quieter). Full noise is +0.5 visibility, fading over 10 s. A loud noise within 15 m (a bell, a forced lock, a noisemaker at your feet) sets it to at least 0.7. While any noise is left, the infected can't lose you |
+| In a vehicle | always 1 |
+
+Some results: walking in daylight 0.85; crouched and still in daylight 0.42; prone and still in
+daylight 0.35 (in rain 0.3); walking at night about 0.47 (never less, whatever the weather);
+crouched and walking at night 0.28; prone and still at night 0.19. Under **0.35** counts as
+hidden: that's the HUD's HIDDEN, and the only state in which the infected can lose you. Other
+systems ask `RZ_Stealth.GetVisibility(playerId)` (1 with Stealth off) and
+`RZ_Stealth.IsHidden(playerId, threshold)` (always false with Stealth off). A new life starts at 1.
+
+### The infected near you
+
+Every update, for the infected the spawner tracks (groups and their members) with a player within
+**60 m** of a member, each member's perception factor is set to:
+
+> its own factor × the base for its kind × a factor from the **most visible** player within 150 m of any member of its group, never more than ×1.2 on top of its own
+
+- **Base by kind:** common ×1, special ×1.2 (sharper), horde member ×0.9 (a crowd on the move
+  looks ahead).
+- **From the player:** ×0.3 for someone fully hidden, rising to ×1 at 0.6 visibility. From 0.6 to
+  0.9 (standing or walking in daylight) it's ×1, as without stealth. Only above 0.9 (running or
+  sprinting in daylight, just after a shot, a vehicle: the HUD's IN PLAIN SIGHT) does it rise, to
+  ×1.2. Prone and still at night gives about ×0.52, crouched and walking at night ×0.63, prone and
+  still in daylight ×0.71, walking at night ×0.85.
+- **The most visible player counts**, out to 150 m, not just the ones within 60 m. A friend lying
+  prone close to them can't hide you while you stand further off.
+- With nobody within 60 m, a group goes back to its base. At most 40 infected are touched an
+  update; the rest wait their turn.
+- **Never lowered for infected that must keep coming:** every horde tied to a mission (the holds
+  and waves, and most event and questline hordes), and everything within 1.5 km of the lab during
+  the final stand. They keep their own factor. Three hordes are the exception, because staying out
+  of sight is the point there: Lead Them Away, The Clockwork Horde and the Horde Migration event.
+- With the vanilla `SCR_AICombatComponent` on the infected, the factor is set as its multiplier.
+  The AI's own update applies it on top of its alert state, and would overwrite a factor set
+  straight on the perception. If that component has no vanilla utility AI behind it (a mod's own
+  agent), nothing else updates the perception, so the factor goes straight on the
+  `PerceptionComponent`, as it does without the component. Without a `PerceptionComponent` nothing
+  changes. Perception that still refuses the factor after 5 updates in a row counts as none. Each
+  case is logged once.
+- The factor only changes how fast they recognise what they see. Hearing is the engine's own. The
+  engine already sees stance and light, so stealth's factor comes on top, which is why it never
+  goes below ×0.3.
+
+### Losing them
+
+A group that is after a player can lose them:
+
+1. **Who it has:** the player among its members' engine targets it has recognised as an enemy
+   (not just a hint of someone), seen or heard most recently. For infected without engine
+   perception: a member touching a player (4 m), a member within 20 m of a player who has just made
+   noise, or the group coming at a player within 20 m at a run (2 m/s or more, faster than toward
+   where a horde is headed, and not while walking where stealth sent it). It stays on that player
+   for up to 53 s (8 + 45) after.
+2. **Lost:** that player has stayed hidden (under **0.35**), unseen, unheard and with no noise left
+   for **8 s**, counted from when the group last had them. A group that had a player a while ago
+   and isn't after them now has nothing to lose, and a contact it has already searched from is
+   never lost twice.
+3. **Search:** the group walks to where it last had them. A group with nothing else to do then
+   looks about for **45 s**, a new spot 5–20 m away every 10–15 s. A group with waypoints of its
+   own (a horde on its way) carries on with them once it has been there. If it sees or hears
+   anyone in that time, its own AI takes over.
+4. **Give up:** stealth's waypoint goes, and the group carries on with its own. One with none left
+   goes back: a horde to where it was sent, anything else toward where it spawned.
+
+Stealth's waypoint is put in front of the group's own and taken back afterwards: nothing of the
+group's (a zombie mod's wander or patrol, a busy-spot visit) is removed. Never for mission infected
+(their mission steers them) or the final stand. It needs a group and the move waypoint (**Zombies
+> Move waypoint**); without them only the senses change. The waypoint stealth gives a group is
+deleted with the group.
+
+### Stealth in missions
+
+Missions use the score only to go easier on someone lying low, never harder. A player at
+visibility 0.6 or more (standing in daylight, even keeping still) is seen exactly as before, by
+these checks and by common infected (who only see better than before someone in plain sight).
+
+| Check | With Stealth on |
+|---|---|
+| Being noticed ([Heat and noise](#heat-and-noise)): puzzles, unarmed missions, the questlines' sneak | The heat limit is unchanged. The "infected close to you for 6–8 s" timer runs at full speed at 0.6 visibility and up, down to 0.35 of it for someone fully hidden: a little over half as fast lying still in the dark |
+| People who see anyone within N m: Haven lookouts and the Haven wanderers near them, the storekeeper, the walker, Halcyon's courier, the Long Table's family, Quiet Count's specials (50 m) | N at 0.6 visibility and up, down to 0.6 × N for someone fully hidden: Quiet Count's 50 m is about 36 m lying still in the dark |
+
+Shots nearby still spoil a sneak. In a questline stage, a person who sees anyone within N m checks
+`RZ_Stealth.SightRadius(playerId, N)` (see [Writing a questline](#writing-a-questline)).
+
+### The HUD
+
+Above the noise meter, five segments and a word: **HIDDEN** (under 0.35: the infected can lose
+you), **LOW**, **SEEN**, **IN PLAIN SIGHT** (0.9 and up: the infected see you better than before).
+It's sent only when it changes, and not shown with Stealth off ([UI.md](UI.md#screens)). There's no
+cue when a group loses you or gives up: you see them go.
+
+*Simplified:* speed is how far you moved between updates, so a sprint that stops just before an
+update reads as still. The stance and the engine's light are read on the server (both on the
+VERIFY list). Stealth has no cover input: a wall or a hedge only counts through the engine's own
+sight. Infected without engine perception are judged "on you" by distance and by how they move,
+so a group that runs at you along its own path (a horde coming straight down the road you're on)
+isn't counted as chasing, and never loses you. A lone infected character that isn't in a group
+never searches, because it has no waypoints.
 
 ## Zombies, bites and infection
 
@@ -325,6 +450,7 @@ Time is never skipped or changed. The environment is read every 30 s and nudges 
 The game clock's night is 20:30 to 05:00.
 
 - **They hear further:** a quarter of every bit of heat also reaches the four neighbouring squares.
+- **They see less:** you're harder to see in the dark, unless you carry a light ([Stealth](#stealth)).
 - **Specials** are ×1.25 as common.
 - **Human AI patrols less:** each holding shows one guard fewer (never under one), standing
   closer to its centre; half the hunter-squad rounds are skipped.
@@ -337,6 +463,7 @@ The game clock's night is 20:30 to 05:00.
 - **Storms** (the Storm event, or rain 0.6+ with wind 10 m/s+) ground Bastion's helicopter
   (no Last Helicopter contract), and wanderers shelter.
 - Players hear one line when rain or fog sets in, at most every 20 minutes each.
+- Fog, fog banks, rain and storms also make you harder to see ([Stealth](#stealth)).
 - **Fog banks** (the Fog Bank event): one region at a time where heat added is ×0.6 and infected
   may spawn twice as close. The engine's fog is global, so it isn't touched; an optional mist
   prop is the only look.
@@ -382,7 +509,7 @@ every 10 minutes server-wide (5 with power). **Cosmetic and social only:** no Fa
 A looping flavour message to everyone every 25 minutes and on each player's first spawn.
 Its tone follows the cure and the outbreak ([LORE.md](LORE.md), "The outside world: silent, watching").
 Its day count ("Day 14") is 11 plus the real days since the season started, so a season of
-about 10 days runs from Day 11 to about Day 21; without the server's clock, a day is 8 hours
+about 45 days runs from Day 11 to about Day 56; without the server's clock, a day is 8 hours
 played. Notes, journals, the radio station and Bastion's orders use the same count.
 
 ## Backgrounds and personal goals
@@ -943,7 +1070,8 @@ example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
      player;
    - sneak: `m_Quiet.Watch(pos, radius)`, then `m_Quiet.IsQuiet(gm, playerId)` (no shots in the
      radius since, not noticed by heat or the infected), `m_Quiet.Spot(playerId)` when someone in
-     the scene sees them;
+     the scene sees them; a person who sees anyone within N m checks
+     `RZ_Stealth.SightRadius(playerId, N)` ([Stealth](#stealth));
    - force: `RZ_UnitWatch` for a spawned group, `SpawnGuards` and `OnZombiesKilled` for the
      infected, `RZ_Util.IsArmed` for a threat;
    - bribe: `TryBribe(gm, playerId, faction, cost)` (spends Favor, says so if they're short);
@@ -991,7 +1119,8 @@ keeps four small things of its own: **season flags**, **canon**, **claims** and 
 |---|---|---|
 | The cure is out | `IsCured()` | cure research |
 | The season is over and waits for its wipe | `IsEpilogue()` | the cure, or the wipe came due ([Seasons](#seasons)) |
-| The final stand is running; research | `IsFinalStand()`, `CurePercent()` | cure research |
+| The final stand is running; research (what the lab has worked through) | `IsFinalStand()`, `CurePercent()` | cure research |
+| Research waiting in the lab's backlog; the backlog is full; research waits at 90% for a finale | `LabWaiting()`, `LabFull()`, `AtFinaleGate()` | cure research |
 | Outbreak stage; how much of Bastion is still out | `Stage()`, `BastionPresence()` (0–1) | the Director's stage table |
 | The day | `Day()` (the broadcast's count), `DaysSince(day)`, `DaysSinceCommand()` (Command's last signal came on Day 3, [LORE.md](LORE.md), "Task Force Bastion") | the broadcast |
 | Time of day | `IsNight()` (20:30–05:00), `IsDusk()` (18:30–20:30), `IsDaytime()`, `KnowsTime()` | the game clock |
@@ -1471,19 +1600,71 @@ looking for them, waves, and waits 5 minutes. Their talk includes faction gossip
 Code: `Cure/`, `Core/RZ_GameModeComponent.c`.
 
 ```
-special infected killed ─▶ sample item drops ─▶ carried to the lab ─▶ "Deliver samples"
-                                                                │
- 25% Field antiviral   spread -15%, bites take 25% longer      ◀┘
+special infected killed ─▶ sample item drops ─▶ carried to the lab ─▶ "Deliver samples" ─┐
+research missions (data, readings, live specimens) ──────────────────────────────────────┤
+                                                                                          ▼
+              the lab's backlog, at most 4 days of work ─▶ worked through at 3% a real day
+                                                                                          │
+ 25% Field antiviral   spread -15%, bites take 25% longer                                ◀┘
  50% Bite treatment    (antidotes and stabilisers cheaper and more plentiful)
  75% Immunity serum    spread -45% total, bites take 50% longer
+(90% the finale's gate: only while a cure finale questline is registered; none is built yet)
 100% FINAL STAND       hold the lab 15 min against waves every 2.5 min
        win  ─▶ infection everywhere -70%, Aftermath, season over
        lose ─▶ nobody at the lab for 90 s: the batch is ruined, research drops to 90%
 ```
 
-- Each sample is 1% research (×2 for a Lab Technician, +25% for Halcyon's Champions; never more
-  than ×2 together). Research from missions counts ×0.75 of what the mission names. Both are
-  multiplied by the **season speed** ([Season pacing](#season-pacing)).
+- **What a delivery is worth.** Each sample is 1% research (×2 for a Lab Technician, +25% for
+  Halcyon's Champions; never more than ×2 together). Research from missions counts ×0.75 of what
+  the mission names. Both are multiplied by the **Cure pace** (0.3), the **pace by play** (below)
+  and the **season speed**, so on a server of five regulars a sample is about a third of a percent
+  ([Season pacing](#season-pacing) has the numbers).
+- **Pace by play.** The server measures how much it really plays: the player-hours (players in
+  the world × hours) on each real day, averaged over the last 7 whole days. Research counts
+  ×(**Pace by play** ÷ that average), between ×0.25 and ×2.5. The setting, 12.5, is the design
+  point (5 regulars at 2.5 hours), so two regulars get about ×2.4 and ten about ×0.5, and a season
+  takes about as long on either. It follows the server as regulars come and go; days the server
+  was down count as unplayed. It's ×1 for the season's first two days (the first is partial).
+  Fame and Favor for samples don't change with it. 0 turns it off.
+- **The lab's capacity.** Nothing counts at once: what's delivered goes into the lab's
+  **backlog**, and the lab works through it at **3% research a real day** (**Lab research per
+  day**, × season speed). It works in real time, also while nobody is online or the server is
+  down (a restart catches up at once, 30 days at most). The breakthroughs fire when the *worked*
+  research crosses 25, 50 and 75%, so a big delivery shows over the next days. Lab research per day
+  0 turns the capacity off: research counts at once.
+- **Breakthrough news waits for listeners.** The lab often crosses a milestone with nobody online.
+  Its effects (spread, bite timers, the antidote stock) start at once; its news ("Breakthrough:
+  Field antiviral", and the 90% gate's) is told the first time a player is in the world, in
+  order, and is saved across a restart. The broadcast's "Reports of research inside the zone are
+  being evaluated" runs for 90 minutes of play from then.
+- **The cold store is full.** The backlog holds at most **4 days of the lab's work** (**Lab
+  backlog days**; 12% at the defaults), a backstop for spikes: with the pace by play on, the
+  simulator never fills it from 2 to 20 regulars. While it's full the lab refuses samples ("The
+  cold store is full. We can't take another sample until the lab works through what's waiting.
+  Come back tomorrow."): the player keeps them, with no Fame for them, and the action shows "The
+  cold store is full". A hand-in that only partly fits takes what fits and the rest stay with the
+  player. Mission research beyond the cap is lost, and the mission's result line to everyone says
+  so ("The lab's cold store is full: only part of it could be kept."). The Red Hand's dead drop
+  still buys samples.
+- **An idle lab.** The part of a delivery that fills the backlog up to **half a day of the lab's
+  work** (1.5% at the defaults) counts **+25%** (**Empty lab bonus**), so the lab's idle days
+  aren't wasted. It's continuous: waiting for the lab to empty and then handing everything in at
+  once gains nothing.
+- **What players see.** The lab's **Check research progress**, the journal and the first-spawn
+  news give the lab's line: "Research 63 percent. Waiting: 14 samples' worth, about 4 days of
+  work." (and "The cold store is full" while it is). Every delivery's line to everyone ends with it.
+  Halcyon's secure chatter about the samples still needed says when the cold store is full or the
+  work has stopped at the gate instead.
+- **The finale's gate** (built as a hook; the finale questlines are planned). Research stops at
+  **90%** only while a cure finale questline is registered (`RZ_Questline.IsCureFinale`, with
+  questlines on). None is yet, so research runs to 100% as before. A finale takes research past
+  the gate with `RZ_CureResearch.AddFinaleResearch(amount, faction, reason)`: straight into the
+  worked research, not through the backlog, the Cure pace, the pace by play or the season speed,
+  and each faction's share is kept (saved) for the ending. Meanwhile the backlog still fills (and
+  then refuses). After **a real week at the gate** (÷ season speed) the lab inches up **1% a real
+  day** by itself (**Finale fallback**, × season speed; with or without the lab's capacity), so a
+  season whose finale nobody finishes still ends, about 17 days after reaching 90%. Once research
+  has reached 100% the gate stays open: a lost batch goes back to the lab's normal work.
 - **The lab** is a placed prefab, or spawns in a random town and stays there across restarts.
 - **Antidotes** are used as a world action or from the inventory; they cure an infection. The
   lab makes doses into a **stock** from the first day, faster with each breakthrough
@@ -1520,81 +1701,142 @@ special infected killed ─▶ sample item drops ─▶ carried to the lab ─�
 
 ## Season pacing
 
-Code: `Core/RZ_GameModeComponent.c` (**Season speed**), `Director/RZ_OutbreakStage.c`, `Cure/RZ_CureResearch.c`.
+Code: `Core/RZ_GameModeComponent.c` (**Season speed**, **Cure > Cure pace**, **Cure > Pace by play**
+and the lab's settings), `Cure/RZ_CureResearch.c`, `Director/RZ_OutbreakStage.c`. Simulator:
+`tools/pacing_sim.py`.
 
-A season is tuned for **about 10 days with 5–10 regular players**. Everything that moves the
-season along is tied to that horizon, and one setting, **Season speed** (top level, 1), scales
-all of it for other servers.
+A season is tuned for **about 45 real days (six and a half weeks) to the cure**, with 5 regular
+players, each playing 2–3 hours a day, as the design point. The **pace by play**
+([Cure research](#cure-research-and-the-seasons-end)) holds that from about 2 to 20 regulars
+without any tuning by the admin. Three kinds of clock move a season, and only the first two were
+stretched for the longer season:
 
-**Assumptions** (the design point; none of these are measured yet):
+| Clock | Runs on | Set by |
+|---|---|---|
+| Research | deliveries, then the lab's work in real time | **Cure pace**, the pace by play, the lab's settings, the season speed |
+| Outbreak stages and spread | hours with someone online | the stage list, the season speed |
+| Moment to moment: safehouse upkeep, supply trucks, territory, the Long Table, wanderers, spawns | their own minutes of play, as before | the season speed for upkeep, trucks, territory and the Long Table; nothing for wanderers and spawns |
+
+**Assumptions** (the design point; none of these are measured yet; the simulator uses them):
 
 | | Value |
 |---|---|
-| Regular players | about 7, each playing 2–3 hours a day |
-| Player-hours | about 17.5 a day, 150–250 over the season |
-| Hours a day with someone online ("hours played", the clock stages run on) | about 8 |
+| Regular players | 5, each 2–3 hours a day, at a random time in a 12-hour stretch of the day |
+| Player-hours | about 12.5 a day (the **Pace by play** setting: ×1 there) |
+| Hours a day with someone online ("hours played", the clock stages run on) | about 8 (4.4 with 2 players, 10 with 10) |
 | Infected killed | about 20 per player-hour (travel, looting and missions mixed) |
+| Specials (with night and adaptation) | 1.1% of kills in Early Outbreak, 1.6% in Collapse, 2.2% in Overrun, 2.7% in Aftermath |
 | Samples that reach the lab | about 60% (deaths, the Red Hand's dead drop, pockets) |
-| Research missions finished | 2–3 a day, about 2.5 named points each |
+| Research missions finished | 0.14 per player-hour (about 1.7 a day), 2.5 named points each |
+| Lab Technicians and Halcyon Champions | about +20% on samples |
+| A finale (planned) | about 5 days from 90% to 100% |
 
-**How research adds up** (1% a sample, missions ×0.75, Lab Technicians and Halcyon Champions
-about +20% overall):
+**How research adds up for 5 players** (a sample is 1% × 0.3 Cure pace; missions ×0.75 × 0.3;
+the pace by play is ×1):
 
-| Stage | Specials (with night and adaptation) | From samples | From missions | Research a day |
-|---|---|---|---|---|
-| Early Outbreak | ~1.1% of kills | ~3% | ~4.5% | ~7.5% |
-| Collapse | ~1.6% | ~4.5% | ~4.5% | ~9% |
-| Overrun | ~2.2% | ~5.5% | ~4.5% | ~10% |
-| Aftermath | ~2.7% | ~7% | ~4.5% | ~11.5% |
+| Stage | From samples | From missions | Delivered a day |
+|---|---|---|---|
+| Early Outbreak | ~0.6% | ~1% | ~1.6% |
+| Collapse | ~0.9% | ~1% | ~1.9% |
+| Overrun | ~1.2% | ~1% | ~2.2% |
+| Aftermath | ~1.5% | ~1% | ~2.5% |
 
-**What that gives:**
+Plus 25% on the part of each delivery that fills the backlog up to half a day of work. The lab
+works through 3% a day, so the backlog is a delay of a day or so and never fills. Other server
+sizes deliver about the same a day: the pace by play scales each delivery by how much the server
+plays.
 
-| Milestone | Target | Expected |
-|---|---|---|
-| 25% Field antiviral | day 2–3 | end of day 3 (Collapse) |
-| 50% Bite treatment | day 4–6 | about day 5.5 (Overrun) |
-| 75% Immunity serum | day 7–9 | about day 7.5 (Aftermath from day 7) |
-| 100% Final stand | day 9–14 | about day 10; a lost stand (back to 90%) costs about a day |
+**What the simulator gives** (`python3 tools/pacing_sim.py`, the defaults, the median of 60 runs;
+day 1 is the season's first day). "Pace" is the average pace by play at a hand-in. The cure comes
+on three days: with a finale questline done in 5 days, with one registered that nobody finishes
+(the fallback only), and with none registered (no gate: today's build):
+
+| Players | Pace | 25% | 50% | 75% | 90% | 100% with a finale | finale never done | no finale | Collapse | Overrun | Aftermath | Delivered a day | Lab full |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2 | ×2.4 | day 15 | 27 | 39 | 45 | 50 | 62 | 50 | 9 | 27 | after the cure | 2.1% | never |
+| 3 | ×1.7 | day 15 | 25 | 36 | 42 | 47 | 59 | 47 | 7 | 21 | 42 | 2.2% | never |
+| 5 | ×1.0 | day 13 | 24 | 33 | 39 | **44** | 56 | 43 | 6 | 16 | 31 | 2.4% | never |
+| 7 | ×0.7 | day 12 | 23 | 32 | 38 | 43 | 55 | 41 | 5 | 14 | 27 | 2.5% | never |
+| 10 | ×0.5 | day 12 | 21 | 31 | 36 | 41 | 53 | 40 | 5 | 13 | 24 | 2.6% | never |
+| 20 | ×0.3 | day 9 | 19 | 28 | 34 | 39 | 50 | 37 | 4 | 11 | 22 | 2.8% | never |
+
+Bigger servers are still a little faster: they spend more hours online, so the stages (and with
+them the share of specials) come sooner. Without the pace by play (0), the same defaults give two
+regulars the cure on about day 90 and ten on about day 36, with 54% of the ten's hand-ins partly
+refused at a full cold store.
+
+**How the soft cap works.** Three layers, from the one players should feel to the one they
+shouldn't:
+
+1. **The pace by play** sets how much a delivery is worth. It measures the player-hours of the
+   last week, so research a day stays near the design point (about 2.4%) whether 2 or 20 people
+   play, and it follows the server as regulars come and go. It stops at ×2.5 (one regular is on
+   their own about twice as long) and ×0.25 (beyond about 20 regulars the lab starts to fill).
+2. **The lab's capacity**, 3% a real day, is a hard ceiling on how fast research can move: no
+   server reaches 90% in under 30 days, or the cure in under about 35, however much it delivers.
+3. **The cold store** (4 days of the lab's work) is the backstop for spikes the first two miss:
+   a weekend event, a new crowd before the week's average catches up. While it's full the lab
+   turns samples away (players keep them) and missions lose research.
+
+So day to day the season moves at the pace by play, never faster than the lab, and the cold
+store only fills when a server suddenly plays far more than it did the week before.
 
 **The final stand** lasts 15 minutes with one horde every 2.5 minutes, plus one per 6 players at
-the lab: six hordes for five defenders, so about five steady players can win it.
+the lab: six hordes for five defenders, so about five steady players can win it. A lost stand
+(back to 90%) costs about three or four days of the lab's work.
 
-**The other clocks**, on the same horizon (all with players online only, all ÷ season speed):
+**The other clocks** (with players online only, unless it says otherwise):
 
 | Clock | Every | Over a season |
 |---|---|---|
-| Outbreak stages | 8, 16, 24 hours played | Aftermath from about day 7 |
-| Infection creep | a quarter of the stage's spread a minute: 0.75–1.5 a played hour | +60 or so over the first six days if nobody pushes back (1.5 per kill) |
-| Territory tick | 45–75 min | about 80 ticks, at most one change each |
-| Supply trucks | 60–90 min per faction | about 6 a day per faction |
-| Safehouse upkeep | 3 h | about 2–3 meals a day |
-| Safehouse stragglers | 4 h, up to 12 people | a Settlement (medic, radio) by about day 4 without rescues |
+| Outbreak stages | 40, 80 and 120 hours played (÷ season speed) | Collapse about day 6, Overrun day 16, Aftermath day 31 |
+| Infection creep | a quarter of the stage's spread a minute: 0.15–0.3 a played hour | as much per stage as the old 10-day tuning: +60 or so by Aftermath if nobody pushes back (1.5 per kill) |
+| The lab's work | 3% a real day, online or not (× season speed) | 90% in 30 days at the very least |
+| The finale fallback | 1% a real day after a week at the 90% gate (only with a finale registered) | the cure about 17 days after 90% if nobody finishes a finale |
+| Territory tick | 45–75 min (÷ season speed) | about 8 a day, at most one change each |
+| Supply trucks | 60–90 min per faction (÷ season speed) | about 6 a day per faction |
+| Safehouse upkeep | 3 h (÷ season speed) | about 2–3 meals a day |
+| Safehouse stragglers | 4 h (÷ season speed), up to 12 people | a Settlement (medic, radio) by about day 4 without rescues |
 
-Treatment supply (antidotes, stabilisers) is on real time, not the season clock
-([Treatments](#treatments)).
+The moment-to-moment clocks keep their pace: a longer season means more of the same days, not
+slower ones. Treatment supply (antidotes, stabilisers) is on real time, not the season clock
+([Treatments](#treatments)); with the breakthroughs later, the antidote stock stays at its slowest
+(a dose every 30 minutes) for about the first two weeks. The stages follow hours played, not the
+pace by play, so a small server stays in the earlier stages longer (two regulars never reach
+Aftermath before the cure).
 
-**Season speed by server** (research is roughly proportional to player-hours, and busier servers
-also have more hours played a day):
+**Settings by server** (run the simulator with your own numbers, e.g. `--players 8 --cure-pace 0.25`):
 
-| Regular players | Season speed | Season |
+| Regular players | Set | The cure, with a 5-day finale |
 |---|---|---|
-| 2–4 | 1.5–2 | about 10 days |
-| 5–10 | 1 (the design point) | about 10 days |
-| 11–20 | 0.5–0.7 | about 10 days |
-| 20+ | 0.3–0.5 | about 10 days |
-| Any, for a one-week season | the row above × 1.4 | about 7 days |
+| 1 | **Season speed** 2 (the pace by play stops at ×2.5) | about day 46 |
+| 2–20 | the defaults | day 39–50 (2: 50, 5: 44, 10: 41, 20: 39) |
+| More than 20 | **Cure pace** about 6 ÷ the number of regulars (0.2 for 30) | about day 38 |
+| Any, for a longer or shorter season | **Cure pace** (research only; the lab's 3% a day still sets the shortest season) or **Season speed** 1.5 (about a month) or 2 (about three and a half weeks), for 5 players | day 31 or 25 with the season speed |
+| Pace by play off (0) | fit it by hand: **Season speed** 2 for 2 regulars, **Cure pace** about 1.5 ÷ regulars above 5 (0.15 for 10) | day 42–48 |
 
-*Simplified:* the season speed doesn't change antidote production, mission counts, the infection
-timer or anything a player does by hand. Check real kills and specials per player-hour in the
-first sessions (the status log shows research and the stage every few minutes) against the
-targets above, and adjust **Research per sample** or the season speed.
+The season speed also makes upkeep, trucks, territory and the Long Table faster, as it always did;
+on a small server that keeps the world busy. The Cure pace and the pace by play change only the
+research. A lower **Lab research per day** lengthens the shortest season; **Lab backlog days** only
+changes how much can wait before the lab refuses.
+
+*Simplified:* the simulator counts the stages' clock only (a server that doesn't push back reaches
+the infection thresholds sooner), each player hands in once at the end of a session, the same
+regulars play every day, and a finale is modelled as 5 days. The pace by play counts whole UTC
+days, so a server whose evening crosses midnight UTC splits it over two days (the week's average
+evens it out). A kill still takes 1.5 infection off its town while the season is longer, so over a
+stage players take off relatively more than creeps in; if towns clean up too easily, lower
+**Zombies > Kill infection**. Check real kills, specials and research per player-hour in the first
+sessions (the status log shows research, the backlog, the pace by play and the stage every few
+minutes) against the assumptions, and adjust the Cure pace.
 
 ## Seasons
 
 Code: `Core/RZ_Seasons.c`, `Persistence/RZ_HallOfFame.c`. Settings: **Season** (top level).
 
-A season runs from a fresh outbreak to the cure (or a set number of weeks), then the server
-wipes and a new outbreak starts. Three things carry across: the last winner's starting rules,
+A season runs from a fresh outbreak to the cure, then the server wipes and a new outbreak
+starts. By default **only the cure ends a season**: there is no timed wipe unless the admin picks
+one ([The wipe cycle](#the-wipe-cycle)). Three things carry across: the last winner's starting rules,
 the rule sets the admin picks, and the hall of fame. Every effect nudges a system that already
 exists, and the combined effects are capped (below), so nothing runs away.
 
@@ -1645,13 +1887,15 @@ season; the rest apply at once and follow the setting if it's changed.
 ### The wipe cycle
 
 **Season > Wipe**: *On cure* (the default), *After weeks*, *whichever comes first*, or *Off* (by
-hand: **Wipe on start**, or delete `state.json`).
+hand: **Wipe on start**, or delete `state.json`). Only *On cure* is on by default: the two timed
+modes stay available for admins who want a fixed calendar, and are never used unless picked.
 
 - **On cure:** the world stays open for an **epilogue** of 48 real hours (Aftermath, with the
   ending, the line stood down) after the final stand is won. Its warnings and its last line speak
   of processing at the checkpoints; the gates open with the wipe.
-- **After weeks:** 4 real weeks after the season started, cure or not. With no cure, the season
-  record says nobody won, and the next season gets no winner's rules.
+- **After weeks** (off unless picked): 10 real weeks after the season started (**Weeks**), cure or
+  not; a season to the cure takes six or seven weeks with 5 regulars ([Season pacing](#season-pacing)).
+  With no cure, the season record says nobody won, and the next season gets no winner's rules.
 - **Warnings:** in the last 24 real hours, the broadcast says so every hour ("Residents are
   advised that the zone will be reprocessed in about 6 hours."), with a plain line under it, and
   first spawns are told.
@@ -1710,7 +1954,7 @@ carried item is ever removed, set the minutes to 0.
 Code: `Persistence/RZ_SaveData.c`.
 
 Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stage, every
-settlement's infection and town memory, cure progress and antidote and stabiliser stock, player profiles (standing, Legacy,
+settlement's infection and town memory, cure progress, the lab's backlog and clock, breakthrough news nobody has heard yet, the pace by play's player-hours of the last week, antidote and stabiliser stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
 supply stock, faction life, the Long Table, the power grid and radio station, story arcs, questlines,
 headlines, world interactions and the world facts (the season's seed, flags, canon and gossip;

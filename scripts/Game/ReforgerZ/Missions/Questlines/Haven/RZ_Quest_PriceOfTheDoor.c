@@ -635,7 +635,7 @@ class RZ_QM_DoorEnvelope : RZ_HavenQM
 		if (HasBonus(gm, carrier))
 			radius = SEEN_RADIUS_BONUS;
 
-		string who = m_Lookouts.SeenBy(gm, ent.GetOrigin(), radius, true);
+		string who = m_Lookouts.SeenBy(gm, ent.GetOrigin(), radius, true, carrier);
 		if (who.IsEmpty())
 			return;
 

@@ -1,17 +1,19 @@
 //! Seasons (docs/DESIGN.md, "Seasons"): the starting rules a fresh season takes from the last
 //! winner (docs/LORE.md, "Endings"), the rule sets admins pick (Winter, Fog, Military Collapse,
-//! No Vehicles, or their own), and the wipe cycle (on the cure after an epilogue, or after a
-//! number of weeks). Everything here runs on the server.
+//! No Vehicles, or their own), and the wipe cycle (by default only after the cure, once the
+//! epilogue is over; a timed wipe after a number of weeks is there but off). Everything here runs
+//! on the server.
 //!
 //! Effects are small nudges to systems that already exist, read through RZ_Seasons.Mods(). They are
 //! capped when they are combined (RZ_SeasonMods.Cap), so no mix of winner and rule sets runs away.
 
-//! When the server wipes the season (Season > Wipe).
+//! When the server wipes the season (Season > Wipe). ON_CURE is the default: a season ends with its
+//! cure and nothing else; the timed modes are only for admins who choose them.
 enum RZ_EWipeMode
 {
 	OFF,			// only by hand (Wipe on start, or deleting state.json)
-	ON_CURE,		// after the cure, once the epilogue is over
-	AFTER_WEEKS,	// a fixed number of real weeks after the season started
+	ON_CURE,		// after the cure, once the epilogue is over (the default)
+	AFTER_WEEKS,	// a fixed number of real weeks after the season started, cure or not
 	FIRST_OF_BOTH	// whichever comes first
 }
 
@@ -191,13 +193,13 @@ class RZ_SeasonSettings
 	[Attribute(desc: "Your own rule sets, or replacements for the built-in ones (same name). Empty = the built-in four")]
 	ref array<ref RZ_SeasonRuleSet> m_aRuleSets;
 
-	[Attribute("1", UIWidgets.ComboBox, "Wipe: Off (by hand), On cure (after the epilogue), After weeks, or whichever comes first. A wipe backs up state.json and starts fresh on the next restart", "", ParamEnumArray.FromEnum(RZ_EWipeMode))]
+	[Attribute("1", UIWidgets.ComboBox, "Wipe: On cure (the default: only after the cure and its epilogue), Off (by hand), After weeks or whichever comes first (timed, cure or not; not used unless you pick them). A wipe backs up state.json and starts fresh on the next restart", "", ParamEnumArray.FromEnum(RZ_EWipeMode))]
 	RZ_EWipeMode m_eWipeMode;
 
 	[Attribute("48", desc: "Epilogue: real hours the world stays open after the cure before the wipe is due")]
 	float m_fEpilogueHours;
 
-	[Attribute("4", desc: "After weeks: real weeks from the season's start until the wipe is due")]
+	[Attribute("10", desc: "Only with Wipe on After weeks or whichever comes first: real weeks from the season's start until the wipe is due (a season to the cure takes about 6-7 weeks with 5 regulars)")]
 	int m_iWipeWeeks;
 
 	[Attribute("24", desc: "Players are warned this many real hours before the wipe is due (every hour, and on first spawn)")]

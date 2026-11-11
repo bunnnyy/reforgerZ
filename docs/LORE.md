@@ -451,9 +451,9 @@ reaches people:
 | Halcyon | The cure is published openly. | Lower infection everywhere, more specials (they adapt) |
 
 Each is a small, capped nudge; the numbers, the rule sets an admin can add (Winter, Fog,
-Military Collapse, No Vehicles) and the wipe are in [DESIGN.md](DESIGN.md#seasons). A season can
-also end without a cure when the server wipes after a set number of weeks: then nobody won, and
-the next season starts plain.
+Military Collapse, No Vehicles) and the wipe are in [DESIGN.md](DESIGN.md#seasons). By default
+only the cure ends a season. Only if an admin picks a timed wipe can a season end without one,
+after a set number of weeks: then nobody won, and the next season starts plain.
 
 Urgency comes from inside: the outbreak keeps slowly getting worse (stages, spread,
 adaptation) until the cure is done. Even a win doesn't mean leaving: the next season is a

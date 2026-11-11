@@ -367,6 +367,66 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Put a move waypoint in front of an AI group's own: it goes there first, then carries on with
+	//! them (unlike RedirectGroup, nothing of the group's is removed). Returns the waypoint (take it
+	//! back with PopGroupWaypoint), or null.
+	static IEntity PushGroupWaypoint(IEntity e, vector target, ResourceName waypointPrefab)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(e);
+		if (!group || waypointPrefab.IsEmpty())
+			return null;
+
+		AIWaypoint wp = AIWaypoint.Cast(SpawnPrefab(waypointPrefab, target));
+		if (wp)
+			group.AddWaypointAt(wp, 0);
+
+		return wp;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Take back a waypoint PushGroupWaypoint gave: off the group's list if it's still on it, and
+	//! deleted (also when the group already finished it). True if the group has waypoints left.
+	static bool PopGroupWaypoint(IEntity e, IEntity waypoint)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(e);
+		AIWaypoint wp = AIWaypoint.Cast(waypoint);
+		if (group && wp && GroupHasWaypoint(group, wp))
+			group.RemoveWaypoint(wp);
+
+		if (waypoint)
+			SCR_EntityHelper.DeleteEntityAndChildren(waypoint);
+
+		return CountGroupWaypoints(e) > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The AI group still has this waypoint (it hasn't finished it, and nothing took it away).
+	static bool GroupHasWaypoint(IEntity e, IEntity waypoint)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(e);
+		AIWaypoint wp = AIWaypoint.Cast(waypoint);
+		if (!group || !wp)
+			return false;
+
+		array<AIWaypoint> current = {};
+		group.GetWaypoints(current);
+		return current.Contains(wp);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many waypoints an AI group has (0 for anything that isn't a group).
+	static int CountGroupWaypoints(IEntity e)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(e);
+		if (!group)
+			return 0;
+
+		array<AIWaypoint> current = {};
+		group.GetWaypoints(current);
+		return current.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A new object of a [BaseContainerProps] class with its [Attribute] defaults, as a prefab would
 	//! make it. Use this instead of `new` for any class with attributes: `new` leaves every field
 	//! at zero, because attribute fields have no initialisers (an initialiser overrides the value

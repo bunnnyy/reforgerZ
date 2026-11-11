@@ -77,6 +77,10 @@ How the code does it:
   (groups delete themselves when the last member dies) counts as dead.
 - **Drops are the mission's own.** An item is only taken at a drop point that mission spawned,
   never at another mission's drop of the same faction.
+- **Lying low helps** ([DESIGN.md](DESIGN.md#stealth-in-missions)). With Stealth on, the distances
+  in these tables at which someone sees you are for normal visibility and shrink for a player who
+  is hard to see, and an infected close by is slower to notice them. With it off, everything is
+  exactly as written.
 
 **Reading the tables:**
 - **Needs:** tier with the giver first, then other requirements. *Any* = Stranger or better and not Hunted.
@@ -231,7 +235,7 @@ already in the Zone, and every crate is earned on the spot.
 | # | Event | What happens | Why it's interesting | Status |
 |---|---|---|---|---|
 | 1 | Crashed Helicopter | The wreck of one of Bastion's lost helicopters, its cargo still aboard | Infected nest around it; a horde comes when someone arrives | ✅ |
-| 2 | Horde Migration | A huge horde walks from one town to another | Get out of the way, or thin it out: 10+ kills leaves a crate | ✅ |
+| 2 | Horde Migration | A huge horde walks from one town to another | Get out of the way (lying low as it passes works: its senses drop with [Stealth](DESIGN.md#the-infected-near-you)), or thin it out: 10+ kills leaves a crate | ✅ |
 | 3 | Night of the Dead | For 20 minutes, twice the infected and twice the specials everywhere | High risk, specials everywhere | ✅ |
 | 4 | Fog Bank | A region drops to low visibility for 20 min | Hiding is easy. So are ambushes | ✅ *the engine's fog is global and never changed: within 700 m of a town, heat is ×0.6 and infected spawn twice as close; an optional mist prop is the look* |
 | 5 | Distress Call | A survivor asks for help on the radio | Could be real, could be a trap (see 19) | ✅ *two people cornered at a town's edge; infected surround the house once someone is within 300 m. Talk them out with nothing within 20 m: they join the nearest safehouse and leave a crate. 25 min. Radio Operators hear that it's live* |
@@ -301,7 +305,8 @@ How they work:
 
 Low-level work for new characters, unarmed backgrounds or anyone who'd rather not shoot. All
 are open to anyone not Hunted by the giver, pay small Fame, and are built on **noise that
-leads** and **being noticed** ([DESIGN.md](DESIGN.md), "Heat and noise"). Code: `Missions/Unarmed/`.
+leads** and **being noticed** ([DESIGN.md](DESIGN.md), "Heat and noise"; lying low helps,
+[Stealth](DESIGN.md#stealth)). Code: `Missions/Unarmed/`.
 
 | # | Mission | From | Bg | What you do | Result | Status |
 |---|---|---|---|---|---|---|
@@ -314,7 +319,7 @@ leads** and **being noticed** ([DESIGN.md](DESIGN.md), "Heat and noise"). Code: 
 | 7 | Barter Chain | Haven, through three wanderers | | Each wants what the next has; the last wants food | Small Fame, Favor; all three remember you | ✅ *only the food changes hands* |
 | 8 | Distraction | Any faction | | Someone makes noise across the street while someone else searches a guarded cellar for 3 minutes | Fame, Favor, a reward crate. Doable alone with alarm clocks | ✅ |
 | 9 | Medicine Before Dark | Haven (for a Doctor wanderer) | ★ Nurse/Doctor: more Fame | Bring medicine to a bitten survivor before 20:30 | Fame, Favor; they join a safehouse. Dark first: fails | ✅ |
-| 10 | Quiet Count | Halcyon | ★ Lab Tech: more Fame | Count the specials in a town from outside and write it in a notebook | Fame, Favor, +1 research. Too close: half pay. Wrong: fails | ✅ *the town's own infected are cleared and kept out while it runs, so the only specials there are the ones to count* |
+| 10 | Quiet Count | Halcyon | ★ Lab Tech: more Fame | Count the specials in a town from outside and write it in a notebook | Fame, Favor, +1 research. Too close (50 m; less while you're hard to see): half pay. Wrong: fails | ✅ *the town's own infected are cleared and kept out while it runs, so the only specials there are the ones to count* |
 | 11 | Car Keys | Haven, from a Mechanic wanderer ("Ask about cars") | | A car the Mechanic fixed stands in a town 0.5–2.5 km away; its keys are in one of the 5 houses nearest it that have no lock of their own. Search them quietly and drive it back to where you met the Mechanic | Fame, Favor, for the one who asked and whoever went with them. Heat 45+ at the house when the keys turn up: a horde, ×0.7. Hotwired: half | ✅ *a fixable car that already runs (no parts); searching the right house always finds the keys; the Mechanic keeps the car (it leaves the world once nobody sits in it). One at a time, one per player per 30 min* |
 
 Four more designed ideas are covered by existing missions: The Safe Code (The Last Experiment,

@@ -14,7 +14,7 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 	protected vector m_vQuarry;
 	protected ref array<IEntity> m_aHorde = {};
 	protected ref array<IEntity> m_aWaypoints = {};
-	protected ref RZ_Stealth m_Stealth = new RZ_Stealth();
+	protected ref RZ_NoticeTracker m_Notice = new RZ_NoticeTracker();
 	protected float m_fCheck;
 	protected float m_fSinceLure = 1000;
 	protected bool m_bHeadingHome;
@@ -61,16 +61,17 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 		if (RZ_Util.IsWater(start) || RZ_Util.IsWater(m_vQuarry))
 			return false;
 
-		gm.GetSpawner().SpawnHordeAt(start, m_vHouse, m_iId, m_aHorde);
+		// Not one that must keep coming: leading it unseen is the job, so stealth may dull its senses (RZ_Stealth)
+		gm.GetSpawner().SpawnHordeAt(start, m_vHouse, m_iId, m_aHorde, false);
 		if (m_aHorde.IsEmpty())
 			return false;
 
 		m_iSettlement = h.m_iSettlement;
 		m_vPos = start;
 		m_bHeadingHome = true;
-		m_Stealth.m_fHeatThreshold = 1000;	// they're following noise on purpose: only closeness counts
-		m_Stealth.m_fZombieRadius = 12;
-		m_Stealth.m_fZombieSeconds = 8;
+		m_Notice.m_fHeatThreshold = 1000;	// they're following noise on purpose: only closeness counts
+		m_Notice.m_fZombieRadius = 12;
+		m_Notice.m_fZombieSeconds = 8;
 		m_sTitle = "Lead Them Away";
 		m_sBrief = string.Format("A horde is drifting toward the safehouse in %1. We can't fight it. Make noise, a bottle, a firecracker, anything, and lead it step by step to the old quarry pit (grid %2). Don't let it see you.",
 			h.m_sName, RZ_SettlementScanner.GridReference(m_vQuarry));
@@ -90,7 +91,7 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 		}
 
 		m_vPos = at;
-		m_Stealth.Track(gm, ids, players, dt, at, 150);
+		m_Notice.Track(gm, ids, players, dt, at, 150);
 		m_fSinceLure += dt;
 		m_fCheck += dt;
 		if (m_fCheck < CHECK_INTERVAL)
@@ -112,11 +113,11 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 		// Seen: it turns on whoever it saw
 		foreach (int i, IEntity p : players)
 		{
-			if (RZ_Util.DistXZ(p.GetOrigin(), at) > 150 || !m_Stealth.IsNoticed(gm, p))
+			if (RZ_Util.DistXZ(p.GetOrigin(), at) > 150 || !m_Notice.IsNoticed(gm, p))
 				continue;
 
 			RZ_UnarmedHelper.SteerUnits(gm, m_aHorde, p.GetOrigin(), m_aWaypoints);
-			m_Stealth.Forget(ids[i]);
+			m_Notice.Forget(ids[i]);
 			m_fSinceLure = 0;
 			m_bHeadingHome = false;
 			gm.NotifyPlayer(ids[i], m_sTitle, "It saw you. The whole crowd turns your way. Break off, then lead it again.");
@@ -237,9 +238,9 @@ class RZ_Mission_RooftopRescue : RZ_PuzzleMission
 		m_vPos = m_vLadder;
 		m_fParticipationRadius = 120;
 		m_fWaveTimer = 20;
-		GetStealth().m_fHeatThreshold = 50;
-		GetStealth().m_fZombieRadius = 10;
-		GetStealth().m_fZombieSeconds = 6;
+		GetNotice().m_fHeatThreshold = 50;
+		GetNotice().m_fZombieRadius = 10;
+		GetNotice().m_fZombieSeconds = 6;
 		m_sTitle = "Rooftop Rescue";
 		m_sBrief = string.Format("Someone is stuck on the roof of %1 in %2. They come in waves around there. Find the ladder at the back, wait for a gap, and talk them down.", what, s.m_sName);
 		return true;
@@ -248,7 +249,7 @@ class RZ_Mission_RooftopRescue : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		GetStealth().Track(gm, ids, players, dt, m_vLadder, 120);
+		GetNotice().Track(gm, ids, players, dt, m_vLadder, 120);
 		if (m_iWaves >= MAX_WAVES || CountPlayersNear(players, m_vLadder, 400) == 0)
 			return;
 
@@ -275,7 +276,7 @@ class RZ_Mission_RooftopRescue : RZ_PuzzleMission
 		if (HasBonus(gm, playerId))
 			clear = CLEAR_RADIUS_BONUS;
 
-		if (gm.GetSpawner().IsZombieNear(m_vLadder, clear) || (user && GetStealth().IsNoticed(gm, user)))
+		if (gm.GetSpawner().IsZombieNear(m_vLadder, clear) || (user && GetNotice().IsNoticed(gm, user)))
 		{
 			gm.GetHeat().AddHeat(m_vLadder, 5);
 			gm.NotifyPlayer(playerId, m_sTitle, "\"Not now! They're right below!\" A hiss from the roof, and every head in the street turns. Wait for the gap.");
@@ -736,9 +737,9 @@ class RZ_Mission_Distraction : RZ_PuzzleMission
 
 		m_vPos = m_vStash;
 		m_fParticipationRadius = 250;
-		GetStealth().m_fHeatThreshold = 1000;	// the noise is the point: only closeness counts
-		GetStealth().m_fZombieRadius = 10;
-		GetStealth().m_fZombieSeconds = 8;
+		GetNotice().m_fHeatThreshold = 1000;	// the noise is the point: only closeness counts
+		GetNotice().m_fZombieRadius = 10;
+		GetNotice().m_fZombieSeconds = 8;
 		m_sTitle = "Distraction";
 		m_sBrief = string.Format("A cellar in %1 is full of what we need, and they're standing on top of it. Someone keeps them busy with noise at grid %2, across the street, for three minutes, while someone else empties the cellar (grid %3). Bring a friend, or a lot of firecrackers.",
 			s.m_sName, RZ_SettlementScanner.GridReference(m_vNoise), RZ_SettlementScanner.GridReference(m_vStash));
@@ -748,7 +749,7 @@ class RZ_Mission_Distraction : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		GetStealth().Track(gm, ids, players, dt, m_vStash, 60);
+		GetNotice().Track(gm, ids, players, dt, m_vStash, 60);
 
 		vector noise;
 		bool loud = gm.GetHeat().FindRecentNoise(m_vNoise, NOISE_RADIUS, NOISE_AGE, noise);
@@ -782,12 +783,12 @@ class RZ_Mission_Distraction : RZ_PuzzleMission
 			return;
 		}
 
-		if (GetStealth().IsNoticed(gm, searcher))
+		if (GetNotice().IsNoticed(gm, searcher))
 		{
 			int seen = m_iSearcher;
 			m_fSearched = 0;
 			m_iSearcher = -1;
-			GetStealth().Forget(seen);
+			GetNotice().Forget(seen);
 			RZ_UnarmedHelper.SteerUnits(gm, m_aGuards, searcher.GetOrigin(), m_aWaypoints);
 			gm.NotifyPlayer(seen, m_sTitle, "One of them came back and saw you in the cellar door. Get out. You'll have to start again.");
 			return;
@@ -837,7 +838,8 @@ class RZ_Mission_Distraction : RZ_PuzzleMission
 //! #15 Quiet Count (Halcyon): count the specials in a town from a distance. Answer at the field
 //! notebook at an observation post outside it. Getting within 50 m of one of them halves the
 //! pay (and they come for you); a wrong count fails it. The answer is how many are alive when
-//! you answer. A right count is also a little research. ★ Lab Tech: more Fame.
+//! you answer. A right count is also a little research. ★ Lab Tech: more Fame. With Stealth on,
+//! the 50 m shrinks while you're hard to see (about 36 m lying still in the dark, RZ_Stealth.SightRadius).
 //! *Simplified:* the town's own infected are cleared and kept out while it runs (the spawner's
 //! suppression, as in The Silent Village), so the only specials there are the ones being counted.
 class RZ_Mission_QuietCount : RZ_PuzzleMission
@@ -908,7 +910,8 @@ class RZ_Mission_QuietCount : RZ_PuzzleMission
 
 		foreach (int i, IEntity p : players)
 		{
-			if (!IsInvolved(ids[i]) || !gm.GetSpawner().IsMissionSpecialNear(m_iId, p.GetOrigin(), CLOSE_RADIUS))
+			// Closer than 50 m and it sees you; less while you're hard to see (Stealth)
+			if (!IsInvolved(ids[i]) || !gm.GetSpawner().IsMissionSpecialNear(m_iId, p.GetOrigin(), RZ_Stealth.SightRadius(ids[i], CLOSE_RADIUS)))
 				continue;
 
 			m_bTooClose = true;

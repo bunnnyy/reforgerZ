@@ -39,7 +39,7 @@ class RZ_PuzzleMission : RZ_Mission
 	protected ref map<int, string> m_mCodes = new map<int, string>();
 	protected ref map<int, RZ_PuzzleObjectComponent> m_mObjects = new map<int, RZ_PuzzleObjectComponent>();
 	protected ref RZ_Rng m_Rng;
-	protected ref RZ_Stealth m_Stealth;
+	protected ref RZ_NoticeTracker m_Notice;
 	protected float m_fLockout;
 	protected float m_fClock;
 	protected int m_iWrong;
@@ -419,12 +419,12 @@ class RZ_PuzzleMission : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected RZ_Stealth GetStealth()
+	protected RZ_NoticeTracker GetNotice()
 	{
-		if (!m_Stealth)
-			m_Stealth = new RZ_Stealth();
+		if (!m_Notice)
+			m_Notice = new RZ_NoticeTracker();
 
-		return m_Stealth;
+		return m_Notice;
 	}
 
 	//------------------------------------------------------------------------------------------------

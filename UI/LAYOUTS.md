@@ -86,6 +86,10 @@ Frame  (root, full screen)
 │  ├─ HorizontalLayout (spacing 3)
 │  │  └─ Image Noise1 … Noise6  14 × 8 each, no texture (tinted lit or dim)
 │  └─ Text    NoiseText         mono bold 12, dim
+├─ HorizontalLayout SeenPanel   anchor bottom-left, offset (536, -80), spacing 10, 85% opacity; hidden until the server sends a visibility (Stealth on)
+│  ├─ HorizontalLayout (spacing 3)
+│  │  └─ Image Seen1 … Seen5    14 × 8 each, no texture (tinted lit, dim, or green when hidden)
+│  └─ Text    SeenText          mono bold 12, dim (HIDDEN, LOW, SEEN, IN PLAIN SIGHT)
 ├─ VerticalLayout NoticeStack   460 wide, anchor top-right, offset (-44, 96), spacing 12
 └─ Text   NoticeQueued          under the stack, right-aligned, mono 12, faint
 ```
@@ -176,8 +180,10 @@ Frame (root)
 Frame (root)
 ├─ (menu frame: heading "JOURNAL", Text Header, tabs, footer)
 ├─ Frame  (list panel, at (72, 168), 660 × 840)
-│  ├─ VerticalLayout List      fills the panel (inside a ScrollLayout if you like)
-│  └─ Text  Empty              "The radio is quiet." centred
+│  ├─ VerticalLayout List      fills the panel above LabStatus (inside a ScrollLayout if you like)
+│  ├─ Text  Empty              "The radio is quiet." centred
+│  └─ Text  LabStatus          bottom of the panel, mono 13, dim, two lines: the lab's line
+│                              ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work."); hidden without a lab
 └─ Frame  (detail panel, at (750, 168), 1098 × 840)
    ├─ Image  DetailAccent      full width × 5, top
    ├─ Image  DetailIcon        56 × 56

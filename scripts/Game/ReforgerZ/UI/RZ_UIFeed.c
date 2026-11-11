@@ -2,7 +2,8 @@
 //! "Data feeds"). Owned by RZ_GameModeComponent and run on its tick, after the infection.
 //!
 //! - Pushed on change: the infection timer (plus a resync every minute), the secure channel the
-//!   player is listening to, and a noise level 0-6 from the heat where they stand.
+//!   player is listening to, a noise level 0-6 from the heat where they stand, and (with Stealth
+//!   on) how visible they are, 0-5, from stealth's own update (RZ_Stealth, every second).
 //! - Asked for by a menu as it opens: standing, the journal, the backgrounds, and by the map's
 //!   icon layer: what this player knows the place of (one string each, one record per line,
 //!   fields split by '|'; see BuildPayload).
@@ -22,6 +23,8 @@ class RZ_UIFeedState
 	float m_fPauseSent;
 	int m_iListen = -2;
 	int m_iNoise = -1;
+	int m_iSeen = -1;		// visibility level last sent (-1: none yet, the client hides it)
+	bool m_bSeenHidden;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -315,6 +318,25 @@ class RZ_UIFeed
 		ui.SendNoise(level);
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! From RZ_Stealth's update: how visible this player is (0..1) and whether that counts as
+	//! hidden. Sent as a level 0 (hidden) to 5 (in plain sight), only when it changes.
+	void PushVisibility(int playerId, float vis, bool hidden)
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		if (!ui)
+			return;
+
+		int level = Math.ClampInt(RZ_Util.RoundToInt(vis * 5), 0, 5);
+		RZ_UIFeedState st = State(playerId);
+		if (level == st.m_iSeen && hidden == st.m_bSeenHidden)
+			return;
+
+		st.m_iSeen = level;
+		st.m_bSeenHidden = hidden;
+		ui.SendVisibility(level, hidden);
+	}
+
 	// ================================================================ Clues
 	//------------------------------------------------------------------------------------------------
 	//! From RZ_PuzzleMission.HandleRead.
@@ -464,6 +486,7 @@ class RZ_UIFeed
 	//------------------------------------------------------------------------------------------------
 	//! M|id|kind|giver (-1 none)|title|given by|where|direction and distance|minutes left|requirements|Fame|Favor|brief|taking part (0/1)
 	//! C|mission id|clue title|clue text
+	//! S|the lab's line ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.")
 	//! A questline the player is part of is an M record too: a negative id, kind QUESTLINE, its
 	//! title, the stage as "given by", minutes -1 (no clock), Fame and Favor 0 (they depend on
 	//! the ending), the stage's text as the brief; its notes ("what you know so far") are C records.
@@ -473,6 +496,14 @@ class RZ_UIFeed
 		if (!mm)
 			return "";
 
+		// The lab's state first, so a long journal never cuts it off (RZ_CureResearch.Describe)
+		string lab = "";
+		if (m_GM.HasLab() && m_GM.GetCure())
+		{
+			RZ_UILine lnS = new RZ_UILine("S");
+			lab = lnS.Add(m_GM.GetCure().Describe()).End();
+		}
+
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		vector from = vector.Zero;
 		if (ent)
@@ -480,7 +511,7 @@ class RZ_UIFeed
 
 		array<RZ_Mission> list = {};
 		mm.ListFor(playerId, list);
-		string s = "";
+		string s = lab;
 		array<int> shown = {};
 		foreach (RZ_Mission m : list)
 		{

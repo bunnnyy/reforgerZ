@@ -3947,13 +3947,13 @@
   {
    "category": "ReforgerZ",
    "object": "(top level)",
-   "covers": "Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1)"
+   "covers": "Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing))"
   },
   {
    "category": "ReforgerZ",
    "object": "Season",
    "field": "m_SeasonSettings",
-   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure; Off, After weeks, or the first of both), epilogue (48 h), weeks (4), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
+   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (48 h), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
   },
   {
    "category": "World",
@@ -3987,7 +3987,7 @@
   {
    "category": "Director",
    "object": "Stages (list)",
-   "covers": "Per-stage overrides; empty = the built-in four (8, 16 and 24 hours played; [DESIGN.md](DESIGN.md#season-pacing))"
+   "covers": "Per-stage overrides; empty = the built-in four (40, 80 and 120 hours played, spread 0.01 to 0.02 a minute; [DESIGN.md](DESIGN.md#the-director-outbreak-stages-and-spread))"
   },
   {"category": "Director", "object": "(top level)", "covers": "**Broadcast minutes** (25; 0 = only on first join)"},
   {
@@ -4020,6 +4020,12 @@
    "field": "m_AdaptationSettings",
    "covers": "Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots"
   },
+  {
+   "category": "Zombies",
+   "object": "Stealth",
+   "field": "m_StealthSettings",
+   "covers": "**Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth))"
+  },
   {"category": "Zombies", "object": "(top level)", "covers": "Presence heat (0.5/tick), vehicle heat (+4/tick)"},
   {
    "category": "Backgrounds",
@@ -4029,7 +4035,7 @@
   {
    "category": "Cure",
    "object": "(top level)",
-   "covers": "Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75)"
+   "covers": "Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end))"
   },
   {
    "category": "Missions",
@@ -4195,7 +4201,7 @@
     "m_sRuleSets": "",
     "m_eWipeMode": "1",
     "m_fEpilogueHours": "48",
-    "m_iWipeWeeks": "4",
+    "m_iWipeWeeks": "10",
     "m_fWarnHours": "24",
     "m_bHallOfFame": "1"
    }
@@ -4342,6 +4348,48 @@
     "m_fSpotMinutes": "35",
     "m_fSpotCooldownMinutes": "60",
     "m_iSpotHordeSize": "3"
+   }
+  },
+  {
+   "field": "m_StealthSettings",
+   "category": "Zombies",
+   "label": "Stealth",
+   "cls": "RZ_StealthSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_fUpdateSeconds": "1",
+    "m_fRadius": "60",
+    "m_iAgentsPerUpdate": "40",
+    "m_fStandMult": "1",
+    "m_fCrouchMult": "0.6",
+    "m_fProneMult": "0.5",
+    "m_fStillMult": "0.7",
+    "m_fWalkMult": "0.85",
+    "m_fRunMult": "1",
+    "m_fSprintMult": "1.25",
+    "m_fDayLight": "1",
+    "m_fDuskLight": "0.6",
+    "m_fNightLight": "0.25",
+    "m_fEngineLightWeight": "0.6",
+    "m_fDarkFloor": "0.4",
+    "m_fFogMult": "0.75",
+    "m_fRainMult": "0.85",
+    "m_fStormMult": "0.7",
+    "m_fEnvFloor": "0.55",
+    "m_fNoiseWeight": "0.5",
+    "m_fNoiseSeconds": "10",
+    "m_fSuppressedNoise": "0.35",
+    "m_fBaseCommon": "1",
+    "m_fBaseSpecial": "1.2",
+    "m_fBaseHorde": "0.9",
+    "m_fMinFactor": "0.3",
+    "m_fMaxFactor": "1.2",
+    "m_fHiddenBelow": "0.35",
+    "m_fLoseSeconds": "8",
+    "m_fSearchSeconds": "45",
+    "m_fContactRadius": "20",
+    "m_fMissionSightMin": "0.6",
+    "m_fMissionNoticeMin": "0.35"
    }
   },
   {
@@ -4908,6 +4956,12 @@
   "m_fInfectionMinutes": "60",
   "m_fResearchPerSample": "1",
   "m_fMissionResearchMult": "0.75",
+  "m_fCurePace": "0.3",
+  "m_fPlayPaceHours": "12.5",
+  "m_fLabPerDay": "3",
+  "m_fLabBacklogDays": "4",
+  "m_fEmptyLabBonus": "0.25",
+  "m_fFinaleFallbackPerDay": "1",
   "m_bScaleCountsItems": "0",
   "m_sLandmarkName": "the old cross",
   "m_fHeatPerShot": "3",
