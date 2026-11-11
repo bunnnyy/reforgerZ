@@ -13,11 +13,11 @@
 //! persistence (if the server runs it) saves it. A new project turns up somewhere else a few
 //! hours later. Wrecks are only ever wrecks: they're never fixable.
 //!
-//! A mission car (Car Keys) is a project that already runs: it needs only its keys, which are in
-//! one house the mission names, or hotwiring. It isn't saved, doesn't trigger a replacement,
+//! A mission car (Car Keys) is a project that already runs: it needs only its keys, which lie in
+//! one house the mission names (loose loot, RZ_Loot), or hotwiring. It isn't saved, doesn't trigger a replacement,
 //! and goes when the mission ends unless someone started it.
 //!
-//! Parts come from garages and car boots (search), stripping wrecks (one part each), a
+//! Parts come from garages (loose loot) and car boots (search), stripping wrecks (one part each), a
 //! Mechanic wanderer for Favor (never a quartermaster: they refuse to sell parts). Fuel comes from
 //! siphoning wrecks or a petrol station's hand pump into a container.
 
@@ -107,7 +107,7 @@ class RZ_CarSettings
 	[Attribute("0.2", desc: "Chance a fixable car's keys are in a house in its town")]
 	float m_fKeysChance;
 
-	[Attribute("0.1", desc: "Chance a search in that town finds them")]
+	[Attribute("0.1", desc: "Chance each building rolled in that town (loose loot) holds them")]
 	float m_fKeyFindChance;
 
 	[Attribute("8", desc: "Seconds to fit parts or fuel")]
@@ -172,6 +172,7 @@ class RZ_CarProject
 	int m_iMissing;			// RZ_Cars.PART_* bits
 	bool m_bHasKeys;		// its keys are in a house in its town
 	bool m_bKeysFound;		// someone has them (this session)
+	bool m_bKeysPlaced;		// they lie in a building's loose loot (RZ_Loot), not taken yet
 	bool m_bHotwired;
 	string m_sNoun;			// "the blue hatchback"
 	int m_iMissionId = -1;	// a mission's car (Car Keys): not saved, not replaced
@@ -208,8 +209,6 @@ class RZ_Cars
 	protected bool m_bOn;
 	protected ref map<int, IEntity> m_mStarted = new map<int, IEntity>();	// mission car id -> the vehicle it became
 	protected ref map<int, bool> m_mStartedWired = new map<int, bool>();
-
-	protected static const float KEY_HOUSE_RADIUS = 18;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Cars(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_CarSettings settings)
@@ -839,38 +838,94 @@ class RZ_Cars
 
 	// ================================================================ Keys and the Mechanic
 	//------------------------------------------------------------------------------------------------
-	//! From a search: sometimes the keys of a fixable car in this town. "" if not.
-	string MaybeFindKeys(int playerId, vector pos)
+	//! Loose loot (RZ_Loot): the mission car whose keys lie in the building at buildingPos (the one
+	//! house the mission names), marked as placed. -1 if none.
+	int ClaimMissionKeysAt(vector buildingPos)
 	{
 		if (!m_bOn)
-			return "";
+			return -1;
 
-		// A mission car's keys are always in the one house it names
-		foreach (RZ_CarProject mc : m_aCars)
-		{
-			if (mc.m_iMissionId < 0 || mc.m_bKeysFound || RZ_Util.DistXZ(mc.m_vKeyHouse, pos) > KEY_HOUSE_RADIUS)
-				continue;
-
-			mc.m_bKeysFound = true;
-			m_Hub.GetSearch().GiveKey(playerId, CarKey(mc), CarKeyTag(mc));
-			return string.Format("a set of car keys in a bowl by the door, on a fob with a plastic fish: they'll fit %1 in %2", mc.m_sNoun, TownName(mc));
-		}
-
-		int town = m_GM.FindNearestSettlement(pos);
 		foreach (RZ_CarProject c : m_aCars)
 		{
-			if (c.m_iMissionId >= 0 || c.m_iTown != town || !c.m_bHasKeys || c.m_bKeysFound)
+			if (c.m_iMissionId < 0 || c.m_bKeysFound || c.m_bKeysPlaced || RZ_Util.DistXZ(c.m_vKeyHouse, buildingPos) > 1)
+				continue;
+
+			c.m_bKeysPlaced = true;
+			return c.m_iId;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A mission car's keys wait for their house to be placed (RZ_Loot looks only then).
+	bool HasUnplacedMissionKeys()
+	{
+		foreach (RZ_CarProject c : m_aCars)
+		{
+			if (c.m_iMissionId >= 0 && !c.m_bKeysFound && !c.m_bKeysPlaced)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Loose loot, when a building in a town is rolled: sometimes the keys of that town's fixable
+	//! car (one that has keys in a house: Keys chance), each roll Key find chance. -1 if not.
+	int ClaimTownKeysAt(vector buildingPos)
+	{
+		if (!m_bOn)
+			return -1;
+
+		int town = m_GM.FindNearestSettlement(buildingPos);
+		foreach (RZ_CarProject c : m_aCars)
+		{
+			if (c.m_iMissionId >= 0 || c.m_iTown != town || !c.m_bHasKeys || c.m_bKeysFound || c.m_bKeysPlaced)
 				continue;
 
 			if (Math.RandomFloat01() >= m_Settings.m_fKeyFindChance)
-				return "";
+				return -1;
 
-			c.m_bKeysFound = true;
-			m_Hub.GetSearch().GiveKey(playerId, CarKey(c), CarKeyTag(c));
-			return string.Format("car keys on a fob shaped like a fish: they'll fit %1 in %2", c.m_sNoun, TownName(c));
+			c.m_bKeysPlaced = true;
+			return c.m_iId;
 		}
 
-		return "";
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The house that held its keys was rolled again or forgotten with the keys still there.
+	void ReleaseKeys(int carId)
+	{
+		RZ_CarProject c = Find(carId);
+		if (c)
+			c.m_bKeysPlaced = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone picked its keys up (loose loot): found.
+	void OnKeysTaken(int carId)
+	{
+		RZ_CarProject c = Find(carId);
+		if (!c)
+			return;
+
+		c.m_bKeysPlaced = false;
+		c.m_bKeysFound = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The key id and the fob's tag for a car's key item. False if the car is gone.
+	bool KeyFor(int carId, out string keyId, out string tag)
+	{
+		RZ_CarProject c = Find(carId);
+		if (!c)
+			return false;
+
+		keyId = CarKey(c);
+		tag = CarKeyTag(c);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -904,6 +959,10 @@ class RZ_Cars
 		if (friendly && best.m_bHasKeys && !best.m_bKeysFound)
 		{
 			best.m_bKeysFound = true;
+			if (best.m_bKeysPlaced)
+				m_Hub.GetLoot().DropCarKeys(best.m_iId); // the ones lying in a house were these
+
+			best.m_bKeysPlaced = false;
 			m_Hub.GetSearch().GiveKey(playerId, CarKey(best), CarKeyTag(best));
 			text += " They dig in a pocket. \"Here. Found its keys in a kitchen drawer last week. Didn't have the parts.\"";
 		}
@@ -994,7 +1053,7 @@ class RZ_Cars
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Someone has found its keys (searched the right house, this session).
+	//! Someone has found its keys (picked them up in the right house, this session).
 	bool AreKeysFound(int carId)
 	{
 		RZ_CarProject c = Find(carId);
@@ -1032,6 +1091,9 @@ class RZ_Cars
 			Hide(c);
 			m_aCars.RemoveItem(c);
 		}
+
+		// Its keys, if they still lie in the house, go with it
+		m_Hub.GetLoot().DropCarKeys(carId);
 
 		m_mStarted.Remove(carId);
 		m_mStartedWired.Remove(carId);

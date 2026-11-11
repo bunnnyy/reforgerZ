@@ -1,10 +1,9 @@
-//! Keys as real items (docs/DESIGN.md, "Locks and keys"). When Interactions > Search > Key
-//! prefab is set, every key a player finds (on a body, in a letter, a car's keys from a search
-//! or the Mechanic) is spawned as that item with the id of the lock it opens. It can be
-//! dropped, traded and taken off a body like any item. The id stays on the server; only the
-//! tag ("Pharmacy, Lindale") is replicated, for the read action.
-//!
-//! Without the prefab, keys stay data for one life (RZ_Search.GiveKey).
+//! Keys are real items (docs/DESIGN.md, "Locks and keys"): Interactions > Search > Key prefab,
+//! spawned with the id of the lock it opens. They lie loose in houses (next to a letter, or a
+//! car's keys in its town: RZ_Loot) or are handed over (on a body, by the Mechanic, as a reward:
+//! RZ_Search.GiveKey). They can be dropped, traded and taken off a body like any item. The id
+//! stays on the server; only the tag ("Pharmacy, Lindale") is replicated, for the read action.
+//! Without the prefab there are no keys.
 
 //------------------------------------------------------------------------------------------------
 [ComponentEditorProps(category: "ReforgerZ", description: "A key item: holds the id of the lock it opens and its tag. Put it on the key prefab (Interactions > Search > Key prefab) with an RplComponent; optionally add RZ_ReadKeyTagAction.")]
@@ -42,25 +41,40 @@ class RZ_KeyItemComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawns a key for `keyId` and puts it in the character's inventory (at their feet if it
-	//! doesn't fit). False if the prefab has no RZ_KeyItemComponent or didn't spawn.
-	static bool Give(ResourceName prefab, IEntity character, string keyId, string tag)
+	//! Spawns a key for `keyId` lying at pos. null if the prefab has no RZ_KeyItemComponent or
+	//! didn't spawn.
+	static IEntity Spawn(ResourceName prefab, vector pos, float yaw, string keyId, string tag)
 	{
-		if (prefab.IsEmpty() || !character)
-			return false;
+		if (prefab.IsEmpty())
+			return null;
 
-		vector pos = RZ_Util.RandomPointInRing(character.GetOrigin(), 0.3, 0.6) + Vector(0, 0.3, 0);
-		IEntity item = RZ_Util.SpawnPrefab(prefab, pos, Math.RandomFloat(0, 360));
+		IEntity item = RZ_Util.SpawnPrefab(prefab, pos, yaw);
 		RZ_KeyItemComponent key = Of(item);
 		if (!key)
 		{
 			if (item)
 				SCR_EntityHelper.DeleteEntityAndChildren(item);
 
-			return false;
+			return null;
 		}
 
 		key.SetKey(keyId, tag);
+		return item;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawns a key for `keyId` and puts it in the character's inventory (at their feet if it
+	//! doesn't fit). False if the prefab has no RZ_KeyItemComponent or didn't spawn.
+	static bool Give(ResourceName prefab, IEntity character, string keyId, string tag)
+	{
+		if (!character)
+			return false;
+
+		vector pos = RZ_Util.RandomPointInRing(character.GetOrigin(), 0.3, 0.6) + Vector(0, 0.3, 0);
+		IEntity item = Spawn(prefab, pos, Math.RandomFloat(0, 360), keyId, tag);
+		if (!item)
+			return false;
+
 		RZ_Util.InsertIntoInventory(character, item);
 		RZ_GameModeComponent.TrackLooseItem(item); // a key dropped and forgotten is cleaned up in time
 		return true;

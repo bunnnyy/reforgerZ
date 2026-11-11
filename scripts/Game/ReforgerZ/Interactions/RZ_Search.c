@@ -1,23 +1,21 @@
-//! Searching the world (docs/DESIGN.md, "World interactions"): cupboards, fridges, desks,
-//! whole buildings, car boots (RZ_Cars) and the bodies of infected killed near players.
+//! Loot rules, locks and keys, readable things, and the searches that are left: car boots
+//! (RZ_Cars) and the bodies of infected killed near players (docs/DESIGN.md, "World
+//! interactions"). Loot in houses lies loose (RZ_Loot.c) and is rolled here (PickHouseLoot).
 //!
 //! - Loot suits the building: pharmacy, garage, farm, police, shop or house, from the prefab
-//!   name of the building around the spot. Tables are configurable per type; anything left
-//!   empty is filled from one flat loot pool by keywords (bandage words for pharmacies, tool
-//!   and fuel words for garages...).
-//! - Nothing exists until someone searches: the roll happens then, scaled by the town's loot
-//!   level (RZ_TownMemory.GetLootLevel), and the search is reported back (ReportSearched) so
-//!   the town runs dry and recovers over about two hours. Each spot is remembered as searched
-//!   for an hour. Electronics get the power grid's multiplier (RZ_PowerGrid.LootMult).
+//!   name of the building. Tables are configurable per type; anything left empty is filled from
+//!   one flat loot pool by keywords (bandage words for pharmacies, tool and fuel words for
+//!   garages...). Scaled by the town's loot level (RZ_TownMemory.GetLootLevel); electronics get
+//!   the power grid's multiplier (RZ_PowerGrid.LootMult).
+//! - A car boot or a body is searched (a few seconds), rolled then, and remembered as searched
+//!   for an hour.
 //! - Locks: some pharmacies, garages, police stations, shops and houses are locked (seeded
-//!   from the building's position, so the same ones stay locked). The lock is on the
-//!   building's outside doors (RZ_DoorLocks.c) and the Search follows it; buildings whose
-//!   doors can't be found, or every building with Door locks off, keep the lock on the loot
-//!   (the stockroom, the cabinets). A key opens that kind of building in that town (houses:
-//!   that colour of door); a crowbar forces it, loudly, and breaks it until the reset.
-//!   Locked places have better loot.
-//! - Keys are real items (RZ_KeyItemComponent) when a key prefab is set, else data for this
-//!   life.
+//!   from the building's position, so the same ones stay locked). The lock is on the building's
+//!   outside doors (RZ_DoorLocks.c); a building whose doors aren't found isn't locked. A key
+//!   opens that kind of building in that town (houses: that colour of door); a crowbar forces
+//!   it, loudly, and breaks it until the reset. Locked places have better loot.
+//! - Keys are real items (RZ_KeyItemComponent, the Key prefab): they lie loose in houses or are
+//!   handed over (GiveKey).
 //! - Readable things: ID cards, letters, receipts and photos, in the Zone's voice, sometimes
 //!   with a key taped inside, a stash on the back, or a puzzle circled on a map.
 
@@ -44,16 +42,16 @@ class RZ_LootTable
 [BaseContainerProps()]
 class RZ_SearchSettings
 {
-	[Attribute("1", desc: "Searching cupboards, fridges, desks, buildings, car boots and bodies")]
+	[Attribute("1", desc: "Searching car boots and infected bodies, locks and keys, readable things (loot in houses: Interactions > Loot)")]
 	bool m_bEnabled;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot pool: every item a search can find. Tables left empty are filled from it by keywords in the prefab names (see docs/WORKBENCH_SETUP.md)", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot pool: every item that can lie in a house or turn up in a car boot or on a body. Tables left empty are filled from it by keywords in the prefab names (see docs/WORKBENCH_SETUP.md). Each must be a real item with vanilla's pick-up action", "et")]
 	ref array<ResourceName> m_aLootPool;
 
 	[Attribute(desc: "Loot tables per building type (optional; empty lists use the pool)")]
 	ref array<ref RZ_LootTable> m_aTables;
 
-	[Attribute("0.6", desc: "Chance a search finds anything, at full town loot (scaled by what the town has left)")]
+	[Attribute("0.6", desc: "At full town loot (scaled by what the town has left): the chance each of a building's item slots holds something (loose loot), and that a car boot or body search finds anything")]
 	float m_fFindChance;
 
 	[Attribute("0.1", desc: "Chance a find is rare (doubled behind a lock)")]
@@ -62,29 +60,20 @@ class RZ_SearchSettings
 	[Attribute("0.1", desc: "Chance a find is electronics (x the power grid's electronics multiplier)")]
 	float m_fElectronicsChance;
 
-	[Attribute("0.02", desc: "Town loot one container search takes (RZ_TownMemory.ReportSearched)")]
-	float m_fSpotShare;
-
-	[Attribute("0.04", desc: "Town loot a whole-building search takes")]
-	float m_fBuildingShare;
-
-	[Attribute("60", desc: "Real minutes before a searched spot has anything again")]
+	[Attribute("60", desc: "Real minutes before a searched car boot has anything again")]
 	float m_fSpotReturnMinutes;
 
-	[Attribute("4", desc: "Seconds a search takes (stay close)")]
+	[Attribute("4", desc: "Seconds a car boot or body search takes (stay close)")]
 	float m_fSearchSeconds;
 
-	[Attribute("1", desc: "Heat a search makes (doors, drawers)")]
+	[Attribute("1", desc: "Heat a car boot or body search makes")]
 	float m_fSearchHeat;
 
 	// ---------------------------------------------------------------- Locks and keys
-	[Attribute("1", desc: "Some buildings are locked (seeded from their position): their doors, or their loot")]
+	[Attribute("1", desc: "Some buildings are locked (seeded from their position): their outside doors (the vanilla door action refuses; Unlock, Lock and Force at the door)")]
 	bool m_bLocks;
 
-	[Attribute("1", desc: "Lock the outside doors of locked buildings (the vanilla door action refuses; Unlock, Lock and Force at the door). Off = the old lock on the loot only (use it if door hooking doesn't work)")]
-	bool m_bDoorLocks;
-
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Key item: a small item with RZ_KeyItemComponent (and optionally RZ_ReadKeyTagAction). Keys found are real items that can be dropped, traded and stolen. Empty = keys are data kept for this life", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Key item: a small item with RZ_KeyItemComponent, an InventoryItemComponent (vanilla's pick-up) and optionally RZ_ReadKeyTagAction. Keys lie in houses and can be dropped, traded and stolen. Empty = no keys", "et")]
 	ResourceName m_sKeyPrefab;
 
 	[Attribute("0.5", desc: "Share of pharmacies that are locked")]
@@ -105,10 +94,10 @@ class RZ_SearchSettings
 	[Attribute("crowbar,crow_bar,prybar,pry_bar,wreckingbar,wrecking_bar", desc: "Crowbar keywords (forces a lock)")]
 	string m_sCrowbarWords;
 
-	[Attribute("10", desc: "Seconds to force a lock or a door")]
+	[Attribute("10", desc: "Seconds to force a door")]
 	float m_fForceSeconds;
 
-	[Attribute("25", desc: "Heat forcing a lock makes")]
+	[Attribute("25", desc: "Heat forcing a door makes")]
 	float m_fForceHeat;
 
 	[Attribute("180", desc: "Real minutes before an unlocked, forced or latched lock is back to its default (locked, doors shut)")]
@@ -140,7 +129,7 @@ class RZ_SearchSettings
 	float m_fDoorBangSeconds;
 
 	// ---------------------------------------------------------------- Readable things and bodies
-	[Attribute("0.12", desc: "Chance a search turns up something readable (ID card, letter, receipt, photo)")]
+	[Attribute("0.12", desc: "Chance a building's loot (or a car boot) has something readable (ID card, letter, receipt, photo)")]
 	float m_fReadableChance;
 
 	[Attribute("0.3", desc: "Chance an infected body has something readable on it")]
@@ -157,7 +146,7 @@ class RZ_SearchSettings
 }
 
 //------------------------------------------------------------------------------------------------
-//! A readable thing a search turned up (its text stays on the server).
+//! A readable thing (its text stays on the server). Its note prop exists only near players.
 class RZ_Readable
 {
 	int m_iId;
@@ -165,10 +154,11 @@ class RZ_Readable
 	string m_sText;
 	IEntity m_Body;
 	float m_fAt;
+	bool m_bLoose;		// lies in a building's loose loot (RZ_Loot keeps it), not left by a search
 }
 
 //------------------------------------------------------------------------------------------------
-//! A stash someone wrote about: searching near it finds it.
+//! A stash someone wrote about: the building or car boot nearest it holds it.
 class RZ_Stash
 {
 	vector m_vPos;
@@ -180,6 +170,7 @@ class RZ_Stash
 class RZ_Search
 {
 	protected static const int NOTES_KEPT = 30;
+	protected static const int LOOSE_NOTES_KEPT = 600;
 	protected static const float NOTE_MINUTES = 30;
 	protected static const float STASH_RADIUS = 30;
 	protected static const float STASH_MINUTES = 90;
@@ -190,13 +181,11 @@ class RZ_Search
 	protected RZ_Interactions m_Hub;
 	protected RZ_SearchSettings m_Settings;
 	protected ref map<string, ref RZ_LootTable> m_mTables = new map<string, ref RZ_LootTable>();
-	protected ref map<string, float> m_mSearched = new map<string, float>();
+	protected ref map<string, float> m_mSearched = new map<string, float>();	// car boots
 	protected ref map<string, float> m_mOpened = new map<string, float>();
 	protected ref map<string, float> m_mForced = new map<string, float>();	// opened by force: broken until the reset
-	protected ref map<string, ref array<string>> m_mKeys = new map<string, ref array<string>>();
 	protected ref array<ref RZ_Readable> m_aNotes = {};
 	protected ref array<ref RZ_Stash> m_aStashes = {};
-	protected ref array<string> m_aFurnitureWords = {};
 	protected ref array<string> m_aElectronicsWords = {};
 	protected int m_iNextNote = 1;
 	protected bool m_bKeyPrefabWarned;
@@ -211,6 +200,9 @@ class RZ_Search
 
 	//------------------------------------------------------------------------------------------------
 	bool IsEnabled() { return m_Settings.m_bEnabled; }
+	float GetReadableChance() { return m_Settings.m_fReadableChance; }
+	float GetFindChance() { return m_Settings.m_fFindChance; }
+	ResourceName GetKeyPrefab() { return m_Settings.m_sKeyPrefab; }
 
 	// ================================================================ Save / load
 	//------------------------------------------------------------------------------------------------
@@ -268,7 +260,6 @@ class RZ_Search
 	//------------------------------------------------------------------------------------------------
 	void Setup()
 	{
-		RZ_ItemHelper.Words("cupboard,cabinet,wardrobe,fridge,refrigerator,freezer,desk,drawer,dresser,locker,bookcase,bookshelf,sideboard,nightstand,bedside,chest_of,kitchen_unit,kitchenunit,counter,shelf,shelves,medicine_cab,safe_", m_aFurnitureWords);
 		RZ_ItemHelper.Words("radio,battery,batteries,flashlight,torch,electronic,gps,walkie,lamp_portable", m_aElectronicsWords);
 
 		array<string> types = {"pharmacy", "garage", "farm", "police", "shop", "house", "body", "car"};
@@ -284,17 +275,15 @@ class RZ_Search
 		RZ_Log.Info(string.Format("Search: %1 items in the loot pool, %2 tables set by hand.", pool, CountConfigured()));
 
 		string where = "off";
-		if (m_Settings.m_bLocks && m_Settings.m_bDoorLocks)
-			where = "on the doors (the loot where no doors are found)";
-		else if (m_Settings.m_bLocks)
-			where = "on the loot";
+		if (m_Settings.m_bLocks)
+			where = "on the outside doors";
 
-		string keys = "data for one life";
+		string keys = "off (no key prefab)";
 		if (!m_Settings.m_sKeyPrefab.IsEmpty())
 			keys = "key items";
 
 		RZ_Log.Info(string.Format("Locks: %1; keys are %2.", where, keys));
-		if (!m_Settings.m_bLocks || !m_Settings.m_bDoorLocks)
+		if (!m_Settings.m_bLocks)
 			return;
 
 		string blockers = "off (no blocker prefab)";
@@ -459,15 +448,6 @@ class RZ_Search
 
 	// ================================================================ Recognising things
 	//------------------------------------------------------------------------------------------------
-	bool IsFurnitureName(string name)
-	{
-		if (!m_Settings.m_bEnabled)
-			return false;
-
-		return RZ_ItemHelper.NameHas(name, m_aFurnitureWords);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The building type from its lower-case prefab or mesh name.
 	string BuildingType(string name)
 	{
@@ -491,36 +471,6 @@ class RZ_Search
 			return "shop";
 
 		return "house";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	string FurnitureNoun(string name)
-	{
-		if (name.Contains("fridge") || name.Contains("refrigerator") || name.Contains("freezer"))
-			return "the fridge";
-
-		if (name.Contains("desk"))
-			return "the desk";
-
-		if (name.Contains("wardrobe"))
-			return "the wardrobe";
-
-		if (name.Contains("locker"))
-			return "the locker";
-
-		if (name.Contains("drawer") || name.Contains("dresser") || name.Contains("nightstand") || name.Contains("bedside") || name.Contains("chest_of"))
-			return "the drawers";
-
-		if (name.Contains("shelf") || name.Contains("shelves") || name.Contains("bookcase"))
-			return "the shelves";
-
-		if (name.Contains("medicine"))
-			return "the medicine cabinet";
-
-		if (name.Contains("safe_"))
-			return "the safe";
-
-		return "the cupboard";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -557,27 +507,13 @@ class RZ_Search
 		return colour + " house";
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! What's behind a lock in this kind of building.
-	protected static string LockNoun(string type)
-	{
-		switch (type)
-		{
-			case "pharmacy": return "the dispensary's steel door";
-			case "garage": return "the padlocked tool store";
-			case "police": return "the evidence room";
-			case "shop": return "the stockroom";
-		}
-
-		return "the locked back room";
-	}
-
 	// ================================================================ Locks
 	//------------------------------------------------------------------------------------------------
 	//! A building's own lock, seeded from its position: the same buildings have one after a restart.
 	//! Never at a place people live or trade (safehouses, the lab, holdings, quartermasters): their
 	//! doors stay open to the people who use them. Never within 25 m of a running mission's props
-	//! (RZ_MissionManager.IsNearMissionProp) unless the lock is part of that mission.
+	//! (RZ_MissionManager.IsNearMissionProp) unless the lock is part of that mission. Only a
+	//! building with outside doors is really locked (RZ_DoorLocks.HasDoorLock).
 	bool HasLock(vector buildingPos, string type)
 	{
 		if (!HasOwnLock(buildingPos, type))
@@ -636,16 +572,17 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A door spot's building is locked right now.
 	bool IsLocked(RZ_Spot s)
 	{
-		if (s.m_iKind != RZ_Interactions.KIND_FURNITURE && s.m_iKind != RZ_Interactions.KIND_BUILDING && s.m_iKind != RZ_Interactions.KIND_DOOR)
+		if (s.m_iKind != RZ_Interactions.KIND_DOOR)
 			return false;
 
 		return IsBuildingLocked(s.m_vBuilding, s.m_sBuildingKey, s.m_sType);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Unlocked (key, latch) or forced: open until the reset. Doors and the Search both follow.
+	//! Unlocked (key, latch) or forced: open until the reset.
 	void OpenBuilding(string buildingKey, bool forced)
 	{
 		m_mOpened.Set(buildingKey, m_Hub.GetClock());
@@ -664,12 +601,6 @@ class RZ_Search
 		m_mOpened.Remove(buildingKey);
 		m_mForced.Remove(buildingKey);
 		m_Hub.OnLockChanged(buildingKey);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void Open(RZ_Spot s, bool forced)
-	{
-		OpenBuilding(s.m_sBuildingKey, forced);
 	}
 
 	// ================================================================ Keys
@@ -734,62 +665,40 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected array<string> KeysOf(int playerId)
-	{
-		string ident = m_GM.GetProfile(playerId).m_sIdentity;
-		array<string> keys;
-		if (!m_mKeys.Find(ident, keys))
-		{
-			keys = new array<string>();
-			m_mKeys.Set(ident, keys);
-		}
-
-		return keys;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A real key item in their inventory if a key prefab is set (it can be dropped, traded and
-	//! stolen), else data carried with this life (a ring in your pocket). `tag` is what it says.
+	//! A key item in their inventory (at their feet if it doesn't fit): rewards, bodies, the
+	//! Mechanic. `tag` is what it says. Nothing without a key prefab.
 	void GiveKey(int playerId, string key, string tag = "")
 	{
-		if (!m_Settings.m_sKeyPrefab.IsEmpty())
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!user || RZ_KeyItemComponent.Give(m_Settings.m_sKeyPrefab, user, key, tag))
+			return;
+
+		if (!m_bKeyPrefabWarned)
 		{
-			IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-			if (user && RZ_KeyItemComponent.Give(m_Settings.m_sKeyPrefab, user, key, tag))
-				return;
-
-			if (user && !m_bKeyPrefabWarned)
-			{
-				m_bKeyPrefabWarned = true;
-				RZ_Log.Warn("Key prefab has no RZ_KeyItemComponent (or didn't spawn): keys are data for this life instead.");
-			}
+			m_bKeyPrefabWarned = true;
+			RZ_Log.Warn("Key prefab is empty, has no RZ_KeyItemComponent or didn't spawn: no keys are given or placed.");
 		}
-
-		array<string> keys = KeysOf(playerId);
-		if (!keys.Contains(key))
-			keys.Insert(key);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A key on their ring (data) or a key item they carry.
+	//! A key item they carry.
 	bool HasKey(int playerId, string key)
 	{
-		if (KeysOf(playerId).Contains(key))
-			return true;
-
 		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		return RZ_KeyItemComponent.Carries(user, key);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A key for a real locked building in the town nearest pos (one with its own lock, not burned
-	//! down). Returns a description, "" if that town has no locked building: no key is given.
-	string GiveRandomKey(int playerId, vector pos)
+	//! A key for a real locked building in the town nearest pos (its own lock on outside doors,
+	//! not burned down). False if that town has none: no key is cut. Needs a key prefab.
+	bool PickRandomKey(vector pos, out string keyId, out string tag)
 	{
+		keyId = "";
+		tag = "";
 		int town = m_GM.FindNearestSettlement(pos);
 		RZ_Settlement s = m_GM.GetSettlement(town);
-		if (!s || !m_Settings.m_bLocks)
-			return "";
+		if (!s || !m_Settings.m_bLocks || m_Settings.m_sKeyPrefab.IsEmpty())
+			return false;
 
 		array<IEntity> buildings = {};
 		RZ_BuildingQuery.FindBuildings(s.m_vCenter, s.m_fRadius + 50, buildings, 120);
@@ -801,22 +710,37 @@ class RZ_Search
 				locked.Insert(b);
 		}
 
-		if (locked.IsEmpty())
-			return "";
+		// Only one whose outside doors are found (a lock that's really there): a few tries
+		for (int tries = 0; tries < 6 && !locked.IsEmpty(); tries++)
+		{
+			int pick = Math.RandomInt(0, locked.Count());
+			IEntity building = locked[pick];
+			locked.Remove(pick);
+			if (!m_Hub.GetDoors().HasDoorLock(building))
+				continue;
 
-		IEntity pick = locked.GetRandomElement();
-		vector at = pick.GetOrigin();
-		string type = BuildingType(RZ_ItemHelper.LowerName(pick));
-		string tag = KeyTagForBuilding(at, type);
-		GiveKey(playerId, KeyForBuilding(at, type), tag);
-		return string.Format("a key with a cardboard tag: \"%1\"", tag);
+			vector at = building.GetOrigin();
+			string type = BuildingType(RZ_ItemHelper.LowerName(building));
+			keyId = KeyForBuilding(at, type);
+			tag = KeyTagForBuilding(at, type);
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void OnPlayerSpawned(int playerId)
+	//! A key (see PickRandomKey) straight into their inventory: a body. Returns a description, ""
+	//! if none.
+	string GiveRandomKey(int playerId, vector pos)
 	{
-		string ident = m_GM.GetProfile(playerId).m_sIdentity;
-		m_mKeys.Remove(ident);
+		string keyId;
+		string tag;
+		if (!PickRandomKey(pos, keyId, tag))
+			return "";
+
+		GiveKey(playerId, keyId, tag);
+		return string.Format("a key with a cardboard tag: \"%1\"", tag);
 	}
 
 	// ================================================================ Bodies
@@ -839,96 +763,29 @@ class RZ_Search
 		m_Hub.AddSpot(RZ_Interactions.KIND_BODY, RZ_Util.GroundPos(pos), "body", "the body", -1, m_Hub.GetClock() + m_Settings.m_fBodyMinutes * 60);
 	}
 
-	// ================================================================ Labels and looking
 	//------------------------------------------------------------------------------------------------
+	//! A body's spot: Look at the body, Search the body.
 	void Labels(RZ_Spot s, out string read, out string choiceLabels)
 	{
-		if (s.m_iKind == RZ_Interactions.KIND_BODY)
-		{
-			read = "Look at the body";
-			choiceLabels = "Search the body";
-			return;
-		}
-
-		read = "Look at " + s.m_sNoun;
-		if (s.m_iKind == RZ_Interactions.KIND_BUILDING)
-			read = "Look around " + s.m_sNoun;
-
-		string burn = "Set it alight (fuel)";
-		if (IsLocked(s) && m_Hub.GetDoors().UsesDoors(s.m_sBuildingKey))
-		{
-			// The way in is the door (RZ_DoorLocks): Unlock, Lock and Force are there
-			choiceLabels = string.Format("Search %1|||%2", s.m_sNoun, burn);
-			return;
-		}
-
-		if (IsLocked(s))
-		{
-			choiceLabels = string.Format("Search %1|Use a key|Force the lock (crowbar)|%2", s.m_sNoun, burn);
-			return;
-		}
-
-		choiceLabels = string.Format("Search %1|||%2", s.m_sNoun, burn);
+		read = "Look at the body";
+		choiceLabels = "Search the body";
 	}
 
 	//------------------------------------------------------------------------------------------------
 	void Describe(int playerId, RZ_Spot s)
 	{
-		string title = m_Hub.Title(s);
-		if (s.m_iKind == RZ_Interactions.KIND_BODY)
-		{
-			m_GM.NotifyPlayer(playerId, title, "It was someone, once. Pockets, a bag, a wallet maybe. Be quick: they don't lie still for long out here.");
-			return;
-		}
-
-		RZ_Traps traps = m_Hub.GetTraps();
-		if (traps.IsBurned(s.m_vBuilding))
-		{
-			m_GM.NotifyPlayer(playerId, title, "Burned out. Black beams and ash, and the smell. Nothing left in there worth the risk.");
-			return;
-		}
-
-		array<string> lines = {};
-		lines.Insert(TypeLook(s.m_sType));
-		if (IsLocked(s) && m_Hub.GetDoors().UsesDoors(s.m_sBuildingKey))
-			lines.Insert("It's locked up. The way in is the door: its key, or a crowbar and a lot of noise.");
-		else if (IsLocked(s))
-			lines.Insert(string.Format("Whatever's worth having is behind %1. It's locked. A key would do it, or a crowbar and a lot of noise.", LockNoun(s.m_sType)));
-
-		if (WasSearched(s.m_sKey))
-			lines.Insert("Someone's been through it already. Recently.");
-
-		float level = RZ_TownMemory.GetLootLevel(s.m_vPos);
-		if (level < 0.5)
-			lines.Insert("The whole town looks picked over.");
-
-		string text = "";
-		foreach (int i, string l : lines)
-		{
-			if (i > 0)
-				text += " ";
-
-			text += l;
-		}
-
-		m_GM.NotifyPlayer(playerId, title, text);
+		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "It was someone, once. Pockets, a bag, a wallet maybe. Be quick: they don't lie still for long out here.");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static string TypeLook(string type)
+	//! A body's one choice: search it.
+	void HandleChoice(int playerId, RZ_Spot s, int option, IEntity user)
 	{
-		switch (type)
-		{
-			case "pharmacy": return "Broken glass, empty shelves at the front. The back is another matter.";
-			case "garage": return "Oil on the floor, a calendar from before. Tools, if nobody took them.";
-			case "farm": return "Boots by the door, a kitchen that smells of damp. Farm people kept things.";
-			case "police": return "Overturned chairs, a notice board of missing faces.";
-			case "shop": return "The front was looted on the first day. People forget to look behind the counter.";
-		}
-
-		return "Someone's home. Coats still on the hooks.";
+		if (m_Settings.m_bEnabled && option == 0)
+			StartSearch(playerId, s, user);
 	}
 
+	// ================================================================ Searching (car boots, bodies)
 	//------------------------------------------------------------------------------------------------
 	protected bool WasSearched(string key)
 	{
@@ -936,80 +793,8 @@ class RZ_Search
 		return m_mSearched.Find(key, at) && m_Hub.GetClock() - at < m_Settings.m_fSpotReturnMinutes * 60;
 	}
 
-	// ================================================================ Choices
 	//------------------------------------------------------------------------------------------------
-	//! 0 search, 1 use a key, 2 force the lock, 3 set it alight.
-	void HandleChoice(int playerId, RZ_Spot s, int option, IEntity user)
-	{
-		if (!m_Settings.m_bEnabled)
-			return;
-
-		string title = m_Hub.Title(s);
-		if (option == 3)
-		{
-			m_Hub.GetTraps().StartBurn(playerId, s, user);
-			return;
-		}
-
-		if (s.m_iKind != RZ_Interactions.KIND_BODY && m_Hub.GetTraps().IsBurned(s.m_vBuilding))
-		{
-			m_GM.NotifyPlayer(playerId, title, "It's burned out. There's nothing left to find.");
-			return;
-		}
-
-		if (option == 1)
-		{
-			UseKey(playerId, s);
-			return;
-		}
-
-		if (option == 2)
-		{
-			if (!IsLocked(s))
-			{
-				m_GM.NotifyPlayer(playerId, title, "It's open.");
-				return;
-			}
-
-			if (!RZ_ItemHelper.Has(user, m_Settings.m_sCrowbarWords))
-			{
-				m_GM.NotifyPlayer(playerId, title, "You'd need a crowbar for that lock. Garages and sheds have them.");
-				return;
-			}
-
-			m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_FORCE, s.m_iId, 0, m_Settings.m_fForceSeconds, "the lock", false);
-			m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fForceHeat * 0.4);
-			m_GM.NotifyPlayer(playerId, title, string.Format("You set the crowbar and lean on it. It's loud. About %1 seconds; stay close.", RZ_Util.RoundToInt(m_Settings.m_fForceSeconds)));
-			return;
-		}
-
-		if (option != 0)
-			return;
-
-		if (IsLocked(s))
-		{
-			if (HasKey(playerId, KeyForBuilding(s.m_vBuilding, s.m_sType)))
-			{
-				Open(s, false);
-				m_GM.NotifyPlayer(playerId, title, "You try your keys. The third one turns.");
-			}
-			else if (m_Hub.GetDoors().UsesDoors(s.m_sBuildingKey))
-			{
-				m_GM.NotifyPlayer(playerId, title, string.Format("Locked up. The way in is the door: a key tagged \"%1\", or a crowbar.", KeyTagForBuilding(s.m_vBuilding, s.m_sType)));
-				return;
-			}
-			else
-			{
-				m_GM.NotifyPlayer(playerId, title, string.Format("The front has been picked clean; what's left is behind %1, and it's locked. A key, or a crowbar.", LockNoun(s.m_sType)));
-				return;
-			}
-		}
-
-		StartSearch(playerId, s, user);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A search of any spot (furniture, building, body, car boot): a few seconds, then the roll.
+	//! A search of a car boot or a body: a few seconds, then the roll.
 	void StartSearch(int playerId, RZ_Spot s, IEntity user)
 	{
 		if (WasSearched(s.m_sKey))
@@ -1022,44 +807,17 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void UseKey(int playerId, RZ_Spot s)
-	{
-		string title = m_Hub.Title(s);
-		if (!IsLocked(s))
-		{
-			m_GM.NotifyPlayer(playerId, title, "It's open.");
-			return;
-		}
-
-		if (!HasKey(playerId, KeyForBuilding(s.m_vBuilding, s.m_sType)))
-		{
-			m_GM.NotifyPlayer(playerId, title, string.Format("None of your keys fit. The one you want has a tag saying \"%1\".", KeyTagForBuilding(s.m_vBuilding, s.m_sType)));
-			return;
-		}
-
-		Open(s, false);
-		m_GM.NotifyPlayer(playerId, title, string.Format("The key turns. %1 is open.", LockNoun(s.m_sType)));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A forced lock (the loot's or a door's): open, loud, and broken until the reset.
+	//! A forced door: open, loud, and broken until the reset.
 	void CompleteForce(int playerId, RZ_Spot s, IEntity user)
 	{
 		if (!s)
 			return;
 
-		Open(s, true);
+		OpenBuilding(s.m_sBuildingKey, true);
 		m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fForceHeat);
-		if (s.m_iKind == RZ_Interactions.KIND_DOOR)
-		{
-			m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "The frame splinters and the lock tears out of it. The door's open, and it won't lock again for hours. Everything for a mile heard that.");
-			return;
-		}
-
-		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "The lock gives with a crack you'll hear in your sleep. It's open. So is every ear for a mile.");
+		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "The frame splinters and the lock tears out of it. The door's open, and it won't lock again for hours. Everything for a mile heard that.");
 	}
 
-	// ================================================================ Searching
 	//------------------------------------------------------------------------------------------------
 	void CompleteSearch(int playerId, RZ_Spot s, IEntity user)
 	{
@@ -1068,25 +826,16 @@ class RZ_Search
 
 		string title = m_Hub.Title(s);
 		bool body = s.m_iKind == RZ_Interactions.KIND_BODY;
-		bool locked = !body && WasLockedHere(s);
 		m_mSearched.Set(s.m_sKey, m_Hub.GetClock());
 		PruneSearched();
 		m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fSearchHeat);
 
-		float share = m_Settings.m_fSpotShare;
-		if (s.m_iKind == RZ_Interactions.KIND_BUILDING)
-			share = m_Settings.m_fBuildingShare;
-
 		array<string> found = {};
-		int items = RollLoot(s.m_sType, s.m_vPos, locked, body, user, s.m_vPos, found);
-		if (!body)
-			RZ_TownMemory.ReportSearched(s.m_vPos, share);
+		int items = RollLoot(s.m_sType, s.m_vPos, false, body, user, s.m_vPos, found);
 
 		// A stash someone wrote about
-		RZ_Stash stash = StashNear(s.m_vPos);
-		if (stash)
+		if (!body && TakeStashNear(s.m_vPos))
 		{
-			m_aStashes.RemoveItem(stash);
 			for (int i = 0; i < 2; i++)
 			{
 				items += RollLoot(s.m_sType, s.m_vPos, true, false, user, s.m_vPos, found);
@@ -1095,19 +844,17 @@ class RZ_Search
 			found.Insert("the stash from the note, wrapped in a bin bag");
 		}
 
-		// Treatments (docs/DESIGN.md, "Treatments"): one roll, better behind a lock
+		if (!body && items > 0)
+			RZ_TownMemory.ReportSearched(s.m_vPos, m_Hub.GetLoot().GetTownLootPerItem() * items);
+
+		// Treatments (docs/DESIGN.md, "Treatments"): one roll
 		RZ_Infection infection = m_GM.GetInfection();
 		if (infection)
 		{
-			string med = infection.RollMedFind(s.m_sType, locked, user, s.m_vPos);
+			string med = infection.RollMedFind(s.m_sType, false, user, s.m_vPos);
 			if (!med.IsEmpty())
 				found.Insert(med);
 		}
-
-		// Car keys for a fixable car in this town, sometimes
-		string carKeys = m_Hub.GetCars().MaybeFindKeys(playerId, s.m_vPos);
-		if (!carKeys.IsEmpty())
-			found.Insert(carKeys);
 
 		// A key on a body
 		if (body && Math.RandomFloat01() < m_Settings.m_fBodyKeyChance)
@@ -1119,7 +866,7 @@ class RZ_Search
 
 		string text = "";
 		if (found.IsEmpty())
-			text = EmptyText(s.m_sType, body, RZ_TownMemory.GetLootLevel(s.m_vPos));
+			text = EmptyText(body, RZ_TownMemory.GetLootLevel(s.m_vPos));
 		else
 			text = "You find " + ListText(found) + ".";
 
@@ -1129,26 +876,24 @@ class RZ_Search
 
 		if (Math.RandomFloat01() < readChance)
 		{
-			string readable = MakeReadable(playerId, s, body);
-			if (!readable.IsEmpty())
-				text += "\n" + readable;
+			string keyId;
+			string keyTag;
+			string line;
+			int note = CreateReadable(s.m_vPos, body, false, keyId, keyTag, line);
+			if (note >= 0)
+			{
+				// A search leaves the readable thing where it was, for others to read too
+				SpawnNote(note, RZ_Util.RandomPointInRing(s.m_vPos, 0.4, 1) + Vector(0, 0.2, 0), Math.RandomFloat(0, 360));
+				if (!keyId.IsEmpty())
+					GiveKey(playerId, keyId, keyTag);
+
+				text += "\n" + line;
+			}
 		}
 
 		m_GM.NotifyPlayer(playerId, title, text);
 		if (body)
 			m_Hub.RemoveSpot(s.m_iId);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A building that was locked when this life started looking: opened locks keep better loot
-	//! for as long as they stay open.
-	protected bool WasLockedHere(RZ_Spot s)
-	{
-		if (!m_Settings.m_bLocks)
-			return false;
-
-		float opened;
-		return m_mOpened.Find(s.m_sBuildingKey, opened);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1173,13 +918,65 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Rolls what a search finds and gives it. Returns how many items. Names go into `found`.
-	protected int RollLoot(string type, vector pos, bool locked, bool body, IEntity user, vector at, notnull array<string> found)
+	protected RZ_LootTable TableFor(string type)
 	{
 		RZ_LootTable t;
 		if (!m_mTables.Find(type, t))
 			m_mTables.Find("house", t);
 
+		return t;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rare and electronics chances for a find here.
+	protected void Odds(string type, vector pos, bool locked, bool body, out float rare, out float electronics)
+	{
+		rare = m_Settings.m_fRareChance;
+		if (locked)
+			rare = rare * 2;
+
+		// Season rules (Bastion's season, Military Collapse): more military kit at police
+		// stations and on bodies
+		if (body || type == "police")
+			rare = Math.Min(0.5, rare * RZ_Seasons.Mods().m_fMilitaryLootMult);
+
+		electronics = m_Settings.m_fElectronicsChance * RZ_PowerGrid.LootMult(pos, "electronics");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Loose loot (RZ_Loot): what lies in a building of this type, as prefabs. Up to `slots`
+	//! items, each there with Find chance x the town's loot level (+0.25 behind a lock); `sure`:
+	//! every slot holds something (a stash).
+	void PickHouseLoot(string type, vector pos, bool locked, int slots, bool sure, notnull array<ResourceName> picks)
+	{
+		RZ_LootTable t = TableFor(type);
+		if (!t || slots <= 0)
+			return;
+
+		float chance = m_Settings.m_fFindChance * RZ_TownMemory.GetLootLevel(pos);
+		if (locked)
+			chance += 0.25;
+
+		float rare;
+		float electronics;
+		Odds(type, pos, locked, false, rare, electronics);
+		for (int i = 0; i < slots; i++)
+		{
+			if (!sure && Math.RandomFloat01() >= Math.Clamp(chance, 0, 0.95))
+				continue;
+
+			ResourceName pick = PickFrom(t, rare, electronics);
+			if (!pick.IsEmpty())
+				picks.Insert(pick);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Rolls what a car boot or body search finds and gives it. Returns how many items. Names go
+	//! into `found`.
+	protected int RollLoot(string type, vector pos, bool locked, bool body, IEntity user, vector at, notnull array<string> found)
+	{
+		RZ_LootTable t = TableFor(type);
 		if (!t)
 			return 0;
 
@@ -1202,16 +999,9 @@ class RZ_Search
 		if (Math.RandomFloat01() < twoChance)
 			count = 2;
 
-		float rare = m_Settings.m_fRareChance;
-		if (locked)
-			rare = rare * 2;
-
-		// Season rules (Bastion's season, Military Collapse): more military kit at police
-		// stations and on bodies
-		if (body || type == "police")
-			rare = Math.Min(0.5, rare * RZ_Seasons.Mods().m_fMilitaryLootMult);
-
-		float electronics = m_Settings.m_fElectronicsChance * RZ_PowerGrid.LootMult(pos, "electronics");
+		float rare;
+		float electronics;
+		Odds(type, pos, locked, body, rare, electronics);
 		int given = 0;
 		for (int i = 0; i < count; i++)
 		{
@@ -1266,34 +1056,30 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static string EmptyText(string type, bool body, float level)
+	protected static string EmptyText(bool body, float level)
 	{
 		if (body)
 			return "Nothing but a bus ticket and a photo too stained to make out.";
 
 		if (level < 0.4)
-			return "Empty. Drawers out, doors open. Somebody beat you to it, and somebody beat them.";
+			return "Empty. Somebody beat you to it, and somebody beat them.";
 
-		switch (type)
-		{
-			case "pharmacy": return "Empty blister packs and a price gun. Nothing you can use.";
-			case "garage": return "Rusted bolts and an empty oil can.";
-			case "farm": return "Seed packets and a calendar with every day crossed off.";
-			case "police": return "Forms. Hundreds of forms.";
-		}
-
-		return "Nothing you can use. Old letters, a broken clock.";
+		return "A spare wheel with no air in it and an empty oil can.";
 	}
 
 	// ================================================================ Readable things
 	//------------------------------------------------------------------------------------------------
 	//! An ID card, a letter, a receipt or a photo, in the Zone's voice. Sometimes a key is taped
-	//! inside, a stash is written on the back, or a town is circled. Returns the line for the
-	//! search message; the text is also kept on a note left at the spot (if a note prefab is set).
-	protected string MakeReadable(int playerId, RZ_Spot s, bool body)
+	//! inside (keyId and keyTag set: the caller places or gives the key), a stash is written on the
+	//! back, or a town is circled. Registers it and returns its id (-1 if none); `line` is
+	//! "Title: text" for a search message. loose = it lies in a building's loose loot.
+	int CreateReadable(vector pos, bool body, bool loose, out string keyId, out string keyTag, out string line)
 	{
+		keyId = "";
+		keyTag = "";
+		line = "";
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
-		int town = m_GM.FindNearestSettlement(s.m_vPos);
+		int town = m_GM.FindNearestSettlement(pos);
 		RZ_Settlement here = m_GM.GetSettlement(town);
 		string place = "the village";
 		if (here)
@@ -1345,25 +1131,29 @@ class RZ_Search
 		float roll = rng.Float01();
 		if (roll < 0.2)
 		{
-			string key = GiveRandomKey(playerId, s.m_vPos);
-			if (!key.IsEmpty())
-				text += string.Format(" Taped inside: %1. You keep it.", key);
+			if (PickRandomKey(pos, keyId, keyTag))
+			{
+				if (loose)
+					text += string.Format(" A key was taped inside, with a cardboard tag: \"%1\". It's lying where it fell.", keyTag);
+				else
+					text += string.Format(" Taped inside: a key with a cardboard tag: \"%1\". You keep it.", keyTag);
+			}
 		}
 		else if (roll < 0.35)
 		{
-			string stash = AddStash(s.m_vPos, rng);
+			string stash = AddStash(pos, rng);
 			if (!stash.IsEmpty())
 				text += " " + stash;
 		}
 		else if (roll < 0.45)
 		{
-			string puzzle = PuzzleHint(s.m_vPos);
+			string puzzle = PuzzleHint(pos);
 			if (!puzzle.IsEmpty())
 				text += " " + puzzle;
 		}
 
-		AddNote(title, text, s.m_vPos);
-		return string.Format("%1: %2", title, text);
+		line = string.Format("%1: %2", title, text);
+		return AddNote(title, text, loose);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1398,16 +1188,21 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected RZ_Stash StashNear(vector pos)
+	//! A stash someone wrote about lies within reach of pos: it's used up and true (the building
+	//! placed there, or the car boot searched there, holds it).
+	bool TakeStashNear(vector pos)
 	{
 		float now = m_Hub.GetClock();
 		foreach (RZ_Stash st : m_aStashes)
 		{
 			if (now < st.m_fUntil && RZ_Util.DistXZ(st.m_vPos, pos) <= STASH_RADIUS)
-				return st;
+			{
+				m_aStashes.RemoveItem(st);
+				return true;
+			}
 		}
 
-		return null;
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1426,12 +1221,11 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Leaves the readable thing at the spot, if a note prefab is set, so others can read it too.
-	protected void AddNote(string title, string text, vector pos)
+	//! Registers a readable thing (no prop yet). -1 without a note prefab.
+	protected int AddNote(string title, string text, bool loose)
 	{
-		ResourceName prefab = m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CLUE);
-		if (prefab.IsEmpty())
-			return;
+		if (m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CLUE).IsEmpty())
+			return -1;
 
 		RZ_Readable r = new RZ_Readable();
 		r.m_iId = m_iNextNote;
@@ -1439,15 +1233,82 @@ class RZ_Search
 		r.m_sTitle = title;
 		r.m_sText = text;
 		r.m_fAt = m_Hub.GetClock();
-		r.m_Body = RZ_Util.SpawnPrefab(prefab, RZ_Util.RandomPointInRing(pos, 0.4, 1) + Vector(0, 0.2, 0), Math.RandomFloat(0, 360));
-		if (!r.m_Body)
-			return;
-
-		RZ_ClueComponent.Tag(r.m_Body, RZ_Interactions.TAG_NOTE, r.m_iId, "Read it: " + title);
+		r.m_bLoose = loose;
 		m_aNotes.Insert(r);
-		while (m_aNotes.Count() > NOTES_KEPT)
+		PruneNotes();
+		return r.m_iId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The oldest left by searches beyond NOTES_KEPT go, and loose ones beyond LOOSE_NOTES_KEPT.
+	protected void PruneNotes()
+	{
+		int searched = 0;
+		int loose = 0;
+		for (int i = m_aNotes.Count() - 1; i >= 0; i--)
 		{
-			RemoveNote(0);
+			RZ_Readable r = m_aNotes[i];
+			if (r.m_bLoose)
+				loose++;
+			else
+				searched++;
+
+			if ((!r.m_bLoose && searched > NOTES_KEPT) || (r.m_bLoose && loose > LOOSE_NOTES_KEPT))
+				RemoveNote(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_Readable FindNote(int id)
+	{
+		foreach (RZ_Readable r : m_aNotes)
+		{
+			if (r.m_iId == id)
+				return r;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The note prop for a readable thing, lying at pos. null if it's gone or didn't spawn.
+	IEntity SpawnNote(int id, vector pos, float yaw)
+	{
+		RZ_Readable r = FindNote(id);
+		if (!r)
+			return null;
+
+		if (r.m_Body)
+			return r.m_Body;
+
+		r.m_Body = RZ_Util.SpawnPrefab(m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CLUE), pos, yaw);
+		if (!r.m_Body)
+			return null;
+
+		RZ_ClueComponent.Tag(r.m_Body, RZ_Interactions.TAG_NOTE, r.m_iId, "Read it: " + r.m_sTitle);
+		return r.m_Body;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its prop goes (the building's loot was put away); the text stays.
+	void DespawnNote(int id)
+	{
+		RZ_Readable r = FindNote(id);
+		if (r && r.m_Body)
+			SCR_EntityHelper.DeleteEntityAndChildren(r.m_Body);
+
+		if (r)
+			r.m_Body = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gone for good (its building was rolled again or forgotten).
+	void ReleaseNote(int id)
+	{
+		for (int i = m_aNotes.Count() - 1; i >= 0; i--)
+		{
+			if (m_aNotes[i].m_iId == id)
+				RemoveNote(i);
 		}
 	}
 
@@ -1464,26 +1325,26 @@ class RZ_Search
 	//------------------------------------------------------------------------------------------------
 	void ReadNote(int playerId, int id)
 	{
-		foreach (RZ_Readable r : m_aNotes)
+		RZ_Readable r = FindNote(id);
+		if (r)
 		{
-			if (r.m_iId == id)
-			{
-				m_GM.NotifyPlayer(playerId, r.m_sTitle, r.m_sText);
-				return;
-			}
+			m_GM.NotifyPlayer(playerId, r.m_sTitle, r.m_sText);
+			return;
 		}
 
 		m_GM.NotifyPlayer(playerId, "Nothing", "The ink has run. You can't make out a word.");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Readable things don't stay: gone after half an hour (no physical traces).
+	//! Readable things a search left don't stay: gone after half an hour (no physical traces).
+	//! Loose ones come and go with their building's loot (RZ_Loot).
 	void Tick(float dt)
 	{
 		float now = m_Hub.GetClock();
 		for (int i = m_aNotes.Count() - 1; i >= 0; i--)
 		{
-			if (now - m_aNotes[i].m_fAt >= NOTE_MINUTES * 60 || !m_aNotes[i].m_Body)
+			RZ_Readable r = m_aNotes[i];
+			if (!r.m_bLoose && (now - r.m_fAt >= NOTE_MINUTES * 60 || !r.m_Body))
 				RemoveNote(i);
 		}
 

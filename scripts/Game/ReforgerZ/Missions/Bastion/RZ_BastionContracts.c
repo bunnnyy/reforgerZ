@@ -259,14 +259,11 @@ class RZ_Mission_CurfewPatrol : RZ_Mission_VisitPoints
 
 //------------------------------------------------------------------------------------------------
 //! #10 Weapons Cache: an armoury in an overrun town (a barracks or police station if the map has
-//! one). Search it for 30 s, then carry the case to Bastion. Bastion gets stronger; you get paid,
-//! not armed.
+//! one). The case lies inside (like loose loot, placed once someone comes near); carry it to
+//! Bastion. Bastion gets stronger; you get paid, not armed.
 class RZ_Mission_WeaponsCache : RZ_Mission_Delivery
 {
-	protected float m_fSearched;
 	protected bool m_bGuarded;
-
-	protected static const float SEARCH_SECONDS = 30;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -298,7 +295,7 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Delivery
 		string place = "the armoury";
 		if (armoury)
 		{
-			m_vPos = LandPointNear(armoury.m_vPos, 4, 10);
+			m_vPos = armoury.m_vPos;
 			place = armoury.m_sName;
 		}
 		else
@@ -314,8 +311,9 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Delivery
 		if (!SpawnDrop(gm, RZ_EFaction.MILITARY, meet))
 			return false;
 
+		PlaceInsideLater(m_vPos);
 		m_sTitle = "Weapons Cache";
-		m_sBrief = string.Format("Our people left weapons locked up in %1 in %2 when it fell. Search it, then bring the case to %3. Don't get ideas about keeping it.", place, s.m_sName, meetName);
+		m_sBrief = string.Format("Our people left weapons in %1 in %2 when it fell: a long case with Bastion stencils, somewhere inside. Find it and bring it to %3. Don't get ideas about keeping it.", place, s.m_sName, meetName);
 		return true;
 	}
 
@@ -328,13 +326,6 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Delivery
 			SpawnGuards(gm, m_vPos, 6, 8, 40, false);
 			SpawnGuards(gm, m_vPos, 1, 10, 30, true);
 		}
-
-		if (m_bItemSpawned || CountPlayersNear(players, m_vPos, 10) == 0)
-			return;
-
-		m_fSearched += dt;
-		if (m_fSearched >= SEARCH_SECONDS && SpawnItem(gm, m_vPos))
-			RZ_ContractHelp.NotifyNear(gm, m_vPos, 40, m_sTitle, "Behind a rack of empty rifle hooks: a long case with Bastion stencils. Heavy.");
 	}
 
 	//------------------------------------------------------------------------------------------------

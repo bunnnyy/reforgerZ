@@ -287,9 +287,12 @@ class RZ_Mission_Delivery : RZ_Mission
 	protected vector m_vItemLastPos;		// where the item (or whoever carried it) was last seen
 	protected bool m_bItemWasCarried;		// last seen in an inventory (a player, a body, a vehicle)
 	protected int m_iItemReturns;			// times it was put back after a carrier left the server
+	protected vector m_vInside;				// PlaceInsideLater: the item lies in the building here
+	protected bool m_bInsideLater;
 
 	protected static const float DROP_GROUP_RADIUS = 50;
 	protected static const int MAX_ITEM_RETURNS = 3;
+	protected static const float INSIDE_PLACE_RADIUS = 60;	// an item inside a building is placed once a player is this close
 
 	//------------------------------------------------------------------------------------------------
 	static bool CanRun(RZ_GameModeComponent gm, RZ_EFaction dropFaction)
@@ -298,13 +301,43 @@ class RZ_Mission_Delivery : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The mission item, or `prefab` if given (it needs RZ_MissionItemComponent too).
+	//! The mission item on the ground at pos, or `prefab` if given (it needs RZ_MissionItemComponent too).
 	protected bool SpawnItem(RZ_GameModeComponent gm, vector pos, ResourceName prefab = "")
+	{
+		return PlaceItem(gm, RZ_Util.GroundPos(pos) + Vector(0, 0.3, 0), prefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The mission item lying in the building nearest pos (within 15 m): on a piece of furniture or
+	//! the floor, like loose loot (RZ_LootAnchors). On the ground at pos if there's no building or
+	//! no anchor in it.
+	protected bool SpawnItemInside(RZ_GameModeComponent gm, vector pos, ResourceName prefab = "")
+	{
+		IEntity building = RZ_LootAnchors.BuildingAt(pos, 15);
+		vector at;
+		if (building && RZ_LootAnchors.PickOne(building, at))
+			return PlaceItem(gm, at + Vector(0, 0.02, 0), prefab);
+
+		return SpawnItem(gm, pos, prefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The item lies in the building nearest pos (SpawnItemInside), placed once a player comes
+	//! within 60 m (items only near players). Its spot counts as the mission's (no lock there).
+	protected void PlaceInsideLater(vector pos)
+	{
+		m_vInside = pos;
+		m_bInsideLater = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Exactly at pos.
+	protected bool PlaceItem(RZ_GameModeComponent gm, vector pos, ResourceName prefab)
 	{
 		if (prefab.IsEmpty())
 			prefab = gm.GetMissionItemPrefab();
 
-		m_Item = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(pos) + Vector(0, 0.3, 0));
+		m_Item = RZ_Util.SpawnPrefab(prefab, pos, Math.RandomFloat(0, 360));
 		if (!m_Item)
 			return false;
 
@@ -339,6 +372,9 @@ class RZ_Mission_Delivery : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
+		if (m_bInsideLater && !m_bItemSpawned && CountPlayersNear(players, m_vInside, INSIDE_PLACE_RADIUS) > 0 && SpawnItemInside(gm, m_vInside))
+			m_bInsideLater = false;
+
 		OnDeliveryTick(gm, dt, ids, players);
 
 		if (!m_bItemSpawned || m_bDelivered)
@@ -458,6 +494,9 @@ class RZ_Mission_Delivery : RZ_Mission
 
 		if (m_Item && !m_bItemWasCarried)
 			result.Insert(m_Item.GetOrigin());
+
+		if (m_bInsideLater)
+			result.Insert(m_vInside);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,23 +1,25 @@
-//! World interactions (docs/DESIGN.md, "World interactions"): searching, locks and keys,
-//! readable things, fixable cars, crafting, water, barricades and traps, generators, fire,
-//! bells and sirens, cracking secure radio channels and treating other players.
+//! World interactions (docs/DESIGN.md, "World interactions"): loose loot in houses, searching car
+//! boots and bodies, locks and keys, readable things, fixable cars, crafting, water, barricades
+//! and traps, generators, fire, bells and sirens, cracking secure radio channels and treating
+//! other players.
 //!
 //! How it works on any map, without touching the map's prefabs:
 //! - Data first. Every few seconds the server looks around each player (a small sphere
 //!   query of static map objects) and recognises things by prefab or mesh name: buildings by
-//!   type (pharmacy, garage, farm, police, shop, house), furniture (cupboards, fridges,
-//!   desks), wrecks, workbenches, wells and pumps, stoves, bells, sirens, radios, generators.
+//!   type (pharmacy, garage, farm, police, shop, house), wrecks, workbenches, wells and pumps,
+//!   stoves, bells, sirens, radios, generators. Buildings get a loot record (RZ_Loot.c).
 //! - Only near a player, an invisible **interaction spot** (one small prefab with the generic
 //!   puzzle object's components) is put on each thing, with replicated labels ("Search the
-//!   fridge"). The puzzle actions route here (TAG). Spots are removed when everyone leaves.
-//! - What happens is decided on the server: loot is rolled when someone searches, and only
-//!   then is anything spawned. What was searched, opened or burned is remembered as data
-//!   (positions and times) and saved; town loot comes back through RZ_TownMemory.
+//!   boot"). The puzzle actions route here (TAG). Spots are removed when everyone leaves.
+//! - What happens is decided on the server. Loot lies in houses only near players and is
+//!   kept as data otherwise; a car boot or body is rolled when it's searched. What was searched,
+//!   opened or burned is remembered as data (positions and times) and saved; town loot comes
+//!   back through RZ_TownMemory.
 //! - Longer actions (searching, forcing a lock, hotwiring, crafting, cracking a channel,
 //!   treating someone) are timed on the server tick: stay put until they finish.
 //!
-//! The parts live in their own files: RZ_Search.c, RZ_DoorLocks.c (with RZ_DoorHooks.c and
-//! RZ_KeyItem.c), RZ_Cars.c, RZ_Crafting.c (and water),
+//! The parts live in their own files: RZ_Loot.c, RZ_Search.c, RZ_DoorLocks.c (with
+//! RZ_DoorHooks.c and RZ_KeyItem.c), RZ_Cars.c, RZ_Crafting.c (and water),
 //! RZ_Traps.c (barricades, tripwires, spike traps, generators, molotovs and fire),
 //! RZ_SecureRadio.c and RZ_Medical.c.
 
@@ -26,7 +28,7 @@
 [BaseContainerProps()]
 class RZ_InteractionSettings
 {
-	[Attribute("1", desc: "World interactions on: searching, locks, cars, crafting, water, traps, generators, fire, bells, secure radio, treating others (docs/DESIGN.md, World interactions)")]
+	[Attribute("1", desc: "World interactions on: loose loot, searching car boots and bodies, locks, cars, crafting, water, traps, generators, fire, bells, secure radio, treating others (docs/DESIGN.md, World interactions)")]
 	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Interaction spot: a small invisible prop (a little collision box, no mesh) with RplComponent, ActionsManagerComponent and the generic puzzle object's components (RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleUseAction values 0-3, 4 RZ_PuzzleChoiceAction options 0-3). Empty = Puzzles > Generic object (visible)", "et")]
@@ -44,7 +46,7 @@ class RZ_InteractionSettings
 	[Attribute("70", desc: "Most interaction spots on the whole server (performance cap)")]
 	int m_iSpotCap;
 
-	[Attribute("3.5", desc: "A timed action (search, hotwire, craft...) stops if you move further than this (m)")]
+	[Attribute("3.5", desc: "A timed action (a search, hotwiring, crafting...) stops if you move further than this (m)")]
 	float m_fTaskReach;
 
 	// ---------------------------------------------------------------- Bells, sirens and alarms
@@ -122,10 +124,10 @@ class RZ_Spot
 	int m_iKind;
 	string m_sKey;			// position key, stable for map objects
 	vector m_vPos;
-	vector m_vBuilding;		// the building it belongs to (locks, fire, loot type)
+	vector m_vBuilding;		// the building it belongs to (locks, fire, building type)
 	string m_sBuildingKey;
 	string m_sType;			// building type: pharmacy, garage, farm, police, shop, house; or body, car
-	string m_sNoun;			// "the fridge", "the pharmacy", "the wreck"
+	string m_sNoun;			// "the blue door", "the wreck", "the body"
 	int m_iRef = -1;		// car project id, body index...
 	float m_fSeen;			// hub clock when a player last saw it
 	float m_fExpires = -1;	// bodies: gone after this
@@ -175,6 +177,9 @@ class RZ_InteractionSave
 	ref array<float> burnAt = {};
 	ref array<string> wreckKey = {};
 	ref array<float> wreckAt = {};
+	ref array<string> lootKey = {};		// loose loot: each building's rolled-at and emptied-at times (no items)
+	ref array<float> lootRolled = {};
+	ref array<float> lootEmptied = {};
 	ref RZ_CarRosterSave cars;
 }
 
@@ -291,6 +296,72 @@ class RZ_ItemHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The first carried item that matches the words (see Matches), null if none.
+	static IEntity FirstMatch(IEntity character, array<string> words)
+	{
+		if (!character || !words || words.IsEmpty())
+			return null;
+
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return null;
+
+		array<IEntity> items = {};
+		inv.GetItems(items);
+		foreach (IEntity item : items)
+		{
+			if (Matches(item, words))
+				return item;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the character holds in its hands: the item or gadget in the right hand (a fuel can),
+	//! else the held gadget, else the current weapon or item. null if nothing. Any machine.
+	static IEntity HeldItem(IEntity character)
+	{
+		ChimeraCharacter cc = ChimeraCharacter.Cast(character);
+		if (!cc)
+			return null;
+
+		CharacterControllerComponent ctrl = cc.GetCharacterController();
+		if (ctrl)
+		{
+			IEntity right = ctrl.GetRightHandItem(); // VERIFY: a fuel can held in the hands is seen on the server (here, as the held gadget, or as the item in hands)
+			if (right)
+				return right;
+		}
+
+		SCR_GadgetManagerComponent gadgets = SCR_GadgetManagerComponent.GetGadgetManager(character);
+		if (gadgets && gadgets.GetHeldGadget())
+			return gadgets.GetHeldGadget();
+
+		if (ctrl)
+			return ctrl.GetCurrentItemInHands();
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: deletes one item the character carries or holds.
+	static void DeleteCarried(IEntity character, IEntity item)
+	{
+		if (!item)
+			return;
+
+		SCR_InventoryStorageManagerComponent inv;
+		if (character)
+			inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
+
+		if (inv && inv.TryDeleteItem(item))
+			return;
+
+		SCR_EntityHelper.DeleteEntityAndChildren(item);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool Has(IEntity character, string wordList)
 	{
 		array<string> words = {};
@@ -402,7 +473,6 @@ class RZ_ItemHelper
 //! Spot kinds (the same values as RZ_Interactions.KIND_*), for switch statements.
 enum RZ_ESpotKind
 {
-	FURNITURE,
 	BUILDING,
 	BODY,
 	WRECK,
@@ -416,7 +486,8 @@ enum RZ_ESpotKind
 	GENERATOR,
 	CAR,
 	DOOR,
-	WOUND
+	WOUND,
+	BURN
 }
 
 //------------------------------------------------------------------------------------------------
@@ -443,23 +514,23 @@ enum RZ_ETaskKind
 class RZ_Interactions
 {
 	static const int TAG = -9;				// RZ_PuzzleObjectComponent / RZ_ClueComponent mission id for spots
-	static const int TAG_NOTE = -10;		// readable things a search turned up
+	static const int TAG_NOTE = -10;		// readable things (lying in a house, or left by a search)
 
-	static const int KIND_FURNITURE = 0;
-	static const int KIND_BUILDING = 1;
-	static const int KIND_BODY = 2;
-	static const int KIND_WRECK = 3;
-	static const int KIND_WORKBENCH = 4;
-	static const int KIND_WELL = 5;
-	static const int KIND_FUELPUMP = 6;
-	static const int KIND_STOVE = 7;
-	static const int KIND_BELL = 8;
-	static const int KIND_SIREN = 9;
-	static const int KIND_RADIO = 10;
-	static const int KIND_GENERATOR = 11;
-	static const int KIND_CAR = 12;
-	static const int KIND_DOOR = 13;		// a locked place's outside door (RZ_DoorLocks)
-	static const int KIND_WOUND = 14;		// a fresh bite at a player's feet (RZ_Infection): Clean the bite
+	static const int KIND_BUILDING = 0;		// a look-around candidate only (doors, loot, church bells): never a spot
+	static const int KIND_BODY = 1;
+	static const int KIND_WRECK = 2;
+	static const int KIND_WORKBENCH = 3;
+	static const int KIND_WELL = 4;
+	static const int KIND_FUELPUMP = 5;
+	static const int KIND_STOVE = 6;
+	static const int KIND_BELL = 7;
+	static const int KIND_SIREN = 8;
+	static const int KIND_RADIO = 9;
+	static const int KIND_GENERATOR = 10;
+	static const int KIND_CAR = 11;
+	static const int KIND_DOOR = 12;		// a locked place's outside door (RZ_DoorLocks)
+	static const int KIND_WOUND = 13;		// a fresh bite at a player's feet (RZ_Infection): Clean the bite
+	static const int KIND_BURN = 14;		// a building's doorway near someone holding fuel (RZ_Traps): Douse the doorway
 
 	static const int TASK_SEARCH = 0;
 	static const int TASK_FORCE = 1;
@@ -483,6 +554,7 @@ class RZ_Interactions
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_InteractionSettings m_Settings;
 	protected ref RZ_Search m_Search;
+	protected ref RZ_Loot m_Loot;
 	protected ref RZ_DoorLocks m_Doors;
 	protected ref RZ_Cars m_Cars;
 	protected ref RZ_Crafting m_Crafting;
@@ -510,12 +582,13 @@ class RZ_Interactions
 	protected vector m_vScanCenter;
 
 	//------------------------------------------------------------------------------------------------
-	void RZ_Interactions(RZ_GameModeComponent gm, RZ_InteractionSettings settings, RZ_SearchSettings search, RZ_CarSettings cars,
-		RZ_CraftSettings craft, RZ_TrapSettings traps, RZ_RadioCrackSettings radio)
+	void RZ_Interactions(RZ_GameModeComponent gm, RZ_InteractionSettings settings, RZ_SearchSettings search, RZ_LootSettings loot,
+		RZ_CarSettings cars, RZ_CraftSettings craft, RZ_TrapSettings traps, RZ_RadioCrackSettings radio)
 	{
 		m_GM = gm;
 		m_Settings = settings;
 		m_Search = new RZ_Search(gm, this, search);
+		m_Loot = new RZ_Loot(gm, this, loot);
 		m_Doors = new RZ_DoorLocks(gm, this, m_Search, search);
 		m_Cars = new RZ_Cars(gm, this, cars);
 		m_Crafting = new RZ_Crafting(gm, this, craft, settings);
@@ -530,6 +603,7 @@ class RZ_Interactions
 	int GetSeed() { return m_iSeed; }
 	RZ_InteractionSettings GetSettings() { return m_Settings; }
 	RZ_Search GetSearch() { return m_Search; }
+	RZ_Loot GetLoot() { return m_Loot; }
 	RZ_DoorLocks GetDoors() { return m_Doors; }
 	RZ_Cars GetCars() { return m_Cars; }
 	RZ_Crafting GetCrafting() { return m_Crafting; }
@@ -565,6 +639,7 @@ class RZ_Interactions
 		data.seed = m_iSeed;
 		data.clock = m_fClock;
 		m_Search.SaveInto(data);
+		m_Loot.SaveInto(data);
 		m_Traps.SaveInto(data);
 		m_Cars.SaveInto(data);
 		return data;
@@ -594,12 +669,14 @@ class RZ_Interactions
 
 			m_fClock = Math.Max(0, m_Restored.clock);
 			m_Search.RestoreFrom(m_Restored);
+			m_Loot.RestoreFrom(m_Restored);
 			m_Traps.RestoreFrom(m_Restored);
 			m_Cars.RestoreWrecks(m_Restored);
 		}
 
 		m_bActive = true;
 		m_Search.Setup();
+		m_Loot.Setup();
 		m_Crafting.Setup();
 		m_Traps.Setup();
 		if (m_Restored)
@@ -626,6 +703,7 @@ class RZ_Interactions
 
 		m_Cars.Tick(dt, players);
 		UpdateSpots(players);
+		m_Loot.Tick(players);
 		m_Doors.Tick(players);
 		m_Doors.TickBlockers(ids, players);
 		TickTasks(dt);
@@ -635,14 +713,13 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A new life: keys, timed actions and listening don't carry over.
+	//! A new life: timed actions and listening don't carry over.
 	void OnPlayerSpawned(int playerId)
 	{
 		if (!m_bActive)
 			return;
 
 		CancelTask(playerId, "");
-		m_Search.OnPlayerSpawned(playerId);
 		m_Radio.OnPlayerSpawned(playerId);
 		m_Medical.OnPlayerSpawned(playerId);
 		m_mScanAt.Remove(playerId);
@@ -700,7 +777,7 @@ class RZ_Interactions
 		m_aCand.Clear();
 		m_vScanCenter = center;
 		BaseWorld world = GetGame().GetWorld();
-		world.QueryEntitiesBySphere(center, m_Settings.m_fScanRadius, OnScanEntity, null, EQueryEntitiesFlags.STATIC); // VERIFY: furniture inside building prefabs is found as static entities (else only whole buildings get a spot)
+		world.QueryEntitiesBySphere(center, m_Settings.m_fScanRadius, OnScanEntity, null, EQueryEntitiesFlags.STATIC);
 
 		// Nearest first (an index list, so the candidates themselves never move)
 		array<int> order = {};
@@ -730,16 +807,13 @@ class RZ_Interactions
 			if (added >= m_Settings.m_iSpotsPerPlayer || m_aSpots.Count() >= m_Settings.m_iSpotCap)
 				break;
 
-			// A locked place's outside doors get a spot each (Unlock, Lock, Force)
+			// A locked place's outside doors get a spot each (Unlock, Lock, Force); the building
+			// itself never gets one (its loot lies loose: RZ_Loot)
 			if (c.m_iKind == KIND_BUILDING)
 			{
 				added += m_Doors.OnBuildingSeen(c.m_Entity, c.m_sName, m_Settings.m_iSpotsPerPlayer - added);
-				if (added >= m_Settings.m_iSpotsPerPlayer)
-					break;
-			}
-
-			if (c.m_iKind == KIND_BUILDING && HasFurnitureNear(c.m_vPos))
 				continue;
+			}
 
 			string key = PosKey(c.m_vPos, 1);
 			RZ_Spot existing = FindSpotByKey(key);
@@ -755,18 +829,6 @@ class RZ_Interactions
 
 		m_aCand.Clear();
 		TouchSpotsNear(center);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected bool HasFurnitureNear(vector buildingPos)
-	{
-		foreach (RZ_SpotCandidate c : m_aCand)
-		{
-			if (c.m_iKind == KIND_FURNITURE && RZ_Util.DistXZ(c.m_vPos, buildingPos) <= 12)
-				return true;
-		}
-
-		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -790,7 +852,10 @@ class RZ_Interactions
 		c.m_sName = name;
 		c.m_fDist = RZ_Util.DistXZ(c.m_vPos, m_vScanCenter);
 		if (kind == KIND_BUILDING)
+		{
 			c.m_Entity = e;
+			m_Loot.OnBuildingSeen(e, name);
+		}
 
 		m_aCand.Insert(c);
 
@@ -839,8 +904,9 @@ class RZ_Interactions
 		if (!building && m_Radio.IsHouseRadioName(name))
 			return KIND_RADIO;
 
-		if (!building && m_Search.IsFurnitureName(name))
-			return KIND_FURNITURE;
+		// Furniture is where loose loot lies (RZ_LootAnchors), not a thing of its own
+		if (!building && RZ_LootAnchors.IsFurnitureName(name))
+			return -1;
 
 		if (building || name.Contains("/buildings/") || name.Contains("house"))
 			return KIND_BUILDING;
@@ -861,17 +927,13 @@ class RZ_Interactions
 		s.m_sType = "house";
 		s.m_fSeen = m_fClock;
 
-		if (c.m_iKind == KIND_FURNITURE || c.m_iKind == KIND_BUILDING || c.m_iKind == KIND_RADIO || c.m_iKind == KIND_STOVE || c.m_iKind == KIND_WORKBENCH)
+		if (c.m_iKind == KIND_RADIO || c.m_iKind == KIND_STOVE || c.m_iKind == KIND_WORKBENCH)
 		{
 			RZ_SpotCandidate b = NearestBuilding(c.m_vPos);
 			if (b)
 			{
 				s.m_vBuilding = b.m_vPos;
 				s.m_sType = m_Search.BuildingType(b.m_sName);
-			}
-			else if (c.m_iKind == KIND_BUILDING)
-			{
-				s.m_sType = m_Search.BuildingType(c.m_sName);
 			}
 		}
 
@@ -910,8 +972,6 @@ class RZ_Interactions
 	{
 		switch (s.m_iKind)
 		{
-			case RZ_ESpotKind.FURNITURE: return m_Search.FurnitureNoun(name);
-			case RZ_ESpotKind.BUILDING: return RZ_Search.TypeNoun(s.m_sType);
 			case RZ_ESpotKind.WRECK: return "the wreck";
 			case RZ_ESpotKind.WORKBENCH: return "the workbench";
 			case RZ_ESpotKind.WELL: return "the well";
@@ -949,6 +1009,57 @@ class RZ_Interactions
 		s.m_fExpires = expires;
 		m_aSpots.Insert(s);
 		return s.m_iId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot with a stable key (a burn spot at a doorway): the existing one is kept (and moved to
+	//! pos if it moved), else a new one is added. null at the cap.
+	RZ_Spot EnsureSpot(int kind, string key, vector pos, vector buildingPos, string type, string noun)
+	{
+		RZ_Spot s = FindSpotByKey(key);
+		if (s)
+		{
+			s.m_fSeen = m_fClock;
+			if (RZ_Util.DistXZ(s.m_vPos, pos) > 0.5)
+			{
+				DespawnSpot(s);
+				s.m_vPos = pos;
+			}
+
+			return s;
+		}
+
+		if (m_aSpots.Count() >= m_Settings.m_iSpotCap)
+			return null;
+
+		s = new RZ_Spot();
+		s.m_iId = m_iNextSpot;
+		m_iNextSpot++;
+		s.m_iKind = kind;
+		s.m_sKey = key;
+		s.m_vPos = pos;
+		s.m_vBuilding = buildingPos;
+		s.m_sBuildingKey = PosKey(buildingPos, 4);
+		s.m_sType = type;
+		s.m_sNoun = noun;
+		s.m_fSeen = m_fClock;
+		m_aSpots.Insert(s);
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every spot of this kind whose key isn't in `keep` goes (with its prop).
+	void RemoveSpotsOfKind(int kind, array<string> keep)
+	{
+		for (int i = m_aSpots.Count() - 1; i >= 0; i--)
+		{
+			RZ_Spot s = m_aSpots[i];
+			if (s.m_iKind != kind || keep.Contains(s.m_sKey))
+				continue;
+
+			DespawnSpot(s);
+			m_aSpots.Remove(i);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1177,7 +1288,7 @@ class RZ_Interactions
 		read = "Look at " + s.m_sNoun;
 		useLabels = "";
 		choiceLabels = "";
-		if (s.m_iKind == KIND_FURNITURE || s.m_iKind == KIND_BUILDING || s.m_iKind == KIND_BODY)
+		if (s.m_iKind == KIND_BODY)
 		{
 			m_Search.Labels(s, read, choiceLabels);
 			return;
@@ -1226,6 +1337,13 @@ class RZ_Interactions
 					m_GM.GetInfection().WoundLabels(read, choiceLabels);
 				break;
 			}
+			case RZ_ESpotKind.BURN:
+			{
+				// Only the choice, and only for someone whose hands hold fuel (RZ_PuzzleChoiceAction)
+				read = RZ_ClueComponent.NO_READ;
+				choiceLabels = RZ_Traps.BURN_LABEL;
+				break;
+			}
 			case RZ_ESpotKind.BELL:
 			{
 				choiceLabels = "Ring the bell";
@@ -1272,7 +1390,7 @@ class RZ_Interactions
 			return;
 		}
 
-		if (s.m_iKind == KIND_FURNITURE || s.m_iKind == KIND_BUILDING || s.m_iKind == KIND_BODY)
+		if (s.m_iKind == KIND_BODY)
 		{
 			m_Search.Describe(playerId, s);
 			return;
@@ -1286,6 +1404,7 @@ class RZ_Interactions
 			case RZ_ESpotKind.WORKBENCH: m_Crafting.DescribeBench(playerId); return;
 			case RZ_ESpotKind.RADIO: m_Radio.ListenHouseRadio(playerId, s, user); return;
 			case RZ_ESpotKind.GENERATOR: m_Traps.DescribeFoundGenerator(playerId, s); return;
+			case RZ_ESpotKind.BURN: return;
 			case RZ_ESpotKind.WOUND:
 			{
 				if (m_GM.GetInfection())
@@ -1320,7 +1439,7 @@ class RZ_Interactions
 			t = t.Substring(4, t.Length() - 4);
 
 		if (t.IsEmpty())
-			return "Search";
+			return "Here";
 
 		string first = t.Substring(0, 1);
 		first.ToUpper(); // in place, like ToLower()
@@ -1341,7 +1460,7 @@ class RZ_Interactions
 			return;
 		}
 
-		if (s.m_iKind == KIND_FURNITURE || s.m_iKind == KIND_BUILDING || s.m_iKind == KIND_BODY)
+		if (s.m_iKind == KIND_BODY)
 		{
 			m_Search.HandleChoice(playerId, s, option, user);
 			return;
@@ -1370,6 +1489,7 @@ class RZ_Interactions
 			}
 			case RZ_ESpotKind.RADIO: m_Radio.HandleHouseRadio(playerId, s, option, user); return;
 			case RZ_ESpotKind.GENERATOR: m_Traps.HandleFoundGenerator(playerId, s, option, user); return;
+			case RZ_ESpotKind.BURN: m_Traps.StartBurn(playerId, s, user); return;
 		}
 	}
 

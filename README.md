@@ -59,9 +59,10 @@ and one way to end it: **research the cure.**
   people who take that road don't always arrive. Eat with them, trade, find out, tell someone or
   end it yourself ([LORE.md](docs/LORE.md#the-long-table)).
 - **Notes between players**: a notice board at every Haven safehouse.
-- **Search the world**: cupboards, car boots and bodies, locked doors that keep the infected
-  out (they bang on them) and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting, traps, fire, water and
-  secure radio channels.
+- **Loot the world**: things lie loose in houses, on worktops and floors, and you pick them up;
+  car boots and bodies to search; locked doors that keep the infected out (they bang on them)
+  and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting,
+  traps, fire (a full fuel can in your hands at the door), water and secure radio channels.
 - **Teaches itself**: no tutorial pop-ups, just a note where you wake, a wind-up radio and
   people who tell you things.
 - **Any map**: towns, the quarantine line and its checkpoints are found automatically.
@@ -76,7 +77,7 @@ and one way to end it: **research the cure.**
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 That's about 116,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 47 `VERIFY` markers left in the game
+was also checked against the base game's script source; the 50 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -144,7 +145,7 @@ scripts/Game/ReforgerZ/
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
   Cure/          research, lab, samples, antidotes, infection stages, treatments and meds
   Guidance/      experience levels, tips, spawn scenarios, open radio channels
-  Interactions/  searching, door locks, doorway blockers and keys, building queries (mission
+  Interactions/  loose loot, searching, door locks, doorway blockers and keys, building queries (mission
                  spots kept out of locked buildings), cars, crafting, water,
                  traps, generators, fire, secure radio, treating others
   Persistence/   save and load of mode state, the hall of fame

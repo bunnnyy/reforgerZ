@@ -52,7 +52,7 @@ class RZ_BuildingQuery
 
 //------------------------------------------------------------------------------------------------
 //! Spots that are behind a lock: inside (or right against) a locked building, or by one of its
-//! doorway blockers. Only while door locks are on: with the lock on the loot, doors open.
+//! doorway blockers. Only while locks are on.
 class RZ_LockedSpots
 {
 	protected static const float QUERY_RADIUS = 30;	// buildings whose origin is this close are checked

@@ -198,7 +198,7 @@ caps at 200 per square.
 | A player being somewhere | 0.5 a tick |
 | In a vehicle | +4 a tick |
 | A shot | 3 × the background's noise multiplier; ×0.3 with a suppressor (detected by attachment name) |
-| Noisemakers, bells, sirens, generators, searches, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
+| Noisemakers, bells, sirens, generators, car boot and body searches, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
 
 - Heat draws extra zombies. **80** heat in one area within 600 m of a living player sends a
   horde toward it (at most one every 10 minutes). A hot square nobody is near (a powered
@@ -415,7 +415,7 @@ and odds**; the world-level breakthroughs (spread, timers, the final stand) are 
 
 **Supply by research:**
 
-| Research | Antidote stock | Stabiliser stock | Stabiliser price | Finds per pharmacy search (antidote / stabiliser) |
+| Research | Antidote stock | Stabiliser stock | Stabiliser price | Finds per pharmacy's loot (antidote / stabiliser) |
 |---|---|---|---|---|
 | 0% | 1 per 30 min, 2 at most | 1 per 90 min, 1 at most | ×2 | 0.4% / 1% |
 | 25% | 1 per 20 min, 3 | 1 per 45 min, 2 | ×2 | 0.8% / 1.5% |
@@ -556,7 +556,7 @@ exists while a player is within 300 m. Restoring it takes three steps:
 Then every town within 2.5 km is **Powered** and everyone hears it. Power gives a lights hook
 (`RZ_PowerGrid.IsPoweredAt`; no lamps are actually switched on), more radio chatter (every
 6 minutes instead of 10), faster radio station broadcasts, and electronics ×1.5 as likely in
-searches there. But the generator hums: 10 heat a minute at the station. It **slowly fails**
+loot there. But the generator hums: 10 heat a minute at the station. It **slowly fails**
 over about four hours with players online (a warning at 20%). **Refuel and grease** restores
 60% with a fuel item or 25% without. When it fails, it's back to step 2. No Fame for any of
 it: the power is the reward.
@@ -1439,8 +1439,9 @@ Code: `World/RZ_TownMemory.c`.
 
 - **Town flags:** Looted, Barricaded, Powered, Burned. Plain values per settlement, saved except
   Barricaded and Powered.
-  - **Looted:** each town has a loot level (0–1). Every search takes a little, and the town
-    counts as Looted under 0.5. It never drops under 0.2 and comes back over about 2 hours.
+  - **Looted:** each town has a loot level (0–1). Every item taken from a house (and every find
+    in a car boot) takes a little, and the town counts as Looted under 0.5. It never drops under
+    0.2 and comes back over about 2 hours.
   - **Barricaded:** while a player's barricade stands in it, or once Fortify the Safehouse has
     succeeded there. Not kept across a restart (barricades aren't saved).
   - **Powered:** set by the power grid.
@@ -1457,45 +1458,89 @@ Code: `World/RZ_TownMemory.c`.
 
 Code: `Interactions/`.
 
-Searching, locked doors and keys, cars, crafting, water, barricades and traps, generators, fire, bells, radios
-and treating each other. Data until a player is near, capped and decaying, nothing left behind.
+Loot lying in houses, car boots and bodies to search, locked doors and keys, cars, crafting,
+water, barricades and traps, generators, fire, bells, radios and treating each other. Data until a
+player is near, capped and decaying, nothing left behind.
 
 **How it works on any map.**
 
 - **Things are recognised by name.** Every 10 s the server looks at static map objects within
-  30 m of each player and sorts them by prefab or mesh name: buildings by type, furniture, car
-  wrecks, workbenches, wells and pumps, fuel pumps, stoves, bells (every church gets one), sirens,
-  house radios and generators. A building with no furniture found gets one spot for itself.
+  30 m of each player and sorts them by prefab or mesh name: buildings by type, car wrecks,
+  workbenches, wells and pumps, fuel pumps, stoves, bells (every church gets one), sirens, house
+  radios and generators. Furniture is where loot lies.
 - **Interaction spots, only near players:** an invisible prop with labelled actions ("Search the
-  fridge"), at most 10 per player and 70 on the server.
-- **Decided on the server.** Loot is rolled when someone searches. What was searched, opened,
-  stripped or burned is remembered as positions and times, and saved.
+  boot"), at most 10 per player and 70 on the server. Buildings and furniture get none.
+- **Decided on the server.** Loot lies in houses only while a player is near and is data
+  otherwise; a car boot or body is rolled when it's searched. What was searched, opened, stripped
+  or burned is remembered as positions and times, and saved.
 - **Timed actions** run on the 5 s tick: move more than 3.5 m away and they stop.
 
-### Searching
+### Loot in houses
 
-| Building type (from the prefab name) | What it tends to have |
+Walk into a building and a few things lie on its worktops, desks and low cupboards, or on the floor
+beside them. Pick them up with vanilla's **Pick up** (or from the inventory's "nearby" list). There
+are no search prompts in buildings and no timers.
+
+| Building type (from the prefab name) | What it tends to have | Items at most |
+|---|---|---|
+| Pharmacy (pharmacy, hospital, clinic) | Bandages, medicine, saline, purification tablets; rare: morphine, antibiotics | 4 |
+| Garage (garage, workshop, repair) | Jerrycans, tools, batteries, tyres, spark plugs, crowbars, planks, wire | 4 |
+| Farm (farm, barn, stable, shed, vet clinic) | Food, water, axes, rope, planks, matches; rare: hunting guns | 3 |
+| Police (police, gendarmerie) | Ammo, batons, torches, radios; rare: pistols, vests | 4 |
+| Shop (shop, store, market, kiosk) | Food, water, batteries, torches, bleach | 3 |
+| House (anything else) | Food, water, cloth, bandages, knives, torches | 2 |
+
+- **Rolled once, then data.** The first time a player comes near, each of the building's item
+  slots holds something 60% of the time at full town loot (scaled by the town's loot level). 10%
+  of finds are rare (20% behind a lock), 10% electronics (×1.5 in powered towns). A locked place
+  (a seeded lock on outside doors that were found) has one more slot, +25% per slot, and better
+  finds. There's also one roll for a treatment (expired antibiotics, suppressant, vet antiviral,
+  stabiliser, antidote, from a configurable list: [Treatments](#treatments)), sometimes the town's
+  fixable car's keys ([Cars](#cars-found-rare-and-hard-to-fix)), and 12% of the time something to
+  read ([Readable things](#readable-things)). Burned buildings and protected places (the same as
+  for locks) have none.
+- **Where it lies.** On the top of a piece of furniture inside the building, recognised by name
+  (cupboards, desks, worktops, counters, shelves no taller than 1.6 m; a trace down at its middle),
+  else on the floor beside it toward the middle of the building, always inside the building's
+  bounding box. A building with no furniture found gets up to five floor points in its box (traced
+  down from 1.4 m above its origin). One item per spot, at most eight spots; items beyond the
+  building's spots aren't placed.
+- **Only near players.** A building's loot is put out when a player is within 35 m and the
+  look-around has seen it, three buildings a tick, the nearest first. With nobody within 60 m for
+  a minute, untaken items are deleted and kept as data: they're there again next time. At most
+  220 items lie on the server; when it's full, the building farthest from players is put away
+  for a nearer one.
+- **Taken.** An item that goes into an inventory (or is carried more than 1.5 m off) is taken:
+  it leaves the building's list, the town's loot level drops by 0.015, and from then on it's an
+  ordinary item (dropped and forgotten, it's cleaned up like any [loose item](#loose-items)).
+- **Refill.** An emptied building has loot again after an hour, divided by the town's loot level
+  (up to four hours in a picked-over town). One with leftovers keeps them, and rolls fresh after
+  three times that.
+- **Saves.** Only each building's rolled and emptied times are saved, never the items: after a
+  restart a building rolls again once its refill time has passed.
+- **A stash someone wrote about** ([Readable things](#readable-things)) adds two good finds to
+  the building nearest it, the first time it's put out.
+
+*Simplified:* the furniture names are guesses, and spots are traced once per building, so an item
+can float on a high shelf or sit in a corner. Car boots and bodies are still searched (below).
+
+### Car boots and bodies
+
+| What | What it tends to have |
 |---|---|
-| Pharmacy (pharmacy, hospital, clinic) | Bandages, medicine, saline, purification tablets; rare: morphine, antibiotics |
-| Garage (garage, workshop, repair) | Jerrycans, tools, batteries, tyres, spark plugs, crowbars, planks, wire |
-| Farm (farm, barn, stable, shed, vet clinic) | Food, water, axes, rope, planks, matches; rare: hunting guns |
-| Police (police, gendarmerie) | Ammo, batons, torches, radios; rare: pistols, vests |
-| Shop (shop, store, market, kiosk) | Food, water, batteries, torches, bleach |
-| House (anything else) | Food, water, cloth, bandages, knives, torches |
 | Body (an infected killed near a player; 4 minutes) | Bandages, ammo, small things; sometimes a key or something to read |
 | Car boot (a wreck) | Jerrycans, tools, rope, batteries, tyres |
 
-A search (4 s, 1 heat) finds something 60% of the time at full town loot, scaled by the town's
-loot level, sometimes two things. 10% of finds are rare (20% behind a lock), 10% electronics
-(×1.5 in powered towns). A searched spot has nothing new for an hour. Each search also has one
-roll for a treatment (expired antibiotics, suppressant, vet antiviral, stabiliser, antidote),
-from a configurable list ([Treatments](#treatments)).
+**Search the boot** or **Search the body** (4 s, 1 heat) finds something 60% of the time (a boot
+scaled by the town's loot level), sometimes two things, plus the treatment roll; the things go
+into your pack. A searched boot has nothing new for an hour; a body is gone once searched. A car
+boot's finds take 0.015 each off the town's loot level.
 
 ### Locks and keys
 
 About half of pharmacies and police stations, a third of garages, a quarter of shops and a tenth
 of houses are locked, seeded from the building's position so the same ones are locked after a
-restart. **The lock is on the building's outside doors**, and its Search follows it. Places people
+restart. **The lock is on the building's outside doors**, and the loot is inside. Places people
 use are never locked: nothing within 80 m of a safehouse, the lab or an outpost, 100 m of a
 quartermaster, or 150 m of a stronghold (the same places that can't burn). **Nothing within 25 m of
 a running mission's props is locked either** (its position, its props, items and drops, the current
@@ -1504,8 +1549,8 @@ one exception is a lock that is part of the mission (the Locked Bunker's keypad)
 
 | State | How it gets there | What it means |
 |---|---|---|
-| Locked (the default) | | The vanilla Open action on an outside door says **Locked** from outside. Search inside is refused |
-| Unlocked | **Unlock** at the door with its key (quiet), or opening the door from inside (the latch) | Its doors open for anyone. Search works, and finds are better |
+| Locked (the default) | | The vanilla Open action on an outside door says **Locked** from outside |
+| Unlocked | **Unlock** at the door with its key (quiet), or opening the door from inside (the latch) | Its doors open for anyone |
 | Locked again | **Lock** at the door with its key | Locked; the door pulls shut once you step away |
 | Forced | **Force the door** with a crowbar: 10 s, 10 heat at the start and 25 when it gives | Open and broken: it can't be locked until the reset |
 | Reset | Three hours after it was unlocked, latched or forced | Locked again, its outside doors pulled shut |
@@ -1525,25 +1570,23 @@ one exception is a lock that is part of the mission (the Locked Bunker's keypad)
   within 80 m of a player; the server refuses it again. Locked doors found open (AI opened them)
   are pulled shut once nobody stands within 2.5 m.
 - **Keys** open one kind of building in one town: "Pharmacy, Lindale", "Shop, back door, Morton";
-  houses and farmhouses by the colour of their door, "Blue house, Morton". They're found on bodies
-  (8%) and in readable things (one in five), and a key is only ever cut for a real building with
-  its own lock in the town nearest where it's found (not burned out); a town with none gives no
-  key. Car keys come from searches and the Mechanic, for fixable cars that have keys. With a
-  key prefab set, **keys are real items**: they can be dropped, traded and taken off a body, the
-  id stays on the server, and the tag can be read on the ground. Without one, keys are data kept
-  for this life.
+  houses and farmhouses by the colour of their door, "Blue house, Morton". One lies next to one
+  readable thing in five (it was taped inside), and bodies carry one 8% of the time. A key is only
+  ever cut for a real building with its own lock on outside doors that were found, in the town
+  nearest where it turns up (not burned out); a town with none gives no key. Car keys lie in houses
+  in their car's town, or come from the Mechanic. **Keys are real items** (the key prefab): they
+  can be dropped, traded and taken off a body, the id stays on the server, and the tag can be read
+  on the ground. Without a key prefab there are no keys.
 - **Mission spots stay outside.** Missions place their items, props, people and crates on random
-  ground points (the shared pickers `LandPointNear` and `HighPointNear`). With door locks on, a
+  ground points (the shared pickers `LandPointNear` and `HighPointNear`). With locks on, a
   point inside a locked building's bounding box (plus 1.5 m, which covers its doorways) or within
   2.5 m of a doorway blocker is rejected, and the last resort is moved out past the nearest wall.
   The landmark finder skips locked buildings too. A building counts while it's unlocked as well,
   since it locks again at the reset. The one exception is the Locked Bunker event, where the
   lock is the point: it turns a locked building's lock into a keypad (no key fits and no crowbar
   forces it while the event runs; the inside latch still works) and puts its crates inside.
-- **Fallback: the lock on the loot.** A building whose doors aren't found (no door entities, or
-  no usable bounding box) keeps the old lock: Search is refused, and the search spot offers "Use
-  a key" and "Force the lock" (the same key, time and heat). With **Door locks** off, every
-  building does; use it if hooking the door action doesn't work.
+- **Doors only.** A building whose doors aren't found (no door entities, or no usable bounding
+  box) isn't locked, and no key is cut for it. With **Search > Locks** off, nothing is locked.
 
 #### Keeping AI and the infected out
 
@@ -1571,16 +1614,20 @@ deleted and only blockers and banging remain. Locked places more than 150 m from
 or past the 20 nearest, have no blocker, so AI there still open their doors (the doors are pulled
 shut again once a player comes near). Each blocker costs two small navmesh rebuilds (on and off);
 how much that costs on a busy server isn't measured yet. A blocker is one fixed size, so a very
-wide door may leave a gap. Buildings whose doors are part of the mesh have no door lock, only
-the loot one. Where the building's box reaches past its walls (a porch, a deep recess), someone
-standing in front of a recessed door, 0.5 m or more inside the box, counts as inside and can
-open it. Key items don't survive a restart; data keys don't survive a death.
+wide door may leave a gap. Buildings whose doors are part of the mesh have no lock. Where the
+building's box reaches past its walls (a porch, a deep recess), someone standing in front of a
+recessed door, 0.5 m or more inside the box, counts as inside and can open it. Key items don't
+survive a restart.
 
 ### Readable things
 
-12% of searches (30% of bodies) turn up an ID card, letter, receipt or photo in the Zone's voice
-([LORE.md](LORE.md), "Writing guide"). One in five has a key inside, about one in seven a stash
-grid on the back (two extra finds within 90 minutes), one in ten a puzzle mission circled on a map.
+12% of buildings' loot (and of car boot searches, 30% of bodies) includes an ID card, letter,
+receipt or photo in the Zone's voice ([LORE.md](LORE.md), "Writing guide"). In a building it lies
+like the rest of the loot, as a note prop read where it lies, and goes with the building's loot;
+one a search turns up is left beside the boot or body for half an hour. One in five had a key
+taped inside: in a building the key lies next to it, from a search it goes into your pack. About
+one in seven has a stash grid on the back (two good finds in the building nearest it, or a car
+boot searched there, within 90 minutes), one in ten a puzzle mission circled on a map.
 
 ### Cars: found, rare and hard to fix
 
@@ -1592,17 +1639,17 @@ and locked so nobody can get in, with its prompts in front of its grille.
 | Step | How | Settings (defaults) |
 |---|---|---|
 | **Inspect** | Says what's missing: two or three of fuel, a battery, a tyre, spark plugs, all different | **Min parts** 2, **Max parts** 3 |
-| **Fit parts** | Battery, tyre and spark plugs (carryable items) come from searches, **stripping** wrecks (one part each) and the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, Inspect and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
+| **Fit parts** | Battery, tyre and spark plugs (carryable items) lie in garages, come from car boots, **stripping** wrecks (one part each) and the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, Inspect and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
 | **Fuel it** | A full can, from siphoning a wreck (60% have some) or a petrol station's hand pump (10 heat). No tool needed | |
 | **Hotwire** | Long and loud: 45 s, half its heat when you start and all of it at the end. It fails about one time in three: the starter grinds, the heat is made all the same, and you try again. A Mechanic does it in 15 s and fails one time in ten | 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
-| **Or its keys** | Only a fifth of cars have keys in a house in their town, and each search there finds them one time in ten. A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
+| **Or its keys** | Only a fifth of cars have keys in a house in their town: each building rolled there holds them one time in ten, lying with its loot (picking them up is finding them). A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
 | **Start the engine** | 15 heat. The parked copy becomes the drivable car with a quarter tank, and from then on it's vanilla | |
 
 A new project turns up elsewhere six hours after one is started. Projects in a save keep the parts
 they were missing.
 
 The Car Keys job ([MISSIONS.md](MISSIONS.md#unarmed-missions)) adds one more car for as long as it
-runs: it already runs, needs only its keys (always in the one house the job names) or hotwiring,
+runs: it already runs, needs only its keys (always lying in the one house the job names) or hotwiring,
 isn't saved and doesn't count toward the replacement timer.
 
 ### Light crafting
@@ -1637,12 +1684,23 @@ None of these are saved.
 
 ### Fire
 
-A thrown molotov (25 heat) kills infected within 3 m and burns the building within 10 m. Only a
-real throw counts (the thrower's grenade-throw event names the bottle); one dropped from the
-inventory is just a bottle. Or **Set
-it alight** with a molotov or fuel. That one building burns: 30 heat, an optional fire effect, the
-town's infection −1, and for two hours nothing to search and no spawns within 30 m. Strongholds,
-outposts, safehouses, quartermasters and the lab can't burn (or be locked).
+Two ways to burn a building:
+
+- **A thrown molotov** (25 heat) kills infected within 3 m and burns the building within 10 m.
+  Only a real throw counts (the thrower's grenade-throw event names the bottle); one dropped from
+  the inventory is just a bottle, and one held in the hand gives no prompt: throw it.
+- **Fuel in your hands.** Hold a full fuel can and walk up to a building: **Douse the doorway and
+  set it alight** appears on its nearest outside door (a building with no door entities: just
+  outside the side of it nearest you). Five seconds within 3.5 m; the whole can is used up. On the
+  5 s tick the server puts one invisible prompt at the nearest building within 8 m of each player
+  holding fuel (two players at one building share it) and removes it when nobody with fuel is near.
+  The prompt shows only to players whose own hands hold fuel, and the server checks the hands
+  again when it starts and when it finishes. With **Fuel in your hands** off, a full can anywhere
+  on you will do.
+
+That one building burns: 30 heat, an optional fire effect, the town's infection −1, and for two
+hours no loot there and no spawns within 30 m. Strongholds, outposts, safehouses, quartermasters
+and the lab can't burn (or be locked), and never show the prompt.
 
 The Gas Station Fire and Burning Town events ([MISSIONS.md](MISSIONS.md#world-events)) use the
 same fire, one building at a time; nothing burns a whole town at once.
@@ -2111,7 +2169,7 @@ played under; at most 500 records are kept per list (the emptiest go first).
 Code: `Core/RZ_LooseItems.c`.
 
 Things the mode spawns for players are tracked: reward crates, dropped samples, key items, shop
-and requisition purchases, search finds, crafted items and treatments, the wind-up radio, the
+and requisition purchases, search finds, loot taken from houses, crafted items and treatments, the wind-up radio, the
 Wedding Party's jewellery and the Crashed Helicopter's wreck. One that lies untouched
 for **30 minutes** (**World > Loose item minutes**; 0 = off) with no player within 150 m is
 removed. Never removed: anything in a pack, a container or a vehicle's storage (its clock starts

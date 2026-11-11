@@ -160,11 +160,14 @@ class RZ_Mission_PharmacyLure : RZ_Mission_Delivery
 		if (!RZ_UnarmedHelper.HavenDrop(gm, s.m_vCenter, dropPos, dropName, house))
 			return false;
 
-		if (!SpawnItem(gm, m_vPharmacy) || !SpawnDrop(gm, RZ_EFaction.SURVIVORS, dropPos))
+		if (!SpawnDrop(gm, RZ_EFaction.SURVIVORS, dropPos))
 		{
 			Cleanup(gm);
 			return false;
 		}
+
+		// The medicine lies on the pharmacy's shelves, placed once someone comes near
+		PlaceInsideLater(m_vPharmacy);
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -545,11 +548,14 @@ class RZ_Mission_MedicineBeforeDark : RZ_Mission_Delivery
 
 		RZ_PuzzleObjectComponent.Tag(m_Patient, m_iId, 0, "", "");
 		RZ_ClueComponent.Tag(m_Patient, m_iId, 0, "Talk to the bitten survivor");
-		if (!SpawnItem(gm, medicine) || !SpawnDrop(gm, RZ_EFaction.SURVIVORS, LandPointNear(m_vPatient, 1, 3)))
+		if (!SpawnDrop(gm, RZ_EFaction.SURVIVORS, LandPointNear(m_vPatient, 1, 3)))
 		{
 			Cleanup(gm);
 			return false;
 		}
+
+		// The medicine lies in the pharmacy, placed once someone comes near
+		PlaceInsideLater(medicine);
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		m_sPatient = RZ_NoteText.FirstName(rng);

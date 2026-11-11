@@ -275,8 +275,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "World interactions: the interaction spot prefab, scan radius and caps, bells and sirens, water, treating other players (docs/DESIGN.md, World interactions)", category: "ReforgerZ|Interactions")]
 	protected ref RZ_InteractionSettings m_InteractionSettings;
 
-	[Attribute(desc: "Searching: loot pool and tables per building type, chances, locks and keys, readable things, bodies", category: "ReforgerZ|Interactions")]
+	[Attribute(desc: "Search: loot pool and tables per building type, chances, locks and keys, readable things, car boots and bodies", category: "ReforgerZ|Interactions")]
 	protected ref RZ_SearchSettings m_SearchSettings;
+
+	[Attribute(desc: "Loose loot in houses: spawn and despawn radius, refill minutes, items per building type, the server cap, town loot per item (docs/DESIGN.md, Loot in houses)", category: "ReforgerZ|Interactions")]
+	protected ref RZ_LootSettings m_LootSettings;
 
 	[Attribute(desc: "Fixable cars (rare), wrecks, parts, fuel, hotwiring", category: "ReforgerZ|Interactions")]
 	protected ref RZ_CarSettings m_CarSettings;
@@ -569,6 +572,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_SearchSettings)
 			m_SearchSettings = RZ_SearchSettings.Cast(RZ_Util.NewWithDefaults("RZ_SearchSettings"));
 
+		if (!m_LootSettings)
+			m_LootSettings = RZ_LootSettings.Cast(RZ_Util.NewWithDefaults("RZ_LootSettings"));
+
 		if (!m_CarSettings)
 			m_CarSettings = RZ_CarSettings.Cast(RZ_Util.NewWithDefaults("RZ_CarSettings"));
 
@@ -637,7 +643,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_FactionLife = new RZ_FactionLife(this, m_FactionLifeSettings);
 		m_LongTable = new RZ_LongTable(this, m_LongTableSettings);
 		m_Land = new RZ_Land(this, m_TribeSettings);
-		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
+		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_LootSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
 
 		// A wipe that came due last run (the wipe cycle) or one by hand is carried out now:
 		// backup, then fresh
@@ -914,6 +920,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_ContractSettings GetContractSettings() { return m_ContractSettings; }
 	RZ_EventSettings GetEventSettings() { return m_EventSettings; }
 	RZ_CarSettings GetCarSettings() { return m_CarSettings; }
+	RZ_TrapSettings GetTrapSettings() { return m_TrapSettings; }
 	RZ_SupplySettings GetSupplySettings() { return m_SupplySettings; }
 	ResourceName GetLabPrefab() { return m_sLabPrefab; }
 	float GetResearchPerSample() { return m_fResearchPerSample; }

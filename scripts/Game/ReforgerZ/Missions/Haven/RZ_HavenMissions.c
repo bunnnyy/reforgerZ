@@ -300,9 +300,10 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 }
 
 //------------------------------------------------------------------------------------------------
-//! #4 Medicine Run: bring medical supplies from a pharmacy town to a Haven
-//! safehouse. Amends: works off Haven Infamy. ★ Nurse/Doctor: bonus Fame and the
-//! exact grid of the pharmacy from the start (never the rough area).
+//! #4 Medicine Run: bring medical supplies lying in a town's pharmacy (on its shelves or floor,
+//! like loose loot; the building nearest the middle if the town has no pharmacy) to a Haven
+//! safehouse. Amends: works off Haven Infamy. ★ Nurse/Doctor: bonus Fame and the exact grid of
+//! the pharmacy from the start (never the rough area).
 class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 {
 	protected bool m_bGuarded;
@@ -374,15 +375,20 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 		if (!pharmacy)
 			return false;
 
-		m_vPos = LandPointNear(pharmacy.m_vCenter, 0, pharmacy.m_fRadius * 0.6);
-		if (!SpawnItem(gm, m_vPos))
-			return false;
+		// The supplies lie in the pharmacy, placed once someone comes near
+		array<string> kinds = {"pharmacy"};
+		RZ_Landmark shop = RZ_LandmarkFinder.FindNearest(pharmacy.m_vCenter, pharmacy.m_fRadius, kinds);
+		if (shop)
+			m_vPos = shop.m_vPos;
+		else
+			m_vPos = LandPointNear(pharmacy.m_vCenter, 0, pharmacy.m_fRadius * 0.6);
 
 		if (!SpawnDrop(gm, RZ_EFaction.SURVIVORS, dropPos))
 			return false;
 
+		PlaceInsideLater(m_vPos);
 		m_sTitle = "Medicine Run";
-		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2. Bring the supplies back.", homeName, pharmacy.m_sName);
+		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2: the supplies are on its shelves. Bring them back.", homeName, pharmacy.m_sName);
 		return true;
 	}
 

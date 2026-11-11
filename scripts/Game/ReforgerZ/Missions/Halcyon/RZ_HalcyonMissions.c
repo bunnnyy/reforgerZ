@@ -294,15 +294,12 @@ class RZ_Mission_LostColleague : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! #6 Research Data: recover a hard drive from an overrun clinic or pharmacy (or, in a town with
-//! none, where a courier fell near the middle), searching 45 s.
-//! Choice: Halcyon (research) or sell it to Bastion (Halcyon Infamy).
+//! #6 Research Data: recover a hard drive lying in an overrun clinic or pharmacy (on its shelves
+//! or floor, like loose loot), or, in a town with none, where a courier fell near the middle. It's
+//! placed once a player comes near. Choice: Halcyon (research) or sell it to Bastion (Halcyon
+//! Infamy).
 class RZ_Mission_ResearchData : RZ_Mission_Choice
 {
-	protected float m_fSearched;
-
-	protected static const float SEARCH_SECONDS = 45;
-
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -353,9 +350,12 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 		array<string> kinds = {"pharmacy"};
 		RZ_Landmark clinic = RZ_LandmarkFinder.FindNearest(s.m_vCenter, s.m_fRadius, kinds);
 		if (clinic)
-			m_vPos = RZ_Util.RandomPointInRing(clinic.m_vPos, 2, 5);
+			m_vPos = clinic.m_vPos;
 		else
 			m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
+
+		// In the clinic (a courier's: where they fell, on the ground)
+		PlaceInsideLater(m_vPos);
 
 		SpawnDrop(gm, RZ_EFaction.INSTITUTE, halcyonPos);
 		SpawnDrop(gm, RZ_EFaction.MILITARY, LandPointNear(b.m_vCenter, b.m_fRadius * 0.8, b.m_fRadius + 50));
@@ -363,29 +363,11 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 		m_fParticipationRadius = 0;
 		m_sTitle = "Research Data";
 		if (clinic)
-			m_sBrief = string.Format("There's a hard drive with Halcyon's research in %1 in %2. Search the building, then take it to the lab. Bastion's drop in %3 would pay for it too.", clinic.m_sName, s.m_sName, b.m_sName);
+			m_sBrief = string.Format("There's a hard drive with Halcyon's research somewhere in %1 in %2: a padded case, on a shelf or on the floor. Find it and take it to the lab. Bastion's drop in %3 would pay for it too.", clinic.m_sName, s.m_sName, b.m_sName);
 		else
-			m_sBrief = string.Format("A Halcyon courier went down near the middle of %1 with a hard drive of our research. Search where they fell, then take it to the lab. Bastion's drop in %2 would pay for it too.", s.m_sName, b.m_sName);
+			m_sBrief = string.Format("A Halcyon courier went down near the middle of %1 with a hard drive of our research. It's lying where they fell. Find it and take it to the lab. Bastion's drop in %2 would pay for it too.", s.m_sName, b.m_sName);
 
 		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnDeliveryTick(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
-	{
-		if (m_bItemSpawned || CountPlayersNear(players, m_vPos, 20) == 0)
-			return;
-
-		m_fSearched += dt;
-		if (m_fSearched >= SEARCH_SECONDS && SpawnItem(gm, m_vPos))
-		{
-			array<int> near = {};
-			GetPlayersNear(ids, players, m_vPos, 40, near);
-			foreach (int playerId : near)
-			{
-				gm.NotifyPlayer(playerId, m_sTitle, "Found it: the drive is under the rubbish, still in its padded case.");
-			}
-		}
 	}
 
 	//------------------------------------------------------------------------------------------------
