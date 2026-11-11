@@ -118,7 +118,7 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | # | Contract | Needs | Bg | What you do | Result | Status |
 |---|---|---|---|---|---|---|
 | 1 | Retake the Town | Any, Bastion present | ★ Police/Soldier: +25% Fame | Kill 8 × size infected in a town | Fame, infection −35 | ✅ |
-| 2 | Last Helicopter | Any, Bastion present, no storm | | Bastion's one helicopter lands at an LZ on its run between its own bases. Keep the LZ clear and be there when it lifts off | Fame, Favor | ✅ |
+| 2 | Last Helicopter | Any, Bastion present, no storm | | Bastion's one helicopter lands at an LZ on its run between its own bases. Keep the LZ clear and be there when it lifts off | Fame, Favor | ✅ *no runs while the helicopter is grounded or lost, or while [The Last Pilot](#the-last-pilot-task-force-bastion) has it; the first run after a grounding says who flies it now. Finishing it can start that questline* |
 | 3 | Burn the Bodies | Any | ★ Nurse: faster | Stand at 5 corpse piles in a town for 10 s each | Fame, infection −10 there | ✅ *the piles are the corpse pile prop (else the puzzle object); it never appears without either* |
 | 4 | Recon | Any | ★ Hunter/Radio Op: double Fame | Visit 3 observation points on high ground | Fame; Bastion shares where the next horde is forming | ✅ |
 | 5 | Checkpoint Duty | Known | ★ Police: holds faster | Hold a checkpoint at a town's edge for 10 min against waves | Fame (Red Hand Infamy) | ✅ |
@@ -128,16 +128,16 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 9 | Curfew Patrol | Known, night | ★ Police: 1.5× faster | Patrol a town at night and keep it clear | Fame | ✅ *four patrol points (15 s each) and six infected killed in town; until dawn* |
 | 10 | Weapons Cache | Trusted | | Retrieve weapons from an armory in an overrun base | Fame; Bastion gets stronger | ✅ *a barracks or police station in an overrun town if the map has one; search 30 s, carry the case to a Bastion drop* |
 | 11 | Convoy Escort | Trusted | ★ Mechanic: fixes a broken-down truck in a third of the time | Escort supply trucks between two towns | Big Fame (Red Hand Infamy if raiders came) | ✅ *Bastion's own supply truck from its stronghold to an outpost; it breaks down once halfway (30 s to fix); raiders only with the Red Hand group prefab; paid for staying with it 40% of the way. Needs supply trucks* |
-| 12 | Rescue the Pilot | Trusted | ★ Nurse/Doctor: patches him up, no clock | Find a downed pilot and bring them out | Fame | ✅ *he follows you to a Bastion seat; 20 min before he bleeds out* |
+| 12 | Rescue the Pilot | Trusted, Bastion present | ★ Nurse/Doctor: patches him up, no clock | The last helicopter put down hard. Find its pilot and bring him out | Fame | ✅ *he follows you to a Bastion seat; 20 min before he bleeds out. Not while the helicopter is grounded or lost, or while [The Last Pilot](#the-last-pilot-task-force-bastion) runs. If he dies, the helicopter is grounded for 2 real hours until a new pilot is found, and if The Last Pilot hasn't run yet, it never will: he was its pilot* |
 | 13 | Quarantine Line | Trusted | | Hold the edge of an infested town for 10 min | Fame; the town stops spreading for 30 min | ✅ |
-| 14 | Clear the Airfield | Trusted | | Clear an airfield so the Last Helicopter can land there | Fame; the Last Helicopter runs twice as often for 2 hours | ✅ *a flat field outside a town, not a real airfield; it doesn't land there* |
+| 14 | Clear the Airfield | Trusted | | Clear an airfield so the Last Helicopter can land there | Fame; the Last Helicopter runs twice as often for 2 hours | ✅ *a flat field outside a town, not a real airfield; it doesn't land there. Not while the helicopter is grounded or lost; finishing it can start [The Last Pilot](#the-last-pilot-task-force-bastion)* |
 | 15 | Raid the Red Hand | Trusted, not Trusted by the Red Hand | 🔒 not Ex-Con/Raider unless Champion with Bastion | Assault a Red Hand camp | Big Fame, a reward crate (big Red Hand Infamy) | ✅ *two Red Hand groups; every member has to die* |
 | 16 | Hunt the Deserter | Trusted | | Track down a deserter who stole supplies. Bring him back or kill him | Fame; killed = 60% | ✅ *a two-step trail (his pack, his fire) to his hideout; arrested, he follows you to a Bastion seat* |
-| 17 | Requisition | Trusted | 🔒 not Elder | "Collect" supplies from a Haven safehouse. Deliver them to Bastion, or give them back | To Bastion: Fame (Haven Infamy), the safehouse loses 4 food. Back: Bastion Infamy | ✅ *giving them back means carrying them to another safehouse 0.8–5 km away (a quiet town when there's none)* |
+| 17 | Requisition | Trusted | 🔒 not Elder | "Collect" supplies from a Haven safehouse. Deliver them to Bastion, or give them back | To Bastion: Fame (Haven Infamy), the safehouse loses 4 food. Back: Bastion Infamy | ✅ *giving them back means carrying them to another safehouse 0.8–5 km away (a quiet town when there's none). The town: a house that refused [The Census](#the-census-task-force-bastion) first (and ×1.2 as often after a refusal), else the safest free town whose nearest safehouse isn't spared (the chair's after [Await Relief](#await-relief-task-force-bastion)'s Haven ending; houses The Census read low)* |
 | 18 | Secure the Shipment | Champion | | Escort a Halcyon sample shipment | **Choice:** Bastion Fame (Halcyon Infamy) or let it reach the lab (Halcyon Fame, research) | ✅ *a courier on foot; divert her by talking to her* |
 | 19 | Blow the Bridge | Champion | ★ Mechanic/Soldier: two charges, not three | Plant charges to stop a horde heading for a safe town | Fame; the horde turns back. Killed to the last instead: paid all the same. It arrives: +10 infection there | ✅ *no real bridge: a choke point on its way; the horde is data until a player is within 600 m; each charge spot is a puzzle object (stand by it 10 s), listed by grid; the clock covers the horde's whole walk* |
 | 20 | Fire Mission | Champion | | Mark three hordes with smoke for artillery | Fame | ✅ *10 s within 80 m marks one; 30 s later the strike kills it outright* |
-| 21 | No Reply | Known | ★ Radio Op: takes the second bearing on their own set, anywhere 400 m+ from the post; 1.25× Fame | A post's radio operator heard an answer on the Command net after the nightly call, and it comes back every hour. He gives a bearing from the post; take a second at a relay mast, draw both lines, find the source where they cross, then tell him what goes in the log | **Choice:** *"No reply"*: paid. What you found: 1.25× Fame, Bastion morale −4. *"Command answered"*: morale +6, 60% pay; 35% the stronghold asks for the transcript: no pay, +10 Bastion Infamy for whoever chose it | ✅ *the post is an outpost commander's seat (else a territory outpost, else the stronghold); never runs without one. The source is one of three, at random: a tape of Day 1 traffic on a timer, a Bastion set someone inside the Zone was keying (gone when you arrive), or nothing at all. It is never Command and never anyone outside; who did it is never said. The operator is the puzzle civilian, the mast the radio mast, the source the puzzle object (the table radio from guidance stands by the operator if set)* |
+| 21 | No Reply | Known | ★ Radio Op: takes the second bearing on their own set, anywhere 400 m+ from the post; 1.25× Fame | A post's radio operator heard an answer on the Command net after the nightly call, and it comes back every hour. He gives a bearing from the post; take a second at a relay mast, draw both lines, find the source where they cross, then tell him what goes in the log | **Choice:** *"No reply"*: paid. What you found: 1.25× Fame, Bastion morale −4. *"Command answered"*: morale +6, 60% pay; 35% the stronghold asks for the transcript: no pay, +10 Bastion Infamy for whoever chose it | ✅ *the post is an outpost commander's seat (else a territory outpost, else the stronghold); never runs without one. The source is one of three, at random: a tape of Day 1 traffic on a timer, a Bastion set someone inside the Zone was keying (gone when you arrive), or nothing at all. It is never Command and never anyone outside; who did it is never said. The operator is the puzzle civilian, the mast the radio mast, the source the puzzle object (the table radio from guidance stands by the operator if set). The tape at an Independent commander's post leads into the [Await Relief](#await-relief-task-force-bastion) questline when it can start: the reel also carries a broken burst after the voice, and the operator says so as the log is written. Never at the post of a running Await Relief* |
 | 22 | Struck Off | Trusted | | A soldier written up as killed in action is alive. A Haven trader in a nearby town saw him (or ask the Deserter wanderer about Bastion: he knows where he sleeps). Find him and decide | **Choice:** back on the roster (walk him to the post): 80%, Bastion morale +3, strength +1. Arrest him (walk him to the post): Fame. The Haven (walk him to a safehouse, +1 there): the Haven pays instead (12 Fame, 15 Favor), 25% Bastion hears of it (+15 Infamy). Bastion's way: carry his tag to the empty nail at the post: 60% | ✅ *he is an escort (Contracts > Escort soldier); the choices are on his kit (the puzzle object) and on him; dead any other way, his tag drops where he fell and the nail pays 60%. The tag is the mission item. Needs a safehouse and a Bastion post; never runs while Hunt the Deserter does* |
 
 **Amends:** Burn the Bodies and Recon work off Bastion Infamy while you're Watched. So do
@@ -365,7 +365,7 @@ Personal jobs that Independent and Rogue leaders give **in person**, off their s
 | 7 | Shut the Door | Haven, Rogue | A family at the edge of town asks to come in. Turn them away | Turned away: paid. Let in: +3 people, no pay | ✅ |
 | 8 | Hidden Stores | Haven, Rogue | Move the council head's hidden stash before the count (20 min) | Paid. Fail it: the leader is discovered. Turn it in: +5 food | ✅ |
 | 9 | Hearts and Minds | Bastion, Independent | Rations to a Haven safehouse, against orders | +4 food; Haven Fame +4 | ✅ |
-| 10 | The Real Orders | Bastion, Independent | Recover command's last orders from a dead courier (guarded) | To the commander or to the stronghold, with different loyalty effects | ✅ |
+| 10 | The Real Orders | Bastion, Independent | Recover command's last orders from a dead courier (guarded) | To the commander or to the stronghold, with different loyalty effects | ✅ *not while the [Await Relief](#await-relief-task-force-bastion) questline follows the Day 3 runner* |
 | 11 | Training Day | Bastion, Independent | Stand with raw recruits at a town's edge for 4 min (3 waves) | Paid | ✅ *recruits are real only with the survivor group prefab; they turn up when a player is within 300 m. All of them killed: fails* |
 | 12 | Local Law | Bastion, Independent | Two families fight over a well. Hear both, then decide | Split: full pay. One side: 80%, the other leaves | ✅ |
 | 13 | Rifles for Sale | Bastion, Rogue | Army rifles to a Red Hand buyer | Red Hand Fame +4 | ✅ |
@@ -446,6 +446,102 @@ all picked at the start. Code: `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c
 
 *Simplified:* the storekeeper, the runner and the crate are standing props with talk, choice and
 use actions; only the optional lookouts are AI. The sick girl is in the text, not in the world.
+
+### Await Relief (Task Force Bastion)
+
+Five stages, four branches, four endings ([QUESTLINES.md](QUESTLINES.md#b1-await-relief), B1). Needs
+an Independent Bastion outpost commander, Bastion's stronghold leader (the commanding officer), the
+note, a person to talk to (Puzzles > Civilian, or the generic object) and the mission item (the
+page, the crate). Not after the cure. It starts on the usual schedule with any Independent
+commander (the one R1's `book.bastion` names, if he's still in the chair), or straight from No
+Reply's tape at that contract's post. Text keys: the commander, his post, his operator, the runner,
+the commanding officer and the stronghold. Code: `Missions/Questlines/Bastion/RZ_Quest_AwaitRelief.c`,
+which also holds what the three Bastion lines share.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **The operator's tape** | Bastion contract, Known, in person from the commander (word reaches Bastion's Known players: he wants a word, not on the radio), only after the nightly call (at night); ★ Radio Op; 50 min; 12 Fame, 15 Favor | At the post: *talk* to the operator and take his tape, or *sneak*: copy it onto your own set while he isn't looking (a radio on you; no shots within 60 m and not noticed; seen, you take it openly). On the hill 0.7–1.6 km away (the radio mast, else the generic object): play it into the relay and stay within 30 m for 3 min (heat; a horde after the first minute; ★ Radio Op: twice as fast). The relay's log names the runner | Stage 2. Time up: once more; then, or with the commander gone, it fizzles | ✅ |
+| 2 | **The runner** | Bastion contract, Known, in the commander's voice (nobody's once he's gone); 60 min; 15 Fame, 15 Favor | A step chain through three towns 0.7–2.5 km apart: his satchel, his fire (2 infected), his body (5 infected, one a special). Reading the page on him ends it | Stage 3. Time up: once more | ✅ |
+| 3 | **Who reads it** | Bastion contract, Known; 60 min; 10 Fame, 10 Favor | The page (the mission item) is on the body. *Talk:* to the duty officer at the stronghold (Trusted, or ★ Soldier): the stove, +8 Bastion Fame and 30 Favor on top; or to the commander, held for the stage and standing in at his post: he reads it to his men. *Side with the Red Hand:* a crew boss's radio man at the nearest Red Hand seat within 6 km (else a Red Hand meeting point; not if the Red Hand is hostile to you): +5 Red Hand Fame, 40 Red Hand Favor, +8 Bastion Infamy, no pay. *Side with the Haven:* the chair's clerk at the Haven stronghold: +5 Haven Fame, no pay | Stage 4 on that branch (`orders.stove`, `.read`, `.mocked`, `.haven`). Lost or time up: once more | ✅ |
+| 4 | **Word gets round** | Wait | 2 hours of play or 12 real hours. Read: a headline, two men walked off the post. Open channel: a headline, "expended" on the open channel every hour | Stage 5. The commander gone (read), or no copy of the tape (stove): the ending at once | ✅ |
+| 5 | **The reckoning** | Bastion contract, Known, from the commanding officer (the Haven's branch: from the commander) | *Read* (★ Soldier): the commander is held and stands at his post as an escort, the squad's sergeant beside him; the Bastion squad prefab is the squad, if set. *Force:* kill the squad (+15 Bastion Infamy each; no pay). *Talk:* take him in yourself: he walks with you to the stronghold (killed on the way, the commander dies). *Persuade:* talk the commanding officer down on the sergeant's radio (difficulty 3: Champion, or Trusted and ★ Soldier). Stand aside (half pay), or nobody comes: they take him. *Open channel:* the operator hides outside a town 1–3 km away: bring him in (paid), or *side with the Haven*: walk him to a safehouse (+1 person, +5 Haven Fame, no pay). *Stove*, only if someone copied the tape: whoever did can give the copy to the commander, a crew or the chair (no pay), or the stove too. *The Haven:* a ration crate from the commander's post (else the stronghold) to the chair's clerk: +4 food at her house | The ending: the branch's, or the copy's | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **Into the stove** | Stove | Everyone who took part: +10 Bastion Fame, and the commanding officer remembers them as having helped. Bastion morale +5; the commander who sent you is relieved and replaced (a headline); a rumour (8 hours) | ✅ |
+| **The men were told** | Read, or the copy to the commander | Everyone: +8 Bastion Fame; the two who walked off join the nearest safehouse (+2 people; everyone +8 Haven Fame). Bastion morale −8. Fought for: the commander turns Rogue (Independent if another Bastion leader already is) and keeps his post, the usual Rein In follows, and whoever fought takes +5 more Bastion Infamy. Talked down: loyalty +25. Arrested, taken or the copy read: relieved and replaced | ✅ |
+| **On the open channel** | Open channel, or the copy to a crew | Whoever sided with the Red Hand: +10 Red Hand Fame, +12 Bastion Infamy. Bastion morale −10; a Bastion–Red Hand feud, under the usual rules; a rumour (12 hours) | ✅ |
+| **The Haven's leverage** | The Haven, or the copy to the chair | Everyone: +10 Haven Fame, +5 Bastion Fame. Haven morale +5; Requisition never comes to the chair's safehouse this season, nor The Census's contribution (`orders.haven`); a rumour (10 hours) | ✅ |
+
+*Simplified:* the tape is the operator's word, not an inventory item. The duty officer, the
+commander, the radio man, the clerk and the operator are standing props; only the squad and the
+escorts are AI. A relieved commander's successor gets a loyalty like any replacement, not always
+Loyal. The two who walk off join a safehouse rather than becoming Deserter wanderers. Bastion's
+open channel isn't silenced: that's a headline and a rumour. While it runs, The Real Orders isn't
+offered and No Reply picks another post than its commander's.
+
+### The Census (Task Force Bastion)
+
+The six designed stages (six contracts and a wait), a start that can skip ahead, and four endings
+([QUESTLINES.md](QUESTLINES.md#b2-the-census), B2). The commanding officer's contracts, starting
+while Bastion needs supplies or security (any time with faction life off). Needs Bastion's
+stronghold leader, two safehouses, a person to talk to and the mission item (the crates, the sack).
+Not after the cure. Two houses carry the line: the first counted (a random one with 2+ people, or
+the one H2 put on Bastion's census: `door.bastion`, read as its index + 1) and the nearest other.
+Text keys: the two towns, the commanding officer, the stronghold, the store. Code:
+`Missions/Questlines/Bastion/RZ_Quest_Census.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 0 | **The commanding officer's count** | No wait | — | Stage 1; with H1's `list.to_bastion`, stage 3 (both houses counted already) | ✅ |
+| 1 | **Count a safehouse** | Bastion contract, Known, ★ Police; 40 min; 10 Fame, 10 Favor | At the first house: *talk*: ask the council head for an honest count (Known with the Haven; a house on Bastion's census hands over its own list). *Sneak*: 45 s at a watch point 70–110 m out, then write it down; noticed (or a shot within 140 m): +3 Haven Infamy and no count. ★ Police: exact; otherwise a person or two out | Stage 2 (`census.counted`). Time up: once more | ✅ |
+| 2 | **Ration cards** | Bastion contract, Known; 60 min; 12 Fame, 12 Favor | Two crates (the mission item) at the Bastion seat nearest the first house, one to each house's storekeeper: +2 food each. *Betray*: skim one at the store (15 Bastion Favor; 25% the quartermaster notices, +10 Bastion Infamy; one house goes without). *Talk*: give 1–2 food items from your own pack at a house (+1 food there, +3 Haven Fame, once per player) | Stage 3. Twice lost: stage 3 without the rations | ✅ |
+| 3 | **The curfew** | Bastion contract, Known, at night (from 10 min before), until dawn; ★ Police: 1.5× faster | Four patrol points in the first house's town, 15 s each. At the notice: *force*: enforce it (+3 Haven Infamy each), or *talk*: patrol gently (★ Police, or Known with the Haven; half pay). At the edge of town: *betray*: let a Red Hand toll in for the night (Known with the Red Hand; +6 Red Hand Fame; no pay): the crew (with the Red Hand group prefab) holds the road until dawn and fights strangers within 80 m | Stage 4 (the second house if the first is the chair's after `orders.haven`, or empty; neither: stage 5). Unwalked: once more the next night | ✅ |
+| 4 | **The contribution** | Bastion contract, Known, 🔒 not Elder; 50 min; 12 Fame, 15 Favor | At the house's storekeeper: collect four food (the house −4 at once) and carry the sack to Bastion's clerk at the nearest Bastion seat (paid), or *side with the Haven*: to the other house's storekeeper (+4 food there, +4 Haven Fame, +5 Bastion Infamy, no pay). *Bribe*: pay it yourself (15 Bastion Favor). *Betray*: falsify the ledger (Trusted, or ★ Police) | Stage 5 | ✅ |
+| 5 | **The Red Hand hears**, then **the raid** | Wait (90 min of play or 12 real hours), then a Bastion contract, Known; 30 min; 15 Fame, 15 Favor | Only with the Red Hand group prefab, at the counted house with the fuller stores. The crew appears 250–350 m out when someone comes within 400 m, and walks in after 45 s (it spares Red Hand friends). *Force*: kill it (+5 Red Hand Infamy). *Side with the Red Hand*: hold the stores for them, 90 s within 20 m (Known with the Red Hand; +5 Red Hand Fame, 30 Red Hand Favor, +5 Bastion Infamy; no pay). Nobody stops them: 90 s of loading. Raided: the house −3 food | Sided: the Red Hand's count. Otherwise stage 6; no prefab: straight to stage 6 | ✅ |
+| 6 | **The nightly call** | Bastion contract, Known, offered from 19:00, until 22:30 | At the radio by the commanding officer's seat (the generic object, with the table radio from guidance if set), 20:30 to 22:30: read the count *as it is* (+5 Bastion Fame and 30 Favor on top), *high* or *low* (betray: 25% found out, and then no pay), or *side with the Haven*: tear it up (+5 Haven Fame, no pay). A falsified ledger is found out here 25% of the time: the house pays its 4 food after all, and the falsifier (if online) takes +10 Bastion Infamy. Command doesn't answer | The ending. Nobody at the radio: once more | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **Counted** | As it is | Everyone who took part: +10 Bastion Fame, +5 Haven Infamy. Both houses +2 food; Haven morale −5. Headline: "Bastion read [the number] names to Command last night. No reply." A rumour (8 hours) | ✅ |
+| **Forged** | High or low | Everyone: +10 Haven Fame, and +10 Bastion Fame (found out: +15 Bastion Infamy instead). High: both houses +2 food. Low: Requisition never comes to them this season (`census.spared`) | ✅ |
+| **Refused** | Torn up | Everyone: +10 Haven Fame, +10 Bastion Infamy. Requisition comes to those houses first, and ×1.2 as often (`census.pressed`); `census.refused` | ✅ |
+| **The Red Hand's count** | Sided with the raid | Whoever sided: +10 Red Hand Fame, +15 Bastion Infamy, +10 Haven Infamy. Red Hand strength +3; a headline | ✅ |
+
+*Simplified:* the people (council heads, storekeepers, the clerk, the toll-man) are standing props;
+only the toll crew and the raiders are AI. Counted houses get their food at once, not off a truck.
+"Civilians sheltered" is the people in the two counted houses.
+
+### The Last Pilot (Task Force Bastion)
+
+Five stages, four branches, four endings ([QUESTLINES.md](QUESTLINES.md#b3-the-last-pilot), B3). It
+starts when someone finishes Last Helicopter or Clear the Airfield (at once if Bastion's questline
+slot is free). Needs Bastion still flying (stage presence 0.2 or more), its stronghold leader, the
+Perimeter with a spot for the wreck, a person to talk to and the mission item (the black box, the
+Red Hand's fuel). Not after the cure, not while a Last Helicopter is out or Rescue the Pilot runs,
+and never once its pilot has died. The pad is 120–350 m from Bastion's stronghold seat. Text keys:
+the pilot, his Day 3 friend, the commanding officer, the stronghold, the far LZ. Code:
+`Missions/Questlines/Bastion/RZ_Quest_LastPilot.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **Fuel** | Bastion contract, Known, ★ Mechanic; 50 min; 10 Fame, 10 Favor | At the pad, the pilot and the fuel point: pour in two jerrycans (a Mechanic finds the leak: one). At a Red Hand depot by their nearest seat within 5 km (the fuel depot prefab as its look, if set): *sneak*: siphon it (unseen: no shots within 80 m, not noticed; seen: +8 Red Hand Infamy) and carry it back to the pad; *bribe*: buy it from the fence (25 Red Hand Favor; the crew delivers it, and the boss hears Bastion is buying) | Stage 2. Time up: once more | ✅ |
+| 2 | **Whose flight** | Bastion contract, Known, no storm; 12 min; 15 Fame, 15 Favor | Lift-off in 12 minutes; it lands 3 minutes before (a horde, then heat). *Talk*: choose the load at the pilot (the first choice stands): Halcyon's samples (+6 Halcyon Fame for you, research +1), the Haven's wounded (+6 Haven Fame, +2 people at the nearest safehouse) or Bastion's ammunition (+6 Bastion Fame, Bastion strength +2). Nobody chose: ammunition. Be within 40 m at lift-off. Fuel bought from the Red Hand: a Red Hand crew comes up the road as it lands (with the group prefab) | Stage 3 (`pilot.flew_for`, `pilot.samples`). Nobody at the LZ: once more | ✅ |
+| 3 | **His friend's wreck** | Bastion contract, Known, ★ Mechanic, ★ Radio Op; 60 min; 15 Fame, 15 Favor | The Day 3 wreck in the warning zone, 30–60 m short of the kill zone and 500 m from any road checkpoint (the helicopter wreck prefab, else the generic object; 3 infected). Stay within 25 m for 60 s (★ Mechanic: twice as fast) and the black box (the mission item) comes out; a ★ Radio Operator there plays it. Carry it to the pilot: if it was played, he hears it | Stage 4. Time up or lost: once more | ✅ |
+| 4 | **He decides** | Bastion contract, Known, ★ Soldier; 60 min; 10 Fame, 10 Favor | At the pad: *persuade*: talk him down (difficulty 2, 1 if he heard the box; ★ Soldier +1): +10 Bastion Fame and 30 Favor on top; or *betray*: help him, two jerrycans (★ Mechanic: one) to a far LZ past the warning zone, at least 1.2 km from the pad (only if the map has one; no pay). At the stronghold: *talk*: report him to the duty officer. At the nearest Red Hand seat: *side with the Red Hand*: sell the plan to a fixer (Trusted with the Red Hand; +5 Red Hand Fame, 40 Red Hand Favor, +10 Bastion Infamy; no pay) | Stage 5 on that branch. Nobody decides: once more, then Grounded | ✅ |
+| 5 | **The last of it** | By branch | *Stays*: one more 12-minute run from the pad, kept clear (paid). *Grounded*: walk him from the pad to the stronghold (an escort; paid). *The line*: keep the far LZ clear for its 12 minutes while he lifts off (no pay). *The Red Hand*: a Red Hand contract (Known with the Red Hand; 10 Fame, 10 Favor): keep watch within 25 m of the pad for 90 s while a crew (the group prefab, if set; it spares friends) does the rest; a dead crew can't burn it | The ending. Stays, unkept twice: He stays anyway. The line, unkept: Grounded. The Red Hand, failed twice: it fizzles | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **He stays** | Stays | Everyone who took part: +10 Bastion Fame. Bastion morale +5; after the extra run, Last Helicopter runs twice as often for 2 hours (as Clear the Airfield); a rumour (8 hours) | ✅ |
+| **Grounded** | Grounded, or the line unkept | Everyone: +10 Bastion Fame. No Last Helicopter, Clear the Airfield or Rescue the Pilot for 2 real hours (`pilot.down_until`); the next Last Helicopter names the new pilot | ✅ |
+| **He flew for the line** | The line | Nothing. No helicopter for 2 real days, until Bastion's mechanics patch up a grounded airframe; Bastion morale −10; a Crashed Helicopter world event (with the wreck prefab) in the warning zone nearest the far LZ. Headline: "Bastion's last pilot flew for the line [at dawn]. The line shot him down short of it, like the one before." | ✅ |
+| **Burnt for the Red Hand** | The Red Hand | Whoever sided: +10 Red Hand Fame, +15 Bastion Infamy. No helicopter for 2 real days; Bastion morale −10, Red Hand morale +5; a Bastion–Red Hand feud; a headline | ✅ |
+
+*Simplified:* there's no helicopter prop, as in Last Helicopter; the pilot, the duty officer, the
+fence and the fixer are standing props. The groundings count real time times **Wait scale**, and
+"twice as often" isn't saved across a restart. Last Helicopter waits while the story has the
+helicopter (fuel, its flight, the last of it); Rescue the Pilot waits while the questline runs.
 
 ## Backgrounds at a glance
 

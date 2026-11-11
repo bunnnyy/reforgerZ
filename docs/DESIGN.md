@@ -841,7 +841,9 @@ example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
    **Crossings between questlines** use season-wide world flags on the manager:
    `gm.GetQuestlines().WorldFlag("key.flag")`, `SetWorldFlag`, `HasWorldFlag`, named
    `<questline key>.<flag>`. Every ending sets `<key>.ending` by itself. They're saved and wiped
-   with the season.
+   with the season. Ordinary contracts can read them too (Last Helicopter stays grounded by The
+   Last Pilot's), and a contract can lead into a questline with `GetQuestlines().TryBegin(key)`,
+   which starts it only if the usual limits allow (No Reply's tape starts Await Relief).
 4. **MakeMission(gm, run, stage)**: `return new RZ_QM_MyStage();`. The engine sets its
    `m_iQuestRun`, runs `Configure`, checks the world and starts it.
 5. **The stage mission** extends `RZ_QuestMission` (a puzzle mission that is never picked at

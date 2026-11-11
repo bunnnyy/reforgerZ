@@ -17,7 +17,7 @@ missions the stages reuse are in [MISSIONS.md](MISSIONS.md).
 | H1 | [The List](#h1-the-list) | Haven | Known; Trusted by the end | 6 stages, 3–5 sessions | B2, R2, C1 |
 | H2 | [The Price of the Door](#h2-the-price-of-the-door) | Haven or Red Hand | Known with either | 5 stages, 3–4 sessions | R1, R2, R3, B2, C1 |
 | H3 | [The Edge of Town](#h3-the-edge-of-town) | Haven | Known | 5 stages, 3–5 sessions | HC1, HC2, R1 |
-| B1 | [No Reply](#b1-no-reply) | Bastion | Known; Trusted for the stove | 5 stages, 3–5 sessions | R1, B2, H2 |
+| B1 | [Await Relief](#b1-await-relief) | Bastion | Known; Trusted for the stove | 5 stages, 3–5 sessions | R1, B2, H2 |
 | B2 | [The Census](#b2-the-census) | Bastion | Known | 6 stages, 4–6 sessions | H1, H2, R3 |
 | B3 | [The Last Pilot](#b3-the-last-pilot) | Bastion | Known; Trusted to talk him down | 5 stages, 3–5 sessions | HC3, R1 |
 | R1 | [The Book](#r1-the-book) | Red Hand | Known; Trusted to return it | 5 stages, 3–5 sessions | H2, H3, B1 |
@@ -198,24 +198,30 @@ it needs Trusted with the Haven.
 
 ## Task Force Bastion
 
-### B1. No Reply
+### B1. Await Relief
 
-Every night the operator reads the numbers to Command and writes "No reply". At one outpost the
-operator wrote something else, then crossed it out. He swears he heard an answer. His commander
-wants it dealt with before the stronghold hears about it. The truth is smaller and worse. The
-relay on the hill still rebroadcasts the Day 3 signal on a loop: the one too broken for voice,
-that a runner set off with and never delivered. The runner is still out there, and so is the
-decoded page in his pocket.
+✅ Built ([MISSIONS.md](MISSIONS.md#await-relief-task-force-bastion)); the changes from this design
+are listed under its endings.
+
+Every night the operator reads the numbers to Command and writes "No reply". Some posts chase a
+voice on the hour (the No Reply contract). At one outpost the operator heard something else after
+the call: a long burst, too broken for voice. He wrote "Reply received", then crossed it out, four
+nights running. His commander wants it dealt with before the stronghold hears about it. The truth
+is smaller and worse. The relay on the hill still rebroadcasts the Day 3 signal on a loop, because
+nobody ever acknowledged it: the signal a runner set off with, decoded by hand, and never
+delivered. The runner is still out there, and so is the decoded page in his pocket.
 
 Command never answers. The "reply" is Bastion's own Day 3 signal, coming back.
 
 **Needs:** Known with Bastion; Trusted (or ★ Soldier) to take the page to the commanding officer.
 ★ Radio Op, ★ Soldier.
-**Starts:** an Independent outpost commander, in person, after the nightly call (20:30).
+**Starts:** an Independent outpost commander, in person, after the nightly call (20:30). Or the
+No Reply contract, when its source is the tape: the reel carries the burst after the voice, and
+the line starts at that post.
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
-| 1 | **The operator's tape** | Take it to the relay on high ground and keep the relay running 3 min while it's compared (a horde after the first minute). ★ Radio Op: hears it's a loop at once (half the hold). **Sneak**: copy the tape rather than take it (`noreply.copy` *(you)*) | Radio Relay |
+| 1 | **The operator's tape** | Take it to the relay on high ground and keep the relay running 3 min while it's compared (a horde after the first minute). ★ Radio Op: hears it's a loop at once (half the hold). **Sneak**: copy the tape rather than take it (`orders.copy` *(you)*) | Radio Relay |
 | 2 | **The runner** | The relay's log gives the hour. Follow his trail across three towns (his pack, his fire, his body), past turned soldiers at the last. His page is water-stained, legible in parts: *"...hold the line... no relief will... authorised to... expended."* | Step chain (Hunt the Deserter's trail); Missing Patrol |
 | 3 | **Who reads it** | **To the commanding officer** (Trusted, or ★ Soldier): it goes in the stove (`orders.stove`). **To the commander** who sent you: he reads it to his men at the shift change (`orders.read`). **Side with the Red Hand**: a crew boss reads it on the open channel, for 40 Red Hand Favor (`orders.mocked`). **Side with the Haven**: the council chair keeps it, as proof of what Bastion was told (`orders.haven`) | Delivery |
 | 4 | **Wait** | One session. Read: two men walk off the post. Mocked: Bastion's open channel is silent for a night while the Red Hand laughs every hour. Stove: the operator is moved to the stronghold. The Haven: the chair says nothing, yet | Wait |
@@ -228,7 +234,29 @@ Command never answers. The "reply" is Bastion's own Day 3 signal, coming back.
 | **On the open channel** | Red Hand Fame +15, 40 Red Hand Favor; Bastion Infamy +20 | Bastion morale −10; a Bastion–Red Hand feud starts; `orders.mocked` |
 | **The Haven's leverage** | Haven Fame +15, Bastion Fame +5 | Bastion's Requisition never picks the chair's safehouse this season; Haven morale +5 |
 
+**Built, with these changes** (key `orders`; the numbers are in [MISSIONS.md](MISSIONS.md#await-relief-task-force-bastion)):
+
+- Renamed from "No Reply", the contract that now leads into it. The burst isn't the voice that
+  contract chases; when its source is the tape, the line starts at that post.
+- With R1's `book.bastion` (read as the Bastion commander's leader id), that commander is the one,
+  if he's Independent and still in the chair.
+- The copy is a record of who sneaked it, by identity rather than by life. Copying needs a radio
+  on you and nobody noticing you at the post.
+- The people are standing stand-ins: the commanding officer's duty officer, the commander himself
+  (his own body is held for the stage), a crew boss's radio man, the chair's clerk. Only the
+  squad and the people you walk somewhere are AI. The "turned soldiers" are the stage's infected.
+- Into the stove: the commander is replaced like any replacement, so his successor isn't always Loyal.
+- The men were told: the two who walked off join the nearest safehouse instead of becoming
+  Deserter wanderers.
+- On the open channel: Bastion's channel isn't silenced. It's a headline and a rumour.
+- Standing is split between the choice and the ending, within the engine's caps.
+- While it runs, The Real Orders (the same lost orders, as a leader job) isn't offered, and No
+  Reply picks another post.
+
 ### B2. The Census
+
+✅ Built ([MISSIONS.md](MISSIONS.md#the-census-task-force-bastion)); the changes from this design
+are listed under its endings.
 
 The nightly call reads "civilians sheltered" to Command, and the numbers have to add up when
 relief comes. The commanding officer wants a real count: every safehouse, every name, for ration
@@ -256,7 +284,29 @@ With `list.to_bastion` it starts at stage 3: the count is done.
 | **Refused** | Haven Fame +15; Bastion Infamy +10 | Requisition picks those houses more often (×1.2); `census.refused` |
 | **The Red Hand's count** | Red Hand Fame +15, 30 Red Hand Favor; Bastion Infamy +15, Haven Infamy +10 | The raided house −3 food; Red Hand strength +3 |
 
+**Built, with these changes** (key `census`; the numbers are in [MISSIONS.md](MISSIONS.md#the-census-task-force-bastion)):
+
+- Two houses carry the whole line: the one counted at stage 1 and the nearest other house (its
+  ration cards put it on the books). The contribution and the raid come from those two.
+- `door.bastion` (H2) is read as that safehouse's index + 1: it's the first house, and it counts itself.
+- With `list.to_bastion` (H1) the line starts at the curfew: stages 1 and 2 are skipped.
+- Counting from outside is 45 s at a watch point 70–110 m out, then writing it down. Without
+  ★ Police it's a person or two out.
+- The Red Hand toll holds the town's edge until dawn (a real crew only with the Red Hand group
+  prefab), and the curfew stage ends then.
+- The raid needs the Red Hand group prefab; without it the Red Hand hears, but nobody comes.
+- "Refused" is reached by tearing up the count at the nightly call.
+- Counted: the houses get their +2 food at once, not off a truck. The headline's number is the
+  people in the two counted houses.
+- A falsified ledger found out at the call: the house pays its 4 food after all, and whoever
+  falsified it takes +10 Bastion Infamy if they're online.
+- Requisition reads the line's flags: never a spared house (`census.spared`, and the chair's after
+  B1's `orders.haven`), refused houses first and ×1.2 as often (`census.pressed`).
+
 ### B3. The Last Pilot
+
+✅ Built ([MISSIONS.md](MISSIONS.md#the-last-pilot-task-force-bastion)); the changes from this
+design are listed under its endings.
 
 Of the helicopters Bastion came in with, only one still flies, and only one pilot is left who can
 fly it. Everyone wants a flight: Halcyon for a sample run, the Haven for its wounded, the Red Hand
@@ -282,6 +332,27 @@ people what it looks like from the ground.
 | **Grounded** | Bastion Fame +10 | No Last Helicopter for 2 real hours, until a new pilot (a named person) is found |
 | **He flew for the line** | Nothing | No Last Helicopter for 2 real days, until Bastion's mechanics patch up a grounded airframe; Bastion morale −10; a Crashed Helicopter event at the edge of the warning zone. Headline: *"Bastion's last pilot flew for the line at dawn. The line shot him down short of it, like the one before."* |
 | **Burnt for the Red Hand** | Red Hand Fame +15, 40 Red Hand Favor; Bastion Infamy +25 | No Last Helicopter for 2 real days; Bastion morale −10, Red Hand morale +5; a Bastion–Red Hand feud |
+
+**Built, with these changes** (key `pilot`; the numbers are in [MISSIONS.md](MISSIONS.md#the-last-pilot-task-force-bastion)):
+
+- It starts as soon as someone finishes Last Helicopter or Clear the Airfield, if Bastion's
+  questline slot is free (later otherwise). It needs the Perimeter (the wreck is at the line), and
+  never starts if its pilot already died in Rescue the Pilot.
+- There's no helicopter prop, as in Last Helicopter: the pad is by Bastion's stronghold, the pilot
+  is a person and the fuel points are puzzle objects. The Red Hand's depot sits by its nearest
+  seat (the fuel depot prefab is only its look).
+- The siphoned fuel is carried back to the pad. ★ Mechanic: one jerrycan is enough.
+- Nobody chose a load: ammunition, as ordered. Fuel bought from the Red Hand brings a crew to look
+  at the flight (with the Red Hand group prefab).
+- A ★ Radio Operator at the wreck plays the box when it comes out; then he hears it at the hand-over.
+- "Help him" needs a far LZ on the map: past the warning zone, at least 1.2 km from the pad.
+  Nobody deciding, twice: he's grounded anyway. Nobody holding the far LZ: he's grounded.
+- Keeping watch for the Red Hand is a Red Hand contract. A dead crew can't burn anything.
+- The groundings are world flags in real time (times **Wait scale**): no Last Helicopter, Clear
+  the Airfield or Rescue the Pilot until then, and the first Last Helicopter after says who flies
+  it now. Last Helicopter also waits while the story has the helicopter (stages 1, 2 and 5), and
+  Rescue the Pilot while the line runs. Losing Rescue the Pilot's pilot grounds it for 2 real hours.
+- "Twice as often" isn't saved across a restart, as with Clear the Airfield.
 
 ---
 
@@ -531,7 +602,8 @@ ask the Haven's friends). ★ Police: anything you learn counts as proof.
 
 ## Crossings
 
-The flags other lines read.
+The flags other lines read, and some that ordinary contracts read. A flag is 1 when set, unless
+its row gives other values.
 
 | Flag | Set in | Read in | What it does there |
 |---|---|---|---|
@@ -545,9 +617,17 @@ The flags other lines read.
 | `walk.lab_road` | H3 | HC2 | The back room holds Haven people: stage 1's talk needs only Known with the Haven |
 | `other_two.numbers` | HC2 | H3 | The lab road's headline gives numbers, not names |
 | `orders.mocked` | B1 | R1 | The boss owes you: returning the page needs only Known |
-| `orders.haven` | B1 | B2 | The chair's house is never asked for a contribution |
+| `orders.haven` | B1 | B2; Requisition | The chair's house is never asked for a contribution, and Requisition never comes to it |
+| `orders.stove`, `orders.read` | B1 | (facts for other content) | Where the Day 3 page went: into the stove, or read to a post's men |
+| `orders.tape`, `orders.tape_gen` | No Reply | B1 | The post (leader id, generation) whose tape leads into B1 there |
+| `census.counted` | B2 | R3 | The first house Bastion counted, as its safehouse index + 1 |
 | `census.refused` | B2 | H1 | The chair trusts you: the last stage's talk needs only Known |
-| `pilot.flew_for` | B3 | HC3 | Samples: one more Halcyon guard at the final stand |
+| `census.spared`, `census.pressed` | B2 | Requisition | Safehouses (one bit per safehouse index) Requisition never visits, or visits first and ×1.2 as often |
+| `census.forged` (1 high, 2 low), `census.found_out`, `census.raided` (house + 1) | B2 | (facts for other content) | How the count went to Command, and which house the Red Hand raided |
+| `pilot.flew_for` (1 samples, 2 wounded, 3 ammunition), `pilot.samples` | B3 | HC3 | Samples: one more Halcyon guard at the final stand |
+| `pilot.lz_kept` | Last Helicopter, Clear the Airfield | B3 | Someone kept an LZ: B3 can start |
+| `pilot.down_until` (Unix time), `pilot.down_reason` (1 new pilot, 2 airframe) | B3; Rescue the Pilot | Last Helicopter, Clear the Airfield, Rescue the Pilot | The helicopter is grounded or lost until then; the first run after says why |
+| `pilot.stays`, `pilot.grounded`, `pilot.line`, `pilot.redhand`, `pilot.heli_lost`, `pilot.dead` | B3; Rescue the Pilot (`dead`) | B3 (`dead`); facts for other content | How the last pilot's story ended; the helicopter lost; its pilot dead (B3 never starts) |
 | `book.bastion` | R1 | B1, B2 | Bastion knows which of its commanders sold rifles: B1's outpost commander is that one, if he's still in the chair |
 | `cargo.buyer_known`, `table.supplier_cut` | R2 | C1 | C1's proof is done; the house takes people half as often |
 | `well.stood` | R3 | H2 | The house stands: H2's "Stands alone" needs no barricades |
