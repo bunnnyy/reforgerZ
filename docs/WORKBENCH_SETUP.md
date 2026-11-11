@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **185 prefab fields**: 40 on `RZ_GameModeComponent`, 138 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **190 entries**: 146 prefabs the plugin creates, 24 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 20 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 40 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **190 prefab fields**: 40 on `RZ_GameModeComponent`, 143 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **195 entries**: 146 prefabs the plugin creates, 29 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 20 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 41 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -487,6 +487,11 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | vanilla AIWaypoint_Move.et | — | Zombies > Move waypoint | **minimum** | hordes toward noise, unarmed missions, hunter squads, supply trucks, favourite spots |
 | (existing prefab) | Bacon Zombies' Group_Zombies_Base (an infected group with no members of its own) | — | Zombies > Empty group | optional | runtime groups: crawlers and loose ones made from character prefabs (without it they stand inactive) |
 | (existing prefab) | Bacon Zombies' civilian characters (the slowest it has: none is slower than about 3.7 m/s) | — | Zombies > Crawlers > Prefabs (list) | optional | the towns' crawlers (empty: Zombies > Common) |
+| (existing prefab) | Bacon Zombies' heavy (the fastest Bacon character, about 4.9 m/s; it climbs nothing in the behaviour layer) | — | Zombies > Tribes > Alpha prefabs (list) | optional | a tribe's leader, one-member runtime group (empty: Zombies > Special; both empty: the leader is data only) |
+| (existing prefab) | Bacon Zombies' military characters (helmeted ones if the pack has them) | — | Zombies > Tribes > Guard prefabs (list) | optional | the leader's guard at the lair and on the trail (empty: Zombies > Special) |
+| (existing prefab) | Bacon Zombies' civilian and military characters | — | Zombies > Tribes > Hunter prefabs (list) | optional | a tribe's grown members (empty: Zombies > Common) |
+| (existing prefab) | Bacon Zombies' lightest civilian characters | — | Zombies > Tribes > Scout prefabs (list) | optional | scouts on the ridges (empty: Hunter prefabs) |
+| (existing prefab) | Bacon Zombies' civilian characters | — | Zombies > Tribes > Young prefabs (list) | optional | the recently taken and the ones who ran (empty: Hunter prefabs) |
 | (existing prefab) | an exploding variant (Bacon's exploder) | — | Zombies > Crawlers > Bloated prefabs (list) | optional | bloated crawlers in dark towns from Overrun |
 | (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Runner prefabs (list) | optional | the Collapse trait |
 | (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Helmet prefabs (list) | optional | the Overrun trait |
@@ -1085,7 +1090,8 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, **Empty group** (runtime groups), per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | Stealth | `m_StealthSettings` | **Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth)) |
-| Zombies | Tribes | `m_TribeSettings` | **Enabled** (on; off: no land grid, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20). The tribes themselves are planned ([INFECTED.md](INFECTED.md#tribes-planned)) |
+| Zombies | Tribes | `m_TribeSettings` | **Enabled** (on; off: no land grid, no tribes, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20), the **role prefabs** (alpha, guard, hunter, scout, young; empty lists fall back), **Day party share** (0.2; 0 = none), day party group (2-3), day party bodies near a cluster (6), **Counted night minutes** (20), **Scout sight** (120 m), **Your dead run** (Described) ([INFECTED.md](INFECTED.md#tribes)) |
+| Zombies | Behaviour | `m_BehaviourSettings` | **Enabled** (on; off: tribe groups take held waypoints and Bacon's own senses), steer factor (0 = blind), contact radius (8 m), take-back multiple (2.5), sight checks a second (12), **notice rate** (0.15, tune in play), hunter sight (220/190 m), shot hearing (170 m), spacing (3 m), flank radius (140/100 m) and angle (70), stalk distance (115/75 m), **Strategies** (on), **Own attacks** (on: the hunter's lunge), special move gap (10 s), **Climb limit** (1.4 m grab height), unstick out of sight (on), LOD bands (60,150,300 m), debug log ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
 | Zombies | Crawlers | `m_CrawlerSettings` | **Enabled** (on; off: towns as before), **Prefabs** (Bacon's civilian characters; empty = Common), bloated prefabs and share (0.05, towns at 70+ from Overrun), group size (1-3), kill ledger half-life (30 played minutes), reinforcement distance (200 m), drift radius (300 m) and seconds (90), stir (stirred at 50, -20 an hour, 5 heat a minute up to 60), siege minutes (10), scavengers (2-4) ([INFECTED.md](INFECTED.md#towns-the-crawlers)) |
 | Zombies | (top level) |  | Presence heat (0.5/tick), vehicle heat (+4/tick) |
 | Backgrounds | Backgrounds (list) |  | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
@@ -1131,7 +1137,7 @@ lower-case words in prefab names. Check them against the mods you run.
 
 **Server.** The mod sets the day's length itself (**Day length**, 4 real hours a game day, x6)
 and keeps the time of day across restarts ([DESIGN.md](DESIGN.md#the-clock)). The infected's
-design assumes about that: a night of about 85 real minutes ([INFECTED.md](INFECTED.md#tribes-planned)).
+design assumes about that: a night of about 85 real minutes ([INFECTED.md](INFECTED.md#hunger-and-the-night)).
 Set **Day length** to 0 to keep your own server's acceleration (the engine's default is real
 time), and keep it modest and fixed; don't use time-skip or sleep mods. The
 defaults fit about 45 real days from about 2 to 20 regulars: **Cure > Pace by play** measures how
@@ -1291,8 +1297,8 @@ it among the dependencies, the 1.9 server compiles none of the addon's scripts, 
 (the lab tests Bacon only).
 
 **Behaviour tests (B1-B20).** `ONLY=behaviour` runs, instead of the experiments above, the lab tests
-for the planned infected behaviour layer (our code driving the infected beyond attack range; its
-design isn't in the repo until the author approves it). They run in lanes at places far apart,
+for the infected behaviour layer (our code driving the infected beyond attack range; built on their
+verdicts, [INFECTED.md](INFECTED.md#how-they-move-and-hunt)). They run in lanes at places far apart,
 about 30 minutes in all (`QUICK=1`: about 16), and the frame-time tests run last, alone.
 `ONLY=b1,b6` runs only those.
 The tests mod a few of Bacon's scripted nodes and character methods (`RZL_Hooks.c`); each hook only
@@ -1356,7 +1362,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **63** lines with the tag, all in the game scripts (one is the comment in
+There are **65** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 13 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1374,10 +1380,10 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:172` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:174` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (31)
+### Medium risk: big features, with a fallback (32)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1405,13 +1411,14 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
 | `UI/RZ_LoadoutLock.c:49` | the server asks `SCR_LoadoutManager.CanAssignLoadout_S` before it assigns the loadout a player picks (1.9's `SCR_PlayerLoadoutComponent.Rpc_RequestLoadout_S` does) | A locked pick is assigned; the spawn check below still refuses it |
-| `Zombies/RZ_InfectedBodies.c:170` | a physics trace from a player's eyes (`TraceMove`, world and entities) is stopped by buildings, walls and trees, and 16 of them a server tick cost little (crawler spawns use it: no body within 300 m of a player who could see the spot) | If traces never hit, crawlers spawn only behind terrain or beyond 300 m, so towns fill thinner near players (watch `/tribes`: towns well under their base). If they show in the frame time, lower `TRACES_PER_TICK` in `RZ_InfectedBodies` (a spot counts as seen once they're used up) |
+| `Zombies/RZ_InfectedBodies.c:175` | a physics trace from a player's eyes (`TraceMove`, world and entities) is stopped by buildings, walls and trees, and 16 of them a server tick cost little (crawler spawns use it: no body within 300 m of a player who could see the spot) | If traces never hit, crawlers spawn only behind terrain or beyond 300 m, so towns fill thinner near players (watch `/tribes`: towns well under their base). If they show in the frame time, lower `TRACES_PER_TICK` in `RZ_InfectedBodies` (a spot counts as seen once they're used up) |
 | `UI/RZ_LoadoutLock.c:66` | the server asks `SCR_BaseGameMode.CanPlayerSpawn_S` for every spawn request, with the prefab the client asked for (1.9's respawn system does) | A locked loadout can spawn: the player keeps its gear for that life but plays as the default background (`ResolveBackground`, the log line below). Check with a fresh profile: pick Soldier, press spawn (mouse and gamepad); it must refuse |
 | `Core/RZ_Util.c:458` | a smart-action waypoint set from script (`SetSmartActionEntity`) sends a ReforgerZ faction group to the composition's tagged sentinel, and vanilla's sit, lean and observation behaviours run for our groups in a mod world | People walk to the piece and stand by it: empty **Camp life > Smart action waypoint** and they loiter beside the pieces instead |
 | `Core/RZ_Util.c:540` | an empty group prefab (vanilla `Group_Base.et`) stays alive until a member joins, takes the character's faction, and a spawned lone character joins it and takes its waypoints | Lone occupants and single guards stand where they spawn, as before: empty **Camp life > Group prefab**. Guards that are AI groups still take jobs |
+| `Zombies/Behaviour/RZ_Behaviour.c:953` | a light bleed opened from the server on a player's arm or leg (`AddParticularBleeding`) replicates and bleeds at the usual rate (a hunter's lunge that lands) | The lunge still makes the bite chance x1.5; with no bleed, set **Behaviour > Own attacks** off if it misbehaves |
 | `Factions/RZ_CampLife.c:678` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 
-### Low risk: contained or cosmetic (19)
+### Low risk: contained or cosmetic (20)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1429,7 +1436,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:937` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
 | `Core/RZ_Util.c:924` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
-| `Zombies/RZ_Stealth.c:1164` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
+| `Zombies/RZ_Stealth.c:1172` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
+| `Zombies/Behaviour/RZ_HuntPlan.c:1421` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
 | `Factions/RZ_CampLife.c:855` | the road network's points follow every drivable road near a camp | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
 | `Factions/RZ_CampLife.c:1382` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
 | `Factions/RZ_CampLife.c:1449` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
@@ -1509,6 +1517,23 @@ start) and the active-AI limit; once the clock runs, the day length; about 40 s 
 
 On Everon the last line reads `Tribes: 24.4 km2 of wild land, 5 slots (1 kept for a split), 1 clan
 possible. Override: none. ...`.
+
+The tribes (phase 2) and the behaviour layer add these. At start: `Behaviour: on. Tribe bodies are
+steered blind ...`. Once the land is read (or loaded): `Tribes: 2 tribes seeded (5 slots).` (on a
+restart `restored`), then one `Tribes: 1 the woods north of Levie: 12 (leader Rising 1, guard 2,
+hunters 6, scouts 1, young 2), hunger 30 fed, BOLD, range 800 m, lair ...` line per tribe. Through the
+day: `Tribes: <place> has N groups out by day.`, `Tribes: <place> calls at dusk (...)`, `Tribes:
+<place> sets out on N trails (core out ...)`, `Tribes: <place> hunts player N (N in the first wave,
+PINCER).`, `Tribes: a scout of <place> called on player N.`, `Tribes: <place> breaks off (lost N of N,
+waves N).`, `Tribes: <place> lost player N and goes home.`, `Tribes: <place> took <who> at <grid>
+(hunger N, young true).`, `Tribes: someone from <town> ran, and joins <place> at dusk.`, `Tribes:
+<place> gains N young at dusk (...)`, `Tribes: a counted night (N so far).`, `Tribes: <place> dawn
+count: N of N came home.`, `Tribes: <place> lost its leader; the vigil at <grid> until dawn.`,
+`Tribes: <place> has a new voice at first light.`, `Tribes: someone walked into the lair at <place>.`
+Every 5 minutes the status log adds `Status | tribe ...` per tribe, `Status | tribes: phase DAY,
+counted nights N, town specials x1 | pack bodies spawned N, hunts N, break-offs N, scout calls N,
+packs N` and `Status | behaviour: steer N, engage N, recover N, by waypoint N; hunts N (started N),
+releases N, take-backs N, unsticks N, moves landed N`.
 
 On a restart the same lines say `(save)` or `(saved)` instead of `(picked)` or `(new ...)`, the
 world facts keep their seed and count what the season has made so far, and the settlement scan
@@ -1745,6 +1770,50 @@ session, tick off:
 - [ ] The clock: a game day takes about 4 real hours; restart at night and it's still night.
 - [ ] **Zombies > Crawlers** and **Zombies > Tribes** both off: towns, roamers and hordes as before,
   and no `infected` status line.
+
+**The tribes and how they move** ([INFECTED.md](INFECTED.md#tribes); on Everon, or Arland with
+**Zombies > Tribes > Slots** 2; the status log's `tribe` lines, `/tribes`, `/tribes hunt`, `/tribes
+call`; a Hunter is useful)
+- [ ] The log seeds 2 tribes on Everon once the land is read, each with a place (*"the woods north of
+  Levie"*); a restart restores them, with the same places.
+- [ ] **A solo night crossing** through a range: at 18:45 one line, *"A call from … at dusk, …"*,
+  never the words alpha, tribe or crawler. After 20:30, walk the range quietly (no shots, no lights):
+  most nights you meet nothing or a group passing in file; if one notices you, it stops and makes a
+  sound first. Make noise (30 heat) inside the range: the young come from the trail side, two groups
+  from either side out of sight, the big one later. Break the line of sight and get 300 m away: within
+  a minute or two they go home. Note how often a careful crossing gets through, and whether any body
+  appeared in plain sight within 300 m.
+- [ ] **A squad at night** (three players together): `/tribes hunt` or noise in a range. The first
+  wave is at most 8; kill a third of what came, or hold out 10 minutes: *"One long call from …, and
+  then they pull back."*, and they don't come for the squad again that night. At first light, from
+  within 2 km: *"A call from … at first light, and fewer answers than at dusk."*
+- [ ] **A day pass by the lair:** by day two or three walk the woods' edges and stop (hop and hold),
+  never in a town and never in no man's land; at most 6 near you. Lie flat as a pair passes: they
+  should walk on (the notice meter). Walk to within 300 m of the lair: the ring is there, the big one
+  in the middle; they don't turn to a shot unless you're close. Within 100 m they all come, the big one
+  too. Stand on a ridge in sight of a scout for 5 seconds: *"A shriek from the ridge, and an answer
+  from …"*, then at most 4 come from the lair's side; kill the scout within 5 seconds instead and
+  nothing comes. A Hunter hears *"The birds just went up off the ridge."* first.
+- [ ] **Formations:** bodies keep 3 m apart (watch a pair walk: no two touching), walk-stop by day,
+  march in file at night; a pincer's two groups come from two sides about together; a stalking group
+  freezes when you turn to face it within 120 m.
+- [ ] **Fences and water:** a low garden fence is vaulted, a tall wall gone round; they never wade a
+  river or a pond outside a bridge or ford. Climb to an upper floor: they wait below. The big one never
+  climbs.
+- [ ] **The hunter's lunge:** let a hunter come at you from out of your view: on a hit, sometimes a
+  light bleed on an arm or a leg; never more often than once in 10 s.
+- [ ] **The taken:** die to a tribe's body in the open after 10 minutes alive: the log says it took you,
+  its hunger falls 25, a kill site appears (crawlers come the next night), and the next dusk it gains a
+  young. Inside a town you're the town's instead. The next day nobody is out on its paths and its
+  dusk is silent (*"Nothing from … tonight."*).
+- [ ] **The alpha:** shoot the big one and get away: come back later, its health is as you left it.
+  Kill it with a player within 150 m: 2 samples in Prime (none while Rising), the vigil (*"The calling
+  from … stops."*), no hunt that night, and *"a voice nobody knows"* at the next dusk.
+- [ ] **Tracks** (as a Hunter): along a trail by day, *"Four or five, heading north-east, last night.
+  …"*; within 60 m of the lair, the line about no birds.
+- [ ] Frame time with a lair, a day party and a town's crawlers near one player, and with two squads at
+  night: the status log's agents stay under 100 and the behaviour line's releases close (no strikes
+  that stroll in). **Zombies > Behaviour** off: tribe groups walk with waypoints and fight as Bacon's.
 
 **Seasons and notes**
 - [ ] With **Wipe** on *After weeks* (1 week), stop the server and set `seasonStartUnix` in

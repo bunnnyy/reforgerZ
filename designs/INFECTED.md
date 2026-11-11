@@ -1,6 +1,8 @@
 # Infected: tribes and crawlers
 
-**Status: designed, not built.** Approved by the author on 2026-11-11.
+**Status: designed; phases 1 and 2 are built** ([docs/INFECTED.md](../docs/INFECTED.md)): crawlers, the
+land, bodies and the budget, and the tribes' daily life and hunts. What's left here is designed (the
+life cycle, people and content, the great alpha and signs). Approved by the author on 2026-11-11.
 
 ## What changed in review
 
@@ -461,107 +463,16 @@ from before tribes existed seeds them on load, as at a season's start.
    - **A split** (rule 11) uses a slot kept for splits first.
    - **Room kept for a split:** while a kept slot is free, no new tribe (except from a split) founds
      within 3 km of a tribe of 18 or more.
-3. **Roles.** Every member has one:
-   - **alpha:** 1;
-   - **guard:** 2 while the alpha is Rising, 3 in Prime and Decline, 4 for a great alpha;
-   - **scouts:** 1, or 2 once the tribe has 15 or more;
-   - **hunters:** every other grown member;
-   - **young:** the taken and the ones who ran, for 4 season days or until their first hunt that takes
-     someone.
-
-   When a guard place is free, it goes to the oldest hunter. A tribe has 30 members at most, and rule
-   11 applies from **Split at** (25). By day a share of the hunters and young is the day party (rule 25).
-4. **The taken.** Someone is *taken* by a tribe in these cases:
-   - **Killed by its bodies.** Each hit the bite detector sees already checks for an infected within
-     reach. Now it also records that body's tribe, from its tracked unit. A player who dies within 60 s
-     of a hit from a tribe's body is taken by that tribe (VERIFY the player-killed event).
-   - **Turned in the open.** Someone who turns (a player, a wanderer, a leader) outside every
-     settlement's radius + 100 m, within 1.5 × a range radius of a tribe, is taken by the nearest such
-     tribe.
-   - **Died as data in the open.** These are attributed by area, also only outside every settlement's
-     radius:
-     - a wanderer bitten or taken (`RZ_Wanderers.Die` with "infected" or "turned", or rule 7);
-     - a supply truck's crew lost to the infected;
-     - a leader bitten off-screen;
-     - a Bastion patrol or hunter squad killed by infected;
-     - a Haven walk-out at a house within 2 km (Walk Him Out's "walk on" now feeds the tribe instead of
-       adding +5 infection).
-   - **Inside a town.** Someone killed or turned there becomes a crawler, as today, whoever bit them.
-
-   **Players** (*Your dead run*, on by default with a server switch) count only after a life of 10
-   minutes or more. Each player counts at most once a season day, and a tribe has at most 3 players'
-   young at a time.
-
-   Each person taken comes back as **one young at the next dusk**. That's −25 hunger and +1 to the
-   alpha's count of people taken. Two people taken at one kill site within 10 minutes are a **bond**
-   (rule 20). Outside every range, the taken count toward a new tribe (rule 2).
-5. **The ones who ran.** On each data tick, a settlement's rise in infection goes into a bank. Its
-   falls don't, and nor do starving walkers' +2.
-   - **Who gets it:** each town banks to the nearest tribe whose range edge is within 1.5 km of its
-     centre. A town near no tribe banks nothing.
-   - **The rate:** every 4 points banked becomes +1 young at the next dusk, unnamed (*"someone from
-     Levie"*). At most 2 a season day per tribe. A tribe's bank holds 8 points at most.
-   - **Late in the season:** ×0.5 from the 75% serum, and none after the cure.
-
-   It's lore-true and it balances itself. Spread feeds a tribe, and players who push a town back (1.5
-   infection a kill) starve the tribe next to it. *"Half of Levie went quiet this week. Not all of them
-   stayed."*
-6. **Hunger** (0–100, starts at 30). It rises 5 a counted night: 7 in Decline, and 3 for a fed moat or
-   near the Long Table (rule 19). It falls 25 for each person taken. The ones who ran don't feed it.
-
-   | Band | Effect |
-   |---|---|
-   | **Fed** (under 40) | One trail a night. The dusk call is short. The day party is its usual size |
-   | **Lean** (40–59) | One trail, the most promising |
-   | **Hungry** (60–84) | Two trails, and the range ×1.25. The call is long. One trail runs toward the nearest lived-in place, and ends at no man's land's edge plus Bacon's perception range (P, [Bodies](#bodies)). This is *testing the wire*: hunters come up to the wire and go home. They never go in. **By day the day party about doubles and walks out to the fields at the nearest towns' edges**, never into a town and never into no man's land (rule 25) |
-   | **Desperate** (85–99) | As Hungry, with the range ×1.5, and the scouts sit lower |
-   | **Starving** (100 for 2 counted nights) | A fifth of its members (at least 2) walk into the nearest town and join its crawlers: +2 infection each through `AddInfection`, at most +10 per town a season day. Hunger then goes back to 70 |
-7. **Hunts, as data.** At dusk each tribe picks tonight's trails: as many as rule 6 says, or 3 on a
-   frenzy night.
-   - **Scoring a trail:**
-     - plus habits (×2 at strength 50 or more);
-     - plus prey: a lived-in place's edge, a wanderer route, a truck road, or where a player was in the
-       last hour;
-     - plus its wear (worn trails are the familiar ones);
-     - plus the alpha's echo;
-     - minus fear places and burned land (avoided);
-     - minus last night's empty trail.
-   - **Moving.** A hunting part moves along its trail as data at **3.5 m/s** (phase 0: Bacon's groups run
-     to every waypoint, about 3.7 m/s, and a group's centre covers about 3.5). It waits 10 minutes at
-     each hunting ground.
-   - **Taking as data.** Only at night, and only with no player within 1 km:
-     - **a wanderer** whose straight-line route crosses a hunting part's trail at night: 10% per
-       crossing, at most one per tribe every 3 counted nights. Only Haven-allied wanderers go round
-       ranges, and only Hungry or worse ones;
-     - **a supply truck** passing within 200 m of a hunting part at night, on any road the trail
-       crosses: 15%, at most one on the server every 3 counted nights. It counts as a lost truck, with
-       the shortage that already causes, and it starts a road habit there.
-
-     Day parties never take anyone as data.
-   - **Hearing as data.** A hunting part without bodies, within 700 m of a remembered noise (8+ heat,
-     the last 16), turns toward it and waits there 3 minutes, once per noise. The young do it from 400
-     m. A cautious tribe ignores noises beyond 400 m. Not Tonight, the call box and Bait the Crew depend
-     on this. **By day only the day party hears** (rule 25): the resting ring and the core never turn
-     toward a noise.
-   - **Writing back.** While a part has bodies, each data tick sets its data position to its leader's.
-     When the bodies go, the trail resumes from the nearest trail point ahead. Nothing snaps back.
-   - **Empty nights.** A tribe that takes nobody three counted nights running drops its worst trail and
-     finds a new hunting ground.
-8. **The night's commitment.** A hunt at one player cluster breaks off at the first of these:
-   - it has lost a third of the members it set out with;
-   - two waves are spent;
-   - the leash runs out (10 minutes at the target).
-
-   The alpha gives **one long call**, the parts go home, and that tribe doesn't target that cluster
-   again that counted night. A cautious tribe breaks off at a quarter or one wave, and a bold one at
-   half.
-   - **Weakened.** Under 8 members, a tribe hunts as data only. Its trails keep 600 m from players, its
-     scouts call but bring no pack, its call is short, and it sends no day party. It rebuilds through
-     the ones who ran. *"The Quarry's gone quiet. Don't trust it."*
-   - **Never broken early.** A tribe never breaks up in its first 3 season days.
-9. **Post-feed sleep.** After a counted night when it took someone, the tribe sleeps through the next
-   day: no day party, no scouts, no dusk call, and the lair ring is spawned at half distance (150 m).
-   Birds come back over the lair. It hunts again that night.
+3. **Roles, the taken, the ones who ran, hunger, hunts as data, the night's commitment, post-feed
+   sleep** (rules 3–9): **built** ([Tribes](../docs/INFECTED.md#tribes)). Still designed from them: the guard place
+   going to the oldest hunter; the young coming of age; bonds (two taken at one kill site within 10
+   minutes); the taken counting toward a new tribe; a Haven walk-out, a supply truck's crew, a leader's
+   off-screen bite or a Bastion patrol as the taken; Haven-allied wanderers going round Hungry ranges;
+   supply trucks taken as data (15%, one on the server every 3 counted nights, with a road habit);
+   **Starving** (100 for 2 counted nights: a fifth walks into the nearest town, +2 infection each,
+   +10 per town a season day at most, then hunger 70); trail scoring by habits, prey, wear and echo;
+   empty nights (three running: drop the worst trail); the hunger rises for a fed moat or near the Long
+   Table (rule 19); "never broken early" (rule 15).
 10. **Disturbance and moving the lair** (0–100). It falls 10 a season day, and gains count ×0.6 for a
     territorial tribe.
 
@@ -699,30 +610,8 @@ from before tribes existed seeds them on load, as at a season's start.
       counted night only. So nobody keeps a corridor open with matches.
 24. **After the cure.** Nobody new turns, and the tribes run down over the epilogue's week. The rules
     are in [After the cure: the last week](#after-the-cure-the-last-week).
-25. **Day parties** (the author's change; the behaviour is in [Day parties](#day-parties)).
-    - **Who:** hunters and young only. Never the alpha, never a guard, never a scout.
-    - **How many:** at most a quarter of the tribe's members (**Day party share**, 0.2 by default;
-      phase 0's simulator found a quarter made a day crossing as busy as a night). At least 2, so a tribe
-      under 8 sends none. A Hungry or worse tribe sends about twice the share, never more than half the
-      tribe.
-    - **Groups** of 2–4 (**Day party group**, 2–3 by default), each a part with its own walk.
-    - **Bodies:** at most **6 day-party bodies near one player cluster**, whichever tribes they come
-      from, out of the cluster's share of the agent budget. A hungry tribe is met more often, not in
-      bigger numbers.
-    - **When:** from 07:00, once the dawn walk and its stragglers are home, until 18:30, when the
-      groups walk back to the lair for the call. Fog counts as dusk ([The land](#the-land)). A storm
-      keeps everyone at the lair.
-    - **Where:** its trails, field edges and forest edges inside its range. Never inside a settlement's
-      radius (towns by day stay the crawlers'), never in no man's land, never within the line's margin,
-      never in a fear place or on burned land. Hungry parties walk out to the fields at the edges of the
-      nearest towns, outside their radius.
-    - **Moving, as data:** hop and hold. A group moves 100–200 m along its walk every 4–6 minutes and
-      holds in between (phase 0: Bacon groups run on every order, and idle groups stay within 4–16 m of
-      their point). Walks are 4–6 points, worked out like trails.
-    - **Hearing:** by day only day-party parts turn toward a remembered noise (700 m, the young in it
-      from 400 m). That's what "day noise draws only the day party" means.
-    - **Not out:** the day after a feed (rule 9), the day of a guard fight (rule 15), while weakened
-      (rule 8), in a storm, and near a player in their gentle start ([Day parties](#day-parties)).
+25. **Day parties:** **built** ([Day parties](../docs/INFECTED.md#day-parties)). Still designed: where each
+    temperament's day party walks (phase 3), the Furious tribe's walking the capture road.
 
 **Caps**
 - **Tribes:** 0–15 by wild land; 30 members each.
@@ -852,79 +741,18 @@ They're used only if the mod stack has such prefabs, and an empty list falls bac
 
 ### Samples
 
-They go through the Cure pace, the pace by play and the lab's capacity, as every sample does (built).
-- **Alphas.**
-  - **By stage:** none while Rising, 2 in Prime, 3 in Decline, and 4 for a great alpha.
-  - **Per tribe:** its alphas give samples at most 3 times a season. After that, *"the lab has this line
-    already"*: the alpha drops none.
-- **Guards:** 1 each, only while their alpha is Prime or older. At most one guard sample per tribe every
-  2 played hours, and 4 per played hour on the server.
-- **Lone ones:** 2, once each.
-- **Hunters, scouts and the young** aren't specials and drop none. So a day party never drops a sample.
-- **Only a player's kill counts.** Any tribe body drops samples only if a player was within 150 m when
-  it died, so faction AI at an outpost's wire farms nothing.
-- **Staged and silent kills** drop nothing ([Bodies](#bodies)).
-- **Town crawlers' special chance** is scaled down by the tribes' share: ×(1 − the tribes' share of
-  samples over the last 10 played hours), never below ×0.6. So the server's specials per player-hour
-  stay near Season pacing's assumptions, and the status log shows them by source.
-- **After the cure** nothing drops samples (built).
+**Built** ([Samples](../docs/INFECTED.md#kill-sites-the-vigil-and-the-alpha)). Still designed: lone ones (2, once each),
+the cap of 4 guard samples per played hour on the server, staged fights dropping nothing (with the
+staged fights), and the status log's samples per player-hour by source.
 
-### The daily rhythm
+### The daily rhythm, the call and the hunt
 
-The alpha's echo can shift the times ([Individuality](#individuality)).
-
-| When | The tribe | What players can do |
-|---|---|---|
-| **Day** (06:00–18:30) | Lies up at the lair. The alpha is in the middle with the guard round it, and the rest of the hunters and young lie in the **resting ring** further out. From 07:00 the **day party** walks the trails, field edges and forest edges in twos and threes (a fifth of the tribe by default, never more than a quarter; about twice that when hungry, as far as the fields at a town's edge). 1–2 scouts sit on ridges watching the trails and roads | Cross the wild carefully: watch the hedges and paths for two or three moving together, and get low to let them pass (stealth). Read tracks. Watch the ridges for a figure standing still. Get near the lair, past the scouts and the day party, while most of the tribe is lying up |
-| **Dusk** (18:30–20:30) | The day party is back by 18:30. **The call** at about 18:45. The tribe gathers, a neighbour answers (a border), and clan tribes relay it along the ridges. Between 19:30 and 20:30 it sets out on tonight's trails, and the scouts move to posts above them | Listen: the call tells you its state (below). Get off the trails. Or take the alpha while it stands and calls, exposed for a few minutes with everyone coming in |
-| **Night** (20:30–05:00) | **The hunt.** Hunter groups walk the trail in file, the young run scattered ahead, and the alpha and guard follow 100–150 m behind (a bold alpha leads). The trail passes town edges and squares. The tribe waits at each hunting ground and feeds at kill sites | Stay off the trails. Ambush one. Draw the hunt off with noise. Hide indoors |
-| **Dawn** (05:00–06:00) | **The walk home**, slow and spread over the hour. At the lair the alpha calls once, and the answers say how many came back. After a bad night, a straggler or two come later | Follow them home (Track Them Home). Count the answers |
-
-### The call
-
-The call is how a tribe tells you how it is. Each player gets one dusk line at most: the nearest
-tribe's call and how many answered. The Radio Operator also gets the relay line, and the Hunter a
-reading of the nearest.
-
-| What you hear or see | What it means |
-|---|---|
-| Nothing from a ridge that called yesterday, and nobody on its paths today | It fed (post-feed sleep), or it's gone (a vacuum) |
-| A short call | Fed, or weakened |
-| A long call, many young answering, and more of them out by day, in the fields at a town's edge | Hungry. Two trails tonight |
-| Two callers, one answering the other | Restless: a split or a challenge is coming |
-| Many voices and no lead | A succession: the vigil, or the morning after |
-| A voice nobody knows | A new alpha |
-| A ragged call | An old alpha, in Decline |
-| One long call in the middle of the night | A hunt breaking off: somebody won tonight |
-| A call at dawn, and fewer answers than at dusk | It lost some |
-| A short-handed call after a quiet day | Somebody put its day party down |
-
-### How a hunt comes for you
-
-A hunt only runs from the dusk set-out to the dawn walk. By day there's no hunt: the day party fights
-what it sees, and a scout's call brings at most 4, or the dusk pack in fog ([Day parties](#day-parties)).
-
-A hunt has a target in three cases:
-- a scout has called on you;
-- heat you made reaches 30 at night inside its range (the infected's own noise at a door doesn't count;
-  [Towns](#towns-the-crawlers));
-- you're on its trail or at its hunting ground as it passes.
-
-How it plays out (the shape comes from where bodies appear, not from steering; [Bodies](#bodies)):
-- **The first wave** is at most 8, fewer when the server is busy: one hunter group and up to 3 young.
-  - **The young** appear on the trail ahead and come straight in.
-  - **The hunters** appear at two points out of sight, 130–180 m from you and 60–90 degrees either side,
-    and run in.
-- **The alpha and guard** appear 150–250 m back on the trail only once the first wave is down to 2, or
-  at once for a bold alpha.
-- **Close in:** within Bacon's own perception range its AI takes over, and nobody steers. Stealth's
-  perception factor still applies, so lying low makes them slower to see you.
-- **Giving up:** a hunt gives up after 60 s without its target and goes home. It never switches to
-  another player. You lose it by going indoors behind a closed door, getting 300 m away, or reaching no
-  man's land. Lying still in the grass doesn't shake a hunt on its trail: stealth's search never runs on
-  it ([Stealth and the tribes](#stealth-and-the-tribes)).
-- **Breaking off:** a hunt that loses a third of what it brought, or two waves, breaks off with the long
-  call (model rule 8).
+**Built** ([The daily rhythm](../docs/INFECTED.md#the-daily-rhythm), [The call](../docs/INFECTED.md#the-call), [How a hunt comes for
+you](../docs/INFECTED.md#how-a-hunt-comes-for-you)). Still designed: the alpha's echo shifting the times; the
+stragglers after a bad night (06:00–07:30); the Radio Operator's relay line and the Hunter's reading of
+the nearest call; two callers when restless; *"a short-handed call after a quiet day"*; a cunning tribe
+putting a group on your back trail; heat that a hunt lost you at ignored within 300 m for the rest of
+that night; a hunted player who logs out (the hunt waits 10 real minutes).
 
 ### Temperament
 
@@ -1097,69 +925,10 @@ Beyond the agreed list; each is cheap data with a sign:
 
 ## Day parties
 
-The author's change, as clarified with the author: wild infected are out by day too, but day stays the
-lighter danger. Conflict 45 proposed parties of 3–5 with at most one guard; the author's version
-replaces it (hunters and young only, a quarter at most, groups of 2–4, 6 bodies near a player cluster).
-The data is model rule 25.
-
-**What's where by day**
-
-| Where | What's there |
-|---|---|
-| A tribe's trails, field edges and forest edges, inside its range | The day party: twos, threes and fours of hunters and young, walking a stretch, stopping, walking on. At most 6 near you, from every tribe together |
-| The ridges | Scouts, as before |
-| The lair | The alpha in the middle, the guard 10–25 m round it, and the resting ring of hunters and young 20–60 m out. Spawned only within 300 m of a player (150 m during post-feed sleep) |
-| The fields at a town's edge | Crawlers that drifted out in the night. A Hungry tribe's day party comes this far too, never closer |
-| Towns | Crawlers only. A day party never goes inside a settlement's radius |
-| No man's land | Nothing from a tribe by day |
-
-**How a day party behaves**
-- **It fights normally when it sees you.** Bacon's AI does the fighting. Stealth judges whether it sees
-  you: its perception factor comes from your visibility, and it can lose you. Hidden, unseen and unheard
-  for 8 s, it searches where it last had you for 45 s and then goes back to its walk
-  ([Stealth and the tribes](#stealth-and-the-tribes)).
-- **The tribe never comes in full by day.** Nothing a player does by day brings the alpha, a guard or
-  the resting ring out of the lair:
-  - **a scout's day call** brings at most 4: the nearest day-party group, topped up from the resting
-    ring's hunters. Never the alpha or a guard, whatever the temperament;
-  - **day noise draws only the day party** (model rules 7 and 25). Heat by day inside a range never gives
-    the tribe a hunt. A heat horde by day inside a range is the day party, inside its 6-body cap; near a
-    town it's that town's crawlers, as before ([Towns](#towns-the-crawlers));
-  - **putting the whole day party down** brings nothing else. At dusk the tribe calls short-handed, and
-    its dawn count says so.
-- **The lair is a choice.** Walk into the resting ring and they fight you where they lie. It's the one
-  place by day where you can meet the alpha.
-- **Hungry tribes** send about twice the share, as far as the fields at the nearest towns' edges, never
-  into a town and never into no man's land. The 6-body cap holds, so a hungry tribe is met more often,
-  not in bigger groups.
-- **The day after a feed** nobody is out: no day party and no scouts. That's still the lair window.
-- **Fog counts as dusk.** In fog by day the scouts sit lower, and a scout's call brings the dusk pack
-  (the nearest hunter group, and a bold Prime alpha with its guard if the lair is within 600 m). So in
-  fog the alpha can come by day, but only on a scout's call, and only a bold Prime one near its lair.
-  The day party stays out until 18:30.
-- **Weather.** In rain the day party keeps to the forest edges. In a storm everyone is at the lair.
-- **New players.** A day party never spawns within 400 m of a player in their gentle start, and a scout
-  never calls on them.
-- **Furious tribes.** By day their day parties walk the capture road toward the lab, inside the same
-  caps ([People](#people), Furious; [FINALE.md](FINALE.md)).
-- **After the cure** the parties shrink with the tribe, and a tribe under 8 sends none.
-
-**Bodies.** A day-party group spawns when a player is within 600 m of its data position, out of sight:
-300 m or more from every player, or behind terrain from them (phase 0: a body spawned in a player's
-sight within reach charges at once). If its spot fails, it's pushed back along its walk. It's removed
-beyond 1.1 km and written back as data. It moves by hop and hold: one held-waypoint order every 4–6
-minutes, 100–200 m along its walk, holding in between.
-
-**Signs.**
-- A Hunter's tracks: *"Three, this morning, along the hedge toward the quarry. Young ones."*
-- An animal tell: *"The crows went up off the hedge line and didn't come back down."*
-- Haven gossip when a tribe is hungry: *"Two of the Quarry lot were in the fields by Levie at noon. They
-  don't come that close in daylight unless they're hungry."*
-
-**Balance** (phase 0's simulator, with the measured sight). With a quarter out, a day crossing was about
-as busy as a night's: 1.3–1.5 fights. With a fifth, a solo crossing through the middle of a range meets
-0.9–1.4 fights of 3–4 bodies by day, against 1.2–1.7 night hunts of 4–5, and day deaths per player-hour
-are a third of the night's. That's why the default is a fifth.
+**Built** ([Day parties](../docs/INFECTED.md#day-parties)). Still designed: the Hunter's tracks line for a day party
+(*"Three, this morning, along the hedge toward the quarry. Young ones."*) is built as the general
+tracks line; Haven gossip when a tribe is hungry (phase 4); Furious tribes' day parties on the capture
+road; day parties shrinking after the cure (the last week).
 
 ## Towns: the crawlers
 
@@ -1432,42 +1201,8 @@ Mission infected count toward the caps but are never trimmed, as today.
   - a player-killed event reads it (VERIFY 9, not measured yet);
   - a turning reads the position.
 
-**Parts.** Each tribe is 4–7 parts, each with one data position, plus its day party by day:
-
-| Part | Members | Day | Dusk | Night | Dawn |
-|---|---|---|---|---|---|
-| **Core** (alpha and guard) | 1 + 2–4 | the lair's centre | the lair, then the trail head | on the trail, 100–150 m behind the hunters (a bold alpha in front) | home first |
-| **Hunters** A, B, C | 3–5 each | the resting ring, 20–60 m out, less those in the day party | gathering at the lair | on the trail, ahead | home |
-| **Young** (1–2 groups) | 0–8 | the lair's edge, less those in the day party | scattered | 50–150 m off the trail, ahead and to the sides | home, last |
-| **Scouts** | 1 each | ridge posts | posts above tonight's trails | high ground along the trail | home after the rest |
-| **Day party** (1–3 groups, up to 5 when hungry) | 2–4 each, hunters and young | from 07:00, walking its trails, field edges and forest edges by hop and hold | back at the lair by 18:30, then rejoins its parts | — | — |
-
-- **When a part spawns.** No body is spent on a passer-by:
-  - **by day:** scouts and day-party groups within 600 m of a player; the lair (the core and the resting
-    ring) only within 300 m, or 150 m during post-feed sleep;
-  - **at night:** a hunting part within 600 m of a player, because it's moving toward people;
-  - **the core** spawns within 300 m of a player, and in a hunt only once the first wave is down to 2 (at
-    once for a bold alpha);
-  - always out of sight, as P says above.
-- **Where.** At the part's data position, if that passes `FindSpawnPos` (120 m or more from every player,
-  ×0.75 in fog; no water; nothing burned or suppressed) and the sight rule above. Otherwise it's pushed
-  back along the trail or walk toward the lair until it passes. Hunt parts with a target use the
-  placement rules below.
-- **Removal.** Parts are removed beyond 1.1 km, as today. Survivors go back into the tribe, kills come off
-  its members, and the write-back keeps the data where the bodies were.
-- **Two players from opposite sides** share one set of bodies, because each part has one data position.
-
-**A hunt, by placement**
-1. **The young** appear on the trail ahead of the hunt, out of sight, and get one waypoint on the target.
-2. **Two hunter groups** appear at two flank points, 130–180 m from the target at 60–90 degrees either
-   side, behind terrain. Each gets one waypoint on the target. A cunning tribe puts one on the target's
-   back trail instead.
-3. **The core** appears 150–250 m back on the trail, out of sight, only when the first wave is down to
-   2, or at once for a bold alpha.
-4. **More groups** come up the trail only while the hunt's commitment allows (model rule 8). A tribe of 25
-   arrives in waves, never all at once.
-5. **The long call.** When the hunt breaks off, every group beyond 80 m of a player is sent home. Groups
-   in a fight stay Bacon's until they win or die, or until the hide rule ends the hunt for them.
+**Parts, when and where they spawn, and a hunt by placement:** **built** ([Tribe bodies](../docs/INFECTED.md#tribe-bodies),
+[How a hunt comes for you](../docs/INFECTED.md#how-a-hunt-comes-for-you)).
 
 **Steering beyond P** (trails, day walks, the dusk set-out and the dawn walk):
 - **Trails** are 4–6 points from the lair to a hunting ground. They stay on land, cross water only at
@@ -1492,75 +1227,15 @@ Mission infected count toward the caps but are never trimmed, as today.
   of sight beyond 250 m the part goes back to data with a silent delete. Heat within 300 m of that spot
   can't target it again that counted night.
 
-**The scout rule**
-1. **Scouts stand at their posts:** ridge cells overlooking the trails, spawned within 600 m of a player
-   and facing the trail (VERIFY 13 that idle AI keeps its facing).
-2. **Sight.** It's checked every second, on the bite check's 1 s callback, for scouts with a player within
-   200 m. A scout has seen you once you've been within its sight radius **and in terrain line of sight**
-   for 5 checks running. The trace is terrain-only (VERIFY 12 for its cost), so it never sees through a
-   hill.
+**The scout rule and the alpha's body:** **built** ([Scouts](../docs/INFECTED.md#scouts), [Kill sites, the vigil and
+the alpha](../docs/INFECTED.md#kill-sites-the-vigil-and-the-alpha)). Still designed: scouts moving to posts above
+tonight's trails at dusk and sitting lower in fog; a marked player seen from 1.5 times as far; the
+building query (a player inside never seen; the code uses its sight trace within 80 m); a pack re-sent
+after 20 s (the behaviour layer follows the last-known spot instead); the corpse kept from the
+engine's cleanup.
 
-   The sight radius is stealth's: `RZ_Stealth.SightRadius(playerId, Scout sight)`, with **Scout sight**
-   120 m. Stealth already folds in stance, movement, light (the sun, the moon, lamps, the clock), rain,
-   fog, storms and noise: the full radius at visibility 0.6 and up, down to 0.6 of it for someone fully
-   hidden. The scout adds only what stealth doesn't know:
-
-   | Condition | Sight |
-   |---|---|
-   | Marked by this tribe, or in a vehicle (the larger, not both) | ×1.5 |
-   | Hunter background | ×0.75 |
-   | Inside a building (the building query) | never seen |
-
-   With Stealth off, `SightRadius` gives the full radius, so a scout sees anyone out to 120 m.
-3. **Silenced** means the scout dies within those 5 s. A suppressed or melee kill also makes no heat. An
-   unsuppressed shot makes heat, which may stir crawlers, but brings no pack.
-4. **The call.** If the 5 s run out, the scout shrieks:
-   - +20 heat at the scout;
-   - one line to players within 600 m: *"A shriek from the ridge, and an answer from the wood."*;
-   - a sound, if one is set.
-
-   Then it comes for you: Bacon's AI has it. A Hunter got their warning line at the first check.
-5. **The pack.** What comes depends on the time:
-   - **by day:** at most 4 bodies: the nearest day-party group, topped up from the resting ring's hunters.
-     Never the alpha or a guard, whatever the temperament. Day-party bodies already near you just get the
-     order;
-   - **at dusk, and in fog by day:** the nearest hunter group, and a bold Prime alpha with its guard too,
-     if the lair is within 600 m;
-   - **at night:** that night's hunt turns toward you instead.
-
-   The rest:
-   - **where it appears:** 150–200 m from the seen player, out of sight, on the lair's side;
-   - **who it chases:** the seen player only. It's re-sent once after 20 s to where that player is now,
-     unless any player is within 80 m of it. It arrives 40–55 s after the shriek, at a run (phase 0);
-   - **when it stops:** if the seen player dies, hides (stealth's search runs on a pack) or gets out, the
-     pack goes home. It never switches.
-6. **When the rule doesn't run:**
-   - the pack never comes within no man's land plus P;
-   - scouts don't call on a player in their gentle start;
-   - there are no calls during post-feed sleep, which posts no scouts;
-   - a weakened tribe's scouts call but bring no pack;
-   - one call per tribe every 10 minutes, and 2 day packs per tribe per game day.
-
-**The alpha's body**
-- **Spawning.** It spawns when a player is within 300 m of the core's position: by day at the lair with
-  its guard 10–25 m round it, at night on the trail. It never spawns in a player's sight within 300 m:
-  if a player would see it, it appears at the next trail point ahead, or on the lair's far side.
-- **Its own group.** It's a one-member group, built at runtime, with the tribe's alpha fields:
-  - a group, because steering needs an `SCR_AIGroup`;
-  - its own tracked unit, because kills are counted per unit, and its samples drop where it died.
-
-  If runtime groups fail (they passed with Bacon 1.8.0), the alpha stays data and the alpha jobs turn
-  off.
-- **Toughness** comes from its prefab only (the heavy's comes from damage multipliers). The code never
-  adds hidden health. It's dangerous because of who's with it, where it lives and when you meet it.
-- **Health** is saved as data when the body is removed and set again when it spawns. Phase 0 measured
-  that `SetHealthScaled` applies (it returns false, so the return is ignored) and that infected never
-  heal by themselves.
-  - An alpha wounded in the last 10 minutes isn't removed until every player is 1.5 km away.
-  - It heals 0.1 an hour played at the lair (scripted).
-  - It's never steered with a player within 80 m.
-
-**Kill sites, the vigil and staged fights**
+**Kill sites, the vigil and staged fights** (kill sites in feeding order and the vigil are built,
+[docs/INFECTED.md](../docs/INFECTED.md#kill-sites-the-vigil-and-the-alpha); props and staged fights are designed)
 - **Kill sites** near players: bodies stand in the feeding order ([Tribes](#group-behaviour)). Props are
   the taken's things (a bicycle, a rucksack, a car door open), only within 200 m of a player, removed
   beyond 250 m, never saved.
@@ -1785,7 +1460,7 @@ All said sideways; the rules are in [The model](#the-model).
 | Background | Reads |
 |---|---|
 | ★ **Hunter** | **Tracks**, at a trail point, a day walk, a kill site or a lair, within 40 m, once every 3 minutes: how many (give or take two), which way, how fresh, whether a big one was with them, and how worn the trail is. *"Nine or ten, heading for the river, last night. A big one in the middle. Young ones all over the place. They come this way most nights."* By day: *"Three, this morning, along the hedge toward the quarry."* Also gets a warning line as soon as a scout starts seeing them: *"The birds just went up off the ridge."* |
-| ★ **Radio Operator** | **The relays.** Hears the dusk calls as a moving line (*"Calls passing west, ridge to ridge, from the Quarry toward the Hollow."*), what each call says ([The call](#the-call)), calling contests (*"The Hollow answered weaker tonight."*), and Bastion's contact reports and culls |
+| ★ **Radio Operator** | **The relays.** Hears the dusk calls as a moving line (*"Calls passing west, ridge to ridge, from the Quarry toward the Hollow."*), what each call says ([The call](../docs/INFECTED.md#the-call)), calling contests (*"The Hollow answered weaker tonight."*), and Bastion's contact reports and culls |
 | ★ **Lab Technician** | **Halcyon tags**: a tagged alpha's rough area (300 m), its stage, and its hunger (lean or fed). From a sample: which tribe, and how long its alpha has led |
 | ★ **Soldier** | **The contact board.** Bastion's contacts, every tribe Bastion has read, are in their journal from spawn, dated. Hears a soldier alpha's shift change for what it is |
 | ★ **Police** | **The column**, the Day 2 tribe, by sight: its range is Read from spawn |
@@ -1954,7 +1629,7 @@ By map:
 - **Chernarus-size:** four seeds, a dozen tribes by day 15, two or three clans in Overrun, and some seasons
   a great alpha in Aftermath.
 
-**Time of day** is in [Tribes](#the-daily-rhythm), [Day parties](#day-parties) and [The land](#the-land)
+**Time of day** is in [Tribes](../docs/INFECTED.md#the-daily-rhythm), [Day parties](#day-parties) and [The land](#the-land)
 (weather and light). Bastion's routines are unchanged, and soldier alphas echo them.
 
 **Events through the season**

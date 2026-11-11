@@ -7,11 +7,14 @@ Perimeter, factions, missions, backgrounds and the cure.
 **Rule of thumb:** other mods provide content and mechanics; ReforgerZ decides when, where and
 why they show up.
 
-**What the code actually depends on:** nothing by name. No ReforgerZ script references another
-mod's classes. Every link is a prefab slot you fill in Workbench (zombie prefabs, a nest, water
-and food items) or a keyword matched against prefab names (food, water, fuel, parts). The repo's
-prefabs do use the two required mods (below). A mod can be swapped for another that offers the
-same kind of prefab: refill the slots and rebase the prefabs built on it.
+**What the code actually depends on:** Bacon Zombies 1.8.0, by name. The behaviour layer
+(`Zombies/Behaviour/RZ_BaconHooks.c`) modifies Bacon's classes, so ReforgerZ doesn't compile without
+Bacon Zombies: it's a hard dependency, not a swappable one (the hooks are listed in its row below).
+No other ReforgerZ script references another mod's classes. Every other link is a prefab slot you
+fill in Workbench (zombie prefabs, a nest, water and food items) or a keyword matched against prefab
+names (food, water, fuel, parts). The repo's prefabs use the two required mods (below). Special
+Zombies can be swapped for another mod that offers the same kind of prefab: refill the slots and
+rebase the prefabs built on it.
 
 > These were found on the Arma Reforger Workshop in November 2026. Before you lock the stack
 > in, check each page for the current game version, the last-updated date and the license.
@@ -24,7 +27,7 @@ needs Bacon Zombies; it leaves Special Zombies out, see [below](#special-zombies
 
 | Mod | Role | How ReforgerZ uses it |
 |---|---|---|
-| [Bacon Zombies](https://reforger.armaplatform.com/workshop/622120A5448725E3) | Zombie AI, animations and prefabs (civilian, military, exploding, ranged, heavy) | Its groups fill **Zombies > Common** and **Horde prefabs**; its civilian characters fill **Zombies > Crawlers** (it has no slow prefab: crawlers move as fast as the rest, about 3.7 m/s), its exploder the bloated crawlers, and its empty `Group_Zombies_Base` **Zombies > Empty group** (runtime groups, [INFECTED.md](INFECTED.md#runtime-groups)); its variants fill the runner and helmet lists in **Zombies > Adaptation** and the Wedding Party's guests. Its zombie faction, hostile to all, comes with the vanilla FactionManager base, which Bacon overrides. Bite detection works with any zombie mod |
+| [Bacon Zombies](https://reforger.armaplatform.com/workshop/622120A5448725E3) | Zombie AI, animations and prefabs (civilian, military, exploding, ranged, heavy) | Its groups fill **Zombies > Common** and **Horde prefabs**; its civilian characters fill **Zombies > Crawlers** (it has no slow prefab: crawlers move as fast as the rest, about 3.7 m/s), its exploder the bloated crawlers, and its empty `Group_Zombies_Base` **Zombies > Empty group** (runtime groups, [INFECTED.md](INFECTED.md#runtime-groups)); its variants fill the runner and helmet lists in **Zombies > Adaptation** and the Wedding Party's guests. Its zombie faction, hostile to all, comes with the vanilla FactionManager base, which Bacon overrides. Its heavy fills **Zombies > Tribes > Alpha prefabs**, its military characters the Guard list, and its civilian and military characters the Hunter, Scout and Young lists ([INFECTED.md](INFECTED.md#tribe-bodies)). **The behaviour layer hooks Bacon 1.8.0 by name** (`Zombies/Behaviour/RZ_BaconHooks.c`: `InfectedCharacter.ComputeLoiterPointInRadius`, `UpdateStance`, `AIBroadcastTarget`, and the nodes `AIGetShooter.ProcessEvent`, `AIRequestClimb`, `AICanMeleeTarget`, `AIInfectedTaskSpeak`), so a Bacon update that renames one breaks the compile; the compile check catches it at once. Bite detection works with any zombie mod |
 | [Special Zombies](https://reforger.armaplatform.com/workshop/69BD721866937F85) | Special variants and destructible hives (needs Bacon Zombies) | Its specials fill **Zombies > Special prefabs** (they drop cure samples) and the screamer list in **Zombies > Adaptation**. The **Missions > Nest** prefab is built on its hive, `ZombieHive_Minor` (it spawns its own infected), and the Wedding Party's bride on its Shambler. To run without it, use Bacon's heavy, exploding and ranged zombies as specials, rebase the Nest and the bride, and remove it from `addon.gproj`. **It breaks ReforgerZ on a Linux server** (below) |
 
 ### Special Zombies stops ReforgerZ loading on a Linux server

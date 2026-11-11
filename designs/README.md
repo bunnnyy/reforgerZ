@@ -1,6 +1,6 @@
 # Designs
 
-**Status: designed; phases 1 and 2 and tribes phase 1 built.** Approved by the author on 2026-11-11.
+**Status: designed; phases 1 and 2 and tribes phases 1 and 2 built.** Approved by the author on 2026-11-11.
 
 This folder holds the approved designs for the rest of the game: who you are, what you do, how it sounds,
 the four majors, the cure's finale, the epilogue week and the infected. Phases 1 and 2 of the plan (the shared engine,
@@ -26,8 +26,8 @@ the one body budget) are in code; they live in `docs/`.
 | [MISSION_STYLE.md](MISSION_STYLE.md) | The mission style: the story kit, who benefits, who decides, truths, lies and witnesses, failure as a branch, the merges and drops | Phase 3 (wave 1); phase 4 (wave 3: worked examples, merges, drops); phase 5 (wave 4); phase 8 (wave 5) |
 | [ERRANDS.md](ERRANDS.md) | Small side jobs from what's true right now: routines and cards, givers, the dealer, strangers only where one would find you | Phase 3 (core); phase 4 (strangers, locals, twists); phase 5 (margin cards); phase 7 (the epilogue deck); phase 8 (to about 60 cards) |
 | [DISGUISE.md](DISGUISE.md) | Borrowed kit and faction colours: looks, caught and held, tricks, the side jobs | Phase 4 (disguise phase 1); phase 8 (phases 2 and 3) |
-| [INFECTED.md](INFECTED.md) | Tribes in the wild and crawlers in the towns: lairs, ranges, alphas, day parties, hunts, the land, the last week | Steps 0.2 and 0.3; tribes phase 1 built ([docs/INFECTED.md](../docs/INFECTED.md)); tribes phases 2–5, in parallel with phases 2–5 |
-| [BEHAVIOUR.md](BEHAVIOUR.md) | How the infected move and hunt, on top of Bacon's AI: our code drives them except at striking range; gait and senses per kind, formations and flanking, stalking in bush, vaulting low fences, navigation, hunt strategies, attacks per kind | Tribes phases 1–2 |
+| [INFECTED.md](INFECTED.md) | Tribes in the wild and crawlers in the towns: lairs, ranges, alphas, day parties, hunts, the land, the last week | Steps 0.2 and 0.3; tribes phases 1 and 2 built ([docs/INFECTED.md](../docs/INFECTED.md)); tribes phases 3–5, in parallel with phases 2–5 |
+| [BEHAVIOUR.md](BEHAVIOUR.md) | How the infected move and hunt, on top of Bacon's AI: our code drives them except at striking range; gait and senses per kind, formations and flanking, stalking in bush, vaulting low fences, navigation, hunt strategies, attacks per kind | Tribes phases 1–2 (its phase 2 parts built: [docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)); the rest with tribes phase 3 |
 | [MAJORS.md](MAJORS.md) | One season-long story per faction, climaxes on cure milestones, dynamic fallbacks from what's happening on the server | Phase 5 |
 | [FINALE.md](FINALE.md) | The fight for control of the cure at 90%: five routes, the lock, the race, the stand as a control fight, terms | Phase 6 |
 | [EPILOGUE.md](EPILOGUE.md) | The week after the cure (168 hours): the Zone remembers the season, and closing work lets every story finish | Phase 7 (records from phase 3) |

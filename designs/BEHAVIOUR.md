@@ -1,6 +1,6 @@
 # The infected behaviour layer
 
-**Status: designed, not built.** Approved by the author on 2026-11-11 (the behaviour ideas). Lab tests B1–B20 have run; their verdicts are in each lever below and in the zombie lab section of [docs/WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md).
+**Status: designed; the phase 2 parts are built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): the hooks, modes, the five kinds' profiles, sight, formations, rush, stalk, pincer, encircle and give up, navigation (water, stairs, the climb gate, the ladder), LOD and the hunter's lunge. What's left here is designed. Approved by the author on 2026-11-11 (the behaviour ideas). Lab tests B1–B20 have run; their verdicts are in each lever below and in the zombie lab section of [docs/WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md).
 
 
 An addendum to the approved tribes design ([INFECTED.md](INFECTED.md)). It uses phase 0's measurements
@@ -162,104 +162,18 @@ small and easy to fix when Bacon updates.
 
 ## 3. Who controls when
 
-**The rule.** Beyond attack range, our code drives. Inside it, Bacon fights. Each body is in one of
-four modes, stored on the character.
-
-| Mode | Who drives | Perception factor | Bacon's intake (L8) | How it moves |
-|---|---|---|---|---|
-| **OFF** | Bacon, as today | Stealth's | Open | Mission infected, relentless hordes and the final stand stay here, unchanged |
-| **STEER** | Our code | 0 | Closed | Slots (L2), gait (L3–L6), held waypoint for marches (L1) |
-| **ENGAGE** | Bacon | Stealth's × the kind's base | Open, filtered by kind | Bacon's chase and melee. Our overlay: gait in the chase (L4, L5), our attacks (section 10), stuck watch, fire avoidance |
-| **RECOVER** | Our code, waiting | 0 | Closed | Taken back from Bacon. Its slot is the last-known spot or home. It becomes STEER once Bacon's own target has cleared (B5: the target clears 8 s after it was last seen, the suspect at 15 s; Roam is on our slot about 9 s after the take-back) |
-
-**Release: STEER to ENGAGE.** Any one of these, per body:
-
-| Trigger | Why |
-|---|---|
-| The hunt strategy orders the strike (section 8) | The plan says go |
-| A target within the kind's **engage radius** E (section 4), with line of sight by our check | Attack range |
-| Any player within **8 m** with line of sight, or within **3 m** without | Contact. A blind body must never stand next to you |
-| The body takes damage | It fights back. Never a punching bag |
-| A player fires an unsuppressed shot within 30 m of it | Too close to ignore |
-| A member of its own group within 15 m was released | The group moves together (our sharing, one hop only) |
-
-**Every release sets the movement type** (RUN, or SPRINT re-set every tick: L5). Without it a
-released body walks in at about 1 m/s, because Combat's move sets no speed and the last one set was
-Roam's WALK (B6: from 30 m it stopped 11-17 m short in 20 s; from 15 m contact took 14 s, from 6 m
-2-5 s). A released body engages within 0.5 s whatever the distance, because a steered body already has
-you in its perception: no share event is needed (L10). Until RUN-at-release is tested, keep releases
-inside about 15 m.
-
-**Take back: ENGAGE to RECOVER.** Any one of these, after at least 10 s in ENGAGE:
-
-| Trigger | Why |
-|---|---|
-| The target is beyond 2.5 × E for 8 s | Out of attack range: back to us |
-| Our senses lost the target for the kind's memory time (section 5), and it's more than 20 m away | Honest memory, not the real-position cheat |
-| The hide rule, the long call, the leash or the commitment cap (approved design) | Breaking off is ours |
-| The target died or left the server | Nothing to fight |
-
-**Never take back** a body that has a player within 15 m in line of sight: turning away mid-fight
-reads as a glitch. A body spends at least 5 s in RECOVER before it can be released again, so it
-can't flicker.
-
-**What engaged bodies still get from us:**
-- gait in the chase (bursts, the crawler's cap);
-- the kind's own attack;
-- stuck watch;
-- moving away from fire;
-- hearing by kind.
-
-**A whole-group view.** Modes are per body, but strategies work per group. A group is "engaged" while
-any member is. Hand-offs between groups (section 8) are about groups.
-
-**If blind steering fails (B1).** It didn't: 0 of 24 blind bodies engaged at 150, 50, 15 and 6 m, and
-the factor could be set in the spawn frame every time. The fallback stays on record: if factor 0 ever
-notices at close range, or the spawn frame is too late, STEER uses a factor of 0.25 instead of 0 (measured: 0% engaged by day,
-standing, in the open), and everything inside 25 m becomes Bacon's. Formations and flanks still work
-out to 25 m. The worst case is the approved design: placement and spawn order, with steering only
-beyond 250 m.
+**Built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): the four modes, releases, take-backs and RECOVER. Still designed:
+the release's reaction delay of 0.2-1.2 s per body.
 
 ---
 
 ## 4. The kinds
 
-Speeds are targets in m/s. **B7:** a speed cap is a fraction of the maximum (sprint) speed, about
-4.4 m/s for every prefab: 0.2 gives 0.85 m/s, 0.4 gives 1.8, 0.6 gives 3.0, and above about 0.7 a run
-isn't slowed. So the crawler's 0.8-1.2 is a cap of 0.2-0.27 and its 1.6-2.2 a cap of 0.37-0.5. Gait
-**walk-stop** is Roam's no-waypoint branch: walk (1.45 m/s) up to 25 m, stand 3–8 s, walk on: **0.45-0.8 m/s
-on average** (B7), less than first assumed. **March** is a held waypoint at RUN with a speed cap.
-Sprints and charges hold only while our code sets SPRINT every tick (B7: 4.4 m/s, the heavy 6.1).
-
-| | **Crawler** | **Young** | **Hunter** | **Scout** | **Guard** | **Alpha** |
-|---|---|---|---|---|---|---|
-| Prefabs (approved design) | Crawlers list, else Common | Young list | Hunter list | Scout list | Guard list | Alpha list (Bacon's heavy) |
-| Out of a fight | Walk-stop, capped at 0.8–1.2 | Walk-stop, wandering slots | Walk-stop when stalking; march at 2.0 | Still: no slot changes, loiter radius 0 | March at 2.0, in the ring | Heavy walk-stop, capped at 1.4; march at 2.0 |
-| In the chase | Capped at 1.6–2.2 | RUN 3.7, bursts to sprint (about 4.4, B7) for 2–4 s, every 8–15 s | RUN 3.7, a lunge sprint from 6–10 m (section 10) | RUN 3.7 | RUN 3.7 | Heavy RUN 4.9, a charge sprint (about 6, B7) for up to 4 s |
-| Stance (dynamic) | 0.60–0.70, hunched | 0.85–0.95 | 0.72–0.82 stalking, Bacon's 0.82–0.92 in a fight | 0.9, standing | Bacon's | Bacon's (the heavy is big already) |
-| Sight, day / night (section 5) | 60 / 40 m | 180 / 150 m | 220 / 190 m | The scout rule (approved): 120 m × stealth, 5 checks | 200 / 170 m | 160 / 140 m |
-| Hearing (× the base table) | ×1.5 | ×1.2 | ×1.0 | ×1.0 | ×1.0 | ×0.8 |
-| Blood scent | 30 m | 80 m | 80 m | — | 60 m | 80 m |
-| Memory after losing you | 20 s | 30 s | 90 s | — (it calls) | 60 s | 120 s |
-| Engage radius E (above 15 m only with RUN set at the release: B6) | 12 m | 35 m | 25 m (after a stalk) or the strike order | 15 m (it calls; fights only if you come) | 30 m | 40 m |
-| Climbs (L11; grab height, B8) | Never: no climb at all | Up to 1.4 m | Up to 1.4 m | Up to 1.4 m | Up to 1.2 m | Never climbs: goes round (its contact doesn't break fences: B17) |
-| Own attack (section 10) | Ankle grab | Leap | Lunge and bite | — (the shriek) | — (Bacon's melee) | Charge and knockdown |
-| Voice | Groans often (Bacon's chances) | Loud, shrieks when it notices you | Quiet while stalking; one tell before the strike | The shriek | Normal | The call; a roar before a charge |
-| Quirks | Herds; lies up by day (section 11) | Erratic: slot jumps 6–12 m sideways every 4–8 s on approach. 15% chance per 30 s to stop and stare at a house | Freezes when you look its way (section 8) | Faces the trail | Stays within 25 m of the alpha | Its contact trips other infected (Bacon's code), so its slot is kept 8 m clear |
-
-**Individual variation.** Each body gets, from its seed:
-- a speed factor of 0.88–1.0 on its kind's caps (caps only go down, so variation goes down too);
-- a stance offset of ±0.04;
-- a reaction delay of 0.2–1.2 s before it acts on a release or an order;
-- a slot jitter of 1–3 m.
-
-So a pack strings out on its own and no two move alike.
-
-**Day parties** are hunters and young. They use their kind's profile and the strategies allowed by day
-(section 8). Phase 0's hop and hold stays as the data rhythm: a 100–200 m leg every 4–6 minutes, now
-walked at walk-stop (about 2–3 minutes), then a hold. The average stays near the simulator's
-assumption, so its day-crossing numbers still hold. Don't let day parties march all the time: phase 0
-measured that groups always moving raise day fights to 1.7 a crossing.
+**Built** for the young, hunters, scouts, the guard and the alpha ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): caps,
+stance, sight, memory, reach, climb limits and individual variation. Still designed: the crawler's
+profile in use (the crawlers aren't driven yet, section 11), blood scent radii, the young's erratic
+slot jumps and stares at houses, the hunter's freeze when you look its way outside a stalk, the alpha's
+roar before a charge.
 
 ---
 
@@ -271,36 +185,16 @@ stealth's factor), so the close fight still feels like Bacon.
 
 ### 5.1 Sight: the notice meter
 
-Each group keeps a meter from 0 to 1 for each player within its sight radius R (section 4). Every
-second:
-
-> meter += 0.15 × vis × facing × (1 − d / R)^1.5 × LOS, and it falls 0.1 a second when there's nothing to add
-
-| Input | Value |
-|---|---|
-| vis | Stealth's visibility of the player, 0–1 (stance, speed, light, weather, noise). Already built |
-| facing | 1 within ±70° of the leader's heading, 0.25 behind it |
-| LOS | 1 or 0, from section 5.5. Never through terrain or buildings |
-| d | Distance from the leader's eye to the player |
-
-| Meter | State | What players see |
-|---|---|---|
-| Under 0.4 | Unaware | Nothing changes |
-| 0.4 to 1 | **Suspicious** | It stops and turns toward you. Hunters freeze and crouch. Crawlers drift your way. One sound (a tell, section 12) |
-| 1 | **Aware** | The group knows your position. The strategy starts (section 8). Young and scouts shriek |
-
-**Close in.** Within 12 m with line of sight, the meter fills in 2 s whatever the rest says. Within
-8 m the contact rule releases the body anyway (section 3).
-
-**Calibration.** For a hunter by day: a walker (vis 0.85) at 100 m in front notices in about 20 s.
-At 150 m it's about 45 s, and at 25 m about 9 s. Phase 0 measured Bacon at about 25% per 30 s at
-50–200 m. Before phase 2 closes, tune the 0.15 so a hunter matches that ladder, then re-run
-`tools/tribe_sim.py` with the new sight. Crawlers are much weaker by design.
+**Built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)). Still to do: calibrate **Notice rate** to phase 0's ladder in a
+play-test and re-run `tools/tribe_sim.py` with it.
 
 ### 5.2 Hearing
 
 A sound gives a group a **lead**: a position with an error of 15% of the distance. A lead starts an
 investigation (walk-stop toward it), never a fix on you.
+
+Built: the unsuppressed (170 m) and suppressed (30 m) shot, as a lead. The rest of this table is
+designed:
 
 | Sound | Base radius | Source |
 |---|---|---|
@@ -336,204 +230,24 @@ it pulls them along your trail. *"It's following the blood."*
 
 ### 5.5 Line of sight without seeing through walls
 
-1. **Terrain.** Sample `GetSurfaceY` every 10 m along the line, and test it against the line's height.
-   This is pure script with no physics. Up to 25 samples.
-2. **Buildings.** Within 80 m only, one physics trace from eye to head against buildings and walls.
-   Trees don't block it.
-3. **Budget.** At most 12 sight checks a second for the layer, nearest players first. The scout rule
-   keeps its own 12 (approved). Each check is cached 2 s.
-
-VERIFY 12 in the approved design (the trace's cost) covers this. **B13:** a terrain check costs
-0.002 ms and an 80 m physics trace 0.021 ms, so 12 a second cost nothing.
-
-**Integration with stealth (built).** Stealth stays the one judge of how visible a player is. It stops
-setting perception factors on STEER and RECOVER bodies, and its "losing them" search doesn't run on
-them (our memory covers it). It sets factors on ENGAGE bodies as today. Its 40-agents-an-update cap
-now counts only engaged bodies.
+**Built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): terrain samples, a trace within 80 m, 12 a second. Still
+designed: a 2 s cache per check.
 
 ---
 
 ## 6. Formations and flanking
 
-### 6.1 Frames and slots
-
-A group has an **anchor** A (where it's going next), a **heading** h (a unit vector toward its goal),
-and its side vector p = h rotated 90°. Each member i has a slot offset (x_i to the side, z_i forward)
-and stands at:
-
-> S_i = A + x_i · p + z_i · h + jitter_i, snapped to the navmesh (L18), never in water
-
-Our tick writes S_i into the character's slot field every 1–2 s (L2). Roam then walks or runs the body
-there. The anchor moves by the group's held waypoint (march) or by our tick (walk-stop).
-
-**Minimum spacing is 3 m, and 8 m round an alpha.** Bacon's infected trip each other on contact, and
-the heavy trips anyone it touches at speed. Spacing also stops the "single file" pile-up the author
-dislikes. **B20:** slots alone don't keep it (members of a pair came within 0.8 m), so the slot code
-enforces the minimum between members. B3 and B20 measured the slots themselves: bodies sit within
-0.1-0.8 m of them, the fan was 63 m wide at 52 m out, and the pincer's pairs arrived 10 s apart.
-
-### 6.2 The formations
-
-n is the number of members, i = 0 … n−1, and c = (n − 1) / 2.
-
-| Formation | When | Slots (x_i, z_i) |
-|---|---|---|
-| **File** | On a trail at night (the lore's "in file"), crossings, bridges | (±0.5 jitter, −i · 5) |
-| **Loose line** | Crossing open ground, sweeping a field | ((i − c) · w, ±2 jitter) |
-| **Fan** | The approach once aware | On an arc round the target (below) |
-| **Wedge** | A hunter group led by its strongest, or the alpha with its guard | (±⌈i/2⌉ · w, −⌈i/2⌉ · 4); the alpha at the point with 8 m clear |
-| **Flanking pairs** | The pincer | Two pairs, each in a short file (0, 0) and (2, −4), at the flank points (6.4) |
-| **Crawler herd** | Town drift | A blob: each slot a random point 6–25 m from the anchor, fixed per body, loiter radius 6 m |
-| **Ring** | Lair by day, kill sites, the vigil | The approved feeding order and ring distances, as angles round the centre |
-
-### 6.3 Spreading wider on the approach
-
-The side spacing w grows as the group gets nearer the target, d being the distance from the group
-centre to the target:
-
-> w(d) = clamp(4 + 0.1 · (200 − d), 4, 20) m
-
-| d | 200 m | 150 m | 100 m | 50 m | 0–40 m |
-|---|---|---|---|---|---|
-| w | 4 m | 9 m | 14 m | 19 m | 20 m |
-| Front of a group of 4 | 12 m | 27 m | 42 m | 57 m | 60 m |
-
-**The fan.** Once w × (n − 1) is more than 30 m, the line bends into an arc of radius d round the
-target T, so everyone keeps the same distance:
-
-> θ_i = (i − c) · w / d, and S_i = T − d · rotate(h, θ_i)
-
-### 6.4 The flank and the pincer
-
-From the target T and the group centre G:
-
-- u = (T − G) / |T − G|, the line of approach;
-- p, the side vector;
-- s = −1 or +1, the side.
-
-The flank point for side s, at radius R_f and angle α off the line of approach:
-
-> F_s = T − R_f · (cos α · u) + R_f · (sin α · s · p)
-
-**Defaults:** R_f = 130–150 m in the open by day, 90–110 m at night or in bush; α = 70°.
-
-**Two legs.** Going straight from G to F_s would cross the target's front. So:
-1. **Leg 1 (the sidestep):** W1 = G + s · p · R_f · sin α, held back.
-2. **Leg 2:** to F_s.
-
-**Cover.** For each leg end, try 5 points within ±15° of the arc. Prefer one whose terrain line to the
-target is blocked (5.5, terrain only). Then prefer a land-grid forest or sparse cell. That is 5 cheap
-checks per re-plan.
-
-**Re-plan** when the target moves 25 m from where the plan assumed, at most once every 10 s.
-
-**Timing.** Each element's ETA is the length of its route divided by its gait speed. The slower element
-starts first. Both are released together:
-- when both are within E of the target, or 45 m;
-- or after 60 s from the first one's arrival, whichever comes first. A pincer never waits forever.
-
-**Worked example.** A target in a field, a group 200 m away, R_f 140 m, α 70°.
-- Each flank point is 140 m from the target, 48 m back toward the group's side and 132 m out to the
-  side. The two are 263 m apart.
-- Leg 1 is a 132 m sidestep, about 1–2 minutes at walk-stop.
-- The whole move takes about 3–4 minutes. That suits a stalk, not a sprint.
-
-### 6.5 Stalking at 80–150 m
-
-A shadow point keeps the group behind and to the side of a moving target, v being the target's
-velocity:
-
-> bearing b = the direction from T to the group, turned toward −v by up to 60°, and toward the nearest cover cell
->
-> S = T + R_s · b, with R_s = 80–150 m by day and 50–100 m at night
-
-- **Gait:** walk-stop, the anchor 15–20 m ahead (Roam walks under 25 m: L3).
-- **When you turn toward them:** if your facing is within 30° of the group and you're within 120 m,
-  they freeze. That means a slot unchanged, a crouched stance (L6) and silence for 3–6 s, or a drop
-  back to the last cover point. *That's the moment a careful player catches them.*
-- **Re-target:** every 5 s, with an order budget of one held-waypoint change per 8 s if marching.
-
----
+**Built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): slots, file, line, wedge, pairs, ring, the spread, the fan on a
+strike, the flank with its sidestep and cover choice, the stalk shadow and its freeze, the 3 m minimum.
+Still designed: the crawler herd blob, a re-plan only when the target moves 25 m (the code re-plans each
+second), an ETA so the slower element starts first.
 
 ## 7. Navigation and getting unstuck
 
-### 7.1 Where they go
-
-| Scale | Who decides | How |
-|---|---|---|
-| Across the range (250 m squares) | The tribe data (approved) | Trails of 4–6 land-grid points. They stay on land, cross water only at crossings, and avoid fear places and burned squares |
-| Along a leg (10–250 m) | Our code | Leg ends at cover: forest-edge and bush cells. Low ground preferred (the lowest of a square's 5 samples). Navmesh-snapped and dry |
-| Step by step | The engine | Bacon's `AITaskMove` paths on the navmesh between our points |
-
-**Along hedges, forest edges and ditches: what's really possible.**
-- **Forest edges: feasible.** The land survey already reads tree entities per square. Add one **edge
-  point** per forest or sparse square that borders an open one (the mean of trees within 30 m of the
-  open side). That's a few KB in the cache. Legs end at edge points.
-- **Hedges: partly.** Bushes are `BaseTree` too (phase 0). We can't trace a hedge line cheaply, so
-  "along hedges" means through bush squares, with leg ends at bush clusters. It doesn't mean hugging
-  one hedge.
-- **Ditches: no** at the grid's scale. The fallback is a preference for low ground.
-
-**Water.** Every point is checked with `RZ_Util.IsWater` and `TryGetWaterSurface` (phase 0's
-method), and so is the straight line to it (1 m steps). Rivers are crossed only at the land grid's
-bridges and fords, in file. **B16:** this is needed: the engine paths straight through a shallow river
-(raw slots across were waded at 0.4-0.7 m), while checked slots and slots 1.5 m from the water stayed dry.
-
-**Stairs and upper floors.** **B11:** they don't climb stairs reliably (in 2 runs, a target 3.8 m
-upstairs wasn't reached in 70 s; one body got 2.7 m up). So this is the rule: if a target is more than
-2.5 m above a body, within 15 m across, and not reached for 20 s, the body waits at the stair foot or the
-doorway (*"they wait below"*). After the leash it gives up. A roof or an upper floor is a fair escape.
-
-### 7.2 Stuck detection
-
-Checked every 5 s for each STEER or ENGAGE body with a player within 300 m (the cheap ones first):
-
-| Case | Stuck when |
-|---|---|
-| STEER | It has moved under 1.5 m in 10 s while its slot is more than 8 m away |
-| ENGAGE | It has closed under 1 m on its target in 8 s, the target is within 40 m, and it's not in melee range |
-| Climb refused (L11) | It counts as a stuck tick at once (B8: a refused body stops dead against the wall and never goes round on its own) |
-
-### 7.3 The unstick ladder
-
-Each step gets one try, then the next.
-
-| Step | What | Time |
-|---|---|---|
-| 1. Sidestep | Slot moved 4 m sideways (left first, then right), as Bacon's `GetSideStepPosition` does | 6 s |
-| 2. Back off | Slot 10–20 m back along its route, navmesh-snapped | 10 s |
-| 3. Another way | A new leg 45° off the old line, on the side with fewer stuck marks | 20 s |
-| 4. Out of sight | Only if no player is within 60 m and none has terrain line of sight within 150 m: `SetOrigin` to the nearest navmesh point up to 15 m ahead on its route | Instant |
-| 5. Give up | STEER: drop the slot, rejoin the group's anchor. Out of sight beyond 250 m: back to data with a silent delete (approved). ENGAGE: take back (RECOVER) | — |
-
-- **Stuck marks.** A 10 m square where a body got stuck twice is marked for 30 minutes, and new legs
-  avoid it. That's data only, at most 64 marks.
-- **Never in view.** Step 4 never happens where a player could see it.
-- **Lab (B9).** Against tall walls the navmesh didn't know, no body ever met the stuck rule: they slid
-  along the walls and round their ends in 17-21 s, rebuilt navmesh or not. The ladder wasn't exercised;
-  its numbers stay untuned. The real stuck case seen in the lab is a refused climb (B8).
-
-### 7.4 Fences: vault low, not tall
-
-Bacon climbs whatever the engine's climb test allows, and only when it has stopped dead against
-something. Our climb gate (L11) adds a height limit:
-
-> allowed when the grab point's height above the body's feet is at or under the kind's limit (section 4)
-
-**B8:** the gate works (a 1.2 m limit refused a 1.39 m fence every time), but the grab point isn't
-always the top: a 1.97 m rail fence was climbed through its 0.85 m rail at every limit. Heights below
-are grab heights.
-
-| Obstacle | Young, hunter, scout | Guard | Crawler | Alpha |
-|---|---|---|---|---|
-| Low wall, fence or hedge up to 1.2 m | Vault | Vault | Goes round | Goes round |
-| Fence 1.2–1.4 m | Vault | Goes round | Goes round | The same |
-| 1.4 m and up (garden walls, chain-link, the perimeter) | Goes round | Goes round | Goes round | The same |
-
-A refused climb is a stuck tick, so the ladder routes them round. **B17:** `m_bDestroysThings` is on
-for `Zombie_Heavy_Tank` and its contacts happen (142), but they didn't damage wooden fences (5000 of
-5000 HP); the heavy climbed over instead. So the alpha goes round like the rest. Breaking fences would
-need our own damage call (untested).
+**Built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): water checks on slots, stairs (wait below), stuck detection, the
+unstick ladder and stuck marks, the climb gate per kind. Still designed: **forest edge points** in the
+land cache (the code uses the square's tree class and its open neighbours), low ground preferred on a
+leg, and the navmesh snap (B9: not on Bacon's bodies).
 
 ### 7.5 Doors
 
@@ -555,98 +269,21 @@ break a weak door. That trade-off is one of the decisions for the author (sectio
 
 ## 8. Hunt strategies
 
-### 8.1 The state machine (per hunt, per target)
-
-```
- TRAIL / DAY WALK ──notice (meter 1, a shriek, a lead with heat 30+ at night)──▶ CHOOSE
- CHOOSE ──picks a strategy (8.3)──▶ APPROACH
- APPROACH ──in position, or the strategy's timeout──▶ SET
- SET ──a moment (8.2), or timeout──▶ STRIKE (release: section 3)
- STRIKE ──engaged; members fight as Bacon──▶ PRESS
- PRESS ──group down to half, or target lost for memory time──▶ REGROUP or HAND-OFF
- REGROUP ──60–100 m back in cover, 20–40 s──▶ CHOOSE (once per target per hunt) or GIVE UP
- HAND-OFF ──another group closer to last-known takes it──▶ (the other group's CHOOSE)
- GIVE UP ──search done; long call if a hunt──▶ HOME
-```
-
-| State | What the bodies do | Timeout |
-|---|---|---|
-| CHOOSE | Freeze 2–5 s (a tell: the sound of them stopping) | — |
-| APPROACH | The strategy's formation and legs, in STEER | Per strategy (8.3) |
-| SET | Hold in cover at the set distance, walk-stop toward the strike side | 20–90 s |
-| STRIKE | Release with injection. The leader roars (a tell) | — |
-| PRESS | Bacon fights. Our overlay: bursts, attacks, stuck watch | — |
-| REGROUP | Take back. Slots in cover 60–100 m from the target | 20–40 s |
-| GIVE UP | Take back. Search the last-known spot (45 s), then home | — |
-
-**A real give-up.** Once a group gives up on a player, it can't target them again for 10 minutes
-unless:
-- it notices them afresh within 50 m;
-- or they fire within 60 m of it.
-
-That's the approved hide rule, with teeth: going home means going home.
-
-### 8.2 "A moment": when they strike
-
-The SET state ends when any of these happens:
-- the target stops moving for 10 s or more (looting, aiming, bandaging);
-- the target goes prone or crouches in bush, or enters a wood or a field edge;
-- the target's facing turns away from the strike side (more than 100° away);
-- the target starts shooting at something else (busy);
-- all elements are in position (a pincer, a ring);
-- night falls, or fog comes in (the stalk's own clock).
-
-### 8.3 The strategies
+**Built** ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): the state machine (approach, set, strike, search, give up), a
+moment, Rush, Stalk, Pincer, Encircle and Give up, the temperament weights for those four, the day's
+limits and the Rising alpha's cautious weights. Still designed:
 
 | Strategy | Needs | Approach | Strike | Timeout |
 |---|---|---|---|---|
-| **Rush** | Anything. Young groups by default | Fan at RUN | At once | — |
-| **Stalk** | 1 group | Shadow at 80–150 m by day, 50–100 m at night (6.5) | At a moment, from cover, from behind | 4 min day, 6 min night, then Rush or give up |
-| **Pincer** | 2 groups, or 1 group of 4+ split into 2 | Two flank points (6.4) | Both together | 60 s after the first arrives |
-| **Encircle** | 5+ bodies, open or mixed ground | A ring of radius 120 m with a **60° gap**, closing 0.7 m/s at walk-stop | At 35 m from every slot, or a moment | 3 min |
 | **Flush** | Target hidden in bush, a wood or a building | 1–2 bodies push in noisily from one side; the rest wait 40–60 m off on the far side | When the target moves or runs out | 90 s |
 | **Bait** | A young plus a hunter group. Cunning only | The young goes noisily at the front (released early). The hunters come blind up the target's back trail | When the target engages the bait, or turns to it | 90 s |
 | **Herd** | A crawler town within 500 m | An encircle whose gap faces the town. The young press from the far side | At the town's edge; the town is stirred (+20) | 4 min |
-| **Ambush** | A crossing (bridge, ford, road gap, gate) or a habit place within 300 m ahead of the target's heading | One group holds still 20–40 m off it, behind terrain or trees | When the target passes within 30 m | 5 min, then stalk |
+| **Ambush** | A crossing or a habit place within 300 m ahead of the target's heading | One group holds still 20–40 m off it, behind terrain or trees | When the target passes within 30 m | 5 min, then stalk |
 | **Hand-off** | Another group of the tribe closer to the last-known spot | Passes last-known and heading | (theirs) | — |
 
-**Fairness inside the strategies:**
-- **The ring always has a gap.** A ring with no way out reads as a trap you couldn't have seen. The
-  gap is where the herd and the ambush come from, so reading the gap is the counterplay.
-- **The bait is always loud.** It shrieks and runs straight in. Shooting it is fine. Turning round
-  is the counter.
-
-### 8.4 Which strategy a tribe picks
-
-Weights by temperament (approved temperaments). A strategy whose "needs" aren't met has weight 0. The
-roll takes the top two and picks between them 70/30.
-
-| Strategy | Bold | Cautious | Cunning | Territorial | Nomadic |
-|---|---|---|---|---|---|
-| Rush | 3 | 0 | 0 | 1 | 1 |
-| Stalk | 1 | 3 | 2 | 1 | 2 |
-| Pincer | 2 | 1 | 2 | 3 | 1 |
-| Encircle | 3 | 0.5 | 1 | 2 | 1 |
-| Flush | 2 | 1 | 1 | 2 | 1 |
-| Bait | 0 | 0 | 3 | 0 | 1 |
-| Herd | 1 | 1 | 2 | 0 | 2 |
-| Ambush | 0 | 2 | 3 | 2 | 0 |
-
-| Situation | Allowed |
-|---|---|
-| **By day** (day parties, a scout's pack of at most 4) | Rush, Stalk and Pincer (2 groups) only. Never the alpha (approved) |
-| **Rising alphas** | Cautious weights (approved: every tribe hunts cautiously while its alpha is Rising) |
-| **Crawlers** | No strategies: herd drift to noise, then Rush at E |
-| **Habits** (approved) | A habit place within 300 m adds 2 to Ambush |
-
-**Caps:**
-- one strategy per tribe per target;
-- at most 3 elements;
-- at most 2 strategies running on the server near one player cluster;
-- everything inside the approved commitment cap and first-wave sizes.
-
-The placement rules for hunts (the young ahead, flankers out of sight, the core held back) stay.
-Strategies start from where bodies appear.
+Their weights (bold, cautious, cunning, territorial, nomadic): Flush 2/1/1/2/1, Bait 0/0/3/0/1, Herd
+1/1/2/0/2, Ambush 0/2/3/2/0; a habit place within 300 m adds 2 to Ambush. Also designed: a regroup
+60–100 m back in cover once per target, at most 3 elements and 2 strategies near one player cluster.
 
 ---
 
@@ -666,6 +303,9 @@ Strategies start from where bodies appear.
 ---
 
 ## 10. Attacks
+
+**Built:** the hunter's lunge and bite, the attribution of a hit, and the per-player limits
+([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)). The rest below is designed.
 
 **The rule.** Bacon's melee stays the hit and its damage stays the damage. Each kind adds one special
 move, made from animations Bacon already uses (melee, jump, crouch, sprint, the heavy's contact) and
@@ -750,71 +390,13 @@ motion. Until a client confirms how it looks, the approved design's slow prefab 
 
 ## 13. Settings
 
-A new block, **Zombies > Behaviour** (`RZ_BehaviourSettings` on `RZ_GameModeComponent`). As
-CLAUDE.md says, no `[Attribute]` field gets an initialiser: the attribute's default string below is
-the only default.
-
-| Setting | Default | What it does |
-|---|---|---|
-| Enabled | 1 | Off: every body is OFF mode, exactly today's Bacon behaviour plus stealth |
-| Blind steering | 1 | Off: STEER uses the fallback factor and only drives beyond 25 m (section 3) |
-| Steer factor | 0 | The perception factor while steered (the fallback uses 0.25) |
-| Contact radius | 8 | m, with line of sight (3 m without is fixed) |
-| Take-back multiple | 2.5 | × E before an engaged body is taken back |
-| Order gap | 5 | s between held-waypoint changes for one group |
-| Orders per 5 s | 16 | Server-wide held-waypoint changes (the approved 8 plus the layer's 8) |
-| Slot update | 1 | s between slot writes for groups with a player within 150 m (3 s beyond) |
-| Sight checks a second | 12 | The layer's line-of-sight checks (the scout rule keeps its own) |
-| Notice rate | 0.15 | The 0.15 in the meter (5.1); tuned in phase 2 |
-| Hunter sight day / night | 220 / 190 | m. Other kinds use the section 4 table, which scales with these |
-| Shot hearing | 170 | m, the base for a shot |
-| Spacing min | 3 | m between slots (8 round an alpha) |
-| Spread start / max | 200 / 20 | m: w(d) in 6.3 |
-| Flank radius day / night | 140 / 100 | m |
-| Flank angle | 70 | degrees |
-| Stalk distance day / night | 80-150 / 50-100 | m |
-| Strategies | 1 | Off: every group Rushes at E |
-| Own attacks | 1 | Off: plain Bacon melee |
-| Special move gap | 10 | s between special moves landing on one player |
-| Weak door words | Shed,Barn,Garage,Wood | Door prefab words an alpha or a bold night hunt may break |
-| Climb limit | 1.4 | m for young, hunters and scouts (guard 0.2 less; crawlers and alphas never climb) |
-| Unstick out of sight | 1 | Allows step 4 of the ladder |
-| LOD bands | 60,150,300 | m: LOD 0 / 2 / 4 / 6 beyond (L13) |
-| Sleep lying crawlers | 1 | AI off for crawlers lying up beyond 40 m of a player |
-| Debug log | 0 | One line a minute: bodies per mode, strategies running, releases, take-backs, unsticks, moves landed |
-
----
+**Built** as **Zombies > Behaviour** (docs/WORKBENCH_SETUP.md, Settings objects). Still designed, with
+their parts: Order gap and Orders per 5 s (fixed at 5 s a group), Weak door words, Sleep lying crawlers.
 
 ## 14. Performance budget
 
-Bodies still exist only near players, and the approved budgets (100 infected agents, the engine limit
-at 160, spawns per tick, props) stay. The layer adds:
-
-| Work | When | Cap | Estimate |
-|---|---|---|---|
-| Behaviour tick (modes, slots, strategies) | 1 s, on the game mode's fast loop | 30 groups near players; groups with no player within 300 m skip it | Vector maths only. Target under 0.3 ms a second |
-| Senses (meters) | 1 s per group with a player within 250 m | 30 groups × players in range | A few multiplies each |
-| Line-of-sight checks | Cached 2 s | 12 a second (terrain samples), building traces only within 80 m | B13: 0.002 ms a terrain check, 0.021 ms a trace |
-| Hooks in Bacon's nodes | Every behaviour-tree loop of every agent | 100 agents × about 7.4 loops a second (B12) | One field read each. B15: no cost above the noise |
-| Held-waypoint changes | Marches, home, search | 16 per 5 s; one per group per 5 s | No RplComponent (phase 0) |
-| Stuck checks | 5 s | Bodies with a player within 300 m | Two distance tests each |
-| Navmesh snaps | — | — | Not available on Bacon bodies (B9); slots go unsnapped (B3 shows they work) |
-| Climb gate | Only while a body stands still against something | — | One extra climb test |
-| Data | — | Stuck marks 64; scent trails 6 points per bleeding player; edge points in the land cache | A few KB |
-
-**Savings the layer brings:**
-- **Think rate.** Bodies 60–150 m from every player get LOD 2 (a 0.5 s loop), 150–300 m LOD 4
-  (0.9 s), and beyond that LOD 6 (1.3 s), through `SetPermanentLOD`. Today all stay at LOD 0 (phase 0).
-  B12: all 100 at LOD 6 cut p99 from 11.9 to 9.6 ms; order latency is dominated by Roam's 3–8 s idles
-  at every LOD.
-- **Sleep.** Crawlers lying up and the lair's resting ring beyond 40 m have their AI off.
-- **Fewer chases.** Blind bodies don't chase on their own, so there's less pathing at 100–250 m.
-
-**The target.** With 100 agents and the layer on, the lab box's p99 frame time stays at or under
-12.5 ms (phase 0 measured 11.6 ms without it), and the mean at or under 4.6 ms. **B15: met.** 100
-agents with half in steered walking formations: p99 11.93 ms, mean 4.41 ms (the same 100 on held
-waypoints in the same run: 13.17 and 4.56). 140: p99 13.03, mean 4.75. Writing all slots takes
-0.04-0.2 ms a second.
+**Built** within the lab's measured budget ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)). Still designed: crawlers and the
+resting ring asleep with their AI off beyond 40 m (L14).
 
 ---
 
@@ -870,8 +452,8 @@ ReforgerZ warnings), and the runtime test where the phase says so. Docs go in th
 | **1a. Hooks and modes** | Phase 1, with the plumbing | `Zombies/Behaviour/RZ_BaconHooks.c` (the modded Bacon character and nodes: L2, L6, L8, L9, L11, L12, L15; the lab's `RZL_Hooks.c` is the tested starting point). `RZ_Behaviour.c`: modes, the control rule (releases set the movement type), kind profiles, individual variation, gait levers, LOD bands through `SetPermanentLOD`. Stealth told about modes | 900 |
 | **1b. Navigation** | Phase 1 | `RZ_Unstick.c`: stuck checks, the ladder, stuck marks. The climb limit. Doors: find another way, weak doors. Water checks on slots. Land survey edge points | 500 |
 | **1c. Crawler life** | Phase 1, with crawlers | Lying up, waking, herd blobs, night drift loops, scavenging bodies, giving way, the crawler's speed cap | 350 |
-| **2a. Senses and formations** | Phase 2 slice | `RZ_BehaviourSenses.c` (meters, hearing table, blood scent, memory, shrieks, line-of-sight cache). `RZ_Formations.c` (slots, spread, fan, flank points with cover, stalk shadow) | 750 |
-| **2b. The first strategies** | Phase 2 slice | `RZ_HuntPlan.c`: the state machine, Rush, Stalk, Pincer, Give up. The hunter lunge and the alpha charge (server effects only: bleed, the miss stumble). Play-test the slice (the approved list, plus a stalk and a pincer) | 700 |
+| **2a. Senses and formations** (built, but blood, shrieks, hand-offs and the full hearing table) | Phase 2 slice | `RZ_BehaviourSenses.c` (meters, hearing table, blood scent, memory, shrieks, line-of-sight cache). `RZ_Formations.c` (slots, spread, fan, flank points with cover, stalk shadow) | 750 |
+| **2b. The first strategies** (built, but the alpha's charge) | Phase 2 slice | `RZ_HuntPlan.c`: the state machine, Rush, Stalk, Pincer, Give up. The hunter lunge and the alpha charge (server effects only: bleed, the miss stumble). Play-test the slice (the approved list, plus a stalk and a pincer) | 700 |
 | **2c. Everything else** | Phase 2, all tribes | Encircle, Flush, Bait, Herd, Ambush, Hand-off; temperament weights; reactions table. `RZ_PlayerEffectsComponent` and the hold, stagger and knockdown after the client test. Re-run `tools/tribe_sim.py` with our sight model | 900 |
 
 Total about 4,100 lines of game code on top of the approved estimate. The lab scripts (about 4,900

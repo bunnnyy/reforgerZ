@@ -115,6 +115,8 @@ class RZ_SaveData
 	// The crawlers' kill sites (Zombies/RZ_Crawlers.c), and the time of day so a restart carries on
 	// where the day stopped (Core/RZ_GameModeComponent.c, Keep time of day). Older saves have none
 	ref RZ_CrawlerSave crawlers;
+	// The tribes (Zombies/RZ_Tribes.c). Older saves have none: the season's seeds are made on load
+	ref RZ_TribesSave tribes;
 	bool hasTimeOfDay;
 	float timeOfDay;
 

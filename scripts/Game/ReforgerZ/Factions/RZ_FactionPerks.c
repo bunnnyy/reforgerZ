@@ -897,6 +897,9 @@ class RZ_FactionPerks
 		m_iDeathKiller = killer;
 		RememberKiller(victim, killer);
 		m_GM.GetMissions().OnPlayerDied(victim, at);
+		// Killed by a tribe's body in the open: that tribe took them (docs/INFECTED.md, the taken)
+		if (killer < 0 && m_GM.GetTribes())
+			m_GM.GetTribes().OnPlayerDied(victim, at);
 
 		// A life that lasted leaves a journal: a headline or a wanderer's rumour, never an object
 		if (m_GM.GetTownMemory())

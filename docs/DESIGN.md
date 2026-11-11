@@ -98,8 +98,8 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
 
 **The land grid** (`World/RZ_Land.c`): what each 250 m square of the map is like (water, height,
 trees, roads, bridges) and which squares are wild land, read once and cached. Crawlers stand in its
-fields and loose ones walk to its lair candidates; the infected tribes (planned) will live in its wild
-land. It's described in [INFECTED.md](INFECTED.md#the-land).
+fields, loose ones walk to its lair candidates, and the infected tribes live in its wild land and
+walk its trails. It's described in [INFECTED.md](INFECTED.md#the-land).
 
 ## The Director: outbreak stages and spread
 
@@ -193,7 +193,7 @@ Every update, for the infected the spawner tracks (groups and their members) wit
 
 > its own factor × the base for its kind × a factor from the **most visible** player within 150 m of any member of its group, never more than ×1.2 on top of its own
 
-- **Base by kind** (with the infected's roles, [INFECTED.md](INFECTED.md#plumbing-for-the-tribes):
+- **Base by kind** (with the infected's roles, [INFECTED.md](INFECTED.md#plumbing):
   a tribe's leader and guard count as specials, a hunt on its trail as a horde that must keep
   coming, crawlers and loose ones as common): common ×1, special ×1.2 (sharper), horde member ×0.9 (a crowd on the move
   looks ahead).
@@ -206,6 +206,11 @@ Every update, for the infected the spawner tracks (groups and their members) wit
   prone close to them can't hide you while you stand further off.
 - With nobody within 60 m, a group goes back to its base. At most 40 infected are touched an
   update; the rest wait their turn.
+- **Bodies the behaviour layer steers** (the tribes', [INFECTED.md](INFECTED.md#how-they-move-and-hunt))
+  are left alone: they're blind on purpose while our code drives them, and their own senses read
+  `GetVisibility` instead. Stealth sets the factor only on their bodies that are engaged (Bacon's), and
+  its search never runs on a group the layer drives. The tribes' scouts see with
+  `SightRadius(player, Scout sight)` ([INFECTED.md](INFECTED.md#scouts)).
 - **Never lowered for infected that must keep coming:** every horde tied to a mission (the holds
   and waves, and most event and questline hordes), and everything within 1.5 km of the lab during
   the final stand. They keep their own factor. Three hordes are the exception, because staying out
@@ -449,7 +454,7 @@ Code: `Core/RZ_GameModeComponent.c`, `Puzzles/RZ_GameTime.c`.
 - **Day length** (top level, 4): a whole game day takes this many real hours, set with the engine's
   day duration at start (×6: a night of about 85 real minutes, dusk about 20). The engine caps it at
   ×12, so 2 hours or more. 0 leaves the server's own clock (phase 0 measured the default as real time,
-  ×1). The infected's design assumes about 4 ([INFECTED.md](INFECTED.md#tribes-planned)).
+  ×1). The infected's design assumes about 4 ([INFECTED.md](INFECTED.md#the-daily-rhythm)).
 - **Keep time of day** (on): the time of day is saved in `state.json` and set again at start, because
   the engine's clock goes back to the scenario's start on a restart. The day carries on where it
   stopped; nothing is skipped.
