@@ -42,6 +42,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected bool m_bSeenHidden;
 	protected string m_sStanding;
 	protected string m_sJournal;
+	protected string m_sDetail;			// the selected journal row's detail (RZ_UIFeed.BuildDetail)
+	protected int m_iDetailVersion;
+	protected int m_iDetailAsked;		// the row id last asked for
+	protected float m_fDetailAskAt = -100;
 	protected string m_sBackgrounds;
 	protected string m_sMap;
 	protected string m_sBoard;
@@ -315,6 +319,11 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			RZ_ShopMenu.OnPayload(this, payload);
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_DETAIL)
+		{
+			m_sDetail = payload;
+			m_iDetailVersion++;
+		}
 		else
 		{
 			m_sBackgrounds = payload;
@@ -378,6 +387,40 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	// ================================================================ Client: ask
+	//------------------------------------------------------------------------------------------------
+	//! The journal's selected row: its detail is asked for once per selection.
+	void AskDetail(int id)
+	{
+		if (id == m_iDetailAsked)
+			return;
+
+		m_iDetailAsked = id;
+		m_sDetail = "";
+		if (Replication.IsServer())
+			RpcAsk_Detail(id);
+		else
+			Rpc(RpcAsk_Detail, id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_Detail(int id)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm || !gm.GetUIFeed())
+			return;
+
+		// At most a few a second: scrolling a list asks for each row it stops on
+		float now = RZ_UIW.Now();
+		if (now - m_fDetailAskAt < 0.25)
+			return;
+
+		m_fDetailAskAt = now;
+		int playerId = OwnerPlayerId();
+		if (playerId > 0)
+			SendPayload(RZ_UIFeed.PAYLOAD_DETAIL, gm.GetUIFeed().BuildDetail(playerId, id));
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! kind: RZ_UIFeed.PAYLOAD_*
 	void Ask(int kind)
@@ -670,6 +713,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	bool IsSeenHidden() { return m_bSeenHidden; }
 	string GetStanding() { return m_sStanding; }
 	string GetJournal() { return m_sJournal; }
+	string GetDetail() { return m_sDetail; }
+	int GetDetailVersion() { return m_iDetailVersion; }
 	string GetBackgrounds() { return m_sBackgrounds; }
 	string GetMap() { return m_sMap; }
 	string GetBoard() { return m_sBoard; }

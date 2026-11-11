@@ -111,9 +111,10 @@ behind it.
 |---|---|---|---|
 | Stronghold leaders | `stronghold:<faction>`, `leader:<faction>`, `leader` | `leader:<seat>:<generation>` (someone new in the chair starts fresh) | Ask for work, Heard anything?, What do you make of me? |
 | Seat leaders | `seat:haven/council_head`, `seat:bastion/outpost_lead`, `seat:redhand/crew_boss`, `seat:halcyon/field_lead`, `leader:<faction>`, `leader` | as above | as above |
-| Wanderers | `wanderer:<role>` (trader, doctor, scavenger, deserter, preacher, courier, kid, mechanic), `wanderer` | `wanderer:<id>:<generation>` | the role's special, Share some food, the antidote while bitten, Rob |
+| Wanderers | `wanderer:<role>` (trader, doctor, scavenger, deserter, preacher, courier, kid, mechanic), `wanderer` | `wanderer:<id>:<generation>` | the role's special, Share some food, the antidote while bitten (else Need a hand?, [errands](ERRANDS.md#the-wanderers-asks); the Mechanic: Ask about cars), Rob |
 | Safehouse occupants | `occupant` | `house:<index>` | Ask how things are |
-| Named people at holdings | `named:<faction>/<role>` (`named:redhand/toll_man`), `named:<faction>`, `named` | `named:<holding>:<index>` | Ask how things are |
+| A safehouse's named people (the first two occupants, [ERRANDS.md](ERRANDS.md#givers)) | none yet (no trees) | `house:<index>:<i>` (errands' regard) | Ask how things are, Anything need doing? |
+| Named people at holdings | `named:<faction>/<role>` (`named:redhand/toll_man`), `named:<faction>`, `named` | `named:<holding>:<index>` | Ask how things are, Anything need doing? (errands) |
 | A road post's speaker | `post:bastion`, `post:redhand`, `post` | `post:<faction>:<town>` | none |
 | The Long Table | `table:host`, `table:mother`, `table:son`, `table:boy`, `table:road` (the host out on the road), `table` | `table:<role>` (no regard: its memory stays its three words) | eat, trade a jar, declare a bite; on the road, accept or decline |
 
@@ -294,6 +295,7 @@ The lint refuses removing one; a gone id is kept as `retired <id>`.
 | `python3 tools/dialogue_pack.py` | Lint and write the packs. `--check` fails if the packs or the lock are out of date (the compile check runs it first); `--lock` adds new ids to the lock; `--list` lists the conversations |
 | `python3 tools/dialogue_sim.py <conv> --bg nurse --tier haven=trusted` | Walks one conversation as one character sees it: the lines (variants picked), every choice with its tag, whether it shows, and where a check would send them. Also `--infamy`, `--fame`, `--favor`, `--flag`, `--knows`, `--fact night`, `--mem helped`, `--regard`, `--food`, `--house short`, `--trait`; `--all` shows every start node |
 | `python3 tools/voice_lint.py` | Also reads every `.rzd` line (says as talk-screen lines, labels as choices) against [WRITING.md](WRITING.md#checking-text) |
+| **[Admin] Errands near here** (server admins, a reply on any named person, wanderer or occupant: no typing) | The errands' live count, the nearest player's last deal and why each other errand wasn't dealt, and their errands ([ERRANDS.md](ERRANDS.md#telemetry-and-the-admin-view)) |
 | `/talkdebug` (admins, in chat) | Whether Trees are on, the conversation and memory counts, your memory, and for the person you're talking to, every conversation for them and the first `when` term that fails |
 
 **The lint** (`dialogue_pack.py`): unique ids; known keywords, speakers, condition keys,

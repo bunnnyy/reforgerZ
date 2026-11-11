@@ -65,6 +65,12 @@ class RZ_Mission
 	//! for this mission (RZ_WorldFacts claims). "" = none.
 	string m_sClaimParent;
 	string m_sDeed;			// what people say you did: a short past-tense phrase with {town} ("brought medicine to {town}")
+	//! The story kit (Missions/Story/RZ_MissionStory.c): who took part and who decides, who benefits,
+	//! truths, records. Null: the mission runs exactly as before.
+	ref RZ_MissionStory m_Story;
+	bool m_bSwitched;				// its result went to another side than the giver's: pays at most the base
+	string m_sWhyNow;				// the reason it was started for ("Levie's on half portions."): the brief opens with it
+	vector m_vReasonAt;				// where that reason is: a reason-started contract must land near it
 	//! Called off by the world, not failed by anyone (Withdraw): no pay, no blame, no penalty.
 	bool m_bWithdrawn;
 	string m_sWithdrawText;
@@ -177,6 +183,22 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Who benefits (RZ_Beneficiaries) sets the side the decider crossed.
+	void SetRivalPublic(int rival, int infamy)
+	{
+		SetRival(rival, infamy);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A scene decision's 5 s hold ran out with nobody objecting (RZ_Deciding): `decider` chose
+	//! `option`. Missions with a scene decision override it and end the hold.
+	void OnHoldDone(RZ_GameModeComponent gm, int decider, int option)
+	{
+		if (m_Story)
+			m_Story.m_Deciding.EndHold();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Relative chance of this mission type being picked right now. 0 = never.
 	float GetWeight(RZ_GameModeComponent gm)
 	{
@@ -234,10 +256,14 @@ class RZ_Mission
 	//! calls this; m_sBrief is the template.
 	string GetBrief(RZ_GameModeComponent gm)
 	{
-		if (!gm || !gm.GetFacts())
-			return m_sBrief;
+		string brief = m_sBrief;
+		if (!m_sWhyNow.IsEmpty())
+			brief = m_sWhyNow + " " + brief;
 
-		return gm.GetFacts().Fill(m_sBrief);
+		if (!gm || !gm.GetFacts())
+			return brief;
+
+		return gm.GetFacts().Fill(brief);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -321,6 +347,9 @@ class RZ_Mission
 		}
 
 		RevealNear(gm, ids, players);
+		if (m_Story)
+			m_Story.Update(this, gm, dt, ids, players);
+
 		OnUpdate(gm, dt, ids, players);
 
 		if (m_eState == RZ_EMissionState.ACTIVE && m_fTimeLeft <= 0)

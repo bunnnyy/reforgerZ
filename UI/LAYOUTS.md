@@ -284,7 +284,11 @@ Frame JournalPage (root)
       └─ VerticalLayout CluesBlock
          ├─ Text  (label "WHAT YOU KNOW": puzzle clues read, or a questline's notes)
          └─ Text  DetailClues  serif 16, wraps, dark text #23211C on a paper-coloured panel #E4DDC8
+                               (first the selected row's detail: "What you've found", "Who it went to")
 ```
+
+An errand you hold is a row like any other (its icon `mission_unarmed` until `mission_errand` is
+drawn); no new widget.
 
 Unlike the mockup, `DetailWhere` is one `Text` (the script fills both lines into it), not a big
 direction over a small area, and the brief's bar isn't tinted with the accent.

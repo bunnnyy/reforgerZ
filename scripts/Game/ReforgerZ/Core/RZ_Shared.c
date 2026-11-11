@@ -81,6 +81,9 @@ class RZ_SharedSettings
 	[Attribute("30", UIWidgets.Slider, "Sign marks at once (the tribes' signs, their own pool)", "0 100 1")]
 	int m_iSignMarks;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Season mark prop (optional): the small memorial the town log's marks use (a cross, a cairn, flowers on a post). Empty = the marks are text only, said to whoever passes (docs/DESIGN.md, World memory)", "et")]
+	ResourceName m_sSeasonMarkPrefab;
+
 	[Attribute("6", UIWidgets.Slider, "On the verge: least metres off a road's centre line", "2 20 0.5")]
 	float m_fVergeMin;
 

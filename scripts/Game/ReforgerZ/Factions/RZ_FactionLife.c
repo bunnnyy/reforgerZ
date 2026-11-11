@@ -1219,6 +1219,9 @@ class RZ_FactionLife
 		array<string> options = {};
 		RZ_SupplyLines supply = m_GM.GetSupply();
 		RZ_Territory territory = m_GM.GetTerritory();
+		if (m_GM.GetErrands())
+			m_GM.GetErrands().GetFaults().SecureLines(f, options);
+
 		if (supply)
 		{
 			string dest = supply.TruckDestination(f);

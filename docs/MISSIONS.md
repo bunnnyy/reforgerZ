@@ -4,22 +4,24 @@ Every mission ReforgerZ has or plans, with its requirements and status. How the 
 behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 [REPUTATION.md](REPUTATION.md); the prefabs each mission needs are in
 [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "The prefab manifest". The long questlines that reuse
-these missions as stages are in [QUESTLINES.md](QUESTLINES.md).
+these missions as stages are in [QUESTLINES.md](QUESTLINES.md). The small, personal jobs named
+people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md).
 
 ## Counts
 
 | Kind | In code | Designed, not built |
 |---|---|---|
-| [Faction contracts](#faction-contracts) (20 designed per faction, plus three hard edges) | 83 | — |
+| [Faction contracts](#faction-contracts) (20 designed per faction, plus three hard edges; the Haven's #6 and #14 are errands now) | 81 | — |
 | [The Red Hand's hard edges](#the-red-hands-hard-edges) | 3 | — |
 | [World events](#world-events) | 25 | — (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 17 | — |
-| [Unarmed missions](#unarmed-missions) | 11 | — |
+| [Unarmed missions](#unarmed-missions) (Water Run and Medicine Before Dark are errands now) | 9 | — |
 | [Perimeter missions](#perimeter-missions) | 3 | — |
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 32, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **182** | **—** |
+| **Total** | **178** | **—** |
+| [Errands](ERRANDS.md) (not missions: asked in person) | 24 routines, 2 wanderers' asks, 16 cards | about 44 more cards, strangers ([designs/ERRANDS.md](../designs/ERRANDS.md)) |
 | [Questlines](#questlines) | 15 questlines, about 90 stage missions (not counted above) | — |
 
 ## Who gets offered what
@@ -72,6 +74,16 @@ How the code does it:
   it's going to changes hands first, the truck turns back and both are called off (no pay, no
   penalty).
 - **Rescues** add population at the nearest Haven safehouse ([DESIGN.md](DESIGN.md), "Haven safehouses").
+- **Reasons start some contracts** ([DESIGN.md](DESIGN.md#story-blocks)): when the world posts a
+  reason (a hungry house, a post's lost truck, a town gone bad, a dead leader, a bitten wanderer,
+  the cure's milestones, a shelled town), one contract that answers it may start within 3 km of it,
+  at most one every 30 minutes server-wide, inside the contract cap. Its brief opens with the
+  reason's line (*"Levie's on half portions."*). Random picks stay.
+- **Who decides, and who benefits** ([DESIGN.md](DESIGN.md#story-blocks)): in the choice missions
+  (Crash Site, Research Data, Requisition) the one who hands the item in decides; their group within
+  150 m is paid by the side it went to (if that side doesn't hunt them). Taken to the other side,
+  it pays at most the base and its Fame doesn't count toward the season's; everyone else who did
+  the work is paid half the Favor by the giver.
 - **Bodies on approach.** A contract's guards, AI people and raiders are spawned when a player
   comes within about 300 m of them; until then the job is data. A spawned AI group that is gone
   (groups delete themselves when the last member dies) counts as dead.
@@ -104,7 +116,6 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 3 | Radio Relay | Any | ★ Radio Op: half the hold time | Keep a loud relay on high ground running for 3 min | Fame; a reward crate | ✅ *a horde comes after the first minute* |
 | 4 | Medicine Run | Any | ★ Nurse/Doctor: the pharmacy is pre-marked, bonus Fame | Bring medical supplies from a pharmacy town to a Haven safehouse | Fame | ✅ *the supplies lie loose in the town's pharmacy (the building nearest a point in the middle if it has none), put out once someone is within 60 m* |
 | 5 | The Bitten Friend | Known | ★ Nurse: slows his infection | A Haven member is bitten. Bring an antidote before he turns, or end it | Fame; mercy = half the Fame. Killed by anything else: failed | ✅ *mercy counts only if a player fired within 30 m of him in his last 10 s; there's no one-person slot, so the survivor group stands in for him (all of it has to die)* |
-| 6 | Fuel for the Lights | Known | ★ Mechanic: generator runs twice as long | Bring 2 jerrycans to a safehouse generator. The lights raise heat there | Fame | ✅ *the lights run 10 min (20 with a Mechanic) and it pays when they go out* |
 | 7 | Take Back the Town | Known, Bastion gone (Overrun+) | | Kill 8 × size infected in a town | Fame, town infection −35 | ✅ |
 | 8 | Harvest Guard | Known | ★ Hunter: farmers stay hidden longer | Protect farmers in the fields for 10 min | Fame; +3 food at the nearest safehouse | ✅ *farmers are real only with the survivor group prefab; ★ delays the first wave by 2 min* |
 | 9 | Missing Scout | Known | | Find a scout's body and bring his notes home | Fame; the notes mark a stash (a reward crate in a random town) for whoever brought them | ✅ *home is a Haven safehouse (the safest town when there's none)* |
@@ -112,7 +123,6 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 11 | Burn the Nest | Trusted | | Destroy a hive in an infested town | Fame, infection −30, a sample. Fails: infection +15 there | ✅ |
 | 12 | Refugee Column | Trusted | | Escort a group walking a road to a safe town | Big Fame; three join the safehouse | ✅ *to a safehouse 0.8–3.5 km away, in a straight line through a midpoint* |
 | 13 | Signal Fires | Trusted, 3+ players online | | Light beacons on 3 hills within 2 minutes of each other | Fame for each player; every town within 2 km −10 infection | ✅ |
-| 14 | Water Purifier | Trusted | ★ Mechanic/Lab Tech: 2 of 3 parts | Find 3 purifier parts in a town and bring them to a safehouse | Fame | ✅ *the parts are the mission item, lying in the streets with two infected each* |
 | 15 | Fortify the Safehouse | Trusted | ★ Mechanic: 1.5× faster | Hold the area for 3 min (3 waves) while barricades go up | Fame; the town counts as Barricaded (until the next restart) | ✅ |
 | 16 | Trader Caravan | Trusted, not Trusted by the Red Hand | | Defend a Haven trader at a crossroads from a Red Hand raid | Fame, a reward crate (Red Hand Infamy) | ✅ *the raid comes 90 s after someone reaches him* |
 | 17 | Rescue the Kids | Trusted | ★ Hunter: quieter approach | Hold a school for 90 s without making noise. Too loud and a horde comes | Big Fame; the kids join a safehouse (+3) | ✅ |
@@ -122,6 +132,9 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 21 | The List | Known, a safehouse | ★ Police/Elder: more Fame; the list says when the line was drawn | A name is crossed off a safehouse's list. Read the list and talk to a council member, and they point somewhere: a cairn at the edge of town (walked out after a bite), a bedroll on the road out (put out by the council), a packed bag at a landmark (left on their own), or the person, alive in another town. Then **tell the family**, **tell the council** or **keep it quiet** | Family: Fame (+3 Haven Infamy if the council put them out; alive: the family goes after them, the safehouse is one fewer). Council: 75%. Quiet: 40% | ✅ *one of the four truths at random; the living one is a Haven wanderer when one is free (they remember a council told, or a secret kept), else a generated person. Only a player the job is open to can choose. Done, it can open the questline [The List](#the-list-the-haven) (who crosses names out, and why). Code: `Missions/Haven/RZ_HavenLoreMissions.c`* |
 
 **Amends:** Medicine Run and Survivors Trapped work off Haven Infamy while you're Watched.
+
+#6 Fuel for the Lights and #14 Water Purifier are the errands Lights and Filter Parts now
+([ERRANDS.md](ERRANDS.md#the-routines)).
 
 ### Task Force Bastion
 
@@ -315,14 +328,13 @@ leads** and **being noticed** ([DESIGN.md](DESIGN.md), "Heat and noise"; lying l
 | 3 | Lead Them Away | Haven | ★ Radio Op: more Fame | A horde drifts toward a safehouse. Lead it with noise to a quarry 550–750 m away | Fame, Favor. It arrives: fails, two people die. Killed instead: half pay | ✅ *the quarry is a grid reference* |
 | 4 | Rooftop Rescue | Haven | ★ Mechanic: 15 m is clear enough | A survivor is stuck up a building. Talk them down when no infected is within 25 m | Fame, Favor; they join a safehouse | ✅ *they wait at the foot of the building* |
 | 5 | Trail of Clues | Haven (for a wanderer) | ★ Police: grid references | Follow a note, then a bag, then a third clue to a missing person | Alive (half the time): they join a safehouse. Dead: their last letter, 70% pay | ✅ |
-| 6 | Water Run | Haven | | Carry water to a safehouse 0.8–2.5 km away; the fast road goes through an infested town | Fame, Favor, +2 food. Fast and unnoticed: ×1.33. Noticed: ×0.7 | ✅ |
-| 7 | Barter Chain | Haven, through three wanderers | | Each wants what the next has; the last wants food | Small Fame, Favor; all three remember you | ✅ *only the food changes hands* |
+| 7 | Barter Chain | Haven, through three wanderers (a wanderer's ask: "Need a hand?") | | Each wants what the next has; the last wants food | 2 Fame, 8 Favor (errands' pay); all three remember you | ✅ *only the food changes hands; started from one of them when nothing else is asked, offered to that player alone ([ERRANDS.md](ERRANDS.md#the-wanderers-asks))* |
 | 8 | Distraction | Any faction | | Someone makes noise across the street while someone else searches a guarded cellar for 3 minutes | Fame, Favor, a reward crate. Doable alone with alarm clocks | ✅ |
-| 9 | Medicine Before Dark | Haven (for a Doctor wanderer) | ★ Nurse/Doctor: more Fame | Bring medicine to a bitten survivor before 20:30 | Fame, Favor; they join a safehouse. Dark first: fails | ✅ *the medicine lies loose in a pharmacy in another town, put out once someone is within 60 m* |
 | 10 | Quiet Count | Halcyon | ★ Lab Tech: more Fame | Count the specials in a town from outside and write it in a notebook | Fame, Favor, +1 research. Too close (50 m; less while you're hard to see): half pay. Wrong: fails | ✅ *the town's own infected are cleared and kept out while it runs, so the only specials there are the ones to count* |
 | 11 | Car Keys | Haven, from a Mechanic wanderer ("Ask about cars") | | A car the Mechanic fixed stands in a town 0.5–2.5 km away; its keys lie in one of the 5 houses nearest it that have no lock of their own. Go through them quietly and drive it back to where you met the Mechanic | Fame, Favor, for the one who asked and whoever went with them. Heat 45+ at the house when the keys are picked up: a horde, ×0.7. Hotwired: half | ✅ *a fixable car that already runs (no parts); the keys always lie loose in the right house (on its furniture or floor; just outside its wall if it has no spot), and picking them up is finding them; they go when the job ends. The Mechanic keeps the car (it leaves the world once nobody sits in it). One at a time, one per player per 30 min* |
 
-Four more designed ideas are covered by existing missions: The Safe Code (The Last Experiment,
+#6 Water Run and #9 Medicine Before Dark are the errands Water for {house} and Before Dark now
+([ERRANDS.md](ERRANDS.md)). Four more designed ideas are covered by existing missions: The Safe Code (The Last Experiment,
 Time-Lock Safe), Breaker Sequence (Junction Boxes), Scout the Town (Recon) and Night Lantern
 (Lights in the Window, Signal Fires).
 
@@ -921,12 +933,12 @@ Every background has contracts it shines at, and some it's shut out of.
 
 | Background | Shines at | Shut out of |
 |---|---|---|
-| Nurse | Medicine Run, Bitten Friend, Walk Him Out, Pharmacy Lure, Medicine Before Dark, Rescue the Pilot, Cold Chain | — |
-| Mechanic | Clear the Road, Crash Site, Junction Boxes, Rooftop Rescue, Fuel for the Lights, Water Purifier, Fortify the Safehouse, Recover the Bus, Convoy Escort, Blow the Bridge, Car Theft | — |
+| Nurse | Medicine Run, Bitten Friend, Walk Him Out, Pharmacy Lure, Rescue the Pilot, Cold Chain | — |
+| Mechanic | Clear the Road, Crash Site, Junction Boxes, Rooftop Rescue, Fortify the Safehouse, Recover the Bus, Convoy Escort, Blow the Bridge, Car Theft | — |
 | Hunter | Rescue the Kids, Smuggler's Run, Hunt the Screamer, Silent Courier, Harvest Guard, Tied Down | — |
 | Police | Checkpoint Duty, Trail of Clues, The Rat, Curfew Patrol, Loot the Armory, Double Agent | The Informant |
 | Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, Bust Out, The Pit's Debtor | Raid the Red Hand (until Champion with Bastion) |
-| Lab Tech | Field Samples, Water Survey, Quiet Count, Steal the Antidotes, Water Purifier, Install Sensors, Patient Zero | — |
+| Lab Tech | Field Samples, Water Survey, Quiet Count, Steal the Antidotes, Install Sensors, Patient Zero | — |
 | Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, Restore Comms, No Reply, Install Sensors, Medical Drone, Learning the Drones | — |
 | Unemployed | +50% Fame from every contract (and Infamy worked off by amends) | — |
 | Elder (unlock) | Walk Him Out, The Ledger, The Bell Order, The Silent Village | Requisition, Protection Racket |

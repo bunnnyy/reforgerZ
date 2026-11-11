@@ -108,6 +108,10 @@ class RZ_SaveData
 	// World interactions: searched car boots, loose loot times, opened locks, burned buildings, stripped wrecks, fixable cars
 	ref RZ_InteractionSave interactions;
 
+	// Errands (Missions/Errands): each player's errand ledger for the season, the safehouses' named
+	// people, the houses' turns done. Older saves have none: everything starts empty
+	ref RZ_ErrandsSave errands;
+
 	// The Long Table (World/RZ_LongTable.c): this season's roll, the farm, its people, hunger,
 	// suspicion, what it took, its tells on the road and what it remembers of each character
 	ref RZ_LongTableSave longTable;

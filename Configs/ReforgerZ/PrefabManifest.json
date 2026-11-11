@@ -585,6 +585,24 @@
    "notes": ""
   },
   {
+   "id": "SeasonMark",
+   "kind": "create",
+   "system": "Shared",
+   "path": "Prefabs/ReforgerZ/World/RZ_SeasonMark.et",
+   "basePrefab": "{5F3F8B510E5F3E8F}Prefabs/Structures/Cultural/Calvaries/CalvarySmall_01.et",
+   "baseFind": "",
+   "baseHint": "a small wayside cross, a cairn or flowers on a post",
+   "components": [],
+   "actions": [],
+   "slots": ["m_SharedSettings.m_sSeasonMarkPrefab"],
+   "listSlot": false,
+   "slotLabel": "Shared > Season mark prefab",
+   "required": false,
+   "minimum": false,
+   "use": "look only: the town log's season marks on the verge (without it they're text only, an approach line)",
+   "notes": ""
+  },
+  {
    "id": "MorseLamp",
    "kind": "create",
    "system": "Puzzles",
@@ -4514,6 +4532,18 @@
   },
   {
    "category": "Missions",
+   "object": "Errands",
+   "field": "m_ErrandSettings",
+   "covers": "**Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), the \"Most people helped\" line (on), telemetry (30 min), debug log (off)"
+  },
+  {
+   "category": "Missions",
+   "object": "Story",
+   "field": "m_MissionStorySettings",
+   "covers": "**Enabled** (the story kit: who decides, who benefits), the **reason lane** (on, 30 min apart, within 3 km of the reason), the one weight clamp (x0.75-1.3)"
+  },
+  {
+   "category": "Missions",
    "object": "Contracts",
    "field": "m_ContractSettings",
    "covers": "**Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs"
@@ -5004,6 +5034,44 @@
     "m_iCampInfamy": "10",
     "m_sJewelleryWords": "jewel,necklace,bracelet,weddingring,wedding_ring",
     "m_fTunnelInfectionCap": "20"
+   }
+  },
+  {
+   "field": "m_ErrandSettings",
+   "category": "Missions",
+   "label": "Errands",
+   "cls": "RZ_ErrandSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_fOfferGapMinutes": "8",
+    "m_iMaxHeld": "2",
+    "m_iCardsPerDay": "2",
+    "m_fPayScale": "1",
+    "m_iFameCeiling": "39",
+    "m_iFamePerDay": "10",
+    "m_iAmendsCap": "8",
+    "m_iFavorPerHour": "40",
+    "m_fLapseMinutes": "45",
+    "m_fFaultChance": "0.25",
+    "m_bCallOut": "1",
+    "m_bWandererAsks": "1",
+    "m_bHelpedLine": "1",
+    "m_fTelemetryMinutes": "30",
+    "m_bDebugLog": "0"
+   }
+  },
+  {
+   "field": "m_MissionStorySettings",
+   "category": "Missions",
+   "label": "Story",
+   "cls": "RZ_MissionStorySettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_bReasonLane": "1",
+    "m_fReasonGapMinutes": "30",
+    "m_fReasonRange": "3000",
+    "m_fWeightMin": "0.75",
+    "m_fWeightMax": "1.3"
    }
   },
   {

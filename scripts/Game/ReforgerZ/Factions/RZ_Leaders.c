@@ -2119,6 +2119,8 @@ class RZ_Leaders
 		if (m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnLeaderDied(l.m_eFaction, l.m_sName, l.m_sPlace, killer);
 
+		RZ_WorldWriters.LeaderDied(l.m_eFaction, l.m_iId, l.m_sName, l.m_sPlace, l.m_vPos);
+
 		if (killer > 0)
 		{
 			RZ_Deeds.AddKill(m_GM, killer, l.m_eFaction);

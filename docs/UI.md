@@ -195,6 +195,14 @@ that doesn't fit lies at your feet). Taken into the hand by its owner it opens t
 the notebook closes, it goes back. *Simplified:* it's given at spawn by script rather than added
 to each of the 13 loadouts, so it works with any loadout.
 
+**The journal's errands and detail.** A held errand is a journal row of its own (kind ERRAND, the
+unarmed icon until `mission_errand` is drawn): the giver as "by", where, the direction (to the
+step's place, then back to the giver), the real minutes before it lapses, and what you said you'd
+do. Never on the map. Selecting any row asks the server for that row's **detail**
+(`RZ_PlayerUIComponent.AskDetail`, payload kind 10, `D|id|told|found|went`, at most 1,500
+characters, a few a second at most): its "What you've found" and "Who it went to" go at the top of
+the clues block (`DetailClues`), so the journal's 6,000-character list is never cut for them.
+
 The notice board opens when you read a safehouse board, with **UI > Board menus** on.
 
 ### The talk screen
@@ -514,9 +522,9 @@ reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and the shop). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item), the talk screen and its engine, the reader, the car repair screen, the shop screen, the screen guard, the notice board menu, chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback |
+| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and the shop). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the journal's errand rows and per-row detail), the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the screen guard, the notice board menu, chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair and shop screens' written as text; the icon atlas and the `RZ_Icons` imageset; the car picture's PNG (to import: **UI > Car picture** is empty); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car and shop presets; N, 1–7, T, the right stick and the filter's X); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, all but the map icon layout. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter |
 | Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the subtitles; mouse clicks and the pad; the notice board menu (**UI > Board menus** is off); the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |
 | Not done | The override of the vanilla deploy menu's layout that holds the background panel, so the panel doesn't show. The map configuration override with `RZ_MapIconsUI`, and **UI > Map icon layout** (empty: set, it turns the vanilla text markers off), so the map shows the vanilla markers. Images for the icons the scripts never swap (the map key's, the radio channel list, the HUD's radio, noise and paused icons, the background panel's): they draw as flat squares in their colour |
-| Planned | A sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm |
+| Planned | The `mission_errand` icon (errand rows use `mission_unarmed`); a sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm |

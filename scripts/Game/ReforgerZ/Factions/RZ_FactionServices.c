@@ -114,8 +114,10 @@ enum RZ_EFactionService
 //! contract and the Bastion Champion perk. Who dies is up to the caller.
 class RZ_Artillery
 {
-	static void Shell(RZ_GameModeComponent gm, vector at, float radius, int shells, array<IEntity> propsOut)
+	static void Shell(RZ_GameModeComponent gm, vector at, float radius, int shells, array<IEntity> propsOut, string cause = "")
 	{
+		// The signal ring: shells landed here (who called them stays on the server)
+		RZ_WorldWriters.Shell(at, cause);
 		ResourceName fx = gm.GetExplosionPrefab();
 		for (int n = 0; n < shells; n++)
 		{
@@ -442,7 +444,7 @@ class RZ_FactionServices
 	protected void Strike(RZ_PendingStrike strike)
 	{
 		array<IEntity> props = {};
-		RZ_Artillery.Shell(m_GM, strike.m_vPos, m_Settings.m_fFireMissionRadius, 4, props);
+		RZ_Artillery.Shell(m_GM, strike.m_vPos, m_Settings.m_fFireMissionRadius, 4, props, strike.m_iCaller.ToString());
 		foreach (IEntity p : props)
 		{
 			m_aShellProps.Insert(p);

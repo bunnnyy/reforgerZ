@@ -1,6 +1,12 @@
 # The mission style
 
-**Status: designed, not built.** Approved by the author on 2026-11-11.
+**Status: designed; wave 1 (the framework) built.** Approved by the author on 2026-11-11. Built and
+described in [docs/DESIGN.md](../docs/DESIGN.md#story-blocks): the story kit, who took part and who
+decides (the hold, Object, Stand with), who benefits with `RZ_Mission_Choice` rebuilt on it (the
+switch-pay fix), the truth deck, world records and their writers, the reason lane and the one weight
+clamp, the journal's per-row detail. This file keeps the rest: route assets, talk scenes, tricks and
+trade, lies, failure as a branch and fallout errands, mirror offers, the conversion of every mission
+(waves 2 to 4), and the parts of wave 1 still listed below.
 
 ## What changed in review
 
@@ -329,17 +335,14 @@ A story job lists 2–4 parties its result can go to:
 | What the world gets | The base result, sent here or there, plus small extras (see Limits) |
 | Route asset | At most one: an ally, proof or standing toward a finale route |
 
-**Rules:**
-- This replaces `RZ_Mission_Choice`, which swaps `m_eGiver` and sets the rival. It puts the hard edges'
-  rule in one place: the side you chose pays anyone with you whom it doesn't hunt, the giver adds
-  Infamy, and the giver's leader doesn't count it as help (`m_bNoLeaderCredit`). Every built choice
-  mission gets the switch-pay fix as soon as `RZ_Mission_Choice` is rebuilt on top of it.
+**Rules:** the core is built (`RZ_Beneficiaries`, [docs/DESIGN.md](../docs/DESIGN.md#story-blocks)):
+the side you chose pays anyone with you whom it doesn't hunt, the giver adds Infamy and its leader doesn't
+count it as help, a switch pays at most the base and leaves season Fame alone, "nobody" pays nobody, and
+`RZ_Mission_Choice` is built on it. Still to build:
 - **The base result stays.** Choosing *where* it goes (which house gets the family) is part of the base
   result, not an extra.
-- **No profit from switching sides.** A switch pays at most the base. Its Fame doesn't count toward
-  season Fame (a flag on `AddFame`), so a group can't steer the season's Fame by switching.
-- **Nobody** is a real option: sink the guns, burn the box, let him go. It pays nobody. It leaves a world
-  record, and sometimes an asset for the Independent route.
+- **Nobody** as an option in the converted jobs (sink the guns, burn the box, let him go), sometimes with an
+  asset for the Independent route.
 - **Decency doesn't pay the Haven by default.** A house's thanks is a record and a callback, not Haven
   Fame. Decency pays other factions where that fits the story: Bastion for civilians sheltered, Halcyon
   for honest data, the Red Hand for paying a debt. Usually it pays least, and often it pays nothing.
@@ -382,44 +385,18 @@ A story job lists 2–4 parties its result can go to:
 
 ## Who decides
 
-The participation and deciding rules are shared by missions, dialogue scenes, errands, the epilogue's
-grey choices and the finale.
-
-- **Who may decide:** someone the contract was offered to (eligible for the giver, or for one side of a
-  mirror) who has taken part: 60 s within 150 m, or a step done. For world events, anyone who has taken
-  part. Everyone else can talk, listen and read. If they pick an option that would end the job, they're
-  told: *"It's not your call. You weren't hired for this."*
-- **Scene decisions** (a choice at a person):
-  - Picking one starts a 5-second hold, announced to the room: *"Mara is about to hand them to the
-    crew."*
-  - Any other eligible participant in the room can **Object**, once per job (by identity). The hold is
-    cancelled, and the objector becomes the speaker for 60 s.
-  - Anyone in the room can **Stand with** the decider during the hold.
-- **Hand-ins** (carrying the item to a drop or the radio station) resolve at once, as built. Getting it
-  there is the deciding step, and anyone can try to take it off you on the way.
-- **With the decider:** the decider, their vanilla group within 150 m, and anyone who chose Stand with.
-  Only they get a switched side's pay, its Infamy and the records. They share good or neutral records;
-  a bad one (took the cut) lands on the decider alone.
-- **Everyone else who was eligible:**
-  - if the result went to the giver, they're paid as usual;
-  - if it went another way, the giver pays those who did the work half the Favor, with no Fame and no
-    Infamy: *"You held it. Someone else sold it."*
-- **Leave** works per player. You stop taking part, with no pay and no blame. The job carries on for
-  anyone else until it's done or time runs out.
-- **Offline players:** a participant who did a step, or spent 5 minutes in the area, and is offline when
-  the job ends is paid on their saved profile when they next join, through the questlines' path. That
-  applies if the result went to the giver, or if they stood with the decider.
-- **Anything that matters to the season** is a tally in `RZ_QuestVote`, never a single pick.
-- **Only three distances:**
-  - **150 m:** you took part (as built).
-  - **30 m:** you're in the room. You get results, reveals and holds, and can object or stand with
-    someone.
-  - **8 m:** you overhear the lines.
-
-  The last draft's 10 m, 50 m and Distress Call's own 150 m are gone.
-- **Amends need clean hands.** If a Watched player in an amends job threatens, tricks, switches sides or
-  hides something, that job works off no Infamy for them. The option's own cost still applies. Every
-  amends goes through `Forgive()`, inside reputation's 30 per faction per life.
+Built ([docs/DESIGN.md](../docs/DESIGN.md#story-blocks)): who took part, who may decide, the 5 s hold
+announced to the room that anyone eligible may object to once, Stand with, with the decider, and half the
+Favor to the others who did the work. Still to build, with the scene decisions of wave 2:
+- the objector becomes the speaker for 60 s; *"It's not your call. You weren't hired for this."* when
+  someone else picks an option that would end the job;
+- **Leave** per player (you stop taking part, with no pay and no blame);
+- **offline participants** (a step done, or 5 minutes in the area) paid on their saved profile at their
+  next join, through the questlines' path;
+- anything that matters to the season as a tally in `RZ_QuestVote`;
+- the three distances for lines: overheard at 8 m (results and holds at 30 m are built);
+- **amends need clean hands:** Press, Trick, a switch or hiding something voids that job's Infamy
+  work-off for that player.
 
 ## Hidden truths
 
@@ -441,13 +418,10 @@ A story job has a deck of 2–4 truths. The brief is only the giver's word.
 - **Canon wins:** a truth about a fixed fact (`bastion.orders`, `origin.*`) reads canon and never rolls
   it again.
 
-**It stays put** (the truth deck in `RZ_WorldMemory`):
-- The draw is seeded by the story key, the subject (the house, the man, the wreck) and the season.
-- It's stored in world facts (`truth.<key>.<subject>`), together with what's been found.
-- A job offered again at the same subject, after a restart or a time-out, gets the same truth and the
-  same "What you've found".
-- It's kept for 3 season days, or until the job says it's used up. It's dropped if the subject is gone.
-- Leaving, or failing on purpose, never draws a new truth.
+**It stays put:** the truth deck is built ([docs/DESIGN.md](../docs/DESIGN.md#world-memory)): seeded by the
+story key, the subject and the season, kept 3 season days or until used up, "as they said" never under
+30%. Still to build: the gates and the giver's traits moving the weights, canon truths, and the found
+list kept across a restart.
 
 **Fair play:**
 - Every truth can be found on site before the decision it matters to, in at least two ways. At least
@@ -566,18 +540,14 @@ Relevance comes from what starts a job, not from a line in front of the brief. R
 - A reason lasts while its fact holds, and at most one season day.
 - Every mission type and errand lists the reasons it answers (`Answers("house.hungry")`), with a place
   rule (near the subject).
-- **Contracts:** when a reason is posted, the manager looks for one contract that answers it near its
-  subject.
-  - At most one reason-started contract every 30 minutes, server-wide.
-  - It stays inside `MAX_CONTRACTS` and every existing check (`CanRunNow`, eligibility, claims).
-  - Its brief opens with the reason's line (*"Levie's on half portions."*). That's the why-now line, and
-    it's true by construction.
+- **Contracts:** the reason lane is built ([docs/DESIGN.md](../docs/DESIGN.md#story-blocks)), with the
+  start of the table below. Still to post: `house.water`, `house.dark`, `house.bitten`, `house.feud`,
+  `house.borrowed`, `post.pressure`, `horde.passed`, `leader.rogue`, `leader.bitten`, `wanderer.owes`,
+  `wanderer.lost`, `crew.skimmed`, `racket.ran`, `lab.power`, `lab.short`, the tribes' and the majors'.
 - **Errands** answer reasons through the people who give them, within their own caps.
 - **Random picks** stay, for variety. A random contract gets a why-now line only when a fact fills one,
   never a filler line.
-- **One clamp on weights.** Three multipliers stack: leader traits (±20%), faction needs (×0.85–1.2) and
-  the majors' season weights (which the majors first combine and clamp to ×0.8–1.2). Their product is
-  clamped once, to ×0.75–1.3. Reasons don't change weights.
+- **One clamp on weights:** built ([docs/DESIGN.md](../docs/DESIGN.md#story-blocks)).
 - **Order per player.** The journal and the quartermaster's list put certain jobs first: those near you,
   those answering a reason where you have a record, and those from a giver you've helped. This changes
   only the order, not the odds.
@@ -1454,7 +1424,7 @@ down."* The boss's *"Light this week."*
 
 | Wave | Plan phase | What | Code added | Removed | Player text |
 |---|---|---|---|---|---|
-| 1 **Framework** | 3 | The kit; ways moved out of `RZ_QuestMission` into `RZ_Ways`, keyed by identity; the shared checks (persuade, Fear, the look, results); scenes and choice routing; the decider rules; who benefits (with `RZ_Mission_Choice` rebuilt on it, so every built choice mission gets the switch-pay fix at once); truths with persistence; world records; callbacks; reasons, the reason lane and the one clamp; the journal's detail payload; log lines. No content changes. The runtime test passes unchanged | ~2,400 | — | ~50 |
+| 1 **Framework** | 3 | **Built** ([docs/DESIGN.md](../docs/DESIGN.md#story-blocks)). Still from it: the look (with disguise), scene choice routing (`HandleChoice`/`HandleUse` for missions that aren't puzzles) and talk nodes, the four guidance tips | ~2,400 | — | ~50 |
 | 2 **Pilot** | 4 (the stop point) | The six worked examples; the 9 merges; the 12 dropped and 5 stage-only missions; the Tier 0 audit. Then a play-test. **After this wave the game is whole**, and what follows is growth | ~2,800 | ~3,000 | ~500 |
 | 3 **The other 22 story jobs** | 5, in parallel with the majors | A faction at a time, in two halves of 11, each followed by a play-test | ~3,300 | — | ~700 |
 | 4 **One-choice jobs and work** | 8 (growth) | The 16 Tier B choices and the 68 Tier C rows; the tribes' contracts on the kit as they're built | ~1,400 | — | ~300 |
@@ -1467,10 +1437,10 @@ approach helpers all 15 questlines use.
 
 ## Engine needs
 
-- **`RZ_MissionStory`:** an optional `m_Story` on `RZ_Mission` (null means the mission runs exactly as
-  today). When it's set, `Update`, `OnPlayerShot`, `OnSuccess`/`OnFailed`, `OnRewardPlayer`, `GetBrief`
-  and `Cleanup` forward to it. Each converted mission gets a story key that is never renamed once
-  shipped.
+Built ([docs/DESIGN.md](../docs/DESIGN.md#story-blocks)): `RZ_MissionStory` (`m_Story`), the decider rules,
+`RZ_Beneficiaries`, the truth deck, `RZ_MissionReasons.c` with the start of the table, the one clamp and the
+journal's detail payload. Still to build:
+
 - **Built in phase 1** ([DESIGN.md](../docs/DESIGN.md#the-shared-engine)): `RZ_Ways` (keyed by identity, the
   approach enum appended), `RZ_Checks` (Trust, Fear, threats, `Result`, the price table, tags), the stores for
   life and world records, the callback queue, and reasons in `RZ_WorldMemory`. Still to add to them: `PassAs` and
@@ -1484,34 +1454,18 @@ approach helpers all 15 questlines use.
   the speaker's 60 s hold, at most 3 minutes in all; lines overheard at 8 m, results and holds to the room
   at 30 m, all through the owner-only personal payload; the numbered fallback; the dialogue screen reads
   the same table later.
-- **Decider rules** (shared): only eligible participants can end a job; the 5 s hold, announced to the
-  room, that anyone eligible can Object to once per job (by identity); Stand with; with the decider = the
-  decider, their vanilla group within 150 m, and those who chose Stand with; hand-ins resolve at once;
-  half the Favor for the work when the result went elsewhere; Leave per player; offline participants paid
-  through the questlines' path; tallies through `RZ_QuestVote`.
-- **`RZ_Beneficiaries`**, which replaces the core of `RZ_Mission_Choice`: 2–4 parties, each with a
-  hand-in kind, a payer, rival Infamy, `m_bNoLeaderCredit`, where the base result goes, and at most one
-  route asset; pay at most the base, with extras only to the chooser; "nobody" pays nobody; no "keep it
-  yourself"; switch Fame left out of season Fame (a flag on `AddFame`); research only at the lab.
 - **`RZ_Trade`:** take items by the price table through `RZ_Safehouses.TakeFood`'s keywords, plus
   background services as timed stand-bys. Mission goods are tagged and refused for pay (VERIFY: how to
   tag an item).
 - **Disguise hooks** (owned by [DISGUISE.md](DISGUISE.md)): `PassAs`, `IsPassing`, `AddWatcher`; the
   own-colours rule; the mission's extra see-through list (a wanderer who remembers you, a life record
   about you, hunter squads); one mission trick per life per faction per season day.
-- **The truth deck** in `RZ_WorldMemory`: a gated, weighted draw seeded by story key, subject and season;
-  stored in world facts (`truth.<key>.<subject>`) with what's been found, kept 3 season days or until
-  used up, dropped if the subject goes; `Reveal(gm, playerId, how)` tells the room and the journal.
 - **The lie store** (shared): each record with its exposing condition; events first (a visit, road news,
   the owning system's tick), the rumour tick only for claims with no world test; a log line for each.
 - **Records:** the quotas per tier, each story job's pinned reads, and the epilogue line and carrier filled in.
 - **Reasons:** their posters in safehouse upkeep, supply lines, territory, leaders, wanderers, cure research, the
   Director, the tribes and the majors; the reason lane (one reason-started contract every 30 minutes server-wide,
   inside `MAX_CONTRACTS` and `CanRunNow`); the why-now line from the reason; jobs ordered per player.
-- **One clamp** on contract weights in `RZ_MissionManager.CreateRandom`: leader traits × faction-life
-  needs × the majors' season weights, clamped together to ×0.75–1.3.
-- **`RZ_MissionReasons.c`:** one data row per mission type (the reasons it answers, the town tally it
-  writes, a fallout line). This is all a work-tier mission needs.
 - **Fallout errands** handed to the errand dealer at the subject: participants first for 20 minutes, at
   most 30% of the base. None from a mirror, a fallout or `Withdraw`.
 - **Limits:** kit extras through the shared capped helpers in the contracts and errands lane of the
@@ -1526,9 +1480,6 @@ approach helpers all 15 questlines use.
   per outcome and 3 per player per route per season; options whose asset belongs to another route refuse
   a locked player when picked, with a line.
 - **The season-day helper**, built once in the plan's phase 1.
-- **Journal:** a per-job detail payload sent when its row is opened, at most 1,500 characters ("What they
-  told you", "What you've found", "Who it went to"), so the 6,000-character list isn't cut; talk lines
-  as person cards (`RZ_NoticeStyle`). Documented in UI.md and UI/LAYOUTS.md.
 - **A hand-in at the radio station:** broadcasting while carrying a mission's document tells the mission
   (Crash Site's open-channel option).
 - **Four new contextual guidance tips:** tags, truths, background reads, holds.

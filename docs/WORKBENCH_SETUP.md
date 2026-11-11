@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **190 prefab fields**: 40 on `RZ_GameModeComponent`, 143 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **195 entries**: 146 prefabs the plugin creates, 29 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 20 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 41 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **191 prefab fields**: 40 on `RZ_GameModeComponent`, 144 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **196 entries**: 147 prefabs the plugin creates, 29 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 20 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 43 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -427,6 +427,12 @@ and the UI files) need none, and seven have no base:
 | `RZ_ScaleCrate.et` | a crate with an inventory storage | the generic set | Puzzles > Scale crate | optional | The Weighing Vault |
 | `RZ_Landmark.et` | a wayside cross or painted mast prop | — | Puzzles > Landmark | optional | towns with no church, tower or well; set Landmark name to match |
 | `RZ_MorseLamp.et` | a lamp prop with a light | `RZ_BlinkLightComponent` | Puzzles > Morse light | optional | Lights in the Window (without the component it's spawned per flash) |
+
+#### Shared
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_SeasonMark.et` | a small wayside cross, a cairn or flowers on a post | — | Shared > Season mark prefab | optional | look only: the town log's season marks on the verge (without it they're text only, an approach line) |
 
 #### Missions
 
@@ -1098,6 +1104,8 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
 | Missions | (top level) |  | Reward crate, mission item, drop points and the optional mission prefabs |
 | Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
+| Missions | Errands | `m_ErrandSettings` | **Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), the "Most people helped" line (on), telemetry (30 min), debug log (off) |
+| Missions | Story | `m_MissionStorySettings` | **Enabled** (the story kit: who decides, who benefits), the **reason lane** (on, 30 min apart, within 3 km of the reason), the one weight clamp (x0.75-1.3) |
 | Missions | Contracts | `m_ContractSettings` | **Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) |  | The puzzle prefabs, **Scale counts items** (off), landmark name |
 | Perimeter | Perimeter | `m_PerimeterSettings` | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
@@ -1380,7 +1388,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:174` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:178` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
 ### Medium risk: big features, with a fallback (32)
@@ -1406,7 +1414,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1015` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1101` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
-| `Cure/RZ_Infection.c:1175` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
+| `Cure/RZ_Infection.c:1177` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
@@ -1453,14 +1461,14 @@ quartermaster's Buy actions, **UI > Reader** and **Subtitles** off for cards. Ho
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:918` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:920` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:197` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_UIData.c:941` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:943` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:440` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
-| `UI/RZ_PlayerUIComponent.c:163` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:167` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
 | `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
@@ -1649,6 +1657,18 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 `Calendar: <key> holds evening N`, `... waits (...)` and `... released`, `World memory: reason ...` and
 `World memory: town ...`; on a restart, `World memory: N reasons, N signals, N town logs, N world
 records.` and `Shared: N callbacks waiting, N season records.`
+
+Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
+start, `Errands: on, 26 routines and 16 cards, N players with a ledger.`; while running, `Errands:
+dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
+(<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
+<player> overtaken`, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
+<place> fixed`, every 30 minutes `Errands | live N | asked N, called out N | <family>: dealt N,
+declined N, lapsed N, overtaken N, done N, Favor N, Fame N (amends N), ways ...`, and `Errands admin
+view: ...`; `Story: truth <key>.<subject> = <truth> (kept|new)` and `...; found by <how>`, `Story:
+errand.<key> talk pass|short|refused by <player>`, `Story: <key> resolved by hand-in to <party>
+(...)`, `Story: reason <key> (<subject>) started N '<title>' at <town>`, `Story: <title> hold by
+<player> objected to by <player>`.
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
 `Dialogue: loaded 30 conversations, 97 nodes`, `Dialogue: memory for N players` (or `Dialogue:
@@ -2187,6 +2207,33 @@ editor's time of day)
 - [ ] A thrown bottle draws nearby infected; a puzzle mission can be finished.
 - [ ] Night: missions that need the dark are offered; the log says "night".
 
+**Errands and the story blocks** ([ERRANDS.md](ERRANDS.md); a safehouse, a Bastion post, a Red
+Hand camp and a Halcyon station near each other help; the admin reply **[Admin] Errands near here**
+on the talk screen says why something wasn't dealt)
+- [ ] A safehouse's first two occupants have names and roles ("Talk to Mara Kovac"); **Anything need
+  doing?** on one offers a true errand, its ways become their replies with tags, and a second player
+  picking one hears "Give us a minute."
+- [ ] The Pot: with the house short of food, hand over two tins; the house's food goes up by 2 and
+  the pay is a few Favor and 1 Fame. Ask again at once: it's cooling down.
+- [ ] A Bastion post with its relief missing shows one guard fewer; Shift Change's "Stand the post
+  yourself" pays after 3 minutes at the gate and the guard is back next visit.
+- [ ] Walk past a house or post: a named person waves you over (once, then not again for 8
+  minutes); never while infected are within 30 m or someone fired near you.
+- [ ] A held errand whose fact stops holding (the truck comes in, the fault is fixed by someone
+  else) ends with the giver's line and no pay.
+- [ ] Errand Fame stops at 39 with a faction and at 10 a season day; at 15+ Infamy an errand pays
+  2 Infamy off instead (8 a life at most, never below 15).
+- [ ] A wanderer's **Need a hand?** (the Doctor near dusk: Before Dark; a Kill on Sight player:
+  Wanted Poster; otherwise Barter Chain may start).
+- [ ] A card (Sleeve Down after a bite near a big house; His Effects after a lost truck) comes once
+  this season; the telemetry line every 30 minutes counts it.
+- [ ] A choice mission (Crash Site) taken to the other side pays the decider and their group at
+  most the base, and pays the others who did the work half the Favor from the giver.
+- [ ] A hungry house, a lost truck or a town gone bad starts one answering contract near it, its
+  brief opening with the reason's line, at most one every 30 minutes.
+- [ ] The journal shows a held errand (the giver, what to do, minutes left), and a selected
+  contract's detail adds "Who it went to" once it's decided.
+
 **Contracts on the building blocks** (start one by raising its weight, or wait for the radio)
 - [ ] Escort: Refugee Column's group walks when you're within 150 m, stops when you run ahead or
   infected come within 25 m, and joins the safehouse on arrival. With the escort prefab empty they
@@ -2224,7 +2271,7 @@ editor's time of day)
 - [ ] A personal notice (a mission brief, a tier change) shows only on its player's screen: with
   a second client watching its radio log, nothing of yours appears there. Broadcasts still reach
   both.
-- [ ] Carry a delivery item (Courier letters, a Bastion case, the capture case, Water Purifier or
+- [ ] Carry a delivery item (Courier letters, a Bastion case, the capture case or
   Restore Comms parts), then disconnect: the others are told and the item is back on the ground
   where you were (or, for parts, at its first spot). Die with it and wait for the body to go: same.
   Check the log for an item that comes back twice from one disconnect.

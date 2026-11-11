@@ -1,5 +1,6 @@
 //! The hall of fame (docs/DESIGN.md, "Seasons"): who delivered the most samples, held the final
-//! stand, rescued the most people, lived longest, finished the most missions, and each faction's
+//! stand, rescued the most people, lived longest, finished the most missions, helped the most people
+//! (errands, until the cure), and each faction's
 //! Champion (the highest Fame anyone reached with it), per season and over all time. Saved to
 //! $profile:ReforgerZ/hall_of_fame.json, which no wipe touches. Server only.
 
@@ -11,6 +12,7 @@ class RZ_HallPlayer
 	int samples;
 	int rescues;
 	int missions;
+	int helped;				// errands done until the cure ("Most people helped"; pays nothing)
 	int stands;
 	float longestLife;		// seconds
 	ref array<int> peakFame = {0, 0, 0, 0};
@@ -50,7 +52,8 @@ class RZ_HallOfFame
 	static const int CAT_RESCUES = 2;
 	static const int CAT_LIFE = 3;
 	static const int CAT_MISSIONS = 4;
-	static const int CAT_CHAMPION = 5;
+	static const int CAT_HELPED = 5;
+	static const int CAT_CHAMPION = 6;
 
 	protected static const int PAST_KEEP = 10;
 	protected static const int PLAYER_CAP = 500;
@@ -285,6 +288,20 @@ class RZ_HallOfFame
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! An errand done (Missions/Errands): "Most people helped". Errands stop counting at the cure.
+	void AddHelped(int playerId)
+	{
+		array<RZ_HallPlayer> recs = {};
+		if (!Records(playerId, recs))
+			return;
+
+		foreach (RZ_HallPlayer r : recs)
+		{
+			r.helped = r.helped + 1;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void AddMission(int playerId)
 	{
 		array<RZ_HallPlayer> recs = {};
@@ -405,6 +422,7 @@ class RZ_HallOfFame
 			case CAT_RESCUES: return p.rescues;
 			case CAT_LIFE: return p.longestLife;
 			case CAT_MISSIONS: return p.missions;
+			case CAT_HELPED: return p.helped;
 		}
 
 		int f = cat - CAT_CHAMPION;
@@ -424,6 +442,7 @@ class RZ_HallOfFame
 			case CAT_RESCUES: return "Most people rescued";
 			case CAT_LIFE: return "Longest life";
 			case CAT_MISSIONS: return "Most missions";
+			case CAT_HELPED: return "Most people helped";
 		}
 
 		return "Champion of " + RZ_Factions.GetNameInText(cat - CAT_CHAMPION);

@@ -397,6 +397,7 @@ class RZ_TownMemory
 	//! most of its buildings have (Burned share); each one stops counting after a while.
 	static void ReportBuildingBurned(vector pos)
 	{
+		RZ_WorldWriters.Fire(pos);
 		RZ_TownMemory mem = Get();
 		if (!mem)
 			return;
@@ -435,6 +436,8 @@ class RZ_TownMemory
 
 		if (m_GM.GetLeaders())
 			m_GM.GetLeaders().AddHeadline(string.Format("%1 has burned. Smoke over the roofs since morning, and nobody went to put it out.", s.m_sName), false);
+
+		RZ_WorldWriters.TownBurned(idx, s.m_sName);
 	}
 
 	// ================================================================ Journals of the dead

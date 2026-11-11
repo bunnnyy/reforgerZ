@@ -514,12 +514,23 @@ class RZ_Mission_Delivery : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! A choice mission: the item can go to m_eGiver or to m_eChoiceOther. Whoever
-//! gets it pays Fame; the side you double-crossed adds Infamy. Taken to the other side, it pays
-//! anyone with you whom that side doesn't hunt, and the leader who gave the job neither counts it
-//! as help nor scales its pay (as RZ_RedHandEdges.PaidByHaven).
+//! A choice mission: the item can go to m_eGiver or to m_eChoiceOther. Built on who benefits
+//! (Missions/Story/RZ_MissionStory.c): whoever gets it pays those with the decider (the deliverer,
+//! their group within 150 m) whom it doesn't hunt; the side you crossed adds Infamy. Taken to the
+//! other side, it's a switch: it pays at most the base, its Fame doesn't count toward season Fame,
+//! the leader who gave the job neither counts it as help nor scales its pay, and everyone else who
+//! did the work is paid half the Favor by the giver.
 class RZ_Mission_Choice : RZ_Mission_Delivery
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_Choice()
+	{
+		string key = Type().ToString();
+		key.ToLower();
+		key.Replace("rz_mission_", "");
+		m_Story = new RZ_MissionStory(key);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool IsEligible(RZ_GameModeComponent gm, int playerId)
 	{
@@ -546,15 +557,25 @@ class RZ_Mission_Choice : RZ_Mission_Delivery
 		if (faction == m_eChoiceOther)
 			crossed = original;
 
-		// Rewards go to whoever received it; the other side remembers
-		m_eGiver = faction;
-		SetRival(crossed, m_iDoubleCrossInfamy);
-		if (faction != original)
+		// Who benefits: the side it went to pays those with the decider; a switch pays at most the base
+		RZ_Beneficiaries parties = m_Story.m_Parties;
+		if (parties.m_aParties.IsEmpty())
 		{
-			m_bNoLeaderCredit = true;
-			m_iLeaderId = -1;
+			parties.Add(original, RZ_Factions.GetName(original), m_iDoubleCrossInfamy);
+			parties.Add(m_eChoiceOther, RZ_Factions.GetName(m_eChoiceOther), m_iDoubleCrossInfamy);
 		}
 
+		vector at = m_vPos;
+		IEntity decider = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (decider)
+			at = decider.GetOrigin();
+
+		m_Story.m_Deciding.Step(gm, playerId);
+		parties.Choose(gm, this, playerId, parties.Find(faction), at);
+
+		// The side that didn't get it remembers (the giver too, when it was a switch)
+		m_eGiver = faction;
+		SetRival(crossed, m_iDoubleCrossInfamy);
 		OnChoiceMade(gm, playerId, faction);
 	}
 

@@ -145,6 +145,7 @@ class RZ_WorldFacts
 	protected ref map<string, string> m_mCanon = new map<string, string>();
 	protected ref array<string> m_aMaking = {};		// canon keys being made right now (CanonText)
 	protected ref map<string, string> m_mClaims = new map<string, string>();	// subject -> owner
+	protected ref map<string, string> m_mSoft = new map<string, string>();		// subject -> errand (soft holds)
 	protected ref array<string> m_aRumours = {};
 	protected ref array<float> m_aRumourUntil = {};
 	protected ref RZ_WorldFactsSave m_Restored;
@@ -1331,6 +1332,65 @@ class RZ_WorldFacts
 		{
 			m_mClaims.Remove(gone);
 		}
+	}
+
+	// ================================================================ Soft holds
+	//------------------------------------------------------------------------------------------------
+	//! Soft holds (errands, docs/ERRANDS.md "Keeping them true"): an errand keeps its subject from a
+	//! second errand. Kept apart from claims: a soft hold never makes a town busy for anyone, and a
+	//! claim on the subject overtakes the errand at its next tick (RZ_Errands). Runtime only.
+	//! True if the subject was free or already this errand's.
+	bool SoftHold(string subject, string errand)
+	{
+		if (subject.IsEmpty() || errand.IsEmpty())
+			return false;
+
+		string holder;
+		if (m_mSoft.Find(subject, holder))
+			return holder == errand;
+
+		m_mSoft.Set(subject, errand);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand holding `subject` softly, "" if none.
+	string SoftHeldBy(string subject)
+	{
+		string holder;
+		m_mSoft.Find(subject, holder);
+		return holder;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SoftRelease(string subject, string errand)
+	{
+		string holder;
+		if (m_mSoft.Find(subject, holder) && holder == errand)
+			m_mSoft.Remove(subject);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SoftReleaseAll(string errand)
+	{
+		array<string> mine = {};
+		foreach (string subject, string holder : m_mSoft)
+		{
+			if (holder == errand)
+				mine.Insert(subject);
+		}
+
+		foreach (string gone : mine)
+		{
+			m_mSoft.Remove(gone);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The season's seed (the truth deck draws from it, with the story key and the subject).
+	int GetSeed()
+	{
+		return m_iSeed;
 	}
 
 	// ================================================================ Gossip

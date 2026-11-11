@@ -622,9 +622,11 @@ Code: `Factions/RZ_Territory.c`.
   delivered, −2 per truck lost; +3 / −5 when a town changes hands. It drifts 2 points an hour
   back toward 50.
 - **Headlines only.** Every change is a headline, never a server-wide alert.
-- **Bodies only near players.** Within 300 m of a holding: its guards, two of its three
-  **named people** (the cook, the sentry, the toll man...) and, at an outpost, the faction's
-  quartermaster. Named people are saved and come back on every visit.
+- **Bodies only near players.** Within 300 m of a holding: its guards (one fewer while its relief
+  is missing, [the faults table](ERRANDS.md#the-faults-table)), two of its three **named people**
+  (the cook, the sentry, the toll man...) and, at an outpost, the faction's quartermaster. Named
+  people are saved and come back on every visit; they answer **Anything need doing?**
+  ([ERRANDS.md](ERRANDS.md#givers)).
 - **Routines:** shift change at 05:30 and 17:30, the dusk meal at 18:30, night watch from
   20:30. Players near a holding hear the routine change, and its people act it out
   ([Camp life](#camp-life)).
@@ -898,8 +900,11 @@ isn't kept as an AI body: they become **+1 population** at the nearest safehouse
   a safehouse eats one food per 5 people. Players hand food items to the quartermaster (2 Haven Favor each). Short of
   food, 1–3 people leave, to a safehouse that can feed them or onto the roads (one may become
   a named wanderer). Upkeep never takes a safehouse below 2 people.
-- **Food in and out.** Haven trucks bring 6. The Water Run brings 2. Bastion's Requisition
-  contract takes 4; so do some leader jobs ([MISSIONS.md](MISSIONS.md)).
+- **Food in and out.** Haven trucks bring 6. Errands bring 2 at a time (The Pot, Water for
+  {house}; [ERRANDS.md](ERRANDS.md)). Bastion's Requisition contract takes 4; so do some leader
+  jobs ([MISSIONS.md](MISSIONS.md)).
+- **Named people.** Each safehouse has four (a cook, a lookout, a storekeeper, a clerk); the first
+  two wear its first two occupants and give its errands ([ERRANDS.md](ERRANDS.md#givers)).
 - **Stragglers.** A fed safehouse under 12 people takes in one person every 4 hours with
   players online (divided by the season speed), so a house reaches Settlement in about four
   days of play even if nobody rescues anyone. Rescues are the fast way.
@@ -942,6 +947,8 @@ settlements above 8). Names come from a seed; roster, positions and memories are
 | Kid | A lost child | Follows you to a safehouse if you show the way; runs from gunfire |
 | Mechanic | "Ask about cars": the nearest fixable car and what it needs, and the Car Keys job; sells a part for 12 Haven Favor | Hands over that car's keys if they like you |
 
+- **Need a hand?** Their free third reply asks for an errand: the Doctor's Before Dark, Wanted
+  Poster, Barter Chain and the lost cards ([ERRANDS.md](ERRANDS.md#the-wanderers-asks)).
 - **Travel:** travel → rest (10–20 min at a safehouse, 3–8 min in a town) → somewhere new,
   0.6–3.5 km away. Routes never cross water or the quarantine line.
 - **They react to the world** (every 30 s): an overrun, loud or line-side destination is
@@ -1036,6 +1043,52 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
 *Simplified:* escorted people without an AI body can't be hurt (only a body can die), and
 move in a straight line. A caught special is carried as a case, not dragged in its cage.
+
+### Story blocks
+
+Code: `Missions/Story/` (`RZ_MissionStory.c`, `RZ_MissionReasons.c`); settings **Missions > Story**.
+The mission style's framework (wave 1 of [designs/MISSION_STYLE.md](../designs/MISSION_STYLE.md),
+which designs the rest). No mission's content changed with it.
+
+- **The story kit.** A mission may carry `m_Story` (null by default: it runs exactly as before),
+  with a story key that is saved in records and never renamed. The mission forwards its tick to it.
+  It holds who took part and who decides, who benefits, the world records it reads (pinned while it
+  runs), and "What you've found" for the journal.
+- **Who took part, who decides** (`RZ_Deciding`): took part is 60 s within 150 m, or a step done.
+  Who may decide: someone it was offered to (anyone, for a world event) who took part. **With the
+  decider**: the decider, their vanilla group within 150 m, and anyone who chose Stand with. A scene
+  decision is a 5-second hold announced to the room (30 m) that any other eligible participant may
+  object to once per job (by identity); no built mission has a scene decision yet.
+- **Who benefits** (`RZ_Beneficiaries`): 2–4 parties a result can go to. The side chosen pays those
+  with the decider whom it doesn't hunt; a **switch** (the result to another side than the giver)
+  pays at most the base, its Fame doesn't count toward season Fame (`RZ_RepFlag.SWITCH`), the giver
+  adds Infamy and its leader doesn't count it as help; everyone else who did the work is paid half
+  the Favor by the giver, with no Fame and no Infamy (*"You held it. Someone else sold it."*).
+  "Nobody" pays nobody. The result is a world record (`<key>.went_to`, by the town). Every built
+  choice mission (`RZ_Mission_Choice`: Crash Site, Research Data, Requisition) is built on it.
+- **Truths** are the truth deck ([World memory](#world-memory)): `m_Story.Truth(subject, ...)`
+  draws, `Reveal` tells the finder and the room (30 m) and adds the line to the journal. The errand
+  Sleeve Down uses one ([ERRANDS.md](ERRANDS.md#the-cards)); the pilot wave's story jobs will.
+- **Reasons and the reason lane.** When the world has posted a reason ([World memory](#world-memory)),
+  the mission manager may start one registered contract that answers it (`RZ_MissionReasons`: The
+  Harvest Guard and Protection Racket answer a hungry house; Checkpoint Duty and Convoy Escort a
+  post's lost truck; Retake the Town and Take Back the Town a town gone bad; Struck Off a dead
+  leader; Trail of Clues and Medicine Run a bitten wanderer; Cold Chain and Power the Lab the cure's
+  milestones; Burn the Bodies a shelled town). At most one every **Reason lane gap** (30 min)
+  server-wide, inside the contract cap and every check (`CanRunNow`, someone online eligible,
+  claims), and only if it lands within 3 km of the reason; each reason starts one contract at most.
+  Its brief opens with the reason's line (*"Levie's on half portions."*). Random picks stay.
+- **One weight clamp.** A contract's leader traits (±20%), its faction's needs (×0.85–1.2) and the
+  majors' season weights multiply, and the product is clamped once to ×0.75–1.3.
+- **The journal's detail**: selecting a row asks the server for that row's detail (at most 1,500
+  characters): what you've found and who it went to ([UI.md](UI.md#the-notebook)).
+
+Log lines: `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`, `Story: <key>
+resolved by hand-in to <party> (...)`, `Story: reason <key> (<subject>) started <id> '<title>'`.
+
+### Errands
+
+The small, personal jobs named people ask, each true right now: [ERRANDS.md](ERRANDS.md).
 
 ## Story arcs and headlines
 
@@ -1305,6 +1358,10 @@ wanderer at once. `Claim(subject, owner)` (true if it was free or already that o
   (`RZ_Questline.ReplaceLeader(gm, id, headline, run)` may move one its own run claimed).
 - **Runtime only.** Claims aren't saved. After a restart the content that is still running claims
   again: missions are offered again from the start, arcs and questline runs take theirs back.
+- **Soft holds** (`SoftHold`, `SoftRelease`, `SoftHeldBy`) are the errands' own, kept apart from
+  claims: an errand holds its subject so a second errand can't use it, never making a town busy for
+  anyone; a claim on the subject overtakes the errand ([ERRANDS.md](ERRANDS.md#keeping-them-true)).
+  Runtime only.
 
 **Can it run now?** `RZ_MissionManager.CanRunNow(m, players, checkWeight)` (`WhyNot` says why
 not, `StartIfCan` checks and starts) is the one check every starter uses: the requirements'
@@ -1504,8 +1561,24 @@ timescales:
 | **The town log** | Per settlement the best and the worst thing that happened there, each with its kind, salience (1–5, +1 when three or more took part), day and up to 2 names frozen at the deed; and up to 16 identities who did something there. `LogTown`, `Visit`, `TownBest`, `TownWorst` | a higher salience replaces, ties keep the older; an identity is named in one entry a town and 6 in all, then written unnamed |
 | **World records** | One per story key and subject: a value, the day, up to 4 players with frozen names, an optional epilogue line and its carrier. `Record`, `FindRecord`, `Pin` | 160; evicted by importance (the source: story 3, one-choice 2, errand 1; +2 a named person; +2 first of its kind; +1 a player, 3 at most; +1 an epilogue line), lowest then oldest, never one a reader holds |
 
-Nothing writes them yet: the systems that own the facts post reasons with errands and the mission
-style (phase 3), and the town log and records start recording there too. Log lines:
+**The truth deck** (in the same store): what's really going on behind a story job or a card, one
+per story key and subject, drawn once from the season's seed (so the same subject gets the same
+truth after a restart), "it's as they said" never under 30% of the deck, kept 3 season days or
+until used up (`DrawTruth`, `FoundTruth`, `UseTruth`). 64 at most.
+
+**The writers** (`World/RZ_WorldWriters.c`, one line in the system that owns each fact):
+
+| Part | Written by |
+|---|---|
+| Signals | bites (a player's own: one per 10 minutes), deaths (the background and how long they lasted, never the name), supply trucks lost (who robbed them as the server-only cause), shells (the Fire Mission perk and contract; who called them as the cause), burned buildings, trial doses |
+| Reasons | `house.hungry` (safehouse upkeep: short posts it, fed clears it), `house.truck_lost` and `post.truck_lost` (supply trucks), `town.infested` (a town turning infested or overrun, checked every 30 s), `town.shelled`, `leader.died`, `wanderer.bitten`, `cure.<percent>` (the lab's milestones) |
+| The town log | a contract or event finished in a town (the best slot: salience 2, 3 for an event or a questline stage, the paid players named) or failed there (the worst), people brought in (3), a town burned (4), an outpost taken (3) |
+| World records | errands ([ERRANDS.md](ERRANDS.md)), and who benefits (`<key>.went_to`) |
+
+**Season marks**: a town log entry of salience 3 or more puts a mark on the verge of the road into
+its town ([Marks](#marks), the season pool), with the entry's line; with no **Shared > Season mark
+prefab** it's text only, said once a session to a player passing within 40 m. Marks aren't saved:
+they're put back from the log at start. The epilogue will read the log and the records. Log lines:
 `World memory: reason <key> (<subject>) <text>`, `World memory: town <idx> <kind> <text>`.
 
 ### Callbacks
@@ -1553,7 +1626,7 @@ place is on), a prefab, a line of text, a salience, how many season days it last
 only while a player is within 150 m, stays up at least 10 minutes, and goes once nobody is within
 200 m. A full pool gives up its oldest lowest-salience mark that isn't protected; with no room, or no
 prefab, a mark is text only (`TextNear`, an approach line). Nothing is saved: owners put their marks
-back. Nothing places one yet.
+back. The town log's season marks are the first ([World memory](#world-memory)).
 
 ### The season budget
 

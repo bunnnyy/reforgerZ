@@ -44,6 +44,8 @@ class RZ_RepFlag
 	static const int ACT = 2;
 	//! Small pay (errands): left out of season Fame, the Trusted goal and records.
 	static const int SMALL = 4;
+	//! A switched side's pay (who benefits): left out of season Fame only.
+	static const int SWITCH = 8;
 }
 
 //------------------------------------------------------------------------------------------------

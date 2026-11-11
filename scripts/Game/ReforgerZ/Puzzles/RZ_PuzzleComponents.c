@@ -266,10 +266,23 @@ class RZ_PuzzleActionHelper
 		if (!comp)
 			return false;
 
+		// A person whose slots are an errand's ways right now (Missions/Errands/RZ_Errands.c)
+		if (comp.GetMissionId() < 0 && gm.GetErrands() && gm.GetErrands().HandleEngagedChoice(owner, playerId, option, user))
+			return true;
+
 		if (comp.GetMissionId() == RZ_Wanderers.TAG)
 		{
 			if (gm.GetWanderers())
 				gm.GetWanderers().HandleChoice(playerId, comp.GetObjectIndex(), option, owner, user);
+
+			return true;
+		}
+
+		// A safehouse's named person (World/RZ_NamedPeople.c)
+		if (comp.GetMissionId() == RZ_NamedPeople.TAG_HOUSE)
+		{
+			if (gm.GetErrands())
+				gm.GetErrands().HandleHouseTalk(playerId, comp.GetObjectIndex(), option, owner, user);
 
 			return true;
 		}
@@ -292,6 +305,10 @@ class RZ_PuzzleActionHelper
 
 		if (comp.GetMissionId() == RZ_Territory.TAG)
 		{
+			// "Anything need doing?" is the errands' (slot 1)
+			if (gm.GetErrands() && gm.GetErrands().HandleHoldingChoice(playerId, comp.GetObjectIndex(), option, owner, user))
+				return true;
+
 			if (gm.GetTerritory())
 				gm.GetTerritory().HandlePersonTalk(playerId, comp.GetObjectIndex());
 
@@ -402,6 +419,15 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetTerritory())
 				gm.GetTerritory().HandlePersonTalk(playerId, comp.GetClueIndex());
+
+			return true;
+		}
+
+		// A safehouse's named people (World/RZ_NamedPeople.c): their own greeting
+		if (comp.GetMissionId() == RZ_NamedPeople.TAG_HOUSE)
+		{
+			if (gm.GetErrands())
+				gm.GetErrands().HandleHouseTalk(playerId, comp.GetClueIndex(), -1, owner, null);
 
 			return true;
 		}
