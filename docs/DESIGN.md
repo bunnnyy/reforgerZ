@@ -979,8 +979,9 @@ wanderer at once. `Claim(subject, owner)` (true if it was free or already that o
   it picks in `Setup` it holds with `ClaimSubject(gm, subject)`. A mission started by an arc or
   a questline may use what that story holds (`m_sClaimParent`).
 - **Story arcs** and **questline runs** (`run.Claim`) hold theirs until they end.
-- **Who respects them:** a claimed town is busy (`IsSettlementBusy`, so every town picker skips
-  it), `PickFreeSafehouse` skips claimed houses, `FindForMission` claimed wanderers, and a
+- **Who respects them:** a claimed town is busy (`IsSettlementBusy`, so the shared town pickers
+  `PickSettlement`, `PickSettlementAway` and `PickEmptyTown` skip it), `PickFreeSafehouse` skips
+  claimed houses, `FindForMission` claimed wanderers, and a
   claimed leader isn't killed off-screen (the danger roll, `KillOffscreen`) or moved from the
   seat by anyone else.
 - **Runtime only.** Claims aren't saved. After a restart the content that is still running claims
