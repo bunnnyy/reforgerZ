@@ -72,7 +72,7 @@ Claude Code on Windows runs **Git Bash**. Things that trip it up:
 | Values found in step 2 | Shell variables don't last from one command to the next: save the paths in `CLAUDE.local.md` and write them out in each command |
 | Opening a Steam link (install, run) | `powershell -NoProfile -Command 'Start-Process "steam://install/1874910"'` |
 | Starting Workbench or the game | `powershell -NoProfile -Command 'Start-Process -FilePath "<Windows path to the .exe>"'`. Never run a program with a window in the foreground: the shell waits until it closes |
-| Long commands | The compile check: a 10-minute shell timeout. The runtime test and a full server: run them in the background and read the output when they finish. Don't ask the author anything while one runs |
+| Long commands | The compile check: a 10-minute shell timeout. The runtime test, the land survey and a full server: run them in the background and read the output when they finish. Don't ask the author anything while one runs |
 | A server left running after a cut-off run | `tasklist //FI "IMAGENAME eq ArmaReforgerServer.exe"`, then `taskkill //PID <pid> //F`, only for a server you started |
 | Workbench's windows | Computer use, if this session has it (the Claude desktop app's computer-use tools). Look only at the window the step needs: not Steam chat, friends, browser tabs, mail or other apps; if one pops up, ignore it. Without computer use, give the author one step at a time and wait for "done" |
 | Checking a Workbench result | Read its log instead of asking the author to copy text ([Logs](#logs)) |
@@ -87,7 +87,7 @@ Claude Code on Windows runs **Git Bash**. Things that trip it up:
 4. Line endings: `.gitattributes` stores text as LF and keeps `.sh` and `.py` files LF on disk, or
    Git Bash can't run them. If a script still fails with `$'\r': command not found`, and
    `git status` shows nothing changed under `tools/`, run
-   `rm tools/compile_check.sh tools/runtime_test/run.sh && git checkout -- tools/`.
+   `rm tools/compile_check.sh tools/runtime_test/run.sh tools/land_survey/run.sh && git checkout -- tools/`.
 5. What to commit after Workbench work: new resources with their `.meta` files (they hold the GUIDs),
    the changed `addon.gproj` and world files. Not what `.gitignore` lists. Check `git status` first.
 
@@ -108,7 +108,7 @@ installed and what's missing.
    |---|---|---|---|---|
    | Arma Reforger | 1874880 | `Arma Reforger` | `ArmaReforgerSteam.exe` (Steam starts it through `ArmaReforger_BE.exe`) | Playing |
    | Arma Reforger Tools | 1874910 | `Arma Reforger Tools` | `Workbench\ArmaReforgerWorkbenchSteamDiag.exe` | Workbench |
-   | Arma Reforger Server | 1874900 | `Arma Reforger Server` | `ArmaReforgerServer.exe` | The compile check, the runtime test, the full-server play-test |
+   | Arma Reforger Server | 1874900 | `Arma Reforger Server` | `ArmaReforgerServer.exe` | The compile check, the runtime test, the land survey, the full-server play-test |
 
    Tools and Server are free, under **Library → Tools** in Steam.
 4. **Documents** (written `<Documents>` below):
@@ -148,6 +148,13 @@ SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" 
 
 ```bash
 SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" EXTRA_ADDONS_DIR="<Documents>/My Games/ArmaReforger/addons" tools/runtime_test/run.sh
+```
+
+The land survey needs no Workshop mods. On Windows it uses the server's usual port, so don't run it
+while the runtime test runs:
+
+```bash
+SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" tools/land_survey/run.sh
 ```
 
 Run them as [long commands](#how-claude-drives-the-pc).

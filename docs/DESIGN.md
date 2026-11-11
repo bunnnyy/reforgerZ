@@ -85,6 +85,70 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
   layer ([UI.md](UI.md#the-map)); without it, world events and the lab are vanilla text markers
   for everyone (a toggle).
 
+### The land grid
+
+Code: `World/RZ_Land.c`. **Off by default** (**Zombies > Tribes > Land survey**), and nothing uses it
+yet: it's the ground the infected tribes will live on. The tribes are planned; their design and the
+land grid's full description come with their own doc, `docs/INFECTED.md` (planned).
+
+- **What it holds.** The heat map's 250 m squares. Each has its height (five samples), how much of
+  it is sea, river or lake (the engine's water query at those samples), whether a river runs
+  through it (the map's river entities, with their widths), how many trees (tree prefabs only, not
+  bushes) and buildings it has, any barn, mill, silo, quarry, culvert, shed or ruin, its widest
+  road, and any bridge or ford.
+- **Bridges are inferred.** Road points sit on the ground even at a bridge, so a bridge shows only
+  as the straight line between two road points running 3 m or more above the ground. Over a river
+  or pond it's a bridge over water; a road through river water with no deck is a ford.
+- **Worked out from it:** ridges (25 m above the land around, or the highest within 1 km), valley
+  floors (15 m below both squares across them, 250 or 500 m away; three or more touching make a
+  valley line), forests (600 or more trees in a square, in groups of three), fields (open, flat
+  and near a town), lair candidates (forest, or one of the landmarks above, 600 m from every town
+  centre and 800 m from where people live; 400 and 600 m on maps under 25 km² of land), and **wild
+  land**: dry squares outside every settlement's radius + 100 m, 300 m round every lived-in place
+  (a lived-in town's edge, or 100 m round a holding, safehouse or the lab), 700 m round the Long
+  Table's farm, and the Perimeter's warning zone + 200 m.
+- **Reading it.** At the first start on a map, from the bite check's one-second tick: up to 20 land
+  squares a second, stopping after 8 ms. It's cached in `$profile:ReforgerZ/land_<map>_<number>.json`
+  (the number comes from 64 terrain heights) and loads in milliseconds after that. Wild land, fields
+  and lair candidates are worked out again on every load, from where people live then. Roads come
+  from the world's `SCR_AIWorld`; without one there are no roads and no bridges.
+- **Tribe slots** (for the planned tribes): 1 per 6 km² of wild land, rounded, 1 to 15; none under
+  1.5 km² of wild land or with no lair candidate.
+
+**Measured** (`tools/land_survey/`, four to six starts on each map; the wild land changes a little
+with the holdings, safehouses and Long Table of the season):
+
+| | Arland | Everon | Cain |
+|---|---|---|---|
+| Squares | 289 (17 × 17) | 2,652 (51 × 52) | 2,756 (52 × 53) |
+| Land / wild | 6.3 / 0.4–1.1 km² | 51.0 / 23.8–25.8 km² | 39.0 / 19.7–21.3 km² |
+| Tribe slots at 1 per 4 / 6 / 9 km² | 0 / 0 / 0 | 6 / 4 / 3 | 5 / 3–4 / 2 |
+| First reading | 39 s (0.3 s of work) | 4.5 min (2.0 s of work) | 4.8 min (2.4 s of work) |
+| Longest second | 12 ms | 14 ms | 23 ms (one dense square) |
+| Cache | 6 KB, loads in 1 ms | 51 KB, 3 ms | 53 KB, 3 ms |
+| Rivers, lakes | 3 (0.9 km), none | 28 (14.9 km), 2 | 7 (4.3 km), none |
+| Bridges inferred (real), fords | 4 (4), 0 | 22 (19), 2 | 15 (14), 3 |
+| Ridge posts, valley lines | 3, 1 | 71, 10 | 51, 6 |
+| Lair candidates | 2–8 | 34–35 | 77–81 |
+
+- **Arland has almost no wild land.** The margins of its 14 settlements leave 2.6 of its 5.9 km² of
+  dry land, lived-in places 1.0–1.3, and the Long Table's farm and the line take most of the rest.
+  It gets no tribe without the planned **Slots** override.
+- **Everon gets 4 tribes and Cain 3 or 4** at 1 per 6 km², each with one slot kept for a split.
+- **What eats the wild land** is the settlements, not the line: on Everon their margins take 19 of
+  its 49 km² of dry land, lived-in places 5 more, the Long Table and the line under 1 each.
+- **The server's memory** doesn't move measurably (Everon +4 MB, Cain +15 MB over the reading, in
+  the noise): the grid is about 75 KB.
+
+**What it can't see:** ponds and streams smaller than about 100 m between the samples; rivers made
+any other way than as river entities; bridges whose deck is under 3 m above the ground, or that no
+road crosses (castle and pier bridges). Of the bridge prefabs a road crosses it finds 4 of 5 on
+Arland, 20 of 33 on Everon and 14 of 22 on Cain (some misses are other parts of a bridge it found).
+Three 4 m tracks over gullies on Everon read as bridges, and one low castle bridge as a ford. Nor
+does it see cliffs, banks and forest edges inside a square; trees whose prefab path doesn't say
+"tree" (a Workshop map's own trees read as open land); or a map update that adds objects but leaves
+the terrain alone (delete the cache).
+
 ## The Director: outbreak stages and spread
 
 Code: `Director/RZ_Director.c`, `Director/RZ_OutbreakStage.c`.

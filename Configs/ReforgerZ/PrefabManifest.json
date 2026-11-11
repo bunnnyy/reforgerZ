@@ -4020,6 +4020,12 @@
    "field": "m_AdaptationSettings",
    "covers": "Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots"
   },
+  {
+   "category": "Zombies",
+   "object": "Tribes",
+   "field": "m_TribeSettings",
+   "covers": "Tribes are planned; for now only the **Land survey** (off): the land grid of water, height, trees, roads, bridges and wild land, read at the first start and cached in the profile; land squares read a second (20) ([DESIGN.md](DESIGN.md#the-land-grid))"
+  },
   {"category": "Zombies", "object": "(top level)", "covers": "Presence heat (0.5/tick), vehicle heat (+4/tick)"},
   {
    "category": "Backgrounds",
@@ -4343,6 +4349,13 @@
     "m_fSpotCooldownMinutes": "60",
     "m_iSpotHordeSize": "3"
    }
+  },
+  {
+   "field": "m_TribeSettings",
+   "category": "Zombies",
+   "label": "Tribes",
+   "cls": "RZ_TribeSettings",
+   "defaults": {"m_bLandSurvey": "0", "m_iLandCellsPerSecond": "20"}
   },
   {
    "field": "m_ContractSettings",

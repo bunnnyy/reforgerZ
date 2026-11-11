@@ -275,7 +275,7 @@ The gear is a suggestion; the perks and flaws are in [DESIGN.md](DESIGN.md#backg
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 146 prefabs the plugin creates, 15 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 31 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 146 prefabs the plugin creates, 15 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 32 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -765,7 +765,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 31 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 32 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
@@ -786,6 +786,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Director | Questlines | `m_QuestlineSettings` | **Enabled**, max active (2, one per faction), minutes between (30), start chance (0.5), retry hours (6), once per season (on), **Wait scale** (1; 0.1 for a quick test) ([DESIGN.md](DESIGN.md#questlines)) |
 | Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
+| Zombies | Tribes | `m_TribeSettings` | Tribes are planned; for now only the **Land survey** (off): the land grid of water, height, trees, roads, bridges and wild land, read at the first start and cached in the profile; land squares read a second (20) ([DESIGN.md](DESIGN.md#the-land-grid)) |
 | Zombies | (top level) |  | Presence heat (0.5/tick), vehicle heat (+4/tick) |
 | Backgrounds | Backgrounds (list) |  | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
 | Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
@@ -833,7 +834,10 @@ on the cure unless you pick a timed mode) does it for you: when the season is ov
 writes `wipe.json`, and the next restart backs `state.json` up to `state_season<N>.json` and starts
 fresh ([DESIGN.md](DESIGN.md#seasons)); restart the server some time after players are told. The
 last winner is kept in `$profile:ReforgerZ/last_season.json` and the hall of fame in
-`hall_of_fame.json`; no wipe touches either. For a season with rules, set **Season > Rule sets**
+`hall_of_fame.json`; no wipe touches either. With **Zombies > Tribes > Land survey** on, the land
+grid is cached in `land_<map>_<number>.json` there too; no wipe touches it. The number comes from
+the terrain's heights, so a map update that changes only objects (new forests, buildings or roads)
+keeps the old file: delete it and the next start reads the map again. For a season with rules, set **Season > Rule sets**
 (e.g. `Winter, No Vehicles`) before the fresh season starts. Give admins `/noteclear` for the
 notice boards (server admins are whoever the server config lists).
 
@@ -887,6 +891,34 @@ A mission that doesn't start usually needs a world state the test doesn't create
 right infection, an optional prefab, a faction standing). None of this is part of the mod: the
 test files are copied into a throwaway addon folder.
 
+### Land survey without Workbench
+
+`tools/land_survey/run.sh` measures the land grid ([DESIGN.md](DESIGN.md#the-land-grid)) on the
+base maps, with no Workshop mods. For each of Arland, Everon and Cain it boots a sub-scene of the
+map with the game mode, the map's `SCR_AIWorld` (the road network comes with it) and **Zombies >
+Tribes > Land survey** on, waits for the grid, prints what it found, then boots the map again to
+load the grid from its cache. It takes about 25 minutes for all three (Everon and Cain take 2 to 3
+minutes to boot, and 2 to 4 more to read). Name maps to run fewer; `CACHE_RUN=0` skips the second
+boots.
+
+```bash
+SERVER_DIR=~/rz_check/server tools/land_survey/run.sh            # arland everon cain
+SERVER_DIR=~/rz_check/server CACHE_RUN=0 tools/land_survey/run.sh everon
+```
+
+It prints, per map: the grid's size, the reading time (the work and the longest second), its
+memory, the land and the wild land (and how much each wild-land rule takes), the tribe slots at
+1 per 4, 6 and 9 km², rivers, lakes, roads, every inferred bridge or ford with the nearest bridge
+prefab on the map (and the bridge prefabs it didn't find), ridge posts, valley lines, forests,
+fields, lair candidates and the prefabs it took for barns, sheds and the rest, a tree histogram,
+the server's memory before and after, and the cache file. A picture of each grid is saved to
+`<WORK_DIR>/land_survey/<map>_map.txt`. On Linux it runs the server in its own network namespace
+(`unshare -n`, as root), so it can run beside the runtime test; elsewhere don't run both at once.
+
+| What it shows | What it can't |
+|---|---|
+| The engine calls the grid makes, on real maps: terrain, water types, river entities, the entity query, the road network; what it costs; the cache written and read back | Maps other than the three, Workshop maps with other prefab names, how the wild land changes as holdings and safehouses do over a season (it reads one fresh start) |
+
 ### The markers
 
 ```bash
@@ -898,8 +930,9 @@ that explains them; 2 are in the UI) and 10 in the Workbench plugin (one is its 
 Every name and signature question is settled: the game scripts compile on 1.9, and each call was
 checked against the base game's script source (its doc comments and how vanilla uses it). Each
 marker left is a **behaviour** only a play-test can show (for the plugin, a run in Workbench):
-replication, what the AI does, what a prefab carries. The game scripts' markers are grouped by
-risk; check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The
+replication, what the AI does, what a prefab carries. The land grid (`World/RZ_Land.c`) has none:
+the [land survey](#land-survey-without-workbench) ran each of its engine calls on Arland, Everon and
+Cain. The game scripts' markers are grouped by risk; check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The
 [UI's](#the-ui-2) and the [plugin's](#the-workbench-plugin-9) come last.
 
 ### High risk: the core loop (1)
@@ -1016,6 +1049,21 @@ the house is gone, `Long Table: broken up this season.` Arland's 14 settlements:
 after the nearest local place label (North Head, Angler Bluff, Sandbank, Heath Point) and the rest
 by grid reference (`Outskirts 13-29`).
 
+With **Zombies > Tribes > Land survey** on, one more line comes before `Started.` at the first start
+on a map, and the land grid's three lines a few minutes later (at once, saying `loaded from the
+cache in N ms`, on later starts). On Everon:
+
+```
+[ReforgerZ] Land survey: reading the map, 2652 squares of 250 m (51 x 52). Tribes stay dormant until it's done.
+[ReforgerZ] Land: 2652 squares of 250 m (51 x 52), 51.0 km2 of land, 24.4 km2 wild; read in 271 s (2036 ms of work, at most 14 ms a second), 27 ms to work out. File $profile:ReforgerZ/land_RZLand_Everon_459158.json.
+[ReforgerZ] Land: the sea, 28 rivers (14.9 km), 2 lakes. 889 roads, 22 bridges inferred (7 over water), 2 fords. Ridge posts 71, valley lines 10, forests 6, fields 25.
+[ReforgerZ] Land: lair candidates 35 (forest 29, culvert 3, shed 3). Tribe slots at 1 per 6 km2 of wild: 4 (1 kept for a split).
+```
+
+What the numbers mean and what to expect on each base map is in
+[DESIGN.md](DESIGN.md#the-land-grid). On a map with no rivers the second line says `rivers: none
+found (the sea only; ...)`; with no road network, `roads: none found ...` (see the table below).
+
 Warnings worth acting on:
 
 | Line | Means |
@@ -1044,6 +1092,8 @@ Warnings worth acting on:
 | `Long Table: none this season (no empty place far enough from everyone on this map).` | Every settlement is too infected or within 400 m of a holding, leader seat, safehouse or the lab (the last of the small-map steps): no house this season. Fewer outposts (**Territory > Outposts per faction**) leave room |
 | `Requirements: no questline has the key '...' (docs/QUESTLINES.md lists them); the gate never closes.` | A mission's `NotWhileQuest`/`NotAfterQuest`/`NotWithQuest` names a key that is neither registered nor designed: a typo. Use the key from [QUESTLINES.md](QUESTLINES.md#the-questlines) |
 | `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON save behaviour in the VERIFY list is wrong) |
+| `Land: ... roads: none found (no road network; no bridges) ...` | The world has no `SCR_AIWorld` (or its road network is empty): place the map's AI world prefab (`SCR_AIWorld_Eden.et` and the like), which the infected need anyway |
+| `Land survey: the cached grid ... doesn't read; reading the map again.` / `Land survey: could not write ...` | The cache in `$profile:ReforgerZ/` is damaged or can't be written: the map is read again at each start (a few minutes, tribes dormant meanwhile) |
 
 While running: `Status | ...` lines every few minutes (stage, infection, zombies, missions, cure,
 the lab's backlog, whether it's full, whether research waits at the finale's gate, and the pace by

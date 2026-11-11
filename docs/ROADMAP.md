@@ -38,6 +38,7 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 | World facts: one layer content reads (the cure and the epilogue, stage, Bastion presence, the day, night, who holds a town and a filtered town pick, safehouses, live leader names), season flags shared with the questlines, canon facts made once a season, claims so two stories don't use the same house, leader or wanderer, `Fill` tokens for text (briefs filled when shown), `Changed` for news, one "can it run now" check every mission starter uses, and missions called off when the world makes them pointless | [World facts](DESIGN.md#world-facts) |
 | The epilogue after the cure: the Perimeter stands down (no shots; whoever walks up to the line is turned back; the gates open with the wipe), research stops and running research and line jobs are called off, and the broadcast, guidance and the factions' lines follow | [The Perimeter](DESIGN.md#the-perimeter), [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
+| The land grid, off by default: water, height, trees, buildings, roads and inferred bridges in 250 m squares, ridges, valleys, forests, lair candidates and wild land, read once and cached; measured on Arland, Everon and Cain (`tools/land_survey/`). Nothing uses it yet: it's the ground the infected tribes will live on | [The land grid](DESIGN.md#the-land-grid) |
 | World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
 | Cure research, antidotes, the final stand, the season's winner; the pace by play (research ×0.25 to ×2.5 for the last week's player-hours); the lab's capacity (a backlog worked through at 3% a real day, capped at 4 days of work as a backstop: samples refused and mission research lost while it's full, +25% on what fills a near-empty backlog to half a day); breakthrough news held until someone is online; the finale's 90% gate as a hook, used only once a finale questline is registered, with a fallback of 1% a real day after a week there | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
@@ -64,6 +65,13 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
   either faction: designed separately. The hook is built: registering one (`IsCureFinale`) stops
   research at 90% until a finale adds research with `RZ_CureResearch.AddFinaleResearch`
   ([Cure research](DESIGN.md#cure-research-and-the-seasons-end)).
+
+### Infected tribes and town crawlers
+- Designed, not built: tribes of infected in the wild land, each with a lair, a range and an
+  alpha, out by day too but lighter (a small day party on its trails; the full hunt only at
+  night); town crawlers drawn from each town's infection. The land grid they need is built and
+  measured ([DESIGN.md](DESIGN.md#the-land-grid)). Next: the crawlers, the land grid in use and the
+  plumbing (runtime groups, one held waypoint per group, a silent kill), with their own doc.
 
 ### Content on the world facts
 - Switch the rest of the content to the world facts ([DESIGN.md](DESIGN.md#world-facts), the

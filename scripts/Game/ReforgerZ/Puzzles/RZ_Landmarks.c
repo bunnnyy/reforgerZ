@@ -19,7 +19,8 @@ class RZ_LandmarkFinder
 
 	//------------------------------------------------------------------------------------------------
 	//! Kinds: church, watertower, tower, castle, lighthouse, school, station, fuel, well, bank, monument,
-	//! power, industrial, radio, pharmacy, police, military.
+	//! power, industrial, radio, pharmacy, police, military; and the wild's lairs: barn, mill, silo,
+	//! quarry, culvert, shed, ruin.
 	static void Find(vector center, float radius, array<string> kinds, notnull array<ref RZ_Landmark> result)
 	{
 		RZ_LandmarkFinder finder = new RZ_LandmarkFinder();
@@ -114,6 +115,14 @@ class RZ_LandmarkFinder
 			case "pharmacy": return name.Contains("pharmacy") || name.Contains("hospital") || name.Contains("clinic") || name.Contains("medical");
 			case "police": return name.Contains("police") || name.Contains("gendarm") || name.Contains("sheriff");
 			case "military": return name.Contains("military") || name.Contains("barrack") || name.Contains("bunker") || name.Contains("armory") || name.Contains("armoury");
+			// Lairs out in the wild (World/RZ_Land.c)
+			case "barn": return name.Contains("barn") || name.Contains("stable") || name.Contains("cowshed") || name.Contains("granary");
+			case "mill": return name.Contains("windmill") || name.Contains("watermill") || name.Contains("/mill") || name.Contains("mill_0");
+			case "silo": return name.Contains("silo");
+			case "quarry": return name.Contains("quarry");
+			case "culvert": return name.Contains("culvert");
+			case "shed": return name.Contains("/shed") || name.Contains("_shed") || name.Contains("woodshed") || name.Contains("toolshed");
+			case "ruin": return name.Contains("ruin");
 		}
 
 		return false;
@@ -144,6 +153,7 @@ class RZ_LandmarkFinder
 			case "pharmacy": return "the pharmacy";
 			case "police": return "the police station";
 			case "military": return "the barracks";
+			case "ruin": return "the ruins";
 		}
 
 		return "the " + kind;
