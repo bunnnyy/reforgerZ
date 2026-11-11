@@ -186,8 +186,9 @@ town, saved) and may write one door. After the cure nothing new is written.
 | Errands' old mark | Errands | [Below](#errands-old-mark) |
 
 A write asks for a kind of building (a shop, a clinic, a farm or barn, a garage, a house, or the one
-nearest a point). It goes on a door already marked with the same kind near the same point, else a new
-door; a full town gives up its least salient, most weathered door (a first-days write never pushes out a
+nearest a point). It goes on the door that already has the same mark by the same writer (a rewrite),
+else a door of the same kind near the same point, else one of the same kind with marks it paints over
+(the crews' hand on the shop's X), else a new door; a full town gives up its least salient, most weathered door (a first-days write never pushes out a
 door with live marks).
 
 ## How marks age
@@ -213,10 +214,11 @@ same door after every restart and nothing about a building is saved. The buildin
 its prefab name. The mark sits on the door's wall 0.8 m beside the doorway, 1.5 m up: never on the leaf
 or in its swing.
 
-Left out: buildings inside a lived-in place's ring (50 m of a holding, 80 m of the lab, 40 m of a
-safehouse except the building it's in), within 25 m of a running mission, and the first patient's
-clinic (`origin.clinic`'s town's clinics carry nothing). A marked door that finds no slot is words only:
-it counts in the town's summary.
+No new mark goes on a building inside a lived-in place's ring (50 m of a holding, 80 m of the lab, 40 m
+of a safehouse except the building it's in), within 25 m of a running mission, or on the first patient's
+clinic (`origin.clinic`'s town's clinics carry nothing); they stay in the list, so slot numbers never
+shift. A live mark keeps its slot across restarts. A marked door that finds no slot is words only: it
+counts in the town's summary.
 
 ## Doors you can see
 

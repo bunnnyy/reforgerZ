@@ -189,6 +189,7 @@ class RZ_MarkedDoor
 	ref array<ref RZ_DoorMark> m_aLayers = {};	// oldest first
 
 	// Runtime, once bound (RZ_DoorSlots)
+	bool m_bPlaced;			// its slot is resolved on the map this run
 	vector m_vPos;			// the mark, beside the door on its wall
 	vector m_vNormal;		// straight out of the wall
 	bool m_bLocked;			// the lock system's building (the X says SEAL)
@@ -197,7 +198,7 @@ class RZ_MarkedDoor
 	//------------------------------------------------------------------------------------------------
 	bool IsBound()
 	{
-		return m_iSlot >= 0;
+		return m_bPlaced;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -478,6 +479,7 @@ class RZ_DoorMarks
 	{
 		RZ_MarkedDoor best = null;
 		float bestDist = 40;
+		RZ_MarkedDoor over = null;
 		foreach (RZ_MarkedDoor d : m_aDoors)
 		{
 			if (d.m_iTown != town || d.m_iWant != want)
@@ -487,6 +489,11 @@ class RZ_DoorMarks
 			RZ_DoorMark same = d.Find(m.m_iSymbol);
 			if (same && same.m_iAuthor == m.m_iAuthor && (anchor == vector.Zero || RZ_Util.DistXZ(d.m_vAnchor, anchor) < 60))
 				return d;
+
+			// A writer who paints over someone goes where their marks are (the crews' hand on the
+			// shop over Bastion's X)
+			if (!over && PaintsOver(d, m))
+				over = d;
 
 			if (anchor == vector.Zero)
 				continue;
@@ -499,7 +506,29 @@ class RZ_DoorMarks
 			}
 		}
 
-		return best;
+		if (best)
+			return best;
+
+		return over;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `m` would paint over a mark on `d` (Overpaint's rules).
+	protected bool PaintsOver(RZ_MarkedDoor d, RZ_DoorMark m)
+	{
+		foreach (RZ_DoorMark a : d.m_aLayers)
+		{
+			if (a.Has(RZ_DoorMark.F_OVER))
+				continue;
+
+			if (m.m_iSymbol == RZ_EDoorSymbol.HAND && a.m_iAuthor == RZ_EDoorAuthor.BASTION)
+				return true;
+
+			if ((m.m_iSymbol == RZ_EDoorSymbol.POSTCODE || m.m_iSymbol == RZ_EDoorSymbol.CLEARED) && a.m_iAuthor == RZ_EDoorAuthor.REDHAND)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -782,6 +811,7 @@ class RZ_DoorMarks
 	//------------------------------------------------------------------------------------------------
 	protected void Place(RZ_MarkedDoor d, RZ_DoorSlot s)
 	{
+		d.m_bPlaced = true;
 		d.m_vPos = s.m_vPos;
 		d.m_vNormal = s.m_vNormal;
 		d.m_bLocked = s.m_bLocked;
@@ -795,7 +825,7 @@ class RZ_DoorMarks
 		float bestScore = float.MAX;
 		foreach (int i, RZ_DoorSlot s : slots.m_aSlots)
 		{
-			if (used.Contains(i))
+			if (used.Contains(i) || s.m_bOff)
 				continue;
 
 			// The first patient's clinic carries nothing: no door there can be read as a clue

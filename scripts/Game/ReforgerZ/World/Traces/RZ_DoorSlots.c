@@ -4,8 +4,9 @@
 //! run per town (one sphere query, at most 64 buildings and their door children), when a player
 //! first comes within 400 m, one town per tick. Runtime only.
 //!
-//! Left out: buildings inside a lived-in place's ring (camp life owns those), except the building
-//! a safehouse stands in (its patched bear), and buildings within 25 m of a running mission.
+//! Kept in the list but taken by no new mark (so slot numbers never shift): buildings inside a
+//! lived-in place's ring (camp life owns those), except the building a safehouse stands in (its
+//! patched bear), and buildings within 25 m of a running mission.
 //! Server only.
 
 //------------------------------------------------------------------------------------------------
@@ -16,6 +17,7 @@ class RZ_DoorSlot
 	vector m_vBuilding;		// the building's origin
 	int m_iKind;			// RZ_EDoorWant: HOUSE, SHOP, CLINIC, FARM, GARAGE, PUBLIC
 	bool m_bLocked;
+	bool m_bOff;			// inside a lived-in ring or by a running job: no new mark goes here
 	int m_iHash;
 }
 
@@ -112,7 +114,7 @@ class RZ_DoorSlots
 
 		foreach (IEntity b : buildings)
 		{
-			if (!b || InRing(b))
+			if (!b)
 				continue;
 
 			array<IEntity> doors = {};
@@ -131,15 +133,14 @@ class RZ_DoorSlots
 				continue;
 
 			RZ_DoorSlot slot = MakeSlot(b, door, seed);
-			bool nearJob = false;
+			slot.m_bOff = InRing(b);
 			foreach (vector job : busy)
 			{
 				if (RZ_Util.DistXZ(job, slot.m_vPos) < 25)
-					nearJob = true;
+					slot.m_bOff = true;
 			}
 
-			if (!nearJob)
-				t.m_aSlots.Insert(slot);
+			t.m_aSlots.Insert(slot);
 		}
 
 		SortByHash(t.m_aSlots);
