@@ -55,6 +55,12 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 ### Characters and UI
 - Build the UI layouts and the icon imageset in Workbench ([UI/LAYOUTS.md](../UI/LAYOUTS.md)).
 
+### Designed, not built
+- **Questlines:** twelve faction questlines and two for the Long Table, over many sessions
+  ([QUESTLINES.md](QUESTLINES.md)).
+- **The Long Table:** a tiny cannibal family in one farmhouse; no reputation tree, a few
+  dealings, exposed and broken up through its questlines ([DESIGN.md](DESIGN.md#the-long-table-planned)).
+
 ## Play-test priorities
 
 In this order, because later ones depend on earlier ones:

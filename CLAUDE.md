@@ -50,6 +50,7 @@ When you restructure, update the **Doc map** below and the README's doc list in 
 | `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
 | `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
 | `docs/MISSIONS.md` | Every contract, world event, puzzle, leader and arc mission, with requirements and ✅ status |
+| `docs/QUESTLINES.md` | The long questlines (three per faction, two for the Long Table): stages, approaches, endings, crossings |
 | `docs/MOD_STACK.md` | Workshop dependencies and why |
 | `docs/UI.md` | Art direction, the icon set, the screens, the UI scripts and data feeds, built vs planned (layout trees: `UI/LAYOUTS.md`) |
 | `docs/WORKBENCH_SETUP.md` | Turning the scripts into a playable mod: dependencies, factions, prefabs, settings, VERIFY list, log lines, play-test checklist |
