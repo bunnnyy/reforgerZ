@@ -107,6 +107,15 @@ class RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A cure finale route (planned; docs/DESIGN.md, "Cure research"): while any registered questline
+	//! says yes, research stops at 90 percent until a finale takes it further with
+	//! RZ_CureResearch.AddFinaleResearch. None does yet, so research runs to 100 as before.
+	bool IsCureFinale()
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A stage that offers one mission (MakeMission) to eligible players.
 	protected RZ_QuestStage MissionStage(int id, string title, string known)
 	{

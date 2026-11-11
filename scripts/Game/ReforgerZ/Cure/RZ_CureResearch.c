@@ -1,6 +1,14 @@
 //! Server-wide cure research. Players kill special infected, carry the samples
 //! to the lab and deliver them. Progress changes the world for everyone:
 //!
+//! The lab has a capacity (docs/DESIGN.md, "Cure research" and "Season pacing"): delivered research
+//! (samples and missions) waits in a backlog that the lab works through at Cure > Lab research per
+//! day, in real time, online or not. The backlog is capped (Lab backlog days): while it's full the
+//! lab refuses samples and mission research beyond the cap is lost. Research delivered while the
+//! backlog is empty counts more (Empty lab bonus). The milestones fire on worked research.
+//! Only while a cure finale questline is registered, research stops at 90 percent until a finale
+//! takes it on (AddFinaleResearch), and the lab inches up by itself meanwhile (Finale fallback).
+//!
 //!  25%  Field antiviral    infection spreads slower, bites take longer to kill
 //!  50%  Bite treatment     (no world effect of its own; supply below)
 //!  75%  Immunity serum     spread slows further, bites take even longer
@@ -44,6 +52,18 @@ class RZ_CureResearch
 	protected int m_iBatchesLost;
 	protected int m_iBatchesStolen;
 
+	//! The lab's capacity (saved): research delivered and not yet worked through, the real time
+	//! (System.GetUnixTime) the lab last worked, whether research has reached 100 percent once (the
+	//! finale's gate then stays open: a lost batch goes back to the lab's normal work), and the
+	//! finale research each faction's route has added.
+	protected float m_fBacklog;
+	protected int m_iLabUnix;
+	protected bool m_bGateOpen;
+	protected ref array<float> m_aFinaleResearch = {};
+	protected float m_fWorkTimer;
+	protected float m_fSyncTimer;
+	protected bool m_bWorkedSinceSync;
+
 	static const float FINAL_STAND_SECONDS = 900;
 	static const float ABANDON_LIMIT_SECONDS = 90;
 	static const float WAVE_INTERVAL_SECONDS = 150;
@@ -53,6 +73,13 @@ class RZ_CureResearch
 	static const int STOLEN_ANTIDOTE_CAP = 4;
 	static const int BLACK_MARKET_EXTRA = 2;	// season rules: the black market everywhere holds two more
 	static const float LAB_DEFENCE_RADIUS = 150;
+	static const float FINALE_GATE = 90;			// research stops here while a finale questline is registered
+	protected static const int DAY_SECONDS = 86400;
+	protected static const int WEEK_SECONDS = 604800;
+	protected static const int MAX_CATCH_UP = 2592000;	// the lab catches up at most 30 days at once (a server down for long)
+	protected static const float WORK_SECONDS = 60;		// the lab works once a minute: whole steps, not float dust
+	protected static const float SYNC_SECONDS = 60;		// clients hear of the lab's work at most once a minute
+	protected static const float EMPTY = 0.01;			// a backlog below this is empty
 
 	//------------------------------------------------------------------------------------------------
 	//! Most stolen doses the Red Hand's black market holds (4, or 6 with the season's open black market).
@@ -68,6 +95,10 @@ class RZ_CureResearch
 	void RZ_CureResearch(RZ_GameModeComponent gm)
 	{
 		m_GM = gm;
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			m_aFinaleResearch.Insert(0);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -83,6 +114,340 @@ class RZ_CureResearch
 		// A restart in the middle of the final stand starts it again from the beginning
 		if (m_iMilestone >= 4 && !m_bCured)
 			StartFinalStand();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lab's backlog, its clock and the finale's gate (older saves: all empty). After Restore.
+	void RestoreLab(float backlog, int labUnix, bool gateOpen, array<float> finale)
+	{
+		m_fBacklog = Math.Max(0, backlog);
+		m_iLabUnix = labUnix;
+		m_bGateOpen = gateOpen || m_iMilestone >= 4;
+		if (finale)
+		{
+			for (int f = 0; f < finale.Count() && f < m_aFinaleResearch.Count(); f++)
+			{
+				m_aFinaleResearch[f] = Math.Max(0, finale[f]);
+			}
+		}
+
+		// What the lab did while the server was down is worked out on the first minute of the tick
+		// (Work), once every system is set up for the milestones it may cross
+	}
+
+	//------------------------------------------------------------------------------------------------
+	float GetBacklog() { return m_fBacklog; }
+
+	//------------------------------------------------------------------------------------------------
+	int GetLabUnix() { return m_iLabUnix; }
+
+	//------------------------------------------------------------------------------------------------
+	bool IsFinaleGateOpen() { return m_bGateOpen; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Finale research a faction's route has added this season (AddFinaleResearch).
+	float GetFinaleResearch(int faction)
+	{
+		if (faction < 0 || faction >= m_aFinaleResearch.Count())
+			return 0;
+
+		return m_aFinaleResearch[faction];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void GetFinaleResearchAll(notnull array<float> into)
+	{
+		into.Clear();
+		foreach (float v : m_aFinaleResearch)
+		{
+			into.Insert(v);
+		}
+	}
+
+	// ================================================================ The lab's capacity
+	//------------------------------------------------------------------------------------------------
+	//! The lab has a capacity at all (Cure > Lab research per day above 0).
+	bool HasCapacity()
+	{
+		return m_GM.GetLabPerDay() > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Percent the lab works through in a real day (x season speed). 0 = no limit.
+	float LabPerDay()
+	{
+		return m_GM.GetLabPerDay() * m_GM.GetSeasonSpeed();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The most research that can wait in the backlog. -1 = no cap.
+	float BacklogCap()
+	{
+		if (!HasCapacity() || m_GM.GetLabBacklogDays() <= 0)
+			return -1;
+
+		return LabPerDay() * m_GM.GetLabBacklogDays();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Room left in the backlog. A big number when there's no cap.
+	float BacklogRoom()
+	{
+		float cap = BacklogCap();
+		if (cap < 0)
+			return 100000;
+
+		return Math.Max(0, cap - m_fBacklog);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The backlog is at its cap: the lab refuses samples and mission research is lost.
+	bool IsLabFull()
+	{
+		return !m_bCured && BacklogCap() >= 0 && BacklogRoom() <= EMPTY;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A cure finale questline is registered (none is built yet; docs/DESIGN.md, "Cure research"):
+	//! research then stops at 90 percent until a finale takes it on.
+	bool HasFinale()
+	{
+		return m_GM.GetQuestlines() && m_GM.GetQuestlines().HasCureFinale();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Research waits at 90 percent for a finale: one is registered and research hasn't reached 100 yet.
+	bool IsAtFinaleGate()
+	{
+		return !m_bCured && !m_bGateOpen && !m_bFinalStand && m_fProgress >= FINALE_GATE && HasFinale();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far the lab's own work goes: 90 percent while the finale's gate is shut, else 100.
+	protected float WorkLimit()
+	{
+		if (!m_bGateOpen && HasFinale())
+			return FINALE_GATE;
+
+		return 100;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Research one of this player's samples is worth, before the empty lab bonus: Research per
+	//! sample x the background and Champion multipliers (x2 at most together) x Cure pace x season
+	//! speed. playerId 0: no personal multiplier.
+	float SampleWorth(int playerId, float pointsPerSample)
+	{
+		float mult = 1;
+		if (playerId > 0)
+		{
+			// Halcyon Champion perk "Lab access": deliveries count 25% more
+			float perk = 1;
+			if (m_GM.GetTier(playerId, RZ_EFaction.INSTITUTE) == RZ_ETier.CHAMPION)
+				perk = 1.25;
+
+			float bgMult = 1;
+			RZ_Background bg = m_GM.GetPlayerBackground(playerId);
+			if (bg)
+				bgMult = bg.m_fResearchMult;
+
+			mult = Math.Min(MAX_RESEARCH_MULT, bgMult * perk);
+		}
+
+		return pointsPerSample * mult * m_GM.GetCurePace() * m_GM.GetSeasonSpeed();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Research delivered now counts this many times: 1 + the Empty lab bonus while nothing waits.
+	protected float EmptyMult()
+	{
+		if (HasCapacity() && m_fBacklog < EMPTY)
+			return 1 + m_GM.GetEmptyLabBonus();
+
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many of `count` samples the lab takes now: all of them, or as many as fit in the backlog
+	//! (the last one may overfill it a little); 0 when it's full or the cure is out.
+	int AcceptsSamples(int playerId, int count, float pointsPerSample)
+	{
+		if (m_bCured || count <= 0)
+			return 0;
+
+		float room = BacklogRoom();
+		if (room <= EMPTY)
+			return 0;
+
+		float worth = SampleWorth(playerId, pointsPerSample) * EmptyMult();
+		if (worth <= 0)
+			return count;
+
+		int fit = RZ_Util.RoundToInt(Math.Ceil(room / worth));
+		return Math.ClampInt(fit, 1, count);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lab works through its backlog for the real time since it last did (also with the server
+	//! empty or down), up to 90 percent while the finale's gate is shut; at the gate it inches up by
+	//! itself. Milestones fire here.
+	protected void Work()
+	{
+		int now = RZ_Guidance.UnixNow();
+		if (now <= 0)
+			return;
+
+		int elapsed = 0;
+		if (m_iLabUnix > 0 && now > m_iLabUnix)
+			elapsed = Math.Min(now - m_iLabUnix, MAX_CATCH_UP);
+
+		m_iLabUnix = now;
+		if (m_bCured)
+			return;
+
+		if (!HasCapacity())
+		{
+			WorkAll();
+			return;
+		}
+
+		if (elapsed <= 0)
+			return;
+
+		float before = m_fProgress;
+		float done = Math.Min(m_fBacklog, LabPerDay() * elapsed / DAY_SECONDS);
+		done = Math.Max(0, Math.Min(done, WorkLimit() - m_fProgress));
+		m_fBacklog = Math.Max(0, m_fBacklog - done);
+		m_fProgress = Math.Min(100, m_fProgress + done);
+
+		// At the gate with a finale registered: the lab inches on by itself, so no season gets stuck
+		if (IsAtFinaleGate())
+			m_fProgress = Math.Min(100, m_fProgress + m_GM.GetFinaleFallbackPerWeek() * m_GM.GetSeasonSpeed() * elapsed / WEEK_SECONDS);
+
+		AfterWork(before);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No capacity (Lab research per day 0): the whole backlog counts at once, as before the lab had one.
+	protected void WorkAll()
+	{
+		if (m_bCured || m_fBacklog <= 0)
+			return;
+
+		float before = m_fProgress;
+		float done = Math.Max(0, Math.Min(m_fBacklog, WorkLimit() - m_fProgress));
+		m_fBacklog = Math.Max(0, m_fBacklog - done);
+		m_fProgress = Math.Min(100, m_fProgress + done);
+		AfterWork(before);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void AfterWork(float before)
+	{
+		if (m_fProgress <= before)
+			return;
+
+		m_bWorkedSinceSync = true;
+		if (before < FINALE_GATE && m_fProgress >= FINALE_GATE && IsAtFinaleGate())
+		{
+			RZ_Log.Info("Cure: research reached the finale's 90 percent gate.");
+			m_GM.NotifyAll("Cure research", "The lab has gone as far as samples can take it: 90 percent. What's missing isn't in a special's blood, and every faction in the Zone thinks it knows where it is.");
+		}
+
+		int milestone = m_iMilestone;
+		CheckMilestones();
+		if (m_iMilestone != milestone)
+			m_GM.OnCureChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The finale's hook (docs/DESIGN.md, "Cure research"; the finale questlines are planned): research
+	//! from a finale route goes straight into the lab's result, past the 90 percent gate, not through
+	//! the backlog, the Cure pace or the season speed. faction: whose route it was (-1 none), kept
+	//! for the ending. Returns how much counted (0 once the cure is out or while the final stand runs).
+	float AddFinaleResearch(float amount, int faction, string reason)
+	{
+		if (m_bCured || m_bFinalStand || amount <= 0)
+			return 0;
+
+		float before = m_fProgress;
+		m_fProgress = Math.Min(100, m_fProgress + amount);
+		float added = m_fProgress - before;
+		if (faction >= 0 && faction < m_aFinaleResearch.Count())
+			m_aFinaleResearch[faction] = m_aFinaleResearch[faction] + added;
+
+		RZ_Log.Info(string.Format("Cure: finale research +%1 (faction %2), now %3 percent.", added, faction, RZ_Util.RoundToInt(m_fProgress)));
+		m_GM.NotifyAll("Cure research", string.Format("%1 Research: %2 percent.", reason, RZ_Util.RoundToInt(m_fProgress)));
+		CheckMilestones();
+		m_GM.OnCureChanged();
+		return added;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This server's line for the lab: "Research 63 percent. Waiting: 14 samples' worth, about 4 days of work."
+	string Describe()
+	{
+		return DescribeLab(m_fProgress, m_fBacklog, SampleWorth(0, m_GM.GetResearchPerSample()), LabPerDay(), IsLabFull(), IsAtFinaleGate(), m_bCured);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lab's line from plain numbers, so the lab status action (on a client, from replicated
+	//! values), the journal and the first-spawn news say the same. sampleWorth: research one sample
+	//! is worth; perDay: what the lab works through in a real day (0 = no limit).
+	static string DescribeLab(float progress, float backlog, float sampleWorth, float perDay, bool full, bool gate, bool cured)
+	{
+		if (cured)
+			return "The cure is complete.";
+
+		string s = string.Format("Research %1 percent.", RZ_Util.RoundToInt(progress));
+		if (backlog < EMPTY || perDay <= 0)
+			s += " Nothing waiting: the lab is ready for more.";
+		else
+			s += string.Format(" Waiting: %1, %2 of work.", SamplesText(backlog, sampleWorth), WorkText(backlog / perDay));
+
+		if (gate)
+			s += " The work has stopped at 90 percent: the last step needs more than samples.";
+		else if (full)
+			s += " The cold store is full: no more samples until the lab works through some.";
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "14 samples' worth", "1 sample's worth", "less than a sample's worth".
+	protected static string SamplesText(float backlog, float sampleWorth)
+	{
+		if (sampleWorth <= 0)
+			return "some research";
+
+		int n = RZ_Util.RoundToInt(backlog / sampleWorth);
+		if (n < 1)
+			return "less than a sample's worth";
+
+		if (n == 1)
+			return "1 sample's worth";
+
+		return string.Format("%1 samples' worth", n);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "about 4 days", "about a day", "about 9 hours", "under an hour".
+	protected static string WorkText(float days)
+	{
+		if (days >= 1.5)
+			return string.Format("about %1 days", RZ_Util.RoundToInt(days));
+
+		if (days >= 0.75)
+			return "about a day";
+
+		int hours = RZ_Util.RoundToInt(days * 24);
+		if (hours < 1)
+			return "under an hour";
+
+		if (hours == 1)
+			return "about an hour";
+
+		return string.Format("about %1 hours", hours);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -253,23 +618,18 @@ class RZ_CureResearch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Samples the lab has taken (ask AcceptsSamples first: the ones it refuses stay with the player).
+	//! They go into the backlog, and the lab works through them over the next days. Each counts
+	//! SampleWorth (the Lab Technician's x2 and the Champion's "Lab access" +25%, x2 at most), +25%
+	//! while nothing is waiting.
 	void AddSamples(int playerId, int count, float pointsPerSample)
 	{
 		if (m_bCured || count <= 0)
 			return;
 
-		RZ_Background bg = m_GM.GetPlayerBackground(playerId);
 		RZ_ETier halcyon = m_GM.GetTier(playerId, RZ_EFaction.INSTITUTE);
-
-		// Halcyon Champion perk "Lab access": deliveries count 25% more. With the background's
-		// multiplier (the Lab Technician's x2) it's never more than x2 a sample.
-		float perk = 1;
-		if (halcyon == RZ_ETier.CHAMPION)
-			perk = 1.25;
-
-		float mult = Math.Min(MAX_RESEARCH_MULT, bg.m_fResearchMult * perk);
-		float before = m_fProgress;
-		m_fProgress = Math.Min(100, m_fProgress + count * pointsPerSample * mult * m_GM.GetSeasonSpeed());
+		float research = count * SampleWorth(playerId, pointsPerSample) * EmptyMult();
+		m_fBacklog += research;
 
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		profile.m_iSamplesDelivered += count;
@@ -283,29 +643,51 @@ class RZ_CureResearch
 		else
 			m_GM.AddFame(playerId, RZ_EFaction.INSTITUTE, 3 * count);
 
+		// No capacity (Lab research per day 0): it counts at once
+		if (!HasCapacity())
+			WorkAll();
+
 		string name = GetGame().GetPlayerManager().GetPlayerName(playerId);
-		m_GM.NotifyAll("Cure research", string.Format("%1 delivered %2 sample(s). Research: %3 percent.",
-			name, count, RZ_Util.RoundToInt(m_fProgress)));
-
-		if (m_fProgress != before)
-			CheckMilestones();
-
+		m_GM.NotifyAll("Cure research", string.Format("%1 delivered %2 sample(s). %3", name, count, Describe()));
 		m_GM.OnCureChanged();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Research from missions (data, readings, field samples) rather than delivered samples.
-	void AddResearch(float points, string reason)
+	//! Research from missions (data, readings, field samples) rather than delivered samples. It goes
+	//! into the backlog like samples do; what doesn't fit is lost, and the line everyone hears (the
+	//! mission's result) says so. Returns the research kept.
+	float AddResearch(float points, string reason)
 	{
 		if (m_bCured || points <= 0)
-			return;
+			return 0;
 
-		// Missions count a share of what they say (Cure > Mission research), x season speed
-		points = points * m_GM.GetMissionResearchMult() * m_GM.GetSeasonSpeed();
-		m_fProgress = Math.Min(100, m_fProgress + points);
-		m_GM.NotifyAll("Cure research", string.Format("%1 Research: %2 percent.", reason, RZ_Util.RoundToInt(m_fProgress)));
-		CheckMilestones();
+		// Missions count a share of what they say (Cure > Mission research), x Cure pace and season
+		// speed, +25% while nothing is waiting
+		float worth = points * m_GM.GetMissionResearchMult() * m_GM.GetCurePace() * m_GM.GetSeasonSpeed() * EmptyMult();
+		float kept = Math.Min(worth, BacklogRoom());
+		string note = "";
+		if (kept < worth - EMPTY)
+		{
+			if (kept <= EMPTY)
+			{
+				kept = 0;
+				note = " The lab's cold store is full: none of it could be kept.";
+			}
+			else
+			{
+				note = " The lab's cold store is full: only part of it could be kept.";
+			}
+
+			RZ_Log.Info(string.Format("Cure: the lab's backlog is full; %1 of %2 research from a mission was lost.", worth - kept, worth));
+		}
+
+		m_fBacklog += kept;
+		if (!HasCapacity())
+			WorkAll();
+
+		m_GM.NotifyAll("Cure research", string.Format("%1%2 %3", reason, note, Describe()));
 		m_GM.OnCureChanged();
+		return kept;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -314,6 +696,26 @@ class RZ_CureResearch
 		TickAnnex(dt, players);
 		if (m_bCured)
 			return;
+
+		// The lab works in real time, once a minute (Work counts the real seconds, online or not);
+		// clients hear of its progress at most once a minute
+		m_fWorkTimer += dt;
+		if (m_fWorkTimer >= WORK_SECONDS)
+		{
+			m_fWorkTimer = 0;
+			Work();
+		}
+
+		m_fSyncTimer += dt;
+		if (m_fSyncTimer >= SYNC_SECONDS)
+		{
+			m_fSyncTimer = 0;
+			if (m_bWorkedSinceSync)
+			{
+				m_bWorkedSinceSync = false;
+				m_GM.OnCureChanged();
+			}
+		}
 
 		// Antidotes from day one; research makes them faster and the stock bigger
 		m_fAntidoteTimer += dt;
@@ -401,6 +803,8 @@ class RZ_CureResearch
 	protected void StartFinalStand()
 	{
 		m_bFinalStand = true;
+		// Research has reached 100 once: a lost batch goes back to the lab's normal work, not to the finale
+		m_bGateOpen = true;
 		m_fFinalStandLeft = FINAL_STAND_SECONDS;
 		m_fAbandonedFor = 0;
 		m_bStandReached = false;

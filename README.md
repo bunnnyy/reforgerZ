@@ -12,9 +12,12 @@ and one way to end it: **research the cure.**
 - **Backgrounds** picked in the spawn menu (Nurse, Mechanic, Hunter, Police Officer, Ex-Con,
   Lab Technician, Radio Operator, Unemployed), each with a real perk and flaw. Five more are
   unlocked through Legacy.
-- **The Director** moves the server through four outbreak stages over a season of about ten
-  days (a season speed setting fits it to the server's size), spreads infection from town
-  to town and sends hordes toward noise. The infected adapt a little as the cure advances.
+- **The Director** moves the server through four outbreak stages over a season of about 45
+  real days with five regulars (season speed and cure pace settings fit it to the server's
+  size), spreads infection from town to town and sends hordes toward noise. The infected adapt
+  a little as the cure advances. Samples and research wait at the lab, which works through about
+  3% a day even with nobody online and refuses more when its cold store is full, so a busy server
+  can't rush the cure.
 - **Bites you can survive**: most hits are scratches, a bite can be cleaned in its first two
   minutes, and the infection runs through fever, weakness and a final stage. Antidotes, Halcyon's
   trial dose, stabilisers and five low-grade meds with side effects exist from day one; research
@@ -36,9 +39,9 @@ and one way to end it: **research the cure.**
   Haven and Red Hand work and leaders' off-book jobs. Contracts
   name a rough area until you're close, unless you're a Radio Operator or trusted by the giver.
 - **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
-  sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself after
-  the cure's epilogue (the line stands down, the gates open with the wipe) or a set number of
-  weeks, and a hall of fame remembers who carried samples, held the final stand and rescued the
+  sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself only
+  after the cure's epilogue (the line stands down, the gates open with the wipe; a timed wipe is
+  there for admins who pick it, off by default), and a hall of fame remembers who carried samples, held the final stand and rescued the
   most, season after season.
 - **One world, one story**: missions, arcs, questlines and voices read the same world facts
   (the cure, the day, who holds a town, fixed facts of the setting), so the line doesn't shoot

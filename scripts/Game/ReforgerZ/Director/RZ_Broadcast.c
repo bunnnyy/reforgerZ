@@ -29,13 +29,18 @@ class RZ_Broadcast
 	//! Server tick. intervalMinutes <= 0 turns the looping broadcast off (first-join still works).
 	void Tick(float dt, float intervalMinutes)
 	{
+		// The lab works research through a little at a time (RZ_CureResearch.Work), so "moved" is
+		// measured from where it stood when it last moved, not from the last tick
 		RZ_CureResearch cure = m_GM.GetCure();
-		if (m_fLastProgress < 0 || cure.m_fProgress > m_fLastProgress + 0.01)
+		if (m_fLastProgress < 0 || cure.m_fProgress > m_fLastProgress + 0.01 || cure.m_fProgress < m_fLastProgress)
+		{
 			m_fStallSeconds = 0;
+			m_fLastProgress = cure.m_fProgress;
+		}
 		else
+		{
 			m_fStallSeconds += dt;
-
-		m_fLastProgress = cure.m_fProgress;
+		}
 
 		if (m_iLastMilestone >= 0 && cure.m_iMilestone > m_iLastMilestone)
 			m_fSinceBreakthrough = 0;
