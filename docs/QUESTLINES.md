@@ -545,7 +545,7 @@ signed for, people too. The commanding officer wants a real count: every safehou
 ration cards, a curfew and a "contribution". The Haven won't give names. It remembers what Bastion's
 lists were for on Day 2. A civilian who can walk into both is useful to everyone.
 
-**Needs:** Known with Bastion. 🔒 not Elder for stage 4's collection (as Requisition). ★ Police,
+**Needs:** Known with Bastion; never after Await Relief ended Expended (`orders.stance` 4). 🔒 not Elder for stage 4's collection (as Requisition). ★ Police,
 ★ Radio Op.
 **Starts:** the commanding officer's radio contract, while Bastion's need is Supplies or Security.
 With `list.to_bastion` it starts at stage 3: the count is done.

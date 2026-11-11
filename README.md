@@ -126,7 +126,7 @@ and one way to end it: **research the cure.**
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
   emblems, an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance, a notebook (standing, journal, radio, map key,
-  hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
+  hall of fame, the season) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks, a repair screen for the cars and a shop screen at the quartermasters,
   spoken lines as subtitles, notes on a paper reader, and on the map only what you know. Gamepad
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
@@ -166,12 +166,15 @@ yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do i
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
 **Not built yet:** the approved designs for the rest of the season: the rest of the four majors,
-of the cure's finale and of the epilogue week, errands' margin, lock and epilogue cards and more,
+of the cure's finale and of the epilogue week, errands' margin and lock cards, the epilogue deck's
+last six and more,
 built in the order of [designs/PLAN.md](designs/PLAN.md). Built so far: the epilogue week (phase 7,
 simplified: the record and the hall's freeze, beats and carriers, the dose outlets, the queue and
-the lab gate, the grey choices, the closure set, [EPILOGUE.md](docs/EPILOGUE.md)); the cure's finale (phase 6,
+the lab gate, the grey choices, the closure set, the evening calendar, 13 cards of the epilogue
+deck, [EPILOGUE.md](docs/EPILOGUE.md)); the cure's finale (phase 6,
 simplified: the controller, the lock, the five routes, live tissue, pacts, the stand as a fight for
-the clean room, Take the Lab and the Coat Run, terms, [FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified,
+the clean room, Take the Lab and the Coat Run, terms, [FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified, with next
+season's story rules, the stand's inputs, the hall's lines and the notebook's season tab,
 [QUESTLINES.md](docs/QUESTLINES.md#the-majors)); the shared engine (phase 1); small
 things everywhere (phase 3: errands' core, the mission style's framework and the world memory's
 writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, simplified: the six story
@@ -227,10 +230,10 @@ scripts/Game/ReforgerZ/
                  table
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, the season mood and grief, story arcs, the questline engine,
-                 the majors' engine (acts, votes, the dynamic fallbacks, the season story),
-                 headlines, the season budget and the set-piece calendar; Epilogue/: the
-                 epilogue week (the record, beats, the dose outlets, its places and scenes,
-                 the closing work)
+                 the majors' engine (acts, votes, the dynamic fallbacks, the season story, the
+                 stand's inputs), next season's story rules, headlines, the season budget and the
+                 set-piece calendar; Epilogue/: the epilogue week (the record, beats, the dose
+                 outlets, its places and scenes, the closing work, the evening calendar)
   Zombies/       spawner (any zombie mod's prefabs), the towns' crawlers, bodies and the agent
                  budget (roles, data parts, the sight rule, runtime groups), the tribes (seeds,
                  the daily rhythm, hunts, scouts, their bodies), their life cycle, borders and
@@ -250,7 +253,7 @@ scripts/Game/ReforgerZ/
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/ Tribes/ (the packs' contracts); the shared checks (Trust, Fear, prices) and
                  ways through a job; Story/ (the story kit, who decides, who benefits, reasons);
-                 Errands/ (the dealer, the routines, Cards/); Questlines/ (the author's base class,
+                 Errands/ (the dealer, the routines, Cards/ with the epilogue deck); Questlines/ (the author's base class,
                  approach helpers, the majors' scenes, the registry, one folder per faction with
                  its major, one for the Long Table, and Finale/: the cure finale's five routes,
                  desks, tissue hunts and items)

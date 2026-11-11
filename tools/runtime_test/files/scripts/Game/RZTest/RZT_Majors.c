@@ -5,7 +5,9 @@
 // 1. starts each major and walks every act through its default (data), printing each act and the
 //    ending; The Book's send-off also runs live once (its scene mission, ended as won);
 // 2. the fallback checks: three empty days fire nothing; a squeeze sends a last call, then a
-//    default after the grace.
+//    default after the grace;
+// 3. what the endings leave: the story rules' cap, the epilogue lines by controller, the season
+//    tab's lines and the stand's groups by stance.
 // Lines: "RZT major <key> act <n> ...", "RZT major <key> ENDED: ending <n>",
 // "RZT majors check: <name>: OK|FAILED (...)", "RZT majors done: ...".
 
@@ -140,6 +142,9 @@ class RZT_Majors
 
 		if (s_iStep == 3)
 			return Squeeze(gm, q, majors);
+
+		if (s_iStep == 4)
+			return Story(gm, majors);
 
 		q.RZT_EndAll();
 		RZ_Questlines.s_bRZTMajors = true;
@@ -312,6 +317,46 @@ class RZT_Majors
 		Check(called && moved, "then a default after the grace", string.Format("stage %1 -> %2, defaults %3", stage, run.m_iStage, run.Flag("mc.defaults")));
 		q.RZT_End("proof");
 		s_iStep = 4;
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! 4. What the endings leave: next season's story rules (strength capped at 2 a faction), the
+	//! epilogue lines by controller, the season tab's lines, the stand's groups by stance.
+	protected static bool Story(RZ_GameModeComponent gm, RZ_Majors majors)
+	{
+		array<string> keys = {"book:10", "book:13", "orders:12", "proof:11", "proof:14"};
+		RZ_StoryRules rules = RZ_StoryRules.Build(keys);
+		RZ_SeasonRuleSet ruleSet = rules.RuleSet();
+		bool capped = ruleSet && ruleSet.m_iBastionStrength == 2 && ruleSet.m_iRedHandStrength == 2;
+		string detail = "no rule set";
+		if (ruleSet)
+			detail = string.Format("Bastion %1, Red Hand %2", ruleSet.m_iBastionStrength, ruleSet.m_iRedHandStrength);
+
+		Check(capped, "story rules cap strength at 2 a faction", detail);
+		Check(rules.m_iStolenDoses == 1 && rules.m_aLegacy.Contains("legacy.terms"), "Two Tins' dose and Under Seal's legacy flag", string.Format("doses %1", rules.m_iStolenDoses));
+		RZ_StoryRules.Build(null);
+		Check(RZ_StoryRules.Get().RuleSet() == null, "no story rules without a record", "");
+
+		bool variants = !RZ_Majors.Variant("orders", 10, true).IsEmpty() && !RZ_Majors.Variant("book", 10, false).IsEmpty() && RZ_Majors.Variant("book", 99, true).IsEmpty();
+		Check(variants, "epilogue lines by controller", "");
+		array<string> lines = {};
+		majors.SeasonLines(lines);
+		Check(!lines.IsEmpty(), "the season tab's lines", string.Format("%1 lines", lines.Count()));
+		foreach (string line : lines)
+		{
+			if (!line.IsEmpty())
+				Print("RZT majors: season tab: " + line);
+		}
+
+		int stance = RZ_MajorHelp.World(gm, "orders.stance");
+		RZ_MajorHelp.SetWorld(gm, "orders.stance", 3);
+		bool road = RZ_Majors.SendsStandGroup(gm, RZ_EFaction.MILITARY) && RZ_Majors.OnLabRoad(gm, RZ_EFaction.MILITARY);
+		RZ_MajorHelp.SetWorld(gm, "orders.stance", 4);
+		bool none = !RZ_Majors.SendsStandGroup(gm, RZ_EFaction.MILITARY);
+		RZ_MajorHelp.SetWorld(gm, "orders.stance", stance);
+		Check(road && none, "the stand's groups by stance", "");
+		s_iStep = 5;
 		return false;
 	}
 

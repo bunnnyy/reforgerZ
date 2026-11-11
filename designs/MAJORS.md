@@ -112,8 +112,8 @@ does today.
   route brought him home, the captain and the four R numbers (the finale's lore), "Continue." after
   "Expended." with the lab's log in Bastion's file.
 - **Readers of the stance:** `RZ_LeaderVoice` and `RZ_FactionVoice` (the call's opening), the presence
-  floor, this season's curfew through `RZ_Seasons`, B2 (the call's wording, the forged-count risk,
-  can't start after Expended), B3 (talking him down one tier harder under 2 or 4), C1 (how fast an
+  floor, this season's curfew through `RZ_Seasons`, B2 (the call's wording, the forged-count risk),
+  B3 (talking him down one tier harder under 2 or 4), C1 (how fast an
   exposed house is burnt), No Reply losing its "Command answered" choice once a stance is set.
 
 ## Every Name
@@ -214,7 +214,7 @@ epilogue's last day nears ([QUESTLINES.md](../docs/QUESTLINES.md#the-majors)). S
 | H2 The Price of the Door | Its flags table offers and tilt one head's vote at both sittings; `door.exile_home` as proof at the reading; its house as act IV's house |
 | H3 The Edge of Town | `walk.walks_stay`: the walker reads his eleven at the Gate |
 | Short Weight | Full Weight leans that head to the pot, Short Weight to the arrangement; starts twice as often during the Haven's acts II–IV |
-| B2 The Census | Counted and Forged feed the muster's count; reads the stance back; can't start after Expended |
+| B2 The Census | Counted and Forged feed the muster's count; reads the stance back |
 | B3 The Last Pilot | `pilot.line`'s name read in the last call; `pilot.stays` flies Bastion's group in (words) |
 | R2 Cargo, R3 The Well Story | Pick the rival's crew while the major runs; `cargo.freed` as proof at the Haven's reading; `well.stood` against the arrangement |
 | HC2 The Other Two | Its flags put names or numbers on the paper, ease the director's persuade, put page six in the open at the Haven's reading |

@@ -4,11 +4,13 @@
 // 1. the story commits: the hall froze, beats were picked, phase A;
 // 2. phase B; the tester is bitten and uses a dose outlet (one per life, its price);
 // 3. two questlines are begun and listed as loose ends: one closes live (a way), one as data;
-// 4. Bring Them Home: a named dead person's keepsake is taken and handed in at a house;
+// 4. Bring Them Home: a named dead person's keepsake is taken and handed in at a house; an
+//    epilogue deck card (Take a Name to the Board) is true and writes a name home;
 // 5. the Last Entry; the chair's grey choice through the decide hold; a say at the station;
 // 6. a town with crawlers is cleared (taken back); the ridges and the Long Table's week close;
 // 7. processing (phase C): the broadcast's tally closes; the tester walks out at the barrier;
-// 8. the wipe's lines: names not brought home, the season block's lines; every closing item ended.
+// 8. the wipe's lines: names not brought home, the season block's lines, last_season.json's beats;
+//    every closing item ended.
 // Lines: "RZT epilogue check: <name>: OK|FAILED (...)", "RZT epilogue: ..." and
 // "RZT epilogue done: N checks OK, N FAILED".
 
@@ -282,6 +284,31 @@ class RZT_Epilogue
 		Check("a name is brought home to the wall", epi.Data().names[idx].state == 2 && epi.GetClosing().WallCount() >= 1, string.Format("state %1", epi.Data().names[idx].state));
 		epi.GetClosing().WriteLine(RZT_Fake.ID, "");
 		Check("the Last Entry", epi.Data().entries.Count() >= 1, "no line");
+
+		// The epilogue deck: Take a Name to the Board is true for a name still lying out, and writes it home
+		epi.AddNamed("Jana Kralova", "her ID card", -1, RZ_Mission.LandPointNear(h.m_vPos, 200, 400), "", "", "the nurse");
+		int jana = epi.Data().names.Count() - 1;
+		RZ_Errand_NameToTheBoard card = new RZ_Errand_NameToTheBoard();
+		card.Define();
+		RZ_Errand e = new RZ_Errand();
+		e.m_Def = card;
+		e.m_iAsker = RZT_Fake.ID;
+		e.m_vGiver = h.m_vPos;
+		e.m_iHouse = 0;
+		e.m_iFaction = RZ_EFaction.SURVIVORS;
+		bool why = gm.GetErrands() && card.Why(gm.GetErrands(), e);
+		Check("an epilogue card is true in the week", why && card.m_bAfterCure, "not true");
+		if (why)
+		{
+			array<string> said = {};
+			card.Resolve(gm.GetErrands(), e, card.m_aWays[0], RZT_Fake.ID, said);
+			RZ_EpiName named = RZ_EpiCard.NameCalled(e.m_sValue);
+			Check("the card writes the name home", named && named.state == 2, e.m_sValue);
+		}
+
+		if (epi.Data().names[jana].state == 0)
+			epi.Data().names[jana].state = 2;
+
 		Next();
 		return false;
 	}
@@ -399,6 +426,8 @@ class RZT_Epilogue
 		RZ_EpilogueSave s = epi.Data();
 		Check("names nobody carried are NOT BROUGHT HOME", s.names[s.names.Count() - 1].state == 3, "still lying out");
 		Check("the season block has the week's lines", !s.hallLines.IsEmpty(), "no lines");
+		RZ_SeasonRecord rec = RZ_Persistence.LoadSeason();
+		Check("last_season.json keeps the week's beats", rec && rec.beats.Count() > 0, "no beats");
 		string open;
 		Check("every closing item reached its end", epi.GetClosing().RZT_AllEnded(open), "open: " + open);
 		int since = 0;

@@ -1373,10 +1373,12 @@ five routes are left out of the questlines' phase: they only start at the gate.
 week runs scripted (`RZT_Epilogue.c`): the commit, the hall's freeze, beats and phase A; phase B;
 the tester bitten and dosed at the first outlet, and refused a second; two questlines begun and
 listed as loose ends, one closed live by a way and one as data; a named dead person's keepsake taken
-and handed in at a house, and the Last Entry; the chair's grey choice through its hold and a say at
+and handed in at a house, an epilogue deck card (Take a Name to the Board) true and writing a name
+home, and the Last Entry; the chair's grey choice through its hold and a say at
 the station; a town with crawlers cleared and taken back, the ridges and the Long Table's week
 closed; processing, the broadcast's tally, the tester walking out at the barrier (then a new life);
-and the wipe's lines, the names not brought home, every closing item at its end (`RZT epilogue check:
+and the wipe's lines, the names not brought home, `last_season.json`'s beats, every closing item at
+its end (`RZT epilogue check:
 <name>: OK|FAILED (...)`, then `RZT epilogue done: N checks OK, N FAILED`). Steps the test world can't
 supply (no outlet under the terms, no town with crawlers) are logged as skipped.
 
@@ -1385,7 +1387,9 @@ Book's send-off runs live once (its scene is ended as won), and every act is wal
 default to an ending (`RZT major <key> act <n> ...`, `RZT major <key> ENDED: ending <n>`). Then the
 fallback checks: three empty days (a day's worth of questline ticks with nobody online, three times
 over) fire nothing; and Proof's Day One with research just short of 25% and a fast pace is squeezed,
-sends its last call, and takes its default once a session's grace has passed (`RZT majors check:
+sends its last call, and takes its default once a session's grace has passed. Last, what the endings
+leave: the story rules' strength cap and Two Tins' dose, the epilogue lines by controller, the season
+tab's lines and the stand's groups by Bastion's stance (`RZT majors check:
 <name>: OK|FAILED (...)`, then `RZT majors done: N checks OK, N FAILED`).
 
 Last, it walks the player through every
