@@ -113,7 +113,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	override bool CanStart(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		// Once the cure is out, nobody is volunteering for the trial dose any more
-		if (!gm.HasLab() || gm.GetCure().IsCured() || !gm.GetLeaders() || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
+		if (!gm.HasLab() || gm.GetCure().IsCured() || !gm.GetLeaders() || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.OBJECT))
 			return false;
 
 		RZ_Safehouses houses = gm.GetSafehouses();
@@ -471,13 +471,14 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Sold: 35% the Haven finds out who sold them (Infamy for whoever took the Red Hand's side).
+	//! Sold: 35% the Haven finds out who sold them (Infamy for whoever took the Red Hand's side: the
+	//! line ends at the sale, so nobody else has sided with anyone in it).
 	protected void SoldFoundOut(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (Math.RandomFloat01() >= 0.35)
 			return;
 
-		ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 0, MAX_INFAMY, RZ_EQuestApproach.BETRAY);
+		ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 0, MAX_INFAMY, RZ_EQuestApproach.SIDE);
 		TellParticipants(gm, run, "The Haven", run.Fill("{sister} heard who sold one of the other two to the Red Hand. So has every safehouse."));
 	}
 
@@ -1279,7 +1280,7 @@ class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 				if (run)
 					run.Reward(gm, playerId, RZ_EFaction.BANDITS, 5, SOLD_FAVOR, "A crew came for the one in the third bed at dusk, and paid well. \"For the pit. Nobody asks where they come from.\"");
 
-				Resolve(gm, playerId, RZ_EQuestApproach.BETRAY, RZ_Quest_OtherTwo.OUT_SOLD, "sold one of the other two to the Red Hand", false);
+				Resolve(gm, playerId, RZ_EQuestApproach.SIDE, RZ_Quest_OtherTwo.OUT_SOLD, "sold one of the other two to the Red Hand", false);
 				return;
 			}
 		}

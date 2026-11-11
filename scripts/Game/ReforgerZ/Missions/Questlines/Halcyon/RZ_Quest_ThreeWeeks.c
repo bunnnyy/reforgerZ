@@ -116,7 +116,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 		if (!gm.HasLab() || !gm.GetLeaders() || !gm.GetWanderers() || gm.GetSettlements().Count() < 4)
 			return false;
 
-		if (!RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.TERMINAL))
+		if (!RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.OBJECT))
 			return false;
 
 		RZ_Leader lead = RZ_QM_HalcyonScene.PickFieldLead(gm, false);
@@ -156,18 +156,25 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 
 	//------------------------------------------------------------------------------------------------
 	//! The closed site: a remote spot on high ground between two towns, well clear of every
-	//! settlement and the lab, at a real mast, factory or barracks there if there is one. anchor =
-	//! the nearest town; place = the landmark's name, or "".
+	//! settlement and the lab, at a real mast, factory or barracks there if there is one. A small
+	//! map gets looser tries at the end. anchor = the nearest town; place = the landmark's name, or "".
 	static bool FindSite(RZ_GameModeComponent gm, RZ_Rng rng, out vector site, out int anchor, out string place)
 	{
 		array<ref RZ_Settlement> all = gm.GetSettlements();
 		int n = all.Count();
 		array<string> kinds = {"military", "industrial", "radio", "power", "tower"};
-		for (int t = 0; t < 30; t++)
+		for (int t = 0; t < 40; t++)
 		{
 			float need = 450;
+			float minGap = 1400;
 			if (t >= 20)
 				need = 300;
+
+			if (t >= 30)
+			{
+				need = 180;
+				minGap = 800;
+			}
 
 			int ia = rng.Int(0, n);
 			int ib = rng.Int(0, n);
@@ -177,7 +184,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 			vector ca = all[ia].m_vCenter;
 			vector cb = all[ib].m_vCenter;
 			float gap = RZ_Util.DistXZ(ca, cb);
-			if (gap < 1400 || gap > 6000)
+			if (gap < minGap || gap > 6000)
 				continue;
 
 			vector line = cb - ca;
@@ -827,6 +834,9 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 	protected int m_iScreen = -1;
 	protected int m_iTries;
 	protected vector m_vDoor;
+	protected bool m_bKeypad;
+	protected ref array<int> m_aPages = {};					// the team's clue indices
+	protected ref map<int, int> m_mPagesRead = new map<int, int>();	// player -> bitmask of pages read
 
 	protected static const int OBJ_DOOR = 0;
 	protected static const int BODIES = 3;
@@ -856,8 +866,18 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 		int code = m_Rng.Int(100000, 1000000);
 		m_sCode = code.ToString();
 
-		m_iScreen = AddClue("The store door", "INSTITUTE FIELD SITE. STORE 2. Six figures, then Enter.\nThe paint around the keypad is worn through where somebody pressed the same keys every day.");
-		AddSpot(m_vDoor, RZ_EPuzzleProp.TERMINAL, OBJ_DOOR, m_iScreen, "Read the door", "", "the store at the site");
+		// The keypad (or terminal); without either, a door that opens for someone with all six figures
+		m_bKeypad = HasPrefab(gm, RZ_EPuzzleProp.TERMINAL);
+		if (m_bKeypad)
+		{
+			m_iScreen = AddClue("The store door", "INSTITUTE FIELD SITE. STORE 2. Six figures, then Enter.\nThe paint around the keypad is worn through where somebody pressed the same keys every day.");
+			AddSpot(m_vDoor, RZ_EPuzzleProp.TERMINAL, OBJ_DOOR, m_iScreen, "Read the door", "", "the store at the site");
+		}
+		else
+		{
+			m_iScreen = AddClue("The store door", "INSTITUTE FIELD SITE. STORE 2. A combination lock, six wheels, and the wheels are stiff with cold.");
+			AddSpot(m_vDoor, RZ_EPuzzleProp.OBJECT, OBJ_DOOR, m_iScreen, "Read the door", "", "the store at the site", "Turn the wheels to the code");
+		}
 
 		// Her team: three bodies around the site, each with two of the digits
 		array<vector> used = {};
@@ -875,11 +895,12 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 			int clue = AddClue(who, string.Format("An Institute field card, %1, and a page folded into it. \"Store 2. My part of the six, numbers %2 and %3: %4. Greta has all of them. She would.\" Under it, later, in a worse hand: \"Day 3. She's gone in to finish it. We're not to follow.\"",
 				who, i * 2 + 1, i * 2 + 2, digits));
 			AddSpot(pos, RZ_EPuzzleProp.BODY, -1, clue, "Search the body", "", "");
+			m_aPages.Insert(clue);
 		}
 
 		m_sItemName = "the code";
 		m_sTitle = "The Three Weeks: the site";
-		m_sBrief = QFill(gm, "The closed site is {site_place}, grid {site_grid}. Dr Wolff went into the store there on Day 3 and her team stayed outside. The store has a keypad. Her team will have had the code between them.");
+		m_sBrief = QFill(gm, "The closed site is {site_place}, grid {site_grid}. Dr Wolff went into the store there on Day 3 and her team stayed outside. The store has a six-figure lock. Her team will have had the code between them.");
 		return true;
 	}
 
@@ -920,6 +941,44 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Which of the team's pages each player has read (for the lock without a keypad).
+	override protected void OnClueRead(RZ_GameModeComponent gm, int playerId, int idx, IEntity source)
+	{
+		int page = m_aPages.Find(idx);
+		if (page < 0)
+			return;
+
+		int mask;
+		m_mPagesRead.Find(playerId, mask);
+		m_mPagesRead.Set(playerId, mask | (1 << page));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lock without a keypad: whoever has read all three pages has the six figures.
+	override protected void OnUse(RZ_GameModeComponent gm, int playerId, int objIdx, int value, IEntity source, IEntity user)
+	{
+		if (objIdx != OBJ_DOOR || m_bKeypad)
+			return;
+
+		int mask;
+		m_mPagesRead.Find(playerId, mask);
+		if (mask != (1 << BODIES) - 1)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "You don't have all six figures. Her team had them between them, and they're still lying around the site.");
+			return;
+		}
+
+		Open(gm, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Open(RZ_GameModeComponent gm, int playerId)
+	{
+		gm.NotifyPlayer(playerId, m_sTitle, "The lock gives with a sound like a held breath. Inside it's dark, and cold, and something moves at the back.");
+		Resolve(gm, playerId, RZ_EQuestApproach.NONE, RZ_Quest_ThreeWeeks.OUT_OPEN, "opened the store");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected void OnCodeEntered(RZ_GameModeComponent gm, int playerId, int objIdx, string code, IEntity source)
 	{
 		if (objIdx != OBJ_DOOR)
@@ -927,8 +986,7 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 
 		if (code == m_sCode)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "The lock gives with a sound like a held breath. Inside it's dark, and cold, and something moves at the back.");
-			Resolve(gm, playerId, RZ_EQuestApproach.NONE, RZ_Quest_ThreeWeeks.OUT_OPEN, "opened the store");
+			Open(gm, playerId);
 			return;
 		}
 

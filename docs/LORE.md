@@ -279,11 +279,11 @@ matter more than people, and it apologises for that, quietly:
 
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
-| **The three weeks** | The first case was three weeks before the gates closed, and the Institute was told. Nobody at the lab says what anyone did with those three weeks. | Patient Zero (the clinic records); The Three Weeks (the closed site's gate log and the Institute's reply: "carry on, say nothing"); the rumour that Halcyon made this |
-| **"The other two"** | The two in ten who don't walk out of the trial dose leave with half the time they came in with, and a page in someone's notebook. Someone sits with them with a clipboard instead of a hand. | The trial dose; Serum Trial; Unsanctioned Trial; The Author List (one of them named, from a Haven safehouse) |
+| **The three weeks** | The first case was three weeks before the gates closed, and the Institute was told. Nobody at the lab says what anyone did with those three weeks. | Patient Zero (the clinic records); the questline The Three Weeks (the driver who came back alone, the closed site, Dr Wolff's notebook and the Institute's one-word reply, "Continue."); the rumour that Halcyon made this |
+| **"The other two"** | The two in ten who don't walk out of the trial dose leave with half the time they came in with, and a page in someone's notebook. Someone sits with them with a clipboard instead of a hand. | The trial dose; Serum Trial; Unsanctioned Trial; the questline The Other Two (a back room at a field station, a Haven woman's brother, and names for the numbers) |
 | **"Samples first, people second"** | When a van can't take both, the cold boxes go. It's an order, and they say sorry for it on the secure channel. | Secure channels |
-| **"At the moment of turning"** | The protocol wants tissue taken as a person turns, so someone has to be there, waiting, with the kit. | Patients Not Samples |
-| **Live ones** | Specials caught alive, for the lab, and sometimes for a field lead's own notebook. People say Halcyon pays the Red Hand for live ones. | Live Capture; Private Collection; rumours |
+| **"At the moment of turning"** | The protocol wants tissue taken as a person turns, so someone has to be there, waiting, with the kit. | Patients Not Samples; The Other Two (the sample kit by the bed) |
+| **Live ones** | Specials caught alive, for the lab, and sometimes for a field lead's own notebook. People say Halcyon pays the Red Hand for live ones. | Live Capture; Private Collection; The Three Weeks (Dr Wolff, brought down alive); rumours |
 | **Pages in the stove** | A dead researcher's notebook belongs to the lab. The pages about the director don't always get there. | The Notebook |
 | **Lazarus** | A locked terminal from a team that went into the field and didn't come back. Nobody at the lab will say what the project was. | The Last Experiment |
 

@@ -125,7 +125,7 @@ class RZ_Quest_Authors : RZ_Questline
 		if (!gm.HasLab() || !cure || cure.m_fProgress < CURE_START || cure.m_fProgress >= CURE_LATE || cure.IsCured() || cure.IsFinalStand())
 			return false;
 
-		if (!RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
+		if (!RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.OBJECT))
 			return false;
 
 		RZ_Leader director = RZ_QM_HalcyonScene.Top(gm, RZ_EFaction.INSTITUTE);
@@ -627,6 +627,7 @@ class RZ_Quest_Authors : RZ_Questline
 			}
 			case E_REDHAND:
 			{
+				// Only whoever took the money (the line's one betray approach)
 				q.SetWorldFlag(FLAG_BATCH_SOLD, 1);
 				ChangeStanding(gm, run, RZ_EFaction.BANDITS, 10, 0, RZ_EQuestApproach.BETRAY);
 				ChangeStanding(gm, run, RZ_EFaction.INSTITUTE, 0, MAX_INFAMY, RZ_EQuestApproach.BETRAY);
@@ -1051,7 +1052,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 				if (gm.GetLeaders() && m_iLead >= 0)
 					gm.GetLeaders().Remember(m_iLead, playerId, RZ_Leaders.MEM_CROSSED);
 
-				Resolve(gm, playerId, RZ_EQuestApproach.BETRAY, RZ_Quest_Authors.OUT_REPORTED, "reported the field lead to the director");
+				Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_Authors.OUT_REPORTED, "reported the field lead to the director");
 				return;
 			}
 			case OBJ_BUYER:

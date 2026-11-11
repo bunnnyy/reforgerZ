@@ -23,9 +23,9 @@ missions the stages reuse are in [MISSIONS.md](MISSIONS.md).
 | R1 | [The Book](#r1-the-book) | Red Hand | Known; Trusted to return it | 5 stages, 3–5 sessions | H2, H3, B1 |
 | R2 | [Cargo](#r2-cargo) | Red Hand (or Haven) | Known with either | 5 stages, 3–5 sessions | H1, H2, C1 |
 | R3 | [The Well Story](#r3-the-well-story) | Red Hand | Known; Trusted at the end | 5 stages, 3–4 sessions | H2, B2 |
-| HC1 | [The Three Weeks](#hc1-the-three-weeks) | Halcyon | Known | 5 stages, 3–5 sessions | H3, HC3 |
-| HC2 | [The Other Two](#hc2-the-other-two) | Halcyon or Haven | Known with either | 5 stages, 3–4 sessions | H3 |
-| HC3 | [Authors](#hc3-authors) | Halcyon | Trusted, cure 50%+ | 6 stages, to the final stand | B3, HC1, H3 |
+| HC1 | [The Three Weeks](#hc1-the-three-weeks) ✅ | Halcyon | Known | 5 stages, 3–5 sessions | H3, HC3 |
+| HC2 | [The Other Two](#hc2-the-other-two) ✅ | Halcyon or Haven | Known with either | 5 stages, 3–4 sessions | H3 |
+| HC3 | [Authors](#hc3-authors) ✅ | Halcyon | Trusted, cure 50%+ | 6 stages, to the final stand | B3, HC1, H3 |
 | C1 | [The House That Went Quiet](#c1-the-house-that-went-quiet) | Nobody (the world) | Any | 5 stages, 2–4 sessions | H1, H2, R2 |
 | C2 | [A Place at the Table](#c2-a-place-at-the-table) | The host | Ate with them twice | 4 stages, 2–3 sessions | C1 |
 
@@ -386,6 +386,17 @@ knows is the driver who came back alone from the site on Day 3, and he won't say
 This line is about the past. It never makes the outside act: the Institute's last call on Day 2
 is still the last.
 
+**Built** ✅: the stages as they are in code are in [MISSIONS.md](MISSIONS.md#the-three-weeks-halcyon).
+It replaces the old Three Weeks contract, whose remote site and keypad store are stage 2. Changes
+from the design: the driver waits at the edge of the town nearest the site, and a Radio Operator
+can also talk him round (they heard his call on Day 3). The notebook is carried as data; stage 4's
+people are stand-ins at each seat, and reaching the director needs Trusted, or Known as a Lab
+Tech or Doctor. Stage 5 is a wait that also waits out a final stand, then the raid or the walk-out as
+missions; a raid not held costs the lab up to two antidote doses to the Red Hand's black market.
+The personal rewards ("Fame +15 with whoever you gave it to") are paid at the choice, within the
+engine's caps. It opens on `halcyon_three_weeks.records`, which Patient Zero and Patient Zero's
+Ledger set when they're solved.
+
 **Needs:** Known with Halcyon. ★ Lab Tech, ★ Doctor, ★ Radio Op.
 **Starts:** an Independent or Rogue field lead at the field station, after any player has
 finished Patient Zero or Patient Zero's Ledger.
@@ -417,6 +428,16 @@ the moment of turning.
 **Starts:** the sister (a Haven named person) at a safehouse. With `walk.knows_other_two` (H3),
 at stage 2.
 
+**Built** ✅: in [MISSIONS.md](MISSIONS.md#the-other-two-halcyon). It replaces The Author List
+contract: stage 5's names come from its deduction (the trial list by the door and the man who
+walked them up; ★ Elder reads the council's pencil). Changes from the design: the stages are the
+sister's (Haven) contracts, offered to anyone Known with either; her house is picked within
+3.5 km of the field station when it can be, and the brother has long enough to be walked home
+rather than a few minutes. Stage 2's courier is an escort. Sold ends the line at stage 4; the
+names to the chair is Brought home; leaving the numbers, or nobody naming them, is The work goes
+on. Sold's Haven Infamy is the engine's 15. It doesn't start after the cure. It reads H3's flags
+as `haven_edge_of_town.knows_other_two` and `haven_edge_of_town.lab_road`.
+
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
 | 1 | **His number** | **Talk** at the lab (Known with Halcyon): a number and a date. **Sneak**: the volunteers' ledger on the night shift (a heat limit; seen: +8 Halcyon Infamy). **Bribe** a courier: 20 Halcyon Favor. ★ Lab Tech reads the ledger's codes | Silent Courier; talk |
@@ -444,6 +465,17 @@ goes is still the season's Fame; this line is about who is standing at the lab w
 ★ Doctor, ★ Soldier.
 **Starts:** the research director's radio contract when research reaches 50%. With
 `weeks.bastion` (HC1), stage 1 is done: Bastion already has terms.
+
+**Built** ✅: in [MISSIONS.md](MISSIONS.md#authors-halcyon). It adds no research and never changes
+the stand; the endings are paid after it, so after the winner is chosen when it's won. Changes
+from the design: it starts only below 90% research (later it would only fizzle), and every stage
+waits out a stand and never runs after the cure. Stage 3 is a wait, then a mission at Bastion's
+adjutant; stage 5 waits for 75% research; stage 6 waits for the stand, then lasts as long as it.
+The Bastion checkpoint on the lab's road is a Bastion group there during the stand. With the boss
+paid, Take the Lab is offered to anyone Known with the Red Hand, not only Champions. The endings
+are taken in the order the Red Hand's batch, Bastion's guard, open doors, the lab alone. The money
+is the engine's 40 Favor, and the endings' Fame and Infamy are within its caps. It reads B3's flag
+as `bastion_last_pilot.flew_for`, the faction the pilot flew for (Halcyon: the samples).
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
@@ -531,7 +563,8 @@ ask the Haven's friends). ★ Police: anything you learn counts as proof.
 
 ## Crossings
 
-The flags other lines read.
+The flags other lines read, and the facts (read in: facts) an ending publishes for ordinary
+contracts, events and rumours to read later.
 
 | Flag | Set in | Read in | What it does there |
 |---|---|---|---|
@@ -543,7 +576,7 @@ The flags other lines read.
 | `cargo.exile` | H2 | R2, C1 | The exile is one of the people who never arrived |
 | `walk.knows_other_two` | H3 | HC2 | HC2 starts at stage 2 |
 | `walk.lab_road` | H3 | HC2 | The back room holds Haven people: stage 1's talk needs only Known with the Haven |
-| `other_two.numbers` | HC2 | H3 | The lab road's headline gives numbers, not names |
+| `halcyon_other_two.numbers` | HC2 | H3 | The lab road's headline gives numbers, not names |
 | `orders.mocked` | B1 | R1 | The boss owes you: returning the page needs only Known |
 | `orders.haven` | B1 | B2 | The chair's house is never asked for a contribution |
 | `census.refused` | B2 | H1 | The chair trusts you: the last stage's talk needs only Known |
@@ -551,6 +584,10 @@ The flags other lines read.
 | `book.bastion` | R1 | B1, B2 | Bastion knows which of its commanders sold rifles: B1's outpost commander is that one, if he's still in the chair |
 | `cargo.buyer_known`, `table.supplier_cut` | R2 | C1 | C1's proof is done; the house takes people half as often |
 | `well.stood` | R3 | H2 | The house stands: H2's "Stands alone" needs no barricades |
-| `weeks.public` | HC1 | H3 | Brokering the lab road needs Trusted with the Haven |
-| `weeks.bastion` | HC1 | HC3 | HC3 starts at stage 2 |
+| `halcyon_three_weeks.public` | HC1 | H3 | Brokering the lab road needs Trusted with the Haven |
+| `halcyon_three_weeks.bastion` | HC1 | HC3 | HC3 starts at stage 2 |
+| `halcyon_three_weeks.records` | Patient Zero, Patient Zero's Ledger | HC1 | HC1 can start: the clinic records are out |
+| `halcyon_three_weeks.record`, `.captured`, `.lead_left` | HC1 | (facts) | The notebook is in the lab's record; Dr Wolff is in the lab's isolation room; the field lead left her station |
+| `halcyon_other_two.named`, `.haven_names`, `.ward`, `.sold` | HC2 | (facts) | The lab named its volunteers; the Haven did instead; the back room (1 closed, 2 at the lab, 3 kept, 4 sold from, 5 gone); one of the other two is in the Red Hand's pit |
+| `halcyon_authors.bastion_key`, `.guard`, `.open`, `.lead_first`, `.batch_sold`, `.formula_sold` | HC3 | (facts) | Bastion holds a key to the clean room; a Bastion squad held the lab gate; the method went to the Haven's clinics; the field lead's name is first on the paper; the boss paid for the batch; the method was sold to the Red Hand |
 | `place.undercover` | C2 | C1 | C1's proof is done |
