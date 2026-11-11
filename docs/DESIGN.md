@@ -540,8 +540,9 @@ played. Notes, journals, the radio station and Bastion's orders use the same cou
 
 Code: `Backgrounds/RZ_Background.c`, `Backgrounds/RZ_Objectives.c`, `Backgrounds/RZ_PlayerProfile.c`.
 
-You pick a background in the vanilla deploy menu (each is a loadout); a panel there shows its
-perk, flaw, starting gear and whether it's locked ([UI.md](UI.md#screens)). Gear comes from the
+You pick a background on our spawn screen, which replaces vanilla's deploy menu (each background is a
+loadout); it shows its perk, flaw, starting gear, starting standing and whether it's locked, and
+where you'll start ([UI.md](UI.md#the-spawn-screen)). Gear comes from the
 loadout; the perk and flaw change ReforgerZ systems, so they work with any other mods.
 Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 
@@ -563,8 +564,8 @@ Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 
 The last five are unlocked through **Legacy**, which carries across lives. The server won't
 assign or spawn a locked background (**UI > Lock loadouts**, on by default), whatever the client
-asks for, so it holds with a gamepad or a modified client too; the deploy menu also shows it as
-unavailable. With the lock off, or if a locked pick gets through another way, the player keeps
+asks for, so it holds with a gamepad or a modified client too; the spawn screen also shows it as
+locked. With the lock off, or if a locked pick gets through another way, the player keeps
 its gear for that life but plays as Unemployed, and is told how to unlock it.
 
 **Personal goals.** Each life gets one goal, flavoured by background (the Hunter heads for

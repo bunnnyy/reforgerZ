@@ -5174,6 +5174,24 @@
    "notes": "Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI)."
   },
   {
+   "id": "UISpawnRowLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the SpawnRow layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sSpawnRowLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Spawn row layout",
+   "required": false,
+   "minimum": false,
+   "use": "our spawn screen, the background picker, in place of vanilla's deploy menu (empty = vanilla's deploy menu)",
+   "notes": "Needs the RZ_SpawnMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)."
+  },
+  {
    "id": "UIMapLegendLayout",
    "kind": "manual",
    "system": "UI",
@@ -5648,7 +5666,7 @@
   },
   {"step": "Place RZ_GameMode.et in the world (one per world)", "plugin": "yes", "find": "", "minimum": true},
   {
-   "step": "Keep RZ_GameMode.et's spawn logic on SCR_MenuSpawnLogic (the deploy menu) with Forced faction SURV, so the menu opens on the loadout picker: GameMode_Plain's SCR_AutoSpawnLogic picks a random faction from all of them",
+   "step": "Keep RZ_GameMode.et's spawn logic on SCR_MenuSpawnLogic with Forced faction SURV: our spawn screen (the background picker) opens through its deploy-menu handler, with no faction or group step. GameMode_Plain's SCR_AutoSpawnLogic picks a random faction from all of them and opens no screen",
    "plugin": "no",
    "find": "",
    "minimum": true
@@ -5982,7 +6000,7 @@
    "category": "UI",
    "object": "UI",
    "field": "m_UISettings",
-   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md))"
+   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md))"
   },
   {
    "category": "Dialogue",

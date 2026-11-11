@@ -141,8 +141,11 @@ class RZ_UISettings
 	[Attribute("450", desc: "Map legend: gone once a kilometre of map is this many units across on screen (zoomed in); it fades in between")]
 	float m_fLegendGoneZoom;
 
-	[Attribute("1", desc: "The deploy menu refuses background loadouts the player hasn't unlocked (UI/RZ_LoadoutLock.c). Off: picking one plays as the default background with its gear")]
+	[Attribute("1", desc: "The server refuses background loadouts the player hasn't unlocked (UI/RZ_LoadoutLock.c), whatever screen asks. Off: picking one plays as the default background with its gear")]
 	bool m_bLockLoadouts;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Spawn screen: the layout of one background row (UI/LAYOUTS.md, SpawnRow). Set, our spawn screen (RZ_SpawnMenu, the background picker) opens instead of vanilla's deploy menu; it needs the RZ_SpawnMenu preset in chimeraMenus.conf. Empty = vanilla's deploy menu", "layout")]
+	ResourceName m_sSpawnRowLayout;
 
 	[Attribute("1", desc: "The safehouse notice board opens as a menu with a box to write in and ready-made notes a pad can pin up without typing (RZ_NoticeBoardMenu; needs its layout and chimeraMenus entry, UI/LAYOUTS.md). Off = notices, and notes are written with /note in chat (no pad route)")]
 	bool m_bBoardMenus;
@@ -1047,24 +1050,5 @@ class RZ_UIW
 	{
 		if (w)
 			FrameSlot.SetSize(w, width, height);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The loadout the local player has picked in the deploy menu, or "".
-	static string SelectedLoadoutName()
-	{
-		PlayerController pc = GetGame().GetPlayerController();
-		if (!pc)
-			return "";
-
-		SCR_PlayerLoadoutComponent lc = SCR_PlayerLoadoutComponent.Cast(pc.FindComponent(SCR_PlayerLoadoutComponent));
-		if (!lc)
-			return "";
-
-		SCR_BasePlayerLoadout loadout = lc.GetLoadout();
-		if (!loadout)
-			return "";
-
-		return loadout.GetLoadoutName();
 	}
 }

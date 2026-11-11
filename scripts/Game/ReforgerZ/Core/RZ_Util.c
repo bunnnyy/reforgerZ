@@ -1063,7 +1063,7 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Readable names of what a character wears and carries, for the deploy panel's gear list.
+	//! Readable names of what a character wears and carries, for the spawn screen's gear list.
 	//! At most `cap`, no repeats.
 	static void GearNames(IEntity character, int cap, notnull array<string> result)
 	{

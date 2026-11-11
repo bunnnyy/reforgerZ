@@ -2,8 +2,8 @@
 //! occupation in Project Zomboid.
 //!
 //! How choosing works: each background is a loadout in the player faction's
-//! loadout list (SCR_LoadoutManager). The vanilla deploy menu already lets players
-//! pick a loadout, so no new UI is needed to get started. The loadout gives the
+//! loadout list (SCR_LoadoutManager). The spawn screen (UI/RZ_SpawnMenu.c) lists the
+//! backgrounds and asks for the picked one's loadout, which gives the
 //! starting gear. This class gives the perk and flaw, matched on m_sLoadoutName.
 //!
 //! Every modifier here feeds a ReforgerZ system (noise/heat, infection, research,
@@ -17,7 +17,7 @@ class RZ_Background
 	[Attribute("", desc: "Display name")]
 	string m_sName;
 
-	[Attribute("", desc: "Must match the loadout name the player picks in the deploy menu")]
+	[Attribute("", desc: "Must match the loadout name the player picks in the spawn screen")]
 	string m_sLoadoutName;
 
 	[Attribute("", UIWidgets.EditBoxMultiline, "Perk text shown on spawn")]
@@ -26,7 +26,7 @@ class RZ_Background
 	[Attribute("", UIWidgets.EditBoxMultiline, "Flaw text shown on spawn")]
 	string m_sFlaw;
 
-	[Attribute("", desc: "Starting gear for the deploy panel, until the server has seen this loadout spawn (then it lists what it really carries)")]
+	[Attribute("", desc: "Starting gear for the spawn screen, until the server has seen this loadout spawn (then it lists what it really carries)")]
 	string m_sGear;
 
 	[Attribute("1", desc: "Multiplier on the heat (zombie attention) this player generates")]

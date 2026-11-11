@@ -14,7 +14,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("5", UIWidgets.Slider, "Server tick interval (seconds)", "1 30 1", category: "ReforgerZ")]
 	protected float m_fTickSeconds;
 
-	[Attribute("SURV", desc: "Faction key players spawn as (the deploy menu, chat, groups and map markers stay on it; characters move onto its hidden variants, see Factions > Hostility)", category: "ReforgerZ")]
+	[Attribute("SURV", desc: "Faction key players spawn as (the spawn screen, chat, groups and map markers stay on it; characters move onto its hidden variants, see Factions > Hostility)", category: "ReforgerZ")]
 	protected string m_sPlayerFactionKey;
 
 	[Attribute("0", desc: "Ignore the saved state on start (season wipe)", category: "ReforgerZ")]
@@ -1480,7 +1480,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The loadout the server assigned the player (their pick in the deploy menu), null if none.
+	//! The loadout the server assigned the player (their pick in the spawn screen), null if none.
 	SCR_BasePlayerLoadout GetPickedLoadout(int playerId)
 	{
 		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);
@@ -1495,7 +1495,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The loadout the player picked in the deploy menu, "" if unknown.
+	//! The loadout the player picked in the spawn screen, "" if unknown.
 	string GetPickedLoadoutName(int playerId)
 	{
 		SCR_BasePlayerLoadout loadout = GetPickedLoadout(playerId);
@@ -1506,7 +1506,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The background is whichever loadout the player picked in the deploy menu.
+	//! The background is whichever loadout the player picked in the spawn screen.
 	protected RZ_Background ResolveBackground(int playerId)
 	{
 		string loadoutName = GetPickedLoadoutName(playerId);
@@ -1654,7 +1654,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// The epilogue week: the cure line and your own first line, its news, your last goal
 		m_Epilogue.OnSpawn(playerId, controlledEntity);
 
-		// The deploy menu can't hide a safehouse spawn point from one player, so an exile
+		// The spawn screen can't hide a safehouse spawn point from one player, so an exile
 		// who picks one is told the door stays shut (its services refuse them)
 		if (m_Safehouses.FindAt(controlledEntity.GetOrigin()) >= 0 && m_Safehouses.IsExiled(playerId))
 			NotifyPlayer(playerId, "The Haven", "You come to outside the safehouse door. It stays shut. Nobody inside will look at you, and if you're carrying a gun, the guards will in a minute. Move on.");
@@ -2737,7 +2737,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Spawn points sit in random, not-too-infected towns and move over time, so
-	//! the deploy menu offers different starting places every life.
+	//! the spawn screen offers different starting places every life.
 	protected void RefreshSpawnPoints(bool all)
 	{
 		if (m_sSpawnPointPrefab.IsEmpty() || m_aSettlements.IsEmpty())
@@ -2802,7 +2802,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A player spawn point (the World > Spawn point prefab) with a name in the deploy menu.
+	//! A player spawn point (the World > Spawn point prefab) with a name in the spawn screen.
 	//! Null without the prefab. Also used for the Haven safehouses' permanent spawn points.
 	IEntity SpawnNamedSpawnPoint(vector pos, string name)
 	{

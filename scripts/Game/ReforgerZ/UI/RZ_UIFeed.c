@@ -7,7 +7,7 @@
 //! - Asked for by a menu as it opens: standing, the journal, the backgrounds, and by the map's
 //!   icon layer: what this player knows the place of (one string each, one record per line,
 //!   fields split by '|'; see BuildPayload).
-//! - The gear each background loadout really spawns with (seen at spawns), for the deploy panel.
+//! - The gear each background loadout really spawns with (seen at spawns), for the spawn screen.
 //! - Clues read in puzzle missions are remembered here per player, while the mission runs.
 //! - The notebook item (UI > Notebook prefab), given to every new life a few seconds after spawn.
 //!
@@ -215,7 +215,7 @@ class RZ_UIFeed
 	// ================================================================ Gear
 	//------------------------------------------------------------------------------------------------
 	//! From the spawn: a few seconds later (the inventory fills after the body), note what this
-	//! loadout carries, for the deploy panel's gear list.
+	//! loadout carries, for the spawn screen's gear list.
 	void RecordGearSoon(int playerId, string loadoutName)
 	{
 		if (loadoutName.IsEmpty())

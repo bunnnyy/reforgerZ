@@ -901,7 +901,7 @@ class RZ_EpiClosing
 
 	//------------------------------------------------------------------------------------------------
 	//! Give your name at the barrier: the character is retired. No death, no grave, no journal; the
-	//! inventory goes with it. Back to the deploy menu.
+	//! inventory goes with it. Back to the spawn screen.
 	protected void WalkOut(int playerId, IEntity user)
 	{
 		if (!user || m_Epi.Phase() < 3)
@@ -948,7 +948,7 @@ class RZ_EpiClosing
 		m_GM.NotifyPlayer(playerId, "The barrier", string.Format("\"Name?\"\n\"%1.\"\nThe arm lifts a hand's width. You go through. Nobody tells you what's on the other side.", name));
 		RZ_Log.Info(string.Format("Epilogue: walked out (%1 in all)", S().walked.Count()));
 
-		// VERIFY: a character ended this way returns its player to the deploy menu with no death
+		// VERIFY: a character ended this way returns its player to the spawn screen with no death
 		// screen; its body and inventory are removed a moment later
 		m_Epi.MarkWalking(playerId);
 		RZ_Util.KillCharacter(user);

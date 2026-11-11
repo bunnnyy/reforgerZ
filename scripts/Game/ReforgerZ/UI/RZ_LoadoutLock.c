@@ -3,16 +3,17 @@
 //!
 //! The server decides, whatever the client sends, so it holds with a gamepad, a console or a
 //! modified client alike, and nothing here needs a mouse:
-//! - SCR_LoadoutManager.CanAssignLoadout_S refuses to assign a locked loadout (the deploy menu's
-//!   loadout request gets "no").
+//! - SCR_LoadoutManager.CanAssignLoadout_S refuses to assign a locked loadout (the spawn screen's,
+//!   or the deploy menu's, loadout request gets "no").
 //! - SCR_BaseGameMode.CanPlayerSpawn_S refuses a spawn while the assigned loadout is locked, or
 //!   when the spawn asks for a locked loadout's prefab (the client names the prefab it spawns as).
 //! RZ_GameModeComponent.ResolveBackground stays as a last safety net: a locked pick that gets
 //! through anyway plays as the default background.
 //!
-//! The client side only shows it: the menu marks a locked loadout unavailable from the last
-//! backgrounds payload (IsLoadoutAvailableClient), and the background panel says how to unlock it.
-modded class SCR_BasePlayerLoadout // VERIFY: what the player sees: the 1.9 deploy menu leaves unavailable loadouts out when it builds the list, and greys their buttons when it refreshes
+//! The client side only shows it: the spawn screen (RZ_SpawnMenu.c) marks a locked background and
+//! says how to unlock it; with the spawn screen off, vanilla's deploy menu marks the loadout
+//! unavailable from the last backgrounds payload (IsLoadoutAvailableClient).
+modded class SCR_BasePlayerLoadout // VERIFY: with the spawn screen off, what the player sees: the 1.9 deploy menu leaves unavailable loadouts out when it builds the list, and greys their buttons when it refreshes
 {
 	//------------------------------------------------------------------------------------------------
 	override bool IsLoadoutAvailable(int playerId)
@@ -36,7 +37,7 @@ modded class SCR_BasePlayerLoadout // VERIFY: what the player sees: the 1.9 depl
 		if (!ui)
 			return true;
 
-		// Not asked yet (no background panel in the menu): ask; the answer comes in a moment
+		// Not asked yet: ask; the answer comes in a moment
 		if (ui.GetBackgroundsVersion() == 0)
 			ui.Ask(RZ_UIFeed.PAYLOAD_BACKGROUNDS);
 

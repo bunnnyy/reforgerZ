@@ -2,7 +2,7 @@
 
 The ReforgerZ layouts are in `UI/layouts/ReforgerZ/`: the HUD, the notice card, the notebook's
 frame and its five pages, the notice board, the journal and radio rows, the talk screen, the
-reader, the car repair and shop screens, the map icon, the map legend and the background panel. They were written as text
+reader, the car repair and shop screens, the spawn screen, the map icon and the map legend. They were written as text
 from the trees below and checked against every widget
 name and type the UI scripts look up.
 This file is their reference: the widget trees, the **names the scripts look up**, sizes, anchors,
@@ -219,6 +219,7 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_TalkMenu` | `RZ_TalkMenu` | `RZ_TalkMenu.layout` |
 | `RZ_CarMenu` | `RZ_CarMenu` | `RZ_CarMenu.layout` |
 | `RZ_ShopMenu` | `RZ_ShopMenu` | `RZ_ShopMenu.layout` |
+| `RZ_SpawnMenu` | `RZ_SpawnMenu` | `RZ_SpawnMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `RZ_RadioFilter`
@@ -661,32 +662,66 @@ Frame MapLegend (root, 540 × 316, anchor bottom-left, offset (96, -54): inside 
 Unlike the mockup (`UI/Mockups/map_legend.html`), it has no Quartermaster or Perimeter rows,
 because `RZ_UIFeed.BuildMap` sends neither.
 
-## Background panel: `RZ_BackgroundPanel.layout`
+## Spawn screen: `RZ_SpawnMenu.layout` and `RZ_SpawnRow.layout`
 
-The panel for the vanilla deploy menu. Its root already carries the `RZ_BackgroundPanelComponent`
-script handler and anchors itself top-right, offset (-48, 120), 560 wide. It isn't in the game
-yet: it goes into an override of the deploy menu's layout, which isn't made
-([setup step 5](../docs/WORKBENCH_SETUP.md#setting-up-the-ui)).
+The spawn screen (`RZ_SpawnMenu` preset), from `UI/Mockups/background_picker.html`, in place of
+vanilla's deploy menu. Written as text. It fills the screen (no world behind it: you have no body
+yet).
 
 ```
-Frame (root, 560 wide, anchor top-right, offset (-48, 120))
-├─ Image  (panel background, top bar 5 units bone)
-├─ Text   (label "BACKGROUND")
-├─ VerticalLayout PanelBody        shown once the picked loadout is a background
-│  ├─ Image  (background icon, 58 × 58: item_radio or similar, static)
-│  ├─ Text   BgName                 condensed bold 36
-│  ├─ (state chip, with a border)
-│  │  ├─ Image  StateIcon           16 × 16 (status_door_unlocked / status_door_locked)
-│  │  └─ Text   StateText           mono bold 18: AVAILABLE / LOCKED
-│  ├─ Text   (label "PERK")  │ Text BgPerk      18, #BFD39B, wraps
-│  ├─ Text   (label "FLAW")  │ Text BgFlaw      18, #E4826F, wraps
-│  ├─ Text   (label "STARTING STANDING") │ Text BgStanding  mono bold 18, wraps
-│  ├─ Text   (label "STARTING GEAR")     │ Text BgGear      18, wraps
-│  └─ Overlay LockedBlock           with a border, shown when locked
-│     └─ Text  LockedText           18, dim, wraps
-├─ Text        Legacy               mono bold 18, dim
-└─ ProgressBar LegacyBar            160 × 8, fill #E3A33B, beside Legacy
+Frame (root, full screen)
+├─ Image   (Backdrop)      full screen, #0B0D0E
+├─ Text    (Heading)       at (96, 54), condensed bold 46, "WHO YOU WERE"
+├─ Text    (Header)        at (96, 112), mono 18, dim: one line on what the pick decides
+├─ Image   (HeadRule)      at (96, 150), 1,728 × 2, #3A3F42
+├─ Frame   (List)          at (96, 170), 560 × 730
+│  ├─ Image (ListBg)        #0F1113
+│  ├─ ScrollLayout RowScroll  fills it (the pad's up/down keep the picked row in view)
+│  │  └─ SizeLayout (RowWidth) 560 wide
+│  │     └─ VerticalLayout Rows   the background rows
+│  └─ Text  ListEmpty       centred, regular 24, dim, "Waiting for the Zone to answer." (hidden)
+├─ Frame   (Panel)         at (696, 170), 1,128 × 730; positions inside from its top left
+│  ├─ Image (PanelBg)       #121416 at 90%; Image (PanelAccent) 5 high, bone; Panel (PanelLine) border
+│  ├─ Text  (label "BACKGROUND") at (32, 24)
+│  ├─ Frame PanelBody       fills the panel, shown once a background is picked
+│  │  ├─ Text  BgName        at (32, 52), condensed bold 46 (the script sends it in capitals)
+│  │  ├─ Image StateIcon     24 × 24 at (32, 118) (status_door_unlocked / status_door_locked)
+│  │  ├─ Text  StateText     at (66, 118), mono bold 20, tinted: AVAILABLE, LOCKED, NOT ON THIS SERVER
+│  │  ├─ Image (PanelRule)   at (32, 160), 1,064 × 2, #2A2E31
+│  │  ├─ Text  (label "PERK") at (32, 180)  │ Text BgPerk at (32, 210), 500 × 150, regular 24, #BFD39B, wraps
+│  │  ├─ Text  (label "FLAW") at (32, 372)  │ Text BgFlaw at (32, 402), 500 × 90, regular 24, #E4826F, wraps
+│  │  ├─ Text  (label "STARTING GEAR") at (580, 180)     │ Text BgGear at (580, 210), 516 × 150, regular 24, wraps
+│  │  ├─ Text  (label "STARTING STANDING") at (580, 372) │ Text BgStanding at (580, 402), 516 × 110, mono bold 22, wraps
+│  │  └─ Overlay LockedBlock at (32, 530), 1,064 × 110, #0D0F11 at 82% with a border, shown when locked
+│  │     └─ Text  LockedText  regular 22, dim, wraps, padding 20 left and right: how to unlock it
+│  ├─ Text  Legacy          at (32, 672), mono bold 20, dim ("LEGACY 6 / 10 - THE DRIFTER AT 10")
+│  └─ Overlay (LegacyTrack) at (700, 680), 240 × 10: Image (LegacyTrackBg) #2A2E31 and ProgressBar LegacyBar, fill #E3A33B
+├─ Text    (label "START")  at (696, 928)
+├─ Button  PlacePrev       40 × 40 at (788, 922), "<" on #1A1D20 (a click: the previous place)
+├─ Text    PlaceName       at (838, 924), 420 wide, centred, condensed bold 28: the spawn point's name
+├─ Button  PlaceNext       40 × 40 at (1,268, 922), ">" (the next place); both arrows hidden with one place
+├─ Text    PlaceCount      at (1,322, 930), mono bold 18, dim ("2 OF 7")
+├─ Text    SpawnStatus     at (696, 974), 740 wide, regular 22, #F4F0E6: why nothing happened (hidden when empty)
+├─ Button  DeployButton    360 × 72 at (1,464, 920)
+│  └─ Overlay: Image DeployBg (bone; #1B1F22 while it can't go) and Text DeployText (condensed bold 30:
+│     DEPLOY, DEPLOY IN 0:08, ON YOUR WAY; dark on bone, dim when it can't go)
+├─ HorizontalLayout Prompts  bottom left at (96, -54): the footer prompts the script makes
+└─ Text    PromptsText     the same place, mono bold 18, dim: the static footer, hidden once prompts are made
 ```
 
-`BgGear` lists what the loadout spawned with the last time anyone took it, or the background's
-gear line until then. A locked loadout is unavailable in the menu itself (`RZ_LoadoutLock.c`).
+`RZ_SpawnRow.layout` (**UI > Spawn row layout**), one background, created into `Rows`. The root is
+a `Button` named `SpawnRow` (a click picks it):
+
+```
+Button SpawnRow (root, 4 below it)
+└─ SizeLayout (RowSize)    560 × 50
+   └─ Overlay (RowBox)
+      ├─ Image  RowBg        #1B1F22, shown on the picked row
+      ├─ Image  RowBar       5 × 50, left edge, bone, on the picked row
+      └─ HorizontalLayout (RowLine)  padding 22 left and right, centred vertically
+         ├─ Image  RowLock   24 × 24, the status_door_locked icon, shown when it's locked
+         ├─ Text   RowName   regular 26, fills the row (bright on the picked row, faint when locked)
+         └─ Text   RowState  mono bold 18, dim, right: LOCKED, or empty
+```
+
+Unlike the mockup, the panel has no background icon and the gear is one line of text, not chips.

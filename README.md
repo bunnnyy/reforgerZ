@@ -9,7 +9,7 @@ and one way to end it: **research the cure.**
 
 ## Features
 
-- **Backgrounds** picked in the spawn menu (Nurse, Mechanic, Hunter, Police Officer, Ex-Con,
+- **Backgrounds** picked on our own spawn screen (Nurse, Mechanic, Hunter, Police Officer, Ex-Con,
   Lab Technician, Radio Operator, Unemployed), each with a real perk and flaw. Five more are
   unlocked through Legacy.
 - **The Director** moves the server through four outbreak stages over a season of about 45
@@ -141,7 +141,7 @@ and one way to end it: **research the cure.**
   people who tell you things.
 - **Any map**: towns, the quarantine line and its checkpoints are found automatically.
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
-  emblems, an infection timer with the golden window, styled notice cards in each faction's
+  emblems, a spawn screen in place of vanilla's deploy menu, an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance, a notebook (standing, journal, radio,
   hall of fame, the season) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks, a repair screen for the cars and a shop screen at the quartermasters,
@@ -307,7 +307,7 @@ scripts/Game/ReforgerZ/
                  lies told), scenes and sittings, barks; Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
-                 the car repair and shop screens, the screen guard, the notice board, deploy-menu panel and loadout lock, the
+                 the car repair and shop screens, the screen guard, the notice board, the spawn screen and loadout lock, the
                  map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist
