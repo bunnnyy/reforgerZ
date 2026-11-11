@@ -950,7 +950,19 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 	{
 		RZ_QuestRun run = Run(gm);
 		RZ_Leader l = SameLeader(gm, run, "lead");
+
+		// The clinic's house emptied since the start: she has packed it for another
 		RZ_Safehouse clinic;
+		if (run && !HouseLives(gm, run.Flag("clinic", -1)))
+		{
+			int other = RZ_Quest_Authors.PickClinic(gm);
+			if (other >= 0)
+			{
+				run.SetFlag("clinic", other);
+				run.SetText("clinic", gm.GetSafehouses().Get(other).m_sName);
+			}
+		}
+
 		if (run)
 			clinic = RZ_Questline.GetHouse(gm, run.Flag("clinic", -1));
 
