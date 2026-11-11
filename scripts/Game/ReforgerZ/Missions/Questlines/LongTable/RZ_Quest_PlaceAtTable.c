@@ -6,9 +6,9 @@
 //! 1. The dead: stand where someone died to the infected in the last hour (a wanderer the house
 //!    heard of, a truck crew, or else a traveller the mission lays in a ditch), then tell the host
 //!    (place.dead, yours). A bowl and true road news: where the next truck is going.
-//! 2. The dying (after a wait): a bitten wanderer on the road. Tell him where the farm is (he never
-//!    arrives; place.dying, yours), send him the wrong way (he's the usual bitten wanderer, and the
-//!    host is cooler with you), or give him your antidote.
+//! 2. The dying (after a wait): a bitten wanderer on the road. Tell them where the farm is (they
+//!    never arrive; place.dying, yours), send them the wrong way (the usual bitten wanderer, and the
+//!    host is cooler with you), or give them your antidote.
 //! 3. A stray (after a wait): an exile the Red Hand keeps track of. Bring him to the farm (an
 //!    escort; place.stray, yours), walk him to a safehouse or a Bastion seat instead
 //!    (place.undercover), or refuse the host at the gate: the guest rule holds in daylight now.
@@ -16,7 +16,7 @@
 //!    get up and go with the proof (place.proof: C1 at "Who to tell"), or fight, at the table.
 //!
 //! Endings: Family, Undercover, Walked away; and the house broken at the table (C1's "by your own
-//! hand", reached here). ★ Police: walking away at any stage takes the proof with you.
+//! hand", reached here). ★ Police: walking away from the host at stage 1 takes the proof with you.
 class RZ_Quest_PlaceAtTable : RZ_Questline
 {
 	static const int S_DEAD = 0;
@@ -51,7 +51,7 @@ class RZ_Quest_PlaceAtTable : RZ_Questline
 		dead.GiveUp(4, "{fizzle}");
 		dead.Visits(2);
 
-		RZ_QuestStage dying = MissionStage(S_DYING, "The dying", "{host} says there's one on the road who won't make it. Bitten. \"Tell him where we are. We'll look after him.\"");
+		RZ_QuestStage dying = MissionStage(S_DYING, "The dying", "{host} says there's one on the road who won't make it. Bitten. \"Tell them where we are. We'll look after them.\"");
 		dying.Wait(20, 6);
 		dying.GiveUp(6, "{fizzle}");
 		dying.Visits(2);
@@ -166,7 +166,7 @@ class RZ_Quest_PlaceAtTable : RZ_Questline
 		run.SetText("ident", ident);
 		run.SetFlag("life", gm.GetProfile(playerId).m_iLives);
 		run.SetText("guest", RZ_Util.PlayerName(playerId));
-		run.SetText("stray", RZ_NoteText.FirstName(rng));
+		run.SetText("stray", RZ_LongTable.ManName(rng));
 		run.SetText("stray_town", t.GetTownName());
 		run.SetText("name", t.ShortLost());
 		run.SetText("name_from", t.GetLostFrom());
@@ -255,13 +255,13 @@ class RZ_Quest_PlaceAtTable : RZ_Questline
 			case S_DYING:
 			{
 				if (outcome == OUT_SENT || outcome == OUTCOME_DONE)
-					run.Note("You told the bitten man on the road where the farm is. He thanked you. He never arrived anywhere.");
+					run.Note("You told the bitten wanderer where the farm is, and were thanked for it. They never arrived anywhere.");
 				else if (outcome == OUT_LIED)
-					run.Note("You sent the bitten man the wrong way. {host} knows. He's a little cooler with you now.");
+					run.Note("You sent the bitten wanderer the wrong way. {host} knows. He's a little cooler with you now.");
 				else if (outcome == OUT_SAVED)
-					run.Note("You gave the bitten man your antidote. He walked on. {host} didn't say anything about it at all.");
+					run.Note("You gave the bitten wanderer your antidote, and they walked on. {host} didn't say anything about it at all.");
 				else
-					run.Note("Nobody went to the bitten man on the road. {host} says it doesn't matter. It was a kindness, that's all.");
+					run.Note("Nobody went to the bitten wanderer on the road. {host} says it doesn't matter. It was a kindness, that's all.");
 
 				if (outcome != OUT_SENT && outcome != OUTCOME_DONE)
 					run.SetFlag("cool", 1);
@@ -466,10 +466,10 @@ class RZ_QM_PlaceDead : RZ_QM_PlaceBase
 		{
 			m_bMade = true;
 			m_vDead = LandPointNear(house, 900, 2000);
-			m_sWho = "a man nobody knew, with a pack still on his back";
+			m_sWho = "a man nobody knew";
 		}
 
-		m_iBodyClue = AddClue("In the ditch", string.Format("Here: %1. The infected got there first and moved on. The pack is still on. Nobody else has found this yet.", m_sWho));
+		m_iBodyClue = AddClue("In the ditch", "A man nobody knew, on his back in the ditch with his pack still on. The infected got there first, and moved on. Nobody else has found him yet.");
 		m_iHostTalk = AddClue(QText(gm, "host"), QFill(gm, "{host} is at the gate, the way he always is. \"Well?\""));
 		m_vPos = m_vDead;
 		m_iSettlement = gm.FindNearestSettlement(m_vDead);
@@ -641,21 +641,21 @@ class RZ_QM_PlaceDying : RZ_QM_PlaceBase
 		}
 		else
 		{
-			m_sDying = RZ_NoteText.FirstName(m_Rng) + ", a man on the road alone";
+			m_sDying = RZ_LongTable.ManName(m_Rng) + ", a man on the road alone";
 		}
 
-		m_iTalk = AddClue(m_sDying, string.Format("%1 is sitting on a milestone with a dressing on his arm, already dark through. \"Don't. I know.\" He looks up the road, and down it. \"Is there anywhere near? Anywhere with a fire?\"", m_sDying));
+		m_iTalk = AddClue(m_sDying, string.Format("%1 is sitting on a milestone with a dressing on one arm, already dark through. \"Don't. I know.\" A look up the road, and down it. \"Is there anywhere near? Anywhere with a fire?\"", m_sDying));
 		m_vPos = m_vRoad;
 		m_iSettlement = gm.FindNearestSettlement(m_vRoad);
 		m_sTitle = "The dying";
-		m_sBrief = QFill(gm, string.Format("{host} says %1 is on the road and won't make it. Bitten. \"Tell him where we are. We'll look after him.\"", m_sDying));
+		m_sBrief = QFill(gm, string.Format("{host} says %1 is on the road and won't make it. Bitten. \"Tell them where we are. We'll look after them.\"", m_sDying));
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected bool SpawnScene(RZ_GameModeComponent gm)
 	{
-		return SpawnPerson(gm, m_vRoad, OBJ_DYING, m_iTalk, "Talk to " + m_sDying, "Tell him where the farm is|Send him the wrong way|Give him your antidote") != null;
+		return SpawnPerson(gm, m_vRoad, OBJ_DYING, m_iTalk, "Talk to " + m_sDying, "Tell them where the farm is|Send them the wrong way|Give them your antidote") != null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -672,7 +672,7 @@ class RZ_QM_PlaceDying : RZ_QM_PlaceBase
 
 		if (playerId != GuestId(gm))
 		{
-			gm.NotifyPlayer(playerId, m_sDying, "\"I'm waiting for someone.\" He doesn't say who.");
+			gm.NotifyPlayer(playerId, m_sDying, "\"I'm waiting for someone.\" They don't say who.");
 			return;
 		}
 
@@ -680,7 +680,7 @@ class RZ_QM_PlaceDying : RZ_QM_PlaceBase
 		RZ_Wanderers wanderers = gm.GetWanderers();
 		if (option == 0)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "He thanks you. He actually thanks you. \"A farm? With a fire?\" He gets up and starts walking, toward {town}."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "A thank you. An actual thank you. \"A farm? With a fire?\" Up off the milestone, and walking, toward {town}."));
 			m_bSettled = true;
 			int role = -1;
 			if (wanderers && m_iWanderer > 0)
@@ -692,15 +692,15 @@ class RZ_QM_PlaceDying : RZ_QM_PlaceBase
 			t.Remember(playerId, RZ_LongTable.MEM_DYING);
 			t.Taken(m_sDying, PlaceName(gm, m_vRoad), t.FarmTitle(), m_vRoad, role,
 				string.Format("%1 was bitten on the road near %2, and never arrived anywhere.", RZ_Util.Capitalize(m_sDying), PlaceName(gm, m_vRoad)));
-			Resolve(gm, playerId, RZ_EQuestApproach.BETRAY, RZ_Quest_PlaceAtTable.OUT_SENT, "told the dying man where the farm was");
+			Resolve(gm, playerId, RZ_EQuestApproach.BETRAY, RZ_Quest_PlaceAtTable.OUT_SENT, "told the dying wanderer where the farm was");
 			return;
 		}
 
 		if (option == 1)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "You point him the other way, toward a safehouse. He nods and goes, slowly. Somewhere behind you, you're sure, the host already knows.");
+			gm.NotifyPlayer(playerId, m_sTitle, "You point the other way, toward a safehouse. A nod, and they go, slowly. Somewhere behind you, you're sure, the host already knows.");
 			Release(gm, true);
-			Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_PlaceAtTable.OUT_LIED, "sent the dying man the wrong way");
+			Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_PlaceAtTable.OUT_LIED, "sent the dying wanderer the wrong way");
 			return;
 		}
 
@@ -710,7 +710,7 @@ class RZ_QM_PlaceDying : RZ_QM_PlaceBase
 		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (!user || !RZ_AntidoteHelper.TakeOne(user))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "You've no antidote to give. He looks at your empty hands and nods.");
+			gm.NotifyPlayer(playerId, m_sTitle, "You've no antidote to give. A look at your empty hands, and a nod.");
 			return;
 		}
 
@@ -720,9 +720,9 @@ class RZ_QM_PlaceDying : RZ_QM_PlaceBase
 		Release(gm, false);
 		RZ_QuestRun run = Run(gm);
 		if (run)
-			run.Reward(gm, playerId, RZ_EFaction.SURVIVORS, 8, 0, "The needle goes in. A long minute, and then the shaking stops. He walks on, and the Haven hears who saved him.");
+			run.Reward(gm, playerId, RZ_EFaction.SURVIVORS, 8, 0, "The needle goes in. A long minute, and then the shaking stops. They walk on, and the Haven hears who saved them.");
 
-		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_PlaceAtTable.OUT_SAVED, "gave the dying man an antidote");
+		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_PlaceAtTable.OUT_SAVED, "gave the dying wanderer an antidote");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -145,6 +145,8 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 			boy = "the boy";
 
 		run.SetText("boy", boy);
+		if (run.Text("volunteer").IsEmpty())
+			run.SetText("volunteer", mother);
 
 		// Filled now, so the stage text that is only "{end}" needs no second pass
 		run.SetText("end", run.Fill(EndText(gm, run)));
@@ -166,16 +168,54 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The last stage's brief, by who was told.
-	protected string EndText(RZ_GameModeComponent gm, RZ_QuestRun run)
+	//! The last stage's brief, by who was told, naming only who is still at the farm.
+	static string EndText(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
+		RZ_LongTable t = Table(gm);
+		bool boy = t && t.IsAlive(RZ_ETableRole.BOY);
+		bool son = t && t.IsAlive(RZ_ETableRole.SON);
+		bool mother = t && t.IsAlive(RZ_ETableRole.MOTHER);
+		string text;
 		switch (run.m_iBranch)
 		{
-			case RZ_EFaction.SURVIVORS: return "The Haven's chair wants them brought home and walked out, the way the Haven does it: at dusk, to the edge of town, unarmed. They'll go quietly. All but {son}.";
-			case RZ_EFaction.MILITARY: return "Bastion has the {family} farm down as an infected cluster. The mortars open up five minutes after the warning. {boy} is in the yard. Get him out first, or don't.";
-			case RZ_EFaction.INSTITUTE: return "Halcyon's director wants one of them alive, and {mother}'s kitchen notebook: why they never eat the bitten. Walk her to the lab as a volunteer.";
-			case RZ_EFaction.BANDITS: return "The Red Hand's boss is paying the {family} farm to go away. Hold the farm ninety seconds while a crew loads them up and moves them on. Don't make it a story.";
-			case BRANCH_SELF: return "You haven't told anyone. Go back to the {family} farm and end it: fight them, or talk the last of them out once {mother} is gone. Get {boy} out first if you can.";
+			case RZ_EFaction.SURVIVORS:
+			{
+				text = "The Haven's chair wants them brought home and walked out, the way the Haven does it: at dusk, to the edge of town, unarmed. They'll go quietly.";
+				if (son)
+					text += " All but {son}.";
+
+				return text;
+			}
+			case RZ_EFaction.MILITARY:
+			{
+				text = "Bastion has the {family} farm down as an infected cluster. The mortars open up five minutes after the warning, and Bastion doesn't check for survivors.";
+				if (boy)
+					text += " {boy} is in the yard. Get him out first, or don't.";
+
+				return text;
+			}
+			case RZ_EFaction.INSTITUTE:
+			{
+				if (mother)
+					return "Halcyon's director wants one of them alive, and {mother}'s kitchen notebook: why they never eat the bitten. Walk her to the lab as a volunteer.";
+
+				return "Halcyon's director wants one of them alive, and the kitchen notebook: why they never eat the bitten. Walk one of them to the lab as a volunteer.";
+			}
+			case RZ_EFaction.BANDITS:
+				return "The Red Hand's boss is paying the {family} farm to go away. Hold the farm ninety seconds while a crew loads them up and moves them on. Don't make it a story.";
+			case BRANCH_SELF:
+			{
+				text = "You haven't told anyone. Go back to the {family} farm and end it: fight them";
+				if (mother)
+					text += ", or talk the last of them out once {mother} is gone.";
+				else
+					text += ", or talk the last of them out.";
+
+				if (boy)
+					text += " Get {boy} out first if you can.";
+
+				return text;
+			}
 		}
 
 		return "Somebody will end the {family} farm. Be there when they do.";
@@ -245,7 +285,10 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 	//------------------------------------------------------------------------------------------------
 	override void OnBegin(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
-		run.Note("{lost} left {from} for {to} and never got there. Their road runs past a farm past {town}, the one with smoke in the chimney.");
+		RZ_Questlines q = gm.GetQuestlines();
+		bool routed = ProofFromCrossing(gm) || Table(gm).IsExposed() || q.WorldFlag("table.found_by_haven") > 0 || q.WorldFlag("list.found_by_haven") > 0;
+		if (!routed)
+			run.Note("{lost} left {from} for {to} and never got there. Their road runs past a farm past {town}, the one with smoke in the chimney.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -253,7 +296,7 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 	{
 		RefreshTexts(gm, run);
 		if (stage == S_GUEST && run.Flag("from_haven") == 1)
-			run.Note("The Haven's List led to a farm past {town}. The council crossed the whole house off on Day 12. There's smoke in the chimney.");
+			run.Note("The Haven's List led to a farm past {town}: in the first hungry week the council crossed the whole house off. There's smoke in the chimney.");
 
 		if (stage == S_TELL && run.Flag("proof_crossing") == 1)
 			run.Note("Someone else found out what the {family} farm is. Now somebody has to say it to someone who'll act.");
@@ -384,7 +427,7 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 				else if (outcome == OUT_SEEN)
 					run.Note("{host} saw you watching the house. He waved. They'll be careful now.");
 				else if (outcome == OUT_BLESSED)
-					run.Note("They blessed your bite and sent you on. A bitten guest is safe there: they learned that on Day 10.");
+					run.Note("They blessed your bite and sent you on, kindly, like people who learned the hard way what the bitten do to a house.");
 				else
 				{
 					run.Note("Nobody went to meet {host}. The road past {town} is still kept.");
@@ -400,7 +443,10 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 			{
 				if (outcome == OUT_PROVEN || outcome == OUTCOME_DONE)
 				{
-					run.Note("The guestbook's small crosses, the boots, the letters nobody delivered, the jars labelled by the day. You know what the {family} farm is.");
+					run.Note("Three things at the farm, and they all say the same thing. You know what the {family} farm is.");
+					if (run.Flag("cellar") == 1)
+						run.Note("In the cellar: jars, each with a day written on the lid, and nothing else.");
+
 					return S_TELL;
 				}
 
@@ -473,9 +519,15 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 		{
 			switch (run.m_iBranch)
 			{
-				case RZ_EFaction.SURVIVORS: return Finish(run, E_WALKED, "Walked out. The {family} family walked to the edge of town in their good coats, and on toward the trees. {boy} stayed.");
+				case RZ_EFaction.SURVIVORS:
+				{
+					if (run.Flag("boy_out") == 1)
+						return Finish(run, E_WALKED, "Walked out. The {family} family walked to the edge of town in their good coats, and on toward the trees. {boy} stayed.");
+
+					return Finish(run, E_WALKED, "Walked out. The {family} family walked to the edge of town in their good coats, and on toward the trees.");
+				}
 				case RZ_EFaction.MILITARY: return Finish(run, E_BURNT, "Burnt. Bastion's mortars took the {family} farm past {town}, and Bastion wrote it up as an infected cluster.");
-				case RZ_EFaction.INSTITUTE: return Finish(run, E_STUDIED, "Studied. {mother} is at the lab, with her kitchen notebook. The rest of them went their own ways in the night.");
+				case RZ_EFaction.INSTITUTE: return Finish(run, E_STUDIED, "Studied. {volunteer} is at the lab, with the kitchen notebook. The rest of them went their own ways in the night.");
 				case RZ_EFaction.BANDITS: return Finish(run, E_PAID, "Paid to go. A Red Hand cart took the {family} family away down the back lane. Somewhere else, there's a place set.");
 			}
 		}
@@ -1544,7 +1596,7 @@ class RZ_QM_TableWalkOut : RZ_QM_TableBase
 		m_vPos = m_vHouse;
 		m_iSettlement = t.GetSettlement();
 		m_sTitle = "The end of the house";
-		m_sBrief = QFill(gm, "The chair wants the {family} family brought home and walked out, the Haven's way: at dusk, to the edge of town, unarmed. They'll go quietly. All but {son}.");
+		m_sBrief = QFill(gm, RZ_Quest_HouseWentQuiet.EndText(gm, Run(gm)));
 		return true;
 	}
 
@@ -1612,8 +1664,16 @@ class RZ_QM_TableWalkOut : RZ_QM_TableBase
 			return;
 		}
 
-		SetQFlag(gm, "boy_out", 1);
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{mother} turns once, and nods to you as if you'd done her a kindness. Then they walk on toward the trees, all of them but {boy}, who stays at your side and doesn't watch them go."));
+		if (Table(gm).IsAlive(RZ_ETableRole.BOY))
+		{
+			SetQFlag(gm, "boy_out", 1);
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{mother} turns once, and nods to you as if you'd done her a kindness. Then they walk on toward the trees, all of them but {boy}, who stays at your side and doesn't watch them go."));
+		}
+		else
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{mother} turns once, and nods to you as if you'd done her a kindness. Then they walk on toward the trees, and nobody looks back."));
+		}
+
 		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_HouseWentQuiet.OUT_ENDED, "walked them out");
 	}
 
@@ -1717,7 +1777,7 @@ class RZ_QM_TableGuns : RZ_QM_TableBase
 		m_vPos = m_vHouse;
 		m_iSettlement = t.GetSettlement();
 		m_sTitle = "The end of the house";
-		m_sBrief = QFill(gm, "Bastion has the {family} farm past {town} down as an infected cluster. The mortars open up five minutes after the warning. {boy} is in the yard. Get him out first, or don't.");
+		m_sBrief = QFill(gm, RZ_Quest_HouseWentQuiet.EndText(gm, Run(gm)));
 		return true;
 	}
 
@@ -1853,6 +1913,10 @@ class RZ_QM_TableVolunteer : RZ_QM_TableBase
 
 		m_vHouse = t.GetHousePos();
 		string name = t.NameOf(m_iRole);
+		RZ_QuestRun run = Run(gm);
+		if (run)
+			run.SetText("volunteer", name);
+
 		m_iTalk = AddClue(name, QFill(gm, string.Format("%1 looks at you for a long time. \"They want to know if we were right about the bitten.\" A notebook comes out of the dresser: a kitchen book, recipes in the front. \"I'll come. Nobody else.\"", name)));
 		m_Escort.m_sName = name;
 		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 0);
@@ -1884,7 +1948,7 @@ class RZ_QM_TableVolunteer : RZ_QM_TableBase
 		m_Escort.Go();
 		AddParticipant(playerId);
 		Remember(gm, playerId, RZ_EQuestApproach.SIDE, "walked a volunteer to the lab");
-		gm.NotifyPlayer(playerId, m_sTitle, string.Format("She puts the notebook in her coat and follows you, a few steps behind. The rest of them don't come to the door. The lab is %1.", RZ_Util.DirectionText(source.GetOrigin(), gm.GetLabPosition())));
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 puts the notebook in a coat pocket and follows you, a few steps behind. The rest of them don't come to the door. The lab is %2.", m_Escort.m_sName, RZ_Util.DirectionText(source.GetOrigin(), gm.GetLabPosition())));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1897,7 +1961,7 @@ class RZ_QM_TableVolunteer : RZ_QM_TableBase
 		if (m_Escort.IsDead())
 		{
 			Table(gm).MemberKilled(m_iRole, -1, m_Escort.m_vPos);
-			NotifyParticipants(gm, m_sTitle, "She didn't reach the lab.");
+			NotifyParticipants(gm, m_sTitle, m_Escort.m_sName + " didn't reach the lab.");
 			m_eState = RZ_EMissionState.FAILED;
 			return;
 		}
@@ -1907,7 +1971,7 @@ class RZ_QM_TableVolunteer : RZ_QM_TableBase
 
 		m_Escort.Arrive();
 		int by = m_Escort.GetFollowed();
-		gm.NotifyPlayer(by, m_sTitle, "At the lab door a researcher in a mask takes the notebook first, then her arm. \"Volunteer,\" she says, writing it down. She says thank you, and goes in.");
+		gm.NotifyPlayer(by, m_sTitle, string.Format("At the lab door a researcher in a mask takes the notebook first, then %1's arm. \"Volunteer,\" she says, writing it down. %1 says thank you, and goes in.", m_Escort.m_sName));
 		Resolve(gm, by, RZ_EQuestApproach.SIDE, RZ_Quest_HouseWentQuiet.OUT_ENDED, "brought a volunteer to the lab");
 	}
 
@@ -2044,7 +2108,7 @@ class RZ_QM_TableByHand : RZ_QM_TableBase
 		m_vPos = m_vHouse;
 		m_iSettlement = t.GetSettlement();
 		m_sTitle = "The end of the house";
-		m_sBrief = QFill(gm, "You haven't told anyone. End the {family} farm yourself: fight them, or talk the last of them out once {mother} is gone. Get {boy} out first if you can.");
+		m_sBrief = QFill(gm, RZ_Quest_HouseWentQuiet.EndText(gm, Run(gm)));
 		return true;
 	}
 

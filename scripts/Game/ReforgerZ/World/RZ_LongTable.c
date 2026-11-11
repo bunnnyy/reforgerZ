@@ -28,7 +28,7 @@ enum RZ_ETableRole
 	HOST,		// the elder son, who meets people on the road
 	SON,		// the quiet son
 	BOY,		// not theirs: he came with the mouths
-	OTHER		// a cousin, an aunt, a lodger who stayed
+	OTHER		// a cousin, an uncle, a lodger who stayed
 }
 
 //------------------------------------------------------------------------------------------------
@@ -867,7 +867,8 @@ class RZ_LongTable
 		array<string> mothers = {"Ada", "Marta", "Irena", "Vera", "Hana", "Olga", "Edith", "Agnes", "Ruth", "Zofia"};
 		array<string> sons = {"Pavel", "Karel", "Josef", "Milan", "Viktor", "Emil", "Anton", "Oskar", "Jakub", "Bruno"};
 		array<string> boys = {"Tomik", "Jiri", "Petr", "Ondra", "Lukas", "Filip", "Matej", "Vit"};
-		array<string> others = {"Lida", "Bohus", "Greta", "Stan", "Alena", "Rudi", "Klara", "Ota"};
+		// A cousin, an uncle, a lodger who stayed (men: whoever keeps the road is "he")
+		array<string> others = {"Bohus", "Stan", "Rudi", "Ota", "Lev", "Hynek", "Ales", "Dusan"};
 		rng.ShuffleStrings(sons);
 		rng.ShuffleStrings(others);
 
@@ -880,6 +881,14 @@ class RZ_LongTable
 		{
 			AddMember(RZ_ETableRole.OTHER, others[i]);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A man's first name (an exile, a stranger on the road: the writing calls them "he").
+	static string ManName(RZ_Rng rng)
+	{
+		array<string> names = {"Pavel", "Henri", "Tomas", "Emil", "Anton", "Viktor", "Karel", "Oskar", "Milan", "Jakub", "Bruno", "Leon"};
+		return rng.Pick(names);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1282,7 +1291,7 @@ class RZ_LongTable
 		if (TakeCrossing("cargo.exile") && m_eState == RZ_ETableState.ACTIVE)
 		{
 			RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
-			string exile = RZ_NoteText.FirstName(rng);
+			string exile = ManName(rng);
 			string town = GetTownName();
 			RZ_Safehouses houses = m_GM.GetSafehouses();
 			RZ_Safehouse h;
