@@ -855,6 +855,9 @@ class RZ_Mission_PatientZero : RZ_PuzzleMission
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		gm.GetCure().AddResearch(6, "Halcyon has found the first case. Knowing where it started changes everything.");
+
+		// The clinic records are out, "notify the Institute" and all: The Three Weeks can begin
+		RZ_Quest_ThreeWeeks.NoteClinicRecords(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
