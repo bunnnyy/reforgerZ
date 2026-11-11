@@ -516,7 +516,7 @@ class RZ_SupplyLines
 		if (!st || !st.m_bShortage)
 			return false;
 
-		int hash = Math.AbsInt(st.m_iSeed) % 997;
+		int hash = RZ_Util.PickIndex(st.m_iSeed, 997);
 		string alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
 		string lower = itemName;
 		lower.ToLower();

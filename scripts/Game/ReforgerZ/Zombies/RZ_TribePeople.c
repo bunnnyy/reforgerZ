@@ -355,7 +355,7 @@ class RZ_TribePeople
 			return "the Choir";
 
 		array<string> names = {"the Lodgers", "the Night Shift", "the Regulars", "the Tenants", "the Day Trippers", "the Committee", "the Late Crowd", "the Congregation"};
-		return names[Math.AbsInt(t.m_iSeed + t.m_iId) % names.Count()];
+		return names[RZ_Util.PickIndex(t.m_iSeed + t.m_iId, names.Count())];
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1855,7 +1855,7 @@ class RZ_EpiClosing
 		{
 			array<string> lines = {"Still here.", "Gone home.", "Thanks for the soup.", "Look after the dog.", "Tell them we tried.", "Left the light on."};
 			int n = Bump("linepick|" + ident);
-			text = string.Format("Day %1. %2", Day(), lines[(n - 1) % lines.Count()]);
+			text = string.Format("Day %1. %2", Day(), lines[RZ_Util.PickIndex(n - 1, lines.Count())]);
 		}
 		else
 		{

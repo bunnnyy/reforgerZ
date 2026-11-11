@@ -997,6 +997,22 @@ class RZ_Util
 		return i;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A safe pick from a seed, a hash or any sum that may be negative or have overflowed: 0 to count - 1,
+	//! or -1 when count is 0 or less (check it before indexing). Use it for every "seed % list.Count()":
+	//! `%` keeps the sign, so a negative seed gives a negative index, and Math.AbsInt(int.MIN) stays negative.
+	static int PickIndex(int seed, int count)
+	{
+		if (count <= 0)
+			return -1;
+
+		int r = seed % count;
+		if (r < 0)
+			r += count;
+
+		return r;
+	}
+
 	// ================================================================ Mission building blocks (Missions/Blocks/)
 	//------------------------------------------------------------------------------------------------
 	//! The vehicle a character sits in, or null if they're on foot.

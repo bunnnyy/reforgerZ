@@ -345,7 +345,7 @@ class RZ_DialogueTrees
 			// Flavour rotates on the speaker and the day, so the same few don't always lead
 			int start = 0;
 			if (prio == 4 && band.Count() > 1)
-				start = Math.AbsInt(t.m_Ctx.m_sKey.Hash() + RZ_SeasonClock.Day()) % band.Count();
+				start = RZ_Util.PickIndex(t.m_Ctx.m_sKey.Hash() + RZ_SeasonClock.Day(), band.Count());
 
 			for (int k = 0; k < band.Count(); k++)
 			{
