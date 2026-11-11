@@ -4020,6 +4020,12 @@
    "field": "m_AdaptationSettings",
    "covers": "Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots"
   },
+  {
+   "category": "Zombies",
+   "object": "Stealth",
+   "field": "m_StealthSettings",
+   "covers": "**Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth))"
+  },
   {"category": "Zombies", "object": "(top level)", "covers": "Presence heat (0.5/tick), vehicle heat (+4/tick)"},
   {
    "category": "Backgrounds",
@@ -4342,6 +4348,48 @@
     "m_fSpotMinutes": "35",
     "m_fSpotCooldownMinutes": "60",
     "m_iSpotHordeSize": "3"
+   }
+  },
+  {
+   "field": "m_StealthSettings",
+   "category": "Zombies",
+   "label": "Stealth",
+   "cls": "RZ_StealthSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_fUpdateSeconds": "1",
+    "m_fRadius": "60",
+    "m_iAgentsPerUpdate": "40",
+    "m_fStandMult": "1",
+    "m_fCrouchMult": "0.6",
+    "m_fProneMult": "0.5",
+    "m_fStillMult": "0.7",
+    "m_fWalkMult": "0.85",
+    "m_fRunMult": "1",
+    "m_fSprintMult": "1.25",
+    "m_fDayLight": "1",
+    "m_fDuskLight": "0.6",
+    "m_fNightLight": "0.25",
+    "m_fEngineLightWeight": "0.6",
+    "m_fDarkFloor": "0.4",
+    "m_fFogMult": "0.75",
+    "m_fRainMult": "0.85",
+    "m_fStormMult": "0.7",
+    "m_fEnvFloor": "0.55",
+    "m_fNoiseWeight": "0.5",
+    "m_fNoiseSeconds": "10",
+    "m_fSuppressedNoise": "0.35",
+    "m_fBaseCommon": "1",
+    "m_fBaseSpecial": "1.2",
+    "m_fBaseHorde": "0.9",
+    "m_fMinFactor": "0.3",
+    "m_fMaxFactor": "1.2",
+    "m_fHiddenBelow": "0.35",
+    "m_fLoseSeconds": "8",
+    "m_fSearchSeconds": "45",
+    "m_fContactRadius": "20",
+    "m_fMissionSightMin": "0.6",
+    "m_fMissionNoticeMin": "0.35"
    }
   },
   {

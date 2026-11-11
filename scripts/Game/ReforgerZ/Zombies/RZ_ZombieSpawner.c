@@ -58,6 +58,12 @@ class RZ_TrackedZombie
 	vector m_vLastPos;
 	bool m_bScreamer;		// Aftermath trait (RZ_Adaptation): shrieks when it sees a player
 	float m_fShriekAt;		// adaptation clock time of the next allowed shriek
+	bool m_bHorde;			// spawned as a horde (its own base senses, RZ_Stealth)
+	bool m_bRelentless;		// must keep coming (a mission's horde): stealth never lowers its senses or makes it lose anyone
+	vector m_vHome;			// where it spawned: where it goes back to when it gives up a search
+	vector m_vGoal;			// where a horde was sent
+	bool m_bHasGoal;
+	ref RZ_SenseState m_Sense;	// stealth's view of it (Zombies/RZ_Stealth.c), once a player was near
 }
 
 //! Spawns zombies only near players and removes them when nobody is around.
@@ -151,6 +157,7 @@ class RZ_ZombieSpawner
 		z.m_bSpecial = special;
 		z.m_bScreamer = screamer;
 		z.m_vLastPos = pos;
+		z.m_vHome = pos;
 		// Groups spawn their members a frame later, so read the real count on the next tick
 		z.m_iLastAlive = -1;
 		m_aTracked.Insert(z);
@@ -181,14 +188,17 @@ class RZ_ZombieSpawner
 
 	//------------------------------------------------------------------------------------------------
 	//! Spawn a horde at pos and send it to target. The spawned units go into spawnedOut; false if none.
-	bool SpawnHordeAt(vector pos, vector target, int missionId = -1, array<IEntity> spawnedOut = null)
+	//! A mission's horde must keep coming: stealth never lowers its senses (docs/DESIGN.md, "Stealth").
+	//! keepComing false: a horde where staying unseen is the point (Lead Them Away, The Clockwork
+	//! Horde, Horde Migration).
+	bool SpawnHordeAt(vector pos, vector target, int missionId = -1, array<IEntity> spawnedOut = null, bool keepComing = true)
 	{
-		array<IEntity> spawned = {};
+		array<RZ_TrackedZombie> spawned = {};
 		if (!m_Settings.m_aHordePrefabs.IsEmpty())
 		{
 			RZ_TrackedZombie z = SpawnZombie(pos, false, -1, missionId, m_Settings.m_aHordePrefabs.GetRandomElement());
 			if (z)
-				spawned.Insert(z.m_Entity);
+				spawned.Insert(z);
 		}
 		else
 		{
@@ -196,15 +206,19 @@ class RZ_ZombieSpawner
 			{
 				RZ_TrackedZombie z2 = SpawnZombie(RZ_Util.RandomPointInRing(pos, 0, 20), false, -1, missionId);
 				if (z2)
-					spawned.Insert(z2.m_Entity);
+					spawned.Insert(z2);
 			}
 		}
 
-		foreach (IEntity e : spawned)
+		foreach (RZ_TrackedZombie t : spawned)
 		{
-			RZ_Util.SendGroupTo(e, target, m_Settings.m_sMoveWaypointPrefab);
+			t.m_bHorde = true;
+			t.m_vGoal = target;
+			t.m_bHasGoal = true;
+			t.m_bRelentless = missionId != -1 && keepComing;
+			RZ_Util.SendGroupTo(t.m_Entity, target, m_Settings.m_sMoveWaypointPrefab);
 			if (spawnedOut)
-				spawnedOut.Insert(e);
+				spawnedOut.Insert(t.m_Entity);
 		}
 
 		return !spawned.IsEmpty();
@@ -383,13 +397,16 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Lets mission zombies despawn normally again.
+	//! Lets mission zombies despawn, and lose players (RZ_Stealth), normally again.
 	void ReleaseMission(int missionId)
 	{
 		foreach (RZ_TrackedZombie z : m_aTracked)
 		{
-			if (z.m_iMissionId == missionId)
-				z.m_iMissionId = -1;
+			if (z.m_iMissionId != missionId)
+				continue;
+
+			z.m_iMissionId = -1;
+			z.m_bRelentless = false;
 		}
 	}
 
@@ -397,6 +414,13 @@ class RZ_ZombieSpawner
 	int GetTrackedCount()
 	{
 		return m_aTracked.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Everything the spawner tracks, for stealth (RZ_Stealth). Read it; don't add or remove.
+	array<ref RZ_TrackedZombie> GetTracked()
+	{
+		return m_aTracked;
 	}
 
 	//------------------------------------------------------------------------------------------------

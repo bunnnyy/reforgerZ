@@ -63,10 +63,11 @@ class RZ_Mission_ClockworkHorde : RZ_PuzzleMission
 		m_fParticipationRadius = s.m_fRadius + 100;
 
 		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_vBox, 0, "Take the strongbox", "");
-		gm.GetSpawner().SpawnHordeAt(LandPointNear(m_vSirenA, 0, 30), m_vSirenA, m_iId, m_aHorde);
+		// Not one that must keep coming: staying unseen is the job, so stealth may dull its senses (RZ_Stealth)
+		gm.GetSpawner().SpawnHordeAt(LandPointNear(m_vSirenA, 0, 30), m_vSirenA, m_iId, m_aHorde, false);
 		m_fSirenTimer = SIREN_INTERVAL;
 
-		RZ_Stealth stealth = GetStealth();
+		RZ_NoticeTracker stealth = GetNotice();
 		stealth.m_fHeatThreshold = 40;
 		stealth.m_fZombieRadius = 12;
 		stealth.m_fZombieSeconds = 6;
@@ -84,7 +85,7 @@ class RZ_Mission_ClockworkHorde : RZ_PuzzleMission
 		if (s)
 			radius = s.m_fRadius + 50;
 
-		GetStealth().Track(gm, ids, players, dt, m_vBox, radius);
+		GetNotice().Track(gm, ids, players, dt, m_vBox, radius);
 
 		m_fSirenTimer -= dt;
 		if (m_fSirenTimer > 0)
@@ -130,7 +131,7 @@ class RZ_Mission_ClockworkHorde : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUse(RZ_GameModeComponent gm, int playerId, int objIdx, int value, IEntity source, IEntity user)
 	{
-		RZ_Stealth stealth = GetStealth();
+		RZ_NoticeTracker stealth = GetNotice();
 		float threshold = 40;
 		if (HasBonus(gm, playerId))
 			threshold = 60;

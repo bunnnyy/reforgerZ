@@ -70,6 +70,12 @@
   .noise .seg i.on { background: var(--bone); }
   .noise .seg i.hot { background: #E07A2E; }
   .noise span { font: 700 12px 'JetBrains Mono'; letter-spacing: .16em; color: var(--dim); }
+  /* visibility (Stealth on), above the noise meter */
+  .seen { position: absolute; left: 536px; bottom: 80px; display: flex; align-items: center; gap: 10px; opacity: .85; }
+  .seen .seg { display: flex; gap: 3px; }
+  .seen .seg i { width: 14px; height: 8px; background: rgba(232,226,208,.18); }
+  .seen .seg i.on { background: #BFD39B; }
+  .seen span { font: 700 12px 'JetBrains Mono'; letter-spacing: .16em; color: var(--dim); }
 
   /* states sheet */
   .sheet { position: absolute; left: 44px; top: 128px; width: 470px; padding: 16px 18px 18px; background: rgba(8,9,10,.62); border: 1px dashed rgba(232,226,208,.22); }
@@ -130,7 +136,12 @@
       <div class="paused"><i data-i="item_stabiliser"></i>PAUSED · STABILISER 14:02</div>
     </div>
   </div>
-  <div class="callout" style="left:500px;bottom:96px">◀ RZ_HudDisplay · infection timer, noise meter ▼</div>
+  <div class="callout" style="left:500px;bottom:112px">◀ RZ_HudDisplay · infection timer, visibility, noise meter ▼</div>
+
+  <div class="seen">
+    <div class="seg"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+    <span>HIDDEN</span>
+  </div>
 
   <div class="noise">
     <i data-i="status_noise"></i>

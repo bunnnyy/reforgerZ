@@ -86,6 +86,10 @@ Frame  (root, full screen)
 │  ├─ HorizontalLayout (spacing 3)
 │  │  └─ Image Noise1 … Noise6  14 × 8 each, no texture (tinted lit or dim)
 │  └─ Text    NoiseText         mono bold 12, dim
+├─ HorizontalLayout SeenPanel   anchor bottom-left, offset (536, -80), spacing 10, 85% opacity; hidden until the server sends a visibility (Stealth on)
+│  ├─ HorizontalLayout (spacing 3)
+│  │  └─ Image Seen1 … Seen5    14 × 8 each, no texture (tinted lit, dim, or green when hidden)
+│  └─ Text    SeenText          mono bold 12, dim (HIDDEN, LOW, SEEN, IN PLAIN SIGHT)
 ├─ VerticalLayout NoticeStack   460 wide, anchor top-right, offset (-44, 96), spacing 12
 └─ Text   NoticeQueued          under the stack, right-aligned, mono 12, faint
 ```

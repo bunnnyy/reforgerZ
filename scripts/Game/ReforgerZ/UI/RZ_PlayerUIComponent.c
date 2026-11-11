@@ -1,4 +1,4 @@
-[ComponentEditorProps(category: "ReforgerZ", description: "ReforgerZ UI feed: the server sends this player's infection timer, secure-radio state, noise, standing, journal and backgrounds to the owning client only. Add to the player controller prefab (UI/LAYOUTS.md).")]
+[ComponentEditorProps(category: "ReforgerZ", description: "ReforgerZ UI feed: the server sends this player's infection timer, secure-radio state, noise, visibility, standing, journal and backgrounds to the owning client only. Add to the player controller prefab (UI/LAYOUTS.md).")]
 class RZ_PlayerUIComponentClass : ScriptComponentClass
 {
 }
@@ -38,6 +38,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected float m_fListenLeft;
 	protected float m_fListenStamp;
 	protected int m_iNoise;
+	protected int m_iSeen = -1;			// visibility 0 (hidden) to 5; -1 = none (Stealth off): not shown
+	protected bool m_bSeenHidden;
 	protected string m_sStanding;
 	protected string m_sJournal;
 	protected string m_sBackgrounds;
@@ -150,6 +152,16 @@ class RZ_PlayerUIComponent : ScriptComponent
 			Rpc(RpcDo_Payload, kind, payload); // VERIFY: a string RPC argument of a few KB arrives whole (RZ_UIFeed caps payloads at 6000 characters)
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! level: 0 hidden to 5 in plain sight (RZ_UIFeed.PushVisibility); hidden: under Stealth > Hidden below.
+	void SendVisibility(int level, bool hidden)
+	{
+		if (IsLocalOwner())
+			RpcDo_Visibility(level, hidden);
+		else
+			Rpc(RpcDo_Visibility, level, hidden);
+	}
+
 	// ================================================================ Client: receive
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
@@ -180,6 +192,14 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_Visibility(int level, bool hidden)
+	{
+		m_iSeen = level;
+		m_bSeenHidden = hidden;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A new life: the radio log and the timers belong to the last one.
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_NewLife()
@@ -189,6 +209,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 		m_iInfState = RZ_EInfectionUI.NONE;
 		m_iListenFaction = -1;
 		m_iNoise = 0;
+		m_iSeen = -1;
+		m_bSeenHidden = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -425,6 +447,9 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	int GetNoise() { return m_iNoise; }
+	//! Visibility 0 (hidden) to 5, or -1: none sent (Stealth off, or not yet this life).
+	int GetSeen() { return m_iSeen; }
+	bool IsSeenHidden() { return m_bSeenHidden; }
 	string GetStanding() { return m_sStanding; }
 	string GetJournal() { return m_sJournal; }
 	string GetBackgrounds() { return m_sBackgrounds; }
