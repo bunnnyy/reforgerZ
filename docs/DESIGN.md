@@ -1489,35 +1489,55 @@ research missions (data, readings, live specimens) ─────────�
 
 - **What a delivery is worth.** Each sample is 1% research (×2 for a Lab Technician, +25% for
   Halcyon's Champions; never more than ×2 together). Research from missions counts ×0.75 of what
-  the mission names. Both are multiplied by the **Cure pace** (0.32) and the **season speed**, so
-  a sample is about a third of a percent ([Season pacing](#season-pacing) has the numbers).
+  the mission names. Both are multiplied by the **Cure pace** (0.3), the **pace by play** (below)
+  and the **season speed**, so on a server of five regulars a sample is about a third of a percent
+  ([Season pacing](#season-pacing) has the numbers).
+- **Pace by play.** The server measures how much it really plays: the player-hours (players in
+  the world × hours) on each real day, averaged over the last 7 whole days. Research counts
+  ×(**Pace by play** ÷ that average), between ×0.25 and ×2.5. The setting, 12.5, is the design
+  point (5 regulars at 2.5 hours), so two regulars get about ×2.4 and ten about ×0.5, and a season
+  takes about as long on either. It follows the server as regulars come and go; days the server
+  was down count as unplayed. It's ×1 for the season's first two days (the first is partial).
+  Fame and Favor for samples don't change with it. 0 turns it off.
 - **The lab's capacity.** Nothing counts at once: what's delivered goes into the lab's
   **backlog**, and the lab works through it at **3% research a real day** (**Lab research per
   day**, × season speed). It works in real time, also while nobody is online or the server is
-  down (a restart catches up, 30 days at most). The breakthroughs fire when the *worked* research
-  crosses 25, 50 and 75%, so a big delivery shows over the next days. Lab research per day 0 turns
-  the capacity off: research counts at once.
+  down (a restart catches up at once, 30 days at most). The breakthroughs fire when the *worked*
+  research crosses 25, 50 and 75%, so a big delivery shows over the next days. Lab research per day
+  0 turns the capacity off: research counts at once.
+- **Breakthrough news waits for listeners.** The lab often crosses a milestone with nobody online.
+  Its effects (spread, bite timers, the antidote stock) start at once; its news ("Breakthrough:
+  Field antiviral", and the 90% gate's) is told the first time a player is in the world, in
+  order, and is saved across a restart. The broadcast's "Reports of research inside the zone are
+  being evaluated" runs for 90 minutes of play from then.
 - **The cold store is full.** The backlog holds at most **4 days of the lab's work** (**Lab
-  backlog days**; 12% at the defaults). While it's full the lab refuses samples ("The cold store
-  is full. We can't take another sample until the lab works through what's waiting. Come back
-  tomorrow."): the player keeps them, with no Fame for them, and the action shows "The cold store
-  is full". A hand-in that only partly fits takes what fits and the rest stay with the player.
-  Mission research beyond the cap is lost, and the mission's result line to everyone says so
-  ("The lab's cold store is full: only part of it could be kept."). The Red Hand's dead drop
+  backlog days**; 12% at the defaults), a backstop for spikes: with the pace by play on, the
+  simulator never fills it from 2 to 20 regulars. While it's full the lab refuses samples ("The
+  cold store is full. We can't take another sample until the lab works through what's waiting.
+  Come back tomorrow."): the player keeps them, with no Fame for them, and the action shows "The
+  cold store is full". A hand-in that only partly fits takes what fits and the rest stay with the
+  player. Mission research beyond the cap is lost, and the mission's result line to everyone says
+  so ("The lab's cold store is full: only part of it could be kept."). The Red Hand's dead drop
   still buys samples.
-- **Quiet servers.** Research delivered while nothing is waiting counts **+25%** (**Empty lab
-  bonus**), so a lab that is mostly idle doesn't hold a small server back as much.
+- **An idle lab.** The part of a delivery that fills the backlog up to **half a day of the lab's
+  work** (1.5% at the defaults) counts **+25%** (**Empty lab bonus**), so the lab's idle days
+  aren't wasted. It's continuous: waiting for the lab to empty and then handing everything in at
+  once gains nothing.
 - **What players see.** The lab's **Check research progress**, the journal and the first-spawn
   news give the lab's line: "Research 63 percent. Waiting: 14 samples' worth, about 4 days of
   work." (and "The cold store is full" while it is). Every delivery's line to everyone ends with it.
+  Halcyon's secure chatter about the samples still needed says when the cold store is full or the
+  work has stopped at the gate instead.
 - **The finale's gate** (built as a hook; the finale questlines are planned). Research stops at
   **90%** only while a cure finale questline is registered (`RZ_Questline.IsCureFinale`, with
   questlines on). None is yet, so research runs to 100% as before. A finale takes research past
   the gate with `RZ_CureResearch.AddFinaleResearch(amount, faction, reason)`: straight into the
-  worked research, not through the backlog, the Cure pace or the season speed, and each faction's
-  share is kept (saved) for the ending. Meanwhile the backlog still fills (and then refuses), and
-  the lab inches up **1% a real week** by itself (**Finale fallback**), so no season gets stuck.
-  Once research has reached 100% the gate stays open: a lost batch goes back to the lab's normal work.
+  worked research, not through the backlog, the Cure pace, the pace by play or the season speed,
+  and each faction's share is kept (saved) for the ending. Meanwhile the backlog still fills (and
+  then refuses). After **a real week at the gate** (÷ season speed) the lab inches up **1% a real
+  day** by itself (**Finale fallback**, × season speed; with or without the lab's capacity), so a
+  season whose finale nobody finishes still ends, about 17 days after reaching 90%. Once research
+  has reached 100% the gate stays open: a lost batch goes back to the lab's normal work.
 - **The lab** is a placed prefab, or spawns in a random town and stays there across restarts.
 - **Antidotes** are used as a world action or from the inventory; they cure an infection. The
   lab makes doses into a **stock** from the first day, faster with each breakthrough
@@ -1554,16 +1574,19 @@ research missions (data, readings, live specimens) ─────────�
 
 ## Season pacing
 
-Code: `Core/RZ_GameModeComponent.c` (**Season speed**, **Cure > Cure pace** and the lab's settings),
-`Cure/RZ_CureResearch.c`, `Director/RZ_OutbreakStage.c`. Simulator: `tools/pacing_sim.py`.
+Code: `Core/RZ_GameModeComponent.c` (**Season speed**, **Cure > Cure pace**, **Cure > Pace by play**
+and the lab's settings), `Cure/RZ_CureResearch.c`, `Director/RZ_OutbreakStage.c`. Simulator:
+`tools/pacing_sim.py`.
 
-A season is tuned for **about 45 real days (six and a half weeks) to the cure with 5 regular
-players**, each playing 2–3 hours a day. Three kinds of clock move it, and only the first two
-were stretched for the longer season:
+A season is tuned for **about 45 real days (six and a half weeks) to the cure**, with 5 regular
+players, each playing 2–3 hours a day, as the design point. The **pace by play**
+([Cure research](#cure-research-and-the-seasons-end)) holds that from about 2 to 20 regulars
+without any tuning by the admin. Three kinds of clock move a season, and only the first two were
+stretched for the longer season:
 
 | Clock | Runs on | Set by |
 |---|---|---|
-| Research | deliveries, then the lab's work in real time | **Cure pace**, the lab's settings, the season speed |
+| Research | deliveries, then the lab's work in real time | **Cure pace**, the pace by play, the lab's settings, the season speed |
 | Outbreak stages and spread | hours with someone online | the stage list, the season speed |
 | Moment to moment: safehouse upkeep, supply trucks, territory, the Long Table, wanderers, spawns | their own minutes of play, as before | the season speed for upkeep, trucks, territory and the Long Table; nothing for wanderers and spawns |
 
@@ -1572,7 +1595,7 @@ were stretched for the longer season:
 | | Value |
 |---|---|
 | Regular players | 5, each 2–3 hours a day, at a random time in a 12-hour stretch of the day |
-| Player-hours | about 12 a day |
+| Player-hours | about 12.5 a day (the **Pace by play** setting: ×1 there) |
 | Hours a day with someone online ("hours played", the clock stages run on) | about 8 (4.4 with 2 players, 10 with 10) |
 | Infected killed | about 20 per player-hour (travel, looting and missions mixed) |
 | Specials (with night and adaptation) | 1.1% of kills in Early Outbreak, 1.6% in Collapse, 2.2% in Overrun, 2.7% in Aftermath |
@@ -1581,7 +1604,8 @@ were stretched for the longer season:
 | Lab Technicians and Halcyon Champions | about +20% on samples |
 | A finale (planned) | about 5 days from 90% to 100% |
 
-**How research adds up for 5 players** (a sample is 1% × 0.32 Cure pace; missions ×0.75 × 0.32):
+**How research adds up for 5 players** (a sample is 1% × 0.3 Cure pace; missions ×0.75 × 0.3;
+the pace by play is ×1):
 
 | Stage | From samples | From missions | Delivered a day |
 |---|---|---|---|
@@ -1590,26 +1614,45 @@ were stretched for the longer season:
 | Overrun | ~1.2% | ~1% | ~2.2% |
 | Aftermath | ~1.5% | ~1% | ~2.5% |
 
-Plus 25% on whatever arrives while the lab is idle. The lab works through 3% a day, so for five
-players the backlog is a delay of a day or so and never fills.
+Plus 25% on the part of each delivery that fills the backlog up to half a day of work. The lab
+works through 3% a day, so the backlog is a delay of a day or so and never fills. Other server
+sizes deliver about the same a day: the pace by play scales each delivery by how much the server
+plays.
 
 **What the simulator gives** (`python3 tools/pacing_sim.py`, the defaults, the median of 60 runs;
-day 1 is the season's first day):
+day 1 is the season's first day). "Pace" is the average pace by play at a hand-in. The cure comes
+on three days: with a finale questline done in 5 days, with one registered that nobody finishes
+(the fallback only), and with none registered (no gate: today's build):
 
-| Players | 25% | 50% | 75% | 90% | 100% with a finale | 100% without | Collapse | Overrun | Aftermath | Delivered a day | Lab full |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2 | day 30 | 53 | 74 | 86 | 91 | 95 | 9 | 28 | 55 | 1.1% | never |
-| 5 | day 14 | 24 | 35 | 40 | **45** | 44 | 6 | 16 | 31 | 2.4% | never |
-| 10 | day 10 | 18 | 26 | 31 | 36 | 35 | 5 | 13 | 25 | 3.3% | 10% of the time |
+| Players | Pace | 25% | 50% | 75% | 90% | 100% with a finale | finale never done | no finale | Collapse | Overrun | Aftermath | Delivered a day | Lab full |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2 | ×2.4 | day 15 | 27 | 39 | 45 | 50 | 62 | 50 | 9 | 27 | after the cure | 2.1% | never |
+| 3 | ×1.7 | day 15 | 25 | 36 | 42 | 47 | 59 | 47 | 7 | 21 | 42 | 2.2% | never |
+| 5 | ×1.0 | day 13 | 24 | 33 | 39 | **44** | 56 | 43 | 6 | 16 | 31 | 2.4% | never |
+| 7 | ×0.7 | day 12 | 23 | 32 | 38 | 43 | 55 | 41 | 5 | 14 | 27 | 2.5% | never |
+| 10 | ×0.5 | day 12 | 21 | 31 | 36 | 41 | 53 | 40 | 5 | 13 | 24 | 2.6% | never |
+| 20 | ×0.3 | day 9 | 19 | 28 | 34 | 39 | 50 | 37 | 4 | 11 | 22 | 2.8% | never |
 
-**The soft cap is the lab's capacity.** At 3% a real day no server reaches 90% in under 30 days,
-or the cure in under about 35, however many play. Five regulars deliver less than the lab can
-work through. Ten deliver more: the backlog fills, the lab turns samples away (60% of their
-hand-ins are at least partly refused, and they keep them) and missions lose research (39% of it).
-That's the cap working, but players feel it, so bigger servers should lower the Cure pace (below)
-and keep the lab just ahead of them. A quiet server's lab is mostly idle, so its deliveries get the
-+25%; two players still need about three months at the defaults, so small servers raise the
-season speed.
+Bigger servers are still a little faster: they spend more hours online, so the stages (and with
+them the share of specials) come sooner. Without the pace by play (0), the same defaults give two
+regulars the cure on about day 90 and ten on about day 36, with 54% of the ten's hand-ins partly
+refused at a full cold store.
+
+**How the soft cap works.** Three layers, from the one players should feel to the one they
+shouldn't:
+
+1. **The pace by play** sets how much a delivery is worth. It measures the player-hours of the
+   last week, so research a day stays near the design point (about 2.4%) whether 2 or 20 people
+   play, and it follows the server as regulars come and go. It stops at ×2.5 (one regular is on
+   their own about twice as long) and ×0.25 (beyond about 20 regulars the lab starts to fill).
+2. **The lab's capacity**, 3% a real day, is a hard ceiling on how fast research can move: no
+   server reaches 90% in under 30 days, or the cure in under about 35, however much it delivers.
+3. **The cold store** (4 days of the lab's work) is the backstop for spikes the first two miss:
+   a weekend event, a new crowd before the week's average catches up. While it's full the lab
+   turns samples away (players keep them) and missions lose research.
+
+So day to day the season moves at the pace by play, never faster than the lab, and the cold
+store only fills when a server suddenly plays far more than it did the week before.
 
 **The final stand** lasts 15 minutes with one horde every 2.5 minutes, plus one per 6 players at
 the lab: six hordes for five defenders, so about five steady players can win it. A lost stand
@@ -1622,6 +1665,7 @@ the lab: six hordes for five defenders, so about five steady players can win it.
 | Outbreak stages | 40, 80 and 120 hours played (÷ season speed) | Collapse about day 6, Overrun day 16, Aftermath day 31 |
 | Infection creep | a quarter of the stage's spread a minute: 0.15–0.3 a played hour | as much per stage as the old 10-day tuning: +60 or so by Aftermath if nobody pushes back (1.5 per kill) |
 | The lab's work | 3% a real day, online or not (× season speed) | 90% in 30 days at the very least |
+| The finale fallback | 1% a real day after a week at the 90% gate (only with a finale registered) | the cure about 17 days after 90% if nobody finishes a finale |
 | Territory tick | 45–75 min (÷ season speed) | about 8 a day, at most one change each |
 | Supply trucks | 60–90 min per faction (÷ season speed) | about 6 a day per faction |
 | Safehouse upkeep | 3 h (÷ season speed) | about 2–3 meals a day |
@@ -1630,32 +1674,34 @@ the lab: six hordes for five defenders, so about five steady players can win it.
 The moment-to-moment clocks keep their pace: a longer season means more of the same days, not
 slower ones. Treatment supply (antidotes, stabilisers) is on real time, not the season clock
 ([Treatments](#treatments)); with the breakthroughs later, the antidote stock stays at its slowest
-(a dose every 30 minutes) for about the first two weeks.
+(a dose every 30 minutes) for about the first two weeks. The stages follow hours played, not the
+pace by play, so a small server stays in the earlier stages longer (two regulars never reach
+Aftermath before the cure).
 
-**Settings by server** (run the simulator with your own numbers, e.g. `--players 8 --cure-pace 0.2`):
+**Settings by server** (run the simulator with your own numbers, e.g. `--players 8 --cure-pace 0.25`):
 
 | Regular players | Set | The cure, with a 5-day finale |
 |---|---|---|
-| 2 | **Season speed** 2 | about day 49 |
-| 3 | **Season speed** 1.5 | about day 46 |
-| 4 | **Season speed** 1.2 | about day 45 |
-| 5–6 | the defaults | day 41–45 |
-| 7 or more | **Cure pace** about 1.6 ÷ the number of regulars (0.23 for 7, 0.16 for 10, 0.08 for 20) | about day 44, the lab never full |
-| 10, defaults left alone | nothing | about day 36, with the lab often full |
-| Any, for a shorter season | **Season speed** 1.5 (about a month) or 2 (about three and a half weeks), for 5 players | day 32 or 26 |
+| 1 | **Season speed** 2 (the pace by play stops at ×2.5) | about day 46 |
+| 2–20 | the defaults | day 39–50 (2: 50, 5: 44, 10: 41, 20: 39) |
+| More than 20 | **Cure pace** about 6 ÷ the number of regulars (0.2 for 30) | about day 38 |
+| Any, for a longer or shorter season | **Cure pace** (research only; the lab's 3% a day still sets the shortest season) or **Season speed** 1.5 (about a month) or 2 (about three and a half weeks), for 5 players | day 31 or 25 with the season speed |
+| Pace by play off (0) | fit it by hand: **Season speed** 2 for 2 regulars, **Cure pace** about 1.5 ÷ regulars above 5 (0.15 for 10) | day 42–48 |
 
 The season speed also makes upkeep, trucks, territory and the Long Table faster, as it always did;
-on a small server that keeps the world busy. The Cure pace changes only the research. A lower **Lab
-research per day** lengthens the shortest season; **Lab backlog days** only changes how much can
-wait before the lab refuses.
+on a small server that keeps the world busy. The Cure pace and the pace by play change only the
+research. A lower **Lab research per day** lengthens the shortest season; **Lab backlog days** only
+changes how much can wait before the lab refuses.
 
 *Simplified:* the simulator counts the stages' clock only (a server that doesn't push back reaches
-the infection thresholds sooner), each player hands in once at the end of a session, and a finale is
-modelled as 5 days. A kill still takes 1.5 infection off its town while the season is longer, so
-over a stage players take off relatively more than creeps in; if towns clean up too easily, lower
+the infection thresholds sooner), each player hands in once at the end of a session, the same
+regulars play every day, and a finale is modelled as 5 days. The pace by play counts whole UTC
+days, so a server whose evening crosses midnight UTC splits it over two days (the week's average
+evens it out). A kill still takes 1.5 infection off its town while the season is longer, so over a
+stage players take off relatively more than creeps in; if towns clean up too easily, lower
 **Zombies > Kill infection**. Check real kills, specials and research per player-hour in the first
-sessions (the status log shows research, the backlog and the stage every few minutes) against the
-assumptions, and adjust the Cure pace.
+sessions (the status log shows research, the backlog, the pace by play and the stage every few
+minutes) against the assumptions, and adjust the Cure pace.
 
 ## Seasons
 
@@ -1781,7 +1827,7 @@ carried item is ever removed, set the minutes to 0.
 Code: `Persistence/RZ_SaveData.c`.
 
 Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stage, every
-settlement's infection and town memory, cure progress, the lab's backlog and clock, antidote and stabiliser stock, player profiles (standing, Legacy,
+settlement's infection and town memory, cure progress, the lab's backlog and clock, breakthrough news nobody has heard yet, the pace by play's player-hours of the last week, antidote and stabiliser stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
 supply stock, faction life, the Long Table, the power grid and radio station, story arcs, questlines,
 headlines, world interactions and the world facts (the season's seed, flags, canon and gossip;

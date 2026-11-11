@@ -1312,6 +1312,13 @@ class RZ_FactionLife
 		if (cure.m_iMilestone >= 4)
 			return "\"Director, lab. Every result is in. Now we have to hold this building long enough to finish. Pray they don't hear us.\"";
 
+		// Samples won't help at the finale's gate, and a full cold store turns them away
+		if (cure.IsAtFinaleGate())
+			return "\"Director, lab. Ninety percent, and that's where the samples stop helping. The last step isn't in the cold store. Don't put that in the log.\"";
+
+		if (cure.IsLabFull())
+			return string.Format("\"Director, lab. We are %1 percent there and the cold store is full. Hold the samples until we've worked through it. Don't put that in the log.\"", RZ_Util.RoundToInt(cure.m_fProgress));
+
 		// What the next result still needs beyond what already waits in the cold store
 		float next = (cure.m_iMilestone + 1) * 25;
 		float per = Math.Max(0.01, cure.SampleWorth(0, m_GM.GetResearchPerSample()));

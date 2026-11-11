@@ -770,7 +770,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 <!-- manifest:settings -->
 | Category | Object | Field | Covers |
 |---|---|---|---|
-| ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days with 5 regulars; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)) |
+| ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)) |
 | ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (48 h), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
 | World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off) |
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
@@ -786,7 +786,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | (top level) |  | Presence heat (0.5/tick), vehicle heat (+4/tick) |
 | Backgrounds | Backgrounds (list) |  | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
-| Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.32: about 45 days with 5 regulars; about 1.6 ÷ regulars above that), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25), **Finale fallback** (1% a real week past 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
+| Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
 | Missions | (top level) |  | Reward crate, mission item, drop points and the optional mission prefabs |
 | Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
 | Missions | Contracts | `m_ContractSettings` | **Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
@@ -821,8 +821,9 @@ buildings, uniforms, buses, protective clothing, alcohol, antiseptic and herbs a
 lower-case words in prefab names. Check them against the mods you run.
 
 **Server.** Keep time acceleration modest and fixed; don't use time-skip or sleep mods. The
-defaults fit about 45 real days with 5 regulars. For other sizes set **Season speed** (small
-servers, shorter seasons) or **Cure > Cure pace** (more players) from the table in
+defaults fit about 45 real days from about 2 to 20 regulars: **Cure > Pace by play** measures how
+much the server plays and scales research to it. For one regular, more than 20, or a longer or
+shorter season, set **Season speed** or **Cure > Cure pace** from the table in
 [DESIGN.md](DESIGN.md#season-pacing), and check your numbers with `python3 tools/pacing_sim.py
 --players N`. For a season wipe by hand, set **Wipe on start** for one restart, or delete
 `$profile:ReforgerZ/state.json`. The wipe cycle (**Season > Wipe**, on cure by default, and only
@@ -900,7 +901,7 @@ No fallback. If this is wrong, nothing persists.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:149` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:156` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 
 ### Medium risk: big features, with a fallback (19)
 
@@ -1038,7 +1039,8 @@ Warnings worth acting on:
 | `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON save behaviour in the VERIFY list is wrong) |
 
 While running: `Status | ...` lines every few minutes (stage, infection, zombies, missions, cure,
-the lab's backlog, whether it's full and whether research waits at the finale's gate),
+the lab's backlog, whether it's full, whether research waits at the finale's gate, and the pace by
+play in percent),
 `Cure: the lab's backlog is full; N of N research from a mission was lost.`,
 `Cure: research reached the finale's 90 percent gate.` and `Cure: finale research +N (faction N),
 now N percent.` (both only once a finale questline is registered),
@@ -1087,8 +1089,14 @@ session, tick off:
 - [ ] The cold store (set **Cure > Lab backlog days** to 0.05, about an hour of work): a second
   delivery is refused ("The cold store is full. ... Come back tomorrow."), the samples stay in your
   pack with no Fame, the action shows "The cold store is full", and a research mission's line says
-  part of it was lost. Stop the server for an hour and start it again: within a minute the backlog
-  is down by that hour's work (the lab works in real time).
+  part of it was lost. Stop the server for an hour and start it again: on start the backlog is
+  down by that hour's work (the lab works in real time), and the cold store takes samples again.
+- [ ] Breakthrough news waits for you (set **Cure > Research per sample** to 100 and **Cure > Lab
+  research per day** to 240, 10% an hour): deliver one sample on a fresh season and log off at once.
+  Come back after three hours: on spawning you hear "Breakthrough: Field antiviral" once, and the
+  broadcast speaks of "reports of research".
+- [ ] The status line's **pace by play** is 100 percent for the season's first two real days, then
+  follows the player-hours played (e.g. about 250 percent for two people playing 2–3 hours a day).
 - [ ] A contract is offered by radio, completes, and pays Fame and Favor; a tier change is announced.
 - [ ] A quartermaster sells an item at the right tier and refuses one above it.
 - [ ] Stop and restart the server: stage, infection, research and your standing are back.

@@ -3947,7 +3947,7 @@
   {
    "category": "ReforgerZ",
    "object": "(top level)",
-   "covers": "Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days with 5 regulars; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing))"
+   "covers": "Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing))"
   },
   {
    "category": "ReforgerZ",
@@ -4029,7 +4029,7 @@
   {
    "category": "Cure",
    "object": "(top level)",
-   "covers": "Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.32: about 45 days with 5 regulars; about 1.6 ÷ regulars above that), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25), **Finale fallback** (1% a real week past 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end))"
+   "covers": "Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end))"
   },
   {
    "category": "Missions",
@@ -4908,11 +4908,12 @@
   "m_fInfectionMinutes": "60",
   "m_fResearchPerSample": "1",
   "m_fMissionResearchMult": "0.75",
-  "m_fCurePace": "0.32",
+  "m_fCurePace": "0.3",
+  "m_fPlayPaceHours": "12.5",
   "m_fLabPerDay": "3",
   "m_fLabBacklogDays": "4",
   "m_fEmptyLabBonus": "0.25",
-  "m_fFinaleFallbackPerWeek": "1",
+  "m_fFinaleFallbackPerDay": "1",
   "m_bScaleCountsItems": "0",
   "m_sLandmarkName": "the old cross",
   "m_fHeatPerShot": "3",

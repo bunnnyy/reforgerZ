@@ -13,11 +13,11 @@ and one way to end it: **research the cure.**
   Lab Technician, Radio Operator, Unemployed), each with a real perk and flaw. Five more are
   unlocked through Legacy.
 - **The Director** moves the server through four outbreak stages over a season of about 45
-  real days with five regulars (season speed and cure pace settings fit it to the server's
-  size), spreads infection from town to town and sends hordes toward noise. The infected adapt
-  a little as the cure advances. Samples and research wait at the lab, which works through about
-  3% a day even with nobody online and refuses more when its cold store is full, so a busy server
-  can't rush the cure.
+  real days, spreads infection from town to town and sends hordes toward noise. The infected adapt
+  a little as the cure advances. Research is scaled to how much the server really plays over the
+  last week, so the season takes about as long with two regulars as with twenty, and it waits at
+  the lab, which works through about 3% a day even with nobody online and refuses more when its
+  cold store is full, so no server can rush the cure.
 - **Bites you can survive**: most hits are scratches, a bite can be cleaned in its first two
   minutes, and the infection runs through fever, weakness and a final stage. Antidotes, Halcyon's
   trial dose, stabilisers and five low-grade meds with side effects exist from day one; research
