@@ -674,8 +674,8 @@ today's tree, and `docs/WRITING.md` (the writing guide moved out of LORE.md, eve
 | **8. Growth, as play-tests allow** | Missions' wave 5 (16 one-choice jobs and 67 work rows); disguise's phases 2 and 3 (again-looks with the sight trace, roll call, word gets round, the Rogue's price, a dead man's kit and kit off the turned, signed-for kit, confiscation, the remaining side jobs); errands to about 60 cards; dialogue's strangers and radio speakers in full | Play-tests after phases 3 and 4 | About 6,000 or more | — |
 
 **Traces** ([TRACES.md](TRACES.md), approved with all 16 of its recommended decisions) runs alongside the phases in its own
-phases 0–7: phase 0 is the author's Workbench spike; phases 1, 2 and 5 need only built systems; phase 7 goes in with
-the epilogue (phase 7 here).
+phases 0–7: phase 0 is the author's Workbench spike; phases 1, 2 and 5 are built ([docs/TRACES.md](../docs/TRACES.md));
+3, 4 and 6 need only built systems; phase 7 goes in with the epilogue (phase 7 here).
 
 **In all:** roughly 77,000–82,000 lines (about two thirds of today's code), plus about 4,600 lines of player text.
 The game is whole after phase 4; phases 5–7 are the season's story; phase 8 is optional. If the author wants the
@@ -885,7 +885,7 @@ system is built, and each with CLAUDE.md's Doc map and the README's doc list in 
 | [ERRANDS.md](ERRANDS.md) | DESIGN.md ("Errands"), MISSIONS.md ("Errands") |
 | [MAJORS.md](MAJORS.md) | QUESTLINES.md (no new doc), DESIGN.md (questlines, the fallbacks, the budget), LORE.md |
 | [EPILOGUE.md](EPILOGUE.md) | DESIGN.md ("The season's end"), MISSIONS.md (the closing work, ✅ only when in code), LORE.md's Endings |
-| [TRACES.md](TRACES.md) | A new doc, `docs/TRACES.md` (its decision 2), when its first phase is built; WORKBENCH_SETUP.md, UI.md |
+| [TRACES.md](TRACES.md) | `docs/TRACES.md` (its decision 2; added with its phase 1), WORKBENCH_SETUP.md, UI.md |
 | This plan | ROADMAP.md ("Next", play-test priorities, and the Dropped list) and README.md (status) |
 
 **Every phase also updates** UI.md and UI/LAYOUTS.md for any screen or widget a script looks up, WORKBENCH_SETUP.md

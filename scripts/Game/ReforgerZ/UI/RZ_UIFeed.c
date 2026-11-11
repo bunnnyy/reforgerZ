@@ -87,6 +87,7 @@ class RZ_UIFeed
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)
 	static const int TRIBE_ID_BASE = 200000;	// the packs' rows (what you know of them): -(base + pack id)
+	static const int DOORS_ID = 300000;			// the one Read on doors row: -DOORS_ID (docs/TRACES.md)
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;
@@ -595,6 +596,7 @@ class RZ_UIFeed
 		s += BuildQuestlines(playerId, ent, from);
 		s += BuildErrands(playerId, ent, from);
 		s += BuildInfected(playerId, ent, from);
+		s += BuildDoors(playerId);
 
 		array<ref RZ_UIClue> clues;
 		if (m_mClues.Find(playerId, clues))
@@ -675,6 +677,27 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Read on doors (docs/TRACES.md): one row while this character has read any door, the count as
+	//! its "by", the newest line as its brief; the detail lists the last 12.
+	protected string BuildDoors(int playerId)
+	{
+		RZ_Traces traces = m_GM.GetTraces();
+		if (!traces)
+			return "";
+
+		array<string> lines = {};
+		traces.JournalFor(playerId, lines);
+		if (lines.IsEmpty())
+			return "";
+
+		string count = string.Format("%1 read", lines.Count());
+		RZ_UILine ln = new RZ_UILine("M");
+		ln.AddInt(-DOORS_ID).AddInt(RZ_EMissionKindUI.DOORS).AddInt(-1).Add("Read on doors").Add(count).Add("").Add("");
+		ln.AddInt(-1).Add("").AddInt(0).AddInt(0).Add(lines[0]).Add("0");
+		return ln.End();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One journal row's detail, sent when the row is selected (at most 1,500 characters, so the
 	//! list's 6,000 is never cut for it): D|id|what they told you|what you've found|who it went to.
 	string BuildDetail(int playerId, int id)
@@ -682,7 +705,21 @@ class RZ_UIFeed
 		string told = "";
 		string found = "";
 		string went = "";
-		if (id <= -TRIBE_ID_BASE)
+		if (id == -DOORS_ID)
+		{
+			RZ_Traces traces = m_GM.GetTraces();
+			array<string> read = {};
+			if (traces)
+				traces.JournalFor(playerId, read);
+
+			foreach (string doorLine : read)
+			{
+				told += doorLine + "\n\n";
+			}
+
+			told = told.Trim();
+		}
+		else if (id <= -TRIBE_ID_BASE)
 		{
 			RZ_Tribes tribes = m_GM.GetTribes();
 			array<int> tids = {};

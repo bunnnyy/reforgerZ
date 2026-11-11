@@ -67,6 +67,7 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `docs/DESIGN.md` | How every system works, organised by system (simplifications marked inline) |
 | `docs/DIALOGUE.md` | Talking to people: the talk screen and its engine, conversation trees, checks and tags, effects, memory and `dialogue.json`, conditions, the `.rzd` format, its lint and simulator, the conversations |
 | `docs/INFECTED.md` | The infected: the spawner, the towns' crawlers, loose ones, heat hordes, infection adapts, the land grid, bodies and the agent budget, the tribes (phases 1–5 built), the behaviour layer |
+| `docs/TRACES.md` | Traces, the world's environmental storytelling: door marks (the grammar, the symbols, reading by level, where marks come from, ageing, doors on the map), doors you can see (decals, boards), player traces, errands' old mark, the Long Table's absence, caps |
 | `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
 | `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
 | `docs/MISSIONS.md` | Every contract, world event, puzzle, leader and arc mission, with requirements and ✅ status |

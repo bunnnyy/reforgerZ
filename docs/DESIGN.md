@@ -1803,8 +1803,8 @@ until used up (`DrawTruth`, `FoundTruth`, `UseTruth`). 64 at most.
 | World records | errands ([ERRANDS.md](ERRANDS.md)), and who benefits (`<key>.went_to`) |
 
 **Season marks**: a town log entry of salience 3 or more puts a mark on the verge of the road into
-its town ([Marks](#marks), the season pool), with the entry's line; with no **Shared > Season mark
-prefab** it's text only, said once a session to a player passing within 40 m. Marks aren't saved:
+its town ([Marks](#marks), the season pool), with the entry's line (Traces opens it with what you see
+and picks its prop by kind, [TRACES.md](TRACES.md#player-traces)); with no prop it's text only, said once a session to a player passing within 40 m. Marks aren't saved:
 they're put back from the log at start. The epilogue will read the log and the records. Log lines:
 `World memory: reason <key> (<subject>) <text>`, `World memory: town <idx> <kind> <text>`.
 
@@ -1874,13 +1874,17 @@ catching your eye about work, and the Long Table's host stepping out on the road
 
 Code: `World/RZ_Marks.c`. One prop spawner for every physical thing that marks the world, in separate
 pools: **season** marks 40 (the town log's, memorials), **epilogue** 100, **props** 30 (missions'
-props and chalk, the ambient notice prop, the Long Table's tells), **signs** 30 (the tribes'). A mark
+props and chalk, the ambient notice prop, the Long Table's tells), **signs** 30 (the tribes'), **doors**
+24 (Traces' boards, 8 a cluster, up within 60 m and down past 90 m) and **traces** 40 (Traces' graves,
+ash and candles, **World > Traces > Props**, 12 a cluster; [TRACES.md](TRACES.md)). Traces' two pools
+put every prop through the dressing guard and count it as scenery; a caller may give the facing. A mark
 is data: a place (on the verge, 6–10 m off the nearest road's centre line within 80 m, on the side the
 place is on), a prefab, a line of text, a salience, how many season days it lasts. Its prop is spawned
 only while a player is within 150 m, stays up at least 10 minutes, and goes once nobody is within
 200 m. A full pool gives up its oldest lowest-salience mark that isn't protected; with no room, or no
 prefab, a mark is text only (`TextNear`, an approach line). Nothing is saved: owners put their marks
-back. The town log's season marks are the first ([World memory](#world-memory)).
+back. The town log's season marks are the first ([World memory](#world-memory)); Traces gives them a look
+and an opening line by their kind ([TRACES.md](TRACES.md#player-traces), P5).
 
 ### The season budget
 

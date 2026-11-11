@@ -124,6 +124,9 @@ class RZ_SaveData
 	ref RZ_CrawlerSave crawlers;
 	// The tribes (Zombies/RZ_Tribes.c). Older saves have none: the season's seeds are made on load
 	ref RZ_TribesSave tribes;
+	// Traces (World/Traces): town history, live door marks, player traces. Older saves have none:
+	// the first days are seeded at every start anyway
+	ref RZ_TracesSave traces;
 	// The cure finale (Cure/RZ_CureFinale.c). Older saves have none
 	ref RZ_FinaleSave finale;
 	bool hasTimeOfDay;

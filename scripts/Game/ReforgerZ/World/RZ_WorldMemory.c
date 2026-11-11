@@ -378,7 +378,9 @@ class RZ_WorldMemory
 			return;
 
 		vector at = RZ_Util.GroundPos(s.m_vCenter + Vector(s.m_fRadius * 0.6, 0, 0));
-		marks.Place(RZ_EMarkPool.SEASON, key, at, RZ_SharedSettings.Get().m_sSeasonMarkPrefab, e.text, e.salience, -1, e.salience >= 5);
+		// Traces (P5, docs/TRACES.md): the mark's look and words by its kind
+		ResourceName prefab = RZ_Traces.SeasonMarkPrefab(e.kind, RZ_SharedSettings.Get().m_sSeasonMarkPrefab);
+		marks.Place(RZ_EMarkPool.SEASON, key, at, prefab, RZ_Traces.SeasonMarkText(e.kind, e.text), e.salience, -1, e.salience >= 5);
 	}
 
 	//------------------------------------------------------------------------------------------------

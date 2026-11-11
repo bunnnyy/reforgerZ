@@ -1,7 +1,7 @@
 //! Chat commands (client): "/note your text" pins a note on the safehouse notice board you're at,
 //! "/noteclear" and "/noteclear all" clear boards (server admins), "/tribes" writes the infected to
 //! the server log (admins), "/talkdebug" reads the conversation trees of the person you're talking
-//! to (admins), "/mydead hidden|shown" keeps your name out of public text if you die out there,
+//! to (admins), "/traces" reads the door marks near you to the server log (admins), "/mydead hidden|shown" keeps your name out of public text if you die out there,
 //! "/rep <name>" reads a player's reputation (server admins;
 //! docs/REPUTATION.md, "Reputations"). The hall of fame is the notebook's Hall of fame tab.
 //! Each is sent to the server through RZ_PlayerUIComponent.SendCommand; the server checks
@@ -28,6 +28,7 @@ class RZ_ChatCommands
 		chat.GetCommandInvoker("rep").Insert(s_Instance.OnRep);
 		chat.GetCommandInvoker("talkdebug").Insert(s_Instance.OnTalkDebug);
 		chat.GetCommandInvoker("mydead").Insert(s_Instance.OnMyDead);
+		chat.GetCommandInvoker("traces").Insert(s_Instance.OnTraces);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -76,6 +77,14 @@ class RZ_ChatCommands
 			Send(RZ_PlayerUIComponent.CMD_CLEAR_ALL, "");
 		else
 			Send(RZ_PlayerUIComponent.CMD_CLEAR_BOARD, "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "/traces" (admins): the marked doors within 300 m to the server log; "/traces town <name>",
+	//! "/traces write <symbol>" (World > Traces > Debug), "/traces clear <town>" (docs/TRACES.md).
+	protected void OnTraces(SCR_ChatPanel panel, string data)
+	{
+		Send(RZ_PlayerUIComponent.CMD_TRACES, data);
 	}
 
 	//------------------------------------------------------------------------------------------------

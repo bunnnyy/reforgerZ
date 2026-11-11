@@ -69,7 +69,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
-	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100, -100, -100};	// per CMD_*
+	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100, -100, -100, -100};	// per CMD_*
 	protected float m_fLastPick = -100;		// the last car job or purchase (PICK_GAP)
 	protected static const float PICK_GAP = 0.5;
 
@@ -80,6 +80,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_REP = 3;		// "/rep <name>": an admin's reputation read-out (Factions/RZ_RepNames.c)
 	static const int CMD_TRIBES = 4;	// /tribes (admins): the infected, to the server log
 	static const int CMD_TALKDEBUG = 5;	// /talkdebug (admins): the conversation trees for the person you're talking to
+	static const int CMD_TRACES = 7;	// /traces (admins): the door marks near you, to the server log (World/Traces)
 	static const int CMD_MYDEAD = 6;	// /mydead hidden|shown: your name in public text if you die out there (also the notebook item's action)
 
 	//------------------------------------------------------------------------------------------------
@@ -641,6 +642,12 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				if (gm.GetTribes())
 					gm.GetTribes().Command(playerId, note);
+				break;
+			}
+			case CMD_TRACES:
+			{
+				if (gm.GetTraces())
+					gm.GetTraces().Command(playerId, note);
 				break;
 			}
 			case CMD_MYDEAD:
