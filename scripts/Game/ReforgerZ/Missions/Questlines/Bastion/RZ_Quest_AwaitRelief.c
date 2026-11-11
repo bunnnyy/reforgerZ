@@ -242,6 +242,22 @@ class RZ_BastionQuest
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A mission of this type is running and not finished (one finishing this tick doesn't count).
+	static bool IsActive(RZ_GameModeComponent gm, typename type)
+	{
+		if (!gm.GetMissions())
+			return false;
+
+		foreach (RZ_Mission m : gm.GetMissions().GetActive())
+		{
+			if (m.Type() == type && m.m_eState == RZ_EMissionState.ACTIVE)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! An in-person job: word reaches each eligible player online once, off the radio. They count
 	//! as offered it (so it's in their journal). `told` keeps who has heard.
 	static void Whisper(RZ_GameModeComponent gm, RZ_Mission m, string title, string text, notnull array<int> told)
@@ -504,6 +520,25 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 		gm.GetQuestlines().TryBegin(KEY);
 		s_iTapeLeader = -1;
 		s_sTapeOperator = "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! While this runs, the Day 3 orders are this story's: no Real Orders job (Missions/Leaders/)
+	//! tells another version of the same lost courier.
+	static bool IsRunning(RZ_GameModeComponent gm)
+	{
+		return gm.GetQuestlines() && gm.GetQuestlines().FindRunByKey(KEY) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This leader's post is this story's while it runs: No Reply picks another post.
+	static bool IsAtPost(RZ_GameModeComponent gm, int leaderId)
+	{
+		if (!gm.GetQuestlines() || leaderId <= 0)
+			return false;
+
+		RZ_QuestRun run = gm.GetQuestlines().FindRunByKey(KEY);
+		return run && run.Flag("cmd", -1) == leaderId;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1592,18 +1627,22 @@ class RZ_QM_OrdersWho : RZ_QuestMission
 		if (!m_bHasCo && !m_bHasCmd && !m_bHasCrew && !m_bHasChair)
 			return false;
 
+		string who = "a Red Hand crew or the Haven's chair";
+		if (m_bHasCmd)
+			who = "{cmd}, a Red Hand crew or the Haven's chair";
+
 		if (m_bCopy)
 		{
 			m_vPos = from;
 			m_sTitle = "Await Relief: the copy";
-			m_sBrief = QFill(gm, "The page is ash, but whoever copied {operator}'s tape still has the Day 3 signal on it. It can go to {cmd}, to a Red Hand crew or to the Haven's chair. Or into the stove after the page.");
+			m_sBrief = QFill(gm, "The page is ash, but whoever copied {operator}'s tape still has the Day 3 signal on it. It can go to " + who + ". Or into the stove after the page.");
 		}
 		else
 		{
 			m_vPos = m_vPage;
 			m_iSettlement = gm.FindNearestSettlement(m_vPage);
 			m_sTitle = "Await Relief: who reads it";
-			m_sBrief = QFill(gm, "Take the page from {runner}'s body in {body_town}. Then decide who reads it. I want it. So will others.");
+			m_sBrief = QFill(gm, "Take the page from {runner}'s body in {body_town}, and decide who reads it: the commanding officer, " + who + ". Everyone will want it.");
 		}
 
 		return true;

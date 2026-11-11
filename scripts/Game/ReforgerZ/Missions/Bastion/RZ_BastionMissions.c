@@ -130,8 +130,9 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 		if (gm.GetEnvironment() && gm.GetEnvironment().IsHelicopterGrounded())
 			return 0;
 
-		// Grounded or lost in The Last Pilot (or its pilot lost in Rescue the Pilot): no flights
-		if (RZ_Quest_LastPilot.IsHelicopterDown(gm))
+		// Grounded or lost in The Last Pilot (or its pilot lost in Rescue the Pilot), or that
+		// questline has the helicopter right now: no flights
+		if (RZ_Quest_LastPilot.IsHelicopterDown(gm) || RZ_Quest_LastPilot.IsHelicopterBusy(gm))
 			return 0;
 
 		float w = 3 * gm.GetDirector().GetStageSettings().m_fMilitaryPresence;

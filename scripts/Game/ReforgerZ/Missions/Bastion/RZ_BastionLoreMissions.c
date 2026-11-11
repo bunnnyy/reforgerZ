@@ -157,6 +157,10 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 		if (!RZ_BastionLoreHelp.PickPostOf(gm, m_vPost, m_sPost, m_iPostLeader))
 			return false;
 
+		// The post whose log is Await Relief's story right now has enough going on
+		if (RZ_Quest_AwaitRelief.IsAtPost(gm, m_iPostLeader))
+			return false;
+
 		m_iSettlement = gm.FindNearestSettlement(m_vPost);
 		m_vSource = LandPointNear(RZ_Compass.PointAt(m_vPost, m_Rng.Range(0, 360), m_Rng.Range(800, 1800)), 0, 60);
 		if (RZ_Util.IsWater(m_vSource))

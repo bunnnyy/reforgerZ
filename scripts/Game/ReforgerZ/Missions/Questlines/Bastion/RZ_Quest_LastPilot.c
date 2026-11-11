@@ -126,6 +126,25 @@ class RZ_Quest_LastPilot : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The story has the helicopter right now (dry on the pad, flying its load, or its last run):
+	//! no Last Helicopter run elsewhere at the same time.
+	static bool IsHelicopterBusy(RZ_GameModeComponent gm)
+	{
+		if (!gm.GetQuestlines())
+			return false;
+
+		RZ_QuestRun run = gm.GetQuestlines().FindRunByKey(KEY);
+		return run && (run.m_iStage == S_FUEL || run.m_iStage == S_FLIGHT || run.m_iStage == S_LAST);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A Last Helicopter contract is flying (and not just finishing): this story's flights wait.
+	static bool IsFlying(RZ_GameModeComponent gm)
+	{
+		return RZ_BastionQuest.IsActive(gm, RZ_Mission_LastHelicopter);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Ground the helicopter for `hours` of real time (x the wait scale), and say why when it flies again.
 	static void SetDown(RZ_GameModeComponent gm, float hours, int reason)
 	{
@@ -206,6 +225,10 @@ class RZ_Quest_LastPilot : RZ_Questline
 		if (RZ_BastionQuest.World(gm, KEY + ".lz_kept") <= 0 || RZ_BastionQuest.World(gm, KEY + ".dead") > 0 || IsHelicopterDown(gm))
 			return false;
 
+		// Not while the helicopter is out on a run, or its pilot is lying hurt in a field
+		if (IsFlying(gm) || RZ_BastionQuest.IsActive(gm, RZ_Mission_RescueThePilot))
+			return false;
+
 		if (!RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN) || gm.GetMissionItemPrefab().IsEmpty())
 			return false;
 
@@ -250,13 +273,13 @@ class RZ_Quest_LastPilot : RZ_Questline
 			return false;
 
 		if (stage == S_FLIGHT)
-			return !IsStorm(gm);
+			return !IsStorm(gm) && !IsFlying(gm);
 
 		if (stage == S_WRECK)
 			return RZ_PerimeterMissionHelper.Get(gm) != null;
 
 		if (stage == S_LAST && (run.m_iBranch == BRANCH_STAYS || run.m_iBranch == BRANCH_LINE))
-			return !IsStorm(gm);
+			return !IsStorm(gm) && !IsFlying(gm);
 
 		return true;
 	}
