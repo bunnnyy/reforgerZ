@@ -1157,13 +1157,45 @@ What it can't do:
 | No behaviour is tested | It only compiles. Nothing runs until there's a world with the game mode in it |
 | Folder names must be lowercase `scripts/` | The Linux server is case-sensitive and only looks there. Windows doesn't care, so keep it lowercase for Linux-hosted servers |
 
+### Text lint
+
+`tools/voice_lint.py` checks every line of player text in the scripts against the writing rules;
+what each check looks for is in [WRITING.md](WRITING.md#checking-text). It reads the list that
+`tools/strings_inventory.py` makes. Python 3 only, no server, about a second. Run it before every commit that changes player text; it must print `voice_lint: OK`.
+
+```bash
+python3 tools/voice_lint.py                    # new findings only; exit 1 if any
+python3 tools/voice_lint.py --all              # every finding, the baseline's too
+python3 tools/voice_lint.py --self-test        # plants one bad line per check; each must be caught
+python3 tools/strings_inventory.py --summary   # how much text there is, by channel and faction
+python3 tools/strings_inventory.py --channel radio
+```
+
+`tools/voice_lint_baseline.txt` holds today's findings (the check, the file and a hash of the line),
+so the lint fails only on new or changed text. Fixing a line leaves a stale entry, which the lint
+reports; `--update-baseline` rewrites the file from what's found now. Don't regenerate it to get a
+new finding through: fix the line.
+
+| What it shows | What it can't |
+|---|---|
+| Text that breaks a rule a script can check, in literals the inventory finds | Whether a line is good. Text built from pieces (`"Talk to " + name`) is checked piece by piece. Channels and factions are guessed from the call, the folder and the nearest `case RZ_EFaction.X:` |
+
 ### Runtime test without Workbench
 
 `tools/runtime_test/run.sh` runs the game mode on the same server, in a sub-scene of Arland with
 vanilla stand-ins for the minimum prefabs and a fake player (a spawned civilian the systems see as
 online). It starts every mission type one at a time and ends each. Then it begins every questline
-in turn, skips its waits, goes to each stage mission and ends it, and follows the questline to an
-ending (or reports where it fizzled or got stuck). Last, it walks the player through every
+in turn, skips its waits, goes to each stage mission and ends it as won, and follows the questline to
+an ending (or reports where it fizzled or got stuck). A fresh test world meets few start conditions,
+so the test forces them (each logged as `RZT forced: ...`): before the questlines, no town overrun,
+the season a couple of days old, every safehouse full and hungry, every seat but the strongholds
+Independent, a Long Table, a scavenger on the roads, a Red Hand van and the clock held at dusk;
+before each questline, the flags and state its start reads (Walk Him Out done, Bastion short of
+supplies, the Last Helicopter's LZ kept, Patient Zero's ledger solved, the farm found, the host's
+offer to the tester, research at 80 percent and, for Authors, the final stand, stopped again after).
+Where a stage mission ended as plain "done" would loop, the test reports the outcome that moves the
+story on. Before Convoy Escort and Hijack the Convoy it sets a Bastion truck and crew, before Mobile
+Lab a Halcyon truck and quiet towns near the lab, and before the Locked Bunker a keypad prop. Last, it walks the player through every
 settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
 every notice the player is sent, and prints the script exceptions (there should be none), how many
 mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes. If the fake player dies outside the Perimeter test (a mission or the line got him), it says where and respawns him.
@@ -1176,8 +1208,8 @@ SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
 |---|---|
 | Script exceptions on real code paths; startup and save/load; missions' Setup, rewards and cleanup; questline stages, branches and endings (by success and failure only, not every approach); the Perimeter; spawn and death; the text players get | Anything a client does (UI, menus, input, replication), real AI behaviour against a player, your prefabs and their components |
 
-A mission that doesn't start usually needs a world state the test doesn't create (a town at the
-right infection, an optional prefab, a faction standing). None of this is part of the mod: the
+A mission or questline that still doesn't start needs a world state the test doesn't create (an
+outpost of the right faction, a spot on the map, the weather). None of this is part of the mod: the
 test files are copied into a throwaway addon folder.
 
 ### Zombie lab: Bacon's real AI, measured

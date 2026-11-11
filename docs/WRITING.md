@@ -1,0 +1,312 @@
+# Writing
+
+How every line of player text in ReforgerZ is written: the tone, the voices, the rules each line
+follows, and the lint that checks them. Who the factions are as people, and the setting they speak
+from, is in [LORE.md](LORE.md). The voice bank, the season mood, grief and joke memory are designed
+in [designs/TONE.md](../designs/TONE.md) and not built yet.
+
+## Contents
+
+- [Tone](#tone)
+- [Everyone is right about something](#everyone-is-right-about-something)
+- [The voices](#the-voices)
+- [By channel](#by-channel)
+- [The government broadcast](#the-government-broadcast)
+- [Information comes first](#information-comes-first)
+- [Grey choices](#grey-choices)
+- [Phrasing choices and outcomes](#phrasing-choices-and-outcomes)
+- [Dark humour, not edginess](#dark-humour-not-edginess)
+- [Template rules](#template-rules)
+- [Names in shared text](#names-in-shared-text)
+- [Checking text](#checking-text)
+
+## Tone
+
+- **Bleak but human.** The world is cruel. People are what make it worth surviving.
+- **No heroes from outside.** No one is coming. The broadcasts are lies or useless.
+- **Ordinary people.** You're a nurse, a mechanic, a kid out of work. Not a commando.
+- **Small stories.** A note on a fridge, a radio message cut off, a body near the line.
+- **Nobody is a villain in their own story.** Every faction does something ugly for a reason you can understand.
+
+## Everyone is right about something
+
+A grey choice puts one side's truth against another's. If one side of a choice has nothing it's
+right about, the choice is a virtue test, not a grey choice. Fix it, or make it a plain job. The
+hard edges are each faction's in [LORE.md](LORE.md#the-factions-as-people).
+
+| Faction | Right about | Wrong about (its hard edges) | What it jokes about instead |
+|---|---|---|---|
+| The Haven | Nobody is useless. People are the point | The List, the mouths, walking people out, quiet arrangements, "borrowing" | Food, chores, the house rules, itself |
+| Bastion | They're all they have: feed your own, look for your own, bring your own home. And someone has to count, queue and hold, or people get trampled | Containment, "contribution", "signed correct", the stove | Forms, Command, the roster, rank |
+| The Red Hand | Nobody was coming, and nothing taken ever has to be given back. Everyone would sell you, so keep something on everyone | Rudi, Cargo, the pit, the cut dose, the well, learning the drones | Everyone, Bastion most; prices, the book, the toll |
+| Halcyon | The cure is the only way out, and the numbers matter | The three weeks, the other two, samples first | Rarely on purpose: exact words that land wrong |
+| The Long Table | Nothing that can be said aloud | Everything | Nothing, ever |
+
+## The voices
+
+- **Broadcasts** are short, official and slightly wrong:
+  *"Day 14. Residents are reminded that the perimeter is for your protection."*
+- **Notes** are personal and specific: names, places in the town they're found in, and mistakes.
+- **Faction voices:**
+  - **Bastion:** clipped, procedural, tired; close with its own.
+  - **Haven:** warm, worried, practical, sometimes darkly funny.
+  - **Red Hand:** mocking, casual, always counting.
+  - **Halcyon:** precise, a bit cold, sometimes guilty.
+  - **The Long Table:** homely, attentive, a little too interested in you.
+- **Open channels** on the radio are people, not institutions. The Haven's is a tired woman:
+  *"If you can hear this, Morton is open. Bring water if you can. Bring yourself either way."*
+  Bastion's net still calls Command, which never answers. The Red Hand uses the open channel
+  to laugh at Bastion: *"Still waiting for relief? We'll keep the kettle on."*
+- **Faction chatter** on the open channels is shift talk with something real in it: a truck
+  leaving in twenty minutes, a toll until dusk, the night watch at 20:30. People say more on the
+  radio than they should.
+- **Rumours** are gossip, often wrong and worst about rivals: *"I heard Bastion got thrown out
+  of Levie. Good riddance."* Never mark which ones are true.
+- **Things found in drawers and on bodies** (ID cards, letters, receipts, photos) are one person's
+  life in a sentence or two: a name, the town they're found in, what they bought or meant to say.
+  *"A till receipt from Morton, Day 2: tinned peaches, batteries (all of them), bleach. Underneath,
+  in pencil: 'enough for a week?'"* Some point somewhere: a key with a tag, a grid on the back.
+- **Secure channels** are what a faction says when it thinks nobody's listening: blunter than its
+  open channel, with numbers in it. *"All stations: Morton rotates the watch at 20:30. Two on the
+  gate. Ten minutes where nobody's looking."*
+- **Headlines** about the factions are one plain sentence with one small detail: *"Bastion buried
+  Corporal Weber outside Morton. No salute: they're saving ammunition."*
+- **Haven gossip** is about food, never blame: *"The safehouse in Levie has gone to half portions.
+  The children eat first."* When a hungry house takes from a fed one, it's *"borrowed"*, in quotes.
+  The Haven's dark side is always said sideways, never announced.
+- **Players on the radio station** pick a preset, and it reads like a person: their name, one real
+  place, one request. *"This is Mara. There's a horde moving around Morton. Stay clear of it."*
+- **Leaders** speak in their faction's voice, coloured by their traits. One short line before a
+  brief and one after, never a speech:
+
+| Trait | Humour | Example of the register |
+|---|---|---|
+| Greedy | About money and the price of the job; talks about pay first | *"Pay first, then the job."* |
+| Paranoid | None. Asks who saw you | *"Close the door. Who saw you come in?"* |
+| Merciful | Gentle, about food and rest; tells you to sit down and eat | *"The soup doesn't mind either way."* |
+| Ruthless | Dry and short, aimed at the job or the institution, never the victim | *"The form was short."* |
+| Idealist | None, earnest. May laugh at themselves once | |
+| Pragmatist | Wry about the deal | *"I like starving less."* |
+| Veteran | Gallows humour about their own dead, fondly | *"They itch."* |
+| Talker | The most jokes, and they leak | |
+
+**Stronghold leaders:** Bastion's commanding officer almost never jokes. The chair jokes once in a
+while, about food. The boss always jokes. The director never jokes on purpose.
+
+## By channel
+
+| Channel | Who speaks | Register | Jokes | Never |
+|---|---|---|---|---|
+| Government broadcast | The outside, through a machine | Official and deadpan, with one wrong word | None on purpose | Names a cause, apologises, acts, answers anyone |
+| Open channels | People on shift | The faction's voice | About 1 line in 4 | A joke instead of the information ([below](#information-comes-first)). A joke about the bitten on air |
+| Secure channels | The faction when nobody's listening | Blunt, with numbers | About 1 in 10, bleak only | A joke at its own people |
+| Rumours, road news | The teller | Gossip, biased, worst about rivals | About 1 in 3, aimed at rivals | Saying which are true |
+| Headlines | The roads | One plain sentence and one detail | The detail may be dry | A verdict. A player's name ([exceptions](#names-in-shared-text)) |
+| Notices and boards | The printed text, then whoever wrote on it | The printed line, then handwriting | The handwriting may answer back | Reusing a questline clue's text |
+| Leader openers and closers | A named person | Faction voice and traits ([above](#the-voices)) | Set by trait | A speech |
+| Mission briefs | The giver | The giver's voice | Haven and Red Hand givers may open with one. Bastion is procedural, Halcyon clinical. **Mercy jobs never** | Telling the player what's right |
+| Choice labels | The player | Verb and object, then the cost or check in brackets | None | Judgement words. Rewards or consequences |
+| Outcomes | What happened, then one reaction | Three beats ([below](#phrasing-choices-and-outcomes)) | Only in the reaction | A verdict. Numbers inside the voiced beats |
+| Guidance | A voiced speaker, or nobody | Voiced tips: the speaker's register. Plain hints: plain | Voiced tips: the speaker's. Plain hints, veterans' short lines, standing and pay notices: none | Burying a critical instruction: it comes first and can't be misread |
+| The Long Table | The family | Homely | None, ever | Describing anything |
+
+**Shared text is the same for everyone who hears it.** The broadcast, the open and secure channels,
+headlines, rumours on the roads, notices and boards never depend on one listener: not their
+standing, their disguise or what they did.
+
+**A voiced tip may be callous in the speaker's way.** The Red Hand's tips stay as they are:
+*"Pour the vodka on it, not in you. Quick, before it takes."* and *"Bitten? Shame. Our cut dose
+works half the time..."* The target is the price, the dose and the drinking, not the bitten
+person's fear or pain.
+
+**Swearing:** mild and rare, only in Red Hand and Bastion voices, and never the punchline.
+
+## The government broadcast
+
+Until the cure the broadcast never changes its message, but its tone follows the state of the Zone
+(why it's there: [LORE.md](LORE.md#the-outside-world-silent-watching); how it runs:
+[DESIGN.md](DESIGN.md#the-government-broadcast)). The first match wins:
+
+| Zone state | Broadcast tone |
+|---|---|
+| Early, cure progressing | *"Remain indoors. Aid is on its way."* |
+| Infection spreading, cure stalled | *"Residents are reminded that the perimeter is for your protection."* |
+| Overrun, little progress | *"The perimeter will be maintained."* |
+| Long stall | *"The perimeter will be maintained indefinitely."* |
+| Cure breakthroughs | *"Reports of research inside the zone are being evaluated."* |
+| The cure is out | The loop stops. Anyone who tunes in hears the new order: *"The quarantine order for this area has been lifted. Remain where you are. Processing will begin at the road checkpoints."* |
+
+## Information comes first
+
+Some lines carry information: chatter with a truck time, toll hours, a watch rotation, the lab's
+count. Their information clause is fixed, as a token the code fills in. A joke may ride on top, never
+in its place, so players never learn that jokes are filler they can skip. The lint checks that these
+lines keep their token.
+
+## Grey choices
+
+**The grey test.** Every choice passes all seven:
+
+1. **Two options someone would defend.** Someone in the world would argue for each.
+2. **Every option changes the world, and the text says how.** A cost is real only if something
+   changes that the world or a later line reads: food at a house, people at a safehouse, a person's
+   fate, a town's infection, a leader's memory, a season flag, the player's Favor or antidote. A
+   sentence with nothing behind it fails the test.
+3. **No option is best on every axis.** The giver's way pays the giver in full; the kindest way pays
+   least; the way that hurts a third party costs somewhere else.
+4. **Labelled as actions, not judgements** ([below](#phrasing-choices-and-outcomes)).
+5. **The giver's framing is one side.** At least one option needs something the giver didn't say.
+6. **Something comes back later, at least sometimes.**
+7. **Doing nothing and failing are outcomes too.**
+
+**Labels show costs and requirements, and hide rewards and consequences.** *"Pay their dues
+yourself (20 Red Hand Favor)"* is right; *"(+10 Haven Fame)"* is not.
+
+## Phrasing choices and outcomes
+
+- **Choice labels:**
+  - Verb and object, from the player's point of view, 40 characters or fewer, with no judgement words.
+  - Then the check or cost in short brackets: `[Police or Known]`, `(20 Favor)`.
+  - The whole label is 64 characters or fewer, so the action menu doesn't cut it.
+  - Good: "Walk him to the line", "Get him away", "Pay what he owes". Not: "Save him", "Do the right
+    thing", "[Evil]".
+- **Outcomes come in three beats**, then a separate system line:
+  1. What happened, in one concrete sentence.
+  2. What it cost, and to whom: one detail in the world.
+  3. One reaction, from a voice that would have one. If there's a joke, it goes here.
+
+  Then **the system line**: standing and pay as numbers. Older outcomes that put
+  *"(+%1 Red Hand Infamy)"* inside the voiced text have it moved out as each one is touched.
+- **No narrator verdicts.** Never *"You did the right thing"* or *"Monster."*
+- **Use the faction's own word:** "contribution", "borrowed", "walked out", "struck off" (Bastion's
+  deserter only), "paid" (the book), "expended", "the other two". The euphemism is the grey.
+
+## Dark humour, not edginess
+
+### Three tests
+
+1. **Who's laughing?** Someone in the world who would. Never the narrator, the system or a plain hint.
+2. **At what?**
+   - Up: the broadcast, Command, the forms, the book, prices, the lab's euphemisms.
+   - Sideways: rivals, in gossip.
+   - At themselves.
+   - Never down at someone with less power in the scene: the bitten, the volunteers, exiles, the
+     people who never arrived, children, or a named dead person. The one exception is the dead
+     person's own people, fondly.
+3. **What's underneath?** A true detail: a number the world holds, a name, a habit, a shortage. Take
+   the joke out and something real is still there; usually the next line says it.
+
+**Callous isn't mocking.** A cruel speaker may be callous about price, odds or count, because that's
+who they are (the Red Hand's tips, a crew with a stopwatch). But the target is never the victim's
+fear, pain or body; the line is never the narrator's; and the next beat shows the cost, in the same
+outcome.
+
+### Never, in any voice
+
+- Sexual violence, in any form. It isn't mentioned at all.
+- Torture or suffering as the punchline; gore described for effect.
+- A child hurt, or a joke at a child's expense (the Kid, the class trip).
+- Suicide as a joke.
+- **Rudi's end as a joke.** Rudi was put out of his own garage at dusk on Day 7. The Red Hand's lie
+  about it (*"He was bitten"*) is said flatly, and nobody laughs after it. The boss's line stays as
+  LORE has it: *"He let people pay later. You can't run a road like that."*
+- Slurs, or jokes about real-world groups, ethnicities, faiths as such, disability, or illness as
+  identity. The Preacher is a person and the church is a building.
+- Real countries, governments, parties, real pandemics, or their politics. The broadcast mocks
+  official language in general.
+- **The Long Table.** Describing it, or the family or the narrator joking about it. "Pork" belongs
+  to the Red Hand, only at the moments already written (when the house is found out, in Cargo and in
+  C1), and silence always follows it. **No ambient line ever hints at it**: no meat of unknown
+  origin, no "don't ask what it was", no "a place set".
+- A player's name as the butt of a joke.
+- Memes, internet talk, pop culture, fourth-wall jokes, modern slang.
+- Praising cruelty. Only a faction that would laugh does, and the next beat shows the cost.
+- A joke that replaces information ([above](#information-comes-first)).
+- A joke about anyone who went through the barrier.
+- **The wrong words for the infected.** Player text never says "alpha", "tribe" or
+  "crawler", and "strays" means only the people the Haven turned out, never the infected.
+
+### Signs a line has turned edgy
+
+- The joke would work in any setting: there's no detail in it.
+- It's louder than the thing it's about.
+- It needs a swear word to land.
+- The victim has no name and no line, and is the punchline.
+- The player is made to feel stupid for choosing kindness.
+- It repeats: one punchline belongs to one line.
+
+### Each faction's humour
+
+| Voice | Jokes about | How | Goes quiet about |
+|---|---|---|---|
+| The Haven | Food, chores, house rules, itself, other houses' cooking | Warm, practical, sideways | The List, the mouths, the walks, the Long Table; anyone's dead but its own |
+| Bastion | Forms, Command, the roster, rank, rations | Dry, procedural, deadpan, often in the passive voice | Day 2 at the north road, the pilot, "expended", its deserters; its orders once read |
+| The Red Hand | Everyone, Bastion most; prices, the book, the toll; itself | Mocking and casual. The joke is how it avoids saying something | Rudi; Cargo; the mothers and sisters in safehouses; the drones' count (the joke dies on air) |
+| Halcyon | Rarely on purpose. Tired understatement; words that are exact and terrible | Precise, short | The other two by name, the three weeks, the volunteers |
+| The broadcast | Never on purpose | One wrong word | Everything |
+| Wanderers | By role: the Trader prices, the Mechanic cars, the Deserter Bastion (bitterly), the Doctor gallows humour, the Scavenger his own rumours, the Courier the post | Their own way | The Preacher almost never jokes. The Kid never does, and nobody jokes about him |
+
+### Before and after
+
+| Edgy | Fixed | Why |
+|---|---|---|
+| Red Hand, about a Haven death: *"Another do-gooder down. More tins for us."* | *"Heard {subject_town} buried someone. We'll keep the noise down on that road tonight. Don't tell anyone we're nice."* | The joke is now at the Red Hand's own expense, and the death stays real |
+| Halcyon, after a trial: *"Volunteer seven popped. Science!"* | *"Volunteer seven didn't walk out. The notes are thorough. The director asks that someone from the Haven come for his coat."* | Exact and guilty, and the coat makes him a person |
+| Walk Him Out brief: *"He's going to turn. Bring popcorn."* | *"He declared it himself, at supper. He'd like it done before dark, by someone who isn't family."* | Mercy jobs carry no joke |
+| Bastion: *"Shoot first. The paperwork's easier if they're dead."* | *"The form for a civilian casualty is four pages. For an infected it's one. The sergeant checks every one-pager twice."* | It shows the pressure, and the man resisting it |
+| Red Hand meal aside: *"Dinner's on. Don't ask what it was."* | *"Dinner's on. Tins. Someone's written prices on them, so don't eat the expensive ones."* | The old line hinted at the Long Table every evening. The new joke is about prices, which is the Red Hand |
+| Halcyon: *"It's done. I keep checking the numbers anyway. Habit."* | *"It's done. I keep checking the numbers anyway. Nobody has asked me to stop."* | The Haven also ends on "Habit." One punchline, one owner |
+| A crewman about Rudi: *"Rudi? Bit, wasn't he. Bit thick, too."* | *"Rudi was bitten."* Nothing after it. The crewman looks at the shutter, then at you | The lie is said flatly, and the silence carries it |
+
+## Template rules
+
+- **Only real tokens.** A line may use `%1`–`%9` (filled by `string.Format`) and the `Fill` tokens
+  ([DESIGN.md](DESIGN.md#world-facts)): `{day}`, `{day_text}`, `{days_since_command}`,
+  `{days_since_command_words}`, `{cure_state}`, `{cure_percent}`, `{stage}`, `{stage_tone}`,
+  `{time_of_day}`, `{lab_town}`, `{stolen_doses}`, `{town:N}`, `{owner:N}`, `{flag:key}`,
+  `{canon:key}`, `{canon_town:key}`, `{leader:id}`, `{leader_short:id}`, `{leader_place:id}`. A
+  questline's text also uses its own keys (`{keeper}`, `{house}`...), set with `run.SetText`.
+- **No invented numbers.** If the world doesn't hold a count, use a token or say it without the number.
+- **No pronouns for seeded people** (leaders, questline people like `{keeper}`, seeded names). The
+  seed stores no gender, so use the name or the title.
+- **Ambient notices never reuse a questline clue's text.** The Census's curfew sheet stays a clue.
+- **Seeded names never collide with LORE's named people.** Halas and Tomas (the Long Table), Alena
+  and Ivo (Bastion's dead and its signaller) and the like are kept out of the seed lists.
+
+## Names in shared text
+
+Headlines name no players. These exceptions stand:
+- the Turned Player event's title (its point is whose gear and whose friend);
+- the Long Table's headlines that name online family members ([REPUTATION.md](REPUTATION.md#the-long-table));
+- players' own radio station presets (they sign their own).
+
+## Checking text
+
+Two tools check the scripts' text; how to run them is in
+[WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint).
+
+- **`tools/strings_inventory.py`** lists every literal that can reach a player: notices, headlines,
+  rumours, briefs, labels and choices, clues, journal lines, outcomes, the guidance tips and the voice
+  pools. For each: its file and line, the channel (guessed from the call, the assignment or the
+  function), the faction (from the folder, or the nearest `case RZ_EFaction.X:`), a register guess
+  (PLAIN, WRY, JOKE, TAUNT, BLEAK, SILENCE) and how often it repeats.
+- **`tools/voice_lint.py`** checks that list against the rules on this page:
+
+| Check | The rule |
+|---|---|
+| `length` | Radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers and talk-screen lines: 200 characters or fewer. Labels and choices: the action part 40 or fewer, the whole 64 or fewer. Briefs over 500: a warning only |
+| `bang` | `!` only in Red Hand lines, notice titles and loudspeakers (alarms) |
+| `format` | `%1`–`%9` only |
+| `token` | Every `{token}` is a `Fill` token or a questline's key |
+| `never` | The never list: sexual violence, slurs, real countries and pandemics, internet talk |
+| `long-table` | No ambient line hints at the Long Table |
+| `infected` | No "alpha", "tribe" or "crawler"; "strays" never for the infected |
+| `pronoun` | No he, she, him, her or his after a seeded person's token |
+| `info-token` | Information lines (truck times, shifts, tolls, the lab's count) keep a token |
+| `clue-echo` | An ambient line never repeats a clue's text |
+| `seed-name` | Seeded name lists never use a name LORE.md gives a person |
+| `punchline` | A short last sentence ends one line only |
+
+`tools/voice_lint_baseline.txt` holds the findings in today's text (the check, the file and a hash of
+the line), so the lint fails only on new or changed text. Each writing pass fixes lines and shrinks
+it. The lint checks words and limits, not tone: the three tests above are still the author's.

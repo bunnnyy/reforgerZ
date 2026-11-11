@@ -63,7 +63,7 @@ class RZ_GuidanceTip
 	}
 }
 
-//! The built-in tip table, written to the voices in docs/LORE.md.
+//! The built-in tip table, written to the voices in docs/WRITING.md.
 class RZ_GuidanceTips
 {
 	//------------------------------------------------------------------------------------------------

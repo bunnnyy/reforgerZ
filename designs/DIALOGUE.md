@@ -1131,8 +1131,7 @@ callback once, and logs anything that throws.
   - `Dialogue: session cap at <speaker>`;
   - `Dialogue: budget reached <player> <faction>`.
 
-**Writing.** The rules go in the writing guide (`docs/WRITING.md`, planned: it takes the writing guide out of
-LORE.md and tone's rules from [TONE.md](TONE.md)):
+**Writing.** The rules go in [WRITING.md](../docs/WRITING.md) when dialogue is built:
 - **Lines:** one to three short lines a node, in the faction's voice, coloured by the speaker's traits.
 - **Choices:** no choice is labelled good or evil, and every option is something a person would say or do. Every
   option costs something real, and the kind one usually pays least.
@@ -1228,7 +1227,7 @@ Dialogue lands across the plan's build order. Each step is playable on its own, 
   that links to it. CLAUDE.md's Doc map and the README's doc list change in the same commit.
 - **REPUTATION.md:** regard and its scope table; lies and the liar count; the Fear check; vouch, call-outs and
   point-out; claims and signed-for kit; reputation-name tags; Make it right.
-- **WRITING.md** (the writing guide moved out of LORE.md): dialogue lines, options and tags, the player's voice,
+- **WRITING.md:** dialogue lines, options and tags, the player's voice,
   where the humour stops, the names policy, the word at the wire, crew names, notebook numbers.
 - **UI.md and UI/LAYOUTS.md:** the panel, the optional menu and their names, the slot donors, `/t`, and the
   journal rows.

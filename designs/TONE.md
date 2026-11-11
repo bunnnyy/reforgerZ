@@ -3,7 +3,12 @@
 **Status: designed, not built.** Approved by the author on 2026-11-11.
 
 This piece decides how the existing voices speak, and sets the standard every choice is written to. It
-adds only small, data-only helpers. In the repo it becomes `docs/WRITING.md` (section 1).
+adds only small, data-only helpers.
+
+**Built so far:** the text standard (the tone, the voices, by channel, the grey test, phrasing, the humour line
+and the template rules) is in [WRITING.md](../docs/WRITING.md), and the inventory and the lint are in
+[WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#text-lint). Sections 2, 3.1, 3.6, 3.11, 4.1, 4.7 and 5 are kept
+below only as pointers, so the numbers other designs use still work. Everything else here is designed, not built.
 
 ## What changed in review
 
@@ -40,8 +45,6 @@ the plan's "Decisions for you". Tone's own options are taken as recommended; the
   at a place [ERRANDS.md](ERRANDS.md#where-a-stranger-can-find-you) allows, never by a timer (4.6b).
 - **The finale's lore is confirmed** (decision 2). Lines may use it, under its owners' rules: the captain's log
   is never quoted on air, and Command never answers.
-- **WRITING.md is added only as it's built** (decision 16): when the writing pass's phase 0 lands, holding only
-  the rules in force then (section 1).
 - **The PC_SETUP.md gap is gone.** The repo's Doc map already lists it.
 - **Room left in a joke is never a timer.** Pitches, route lines and coldness fade by real days and visits, as
   before; nothing new runs on fixed season days.
@@ -64,48 +67,19 @@ Where it meets the other designs, it owns the **voice**, and they own the mechan
 
 ## 1. Where it lives in the docs
 
+[WRITING.md](../docs/WRITING.md) holds the rules in force. What's left lands as it's built:
+
 | Doc | Gets |
 |---|---|
-| **New `docs/WRITING.md`** | Moved from LORE.md: Tone, the writing guide and the broadcast table. New: the tone map (3), the humour line (5), phrasing for choices and outcomes (4.7), the template rules (5.6), the infected's words (from INFECTED.md), the before-and-after rewrites |
-| `docs/LORE.md` | Keeps the setting, the factions as people, the hard edges, the Long Table and the endings. Its broadcast paragraph stays and links to WRITING.md for the table. Each faction keeps a one-line "Voice:" sample with a link |
-| `docs/DESIGN.md`, Missions | "Grey choices": 4.1–4.5 and 4.8. The by-kind content becomes two columns of the mission-style table, not a second table |
-| `docs/DESIGN.md`, Faction life | The voice bank, the season mood and temper, grief, joke memory (once built) |
+| `docs/WRITING.md` | The season mood, temper, grief and joke memory (phase 3); the rules for dry lines (3.7), saying the word (3.8), disguise lines (3.9), running jokes (3.10), repeats (3.12), givers who lie (4.3) and small asks (4.6b), each with its system; the infected's words for each speaker (from INFECTED.md) |
+| `docs/DESIGN.md`, Missions | "Grey choices": the payout spread, lies, failure as a branch, callbacks (4.2–4.5) and the shared-server rules (4.8), as the mission style builds them. The by-kind content becomes two columns of the mission-style table, not a second table |
+| `docs/DESIGN.md`, Faction life | The voice bank, the season mood and temper, grief, joke memory |
 | `docs/MISSIONS.md` | Each Result text corrected where options or outcomes change |
-| `docs/ROADMAP.md` | "Writing pass" under Next, with the phases (section 6) |
 | `docs/WORKBENCH_SETUP.md` | Voice > Lines, Voice > Disabled, the debug settings, the voice log line |
-
-**When WRITING.md is added** (decision 16). It's added in the commit that lands phase 0 of the writing pass:
-the guide moved out of LORE.md, the grey test, the humour line and the phrasing and template rules, which are
-rules for writing and are in force the day they land. The season mood, temper, grief, joke memory and the voice
-bank go into it (and into DESIGN.md) only when phase 3 builds them. Until then WRITING.md doesn't describe them,
-and the roadmap lists them as planned.
-
-**Every link that changes with the move** goes in the same commit:
-- **`CLAUDE.md`:**
-  - in the Doc map, the LORE.md row loses "tone, writing guide", and WRITING.md gets a row;
-  - the change list's "Change to setting, tone or factions" line points tone to `docs/WRITING.md`;
-  - the writing-style line changes from `docs/LORE.md` to `docs/WRITING.md`.
-- **`README.md`:** the LORE.md row of the doc list, plus a new WRITING.md row.
-- **`docs/DESIGN.md`:** three links: the mission text rule (`LORE.md#writing-guide`), things found in drawers,
-  and the guidance voices.
-- **Code comments** that point at LORE.md's writing guide or broadcast table:
-  - `Factions/RZ_FactionVoice.c` and `Factions/RZ_LeaderVoice.c` (the writing guide);
-  - `Director/RZ_Broadcast.c` ("The table in docs/LORE.md", and its file header);
-  - `Guidance/RZ_GuidanceTips.c` and `Guidance/RZ_GuidanceText.c` ("written to the voices in docs/LORE.md").
-- Then run CLAUDE.md's link check, and check the Doc map lists exactly the files in `docs/`.
 
 ## 2. The grey core: everyone is right about something
 
-A grey choice puts one side's truth against another's. If one side of a choice has nothing it's right about,
-the choice is a virtue test, not a grey choice. Fix it, or make it a plain job.
-
-| Faction | Right about | Wrong about (its hard edges, LORE.md) | What it jokes about instead |
-|---|---|---|---|
-| The Haven | Nobody is useless. People are the point | The List, the mouths, walking people out, quiet arrangements, "borrowing" | Food, chores, the house rules, itself |
-| Bastion | They're all they have: feed your own, look for your own, bring your own home. And someone has to count, queue and hold, or people get trampled | Containment, "contribution", "signed correct", the stove | Forms, Command, the roster, rank |
-| The Red Hand | Nobody was coming, and nothing taken ever has to be given back. Everyone would sell you, so keep something on everyone | Rudi, Cargo, the pit, the cut dose, the well, learning the drones | Everyone, Bastion most; prices, the book, the toll |
-| Halcyon | The cure is the only way out, and the numbers matter | The three weeks, the other two, samples first | Rarely on purpose: exact words that land wrong |
-| The Long Table | Nothing that can be said aloud | Everything | Nothing, ever |
+Built: [WRITING.md](../docs/WRITING.md#everyone-is-right-about-something).
 
 ## 3. Where the tone shifts
 
@@ -123,29 +97,7 @@ the choice is a virtue test, not a grey choice. Fix it, or make it a plain job.
 
 ### 3.1 By channel
 
-| Channel | Who speaks | Register | Joke cap | Never |
-|---|---|---|---|---|
-| Government broadcast | The outside, through a machine | Official and deadpan, with one wrong word | No intended jokes | Names a cause, apologises, acts, answers anyone |
-| Open channels | People on shift | The faction's voice | 1 in 4 | A joke instead of the information (3.11). A joke about the bitten on air |
-| Secure channels | The faction when nobody's listening | Blunt, with numbers | 1 in 10, bleak register only | A joke at its own people |
-| Rumours, road news | The teller | Gossip, biased, worst about rivals | 1 in 3, aimed at rivals | Saying which are true |
-| Headlines | The roads | One plain sentence and one detail | The detail may be dry | A verdict. A player's name (except as listed in 4.8) |
-| Notices and boards | The printed text, then whoever wrote on it | The printed line, then handwriting | The handwriting may answer back | Reusing a questline clue's text. Vanishing in front of someone |
-| Leader openers and closers | A named person | Faction voice × traits (3.6) | Set by trait | A speech (the route pitch is the one exception) |
-| Mission briefs | The giver | The giver's voice, with what they leave out | Haven and Red Hand givers may open with one. Bastion is procedural, Halcyon clinical. **Mercy jobs never** | Telling the player what's right |
-| Choice labels | The player | Verb + object, then the cost or check in brackets | None | Judgement words. Rewards or consequences |
-| Outcomes | What happened, then one reaction | Three beats (4.7) | Only in the reaction | A verdict. Numbers inside the voiced beats |
-| Guidance | A voiced speaker, or nobody | Voiced tips: the speaker's register. Plain hints: plain | Voiced tips: the speaker's. Plain hints, veteran short lines, standing and pay notices: none | Burying a critical instruction: it comes first and can't be misread |
-| Epilogue | The world (3.5) | Looking back | One wry line per place | Contradicting the season |
-| The Long Table | The family | Homely | None, ever | Describing anything |
-
-**A voiced tip may be callous in the speaker's way.** The Red Hand's built tips stay as they are:
-- *"Pour the vodka on it, not in you. Quick, before it takes."*
-- *"Bitten? Shame. Our cut dose works half the time..."*
-
-The target is the price, the dose and the drinking, not the bitten person's fear or pain (5.1).
-
-**Swearing:** mild and rare, only in Red Hand and Bastion voices, and never the punchline.
+Built: [WRITING.md](../docs/WRITING.md#by-channel).
 
 ### 3.2 By the season's mood
 
@@ -210,7 +162,7 @@ with the gate inserted after Hope:
 | Early | *"Remain indoors. Aid is on its way."* | built |
 | Season over (any end) | *"The perimeter will be maintained."* plus the wipe note (`Core/RZ_Seasons.c`) | built |
 
-The table moves from LORE.md to WRITING.md and is rewritten there. The guidance radio tip that quotes
+When the mood is built, [WRITING.md's table](../docs/WRITING.md#the-government-broadcast) is rewritten to this one. The guidance radio tip that quotes
 *"...the perimeter will be maintained"* stays true.
 
 ### 3.3 Grief and other local overrides
@@ -370,22 +322,7 @@ carry it.
 
 ### 3.6 Leader traits and humour
 
-| Trait | Humour | Example of the register |
-|---|---|---|
-| Greedy | About money and the price of the job | *"Pay first, then the job."* |
-| Paranoid | None. Asks who saw you | *"Close the door. Who saw you come in?"* |
-| Merciful | Gentle, about food and rest | *"The soup doesn't mind either way."* |
-| Ruthless | Dry and short, aimed at the job or the institution, never the victim | *"The form was short."* |
-| Idealist | None, earnest. May laugh at themselves once | |
-| Pragmatist | Wry about the deal | *"I like starving less."* (built) |
-| Veteran | Gallows humour about their own dead, fondly | *"They itch."* |
-| Talker | The most jokes, and they leak | |
-
-**Stronghold leaders:**
-- Bastion's commanding officer almost never jokes.
-- The chair jokes once in a while, about food.
-- The boss always jokes.
-- The director never jokes on purpose.
+Built: [WRITING.md](../docs/WRITING.md#the-voices).
 
 ### 3.7 Player lines in dialogue trees
 
@@ -454,11 +391,7 @@ Running jokes read the majors' flags through the voice bank's flag conditions. T
 
 ### 3.11 Information comes first
 
-Some kinds carry information: chatter with a truck time, toll hours, a watch rotation, the lab's count, an outlet's
-next dose.
-- Their information clause is fixed. A joke is an optional tail from the bank, riding on top, never in its place.
-- The lint checks that these kinds keep their information tokens.
-- That way players never learn that joke lines are filler they can skip.
+Built: [WRITING.md](../docs/WRITING.md#information-comes-first), and the lint's `info-token` check.
 
 ### 3.12 Repeats
 
@@ -508,21 +441,7 @@ lines are built from parts (a route clause, a place line, a "you" line) to keep 
 
 ### 4.1 The grey test (every choice passes all seven)
 
-1. **Two options someone would defend.** Someone in the world would argue for each.
-2. **Every option changes the world, and the text says how.** A cost is real only if something changes that the
-   world or a later line reads:
-   - food at a house, or people at a safehouse;
-   - a person's fate, or a town's infection;
-   - a leader's memory flag;
-   - a season flag that a later line or job reads;
-   - the player's Favor or antidote.
-
-   A sentence with nothing behind it fails the test.
-3. **No option is best on every axis** (4.2).
-4. **Labelled as actions, not judgements** (4.7).
-5. **The giver's framing is one side.** At least one option needs something the giver didn't say.
-6. **Something comes back later, at least sometimes** (4.5).
-7. **Doing nothing and failing are outcomes too** (4.4).
+Built: [WRITING.md](../docs/WRITING.md#grey-choices). The sections below are the mechanics behind tests 3, 6 and 7.
 
 ### 4.2 The payout spread
 
@@ -542,8 +461,8 @@ lines are built from parts (a route clause, a place line, a "you" line) to keep 
     not more of it.
   - Side quests only move items and food that already exist.
 - **Background and standing change which option is cheapest**, so different characters choose differently.
-- **Labels show costs and requirements, and hide rewards and consequences.** *"Pay their dues yourself (20 Red Hand
-  Favor)"* is right; *"(+10 Haven Fame)"* is not. New Vegas does the same.
+- **Labels show costs and requirements, and hide rewards and consequences** (built:
+  [WRITING.md](../docs/WRITING.md#grey-choices)).
 - **Small side quests pay mostly in deeds and world change**, under errands' small-pay ledger.
 
 ### 4.3 Givers who lie or hide things
@@ -648,22 +567,8 @@ table, not two. Offer at least two grey options in each row.
 
 ### 4.7 Phrasing choices and outcomes
 
-- **Choice labels:**
-  - Verb + object, from the player's point of view, 40 characters or fewer, with no judgement words.
-  - Then the check or cost in short brackets: `[Police or Known]`, `(20 Favor)`.
-  - The whole label is 64 characters or fewer, so the action menu doesn't cut it.
-  - Good: "Walk him to the line", "Get him away", "Pay what he owes". Not: "Save him", "Do the right thing", "[Evil]".
-  - Built labels over the limit go in the lint baseline, and get shorter tags in Phase 4.
-- **Outcomes come in three beats**, then a separate system line:
-  1. What happened, in one concrete sentence.
-  2. What it cost, and to whom: one detail in the world.
-  3. One reaction, from a voice that would have one. If there's a joke, it goes here.
-
-  Then **the system line**, shown after: standing and pay as numbers, like New Vegas's reputation notice. Built
-  outcomes that put *"(+%1 Red Hand Infamy)"* inside the voiced text have it moved out as each one is touched.
-- **No narrator verdicts.** Never *"You did the right thing"* or *"Monster."*
-- **Use the faction's own word:** "contribution", "borrowed", "walked out", "struck off" (Bastion's deserter only),
-  "paid" (the book), "expended", "the other two". The euphemism is the grey.
+Built: [WRITING.md](../docs/WRITING.md#phrasing-choices-and-outcomes). Built labels over the limit are in the lint baseline,
+and get shorter tags in Phase 4.
 
 ### 4.8 The shared server
 
@@ -675,12 +580,8 @@ table, not two. Offer at least two grey options in each row.
 - **The clever way closes the honest one.** Once anyone in the run tries a trick or a betrayal, the honest branch is
   closed for that run. If they're found out, the run ends in the found-out outcome for everyone in it.
 - **Standing is personal; world consequences are shared.**
-- **Names in shared text.** Headlines name no players. These exceptions stay as built:
-  - the Turned Player event's title (its point is whose gear and whose friend);
-  - the Long Table's headlines that name online family members (REPUTATION.md);
-  - players' own radio station presets (they sign their own).
-
-  The Turned Player brief loses its quip in Phase 1. Epilogue honour lines follow 3.5.
+- **Names in shared text** are built ([WRITING.md](../docs/WRITING.md#names-in-shared-text)). The Turned Player brief loses
+  its quip in Phase 1. Epilogue honour lines follow 3.5.
 - **Late joiners read it in the world:**
   - headlines (the newest 10) and road news;
   - **boards of record**: a few stable boards whose text is worked out from season flags each time, the same for
@@ -692,146 +593,32 @@ table, not two. Offer at least two grey options in each row.
 
 ## 5. The line: dark humour, not edginess
 
-### 5.1 Three tests
-
-1. **Who's laughing?** Someone in the world who would. Never the narrator, the system or a plain hint.
-2. **At what?**
-   - Up: the broadcast, Command, the forms, the book, prices, the lab's euphemisms.
-   - Sideways: rivals, in gossip.
-   - At themselves.
-   - Never down at someone with less power in the scene: the bitten, the volunteers, exiles, the people who never
-     arrived, children, or a named dead person. The one exception is the dead person's own people, fondly.
-3. **What's underneath?** A true detail: a number the world holds, a name, a habit, a shortage. Take the joke out
-   and something real is still there; usually the next line says it.
-
-**Callous isn't mocking.** A cruel speaker may be callous about price, odds or count, because that's who they are (the
-Red Hand's tips, a crew with a stopwatch). But:
-- the target is never the victim's fear, pain or body;
-- the line is never the narrator's;
-- the next beat shows the cost, in the same outcome.
-
-### 5.2 Never, in any voice
-
-- Sexual violence, in any form. It isn't mentioned at all.
-- Torture or suffering as the punchline; gore described for effect.
-- A child hurt, or a joke at a child's expense (the Kid, the class trip).
-- Suicide as a joke.
-- **Rudi's end as a joke.** Rudi was put out of his own garage at dusk on Day 7. The Red Hand's lie about it (*"He was
-  bitten"*) is said flatly, and nobody laughs after it. The boss's line stays as LORE has it: *"He let people pay
-  later. You can't run a road like that."*
-- Slurs, or jokes about real-world groups, ethnicities, faiths as such, disability, or illness as identity. The Preacher
-  is a person and the church is a building.
-- Real countries, governments, parties, real pandemics, or their politics. The broadcast mocks official language in
-  general.
-- **The Long Table.**
-  - Describing it, or the family or the narrator joking about it.
-  - "Pork" belongs to the Red Hand, only at the moments already written (when the house is found out, in Cargo and in
-    C1), and silence always follows it.
-  - **No ambient pool ever hints at it**: no meat of unknown origin, no "don't ask what it was", no "a place set". The
-    built Red Hand meal aside does exactly that every evening, in every season, and is fixed in Phase 1.
-- A player's name as the butt of a joke.
-- Memes, internet talk, pop culture, fourth-wall jokes, modern slang.
-- Praising cruelty. Only a faction that would laugh does, and the next beat shows the cost.
-- A joke that replaces information (3.11).
-- A joke about the walk out, or about anyone who went through the barrier.
-
-### 5.3 Signs a line has turned edgy
-
-- The joke would work in any setting: there's no detail in it.
-- It's louder than the thing it's about.
-- It needs a swear word to land.
-- The victim has no name and no line, and is the punchline.
-- The player is made to feel stupid for choosing kindness.
-- It repeats: the same joke to one player within a real day, or on one channel within 6 hours (3.12).
-
-### 5.4 Each faction's humour
-
-| Voice | Jokes about | How | Goes quiet about |
-|---|---|---|---|
-| The Haven | Food, chores, house rules, itself, other houses' cooking | Warm, practical, sideways | The List, the mouths, the walks, the Long Table; anyone's dead but its own; the big ones it knew by name |
-| Bastion | Forms, Command, the roster, rank, rations | Dry, procedural, deadpan, often in the passive voice | Day 2 at the north road, the pilot, "expended", its deserters; its orders once read |
-| The Red Hand | Everyone, Bastion most; prices, the book, the toll; itself; the infected, in its own words | Mocking and casual. The joke is how it avoids saying something | Rudi; Cargo; the mothers and sisters in safehouses; the drones' count (the joke dies on air) |
-| Halcyon | Rarely on purpose. Tired understatement; words that are exact and terrible | Precise, short | The other two by name, the three weeks, the volunteers |
-| The broadcast | Never on purpose | One wrong word | Everything |
-| Wanderers | By role: the Trader prices, the Mechanic cars, the Deserter Bastion (bitterly), the Doctor gallows humour, the Scavenger his own rumours, the Courier the post | Their own way | The Preacher almost never jokes. The Kid never does, and nobody jokes about him |
-| The infected's words ([INFECTED.md](INFECTED.md#people)) | Only the Red Hand jokes about them | Each speaker's word, always with the place: the Haven's name or "the big one", Bastion's contact and "the heavy", the Red Hand's crew nickname and "the boss", Halcyon's pack number and "the index" | Never "alpha", "tribe" or "crawler" in player text; never "strays" for the infected |
-
-### 5.5 Before and after
-
-| Edgy | Fixed | Why |
-|---|---|---|
-| Red Hand, about a Haven death: *"Another do-gooder down. More tins for us."* | *"Heard {subject_town} buried someone. We'll keep the noise down on that road tonight. Don't tell anyone we're nice."* | The joke is now at the Red Hand's own expense, and the death stays real |
-| Halcyon, after a trial: *"Volunteer seven popped. Science!"* | *"Volunteer seven didn't walk out. The notes are thorough. The director asks that someone from the Haven come for his coat."* | Exact and guilty, and the coat makes him a person |
-| Walk Him Out brief: *"He's going to turn. Bring popcorn."* | *"He declared it himself, at supper. He'd like it done before dark, by someone who isn't family."* | Mercy jobs carry no joke |
-| Bastion: *"Shoot first. The paperwork's easier if they're dead."* | *"The form for a civilian casualty is four pages. For an infected it's one. The sergeant checks every one-pager twice."* | It shows the pressure, and the man resisting it |
-| Red Hand meal aside (built): *"Dinner's on. Don't ask what it was."* | *"Dinner's on. Tins. Someone's written prices on them, so don't eat the expensive ones."* | The old line hinted at the Long Table every evening. The new joke is about prices, which is the Red Hand |
-| Halcyon (built): *"It's done. I keep checking the numbers anyway. Habit."* | *"It's done. I keep checking the numbers anyway. Nobody has asked me to stop."* | The Haven also ends on "Habit." One punchline, one owner |
-| A crewman about Rudi: *"Rudi? Bit, wasn't he. Bit thick, too."* | *"Rudi was bitten."* Nothing after it. The crewman looks at the shutter, then at you | The lie is said flatly, and the silence carries it |
-
-### 5.6 Template rules
-
-- **Only real tokens.** Use the `Fill` table's tokens (`{day}`, `{days_since_command_words}`, `{cure_percent}`,
-  `{leader:id}`, `{town:N}`, `{canon_town:key}`...) plus reputation's `FillFor` tokens, the infected's
-  `{tribe:N}`, `{alpha:N}` and `{young:N}` (each in the speaker's own word), and the voice bank's context tokens:
-  - `{place}`: the speaker's settlement;
-  - `{subject_town}`: the town a line is about;
-  - `{player_name}`: face to face only, through the note filter, otherwise "stranger";
-  - `{player_word}` (3.8);
-  - `{count}`: only once the majors' `orders.count` exists.
-
-  There's no home town: players don't have one.
-- **No invented numbers.** If the world doesn't hold a count, use a token or say it without the number. Bastion's call
-  says *"Strength as last reported"* until the majors give it `{count}`.
-- **No pronouns for seeded people** (leaders, the infected's named leaders, seeded named people). The seed stores no
-  gender, so use the name or the title.
-- **Ambient notices never reuse a questline clue's text.** The Census's curfew sheet stays a clue.
-- **Seeded names never collide with LORE's named people.** Halas (the Long Table's first meal), Tomas (the Long Table's
-  grace), Alena and Ivo (Bastion's dead and its signaller) and the like are kept out of the seed lists.
+Built: [WRITING.md](../docs/WRITING.md#dark-humour-not-edginess) (5.1–5.5) and [its template rules](../docs/WRITING.md#template-rules)
+(5.6). What joins them later:
+- **5.2:** a joke about the walk out, once the Walk Out is built ([EPILOGUE.md](EPILOGUE.md)).
+- **5.4:** the infected's row (each speaker's word, always with the place: the Haven's name or "the big one",
+  Bastion's contact and "the heavy", the Red Hand's crew nickname and "the boss", Halcyon's pack number and "the
+  index"), with the tribes ([INFECTED.md](INFECTED.md#people)).
+- **5.6:** the planned tokens, as each is built: reputation's `FillFor` tokens, the infected's `{tribe:N}`,
+  `{alpha:N}` and `{young:N}` (each in the speaker's own word), and the voice bank's context tokens (7), with
+  `{count}` only once the majors' `orders.count` exists (until then Bastion's call says *"Strength as last
+  reported"*). There's no home town: players don't have one.
 
 ## 6. The writing pass
 
 | Phase | What | Files | Done when |
 |---|---|---|---|
-| **0. The guide** | WRITING.md (section 1); DESIGN.md's "Grey choices"; the roadmap; every link in section 1 | Docs, `CLAUDE.md`, `README.md`, code comments | The link check passes; the Doc map lists exactly `docs/` |
+| **0. The guide** | Built: [WRITING.md](../docs/WRITING.md), with every link moved. DESIGN.md's "Grey choices" waits for the mission style's mechanics (section 1) | Docs, `CLAUDE.md`, `README.md`, code comments | Done |
 | **1. Built contradictions** (text only) | The Red Hand's meal aside (5.5). `HintAfterCure`'s Halcyon line on Bastion: only when Bastion didn't control the cure, plus a Bastion-controlled line, and the Haven's "The scientists did it" only when Halcyon did. The Turned Player brief's quip. Halcyon's "Habit." | `Factions/RZ_FactionVoice.c`, `Factions/RZ_LeaderVoice.c`, `Missions/Events/RZ_WorldEvents.c`, and any doc that quotes them | `tools/compile_check.sh` exits 0; the docs match |
-| **2. Inventory and lint** | See below the table | `tools/` | The lint exits 0 on today's tree and fails on a planted bad line |
+| **2. Inventory and lint** | Built: `tools/strings_inventory.py`, `tools/voice_lint.py` and its baseline ([WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#text-lint)). Left for later phases: the lint learns reputation's `FillFor` tokens and the voice bank's context tokens (7) when they're built | `tools/` | Done |
 | **3. The voice bank** | Bank, `SeasonMood()`, temper, grief, joke memory, picker. Move the top-ranked pools (3.13) and tag their registers. The broadcast reads the mood and gains its two lines. Loudspeakers, the wipe line and guidance tips get the lint and a review, but stay out of the bank (few lines, or their own attribute class). `tools/voice_sim.py` | `Factions/RZ_FactionVoice.c`, `Factions/RZ_LeaderVoice.c`, `Factions/RZ_FactionLife.c` (chatter, secure channels), `Guidance/RZ_GuidanceText.c` (newcomer open channels), `World/RZ_Wanderers.c` (road news), `World/RZ_Safehouses.c`, `Director/RZ_Broadcast.c`; review only: `World/RZ_Perimeter.c`, `Core/RZ_Seasons.c`, `Guidance/RZ_GuidanceTips.c` | The simulator shows each mood's share inside 3.2 and no repeats inside the windows at the fastest cadence; the compile check passes. WRITING.md and DESIGN.md gain the mood, temper, grief and joke memory |
 | **4. Choice missions** | The grey test on every choice. Each cost line gets a world change behind it: a flag plus at least one reader. The three-beat outcome and system line. Who can choose; the clever way closes the honest one. Labels shortened. Honour Among Thieves' "let him keep it" becomes a branch. Then: Local Law, Shut the Door, The Ledger, Requisition, Protection Racket, Struck Off, No Reply, the three hard edges, Patients Not Samples, The Notebook, Private Collection, The Silent Village, The Witness, Rein In | `Missions/`, `Puzzles/` | Every choice passes 4.1; MISSIONS.md's Result text matches |
 | **5. Givers who lie** | About 12 briefs, each with 2–3 omissions plus an honest version, picked once a season: Learning the Drones, A Quiet Arrangement, Requisition, Names for Bastion, Off-Book Requisition, Rifles for Sale, The Real Orders, Unsanctioned Trial, Private Collection, Sell the Formula, The Pit's Debtor, Debt Collection. For each: the truth-finding approach open to everyone, the checks, the outcome lines, and the morale cap | Missions | No gotchas (4.3); no tag gives a lie away |
 | **6. State variants** | Majors' running jokes (3.10). Race lines and pitches. Route lines face to face. Lost-route and unsided lines. Saying the word and crew names. Disguise look lines. Epilogue lines with [EPILOGUE.md](EPILOGUE.md), for every ending including the slow cure, handed over and no cure, and the plain lines for a week. Every after-cure line made ending-aware | Voice bank | Every variant meets the minimum pool size (3.12) |
 | **7. Check** | `voice_sim.py` over three scripted seasons: season speed 1, season speed 2, and a gate that runs to the slow finish. The runtime test with the voice log on and Voice > Force mood cycling the moods, to catch script exceptions and confirm the in-game picker matches the simulator. The author reads one player's radio log for an hour | `tools/`, `tools/runtime_test/` | No exceptions; the shares and repeats in the simulator are inside the targets |
 
-**Phase 2 in detail.**
-- **`tools/strings_inventory.py`** lists every literal that reaches `NotifyPlayer`, `NotifyAll`, `Headline`,
-  `SpreadRumour`, `AddRumour`, `Changed`, briefs, `SpawnPerson`/`AddClue` labels and choices, and the guidance tip
-  fields. For each it gives:
-  - file:line;
-  - the channel, guessed from the call;
-  - the faction, guessed from the folder;
-  - repeats;
-  - a register guess, which the author confirms only for the pools being moved.
-- **`tools/voice_lint.py`** has per-kind limits:
-  - radio, hints, leader lines, rumours and headlines: 200 characters or fewer;
-  - briefs: a warning over 500;
-  - labels: an action part of 40 or fewer, and 64 or fewer overall.
-
-  It checks:
-  - `!` only in Red Hand lines and alarms;
-  - `%1`–`%9` only;
-  - tokens against the Fill, `FillFor` and bank tables;
-  - the never list;
-  - the Long Table word list in ambient pools;
-  - the infected's word list ("alpha", "tribe" and "crawler" out of player text; "strays" never for the infected);
-  - pronouns beside a seeded-person token;
-  - information kinds keep their tokens;
-  - ambient notices never match a clue;
-  - seeded names against LORE's named people;
-  - no punchline is used twice.
-- **`tools/voice_lint_baseline.txt`** holds today's findings (file plus a hash of the literal). The lint fails only on
-  new or changed text, and each phase shrinks the baseline.
-
 **Order.**
-- Phases 0–2 can land now.
+- Phases 0 and 2 are built.
 - Phase 3 needs code.
 - In Phase 4, the label, outcome and eligibility fixes can start after Phase 2. New options wait for the mission-style
   and dialogue designs.
@@ -898,9 +685,8 @@ Red Hand's tips, a crew with a stopwatch). But:
 - **Lie variants:** each lying brief has a set of 2 to 3 omissions plus an honest version, picked once a season with
   `CanonPick`, kept in the one lie store. Making a caught lie public costs 1 morale, at most once per faction per real
   day and once per lie per season; an outpost leader caught loses 5 loyalty. No memory flag for catching a lie.
-- **Offline tools**, none run in the game: `tools/strings_inventory.py`; `tools/voice_lint.py` with
-  `tools/voice_lint_baseline.txt`; `tools/voice_sim.py` (parses `RZ_VoiceDefaults.c` and replays scripted seasons at
-  each guidance cadence, in the manner of `tools/pacing_sim.py`, reporting joke share by mood, repeats per window and
+- **Offline tools**, none run in the game (the inventory and the lint are built): `tools/voice_sim.py` (parses
+  `RZ_VoiceDefaults.c` and replays scripted seasons at each guidance cadence, in the manner of `tools/pacing_sim.py`, reporting joke share by mood, repeats per window and
   grief skips).
 - **Debug settings**, off by default: the voice log (`[RZ] voice: <channel> <faction> <register> <id> mood=<mood>
   listener=<identity or all>`) and **Voice > Force mood**, so the runtime test can cycle moods it wouldn't reach in

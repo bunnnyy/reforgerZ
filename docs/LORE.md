@@ -1,7 +1,8 @@
 # Setting: The Zone
 
-The story, the people and the voice of ReforgerZ. How the systems work is in
-[DESIGN.md](DESIGN.md); what each faction gives and takes is in [REPUTATION.md](REPUTATION.md).
+The story and the people of ReforgerZ. How the systems work is in [DESIGN.md](DESIGN.md); what each
+faction gives and takes is in [REPUTATION.md](REPUTATION.md); how their lines are written (the tone,
+the voices, the rules every line follows) is in [WRITING.md](WRITING.md).
 
 ## The premise
 
@@ -532,16 +533,9 @@ It guards the line, and that's all. Every threat in the Zone comes from inside i
 
 The only sign of the outside is the **government broadcast**, looping on every
 frequency. Until the cure it never changes its message, but its tone shifts with the state of
-the Zone. It's flavour only, with no mechanics behind it:
+the Zone. It's flavour only, with no mechanics behind it.
 
-| Zone state | Broadcast tone |
-|---|---|
-| Early, cure progressing | *"Remain indoors. Aid is on its way."* |
-| Infection spreading, cure stalled | *"Residents are reminded that the perimeter is for your protection."* |
-| Overrun, little progress | *"The perimeter will be maintained."* |
-| Long stall | *"The perimeter will be maintained indefinitely."* |
-| Cure breakthroughs | *"Reports of research inside the zone are being evaluated."* |
-| The cure is out | The loop stops. Anyone who tunes in hears the new order: *"The quarantine order for this area has been lifted. Remain where you are. Processing will begin at the road checkpoints."* |
+What it says at each stage, and how it's written, is in [WRITING.md](WRITING.md#the-government-broadcast).
 
 ## Endings
 
@@ -569,52 +563,6 @@ after a set number of weeks: then nobody won, and the next season starts plain.
 Urgency comes from inside: the outbreak keeps slowly getting worse (stages, spread,
 adaptation) until the cure is done. Even a win doesn't mean leaving: the next season is a
 new outbreak, in a new Zone.
-
-## Tone
-
-- **Bleak but human.** The world is cruel. People are what make it worth surviving.
-- **No heroes from outside.** No one is coming. The broadcasts are lies or useless.
-- **Ordinary people.** You're a nurse, a mechanic, a kid out of work. Not a commando.
-- **Small stories.** A note on a fridge, a radio message cut off, a body near the line.
-- **Nobody is a villain in their own story.** Every faction does something ugly for a reason you can understand.
-
-## Writing guide
-
-- **Broadcasts** are short, official and slightly wrong:
-  *"Day 14. Residents are reminded that the perimeter is for your protection."*
-- **Notes** are personal and specific: names, places in the town they're found in, and mistakes.
-- **Faction voices:**
-  - **Bastion:** clipped, procedural, tired; close with its own.
-  - **Haven:** warm, worried, practical, sometimes darkly funny.
-  - **Red Hand:** mocking, casual, always counting.
-  - **Halcyon:** precise, a bit cold, sometimes guilty.
-  - **The Long Table:** homely, attentive, a little too interested in you.
-- **Open channels** on the radio are people, not institutions. The Haven's is a tired woman:
-  *"If you can hear this, Morton is open. Bring water if you can. Bring yourself either way."*
-  Bastion's net still calls Command, which never answers. The Red Hand uses the open channel
-  to laugh at Bastion: *"Still waiting for relief? We'll keep the kettle on."*
-- **Faction chatter** on the open channels is shift talk with something real in it: a truck
-  leaving in twenty minutes, a toll until dusk, the night watch at 20:30. People say more on the
-  radio than they should.
-- **Rumours** are gossip, often wrong and worst about rivals: *"I heard Bastion got thrown out
-  of Levie. Good riddance."* Never mark which ones are true.
-- **Things found in drawers and on bodies** (ID cards, letters, receipts, photos) are one person's
-  life in a sentence or two: a name, the town they're found in, what they bought or meant to say.
-  *"A till receipt from Morton, Day 2: tinned peaches, batteries (all of them), bleach. Underneath,
-  in pencil: 'enough for a week?'"* Some point somewhere: a key with a tag, a grid on the back.
-- **Secure channels** are what a faction says when it thinks nobody's listening: blunter than its
-  open channel, with numbers in it. *"All stations: Morton rotates the watch at 20:30. Two on the
-  gate. Ten minutes where nobody's looking."*
-- **Headlines** about the factions are one plain sentence with one small detail: *"Bastion buried
-  Corporal Weber outside Morton. No salute: they're saving ammunition."*
-- **Haven gossip** is about food, never blame: *"The safehouse in Levie has gone to half portions.
-  The children eat first."* When a hungry house takes from a fed one, it's *"borrowed"*, in quotes.
-  The Haven's dark side is always said sideways, never announced.
-- **Players on the radio station** pick a preset, and it reads like a person: their name, one real
-  place, one request. *"This is Mara. There's a horde moving around Morton. Stay clear of it."*
-- **Leaders** speak in their faction's voice, coloured by their traits: a Greedy one talks
-  about pay first, a Paranoid one asks who saw you come in, a Merciful one tells you to sit
-  down and eat. One short line before a brief and one after, never a speech.
 
 ## Name
 

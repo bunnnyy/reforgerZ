@@ -533,7 +533,7 @@ author can tune them and the runtime test can trigger them.
 - A Paranoid giver won't give you their in-person jobs for 2 hours of your play.
 - Radio contracts are never blocked. There's no hush money.
 
-**How each faction lies** (goes into the writing guide: LORE.md's today, WRITING.md once it's built):
+**How each faction lies** (goes into [WRITING.md](../docs/WRITING.md) when it's built):
 
 | Faction | Lies by | For example |
 |---|---|---|
@@ -1511,7 +1511,8 @@ have their own table ([ERRANDS.md](ERRANDS.md)).
 | REPUTATION.md | A section, "Talking, threatening, lying": the persuade score's use in missions, Fear and its limits, results, tricks (pointing to Disguises) and the price table. Also *lied* in regard |
 | MISSIONS.md | "Who gets offered what" gains reasons, mirror offers and who decides. A block per story job, one line per one-choice job, the Records table. Merged and retired missions are removed; the Counts table is updated |
 | QUESTLINES.md | The approaches table grows to eleven and points to DESIGN.md. The stage "Uses" in the references table are fixed |
-| LORE.md (WRITING.md once it exists) | The writing guide gains how each faction lies, and the dark-humour rule. The rows in the references table are fixed |
+| WRITING.md | Gains how each faction lies, and the dark-humour rule |
+| LORE.md | The rows in the references table are fixed |
 | UI.md, UI/LAYOUTS.md | Check tags; the journal's per-job detail ("What they told you", "What you've found", "Who it went to"); talk lines as person cards |
 | WORKBENCH_SETUP.md | Settings (Missions > Story, Mirrors). The "used by" rows. VERIFY entries: choice routing, label refresh, how to mark an item as mission goods, the journal detail RPC, decals for chalk. The log lines and play-test checklist |
 | ROADMAP.md | The waves go under Next. The 12 dropped missions go on the Dropped list, one line each. Take the Lab moves to the finale |

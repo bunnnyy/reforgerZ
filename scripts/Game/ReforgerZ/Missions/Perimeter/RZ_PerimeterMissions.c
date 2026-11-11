@@ -693,7 +693,7 @@ class RZ_Mission_ShotAtTheLine : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! In the giver's voice (docs/LORE.md, "Faction voices").
+	//! In the giver's voice (docs/WRITING.md, "The voices").
 	protected string GetBriefFor(RZ_EFaction giver, string grid)
 	{
 		switch (giver)

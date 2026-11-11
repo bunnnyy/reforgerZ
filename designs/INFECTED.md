@@ -271,7 +271,7 @@ place, so players can tell four names mean one tribe.
 - The tracks round the Long Table's farm come up to the old wall and turn back. Never say why.
 - Your dead run. A character who dies on a tribe's land runs with it afterwards.
 
-**Writing them** (an addition to the writing guide):
+**Writing them** (an addition to [WRITING.md](../docs/WRITING.md); its word rule is already there and in the lint):
 - Never explain how it works. Player text never says "alpha", "tribe" or "crawler": it uses the
   speaker's word, and names the place.
 - Inspired by modern "alpha infected" films, with nothing copied: no named film characters, no

@@ -33,6 +33,7 @@ modded class RZ_MissionManager
 				return true;
 			}
 			m_RZTCur.Configure(m_GM);
+			RZT_Prep.BeforeMission(m_GM, t);
 			bool ok = StartMission(m_RZTCur);
 			if (ok)
 				m_iRZTStarted++;
@@ -105,6 +106,13 @@ modded class RZ_GameModeComponent
 	protected int m_iRZTDeaths;
 	protected int m_iRZTDoneAt;
 
+	//! The Locked Bunker's keypad (test only: a stand-in prop when the world sets none).
+	void RZT_SetKeypad(ResourceName prefab)
+	{
+		if (m_sKeypadPrefab.IsEmpty())
+			m_sKeypadPrefab = prefab;
+	}
+
 	override void NotifyPlayer(int playerId, string title, string text)
 	{
 		if (playerId == RZT_Fake.ID)
@@ -147,8 +155,9 @@ modded class RZ_GameModeComponent
 		GetGame().GetCallqueue().CallLater(RZT_Tick, 1000, true);
 	}
 
-	// Questlines, one at a time: begin it, fast-forward its waits, go to each stage mission and end
-	// it (alternately won and failed), until it ends, fizzles or is stuck for 6 minutes.
+	// Questlines, one at a time: force what its CanStart needs (RZT_Prep), begin it, fast-forward its
+	// waits, go to each stage mission and end it as won (with the outcome that moves the story on,
+	// where "done" alone would loop), until it ends, fizzles or is stuck for 15 minutes.
 	void RZT_QuestTick()
 	{
 		RZ_Questlines q = GetQuestlines();
@@ -162,12 +171,22 @@ modded class RZ_GameModeComponent
 		{
 			m_aRZTQuestKeys = {};
 			q.RZT_Keys(m_aRZTQuestKeys);
+			RZT_Prep.Order(m_aRZTQuestKeys);
+			RZT_Prep.BeforeQuestlines(this);
 			Print(string.Format("RZT questlines: %1 registered", m_aRZTQuestKeys.Count()));
 		}
 		if (m_iRZTQuest < 0 || m_iRZTQuestSec > 900)
 		{
-			if (m_iRZTQuest >= 0 && m_iRZTQuestSec < 999)
-				Print(string.Format("RZT quest %1 STUCK at stage %2 after 15 min", m_aRZTQuestKeys[m_iRZTQuest], m_iRZTQuestStage));
+			if (m_iRZTQuest >= 0)
+			{
+				string prev = m_aRZTQuestKeys[m_iRZTQuest];
+				if (m_iRZTQuestSec < 999)
+				{
+					Print(string.Format("RZT quest %1 STUCK at stage %2 after 15 min", prev, m_iRZTQuestStage));
+					q.RZT_End(prev);
+				}
+				RZT_Prep.AfterQuest(this, prev);
+			}
 			m_iRZTQuest++;
 			m_iRZTQuestSec = 0;
 			m_iRZTQuestStage = -2;
@@ -179,7 +198,9 @@ modded class RZ_GameModeComponent
 				return;
 			}
 			string key = m_aRZTQuestKeys[m_iRZTQuest];
+			RZT_Prep.BeforeQuest(this, key);
 			bool began = q.Begin(key);
+			RZT_Prep.AfterBegin(this, key);
 			if (!began && !q.FindRunByKey(key))
 			{
 				Print(string.Format("RZT quest %1 did not start (CanStart false)", key));
@@ -204,6 +225,7 @@ modded class RZ_GameModeComponent
 			m_iRZTQuestSec = 999;
 			return;
 		}
+		RZT_Prep.Tick(this, qkey, run);
 		if (run.m_iStage != m_iRZTQuestStage)
 		{
 			m_iRZTQuestStage = run.m_iStage;
@@ -233,10 +255,10 @@ modded class RZ_GameModeComponent
 			RZT_Fake.MoveTo(m.m_vPos);
 		if (m_iRZTQuestMissionSec >= 10 && m.m_eState == RZ_EMissionState.ACTIVE)
 		{
-			if ((m_iRZTQuestStages + m_iRZTQuest) % 3 == 2)
-				m.m_eState = RZ_EMissionState.FAILED;
-			else
-				m.m_eState = RZ_EMissionState.SUCCEEDED;
+			int forced = RZT_Prep.Outcome(qkey, run.m_iStage);
+			if (forced >= 0)
+				run.SetOutcome(forced);
+			m.m_eState = RZ_EMissionState.SUCCEEDED;
 		}
 	}
 

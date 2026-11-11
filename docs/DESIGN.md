@@ -517,7 +517,8 @@ every 10 minutes server-wide (5 with power). **Cosmetic and social only:** no Fa
 ### The government broadcast
 
 A looping flavour message to everyone every 25 minutes and on each player's first spawn.
-Its tone follows the cure and the outbreak ([LORE.md](LORE.md), "The outside world: silent, watching").
+Its tone follows the cure and the outbreak ([LORE.md](LORE.md), "The outside world: silent, watching"; its
+lines: [WRITING.md](WRITING.md#the-government-broadcast)).
 Its day count ("Day 14") is 11 plus the real days since the season started, so a season of
 about 45 days runs from Day 11 to about Day 56; without the server's clock, a day is 8 hours
 played. Notes, journals, the radio station and Bastion's orders use the same count.
@@ -1251,7 +1252,7 @@ example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
    it's in code) and run `tools/compile_check.sh`. To try it quickly, set **Wait scale** to 0.1
    and call `GetQuestlines().Begin("your_key")` from a test.
 
-Player-facing text follows the writing guide in [LORE.md](LORE.md#writing-guide).
+Player-facing text follows [WRITING.md](WRITING.md).
 
 ## World facts
 
@@ -1611,7 +1612,7 @@ survive a restart.
 ### Readable things
 
 12% of buildings' loot (and of car boot searches, 30% of bodies) includes an ID card, letter,
-receipt or photo in the Zone's voice ([LORE.md](LORE.md), "Writing guide"). In a building it lies
+receipt or photo in the Zone's voice ([WRITING.md](WRITING.md#the-voices)). In a building it lies
 like the rest of the loot, as a note prop read where it lies, and goes with the building's loot;
 one a search turns up is left beside the boot or body for half an hour. One in five had a key
 taped inside: in a building the key lies next to it, from a search it goes into your pack. About
@@ -1735,7 +1736,7 @@ Traps check on the 5 s tick.
 Code: `Guidance/`.
 
 The world teaches itself through things you find and people you hear, never tutorial pop-ups.
-Every line is in a speaker's voice ([LORE.md](LORE.md), "Writing guide").
+Every line is in a speaker's voice ([WRITING.md](WRITING.md#the-voices)).
 
 ### Experience levels
 

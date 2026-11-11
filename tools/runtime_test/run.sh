@@ -10,8 +10,11 @@
 #   - adds a fake player (id 901, a spawned civilian) to the players every system sees;
 #   - starts every registered mission type one at a time, moves the player there, then ends it
 #     (alternately won and failed) so Setup, Update, rewards and cleanup all run;
-#   - then begins every registered questline in turn, fast-forwards its waits, goes to each stage
-#     mission and ends it (mostly won), and reports which reached an ending, fizzled or got stuck;
+#   - forces what four missions need (a Bastion truck for Convoy Escort and Hijack the Convoy, a
+#     Halcyon truck and quiet towns for Mobile Lab, a keypad for the Locked Bunker; RZT_Prep.c);
+#   - then forces each registered questline's start conditions (RZT_Prep.c), begins it, fast-forwards
+#     its waits, goes to each stage mission and ends it as won (with the outcome that moves the
+#     story on), and reports which reached an ending, fizzled or got stuck;
 #   - walks the player through every settlement, the safehouses, the lab, then into the
 #     Perimeter's warning and kill zones; kills them if the Perimeter didn't; respawns them.
 # Every notice sent to the fake player is logged as "RZT notify [title] text".

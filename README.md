@@ -118,7 +118,8 @@ and the rest of what the tribes stand on are built (phase 1, [INFECTED.md](docs/
 
 | Doc | What's in it |
 |---|---|
-| [LORE.md](docs/LORE.md) | The sealed Zone, the factions as people, tone, writing guide, endings |
+| [LORE.md](docs/LORE.md) | The sealed Zone, the factions as people, endings |
+| [WRITING.md](docs/WRITING.md) | How player text is written: tone, the voices, grey choices, the humour line, the text lint's rules |
 | [DESIGN.md](docs/DESIGN.md) | How every system works, by system |
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
@@ -194,6 +195,11 @@ tools/tribe_sim.py
                  simulates the infected tribes (planned) over a season on that pacing, on the
                  measured wild land of Arland, Everon and Cain and a Chernarus-size map, 2, 5 and
                  10 players
+tools/strings_inventory.py
+                 lists every line of player text in the scripts, with its channel and faction
+tools/voice_lint.py, tools/voice_lint_baseline.txt
+                 the text lint: checks player text against the writing rules; the baseline
+                 holds today's findings, so only new or changed text fails
 tools/compile_check.sh
                  compiles the scripts on the dedicated server, no Workbench needed (Linux,
                  or Windows in Git Bash)

@@ -72,10 +72,10 @@ Checked against the code on 2026-11-11 (branch `claude/sleepy-volta-nwm433`).
 | Today's epilogue: the line stands down, research stops, the gates open with the wipe. Its default is 48 hours (`Core/RZ_Seasons.c`, the **Epilogue** attribute) | `Core/RZ_Seasons.c` |
 | The build-review fixes (shops, people, tablets, the server-side loadout lock) and the retaliation watch fix | commits cfbcff4, 00ff654 |
 
-**One honest caveat.** The last runtime test started none of the 15 questlines, because their start conditions
-weren't forced. Convoy Escort, Hijack the Convoy, Mobile Lab and the
-Locked Bunker didn't start either. The majors and the finale are built on that engine and reuse those
-missions, so that test comes first (step 0.4).
+**One honest caveat.** The last runtime test started six of the 15 questlines and ended two, because their start
+conditions weren't forced. Convoy Escort, Hijack the Convoy, Mobile Lab and the Locked Bunker didn't start either.
+The majors and the finale are built on that engine and reuse those missions, so that test comes first (step 0.4:
+the forcing is now in the test, and waits for its next server run).
 
 ---
 
@@ -98,7 +98,7 @@ missions, so that test comes first (step 0.4).
 |---|---|---|
 | Who you are | Reputation ([REPUTATION_NAMES.md](REPUTATION_NAMES.md)), disguise ([DISGUISE.md](DISGUISE.md)) | A name with each faction ("Merciful Thug"), deeds people quote back to you, and borrowed kit that buys a moment, never a living |
 | What you do | Missions ([MISSION_STYLE.md](MISSION_STYLE.md)), errands ([ERRANDS.md](ERRANDS.md)), dialogue ([DIALOGUE.md](DIALOGUE.md)) | Several ways through every job; small jobs that come out of what's true right now; conversations with checks, lies and memory |
-| How it sounds | Tone ([TONE.md](TONE.md), becomes `docs/WRITING.md`) | One standard for grey choices and dark humour, a season mood, one voice bank and one lint |
+| How it sounds | Tone (the standard and the lint built in [WRITING.md](../docs/WRITING.md); the rest in [TONE.md](TONE.md)) | One standard for grey choices and dark humour, a season mood, one voice bank and one lint |
 | What the Zone remembers | World memory (shared by missions, errands and the epilogue), the epilogue ([EPILOGUE.md](EPILOGUE.md)) | Callbacks all season, and an ending told by places and people, not slides |
 
 **Dialogue is the delivery layer for almost everything.** All of these are conversations in one engine:
@@ -192,7 +192,7 @@ an initialiser (step 0.5).
 | Conversations, sessions, owner-only delivery, regard, claims, knowledge, scenes, sways into tallies, the commit node | Dialogue ([DIALOGUE.md](DIALOGUE.md)) | Everything that talks |
 | The story kit: ways, the persuade and Fear checks, who benefits, who decides, truths, fallout, route assets, reasons, the price table | Missions ([MISSION_STYLE.md](MISSION_STYLE.md)) | Errands, the majors' stages, the finale's stages |
 | Small jobs: the dealer, routines, cards, named people, locals, strangers and their spots, the footfall grid, the interruption budget | Errands ([ERRANDS.md](ERRANDS.md)) | Missions' odd jobs and found hooks, reputation's and disguise's side jobs, and the epilogue's last errands all become errands |
-| The text standard, season mood, temper, grief, joke memory, the voice bank, the lint | Tone ([TONE.md](TONE.md), becomes `docs/WRITING.md`) | Every line |
+| The text standard, season mood, temper, grief, joke memory, the voice bank, the lint | Tone ([WRITING.md](../docs/WRITING.md) built; [TONE.md](TONE.md) designed) | Every line |
 | The epilogue week and its closing work, the town log, the record, beats, carriers, the dose-outlet table, epilogue scenes, the hall of fame freeze, the names policy | Epilogue ([EPILOGUE.md](EPILOGUE.md)) | Everyone |
 | The season budget and its lanes, the set-piece calendar, votes (`RZ_QuestVote`), pages, `SeasonStory`, the dynamic fallbacks, the codas' scenes | Majors ([MAJORS.md](MAJORS.md)) | Missions, errands, the epilogue, tone, the finale |
 | Routes, the lock, the doors, live tissue's order, the stand, how it was won, terms, the Fame chunk | Finale ([FINALE.md](FINALE.md)) | Everyone |
@@ -609,7 +609,7 @@ runtime test after cross-system changes, and the docs in the same commit.**
 | 0.1 | **Get it running** (ROADMAP "Get it playable"): the Workbench project, prefabs from the generator, a 2-hour Arland session. Every VERIFY spike and play-test below needs it | Under way on the author's PC | Workbench evenings, no code |
 | 0.2 | **Tribes phase 0** (the zombie lab): runtime groups, Bacon speeds, frame time at 60/100/140 agents, silent kills, the land survey, the tribe simulator | Done on its branch (`worktree-wf_34724fc3-3cf-4`), not merged. Left: the day-party test (a group of 2–3 hopping and holding past a player at each stance with stealth on), the player-killed event, a second hostile faction, the sight trace, facing, replication. The proposed retunes wait for the author ([INFECTED.md](INFECTED.md#phase-0-results)) | Tests and tools |
 | 0.3 | **One group-waypoint helper** (`RZ_GroupOrders`): the tribes' held waypoint, the `DeleteUnit` leak, stealth's push and pop, in one commit (conflict 47) | Done on the phase 0 branch except stealth's push and pop | About 200 |
-| 0.4 | **Runtime test with questline preconditions forced** (task 37): every built questline starts and ends once, and Convoy Escort, Hijack the Convoy, Mobile Lab and the Locked Bunker start (conflict 20). The majors and the finale stand on these | Planned | About 300 test code |
+| 0.4 | **Runtime test with questline preconditions forced** (task 37): every built questline starts and ends once, and Convoy Escort, Hijack the Convoy, Mobile Lab and the Locked Bunker start (conflict 20). The majors and the finale stand on these | Built in the test (`tools/runtime_test/`, [WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#runtime-test-without-workbench)); compiles; not yet run on the server | About 500 test code |
 | 0.5 | **The built bug fixes**, listed below, plus the VERIFY spikes | Being done now | About 1,500 with the lint |
 | 0.6 | **A text pass on the design files** (old lore, names, prices, keys) and the author's lore confirmations | Done: these design files carry the fixes. The confirmed lore goes into LORE.md in the finale's commit (conflict 10) | No code |
 
@@ -635,8 +635,8 @@ out-of-sight spawn (strangers, day parties); road width; decals; Bacon Zombies f
 yes, always at a run).
 
 **Docs and tools in step 0:** `tools/strings_inventory.py` and one text lint with a baseline file, so it passes on
-today's tree. `docs/WRITING.md` (the writing guide moved out of LORE.md, every link fixed) is added in the same
-commit as the lint, not before (decision 16).
+today's tree, and `docs/WRITING.md` (the writing guide moved out of LORE.md, every link fixed): built
+([WRITING.md](../docs/WRITING.md), [WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#text-lint)).
 
 *Playable: today's game, fixed.*
 
@@ -851,7 +851,7 @@ system is built, and each with CLAUDE.md's Doc map and the README's doc list in 
 
 | New doc | Added in | Owns |
 |---|---|---|
-| `docs/WRITING.md` | Step 0 (with the lint) | The writing guide, moved out of LORE.md, and tone's rules |
+| `docs/WRITING.md` | Step 0 (with the lint): built | The writing guide, moved out of LORE.md, and tone's rules |
 | `docs/INFECTED.md` | Tribes phase 1 | Crawlers, tribes, day parties, the land, bodies |
 | `docs/DIALOGUE.md` | Phase 2 | Conversations, checks, tags, memory, lies, scenes |
 | `docs/FINALE.md` | Phase 6 | Routes, the lock, the stand as a control fight, terms |

@@ -3,8 +3,8 @@
 The ReforgerZ HUD, menus and icon set: how they look, what each screen shows, how the scripts
 feed them, and what's built. The layouts' widget trees and the icon atlas are in
 [UI/LAYOUTS.md](../UI/LAYOUTS.md); the setup steps are in
-[WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui). The setting and the voices used in every line of
-text are in [LORE.md](LORE.md).
+[WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui). The setting is in [LORE.md](LORE.md), and the voices used in
+every line of text are in [WRITING.md](WRITING.md).
 
 **Status:** the icon set, the mockups, the layouts, the icon atlas and its imageset, and the
 menu and input config overrides are built. In Workbench play the HUD works: the styled notice

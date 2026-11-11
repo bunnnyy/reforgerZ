@@ -1,4 +1,5 @@
-//! The government broadcast (docs/LORE.md, "The outside world: silent, watching").
+//! The government broadcast (docs/LORE.md, "The outside world: silent, watching"; its lines:
+//! docs/WRITING.md, "The government broadcast").
 //! The same official loop on every frequency, sent to everyone on a slow interval and
 //! to each player on their first spawn of the session. Its words never change much,
 //! but its tone follows the state of the Zone. Flavour only: nothing depends on it.
@@ -94,7 +95,7 @@ class RZ_Broadcast
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The table in docs/LORE.md. The first match wins.
+	//! The table in docs/WRITING.md, "The government broadcast". The first match wins.
 	protected string GetToneLine()
 	{
 		if (m_fSinceBreakthrough >= 0 && m_fSinceBreakthrough < BREAKTHROUGH_SECONDS)
