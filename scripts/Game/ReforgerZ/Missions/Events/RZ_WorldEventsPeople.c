@@ -762,7 +762,11 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 
 		if (m_iHidBite > 0)
 		{
-			RZ_Deeds.AddLifeRecord(gm.GetProfile(m_iHidBite), "hid_bite", true);
+			int doorHouse = m_iSister;
+			if (m_iWhere != WHERE_SISTER && gm.GetSafehouses() && gm.GetSafehouses().Count() > 0)
+				doorHouse = gm.GetSafehouses().FindNearest(m_vSpot);
+
+			RZ_StoryKit.HidBite(gm, m_iHidBite, doorHouse);
 			gm.GetFacts().Memory().Lies().Tell(gm, m_iHidBite, "distress.bite", m_sCaller, RZ_EFaction.SURVIVORS, "", m_vSpot, RZ_ELieTest.TICK, HID_INFAMY,
 				"The woman with the limp turned in the night. The house found the dressing, and knows whose knots those are.");
 			return 2;

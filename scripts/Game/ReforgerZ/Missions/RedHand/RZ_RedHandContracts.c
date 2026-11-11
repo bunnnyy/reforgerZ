@@ -476,6 +476,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		if (m_SpokeFor && m_SpokeFor.idents.Contains(gm.GetProfile(playerId).m_sIdentity))
 			difficulty = 1;
 
+		difficulty = RZ_StoryKit.AtHouse(gm, playerId, m_iHouse, difficulty);
 		RZ_ECheck result = m_Ways.TryTrust(gm, playerId, "keeper", RZ_EFaction.SURVIVORS, difficulty, "nurse,police");
 		if (result == RZ_ECheck.REFUSED)
 		{

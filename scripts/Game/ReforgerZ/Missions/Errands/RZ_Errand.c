@@ -29,6 +29,17 @@ enum RZ_EErrandItem
 }
 
 //------------------------------------------------------------------------------------------------
+//! A prop at a step's place while it's open (Missions > Errands > Props; none set: words only).
+enum RZ_EErrandProp
+{
+	NONE,
+	EFFECTS,	// a dead man's things
+	CRATE,		// a small crate or box
+	PAPERS,		// a book or papers
+	PARTS		// a toolbox or a machine part
+}
+
+//------------------------------------------------------------------------------------------------
 //! Where a way's step happens (filled when it's offered; all within 1.5 km).
 enum RZ_EErrandPlace
 {
@@ -81,6 +92,7 @@ class RZ_ErrandWay
 	bool m_bQuiet;				// a shot near it spoils the "unnoticed" bonus
 	float m_fBefore = -1;		// must be done before this game hour (20.5 = half past eight), -1 none
 	string m_sStep;				// the system line: "Search the farm buildings at {place}."
+	RZ_EErrandProp m_eProp = RZ_EErrandProp.NONE;	// a prop at the place while the step is open
 
 	// What it pays (docs/ERRANDS.md, "Pay: nothing for free")
 	int m_iFavor;

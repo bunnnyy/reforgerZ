@@ -138,6 +138,41 @@ class RZ_StoryKit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A Nurse dressed a bite and said nothing at a house's door: the life record "hid_bite", and
+	//! "hid_bite.<house>", which that house's people read (HouseHarder) for the rest of the life.
+	static void HidBite(RZ_GameModeComponent gm, int playerId, int house)
+	{
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		if (!p)
+			return;
+
+		RZ_Deeds.AddLifeRecord(p, "hid_bite", true);
+		if (house >= 0)
+			RZ_Deeds.AddLifeRecord(p, "hid_bite." + house.ToString(), true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How much harder this house's people make a check for this player: 1 if this life hid a bite at
+	//! their door, else 0. Never makes a check impossible (difficulty 3 at most).
+	static int HouseHarder(RZ_GameModeComponent gm, int playerId, int house)
+	{
+		if (!gm || house < 0 || playerId <= 0)
+			return 0;
+
+		if (RZ_Deeds.HasLifeRecord(gm.GetProfile(playerId), "hid_bite." + house.ToString()))
+			return 1;
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A check's difficulty at a house's people: one step harder after a hidden bite there, at most 3.
+	static int AtHouse(RZ_GameModeComponent gm, int playerId, int house, int difficulty)
+	{
+		return Math.MinInt(3, difficulty + HouseHarder(gm, playerId, house));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A player within `range` of pos with one of these backgrounds, -1 if none.
 	static int WithBackground(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players, vector pos, float range, string backgrounds)
 	{

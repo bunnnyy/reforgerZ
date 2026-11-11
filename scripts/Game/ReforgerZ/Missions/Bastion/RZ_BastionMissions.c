@@ -873,7 +873,9 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 	//------------------------------------------------------------------------------------------------
 	//! Minute 15: Bastion's recovery truck stops at the road and shouts for the box. Trusted with
 	//! Bastion: they leave it to you. Only Known: they take it, and the job's paid at half. Watched or
-	//! worse: they fire over your heads (+5 Bastion Infamy).
+	//! worse: they fire over your heads (+5 Bastion Infamy). The team is a real squad (Contracts >
+	//! Bastion squad, else the hunter squad or a truck crew) as a story group, walking from the road
+	//! to the wreck; with no prefab or no room it's words only, as before.
 	protected void RecoveryTeam(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players)
 	{
 		if (m_bTeam || m_fAge < TEAM_SECONDS || m_sTruth == "line")
@@ -885,6 +887,10 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 			return;
 
 		m_bTeam = true;
+		vector road = LandPointNear(m_vPos, 70, 110);
+		if (RZ_StoryGroups.Spawn(gm, this, RZ_Mission_BustOut.SquadPrefab(gm), road, LandPointNear(m_vPos, 8, 15), "recovery team"))
+			RZ_ContractHelp.NotifyNear(gm, m_vPos, 150, m_sTitle, string.Format("A truck pulls up on the road, %1, and a section climbs down and walks toward the wreck.", RZ_Util.DirectionText(m_vPos, road)));
+
 		bool trusted = false;
 		bool known = false;
 		foreach (int playerId : near)

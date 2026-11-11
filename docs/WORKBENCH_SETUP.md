@@ -372,7 +372,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **258 prefab fields**: 40 on `RZ_GameModeComponent`, 211 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **263 entries**: 160 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 70 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **262 prefab fields**: 40 on `RZ_GameModeComponent`, 215 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **267 entries**: 160 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 74 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -522,18 +522,22 @@ and the UI files) need none, and seven have no base:
 | `RZ_Relay.et` | a radio mast with a damage manager | — | Missions > Relay | optional | Sabotage the Relay |
 | `RZ_Trader.et` | a character or vehicle (e.g. a Shop System trader) | — | Missions > Trader | optional | Wandering Trader |
 | `RZ_Explosion.et` | a mortar or shell impact effect | — | Missions > Explosion | optional | Bastion Shelling; charges in Blow the Bridge, shells in Fire Mission, Gas Station Fire's blast, the burning helicopter in The Last Pilot |
+| (existing prefab) | a dead man's things: a kit bag or rucksack with a jacket over it, as one composition (`RZ_ErrandProp_Effects.et`): an empty root with an RplComponent, vanilla props as children, no physics | — | Missions > Errands > Props > Effects | optional | His Effects, The Name on the Tape, Notebook 31 and its fallout, Into the Record: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
+| (existing prefab) | a small wooden supply crate or a cardboard box of odds and ends (`RZ_ErrandProp_Crate.et`) | — | Missions > Errands > Props > Crate | optional | The Truck Didn't Come, Clean Glasses, Pack for the Queue: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
+| (existing prefab) | a ledger or a few papers on a stool (`RZ_ErrandProp_Papers.et`; a vanilla notebook or clipboard prop will do) | — | Missions > Errands > Props > Papers | optional | Last Orders' order book at his seat: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
+| (existing prefab) | a toolbox or a machine part on the ground (`RZ_ErrandProp_Parts.et`; a vanilla toolbox or battery prop will do) | — | Missions > Errands > Props > Parts | optional | Filter Parts' pump housing, Buy It Back's box at the wreck: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
 
 #### Contracts
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor, the brother walked home in The Other Two (falls back to the survivor group, then data) |
-| `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment, the field lead in The Three Weeks and the courier in The Other Two |
+| `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment, Lost Colleague walked in, the field lead in The Three Weeks and the courier in The Other Two |
 | `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Struck Off |
 | `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection, The Three Weeks questline (falls back to the puzzle object) |
 | `RZ_Bus.et` | a drivable bus or truck (keeps its damage manager) | — | Missions > Contracts > Bus | optional | Recover the Bus (falls back to the Haven truck, then car prefabs) |
 | `RZ_BountyTarget.et` | an armed AI group or character on SURV (a loner, not a faction's man) | — | Missions > Contracts > Bounty target | optional | Collect the Bounty (falls back to the survivor group) |
-| `RZ_BastionSquad.et` | an AI group on MIL | — | Missions > Contracts > Bastion squad | optional | the stockade guards in Bust Out, the arrest squad in Await Relief (falls back to the Bastion hunters, then crew) |
+| `RZ_BastionSquad.et` | an AI group on MIL | — | Missions > Contracts > Bastion squad | optional | the stockade guards in Bust Out, the arrest squad in Await Relief, Crash Site's recovery team (falls back to the Bastion hunters, then crew) |
 | `RZ_DroneWreck.et` | a small wreck prop | — | Missions > Contracts > Crashed drone | optional | Medical Drone (falls back to the puzzle object) |
 | `RZ_Smoke.et` | a coloured smoke effect | — | Missions > Contracts > Smoke marker | optional | Fire Mission (none: the message says it) |
 
@@ -1317,7 +1321,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
 | Missions | (top level) |  | Reward crate, mission item, drop points and the optional mission prefabs |
 | Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
-| Missions | Errands | `m_ErrandSettings` | **Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), strangers (on), found hooks (0.2 of job sites), dark cards (on), twist chance (0.2), board asks (on), radio asks (on, 60 min apart a player), the "Most people helped" line (on), telemetry (30 min), debug log (off) |
+| Missions | Errands | `m_ErrandSettings` | **Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), strangers (on), found hooks (0.2 of job sites), dark cards (on), twist chance (0.2), board asks (on), radio asks (on, 60 min apart a player), the "Most people helped" line (on), telemetry (30 min), debug log (off); **Props**: effects, crate, papers, parts (all optional; a step's place shows one while it's open) |
 | Missions | Story | `m_MissionStorySettings` | **Enabled** (the story kit: who decides, who benefits), the **reason lane** (on, 30 min apart, within 3 km of the reason), the one weight clamp (x0.75-1.3) |
 | Missions | Contracts | `m_ContractSettings` | **Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) |  | The puzzle prefabs, **Scale counts items** (off), landmark name |
@@ -2099,8 +2103,10 @@ The season record: `Reputation: season record: <player> locked to <route>`. Lies
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
 `Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
-`Story: colleague <name> is <truth>`, `Story: crash at <grid> is <truth>`, `Errands: fallout <card> at <grid>
-from <title> (cap N Favor, N participant(s) first)`. One-choice jobs and work: `Story: <title> asks (<options>)`,
+`Story: colleague <name> is <truth>`, `Story: colleague <name> trail found by <player> (<how>)`,
+`Story: crash at <grid> is <truth>`, `Story: <title> group '<what>' at <grid> (N on the server)`,
+`Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Errands: <key>
+prop <kind> at <grid>`. One-choice jobs and work: `Story: <title> asks (<options>)`,
 `Story: <title> chose N (by <player>|nobody)`,
 `Story: tally N (<town>) = N, mark N (<key>)`. Strangers: `Errands: stranger <kind> for <player> at
 <grid> (<spot>)`, `Errands: stranger <kind> done by <player>`, `Errands: stranger <kind> killed by <player>`,
@@ -3064,6 +3070,12 @@ on the talk screen says why something wasn't dealt)
   offers The Pot to the participant first.
 - [ ] Lost Colleague: hiding (choose at him), turned (kill him; the notebook's two choices) and walked
   out (the camp's note, then the new man at the house with five choices); research +2 or +1.
+- [ ] Lost Colleague's search: the job's spot is his cold box first; its read leads to his pack,
+  whose read moves the spot to him (`Story: colleague <name> trail found by <player> (trail)`). The
+  scavenger by the cold box takes a tin for the grid; the Haven trader in a lived-in town gives it
+  for nothing. Hiding, "Walk him in": he follows you to the Halcyon station or the lab (with Contracts
+  > Escort scientist set, a body you can lose to the infected); at the gate the job ends as done; dead
+  on the way, Notebook 31 is dealt. With no escort free, Halcyon's stretcher line, as before.
 - [ ] Crash Site: the wreck and cockpit appear at 400 m; the cockpit read tells the room the truth;
   already taken: two Red Hand carriers at a fire 300–600 m off, the box by the fire once they're dead;
   inventory taken to the Red Hand puts the manifest on the open channel. The Last Pilot's line ending
@@ -3166,12 +3178,21 @@ on the talk screen says why something wasn't dealt)
   takes the default. Fight Pit asks in round 3, Kill the Officer within 40 m of him (taking the
   stores ends it paid by Bastion at half Favor). With no civilian prefab, the default is taken at once.
 - [ ] The worked examples' remaining ways: Crash Site's sneak lift (hidden within 8 m in the first
-  90 s), the recovery team at minute 15 (Trusted / Known / Watched), the carriers' fire (persuade, pay,
+  90 s), the recovery team at minute 15 (Trusted / Known / Watched; with Contracts > Bastion squad or
+  the hunter squad set, a real section climbs down on the road and walks to the wreck:
+  `Story: Crash Site group 'recovery team' at <grid> (N on the server)`; gone when the job ends), the carriers' fire (persuade, pay,
   "That's ours, lads" in Bastion kit) and the open channel at the radio station (10 s with the box);
   Lost Colleague's Sold truth (the fence's table at night, unseen) and the Haven medic; Distress
   Call's Sneak out the back and the three destinations; Struck Off's Press and Trade at a Haven door,
   the Hunter's tracks and the Soldier's shortcut, and let go becoming the Deserter; Protection Racket's
   runner (Off the book) with a Rogue crew boss near. Each new outcome logs `Story: <title> record`.
+- [ ] "Hid a bite": as a Nurse, dress the hidden bite in Survivors Trapped or Distress Call; that
+  house's errands then tag their talk one step harder for you (e.g. "[Trusted - Haven]" where it was
+  "[Known - Haven]"), and Protection Racket's persuade at that house is one harder.
+- [ ] Errand props: with **Missions > Errands > Props** set, His Effects' wreck shows the effects,
+  The Truck Didn't Come's wreck a crate, Last Orders' seat the papers and Filter Parts' pump house the
+  part while the step is open (`Errands: <key> prop <kind> at <grid>`); each goes when the step is done
+  or the errand ends. Empty slots: the same errands, words only.
 - [ ] Work rows: finish Retake the Town in a town twice; the second brief there reads the town tally
   ("cleared 1 times" is never said: "once"). A failed work job says its fallout line after the fail text.
 - [ ] Route assets (finale on, past 90%): lock one player to Bastion, then pick Steal the Antidotes'

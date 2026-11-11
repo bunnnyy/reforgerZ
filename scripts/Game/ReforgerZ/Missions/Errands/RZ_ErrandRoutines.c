@@ -187,6 +187,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 25;
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the pump house at {place} and take the filter housing (25 s there), then bring it to {giver}.";
+		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 8;
 		w.m_iEffect = FX_FIX;
 		w.Done("\"That's the one. I'll tell everyone it was me.\"");
@@ -198,6 +199,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 12;
 		w.m_fRadius = 60;
 		w.m_sStep = "At the pump house in {place}, take the one part worth taking (12 s there), then bring it to {giver}.";
+		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 8;
 		w.m_iEffect = FX_FIX;
 		w.Done("\"One part, not two. You know what you're doing. That's rare.\"");

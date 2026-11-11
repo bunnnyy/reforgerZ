@@ -301,7 +301,15 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		// who knew: he comes in, and turns within a season day; the house names her (+8 Haven Infamy)
 		if (m_bBitten && m_iWhere != WHERE_BASTION && m_iHidBite > 0)
 		{
-			RZ_Deeds.AddLifeRecord(gm.GetProfile(m_iHidBite), "hid_bite", true);
+			int doorHouse = -1;
+			if (gm.GetSafehouses() && gm.GetSafehouses().Count() > 0)
+			{
+				doorHouse = gm.GetSafehouses().FindNearest(m_vPos);
+				if (m_iWhere == WHERE_HUNGRY)
+					doorHouse = Hungriest(gm);
+			}
+
+			RZ_StoryKit.HidBite(gm, m_iHidBite, doorHouse);
 			gm.GetFacts().Memory().Lies().Tell(gm, m_iHidBite, "trapped.bite", m_sSurname, RZ_EFaction.SURVIVORS, "", m_vPos, RZ_ELieTest.TICK, HID_INFAMY,
 				string.Format("Mr %1 turned in the night. The house found the dressing under his sleeve, and knows whose knots those are.", m_sSurname));
 		}

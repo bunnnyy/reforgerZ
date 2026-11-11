@@ -301,6 +301,7 @@ class RZ_MissionManager
 			mission.m_eState = RZ_EMissionState.FAILED;
 			m_GM.GetSpawner().ReleaseMission(mission.m_iId);
 			facts.ReleaseAll(owner);
+			RZ_StoryGroups.Release(mission.m_iId);
 			mission.Cleanup(m_GM);
 			return false;
 		}
@@ -795,6 +796,7 @@ class RZ_MissionManager
 				m_GM.GetQuestlines().OnMissionFinished(m, false);
 
 			m_GM.GetFacts().ReleaseAll(RZ_WorldFacts.MissionOwner(m.m_iId));
+			RZ_StoryGroups.Release(m.m_iId);
 			m.Cleanup(m_GM);
 			return;
 		}
@@ -864,6 +866,7 @@ class RZ_MissionManager
 
 		// Whatever it held (RZ_WorldFacts claims) is free again
 		m_GM.GetFacts().ReleaseAll(RZ_WorldFacts.MissionOwner(m.m_iId));
+		RZ_StoryGroups.Release(m.m_iId);
 		m.Cleanup(m_GM);
 	}
 

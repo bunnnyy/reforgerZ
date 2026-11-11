@@ -75,12 +75,6 @@ never pays the Haven by default. Each has one darkly funny line, spoken by the l
   answering a reason where you have a record, and those from a giver you've helped. Only the order
   changes, never the odds.
 
-## Limits
-
-- **Story groups** a story job adds (crews, recovery teams, a keeper's people, carriers): at most 4
-  server-wide and 2 per job, inside the one body budget, each option with a written fallback for when the
-  cap is full or the prefab is missing.
-
 ## Teaching it
 
 Four contextual guidance tips, each shown once: the first tag (*"Tags say what an option needs. [Trusted
@@ -96,14 +90,6 @@ hold (*"Someone is about to decide. You can object once."*).
   tags to the nail, or left walking).
 - **`walk.out` read by the tribes:** a man walked on feeds the nearest pack within 2 km as a named young.
 - **Tier 0:** check tags on the audited choices that have none.
-
-## The worked examples' leftovers
-
-- **Lost Colleague:** the step chain to him (his cold box, then his pack) with the shortcuts (a Scavenger
-  sells the last sighting for one food; the Haven trader saw "a man with a lab badge"), and walking him in
-  when he's hiding (an escort, 20 minutes).
-- **Crash Site:** Bastion's recovery team as real soldiers at minute 15.
-- **"Hid a bite":** the life record read by that house's people, one step harder there.
 
 ## Log lines and tests
 

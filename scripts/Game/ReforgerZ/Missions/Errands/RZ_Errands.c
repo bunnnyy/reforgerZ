@@ -12,6 +12,39 @@
 //! Server only.
 
 //------------------------------------------------------------------------------------------------
+//! The props a step's place may show while it's open (Missions > Errands > Props). All optional:
+//! empty = that step is words only, as before.
+[BaseContainerProps()]
+class RZ_ErrandProps
+{
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Effects (optional): a dead man's things in a heap, a kit bag with a jacket on it (His Effects, The Name on the Tape, Notebook 31, Into the Record). Empty = words only", "et")]
+	ResourceName m_sEffects;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Crate (optional): a small supply crate or a box of odds and ends (The Truck Didn't Come, Clean Glasses, Pack for the Queue). Empty = words only", "et")]
+	ResourceName m_sCrate;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Papers (optional): a book or a few papers on a stool or a seat (Last Orders). Empty = words only", "et")]
+	ResourceName m_sPapers;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Parts (optional): a toolbox or a machine part on the ground (Filter Parts, Buy It Back's box). Empty = words only", "et")]
+	ResourceName m_sParts;
+
+	//------------------------------------------------------------------------------------------------
+	ResourceName For(RZ_EErrandProp kind)
+	{
+		switch (kind)
+		{
+			case RZ_EErrandProp.EFFECTS: return m_sEffects;
+			case RZ_EErrandProp.CRATE: return m_sCrate;
+			case RZ_EErrandProp.PAPERS: return m_sPapers;
+			case RZ_EErrandProp.PARTS: return m_sParts;
+		}
+
+		return "";
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! Settings on RZ_GameModeComponent > Missions > Errands.
 [BaseContainerProps()]
 class RZ_ErrandSettings
@@ -85,7 +118,19 @@ class RZ_ErrandSettings
 	[Attribute("0", desc: "Errands debug log: every deal and why the rest weren't dealt")]
 	bool m_bDebugLog;
 
+	[Attribute(desc: "Props a step's place shows while it's open (all optional; empty = words only)")]
+	ref RZ_ErrandProps m_Props;
+
 	protected static ref RZ_ErrandSettings s_Defaults;
+
+	//------------------------------------------------------------------------------------------------
+	RZ_ErrandProps Props()
+	{
+		if (!m_Props)
+			m_Props = RZ_ErrandProps.Cast(RZ_Util.NewWithDefaults("RZ_ErrandProps"));
+
+		return m_Props;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static RZ_ErrandSettings Get()
@@ -526,6 +571,7 @@ class RZ_Errands
 
 				e.m_bStepDone = true;
 				e.m_bTold = false;
+				RemoveProp(e);
 				if (!e.m_Def.Still(this, e))
 				{
 					Overtake(e);
@@ -718,12 +764,44 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The way's prop (Missions > Errands > Props) at its place while the step is open: a marks-pool
+	//! prop, up only while a player is near (RZ_Marks), gone when the step is done or the errand ends.
+	protected void PlaceProp(RZ_Errand e, RZ_ErrandWay w)
+	{
+		if (w.m_eProp == RZ_EErrandProp.NONE || w.m_ePlace == RZ_EErrandPlace.NONE || w.m_ePlace == RZ_EErrandPlace.HERE)
+			return;
+
+		ResourceName prefab = m_Settings.Props().For(w.m_eProp);
+		RZ_Marks marks = RZ_Marks.Get();
+		if (prefab.IsEmpty() || !marks)
+			return;
+
+		if (marks.Place(RZ_EMarkPool.PROPS, PropKey(e), RZ_Util.GroundPos(e.m_vPlace), prefab, "", 1, -1, false, false))
+			RZ_Log.Info(string.Format("Errands: %1 prop %2 at %3", e.m_Def.m_sKey, typename.EnumToString(RZ_EErrandProp, w.m_eProp), RZ_SettlementScanner.GridReference(e.m_vPlace)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RemoveProp(RZ_Errand e)
+	{
+		RZ_Marks marks = RZ_Marks.Get();
+		if (marks)
+			marks.Remove(PropKey(e));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string PropKey(RZ_Errand e)
+	{
+		return "errand." + e.m_iId.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void End(RZ_Errand e, string why)
 	{
 		if (e.m_eState == RZ_EErrandState.DONE)
 			return;
 
 		e.m_eState = RZ_EErrandState.DONE;
+		RemoveProp(e);
 		RZ_WorldFacts facts = m_GM.GetFacts();
 		if (facts)
 			facts.SoftReleaseAll(e.Owner());
@@ -1218,7 +1296,7 @@ class RZ_Errands
 			if (trustF < 0)
 				trustF = f;
 
-			tag += RZ_Checks.TrustTag(trustF, w.m_iTrust) + " ";
+			tag += RZ_Checks.TrustTag(trustF, RZ_StoryKit.AtHouse(m_GM, e.m_iAsker, e.m_iHouse, w.m_iTrust)) + " ";
 		}
 
 		if (w.m_bThreat)
@@ -1344,7 +1422,8 @@ class RZ_Errands
 			if (trustF < 0)
 				trustF = f;
 
-			RZ_ECheck result = RZ_Checks.Result(RZ_Checks.TrustScore(m_GM, playerId, trustF, w.m_sBackground), w.m_iTrust);
+			// A house's people read a bite hidden at their door: one step harder there
+			RZ_ECheck result = RZ_Checks.Result(RZ_Checks.TrustScore(m_GM, playerId, trustF, w.m_sBackground), RZ_StoryKit.AtHouse(m_GM, playerId, e.m_iHouse, w.m_iTrust));
 			RZ_Log.Info(string.Format("Story: errand.%1 talk %2 by %3", e.m_Def.m_sKey, RZ_Checks.ResultName(result), RZ_Util.PlayerName(playerId)));
 			if (result != RZ_ECheck.PASS)
 				return "\"Not from you. Maybe from someone the house knows.\"";
@@ -1403,6 +1482,7 @@ class RZ_Errands
 
 		e.m_vPlace = PlaceFor(e, w.m_ePlace);
 		e.SetText("place", PlaceText(e, w.m_ePlace, user.GetOrigin()));
+		PlaceProp(e, w);
 		Say(e, Pick(w.m_aTake), false);
 		string step = e.Fill(w.m_sStep);
 		if (w.m_fBefore >= 0)

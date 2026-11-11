@@ -1119,7 +1119,7 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
 - **Lies in a job** go to the one lie store ([Lies and witnesses](#lies-and-witnesses)): covering a
   collection (found at the next collection there), saying a colleague turned or walking a deserter to
   the Haven (found by a visit), selling a distress call to the crew (found when Tied Down frees a
-  truck), a Nurse hiding a bite at a house's door (found within a season day), the commander's stove
+  truck), a Nurse hiding a bite at a house's door (found within a season day; the life record "hid a bite" names the house, and that house's people make her checks one step harder for the rest of the life: its errands' talk and Protection Racket's persuade, `RZ_StoryKit.HouseHarder`), the commander's stove
   (found by the rumour round).
 - **Season counts the story jobs keep** (season flags): Bastion's civilians sheltered
   (`bastion.sheltered`, read on the call to those who brought them), and Struck Off's men walked home
@@ -1137,6 +1137,10 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   text. The Tier 0 audit's 27 jobs each have one, write `t0.<key>` at their town when they end (read
   into the next one's brief there, `Tier0Read`), and keep their choices to someone they were offered
   to ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)).
+- **Story groups** (`Missions/Story/RZ_StoryGroups.c`): the AI groups a story job adds on top of its
+  base mission's own (Crash Site's recovery team): at most 4 on the server and 2 a job, spawned only
+  within 400 m of a player, counted in the one body budget as story bodies, deleted when the job ends.
+  No prefab, or no room: the job goes on in words.
 - **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice slots
   (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` (Survivors Trapped's mother).
 - **One real choice** (`Missions/Blocks/RZ_OneChoice.c`, `m_Choice`): when a one-choice job's work

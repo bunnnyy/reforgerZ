@@ -58,7 +58,11 @@ Two layers:
   place, your standing or background, the season's stage, a major's wait or the finale's lock).
 
 Errands are never stages and never on the map. Every one has a way without a gun. They spawn no
-AI, no crates and no items. Nobody in the Zone calls them errands: the Haven asks you to "do us a
+AI, no loot and no items. A few steps show a prop at their place while they're open (**Missions >
+Errands > Props**: a dead man's effects, a crate, papers, a part; up only while a player is within
+150 m, gone when the step is done; empty slots: words only): His Effects, The Name on the Tape,
+Notebook 31 and its fallout, Into the Record, The Truck Didn't Come, Clean Glasses, Pack for the
+Queue, Last Orders, Buy It Back and Filter Parts. Nobody in the Zone calls them errands: the Haven asks you to "do us a
 turn", Bastion has "a detail", the Red Hand "a little something", Halcyon "a small request".
 
 ## Givers
@@ -520,8 +524,8 @@ found by events (a visit, a road, a rumour round, the next real reading).
 
 ## Simplified, and not built yet
 
-*Simplified:* a step's place is a point, with no scene person or prop at it (strangers are the only
-scene people); the lines have two or three variants each, not always three; a card dealt counts toward
+*Simplified:* a step's place is a point with no scene person (strangers are the only scene
+people); the lines have two or three variants each, not always three; a card dealt counts toward
 the day's two even if declined; pay in kind is an effect (errands hand out no items; a stranger's gift
 is one common find). The margin cards read the majors' waits (the run's stage), and the lock cards read
 the finale's lock (`RouteOfPlayer`). Not built yet, and designed in

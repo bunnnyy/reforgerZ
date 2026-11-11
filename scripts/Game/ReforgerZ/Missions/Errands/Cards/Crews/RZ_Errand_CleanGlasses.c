@@ -22,6 +22,7 @@ class RZ_Errand_CleanGlasses : RZ_ErrandCard
 		w.m_fSeconds = 30;
 		w.m_fRadius = 80;
 		w.m_sStep = "Search the houses at {place} for six glasses without a crack (30 s there), then bring them to {giver}.";
+		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 5;
 		w.Done("\"Six. Clean. He'll hold one up to the light before he reads the names. Old habit.\"");
 	}
