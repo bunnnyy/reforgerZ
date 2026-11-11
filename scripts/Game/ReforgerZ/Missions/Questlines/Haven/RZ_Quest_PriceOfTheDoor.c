@@ -149,7 +149,11 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 	//------------------------------------------------------------------------------------------------
 	override void OnBegin(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
-		Headline(gm, run.Fill("The safehouse in {house} has gone to half portions. The Red Hand hasn't been by, which is strange, given."), false);
+		RZ_Safehouse h = RZ_HavenQuest.LiveHouse(gm, run.Flag("house", -1));
+		if (h && RZ_HavenQuest.IsHungry(h))
+			Headline(gm, run.Fill("The safehouse in {house} has gone to half portions. The Red Hand hasn't been by, which is strange, given."), false);
+		else
+			Headline(gm, run.Fill("There are fewer people at supper in {house} than last week. The Red Hand hasn't been by, which is strange, given."), false);
 	}
 
 	//------------------------------------------------------------------------------------------------
