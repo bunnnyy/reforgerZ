@@ -33,7 +33,7 @@ the plan's "Decisions for you". Tone's own options are taken as recommended; the
   The book's word is "paid" (conflict 7, as [FINALE.md](FINALE.md) applies it).
 - **The finale's keys** (conflict 39). `RouteOf(identity)` everywhere. `finale.route` 0 is nobody (handed
   over); the lab alone is `finale.finisher` 0. The lock is per identity for the season, survives death and
-  ends at the cure ([FINALE.md](FINALE.md#how-long)), so the option on lock scope is gone.
+  ends at the cure ([FINALE.md](../docs/FINALE.md#the-lock)), so the option on lock scope is gone.
 - **Tribes replace Grounds** (conflicts 42 and 43). The infected's words come from
   [INFECTED.md](INFECTED.md#people). Player text never says "alpha", "tribe" or "crawler", and "strays" means
   only the people the Haven turned out.
@@ -142,7 +142,7 @@ Still to build:
 
 ### 3.4 The race and the point of no return (90%)
 
-**Scope.** [FINALE.md](FINALE.md#4-the-lock) owns the lock. The voice reads `RouteOf(identity)`: none, the Haven,
+**Scope.** [FINALE.md](../docs/FINALE.md#the-lock) owns the lock. The voice reads `RouteOf(identity)`: none, the Haven,
 Bastion, the Red Hand, Halcyon or Independent. The lock is per identity for the season: it survives death, so
 dying doesn't undo it, and it ends at the cure.
 

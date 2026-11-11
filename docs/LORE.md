@@ -70,6 +70,16 @@ teddy bear on its doors so that nobody would shoot through them. Every safehouse
 in it has the bear on its door now, and the Haven uses it as its mark. It has been touched up so
 often that it has a patch on its belly and one eye stitched shut.
 
+**The lodger.** On Day 2 a woman was on the bus Sedlak turned round at the north road. On Day 4 she
+was bitten in the church doorway, the morning the priest opened it, and declared it, as every house
+asks. The priest sat up with her all night, and in the morning she asked for tea. On Day 6 she was
+meant to walk up the hill with the volunteers; her council head kept her back, and the lab's ledger
+says *"did not present"*. Then her house crossed her off the List with the pencil it uses for the
+dead, so the lab wouldn't come for her and Bastion couldn't count her: the one name on the List
+crossed out as a kindness. Since then she's moved from house to house at dusk, a mouth on half
+portions in a network whose rule is that everyone works. Her son runs with a Red Hand crew. Nobody
+says why she didn't turn. *"They crossed me off to keep me safe. Nobody asked me either."*
+
 **The hard edges.** The Haven is kind, and it is also frightened and hungry. It has a
 little dark side that nobody talks about:
 
@@ -153,6 +163,25 @@ one to walk out. On Day 10 the stronghold took a contribution too, and Zeman was
 contribution run. There was no diesel to get him to the lab, so his corporal sat with him. Every
 post since has run somewhere between Sedlak's roster and Zeman's barn, and its commander's traits
 say which way it leans ([REPUTATION.md](REPUTATION.md#traits)).
+
+**Held for collection.** The order on Day 2 said to screen the civilians first, *"with the samples to
+go along with them"*. At a tent short of the north road barrier the battalion's medical officer took
+a tube from everyone in Sedlak's column, three hundred people or so; Sedlak rolled up her sleeve first
+so the column would. Every tube got a number, and every person a slip with the number and their name,
+stapled to the bus driver's clipboard for the barrier. The captain's log has two lines that afternoon:
+*"13:10. Results to Command by radio: 4 R / {count}. Ack."* and *"14:00. Barrier not lifted. Column
+turned back."* Nobody says what anyone outside did with that number in the fifty minutes between. The
+samples had nobody left to go with, so he wrote *"Held for collection"* and took them in two chest
+freezers to the battalion's cold store in the hills. He's still there. The roster says *"Detached,
+stores: 1."* He opens to "collection", only the CO can say it, and a tube goes only with its slip.
+
+**Twice.** Private Marek Fiala was on Sedlak's cordon detail on Day 1, bitten through the sleeve,
+and never turned. He gave his tube with the column on Day 2 (R2: one of the four marked R). He's the
+man who walked out of Zeman's post on Day 7, and the board still says he was killed in action. He
+runs with the Red Hand crew nearest the cold store now, and the crews call him Twice: *"Killed in
+action once. Bitten once. Neither took."* He keeps out of Bastion's sight, because he knows someone is
+sent to bring a struck-off man home. Bastion's word for a deserter is "struck off"; the book's word
+for a cleared line is "paid".
 
 **How a post runs.** A commander runs each post: an officer if there's one left, a sergeant
 if not ([Who's in charge](#whos-in-charge)). Every post keeps the same routine:
@@ -268,6 +297,18 @@ was in charge. The boss read each of them their own line, quietly: what they'd p
 it had been. The arguing stopped. The younger Janda runs the pit now, and doesn't drink with
 anyone.
 
+**The cook.** She cooks the dusk meal at the stronghold, and ran the school kitchen in town until
+Day 2; the crews call her Doc because she isn't one. On Day 2 she queued at Rudi's forecourt all day,
+and that night he sold her forty litres round the back and let her pay later, because he knew her.
+Her line is on Rudi's first page, under the boss's ten litres. On Day 7 she took Rudi his supper the
+evening the boss told the brothers he'd been bitten: *"He let people pay later. That's what he died
+of."* Rudi's tally became the boss's book, every "pay later" in it became owed to the boss, and she's
+paid hers off in the kitchen ever since. After supper she cooks the other thing, on an old farm still
+in a barn nobody lives near: the cut dose. Beside the book she keeps her own pages, which pan each
+line's dose came from. The Red Hand ran the biggest trial in the Zone and wrote the misses up as
+debts. The crews take their own cut only when a man's worth less than a real dose, and every man
+knows it.
+
 **How it runs.** A crew holds a camp and a stretch of road, and a crew boss runs it. Every crew
 pays **the boss** a cut. The boss hardly needs to give orders, because the boss holds **the book**:
 everything owed, who owes it and what for, and under some debts what somebody did and who saw. The
@@ -356,6 +397,22 @@ there all night. In the morning
 the platoon went home, except for two men who stayed and became Halcyon's first guards. On Day 6
 ten bitten people from the Haven volunteered for the first trial dose. Eight walked out. The
 number has been eight in ten ever since, which the lab says is a coincidence.
+
+**The lower store.** At 04:10 on Day 1 the cordon detail chained the closed site's lower store and
+pasted an order on it: *"By order: lower store to be secured and not opened. Day 1, 04:10. Lt H.
+Sedlak."* Two keys were cut, and both were signed for. On Day 2 the detail went down to walk the
+column and never came back up. On Day 3 Dr Wolff went up for the rest of the samples, found the chain,
+sent her driver down and stayed with three of her team. Her clipboard still hangs by the lower
+store's door: *"Day 3. Chained. Soldiers gone. Four of us staying."* Behind the chain is a dewar with
+the first isolate in it, labelled with the clinic patient's surname and the date the Institute was
+told. The director has known where it is since Day 3, and has never asked Bastion for the key.
+
+**The eight and the ham.** Whatever the trial dose taught the blood of the eight who walked out on
+Day 6, they've carried it longest; most went back to the Haven's houses, and nobody owns them. The
+lab has read its numbers on the open channel at every change of shift since, *"in case somebody
+outside is writing them down"*. Nobody outside is. A retired schoolteacher with a long-wire aerial
+between two trees, in a village nobody else lives in, has copied every one into school exercise
+books: *"In case. Somebody should."*
 
 **How it runs.** The research director runs the lab, and the lab never stops:
 
@@ -642,9 +699,15 @@ The quarantine is lifted. The line stands down at once: the drones go home, nobo
 fires again, and the loudspeakers read a new order about processing at the road checkpoints.
 The barriers stay closed until the season ends, and the gates open with it: whoever walks up to
 the line is told to turn around by a voice they never see, and walks back. Until then (the
-epilogue) the research is over: the lab takes no more samples and nobody pays for them. The cure
-goes to the faction the server gave the most Fame this season, and that faction decides how it
-reaches people:
+epilogue) the research is over: the lab takes no more samples and nobody pays for them.
+
+At 90% the lab's batch is missing one thing, and every faction thinks it knows what: the woman who
+didn't turn, the captain's tubes, the cook's still, the lower store, or the eight who walked out.
+Players race to finish it and fight for the lab's **clean room** during the stand. **The cure goes to
+whoever holds the clean room when the stand is won**, and their people decide how it reaches people
+([FINALE.md](FINALE.md)). When nobody holds the room, the lab hands the cure to the faction the server
+gave the most Fame this season. The lab itself never falls, and neither does any stronghold:
+
 
 | Cure goes to | Aftermath | Next season starts with |
 |---|---|---|
@@ -652,6 +715,12 @@ reaches people:
 | Bastion | Martial law. The cure only reaches those who comply. | Stronger checkpoints, a curfew, more military kit |
 | The Red Hand | The cure is sold to the highest bidder. | More roadblocks, the black market open to anyone they know |
 | Halcyon | The cure is published openly. | Lower infection everywhere, more specials (they adapt) |
+| Nobody (the Independent route) | The cure goes to everyone, or to one side with a condition, or is sold, or kept back. | By its terms: half the Haven's and half Halcyon's, one side's at half, the black market, or nothing |
+
+How the winner hands it out depends on the terms its people chose (the Haven's houses first or the
+bite book, Bastion's roster or the column, the Red Hand's price or "pay when you can", Halcyon's
+authors first or the method published). A route that finished but lost the room, or never finished,
+says so in its own words, and its people keep what they were paid.
 
 Each is a small, capped nudge; the numbers, the rule sets an admin can add (Winter, Fog,
 Military Collapse, No Vehicles) and the wipe are in [DESIGN.md](DESIGN.md#seasons). By default

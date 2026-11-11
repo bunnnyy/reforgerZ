@@ -85,6 +85,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Majors: one season-long story per faction, climaxes on cure milestones, defaults that fire from what's happening on the server (docs/DESIGN.md, The majors)", category: "ReforgerZ|Director")]
 	protected ref RZ_MajorSettings m_MajorSettings;
 
+	[Attribute(desc: "The cure finale (docs/FINALE.md): at 90 percent five routes race to finish the batch, a lock per player for the season, the stand as a fight for the clean room, the finisher's capped Fame chunk, terms", category: "ReforgerZ|Director")]
+	protected ref RZ_FinaleSettings m_FinaleSettings;
+
 	[Attribute(desc: "Zombie prefabs and density", category: "ReforgerZ|Zombies")]
 	protected ref RZ_ZombieSettings m_ZombieSettings;
 
@@ -461,6 +464,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_WorldFacts m_Facts;
 	protected ref RZ_Shared m_Shared;
 	protected ref RZ_RepWatch m_RepWatch;
+	protected ref RZ_CureFinale m_Finale;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -601,6 +605,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_MajorSettings)
 			m_MajorSettings = RZ_MajorSettings.Cast(RZ_Util.NewWithDefaults("RZ_MajorSettings"));
 
+		if (!m_FinaleSettings)
+			m_FinaleSettings = RZ_FinaleSettings.Cast(RZ_Util.NewWithDefaults("RZ_FinaleSettings"));
+
 		if (!m_SafehouseSettings)
 			m_SafehouseSettings = RZ_SafehouseSettings.Cast(RZ_Util.NewWithDefaults("RZ_SafehouseSettings"));
 
@@ -707,6 +714,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_RadioStation = new RZ_RadioStation(this, m_RadioStationSettings);
 		m_StoryArcs = new RZ_StoryArcs(this, m_StorySettings);
 		m_Questlines = new RZ_Questlines(this, m_QuestlineSettings);
+		// The cure finale's controller, before the cure (its Restore reads whether the stand waits)
+		m_Finale = new RZ_CureFinale(this, m_FinaleSettings);
 		m_Headlines = new RZ_Headlines(this);
 		m_Cure = new RZ_CureResearch(this);
 		m_Director = new RZ_Director(this, m_aStages);
@@ -859,6 +868,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Dialogue.Tick(dt);
 		m_Perimeter.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
+		m_Finale.Tick(dt, ids, players);
 		m_Perks.Tick(dt, ids, players);
 		m_Services.Tick(dt, ids, players);
 		m_Safehouses.Tick(dt, ids, players);
@@ -934,6 +944,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_StoryArcs GetStoryArcs() { return m_StoryArcs; }
 	RZ_Questlines GetQuestlines() { return m_Questlines; }
 	RZ_MajorSettings GetMajorSettings() { return m_MajorSettings; }
+	RZ_CureFinale GetFinale() { return m_Finale; }
 	RZ_Headlines GetHeadlines() { return m_Headlines; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
@@ -2079,16 +2090,49 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Called by RZ_CureResearch when the final stand is won. The cure goes to whichever
-	//! faction got the most Fame this season (docs/REPUTATION.md). The result is saved
-	//! so the next season can read it.
+	//! A capped bonus into a faction's season Fame (never into a player's standing): the finale's
+	//! route chunk (docs/FINALE.md, "Fame"). Saved with the season Fame and logged.
+	void AddFactionBonus(int faction, int amount, string why)
+	{
+		if (!RZ_Factions.IsValid(faction) || amount <= 0)
+			return;
+
+		while (m_aSeasonFame.Count() < RZ_Factions.COUNT)
+		{
+			m_aSeasonFame.Insert(0);
+		}
+
+		m_aSeasonFame[faction] = m_aSeasonFame[faction] + amount;
+		RZ_Log.Info(string.Format("Season Fame: %1 +%2 (%3), now %4.", RZ_Factions.GetName(faction), amount, why, m_aSeasonFame[faction]));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Called by RZ_CureResearch when the final stand is won. With the cure finale (docs/FINALE.md):
+	//! whoever holds the clean room controls the cure, and the faction whose rules apply in full is
+	//! the controller's (the Independent's only by its "one side" terms, chosen at the release); when
+	//! nobody holds the room it's handed over to the faction with the most season Fame. Without the
+	//! finale: the most season Fame, as before. The result is saved so the next season can read it.
 	void OnCureCompleted()
 	{
-		m_iSeasonWinner = GetSeasonLeader();
-		if (m_iSeasonWinner < 0)
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		bool contest = finale && RZ_CureFinale.IsOn() && finale.Controller() != RZ_CureFinale.NONE;
+		if (contest)
+			m_iSeasonWinner = finale.ControllerFaction();
+		else
+			m_iSeasonWinner = GetSeasonLeader();
+
+		if (m_iSeasonWinner < 0 && !contest)
 			m_iSeasonWinner = RZ_EFaction.INSTITUTE;
 
-		NotifyAll("The cure goes to " + RZ_Factions.GetName(m_iSeasonWinner), GetEndingText(m_iSeasonWinner));
+		string title = "The cure goes to " + RZ_Factions.GetName(m_iSeasonWinner);
+		string ending = GetEndingText(m_iSeasonWinner);
+		if (contest)
+		{
+			title = "The cure: " + RZ_CureFinale.RouteName(finale.Controller());
+			ending = FinaleEndingText(finale);
+		}
+
+		NotifyAll(title, ending);
 		RZ_Log.Info(string.Format("Season over. Cure goes to %1. Season Fame: Haven %2, Bastion %3, Red Hand %4, Halcyon %5.",
 			RZ_Factions.GetName(m_iSeasonWinner), GetSeasonFame(0), GetSeasonFame(1), GetSeasonFame(2), GetSeasonFame(3)));
 
@@ -2097,10 +2141,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		record.season = m_Seasons.GetSeason();
 		record.winner = m_iSeasonWinner;
 		record.winnerName = RZ_Factions.GetName(m_iSeasonWinner);
+		if (m_iSeasonWinner < 0)
+			record.winnerName = "nobody";
+
 		foreach (int fame : m_aSeasonFame)
 		{
 			record.fame.Insert(fame);
 		}
+
+		FillFinaleRecord(record);
 
 		// The majors' endings (the season story) go with it
 		if (RZ_Majors.Get())
@@ -2112,9 +2161,155 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		RZ_Persistence.SaveSeason(record);
+		if (GetHall())
+			GetHall().SetSeasonLine(SeasonLine());
+
 		// The epilogue starts: the wipe cycle counts from now (RZ_Seasons)
 		m_Seasons.OnCureCompleted();
 		SaveState();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The finale's part of the season record: the route, how, the terms, the finisher, the
+	//! deciders, the half rule set for next season.
+	protected void FillFinaleRecord(RZ_SeasonRecord record)
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (!finale || !RZ_CureFinale.IsOn())
+			return;
+
+		record.route = finale.Controller() + 1;
+		record.finisher = finale.Finisher() + 1;
+		record.how = finale.How();
+		record.terms = finale.Terms();
+		record.partner = finale.Partner() + 1;
+		record.deciders.Clear();
+		foreach (string ident : finale.GetDeciders())
+		{
+			RZ_PlayerProfile p = FindProfileByIdentity(ident);
+			string name = "someone";
+			int pid = m_Questlines.OnlineId(ident);
+			if (pid > 0)
+				name = RZ_Util.PlayerName(pid);
+
+			if (p || pid > 0)
+				record.deciders.Insert(name);
+		}
+
+		// At most one half rule set on top: the deal partner, else the Fame leader when it isn't the
+		// controller (Finale > Fame leader rule)
+		record.halfRules = -1;
+		int leader = GetSeasonLeader();
+		if (finale.Partner() >= 0 && finale.Partner() < RZ_CureFinale.INDEP && finale.How() == RZ_CureFinale.HOW_DEAL)
+			record.halfRules = finale.Partner();
+		else if (finale.GetSettings().m_bFameLeaderRule && leader >= 0 && leader != m_iSeasonWinner && finale.Controller() != RZ_CureFinale.NONE)
+			record.halfRules = leader;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The terms came in at the release (RZ_CureFinale.OnTerms): the winner (the Independent's one
+	//! side), the record and the hall's line follow them.
+	void OnFinaleReleased()
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (!finale)
+			return;
+
+		m_iSeasonWinner = finale.ControllerFaction();
+		RZ_SeasonRecord record = RZ_Persistence.LoadSeason();
+		if (record && record.season == m_Seasons.GetSeason())
+		{
+			record.winner = m_iSeasonWinner;
+			record.winnerName = RZ_Factions.GetName(m_iSeasonWinner);
+			if (m_iSeasonWinner < 0)
+				record.winnerName = "nobody";
+
+			FillFinaleRecord(record);
+			RZ_Persistence.SaveSeason(record);
+		}
+
+		string line = FinaleEndingText(finale);
+		if (!line.IsEmpty())
+			NotifyAll("The cure", line);
+
+		if (GetHall())
+			GetHall().SetSeasonLine(SeasonLine());
+
+		SaveState();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "The cure: the Haven, by force. The Zone's Fame: Bastion, 1640." (the hall of fame).
+	string SeasonLine()
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale && RZ_CureFinale.IsOn())
+			return finale.SeasonLine(m_iSeasonWinner);
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cure's line under the finale: by route and terms (docs/FINALE.md, "Endings").
+	static string FinaleEndingText(RZ_CureFinale finale)
+	{
+		int c = finale.Controller();
+		int t = finale.Terms();
+		switch (c)
+		{
+			case RZ_CureFinale.HAVEN:
+			{
+				if (t == 2)
+					return "The Haven holds the cure. Somebody finally drove out to the far house.";
+				if (t == 3)
+					return "The Haven holds the cure. The houses read the bite book, not the List.";
+				if (t == 4)
+					return "The Haven holds the cure. They went down the List from the bottom.";
+				return "The Haven holds the cure. It goes hand to hand, and the first box went to her house.";
+			}
+			case RZ_CureFinale.BASTION:
+			{
+				if (t == 2)
+					return "Bastion holds the cure. The column's slips go first, by the numbers on them.";
+				if (t == 3)
+					return "Bastion holds the cure. \"The sick first. Whoever.\"";
+				if (t == 4)
+					return "Bastion holds the cure. Names are taken at the table, for everyone.";
+				return "Bastion holds the cure. Soldiers first, then civilians attached.";
+			}
+			case RZ_CureFinale.REDHAND:
+			{
+				if (t == 2)
+					return "The Red Hand holds the cure. They read the book from the back. The last name was on the first line. Paid.";
+				if (t == 3)
+					return "The Red Hand holds the cure. The first pan went to a Haven house for nothing.";
+				if (t == 4)
+					return "The Red Hand holds the cure. Every dose went on somebody's line. The book has never been so full.";
+				return "The Red Hand holds the cure. Two tins a dose at the crossroads. Lab stickers extra.";
+			}
+			case RZ_CureFinale.HALCYON:
+			{
+				if (t == 2)
+					return "Halcyon holds the cure. The volunteers first, by name.";
+				if (t == 3)
+					return "Halcyon holds the cure. The newly bitten first: they're likeliest to walk out.";
+				if (t == 4)
+					return "Halcyon holds the cure. THE METHOD. READ IT. COPY IT. PASS IT ON.";
+				return "Halcyon holds the cure. The authors first.";
+			}
+			case RZ_CureFinale.INDEP:
+			{
+				if (t == 2)
+					return "Nobody's batch went to one side, with a condition chalked on the crate.";
+				if (t == 3)
+					return "Nobody's batch is sold from a crate at the queue. The payment goes nowhere.";
+				if (t == 4)
+					return "Nobody's batch is behind a padlock that isn't the lab's. BACK SOON.";
+				return "Nobody's batch: ONE EACH. Free, at the queue, first come first served.";
+			}
+		}
+
+		return "Nobody held the clean room. The lab handed the cure to the faction the Zone had backed all season.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2375,7 +2570,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	protected void UpdateReplicated()
 	{
-		m_fReplCureProgress = m_Cure.m_fProgress;
+		m_fReplCureProgress = m_Cure.ShownProgress();
 		m_fReplCureBacklog = m_Cure.GetBacklog();
 		m_bReplLabFull = m_Cure.IsLabFull();
 		m_bReplAtGate = m_Cure.IsAtFinaleGate();
@@ -2591,6 +2786,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		}
 
 		m_Director.Restore(data.stage, data.stageMinutes, data.playedMinutes);
+		// The finale first: whether the batch waits for its seal decides if a saved stand restarts
+		m_Finale.Restore(data.finale);
 		m_Cure.Restore(data.cureProgress, data.cureMilestone, data.cured, data.labAntidotes, data.stolenAntidotes, data.labStabilisers);
 		m_Cure.RestoreLab(data);
 		if (data.seasonFame)
@@ -2702,6 +2899,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Questlines && m_Questlines.IsEnabled())
 			data.questlines = m_Questlines.Save();
+
+		if (m_Finale && RZ_CureFinale.IsOn())
+			data.finale = m_Finale.Save();
 
 		if (m_Facts)
 			data.facts = m_Facts.Save();

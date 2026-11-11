@@ -708,6 +708,7 @@ Known toll pass the difference between being shot and not.
 | The killers' camp in The Witness | Players within 150 m who aren't at least Known with the Red Hand |
 | The crew in the trees at a Distress Call (its loop and bait truths), the carriers at a Crash Site already taken, the convicts in Prison Break | Players within 300 m (250 m for the convicts) who aren't at least Known with the Red Hand |
 | The Sniper | Every player within 500 m, Red Hand friends included |
+| A faction's group at the cure finale's stand | Within 1.5 km of the lab during the stand, players locked to a side fighting that faction's route ([FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)); never Halcyon's, and not in Tally mode |
 | Rival Survivors (an unaligned group on `SURV`) | Only a player Hunted by any faction or Watched by two, once they come within 120 m (the Haven bit, like a wanderer's grudge) |
 
 In Trader Caravan the trader is put on a variant the Red Hand is hostile to, so the raiders go
@@ -805,12 +806,37 @@ Planned (disguise phases 2 and 3, [DISGUISE.md](../designs/DISGUISE.md)): again-
 trace, roll call, word gets round, vouching at barriers, the Rogue's price, kit that remembers whose
 it was (a dead man's, off the turned, signed for), confiscation at searches, the nail list.
 
+## The cure finale: locks and war
+
+The last tenth of the cure is a race between five routes ([FINALE.md](FINALE.md)) ✅. What it does to
+standing:
+
+- **Locking.** You lock to one route at its desk, for the season; dying doesn't undo it. A faction
+  route locks you unless you're Hunted by its faction; the Hunted lock if they're owed (the parley,
+  [above](#the-parley-and-the-knock)) or pay its **price door** (the Haven's *In pencil*, Bastion's *Sign
+  on, attached*, the Red Hand's *line in the book*, Halcyon's *volunteers' book*). A price door opens
+  the route only: Infamy stays. The Independent route is always open.
+- **War deeds.** Killing a player locked to a faction route costs **+3 Infamy** with that faction (an
+  Independent-locked victim: the Haven), at most **12 an hour**, tagged war. At the stand, within
+  150 m of the lab, fire between locked players of different sides costs nothing, and the lab's
+  safe-zone rule doesn't apply to locked players; killing an unlocked player there costs +10 Halcyon.
+  Shooting your own side: +10 with your route's faction. Nothing new is paid for these kills.
+- **Parley** closes with any faction whose route is fighting yours (a hostile act in the last 2 real
+  days, or the stand). It reopens at the cure.
+- **Pay.** All finale content pays at most 50 Fame per faction per player, 60 Favor and 40 Infamy.
+
 ## The season's winner
 
-When the final stand is won, the cure goes to whichever faction the server gave the most Fame
-this season ✅. What that means is in [LORE.md](LORE.md), "Endings". The winner shapes the next season's
-starting rules ✅: in the Red Hand's season the fence opens at Known, and in Bastion's its
-checkpoints keep a curfew ([DESIGN.md](DESIGN.md#seasons)).
+When the final stand is won, **whoever holds the clean room controls the cure** ✅
+([FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)), and the faction whose rules apply is the
+controller's (an Independent cure: only by its "one side" terms). **Season Fame**, the Fame the
+server gave each faction this season summed over all players plus the finisher's capped chunk, is the
+fallback: when nobody holds the room the cure is **handed over** to the faction with the most, and
+with the finale off it picks the winner as it always did. Season Fame also gives the hall of fame its
+line (*"The cure: the Haven, by force. The Zone's Fame: Bastion, 1640."*) and, when the Fame leader
+isn't the controller, its rules at half next season. What each ending means is in [LORE.md](LORE.md),
+"Endings". The winner shapes the next season's starting rules ✅: in the Red Hand's season the fence
+opens at Known, and in Bastion's its checkpoints keep a curfew ([DESIGN.md](DESIGN.md#seasons)).
 
 ## How it maps to code
 
@@ -850,5 +876,7 @@ checkpoints keep a curfew ([DESIGN.md](DESIGN.md#seasons)).
   `RZ_Retaliation` handles shooting back; `RZ_Disguise` reads kit, runs claims and looks, catches and
   exposures, and doubles an act seen while passing; `RZ_Parley` runs the parley, the knock, amends
   reservations (`RZ_Mission.Reserve`) and settling up.
-- The season's winner: Fame per faction summed over all players (`RZ_SaveData.seasonFame`),
-  written to `last_season.json`.
+- The season's winner: the cure finale's controller (`RZ_CureFinale.ControllerFaction`), else Fame
+  per faction summed over all players (`RZ_SaveData.seasonFame`, plus `AddFactionBonus` for the
+  finisher's chunk), written to `last_season.json`. The finale's locks, price doors, war Infamy and
+  caps are in `Cure/RZ_CureFinale.c`.

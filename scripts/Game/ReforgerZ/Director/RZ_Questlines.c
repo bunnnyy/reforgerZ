@@ -787,7 +787,7 @@ class RZ_Questlines
 	//! percent until a finale takes it further (RZ_CureResearch.IsAtFinaleGate).
 	bool HasCureFinale()
 	{
-		return m_bHasCureFinale && m_Settings.m_bEnabled;
+		return m_bHasCureFinale && m_Settings.m_bEnabled && RZ_CureFinale.IsOn();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1026,6 +1026,7 @@ class RZ_Questlines
 		{
 			m_fMajorCheck = 0;
 			TryStartMajors();
+			TryStartRoutes();
 		}
 
 		if (m_fClock < m_fNextChance)
@@ -1074,8 +1075,8 @@ class RZ_Questlines
 		}
 
 		// The wait is over, but the stage can't happen: it waits, then fizzles (a major never
-		// fizzles: its act's clock decides when the default moves it on)
-		if (!run.m_Line.IsMajor() && st.m_fGiveUpHours > 0 && m_fClock - run.m_fReadyAt >= st.m_fGiveUpHours * 3600 * scale)
+		// fizzles: its act's clock decides when the default moves it on; a finale route waits)
+		if (!run.m_Line.IsMajor() && !run.m_Line.IsCureFinale() && st.m_fGiveUpHours > 0 && m_fClock - run.m_fReadyAt >= st.m_fGiveUpHours * 3600 * scale)
 		{
 			run.m_iEnding = -1;
 			run.m_sEndText = run.Fill(st.m_sFizzle);
@@ -1247,7 +1248,7 @@ class RZ_Questlines
 	{
 		RZ_QuestStage st = run.m_Line.GetStage(stage);
 		int visits = run.Visits(stage) + 1;
-		if (visits > Math.MaxInt(1, st.m_iMaxVisits) && !run.m_Line.IsMajor())
+		if (visits > Math.MaxInt(1, st.m_iMaxVisits) && !run.m_Line.IsMajor() && !run.m_Line.IsCureFinale())
 		{
 			// A loop that keeps failing ends here, cleanly
 			run.m_iEnding = -1;
@@ -1412,6 +1413,89 @@ class RZ_Questlines
 
 			Begin(line.m_sKey);
 		}
+	}
+
+	// ================================================================ The finale's routes
+	//------------------------------------------------------------------------------------------------
+	//! The finale's lane (docs/FINALE.md): at the gate every route not running and not ended this
+	//! season begins (outside Max active and the faction slots).
+	protected void TryStartRoutes()
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (!finale || !finale.IsOpen() || finale.IsFrozen())
+			return;
+
+		foreach (RZ_Questline line : m_aLines)
+		{
+			if (!line.IsCureFinale() || FindRunByKey(line.m_sKey) || m_aDone.Contains(line.m_sKey))
+				continue;
+
+			Begin(line.m_sKey);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A route finished (RZ_CureFinale.Finish): every other route's stage work is called off, with
+	//! no pay and no penalty, and its items are gone. They wait (frozen) until the cure.
+	void FreezeRoutes(string finisherKey)
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		foreach (RZ_QuestRun run : m_aRuns)
+		{
+			if (run.m_bDone || !run.m_Line.IsCureFinale() || run.m_sKey == finisherKey)
+				continue;
+
+			Withdraw(run);
+			if (finale)
+				finale.GetItems().ClearRoute(RZ_CureFinale.RouteOfKey(run.m_sKey));
+
+			RZ_FinaleRoute route = RZ_FinaleRoute.Cast(run.m_Line);
+			if (route && run.m_iStage != RZ_FinaleRoute.S_AFTER)
+				JumpTo(run, RZ_FinaleRoute.S_AFTER);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A stand was lost: the finisher's route makes the batch again (its remake step).
+	void RouteRemake(string finisherKey)
+	{
+		RZ_QuestRun run = FindRunByKey(finisherKey);
+		if (run && RZ_FinaleRoute.Cast(run.m_Line))
+			JumpTo(run, RZ_FinaleRoute.S_REMAKE);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cure: every route ends; the controller's goes to its release (the terms). A controller
+	//! whose run is gone gets its default terms at once.
+	void EndRoutes(string controllerKey)
+	{
+		bool released = false;
+		for (int i = m_aRuns.Count() - 1; i >= 0; i--)
+		{
+			RZ_QuestRun run = m_aRuns[i];
+			RZ_FinaleRoute route = RZ_FinaleRoute.Cast(run.m_Line);
+			if (run.m_bDone || !route)
+				continue;
+
+			bool mine = run.m_sKey == controllerKey;
+			if (mine)
+				released = true;
+
+			Withdraw(run);
+			JumpTo(run, route.AtCure(m_GM, run, mine));
+		}
+
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		int c = RZ_CureFinale.RouteOfKey(controllerKey);
+		if (released || !finale || c < 0)
+			return;
+
+		RZ_FinaleRoute line = RZ_FinaleRoute.Cast(FindLine(controllerKey));
+		int terms = 1;
+		if (line)
+			terms = line.DefaultTerms(m_GM);
+
+		finale.OnTerms(c, terms, 0, null);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1614,6 +1698,11 @@ class RZ_Questlines
 
 		// The majors are the season's stories: everyone sees them (the journal's season view)
 		if (run.m_Line && run.m_Line.IsMajor())
+			return true;
+
+		// A finale route: its own locked players always see it
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale && run.m_Line && run.m_Line.IsCureFinale() && finale.RouteOfPlayer(playerId) == RZ_CureFinale.RouteOfKey(run.m_sKey))
 			return true;
 
 		RZ_Mission m = m_GM.GetMissions().FindById(run.m_iMissionId);

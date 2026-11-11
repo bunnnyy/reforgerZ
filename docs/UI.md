@@ -127,10 +127,10 @@ oldest first.
 
 | Priority | Means | Examples |
 |---|---|---|
-| Urgent | danger to you, now | Bitten, Fever, Weakness, The end of it, Horde, THE FINAL STAND |
-| High | about you, now | your background card, a locked background, your standing changed, a background unlocked, every mission notice (offered, "this is the place", done, failed, refused) |
+| Urgent | danger to you, now | Bitten, Fever, Weakness, The end of it, Horde, THE FINAL STAND, the clean room changing hands and overtime ([FINALE.md](FINALE.md)) |
+| High | about you, now | your background card, a locked background, your standing changed, a background unlocked, every mission notice (offered, "this is the place", done, failed, refused), the finale's lock card ("[Point of no return]") and "Written down", the batch and the seal calls |
 | Normal | radio and faction voices | open and secure channels, the broadcast, faction notices, world events, anything with an unusual title |
-| Low | news and welcome | at spawn: the outbreak, the broadcast, word on the roads, this season, the hall of fame, the "Radio" summary; guidance reminders for veterans |
+| Low | news and welcome | at spawn: the outbreak, the broadcast, word on the roads, this season, the hall of fame, the "Radio" summary; guidance reminders for veterans; the finale's stand line within 150 m of the lab ("CLEAN ROOM: Bastion. The Haven taking: 0:35 of 0:60.") |
 
 - **At spawn** the background card comes first, then the state of the world, one by one. For
   **Calm after spawn** (4 s) after a new life only urgent and high cards show.
@@ -542,4 +542,4 @@ reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter |
 | Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the subtitles; mouse clicks and the pad; the notice board menu (**UI > Board menus** is off); the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |
 | Not done | The override of the vanilla deploy menu's layout that holds the background panel, so the panel doesn't show. The map configuration override with `RZ_MapIconsUI`, and **UI > Map icon layout** (empty: set, it turns the vanilla text markers off), so the map shows the vanilla markers. Images for the icons the scripts never swap (the map key's, the radio channel list, the HUD's radio, noise and paused icons, the background panel's): they draw as flat squares in their colour |
-| Planned | The `mission_errand` icon (errand rows use `mission_unarmed`); a sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm |
+| Planned | The `mission_errand` icon (errand rows use `mission_unarmed`); a sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm; the cure finale's own UI: the journal's finale page, the lock card as a screen and the stand's HUD line under the noise meter (today they're a desk's "How do things stand?" and the readout under each route's journal entry, a notice, and low notices: [FINALE.md](FINALE.md#simplified-and-not-built-yet)) |

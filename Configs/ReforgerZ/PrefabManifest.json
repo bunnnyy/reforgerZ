@@ -4760,6 +4760,12 @@
    "covers": "**Enabled** (on; needs Questlines on), lead points (5), grace sessions (1), hold limit (1), stall points (1), between beats (4), slots (2) ([DESIGN.md](DESIGN.md#the-majors))"
   },
   {
+   "category": "Director",
+   "object": "Finale",
+   "field": "m_FinaleSettings",
+   "covers": "**Enabled** (on; needs Questlines on; off: research runs to 100 and the cure goes to the most season Fame), route worth (0.25), floor (150), ceiling (0: none), soft line (1.1), batch real hours (12) and play hours (2), seal call minutes (60), seal hour (-1: off), take seconds (90), take per point (5), take floor (45), overtime (180 s), clean room radius (10 m), bay seconds (120), **Contest** (Auto, Force, Tally), Coat Run, Take the Lab, pacts (on), groups at the lab (2), fight memory days (2), active lock days (2) and hours (2), Fame leader rule (on) ([FINALE.md](FINALE.md))"
+  },
+  {
    "category": "Zombies",
    "object": "Zombie settings",
    "field": "m_ZombieSettings",
@@ -5127,6 +5133,38 @@
     "m_fStallPoints": "1",
     "m_fBetweenBeats": "4",
     "m_iSlots": "2"
+   }
+  },
+  {
+   "field": "m_FinaleSettings",
+   "category": "Director",
+   "label": "Finale",
+   "cls": "RZ_FinaleSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_fRouteWorth": "0.25",
+    "m_iFloor": "150",
+    "m_iCeiling": "0",
+    "m_fSoftLine": "1.1",
+    "m_fBatchRealHours": "12",
+    "m_fBatchPlayHours": "2",
+    "m_iSealCallMinutes": "60",
+    "m_iSealHour": "-1",
+    "m_fTakeSeconds": "90",
+    "m_fTakePerPoint": "5",
+    "m_fTakeFloor": "45",
+    "m_fOvertimeSeconds": "180",
+    "m_fRoomRadius": "10",
+    "m_fBaySeconds": "120",
+    "m_eContest": "0",
+    "m_bCoatRun": "1",
+    "m_bTakeTheLab": "1",
+    "m_bPacts": "1",
+    "m_iGroups": "2",
+    "m_fFightDays": "2",
+    "m_fActiveDays": "2",
+    "m_fActiveHours": "2",
+    "m_bFameLeaderRule": "1"
    }
   },
   {

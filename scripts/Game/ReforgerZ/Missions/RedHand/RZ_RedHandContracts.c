@@ -1434,13 +1434,32 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 class RZ_Mission_TakeTheLab : RZ_Mission_Hold
 {
 	protected bool m_bTaken;
+	protected bool m_bFinale;	// the cure finale's mode: the Red Hand route's holder change at the loading bay
+
+	//------------------------------------------------------------------------------------------------
+	//! The cure finale runs: Take the Lab is the Red Hand route's once-a-season theft (docs/FINALE.md).
+	protected static bool FinaleMode()
+	{
+		return RZ_CureFinale.Get() && RZ_CureFinale.IsOn() && RZ_CureFinale.Get().IsOpen();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
-		SetContract(RZ_EFaction.BANDITS, RZ_ETier.CHAMPION, 60, 60);
-		SetRival(RZ_EFaction.INSTITUTE, 40);
-		m_fHoldNeeded = 90;
+		m_bFinale = FinaleMode();
+		if (m_bFinale)
+		{
+			// Started by a Red Hand-locked player Trusted with the Red Hand; the holder change is the prize
+			SetContract(RZ_EFaction.BANDITS, RZ_ETier.TRUSTED, 10, 20);
+			m_fHoldNeeded = RZ_CureFinale.Get().BaySeconds();
+		}
+		else
+		{
+			SetContract(RZ_EFaction.BANDITS, RZ_ETier.CHAMPION, 60, 60);
+			SetRival(RZ_EFaction.INSTITUTE, 40);
+			m_fHoldNeeded = 90;
+		}
+
 		m_fHoldRadius = 10;
 		m_fTimeLeft = 900;
 	}
@@ -1448,7 +1467,8 @@ class RZ_Mission_TakeTheLab : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
-		if (!gm.HasLab() || !gm.GetCure().IsFinalStand())
+		// While a finale runs it leaves the random pool: the controller offers it at the stand
+		if (!gm.HasLab() || !gm.GetCure().IsFinalStand() || FinaleMode())
 			return 0;
 
 		return 3;
@@ -1462,7 +1482,52 @@ class RZ_Mission_TakeTheLab : RZ_Mission_Hold
 		m_fParticipationRadius = 40;
 		m_sTitle = "Take the Lab";
 		m_sBrief = "Halcyon is cooking the cure and every gun in the Zone is at their door. While they're busy with the dead, walk into the clean room and hold it for ninety seconds. We'll carry the batch out ourselves.";
+		if (m_bFinale)
+		{
+			m_vPos = RZ_CureFinale.Get().BayPos();
+			m_sBrief = "The lorry backs up to the lab's loading bay. Hold the bay while the crew goes in, with none of the holders' people near it, and the clean room is ours.";
+		}
+
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The finale's bay hold: only Red Hand-locked players who count at the stand hold it, one of
+	//! them Trusted to start it, and the count pauses while the holder's side is within 15 m.
+	protected void FinaleHold(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (!finale || !gm.GetCure().IsFinalStand())
+		{
+			m_eState = RZ_EMissionState.FAILED;
+			return;
+		}
+
+		bool counted = false;
+		foreach (int i, IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), m_vPos) > m_fHoldRadius || !finale.CountsForBay(ids[i]))
+				continue;
+
+			if (!m_bStarted && !finale.CanStartTake(ids[i]))
+				continue;
+
+			m_bStarted = true;
+			counted = true;
+			if (!m_aParticipants.Contains(ids[i]))
+				m_aParticipants.Insert(ids[i]);
+		}
+
+		if (!counted || finale.BayContested(players))
+			return;
+
+		m_fHeld += dt;
+		if (m_fHeld < m_fHoldNeeded || m_bTaken)
+			return;
+
+		m_bTaken = true;
+		m_eState = RZ_EMissionState.SUCCEEDED;
+		finale.OnTakeTheLab();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1483,6 +1548,12 @@ class RZ_Mission_TakeTheLab : RZ_Mission_Hold
 	//! ended) is a failure, not an unpaid success.
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
+		if (m_bFinale)
+		{
+			FinaleHold(gm, dt, ids, players);
+			return;
+		}
+
 		super.OnUpdate(gm, dt, ids, players);
 		if (m_eState != RZ_EMissionState.SUCCEEDED || m_bTaken)
 			return;

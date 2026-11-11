@@ -62,6 +62,13 @@ and one way to end it: **research the cure.**
   milestones in order, council votes and a muster, and codas at the north road after the cure. Their
   defaults fire from what the server is really doing (research pace, hours played, who's engaging,
   the gap since the last beat), never on fixed days ([QUESTLINES.md](docs/QUESTLINES.md#the-majors)).
+- **The cure's finale** ([FINALE.md](docs/FINALE.md)): at 90% the lab's batch is missing one thing,
+  and five routes race to bring it (the woman who didn't turn, the captain's Day 2 tubes, the cook's
+  still, the lower store's reference stock, the eight who walked out of the Day 6 trial). Each needs
+  one thing a rival faction holds, and every door has a slower way round. You lock to one route for
+  the season; the first to finish makes the batch and earns its faction a capped chunk of season
+  Fame; and the final stand is a fight for the clean room: whoever holds it when the stand is won
+  controls the cure and chooses its terms. Season Fame decides only when nobody holds the room.
 - **164 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
   events, puzzle missions, unarmed stealth jobs, missions at the quarantine line, morally grey
   Haven and Red Hand work and leaders' off-book jobs. Contracts
@@ -142,9 +149,11 @@ yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do i
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
 **Not built yet:** the content pass onto the world facts (see the roadmap's *Next*), and the
-approved designs for the rest of the season: the rest of the four majors, the cure's finale, the
-epilogue week, errands' margin, lock and epilogue cards and more, built in the order of
-[designs/PLAN.md](designs/PLAN.md). Built so far: the four majors (phase 5, simplified,
+approved designs for the rest of the season: the rest of the four majors and of the cure's finale,
+the epilogue week, errands' margin, lock and epilogue cards and more, built in the order of
+[designs/PLAN.md](designs/PLAN.md). Built so far: the cure's finale (phase 6, simplified:
+the controller, the lock, the five routes, live tissue, pacts, the stand as a fight for the clean
+room, Take the Lab and the Coat Run, terms, [FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified,
 [QUESTLINES.md](docs/QUESTLINES.md#the-majors)); the shared engine (phase 1); small
 things everywhere (phase 3: errands' core, the mission style's framework and the world memory's
 writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, simplified: the six story
@@ -159,7 +168,7 @@ moves, new tribes, memory), the behaviour layer and the crawlers' daily life, an
 (each faction's words and marks, knowing, skills, your dead run, the moat, 13 contracts and the
 reworked events, the cure's hooks and the last week), and the great one with its Gathering and Night of
 Many Calls, the packs' signs and call sounds, the bright moon and the map's range rings (tribes phases
-1 to 5, [INFECTED.md](docs/INFECTED.md)). The finale's live tissue goes in with the finale.
+1 to 5, [INFECTED.md](docs/INFECTED.md)).
 
 ## Docs
 
@@ -175,11 +184,12 @@ Many Calls, the packs' signs and call sounds, the bright moon and the map's rang
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards |
 | [QUESTLINES.md](docs/QUESTLINES.md) | The four majors (one season-long story per faction) and the long questlines over many sessions, three per faction and two for the Long Table |
+| [FINALE.md](docs/FINALE.md) | The cure's finale: the five routes, the lock, the race, the stand as a fight for the clean room, terms, Fame and fallbacks |
 | [MOD_STACK.md](docs/MOD_STACK.md) | Which Workshop mods the server runs and why |
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
-| [designs/](designs/README.md) | Approved designs not built yet (the four majors, the cure's finale, the epilogue week, infected tribes, dialogue, errands, the mission style, reputation names, disguise, tone) and the build plan. Each moves into `docs/` as it's built |
+| [designs/](designs/README.md) | Approved designs not built yet (the rest of the four majors and the cure's finale, the epilogue week, infected tribes, dialogue, errands, the mission style, reputation names, disguise, tone) and the build plan. Each moves into `docs/` as it's built |
 
 ## Code
 
@@ -194,7 +204,8 @@ scripts/Game/ReforgerZ/
                  reads: season flags, canon, claims and soft holds, text tokens) and its world
                  memory (reasons, signals, the town log, world records, the truth deck) with its
                  writers, the marks spawner, the Long Table, the land grid (water, height, trees,
-                 roads, bridges and wild land), named people and the faults table
+                 roads, bridges and wild land), named people, the finale's people and the faults
+                 table
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, the season mood and grief, story arcs, the questline engine,
                  the majors' engine (acts, votes, the dynamic fallbacks, the season story),
@@ -220,9 +231,11 @@ scripts/Game/ReforgerZ/
                  ways through a job; Story/ (the story kit, who decides, who benefits, reasons);
                  Errands/ (the dealer, the routines, Cards/); Questlines/ (the author's base class,
                  approach helpers, the majors' scenes, the registry, one folder per faction with
-                 its major, and one for the Long Table)
+                 its major, one for the Long Table, and Finale/: the cure finale's five routes,
+                 desks, tissue hunts and items)
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
-  Cure/          research, lab, samples, antidotes, infection stages, treatments and meds
+  Cure/          research, lab, samples, antidotes, infection stages, treatments and meds; the
+                 cure finale's controller (tracks, locks, pacts, the batch, the stand's clean room)
   Guidance/      experience levels, tips, spawn scenarios, open radio channels
   Interactions/  loose loot, searching, door locks, doorway blockers and keys, building queries (mission
                  spots kept out of locked buildings), cars, crafting, water,

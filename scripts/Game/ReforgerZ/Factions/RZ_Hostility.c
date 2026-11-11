@@ -630,6 +630,12 @@ class RZ_Hostility
 
 		mask = mask | ZoneMask(playerId, ent.GetOrigin());
 
+		// The cure finale's stand: rival sides' players carry the bits of the factions whose routes
+		// they're fighting, within 1.5 km of the lab (never Halcyon's; docs/FINALE.md)
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale)
+			mask = mask | finale.StandMask(playerId, ent.GetOrigin());
+
 		if ((mask & haven) == 0 && FindGrudge(playerId, ent))
 			mask = mask | haven;
 

@@ -4,8 +4,9 @@
 land, bodies and the budget, the tribes' daily life and hunts, their life cycle, the people's side
 ([People](../docs/INFECTED.md#people)), the great alpha, signs and sounds ([The great
 one](../docs/INFECTED.md#the-great-one)). What's left here is designed: the small rules each section
-still lists, the people's rest ([People](#people)), and the finale's live tissue (it goes in with the
-finale). Approved by the author on 2026-11-11.
+still lists, the people's rest ([People](#people)), and the finale's live tissue's rest (the hunts
+themselves are built with the finale: [docs/FINALE.md](../docs/FINALE.md#live-tissue)). Approved by the
+author on 2026-11-11.
 
 ## What changed in review
 

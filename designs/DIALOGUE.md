@@ -67,7 +67,7 @@ all conversations in this one engine. Nobody builds a second talk system.
   stranger are re-angled to towns of crawlers; the bark reads a tribe's leader calling at dusk.
 - **The finale's edges.** `CanCommit` reads `CanSideWith`; the lock is per identity for the season and ends
   at the cure; late joiners can commit until the stand is won; `RouteOf(identity)` everywhere
-  (conflict 39). See [FINALE.md](FINALE.md#4-the-lock).
+  (conflict 39). See [FINALE.md](../docs/FINALE.md#the-lock).
 - **The epilogue lasts one week** (decision 12). Dialogue delivers the closure set's scenes and topics
   ([The last week](#18-finale-and-the-last-week)).
 - **One owner-only payload for all personal text** and **one names policy** (the plan's section 5).
@@ -410,7 +410,7 @@ Dialogue is where a claim is spoken. The built AI behaviour doesn't change.
     that faction's kit, sees "[Point them out] 'That one's not yours.'". Each point-out is −1 at that look
     (two at most), shown in the tags. Wrong (it was their own kit): the pointer takes regard *slander* with
     that speaker. Once per pair per hour. The Coat Run's call-outs at the clean room door are the same
-    mechanic ([FINALE.md](FINALE.md#the-coat-run-independent-once-a-season)).
+    mechanic ([FINALE.md](../docs/FINALE.md#take-the-lab-and-the-coat-run)).
 11. **Changing clothes ends the session.** Kit is checked on every pick and every 5 s. Any change ends the
     session ("...Didn't you just—? Never mind. Off you go."). So nobody opens a hub in one outfit and picks in
     another.
@@ -600,7 +600,7 @@ interruption budget; dialogue is how they're spoken, through `errand:` and the a
 
 ### The finale's commit
 
-[FINALE.md](FINALE.md#4-the-lock) owns the routes, the lock and its rules. Dialogue gives it the confirm node.
+[FINALE.md](../docs/FINALE.md#the-lock) owns the routes, the lock and its rules. Dialogue gives it the confirm node.
 
 - **Where routes are taken.** Each faction route's topic is an `always` topic on its stronghold leader and on
   its Loyal seat leaders. So a player whose stronghold leader refuses them, or who is far away, can commit at
@@ -1117,7 +1117,7 @@ The vote is counted at 20:30, and the chair breaks ties. Nobody won anything by 
 
 ### H. The point of no return
 
-[FINALE.md](FINALE.md#4-the-lock) owns the routes. Bastion's route at any Loyal Bastion seat, and the Independent
+[FINALE.md](../docs/FINALE.md#the-lock) owns the routes. Bastion's route at any Loyal Bastion seat, and the Independent
 route on the radio.
 
 ```

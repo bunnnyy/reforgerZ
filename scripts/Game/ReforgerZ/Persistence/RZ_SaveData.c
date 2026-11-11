@@ -59,6 +59,9 @@ class RZ_SaveData
 	int seasonStartUnix;
 	int cureUnix;
 	int rulesWinner = -1;
+	int rulesHalf = -1;		// the cure finale's half rule set on top (a faction), -1 none
+	int rulesRoute;			// last season's finale route + 1 (5: the Independent), 0 none
+	int rulesTerms;
 	bool wipeDue;
 
 	bool hasLab;
@@ -121,6 +124,8 @@ class RZ_SaveData
 	ref RZ_CrawlerSave crawlers;
 	// The tribes (Zombies/RZ_Tribes.c). Older saves have none: the season's seeds are made on load
 	ref RZ_TribesSave tribes;
+	// The cure finale (Cure/RZ_CureFinale.c). Older saves have none
+	ref RZ_FinaleSave finale;
 	bool hasTimeOfDay;
 	float timeOfDay;
 
@@ -140,6 +145,16 @@ class RZ_SeasonRecord
 	string endedBy = "cure";	// "cure" or "time"
 	ref array<int> fame = {};
 	ref array<ref RZ_StoryRecord> stories = {};	// the majors' endings (Director/RZ_Majors.c)
+	// The cure finale (docs/FINALE.md): the controller and finisher (route + 1; 0 none or the lab
+	// alone), how it was won, the terms, the pact partner, the deciders' names, and the half rule
+	// set on top next season (a faction, -1 none). `winner` is the faction whose rules apply in full
+	int route;
+	int finisher;
+	int how;
+	int terms;
+	int partner;
+	int halfRules = -1;
+	ref array<string> deciders = {};
 }
 
 class RZ_Persistence

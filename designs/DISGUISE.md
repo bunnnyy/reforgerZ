@@ -40,7 +40,7 @@ one of three catches per faction per life.
   with his name still on the board, and the callback is the deserter handing his tag to the sergeant.
 - **The Coat Run** (conflict 34, decision 7). This file keeps only its look: difficulty 3, the lock's −1, and call-outs
   making it harder. What it does (re-labelling the sealed batch inside the lab, during another route's batch hold) is
-  [FINALE.md](FINALE.md#the-coat-run-independent-once-a-season)'s. The batch never leaves the cold.
+  [FINALE.md](../docs/FINALE.md#take-the-lab-and-the-coat-run)'s. The batch never leaves the cold.
 - **Halcyon's kit is the beaks** (conflict 35). Halcyon's full kit is a coat and a hood or mask with a respirator. The
   respirator and gas-mask keywords join the attribute's default string (never an initialiser). The mask is never a tell:
   Halcyon's people always wear them outside the clean room.
@@ -222,7 +222,7 @@ seeing through it (the mission passes `seenThrough` today); keeping trick object
   Technician's background. Each holder-route player standing at the clean room door who calls the player out makes it one
   step harder (two at most), as any point-out does. What a pass does (re-labelling the sealed batch inside the lab, during
   another route's batch hold) and what a catch tells the batch's route are in
-  [FINALE.md](FINALE.md#the-coat-run-independent-once-a-season). A catch costs the usual: +3 Halcyon Infamy, the coat
+  [FINALE.md](../docs/FINALE.md#take-the-lab-and-the-coat-run). A catch costs the usual: +3 Halcyon Infamy, the coat
   taken, one of three catches.
 - **Take the Lab** (the Red Hand route's theft) is a hold at the loading bay, not a disguise.
 
@@ -527,7 +527,7 @@ the last week, the same jacket carried to the lost post's roster is taken in: "H
 shift change in a clean coat, hood and respirator, with notebook 31's number. Her notice reads "[Full kit +2] [Lab
 Technician +1] [Notebook 31 +1] [Dark +1] [Locked elsewhere −1] 4 of 3." Two Bastion-locked players are standing at the
 clean room door and both call her out: 2 of 3. She doesn't go in. What a pass would have done is the finale's
-([FINALE.md](FINALE.md#the-coat-run-independent-once-a-season)).
+([FINALE.md](../docs/FINALE.md#take-the-lab-and-the-coat-run)).
 
 ---
 

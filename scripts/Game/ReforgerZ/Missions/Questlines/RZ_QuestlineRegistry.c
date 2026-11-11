@@ -29,6 +29,14 @@ class RZ_QuestlineRegistry
 		q.Register(RZ_Quest_Authors);
 		q.Register(RZ_Major_Proof);
 
+		// The cure finale's five routes (Missions/Questlines/Finale/; docs/FINALE.md): research stops
+		// at the 90 percent gate while they're registered and the finale is on
+		q.Register(RZ_Route_Haven);
+		q.Register(RZ_Route_Bastion);
+		q.Register(RZ_Route_RedHand);
+		q.Register(RZ_Route_Halcyon);
+		q.Register(RZ_Route_OneEach);
+
 		// Unaligned groups
 		// The Long Table (World/RZ_LongTable.c; only in a season that has one)
 		q.Register(RZ_Quest_HouseWentQuiet);
@@ -47,7 +55,8 @@ class RZ_QuestlineRegistry
 			"book", "cargo", "well",
 			"weeks", "other_two", "authors",
 			"table", "place",
-			"every_name", "proof"};
+			"every_name", "proof",
+			"route_haven", "route_bastion", "route_redhand", "route_halcyon", "route_one_each"};
 		return keys.Contains(key);
 	}
 }

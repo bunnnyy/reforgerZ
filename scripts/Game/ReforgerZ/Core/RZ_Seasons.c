@@ -93,6 +93,32 @@ class RZ_SeasonRuleSet
 	bool m_bNoVehicles;
 
 	//------------------------------------------------------------------------------------------------
+	//! A half copy of a rule set (the cure finale's half rule sets, docs/FINALE.md "Next season"):
+	//! numbers half-way to neutral, switches off.
+	static RZ_SeasonRuleSet Half(RZ_SeasonRuleSet r)
+	{
+		if (!r)
+			return null;
+
+		RZ_SeasonRuleSet h = Make(r.m_sName + " (half)", r.m_sDescription);
+		h.m_fStartInfectionMult = 1 + (r.m_fStartInfectionMult - 1) * 0.5;
+		h.m_iSafeTowns = r.m_iSafeTowns / 2;
+		h.m_fSpreadMult = 1 + (r.m_fSpreadMult - 1) * 0.5;
+		h.m_fSpecialMult = 1 + (r.m_fSpecialMult - 1) * 0.5;
+		h.m_fNightSpecialMult = 1 + (r.m_fNightSpecialMult - 1) * 0.5;
+		h.m_fNightHearingMult = 1 + (r.m_fNightHearingMult - 1) * 0.5;
+		h.m_fUpkeepMult = 1 + (r.m_fUpkeepMult - 1) * 0.5;
+		h.m_fMilitaryLootMult = 1 + (r.m_fMilitaryLootMult - 1) * 0.5;
+		h.m_iSafehouseBonus = r.m_iSafehouseBonus / 2;
+		h.m_iRoadPostBonus = r.m_iRoadPostBonus / 2;
+		h.m_iHavenStrength = r.m_iHavenStrength / 2;
+		h.m_iBastionStrength = r.m_iBastionStrength / 2;
+		h.m_iRedHandStrength = r.m_iRedHandStrength / 2;
+		h.m_iHalcyonStrength = r.m_iHalcyonStrength / 2;
+		return h;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static RZ_SeasonRuleSet Make(string name, string description)
 	{
 		RZ_SeasonRuleSet r = RZ_SeasonRuleSet.Cast(RZ_Util.NewWithDefaults("RZ_SeasonRuleSet"));
@@ -348,6 +374,9 @@ class RZ_Seasons
 	protected int m_iStartUnix;
 	protected int m_iCureUnix;
 	protected int m_iRulesWinner = -1;		// whose rules this season started with, -1 none
+	protected int m_iRulesHalf = -1;		// the cure finale's half rule set on top (a faction), -1 none
+	protected int m_iRulesRoute;			// last season's cure finale route (route + 1; 5 the Independent)
+	protected int m_iRulesTerms;			// and its terms
 	protected bool m_bFresh;
 	protected bool m_bWipeDue;
 	protected string m_sWipeReason;
@@ -510,6 +539,9 @@ class RZ_Seasons
 		m_iStartUnix = data.seasonStartUnix;
 		m_iCureUnix = data.cureUnix;
 		m_iRulesWinner = data.rulesWinner;
+		m_iRulesHalf = data.rulesHalf;
+		m_iRulesRoute = data.rulesRoute;
+		m_iRulesTerms = data.rulesTerms;
 		m_bWipeDue = data.wipeDue;
 	}
 
@@ -520,6 +552,9 @@ class RZ_Seasons
 		data.seasonStartUnix = m_iStartUnix;
 		data.cureUnix = m_iCureUnix;
 		data.rulesWinner = m_iRulesWinner;
+		data.rulesHalf = m_iRulesHalf;
+		data.rulesRoute = m_iRulesRoute;
+		data.rulesTerms = m_iRulesTerms;
 		data.wipeDue = m_bWipeDue;
 		if (m_Hall)
 			m_Hall.SaveIfChanged();
@@ -544,11 +579,19 @@ class RZ_Seasons
 			m_iCureUnix = 0;
 			m_bWipeDue = false;
 			m_iRulesWinner = -1;
+			m_iRulesHalf = -1;
+			m_iRulesRoute = 0;
+			m_iRulesTerms = 0;
 
 			// Only the season just ended counts: a record older than the hall's last season (a
 			// wipe by hand after a season without a cure) leaves nothing behind
 			if (last && m_Settings.m_bWinnerRules && last.season >= m_Hall.GetSeason())
+			{
 				m_iRulesWinner = last.winner;
+				m_iRulesHalf = last.halfRules;
+				m_iRulesRoute = last.route;
+				m_iRulesTerms = last.terms;
+			}
 		}
 		else
 		{
@@ -591,8 +634,7 @@ class RZ_Seasons
 	protected RZ_SeasonMods BuildMods()
 	{
 		RZ_SeasonMods mods = new RZ_SeasonMods();
-		if (m_iRulesWinner >= 0)
-			mods.Add(RZ_SeasonRuleSet.ForWinner(m_iRulesWinner));
+		AddWinnerRules(mods);
 
 		// Names lower-cased with spaces dropped, as FindRuleSet compares them
 		array<string> picked = {};
@@ -611,6 +653,46 @@ class RZ_Seasons
 
 		mods.Cap();
 		return mods;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Last season's ending (docs/FINALE.md, "Next season"): the controller's rules in full; the
+	//! Independent by its terms (open: half the Haven's and half Halcyon's; one side: that faction's
+	//! at half; sold: only the Red Hand's black market; kept back: nothing); then at most one half
+	//! rule set on top (a deal partner, else the Fame leader). Seasons before the finale: the
+	//! winner's rules.
+	protected void AddWinnerRules(RZ_SeasonMods mods)
+	{
+		if (m_iRulesRoute == RZ_CureFinale.INDEP + 1)
+		{
+			switch (m_iRulesTerms)
+			{
+				case 1:
+					mods.Add(RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(RZ_EFaction.SURVIVORS)));
+					mods.Add(RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(RZ_EFaction.INSTITUTE)));
+					break;
+				case 2:
+					if (m_iRulesWinner >= 0)
+						mods.Add(RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(m_iRulesWinner)));
+					break;
+				case 3:
+				{
+					RZ_SeasonRuleSet market = RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(RZ_EFaction.BANDITS));
+					market.m_iRoadPostBonus = 0;
+					market.m_iRedHandStrength = 0;
+					market.m_bOpenBlackMarket = true;
+					mods.Add(market);
+					break;
+				}
+			}
+		}
+		else if (m_iRulesWinner >= 0)
+		{
+			mods.Add(RZ_SeasonRuleSet.ForWinner(m_iRulesWinner));
+		}
+
+		if (m_iRulesHalf >= 0 && m_iRulesHalf != m_iRulesWinner)
+			mods.Add(RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(m_iRulesHalf)));
 	}
 
 	//------------------------------------------------------------------------------------------------

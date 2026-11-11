@@ -184,7 +184,7 @@ mean.
 
 ### From 90%: route marks
 
-The finale locks each player into a route ([FINALE.md](FINALE.md#4-the-lock)). The walls show it.
+The finale locks each player into a route ([FINALE.md](../docs/FINALE.md#the-lock)). The walls show it.
 - **Where:** on the verge of holdings' roads and the lab road. One mark per route, at most 2 per place and 12 in all,
   refreshed on the territory tick.
 - **Who counts:** only **active** locks: identities with 2 or more hours played this season who have been online in
@@ -357,7 +357,7 @@ The grey side is in the table:
 
 ## How it was won
 
-The finale reports `finale.how` ([FINALE.md](FINALE.md#how-it-was-won-finalehow)). Each value has a clause in the cure
+The finale reports `finale.how` ([FINALE.md](../docs/FINALE.md#how-it-was-won-finalehow)). Each value has a clause in the cure
 line and its own version of the stand board.
 
 | How | The cure line says | The stand board |
@@ -962,7 +962,7 @@ owns the scenes and their pay; this design owns the calendar, the standing versi
 | **The last line** (the Red Hand closes the book, paid or not) | The boss, at Rudi's crossroads, at dusk on the next free evening after the paper | Stand at the lorry for your own line; hold the crossroads while the horns go for the season's dead; ask the boss about the first line (Trusted, or with a crew name) | Every open line is read out with its name, *"Paid"* written beside the ones that are. The book is nailed open at the last page for the rest of the week. Lines paid in [Settle Accounts](#settle-accounts) before the evening are read as paid |
 
 **The finale's routes get their closing lines too.** Whoever controlled the cure, each route's subject gets its line,
-carried here ([FINALE.md](FINALE.md#the-losing-routes)): the Haven's channel says her name every evening if she was found;
+carried here ([FINALE.md](../docs/FINALE.md#endings-and-next-season)): the Haven's channel says her name every evening if she was found;
 Bastion's last call reads the four R numbers; the cook stands at the lorry with `cook.line_paid`; the readout keeps saying
 *"Reference stock: wanted"*; and *"WE TRIED."* is chalked on the lab gate if the Independent never finished.
 

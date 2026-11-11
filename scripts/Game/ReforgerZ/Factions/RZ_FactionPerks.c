@@ -932,6 +932,11 @@ class RZ_FactionPerks
 		m_iDeathVictim = victim;
 		m_iDeathKiller = killer;
 		RememberKiller(victim, killer);
+		// The cure finale: route items drop where their carrier fell, and kills between route players
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale)
+			finale.OnPlayerKilled(victim, killer, at);
+
 		m_GM.GetMissions().OnPlayerDied(victim, at);
 		// Killed by a tribe's body in the open: that tribe took them (docs/INFECTED.md, the taken)
 		if (killer < 0 && m_GM.GetTribes())

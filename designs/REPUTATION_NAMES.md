@@ -47,7 +47,7 @@ reads.
 - **Tribes replace Grounds** (conflicts 42 and 43): deeds, crew names and conditions read tribes and their leaders,
   in each faction's own word.
 - **The Knock also hosts the Haven's price door,** "In pencil" (conflict 21), so the two no longer share a name.
-- **The lock** follows [FINALE.md](FINALE.md#4-the-lock): the price doors are named, "fighting" has the finale's
+- **The lock** follows [FINALE.md](../docs/FINALE.md#the-lock): the price doors are named, "fighting" has the finale's
   meaning, the Independent's overlay is "nobody's", and killing locked players costs +3 Infamy outside the stand,
   12 an hour at most, and nothing at the stand between locked sides (decision 9).
 - **The epilogue lasts one week** (decision 12). Reputation gives the closure set's Settle Accounts its hooks
@@ -219,7 +219,7 @@ safehouse's named person), `IsEmptyHanded`, amends reservations. Still to build:
 - **After the 90% lock**, closed while that faction's route is **fighting** yours ([§13](#13-the-lock-the-cure-and-the-season-record)).
 - **Pauses** on anyone else's fire, with a grudge on the shooter; `RZ_FactionPerks` skipping that faction's squad
   round for the parleyer while a parley runs.
-- **In pencil** (the finale's Haven price door, [FINALE.md](FINALE.md#price-doors)) on the same Knock: after the 90%
+- **In pencil** (the finale's Haven price door, [FINALE.md](../docs/FINALE.md#the-lock)) on the same Knock: after the 90%
   gate, at dusk, an exile who **isn't** owed offers 4 food for the pot and a name to read; a council head (never the
   chair) writes you on the List in pencil. That opens the Haven's route, not the door, and forgives nothing.
 - The Bastion approach fix stays as built (`RZ_Checkpoints.BastionContact`: only while closing, 90 s at most, closed
@@ -324,14 +324,14 @@ a crew name carried by the book, the route at the lock, all keyed by identity an
 
 ## 13. The lock, the cure and the season record
 
-[FINALE.md](FINALE.md#4-the-lock) owns the routes and the lock. Reputation supplies who may side, and what changes in
+[FINALE.md](../docs/FINALE.md#the-lock) owns the routes and the lock. Reputation supplies who may side, and what changes in
 what people call you.
 
 **Before 90%, reputation locks no finale route.** `CanSideWith(identity, f)` answers:
 - **yes:** f doesn't hunt you;
 - **by parley:** you're owed. A parley at f's gate at the lock opens its door: "You're owed one conversation. This is
   it.";
-- **by price:** the route's price door ([FINALE.md](FINALE.md#price-doors)): In pencil at the Haven's knock; Sign on,
+- **by price:** the route's price door ([FINALE.md](../docs/FINALE.md#the-lock)): In pencil at the Haven's knock; Sign on,
   attached at a Bastion checkpoint; a line in the Red Hand's book; the volunteers' book at a Halcyon field station.
   Each opens the route only and forgives nothing;
 - **Independent:** always open, with no standing needed.
@@ -348,8 +348,8 @@ what people call you.
 
 - **Parley and settling up** stay open with your route's faction. They're closed with a faction whose route is
   **fighting** yours: either route has done a hostile route act against the other in the last 2 real days, or it's the
-  stand ([FINALE.md](FINALE.md#fighting-routes)). Independents keep them with any faction not fighting them right now.
-- **Kills between route players** (decision 9, [FINALE.md](FINALE.md#kills-between-route-players)):
+  stand ([FINALE.md](../docs/FINALE.md#fighting-routes)). Independents keep them with any faction not fighting them right now.
+- **Kills between route players** (decision 9, [FINALE.md](../docs/FINALE.md#kills-between-route-players)):
   - outside the stand, killing a player locked to a faction route costs +3 Infamy with that faction, at most 12 an
     hour; killing an Independent-locked player costs +3 with the Haven;
   - at the stand, within 150 m of the lab, fire between locked players of different sides costs nothing;

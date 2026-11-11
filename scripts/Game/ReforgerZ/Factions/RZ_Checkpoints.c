@@ -1261,6 +1261,11 @@ class RZ_Checkpoints
 		if (f < 0 || RZ_Reputation.IsHunted(m_GM.GetTier(playerId, f)))
 			return;
 
+		// The cure finale's stand: fire between locked players at the lab is war, not a breach
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (f == RZ_EFaction.INSTITUTE && finale && finale.SafeZoneExempt(playerId, pos))
+			return;
+
 		// Defending the place is fine
 		if (m_GM.GetSpawner().IsZombieNear(pos, DEFEND_RADIUS) || m_GM.GetSpawner().IsZombieNear(center, DEFEND_RADIUS))
 			return;

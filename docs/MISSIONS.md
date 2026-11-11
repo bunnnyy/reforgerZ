@@ -24,6 +24,7 @@ people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md).
 | **Total** | **164** | **—** |
 | [Errands](ERRANDS.md) (not missions: asked in person) | 31 routines, 2 wanderers' asks, 18 strangers, 39 cards | the margin, lock and epilogue cards and about 20 more ([designs/ERRANDS.md](../designs/ERRANDS.md)) |
 | [Questlines](#questlines) | 15 questlines and the 4 majors, about 90 stage missions plus the majors' 15 scenes (not counted above) | the majors' parts still designed ([designs/MAJORS.md](../designs/MAJORS.md)) |
+| [The cure finale](#the-cure-finale) | 5 routes (20 scenes and 5 releases), 5 desks, 2 tissue hunts, Take the Lab's finale mode (not counted above) | the subjects' branches, the moves and the rest of each route's ways ([designs/FINALE.md](../designs/FINALE.md)) |
 
 ## Who gets offered what
 
@@ -276,7 +277,7 @@ and Clear the Trail run on after it (with no samples, as nothing drops them).
 | 9 | Bait the Crew | Red Hand | Trusted; offered 18:30–19:30, only with nobody within 500 m of the border | ★ Radio Op: twice the noise | Two packs share a border. At night, make heat 40+ at the border point (within 150 m) | One side's hunters cross: a Border Night with you in it ([INFECTED.md](INFECTED.md#borders)); when it's settled, Fame and Favor | ✅ *simplified: Zombie Bait's Infamy for packs that land on a faction's people isn't applied* |
 | 10 | Plant a Tag | Halcyon | Known; offered 06:00–12:00; needs the tag item | ★ Lab Tech | Pick up the tag at the lab. Use it (**Tag it**, held 5 s) within 8 m of a pack's leader in its prime or older, by day or in its sleep after a feed, while the pack isn't after you | Research +1 (×0.75); the pack is tagged: Lab Techs and Halcyon's Trusted read its leader's rough area in the journal, Halcyon's range map shows it, and Halcyon reports on it at dusk | ✅ *killing a tagged leader in its prime or older costs +2 Halcyon Infamy ([REPUTATION.md](REPUTATION.md))* |
 | 11 | Track Them Home | Halcyon or Bastion | Any (unarmed is fine); offered 03:30–04:30 | ★ Hunter | Between 05:00 and 07:00 follow a group of a pack walking home within 200 m of it until it's all home and you're within 300 m of the lair, without it coming for you | The lair is Mapped for you; Bastion puts it on its board, Halcyon gets a little research | ✅ *lost for 90 s: failed. Simplified: "not closer than 80 m" isn't checked; being seen is* |
-| 12 | Capture the Index | Halcyon | Champion | | A pack's leader in its prime or older, alive, with Live Capture's rules: wound it to a third and get within 3 m to tie it, hold it 30 s while its guard comes, then carry the case to the lab before it wakes (12 min) | Live Capture's research (×0.75); the pack holds its vigil, takes a new leader, and goes **Furious** | ✅ *the leader's own body is the special (it carries the mission while the job runs). Needs the mission item, Halcyon's drop and an Alpha prefab. The finale's live tissue builds on it when the finale is built ([designs/FINALE.md](../designs/FINALE.md))* |
+| 12 | Capture the Index | Halcyon | Champion | | A pack's leader in its prime or older, alive, with Live Capture's rules: wound it to a third and get within 3 m to tie it, hold it 30 s while its guard comes, then carry the case to the lab before it wakes (12 min) | Live Capture's research (×0.75); the pack holds its vigil, takes a new leader, and goes **Furious** | ✅ *the leader's own body is the special (it carries the mission while the job runs). Needs the mission item, Halcyon's drop and an Alpha prefab. The finale's live tissue builds on it ([FINALE.md](FINALE.md#live-tissue))* |
 | 13 | Stock the Pit | Red Hand | Known; a Red Hand camp within 6 km of the lair | | Two of a pack's young alive, one after the other, with Live Capture's rules: put it down without killing it and tie it, hold it 30 s, then the case to the Red Hand's drop by the camp before it wakes | Fame, Favor; the next Fight Pit's last round lets them out: *"Fresh hires, from the Postmen."* Each one caught leaves the pack | ✅ *tie only, like Capture the Index (the cage's door isn't routed for a pack's job); the second capture starts when the first case is handed in; if the pack has no young left by then, half pay. House Rules is a questline stage now, so only the Fight Pit takes them* |
 
 The Lone One is Halcyon's #1. **Fire Mission** and **Bastion Shelling** on a lair disturb it +50
@@ -819,8 +820,8 @@ final stand, with Halcyon's director and Bastion's commanding officer in their s
 and a Haven safehouse for the clinic (one with a medic if there is). Needs a lab, the note, a
 civilian and the puzzle object. Its stages are Halcyon
 contracts for players Trusted with it (stage 2 from the field lead). It adds no research and never
-changes the stand: the stand keeps its own rules, the season's winner is still chosen on Fame the
-moment it's won, and the endings are paid after the stand. Its stages wait out a stand and never
+changes the stand: the stand keeps its own rules, who controls the cure is the finale's
+([FINALE.md](FINALE.md)), and the endings are paid after the stand. Its stages wait out a stand and never
 run after the cure. It holds Halcyon's questline slot until the stand. Code:
 `Missions/Questlines/Halcyon/RZ_Quest_Authors.c`.
 
@@ -831,7 +832,7 @@ run after the cure. It holds Halcyon's questline slot until the stand. Code:
 | 3 | **The CO's answer** | Wait, then a Halcyon contract, Trusted, ★ Soldier; 60 min; 10 Fame, 15 Favor | 2 hours of play or a real day; then at Bastion's adjutant: *talk*: agree for the director; *persuade*: bargain for two guards at the gate and no key (Trusted with Halcyon and with Bastion); refuse (+5 Bastion Infamy). Nobody answers: Bastion takes it as no | Stage 4 (no Red Hand seat: stage 5) | ✅ |
 | 4 | **The Red Hand's offer** | Halcyon contract, Trusted; 60 min; 10 Fame, 10 Favor | The boss's man at a meeting place near a Red Hand seat: *talk*: turn him down (the director refuses); *betray*: take the money (40 Red Hand Favor, the engine's cap; the contract pays nothing): Take the Lab is offered during the stand; *side with* Bastion once he's been heard: tell the adjutant (+6 Bastion Fame): a Bastion group on the lab's road during the stand | Stage 5 | ✅ |
 | 5 | **Ready the lab** | From 75% research: one of Power the Lab, Decontamination or Lab Defence (each with its own rules, as a Halcyon contract for the Trusted) | Picked from the flags: Bastion's terms, power; the Haven's copy, decontamination; else defence. One that can't run, or already runs as an ordinary contract, gives way to the next | Stage 6 | ✅ |
-| 6 | **The final stand** | Wait for the stand, then a Halcyon contract (Trusted; 5 Fame, 10 Favor) that lasts as long as it; everyone within 150 m of the lab takes part | With players near: a Bastion group at the gate (Bastion's terms; Territory > Bastion guard), one on the road toward the Red Hand (Bastion was told; same prefab), and one more Halcyon guard (B3's pilot flew for the samples; Territory > Halcyon guard). The boss was paid: Take the Lab is offered to anyone Known with the Red Hand, not only Champions, with its usual result | The ending: won, lost or stolen | ✅ |
+| 6 | **The final stand** | Wait for the stand, then a Halcyon contract (Trusted; 5 Fame, 10 Favor) that lasts as long as it; everyone within 150 m of the lab takes part | With players near: a Bastion group at the gate (Bastion's terms; Territory > Bastion guard), one on the road toward the Red Hand (Bastion was told; same prefab), and one more Halcyon guard (B3's pilot flew for the samples; Territory > Halcyon guard). The boss was paid: Take the Lab is offered to anyone Known with the Red Hand, not only Champions, with its usual result; while the cure finale runs, the controller offers it to the Red Hand route instead | The ending: won, lost or stolen | ✅ |
 
 | Ending | Branch | Consequences | Status |
 |---|---|---|---|
@@ -1006,6 +1007,29 @@ Haven, and only that character can do its stages, in that life. Needs Puzzles > 
 
 *Simplified:* the people are standing props with talk and choice actions (the stray, an escort,
 moves as data while nobody watches); the fight is the only AI.
+
+## The cure finale
+
+The last tenth of the cure ([FINALE.md](FINALE.md)): five routes open at the 90% gate, each a
+questline of four acts whose stages are scenes. Open acts are offered on the radio by the route's
+faction (anyone not locked elsewhere); sworn acts aren't, and are told to the route's locked players.
+Each step pays its decider at most 10 Fame and 20 Favor (the Independent: 20 Haven Favor). Code:
+`Missions/Questlines/Finale/`.
+
+| Route | I (open, +2) | II, the door (sworn, +1) | II, the piece (sworn, +2) | IV (sworn, last, +3) | Status |
+|---|---|---|---|---|---|
+| **The One Who Didn't Turn** (the Haven) | The Crossed-Out Name: the chair, the List, a house at dusk, 3 food, the Day 6 ledger | And my boy: her yes (persuade 3), then pay her boy's line, walk him out, or she gives without it | Three Times: two bags drawn at dusk, stored cold at the lab | Up the Hill: at dawn, walk her up or run the last draw; or the lab's 2 days if she was spared | ✅ *the subject's branches aren't built* |
+| **Held for Collection** (Bastion) | Request Instructions: Sedlak, the quartermaster, the bus driver, the diesel line | Names for the tubes: the driver's slips, the clipboard at night, the census; or the CO's manifest | Collection: the CO's word, a signal form, the box while he sleeps, or cut the door; bring Twice home | Signed For: the box in at the lab; a short box waits 2 days a missing tube | ✅ *no fuel clock, drain or stage road posts* |
+| **The Cook** (the Red Hand) | The Kitchen Book: ask her, win her round, follow her, her sister | A Tray: the director, a page of her tally, a field lead, the night store; or four stolen doses | A Night on the Still: an 8-minute hold, or run it cold | The Lab's Word: the proof (60%, the third pan always holds), the case to the lab; mark her line paid | ✅ *Who Came Back and the rival crew boss fold into the odds* |
+| **The Lower Store** (Halcyon) | Reference: None: the duty officer, the vial map, the sergeant, the records room | Item 114: the adjutant, the quartermaster, the key board; or the sergeant's key, or cut the chain (3 min) | Something Cold: the vet's tank, then a hold at the dewar | Samples First: the comparison (28 or 56 real hours), then a 4-minute hold | ✅ *no canister riddle or family at dusk* |
+| **One Each** (Independent) | Eight Walked Out: the ham's books, the Day 6 ledger, the Doctor | Asking: three of the eight, each with their keeper's leave; or donors | Three bags stored "for everyone" | For Everyone: a tray off the books, then the batch sheet | ✅ *no sit-in or on-air carry* |
+
+| Also | What | Status |
+|---|---|---|
+| **The desks** | One a route, from the gate until the stand is won: lock (two steps), the finale page, a price door or the Coat Run, pacts, give back what you found | ✅ |
+| **Live tissue** (Act III, open) | Who It Was, Contact Captured, Fresh Stock, The Index, Nobody's Index: a leader taken alive (Capture the Index's rules, +2 at once) or one of its guard or young or a special (Live Capture's rules, +2 after 12 real hours); never picked at random | ✅ |
+| **The release** | The controller's route: its locked players choose the terms in 3 minutes at the lab | ✅ |
+| **Take the Lab** (the Red Hand route, at the stand, once a season) | The loading bay, 120 s, started by a Red Hand-locked player Trusted with the Red Hand; the room changes hands. With the finale off: as before, the batch is stolen | ✅ |
 
 ## Backgrounds at a glance
 
