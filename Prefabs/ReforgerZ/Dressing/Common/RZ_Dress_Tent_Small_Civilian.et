@@ -1,0 +1,28 @@
+GenericEntity {
+ ID "7BB75D03FD5CBD41"
+ components {
+  RplComponent "{3CD496168B4103BA}" {
+  }
+  Hierarchy "{23DA9E8F4ACF7A77}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{2BF6748C6440D818}Prefabs/Props/Recreation/Camp/TentSmall_02/TentSmall_02_red.et" {
+   ID "4F00F627E9230E94"
+   components {
+    Hierarchy "{A3780FDC3DC77B4C}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "DDDEEAD62CADEA18"
+   components {
+    Hierarchy "{8D5A30447D631126}" {
+    }
+   }
+   coords 0 0.05 0.2
+  }
+ }
+}

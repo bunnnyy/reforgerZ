@@ -1,0 +1,58 @@
+GenericEntity {
+ ID "3A5DBDC6BE1EC208"
+ components {
+  RplComponent "{3FD82258838700B0}" {
+  }
+  Hierarchy "{B516FFCA0B669138}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+   ID "3FD9E1F66EB50F2A"
+   components {
+    Hierarchy "{9930D163894BCF7E}" {
+    }
+   }
+   coords 0 0 0
+  }
+  ParticleEffectEntity : "{899360C930DA3EE3}Prefabs/Particles/Campfire_burning.et" {
+   ID "C9F3498D180CCB6B"
+   components {
+    Hierarchy "{72F92C6588ED1FB9}" {
+    }
+   }
+   coords 0 0.9 0
+  }
+  GenericEntity {
+   ID "2882E8CED490288F"
+   components {
+    SCR_AISmartActionSentinelComponent "{B7EA7AEF8774FA29}" {
+     Tags {
+      "RZ_Lean"
+     }
+     m_vLookPosition -0.9 1.6 -0.2
+     m_eLoiterAnimation LEAN_LEFT
+    }
+    Hierarchy "{14310C7DA2C9352E}" {
+    }
+   }
+   coords 0.9 0 0.2
+  }
+  GenericEntity {
+   ID "F377DB61927A3D07"
+   components {
+    SCR_AISmartActionSentinelComponent "{3BA15ADB76AAEBC6}" {
+     Tags {
+      "RZ_Lean"
+     }
+     m_vLookPosition 0.9 1.6 0.2
+     m_eLoiterAnimation LEAN_RIGHT
+    }
+    Hierarchy "{3CB1EB8B6C6AF0C6}" {
+    }
+   }
+   coords -0.9 0 -0.2
+  }
+ }
+}

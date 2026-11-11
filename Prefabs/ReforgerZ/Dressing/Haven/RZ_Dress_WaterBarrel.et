@@ -1,0 +1,43 @@
+GenericEntity {
+ ID "F55C87C8C24EB8D5"
+ components {
+  RplComponent "{CA87E6971D16811A}" {
+  }
+  Hierarchy "{8988FB9C4BC76315}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+   ID "86EBDFB259C1F3D6"
+   components {
+    Hierarchy "{89B3ECFFD02D727F}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "35EDC751FC4674F1"
+   components {
+    Hierarchy "{44E1F155FD801840}" {
+    }
+   }
+   coords 0.6 0 0.3
+  }
+  GenericEntity {
+   ID "363C32ABB1B4F610"
+   components {
+    SCR_AISmartActionSentinelComponent "{55317714A4329A84}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 -0.9
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{C13571A383C6003D}" {
+    }
+   }
+   coords 0 0 0.9
+  }
+ }
+}

@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{0DA6C77863C25D75}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_TollBarrier.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

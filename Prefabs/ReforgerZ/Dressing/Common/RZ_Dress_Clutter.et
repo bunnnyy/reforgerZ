@@ -1,0 +1,71 @@
+GenericEntity {
+ ID "B31509BE389D98EF"
+ components {
+  RplComponent "{4DC2A6981F08DA12}" {
+  }
+  Hierarchy "{643A754A6AFC8ACE}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "F43C671216E6D912"
+   components {
+    Hierarchy "{D20F28BDBA1278BD}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "3A0E691E69356071"
+   components {
+    Hierarchy "{FF4D2416C2A9C2C0}" {
+    }
+   }
+   coords 0.8 0 0.3
+   angles 0 20 0
+  }
+  GenericEntity : "{1BE2B6FF4806EB3E}Prefabs/Props/Civilian/Guitar_01/Guitar_01.et" {
+   ID "5B723D398D30D71A"
+   components {
+    Hierarchy "{56EAA07FA2960D99}" {
+    }
+   }
+   coords 0.3 0.2 0.4
+   angles 0 60 0
+  }
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "0E31B7D4118AC270"
+   components {
+    Hierarchy "{A4F028D330740654}" {
+    }
+   }
+   coords -0.6 0 0.5
+  }
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "AB87D7B6387B1A8A"
+   components {
+    Hierarchy "{4B52BC443CBD0BFA}" {
+    }
+   }
+   coords -0.7 0 0.3
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "C7A9474B28DAF421"
+   components {
+    Hierarchy "{A9FE988C59178259}" {
+    }
+   }
+   coords -0.4 0 -0.5
+  }
+  GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+   ID "75784426BDC20542"
+   components {
+    Hierarchy "{E3820E5B32019A44}" {
+    }
+   }
+   coords 1.6 0 -0.8
+   angles 0 40 0
+  }
+ }
+}

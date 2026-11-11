@@ -1,0 +1,35 @@
+GenericEntity {
+ ID "B4918FE812C727A5"
+ components {
+  RplComponent "{A4F47D1D6047C580}" {
+  }
+  Hierarchy "{E1DDAA814158BBFA}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{4F6BB0502ED3EFBB}Prefabs/Props/Military/Generators/GeneratorPortable_US_01_Off.et" {
+   ID "7E231EFABA10D300"
+   components {
+    Hierarchy "{6E0BDCD8BDA1B317}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity {
+   ID "557955200BA7AF7E"
+   components {
+    SCR_AISmartActionSentinelComponent "{A30CC34223AEAECD}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 -1.0
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{D43B54788E6DE0AF}" {
+    }
+   }
+   coords 0 0 1.0
+  }
+ }
+}

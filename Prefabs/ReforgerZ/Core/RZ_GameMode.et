@@ -200,6 +200,626 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sLoiterWaypoint "{4ECD14650D82F5CA}Prefabs/AI/Waypoints/AIWaypoint_Loiter_CO.et"
     m_sObservationWaypoint "{97FB527ECC7CA49E}Prefabs/AI/Waypoints/AIWaypoint_ObservationPost.et"
     m_sGroupPrefab "{000CD338713F2B5A}Prefabs/AI/Groups/Group_Base.et"
+    m_sSmartActionWaypoint "{6CD9FAF45856E934}Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et"
+    m_aKits {
+     RZ_DressingKit "{48FC6963E1A5437B}" {
+      m_eFaction MILITARY
+      m_ePlace ANY
+      m_aPieces {
+       RZ_DressingPiece "{91B451032D51D3FA}" {
+        m_sPrefab "{16982E65ED413FF5}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_SentryNest_Bastion.et"
+        m_eRole APPROACH
+        m_eUse WATCH
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{50C36B26679D96E2}" {
+        m_sPrefab "{094833442B93FB33}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_RosterBoard.et"
+        m_eRole CENTRE
+        m_eUse GATHER
+        m_iCount 1
+        m_iSeats 4
+       }
+       RZ_DressingPiece "{7F2F45064CB3CBB8}" {
+        m_sPrefab "{22B8DA94254353A4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FirePit.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 4
+       }
+       RZ_DressingPiece "{D31A79009A1090D4}" {
+        m_sPrefab "{DE3CABBDBDA5DEB2}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Tent_Small_Bastion.et"
+        m_eRole INNER
+        m_eUse SLEEP
+        m_iCount 2
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{5A1C5753C49EBDFC}" {
+        m_sPrefab "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et"
+        m_eRole INNER
+        m_eUse COOK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{D17F283051C6A9FA}" {
+        m_sPrefab "{5C121A788CD4C5B4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Barricade_Sandbag.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iCount 2
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{3F55E90D77802760}" {
+        m_sPrefab "{D205C96A784B806B}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Table.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 4
+       }
+       RZ_DressingPiece "{33D87B01B8FB8242}" {
+        m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
+        m_eRole INNER
+        m_eUse CHOP
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{828F835BF70E72C8}" {
+        m_sPrefab "{3C94F02F30F3573A}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_ShavingStand.et"
+        m_eRole INNER
+        m_eUse WASH
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{56A7DC94D7B89A67}" {
+        m_sPrefab "{97CE8AAB5062C46B}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_FlagPole.et"
+        m_eRole CENTRE
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{04F592B40DFA3D1F}" {
+        m_sPrefab "{DCA85672D7E3F419}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_CrateSeats.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 4
+       }
+       RZ_DressingPiece "{BB10D2B877F0CD4F}" {
+        m_sPrefab "{5387FF36B081A0AE}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Tent_Large_Bastion.et"
+        m_eRole INNER
+        m_eUse SLEEP
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{16D39A9D6BB60ACE}" {
+        m_sPrefab "{FD1D23B5A51FC099}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_DutyBoard.et"
+        m_eRole CENTRE
+        m_eUse GATHER
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{8FCBCFF587AE87BE}" {
+        m_sPrefab "{6AD9BBD18E454D48}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tarp.et"
+        m_eRole INNER
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{651A15DFF31B629F}" {
+        m_sPrefab "{136E35552D91BCE4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_DryingLine.et"
+        m_eRole EDGE
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{AA91150EA75AE9F3}" {
+        m_sPrefab "{5A04E1440160CFEE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Latrine.et"
+        m_eRole EDGE
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{03732F2F1D767A04}" {
+        m_sPrefab "{34030C655055CC99}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Clutter.et"
+        m_eRole INNER
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{B7F285FF50BE2997}" {
+        m_sPrefab "{DE3CABBDBDA5DEB2}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Tent_Small_Bastion.et"
+        m_eRole INNER
+        m_eUse SLEEP
+        m_iCount 1
+        m_iSeats 1
+       }
+      }
+     }
+     RZ_DressingKit "{30B1C17C95E18296}" {
+      m_eFaction BANDITS
+      m_ePlace ANY
+      m_aPieces {
+       RZ_DressingPiece "{24E92336399E0130}" {
+        m_sPrefab "{0DA6C77863C25D75}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_TollBarrier.et"
+        m_eRole APPROACH
+        m_eUse LEAN
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{61162CE741A21BFC}" {
+        m_sPrefab "{751938FE13238EF9}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FireBarrel.et"
+        m_eRole CENTRE
+        m_eUse LEAN
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{5DDD34349F04C27E}" {
+        m_sPrefab "{BE834CB640BFC1BA}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_CardTable.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 3
+       }
+       RZ_DressingPiece "{F109CACE9D4CD09C}" {
+        m_sPrefab "{1893A854370DF417}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Small_Civilian.et"
+        m_eRole INNER
+        m_eUse SLEEP
+        m_iCount 2
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{0686D92D4C12B628}" {
+        m_sPrefab "{23F1B3D4E1AE83BD}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_SentryNest_RedHand.et"
+        m_eRole APPROACH
+        m_eUse WATCH
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{629818624D6602E4}" {
+        m_sPrefab "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et"
+        m_eRole INNER
+        m_eUse COOK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{D7EF677E76DA05C3}" {
+        m_sPrefab "{65CF0FD454B5A3B9}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Sofa.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 3
+       }
+       RZ_DressingPiece "{3D79E1A6AC710D07}" {
+        m_sPrefab "{4E44857251B9F7C5}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_RedHandSheet.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{D87C57576187999D}" {
+        m_sPrefab "{F9136286B0F575CC}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Barricade_Scrap.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{40252C92E36EEF60}" {
+        m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
+        m_eRole INNER
+        m_eUse CHOP
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{CEE6DFCD0354954A}" {
+        m_sPrefab "{34030C655055CC99}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Clutter.et"
+        m_eRole INNER
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{9731FA236A0D2823}" {
+        m_sPrefab "{92A040301017908A}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_ScrapShelter.et"
+        m_eRole INNER
+        m_eUse SLEEP
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{E29731189D89EDF7}" {
+        m_sPrefab "{4B17C267BBBF2FD4}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_TrophyWall.et"
+        m_eRole EDGE
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{CC01F95962FFC2EA}" {
+        m_sPrefab "{BEFDEB4AE9255602}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Kennel.et"
+        m_eRole EDGE
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{1D6F38FE9BF87C1E}" {
+        m_sPrefab "{22B8DA94254353A4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FirePit.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 4
+       }
+       RZ_DressingPiece "{02BB6A605393E8A3}" {
+        m_sPrefab "{6AD9BBD18E454D48}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tarp.et"
+        m_eRole INNER
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{F82421F259A6D016}" {
+        m_sPrefab "{246DFC7CF5548873}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Large_Civilian.et"
+        m_eRole INNER
+        m_eUse SLEEP
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{7844D7C534B35B37}" {
+        m_sPrefab "{5A04E1440160CFEE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Latrine.et"
+        m_eRole EDGE
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{1494F567193E4CBA}" {
+        m_sPrefab "{136E35552D91BCE4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_DryingLine.et"
+        m_eRole EDGE
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+      }
+     }
+     RZ_DressingKit "{07F05B51C776ED95}" {
+      m_eFaction SURVIVORS
+      m_ePlace ANY
+      m_aPieces {
+       RZ_DressingPiece "{92469F5F043CAEFE}" {
+        m_sPrefab "{D205C96A784B806B}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Table.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 4
+       }
+       RZ_DressingPiece "{25A23B6642F75761}" {
+        m_sPrefab "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et"
+        m_eRole INNER
+        m_eUse COOK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{39652440750E763D}" {
+        m_sPrefab "{EF36E0469A132682}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_WaterBarrel.et"
+        m_eRole INNER
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{EA4B516035FE15F4}" {
+        m_sPrefab "{9A9A00A1296CEE93}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_WashStand.et"
+        m_eRole INNER
+        m_eUse WASH
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{AEB807BD59C758D7}" {
+        m_sPrefab "{D2FB51325F7D7BC5}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_WashingLine.et"
+        m_eRole EDGE
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{B5401BACE1C39932}" {
+        m_sPrefab "{54693ACA3D1C3A9F}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Garden.et"
+        m_eRole EDGE
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{9820BC011FC24C2F}" {
+        m_sPrefab "{F92F47ADCE2433C7}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_BearDoor.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{7B29D454BE4F04D3}" {
+        m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
+        m_eRole INNER
+        m_eUse CHOP
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{8FC3F2014154709F}" {
+        m_sPrefab "{63C79FDEA1459DEF}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Memorial.et"
+        m_eRole CENTRE
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{CBC852DD8E1C4454}" {
+        m_sPrefab "{1893A854370DF417}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Small_Civilian.et"
+        m_eRole INNER
+        m_eUse SLEEP
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{3BB2D83A79C42AA3}" {
+        m_sPrefab "{D490D2E9A0478D9C}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_ChildrensCorner.et"
+        m_eRole INNER
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{DA10B34FCFE810B0}" {
+        m_sPrefab "{972C9B0757FDC5B6}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Barricade_Fence.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{43E912D0D2025889}" {
+        m_sPrefab "{73F6E3F5B85430A2}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_VegStall.et"
+        m_eRole EDGE
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{404960DBEF52096E}" {
+        m_sPrefab "{22B8DA94254353A4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FirePit.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 4
+       }
+       RZ_DressingPiece "{A330EE151D54E7BD}" {
+        m_sPrefab "{5AAE19ADE6DFD2F7}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CrateChairs.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 3
+       }
+       RZ_DressingPiece "{92D021AD5027015B}" {
+        m_sPrefab "{246DFC7CF5548873}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Large_Civilian.et"
+        m_eRole INNER
+        m_eUse SLEEP
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{2050F6ED3B8B508A}" {
+        m_sPrefab "{BEFDEB4AE9255602}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Kennel.et"
+        m_eRole EDGE
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{C4A767DF6373EE47}" {
+        m_sPrefab "{5A04E1440160CFEE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Latrine.et"
+        m_eRole EDGE
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{9817B8EBA075E22A}" {
+        m_sPrefab "{34030C655055CC99}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Clutter.et"
+        m_eRole INNER
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{C75AEC5CBA020E75}" {
+        m_sPrefab "{6AD9BBD18E454D48}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tarp.et"
+        m_eRole INNER
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 2
+       }
+      }
+     }
+     RZ_DressingKit "{B45A6875488224AC}" {
+      m_eFaction INSTITUTE
+      m_ePlace ANY
+      m_aPieces {
+       RZ_DressingPiece "{21D923438B7ED203}" {
+        m_sPrefab "{CD2853590569D1BF}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_FieldTable.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 2
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{2AD43C76E10C489A}" {
+        m_sPrefab "{D03875D64E385E10}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_ColdBox.et"
+        m_eRole INNER
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{6BBC175D0FAD3545}" {
+        m_sPrefab "{A6D5EF2811D86237}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Tent_Halcyon.et"
+        m_eRole INNER
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{8750ABBE6B829837}" {
+        m_sPrefab "{6DA398CC698F5F39}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_DeconShower.et"
+        m_eRole INNER
+        m_eUse WASH
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{4B4D26AF5129145B}" {
+        m_sPrefab "{F2958F7B2FC579F9}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Generator.et"
+        m_eRole EDGE
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{55D20A02184F85CB}" {
+        m_sPrefab "{9056DDF5C7C65450}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_SampleRack.et"
+        m_eRole INNER
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{9047C28FA2D72F8C}" {
+        m_sPrefab "{D6418426EDC4960F}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_PlagueBoard.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{76D91B2C5A1213FB}" {
+        m_sPrefab "{D95DD76AEF1F70A2}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Antenna.et"
+        m_eRole EDGE
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{9E488C97263C9F41}" {
+        m_sPrefab "{B2267422073B1F81}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_NotebookBench.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{A96F358E710434BB}" {
+        m_sPrefab "{972C9B0757FDC5B6}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Barricade_Fence.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iCount 2
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{EBD344B849234539}" {
+        m_sPrefab "{6AD9BBD18E454D48}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tarp.et"
+        m_eRole INNER
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{7AD639C84D9FA5EE}" {
+        m_sPrefab "{246DFC7CF5548873}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Large_Civilian.et"
+        m_eRole INNER
+        m_eUse SLEEP
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{51BF22D53EA07D48}" {
+        m_sPrefab "{10303A31D2DBD4EE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_RadioTable.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{84739F2151109B6A}" {
+        m_sPrefab "{5A04E1440160CFEE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Latrine.et"
+        m_eRole EDGE
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{31374351DB97DEE7}" {
+        m_sPrefab "{136E35552D91BCE4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_DryingLine.et"
+        m_eRole EDGE
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{BAE01AFEC7A54D4D}" {
+        m_sPrefab "{34030C655055CC99}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Clutter.et"
+        m_eRole INNER
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{471FB6F4480FF68F}" {
+        m_sPrefab "{5AAE19ADE6DFD2F7}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CrateChairs.et"
+        m_eRole CENTRE
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 3
+       }
+       RZ_DressingPiece "{9A70DF00083349C6}" {
+        m_sPrefab "{A6D5EF2811D86237}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Tent_Halcyon.et"
+        m_eRole INNER
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 1
+       }
+      }
+     }
+     RZ_DressingKit "{FC8598B6F352E00F}" {
+      m_eFaction MILITARY
+      m_ePlace ROAD_POST
+      m_aPieces {
+       RZ_DressingPiece "{93D08F8B08AAAA69}" {
+        m_sPrefab "{751938FE13238EF9}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FireBarrel.et"
+        m_eRole APPROACH
+        m_eUse LEAN
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{0623B1148504336A}" {
+        m_sPrefab "{16982E65ED413FF5}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_SentryNest_Bastion.et"
+        m_eRole APPROACH
+        m_eUse WATCH
+        m_iCount 1
+        m_iSeats 1
+       }
+       RZ_DressingPiece "{8B5598CD3863D848}" {
+        m_sPrefab "{6AD9BBD18E454D48}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tarp.et"
+        m_eRole APPROACH
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{B8FBF5BAC6C8622B}" {
+        m_sPrefab "{5C121A788CD4C5B4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Barricade_Sandbag.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+      }
+     }
+     RZ_DressingKit "{977C93648A7F396B}" {
+      m_eFaction BANDITS
+      m_ePlace ROAD_POST
+      m_aPieces {
+       RZ_DressingPiece "{33E5C433A276D4E9}" {
+        m_sPrefab "{751938FE13238EF9}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FireBarrel.et"
+        m_eRole APPROACH
+        m_eUse LEAN
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{80881FCCB3E5B582}" {
+        m_sPrefab "{BE834CB640BFC1BA}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_CardTable.et"
+        m_eRole APPROACH
+        m_eUse SIT
+        m_iCount 1
+        m_iSeats 3
+       }
+       RZ_DressingPiece "{C9E5371C0CB2F3A5}" {
+        m_sPrefab "{6AD9BBD18E454D48}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tarp.et"
+        m_eRole APPROACH
+        m_eUse WORK
+        m_iCount 1
+        m_iSeats 2
+       }
+       RZ_DressingPiece "{26E609DBF67D0840}" {
+        m_sPrefab "{F9136286B0F575CC}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Barricade_Scrap.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iCount 1
+        m_iSeats 1
+       }
+      }
+     }
+    }
    }
    m_GuidanceSettings RZ_GuidanceSettings "{6AD67DC2B8040E09}" {
     m_sRadioPrefab "{6F4EF5D0232D4827}Prefabs/ReforgerZ/Guidance/RZ_WindupRadio.et"

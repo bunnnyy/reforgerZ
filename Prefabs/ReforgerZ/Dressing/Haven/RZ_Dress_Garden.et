@@ -1,0 +1,53 @@
+GenericEntity {
+ ID "D8D55FFB3A6AD0BD"
+ components {
+  RplComponent "{3D5E845142EB6B4A}" {
+  }
+  Hierarchy "{E6D3C938357EA5D7}" {
+  }
+ }
+ coords 0 0 0
+ {
+  StaticModelEntity : "{7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_small.et" {
+   ID "6785E6C62415A40A"
+   components {
+    Hierarchy "{DBD15B1CE1C35AD4}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{30A496094B91F0C3}Prefabs/Props/Civilian/Hutch_01.et" {
+   ID "10A922E32F0CE70D"
+   components {
+    Hierarchy "{7B997F6093B9DE64}" {
+    }
+   }
+   coords 2.0 0 0.5
+   angles 0 -90 0
+  }
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "CE3B655F4BBBF8E2"
+   components {
+    Hierarchy "{3C65340C5EB44391}" {
+    }
+   }
+   coords -1.5 0 0.8
+   angles 0 30 0
+  }
+  GenericEntity {
+   ID "0B7091456350045E"
+   components {
+    SCR_AISmartActionSentinelComponent "{2CB31831BFEC50F8}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 -1.2
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{84FB38BB031D613A}" {
+    }
+   }
+   coords 0 0 1.2
+  }
+ }
+}

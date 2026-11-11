@@ -1,0 +1,61 @@
+GenericEntity {
+ ID "DCD5D7E59CB89A70"
+ components {
+  RplComponent "{93C182BFE226D536}" {
+  }
+  Hierarchy "{F0997145DA46C55B}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+   ID "9F036ACBA88475E7"
+   components {
+    Hierarchy "{BCE80AE11903AA78}" {
+    }
+   }
+   coords -1.2 0 0
+  }
+  GenericEntity : "{6105032F794BA64B}Prefabs/Props/Civilian/LogChopping_01.et" {
+   ID "9A56082573F7563D"
+   components {
+    Hierarchy "{6C4135C44E48DEC7}" {
+    }
+   }
+   coords 0.8 0 0.2
+  }
+  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
+   ID "24D2E32E0DCBE655"
+   components {
+    Hierarchy "{468CDCD90F01994F}" {
+    }
+   }
+   coords 1.6 0 -0.4
+   angles 0 30 0
+  }
+  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
+   ID "A7EE28EF4BF6E7A8"
+   components {
+    Hierarchy "{7DC40E80AAF43F98}" {
+    }
+   }
+   coords 1.5 0 0.8
+   angles 0 80 0
+  }
+  GenericEntity {
+   ID "DB11D7063AA3593A"
+   components {
+    SCR_AISmartActionSentinelComponent "{9E2011ADD87FB82F}" {
+     Tags {
+      "RZ_Chop"
+     }
+     m_vLookPosition 0 1.6 -0.8
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{0C70E8161D1BF2F3}" {
+    }
+   }
+   coords 0.8 0 1.0
+  }
+ }
+}

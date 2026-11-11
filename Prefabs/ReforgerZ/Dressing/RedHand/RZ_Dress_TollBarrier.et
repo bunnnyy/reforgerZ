@@ -1,0 +1,69 @@
+GenericEntity {
+ ID "450107ABA93703B5"
+ components {
+  RplComponent "{F74D545EBE9D8FB0}" {
+  }
+  Hierarchy "{E8319BDA827E0B9B}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
+   ID "CAD16632571D5737"
+   components {
+    Hierarchy "{23F5A8C7144F7C4F}" {
+    }
+   }
+   coords 0 0 1.5
+   angles 0 90 0
+  }
+  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
+   ID "AF9FBC07F501287B"
+   components {
+    Hierarchy "{A2C6F6A5963DCEF4}" {
+    }
+   }
+   coords 0 0.35 1.5
+   angles 0 88 0
+  }
+  GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
+   ID "A2ECCE10094D2D06"
+   components {
+    Hierarchy "{58EB7B23363AC0B0}" {
+    }
+   }
+   coords 1.8 0 0
+   angles 0 200 0
+  }
+  GenericEntity {
+   ID "59712C9D92B4322C"
+   components {
+    SCR_AISmartActionSentinelComponent "{6BDE8141D3617462}" {
+     Tags {
+      "RZ_Lean"
+     }
+     m_vLookPosition 0 1.6 3
+     m_eLoiterAnimation LEAN_LEFT
+    }
+    Hierarchy "{0FBB6EAA479A8568}" {
+    }
+   }
+   coords -1.6 0 0.6
+  }
+  GenericEntity {
+   ID "66E732616A1FDEE8"
+   components {
+    SCR_AISmartActionSentinelComponent "{12693FF7CA8896D4}" {
+     Tags {
+      "RZ_Lean"
+     }
+     m_vLookPosition 0 1.6 3
+     m_eLoiterAnimation SMOKING
+    }
+    Hierarchy "{3AA9147EBA7A80D5}" {
+    }
+   }
+   coords 1.8 0 0.6
+  }
+ }
+}

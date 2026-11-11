@@ -18,7 +18,6 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 94217f5: `Zombies/RZ_CallSound.et`, `Zombies/RZ_GreatCallSound.et`.
 
 **Manual entries (WBS §4)**
-- 2026-11-11 55f071f: camp life. Make the smart-action waypoint `AI/RZ_WP_SmartAction.et`, the 49 compositions and the kits (WBS §4, "Camp life: the compositions and kits"). The 21 original pieces come first.
 - 2026-11-11 76b52d0: optional lists: loot tables, extra recipes, shop items, Requisition items (WBS §4, "Hand-set list entries").
 - 2026-11-11 76b52d0: replace the stand-in bases, worst first: drugs' consumable effects, `RZ_Explosion.et` (a real HE round), `RZ_Nest.et` (spawns its own), the carryable generator and alarm clock, the molotov, bottle and tin (WBS §4, "Stand-in bases").
 
@@ -29,6 +28,8 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 76b52d0: measure a player's real run and sprint speed (m/s) and Bacon's run and sprint speed. Young infected are being tuned to about 10% faster than a sprinting player.
 
 ## For the cloud
+
+- 2026-11-12 (PC): camp life built as text: `AI/RZ_WP_SmartAction.et`, the 49 `Dressing/*/RZ_Dress_*.et` (root GenericEntity + RplComponent + Hierarchy, vanilla props as children, seats as direct children with `SCR_AISmartActionSentinelComponent`: Tags, `m_vLookPosition`, `m_eLoiterAnimation`, `m_fLookDirectionRange` 120 on watch seats) and the six kits on RZ_GameMode.et as in WBS. All load in Workbench. Simplified: no plain mesh copies and no new decals (red hand, bear, plague doctor, chalk, the ball, vegetables, boots, axe, tubes) — those spots are left out or use a plank; the barrel fire is `Particles/Campfire_burning.et`; cooler = small crate + autoclave drum; Halcyon tent = `TentSmall_03_white` + medical table; civilian tents = `TentSmall_02_red` / `TentBig_01_orange`. Please reflect in WBS (Camp life) and ROADMAP.
 
 - 2026-11-12 (PC): set `basePrefab` in the manifest for EpilogueBoard (MessageBoard_01_base), EpilogueCandle (CandleHolderDecorative_01) and EpilogueTable (Table_01); the plugin built them and filled the slots. Tribe props set on RZ_GameMode.et (stand-ins): kill sites = suitcases, a UAZ tyre, a folded blanket; old lair = a bunk-bed mattress; marks = a stone verge post (Haven), the minefield sign (Bastion), the FIA graffiti decal (Red Hand), a no-entry sign (Halcyon). Please note these in WBS.
 - 2026-11-12 (PC): new PC-side Workbench plugin `scripts/WorkbenchGame/ReforgerZ/RZ_ResourceIndexPlugin.c` ("ReforgerZ: Write resource index": every prefab/sound/layout/texture ResourceName to `$profile:RZ_ResourceIndex.txt`). Please list it in PC_SETUP / WBS tools.

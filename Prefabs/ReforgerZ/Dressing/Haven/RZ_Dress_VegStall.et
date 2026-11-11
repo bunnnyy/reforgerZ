@@ -1,0 +1,68 @@
+GenericEntity {
+ ID "25F23FAEE60283AC"
+ components {
+  RplComponent "{6EE5FCAEA7B51A9F}" {
+  }
+  Hierarchy "{F0AE77957FF5716F}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
+   ID "58CDD76976D3EE67"
+   components {
+    Hierarchy "{9BF4013E1F86B59A}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "0D838DB9DFCE8D2D"
+   components {
+    Hierarchy "{DE42B403A494DE06}" {
+    }
+   }
+   coords -0.6 0 -0.2
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "052EE63970557C07"
+   components {
+    Hierarchy "{1BE00440D803027B}" {
+    }
+   }
+   coords 0.6 0 -0.2
+  }
+  GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
+   ID "5435FF84DE5593A6"
+   components {
+    Hierarchy "{C0C980E5501D1DEE}" {
+    }
+   }
+   coords 1.5 0 0.4
+   angles 0 20 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "BC703C5E0ACEE8A5"
+   components {
+    Hierarchy "{259E9F1BE57E81FD}" {
+    }
+   }
+   coords -1.4 0 0.3
+  }
+  GenericEntity {
+   ID "0BB47438A218AED7"
+   components {
+    SCR_AISmartActionSentinelComponent "{38F563A0DEFE3367}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 1.0
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{686932CFB04F86EA}" {
+    }
+   }
+   coords 0 0 -1.0
+  }
+ }
+}

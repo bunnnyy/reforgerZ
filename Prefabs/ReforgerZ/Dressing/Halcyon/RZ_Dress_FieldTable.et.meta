@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{CD2853590569D1BF}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_FieldTable.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

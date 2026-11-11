@@ -1,0 +1,54 @@
+GenericEntity {
+ ID "BB176A25DDCBCA31"
+ components {
+  RplComponent "{D3E10DFDD60B734C}" {
+  }
+  Hierarchy "{544C026D0550DA99}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
+   ID "E099A4A7333A2B51"
+   components {
+    Hierarchy "{7014EC6763AEE890}" {
+    }
+   }
+   coords 0 0 1.2
+  }
+  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
+   ID "B3404A441FE1F0D1"
+   components {
+    Hierarchy "{C90BE1AD859D94FF}" {
+    }
+   }
+   coords -1.1 0 0.6
+   angles 0 55 0
+  }
+  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
+   ID "970004CF1CB568CB"
+   components {
+    Hierarchy "{F6BBA94A08B1086B}" {
+    }
+   }
+   coords 1.1 0 0.6
+   angles 0 -55 0
+  }
+  GenericEntity {
+   ID "0EFB5D1C9067A4CF"
+   components {
+    SCR_AISmartActionSentinelComponent "{8F16BA101959CD1D}" {
+     Tags {
+      "RZ_Watch"
+     }
+     m_vLookPosition 0 1.6 10
+     m_fLookDirectionRange 120
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{100538EBA0349F99}" {
+    }
+   }
+   coords 0 0 0
+  }
+ }
+}

@@ -1,0 +1,114 @@
+GenericEntity {
+ ID "545F34BEF04E9694"
+ components {
+  RplComponent "{41266EA396D88CAA}" {
+  }
+  Hierarchy "{E6E4B981D7499CBA}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "C944279BB2C639C5"
+   components {
+    Hierarchy "{E9B1290DEB98B9A1}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "DE44740308ED1F07"
+   components {
+    Hierarchy "{8F1400848C7E5C4A}" {
+    }
+   }
+   coords 0 0 1.1
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "5B0FDE65DA17418B"
+   components {
+    Hierarchy "{74968FD1182A93DC}" {
+    }
+   }
+   coords 0 0 -1.1
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "1FC68BB8FC9E4678"
+   components {
+    Hierarchy "{0ACB78572EC934B4}" {
+    }
+   }
+   coords 1.1 0 0
+   angles 0 90 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "C476A6ACD632A078"
+   components {
+    Hierarchy "{F1C369F8043E670C}" {
+    }
+   }
+   coords -1.1 0 0
+   angles 0 90 0
+  }
+  GenericEntity {
+   ID "DA3828766DA7BF1F"
+   components {
+    SCR_AISmartActionSentinelComponent "{57C9A06BCCB436C1}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -0.0 1.6 -1.1
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{47CCA261436734C8}" {
+    }
+   }
+   coords 0.0 0 1.1
+  }
+  GenericEntity {
+   ID "469277E184FB19FD"
+   components {
+    SCR_AISmartActionSentinelComponent "{89D2F18F66F474A1}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -1.1 1.6 -0.0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{7C54E8E272822D77}" {
+    }
+   }
+   coords 1.1 0 0.0
+  }
+  GenericEntity {
+   ID "73F0AB77D8426B62"
+   components {
+    SCR_AISmartActionSentinelComponent "{ED12C4D64A239B1B}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -0.0 1.6 1.1
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{FE12932F6CB937C8}" {
+    }
+   }
+   coords 0.0 0 -1.1
+  }
+  GenericEntity {
+   ID "7E1D006AB5CBD99E"
+   components {
+    SCR_AISmartActionSentinelComponent "{14691103AB306043}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 1.1 1.6 0.0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{C5D97E1EECABB535}" {
+    }
+   }
+   coords -1.1 0 -0.0
+  }
+ }
+}

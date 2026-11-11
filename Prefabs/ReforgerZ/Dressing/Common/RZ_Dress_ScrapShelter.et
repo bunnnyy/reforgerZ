@@ -1,0 +1,55 @@
+GenericEntity {
+ ID "F70F291414CF3B9A"
+ components {
+  RplComponent "{6D37441AB52DC7ED}" {
+  }
+  Hierarchy "{CE59700F235D9851}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "06D524FD8B1FF9A9"
+   components {
+    Hierarchy "{B104E04DA4FAB5F8}" {
+    }
+   }
+   coords -0.9 0.6 0
+   angles 0 90 0
+  }
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "5672E229F14CEA43"
+   components {
+    Hierarchy "{8D30C63D7FEF4A73}" {
+    }
+   }
+   coords 0.9 0.6 0
+   angles 0 90 0
+  }
+  SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
+   ID "2F2906000A16A6C5"
+   components {
+    Hierarchy "{B3C7F308FB020AE9}" {
+    }
+   }
+   coords 0 1.25 -0.2
+  }
+  GenericEntity : "{A8D8015D0E2B600A}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_mattress.et" {
+   ID "C0A7D928C911411C"
+   components {
+    Hierarchy "{F93E20E3383156EB}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
+   ID "B8ADB055D12D7A14"
+   components {
+    Hierarchy "{59746CF5547A8047}" {
+    }
+   }
+   coords 0.2 0.08 0.1
+   angles 0 10 0
+  }
+ }
+}

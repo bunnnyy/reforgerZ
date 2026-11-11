@@ -1,0 +1,60 @@
+GenericEntity {
+ ID "9E94031AAFBCF701"
+ components {
+  RplComponent "{A5C455EA3F8EB340}" {
+  }
+  Hierarchy "{784C5EB1A69B3A45}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "598D4C48D67A5CC4"
+   components {
+    Hierarchy "{A457F01895F52FB2}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{DC6B28A772BCC731}Prefabs/Structures/Recreation/Beach/ShowerBeach_01.et" {
+   ID "18609BA0D31A58BF"
+   components {
+    Hierarchy "{47209000731BEB8D}" {
+    }
+   }
+   coords 0 0.15 0
+  }
+  GenericEntity : "{F188F489FD7864C0}Prefabs/Props/Furniture/ShowerCurtains_01_straight.et" {
+   ID "4D2CC47B13B547E0"
+   components {
+    Hierarchy "{0FE1D2F35BC4197A}" {
+    }
+   }
+   coords 0.6 0.15 0
+   angles 0 90 0
+  }
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "06CC2DDD4FBDF553"
+   components {
+    Hierarchy "{BE001EA72F8AEEB5}" {
+    }
+   }
+   coords -0.9 0 0.5
+  }
+  GenericEntity {
+   ID "BCB9E63A5A0F8DA3"
+   components {
+    SCR_AISmartActionSentinelComponent "{FF98262A6532C184}" {
+     Tags {
+      "RZ_Wash"
+     }
+     m_vLookPosition 0 1.6 1.0
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{593239ADAC9D2DC9}" {
+    }
+   }
+   coords 0 0 0
+  }
+ }
+}

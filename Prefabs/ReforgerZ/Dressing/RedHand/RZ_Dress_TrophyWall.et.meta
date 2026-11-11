@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{4B17C267BBBF2FD4}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_TrophyWall.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

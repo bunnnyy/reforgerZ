@@ -1,0 +1,75 @@
+GenericEntity {
+ ID "9159CC383F3C647A"
+ components {
+  RplComponent "{C9A674FFE89832DF}" {
+  }
+  Hierarchy "{538B383762CB7E69}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
+   ID "BDE5358D2B0A79A5"
+   components {
+    Hierarchy "{1D798A98EB3F5D19}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
+   ID "9F565B1DADA7DA91"
+   components {
+    Hierarchy "{6289C1964F50B3AC}" {
+    }
+   }
+   coords 0.3 0.78 0
+   angles 0 10 0
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "17ACC8005AE0ABD0"
+   components {
+    Hierarchy "{B841072394294221}" {
+    }
+   }
+   coords 0 0 0.8
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "79247813543634C1"
+   components {
+    Hierarchy "{089ABA053EB54B59}" {
+    }
+   }
+   coords 0 0 -0.8
+  }
+  GenericEntity {
+   ID "6E7881C3DDDF6A19"
+   components {
+    SCR_AISmartActionSentinelComponent "{F6BC36B1B622C266}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0 1.6 -0.8
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{FDD6962A7058FDE7}" {
+    }
+   }
+   coords 0 0 0.8
+  }
+  GenericEntity {
+   ID "C47EEAA5D18F70A5"
+   components {
+    SCR_AISmartActionSentinelComponent "{7CE50E86EA385E74}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0 1.6 0.8
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{AFFC63097C7F707C}" {
+    }
+   }
+   coords 0 0 -0.8
+  }
+ }
+}

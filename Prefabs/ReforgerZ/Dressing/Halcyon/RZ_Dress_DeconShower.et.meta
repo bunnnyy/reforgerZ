@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{6DA398CC698F5F39}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_DeconShower.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
