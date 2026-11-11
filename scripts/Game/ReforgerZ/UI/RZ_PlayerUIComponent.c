@@ -71,7 +71,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
-	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100};	// per CMD_*
+	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100};	// per CMD_*
 	protected float m_fLastPick = -100;		// the last car job or purchase (PICK_GAP)
 	protected static const float PICK_GAP = 0.5;
 
@@ -87,6 +87,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_SEASON = 8;	// /season: the journal's season view as a notice (also the notebook item's action)
 	static const int CMD_ANON = 9;		// /anonymous [off]: keep your name out of the world's text, the reel and the hall
 	static const int CMD_LASTENTRY = 10;	// /lastentry <text>: your line on the Names board (a pad writes one without typing)
+	static const int CMD_TRACES = 11;	// /traces (admins): the door marks near you, to the server log (World/Traces)
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -703,6 +704,12 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				if (gm.GetEpilogue())
 					RZ_EpiActions.LastEntry(gm, playerId, note);
+				break;
+			}
+			case CMD_TRACES:
+			{
+				if (gm.GetTraces())
+					gm.GetTraces().Command(playerId, note);
 				break;
 			}
 			case CMD_MYDEAD:

@@ -80,6 +80,8 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	override protected void DisplayUpdate(IEntity owner, float timeSlice)
 	{
 		super.DisplayUpdate(owner, timeSlice);
+		// Door marks as decals near you (docs/TRACES.md, Doors you can see)
+		RZ_DoorMarkClient.Tick(timeSlice);
 		m_fRefresh -= timeSlice;
 		if (m_fRefresh > 0)
 			return;

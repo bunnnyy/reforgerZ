@@ -110,6 +110,7 @@ while, about food. The boss always jokes. The director never jokes on purpose.
 | Rumours, road news | The teller | Gossip, biased, worst about rivals | About 1 in 3, aimed at rivals | Saying which are true |
 | Headlines | The roads | One plain sentence and one detail | The detail may be dry | A verdict. A player's name ([exceptions](#names-in-shared-text)) |
 | Notices and boards | The printed text, then whoever wrote on it | The printed line, then handwriting | The handwriting may answer back | Reusing a questline clue's text |
+| Traces: door marks, graves, the season marks ([TRACES.md](TRACES.md)) | What anyone sees, then the writer's meaning, then one true detail ([levels](TRACES.md#reading-a-door)) | One plain sentence and one detail; the writer's voice briefly at Read and Know | None. The mark's own words may be dry | A gore detail, a child hurt, a pronoun for a seeded person, a hint at the Long Table, a joke at a victim. The Haven never writes "taken" |
 | Leader openers and closers | A named person | Faction voice and traits ([above](#the-voices)) | Set by trait | A speech |
 | Mission briefs | The giver | The giver's voice | Haven and Red Hand givers may open with one. Bastion is procedural, Halcyon clinical. **Mercy jobs never** | Telling the player what's right |
 | Choice labels | The player | Verb and object, then the cost or check in brackets | None | Judgement words. Rewards or consequences |
@@ -419,7 +420,7 @@ Two tools check the scripts' text; how to run them is in
 
 | Check | The rule |
 |---|---|
-| `length` | Radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers and talk-screen lines: 200 characters or fewer. Labels and choices: the action part 40 or fewer, the whole 64 or fewer. Briefs over 500: a warning only |
+| `length` | Radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers, talk-screen lines and Traces' lines (channels `trace` and `door`): 200 characters or fewer. Labels and choices: the action part 40 or fewer, the whole 64 or fewer. Briefs over 500: a warning only |
 | `bang` | `!` only in Red Hand lines, notice titles and loudspeakers (alarms) |
 | `format` | `%1`–`%9` only |
 | `token` | Every `{token}` is a `Fill` token or a questline's key (a conversation's tokens in `.rzd` files, `{place}` in the voice bank) |

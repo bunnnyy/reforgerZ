@@ -74,6 +74,8 @@ class RZ_WorldWriters
 	//! the name.
 	static void Death(int playerId, vector pos)
 	{
+		// Traces (docs/TRACES.md): a grave, a candle, the memorial candles; the doors read go
+		RZ_TraceWriters.Death(playerId, pos);
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		RZ_WorldMemory mem = Memory();
 		if (!gm || !mem || Flooding("death", playerId))
@@ -175,6 +177,9 @@ class RZ_WorldWriters
 			return;
 
 		if (infested)
+			RZ_TraceWriters.TownInfested(idx);
+
+		if (infested)
 			mem.PostReason("town.infested", RZ_WorldFacts.Town(idx), string.Format("%1 belongs to the infected now.", name), pos);
 		else
 			mem.ClearReason("town.infested", RZ_WorldFacts.Town(idx));
@@ -242,6 +247,9 @@ class RZ_WorldWriters
 		if (!gm || !mem || m.m_bGlobal || m.m_bWithdrawn)
 			return;
 
+		// Traces (docs/TRACES.md): the grammar's door writes by mission, and the player traces
+		RZ_TraceWriters.MissionEnded(m, success);
+
 		int town = m.m_iSettlement;
 		if (town < 0)
 			town = gm.FindNearestSettlement(m.m_vPos);
@@ -304,6 +312,8 @@ class RZ_WorldWriters
 	//! A safehouse emptied (RZ_Safehouses): the worst slot of its town.
 	static void HouseEmptied(int town, string name)
 	{
+		// Traces: its bears ringed, an arrow to the nearest house
+		RZ_TraceWriters.HouseEmptied(town);
 		RZ_WorldMemory mem = Memory();
 		if (mem)
 			mem.LogTown(town, false, "emptied", 4, string.Format("Day %1: the last people left the safehouse in %2.", RZ_SeasonClock.Day(), name));

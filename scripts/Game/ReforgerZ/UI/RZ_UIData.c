@@ -71,7 +71,8 @@ enum RZ_EMissionKindUI
 	ARC,
 	QUESTLINE,	// a questline's entry and its stage missions (the arc icon)
 	ERRAND,		// an errand you hold (Missions/Errands): the unarmed icon until mission_errand is drawn
-	PACK		// a pack you know of (docs/INFECTED.md, Knowing): the range ring, the level as its time
+	PACK,		// a pack you know of (docs/INFECTED.md, Knowing): the range ring, the level as its time
+	DOORS		// Read on doors (docs/TRACES.md): the last door lines you read, the puzzle icon
 }
 
 //------------------------------------------------------------------------------------------------
@@ -464,6 +465,7 @@ class RZ_UIText
 			case RZ_EMissionKindUI.QUESTLINE: return "mission_arc";
 			case RZ_EMissionKindUI.ERRAND: return "mission_unarmed";
 			case RZ_EMissionKindUI.PACK: return "marker_range";
+			case RZ_EMissionKindUI.DOORS: return "mission_puzzle";
 		}
 
 		return "mission_contract";

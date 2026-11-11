@@ -10,8 +10,8 @@
 Checks every player-facing literal that tools/strings_inventory.py finds against the rules in
 docs/WRITING.md:
 
-    length       radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers and
-                 talk-screen lines: 200 characters or fewer. Labels and choices: the action part
+    length       radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers,
+                 talk-screen lines and Traces' lines (trace, door): 200 characters or fewer. Labels and choices: the action part
                  (before a bracket) 40 or fewer, the whole label 64 or fewer. Briefs: a warning
                  over 500.
     bang         '!' only in Red Hand lines, notice titles and loudspeakers (alarms)
@@ -46,7 +46,7 @@ import strings_inventory as si  # noqa: E402
 BASELINE = os.path.join(si.ROOT, "tools", "voice_lint_baseline.txt")
 LORE = os.path.join(si.ROOT, "docs", "LORE.md")
 
-SHORT_CHANNELS = {"radio", "hint", "leader", "rumour", "headline", "broadcast", "loudspeaker", "speech"}
+SHORT_CHANNELS = {"radio", "hint", "leader", "rumour", "headline", "broadcast", "loudspeaker", "speech", "trace", "door"}
 SHORT_LIMIT = 200
 BRIEF_WARN = 500
 LABEL_ACTION_LIMIT = 40
@@ -54,10 +54,10 @@ LABEL_LIMIT = 64
 
 # Ambient pools: lines anyone can hear anywhere, not a mission's or questline's own text.
 AMBIENT_CHANNELS = {"radio", "rumour", "headline", "broadcast", "loudspeaker", "leader", "hint",
-                    "ambient", "moment"}
+                    "ambient", "moment", "trace", "door"}
 
 # Pools where a short last line is a punchline, and the formulae that aren't one.
-PUNCHLINE_CHANNELS = {"radio", "rumour", "leader", "hint", "ambient", "speech", "loudspeaker"}
+PUNCHLINE_CHANNELS = {"radio", "rumour", "leader", "hint", "ambient", "speech", "loudspeaker", "trace", "door"}
 FORMULA_RE = re.compile(r"(\w+ out|over|out|thank you|thanks|please|go on|good)[.!]?", re.I)
 
 # World tokens RZ_WorldFacts.Fill knows, and the kinds that take an argument ({town:N}).

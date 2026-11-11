@@ -99,6 +99,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	static const int ADMIN_TREES = 31;
 	static const int ADMIN_TRIBES = 32;
 	static const int ADMIN_REP = 33;
+	static const int ADMIN_TRACES = 34;	// /traces: the door marks near you, to the server log (docs/TRACES.md)
 
 	protected IEntity m_Owner;
 
@@ -300,13 +301,16 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 		if (gm.GetRepWatch())
 			replies.Insert(Reply(ADMIN_REP, "[Admin] Standing of the nearest player"));
+
+		if (gm.GetTraces() && gm.GetTraces().IsOn())
+			replies.Insert(Reply(ADMIN_TRACES, "[Admin] Door marks near here, to the log"));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The admin replies (none of them changes the game). True if replyId was one.
 	protected bool PickAdmin(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
-		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP)
+		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP && replyId != ADMIN_TRACES)
 			return false;
 
 		if (!RZ_NoticeBoard.IsAdmin(playerId))
@@ -318,6 +322,8 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 			gm.GetTribes().Command(playerId, "");
 		else if (replyId == ADMIN_REP && gm.GetRepWatch())
 			gm.GetRepWatch().Readout(playerId, NearestPlayerName(playerId, user, 50));
+		else if (replyId == ADMIN_TRACES && gm.GetTraces())
+			gm.GetTraces().Command(playerId, "");
 
 		return true;
 	}

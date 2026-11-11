@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **209 prefab fields**: 40 on `RZ_GameModeComponent`, 162 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **214 entries**: 155 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 26 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 46 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **224 prefab fields**: 40 on `RZ_GameModeComponent`, 177 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **229 entries**: 155 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 41 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -441,6 +441,26 @@ and the UI files) need none, and seven have no base:
 | `RZ_EpilogueBoard.et` | a free-standing board or sign on posts (a notice board, a road sign); confirm the name in Workbench | — | Director > Epilogue > Board prefab | optional | look only: the epilogue's marks (the stand board, the Names board, the price board, notices, posters, graves) on the verge; without it they're text only, an approach line |
 | `RZ_EpilogueCandle.et` | a candle or a jar lantern on the ground; confirm the name in Workbench | — | Director > Epilogue > Candle prefab | optional | look only: a town taken back after the cure, the candles on a safehouse step (else the board, else text) |
 | `RZ_EpilogueTable.et` | a folding or trestle table (or a crate) with the generic puzzle object's components (RZ_PuzzleObjectComponent, RZ_ClueComponent, an RplComponent) and its read and four choice actions | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; `RZ_ReadClueAction`, 4 × `RZ_PuzzleChoiceAction` (Option 0-3) | Director > Epilogue > Table prefab | optional | the tables, boards and crates players use at the epilogue's places (the dose, the Names board, the nail, the book); without it Puzzles > Object stands in |
+
+#### Traces
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| (existing prefab) | a decal material (`RZ_DoorMarks.emat` in `Prefabs/ReforgerZ/Traces/`) on a 4 × 4 atlas (`RZ_DoorMarks_atlas.edds`): X, slash, post code, C, ATT, CLEARED, bear, patched bear, candle, hatching, ring and dot, arrow, drop, red hand, tally, beak, in that order | — | World > Traces > Kit > Door marks atlas | optional | door marks drawn as decals on each client (docs/TRACES.md, Doors you can see); empty = boards, else text. Manual: drawn in the UI's art direction (hand-made survivor marks); the fields stay text. Settle it with the Traces spike first (VERIFY) |
+| (existing prefab) | a second decal material (`RZ_DoorMarks_overlays.emat`) on a 4 × 4 atlas: ring, tick, strike, PAID, scratches outside, scratches inside, smears, thumbprint, grey overpaint | — | World > Traces > Kit > Door marks overlays | optional | the overlays on the door decals (rings, ticks, strikes, the infected's marks, grey paint); empty = not drawn. Manual |
+| (existing prefab) | a plywood offcut with the orange X painted on it (`RZ_Trace_DoorBoard_Bastion.et`); nothing with physics, storage or actions | — | World > Traces > Kit > Door board, Bastion | optional | the board path: leaned beside a door whose newest mark is Bastion's. Only when decals fail the spike: never both |
+| (existing prefab) | a cardboard sheet with the bear in white (`RZ_Trace_DoorBoard_Haven.et`) | — | World > Traces > Kit > Door board, the Haven | optional | the board path: the Haven's marks. Only when decals fail the spike |
+| (existing prefab) | a plank with a red hand (`RZ_Trace_DoorBoard_RedHand.et`) | — | World > Traces > Kit > Door board, the Red Hand | optional | the board path: the Red Hand's marks. Only when decals fail the spike |
+| (existing prefab) | a square of white primer with the beak stencilled (`RZ_Trace_DoorBoard_Halcyon.et`) | — | World > Traces > Kit > Door board, Halcyon | optional | the board path: Halcyon's marks. Only when decals fail the spike |
+| (existing prefab) | a sheet of paper on the door (`RZ_Trace_DoorBoard_Residents.et`, from `Notice_A4_Vertical_V1.et`) | — | World > Traces > Kit > Door board, residents | optional | the board path: residents' words and the infected's scratches. Only when decals fail the spike |
+| (existing prefab) | two fence palings and a mound (`RZ_Trace_Grave.et`): an empty root with an RplComponent, vanilla props as children, no physics | — | World > Traces > Kit > Grave | optional | P3, a grave where a notable character died; without it the grave is its approach line. Check the log for no Dressing: removed line after placing it once |
+| (existing prefab) | a black patch decal or mesh, a burnt pallet, a burnt tyre and a post (`RZ_Trace_Pyre.et`) | — | World > Traces > Kit > Pyre | optional | P2, ash where a job burned the bodies. As the grave |
+| (existing prefab) | 3-5 jam jars with candles (`RZ_Trace_CandleJars.et`), the lit twin with its light on LIT_ON_SPAWN and no switch action | — | World > Traces > Kit > Candle jars | optional | P3b, the memorial candles on every safehouse's step. As the grave; the lit light is a VERIFY of the Traces spike |
+| (existing prefab) | a sheet on two posts (`RZ_SeasonMark_Sheet.et`) | — | World > Traces > Kit > Season mark, rescue | optional | P5, the town log's season mark for people brought in alive. Empty = Shared > Season mark prefab |
+| (existing prefab) | a board on a post (`RZ_SeasonMark_Board.et`) | — | World > Traces > Kit > Season mark, burned and other jobs | optional | P5, the season mark for a town burned or a job. Empty = Shared > Season mark prefab |
+| (existing prefab) | a stencilled board (`RZ_SeasonMark_Stencil.et`) | — | World > Traces > Kit > Season mark, taken | optional | P5, the season mark for an outpost taken. Empty = Shared > Season mark prefab |
+| (existing prefab) | tape between two posts (`RZ_SeasonMark_Tape.et`) | — | World > Traces > Kit > Season mark, sealed | optional | P5, the season mark's look for a sealed place (no town log kind uses it yet). Empty = Shared > Season mark prefab |
+| (existing prefab) | flowers tied to a post (`RZ_SeasonMark_Flowers.et`) | — | World > Traces > Kit > Season mark, emptied | optional | P5, the season mark for a safehouse emptied. Empty = Shared > Season mark prefab |
 
 #### Missions
 
@@ -1071,6 +1091,43 @@ play-test checklist, *Camp life*).
 empty group from **Camp life > Group prefab**. The occupant and civilian prefabs are characters
 without AI today: they keep standing where they spawn until they're based on an AI character.
 
+### Traces: the Workbench spike (phase 0)
+
+Traces ([TRACES.md](TRACES.md)) runs with nothing set: every door's words come when you stand at it.
+How a marked door **looks** waits on this spike (decision 1: text first, spike decals, then decals;
+boards only if the spike fails). One evening, in this order. The prefab rows are in section 4
+(*Traces*); build in `Prefabs/ReforgerZ/Traces/` with camp life's rules (an empty root with an
+`RplComponent`, vanilla props as children, nothing with physics, no storage, ammo, supplies, fuel,
+wells, pumps or radios with actions).
+
+1. **A test atlas.** Make `RZ_DoorMarks_atlas.edds` as a 4 × 4 grid of plain shapes (a number in each
+   cell is enough for the test), and a decal material `RZ_DoorMarks.emat` on it (copy a vanilla decal
+   material, e.g. a bullet hole's, and swap its texture). Set it as **World > Traces > Kit > Door marks
+   atlas**. Leave **Door drawing** on *Decals*.
+2. **A marked door near you.** Turn **World > Traces > Debug** on, play on the repo's world, walk into a
+   town and type `/traces write bear` (or `x`, `hand`, `beak`). The notice names the door
+   (`<town>#<slot>`); `/traces` lists it with its grid in the log.
+3. **VERIFY 1, the decal.** Walk to the door: within 70 m a decal of cell 6 (the bear) shows on the
+   wall beside the door, 1.5 m up, not on the leaf. Walk past 80 m and back: it goes and comes back,
+   and nothing piles up (one decal, not many).
+4. **VERIFY 2, the building.** Try three buildings of different sizes (a house, a shop, a barn): the
+   decal lands on the right building every time. If it lands on nothing (no decal) or on the ground,
+   note which: the fallback is to send the wall point and normal only (a code change).
+5. **VERIFY 3, the atlas and the alpha.** `/traces write x` on a second door: the X's cell shows, not the
+   bear's. Wait a season day (or set **Season speed** 4) and look again: the mark is fainter. If every
+   door shows the whole sheet, the material doesn't take `atlasNum`: make one material per symbol
+   (a code change) or use boards.
+6. **Two clients.** With a second client in the town, both see the same marks on the same doors.
+7. **The other kit items, once each.** Place the grave, the pyre and the candle jars (P2, P3, P3b)
+   through play (die after 2 hours near a safehouse, finish Burn the Bodies, die as a Haven Champion),
+   or spawn each prefab by hand once: the log has no `Dressing: removed` line, nothing on them has a
+   prompt, and AI walk round them (VERIFY 7 and 8 of the design). The lit candle jars light on a
+   second client that streams them in (VERIFY 4).
+8. **Decide.** Decals pass: draw the real atlas and the overlays (`RZ_DoorMarks_overlays.emat`: ring,
+   tick, strike, PAID, scratches outside, scratches inside, smears, thumbprint, grey overpaint) in the
+   UI's art direction. Decals fail: set **Door drawing** to *Boards* and make the five boards. Turn
+   **Debug** off again; write the result in [TRACES.md](TRACES.md) and the VERIFY list.
+
 ### Setting up the UI
 
 Optional: without it every message is a vanilla hint, as before. How the UI works is in
@@ -1157,7 +1214,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 40 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 41 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
@@ -1171,6 +1228,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
 | World | Long Table | `m_LongTableSettings` | **Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table)) |
+| World | Traces | `m_TraceSettings` | **Enabled** (on), **Door marks** (on), doors a town (6, 8 in a stronghold's town), layers a door (3), live writes a season day (20, 2 a town), **First days** (on), **Player traces** (on), **Door drawing** (Decals: from the kit's atlas, boards without it, else text; Boards; Text), props on the server (40) and a cluster (12), **Debug** (off: logs every door read; lets admins write a mark), and the **Kit** of optional prefabs and materials ([TRACES.md](TRACES.md)) |
 | Director | Stages (list) |  | Per-stage overrides; empty = the built-in four (40, 80 and 120 hours played, spread 0.01 to 0.02 a minute; [DESIGN.md](DESIGN.md#the-director-outbreak-stages-and-spread)) |
 | Director | (top level) |  | **Broadcast minutes** (25; 0 = only on first join) |
 | Director | Environment | `m_EnvironmentSettings` | Night heat spread (0.25), night specials (×1.25), rain and fog thresholds, storm thresholds, storm grounds the helicopter |
@@ -1513,8 +1571,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **79** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 14 are in the UI, the talk screen and the server's loadout
+There are **81** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -1534,7 +1592,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:196` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (45)
+### Medium risk: big features, with a fallback (47)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1576,6 +1634,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Cure/RZ_CureFinale.c:1429` | the cure finale's clean room: the lab prefab has no named child entity to read, so a land point 15–25 m from the lab stands in; check it's somewhere players can stand and fight | Move the lab, or a lab prefab with the room as a child entity (planned) |
 | `Cure/RZ_CureFinale.c:1531` | an unconscious player still counts in the clean room (only alive is read) | A downed player holds the room until killed: fine for a first play-test; reading the unconscious state is planned |
 | `Cure/RZ_CureFinale.c:1936` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
+| `UI/RZ_DoorMarkClient.c:77`, `:106` | Traces' door marks as decals: a small sphere query on a client at a door's mark point finds the same static building the server resolved the door from, and `World.CreateDecal` with lifetime 0 projects a static decal from the door atlas (the cell by `atlasNum`, the age by the colour's alpha) onto its wall, removed again with `RemoveDecal` ([the spike](#traces-the-workbench-spike-phase-0), VERIFY 1–3) | Set **World > Traces > Door drawing** to *Boards* and fill the kit's boards, or *Text*: the words come either way |
 | `Director/Epilogue/RZ_EpilogueClosing.c:951` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the deploy menu, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
@@ -1937,6 +1996,17 @@ from <title> (cap N Favor, N participant(s) first)`. Strangers: `Errands: strang
 `Errands: found hook <kind> at <grid> after <title>`; `Errands: radio ask to <player> for <name> at <house>`,
 `Errands: <key> for <player> has its twist`; locals: `Locals: <name> (<role>) made at <house> by <player>
 (pinned|unpinned)`, `Locals: <name> at <house> died with the house's losses`, `Locals: <name> killed (by <player>)`.
+
+Traces ([TRACES.md](TRACES.md)): at start, `Traces: first days seeded (gym <town>, church <town>,
+roadblock <grid>, N towns swept)`, `Canon: day2.gym = ...` (and the other new keys, once a season), then
+`Traces: N marked doors (N live layers), N town events, drawing decals|boards|text.` (or `Traces: off.`);
+while running, `Traces: door <town>#<slot> <author> <symbol> D<day> (<cause>)` for each live write
+(`#-1` while the town's doors aren't resolved yet), `Traces: overpaint <town>#<slot> by <author>`,
+`Traces: scene grave|pyre at <grid> (a player's)`, `Traces: scene <kind> gone (its days are up|made
+room)`; every 5 minutes `Status | Traces: doors N (drawn M), scenes S, props P/40, lights 0, loops 0`;
+`/traces` writes `Traces: <town>#<slot> <key> at <grid>: [<author> <symbol> D<day> <first days|live|old
+mark>] | <the line>` and `Traces: <town> history: Day N <kind> (<faction>) xN`; with **Debug** on, `Traces:
+player N read <town>#<slot>`.
 
 ## 8. Play-test checklist
 
@@ -2559,6 +2629,29 @@ editor's time of day)
 - [ ] Shoot near a camp (when Hunted): they fight as before, then go back to their jobs.
 - [ ] Do AI walk through the tents (the navmesh VERIFY)? Is one more person per camp and the server
   frame time fine with 3 live places and a stronghold's 20 pieces?
+
+**Traces** ([TRACES.md](TRACES.md); the log's `Traces:` lines, `/traces` and `/traces town <name>` as an
+admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
+- [ ] The log's first-days line names a gym and a church on the map, and `/traces town <name>` for a town
+  near the north road lists X's dated Day 2–5 (never later), each with a section and a found field.
+- [ ] Walk into a town with two or more marked doors: one **Doors** notice, the three biggest things,
+  once this session (leave and come back: nothing). Stand 2 s at a marked door, on foot, with a pad:
+  its line comes once; again at the same door: nothing. Drive past: nothing.
+- [ ] The same door read by different characters: a Police Officer reads Bastion's code in full; a
+  Hunter gets how many and how old on scratches; an Elder reads names under a candle; anyone else the
+  glance. Known with a faction reads that faction's marks.
+- [ ] A door with three layers opens the reader (UI > Reader on); B closes it.
+- [ ] The notebook's Journal has **Read on doors** with the last lines, newest first; die and it's gone.
+- [ ] Finish Protection Racket in a town: a red hand on the shop with one more stroke; one in a town with
+  an X on the shop: the X now reads "Under the paint, still readable".
+- [ ] A safehouse empties (or `house` dead go up): its bear gets a ring and an arrow; a candle's number
+  goes up. Finish Walk Him Out: hatching in that town.
+- [ ] Restart: the first-days marks are the same doors with the same words; live marks are still there.
+- [ ] Die after a 2-hour life within 3 km of a safehouse: a grave (or its line) where you fell, with your
+  description (your name only on **Named**). Die briefly in a town far from any house: no grave.
+- [ ] Errands' old mark: its line reads at your level and is in the journal; no old mark in the
+  Long Table's ground (no marks at all within 2 km of its farm but residents' Day 1–3 words).
+- [ ] Nothing pays: Fame, Favor and items stay the same through all of the above.
 
 **World**
 - [ ] Walking near the map edge: drone and loudspeaker at 300 m, warning shot at 100 m.
