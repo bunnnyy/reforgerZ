@@ -49,9 +49,16 @@ fi
 # The test addon: same layout as the repo (the engine wants lowercase 'scripts' on Linux).
 rm -rf "$ADDONS/ReforgerZ" && mkdir -p "$ADDONS/ReforgerZ"
 cp "$ROOT/addon.gproj" "$ADDONS/ReforgerZ/"
+# Special Zombies ships its scripts in "Scripts/" (capital S). On the Linux server, with it loaded, the
+# Game module never finds our lowercase "scripts/" and compiles nothing of ReforgerZ, without an error.
+# The check drops it from the throwaway copy (ReforgerZ never references it by name).
+sed -i 's/ *"69BD721866937F85"//' "$ADDONS/ReforgerZ/addon.gproj"
 for d in scripts Configs UI Prefabs Worlds Missions Layouts; do
 	[ -d "$ROOT/$d" ] && cp -r "$ROOT/$d" "$ADDONS/ReforgerZ/"
 done
+# A sentinel with one known warning: if the log doesn't show it, ReforgerZ wasn't compiled at all.
+SENTINEL="scripts/Game/ReforgerZ/RZ_CompileSentinel.c"
+printf 'class RZ_CompileSentinel\n{\n\tvoid Probe()\n\t{\n\t\tint rzSentinelUnused = 1;\n\t}\n}\n' > "$ADDONS/ReforgerZ/$SENTINEL"
 
 BIN="./ArmaReforgerServer"
 [ -f "$SERVER/ArmaReforgerServer.exe" ] && BIN="./ArmaReforgerServer.exe"
@@ -71,12 +78,16 @@ if ! grep -q "Module: Game;" "$LOG"; then
 	[ -f "$C" ] && cp "$C" "$LOG"
 fi
 
-grep -E "\((E|W)\).*scripts/Game/ReforgerZ/|Can't compile" "$LOG"
+grep -E "\((E|W)\).*scripts/Game/ReforgerZ/|Can't compile" "$LOG" | grep -v "RZ_CompileSentinel.c"
 if grep -E "dependency '[0-9A-F]*' can't be added" "$LOG"; then
 	echo "Warning: a Workshop dependency in addon.gproj is missing; set EXTRA_ADDONS_DIR to a folder holding it."
 fi
 if grep -q "Module: Game;" "$LOG" && ! grep -q "Can't compile" "$LOG"; then
-	echo "OK: the Game module compiled ($(grep -cE '\(W\).*scripts/Game/ReforgerZ/' "$LOG") ReforgerZ warnings). Log: $LOG"
+	if ! grep -q "RZ_CompileSentinel.c" "$LOG"; then
+		echo "FAILED: ReforgerZ's scripts were not compiled at all (the sentinel's warning is missing). See $LOG"
+		exit 1
+	fi
+	echo "OK: the Game module compiled ($(grep -E '\(W\).*scripts/Game/ReforgerZ/' "$LOG" | grep -vc "RZ_CompileSentinel.c") ReforgerZ warnings). Log: $LOG"
 	exit 0
 fi
 echo "FAILED: see $LOG"
