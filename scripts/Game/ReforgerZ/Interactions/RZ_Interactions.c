@@ -291,6 +291,72 @@ class RZ_ItemHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The first carried item that matches the words (see Matches), null if none.
+	static IEntity FirstMatch(IEntity character, array<string> words)
+	{
+		if (!character || !words || words.IsEmpty())
+			return null;
+
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return null;
+
+		array<IEntity> items = {};
+		inv.GetItems(items);
+		foreach (IEntity item : items)
+		{
+			if (Matches(item, words))
+				return item;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the character holds in its hands: the item or gadget in the right hand (a fuel can),
+	//! else the held gadget, else the current weapon or item. null if nothing. Any machine.
+	static IEntity HeldItem(IEntity character)
+	{
+		ChimeraCharacter cc = ChimeraCharacter.Cast(character);
+		if (!cc)
+			return null;
+
+		CharacterControllerComponent ctrl = cc.GetCharacterController();
+		if (ctrl)
+		{
+			IEntity right = ctrl.GetRightHandItem(); // VERIFY: a fuel can held in the hands is seen on the server (here, as the held gadget, or as the item in hands)
+			if (right)
+				return right;
+		}
+
+		SCR_GadgetManagerComponent gadgets = SCR_GadgetManagerComponent.GetGadgetManager(character);
+		if (gadgets && gadgets.GetHeldGadget())
+			return gadgets.GetHeldGadget();
+
+		if (ctrl)
+			return ctrl.GetCurrentItemInHands();
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: deletes one item the character carries or holds.
+	static void DeleteCarried(IEntity character, IEntity item)
+	{
+		if (!item)
+			return;
+
+		SCR_InventoryStorageManagerComponent inv;
+		if (character)
+			inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
+
+		if (inv && inv.TryDeleteItem(item))
+			return;
+
+		SCR_EntityHelper.DeleteEntityAndChildren(item);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool Has(IEntity character, string wordList)
 	{
 		array<string> words = {};
@@ -416,7 +482,8 @@ enum RZ_ESpotKind
 	GENERATOR,
 	CAR,
 	DOOR,
-	WOUND
+	WOUND,
+	BURN
 }
 
 //------------------------------------------------------------------------------------------------
@@ -460,6 +527,7 @@ class RZ_Interactions
 	static const int KIND_CAR = 12;
 	static const int KIND_DOOR = 13;		// a locked place's outside door (RZ_DoorLocks)
 	static const int KIND_WOUND = 14;		// a fresh bite at a player's feet (RZ_Infection): Clean the bite
+	static const int KIND_BURN = 15;		// a building's doorway near someone holding fuel (RZ_Traps): Douse the doorway
 
 	static const int TASK_SEARCH = 0;
 	static const int TASK_FORCE = 1;
@@ -952,6 +1020,57 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A spot with a stable key (a burn spot at a doorway): the existing one is kept (and moved to
+	//! pos if it moved), else a new one is added. null at the cap.
+	RZ_Spot EnsureSpot(int kind, string key, vector pos, vector buildingPos, string type, string noun)
+	{
+		RZ_Spot s = FindSpotByKey(key);
+		if (s)
+		{
+			s.m_fSeen = m_fClock;
+			if (RZ_Util.DistXZ(s.m_vPos, pos) > 0.5)
+			{
+				DespawnSpot(s);
+				s.m_vPos = pos;
+			}
+
+			return s;
+		}
+
+		if (m_aSpots.Count() >= m_Settings.m_iSpotCap)
+			return null;
+
+		s = new RZ_Spot();
+		s.m_iId = m_iNextSpot;
+		m_iNextSpot++;
+		s.m_iKind = kind;
+		s.m_sKey = key;
+		s.m_vPos = pos;
+		s.m_vBuilding = buildingPos;
+		s.m_sBuildingKey = PosKey(buildingPos, 4);
+		s.m_sType = type;
+		s.m_sNoun = noun;
+		s.m_fSeen = m_fClock;
+		m_aSpots.Insert(s);
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every spot of this kind whose key isn't in `keep` goes (with its prop).
+	void RemoveSpotsOfKind(int kind, array<string> keep)
+	{
+		for (int i = m_aSpots.Count() - 1; i >= 0; i--)
+		{
+			RZ_Spot s = m_aSpots[i];
+			if (s.m_iKind != kind || keep.Contains(s.m_sKey))
+				continue;
+
+			DespawnSpot(s);
+			m_aSpots.Remove(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A spot outside a locked place's door (RZ_DoorLocks). False if it exists already (a double
 	//! door shares one) or at the cap.
 	bool AddDoorSpot(vector pos, vector buildingPos, string buildingKey, string type, string noun, int doorIndex)
@@ -1226,6 +1345,13 @@ class RZ_Interactions
 					m_GM.GetInfection().WoundLabels(read, choiceLabels);
 				break;
 			}
+			case RZ_ESpotKind.BURN:
+			{
+				// Only the choice, and only for someone whose hands hold fuel (RZ_PuzzleChoiceAction)
+				read = RZ_ClueComponent.NO_READ;
+				choiceLabels = RZ_Traps.BURN_LABEL;
+				break;
+			}
 			case RZ_ESpotKind.BELL:
 			{
 				choiceLabels = "Ring the bell";
@@ -1286,6 +1412,7 @@ class RZ_Interactions
 			case RZ_ESpotKind.WORKBENCH: m_Crafting.DescribeBench(playerId); return;
 			case RZ_ESpotKind.RADIO: m_Radio.ListenHouseRadio(playerId, s, user); return;
 			case RZ_ESpotKind.GENERATOR: m_Traps.DescribeFoundGenerator(playerId, s); return;
+			case RZ_ESpotKind.BURN: return;
 			case RZ_ESpotKind.WOUND:
 			{
 				if (m_GM.GetInfection())
@@ -1370,6 +1497,7 @@ class RZ_Interactions
 			}
 			case RZ_ESpotKind.RADIO: m_Radio.HandleHouseRadio(playerId, s, option, user); return;
 			case RZ_ESpotKind.GENERATOR: m_Traps.HandleFoundGenerator(playerId, s, option, user); return;
+			case RZ_ESpotKind.BURN: m_Traps.StartBurn(playerId, s, user); return;
 		}
 	}
 

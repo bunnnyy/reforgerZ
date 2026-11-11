@@ -64,6 +64,8 @@ class RZ_ClueComponentClass : ScriptComponentClass
 //! for the replicated read label.
 class RZ_ClueComponent : ScriptComponent
 {
+	static const string NO_READ = "-";	// a read label that hides the read action (a spot with only a choice)
+
 	protected int m_iMissionId = -1;
 	protected int m_iClueIndex = -1;
 

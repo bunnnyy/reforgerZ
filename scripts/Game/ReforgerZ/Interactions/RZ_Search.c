@@ -854,21 +854,14 @@ class RZ_Search
 		if (s.m_iKind == RZ_Interactions.KIND_BUILDING)
 			read = "Look around " + s.m_sNoun;
 
-		string burn = "Set it alight (fuel)";
-		if (IsLocked(s) && m_Hub.GetDoors().UsesDoors(s.m_sBuildingKey))
+		if (IsLocked(s) && !m_Hub.GetDoors().UsesDoors(s.m_sBuildingKey))
 		{
-			// The way in is the door (RZ_DoorLocks): Unlock, Lock and Force are there
-			choiceLabels = string.Format("Search %1|||%2", s.m_sNoun, burn);
+			choiceLabels = string.Format("Search %1|Use a key|Force the lock (crowbar)", s.m_sNoun);
 			return;
 		}
 
-		if (IsLocked(s))
-		{
-			choiceLabels = string.Format("Search %1|Use a key|Force the lock (crowbar)|%2", s.m_sNoun, burn);
-			return;
-		}
-
-		choiceLabels = string.Format("Search %1|||%2", s.m_sNoun, burn);
+		// The way into a locked place is the door (RZ_DoorLocks): Unlock, Lock and Force are there
+		choiceLabels = string.Format("Search %1||", s.m_sNoun);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -938,19 +931,13 @@ class RZ_Search
 
 	// ================================================================ Choices
 	//------------------------------------------------------------------------------------------------
-	//! 0 search, 1 use a key, 2 force the lock, 3 set it alight.
+	//! 0 search, 1 use a key, 2 force the lock.
 	void HandleChoice(int playerId, RZ_Spot s, int option, IEntity user)
 	{
 		if (!m_Settings.m_bEnabled)
 			return;
 
 		string title = m_Hub.Title(s);
-		if (option == 3)
-		{
-			m_Hub.GetTraps().StartBurn(playerId, s, user);
-			return;
-		}
-
 		if (s.m_iKind != RZ_Interactions.KIND_BODY && m_Hub.GetTraps().IsBurned(s.m_vBuilding))
 		{
 			m_GM.NotifyPlayer(playerId, title, "It's burned out. There's nothing left to find.");

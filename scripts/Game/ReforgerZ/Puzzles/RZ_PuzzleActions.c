@@ -20,6 +20,14 @@ class RZ_ReadClueAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Hidden when the read label is RZ_ClueComponent.NO_READ (a burn spot has only its choice).
+	override bool CanBeShownScript(IEntity user)
+	{
+		RZ_ClueComponent comp = RZ_ClueComponent.Cast(GetOwner().FindComponent(RZ_ClueComponent));
+		return !comp || comp.GetReadLabel() != RZ_ClueComponent.NO_READ;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool HasLocalEffectOnlyScript()
 	{
 		return false;
@@ -163,6 +171,10 @@ class RZ_PuzzleChoiceAction : ScriptedUserAction
 		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
 		if (comp && comp.IsSlotHidden(true, m_iOption))
 			return false;
+
+		// A burn spot (world interactions): only for someone whose own hands hold fuel
+		if (comp && comp.GetSlotLabel(true, m_iOption) == RZ_Traps.BURN_LABEL)
+			return RZ_Traps.FireFuel(user) != null;
 
 		return true;
 	}

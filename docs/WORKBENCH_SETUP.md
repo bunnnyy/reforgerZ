@@ -936,7 +936,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6, rare 0.1, electronics 0.1), locks and their shares, **Door locks** (on; off = the lock on the loot), **Key prefab**, force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
 | Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), siphon and pump timings, Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix)) |
 | Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
-| Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs |
+| Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs, **Fuel in your hands** (on; off = a full can anywhere on you), seconds to set it going (5) ([DESIGN.md](DESIGN.md#fire)) |
 | Interactions | Secure radio | `m_RadioCrackSettings` | Crack seconds (60), listen minutes (20), line minutes (4), range (3 km), interrupts, house radio keywords |
 | Survival | (top level) |  | Shot heat (3), suppressed mult (0.3), **Bite chance** (0.1; hardcore 0.15, casual 0.07), bite reach (2.5 m) |
 | Survival | Infection | `m_InfectionSettings` | Bite modifiers (surrounded ×2, grabbed ×1.5, tired ×1.5, hurt ×1.5, max 0.6), **protective clothing keywords** and multipliers (jacket 0.8, gloves 0.8, helmet 0.85), **Golden window** (120 s; hardcore 60, casual 180), alcohol and antiseptic keywords, clean chances (0.7, 0.9) and seconds (6), Final stage minutes (10), the six treatment prefabs, stabiliser minutes (20), med cap (30 min), trial dose cure (0.8) and Fame (3), cut dose cure (0.5), antibiotics fail (0.3), herb keywords, brew seconds (20), **Finds** (where treatments turn up; empty = the built-in list) |
@@ -1024,7 +1024,7 @@ test files are copied into a throwaway addon folder.
 grep -rn "VERIFY" scripts/
 ```
 
-There are **39** lines with the tag, all in the game scripts (one is the comment in
+There are **40** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 2 are in the UI). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -1041,7 +1041,7 @@ No fallback. If this is wrong, nothing persists.
 |---|---|---|
 | `Persistence/RZ_SaveData.c:156` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 
-### Medium risk: big features, with a fallback (22)
+### Medium risk: big features, with a fallback (23)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1050,7 +1050,7 @@ No fallback. If this is wrong, nothing persists.
 | `Core/RZ_Util.c:725` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:971` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:753` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
-| `Interactions/RZ_Interactions.c:703` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
+| `Interactions/RZ_Interactions.c:771` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
 | `Core/RZ_Util.c:529` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:246` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
 | `World/RZ_Perimeter.c:861`, `:876` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
@@ -1058,6 +1058,7 @@ No fallback. If this is wrong, nothing persists.
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: no door locks, the loot lock everywhere |
+| `Interactions/RZ_Interactions.c:327` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:861` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:947` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
@@ -1072,7 +1073,7 @@ No fallback. If this is wrong, nothing persists.
 |---|---|---|
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
-| `Interactions/RZ_Traps.c:260` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: use **Set it alight** on the building instead |
+| `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
 | `Core/RZ_Util.c:695` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
 | `Core/RZ_Util.c:492` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
@@ -1484,6 +1485,12 @@ session, tick off:
   seconds after you arrive. Lead infected and a hostile AI group at it: they route to another
   door or wait outside; they don't open it. Note the server frame time when blockers come and go.
 - [ ] Infected pressed against a locked door make noise (heat), and you're told once.
+- [ ] Fire: with a full fuel can in your hands, walk up to a house: **Douse the doorway and set it
+  alight** appears at its door within 10 s; a second player without fuel beside you doesn't
+  see it; put the can away and it's gone. Five seconds later the house burns and the can is gone.
+  No prompt at a safehouse, an outpost or the lab. A thrown molotov still burns the house it
+  lands by. If the prompt never shows with the can in your hands, the server doesn't see the held
+  can (the VERIFY in `RZ_Interactions.c`): set **Traps > Fuel in your hands** off.
 - [ ] World events (raise a weight to start one): Fog Bank muffles heat and brings spawns closer
   only inside its radius, and both reset when it ends. Power Surge marks the town Powered for 10
   minutes (status log, the lights hook, electronics in searches) and dark again after, unless the

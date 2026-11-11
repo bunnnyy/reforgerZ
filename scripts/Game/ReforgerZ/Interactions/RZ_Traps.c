@@ -9,10 +9,12 @@
 //! - Generators: a portable one or one found in a shed. Running: lights where the hook is
 //!   used (RZ_PowerGrid.IsPoweredAt), radios nearby pick up every open channel, standing next
 //!   to it charges your radio and torch (a "charged" flag), and it's loud. It uses fuel.
-//! - Fire: a molotov, or fuel and a match, burns THAT building (RZ_TownMemory.ReportBuildingBurned):
-//!   nothing to search there until it's cooled and loot has come back, and no infected spawn
-//!   right around it meanwhile. A town is Burned only if most of its buildings are. Strongholds,
-//!   outposts, safehouses, quartermasters and the lab can't burn.
+//! - Fire: a thrown molotov, or a full fuel can held in your hands at a building's door ("Douse
+//!   the doorway and set it alight", a burn spot only that player and others holding fuel see),
+//!   burns THAT building (RZ_TownMemory.ReportBuildingBurned): no loot there until it's cooled
+//!   and loot has come back, and no infected spawn right around it meanwhile. A town is Burned
+//!   only if most of its buildings are. Strongholds, outposts, safehouses, quartermasters and the
+//!   lab can't burn.
 
 //------------------------------------------------------------------------------------------------
 enum RZ_EPlaceable
@@ -98,11 +100,14 @@ class RZ_TrapSettings
 	string m_sFuelWords;
 
 	// ---------------------------------------------------------------- Fire
-	[Attribute("1", desc: "Molotovs and fuel burn buildings (one building each)")]
+	[Attribute("1", desc: "Fire: a thrown molotov, or a full fuel can poured at a doorway, burns that building (one building each)")]
 	bool m_bFire;
 
-	[Attribute("molotov,firebomb", desc: "Molotov keywords (setting a fire by hand uses one, or a fuel item)")]
-	string m_sMolotovWords;
+	[Attribute("1", desc: "Fuel in your hands: Douse the doorway and set it alight shows only while you hold a full fuel can (the can is used up). Off = it shows with a full can anywhere on you")]
+	bool m_bFuelInHands;
+
+	[Attribute("5", desc: "Seconds to douse a doorway and set it going (stay close)")]
+	float m_fBurnSeconds;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Fire effect spawned on a burning building for a few minutes (optional)", "et")]
 	ResourceName m_sFireEffectPrefab;
@@ -377,6 +382,15 @@ class RZ_Traps
 	protected ref map<int, float> m_mCharge = new map<int, float>();
 	protected ref map<string, float> m_mCharged = new map<string, float>();
 	protected ref array<string> m_aGeneratorWords = {};
+	protected ref map<string, vector> m_mDoorway = new map<string, vector>();	// building key: where its burn spot stands
+
+	// The burn prompt (any machine: the client hides it unless its own hands hold fuel)
+	static const string BURN_LABEL = "Douse the doorway and set it alight";
+	protected static const float BURN_REACH = 8;		// a building this close (m) to someone holding fuel gets the prompt
+	protected static const float DOORWAY_OUT = 1.1;	// the spot stands this far (m) outside the door (a locked door's own spot is at 0.6)
+	protected static ref RZ_TrapSettings s_ClientSettings;
+	protected static ref array<string> s_aFuelWords;
+	protected static string s_sFuelWordsFrom;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Traps(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_TrapSettings settings)
@@ -430,6 +444,7 @@ class RZ_Traps
 		TickPlaced(dt);
 		TickGenerators(dt, ids, players);
 		TickFire();
+		TickBurnSpots(players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -967,12 +982,158 @@ class RZ_Traps
 		return false;
 	}
 
+	// ================================================================ Fuel at the doorway
 	//------------------------------------------------------------------------------------------------
-	//! "Set it alight" on a building spot: a molotov or a fuel item, and a few seconds.
+	//! Any machine: the settings the client checks with (the game mode's, else the defaults).
+	protected static RZ_TrapSettings SharedSettings()
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm && gm.GetTrapSettings())
+			return gm.GetTrapSettings();
+
+		if (!s_ClientSettings)
+			s_ClientSettings = RZ_TrapSettings.Cast(RZ_Util.NewWithDefaults("RZ_TrapSettings"));
+
+		return s_ClientSettings;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static array<string> FuelWords(RZ_TrapSettings settings)
+	{
+		string from = settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY;
+		if (!s_aFuelWords || s_sFuelWordsFrom != from)
+		{
+			s_aFuelWords = new array<string>();
+			RZ_ItemHelper.Words(from, s_aFuelWords);
+			s_sFuelWordsFrom = from;
+		}
+
+		return s_aFuelWords;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Any machine: the full fuel can this character would pour. With Fuel in your hands on, only
+	//! the one held in the hands; off, any full can it carries. null if none.
+	static IEntity FireFuel(IEntity character)
+	{
+		RZ_TrapSettings settings = SharedSettings();
+		if (!character || !settings || !settings.m_bFire)
+			return null;
+
+		array<string> words = FuelWords(settings);
+		IEntity held = RZ_ItemHelper.HeldItem(character);
+		if (RZ_ItemHelper.Matches(held, words))
+			return held;
+
+		if (settings.m_bFuelInHands)
+			return null;
+
+		return RZ_ItemHelper.FirstMatch(character, words);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On the 5 s tick: a burn spot at the nearest outside door of the nearest building that can
+	//! burn, within BURN_REACH of each player who has fuel for it (one per player; two players at
+	//! the same building share it). Spots nobody with fuel is near go at once.
+	protected void TickBurnSpots(array<IEntity> players)
+	{
+		array<string> wanted = {};
+		if (m_Settings.m_bFire)
+		{
+			foreach (IEntity p : players)
+			{
+				if (!p || RZ_Util.IsInVehicle(p) || !FireFuel(p))
+					continue;
+
+				IEntity building = FindBurnable(p.GetOrigin());
+				if (!building)
+					continue;
+
+				vector bpos = building.GetOrigin();
+				string bkey = RZ_Interactions.PosKey(bpos, 4);
+				string key = "burn_" + bkey;
+				if (wanted.Contains(key))
+					continue;
+
+				wanted.Insert(key);
+				m_Hub.EnsureSpot(RZ_Interactions.KIND_BURN, key, Doorway(building, bkey, p.GetOrigin()), bpos, "house", "the doorway");
+			}
+		}
+
+		m_Hub.RemoveSpotsOfKind(RZ_Interactions.KIND_BURN, wanted);
+		if (m_mDoorway.Count() > 200)
+			m_mDoorway.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest building within BURN_REACH that can burn (not burned, not a protected place).
+	protected IEntity FindBurnable(vector pos)
+	{
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(pos, BURN_REACH, buildings, 16);
+		IEntity best;
+		float bestDist = float.MAX;
+		foreach (IEntity b : buildings)
+		{
+			vector bpos = b.GetOrigin();
+			if (IsBurned(bpos) || m_Hub.IsProtected(bpos))
+				continue;
+
+			float d = RZ_Util.DistXZ(bpos, pos);
+			if (d < bestDist)
+			{
+				bestDist = d;
+				best = b;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a building's burn spot stands: just outside its outside door nearest `from` (the
+	//! doors are the building's door children, as for locks), else just outside the side of its
+	//! box nearest `from` (the entrance side). Remembered per building.
+	protected vector Doorway(IEntity building, string buildingKey, vector from)
+	{
+		vector known;
+		if (m_mDoorway.Find(buildingKey, known))
+			return known;
+
+		vector at = building.GetOrigin();
+		bool found = false;
+		float best = float.MAX;
+		array<IEntity> doors = {};
+		RZ_DoorGeometry.FindDoors(building, 0, doors);
+		foreach (IEntity door : doors)
+		{
+			if (!door || !RZ_DoorGeometry.IsOuterDoor(building, door))
+				continue;
+
+			vector outside = RZ_DoorGeometry.OutsidePoint(building, door, DOORWAY_OUT);
+			float d = RZ_Util.DistXZ(outside, from);
+			if (d < best)
+			{
+				best = d;
+				at = outside;
+				found = true;
+			}
+		}
+
+		if (!found)
+			at = RZ_DoorGeometry.SidePoint(building, from, DOORWAY_OUT);
+
+		at = RZ_Util.GroundPos(at);
+		m_mDoorway.Set(buildingKey, at);
+		return at;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Douse the doorway and set it alight (the burn spot): fuel in your hands, a few seconds.
 	void StartBurn(int playerId, RZ_Spot s, IEntity user)
 	{
-		string title = m_Hub.Title(s);
-		if (!m_Settings.m_bFire)
+		string title = "Fire";
+		if (!m_Settings.m_bFire || !s)
 			return;
 
 		if (m_Hub.IsProtected(s.m_vBuilding))
@@ -987,25 +1148,44 @@ class RZ_Traps
 			return;
 		}
 
-		if (!RZ_ItemHelper.Has(user, m_Settings.m_sMolotovWords) && !RZ_ItemHelper.Has(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY))
+		if (!FireFuel(user))
 		{
-			m_GM.NotifyPlayer(playerId, title, "You'd need fuel or a molotov to set it going.");
+			m_GM.NotifyPlayer(playerId, title, NoFuelText());
 			return;
 		}
 
-		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_BURN, s.m_iId, 0, 5, "the fire", false);
-		m_GM.NotifyPlayer(playerId, title, "You splash it around the doorframe. Five seconds, and then get out.");
+		float seconds = Math.Max(1, m_Settings.m_fBurnSeconds);
+		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_BURN, s.m_iId, 0, seconds, "the fire", false);
+		m_GM.NotifyPlayer(playerId, title, string.Format("You slosh it over the doorframe and the floor inside. About %1 seconds, then get clear.", RZ_Util.RoundToInt(seconds)));
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected string NoFuelText()
+	{
+		if (m_Settings.m_bFuelInHands)
+			return "You'd need a full can of fuel in your hands to set it going.";
+
+		return "You'd need a full can of fuel to set it going.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The can is checked again and used up (the whole can), then the building burns.
 	void CompleteBurn(int playerId, RZ_Spot s, IEntity user)
 	{
 		if (!s)
 			return;
 
-		if (RZ_ItemHelper.Take(user, m_Settings.m_sMolotovWords, 1) <= 0 && RZ_ItemHelper.Take(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, 1) <= 0)
+		IEntity can = FireFuel(user);
+		if (!can)
+		{
+			m_GM.NotifyPlayer(playerId, "Fire", NoFuelText());
+			return;
+		}
+
+		if (IsBurned(s.m_vBuilding) || m_Hub.IsProtected(s.m_vBuilding))
 			return;
 
+		RZ_ItemHelper.DeleteCarried(user, can);
 		Burn(s.m_vBuilding, playerId);
 	}
 

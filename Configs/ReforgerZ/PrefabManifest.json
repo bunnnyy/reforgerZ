@@ -4140,7 +4140,7 @@
    "category": "Interactions",
    "object": "Traps",
    "field": "m_TrapSettings",
-   "covers": "Barricade, tripwire, spike trap limits and props, generators, fire and molotovs"
+   "covers": "Barricade, tripwire, spike trap limits and props, generators, fire and molotovs, **Fuel in your hands** (on; off = a full can anywhere on you), seconds to set it going (5) ([DESIGN.md](DESIGN.md#fire))"
   },
   {
    "category": "Interactions",
@@ -4771,7 +4771,8 @@
     "m_iGeneratorsPerPlayer": "1",
     "m_sFuelWords": "jerrycan,jerry_can,fuelcan,fuel_can,canister",
     "m_bFire": "1",
-    "m_sMolotovWords": "molotov,firebomb",
+    "m_bFuelInHands": "1",
+    "m_fBurnSeconds": "5",
     "m_fFireEffectSeconds": "180",
     "m_fBurnHeat": "30",
     "m_fBurnMinutes": "120",

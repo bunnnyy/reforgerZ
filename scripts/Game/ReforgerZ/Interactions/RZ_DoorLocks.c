@@ -254,6 +254,39 @@ class RZ_DoorGeometry
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A point `dist` m outside the side of the building's box nearest `from` (a building with no
+	//! door children: its burn spot). The building's origin without a usable box.
+	static vector SidePoint(IEntity building, vector from, float dist)
+	{
+		vector mins;
+		vector maxs;
+		if (!LocalBox(building, mins, maxs))
+			return building.GetOrigin();
+
+		vector p = ToLocal(building, from);
+		float x = Math.Clamp(p[0], mins[0], maxs[0]);
+		float z = Math.Clamp(p[2], mins[2], maxs[2]);
+		array<vector> sides = {};
+		sides.Insert(Vector(mins[0] - dist, 0, z));
+		sides.Insert(Vector(maxs[0] + dist, 0, z));
+		sides.Insert(Vector(x, 0, mins[2] - dist));
+		sides.Insert(Vector(x, 0, maxs[2] + dist));
+		vector best = sides[0];
+		float bestDist = float.MAX;
+		foreach (vector side : sides)
+		{
+			float d = RZ_Util.DistXZ(side, p);
+			if (d < bestDist)
+			{
+				bestDist = d;
+				best = side;
+			}
+		}
+
+		return ToWorld(building, best);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Straight out of the door's wall, in world space (flat, length 1). Zero without a box.
 	static vector WallNormal(IEntity building, IEntity door)
 	{

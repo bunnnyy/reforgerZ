@@ -1482,12 +1482,23 @@ None of these are saved.
 
 ### Fire
 
-A thrown molotov (25 heat) kills infected within 3 m and burns the building within 10 m. Only a
-real throw counts (the thrower's grenade-throw event names the bottle); one dropped from the
-inventory is just a bottle. Or **Set
-it alight** with a molotov or fuel. That one building burns: 30 heat, an optional fire effect, the
-town's infection −1, and for two hours nothing to search and no spawns within 30 m. Strongholds,
-outposts, safehouses, quartermasters and the lab can't burn (or be locked).
+Two ways to burn a building:
+
+- **A thrown molotov** (25 heat) kills infected within 3 m and burns the building within 10 m.
+  Only a real throw counts (the thrower's grenade-throw event names the bottle); one dropped from
+  the inventory is just a bottle, and one held in the hand gives no prompt: throw it.
+- **Fuel in your hands.** Hold a full fuel can and walk up to a building: **Douse the doorway and
+  set it alight** appears on its nearest outside door (a building with no door entities: just
+  outside the side of it nearest you). Five seconds within 3.5 m; the whole can is used up. On the
+  5 s tick the server puts one invisible prompt at the nearest building within 8 m of each player
+  holding fuel (two players at one building share it) and removes it when nobody with fuel is near.
+  The prompt shows only to players whose own hands hold fuel, and the server checks the hands
+  again when it starts and when it finishes. With **Fuel in your hands** off, a full can anywhere
+  on you will do.
+
+That one building burns: 30 heat, an optional fire effect, the town's infection −1, and for two
+hours no loot there and no spawns within 30 m. Strongholds, outposts, safehouses, quartermasters
+and the lab can't burn (or be locked), and never show the prompt.
 
 The Gas Station Fire and Burning Town events ([MISSIONS.md](MISSIONS.md#world-events)) use the
 same fire, one building at a time; nothing burns a whole town at once.
