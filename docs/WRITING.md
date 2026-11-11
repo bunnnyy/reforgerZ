@@ -356,7 +356,8 @@ outcome.
   ([DESIGN.md](DESIGN.md#world-facts)): `{day}`, `{day_text}`, `{days_since_command}`,
   `{days_since_command_words}`, `{cure_state}`, `{cure_percent}`, `{stage}`, `{stage_tone}`,
   `{time_of_day}`, `{lab_town}`, `{stolen_doses}`, `{town:N}`, `{owner:N}`, `{flag:key}`,
-  `{canon:key}`, `{canon_town:key}`, `{leader:id}`, `{leader_short:id}`, `{leader_place:id}`. A
+  `{canon:key}`, `{canon_town:key}`, `{leader:id}`, `{leader_short:id}`, `{leader_place:id}`,
+  `{tribe:N}`, `{alpha:N}`, `{young:N}` (the packs, in a speaker's word, [INFECTED.md](INFECTED.md#the-words)). A
   questline's text also uses its own keys (`{keeper}`, `{house}`...), set with `run.SetText`.
 - **No invented numbers.** If the world doesn't hold a count, use a token or say it without the number.
 - **No pronouns for seeded people** (leaders, questline people like `{keeper}`, seeded names). The

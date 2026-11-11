@@ -1,6 +1,6 @@
 # ReforgerZ icons
 
-The icon set for the ReforgerZ UI: 61 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
+The icon set for the ReforgerZ UI: 62 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
 
 - **Sources:** `src/<name>.svg`, hand-written, 64×64 viewBox, one colour (`currentColor`), 4-unit strokes, transparent background.
 - **Mono exports:** `png/64/` and `png/128/`, white on transparent so the game can tint them (`ImageWidget.SetColor`).
@@ -46,7 +46,7 @@ Importing them into Workbench (`.edds` and an imageset) is in [UI/LAYOUTS.md](..
 | <img src="src/mission_perimeter.svg" width="32"> | `mission_perimeter` | A Perimeter mission: the drone line at the edge of the Zone |
 | <img src="src/mission_arc.svg" width="32"> | `mission_arc` | A story arc mission: one chapter of a longer story |
 
-## Map markers (9)
+## Map markers (10)
 
 | Icon | Name | Use |
 |---|---|---|
@@ -59,6 +59,7 @@ Importing them into Workbench (`.edds` and an imageset) is in [UI/LAYOUTS.md](..
 | <img src="src/marker_power.svg" width="32"> | `marker_power` | The power station |
 | <img src="src/marker_radio.svg" width="32"> | `marker_radio` | The radio station |
 | <img src="src/marker_checkpoint.svg" width="32"> | `marker_checkpoint` | A sealed Perimeter road checkpoint (octagon plate) |
+| <img src="src/marker_range.svg" width="32"> | `marker_range` | A pack's ground: a broken ring with three claw marks, no plate. The map sizes it to the ground; the journal's pack rows |
 
 ## Items (18)
 

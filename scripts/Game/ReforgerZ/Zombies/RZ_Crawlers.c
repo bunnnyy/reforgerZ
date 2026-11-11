@@ -570,6 +570,10 @@ class RZ_Crawlers
 
 	// ================================================================ Kill sites
 	//------------------------------------------------------------------------------------------------
+	//! The kill sites now (the tribes' props stand at them, Zombies/RZ_TribeProps.c).
+	array<ref RZ_KillSite> GetKillSites() { return m_aSites; }
+
+	//------------------------------------------------------------------------------------------------
 	//! Where someone was taken in the open (tribes call this, phase 2). The next night a few of the
 	//! nearest town's crawlers walk out to it, if one is within 1 km. Six on the server at most.
 	void AddKillSite(vector pos, string who)

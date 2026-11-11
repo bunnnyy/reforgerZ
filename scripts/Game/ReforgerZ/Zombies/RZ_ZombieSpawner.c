@@ -452,11 +452,21 @@ class RZ_ZombieSpawner
 	//! Spawn a horde at pos and send it to target. The spawned units go into spawnedOut; false if none.
 	//! A mission's horde must keep coming: stealth never lowers its senses (docs/DESIGN.md, "Stealth").
 	//! keepComing false: a horde where staying unseen is the point (Lead Them Away, The Clockwork
-	//! Horde, The Tribe Moves).
-	bool SpawnHordeAt(vector pos, vector target, int missionId = -1, array<IEntity> spawnedOut = null, bool keepComing = true)
+	//! Horde, The Tribe Moves). prefabs: a pack's own bodies (RZ_TribePeople.PackHordePrefabs), four of
+	//! them, instead of the horde prefabs.
+	bool SpawnHordeAt(vector pos, vector target, int missionId = -1, array<IEntity> spawnedOut = null, bool keepComing = true, array<ResourceName> prefabs = null)
 	{
 		array<RZ_TrackedZombie> spawned = {};
-		if (!m_Settings.m_aHordePrefabs.IsEmpty())
+		if (prefabs && !prefabs.IsEmpty())
+		{
+			for (int k = 0; k < 4; k++)
+			{
+				RZ_TrackedZombie zp = SpawnZombie(RZ_Util.RandomPointInRing(pos, 0, 20), false, -1, missionId, prefabs.GetRandomElement());
+				if (zp)
+					spawned.Insert(zp);
+			}
+		}
+		else if (!m_Settings.m_aHordePrefabs.IsEmpty())
 		{
 			RZ_TrackedZombie z = SpawnZombie(pos, false, -1, missionId, m_Settings.m_aHordePrefabs.GetRandomElement());
 			if (z)

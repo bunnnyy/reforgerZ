@@ -1,10 +1,11 @@
 # Infected: tribes and crawlers
 
-**Status: designed; phases 1 to 4 are built** ([docs/INFECTED.md](../docs/INFECTED.md)): crawlers, the
-land, bodies and the budget, the tribes' daily life and hunts, their life cycle, and the people's side
-([People](../docs/INFECTED.md#people)). What's left here is designed: phase 4's rest ([People](#people)),
-the finale's live tissue (it goes in with the finale), the great alpha and signs (phase 5), and the few
-life-cycle rules still waiting for a sign. Approved by the author on 2026-11-11.
+**Status: designed; phases 1 to 5 are built** ([docs/INFECTED.md](../docs/INFECTED.md)): crawlers, the
+land, bodies and the budget, the tribes' daily life and hunts, their life cycle, the people's side
+([People](../docs/INFECTED.md#people)), the great alpha, signs and sounds ([The great
+one](../docs/INFECTED.md#the-great-one)). What's left here is designed: the small rules each section
+still lists, the people's rest ([People](#people)), and the finale's live tissue (it goes in with the
+finale). Approved by the author on 2026-11-11.
 
 ## What changed in review
 
@@ -46,8 +47,7 @@ life-cycle rules still waiting for a sign. Approved by the author on 2026-11-11.
 - **The 16 tribes decisions stay as recommended.** Decision 13 had no recommended option; this doc
   takes (b), because decision 2 keeps "alpha" out of player text ([Decisions](#decisions)).
 - **Lore kept consistent with LORE.md:** the Haven's bear on its doors, Halcyon's "beaks" and their
-  plague-doctor stencil, Bastion's roster and "No reply", and the Red Hand's book. The range ring is a
-  new icon: the set already has 61.
+  plague-doctor stencil, Bastion's roster and "No reply", and the Red Hand's book.
 
 The infected's ecology: wild packs with leaders (tribes) and the slow infected of the towns
 (crawlers). Code (planned): `World/RZ_Land.c` (the land grid), `Zombies/RZ_Tribes.c` (records and
@@ -351,8 +351,7 @@ from before tribes existed seeds them on load, as at a season's start.
 25. **Day parties:** **built** ([Day parties](../docs/INFECTED.md#day-parties)). Still designed: the Furious
     tribe's walking the capture road.
 
-**Caps:** **built** ([docs/INFECTED.md](../docs/INFECTED.md)) but for: one great alpha per map (phase 5); props (30 on
-the server).
+**Caps:** **built** ([docs/INFECTED.md](../docs/INFECTED.md)).
 
 ### Scaling by map
 
@@ -380,22 +379,8 @@ the ridges, and all of a clan hunting toward one ground on frenzy nights.
 
 ### The great alpha
 
-- **How it rises.** A clan of 3 or more tribes that holds together for 8 season days, from Overrun,
-  makes its oldest living alpha (Prime or Decline) the great alpha. There's only ever one per map at a
-  time. After it dies, another can rise only 8 season days later.
-- **What changes:**
-  - its guard is 4, helmeted and heavy;
-  - its dusk call is the server's one dusk line that evening, and within 1.5 km it's heard as a sound;
-  - **a gathering** happens every 4 season days and on frenzy nights: every clan tribe sends one hunter
-    group along the great alpha's trail toward the nearest lived-in place's wire. The bodies stay inside
-    the per-cluster caps, so a gathering arrives in waves;
-  - it doesn't die of age while its clan holds three tribes, though it can still be challenged.
-- **When it dies:**
-  1. every clan tribe holds the vigil at once, and nothing in the clan hunts that night;
-  2. each tribe runs its own succession, and the clan breaks into separate tribes, with no clan for 8
-     season days;
-  3. the next dusk is the **Night of Many Calls**: every border reopens for 2 counted nights.
-- **Caught alive,** it counts +3 on a finale route's track instead of +2 ([FINALE.md](FINALE.md)).
+**Built** ([The great one](../docs/INFECTED.md#the-great-one)). Still designed: caught alive it counts +3
+on a finale route's track instead of +2 ([FINALE.md](FINALE.md)), with the finale's live tissue.
 
 ### Claims
 
@@ -606,16 +591,16 @@ fog and storms lower a player's visibility. The table says only what tribes and 
 | Condition | Tribes | Crawlers |
 |---|---|---|
 | Clear night | Hunt as normal | Out in the streets |
-| **Bright moon** (phase 0 found a moon-phase reading) | Range ×1.25, and hunts until 05:30. You can see them too | — |
 | **Rain** | Hunts are shorter (home by 03:00): a good time to cross a range. Day parties keep to the forest edges. Tracks read fresh after rain (the old ones are washed out) | Drift less (rain already makes heat ×0.7) |
 | **Fog and fog banks** | Count as dusk: scouts sit lower, and a scout's call brings the dusk pack, so the alpha of a bold tribe can come by day in the fog. Hunters get closer before you see them | Spawn closer, as today |
 | **Storm** | Everyone lies up, no day party, and nobody hunts: the Storm event's "a good time to move" is literally true | Indoors |
 | **Winter** (the rule set) | Lairs move into empty villages' barns from Overrun. A Hunter always reads tracks as fresh in snow | Thicker in the dark towns |
 | No game clock | Always day: day parties walk, scouts post, nobody hunts | As by day |
 
-**Frenzy nights** (Every Ridge Calls and Red Dusk): **built** ([docs/INFECTED.md](../docs/INFECTED.md#contracts-and-events),
-[MISSIONS.md](../docs/MISSIONS.md#world-events)). Still designed: a frenzy ignoring fear places and borders, with up to
-2 Border Nights staged, and the crawlers' ×2 at its height lasting the night.
+**Frenzy nights** (Every Ridge Calls and Red Dusk, ignoring fear places and borders) and **the bright
+moon**: **built** ([docs/INFECTED.md](../docs/INFECTED.md#contracts-and-events),
+[Signs and sounds](../docs/INFECTED.md#signs-and-sounds)). Still designed: the crawlers' ×2 at a
+frenzy's height lasting the night.
 
 **Chain reactions:** built ([docs/INFECTED.md](../docs/INFECTED.md)) but for Siren Test's other tribes keeping away
 from that town that night (the bells habit's tribes coming is built).
@@ -753,8 +738,8 @@ engine's cleanup.
 
 **Kill sites, the vigil, staged fights, splinters and moving tribes:** **built**
 ([docs/INFECTED.md](../docs/INFECTED.md#kill-sites-the-vigil-and-the-alpha), [Borders](../docs/INFECTED.md#borders), [The life
-cycle](../docs/INFECTED.md#the-life-cycle)). Still designed: the props (a bicycle, a rucksack, a car door open; only
-within 200 m of a player, removed beyond 250 m, never saved); the samples kept from the loose-item
+cycle](../docs/INFECTED.md#the-life-cycle)), and their props ([Signs and sounds](../docs/INFECTED.md#signs-and-sounds)).
+Still designed: the samples kept from the loose-item
 cleanup during the vigil; the corpse kept from the engine's cleanup (VERIFY 15); a second infected
 faction hostile to the first, so fights could be seen (behind a setting); loose ones as starving
 walkers and members crossing between ranges at night; the capture case's tribe following it.
@@ -801,7 +786,6 @@ walkers and members crossing between ranges at night; the capture case's tribe f
 | Hunter, Young, Scout and optional Look lists | The role's fallback ([Tribes](#roles)) |
 | Runtime groups fail | Group prefabs only, with no per-member tracking: no named young, bonds, ID cards or per-guard samples. Alphas are data |
 | No move waypoint prefab | Steering off. Placement by phase only. Packs still spawn at the call point |
-| Sound, mark, kill-site and ID card props | Lines only |
 | Tag item, call box item | Plant a Tag and the call box turn off |
 | **Your dead run** off | Player deaths never make young |
 
@@ -864,31 +848,23 @@ search, and the group carries on where it was going.
 
 ## People
 
-**Built** ([docs/INFECTED.md](../docs/INFECTED.md#people)): the words, voices, marks (as text), knowing and
-the ways to learn, skills, your dead run, the dark corners, the factions' sides, the moat rule, the 12
-contracts, The Lone One, the events, the changed missions listed in
-[MISSIONS.md](../docs/MISSIONS.md), and HC1's and H3's hooks ([QUESTLINES.md](../docs/QUESTLINES.md)).
+**Built** ([docs/INFECTED.md](../docs/INFECTED.md#people)): the words and their tokens, voices, marks
+(with their props), knowing and the ways to learn (with the map's range rings), skills, your dead run,
+the dark corners, the factions' sides, the moat rule, the 13 contracts (Stock the Pit among them), The
+Lone One, the events, the changed missions listed in [MISSIONS.md](../docs/MISSIONS.md), frenzies
+ignoring fear places and borders, and HC1's and H3's hooks ([QUESTLINES.md](../docs/QUESTLINES.md)).
 Still designed:
-- **Tokens** `{tribe:N}`, `{alpha:N}` and `{young:N}`, resolving to the speaker's word, the place and the
-  name (or the description where a name isn't allowed).
-- **Stock the Pit** (Red Hand, Known): cage two young alive with Live Capture for the next Fight Pit or
-  House Rules: *"Fresh hires, from the Postmen."*
-- **The changed missions not yet changed:** Live Capture can take a guard or a young; Lead Them Away's
-  drifting horde is a hunting party heading for the house, or a moving tribe; Blow the Bridge picks a
-  tribe crossing a bridge first; Missing Patrol's and the Military Remnant Camp's turned soldiers are a
-  military tribe's young when one is near.
+- **Lead Them Away's** drifting horde as a moving tribe (today it's a pack's hunting party, or a horde).
 - **The jobs' rest:** Clear the Trail on a truck road; Burn the Lair's splinter when 4 or more died;
   Bait the Crew's Zombie Bait Infamy when either side lands on a faction's people; Track Them Home's
   "not closer than 80 m"; a Furious tribe's day parties walking the capture road, and couriers and
   columns needing an escort.
-- **Frenzies** ignoring fear places and borders, with up to 2 Border Nights staged on a frenzy night.
 - **Questline hooks:** B1 Await Relief (the Day 3 runner's road crosses the column's range, and his page
   can be at an old kill site); R1 The Book (a page for "the crew in the woods", the moat's feeding, as a
   rumour); HC3 Authors (tagged alphas numbered in the paper's appendix); the finale routes' Act III live
   tissue and The Lower Store claiming the site tribe in Act II ([FINALE.md](FINALE.md)); seeds for later
   questlines (the Haven's Bring Them Home chain, Bastion's Not Our Sector, the Red Hand's The Moat,
   Halcyon's Index).
-- **Props** (phase 5): the marks, the ID card's look, kill-site things.
 
 ## The season
 
@@ -928,8 +904,7 @@ By map:
 **Time of day** is in [Tribes](../docs/INFECTED.md#the-daily-rhythm), [Day parties](#day-parties) and [The land](#the-land)
 (weather and light). Bastion's routines are unchanged, and soldier alphas echo them.
 
-**Events through the season:** built ([MISSIONS.md](../docs/MISSIONS.md#world-events)) but for the Gathering every 4
-season days while a great alpha lives (phase 5).
+**Events through the season:** built ([MISSIONS.md](../docs/MISSIONS.md#world-events)).
 
 **The cure.** The 25%, 50%, 75%, final stand, won and lost rows are built ([The cure](../docs/INFECTED.md#the-cure)). On the built research: the Cure pace, the pace by play, the lab's capacity of 3% a real
 day, the cold store, and the 90% finale gate.
@@ -950,9 +925,9 @@ option is for its seeds to start in Prime too.
 ## After the cure: the last week
 
 **Built** ([The last week](../docs/INFECTED.md#the-last-week)), with the beats kept for the epilogue. Still
-designed: the epilogue reading them, and two more beats: **Walking with it** (up to 3 named young still
-running with each tribe, players' characters among them by the name setting) and **The great alpha**
-(phase 5). The closing work that touches the infected (Quiet the Ridges, Bring Them Home as closing
+designed: the epilogue reading them, and one more beat: **Walking with it** (up to 3 named young still
+running with each tribe, players' characters among them by the name setting). The great alpha's rise and
+fall are kept as beats (built). The closing work that touches the infected (Quiet the Ridges, Bring Them Home as closing
 work, Take Back a Town) is [EPILOGUE.md](EPILOGUE.md)'s.
 
 ## From Grounds to tribes: the rename table
@@ -1087,11 +1062,9 @@ Docs: MISSIONS (new and changed rows, with checkmarks only once in code), QUESTL
 REPUTATION (Halcyon Infamy for a tagged alpha, the night toll, Bailiff's trigger), LORE (the faction
 words), WORKBENCH (the tag, call box and ID card items).
 
-**Phase 5, the great alpha and signs** (about 500 lines plus Workbench work). The great alpha, the
-Gathering and the Night of Many Calls. Props: kill-site things, abandoned lairs, faction marks, the ID
-card. Call sounds. Red Dusk. The bright moon (phase 0 found a moon-phase reading). A new range ring icon
-(the set has 61 today) and the journal's list of tribes at the three knowledge levels.
-Docs: UI.md and UI/LAYOUTS.md, README, ROADMAP.
+**Phase 5, the great alpha and signs** (**built**: [The great one](../docs/INFECTED.md#the-great-one),
+[Signs and sounds](../docs/INFECTED.md#signs-and-sounds)), with phase 4's rest but for what [People](#people)
+still lists.
 
 ## Phase 0 results
 
@@ -1259,5 +1232,5 @@ nobody out the day after a feed, fog as dusk, and towns by day the crawlers'.
     check that a busy server can still hunt the last alphas before they lie down, that a quiet one hears
     the last call, and that crawler towns cleared after the cure really stay cleared.
 23. **Dependencies on unbuilt work.** The finale (for the live-tissue stage), the epilogue (for the closing
-    work), the icon layer (for range rings), the readable ID card prefab, and phase 0's merge. Each has a
-    fallback, and the tissue stage ships with the finale, not before.
+    work), and phase 0's merge. Each has a fallback, and the tissue stage ships with the finale, not
+    before.

@@ -829,10 +829,13 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 //! detonator before it passes. It turns back. It reaches the town: +10 infection there, failed.
 //! Killed to the last instead: the town is safe, paid all the same. Each charge spot is a puzzle
 //! object (use it to see how far its wiring is). The clock covers the horde's whole walk.
-//! *Simplified:* no real bridge: a choke point on the line between the horde and the town. The
-//! horde is data (walking 1 m/s) until a player is within 600 m.
+//! With the packs on, first a pack crossing a real bridge (the land grid's) toward a safe town beyond
+//! it: the horde is its hunters and young, in its look, from its lair, and the charges go at the
+//! bridge. *Simplified* otherwise: no real bridge, a choke point on the line between the horde and
+//! the town. The horde is data (walking 1 m/s) until a player is within 600 m.
 class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 {
+	protected int m_iPack = -1;			// the pack crossing (-1: a horde from a town)
 	protected vector m_vTown;
 	protected vector m_vChoke;
 	protected vector m_vHorde;
@@ -876,6 +879,9 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
+		if (SetupFromPack(gm))
+			return true;
+
 		m_iSettlement = PickSettlement(gm, 0, 35);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
@@ -888,6 +894,102 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 		m_vTown = s.m_vCenter;
 		m_vHorde = LandPointNear(src.m_vCenter, 0, src.m_fRadius * 0.5);
 		m_vChoke = RZ_ContractHelp.Between(m_vHorde, m_vTown, 0.6);
+		PlaceCharges();
+
+		// The clock covers the horde's whole walk, so it never lapses before they get there
+		m_fTimeLeft = m_fStartIn + RZ_Util.DistXZ(m_vHorde, m_vTown) / HORDE_SPEED + SPARE_SECONDS;
+		m_sTitle = "Blow the Bridge";
+		m_sBrief = string.Format("A horde out of %1 is walking toward %2. There's a narrow point on its way at grid %3. Plant the charges there and blow it before they pass. You have about five minutes before they move.",
+			src.m_sName, s.m_sName, RZ_SettlementScanner.GridReference(m_vChoke));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! With the packs on: a free pack with a bridge (not a ford) on its way, between its lair and a
+	//! safe town beyond it (400 m to 3 km past the bridge, the same way on).
+	protected bool SetupFromPack(RZ_GameModeComponent gm)
+	{
+		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+		RZ_Land land = gm.GetLand();
+		if (!tribes || !land || !land.IsReady())
+			return false;
+
+		foreach (RZ_Tribe t : tribes.GetTribeList())
+		{
+			string subject = RZ_TribeContract.Claim(t.m_iId);
+			if (t.IsRover() || !IsSubjectFree(gm, subject))
+				continue;
+
+			for (int c = 0; c < land.GetCrossingCount(); c++)
+			{
+				if (land.GetCrossingKind(c) == RZ_Land.CROSS_FORD)
+					continue;
+
+				vector bridge = land.GetCrossing(c);
+				float fromLair = RZ_Util.DistXZ(bridge, t.m_vLair);
+				if (fromLair < 300 || fromLair > t.m_fRadius * 1.5 + 500)
+					continue;
+
+				int town = TownBeyond(gm, t.m_vLair, bridge);
+				RZ_Settlement s = gm.GetSettlement(town);
+				if (!s || IsTownBusy(gm, town) || !ClaimSubject(gm, subject))
+					continue;
+
+				m_iPack = t.m_iId;
+				m_iSettlement = town;
+				m_vTown = s.m_vCenter;
+				m_vHorde = t.m_vLair;
+				m_vChoke = RZ_Util.GroundPos(bridge);
+				PlaceCharges();
+				m_fTimeLeft = m_fStartIn + RZ_Util.DistXZ(m_vHorde, m_vTown) / HORDE_SPEED + SPARE_SECONDS;
+				m_sTitle = "Blow the Bridge";
+				m_sBrief = string.Format("%1 will come over the bridge at grid %2, toward %3. Plant the charges on the bridge and blow it before they cross. You have about five minutes before they move.",
+					RZ_Tribes.Capitalize(tribes.GetPeople().NameAt(t, RZ_EFaction.MILITARY)), RZ_SettlementScanner.GridReference(m_vChoke), s.m_sName);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A safe town (infection 35 or less) 400 m to 3 km past the bridge, the way on from the lair; -1.
+	protected int TownBeyond(RZ_GameModeComponent gm, vector lair, vector bridge)
+	{
+		vector dir = bridge - lair;
+		dir[1] = 0;
+		if (dir.Length() < 1)
+			return -1;
+
+		dir.Normalize();
+		int best = -1;
+		float bestD = 3000;
+		foreach (int i, RZ_Settlement s : gm.GetSettlements())
+		{
+			if (s.m_fInfection > 35)
+				continue;
+
+			vector to = s.m_vCenter - bridge;
+			to[1] = 0;
+			float d = to.Length();
+			if (d < 400 || d > bestD)
+				continue;
+
+			to.Normalize();
+			if (vector.Dot(dir, to) < 0.3)
+				continue;
+
+			best = i;
+			bestD = d;
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Three charge spots at the narrow point, and the detonator back from it.
+	protected void PlaceCharges()
+	{
 		for (int i = 0; i < 3; i++)
 		{
 			m_aCharges.Insert(LandPointNear(m_vChoke, 6, 20));
@@ -896,13 +998,6 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 
 		m_vDetonator = LandPointNear(m_vChoke, 45, 60);
 		m_vPos = m_vChoke;
-
-		// The clock covers the horde's whole walk, so it never lapses before they get there
-		m_fTimeLeft = m_fStartIn + RZ_Util.DistXZ(m_vHorde, m_vTown) / HORDE_SPEED + SPARE_SECONDS;
-		m_sTitle = "Blow the Bridge";
-		m_sBrief = string.Format("A horde out of %1 is walking toward %2. There's a narrow point on its way at grid %3. Plant the charges there and blow it before they pass. You have about five minutes before they move.",
-			src.m_sName, s.m_sName, RZ_SettlementScanner.GridReference(m_vChoke));
-		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1047,7 +1142,13 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 			if (RZ_ContractHelp.AnyNear(players, m_vHorde, 600))
 			{
 				m_bHordeSpawned = true;
-				gm.GetSpawner().SpawnHordeAt(m_vHorde, m_vTown, m_iId);
+				// A pack's crossing: its own hunters and young
+				array<ResourceName> pack = null;
+				RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+				if (m_iPack >= 0 && tribes && tribes.Find(m_iPack))
+					pack = tribes.GetPeople().PackHordePrefabs(tribes.Find(m_iPack));
+
+				gm.GetSpawner().SpawnHordeAt(m_vHorde, m_vTown, m_iId, null, true, pack);
 			}
 		}
 

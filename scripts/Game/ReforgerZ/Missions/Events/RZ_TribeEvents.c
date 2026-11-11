@@ -302,3 +302,148 @@ class RZ_Event_TribeMoves : RZ_Mission
 			mm.StartMission(m);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! The Gathering (docs/INFECTED.md, "The great one"): every 4 season days, and on frenzy nights, each
+//! pack of the great one's clan sends a group along its way to the nearest lived-in place's wire, and
+//! they wait there until dawn (Zombies/RZ_TribeGreat.c moves them; this event is what everyone is
+//! told, and the wire's spot). The bodies stay inside the per-cluster shares, so it comes in waves.
+//! 10 or more of them put down within 300 m of the wire: what they carried is left there at dawn.
+//! Never picked at random.
+class RZ_Event_Gathering : RZ_Mission
+{
+	protected int m_iKills;
+
+	//------------------------------------------------------------------------------------------------
+	override void Configure(RZ_GameModeComponent gm)
+	{
+		SetEvent(false);
+		m_fTimeLeft = 3600;
+		m_fParticipationRadius = 300;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override float GetWeight(RZ_GameModeComponent gm)
+	{
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Started by the great one at dusk (or on a frenzy night): from place, to town's wire at wire.
+	static void Start(RZ_GameModeComponent gm, vector wire, string place, string town)
+	{
+		RZ_MissionManager mm = gm.GetMissions();
+		if (!mm)
+			return;
+
+		RZ_Event_Gathering m = new RZ_Event_Gathering();
+		m.Configure(gm);
+		m.m_vPos = wire;
+		m.m_sTitle = "The Gathering";
+		m.m_sBrief = string.Format("Every ridge answered the call from %1 tonight, and now they're all coming down toward the wire at %2 together. Not one hunt: all of them, in waves, until first light.", place, town);
+		float secs = RZ_GameTime.RealSecondsUntil(5.5);
+		if (secs > 0)
+			m.m_fTimeLeft = Math.Clamp(secs, 600, 10800);
+
+		array<int> ids = {};
+		GetGame().GetPlayerManager().GetPlayers(ids);
+		if (!ids.IsEmpty() && mm.CanRunNow(m, ids.Count(), false))
+			mm.StartMission(m);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Setup(RZ_GameModeComponent gm)
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnZombiesKilled(RZ_GameModeComponent gm, int settlementIdx, int missionId, bool special, vector pos, int count)
+	{
+		if (RZ_Util.DistXZ(pos, m_vPos) <= 300)
+			m_iKills += count;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnTimeUp(RZ_GameModeComponent gm)
+	{
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnSuccess(RZ_GameModeComponent gm)
+	{
+		if (m_iKills >= 10)
+			gm.SpawnRewardCrate(LandPointNear(m_vPos, 5, 20));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetSuccessText(RZ_GameModeComponent gm)
+	{
+		if (m_iKills >= 10)
+			return string.Format("First light. The wire held: %1 of them are lying in front of it, and what they had on them is still there.", m_iKills);
+
+		return "First light. Whatever came down to the wire last night has gone back up into the hills.";
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The Night of Many Calls (docs/INFECTED.md, "The great one"): the dusk after the great one dies, every
+//! border reopens for 2 counted nights (Zombies/RZ_TribeGreat.c); this event is what everyone is told.
+//! Never picked at random.
+class RZ_Event_NightOfManyCalls : RZ_Mission
+{
+	//------------------------------------------------------------------------------------------------
+	override void Configure(RZ_GameModeComponent gm)
+	{
+		SetEvent(false);
+		m_bGlobal = true;
+		m_fTimeLeft = 3600;
+		m_fParticipationRadius = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override float GetWeight(RZ_GameModeComponent gm)
+	{
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void Start(RZ_GameModeComponent gm)
+	{
+		RZ_MissionManager mm = gm.GetMissions();
+		if (!mm)
+			return;
+
+		RZ_Event_NightOfManyCalls m = new RZ_Event_NightOfManyCalls();
+		m.Configure(gm);
+		float secs = RZ_GameTime.RealSecondsUntil(5);
+		if (secs > 0)
+			m.m_fTimeLeft = Math.Clamp(secs, 600, 10800);
+
+		array<int> ids = {};
+		GetGame().GetPlayerManager().GetPlayers(ids);
+		if (!ids.IsEmpty() && mm.CanRunNow(m, ids.Count(), false))
+			mm.StartMission(m);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Setup(RZ_GameModeComponent gm)
+	{
+		m_sTitle = "The Night of Many Calls";
+		m_sBrief = "Every ridge is calling at once tonight, and none of them is answering the same voice. Whatever held them together is gone. Stay away from the rivers and the bridges for a night or two.";
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnTimeUp(RZ_GameModeComponent gm)
+	{
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetSuccessText(RZ_GameModeComponent gm)
+	{
+		return "The calling has thinned out. Most of them know whose ground is whose again.";
+	}
+}

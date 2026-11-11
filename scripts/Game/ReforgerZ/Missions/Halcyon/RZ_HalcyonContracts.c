@@ -875,11 +875,16 @@ class RZ_Mission_PatientZero : RZ_PuzzleMission
 
 //------------------------------------------------------------------------------------------------
 //! #18 Live Capture: lure a special into a cage trap, or wound and tie it, hold it while it's
-//! sedated, and carry the case to the lab before it wakes (RZ_LiveCapture). Huge research.
+//! sedated, and carry the case to the lab before it wakes (RZ_LiveCapture). Huge research. With the
+//! packs on it's one of a pack's guard (its young if it has under 2 guard), at the edge of its lair;
+//! caught, it leaves the pack. Else a special in an infested town.
 class RZ_Mission_LiveCapture : RZ_PuzzleMission
 {
 	protected ref RZ_LiveCapture m_Capture = new RZ_LiveCapture();
 	protected IEntity m_Drop;
+	protected int m_iPack = -1;
+	protected RZ_ETribePart m_ePackKind;
+	protected bool m_bPackTaken;
 
 	//------------------------------------------------------------------------------------------------
 	override void GetPropSpots(notnull array<vector> result)
@@ -909,6 +914,9 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
+		if (SetupFromPack(gm))
+			return true;
+
 		m_iSettlement = PickSettlement(gm, 40, 100);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
@@ -928,11 +936,72 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! With the packs on: one of a free pack's guard (or its young), its own prefab, at its lair's edge.
+	protected bool SetupFromPack(RZ_GameModeComponent gm)
+	{
+		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+		if (!tribes)
+			return false;
+
+		RZ_TribePeople people = tribes.GetPeople();
+		foreach (RZ_Tribe t : tribes.GetTribeList())
+		{
+			string subject = RZ_TribeContract.Claim(t.m_iId);
+			if (t.IsRover() || !IsSubjectFree(gm, subject))
+				continue;
+
+			RZ_ETribePart kind = RZ_ETribePart.GUARD;
+			ResourceName prefab = people.GuardPrefab(t);
+			string what = "one of the big ones that stays by its index";
+			if (t.Count(RZ_ETribePart.GUARD) < 2)
+			{
+				kind = RZ_ETribePart.YOUNG;
+				prefab = people.YoungPrefab(t);
+				what = "one of its recent conversions";
+				if (t.Count(RZ_ETribePart.YOUNG) < 1)
+					continue;
+			}
+
+			if (prefab.IsEmpty() || !ClaimSubject(gm, subject))
+				continue;
+
+			m_Drop = RZ_HalcyonContractHelp.SpawnLabDrop(gm);
+			if (!m_Drop)
+				return false;
+
+			TrackProp(m_Drop);
+			vector lair = LandPointNear(t.m_vLair, 20, 60);
+			vector cage = LandPointNear(lair, 60, 120);
+			m_iPack = t.m_iId;
+			m_ePackKind = kind;
+			m_vPos = cage;
+			m_sTitle = "Live Capture";
+			m_sBrief = string.Format("We need one of %1 alive: %2. There's a cage trap set near where they lie up. Get it to follow you in and drop the door, or bring it down without killing it and tie it. Keep it calm until the sedative takes, then bring it to the lab before it wakes. Dead is no use to us.", people.NameAt(t, RZ_EFaction.INSTITUTE), what);
+			if (!m_Capture.Begin(gm, m_iId, -1, cage, lair, 0))
+				return false;
+
+			m_Capture.UsePrefab(prefab);
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
 		m_Capture.Update(gm, dt, ids, players);
 		if (m_Capture.m_eState == RZ_ECaptureState.CAUGHT)
+		{
 			RZ_ContractHelp.AddNear(ids, players, m_Capture.m_vHeld, 30, m_aParticipants);
+			// One of a pack's: it leaves the pack
+			RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+			if (m_iPack >= 0 && !m_bPackTaken && tribes && tribes.Find(m_iPack))
+			{
+				m_bPackTaken = true;
+				tribes.GetLife().TakeMembers(tribes.Find(m_iPack), m_ePackKind, 1);
+			}
+		}
 
 		if (m_Capture.IsLost())
 			m_eState = RZ_EMissionState.FAILED;

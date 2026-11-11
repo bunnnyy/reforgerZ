@@ -70,7 +70,8 @@ enum RZ_EMissionKindUI
 	PERIMETER,
 	ARC,
 	QUESTLINE,	// a questline's entry and its stage missions (the arc icon)
-	ERRAND		// an errand you hold (Missions/Errands): the unarmed icon until mission_errand is drawn
+	ERRAND,		// an errand you hold (Missions/Errands): the unarmed icon until mission_errand is drawn
+	PACK		// a pack you know of (docs/INFECTED.md, Knowing): the range ring, the level as its time
 }
 
 //------------------------------------------------------------------------------------------------
@@ -462,6 +463,7 @@ class RZ_UIText
 			case RZ_EMissionKindUI.ARC: return "mission_arc";
 			case RZ_EMissionKindUI.QUESTLINE: return "mission_arc";
 			case RZ_EMissionKindUI.ERRAND: return "mission_unarmed";
+			case RZ_EMissionKindUI.PACK: return "marker_range";
 		}
 
 		return "mission_contract";
@@ -1015,6 +1017,14 @@ class RZ_UIW
 	{
 		if (w)
 			FrameSlot.SetPos(w, x, y);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A widget's size in its frame (the map's range rings).
+	static void SetSize(Widget w, float width, float height)
+	{
+		if (w)
+			FrameSlot.SetSize(w, width, height);
 	}
 
 	//------------------------------------------------------------------------------------------------

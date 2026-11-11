@@ -63,7 +63,8 @@ FORMULA_RE = re.compile(r"(\w+ out|over|out|thank you|thanks|please|go on|good)[
 # World tokens RZ_WorldFacts.Fill knows, and the kinds that take an argument ({town:N}).
 WORLD_TOKENS = {"day", "day_text", "days_since_command", "days_since_command_words", "cure_state",
                 "cure_percent", "stage", "stage_tone", "time_of_day", "lab_town", "stolen_doses"}
-WORLD_KINDS = {"town", "owner", "flag", "canon", "canon_town", "leader", "leader_short", "leader_place"}
+WORLD_KINDS = {"town", "owner", "flag", "canon", "canon_town", "leader", "leader_short", "leader_place",
+               "tribe", "alpha", "young"}
 # Tokens a conversation (.rzd) line may use (RZ_DialogueText.Fill, RZ_RepVoice.FillFor), and the voice
 # bank's context token {place} (RZ_VoiceBank.PickFor).
 DIALOGUE_TOKENS = {"npc", "npc_short", "player", "house", "resident", "word", "rep", "best", "worst", "kills",
@@ -246,7 +247,7 @@ def check(lits, all_lits):
                 findings.append(Finding("long-table", lit, "ambient line hints at the Long Table ('%s')" % m.group(0)))
 
         # infected
-        m = INFECTED_RE.search(t)
+        m = INFECTED_RE.search(TOKEN_RE.sub("", t))  # {tribe:N} and {alpha:N} are tokens, not words
         if m:
             findings.append(Finding("infected", lit, "'%s' in player text" % m.group(0)))
         elif STRAYS_RE.search(t) and INFECTED_CONTEXT_RE.search(t):
@@ -257,7 +258,7 @@ def check(lits, all_lits):
             person = None
             for m in TOKEN_RE.finditer(sentence):
                 name = m.group(1)
-                if name in ("leader", "leader_short", "npc", "npc_short") or (m.group(2) is None and name not in WORLD_TOKENS
+                if name in ("leader", "leader_short", "npc", "npc_short", "alpha", "young") or (m.group(2) is None and name not in WORLD_TOKENS
                                                            and name not in DIALOGUE_TOKENS
                                                            and not NOT_PERSON_TOKEN.search(name)):
                     person = m

@@ -62,6 +62,9 @@ class RZ_TribePeopleSave
 	bool lastCall;
 	int lastFrenzyDay = -100;
 	int lastRedDuskDay = -100;
+	int pitStock;
+	string pitCrew;
+	string pitPrefab;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -86,6 +89,9 @@ class RZ_TribePeople
 	protected bool m_bLastCallDue;
 	protected int m_iLastFrenzyDay = -100;
 	protected int m_iLastRedDuskDay = -100;
+	protected int m_iPitStock;				// Stock the Pit: young caged for the next Fight Pit
+	protected string m_sPitCrew;
+	protected ResourceName m_sPitPrefab;
 	protected float m_fMarkTimer;
 	protected float m_fVoiceDay = -1;
 	protected int m_iVoiceDay = -1;
@@ -190,6 +196,72 @@ class RZ_TribePeople
 		}
 
 		return "the big one";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The world's pack tokens (RZ_WorldFacts.Fill): {tribe:N} is pack N in the speaker's word with the
+	//! place, {alpha:N} its leader in the speaker's word (the Haven's name when it knew them), {young:N}
+	//! its newest named young (described where a name isn't allowed), else the speaker's word for the
+	//! young. The speaker follows a dot (haven, bastion, redhand, halcyon, table): {tribe:3.bastion};
+	//! the Haven's words without one. False if there's no such pack (the token is left alone).
+	bool TokenText(string arg, int what, out string value)
+	{
+		string idText = arg;
+		string who = "";
+		int dot = arg.IndexOf(".");
+		if (dot > 0)
+		{
+			idText = arg.Substring(0, dot);
+			who = arg.Substring(dot + 1, arg.Length() - dot - 1);
+		}
+
+		RZ_Tribe t = m_Tribes.Find(idText.ToInt(-1));
+		if (!t || t.IsRover())
+			return false;
+
+		int f = SpeakerFrom(who);
+		switch (what)
+		{
+			case 0:
+			{
+				value = NameAt(t, f);
+				return true;
+			}
+			case 1:
+			{
+				if (!t.m_bHasAlpha)
+					return false;
+
+				value = LeaderWord(t, f);
+				return true;
+			}
+			case 2:
+			{
+				if (t.m_aNamed.IsEmpty())
+					value = YoungWord(f);
+				else
+					value = PublicNameOf(t.m_aNamed[t.m_aNamed.Count() - 1]);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A token's speaker: "bastion", "redhand", "halcyon", "table"; anything else is the Haven.
+	static int SpeakerFrom(string who)
+	{
+		switch (who)
+		{
+			case "bastion": return RZ_EFaction.MILITARY;
+			case "redhand": return RZ_EFaction.BANDITS;
+			case "halcyon": return RZ_EFaction.INSTITUTE;
+			case "table": return SPEAKER_TABLE;
+		}
+
+		return RZ_EFaction.SURVIVORS;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -441,17 +513,57 @@ class RZ_TribePeople
 		if (!k)
 			return;
 
+		// The three levels in order: what you've mapped, what you've read, what you've heard of
+		for (int want = RZ_EKnow.MAPPED; want >= RZ_EKnow.HEARD; want--)
+		{
+			foreach (int i, int id : k.m_aTribe)
+			{
+				RZ_Tribe t = m_Tribes.Find(id);
+				if (!t || t.IsRover() || k.m_aLevel[i] != want)
+					continue;
+
+				tribes.Insert(id);
+				titles.Insert(RZ_Tribes.Capitalize(t.m_sPlace));
+				bys.Insert(LevelName(k.m_aLevel[i]));
+				wheres.Insert(RoughArea(t, k.m_aLevel[i]));
+				briefs.Insert(JournalText(playerId, t, k.m_aLevel[i], k.m_aHeard[i], k.m_aDay[i]));
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The map's range rings (RZ_UIFeed.BuildMap, the marker_range icon), one a pack this character
+	//! knows of: Heard of, a ring of half a kilometre round its rough area; Read, its range; Mapped, its
+	//! range, with where it lies up in the label.
+	void MapFor(int playerId, notnull array<vector> wheres, notnull array<float> radii, notnull array<string> labels)
+	{
+		RZ_TribeKnowing k = Knowing(playerId, false);
+		if (!k)
+			return;
+
 		foreach (int i, int id : k.m_aTribe)
 		{
 			RZ_Tribe t = m_Tribes.Find(id);
-			if (!t || t.IsRover() || k.m_aLevel[i] == RZ_EKnow.NONE)
+			int level = k.m_aLevel[i];
+			if (!t || t.IsRover() || level == RZ_EKnow.NONE)
 				continue;
 
-			tribes.Insert(id);
-			titles.Insert(RZ_Tribes.Capitalize(t.m_sPlace));
-			bys.Insert(LevelName(k.m_aLevel[i]));
-			wheres.Insert(RoughArea(t, k.m_aLevel[i]));
-			briefs.Insert(JournalText(playerId, t, k.m_aLevel[i], k.m_aHeard[i], k.m_aDay[i]));
+			string label = string.Format("%1 (%2)", RZ_Tribes.Capitalize(t.m_sPlace), LevelName(level));
+			if (level == RZ_EKnow.HEARD)
+			{
+				wheres.Insert(RoughArea(t, level));
+				radii.Insert(500);
+			}
+			else
+			{
+				wheres.Insert(t.RangeCentre());
+				radii.Insert(t.m_fRadius);
+			}
+
+			if (level >= RZ_EKnow.MAPPED)
+				label += string.Format(", lies up at %1", RZ_SettlementScanner.GridReference(t.m_vLair));
+
+			labels.Insert(label);
 		}
 	}
 
@@ -968,6 +1080,7 @@ class RZ_TribePeople
 		}
 
 		m_GM.GetHeat().AddHeat(at, 25);
+		m_Tribes.GetProps().CallSound(at, false);
 		RZ_Tribe t = m_Tribes.NearestTribe(at, 1500);
 		bool night = m_Tribes.GetPhase() != RZ_ETribePhase.DAY;
 		int drawn = 0;
@@ -2131,6 +2244,117 @@ class RZ_TribePeople
 		WriteMarks();
 	}
 
+	// ================================================================ The changed missions
+	//------------------------------------------------------------------------------------------------
+	//! A pack's own bodies for a mission's crowd (Lead Them Away, Blow the Bridge): its hunters' and its
+	//! young's prefabs, in its look. Empty if it has none.
+	array<ResourceName> PackHordePrefabs(RZ_Tribe t)
+	{
+		array<ResourceName> list = {};
+		if (!t)
+			return list;
+
+		RZ_ZombieSettings zs = m_GM.GetSpawner().GetSettings();
+		foreach (ResourceName h : m_Tribes.PrefabsForTribe(t, RZ_ETribePart.HUNTERS, zs))
+		{
+			list.Insert(h);
+		}
+
+		foreach (ResourceName y : m_Tribes.PrefabsForTribe(t, RZ_ETribePart.YOUNG, zs))
+		{
+			list.Insert(y);
+		}
+
+		return list;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of a pack's young, as a prefab (Missing Patrol, the Military Remnant Camp, Live Capture,
+	//! Stock the Pit). "" if it has none.
+	ResourceName YoungPrefab(RZ_Tribe t)
+	{
+		if (!t)
+			return "";
+
+		array<ResourceName> list = m_Tribes.PrefabsForTribe(t, RZ_ETribePart.YOUNG, m_GM.GetSpawner().GetSettings());
+		if (!list || list.IsEmpty())
+			return "";
+
+		return list.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of a pack's guard, as a prefab (Live Capture). "" if it has none.
+	ResourceName GuardPrefab(RZ_Tribe t)
+	{
+		if (!t)
+			return "";
+
+		array<ResourceName> list = m_Tribes.PrefabsForTribe(t, RZ_ETribePart.GUARD, m_GM.GetSpawner().GetSettings());
+		if (!list || list.IsEmpty())
+			return "";
+
+		return list.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest military pack (soldiers' clothes, or a third of it were soldiers) within radius of
+	//! pos, with young to spare, or null (Missing Patrol, the Military Remnant Camp).
+	RZ_Tribe NearMilitary(vector pos, float radius)
+	{
+		if (!IsOn())
+			return null;
+
+		RZ_Tribe best;
+		float bestD = radius;
+		foreach (RZ_Tribe t : m_Tribes.GetTribeList())
+		{
+			if (t.m_eLook != RZ_ELook.MILITARY && t.m_fMilitaryShare < 0.33)
+				continue;
+
+			if (t.Count(RZ_ETribePart.YOUNG) <= 0)
+				continue;
+
+			float d = RZ_Util.DistXZ(t.RangeCentre(), pos);
+			if (d <= bestD)
+			{
+				bestD = d;
+				best = t;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stock the Pit: two of a pack's young caged for the next Fight Pit: the crews' name for the pack
+	//! they ran with, and their prefab.
+	void StockThePit(string crew, ResourceName prefab)
+	{
+		m_iPitStock = 2;
+		m_sPitCrew = crew;
+		m_sPitPrefab = prefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next Fight Pit takes the stock: true and the crew and prefab if there is some.
+	bool TakePitStock(out string crew, out ResourceName prefab)
+	{
+		if (m_iPitStock <= 0)
+			return false;
+
+		crew = m_sPitCrew;
+		prefab = m_sPitPrefab;
+		m_iPitStock = 0;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasPitStock()
+	{
+		return m_iPitStock > 0;
+	}
+
 	// ================================================================ Frenzies and Furious
 	//------------------------------------------------------------------------------------------------
 	//! A frenzy night (Every Ridge Calls, Red Dusk): one at a time, never in the first 2 season days,
@@ -2158,9 +2382,14 @@ class RZ_TribePeople
 
 			t.m_fFrenzy = mult;
 			n++;
+			// A frenzy ignores fear places: tonight's trails go straight through them
+			if (m_Tribes.WaysFear(t))
+				m_Tribes.BuildTrails(t);
 		}
 
 		RZ_Log.Info(string.Format("Tribes: a frenzy night (%1 tribes, range x%2).", n, mult));
+		// The great one's clan gathers on a frenzy night
+		m_Tribes.GetGreat().OnFrenzy();
 		return n;
 	}
 
@@ -2645,6 +2874,9 @@ class RZ_TribePeople
 		d.lastCall = m_bLastCall;
 		d.lastFrenzyDay = m_iLastFrenzyDay;
 		d.lastRedDuskDay = m_iLastRedDuskDay;
+		d.pitStock = m_iPitStock;
+		d.pitCrew = m_sPitCrew;
+		d.pitPrefab = m_sPitPrefab;
 		return d;
 	}
 
@@ -2661,6 +2893,9 @@ class RZ_TribePeople
 		m_bLastCall = d.lastCall;
 		m_iLastFrenzyDay = d.lastFrenzyDay;
 		m_iLastRedDuskDay = d.lastRedDuskDay;
+		m_iPitStock = d.pitStock;
+		m_sPitCrew = d.pitCrew;
+		m_sPitPrefab = d.pitPrefab;
 		if (d.knowIdent && d.knowOwner)
 		{
 			array<ref RZ_TribeKnowing> owners = {};

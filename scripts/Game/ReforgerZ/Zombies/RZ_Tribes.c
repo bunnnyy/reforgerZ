@@ -113,6 +113,37 @@ class RZ_TribeSettings
 
 	[Attribute("25", desc: "The tag frequencies: Red Hand Favor the fence asks for Halcyon's (and a stolen tag, if the server has the tag item)")]
 	int m_iFrequencyFavor;
+
+	// Phase 5 (docs/INFECTED.md, "The great one" and "Signs and sounds")
+	[Attribute("1", desc: "The great one: a clan of 3 or more packs that holds together 8 season days, from Overrun, makes its oldest leader (in its prime or older) the great one, one on the map at a time. Its guard is 4, its dusk call is the server's one dusk line that evening, its clan gathers every 4 season days and on frenzy nights (the Gathering), and when it dies the clan breaks up and every border reopens (the Night of Many Calls). Needs Life cycle. Off: none of this")]
+	bool m_bGreatOne;
+
+	[Attribute("0.85", desc: "Bright moon: from this moon phase (0 new, 1 full) on a clear night (no rain, fog or storm), packs hunt with their range x1.25 and stay out until 05:30. Read from the engine's moon. 0 = off")]
+	float m_fBrightMoon;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Kill-site prefabs (optional): small things left where someone was taken (a bicycle on its side, a rucksack with its zip open, one shoe; no gore). One at each kill site while a player is within 200 m. Empty: the lines only", "et")]
+	ref array<ResourceName> m_aKillSitePrefabs;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Abandoned lair prefab (optional): flattened bedding or somebody's things at the back of a culvert, where a pack lay up before it moved. Shown within 200 m of a player. Empty: the line only", "et")]
+	ResourceName m_sOldLairPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven mark prefab (optional): a post with chalk on it, where a road enters a pack's ground the Haven knows. Empty: the mark is text only", "et")]
+	ResourceName m_sHavenMarkPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion mark prefab (optional): a stencilled plate. Empty: the mark is text only", "et")]
+	ResourceName m_sBastionMarkPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand mark prefab (optional): a red hand with a line through it. Empty: the mark is text only", "et")]
+	ResourceName m_sRedHandMarkPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon mark prefab (optional): a plate with the plague doctor stencilled on it. Empty: the mark is text only", "et")]
+	ResourceName m_sHalcyonMarkPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Call sound prefab (optional): an entity with a SoundComponent and RZ_CallSoundComponent, which plays its sound event once when it appears. Put at a lair when it calls at dusk with a player within 1.5 km, at a played call box, and at the last call; removed after 40 s. Empty: the lines only", "et")]
+	ResourceName m_sCallSoundPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Great call sound prefab (optional): the great one's dusk call, deeper. Empty: the call sound", "et")]
+	ResourceName m_sGreatCallSoundPrefab;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -134,6 +165,8 @@ class RZ_Tribes
 	protected ref RZ_TribeBorders m_Borders;
 	protected ref RZ_TribeWays m_Ways;
 	protected ref RZ_TribePeople m_People;
+	protected ref RZ_TribeGreat m_Great;
+	protected ref RZ_TribeProps m_Props;
 	protected RZ_Tribe m_ScoreFor;			// weak: the tribe whose trails are being worked out (fear, burned land)
 	protected int m_iLastSeasonDay = -1;
 	protected bool m_bContested;
@@ -157,6 +190,7 @@ class RZ_Tribes
 	protected ref map<int, int> m_mTakenDay = new map<int, int>();		// player: the season day they last fed a tribe
 	protected ref map<int, bool> m_mCalledTo = new map<int, bool>();	// players told a dusk call this dusk
 	protected int m_iLastWandererNight = -10;
+	protected bool m_bMoonTell;				// a bright moon tonight: told to players near a pack once
 
 	static const float DATA_SECONDS = 60;
 	static const float CALL_RANGE = 3000;		// a dusk call carries this far
@@ -176,6 +210,8 @@ class RZ_Tribes
 		m_Borders = new RZ_TribeBorders(gm, this);
 		m_Ways = new RZ_TribeWays(gm, this);
 		m_People = new RZ_TribePeople(gm, this);
+		m_Great = new RZ_TribeGreat(gm, this);
+		m_Props = new RZ_TribeProps(gm, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -189,6 +225,8 @@ class RZ_Tribes
 	RZ_TribeBorders GetBorders() { return m_Borders; }
 	RZ_TribeWays GetWays() { return m_Ways; }
 	RZ_TribePeople GetPeople() { return m_People; }
+	RZ_TribeGreat GetGreat() { return m_Great; }
+	RZ_TribeProps GetProps() { return m_Props; }
 	array<ref RZ_Tribe> GetRovers() { return m_Life.GetRovers(); }
 	int CountedNights() { return m_iCountedNights; }
 
@@ -380,6 +418,7 @@ class RZ_Tribes
 
 		m_Bodies.Tick(dt, ids, players);
 		m_People.Tick(dt, ids, players);
+		m_Props.Tick(dt, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -431,6 +470,17 @@ class RZ_Tribes
 		bool noClock = h < 0;
 		RZ_Environment env = m_GM.GetEnvironment();
 		bool rain = env && env.IsRaining();
+
+		// The great one's call (the server's one dusk line) and the Night of Many Calls, before the rest
+		if (m_ePhase == RZ_ETribePhase.DUSK && h >= 18.75)
+			m_Great.Dusk(ids, players);
+
+		if (m_bMoonTell)
+		{
+			m_bMoonTell = false;
+			TellMoon(ids, players);
+		}
+
 		foreach (RZ_Tribe t : m_aTribes)
 		{
 			if (m_ePhase == RZ_ETribePhase.DAY && !t.m_bDayOut && (noClock || h >= 7))
@@ -469,10 +519,14 @@ class RZ_Tribes
 					SendHome(t, false);
 			}
 
-			// Echoes: a soldier's tribe walks home at 05:30, a farmer's at first light by the fields
-			if (t.m_bLateHome && m_ePhase == RZ_ETribePhase.DAWN && h >= 5.5 && t.Echo(RZ_EAlphaKind.SOLDIER))
+			// Echoes: a soldier's tribe walks home at 05:30, a farmer's at first light by the fields; under a
+			// bright moon every pack stays out until 05:30
+			if (t.m_bLateHome && m_ePhase == RZ_ETribePhase.DAWN && h >= 5.5 && (t.Echo(RZ_EAlphaKind.SOLDIER) || t.m_bMoon))
 			{
 				t.m_bLateHome = false;
+				if (t.m_bMoon)
+					m_Bodies.EndHunt(t, false);
+
 				SendHome(t, false);
 			}
 
@@ -507,6 +561,7 @@ class RZ_Tribes
 			m_mCalledTo.Clear();
 			m_bContested = false;
 			m_bVacuumTold = false;
+			m_Great.NotDusk();
 		}
 	}
 
@@ -1195,6 +1250,8 @@ class RZ_Tribes
 			t.m_fSetOutHour = Math.RandomFloat(19.5, 20.5);
 			if (!t.m_bLateHome)
 				SendHome(t, false);
+
+			t.m_bMoon = false;
 		}
 
 		m_Life.RoversAtPhase(RZ_ETribePhase.DAY);
@@ -1525,6 +1582,10 @@ class RZ_Tribes
 			m_GM.NotifyPlayer(id, "At dusk", CallLine(t, silent));
 		}
 
+		// The call as a sound at the lair (the great one's has its own, made by RZ_TribeGreat)
+		if (!silent && !t.m_bGreat)
+			m_Props.CallSound(t.m_vLair, false);
+
 		if (!silent)
 			RZ_Log.Info(string.Format("Tribes: %1 calls at dusk (%2 members, hunger %3 %4, %5).", t.m_sPlace, t.Members(), RZ_Util.RoundToInt(t.m_fHunger), RZ_Tribe.BandName(t.Band()), t.m_sPattern));
 	}
@@ -1654,7 +1715,7 @@ class RZ_Tribes
 		int n = 0;
 		foreach (RZ_TribePart p : t.m_aParts)
 		{
-			if (p.m_eKind == RZ_ETribePart.SCOUT || p.m_eKind == RZ_ETribePart.DAY || p.m_iTarget >= 0)
+			if (p.m_eKind == RZ_ETribePart.SCOUT || p.m_eKind == RZ_ETribePart.DAY || p.m_iTarget >= 0 || p.m_bGathering)
 				continue;
 
 			if (p.IsCore() && !coreOut)
@@ -1820,23 +1881,76 @@ class RZ_Tribes
 	//! man's land plus P. They come up to the wire and go home; they never go in.
 	protected bool WireTrail(RZ_Tribe t, array<vector> trail)
 	{
-		RZ_Land land = m_GM.GetLand();
-		vector edge;
-		if (!land.NearestNoMansLand(t.m_vLair, edge))
+		vector end;
+		if (!WireEnd(t.m_vLair, end) || RZ_Util.DistXZ(end, t.m_vLair) > GROUND_RANGE * 1.5)
 			return false;
 
-		vector dir = t.m_vLair - edge;
+		BuildTrail(t.m_vLair, end, trail);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The wire of the lived-in place nearest from: its no man's land's edge plus P, on from's side.
+	bool WireEnd(vector from, out vector end)
+	{
+		RZ_Land land = m_GM.GetLand();
+		vector edge;
+		if (!land || !land.NearestNoMansLand(from, edge))
+			return false;
+
+		vector dir = from - edge;
 		dir[1] = 0;
 		if (dir.Length() < 1)
 			return false;
 
 		dir.Normalize();
-		vector end = RZ_Util.GroundPos(edge + dir * RZ_InfectedBodies.P);
-		if (RZ_Util.DistXZ(end, t.m_vLair) > GROUND_RANGE * 1.5)
-			return false;
-
-		BuildTrail(t.m_vLair, end, trail);
+		end = RZ_Util.GroundPos(edge + dir * RZ_InfectedBodies.P);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether t's trails have fear places to go round (its own or its clan's).
+	bool WaysFear(RZ_Tribe t)
+	{
+		return !t.m_aFear.IsEmpty() || t.m_iClan > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Gathering (RZ_TribeGreat): one of t's hunter groups walks along the great one's way, by its
+	//! lair, to the wire, and waits there until it's sent home at dawn. False if it had none free.
+	bool GatherTo(RZ_Tribe t, RZ_Tribe great, vector wire)
+	{
+		foreach (RZ_TribePart p : t.m_aParts)
+		{
+			if (p.m_eKind != RZ_ETribePart.HUNTERS || p.m_iCount <= 0 || p.m_iTarget >= 0 || p.m_bGathering)
+				continue;
+
+			array<vector> path = {};
+			if (t != great)
+				BuildTrail(p.m_vPos, great.m_vLair, path);
+			else
+				path.Insert(p.m_vPos);
+
+			array<vector> leg = {};
+			BuildTrail(great.m_vLair, wire, leg);
+			foreach (int i, vector v : leg)
+			{
+				if (i > 0 || path.IsEmpty())
+					path.Insert(v);
+			}
+
+			p.SetPath(path);
+			p.m_bGathering = true;
+			p.m_bOut = true;
+			p.m_bHome = false;
+			p.m_bHop = false;
+			p.m_bWaits = true;
+			p.m_iTrail = -1;
+			p.m_fHoldUntil = m_fClock;
+			return true;
+		}
+
+		return false;
 	}
 
 	// ================================================================ Night and dawn
@@ -1845,6 +1959,31 @@ class RZ_Tribes
 	{
 		m_fNightOnline = 0;
 		m_Life.RoversAtPhase(RZ_ETribePhase.NIGHT);
+
+		// A bright moon on a clear night: every pack's range x1.25, out until 05:30
+		bool moon = RZ_TribeSky.BrightMoon(m_GM, m_Settings.m_fBrightMoon);
+		foreach (RZ_Tribe t : m_aTribes)
+		{
+			t.m_bMoon = moon;
+		}
+
+		if (moon && !m_aTribes.IsEmpty())
+		{
+			m_bMoonTell = true;
+			RZ_Log.Info(string.Format("Tribes: a bright moon tonight (phase %1): ranges x1.25, out until 05:30.", Math.Round(RZ_TribeSky.MoonPhase() * 100) / 100));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A bright moon: a line to each player within a call's reach of a pack, once a night.
+	protected void TellMoon(array<int> ids, array<IEntity> players)
+	{
+		foreach (int i, IEntity p : players)
+		{
+			RZ_Tribe t = NearestTribe(p.GetOrigin(), CALL_RANGE);
+			if (t)
+				m_GM.NotifyPlayer(ids[i], "Nightfall", string.Format("A full moon over %1, and not a cloud. They'll come further tonight, and they'll stay out late.", t.m_sPlace));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1856,10 +1995,13 @@ class RZ_Tribes
 		bool counted = m_fNightOnline >= Math.Max(1, m_Settings.m_fCountedNightMinutes) * 60;
 		m_fNightOnline = 0;
 
-		// A frenzy lasts the night, counted or not
+		// A frenzy lasts the night, counted or not; its trails go round fear places again
 		foreach (RZ_Tribe f : m_aTribes)
 		{
+			bool was = f.m_fFrenzy > 0;
 			f.m_fFrenzy = 0;
+			if (was && WaysFear(f))
+				BuildTrails(f);
 		}
 
 		if (!counted)
@@ -1905,7 +2047,10 @@ class RZ_Tribes
 
 		foreach (RZ_Tribe t : list)
 		{
-			m_Bodies.EndHunt(t, false);
+			// Under a bright moon the hunt goes on until 05:30
+			if (!t.m_bMoon || t.m_bVigil)
+				m_Bodies.EndHunt(t, false);
+
 			t.m_fFeedUntil = -1;
 			t.m_iDayPacks = 0;
 			if (t.m_bVigil)
@@ -1917,7 +2062,7 @@ class RZ_Tribes
 			// Echoes: a soldier's tribe comes home at 05:30, a farmer's at first light by the fields;
 			// the column walks toward the line first
 			m_Ways.ColumnDawn(t);
-			if (t.Echo(RZ_EAlphaKind.SOLDIER) || t.Echo(RZ_EAlphaKind.FARMER))
+			if (t.Echo(RZ_EAlphaKind.SOLDIER) || t.Echo(RZ_EAlphaKind.FARMER) || t.m_bMoon)
 			{
 				t.m_bLateHome = true;
 				continue;
@@ -1953,6 +2098,7 @@ class RZ_Tribes
 		p.m_vTarget = p.m_vRest;
 		p.m_bHome = true;
 		p.m_bHop = false;
+		p.m_bGathering = false;
 		p.m_iTarget = -1;
 		p.m_fHoldUntil = m_fClock + Math.RandomFloat(0, 600);
 	}
@@ -2019,6 +2165,10 @@ class RZ_Tribes
 	//! stand round it 30 real minutes at most.
 	void StartVigil(RZ_Tribe t, vector at)
 	{
+		// The great one: its whole clan holds the vigil, and the clan breaks up (RZ_TribeGreat)
+		if (t.m_bGreat)
+			m_Great.OnGreatDown(t);
+
 		// A named alpha's history in the headlines, always with the place
 		if (t.m_bHasAlpha && !t.m_sAlphaName.IsEmpty() && m_Settings.m_bLifeCycle)
 		{
@@ -3000,6 +3150,7 @@ class RZ_Tribes
 		data.countedNights = m_iCountedNights;
 		data.life = m_Life.Save();
 		data.people = m_People.Save();
+		data.great = m_Great.Save();
 		m_Borders.Save(data.borders);
 		foreach (RZ_Tribe r : m_Life.GetRovers())
 		{
@@ -3059,6 +3210,7 @@ class RZ_Tribes
 		s.young = t.m_iYoung;
 		RZ_TribeWays.SaveTribe(t, s);
 		RZ_TribePeople.SaveTribe(t, s);
+		s.great = t.m_bGreat;
 		return s;
 	}
 
@@ -3075,6 +3227,7 @@ class RZ_Tribes
 		m_iCountedNights = data.countedNights;
 		m_Life.Restore(data.life);
 		m_People.Restore(data.people);
+		m_Great.Restore(data.great);
 		m_Borders.Restore(data.borders);
 		m_fNightOnline = data.nightOnline;
 		m_fTribeSamples = data.tribeSamples;
@@ -3174,6 +3327,7 @@ class RZ_Tribes
 
 		RZ_TribeWays.RestoreTribe(t, s);
 		RZ_TribePeople.RestoreTribe(t, s);
+		t.m_bGreat = s.great && t.m_bHasAlpha;
 		if (t.m_sAlphaName.IsEmpty() && t.m_bHasAlpha)
 			m_Ways.NameAlpha(t);
 
@@ -3249,6 +3403,8 @@ class RZ_Tribes
 
 		if (m_People.IsOn())
 			RZ_Log.Info("Status | " + m_People.StatusText());
+
+		RZ_Log.Info(string.Format("Status | the great one: %1 | %2", m_Great.StatusText(), m_Props.StatusText()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3345,6 +3501,7 @@ class RZ_Tribes
 
 		RZ_Log.Info("Tribes dump | " + m_Life.StatusText() + " | " + m_Borders.StatusText());
 		RZ_Log.Info("Tribes dump | " + m_People.StatusText());
+		RZ_Log.Info(string.Format("Tribes dump | the great one: %1 | %2", m_Great.StatusText(), m_Props.StatusText()));
 		foreach (string beat : m_People.GetBeats())
 		{
 			RZ_Log.Info("Tribes dump | for the epilogue: " + beat);

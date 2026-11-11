@@ -745,9 +745,11 @@ class RZ_JournalPage : RZ_NotebookPage
 			RZ_UIW.SetText(row, "RowTitle", RZ_UIText.Str(m, 4));
 			RZ_UIW.SetText(row, "RowSub", sub);
 			RZ_UIW.SetText(row, "RowDir", RZ_UIText.Str(m, 7));
-			// A questline has no clock (minutes -1)
+			// A questline has no clock (minutes -1); a pack shows what you know of it
 			string rowTime = RZ_UIText.Str(m, 8) + " min left";
-			if (RZ_UIText.Int(m, 8) < 0)
+			if (RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.PACK)
+				rowTime = RZ_UIText.Str(m, 5);
+			else if (RZ_UIText.Int(m, 8) < 0)
 				rowTime = "Questline";
 
 			RZ_UIW.SetText(row, "RowTime", rowTime);
@@ -796,7 +798,9 @@ class RZ_JournalPage : RZ_NotebookPage
 
 		RZ_UIW.SetText(m_wRoot, "DetailReq", req);
 		string rewards = "";
-		if (RZ_UIText.Int(m, 8) < 0)
+		if (RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.PACK)
+			rewards = "Heard of: a rough area. Read: its ground. Mapped: where it lies up. Read and Mapped are rings on the map.";
+		else if (RZ_UIText.Int(m, 8) < 0)
 			rewards = "It depends on how it ends.";
 		else if (giver >= 0)
 			rewards = string.Format("About %1 Fame and %2 Favor with %3", RZ_UIText.Str(m, 10), RZ_UIText.Str(m, 11), RZ_Factions.GetNameInText(giver));

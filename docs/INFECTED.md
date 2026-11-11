@@ -5,7 +5,7 @@ hordes, the land they live on, and how their bodies are spawned, counted and rem
 infection are in [DESIGN.md](DESIGN.md#zombies-bites-and-infection), noise and heat in
 [DESIGN.md](DESIGN.md#heat-and-noise), and how hidden a player is in [DESIGN.md](DESIGN.md#stealth).
 
-**Status.** Phases 1 to 4 of the tribes design are built: crawlers, loose ones, heat hordes from
+**Status.** Phases 1 to 5 of the tribes design are built: crawlers, loose ones, heat hordes from
 towns, the land grid, the agent budget and its plumbing; **the tribes** on every slot of the map
 (lairs, scouts, day parties, the dusk call, night hunts by placement, the dawn count, hunger, the taken,
 the ones who ran, the vigil); **their life cycle** (successions, lone ones and splinters, ageing and
@@ -14,14 +14,17 @@ memory and who they are); and **the behaviour layer** driving their bodies beyon
 with every hunt strategy and the crawlers' daily life; and **the people's side** ([People](#people):
 each faction's words, voices and marks, knowing and the ways to learn, skills, your dead run, the
 dark corners, the moat, the packs' contracts and events, the cure's milestones, the final stand's
-waves and the last week). What's left is [planned](#planned). Nothing here has been play-tested
+waves and the last week); and **[the great one](#the-great-one)** and **[signs and
+sounds](#signs-and-sounds)** (props, call sounds, the bright moon, the map's range rings). What's left
+is [planned](#planned). Nothing here has been play-tested
 with a game client yet ([ROADMAP.md](ROADMAP.md)).
 
 Code: `Zombies/RZ_ZombieSpawner.c` (spawning, counting, removing), `Zombies/RZ_Crawlers.c` (towns),
 `Zombies/RZ_InfectedBodies.c` (roles, data parts, the sight rule, the agent budget, runtime
 groups), `Zombies/RZ_Tribes.c`, `RZ_TribeData.c` and `RZ_TribeBodies.c` (the tribes, `/tribes`),
 `Zombies/RZ_TribeLife.c`, `RZ_TribeBorders.c` and `RZ_TribeWays.c` (the life cycle),
-`Zombies/RZ_TribePeople.c` and `RZ_TribeItems.c` (the people's side), `Missions/Tribes/` and
+`Zombies/RZ_TribePeople.c` and `RZ_TribeItems.c` (the people's side), `Zombies/RZ_TribeGreat.c` (the
+great one), `Zombies/RZ_TribeProps.c` (props, call sounds, the moon), `Missions/Tribes/` and
 `Missions/Events/RZ_TribeEvents.c` (the packs' contracts and events),
 `Zombies/Behaviour/` (the behaviour layer and the crawlers' life), `World/RZ_Land.c` (the land grid),
 `Director/RZ_Adaptation.c` (infection adapts).
@@ -45,6 +48,8 @@ groups), `Zombies/RZ_Tribes.c`, `RZ_TribeData.c` and `RZ_TribeBodies.c` (the tri
 - [The signs](#the-signs)
 - [How they move and hunt](#how-they-move-and-hunt)
 - [People](#people)
+- [The great one](#the-great-one)
+- [Signs and sounds](#signs-and-sounds)
 - [Planned](#planned)
 
 ## Two switches
@@ -392,7 +397,8 @@ they stand on their own.
   life cycle its alpha's name and kind, look, disturbance, restless, clan, weak days, fear places,
   habits, marks, bonds, drift and history), the tribes' phase, counted nights and the town specials'
   scaling, a `tribes' life` line (lone ones, splinters, vacuums, burned land, abandoned lairs, the taken
-  in the open, borders and fights), and the behaviour layer's counts. `/tribes` adds the rovers.
+  in the open, borders and fights), the great one's line (who, the clan's days, gatherings, falls) with
+  the props and call sounds, and the behaviour layer's counts. `/tribes` adds the rovers.
 - **The land** logs what it found when it's read or loaded, and the tribe slots.
 
 The log lines are listed in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check).
@@ -446,8 +452,9 @@ Every rule shows: a call, a track, a line, always with the place's name. Code:
 | **Night** (20:30–05:00) | **The hunt** on tonight's trails |
 | **Dawn** (05:00–06:00) | **The walk home**, spread over the hour, then **the dawn count** |
 
-Fog counts as dusk (a scout's pack is the dusk pack); in a storm nobody goes out. With no game clock
-it's always day: day parties walk, scouts post, nobody hunts.
+Fog counts as dusk (a scout's pack is the dusk pack); in a storm nobody goes out. Under a [bright
+moon](#signs-and-sounds) every pack hunts further and stays out until 05:30. With no game clock it's
+always day: day parties walk, scouts post, nobody hunts.
 
 ### Day parties
 
@@ -742,7 +749,8 @@ candidate (outside every range by 300 m, not burned):
 - **Clans.** A daughter and its mother, lairs within 4 km, both 8 or more for 3 season days, are one
   clan: they never fight, each answers the other's dusk call (*"The same call answers from ..., one
   note different."*), they go round each other's fear places, and a splinter joins its old tribe's
-  clan first. A clan ends when one is left or they're 4 km apart.
+  clan first. A clan ends when one is left or they're 4 km apart. A clan of three that holds raises
+  [the great one](#the-great-one); after it dies there's no clan for 8 season days.
 
 ### Lair moves and displacement
 
@@ -944,8 +952,9 @@ Every rule above was checked against the design's signs table: each shows within
 
 **Waiting** (no sign of their own yet, or another phase): the clans' relay along the ridges, a range
 that moves as its border does (the border's offset is data only), hunting grounds following the prey,
-the stragglers after a bad night, tracks always fresh in snow, the great alpha and the Gathering
-(phase 5). The people's side shows through its own lines, marks and the journal ([People](#people)).
+the stragglers after a bad night, tracks always fresh in snow. The people's side shows through its
+own lines, marks and the journal ([People](#people)); the great one through its call, the Gathering
+and the Night of Many Calls ([The great one](#the-great-one)).
 
 ## How they move and hunt
 
@@ -1111,6 +1120,12 @@ are one pack.
 The journal keeps, under the place, every name the character has heard: *"The quarry by Morton: the
 Quarry lot (Haven), Contact Papa-two (Bastion), the Postmen (Red Hand), Pack P-02 (Halcyon)."*
 
+**Tokens** for any filled text (`RZ_WorldFacts.Fill`): `{tribe:N}` is pack N in a speaker's word with
+the place, `{alpha:N}` its leader in that speaker's word (the Haven's name when it knew them), and
+`{young:N}` its newest named young (described where a name isn't allowed), else the speaker's word for
+the young. The speaker follows a dot, `{tribe:3.bastion}` (`haven`, `bastion`, `redhand`, `halcyon`,
+`table`); without one it's the Haven's words. A pack that's gone leaves the token as it is.
+
 ### Voices
 
 - **At dusk**, once a game evening, each faction tells its Known one line about one pack, in its own
@@ -1147,8 +1162,9 @@ mark can be wrong.
 | Red Hand | *A red hand with a line through it, and POSTMEN.* |
 | Halcyon | *A Halcyon plate with the plague doctor stencilled on it: P-02 · I d19* (days its index has led) |
 
-*Simplified:* marks are text today (the props are planned). A player within 25 m reads each mark once
-a version: *"… Written on day 12."*, and the range is Read.
+A player within 25 m reads each mark once a version: *"… Written on day 12."*, and the range is Read.
+With a faction's **mark prefab** set, the mark also stands there as a prop ([Signs and
+sounds](#signs-and-sounds)); its words are always the text.
 
 ### Knowing
 
@@ -1170,8 +1186,11 @@ Per character, like the outposts you've seen: lost with the life, saved in `stat
 | **The tag frequencies** | The Red Hand, Trusted, 25 Favor | Every tagged leader's rough area, and a stolen tag when the server has the tag item |
 | **The range map** | Halcyon, Known, from 25% | The ranges Halcyon has read (within 4 km of the lab) or tagged, Read; also given to its Known at the breakthrough and on spawn |
 
-Each pack is a journal row (the place as its title, the level, a direction to its rough area), with the
-detail on select. *Planned:* the range rings on the map (phase 5).
+**In the journal and on the map.** Each pack is a journal row with the range ring icon, Mapped first,
+then Read, then Heard of: the place as its title, the level where a job shows its time left, a
+direction to its rough area, and the detail on select. On the map each is a **range ring**
+(`marker_range`) sized to its ground: Heard of, half a kilometre round the rough area; Read, its
+range; Mapped, its range, with where it lies up in the label ([UI.md](UI.md#the-map)).
 
 ### Skills
 
@@ -1242,15 +1261,18 @@ All said sideways.
 
 ### Contracts and events
 
-The packs' twelve contracts, The Lone One, the changed missions and the events are in
+The packs' thirteen contracts, The Lone One, the changed missions and the events are in
 [MISSIONS.md](MISSIONS.md#the-packs-contracts). The rules they share:
 - **Claims.** A job holds its pack (`tribe:N`): no lair move, nomad's move, split, merge or absorption
   while it runs. A succession still happens. HC1's site stages hold the site's pack, and its parts keep
   150 m off the store ([QUESTLINES.md](QUESTLINES.md)).
 - **Frenzy nights** (Every Ridge Calls everywhere, Red Dusk within 3 km of one point): one at a time,
   never in the first 2 season days, one every 3 at most (Red Dusk one every 7). A frenzied pack hunts with
-  its range ×2 (×1.75) whatever its temperament, on three trails (the wire first), until dawn.
-  *Simplified:* fear places and borders still hold.
+  its range ×2 (×1.75) whatever its temperament, on three trails (the wire first), until dawn. It
+  ignores fear places (its trails are worked out again through them at dusk, and back round them at
+  dawn) and borders: a border with a frenzied side always has a cause to fight, twice as likely, still
+  2 Border Nights staged a night at most. The great one's clan gathers on a frenzy night ([The great
+  one](#the-great-one)).
 - **Furious** (its leader caught alive, Capture the Index): for 2 counted nights its one trail runs
   toward the lab and stops at the lab's no man's land plus P (250 m). The most recently Furious pack
   still Furious comes with the final stand's last wave.
@@ -1286,8 +1308,61 @@ server's ridges go quiet too:
 - **Towns stay cleared.** The kill ledger stops halving (built before), and nothing raises a town's
   infection in the epilogue.
 - **Beats for the epilogue:** still calling (each leader alive at the cure), brought home, taken alive
-  for the lab, culled, burned out: kept in `state.json` (40 at most) and shown by `/tribes`, for the
+  for the lab, culled, burned out, the great one risen and fallen: kept in `state.json` (40 at most) and shown by `/tribes`, for the
   epilogue's closing work when it's built ([designs/EPILOGUE.md](../designs/EPILOGUE.md)).
+
+## The great one
+
+Code: `Zombies/RZ_TribeGreat.c`; **Zombies > Tribes > Great one** (on; needs the life cycle). Player
+text never names it: it's *"the deep voice"*, the call every ridge answers.
+
+- **How it rises.** A [clan](#splits-and-clans) of 3 or more packs that holds together 8 season days,
+  from Overrun, makes its oldest leader in its prime or older the great one. One on the map at a time;
+  none for 8 season days after one dies. The headline: *"Every call along the ridges answers one voice
+  now: Josef Hruby's, at the quarry by Morton."* On Everon (a clan in about half of seasons, usually of
+  two) expect it rarely; on a Chernarus-size map, some seasons.
+- **What changes.** Its guard is 4 (hunters lying up step up; the Guard prefabs are the helmeted ones).
+  It doesn't die of age while its clan holds 3 packs, though it can still be challenged. Its dusk call is
+  **the server's one dusk line** that evening: everyone online hears *"One call from the quarry by Morton
+  at dusk, deeper than the rest, and every ridge from there to the woods north of Levie answers it."*
+  instead of their nearest pack's, and within 1.5 km it's a sound (**Great call sound prefab**).
+- **The Gathering**, every 4 season days at its dusk call and on a frenzy night: each pack of the clan
+  (not one holding a vigil or weakened) sends one hunter group along the great one's way, by its lair, to
+  the wire of the lived-in place nearest it (no man's land's edge plus P), where they wait until they're
+  sent home at dawn. The bodies stay inside the per-cluster shares, so it comes in waves. It's a world
+  event everyone is told (*The Gathering*, [MISSIONS.md](MISSIONS.md#world-events)); 10 or more of them
+  put down within 300 m of the wire leave what they carried there at dawn.
+- **When it dies:** every pack of its clan holds the vigil at its own lair, so nothing in the clan hunts
+  that night (*"Every call along the ridges stops at once"*); the clan breaks up, with no clan and no
+  great one for 8 season days; and the next dusk is **the Night of Many Calls**: every border on the map
+  reopens for 2 counted nights (border fights twice as likely), told as a world event. Its fall is an
+  epilogue beat.
+- **Losing its clan** (a break-up, a merge) makes it an ordinary leader again.
+- **Caught alive** it would count +3 on a finale route's track: that goes in with the finale's live
+  tissue ([designs/FINALE.md](../designs/FINALE.md)).
+
+## Signs and sounds
+
+Code: `Zombies/RZ_TribeProps.c`. Every prop and sound is an optional prefab under **Zombies > Tribes**
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); without one, its line is all there is, and the lines are
+always told.
+
+| Sign | Prefab | Where and when |
+|---|---|---|
+| **Kill-site things** | **Kill-site prefabs** (a list: a bicycle on its side, a rucksack with its zip open, one shoe; never gore) | One at each [kill site](#kill-sites-the-vigil-and-the-alpha), picked by the spot, so it's the same one each time |
+| **An abandoned lair** | **Abandoned lair prefab** (flattened bedding, somebody's things at the back of a culvert) | Where a pack lay up before it [moved](#lair-moves-and-displacement), as long as the lair is remembered |
+| **The marks** | **Haven / Bastion / Red Hand / Halcyon mark prefab** | Each faction's [mark](#marks) that's written, a step apart where the road enters the range; a rewritten mark is a new prop |
+| **The ID card** | **ID card prefab** (built with [your dead run](#your-dead-run)) | Where a named young is put down |
+| **Call sounds** | **Call sound prefab**, **Great call sound prefab** | At a lair when it calls at dusk with a player within 1.5 km (not after it fed), at a call box when it plays, and at the last call; removed after 40 s, 6 at once at most. The prefab carries `RZ_CallSoundComponent`, which plays its sound event once on each client |
+
+- **Props** appear only while a player is within 200 m and go once nobody is within 250 m (checked
+  every 5 s): 6 a pack and 30 on the server at most, never saved. They're looks only; reading them is
+  the lines' job.
+- **The bright moon** (**Bright moon**, from phase 0.85): on a clear night (no rain, fog or storm) with
+  the engine's moon at least that full, every pack hunts with its range ×1.25 (on top of hunger; a
+  frenzy's own) and stays out until 05:30, its hunt too. Players near a pack are told at nightfall:
+  *"A full moon over the quarry by Morton, and not a cloud. They'll come further tonight, and they'll
+  stay out late."* *Simplified:* the moon doesn't change what anyone sees (the engine's light does).
 
 ## Planned
 
@@ -1295,13 +1370,12 @@ What's left of the design, in [designs/INFECTED.md](../designs/INFECTED.md) and
 [designs/BEHAVIOUR.md](../designs/BEHAVIOUR.md):
 - **The life cycle's rest:** what [waits](#the-signs) for a sign of its own (the clans' relay, the
   border moving the ranges, hunting grounds following the prey, stragglers, snow tracks).
-- **Phase 4's rest:** the `{tribe:N}`, `{alpha:N}` and `{young:N}` tokens; Stock the Pit; the changed
-  Live Capture (a guard or a young), Lead Them Away, Blow the Bridge, Missing Patrol and the Military
-  Remnant Camp; the Haven's warnings about day parties in the fields; the frenzy ignoring fear places
-  and borders; trucks taken on any road a trail crosses; the finale's live tissue (it goes in with the
-  finale, [designs/FINALE.md](../designs/FINALE.md)); the epilogue reading the beats.
-- **Phase 5:** the great alpha, props (marks, kill sites, the ID card's look), call sounds, the bright
-  moon, the range ring icon and the journal's list of packs by level.
+- **The people's rest:** the Haven's warnings about day parties in the fields; trucks taken on any road
+  a trail crosses; the jobs' rest (Clear the Trail on a truck road and the others the design lists);
+  the questline hooks still to write; the epilogue reading the beats; Lead Them Away's crowd as a pack
+  on the move.
+- **The finale's live tissue** goes in with the finale ([designs/FINALE.md](../designs/FINALE.md)), with
+  the great one's +3.
 - **The behaviour layer's rest:** shrieks passed between groups; blood scent; the hearing table beyond
   shots; doors (another way in, weak doors); the reactions table; the regroup; the ankle grab and the
   client effects (hold, stagger, knockdown) after a client test; forest edge points in the land cache.

@@ -131,6 +131,7 @@ class RZ_TribePart : RZ_InfectedPart
 	bool m_bStirred;					// stirred a town tonight
 	int m_iTrail = -1;					// the trail it walks tonight (worn trails)
 	bool m_bWaits;						// holds at the end of its path until it's sent home (a crossing, a wire, a border)
+	bool m_bGathering;					// gone to the Gathering tonight (RZ_TribeGreat): the set-out leaves it be
 
 	//------------------------------------------------------------------------------------------------
 	//! The role its bodies carry (stealth reads it).
@@ -355,6 +356,9 @@ class RZ_Tribe
 	ref array<int> m_aMarkDay = {0, 0, 0, 0};
 	ref array<ref RZ_NamedYoung> m_aNamed = {};			// named young running with it (players' characters among them)
 	int m_iWalkouts;			// walk-outs it was fed (dark corners)
+	// Phase 5 (Zombies/RZ_TribeGreat.c)
+	bool m_bGreat;				// its leader is the great one: its clan answers it
+	bool m_bMoon;				// tonight's bright moon: its range x1.25, out until 05:30
 
 	//------------------------------------------------------------------------------------------------
 	bool IsRover()
@@ -526,18 +530,23 @@ class RZ_Tribe
 		if (m_fFrenzy > 0)
 			return m_fRadius * m_fFrenzy;
 
-		// A territorial tribe never hunts beyond its range
+		// A bright moon: x1.25 on top
+		float moon = 1;
+		if (m_bMoon)
+			moon = 1.25;
+
+		// A territorial tribe never hunts beyond its range (but for the moon)
 		if (m_eTemper == RZ_ETemperament.TERRITORIAL)
-			return m_fRadius;
+			return m_fRadius * moon;
 
 		int band = Band();
 		if (band >= 3)
-			return m_fRadius * 1.5;
+			return m_fRadius * 1.5 * moon;
 
 		if (band == 2)
-			return m_fRadius * 1.25;
+			return m_fRadius * 1.25 * moon;
 
-		return m_fRadius;
+		return m_fRadius * moon;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -714,6 +723,8 @@ class RZ_TribeSave
 	ref array<float> namedZ = {};
 	ref array<bool> namedWalkout = {};
 	int walkouts;
+	// Phase 5
+	bool great;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -772,4 +783,5 @@ class RZ_TribesSave
 	ref array<ref RZ_BorderSave> borders = {};
 	ref RZ_TribeLifeSave life;
 	ref RZ_TribePeopleSave people;
+	ref RZ_TribeGreatSave great;
 }

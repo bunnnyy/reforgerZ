@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **198 prefab fields**: 40 on `RZ_GameModeComponent`, 151 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **203 entries**: 150 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 20 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 43 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **206 prefab fields**: 40 on `RZ_GameModeComponent`, 159 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **211 entries**: 152 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 26 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 43 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -506,6 +506,14 @@ and the UI files) need none, and seven have no base:
 | `RZ_TribeTag.et` | a small carryable item (a vanilla small prop that can be picked up); display name Halcyon tag | `RZ_TagAction` | Zombies > Tribes > Tag prefab | optional | Plant a Tag (Halcyon) and the Red Hand fence's stolen tag: Tag it on a pack's leader within 8 m. Set the action's duration to 5 s (hold it). Check in Workbench that the action shows on the item in the hand and on the ground |
 | `RZ_CallBox.et` | a small radio or speaker item (a vanilla handheld radio); display name Call box | `RZ_CallBoxAction` | Zombies > Tribes > Call box prefab | optional | the call box Halcyon lends from 50% (Trusted, 2 a real day): 90 s of a recorded dusk call as a data noise. Put it down and use it; it's used up when it plays |
 | `RZ_IdCard.et` | a small flat carryable item (a card or a wallet); display name ID card | — | Zombies > Tribes > ID card prefab | optional | dropped where a named young is put down (its text is told to whoever is near); cleared like loose items. Bring Them Home uses the mission item instead |
+| `RZ_CallSound.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has a dusk call on the event SOUND_CALL (a long rising call, a few voices answering) | `RZ_CallSoundComponent` | Zombies > Tribes > Call sound prefab | optional | a pack's dusk call as a sound at its lair (a player within 1.5 km), the call box and the last call; removed after 40 s. Manual: the sound itself (record or license a call; nothing in the base game sounds right). Check in play that it replicates and plays once (VERIFY) |
+| `RZ_GreatCallSound.et` | like the call sound prefab, with a deeper, longer call on SOUND_CALL | `RZ_CallSoundComponent` | Zombies > Tribes > Great call sound prefab | optional | the great one's dusk call (empty: the call sound). Manual: the sound itself |
+| (existing prefab) | small vanilla props: a bicycle on its side, a rucksack, a single shoe, a car door (static props, no gore) | — | Zombies > Tribes > Kill-site prefabs (list) | optional | one thing at each kill site while a player is within 200 m. Manual: pick a few props by hand; the lines are told whether or not any are set |
+| (existing prefab) | a static prop: flattened bedding, a heap of old coats, or somebody's things at the back of a culvert | — | Zombies > Tribes > Abandoned lair prefab | optional | where a pack lay up before it moved, while a player is within 200 m. Manual: pick or build the prop |
+| (existing prefab) | a wooden post or a gatepost with chalk on it (a decal or a sign prop) | — | Zombies > Tribes > Haven mark prefab | optional | the Haven's mark where a road enters a pack's ground (the text is read within 25 m). Manual: the mark's look; its words stay text |
+| (existing prefab) | a stencilled metal plate or sign | — | Zombies > Tribes > Bastion mark prefab | optional | Bastion's mark (P-2 · QUARRY · 20+). Manual: the mark's look; its words stay text |
+| (existing prefab) | a post or a wall section with a red hand painted on it, a line through it | — | Zombies > Tribes > Red Hand mark prefab | optional | the Red Hand's mark (a crew's name). Manual: the mark's look; its words stay text |
+| (existing prefab) | a small plate with the plague doctor stencilled on it | — | Zombies > Tribes > Halcyon mark prefab | optional | Halcyon's mark on a tagged pack (P-02 · I d19). Manual: the mark's look; its words stay text |
 | (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Runner prefabs (list) | optional | the Collapse trait |
 | (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Helmet prefabs (list) | optional | the Overrun trait |
 | (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Screamer prefabs (list) | optional | the Aftermath trait |
@@ -750,6 +758,15 @@ crawlers are as fast as the rest (about 3.7 m/s): if a zombie mod in your stack 
 put it here ([MOD_STACK.md](MOD_STACK.md)). Both **Zombies > Crawlers** and **Zombies > Tribes** are on
 by default; with both off the spawner is as it was. The first start on a map reads the land grid
 (about 5 minutes on Everon, logged), then loads it from the profile.
+
+**The packs' signs and sounds** ([INFECTED.md](INFECTED.md#signs-and-sounds)) are all by hand and all
+optional: the plugin can't pick props or record a call. For **Kill-site prefabs**, **Abandoned lair
+prefab** and the four **mark prefabs**, pick static props (no inventory item, no physics that rolls)
+and put their names in the slots; nothing about them is scripted. For the two **call sound** prefabs,
+make a new entity prefab with an `RplComponent`, a `SoundComponent` with a sound project that has the
+call on the event `SOUND_CALL` (the base game has nothing that sounds right: record or license one), and
+`RZ_CallSoundComponent` (its **Event** names the event if you used another). The server deletes it after
+40 s. Leave any slot empty and that sign is its line only.
 
 **Treatments.** Each turns itself off when its slot is empty. Wound cleaning needs no prefab: it
 uses carried items by keyword (alcohol, antiseptic, bandages, first-aid kits) and the interaction
@@ -1107,7 +1124,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, **Empty group** (runtime groups), per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | Stealth | `m_StealthSettings` | **Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth)) |
-| Zombies | Tribes | `m_TribeSettings` | **Enabled** (on; off: no land grid, no tribes, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20), the **role prefabs** (alpha, guard, hunter, scout, young; empty lists fall back), **Day party share** (0.2; 0 = none), day party group (2-3), day party bodies near a cluster (6), **Counted night minutes** (20), **Scout sight** (120 m), **Your dead run** (Described), **Life cycle** (on), hunger a counted night (3), split at (24), the looks' prefabs, **People** (on: words, knowing, the packs' contracts and events, the moat, the call box, the stand's waves, the last week), **Name filter** (words), the **ID card**, **tag** and **call box** prefabs, the map of the crews (15 Favor) and the tag frequencies (25 Favor) ([INFECTED.md](INFECTED.md#tribes), [People](INFECTED.md#people)) |
+| Zombies | Tribes | `m_TribeSettings` | **Enabled** (on; off: no land grid, no tribes, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20), the **role prefabs** (alpha, guard, hunter, scout, young; empty lists fall back), **Day party share** (0.2; 0 = none), day party group (2-3), day party bodies near a cluster (6), **Counted night minutes** (20), **Scout sight** (120 m), **Your dead run** (Described), **Life cycle** (on), hunger a counted night (3), split at (24), the looks' prefabs, **People** (on: words, knowing, the packs' contracts and events, the moat, the call box, the stand's waves, the last week), **Name filter** (words), the **ID card**, **tag** and **call box** prefabs, the map of the crews (15 Favor) and the tag frequencies (25 Favor), **Great one** (on: the great one, the Gathering, the Night of Many Calls), **Bright moon** (0.85; 0 = off), and the optional sign prefabs: kill-site things (a list), the abandoned lair, the four marks and the two call sounds (empty: the lines only) ([INFECTED.md](INFECTED.md#tribes), [People](INFECTED.md#people), [The great one](INFECTED.md#the-great-one), [Signs and sounds](INFECTED.md#signs-and-sounds)) |
 | Zombies | Behaviour | `m_BehaviourSettings` | **Enabled** (on; off: tribe groups take held waypoints and Bacon's own senses), steer factor (0 = blind), contact radius (8 m), take-back multiple (2.5), sight checks a second (12), **notice rate** (0.15, tune in play), hunter sight (220/190 m), shot hearing (170 m), spacing (3 m), flank radius (140/100 m) and angle (70), stalk distance (115/75 m), **Strategies** (on), **Own attacks** (on: the hunter's lunge), special move gap (10 s), **Climb limit** (1.4 m grab height), unstick out of sight (on), LOD bands (60,150,300 m), debug log ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
 | Zombies | Crawlers | `m_CrawlerSettings` | **Enabled** (on; off: towns as before), **Prefabs** (Bacon's civilian characters; empty = Common), bloated prefabs and share (0.05, towns at 70+ from Overrun), group size (1-3), kill ledger half-life (30 played minutes), reinforcement distance (200 m), drift radius (300 m) and seconds (90), stir (stirred at 50, -20 an hour, 5 heat a minute up to 60), siege minutes (10), scavengers (2-4) ([INFECTED.md](INFECTED.md#towns-the-crawlers)) |
 | Zombies | (top level) |  | Presence heat (0.5/tick), vehicle heat (+4/tick) |
@@ -1403,7 +1420,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **71** lines with the tag, all in the game scripts (one is the comment in
+There are **73** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 13 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1424,7 +1441,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:178` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (38)
+### Medium risk: big features, with a fallback (40)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1432,7 +1449,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_Checkpoints.c:514` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
 | `Core/RZ_Util.c:749` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:894` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
-| `Factions/RZ_SupplyLines.c:971` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
+| `Factions/RZ_SupplyLines.c:980` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:922` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Loot.c:178` | furniture inside buildings is found as static entities | Loose loot lies only on up to five floor points in each building's box |
 | `Interactions/RZ_Loot.c:941` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
@@ -1462,6 +1479,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/Behaviour/RZ_Behaviour.c:975` | a light bleed opened from the server on a player's arm or leg (`AddParticularBleeding`) replicates and bleeds at the usual rate (a hunter's lunge that lands) | The lunge still makes the bite chance x1.5; with no bleed, set **Behaviour > Own attacks** off if it misbehaves |
 | `Factions/RZ_CampLife.c:678` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:338` | a stranger is placed at the spot itself, 150–350 m ahead of the player (no line-of-sight test for the design's out-of-sight point 60–90 m off) | If one visibly pops in, set **Missions > Errands > Strangers** off |
+| `Zombies/RZ_TribeProps.c:68`, `:350` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
 
 ### Low risk: contained or cosmetic (20)
 
@@ -1498,14 +1516,14 @@ quartermaster's Buy actions, **UI > Reader** and **Subtitles** off for cards. Ho
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:920` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:922` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:197` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_UIData.c:943` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:945` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:494` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
-| `UI/RZ_PlayerUIComponent.c:167` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:168` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
 | `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
@@ -1615,6 +1633,16 @@ after the cure `Tribes: the cure is out. Nobody new turns, and the packs run dow
 `Tribes: <place> is starving in the last week: N lay down.`, `Tribes: <place> lost its leader after
 the cure, and ends.`, `Tribes: the last call. Every leader still living calls once, and nothing
 answers.`
+
+The great one and the signs ([INFECTED.md](INFECTED.md#the-great-one)) add `Status | the great one:
+<name> at <place> (clan of N), clan holding N/8 days, gatherings N, fallen N, clans locked false, many
+calls due false | props N standing (N shown so far), call sounds N playing (N so far), moon 0.87`
+(`/tribes` too), and events: `Tribes: <place>'s leader <name> is the great one of a clan of N.`,
+`Tribes: the Gathering: N packs send a group each by <place> to the wire at <grid>.`, `Tribes: the
+great one of <place> fell; its clan breaks up, no clan or great one for 8 season days.`, `Tribes: the
+Night of Many Calls: every border reopens for 2 counted nights.`, `Tribes: <place>'s great one has no
+clan left to answer it.`, `Tribes: a bright moon tonight (phase 0.92): ranges x1.25, out until
+05:30.`
 
 On a restart the same lines say `(save)` or `(saved)` instead of `(picked)` or `(new ...)`, the
 world facts keep their seed and count what the season has made so far, and the settlement scan
@@ -1978,8 +2006,33 @@ when it happens)
   03:30, Plant a Tag in the morning). Run Not Tonight (a noise at the spot before nine), Contact Report
   (two points at dusk), Plant a Tag (the tag from the lab, held 5 s by a sleeping leader by day) and
   Bring Them Home (the card to any house) end to end; the pack doesn't move while one runs.
-- [ ] **Every Ridge Calls** at dusk: every pack hunts three trails, its range doubled; **The Tribe Moves**
-  when a lair moves out of its range ("On the Move", two groups near you); **Red Dusk** at a clear dusk.
+- [ ] **Every Ridge Calls** at dusk: every pack hunts three trails, its range doubled, straight through its
+  fear places, and a border with a frenzied side is fought more often (2 Border Nights at most); **The
+  Tribe Moves** when a lair moves out of its range ("On the Move", two groups near you); **Red Dusk** at a
+  clear dusk.
+- [ ] **Stock the Pit** (Red Hand Known, a camp within 6 km of a pack): tie one young, hold it 30 s, the
+  case to the drop by the camp, then the second; the next Fight Pit's brief says *"Fresh hires tonight,
+  from …"* and two come out in its last round. **Live Capture** with packs on: the special is one of a
+  pack's guard (or young) at its lair's edge, and the pack is one smaller after. **Lead Them Away** near a
+  pack's ground: the crowd is in its look, from its side. **Blow the Bridge** on Everon: the charges go on
+  a real bridge and the crowd comes from the pack's lair. **Missing Patrol** and the **Military Remnant
+  Camp** near a military pack: its young.
+- [ ] **The great one** (a big map, or `/tribes` to watch the clan's days): a clan of three holding 8
+  season days from Overrun gives the headline and a guard of 4; at dusk everyone online hears its call
+  instead of their own pack's. Every 4 season days (or on Every Ridge Calls) **The Gathering** is told
+  and groups from each clan pack wait at the wire until first light; put 10 down there for a crate at
+  dawn. Kill it: every clan pack holds the vigil that night, `/tribes` shows no clans, and the next dusk
+  is **The Night of Many Calls**.
+- [ ] **Signs and sounds:** with the kill-site, abandoned lair and mark prefabs set, walk up to a kill
+  site, an old lair and a mark: each prop appears by 200 m and is gone once you're 250 m off; a
+  rewritten mark is a new prop. With a call sound prefab, a pack's dusk call is heard at its lair from
+  within 1.5 km, once (VERIFY). On a clear night near a full moon the nightfall line comes and the
+  hunt stays out until 05:30.
+- [ ] **The journal and the map:** the journal lists your packs Mapped first, then Read, then Heard of,
+  each with the range ring and its level where the time goes; on the map each is a yellow ring sized to
+  its ground (Heard of: half a kilometre round the rough area), following the zoom.
+- [ ] **Tokens:** a line with `{tribe:N.bastion}` or `{alpha:N}` (for example a test rumour) reads
+  "Contact Papa-two, the quarry by Morton" and the leader's word; a pack that's gone leaves the token.
 - [ ] **The cure:** at 50% borrow the call box (Halcyon Trusted), put it down at night in a pack's
   ground away from people, and play it: its hunters come, never the leader. Refused near a house or
   near a stranger. At 100% the stand's waves come from the lab's neighbour towns and the nearest pack.

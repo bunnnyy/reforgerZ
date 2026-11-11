@@ -131,6 +131,7 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_PlantATag);
 		mgr.RegisterType(RZ_Mission_TrackThemHome);
 		mgr.RegisterType(RZ_Mission_CaptureTheIndex);
+		mgr.RegisterType(RZ_Mission_StockThePit);
 
 		// Unarmed missions (Missions/Unarmed/): stealth, noise and thinking, small Fame
 		mgr.RegisterType(RZ_Mission_LeadThemAway);
@@ -147,6 +148,8 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Event_TribeMoves);
 		mgr.RegisterType(RZ_Event_EveryRidgeCalls);
 		mgr.RegisterType(RZ_Event_RedDusk);
+		mgr.RegisterType(RZ_Event_Gathering);
+		mgr.RegisterType(RZ_Event_NightOfManyCalls);
 		mgr.RegisterType(RZ_Event_SirenTest);
 		mgr.RegisterType(RZ_Event_Storm);
 		mgr.RegisterType(RZ_Event_WanderingTrader);
