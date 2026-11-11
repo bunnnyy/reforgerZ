@@ -391,6 +391,17 @@ class RZ_Mission_Recon : RZ_Mission_VisitPoints
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
+		// With the packs: the hungriest of them, in Bastion's word, with its place
+		if (gm.GetTribes())
+		{
+			string pack = gm.GetTribes().GetPeople().Hungriest();
+			if (!pack.IsEmpty())
+			{
+				NotifyParticipants(gm, "Bastion intel", pack);
+				return;
+			}
+		}
+
 		vector hot;
 		float heat;
 		if (!gm.GetHeat().GetHottest(hot, heat))

@@ -2,89 +2,6 @@
 //! Most pay in loot found on the spot rather than Fame. Nothing comes in from outside the Zone.
 
 //------------------------------------------------------------------------------------------------
-//! #2 Horde Migration: a huge horde walks from one town to another. Get out of the
-//! way, or thin it out: 10+ kills from it leaves a crate where the last one fell.
-class RZ_Event_HordeMigration : RZ_Mission
-{
-	protected int m_iTarget = -1;
-	protected int m_iKills;
-	protected vector m_vLastKill;
-
-	//------------------------------------------------------------------------------------------------
-	//! Its position follows the moving horde: nothing of its own stands anywhere, so no building is kept unlocked.
-	override void GetPropSpots(notnull array<vector> result)
-	{
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetEvent(false);
-		m_fTimeLeft = 900;
-		m_fParticipationRadius = 250;
-		m_Req.m_iMinStage = RZ_EOutbreakStage.COLLAPSE;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 1;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 50, 100);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		m_iTarget = PickSettlementAway(gm, s.m_vCenter, 1500, 3500, 0, 100);
-		RZ_Settlement t = gm.GetSettlement(m_iTarget);
-		if (!t)
-			return false;
-
-		m_vPos = s.m_vCenter;
-		// Passing through, not coming for anyone: lying low in a ditch as it goes by works (Stealth)
-		gm.GetSpawner().SpawnHordeAt(LandPointNear(s.m_vCenter, 0, 50), t.m_vCenter, m_iId, null, false);
-		gm.GetSpawner().SpawnHordeAt(LandPointNear(s.m_vCenter, 30, 80), t.m_vCenter, m_iId, null, false);
-		m_sTitle = "Horde Migration";
-		m_sBrief = string.Format("A massive horde is leaving %1 and heading for %2. Stay off that road, or make them pay for it.", s.m_sName, t.m_sName);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnZombiesKilled(RZ_GameModeComponent gm, int settlementIdx, int missionId, bool special, vector pos, int count)
-	{
-		if (missionId != m_iId)
-			return;
-
-		m_iKills += count;
-		m_vLastKill = pos;
-		m_vPos = pos; // participants are whoever is near the horde
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnTimeUp(RZ_GameModeComponent gm)
-	{
-		m_eState = RZ_EMissionState.SUCCEEDED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
-	{
-		if (m_iKills >= 10)
-			gm.SpawnRewardCrate(m_vLastKill);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override string GetSuccessText(RZ_GameModeComponent gm)
-	{
-		return string.Format("The horde has moved on. Survivors killed %1 of them on the way.", m_iKills);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 //! Base for events that change a world setting for a while and put it back afterwards.
 class RZ_Event_Timed : RZ_Mission
 {
@@ -103,48 +20,6 @@ class RZ_Event_Timed : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	protected void Restore(RZ_GameModeComponent gm)
 	{
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! #3 Night of the Dead: for 20 minutes, twice the infected and twice the specials everywhere.
-class RZ_Event_NightOfTheDead : RZ_Event_Timed
-{
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetEvent(false);
-		m_bGlobal = true;
-		m_fTimeLeft = 1200;
-		m_fParticipationRadius = 0;
-		m_Req.m_iMinStage = RZ_EOutbreakStage.COLLAPSE;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 0.5;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		gm.GetSpawner().SetEventModifiers(2, 2);
-		m_sTitle = "Night of the Dead";
-		m_sBrief = "Something has stirred them up. For the next 20 minutes there are twice as many infected, and the mutated ones are everywhere. Find somewhere safe.";
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void Restore(RZ_GameModeComponent gm)
-	{
-		gm.GetSpawner().SetEventModifiers(1, 1);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override string GetSuccessText(RZ_GameModeComponent gm)
-	{
-		return "The Night of the Dead is over. They're settling down again.";
 	}
 }
 
@@ -177,6 +52,11 @@ class RZ_Event_SirenTest : RZ_Event_Timed
 
 		m_vPos = s.m_vCenter;
 		gm.GetSpawner().SetFocusSettlement(m_iSettlement);
+
+		// Packs come only if they've learned the bells; the rest keep away
+		if (gm.GetTribes())
+			gm.GetTribes().GetPeople().BellsCome(m_vPos);
+
 		m_sTitle = "Siren Test";
 		m_sBrief = string.Format("The air-raid sirens in %1 have started wailing. Every infected around is heading there. Everywhere else is quieter for the next five minutes.", s.m_sName);
 		return true;
@@ -423,6 +303,11 @@ class RZ_Event_MassGrave : RZ_Mission
 
 		SpawnGuards(gm, m_vPos, 4, 5, 15);
 		gm.GetSpawner().SpawnHorde(m_vPos, 150);
+
+		// The nearest pack has eaten here (docs/INFECTED.md, the changed missions)
+		if (gm.GetTribes())
+			gm.GetTribes().GetPeople().FeedNearest(m_vPos, 3000, 20);
+
 		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 

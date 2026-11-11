@@ -252,7 +252,7 @@ before.
 
 | Tier | Shop | Perk / service |
 |---|---|---|
-| Known | Canned food, water, bandages, crowbars | A welcome message ✅ (safehouse services, including bite declarations and expired antibiotics for 5 Favor, are open to anyone the Haven hasn't exiled) |
+| Known | Canned food, water, bandages, crowbars | A welcome message ✅ (safehouse services, including bite declarations and expired antibiotics for 5 Favor, are open to anyone the Haven hasn't exiled). **Ask about the roads** ✅: the three nearest packs, the Haven's names for them and their mood ([INFECTED.md](INFECTED.md#knowing)) |
 | Trusted | Hunting rifles, ammo, backpacks, radios | **Neighbours** ✅: the direction to the nearest job you'd be paid for, on spawn and every 10 min |
 | Champion | Fortification kits (barricade planks), saline bags | **Safe Harbour** ✅ and **Remembered** ✅: see below |
 | Hunted | — | **Exile** ✅: see below |
@@ -276,7 +276,7 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 
 | Tier | Shop | Perk / service |
 |---|---|---|
-| Known | Military rations, morphine, flares | **Waved through** ✅: Bastion's checkpoints inside the Zone let you pass unsearched ([Checkpoints](#checkpoints-roadblocks-and-camps)) |
+| Known | Military rations, morphine, flares | **The contact board** ✅: every pack Bastion has counted ([INFECTED.md](INFECTED.md#knowing)). **Waved through** ✅: Bastion's checkpoints inside the Zone let you pass unsearched ([Checkpoints](#checkpoints-roadblocks-and-camps)) |
 | Trusted | Service rifles, body armour, helmets, NVGs | **Requisition** ✅: once an hour, ammo or rations at half the Favor cost, only from what the quartermaster sells at Trusted or below ✅ (never a Champion item). While Bastion's trucks run, it's drawn at a Bastion outpost's quartermaster from the stock its trucks brought, and refused while that outpost is short |
 | Champion | Machine guns, grenades, the **signal smoke** | **Fire Mission** ✅: see below |
 | Hunted | — | Bastion AI shoots you ✅; hunter squads get your last position ✅ |
@@ -292,8 +292,8 @@ shelling with the Fire Mission contract ([MISSIONS.md](MISSIONS.md)).
 
 | Tier | Shop (black market) | Perk / service |
 |---|---|---|
-| Known | Knives, pistols, lockpick-style tools, the **cut dose** (cheap: cures half the time, else a faster turn and a fever ✅) | **Toll pass** ✅: Red Hand roadblocks take a toll instead of shooting ([Checkpoints](#checkpoints-roadblocks-and-camps)) |
-| Trusted | Suppressors, scoped rifles, explosives | **Fence** ✅: sell found loot for Favor; roadblocks wave you through ✅; the **red armband** ✅ ([clues](#reputation-clues)) |
+| Known | Knives, pistols, lockpick-style tools, the **cut dose** (cheap: cures half the time, else a faster turn and a fever ✅) | **Toll pass** ✅: Red Hand roadblocks take a toll instead of shooting ([Checkpoints](#checkpoints-roadblocks-and-camps)). **The map of the crews** ✅ (15 Favor): every pack, with its crew name ([INFECTED.md](INFECTED.md#knowing)) |
+| Trusted | Suppressors, scoped rifles, explosives | **Fence** ✅: sell found loot for Favor; roadblocks wave you through ✅; the **red armband** ✅ ([clues](#reputation-clues)). **The tag frequencies** ✅ (25 Favor): Halcyon's tagged packs, and a stolen tag |
 | Champion | Rare military gear, stolen antidotes (only the doses stolen from the lab ✅) | **Bounty board** ✅: a bounty on whoever last killed you |
 
 **Fence.** "Fence what you're carrying" at a Red Hand quartermaster buys found loot by keyword
@@ -317,8 +317,8 @@ the same vanilla player group; a poster in no group excludes only themselves.
 | Tier | Shop (lab stores) | Perk / service |
 |---|---|---|
 | Stranger | The **trial dose** for anyone bitten (free, once per life, 80% cure ✅) | — |
-| Known | Antiseptic, painkillers, sample containers, **stabilisers** (from a small stock; double price until 50% research ✅) | — |
-| Trusted | Antidotes (only while the lab has doses in stock ✅), stim kits, gas masks | **Sample scanner** ✅: special infected within 300 m are revealed every minute. **The medic** ✅: 20 Favor to be patched up, and a fresh bite washed out |
+| Known | Antiseptic, painkillers, sample containers, **stabilisers** (from a small stock; double price until 50% research ✅) | **The range map** ✅ from 25%: the packs' ground Halcyon has read or tagged ([INFECTED.md](INFECTED.md#knowing)) |
+| Trusted | Antidotes (only while the lab has doses in stock ✅), stim kits, gas masks | **Sample scanner** ✅: special infected within 300 m are revealed every minute. **The medic** ✅: 20 Favor to be patched up, and a fresh bite washed out. **The call box** ✅ from 50% ([INFECTED.md](INFECTED.md#the-cure)). Tag readings in the journal |
 | Champion | The **immunity booster** ✅ (80 Favor, once per life: the next bite doesn't take) | **Lab access** ✅: your samples count 25% more |
 
 The medic and the booster are services at Halcyon's quartermaster, not items. The medic is the
@@ -341,6 +341,8 @@ visit the medic; calling one out isn't built.
   a faction never pays someone it hunts too. If none pays, a posting on the Red Hand's
   [bounty board](#the-red-hand) can. *The killer is the last attacker the body's damage manager
   recorded; if that wasn't a player, no bounty is paid.*
+- **A tagged pack's leader** ✅: killing one in its prime or older (Halcyon's tag in it) costs the
+  nearest player within 150 m +2 Halcyon Infamy: *"a year of data"* ([INFECTED.md](INFECTED.md#the-factions-sides)).
 - **Choice missions** ✅: you decide which faction's drop point gets the item. The winner gives
   Fame; the one you double-crossed gives Infamy. Taken to the other side, it pays everyone with
   you whom that side doesn't hunt, and the leader who gave the job neither counts it as help nor
@@ -418,7 +420,7 @@ life's ([DESIGN.md](DESIGN.md#camp-life)); none of it changes who is waved throu
 | | Hunted | Shot (as everywhere); or [surrender](#surrender) |
 | Red Hand roadblock | In Bastion's colours | Turned round at 150 m whatever your tier ("We don't sell passes to the army."), fired on at the barrier |
 | | Trusted or better | Waved through |
-| | Known | Pay the **toll** at the barrier (10 Red Hand Favor) and pass. Can't pay: treated as a stranger. The Wildcard tier pays danger money: 20 (**Reputation > Wildcard toll**, ×2). In Halcyon's colours the toll doubles to 20 ("Beaks pay double."); with both, the higher, never both |
+| | Known | Pay the **toll** at the barrier (10 Red Hand Favor) and pass. Can't pay: treated as a stranger. The Wildcard tier pays danger money: 20 (**Reputation > Wildcard toll**, ×2). In Halcyon's colours the toll doubles to 20 ("Beaks pay double."); with both, the higher, never both. The **night rate**: at night within 1.5 km of a road a pack hunts at its hour, one Favor more (*"Night rate. The Postmen are out."*, [INFECTED.md](INFECTED.md#voices)) |
 | | In the Red Hand's kit, below Known | A claim: the look at the barrier. Pass: waved through like crew. Caught: the toll for liars |
 | | Anyone else | Told at 150 m to turn around. At the barrier: fired on for a few minutes |
 | | Hunted | Shot |

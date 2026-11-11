@@ -34,6 +34,7 @@ class RZ_VoiceDefaults
 		Openers(lines);
 		People(lines);
 		Asides(lines);
+		Infected(lines);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -144,5 +145,35 @@ class RZ_VoiceDefaults
 		Line(lines, "redhand.aside.night.1", REDHAND, "aside_night", "", P, 0, "", "\"Night's when the money moves. Don't stand in the road.\"");
 		Line(lines, "halcyon.aside.night.1", HALCYON, "aside_night", "", P, 0, "", "\"The night readings are the clean ones. Please don't bang the door.\"");
 		Line(lines, "any.aside.shift.1", -1, "aside_shift", "", P, 0, "", "\"Shift change. Give me a minute. I can still help you.\"");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The packs (kind "infected", Zombies/RZ_TribePeople.c): each faction's lines about them, by
+	//! manner. {place} is the speaker's name for the pack with its place ("the Quarry lot, up at the
+	//! quarry by Morton"), so four names are always one pack. Never "alpha", "tribe" or "crawler".
+	protected static void Infected(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+		RZ_ERegister J = RZ_ERegister.JOKE;
+		RZ_ERegister B = RZ_ERegister.BLEAK;
+
+		Line(lines, "haven.infected.warn.1", HAVEN, "infected", "warn", P, 0, "", "\"Nobody on the roads after seven. {place} are out.\"");
+		Line(lines, "haven.infected.warn.2", HAVEN, "infected", "warn", P, 0, "", "\"Bring the washing in early. {place} are hungry, and they've been in the fields.\"");
+		Line(lines, "haven.infected.warn.3", HAVEN, "infected", "warn", B, 6, "", "\"{place} came to the hedge last night. Count the children before dark.\"");
+		Line(lines, "haven.infected.roads.1", HAVEN, "infected", "roads", P, 0, "", "\"That's all we know. Ask again tomorrow, it changes.\"");
+		Line(lines, "haven.infected.roads.2", HAVEN, "infected", "roads", W, 0, "", "\"Mind, we only know what came past the window.\"");
+		Line(lines, "haven.infected.furious.1", HAVEN, "infected", "furious", P, 0, "", "\"Whatever was taken from {place}, they want it back. Stay off the lab road.\"");
+		Line(lines, "haven.infected.moved.1", HAVEN, "infected", "moved", P, 0, "", "\"Bastion pushed {place} off their ground, and now they're on ours.\"");
+		Line(lines, "bastion.infected.contact.1", BASTION, "infected", "contact", P, 0, "", "Contact, {place}. Logged. No reply. Bastion out.");
+		Line(lines, "bastion.infected.contact.2", BASTION, "infected", "contact", W, 0, "", "New contact on the board: {place}. Command says monitor. Command says a lot of things. Bastion out.");
+		Line(lines, "bastion.infected.cull.1", BASTION, "infected", "cull", P, 0, "", "{place}, culled. Not our sector now. Bastion out.");
+		Line(lines, "redhand.infected.crew.1", REDHAND, "infected", "crew", W, 0, "", "\"{place}. Same as us: the boss is whoever's got something on the rest.\"");
+		Line(lines, "redhand.infected.crew.2", REDHAND, "infected", "crew", J, 0, "", "\"{place} are on time again. More than I can say for you lot.\"");
+		Line(lines, "redhand.infected.crew.3", REDHAND, "infected", "crew", P, 0, "", "\"{place} keep the soldiers honest. Don't feed them. That's our job.\"");
+		Line(lines, "halcyon.infected.index.1", HALCYON, "infected", "index", P, 0, "", "\"{place}: the index is well. Please don't shoot it.\"");
+		Line(lines, "halcyon.infected.index.2", HALCYON, "infected", "index", W, 0, "", "\"{place}: the index is doing better than any of us, frankly.\"");
+		Line(lines, "halcyon.infected.sorry.1", HALCYON, "infected", "sorry", P, 0, "", "\"{place} took someone on the road last night. The index is in good condition. We're sorry.\"");
+		Line(lines, "halcyon.infected.lost.1", HALCYON, "infected", "lost", B, 0, "", "\"The tag on {place} stopped moving. That was a year of data.\"");
 	}
 }

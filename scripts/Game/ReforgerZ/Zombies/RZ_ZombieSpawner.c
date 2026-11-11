@@ -123,7 +123,7 @@ class RZ_ZombieSpawner
 	protected ref array<ref RZ_TrackedZombie> m_aTracked = {};
 	protected float m_fHordeCooldownLeft = 300;
 
-	// World event modifiers (Night of the Dead, Siren Test). Reset by the event when it ends.
+	// World event modifiers (Every Ridge Calls, Siren Test). Reset by the event when it ends.
 	protected float m_fEventDensityMult = 1;
 	protected float m_fEventSpecialMult = 1;
 	protected float m_fEnvSpecialMult = 1;		// time and weather (RZ_Environment): night
@@ -452,7 +452,7 @@ class RZ_ZombieSpawner
 	//! Spawn a horde at pos and send it to target. The spawned units go into spawnedOut; false if none.
 	//! A mission's horde must keep coming: stealth never lowers its senses (docs/DESIGN.md, "Stealth").
 	//! keepComing false: a horde where staying unseen is the point (Lead Them Away, The Clockwork
-	//! Horde, Horde Migration).
+	//! Horde, The Tribe Moves).
 	bool SpawnHordeAt(vector pos, vector target, int missionId = -1, array<IEntity> spawnedOut = null, bool keepComing = true)
 	{
 		array<RZ_TrackedZombie> spawned = {};

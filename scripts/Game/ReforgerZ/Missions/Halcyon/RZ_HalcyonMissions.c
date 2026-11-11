@@ -1,10 +1,13 @@
 //! Halcyon (Institute) contracts. See docs/MISSIONS.md, "Halcyon".
 
 //------------------------------------------------------------------------------------------------
-//! #1 Alpha Sighting: a special infected has been spotted. Kill it for research
-//! samples. This is the main way the cure moves forward.
-class RZ_Mission_SampleHunt : RZ_Mission
+//! #1 The Lone One (Alpha Sighting, renamed): a lone one when there is one (a leader with no pack,
+//! walking alone; Zombies/RZ_TribeLife.c), else today's special in a bad town. Kill it for its
+//! samples. A lone one the Haven knew is the Haven's job instead: lay it down by name.
+class RZ_Mission_SampleHunt : RZ_TribeContract
 {
+	protected bool m_bLone;
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -21,6 +24,38 @@ class RZ_Mission_SampleHunt : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
+		m_sTitle = "The Lone One";
+		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+		if (tribes)
+		{
+			foreach (RZ_Tribe r : tribes.GetRovers())
+			{
+				if (r.m_eKind != RZ_ETribeKind.LONE || !ClaimSubject(gm, RZ_TribeContract.Claim(r.m_iId)))
+					continue;
+
+				m_iTribe = r.m_iId;
+				m_bLone = true;
+				m_vPos = r.m_vLair;
+				m_fParticipationRadius = 300;
+				RZ_TribePart body = r.FindPart(RZ_ETribePart.ALPHA);
+				if (body)
+					m_vPos = body.m_vPos;
+
+				bool known = !r.m_sAlphaName.IsEmpty() && (r.m_iSeed + r.m_sAlphaName.Length()) % 3 == 0;
+				if (known)
+				{
+					// The Haven knew who it was: lay it down by name
+					m_eGiver = RZ_EFaction.SURVIVORS;
+					m_Req.m_eGiver = RZ_EFaction.SURVIVORS;
+					m_sBrief = string.Format("%1 walks alone now, out past %2. We knew %1. Lay %1 down, please, and tell us when it's done.", r.m_sAlphaName, r.m_sPlace);
+					return true;
+				}
+
+				m_sBrief = string.Format("We've been following an isolate out past %1: a big one, on its own, with no pack round it. Kill it and bring its samples to the lab.", r.m_sPlace);
+				return true;
+			}
+		}
+
 		m_iSettlement = PickSettlement(gm, 40, 100);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
@@ -28,17 +63,49 @@ class RZ_Mission_SampleHunt : RZ_Mission
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.8);
 		m_fParticipationRadius = s.m_fRadius + 100;
-		m_sTitle = "Alpha Sighting";
-		m_sBrief = string.Format("Halcyon tracked a mutated infected to %1. Kill it and bring its samples to the lab.", s.m_sName);
+		m_sBrief = string.Format("Halcyon tracked a big one, on its own, to %1. Kill it and bring its samples to the lab.", s.m_sName);
 
 		RZ_TrackedZombie alpha = gm.GetSpawner().SpawnZombie(m_vPos, true, m_iSettlement, m_iId);
 		return alpha != null;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		if (!m_bLone)
+			return;
+
+		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+		RZ_Tribe r;
+		if (tribes)
+			r = tribes.Find(m_iTribe);
+
+		if (!r)
+		{
+			Withdraw("It's gone: died out there on its own, or found others.");
+			return;
+		}
+
+		RZ_TribePart body = r.FindPart(RZ_ETribePart.ALPHA);
+		if (body)
+			m_vPos = body.m_vPos;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnTribeKill(RZ_GameModeComponent gm, RZ_Tribe t, RZ_EInfectedRole role, RZ_TribePart p, vector at, bool silent)
+	{
+		if (!m_bLone || t.m_iId != m_iTribe || role != RZ_EInfectedRole.ALPHA)
+			return;
+
+		m_vPos = at;
+		AddParticipant(NearestPlayer(at, 300));
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void OnZombiesKilled(RZ_GameModeComponent gm, int settlementIdx, int missionId, bool special, vector pos, int count)
 	{
-		if (missionId == m_iId && special)
+		if (!m_bLone && missionId == m_iId && special)
 		{
 			m_vPos = pos;
 			m_eState = RZ_EMissionState.SUCCEEDED;
@@ -48,8 +115,9 @@ class RZ_Mission_SampleHunt : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		// The kill already dropped one sample; an Alpha is worth more
-		gm.SpawnSamples(m_vPos, 2);
+		// The kill already dropped its samples (a lone one 2, a special 1); a town's special is worth more
+		if (!m_bLone)
+			gm.SpawnSamples(m_vPos, 2);
 	}
 }
 
@@ -597,10 +665,11 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 //------------------------------------------------------------------------------------------------
 //! #12 Hunt the Screamer: kill a Screamer before it alerts the town. After four
 //! minutes it screams: a horde comes, but it can still be killed. ★ Hunter: +50% Fame.
-class RZ_Mission_HuntScreamer : RZ_Mission
+class RZ_Mission_HuntScreamer : RZ_TribeContract
 {
 	protected float m_fScreamIn = 240;
 	protected bool m_bScreamed;
+	protected bool m_bScout;		// a pack's posted scout (its premise), not a town's screamer
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -620,6 +689,26 @@ class RZ_Mission_HuntScreamer : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
+		m_sTitle = "Hunt the Screamer";
+
+		// A pack's scout on its post, in daylight, when there is one: the scout rule is the premise
+		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+		if (tribes && tribes.GetPhase() == RZ_ETribePhase.DAY)
+		{
+			foreach (RZ_Tribe t : tribes.GetTribeList())
+			{
+				RZ_TribePart scout = t.FindPart(RZ_ETribePart.SCOUT);
+				if (!scout || scout.m_iCount <= 0 || scout.m_iPost < 0 || t.m_bFed || !Free(gm, t) || !TakeTribe(gm, t))
+					continue;
+
+				m_bScout = true;
+				m_vPos = scout.m_vPos;
+				m_fParticipationRadius = 250;
+				m_sBrief = string.Format("Something sits on the ridge above %1 all day and watches. When it sees you, it shrieks, and the rest come. Kill it before it does. Halcyon wants what's left.", t.m_sPlace);
+				return true;
+			}
+		}
+
 		m_iSettlement = PickSettlement(gm, 30, 100);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
@@ -627,7 +716,6 @@ class RZ_Mission_HuntScreamer : RZ_Mission
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.7);
 		m_fParticipationRadius = s.m_fRadius + 100;
-		m_sTitle = "Hunt the Screamer";
 		m_sBrief = string.Format("A Screamer is in %1. Kill it before it calls every infected in town. Halcyon wants what's left.", s.m_sName);
 		return gm.GetSpawner().SpawnZombie(m_vPos, true, m_iSettlement, m_iId) != null;
 	}
@@ -635,6 +723,10 @@ class RZ_Mission_HuntScreamer : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
+		// A scout's own rule decides whether it shrieks (Zombies/RZ_TribeBodies.c)
+		if (m_bScout)
+			return;
+
 		// The clock only runs once someone is hunting it
 		if (m_bScreamed || m_aParticipants.IsEmpty())
 			return;
@@ -652,11 +744,23 @@ class RZ_Mission_HuntScreamer : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override void OnZombiesKilled(RZ_GameModeComponent gm, int settlementIdx, int missionId, bool special, vector pos, int count)
 	{
-		if (missionId == m_iId && special)
+		if (missionId == m_iId && special && !m_bScout)
 		{
 			m_vPos = pos;
 			m_eState = RZ_EMissionState.SUCCEEDED;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnTribeKill(RZ_GameModeComponent gm, RZ_Tribe t, RZ_EInfectedRole role, RZ_TribePart p, vector at, bool silent)
+	{
+		if (!m_bScout || t.m_iId != m_iTribe || role != RZ_EInfectedRole.SCOUT)
+			return;
+
+		m_vPos = at;
+		m_bScreamed = t.m_fLastCall > Tribes(gm).GetClock() - 60;
+		AddParticipant(NearestPlayer(at, 300));
+		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 
 	//------------------------------------------------------------------------------------------------

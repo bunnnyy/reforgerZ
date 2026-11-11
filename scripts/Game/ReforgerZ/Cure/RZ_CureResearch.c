@@ -910,6 +910,10 @@ class RZ_CureResearch
 		if (milestone < 4 && m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnBreakthrough(milestone);
 
+		// 25%: Halcyon's range map for its Known (Zombies/RZ_TribePeople.c)
+		if (m_GM.GetTribes())
+			m_GM.GetTribes().GetPeople().OnMilestone(milestone);
+
 		if (milestone < 4)
 			m_iNews = m_iNews | (1 << milestone);
 
@@ -1027,7 +1031,15 @@ class RZ_CureResearch
 			m_fWaveTimer = 0;
 			int defenders = RZ_Mission.CountPlayersNear(players, lab, LAB_DEFENCE_RADIUS);
 			int hordes = Math.ClampInt(1 + defenders / 6, 1, 3);
-			for (int h = 0; h < hordes; h++)
+
+			// With the packs: from the crawlers of the towns within 3 km and the nearest pack's
+			// hunters, 70-130% of these, the last wave bringing a Furious pack (RZ_TribePeople)
+			bool last = m_fFinalStandLeft <= WAVE_INTERVAL_SECONDS;
+			int sent = 0;
+			if (m_GM.GetTribes())
+				sent = m_GM.GetTribes().GetPeople().StandWave(lab, hordes, last);
+
+			for (int h = 0; h < hordes && sent == 0; h++)
 			{
 				m_GM.GetSpawner().SpawnHorde(lab, 350 + 50 * h);
 			}
@@ -1047,6 +1059,8 @@ class RZ_CureResearch
 		m_iMilestone = 3;
 		m_iBatchesLost++;
 		m_GM.NotifyAll(title, text);
+		if (m_GM.GetTribes())
+			m_GM.GetTribes().GetPeople().OnStandLost(m_GM.GetLabPosition());
 		if (m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnFinalStandLost();
 

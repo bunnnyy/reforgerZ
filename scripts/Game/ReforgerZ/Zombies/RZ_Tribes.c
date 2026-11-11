@@ -92,6 +92,27 @@ class RZ_TribeSettings
 
 	[Attribute("1", UIWidgets.ComboBox, "Your dead run: a character a tribe's bodies kill in the open (after a life of 10 minutes or more) comes back as one of its young at the next dusk. Off: player deaths feed it but make no young. Described: public lines use a description. Named: the character's name", "", ParamEnumArray.FromEnum(RZ_EDeadRun))]
 	RZ_EDeadRun m_eYourDeadRun;
+
+	[Attribute("1", desc: "People: each faction's words, voices and marks for the packs, what each character knows of them and the ways to learn it, skills by background, the packs' contracts and events, your dead run's named young and ID cards, the fat moat, the moat rule, the call box, the final stand's waves from the lab's neighbours, and the last week's run-down (docs/INFECTED.md, People). Off: tribes as in phase 3")]
+	bool m_bPeople;
+
+	[Attribute("", desc: "Name filter: words (comma-separated, lower case). A player's name that contains one is never used in public text, even with Your dead run on Named: the description is")]
+	string m_sNameFilter;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "ID card prefab (optional): a small readable item dropped where a named young is put down (its text is told to whoever is near). Empty: the line only", "et")]
+	ResourceName m_sIdCardPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Tag prefab: Halcyon's tag, an item with RZ_TagAction (Tag it). Plant a Tag needs it; the Red Hand's fence sells a stolen one with the frequencies. Empty: no Plant a Tag", "et")]
+	ResourceName m_sTagPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Call box prefab: an item with RZ_CallBoxAction (Play the recorded call), lent by Halcyon's quartermaster from 50%. Empty: no call box", "et")]
+	ResourceName m_sCallBoxPrefab;
+
+	[Attribute("15", desc: "The map of the crews: Red Hand Favor the fence asks for it")]
+	int m_iCrewMapFavor;
+
+	[Attribute("25", desc: "The tag frequencies: Red Hand Favor the fence asks for Halcyon's (and a stolen tag, if the server has the tag item)")]
+	int m_iFrequencyFavor;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -112,6 +133,7 @@ class RZ_Tribes
 	protected ref RZ_TribeLife m_Life;
 	protected ref RZ_TribeBorders m_Borders;
 	protected ref RZ_TribeWays m_Ways;
+	protected ref RZ_TribePeople m_People;
 	protected RZ_Tribe m_ScoreFor;			// weak: the tribe whose trails are being worked out (fear, burned land)
 	protected int m_iLastSeasonDay = -1;
 	protected bool m_bContested;
@@ -153,6 +175,7 @@ class RZ_Tribes
 		m_Life = new RZ_TribeLife(gm, this);
 		m_Borders = new RZ_TribeBorders(gm, this);
 		m_Ways = new RZ_TribeWays(gm, this);
+		m_People = new RZ_TribePeople(gm, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -165,6 +188,7 @@ class RZ_Tribes
 	RZ_TribeLife GetLife() { return m_Life; }
 	RZ_TribeBorders GetBorders() { return m_Borders; }
 	RZ_TribeWays GetWays() { return m_Ways; }
+	RZ_TribePeople GetPeople() { return m_People; }
 	array<ref RZ_Tribe> GetRovers() { return m_Life.GetRovers(); }
 	int CountedNights() { return m_iCountedNights; }
 
@@ -355,6 +379,7 @@ class RZ_Tribes
 		}
 
 		m_Bodies.Tick(dt, ids, players);
+		m_People.Tick(dt, ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -468,6 +493,7 @@ class RZ_Tribes
 		if (m_ePhase == RZ_ETribePhase.DUSK && h >= 18.8 && m_bContested && !m_bVacuumTold)
 		{
 			m_bVacuumTold = true;
+			m_People.AfterCalls(ids, players);
 			foreach (int i, IEntity p : players)
 			{
 				string quiet = m_Life.VacuumLine(p.GetOrigin());
@@ -889,6 +915,7 @@ class RZ_Tribes
 		{
 			array<vector> trail = {};
 			BuildTrail(t.m_vLair, g, trail);
+			m_People.TableTurnsBack(trail);
 			t.m_aTrails.Insert(trail);
 		}
 
@@ -1375,6 +1402,7 @@ class RZ_Tribes
 			walk.Insert(field);
 
 		walk.Insert(t.m_vLair);
+		m_People.KeepOffTable(walk);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1507,6 +1535,10 @@ class RZ_Tribes
 	{
 		string place = t.m_sPlace;
 		string answers = Answers(t.Members());
+		string last = m_People.LastWeekCall(t);
+		if (!last.IsEmpty())
+			return last;
+
 		if (silent)
 			return string.Format("Nothing from %1 tonight. Whatever lies up there ate well last night.", place);
 
@@ -1576,18 +1608,43 @@ class RZ_Tribes
 		if (first < 0)
 			first = Math.RandomInt(0, t.m_aTrails.Count());
 
-		tonight.Insert(t.m_aTrails[first]);
-		t.m_aTrailsTonight.Insert(first);
-		if (trails > 1)
+		// Clear the Trail: a dropped trail isn't walked for 3 counted nights
+		if (first == t.m_iTrailOff && m_iCountedNights < t.m_iTrailOffUntil && t.m_aTrails.Count() > 1)
+			first = (first + 1) % t.m_aTrails.Count();
+
+		// Furious (its leader caught alive): every trail runs along the capture road toward the lab,
+		// stopping at the lab's no man's land plus P, whatever its hunger
+		array<vector> furious = {};
+		if (m_People.IsFurious(t) && FuriousTrail(t, furious))
+		{
+			tonight.Insert(furious);
+			trails = 1;
+		}
+		else
+		{
+			tonight.Insert(t.m_aTrails[first]);
+			t.m_aTrailsTonight.Insert(first);
+		}
+
+		// A frenzy night: three trails, and the wire whatever its hunger
+		bool frenzy = t.m_fFrenzy > 0 && furious.IsEmpty();
+		if (frenzy)
+			trails = 3;
+
+		bool noWire = t.m_iNoWireNight == m_iCountedNights;
+		for (int extra = 1; extra < trails; extra++)
 		{
 			array<vector> wire = {};
-			if (t.m_eTemper != RZ_ETemperament.TERRITORIAL && WireTrail(t, wire))
+			if (extra == 1 && !noWire && t.m_eTemper != RZ_ETemperament.TERRITORIAL && WireTrail(t, wire))
 			{
 				tonight.Insert(wire);
 			}
-			else if (t.m_aTrails.Count() > 1)
+			else if (t.m_aTrails.Count() > extra)
 			{
-				int second = (first + 1) % t.m_aTrails.Count();
+				int second = (first + extra) % t.m_aTrails.Count();
+				if (second == t.m_iTrailOff && m_iCountedNights < t.m_iTrailOffUntil)
+					continue;
+
 				tonight.Insert(t.m_aTrails[second]);
 				t.m_aTrailsTonight.Insert(second);
 			}
@@ -1662,8 +1719,11 @@ class RZ_Tribes
 			return;
 		}
 
+		// A runner's young wait at the nearest house's wire at dusk (its echo), and so, some
+		// evenings, do the walk-outs a pack was fed (the dark corners: only ever gossip)
 		array<vector> wire = {};
-		if (t.Echo(RZ_EAlphaKind.RUNNER) && WireTrail(t, wire))
+		bool walkouts = m_People.WalkoutsAtWire(t);
+		if ((t.Echo(RZ_EAlphaKind.RUNNER) || walkouts) && WireTrail(t, wire))
 			SendToWait(t, RZ_ETribePart.YOUNG, wire[wire.Count() - 1]);
 	}
 
@@ -1706,6 +1766,56 @@ class RZ_Tribes
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A Furious tribe's trail: from the lair toward the lab, ending at the lab's no man's land plus P.
+	protected bool FuriousTrail(RZ_Tribe t, array<vector> trail)
+	{
+		if (!m_GM.HasLab())
+			return false;
+
+		vector lab = m_GM.GetLabPosition();
+		vector dir = RZ_TribePeople.Dir(lab, t.m_vLair);
+		vector end = RZ_Util.GroundPos(lab + dir * (300 + RZ_InfectedBodies.P));
+		if (RZ_Util.DistXZ(end, t.m_vLair) < 200)
+			return false;
+
+		BuildTrail(t.m_vLair, end, trail);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Draws a tribe to a spot (the call box, the final stand): at night its hunters and young walk
+	//! there and wait, never the leader or the guard; by day only its day party, within 1.5 km. The
+	//! number of parts sent.
+	int DrawTo(RZ_Tribe t, vector at, bool night)
+	{
+		int n = 0;
+		foreach (RZ_TribePart p : t.m_aParts)
+		{
+			if (p.m_iCount <= 0 || p.m_iTarget >= 0 || p.IsCore() || p.m_eKind == RZ_ETribePart.SCOUT)
+				continue;
+
+			if (night && p.m_eKind != RZ_ETribePart.HUNTERS && p.m_eKind != RZ_ETribePart.YOUNG && p.m_eKind != RZ_ETribePart.DAY)
+				continue;
+
+			if (!night && (p.m_eKind != RZ_ETribePart.DAY || RZ_Util.DistXZ(p.m_vPos, at) > 1500))
+				continue;
+
+			array<vector> path = {p.m_vPos, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(at, 10, 40))};
+			BuildTrail(p.m_vPos, path[1], path);
+			p.SetPath(path);
+			p.m_bOut = true;
+			p.m_bHome = false;
+			p.m_bHop = false;
+			p.m_bWaits = true;
+			p.m_iTrail = -1;
+			p.m_fHoldUntil = m_fClock;
+			n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Testing the wire (a hungry night): a trail toward the nearest lived-in place, ending at its no
 	//! man's land plus P. They come up to the wire and go home; they never go in.
 	protected bool WireTrail(RZ_Tribe t, array<vector> trail)
@@ -1745,6 +1855,13 @@ class RZ_Tribes
 	{
 		bool counted = m_fNightOnline >= Math.Max(1, m_Settings.m_fCountedNightMinutes) * 60;
 		m_fNightOnline = 0;
+
+		// A frenzy lasts the night, counted or not
+		foreach (RZ_Tribe f : m_aTribes)
+		{
+			f.m_fFrenzy = 0;
+		}
+
 		if (!counted)
 			return;
 
@@ -1765,6 +1882,8 @@ class RZ_Tribes
 			if (t.m_bRestless)
 				rise += 2;
 
+			// The fat moat and the Long Table's neighbours gain less; nothing after the cure (the last week)
+			rise = m_People.NightHunger(t, rise);
 			t.m_fHunger = Math.Clamp(t.m_fHunger + rise, 0, 100);
 		}
 
@@ -2306,9 +2425,14 @@ class RZ_Tribes
 
 		RZ_Tribe t = TribeForOpen(at);
 		if (t)
+		{
 			Taken(t, at, who, true);
+			m_People.OnNamedTaken(t, who, at, false);
+		}
 		else
+		{
 			m_Life.OnOpenDeath(at, who);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2369,6 +2493,7 @@ class RZ_Tribes
 			m_Ways.OnJoined(t, bg.m_sId == "soldier" || bg.m_sId == "police");
 
 		Taken(t, at, Who(playerId), young);
+		m_People.OnPlayerTaken(t, playerId, at, Described(playerId), young);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2376,9 +2501,13 @@ class RZ_Tribes
 	//! else a description from their background ("someone who'd been a hunter").
 	protected string Who(int playerId)
 	{
-		if (m_Settings.m_eYourDeadRun == RZ_EDeadRun.NAMED)
-			return RZ_Util.PlayerName(playerId);
+		return m_People.PublicName(playerId, RZ_Util.PlayerName(playerId), Described(playerId));
+	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A player's character described: "someone who'd been a hunter".
+	protected string Described(int playerId)
+	{
 		RZ_Background bg = m_GM.GetPlayerBackground(playerId);
 		string what = "a traveller";
 		if (bg && !bg.m_sName.IsEmpty())
@@ -2396,6 +2525,11 @@ class RZ_Tribes
 	//! the kill site (crawlers come out to it the next night) where the tribe feeds in order.
 	void Taken(RZ_Tribe t, vector at, string who, bool young)
 	{
+		// After the cure nobody new turns; from the 75% serum each one taken comes back half the time
+		RZ_CureResearch cure = m_GM.GetCure();
+		if (young && m_People.IsOn() && cure && (cure.IsCured() || (cure.m_fProgress >= 75 && Math.RandomFloat01() < 0.5)))
+			young = false;
+
 		t.m_fHunger = Math.Max(0, t.m_fHunger - 25);
 		if (young)
 			t.m_iPendingYoung++;
@@ -2412,6 +2546,8 @@ class RZ_Tribes
 
 		if (RZ_TribeWays.IsAName(who))
 			t.AddHistory("took " + who);
+
+		m_People.OnTaken(t, who);
 		if (m_ePhase != RZ_ETribePhase.DAY)
 		{
 			t.m_bTookTonight = true;
@@ -2433,8 +2569,11 @@ class RZ_Tribes
 	//! playerId <= 0: an event's fire.
 	void OnFire(vector pos, int playerId)
 	{
-		if (IsEnabled())
-			m_Life.OnFire(pos, playerId);
+		if (!IsEnabled())
+			return;
+
+		RZ_TribeContract.OnFire(m_GM, pos, playerId);
+		m_Life.OnFire(pos, playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2469,6 +2608,7 @@ class RZ_Tribes
 		if (p && p.m_iYoung > p.m_iCount)
 			p.m_iYoung = p.m_iCount;
 
+		RZ_TribeContract.OnKill(m_GM, t, z.m_eRole, p, at, silent);
 		if (t.IsRover())
 		{
 			m_Life.OnRoverKilled(t, z.m_eRole, at, silent);
@@ -2483,6 +2623,9 @@ class RZ_Tribes
 		}
 
 		m_Bodies.OnLoss(t, p);
+		if (!silent && (z.m_eRole == RZ_EInfectedRole.YOUNG || (p && p.m_eKind == RZ_ETribePart.YOUNG)))
+			m_People.OnYoungDown(t, at, RZ_TribeContract.WantedYoung(m_GM, t, at));
+
 		if (!silent && m_Settings.m_bLifeCycle)
 		{
 			m_Ways.OnKilledNear(t, z.m_eRole, at);
@@ -2501,6 +2644,9 @@ class RZ_Tribes
 		if (z.m_eRole == RZ_EInfectedRole.ALPHA && p && t.FindPart(RZ_ETribePart.ALPHA) == p)
 		{
 			int stage = t.Stage();
+			if (!silent)
+				m_People.OnLeaderKilled(t, at);
+
 			StartVigil(t, at);
 			if (!silent && PlayerWithin(at, 150) && !Cured() && t.m_iAlphaSamples < 3 && stage > 0)
 			{
@@ -2511,6 +2657,7 @@ class RZ_Tribes
 				t.m_iAlphaSamples++;
 				m_GM.SpawnSamples(at, n);
 				OnSample(n, true);
+				m_People.OnSampleNear(t, at);
 			}
 
 			return;
@@ -2526,6 +2673,7 @@ class RZ_Tribes
 		t.m_fGuardSampleAt = played;
 		m_GM.SpawnSamples(at, 1);
 		OnSample(1, true);
+		m_People.OnSampleNear(t, at);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2851,6 +2999,7 @@ class RZ_Tribes
 		data.allSamples = m_fAllSamples;
 		data.countedNights = m_iCountedNights;
 		data.life = m_Life.Save();
+		data.people = m_People.Save();
 		m_Borders.Save(data.borders);
 		foreach (RZ_Tribe r : m_Life.GetRovers())
 		{
@@ -2909,6 +3058,7 @@ class RZ_Tribes
 		s.scouts = t.m_iScouts;
 		s.young = t.m_iYoung;
 		RZ_TribeWays.SaveTribe(t, s);
+		RZ_TribePeople.SaveTribe(t, s);
 		return s;
 	}
 
@@ -2924,6 +3074,7 @@ class RZ_Tribes
 		m_iNextId = Math.Max(1, data.nextId);
 		m_iCountedNights = data.countedNights;
 		m_Life.Restore(data.life);
+		m_People.Restore(data.people);
 		m_Borders.Restore(data.borders);
 		m_fNightOnline = data.nightOnline;
 		m_fTribeSamples = data.tribeSamples;
@@ -3022,6 +3173,7 @@ class RZ_Tribes
 			m_iNextId = t.m_iId + 1;
 
 		RZ_TribeWays.RestoreTribe(t, s);
+		RZ_TribePeople.RestoreTribe(t, s);
 		if (t.m_sAlphaName.IsEmpty() && t.m_bHasAlpha)
 			m_Ways.NameAlpha(t);
 
@@ -3094,6 +3246,9 @@ class RZ_Tribes
 		RZ_Log.Info(string.Format("Status | tribes: phase %1, counted nights %2, town specials x%3 | %4", typename.EnumToString(RZ_ETribePhase, m_ePhase), m_iCountedNights, Math.Round(TownSpecialMult() * 100) / 100, m_Bodies.StatusText()));
 		if (m_Settings.m_bLifeCycle)
 			RZ_Log.Info(string.Format("Status | tribes' life: %1 | %2", m_Life.StatusText(), m_Borders.StatusText()));
+
+		if (m_People.IsOn())
+			RZ_Log.Info("Status | " + m_People.StatusText());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3189,6 +3344,11 @@ class RZ_Tribes
 		}
 
 		RZ_Log.Info("Tribes dump | " + m_Life.StatusText() + " | " + m_Borders.StatusText());
+		RZ_Log.Info("Tribes dump | " + m_People.StatusText());
+		foreach (string beat : m_People.GetBeats())
+		{
+			RZ_Log.Info("Tribes dump | for the epilogue: " + beat);
+		}
 		foreach (RZ_Tribe t : m_aTribes)
 		{
 			RZ_Log.Info("Tribes dump | tribe " + Describe(t));
