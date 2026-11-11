@@ -53,6 +53,11 @@ and one way to end it: **research the cure.**
   persuade, sneak, fight, bribe, betray or side with another faction, and what you chose changes
   the ending, the rewards and the world. Fifteen: three per faction, two for the Long Table and
   the example Short Weight, crossing each other through shared flags ([QUESTLINES.md](docs/QUESTLINES.md)).
+- **Four majors**, one season-long story per faction (The Book Has to Balance, Await Relief, Every
+  Name, Proof), each a page its stronghold leader would rather burn, with climaxes on the cure's
+  milestones in order, council votes and a muster, and codas at the north road after the cure. Their
+  defaults fire from what the server is really doing (research pace, hours played, who's engaging,
+  the gap since the last beat), never on fixed days ([QUESTLINES.md](docs/QUESTLINES.md#the-majors)).
 - **151 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
   events, puzzle missions, unarmed stealth jobs, missions at the quarantine line, morally grey
   Haven and Red Hand work and leaders' off-book jobs. Contracts
@@ -107,7 +112,7 @@ The game scripts **compile without errors or warnings** against Arma Reforger 1.
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
 Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
-That's about 157,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+That's about 167,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
 was also checked against the base game's script source; the 70 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
@@ -132,9 +137,10 @@ yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do i
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
 **Not built yet:** the content pass onto the world facts (see the roadmap's *Next*), and the
-approved designs for the rest of the season: the infected tribes and crawlers, the four majors, the
-cure's finale, the epilogue week, locals and twists, errands' other cards and more, built in the
-order of [designs/PLAN.md](designs/PLAN.md). Built so far: the shared engine (phase 1); small
+approved designs for the rest of the season: the infected tribes and crawlers, the rest of the four
+majors, the cure's finale, the epilogue week, locals and twists, errands' other cards and more, built in the
+order of [designs/PLAN.md](designs/PLAN.md). Built so far: the four majors (phase 5, simplified,
+[QUESTLINES.md](docs/QUESTLINES.md#the-majors)); the shared engine (phase 1); small
 things everywhere (phase 3: errands' core, the mission style's framework and the world memory's
 writers, [ERRANDS.md](docs/ERRANDS.md)); most of the mission style in full (phase 4: the six story
 jobs with truths, lies and fallout, reputation's parley and settling up, lies and witnesses,
@@ -160,7 +166,7 @@ and events) is next.
 | [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes and their life cycle, borders, memory, who they are, how they move and hunt, the crawlers' life, the simulator's numbers |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards |
-| [QUESTLINES.md](docs/QUESTLINES.md) | Long questlines over many sessions, three per faction and two for the Long Table |
+| [QUESTLINES.md](docs/QUESTLINES.md) | The four majors (one season-long story per faction) and the long questlines over many sessions, three per faction and two for the Long Table |
 | [MOD_STACK.md](docs/MOD_STACK.md) | Which Workshop mods the server runs and why |
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
@@ -183,6 +189,7 @@ scripts/Game/ReforgerZ/
                  roads, bridges and wild land), named people and the faults table
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, the season mood and grief, story arcs, the questline engine,
+                 the majors' engine (acts, votes, the dynamic fallbacks, the season story),
                  headlines, the season budget and the set-piece calendar
   Zombies/       spawner (any zombie mod's prefabs), the towns' crawlers, bodies and the agent
                  budget (roles, data parts, the sight rule, runtime groups), the tribes (seeds,
@@ -202,7 +209,8 @@ scripts/Game/ReforgerZ/
                  Events/ Leaders/ Unarmed/ Perimeter/; the shared checks (Trust, Fear, prices) and
                  ways through a job; Story/ (the story kit, who decides, who benefits, reasons);
                  Errands/ (the dealer, the routines, Cards/); Questlines/ (the author's base class,
-                 approach helpers, the registry, one folder per faction and one for the Long Table)
+                 approach helpers, the majors' scenes, the registry, one folder per faction with
+                 its major, and one for the Long Table)
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
   Cure/          research, lab, samples, antidotes, infection stages, treatments and meds
   Guidance/      experience levels, tips, spawn scenarios, open radio channels

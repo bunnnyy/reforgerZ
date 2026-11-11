@@ -290,14 +290,14 @@ meter. The voice follows its results and has **no fixed count**:
 
 ### 3.10 Running jokes and the majors' states
 
-Running jokes read the majors' flags through the voice bank's flag conditions. They never switch on a day.
+The people's running jokes on the majors' flags are built in the voice bank
+([WRITING.md](../docs/WRITING.md#the-voice-bank)). Still to build, on the channels and signs:
 
 | Running joke | Runs while | Then |
 |---|---|---|
-| The Red Hand's *"Still waiting for relief? We'll keep the kettle on."* (built, `Guidance/RZ_GuidanceText.c`) and its jokes about Bastion's dead radio | `orders.stance` unset or 1 (The Call Stands). The majors make the kettle line nightly at 1 | Retired at stance 2 (All Stations: the orders read aloud, "they've lost their joke"), and at stance 3 (Bastion, Command) or 4 (Expended). In the epilogue it also stops if the CO closes the net: *"Nobody left to laugh at."* |
-| Bastion's *"No reply."* | Always: it's a fact | The sergeant's dry tag goes plain from stance 2 |
-| Haven gossip about the ration cards | `haven.rule` 3 (Counted) | Each rule has its own gossip: the shared pot (1), workers first (2), the arrangement (4, always said sideways) |
-| The toll sign's handwriting and the Red Hand's book jokes | The book stands | After `book.burnt` or `book.debts_dead`, the handwriting changes and the book jokes stop for a real day |
+| The Red Hand's *"Still waiting for relief? We'll keep the kettle on."* on the open channel (built as a guidance line, `Guidance/RZ_GuidanceText.c`) | `orders.stance` unset or 1: nightly at 1 | Retired at stances 2–4. In the epilogue it also stops if the CO closes the net: *"Nobody left to laugh at."* |
+| Bastion's *"No reply."* on the call | Always: it's a fact | The sergeant's dry tag goes plain from stance 2 |
+| The toll sign's handwriting | The book stands | After `book.burnt` or `book.debts_dead`, the handwriting changes, and the book jokes stop for a real day |
 | Rivals' gossip about a page | Plain, from the second real day after it's in the open | Never a joke from the page's owner |
 
 ### 3.11 Information comes first

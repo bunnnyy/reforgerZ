@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **195 prefab fields**: 40 on `RZ_GameModeComponent`, 148 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **200 entries**: 147 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 20 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 43 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **195 prefab fields**: 40 on `RZ_GameModeComponent`, 148 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **200 entries**: 147 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 20 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 44 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -1101,6 +1101,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Director | Environment | `m_EnvironmentSettings` | Night heat spread (0.25), night specials (×1.25), rain and fog thresholds, storm thresholds, storm grounds the helicopter |
 | Director | Story arcs | `m_StorySettings` | Minutes between (60), start chance (0.6), repeat hours (4), the dark-side arc's limits |
 | Director | Questlines | `m_QuestlineSettings` | **Enabled**, max active (2, one per faction), minutes between (30), start chance (0.5), retry hours (6), once per season (on), **Wait scale** (1; 0.1 for a quick test) ([DESIGN.md](DESIGN.md#questlines)) |
+| Director | Majors | `m_MajorSettings` | **Enabled** (on; needs Questlines on), lead points (5), grace sessions (1), hold limit (1), stall points (1), between beats (4), slots (2) ([DESIGN.md](DESIGN.md#the-majors)) |
 | Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, **Empty group** (runtime groups), per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | Stealth | `m_StealthSettings` | **Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth)) |
@@ -1275,7 +1276,17 @@ mission, every mission that isn't a questline stage is ended, so a contract on t
 the stage's town for the hour it lasts (a real stage waits hours before it gives up; the test's
 waits are scaled down). While The Three Weeks waits for its driver, the tester keeps 300 m from him
 (the stage won't start with a player within 250 m). Where a stage mission ended as plain "done"
-would loop, the test reports the outcome that moves the story on.
+would loop, the test reports the outcome that moves the story on. The majors are off through the
+mission and questline phases (The Book and Await Relief run there as their built questlines, and
+nothing starts by itself).
+
+**The majors.** Then the majors go on (Collapse's second evening forced): each major starts, The
+Book's send-off runs live once (its scene is ended as won), and every act is walked through its
+default to an ending (`RZT major <key> act <n> ...`, `RZT major <key> ENDED: ending <n>`). Then the
+fallback checks: three empty days (a day's worth of questline ticks with nobody online, three times
+over) fire nothing; and Proof's Day One with research just short of 25% and a fast pace is squeezed,
+sends its last call, and takes its default once a session's grace has passed (`RZT majors check:
+<name>: OK|FAILED (...)`, then `RZT majors done: N checks OK, N FAILED`).
 
 Last, it walks the player through every
 settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
@@ -1538,7 +1549,7 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Loose loot: on. Put out within 35 m, put away past 60 m, at most 220 items lying, refill 60 min.
 [ReforgerZ] World interactions: on. 0 fixable cars on the map.
 [ReforgerZ] Story arcs: on, running none.
-[ReforgerZ] Questlines: on, 15 registered (Short Weight, The List, The Price of the Door, The Edge of Town, Await Relief, The Census, The Last Pilot, The Book, Cargo, The Well Story, The Three Weeks, The Other Two, Authors, The House That Went Quiet, A Place at the Table), at most 2 at once, running none.
+[ReforgerZ] Questlines: on, 17 registered (Short Weight, The List, The Price of the Door, The Edge of Town, Every Name, Await Relief, The Census, The Last Pilot, The Book Has to Balance, Cargo, The Well Story, The Three Weeks, The Other Two, Authors, Proof, The House That Went Quiet, A Place at the Table), at most 2 at once, running none.
 [ReforgerZ] Started. 14 settlements, stage Early Outbreak, cure 0 percent, state 0.
 ```
 
@@ -1680,6 +1691,14 @@ now N percent.` (both only once a finale questline is registered),
 `Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...`, `... goes with N of N crew aboard; the rest follow on foot.` and `... lost (...)`,
 `Story arc started: ...`, `Questline started: ...`, `Questline ...: stage '...'.` and
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
+the majors' (`Majors: <key> act N (...) opens.`, `Majors: <key> act N squeezed (room N h, need N h). Last call.`
+or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squeezed|patience|nobody qualifies|hard stop).`,
+`Majors: <key> act N held its anchor as long as it may; the default comes anyway.`,
+`Majors: <key> leads at N percent toward N (research stalled 3 days).`, `Majors: <key> between beats (gap N h).`,
+`Majors: <key> is squeezed and takes <key>'s slot.`, `Majors: <key> act N (...) settled, result N.`,
+`Majors: <key> act N resolves at the hard stop, at half effect.`, `Majors: a page in the open: ...`,
+`Majors: season story for <key>: ending N (...).`, `Majors: <key> <kind> for one player clipped from N to N (the majors' caps)`,
+`Majors: <key> stage N went quiet; its act takes its default.`, `Calendar: <key>.<stage> holds evening N`),
 `Bastion checkpoint up near ...` / `Red Hand roadblock up near ...`,
 `Long Table: ... never arrived (hunger N, suspicion N, N taken).`, `Long Table: a player heard the rumour.`,
 `Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
@@ -2112,7 +2131,18 @@ when it happens)
   is back at the same stage with the same names. At the handover, warn the runner on one run and
   take the crate back unseen on another: the endings differ (Haven food and morale, headline,
   rumour). A second player who joins late sees it in the journal only once they're offered a stage.
-- [ ] The List (same settings; finish the contract The List first, or let a safehouse run short):
+- [ ] The majors (Questlines on, **Wait scale** 0.1): on the season's first evening the Haven's
+  family waits at the edge of the house nearest the stronghold, and all four majors are in every
+  player's journal with their act. At Collapse's second evening the Red Hand's send-off is offered
+  at Rudi's crossroads (a road junction 300–800 m from the boss): ask a crew boss to come, hold the
+  crossroads (waves); the back page goes missing and The Book's first stage follows. At the first
+  sitting, speak for a rule to a head (one sway at this sitting), table Bastion's cards, wait out
+  supper: the vote's rule is in the journal and the Haven's people say a line about it. Raise
+  research to 49 percent with a fast pace (a sample run): a squeezed act's last call shows as a
+  headline and in the journal, and its default follows a session later. Set **Lead points** 0 and
+  stall research at 48: settling day doesn't open until 50.
+- [ ] The List (same settings; finish the contract The List first, or let a safehouse run short; with
+  **Director > Majors** off, or as Every Name's act III):
   a free council head asks; the husband's trail ends at him (bring him home: +1 person) or his
   letter. Talk to a Loyal council head while Known (refused), read a house's list in its stores
   after dark next to a lookout (+8 Haven Infamy), solve the copies at the asking house, look round

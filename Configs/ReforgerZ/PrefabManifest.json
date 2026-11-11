@@ -4550,6 +4550,12 @@
    "covers": "**Enabled**, max active (2, one per faction), minutes between (30), start chance (0.5), retry hours (6), once per season (on), **Wait scale** (1; 0.1 for a quick test) ([DESIGN.md](DESIGN.md#questlines))"
   },
   {
+   "category": "Director",
+   "object": "Majors",
+   "field": "m_MajorSettings",
+   "covers": "**Enabled** (on; needs Questlines on), lead points (5), grace sessions (1), hold limit (1), stall points (1), between beats (4), slots (2) ([DESIGN.md](DESIGN.md#the-majors))"
+  },
+  {
    "category": "Zombies",
    "object": "Zombie settings",
    "field": "m_ZombieSettings",
@@ -4571,13 +4577,13 @@
    "category": "Zombies",
    "object": "Tribes",
    "field": "m_TribeSettings",
-   "covers": "**Enabled** (on; off: no land grid, no tribes, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20), the **role prefabs** (alpha, guard, hunter, scout, young; empty lists fall back), **Day party share** (0.2; 0 = none), day party group (2-3), day party bodies near a cluster (6), **Counted night minutes** (20), **Scout sight** (120 m), **Your dead run** (Described) ([INFECTED.md](INFECTED.md#tribes))"
+   "covers": "**Enabled** (on; off: no land grid, no tribes, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20), the **role prefabs** (alpha, guard, hunter, scout, young; empty lists fall back), **Day party share** (0.2; 0 = none), day party group (2-3), day party bodies near a cluster (6), **Counted night minutes** (20), **Scout sight** (120 m), **Your dead run** (Described), **Life cycle** (on: successions, borders, splits, lair moves, new tribes, memory; off: phase 2's tribes), **Hunger a counted night** (3; the design's 5 had tribes starving), **Split at** (24), the **looks' prefab lists** (Military, Work clothes, Dust-grey, Outdoor; empty: none) ([INFECTED.md](INFECTED.md#tribes), [The life cycle](INFECTED.md#the-life-cycle))"
   },
   {
    "category": "Zombies",
    "object": "Behaviour",
    "field": "m_BehaviourSettings",
-   "covers": "**Enabled** (on; off: tribe groups take held waypoints and Bacon's own senses), steer factor (0 = blind), contact radius (8 m), take-back multiple (2.5), sight checks a second (12), **notice rate** (0.15, tune in play), hunter sight (220/190 m), shot hearing (170 m), spacing (3 m), flank radius (140/100 m) and angle (70), stalk distance (115/75 m), **Strategies** (on), **Own attacks** (on: the hunter's lunge), special move gap (10 s), **Climb limit** (1.4 m grab height), unstick out of sight (on), LOD bands (60,150,300 m), debug log ([INFECTED.md](INFECTED.md#how-they-move-and-hunt))"
+   "covers": "**Enabled** (on; off: tribe groups take held waypoints and Bacon's own senses), steer factor (0 = blind), contact radius (8 m), take-back multiple (2.5), sight checks a second (12), **notice rate** (0.15, tune in play), hunter sight (220/190 m), shot hearing (170 m), spacing (3 m), flank radius (140/100 m) and angle (70), stalk distance (115/75 m), **Strategies** (on: rush, stalk, pincer, encircle, flush, bait, herd, ambush), **Own attacks** (on: the hunter's lunge, the young's leap, the alpha's charge), special move gap (10 s), **Climb limit** (1.4 m grab height), unstick out of sight (on), LOD bands (60,150,300 m), debug log, **Crawler life** (on), **Sleep lying crawlers** (on), **Crawler speed cap** (0 = Bacon's speed; see the lab's slow-motion note) ([INFECTED.md](INFECTED.md#how-they-move-and-hunt))"
   },
   {
    "category": "Zombies",
@@ -4902,6 +4908,21 @@
     "m_fRetryHours": "6",
     "m_bOncePerSeason": "1",
     "m_fWaitScale": "1"
+   }
+  },
+  {
+   "field": "m_MajorSettings",
+   "category": "Director",
+   "label": "Majors",
+   "cls": "RZ_MajorSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_fLeadPoints": "5",
+    "m_fGraceSessions": "1",
+    "m_fHoldLimit": "1",
+    "m_fStallPoints": "1",
+    "m_fBetweenBeats": "4",
+    "m_iSlots": "2"
    }
   },
   {

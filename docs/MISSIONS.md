@@ -22,7 +22,7 @@ people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md).
 | [Story arc missions](#story-arc-missions) | 3 | — |
 | **Total** | **148** | **—** |
 | [Errands](ERRANDS.md) (not missions: asked in person) | 24 routines, 2 wanderers' asks, 2 strangers, 18 cards | about 42 more cards, the other strangers ([designs/ERRANDS.md](../designs/ERRANDS.md)) |
-| [Questlines](#questlines) | 15 questlines, about 90 stage missions (not counted above) | — |
+| [Questlines](#questlines) | 15 questlines and the 4 majors, about 90 stage missions plus the majors' 15 scenes (not counted above) | the majors' parts still designed ([designs/MAJORS.md](../designs/MAJORS.md)) |
 
 ## Who gets offered what
 
@@ -102,7 +102,7 @@ How the code does it:
 - **Out of the random pool, kept only as questline stages:** Fortify the Safehouse ([The Price of
   the Door](#the-price-of-the-door-the-haven-or-the-red-hand)), Curfew Patrol (The Census), Take the
   Lab ([Authors](#authors-halcyon); the finale's Red Hand route will own it), and the Red Hand
-  leader jobs Our Crossroads, House Rules and Coup Talk (the Red Hand's major will reuse them;
+  leader jobs Our Crossroads, House Rules and Coup Talk (the Red Hand's major has its own scenes;
   House Rules is The Price of the Door's pit). Training Day stays a Bastion leader job.
 - **Bodies on approach.** A contract's guards, AI people and raiders are spawned when a player
   comes within about 300 m of them; until then the job is data. A spawned AI group that is gone
@@ -436,9 +436,43 @@ write one: [DESIGN.md](DESIGN.md#questlines). Code: `Missions/Questlines/<Factio
   (siding with another faction) or a small reward. The ending's world consequences are shared,
   and its standing goes to everyone who took part.
 - **At most 2 at once, one per faction.** A stage that can't happen waits, then fizzles with a
-  line of text.
+  line of text. The four majors run beside them, outside that limit, and never fizzle
+  ([The majors' acts](#the-majors-acts)).
 
 Every questline's stage missions are counted in [Counts](#counts).
+
+### The majors' acts
+
+The four majors' stories, acts, defaults and endings are in [QUESTLINES.md](QUESTLINES.md#the-majors);
+how they run in [DESIGN.md](DESIGN.md#the-majors). Their absorbed stages are the built questlines'
+own (The Book, Await Relief, The List, The Three Weeks, Authors, below). Every new act is one scene
+(`RZ_QM_MajorScene`, `Missions/Questlines/RZ_MajorScene.c`): a contract from the major's faction,
+never picked at random, with people spawned only when a player is within 300 m, and a window after
+which its vote is taken or its timeout outcome stands. Set pieces hold the evening on the set-piece
+calendar. Needs Puzzles > Civilian (or the generic object).
+
+| Major | Scene (act) | Contract | Window | Status |
+|---|---|---|---|---|
+| The Book Has to Balance | Send him off (1), at Rudi's crossroads | the Red Hand, any standing; 5 Fame, 10 Favor | 1 hour, 16:00–21:00; a 4-minute hold | ✅ |
+| | Settling day (4), at the crossroads and Bastion's duty officer | the Red Hand, Known; 8 Fame, 15 Favor | 1 hour, 16:00–21:00; a 4-minute hold | ✅ |
+| | The last page (5), at the boss's seat, the boss's table and the lab | the Red Hand, Known; 10 Fame, 20 Favor | 1 hour, 16:00–21:00 | ✅ |
+| | Sent off loud (5), at the crossroads | the Red Hand, any standing; 5 Fame, 10 Favor | 1 hour; a 3-minute hold | ✅ |
+| | The last line (7), at the crossroads | the Red Hand, any standing, after the cure; no pay | 1 hour, 17:00–22:00 | ✅ |
+| Await Relief | Effective Strength (IV), at the CO's radio and the three nearest posts | Bastion, Known; 6 Fame, 15 Favor | 90 minutes | ✅ |
+| | The muster (V), at the CO's radio and the relay | Bastion, Known; 10 Fame, 20 Favor | 90 minutes, 19:00–22:30; a 3-minute hold at the gate or the relay | ✅ |
+| | The last call (VI), at the radio and the halt on the north road | Bastion, any standing, after the cure; no pay | 2 hours | ✅ |
+| Every Name | The ones who can't work (I), at the edge of the house nearest the stronghold | the Haven, any standing; 5 Fame, 10 Favor | 1 hour, 17:00–21:00 | ✅ |
+| | The first sitting (II), at the chair's safehouse | the Haven, any standing; 5 Fame, 10 Favor | 90 minutes at supper; the vote at the end | ✅ |
+| | The hungry week (IV), at the hungry house | the Haven, Known; 6 Fame, 15 Favor | 90 minutes; a 4-minute hold | ✅ |
+| | The second sitting (V), at the chair's safehouse | the Haven, any standing; 5 Fame, 10 Favor | 90 minutes at supper; a 3-minute hold for the reading; the vote at the end | ✅ |
+| | A week on (VI), at the house the rule costs | the Haven, Known; 5 Fame, 10 Favor | 90 minutes | ✅ |
+| | The Gate (VII), at the bend on the north road | the Haven, any standing, after the cure; no pay | 90 minutes, 17:00–22:00; a hold | ✅ |
+| Proof | Day One (I), at the clinic, the lab, Bastion's and the Haven's strongholds | Halcyon, Known; 10 Fame, 15 Favor | 90 minutes | ✅ |
+| | The reading (IV), at the lab | Halcyon, Known; 10 Fame, 20 Favor | 90 minutes, 17:30–20:30 | ✅ |
+| | The Paper (VI), from the lab gate to the table on the north road | Halcyon, any standing, after the cure; no pay | 90 minutes, from 17:30 | ✅ |
+
+Our Crossroads and Coup Talk stay out of the random pool and Training Day stays a Bastion leader job;
+the majors' scenes don't reuse them (simplified: their holds are the scene's own).
 
 ### Short Weight (the Haven)
 

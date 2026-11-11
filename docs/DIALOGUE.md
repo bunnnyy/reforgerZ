@@ -232,7 +232,10 @@ two players at one speaker can see different choices.
   talking to that speaker sees **Object** (once per scene) and **Stand with**. Unobjected, the pick
   lands for the decider and writes the scene's record (`scene.<key>`, a world record), once; later
   visitors meet the result through `jump decided -> <node>`. One hold per speaker at a time.
-- **Tallies.** `sway:<name>` adds one contribution per player to `tally.<name>`; the owning system
+- **Tallies.** `sway:<name>` adds one contribution per player to `tally.<name>`. A major's vote
+  reads its own: `sway:every_name.first.pot` (the major's key, the vote, the option's word: `pot`,
+  `workers`, `cards`, `tins`) swings one voter to that option per contribution when the sitting is
+  tallied ([DESIGN.md](DESIGN.md#the-majors)); the owning system
   counts at its own time.
 - **Vouch.** Trusted or better with the speaker's faction, within 8 m of someone talking to them:
   "[Vouch] '{name}'s with me.'" For 5 minutes, while you stay within 8 m, their persuade and lie

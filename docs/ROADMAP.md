@@ -44,6 +44,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | The world memory's writers: bites, deaths, lost trucks, shells, fires and trial doses in the signal ring; reasons from upkeep, trucks, towns, leaders, wanderers and the lab; the town log from missions, rescues, burned towns and taken outposts, with season marks on the verge; world records from errands and choice missions | [World memory](DESIGN.md#world-memory) |
 | Six story arcs and session headlines | [Story arcs](DESIGN.md#story-arcs-and-headlines) |
 | Questlines: long storylines over many sessions, in stages (a contract or a wait for time and the world), with approaches (talk, persuade, sneak, force, bribe, betray, side with another faction) that set the outcome, capped endings through the existing systems, the journal, saved across restarts. Fifteen built, about 90 stage missions: The List, The Price of the Door, The Edge of Town (the Haven); Await Relief, The Census, The Last Pilot (Bastion); The Book, Cargo, The Well Story (the Red Hand); The Three Weeks, The Other Two, Authors (Halcyon); the Long Table's two; and the example Short Weight. They cross through shared flags | [Questlines](DESIGN.md#questlines), [MISSIONS.md](MISSIONS.md#questlines) |
+| The four majors, phase 5 of [the plan](../designs/PLAN.md#phases-18): one season-long story per faction (The Book Has to Balance, Await Relief, Every Name, Proof), their climaxes on the cure's milestones in a fixed order; the major lane, acts and `ActEnd`, `RZ_QuestVote` at the Haven's sittings, scenes for every new act, the absorbed questlines (R1, B1, H1, HC1, HC3) as acts; the dynamic fallbacks (squeeze, patience, nobody qualifies, last calls and grace, the guards, leads, between beats, hard stops); pay caps and the majors lane of the season budget; the codas at the north road; the season story in `last_season.json`; running jokes on the majors' flags; the runtime test's majors phase. Simplified: see each major | [QUESTLINES.md](QUESTLINES.md#the-majors), [DESIGN.md](DESIGN.md#the-majors) |
 | The Long Table: some seasons, one small family in a farmhouse past the emptiest village; data with bodies only near players, capped takings (never from a safehouse, a holding or a player) and their tells, suspicion and rumours, the host on the road, the guest rule, dealings (eat, a jar, declare a bite), found out with each faction's reaction, moving once, broken up; its two questlines, The House That Went Quiet and A Place at the Table | [The Long Table](DESIGN.md#the-long-table), [REPUTATION.md](REPUTATION.md#the-long-table) |
 | World facts: one layer content reads (the cure and the epilogue, stage, Bastion presence, the day, night, who holds a town and a filtered town pick, safehouses, live leader names), season flags shared with the questlines, canon facts made once a season, claims so two stories don't use the same house, leader or wanderer, `Fill` tokens for text (briefs filled when shown), `Changed` for news, one "can it run now" check every mission starter uses, and missions called off when the world makes them pointless | [World facts](DESIGN.md#world-facts) |
 | The epilogue after the cure: the Perimeter stands down (no shots; whoever walks up to the line is turned back; the gates open with the wipe), research stops and running research and line jobs are called off, and the broadcast, guidance and the factions' lines follow | [The Perimeter](DESIGN.md#the-perimeter), [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
@@ -106,7 +107,10 @@ The build-review fixes are done. Everything below is approved. The order of the 
   the cure's finale, the epilogue week, dialogue, errands, the mission style, reputation names,
   disguise and tone) are in [designs/](../designs/README.md). Their build order, from step 0 (now)
   to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
-- Already built for them: most of phase 4, the mission style in full (the six story jobs, reputation's
+- Already built for them: phase 5, the four majors, simplified ([QUESTLINES.md](QUESTLINES.md#the-majors);
+  what's left of it is in [designs/MAJORS.md](../designs/MAJORS.md): next-season story rules, the
+  codas' standing versions and hall lines, the journal's own season tab, the stand inputs for the
+  finale, Before the stand, and the approaches each major lists as not built); most of phase 4, the mission style in full (the six story jobs, reputation's
   parley and settling up, lies and witnesses, dialogue's scenes for several players, borrowed kit,
   fallout errands and strangers at their spots: [MISSIONS.md](MISSIONS.md), [ERRANDS.md](ERRANDS.md#strangers);
   locals, twists, board and radio asks and the other cards are still to build); phase 3, small things everywhere ([ERRANDS.md](ERRANDS.md), the mission
@@ -231,6 +235,10 @@ In this order, because later ones depend on earlier ones:
     whose rival shares pile up, and does the credit rule's Fame cost read as fair at Champion? Does
     the Wildcard search feel like the company you keep, or a nuisance? Does the contracts lane of
     the season budget ever clip on a busy evening (the `Budget:` log lines)?
+19. **The majors on a real season** (phase 5): do the climaxes land in order on 2, 5 and 15
+    regulars (settling day, the muster, the second sitting, the reading), does a squeeze's last call
+    come early enough to be answered, and does a quiet server's act stay open without nagging? Watch
+    the `Majors:` log lines and the journal's season lines.
 
 ## Dropped
 

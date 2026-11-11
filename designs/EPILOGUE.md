@@ -42,7 +42,7 @@ plan's "Decisions for you". The epilogue's own options are taken as recommended;
   pay through errands' small-pay ledger, not "like the contract". The Tags and The Wreck's Name are His Effects'
   epilogue variants, Come In is errands' amends card, and Processing and What the Cure Costs Here join the deck.
 - **The paper's table stands just outside the kill zone, about 110 m from the barrier**, not 75 m
-  ([MAJORS.md](MAJORS.md#act-vi-the-paper-coda)).
+  ([MAJORS.md](MAJORS.md#last-rounds-the-codas-in-the-epilogue-week)).
 - **The Walk Out is the one crossing**: in processing, at the north road only, people walk out one at a time, and the
   voice at the barrier asks *"Name?"*. Nothing comes back in, and nothing past the barrier is ever shown or said.
 - **Dialogue is off by default** (decision 13): every topic, grey choice and hand-in here also works from the action
@@ -281,7 +281,7 @@ This is on by default (**Epilogue > The world settles**), so outpost and leader 
 
 The author's rule (decision 10) holds in the week too: nothing closes on a fixed day. Each closing item that can time
 out is read on the existing questline tick against live signals, as the majors' [dynamic
-fallbacks](MAJORS.md#dynamic-fallbacks) are:
+fallbacks](../docs/DESIGN.md#the-majors) are:
 
 | Signal | What it is |
 |---|---|
