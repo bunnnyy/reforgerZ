@@ -6,7 +6,8 @@ the clean room when the cure goes out. Strongholds and the lab never fall: the c
 hands, the lab doesn't.
 
 Code: `Cure/RZ_CureFinale.c` (the controller, saved), `Missions/Questlines/Finale/` (the five routes,
-the desks, the tissue hunts, the items), `World/RZ_FinalePeople.c` (the people). Settings:
+the desks, the tissue hunts, the items, the route assets), `World/RZ_FinalePeople.c` (the people),
+`dialogue/finale/routes.rzd` (the pitches and the commit topics). Settings:
 **Director > Finale** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#5-settings-objects)). What's left to
 build is in [designs/FINALE.md](../designs/FINALE.md).
 
@@ -14,6 +15,7 @@ build is in [designs/FINALE.md](../designs/FINALE.md).
 
 - [In one page](#in-one-page)
 - [The gate](#the-gate)
+- [Before the gate: pitches and route assets](#before-the-gate-pitches-and-route-assets)
 - [The lock](#the-lock)
 - [How a route runs](#how-a-route-runs)
 - [The five routes](#the-five-routes)
@@ -78,20 +80,70 @@ route's pact and items. Lock counts are never shown.
 **What carries on.** Samples are still taken and paid into the backlog; they don't move research
 past 90. Ordinary missions, errands and majors carry on.
 
+## Before the gate: pitches and route assets
+
+**Pitches** (with **Dialogue > Trees** on, `dialogue/finale/routes.rzd`). From 75% every leader's
+"Ask about the cure." answers *"Ask me again when it's nearly done."* From 80% the four stronghold
+leaders (the chair, the CO, the boss, the director) and the Independent's voice on the road (the
+Doctor wanderer, else the Courier) give the route's pitch: its best argument, then its admission. At
+85% each pitch goes on air once, naming nobody: the four on their factions' open channels, the
+Independent's as an unsigned voice on the open channel (log: *"Finale: the routes' pitches went on
+air at 85 percent."*). Nothing locks before 90%.
+
+**Route assets** (`RZ_FinaleAssets`, saved with the finale). A story job's outcome can lean toward a
+route: at most one asset per outcome, at most 3 per player per route a season, kept by identity and
+told to the player (*"That counts for something with Bastion, if you ever stand with them:
+standing."*). The finale page and the lock card show them as "What you'd bring". An asset does
+nothing until its owner locks to that route; then it's a card played once, in that route's scenes:
+
+| Asset | In that route |
+|---|---|
+| **Ally** | One rank or persuade check one step easier (someone who vouches) |
+| **Proof** | One persuade one step easier |
+| **Standing** | One price a third lower, or one leader's check one step easier |
+
+Assets for other routes go dormant at the lock and lapse at the cure. No asset closes a route. Where
+they come from (`RZ_StoryKit.Record` hands every story record to `RZ_FinaleAssets.FromRecord`):
+
+| Outcome (record) | Asset |
+|---|---|
+| The black box burnt in the stove (`crash.box` stove) | Standing, Bastion |
+| The manifest read on the open channel (`crash.box` redhand:inventory) | Proof, Independent |
+| The box to the fence (`crash.box` redhand) / to Bastion (`crash.box` bastion) | Proof, the Red Hand / Bastion |
+| A trapped family to a house (`trapped.family` house, hungry) / to Bastion | Ally, the Haven / Bastion |
+| A deserter the Haven hid (`struck.fate` haven) / back on the roster / let go | Ally, the Haven / Standing, Bastion / Ally, Independent |
+| A scientist who walked out (`colleague.fate` left) | Ally, Independent |
+| A distress call answered (`distress.saved`) | Ally, Independent |
+| A racket's receipt / a house covered / the tally kept secret (`racket.*`) | Standing, the Red Hand / Standing, the Haven / Proof, the Haven |
+
 ## The lock
 
-**The desks** are the commit node (the dialogue confirm node is planned). Each route has one, from
-the gate until the stand is won, not on the radio: the route's clerk near its stronghold leader (the
-Independent's: the Doctor at the lab gate), with a go-between and a lost-and-found beside it.
+**The commit node** (with **Dialogue > Trees** on). Each faction route's "Ask about the cure." is an
+`always` topic at its stronghold leader and at its Loyal seat leaders, so a leader who refuses you, or
+one far away, still offers it; the Independent's is at the Doctor on the road, else the Courier. Its
+**What would it mean?** opens a confirm node tagged **[Point of no return]**: the leader's line, then
+the finale's three plain lines (the route's admission, what you bring: your items and assets for it,
+and what you leave). Its one commit choice ("Write me down.", "Sign the roster.", "Put me in the
+book.", "Write me in the notebook.", "Count me as nobody's.") is dimmed with `CanCommit`'s reason
+when you can't lock, and the engine checks `CanCommit` again when you pick it
+([DIALOGUE.md](DIALOGUE.md#the-finales-commit)).
+
+**The desks**, from the gate until the stand is won, not on the radio: the route's clerk near its
+stronghold leader (the Independent's: the Doctor at the lab gate), with a go-between and a
+lost-and-found beside it. With Trees off they are the commit node; with Trees on the faction desks
+take no names (the leaders do) and keep the rest, and the Independent's desk (the unsigned sheet at
+the lab gate) takes names only while no Doctor or Courier is on the road.
 
 | Choice | Does |
 |---|---|
-| **What would it mean?** | The lock card, tagged **[Point of no return]**: the route's admission, what you bring (your items for it) and what you leave. It arms the next choice for 30 s |
-| **Write me down [no return]** | Locks you to the route, within 30 s of hearing it |
+| **What would it mean?** (Trees off) | The lock card, tagged **[Point of no return]**: the route's admission, what you bring and what you leave. It arms the next choice for 30 s |
+| **Write me down [no return]** (Trees off) | Locks you to the route, within 30 s of hearing it |
 | **How do things stand?** | The finale page ([The gate](#the-gate)) |
 | **The price door** (faction routes) / **The Coat Run** (Independent) | Below, and [The Coat Run](#take-the-lab-and-the-coat-run) |
 | **Pact with ...** (the go-between, four choices) | Propose, agree or end a pact ([Pacts](#pacts-and-deals)) |
 | **Give back what you found** (the lost-and-found) | Your items of this route go back to their seats; 10 Favor with its faction if you're not locked to it ("found it") |
+| **Ransom it back** / **Spoil another route's find** (the lost-and-found) | [The moves](#the-moves) |
+| **Buy the plan** (someone who sells plans, at the Red Hand's and the Independent's desks) | [The moves](#the-moves) |
 
 **Who may lock** (`CanCommit`): research at the gate or past it and the stand not won; not locked
 this season; and `CanSideWith`: yes unless Hunted by the route's faction; the Hunted lock if they're
@@ -113,9 +165,13 @@ that stand. An **active lock** has 2+ hours played this season (**Active lock ho
 scale) and was online in the last 2 real days (**Active lock days**): only active locks count for
 pacts, holding the room and deciding.
 
-**After the lock:** other routes' work refuses you (*"You've picked your side. This isn't it."*);
-ordinary errands and missions carry on; your route's sworn work is told to you as it comes up; and
-the route's questline is in your journal whether you took part or not.
+**After the lock:** other routes' work refuses you (*"You've picked your side. This isn't it."*),
+except the rivals' moves on it; ordinary errands and missions carry on; your route's sworn work is
+told to you as it comes up; and the route's questline is in your journal whether you took part or not.
+
+**A route with no active lock for 3 real days** (× the wait scale, counted from the gate): its sworn
+stages pause and its subject's claim (her, the captain, the cook) is let go, claimed again when a lock
+is active (log: *"Finale: Halcyon paused (no active lock for 3 real days)."*).
 
 ## How a route runs
 
@@ -142,10 +198,15 @@ The same four acts on every route:
 - **Never a dead end.** A route never fizzles: a stage that fails or times out is offered again. It
   freezes at another route's finish and ends at the cure.
 - **Scenes.** Every stage is a scene: people at places, put down only within 300 m of a player, each
-  with up to four choices (talk, persuade, sneak, bribe, a hold, a hand-in). Persuade uses the fixed
-  score (`TryPersuade`): your access rank with the faction, +1 for a listed background, against 1–4;
-  the majors' flags move it one step. Bribes are Favor. Sneaks are the questline sneak (unseen, no
-  shots). A hold keeps a place for minutes while the noise brings the infected.
+  with up to four choices. **The ways:** talk; persuade (the fixed score, `TryPersuade`: your access
+  rank with the faction, +1 for a listed background, against 1–4; the majors' flags move it one
+  step); threaten (Fear, `RZ_Checks.Threaten`: +3 Infamy or more whatever happens, once a season per
+  person by anyone); trade (items handed over: food, fuel); bribe (Favor); sneak (the questline sneak:
+  unseen, no shots); trick (passing in a faction's kit: the look, `PassAs`); force (a loud way with
+  Infamy, or a hold that keeps a place for minutes while the noise brings the infected); betray (a
+  bag or a vial kept back for nobody: Infamy, and the subject remembers); a hand-in. A route asset
+  of yours eases one check once ([Route assets](#before-the-gate-pitches-and-route-assets)); a
+  spoiled case makes the act's persuades one step harder ([The moves](#the-moves)).
 - **Time windows** are game-clock waits (no time skip): the Haven draws at dusk or after dark and
   walks up the hill at dawn (05:00–09:00); the Red Hand's still runs on the lab's night shift
   (20:30–05:00) and the proof by day; the Independent asks at dusk and fills the batch sheet at a
@@ -166,10 +227,11 @@ runs with a Red Hand crew. Nobody, the writing included, ever says why she didn'
 
 | Stage | Ways through |
 |---|---|
-| **I. The Crossed-Out Name** (open) | The chair (Known with the Haven); her name off the List (with `list.read`); watch a house at dusk for the second bowl (unseen); feed her hungry house (3 food); the lab's Day 6 ledger (Known with Halcyon, or 20 Halcyon Favor) |
-| **II. And my boy** (sworn) | Her yes: persuade 3 on Haven rank (Nurse, Doctor or Elder +1; one easier with her name read at supper, one harder if she was sent to the far house). Then the door: pay his line (30 Red Hand Favor, Trusted; 15 under Paid at the Door), walk him out at night (unseen), or it's already clear (the book sent off loud, or a pact with the Red Hand). The other way: she gives without it, one step harder |
-| **II. Three Times** (sworn, at dusk or after dark) | Draw a bag at the edge of her town (a cool bag, 15 minutes out of the cold, +10 with a Nurse or Doctor carrying; draws 12 real hours apart; five at most, never a sixth), store two at the lab. "Two is enough" (Trusted with the Haven) spares her the dawn |
-| **IV. Up the Hill** (sworn, last, at dawn) | Walk up the hill with her and bring her in at the gate; or draw at first light and run it up in 12 minutes. Spared: the lab's 2 real days of work on two bags |
+| **I. The Crossed-Out Name** (open) | The chair (Known with the Haven); her name off the List (with `list.read`); a council head near her house (Known; read by the head: a Loyal one sends you to the chair unless Merciful, a Paranoid one gives a decoy below Trusted, an Independent one wants 3 food first); the Preacher (persuade 2, Elder +1); watch a house at dusk for the second bowl (unseen); feed her hungry house (3 food); tail the walker (unseen, with `walk.walks_stay`); knock as a house runner (a trick in Haven kit); the lab's Day 6 ledger (Known with Halcyon, or 20 Halcyon Favor); Bastion's Day 2 processing list (Trusted with Bastion, or 15 Bastion Favor); the strays crew (20 Red Hand Favor, or threaten them) |
+| **II. And my boy** (sworn) | Her yes: persuade 3 on Haven rank (Nurse, Doctor or Elder +1; one easier with her name read at supper, one harder if she was sent to the far house). Then the door: pay his line (30 Red Hand Favor, Trusted; 15 under Paid at the Door), walk him out at night (unseen), threaten his crew boss (Fear 3, +5 Red Hand Infamy), mark his line paid at the fence's desk (a trick in Red Hand kit), or it's already clear (the book sent off loud, or a pact with the Red Hand). The other way: she gives without it, one step harder |
+| **II. Three Times** (sworn, at dusk or after dark) | Draw a bag at the edge of her town (a cool bag, 15 minutes out of the cold, +10 with a Nurse or Doctor carrying; draws 12 real hours apart; five at most, never a sixth), store two at the lab. R1, her Day 2 tube, is one bag: traded at Bastion's medical store (40 Bastion Favor) or taken (unseen), once a season. **Betray:** keep a bag back for nobody (a bag for the Independent, +15 Haven Infamy, a betrayal she counts). "Two is enough" (Trusted with the Haven) spares her the dawn |
+| **IV. Up the Hill** (sworn, last, at dawn) | Walk up the hill with her (or the Preacher rings her up, the courier road unseen, the roadblocks paid with 30 Red Hand Favor, Halcyon's gate with 20 Halcyon Favor) and bring her in at the gate; or draw at first light and run it up in 12 minutes. Spared: the lab's 2 real days of work on two bags |
+| **Her branch** (she's dead or walked off) | *What She Left:* her notebook taken to the lab stands in for the door. *Twice:* his yes (persuade 2 on Haven or on Red Hand rank; with bread, 1 food, one easier) and up to six bags of his. Act IV is the lab's 2 real days on what she left |
 
 Terms: **her house, and her boy**; **the far house first** (only under workers first); **by the bite
 book**; **the crossed-out first** (with `list.read`). Nobody chooses: a Merciful or Idealist chair
@@ -183,9 +245,10 @@ still is. He opens to "collection", only the CO can say it, and a tube goes only
 
 | Stage | Ways through |
 |---|---|
-| **I. Request Instructions** (open) | Sedlak at the roster (Trusted); bribe the quartermaster (20 Bastion Favor); the bus driver (Known with the Haven); the diesel line in the Red Hand's book (15 Red Hand Favor; sets `held.rh_knows`) |
-| **II. Names for the tubes** (sworn) | The door: the driver's slips (persuade 2 on Haven rank, Police or Elder +1), the clipboard at night (unseen), or the census (Counted, or a pact with the Haven). The other way: the CO signs a manifest from the four ledgers (Trusted; sets `held.named`) |
-| **II. Collection** (sworn) | At the cold store: collection on the CO's word (persuade 3 on Bastion rank, Soldier or Police +1; one easier under Bastion, Command, one harder under Expended); a signal form (40 Bastion Favor); the box while he sleeps (unseen); or cut the door (+15 Bastion Infamy, one tube spoils). The box keeps 45 minutes out of the cold. Bringing Twice home (persuade 3 on Red Hand rank) adds his tube and sets `held.processed` |
+| **I. Request Instructions** (open) | Sedlak at the roster (Trusted); bribe the quartermaster (20 Bastion Favor); read the fuel log in a Bastion coat (a trick); the bus driver (Known with the Haven); the diesel line in the Red Hand's book (15 Red Hand Favor, or threaten the fence; sets `held.rh_knows`) |
+| **II. Names for the tubes** (sworn) | The door: the driver's slips (persuade 2 on Haven rank, Police or Elder +1), the clipboard at night (unseen), threaten the driver, or the census (Counted, or a pact with the Haven). The other way: the CO signs a manifest from the four ledgers (Trusted; sets `held.named`), or the ration clerk's copies (2 food) |
+| **II. Collection** (sworn) | At the cold store: collection on the CO's word (persuade 3 on Bastion rank, Soldier or Police +1; one easier under Bastion, Command, one harder under Expended); refuel the generator and ask (1 fuel, one step easier, Mechanic +1); a signal form (40 Bastion Favor); read collection off a signals pad (a trick); the box while he sleeps (unseen); or cut the door (+15 Bastion Infamy, one tube spoils). The box keeps 45 minutes out of the cold. Bringing Twice home (persuade 3 on Red Hand rank, or buy him out of his crew for 40 Red Hand Favor) adds his tube and sets `held.processed` |
+| **Processing Again** (the branch: the captain is gone or the freezers were spoiled) | Tubes from the living: "Give blood" at a post (one each), Twice's tube (as above), then the medic boxes what there is. Fewer than three tubes is the long way at the lab |
 | **IV. Signed For** (sworn, last) | Sign the box in at the lab. Fewer than three good tubes: the receipt goes out short and waits 2 real days a missing tube. The receipt is read on Bastion's call |
 
 Terms: **the roster** (not if the box came by a form, sneaking or force); **the column**; **by need**
@@ -199,10 +262,11 @@ dose a player takes is a line in her book (`cook.lines`, `cook.paid`).
 
 | Stage | Ways through |
 |---|---|
-| **I. The Kitchen Book** (open) | Ask her at supper (Known); win her round (persuade 2, Ex-Con, Lab Tech, Doctor or Nurse +1); follow her after supper (unseen; `cook.still_known`); her sister (3 food). Hearing her sets `cook.heard` |
-| **II. A Tray** (sworn) | The door, a tray: the director (Trusted with Halcyon), a page of her tally (a pact with Halcyon, or `proof.redhand`), a field lead (40 Red Hand Favor), or the night store (unseen; Halcyon morale −5). One tray out per route; the lab has three and rebuilds one a real day. The tray keeps 15 minutes out of the cold. The other way: four stolen doses (30 Red Hand Favor), a harder base |
-| **II. A Night on the Still** (sworn, 20:30–05:00) | Keep the still running 8 minutes while she cuts the pan, or run it cold (unseen, a clean run). The case keeps without a cold clock |
-| **IV. The Lab's Word** (sworn, last, by day) | The proof on someone bitten who asked: 60%, +15 for a clean run or the formula sold, −15 on the harder base; each failure is a step higher and the third pan always holds. Then the case in at the lab. Her own term: the boss marks her line paid (persuade 3; `cook.line_paid`) |
+| **I. The Kitchen Book** (open) | Ask her at supper (Known); win her round (persuade 2, Ex-Con, Lab Tech, Doctor or Nurse +1); eat at her table in crew colours (a trick); follow her after supper (unseen; `cook.still_known`); her sister (3 food); Who Came Back: a paid line at a Bastion post (15 Bastion Favor). Hearing her sets `cook.heard` |
+| **II. A Tray** (sworn) | The door, a tray: the director (Trusted with Halcyon), a page of her tally (a pact with Halcyon, or `proof.redhand`), Bastion's key (`authors.bastion_key`), a field lead (40 Red Hand Favor), Two Tins a Copy (2 food), the back door in a coat (a trick in Halcyon kit), robbing a Halcyon courier (+10 Halcyon Infamy), or the night store (unseen; Halcyon morale −5 for a stolen tray). One tray out per route; the lab has three and rebuilds one a real day. The tray keeps 15 minutes out of the cold. The other way: four stolen doses (30 Red Hand Favor), a harder base |
+| **II. A Night on the Still** (sworn, 20:30–05:00) | Keep the still running 8 minutes while she cuts the pan, or a clean run: run it cold (unseen), feed it two jerrycans (2 fuel), or talk her through the cut (persuade 2, Lab Tech, Doctor, Nurse or Mechanic +1). The rival crew boss at midnight: cut him in (20 Red Hand Favor; `cook.crew_cut`) or threaten him. The case keeps without a cold clock |
+| **IV. The Lab's Word** (sworn, last, by day) | The proof on someone bitten who asked, or on yourself (+10 Red Hand Fame): 60%, +15 for a clean run or the formula sold, −15 on the harder base; each failure is a step higher and the third pan always holds. Then the case in at the lab. Her own term: the boss marks her line paid (persuade 3; `cook.line_paid`) |
+| **The Book Without Her** (the branch: the cook is gone, or the pan was spoiled) | Act I copies her tally off the kitchen wall; Act II runs the still by the tally at half speed (16 minutes) or cold by the tally (unseen) |
 
 Terms: **the boss's price** (Trusted); **pay when you can** (someone heard her); **the first pan to
 the houses** (Known with the Haven); **the book first**.
@@ -215,10 +279,11 @@ The reference stock, the first isolate, is in a dewar in the closed site's lower
 
 | Stage | Ways through |
 |---|---|
-| **I. Reference: None** (open) | The duty officer (persuade 2, Lab Tech or Doctor +1); the director's stand-in for the vial map (persuade 3, 2 with `weeks.record`); the sergeant; the records room (unseen). Under The Whole of It the director simply says |
-| **II. Item 114** (sworn) | The door: the adjutant (persuade 2 on Bastion rank, Soldier or Police +1), the quartermaster (40 Bastion Favor), the key board (unseen), or a pact with Bastion / Under Seal. The other way: the sergeant's second key (Known with the Haven), or cut the chain (a 3-minute hold, +10 Bastion Infamy) |
-| **II. Something Cold** (sworn) | Borrow the vet's tank (Known with the Haven, or 25 Haven Favor: a real day out of the cold; else the courier's case, 30 minutes), then hold at the dewar (4 minutes, under 3 with the map) |
+| **I. Reference: None** (open) | The duty officer (persuade 2, Lab Tech or Doctor +1); the director's stand-in for the vial map (persuade 3, 2 with `weeks.record`, or signed out in a Halcyon coat: a trick); the sergeant (asked, or threatened); the records room (unseen). Under The Whole of It the director simply says |
+| **II. Item 114** (sworn) | The door: the adjutant (persuade 2 on Bastion rank, Soldier or Police +1), the quartermaster (40 Bastion Favor), the key board (unseen), a wax copy off the outpost commander's bootlace (unseen), Bastion's wrong key swapped on (a trick in Bastion kit), or a pact with Bastion / Under Seal. The other way: the sergeant's second key (Known with the Haven), a crew's lockpick (25 Red Hand Favor), or cut the chain (a 3-minute hold, +10 Bastion Infamy) |
+| **II. Something Cold** (sworn) | The vet's tank (Known with the Haven, 25 Haven Favor, Trusted with Halcyon to requisition it, or taken at night unseen: a real day out of the cold; else the courier's case, 30 minutes), then the dewar: hold 4 minutes (under 3 with the map), crack its neck (a 1-minute hold, loud), or split the works' tank (3 minutes, loud). **Betray:** pocket a vial for nobody (a vial for the Independent, +10 Halcyon Infamy, once) |
 | **IV. Samples First** (sworn, last) | Hand the vials in; the comparison takes 28 real hours (56 without Wolff's method), then a 4-minute hold while the centrifuge runs |
+| **Second best** (the branch: the dewar was spoiled) | Wolff's one marked tube from the isolation room; the comparison takes 78 real hours |
 
 Terms: **the authors first**; **the volunteers first**; **by the numbers**; **published**.
 
@@ -231,9 +296,9 @@ aerial (the ham, `ham.house`) has copied every number the lab read into exercise
 | Stage | Ways through |
 |---|---|
 | **I. Eight Walked Out** (open) | The ham's exercise books; the Day 6 ledger (Known with Halcyon, or 20 Halcyon Favor); the Doctor at the lab gate (persuade 1, Doctor or Nurse +1) |
-| **II. Asking** (sworn, at dusk) | Each of the eight, by their own yes and their keeper's leave: a Haven house's council head (persuade 2 on Haven rank, Nurse +1), Sedlak (Known with Bastion), a crew boss (30 Red Hand Favor) or a field lead. Each gives one bag. The other way, when fewer than three are alive: donors at a Haven medic |
-| **II. Three bags** (sworn) | Store three bags at the lab, "for everyone" |
-| **IV. For Everyone** (sworn, last, at a change of shift) | A tray off the books (a field lead, persuade 2 or 1 with `authors.open`; or 30 Halcyon Favor), then the batch sheet, "Released to: -": the director (persuade 3, easier under The Whole of It or with an Idealist or Merciful director), 40 Halcyon Favor, or the records room at night (unseen) |
+| **II. Asking** (sworn, at dusk) | Each of the eight, by their own yes and their keeper's leave: a Haven house's council head (persuade 2 on Haven rank, Nurse +1), Sedlak (Known with Bastion), a crew boss (30 Red Hand Favor) or a field lead. Each gives one bag. When fewer than three are alive: Twice (his debt, 30 Red Hand Favor), the Scavenger (2 food, once), or donors at a Haven medic (the other way) |
+| **II. Three bags** (sworn) | Store three bags at the lab, "for everyone". One unit from another route's subject counts as a bag: her bag, R1, a tube, a box, the case, a vial (handed over: the two routes are fighting) |
+| **IV. For Everyone** (sworn, last, at a change of shift) | A tray off the books (a field lead, persuade 2 or 1 with `authors.open`; 30 Halcyon Favor; bought at the still for 30 Red Hand Favor; or stolen from the night store, unseen), then the batch sheet, "Released to: -": the director (persuade 3, easier under The Whole of It or with an Idealist or Merciful director), 40 Halcyon Favor, the records room at night (unseen), or a sit-in at the lab gate (unarmed, a 10-minute hold through the change of shift) |
 
 Terms: **open** (one each); **one side, with a condition** (all of them, exiles too / no names taken /
 one tin, not two / a home batch at every house); **sold**; **kept back**. Nobody chooses: open.
@@ -286,6 +351,24 @@ goes back to its seat after 2 hours of play or a real day. **Last Mile:** when a
 everyone hears *"One of them is close."*, and every 10 minutes the other routes' locked players get a
 rough area for any of its items on the move.
 
+### The moves
+
+What a route's rivals can do to it. Moves on a route's scenes are on **the way round the back**, a spot
+beside the subject or the source; only players locked to another route can take them (the label is
+shared, the refusal comes when you pick). Every move makes the two routes fighting.
+
+| Move | Where | What it does | Cost and limit |
+|---|---|---|---|
+| **Spoil the case** | Beside her, the captain or the cook | A true thing told about the route: that act's persuades one step harder | Once per subject per rival route |
+| **Custody** | Beside her, the captain or the cook | The subject is walked to the mover's own people (a seat of their faction; the lab gate for the Independent). They give the holder nothing; it counts as a betrayal | +20 Infamy with the subject's faction. The route's people can talk them out of it (persuade 3 on the holder's rank, Elder or Police +1) |
+| **Drain** | Beside the freezers, the pan, the dewar | The source spoils for the season (`finale.drained.<route + 1>`) and the route moves to its branch (Processing Again, The Book Without Her, second best) | Once; +5 Infamy with the route's faction, +15 if one of its locked players is within 100 m |
+| **Ambush a carry** | Picking it up (built), then a desk's lost-and-found | Give it back ("found it"), keep it, **ransom** it at its route's desk (15 Favor an item with that faction), or **spoil** it at any desk (her bag: +10 Haven Infamy, and she gives again) | The finale's caps |
+| **Sell the plan** | Someone who sells plans, at the Red Hand's desk (needs a Rogue Red Hand seat) and the Independent's | Take the Lab's timing (`finale.plan_sold`: the bay takes 150 s), or the Coat Run's night (`finale.coat_sold`: the Coat Run is called out) | Once per route a season; 30 Red Hand Favor or 20 Haven Favor |
+
+**Killing a subject on-screen.** A scene's body for one of the finale's people (her, Twice, the
+captain, the cook) that dies is `RZ_FinalePeople.Killed`: +20 Infamy with their faction for the
+nearest player within 150 m, the stage is offered again, and the route moves to its branch.
+
 ### Kills between route players
 
 - **Outside the stand,** killing a player locked to a faction route costs **+3 Infamy** with that
@@ -329,7 +412,7 @@ On top:
 | **The take time** | 90 s (**Take seconds**) minus 5 s (**Take per point**) a point on the side's frozen track (a pact uses the higher), never under 45 s (**Take floor**). The finisher retakes in 45 s |
 | **Holding it** | The holder needn't be inside; it only has to stop anyone else's count reaching its take time |
 | **The end** | At 15:00 the holder controls the cure. While a challenger's count is above zero, **overtime** runs, 3 minutes at most (**Overtime seconds**). The holder wins ties |
-| **What everyone sees** | Within 150 m of the lab, a short notice when a count moves 15 s or the room changes hands: *"CLEAN ROOM: Bastion. The Haven taking: 0:35 of 0:60."* Routes, never players |
+| **What everyone sees** | Within 150 m of the lab, the stand's line on the HUD under the noise meter (`StandPanel`, sent every 2 s): *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."* Routes, never players. A player whose HUD can't take it gets it as a short notice when a count moves 15 s; everyone gets a notice when the room changes hands |
 
 **Groups.** At most two friendly faction groups (**Groups at the lab**) stand 40–120 m out: the
 finisher's faction first, then factions whose route has active locks, then those a major sends (the
@@ -409,7 +492,7 @@ per player. The finale is the one place past the limits every questline keeps
 | **The slow finish** | After a real week at the gate the built fallback (**Finale fallback**, 1% a real day) feeds the **lab-alone track** instead of research. At 10 the lab makes the batch on its own work: the same hold and seal, nobody starts as holder, no route Fame, `cure.slow` set |
 | **Nobody holds the room** | The cure is **handed over** to the faction with the most season Fame |
 | **A lost stand** | As built: the batch is ruined, research back to 90, the lab never falls. The finisher stays finished; locks and pacts stand. The next batch comes from the finisher's remake step (its route's wait, about a session or a day) or the lab's backlog, whichever is first; then the seal, and the finisher starts as holder again. Stands lost are recorded by day |
-| **A route's subject is lost** | She walks off after a third betrayal; the eight who died stay dead. *Simplified:* the branch stages (What She Left, The Book Without Her...) aren't built ([designs/FINALE.md](../designs/FINALE.md)) |
+| **A route's subject is lost** | She walks off after a third betrayal, or dies on-screen; the eight who died stay dead. The route moves to its branch: What She Left and Twice (the Haven), Processing Again (Bastion), The Book Without Her (the Red Hand), second best (Halcyon), Twice and the Scavenger (the Independent) ([The five routes](#the-five-routes)) |
 | **No tissue to hunt** | The lab grows it after a real day |
 | **Small servers** | Every act has a solo way; in Tally mode a lone holder keeps a room nobody contests |
 | **The finale off** | Research runs to 100 and the cure goes to the most season Fame, as before |
@@ -425,7 +508,10 @@ stand's hostility comes off, and parley reopens.
 **Season flags** for the epilogue: `finale.route` (the controller, route + 1: 1 the Haven, 2 Bastion,
 3 the Red Hand, 4 Halcyon, 5 Independent; 0 nobody), `finale.finisher` (0 the lab alone), `finale.how`,
 `finale.terms`, `finale.condition`, `finale.partner`, `route.<n>.state` (0 not worked, 1 worked, 3
-finished), and the subjects' (`held.named`, `held.processed`, `cook.line_paid`, `cook.heard`...).
+finished), `finale.came` (how many routes counted toward the room at a stand: the stand board's
+*"CAME FOR IT: {n}"*), the moves' (`finale.drained.<n>`, `finale.plan_sold`, `finale.coat_sold`,
+`finale.r1`), and the subjects' (`held.named`, `held.processed`, `cook.line_paid`, `cook.heard`,
+`cook.crew_cut`...).
 `last_season.json` keeps the route, finisher, how, terms, partner, deciders and the half rule set.
 
 **Next season** ([DESIGN.md](DESIGN.md#next-season-rules-from-the-last-winner)): the controller's
@@ -455,20 +541,21 @@ betrayals. Nobody is killed off-screen, and consent is a check in every draw and
 
 ## Simplified, and not built yet
 
-*Simplified:* the commit node is the desks (dialogue's confirm node is planned); `CanSideWith` is
-the finale's own (unless Hunted, owed, or the price door); route assets, pitches at 80% and 85%, route
-marks, lock cards, Hand to Hand and the word overlays aren't built, so the lock card's "you bring" is
-your items; the deal needs no gate meeting; the clean room is a land point (a named child entity on
-the lab prefab is a VERIFY); unconscious players count while alive (VERIFY); Contest Auto plays as
-Force (reading the player-damage setting is a VERIFY); the stand's line is a notice, not a HUD line;
-the journal's finale page is the desk's "How do things stand?" and the readout under each route;
-Halcyon's price door takes no blood draw; the Red Hand's line takes what Favor you have; each route's
-stages are one scene each with the ways listed above, not every way in the design.
+*Simplified:* the commit node needs **Dialogue > Trees** (off by default): with Trees off the desks
+take the names; the Independent commits at the Doctor or the Courier on the road, not on the open
+channel (radio speakers aren't built); `CanSideWith` is the finale's own (unless Hunted, owed, or the
+price door); assets come from the story records listed above (the other missions' leans aren't
+tagged yet), and an Ally doesn't open doors or carry items; the drain is immediate, not 20 s; a
+subject killed on-screen is blamed on the nearest player, not read from the kill; the deal needs no
+gate meeting; the clean room is a land point (a named child entity on the lab prefab is a VERIFY);
+unconscious players count while alive (VERIFY); Contest Auto plays as Force (reading the player-damage
+setting is a VERIFY); the journal's finale page is the desk's "How do things stand?" and the readout
+under each route; Halcyon's price door takes no blood draw; the Red Hand's line takes what Favor you
+have; Bastion's fuel clock is the refuel way only; her four terms are said, not taken one by one.
 
-**Planned** ([designs/FINALE.md](../designs/FINALE.md)): the subjects' branches (What She Left, Twice
-for the Haven, Processing Again's donors and the Scavenger, The Book Without Her and The Bottles, second
-best for Halcyon); the moves (drain, spoil the case, guard the door, custody, sell the plan, hand it
-over, Last Mile's contracts) and notes for sale; the routes' rival choices and the cold sources beyond
-the cool bag, case and tank; the fuel clock and Bastion's stage road posts, truck and squad; the
-helicopter and the annex as carries; the sit-in at the lab gate; route stages pausing on 3 days with
-no active lock; the finale's epilogue carriers.
+**Planned** ([designs/FINALE.md](../designs/FINALE.md)): what still waits on other systems (Hand to
+Hand and lock cards on errands' promises, the look's −1 and the word overlays on disguise, the
+presence floor and `RZ_QuestVote` pacts on the majors, `Forgive()` on reputation), guard the door,
+hand it over, Last Mile's contracts and notes for sale, the carries (the stage truck, road posts,
+helicopter, escorts), The Bottles, live tissue's remaining rules, the stand's remaining pieces, the
+majors' remaining inputs and the finale's epilogue carriers.

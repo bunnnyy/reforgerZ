@@ -101,6 +101,7 @@ class RZ_DNode
 {
 	string m_sId;
 	bool m_bPublic;			// overheard: its lines and the chosen label go to others within 8 m
+	bool m_bConfirm;		// a [Point of no return] node: the finale's lock card follows its lines
 	ref array<ref RZ_DSay> m_aItems = {};
 	ref array<ref RZ_DChoice> m_aChoices = {};
 }
@@ -111,6 +112,7 @@ class RZ_DConv
 	static const int FLAG_ONCE = 1;
 	static const int FLAG_DAILY = 2;
 	static const int FLAG_GREET = 4;
+	static const int FLAG_ALWAYS = 8;	// shows even when the speaker refuses you (the finale's route topics)
 
 	string m_sId;
 	ref array<string> m_aFor = {};
@@ -255,6 +257,13 @@ class RZ_DialogueDB
 	{
 		if (m_Node)
 			m_Node.m_bPublic = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Confirm()
+	{
+		if (m_Node)
+			m_Node.m_bConfirm = true;
 	}
 
 	//------------------------------------------------------------------------------------------------

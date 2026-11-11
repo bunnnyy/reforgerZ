@@ -45,6 +45,7 @@ class RZ_StoryKit
 
 		RZ_WorldFacts.Get().Memory().Record(key, subject, value, RZ_WorldMemory.SOURCE_STORY, false, players, epilogue, carrier);
 		RZ_Log.Info(string.Format("Story: %1 record %2 (%3) = %4", m.m_sTitle, key, subject, value));
+		RZ_FinaleAssets.FromRecord(key, subject, value, players);
 	}
 
 	//------------------------------------------------------------------------------------------------

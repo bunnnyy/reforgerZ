@@ -154,6 +154,84 @@ class RZ_FinaleItems
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One unit from another route's subject, for route r (the Independent): a carried item that
+	//! isn't a tray and isn't r's own bag (another route's bag, tube, box, case or vial, or a vial
+	//! pocketed for nobody).
+	protected bool IsUnitFor(RZ_FinaleItemSave it, int r)
+	{
+		return it.kind != "tray" && (it.route != r || it.kind != "bag");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int CountAny(string ident, int r)
+	{
+		int n = 0;
+		foreach (RZ_FinaleItemSave it : m_S.items)
+		{
+			if (it.carrier == ident && IsUnitFor(it, r))
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hands in one such unit for route r. Another route's item is "handed over": the two routes
+	//! are fighting. Returns how many (0 or 1).
+	int HandInAny(string ident, int r)
+	{
+		for (int i = m_S.items.Count() - 1; i >= 0; i--)
+		{
+			RZ_FinaleItemSave it = m_S.items[i];
+			if (it.carrier != ident || !IsUnitFor(it, r))
+				continue;
+
+			if (it.route != r)
+				m_Finale.Hostile(r, it.route);
+
+			RZ_Log.Info(string.Format("Finale: item %1 (%2) handed in for %3 as one unit; carriers %4.", it.id, it.name, RZ_CureFinale.RouteName(r), it.chain));
+			m_S.items.Remove(i);
+			return 1;
+		}
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ambush a carry: an item of another route this identity carries is spoiled on purpose.
+	//! Returns its route, or NONE when there was none.
+	int Spoil(string ident, int mine)
+	{
+		for (int i = m_S.items.Count() - 1; i >= 0; i--)
+		{
+			RZ_FinaleItemSave it = m_S.items[i];
+			if (it.carrier != ident || it.route == mine)
+				continue;
+
+			int r = it.route;
+			RZ_Log.Info(string.Format("Finale: item %1 (%2) of %3 spoiled on purpose.", it.id, it.name, RZ_CureFinale.RouteName(r)));
+			Tell(it, string.Format("%1 was spoiled on purpose. That step has to be done again.", it.name));
+			m_S.items.Remove(i);
+			return r;
+		}
+
+		return RZ_CureFinale.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first route other than `mine` this identity carries an item of, NONE if none.
+	int CarriesOther(string ident, int mine)
+	{
+		foreach (RZ_FinaleItemSave it : m_S.items)
+		{
+			if (it.carrier == ident && it.route != mine)
+				return it.route;
+		}
+
+		return RZ_CureFinale.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! "Found it": this identity's items of `route` go back to their seats. Returns how many.
 	int GiveBack(string ident, int route)
 	{

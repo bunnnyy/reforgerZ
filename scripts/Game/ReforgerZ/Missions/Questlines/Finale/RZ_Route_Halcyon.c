@@ -10,6 +10,7 @@
 //!   IV  Samples First (sworn, last): the stock in the lab's freezers, the comparison (a real day and
 //!       4 hours of play, quicker with Wolff's method and samples), then a 4-minute hold while the
 //!       centrifuge runs
+//! Branch: second best (the dewar drained): Wolff's marked tube, a 78-hour comparison.
 //! Simplified: the canisters' riddle, the family at dusk and the rival contracts on the way down
 //! aren't built; the comparison is real time only.
 class RZ_Route_Halcyon : RZ_FinaleRoute
@@ -107,15 +108,17 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 				if (Major(gm, "proof.first_page") == 2)
 					scene.Choice(duty, "Ask the director").Decides(OUT_ACT1).Says("The director has nothing left to hide. \"The lower store. We've known since Day 3.\"", "asked the director outright");
 
+				scene.Choice(duty, "Read the records room at night [unseen]").Sneak().Decides(OUT_ACT1).Says("The order on the chained door, filed. And a note: reference stock still wanted.", "read the records room at night");
 				int stand = scene.Person(RZ_MajorHelp.NearSeat(lab), "the director's stand-in", "Talk to the stand-in", "\"We've known where it was since Day 3.\"");
 				int step = 3;
 				if (Major(gm, "weeks.record") != 0)
 					step = 2;
 
 				scene.Choice(stand, "Ask for the vial map").Persuade(RZ_EFaction.INSTITUTE, step, "labtech").Sets("map").Decides(OUT_ACT1).Says("A sketch of the dewar: four canisters, a surname and a date on the right one.", "had the vial map").Refused("\"Not before the paper is.\"");
+				scene.Choice(stand, "Sign the map out in a Halcyon coat").Trick(RZ_EFaction.INSTITUTE, 2).Sets("map").Decides(OUT_ACT1).Says("A coat, a notebook number, the map signed out. Somebody will count the numbers later.", "signed the vial map out in a borrowed coat").Refused("\"Your number isn't in the book.\"");
 				int sergeant = scene.Person(PersonAt("sergeant", lower), run.Fill("{sergeant}"), "Talk to the sergeant", "\"We chained a door up there on Day 1. Two keys. I've still got mine. Nobody ever asked.\"");
 				scene.Choice(sergeant, "Ask about the door").Decides(OUT_ACT1).Says("\"The lower store. A dewar. I never looked in it.\"", "heard about the lower store from the sergeant");
-				scene.Choice(duty, "Read the records room at night [unseen]").Sneak().Decides(OUT_ACT1).Says("The order on the chained door, filed. And a note: reference stock still wanted.", "read the records room at night");
+				scene.Choice(sergeant, "Lean on the sergeant").Threaten(RZ_EFaction.MILITARY, 2).Decides(OUT_ACT1).Says("\"The lower store. Now go away.\" He'll tell his post you asked.", "leaned on the sergeant").Refused("\"I chained it. I can chain you.\"");
 				return true;
 			}
 			case S_DOOR:
@@ -131,6 +134,10 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 				int keyholder = scene.Person(PersonAt("sergeant", lower), run.Fill("{sergeant} at dusk"), "Talk to the sergeant", "\"Nobody's to know where I sleep.\"");
 				scene.Choice(keyholder, "Ask for the second key [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Decides(OUT_OTHER).Says("He hands it over without a word.", "had the sergeant's second key");
 				scene.Choice(keyholder, "Cut the chain instead [loud]").Side(-1, RZ_EFaction.MILITARY, 0, 10).HoldAt(lower, 180, OUT_OTHER, -1).Says("Three minutes on the chain with a crowbar. Bastion's seal breaks, and the noise carries.", "cut Bastion's chain");
+				scene.Choice(keyholder, "Pay a crew's lockpick [25 Red Hand Favor]").Bribe(RZ_EFaction.BANDITS, 25).Decides(OUT_OTHER).Says("An ex-con with a bent wire. The chain stays on; the lock doesn't.", "had the chain picked");
+				int commander = scene.Person(RZ_Mission.LandPointNear(Seat(gm, RZ_EFaction.MILITARY), 20, 40), "the outpost commander", "Talk to the commander", "A key on a bootlace round his neck. He doesn't know which door it opens.");
+				scene.Choice(commander, "Press a wax copy off it [unseen]").Sneak().Decides(OUT_DOOR).Says("Wax, a thumb, ten seconds while he sleeps. A copy of 114.", "copied item 114 off a bootlace");
+				scene.Choice(commander, "Swap it for Bastion's wrong key").Trick(RZ_EFaction.MILITARY, 2).Decides(OUT_DOOR).Says("Item 113 on the bootlace, 114 in your pocket. They look the same from the front.", "swapped item 113 for 114").Refused("\"That's not mine. Where's mine?\"");
 				return true;
 			}
 			case S_PIECE:
@@ -139,12 +146,28 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 				int vet = scene.Person(PersonAt("vet", lower), "the vet with the tank", "Talk to the vet", "\"The tank holds six. The first ampoules go to my house.\"");
 				scene.Choice(vet, "Borrow the tank [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Sets("tank").Says("A promise: her house first. The tank keeps a real day.", "borrowed the vet's tank");
 				scene.Choice(vet, "Pay for the tank [25 Haven Favor]").Bribe(RZ_EFaction.SURVIVORS, 25).Sets("tank").Says("The tank, and a look that says she'll remember.", "paid for the vet's tank");
+				scene.Choice(vet, "Take the tank at night [unseen]").Sneak().Sets("tank").Says("The tank goes out of the surgery at night. Her house won't be first now.", "took the vet's tank at night");
+				scene.Choice(vet, "Requisition it [Halcyon: Trusted]").Needs(RZ_EFaction.INSTITUTE, 2).Sets("tank").Says("A requisition form, signed. She keeps the carbon.", "requisitioned the vet's tank");
+				if (IsDrained())
+				{
+					// Second best: the dewar is spoiled; Wolff's one marked tube, and the long way
+					scene.m_sBrief = "The dewar is spoiled. Second best: the one tube Wolff marked, and a much longer comparison.";
+					int wolff = scene.Person(RZ_MajorHelp.NearSeat(gm.GetLabPosition()), "Wolff's isolation room", "Look at the room", "One tube in the fridge, marked in Wolff's hand. Not the first isolate. The best after it.");
+					scene.Choice(wolff, "Take Wolff's marked tube").Sets("do:second").Decides(OUT_PIECE).Says("Second best. The comparison will take three real days and more.", "took Wolff's marked tube");
+					return true;
+				}
+
 				int dewar = scene.Person(lower, "the dewar in the lower store", "Look at the dewar", "Four canisters. A clipboard by the door: \"Day 3. Chained. Soldiers gone. Four of us staying.\"");
 				float hold = 240;
 				if (run.Flag("map") != 0)
 					hold = 160;
 
 				scene.Choice(dewar, "Take the reference vials").Sets("do:vials").HoldAt(lower, hold, OUT_PIECE, -1).Says("A vial a minute while the cold smoke pours out. The noise carries.", "took the reference vials");
+				scene.Choice(dewar, "Crack the dewar's neck [loud]").Way(RZ_EQuestApproach.FORCE).Sets("do:vials_cracked").HoldAt(lower, 60, OUT_PIECE, -1).Says("A charge on the neck. One canister is lost in the crack; the rest come out fast.", "cracked the dewar");
+				scene.Choice(dewar, "Pocket a vial for nobody").Way(RZ_EQuestApproach.BETRAY).Sets("do:pocket").Says("One vial goes in your own pocket. Nobody counted them but the clipboard.", "pocketed a reference vial");
+				int works = scene.Person(RZ_Mission.LandPointNear(lower, 30, 60), "the works' flask", "Look at the flask", "The water works' own nitrogen flask, on a trolley. It holds four vials and leaks through loud valves.");
+				scene.Choice(works, "Split the works' tank [3 min, loud]").Sets("do:vials").HoldAt(lower, 180, OUT_PIECE, -1).Says("Three minutes of valves screaming. Four vials, cold enough.", "split the works' tank for the vials");
+				RivalSpot(gm, run, scene, lower, "", "", "the dewar");
 				return true;
 			}
 			case S_ACT4:
@@ -166,19 +189,34 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 		if (code == "compare" && Carries(gm, playerId, "vials") <= 0)
 			return "You haven't got the vials with you.";
 
+		if (code == "pocket" && run.Flag("pocketed") != 0)
+			return "Somebody already took one. The clipboard says three now.";
+
 		return super.CanDo(gm, run, playerId, code);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override int DoIt(RZ_GameModeComponent gm, RZ_QuestRun run, int playerId, string code)
 	{
-		if (code == "vials")
+		if (code == "vials" || code == "vials_cracked" || code == "second")
 		{
 			float cold = CASE_COLD;
 			if (run.Flag("tank") != 0)
 				cold = TANK_COLD;
 
+			if (code == "second")
+				run.SetFlag("second", 1);
+
 			GiveItem(gm, playerId, "vials", ItemName("vials"), RZ_WorldFacts.Get().CanonPos("origin.site.lower"), ColdFor(gm, playerId, cold));
+			return -1;
+		}
+
+		if (code == "pocket")
+		{
+			// One vial for nobody: the Independent's one unit; Halcyon remembers the gap
+			run.SetFlag("pocketed", 1);
+			Finale().GetItems().Give("vials", "a reference vial", RZ_CureFinale.INDEP, IdentOf(gm, playerId), PlayerPos(playerId), ColdFor(gm, playerId, CASE_COLD));
+			Finale().PayIdent(IdentOf(gm, playerId), RZ_EFaction.INSTITUTE, 0, 0, 10, "pocketed a reference vial");
 			return -1;
 		}
 
@@ -186,10 +224,14 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 		{
 			HandIn(gm, playerId, "vials", 1);
 			run.SetFlag("compare", 1);
-			// A real day and 4 hours (x the wait scale); half without Wolff's method twice as long
+			// A real day and 4 hours (x the wait scale); twice as long without Wolff's method;
+			// second best (Wolff's marked tube) 3 real days and 6 hours
 			float hours = 28;
 			if (Major(gm, "weeks.record") == 0 && Major(gm, "weeks.public") == 0 && Major(gm, "weeks.bastion") == 0)
 				hours = 56;
+
+			if (run.Flag("second") != 0)
+				hours = 78;
 
 			run.SetFlag("compare_until", RZ_SeasonClock.Now() + RZ_Util.RoundToInt(hours * 3600 * gm.GetQuestlines().WaitScale()));
 			return -1;

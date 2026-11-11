@@ -1165,7 +1165,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Category | Object | Field | Covers |
 |---|---|---|---|
 | ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)), **Day length** (4 real hours a game day, x6; 0 = the server's own clock; [DESIGN.md](DESIGN.md#the-clock)), **Keep time of day** (on: saved in state.json and set again at start) |
-| ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), minimum epilogue (56 h: a late cure pushes an After-weeks wipe back), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
+| ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
 | World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off) |
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
@@ -1360,11 +1360,14 @@ nothing starts by itself).
 **The cure finale.** Last, after the route walk (the cure stands the line down), the questlines'
 **Wait scale** goes to 0.1 and a scripted finale runs: a commit refused below the gate; the slow
 finish (the lab-alone track to 10, nobody holding the room), then a fresh finale; the gate opening the
-five routes; the tester locked to the Haven and stand-in identities to Bastion and the Red Hand, with
+five routes; a route asset on the lock card, dormant until the lock and played once after it; the
+dialogue's `route:` and `finale:` conditions before and after the lock; no route paused at the gate;
+the tester locked to the Haven and stand-in identities to Bastion and the Red Hand, with
 a Bastion–Red Hand pact by tally; the Haven and Bastion racing, the Haven finishing and the others
 freezing; the seal and a stand lost, the Haven's remake step making the batch again; the second stand
 with a scripted take by the pact's side and the tester in the clean room running it into overtime
-(20 s); the win, the controller, the winner rule and the route's chunk; and the release's terms
+(20 s), the stand's HUD line naming the holder's route; the win, the controller, the winner rule, the
+route's chunk and `finale.came`; and the release's terms
 (`RZT finale check: <name>: OK|FAILED (...)`, then `RZT finale done: N checks OK, N FAILED`). The
 five routes are left out of the questlines' phase: they only start at the gate.
 
@@ -1528,7 +1531,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:194` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:196` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
 ### Medium risk: big features, with a fallback (45)
@@ -1545,7 +1548,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_Loot.c:941` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
 | `Core/RZ_Util.c:678` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:246` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:872`, `:887` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `World/RZ_Perimeter.c:881`, `:896` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Locks** off (nothing is locked) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
@@ -1570,9 +1573,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:753` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:967` | a stranger is placed at the spot itself, 150–350 m ahead of the player (or 60–90 m from a stopped car), with no line-of-sight test for the design's out-of-sight point 60–90 m off | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Zombies/RZ_TribeProps.c:68`, `:350` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
-| `Cure/RZ_CureFinale.c:1270` | the cure finale's clean room: the lab prefab has no named child entity to read, so a land point 15–25 m from the lab stands in; check it's somewhere players can stand and fight | Move the lab, or a lab prefab with the room as a child entity (planned) |
-| `Cure/RZ_CureFinale.c:1372` | an unconscious player still counts in the clean room (only alive is read) | A downed player holds the room until killed: fine for a first play-test; reading the unconscious state is planned |
-| `Cure/RZ_CureFinale.c:1723` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
+| `Cure/RZ_CureFinale.c:1429` | the cure finale's clean room: the lab prefab has no named child entity to read, so a land point 15–25 m from the lab stands in; check it's somewhere players can stand and fight | Move the lab, or a lab prefab with the room as a child entity (planned) |
+| `Cure/RZ_CureFinale.c:1531` | an unconscious player still counts in the clean room (only alive is read) | A downed player holds the room until killed: fine for a first play-test; reading the unconscious state is planned |
+| `Cure/RZ_CureFinale.c:1936` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
 | `Director/Epilogue/RZ_EpilogueClosing.c:951` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the deploy menu, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
@@ -1618,7 +1621,7 @@ quartermaster's Buy actions, **UI > Reader** and **Subtitles** off for cards. Ho
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_UIData.c:945` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:494` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
-| `UI/RZ_PlayerUIComponent.c:168` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:174` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
 | `UI/RZ_Menus.c:303` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
@@ -1829,7 +1832,13 @@ the stand was lost (N this season). Remake from <route> or the backlog.`, `Final
 how <how>, partner <route>.`, `Finale: controller <route>, how <how>, terms N, deciders N.`, `Finale:
 item N (...) for <route> to <ident>.` and its drops, returns, spoils and hand-ins, `Finale: the rota
 moved the woman to house N.`, `Finale: a price door paid for <route>.`, `Finale: the Coat Run passed.`
-or `... was caught.`, `Finale: <route> broke its pact with <route> (...).`),
+or `... was caught.`, `Finale: <route> broke its pact with <route> (...).`, `Finale: the routes' pitches
+went on air at 85 percent.`, `Finale: asset <kind> for <route> to <ident> (<record>).`, `Finale: asset
+<kind> played for <route> by <ident>.`, `Finale: <route> spoiled <route>'s case with <person>.`,
+`Finale: <route> took <person> into custody from <route>.`, `Finale: <person> talked out of <route>'s
+hands.`, `Finale: <route> drained <route>'s source (<source>).`, `Finale: N item(s) of <route> ransomed
+back.`, `Finale: item N (...) of <route> spoiled on purpose.`, `Finale: <route>'s plan sold to <route>.`,
+`Finale: <route> paused (no active lock for 3 real days).`, `Finale: <person> died on-screen.`),
 `Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...`, `... goes with N of N crew aboard; the rest follow on foot.` and `... lost (...)`,
 `Story arc started: ...`, `Questline started: ...`, `Questline ...: stage '...'.` and
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
@@ -1910,14 +1919,15 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 30 conversations, 97 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 46 conversations, 124 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe) and `Dialogue: trees off` (on with **Dialogue >
 Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
 season mood <mood> (was <mood>)`, `Dialogue: budget reached <player> <faction>` (talk Favor for the
 day), `Reputation: crew name <name> for <player>`, `Dialogue debug: ...` (an admin's `/talkdebug`), and
 with **Voice > Log** on, `voice: face <faction> <register> <id> mood=<mood> listener=<identity>`. Several
 players: `Dialogue: scene <key> decided <value> by <player>`, `Dialogue: scene <key> hold by <player> objected to
-by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> vouched for <player>`. Lies: `Story:
+by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> vouched for <player>`. The finale's
+commit: `Dialogue: <player> committed to <route> at <speaker>`. Lies: `Story:
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
 `Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
@@ -2390,16 +2400,27 @@ when it happens)
   headline and in the journal, and its default follows a session later. Set **Lead points** 0 and
   stall research at 48: settling day doesn't open until 50.
 - [ ] The cure finale ([FINALE.md](FINALE.md); Questlines on, **Wait scale** 0.1, research brought to
-  90 with samples): the gate news and the lab's line come once; the cure shows 90; the five routes'
+  90 with samples): at 75% a leader's "Ask about the cure." says to ask again; at 80% the stronghold
+  leaders and the Doctor give the pitch; at 85% the four pitches and an unsigned one come on air once.
+  The gate news and the lab's line come once; the cure shows 90; the five routes'
   opening lines are heard and each route's desk stands by its stronghold leader (the Independent's at
-  the lab gate). "Write me down" without "What would it mean?" is refused; with it, within 30 s, you're
-  locked, and another desk refuses you. Do the Haven's Act I by the chair: the track readout says
+  the lab gate). With **Dialogue > Trees** off: "Write me down" without "What would it mean?" is
+  refused; with it, within 30 s, you're locked, and another desk refuses you. With Trees on: the
+  desks show no lock choices; a stronghold leader's (or a Loyal seat leader's) "Ask about the cure."
+  shows even when they refuse you, its "What would it mean?" shows the lock card tagged [Point of no
+  return], and "Write me down." locks you (dimmed with the reason when you can't). Finish a story job
+  that leans to a route (the black box into the stove): a "What you'd bring" notice, and the lock card
+  lists it. On a sworn stage, a player locked to another route takes "Tell her the truth about them"
+  (the next persuade is a step harder for the route) and "Walk her to your own people" (+20 Haven
+  Infamy; the stage comes back with "Talk them out of it"). Spoil the captain's freezers: the stage
+  comes back as Processing Again. Do the Haven's Act I by the chair: the track readout says
   "The Haven's work is at two" and a tissue hunt is offered. Hunted by Bastion, Bastion's desk refuses
   you until you hand over a firearm at the price door. Two players on different routes: one kills the
   other away from the lab (+3 Infamy with the victim's route faction; a fourth and fifth kill in the
   hour cost nothing more). Finish a route: the others' stage work is called off, the seal calls come at
   60, 30 and 10 minutes, the stand starts with your route holding the room. Stand in the clean room
-  (15–25 m from the lab) on a rival route: the "CLEAN ROOM" notice counts you up; take it; let the 15
+  (15–25 m from the lab) on a rival route: the "CLEAN ROOM" line under the noise meter counts you up
+  (routes, never names; gone 5 s after you leave the lab); take it; let the 15
   minutes run out with a count going (overtime). After the win the release scene at the lab takes the
   terms; the cure's notice names the route and the terms; the hall of fame shows "The cure: ...". Check
   the groups at the lab (two at most) and that they only fire on rival-route players.

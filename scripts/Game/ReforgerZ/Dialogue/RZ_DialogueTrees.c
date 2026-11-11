@@ -208,8 +208,8 @@ class RZ_DialogueTrees
 	protected void CollectTopics(RZ_DTalk t)
 	{
 		t.m_aTopics.Clear();
-		if (Refuses(t.m_Ctx))
-			return;
+		// A refusing speaker still offers its `always` topics (the finale's route topics)
+		bool refuses = Refuses(t.m_Ctx);
 		array<RZ_DConv> all = {};
 		m_DB.ForSpeaker(t.m_Ctx.m_aKinds, all);
 		for (int prio = 0; prio <= 4; prio++)
@@ -217,6 +217,9 @@ class RZ_DialogueTrees
 			array<RZ_DConv> band = {};
 			foreach (RZ_DConv c : all)
 			{
+				if (refuses && (c.m_iFlags & RZ_DConv.FLAG_ALWAYS) == 0)
+					continue;
+
 				if (c.m_iPrio == prio && !c.IsGreet() && TopicFree(t, c) && RZ_DialogueCond.Holds(t.m_Ctx, c.m_When))
 					band.Insert(c);
 			}
@@ -394,6 +397,24 @@ class RZ_DialogueTrees
 		// A price is never taken off a label that hasn't refreshed yet
 		if (!c.m_sCostKind.IsEmpty() && RZ_UIW.Now() - t.m_fNodeAt < FRESH_NODE)
 			return true;
+
+		// The finale's lock: only from a [Point of no return] node, and only if the finale says yes
+		string commitTo = CommitRoute(c);
+		if (!commitTo.IsEmpty())
+		{
+			string no = "\"Not here.\"";
+			if (t.m_Node.m_bConfirm && RZ_CureFinale.Get())
+				no = RZ_CureFinale.Get().CanCommit(pid, RZ_CureFinale.RouteOfWord(commitTo));
+
+			if (!no.IsEmpty() || RZ_UIW.Now() - t.m_fNodeAt < FRESH_NODE)
+			{
+				if (!no.IsEmpty())
+					s.m_aNew.Insert(no);
+
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+		}
 
 		if (!Pay(t, c, user))
 		{
@@ -719,6 +740,9 @@ class RZ_DialogueTrees
 		s.m_aNew.Clear();
 		array<string> lines = {};
 		Lines(t, node, lines);
+		if (node.m_bConfirm)
+			ConfirmLines(t, node, lines);
+
 		s.m_aNew.InsertAll(lines);
 		s.m_aNew.InsertAll(effectLines);
 		s.m_aNew.InsertAll(extra);
@@ -756,6 +780,42 @@ class RZ_DialogueTrees
 
 		if (hasPending)
 			lines.Insert(RZ_DialogueText.Fill(t.m_Ctx, pending));
+	}
+
+	// ================================================================ The finale's commit
+	//------------------------------------------------------------------------------------------------
+	//! The route word of a choice's commit effect ("bastion"), "" if it has none.
+	protected static string CommitRoute(RZ_DChoice c)
+	{
+		foreach (RZ_DEffect e : c.m_aDo)
+		{
+			if (e.m_sName == "commit")
+				return e.m_sArg;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A [Point of no return] node: the finale's three plain lines (the admission, what you bring,
+	//! what you leave) for the route its commit choice names.
+	protected void ConfirmLines(RZ_DTalk t, RZ_DNode node, notnull array<string> lines)
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (!finale)
+			return;
+
+		foreach (RZ_DChoice c : node.m_aChoices)
+		{
+			string route = CommitRoute(c);
+			if (route.IsEmpty())
+				continue;
+
+			array<string> card = {};
+			finale.LockCard(t.m_Ctx.m_iPlayer, RZ_CureFinale.RouteOfWord(route)).Split("\n", card, true);
+			lines.InsertAll(card);
+			return;
+		}
 	}
 
 	// ================================================================ Checks and tags
@@ -897,6 +957,22 @@ class RZ_DialogueTrees
 			{
 				r.m_bEnabled = false;
 				r.m_sNeed = string.Format("you have %1 food", food);
+			}
+		}
+
+		// The lock: [Point of no return], dimmed with the finale's reason when you can't
+		string commitTo = CommitRoute(c);
+		if (!commitTo.IsEmpty())
+		{
+			tag = Join(tag, "[Point of no return]");
+			string why = "\"Not here.\"";
+			if (t.m_Node && t.m_Node.m_bConfirm && RZ_CureFinale.Get())
+				why = RZ_CureFinale.Get().CanCommit(ctx.m_iPlayer, RZ_CureFinale.RouteOfWord(commitTo));
+
+			if (!why.IsEmpty())
+			{
+				r.m_bEnabled = false;
+				r.m_sNeed = why;
 			}
 		}
 
@@ -1072,6 +1148,18 @@ class RZ_DialogueTrees
 						scene.SetFlag("scene." + ctx.m_sScene + "." + e.m_sArg, 1);
 						scene.Memory().Record("scene." + ctx.m_sScene, ctx.m_sKey, e.m_sArg, RZ_WorldMemory.SOURCE_CHOICE, false);
 						RZ_Log.Info(string.Format("Dialogue: scene %1 decided %2 by %3", ctx.m_sScene, e.m_sArg, RZ_Util.PlayerName(pid)));
+					}
+
+					break;
+				}
+				case "commit":
+				{
+					// The finale's lock (RZ_CureFinale.Commit checks CanCommit again)
+					RZ_CureFinale finale = RZ_CureFinale.Get();
+					if (finale && t.m_Node && t.m_Node.m_bConfirm && finale.Commit(pid, RZ_CureFinale.RouteOfWord(e.m_sArg)))
+					{
+						s.m_aNew.Insert(string.Format("Written down for %1, until the cure.", RZ_CureFinale.RouteName(RZ_CureFinale.RouteOfWord(e.m_sArg))));
+						RZ_Log.Info(string.Format("Dialogue: %1 committed to %2 at %3", RZ_Util.PlayerName(pid), e.m_sArg, ctx.m_sKey));
 					}
 
 					break;

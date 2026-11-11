@@ -157,7 +157,7 @@ Still to build:
 | `stranger:<kind>` | People who need help, at places where they'd be ([section 16](#strangers)) | `stranger:<id>` | Their request |
 | `radio:<channel>` | No body: "Call on the channel" at a house radio with power, or a carried radio | `radio:<channel>` | Call-ins, distress calls, haggling ([section 16](#radio)) |
 
-Also still to build: an `always` topic (the finale's route topics) shows even when the speaker refuses; a
+Also still to build: a
 refusing leader offers **Make it right** ([section 6](#make-it-right)). **Claimed speakers:** a leader,
 wanderer or house that a running story holds shows that story's topics first, and other conversations can't
 `offer`, `begin` or `start` anything that touches the claimed subject that turn ("Not now. I've got enough on.").
@@ -219,7 +219,7 @@ what the player knows" ([docs/DIALOGUE.md](../docs/DIALOGUE.md#conditions)).
 
 Still to build, as their owners are built: `kit`, `claimed`, `passing`, `caught` (disguise); `tribe*`, `alpha*`
 (the tribes, through the infected adapter); `lean`, `sitting`, `swayed`, `decided` (the majors and scenes);
-`finale:*`, `route`, `cure_held`, `ending`, `was` (the finale and the season story); `promise`, `heard_lie`
+`cure_held`, `ending`, `was` (the season story; `finale:*` and `route` are built); `promise`, `heard_lie`
 (promises and lies); `q:` and `m:` (questline and mission values); `declared` and `symptoms`; `group`.
 
 ## 8. Checks and tags (New Vegas style)
@@ -236,7 +236,6 @@ Still to build:
 | `look F D [cover:<key>]` | [Full kit +2] [Watched −1] 1 of 2 | **The look** ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) |
 | Callout | [Evidence] | You hold the truth for that lie |
 | Vouch | [Vouch] | [docs/DIALOGUE.md](../docs/DIALOGUE.md#several-players) |
-| `commit` | [Point of no return] | `finale:can_commit`; always followed by a confirm node |
 
 - The −1 for the liar count (2 or more) in Trust, once lies are built.
 - **Groups.** In a decide scene the best talker present can answer for everyone; each member keeps their own
@@ -270,7 +269,6 @@ Still to build, with scenes and the systems that own them:
 | `call` | `call:work`, `call:rob`, `call:search`, `call:declare_bite`, `call:table_bite` | named calls for the built behaviours (today's `slot:N` covers them) | its own rules |
 | `hostile`, `flee` | `hostile:3` | a timed grudge; the wanderer runs | grudges restart |
 | `pass`, `catch` | `pass:post`, `catch:bastion` | a passed or caught look's result | DISGUISE.md's rules |
-| `commit` | `commit:bastion` | the finale route lock | a confirm node, and `CanCommit` |
 
 **Personal and world.** Season, run and scene flags, `resolve`, `start` and `commit` change the world: they're
 allowed only in a scene, so they run once ([section 14](#14-multiplayer)). **Talk resolves talk:** anything
@@ -600,32 +598,16 @@ interruption budget; dialogue is how they're spoken, through `errand:` and the a
 
 ### The finale's commit
 
-[FINALE.md](../docs/FINALE.md#the-lock) owns the routes, the lock and its rules. Dialogue gives it the confirm node.
+The commit node, the `always` route topics and the pitches are built ([docs/DIALOGUE.md](../docs/DIALOGUE.md#the-finales-commit)).
+Still to build:
 
-- **Where routes are taken.** Each faction route's topic is an `always` topic on its stronghold leader and on
-  its Loyal seat leaders. So a player whose stronghold leader refuses them, or who is far away, can commit at
-  another seat. The Independent route is committed on the open channel, at any powered house radio or a carried
-  one. The Doctor wanderer gives its pitch; if the Doctor is gone, the Courier, else an unsigned sheet at the lab
-  gate.
-- **Before 90%.** From 75% the topic shows "Ask me again when it's nearly done." From 80% the pitches are on
-  demand. Nothing locks before 90%.
-- **Committing.** `commit:<route>` only runs through a confirm node tagged [Point of no return]. The engine
-  refuses it unless `CanCommit` is true:
-  - research is at or past the 90% gate;
-  - the stand hasn't been won;
-  - this identity hasn't locked this season;
-  - `CanSideWith` says yes, by parley (you're owed), or by price (the route's price door). The Independent route
-    is always open.
-
-  No conversation text can override this. The lint refuses tier, standing or memory terms on a commit choice:
-  the finale decides who may commit, not the writer.
-- **The confirm node** shows the finale's three plain lines: the route's **admission**, **what you bring** (your
-  assets and notes for this route), and **what you leave** (assets for other routes go dormant).
-- **The lock** is per identity for the season, so dying isn't a way out. It ends at the cure.
-- **Late joiners** and the undecided can commit until the stand is won.
+- **The Independent on the open channel**, at any powered house radio or a carried one (with radio speakers):
+  said on air without a name, *"This is nobody. The cure goes to everyone."*, and every faction hears that
+  somebody said it. Today it's committed at the Doctor or the Courier on the road.
 - **After the lock** route lines are face to face only, cool on the first visit and back to normal over two
   real days. Shared channels never single out anyone's route. `route:none` players in the last 10% are treated
-  as bystanders, and any route topic still offers them the commit.
+  as bystanders.
+- **The confirm node's "you bring"** also lists the player's notes for the route, once notes are built.
 
 ### The last week
 
@@ -729,7 +711,7 @@ Dialogue lands across the plan's build order. Each step is playable on its own, 
 | 3. Small things | Errand asks through `errand:`, promises, callbacks and barks |
 | 4. The mission style | Lies, tells and the lie store; the multiplayer layer (overheard lines, decide holds and objections, tallies, vouch, call-outs); claims as look choices, cover details and point-out (with disguise's phase 1); strangers' voice |
 | 5. The majors | Sitting scenes and sways into `RZ_QuestVote`; "Ask about..." topics; set pieces as public scenes |
-| 6. The finale | The commit topics and confirm nodes; route lines |
+| 6. The finale | **Built** (the commit topics and confirm nodes, the pitches: [docs/DIALOGUE.md](../docs/DIALOGUE.md#the-finales-commit)). Still: route lines, and the Independent's commit on the radio |
 | 7. The ending | Leaders' epilogue topics, the codas, closing stages, hand-ins, the barrier, epilogue greets and barks |
 | 8. Growth | Strangers and radio speakers in full; the dialogue screen and panel layouts, once they're built in Workbench |
 
@@ -1115,69 +1097,28 @@ How it plays out:
 
 The vote is counted at 20:30, and the chair breaks ties. Nobody won anything by picking first.
 
-### H. The point of no return
+### H. The point of no return on the radio
 
-[FINALE.md](../docs/FINALE.md#the-lock) owns the routes. Bastion's route at any Loyal Bastion seat, and the Independent
-route on the radio.
+The faction routes' commit topics are built ([docs/DIALOGUE.md](../docs/DIALOGUE.md#the-finales-commit)). The
+Independent's, on the open channel once radio speakers are built:
 
 ```
-conv finale.route.bastion
-for stronghold:bastion, seat:bastion/outpost_lead
-when cure>=75 & route:none & loyalty:loyal
-topic "Ask where Bastion stands when it's done."
-prio quest
-always
-voice bastion
-
-node start
-  jump !finale:open -> early
-  say The cure goes in a crate, and the crate goes where we can count it. Are you with us on the lab road?
-  > @with "I'm with Bastion. To the end." -> confirm   if finale:can_commit=bastion
-  > @why "Why should it be you?" -> why
-  > @notyet "Not yet." -> end
-
-node why
-  say Because we count. Everyone else just hopes. Ask me again when you've decided.
-  > @back Back. -> start
-
-node early
-  say Ask me again when it's nearly done. Until then you're a civilian, and civilians change their minds.
-  > @leave Leave. -> end
-
-node confirm
-  say From now until the cure, you stand with Bastion on the lab road. Our cure reaches those who comply, and the register is a census.
-  say {lock:bring}. {lock:leave}.
-  say Other routes' work won't have you. Dying doesn't change it.
-  > @yes "Write me down." -> sworn   do commit:bastion
-  > @notyet2 "Not yet." -> end
-
-node sworn
-  say Noted. One civilian, attached. Name goes on the roster. Bastion out.
-  > @leave2 Leave. -> end
-
 conv finale.route.independent
 for radio:open
-when cure>=75 & route:none
+when finale:open & route:none
 topic "Speak on the open channel about the cure."
 prio quest
 always
 voice plain
 
 node start public
-  jump !finale:open -> early
   say (static) ...open channel. Go ahead.
-  > @all "This is nobody. The cure goes to everyone. No crates, no lists." -> confirm   if finale:can_commit=independent
+  > @all "This is nobody. The cure goes to everyone. No crates, no lists." -> card
   > @off Switch off. -> end
 
-node early
-  say (static) Nothing to say yet. The lab's still working.
-  > @off2 Switch off. -> end
-
-node confirm
-  say (static) Nobody guards it and nobody counts it, and every faction remembers who took it from them.
-  say {lock:bring}. {lock:leave}.
-  say (static) Once it's on the air, every faction hears that somebody said it. Other routes' work won't have you. Dying doesn't change it.
-  > @say Say it. -> said   do commit:independent
+node card confirm
+  say (static) Once it's on the air, every faction hears that somebody said it.
+  > @say Say it. -> said   do commit:indep
   > @off3 Switch off. -> end
 
 node said
@@ -1185,11 +1126,6 @@ node said
   > @leave Leave. -> end
 ```
 
-- The packer tags each commit '[Point of no return]'. `{lock:bring}` and `{lock:leave}` are the finale's lock-card
-  lines for this player ("You bring: one proof (the black box in the stove)." "You leave: the woman's house, which
-  you know.").
-- Before 90% nothing locks, and the engine refuses a commit whatever the text says. Refusals don't hide these
-  topics, and a Stranger who joins at 95% can still choose, until the stand is won.
 - Nothing on air names the player: shared channels never single out anyone's route.
 - `CanCommit` decides who may commit, not the writer.
 

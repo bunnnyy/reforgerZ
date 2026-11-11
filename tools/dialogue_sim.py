@@ -195,6 +195,8 @@ def describe_choice(ch, conv, c):
             tag = "[%s]" % m.group(3).split(",")[0].capitalize() + (" " + tag if tag else "")
         if m and m.group(2) == "tier" and not m.group(1) and m.group(4) == ">=":
             tag = "[%s - %s]" % (m.group(5).capitalize(), NAMES.get(m.group(3), "")) + (" " + tag if tag else "")
+    if "commit:" in c.do:
+        tag = (tag + " " if tag else "") + "[Point of no return]"
     return tag, shown, result
 
 
@@ -239,6 +241,8 @@ def walk(ch, conv, start_only=False):
             continue
         for line in say_lines(ch, node):
             print("     " + line)
+        if node.confirm:
+            print("     (the finale's lock card: the admission, what you bring, what you leave)")
         for c in node.choices:
             tag, shown, result = describe_choice(ch, conv, c)
             mark = " " if shown else "x"

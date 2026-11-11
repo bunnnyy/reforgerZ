@@ -3,9 +3,10 @@
 // the cure it ends with stands the Perimeter down. With questlines' Wait scale at 0.1:
 // 1. a commit is refused below the gate;
 // 2. the slow finish: the lab-alone track makes the batch with nobody holding the room (then reset);
-// 3. the gate opens the five routes; the tester locks to the Haven, a stand-in identity to Bastion
-//    and another to the Red Hand; two routes race (the Haven and Bastion), Bastion and the Red Hand
-//    make a pact;
+// 3. the gate opens the five routes; the tester gets a route asset for the Haven (on the lock card),
+//    locks to the Haven (the dialogue's route: and finale: conditions read it, the asset is played
+//    once), a stand-in identity to Bastion and another to the Red Hand; two routes race (the Haven
+//    and Bastion), Bastion and the Red Hand make a pact;
 // 4. the Haven finishes: the others freeze, the batch is made ready and sealed, the stand starts;
 // 5. the stand is lost (nobody held the lab): research back to 90, the Haven's remake step makes the
 //    batch again, and the second stand starts with the Haven holding the room;
@@ -22,6 +23,7 @@ modded class RZ_CureFinale
 		Pad();
 		m_Items = new RZ_FinaleItems(m_GM, this);
 		m_People = new RZ_FinalePeople(m_GM, this);
+		m_Assets = new RZ_FinaleAssets(m_GM);
 		m_bStandOn = false;
 		m_bStandPrep = false;
 		m_bInOvertime = false;
@@ -253,8 +255,22 @@ class RZT_Finale
 		}
 
 		Check("the five routes begin", running == RZ_CureFinale.ROUTES, string.Format("%1 running", running));
+		string me = gm.GetProfile(RZT_Fake.ID).m_sIdentity;
+		Check("an asset is added", f.GetAssets().Add(RZ_CureFinale.HAVEN, RZ_FinaleAssets.ALLY, me, "rzt.asset|1"), "refused");
+		Check("an outcome gives one asset", !f.GetAssets().Add(RZ_CureFinale.HAVEN, RZ_FinaleAssets.PROOF, me, "rzt.asset|1"), "given twice");
+		Check("the lock card shows the asset", f.LockCard(RZT_Fake.ID, RZ_CureFinale.HAVEN).Contains("an ally"), f.LockCard(RZT_Fake.ID, RZ_CureFinale.HAVEN));
+		array<int> kinds = {RZ_FinaleAssets.ALLY};
+		Check("an asset is dormant before the lock", f.GetAssets().Find(me, RZ_CureFinale.HAVEN, kinds) < 0, "playable unlocked");
+		Check("dialogue: route:none before the lock", RZ_CureFinale.RouteTerm("none", RZT_Fake.ID), "false");
+		Check("dialogue: finale:open at the gate", RZ_CureFinale.FinaleTerm("open", RZT_Fake.ID, null), "false");
 		bool locked = f.Commit(RZT_Fake.ID, RZ_CureFinale.HAVEN);
 		Check("the tester locks to the Haven", locked && f.RouteOfPlayer(RZT_Fake.ID) == RZ_CureFinale.HAVEN, "lock failed");
+		Check("dialogue: route:haven after the lock", RZ_CureFinale.RouteTerm("haven", RZT_Fake.ID) && !RZ_CureFinale.RouteTerm("none", RZT_Fake.ID), "wrong");
+		int asset = f.GetAssets().Find(me, RZ_CureFinale.HAVEN, kinds);
+		Check("the asset is playable after the lock", asset >= 0, "not found");
+		f.GetAssets().Play(asset);
+		Check("an asset plays once", f.GetAssets().Find(me, RZ_CureFinale.HAVEN, kinds) < 0, "played twice");
+		Check("no route is paused at the gate", !f.RoutePaused(RZ_CureFinale.HALCYON), "paused");
 		Check("a second lock is refused", !f.CanCommit(RZT_Fake.ID, RZ_CureFinale.BASTION).IsEmpty(), "no refusal");
 		f.RZT_Lock(gm.GetProfile(RZT_Fake.ID).m_sIdentity, RZ_CureFinale.HAVEN);
 		f.RZT_Lock(BASTION_ID, RZ_CureFinale.BASTION);
@@ -369,6 +385,7 @@ class RZT_Finale
 		if (cure.IsCured())
 		{
 			Check("the stand is won after overtime", f.RZT_InOvertime(), "no overtime ran");
+			Check("finale.came counts the routes that came for it", RZ_WorldFacts.Get().Flag("finale.came") >= 1, string.Format("came %1", RZ_WorldFacts.Get().Flag("finale.came")));
 			Next();
 			return false;
 		}
@@ -380,6 +397,7 @@ class RZT_Finale
 			Check("the finisher holds the room again", true, "");
 			f.RZT_Take(f.SideOf(RZ_CureFinale.BASTION));
 			Check("a scripted take", f.Holder() == RZ_CureFinale.BASTION, string.Format("holder %1", f.Holder()));
+			Check("the stand's HUD line names the holder's route", f.StandLine().Contains("BASTION"), f.StandLine());
 			// The Haven (the tester, in the room) counts toward its take; the 15 minutes end now
 			cure.RZT_StandLeft(2);
 			return false;

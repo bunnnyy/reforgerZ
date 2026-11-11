@@ -11,8 +11,9 @@
 //! is a scene (RZ_QM_RouteScene: people at places with choices); a choice's "do:<code>" runs the
 //! route's own code (items, people, trays). Route stages never claim the lab.
 //!
-//! This file also holds the desks (the commit node's fallback: "What would it mean?", then "Write
-//! me down" within 30 s; pacts; price doors; giving back what you found) and the tissue hunts.
+//! This file also holds the desks (the commit node's fallback with Dialogue > Trees off: "What would it
+//! mean?", then "Write me down" within 30 s; pacts; price doors; giving back what you found) and the
+//! tissue hunts.
 
 //------------------------------------------------------------------------------------------------
 //! A route's stage scene: the majors' scene with the finale's gates.
@@ -20,6 +21,49 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 {
 	int m_iRoute = -2;
 	bool m_bSworn;
+	protected ref map<int, string> m_mSubjects = new map<int, string>();	// spot -> the finale person standing there
+
+	//------------------------------------------------------------------------------------------------
+	//! This spot is one of the finale's people: a death on-screen is theirs (RZ_FinalePeople.Killed).
+	void TrackSubject(int spot, string key)
+	{
+		m_mSubjects.Set(spot, key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A subject's body died on-screen: +20 Infamy with their faction for the nearest player within
+	//! 150 m (the killer isn't read), and the stage is offered again, now with the route's branch.
+	override protected void OnScene(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		super.OnScene(gm, dt, ids, players);
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (!finale || m_mSubjects.IsEmpty())
+			return;
+
+		foreach (int spot, string key : m_mSubjects)
+		{
+			RZ_HalcyonSpot s = GetSpot(spot);
+			if (!s || !s.m_bUp || !s.m_Ent || RZ_Util.IsCharacterAlive(s.m_Ent) || !finale.GetPeople().IsAlive(key))
+				continue;
+
+			int killer = -1;
+			float best = 150;
+			foreach (int i, IEntity p : players)
+			{
+				float d = RZ_Util.DistXZ(p.GetOrigin(), s.m_vPos);
+				if (d < best)
+				{
+					best = d;
+					killer = ids[i];
+				}
+			}
+
+			finale.GetPeople().Killed(key, killer);
+			NotifyInterested(gm, m_sTitle, "They're dead. Whatever this route needed from them, it needs from somewhere else now.");
+			m_eState = RZ_EMissionState.FAILED;
+			return;
+		}
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -50,7 +94,17 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 		if (!finale)
 			return false;
 
+		// A rival's move ("do:rival:..."): only for players written down for another route
+		bool rival = c.m_sFlag.StartsWith("do:rival:");
 		string why = finale.MayDecide(playerId, m_iRoute, m_bSworn);
+		if (rival)
+		{
+			why = "";
+			int theirs = finale.RouteOfPlayer(playerId);
+			if (theirs == RZ_CureFinale.NONE || theirs == m_iRoute)
+				why = "\"That's for the other routes' people. Not you.\"";
+		}
+
 		if (!why.IsEmpty())
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, why);
@@ -68,7 +122,60 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 			}
 		}
 
-		return super.Allowed(gm, run, playerId, c);
+		// A route asset (its owner locked to this route) eases one check, once: a persuade or a
+		// rank one step easier, or a price a third lower
+		RZ_FinaleAssets assets = finale.GetAssets();
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		int faction = c.m_iFaction;
+		if (faction < 0)
+			faction = m_iGiver;
+
+		int persuade = c.m_iPersuade;
+		int rank = c.m_iRank;
+		int bribe = c.m_iBribe;
+		int asset = -1;
+
+		// Spoil the case: someone told this act's people a true thing about the route
+		if (c.m_iPersuade > 0 && !rival && run.Flag("spoiled." + run.m_iStage.ToString()) != 0)
+			c.m_iPersuade = Math.MinInt(4, c.m_iPersuade + 1);
+
+		array<int> kinds = {};
+		if (c.m_iPersuade > 1)
+		{
+			kinds.Insert(RZ_FinaleAssets.PROOF);
+			kinds.Insert(RZ_FinaleAssets.ALLY);
+			kinds.Insert(RZ_FinaleAssets.STANDING);
+			asset = assets.Find(ident, m_iRoute, kinds);
+			if (asset >= 0)
+				c.m_iPersuade = c.m_iPersuade - 1;
+		}
+		else if (c.m_iRank > 0 && c.m_iRank > -99 && Rank(gm, playerId, faction) < c.m_iRank)
+		{
+			kinds.Insert(RZ_FinaleAssets.ALLY);
+			kinds.Insert(RZ_FinaleAssets.STANDING);
+			asset = assets.Find(ident, m_iRoute, kinds);
+			if (asset >= 0)
+				c.m_iRank = c.m_iRank - 1;
+		}
+		else if (c.m_iBribe >= 3)
+		{
+			kinds.Insert(RZ_FinaleAssets.STANDING);
+			asset = assets.Find(ident, m_iRoute, kinds);
+			if (asset >= 0)
+				c.m_iBribe = c.m_iBribe - c.m_iBribe / 3;
+		}
+
+		bool ok = super.Allowed(gm, run, playerId, c);
+		c.m_iPersuade = persuade;
+		c.m_iRank = rank;
+		c.m_iBribe = bribe;
+		if (ok && asset >= 0)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("What you brought counts here (%1). It won't count twice.", RZ_FinaleAssets.KindName(assets.KindAt(asset))));
+			assets.Play(asset);
+		}
+
+		return ok;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -80,6 +187,14 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 			decide = line.DoIt(gm, run, playerId, c.m_sFlag.Substring(3, c.m_sFlag.Length() - 3));
 
 		super.Apply(gm, run, playerId, spot, c);
+
+		// Custody and a drained source change what the stage can be: it's offered again
+		if (c.m_sFlag.StartsWith("do:rival:custody") || c.m_sFlag.StartsWith("do:rival:drain"))
+		{
+			m_eState = RZ_EMissionState.FAILED;
+			return;
+		}
+
 		if (decide < 0)
 			return;
 
@@ -200,6 +315,13 @@ class RZ_FinaleRoute : RZ_Questline
 	protected float RemakeHours() { return 24; }
 
 	//------------------------------------------------------------------------------------------------
+	//! The person the route claims while it runs ("woman", "captain", "cook"; "" none).
+	protected string SubjectKey()
+	{
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Sworn: Acts II and IV (only the route's locked players decide them).
 	bool IsSworn(int stage)
 	{
@@ -253,6 +375,27 @@ class RZ_FinaleRoute : RZ_Questline
 	{
 		RZ_CureFinale f = Finale();
 		if (!f)
+			return false;
+
+		// No active lock for 3 real days: the sworn work pauses and the subject is let go
+		bool paused = f.RoutePaused(m_iRoute);
+		string subject = SubjectKey();
+		if (paused && run.Flag("paused") == 0)
+		{
+			run.SetFlag("paused", 1);
+			if (!subject.IsEmpty())
+				run.Unclaim(RZ_FinalePeople.Subject(subject));
+
+			RZ_Log.Info(string.Format("Finale: %1 paused (no active lock for 3 real days).", RZ_CureFinale.RouteName(m_iRoute)));
+		}
+		else if (!paused && run.Flag("paused") != 0)
+		{
+			run.SetFlag("paused", 0);
+			if (!subject.IsEmpty())
+				run.Claim(RZ_FinalePeople.Subject(subject));
+		}
+
+		if (paused && IsSworn(stage))
 			return false;
 
 		switch (stage)
@@ -398,6 +541,18 @@ class RZ_FinaleRoute : RZ_Questline
 			return "";
 		}
 
+		if (head == "rival" && parts.Count() >= 3)
+			return CanMove(gm, run, playerId, parts[1], parts[2]);
+
+		if (head == "free" && parts.Count() >= 2)
+		{
+			RZ_FinalePersonSave held = Finale().GetPeople().Get(parts[1]);
+			if (!held || !held.alive || held.holder < 0 || held.holder == m_iRoute)
+				return "Nobody's holding them.";
+
+			return "";
+		}
+
 		return "";
 	}
 
@@ -412,6 +567,24 @@ class RZ_FinaleRoute : RZ_Questline
 		if (head == "give" && parts.Count() >= 3)
 		{
 			GiveItem(gm, playerId, parts[1], ItemName(parts[1]), PlayerPos(playerId), ColdFor(gm, playerId, parts[2].ToFloat()));
+			return -1;
+		}
+
+		if (head == "rival" && parts.Count() >= 3)
+		{
+			Move(gm, run, playerId, parts[1], parts[2]);
+			return -1;
+		}
+
+		if (head == "free" && parts.Count() >= 2)
+		{
+			RZ_FinalePersonSave freed = Finale().GetPeople().Get(parts[1]);
+			if (freed)
+			{
+				RZ_Log.Info(string.Format("Finale: %1 talked out of %2's hands.", parts[1], RZ_CureFinale.RouteName(freed.holder)));
+				freed.holder = -1;
+			}
+
 			return -1;
 		}
 
@@ -434,6 +607,166 @@ class RZ_FinaleRoute : RZ_Questline
 	protected string ItemName(string kind)
 	{
 		return kind;
+	}
+
+	// ================================================================ The moves (rivals)
+	//------------------------------------------------------------------------------------------------
+	//! A rival's move on this route's scene (docs/FINALE.md, "The moves"). "" if it can happen now.
+	//!   spoil:<person>    tell them a true thing about this route: its persuades one step harder for the act (once per subject per rival route)
+	//!   custody:<person>  walk them to your own people: +20 Infamy with their faction; they give you nothing
+	//!   drain:<source>    the source spoils for the season: the route moves to its branch
+	protected string CanMove(RZ_GameModeComponent gm, RZ_QuestRun run, int playerId, string move, string what)
+	{
+		int theirs = Finale().RouteOfPlayer(playerId);
+		RZ_FinalePeople people = Finale().GetPeople();
+		if (move == "spoil")
+		{
+			if (run.Flag(string.Format("spoil.%1.%2", what, theirs)) != 0)
+				return "\"You've told me. I heard you the first time.\"";
+
+			return "";
+		}
+
+		if (move == "custody")
+		{
+			RZ_FinalePersonSave p = people.Get(what);
+			if (!p || !p.alive || p.holder >= 0)
+				return "\"I'm not going anywhere with you.\"";
+
+			return "";
+		}
+
+		if (move == "drain")
+		{
+			if (RZ_WorldFacts.Get().Flag(DrainKey()) != 0)
+				return "There's nothing left in it to spoil.";
+
+			return "";
+		}
+
+		return "Not now.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Move(RZ_GameModeComponent gm, RZ_QuestRun run, int playerId, string move, string what)
+	{
+		RZ_CureFinale f = Finale();
+		int theirs = f.RouteOfPlayer(playerId);
+		RZ_FinalePeople people = f.GetPeople();
+		f.Hostile(theirs, m_iRoute);
+		if (move == "spoil")
+		{
+			run.SetFlag(string.Format("spoil.%1.%2", what, theirs), 1);
+			run.SetFlag("spoiled." + run.m_iStage.ToString(), 1);
+			TellLocked(gm, run.Fill("Someone told them the truth about us. Asking just got harder."));
+			RZ_Log.Info(string.Format("Finale: %1 spoiled %2's case with %3.", RZ_CureFinale.RouteName(theirs), RZ_CureFinale.RouteName(m_iRoute), what));
+			return;
+		}
+
+		if (move == "custody")
+		{
+			RZ_FinalePersonSave p = people.Get(what);
+			if (!p)
+				return;
+
+			int faction = p.faction;
+			vector to = Seat(gm, RZ_CureFinale.PayFaction(theirs));
+			if (theirs == RZ_CureFinale.INDEP)
+				to = LabGate(gm);
+
+			people.Custody(what, theirs, to);
+			if (faction >= 0)
+				f.PayIdent(IdentOf(gm, playerId), faction, 0, 0, 20, "took one of the finale's people into custody");
+
+			TellLocked(gm, string.Format("%1 has them now. They'll give %1 nothing, and we need them back.", RZ_Util.Capitalize(RZ_CureFinale.RouteName(theirs))));
+			RZ_Log.Info(string.Format("Finale: %1 took %2 into custody from %3.", RZ_CureFinale.RouteName(theirs), what, RZ_CureFinale.RouteName(m_iRoute)));
+			return;
+		}
+
+		if (move == "drain")
+		{
+			RZ_WorldFacts.Get().SetFlag(DrainKey(), 1);
+			int infamy = 5;
+			if (LockedNear(PlayerPos(playerId), 100))
+				infamy = 15;
+
+			int victim = RZ_CureFinale.PayFaction(m_iRoute);
+			if (victim >= 0)
+				f.PayIdent(IdentOf(gm, playerId), victim, 0, 0, infamy, "drained a route's source");
+
+			TellLocked(gm, "Someone spoiled it at the source. That way's gone for the season.");
+			RZ_Log.Info(string.Format("Finale: %1 drained %2's source (%3).", RZ_CureFinale.RouteName(theirs), RZ_CureFinale.RouteName(m_iRoute), what));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The season flag a drained source sets: its route moves to its branch.
+	string DrainKey()
+	{
+		return string.Format("finale.drained.%1", m_iRoute + 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDrained()
+	{
+		return RZ_WorldFacts.Get().Flag(DrainKey()) != 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of this route's locked players is within `radius` of `pos` (they saw it).
+	protected bool LockedNear(vector pos, float radius)
+	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			if (Finale().RouteOfPlayer(ids[i]) == m_iRoute && RZ_Util.DistXZ(p.GetOrigin(), pos) <= radius)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line to this route's locked players who are online.
+	protected void TellLocked(RZ_GameModeComponent gm, string text)
+	{
+		array<int> all = {};
+		GetGame().GetPlayerManager().GetPlayers(all);
+		foreach (int pid : all)
+		{
+			if (Finale().RouteOfPlayer(pid) == m_iRoute)
+				gm.NotifyPlayer(pid, m_sTitle, text);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rivals' way into a scene: a spot beside the subject or the source, with the moves on it.
+	//! Locked players of other routes only (the label is shared; the refusal comes when you pick).
+	protected void RivalSpot(RZ_GameModeComponent gm, RZ_QuestRun run, RZ_QM_MajorScene scene, vector at, string person, string personName, string source)
+	{
+		int spot = scene.Person(RZ_Mission.LandPointNear(at, 8, 16), "the way round the back", "Look round the back", "Nobody's watching this side. Somebody from another route could do a lot from here.");
+		if (!person.IsEmpty())
+		{
+			scene.Choice(spot, "Tell " + personName + " the truth about them").Sets("do:rival:spoil:" + person).Says("Every word of it true. It lands.", "spoiled a rival route's case");
+			scene.Choice(spot, "Walk " + personName + " to your own people").Way(RZ_EQuestApproach.BETRAY).Sets("do:rival:custody:" + person).Says("They come, because you're armed and they aren't. They won't give you anything.", "took one of the finale's people into custody");
+		}
+
+		if (!source.IsEmpty())
+			scene.Choice(spot, "Spoil " + source).Way(RZ_EQuestApproach.FORCE).Sets("do:rival:drain:" + source).Says("It takes twenty seconds to spoil. Whatever was in it is gone.", "drained a rival route's source");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A subject held by another route: talk them out of it (persuade 3 on the holder's rank).
+	protected void FreeChoice(RZ_GameModeComponent gm, RZ_QuestRun run, RZ_QM_MajorScene scene, int spot, string key)
+	{
+		RZ_FinalePersonSave p = Finale().GetPeople().Get(key);
+		if (!p || !p.alive || p.holder < 0 || p.holder == m_iRoute)
+			return;
+
+		int holder = RZ_CureFinale.PayFaction(p.holder);
+		scene.Choice(spot, "Talk them out of it").Persuade(holder, 3, "elder,police").Sets("do:free:" + key).Says("\"Fine. Take them. They weren't giving us anything anyway.\"", "talked one of the finale's people out of custody").Refused("\"They stay with us.\"");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -723,9 +1056,12 @@ class RZ_FinaleRoute : RZ_Questline
 }
 
 //------------------------------------------------------------------------------------------------
-//! A route's desk (the commit node's fallback, docs/FINALE.md "The lock"): the route's clerk near
-//! its stronghold leader (the Independent's at the lab gate), from the gate until the cure. Not on
-//! the radio. "What would it mean?" shows the lock card and arms "Write me down" for 30 s. The
+//! A route's desk (docs/FINALE.md "The lock"): the route's clerk near its stronghold leader (the
+//! Independent's at the lab gate), from the gate until the cure. Not on the radio. With Dialogue >
+//! Trees off it is the commit node: "What would it mean?" shows the lock card and arms "Write me
+//! down" for 30 s. With Trees on, the leaders' [Point of no return] topics take the names
+//! (dialogue/finale/routes.rzd) and the desk keeps the rest; the Independent's desk (the unsigned
+//! sheet at the lab gate) still takes names while no Doctor or Courier is on the road. The
 //! go-between takes pact votes; the clerk takes a price door; the lost-and-found takes back what
 //! you found (10 Favor with the route's faction: "found it").
 class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
@@ -781,7 +1117,14 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 		m_sTitle = RZ_CureFinale.RouteTitle(m_iRoute);
 		m_sBrief = string.Format("The cure is at the gate. %1 takes names for its route here.", RZ_CureFinale.RouteName(m_iRoute));
 		int talk = AddClue(clerk, Pitch());
-		AddSpot(at, RZ_EPuzzleProp.CIVILIAN, 0, talk, "Talk to " + clerk, "What would it mean?|Write me down [no return]|How do things stand?|" + PriceLabel(), clerk);
+		string lockLabels = "What would it mean?|Write me down [no return]|";
+		if (TreesTakeNames() && m_iRoute != RZ_CureFinale.INDEP)
+		{
+			lockLabels = "||";
+			m_sBrief = string.Format("The cure is at the gate. %1's leaders take names for its route; this desk keeps the page, the pacts and the price.", RZ_CureFinale.RouteName(m_iRoute));
+		}
+
+		AddSpot(at, RZ_EPuzzleProp.CIVILIAN, 0, talk, "Talk to " + clerk, lockLabels + "How do things stand?|" + PriceLabel(), clerk);
 		string pacts = "";
 		for (int r = 0; r < RZ_CureFinale.ROUTES; r++)
 		{
@@ -797,8 +1140,14 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 
 		int between = AddClue("the go-between", "\"A pact is both routes' regulars agreeing within a day. One a route. You stand together at the stand.\"");
 		AddSpot(RZ_Mission.LandPointNear(at, 3, 6), RZ_EPuzzleProp.CIVILIAN, 1, between, "Talk to the go-between", pacts, "the go-between");
-		int found = AddClue("the lost-and-found", "\"Picked up something with our name on it? We'll take it back. No questions.\"");
-		AddSpot(RZ_Mission.LandPointNear(at, 3, 6), RZ_EPuzzleProp.OBJECT, 2, found, "Read the note", "Give back what you found", "");
+		int found = AddClue("the lost-and-found", "\"Picked up something with our name on it? We'll take it back. No questions. Or we'll buy it back, and remember who sold it.\"");
+		AddSpot(RZ_Mission.LandPointNear(at, 3, 6), RZ_EPuzzleProp.OBJECT, 2, found, "Read the note", "Give back what you found|Ransom it back [their Favor]|Spoil another route's find", "");
+		if (m_iRoute == RZ_CureFinale.REDHAND || m_iRoute == RZ_CureFinale.INDEP)
+		{
+			int plan = AddClue("someone who sells plans", PlanTalk());
+			AddSpot(RZ_Mission.LandPointNear(at, 6, 12), RZ_EPuzzleProp.CIVILIAN, 3, plan, "Talk to them", PlanLabel(), "someone who sells plans");
+		}
+
 		return true;
 	}
 
@@ -806,16 +1155,15 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 	//! The route's pitch, with its admission.
 	protected string Pitch()
 	{
-		switch (m_iRoute)
-		{
-			case RZ_CureFinale.HAVEN: return "\"The cure goes hand to hand, to the people the others would leave till last.\" Then, quieter: " + RZ_CureFinale.Admission(m_iRoute);
-			case RZ_CureFinale.BASTION: return "\"Order: a queue, a register, nobody trampled at the gate.\" Then, quieter: " + RZ_CureFinale.Admission(m_iRoute);
-			case RZ_CureFinale.REDHAND: return "\"It reaches anyone who can pay, including people nobody else would serve.\" Then: " + RZ_CureFinale.Admission(m_iRoute);
-			case RZ_CureFinale.HALCYON: return "\"Published, fast, checked, with every author named.\" Then, quieter: " + RZ_CureFinale.Admission(m_iRoute);
-			case RZ_CureFinale.INDEP: return "\"Four lots of people are about to tell you the cure is theirs. It isn't anyone's yet.\" Then: " + RZ_CureFinale.Admission(m_iRoute);
-		}
+		return RZ_CureFinale.PitchLine(m_iRoute) + " Then, quieter: " + RZ_CureFinale.Admission(m_iRoute);
+	}
 
-		return "";
+	//------------------------------------------------------------------------------------------------
+	//! Dialogue > Trees on: the [Point of no return] topics take the names, not the desk.
+	protected static bool TreesTakeNames()
+	{
+		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
+		return trees && trees.IsOn();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -857,7 +1205,8 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 		if (!look && hostility && hostility.GetDisguise())
 			look = hostility.GetDisguise().IsPassing(playerId, RZ_EFaction.INSTITUTE);
 
-		bool called = false;
+		// The night was sold: someone is waiting for the coat
+		bool called = RZ_WorldFacts.Get().Flag("finale.coat_sold") != 0;
 		array<int> ids = {};
 		array<IEntity> players = {};
 		RZ_Util.GetAlivePlayers(ids, players);
@@ -906,7 +1255,26 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 
 		if (objIdx == 2)
 		{
-			GiveBack(gm, f, playerId);
+			if (option == 1)
+				Ransom(gm, f, playerId);
+			else if (option == 2)
+				SpoilFind(gm, f, playerId);
+			else
+				GiveBack(gm, f, playerId);
+
+			return;
+		}
+
+		if (objIdx == 3)
+		{
+			SellPlan(gm, f, playerId);
+			return;
+		}
+
+		// The unsigned sheet: with Trees on, the Doctor (else the Courier) on the road takes the names
+		if (option <= 1 && m_iRoute == RZ_CureFinale.INDEP && TreesTakeNames() && f.HasIndependentVoice())
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Not on a sheet. Find the Doctor on the road, or the Courier. Ask them about the cure.\"");
 			return;
 		}
 
@@ -1050,6 +1418,141 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 
 			RZ_ItemHelper.DeleteCarried(me, w);
 			return true;
+		}
+
+		return false;
+	}
+
+	// ================================================================ The moves at the desk
+	//------------------------------------------------------------------------------------------------
+	//! Ambush a carry, ransomed: this route's items you carry go back to their seats, and its
+	//! faction pays 15 Favor an item (inside the finale's caps). The two routes are fighting.
+	protected void Ransom(RZ_GameModeComponent gm, RZ_CureFinale f, int playerId)
+	{
+		int mine = f.RouteOfPlayer(playerId);
+		if (mine == m_iRoute)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"It's ours. Just give it back.\"");
+			return;
+		}
+
+		int n = f.GetItems().GiveBack(gm.GetProfile(playerId).m_sIdentity, m_iRoute);
+		if (n <= 0)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Nothing of ours on you.\"");
+			return;
+		}
+
+		f.PayIdent(gm.GetProfile(playerId).m_sIdentity, RZ_CureFinale.PayFaction(m_iRoute), 0, 15 * n, 0, "ransomed a route's find");
+		if (mine != RZ_CureFinale.NONE)
+			f.Hostile(mine, m_iRoute);
+
+		gm.NotifyPlayer(playerId, m_sTitle, "\"Paid. Don't think we won't remember who we paid.\"");
+		RZ_Log.Info(string.Format("Finale: %1 item(s) of %2 ransomed back.", n, RZ_CureFinale.RouteName(m_iRoute)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ambush a carry, spoiled: an item of another route you carry is spoiled here. Her bag: +10
+	//! Haven Infamy, and she gives again.
+	protected void SpoilFind(RZ_GameModeComponent gm, RZ_CureFinale f, int playerId)
+	{
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		int mine = f.RouteOfPlayer(playerId);
+		int r = f.GetItems().Spoil(ident, mine);
+		if (r == RZ_CureFinale.NONE)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "You're carrying nothing of anyone else's.");
+			return;
+		}
+
+		if (mine != RZ_CureFinale.NONE)
+			f.Hostile(mine, r);
+
+		if (r == RZ_CureFinale.HAVEN)
+		{
+			f.PayIdent(ident, RZ_EFaction.SURVIVORS, 0, 0, 10, "spoiled a bag of her blood");
+			f.GetPeople().GiveAgain("woman");
+		}
+
+		gm.NotifyPlayer(playerId, m_sTitle, "Poured out behind the desk. Whoever needed it will have to start that step again.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string PlanTalk()
+	{
+		if (m_iRoute == RZ_CureFinale.REDHAND)
+			return "\"Everyone wants to know when the lorry backs up. I know a man who knows.\"";
+
+		return "\"The coat, the shift, the night. Somebody always knows. For a price.\"";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string PlanLabel()
+	{
+		if (m_iRoute == RZ_CureFinale.REDHAND)
+			return "Buy the lorry's timing [30 Red Hand Favor]";
+
+		return "Buy the Coat Run's night [20 Haven Favor]";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sell the plan (once per route a season): Take the Lab's timing (finale.plan_sold: the bay takes
+	//! 150 s) or the Coat Run's night (finale.coat_sold: the Coat Run is called out). Only for players
+	//! written down for another route; the Red Hand's needs one of its seat leaders gone Rogue.
+	protected void SellPlan(RZ_GameModeComponent gm, RZ_CureFinale f, int playerId)
+	{
+		int mine = f.RouteOfPlayer(playerId);
+		if (mine == RZ_CureFinale.NONE || mine == m_iRoute)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Not to you. You'd only tell them.\"");
+			return;
+		}
+
+		string key = "finale.coat_sold";
+		int faction = RZ_EFaction.SURVIVORS;
+		int price = 20;
+		if (m_iRoute == RZ_CureFinale.REDHAND)
+		{
+			key = "finale.plan_sold";
+			faction = RZ_EFaction.BANDITS;
+			price = 30;
+			if (!HasRogue(gm, RZ_EFaction.BANDITS))
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "\"Nobody's selling. Every crew boss is the boss's, this season.\"");
+				return;
+			}
+		}
+
+		if (RZ_WorldFacts.Get().Flag(key) != 0)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Sold already. Plans only sell once.\"");
+			return;
+		}
+
+		if (!gm.SpendFavor(playerId, faction, price))
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("\"%1 %2 Favor. That's the price.\"", price, RZ_Factions.GetName(faction)));
+			return;
+		}
+
+		RZ_WorldFacts.Get().SetFlag(key, 1);
+		f.Hostile(mine, m_iRoute);
+		gm.NotifyPlayer(playerId, m_sTitle, "\"You didn't hear it from me.\" You hear it from them.");
+		RZ_Log.Info(string.Format("Finale: %1's plan sold to %2.", RZ_CureFinale.RouteName(m_iRoute), RZ_CureFinale.RouteName(mine)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool HasRogue(RZ_GameModeComponent gm, RZ_EFaction faction)
+	{
+		if (!gm.GetLeaders())
+			return false;
+
+		array<RZ_Leader> all = {};
+		gm.GetLeaders().GetFactionLeaders(faction, all);
+		foreach (RZ_Leader l : all)
+		{
+			if (l.IsPresent() && l.m_eLoyalty == RZ_ELoyalty.ROGUE)
+				return true;
 		}
 
 		return false;

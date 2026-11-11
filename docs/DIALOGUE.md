@@ -5,7 +5,7 @@ How talking to people works: the talk screen and its engine, the conversation tr
 the `.rzd` text format, its lint and simulator, and the conversations that ship. How the screen
 looks and is driven with a pad is in [UI.md](UI.md#the-talk-screen); how lines are written is in
 [WRITING.md](WRITING.md#conversations). What's still to build (promises, strangers' and radio
-speakers' conversations, barks, claim lines in someone else's kit, the finale's commit) is designed in
+speakers' conversations, barks, claim lines in someone else's kit) is designed in
 [designs/DIALOGUE.md](../designs/DIALOGUE.md).
 
 Code: `Dialogue/RZ_Dialogue.c` (sessions), `Dialogue/RZ_TalkSpeakers.c` (who someone is),
@@ -23,6 +23,7 @@ players), `Dialogue/Pack/` (generated). Server only, except the screen.
 - [What a choice does](#what-a-choice-does)
 - [Memory](#memory)
 - [Several players](#several-players)
+- [The finale's commit](#the-finales-commit)
 - [Conditions](#conditions)
 - [The text format (.rzd)](#the-text-format-rzd)
 - [Tools](#tools)
@@ -186,6 +187,7 @@ system's caps.
 | `decide` | `decide:all_in` | In a conversation with a `scene`: the pick waits 5 s for objections ([Several players](#several-players)), then writes the scene's record (who, which), once for the world |
 | `sway` | `sway:council.workers` | In a conversation with a `scene`: one contribution per player to a count its owner reads (`tally.<name>`) |
 | `offer` | `offer:leader_job` | A leader's personal job (the built Ask for work) |
+| `commit` | `commit:bastion` | The finale's lock, from a confirm node only ([The finale's commit](#the-finales-commit)) |
 
 There is **no Fame, no Infamy and no item** from talk, ever: the lint refuses `fame`, `infamy` and
 `house` effects, and Infamy comes only from a tagged threat or a caught lie. Effects that change the
@@ -255,12 +257,31 @@ two players at one speaker can see different choices.
 *Simplified:* the social verbs are on your own hub with that speaker (open Talk while they talk), and
 "eligible to object" is anyone talking to the speaker.
 
+## The finale's commit
+
+The cure finale's lock ([FINALE.md](FINALE.md#the-lock)) runs through the trees. With Trees off the
+finale's desks take the names instead.
+
+- **`always` topics.** A conversation marked `always` shows even when the speaker refuses you (a
+  Hunted player, attitude −2): the finale's route topics, so a leader who won't talk to you still
+  offers the route. The lint allows `always` only on a topic with a confirm node.
+- **The confirm node** (`node <id> confirm`), tagged **[Point of no return]**: its lines, then the
+  finale's three plain lines (the route's admission, what you bring, what you leave). It has exactly
+  one commit choice and at least one way back.
+- **`commit:<route>`** (`haven`, `bastion`, `redhand`, `halcyon`, `indep`) runs only from a choice in a
+  confirm node, never on entry, never on a check's short or else. The choice has no `if`, check or
+  cost: the finale decides who may lock. It's dimmed with `CanCommit`'s reason when you can't, refused
+  within 1.5 s of the node opening, and checked again when picked.
+- **Where:** each faction route at its stronghold leader and its Loyal seat leaders; the
+  Independent at the Doctor on the road, else the Courier (`finale:voice`). From 75% every leader's
+  "Ask about the cure." says to ask again later; from 80% the four stronghold leaders and the
+  Independent's voice give the pitch (`dialogue/finale/routes.rzd`).
+
 ## Conditions
 
 Terms are joined with ` & `; `!` negates one; commas in an argument mean "any of". There is no OR:
 write two choices. Every key reads a system that's already there; keys of designs not built yet
-(tribes, the majors, the finale, disguise, errands, promises, lies) read false, and `route:none`
-reads true.
+(tribes, the majors, disguise, errands, promises, lies) read false.
 
 | Key | Example | True when |
 |---|---|---|
@@ -280,13 +301,14 @@ reads true.
 | You | `crew`, `picture:mixed` | you have a crew name; the whole picture ([REPUTATION.md](REPUTATION.md#what-people-call-you)) |
 | Others | `others>=1` | other players within 8 m |
 | Scenes | `decided`, `decided:all_in`, `swayed:council.workers` | this conversation's scene is decided (any, or that value); you've swayed that tally |
+| The finale | `finale:soon`, `finale:pitch`, `finale:open`, `finale:locked`, `finale:voice`, `route:none`, `route:bastion` | research 75–90 before the gate; 80 or more; the routes are open; you're locked to a route; this wanderer is the Independent's voice (the Doctor, else the Courier); your route this season (`none`, `haven`, `bastion`, `redhand`, `halcyon`, `indep`) |
 
 **Only what the player knows** goes into a tag: background, standing, items, the HUD, their own
 memory. Nothing reads whether a cleaned bite took.
 
 ## The text format (.rzd)
 
-Conversations are text files in `dialogue/<area>/<name>.rzd` (areas today: `leaders`,
+Conversations are text files in `dialogue/<area>/<name>.rzd` (areas today: `leaders`, `finale`,
 `wanderers`, `residents`, `posts`, `table`). A file holds one or more conversations. A line whose
 first character is `#` is a comment. Plain ASCII only (straight quotes).
 
@@ -297,10 +319,12 @@ when <conditions>               read when the hub is built and on every pick
 topic "<hub label>" | greet     a topic (40 characters at most), or a greet (one node of lines)
 prio quest|ask|world|reaction|flavour
 once | daily                    per character, per speaker
+always                          shows even when the speaker refuses (the finale's route topics)
 voice haven|bastion|redhand|halcyon|table|plain
 
 scene <id> speaker|season [who <conditions>]   deciding together (Several players): one record per speaker, or one for the season; who may decide
-node <id> [public]              the first node is "start"; public: others within 8 m overhear it
+node <id> [public|confirm]      the first node is "start"; public: others within 8 m overhear it;
+                                confirm: [Point of no return], the finale's lock card after its lines
   jump <conditions> -> <node>   checked in order on entry
   say <text>                    one to three lines; 200 characters each
   say? <conditions> :: <text>   the first true variant replaces the next plain say
@@ -351,7 +375,7 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
 
 ## The conversations
 
-✅ 31 conversations, 100 nodes (`python3 tools/dialogue_pack.py --list`).
+✅ 46 conversations, 124 nodes (`python3 tools/dialogue_pack.py --list`).
 
 | Speaker | Conversations |
 |---|---|
@@ -365,6 +389,7 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
 | Post speakers | Bastion's search (persuade with [Soldier], [Police]: the pole goes up); the Red Hand's toll (pay it, or threaten: Fear, +3 Red Hand Infamy) |
 | The Long Table | The host on the road (where you're headed, and is anyone expecting you); the mother at the farm (is the boy hers; [Bitten]: declare it, as built) |
 | Asks | A short house (two tins into the stores: the built hand-in); the Kid, lost (show the way: the built escort); a bitten wanderer (your antidote: the built one) |
+| The finale | "Ask about the cure.": ask me again (every leader, 75%); the pitches (the four stronghold leaders and the Doctor or Courier, 80%); the commit topics with their [Point of no return] nodes (stronghold and Loyal seat leaders of each faction; the Doctor or Courier for the Independent) |
 
 ## Saving and performance
 
@@ -378,7 +403,7 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
   `Dialogue: memory for N players`; `Dialogue: memory from season N dropped (season M)`;
   `Dialogue: budget reached <player> <faction>`; `Dialogue: debug: ...`; `Dialogue: scene <key> decided
   <value> by <player>`, `Dialogue: scene <key> hold by <player> objected to by <player>`, `Dialogue: sway <name>
-  by <player> (now N)`, `Dialogue: <player> vouched for <player>` ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check)).
+  by <player> (now N)`, `Dialogue: <player> vouched for <player>`, `Dialogue: <player> committed to <route> at <speaker>` ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check)).
 
 ## Simplified, and not built yet
 
@@ -394,7 +419,8 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
 - **Planned** ([designs/DIALOGUE.md](../designs/DIALOGUE.md)): lies the player is *told*
   (`~lie` lines, `heard_lie`, the `[Evidence]` call-out); promises and callbacks through `later:`;
   claims in someone else's kit as conversation lines (the look itself is built); Make it right;
-  strangers', radio speakers' conversations and barks; the finale's commit and the epilogue's topics as
-  conversations (today they're the leaders' built replies: About the season, Where should I look? and a
-  stronghold's grey choice, [EPILOGUE.md](EPILOGUE.md#carriers)).
+  strangers', radio speakers' conversations and barks; the epilogue's topics as conversations (today
+  they're the leaders' built replies: About the season, Where should I look? and a stronghold's grey
+  choice, [EPILOGUE.md](EPILOGUE.md#carriers)); the Independent's commit on the open channel (it waits
+  for radio speakers).
   One shipped conversation uses a scene (the bed by the stove); none uses lies yet.

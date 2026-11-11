@@ -71,7 +71,10 @@ and one way to end it: **research the cure.**
   one thing a rival faction holds, and every door has a slower way round. You lock to one route for
   the season; the first to finish makes the batch and earns its faction a capped chunk of season
   Fame; and the final stand is a fight for the clean room: whoever holds it when the stand is won
-  controls the cure and chooses its terms. Season Fame decides only when nobody holds the room.
+  controls the cure and chooses its terms. Season Fame decides only when nobody holds the room. You
+  commit at a leader's [Point of no return]; what you did earlier in the season can count as a route
+  asset; every route has ways to talk, threaten, trade, trick, force or betray its way through, a
+  branch when its subject is lost, and rivals can spoil, drain, take or ransom what it needs.
 - **The epilogue week** ([EPILOGUE.md](docs/EPILOGUE.md)): for a week after the cure the Zone tells
   its season in the world, not in slides: a board by the lab gate with the names of who held it,
   candles on a safehouse step with a number chalked beside them, a queue on the north road that
@@ -168,8 +171,10 @@ of the cure's finale and of the epilogue week, errands' margin, lock and epilogu
 built in the order of [designs/PLAN.md](designs/PLAN.md). Built so far: the epilogue week (phase 7,
 simplified: the record and the hall's freeze, beats and carriers, the dose outlets, the queue and
 the lab gate, the grey choices, the closure set, [EPILOGUE.md](docs/EPILOGUE.md)); the cure's finale (phase 6,
-simplified: the controller, the lock, the five routes, live tissue, pacts, the stand as a fight for
-the clean room, Take the Lab and the Coat Run, terms, [FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified,
+simplified: the controller, the lock and its dialogue commit node, pitches and route assets, the five
+routes with their ways and branches, live tissue, pacts and the moves between routes, the stand as a
+fight for the clean room with its HUD line, Take the Lab and the Coat Run, terms,
+[FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified,
 [QUESTLINES.md](docs/QUESTLINES.md#the-majors)); the shared engine (phase 1); small
 things everywhere (phase 3: errands' core, the mission style's framework and the world memory's
 writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, simplified: the six story
@@ -251,7 +256,7 @@ scripts/Game/ReforgerZ/
                  Errands/ (the dealer, the routines, Cards/); Questlines/ (the author's base class,
                  approach helpers, the majors' scenes, the registry, one folder per faction with
                  its major, one for the Long Table, and Finale/: the cure finale's five routes,
-                 desks, tissue hunts and items)
+                 desks, tissue hunts, items and route assets)
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
   Cure/          research, lab, samples, antidotes, infection stages, treatments and meds; the
                  cure finale's controller (tracks, locks, pacts, the batch, the stand's clean room)
@@ -293,7 +298,7 @@ tools/tribe_sim.py
                  simulates the infected tribes as data over a season on that pacing, on the
                  code's rules and the measured wild land of Arland, Everon and Cain and a
                  Chernarus-size map, 2, 5 and 10 players
-dialogue/        the conversations as .rzd text (leaders, wanderers, residents, posts, table)
+dialogue/        the conversations as .rzd text (leaders, wanderers, residents, posts, table, finale)
                  and shipped.lock, the ids that have shipped
 tools/dialogue_pack.py, tools/dialogue_sim.py
                  the dialogue lint and packer; walks a conversation as one character sees it
