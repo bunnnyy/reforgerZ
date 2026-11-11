@@ -12,7 +12,8 @@ reads it and makes what it can; the tables in sections 2 to 5 are generated from
 as the manual checklist.
 
 A first pass is done, in Workbench 1.9 on Arland: the repo holds the plugin's prefabs, the
-faction and loadout managers, the world and its scenario, and most of the UI. Many prefabs are
+faction and loadout managers, the worlds (Everon, the main one, and Arland) and their scenarios,
+and most of the UI. Many prefabs are
 built on stand-ins ([what that means](#stand-in-bases)), and the deploy panel and the map's icons
 aren't set up yet ([the UI](#setting-up-the-ui)). This doc says how it was done, what's left, and
 how to do it again on another map.
@@ -50,8 +51,9 @@ Run **ReforgerZ: Create prefabs** (or follow the manual checklist). First:
 4. Open the Script Editor and compile (**F7**). The game scripts compile cleanly on 1.9; the plugin
    compiles with one warning (`Workbench.SearchResources` is obsolete in 1.9, but still works).
    [The VERIFY list](#6-the-verify-list) is what to watch in play.
-5. Open the repo's world, `Worlds/RZ_Arland/RZ_Arland.ent` (a **sub-scene of Arland**), in the
-   World Editor, or make another ([world steps](#the-world)).
+5. Open the repo's main world, `Worlds/RZ_Everon/RZ_Everon.ent` (a **sub-scene of Eden**), in the
+   World Editor; `Worlds/RZ_Arland/RZ_Arland.ent` is the small test world. Or make another
+   ([world steps](#the-world)).
 
 Look up classes in the Script Editor or the
 [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
@@ -76,7 +78,7 @@ prefab column must show `RZ_GameMode`. If it doesn't, delete it and drag `RZ_Gam
 `Prefabs/ReforgerZ/Core/`.
 
 1. Compile the scripts (the plugin is in the Workbench script module, so `RZ_` classes must exist).
-2. Open your Arland sub-scene in the World Editor.
+2. Open your world (the Everon or Arland sub-scene) in the World Editor.
 3. **Plugins → ReforgerZ: Create prefabs.** The options dialog opens with **Dry run** on. Run it
    once like that: it changes nothing and lists what it would do in the log (search for
    `[ReforgerZ]`).
@@ -223,10 +225,10 @@ houses until the loot pool is filled), fixable cars, crafting and traps, and the
 <!-- manifest:world -->
 | Step | Plugin | Minimum |
 |---|---|---|
-| Make a world as a sub-scene of the map (File > Load World the map, then File > New World > Sub-scene (of current world)); the repo has Worlds/RZ_Arland | manual | yes |
+| Make a world as a sub-scene of the map (File > Load World the map, then File > New World > Sub-scene (of current world)); the repo has Worlds/RZ_Everon (the main world, on Eden) and Worlds/RZ_Arland (the small test world) | manual | yes |
 | Place RZ_FactionManager.et (Prefabs/MP/Managers/Factions/: the four factions, the 15 hidden variants and SURV_OUTLAW below) | checks it | yes |
 | Place RZ_LoadoutManager.et (Prefabs/MP/Managers/Loadouts/: the 13 loadouts on SURV) | checks it | yes |
-| Place the map's AI world (vanilla Prefabs/AI/SCR_AIWorld_Arland.et, _Eden or _Cain) and set its Soldiers and BTRlike navmesh files (on Arland worlds/GameMaster/Navmeshes/GM_Arland.nmn and GM_Arland_vehicles.nmn): without it no AI group gets members and there is no road network | manual | yes |
+| Place the map's AI world (vanilla Prefabs/AI/SCR_AIWorld_Arland.et, _Eden or _Cain) and set its Soldiers and BTRlike navmesh files (on Everon Navmesh_GM_Eden_Soldier.conf and GM_Eden_vehicles.nmn; on Arland worlds/GameMaster/Navmeshes/GM_Arland.nmn and GM_Arland_vehicles.nmn): without it no AI group gets members and there is no road network | manual | yes |
 | Place the vanilla world managers every game-mode world has: Prefabs/World/Game/PerceptionManager.et (without it the game crashes in the first frame after the first AI spawns), Prefabs/Systems/Radio/RadioManager.et (radios), Prefabs/MP/ScriptedChatEntity.et (text chat) and Prefabs/World/Game/ItemPreviewManager.et (inventory previews) | manual | yes |
 | Place RZ_GameMode.et in the world (one per world) | does it | yes |
 | Keep RZ_GameMode.et's spawn logic on SCR_MenuSpawnLogic (the deploy menu): GameMode_Plain's SCR_AutoSpawnLogic picks a random faction from all of them | manual | yes |
@@ -234,15 +236,19 @@ houses until the loot pool is filled), fixable cars, crafting and traps, and the
 | Optional: place marker entities (RZ_SettlementMarkerEntity and the others) to override automatic picks | manual | — |
 <!-- /manifest:world -->
 
-**The repo's world** is `Worlds/RZ_Arland/RZ_Arland.ent`, a sub-scene of Arland. It holds eight
-entities: three repo prefabs and five vanilla ones.
+**The repo's worlds.** The main world is **Everon**: `Worlds/RZ_Everon/RZ_Everon.ent`
+(`{4A535A0DE93773EA}`), a sub-scene of Eden, played by `Missions/RZ_Everon.conf`
+(`{933D8C91F1C91F38}`). It boots on the dedicated server with no script exceptions, 96 settlements,
+14 holdings and no road checkpoints (being looked into). **Arland** stays as the small test world:
+`Worlds/RZ_Arland/RZ_Arland.ent`, a sub-scene of Arland. Each holds eight entities: three repo
+prefabs and five vanilla ones.
 
 | Entity | Prefab |
 |---|---|
 | The game mode | `Prefabs/ReforgerZ/Core/RZ_GameMode.et` |
 | The FactionManager | `Prefabs/MP/Managers/Factions/RZ_FactionManager.et` ([section 3](#3-factions-and-loadouts)) |
 | The LoadoutManager | `Prefabs/MP/Managers/Loadouts/RZ_LoadoutManager.et` ([section 3](#3-factions-and-loadouts)) |
-| The AI world | vanilla `Prefabs/AI/SCR_AIWorld_Arland.et`, with its navmesh files set by hand to Arland's Game Master ones (`worlds/GameMaster/Navmeshes/GM_Arland.nmn` and `GM_Arland_vehicles.nmn`) |
+| The AI world | Everon: vanilla `SCR_AIWorld_Eden`, with `Navmesh_GM_Eden_Soldier.conf` and `GM_Eden_vehicles.nmn`. Arland: vanilla `Prefabs/AI/SCR_AIWorld_Arland.et`, with its navmesh files set by hand to Arland's Game Master ones (`worlds/GameMaster/Navmeshes/GM_Arland.nmn` and `GM_Arland_vehicles.nmn`) |
 | The perception manager | vanilla `Prefabs/World/Game/PerceptionManager.et` |
 | The radio manager | vanilla `Prefabs/Systems/Radio/RadioManager.et` |
 | The chat | vanilla `Prefabs/MP/ScriptedChatEntity.et` |
@@ -255,8 +261,9 @@ vanilla game-mode world on Arland places a perception manager, and most also pla
 manager and the chat; the base map, `Arland.ent`, has none of them. The world has no music
 manager (vanilla's are `Prefabs/Sounds/Music/MusicManager_*.et`), so there's no music.
 Both faction and loadout managers inherit the vanilla ones and already hold
-everything in section 3. The world's scenario is `Missions/RZ_Arland.conf` (`{3487FFB701729EC7}`):
-an `SCR_MissionHeader` that points at the world, for 32 players. How to play it is in
+everything in section 3. Each world's scenario is an `SCR_MissionHeader` that points at it, for 32
+players: `Missions/RZ_Everon.conf` (`{933D8C91F1C91F38}`) and `Missions/RZ_Arland.conf`
+(`{3487FFB701729EC7}`). How to play it is in
 [PC_SETUP.md](PC_SETUP.md#6-play-testing).
 
 **On another map:** in Workbench 1.9, **File → Load World** and open the map's world; then **File →

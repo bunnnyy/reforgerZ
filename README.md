@@ -170,14 +170,16 @@ up to 140 agents.
 The **first Workbench build** is in the repo. The plugin **ReforgerZ: Create prefabs** made 156
 prefabs from the **prefab manifest**, on vanilla, Bacon Zombies and Special Zombies bases; many are
 stand-ins for now, and four more have no base yet, so they aren't made. With the player controller
-and the faction and loadout managers, that's 159 prefabs. The world, a sub-scene of Arland, holds
+and the faction and loadout managers, that's 159 prefabs. The main world is **Everon** (a
+sub-scene of Eden, `Missions/RZ_Everon.conf`), and Arland stays as the small test world; each holds
 the game mode, the four factions with their hidden variants and the 13 background loadouts, and a
-scenario plays it. The UI layouts and the icon atlas are there too. In Workbench's World Editor
+scenario plays it. Everon boots on the dedicated server with no script exceptions, 96 settlements
+and 14 holdings. The UI layouts and the icon atlas are there too. In Workbench's World Editor
 **Play**, the mode starts with no script exceptions: towns, the Perimeter, safehouses, wanderers,
 leaders, territory, supply trucks, questlines and a first mission, with the HUD and notice cards on
 screen. Those first plays had no AI world in the world, so no AI or infected spawned; the next ones
-crashed when the first infected spawned, because the world had no perception manager. The world has
-Arland's AI world and vanilla's world managers now; AI in play is still to test
+crashed when the first infected spawned, because the world had no perception manager. The worlds have
+their map's AI world and vanilla's world managers now; AI in play is still to test
 ([the roadmap](docs/ROADMAP.md#play-test-priorities)). Nobody has played it from the game client
 yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
@@ -308,10 +310,12 @@ scripts/Game/ReforgerZ/
                  map's icon layer, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
+Worlds/RZ_Everon/
+                 the main world: a sub-scene of Eden with the game mode, the faction and
+                 loadout managers, Eden's AI world and vanilla's world managers
 Worlds/RZ_Arland/
-                 the world: a sub-scene of Arland with the game mode, the faction and
-                 loadout managers, Arland's AI world and vanilla's world managers
-Missions/        the scenario that plays it (RZ_Arland.conf)
+                 the small test world, the same on Arland
+Missions/        the scenarios that play them (RZ_Everon.conf, RZ_Arland.conf)
 Prefabs/         ReforgerZ/: the prefabs made from the manifest; the player controller
                  (Characters/Core/) and the faction and loadout managers (MP/Managers/)
 Configs/ReforgerZ/PrefabManifest.json

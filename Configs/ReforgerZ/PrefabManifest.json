@@ -5617,7 +5617,7 @@
  },
  "world": [
   {
-   "step": "Make a world as a sub-scene of the map (File > Load World the map, then File > New World > Sub-scene (of current world)); the repo has Worlds/RZ_Arland",
+   "step": "Make a world as a sub-scene of the map (File > Load World the map, then File > New World > Sub-scene (of current world)); the repo has Worlds/RZ_Everon (the main world, on Eden) and Worlds/RZ_Arland (the small test world)",
    "plugin": "no",
    "find": "",
    "minimum": true
@@ -5635,7 +5635,7 @@
    "minimum": true
   },
   {
-   "step": "Place the map's AI world (vanilla Prefabs/AI/SCR_AIWorld_Arland.et, _Eden or _Cain) and set its Soldiers and BTRlike navmesh files (on Arland worlds/GameMaster/Navmeshes/GM_Arland.nmn and GM_Arland_vehicles.nmn): without it no AI group gets members and there is no road network",
+   "step": "Place the map's AI world (vanilla Prefabs/AI/SCR_AIWorld_Arland.et, _Eden or _Cain) and set its Soldiers and BTRlike navmesh files (on Everon Navmesh_GM_Eden_Soldier.conf and GM_Eden_vehicles.nmn; on Arland worlds/GameMaster/Navmeshes/GM_Arland.nmn and GM_Arland_vehicles.nmn): without it no AI group gets members and there is no road network",
    "plugin": "no",
    "find": "",
    "minimum": true

@@ -213,7 +213,7 @@ Needs the saved world and the scenario (mission header) from
 |---|---|
 | Quick single-player | Open the world in Workbench's World Editor and press **Play** (the green triangle in its toolbar). **Escape** stops it |
 | Local multiplayer | Workbench's peer-client tool (Workbench calls it the Peer Tool) |
-| Full server | Run in the background: `"<server folder>/ArmaReforgerServer.exe" -addonsDir 'C:\Mods,<Documents in Windows form>\My Games\ArmaReforger\addons' -addons <GUID in addon.gproj> -server "{<scenario GUID>}Missions/<scenario>.conf" -profile "$HOME/rz_check/server_profile" -bindPort 2001`. `-addonsDir` takes a comma-separated list: the folder holding the repo, then the downloaded dependencies. The author joins from the game: **Multiplayer → Direct Join → 127.0.0.1:2001** |
+| Full server | Run in the background: `"<server folder>/ArmaReforgerServer.exe" -addonsDir 'C:\Mods,<Documents in Windows form>\My Games\ArmaReforger\addons' -addons <GUID in addon.gproj> -server "{933D8C91F1C91F38}Missions/RZ_Everon.conf" -profile "$HOME/rz_check/server_profile" -bindPort 2001`. Everon is the main world; for the small test world use `"{3487FFB701729EC7}Missions/RZ_Arland.conf"`. `-addonsDir` takes a comma-separated list: the folder holding the repo, then the downloaded dependencies. The author joins from the game: **Multiplayer → Direct Join → 127.0.0.1:2001** |
 
 During and after a session, read the logs against
 [WORKBENCH_SETUP.md, section 7](WORKBENCH_SETUP.md#7-log-lines-to-check) and go through the
