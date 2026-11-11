@@ -479,7 +479,7 @@ class RZ_Quest_Cargo : RZ_Questline
 			RZ_RedHandQuest.SetWorld(gm, "cargo.buyer_known", 1);
 			RZ_RedHandQuest.SetWorld(gm, "cargo.buyer", 1);
 			string line = "The buyer is the farm past the last village. The fence calls it pork.";
-			if (RZ_RedHandQuest.HasWorld(gm, "cargo.exile"))
+			if (RZ_RedHandQuest.HasWorld(gm, "door.exile_sold"))
 				line += " The exile the safehouse sold was one of the ones who never arrived.";
 
 			run.Note(line);

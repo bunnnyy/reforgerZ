@@ -464,7 +464,6 @@ class RZ_Quest_WellStory : RZ_Questline
 		// Stood up
 		ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 10, 0);
 		ChangeStanding(gm, run, RZ_EFaction.BANDITS, 0, 10, RZ_EQuestApproach.SIDE);
-		ChangeStanding(gm, run, RZ_EFaction.BANDITS, 0, 10, RZ_EQuestApproach.FORCE);
 		if (run.m_iBranch == OUT_TESTED)
 			NudgeInfection(gm, town, -10);
 
@@ -860,6 +859,7 @@ class RZ_QM_WellOrder : RZ_RedHandQuestMission
 	protected static const float CREW_DELAY = 60;
 	protected static const int HALCYON_FAME = 8;
 	protected static const int HAVEN_FAME = 5;
+	protected static const int HELD_INFAMY = 10;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -1123,6 +1123,11 @@ class RZ_QM_WellOrder : RZ_RedHandQuestMission
 		RZ_QuestRun run = Run(gm);
 		if (run)
 			run.Reward(gm, m_iGuard, RZ_EFaction.SURVIVORS, HAVEN_FAME, 0, QFill(gm, "{village} saw who stood at its well."));
+
+		// The crew won't forget who was standing there (the ones who sided are counted at the ending)
+		RZ_QuestApproach.SideWith(gm, m_iGuard, -1, RZ_EFaction.BANDITS, 0, HELD_INFAMY);
+		if (who != m_iGuard)
+			RZ_QuestApproach.SideWith(gm, who, -1, RZ_EFaction.BANDITS, 0, HELD_INFAMY);
 
 		NotifyParticipants(gm, m_sTitle, QFill(gm, "The crew is down or gone. {village} comes out with lamps and stands round the well with you until it's light."));
 		Resolve(gm, who, RZ_EQuestApproach.FORCE, RZ_Quest_WellStory.OUT_HELD, "drove the crew off the well", false);

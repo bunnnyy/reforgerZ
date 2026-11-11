@@ -315,6 +315,13 @@ the faction's Rogue leaders where there are any, else Independent ones.
 | **Bastion's file** | Bastion Fame +20; Red Hand Infamy +25 | The Bastion commander on the page is pulled into line (loyalty +25); Red Hand strength −3; Bastion keeps Red Hand prisoners longer (Bust Out a little more often, ×1.2) |
 | **Burnt** | Haven Fame +5 if the thief lived; Red Hand Infamy +25 (a debt is a debt) | The debts die with the page; Red Hand morale −5; the three leaders remember you saved them |
 
+**Built** ✅ (stages, numbers and simplifications: [MISSIONS.md](MISSIONS.md#the-book-the-red-hand)).
+Changes from the design: the thief goes in the boss's own pit; turning a name in means carrying its
+line to that faction's stronghold; a name whose leader leaves the chair drops off the page (the debt
+was theirs); the fourth line from `door.debt_yours` is text only (the flag doesn't say whose debt it
+is), and `orders.mocked` lets anyone Known give the page back; the crew name is in the ending's
+headline and rumour only.
+
 ### R2. Cargo
 
 Some trucks carry people, not tins, and where to, nobody says. The driver of one of them wants
@@ -341,6 +348,17 @@ this season, the van goes to the pit, and stage 3 ends there.
 | **The cut** | 20 Red Hand Favor a session for three sessions; if the Long Table is exposed while you're on it, Haven Infamy +20 | The vans keep running; one more *"never arrived"* in the news |
 | **Bastion's raid** | Bastion Fame +20; Red Hand Infamy +25 | The crew's outpost goes to Bastion if Bastion is strong enough by the usual margin, else the Red Hand drops it; Bastion knows the farm (`table.bastion_knows`) |
 | **Freed and told** | Haven Fame +15; Red Hand Infamy +10 | The safehouse +3 people, and the driver; C1 starts with the Haven |
+
+**Built** ✅ ([MISSIONS.md](MISSIONS.md#cargo-the-red-hand-or-the-haven)). It's the long version of
+the Haven's contract Tied Down ([MISSIONS.md](MISSIONS.md#the-red-hands-hard-edges)) and shares its
+van and padlock: the Haven's version starts only once Tied Down has reached its shed this season
+(`cargo.truck_seen`), and Tied Down isn't offered while Cargo runs. Changes from the design: the van
+is the Red Hand supply truck, so No Vehicles takes Cargo out; the farm is wherever the Long Table
+says it is (`table.town`), and without it the loads go to the crew boss's own pit (stage 3 ends
+there: no proof for C1); stage 3 is skipped when you drove the van to the drop yourself; Bastion's
+raid is the crew at its camp, with no Bastion soldiers on the ground, and a Bastion too weak to take
+the outpost costs the Red Hand strength instead; a session's cut is paid only if its taker is on;
+"Freed and told" is the Haven's ending whether or not the load was freed.
 
 ### R3. The Well Story
 
@@ -370,6 +388,12 @@ is the nearest Haven safehouse town, or a quiet village under 30 infection. With
 | **The well was done** | Red Hand Fame +5; the boss is angry: Red Hand Infamy +10; if anyone saw, Haven Infamy +30 | Town infection +15 (Fever Town may start there); the safehouse −3 people; the crew boss is replaced for a bad deal. Headline: *"Nobody in [the village] is drinking from the well."* |
 | **Faked** | Red Hand Fame +10; Haven Fame +8 if you told the council after; 25% the crew boss finds out: Red Hand Infamy +10 | The village −1 food once; the story spreads anyway |
 | **Stood up** | Haven Fame +15; Halcyon Fame +8 if tested; Red Hand Infamy +10 | Infection −10 there if tested; the crew boss's loyalty swings toward Rogue; `well.stood` |
+
+**Built** ✅ ([MISSIONS.md](MISSIONS.md#the-well-story-the-red-hand)). Changes from the design: H2's
+house is read from `door.shut` or `door.bastion` as its safehouse index + 1; a warned well can't be
+done unseen; if nobody stands in the way, the crew does it themselves; telling the council after a
+fake is talking to their council head during the session's wait; paying the dues yourself isn't
+refunded; the poisoned well doesn't start Fever Town.
 
 ---
 
@@ -548,9 +572,21 @@ The flags other lines read.
 | `orders.haven` | B1 | B2 | The chair's house is never asked for a contribution |
 | `census.refused` | B2 | H1 | The chair trusts you: the last stage's talk needs only Known |
 | `pilot.flew_for` | B3 | HC3 | Samples: one more Halcyon guard at the final stand |
-| `book.bastion` | R1 | B1, B2 | Bastion knows which of its commanders sold rifles: B1's outpost commander is that one, if he's still in the chair |
-| `cargo.buyer_known`, `table.supplier_cut` | R2 | C1 | C1's proof is done; the house takes people half as often |
-| `well.stood` | R3 | H2 | The house stands: H2's "Stands alone" needs no barricades |
+| `book.bastion` | R1 | B1, B2, Bust Out | Bastion knows which of its commanders sold rifles: B1's outpost commander is that one, if they're still in the chair (value: that commander's leader seat id + 1; 0 if nobody on the page is still in the chair). Bust Out ×1.2 |
+| `book.returned`, `book.kept`, `book.burnt` | R1 | — | What became of the page (or `book.bastion`) |
+| `book.thief` | R1 | — | The thief: 1 went in the pit, 2 someone took his place, 3 his debt was paid, 4 walked to the Haven, 5 ran |
+| `book.wrong_man`, `book.turned_in` | R1 | — | The wrong man went in the pit; a name on the page was turned in to its own people (that faction + 1) |
+| `cargo.buyer_known`, `table.supplier_cut` | R2 | C1 | C1's proof is done; the house takes people half as often (both only when the loads went to the farm) |
+| `cargo.told_haven`, `table.bastion_knows` | R2 | C1 | The Haven's chair knows where the strays go (with the farm, C1 can start at stage 4 with the Haven); Bastion knows the farm |
+| `cargo.truck_seen` | Tied Down | R2 | The Haven has followed a truck to its shed: R2's Haven version can start |
+| `cargo.freed`, `cargo.delivered`, `cargo.bastion` | R2 | — | What happened to the load at stage 2 |
+| `cargo.buyer`, `cargo.purge`, `cargo.cut`, `cargo.bastion_raid` | R2 | — | Who buys (1 the farm, 2 the crew boss's pit); who heard it at stage 4 |
+| `cargo.driver` | R2 | — | The driver: 1 at the Haven, 2 still driving, 3 in the pit, 4 in a Bastion cell |
+| `table.town` | the Long Table, wherever the house is placed | R2 | Where the farm is this season, as its settlement index + 1 (unset or 0: no house). R2's loads go there, else to a crew boss's pit |
+| `table.exposed` | C1, when the house is exposed | R2 | The cut stops, and the Haven holds it against whoever took it or delivered a load |
+| `well.stood` | R3 | H2 | The house stands: H2's "Stands alone" needs no barricades (which house: `well.house`) |
+| `well.town`, `well.house` | R3 | — | R3's village (settlement index + 1) and its safehouse (index + 1; 0 if it has none) |
+| `well.paid`, `well.warned`, `well.done`, `well.faked`, `well.tested` | R3 | — | What happened at the well |
 | `weeks.public` | HC1 | H3 | Brokering the lab road needs Trusted with the Haven |
 | `weeks.bastion` | HC1 | HC3 | HC3 starts at stage 2 |
 | `place.undercover` | C2 | C1 | C1's proof is done |
