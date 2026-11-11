@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ReforgerZ shop</title>
+<link rel="stylesheet" href="common/zone.css">
+<script src="common/zone.js"></script>
+<style>
+  :root {
+    --deep: #0f1113;
+    --spoken: #F4F0E6;
+    --row: #1b1f22;
+    --ring: #6b5222;
+    --acc: var(--haven);
+    --need: #6d6a62;
+  }
+  body { font-family: Inter, 'Segoe UI', sans-serif; }
+  .mono, .callout, .pk, .price, .tab { font-family: 'JetBrains Mono', Consolas, monospace; }
+  .worlddim { position: absolute; inset: 0; z-index: 1; background: rgba(8,9,10,.6); }
+
+  /* the panel: 1600 x 880, centred */
+  .shop { position: absolute; left: 160px; top: 100px; width: 1600px; height: 880px; background: #121416; border-top: 5px solid var(--acc); box-shadow: 0 18px 60px rgba(0,0,0,.6); }
+  .head { position: absolute; left: 48px; right: 48px; top: 26px; height: 86px; border-bottom: 2px solid var(--acc); }
+  .head b { display: block; font: 700 36px/1 Inter, 'Segoe UI', sans-serif; color: var(--bone); }
+  .head .sub { display: block; margin-top: 12px; font: 400 22px/1 Inter, sans-serif; color: var(--dim); }
+  .head .me { position: absolute; right: 92px; top: 4px; text-align: right; }
+  .head .me span { display: block; font: 400 24px/1 Inter, sans-serif; color: var(--bone); }
+  .head .me em { display: block; margin-top: 10px; font: 700 28px/1 'JetBrains Mono', monospace; font-style: normal; color: var(--acc); }
+  .close { position: absolute; right: 48px; top: 26px; width: 44px; height: 44px; background: var(--row); color: var(--acc); display: flex; align-items: center; justify-content: center; font: 700 22px/1 'JetBrains Mono', monospace; }
+
+  .tabs { position: absolute; left: 48px; top: 132px; display: flex; gap: 20px; }
+  .tab { width: 284px; height: 48px; display: flex; align-items: center; justify-content: center; background: #1a1d20; color: var(--dim); font-weight: 700; font-size: 20px; letter-spacing: .06em; }
+  .tab.on { background: var(--acc); color: #15171a; }
+
+  .list { position: absolute; left: 48px; top: 200px; width: 820px; height: 560px; background: var(--deep); padding-top: 4px; }
+  .r { display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 22px; margin-bottom: 4px; border-left: 5px solid transparent; font: 400 26px/1 Inter, 'Segoe UI', sans-serif; color: var(--bone); }
+  .r .n { flex: 1; }
+  .r .price { font-weight: 700; font-size: 22px; color: var(--acc); }
+  .r .lock { width: 26px; height: 26px; color: var(--dim); }
+  .r .needs { font: 400 20px/1 'JetBrains Mono', monospace; color: var(--dim); }
+  .r.on { background: var(--row); border-left-color: var(--acc); color: var(--spoken); }
+  .r.no { color: var(--need); }
+  .r.no .price { color: var(--need); }
+
+  .details { position: absolute; left: 900px; top: 200px; width: 652px; height: 560px; }
+  .pic { position: relative; width: 652px; height: 300px; background: var(--deep); border: 1px solid #22262a; overflow: hidden; }
+  .pic .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 60px; background: #16191c; }
+  .pic .lbl { position: absolute; left: 16px; top: 12px; font: 700 18px/1 'JetBrains Mono', monospace; color: var(--faint); letter-spacing: .12em; }
+  .pic .turn { position: absolute; right: 16px; bottom: 16px; font: 600 16px/1 'JetBrains Mono', monospace; color: var(--faint); }
+  .pic svg { position: absolute; left: 226px; top: 50px; width: 200px; height: 200px; }
+  .d-name { margin: 18px 0 0; font: 700 32px/1 Inter, 'Segoe UI', sans-serif; color: var(--bone); }
+  .d-desc { margin: 14px 0 0; height: 110px; font: 400 22px/1.4 Inter, sans-serif; color: #D9D2BE; }
+  .d-price { position: absolute; left: 0; top: 486px; font: 700 28px/1 'JetBrains Mono', monospace; color: var(--acc); }
+  .d-have { position: absolute; left: 0; top: 524px; font: 400 20px/1 'JetBrains Mono', monospace; color: var(--dim); }
+  .buy { position: absolute; right: 0; top: 490px; width: 240px; height: 60px; background: var(--acc); color: #15171a; display: flex; align-items: center; justify-content: center; gap: 12px; font: 700 26px/1 Inter, 'Segoe UI', sans-serif; letter-spacing: .06em; }
+  .buy .pk { background: #15171a; color: var(--acc); border-color: #15171a; }
+
+  .status { position: absolute; left: 48px; top: 772px; font: 400 22px/1.4 Inter, sans-serif; color: var(--spoken); }
+  .prompts { position: absolute; left: 48px; top: 828px; display: flex; gap: 28px; align-items: center; font: 600 18px/1 'JetBrains Mono', monospace; color: var(--dim); letter-spacing: .04em; }
+  .prompts > span { display: inline-flex; align-items: center; gap: 10px; }
+  .pk { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0 8px; border: 2px solid var(--ring); border-radius: 15px; color: var(--acc); font: 700 15px/1 'JetBrains Mono', monospace; }
+  .note { position: absolute; right: 48px; top: 834px; font: 400 18px/1 'JetBrains Mono', monospace; color: var(--faint); }
+
+  .callout { position: absolute; font: 600 14px/1.3 'JetBrains Mono', Consolas, monospace; color: rgba(242,194,48,.85); letter-spacing: .1em; }
+</style>
+</head>
+<body>
+<canvas class="scene" data-scene="dusk"></canvas>
+<div class="worlddim"></div>
+<div class="layer">
+  <div class="callout" style="left:160px;top:62px">THE SHOP · TRADE AT A QUARTERMASTER ▼ (THE WORLD STAYS IN VIEW, DIMMED)</div>
+
+  <div class="shop">
+    <div class="head">
+      <b>Haven stores</b><span class="sub">Ada Reyes, quartermaster in Morton</span>
+      <div class="me"><span>You're Trusted</span><em>64 Favor</em></div>
+    </div>
+    <div class="close">X</div>
+
+    <div class="tabs">
+      <div class="tab on">FOOD AND WATER</div>
+      <div class="tab">MEDICAL</div>
+      <div class="tab">GEAR AND TOOLS</div>
+      <div class="tab">WEAPONS AND AMMO</div>
+      <div class="tab">SERVICES</div>
+    </div>
+
+    <div class="list">
+      <div class="r on"><span class="n">Canned food</span><span class="price">4 Favor</span></div>
+      <div class="r"><span class="n">Bottle of water</span><span class="price">3 Favor</span></div>
+      <div class="r"><span class="n">Army crackers</span><span class="price">2 Favor</span></div>
+      <div class="r"><span class="n">Dried meat</span><span class="price">5 Favor</span></div>
+      <div class="r no"><i class="ic lock" data-i="status_door_locked"></i><span class="n">Field kitchen rations</span><span class="needs">Needs Champion</span><span class="price">12 Favor</span></div>
+      <div class="r no"><span class="n">Tinned peaches</span><span class="needs">Not until the next truck</span><span class="price">6 Favor</span></div>
+    </div>
+
+    <div class="details">
+      <div class="pic">
+        <div class="floor"></div>
+        <span class="lbl">3D PREVIEW</span>
+        <svg viewBox="0 0 100 100">
+          <ellipse cx="50" cy="86" rx="30" ry="5" fill="#0b0d0e"/>
+          <rect x="22" y="30" width="56" height="54" rx="4" fill="#8b9096"/>
+          <ellipse cx="50" cy="30" rx="28" ry="7" fill="#b7bcc1"/>
+          <ellipse cx="50" cy="30" rx="22" ry="5" fill="#9aa0a6"/>
+          <rect x="22" y="44" width="56" height="26" fill="#a5432f"/>
+          <rect x="22" y="44" width="56" height="3" fill="#7d3123"/>
+          <text x="50" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" font-weight="700" fill="#E8E2D0">STEW</text>
+        </svg>
+        <span class="turn">RIGHT STICK TURNS IT</span>
+      </div>
+      <div class="d-name">Canned food</div>
+      <div class="d-desc">A tin of stew. Heavy, and worth it.<br>0.4 kg</div>
+      <div class="d-price">4 Favor</div>
+      <div class="d-have">you have 64</div>
+      <div class="buy"><span class="pk">A</span>BUY</div>
+    </div>
+
+    <div class="status">Here's your Bottle of water, for 3 Favor. 64 Favor left.</div>
+    <div class="prompts">
+      <span><span class="pk">LB/RB</span>Category</span>
+      <span><span class="pk">D-pad</span>Item</span>
+      <span><span class="pk">A</span>Buy</span>
+      <span><span class="pk">R</span>Turn</span>
+      <span><span class="pk">B</span>Close</span>
+    </div>
+    <div class="note">Prices in Haven Favor</div>
+  </div>
+
+  <div class="callout" style="left:1780px;top:300px;width:130px">◀ AN ITEM ABOVE YOUR STANDING IS DIM WITH A LOCK AND WHAT IT NEEDS</div>
+  <div class="callout" style="left:1780px;top:560px;width:130px">◀ VANILLA'S ITEM PREVIEW OF THE PREFAB, DARKENED WHEN IT'S LOCKED</div>
+</div>
+</body>
+</html>

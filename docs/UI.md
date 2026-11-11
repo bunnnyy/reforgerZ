@@ -87,8 +87,8 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Talk | `talk.png` | A person's name and who they are, what they say in large type, your replies with what each needs ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play |
 | Subtitles | `hud.png` | What people say outside the talk screen, at the bottom centre: the speaker in their faction colour, the line in bright bone ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
-| Car repair | — | A fixable car's job card (each job, what it needs, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
-| Shop | — | A quartermaster's stock in tabs, each item with its Favor price and the standing it needs, a picture of the selected item and a details panel with Buy ([below](#the-shop-screen)) | `RZ_ShopMenu` | Layouts built as text, not checked in play |
+| Car repair | `car_repair.png` | A fixable car's job card (each job, what it needs, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
+| Shop | `shop.png` | A quartermaster's stock in tabs, each item with its Favor price and the standing it needs, a picture of the selected item and a details panel with Buy ([below](#the-shop-screen)) | `RZ_ShopMenu` | Layouts built as text, not checked in play |
 | The map | — | The marker icons on the vanilla map, per player ([below](#the-map)) | `RZ_MapIconsUI` | Layout built, not on the map yet |
 
 The notice board isn't a notebook tab: it opens when you read a safehouse board, and Esc, B or
@@ -280,7 +280,7 @@ flyers so far.
 
 ### The car repair screen
 
-As approved: **Look over the car** at a fixable car ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix))
+As approved (`car_repair.html`): **Look over the car** at a fixable car ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix))
 opens a panel 1,440 × 820 in the middle of the screen, the world dimmed behind it. The header is the
 car ("The blue two-door") and "2 of 5 done". On the left, a side view of the car facing left (a
 white line drawing, tinted) with five numbered markers where the jobs are: 1 spark plugs at the
@@ -327,7 +327,7 @@ drawn: which job is missing shows on the markers, not the picture.
 
 ### The shop screen
 
-As approved: **Trade** at a quartermaster opens a panel 1,600 × 880 in the middle of the screen, the
+As approved (`shop.html`): **Trade** at a quartermaster opens a panel 1,600 × 880 in the middle of the screen, the
 world dimmed. The header says whose stores they are ("Haven stores", "Ada Reyes, quartermaster in
 Morton") and, on the right, your standing with them and your Favor ("You're Trusted", "64 Favor" in
 the faction's colour), over a 2 px line in that colour. Under it the categories as tabs: **Food
@@ -514,7 +514,7 @@ reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; nine mockups and previews (with the talk screen, the reader and a subtitle). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item), the talk screen and its engine, the reader, the car repair screen, the shop screen, the screen guard, the notice board menu, chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback |
+| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and the shop). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item), the talk screen and its engine, the reader, the car repair screen, the shop screen, the screen guard, the notice board menu, chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair and shop screens' written as text; the icon atlas and the `RZ_Icons` imageset; the car picture's PNG (to import: **UI > Car picture** is empty); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car and shop presets; N, 1–7, T, the right stick and the filter's X); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, all but the map icon layout. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter |
 | Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the subtitles; mouse clicks and the pad; the notice board menu (**UI > Board menus** is off); the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |

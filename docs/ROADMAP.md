@@ -87,9 +87,6 @@ The build-review fixes are done. Everything below is approved. The order of the 
 ### UI
 - **Controllers:** check the whole mod with a gamepad and fix what doesn't work
   ([UI.md](UI.md#controllers)). Planned.
-- **Mockups of the approved screens:** the car repair and shop screens the author approved are
-  described in `UI/Mockups/approved_samples.md`. Make full-size mockups of them in `UI/Mockups/`,
-  add them to the screens table in [UI.md](UI.md), then delete that file.
 
 ### World interactions (from play-testing)
 - **Bodies** are looted with the vanilla inventory, with no search prompt. Planned.
