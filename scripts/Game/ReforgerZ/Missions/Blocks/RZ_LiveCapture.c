@@ -29,6 +29,7 @@ class RZ_LiveCapture
 
 	RZ_ECaptureState m_eState = RZ_ECaptureState.BAIT;
 	string m_sLostReason;
+	string m_sCageLine;		// what the cage door's catch says ("": Halcyon's line)
 	vector m_vCage;
 	vector m_vLair;
 	vector m_vHeld;
@@ -221,7 +222,11 @@ class RZ_LiveCapture
 			return false;
 		}
 
-		Catch(gm, z.m_Entity, m_vCage, "The door drops. It hits the bars so hard the whole cage jumps, again and again. Stay close until Halcyon's sedative takes.");
+		string line = m_sCageLine;
+		if (line.IsEmpty())
+			line = "The door drops. It hits the bars so hard the whole cage jumps, again and again. Stay close until Halcyon's sedative takes.";
+
+		Catch(gm, z.m_Entity, m_vCage, line);
 		return true;
 	}
 

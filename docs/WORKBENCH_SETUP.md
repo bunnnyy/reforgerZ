@@ -2094,11 +2094,14 @@ when it happens)
   fear places, and a border with a frenzied side is fought more often (2 Border Nights at most); **The
   Tribe Moves** when a lair moves out of its range ("On the Move", two groups near you); **Red Dusk** at a
   clear dusk.
-- [ ] **Stock the Pit** (Red Hand Known, a camp within 6 km of a pack): tie one young, hold it 30 s, the
-  case to the drop by the camp, then the second; the next Fight Pit's brief says *"Fresh hires tonight,
+- [ ] **Stock the Pit** (Red Hand Known, a camp within 6 km of a pack): lure one young into the cage at
+  the lair's edge and drop the door (the second: tie it instead), hold it 30 s, the case to the drop by
+  the camp, then the second; the next Fight Pit's brief says *"Fresh hires tonight,
   from …"* and two come out in its last round. **Live Capture** with packs on: the special is one of a
   pack's guard (or young) at its lair's edge, and the pack is one smaller after. **Lead Them Away** near a
-  pack's ground: the crowd is in its look, from its side. **Blow the Bridge** on Everon: the charges go on
+  pack's ground: the crowd is in its look, from its side; with a nomad (or half the time) it's the pack
+  on the move: kill a few, lead the rest to the quarry, and the log says the pack moved house there and
+  `/tribes` shows it smaller. **Blow the Bridge** on Everon: the charges go on
   a real bridge and the crowd comes from the pack's lair. **Missing Patrol** and the **Military Remnant
   Camp** near a military pack: its young.
 - [ ] **The great one** (a big map, or `/tribes` to watch the clan's days): a clan of three holding 8

@@ -1356,6 +1356,11 @@ The packs' thirteen contracts, The Lone One, the changed missions and the events
   dawn) and borders: a border with a frenzied side always has a cause to fight, twice as likely, still
   2 Border Nights staged a night at most. The great one's clan gathers on a frenzy night ([The great
   one](#the-great-one)).
+- **A pack on the move** (Lead Them Away, with **Life cycle** on): a free pack of 8 or more whose ground
+  is within 3 km of the safehouse (always a nomad, else half the time) is the crowd itself, moving
+  house, held for the job. Every body killed comes off the pack (hunters first, then young). Led to the
+  quarry, it lies up at a free lair within 1.2 km of it; reaching the house, at one within 2 km of the
+  house's side; all of it killed, it stays where it was.
 - **Furious** (its leader caught alive, Capture the Index): for 2 counted nights its one trail runs
   toward the lab and stops at the lab's no man's land plus P (250 m). The most recently Furious pack
   still Furious comes with the final stand's last wave.
@@ -1455,8 +1460,7 @@ What's left of the design, in [designs/INFECTED.md](../designs/INFECTED.md) and
   border moving the ranges, hunting grounds following the prey, stragglers, snow tracks).
 - **The people's rest:** the Haven's warnings about day parties in the fields; trucks taken on any road
   a trail crosses; the jobs' rest (Clear the Trail on a truck road and the others the design lists);
-  the questline hooks still to write; the epilogue reading the beats; Lead Them Away's crowd as a pack
-  on the move.
+  the questline hooks still to write; the epilogue reading the beats.
 - **The finale's live tissue's rest** ([designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules)):
   the great one's +3, best first within reach, the same pack never twice in 6 season days, and
   Fury's road toward the lab.

@@ -855,7 +855,6 @@ the dark corners, the factions' sides, the moat rule, the 13 contracts (Stock th
 Lone One, the events, the changed missions listed in [MISSIONS.md](../docs/MISSIONS.md), frenzies
 ignoring fear places and borders, and HC1's and H3's hooks ([QUESTLINES.md](../docs/QUESTLINES.md)).
 Still designed:
-- **Lead Them Away's** drifting horde as a moving tribe (today it's a pack's hunting party, or a horde).
 - **The jobs' rest:** Clear the Trail on a truck road; Burn the Lair's splinter when 4 or more died;
   Bait the Crew's Zombie Bait Infamy when either side lands on a faction's people; Track Them Home's
   "not closer than 80 m"; a Furious tribe's day parties walking the capture road, and couriers and

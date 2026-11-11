@@ -8,7 +8,11 @@
 //! settles there: done. It reaches the safehouse: two people there don't get to the cellar.
 //! Noticed near it, it turns on you instead. Killing it all also ends it, for half. With the packs
 //! on and one whose ground is within 3 km of the house, it's that pack's hunting party, in its own
-//! look, coming from its side.
+//! look, coming from its side. With the life cycle on, a free pack of 8 or more (always a nomad,
+//! else half the time) is a pack on the move: all of it that walks, moving house past the safehouse
+//! (docs/INFECTED.md, "Contracts and events"). It's held for the job; every body killed comes off
+//! the pack; led to the quarry, it beds down at a free lair past it; reaching the house, it beds
+//! down near the house's side instead.
 class RZ_Mission_LeadThemAway : RZ_Mission
 {
 	protected int m_iHouse = -1;
@@ -21,6 +25,8 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 	protected float m_fSinceLure = 1000;
 	protected bool m_bHeadingHome;
 	protected vector m_vLure;
+	protected int m_iTribe = -1;		// a pack on the move: the pack (held for the job)
+	protected int m_iSpawned;
 
 	protected static const float CHECK_INTERVAL = 5;
 	protected static const float LURE_RANGE = 200;
@@ -59,9 +65,11 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 		m_vHouse = h.m_vPos;
 		vector start = LandPointNear(m_vHouse, 750, 950);
 
-		// A pack's hunting party, from its side (docs/INFECTED.md, People)
+		// A pack's hunting party, from its side (docs/INFECTED.md, People), or the pack on the move
 		array<ResourceName> pack = null;
 		string partyOf = "";
+		bool moving = false;
+		int movingId = -1;
 		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
 		if (tribes)
 		{
@@ -71,6 +79,13 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 				pack = tribes.GetPeople().PackHordePrefabs(near);
 				partyOf = tribes.GetPeople().NameAt(near, RZ_EFaction.SURVIVORS);
 				start = LandPointNear(RZ_Compass.PointAt(m_vHouse, RZ_Compass.Bearing(m_vHouse, near.RangeCentre()), 850), 0, 100);
+				bool nomad = near.m_eTemper == RZ_ETemperament.NOMADIC;
+				if (tribes.GetSettings().m_bLifeCycle && !near.IsRover() && near.Members() >= 8 && !pack.IsEmpty() && (nomad || Math.RandomFloat01() < 0.5)
+					&& IsSubjectFree(gm, RZ_TribeContract.Claim(near.m_iId)))
+				{
+					moving = true;
+					movingId = near.m_iId;
+				}
 			}
 		}
 
@@ -84,6 +99,12 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 		if (m_aHorde.IsEmpty())
 			return false;
 
+		m_iSpawned = CountAlive(m_aHorde);
+		if (moving && ClaimSubject(gm, RZ_TribeContract.Claim(movingId)))
+			m_iTribe = movingId;
+		else
+			moving = false;
+
 		m_iSettlement = h.m_iSettlement;
 		m_vPos = start;
 		m_bHeadingHome = true;
@@ -93,7 +114,10 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 		m_sTitle = "Lead Them Away";
 		m_sBrief = string.Format("A horde is drifting toward the safehouse in %1. We can't fight it. Make noise, a bottle, a firecracker, anything, and lead it step by step to the old quarry pit (grid %2). Don't let it see you.",
 			h.m_sName, RZ_SettlementScanner.GridReference(m_vQuarry));
-		if (!partyOf.IsEmpty())
+		if (moving)
+			m_sBrief = string.Format("%1 are on the move, all of them that walk, and the way they're going runs past the safehouse in %2. We can't fight that many. Make noise and lead them step by step to the old quarry pit (grid %3). They'll lie up past it. Don't let them see you.",
+				RZ_Tribes.Capitalize(partyOf), h.m_sName, RZ_SettlementScanner.GridReference(m_vQuarry));
+		else if (!partyOf.IsEmpty())
 			m_sBrief = string.Format("Some of %1 are out early and coming down toward the safehouse in %2. We can't fight them. Make noise, a bottle, a firecracker, anything, and lead them step by step to the old quarry pit (grid %3). Don't let them see you.",
 				partyOf, h.m_sName, RZ_SettlementScanner.GridReference(m_vQuarry));
 
@@ -168,8 +192,69 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A pack on the move: the bodies killed come off it, and it beds down at a free lair near `at`
+	//! (the quarry, or the house's side), else where it was.
+	protected void PackEnds(RZ_GameModeComponent gm, vector at, float reach)
+	{
+		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+		if (m_iTribe < 0 || !tribes)
+			return;
+
+		RZ_Tribe t = tribes.Find(m_iTribe);
+		m_iTribe = -1;
+		if (!t)
+			return;
+
+		int alive = CountAlive(m_aHorde);
+		int lost = m_iSpawned - alive;
+		if (lost > 0)
+		{
+			int got = tribes.GetLife().TakeMembers(t, RZ_ETribePart.HUNTERS, lost);
+			if (got < lost)
+				tribes.GetLife().TakeMembers(t, RZ_ETribePart.YOUNG, lost - got);
+		}
+
+		vector lair;
+		if (alive > 0 && t.Members() > 0 && tribes.GetLife().FreeLair(at, reach, lair, t, 0))
+		{
+			string was = t.m_sPlace;
+			tribes.GetLife().RelocateLair(t, lair);
+			RZ_Log.Info(string.Format("Tribes: %1 moved house (Lead Them Away), to %2.", was, t.m_sPlace));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static int CountAlive(array<IEntity> units)
+	{
+		int n = 0;
+		array<IEntity> members = {};
+		foreach (IEntity u : units)
+		{
+			if (!u)
+				continue;
+
+			members.Clear();
+			RZ_Util.GetUnitMembers(u, members);
+			foreach (IEntity m : members)
+			{
+				if (RZ_Util.IsCharacterAlive(m))
+					n++;
+			}
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnSuccess(RZ_GameModeComponent gm)
+	{
+		PackEnds(gm, m_vQuarry, 1200);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void OnFailed(RZ_GameModeComponent gm)
 	{
+		PackEnds(gm, m_vHouse, 2000);
 		RZ_Safehouses houses = gm.GetSafehouses();
 		if (houses && RZ_Util.DistXZ(m_vPos, m_vHouse) <= ARRIVE_HOUSE * 1.5)
 			houses.RemovePopulation(m_iHouse, 2);
