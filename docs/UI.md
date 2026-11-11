@@ -83,6 +83,8 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Notebook: Map key | `map_legend.png` | The marker icons the map draws, with one line each | `RZ_MapKeyPage` | Static page built, not checked in play |
 | Notebook: Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallPage` | Page built, not checked in play; no mockup |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), and a box to write one with a Post button. Opened when you read the board, with **UI > Board menus** on | `RZ_NoticeBoardMenu` | Layout built; **Board menus** is off; no mockup |
+| Subtitles | `hud.png` (planned) | What people say outside the talk screen, at the bottom centre: the speaker in their faction colour, the line in bright bone ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` built as text in the HUD layout, not checked in play |
+| The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
 | The map | — | The marker icons on the vanilla map, per player ([below](#the-map)) | `RZ_MapIconsUI` | Layout built, not on the map yet |
 
 The notice board isn't a notebook tab: it opens when you read a safehouse board, and Esc, B or
@@ -183,6 +185,54 @@ to each of the 13 loadouts, so it works with any loadout.
 
 The notice board opens when you read a safehouse board, with **UI > Board menus** on.
 
+### Subtitles and the reader
+
+**Subtitles.** What people say *outside* the talk screen shows at the **bottom centre**: a solid
+dark backing (12, 14, 15 at 88%), the speaker's name on its own line in their faction colour (bold
+24, bone when they have no faction), the line in bright bone (32), centred, 1,100 units wide, its
+bottom 204 above the screen's (clear of the infection panel and the noise meter). The notice
+cards stay top right; the two never mix. One line at a time, on screen for **Subtitle shortest**
+to **longest** (2.5–8 s) by length at **reading speed** (18 characters a second); a line longer
+than two rows (130 characters) is split at sentence ends into parts shown in turn. At most four
+wait; a newer line from the same speaker replaces theirs still waiting. While the reader is open
+they wait. Nothing to press, so nothing to bind. A spoken line goes only to its player
+(`RZ_GameModeComponent.Say`, `SayNear`; `RpcDo_Say`). With **UI > Subtitles** off, without
+`SubtitlePanel` in the HUD layout, or without the UI component, it's a notice card, as before.
+
+Which lines are subtitles:
+
+| System | Lines |
+|---|---|
+| `RZ_Checkpoints` | road post warnings, the search, the toll, camp warnings and the gate, the safe-zone rule, "You again" (the outcomes with numbers stay cards: a surrender's Infamy, the toll paid) |
+| `RZ_Perimeter` | the loudspeakers, the final warning |
+| `RZ_Territory` | routine lines (shift change, the roll, supper) |
+| `RZ_Safehouses` | the shut door, the people who won't look at an exile |
+| `RZ_Wanderers` | refusing, running when shot at, warning others about an exile, the one who comes looking for a new player |
+| `RZ_LongTable` | the host stepping out on the road |
+| `RZ_Leaders` | a refusal at attitude −2 |
+| The screen guard | "Not now!" when danger closes a talk |
+
+Everything else stays a card; radio voices stay cards (they're radio).
+
+**The reader.** Notes open on a sheet of paper in the middle of the screen, as in `reader.html`: the
+world dimmed; the paper (#EDE7D6, ink #1C1A16) 960 × 800: the title (bold 34), a dim line on how it
+looks ("Folded twice, in pencil", 21, hidden when there's none), the text (30); at the foot the
+pages "1 / 2" with arrows (LB/RB, Q/E, the D-pad left/right, or click), the footer prompts and the
+close button (B or Esc). Pages break at the end of a paragraph near **Reader page characters**
+(700). You can't move while it's open; danger closes it ([the screen guard](#how-the-scripts-fit)).
+
+What opens in the reader: puzzle notes and anything a mission tags with a "Read ..." label (letters,
+orders), guidance notes and safehouse flyers, and the readable things a search turns up. Bodies,
+objects and people stay as they are.
+
+How: `RZ_Reader.Show(gm, playerId, title, how, text)` opens a screen-guard entry and sends
+`PAYLOAD_READER` (`P|title|how`, then the text, at most 5,600 characters) to that player only; the
+client splits the pages and opens `RZ_ReaderMenu`, and tells the server when the player closes it.
+An empty `PAYLOAD_READER` from the server closes it. With **UI > Reader** off, no UI component, or
+the server at its cap of open screens, it's a notice card; a client that can't open the menu (no
+preset or layout) shows it as a card too. *Simplified:* the "how it looks" line is set only for
+flyers so far.
+
 ### The background picker
 
 The panel reads the picked loadout twice a second. Its **starting gear** is what that loadout
@@ -244,9 +294,10 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 |---|---|---|
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes**; with Stealth on, stealth's own update (every second) hands it each player's visibility, sent the same way as a level 0–5 and whether it counts as hidden (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal (with the questlines the player is part of and the lab's line), background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the radio log on the client for this life. A notice board payload from the server opens the board menu |
+| `RZ_Reader`, `RZ_ReaderMenu` | server, client | The reader: one player's paper, a page at a time ([Subtitles and the reader](#subtitles-and-the-reader)) |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk screens and readers and closes them in danger (below) |
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, sent as commands to the server, which checks them again. Registered with the first notice |
-| `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards |
+| `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards and the subtitles |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
 | `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookGadgetComponent` | client | Open the notebook: N, the pause menu's button, the notebook item |
 | `RZ_BackgroundPanelComponent` | client (widget handler) | Watches the picked loadout in the deploy menu and shows its background and gear |

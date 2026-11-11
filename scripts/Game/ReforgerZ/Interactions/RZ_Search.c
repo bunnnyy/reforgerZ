@@ -1468,7 +1468,7 @@ class RZ_Search
 		{
 			if (r.m_iId == id)
 			{
-				m_GM.NotifyPlayer(playerId, r.m_sTitle, r.m_sText);
+				RZ_Reader.Show(m_GM, playerId, r.m_sTitle, "", r.m_sText);
 				return;
 			}
 		}

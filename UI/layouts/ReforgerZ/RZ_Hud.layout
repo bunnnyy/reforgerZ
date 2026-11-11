@@ -761,5 +761,95 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
     }
    }
   }
+  VerticalLayoutWidgetClass "{5CC37220DFC50B15}" {
+   Name "SubtitlePanel"
+   Slot FrameWidgetSlot "{9CD50CF1DCDA2EA3}" {
+    Anchor 0.5 1 0.5 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY -204
+    OffsetTop -204
+    SizeX 1100
+    OffsetRight -1100
+    SizeY 100
+    OffsetBottom 104
+    Alignment 0.5 1
+    SizeToContent 1
+   }
+   "Is Visible" 0
+   {
+    OverlayWidgetClass "{0D2F29A6735C6BB0}" {
+     Name "SubtitleBox"
+     Slot LayoutSlot "{72DD6AAA6462C6BF}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+     }
+     {
+      ImageWidgetClass "{2DE8F6DFDC802FD2}" {
+       Name "SubtitleBg"
+       Slot OverlayWidgetSlot "{A2087D9FD6FBD46F}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.047 0.055 0.059 0.88
+       Size 1 1
+      }
+      SizeLayoutWidgetClass "{E1986C51A11CB942}" {
+       Name "SubtitleWidth"
+       Slot OverlayWidgetSlot "{4BE3563A34B38514}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 28 16 28 20
+       }
+       AllowWidthOverride 1
+       WidthOverride 1044
+       {
+        VerticalLayoutWidgetClass "{59CE57E3F9E574B9}" {
+         Name "SubtitleBody"
+         Slot AlignableSlot "{F33F08E85857A119}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         {
+          TextWidgetClass "{2EABBB00A9097755}" {
+           Name "SubtitleSpeaker"
+           Slot LayoutSlot "{B681C7D8437A56C8}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 0 0 6
+           }
+           Color 0.89 0.639 0.231 1
+           Text ""
+           "Font Size" 24
+           "Min Font Size" 24
+           "Horizontal Alignment" Center
+           FontProperties FontProperties "{A32D62348C632EA9}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{5595084075B4772C}" {
+           Name "SubtitleText"
+           Slot LayoutSlot "{AE00B6567A3D2954}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+           Color 0.957 0.941 0.902 1
+           Text ""
+           "Font Size" 32
+           "Min Font Size" 32
+           "Horizontal Alignment" Center
+           Wrap 1
+           FontProperties FontProperties "{E92FEE04024F3E2C}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
  }
 }

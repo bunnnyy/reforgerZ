@@ -60,6 +60,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected int m_iLoggedSeen;
 	protected int m_iMissions;			// mission notices this life (the Journal tab's count)
 	protected int m_iMissionsSeen;
+	protected string m_sReader;
+	protected int m_iReaderVersion;
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
@@ -292,7 +294,11 @@ class RZ_PlayerUIComponent : ScriptComponent
 			m_sHall = payload;
 			m_iHallVersion++;
 		}
-		else if (kind == RZ_UIFeed.PAYLOAD_TALK || kind == RZ_UIFeed.PAYLOAD_READER)
+		else if (kind == RZ_UIFeed.PAYLOAD_READER)
+		{
+			OnReader(payload);
+		}
+		else if (kind == RZ_UIFeed.PAYLOAD_TALK)
 		{
 			return;
 		}
@@ -302,6 +308,36 @@ class RZ_PlayerUIComponent : ScriptComponent
 			m_iBackgroundsVersion++;
 			ReadLockedLoadouts();
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The reader: open it on a new paper; "" from the server closes it (the screen guard). If the
+	//! reader can't open here (no preset or layout), the paper is a notice card instead.
+	protected void OnReader(string payload)
+	{
+		if (payload.IsEmpty())
+		{
+			RZ_ReaderMenu.CloseFromServer();
+			return;
+		}
+
+		m_sReader = payload;
+		m_iReaderVersion++;
+		if (RZ_ReaderMenu.IsOpen())
+			return;
+
+		if (RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_ReaderMenu))
+			return;
+
+		SendScreenClosed(RZ_ScreenGuard.KIND_READER);
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int nl = payload.IndexOf("\n");
+		if (!gm || nl < 0)
+			return;
+
+		array<string> f = {};
+		RZ_UIText.Split(payload.Substring(0, nl), RZ_UIText.SEP, f);
+		gm.ShowNotice(RZ_UIText.Str(f, 1), payload.Substring(nl + 1, payload.Length() - nl - 1), RZ_ENoticeTag.AUTO);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -523,6 +559,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	string GetMap() { return m_sMap; }
 	string GetBoard() { return m_sBoard; }
 	string GetHall() { return m_sHall; }
+	string GetReader() { return m_sReader; }
+	int GetReaderVersion() { return m_iReaderVersion; }
 	int GetBoardVersion() { return m_iBoardVersion; }
 	int GetHallVersion() { return m_iHallVersion; }
 	int GetMapVersion() { return m_iMapVersion; }

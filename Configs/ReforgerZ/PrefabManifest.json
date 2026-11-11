@@ -4294,7 +4294,7 @@
    "category": "UI",
    "object": "UI",
    "field": "m_UISettings",
-   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (3), queue (8), radio log size (40), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu) ([UI/LAYOUTS.md](../UI/LAYOUTS.md))"
+   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md))"
   },
   {
    "category": "Dialogue",
@@ -5062,7 +5062,13 @@
     "m_fResyncSeconds": "60",
     "m_fMapRefreshSeconds": "20",
     "m_bLockLoadouts": "1",
-    "m_bBoardMenus": "0"
+    "m_bBoardMenus": "0",
+    "m_bSubtitles": "1",
+    "m_fSubtitleMin": "2.5",
+    "m_fSubtitleMax": "8",
+    "m_fSubtitleCps": "18",
+    "m_bReader": "1",
+    "m_iReaderPageChars": "700"
    }
   },
   {

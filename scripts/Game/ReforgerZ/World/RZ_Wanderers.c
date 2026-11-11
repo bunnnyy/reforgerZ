@@ -1483,7 +1483,7 @@ class RZ_Wanderers
 		if (!w.m_Body || !target || RZ_Util.DistXZ(target.GetOrigin(), w.m_vPos) > m_Settings.m_fSpawnRadius)
 			return;
 
-		m_GM.NotifyPlayer(w.m_iNudgePlayer, w.GetTitle(), string.Format("Someone on the road, %1, is waving an arm over their head. They've seen you, and they're waiting.",
+		m_GM.Say(w.m_iNudgePlayer, w.GetTitle(), -1, string.Format("Someone on the road, %1, is waving an arm over their head. They've seen you, and they're waiting.",
 			RZ_Util.DirectionText(target.GetOrigin(), w.m_vPos)));
 		w.m_iNudgePlayer = -1;
 		w.m_eState = RZ_EWandererState.REST;
@@ -1759,7 +1759,7 @@ class RZ_Wanderers
 					continue;
 
 				m_mWarned.Set(key, m_fClock);
-				m_GM.NotifyPlayer(ids[j], w.GetTitle(), string.Format("\"That one there. %1. The Haven turned them out. Don't let them follow you home.\"", RZ_Util.PlayerName(ids[i])));
+				m_GM.Say(ids[j], w.GetTitle(), -1, string.Format("\"That one there. %1. The Haven turned them out. Don't let them follow you home.\"", RZ_Util.PlayerName(ids[i])));
 			}
 		}
 	}
@@ -1973,7 +1973,7 @@ class RZ_Wanderers
 			if (w.IsHaven())
 				m_GM.AddInfamy(playerId, RZ_EFaction.SURVIVORS, m_Settings.m_iShotInfamy);
 
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "They flinch, then run. Every safehouse will hear about this by tonight.");
+			m_GM.Say(playerId, w.GetTitle(), -1, "They flinch, then run. Every safehouse will hear about this by tonight.");
 			Flee(w, pos);
 		}
 	}
@@ -2183,7 +2183,7 @@ class RZ_Wanderers
 		int attitude = Attitude(w, playerId);
 		if (attitude <= -2)
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), RefuseText(w, attitude));
+			m_GM.Say(playerId, w.GetTitle(), -1, RefuseText(w, attitude));
 			Flee(w, player.GetOrigin());
 			return;
 		}
@@ -2261,7 +2261,7 @@ class RZ_Wanderers
 		int attitude = Attitude(w, playerId);
 		if (attitude <= -2)
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), RefuseText(w, attitude));
+			m_GM.Say(playerId, w.GetTitle(), -1, RefuseText(w, attitude));
 			Flee(w, user.GetOrigin());
 			return;
 		}

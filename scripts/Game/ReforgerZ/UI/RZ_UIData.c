@@ -135,6 +135,24 @@ class RZ_UISettings
 	[Attribute("0", desc: "The safehouse notice board opens as a menu with a box to write in (RZ_NoticeBoardMenu; needs its layout and chimeraMenus entry, UI/LAYOUTS.md). Off = notices, and notes are written with /note in chat")]
 	bool m_bBoardMenus;
 
+	[Attribute("1", desc: "Subtitles: what people say outside the talk screen shows at the bottom centre (needs SubtitlePanel in the HUD layout). Off = notice cards, as before")]
+	bool m_bSubtitles;
+
+	[Attribute("2.5", desc: "Subtitles: shortest time a line stays (s)")]
+	float m_fSubtitleMin;
+
+	[Attribute("8", desc: "Subtitles: longest time a line stays (s); longer lines are split into parts shown in turn")]
+	float m_fSubtitleMax;
+
+	[Attribute("18", desc: "Subtitles: reading speed (characters per second) that sets how long a line stays")]
+	float m_fSubtitleCps;
+
+	[Attribute("1", desc: "The reader: notes, letters, orders and flyers open on a sheet of paper (RZ_ReaderMenu). Off = notice cards, as before")]
+	bool m_bReader;
+
+	[Attribute("700", desc: "Reader: about this many characters to a page; pages break at the end of a paragraph")]
+	int m_iReaderPageChars;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Standing page layout (UI/LAYOUTS.md). Empty = the tab says Nothing here yet", "layout")]
 	ResourceName m_sStandingPage;
 
@@ -228,6 +246,106 @@ class RZ_UIText
 			return "";
 
 		return f[i];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where to cut `text` at or before `limit` characters: after a sentence end, else at a space,
+	//! else at the limit.
+	static int CutAt(string text, int limit)
+	{
+		if (text.Length() <= limit)
+			return text.Length();
+
+		int space = -1;
+		for (int i = limit; i > limit / 2; i--)
+		{
+			string ch = text.Substring(i, 1);
+			if (ch == "\n")
+				return i + 1;
+
+			if (ch == " ")
+			{
+				string before = text.Substring(i - 1, 1);
+				if (before == "." || before == "?" || before == "!" || before == "\"")
+					return i + 1;
+
+				if (space < 0)
+					space = i + 1;
+			}
+		}
+
+		if (space > 0)
+			return space;
+
+		return limit;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A subtitle's parts: at most `limit` characters each (two lines), cut at sentence ends.
+	static void SplitLine(string text, int limit, notnull array<string> parts)
+	{
+		parts.Clear();
+		string rest = text.Trim();
+		int guard = 0;
+		while (!rest.IsEmpty() && guard < 20)
+		{
+			guard++;
+			int cut = CutAt(rest, limit);
+			string part = rest.Substring(0, cut);
+			parts.Insert(part.Trim());
+			rest = rest.Substring(cut, rest.Length() - cut);
+			rest = rest.Trim();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The reader's pages: whole paragraphs (split by line breaks) up to about `chars` characters a
+	//! page; a paragraph longer than a page is cut at a sentence end.
+	static void Paginate(string text, int chars, notnull array<string> pages)
+	{
+		pages.Clear();
+		int size = Math.Max(200, chars);
+		array<string> paras = {};
+		Split(text, "\n", paras);
+		string page = "";
+		foreach (string para : paras)
+		{
+			string p = para.Trim();
+			if (p.IsEmpty())
+				continue;
+
+			while (p.Length() > size)
+			{
+				if (!page.IsEmpty())
+				{
+					pages.Insert(page);
+					page = "";
+				}
+
+				int cut = CutAt(p, size);
+				string piece = p.Substring(0, cut);
+				pages.Insert(piece.Trim());
+				p = p.Substring(cut, p.Length() - cut);
+				p = p.Trim();
+			}
+
+			if (p.IsEmpty())
+				continue;
+
+			if (!page.IsEmpty() && page.Length() + p.Length() > size)
+			{
+				pages.Insert(page);
+				page = "";
+			}
+
+			if (page.IsEmpty())
+				page = p;
+			else
+				page += "\n\n" + p;
+		}
+
+		if (!page.IsEmpty() || pages.IsEmpty())
+			pages.Insert(page);
 	}
 
 	//------------------------------------------------------------------------------------------------

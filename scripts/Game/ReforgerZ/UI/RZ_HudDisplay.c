@@ -11,6 +11,15 @@
 //! used then, exactly as before.
 
 //------------------------------------------------------------------------------------------------
+//! A spoken line waiting for the subtitle panel.
+class RZ_QueuedSubtitle
+{
+	string m_sSpeaker;
+	int m_iFaction;
+	string m_sText;
+}
+
+//------------------------------------------------------------------------------------------------
 //! A notice waiting for a card.
 class RZ_QueuedNotice
 {
@@ -35,6 +44,10 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	protected float m_fLastCardAt = -100;
 	protected int m_iToNotebook;		// notices that went to the notebook without a card
 	protected float m_fLifeSeen = -1;
+	protected ref array<ref RZ_QueuedSubtitle> m_aSubs = {};
+	protected float m_fSubUntil = -1;		// the line showing stays until then; -1 none showing
+	protected static const int SUB_WAITING = 4;
+	protected static const int SUB_CHARS = 130;	// about two lines at 32 px in 1,044 units
 
 	//------------------------------------------------------------------------------------------------
 	override protected void DisplayStartDraw(IEntity owner)
@@ -107,6 +120,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		}
 
 		DrawNotices(settings);
+		DrawSubtitle(settings);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -433,6 +447,78 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		m_aCards.RemoveOrdered(i);
 		m_aCardStart.RemoveOrdered(i);
 		m_aCardPriority.RemoveOrdered(i);
+	}
+
+	// ================================================================ Subtitles
+	//------------------------------------------------------------------------------------------------
+	//! From RZ_GameModeComponent.ShowSay (client). False = no subtitle panel, or Subtitles off:
+	//! the line becomes a card instead.
+	static bool PushSubtitle(string speaker, int faction, string text)
+	{
+		if (!s_Instance || !RZ_UISettings.Get().m_bSubtitles || !RZ_UIW.Find(s_Instance.m_wRoot, "SubtitlePanel"))
+			return false;
+
+		s_Instance.EnqueueSubtitle(speaker, faction, text);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line at a time; a long one is split into parts shown in turn. A newer line from the same
+	//! speaker replaces one of theirs still waiting; at most four wait.
+	protected void EnqueueSubtitle(string speaker, int faction, string text)
+	{
+		for (int i = m_aSubs.Count() - 1; i >= 0; i--)
+		{
+			if (m_aSubs[i].m_sSpeaker == speaker)
+				m_aSubs.RemoveOrdered(i);
+		}
+
+		array<string> parts = {};
+		RZ_UIText.SplitLine(text, SUB_CHARS, parts);
+		foreach (string part : parts)
+		{
+			RZ_QueuedSubtitle q = new RZ_QueuedSubtitle();
+			q.m_sSpeaker = speaker;
+			q.m_iFaction = faction;
+			q.m_sText = part;
+			m_aSubs.Insert(q);
+		}
+
+		while (m_aSubs.Count() > SUB_WAITING + parts.Count() - 1)
+		{
+			m_aSubs.RemoveOrdered(0);
+		}
+
+		DrawSubtitle(RZ_UISettings.Get());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On screen for shortest to longest seconds by length; held while the reader is open.
+	protected void DrawSubtitle(RZ_UISettings settings)
+	{
+		float now = RZ_UIW.Now();
+		bool held = RZ_ReaderMenu.IsOpen();
+		if (m_fSubUntil >= 0 && (now >= m_fSubUntil || held))
+		{
+			m_fSubUntil = -1;
+			RZ_UIW.Show(m_wRoot, "SubtitlePanel", false);
+		}
+
+		if (m_fSubUntil >= 0 || held || m_aSubs.IsEmpty())
+			return;
+
+		RZ_QueuedSubtitle q = m_aSubs[0];
+		m_aSubs.RemoveOrdered(0);
+		Color c = RZ_UIColor.Bone();
+		if (q.m_iFaction >= 0)
+			c = RZ_UIColor.Faction(q.m_iFaction);
+
+		RZ_UIW.SetText(m_wRoot, "SubtitleSpeaker", q.m_sSpeaker);
+		RZ_UIW.Tint(m_wRoot, "SubtitleSpeaker", c);
+		RZ_UIW.SetText(m_wRoot, "SubtitleText", q.m_sText);
+		RZ_UIW.Show(m_wRoot, "SubtitlePanel", true);
+		float seconds = q.m_sText.Length() / Math.Max(1, settings.m_fSubtitleCps);
+		m_fSubUntil = now + Math.Clamp(seconds, settings.m_fSubtitleMin, Math.Max(settings.m_fSubtitleMin, settings.m_fSubtitleMax));
 	}
 
 	//------------------------------------------------------------------------------------------------

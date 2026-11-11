@@ -121,10 +121,19 @@ Frame  (root, full screen)
 │  ├─ HorizontalLayout (3 apart)
 │  │  └─ Image Seen1 … Seen5    14 × 8 each, no texture (tinted lit, dim, or green when hidden)
 │  └─ Text    SeenText          mono bold 12, dim (HIDDEN, LOW, SEEN, IN PLAIN SIGHT)
-└─ VerticalLayout (NoticeArea)  460 wide, anchor top-right, offset (-96, 96)
-   ├─ VerticalLayout NoticeStack  the notice cards
-   └─ Text   NoticeQueued       under the stack, right-aligned, mono 12, faint ("+3 in your notebook")
+├─ VerticalLayout (NoticeArea)  460 wide, anchor top-right, offset (-96, 96)
+│  ├─ VerticalLayout NoticeStack  the notice cards
+│  └─ Text   NoticeQueued       under the stack, right-aligned, mono 12, faint ("+3 in your notebook")
+└─ VerticalLayout SubtitlePanel  anchor bottom-centre, offset (0, -204), fits its content, hidden
+   └─ Overlay (SubtitleBox)
+      ├─ Image  (SubtitleBg)      #0C0E0F at 88%
+      └─ SizeLayout (SubtitleWidth)  1,044 wide, padding 28 16 28 20
+         └─ VerticalLayout (SubtitleBody)
+            ├─ Text  SubtitleSpeaker  condensed bold 24, centred, tinted with the speaker's faction
+            └─ Text  SubtitleText     regular 32, #F4F0E6, centred, wraps
 ```
+
+Without `SubtitlePanel` the HUD shows spoken lines as cards.
 
 ## Notice card: `RZ_NoticeCard.layout`
 
@@ -197,6 +206,7 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 |---|---|---|
 | `RZ_NotebookMenu` | `RZ_NotebookMenu` | `RZ_NotebookMenu.layout` |
 | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu.layout` |
+| `RZ_ReaderMenu` | `RZ_ReaderMenu` | `RZ_ReaderMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `RZ_RadioFilter`
@@ -368,6 +378,29 @@ Frame HallPage (root)
 │  └─ Text PastList      wraps, 14, dim, in a ScrollLayout
 └─ Text   Waiting        centred, italic 22, "Reading the names..." (until the data arrives)
 ```
+
+## Reader: `RZ_ReaderMenu.layout`
+
+The reader (`RZ_ReaderMenu` preset), from `UI/Mockups/reader.html`. Written as text.
+
+```
+Frame (root, full screen)
+├─ Image   Dim             full screen, #0A0C0D at 72%
+└─ Frame   Paper           960 × 800, centred
+   ├─ Image  (PaperBg)      #EDE7D6, the whole sheet (flat; a paper texture later)
+   ├─ Text   PaperTitle     at (72, 60), 816 wide, condensed bold 34, ink #1C1A16
+   ├─ Text   PaperHow       at (72, 110), regular 21, #5F5C55 (hidden when empty)
+   ├─ Text   PaperText      at (72, 160), 816 × 520, regular 30, ink, wraps
+   ├─ Image  (PaperRule)    across the paper, 100 above its foot, ink at 16%
+   ├─ Button PrevButton     44 × 44 at the bottom left (72, -30), "<" in amber on ink (hidden on the first page)
+   ├─ Text   PaperPages     at (128, -38), 100 wide, bold 21, #5F5C55, centred ("1 / 2")
+   ├─ Button NextButton     44 × 44 at (240, -30), ">" (hidden on the last page)
+   ├─ HorizontalLayout Prompts  at (300, -34): the footer prompts the script makes
+   ├─ Text   PromptsText    the same place, bold 21, #5F5C55: the static footer, hidden once prompts are made
+   └─ Button CloseButton    200 × 44 at the bottom right (-72, -30), "B / ESC  CLOSE" in amber on ink
+```
+
+Unlike the mockup, the paper has no grain or folds (they'd need a texture) and is a fixed 800 high.
 
 ## Map icon: `RZ_MapIcon.layout`
 

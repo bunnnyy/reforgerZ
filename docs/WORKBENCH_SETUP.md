@@ -880,7 +880,9 @@ aren't. The layouts are in `UI/layouts/ReforgerZ/`.
    2. Open `Prefabs/ReforgerZ/UI/RZ_Notebook.et` (written as text on vanilla's carryable notebook,
       with `RZ_NotebookGadgetComponent`): it should show the component, display name Notebook and
       weight 0.1 kg. **UI > Notebook prefab** points at it.
-   3. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
+   3. Open `RZ_ReaderMenu.layout` and `RZ_Hud.layout` (its new `SubtitlePanel`, hidden) the same
+      way. Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
+   4. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
       with the pad); after spawning, find the notebook in the inventory and take it in hand. If
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
@@ -967,7 +969,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
 | Factions | Services | `m_ServiceSettings` | **Fire Mission** (on, 60 min cooldown, 6 infected, 50 m, 30 s, kills at most 25, not within 250 m of people), **Fence** (on, keywords, 3 Favor an item, 8 a sale, 30 an hour), **Bounty board** (on, 60 to post, 40 paid, 3 at once, 2 h), booster (80) and medic (20) prices, **Amends** (15 Favor, ×1.5 each time, 5 Infamy, 15 a life, never below 15, every 30 min), armband and ribbon prefabs |
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
-| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (3), queue (8), radio log size (40), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu) ([UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
+| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
@@ -1332,6 +1334,11 @@ session, tick off:
   them, and the notebook's Radio tab lists them (filter Missions and World).
 - [ ] On a dedicated server with two clients, a contract offer to one player never reaches the
   other's log (owner-only notices).
+- [ ] Walk up to a Bastion checkpoint: its warning is a subtitle at the bottom centre in olive,
+  not a card; a Perimeter loudspeaker too. With **Subtitles** off, they're cards again.
+- [ ] Read a puzzle note, a guidance note at spawn and a letter from a search: each opens on the
+  paper; a long one has pages (LB/RB, Q/E or the arrows); B or Esc closes it. Have an infected
+  walk up while it's open: it closes by itself. A subtitle that comes while reading waits.
 - [ ] A bite shows the golden window counting down, then Fever with the track filling; a
   stabiliser shows PAUSED and the clock stops; the timer matches the stage messages within seconds.
 - [ ] Cracking a secure channel shows the indicator until the codes change.

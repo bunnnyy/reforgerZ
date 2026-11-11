@@ -2543,7 +2543,7 @@ class RZ_Leaders
 
 		if (Attitude(l, playerId) <= -2)
 		{
-			m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Refuse(l.m_eFaction));
+			m_GM.Say(playerId, l.GetHeader(), l.m_eFaction, RZ_LeaderVoice.Refuse(l.m_eFaction));
 			return;
 		}
 
@@ -2591,7 +2591,7 @@ class RZ_Leaders
 
 		if (Attitude(l, playerId) <= -2)
 		{
-			m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Refuse(l.m_eFaction));
+			m_GM.Say(playerId, l.GetHeader(), l.m_eFaction, RZ_LeaderVoice.Refuse(l.m_eFaction));
 			return;
 		}
 

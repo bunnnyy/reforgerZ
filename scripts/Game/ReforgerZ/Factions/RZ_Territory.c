@@ -1570,7 +1570,7 @@ class RZ_Territory
 					continue;
 
 				m_mRoutineTold.Set(key, m_fClock);
-				m_GM.NotifyPlayer(ids[i], h.GetTitle(), line);
+				m_GM.Say(ids[i], h.GetTitle(), h.m_eFaction, line);
 			}
 		}
 	}

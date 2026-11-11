@@ -1427,6 +1427,8 @@ open it. Key items don't survive a restart; data keys don't survive a death.
 12% of searches (30% of bodies) turn up an ID card, letter, receipt or photo in the Zone's voice
 ([LORE.md](LORE.md), "Writing guide"). One in five has a key inside, about one in seven a stash
 grid on the back (two extra finds within 90 minutes), one in ten a puzzle mission circled on a map.
+Reading one opens it in the reader, a sheet of paper you page through, as do puzzle notes, letters
+and orders, guidance notes and safehouse flyers ([UI.md](UI.md#subtitles-and-the-reader)).
 
 ### Cars: found, rare and hard to fix
 

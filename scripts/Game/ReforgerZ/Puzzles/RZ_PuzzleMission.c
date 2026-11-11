@@ -126,7 +126,12 @@ class RZ_PuzzleMission : RZ_Mission
 
 		AddParticipant(playerId);
 		string clueText = GetClueText(gm, playerId, idx);
-		gm.NotifyPlayer(playerId, m_aClueTitles[idx], clueText);
+		// Paper (a note, a letter, orders: "Read ...") opens in the reader; a plaque, a body or a
+		// person stays a notice
+		if (IsPaper(source))
+			RZ_Reader.Show(gm, playerId, m_aClueTitles[idx], "", clueText);
+		else
+			gm.NotifyPlayer(playerId, m_aClueTitles[idx], clueText);
 		if (gm.GetUIFeed())
 			gm.GetUIFeed().OnClueRead(playerId, m_iId, m_aClueTitles[idx], clueText);
 
@@ -136,6 +141,21 @@ class RZ_PuzzleMission : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	protected void OnClueRead(RZ_GameModeComponent gm, int playerId, int idx, IEntity source)
 	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A clue read from paper: its read label starts with "Read" (the note's default is "Read").
+	protected static bool IsPaper(IEntity source)
+	{
+		if (!source || ChimeraCharacter.Cast(source))
+			return false;
+
+		RZ_ClueComponent comp = RZ_ClueComponent.Cast(source.FindComponent(RZ_ClueComponent));
+		if (!comp)
+			return false;
+
+		string label = comp.GetReadLabel();
+		return label.IsEmpty() || RZ_Reader.IsPaperLabel(label);
 	}
 
 	// ================================================================ Spawning

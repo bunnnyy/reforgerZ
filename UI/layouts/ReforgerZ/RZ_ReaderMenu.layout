@@ -1,0 +1,366 @@
+FrameWidgetClass "{89CDB25CD448A0BF}" {
+ Name "ReaderMenu"
+ Slot FrameWidgetSlot "{C7BC4A8E2DF7FEE0}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+  Alignment 0 0
+ }
+ "Ignore Cursor" 0
+ {
+  ImageWidgetClass "{5FF183CFF15ACC40}" {
+   Name "Dim"
+   Slot FrameWidgetSlot "{6F4AC7E62CF33724}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   Color 0.039 0.047 0.051 0.72
+   Size 1 1
+  }
+  FrameWidgetClass "{1E1B522829DC82DC}" {
+   Name "Paper"
+   Slot FrameWidgetSlot "{4B5AC6ECB330A70C}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 960
+    OffsetRight -960
+    SizeY 800
+    OffsetBottom -800
+    Alignment 0.5 0.5
+   }
+   {
+    ImageWidgetClass "{C61DC104D7D43504}" {
+     Name "PaperBg"
+     Slot FrameWidgetSlot "{A6756EFFE81DF6DB}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.929 0.906 0.839 1
+     Size 1 1
+    }
+    TextWidgetClass "{80DD15F5CE2DBCC3}" {
+     Name "PaperTitle"
+     Slot FrameWidgetSlot "{E4632A9D55A76696}" {
+      Anchor 0 0 0 0
+      PositionX 72
+      OffsetLeft 72
+      PositionY 60
+      OffsetTop 60
+      SizeX 816
+      OffsetRight -888
+      SizeY 44
+      OffsetBottom -104
+      Alignment 0 0
+     }
+     Color 0.11 0.102 0.086 1
+     Text "Note on the dashboard"
+     "Font Size" 34
+     "Min Font Size" 34
+     FontProperties FontProperties "{E69972D1FCAA61B8}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{B5430642620BCBE3}" {
+     Name "PaperHow"
+     Slot FrameWidgetSlot "{3A201CE0DF211B14}" {
+      Anchor 0 0 0 0
+      PositionX 72
+      OffsetLeft 72
+      PositionY 110
+      OffsetTop 110
+      SizeX 816
+      OffsetRight -888
+      SizeY 28
+      OffsetBottom -138
+      Alignment 0 0
+     }
+     Color 0.373 0.361 0.333 1
+     Text "Folded twice, in pencil"
+     "Font Size" 21
+     "Min Font Size" 21
+     FontProperties FontProperties "{98B8E38E2006565C}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    TextWidgetClass "{4779A0009907B347}" {
+     Name "PaperText"
+     Slot FrameWidgetSlot "{AB79FA4069DE9AE9}" {
+      Anchor 0 0 0 0
+      PositionX 72
+      OffsetLeft 72
+      PositionY 160
+      OffsetTop 160
+      SizeX 816
+      OffsetRight -888
+      SizeY 520
+      OffsetBottom -680
+      Alignment 0 0
+     }
+     Color 0.11 0.102 0.086 1
+     Text ""
+     "Font Size" 30
+     "Min Font Size" 30
+     Wrap 1
+     FontProperties FontProperties "{F89929F0C9AA0A8F}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    ImageWidgetClass "{3AFC677F26D0CD9A}" {
+     Name "PaperRule"
+     Slot FrameWidgetSlot "{EF08BFAC06BEB007}" {
+      Anchor 0 1 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY -100
+      OffsetTop -100
+      SizeX 0
+      OffsetRight 0
+      SizeY 1
+      OffsetBottom 99
+      Alignment 0 0
+     }
+     Color 0.11 0.102 0.086 0.16
+     Size 1 1
+    }
+    ButtonWidgetClass "{AEFF56148E54B54F}" {
+     Name "PrevButton"
+     Slot FrameWidgetSlot "{EBD74DF9512A7A4F}" {
+      Anchor 0 1 0 1
+      PositionX 72
+      OffsetLeft 72
+      PositionY -30
+      OffsetTop -30
+      SizeX 44
+      OffsetRight -116
+      SizeY 44
+      OffsetBottom -14
+      Alignment 0 1
+     }
+     style blank
+     {
+      OverlayWidgetClass "{C11E0BD2CFF7E073}" {
+       Name "PrevBox"
+       Slot ButtonWidgetSlot "{52A97AD7B901F3A9}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{C981B5881D27D623}" {
+         Name "PrevBg"
+         Slot OverlayWidgetSlot "{49FFDCAC3271D0B0}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.11 0.102 0.086 1
+         Size 1 1
+        }
+        TextWidgetClass "{4C5E6BE52A909D0E}" {
+         Name "PrevText"
+         Slot OverlayWidgetSlot "{D7E91C39F7E98A94}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text "<"
+         "Font Size" 24
+         "Min Font Size" 24
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{CF0132A917C239EB}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    TextWidgetClass "{34CD3F72F7256F88}" {
+     Name "PaperPages"
+     Slot FrameWidgetSlot "{BEB94B54CFC27B48}" {
+      Anchor 0 1 0 1
+      PositionX 128
+      OffsetLeft 128
+      PositionY -38
+      OffsetTop -38
+      SizeX 100
+      OffsetRight -228
+      SizeY 28
+      OffsetBottom 10
+      Alignment 0 1
+     }
+     Color 0.373 0.361 0.333 1
+     Text "1 / 1"
+     "Font Size" 21
+     "Min Font Size" 21
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{07DC46812D67B18E}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    ButtonWidgetClass "{F6C4DCD5DCA19383}" {
+     Name "NextButton"
+     Slot FrameWidgetSlot "{74E5CFF3CBA28D80}" {
+      Anchor 0 1 0 1
+      PositionX 240
+      OffsetLeft 240
+      PositionY -30
+      OffsetTop -30
+      SizeX 44
+      OffsetRight -284
+      SizeY 44
+      OffsetBottom -14
+      Alignment 0 1
+     }
+     style blank
+     {
+      OverlayWidgetClass "{10418F0E52335251}" {
+       Name "NextBox"
+       Slot ButtonWidgetSlot "{4EB0AF7C39D36B70}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{9767891E47756864}" {
+         Name "NextBg"
+         Slot OverlayWidgetSlot "{69A1D6C89A5B1C36}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.11 0.102 0.086 1
+         Size 1 1
+        }
+        TextWidgetClass "{1D09406D01A6B1A2}" {
+         Name "NextText"
+         Slot OverlayWidgetSlot "{F1A8851190793E7B}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text ">"
+         "Font Size" 24
+         "Min Font Size" 24
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{78267879CDDB96C0}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    HorizontalLayoutWidgetClass "{688D75081C179D1A}" {
+     Name "Prompts"
+     Slot FrameWidgetSlot "{A83D49C679B431DE}" {
+      Anchor 0 1 0 1
+      PositionX 300
+      OffsetLeft 300
+      PositionY -34
+      OffsetTop -34
+      SizeX 380
+      OffsetRight -680
+      SizeY 40
+      OffsetBottom -6
+      Alignment 0 1
+     }
+    }
+    TextWidgetClass "{B1D51B6ACF728482}" {
+     Name "PromptsText"
+     Slot FrameWidgetSlot "{9B77F47DCFB3F297}" {
+      Anchor 0 1 0 1
+      PositionX 300
+      OffsetLeft 300
+      PositionY -38
+      OffsetTop -38
+      SizeX 380
+      OffsetRight -680
+      SizeY 28
+      OffsetBottom 10
+      Alignment 0 1
+     }
+     Color 0.373 0.361 0.333 1
+     Text "LB / RB  PAGES"
+     "Font Size" 21
+     "Min Font Size" 21
+     FontProperties FontProperties "{A0A527CFB6AED54B}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    ButtonWidgetClass "{421EDB31F3ED4B1C}" {
+     Name "CloseButton"
+     Slot FrameWidgetSlot "{C8D5FF2EFCE5401E}" {
+      Anchor 1 1 1 1
+      PositionX -72
+      OffsetLeft -72
+      PositionY -30
+      OffsetTop -30
+      SizeX 200
+      OffsetRight -128
+      SizeY 44
+      OffsetBottom -14
+      Alignment 1 1
+     }
+     style blank
+     {
+      OverlayWidgetClass "{A6852694B2BFF638}" {
+       Name "CloseBox"
+       Slot ButtonWidgetSlot "{953F1865F066E6AF}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{2E0177A7DDC8AE3A}" {
+         Name "CloseBg"
+         Slot OverlayWidgetSlot "{29F99E039F991EE0}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.11 0.102 0.086 1
+         Size 1 1
+        }
+        TextWidgetClass "{CBB7214D4CABE9B0}" {
+         Name "CloseText"
+         Slot OverlayWidgetSlot "{79B45C91DC09AAD3}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text "B / ESC  CLOSE"
+         "Font Size" 21
+         "Min Font Size" 21
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{83ABA80E620B32F5}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

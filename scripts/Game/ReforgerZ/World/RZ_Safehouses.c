@@ -1352,7 +1352,7 @@ class RZ_Safehouses
 
 		if (IsExiled(playerId))
 		{
-			m_GM.NotifyPlayer(playerId, "The Haven", "The door stays shut. Someone on the other side says your name, and then nothing else.");
+			m_GM.Say(playerId, "Behind the door", RZ_EFaction.SURVIVORS, "The door stays shut. Someone on the other side says your name, and then nothing else.");
 			return;
 		}
 
@@ -1379,7 +1379,7 @@ class RZ_Safehouses
 
 		if (IsExiled(playerId))
 		{
-			m_GM.NotifyPlayer(playerId, "The Haven", "They look straight through you. A man steps between you and the children.");
+			m_GM.Say(playerId, "The Haven", RZ_EFaction.SURVIVORS, "They look straight through you. A man steps between you and the children.");
 			return;
 		}
 

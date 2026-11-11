@@ -2391,7 +2391,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			return;
 
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.Cast(pc.FindComponent(RZ_PlayerUIComponent));
-		if (!ui)
+		if (!ui || !RZ_UISettings.Get().m_bSubtitles)
 		{
 			NotifyPlayer(playerId, speaker, text);
 			return;
@@ -2425,10 +2425,14 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: a spoken line for this machine's player (RZ_PlayerUIComponent.RpcDo_Say).
+	//! Client: a spoken line for this machine's player (RZ_PlayerUIComponent.RpcDo_Say): a subtitle,
+	//! or a card where the HUD has no subtitle panel.
 	void ShowSay(string speaker, int faction, string text)
 	{
 		if (System.IsConsoleApp())
+			return;
+
+		if (RZ_HudDisplay.PushSubtitle(speaker, faction, text))
 			return;
 
 		QueueHint(speaker, text, RZ_ENoticeTag.AUTO);

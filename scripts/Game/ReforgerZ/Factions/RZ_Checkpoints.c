@@ -488,7 +488,7 @@ class RZ_Checkpoints
 			if (dist <= m_Settings.m_fWarnRadius)
 			{
 				c.m_bCleared = true;
-				m_GM.NotifyPlayer(playerId, title, "The sentry knows your face. A nod, the pole goes up, and you're through without a search.");
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "The sentry knows your face. A nod, the pole goes up, and you're through without a search.");
 			}
 
 			return;
@@ -498,9 +498,9 @@ class RZ_Checkpoints
 		{
 			c.m_bWarned = true;
 			if (hunted)
-				m_GM.NotifyPlayer(playerId, title, "\"We know who you are. Drop your weapons and walk to the barrier, slowly, if you want to talk. Otherwise turn around.\"");
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"We know who you are. Drop your weapons and walk to the barrier, slowly, if you want to talk. Otherwise turn around.\"");
 			else
-				m_GM.NotifyPlayer(playerId, title, "A loudhailer: \"Checkpoint. Walk to the barrier and wait to be searched. Leave once you're there and we'll treat it as running.\"");
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "A loudhailer: \"Checkpoint. Walk to the barrier and wait to be searched. Leave once you're there and we'll treat it as running.\"");
 		}
 
 		// Hunted but coming in with empty hands: they hold their fire while you walk up and wait
@@ -528,9 +528,9 @@ class RZ_Checkpoints
 
 			int taken = RZ_FoodHelper.TakeFood(ent, m_aContraband, 3);
 			if (taken > 0)
-				m_GM.NotifyPlayer(playerId, title, string.Format("Hands on the barrier. They go through everything. %1 things go into a crate marked CONFISCATED, and you're waved on.", taken));
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, string.Format("Hands on the barrier. They go through everything. %1 things go into a crate marked CONFISCATED, and you're waved on.", taken));
 			else
-				m_GM.NotifyPlayer(playerId, title, "Hands on the barrier. They go through everything, find nothing they care about, and wave you on.");
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "Hands on the barrier. They go through everything, find nothing they care about, and wave you on.");
 
 			return;
 		}
@@ -543,7 +543,7 @@ class RZ_Checkpoints
 			if (hostility)
 				hostility.AddGrudge(playerId, RZ_EFaction.MILITARY, post.m_vPos);
 
-			m_GM.NotifyPlayer(playerId, title, "\"Stop! STOP!\" You ran the checkpoint. They'll remember the face.");
+			m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"Stop! STOP!\" You ran the checkpoint. They'll remember the face.");
 		}
 	}
 
@@ -558,7 +558,7 @@ class RZ_Checkpoints
 		float gap = m_Settings.m_fSurrenderCooldownMinutes * 60;
 		if (m_mSurrenderAt.Find(ident, last) && m_fClock - last < gap)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"You again. We've had this talk.\" A search, and nothing more.");
+			m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"You again. We've had this talk.\" A search, and nothing more.");
 			return false;
 		}
 
@@ -589,7 +589,7 @@ class RZ_Checkpoints
 			if (dist <= m_Settings.m_fWarnRadius)
 			{
 				c.m_bCleared = true;
-				m_GM.NotifyPlayer(playerId, title, "One of them lifts a hand. You're one of theirs. The car they use as a gate rolls back.");
+				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "One of them lifts a hand. You're one of theirs. The car they use as a gate rolls back.");
 			}
 
 			return;
@@ -601,9 +601,9 @@ class RZ_Checkpoints
 		{
 			c.m_bWarned = true;
 			if (known)
-				m_GM.NotifyPlayer(playerId, title, string.Format("\"Toll road. %1 Favor and you're a friend. Walk up slow.\"", toll));
+				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, string.Format("\"Toll road. %1 Favor and you're a friend. Walk up slow.\"", toll));
 			else
-				m_GM.NotifyPlayer(playerId, title, "\"This road's ours. Turn around. Come any closer and we start shooting.\"");
+				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"This road's ours. Turn around. Come any closer and we start shooting.\"");
 		}
 
 		if (dist > m_Settings.m_fStopRadius)
@@ -623,9 +623,9 @@ class RZ_Checkpoints
 			hostility.AddGrudge(playerId, RZ_EFaction.BANDITS, post.m_vPos);
 
 		if (known)
-			m_GM.NotifyPlayer(playerId, title, "\"No Favor? Then you're no friend.\" The rifles come up.");
+			m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"No Favor? Then you're no friend.\" The rifles come up.");
 		else
-			m_GM.NotifyPlayer(playerId, title, "\"You were told.\" The rifles come up.");
+			m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"You were told.\" The rifles come up.");
 	}
 
 	// ================================================================ Camps and safe zones
@@ -679,7 +679,7 @@ class RZ_Checkpoints
 		if (m_Settings.m_bCamps && f != RZ_EFaction.SURVIVORS && RZ_Reputation.IsWatchedOrWorse(tier))
 		{
 			if (Tell(playerId, place, "warn", TELL_GAP))
-				m_GM.NotifyPlayer(playerId, title, RZ_FactionVoice.CampWarning(f));
+				m_GM.Say(playerId, title, f, RZ_FactionVoice.CampWarning(f));
 
 			if (dist > m_Settings.m_fCampRefuseRadius)
 				return;
@@ -687,7 +687,7 @@ class RZ_Checkpoints
 			if (!RZ_Util.IsArmed(ent))
 			{
 				if (Tell(playerId, place, "gate", GATE_GAP))
-					m_GM.NotifyPlayer(playerId, title, "The gate stays shut. Nobody here will deal with you until you've made it right with them.");
+					m_GM.Say(playerId, title, f, "The gate stays shut. Nobody here will deal with you until you've made it right with them.");
 
 				return;
 			}
@@ -699,12 +699,12 @@ class RZ_Checkpoints
 			if (hostility)
 				hostility.AddGrudge(playerId, f, pos);
 
-			m_GM.NotifyPlayer(playerId, title, "\"We told you once.\" Armed and still coming: they open fire.");
+			m_GM.Say(playerId, title, f, "\"We told you once.\" Armed and still coming: they open fire.");
 			return;
 		}
 
 		if (m_Settings.m_bSafeZones && safeZone && f != RZ_EFaction.SURVIVORS && dist <= m_Settings.m_fSafeZoneRadius && Tell(playerId, place, "rule", TELL_GAP * 1.5))
-			m_GM.NotifyPlayer(playerId, title, RZ_FactionVoice.SafeZoneRule(f));
+			m_GM.Say(playerId, title, f, RZ_FactionVoice.SafeZoneRule(f));
 	}
 
 	//------------------------------------------------------------------------------------------------

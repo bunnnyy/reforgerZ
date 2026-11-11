@@ -256,6 +256,10 @@ own [house rules](#haven-house-rules-and-exile).
 Every "fired on for a few minutes" here is the same timed grudge as
 [shooting back](#what-makes-ai-shoot-you): it restarts, never adds up.
 
+What the posts and camps say to you (the warnings, the search, the toll, the gate, the safe-zone
+rule) shows as a subtitle at the bottom of the screen, not a notice card; the outcomes with
+numbers (a surrender's Infamy, the toll paid) stay cards ([UI.md](UI.md#subtitles-and-the-reader)).
+
 ## Reputation clues
 
 Something other players can see ✅. At **Trusted** the Red Hand gives you a **red armband** and
