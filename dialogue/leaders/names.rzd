@@ -1,0 +1,122 @@
+# The name, not the face (docs/REPUTATION.md, "The season record"): a new life is a new face, but
+# the season record keeps the name an earlier life made. Once a life per leader. And a lie that was
+# caught or found out (nmem:lied): the speaker's next greeting says so, once.
+
+conv haven.leader.name
+for leader:haven
+when seasoned:haven & !met
+greet
+once
+prio reaction
+voice haven
+
+node start
+  say "I don't know the face. I know the name. {title:haven}, wasn't it? Sit. Faces change. Soup doesn't."
+
+conv bastion.leader.name
+for leader:bastion
+when seasoned:bastion & !met
+greet
+once
+prio reaction
+voice bastion
+
+node start
+  say "Don't know the face. Know the name. It's in the file as {title:bastion}. New face, same file."
+
+conv redhand.leader.name
+for leader:redhand
+when seasoned:redhand & !met
+greet
+once
+prio reaction
+voice redhand
+
+node start
+  say "Don't know the face. Know the name, though. The book never forgets a name. Faces, all the time."
+
+conv halcyon.leader.name
+for leader:halcyon
+when seasoned:halcyon & !met
+greet
+once
+prio reaction
+voice halcyon
+
+node start
+  say "Different face. Same name in the record: {title:halcyon}. We'll treat it as a repeat measurement."
+
+conv haven.leader.lied
+for leader:haven
+when nmem:lied
+greet
+once
+prio quest
+voice haven
+
+node start
+  say "You told me something that wasn't true. I found out. I'm not angry. I'm just counting differently now."
+
+conv bastion.leader.lied
+for leader:bastion
+when nmem:lied
+greet
+once
+prio quest
+voice bastion
+
+node start
+  say "What you told me didn't check out. It's in your file now. Next to the other things."
+
+conv redhand.leader.lied
+for leader:redhand
+when nmem:lied
+greet
+once
+prio quest
+voice redhand
+
+node start
+  say "You lied to me. To me! In my own camp. I'd be impressed if I wasn't writing it down."
+
+conv halcyon.leader.lied
+for leader:halcyon
+when nmem:lied
+greet
+once
+prio quest
+voice halcyon
+
+node start
+  say "Your account didn't replicate. The discrepancy is in the record, with your initials."
+
+conv wanderer.deserter.picture
+for wanderer:deserter
+when tier:bastion!=stranger
+topic "Ask what Bastion makes of you."
+prio flavour
+daily
+voice plain
+
+node start
+  say? rep:bastion=necessary_evil :: "Bastion's got you as a Necessary Evil. Means they'll use you till you're used up. Ask me how I know."
+  say? rep:bastion=useful_trouble :: "Useful Trouble. They'll smile at you and log it. Both, every time."
+  say? hunted:bastion :: "Hunted. Welcome to the club. There's no club. There's a ditch and a lot of looking over your shoulder."
+  say? tier:bastion>=trusted :: "They trust you. I was trusted once. It's a lovely feeling until they read you an order."
+  say "They've got you on a board somewhere, in chalk. Chalk rubs out. Remember that."
+  > @why "Why did you leave?" -> why
+  > @back "Something else." -> hub
+
+node why
+  say "Same reason anyone leaves. Somebody read out an order and I heard it properly for once."
+  > @back1 "Something else." -> hub
+
+conv table.road.exile
+for table:road
+when exiled & !table:crossed
+greet
+once
+voice table
+
+node start
+  say "Put out, were you? The houses do that. Counting, always counting. We don't count. We just make room."

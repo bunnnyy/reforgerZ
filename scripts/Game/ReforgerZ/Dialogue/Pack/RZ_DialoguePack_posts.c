@@ -8,6 +8,22 @@ class RZ_DialoguePack_posts
 
 	protected static void Add0(RZ_DialogueDB db)
 	{
+		db.Conv("post.bastion.claim", "post:bastion", "kit:in_kit & !caught", "Answer as one of theirs.", 0, 0, "bastion");
+		db.Node("start");
+		db.Say("", "\"You. Which unit? I don't know your face.\"");
+		db.Choice("claim", "\"One of yours. Let me through.\"", "passed", "caught", "", "look bastion 2", "", "", "", "", "");
+		db.Choice("truth", "\"Off a dead man. I'm not one of yours.\"", "honest", "", "", "", "", "", "", "", "");
+		db.Choice("leave", "\"Never mind.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("passed");
+		db.Say("", "\"Fine. Go on. Keep your head down, we're short of heads.\"");
+		db.Do("call:post_wave");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("caught");
+		db.Say("", "\"Hands on the barrier. That kit goes back where it came from.\"");
+		db.Choice("back2", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("honest");
+		db.Say("", "\"At least you said so. Take it off before somebody less patient asks.\"");
+		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("post.bastion.search", "post:bastion", "!hunted:bastion", "Ask about the search.", 2, 0, "bastion");
 		db.Node("start");
 		db.Say("", "\"Hands on the barrier, pockets out. We take suppressors and explosives. Everything else you keep.\"");
@@ -29,6 +45,22 @@ class RZ_DialoguePack_posts
 		db.Say("", "\"Somebody walked a charge into a post up north. Since then, everyone gets searched. Even the ones we like.\"");
 		db.Say("", "\"Especially the ones we like. They're the ones who get close.\"");
 		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("post.redhand.claim", "post:redhand", "kit:in_kit & !caught", "Say you're crew.", 0, 0, "redhand");
+		db.Node("start");
+		db.Say("", "\"Crew? Funny. I know all the crew. What do they call you?\"");
+		db.Choice("claim", "\"One of yours. Wave me on.\"", "passed", "caught", "", "look redhand 2", "", "", "", "", "");
+		db.Choice("truth", "\"Found the armband. Thought it'd help.\"", "honest", "", "", "", "", "", "", "", "");
+		db.Choice("leave", "\"Never mind.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("passed");
+		db.Say("", "\"Huh. Must be new. Go on, then, and pay next time like everyone.\"");
+		db.Do("call:post_wave");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("caught");
+		db.Say("", "\"Lads! Dress-up day. Armband off, if you please.\"");
+		db.Choice("back2", "\"Fair enough.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("honest");
+		db.Say("", "\"It might, too. Not here. Here we count the armbands.\"");
+		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("post.redhand.toll", "post:redhand", "!hunted:redhand", "Ask about the toll.", 2, 0, "redhand");
 		db.Node("start");
 		db.Say("", "\"Red hand means stop. Stop means pay. {toll} Favor, or walk round. It's only a few kilometres. Mostly dead people.\"");

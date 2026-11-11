@@ -1,0 +1,53 @@
+# Kit, without any claim (docs/DIALOGUE.md, "Claims in someone else's kit"): people react to what
+# you wear. Your own colours suit you; theirs on a stranger get a question, never an accusation.
+# There's no disguise with the Haven (its mark is the bear on its doors, not on its people).
+
+conv named.bastion.kit_own
+for named:bastion
+when kit:own
+greet
+voice bastion
+daily
+
+node start
+  say "Kit suits you. Mind the collar. The sergeant notices collars."
+
+conv named.bastion.kit_theirs
+for named:bastion
+when kit:in_kit & !passing
+greet
+voice bastion
+daily
+
+node start
+  say "Where did you get that jacket? Don't answer. I'd have to write it down."
+
+conv named.redhand.kit_own
+for named:redhand
+when kit:own
+greet
+voice redhand
+daily
+
+node start
+  say "Wearing the red. Good. Now everyone knows who to blame."
+
+conv named.redhand.kit_theirs
+for named:redhand
+when kit:in_kit & !passing
+greet
+voice redhand
+daily
+
+node start
+  say "Nice armband. Whose was it before? Doesn't matter. Everything was somebody's before."
+
+conv named.halcyon.kit_theirs
+for named:halcyon
+when kit:in_kit & !passing
+greet
+voice halcyon
+daily
+
+node start
+  say "That coat has somebody's initials in the collar. They aren't yours."

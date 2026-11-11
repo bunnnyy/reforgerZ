@@ -112,8 +112,9 @@ on ([DIALOGUE.md](DIALOGUE.md)); the word and crew names are kept either way.
 **Manners** are a writing tool, never a rule: the cell picks how a line sounds. Stranger is
 *unknown*; Known and Trusted *warm*; Champion *devoted*; Watched and Mixed Bag *wary*; Useful
 Trouble and Favourite Rascal *fond*; Wildcard, Necessary Evil and Wild Child *needed*; the Hunted
-cells *hostile*. A Pragmatist, or an Independent or Rogue leader who holds nothing against you,
-reads *hostile* as *wary*.
+cells *hostile*, or *owed* when they still owe you a hearing ([the parley](#the-parley-and-the-knock)).
+A Pragmatist, or an Independent or Rogue leader who holds nothing against you, reads *hostile* as
+*wary*.
 
 **The word for you**, to your face, this life (`RZ_RepVoice.Word`, the `{word}` token):
 
@@ -125,9 +126,19 @@ reads *hostile* as *wary*.
 | wary | a worry | uncleared | you | subject of concern |
 | fond, needed | a worry we feed | flagged, useful / flagged | your crew name | under review |
 | hostile | put out | on the list | that one | excluded from the study |
+| owed | put out, prayed for | on the list, with a note | in the book, both pages | excluded, with thanks |
 
 Kin of a fallen Champion are "family" to the Haven. A word the majors or questlines give
 (`SetWord`, "Sergeant Novak") wins unless they're hostile.
+
+**After the 90% lock**, until the cure, the word is the lock's ([FINALE.md](FINALE.md#the-lock)),
+unless they're hostile. Names don't change.
+
+| You locked to | The Haven | Bastion | The Red Hand | Halcyon |
+|---|---|---|---|---|
+| Their route | with the house | attached | in on it | signed on |
+| A rival route | the other lot's | hostile element | the other crew | a confound |
+| Independent | nobody's | unaffiliated | freelance | an uncontrolled variable |
 
 **Red Hand crew names** are what the crews hold on you: leverage, not an honour. The first of these
 this life, while you're Known or better with the Red Hand, becomes your name, and a notice tells
@@ -164,9 +175,15 @@ remembers of this life, then the rule in brackets:
 exists: a **local deed** at this seat ("You're the one who brought medicine to Levie.", written when
 you finish that leader's personal job); this life's memory (saved: "Here's the one I owe. Sit
 down."; crossed: "You. I remember."); the **name from an earlier life**, once per leader per life
-("There was a Lukas who crossed me once. Different face. Same name. Should I be worried?"); the
-greeting for your manner in the leader's voice, from the voice bank
-([WRITING.md](WRITING.md#the-voice-bank)); the built greeting.
+("There was a Lukas who crossed me once. Different face. Same name. Should I be worried?"); a
+**route line** the first visit each real day once routes are open or you've locked
+([WRITING.md](WRITING.md#the-race-and-the-lock)); then, unless they're hostile, one time in four
+**who you work for** when it's another faction (the one you've given the most Fame, 15 or more:
+"You run for Bastion. Noted. Arms out.") and one time in three your **best deed** ("You're the one
+who held the lab."); the greeting for your manner in the leader's voice, from the voice bank
+([WRITING.md](WRITING.md#the-voice-bank)), with the owed's own ("Halt. Hands. You {best}. You also
+{worst}. Both go in the log. Talk.") and a set word said the way each faction says a rank; the built
+greeting.
 
 **The whole picture** (`RZ_RepVoice.Picture`): the two factions that know your name best, in a
 wanderer's voice: "Word is you're the Haven's Champion and Bastion's Bad News. I'll believe the
@@ -191,8 +208,38 @@ Old saves load their entries as an earlier life. Questline participation stays b
 at most ±2 and fading a step a real day ([DIALOGUE.md](DIALOGUE.md#memory)). Prices still read
 only the built memory.
 
-The parley, the knock, settling up, the company you keep and the season record are planned:
-[REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md).
+**The name outlives the face** this season: [the season record](#the-season-record). A leader who
+never met this life's face, but whose faction an earlier life stood out with, greets it once with
+the name: "Don't know the face. Know the name. It's in the file as Useful Trouble."
+
+### The season record
+
+✅ Code: `Factions/RZ_RepNamesSeason.c` (`RZ_RepSeason`). The name a player made this season, by
+identity across every life, wiped with the season. Sampled every 30 s for players online; saved in
+its own file, `$profile:ReforgerZ/season_record.json`, at the 2-minute save when changed, and dropped
+when the season number changes. Nothing in it opens anything.
+
+| Kept | Per |
+|---|---|
+| The best and the worst cell reached (by access rank, then the cell's place on the grid) and the life the best was reached in | faction |
+| The deed that stood at the best and at the worst (the life's best deed and worst deed then) | faction |
+| Kills, jobs and Infamy worked off, summed across lives; the last Infamy seen | faction |
+| The cell at the 90% lock | faction |
+| The route at the lock and when it was taken; one war deed (`NoteWar`); the latest crew name; the name as first recorded | player |
+
+**Titles.** A player's title with a faction is the name of the best cell they reached this season
+("Necessary Evil"), whichever life reached it. Conversations read it as `title:bastion=...` and
+`{title:bastion}`, and `seasoned:bastion` is true when an earlier life stood out with them (Known or
+better at its best, or Watched or worse at its worst).
+
+**What the ending reads:** `TitleFor`, `SeasonCell`, `SeasonDeed`, `SeasonPicture` ("Necessary Evil
+to Bastion": the title with the faction you stood highest with), `RouteAtLock`, `LockDays`,
+`LockCell`, `CrewName`, `WarDeed`, `Kills`, `Jobs`, `WorkedOff`, `NameOf`, and `IsSquare` (the last
+Infamy seen with them is under 15). Log line: `Reputation: season record: <player> locked to <route>`.
+
+*Simplified:* the deeds kept are the ones standing when the best and worst cells were reached, not
+the biggest across every life; square doesn't read the Red Hand's book yet. The epilogue's use of it
+is the epilogue's ([designs/EPILOGUE.md](../designs/EPILOGUE.md)).
 
 
 ### Small pay and switched sides
@@ -827,6 +874,10 @@ standing:
   Shooting your own side: +10 with your route's faction. Nothing new is paid for these kills.
 - **Parley** closes with any faction whose route is fighting yours (a hostile act in the last 2 real
   days, or the stand). It reopens at the cure.
+- **What they call you** after the lock is the lock's word ([above](#what-people-call-you)), and leaders
+  greet you on the first visit each real day with a route line in their voice
+  ([WRITING.md](WRITING.md#the-race-and-the-lock)). The season record keeps the route and the cell
+  with each faction at the lock ([above](#the-season-record)).
 - **Pay.** All finale content pays at most 50 Fame per faction per player, 60 Favor and 40 Infamy.
 
 ## The season's winner

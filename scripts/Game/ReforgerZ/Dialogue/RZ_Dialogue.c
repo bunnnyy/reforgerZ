@@ -105,6 +105,8 @@ class RZ_Dialogue
 	protected static const float TALK_GAP = 2;
 	protected static const float PICK_GAP = 0.3;
 	protected static const int MAX_SAID = 1400;
+	protected static const int PER_SPEAKER = 6;		// conversations with one person at once
+	protected static const float IDLE_BUMP = 30;		// at the cap, the one idle this long gives way
 	protected static const string LINE_BREAK = "^";
 
 	protected RZ_GameModeComponent m_GM;
@@ -127,10 +129,35 @@ class RZ_Dialogue
 	RZ_DialogueScenes GetScenes() { return m_Scenes; }
 
 	//------------------------------------------------------------------------------------------------
-	//! On the game mode's tick: the scenes' holds.
+	//! On the game mode's tick: the scenes' holds, the trees' clocks and barks, and a change of
+	//! clothes ending a conversation.
 	void Tick(float dt)
 	{
 		m_Scenes.Tick(dt);
+		m_Trees.Tick(dt);
+		WatchKit();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Kit is read on every pick and on the server tick: any change ends the conversation, so nobody
+	//! opens it in one outfit and picks in another.
+	protected void WatchKit()
+	{
+		array<int> changed = {};
+		foreach (int playerId, RZ_TalkSession s : m_mSessions)
+		{
+			if (s.m_Tree && m_Trees.KitNow(playerId) != s.m_Tree.m_iKit)
+				changed.Insert(playerId);
+		}
+
+		foreach (int id : changed)
+		{
+			RZ_TalkSession gone = GetSession(id);
+			string name = gone.m_sName;
+			int faction = gone.m_iFaction;
+			End(id, "", true);
+			m_GM.Say(id, name, faction, "\"Didn't you just change? Never mind. Off you go.\"");
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -214,6 +241,17 @@ class RZ_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! "Call on the open channel" (RZ_RadioCallAction) on a radio: the open channel, with no body.
+	//! Needs Trees (there's nothing to say on air without them).
+	bool OpenRadio(int playerId, IEntity radio, IEntity user)
+	{
+		if (!IsOn() || !radio || !m_Trees.IsOn())
+			return false;
+
+		return Start(playerId, radio, user, new RZ_TalkRadio(radio));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! "Talk to whoever's in charge" on a quartermaster (RZ_LeaderAction): the leader of this seat.
 	bool OpenSeat(int playerId, IEntity owner, IEntity user)
 	{
@@ -242,6 +280,12 @@ class RZ_Dialogue
 
 		m_mLastTalk.Set(playerId, now);
 		m_mSessions.Remove(playerId);
+		if (!RoomAt(owner))
+		{
+			m_GM.NotifyPlayer(playerId, "Talk", "\"One at a time.\"");
+			return true;
+		}
+
 		RZ_TalkSession s = new RZ_TalkSession();
 		s.m_iPlayer = playerId;
 		s.m_Speaker = owner;
@@ -279,6 +323,37 @@ class RZ_Dialogue
 
 		TakeNew(s);
 		SendNode(s, user);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! At most 6 conversations with one person (the open channel has no cap). At the cap, the one
+	//! idle longest (over 30 s) gives way; else there's no room.
+	protected bool RoomAt(IEntity owner)
+	{
+		if (RZ_TalkRadio.IsRadio(owner))
+			return true;
+
+		array<RZ_TalkSession> with = {};
+		SessionsWith(owner, with);
+		if (with.Count() < PER_SPEAKER)
+			return true;
+
+		float now = RZ_UIW.Now();
+		RZ_TalkSession idlest;
+		foreach (RZ_TalkSession s : with)
+		{
+			if (now - s.m_fLastPick >= IDLE_BUMP && (!idlest || s.m_fLastPick < idlest.m_fLastPick))
+				idlest = s;
+		}
+
+		if (!idlest)
+		{
+			RZ_Log.Info("Dialogue: session cap at " + with[0].m_sName);
+			return false;
+		}
+
+		End(idlest.m_iPlayer, "", true);
 		return true;
 	}
 
@@ -346,9 +421,18 @@ class RZ_Dialogue
 			return;
 		}
 
-		if (!s.m_Speaker || !IsPerson(s.m_Speaker) || RZ_Util.DistXZ(user.GetOrigin(), s.m_Speaker.GetOrigin()) > RZ_DialogueSettings.Get().m_fRange)
+		if (!s.m_Speaker || (!IsPerson(s.m_Speaker) && !RZ_TalkRadio.Cast(s.m_Adapter)) || RZ_Util.DistXZ(user.GetOrigin(), s.m_Speaker.GetOrigin()) > RZ_DialogueSettings.Get().m_fRange)
 		{
 			End(playerId, "left", true);
+			return;
+		}
+
+		// A change of clothes since it opened ends it (also checked on the tick)
+		if (s.m_Tree && m_Trees.KitNow(playerId) != s.m_Tree.m_iKit)
+		{
+			string name = s.m_sName;
+			End(playerId, "", true);
+			m_GM.Say(playerId, name, s.m_iFaction, "\"Didn't you just change? Never mind. Off you go.\"");
 			return;
 		}
 
@@ -395,6 +479,7 @@ class RZ_Dialogue
 	{
 		m_mSessions.Remove(playerId);
 		m_mLastTalk.Remove(playerId);
+		m_Trees.GetBarks().Forget(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -100,7 +100,10 @@ and one way to end it: **research the cure.**
   what each answer needs shown before you choose (persuade, a threat that always costs, a price, your
   background) and no dice; they remember how you spoke to them this life. Each faction has its own
   word for you, the Red Hand's crews give you a name you'd rather they hadn't, and leaders tell you
-  what they make of you. Talk never pays Fame.
+  what they make of you. People lie to you (and the truth is out there to catch them with), you
+  can make promises they'll hold you to, people say a line as you pass, strangers tell you who they
+  are, and anyone can call on the open channel. The season keeps the name you made, whatever face
+  you come back with. Talk never pays Fame.
 - **Notes between players**: a notice board at every Haven safehouse.
 - **Loot the world**: things lie loose in houses, on worktops and floors, and you pick them up;
   bodies looted like any body, car boots to search; locked doors that keep the infected out (they bang on them)
@@ -162,8 +165,9 @@ jobs with truths, lies and fallout, reputation's parley and settling up, lies an
 dialogue's scenes for several players, borrowed kit, strangers at their spots, locals, twists,
 board and radio asks and errands' phase 4 cards,
 [MISSIONS.md](docs/MISSIONS.md)); talk
-(phase 2: conversation trees, reputation's voice, the season mood and the voice bank,
-[DIALOGUE.md](docs/DIALOGUE.md)); the towns' crawlers, the loose ones, heat hordes from towns, the
+(phase 2: conversation trees, reputation's voice, the season mood and the voice bank, and talk's
+rest: lies you're told, promises, claims in kit, barks, strangers, the open channel, the season
+record and titles, [DIALOGUE.md](docs/DIALOGUE.md)); the towns' crawlers, the loose ones, heat hordes from towns, the
 land grid, the tribes' daily life and hunts, their life cycle (succession, borders, splits, lair
 moves, new tribes, memory), the behaviour layer and the crawlers' daily life, and the people's side
 (each faction's words and marks, knowing, skills, your dead run, the moat, 13 contracts and the
@@ -221,7 +225,7 @@ scripts/Game/ReforgerZ/
     Behaviour/   the behaviour layer: Bacon's hooks, steering modes, senses, formations,
                  hunt strategies, navigation, the kinds' attacks, the crawlers' daily life
   Backgrounds/   backgrounds, personal goals, player profiles
-  Factions/      reputation and its 16 names, quartermasters, shops and the shop screen's server
+  Factions/      reputation and its 16 names (and the season record and titles), quartermasters, shops and the shop screen's server
                  side, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,
                  territory, supply trucks, faction life, camp life (scenery and routines),
@@ -242,9 +246,10 @@ scripts/Game/ReforgerZ/
                  spots kept out of locked buildings), cars, crafting, water,
                  traps, generators, fire, secure radio, treating others
   Persistence/   save and load of mode state, the hall of fame
-  Dialogue/      the talk screen's engine: conversations, adapters for each kind of person,
-                 what a reply needs; the trees (hubs, nodes, checks, effects), conditions,
-                 memory (dialogue.json); Pack/: the conversations, generated from dialogue/
+  Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
+                 (strangers and the open channel too), what a reply needs; the trees (hubs,
+                 nodes, checks, effects), conditions, memory (dialogue.json: promises, callbacks,
+                 lies told), scenes and sittings, barks; Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
                  the car repair and shop screens, the screen guard, the notice board, deploy-menu panel and loadout lock, the
@@ -275,7 +280,8 @@ tools/tribe_sim.py
                  simulates the infected tribes as data over a season on that pacing, on the
                  code's rules and the measured wild land of Arland, Everon and Cain and a
                  Chernarus-size map, 2, 5 and 10 players
-dialogue/        the conversations as .rzd text (leaders, wanderers, residents, posts, table)
+dialogue/        the conversations as .rzd text (leaders, wanderers, residents, posts, table,
+                 strangers, radio, barks)
                  and shipped.lock, the ids that have shipped
 tools/dialogue_pack.py, tools/dialogue_sim.py
                  the dialogue lint and packer; walks a conversation as one character sees it

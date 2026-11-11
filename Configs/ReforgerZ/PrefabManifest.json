@@ -3298,7 +3298,10 @@
    "baseFind": "",
    "baseHint": "a small radio item; keep \"radio\" in its name",
    "components": [],
-   "actions": [{"cls": "RZ_TuneRadioAction", "values": [], "name": "Tune"}],
+   "actions": [
+    {"cls": "RZ_TuneRadioAction", "values": [], "name": "Tune"},
+    {"cls": "RZ_RadioCallAction", "values": [], "name": "Call"}
+   ],
    "slots": ["m_GuidanceSettings.m_sRadioPrefab"],
    "listSlot": false,
    "slotLabel": "Guidance > Radio prefab",
@@ -4418,8 +4421,11 @@
   },
   {
    "target": "any vanilla radio prefab you want crackable",
-   "add": [{"cls": "RZ_TuneRadioAction", "values": [], "name": "Tune"}],
-   "why": "secure radio channels (the wind-up radio gets it already)",
+   "add": [
+    {"cls": "RZ_TuneRadioAction", "values": [], "name": "Tune"},
+    {"cls": "RZ_RadioCallAction", "values": [], "name": "Call"}
+   ],
+   "why": "secure radio channels, and calling on the open channel with Dialogue > Trees on (the wind-up radio gets both already)",
    "required": false,
    "minimum": false
   },

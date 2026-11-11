@@ -18,6 +18,11 @@ class RZ_TalkSpeaker
 				return new RZ_TalkLeader(l);
 		}
 
+		// A stranger (errands) carries its tag on its puzzle object, not its clue
+		RZ_PuzzleObjectComponent obj = RZ_PuzzleObjectComponent.Cast(owner.FindComponent(RZ_PuzzleObjectComponent));
+		if (obj && obj.GetMissionId() == RZ_Strangers.TAG)
+			return new RZ_TalkStranger(owner, obj.GetObjectIndex());
+
 		return new RZ_TalkGeneric(owner);
 	}
 

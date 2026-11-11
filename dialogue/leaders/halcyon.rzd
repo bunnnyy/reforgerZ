@@ -49,3 +49,33 @@ node help
   say? need:samples :: "We are short this week. The field leads will pay for anything usable."
   say "Ask the quartermaster what pays. I don't handle money. I handle consequences."
   > @back4 "Something else." -> hub
+
+# A field lead who hides the other two: the lie, and the truth that opens a better answer
+# (the Doctor wanderer says it too: dialogue/wanderers/lies.rzd).
+conv halcyon.lead.volunteers
+for seat:halcyon/field_lead
+when cure>=25
+topic "Ask about the volunteers."
+prio world
+voice halcyon
+
+node start
+  say "Eight in ten walk out of the trial. We write down the other two. They're in the record."
+  > @where "Where are the other two now?" -> deflect
+  > @sheets "Ten went in. Your beds say eight." -> back_room   if bg:labtech,doctor
+  > @catch "There's a room at the back. I know." -> back_room   callout halcyon.back_room
+  > @leave "That's enough for me." -> hub
+
+node deflect
+  say "Somewhere quiet. They're comfortable. Ask me something else." ~lie:halcyon.back_room
+  > @show "Show me." -> back_room | refused   check persuade halcyon 3 bg:labtech,doctor
+  > @drop "Something else, then." -> hub
+
+node refused
+  say "No. And if you're from the houses, tell them we're sorry. We are."
+  > @yourself "Tell them yourself." -> start
+  > @drop2 "Something else." -> hub
+
+node back_room
+  say "There's a room at the back. Someone sits with them, with a clipboard. It's the protocol, and I hate it." ~truth:halcyon.back_room
+  > @back1 "Something else." -> hub

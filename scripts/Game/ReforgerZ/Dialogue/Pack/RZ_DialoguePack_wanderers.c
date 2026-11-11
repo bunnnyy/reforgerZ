@@ -4,6 +4,7 @@ class RZ_DialoguePack_wanderers
 	static void Add(RZ_DialogueDB db)
 	{
 		Add0(db);
+		Add1(db);
 	}
 
 	protected static void Add0(RZ_DialogueDB db)
@@ -54,6 +55,17 @@ class RZ_DialoguePack_wanderers
 		db.Node("back");
 		db.Say("", "\"If I walked in, they'd rub out the KIA, not the man. Then they'd hang me for it, properly signed for.\"");
 		db.Choice("back8", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.doctor.back_room", "wanderer:doctor", "heard_lie:halcyon.back_room", "Ask about Halcyon's volunteers.", 3, 1, "plain");
+		db.Node("start");
+		db.Say("", "\"The two who don't walk out? There's a room at the back of the lab. A chair by every bed and someone with a clipboard in it.\"");
+		db.Mark("truth", "halcyon.back_room");
+		db.Say("", "\"They're not cruel. They write everything down. That's worse, some days.\"");
+		db.Choice("thanks", "\"Thank you for telling me.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.doctor.chemist", "wanderer:doctor", "heard_lie:scav.chemist", "Ask about the chemist's in town.", 3, 1, "plain");
+		db.Node("start");
+		db.Say("", "\"The chemist's? I cleared it myself, Day 3. Every shelf. Whoever told you otherwise wanted a tin more than you did.\"");
+		db.Mark("truth", "scav.chemist");
+		db.Choice("thanks", "\"Good to know.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("wanderer.doctor.work", "wanderer:doctor", "", "Ask how the work's going.", 4, 0, "plain");
 		db.Node("start");
 		db.Say("", "\"Same as the old job. People come in hurt, I fix what I can, and I write down what I can't.\"");
@@ -115,6 +127,26 @@ class RZ_DialoguePack_wanderers
 		db.Node("danger");
 		db.Say("", "\"They do. That's why I ring and walk on. You can ask me to stop for a while. I'll listen.\"");
 		db.Choice("back9", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.scavenger.came_back", "wanderer:scavenger", "due:scav.came_back & !nmem:honest", "", 4, 5, "plain");
+		db.Node("start");
+		db.Say("", "\"You're back. Did you go to the chemist's? Don't tell me. I can see it on you. Still here, though. That's the main thing.\"");
+		db.Conv("wanderer.scavenger.chemist", "wanderer:scavenger", "!nmem:sold_chemist", "Ask if anywhere's worth looking.", 2, 0, "plain");
+		db.Node("start");
+		db.Say("", "\"The chemist's in {here}. Back room, top shelf. Nobody's touched it. Clean as a whistle.\"");
+		db.Mark("lie", "scav.chemist");
+		db.Say("", "\"Bit of food and it's yours. The knowing, I mean. The shelf's free.\"");
+		db.Choice("buy", "Give him a tin.", "sold", "", "", "", "item:food*1", "", "nset:sold_chemist; later:6h:scav.came_back", "", "");
+		db.Choice("hunter", "\"That door was forced. Boot marks.\"", "caught_out", "", "", "", "", "bg:hunter,police", "", "", "");
+		db.Choice("catch", "\"Picked clean on Day 3. I asked.\"", "caught_out", "", "", "", "", "", "", "", "");
+		db.ChoiceExtra("", "scav.chemist");
+		db.Choice("no", "\"Not today.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("sold");
+		db.Say("", "\"Pleasure. Mind how you go. I mean that part.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("caught_out");
+		db.Say("", "\"All right, all right. Picked clean. But the vet's on the south road still has bandages. Honest. That one's free, for the cheek.\"");
+		db.Do("nset:honest");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("wanderer.scavenger.where", "wanderer:scavenger", "", "Ask where they've been.", 4, 0, "plain");
 		db.Node("start");
 		db.Say("", "\"Everywhere twice and nowhere I'd go a third time. {here} has a chemist with the shutters down.\"");
@@ -127,6 +159,10 @@ class RZ_DialoguePack_wanderers
 		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("shrug");
 		db.Say("", "\"True enough to sell. That's the only kind of true I can afford.\"");
+	}
+
+	protected static void Add1(RZ_DialogueDB db)
+	{
 		db.Choice("back5", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("wanderer.trader.prices", "wanderer:trader", "", "Ask what sells these days.", 4, 0, "plain");
 		db.Node("start");

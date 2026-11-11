@@ -70,6 +70,10 @@ WORLD_KINDS = {"town", "owner", "flag", "canon", "canon_town", "leader", "leader
 DIALOGUE_TOKENS = {"npc", "npc_short", "player", "house", "resident", "word", "rep", "best", "worst", "kills",
                    "jobs", "picture", "name", "crew", "place", "here", "faction", "role", "toll", "seat", "boss"}
 VOICE_TOKENS = {"place"}
+# The voice bank's openers are filled for the listener too (RZ_RepVoice.Opening: reputation's FillFor)
+VOICE_LISTENER_TOKENS = {"word", "best", "worst", "crew", "rep", "kills", "jobs", "name"}
+# A conversation's tokens with an argument: a stranger's own words, the season's title with a faction
+DIALOGUE_KINDS = {"their", "title"}
 
 NEVER = [
     # Sexual violence is never mentioned
@@ -224,13 +228,13 @@ def check(lits, all_lits):
         for m in TOKEN_RE.finditer(t):
             name, arg = m.group(1), m.group(2)
             if arg is not None:
-                ok = name in WORLD_KINDS
+                ok = name in WORLD_KINDS or (lit.file.endswith(".rzd") and name in DIALOGUE_KINDS)
             else:
                 ok = name in WORLD_TOKENS or name in known_keys
                 if lit.file.endswith(".rzd"):
                     ok = ok or name in DIALOGUE_TOKENS
                 elif lit.file.endswith("RZ_VoiceDefaults.c"):
-                    ok = ok or name in VOICE_TOKENS
+                    ok = ok or name in VOICE_TOKENS or name in VOICE_LISTENER_TOKENS
             if not ok:
                 findings.append(Finding("token", lit, "unknown token {%s}" % m.group(0)[1:-1]))
                 break

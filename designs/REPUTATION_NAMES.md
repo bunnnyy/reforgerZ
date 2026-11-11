@@ -1,6 +1,8 @@
 # Reputation names: the mixed picture
 
-**Status: designed, phases 1, 2 and most of 3 built.** Approved by the author on 2026-11-11. Phase 3 (the Fear check's
+**Status: designed, phases 1, 2 and most of 3 built, and the season record.** Approved by the author on 2026-11-11.
+The season record and titles, the owed manner and word, the lock's word, who you work for and the best-deed callback
+in the opening are built and live in [REPUTATION.md](../docs/REPUTATION.md#the-season-record). Phase 3 (the Fear check's
 modifiers and tags, the parley and the knock, settling up, the company you keep) is built and lives in
 [REPUTATION.md](../docs/REPUTATION.md#the-parley-and-the-knock). Phase 2 (the voice: manners,
 the opening line, what a leader makes of you in four voices, the faction's word for you, Red Hand crew names,
@@ -164,10 +166,9 @@ Settling up greys out at the budget's end with the built line: "Bastion has forg
 
 ## 4. Manners (for writing lines only)
 
-**Built:** the manners and `VoiceManner` (Pragmatist, Independent and Rogue leaders)
-([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)). Still to build: the **Owed** manner (Hunted or
-Kill on Sight with Earned Fame 15+ and a best deed) with the parley; wanderers reading the Haven's manner and
-then their memory, and the Deserter reading Bastion's reversed, when wanderer greetings move into the voice bank.
+**Built:** the manners, `VoiceManner` (Pragmatist, Independent and Rogue leaders) and the owed manner
+([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)). Still to build: wanderers reading the Haven's manner
+and then their memory, and the Deserter reading Bastion's reversed, when wanderer greetings move into the voice bank.
 **Weighting:** the runtime test logs time spent per cell, so the pools are written heaviest for the cells players
 live in (Stranger, Known, Watched, Mixed Bag).
 
@@ -182,12 +183,9 @@ Still to build:
 - **Step 1 of the opening, the crossing opener:** a questline or major's deed line ("You're the one who gave
   Bastion the book.").
 - **Kin and the Long Table in the opening:** kin of the fallen and the Long Table's guest, family or crossed.
-- **Who you work for:** the faction you gave the most Fame this life ("You run for Bastion."), and a tally
-  standing in for the worst deed in the openings ("You've put {kills} of ours down.").
-- **One time in three a deed callback** in the reputation greeting.
+- **A tally standing in for the worst deed** in the openings ("You've put {kills} of ours down.").
 - **The change notice in voice:** the line from the nearest person of that faction (else its channel), with the
   rule in brackets: "(Hunted: their people shoot you. They still owe you a hearing at a gate.)"
-- **The owed greetings** (with the parley): "Halt. Hands. You {best}. You also {worst}. Both go in the log. Talk."
 
 ## 6. Talk: Fear, the parley and the knock
 
@@ -286,8 +284,6 @@ Lucky, Snack, Legs, Skint, Pockets and Sorry, given at Known or better and said 
 ([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)).
 
 Still to build:
-- **Owed** words: "put out, prayed for", "on the list, with a note", "in the book, both pages", "excluded, with
-  thanks" (with the parley); **after the lock** a one-word overlay ([§13](#13-the-lock-the-cure-and-the-season-record)).
 - **Crew names** from **Bailiff** (laid down a tribe's leader: with the tribes) and **Smoke** (threw a signal
   smoke: needs a throw hook), from a major (the pit, The book balances) and from a crew boss's dare (the Name Day
   card, [§15](#15-side-quests-what-reputation-gives-errands)).
@@ -310,17 +306,17 @@ quarry", "brought in the index"); the Long Table's (you) flags; war deeds betwee
 **Built:** `Picture` and `PictureKind` (nine kinds), and wanderers saying it one time in four after the road
 news ([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)).
 
-Still to build: the standing screen's header (`H` in the feed); the Deserter reading Bastion's side ("Bastion's
-got you as a Necessary Evil. Means they'll use you till you're used up. Ask me how I know."); the Long Table's
-host to an exile ("Put out, were you?"); the epilogue's picture from the season record.
+Still to build: the standing screen's header (`H` in the feed). The Deserter's read of Bastion's side and the
+Long Table host's line to an exile are built as conversations ([docs/DIALOGUE.md](../docs/DIALOGUE.md#the-conversations));
+the epilogue's picture from the season record is the epilogue's.
 
 ## 12. Face and name: one scope rule
 
 **Built:** life-stamped leader and wanderer memory (earlier lives at half, met doesn't carry, old saves as an
 earlier life) and local deeds ([REPUTATION.md](../docs/REPUTATION.md#face-and-name)).
 
-**Name (this season)**, still to build: the season record ([§13](#13-the-lock-the-cure-and-the-season-record)),
-a crew name carried by the book, the route at the lock, all keyed by identity and wiped with the season.
+**Name (this season)** is built: the season record ([REPUTATION.md](../docs/REPUTATION.md#the-season-record)).
+Still to build: a crew name carried to the next season by the book (the majors' "The book balances").
 
 ## 13. The lock, the cure and the season record
 
@@ -336,15 +332,8 @@ what people call you.
   Each opens the route only and forgives nothing;
 - **Independent:** always open, with no standing needed.
 
-**At the lock** each player's choice is recorded, and the season record takes a snapshot.
-
-**After the lock** the word gains a one-word overlay. Names don't change.
-
-| You sided | The Haven | Bastion | The Red Hand | Halcyon |
-|---|---|---|---|---|
-| With them | with the house | attached | in on it | signed on |
-| With a rival route | the other lot's | hostile element | the other crew | a confound |
-| Independent | nobody's | unaffiliated | freelance | an uncontrolled variable |
+**At the lock** and **after it**, the season record's snapshot and the lock's word are built
+([REPUTATION.md](../docs/REPUTATION.md#the-season-record)).
 
 - **Parley and settling up** stay open with your route's faction. They're closed with a faction whose route is
   **fighting** yours: either route has done a hostile route act against the other in the last 2 real days, or it's the
@@ -353,22 +342,16 @@ what people call you.
   - outside the stand, killing a player locked to a faction route costs +3 Infamy with that faction, at most 12 an
     hour; killing an Independent-locked player costs +3 with the Haven;
   - at the stand, within 150 m of the lab, fire between locked players of different sides costs nothing;
-  - it's ordinary Infamy, with credit erosion. Each is tagged *war* in the season record, so the ending can tell a war
-    from a crime. Nothing new is paid for these kills; the built bounties are unchanged.
+  - it's ordinary Infamy, with credit erosion. Each is tagged *war* in the season record (`NoteWar`, built; the
+    finale's kills are still to call it), so the ending can tell a war from a crime. Nothing new is paid for these
+    kills; the built bounties are unchanged.
 - **At the cure** all locks end, and every grudge and squad the contest started stands down once. Parley reopens with
   everyone: "It's over. Talk."
 
-**The season record** (saved in `RZ_SaveData`, by identity, in the shared deeds store's season scope, wiped with the
-season):
-- per faction: the best and worst cell reached (by access rank), the cell at the lock, the biggest best and worst deeds
-  across all lives, kill and job tallies, and Infamy worked off;
-- the route at the lock, and one war deed;
-- a crew name, if "The book balances" carried it;
-- whether the season ended square with that faction ([§14](#14-the-last-week-settling-accounts)).
-
-**What the in-world ending reads:** `SeasonPicture(ident)`, `SeasonDeed(ident, f)`, `SeasonCell(ident, f)`,
-`RouteAtLock(ident)`, `CrewName(ident)` and `TitleFor(ident, f)` (the name from the best life). It speaks about the
-**name**, so a player who dies in the epilogue isn't greeted as a stranger: "Don't know the face. Know the name."
+**The season record** and its APIs are built ([REPUTATION.md](../docs/REPUTATION.md#the-season-record)). Still to
+build on it: the biggest best and worst deeds across all lives (the record keeps the ones standing at the best and
+worst cells), square reading the Red Hand's book ([§14](#14-the-last-week-settling-accounts)), and a crew name the
+book carried.
 
 ## 14. The last week: settling accounts
 
@@ -471,7 +454,7 @@ Still to build:
 - the last parley time per faction;
 - Fear threats used per faction.
 
-**Saved, per season:** the season record. Memory entries gain a life number.
+**Saved, per season:** the season record (built). Memory entries gain a life number.
 
 **Performance:**
 - The name is a lookup on two bands, cached in `CheckTierChange`.
@@ -490,7 +473,7 @@ Reputation lands in four steps across the plan's build order.
 | 1. Shared foundations | **Built** ([REPUTATION.md](../docs/REPUTATION.md#reputations)) | — |
 | 2. Talk | **Built** ([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)) | — |
 | 4. The mission style | **Built** ([REPUTATION.md](../docs/REPUTATION.md#the-parley-and-the-knock)): the Fear check's trait modifiers and tags, the parley and the knock, `IsEmptyHanded`, amends reservations, settling up, the company you keep. Still: the quiet successes on the questlines' FORCE stages (§6.1) | — |
-| 6–7. Finale and ending | `CanSideWith`, the lock overlay, parley closed with fighting routes, war deeds; the season record and its APIs; barks and others-hear; the last week's hooks and "square" | Needs the finale and the epilogue |
+| 6–7. Finale and ending | Parley closed with fighting routes; barks and others-hear at gates; the last week's hooks and "square" with the book. Built: the season record and its APIs, the lock's word | Needs the finale and the epilogue |
 
 ## 20. Guardrails
 
@@ -669,17 +652,10 @@ debounced change notice, `RZ_Checks` (Trust, Fear, threats) and `RZ_Ways`, and t
 - **Barks and others-hear:** from gate and door points on the existing contact ticks; first visit or change only;
   suppressed while claiming in someone's kit (`RZ_Disguise`), during a stealth stage the player is in, and for Hostile;
   folded into the post's line; others-hear at notoriety 3, non-hostile, undisguised, 30 m, once per 10 min per place,
-  through `RZ_Names`. Wanderers' picture line after road news, one time in four; the Deserter's Bastion read; the Long
-  Table host's line for exiles; bounty notices with the name and the owed note.
-- **The season and the lock:**
-  - **The `RZ_SaveData` season record by identity:** best and worst cell per faction, the cell at the lock, the season's
-    biggest deeds, tallies, Infamy worked off, the route at the lock, one war deed, a carried crew name, and "square".
-    Wiped with the season.
-  - **APIs for the finale and the epilogue:** `CanSideWith(identity, f)` (yes / by parley / by price / no),
-    `SnapshotAtLock()`, `SeasonPicture(ident)`, `SeasonDeed(ident, f)`, `SeasonCell(ident, f)`, `RouteAtLock(ident)`,
-    `CrewName(ident)`, `TitleFor(ident, f)`, `IsSquare(ident, f)`.
-  - **After the lock:** the word overlay, and parley and settling closed with factions on a fighting route; war deeds;
-    at the cure, locks end and parley reopens with everyone.
+  through `RZ_Names`; bounty notices with the name and the owed note.
+- **The season and the lock:** the season record is built (`Factions/RZ_RepNamesSeason.c`); still, `CanSideWith` as
+  reputation's own (the finale has its own today), parley and settling closed with factions on a fighting route, and
+  the finale's war kills calling `NoteWar`.
 - **For the disguise look:** `Notoriety(identity, f)` and `KnowsFace(identity, f, pos)`.
 - **Settings** still to add to the built `RZ_ReputationSettings` (Factions > Reputation): the quiet success on; parley on, with 120 min, 1 km squad radius, 150 m alone radius,
   200 m hold radius and 90 s walk; settling on, at 2 Fame per Infamy and 10 a day; group rules on; crew names on; barks

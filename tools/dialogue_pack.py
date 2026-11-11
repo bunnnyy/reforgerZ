@@ -39,7 +39,8 @@ SPEAKER_RE = re.compile(r"^(leader|leader:(haven|bastion|redhand|halcyon)|strong
                         r"seat:(haven/council_head|bastion/outpost_lead|redhand/crew_boss|halcyon/field_lead)|"
                         r"wanderer|wanderer:(trader|doctor|scavenger|deserter|preacher|courier|kid|mechanic)|"
                         r"occupant|named|named:(haven|bastion|redhand|halcyon)(/[a-z_]+)?|"
-                        r"post|post:(bastion|redhand)|table|table:(host|mother|son|boy|road))$")
+                        r"post|post:(bastion|redhand)|table|table:(host|mother|son|boy|road)|"
+                        r"stranger|stranger:[a-z_]+|radio|radio:open)$")
 
 TIERS = ["kill_on_sight", "hunted", "watched", "uneasy", "stranger", "tolerated", "wildcard", "known", "respected",
          "trusted", "champion"]
@@ -65,27 +66,46 @@ COND_KEYS = {
     "picture": (True, False), "stronghold": (False, False),
     # Scenes: this conversation's scene is decided (any value, or decided:<value>); you swayed a tally
     "decided": (False, False), "swayed": (True, False),
+    # A major's sitting is open (sitting:every_name.first); an option is on its table (tabled:...pot)
+    "sitting": (True, False), "tabled": (True, False),
+    # Lies you're told, promises and callbacks
+    "heard_lie": (True, False), "promise": (True, False), "kept": (True, False), "broke": (True, False),
+    "due": (True, False),
+    # Kit and the look (relative to the speaker's faction)
+    "kit": (True, False), "passing": (False, False), "caught": (False, False),
+    # The finale's lock and the season record
+    "route": (True, False), "lockdays": (False, True), "title": (True, True), "seasoned": (True, False),
+    "owed": (True, False), "setword": (True, False), "radio": (False, False),
 }
-QUIET_KEYS = {"tribe", "alpha", "lean", "sitting", "finale", "route", "cure_held", "ending",
-              "was", "kit", "claimed", "passing", "caught", "stranger", "promise", "heard_lie"}
+QUIET_KEYS = {"tribe", "alpha", "lean", "finale", "cure_held", "ending", "was", "claimed", "stranger"}
+KIT_ARGS = {"own", "in_kit", "full", "other", "any"}
+ROUTE_ARGS = {"none", "any", "in", "out", "independent", "unsided", "won", "lost", "haven", "bastion", "redhand",
+              "halcyon", "indep"}
 # Keys that read the world or the player's place in it: an ask needs one (docs/DIALOGUE.md, "Asks").
 WORLD_KEYS = {"house", "town", "need", "wbitten", "kidlost", "bg", "tier", "rep", "exiled", "bite_shown", "hunted",
               "outbreak", "cure", "flag", "stage", "infamy", "fame", "kin"}
 EFFECTS = {"mark", "cset", "nset", "regard", "favor", "take", "claim", "learn", "rumour", "call", "offer", "later",
-           "sway", "decide"}
+           "sway", "decide", "promise", "keep"}
 SCENE_EFFECTS = {"sway", "decide"}
 WORLD_EFFECTS = {"set", "qset", "resolve", "start", "event", "commit", "reward", "pass", "catch", "errand",
-                 "promise", "approach", "reveal", "begin", "hostile", "flee", "note", "return"}
+                 "approach", "reveal", "begin", "hostile", "flee", "note", "return"}
+# What a claim in someone else's kit may never lead to (docs/DIALOGUE.md, "Claims in someone else's kit")
+CLAIM_BARRED = {"favor", "offer", "learn", "errand", "reveal", "begin"}
 FORBIDDEN_EFFECTS = {"fame", "house", "infamy", "follow", "escort", "companion"}
 REGARD_WORDS = {"thanks", "kept", "broke", "threatened", "slander", "vouched_liar", "lied"}
 CALLS = re.compile(r"^(slot:[0-9]|hand_in:[0-9]+|toll|post_wave|standing)$")
-CHECKS = {"persuade", "threaten", "lie"}
-LATER_CHECKS = {"look", "vouch", "commit"}
+CHECKS = {"persuade", "threaten", "lie", "look"}
+LATER_CHECKS = {"vouch", "commit"}
 SCENE_SCOPES = {"speaker", "season"}
 
 # Tokens a .rzd line may use beyond the world tokens (RZ_DialogueText.Fill, RZ_RepVoice.FillFor).
 DIALOGUE_TOKENS = {"npc", "npc_short", "player", "house", "resident", "word", "rep", "best", "worst", "kills",
                    "jobs", "picture", "name", "crew", "place", "here", "faction", "role", "toll", "seat", "boss"}
+# Tokens with an argument a conversation may use: a stranger's own words, the season's title with a faction
+DIALOGUE_KINDS = {"their", "title"}
+# Tokens that would put a player on air (a radio conversation never uses them)
+PERSONAL_TOKENS = {"player", "name", "crew", "word", "rep", "best", "worst", "kills", "jobs", "picture", "title"}
+MARK_RE = re.compile(r"\s+~(lie|truth):([a-z0-9_.@]+)\s*$")
 WORLD_TOKENS = {"day", "day_text", "days_since_command", "days_since_command_words", "cure_state", "cure_percent",
                 "stage", "stage_tone", "time_of_day", "lab_town", "stolen_doses"}
 WORLD_KINDS = {"town", "owner", "flag", "canon", "canon_town", "leader", "leader_short", "leader_place"}
@@ -123,6 +143,9 @@ class Choice:
         self.short = ""
         self.els = ""
         self.line = 0
+        self.truth = ""
+        self.callout = ""
+        self.dry = False
 
 
 class Node:
@@ -132,6 +155,7 @@ class Node:
         self.items = []     # ("say", cond, text) | ("jump", cond, target) | ("do", effects)
         self.choices = []
         self.public = False
+        self.marks = {}     # item index -> ("lie" | "truth", key)
 
 
 class Conv:
@@ -169,7 +193,7 @@ def area_of(path):
 
 
 TOKEN_SPLIT = re.compile(r'"[^"]*"|\S+')
-CHOICE_KEYS = {"check", "cost", "if", "do", "short", "else", "label"}
+CHOICE_KEYS = {"check", "cost", "if", "do", "short", "else", "label", "truth", "callout"}
 
 
 def parse_choice(text, lineno):
@@ -190,7 +214,10 @@ def parse_choice(text, lineno):
     vals = {}
     while i < len(toks):
         t = toks[i]
-        if t in CHOICE_KEYS:
+        if t == "dry":
+            c.dry = True
+            key = None
+        elif t in CHOICE_KEYS:
             key = t
             vals.setdefault(key, [])
         elif key is None:
@@ -204,6 +231,8 @@ def parse_choice(text, lineno):
     c.do = " ".join(vals.get("do", []))
     c.short = " ".join(vals.get("short", []))
     c.els = " ".join(vals.get("else", []))
+    c.truth = " ".join(vals.get("truth", []))
+    c.callout = " ".join(vals.get("callout", []))
     if "label" in vals:
         raise Problem("'label' (the action-menu label) isn't used: the talk screen shows the whole label")
     return c
@@ -240,6 +269,8 @@ def parse_file(path):
                 conv.label = unquote(rest)
             elif word == "greet":
                 conv.kind = "greet"
+            elif word == "bark":
+                conv.kind = "bark"
             elif word == "prio":
                 conv.prio = rest
             elif word == "once":
@@ -263,12 +294,12 @@ def parse_file(path):
                 if line.startswith(">"):
                     node.choices.append(parse_choice(line, n))
                 elif word == "say":
-                    node.items.append(("say", "", rest))
+                    node.items.append(("say", "", strip_mark(node, rest)))
                 elif word == "say?":
                     cond, sep, text = rest.partition("::")
                     if not sep:
                         raise Problem("say? is 'say? <conditions> :: <text>'")
-                    node.items.append(("say", cond.strip(), text.strip()))
+                    node.items.append(("say", cond.strip(), strip_mark(node, text.strip())))
                 elif word == "jump":
                     cond, sep, target = rest.partition("->")
                     if not sep:
@@ -283,13 +314,22 @@ def parse_file(path):
                     raise Problem("a scene is 'scene <id> speaker|season [who <conditions>]'")
                 conv.scene, conv.scope = bits[0], bits[1]
                 conv.who = who.strip()
-            elif word in ("bind", "use", "opens", "always", "callout"):
+            elif word in ("bind", "use", "opens", "always"):
                 raise Problem("'%s' comes with a later phase (docs/DIALOGUE.md, 'Not built yet')" % word)
             else:
                 raise Problem("unknown keyword '%s'" % word)
         except Problem as e:
             raise Problem("%s:%d: %s" % (rel(path), n, e))
     return convs
+
+
+def strip_mark(node, text):
+    """A line ending in ~lie:<key> or ~truth:<key>: the mark is kept on the node, the text without it."""
+    m = MARK_RE.search(text)
+    if not m:
+        return text
+    node.marks[len(node.items)] = (m.group(1), m.group(2))
+    return text[:m.start()].rstrip()
 
 
 def unquote(s):
@@ -350,6 +390,14 @@ def lint_cond(cond, where, errs):
             errs.append("%s: unknown tier '%s'" % (where, val))
         if key == "trait" and arg not in TRAITS:
             errs.append("%s: unknown trait '%s'" % (where, arg))
+        if key == "kit" and arg not in KIT_ARGS:
+            errs.append("%s: kit is kit:own, in_kit, full, other or any" % where)
+        if key == "route" and arg not in ROUTE_ARGS:
+            errs.append("%s: route is route:none, any, in, out, independent, unsided, won, lost or a route's name" % where)
+        if key in ("title", "seasoned", "owed", "setword") and arg not in ("haven", "bastion", "redhand", "halcyon"):
+            errs.append("%s: '%s' needs a faction (haven, bastion, redhand, halcyon)" % (where, key))
+        if key in ("sitting", "tabled") and (arg or "").count(".") != (1 if key == "sitting" else 2):
+            errs.append("%s: %s is %s:<major>.<vote>%s" % (where, key, key, "" if key == "sitting" else ".<word>"))
     return keys
 
 
@@ -385,14 +433,20 @@ def lint_effects(fx, where, conv, errs, favor_total):
             errs.append("%s: offer takes leader_job" % where)
         elif name == "offer" and not all(s.startswith(("leader", "stronghold", "seat")) for s in conv.speakers):
             errs.append("%s: offer is only for leaders" % where)
+        elif name == "sway" and arg.count(".") >= 2 and not conv.scene:
+            pass    # a major's sitting (every_name.first.pot): its own vote, no scene needed
         elif name in SCENE_EFFECTS and not conv.scene:
             errs.append("%s: '%s' needs a scene in this conversation ('scene <id> speaker|season')" % (where, name))
         elif name in SCENE_EFFECTS and not re.match(r"^[a-z0-9_.]+$", arg):
             errs.append("%s: %s is %s:<word>" % (where, name, name))
         elif name == "take" and not re.match(r"^food\*[0-9]+$", arg):
             errs.append("%s: take is take:food*N" % where)
-        elif name == "later" and not re.match(r"^[0-9]+h:[a-z0-9_.]+$", arg):
+        elif name == "later" and not re.match(r"^[0-9]+h:[a-z0-9_.@]+$", arg):
             errs.append("%s: later is later:<hours>h:<key>" % where)
+        elif name == "promise" and not re.match(r"^[a-z0-9_.@]+(:[0-9.]+h)?$", arg):
+            errs.append("%s: promise is promise:<key>[:<hours>h]" % where)
+        elif name == "keep" and not re.match(r"^[a-z0-9_.@]+$", arg):
+            errs.append("%s: keep is keep:<key>" % where)
     return names
 
 
@@ -401,9 +455,15 @@ def lint_text(text, where, conv, errs, warns):
         errs.append("%s: %d characters (limit %d)" % (where, len(text), SAY_LIMIT))
     for m in TOKEN_RE.finditer(text):
         name, arg = m.group(1), m.group(2)
-        ok = (name in WORLD_KINDS) if arg is not None else (name in WORLD_TOKENS or name in DIALOGUE_TOKENS)
+        ok = (name in WORLD_KINDS or name in DIALOGUE_KINDS) if arg is not None else (name in WORLD_TOKENS or name in DIALOGUE_TOKENS)
         if not ok:
             errs.append("%s: unknown token %s" % (where, m.group(0)))
+        if name == "their" and not any(sp.startswith("stranger") for sp in conv.speakers):
+            errs.append("%s: {their:...} is a stranger's own words (for stranger:...)" % where)
+        if name == "title" and arg not in ("haven", "bastion", "redhand", "halcyon"):
+            errs.append("%s: {title:<faction>}" % where)
+        if name in PERSONAL_TOKENS and any(sp.startswith("radio") for sp in conv.speakers):
+            errs.append("%s: no name on air: %s in a radio conversation" % (where, m.group(0)))
     if INFECTED_WORDS.search(text):
         errs.append("%s: player text never says alpha, tribe or crawler" % where)
     if conv.voice == "table":
@@ -428,6 +488,12 @@ def lint(convs):
     errs = []
     warns = []
     ids = {}
+    told_lies = set()
+    for c in convs:
+        for n in c.nodes:
+            for kind, key in n.marks.values():
+                if kind == "lie":
+                    told_lies.add(key)
     for c in convs:
         where_c = "%s:%d (%s)" % (rel(c.path), c.line, c.id)
         if not re.match(r"^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+$", c.id):
@@ -440,8 +506,8 @@ def lint(convs):
         for s in c.speakers:
             if not SPEAKER_RE.match(s):
                 errs.append("%s: unknown speaker '%s'" % (where_c, s))
-        if c.kind not in ("topic", "greet"):
-            errs.append("%s: needs 'topic \"<label>\"' or 'greet'" % where_c)
+        if c.kind not in ("topic", "greet", "bark"):
+            errs.append("%s: needs 'topic \"<label>\"', 'greet' or 'bark'" % where_c)
         if c.kind == "topic":
             if not c.label:
                 errs.append("%s: an empty topic label" % where_c)
@@ -468,6 +534,13 @@ def lint(convs):
         if c.kind == "greet":
             if len(c.nodes) > 1 or c.nodes[0].choices:
                 errs.append("%s: a greet is one node of lines, no choices (greets with choices come with phase 4)" % where_c)
+        if c.kind == "bark":
+            if len(c.nodes) > 1 or c.nodes[0].choices or c.nodes[0].public:
+                errs.append("%s: a bark is one node of lines, no choices, never public" % where_c)
+            if any(it[0] == "do" for it in c.nodes[0].items):
+                errs.append("%s: a bark does nothing but say its line" % where_c)
+            if any(sp.startswith("radio") for sp in c.speakers):
+                errs.append("%s: no barks on the radio" % where_c)
         node_ids = {}
         choice_ids = {}
         favor_total = [0]
@@ -535,6 +608,30 @@ def lint(convs):
                 if ch.cost:
                     if not re.match(r"^(favor:(haven|bastion|redhand|halcyon) [0-9]+|item:food\*[0-9]+)$", ch.cost):
                         errs.append("%s: cost is 'favor:<faction> N' or 'item:food*N'" % wch)
+                if ch.truth:
+                    lint_cond(ch.truth, wch + " truth", errs)
+                    if not check or check[0] != "lie":
+                        errs.append("%s: 'truth' belongs on a [Lie] (check lie ...)" % wch)
+                if ch.callout and ch.callout not in told_lies:
+                    errs.append("%s: callout %s: no line tells that lie (~lie:%s)" % (wch, ch.callout, ch.callout))
+                if check and check[0] == "look":
+                    if check[1] == "none" or check[1] == "haven":
+                        errs.append("%s: a look is for Bastion, the Red Hand or Halcyon kit (no disguise with the Haven)" % wch)
+                    barred = set(fx) & CLAIM_BARRED
+                    passn = c.node(ch.targets[0])
+                    if passn:
+                        for kind, _, val in passn.items:
+                            if kind == "do":
+                                barred |= set(p.strip().partition(":")[0] for p in val.split(";")) & CLAIM_BARRED
+                    if barred:
+                        errs.append("%s: no rewards through a claim (%s)" % (wch, ", ".join(sorted(barred))))
+                if check and check[0] == "threaten" and any(sp.startswith(("radio", "stranger")) for sp in c.speakers):
+                    errs.append("%s: no threats on air or at a stranger through talk" % wch)
+                if ch.dry:
+                    twins = [o for o in n.choices if o is not ch and not o.dry and o.targets == ch.targets
+                             and o.do == ch.do and o.check == ch.check and o.cost == ch.cost]
+                    if not twins:
+                        errs.append("%s: a dry line leads where a plain line in the same node does (same targets, check, cost and effects)" % wch)
                 if "regard" in fx and "regard:thanks" in ch.do and not (ch.cost or "take:" in ch.do or "call:" in ch.do):
                     errs.append("%s: regard:thanks needs a cost or a deed on the same choice" % wch)
                 for t in ch.targets:
@@ -616,7 +713,7 @@ def esc(s):
 def pack_area(area, convs):
     calls = []
     for c in convs:
-        flags = (1 if c.once else 0) | (2 if c.daily else 0) | (4 if c.kind == "greet" else 0)
+        flags = (1 if c.once else 0) | (2 if c.daily else 0) | (4 if c.kind == "greet" else 0) | (8 if c.kind == "bark" else 0)
         calls.append("db.Conv(%s, %s, %s, %s, %d, %d, %s);" % (esc(c.id), esc(",".join(c.speakers)), esc(c.when),
                                                              esc(c.label), PRIOS[c.prio], flags, esc(c.voice)))
         if c.scene and c.who:
@@ -627,9 +724,11 @@ def pack_area(area, convs):
             calls.append("db.Node(%s);" % esc(n.id))
             if n.public:
                 calls.append("db.Public();")
-            for kind, cond, val in n.items:
+            for idx, (kind, cond, val) in enumerate(n.items):
                 if kind == "say":
                     calls.append("db.Say(%s, %s);" % (esc(cond), esc(val)))
+                    if idx in n.marks:
+                        calls.append("db.Mark(%s, %s);" % (esc(n.marks[idx][0]), esc(n.marks[idx][1])))
                 elif kind == "jump":
                     calls.append("db.Jump(%s, %s);" % (esc(cond), esc(val)))
                 else:
@@ -639,6 +738,8 @@ def pack_area(area, convs):
                 calls.append("db.Choice(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);" % (
                     esc(ch.id), esc(ch.label), esc(t[0]), esc(t[1]), esc(t[2]), esc(ch.check), esc(ch.cost),
                     esc(ch.cond), esc(ch.do), esc(ch.short), esc(ch.els)))
+                if ch.truth or ch.callout:
+                    calls.append("db.ChoiceExtra(%s, %s);" % (esc(ch.truth), esc(ch.callout)))
     cls = "RZ_DialoguePack_" + area
     out = ["// GENERATED by tools/dialogue_pack.py from dialogue/%s/*.rzd. Do not edit: edit the .rzd and run the tool." % area,
            "class %s" % cls, "{", "\tstatic void Add(RZ_DialogueDB db)", "\t{"]

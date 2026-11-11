@@ -1,0 +1,63 @@
+# Lies you're told (docs/DIALOGUE.md, "Lies you're told"). A line ending in ~lie:<key> is a lie the
+# player hears (heard_lie:<key>); a line ending in ~truth:<key> is the truth (knows:<key>). Once a
+# player has both, the choice with `callout <key>` shows, tagged [Evidence]. Nobody is punished for
+# believing a lie: the truth opens a better answer, and that's the payoff.
+
+conv wanderer.scavenger.chemist
+for wanderer:scavenger
+when !nmem:sold_chemist
+topic "Ask if anywhere's worth looking."
+prio world
+voice plain
+
+node start
+  say "The chemist's in {here}. Back room, top shelf. Nobody's touched it. Clean as a whistle." ~lie:scav.chemist
+  say "Bit of food and it's yours. The knowing, I mean. The shelf's free."
+  > @buy Give him a tin. -> sold   cost item:food*1   do nset:sold_chemist; later:6h:scav.came_back
+  > @hunter "That door was forced. Boot marks." -> caught_out   if bg:hunter,police
+  > @catch "Picked clean on Day 3. I asked." -> caught_out   callout scav.chemist
+  > @no "Not today." -> hub
+
+node sold
+  say "Pleasure. Mind how you go. I mean that part."
+  > @back1 "Something else." -> hub
+
+node caught_out
+  say "All right, all right. Picked clean. But the vet's on the south road still has bandages. Honest. That one's free, for the cheek."
+  do nset:honest
+  > @back2 "Something else." -> hub
+
+conv wanderer.scavenger.came_back
+for wanderer:scavenger
+when due:scav.came_back & !nmem:honest
+once
+greet
+voice plain
+
+node start
+  say "You're back. Did you go to the chemist's? Don't tell me. I can see it on you. Still here, though. That's the main thing."
+
+conv wanderer.doctor.chemist
+for wanderer:doctor
+when heard_lie:scav.chemist
+topic "Ask about the chemist's in town."
+prio reaction
+once
+voice plain
+
+node start
+  say "The chemist's? I cleared it myself, Day 3. Every shelf. Whoever told you otherwise wanted a tin more than you did." ~truth:scav.chemist
+  > @thanks "Good to know." -> hub
+
+conv wanderer.doctor.back_room
+for wanderer:doctor
+when heard_lie:halcyon.back_room
+topic "Ask about Halcyon's volunteers."
+prio reaction
+once
+voice plain
+
+node start
+  say "The two who don't walk out? There's a room at the back of the lab. A chair by every bed and someone with a clipboard in it." ~truth:halcyon.back_room
+  say "They're not cruel. They write everything down. That's worse, some days."
+  > @thanks "Thank you for telling me." -> hub

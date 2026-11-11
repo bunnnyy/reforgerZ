@@ -28,10 +28,10 @@ class RZ_VoiceLine
 	[Attribute("-1", desc: "Faction: -1 any, 0 the Haven, 1 Bastion, 2 the Red Hand, 3 Halcyon")]
 	int m_iFaction;
 
-	[Attribute("opener", desc: "Kind: opener, person, aside_meal, aside_night, aside_shift")]
+	[Attribute("opener", desc: "Kind: opener, greeting, person, aside_meal, aside_night, aside_shift, infected, route (after the 90% lock), look_pass, look_caught")]
 	string m_sKind;
 
-	[Attribute("", desc: "Manner (openers): unknown, warm, devoted, wary, fond, needed, hostile; empty = any")]
+	[Attribute("", desc: "Manner (openers): unknown, warm, devoted, wary, fond, needed, hostile, owed; empty = any")]
 	string m_sManner;
 
 	[Attribute("0", UIWidgets.ComboBox, "Register: plain lines fill gaps; wry, joke and taunt lines follow the mood's joke share and joke memory", "", ParamEnumArray.FromEnum(RZ_ERegister))]
@@ -226,7 +226,9 @@ class RZ_VoiceBank
 			}
 		}
 
-		bool joke = !jokes.IsEmpty() && RZ_ToneGuard.AllowsJoke(pos) && Math.RandomFloat01() < 1.0 / RZ_SeasonMood.JokeOneIn(mood);
+		// Nobody at a seat whose leader refuses a player jokes with them
+		bool refused = leader && playerId > 0 && gm.GetLeaders() && gm.GetLeaders().Attitude(leader, playerId) <= -2;
+		bool joke = !refused && !jokes.IsEmpty() && RZ_ToneGuard.AllowsJoke(pos) && Math.RandomFloat01() < 1.0 / RZ_SeasonMood.JokeOneIn(mood);
 		RZ_VoiceLine picked;
 		if (joke || plain.IsEmpty())
 		{

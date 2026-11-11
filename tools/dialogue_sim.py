@@ -64,7 +64,7 @@ def term_true(ch, term):
 
 def term_value(ch, key, arg, op, val):
     if key == "route" and arg == "none":
-        return True
+        return not any(f.startswith("route:") for f in ch.facts)
     if key in dp.QUIET_KEYS:
         return False
     if key == "bg":
@@ -155,8 +155,13 @@ def difficulty(ch, d, extras):
 def describe_choice(ch, conv, c):
     tag = ""
     shown = cond_true(ch, c.cond)
+    if c.callout:
+        # [Evidence]: only for a player who heard that lie (--fact heard_lie:<key>) and knows the truth
+        shown = shown and ("heard_lie:" + c.callout) in ch.facts and c.callout in ch.knows
     result = c.targets[0]
     check = c.check.split()
+    if check and check[0] == "lie" and c.truth and cond_true(ch, c.truth):
+        check = []     # true for this character: no [Lie], no check
     if check:
         kind, f, d = check[0], check[1], int(check[2])
         d = difficulty(ch, d, check[3:])
@@ -170,6 +175,9 @@ def describe_choice(ch, conv, c):
         elif kind == "lie":
             score = max(0, trust(ch, f, []))
             tag = "[Lie - %d of %d]" % (score, d)
+        elif kind == "look":
+            # The look's score reads the kit worn, the day's word and who's watching: only the game knows
+            return "[Look - %s - scored in the game]" % fname, shown, "pass -> %s, caught -> %s" % (c.targets[0], c.targets[-1])
         else:
             score = fear(ch, f, check[3:])
             tag = "[Fear %d of %d - +3 Infamy]" % (score, d)
@@ -195,6 +203,8 @@ def describe_choice(ch, conv, c):
             tag = "[%s]" % m.group(3).split(",")[0].capitalize() + (" " + tag if tag else "")
         if m and m.group(2) == "tier" and not m.group(1) and m.group(4) == ">=":
             tag = "[%s - %s]" % (m.group(5).capitalize(), NAMES.get(m.group(3), "")) + (" " + tag if tag else "")
+    if c.callout:
+        tag = "[Evidence]" + (" " + tag if tag else "")
     return tag, shown, result
 
 
@@ -216,7 +226,7 @@ def say_lines(ch, node):
 
 
 def walk(ch, conv, start_only=False):
-    print("== %s  (%s; for %s)" % (conv.id, conv.label or "greet", ", ".join(conv.speakers)))
+    print("== %s  (%s; for %s)" % (conv.id, conv.label or conv.kind, ", ".join(conv.speakers)))
     if not cond_true(ch, conv.when):
         print("   not in the hub for this character (when: %s)" % conv.when)
         return

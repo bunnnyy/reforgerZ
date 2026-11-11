@@ -2,8 +2,9 @@
 
 How every line of player text in ReforgerZ is written: the tone, the voices, the rules each line
 follows, and the lint that checks them. Who the factions are as people, and the setting they speak
-from, is in [LORE.md](LORE.md). Running jokes, the race and route lines, the radio's joke memory
-and the epilogue's variants are designed in [designs/TONE.md](../designs/TONE.md) and not built yet.
+from, is in [LORE.md](LORE.md). The running jokes on the channels, the race lines and pitches on air,
+the radio's pools and joke memory, grief's other sources and the epilogue's variants are designed in
+[designs/TONE.md](../designs/TONE.md) and not built yet.
 
 ## Contents
 
@@ -16,6 +17,8 @@ and the epilogue's variants are designed in [designs/TONE.md](../designs/TONE.md
 - [The season mood](#the-season-mood)
 - [The voice bank](#the-voice-bank)
 - [Conversations](#conversations)
+- [The race and the lock](#the-race-and-the-lock)
+- [Faction kit and disguises](#faction-kit-and-disguises)
 - [Grey choices](#grey-choices)
 - [Phrasing choices and outcomes](#phrasing-choices-and-outcomes)
 - [Dark humour, not edginess](#dark-humour-not-edginess)
@@ -202,6 +205,12 @@ optional condition in the conversation syntax (`cure>=50`), a weight and the tex
   Red Hand's book jokes until `book.debts_dead`, then a plain line; Halcyon noticing once a page is
   in the open (`majors.pages_open`). They're ordinary `person` lines with a condition, so the joke
   memory and the mood's share apply.
+- **More kinds:** `route` (face to face after the 90% lock, [below](#the-race-and-the-lock)),
+  `look_pass` and `look_caught` ([below](#faction-kit-and-disguises)), and the openers' `owed`
+  manner and set-word lines. An opener is filled for the listener too: `{word}`, `{best}`, `{worst}`,
+  `{crew}` (reputation's tokens).
+- **Nobody jokes with a player their leader refuses:** at a seat whose leader holds you at −2 or
+  below, the bank picks only plain lines.
 - *Not built yet:* the radio's pools, rumours and chatter in the bank, the shared channels' joke
   memory, and the running jokes on the open channels (the nightly kettle line on air)
   ([designs/TONE.md](../designs/TONE.md)).
@@ -233,8 +242,54 @@ Conversation lines ([DIALOGUE.md](DIALOGUE.md)) follow everything on this page, 
   boss's line stays LORE's: *"He let people pay later. You can't run a road like that."*
 - **The Long Table is never described.** Its people are homely and attentive; they ask where you're
   going and whether anyone expects you. No line anywhere else hints at it.
+- **A dry line** (`dry` on a choice) is a node's wry way of saying what a plain choice beside it
+  says: the same result, only the reply changes. It's never the only kind option or the only way to
+  say no, and the lint holds it to its plain twin.
+- **Lies you're told.** A giver or passer-by lies in their own voice, plausibly, and once: one lie
+  a conversation. The truth is always findable before it matters, by someone anyone can ask (the
+  Doctor wanderer knows the chemist's) or by a background line, and the [Evidence] answer names it:
+  *"Picked clean on Day 3. I asked."* Believing a lie is never punished; the truth is a better
+  door. No tag ever gives a lie away.
+- **Promises** are said in the player's words, with the time in them: *"I'll bring two tins. Two
+  hours."* The thank-you and the disappointment are one line each, said plainly, and the
+  disappointment blames nobody but the speaker's own hope: *"You said you'd bring tins. I told the
+  children."*
+- **Barks** are one line, said in passing: never a question that needs an answer, never a player's
+  name in someone else's kit, never anything the player couldn't see for themselves.
+- **Strangers** speak with one personal detail (a marrow, a pram of pans, a husband across the
+  line), in their own words. Small means small: a pinch, not a tragedy. Nobody leans on them.
+- **On the open channel** nobody is named, ever: no `{player}`, `{word}` or crew name on air.
 - The lint for conversations is `tools/dialogue_pack.py` ([DIALOGUE.md](DIALOGUE.md#tools)); the
   checks below also read every `.rzd` line.
+
+## The race and the lock
+
+✅ Face to face, the voice bank's `route` lines (`Factions/RZ_VoiceDefaults.c`, `Routes`): a leader's
+first visit from you each real day, once the routes are open or you've locked, said instead of the
+opening ([REPUTATION.md](REPUTATION.md#what-people-call-you)). Shared channels never single out
+anyone's route.
+
+| The listener is | What they hear |
+|---|---|
+| **In-group** (`route:in`, locked to this faction's route) | Gallows humour *with* them, as one of their own: *"Attached. Your name's on the board in pencil. Don't make us rub it out."* |
+| **Out-group** (`route:out`) | Cool for two real days (`lockdays<2`): no in-jokes, their word not their name; Bastion says *"Civilian."* Then civil. The Haven stays kind; the Red Hand jokes *at* them, as at everyone; Halcyon is exact and disappointed |
+| **Independent** | Everyone is a little afraid of them: *"An uncontrolled variable. You understand why I'd rather you stood over there."* |
+| **Unsided** (`route:unsided`, routes open) | Courted once a visit: the Red Hand an offer, Bastion a form, the Haven a bowl and a question, Halcyon a pen |
+| **After the cure** | The losing route's own leaders give one plain line, no blame (`route:lost & route:haven`); the winners say theirs to a loser (`flag:finale.route`): the Haven gracious, Bastion files them, the Red Hand *"No hard feelings. Some soft ones."*, Halcyon objections on page two. Never on air, never with a name |
+
+The lock ends at the cure: `route:in`, `out` and `independent` are the locked weeks only. The
+pitches, the admissions and the race lines on air are the finale's and the channels'
+([FINALE.md](FINALE.md), [designs/TONE.md](../designs/TONE.md)).
+
+## Faction kit and disguises
+
+✅ The voice follows the look's result ([REPUTATION.md](REPUTATION.md#borrowed-kit)), with no fixed
+count. A pass in a conversation goes without a word at least one time in three (the server's pick),
+else a `look_pass` line (*"Didn't recognise you. Must be the light."*); a catch gets a `look_caught`
+line, said only while the look is being made (*"Nice uniform. Whose was it?"*). People react to kit
+without any claim in their greetings (*"Where did you get that jacket? Don't answer. I'd have to
+write it down."*), saying only what they can see. A disguise never changes the word anyone uses for
+you once they know who you are.
 
 ## Information comes first
 

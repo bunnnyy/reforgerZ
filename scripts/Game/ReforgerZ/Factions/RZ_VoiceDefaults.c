@@ -36,6 +36,103 @@ class RZ_VoiceDefaults
 		Asides(lines);
 		Infected(lines);
 		RunningJokes(lines);
+		Routes(lines);
+		Looks(lines);
+		Owed(lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Route lines face to face after the 90% lock (docs/WRITING.md, "The race and the lock"): the
+	//! first visit to a leader each real day, said instead of the opener. In-group: one of their own;
+	//! out-group: cool for two real days (lockdays<2), then civil; Independent: a little afraid;
+	//! unsided: courted once a visit; after the cure, the losing route's own leaders give one plain
+	//! line, and the winners say theirs (flag:finale.route is the controlling route + 1). Never on air.
+	protected static void Routes(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+		RZ_ERegister J = RZ_ERegister.JOKE;
+
+		Line(lines, "haven.route.in.1", HAVEN, "route", "", P, 0, "route:in", "\"Somebody said you're with the houses now. Sit. You'll want feeding.\"");
+		Line(lines, "haven.route.in.2", HAVEN, "route", "", J, 0, "route:in", "\"With the houses, are you? Then you're on the rota. Everybody's on the rota.\"");
+		Line(lines, "haven.route.out.cool", HAVEN, "route", "", P, 0, "route:out & lockdays<2", "\"You picked someone else's door. That's allowed. The soup's still soup.\"");
+		Line(lines, "haven.route.out.1", HAVEN, "route", "", W, 0, "route:out & lockdays>=2", "\"The other lot's, aren't you. We'll feed you anyway. We're hopeless at grudges.\"");
+		Line(lines, "haven.route.indep.1", HAVEN, "route", "", W, 0, "route:independent", "\"Nobody's, they tell me. That sounds lonely. Eat something.\"");
+		Line(lines, "haven.route.unsided.1", HAVEN, "route", "", P, 0, "route:unsided", "\"Nobody's asked you yet? Then I will. Bowl first. Then the question: who do you trust to share it?\"");
+		Line(lines, "haven.route.lost.1", HAVEN, "route", "", P, 0, "route:lost & route:haven", "\"It didn't go our way. It wasn't you. Have some soup.\"");
+		Line(lines, "haven.route.winner.1", HAVEN, "route", "", P, 0, "route:lost & flag:finale.route=1", "\"You stood somewhere else. It's all right. There's a queue, and you're in it, same as anyone.\"");
+
+		Line(lines, "bastion.route.in.1", BASTION, "route", "", P, 0, "route:in", "\"Attached. Your name's on the board in pencil. Don't make us rub it out.\"");
+		Line(lines, "bastion.route.in.2", BASTION, "route", "", J, 0, "route:in", "\"Welcome to the roster. The pay is the same as ours. Nothing, on time.\"");
+		Line(lines, "bastion.route.out.cool", BASTION, "route", "", P, 0, "route:out & lockdays<2", "\"Civilian.\"");
+		Line(lines, "bastion.route.out.1", BASTION, "route", "", W, 0, "route:out & lockdays>=2", "\"Civilian. Filed with the other lot. Move along, please.\"");
+		Line(lines, "bastion.route.indep.1", BASTION, "route", "", W, 0, "route:independent", "\"Unaffiliated. There's a form for that. It's blank.\"");
+		Line(lines, "bastion.route.unsided.1", BASTION, "route", "", P, 0, "route:unsided", "\"There's a form for people who haven't decided. It's short. Sign it and you've decided.\"");
+		Line(lines, "bastion.route.lost.1", BASTION, "route", "", P, 0, "route:lost & route:bastion", "\"It went the other way. Your part was logged. That's what a log is for.\"");
+		Line(lines, "bastion.route.winner.1", BASTION, "route", "", P, 0, "route:lost & flag:finale.route=2", "\"You'll be processed with everyone else. In order. That's the point.\"");
+
+		Line(lines, "redhand.route.in.1", REDHAND, "route", "", J, 0, "route:in", "\"In on it. Good. Your share's in the book. So's your debt. Don't worry about it.\"");
+		Line(lines, "redhand.route.in.2", REDHAND, "route", "", P, 0, "route:in", "\"You're with us now. That means we lie to everyone but you, on a good day.\"");
+		Line(lines, "redhand.route.out.cool", REDHAND, "route", "", J, 0, "route:out & lockdays<2", "\"The other crew, is it? Bold. Wrong, but bold.\"");
+		Line(lines, "redhand.route.out.1", REDHAND, "route", "", J, 0, "route:out & lockdays>=2", "\"Still with that lot? We'll keep a page open for when you come to your senses.\"");
+		Line(lines, "redhand.route.indep.1", REDHAND, "route", "", J, 0, "route:independent", "\"Freelance. I respect it. I'd also like to know where you sleep.\"");
+		Line(lines, "redhand.route.unsided.1", REDHAND, "route", "", W, 0, "route:unsided", "\"Haven't picked yet? Smart. Hear our offer first. It's terrible, but it's honest.\"");
+		Line(lines, "redhand.route.lost.1", REDHAND, "route", "", P, 0, "route:lost & route:redhand", "\"Didn't come off. The book takes the loss, not you. Go on.\"");
+		Line(lines, "redhand.route.winner.1", REDHAND, "route", "", J, 0, "route:lost & flag:finale.route=3", "\"No hard feelings. Some soft ones.\"");
+
+		Line(lines, "halcyon.route.in.1", HALCYON, "route", "", P, 0, "route:in", "\"Signed on. Your initials are on page three. Try to keep them there.\"");
+		Line(lines, "halcyon.route.out.cool", HALCYON, "route", "", P, 0, "route:out & lockdays<2", "\"You're a confound now. Nothing personal. Everything is recorded.\"");
+		Line(lines, "halcyon.route.out.1", HALCYON, "route", "", W, 0, "route:out & lockdays>=2", "\"Still with the other study. It's in the minutes. Underlined.\"");
+		Line(lines, "halcyon.route.indep.1", HALCYON, "route", "", P, 0, "route:independent", "\"An uncontrolled variable. You understand why I'd rather you stood over there.\"");
+		Line(lines, "halcyon.route.unsided.1", HALCYON, "route", "", P, 0, "route:unsided", "\"Here's a pen. You don't have to sign anything yet. The pen is for later.\"");
+		Line(lines, "halcyon.route.lost.1", HALCYON, "route", "", P, 0, "route:lost & route:halcyon", "\"The result went against us. The method was sound. So were you.\"");
+		Line(lines, "halcyon.route.winner.1", HALCYON, "route", "", P, 0, "route:lost & flag:finale.route=4", "\"Your objections are noted. Page two. Everyone reads page two eventually.\"");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a guard says when a claim in their kit is looked at (docs/WRITING.md, "Faction kit and
+	//! disguises"): a pass often has no line at all (the engine's pick), a catch says what they saw.
+	protected static void Looks(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+		RZ_ERegister J = RZ_ERegister.JOKE;
+
+		Line(lines, "bastion.look.pass.1", BASTION, "look_pass", "", P, 0, "", "\"Right. Through you go.\"");
+		Line(lines, "bastion.look.pass.2", BASTION, "look_pass", "", W, 0, "", "\"Didn't recognise you. Must be the light.\"");
+		Line(lines, "bastion.look.caught.1", BASTION, "look_caught", "", P, 0, "", "\"That's not your uniform. Hands where I can see them.\"");
+		Line(lines, "bastion.look.caught.2", BASTION, "look_caught", "", W, 0, "", "\"Nice uniform. Whose was it?\"");
+		Line(lines, "redhand.look.pass.1", REDHAND, "look_pass", "", P, 0, "", "\"Alright. Off you trot.\"");
+		Line(lines, "redhand.look.pass.2", REDHAND, "look_pass", "", J, 0, "", "\"Thought I knew everyone. Must be getting old. Go on.\"");
+		Line(lines, "redhand.look.caught.1", REDHAND, "look_caught", "", J, 0, "", "\"Ha. Lads, look. Dressed up for us.\"");
+		Line(lines, "redhand.look.caught.2", REDHAND, "look_caught", "", P, 0, "", "\"That armband was on someone else last week.\"");
+		Line(lines, "halcyon.look.pass.1", HALCYON, "look_pass", "", P, 0, "", "\"Badge later. Go on.\"");
+		Line(lines, "halcyon.look.caught.1", HALCYON, "look_caught", "", P, 0, "", "\"You're not on the rota. You're not on any rota.\"");
+		Line(lines, "halcyon.look.caught.2", HALCYON, "look_caught", "", W, 0, "", "\"That coat has someone else's initials in it.\"");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The owed (Hunted with a hearing still owed: the parley, docs/REPUTATION.md), the word a leader
+	//! sets ("Sergeant {word}"), said the way each faction says a rank, and the crew name at Champion,
+	//! said politely because the book says so. {best}, {worst}, {word} and {crew} are filled for the
+	//! listener (RZ_RepVoice.Opening).
+	protected static void Owed(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+		RZ_ERegister J = RZ_ERegister.JOKE;
+
+		Line(lines, "haven.opener.owed.1", HAVEN, "opener", "owed", P, 0, "", "\"Put out, and prayed for. We still owe you a hearing. Sit on the step and say it.\"");
+		Line(lines, "bastion.opener.owed.1", BASTION, "opener", "owed", P, 0, "", "\"Halt. Hands. You {best}. You also {worst}. Both go in the log. Talk.\"");
+		Line(lines, "redhand.opener.owed.1", REDHAND, "opener", "owed", J, 0, "", "\"In the book, both pages. Lucky for you, we read both. Talk fast.\"");
+		Line(lines, "redhand.opener.owed.2", REDHAND, "opener", "owed", P, 0, "", "\"You {best}. You also {worst}. The book keeps both. So do I.\"");
+		Line(lines, "halcyon.opener.owed.1", HALCYON, "opener", "owed", P, 0, "", "\"Excluded, with thanks. The thanks means we owe you a hearing. One.\"");
+
+		Line(lines, "haven.opener.setword.1", HAVEN, "opener", "", W, 0, "setword:haven & tier:haven>=known", "\"There's our {word}. Don't let it go to your head. It's a pencil title.\"");
+		Line(lines, "bastion.opener.setword.1", BASTION, "opener", "", P, 0, "setword:bastion & tier:bastion>=known", "\"{word}. Report.\"");
+		Line(lines, "redhand.opener.setword.1", REDHAND, "opener", "", W, 0, "setword:redhand & tier:redhand>=known", "\"{word}. It says so in the book. We remember who wrote it.\"");
+		Line(lines, "halcyon.opener.setword.1", HALCYON, "opener", "", P, 0, "setword:halcyon & tier:halcyon>=known", "\"{word}. It's in the minutes now. Nobody edits the minutes.\"");
+		Line(lines, "redhand.opener.crew.champion", REDHAND, "opener", "devoted", J, 0, "crew & tier:redhand=champion", "\"{crew}. The book says I'm to say it politely now. {crew}, sir.\"");
 	}
 
 	//------------------------------------------------------------------------------------------------

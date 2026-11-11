@@ -1,0 +1,63 @@
+# The open channel (docs/DIALOGUE.md, "The open channel"): a radio with "Call on the open channel".
+# No body, no faction. A public node goes out on air to everyone within the channel's reach, as
+# one line, with no name: nobody's name goes on air (the lint refuses {player}, {name} and the like
+# here). Nobody is threatened on air.
+
+conv radio.open.call_in
+for radio:open
+topic "Call in what you've seen."
+prio world
+voice plain
+
+node start
+  say A hiss, then a tired voice: "Go ahead. Keep it short. Batteries."
+  > @thick "{here}'s thick with them. Go round." -> thick   if town:infection>=60
+  > @quiet "{here} is quiet. For now." -> quiet   if town:infection<60
+  > @nothing "Nothing. Just checking anyone's there." -> anyone
+
+node thick public
+  say "Copy. {here}, go round. Thanks, whoever you are."
+  do rumour:"Someone on the open channel says {here} is thick with them. Go round."@4
+  > @out "Out." -> hub
+
+node quiet public
+  say "Copy. {here} quiet. For now. Nobody believes for now, but thanks."
+  do rumour:"Someone on the open channel says {here} is quiet, for now."@4
+  > @out2 "Out." -> hub
+
+node anyone
+  say "Someone's always here. That's the only thing this channel's for, most nights."
+  > @out3 "Out." -> hub
+
+conv radio.open.listen
+for radio:open
+topic "Listen for anyone calling."
+prio flavour
+voice plain
+
+node start
+  say? night :: Static. A long way off, somebody counting slowly to ten, then starting again. Nobody answers them.
+  say? mood:hope :: Two voices arguing about whether the cure is real. Both of them sound happier than they did last week.
+  say? mood:bleak :: Static. Then a child asking if anyone has seen her dog. Then static again.
+  say A woman's voice: "If you can hear this, the houses are open. Bring water if you can. Bring yourself either way."
+  > @answer "Heard you. Still here." -> answered
+  > @off Switch it off. -> hub
+
+node answered public
+  say A pause. Then, very quietly, from somewhere: "Good. Good. Keep being still here."
+  > @out "Out." -> hub
+
+conv radio.open.toll
+for radio:open
+topic "Ask the crews what the toll is."
+prio flavour
+voice redhand
+
+node start
+  say "Who's asking? Never mind. Toll for you is {toll}. Same as yesterday. Prices only go one way, sweetheart."
+  > @haggle "Too much. Half." -> haggle
+  > @fine "Fine. Out." -> hub
+
+node haggle
+  say "Half! Lads, it's asked for half. Love the nerve. Still {toll}. Come and argue at the barrier. We've chairs."
+  > @out "Out." -> hub

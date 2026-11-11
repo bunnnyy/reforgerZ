@@ -1,12 +1,12 @@
 # Dialogue
 
-**Status: designed; phase 2 and the multiplayer layer built.** Approved by the author on 2026-11-11. Phase 4's
-multiplayer layer (overheard lines, decide and tally scenes, vouch, call-outs, point-out) and the player's lies
-are built and live in [docs/DIALOGUE.md](../docs/DIALOGUE.md#several-players). Phase 2 (the trees on the
-talk screen's `RZ_Dialogue` behind **Dialogue > Trees**, hubs and topics, checks shown before you choose,
-regard, claims and knowledge, `dialogue.json`, the `.rzd` format with its lint, simulator and
-`shipped.lock`, a post's speaker at the barrier, and 30 conversations) is built and lives in
-[docs/DIALOGUE.md](../docs/DIALOGUE.md). This file keeps only what's still to build.
+**Status: designed; most of it built.** Approved by the author on 2026-11-11. Built and living in
+[docs/DIALOGUE.md](../docs/DIALOGUE.md): phase 2 (the trees on the talk screen behind **Dialogue > Trees**,
+hubs and topics, checks shown before you choose, regard, claims and knowledge, `dialogue.json`, the `.rzd`
+format with its lint, simulator and `shipped.lock`, a post's speaker at the barrier); phase 4's multiplayer
+layer and the player's lies; and talk's rest from phases 3 to 8 (lies you're told, promises and callbacks,
+claims in someone else's kit as lines, barks, strangers and the open channel as speakers, the majors'
+sittings swayed by talk, the per-speaker cap). This file keeps only what's still to build.
 
 A server-side conversation system for everyone a player can talk to: stronghold and seat leaders,
 quartermasters, the eight wanderer roles, safehouse occupants, named people, road-post crews (who get a
@@ -53,7 +53,7 @@ all conversations in this one engine. Nobody builds a second talk system.
 - **Strangers only where one would make sense** (decision 14, changed by the author). A stranger finds you
   only at a road people use, a wanderer route, near a safehouse or outpost, a campfire, a stopped car, near
   a fresh event or a body, or a town edge at dusk. Never in the empty middle of nowhere, never on a timer.
-  The rate is a ceiling only ([Strangers](#strangers)).
+  The rate is a ceiling only ([docs/ERRANDS.md](../docs/ERRANDS.md#strangers)).
 - **The commit nodes** (conflicts 27 and 28). Bastion's says "From now until the cure" and shows the
   finale's three lines (the admission, what you bring, what you leave). The Independent's is said on air
   without a name: *"This is nobody. The cure goes to everyone."* Every faction hears that somebody said it.
@@ -90,7 +90,7 @@ all conversations in this one engine. Nobody builds a second talk system.
 - [13. Infection, time and items](#13-infection-time-and-items)
 - [14. Multiplayer](#14-multiplayer)
 - [15. Delivery](#15-delivery)
-- [16. Barks, radio and strangers](#16-barks-radio-and-strangers)
+- [16. Radio](#16-radio)
 - [17. Asks: errands, spoken](#17-asks-errands-spoken)
 - [18. Finale and the last week](#18-finale-and-the-last-week)
 - [19. Authoring format, pipeline and tools](#19-authoring-format-rzd-pipeline-and-tools)
@@ -109,11 +109,12 @@ all conversations in this one engine. Nobody builds a second talk system.
 ## 1. What it is
 
 **Built:** the engine, hubs, nodes, checks and effects, memory, the guardrails on pay (no Fame, small Favor
-inside one daily budget, no items) and Trees off as today's game: [docs/DIALOGUE.md](../docs/DIALOGUE.md).
+inside one daily budget, no items), Trees off as today's game, and on it lies you're told, promises and
+callbacks, claims in kit, the multiplayer layer, barks, strangers and the open channel
+([docs/DIALOGUE.md](../docs/DIALOGUE.md)).
 
-Still to build, on that engine: lies and being lied to (section 10), promises and callbacks (11), claims in
-someone else's kit (12), the multiplayer layer (14), barks, radio and strangers (16), asks dealt as errands
-(17), and the finale's and the last week's conversations (18).
+Still to build, on that engine: the rest of lies and of promises (sections 10 and 11), asks dealt as
+errands (17), the finale's and the last week's conversations (18), and the pieces each section lists.
 
 **Guardrails the rest keeps:** no companions (the lint refuses follow effects and escorts without a
 destination; escorts stay mission or errand blocks ending at a place, at most 600 m for errands); no stronghold
@@ -154,8 +155,7 @@ Still to build:
 |---|---|---|---|
 | `quartermaster:<faction>` | Shopkeepers away from a seat | the holding | What's short?; requisition talk. Shop and services stay their own actions |
 | `quest:<key>.<role>` | People a stage or contract spawns (`SpawnPerson` with a conversation id) | `quest:<key>:<role>:<run>` | Whatever the stage writes |
-| `stranger:<kind>` | People who need help, at places where they'd be ([section 16](#strangers)) | `stranger:<id>` | Their request |
-| `radio:<channel>` | No body: "Call on the channel" at a house radio with power, or a carried radio | `radio:<channel>` | Call-ins, distress calls, haggling ([section 16](#radio)) |
+| `radio:<channel>` for the secure nets | No body: a cracked secure net, for a Radio Operator | `radio:<channel>` | ([section 16](#16-radio)) |
 
 Also still to build: an `always` topic (the finale's route topics) shows even when the speaker refuses; a
 refusing leader offers **Make it right** ([section 6](#make-it-right)). **Claimed speakers:** a leader,
@@ -172,9 +172,7 @@ Still to build:
 - **Server-opened greets:** a post speaker at 35 m for a player in that faction's kit below Known (so a claim is
   offered whether or not they press Talk), a stranger at 10 m, the host on the road.
 - **Resume:** a session ended by danger or range keeps its node for 60 s ("Where were we?").
-- **Per-speaker caps:** 6 sessions per speaker, 16 for public scene nodes; at the cap, the session idle longest
-  (over 30 s) is closed for the newcomer, else "One at a time."; 45 s idle while someone else is waiting.
-- **A change of kit ends the session** ([section 12](#12-claims-in-someone-elses-kit)).
+- **A larger cap for public scene nodes** (16 sessions, where the built cap is 6 a person).
 
 ## 5. The hub
 
@@ -195,8 +193,6 @@ life-stamped leader and wanderer memory ([docs/DIALOGUE.md](../docs/DIALOGUE.md#
 [docs/REPUTATION.md](../docs/REPUTATION.md#face-and-name)).
 
 Still to build:
-- **Promises** (a held-errand kind, [section 11](#11-promises-callbacks-and-knowledge)) with their regard words
-  *kept* and *broke*.
 - **The liar count** per faction per player (1 off each real day), and failed lies and threats barred at that
   speaker for a real day per player.
 - **Knowledge with expiry:** passing facts (the word at the wire until the next 05:30; chatter for 2 hours of
@@ -214,13 +210,13 @@ Still to build:
 
 ## 7. Conditions
 
-**Built:** the condition syntax and its keys, the quiet defaults for keys of designs not built yet, and "only
-what the player knows" ([docs/DIALOGUE.md](../docs/DIALOGUE.md#conditions)).
+**Built:** the condition syntax and its keys, including `kit`, `passing`, `caught`, `sitting`, `tabled`,
+`route`, `promise`, `kept`, `broke`, `due`, `heard_lie`, `title`, `seasoned` and `owed`
+([docs/DIALOGUE.md](../docs/DIALOGUE.md#conditions)).
 
-Still to build, as their owners are built: `kit`, `claimed`, `passing`, `caught` (disguise); `tribe*`, `alpha*`
-(the tribes, through the infected adapter); `lean`, `sitting`, `swayed`, `decided` (the majors and scenes);
-`finale:*`, `route`, `cure_held`, `ending`, `was` (the finale and the season story); `promise`, `heard_lie`
-(promises and lies); `q:` and `m:` (questline and mission values); `declared` and `symptoms`; `group`.
+Still to build, as their owners are built: `claimed` (disguise); `tribe*`, `alpha*` (the tribes, through the
+infected adapter); `lean` (the majors); `finale:*`, `cure_held`, `ending`, `was` (the finale and the season
+story); `q:` and `m:` (questline and mission values); `declared` and `symptoms`; `group`.
 
 ## 8. Checks and tags (New Vegas style)
 
@@ -232,13 +228,10 @@ Still to build:
 
 | Check | Tag | Score |
 |---|---|---|
-| `lie F D` | [Lie], shown only when the claim is false | Access rank with F, +1 ★ (Ex-Con, Raider, or the line's own list), plus the dialogue bonus, against D plus hidden modifiers: the speaker's credulity (0 or +1, seeded, never shown), +1 Paranoid, +1 if this speaker caught you lying this life. A tell catches the lie whatever the score ([section 10](#10-lying-and-being-lied-to)) |
-| `look F D [cover:<key>]` | [Full kit +2] [Watched −1] 1 of 2 | **The look** ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) |
-| Callout | [Evidence] | You hold the truth for that lie |
-| Vouch | [Vouch] | [docs/DIALOGUE.md](../docs/DIALOGUE.md#several-players) |
 | `commit` | [Point of no return] | `finale:can_commit`; always followed by a confirm node |
 
-- The −1 for the liar count (2 or more) in Trust, once lies are built.
+- The lie's hidden modifiers (the speaker's seeded credulity, +1 Paranoid, +1 if this speaker caught you
+  lying this life) and +1 for Ex-Con and Raider on every lie.
 - **Groups.** In a decide scene the best talker present can answer for everyone; each member keeps their own
   one try per job. In a tally scene each player sways only their own voter.
 - The design's non-modal deliveries (the panel, the action-menu donors that hide checks you'd fail with "There's
@@ -257,7 +250,6 @@ Still to build, with scenes and the systems that own them:
 |---|---|---|---|
 | `set`, `qset` | `set:ask.tins@house=1` | season and run flags | world effect: only in a scene; scoped (`@house`, `@seat`, `@run`) in a conversation that serves many speakers |
 | `return` | `return:keepsake` | gives back only an item this character handed this speaker | never gives new items |
-| `promise`, `later` | `promise:tins@house:food*2`, `later:6h:scav.came_back` | promises and callbacks ([section 11](#11-promises-callbacks-and-knowledge)) | 3 promises, 10 callbacks per player |
 | `note` | `note:"..."` | a journal note on the run | the existing caps |
 | `reveal` | `reveal` | the exact spot of the speaker's contract | only to players the contract's own rule allows; never behind a lie or a disguise |
 | `begin` | `begin:other_two` | a questline's `TryBegin` | the engine's own rules |
@@ -278,144 +270,67 @@ physical starts the stage's block with `start:`, and the stage resolves and pays
 
 ## 10. Lying and being lied to
 
-**Built:** the player's `[Lie]` (`check lie <faction> <difficulty>`: tells first, then Trust; believed into
-the one lie store, caught now with regard *lied*, +2 Infamy and the liar count) and the lie store found out by
-events first ([docs/DIALOGUE.md](../docs/DIALOGUE.md#checks-and-tags), [DESIGN.md](../docs/DESIGN.md#lies-and-witnesses)).
-Still to build: a lie's `truth` condition (true, it isn't a lie); a lie about a bite at a safehouse being the built
-"caught hiding a bite" instead; claims the world tests by the owner's own check ("expected back by six"); the
-speaker's next greeting saying so; `found` effects on things still running.
+**Built:** the player's `[Lie]`, the lie store found out by events first, lies you're told (`~lie`, `~truth`,
+`heard_lie`, the [Evidence] call-out), a lie's `truth`, and the speaker's next greeting saying a lie was found out
+([docs/DIALOGUE.md](../docs/DIALOGUE.md#lies-youre-told)).
 
-**Found out, events first.** A believed lie is exposed by the first of these:
-- a visit by a player of that faction (who knows the truth, or whose presence tests it);
-- road news that carries the truth;
-- the owning system's tick (the family checks at 20:30; the post counts its roster; the book is read).
-
-Only a claim with nothing in the world to test gets the **rumour tick**: the next half-hourly leader round,
-and once more a real day later, 15% each, +10 for a Talker speaker, +5 for a Paranoid one.
-
-**When it's found out:**
-- regard *lied* and +2 Infamy;
-- the speaker's next greeting says so ("You told me Bastion sent you. Bastion's never heard of you.");
-- the choice's `found` effects run, but only on things still running (a passage revoked, a sway removed).
-  Never on Fame already paid or a finished mission.
-
-**Lies that move the world.** A lie picked in a scene (a sway, a decision) is recorded on the scene with the
-liar's identity. A questline can read `scene_lied:<scene>` later: a callback, a harder stage, a name in a
-headline (through the names policy). The world effect stays. Lying worked; it just isn't free.
-
-**Claims the world tests.** Where the speaker could simply wait and see, the claim's exposing condition is a
-later check instead of a roll. "They're expecting me back by six": the family checks at 20:30.
-
-**The player is lied to.** A `say` line ending in `~lie:<key>` (bound if needed: `~lie:scav.pharmacy@target`)
-marks a lie. Showing it sets `heard_lie:<key>` for the player and for anyone who overhears a public node. The
-truth sets `knows:<key>`, from any of these:
-- a clue;
-- another speaker's `~truth:<key>` line;
-- a background line ([Police] "He keeps looking at the door.");
-- a cracked secure channel or a journal note;
-- a **world predicate** checked when the player gets there. For example `town:thick=@target` is true the
-  moment they walk into that town while its crawlers are thick.
-
-Once a player has both, the conversation's `callout <key> -> node` choice appears, tagged [Evidence]. The
-journal's "What you know" lists it ("Grigor said the cellar was empty. It wasn't."). Givers who lie are just
-conversations and briefs with `~lie` lines; the mission owns the truth, in its truth deck.
-
-**Hiding things.** Behind trust, evidence or a check. The default deflection is one line in voice ("Ask me
-something else."). Beside it sits a Press choice (persuade, or threaten where allowed), with its fail branch.
+Still to build:
+- a lie about a bite at a safehouse being the built "caught hiding a bite" instead;
+- **claims the world tests** by the owner's own check instead of the rumour tick ("They're expecting me back by
+  six": the family checks at 20:30);
+- a choice's `found` effects, run when the lie is found out, only on things still running (a passage revoked, a
+  sway removed), never on Fame already paid or a finished mission;
+- **lies that move the world:** a lie picked in a scene is recorded on the scene with the liar's identity, and a
+  questline can read `scene_lied:<scene>` later (a callback, a harder stage, a name in a headline through the
+  names policy); the world effect stays;
+- **more ways to the truth:** a clue, a cracked secure channel or a journal note, and **world predicates**
+  checked when the player gets there (`town:thick=@target` is true the moment they walk into that town while its
+  crawlers are thick), with the binding that names the place; overheard public lines marking the lie for the
+  people who hear them; the journal's "What you know" list ("Grigor said the cellar was empty. It wasn't.");
+  givers' briefs with `~lie` lines, the mission owning the truth in its truth deck;
+- **hiding things:** behind trust, evidence or a check, with a default deflection in voice ("Ask me something
+  else.") and a Press choice beside it (persuade, or threaten where allowed), with its fail branch.
 
 ## 11. Promises, callbacks and knowledge
 
-**Promises** are a held-errand kind with their own clock. `promise:<kind>@<scope>[:<what>]` ties to a built
-event:
-- food handed in at that house;
-- an item at a place;
-- a visit within a time window;
-- someone walked home;
-- a message told to a named occupant.
+**Built:** promises (`promise:`, `keep:`, a `.visit` kept by coming back; 2 hours of the promiser's play, 3 real
+days at most, 3 open; regard *kept* and *broke*; no pay of their own; the speaker lists what's open) and
+callbacks (`later:`, `due:`; 10 per player, 3 days) ([docs/DIALOGUE.md](../docs/DIALOGUE.md#promises-and-callbacks)).
 
-How they run:
-- **Clock:** 2 hours of the promiser's own online play, at most 3 real days. Logging off overnight doesn't
-  break one.
-- **Limit:** 3 open per character.
-- **Where you see them:** "Promises" rows in the journal, with the time left. `/t` with no number lists them
-  too.
-- **Kept:** regard *kept* and a thank-you line next time.
-- **Broken** (time up, or death): regard *broke* and a line ("You said you'd bring tins. I told the kids.").
-- **No double pay.** A kept promise pays nothing beyond the built event's own pay: a food hand-in pays as
-  built. A visit pays nothing.
-
-**Callbacks.** Dialogue's `later:<time>:<key>`, missions' echoes and errands' follow-ups are **one callback
-queue**:
-- words only: a reaction topic, one bark, or one notice in the speaker's voice;
-- checked on the 5-minute tick, on played time, near the subject;
-- 10 per player (their own oldest go first), and a separate system pool of 100 for quests and systems, so
-  nobody can push out someone else's;
-- each expires after 3 season days;
-- at death, a waiting one becomes an unsigned board note at its subject ("For the man who brought the
-  Dvoraks in, if anyone sees him").
-
-**Knowledge** is recorded on the server when it sends a player a line that carries a key:
-- open-channel chatter;
-- secure lines (including the word at the wire);
-- clue reads and leaders' news;
-- `~truth` lines and questline notes;
-- world predicates.
-
-It's per player, like the journal. Evidence keys (up to 96) last with their run or the season. Passing facts
-(up to 32) expire.
+Still to build:
+- **Promise kinds tied to more built events:** an item at a place, someone walked home, a message told to a named
+  occupant.
+- **Where you see them:** "Promises" rows in the journal, with the time left.
+- **One callback queue** for dialogue's `later:`, missions' echoes and errands' follow-ups: checked on the 5-minute
+  tick near the subject, and a separate system pool of 100 for quests and systems, so nobody can push out
+  someone else's. At death, a waiting one becomes an unsigned board note at its subject ("For the man who
+  brought the Dvoraks in, if anyone sees him").
+- **Knowledge** recorded on the server when it sends a player a line that carries a key: open-channel chatter,
+  secure lines (including the word at the wire), clue reads and leaders' news, questline notes, world
+  predicates. Evidence keys (up to 96) last with their run or the season; passing facts (up to 32) expire.
 
 ## 12. Claims in someone else's kit
 
+**Built:** kit greets (`kit:own`, `kit:in_kit`), claims as `look` choices with the look's tags, a pass waving you
+through a post, passing counting 0 at persuade and no threats, leaders and home ground seeing through it, the lint
+refusing rewards behind a claim, and a change of clothes ending the session
+([docs/DIALOGUE.md](../docs/DIALOGUE.md#claims-in-someone-elses-kit)).
 [DISGUISE.md](DISGUISE.md) owns kit, colours, the look, catches, word gets round and vouching at barriers.
-Dialogue is where a claim is spoken. The built AI behaviour doesn't change.
 
-1. **Kit has a kind**, read by the disguise system (`kit:` in [section 7](#7-conditions)): `own`, `issued`,
-   `in_kit`, `signed_other`, `dead_mans` or `off_turned`. People react to kit without any claim: "Kit suits
-   you." (own); "You're still in our kit. Take it off before someone asks why." (issued); "Where'd you get
-   that jacket?" (in their kit). The true answer ("Off a dead man.") costs nothing.
-2. **A disguise needs intent.** You're claiming only when you pick a claim line ("[Look · Bastion] 'I'm one
-   of yours.'") or answer as one of them at a barrier. Nobody is ever "pretending" by accident. Your own kit,
-   worn at Known or better, is never a disguise.
-3. **The look decides it.** A claim runs DISGUISE.md's fixed look, with its tags on the choice before you
-   pick: "[Full kit +2] [Name: Sgt Hruby +1] [Watched −1] 2 of 2". There are no random challenge odds and no
-   suspicion meter. The Hunted can't claim at all, so the claim line doesn't show for them.
-4. **Cover details are things you can say.** A choice that speaks one carries `cover:<key>` and adds +1 at
-   the look:
-   - **Bastion's word at the wire.** It changes at 05:30 and is read on Bastion's secure net (a Radio
-     Operator hears it). Three words are offered, shuffled daily, and one is right. The word itself is the
-     key: a friend can tell you over voice. The right word is +1; **a wrong word fails at once**. Saying you
-     haven't got it runs the look without the detail.
-   - **A real name you've heard:** a leader's, or a dead man's from the nightly call. A dead man's name at
-     his own post fails at once.
-   - **A crew name** at the Red Hand ("What do they call you?"): your own, or one you heard on the open
-     channel.
-   - **A notebook number** at Halcyon ("Notebook number?"): only from a dead researcher's notebook.
-   - **A mission's paper,** where the stage provides one.
-5. **No rewards through a claim.** It never changes your tier, shop, Favor, Fame, services, perks or the
-   contracts offered. The lint refuses `reveal`, `offer`, `begin`, `learn`, `errand` and Favor on anything
-   reachable only through a claim. All a claim can get you is lines, `pass:`, and a stage's own trick branch.
-   While you're passing as a faction, your persuade score with it counts as 0 and you can't threaten its people.
-6. **Passage is small**, as DISGUISE.md sets it: a passed look at a road post clears you there while it
-   stands (no search at a Bastion checkpoint, no turning back at a Red Hand roadblock); a passed look at an
-   outpost gate gives 10 minutes inside. Camp services and safe zones still go by your real standing.
-7. **Leaders and home ground see through it.** Stronghold and seat leaders of that faction, everyone inside a
-   stronghold's or the lab's wire, and the Red Hand camp at the dusk meal catch any claim at once. The one
-   exception is a Rogue leader's price (DISGUISE.md, section 10).
-8. **Caught** is DISGUISE.md's one cost: +3 Infamy (never taking you into Watched on its own), the kit taken,
-   one of three catches per life per faction, and word gets round at that holding. A conversation does this
-   with `catch:<faction>`.
-9. **Signed for.** Kit a quartermaster sold is signed out to its buyer. Worn by anyone else, it fails the
-   look at once: "That's Weber's jacket. Signed for."
-10. **Point them out.** A player Known or better with a faction, within 8 m of a player who is claiming in
-    that faction's kit, sees "[Point them out] 'That one's not yours.'". Each point-out is −1 at that look
-    (two at most), shown in the tags. Wrong (it was their own kit): the pointer takes regard *slander* with
-    that speaker. Once per pair per hour. The Coat Run's call-outs at the clean room door are the same
-    mechanic ([FINALE.md](../docs/FINALE.md#take-the-lab-and-the-coat-run)).
-11. **Changing clothes ends the session.** Kit is checked on every pick and every 5 s. Any change ends the
-    session ("...Didn't you just—? Never mind. Off you go."). So nobody opens a hub in one outfit and picks in
-    another.
-12. There's no disguise with the Haven (no uniform; its mark is the bear on its doors, not on its people) or
-    the Long Table.
+Still to build:
+- **The other kit kinds** (`issued`, `signed_other`, `dead_mans`, `off_turned`), read by the disguise system, with
+  their reactions: "You're still in our kit. Take it off before someone asks why." (issued). Kit a quartermaster
+  sold is signed out to its buyer: worn by anyone else it fails the look at once ("That's Weber's jacket. Signed
+  for.").
+- **Cover details spoken as choices**, each `cover:<key>`, +1 at the look:
+  - **Bastion's word at the wire:** three words offered, shuffled daily, one right; a wrong word fails at once;
+    saying you haven't got it runs the look without the detail;
+  - **a real name you've heard:** a dead man's name at his own post fails at once;
+  - **a crew name** at the Red Hand ("What do they call you?"), your own or one heard on the open channel;
+  - **a notebook number** at Halcyon, only from a dead researcher's notebook;
+  - **a mission's paper**, where the stage provides one.
+- **A post speaker opening the claim** at 35 m (section 4), and an outpost gate's look giving 10 minutes inside.
+- The one exception to home ground seeing through it: a Rogue leader's price (DISGUISE.md, section 10).
 
 ## 13. Infection, time and items
 
@@ -438,16 +353,13 @@ Dialogue is where a claim is spoken. The built AI behaviour doesn't change.
 ## 14. Multiplayer
 
 **Built** ([docs/DIALOGUE.md](../docs/DIALOGUE.md#several-players)): overheard `public` nodes at 8 m, the
-decide hold with Object and Stand with and the scene record, tallies (`sway:`), vouching (+1, the voucher's
-liability through the lie store), call-outs and point-outs, as verbs on your own hub with the speaker.
-
-Also built: a scene's `who <conditions>` (others see the choice dimmed), the 45 s idle while someone waits, and
-the first shipped scene (the bed by the stove). Still to build:
+decide hold with Object and Stand with and the scene record, tallies (`sway:`), vouching, call-outs and
+point-outs, a scene's `who`, the 45 s idle while someone waits, and the majors' sittings swayed through
+`RZ_QuestVote`, one sway per player per sitting. Still to build:
 - **Who may decide, by default:** the stage's own requirement and having taken part, when a mission's scene names
   no `who`.
 - **With the decider:** the decider's vanilla group within 150 m and anyone who stood with them share the result's
   pay; everyone else eligible gets half the Favor from the giver (missions' rule, once missions take conversations).
-- **The majors' sittings** read their tallies through `RZ_QuestVote`, one sway per player per sitting.
 - **No double pay** once missions pay through conversations.
 
 ## 15. Delivery
@@ -512,69 +424,18 @@ pings, wanderers, the Long Table host and errands, with errands last.
 
 **Off.** With **Dialogue > On** false, no donor relabels, and every built action and line runs exactly as built.
 
-## 16. Barks, radio and strangers
+## 16. Radio
 
-### Barks
+**Built:** the open channel as a speaker (`radio:open`, "Call on the open channel" on a radio item), public nodes
+on air without names, and its first conversations ([docs/DIALOGUE.md](../docs/DIALOGUE.md#the-open-channel)).
+Barks and strangers are built too ([docs/DIALOGUE.md](../docs/DIALOGUE.md#barks)).
 
-Barks are `bark` conversations: one line, conditions, no choices.
-- They're said owner-only to a player passing within 6 m of the speaker's body, checked on the 1-second tick,
-  and only for bodies near players.
-- Limits: one per player per 60 s, and one per speaker per player per 10 minutes. Epilogue barks: once per
-  speaker per player.
-- They're the cheapest environmental storytelling there is. They flag an ask ("You're the one who brought the
-  tins?"), read the hills ("The big one's calling tonight. Not past the chapel."), and carry most of the in-game
-  ending, because most players won't press Talk on every occupant.
-
-### Radio
-
-`radio:<channel>`:
-- **Where:** "Call on the open channel" at a house radio with power, or on a carried radio. There's no body, and
-  it works on any map.
-- **What:** answer a distress call (a stranger on the air), call the Haven's channel in with news, haggle a toll
-  with a crew.
-- **Who hears it:** a public radio node is heard by players within that channel's built reach, as one line with
-  tags stripped. **No name goes on air** except a player's own broadcasts (their radio-station presets) and honour
-  lines: the names policy.
-- **Secure nets:** Bastion's net, the Red Hand boss's and Halcyon's lab can be called only by a Radio Operator
-  who has cracked them, as built.
-- It's where the finale's Independent route is committed ([section 18](#18-finale-and-the-last-week)).
-
-### Strangers
-
-Strangers are "help a random person" errands. [ERRANDS.md](ERRANDS.md) owns the catalogue, the dealer, the pay
-and the budget; dialogue gives them a voice.
-
-**Kinds to start:**
-- **hiding:** someone shut in a house at a town's edge, with the town's crawlers between them and the road;
-- **wreck:** a lone survivor by a crashed car;
-- **grave:** someone digging, with a name;
-- **roadside:** a broken car and two kids;
-- **walk_out:** a man a safehouse walked out, still walking;
-- **campfire:** someone at a fire who's been waiting for anyone at all.
-
-**Where a stranger can find you** (decision 14). Only where it would make sense for one to be, and never in the
-empty middle of nowhere:
-
-| Place | Why someone would be there | Kinds that fit |
-|---|---|---|
-| A road or crossroads people use: a truck route, a road post's road, a road with recent traffic | People walk where the traffic is | roadside, walk_out, wreck |
-| A wanderer route | They're following the same road the wanderers use | walk_out, roadside |
-| Near a safehouse or outpost (outside its wire, 100–400 m) | Walking towards help, or turned away from it | walk_out, hiding |
-| A campfire | Fires draw people at night | campfire |
-| A stopped car: yours, stopped on a road for 20 s or more, or a car stopped on the verge | Someone walks up to a car that's stopped | roadside, wreck |
-| Near a fresh event or a body (a lost truck, a fight, a death this season hour) | Someone saw it, or lost someone in it | wreck, grave |
-| A town edge at dusk | People come out of hiding when the light goes | hiding, grave |
-
-- **Never:** in open country away from all of these; on a timer; inside a holding; within 2 km of the Long
-  Table's farm; inside the 300 m no man's land round a lived-in place for the kinds that hide from it.
-- **Only a reason, never a clock.** A stranger is dealt when the player reaches such a place and the place has a
-  stranger to give (each place has its own cooldown). Time passing on its own deals nothing.
-- **The budget is a ceiling only:** never more than one stranger per player every 15 minutes, inside the
-  unasked-contacts lane, and at most 6 stranger bodies on the server (the shared body budget).
-- **Body:** only while a player is within 150 m. They're gone when they're done, or after 20 minutes out of
-  range. Placed as data first, within 300 m of the player.
-- **What they ask:** each has a conversation and at most one small block: an escort that ends at a place
-  (at most 600 m), a message to a safehouse, a tin. They pay through the errand rules, never items.
+Still to build:
+- **A house radio with power:** the call from a house radio prop, with power read.
+- **Distress calls:** a stranger on the air, dealt by errands, answered on the channel.
+- **Secure nets:** Bastion's net, the Red Hand boss's and Halcyon's lab, callable only by a Radio Operator who
+  has cracked them.
+- The finale's Independent route is committed on the open channel ([section 18](#18-finale-and-the-last-week)).
 
 ## 17. Asks: errands, spoken
 
@@ -592,7 +453,8 @@ interruption budget; dialogue is how they're spoken, through `errand:` and the a
   you, nobody asks.
 - **Leaders never ask.** A leader's line names the person who needs it.
 - **Promises are an errand's accept** where there's no other: "I'll bring tins by tomorrow."
-- **Callbacks.** The asker's next greeting or bark reflects how it went, through the one callback queue.
+- **Callbacks.** The asker's next greeting or bark reflects how it went, through the one callback queue
+  (section 11).
 - **Talk pay:** talk alone pays at most the talk line of the ledger (20 Favor per faction per real day), never
   items, never Fame. Errand pay is errands'.
 
@@ -663,15 +525,16 @@ season except hall-of-fame lines.
 
 ## 19. Authoring format (`.rzd`), pipeline and tools
 
-**Built:** the format for conversations, topics and greets (lines only), the packer with its lint, the
-simulator for one character, `dialogue/shipped.lock`, the compile check running the lint first, `/talkdebug`,
-and the writing rules ([docs/DIALOGUE.md](../docs/DIALOGUE.md#the-text-format-rzd),
-[docs/WRITING.md](../docs/WRITING.md#conversations)). The text source is the generated packs ("plan B").
+**Built:** the format for conversations, topics, greets and barks, `~lie` and `~truth` lines, the choice options
+`truth`, `callout` and `dry`, the tokens `{title:f}` and `{their:key}`, the packer with its lint, the simulator for
+one character, `dialogue/shipped.lock`, the compile check running the lint first, `/talkdebug`, and the writing
+rules ([docs/DIALOGUE.md](../docs/DIALOGUE.md#the-text-format-rzd), [docs/WRITING.md](../docs/WRITING.md#conversations)).
+The text source is the generated packs ("plan B").
 
 Still to build:
-- **Keywords:** `scene <id> run|speaker|house|season [who <conditions>]`, `bind <name> = <picker>`, `use <conv id>`,
-  `opens approach <metres>`, `always`, `callout <lie key> -> <node>`; node options `shared` and `public`;
-  `say (<role>)` for someone else in the scene; choice options `truth`, `tell`, `found`, `decides`.
+- **Keywords:** scene scopes `run` and `house`, `bind <name> = <picker>`, `use <conv id>`, `opens approach <metres>`,
+  `always`; node option `shared`; `say (<role>)` for someone else in the scene; choice options `tell`, `found`,
+  `decides`.
 - **Tokens:** `{resident}`, `{tier:f}`, `{rep:f}`, `{word:f}` (another faction's), `{claim:key}`, `{bind:name}` and
   `{town:@name}`, `{decider}`, `{lean}`, `{tribe:N}`, `{alpha:N}`, `{word:bastion.N}`, `{kit_owner}`, `{dead_name}`.
 - **Text source:** the server reading `.rzd` files from the addon (plan A, VERIFY `FileIO` on addon files on the
@@ -679,14 +542,11 @@ Still to build:
 - **Lint:** a `truth` that reads what the player can't know; a lie without `truth` or `tell always`; world effects
   and `decides` outside a scene; an unscoped season flag in a conversation that serves many speakers; a flag
   outside its owner's namespace; `resolve` with an outcome name the questline doesn't declare
-  (`dialogue/quests/<key>/outcomes.txt`); `reveal`, `offer`, `begin`, `learn`, `errand` or Favor behind a claim or
-  a lie; `commit` without a confirm node; barks with choices; `{player}` in a radio node; Halcyon long trees
-  without numbers.
+  (`dialogue/quests/<key>/outcomes.txt`); `commit` without a confirm node; Halcyon long trees without numbers.
 - **Simulator:** `--chars ... --race` for several characters in a scene (holds, objections, tallies).
 - **Runtime test:** open every conversation's start node with a fake player and run each lie, promise and
   callback once.
-- `/talkreset <scene>` (admins); log lines `Dialogue: scene <id> decided by <name> (<choice>)`,
-  `Dialogue: scene <id> objection by <name>`, `Dialogue: session cap at <speaker>`.
+- `/talkreset <scene>` (admins).
 
 ## 20. Fitting the existing systems
 
@@ -699,10 +559,10 @@ Still to build:
 | The Long Table | Its dealings are verbs and topics, with factionless checks. The host on the road opens a greet. Memory stays its three words |
 | Questlines | `SpawnPerson(gm, pos, objIdx, talkClue, label, choices, convId)`. Effects map to `Remember`, `Resolve` (named outcomes), `SetQFlag`, `QNote`, `TryBribe`, `SideWith` and `Run.Reward`, through `RZ_Ways` (keyed by identity). `OnLeaderTalk` and `OnWandererTalk` become injected topics. With Dialogue on, a stage person with a conversation hides its built choice slots: one path per scene |
 | Contracts | Any puzzle object can take a conversation (`SetDialogue(convId)`). `event:` and `start:` call `RZ_Mission.OnDialogueEvent`; `m:` reads `DialogueValue` |
-| Errands | `errand:` asks the dealer. Strangers, askers and named people are speakers. Errands write regard only on named-person keys |
+| Errands | `errand:` asks the dealer. Askers and named people are speakers (strangers are built). Errands write regard only on named-person keys |
 | Majors | `sway:` goes into `RZ_QuestVote` (a tally). `{lean}` reads it. "Ask about..." topics sit on other stronghold leaders while a stage is open. Set pieces and codas are public scenes. `was:` reads the decider lists |
 | Tribes and crawlers | "Ask about the hills" at a safehouse. `{tribe:N}` and `{alpha:N}` in each faction's own word. Knowledge from kill sites, abandoned lairs and the calls. Asks and barks |
-| Disguise | Kit kinds, claims as look choices, cover details, point-out as a −1, and the session ending on a change of clothes. AI behaviour unchanged |
+| Disguise | The other kit kinds and cover details spoken as choices (the rest is built). AI behaviour unchanged |
 | Finale | `always` route topics, the confirm node with its three lines, `CanCommit`, `commit`, `route:` |
 | Epilogue | Leaders' topics, codas, closing stages, hand-ins, the barrier's "Name?", greets, reactions and barks reading `cure_held`, `ending`, `was`, `route` and memory |
 | UI | `PAYLOAD_DIALOGUE`, the panel, the slot donors, the hint fallback, `/t`, the optional menu, and journal rows for promises and "What you know" |
@@ -713,10 +573,9 @@ Still to build:
 `dialogue.json` written at the 2-minute save when changed and dropped with the season
 ([docs/DIALOGUE.md](../docs/DIALOGUE.md#saving-and-performance)).
 
-Still to build: barks checked only for bodies within 6 m of a player; strangers placed as data with a body only
-within 150 m, inside the body budget; overheard lines as small owner-only records; the lie store and callbacks
-saved with world memory; seen nodes capped at 512 per character if a busy server needs it (measure
-`dialogue.json` there).
+Still to build: overheard lines as small owner-only records; callbacks saved with world memory once missions'
+echoes join them; seen nodes capped at 512 per character if a busy server needs it (measure `dialogue.json`
+there).
 
 ## 22. Phases and the first content
 
@@ -726,12 +585,12 @@ Dialogue lands across the plan's build order. Each step is playable on its own, 
 |---|---|
 | 0. Fixes and spikes | The VERIFY spike (one evening): per-player donor labels, `PerformAction` on the client, replacing a hint, `FileIO` on addon files, moving with a menu open. The results pick the delivery and the text source. The owner-only payload for all personal text |
 | 2. Talk | **Built** ([docs/DIALOGUE.md](../docs/DIALOGUE.md)), on the talk screen. Still: the runtime test opening every start node. **Turned on** by default only after the per-player label test and a play-test pass |
-| 3. Small things | Errand asks through `errand:`, promises, callbacks and barks |
-| 4. The mission style | Lies, tells and the lie store; the multiplayer layer (overheard lines, decide holds and objections, tallies, vouch, call-outs); claims as look choices, cover details and point-out (with disguise's phase 1); strangers' voice |
-| 5. The majors | Sitting scenes and sways into `RZ_QuestVote`; "Ask about..." topics; set pieces as public scenes |
+| 3. Small things | Errand asks through `errand:`. Promises, callbacks and barks are built |
+| 4. The mission style | Built, but for cover details spoken as choices and the other kit kinds (with disguise's later phases) |
+| 5. The majors | "Ask about..." topics; set pieces as public scenes. Sways into `RZ_QuestVote` at the sittings are built |
 | 6. The finale | The commit topics and confirm nodes; route lines |
 | 7. The ending | Leaders' epilogue topics, the codas, closing stages, hand-ins, the barrier, epilogue greets and barks |
-| 8. Growth | Strangers and radio speakers in full; the dialogue screen and panel layouts, once they're built in Workbench |
+| 8. Growth | Distress calls and the secure nets on the radio. Strangers' and the open channel's conversations are built |
 
 ## 23. Docs in the same commits
 
@@ -944,48 +803,6 @@ Notes:
   toll, never both.
 - The node is public. Others within 8 m see the line without its tag, and for 20 s after the lie they can call it
   out.
-
-### D. A Scavenger who lies about a pharmacy (a giver who lies)
-
-With a binding and a world-predicate truth.
-
-```
-conv wanderer.scav.pharmacy
-for wanderer:scavenger
-when !nmem:sold_pharmacy
-bind target = town:thick_within(2500)
-topic "Ask if he knows anywhere worth looking."
-prio ask
-voice plain
-
-node start
-  say The pharmacy in {town:@target}. Nobody's touched it. Clean as a whistle. ~lie:scav.pharmacy@target
-  say Bit of food and it's yours.
-  > @buy Give him a tin. -> sold   cost item:food*1   do call:scav_rumour:@target; later:6h:scav.came_back
-  > @hunter "Shop doors open and the dust not touched. They're lying up in there." -> caught_out   if bg:hunter
-  > @leave Leave. -> end
-  callout scav.pharmacy -> caught_out
-
-node sold
-  say Pleasure doing business. Mind how you go. I mean it.
-  do nset:sold_pharmacy
-  > @leave2 Leave. -> end
-
-node caught_out
-  say ...All right. They lie up in the shops by day. All of them. But there's antibiotics in the back, honest. I'd want a tin for that much honesty.
-  do nset:honest
-  > @buy2 Give him a tin. -> sold   cost item:food*1   do call:scav_rumour:@target
-  > @leave3 Leave. -> end
-```
-
-Notes:
-- The town is bound once (a town within 2.5 km whose crawlers are thick) and kept with the heard lie and the
-  callback.
-- The truth (`knows:scav.pharmacy@target`) is set the moment the player walks into that town while its crawlers
-  are thick. Next time they meet him, '[Evidence] "You said it was clean."' appears.
-- The Hunter's own line exposes it at once.
-- The rumour is the built Scavenger rumour (food for a lead), pointed at that town if it can be. Nothing new is
-  given.
 
 ### E. A Halcyon field lead who hides the other two
 
@@ -1222,36 +1039,6 @@ node bastion_route
 The first true variant replaces the next plain line. `{resident}` is a seeded name for this house, never a name
 from LORE. Most players will hear the ending as barks instead (example L), over the week.
 
-### J. A small ask at a short safehouse, with a promise that can't be double-paid
-
-```
-conv ask.occupant.tins
-for occupant
-when house:short & !promise:tins@house=open
-topic "Ask how the house is doing."
-prio ask
-voice haven
-
-node start
-  say Half portions since Tuesday. The children eat first. Don't tell the head I said.
-  > @promise "I'll bring tins by tomorrow." -> promised   do promise:tins@house:food*2
-  > @give Put two tins in the stores. -> given   cost item:food*2   do call:hand_in:food*2; regard:thanks
-  > @leave Leave. -> end
-
-node promised
-  say I'll hold you to that. So will they.
-  > @leave2 Leave. -> end
-
-node given
-  say ...That's two suppers for somebody. I won't say who.
-  > @leave3 Leave. -> end
-```
-
-The hand-in is the built one: 2 Haven Favor an item, plus Fame per 3 items as built. A kept promise adds only
-regard 'kept' and a line next time ("You came back. The Dvorak girl asked who you were."). Broken: 'broke', and
-"You said you'd bring tins. I told the kids." The clock is 2 hours of the promiser's own play, at most 3 real
-days, and the journal shows the time left. The ask only appears while the house really is short.
-
 ### K. One node in each delivery
 
 The panel: a header 'JANA KRAL · COUNCIL HEAD · MORTON' in amber, and the strip 'You: Trusted · Haven. Remembers
@@ -1273,127 +1060,6 @@ dialogue hint, and `/t` shows it again.
 If labels don't refresh: the donors read 'Answer 1'...'Answer 6', More..., Leave, and '/t 2' in chat picks the
 Doctor's line.
 
-### L. Barks: the world reacting without anyone pressing Talk
-
-```
-conv bark.occupant.tins_kept
-for occupant
-when promise:tins@house=kept
-bark
-voice haven
-
-node start
-  say You're the one who brought the tins? The Dvorak girl asked who you were.
-
-conv bark.haven.big_one_calling
-for occupant, named:haven
-when tribe:within(1500) & dusk
-bark
-voice haven
-
-node start
-  say {alpha:near}'s calling tonight. Nobody past the chapel after eight.
-
-conv bark.epilogue.bastion_sentry
-for named:bastion, post:bastion
-when epilogue & cure_held:haven
-bark
-voice bastion
-
-node start
-  say Processing starts at 05:30, they say. Nobody's told us who processes us.
-
-conv bark.epilogue.redhand
-for named:redhand
-when epilogue & cure_held:redhand
-bark
-voice redhand
-
-node start
-  say Cure's on the market. Price on application. Don't apply.
-```
-
-`{alpha:near}` is the nearest tribe's leader in the Haven's own word: its name if the Haven knows who it was, else
-"the big one". Each bark is one owner-only line to a player passing within 6 m: at most one every 60 s per player,
-and once per speaker per player in the epilogue.
-
-### M. A stranger at a town's edge at dusk
-
-Helping a random person, always about the world as it is, and only where someone would be.
-
-```
-conv stranger.hiding.dusk
-for stranger:hiding
-when town:edge & dusk
-greet
-opens approach 10
-prio ask
-voice plain
-
-node start
-  say Shut the door. Shut it! ...They lie up in the shops by day, and at dusk they come out to the noise. I've been in here since Tuesday.
-  > @go "Stay behind me. We go now, before they're all out." -> going   do start:escort_house
-  > @dawn "Wait for the morning. I'll come back." -> waiting   do promise:visit@here:dawn
-  > @tin Leave him a tin. -> fed   cost item:food*1   do regard:thanks
-  > @leave Leave him. -> end
-
-node going
-  say My name's Jiri. From the bakery. In case.
-  > @leave2 Leave. -> end
-
-node waiting
-  say Morning. You said morning.
-  > @leave3 Leave. -> end
-
-node fed
-  say ...Thank you. I'll make it last. I've got good at that.
-  > @leave4 Leave. -> end
-```
-
-Outcomes:
-- The escort is a small errand block that ends at the nearest safehouse (at most 600 m). He becomes +1 person
-  there if he arrives.
-- A promised dawn visit is kept if you come back between 05:00 and 08:00.
-- If nobody comes, he may not be there in the morning. A Haven bark at the next house says "Jiri from the bakery
-  never came out." No joke goes near it.
-- He was dealt because the player reached a town's edge at dusk, not because time passed.
-
-### N. Your own kit, and someone else's
-
-A Red Hand crewman at a holding reacts to a Bastion jacket.
-
-```
-conv redhand.kit.jacket
-for named:redhand
-when kit:bastion=own,issued,in_kit,dead_mans
-greet
-prio reaction
-voice redhand
-
-node start
-  say Nice jacket. Whose was it?
-  > @dead "A dead man's. He won't miss it." -> laugh   if kit:bastion=in_kit,dead_mans
-  > @mine "Mine. Bastion signed it out to me." -> cold   if kit:bastion=own,issued
-  > @fence "Found it on a fence." -> laugh | cold   check lie redhand 1   truth kit:bastion=in_kit,dead_mans
-  > @walk Walk on. -> end
-
-node laugh
-  say Keep it. Bastion'll shoot you in it. Saves us the bullet.
-  > @leave Leave. -> end
-
-node cold
-  say Then you're on the wrong road, soldier. Walk.
-  do nset:bastion_kit
-  > @leave2 Leave. -> end
-```
-
-Kit in their colours isn't a disguise until you claim one: 'A dead man's' is the truth, and it costs nothing.
-'Found it on a fence' shows [Lie] only to someone whose kit is really their own. Bastion colours still carry
-Bastion's enemies: this crewman talks, but the fence and the quartermaster won't deal with you while you wear it,
-and at a Red Hand roadblock you're turned round at 150 m ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)).
-
----
-
 ## Engine needs
 
 **Built** in phase 2 ([docs/DIALOGUE.md](../docs/DIALOGUE.md)): `RZ_DialogueDB` (the compiled packs, indexed by
@@ -1405,9 +1071,7 @@ regard in leader and wanderer attitude, the danger check (the talk screen's guar
 (dropped: one modal screen with the pad, see [PLAN.md](PLAN.md#built-alongside-the-work-in-roadmap-next)).
 
 Still needed:
-- **`RZ_DialogueScenes`** (decide records, the 5-second hold, objections and Stand with, tally sways into
-  `RZ_QuestVote`) and **`RZ_DialogueBarks`**; speaker adapters for quartermasters, quest people, strangers and
-  radio channels.
+- Speaker adapters for quartermasters, quest people and the secure nets.
 - **Hooks in existing code:**
   - `RZ_Leaders`, `RZ_Wanderers`, `RZ_Safehouses`, `RZ_Territory`, `RZ_Checkpoints` and `RZ_LongTable` expose
     their built behaviours as `call:` targets: work, news, standing, first_contact, share_food, rob,
@@ -1430,19 +1094,11 @@ Still needed:
   `{word:f}`, `{claim:key}`, `{kit_owner}`, `{dead_name}`, `{lean}` (majors), `{tribe:N}` and `{alpha:N}` (tribes,
   in the speaker's faction word), `{lock:bring}` and `{lock:leave}` (the finale). Bindings come from pickers on
   the world facts: `town:thick_within(m)`, `house:nearest_short`, and so on.
-- **Promises and callbacks:**
-  - The built events report to `RZ_DialogueMemory`: food handed in at a house, a delivery at a drop, a visit within
-    range and window, a rescue or escort arriving, a message told.
-  - Promise clocks count the promiser's online play (2 hours), with a 3-real-day ceiling.
-  - Callbacks go into the shared queue (10 per player, a system pool of 100, 3 season days).
-  - The rumour tick for claims with no world test: at the half-hourly leader round, and a real day later.
-- **Claims in kit** (through `RZ_Disguise`):
-  - the kit kind per player and faction, read from the loadout slots;
-  - the look's score and tags for a claim choice, with cover details;
-  - the server opens post sessions on approach (35 m);
-  - point-out as a −1 on the current look; the session ends when kit changes (checked every 5 s and on every
-    pick);
-  - AI behaviour unchanged.
+- **Promises and callbacks:** the built events report to `RZ_DialogueMemory` (a delivery at a drop, a rescue or
+  escort arriving, a message told); missions' echoes and errands' follow-ups join the callback queue, with a
+  system pool of 100.
+- **Claims in kit:** the other kit kinds per player and faction (through `RZ_Disguise`); the server opens post
+  sessions on approach (35 m).
 - **Finale and epilogue**, supplied by those designs:
   - `RZ_Finale.CanCommit(identity, route)`: refused below the 90% gate, after the stand is won, if already locked,
     or when `CanSideWith` says no;
@@ -1450,21 +1106,17 @@ Still needed:
   - the lock card's bring and leave lines;
   - `cure_held`, `ending:` and `was:` from `SeasonStory`'s decider lists by identity;
   - every key is quiet (false) until those designs are built.
-- **Strangers and radio:**
-  - strangers are dealt by the errands dealer at the places in [section 16](#strangers), with the
-    one-per-15-minutes ceiling and 6 bodies on the server; a body within 150 m; gone when done or after 20 min out
-    of range; never within 2 km of the Long Table's farm;
-  - a "Call on the channel" action on house radios and the carried radio (`RZ_SecureRadio`'s channels; secure ones
-    only for Radio Operators who've cracked them);
-  - barks on the 1-second tick for bodies within 6 m of a player.
+- **Radio:** the call on house radio props with power, and the secure nets (`RZ_SecureRadio`'s channels) for Radio
+  Operators who've cracked them.
 
 ## Settings
 
 **Built** on `RZ_GameModeComponent > Dialogue`: **Trees** (off), **Talk Favor a day** (20), with the talk screen's
 range, idle seconds and danger ([docs/WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#5-settings-objects)).
-Still to add as their parts are built: 45 s idle while someone waits; per speaker 6, scene sessions 16;
-overheard radius 8 m, room radius 30 m; decide hold 5 s, objections; vouching, call-outs, point-out; the rumour
-tick (15%); promise play hours (2) and real-day ceiling (3); barks; Make it right; the text source.
+Still to add as settings (built today as fixed numbers in the code): the 45 s idle while someone waits; 6
+sessions a person, 16 for scenes; the overheard and room radii; the decide hold; the rumour tick (15%); promise
+play hours (2) and the real-day ceiling (3); the bark radius and limits. And, with their parts: Make it right; the
+text source.
 
 Strangers' settings (on, the 15-minute ceiling, the places) belong to Missions > Errands.
 
