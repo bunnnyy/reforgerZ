@@ -48,7 +48,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Contracts that give a rough area (a 500 m circle) until you're close; Radio Operators and Trusted players get the spot | [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
-| The UI: an original icon set (61 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the standing screen, journal, radio log and map key (keys and mouse), the notice board and hall of fame menus, chat commands (`/note`, `/hall`), a deploy-menu background panel with the loadout's gear and locked loadouts unavailable, and the marker icons on the map, fed per player from the server | [UI.md](UI.md) |
+| The UI: an original icon set (61 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the standing screen, journal, radio log and map key (keys and mouse), the notice board and hall of fame menus, chat commands (`/note`, `/hall`), a deploy-menu background panel with the loadout's gear, locked loadouts refused by the server, and the marker icons on the map, fed per player from the server | [UI.md](UI.md) |
 | Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout, with a vanilla or Workshop prefab for 152 of its entries and the 13 loadouts), the Workbench plugin **ReforgerZ: Create prefabs** (run for real; a second run changes nothing) with a dry run and a checklist fallback, `tools/icon_atlas.py` for the icon atlas and imageset, and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
 | The first Workbench build: 159 prefabs (156 the plugin made from the manifest, many of them on stand-in bases, plus the player controller with the HUD and the faction and loadout managers), the Arland world with the game mode, the four factions and their hidden variants and the 13 background loadouts, its scenario, the 12 UI layouts, the icon atlas and imageset, and the screens and their keys in the menu and input configs. It starts in Workbench play with no script exceptions | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), [UI.md](UI.md) |
 
@@ -59,19 +59,12 @@ designed" (shown to the author before anything is built), then the build.
 
 ### Fixes from the build review (first)
 The prefabs were filled in by text edits on 2026-11-11; their reviewers found these. A fix run was
-stopped part-way: its edits to `RZ_Quartermaster.c` and `RZ_SupplyLines.c` are unreviewed, so
+stopped part-way: its edit to `RZ_SupplyLines.c` is unreviewed, so
 check them first.
-- **Shops:** no vehicles and no car parts in any quartermaster's stock or requisitions. Replace or
-  remove the Haven medkit (vanilla `MedicalKit_01_FIA` heals without limit). The Trusted
-  machine-gun requisition hands out a Champion item.
 - **Cars:** make `RZ_Tyre.et` and `RZ_Planks.et` carryable inventory items. Make fixing harder, as
   `RZ_CarSettings` attributes: two or three missing parts, a wrench or toolkit to fit them, longer and
   louder hotwiring that can fail, rarer keys.
 - **Supply crews** board only once all their members have spawned (`RZ_SupplyLines`).
-- **People:** checkpoint guards get their rifles back; occupants lose their shop-tier armour; the
-  council head and the bounty target's faction must fit their missions.
-- **Items and loadouts:** the tablet keywords must match `RZ_Tablets.et`; the server enforces
-  locked loadouts.
 - **Docs** for all of the above: WORKBENCH_SETUP, MISSIONS, DESIGN, REPUTATION.
 - **Compile check** (`tools/compile_check.sh`): not run since the fixable-car change.
 - **Untested in play:** the fixable cars' names, the parked cars' lock, and the unarmed zombie
@@ -211,6 +204,7 @@ In this order, because later ones depend on earlier ones:
 | Evac as an escape or a way to win | Nobody leaves the Zone; the only ending is the cure |
 | Crates from the evac helicopter | Free loot; the Last Helicopter pays Fame and Favor instead |
 | The free hourly Requisition crate | Free loot; Requisition is a half-price purchase |
+| Vehicles, car parts and fuel in the quartermasters' shops and requisitions | Cars are only ever found and fixed; the server refuses such stock |
 | The Haven Champion's supply bag on respawn | Free loot; replaced by Safe Harbour and Remembered |
 | A personal hideout per player | Leaves persistent physical traces; the Haven's safehouses are the shelter |
 | Factions hostile to all players or none | Replaced by per-player hostility through hidden faction variants |

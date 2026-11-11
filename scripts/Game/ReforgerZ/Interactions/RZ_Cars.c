@@ -17,7 +17,7 @@
 //! and goes when the mission ends unless someone started it.
 //!
 //! Parts come from garages and car boots (search), stripping wrecks (one part each), a
-//! Mechanic wanderer or the Haven quartermaster (shop actions) for Favor. Fuel comes from
+//! Mechanic wanderer for Favor (never a quartermaster: they refuse to sell parts). Fuel comes from
 //! siphoning wrecks or a petrol station's hand pump into a container.
 
 //------------------------------------------------------------------------------------------------

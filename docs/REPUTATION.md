@@ -75,8 +75,9 @@ standing ([DESIGN.md](DESIGN.md), "Backgrounds and personal goals"). Two things 
 
 ## What each faction gives you
 
-Shops are the faction's own **quartermasters**: any item, crate or vehicle, sold for Favor at
-a required tier ✅. The items below are a suggested starting list. Prices are the base cost ×
+Shops are the faction's own **quartermasters**: any item or crate, sold for Favor at a required
+tier ✅. Never a vehicle or a car part: cars are only ever found, and the server refuses a shop or
+requisition action set to one ✅. The items below are a suggested starting list. Prices are the base cost ×
 the local leader's traits and memory (within ±20%), × a shortage (+25–50% where a supply truck
 didn't arrive), × the faction's morale (0.95–1.1). The server checks tier and Favor when you buy.
 
@@ -84,9 +85,9 @@ didn't arrive), × the faction's morale (0.95–1.1). The server checks tier and
 
 | Tier | Shop | Perk / service |
 |---|---|---|
-| Known | Canned food, water, bandages, crowbars, car parts | A welcome message ✅ (safehouse services, including bite declarations and expired antibiotics for 5 Favor, are open to anyone the Haven hasn't exiled) |
-| Trusted | Hunting rifles, ammo, backpacks, radios, jerrycans | **Neighbours** ✅: the direction to the nearest job you'd be paid for, on spawn and every 10 min |
-| Champion | Vehicles, fortification kits, good medkits | **Safe Harbour** ✅ and **Remembered** ✅: see below |
+| Known | Canned food, water, bandages, crowbars | A welcome message ✅ (safehouse services, including bite declarations and expired antibiotics for 5 Favor, are open to anyone the Haven hasn't exiled) |
+| Trusted | Hunting rifles, ammo, backpacks, radios | **Neighbours** ✅: the direction to the nearest job you'd be paid for, on spawn and every 10 min |
+| Champion | Fortification kits (barricade planks), saline bags | **Safe Harbour** ✅ and **Remembered** ✅: see below |
 | Hunted | — | **Exile** ✅: see below |
 
 **Safe Harbour.** While a Haven Champion is inside any safehouse (within 60 m of it), no hunter
@@ -109,8 +110,8 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 | Tier | Shop | Perk / service |
 |---|---|---|
 | Known | Military rations, morphine, flares | **Waved through** ✅: Bastion's checkpoints inside the Zone let you pass unsearched ([Checkpoints](#checkpoints-roadblocks-and-camps)) |
-| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition** ✅: once an hour, ammo or rations at half the Favor cost. While Bastion's trucks run, it's drawn at a Bastion outpost's quartermaster from the stock its trucks brought, and refused while that outpost is short |
-| Champion | Machine guns, grenades, military trucks, the **signal smoke** | **Fire Mission** ✅: see below |
+| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition** ✅: once an hour, ammo or rations at half the Favor cost, only from what the quartermaster sells at Trusted or below ✅ (never a Champion item). While Bastion's trucks run, it's drawn at a Bastion outpost's quartermaster from the stock its trucks brought, and refused while that outpost is short |
+| Champion | Machine guns, grenades, the **signal smoke** | **Fire Mission** ✅: see below |
 | Hunted | — | Bastion AI shoots you ✅; hunter squads get your last position ✅ |
 
 **Fire Mission.** A Bastion Champion throws a signal smoke (bought on the Champion shelf) at a

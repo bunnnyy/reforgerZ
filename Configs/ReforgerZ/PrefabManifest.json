@@ -982,7 +982,7 @@
    "path": "Prefabs/ReforgerZ/Missions/RZ_BountyTarget.et",
    "basePrefab": "{6E725D44CA973C24}Prefabs/Groups/INDFOR/Group_FIA_SentryTeam.et",
    "baseFind": "",
-   "baseHint": "an armed AI group or character",
+   "baseHint": "an armed AI group or character on SURV (a loner, not a faction's man)",
    "components": [],
    "actions": [],
    "slots": ["m_ContractSettings.m_sBountyTargetPrefab"],
@@ -1728,7 +1728,7 @@
    "path": "Prefabs/ReforgerZ/Perimeter/RZ_CheckpointGuard.et",
    "basePrefab": "{26A9756790131354}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Rifleman.et",
    "baseFind": "",
-   "baseHint": "a soldier without AI, or a figure prop",
+   "baseHint": "a soldier without AI with his rifle (no grenades), or a figure prop",
    "components": [],
    "actions": [],
    "slots": ["m_PerimeterSettings.m_sGuardPrefab"],
@@ -1821,7 +1821,7 @@
    "path": "Prefabs/ReforgerZ/Haven/RZ_SafehouseOccupant.et",
    "basePrefab": "{035F8F1CEF3B187F}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_4.et",
    "baseFind": "",
-   "baseHint": "a civilian without AI, or a seated prop",
+   "baseHint": "a civilian without AI, or a seated prop (no armour or weapons: nothing a shop sells)",
    "components": [
     {"cls": "RZ_PuzzleObjectComponent", "values": [], "name": ""},
     {"cls": "RZ_ClueComponent", "values": [], "name": ""}
@@ -2260,7 +2260,7 @@
    "path": "Prefabs/ReforgerZ/Leaders/RZ_CouncilHead.et",
    "basePrefab": "{E024A74F8A4BC644}Prefabs/Characters/Factions/CIV/Businessman/Character_CIV_Businessman_1.et",
    "baseFind": "",
-   "baseHint": "a civilian without AI (damage off)",
+   "baseHint": "a civilian without AI on SURV, damage on (a council head can die and be replaced)",
    "components": [
     {"cls": "RZ_PuzzleObjectComponent", "values": [], "name": ""},
     {"cls": "RZ_ClueComponent", "values": [], "name": ""}
@@ -2456,7 +2456,7 @@
    "path": "Prefabs/ReforgerZ/Territory/RZ_Occupant_Haven.et",
    "basePrefab": "{8A97F7055F1A003A}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_6.et",
    "baseFind": "",
-   "baseHint": "a character without AI in the faction's clothes",
+   "baseHint": "a character without AI in the faction's clothes (no armour or weapons: nothing a shop sells)",
    "components": [
     {"cls": "RZ_PuzzleObjectComponent", "values": [], "name": ""},
     {"cls": "RZ_ClueComponent", "values": [], "name": ""}
@@ -2487,7 +2487,7 @@
    "path": "Prefabs/ReforgerZ/Territory/RZ_Occupant_Bastion.et",
    "basePrefab": "{26A9756790131354}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Rifleman.et",
    "baseFind": "",
-   "baseHint": "a character without AI in the faction's clothes",
+   "baseHint": "a character without AI in the faction's clothes (no armour or weapons: nothing a shop sells)",
    "components": [
     {"cls": "RZ_PuzzleObjectComponent", "values": [], "name": ""},
     {"cls": "RZ_ClueComponent", "values": [], "name": ""}
@@ -2518,7 +2518,7 @@
    "path": "Prefabs/ReforgerZ/Territory/RZ_Occupant_RedHand.et",
    "basePrefab": "{B4977616CD19191A}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_AC_Scout.et",
    "baseFind": "",
-   "baseHint": "a character without AI in the faction's clothes",
+   "baseHint": "a character without AI in the faction's clothes (no armour or weapons: nothing a shop sells)",
    "components": [
     {"cls": "RZ_PuzzleObjectComponent", "values": [], "name": ""},
     {"cls": "RZ_ClueComponent", "values": [], "name": ""}
@@ -2549,7 +2549,7 @@
    "path": "Prefabs/ReforgerZ/Territory/RZ_Occupant_Halcyon.et",
    "basePrefab": "{4E29194BA809DF32}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_AC_Medic.et",
    "baseFind": "",
-   "baseHint": "a character without AI in the faction's clothes",
+   "baseHint": "a character without AI in the faction's clothes (no armour or weapons: nothing a shop sells)",
    "components": [
     {"cls": "RZ_PuzzleObjectComponent", "values": [], "name": ""},
     {"cls": "RZ_ClueComponent", "values": [], "name": ""}
@@ -3538,7 +3538,7 @@
    "path": "",
    "basePrefab": "",
    "baseFind": "",
-   "baseHint": "vanilla items, crates or vehicles",
+   "baseHint": "vanilla items or crates (never a vehicle or a car part: refused)",
    "components": [],
    "actions": [],
    "slots": ["RZ_FactionShopAction.m_sItemPrefab"],
@@ -3556,7 +3556,7 @@
    "path": "",
    "basePrefab": "",
    "baseFind": "",
-   "baseHint": "vanilla ammo or rations",
+   "baseHint": "vanilla ammo or rations the same quartermaster sells at Trusted or below",
    "components": [],
    "actions": [],
    "slots": ["RZ_RequisitionAction.m_sItemPrefab"],
@@ -3688,29 +3688,16 @@
    "minimum": false
   },
   {
-   "target": "the Haven quartermaster",
-   "add": [
-    {
-     "cls": "RZ_FactionShopAction",
-     "values": ["m_eFaction=0", "m_eRequiredTier=1", "m_iFavorCost=8", "m_sItemPrefab=@CarBattery", "m_sDisplayName=Car battery"],
-     "name": ""
-    }
-   ],
-   "why": "car parts for sale (Known), if wanted; same for tyre and spark plugs",
-   "required": false,
-   "minimum": false
-  },
-  {
    "target": "the Bastion quartermaster",
    "add": [{"cls": "RZ_RequisitionAction", "values": ["m_iFavorCost=30", "m_sDisplayName=rations"], "name": ""}],
-   "why": "Requisition: one action per ammo or rations item (set its Item prefab)",
+   "why": "Requisition: one action per ammo or rations item (set its Item prefab to one this quartermaster sells at Trusted or below; anything else is refused)",
    "required": false,
    "minimum": false
   },
   {
    "target": "any quartermaster",
    "add": [{"cls": "RZ_FactionShopAction", "values": [], "name": ""}],
-   "why": "vanilla stock (suggested stock table); the Item prefab is a vanilla item, crate or vehicle",
+   "why": "vanilla stock (suggested stock table); the Item prefab is a vanilla item or crate, never a vehicle or a car part (refused: cars are only found)",
    "required": false,
    "minimum": false
   },
@@ -4634,7 +4621,7 @@
     "m_sSirenWords": "siren,alarm,klaxon",
     "m_sContainerWords": "bottle_empty,empty_bottle,emptybottle,canteen_empty,empty_canteen",
     "m_sDirtyWaterWords": "water_dirty,dirty_water,untreated,unsafe_water,water_unsafe",
-    "m_sTabletWords": "purification,purifying,watertablet,water_tablet",
+    "m_sTabletWords": "purification,purifying,watertablet,water_tablet,rz_tablets",
     "m_sWellWords": "well,waterpump,water_pump,handpump,hand_pump,pump_water",
     "m_sStoveWords": "stove,oven,fireplace,campfire,furnace,hearth",
     "m_fBoilSeconds": "30",

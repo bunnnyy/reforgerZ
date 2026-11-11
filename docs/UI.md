@@ -122,14 +122,17 @@ instead, with tabs or a menu in the map. That's being designed; none of it is bu
 The panel reads the picked loadout twice a second. Its **starting gear** is what that loadout
 really spawned with the last time anyone took it (the server notes up to ten things a few seconds
 after the spawn, by prefab name); until then, the background's own gear line (`RZ_Background.m_sGear`).
-A locked background's loadout is **unavailable** in the vanilla menu (**UI > Lock loadouts**, on):
-`RZ_LoadoutLock.c` mods `SCR_BasePlayerLoadout`, so the client marks it unavailable from the last
-backgrounds payload. The 1.9 menu leaves unavailable loadouts out of its list when it builds it and
-greys their buttons when it refreshes (which one players see is a VERIFY). Vanilla never asks the
-server, so the server checks on spawn: a locked pick spawns as the default background. The panel
-says how to unlock it. In Workbench play the player spawned with the locked Soldier loadout and
-played as the default background: the server's check works; the menu's side is still to be
-checked.
+A locked background's loadout can't be spawned (**UI > Lock loadouts**, on). The server decides,
+whatever the client sends, so it holds with a mouse, a gamepad or a modified client:
+`RZ_LoadoutLock.c` mods `SCR_LoadoutManager.CanAssignLoadout_S` (a locked loadout is never
+assigned) and `SCR_BaseGameMode.CanPlayerSpawn_S` (a spawn is refused while the assigned loadout
+is locked, or when it asks for a locked loadout's prefab). The menu only shows it: the client marks
+the loadout unavailable from the last backgrounds payload (`SCR_BasePlayerLoadout`, modded). The
+1.9 menu leaves unavailable loadouts out of its list when it builds it and greys their buttons when
+it refreshes (which one players see is a VERIFY). The panel says how to unlock it. If a locked pick
+gets through anyway, it plays as the default background. Before the server-side refusal, Workbench
+play spawned the locked Soldier loadout as the default background; the refusal itself is still to
+be checked in play.
 
 ### The map
 
@@ -169,7 +172,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards |
 | `RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu`, `RZ_NoticeBoardMenu`, `RZ_HallOfFameMenu` | client (`ChimeraMenuBase`) | Ask for their data on open, redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them |
 | `RZ_BackgroundPanelComponent` | client (widget handler) | Watches the picked loadout in the deploy menu and shows its background and gear |
-| `SCR_BasePlayerLoadout` (modded, `RZ_LoadoutLock.c`) | server and client | Makes a locked background's loadout unavailable |
+| `SCR_BasePlayerLoadout`, `SCR_LoadoutManager`, `SCR_BaseGameMode` (modded, `RZ_LoadoutLock.c`) | server (the client only marks the loadout unavailable) | Never assigns or spawns a locked background's loadout |
 | `RZ_MapIconsUI` | client (map component) | The icon layer on the map |
 | `RZ_NoticeStyle` | client | Classifies a notice by its title (faction names, leader titles, channel names) into a kind and a faction for its card and the radio log. The 600-odd `NotifyPlayer` calls are unchanged |
 | `RZ_UIW`, `RZ_UIText`, `RZ_UIColor` | client | Every engine UI call in one helper; payload text; the palette |
@@ -192,7 +195,7 @@ it: the `m_UISettings` attribute, `m_UIFeed` (creation, tick, spawn,
 top of `QueueHint` (with the chat commands' registration) in `Core/RZ_GameModeComponent.c`, the
 board menu call in `World/RZ_NoticeBoard.c` (`SendMenu`), and the `OnClueRead` call in
 `Puzzles/RZ_PuzzleMission.c`. `RZ_LoadoutLock.c` and `RZ_MapIcons.c` can each be deleted on their
-own. Then remove what names the UI's classes: point `RZ_GameMode.et` back at the vanilla player
+own (without the first, a locked pick spawns and plays as the default background). Then remove what names the UI's classes: point `RZ_GameMode.et` back at the vanilla player
 controller and clear its **UI** settings, and delete the two overrides in `Configs/System/` and
 the layouts in `UI/layouts/ReforgerZ/`.
 
@@ -207,9 +210,9 @@ static parts of the layouts.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; six mockups and previews. In code: the feed, the HUD, six menus with mouse support (four tabs, the notice board, the hall of fame), chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback, the radio log |
+| Built | The icon set and its renderer; six mockups and previews. In code: the feed, the HUD, six menus with mouse support (four tabs, the notice board, the hall of fame), chat commands, the deploy-menu panel with the loadout's gear, locked loadouts refused by the server, the map's icon layer, styled notices with the vanilla fallback, the radio log |
 | Workbench files | The 12 layouts ([LAYOUTS.md](../UI/LAYOUTS.md)); the icon atlas and the `RZ_Icons` imageset; the menu and input config overrides in `Configs/System/` (Workbench finds the six menu presets); the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, all but the map icon layout. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter |
-| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); the menus, their keys and their mouse clicks; the notice board menu (**UI > Board menus** is off); the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |
+| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); the menus, their keys and their mouse clicks; the notice board menu (**UI > Board menus** is off); the chat commands; the server's refusal of locked loadouts and the menu's side of it ([above](#the-background-picker)) |
 | Not done | The override of the vanilla deploy menu's layout that holds the background panel, so the panel doesn't show. The map configuration override with `RZ_MapIconsUI`, and **UI > Map icon layout** (empty: set, it turns the vanilla text markers off), so the map shows the vanilla markers. Images for the icons the scripts never swap (the map key's, the radio log's channel list, the HUD's radio, noise and paused icons, the background panel's): they draw as flat squares in their colour |
 | Planned | A sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm |

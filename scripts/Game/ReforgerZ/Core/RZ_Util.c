@@ -534,6 +534,26 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether a prefab's entity is a vehicle (its entity class is Vehicle or inherits it), without
+	//! spawning it. False for an empty or unloadable prefab.
+	static bool IsVehiclePrefab(ResourceName prefab)
+	{
+		if (prefab.IsEmpty())
+			return false;
+
+		Resource res = Resource.Load(prefab);
+		if (!res || !res.IsValid())
+			return false;
+
+		IEntitySource src = res.GetResource().ToEntitySource(); // VERIFY: a prefab's entity source names its entity class (Vehicle for cars and trucks)
+		if (!src)
+			return false;
+
+		typename t = src.GetClassName().ToType();
+		return t && t.IsInherited(Vehicle);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True if the FactionManager has a faction with this key.
 	static bool HasFaction(string key)
 	{

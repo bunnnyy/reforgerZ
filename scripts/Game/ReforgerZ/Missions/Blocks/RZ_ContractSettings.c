@@ -65,7 +65,7 @@ class RZ_ContractSettings
 	float m_fBloodMinHealth;
 
 	// ---------------------------------------------------------------- Optional contract prefabs
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bounty target: an armed AI group or character (Collect the Bounty when no player has a bounty). Empty = Missions > Survivor group", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bounty target: an armed AI group or character on SURV, a loner who owes the Red Hand (Collect the Bounty when no player has a bounty; it's made hostile as SURV). Empty = Missions > Survivor group", "et")]
 	ResourceName m_sBountyTargetPrefab;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion squad: an AI group on MIL (the stockade guards in Bust Out). Empty = Factions > Bastion hunter squad, then Supply > Bastion crew", "et")]

@@ -77,7 +77,7 @@ class RZ_QuartermasterHelper
 
 	//------------------------------------------------------------------------------------------------
 	//! Spawns a prefab next to the quartermaster, a little in front of the buyer. Tracked as a loose
-	//! item (vehicles aren't).
+	//! item (quartermasters never sell vehicles: IsForbiddenStock).
 	static IEntity SpawnNear(ResourceName prefab, IEntity owner, IEntity user)
 	{
 		vector pos = owner.GetOrigin();
@@ -121,6 +121,63 @@ class RZ_QuartermasterHelper
 	{
 		return e && s_aBought && s_aBought.Contains(e);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Never sold or handed out by a quartermaster: a vehicle, or a part or fuel that fixes a car
+	//! (Interactions > Cars). Cars are only ever found. A shop or requisition action set to one
+	//! refuses, and the log says which.
+	static bool IsForbiddenStock(ResourceName prefab)
+	{
+		if (prefab.IsEmpty())
+			return false;
+
+		string lower = prefab;
+		lower.ToLower();
+		if (lower.Contains("/vehicles/") || RZ_Util.IsVehiclePrefab(prefab))
+			return true;
+
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm || !gm.GetCarSettings())
+			return false;
+
+		RZ_CarSettings cars = gm.GetCarSettings();
+		if (prefab == cars.m_sBatteryPrefab || prefab == cars.m_sTyrePrefab || prefab == cars.m_sSparkPrefab || prefab == cars.m_sFuelPrefab)
+			return true;
+
+		if (cars.m_aCarPrefabs && cars.m_aCarPrefabs.Contains(prefab))
+			return true;
+
+		return cars.m_aParkedPrefabs && cars.m_aParkedPrefabs.Contains(prefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lowest tier, as an access rank (RZ_Reputation.GetAccessRank), at which this
+	//! quartermaster's shop actions sell the prefab; -1 if none of them does.
+	static int StockRank(IEntity quartermaster, ResourceName prefab)
+	{
+		if (!quartermaster || prefab.IsEmpty())
+			return -1;
+
+		ActionsManagerComponent actions = ActionsManagerComponent.Cast(quartermaster.FindComponent(ActionsManagerComponent));
+		if (!actions)
+			return -1;
+
+		array<BaseUserAction> list = {};
+		actions.GetActionsList(list);
+		int best = -1;
+		foreach (BaseUserAction a : list)
+		{
+			RZ_FactionShopAction shop = RZ_FactionShopAction.Cast(a);
+			if (!shop || shop.GetItemPrefab() != prefab)
+				continue;
+
+			int rank = RZ_Reputation.GetAccessRank(shop.GetRequiredTier());
+			if (best < 0 || rank < best)
+				best = rank;
+		}
+
+		return best;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -146,6 +203,18 @@ class RZ_FactionShopAction : ScriptedUserAction
 
 	[Attribute("", desc: "Name shown in the action menu")]
 	protected string m_sDisplayName;
+
+	//------------------------------------------------------------------------------------------------
+	ResourceName GetItemPrefab()
+	{
+		return m_sItemPrefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_ETier GetRequiredTier()
+	{
+		return m_eRequiredTier;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
@@ -224,6 +293,14 @@ class RZ_FactionShopAction : ScriptedUserAction
 
 		if (m_sItemPrefab.IsEmpty())
 		{
+			gm.NotifyPlayer(playerId, factionName, "They're out of stock.");
+			return;
+		}
+
+		// Cars are only ever found: no quartermaster sells a vehicle or a car part
+		if (RZ_QuartermasterHelper.IsForbiddenStock(m_sItemPrefab))
+		{
+			RZ_Log.Warn("Shop action '" + m_sDisplayName + "' sells a vehicle or a car part (" + m_sItemPrefab + "): refused. Cars are only found");
 			gm.NotifyPlayer(playerId, factionName, "They're out of stock.");
 			return;
 		}
@@ -389,12 +466,15 @@ class RZ_StandingStatusAction : ScriptedUserAction
 //! With supply trucks running for Bastion, it's signed out at a Bastion outpost's
 //! quartermaster, from the stock its trucks brought (one unit each), and refused while that
 //! outpost is short or hasn't been resupplied (RZ_FactionPerks.TryRequisition).
+//! It's a Trusted perk, so it hands out only what the same quartermaster sells at Trusted or
+//! below: an item stocked only at Champion, or not stocked there at all, is refused, and so is
+//! a vehicle or a car part.
 class RZ_RequisitionAction : ScriptedUserAction
 {
 	[Attribute("30", desc: "Full Favor price. Requisition charges half of it, rounded up")]
 	protected int m_iFavorCost;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Ammo or rations to hand out, spawned next to the quartermaster", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Ammo or rations to hand out, spawned next to the quartermaster. Must be an item a shop action on the same quartermaster sells at Trusted or below", "et")]
 	protected ResourceName m_sItemPrefab;
 
 	[Attribute("rations", desc: "Name shown in the action menu")]
@@ -421,7 +501,22 @@ class RZ_RequisitionAction : ScriptedUserAction
 
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
-		if (gm && playerId > 0)
-			gm.TryRequisition(playerId, pOwnerEntity, pUserEntity, m_sItemPrefab, m_sDisplayName, m_iFavorCost);
+		if (!gm || playerId <= 0)
+			return;
+
+		// Each tier hands out only its own tier's stock, and Requisition is Bastion Trusted
+		if (!m_sItemPrefab.IsEmpty())
+		{
+			int rank = RZ_QuartermasterHelper.StockRank(pOwnerEntity, m_sItemPrefab);
+			bool forbidden = RZ_QuartermasterHelper.IsForbiddenStock(m_sItemPrefab);
+			if (forbidden || rank < 0 || rank > RZ_Reputation.GetAccessRank(RZ_ETier.TRUSTED))
+			{
+				RZ_Log.Warn("Requisition '" + m_sDisplayName + "' (" + m_sItemPrefab + ") isn't Trusted stock here (a shop action on this quartermaster at Trusted or below, never a vehicle or a car part): refused");
+				gm.NotifyPlayer(playerId, RZ_Factions.GetName(RZ_EFaction.MILITARY), string.Format("\"We don't sign out %1. Buy it, if you can.\"", m_sDisplayName));
+				return;
+			}
+		}
+
+		gm.TryRequisition(playerId, pOwnerEntity, pUserEntity, m_sItemPrefab, m_sDisplayName, m_iFavorCost);
 	}
 }
