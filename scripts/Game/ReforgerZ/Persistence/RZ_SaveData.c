@@ -139,6 +139,7 @@ class RZ_SeasonRecord
 	string winnerName;
 	string endedBy = "cure";	// "cure" or "time"
 	ref array<int> fame = {};
+	ref array<ref RZ_StoryRecord> stories = {};	// the majors' endings (Director/RZ_Majors.c)
 }
 
 class RZ_Persistence

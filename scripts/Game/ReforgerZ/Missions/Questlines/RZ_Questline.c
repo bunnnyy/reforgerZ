@@ -73,6 +73,10 @@ class RZ_Questline
 	protected string m_sSlot;		// what "one at a time" counts by; default the faction
 	protected ref array<ref RZ_QuestStage> m_aStages = {};
 
+	// The majors (docs/QUESTLINES.md, "The majors"; the engine in Director/RZ_Majors.c)
+	protected bool m_bMajor;
+	protected ref array<ref RZ_MajorAct> m_aActs = {};
+
 	// ================================================================ The definition
 	//------------------------------------------------------------------------------------------------
 	//! Set the key, title and faction with Info(), then add the stages. The first stage added is
@@ -161,12 +165,150 @@ class RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where a run begins: the first stage added, unless a questline says otherwise.
 	int FirstStage()
 	{
 		if (m_aStages.IsEmpty())
 			return END;
 
 		return m_aStages[0].m_iId;
+	}
+
+	// ================================================================ The majors
+	//------------------------------------------------------------------------------------------------
+	//! In Define(): this questline is its faction's major. It runs in the majors' lane (outside Max
+	//! active and the one-per-faction rule), starts with priority once CanStart is true, runs once
+	//! a season and never fizzles: a stage that can't happen waits, and the act's default (when the
+	//! clock says so) moves it on. Its stages belong to acts (Act()).
+	protected void Major()
+	{
+		m_bMajor = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsMajor()
+	{
+		return m_bMajor;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! False: never offered by the half-hourly roll (an inner line a major starts with Begin, or a
+	//! questline a major absorbed under a new key). Begin() still starts it.
+	bool StartsOnItsOwn()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A major's act: its stages, anchor, need, patience and last call (RZ_MajorAct's setters).
+	protected RZ_MajorAct Act(int id, string name)
+	{
+		RZ_MajorAct act = new RZ_MajorAct();
+		act.m_iId = id;
+		act.m_sName = name;
+		m_aActs.Insert(act);
+		return act;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_MajorAct GetAct(int id)
+	{
+		foreach (RZ_MajorAct act : m_aActs)
+		{
+			if (act.m_iId == id)
+				return act;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The act a stage belongs to, null if none.
+	RZ_MajorAct ActOf(int stage)
+	{
+		foreach (RZ_MajorAct act : m_aActs)
+		{
+			if (act.Has(stage))
+				return act;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int ActCount()
+	{
+		return m_aActs.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_MajorAct ActAt(int idx)
+	{
+		if (idx < 0 || idx >= m_aActs.Count())
+			return null;
+
+		return m_aActs[idx];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Could this player decide one of the act's approaches now? Default: the act's access rank
+	//! with the major's faction (Known unless the act says otherwise).
+	bool ActQualifies(RZ_GameModeComponent gm, RZ_QuestRun run, RZ_MajorAct act, int playerId)
+	{
+		if (!gm || playerId <= 0 || !RZ_Factions.IsValid(m_iFaction))
+			return false;
+
+		return RZ_Reputation.GetAccessRank(gm.GetTier(playerId, m_iFaction)) >= act.m_iRank;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The act's default (docs/QUESTLINES.md, "Dynamic fallbacks"): what happens when no player
+	//! decides it. It pays nobody (the engine turns pay off around it). Apply its world part, set its
+	//! flags and return the next stage, or END through Finish().
+	int ActDefault(RZ_GameModeComponent gm, RZ_QuestRun run, RZ_MajorAct act)
+	{
+		return END;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An absorbed questline reached one of its own endings inside the major (B1, R1, H1): apply
+	//! it as an act's result (ActEnd) and return the stage the major goes on to. END: the major
+	//! itself ends there.
+	int AfterInnerEnding(RZ_GameModeComponent gm, RZ_QuestRun run, int ending)
+	{
+		return END;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line for "between beats" (one of the major's people saying what's coming), "" if none.
+	string BetweenLine(RZ_GameModeComponent gm, RZ_QuestRun run)
+	{
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The major's line for the journal's season view: the rule or stance in force, the leans. ""
+	//! if none.
+	string SeasonState(RZ_GameModeComponent gm, RZ_QuestRun run)
+	{
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For a major's stage missions (RZ_QM_MajorScene): fill in the scene for `stage`. False: it
+	//! can't now (tried again in a few minutes).
+	bool BuildScene(RZ_GameModeComponent gm, RZ_QuestRun run, int stage, RZ_QM_MajorScene scene)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For Next() and ActDefault(): an act's result inside a major, without ending it. Sets
+	//! "<key>.act<act>" (and "<key>.climax" for the climax) to `outcome`, notes `line`, tells the
+	//! participants and marks a beat. `line` "" = no line.
+	protected void ActEnd(RZ_GameModeComponent gm, RZ_QuestRun run, int act, int outcome, string line)
+	{
+		RZ_Majors.ActEnd(gm, run, act, outcome, line);
 	}
 
 	// ================================================================ What the author writes
@@ -333,16 +475,18 @@ class RZ_Questline
 	//! Faction morale, at most 10 points either way (it drifts back by itself).
 	static void NudgeMorale(RZ_GameModeComponent gm, int faction, float delta)
 	{
-		if (gm.GetFactionLife())
-			gm.GetFactionLife().AddMorale(faction, Math.Clamp(delta, -MAX_MORALE, MAX_MORALE));
+		delta = RZ_Majors.MoraleThroughBudget(faction, Math.Clamp(delta, -MAX_MORALE, MAX_MORALE));
+		if (gm.GetFactionLife() && delta != 0)
+			gm.GetFactionLife().AddMorale(faction, delta);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Faction strength (territory), at most 5 points either way (it drifts back too).
 	static void NudgeStrength(RZ_GameModeComponent gm, int faction, float delta)
 	{
-		if (gm.GetTerritory())
-			gm.GetTerritory().AddStrength(faction, Math.Clamp(delta, -MAX_STRENGTH, MAX_STRENGTH));
+		delta = RZ_Majors.StrengthThroughBudget(faction, Math.Clamp(delta, -MAX_STRENGTH, MAX_STRENGTH));
+		if (gm.GetTerritory() && delta != 0)
+			gm.GetTerritory().AddStrength(faction, delta);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -461,6 +605,9 @@ class RZ_Questline
 
 		fame = Math.ClampInt(fame, -MAX_FAME, MAX_FAME);
 		infamy = Math.ClampInt(infamy, 0, MAX_INFAMY);
+		if (RZ_Majors.IsNoPay())
+			return;
+
 		array<string> idents = {};
 		run.GetIdents(idents);
 		foreach (string ident : idents)
@@ -468,26 +615,41 @@ class RZ_Questline
 			if (onlyApproach >= 0 && !run.IdentDid(ident, onlyApproach))
 				continue;
 
-			int playerId = gm.GetQuestlines().OnlineId(ident);
-			if (playerId > 0)
-			{
-				gm.AddFame(playerId, faction, fame, false);
-				gm.AddInfamy(playerId, faction, infamy, "questline", RZ_RepFlag.SHARE);
-				continue;
-			}
-
-			// Offline: straight onto the saved profile (no tier message; they'll see it in Standing)
-			RZ_PlayerProfile profile = gm.FindProfileByIdentity(ident);
-			if (!profile)
-				continue;
-
-			RZ_EFaction ef = faction;
-			if (fame != 0)
-				profile.AddFame(ef, fame);
-
-			if (infamy > 0)
-				profile.AddInfamy(ef, infamy, true);
+			ChangeStandingFor(gm, ident, faction, fame, infamy);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Standing for one identity (online or not; offline straight onto the saved profile, with no
+	//! tier message), inside a major's caps while a major pays (RZ_Majors.ClipPay).
+	static void ChangeStandingFor(RZ_GameModeComponent gm, string ident, int faction, int fame, int infamy)
+	{
+		if (RZ_Majors.IsNoPay() || ident.IsEmpty() || !RZ_Factions.IsValid(faction))
+			return;
+
+		fame = RZ_Majors.ClipPay(ident, faction, "fame", fame);
+		infamy = RZ_Majors.ClipPay(ident, faction, "infamy", infamy);
+		if (fame == 0 && infamy <= 0)
+			return;
+
+		int playerId = gm.GetQuestlines().OnlineId(ident);
+		if (playerId > 0)
+		{
+			gm.AddFame(playerId, faction, fame, false);
+			gm.AddInfamy(playerId, faction, infamy, "questline", RZ_RepFlag.SHARE);
+			return;
+		}
+
+		RZ_PlayerProfile profile = gm.FindProfileByIdentity(ident);
+		if (!profile)
+			return;
+
+		RZ_EFaction ef = faction;
+		if (fame != 0)
+			profile.AddFame(ef, fame);
+
+		if (infamy > 0)
+			profile.AddInfamy(ef, infamy, true);
 	}
 
 	//------------------------------------------------------------------------------------------------

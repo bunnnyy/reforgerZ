@@ -82,6 +82,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Questlines: long faction storylines in stages (contracts and waits) where how you do each stage changes the ending, saved across restarts (docs/DESIGN.md, Questlines)", category: "ReforgerZ|Director")]
 	protected ref RZ_QuestlineSettings m_QuestlineSettings;
 
+	[Attribute(desc: "Majors: one season-long story per faction, climaxes on cure milestones, defaults that fire from what's happening on the server (docs/DESIGN.md, The majors)", category: "ReforgerZ|Director")]
+	protected ref RZ_MajorSettings m_MajorSettings;
+
 	[Attribute(desc: "Zombie prefabs and density", category: "ReforgerZ|Zombies")]
 	protected ref RZ_ZombieSettings m_ZombieSettings;
 
@@ -595,6 +598,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_QuestlineSettings)
 			m_QuestlineSettings = RZ_QuestlineSettings.Cast(RZ_Util.NewWithDefaults("RZ_QuestlineSettings"));
 
+		if (!m_MajorSettings)
+			m_MajorSettings = RZ_MajorSettings.Cast(RZ_Util.NewWithDefaults("RZ_MajorSettings"));
+
 		if (!m_SafehouseSettings)
 			m_SafehouseSettings = RZ_SafehouseSettings.Cast(RZ_Util.NewWithDefaults("RZ_SafehouseSettings"));
 
@@ -927,6 +933,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_RadioStation GetRadioStation() { return m_RadioStation; }
 	RZ_StoryArcs GetStoryArcs() { return m_StoryArcs; }
 	RZ_Questlines GetQuestlines() { return m_Questlines; }
+	RZ_MajorSettings GetMajorSettings() { return m_MajorSettings; }
 	RZ_Headlines GetHeadlines() { return m_Headlines; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
@@ -2091,6 +2098,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		foreach (int fame : m_aSeasonFame)
 		{
 			record.fame.Insert(fame);
+		}
+
+		// The majors' endings (the season story) go with it
+		if (RZ_Majors.Get())
+		{
+			RZ_Majors.Get().FillRecord(record);
+			string story = RZ_Majors.Get().EpilogueLine(m_iSeasonWinner);
+			if (!story.IsEmpty())
+				RZ_Questline.Headline(this, story, false);
 		}
 
 		RZ_Persistence.SaveSeason(record);

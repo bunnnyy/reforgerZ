@@ -786,6 +786,10 @@ class RZ_Seasons
 				record.fame.Insert(m_GM.GetSeasonFame(f));
 			}
 
+			// The majors' endings are written even without a cure
+			if (RZ_Majors.Get())
+				RZ_Majors.Get().FillRecord(record);
+
 			RZ_Persistence.SaveSeason(record);
 		}
 
