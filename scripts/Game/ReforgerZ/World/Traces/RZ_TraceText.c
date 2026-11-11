@@ -298,8 +298,11 @@ class RZ_TraceText
 			}
 			case RZ_EDoorSymbol.BEAR:
 			{
-				if (m.Has(RZ_DoorMark.F_TICK))
+				if (m.Has(RZ_DoorMark.F_TICK) && m.m_iA > 0)
 					return string.Format("A bear on the door with a tick through it, and an arrow: → %1.", ArrowLetter(m.m_iA));
+
+				if (m.Has(RZ_DoorMark.F_TICK))
+					return string.Format("A bear on the door with a tick through it. D%1.", m.m_iDay);
 
 				if (m.Has(RZ_DoorMark.F_RING) && m.m_iA > 0)
 					return string.Format("A bear in white paint, with a chalk ring round it and an arrow: → %1.", ArrowLetter(m.m_iA));
@@ -311,8 +314,11 @@ class RZ_TraceText
 			}
 			case RZ_EDoorSymbol.PATCHED_BEAR:
 			{
-				if (m.Has(RZ_DoorMark.F_RING))
+				if (m.Has(RZ_DoorMark.F_RING) && m.m_iA > 0)
 					return string.Format("A bear with a patch on its belly, a chalk ring round it, and an arrow: → %1.", ArrowLetter(m.m_iA));
+
+				if (m.Has(RZ_DoorMark.F_RING))
+					return string.Format("A bear with a patch on its belly and a chalk ring round it. D%1.", m.m_iDay);
 
 				return string.Format("A bear with a patch on its belly and one eye stitched. D%1.", m.m_iDay);
 			}
@@ -395,8 +401,11 @@ class RZ_TraceText
 			case RZ_EDoorSymbol.CLEARED: return string.Format("Bastion cleared this on Day %1 at %2: culled, shelled or retaken.", m.m_iDay, ClockWords(m.m_iA));
 			case RZ_EDoorSymbol.BEAR:
 			{
-				if (m.Has(RZ_DoorMark.F_TICK))
+				if (m.Has(RZ_DoorMark.F_TICK) && m.m_iA > 0)
 					return string.Format("Everyone got out. The Haven ticked it on Day %1; they went to %2.", m.m_iDay, TownName(m.m_iA - 1));
+
+				if (m.Has(RZ_DoorMark.F_TICK))
+					return string.Format("Everyone got out. The Haven ticked it on Day %1.", m.m_iDay);
 
 				if (m.Has(RZ_DoorMark.F_RING) && m.m_iA > 0)
 					return string.Format("Children were here. They went to %1.", TownName(m.m_iA - 1));
@@ -410,6 +419,9 @@ class RZ_TraceText
 			{
 				if (m.Has(RZ_DoorMark.F_RING) && m.m_iA > 0)
 					return string.Format("A Haven house, emptied. The people went to %1.", TownName(m.m_iA - 1));
+
+				if (m.Has(RZ_DoorMark.F_RING))
+					return string.Format("A Haven house, emptied on Day %1.", m.m_iDay);
 
 				return string.Format("A Haven house. It opened its door on Day %1.", m.m_iDay);
 			}
