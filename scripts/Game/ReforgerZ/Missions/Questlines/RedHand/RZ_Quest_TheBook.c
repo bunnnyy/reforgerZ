@@ -137,15 +137,15 @@ class RZ_Quest_TheBook : RZ_Questline
 		RZ_RedHandQuest.Keep(run, "boss", boss);
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		array<string> names = {};
-		RZ_NoteText.DistinctFirstNames(rng, 4, names);
-		if (names.Count() < 4)
+		RZ_RedHandQuest.MenNames(rng, 3, names);
+		if (names.Count() < 3)
 			return false;
 
 		run.SetText("thief", names[0] + " " + RZ_NoteText.Surname(rng));
 		run.SetText("thief_short", names[0]);
 		run.SetText("inno1", names[1]);
 		run.SetText("inno2", names[2]);
-		run.SetText("sister", names[3]);
+		run.SetText("sister", RZ_RedHandQuest.WomanName(rng));
 		run.SetFlag("turned", -1);
 		run.SetPlace(boss.m_vPos, boss.m_sPlace);
 		return true;
@@ -597,7 +597,7 @@ class RZ_Quest_TheBook : RZ_Questline
 				RZ_RedHandQuest.SwingLoyalty(gm, squeezed, -RZ_RedHandQuest.SWING);
 
 			Headline(gm, "Somebody outside the Red Hand is holding a page of its book, the crews say. Nobody will say whose names are on it.", false);
-			SpreadRumour(gm, "\"The boss is asking who's got his page. Nobody's answering, which is an answer.\"", 6);
+			SpreadRumour(gm, "\"The boss is asking who's got the page. Nobody's answering, which is an answer.\"", 6);
 			return;
 		}
 
@@ -609,11 +609,11 @@ class RZ_Quest_TheBook : RZ_Questline
 			if (commander)
 			{
 				RZ_RedHandQuest.SwingLoyalty(gm, commander, RZ_RedHandQuest.SWING);
-				Headline(gm, string.Format("Bastion's commanding officer has a page of the Red Hand's book on his desk. %1 in %2 has started saluting again.", commander.m_sName, commander.m_sPlace));
+				Headline(gm, string.Format("A page of the Red Hand's book is on Bastion's commanding officer's desk. %1 in %2 has started saluting again.", commander.m_sName, commander.m_sPlace));
 			}
 			else
 			{
-				Headline(gm, "Bastion's commanding officer has a page of the Red Hand's book on his desk. He's reading it slowly.");
+				Headline(gm, "A page of the Red Hand's book is on Bastion's commanding officer's desk, and it's being read slowly.");
 			}
 
 			SpreadRumour(gm, "\"Bastion's got a page of the Red Hand's book. The Red Hand's got a list of who gave it to them.\"", 8);
@@ -870,7 +870,7 @@ class RZ_QM_BookWho : RZ_QuestMission
 
 		if (!IsEligible(gm, playerId))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "The book-keeper doesn't look up. \"The boss asked people he knows.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "The book-keeper doesn't look up. \"The boss asked for people we know.\"");
 			return;
 		}
 
@@ -955,7 +955,7 @@ class RZ_QM_BookFind : RZ_QuestMission
 		fire.m_sReadLabel = "Look round the fire";
 		fire.m_iGuards = 2;
 
-		m_iThiefTalk = AddClue(QText(gm, "thief"), QFill(gm, "{thief_short} has the page down his boot and his back to the wall. \"Did {boss} send you? Course he did. Go on, then. Do what you came for.\""));
+		m_iThiefTalk = AddClue(QText(gm, "thief"), QFill(gm, "{thief_short} has the page down his boot and his back to the wall. \"Did {boss} send you? Course they did. Go on, then. Do what you came for.\""));
 		m_vPos = jacket.m_vPos;
 		m_iSettlement = run.Flag("t1");
 		m_sTitle = "The Book: find him";
@@ -1192,7 +1192,7 @@ class RZ_QM_BookRead : RZ_RedHandQuestMission
 		string key = RZ_Quest_TheBook.Key(i);
 		switch (run.Flag(key + "_faction", -1))
 		{
-			case RZ_EFaction.MILITARY: return run.Fill(string.Format("{%1} keeps his voice down and his back to his own men. \"Eight rifles. I know. The diesel's gone, and so is the inventory officer who'd have noticed. Tell the boss I'm good for it.\"", key));
+			case RZ_EFaction.MILITARY: return run.Fill(string.Format("{%1} keeps their voice down and their back to their own soldiers. \"Eight rifles. I know. The diesel's gone, and so is the inventory officer who'd have noticed. Tell the boss I'm good for it.\"", key));
 			case RZ_EFaction.INSTITUTE: return run.Fill(string.Format("{%1} doesn't look up from a sample case. \"Two live ones. I wrote them up as caught in the field. If the director finds out where they came from, there's no field station and no me.\"", key));
 			case RZ_EFaction.SURVIVORS: return run.Fill(string.Format("{%1} has flour on their hands and doesn't wipe it off. \"Three months. We haven't had it. We've thirty mouths here, and every one of them eats before the Red Hand does.\"", key));
 		}
@@ -1624,7 +1624,7 @@ class RZ_QM_BookPage : RZ_RedHandQuestMission
 		bool owed = RZ_RedHandQuest.HasWorld(gm, "orders.mocked") && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN);
 		if (!RZ_Reputation.IsAtLeast(tier, RZ_ETier.TRUSTED) && !owed)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "The book-keeper shakes his head. \"The boss takes it back from people he trusts. Not from you. Not yet.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "The book-keeper shakes his head. \"The boss takes it back from people the boss trusts. Not from you. Not yet.\"");
 			return;
 		}
 
@@ -1633,7 +1633,7 @@ class RZ_QM_BookPage : RZ_RedHandQuestMission
 		run.SetText("crewname", rng.Pick(names));
 		run.SetText("returner", RZ_RedHandQuest.NameOf(playerId));
 		RZ_RedHandQuest.SetWorld(gm, "book.returned", 1);
-		run.Reward(gm, playerId, RZ_EFaction.BANDITS, 0, RETURN_FAVOR, "The boss counts the page back into the book himself.");
+		run.Reward(gm, playerId, RZ_EFaction.BANDITS, 0, RETURN_FAVOR, "The boss counts the page back into the book in person.");
 
 		string text = "The book-keeper smooths the page flat and glues it back where it belongs. The book balances.";
 		if (owed && !RZ_Reputation.IsAtLeast(tier, RZ_ETier.TRUSTED))
@@ -1882,7 +1882,7 @@ class RZ_QM_BookThief : RZ_QuestMission
 		if (m_fHeld < RING_SECONDS)
 			return;
 
-		NotifyParticipants(gm, m_sTitle, QFill(gm, "Last bell. You're still standing. {boss} keeps his word, because the whole crowd heard him give it: {thief_short} walks."));
+		NotifyParticipants(gm, m_sTitle, QFill(gm, "Last bell. You're still standing. {boss} keeps the word the whole crowd heard given: {thief_short} walks."));
 		Resolve(gm, m_iSecond, RZ_EQuestApproach.FORCE, RZ_Quest_TheBook.OUT_PLACE, "took his place and walked out");
 	}
 

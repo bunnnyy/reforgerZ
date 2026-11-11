@@ -271,6 +271,28 @@ class RZ_RedHandQuest
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Distinct men's first names (the texts say "he"), from the Red Hand's debtors' names.
+	static void MenNames(RZ_Rng rng, int count, notnull array<string> result)
+	{
+		int guard = 0;
+		while (result.Count() < count && guard < 200)
+		{
+			guard++;
+			string n = RZ_RedHandEdges.DebtorName(rng);
+			if (!result.Contains(n))
+				result.Insert(n);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A woman's first name (the texts say "she").
+	static string WomanName(RZ_Rng rng)
+	{
+		array<string> names = {"Marta", "Jana", "Lucie", "Ruth", "Irena", "Elise", "Nadia", "Vera", "Sabine", "Ilse", "Dana", "Agata"};
+		return rng.Pick(names);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! "Mara": a player's name, "someone" if they're gone.
 	static string NameOf(int playerId)
 	{

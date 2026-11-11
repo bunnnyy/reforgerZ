@@ -76,8 +76,8 @@ class RZ_Quest_WellStory : RZ_Questline
 		RZ_QuestStage later = WaitStage(S_LATER, "A session later", "Whatever happened at the well in {village}, the boss will hear about it.");
 		later.Wait(120);
 
-		RZ_QuestStage boss = MissionStage(S_BOSS, "The boss hears", "The boss has sent for you. He says the story works best untold: you don't kill the cow you milk. Own what happened at {village}, blame {crew_short}, or say nothing.");
-		boss.GiveUp(6, "The boss stopped waiting for an answer about {village}, and made up his own.");
+		RZ_QuestStage boss = MissionStage(S_BOSS, "The boss hears", "The boss has sent for you. The boss says the story works best untold: you don't kill the cow you milk. Own what happened at {village}, blame {crew_short}, or say nothing.");
+		boss.GiveUp(6, "The boss stopped waiting for an answer about {village}, and decided alone.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -349,7 +349,7 @@ class RZ_Quest_WellStory : RZ_Questline
 				}
 				else
 				{
-					run.Note("Nobody said anything to the boss. He made up his own mind.");
+					run.Note("Nobody said anything to the boss. The boss decided alone.");
 				}
 
 				return Ending(run);
@@ -429,7 +429,7 @@ class RZ_Quest_WellStory : RZ_Questline
 
 			// A bad deal: the boss takes it out on the crew boss (unless someone else already put him in the pit)
 			if (!blamed && crew && crew.IsPresent())
-				ReplaceLeader(gm, crew.m_iId, string.Format("The boss has taken the crew outside %1 off %2. A bad deal, he says, and he doesn't say which.", crew.m_sPlace, crew.m_sName));
+				ReplaceLeader(gm, crew.m_iId, string.Format("The boss has taken the crew outside %1 off %2. A bad deal, the boss says, without saying which.", crew.m_sPlace, crew.m_sName));
 
 			if (run.Flag("crew_did_it") != 1)
 			{
@@ -454,7 +454,7 @@ class RZ_Quest_WellStory : RZ_Questline
 			if (!blamed && run.Flag("owned") != 1 && Math.RandomFloat01() < FOUND_OUT)
 			{
 				ChangeStanding(gm, run, RZ_EFaction.BANDITS, 0, 10, RZ_EQuestApproach.BETRAY);
-				Headline(gm, run.Fill("{crew_short} found out what really went in the bucket at {village}. He's telling everyone who did it."), false);
+				Headline(gm, run.Fill("{crew_short} found out what really went in the bucket at {village}, and is telling everyone who did it."), false);
 			}
 
 			SpreadRumour(gm, run.Fill("\"Somebody found a dead dog in the well bucket at {village}. Red Hand, they say. The story spreads itself.\""), 8);
@@ -762,7 +762,7 @@ class RZ_QM_WellTell : RZ_QuestMission
 		m_vPos = RZ_Util.RandomPointInRing(m_vWell, 2, 4);
 		m_iSettlement = run.Flag("town", -1);
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
-		string woman = RZ_NoteText.FirstName(rng);
+		string woman = RZ_RedHandQuest.WomanName(rng);
 		run.SetText("drawer", woman);
 		m_iTalk = AddClue(woman, QFill(gm, "{drawer} is hauling up a bucket, and doesn't stop. \"You're the Red Hand's. Go on, then. Say it.\""));
 		m_sTitle = "The Well Story: tell the story";
@@ -998,7 +998,7 @@ class RZ_QM_WellOrder : RZ_RedHandQuestMission
 			m_iGuard = playerId;
 			m_fCrewIn = CREW_DELAY;
 			Remember(gm, playerId, RZ_EQuestApproach.FORCE, "stood guard at the well");
-			RZ_ContractHelp.NotifyNear(gm, m_vWell, 150, m_sTitle, QFill(gm, "You sit down on the well's edge. If {crew_short} wants it done, his crew will have to come and do it themselves. They will."));
+			RZ_ContractHelp.NotifyNear(gm, m_vWell, 150, m_sTitle, QFill(gm, "You sit down on the well's edge. If {crew_short} wants it done, the crew will have to come and do it themselves. They will."));
 		}
 	}
 
@@ -1137,7 +1137,7 @@ class RZ_QM_WellOrder : RZ_RedHandQuestMission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return QFill(gm, "The Well Story: {crew_short}'s order wasn't carried out the way he wanted.");
+		return QFill(gm, "The Well Story: {crew_short}'s order wasn't carried out the way {crew_short} wanted.");
 	}
 }
 
@@ -1166,9 +1166,9 @@ class RZ_QM_WellBoss : RZ_QuestMission
 
 		m_vPos = LandPointNear(boss.m_vPos, 8, 16);
 		m_iSettlement = gm.FindNearestSettlement(boss.m_vPos);
-		m_iTalk = AddClue("The boss's second", QFill(gm, "\"The boss wants to know about {village}. He says the story works best untold: you don't kill the cow you milk. So. What happened?\""));
+		m_iTalk = AddClue("The boss's second", QFill(gm, "\"The boss wants to know about {village}. The boss says the story works best untold: you don't kill the cow you milk. So. What happened?\""));
 		m_sTitle = "The Well Story: the boss hears";
-		m_sBrief = QFill(gm, "The boss has heard about {village}, and he wants it from you, at {boss_place}. He's not angry yet.");
+		m_sBrief = QFill(gm, "The boss has heard about {village}, and wants it from you, at {boss_place}. Not angry. Yet.");
 		return true;
 	}
 
@@ -1187,27 +1187,27 @@ class RZ_QM_WellBoss : RZ_QuestMission
 
 		if (!IsEligible(gm, playerId))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"The boss sent for people he trusts.\" The door stays shut.");
+			gm.NotifyPlayer(playerId, m_sTitle, "\"The boss sent for people the boss trusts.\" The door stays shut.");
 			return;
 		}
 
 		if (option == 0)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "You tell it straight, what you did and why. The second writes nothing down. \"He'll remember that you said it to his face.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "You tell it straight, what you did and why. The second writes nothing down. \"The boss will remember that you came and said it.\"");
 			Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_WellStory.OUT_OWN, "owned it");
 			return;
 		}
 
 		if (option == 1)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"{crew_short}'s order, was it.\" The second nods slowly. \"The pit's on tonight. He'll be in it.\""));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"{crew_short}'s order, was it.\" The second nods slowly. \"The pit's on tonight. {crew_short} will be in it.\""));
 			Resolve(gm, playerId, RZ_EQuestApproach.PERSUADE, RZ_Quest_WellStory.OUT_BLAME, "blamed the crew boss");
 			return;
 		}
 
 		if (option == 2)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "You say nothing. The second waits, then shrugs. \"Then he'll decide what happened. He usually does.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "You say nothing. The second waits, then shrugs. \"Then the boss decides what happened. The boss usually does.\"");
 			Resolve(gm, playerId, RZ_EQuestApproach.NONE, RZ_Quest_WellStory.OUT_QUIET, "said nothing");
 		}
 	}

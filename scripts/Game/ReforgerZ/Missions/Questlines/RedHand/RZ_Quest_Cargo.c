@@ -83,7 +83,7 @@ class RZ_Quest_Cargo : RZ_Questline
 		buys.GiveUp(4, "Nobody found out who buys what's in the vans. They keep running.");
 		buys.Visits(2);
 
-		RZ_QuestStage tell = MissionStage(S_TELL, "Tell someone", "{buyer_line} Now somebody has to hear it: the boss, {crew_short} himself (for a cut), Bastion, or the Haven's chair.");
+		RZ_QuestStage tell = MissionStage(S_TELL, "Tell someone", "{buyer_line} Now somebody has to hear it: the boss, {crew_short} (for a cut), Bastion, or the Haven's chair.");
 		tell.GiveUp(4, "Nobody told anyone what's in the vans. They keep running.");
 		tell.Visits(2);
 
@@ -117,7 +117,7 @@ class RZ_Quest_Cargo : RZ_Questline
 		RZ_RedHandQuest.Keep(run, "boss", boss);
 		RZ_RedHandQuest.Keep(run, "crew", crew);
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
-		string first = RZ_NoteText.FirstName(rng);
+		string first = RZ_RedHandEdges.DebtorName(rng);
 		run.SetText("driver", first + " " + RZ_NoteText.Surname(rng));
 		run.SetText("driver_short", first);
 
@@ -298,7 +298,7 @@ class RZ_Quest_Cargo : RZ_Questline
 		if (IsFarm(run))
 			return run.Fill("{crew_short} sells the loads to a farm past the last village, at grid {farm_grid}. A woman there pays in jars.");
 
-		return run.Fill("{crew_short} sells the loads to his own pit: strays who owe nothing go in with the debtors, and he keeps the bets.");
+		return run.Fill("{crew_short} sells the loads to the crew's own pit: strays who owe nothing go in with the debtors, and the crew boss keeps the bets.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -422,9 +422,9 @@ class RZ_Quest_Cargo : RZ_Questline
 	{
 		string text = "He's carried strays the Haven turned out, debtors from the book, a deserter or two. Most went to the pit, or to the line to learn the drones.";
 		if (IsFarm(run))
-			text += " Lately {crew_short} sends a load somewhere else: a farm past the last village, where a woman pays in jars. He's stopped eating meat.";
+			text += " Lately {crew_short} sends a load somewhere else: a farm past the last village, where a woman pays in jars. The driver has stopped eating meat.";
 		else
-			text += " Lately {crew_short} sends the ones who owe nothing to his own pit as well, and keeps the bets.";
+			text += " Lately {crew_short} sends the ones who owe nothing to the crew's own pit as well, and keeps the bets.";
 
 		if (RZ_RedHandQuest.HasWorld(gm, "list.to_redhand"))
 			text += " Half of this month's strays came off a Haven list somebody sold.";
@@ -482,7 +482,7 @@ class RZ_Quest_Cargo : RZ_Questline
 		}
 
 		RZ_RedHandQuest.SetWorld(gm, "cargo.buyer", 2);
-		run.Note("The buyer is {crew_short}'s own pit. People who owe the book nothing go in with the debtors, and the bets go in his pocket.");
+		run.Note("The buyer is {crew_short}'s own pit. People who owe the book nothing go in with the debtors, and the bets go in {crew_short}'s pocket.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -637,7 +637,7 @@ class RZ_Quest_Cargo : RZ_Questline
 			}
 			else
 			{
-				SpreadRumour(gm, "\"The boss emptied a crew boss's pit last night, and put him in it.\"", 8);
+				SpreadRumour(gm, "\"The boss emptied a crew boss's pit last night, and put the crew boss in it.\"", 8);
 			}
 
 			return;
@@ -1354,9 +1354,9 @@ class RZ_QM_CargoBuys : RZ_RedHandQuestMission
 			if (!TryBribe(gm, playerId, RZ_EFaction.BANDITS, DRIVER_FAVOR))
 				return;
 
-			string named = QFill(gm, "\"{crew_short}. It's always {crew_short}. He sends them to a farm past the last village, and the woman there pays in jars.\" He wipes his mouth like he's tasted something.");
+			string named = QFill(gm, "\"{crew_short}. It's always {crew_short}. They go to a farm past the last village, and the woman there pays in jars.\" {driver_short} wipes his mouth like he's tasted something.");
 			if (!farm)
-				named = QFill(gm, "\"{crew_short}. He puts them in his own pit, the ones who owe nothing, and keeps the bets.\"");
+				named = QFill(gm, "\"{crew_short}. The ones who owe nothing go in the crew's own pit, and the bets go in {crew_short}'s tin.\"");
 
 			gm.NotifyPlayer(playerId, m_sTitle, named);
 			Resolve(gm, playerId, RZ_EQuestApproach.BRIBE, RZ_Quest_Cargo.OUT_KNOWN, "paid the driver to name names");
@@ -1426,7 +1426,7 @@ class RZ_QM_CargoTell : RZ_RedHandQuestMission
 		m_vPos = m_aSpots[m_iCrewSpot];
 		m_iSettlement = gm.FindNearestSettlement(crew.m_vPos);
 		m_sTitle = "Cargo: tell someone";
-		m_sBrief = QFill(gm, "{buyer_line} Somebody has to hear it. The boss, if he'll listen. {crew_short}, if you want paying to forget it. Bastion. Or the Haven's chair.");
+		m_sBrief = QFill(gm, "{buyer_line} Somebody has to hear it. The boss, if you can get a hearing. {crew_short}, if you want paying to forget it. Bastion. Or the Haven's chair.");
 		return true;
 	}
 
@@ -1440,7 +1440,7 @@ class RZ_QM_CargoTell : RZ_RedHandQuestMission
 		bool farm = RZ_Quest_Cargo.IsFarm(run);
 		if (spot == m_iBossSpot)
 		{
-			int second = AddClue("The boss's second", "\"The boss is busy. Whatever it is, tell me, and I'll decide if he wants to hear it.\"");
+			int second = AddClue("The boss's second", "\"The boss is busy. Whatever it is, tell me, and I'll decide if it's worth the boss's time.\"");
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_aSpots[spot], OBJ_BOSS, "", run.Fill("Tell the boss what {crew_short} sells"), second, "Talk to the boss's second");
 			return;
 		}
@@ -1511,7 +1511,7 @@ class RZ_QM_CargoTell : RZ_RedHandQuestMission
 		{
 			run.SetText("cut_ident", gm.GetProfile(playerId).m_sIdentity);
 			RZ_RedHandQuest.SetWorld(gm, "cargo.cut", 1);
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{crew_short} smiles with half his mouth. \"Sensible. My man will find you once a session.\" You walk away, and the van goes past you on the road."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{crew_short} smiles, not all the way. \"Sensible. My man will find you once a session.\" You walk away, and the van goes past you on the road."));
 			Resolve(gm, playerId, RZ_EQuestApproach.BETRAY, RZ_Quest_Cargo.OUT_CUT, "took a cut to keep quiet", false);
 			return;
 		}
@@ -1807,7 +1807,7 @@ class RZ_QM_CargoFate : RZ_QuestMission
 		if (m_fHeld < RING_SECONDS)
 			return;
 
-		NotifyParticipants(gm, m_sTitle, QFill(gm, "Last bell. The boss gave his word in front of the crowd: {driver_short} walks. He doesn't thank you. He can't, yet."));
+		NotifyParticipants(gm, m_sTitle, QFill(gm, "Last bell. The boss's word was given in front of the crowd: {driver_short} walks. He doesn't thank you. He can't, yet."));
 		Resolve(gm, m_iSecond, RZ_EQuestApproach.FORCE, RZ_Quest_Cargo.OUT_DRIVER_PLACE, "took the driver's place and walked out");
 	}
 
