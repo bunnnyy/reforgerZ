@@ -9,7 +9,7 @@
 //! - The quiet threat: m_iMenaceDifficulty > 0 gives a built FORCE option a quiet success
 //!   (Fear at that difficulty) before the fight.
 //! - Stealth: m_Quiet, the built "not seen, no shots near" for one place (RZ_QuestStealth).
-//! - PassAs (a claim in someone's kit) is disguise's and comes with disguise's phase 1.
+//! - PassAs: a claim in someone's kit, judged by the disguise look (a trick).
 //! Server only.
 class RZ_Ways
 {
@@ -128,6 +128,55 @@ class RZ_Ways
 			return false;
 
 		return TryFear(gm, playerId, person, listener, giver, m_iMenaceDifficulty, stronghold) == RZ_ECheck.PASS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A trick: a claim in `faction`'s kit at `person`, judged by the look (RZ_Checks.LookScore) at
+	//! `difficulty` (1-3), with the job's paper as its cover detail ("" none). Once per player per
+	//! person per job, and one mission trick per life per faction per season day. Always seen through
+	//! by a wanderer who remembers you or someone holding a life record about you (the mission says
+	//! so with `seenThrough`). Caught is the one cost (RZ_Disguise.Caught) plus the stage's own outcome.
+	RZ_ECheck PassAs(RZ_GameModeComponent gm, int playerId, string person, int faction, int difficulty, string paper, bool seenThrough = false)
+	{
+		RZ_Hostility hostility = gm.GetHostility();
+		if (!hostility || !MayTry(gm, playerId, person, "trick"))
+			return RZ_ECheck.REFUSED;
+
+		RZ_Disguise d = hostility.GetDisguise();
+		string no = d.CannotClaim(playerId, faction);
+		if (!no.IsEmpty())
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, no);
+			return RZ_ECheck.REFUSED;
+		}
+
+		RZ_PlayerProfile profile = gm.GetProfile(playerId);
+		RZ_WorldFacts facts = gm.GetFacts();
+		string dayKey = string.Format("trick.%1.%2.%3.%4", profile.m_sIdentity, profile.m_iLives, faction, RZ_SeasonClock.Day());
+		if (facts && facts.Flag(dayKey) > 0)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "You've tried that on them once today. Twice and someone remembers.");
+			return RZ_ECheck.REFUSED;
+		}
+
+		if (facts)
+			facts.SetFlag(dayKey, 1);
+
+		Remember(gm, playerId, RZ_EQuestApproach.TRICK);
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		bool pass = false;
+		if (seenThrough)
+			d.Caught(playerId, faction, me, "\"I know you. Whatever you're wearing.\"");
+		else
+			pass = d.Look(playerId, faction, difficulty, person, paper, 600);
+
+		RZ_ECheck result = RZ_ECheck.REFUSED;
+		if (pass)
+			result = RZ_ECheck.PASS;
+
+		Note(gm, playerId, person, "trick", result);
+		RZ_Log.Info(string.Format("Story: %1 trick %2 by %3", m_sTitle, RZ_Checks.ResultName(result), Ident(gm, playerId)));
+		return result;
 	}
 
 	//------------------------------------------------------------------------------------------------

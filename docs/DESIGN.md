@@ -1039,7 +1039,7 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 | **Vehicle zone** (`RZ_VehicleZone`, `RZ_ConvoyWatch`) | A specific vehicle, or any vehicle whose prefab name has a keyword (or is one of a list), driven into a zone by a player. Works with vehicles a mission spawns, fixed cars and supply trucks. The convoy watch asks the supply system for a faction's next truck to an outpost and reports whether it arrived, was robbed, destroyed, stolen or late | Recover the Bus, Car Theft, Mobile Lab, Tied Down and the Cargo questline (one van, `RZ_CargoVan`); Convoy Escort, Hijack the Convoy; questline stages in The Three Weeks and The Other Two |
 | **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
 | **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Hunt the Deserter, The Three Weeks, Tied Down; The Book (questline) |
-| **Disguises** (`Factions/RZ_Disguise.c`) | A faction's uniform gets you past its AI; caught, the Infamy doubles ([REPUTATION.md](REPUTATION.md#disguises)) | Bust Out; anywhere a faction shoots from Watched |
+| **Borrowed kit** (`Factions/RZ_Disguise.c`, `RZ_Ways.PassAs`) | A claim in a faction's kit, judged by the fixed look (`RZ_Checks.LookScore`); a mission sets the difficulty, may give its paper as the cover detail and registers its people as watchers (`AddWatcher`). Caught: the one cost ([REPUTATION.md](REPUTATION.md#borrowed-kit)) plus the stage's own outcome. Approach `TRICK` | Bust Out (the claim at the stockade and the second look); road posts and gates |
 
 *Simplified:* escorted people without an AI body can't be hurt (only a body can die), and
 move in a straight line. A caught special is carried as a case, not dragged in its cage.
@@ -1520,14 +1520,28 @@ a stronghold leader; a person already threatened this season, by anyone; a speak
 failed to threaten in the last real day; and past three threats a life with that faction
 (**Reputation > Threats per life**), which still costs the Infamy. A refused threat bars that speaker
 for a real day. Saved in the season flags (`threat.<person>`, `threatbar.<ident>.<person>`).
+Also refused while you're passing in the listener's kit. At a leader or a leader's people
+(`FearDifficulty`): a Ruthless listener is one harder, a Paranoid one one easier, and a faction you
+worked against in a questline ending one harder (the life record `crossed.<f>`), never under 1.
+Free-standing talk threats are never made at a safehouse or inside a stronghold's or the lab's wire
+(`ThreatRefusedAt`); a threat a mission writes into its own scene stays. The Ledger's and Debt
+Collection's threats now run this check (+3 Infamy whatever happens; refused, they don't give in).
+The quiet success on the questlines' built FORCE stages is planned
+([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)).
+
+**The look** (`RZ_Checks.LookScore`): the disguise check, fixed and shown before you commit
+([REPUTATION.md](REPUTATION.md#borrowed-kit)). **A lie** (`RZ_Checks.Lie`): a tell catches it first
+(symptoms for a bite lie, other colours for "I'm with them", a different claim already held), else
+Trust against the difficulty.
 
 **Results.** Difficulty 1 (easy), 2 (normal) or 3 (hard): at or over it **Pass**; one under
 **Short** (a halfway deal at the price the option names); two or more under **Refused** (that person
 won't hear that approach from you again this job).
 
 **The price table.** One value is 5 Favor; food is 1, medical 2, a car part 3 (`ValueOf`,
-`FavorFor`). Tags: `TrustTag` "[Trusted - Haven]", `FearTag` "[Feared | +3 Infamy]" (with "you'd be
-Hunted" when the cost would take you there), `PriceTag` "[4 food | 20 Favor]".
+`FavorFor`). Tags: `TrustTag` "[Trusted - Haven]", `FearTag` "[Threaten - +3 Bastion Infamy - Fear 2 of 2]"
+(or "- this makes you Hunted]" when the cost would take you there; never the outcome), `PriceTag`
+"[4 food | 20 Favor]".
 
 **Ways** (`RZ_Ways`, one per job, keyed by identity so a rejoin keeps everything): one try per person
 per job per identity for every check (`TryTrust`, `TryPersuade`, `TryFear`); someone you threatened
@@ -1536,8 +1550,10 @@ or who refused you won't talk to you for the rest of the job; who took which app
 `TryMenace`); a place's stealth (`m_Quiet`). Questline stage missions (`RZ_QuestMission`) hand their
 `TryPersuade`, `TryBribe`, `Remember` and `TryMenace` to theirs. The approach enum
 (`RZ_EQuestApproach`) has **PRESS, TRADE, TRICK and LEAVE** appended once, in that order, so saved
-questline runs keep their numbers; built threat stages keep recording FORCE. The disguise look
-(TRICK's claims, `PassAs`) is planned with disguise's phase 1.
+questline runs keep their numbers; built threat stages keep recording FORCE. **A trick**
+(`PassAs`): a claim in someone's kit judged by the look at the mission's difficulty with its paper as
+the cover detail, once per player per person per job and one mission trick per life per faction per
+season day; recorded as TRICK.
 
 ### Deeds
 

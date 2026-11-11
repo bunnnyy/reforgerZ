@@ -410,6 +410,18 @@ class RZ_DialogueTrees
 				return true;
 			}
 
+			// Free-standing talk threats: never at a safehouse or inside a stronghold's or the lab's wire
+			string here = "";
+			if (user)
+				here = RZ_Checks.ThreatRefusedAt(m_GM, user.GetOrigin());
+
+			if (!here.IsEmpty())
+			{
+				s.m_aNew.Insert(here);
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+
 			result = RZ_Checks.Threaten(m_GM, pid, ctx.m_sKey, c.m_iCheckFaction, -1, Difficulty(ctx, c), ctx.m_bStronghold, RZ_Checks.THREAT_INFAMY, c.m_sFavoured);
 			m_Memory.AddRegard(pid, ctx.m_sKey, "threatened");
 			verdict = FearVerdict(result);

@@ -31,7 +31,7 @@ all conversations in this one engine. Nobody builds a second talk system.
   +3 Infamy, once per person by anyone for the season, three per life per faction, never on stronghold
   leaders, never free-standing in safe zones or safehouses.
 - **One look for disguises.** A claim to be one of them is judged by the fixed look in
-  [DISGUISE.md](DISGUISE.md#6-looks), shown before you commit. Dialogue's random challenge odds, its
+  [REPUTATION.md](../docs/REPUTATION.md#borrowed-kit), shown before you commit. Dialogue's random challenge odds, its
   suspicion counter, its blown-for-15-minutes and its doubled caught-lie cost are gone. The word at the
   wire, a real name, a crew name and a notebook number are **cover details** (+1 at the look; a wrong word
   fails at once). Kit kinds follow DISGUISE.md: own, issued, in their kit, signed for, a dead man's, off
@@ -138,7 +138,7 @@ leader moved, killed, threatened or replaced by talk; a disguise never unlocks a
 | Knowledge | What a player has learned (`knows:` keys) |
 | Binding | A value picked once in a session (a town, a house) and kept with claims, promises and callbacks |
 | Face | Recognition: this faction's people know you. ("Locals" are errands' remembered people, a different thing) |
-| Cover detail | Something real you can say at a disguise look: the word at the wire, a real name, a crew name, a notebook number, a mission's paper ([DISGUISE.md](DISGUISE.md#6-looks)) |
+| Cover detail | Something real you can say at a disguise look: the word at the wire, a real name, a crew name, a notebook number, a mission's paper ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) |
 
 ## 3. Who talks
 
@@ -231,7 +231,7 @@ Still to build:
 | Check | Tag | Score |
 |---|---|---|
 | `lie F D` | [Lie], shown only when the claim is false | Access rank with F, +1 ★ (Ex-Con, Raider, or the line's own list), plus the dialogue bonus, against D plus hidden modifiers: the speaker's credulity (0 or +1, seeded, never shown), +1 Paranoid, +1 if this speaker caught you lying this life. A tell catches the lie whatever the score ([section 10](#10-lying-and-being-lied-to)) |
-| `look F D [cover:<key>]` | [Full kit +2] [Watched −1] 1 of 2 | **The look** ([DISGUISE.md](DISGUISE.md#6-looks)) |
+| `look F D [cover:<key>]` | [Full kit +2] [Watched −1] 1 of 2 | **The look** ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) |
 | Callout | [Evidence] | You hold the truth for that lie |
 | Vouch | [Vouch] | [Section 14](#vouch) |
 | `commit` | [Point of no return] | `finale:can_commit`; always followed by a confirm node |
@@ -1465,7 +1465,7 @@ node cold
 Kit in their colours isn't a disguise until you claim one: 'A dead man's' is the truth, and it costs nothing.
 'Found it on a fence' shows [Lie] only to someone whose kit is really their own. Bastion colours still carry
 Bastion's enemies: this crewman talks, but the fence and the quartermaster won't deal with you while you wear it,
-and at a Red Hand roadblock you're turned round at 150 m ([DISGUISE.md](DISGUISE.md#4-colours-wearing-someones-war)).
+and at a Red Hand roadblock you're turned round at 150 m ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)).
 
 ---
 

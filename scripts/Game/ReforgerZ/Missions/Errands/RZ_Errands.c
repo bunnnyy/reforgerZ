@@ -714,6 +714,11 @@ class RZ_Errands
 		RZ_Safehouses houses = m_GM.GetSafehouses();
 		if (houses && houses.IsExiled(playerId))
 		{
+			// An owed exile's knock: the council head answers through the door (RZ_Parley)
+			RZ_Checkpoints posts = m_GM.GetCheckpoints();
+			if (posts && posts.GetParley().Knock(playerId, user, p.m_vPos, p.m_sPlace))
+				return;
+
 			m_GM.Say(playerId, p.m_sTitle, RZ_EFaction.SURVIVORS, "They look straight through you. Someone steps between you and the children.");
 			return;
 		}
@@ -1064,7 +1069,7 @@ class RZ_Errands
 		}
 
 		if (w.m_bThreat)
-			tag += RZ_Checks.FearTag(m_GM, e.m_iAsker, f) + " ";
+			tag += RZ_Checks.FearTag(m_GM, e.m_iAsker, f, RZ_Checks.THREAT_INFAMY, 2) + " ";
 
 		if (w.m_iItems > 0 && w.m_eItem != RZ_EErrandItem.NONE)
 			tag += "[" + ItemNeed(w.m_eItem, w.m_iItems) + "] ";
@@ -1200,6 +1205,10 @@ class RZ_Errands
 
 		if (w.m_bThreat)
 		{
+			string here = RZ_Checks.ThreatRefusedAt(m_GM, user.GetOrigin());
+			if (!here.IsEmpty())
+				return here;
+
 			RZ_ECheck threat = RZ_Checks.Threaten(m_GM, playerId, e.m_sGiver, e.m_iFaction, e.m_iFaction, 2, false);
 			if (threat != RZ_ECheck.PASS)
 				return "\"Is that meant to frighten me? Get away from my door.\"";

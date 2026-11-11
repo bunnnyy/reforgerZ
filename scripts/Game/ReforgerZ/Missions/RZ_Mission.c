@@ -70,6 +70,9 @@ class RZ_Mission
 	ref RZ_MissionStory m_Story;
 	//! A mirror offer (Missions/Story/RZ_Mirror.c): a second giver for the same job. Null: one giver.
 	ref RZ_Mirror m_Mirror;
+	//! An amends job reserved for one player by a parley or a knock (Factions/RZ_Parley.c): offered to
+	//! them alone, though they're Hunted, and it works their Infamy off. "" = not reserved.
+	string m_sReservedFor;
 	bool m_bSwitched;				// its result went to another side than the giver's: pays at most the base
 	string m_sWhyNow;				// the reason it was started for ("Levie's on half portions."): the brief opens with it
 	vector m_vReasonAt;				// where that reason is: a reason-started contract must land near it
@@ -283,11 +286,24 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Reserve this amends job for one player for `seconds` (a parley's offer): theirs alone, though
+	//! they're Hunted, paid as amends (Infamy worked off through the forgiveness budget).
+	void Reserve(RZ_GameModeComponent gm, int playerId, float seconds)
+	{
+		m_sReservedFor = gm.GetProfile(playerId).m_sIdentity;
+		m_bAmends = true;
+		m_fTimeLeft = Math.Min(m_fTimeLeft, seconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Contracts: does this player meet the requirements? World events are open to everyone.
 	bool IsEligible(RZ_GameModeComponent gm, int playerId)
 	{
 		if (!m_bContract)
 			return true;
+
+		if (!m_sReservedFor.IsEmpty())
+			return playerId > 0 && gm.GetProfile(playerId).m_sIdentity == m_sReservedFor;
 
 		if (!m_Req.IsEligible(gm, playerId))
 			return m_Mirror && m_Mirror.IsSide(gm, playerId);

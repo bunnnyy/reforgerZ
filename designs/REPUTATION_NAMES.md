@@ -1,6 +1,8 @@
 # Reputation names: the mixed picture
 
-**Status: designed, phases 1 and 2 built.** Approved by the author on 2026-11-11. Phase 2 (the voice: manners,
+**Status: designed, phases 1, 2 and most of 3 built.** Approved by the author on 2026-11-11. Phase 3 (the Fear check's
+modifiers and tags, the parley and the knock, settling up, the company you keep) is built and lives in
+[REPUTATION.md](../docs/REPUTATION.md#the-parley-and-the-knock). Phase 2 (the voice: manners,
 the opening line, what a leader makes of you in four voices, the faction's word for you, Red Hand crew names,
 the whole picture, deed phrases and local deeds, life-stamped memory) is built and lives in
 [REPUTATION.md](../docs/REPUTATION.md#what-people-call-you). Phase 1 (the 16 names and
@@ -197,108 +199,31 @@ listeners (your highest earned Infamy, at most 2, charged to the Haven), Pass / 
 barred a real day, never a stronghold leader), the enum (PRESS, TRADE, TRICK and LEAVE appended once) and the quiet
 success's helper (`m_iMenaceDifficulty`, `TryMenace`): [DESIGN.md](../docs/DESIGN.md#checks-and-ways).
 
-Still to build:
-- **Trait modifiers** on the difficulty: a Ruthless listener one harder (`harder:ruthless`), a Paranoid one one
-  easier (`easier:paranoid`); a faction you worked against in a questline ending adds 1 (the crossing record).
-- **The quiet success on the built FORCE stages** (Read the Page, Collect, Protection Racket, The Driver, Meet the
-  Driver, Debt Collection, The Ledger, and any stage written with a threat): each sets `m_iMenaceDifficulty` and
-  writes its quiet outcome (the stage's better outcome: nobody tells the crew and the camp isn't on guard). Below it,
-  the built outcome, still recorded as FORCE.
-- **Where threats are offered:** the stronghold leader's option greyed ("The boss doesn't scare."); never during a
-  parley; free-standing talk threats never in safe zones (strongholds, the lab) or safehouses (a threat a mission
-  writes into its own scene stays). After one threat by anyone: "He's already scared. Of someone else."
-- **Memory:** a threatened leader or wanderer remembers being crossed, life-stamped ([§12](#12-face-and-name-one-scope-rule));
-  dialogue adds regard *threatened*.
-- **The tag** in this form: "[Threaten · +3 Bastion Infamy · Fear 2 of 2]", "[Threaten · +3 Bastion Infamy · this
-  makes you Hunted]" (the built `FearTag` gives the cost and the Hunted warning).
-
-Short Weight's "Lean on him" stays what it is: a persuade with ★ Police, Ex-Con or Elder. Only threats use Fear.
+Built in phase 4 ([DESIGN.md](../docs/DESIGN.md#checks-and-ways)): the trait modifiers and the crossing
+record (`FearDifficulty`), the tag with its score and the Hunted warning, free-standing threats refused at
+safehouses and inside the wire (`ThreatRefusedAt`), and the Fear check on The Ledger's and Debt Collection's
+threats. Still to build:
+- **The quiet success on the built FORCE stages** (Read the Page, Collect, The Driver, Meet the Driver, and any
+  stage written with a threat): each sets `m_iMenaceDifficulty` and writes its quiet outcome (the stage's better
+  outcome: nobody tells the crew and the camp isn't on guard). Below it, the built outcome, still recorded as FORCE.
+  Protection Racket's Press is its worked example's ([MISSION_STYLE.md](MISSION_STYLE.md)).
+- **Where threats are offered:** never during a parley.
+- **Memory:** a threatened leader or wanderer remembers being crossed, life-stamped ([§12](#12-face-and-name-one-scope-rule)).
 
 ### 6.2 The parley (for the owed)
 
-**Who is owed:** Hunted or Kill on Sight with a faction, Earned Fame 15+ with it ([§3.1](../docs/REPUTATION.md#reputations)), and a
-recorded best deed with it this life. In the grid that's Bad News, Merciful Thug and Soft-Hearted Devil, but only for
-someone who earned the Fame this life.
-
-**Where:**
-
-| Faction | Where |
-|---|---|
-| Bastion | A checkpoint barrier or a camp gate. For the owed, the built surrender becomes the parley: the search, then the offer |
-| The Red Hand | A roadblock barrier or a camp gate |
-| Halcyon | The lab gate or a field station gate |
-| The Haven | **The knock** (below) |
-
-**Closed (no shout at all, so they shoot as usual) when any of these is true:**
-- a hunter squad of that faction is within 1 km of you;
-- any mission fight, hostile zone or retaliation grudge of that faction has you;
-- another player is within 150 m of the gate ("Just you.");
-- this identity parleyed with that faction in the last 2 real hours (saved as server time, so a reconnect or restart
-  doesn't reset it);
-- after the 90% lock, that faction's route is **fighting** yours ([§13](#13-the-lock-the-cure-and-the-season-record)).
-
-**How it runs:**
-1. **The shout.** At 150 m: "Stop there. Empty hands, or not at all."
-2. **Walking in.** You must be **empty-handed**: no firearm in any slot *or* in storage, and no grenade or charge (new
-   `RZ_Util.IsEmptyHanded`, every tick). They hold fire only while your distance is falling, 90 s at most. The hold is
-   the existing `StandDown`, refreshed 5 s at a time, and only while you're within 200 m of the gate with every
-   closing condition still false. *Simplified:* Reforger's hostility is per faction, so the hold is made local by its
-   conditions. It can only exist at the gate, with nothing else of that faction on you.
-3. **At the barrier** (35 m) for 10 s you're searched. A weapon found ends it, with the post's grudge. Nobody walks out
-   to meet you. The seat's leader speaks as a notice ("over the radio from inside"). At a road post, the nearest
-   outpost's leader speaks; with no leader, the gate's voice. You get one deed callback and **one amends offer**.
-4. **Walking away.** The hold lasts while your distance is rising, until 200 m or 90 s, whichever comes first. Stop,
-   turn back or arm yourself, and it ends.
-
-**What breaks it, and what only pauses it:**
-- **Breaks:** you arm yourself or fire; you go 20 m past the barrier; your own vanilla group fires on the post or that
-  faction's people.
-- **Pauses:** anyone else's fire. The talk timer stops, your hold stays, and the post takes a grudge against the
-  shooter. A third party can't get you killed this way.
-- **Another player arriving within 150 m** also pauses it. "Back off. We're talking." An armed newcomer who stays 20 s
-  gets the post's grudge. Player-against-player damage is unchanged, so a bounty hunter can still shoot a Kill on
-  Sight parleyer. That's the risk of being Kill on Sight.
-- **Hunter squads.** Sent squads keep hunting. A squad coming within 1 km breaks the parley: "They've got friends
-  coming. So have we." While a parley runs (at most about 4 minutes), that faction's next squad round skips you, so a
-  squad sent mid-parley doesn't spawn on top of you. Bounties and the bounty board carry on.
-
-**The Haven's knock.** The Haven only shoots an exile who carries a firearm within 100 m of a safehouse, so there's no
-hold and no shout.
-- Stand empty-handed at a safehouse door (10 m), under the bear stencilled on it, and use **Knock**.
-- The council head answers through the door, which stays shut. You get one callback and the offer.
-- The same 2-hour limit and "just you" rule apply.
-- Hostile Haven lines are a shut door, never gunpoint.
-- **In pencil** (the finale's Haven price door, [FINALE.md](FINALE.md#price-doors)) uses the same Knock. After the 90%
-  gate, at dusk, an exile who **isn't** owed can offer 4 food for the pot and a name to read (one of your own dead
-  characters, or a crossed-out name you found). A council head (never the chair) writes you on the List in pencil.
-  That opens the Haven's route, not the door, and forgives nothing.
-
-**The amends offer.** One of that faction's listed amends contracts, reserved for you for 60 minutes and offered
-although you're Hunted:
-
-| Faction | Contracts |
-|---|---|
-| Haven | Medicine Run, else Survivors Trapped |
-| Bastion | Burn the Bodies, else Recon |
-| Red Hand | Fence the Goods |
-| Halcyon | Field Samples |
-
-- Blood Drive is left out: it needs Known and is once per life.
-- If none can find a place now: "Come back later." The 2 hours aren't used.
-- **The job finishes by its own rules, where it says.** Nothing is handed in at the gate, so there's no return trip and
-  no free second parley.
-- It works off its Fame as Infamy, from the budget ([§3.3](../docs/REPUTATION.md#working-off-infamy)).
-- That faction's AI still shoots you elsewhere. The jobs are away from its people, and Medicine Run ends at a
-  safehouse drop, where an unarmed exile isn't shot.
-
-**A fix to built code (`RZ_Checkpoints.BastionContact`).** Today a Hunted, unarmed player within 150 m of a Bastion
-checkpoint gets a 15 s `StandDown` renewed every tick, with no limit. That's a safe zone from every Bastion AI, squads
-included. It gets the same rules as the parley walk-in:
-- only while distance is falling, at most 90 s;
-- closed while a Bastion squad is within 1 km or a zone has you;
-- the approach uses the surrender hour.
-
-Surrender's own 5-minute hold (built) ends early if you arm yourself within 200 m of the post or fire.
+**Built** ([REPUTATION.md](../docs/REPUTATION.md#the-parley-and-the-knock)): who is owed, the gates, the closing
+conditions, the shout, the empty-handed walk-in hold, the 10 s search, the leader's voice with one callback and
+one amends offer reserved for 60 minutes, the walk-away hold, breaks and pauses, the Haven's knock (on the
+safehouse's named person), `IsEmptyHanded`, amends reservations. Still to build:
+- **After the 90% lock**, closed while that faction's route is **fighting** yours ([§13](#13-the-lock-the-cure-and-the-season-record)).
+- **Pauses** on anyone else's fire, with a grudge on the shooter; `RZ_FactionPerks` skipping that faction's squad
+  round for the parleyer while a parley runs.
+- **In pencil** (the finale's Haven price door, [FINALE.md](FINALE.md#price-doors)) on the same Knock: after the 90%
+  gate, at dusk, an exile who **isn't** owed offers 4 food for the pot and a name to read; a council head (never the
+  chair) writes you on the List in pencil. That opens the Haven's route, not the door, and forgives nothing.
+- The Bastion approach fix stays as built (`RZ_Checkpoints.BastionContact`: only while closing, 90 s at most, closed
+  while a squad is within 1 km).
 
 ### 6.3 Tags and conditions for talk
 
@@ -318,23 +243,9 @@ There's no `manner()`: lines may vary by manner, but options may not.
 
 ## 7. Settling up
 
-The built **Make amends** action at a faction's quartermaster gains a second price, **Settle up in Fame**:
-- **2 Fame for 1 Infamy**, in steps of 10 Fame for 5 Infamy;
-- at most 10 Infamy a real day per faction, from the shared budget;
-- the stronghold's temper applies to the Infamy taken off, within the budget.
-
-**Why it can't launder:**
-- **Spent Fame is gone.** It can drop your Fame band and your tier. That's the price.
-- No contract is involved, so nothing dodges rival shares. That Fame was earned with its shares already.
-- With [§3.2](../docs/REPUTATION.md#standing-tiers), Fame above 75 isn't dead weight: it's what your next mistake costs.
-  Spending it is a real choice.
-- Hopping across a band edge costs Fame on both axes, and the Infamy doesn't come back for free. It's once a real day,
-  and within 30 a life.
-- At the budget's end it greys out, with the notice. Nothing is silently lost.
-
-**What it does in practice.** Necessary Evil (Fame 81, Infamy 46) settles 10, ending at 61/36: Useful Trouble, which
-counts as Known. That's the same access, a lighter name, and no more Wildcard search. The Trusted shelf needs work, not
-settling.
+**Built** ([REPUTATION.md](../docs/REPUTATION.md#working-off-infamy)): "Settle up" at any quartermaster, 10 Fame for 5
+Infamy, at most 10 a real day per faction, from the budget, greyed with the line at the budget's end. Still to build:
+the stronghold's temper on the Infamy taken off; closed with factions on a fighting route after the lock.
 
 ## 8. Gates, roads and the company you keep
 
@@ -343,15 +254,9 @@ Hand roadblocks ([REPUTATION.md](../docs/REPUTATION.md#checkpoints-roadblocks-an
 if you also wear Halcyon colours, the lab-coat toll and this one take the higher of the two (20), never both. There's
 no danger money on shop prices.
 
-**The company you keep.** A vanilla group that arrives together (members within 50 m of each other) is treated
-together:
-
-| Place | What happens |
-|---|---|
-| Bastion checkpoint | If one member would be searched, everyone there is: "We search the whole car." This applies **before any disguise look**: a disguised member of a searched car gets the look at the search. Running is still per player |
-| Red Hand roadblock | The wave-through covers only Trusted members. Everyone else pays their own toll |
-| Camps | Built per-player turn-aways, with a line: "Your friend waits outside." |
-| Parley | Only alone ([§6.2](#62-the-parley-for-the-owed)) |
+**The company you keep** is built ([REPUTATION.md](../docs/REPUTATION.md#checkpoints-roadblocks-and-camps)): the whole
+car searched before any look, per-member tolls, "Your friend can come in. You wait outside." at camps, the parley
+only alone.
 
 **Barks** (a setting):
 - **Where from:** the gate or door point of a holding, safehouse or road post, never from a body. So a bark never gives
@@ -584,7 +489,7 @@ Reputation lands in four steps across the plan's build order.
 | 0. Fixes | The `BastionContact` hold fix; amends paid uncapped on the Hunted path in `RewardPlayer`; the SHARE flag so disguise doubling stops hitting rival shares | Built bugs |
 | 1. Shared foundations | **Built** ([REPUTATION.md](../docs/REPUTATION.md#reputations)) | — |
 | 2. Talk | **Built** ([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)) | — |
-| 4. The mission style | The Fear check's trait modifiers, tags and quiet successes (the check itself is built); the parley and the knock; `IsEmptyHanded`; amends reservations; settling up; the company you keep | New rules, each small and capped |
+| 4. The mission style | **Built** ([REPUTATION.md](../docs/REPUTATION.md#the-parley-and-the-knock)): the Fear check's trait modifiers and tags, the parley and the knock, `IsEmptyHanded`, amends reservations, settling up, the company you keep. Still: the quiet successes on the questlines' FORCE stages (§6.1) | — |
 | 6–7. Finale and ending | `CanSideWith`, the lock overlay, parley closed with fighting routes, war deeds; the season record and its APIs; barks and others-hear; the last week's hooks and "square" | Needs the finale and the epilogue |
 
 ## 20. Guardrails
@@ -738,42 +643,20 @@ Bastion; the third has Bastion Infamy 41 and is a Wildcard.
 
 ## Engine needs
 
+Built in phase 3 and not repeated here: the parley and the knock (`Factions/RZ_Parley.c`), `IsEmptyHanded`,
+amends reservations (`RZ_Mission.Reserve`), settling up, the group rules at posts and camps, the Fear modifiers
+([REPUTATION.md](../docs/REPUTATION.md#the-parley-and-the-knock)).
+
 Built in phase 1 and not repeated here: `RZ_ERep` and the names (`Factions/RZ_RepNames.c`), the profile's gains,
 budget and threats, `AddInfamy`/`AddFame` with their flags and the credit rule, `Forgive()` on the built routes, the
 debounced change notice, `RZ_Checks` (Trust, Fear, threats) and `RZ_Ways`, and the Wildcard tier at posts
 ([REPUTATION.md](../docs/REPUTATION.md#how-it-maps-to-code), [DESIGN.md](../docs/DESIGN.md#checks-and-ways)).
 
 - **`RZ_RepNames`** additions: `enum RZ_EPictureKind` (9, in match order); `GetManner`, for writing only.
-- **`RZ_PlayerProfile`** per life: `m_aSettleUnix[4]` and `m_aParleyUnix[4]` (server time).
 - **Call sites marked `ACT`** one by one (today a direct gain without SHARE counts as done in sight), and offline
   profiles never doubled.
-- **`Forgive()` callers still to come:** parley amends, settling up, Make it right, errand amends, the epilogue's Come
-  In and the finale's Hand it in.
-- **`RZ_Checks`:** the trait modifiers; refused during a parley and for free-standing talk in safe zones and
-  safehouses; crossed memory written, life-stamped.
-- **`RZ_Checkpoints`:**
-  - the lab-coat toll, and the Wildcard toll taking the higher of the two;
-  - group search before any look, per-member tolls, the camp line (vanilla group, 50 m);
-  - surrender's 5-minute hold ends if the player arms within 200 m or fires.
-- **The parley** in `RZ_Checkpoints` (posts, camps, the lab and field station gates):
-  - the closing conditions: a squad of that faction within 1 km, any zone or grudge, another player within 150 m, the
-    2-hour limit by identity, the finale's fighting flag;
-  - the 150 m shout only when open;
-  - the walk-in hold: `StandDown`, 5 s at a time, only while distance falls and within 200 m, at most 90 s;
-  - a 10 s search at the barrier;
-  - the leader's voice as a notice;
-  - the walk-away hold to 200 m or 90 s;
-  - breaks on the parleyer's own group's fire; pauses on others' fire, with a grudge on the shooter;
-  - `RZ_FactionPerks` skips that faction's squad round for the parleyer while a parley runs.
-- **The Haven's knock:** a `Knock` action on the safehouse door or quartermaster for owed exiles, empty-handed within
-  10 m, with the same limits; after the gate, also In pencil for exiles who aren't owed (the finale's price door).
-- **Amends reservations:** an `RZ_Mission` reservation offers the contract to one player for 60 min although Hunted, and
-  it finishes by its own rules. If none can be placed, the 2 hours aren't used.
-- **`RZ_Util.IsEmptyHanded(character)`:** no firearm in weapon slots *or* storage, and no grenade or charge (a keyword
-  list in settings). It's checked every tick during a parley or a knock. VERIFY: the inventory iteration API (reuse
-  the item walk `RZ_FoodHelper.TakeFood` uses).
-- **Settling up:** a second price on the built Make amends action in `RZ_FactionServices` (10 Fame for 5 Infamy,
-  through `Forgive`, 10 a real day), greyed out with a notice at the budget's end.
+- **`Forgive()` callers still to come:** Make it right, the epilogue's Come In and the finale's Hand it in.
+- **`RZ_Checks`:** threats refused during a parley; crossed memory written, life-stamped.
 - **`RZ_RepVoice`**, built in phase 2 ([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)). Still: bark,
   parley, knock and change lines; the crossing opener; `OpinionText` and the Long Table host routed through it; the
   wanderers' greetings by manner; per-faction tokens (`{rep:f}`, `{word:f}`, `{best_place:f}`) for lines about

@@ -1108,6 +1108,125 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What a character wears, read from the loadout slots (never from a pack): the prefab names
+	//! (lower case) and, in `heads`, those in the head slot. Falls back to the child entities when the
+	//! character has no loadout storage. VERIFY: GetClothFromArea on a player character on the server.
+	static void GetWornKit(IEntity character, notnull array<string> result, notnull array<string> heads)
+	{
+		if (!character)
+			return;
+
+		EquipedLoadoutStorageComponent loadout = EquipedLoadoutStorageComponent.Cast(character.FindComponent(EquipedLoadoutStorageComponent));
+		if (!loadout)
+		{
+			GetWornNames(character, result);
+			return;
+		}
+
+		array<typename> areas = {LoadoutHeadCoverArea, LoadoutJacketArea, LoadoutPantsArea, LoadoutVestArea, LoadoutBootsArea, LoadoutHandwearSlotArea, LoadoutBackpackArea};
+		foreach (int i, typename area : areas)
+		{
+			IEntity cloth = loadout.GetClothFromArea(area);
+			if (!cloth)
+				continue;
+
+			string name = GetPrefabName(cloth);
+			name.ToLower();
+			if (name.IsEmpty())
+				continue;
+
+			result.Insert(name);
+			if (i == 0)
+				heads.Insert(name);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The worn pieces whose prefab names match `words`: what a confiscation takes.
+	static void GetWornMatching(IEntity character, notnull array<string> words, notnull array<IEntity> result)
+	{
+		EquipedLoadoutStorageComponent loadout = EquipedLoadoutStorageComponent.Cast(character.FindComponent(EquipedLoadoutStorageComponent));
+		if (!loadout)
+			return;
+
+		array<typename> areas = {LoadoutHeadCoverArea, LoadoutJacketArea, LoadoutPantsArea, LoadoutVestArea, LoadoutBootsArea, LoadoutHandwearSlotArea};
+		foreach (typename area : areas)
+		{
+			IEntity cloth = loadout.GetClothFromArea(area);
+			if (!cloth)
+				continue;
+
+			string name = GetPrefabName(cloth);
+			name.ToLower();
+			if (RZ_ItemHelper.NameHas(name, words))
+				result.Insert(cloth);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The firearms in a character's weapon slots: prefab names (lower case), and whether any is a
+	//! long gun (a rifle, sniper rifle, machine gun or launcher).
+	static bool GetFirearms(IEntity character, notnull array<string> result)
+	{
+		bool longGun = false;
+		BaseWeaponManagerComponent wm = BaseWeaponManagerComponent.Cast(character.FindComponent(BaseWeaponManagerComponent));
+		if (!wm)
+			return false;
+
+		array<IEntity> weapons = {};
+		wm.GetWeaponsList(weapons);
+		foreach (IEntity w : weapons)
+		{
+			if (!w)
+				continue;
+
+			BaseWeaponComponent wc = BaseWeaponComponent.Cast(w.FindComponent(BaseWeaponComponent));
+			if (!wc || !IsFirearmType(wc.GetWeaponType()))
+				continue;
+
+			string name = GetPrefabName(w);
+			name.ToLower();
+			result.Insert(name);
+			if (wc.GetWeaponType() != EWeaponType.WT_HANDGUN)
+				longGun = true;
+		}
+
+		return longGun;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Empty hands for a parley or a knock: no firearm in any weapon slot or anywhere in the pack, and
+	//! nothing matching `charges` (grenades, charges). VERIFY: GetItems walks every storage.
+	static bool IsEmptyHanded(IEntity character, notnull array<string> charges)
+	{
+		if (!character || IsArmed(character))
+			return false;
+
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return true;
+
+		array<IEntity> items = {};
+		inv.GetItems(items);
+		foreach (IEntity item : items)
+		{
+			if (!item)
+				continue;
+
+			BaseWeaponComponent wc = BaseWeaponComponent.Cast(item.FindComponent(BaseWeaponComponent));
+			if (wc && IsFirearmType(wc.GetWeaponType()))
+				return false;
+
+			string name = GetPrefabName(item);
+			name.ToLower();
+			if (RZ_ItemHelper.NameHas(name, charges))
+				return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void CollectChildNames(IEntity e, int depth, notnull array<string> result)
 	{
 		if (!e || depth > 1 || result.Count() > 40)

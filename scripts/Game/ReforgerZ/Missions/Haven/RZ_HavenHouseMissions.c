@@ -535,7 +535,7 @@ class RZ_Mission_TheLedger : RZ_PuzzleMission
 		string child = RZ_NoteText.Surname(m_Rng);
 		m_iTalk = AddClue(m_sMember, string.Format("\"Two extra tins a week. For the %1 girl, three doors down from the council room. Her mother died the first week, and she's not on anyone's list, so nobody counts her. So I counted her.\" A shrug. \"Tell them whatever you like. I'll still be counting her.\"",
 			child));
-		string labels = string.Format("Threaten %1|Pay what %1 owes (%2 Haven Favor)|Tell %1 to disappear", m_sMember, DEBT_FAVOR);
+		string labels = string.Format("Threaten %1 [Threaten - +3 Haven Infamy]|Pay what %1 owes (%2 Haven Favor)|Tell %1 to disappear", m_sMember, DEBT_FAVOR);
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", labels, m_iTalk, "Talk to " + m_sMember);
 
 		m_sTitle = "The Ledger";
@@ -569,6 +569,15 @@ class RZ_Mission_TheLedger : RZ_PuzzleMission
 
 		if (option == 0)
 		{
+			// The one Fear check (+3 Haven Infamy whatever happens): refused, and they don't give in
+			RZ_ECheck fear = RZ_Checks.Threaten(gm, playerId, "ledger." + m_sMember, RZ_EFaction.SURVIVORS, RZ_EFaction.SURVIVORS, 1, false);
+			RZ_Log.Info(string.Format("Story: ledger press %1 by %2", RZ_Checks.ResultName(fear), RZ_Util.PlayerName(playerId)));
+			if (fear == RZ_ECheck.REFUSED)
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 hears you out and doesn't blink. \"Is that meant to frighten me? I've buried better than you.\" It'll have to be some other way.", m_sMember));
+				return;
+			}
+
 			Remember(wanderers, playerId, RZ_Wanderers.MEM_WRONGED);
 			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You say it close and quiet, the way it has to be said. %1 nods and doesn't look at you again. The council will have its tins back. The girl won't.", m_sMember));
 			m_eState = RZ_EMissionState.SUCCEEDED;

@@ -167,12 +167,15 @@ class RZ_Checkpoints
 	protected int m_iNextPostId = 1;
 	protected RZ_CheckpointSettings m_Settings;
 	protected float m_fClock;
+	protected float m_fLastDt = 1;
 	protected float m_fPostTimer;
 	protected ref array<ref RZ_RoadPost> m_aPosts = {};
 	protected ref array<string> m_aContraband = {};
 	protected ref map<string, float> m_mSurrenderAt = new map<string, float>();	// identity -> clock
 	protected ref map<string, float> m_mToldAt = new map<string, float>();			// "player:place:kind" -> clock
 	protected bool m_bToldNoRoads;
+	protected ref RZ_Parley m_Parley;
+	protected ref map<string, float> m_mGatePass = new map<string, float>();		// "player:place" -> clock a gate look let them in until
 
 	protected static const float TELL_GAP = 600;
 	protected static const float GATE_GAP = 180;
@@ -187,6 +190,7 @@ class RZ_Checkpoints
 	{
 		m_GM = gm;
 		m_Settings = settings;
+		m_Parley = new RZ_Parley(gm);
 		RZ_ItemHelper.Words(settings.m_sContrabandWords, m_aContraband);
 	}
 
@@ -207,6 +211,8 @@ class RZ_Checkpoints
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		m_fClock += dt;
+		m_fLastDt = dt;
+		m_Parley.Forget(ids);
 		if (m_Settings.m_bRoadPosts)
 		{
 			UpdatePosts(dt, ids, players);
@@ -549,6 +555,20 @@ class RZ_Checkpoints
 		string title = post.SpeakerName() + ", " + post.GetTitle();
 		RZ_PostContact c = GetContact(post, playerId);
 		RZ_ETier tier = m_GM.GetTier(playerId, post.m_eFaction);
+
+		// In their kit and below Known, talking to the speaker is the claim: the look decides
+		RZ_Disguise disguise = Disguise();
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!c.m_bCleared && disguise && me && disguise.InTheirKit(playerId, post.m_eFaction) && !RZ_Reputation.IsHunted(tier))
+		{
+			c.m_bCleared = true;
+			if (disguise.Look(playerId, post.m_eFaction, 2, PostKey(post), "", 0))
+				m_GM.Say(playerId, title, post.m_eFaction, "\"Right. Go on, then.\" You walk through as one of theirs.");
+			else
+				c.m_bPunished = true;
+
+			return;
+		}
 		if (post.m_eFaction == RZ_EFaction.BANDITS)
 		{
 			if (c.m_bCleared)
@@ -572,13 +592,19 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The Red Hand toll for this player now: the setting, times the Wildcard's danger money.
+	//! The Red Hand toll for this player now: the setting, times the Wildcard's danger money; in
+	//! Halcyon's colours double ("Beaks pay double."). With both, the higher of the two, never both.
 	int TollFor(int playerId)
 	{
-		int toll = Math.Max(0, m_Settings.m_iToll);
+		int base = Math.Max(0, m_Settings.m_iToll);
+		int toll = base;
 		RZ_ReputationSettings rs = RZ_ReputationSettings.Get();
 		if (m_GM.GetTier(playerId, RZ_EFaction.BANDITS) == RZ_ETier.WILDCARD && rs.m_bWildcardPosts)
-			toll = RZ_Util.RoundToInt(toll * Math.Max(1, rs.m_fWildcardTollMult));
+			toll = RZ_Util.RoundToInt(base * Math.Max(1, rs.m_fWildcardTollMult));
+
+		RZ_Disguise disguise = Disguise();
+		if (disguise && disguise.WearsColours(playerId, RZ_EFaction.INSTITUTE))
+			toll = Math.Max(toll, base * 2);
 
 		return toll;
 	}
@@ -668,7 +694,7 @@ class RZ_Checkpoints
 			return;
 
 		if (post.m_eFaction == RZ_EFaction.BANDITS)
-			RedHandContact(post, c, playerId, dist);
+			RedHandContact(post, c, playerId, ent, dist, dt);
 		else
 			BastionContact(post, c, playerId, ent, dist, dt);
 	}
@@ -677,16 +703,24 @@ class RZ_Checkpoints
 	protected void BastionContact(RZ_RoadPost post, RZ_PostContact c, int playerId, IEntity ent, float dist, float dt)
 	{
 		string title = post.GetTitle();
+		// The owed get a hearing at the barrier instead (RZ_Parley)
+		if (m_Parley.Contact(playerId, ent, RZ_EFaction.MILITARY, post.m_vPos, dist, dt, title, PostKey(post)))
+			return;
+
 		RZ_ETier tier = m_GM.GetTier(playerId, RZ_EFaction.MILITARY);
 		bool hunted = RZ_Reputation.IsHunted(tier);
 		bool armed = RZ_Util.IsArmed(ent);
 		bool canSurrender = m_Settings.m_bSurrender && m_GM.GetProfile(playerId).GetInfamy(RZ_EFaction.MILITARY) >= 15 && !armed;
+		RZ_Disguise disguise = Disguise();
 
 		// Known perk: waved through unsearched. Not the Wildcard tier: they're searched like a
-		// stranger, because they don't trust you (Reputation > Wildcard at posts)
+		// stranger, because they don't trust you (Reputation > Wildcard at posts). Not anyone in Red
+		// Hand colours (the colours rule), and not anyone in a car being searched (the company you keep)
 		RZ_ReputationSettings rs = RZ_ReputationSettings.Get();
 		bool wildcard = tier == RZ_ETier.WILDCARD && rs.m_bWildcardPosts;
-		if (!hunted && !wildcard && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
+		bool redColours = disguise && disguise.WearsColours(playerId, RZ_EFaction.BANDITS);
+		bool wholeCar = rs.m_bGroupRules && GroupSearched(post, playerId, ent);
+		if (!hunted && !wildcard && !redColours && !wholeCar && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
 		{
 			if (dist <= m_Settings.m_fWarnRadius)
 			{
@@ -697,11 +731,19 @@ class RZ_Checkpoints
 			return;
 		}
 
+		// In Bastion's kit and below Known: a claim, judged by the look. Surrender comes first
+		bool claim = disguise && !hunted && !canSurrender && disguise.InTheirKit(playerId, RZ_EFaction.MILITARY);
 		if (!c.m_bWarned && dist <= m_Settings.m_fWarnRadius)
 		{
 			c.m_bWarned = true;
 			if (hunted)
 				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"We know who you are. Drop your weapons and walk to the barrier, slowly, if you want to talk. Otherwise turn around.\"");
+			else if (claim)
+				disguise.ShowComing(playerId, RZ_EFaction.MILITARY, 2, PostKey(post), "", title);
+			else if (wholeCar && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "The sentry knows your face, then looks at who you came with. \"We search the whole car.\"");
+			else if (redColours)
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "The sentry looks at the red on you, then at you. \"Arms out. We search everyone in those colours.\"");
 			else if (wildcard)
 				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "The sentry knows your face, and doesn't like what he knows. \"Arms out. Walk to the barrier. We search you today.\"");
 			else
@@ -732,6 +774,19 @@ class RZ_Checkpoints
 			if (hunted && !canSurrender)
 				return; // they shoot (RZ_Hostility); nothing to wait for
 
+			// The claim: walking up in full kit (Hostility > claim in full kit), or by talking to the
+			// speaker (HandleSpeakerTalk). Pass: waved through as one of theirs. Caught: held and searched
+			if (claim && Hostility().m_bClaimInFullKit && disguise.KitLevel(playerId, RZ_EFaction.MILITARY) >= 2)
+			{
+				c.m_bCleared = true;
+				if (disguise.Look(playerId, RZ_EFaction.MILITARY, 2, PostKey(post), "", 0))
+					m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"Not on the board.\" A long look, then a nod. The pole goes up, and you walk through as one of theirs.");
+				else
+					c.m_bPunished = true;
+
+				return;
+			}
+
 			c.m_fWaited = c.m_fWaited + dt;
 			float needed = m_Settings.m_fSearchSeconds;
 			if (canSurrender)
@@ -744,14 +799,15 @@ class RZ_Checkpoints
 			if (canSurrender && Surrender(playerId, ent, post))
 				return;
 
-			int taken = RZ_FoodHelper.TakeFood(ent, m_aContraband, 3);
+			int taken = Search(ent);
+			string evidence = TakeArmband(ent, playerId);
 			if (taken >= 3)
 				RZ_RepVoice.CrewEvent(m_GM, playerId, RZ_RepVoice.CREW_POCKETS);
 
 			if (taken > 0)
-				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, string.Format("Hands on the barrier. They go through everything. %1 things go into a crate marked CONFISCATED, and you're waved on.", taken));
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, string.Format("Hands on the barrier. They go through everything. %1 things go into a crate marked CONFISCATED, and you're waved on.%2", taken, evidence));
 			else
-				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "Hands on the barrier. They go through everything, find nothing they care about, and wave you on.");
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "Hands on the barrier. They go through everything, find nothing they care about, and wave you on." + evidence);
 
 			return;
 		}
@@ -772,6 +828,93 @@ class RZ_Checkpoints
 
 			m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"Stop! STOP!\" You ran the checkpoint. They'll remember the face.");
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bastion's search at a barrier: up to three contraband items taken. How many.
+	int Search(IEntity ent)
+	{
+		if (!ent)
+			return 0;
+
+		return RZ_FoodHelper.TakeFood(ent, m_aContraband, 3);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A worn red armband or bandana is taken at a Bastion search ("Evidence."), never one in a pack.
+	protected string TakeArmband(IEntity ent, int playerId)
+	{
+		RZ_Disguise disguise = Disguise();
+		if (!disguise || !Hostility().m_bConfiscation || !disguise.WearsColours(playerId, RZ_EFaction.BANDITS))
+			return "";
+
+		array<string> words = {};
+		RZ_ItemHelper.Words(Hostility().m_sRedHandUniformWords, words);
+		array<IEntity> pieces = {};
+		RZ_Util.GetWornMatching(ent, words, pieces);
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(ent.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv || pieces.IsEmpty())
+			return "";
+
+		foreach (IEntity piece : pieces)
+		{
+			inv.TryDeleteItem(piece);
+		}
+
+		return " The red comes off you too. \"Evidence.\"";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The company you keep: someone in this player's vanilla group within 50 m of them, at this post,
+	//! would be searched (not Known, or Wildcard, or in Red Hand colours): then everyone there is.
+	//! Applies before any look: a disguised member of a searched car gets the look at the search.
+	protected bool GroupSearched(RZ_RoadPost post, int playerId, IEntity ent)
+	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		RZ_Disguise disguise = Disguise();
+		foreach (int i, IEntity p : players)
+		{
+			int other = ids[i];
+			if (other == playerId || !RZ_Util.SameGroup(playerId, other) || RZ_Util.DistXZ(p.GetOrigin(), ent.GetOrigin()) > 50)
+				continue;
+
+			if (RZ_Util.DistXZ(p.GetOrigin(), post.m_vPos) > m_Settings.m_fWarnRadius)
+				continue;
+
+			RZ_ETier tier = m_GM.GetTier(other, RZ_EFaction.MILITARY);
+			bool searched = !RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN) || tier == RZ_ETier.WILDCARD;
+			if (disguise && disguise.WearsColours(other, RZ_EFaction.BANDITS))
+				searched = true;
+
+			if (searched)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_Disguise Disguise()
+	{
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (!hostility || !hostility.GetDisguise().IsOn())
+			return null;
+
+		return hostility.GetDisguise();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_HostilitySettings Hostility()
+	{
+		return m_GM.GetHostility().GetSettings();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_Parley GetParley()
+	{
+		return m_Parley;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -822,14 +965,22 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void RedHandContact(RZ_RoadPost post, RZ_PostContact c, int playerId, float dist)
+	protected void RedHandContact(RZ_RoadPost post, RZ_PostContact c, int playerId, IEntity ent, float dist, float dt)
 	{
 		string title = post.GetTitle();
+		if (m_Parley.Contact(playerId, ent, RZ_EFaction.BANDITS, post.m_vPos, dist, dt, title, PostKey(post)))
+			return;
+
 		RZ_ETier tier = m_GM.GetTier(playerId, RZ_EFaction.BANDITS);
 		if (RZ_Reputation.IsHunted(tier))
 			return; // they shoot (RZ_Hostility)
 
-		if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.TRUSTED))
+		// Colours: in Bastion's colours you're turned round whatever your tier, and fired on at the
+		// barrier ("We don't sell passes to the army.")
+		RZ_Disguise disguise = Disguise();
+		bool armyColours = disguise && disguise.WearsColours(playerId, RZ_EFaction.MILITARY);
+		bool claim = disguise && !armyColours && disguise.InTheirKit(playerId, RZ_EFaction.BANDITS);
+		if (!armyColours && RZ_Reputation.IsAtLeast(tier, RZ_ETier.TRUSTED))
 		{
 			if (dist <= m_Settings.m_fWarnRadius)
 			{
@@ -840,16 +991,16 @@ class RZ_Checkpoints
 			return;
 		}
 
-		bool known = RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN);
-		int toll = Math.Max(0, m_Settings.m_iToll);
-		// The Wildcard tier pays danger money: the toll times Reputation > Wildcard toll
-		RZ_ReputationSettings rs = RZ_ReputationSettings.Get();
-		if (tier == RZ_ETier.WILDCARD && rs.m_bWildcardPosts)
-			toll = RZ_Util.RoundToInt(toll * Math.Max(1, rs.m_fWildcardTollMult));
+		bool known = !armyColours && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN);
+		int toll = TollFor(playerId);
 		if (!c.m_bWarned && dist <= m_Settings.m_fWarnRadius)
 		{
 			c.m_bWarned = true;
-			if (known)
+			if (armyColours)
+				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"We don't sell passes to the army. Turn round, soldier.\"");
+			else if (claim)
+				disguise.ShowComing(playerId, RZ_EFaction.BANDITS, 2, PostKey(post), "", title);
+			else if (known)
 				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, string.Format("\"Toll road. %1 Favor and you're a friend. Walk up slow.\"", toll));
 			else
 				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"This road's ours. Turn around. Come any closer and we start shooting.\"");
@@ -860,6 +1011,18 @@ class RZ_Checkpoints
 
 		// Reached a roadblock the same day you ran a Bastion checkpoint: the crews call that Legs
 		RZ_RepVoice.NoteRoadblock(m_GM, playerId);
+
+		// The claim: walking up in full kit. Pass: waved through like crew. Caught: the toll for liars
+		if (claim && Hostility().m_bClaimInFullKit && disguise.KitLevel(playerId, RZ_EFaction.BANDITS) >= 2)
+		{
+			c.m_bCleared = true;
+			if (disguise.Look(playerId, RZ_EFaction.BANDITS, 2, PostKey(post), "", 0))
+				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"What do they call you?\" You tell them. A grunt, and the car rolls back. You walk through like crew.");
+			else
+				c.m_bPunished = true;
+
+			return;
+		}
 
 		// Known perk: the toll instead of a bullet
 		int hadFavor = m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS);
@@ -878,7 +1041,9 @@ class RZ_Checkpoints
 		if (hostility)
 			hostility.AddGrudge(playerId, RZ_EFaction.BANDITS, post.m_vPos);
 
-		if (known)
+		if (armyColours)
+			m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"Told you. No passes for the army.\" The rifles come up.");
+		else if (known)
 			m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"No Favor? Then you're no friend.\" The rifles come up.");
 		else
 			m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"You were told.\" The rifles come up.");
@@ -923,20 +1088,33 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A player near a camp. Hunted: they shoot (RZ_Hostility). Watched: warned off and turned away;
-	//! armed past the gate after the warning, fired on for a few minutes. Welcome: the safe-zone rule.
+	//! A player near a camp. Hunted: they shoot (RZ_Hostility), unless they're owed a hearing at the
+	//! gate (RZ_Parley). Watched, or in the Red Hand's colours at Bastion's or Halcyon's gate: warned
+	//! off and turned away; armed past the gate after the warning, fired on for a few minutes. In the
+	//! camp's own kit while Watched: a look at the gate, and a pass lets you in for a while (Hostility >
+	//! Gate pass minutes); services still go by your real standing. Welcome: the safe-zone rule.
 	protected void CampContact(int playerId, IEntity ent, float dist, RZ_EFaction f, bool safeZone, string place, string title, vector pos)
 	{
+		if (f != RZ_EFaction.SURVIVORS && m_Parley.Contact(playerId, ent, f, pos, dist, m_fLastDt, title, place))
+			return;
+
 		RZ_ETier tier = m_GM.GetTier(playerId, f);
 		if (RZ_Reputation.IsHunted(tier))
 			return;
 
+		RZ_Disguise disguise = Disguise();
+		bool refused = RZ_Reputation.IsWatchedOrWorse(tier);
+		bool redColours = !refused && disguise && f != RZ_EFaction.BANDITS && disguise.WearsColours(playerId, RZ_EFaction.BANDITS);
+		if (redColours)
+			refused = true;
+
 		// The Haven's own holdings follow the house rules instead (RZ_Safehouses)
-		if (m_Settings.m_bCamps && f != RZ_EFaction.SURVIVORS && RZ_Reputation.IsWatchedOrWorse(tier))
+		if (m_Settings.m_bCamps && f != RZ_EFaction.SURVIVORS && refused)
 		{
 			// The lab still gives the bitten their trial dose (RZ_Infection.TrialDose refuses only
-			// the Hunted): an unarmed bitten player who hasn't had it is let in, not turned away.
-			// By position, not place: Halcyon's stronghold seated at the lab is a holding here
+			// the Hunted): an unarmed bitten player who hasn't had it is let in, not turned away,
+			// whatever they wear. By position, not place: Halcyon's stronghold seated at the lab is a
+			// holding here
 			RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 			bool atLab = f == RZ_EFaction.INSTITUTE && m_GM.HasLab() && RZ_Util.DistXZ(pos, m_GM.GetLabPosition()) <= m_Settings.m_fCampWarnRadius;
 			if (atLab && profile.IsInfected() && !profile.m_bTrialDoseTaken && !RZ_Util.IsArmed(ent))
@@ -947,8 +1125,40 @@ class RZ_Checkpoints
 				return;
 			}
 
+			// In their kit: a look at the gate instead of being turned away
+			string passKey = playerId.ToString() + ":" + place;
+			float until;
+			if (m_mGatePass.Find(passKey, until) && m_fClock < until && disguise && disguise.IsPassing(playerId, f))
+				return;
+
+			if (!redColours && disguise && disguise.InTheirKit(playerId, f))
+			{
+				if (dist > m_Settings.m_fCampRefuseRadius)
+				{
+					disguise.ShowComing(playerId, f, 2, place, "", title);
+					return;
+				}
+
+				if (!Tell(playerId, place, "look", GATE_GAP))
+					return;
+
+				float pass = Math.Max(1, Hostility().m_fGatePassMinutes) * 60;
+				if (disguise.Look(playerId, f, 2, place, "", pass))
+				{
+					m_mGatePass.Set(passKey, m_fClock + pass);
+					m_GM.Say(playerId, title, f, string.Format("The sentry looks you up and down, then waves you in. You've about %1 minutes before somebody looks again.", RZ_Util.RoundToInt(pass / 60)));
+				}
+
+				return;
+			}
+
 			if (Tell(playerId, place, "warn", TELL_GAP))
-				m_GM.Say(playerId, title, f, RZ_FactionVoice.CampWarning(f));
+			{
+				if (redColours)
+					m_GM.Say(playerId, title, f, "\"Not in those colours. Take the red off before you come up here.\"");
+				else
+					m_GM.Say(playerId, title, f, RZ_FactionVoice.CampWarning(f));
+			}
 
 			if (dist > m_Settings.m_fCampRefuseRadius)
 				return;
@@ -956,7 +1166,13 @@ class RZ_Checkpoints
 			if (!RZ_Util.IsArmed(ent))
 			{
 				if (Tell(playerId, place, "gate", GATE_GAP))
-					m_GM.Say(playerId, title, f, "The gate stays shut. Nobody here will deal with you until you've made it right with them.");
+				{
+					string gate = "The gate stays shut. Nobody here will deal with you until you've made it right with them.";
+					if (FriendWelcome(playerId, ent, f))
+						gate += " \"Your friend can come in. You wait outside.\"";
+
+					m_GM.Say(playerId, title, f, gate);
+				}
 
 				return;
 			}
@@ -977,10 +1193,30 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The company you keep at a camp: someone in this player's group, within 50 m, whom the camp lets in.
+	protected bool FriendWelcome(int playerId, IEntity ent, int f)
+	{
+		if (!RZ_ReputationSettings.Get().m_bGroupRules)
+			return false;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			if (ids[i] != playerId && RZ_Util.SameGroup(playerId, ids[i]) && RZ_Util.DistXZ(p.GetOrigin(), ent.GetOrigin()) <= 50 && !RZ_Reputation.IsWatchedOrWorse(m_GM.GetTier(ids[i], f)))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! From the gunfire hook: firing inside a stronghold's or the lab's safe zone, with no infected
 	//! close, costs a little Infamy with the faction and draws its fire for a few minutes.
 	void OnPlayerShot(int playerId, vector pos)
 	{
+		m_Parley.OnPlayerShot(playerId);
 		if (!m_Settings.m_bSafeZones)
 			return;
 

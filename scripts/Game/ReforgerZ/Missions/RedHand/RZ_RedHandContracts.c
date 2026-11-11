@@ -383,10 +383,14 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! #13 Bust Out: Red Hand prisoners in a Bastion stockade near one of its posts. Cut the lock (20 s
-//! at the gate, 8 s for an Ex-Con). If a Bastion squad guards it and you're not in Bastion's uniform
-//! (RZ_Disguise), they see you and it's a fight. Then walk the prisoners (RZ_Escort) to a Red Hand
-//! drop. Bastion Infamy.
+//! #13 Bust Out: Red Hand prisoners in a Bastion stockade near one of its outposts (never the
+//! stronghold; the gate 45-70 m from the seat). Cut the lock (20 s at the gate, 8 s for an Ex-Con).
+//! The stockade's guards are the mission's watchers. In Bastion kit, Cut the lock is a claim: a guard
+//! asks "Who sent you?" (a look at difficulty 2; the post commander's name is the cover detail). Pass
+//! and there's no alarm; a 20 s cut gets a second look at 15 s ("Orders. They're being moved."), with
+//! -1 for the look already passed. Fail either and it's the alarm: a fight, so you're never held.
+//! Without Bastion kit, the guards see you and it's a fight. Then walk the prisoners (RZ_Escort) to a
+//! Red Hand drop, whose crew never reacts to colours on the mission's players. Bastion Infamy.
 class RZ_Mission_BustOut : RZ_PuzzleMission
 {
 	protected ref RZ_Escort m_Escort = new RZ_Escort();
@@ -396,6 +400,12 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 	protected bool m_bShown;
 	protected IEntity m_Guards;
 	protected int m_iCutter = -1;
+	protected int m_iCommander = -1;
+	protected string m_sCommander;
+	protected bool m_bClaimed;
+	protected bool m_bSecondLook;
+	protected ref RZ_Ways m_Ways = new RZ_Ways("Bust Out");
+	protected static const float SECOND_LOOK = 15;
 	protected float m_fCut;
 	protected float m_fCutNeeded = 20;
 	protected bool m_bOpen;
@@ -458,7 +468,27 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		if (!RZ_LeaderJob.MeetingPoint(gm, RZ_EFaction.MILITARY, s.m_vCenter, post, postName))
 			return false;
 
-		m_vGate = LandPointNear(post, 40, 70);
+		// Only an outpost's stockade, never the stronghold's
+		RZ_Territory territory = gm.GetTerritory();
+		if (territory && territory.IsActive())
+		{
+			RZ_Holding stronghold = territory.GetStronghold(RZ_EFaction.MILITARY);
+			if (stronghold && RZ_Util.DistXZ(stronghold.m_vPos, post) < 400)
+				return false;
+		}
+
+		m_sCommander = "";
+		if (gm.GetLeaders())
+		{
+			RZ_Leader seat = gm.GetLeaders().FindNearest(RZ_EFaction.MILITARY, post, 300);
+			if (seat)
+			{
+				m_iCommander = seat.m_iId;
+				m_sCommander = seat.m_sShort;
+			}
+		}
+
+		m_vGate = LandPointNear(post, 45, 70);
 		if (!RZ_LeaderJob.MeetingPoint(gm, RZ_EFaction.BANDITS, m_vGate, m_vMeet, m_sMeetName))
 			return false;
 
@@ -483,7 +513,10 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 			m_Guards = RZ_Util.SpawnPrefab(SquadPrefab(gm), LandPointNear(m_vGate, 10, 25));
 			TrackProp(m_Guards);
 			if (m_Guards && gm.GetHostility())
+			{
 				gm.GetHostility().WatchUnit(m_Guards, RZ_EFaction.MILITARY);
+				gm.GetHostility().GetDisguise().AddWatcher(m_Guards, RZ_EFaction.MILITARY);
+			}
 		}
 
 		if (!m_bOpen)
@@ -516,6 +549,15 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		}
 
 		m_fCut += dt;
+		// The second look, at 15 s into a 20 s cut: "What are you doing with those?"
+		if (m_bClaimed && !m_bSecondLook && !m_bAlarm && m_fCut >= SECOND_LOOK && m_fCutNeeded > SECOND_LOOK)
+		{
+			m_bSecondLook = true;
+			gm.NotifyPlayer(m_iCutter, m_sTitle, "A guard looks at the cutters, then at you. \"What are you doing with those?\" \"Orders. They're being moved.\"");
+			if (!gm.GetHostility().GetDisguise().Look(m_iCutter, RZ_EFaction.MILITARY, 2, m_sTitle, Paper(gm, m_iCutter), 120))
+				Alarm(gm, m_iCutter, "\"Moved where?\" He's already shouting.");
+		}
+
 		if (m_fCut < m_fCutNeeded)
 			return;
 
@@ -537,19 +579,51 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 			m_fCutNeeded = EXCON_SECONDS;
 
 		string text = "You get the cutters on the chain. Stay at the gate.";
-		bool disguised = gm.GetHostility() && gm.GetHostility().GetDisguise().IsDisguisedAs(playerId, RZ_EFaction.MILITARY);
-		if (!m_bAlarm && RZ_Util.CountAlive(m_Guards) > 0 && !disguised)
+		RZ_Disguise disguise = gm.GetHostility().GetDisguise();
+		bool guarded = RZ_Util.CountAlive(m_Guards) > 0;
+		if (!m_bAlarm && guarded && disguise.InTheirKit(playerId, RZ_EFaction.MILITARY))
 		{
-			m_bAlarm = true;
-			RZ_Hostility.MarkFight(RZ_EFaction.MILITARY, m_Guards, 150);
-			text = "A shout from the wire: the guards have seen you. Cut fast.";
+			// The claim: "Who sent you?" (the commander's name is the cover detail)
+			m_bClaimed = true;
+			if (m_Ways.PassAs(gm, playerId, "stockade guard", RZ_EFaction.MILITARY, 2, Paper(gm, playerId)) == RZ_ECheck.PASS)
+				text = "A guard asks who sent you. You tell him, and he looks away. Cut, quietly.";
+			else
+				Alarm(gm, playerId, "");
+
+			gm.NotifyPlayer(playerId, m_sTitle, text);
+			return;
 		}
-		else if (disguised)
+
+		if (!m_bAlarm && guarded)
 		{
-			text = "A guard glances at your uniform and looks away. Cut, quietly.";
+			Alarm(gm, playerId, "");
+			text = "A shout from the wire: the guards have seen you. Cut fast.";
 		}
 
 		gm.NotifyPlayer(playerId, m_sTitle, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The commander's name, if this player has heard it (met him): the cover detail at the stockade.
+	protected string Paper(RZ_GameModeComponent gm, int playerId)
+	{
+		if (m_sCommander.IsEmpty() || !gm.GetLeaders() || !gm.GetLeaders().HasMet(m_iCommander, playerId))
+			return "";
+
+		return "Name: " + m_sCommander;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The alarm: a fight with the stockade's guards (never held: it's a fight).
+	protected void Alarm(RZ_GameModeComponent gm, int playerId, string line)
+	{
+		if (m_bAlarm)
+			return;
+
+		m_bAlarm = true;
+		RZ_Hostility.MarkFight(RZ_EFaction.MILITARY, m_Guards, 150);
+		if (!line.IsEmpty())
+			gm.NotifyPlayer(playerId, m_sTitle, line);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -568,7 +642,8 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 
 //------------------------------------------------------------------------------------------------
 //! #17 Double Agent: carry a dossier of fake intel from the Red Hand to a Bastion drop. Bastion
-//! may see through it (35%, 15% for a Police officer they believe): +20 Bastion Infamy for whoever
+//! may see through it (35%, 15% for a Police officer they believe; certain in Red Hand colours): +20
+//! Bastion Infamy for whoever
 //! handed it in. Believed: a little Bastion Fame too, and Bastion wastes a patrol on ghosts.
 class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 {
@@ -637,7 +712,16 @@ class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 		if (HasBonus(gm, playerId))
 			chance = POLICE_CHANCE;
 
-		m_bCaught = Math.RandomFloat01() < chance;
+		// The colours rule: handed in wearing the Red Hand's colours, Bastion sees through it at once
+		RZ_Hostility hostility = gm.GetHostility();
+		bool redColours = hostility && hostility.GetDisguise().WearsColours(playerId, RZ_EFaction.BANDITS);
+		m_bCaught = redColours || Math.RandomFloat01() < chance;
+		if (m_bCaught && redColours)
+		{
+			gm.NotifyPlayer(playerId, "Task Force Bastion", "The lieutenant looks at the red on you before he looks at the dossier. He doesn't open it.");
+			return;
+		}
+
 		if (m_bCaught)
 		{
 			gm.NotifyPlayer(playerId, "Task Force Bastion", "The lieutenant reads the first page twice, then looks up at you. \"Who gave you this?\" You leave before he finishes the question.");

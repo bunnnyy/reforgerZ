@@ -106,7 +106,8 @@ enum RZ_EFactionService
 	BOUNTY_BOARD,	// Red Hand Champion
 	BOOSTER,		// Halcyon Champion
 	MEDIC,			// Halcyon Trusted
-	AMENDS			// any faction: the quartermaster's own
+	AMENDS,			// any faction: the quartermaster's own
+	SETTLE			// any faction: settle up, 10 Fame for 5 Infamy (Factions/RZ_Parley.c)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -245,6 +246,7 @@ class RZ_FactionServiceAction : ScriptedUserAction
 			case RZ_EFactionService.BOOSTER: outName = "Take the immunity booster (Halcyon Champion)"; break;
 			case RZ_EFactionService.MEDIC: outName = "See the Halcyon medic (Halcyon Trusted)"; break;
 			case RZ_EFactionService.AMENDS: outName = "Pay to make amends (Favor)"; break;
+			case RZ_EFactionService.SETTLE: outName = "Settle up (10 Fame for 5 Infamy)"; break;
 		}
 
 		return true;
@@ -363,7 +365,35 @@ class RZ_FactionServices
 			case RZ_EFactionService.BOOSTER: Booster(playerId); break;
 			case RZ_EFactionService.MEDIC: Medic(playerId, user); break;
 			case RZ_EFactionService.AMENDS: Amends(playerId, owner); break;
+			case RZ_EFactionService.SETTLE: Settle(playerId, owner); break;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Make amends' second price (Reputation > Settling up): spent Fame for Infamy, from the budget.
+	protected void Settle(int playerId, IEntity owner)
+	{
+		RZ_QuartermasterComponent qm;
+		if (owner)
+			qm = RZ_QuartermasterComponent.Cast(owner.FindComponent(RZ_QuartermasterComponent));
+
+		if (!qm)
+			return;
+
+		RZ_EFaction f = qm.GetFaction();
+		if (!RZ_ReputationSettings.Get().m_bSettling || !m_GM.GetCheckpoints())
+		{
+			m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), "\"We don't do that here.\"");
+			return;
+		}
+
+		if (m_GM.GetTier(playerId, f) == RZ_ETier.KILL_ON_SIGHT)
+		{
+			m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), "\"Fame? From you? They want blood.\"");
+			return;
+		}
+
+		m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), m_GM.GetCheckpoints().GetParley().Settle(playerId, f));
 	}
 
 	//------------------------------------------------------------------------------------------------
