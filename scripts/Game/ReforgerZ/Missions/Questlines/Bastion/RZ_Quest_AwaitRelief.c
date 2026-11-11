@@ -1058,6 +1058,13 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 
 				break;
 			}
+			case S_WHO:
+			{
+				if (!cmdHere)
+					return run.Fill("{runner}'s page says, in parts: \"...hold the line... no relief will... authorised to... expended.\" It's on his body in {body_town}. {cmd} is gone from {post}. Somebody has to read it: the commanding officer, the Red Hand or the Haven's chair.");
+
+				break;
+			}
 			case S_WAIT:
 				return WaitText(run);
 			case S_RECKON:

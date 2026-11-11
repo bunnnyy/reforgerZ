@@ -10,9 +10,9 @@
 //!    put on Bastion's census (door.bastion) counts itself.
 //! 2. Ration cards (mission): a crate each for two houses. Skim one (15 Bastion Favor; 25% the
 //!    quartermaster notices), or give extra from your own pack (Haven Fame).
-//! 3. The curfew (mission, at night): walk the beat in the first house's town. Enforce it (+3
-//!    Haven Infamy), patrol gently (★ Police, or Known with the Haven: half pay), or let a Red Hand
-//!    toll in for the night (Known with the Red Hand).
+//! 3. The curfew (mission, at night): walk the beat in the first house's town (the second's if it
+//!    has emptied). Enforce it (+3 Haven Infamy), patrol gently (★ Police, or Known with the Haven:
+//!    half pay), or let a Red Hand toll in for the night (Known with the Red Hand).
 //! 4. The contribution (mission, not for Elders): four food from a counted house (never the
 //!    chair's after Await Relief's orders.haven). Carry it to Bastion, or to another house; pay it
 //!    yourself (15 Bastion Favor); or falsify the ledger (Trusted, or ★ Police; 25% found out at 6).
@@ -72,8 +72,8 @@ class RZ_Quest_Census : RZ_Questline
 		cards.GiveUp(4, "The ration cards were printed. The rations never left {store}.");
 		cards.Visits(2);
 
-		RZ_QuestStage curfew = MissionStage(S_CURFEW, "The curfew", "A curfew in {town_a} tonight. Walk the beat. How hard is up to you.");
-		curfew.GiveUp(6, "Nobody walked the curfew in {town_a}. The houses kept their own hours.");
+		RZ_QuestStage curfew = MissionStage(S_CURFEW, "The curfew", "A curfew in {town_f} tonight. Walk the beat. How hard is up to you.");
+		curfew.GiveUp(6, "Nobody walked the curfew in {town_f}. The houses kept their own hours.");
 		curfew.Visits(2);
 
 		RZ_QuestStage contrib = MissionStage(S_CONTRIB, "The contribution", "The census says {town_c} can spare four food. Bastion calls it a contribution. Collect it, pay it, or make the ledger say you did.");
@@ -156,10 +156,12 @@ class RZ_Quest_Census : RZ_Questline
 		run.SetFlag("house_a", first);
 		run.SetFlag("house_b", second);
 		run.SetFlag("house_c", first);
+		run.SetFlag("house_f", first);
 		run.SetFlag("house_r", first);
 		run.SetText("town_a", ha.m_sName);
 		run.SetText("town_b", hb.m_sName);
 		run.SetText("town_c", ha.m_sName);
+		run.SetText("town_f", ha.m_sName);
 		run.SetText("town_r", ha.m_sName);
 		run.SetText("co", co.m_sShort);
 		run.SetText("stronghold", co.m_sPlace);
@@ -285,6 +287,38 @@ class RZ_Quest_Census : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The curfew's town: the first house's, else the second's if the first has emptied. False if
+	//! neither has people.
+	protected bool PickCurfew(RZ_GameModeComponent gm, RZ_QuestRun run)
+	{
+		int f = Live(gm, run, "house_a");
+		if (f < 0)
+			f = Live(gm, run, "house_b");
+
+		RZ_Safehouse hf = GetHouse(gm, f);
+		if (!hf)
+			return false;
+
+		run.SetFlag("house_f", f);
+		run.SetText("town_f", hf.m_sName);
+		run.SetPlace(hf.m_vPos, hf.m_sName);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the cards (or the List): the curfew, else straight to the contribution, else the wait.
+	protected int ToCurfew(RZ_GameModeComponent gm, RZ_QuestRun run)
+	{
+		if (PickCurfew(gm, run))
+			return S_CURFEW;
+
+		if (PickContribution(gm, run))
+			return S_CONTRIB;
+
+		return S_HEARS;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The raid's house: the counted one with the fuller stores. False if neither has people.
 	protected bool PickRaid(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
@@ -323,7 +357,7 @@ class RZ_Quest_Census : RZ_Questline
 		switch (stage)
 		{
 			case S_COUNT: return Live(gm, run, "house_a") >= 0;
-			case S_CURFEW: return Live(gm, run, "house_a") >= 0 && IsNightSoon();
+			case S_CURFEW: return Live(gm, run, "house_f") >= 0 && IsNightSoon();
 			case S_CONTRIB: return Live(gm, run, "house_c") >= 0;
 			case S_RAID: return Live(gm, run, "house_r") >= 0;
 			case S_CALL: return IsCallSoon();
@@ -414,7 +448,7 @@ class RZ_Quest_Census : RZ_Questline
 				RZ_BastionQuest.SetWorld(gm, KEY + ".counted", run.Flag("house_a", -1) + 1);
 				run.SetFlag("no_cards", 1);
 				run.Note("The Haven's List reached {stronghold}: every house, every name, crossed-out ones too. The count is done before anyone walked it.");
-				return S_CURFEW;
+				return ToCurfew(gm, run);
 			}
 			case S_COUNT:
 			{
@@ -430,7 +464,7 @@ class RZ_Quest_Census : RZ_Questline
 				return S_COUNT;
 			}
 			case S_CARDS:
-				return AfterCards(run, outcome);
+				return AfterCards(gm, run, outcome);
 			case S_CURFEW:
 				return AfterCurfew(gm, run, outcome);
 			case S_CONTRIB:
@@ -474,7 +508,7 @@ class RZ_Quest_Census : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected int AfterCards(RZ_QuestRun run, int outcome)
+	protected int AfterCards(RZ_GameModeComponent gm, RZ_QuestRun run, int outcome)
 	{
 		if (outcome == OUT_CARDS)
 		{
@@ -484,7 +518,7 @@ class RZ_Quest_Census : RZ_Questline
 			else
 				run.Note("Ration cards went to {town_a} and {town_b}, with a crate each. Both houses are on the books now.");
 
-			return S_CURFEW;
+			return ToCurfew(gm, run);
 		}
 
 		if (run.Visits(S_CARDS) < 2)
@@ -496,7 +530,7 @@ class RZ_Quest_Census : RZ_Questline
 		run.SetFlag("no_cards", 1);
 		Count(run, run.Flag("house_b", -1));
 		run.Note("The ration cards went out without the rations.");
-		return S_CURFEW;
+		return ToCurfew(gm, run);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -505,26 +539,26 @@ class RZ_Quest_Census : RZ_Questline
 		if (outcome == OUT_ENFORCED)
 		{
 			run.SetFlag("enforced", 1);
-			run.Note("The curfew was enforced in {town_a}. Doors shut at dusk, and stayed shut.");
+			run.Note("The curfew was enforced in {town_f}. Doors shut at dusk, and stayed shut.");
 		}
 		else if (outcome == OUT_GENTLE)
 		{
 			run.SetFlag("gentle", 1);
-			run.Note("The curfew in {town_a} was walked gently: a knock, a word, a lamp turned down.");
+			run.Note("The curfew in {town_f} was walked gently: a knock, a word, a lamp turned down.");
 		}
 		else if (outcome == OUT_TOLL)
 		{
 			run.SetFlag("toll", 1);
-			run.Note("A Red Hand toll stood on {town_a}'s road all night, where the curfew patrol should have been.");
+			run.Note("A Red Hand toll stood on {town_f}'s road all night, where the curfew patrol should have been.");
 		}
 		else if (run.Visits(S_CURFEW) < 2)
 		{
-			run.Note("Nobody walked the curfew in {town_a}. Tomorrow night, then.");
+			run.Note("Nobody walked the curfew in {town_f}. Tomorrow night, then.");
 			return S_CURFEW;
 		}
 		else
 		{
-			run.Note("Nobody walked the curfew in {town_a}. The houses kept their own hours.");
+			run.Note("Nobody walked the curfew in {town_f}. The houses kept their own hours.");
 		}
 
 		if (PickContribution(gm, run))
@@ -691,7 +725,7 @@ class RZ_Quest_Census : RZ_Questline
 			return "\"Bastion's counting heads in {town_a}. Says it's for ration cards. Last time they had a list, we ended up at the line.\"";
 
 		if (run.m_iStage == S_CURFEW)
-			return "\"Curfew in {town_a} tonight. Bastion's orders. In a Haven town.\"";
+			return "\"Curfew in {town_f} tonight. Bastion's orders. In a Haven town.\"";
 
 		if (run.m_iStage <= S_RAID)
 			return "\"The Red Hand's been asking which houses got Bastion's ration cards. Funny question.\"";
@@ -1195,11 +1229,12 @@ class RZ_QM_CensusCards : RZ_QuestMission
 
 //------------------------------------------------------------------------------------------------
 //! The Census, stage 3 (Bastion contract, Known, at night until dawn; ★ Police: the beat goes 1.5
-//! times faster): the curfew in the first house's town. Four patrol points, 15 s at each. At the
-//! curfew board: enforce it (+3 Haven Infamy each for the patrol), or patrol gently (★ Police, or
-//! Known with the Haven: half pay). At the edge of town a Red Hand toll-man: let him set up for the
-//! night (Known with the Red Hand; betray: Red Hand Fame +6, Bastion pays nothing). The crew holds
-//! the road till dawn (with the Red Hand group prefab it's real, and it fights strangers).
+//! times faster): the curfew in the first house's town (the second's if it has emptied). Four
+//! patrol points, 15 s at each. At the curfew board: enforce it (+3 Haven Infamy each for the
+//! patrol), or patrol gently (★ Police, or Known with the Haven: half pay). At the edge of town a
+//! Red Hand toll-man: let him set up for the night (Known with the Red Hand; betray: Red Hand Fame
+//! +6, Bastion pays nothing). The crew holds the road till dawn (with the Red Hand group prefab
+//! it's real, and it fights strangers).
 class RZ_QM_CensusCurfew : RZ_QuestMission
 {
 	protected ref array<vector> m_aPoints = {};
@@ -1232,7 +1267,7 @@ class RZ_QM_CensusCurfew : RZ_QuestMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		RZ_Safehouse h = RZ_Questline.GetHouse(gm, QFlag(gm, "house_a", -1));
+		RZ_Safehouse h = RZ_Questline.GetHouse(gm, QFlag(gm, "house_f", -1));
 		RZ_Settlement s = null;
 		if (h)
 			s = gm.GetSettlement(h.m_iSettlement);
@@ -1254,7 +1289,7 @@ class RZ_QM_CensusCurfew : RZ_QuestMission
 		m_iBoardClue = AddClue("The curfew notice", "TASK FORCE BASTION. CURFEW IN FORCE FROM DUSK. Residents will remain indoors. Lights to be kept low. Persons abroad after dark will be questioned. By order.");
 		m_iTollClue = AddClue("A Red Hand toll-man", "He's leaning on the signpost as if it's his. \"Bastion's curfew, eh? Nobody on the road all night but you and me.\" He grins. \"Seems a shame to waste a road like that.\"");
 		m_sTitle = "The Census: the curfew";
-		m_sBrief = QFill(gm, "Curfew in {town_a} tonight, by order. Walk the beat, four points. How firmly is up to you, within reason.");
+		m_sBrief = QFill(gm, "Curfew in {town_f} tonight, by order. Walk the beat, four points. How firmly is up to you, within reason.");
 		return true;
 	}
 
@@ -1327,7 +1362,7 @@ class RZ_QM_CensusCurfew : RZ_QuestMission
 		if (m_bGentle)
 		{
 			m_fRewardScale = 0.5;
-			NotifyParticipants(gm, m_sTitle, QFill(gm, "The beat is walked: a knock, a word, a lamp turned down. {town_a} sleeps, and nobody in it is afraid of you."));
+			NotifyParticipants(gm, m_sTitle, QFill(gm, "The beat is walked: a knock, a word, a lamp turned down. {town_f} sleeps, and nobody in it is afraid of you."));
 			Resolve(gm, who, RZ_EQuestApproach.TALK, RZ_Quest_Census.OUT_GENTLE, "patrolled the curfew gently");
 			return;
 		}
@@ -1338,7 +1373,7 @@ class RZ_QM_CensusCurfew : RZ_QuestMission
 			RZ_QuestApproach.SideWith(gm, playerId, -1, RZ_EFaction.SURVIVORS, 0, 3);
 		}
 
-		NotifyParticipants(gm, m_sTitle, QFill(gm, "The beat is walked. Every door in {town_a} is shut, and stays shut. Behind them, people remember who knocked."));
+		NotifyParticipants(gm, m_sTitle, QFill(gm, "The beat is walked. Every door in {town_f} is shut, and stays shut. Behind them, people remember who knocked."));
 		Resolve(gm, who, RZ_EQuestApproach.FORCE, RZ_Quest_Census.OUT_ENFORCED, "enforced the curfew");
 	}
 
@@ -1403,22 +1438,22 @@ class RZ_QM_CensusCurfew : RZ_QuestMission
 			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Crew.m_Unit, 80, true);
 		}
 
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "He whistles, and a car wreck rolls across the road. \"Pleasure doing business. The night's ours.\" Nobody walks the curfew in {town_a} tonight."));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "He whistles, and a car wreck rolls across the road. \"Pleasure doing business. The night's ours.\" Nobody walks the curfew in {town_f} tonight."));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		return QFill(gm, "The Census: the curfew in {town_a} is walked.");
+		return QFill(gm, "The Census: the curfew in {town_f} is walked.");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		if (m_bToll)
-			return QFill(gm, "The Census: a Red Hand toll held {town_a}'s road till dawn.");
+			return QFill(gm, "The Census: a Red Hand toll held {town_f}'s road till dawn.");
 
-		return QFill(gm, "The Census: nobody walked the curfew in {town_a}.");
+		return QFill(gm, "The Census: nobody walked the curfew in {town_f}.");
 	}
 
 	//------------------------------------------------------------------------------------------------
