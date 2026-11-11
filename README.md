@@ -39,6 +39,10 @@ and one way to end it: **research the cure.**
   sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself after
   the cure's epilogue or a set number of weeks, and a hall of fame remembers who carried samples,
   held the final stand and rescued the most, season after season.
+- **The Long Table**: some seasons, a small family in a farmhouse past the emptiest village. They
+  set a place for whoever comes, the host on the road is the friendliest man in the Zone, and
+  people who take that road don't always arrive. Eat with them, trade, find out, tell someone or
+  end it yourself ([LORE.md](docs/LORE.md#the-long-table)).
 - **Notes between players**: a notice board at every Haven safehouse.
 - **Search the world**: cupboards, car boots and bodies, locked doors that keep the infected
   out (they bang on them) and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting, traps, fire, water and
@@ -67,8 +71,7 @@ plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
 **Designed, not built yet:** fourteen long questlines in the New Vegas style, with choices that
-cross between factions ([QUESTLINES.md](docs/QUESTLINES.md)), and the **Long Table**, a tiny
-cannibal family in one farmhouse ([LORE.md](docs/LORE.md#the-long-table)).
+cross between factions ([QUESTLINES.md](docs/QUESTLINES.md)).
 
 ## Docs
 
@@ -91,7 +94,7 @@ scripts/Game/ReforgerZ/
   Core/          game mode component (the hub), helpers, map markers, loose-item cleanup,
                  seasons (the winner's rules, rule sets, the wipe cycle)
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
-                 town memory, the power grid, the radio station
+                 town memory, the power grid, the radio station, the Long Table
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, story arcs, the questline engine, headlines
   Zombies/       spawner (any zombie mod's prefabs), bite detection
@@ -102,7 +105,7 @@ scripts/Game/ReforgerZ/
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/; Questlines/ (the author's base class,
-                 approach helpers, the registry, one folder per faction)
+                 approach helpers, the registry, one folder per faction and one for the Long Table)
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
   Cure/          research, lab, samples, antidotes, infection stages, treatments and meds
   Guidance/      experience levels, tips, spawn scenarios, open radio channels

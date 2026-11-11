@@ -121,7 +121,7 @@ to upkeep this season.
 | 1 | **Find the husband** | **Follow his trail**: a note, his pack, a third clue. Half the time he's alive: he walked off when he saw his name crossed out, and comes home (+1 person, `list.husband_alive`). **Ask the wanderers**: a Scavenger sells his last sighting for 1 food. ★ Radio Op: hears his last call on the Haven channel, grid included | Trail of Clues |
 | 2 | **Get three copies of the List** | **Talk** to council heads: a Merciful one hands it over; a Loyal one asks the chair first and refuses unless you're Trusted; a Paranoid one won't. **Sneak**: read it in the stores at night past two lookouts (seen: +8 Haven Infamy, `list.stolen` *(you)*). **Bribe**: deliver 3 food to that house. **Side with the Red Hand**: their list of strays counts as one copy, for 15 Red Hand Favor | A Quiet Arrangement's lookouts; delivery |
 | 3 | **Read the pattern** | **Work it out** at a safehouse: the names crossed out in the same week on all three copies, against the ration notes, point to one farmhouse. Wrong: locked 5 min; twice: you only learn "a farm out that way" (`list.half_truth`). ★ Elder or Police: the method spelled out. **Ask the chair** (Trusted): she tells you half and asks you to stop (`list.chair_asked`) | Patient Zero's Ledger (a deduction) |
-| 4 | **Go and look** | If the Long Table lives there this season, it's their house: the host meets you at the gate and sets a place (C1 starts at stage 2, `table.found_by_haven`). If not, an empty farm: nine graves, and one too few. **Look round** (three points, 10 s each). **Sit down and eat** (the guest rule applies, [REPUTATION.md](REPUTATION.md#the-long-table-planned)). **Leave and report** | Visit points |
+| 4 | **Go and look** | If the Long Table lives there this season, it's their house: the host meets you at the gate and sets a place (C1 starts at stage 2, `table.found_by_haven`). If not, an empty farm: nine graves, and one too few. **Look round** (three points, 10 s each). **Sit down and eat** (the guest rule applies, [REPUTATION.md](REPUTATION.md#the-long-table)). **Leave and report** | Visit points |
 | 5 | **Wait** | One session (2 real hours with players online). Gossip in the news: *"Someone's been asking about the List."* Then the chair of the council asks to see you | Wait |
 | 6 | **The chair's decision** | **Talk: read it out**, every house, crossed names too (Trusted, ★ Elder, or Known with `list.husband_alive` as proof): then hold the reading at the stronghold safehouse while the bells bring the infected (3 min, 2 waves). **Keep it quiet**: give the copies to the chair (`list.buried`). **Side with Bastion**: deliver them to a Bastion seat for its census (`list.to_bastion`). **Side with the Red Hand**: sell them to a crew boss (`list.to_redhand`). Either delivery must pass two Haven lookouts unseen | Hold; delivery |
 
@@ -466,8 +466,10 @@ goes is still the season's Fame; this line is about who is standing at the lab w
 ## The Long Table
 
 Who they are is in [LORE.md](LORE.md#the-long-table); how they work and how players deal with them
-is in [DESIGN.md](DESIGN.md#the-long-table-planned) and [REPUTATION.md](REPUTATION.md#the-long-table-planned).
-Both lines exist only in a season that has a Long Table.
+is in [DESIGN.md](DESIGN.md#the-long-table) and [REPUTATION.md](REPUTATION.md#the-long-table).
+Both lines exist only in a season that has a Long Table, and never run together (one slot).
+Both are built; their stages, numbers and what each approach does are in
+[MISSIONS.md](MISSIONS.md#questlines).
 
 ### C1. The House That Went Quiet
 
@@ -484,7 +486,7 @@ rumour; or from H1 (at stage 2), R2 (at stage 4) or C2 (at stage 4).
 |---|---|---|---|
 | 1 | **Never arrived** | Follow a missing wanderer's last road: a boot on the verge, a satchel at a fence, the gate of the farm. ★ Hunter or Police: grid references | Trail of Clues |
 | 2 | **Guest** | The host meets you on the road. **Talk: accept** and eat: in daylight, in company or bitten, it's only a meal (`table.guest` *(you)*). **Sneak: decline** and watch from outside, unseen. **Declare your bite** if you have one: they bless you and send you on | Talk; visit points |
-| 3 | **Proof** | Three of: the guestbook and its small crosses, the boots by the door, a dead courier's letters in a drawer, the cellar (locked: the mother's key, or a crowbar, which is loud). **Sneak** in during supper (18:30). **Talk** to the boy, away from the house, unarmed (★ Nurse or Elder): he says one thing. **Fight** your way in (before the cellar is open, shooting them costs Haven Infamy, [REPUTATION.md](REPUTATION.md#the-long-table-planned)). With `cargo.buyer_known` (R2) or `place.undercover` (C2): done | Searching; door locks; clues |
+| 3 | **Proof** | Three of: the guestbook and its small crosses, the boots by the door, a dead courier's letters in a drawer, the cellar (locked: the mother's key, or a crowbar, which is loud). **Sneak** in during supper (18:30). **Talk** to the boy, away from the house, unarmed (★ Nurse or Elder): he says one thing. **Fight** your way in (before the cellar is open, shooting them costs Haven Infamy, [REPUTATION.md](REPUTATION.md#the-long-table)). With `cargo.buyer_known` (R2) or `place.undercover` (C2): done | Searching; door locks; clues |
 | 4 | **Who to tell** | **The Haven**: horror and shame; the chair wants them brought home and walked out (`table.haven`). **Bastion**: containment (`table.bastion`). **Halcyon**: the director wants one of them alive, and the mother's kitchen notebook: why they never eat the bitten (`table.halcyon`). **The Red Hand**: the boss pays the house to go away (`table.redhand`). **Nobody**: deal with it yourself | Talk; delivery |
 | 5 | **The end of the house** | *Haven:* walk the family to the edge of town at dusk, unarmed. They go quietly, except the quiet son. *Bastion:* the guns, after five minutes' warning; get the boy out first (talk him down, nothing within 25 m), or don't. *Halcyon:* walk the mother to the lab as a "volunteer". *Red Hand:* hold the farm 90 s while a crew moves them on. *Yourself:* **fight** (three or four of them), or **talk** the last ones out once the mother is gone | Walk Him Out; Bastion Shelling; escort; hold |
 
@@ -497,8 +499,31 @@ rumour; or from H1 (at stage 2), R2 (at stage 4) or C2 (at stage 4).
 **By your own hand** is no ending of its own: the house is gone for the season, the boy lives if you
 got him out, and the proof, taken to a faction after, pays half that faction's Fame.
 
-If nobody ends it, the house goes on until the season ends, and next season there's a long table
-somewhere else.
+If nobody ends it and it's never found out, the house goes on until the season ends, and next
+season there may be a long table somewhere else. Found out and not ended within a real day,
+Bastion burns it ([DESIGN.md](DESIGN.md#the-long-table)).
+
+**Built** ✅ (`Missions/Questlines/LongTable/RZ_Quest_HouseWentQuiet.c`). Changes from the design:
+- A first stage routes it: `table.found_by_haven` to stage 2; `cargo.buyer_known`, `place.undercover`
+  or `place.proof`, or the house already found out, to stage 4.
+- *Guest:* accepting walks you up to the farm, and the meal is at the table. Declining points you
+  to a rise behind the farm: a minute there unseen is the watch; seen, they're wary at stage 3.
+- *Proof:* the boy's one thing is also where the key hangs (without it, the cellar needs a
+  crowbar). Outside supper, any of them within 20 m sees you (30 m once they're wary). Caught, they
+  set on you (a fight) or, without the fight prefab, shut the house for the day. A fight that
+  finishes the house ends the line by your own hand.
+- *Who to tell* is any leader of that faction, talked to by someone who took part (by anyone, when
+  the proof came from another line); Halcyon needs the lab, Bastion its stronghold. The house is
+  found out then, and the teller gets the faction's Fame then (+10, the Red Hand +4).
+- *The end of the house* the factions' way is that faction's contract on the radio, so an ending's
+  Fame is the telling's plus the contract's (10 Fame and 30 Favor; Halcyon 10 and 20; the Red Hand
+  11 and 40). The Haven's walk is between 16:00 and 21:30, and the family waits for you at the edge
+  of town rather than walking with you; the quiet son is talked round (persuade) or let go.
+  Halcyon's volunteer is the mother, or one of them alive without her. By your own hand: fight them
+  (the fight prefab), or tell the mother you know (persuade with the Haven, difficulty 2; ★ Elder
+  or Nurse) and she walks out, then tell the rest to go; a failed word and they set on you. "Taken
+  to a faction after" is a last wait of two hours of play or 12 real hours.
+- Its endings also publish what happened (`table.walked_out` and the rest, in [Crossings](#crossings)).
 
 ### C2. A Place at the Table
 
@@ -523,9 +548,26 @@ ask the Haven's friends). ★ Police: anything you learn counts as proof.
 
 | Ending | You get | The world |
 |---|---|---|
-| **Family** | A bowl when you visit (one food item a real day) and true road news; no Fame anywhere | The guest rule never applies to you. When the house is exposed while you're family, the Haven and Bastion hold it against you ([REPUTATION.md](REPUTATION.md#the-long-table-planned)), and your name is in the headline |
+| **Family** | A bowl when you visit (one food item a real day) and true road news; no Fame anywhere | The guest rule never applies to you. When the house is exposed while you're family, the Haven and Bastion hold it against you ([REPUTATION.md](REPUTATION.md#the-long-table)), and your name is in the headline |
 | **Undercover** | C1's proof; +5 Fame with whoever you take it to, on top of C1's | The exile lives, with the Haven or Bastion |
 | **Walked away** | Nothing | The host stops meeting you on the road |
+
+**Built** ✅ (`Missions/Questlines/LongTable/RZ_Quest_PlaceAtTable.c`). Changes from the design:
+- It's personal: only the character the offer was made to does its stages, and only in that life.
+  The host makes the offer on the third meal of a life.
+- Stages 2 to 4 wait 20 minutes of play or 6 real hours first; Grace is in the evening (17:00 to
+  22:00).
+- *The dead:* a wanderer or a truck crew who died to the infected in the last hour, within 4 km;
+  if there isn't one, a traveller in a ditch, laid out by the stage, with two infected about.
+  Telling the host also feeds the house a little (fewer taken).
+- *The dying* is a wanderer from the roster, held by the stage (a stranger if nobody is free). Sent
+  the wrong way, he's the usual bitten wanderer; your antidote saves him (+8 Haven Fame).
+- *A stray:* refusing is said to the host at the farm gate. A safehouse takes the exile in (+1
+  person); Bastion logs him as sheltered.
+- Walking away from the host at stage 1, and Grace's "get up and go", end it Walked away; Grace's,
+  or a ★ Police guest's walk, carries the proof (`place.proof`): C1 starts at stage 4.
+- The fight at the table finishes the house there: the line ends By your own hand (C1's outcome,
+  reached here).
 
 ---
 
@@ -553,4 +595,16 @@ The flags other lines read.
 | `well.stood` | R3 | H2 | The house stands: H2's "Stands alone" needs no barricades |
 | `weeks.public` | HC1 | H3 | Brokering the lab road needs Trusted with the Haven |
 | `weeks.bastion` | HC1 | HC3 | HC3 starts at stage 2 |
-| `place.undercover` | C2 | C1 | C1's proof is done |
+| `place.undercover` | C2 | C1 | C1's proof is done: it starts at stage 4; the undercover guest gets +5 Fame on top when they tell |
+| `place.proof` | C2 | C1 | Got up from grace (or a ★ Police guest walked away) with the proof: C1 starts at stage 4 |
+| `place.family`, `place.by_hand` | C2 | any | Someone sat at the long table and said a name; the house was finished at its own table |
+| `table.exists`, `table.town` | the Long Table | R2, H1, any | There's a house this season, past this settlement (its index; -1 none). Without one, R2's van goes to the pit |
+| `table.exposed`, `table.exposed_to` | the Long Table | R2, any | The house was found out (by the faction told; -1 everyone). R2's "The cut" holds it against its player |
+| `table.broken`, `table.burnt`, `table.moved`, `table.suspicion` | the Long Table | any | Gone for the season; burnt by Bastion; moved once; how suspected (0–100) |
+| `table.suspicion_add` | any line | the Long Table | Added to its suspicion, then cleared (H1's names read: +30) |
+| `table.bastion_knows` | R2 | the Long Table | Bastion knows the farm: the house is found out, to Bastion |
+| `table.haven`, `table.bastion`, `table.halcyon`, `table.redhand` | C1 | any | Who was told |
+| `table.walked_out`, `table.studied`, `table.host_wanders`, `table.paid`, `table.by_hand`, `table.boy_lost` | C1 (`table.by_hand` also C2) | any | How the house ended: walked out; the mother at the lab; the host on the roads as a Scavenger; paid to move; by your own hand; the boy not got out |
+
+The Long Table also accepts the setter's own spelling for flags the table names under `table.`
+(`list.found_by_haven`, `cargo.supplier_cut`, `cargo.bastion_knows`).

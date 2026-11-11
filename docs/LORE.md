@@ -301,9 +301,9 @@ Somebody has to, and they should be counted."*
 
 ## The Long Table
 
-*Planned, not built.* How the house works in the world is in [DESIGN.md](DESIGN.md#the-long-table-planned);
-how players deal with it is in [REPUTATION.md](REPUTATION.md#the-long-table-planned); its two
-questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table).
+How the house works in the world is in [DESIGN.md](DESIGN.md#the-long-table); how players deal
+with it is in [REPUTATION.md](REPUTATION.md#the-long-table); its two questlines are in
+[QUESTLINES.md](QUESTLINES.md#the-long-table).
 
 Not a faction. A family of four to seven people in one farmhouse, in one of the empty places
 nobody goes. They're kind to strangers. There's always an extra place set at supper. And they
@@ -341,9 +341,9 @@ They tell themselves they only took the ones who were going anyway. That was tru
 
 **The hard edges.** The house is homely, and that's the horror of it:
 
-| What they don't say out loud | What it means | Where it shows in play (planned) |
+| What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
-| **Grace** | At a Haven house, the name read at supper is the dead. At Ada's, it's the meal | The host's invitation; A Place at the Table |
+| **Grace** | At a Haven house, the name read at supper is the dead. At Ada's, it's the meal | Every meal at the long table (the name is the last one who never arrived); A Place at the Table |
 | **"Nothing is wasted"** | It started with the dead. Then the dying. Then the ones nobody would come looking for | Wanderers who never arrive; rumours |
 | **"Declare your bite"** | Asked kindly, like a Haven house. A bitten guest is safe: they learned on Day 10 what the bitten do to a family | A bitten player is never set on; Halcyon's interest |
 | **The guestbook** | Every guest signs. Some names have a date and a small cross beside them, the way the List does | Proof in The House That Went Quiet |
@@ -470,7 +470,7 @@ new outbreak, in a new Zone.
   - **Haven:** warm, worried, practical, sometimes darkly funny.
   - **Red Hand:** mocking and casual.
   - **Halcyon:** precise, a bit cold, sometimes guilty.
-  - **The Long Table** (planned): homely, attentive, a little too interested in you.
+  - **The Long Table:** homely, attentive, a little too interested in you.
 - **Open channels** on the radio are people, not institutions. The Haven's is a tired woman:
   *"If you can hear this, Morton is open. Bring water if you can. Bring yourself either way."*
   Bastion's net still calls Command, which never answers. The Red Hand uses the open channel

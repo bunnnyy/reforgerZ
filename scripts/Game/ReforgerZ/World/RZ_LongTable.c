@@ -318,6 +318,7 @@ class RZ_LongTable
 	protected float m_fTellTimer;
 	protected bool m_bPublished;
 	protected bool m_bC1Was;
+	protected bool m_bPurgeDue;							// found out: the Red Hand purges its buyer next round
 
 	// The fight (the guest rule, or a questline's)
 	protected IEntity m_FightGroup;
@@ -1162,6 +1163,8 @@ class RZ_LongTable
 		ReadCrossings();
 		TrackC1();
 		ForgetOld();
+		if (m_bPurgeDue)
+			RedHandPurge();
 
 		int now = RZ_Guidance.UnixNow();
 		if (m_eState == RZ_ETableState.QUIET)
@@ -1578,14 +1581,14 @@ class RZ_LongTable
 	protected void UpdateBodies(array<IEntity> players)
 	{
 		float nearest = RZ_Util.NearestDistance(m_vHouse, players);
-		bool want = nearest <= m_Settings.m_fBodyRadius && m_iSceneHold < 0 && !m_FightGroup;
-		if (m_bSpawned && (!want || nearest > m_Settings.m_fBodyRadius + 50))
+		bool blocked = m_iSceneHold >= 0 || m_FightGroup;
+		if (m_bSpawned && (blocked || nearest > m_Settings.m_fBodyRadius + 50))
 		{
 			DespawnBodies();
 			return;
 		}
 
-		if (!m_bSpawned && want)
+		if (!m_bSpawned && !blocked && nearest <= m_Settings.m_fBodyRadius)
 			SpawnBodies();
 	}
 
@@ -2569,8 +2572,10 @@ class RZ_LongTable
 		// Halcyon: interested, and ashamed of being interested
 		RZ_Questline.SpreadRumour(m_GM, "\"A Halcyon researcher asked whether they ever ate the bitten. Then she wouldn't look at anyone.\"", 8);
 
-		// The Red Hand: the crew that bought the jars is purged, and the open channel laughs
-		RedHandPurge();
+		// The Red Hand: the crew that bought the jars is purged (on the next round, not in the middle
+		// of someone's talk with a crew boss), and the open channel laughs
+		RZ_Questline.SpreadRumour(m_GM, "\"Heard about the farm? Pork, they said. Pork!\" The Red Hand's open channel laughs for a long time. Then nobody says anything at all.", 8);
+		m_bPurgeDue = true;
 		Publish();
 	}
 
@@ -2625,7 +2630,7 @@ class RZ_LongTable
 	//! is replaced (never the stronghold's), once, while the house still had its buyer.
 	protected void RedHandPurge()
 	{
-		RZ_Questline.SpreadRumour(m_GM, "\"Heard about the farm? Pork, they said. Pork!\" The Red Hand's open channel laughs for a long time. Then nobody says anything at all.", 8);
+		m_bPurgeDue = false;
 		RZ_Questlines q = m_GM.GetQuestlines();
 		if (m_bSlowed || (q && (q.WorldFlag("table.supplier_cut") > 0 || q.WorldFlag("cargo.supplier_cut") > 0)))
 			return;

@@ -447,6 +447,62 @@ all picked at the start. Code: `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c
 *Simplified:* the storekeeper, the runner and the crate are standing props with talk, choice and
 use actions; only the optional lookouts are AI. The sick girl is in the text, not in the world.
 
+### The House That Went Quiet (the Long Table)
+
+C1 in [QUESTLINES.md](QUESTLINES.md#c1-the-house-that-went-quiet): seven stages, five endings. Only
+in a season with a Long Table ([DESIGN.md](DESIGN.md#the-long-table)), and never with A Place at
+the Table running. Needs Puzzles > Note and Civilian (or the generic object). Starts when someone
+hears a wanderer talk about the missing at suspicion 30 or more, or from another line's find.
+Nobody gives its first stages: they're offered in person to whoever noticed the house (heard the
+rumour, found a tell, ate there, met the host) and to everyone who took part. Code:
+`Missions/Questlines/LongTable/RZ_Quest_HouseWentQuiet.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 0 | **Somebody noticed** | Wait (none) | Routes it: H1's `table.found_by_haven` to stage 2; R2's `cargo.buyer_known`, C2's `place.undercover` or `place.proof`, or the house already found out, to stage 4 | 1, 2 or 4 | ✅ |
+| 1 | **Never arrived** | In person, Any, ★ Hunter, Police; 60 min; no pay | The last road of the last one who never arrived: a boot on the verge, a satchel at a fence, the farm gate (a step chain). ★ Hunter or Police: each gives the next one's grid | The gate: 2. Time up: 1 again, once | ✅ |
+| 2 | **Guest** | In person, Any, ★ Nurse, Elder; 60 min | Whoever keeps the road now, on the lane 160 m out. *Talk*: accept, walk up and eat at the table (`table.guest`, yours; the guest rule watches the rest of the visit). *Sneak*: decline, then lie up a minute on the rise behind the farm unseen (seen: they're wary at stage 3). *Declare a bite* (infected): blessed and sent on, past the boots. Shooting the host ends it | 3. Time up: 2 again, once | ✅ |
+| 3 | **Proof** | In person, Any, ★ Nurse, Elder; 60 min | Three of the guestbook (its last small cross is the last one taken), the boots, the letters in the drawer, the cellar (the mother's key, once the boy has said where it hangs; or a crowbar, which they hear) and the boy's one thing. *Sneak*: at supper (18:30–20:30) nobody sees you; otherwise any of them within 20 m (30 m if wary), shots, heat or the infected's notice and you're caught. *Talk*: the boy at the stream, 160–220 m out, unarmed, ★ Nurse or Elder only. *Force*: caught, they set on you; shoot at the house and you start it (+6 Haven Infamy a death until you've found something); win and the house is open | Three: 4. Caught and shut out, or time up: 3 again (three tries). The house finished in the fight: 6 | ✅ |
+| 4 | **Who to tell** | In person, Any; 2 h | *Side*: talk to any leader of the Haven, Bastion, Halcyon (needs the lab) or the Red Hand, having taken part: the house is found out; +10 Fame with that faction (the Red Hand +4; +5 more for C2's undercover guest); `table.haven`, `table.bastion`, `table.halcyon` or `table.redhand`. *Force*: "Deal with it yourself" at the farm gate | 5, that faction's way or yours. Time up: 4 again, once | ✅ |
+| 5 | **The end of the house** | The told faction's contract on the radio, Any; yours in person | *The Haven* (10 Fame, 30 Favor; 16:00–21:30): unarmed, "It's time" with the mother once the quiet son is talked round (persuade with the Haven, difficulty 2; ★ Elder or Nurse +1) or let go; the family waits at the edge of town; "Let them walk on", and the boy stays. *Bastion* (10 Fame, 30 Favor): a warning once someone is within 600 m (or after 15 min), the guns 5 min later (Missions > Explosion); get the boy out first (no infected within 25 m of him). *Halcyon* (10 Fame, 20 Favor): the mother, or one of them alive, follows you to the lab (an escort). *The Red Hand* (11 Fame, 40 Favor): 90 s within 50 m of the house, two waves of three infected. *Yourself*: fight them (the fight prefab), or tell the mother you know (persuade, as above) and she walks out, then tell the rest to go; a failed word and they set on you; get the boy out first | The ending; yours: 6. Failed: 5 again, once | ✅ |
+| 6 | **What you know** | Wait | Two hours of play or 12 real hours. A faction's leader hearing the proof from someone who took part: half that faction's telling Fame, once each | By your own hand | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **Walked out** | The Haven | The house is broken up; the boy goes to a safehouse (+1) or becomes the Kid wanderer; Haven morale +5 (after −8 when it was found out); +4 Haven Fame for everyone who took part; the headline *"Every Haven house lit a candle last night. Nobody said who for."* and a rumour (12 hours); `table.walked_out` | ✅ |
+| **Burnt** | Bastion | Broken up; its town counts as Burned (town memory), infection −15; Bastion morale +3; +4 Bastion Fame for everyone who took part; a headline. The boy lives only if he was got out (else `table.boy_lost`) | ✅ |
+| **Studied** | Halcyon | Research +2 (scaled as any mission's); broken up; the boy to a safehouse or the Kid; the host becomes a Scavenger wanderer; +4 Halcyon Fame for everyone who took part; a headline; `table.studied`, `table.host_wanders` | ✅ |
+| **Paid to go** | The Red Hand | The house moves (quiet for a real day, then 2–5 km away) and takes people half as often after; C1 can start again, once; +4 Red Hand Fame for everyone who took part; a rumour; `table.paid` | ✅ |
+| **By your own hand** | Yourself | Broken up as stage 5 ends (the boy lives if you got him out); the ending, with a rumour, after the last wait; `table.by_hand` (and `table.boy_lost`) | ✅ |
+
+*Simplified:* the family are standing props with talk and choice actions; only the fights (the
+Missions > Events > Rival group, else Survivor group) are AI. The family doesn't walk to the edge of
+town with you: they wait there. The jars are in the text, not in the cellar.
+
+### A Place at the Table (the Long Table)
+
+C2 in [QUESTLINES.md](QUESTLINES.md#c2-a-place-at-the-table): four stages, four endings. Personal:
+the host makes his offer at the gate on the third meal of a life, to anyone not Trusted with the
+Haven, and only that character can do its stages, in that life. Needs Puzzles > Note and Civilian
+(or the generic object). No stage pays. Code: `Missions/Questlines/LongTable/RZ_Quest_PlaceAtTable.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **The dead** | In person, the guest only; 60 min | A death to the infected in the last hour within 4 km (a wanderer, a supply truck's crew), or else a traveller in a ditch 0.9–2 km out with two infected about. Stand there 10 s (or look), then "Tell him where the dead are" at the farm gate: a bowl, true road news (where a truck is going), `place.dead` (yours), and the house is fed a little. "Walk away": Walked away | 2. Time up: 1 again, once | ✅ |
+| 2 | **The dying** | In person, the guest; 40 min; after 20 min of play or 6 real hours | A wanderer from the roster (not the Kid), held by the stage, bitten, 1–2 km from the farm (a stranger if nobody is free). *Betray*: "Tell him where the farm is": he never arrives (the news, a boot), `place.dying` (yours). *Talk*: "Send him the wrong way": the usual bitten wanderer (an antidote within 20 min saves him), the host cooler. "Give him your antidote": +8 Haven Fame, he remembers you saved him | 3 (time up too: he walks on, bitten) | ✅ |
+| 3 | **A stray** | In person, the guest; 60 min; after a wait | An exile sleeping rough 1.5–3 km out, away from the safehouses, who follows you once asked (an escort). *Betray*: within 40 m of the farm, he never arrives, `place.stray` (yours). *Side*: within 60 m of a safehouse (it takes him in: +1) or 80 m of a Bastion holding or seat (sheltered), Undercover. *Refuse*: "Tell him no" to the host at the gate: crossed, and the guest rule holds in daylight too | 4, Undercover or Walked away. Time up: 3 again, once | ✅ |
+| 4 | **Grace** | In person, the guest; 60 min; after a wait, 17:00–22:00 | The mother at the head of the table. "Sit, and say the name" (the stray's, or the last one taken): Family. "Get up and go": Walked away, with the proof. "Turn the table over" (the fight prefab): a fight; won, the house is finished | An ending. Failed: 4 again, once | ✅ |
+
+| Ending | Consequences | Status |
+|---|---|---|
+| **Family** | No Fame anywhere. Eating there gives a jar to take away (one food item from the loot pool, once a real day); the guest rule never applies; found out while you're family: Haven Infamy +40, Bastion Infamy +20, your name in the headline; `place.family` | ✅ |
+| **Undercover** | The proof: C1 begins at stage 4, and you get +5 Fame on top when you tell; the exile lives with the Haven or Bastion; `place.undercover` | ✅ |
+| **Walked away** | Nothing; the host stops meeting you on the road. With the proof (Grace's "get up and go", or a ★ Police guest at stage 1): `place.proof`, and C1 begins at stage 4 | ✅ |
+| **By your own hand** (at the table) | The house is finished there (the boy lives); `place.by_hand`, `table.by_hand` | ✅ |
+
+*Simplified:* the people are standing props with talk and choice actions (the stray, an escort,
+moves as data while nobody watches); the fight is the only AI.
+
 ## Backgrounds at a glance
 
 Every background has contracts it shines at, and some it's shut out of.

@@ -273,7 +273,7 @@ The gear is a suggestion; the perks and flaws are in [DESIGN.md](DESIGN.md#backg
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 146 prefabs the plugin creates, 15 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 30 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 146 prefabs the plugin creates, 15 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 31 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -668,6 +668,16 @@ players. A faction without a truck and crew counts its places as always supplied
 **Territory > Outpost quartermaster** puts a shop (and Bastion's Requisition) at each outpost,
 using the four quartermasters. Supply trucks also need **Zombies > Move waypoint**.
 
+**The Long Table** has no prefabs of its own. Its people are **Puzzles > Civilian** (or the generic
+object), its tell on the road is the **Note**, its fights are **Missions > Events > Rival group**
+(else **Missions > Survivor group**), Bastion's guns are **Missions > Explosion**, and the jar and
+family's bowl are food items from **Search > Loot pool** (by the Haven's food keywords). Without a
+person prefab the house is data only (nothing to deal with, no host on the road) and its
+questlines don't start; without a fight prefab the guest rule is a narrow escape and "by your own
+hand" can only be talked; without food in the pool there are no jars. Check **Long Table > Trade
+keywords** against your ammunition and medicine. Its two questlines' stage people need the generic
+object's set, like the wanderers.
+
 **New-player guidance, the power grid and the radio station** work with no prefabs: tips use the
 people and radios that exist, scenario clues fall back to the note and body, and the control
 object and console fall back to the puzzle prefabs. **The wind-up radio's prefab name must
@@ -753,7 +763,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 30 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 31 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
@@ -766,6 +776,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
+| World | Long Table | `m_LongTableSettings` | **Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table)) |
 | Director | Stages (list) |  | Per-stage overrides; empty = the built-in four (8, 16 and 24 hours played; [DESIGN.md](DESIGN.md#season-pacing)) |
 | Director | (top level) |  | **Broadcast minutes** (25; 0 = only on first join) |
 | Director | Environment | `m_EnvironmentSettings` | Night heat spread (0.25), night specials (×1.25), rain and fog thresholds, storm thresholds, storm grounds the helicopter |
@@ -975,6 +986,7 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Faction life: morale 60/60/60/60, 0 remembered moments.
 [ReforgerZ] Territory: 8 holdings in 14 settlements (new, seed S). Haven 1+1, Bastion 1+1, Red Hand 1+1, Halcyon 1+1
 [ReforgerZ] Supply trucks: none (no truck or crew prefabs, or no move waypoint).
+[ReforgerZ] Long Table: the F farm past T at grid G (new), N of them, open, hunger 45, suspicion 10.
 [ReforgerZ] Search: 0 items in the loot pool, 0 tables set by hand.
 [ReforgerZ] Locks: on the doors (the loot where no doors are found); keys are data for one life.
 [ReforgerZ] Door blockers: off (no blocker prefab); AI door hook on.
@@ -985,7 +997,9 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 ```
 
 On a restart the same lines say `(save)` or `(saved)` instead of `(picked)` or `(new ...)`, and the
-settlement scan doesn't run. Arland's 14 settlements: its two cities, the building clusters named
+settlement scan doesn't run. The Long Table's line is there in a season that rolled a house
+(**Long Table > Chance**); otherwise it says `Long Table: none this season (the roll).`, and once
+the house is gone, `Long Table: broken up this season.` Arland's 14 settlements: its two cities, the building clusters named
 after the nearest local place label (North Head, Angler Bluff, Sandbank, Heath Point) and the rest
 by grid reference (`Outskirts 13-29`).
 
@@ -1008,12 +1022,13 @@ Warnings worth acting on:
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
 | `Mission item prefab has no RZ_MissionItemComponent ...` | The mission item is missing its component |
 | `Key prefab has no RZ_KeyItemComponent (or didn't spawn) ...` | Add the component to the key prefab; until then keys are data |
-| `Supply trucks are off. ...` / `Territory is off. ...` | Expected only if you turned them off |
+| `Supply trucks are off. ...` / `Territory is off. ...` / `Long Table: off.` | Expected only if you turned them off |
 | `Saved state is from another map, starting a fresh outbreak.` | Expected after changing maps |
 | `Season wipe carried out (...). A fresh outbreak starts.` | The wipe cycle ran on this start; the old state is in `state_season<N>.json` |
 | `Season rule set '...' doesn't exist; ignored.` | A name in **Season > Rule sets** is misspelt |
 | `Questlines: the saved questline '...' (or its stage) no longer exists; dropped.` | A questline (or a stage id) was removed or renamed in the code since the save; that one ends |
 | `Questlines: two questlines use the key '...'` / `... has no key or no stages; skipped.` | A content mistake in `Missions/Questlines/`: give each questline its own key and at least one stage |
+| `Long Table: none this season (no empty place far enough from everyone on this map).` | Every settlement is too infected or within 700 m of a holding, leader seat, safehouse or the lab: no house this season. Fewer outposts (**Territory > Outposts per faction**) leave room |
 | `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON save behaviour in the VERIFY list is wrong) |
 
 While running: `Status | ...` lines every few minutes (stage, infection, zombies, missions, cure),
@@ -1021,6 +1036,10 @@ While running: `Status | ...` lines every few minutes (stage, infection, zombies
 `Story arc started: ...`, `Questline started: ...`, `Questline ...: stage '...'.` and
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
 `Bastion checkpoint up near ...` / `Red Hand roadblock up near ...`,
+`Long Table: ... never arrived (hunger N, suspicion N, N taken).`, `Long Table: a player heard the rumour.`,
+`Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
+`Long Table: found out (to N).`, `Long Table: the farm past ... is moving (quiet for a real day).` and
+`... opens again past ...`, `Long Table: broken up (N).`,
 `Fire Mission perk: player N, M infected killed.`, `Note at ... by ...: ...`, `Season over. Cure goes to ...`,
 and `Season N is over (...). The wipe happens at the next restart.`
 
@@ -1124,6 +1143,23 @@ session, tick off:
   is back at the same stage with the same names. At the handover, warn the runner on one run and
   take the crate back unseen on another: the endings differ (Haven food and morale, headline,
   rumour). A second player who joins late sees it in the journal only once they're offered a stage.
+- [ ] The Long Table (**Chance** 1, a fresh season): the log names the farm; within 300 m its people
+  stand there and talk. Eat (grace reads the last name taken, the boots show once), trade a jar for a
+  magazine, declare a bite while infected. Alone, eat at 20:00 and wait past 20:30 by the door: the
+  family sets on you once (a fight with the rival group, else a narrow escape); with a friend
+  within 100 m, or bitten, nothing happens. Walk within 1.5 km alone: the host steps out once a
+  session. Restart: the farm, its people and what it remembers of you are back.
+- [ ] The House That Went Quiet (**Wait scale** 0.1; set the world flag `table.suspicion_add` to 30
+  from a test, then talk to wanderers until one mentions the missing): the trail's three spots lead
+  to the farm gate; at the guest stage decline and lie up on the rise unseen; take the proof at
+  supper, then tell a Haven council head (the house is found out: headline, Haven morale −8), and
+  walk the family out at dusk unarmed. On another season tell Bastion and get the boy out before
+  the guns, or keep it to yourself and talk the mother out.
+- [ ] A Place at the Table: eat three times in one life (not Trusted with the Haven): the host makes
+  his offer. Do the dead (the traveller in the ditch), send the dying man the wrong way (he's a
+  bitten wanderer on the roads after), walk the stray to a safehouse instead (Undercover: The House
+  That Went Quiet begins at "Who to tell"). On another life, bring the stray and sit at grace:
+  family, then found out (+40 Haven, +20 Bastion Infamy, your name in the headline).
 - [ ] With **Post minutes** at 1, a road post goes up on a road ahead of you. At a Bastion
   checkpoint: Known, you're waved through; a stranger is searched at the barrier (a suppressor is
   taken); walking off mid-search costs 3 Infamy and they fire. Unarmed with Bastion Infamy, wait at

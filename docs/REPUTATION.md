@@ -388,46 +388,53 @@ factions, and a 30-minute pause after one ends.
 
 They're headlines, never alerts.
 
-## The Long Table (planned)
+## The Long Table
 
-**Planned, not built.** A tiny cannibal family in one farmhouse ([LORE.md](LORE.md#the-long-table)).
-Where the house is and what it does in the world is in [DESIGN.md](DESIGN.md#the-long-table-planned);
-its questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table).
+A tiny cannibal family in one farmhouse ([LORE.md](LORE.md#the-long-table)), some seasons. Where
+the house is and what it does in the world is in [DESIGN.md](DESIGN.md#the-long-table); its
+questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table). ✅ all (`World/RZ_LongTable.c`).
 
 **Not a fifth faction.** They're four to seven people with nothing to sell that a player should
 want. A Fame ladder would make eating people a way up, and a shop would be loot paid for in
 people. So there's no Fame, Infamy or Favor with them, no tiers, no shop, no perks, and no bit
-in the hostility mask. They remember each character the way a leader does, in three words:
-*guest* (ate with them), *family* (A Place at the Table) or *crossed* (refused them, or took proof
-to someone).
+in the hostility mask. They remember each character (for this life) in three words: *guest* (ate
+with them), *family* (A Place at the Table) or *crossed* (refused the host, was set on, shot one of
+them, or took proof to someone). The crossed get nothing at the farm but a shut door.
 
 | Dealing | What happens |
 |---|---|
-| **Eat with them** | A bowl (one food item) and true road news from the host. Safe, except under the guest rule |
-| **Trade** | A jar (a food item) for ammunition or medicine, once a visit |
-| **Declare your bite** | A blessing, and they'll never set on you while you're infected |
-| **Expose them** | Proof to a faction ([QUESTLINES.md](QUESTLINES.md#c1-the-house-that-went-quiet)): Fame with that faction |
-| **Break them up** | One of the questline's endings, or a fight |
+| **Eat with them** ("Sit down and eat", on any of the grown-ups) | A bowl at the long table, grace (the name read is the last one who never arrived) and true road news (a truck on the road or about to leave, a hungry safehouse, where the infected are stirred up). Once a visit; the first meal of a life shows the boots by the door. Family also take a jar away: one food item from the loot pool, once a real day. Safe, except under the guest rule |
+| **Trade** ("Trade for a jar") | One piece of ammunition or medicine (Long Table > Trade keywords) for a jar: a food item from the loot pool, a day written on the lid. Once a visit |
+| **Declare your bite** | Infected: a blessing, and they'll never set on you while you're infected. Not: "Good. Then sit." |
+| **Expose them** | Proof to a faction's leader ([C1](QUESTLINES.md#c1-the-house-that-went-quiet), stage 4): +10 Fame with that faction (the Red Hand +4; +5 more for [C2](QUESTLINES.md#c2-a-place-at-the-table)'s undercover guest) |
+| **Break them up** | One of C1's endings, C2's fight at the table, or any fight they lose |
 
-**The guest rule.** A player who ate with them and is still within 30 m of the house after 20:30,
-with no other player within 100 m and no infection, is set on by the family: a fight. Once a life.
-Anyone else, at any other time, is a guest.
+On the third meal of a life the host makes his offer (C2), to anyone not Trusted with the Haven.
 
-**Shooting them.** Until they're exposed they're a quiet farm family, so shooting one costs +6
+**The guest rule.** A player who ate with them on this visit and is still within 30 m of the house
+between 20:30 and 05:00 (from a minute after the meal), with no other player within 100 m and not
+infected, is set on by the family: a fight ([DESIGN.md](DESIGN.md#the-long-table)). Once a life,
+and never for family; for someone who refused the host's stray, at any time of day, meal or not.
+Anyone else, at any other time, is a guest. Without the fight prefab it's a narrow escape. Either
+way the house is crossed with them, and suspicion rises 15.
+
+**Shooting them.** Until they're found out they're a quiet farm family, so killing one costs +6
 Haven Infamy, as for gunning down Rival Survivors who'd fought nobody. Once they've set on you,
-or once they're exposed, it costs nothing with anyone.
+once they're found out, with the infected on them, or for a questline's player who has found the
+proof or come to end it, it costs nothing with anyone.
 
-**When they're exposed,** every faction reacts in its own way, within the usual caps:
+**When they're found out,** every faction reacts in its own way, within the usual caps:
 
 | Faction | Reacts | For players |
 |---|---|---|
-| The Haven | Morale −8 (shame); wants them walked out | Proof: Haven Fame. Family of the house when it's exposed: Haven Infamy +40 |
-| Bastion | Containment: if nobody else ends it within a real day, it burns the farm | Proof: Bastion Fame. Family: Bastion Infamy +20 |
-| The Red Hand | The boss purges any crew that bought from them; the open channel says "pork" and laughs | Proof: a little Red Hand Fame |
-| Halcyon | Wants one of them alive, and the mother's kitchen notebook | Proof, or one of them brought in: Halcyon Fame, a little research |
+| The Haven | Morale −8 (shame), and a rumour that it was one of theirs, and no more; wants them walked out (C1) | Proof: +10 Haven Fame. Family of the house when it's found out: Haven Infamy +40 |
+| Bastion | A rumour: an infected cluster, containment. If nobody else ends it within a real day, it burns the farm | Proof: +10 Bastion Fame. Family: Bastion Infamy +20 |
+| The Red Hand | On the next round the boss purges the crew that bought from them (the crew boss of the Red Hand outpost nearest the farm is replaced; Red Hand morale −3), once, unless the buyer is already gone; the open channel says "pork" and laughs | Proof: +4 Red Hand Fame |
+| Halcyon | A rumour about whether they ate the bitten; wants one of them alive, and the mother's kitchen notebook (C1) | Proof: +10 Halcyon Fame; the volunteer brought in: research +2 |
 
-Trading with them before anyone knew costs nothing. Only what a player did knowingly (the
-questlines' *(you)* flags) is held against them.
+Family who are online are named in the headline; those offline get their Infamy on their saved
+profile. Trading with them before anyone knew costs nothing. Only what a player did knowingly
+(the questlines' *(you)* flags) is held against them.
 
 ## What makes AI shoot you
 
@@ -523,6 +530,8 @@ checkpoints keep a curfew ([DESIGN.md](DESIGN.md#seasons)).
   leak (`LeakLocation`). House rules and exile are in `RZ_Safehouses` and `RZ_Wanderers`.
 - `RZ_FactionServices`: the Fire Mission perk (`RZ_FireMissionSmokeComponent`), the fence, the
   medic and booster, paying for amends, reputation clues; `RZ_FactionServiceAction` on quartermasters.
+- `RZ_LongTable` (`World/RZ_LongTable.c`): the Long Table's memory of each character, its
+  dealings, the guest rule, shooting them and the reactions when it's found out.
 - `RZ_Checkpoints`: road posts, surrender, camps and safe zones. A surrender is
   `RZ_Hostility.StandDown`; every "fired on for a few minutes" is `RZ_Hostility.AddGrudge`.
 - AI hostility: `RZ_Hostility` works out each player's bitmask; `RZ_Factions` builds and decodes

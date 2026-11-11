@@ -439,6 +439,7 @@ Code: `Factions/RZ_Territory.c`.
   | Halcyon | quiet, low-infection places |
 
   Never: a town already held (or within 400 m of a holding), a safehouse town, the lab town,
+  a town within 1.5 km of the [Long Table](#the-long-table)'s farm,
   a town at 85+ infection, or anything near the quarantine line. Not under 700 m from the
   faction's own stronghold, and rarely over 6 km.
 - **The territory tick**, every 45–75 minutes while players are online (divided by the season
@@ -535,44 +536,82 @@ Capped, background and cheap. Needs, morale, truces and feuds are in
   A false rumour inverts strength, invents a lost town, names the wrong truck destination or
   invents a need.
 
-### The Long Table (planned)
+### The Long Table
 
-**Planned, not built.** One small cannibal family in one farmhouse. Who they are is in
-[LORE.md](LORE.md#the-long-table); how players deal with them (no reputation tree, the guest
-rule, what each faction does when they're exposed) is in [REPUTATION.md](REPUTATION.md#the-long-table-planned);
-their questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table).
+Code: `World/RZ_LongTable.c`; settings: **World > Long Table**. One small cannibal family in one
+farmhouse, some seasons. Who they are is in [LORE.md](LORE.md#the-long-table); how players deal
+with them (no reputation tree, the dealings, the guest rule, shooting them, what each faction does
+when they're found out) is in [REPUTATION.md](REPUTATION.md#the-long-table); their two
+questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md](MISSIONS.md#questlines).
 
-- **Not a faction.** No territory, strength, morale, truck, leader seat or stronghold. One house
-  a season at most; **Long Table > Chance** (a setting) decides whether a season has one.
-- **Where.** At a fresh season's start: the small settlement with the fewest towns within 1.6 km,
-  infection under 40, at least 2 km from every holding, safehouse and the lab, and away from the
-  quarantine line; a farm building (barn, farm, mill, by prefab name) there if there is one.
-  Saved. It **moves at most once a season** (paid to go, or suspicion past 80 with nobody acting):
-  quiet for a real day, then the next place that fits, 2–5 km away.
-- **Data.** One record: the members (4–7, by role: the mother, the host, the quiet son, the boy,
-  one or two others; names seeded), **hunger** (0–100, up a little every hour) and **suspicion**
-  (0–100). Ticked every 10 minutes.
-- **Bodies only near players.** Within 300 m: the host and one or two others outside, the mother
-  inside, sometimes the boy. They're civilians until a fight starts, then a fight group hostile
-  only to the players in it (as a hunter squad is).
-- **The host on the road.** A lone player within 1.5 km may meet him, at most once a session:
-  road news (true) and an invitation.
-- **What it takes,** capped. While hunger is over 50, every 3 hours with players online (divided
-  by the season speed), one person: a wanderer whose route passes within 1.5 km (at most one a
-  real day; the roster's replacement comes a real day later), or someone leaving a safehouse onto
-  the roads, or an exile whose location was sold. Never from a safehouse or a holding, never a
-  player. Each one lowers hunger by 40, raises suspicion by 10 and leaves one tell: *"never
-  arrived"* in the news (not a death), a satchel at a Red Hand fence, a boot on the road.
-- **Suspicion** also rises with tells found and with the questlines' flags. At 30 the rumours
-  start (*"There's smoke past the last village. Nobody lives out there."*) and so does
-  [C1](QUESTLINES.md#c1-the-house-that-went-quiet).
-- **Exposed** when a questline's proof reaches a faction, or suspicion reaches 100: a headline,
-  and each faction reacts ([REPUTATION.md](REPUTATION.md#the-long-table-planned)). If nobody ends
-  it within a real day, Bastion burns it while Bastion is around (a Bastion Shelling, as data if
-  nobody is near); otherwise it moves.
-- **Broken up:** gone for the season. The farm is an ordinary house again (Burned, if it was
-  burnt). The boy may become the Kid wanderer, and the host a Scavenger wanderer.
-- **Next season** is wiped like everything else; a new house may form somewhere else.
+- **Not a faction.** No territory, strength, morale, truck, leader seat or stronghold, and never a
+  stronghold. One house a season at most: **Chance** (0.75) is rolled once, at the season's first
+  start (a wipe rolls again). Off, there's no house, nothing is taken and its questlines never start.
+- **Where.** The small settlement (size 1) with the fewest towns within 1.6 km, infection under 40,
+  at least 2 km from every holding, leader seat, quartermaster, safehouse and the lab, off the
+  quarantine line. Small maps relax it a step at a time (1.5 km and infection under 50, then 1 km,
+  then 700 m and any size); if nothing fits, there's no house that season. The house is the
+  farthest farm building there (barn, farm, mill, stable, granary, cowshed or silo, by prefab
+  name), else the building farthest out, else a point on the edge. Saved. Territory never founds or
+  takes an outpost within 1.5 km of it, and world events that want a town nobody lives in leave
+  its town alone.
+- **Data.** One record: 4–7 people by role (the mother, the host, the quiet son, the boy, and up to
+  three others; names seeded), **hunger** (0–100, starts at 45, +6 an hour of play × season speed)
+  and **suspicion** (0–100, starts at 10). Ticked every 10 minutes of play. Saved with what it took
+  last, its tells on the road and what it remembers of each character.
+- **Bodies only near players.** Within 300 m (Puzzles > Civilian): the host and one or two others
+  outside, the mother at the door, the boy half the time. While a questline's stage mission is at
+  the farm, it has the farm: the house's own people stand aside. A body that's a character and is
+  killed is one of them gone.
+- **The host on the road.** Every 30 s, a player within 1.5 km of the farm (not at it, not in a
+  vehicle, nobody else within 150 m) has a 1 in 5 chance to meet him, once a session: he steps out
+  35 m ahead with a flask, true road news and an invitation, and goes home after five minutes or
+  when they've walked 350 m on. Never to a character who walked away from him or crossed the house.
+- **What it takes, capped.** Every 3 hours of play (÷ season speed; twice as long once its buyer
+  is gone or it was paid to move), if hunger is over 50: a wanderer as data (no body, no player
+  within 600 m, not the Kid, not bitten, held or escorted) whose straight route passes within
+  1.5 km of the farm, at most one a real day; else someone who walked out of a hungry safehouse
+  alone in the last six hours (upkeep's leavers who found no other house). Never from a safehouse
+  or a holding, never a player. H2's sold exile (`cargo.exile`) is one more. Each lowers hunger by
+  40, raises suspicion by 10 and leaves its tells: *"never arrived"* in the news (a quiet headline;
+  Haven-Known players are told; not a death, though the roster replaces the wanderer a real day
+  later as it does the dead), a boot on the verge where they were last seen (a note prop while a
+  player is within 150 m, for two real days), and for a courier or a trader (else 30% of the time)
+  their satchel at a Red Hand fence (the Red Hand's open channel laughs about it; a rumour).
+- **Suspicion** also rises with tells found (+5 a boot, +2 the boots by the door at a first meal,
+  +15 the guest rule) and with other questlines' flag `table.suspicion_add`. Wanderers talk about
+  anyone who never arrived in the last three real days (half the time); at 30 the rumours start
+  too (*"There's smoke past Levie most evenings. Nobody lives out there. Nobody should."*), and
+  someone who hears either from a wanderer, or finds a boot, then starts
+  [C1](QUESTLINES.md#c1-the-house-that-went-quiet). Past 80 with neither questline running, the
+  house moves. At 100 it's found out.
+- **Found out** when a questline's proof reaches a faction, at suspicion 100, or by R2's
+  `table.bastion_knows`: a headline, each faction's reaction
+  ([REPUTATION.md](REPUTATION.md#the-long-table)), and no more takings. If nobody ends it within a
+  real day (C1's last stage holds that clock), Bastion burns it while Bastion is around (its
+  stronghold stands): Missions > Explosion at the farm if a player is within 600 m, as data if not.
+  Otherwise it moves, or scatters if it already moved.
+- **Moving**, once a season: paid to go, past 80 suspicion with nobody after them, or its town
+  overrun (85 infection). Quiet for a real day (no bodies, no takings), then the next place that
+  fits 2–5 km away (or the same one if none), with suspicion 20.
+- **The fight** (the guest rule's, or a questline's): the family's men as one AI group (Missions >
+  Events > Rival group, else Missions > Survivor group) hostile only to the players it's set on, by
+  the Haven's bit as Rival Survivors are. Each death is one of them, the host last. All of them
+  down: the mother is gone by morning. The players gone for a minute: the group goes, the dead stay
+  dead. Without the prefab there's no fight (the guest rule is a narrow escape).
+- **Broken up**: without the mother, or with fewer than two grown-ups, or by a questline's ending,
+  it's gone for the season. Burnt: its town counts as Burned (town memory) and loses 15 infection.
+  The boy, if he got out, becomes the Kid wanderer (or one more at the nearest safehouse if a Kid is
+  already on the roads); the host may become a Scavenger wanderer.
+- **World flags** (season-wide, for any content): `table.exists`, `table.town` (its settlement,
+  -1 none), `table.exposed`, `table.exposed_to` (the faction, -1 everyone), `table.broken`,
+  `table.burnt`, `table.moved`, `table.suspicion`; `table.supplier_cut` once the Red Hand purges
+  its buyer. What it reads from other lines is in [QUESTLINES.md](QUESTLINES.md#crossings).
+- **Next season** is wiped like everything else, and rolls again.
+
+*Simplified:* the takings and the family are data; a taken wanderer just isn't on the roads any
+more, and routes are straight lines. The family's people stand where they're spawned. The jar is
+any food item in the loot pool.
 
 ## Haven safehouses
 
@@ -664,6 +703,8 @@ settlements above 8). Names come from a seed; roster, positions and memories are
   killed them is read from the body where the engine records it; otherwise the player who shot
   near them in the last 30 s is blamed, but never while the infected are on them (so nobody is
   framed for a death to the infected).
+- **Never arrived.** One whose road passes the [Long Table](#the-long-table)'s farm may be taken
+  off it as data: no death in the news, only that they never arrived; replaced a real day later.
 - **Performance.** With no player within 400 m, a wanderer is a position moving in a straight
   line on the tick. At most two bodies near each player.
 
@@ -1451,7 +1492,7 @@ Code: `Persistence/RZ_SaveData.c`.
 Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stage, every
 settlement's infection and town memory, cure progress and antidote and stabiliser stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
-supply stock, faction life, the power grid and radio station, story arcs, questlines, headlines and world
+supply stock, faction life, the Long Table, the power grid and radio station, story arcs, questlines, headlines and world
 interactions. A save from another map is ignored. A profile that never spawned and holds nothing
 lasting (no lives, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
 left before the server knew them (a wound described after a disconnect) gets a blank profile
