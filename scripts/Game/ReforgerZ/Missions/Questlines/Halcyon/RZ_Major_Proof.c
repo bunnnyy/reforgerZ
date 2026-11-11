@@ -180,8 +180,7 @@ class RZ_Major_Proof : RZ_Questline
 		if (!cal || !act || !RZ_Majors.InWindow(act) || (gm.GetCure() && gm.GetCure().IsFinalStand()))
 			return false;
 
-		string key = string.Format("%1.%2", KEY, stage);
-		return cal.Hold(key, gm.GetLabPosition()) || cal.MustRun(key);
+		return RZ_MajorHelp.HoldEvening(run, string.Format("%1.%2", KEY, stage), gm.GetLabPosition());
 	}
 
 	//------------------------------------------------------------------------------------------------

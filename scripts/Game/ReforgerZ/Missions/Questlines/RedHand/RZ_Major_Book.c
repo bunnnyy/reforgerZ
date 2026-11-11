@@ -257,8 +257,7 @@ class RZ_Major_Book : RZ_Quest_TheBook
 		if (!cal || !act || !RZ_Majors.InWindow(act))
 			return false;
 
-		string key = string.Format("book.%1", stage);
-		return cal.Hold(key, RZ_RedHandQuest.PosOf(run, "cross")) || cal.MustRun(key);
+		return RZ_MajorHelp.HoldEvening(run, string.Format("book.%1", stage), RZ_RedHandQuest.PosOf(run, "cross"));
 	}
 
 	//------------------------------------------------------------------------------------------------

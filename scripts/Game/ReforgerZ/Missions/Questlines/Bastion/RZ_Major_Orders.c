@@ -151,8 +151,7 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 		if (!cal || !act || !co || !RZ_Majors.InWindow(act))
 			return false;
 
-		string key = string.Format("orders.%1", stage);
-		return cal.Hold(key, co.m_vPos) || cal.MustRun(key);
+		return RZ_MajorHelp.HoldEvening(run, string.Format("orders.%1", stage), co.m_vPos);
 	}
 
 	//------------------------------------------------------------------------------------------------

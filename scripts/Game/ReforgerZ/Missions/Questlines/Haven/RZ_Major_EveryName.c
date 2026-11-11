@@ -253,8 +253,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		if (!cal || !act || !RZ_Majors.InWindow(act))
 			return false;
 
-		string key = string.Format("%1.%2", KEY, stage);
-		return cal.Hold(key, run.m_vPlace) || cal.MustRun(key);
+		return RZ_MajorHelp.HoldEvening(run, string.Format("%1.%2", KEY, stage), run.m_vPlace);
 	}
 
 	//------------------------------------------------------------------------------------------------

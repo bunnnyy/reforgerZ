@@ -161,6 +161,31 @@ class RZ_MajorHelp
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A set piece asks for this evening (RZ_SetPieceCalendar): true when it holds it (or has waited
+	//! its evenings and runs anyway). A held evening counts as one wait, once per evening.
+	static bool HoldEvening(RZ_QuestRun run, string key, vector pos)
+	{
+		RZ_SetPieceCalendar cal = RZ_SetPieceCalendar.Get();
+		if (!cal || cal.Holder() == key)
+			return true;
+
+		if (cal.IsFree())
+			return cal.Hold(key, pos);
+
+		if (cal.MustRun(key))
+			return true;
+
+		int eve = cal.Evening();
+		if (run.Flag("cal." + key, -1) != eve)
+		{
+			run.SetFlag("cal." + key, eve);
+			cal.Hold(key, pos);
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A stand-in's spot near a seat (never behind a lock).
 	static vector NearSeat(vector seat)
 	{

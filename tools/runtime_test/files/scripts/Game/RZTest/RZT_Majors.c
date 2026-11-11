@@ -88,6 +88,7 @@ class RZT_Majors
 	protected static int s_iFailed;
 	protected static float s_fCureBefore = -1;
 	protected static bool s_bLiveDone;
+	protected static int s_iLiveAt;
 	protected static ref array<string> s_aKeys = {"book", "orders", "every_name", "proof"};
 
 	//------------------------------------------------------------------------------------------------
@@ -196,6 +197,7 @@ class RZT_Majors
 
 				Print("RZT major book: the send-off's scene didn't come up in 90 s; its default instead");
 				s_bLiveDone = true;
+				s_iAct = 2;
 				return false;
 			}
 
@@ -209,10 +211,15 @@ class RZT_Majors
 			}
 
 			s_bLiveDone = true;
+			s_iLiveAt = s_iSec;
 			return false;
 		}
 
-		if (key == "book" && s_bLiveDone && s_iAct == 1 && run.m_iStage != RZ_Major_Book.S_SEND)
+		// The mission manager hands the won scene to the questline within a few seconds
+		if (key == "book" && s_bLiveDone && s_iAct == 1 && run.m_iStage == RZ_Major_Book.S_SEND && s_iSec - s_iLiveAt < 30)
+			return false;
+
+		if (key == "book" && s_bLiveDone && s_iAct == 1)
 		{
 			Check(q.HasWorldFlag("book.act1"), "the send-off settles act 1 live", "book.act1 " + q.WorldFlag("book.act1", -1).ToString());
 			s_iAct = 2;
