@@ -1,5 +1,6 @@
 //! Chat commands (client): "/note your text" pins a note on the safehouse notice board you're at,
-//! "/noteclear" and "/noteclear all" clear boards (server admins), "/hall" shows the hall of fame.
+//! "/noteclear" and "/noteclear all" clear boards (server admins), "/hall" shows the hall of fame,
+//! "/tribes" writes the infected to the server log (admins).
 //! Each is sent to the server through RZ_PlayerUIComponent.SendCommand; the server checks
 //! everything again. Registered once, from the first notice the client receives
 //! (RZ_GameModeComponent.QueueHint), so it works without any layout.
@@ -21,6 +22,7 @@ class RZ_ChatCommands
 		chat.GetCommandInvoker("note").Insert(s_Instance.OnNote);
 		chat.GetCommandInvoker("noteclear").Insert(s_Instance.OnNoteClear);
 		chat.GetCommandInvoker("hall").Insert(s_Instance.OnHall);
+		chat.GetCommandInvoker("tribes").Insert(s_Instance.OnTribes);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -52,5 +54,13 @@ class RZ_ChatCommands
 	protected void OnHall(SCR_ChatPanel panel, string data)
 	{
 		Send(RZ_PlayerUIComponent.CMD_HALL, "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "/tribes" (admins): the infected to the server log; "/tribes stir" and "/tribes site" are
+	//! play-test aids (docs/INFECTED.md, Admin visibility).
+	protected void OnTribes(SCR_ChatPanel panel, string data)
+	{
+		Send(RZ_PlayerUIComponent.CMD_TRIBES, data);
 	}
 }

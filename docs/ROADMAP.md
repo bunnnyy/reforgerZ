@@ -22,9 +22,10 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | One move waypoint per AI group: every order moves the same waypoint (no order leaves one in the world), deleted with the group; checked on the server with Bacon Zombies | [Principles](DESIGN.md#principles) |
 | Zombie spawner for any zombie mod, bite detection (scratches and bites, protective clothing), the golden window and wound cleaning, staged infection, the Turned Player | [Zombies](DESIGN.md#zombies-bites-and-infection) |
 | Treatments from day one: antidote and stabiliser stocks scaled by research, Halcyon's trial dose, safehouse bite declarations, five low-grade meds with side effects | [Treatments](DESIGN.md#treatments) |
-| Light adaptation: specials after breakthroughs, one trait per stage, favourite spots | [Infection adapts](DESIGN.md#infection-adapts) |
+| Light adaptation: specials after breakthroughs, one trait per stage, favourite spots | [Infection adapts](INFECTED.md#infection-adapts) |
+| The infected, phase 1 of the tribes design: the towns' crawlers (placed by the time of day, drifting to noise, the kill ledger, reinforcements from the buildings, stir and scavengers as data, giving up on locked doors), loose ones that walk to a town or a lair, heat hordes from the nearest town, the agent budget (100 agents, a share per player cluster, 8 a tick, the engine's active-AI limit at 160), no spawn in a player's sight within 300 m, runtime groups, per-member tracking (samples where a special fell), data parts with write-back, the silent kill, hit attribution, `/tribes` and the status line; both switches off gives the old spawner | [INFECTED.md](INFECTED.md) |
 | The Perimeter: warning and kill zones, one drone per player, sealed road checkpoints | [The Perimeter](DESIGN.md#the-perimeter) |
-| Night, rain, fog, fog banks and storms; the power grid and power surges; the radio station; the government broadcast | [Time and environment](DESIGN.md#time-and-environment) |
+| Night, rain, fog, fog banks and storms; the day's length (4 real hours by default) and the time of day kept across restarts; the power grid and power surges; the radio station; the government broadcast | [Time and environment](DESIGN.md#time-and-environment) |
 | 13 backgrounds (5 unlocked through Legacy), personal goals, Legacy points | [Backgrounds](DESIGN.md#backgrounds-and-personal-goals) |
 | Fame, Infamy and Favor; tiers; rivals; amends (contracts, paying Favor, surrender); quartermaster shops; every perk (Requisition, Fire Mission, the fence, the bounty board, Halcyon's medic and immunity booster, the Haven Champion's Safe Harbour and Remembered...); hunter squads; bounties; reputation clues | [REPUTATION.md](REPUTATION.md) |
 | Bastion checkpoints and Red Hand roadblocks inside the Zone (unsearched passage, tolls, searches), surrender, camps that warn and refuse, safe zones | [REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps) |
@@ -42,7 +43,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | World facts: one layer content reads (the cure and the epilogue, stage, Bastion presence, the day, night, who holds a town and a filtered town pick, safehouses, live leader names), season flags shared with the questlines, canon facts made once a season, claims so two stories don't use the same house, leader or wanderer, `Fill` tokens for text (briefs filled when shown), `Changed` for news, one "can it run now" check every mission starter uses, and missions called off when the world makes them pointless | [World facts](DESIGN.md#world-facts) |
 | The epilogue after the cure: the Perimeter stands down (no shots; whoever walks up to the line is turned back; the gates open with the wipe), research stops and running research and line jobs are called off, and the broadcast, guidance and the factions' lines follow | [The Perimeter](DESIGN.md#the-perimeter), [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
-| The land grid, off by default: water, height, trees, buildings, roads and inferred bridges in 250 m squares, ridges, valleys, forests, lair candidates and wild land, read once and cached; measured on Arland, Everon and Cain (`tools/land_survey/`). Nothing uses it yet: it's the ground the infected tribes will live on | [The land grid](DESIGN.md#the-land-grid) |
+| The land grid (on with Zombies > Tribes): water, height, trees, buildings, roads and inferred bridges in 250 m squares, ridges, valleys, forests, fields, lair candidates, wild land and no-lair overlays, read once and cached, tribe slots at 1 per 5 km² with an override; measured on Arland, Everon and Cain (`tools/land_survey/`) | [The land](INFECTED.md#the-land) |
 | World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
 | Cure research, antidotes, the final stand, the season's winner; the pace by play (research ×0.25 to ×2.5 for the last week's player-hours); the lab's capacity (a backlog worked through at 3% a real day, capped at 4 days of work as a backstop: samples refused and mission research lost while it's full, +25% on what fills a near-empty backlog to half a day); breakthrough news held until someone is online; the finale's 90% gate as a hook, used only once a finale questline is registered, with a fallback of 1% a real day after a week there | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
@@ -111,13 +112,16 @@ The build-review fixes are done. The design for the items marked "being designed
   research at 90% until a finale adds research with `RZ_CureResearch.AddFinaleResearch`
   ([Cure research](DESIGN.md#cure-research-and-the-seasons-end)).
 
-### Infected tribes and town crawlers
+### Infected tribes
 - Designed, not built: tribes of infected in the wild land, each with a lair, a range and an
   alpha, out by day too but lighter (a small day party on its trails; the full hunt only at
-  night); town crawlers drawn from each town's infection. The land grid they need is built and
-  measured ([DESIGN.md](DESIGN.md#the-land-grid)), and so is one held waypoint per group. Next: the
-  crawlers, the land grid in use and the rest of the plumbing (runtime groups, a silent kill), with
-  their own doc.
+  night). Phase 1 is built: the towns' crawlers, the land grid in use, the agent budget and the
+  plumbing ([INFECTED.md](INFECTED.md)). **Next, phase 2:** one tribe end to end on Everon (lair,
+  scouts, day parties, the dusk call, a hunt by placement, the night's commitment, the alpha's body,
+  kill sites, the vigil), play-tested before all of them; then what stirs a town and makes kill sites,
+  crawlers giving way to a tribe, hordes and lookers from a tribe inside its range. Phases 3 to 5:
+  the life cycle, people and content, the great alpha and signs
+  ([INFECTED.md](INFECTED.md#tribes-planned)).
 - Before the tribes' code, `tools/tribe_sim.py` simulates them as data over a season on the
   45-day pacing (`--legacy` for the old one) at 2, 5 and 10 players, on the wild land the land
   survey measured on Arland, Everon and Cain (and a Chernarus-size map), with the infected's sight
@@ -187,6 +191,11 @@ In this order, because later ones depend on earlier ones:
     the guest rule's timing is fair and its fight fires, and whether the writing stays on the right
     side of the line.
 14. **Weather** accessors and the generator's noise.
+    **The infected** (phase 1, the checklist's "The infected"): do towns read as full and slow, or
+    just as many and fast (Bacon has no slow prefab)? Is 28 a cluster enough for a town in Overrun,
+    and 100 on the server enough with several groups out? Does the sight rule (the physics trace's
+    cost, the status line's frame) keep spawns out of view without starving towns near players? Do
+    loose ones lead somewhere worth following, and does a siege's end feel fair?
 15. **Road posts and camps:** do posts go up on real roads ahead of players, and do the search,
     the toll, running and surrender fire at the right distances? Is the timed grudge enough to
     make the crew shoot, and does a surrender's stand-down stop them? Is a Fire Mission's horde

@@ -21,6 +21,11 @@ class RZ_BiteDetector
 	protected ref map<int, float> m_mLastHealth = new map<int, float>();
 	protected ref map<int, float> m_mLastHitAt = new map<int, float>();
 	protected ref map<int, float> m_mScratchToldAt = new map<int, float>();
+	// Death attribution (docs/INFECTED.md, "Bodies"): what hit each player last, and when
+	protected ref map<int, float> m_mHitAt = new map<int, float>();
+	protected ref map<int, int> m_mHitRole = new map<int, int>();
+	protected ref map<int, int> m_mHitTribe = new map<int, int>();
+	protected ref map<int, int> m_mHitTown = new map<int, int>();
 	protected ref array<string> m_aJacketWords = {};
 	protected ref array<string> m_aGloveWords = {};
 	protected ref array<string> m_aHelmetWords = {};
@@ -62,6 +67,10 @@ class RZ_BiteDetector
 		m_mLastHealth.Remove(playerId);
 		m_mLastHitAt.Remove(playerId);
 		m_mScratchToldAt.Remove(playerId);
+		m_mHitAt.Remove(playerId);
+		m_mHitRole.Remove(playerId);
+		m_mHitTribe.Remove(playerId);
+		m_mHitTown.Remove(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -93,6 +102,8 @@ class RZ_BiteDetector
 	//------------------------------------------------------------------------------------------------
 	protected void OnHit(int playerId, IEntity ent, float hp)
 	{
+		RecordHit(playerId, ent.GetOrigin());
+
 		float lastHit;
 		bool grabbed = m_mLastHitAt.Find(playerId, lastHit) && m_fClock - lastHit <= GRAB_SECONDS;
 		m_mLastHitAt.Set(playerId, m_fClock);
@@ -112,6 +123,51 @@ class RZ_BiteDetector
 
 		m_mScratchToldAt.Set(playerId, m_fClock);
 		m_GM.NotifyPlayer(playerId, "Scratched", "Nails, not teeth. It tore the cloth and the skin under it, but it didn't bite. Keep it that way.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Which body hit the player: its role, town and tribe (with Crawlers or Tribes on, when the
+	//! spawner tracks members). A player-killed event can read it (the design's check 9:
+	//! not measured yet, so nothing reads it on a death yet; tribes use it in phase 2).
+	protected void RecordHit(int playerId, vector pos)
+	{
+		RZ_ZombieSpawner spawner = m_GM.GetSpawner();
+		if (!spawner.IsPlumbingOn())
+			return;
+
+		RZ_TrackedZombie z = spawner.FindUnitNear(pos, m_fReach + 1);
+		if (!z)
+			return;
+
+		m_mHitAt.Set(playerId, m_fClock);
+		m_mHitRole.Set(playerId, z.m_eRole);
+		m_mHitTribe.Set(playerId, z.m_iTribe);
+		m_mHitTown.Set(playerId, z.m_iSettlement);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The last body that hit the player within maxAge seconds (role: an RZ_EInfectedRole): false if none.
+	bool GetLastHit(int playerId, float maxAge, out int role, out int tribe, out int town)
+	{
+		float at;
+		if (!m_mHitAt.Find(playerId, at) || m_fClock - at > maxAge)
+			return false;
+
+		role = m_mHitRole.Get(playerId);
+		tribe = m_mHitTribe.Get(playerId);
+		town = m_mHitTown.Get(playerId);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every player's last hit, to the log (/tribes).
+	void DumpHits()
+	{
+		foreach (int playerId, float at : m_mHitAt)
+		{
+			RZ_Log.Info(string.Format("Tribes dump | last hit on player %1: %2 s ago, %3, town %4, tribe %5", playerId,
+				RZ_Util.RoundToInt(m_fClock - at), typename.EnumToString(RZ_EInfectedRole, m_mHitRole.Get(playerId)), m_mHitTown.Get(playerId), m_mHitTribe.Get(playerId)));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

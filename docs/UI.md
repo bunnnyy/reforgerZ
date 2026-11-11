@@ -90,7 +90,9 @@ screens open is [below](#opening-the-screens).
 
 **Chat commands** (`RZ_ChatCommands`, client): `/note <text>` pins a note on the board you're at,
 `/noteclear` and `/noteclear all` clear boards (server admins), `/hall` shows the hall of fame
-as a notice. They work without any layout. Without the board menu, reading the board is a
+as a notice, `/tribes` (server admins) writes the infected to the server log (`/tribes stir` and
+`/tribes site` are play-test aids; the status log prints the summary anyway, so nothing needs typing:
+[INFECTED.md](INFECTED.md#admin-visibility)). They work without any layout. Without the board menu, reading the board is a
 notice and notes are written with `/note`.
 
 **Rough areas in the journal.** A contract's "where" and direction are the rough circle ("around
@@ -168,7 +170,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 |---|---|---|
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes**; with Stealth on, stealth's own update (every second) hands it each player's visibility, sent the same way as a level 0–5 and whether it counts as hidden (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal (with the questlines the player is part of and the lab's line), background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the radio log on the client for this life. A notice board payload from the server opens the board menu |
-| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/hall`, sent as commands to the server, which checks them again. Registered with the first notice |
+| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/hall`, `/tribes`, sent as commands to the server, which checks them again. Registered with the first notice |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards |
 | `RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu`, `RZ_NoticeBoardMenu`, `RZ_HallOfFameMenu` | client (`ChimeraMenuBase`) | Ask for their data on open, redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them |
 | `RZ_BackgroundPanelComponent` | client (widget handler) | Watches the picked loadout in the deploy menu and shows its background and gear |

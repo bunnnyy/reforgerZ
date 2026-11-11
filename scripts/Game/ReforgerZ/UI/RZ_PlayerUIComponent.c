@@ -58,13 +58,14 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
-	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100};	// per CMD_*
+	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100};	// per CMD_*
 
 	//! Commands from the client (RZ_ChatCommands, the board menu)
 	static const int CMD_NOTE = 0;
 	static const int CMD_CLEAR_BOARD = 1;
 	static const int CMD_CLEAR_ALL = 2;
 	static const int CMD_HALL = 3;
+	static const int CMD_TRIBES = 4;	// /tribes (admins): the infected, to the server log
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -384,6 +385,12 @@ class RZ_PlayerUIComponent : ScriptComponent
 					hall = "Nobody's name is on it yet.";
 
 				gm.NotifyPlayer(playerId, "Hall of fame", hall);
+				break;
+			}
+			case CMD_TRIBES:
+			{
+				if (gm.GetTribes())
+					gm.GetTribes().Command(playerId, note);
 				break;
 			}
 		}

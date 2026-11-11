@@ -18,6 +18,11 @@ and one way to end it: **research the cure.**
   last week, so the season takes about as long with two regulars as with twenty, and it waits at
   the lab, which works through about 3% a day even with nobody online and refuses more when its
   cold store is full, so no server can rush the cure.
+- **Two kinds of infected** ([INFECTED.md](docs/INFECTED.md)): the towns hold many slow ones
+  that lie up by day, come out at night, drift to noise, remember what you killed and give up on a
+  locked door; the countryside's few walk somewhere, and a horde comes from a town's side. Bodies
+  only near players, counted in a fixed budget, never spawned in your sight. Infected tribes in the
+  wild land are designed and next.
 - **Stealth**: stance, speed, light, weather and noise make you more or less visible. The
   infected near you see the most visible of you, lose a player who lies low, search where they
   last had them and give up; the HUD shows how visible you are.
@@ -72,7 +77,7 @@ and one way to end it: **research the cure.**
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 That's about 113,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 41 `VERIFY` markers left in the game
+was also checked against the base game's script source; the 42 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -95,9 +100,9 @@ Arland's AI world and vanilla's world managers now; AI in play is still to test
 yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Not built yet:** the content pass onto the world facts, and the infected tribes in the wild with
-crawlers in the towns (designed; see the roadmap's *Next*). The land grid the tribes need is built
-and measured on the base maps, off by default.
+**Not built yet:** the content pass onto the world facts, and the infected tribes in the wild
+(designed; see the roadmap's *Next*). The towns' crawlers, the loose ones, heat hordes from towns,
+the land grid and the rest of what the tribes stand on are built (phase 1, [INFECTED.md](docs/INFECTED.md)).
 
 ## Docs
 
@@ -107,6 +112,7 @@ and measured on the base maps, off by default.
 | [DESIGN.md](docs/DESIGN.md) | How every system works, by system |
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
+| [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, tribes (planned) |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [QUESTLINES.md](docs/QUESTLINES.md) | Long questlines over many sessions, three per faction and two for the Long Table |
 | [MOD_STACK.md](docs/MOD_STACK.md) | Which Workshop mods the server runs and why |
@@ -124,11 +130,12 @@ scripts/Game/ReforgerZ/
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
                  town memory, the power grid, the radio station, the world facts (what content
                  reads: season flags, canon, claims, text tokens), the Long Table, the land grid
-                 (water, height, trees, roads, bridges and wild land; off by default)
+                 (water, height, trees, roads, bridges and wild land)
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, story arcs, the questline engine, headlines
-  Zombies/       spawner (any zombie mod's prefabs), bite detection, stealth (visibility, the
-                 infected's senses, losing them)
+  Zombies/       spawner (any zombie mod's prefabs), the towns' crawlers, bodies and the agent
+                 budget (roles, data parts, the sight rule, runtime groups), the tribes' settings,
+                 bite detection, stealth (visibility, the infected's senses, losing them)
   Backgrounds/   backgrounds, personal goals, player profiles
   Factions/      reputation, quartermasters and shops, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,

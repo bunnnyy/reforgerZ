@@ -24,6 +24,8 @@ class RZ_HeatMap
 	protected ref array<vector> m_aNoisePos = {};
 	protected ref array<float> m_aNoiseAt = {};
 	protected ref array<float> m_aNoiseAmount = {};
+	protected ref array<int> m_aNoiseId = {};
+	protected int m_iNextNoiseId;
 	protected float m_fClock;
 
 	//------------------------------------------------------------------------------------------------
@@ -101,12 +103,36 @@ class RZ_HeatMap
 		m_aNoisePos.Insert(pos);
 		m_aNoiseAt.Insert(m_fClock);
 		m_aNoiseAmount.Insert(amount);
+		m_iNextNoiseId++;
+		m_aNoiseId.Insert(m_iNextNoiseId);
 		while (m_aNoisePos.Count() > NOISE_EVENTS_KEPT)
 		{
 			m_aNoisePos.RemoveOrdered(0);
 			m_aNoiseAt.RemoveOrdered(0);
 			m_aNoiseAmount.RemoveOrdered(0);
+			m_aNoiseId.RemoveOrdered(0);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The newest remembered noise after afterId (each noise has a rising id), within radius of
+	//! center and maxAge seconds: crawlers drift to each noise once (Zombies/RZ_Crawlers.c).
+	bool NewestNoise(int afterId, vector center, float radius, float maxAge, out int id, out vector pos)
+	{
+		for (int i = m_aNoisePos.Count() - 1; i >= 0; i--)
+		{
+			if (m_aNoiseId[i] <= afterId)
+				return false;
+
+			if (m_fClock - m_aNoiseAt[i] > maxAge || RZ_Util.DistXZ(m_aNoisePos[i], center) > radius)
+				continue;
+
+			id = m_aNoiseId[i];
+			pos = m_aNoisePos[i];
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

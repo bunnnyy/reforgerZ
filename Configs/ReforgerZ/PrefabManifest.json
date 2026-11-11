@@ -1313,6 +1313,60 @@
    "notes": ""
   },
   {
+   "id": "EmptyGroup",
+   "kind": "external",
+   "system": "Zombies",
+   "path": "",
+   "basePrefab": "{E15B91D284F1ED15}622120A5448725E3/Prefabs/Groups/Group_Zombies_Base.et",
+   "baseFind": "",
+   "baseHint": "Bacon Zombies' Group_Zombies_Base (an infected group with no members of its own)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_ZombieSettings.m_sEmptyGroupPrefab"],
+   "listSlot": false,
+   "slotLabel": "Zombies > Empty group",
+   "required": false,
+   "minimum": false,
+   "use": "runtime groups: crawlers and loose ones made from character prefabs (without it they stand inactive)",
+   "notes": ""
+  },
+  {
+   "id": "Crawlers",
+   "kind": "external",
+   "system": "Zombies",
+   "path": "",
+   "basePrefab": "{1228A830F9454F4B}622120A5448725E3/Prefabs/Characters/Zombie_CIV.et,{6734045E1A07091D}622120A5448725E3/Prefabs/Characters/Variants/Variant_CIV_Regular1.et",
+   "baseFind": "",
+   "baseHint": "Bacon Zombies' civilian characters (the slowest it has: none is slower than about 3.7 m/s)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_CrawlerSettings.m_aPrefabs"],
+   "listSlot": true,
+   "slotLabel": "Zombies > Crawlers > Prefabs (list)",
+   "required": false,
+   "minimum": false,
+   "use": "the towns' crawlers (empty: Zombies > Common)",
+   "notes": ""
+  },
+  {
+   "id": "CrawlersBloated",
+   "kind": "external",
+   "system": "Zombies",
+   "path": "",
+   "basePrefab": "{84862F078179934E}622120A5448725E3/Prefabs/Characters/Variants/Variant_Exploder1.et",
+   "baseFind": "",
+   "baseHint": "an exploding variant (Bacon's exploder)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_CrawlerSettings.m_aBloatedPrefabs"],
+   "listSlot": true,
+   "slotLabel": "Zombies > Crawlers > Bloated prefabs (list)",
+   "required": false,
+   "minimum": false,
+   "use": "bloated crawlers in dark towns from Overrun",
+   "notes": ""
+  },
+  {
    "id": "AdaptRunners",
    "kind": "external",
    "system": "Zombies",
@@ -3939,7 +3993,7 @@
   {
    "category": "ReforgerZ",
    "object": "(top level)",
-   "covers": "Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing))"
+   "covers": "Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)), **Day length** (4 real hours a game day, x6; 0 = the server's own clock; [DESIGN.md](DESIGN.md#the-clock)), **Keep time of day** (on: saved in state.json and set again at start)"
   },
   {
    "category": "ReforgerZ",
@@ -4004,7 +4058,7 @@
    "category": "Zombies",
    "object": "Zombie settings",
    "field": "m_ZombieSettings",
-   "covers": "Common, special, horde prefabs, Move waypoint, per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s)"
+   "covers": "Common, special, horde prefabs, Move waypoint, **Empty group** (runtime groups), per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s)"
   },
   {
    "category": "Zombies",
@@ -4022,7 +4076,13 @@
    "category": "Zombies",
    "object": "Tribes",
    "field": "m_TribeSettings",
-   "covers": "Tribes are planned; for now only the **Land survey** (off): the land grid of water, height, trees, roads, bridges and wild land, read at the first start and cached in the profile; land squares read a second (20) ([DESIGN.md](DESIGN.md#the-land-grid))"
+   "covers": "**Enabled** (on; off: no land grid, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20). The tribes themselves are planned ([INFECTED.md](INFECTED.md#tribes-planned))"
+  },
+  {
+   "category": "Zombies",
+   "object": "Crawlers",
+   "field": "m_CrawlerSettings",
+   "covers": "**Enabled** (on; off: towns as before), **Prefabs** (Bacon's civilian characters; empty = Common), bloated prefabs and share (0.05, towns at 70+ from Overrun), group size (1-3), kill ledger half-life (30 played minutes), reinforcement distance (200 m), drift radius (300 m) and seconds (90), stir (stirred at 50, -20 an hour, 5 heat a minute up to 60), siege minutes (10), scavengers (2-4) ([INFECTED.md](INFECTED.md#towns-the-crawlers))"
   },
   {"category": "Zombies", "object": "(top level)", "covers": "Presence heat (0.5/tick), vehicle heat (+4/tick)"},
   {
@@ -4395,7 +4455,38 @@
    "category": "Zombies",
    "label": "Tribes",
    "cls": "RZ_TribeSettings",
-   "defaults": {"m_bLandSurvey": "0", "m_iLandCellsPerSecond": "20"}
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_iSlots": "0",
+    "m_fWildKm2PerSlot": "5",
+    "m_iAgentBudget": "100",
+    "m_iClusterShare": "28",
+    "m_iAgentsPerTick": "8",
+    "m_iActiveAILimit": "160",
+    "m_iLandCellsPerSecond": "20"
+   }
+  },
+  {
+   "field": "m_CrawlerSettings",
+   "category": "Zombies",
+   "label": "Crawlers",
+   "cls": "RZ_CrawlerSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_fBloatedShare": "0.05",
+    "m_iGroupMin": "1",
+    "m_iGroupMax": "3",
+    "m_fLedgerHalfMinutes": "30",
+    "m_fReinforceDistance": "200",
+    "m_fDriftRadius": "300",
+    "m_fDriftSeconds": "90",
+    "m_fStirAt": "50",
+    "m_fStirDecayPerHour": "20",
+    "m_fStirHeat": "5",
+    "m_fSiegeMinutes": "10",
+    "m_iScavengeMin": "2",
+    "m_iScavengeMax": "4"
+   }
   },
   {
    "field": "m_ContractSettings",
@@ -4955,6 +5046,8 @@
   "m_bWipeOnStart": "0",
   "m_fSaveIntervalSeconds": "120",
   "m_fSeasonSpeed": "1",
+  "m_fDayLengthHours": "4",
+  "m_bKeepTimeOfDay": "1",
   "m_fScanCellSize": "300",
   "m_iScanMinBuildings": "8",
   "m_iSpawnPointCount": "6",

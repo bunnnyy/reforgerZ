@@ -706,7 +706,7 @@ class RZ_Stealth
 			if (!z.m_Entity)
 				continue;
 
-			bool held = z.m_bRelentless || (finalStand && RZ_Util.DistXZ(z.m_vLastPos, lab) <= FINAL_STAND_RADIUS);
+			bool held = z.m_bRelentless || z.m_bHunting || (finalStand && RZ_Util.DistXZ(z.m_vLastPos, lab) <= FINAL_STAND_RADIUS);
 			budget -= SenseUnit(z, held, ids, players, vis);
 		}
 
@@ -727,12 +727,14 @@ class RZ_Stealth
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Tribe bodies (docs/INFECTED.md, "Stealth and the tribes"): the alpha and guard are specials,
+	//! a hunt on its trail a horde; crawlers, loose ones, scouts, the young and day parties common.
 	static RZ_EInfectedKind KindOf(RZ_TrackedZombie z)
 	{
-		if (z.m_bHorde)
+		if (z.m_bHorde || z.m_bHunting)
 			return RZ_EInfectedKind.HORDE;
 
-		if (z.m_bSpecial)
+		if (z.m_bSpecial || z.m_eRole == RZ_EInfectedRole.ALPHA || z.m_eRole == RZ_EInfectedRole.GUARD)
 			return RZ_EInfectedKind.SPECIAL;
 
 		return RZ_EInfectedKind.COMMON;

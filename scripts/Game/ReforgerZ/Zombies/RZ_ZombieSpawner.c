@@ -16,6 +16,9 @@ class RZ_ZombieSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Move waypoint used to send hordes toward noise (e.g. vanilla AIWaypoint_Move)", "et")]
 	ResourceName m_sMoveWaypointPrefab;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Empty group (runtime groups): an AI group prefab with no members of its own (Bacon's Group_Zombies_Base). Crawlers and loose ones made from character prefabs are put in one, so they can walk somewhere. Empty: character prefabs spawn on their own (Bacon's then stay inactive)", "et")]
+	ResourceName m_sEmptyGroupPrefab;
+
 	[Attribute("4", desc: "Spawns per size class at 100% infection (size 3 city at 100% = 12)")]
 	float m_fDensityPerSize;
 
@@ -65,6 +68,42 @@ class RZ_TrackedZombie
 	bool m_bHasGoal;
 	ref RZ_SenseState m_Sense;	// stealth's view of it (Zombies/RZ_Stealth.c), once a player was near
 	ref RZ_HeldWaypoint m_Held;	// a group's one move waypoint (Core/RZ_GroupOrders.c): every order moves it; deleted when the record goes
+
+	// With Zombies > Crawlers or Tribes on (docs/INFECTED.md, "Bodies"): what it's for, the data it
+	// writes back to, and each member, so the code knows who died where
+	RZ_EInfectedRole m_eRole;	// NONE: as before (missions, specials, the old roamers)
+	int m_iTribe = -1;			// tribes (planned, phase 2)
+	bool m_bHunting;			// a tribe's hunt on its trail: stealth never makes it lose anyone (phase 2)
+	RZ_InfectedPart m_Part;		// weak: the data part it writes back to, or null
+	ResourceName m_sPrefab;
+	bool m_bRuntimeGroup;		// a character prefab put in an empty group (RZ_InfectedBodies.WrapInGroup)
+	float m_fBornAt;			// the spawner's clock
+	int m_iAgents = -1;			// living members, -1 until read
+	ref array<IEntity> m_aMembers;	// null: no per-member tracking (both switches off)
+	ref array<vector> m_aMemberPos;
+	ref array<int> m_aMemberIds;
+	ref array<bool> m_aMemberDone;
+	ref array<int> m_aSilentIds;	// members marked for a silent kill (no samples, infection, ledger or credit)
+	// Crawlers: drift to noise, walking somewhere, a siege at a locked door
+	int m_iHeardNoise = -1;
+	bool m_bDrifting;
+	float m_fDriftBackAt;
+	bool m_bWalking;
+	vector m_vWalkTo;
+	int m_iWalkTown = -1;
+	float m_fSiegeSince;
+	float m_fSiegeLast;
+	vector m_vSiegeAt;
+
+	//------------------------------------------------------------------------------------------------
+	//! Living agents for the budget: members once read, else an estimate.
+	int Agents()
+	{
+		if (m_iAgents >= 0)
+			return m_iAgents;
+
+		return 4;
+	}
 }
 
 //! Spawns zombies only near players and removes them when nobody is around.
@@ -93,19 +132,53 @@ class RZ_ZombieSpawner
 	protected static const float AMBIENT_RADIUS = 300;
 	protected static const float HORDE_PLAYER_RANGE = 600;	// heat hordes only go to squares this close to a living player
 
+	// Crawlers and tribes (docs/INFECTED.md). With both off none of this runs
+	protected ref RZ_Crawlers m_Crawlers;
+	protected RZ_TribeSettings m_TribeSettings;
+	protected ref RZ_InfectedBudget m_Budget = new RZ_InfectedBudget();
+	protected ref map<string, int> m_mPrefabAgents = new map<string, int>();	// group prefabs: members seen
+	protected float m_fClock;
+	protected int m_iTickAgents;
+	protected int m_iHordesFromTowns;
+	protected int m_iLooseArrived;
+
+	protected static const float LOOSE_GOAL_RANGE = 3000;	// loose ones walk to a town or a lair within this
+	protected static const float HORDE_TOWN_RANGE = 1500;	// a heat horde comes from a town this close
+	protected static const float SIEGE_GAP = 60;			// banging stopped this long: the siege is over
+	protected static const float MEMBER_WAIT = 30;			// a group prefab may take this long to fill
+
 	//------------------------------------------------------------------------------------------------
-	void RZ_ZombieSpawner(RZ_GameModeComponent gm, RZ_ZombieSettings settings)
+	void RZ_ZombieSpawner(RZ_GameModeComponent gm, RZ_ZombieSettings settings, RZ_CrawlerSettings crawlers = null, RZ_TribeSettings tribes = null)
 	{
 		m_GM = gm;
 		m_Settings = settings;
+		m_TribeSettings = tribes;
+		if (crawlers)
+			m_Crawlers = new RZ_Crawlers(gm, crawlers);
 
 		if (m_Settings.m_aCommonPrefabs.IsEmpty())
 			RZ_Log.Error("No common zombie prefabs configured. Set them on RZ_GameModeComponent > Zombies.");
 	}
 
 	//------------------------------------------------------------------------------------------------
+	bool CrawlersOn() { return m_Crawlers && m_Crawlers.IsEnabled(); }
+	bool TribesOn() { return m_TribeSettings && m_TribeSettings.m_bEnabled; }
+	//! Crawlers or tribes: the agent budget, per-member tracking, the sight rule. Both off: the
+	//! spawner exactly as before.
+	bool IsPlumbingOn() { return CrawlersOn() || TribesOn(); }
+	RZ_Crawlers GetCrawlers() { return m_Crawlers; }
+	RZ_InfectedBudget GetBudget() { return m_Budget; }
+	float GetDensityPerSize() { return m_Settings.m_fDensityPerSize; }
+
+	//------------------------------------------------------------------------------------------------
 	void Tick(float dt, array<IEntity> players)
 	{
+		if (IsPlumbingOn())
+		{
+			TickInfected(dt, players);
+			return;
+		}
+
 		UpdateTracked(players);
 		if (players.IsEmpty())
 			return;
@@ -151,19 +224,100 @@ class RZ_ZombieSpawner
 		if (!ent)
 			return null;
 
+		RZ_TrackedZombie z = Track(ent, pos, special, settlementIdx, missionId, prefab);
+		z.m_bScreamer = screamer;
+		return z;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A new tracked record for a spawned unit.
+	protected RZ_TrackedZombie Track(IEntity ent, vector pos, bool special, int settlementIdx, int missionId, ResourceName prefab)
+	{
 		RZ_TrackedZombie z = new RZ_TrackedZombie();
 		z.m_Entity = ent;
 		z.m_iSettlement = settlementIdx;
 		z.m_iMissionId = missionId;
 		z.m_bSpecial = special;
-		z.m_bScreamer = screamer;
 		z.m_vLastPos = pos;
 		z.m_vHome = pos;
+		z.m_sPrefab = prefab;
+		z.m_fBornAt = m_fClock;
 		// Its group's held waypoint (none spawned until the first order)
 		z.m_Held = RZ_GroupOrders.Hold(ent);
 		// Groups spawn their members a frame later, so read the real count on the next tick
 		z.m_iLastAlive = -1;
+		if (IsPlumbingOn())
+		{
+			z.m_aMembers = {};
+			z.m_aMemberPos = {};
+			z.m_aMemberIds = {};
+			z.m_aMemberDone = {};
+			z.m_iAgents = EstimateAgents(ent, prefab);
+		}
+
 		m_aTracked.Insert(z);
+		return z;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Agents a fresh unit will have: a character 1, a group prefab what it had last time (4 until
+	//! seen once), a runtime group its members.
+	protected int EstimateAgents(IEntity ent, ResourceName prefab)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(ent);
+		if (!group)
+			return 1;
+
+		if (group.GetAgentsCount() > 0)
+			return group.GetAgentsCount();
+
+		int seen;
+		if (m_mPrefabAgents.Find(prefab, seen) && seen > 0)
+			return seen;
+
+		return 4;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One unit for the crawlers and loose ones: a group prefab as it is, or `size` characters of a
+	//! character prefab in a runtime group (Zombies > Empty group). Empty prefab: Common.
+	RZ_TrackedZombie SpawnUnit(vector pos, ResourceName prefab, int size, int settlementIdx, RZ_EInfectedRole role)
+	{
+		if (prefab.IsEmpty())
+		{
+			if (m_Settings.m_aCommonPrefabs.IsEmpty())
+				return null;
+
+			prefab = m_Settings.m_aCommonPrefabs.GetRandomElement();
+		}
+
+		float yaw = Math.RandomFloat(0, 360);
+		IEntity first = RZ_Util.SpawnPrefab(prefab, pos, yaw);
+		if (!first)
+			return null;
+
+		IEntity unit = first;
+		bool runtime = false;
+		if (!SCR_AIGroup.Cast(first) && ChimeraCharacter.Cast(first))
+		{
+			SCR_AIGroup group = RZ_InfectedBodies.WrapInGroup(first, m_Settings.m_sEmptyGroupPrefab);
+			if (group)
+			{
+				unit = group;
+				runtime = true;
+				for (int i = 1; i < size; i++)
+				{
+					IEntity more = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(pos, 1.5, 6)), yaw);
+					RZ_InfectedBodies.AddToGroup(group, more);
+				}
+			}
+		}
+
+		RZ_TrackedZombie z = Track(unit, pos, false, settlementIdx, -1, prefab);
+		z.m_eRole = role;
+		z.m_bRuntimeGroup = runtime;
+		m_Budget.Add(pos, z.Agents());
+		m_iTickAgents += z.Agents();
 		return z;
 	}
 
@@ -794,6 +948,937 @@ class RZ_ZombieSpawner
 		}
 
 		return n;
+	}
+
+	// ================================================================ Crawlers and tribes (docs/INFECTED.md)
+	//------------------------------------------------------------------------------------------------
+	//! The tick with Crawlers or Tribes on: bodies are counted per member and in agents, towns hold
+	//! crawlers (or are populated as before with Crawlers off), the countryside's roamers are loose
+	//! ones walking somewhere and heat hordes come from towns (or both as before with Tribes off).
+	protected void TickInfected(float dt, array<IEntity> players)
+	{
+		m_fClock += dt;
+		RZ_InfectedBodies.NewTick();
+		UpdateTrackedBodies(players);
+
+		int budget = 100;
+		int share = 28;
+		if (m_TribeSettings)
+		{
+			budget = m_TribeSettings.m_iAgentBudget;
+			share = m_TribeSettings.m_iClusterShare;
+		}
+
+		m_Budget.Begin(players, m_aTracked, budget, share);
+		m_iTickAgents = 0;
+		if (m_Crawlers)
+			m_Crawlers.Tick(dt, players);
+
+		UpdateSieges(players);
+		if (players.IsEmpty())
+			return;
+
+		RZ_StageSettings stage = m_GM.GetDirector().GetStageSettings();
+		int entries = m_Settings.m_iSpawnsPerTick;
+		if (CrawlersOn())
+			PopulateCrawlers(players, stage);
+		else
+			entries -= PopulateSettlements(players, stage, entries);
+
+		if (TribesOn())
+			PopulateLoose(players, stage);
+		else if (entries > 0)
+			PopulateWilderness(players, stage, entries);
+
+		if (CrawlersOn())
+		{
+			foreach (RZ_TrackedZombie z : m_aTracked)
+			{
+				if (z.m_Entity && z.m_eRole == RZ_EInfectedRole.CRAWLER && z.m_iMissionId == -1)
+					m_Crawlers.UpdateDrift(z, players, m_Settings.m_sMoveWaypointPrefab);
+			}
+		}
+
+		m_fHordeCooldownLeft -= dt;
+		if (TribesOn())
+			TryTownHorde(players);
+		else
+			TryHeatHorde(players);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Agents a tick may still spawn (Zombies > Tribes > Agents per tick).
+	protected int TickRoom()
+	{
+		int perTick = 8;
+		if (m_TribeSettings)
+			perTick = Math.Max(1, m_TribeSettings.m_iAgentsPerTick);
+
+		return Math.Max(0, perTick - m_iTickAgents);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Per-member tracking: who died where. A member missing from its group's living agents has
+	//! died (phase 0: the count drops within a second; the group deletes itself when its last member
+	//! dies, and the bodies stay). Each death is a kill at that member's spot, unless it was a
+	//! silent kill. Parts get their positions and their dead written back.
+	protected void UpdateTrackedBodies(array<IEntity> players)
+	{
+		for (int i = m_aTracked.Count() - 1; i >= 0; i--)
+		{
+			RZ_TrackedZombie z = m_aTracked[i];
+			if (!z.m_aMembers)
+			{
+				// Spawned before the switches were read (not expected): treat it as tracked from now
+				z.m_aMembers = {};
+				z.m_aMemberPos = {};
+				z.m_aMemberIds = {};
+				z.m_aMemberDone = {};
+			}
+
+			int alive = UpdateMembers(z);
+			if (!z.m_Entity)
+			{
+				EndPart(z, alive);
+				Untrack(i);
+				continue;
+			}
+
+			// A group prefab fills over a few frames: give it time before an empty one counts as dead
+			if (z.m_iLastAlive < 0 && alive == 0 && m_fClock - z.m_fBornAt < MEMBER_WAIT)
+				continue;
+
+			if (z.m_iLastAlive < 0 && SCR_AIGroup.Cast(z.m_Entity) && !z.m_bRuntimeGroup && alive > 0)
+				m_mPrefabAgents.Set(z.m_sPrefab, alive);
+
+			z.m_iLastAlive = alive;
+			z.m_iAgents = alive;
+			if (alive <= 0)
+			{
+				EndPart(z, 0);
+				Untrack(i);
+				continue;
+			}
+
+			z.m_vLastPos = RZ_Util.GetUnitPosition(z.m_Entity);
+			if (z.m_Part)
+				z.m_Part.m_vPos = z.m_vLastPos;
+
+			if (z.m_bWalking && RZ_Util.DistXZ(z.m_vLastPos, z.m_vWalkTo) < 40)
+				Arrive(z);
+
+			if (z.m_iMissionId != -1)
+				continue;
+
+			float nearest = RZ_Util.NearestDistance(z.m_vLastPos, players);
+			// A part's bodies go back to data, with their survivors, once every player is beyond the
+			// range they appear at (600 m) and a margin, so they don't flicker in and out
+			if (z.m_Part && nearest > RZ_Crawlers.PART_SPAWN_RANGE + 100 && RZ_InfectedBodies.Unseen(z.m_vLastPos, players))
+			{
+				EndPart(z, alive);
+				RZ_Util.DeleteUnit(z.m_Entity);
+				Untrack(i);
+				continue;
+			}
+
+			if (nearest > m_Settings.m_fDespawnRadius)
+			{
+				EndPart(z, alive);
+				RZ_Util.DeleteUnit(z.m_Entity);
+				Untrack(i);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! New members are learned, living ones remembered where they stand, the dead counted once.
+	//! Returns the living.
+	protected int UpdateMembers(RZ_TrackedZombie z)
+	{
+		array<IEntity> living = {};
+		RZ_Util.GetUnitMembers(z.m_Entity, living);
+		foreach (IEntity m : living)
+		{
+			if (z.m_aMembers.Find(m) >= 0)
+				continue;
+
+			z.m_aMembers.Insert(m);
+			z.m_aMemberPos.Insert(m.GetOrigin());
+			z.m_aMemberIds.Insert(RZ_InfectedBodies.NewMemberId());
+			z.m_aMemberDone.Insert(false);
+		}
+
+		int alive = 0;
+		for (int i = 0; i < z.m_aMembers.Count(); i++)
+		{
+			if (z.m_aMemberDone[i])
+				continue;
+
+			IEntity member = z.m_aMembers[i];
+			if (member && RZ_Util.IsCharacterAlive(member))
+			{
+				// The unit is gone but this one stands (not expected): it goes quietly
+				if (!z.m_Entity)
+				{
+					MarkSilent(z, z.m_aMemberIds[i]);
+					SCR_EntityHelper.DeleteEntityAndChildren(member);
+				}
+				else
+				{
+					z.m_aMemberPos[i] = member.GetOrigin();
+					alive++;
+					continue;
+				}
+			}
+
+			vector at = z.m_aMemberPos[i];
+			if (member)
+				at = member.GetOrigin();
+
+			z.m_aMemberDone[i] = true;
+			OnMemberGone(z, z.m_aMemberIds[i], at);
+		}
+
+		return alive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One member gone. A silent kill gives nothing; anything else is a kill at its spot (samples
+	//! for a special drop there, the town's infection and ledger, bodies to search, mission credit).
+	protected void OnMemberGone(RZ_TrackedZombie z, int memberId, vector at)
+	{
+		bool silent = z.m_aSilentIds && z.m_aSilentIds.Find(memberId) >= 0;
+		if (z.m_Part)
+		{
+			z.m_Part.m_iCount = Math.Max(0, z.m_Part.m_iCount - 1);
+			if (!silent)
+				z.m_Part.m_iKilled = z.m_Part.m_iKilled + 1;
+		}
+
+		if (silent)
+			return;
+
+		m_GM.OnZombiesKilled(z.m_iSettlement, z.m_iMissionId, z.m_bSpecial, at, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void MarkSilent(RZ_TrackedZombie z, int memberId)
+	{
+		if (!z.m_aSilentIds)
+			z.m_aSilentIds = {};
+
+		if (z.m_aSilentIds.Find(memberId) < 0)
+			z.m_aSilentIds.Insert(memberId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The bodies go: the part keeps its survivors where they were, as data.
+	protected void EndPart(RZ_TrackedZombie z, int survivors)
+	{
+		RZ_InfectedPart part = z.m_Part;
+		if (!part)
+			return;
+
+		part.m_iCount = Math.Max(0, survivors);
+		part.m_vPos = z.m_vLastPos;
+		part.m_Body = null;
+		z.m_Part = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A silent kill (docs/INFECTED.md, "Bodies"): no samples, no infection change, no ledger, no
+	//! searchable body and no mission credit. DELETE: gone without a trace, only out of sight.
+	//! KILL_AND_MARK: killed where it stands, the body stays (and the zombie mod's loose item, for
+	//! the loose-item cleanup). e is a unit or one of its members. False if the spawner doesn't own it.
+	bool KillSilently(IEntity e, RZ_ESilentKill mode)
+	{
+		if (!e)
+			return false;
+
+		for (int i = m_aTracked.Count() - 1; i >= 0; i--)
+		{
+			RZ_TrackedZombie z = m_aTracked[i];
+			bool whole = z.m_Entity == e;
+			int at = -1;
+			if (!whole && z.m_aMembers)
+				at = z.m_aMembers.Find(e);
+
+			if (!whole && at < 0)
+				continue;
+
+			// No per-member tracking (both switches off): the unit goes, as a special caught alive
+			if (!z.m_aMembers)
+			{
+				Untrack(i);
+				RZ_Util.DeleteUnit(z.m_Entity);
+				return true;
+			}
+
+			array<IEntity> victims = {};
+			foreach (int k, IEntity member : z.m_aMembers)
+			{
+				if (z.m_aMemberDone[k] || (!whole && k != at))
+					continue;
+
+				MarkSilent(z, z.m_aMemberIds[k]);
+				if (member)
+					victims.Insert(member);
+			}
+
+			foreach (IEntity victim : victims)
+			{
+				if (mode == RZ_ESilentKill.KILL_AND_MARK)
+					RZ_Util.KillCharacter(victim);
+				else
+					SCR_EntityHelper.DeleteEntityAndChildren(victim);
+			}
+
+			if (whole && mode == RZ_ESilentKill.DELETE)
+				RZ_Util.DeleteUnit(z.m_Entity);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A loose one got where it was going: at a town it becomes one of that town's crawlers.
+	protected void Arrive(RZ_TrackedZombie z)
+	{
+		z.m_bWalking = false;
+		z.m_vHome = z.m_vLastPos;
+		if (z.m_iWalkTown < 0 || !CrawlersOn())
+			return;
+
+		z.m_iSettlement = z.m_iWalkTown;
+		z.m_eRole = RZ_EInfectedRole.CRAWLER;
+		m_iLooseArrived++;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Living agents of a town's own (crawlers, its specials, its horde and scavengers out with bodies).
+	int CountAgentsForSettlement(int idx)
+	{
+		int n = 0;
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (z.m_iSettlement == idx && z.m_Entity)
+				n += z.Agents();
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Towns hold crawlers (Zombies > Crawlers): the old formula in spawns, times the average group,
+	//! less the ledger and those out; placed by the time of day; once a town is full, what refills it
+	//! comes from the buildings 200 m from the players and walks into the street. All inside the
+	//! agent budget, a few agents a tick.
+	protected void PopulateCrawlers(array<IEntity> players, RZ_StageSettings stage)
+	{
+		float maxFromPlayer = Math.Min(m_Settings.m_fActivationRadius, m_Settings.m_fDespawnRadius * 0.9);
+		foreach (int idx, RZ_Settlement s : m_GM.GetSettlements())
+		{
+			if (TickRoom() <= 0 || m_aTracked.Count() >= m_Settings.m_iGlobalCap)
+				break;
+
+			if (RZ_Util.NearestDistance(s.m_vCenter, players) > m_Settings.m_fActivationRadius + s.m_fRadius)
+			{
+				// Gone back to data: the next visit fills it as a first visit
+				if (m_Crawlers.IsFull(idx) && CountAgentsForSettlement(idx) == 0)
+					m_Crawlers.SetFull(idx, false);
+
+				continue;
+			}
+
+			if (m_aSuppressed.Contains(idx))
+				continue;
+
+			float entries = s.m_iSize * m_Settings.m_fDensityPerSize * (s.m_fInfection / 100) * stage.m_fDensityMult * m_fEventDensityMult;
+			entries += m_GM.GetHeat().GetHeat(s.m_vCenter) / 25;
+			if (m_iFocusSettlement >= 0)
+			{
+				if (idx == m_iFocusSettlement)
+					entries = entries * 1.5;
+				else
+					entries = entries * 0.4;
+			}
+
+			entries = entries * GentleMult(s.m_vCenter, m_Settings.m_fActivationRadius + s.m_fRadius);
+			float target = m_Crawlers.TargetAgents(idx, s, entries);
+			int present = CountAgentsForSettlement(idx);
+			if (present >= target - 0.5)
+			{
+				m_Crawlers.SetFull(idx, true);
+				continue;
+			}
+
+			bool reinforce = m_Crawlers.IsFull(idx);
+			int tries = 0;
+			while (present < target - 0.5 && tries < 4 && TickRoom() > 0 && m_aTracked.Count() < m_Settings.m_iGlobalCap)
+			{
+				tries++;
+				int room = Math.Min(m_Budget.RoomAt(s.m_vCenter), TickRoom());
+				int size = Math.Min(m_Crawlers.RollGroupSize(), Math.Ceil(target - present));
+				size = Math.Min(size, room);
+				if (size <= 0)
+					break;
+
+				vector pos;
+				RZ_ECrawlerSpot kind;
+				if (!FindCrawlerSpot(idx, s, reinforce, players, maxFromPlayer, pos, kind))
+					break;
+
+				// Specials as before (Install Sensors doubles them)
+				float specialChance = GetSpecialChance(stage);
+				if (s.m_fSensorSeconds > 0)
+					specialChance = Math.Min(0.5, specialChance * 2);
+
+				RZ_TrackedZombie z;
+				if (Math.RandomFloat01() < specialChance)
+				{
+					z = SpawnZombie(pos, true, idx, -1);
+					if (z)
+					{
+						m_Budget.Add(pos, z.Agents());
+						m_iTickAgents += z.Agents();
+					}
+				}
+				else
+				{
+					z = SpawnUnit(pos, m_Crawlers.PickPrefab(s), size, idx, RZ_EInfectedRole.CRAWLER);
+				}
+
+				if (!z)
+					break;
+
+				present += z.Agents();
+				// Reinforcements walk out of the buildings into the street
+				if (reinforce)
+				{
+					vector street = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(pos + (s.m_vCenter - pos) * 0.2, 10, 40));
+					z.m_vHome = street;
+					RZ_Util.SendGroupTo(z.m_Entity, street, m_Settings.m_sMoveWaypointPrefab);
+				}
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A crawler spot that passes every check: dry, far enough (200 m for reinforcements), near
+	//! enough a player not to be removed at once, not suppressed, scorched or by a held door, and out
+	//! of every player's sight within 300 m (terrain, buildings and trees).
+	protected bool FindCrawlerSpot(int idx, RZ_Settlement s, bool reinforce, array<IEntity> players, float maxFromPlayer, out vector pos, out RZ_ECrawlerSpot kind)
+	{
+		float minDist = m_Settings.m_fMinSpawnDistance * m_fEnvMinSpawnMult;
+		if (reinforce)
+			minDist = Math.Max(minDist, m_Crawlers.GetSettings().m_fReinforceDistance);
+
+		RZ_Interactions hub = m_GM.GetInteractions();
+		for (int i = 0; i < 6; i++)
+		{
+			pos = m_Crawlers.PickSpot(idx, s, reinforce, kind);
+			if (RZ_Util.IsWater(pos))
+				continue;
+
+			float mult = 1;
+			if (m_bFogBank && RZ_Util.DistXZ(pos, m_vFogPos) <= m_fFogRadius)
+				mult = m_fFogSpawnMult;
+
+			float nearest = RZ_Util.NearestDistance(pos, players);
+			if (nearest < minDist * mult || nearest > maxFromPlayer)
+				continue;
+
+			if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))
+				continue;
+
+			if (hub && hub.IsActive() && hub.GetTraps().IsScorched(pos))
+				continue;
+
+			if (m_Crawlers.IsNearHeldDoor(pos))
+				continue;
+
+			if (RZ_InfectedBodies.InSight(pos, players, true))
+				continue;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Loose ones (Zombies > Tribes): the countryside's roamers, the same count, each spawned
+	//! 250-300 m out behind terrain and walking somewhere, a town or a lair candidate within 3 km,
+	//! so following one leads somewhere. By day they're crawlers drifted out of town; at night
+	//! anything. With no town or lair within 3 km they spawn as before.
+	protected void PopulateLoose(array<IEntity> players, RZ_StageSettings stage)
+	{
+		int wanted = RZ_Util.RoundToInt(m_Settings.m_iAmbientPerPlayer * stage.m_fDensityMult * m_fEventDensityMult);
+		foreach (IEntity player : players)
+		{
+			if (TickRoom() <= 0 || m_aTracked.Count() >= m_Settings.m_iGlobalCap)
+				return;
+
+			vector p = player.GetOrigin();
+			int wantedHere = RZ_Util.RoundToInt(wanted * GentleMult(p, 1));
+			if (CountRoleNear(p, RZ_EInfectedRole.LOOSE, m_Settings.m_fDespawnRadius) >= wantedHere)
+				continue;
+
+			if (m_Budget.RoomAt(p) <= 0)
+				continue;
+
+			// Specials as the old roamers had them
+			bool special = Math.RandomFloat01() < GetSpecialChance(stage) * 0.5;
+			vector goal;
+			int town;
+			if (special || !PickLooseGoal(p, goal, town))
+			{
+				vector old;
+				if (!FindSpawnPos(p, m_Settings.m_fMinSpawnDistance + 30, AMBIENT_RADIUS - 50, players, old))
+					continue;
+
+				RZ_TrackedZombie roamer = SpawnZombie(old, special, -1, -1);
+				if (roamer)
+				{
+					roamer.m_eRole = RZ_EInfectedRole.LOOSE;
+					m_Budget.Add(old, roamer.Agents());
+					m_iTickAgents += roamer.Agents();
+				}
+
+				continue;
+			}
+
+			vector pos;
+			if (!FindLooseSpot(p, players, pos))
+				continue;
+
+			ResourceName prefab = "";
+			int size = 1;
+			RZ_WorldFacts facts = m_GM.GetFacts();
+			bool night = facts && facts.IsNight();
+			if (CrawlersOn() && !night)
+			{
+				prefab = m_Crawlers.PickPrefab(m_GM.GetSettlement(town));
+				size = Math.RandomIntInclusive(1, 2);
+			}
+
+			RZ_TrackedZombie z = SpawnUnit(pos, prefab, size, -1, RZ_EInfectedRole.LOOSE);
+			if (!z)
+				continue;
+
+			z.m_bWalking = true;
+			z.m_vWalkTo = goal;
+			z.m_iWalkTown = town;
+			z.m_vHome = goal;
+			RZ_Util.SendGroupTo(z.m_Entity, goal, m_Settings.m_sMoveWaypointPrefab);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a loose one near p walks: by day a town (a crawler going home), at night a lair
+	//! candidate when the land grid has one, else a town. Within 3 km; false if neither.
+	protected bool PickLooseGoal(vector p, out vector goal, out int town)
+	{
+		town = -1;
+		int idx = m_GM.FindNearestSettlement(p);
+		RZ_Settlement s = m_GM.GetSettlement(idx);
+		bool hasTown = s && RZ_Util.DistXZ(s.m_vCenter, p) <= LOOSE_GOAL_RANGE && RZ_Util.DistXZ(s.m_vCenter, p) > s.m_fRadius;
+
+		vector lair;
+		bool hasLair = false;
+		RZ_Land land = m_GM.GetLand();
+		if (land && land.IsReady())
+			hasLair = land.NearestCellWith(p, RZ_Land.BIT_LAIR, 400, LOOSE_GOAL_RANGE, lair);
+
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		bool night = facts && facts.IsNight();
+		if (hasLair && (night || !hasTown))
+		{
+			goal = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(lair, 0, 80));
+			return true;
+		}
+
+		if (!hasTown)
+			return false;
+
+		town = idx;
+		goal = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(s.m_vCenter, 0, s.m_fRadius * 0.6));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! 250-300 m from the player and behind terrain from everyone within 300 m; else just beyond
+	//! 300 m, where a body may appear in the open.
+	protected bool FindLooseSpot(vector p, array<IEntity> players, out vector pos)
+	{
+		for (int i = 0; i < 10; i++)
+		{
+			float lo = 250;
+			float hi = 300;
+			if (i >= 6)
+			{
+				lo = 305;
+				hi = 340;
+			}
+
+			pos = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(p, lo, hi));
+			if (RZ_Util.IsWater(pos) || RZ_Util.NearestDistance(pos, players) < m_Settings.m_fMinSpawnDistance)
+				continue;
+
+			if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))
+				continue;
+
+			if (RZ_InfectedBodies.InSight(pos, players, false))
+				continue;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int CountRoleNear(vector pos, RZ_EInfectedRole role, float radius)
+	{
+		int n = 0;
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (z.m_Entity && z.m_eRole == role && RZ_Util.DistXZ(z.m_vLastPos, pos) <= radius)
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Heat hordes come from somewhere (Zombies > Tribes): from the nearest town within 1.5 km, as
+	//! that town's own crawlers spawned 300-450 m out on its side, so they come from a direction and
+	//! count as lent out of the town. With no town that near, as before.
+	protected void TryTownHorde(array<IEntity> players)
+	{
+		if (m_fHordeCooldownLeft > 0)
+			return;
+
+		vector hotPos;
+		float heat;
+		if (!m_GM.GetHeat().GetHottestNear(players, HORDE_PLAYER_RANGE, hotPos, heat) || heat < m_Settings.m_fHordeHeatThreshold)
+			return;
+
+		int idx = m_GM.FindNearestSettlement(hotPos);
+		RZ_Settlement s = m_GM.GetSettlement(idx);
+		if (!s || RZ_Util.DistXZ(s.m_vCenter, hotPos) > s.m_fRadius + HORDE_TOWN_RANGE)
+		{
+			TryHeatHorde(players);
+			return;
+		}
+
+		// Inside the budget: wait for room rather than spawn a thin horde
+		if (m_Budget.RoomAt(hotPos) < 4)
+			return;
+
+		vector dir = s.m_vCenter - hotPos;
+		dir[1] = 0;
+		if (dir.Length() < 1)
+			dir = Vector(1, 0, 0);
+		dir.Normalize();
+		float baseYaw = Math.Atan2(dir[0], dir[2]);
+
+		vector from;
+		bool found = false;
+		for (int i = 0; i < 8; i++)
+		{
+			float yaw = baseYaw + Math.RandomFloat(-0.45, 0.45);
+			from = RZ_Util.GroundPos(hotPos + Vector(Math.Sin(yaw), 0, Math.Cos(yaw)) * Math.RandomFloat(300, 450));
+			if (RZ_Util.IsWater(from) || RZ_Util.NearestDistance(from, players) < 250)
+				continue;
+
+			if (RZ_InfectedBodies.InSight(from, players, false))
+				continue;
+
+			found = true;
+			break;
+		}
+
+		if (!found)
+			return;
+
+		array<RZ_TrackedZombie> horde = {};
+		if (CrawlersOn())
+		{
+			int left = Math.Min(m_Budget.RoomAt(hotPos), 12);
+			for (int j = 0; j < 4 && left > 0; j++)
+			{
+				int size = Math.Min(m_Crawlers.RollGroupSize() + 1, left);
+				RZ_TrackedZombie unit = SpawnUnit(RZ_Util.GroundPos(RZ_Util.RandomPointInRing(from, 0, 20)), m_Crawlers.PickPrefab(s), size, idx, RZ_EInfectedRole.CRAWLER);
+				if (!unit)
+					break;
+
+				left -= unit.Agents();
+				horde.Insert(unit);
+			}
+		}
+		else if (!m_Settings.m_aHordePrefabs.IsEmpty())
+		{
+			RZ_TrackedZombie big = SpawnUnit(from, m_Settings.m_aHordePrefabs.GetRandomElement(), 1, idx, RZ_EInfectedRole.NONE);
+			if (big)
+				horde.Insert(big);
+		}
+
+		if (horde.IsEmpty())
+			return;
+
+		foreach (RZ_TrackedZombie t : horde)
+		{
+			t.m_bHorde = true;
+			t.m_vGoal = hotPos;
+			t.m_bHasGoal = true;
+			RZ_Util.SendGroupTo(t.m_Entity, hotPos, m_Settings.m_sMoveWaypointPrefab);
+		}
+
+		m_GM.GetHeat().AddHeat(hotPos, -heat * 0.5);
+		m_fHordeCooldownLeft = m_Settings.m_fHordeCooldown;
+		m_iHordesFromTowns++;
+		RZ_Log.Info(string.Format("Heat horde: %1 units out of %2, from its side of %3.", horde.Count(), s.m_sName, RZ_SettlementScanner.GridReference(hotPos)));
+		m_GM.NotifyHorde(hotPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A data part near a player gets bodies (RZ_Crawlers): at its spot if no player could see it
+	//! there, else pushed back toward its town; inside the budget.
+	void SpawnPart(RZ_InfectedPart part, array<IEntity> players)
+	{
+		if (part.HasBody() || part.m_iCount <= 0 || !m_Crawlers)
+			return;
+
+		int n = part.m_iCount;
+		if (m_Budget.RoomAt(part.m_vPos) < n || TickRoom() < n || m_aTracked.Count() >= m_Settings.m_iGlobalCap)
+			return;
+
+		RZ_Settlement s = m_GM.GetSettlement(part.m_iTown);
+		vector back = part.m_vPos;
+		if (s)
+			back = s.m_vCenter;
+
+		vector pos = part.m_vPos;
+		bool found = false;
+		for (int i = 0; i < 6; i++)
+		{
+			float nearest = RZ_Util.NearestDistance(pos, players);
+			if (!RZ_Util.IsWater(pos) && nearest >= m_Settings.m_fMinSpawnDistance && !RZ_InfectedBodies.InSight(pos, players, true))
+			{
+				found = true;
+				break;
+			}
+
+			vector dir = back - pos;
+			dir[1] = 0;
+			if (dir.Length() < 40)
+				break;
+
+			dir.Normalize();
+			pos = RZ_Util.GroundPos(pos + dir * 40);
+		}
+
+		if (!found)
+			return;
+
+		RZ_TrackedZombie z = SpawnUnit(pos, m_Crawlers.PickPrefab(s), n, part.m_iTown, part.m_eRole);
+		if (!z)
+			return;
+
+		z.m_Part = part;
+		part.m_Body = z;
+		if (part.m_bHasTarget && RZ_Util.DistXZ(pos, part.m_vTarget) > 20)
+			RZ_Util.SendGroupTo(z.m_Entity, RZ_Util.RandomPointInRing(part.m_vTarget, 2, 10), m_Settings.m_sMoveWaypointPrefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Dawn: scavengers with bodies walk home and are the town's crawlers again.
+	void SendPartHome(RZ_InfectedPart part)
+	{
+		RZ_TrackedZombie z = part.m_Body;
+		part.m_Body = null;
+		if (!z || !z.m_Entity)
+			return;
+
+		z.m_Part = null;
+		z.m_eRole = RZ_EInfectedRole.CRAWLER;
+		RZ_Settlement s = m_GM.GetSettlement(z.m_iSettlement);
+		if (!s)
+			return;
+
+		z.m_vHome = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(s.m_vCenter, 0, s.m_fRadius * 0.7));
+		RZ_Util.SendGroupTo(z.m_Entity, z.m_vHome, m_Settings.m_sMoveWaypointPrefab);
+	}
+
+	// ================================================================ Sieges at locked doors
+	//------------------------------------------------------------------------------------------------
+	//! A locked door is being banged on (RZ_DoorBlockers): the infected at it are on the clock.
+	void OnDoorBang(vector at)
+	{
+		if (!CrawlersOn())
+			return;
+
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (!z.m_Entity || z.m_iMissionId != -1 || !z.m_aMemberPos || RZ_Util.DistXZ(z.m_vLastPos, at) > 80)
+				continue;
+
+			bool atDoor = false;
+			foreach (vector mp : z.m_aMemberPos)
+			{
+				if (RZ_Util.DistXZ(mp, at) <= 4)
+				{
+					atDoor = true;
+					break;
+				}
+			}
+
+			if (!atDoor)
+				continue;
+
+			if (z.m_fSiegeSince <= 0)
+			{
+				z.m_fSiegeSince = m_fClock;
+				z.m_vSiegeAt = at;
+			}
+
+			z.m_fSiegeLast = m_fClock;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After Siege minutes at a door they give up and the door holds: out of every player's sight
+	//! they go back to the town as data, else they're sent away. No crawler spawns by that door for
+	//! as long again.
+	protected void UpdateSieges(array<IEntity> players)
+	{
+		if (!CrawlersOn())
+			return;
+
+		for (int i = m_aTracked.Count() - 1; i >= 0; i--)
+		{
+			RZ_TrackedZombie z = m_aTracked[i];
+			if (z.m_fSiegeSince <= 0)
+				continue;
+
+			if (m_fClock - z.m_fSiegeLast > SIEGE_GAP)
+			{
+				z.m_fSiegeSince = 0;
+				continue;
+			}
+
+			if (m_fClock - z.m_fSiegeSince < m_Crawlers.SiegeSeconds())
+				continue;
+
+			z.m_fSiegeSince = 0;
+			m_Crawlers.HoldDoor(z.m_vSiegeAt);
+			foreach (IEntity p : players)
+			{
+				if (p && RZ_Util.DistXZ(p.GetOrigin(), z.m_vSiegeAt) <= 40)
+					m_GM.NotifyPlayer(GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(p), "Quiet", "The banging stops. Whatever it was has given up on the door, for now.");
+			}
+
+			if (!z.m_Entity)
+				continue;
+
+			if (!RZ_InfectedBodies.InSight(z.m_vLastPos, players, true))
+			{
+				EndPart(z, z.Agents());
+				RZ_Util.DeleteUnit(z.m_Entity);
+				Untrack(i);
+				continue;
+			}
+
+			vector away = z.m_vSiegeAt - z.m_vHome;
+			vector dest = z.m_vHome;
+			if (away.Length() < 60)
+				dest = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(z.m_vSiegeAt, 80, 150));
+
+			RZ_Util.RedirectGroup(z.m_Entity, dest, m_Settings.m_sMoveWaypointPrefab);
+		}
+	}
+
+	// ================================================================ Death attribution and admin
+	//------------------------------------------------------------------------------------------------
+	//! The tracked unit with a living member nearest pos within radius (the bite detector's
+	//! attribution), or null.
+	RZ_TrackedZombie FindUnitNear(vector pos, float radius)
+	{
+		RZ_TrackedZombie best;
+		float bestDist = radius;
+		array<IEntity> members = {};
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (!z.m_Entity || RZ_Util.DistXZ(z.m_vLastPos, pos) > radius + 60)
+				continue;
+
+			members.Clear();
+			RZ_Util.GetUnitMembers(z.m_Entity, members);
+			foreach (IEntity m : members)
+			{
+				float d = RZ_Util.DistXZ(m.GetOrigin(), pos);
+				if (d <= bestDist && RZ_Util.IsCharacterAlive(m))
+				{
+					bestDist = d;
+					best = z;
+				}
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "infected 62/100 agents (19 entries), clusters 2 share 28 [28/28, 6/28], hordes from towns 1, loose arrived 3"
+	string StatusText()
+	{
+		if (!IsPlumbingOn())
+			return string.Format("infected: %1 entries (crawlers and tribes off)", m_aTracked.Count());
+
+		int agents = 0;
+		int crawlers = 0;
+		int loose = 0;
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (!z.m_Entity)
+				continue;
+
+			agents += z.Agents();
+			if (z.m_eRole == RZ_EInfectedRole.CRAWLER || z.m_eRole == RZ_EInfectedRole.SCAVENGER)
+				crawlers += z.Agents();
+			else if (z.m_eRole == RZ_EInfectedRole.LOOSE)
+				loose += z.Agents();
+		}
+
+		string text = string.Format("infected %1/%2 agents (%3 entries; crawlers %4, loose %5), clusters %6 share %7 [%8]",
+			agents, m_Budget.GetBudget(), m_aTracked.Count(), crawlers, loose, m_Budget.GetClusterCount(), m_Budget.GetShare(), m_Budget.DescribeClusters());
+		text += string.Format(", hordes from towns %1, loose ones arrived %2", m_iHordesFromTowns, m_iLooseArrived);
+		if (m_Crawlers)
+			text += " | " + m_Crawlers.StatusText();
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every tracked unit, to the log (/tribes).
+	void DumpTracked()
+	{
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (!z.m_Entity)
+				continue;
+
+			int partId = -1;
+			if (z.m_Part)
+				partId = z.m_Part.m_iId;
+
+			RZ_Log.Info(string.Format("Tribes dump | unit %1 at %2: town %3, mission %4, agents %5, part %6, drifting %7, walking %8, siege %9",
+				typename.EnumToString(RZ_EInfectedRole, z.m_eRole), RZ_SettlementScanner.GridReference(z.m_vLastPos), z.m_iSettlement,
+				z.m_iMissionId, z.Agents(), partId, z.m_bDrifting, z.m_bWalking, z.m_fSiegeSince > 0));
+		}
 	}
 
 	// ================================================================ Mission building blocks

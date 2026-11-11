@@ -1,5 +1,5 @@
-//! In-game time of day, and how fast it runs on this server. ReforgerZ never skips
-//! or changes time; night missions just wait for it. The speed is measured by
+//! In-game time of day, and how fast it runs on this server. ReforgerZ never skips time; it sets
+//! the day's length at start (docs/DESIGN.md, The clock); night missions just wait. The speed is measured by
 //! sampling the clock on the server tick, so it works with any time acceleration
 //! the server config sets, without needing an API for it.
 class RZ_GameTime

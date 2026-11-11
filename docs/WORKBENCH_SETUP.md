@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 145 prefabs the plugin creates, 16 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 32 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **168 prefab fields**: 40 on `RZ_GameModeComponent`, 122 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **173 entries**: 145 prefabs the plugin creates, 19 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 34 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -485,6 +485,9 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | Special Zombies, or Bacon heavy, exploding and ranged | — | Zombies > Special prefabs (list) | **minimum** | samples, the cure |
 | (existing prefab) | a large Bacon group | — | Zombies > Horde prefabs (list) | **minimum** | hordes |
 | (existing prefab) | vanilla AIWaypoint_Move.et | — | Zombies > Move waypoint | **minimum** | hordes toward noise, unarmed missions, hunter squads, supply trucks, favourite spots |
+| (existing prefab) | Bacon Zombies' Group_Zombies_Base (an infected group with no members of its own) | — | Zombies > Empty group | optional | runtime groups: crawlers and loose ones made from character prefabs (without it they stand inactive) |
+| (existing prefab) | Bacon Zombies' civilian characters (the slowest it has: none is slower than about 3.7 m/s) | — | Zombies > Crawlers > Prefabs (list) | optional | the towns' crawlers (empty: Zombies > Common) |
+| (existing prefab) | an exploding variant (Bacon's exploder) | — | Zombies > Crawlers > Bloated prefabs (list) | optional | bloated crawlers in dark towns from Overrun |
 | (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Runner prefabs (list) | optional | the Collapse trait |
 | (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Helmet prefabs (list) | optional | the Overrun trait |
 | (existing prefab) | runner, helmet or screamer prefabs from your zombie mods | — | Zombies > Adaptation > Screamer prefabs (list) | optional | the Aftermath trait |
@@ -698,6 +701,16 @@ slots they don't use. **Without replicated labels** (the prefab needs an `RplCom
 label, and the actions still route correctly. The specific puzzle props only change the look;
 missions turn themselves off when a prefab they need is missing.
 
+**The infected** ([INFECTED.md](INFECTED.md)). **Zombies > Empty group** (Bacon's
+`Group_Zombies_Base`) is what lets crawlers and loose ones made from character prefabs walk anywhere:
+without it they stand on their own and Bacon's stay inactive. **Zombies > Crawlers > Prefabs** takes
+characters (each spawn is a group of 1-3 in an empty group) or groups; the repo's game mode has
+Bacon's civilian characters there and its exploder as the bloated one. Bacon has no slow prefab, so
+crawlers are as fast as the rest (about 3.7 m/s): if a zombie mod in your stack has a slower civilian,
+put it here ([MOD_STACK.md](MOD_STACK.md)). Both **Zombies > Crawlers** and **Zombies > Tribes** are on
+by default; with both off the spawner is as it was. The first start on a map reads the land grid
+(about 5 minutes on Everon, logged), then loads it from the profile.
+
 **Treatments.** Each turns itself off when its slot is empty. Wound cleaning needs no prefab: it
 uses carried items by keyword (alcohol, antiseptic, bandages, first-aid kits) and the interaction
 spot. Make sure the loot pool has some alcohol, antiseptic and herbs.
@@ -899,14 +912,14 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 32 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 33 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
 <!-- manifest:settings -->
 | Category | Object | Field | Covers |
 |---|---|---|---|
-| ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)) |
+| ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)), **Day length** (4 real hours a game day, x6; 0 = the server's own clock; [DESIGN.md](DESIGN.md#the-clock)), **Keep time of day** (on: saved in state.json and set again at start) |
 | ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (48 h), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
 | World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off) |
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
@@ -918,10 +931,11 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Director | Environment | `m_EnvironmentSettings` | Night heat spread (0.25), night specials (×1.25), rain and fog thresholds, storm thresholds, storm grounds the helicopter |
 | Director | Story arcs | `m_StorySettings` | Minutes between (60), start chance (0.6), repeat hours (4), the dark-side arc's limits |
 | Director | Questlines | `m_QuestlineSettings` | **Enabled**, max active (2, one per faction), minutes between (30), start chance (0.5), retry hours (6), once per season (on), **Wait scale** (1; 0.1 for a quick test) ([DESIGN.md](DESIGN.md#questlines)) |
-| Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
+| Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, **Empty group** (runtime groups), per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | Stealth | `m_StealthSettings` | **Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth)) |
-| Zombies | Tribes | `m_TribeSettings` | Tribes are planned; for now only the **Land survey** (off): the land grid of water, height, trees, roads, bridges and wild land, read at the first start and cached in the profile; land squares read a second (20) ([DESIGN.md](DESIGN.md#the-land-grid)) |
+| Zombies | Tribes | `m_TribeSettings` | **Enabled** (on; off: no land grid, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20). The tribes themselves are planned ([INFECTED.md](INFECTED.md#tribes-planned)) |
+| Zombies | Crawlers | `m_CrawlerSettings` | **Enabled** (on; off: towns as before), **Prefabs** (Bacon's civilian characters; empty = Common), bloated prefabs and share (0.05, towns at 70+ from Overrun), group size (1-3), kill ledger half-life (30 played minutes), reinforcement distance (200 m), drift radius (300 m) and seconds (90), stir (stirred at 50, -20 an hour, 5 heat a minute up to 60), siege minutes (10), scavengers (2-4) ([INFECTED.md](INFECTED.md#towns-the-crawlers)) |
 | Zombies | (top level) |  | Presence heat (0.5/tick), vehicle heat (+4/tick) |
 | Backgrounds | Backgrounds (list) |  | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
 | Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
@@ -958,7 +972,11 @@ what each one covers; defaults are in brackets where they matter for setup.
 buildings, uniforms, buses, protective clothing, alcohol, antiseptic and herbs are found by
 lower-case words in prefab names. Check them against the mods you run.
 
-**Server.** Keep time acceleration modest and fixed; don't use time-skip or sleep mods. The
+**Server.** The mod sets the day's length itself (**Day length**, 4 real hours a game day, x6)
+and keeps the time of day across restarts ([DESIGN.md](DESIGN.md#the-clock)). The infected's
+design assumes about that: a night of about 85 real minutes ([INFECTED.md](INFECTED.md#tribes-planned)).
+Set **Day length** to 0 to keep your own server's acceleration (the engine's default is real
+time), and keep it modest and fixed; don't use time-skip or sleep mods. The
 defaults fit about 45 real days from about 2 to 20 regulars: **Cure > Pace by play** measures how
 much the server plays and scales research to it. For one regular, more than 20, or a longer or
 shorter season, set **Season speed** or **Cure > Cure pace** from the table in
@@ -969,7 +987,7 @@ on the cure unless you pick a timed mode) does it for you: when the season is ov
 writes `wipe.json`, and the next restart backs `state.json` up to `state_season<N>.json` and starts
 fresh ([DESIGN.md](DESIGN.md#seasons)); restart the server some time after players are told. The
 last winner is kept in `$profile:ReforgerZ/last_season.json` and the hall of fame in
-`hall_of_fame.json`; no wipe touches either. With **Zombies > Tribes > Land survey** on, the land
+`hall_of_fame.json`; no wipe touches either. With **Zombies > Tribes** on (the default), the land
 grid is cached in `land_<map>_<number>.json` there too; no wipe touches it. The number comes from
 the terrain's heights, so a map update that changes only objects (new forests, buildings or roads)
 keeps the old file: delete it and the next start reads the map again. For a season with rules, set **Season > Rule sets**
@@ -1063,10 +1081,10 @@ None of this is part of the mod: the lab's files are copied into a throwaway add
 
 ### Land survey without Workbench
 
-`tools/land_survey/run.sh` measures the land grid ([DESIGN.md](DESIGN.md#the-land-grid)) on the
+`tools/land_survey/run.sh` measures the land grid ([INFECTED.md](INFECTED.md#the-land)) on the
 base maps, with no Workshop mods. For each of Arland, Everon and Cain it boots a sub-scene of the
 map with the game mode, the map's `SCR_AIWorld` (the road network comes with it) and **Zombies >
-Tribes > Land survey** on, waits for the grid, prints what it found, then boots the map again to
+Tribes > Enabled** on, waits for the grid, prints what it found, then boots the map again to
 load the grid from its cache. It takes about 25 minutes for all three (Everon and Cain take 2 to 3
 minutes to boot, and 2 to 4 more to read). Name maps to run fewer; `CACHE_RUN=0` skips the second
 boots.
@@ -1095,7 +1113,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **42** lines with the tag, all in the game scripts (one is the comment in
+There are **43** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 4 are in `UI/`: two the UI's own, two the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1113,9 +1131,9 @@ No fallback. If this is wrong, nothing persists.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:156` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:165` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 
-### Medium risk: big features, with a fallback (24)
+### Medium risk: big features, with a fallback (25)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1140,6 +1158,7 @@ No fallback. If this is wrong, nothing persists.
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
 | `UI/RZ_LoadoutLock.c:49` | the server asks `SCR_LoadoutManager.CanAssignLoadout_S` before it assigns the loadout a player picks (1.9's `SCR_PlayerLoadoutComponent.Rpc_RequestLoadout_S` does) | A locked pick is assigned; the spawn check below still refuses it |
+| `Zombies/RZ_InfectedBodies.c:170` | a physics trace from a player's eyes (`TraceMove`, world and entities) is stopped by buildings, walls and trees, and 16 of them a server tick cost little (crawler spawns use it: no body within 300 m of a player who could see the spot) | If traces never hit, crawlers spawn only behind terrain or beyond 300 m, so towns fill thinner near players (watch `/tribes`: towns well under their base). If they show in the frame time, lower `TRACES_PER_TICK` in `RZ_InfectedBodies` (a spot counts as seen once they're used up) |
 | `UI/RZ_LoadoutLock.c:66` | the server asks `SCR_BaseGameMode.CanPlayerSpawn_S` for every spawn request, with the prefab the client asked for (1.9's respawn system does) | A locked loadout can spawn: the player keeps its gear for that life but plays as the default background (`ResolveBackground`, the log line below). Check with a fresh profile: pick Soldier, press spawn (mouse and gamepad); it must refuse |
 
 ### Low risk: contained or cosmetic (15)
@@ -1159,7 +1178,7 @@ No fallback. If this is wrong, nothing persists.
 | `Core/RZ_Util.c:785` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
 | `Core/RZ_Util.c:772` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
-| `Zombies/RZ_Stealth.c:1162` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
+| `Zombies/RZ_Stealth.c:1164` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
 
 ### The UI (2)
 
@@ -1169,7 +1188,7 @@ is in [UI.md](UI.md).
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_PlayerUIComponent.c:152` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:153` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
 
 ## 7. Log lines to check
@@ -1204,6 +1223,24 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Questlines: on, 15 registered (Short Weight, The List, The Price of the Door, The Edge of Town, Await Relief, The Census, The Last Pilot, The Book, Cargo, The Well Story, The Three Weeks, The Other Two, Authors, The House That Went Quiet, A Place at the Table), at most 2 at once, running none.
 [ReforgerZ] Started. 14 settlements, stage Early Outbreak, cure 0 percent, state 0.
 ```
+
+The infected (phase 1, [INFECTED.md](INFECTED.md)) add these, written from the code and not yet seen
+in a run: before `Started`, the land grid starting to read the map (from its cache after the first
+start) and the active-AI limit; once the clock runs, the day length; about 40 s later on Arland
+(5 minutes on Everon) the land's summary and its tribe slots:
+
+```
+[ReforgerZ] Land survey: reading the map, 289 squares of 250 m (17 x 17). Tribes stay dormant until it's done.
+[ReforgerZ] Tribes: the engine's active-AI limit raised from 128 to 160 (it covers faction AI, wanderers and trucks too).
+[ReforgerZ] Clock: a game day takes 240 real minutes; the time of day is 12:00 (saved --:--).
+[ReforgerZ] Land: 289 squares of 250 m (17 x 17), 6.3 km2 of land, 0.8 km2 wild; read in 39 s (...). File $profile:ReforgerZ/land_<map>_<number>.json.
+[ReforgerZ] Land: the sea, 3 rivers (0.9 km), 0 lakes. ... Ridge posts 3, valley lines 1, forests 3, fields 0.
+[ReforgerZ] Land: lair candidates N (forest N, barn N, ...).
+[ReforgerZ] Tribes: 0.8 km2 of wild land and N lair candidates: under the floor (1.5 km2 and a lair), so no tribes here, crawlers only. Override: none.
+```
+
+On Everon the last line reads `Tribes: 24.4 km2 of wild land, 5 slots (1 kept for a split), 1 clan
+possible. Override: none. ...`.
 
 On a restart the same lines say `(save)` or `(saved)` instead of `(picked)` or `(new ...)`, the
 world facts keep their seed and count what the season has made so far, and the settlement scan
@@ -1266,6 +1303,8 @@ Warnings worth acting on:
 | `Requirements: no questline has the key '...' (docs/QUESTLINES.md lists them); the gate never closes.` | A mission's `NotWhileQuest`/`NotAfterQuest`/`NotWithQuest` names a key that is neither registered nor designed: a typo. Use the key from [QUESTLINES.md](QUESTLINES.md#the-questlines) |
 | `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON save behaviour in the VERIFY list is wrong) |
 | `Land: ... roads: none found (no road network; no bridges) ...` | The world has no `SCR_AIWorld` (or its road network is empty): place the map's AI world prefab (`SCR_AIWorld_Eden.et` and the like), which the infected need anyway |
+| `Zombies > Empty group isn't an AI group: ...` | **Zombies > Empty group** is set to something that isn't an AI group: crawlers and loose ones made from character prefabs stand on their own (Bacon's stay inactive). Set Bacon's `Group_Zombies_Base` |
+| `Clock: no time and weather manager in the world; every hour reads as day.` | The world has no time and weather manager: no night, no Day length, nothing to keep across restarts |
 | `Land survey: the cached grid ... doesn't read; reading the map again.` / `Land survey: could not write ...` | The cache in `$profile:ReforgerZ/` is damaged or can't be written: the map is read again at each start (a few minutes, tribes dormant meanwhile) |
 
 While running: `Status | ...` lines every few minutes (stage, infection, zombies, missions, move
@@ -1284,6 +1323,14 @@ now N percent.` (both only once a finale questline is registered),
 `Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
 `Long Table: found out (to N).`, `Long Table: the farm past ... is moving (quiet for a real day).` and
 `... opens again past ...`, `Long Table: broken up (N).`,
+`Status | infected N/100 agents (N entries; crawlers N, loose N), clusters N share N [N/N, ...], hordes
+from towns N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
+doors N | active AI N/160 | land: ... | clock ..., day N min` (with Crawlers or Tribes on: agents near the
+budget all the time, or the active AI at its limit, means the budget is too high for the server),
+`Heat horde: N units out of <town>, from its side of <grid>.`, `Crawlers: <town> is stirred (N).`,
+`Crawlers: a kill site at <grid> (...); the slow ones from <town> come out to it at night.`,
+`Crawlers: N from <town> are walking out to the kill site at <grid>.`, `Tribes dump | ...` (an admin's
+`/tribes`: every town with crawlers, a ledger or stir, kill sites, parts, tracked units, last hits),
 `Fire Mission perk: player N, M infected killed.`, `Cars: the ... in ... fixed by player N.`, `Stealth: the infected take a perception factor (...)` (once, the
 first time infected near a player take it), `Note at ... by ...: ...`, `Season over. Cure goes to ...`,
 `Canon: <key> = <value>.` (a fixed fact of the setting, made the first time content asks, once a
@@ -1367,6 +1414,34 @@ session, tick off:
 - [ ] Hold the lab in the final stand, or a hold mission, lying prone: the waves still find you.
 - [ ] All of the above with **Stealth > Enabled** off: no visibility on the HUD, and compare how
   close you get and how long they chase you.
+
+**The infected** ([INFECTED.md](INFECTED.md); the status log's `infected` line and `/tribes` as an admin)
+- [ ] At the first start the log says the land is being read and, a few minutes later, its summary
+  and the tribe slots (Arland: under the floor). A restart loads it from the cache in milliseconds.
+- [ ] By day a town's crawlers stand mostly by doors and in yards; at dusk half are in the streets;
+  at night most are in the streets and a few in the fields at the edge. None appears in plain sight
+  within 300 m: watch a street from a roof while the town fills.
+- [ ] Kill a town's crawlers, walk 1.2 km away and back within half an hour: it's thinner (the
+  ledger), and what comes back walks out of the buildings 200 m or more away. `/tribes` shows the
+  ledger halving.
+- [ ] A thrown bottle or a shot at the edge of a quiet town: the crawlers within 300 m come over,
+  stand about a minute and a half, then go back. Not if you're within 250 m of them.
+- [ ] Hide in a locked house with crawlers banging on the door: after about 10 minutes the banging
+  stops ("The banging stops."), and no new ones come to that door for a while.
+- [ ] `/tribes stir` in a town: its crawlers come out and toward the last noise, its square warms
+  up, and no horde comes from the stir alone. `/tribes site` 500 m outside a town by day: at
+  nightfall 2–4 of its crawlers walk out to it and stand there until dawn.
+- [ ] In the countryside, the two infected near you walk somewhere (by day toward a town, at night
+  toward the woods); follow one into town. None appears in the open within 300 m of you.
+- [ ] Make 80 heat near a town (a long firefight): the horde comes from the town's side, and the
+  log names the town. Far from any town, it comes from anywhere, as before.
+- [ ] The status line's agents stay at or under 100 with two groups of players far apart (28 each
+  at most), and the active AI stays under its limit with trucks and patrols out.
+- [ ] A special killed in a group drops its sample where it fell. Burn the Nest's brief reads "The
+  slow ones lie up thick in ...".
+- [ ] The clock: a game day takes about 4 real hours; restart at night and it's still night.
+- [ ] **Zombies > Crawlers** and **Zombies > Tribes** both off: towns, roamers and hordes as before,
+  and no `infected` status line.
 
 **Seasons and notes**
 - [ ] With **Wipe** on *After weeks* (1 week), stop the server and set `seasonStartUnix` in
