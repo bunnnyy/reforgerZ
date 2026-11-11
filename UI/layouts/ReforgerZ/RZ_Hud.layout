@@ -115,8 +115,8 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
      }
      Color 0.886 0.702 0.235 1
      Text "INFECTED - FEVER"
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{B95C3EFD17E25424}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -334,8 +334,8 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
        }
        Color 0.639 0.62 0.565 1
        Text ""
-       "Font Size" 14
-       "Min Font Size" 14
+       "Font Size" 18
+       "Min Font Size" 18
        Wrap 1
        FontProperties FontProperties "{B2AEB789850AB6FC}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -386,8 +386,8 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
            }
            Color 0.31 0.722 0.69 1
            Text "PAUSED - 14:02"
-           "Font Size" 12
-           "Min Font Size" 12
+           "Font Size" 18
+           "Min Font Size" 18
            FontProperties FontProperties "{F5D8048081838DEA}" {
             Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
@@ -477,14 +477,14 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
       OffsetTop 10
       SizeX 318
       OffsetRight -378
-      SizeY 18
-      OffsetBottom -28
+      SizeY 22
+      OffsetBottom -32
       Alignment 0 0
      }
      Color 0.604 0.639 0.369 1
      Text "BASTION COMMAND NET"
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{2B451DF53D48CB83}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -499,14 +499,14 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
       OffsetTop 32
       SizeX 318
       OffsetRight -378
-      SizeY 18
-      OffsetBottom -50
+      SizeY 22
+      OffsetBottom -54
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
      Text "Cracked - codes change in 12 min"
-     "Font Size" 13
-     "Min Font Size" 13
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{7CBA1F958D0ADEAF}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -619,8 +619,8 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
      }
      Color 0.639 0.62 0.565 1
      Text "QUIET"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{277A434B3AC1EF5F}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -713,8 +713,8 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
      }
      Color 0.639 0.62 0.565 1
      Text "SEEN"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      FontProperties FontProperties "{93EEF49BC6720E6A}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -752,8 +752,8 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
      "Is Visible" 0
      Color 0.431 0.416 0.376 1
      Text "+1 QUEUED"
-     "Font Size" 12
-     "Min Font Size" 12
+     "Font Size" 18
+     "Min Font Size" 18
      "Horizontal Alignment" Right
      FontProperties FontProperties "{C4E2B0BAA8BCDC75}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"

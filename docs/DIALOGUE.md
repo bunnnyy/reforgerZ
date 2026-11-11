@@ -337,7 +337,7 @@ The lint refuses removing one; a gone id is kept as `retired <id>`.
 | `python3 tools/dialogue_sim.py <conv> --bg nurse --tier haven=trusted` | Walks one conversation as one character sees it: the lines (variants picked), every choice with its tag, whether it shows, and where a check would send them. Also `--infamy`, `--fame`, `--favor`, `--flag`, `--knows`, `--fact night`, `--mem helped`, `--regard`, `--food`, `--house short`, `--trait`; `--all` shows every start node |
 | `python3 tools/voice_lint.py` | Also reads every `.rzd` line (says as talk-screen lines, labels as choices) against [WRITING.md](WRITING.md#checking-text) |
 | **[Admin] Errands near here** (server admins, a reply on any named person, wanderer or occupant: no typing) | The errands' live count, the nearest player's last deal and why each other errand wasn't dealt, and their errands ([ERRANDS.md](ERRANDS.md#telemetry-and-the-admin-view)) |
-| `/talkdebug` (admins, in chat) | Whether Trees are on, the conversation and memory counts, your memory, and for the person you're talking to, every conversation for them and the first `when` term that fails |
+| `/talkdebug` (admins, in chat; or the **[Admin] Read this person's conversations** reply) | Whether Trees are on, the conversation and memory counts, your memory, and for the person you're talking to, every conversation for them and the first `when` term that fails |
 
 **The lint** (`dialogue_pack.py`): unique ids; known keywords, speakers, condition keys,
 effects, checks, calls and tokens; targets that exist; nodes no path reaches; at most 6 choices;

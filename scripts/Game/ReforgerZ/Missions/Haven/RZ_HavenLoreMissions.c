@@ -51,6 +51,10 @@ class RZ_Mission_TheList : RZ_PuzzleMission
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.KNOWN, 12, 12);
 		m_Req.Bonus("police");
 		m_Req.Bonus("elder");
+		// Not while the questline The List asks the same question at length
+		if (m_iQuestRun < 0)
+			m_Req.NotWhileQuest("list");
+
 		m_fBonusFameMult = 1.25;
 		m_fTimeLeft = 3600;
 		m_fParticipationRadius = 0;

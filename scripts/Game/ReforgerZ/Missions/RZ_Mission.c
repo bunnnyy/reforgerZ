@@ -78,6 +78,9 @@ class RZ_Mission
 	vector m_vReasonAt;				// where that reason is: a reason-started contract must land near it
 	//! Called off by the world, not failed by anyone (Withdraw): no pay, no blame, no penalty.
 	bool m_bWithdrawn;
+	//! A Bastion contract whose GetWeight already follows Bastion presence: the mission manager
+	//! doesn't scale it again (RZ_MissionManager.PresenceMult).
+	bool m_bPresenceWeighted;
 	string m_sWithdrawText;
 
 	// Rough areas (docs/MISSIONS.md, "Who gets offered what"): contracts name a circle, not a spot
@@ -224,6 +227,15 @@ class RZ_Mission
 	//! fails. Subjects picked in Setup are claimed there with ClaimSubject.
 	void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
 	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Not started by a questline or a story arc: a contract on its own. A story that reuses a
+	//! mission holds what it needs itself, so a mission claims shared subjects ("lab") and keeps out
+	//! of a questline's premise (NotWhileQuest) only on its own.
+	bool IsStandalone()
+	{
+		return m_iQuestRun < 0 && m_sClaimParent.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -771,6 +783,91 @@ class RZ_Mission
 			return -1;
 
 		return candidates.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Town pickers by who holds a town (docs/DESIGN.md, "World facts"): RZ_WorldFacts.PickTown
+	//! with the infection range, not busy (with `asker`, what it or its story holds is free).
+	//! A town nobody lives in: no safehouse, holding or lab. For work in an abandoned or overrun
+	//! town (a nest, a cache, a ruin to clear). -1 if none.
+	static int PickEmptySettlement(RZ_GameModeComponent gm, float minInf, float maxInf, RZ_Mission asker = null)
+	{
+		RZ_TownFilter f = TownFilter(minInf, maxInf);
+		f.m_iHeldBy = -1;
+		return gm.GetFacts().PickTown(f, asker);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! As PickEmptySettlement, between minDist and maxDist from `from`, other than `exclude`.
+	static int PickEmptySettlementAway(RZ_GameModeComponent gm, vector from, float minDist, float maxDist, float minInf, float maxInf, int exclude = -1, RZ_Mission asker = null)
+	{
+		RZ_TownFilter f = TownFilterAway(from, minDist, maxDist, minInf, maxInf, exclude);
+		f.m_iHeldBy = -1;
+		return gm.GetFacts().PickTown(f, asker);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A town that none of `notHeldBy` holds (RZ_Factions.Bit of each; a town nobody holds is fine).
+	//! For work a faction does in the open, never in its rivals' towns. -1 if none.
+	static int PickSettlementNotHeldBy(RZ_GameModeComponent gm, float minInf, float maxInf, int notHeldBy, RZ_Mission asker = null)
+	{
+		RZ_TownFilter f = TownFilter(minInf, maxInf);
+		f.m_iNotHeldBy = notHeldBy;
+		return gm.GetFacts().PickTown(f, asker);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! As PickSettlementNotHeldBy, between minDist and maxDist from `from`, other than `exclude`.
+	static int PickSettlementAwayNotHeldBy(RZ_GameModeComponent gm, vector from, float minDist, float maxDist, float minInf, float maxInf, int notHeldBy, int exclude = -1, RZ_Mission asker = null)
+	{
+		RZ_TownFilter f = TownFilterAway(from, minDist, maxDist, minInf, maxInf, exclude);
+		f.m_iNotHeldBy = notHeldBy;
+		return gm.GetFacts().PickTown(f, asker);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A town `faction` holds (a stronghold, an outpost, a Haven safehouse, the lab), between minDist
+	//! and maxDist from `from` (maxDist 0: anywhere), other than `exclude`. For a drop, a fence or a
+	//! post that should be where that faction really is. -1 if none: fall back to another picker.
+	static int PickHeldSettlementAway(RZ_GameModeComponent gm, RZ_EFaction faction, vector from, float minDist, float maxDist, int exclude = -1, RZ_Mission asker = null)
+	{
+		RZ_TownFilter f = TownFilterAway(from, minDist, maxDist, 0, 100, exclude);
+		f.m_iHeldBy = faction;
+		return gm.GetFacts().PickTown(f, asker);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static RZ_TownFilter TownFilter(float minInf, float maxInf)
+	{
+		RZ_TownFilter f = new RZ_TownFilter();
+		f.m_fMinInfection = minInf;
+		f.m_fMaxInfection = maxInf;
+		return f;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static RZ_TownFilter TownFilterAway(vector from, float minDist, float maxDist, float minInf, float maxInf, int exclude)
+	{
+		RZ_TownFilter f = TownFilter(minInf, maxInf);
+		f.m_vFrom = from;
+		f.m_fMinDist = minDist;
+		f.m_fMaxDist = maxDist;
+		f.m_iExclude = exclude;
+		return f;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The factions' bits for RZ_TownFilter.m_iNotHeldBy: everyone but `faction` (who may hold it).
+	static int OthersBits(RZ_EFaction faction)
+	{
+		int bits = 0;
+		for (int i = 0; i < RZ_Factions.COUNT; i++)
+		{
+			if (i != faction)
+				bits = bits | RZ_Factions.Bit(i);
+		}
+
+		return bits;
 	}
 
 	//------------------------------------------------------------------------------------------------

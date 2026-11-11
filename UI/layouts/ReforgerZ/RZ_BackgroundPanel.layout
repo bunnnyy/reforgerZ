@@ -76,8 +76,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
          }
          Color 0.639 0.62 0.565 1
          Text "BACKGROUND"
-         "Font Size" 12
-         "Min Font Size" 12
+         "Font Size" 18
+         "Min Font Size" 18
          FontProperties FontProperties "{FA43113B328FDF47}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
@@ -174,8 +174,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
                    }
                    Color 0.749 0.827 0.608 1
                    Text ""
-                   "Font Size" 12
-                   "Min Font Size" 12
+                   "Font Size" 18
+                   "Min Font Size" 18
                    FontProperties FontProperties "{84AFC5F5E95A840D}" {
                     Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
                    }
@@ -214,8 +214,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
              }
              Color 0.639 0.62 0.565 1
              Text "PERK"
-             "Font Size" 12
-             "Min Font Size" 12
+             "Font Size" 18
+             "Min Font Size" 18
              FontProperties FontProperties "{59D61F506345CBBE}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
@@ -229,8 +229,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
              }
              Color 0.749 0.827 0.608 1
              Text ""
-             "Font Size" 17
-             "Min Font Size" 17
+             "Font Size" 18
+             "Min Font Size" 18
              Wrap 1
              FontProperties FontProperties "{DF89A5FEFB4BBA1E}" {
               Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -264,8 +264,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
              }
              Color 0.639 0.62 0.565 1
              Text "FLAW"
-             "Font Size" 12
-             "Min Font Size" 12
+             "Font Size" 18
+             "Min Font Size" 18
              FontProperties FontProperties "{EF284736DE26D357}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
@@ -279,8 +279,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
              }
              Color 0.894 0.51 0.435 1
              Text ""
-             "Font Size" 17
-             "Min Font Size" 17
+             "Font Size" 18
+             "Min Font Size" 18
              Wrap 1
              FontProperties FontProperties "{E848B67ABCB1499B}" {
               Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -314,8 +314,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
              }
              Color 0.639 0.62 0.565 1
              Text "STARTING STANDING"
-             "Font Size" 12
-             "Min Font Size" 12
+             "Font Size" 18
+             "Min Font Size" 18
              FontProperties FontProperties "{6CA7B82A0129CF63}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
@@ -329,8 +329,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
              }
              Color 0.91 0.886 0.816 1
              Text ""
-             "Font Size" 14
-             "Min Font Size" 14
+             "Font Size" 18
+             "Min Font Size" 18
              Wrap 1
              FontProperties FontProperties "{2D07E97B8A1EC11D}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -364,8 +364,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
              }
              Color 0.639 0.62 0.565 1
              Text "STARTING GEAR"
-             "Font Size" 12
-             "Min Font Size" 12
+             "Font Size" 18
+             "Min Font Size" 18
              FontProperties FontProperties "{16BAACD0811CFBEB}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
@@ -379,8 +379,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
              }
              Color 0.91 0.886 0.816 1
              Text ""
-             "Font Size" 15
-             "Min Font Size" 15
+             "Font Size" 18
+             "Min Font Size" 18
              Wrap 1
              FontProperties FontProperties "{EBCED68C12684206}" {
               Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -424,8 +424,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
              }
              Color 0.639 0.62 0.565 1
              Text ""
-             "Font Size" 15
-             "Min Font Size" 15
+             "Font Size" 18
+             "Min Font Size" 18
              Wrap 1
              FontProperties FontProperties "{B58A7A7F38A784B1}" {
               Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -451,8 +451,8 @@ FrameWidgetClass "{A4C008FFAC6DBA53}" {
            }
            Color 0.639 0.62 0.565 1
            Text ""
-           "Font Size" 12
-           "Min Font Size" 12
+           "Font Size" 18
+           "Min Font Size" 18
            FontProperties FontProperties "{372E3F1C81C85DDF}" {
             Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }

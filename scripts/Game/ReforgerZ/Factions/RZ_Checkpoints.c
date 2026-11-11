@@ -295,6 +295,12 @@ class RZ_Checkpoints
 			if (CrewPrefab(f).IsEmpty())
 				continue;
 
+			// Bastion puts up posts as often as it's still out on the roads (world facts' Bastion
+			// presence): every time at full strength, a third of the time in Aftermath (0.1).
+			// A curfew's night posts always go up
+			if (f == RZ_EFaction.MILITARY && bastionFirst < 1 && Math.RandomFloat01() > BastionPostChance())
+				continue;
+
 			RZ_Holding home = NearestHolding(territory, f, at);
 			if (!home || RZ_Util.DistXZ(home.m_vPos, at) > m_Settings.m_fHoldingRange + 1000)
 				continue;
@@ -318,6 +324,15 @@ class RZ_Checkpoints
 			RZ_Log.Info(string.Format("%1 up near %2.", post.GetTitle(), post.m_sNear));
 			return;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The chance a Bastion road post goes up when it's Bastion's turn: 0.3 + 0.7 x Bastion presence
+	//! (1 at Early Outbreak, 0.72 at Collapse, 0.48 at Overrun, 0.37 in Aftermath).
+	protected float BastionPostChance()
+	{
+		float presence = Math.Clamp(RZ_WorldFacts.Get().BastionPresence(), 0, 1);
+		return 0.3 + 0.7 * presence;
 	}
 
 	//------------------------------------------------------------------------------------------------

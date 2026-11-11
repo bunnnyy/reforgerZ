@@ -56,7 +56,7 @@ class RZ_Mission_SampleHunt : RZ_TribeContract
 			}
 		}
 
-		m_iSettlement = PickSettlement(gm, 40, 100);
+		m_iSettlement = PickEmptySettlement(gm, 40, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -154,7 +154,7 @@ class RZ_Mission_FieldSamples : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 40, 100);
+		m_iSettlement = PickEmptySettlement(gm, 40, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -234,7 +234,7 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 80);
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 80, RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -248,7 +248,7 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 		while (m_aPoints.Count() < 3 && guard < 20)
 		{
 			guard++;
-			int idx = PickSettlementAway(gm, s.m_vCenter, 500, 3500, 0, 100);
+			int idx = PickSettlementAwayNotHeldBy(gm, s.m_vCenter, 500, 3500, 0, 100, RZ_Factions.Bit(RZ_EFaction.BANDITS), m_iSettlement, this);
 			RZ_Settlement other = gm.GetSettlement(idx);
 			if (!other || used.Contains(idx))
 				continue;
@@ -347,7 +347,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 20, 100);
+		m_iSettlement = PickEmptySettlement(gm, 20, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -603,7 +603,7 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 55, 100);
+		m_iSettlement = PickEmptySettlement(gm, 55, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -623,7 +623,12 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 			halcyonPos = LandPointNear(h.m_vCenter, 0, h.m_fRadius * 0.5);
 		}
 
-		RZ_Settlement b = gm.GetSettlement(PickSettlementAway(gm, s.m_vCenter, 800, 5000, 0, 100));
+		// Bastion's drop where Bastion really is, when it holds a town in reach
+		int bastionTown = PickHeldSettlementAway(gm, RZ_EFaction.MILITARY, s.m_vCenter, 800, 5000, m_iSettlement, this);
+		if (bastionTown < 0)
+			bastionTown = PickSettlementAway(gm, s.m_vCenter, 800, 5000, 0, 100, m_iSettlement, this);
+
+		RZ_Settlement b = gm.GetSettlement(bastionTown);
 		if (!b)
 			return false;
 
@@ -709,7 +714,7 @@ class RZ_Mission_HuntScreamer : RZ_TribeContract
 			}
 		}
 
-		m_iSettlement = PickSettlement(gm, 30, 100);
+		m_iSettlement = PickEmptySettlement(gm, 30, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -779,6 +784,15 @@ class RZ_Mission_HuntScreamer : RZ_TribeContract
 class RZ_Mission_LabDefence : RZ_Mission_Hold
 {
 	protected IEntity m_Raiders;
+
+	//------------------------------------------------------------------------------------------------
+	//! On its own it holds the lab (a claim, docs/DESIGN.md "World facts"); a story that runs it
+	//! holds the lab itself
+	override void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
+	{
+		if (IsStandalone())
+			result.Insert(RZ_WorldFacts.LAB);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)

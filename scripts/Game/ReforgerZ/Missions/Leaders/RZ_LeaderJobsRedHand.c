@@ -136,7 +136,13 @@ class RZ_Job_HouseRules : RZ_LeaderHold
 		if (!l)
 			return false;
 
-		m_vPos = LandPointNear(l.m_vPos, 60, 150);
+		// When the season's pit is behind this seat (no boss's seat to put it behind), this crew's
+		// pit is that one: the canon spot, held while it runs
+		if (RZ_RedHandEdges.PitSeat(gm) == l.m_iId && ClaimSubject(gm, RZ_WorldFacts.PIT))
+			m_vPos = gm.GetFacts().CanonPos("redhand.pit");
+		else
+			m_vPos = LandPointNear(l.m_vPos, 60, 150);
+
 		m_iSettlement = gm.FindNearestSettlement(m_vPos);
 		m_sTitle = "House Rules";
 		m_sBrief = "The boss runs the big pit. This one's ours: our rules, our bets, our cut. Get in the ring behind the garages and stay standing. Win and I'll pay out of the pot.";

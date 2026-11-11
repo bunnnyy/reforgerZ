@@ -17,6 +17,10 @@ mockup, its section says so.
   anchor to their corner, menus fill the screen. Everything that matters stays inside the 90% safe
   area: 96 units from the left and right edges, 54 from the top and bottom
   ([UI.md](../docs/UI.md#controllers), "Readable on a TV").
+- **No text under 18.** Every text in these layouts has a font size (and min font size) of 18 or
+  more, the HUD's and the map icons' too. Where a label's slot was shorter than its text, the text
+  overflows its slot by a few units rather than move what's below (the Workbench check in
+  [UI.md](../docs/UI.md#controllers)).
 - **Names matter.** The scripts find widgets with `FindAnyWidget(name)`. Every name in the trees
   must be spelt exactly. A widget that's missing is skipped, so a simpler layout still works. The
   layouts name every widget; one shown in brackets, a description like `(panel background)` or a
@@ -40,7 +44,7 @@ mockup, its section says so.
   `RobotoCondensed_Bold.fnt` for *condensed bold* headings and *bold* text,
   `RobotoCondensed_Regular.fnt` for *regular* text and text given only a size (both in
   `UI/Fonts/RobotoCondensed/`). Italic is a font property.
-  Labels, like `(label "WHERE")`, are mono bold 12, dim.
+  Labels, like `(label "WHERE")`, are mono bold 18, dim.
 - **No upper case or letter spacing.** Layouts have neither property, so static labels are typed
   in capitals and the mockups' wide spacing is gone. Text a script sets shows as the script sends
   it: some in capitals (the infection stage, tier names, the menu headers, the background's
@@ -105,28 +109,28 @@ Frame  (root, full screen)
 │  │  ├─ ProgressBar TrackWeakness  fill weight 15, fill #E07A2E
 │  │  └─ ProgressBar TrackFinal     fill weight 10, fill #D2412F   (each on #2A2D2F)
 │  └─ VerticalLayout (NoteColumn) at (16, 102), 398 wide
-│     ├─ Text    InfectionNote  italic 14, dim, wraps
+│     ├─ Text    InfectionNote  italic 18, dim, wraps
 │     └─ Overlay PausedRow      4 below the note, fits its content, border #4FB8B0 50%
 │        ├─ Image  (item_stabiliser icon, 18 × 18, #4FB8B0, static)
-│        └─ Text   PausedText   mono bold 12, #4FB8B0
+│        └─ Text   PausedText   mono bold 18, #4FB8B0
 ├─ Frame  RadioPanel            390 × 60, anchor top-left, offset (96, 54)
 │  ├─ Image   (panel background)
 │  ├─ Image   RadioAccent       4 × 60, left edge                   faction colour
 │  ├─ Image   RadioIcon         34 × 34 at (12, 13)                 status_secure_radio, static, tinted
 │  ├─ Text    RadioChannel      at (60, 10), mono bold 13           faction colour
-│  └─ Text    RadioSub          at (60, 32), mono 13, dim
+│  └─ Text    RadioSub          at (60, 32), mono 18, dim
 ├─ HorizontalLayout NoisePanel  anchor bottom-left, offset (552, -62), 10 apart, 85% opacity
 │  ├─ Image   (status_noise icon, 26 × 26, bone, static)
 │  ├─ HorizontalLayout (3 apart)
 │  │  └─ Image Noise1 … Noise6  14 × 8 each, no texture (tinted lit or dim)
-│  └─ Text    NoiseText         mono bold 12, dim (QUIET, HEARD, LOUD, VERY LOUD)
+│  └─ Text    NoiseText         mono bold 18, dim (QUIET, HEARD, LOUD, VERY LOUD)
 ├─ HorizontalLayout SeenPanel   anchor bottom-left, offset (588, -90), 10 apart, 85% opacity; hidden until the server sends a visibility (Stealth on)
 │  ├─ HorizontalLayout (3 apart)
 │  │  └─ Image Seen1 … Seen5    14 × 8 each, no texture (tinted lit, dim, or green when hidden)
-│  └─ Text    SeenText          mono bold 12, dim (HIDDEN, LOW, SEEN, IN PLAIN SIGHT)
+│  └─ Text    SeenText          mono bold 18, dim (HIDDEN, LOW, SEEN, IN PLAIN SIGHT)
 ├─ VerticalLayout (NoticeArea)  460 wide, anchor top-right, offset (-96, 96)
 │  ├─ VerticalLayout NoticeStack  the notice cards
-│  └─ Text   NoticeQueued       under the stack, right-aligned, mono 12, faint ("+3 in your notebook")
+│  └─ Text   NoticeQueued       under the stack, right-aligned, mono 18, faint ("+3 in your notebook")
 └─ VerticalLayout SubtitlePanel  anchor bottom-centre, offset (0, -204), fits its content, hidden
    └─ Overlay (SubtitleBox)
       ├─ Image  (SubtitleBg)      #0C0E0F at 88%
@@ -151,10 +155,10 @@ SizeLayout  (root, 460 wide, height fits the content, 12 below it: the gap betwe
    ├─ VerticalLayout       padding 16
    │  ├─ HorizontalLayout
    │  │  ├─ Image  CardIcon     26 × 26, 10 before the kind
-   │  │  ├─ Text   CardKind     mono bold 12, fills the row
-   │  │  └─ Text   CardTime     mono 12, faint, right
-   │  ├─ Text   CardSpeaker  bold 17, bone, 10 above, wraps
-   │  └─ Text   CardText     regular 16, #D9D2BE, wraps
+   │  │  ├─ Text   CardKind     mono bold 18, fills the row
+   │  │  └─ Text   CardTime     mono 18, faint, right
+   │  ├─ Text   CardSpeaker  bold 18, bone, 10 above, wraps
+   │  └─ Text   CardText     regular 18, #D9D2BE, wraps
    ├─ Image   CardAccent    full width × 4, top edge
    ├─ Image   CardHazard    full width × 8, top edge, hazard yellow, hidden; shown for the broadcast
    └─ ProgressBar CardLife  full width × 3, bottom edge, 70% opacity, no background (counts down)
@@ -238,25 +242,27 @@ Frame StandingPage (root)
 │     ├─ Frame   (tier box, 387 × 66 at (22, 88), background white 3.5%, border)
 │     │  ├─ Image  TierIconN     42 × 42                           tier_* icon
 │     │  ├─ Text   TierNameN     condensed bold 26: the reputation's name (Mixed Bag, Wildcard...)
-│     │  └─ Text   TierNoteN     mono 13, dim: what it counts as, at most 42 characters
+│     │  └─ Text   TierNoteN     mono 18, dim: what it counts as, at most 42 characters
 │     ├─ Text    FameValueN      right, mono bold 14     │ ProgressBar FameBarN   387 × 10
 │     ├─ Text    InfamyValueN    right, mono bold 14 ("36 - 12 TO FORGIVE") │ ProgressBar InfamyBarN 387 × 10, fill #D2553F
 │     │   (three 2-unit dark ticks over both bars at 15%, 40% and 75%: the tier bands)
 │     ├─ Text    FavorValueN     mono bold 24, faction colour
-│     ├─ Text    (label "LEADERS YOU'VE MET") │ Text LeadersN  wraps, 15, in a ScrollLayout
+│     ├─ Text    (label "LEADERS YOU'VE MET") │ Text LeadersN  wraps, 18, in a ScrollLayout
 │     ├─ Frame   NeedBlockN
 │     │  ├─ Text   (label "WHAT THEY NEED")
-│     │  ├─ Text   NeedTitleN     mono bold 12, faction colour
-│     │  └─ Text   NeedN          italic 14, wraps
+│     │  ├─ Text   NeedTitleN     mono bold 18, faction colour
+│     │  └─ Text   NeedN          italic 18, wraps
 │     └─ Overlay WarnN           bottom strip, 36 high, red tint 16%
-│        └─ Text  (WarnTextN)    mono 13, "HUNTER SQUADS ARE OUT FOR YOU"
+│        └─ Text  (WarnTextN)    mono 18, "HUNTER SQUADS ARE OUT FOR YOU"
 ├─ Frame  (between the factions, at (72, 798), 880 × 196, label "BETWEEN THE FACTIONS")
-│  └─ Text   Relations          wraps, 16
+│  └─ Text   Relations          wraps, 18
 ├─ Frame  TierGrid (the reputation grid, at (970, 798), 874 × 196): a 5 × 5 grid, labels on the
-│  top row and the left column; the 16 cells are Text RepCell_<fame band>_<infamy band> (0-3 each,
+│  top row ("FAME" in the corner, then "INFAMY UNDER 15" ... "INFAMY 75+") and the left column
+│  (the Fame bands); all 18; the 16 cells are Text RepCell_<fame band>_<infamy band> (0-3 each,
 │  so RepCell_3_0 is Champion, top left), each over an Image TierGridCell<row><col>. Code writes each
 │  cell's name, upper case, and the initials of the factions that put you there, bright where you
-│  stand and dim elsewhere: no static names
+│  stand and dim elsewhere: no static names. The cells are condensed bold, so the longest names
+│  ("SOFT-HEARTED DEVIL") fit 169 units at 18
 └─ Text   Waiting              centred, italic 22, "Asking around..." (shown until the data arrives)
 ```
 
@@ -269,23 +275,23 @@ Frame JournalPage (root)
 │  ├─ VerticalLayout (list column)
 │  │  ├─ ScrollLayout (fills the column above LabStatus)
 │  │  │  └─ VerticalLayout List   the rows
-│  │  └─ Text  LabStatus      mono 13, dim, wraps: the lab's line ("Research 63 percent.
+│  │  └─ Text  LabStatus      mono 18, dim, wraps: the lab's line ("Research 63 percent.
 │  │                          Waiting: 14 samples' worth, about 4 days of work."); hidden without a lab
 │  └─ Text  Empty             centred, italic 18, "The radio is quiet."
 └─ Frame  (detail panel, at (750, 168), 1098 × 840)
    ├─ Image  DetailAccent     full width × 5, top
    ├─ Image  DetailIcon       56 × 56 at (34, 31)
    ├─ Text   DetailTitle      at (108, 30), condensed bold 34
-   ├─ Text   DetailBy         at (108, 72), 15, dim
+   ├─ Text   DetailBy         at (108, 72), 18, dim
    └─ VerticalLayout (detail body, at (34, 112), 1030 × 712)
       ├─ Text   DetailBrief   italic 18, wraps, on a faint panel with a 3-unit faint bar on its left
       ├─ (WHERE and REWARDS side by side)
       │  ├─ Text (label "WHERE")   │ Text DetailWhere    mono bold 20, wraps: the direction, then the area
-      │  └─ Text (label "REWARDS") │ Text DetailRewards  mono bold 13, wraps
-      ├─ Text   (label "REQUIREMENTS") │ Text DetailReq  16, wraps
+      │  └─ Text (label "REWARDS") │ Text DetailRewards  mono bold 18, wraps
+      ├─ Text   (label "REQUIREMENTS") │ Text DetailReq  18, wraps
       └─ VerticalLayout CluesBlock
          ├─ Text  (label "WHAT YOU KNOW": puzzle clues read, or a questline's notes)
-         └─ Text  DetailClues  serif 16, wraps, dark text #23211C on a paper-coloured panel #E4DDC8
+         └─ Text  DetailClues  serif 18, wraps, dark text #23211C on a paper-coloured panel #E4DDC8
                                (first the selected row's detail: "What you've found", "Who it went to")
 ```
 
@@ -305,9 +311,9 @@ Button MissionRow (root)
    ├─ Image  RowAccent     4 × 62, left edge
    ├─ Image  RowIcon       30 × 30 at (26, 16)
    ├─ Text   RowTitle      at (70, 10), bold 17
-   ├─ Text   RowSub        at (70, 34), 13, dim
+   ├─ Text   RowSub        at (70, 34), 18, dim
    ├─ Text   RowDir        right, at (-22, 10), mono bold 14
-   └─ Text   RowTime       right, at (-22, 34), mono 12, faint
+   └─ Text   RowTime       right, at (-22, 34), mono 18, faint
 ```
 
 ### Radio page: `RZ_RadioPage.layout` and `RZ_RadioRow.layout`
@@ -318,7 +324,7 @@ Frame RadioPage (root)
 ├─ Frame  (channels panel, at (72, 168), 450 × 840): a static list of the channels, static icons and names
 └─ Frame  (log panel, at (546, 168), 1302 × 840)
    ├─ Button FilterButton   at (26, 16), 150 × 30, the bone chip; a click cycles the filter
-   │  └─ Text FilterText    mono bold 12: ALL / OPEN CHANNEL / SECURE / BROADCAST / MISSIONS / WORLD
+   │  └─ Text FilterText    mono bold 18: ALL / OPEN CHANNEL / SECURE / BROADCAST / MISSIONS / WORLD
    ├─ ScrollLayout (under a rule at y 62, fills the rest)
    │  └─ VerticalLayout Log   the rows, newest first
    └─ Text   Empty          centred, italic 18, "Nothing on the air yet."
@@ -335,8 +341,8 @@ Overlay (root)
    ├─ Image  RowIcon       30 × 30 at (114, 14)
    └─ (1110 wide)
       ├─ Text   RowChannel    at (158, 14), mono bold 12
-      ├─ Text   RowSpeaker    after RowChannel, 14, dim
-      └─ Text   RowText       under them, 17, wraps
+      ├─ Text   RowSpeaker    after RowChannel, 18, dim
+      └─ Text   RowText       under them, 18, wraps
 ```
 
 ### Map key page: `RZ_MapKeyPage.layout`
@@ -344,7 +350,7 @@ Overlay (root)
 Static: no names are looked up (the script sets only the frame's `Header`). It holds a
 legend panel at (72, 168), 640 × 840 before the scale, with one row per marker the map draws: the icon in its colour
 (32 × 32; the stronghold and outpost rows show three 24 × 24 icons in faction colours), the name
-in bold 15 and one line in 13, dim. Under WHO HOLDS WHAT: stronghold, outpost, Haven safehouse,
+in bold 18 and one line in 18, dim. Under WHO HOLDS WHAT: stronghold, outpost, Haven safehouse,
 Halcyon's lab. Under THE WORLD: world event and sealed checkpoint in hazard yellow, power station
 and radio station in bone. The icons are static.
 
@@ -361,18 +367,24 @@ panels are scaled into the safe area like the pages.
 
 ```
 Frame (root)
-├─ (frame: heading "SAFEHOUSE", Header "NOTICE BOARD: MORTON", CloseButton, footer "ESC / B  CLOSE      UP / DOWN  SCROLL")
+├─ (frame: heading "SAFEHOUSE", Header "NOTICE BOARD: MORTON", CloseButton)
+├─ HorizontalLayout Prompts  at (96, -54), 1100 × 40: the footer's prompts (A pin it up, right
+│                            a ready-made note, down scroll, B close; X clear board for admins)
+├─ Text     PromptsText     the same place, mono bold 18: the static footer, hidden once prompts are made
 ├─ Frame  (board panel, at (72, 168), 1100 × 840, the panel colour)
 │  ├─ ScrollLayout
 │  │  └─ Text  Notes       wraps, 18, bone
 │  └─ Text  Empty          centred, italic 18, "Nothing pinned up."
 └─ Frame  WriteBlock       at (1200, 168), 648 × 210, hidden for exiles
    ├─ Text     (label "LEAVE A NOTE")
-   ├─ EditBox  NoteInput   one line, 576 × 32 inside a 600 × 44 box with a border, 16,
+   ├─ EditBox  NoteInput   one line, 576 × 32 inside a 600 × 44 box with a border, 18,
    │                       placeholder "Write your note here."
-   ├─ Text     NoteLimit   13, dim, wraps
-   └─ Button   PostButton  180 × 40, with a Text "PIN IT UP"
+   ├─ Text     NoteLimit   18, dim, wraps
+   └─ Button   PostButton  180 × 40, with a Text "PIN IT UP" (18): has the focus when you can write
 ```
+
+With a pad: left and right put one of seven ready-made notes in the box (not while the box itself
+has the focus), and A on PIN IT UP pins it, so writing a note needs no typing.
 
 `NoteInput` is a single-line `EditBox`: the script reads it as an `EditBoxWidget`, and a
 multi-line edit box isn't one.
@@ -384,13 +396,13 @@ Frame HallPage (root)
 ├─ (in the frame: Header, "SEASON 3")
 ├─ Frame  (this season, at (72, 168), 580 × 840)
 │  ├─ Text (label "THIS SEASON")
-│  └─ Text SeasonList    wraps, 16 (each record: the category, then the name and value)
+│  └─ Text SeasonList    wraps, 18 (each record: the category, then the name and value)
 ├─ Frame  (all time, at (670, 168), 580 × 840)
 │  ├─ Text (label "ALL TIME")
-│  └─ Text AllTimeList   wraps, 16
+│  └─ Text AllTimeList   wraps, 18
 ├─ Frame  (past seasons, at (1268, 168), 580 × 840)
 │  ├─ Text (label "PAST SEASONS")
-│  └─ Text PastList      wraps, 14, dim, in a ScrollLayout
+│  └─ Text PastList      wraps, 18, dim, in a ScrollLayout
 └─ Text   Waiting        centred, italic 22, "Reading the names..." (until the data arrives)
 ```
 
@@ -413,7 +425,7 @@ Frame (root, full screen)
    ├─ VerticalLayout Replies   at (240, 268), 1,120 wide: the reply rows
    ├─ VerticalLayout Prompts   at (1400, 268), 280 wide: the footer prompts the script makes
    ├─ Text   PromptsText     the same place, mono bold 18, dim: the static prompts, hidden once made
-   └─ Text   (KeysHint)      at (1400, 440), mono 18, faint: "KEYS 1-7 PICK A REPLY, ESC LEAVES"
+   └─ Text   (KeysHint)      at (1400, 440), mono 18, faint: "1-7 OR D-PAD AND A: A REPLY. ESC / B LEAVES"
 ```
 
 `RZ_TalkReply.layout` (**UI > Talk reply layout**), one row, created into `Replies`. The root
@@ -427,7 +439,7 @@ Button ReplyRow (root, 4 below it)
       ├─ Image  ReplyBar      5 × 52, left edge, tinted with the faction colour, shown on the selected row
       └─ HorizontalLayout (ReplyLine)  padding 18 left, 20 right, centred vertically
          ├─ SizeLayout (ReplyNumBox) 34 × 34, 20 before the text
-         │  └─ Overlay: Panel (ReplyNumLine, border #6B5222) and Text ReplyNum (mono bold 17, tinted)
+         │  └─ Overlay: Panel (ReplyNumLine, border #6B5222) and Text ReplyNum (mono bold 18, tinted)
          ├─ Text   ReplyText     regular 25, fills the row (bright on the selected row, faint when it can't be picked)
          ├─ Text   ReplyTag      mono 18, dim, right ("a job", "trade")
          └─ Text   ReplyNeed     mono 18, dim, right, hidden unless the reply can't be picked
@@ -605,7 +617,7 @@ not stretched by anchors.
 ```
 Frame (root, 28 × 28, top-left anchor, ignores the cursor)
 ├─ Image  Icon       28 × 28, a marker_* icon (white; the script sets the image and tints it)
-└─ Text   Label      under the icon, offset (-60, 30), 148 wide, centred, 12, bone, a dark shadow offset by 1
+└─ Text   Label      under the icon, offset (-60, 30), 148 wide, centred, 18, bone, a dark shadow offset by 1
 ```
 
 ## Background panel: `RZ_BackgroundPanel.layout`
@@ -624,14 +636,14 @@ Frame (root, 560 wide, anchor top-right, offset (-48, 120))
 │  ├─ Text   BgName                 condensed bold 36
 │  ├─ (state chip, with a border)
 │  │  ├─ Image  StateIcon           16 × 16 (status_door_unlocked / status_door_locked)
-│  │  └─ Text   StateText           mono bold 12: AVAILABLE / LOCKED
-│  ├─ Text   (label "PERK")  │ Text BgPerk      17, #BFD39B, wraps
-│  ├─ Text   (label "FLAW")  │ Text BgFlaw      17, #E4826F, wraps
-│  ├─ Text   (label "STARTING STANDING") │ Text BgStanding  mono bold 14, wraps
-│  ├─ Text   (label "STARTING GEAR")     │ Text BgGear      15, wraps
+│  │  └─ Text   StateText           mono bold 18: AVAILABLE / LOCKED
+│  ├─ Text   (label "PERK")  │ Text BgPerk      18, #BFD39B, wraps
+│  ├─ Text   (label "FLAW")  │ Text BgFlaw      18, #E4826F, wraps
+│  ├─ Text   (label "STARTING STANDING") │ Text BgStanding  mono bold 18, wraps
+│  ├─ Text   (label "STARTING GEAR")     │ Text BgGear      18, wraps
 │  └─ Overlay LockedBlock           with a border, shown when locked
-│     └─ Text  LockedText           15, dim, wraps
-├─ Text        Legacy               mono bold 12, dim
+│     └─ Text  LockedText           18, dim, wraps
+├─ Text        Legacy               mono bold 18, dim
 └─ ProgressBar LegacyBar            160 × 8, fill #E3A33B, beside Legacy
 ```
 

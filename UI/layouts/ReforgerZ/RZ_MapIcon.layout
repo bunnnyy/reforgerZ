@@ -42,14 +42,14 @@ FrameWidgetClass "{98721C3D930BE900}" {
     OffsetTop 30
     SizeX 148
     OffsetRight -88
-    SizeY 18
-    OffsetBottom -48
+    SizeY 22
+    OffsetBottom -52
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "Morton"
-   "Font Size" 12
-   "Min Font Size" 12
+   "Font Size" 18
+   "Min Font Size" 18
    "Horizontal Alignment" Center
    FontProperties FontProperties "{A15EA06DAE21F912}" {
     Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"

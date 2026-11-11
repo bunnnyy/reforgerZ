@@ -484,8 +484,9 @@ class RZ_Mission_ReinIn : RZ_PuzzleMission
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", labels, m_iTalk, "Talk to " + l.m_sShort);
 
 		m_sTitle = "Rein In " + m_sPlace;
-		m_sBrief = string.Format("%1 in %2 has stopped answering to us. Go there and read them our terms: they keep their place, they stop the side deals, and they answer when we call. They'll try to buy you. Don't let them.",
-			m_sTarget, m_sPlace);
+		// The seat's tokens: the name is whoever sits there when the brief is read
+		m_sBrief = string.Format("{leader:%1} in {leader_place:%1} has stopped answering to us. Go there and read them our terms: they keep their place, they stop the side deals, and they answer when we call. They'll try to buy you. Don't let them.",
+			m_iTarget);
 		return true;
 	}
 

@@ -125,8 +125,11 @@ Each stage's numbers can be overridden on the game mode. The days below are for 
   burn, seal and shell towns.
 - **Missions at once:** the stage's count, plus one per 4 players. "Bastion presence"
   (`RZ_WorldFacts.BastionPresence`) is how much of Bastion is still out on the roads: some
-  Bastion contracts need a minimum of it and three of them scale with it. *Planned:* every
-  Bastion contract and the road posts scaled by it.
+  Bastion contracts need a minimum of it, and every Bastion contract comes as often as it allows
+  (the random pick's weight ×(0.3 + 0.7 × presence): ×1 in Early Outbreak, ×0.37 in Aftermath;
+  Retake the Town, Last Helicopter and Checkpoint Duty scale their own weight instead,
+  `m_bPresenceWeighted`). Bastion's road posts go up on the same chance
+  ([REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps)). A balance call to play-test.
 - Each stage change is announced to everyone in a line of the Zone's voice, except the move to
   Aftermath that comes with the cure (the cure's own news is the line everyone hears).
 
@@ -917,10 +920,10 @@ isn't kept as an AI body: they become **+1 population** at the nearest safehouse
   [REPUTATION.md](REPUTATION.md), "Haven house rules and exile".
 - **A notice board** at every safehouse (`World/RZ_NoticeBoard.c`): short notes players leave
   for each other between sessions. Cosmetic and social only.
-  - **Read** it with "Read the notice board" at the safehouse's quartermaster. **Write** by typing
-    `/note` and the message in chat while at a safehouse (within 60 m); "Leave a note on the
-    board" says how. With **UI > Board menus** on, reading opens the board menu, which has a box
-    to write in ([UI.md](UI.md)).
+  - **Read** it with "Read the notice board" at the safehouse's quartermaster. With **UI > Board
+    menus** on (the default), reading opens the board menu: a box to write in, and ready-made notes
+    a pad pins up without typing ([UI.md](UI.md#controllers)). **Write** also by typing `/note` and
+    the message in chat while at a safehouse (within 60 m); "Leave a note on the board" says how.
   - The newest 8 notes per board, 160 characters at most, one note per player every 10 minutes
     (on any board), the author's name on each, and notes come down by themselves after 3 real
     days. A **note filter** (Haven settings) blanks listed words out with asterisks. Exiles can't
@@ -1457,7 +1460,7 @@ holds the shared engine's [world memory](#world-memory).
 | The line is up and shooting | `PerimeterSealed()` (not after the cure) | the Perimeter |
 | Bastion's helicopter can fly | `HeliAvailable()`; `SetHeliDown(days)` (days < 0: for good) | storms, the season flags `heli.down_until` (a day) and `heli.lost` |
 | Who holds a town | `TownOwner(idx)`: faction and kind (lab, stronghold, outpost, safehouse, none); `IsLivedIn(idx)`; `OwnerText(idx)` | the lab, territory, safehouses |
-| A town for a job | `PickTown(filter, asker)`, `CollectTowns(filter, result, asker)`: an `RZ_TownFilter` (infection, held by a faction or by nobody, not held by some factions, kind of holder, size, one to leave out), busy towns skipped | the queries above |
+| A town for a job | `PickTown(filter, asker)`, `CollectTowns(filter, result, asker)`: an `RZ_TownFilter` (infection, held by a faction or by nobody, not held by some factions, kind of holder, size, a distance from a point, one to leave out), busy towns skipped. A mission's shortcuts: `PickEmptySettlement(Away)` (nobody lives there), `PickSettlement(Away)NotHeldBy` (none of some factions holds it; `OthersBits(f)`: only `f` may), `PickHeldSettlementAway` (a town that faction holds) | the queries above |
 | People live near a spot | `IsNearLivedIn(pos, radius)`: a safehouse, a holding or the lab (what shelling keeps away from) | safehouses, territory, the lab |
 | Lights | `IsPowered(pos)` | the power grid, surges, generators |
 | A safehouse now | `House(idx)`: people, food, short, medic, radio, lost lately (`m_iLost`: left, moved, taken or dead), died lately (`m_iDied`, only the dead), empty, tier | safehouses |
@@ -1485,11 +1488,11 @@ canon town can change hands during the season: read `TownOwner` when you use it.
 |---|---|---|---|
 | `origin.site` | spot (`CanonPos`) | the closed site in the hills | The Three Weeks' rules: a high dry spot between two towns 1.4–6 km apart, at least 450 m past every settlement, 1.5 km from the lab, not behind a lock and not nearest the lab's town, moved onto a factory, mast or barracks within 400 m if one is as remote; else high ground beyond the town farthest from the lab, as remote as it can be |
 | `origin.site.town` | town (`CanonSettlement`) | the town nearest the site | |
-| `origin.clinic` | town | the clinic the first patient was brought to | the town or city nearest the site, not the lab's or the site's own |
-| `origin.patient` | words | his surname | a surname |
+| `origin.clinic` | town | the clinic the first patient was brought to (the last town of Patient Zero's trail) | the town or city nearest the site, not the lab's or the site's own |
+| `origin.patient` | words | his surname (Patient Zero's clinic records name him, with the site's town and the day the Institute was told) | a surname |
 | `origin.told`, `origin.told.month` | number (`CanonInt`) | the date the Institute was told | day 3–24, month 1–12 |
-| `bastion.orders` | words | what the last orders said | `expended`, always (pinned by Await Relief; "Command meant to come and couldn't" is only what some posts believe) |
-| `redhand.pit` | spot | where the Red Hand's fight pit is | 60–150 m behind the boss's seat at the Red Hand stronghold, else a crew boss's seat, else its stronghold or an outpost, else outside a quiet town |
+| `bastion.orders` | words | what the last orders said (The Real Orders reads it) | `expended`, always (pinned by Await Relief; "Command meant to come and couldn't" is only what some posts believe) |
+| `redhand.pit` | spot | where the Red Hand's fight pit is (Fight Pit and The Pit's Debtor hold it while they run; House Rules uses it when it's behind that crew boss's seat) | 60–150 m behind the boss's seat at the Red Hand stronghold, else a crew boss's seat, else its stronghold or an outpost, else outside a quiet town |
 | `redhand.pit.town`, `redhand.pit.seat` | town; number | the pit's town; the seat it's behind (a leader id, -1 none: `LeaderName(id)` names whoever sits there now) | made with the pit |
 | `redhand.crossroads` | spot | Rudi's crossroads (the Red Hand's major) | the road junction (the road point with the most others within 30 m) 300–800 m from the boss's seat, not within 400 m of a safehouse or the lab and off the line; without roads, a dry spot 300–800 m out |
 | `day2.checkpoint` | spot | where the Day 2 column was turned back (the majors' codas) | the sealed road checkpoint nearest the Haven stronghold's safehouse, preferring the north; without checkpoints, that safehouse. The walks and readings halt 150 m short of it toward the stronghold, the paper's table 110 m (`RZ_MajorHelp.NorthRoad`) |
@@ -1501,6 +1504,12 @@ wanderer at once. `Claim(subject, owner)` (true if it was free or already that o
 | Subjects | Owners |
 |---|---|
 | `lab`, `heli`, `pit`; `Town(idx)` "town:7", `Safehouse(idx)` "safehouse:2", `Leader(id)` "leader:12", `Wanderer(id)` "wanderer:5", `Truck(faction)` "truck:1" | `MissionOwner(id)` "mission:12", `ArcOwner(kind)` "arc:4", `QuestOwner(key)` "quest:haven_short_weight"; the cure holds `lab` during the final stand |
+
+Who holds which today: `lab` Lab Defence, Steal the Antidotes and Burn the Bodies at the lab (on
+their own; a story that runs one holds the lab itself, `IsStandalone`); `heli` Last Helicopter and
+Rescue the Pilot (both also need `m_bNeedsHeli`); `pit` Fight Pit, The Pit's Debtor, and House
+Rules when the pit is behind its seat; `Leader(id)` Kill the Officer's officer. Take the Lab runs in
+the final stand, inside the cure's own hold.
 
 - **A mission** lists what it needs in `GetClaims(gm, result)`: the manager starts it only while
   they're free, holds them from before `Setup`, and lets go when it ends or `Setup` fails. What
@@ -1589,8 +1598,8 @@ endings use it too). Saved.
 | a job only once the season has run a few days | `m_Req.m_iMinDay = 13` |
 | a job that needs Bastion's helicopter | `m_Req.m_bNeedsHeli = true`; `SetHeliDown(days)` when it crashes (days < 0: for good) |
 | a job only in the days after something changed | `m_Req.NeedFlagWithin("<the Changed key>", 2)` |
-| a contract that tells a questline's story | `m_Req.NotWithQuest("<key>")`, with the key from [QUESTLINES.md](QUESTLINES.md#the-questlines) |
-| a town that nobody lives in, or one a faction really holds | `RZ_EventHelp.PickEmptyTown(gm, min, max, this)`, or `PickTown` with an `RZ_TownFilter` (`m_iHeldBy`, `m_iNotHeldBy`, `m_iKinds`) |
+| a contract that tells a questline's story | `if (m_iQuestRun < 0) m_Req.NotWhileQuest("<key>")` (or `NotWithQuest` to stay away after it too), with the key from [QUESTLINES.md](QUESTLINES.md#the-questlines) |
+| a town that nobody lives in, or one a faction really holds | `PickEmptySettlement(gm, min, max, this)`, `PickHeldSettlementAway`, `PickSettlementNotHeldBy`, or `PickTown` with an `RZ_TownFilter` (`m_iHeldBy`, `m_iNotHeldBy`, `m_iKinds`, a distance) |
 | keep shells, fire or a horde away from people | `IsNearLivedIn(pos, radius)` |
 | name a leader in text | `{leader:id}` in the brief (or `Fill` the line where you show it); `LeaderAlive(id, generation)` before you count on them |
 | say how a safehouse is doing | `House(idx)` (`m_iDied` for the dead; `m_iLost` counts everyone who left) |
@@ -1601,13 +1610,30 @@ endings use it too). Saved.
 | record an outcome other content reads | `SetFlag("<you>.<what>", value)` |
 | tell everyone something in the world changed | `Changed(...)` |
 
-*Simplified:* the layer is built, and the epilogue, the Perimeter, guidance, the voice lines named
-above and the arcs use it. **Planned:** switching the rest of the content to it (contract town
-pickers to `PickTown`, Bastion contracts and road posts to Bastion presence, the hard-coded days
-and copied leader names in briefs to tokens, The Three Weeks, Patient Zero, The Real Orders,
-Fight Pit, House Rules and The Pit's Debtor to canon, the lab and the helicopter as claims and
-`m_bNeedsHeli`, missions that duplicate a questline's premise to `NotWithQuest`, research jobs
-outside Halcyon to `m_bNotCured`, Bastion Shelling to `IsNearLivedIn`).
+**What uses it.** The epilogue, the Perimeter, guidance, the voice lines named above, the arcs,
+and the content:
+
+- **Town pickers by who holds a town.** The faction contracts pick with the shortcuts above: work
+  in a ruin (a nest, a cache, a town to retake or seal, a pharmacy, a body, a lost patrol) goes to a
+  town nobody lives in; a faction's open work never goes to its rivals' holdings (the Haven's
+  fields and relay, Bastion's curfew and recon, the Red Hand's car and courier); a drop, a fence, a
+  stockade, a fuel depot or a relay goes where its faction really is when it holds a town in reach,
+  else to a town nobody holds. Puzzles, events and most leader jobs still pick any free town.
+- **Bastion presence** scales Bastion's contracts and road posts ([The Director](#the-director-outbreak-stages-and-spread)).
+- **Briefs as tokens.** The days in briefs are tokens (`{days_since_command_words}`), and a brief
+  that names a leader holds the seat's tokens (Kill the Officer, Rein In, Over the Fence), so the
+  name is whoever sits there when it's read.
+- **Canon.** Patient Zero (the origin story), The Real Orders (the last orders) and the Red Hand's
+  pit read the canon table above. The Three Weeks is the Halcyon major's.
+- **Claims** for the lab, the helicopter and the pit (above).
+- **A questline's premise.** A standalone contract that tells part of a questline's story isn't
+  offered while that questline runs (`NotWhileQuest`, set only when no questline started it); The
+  Real Orders also stays away once Await Relief has ended (`NotWithQuest`). The pairs are in
+  [QUESTLINES.md](QUESTLINES.md#contracts-that-wait-for-a-questline).
+- **After the cure** the research jobs outside Halcyon stop (`m_bNotCured`: the Red Hand's samples,
+  Bastion's shipment, the packs' jobs, Take the Lab), and the Silent Village has no Halcyon way.
+- **Shelling** (Bastion Shelling, the Fire Mission contract) keeps 300 m from where people live
+  (`IsNearLivedIn`), as the Fire Mission perk does.
 
 ## The shared engine
 

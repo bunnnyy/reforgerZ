@@ -29,7 +29,7 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 15, 85);
+		m_iSettlement = PickEmptySettlement(gm, 15, 85, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -127,7 +127,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 30, 90);
+		m_iSettlement = PickEmptySettlement(gm, 30, 90, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -373,7 +373,7 @@ class RZ_Mission_RadioRelay : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 100);
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 100, RZ_Factions.Bit(RZ_EFaction.MILITARY) | RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -441,7 +441,7 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 60, 100);
+		m_iSettlement = PickEmptySettlement(gm, 60, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -617,7 +617,7 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 			homeName = house.m_sName;
 		}
 
-		m_iSettlement = PickSettlementAway(gm, dropPos, 800, 4000, 20, 90);
+		m_iSettlement = PickEmptySettlementAway(gm, dropPos, 800, 4000, 20, 90, -1, this);
 		RZ_Settlement pharmacy = gm.GetSettlement(m_iSettlement);
 		if (!pharmacy)
 			return false;
@@ -689,7 +689,7 @@ class RZ_Mission_BittenFriend : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 60);
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 60, RZ_Factions.Bit(RZ_EFaction.MILITARY) | RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -824,7 +824,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 10, 80);
+		m_iSettlement = PickEmptySettlement(gm, 10, 80, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -889,7 +889,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 			return;
 
 		// His notes mention a stash
-		int idx = PickSettlement(gm, 0, 100);
+		int idx = PickEmptySettlement(gm, 0, 100);
 		RZ_Settlement s = gm.GetSettlement(idx);
 		if (!s)
 			return;
@@ -934,7 +934,7 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 60);
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 60, RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -1043,7 +1043,7 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 30, 85);
+		m_iSettlement = PickEmptySettlement(gm, 30, 85, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;

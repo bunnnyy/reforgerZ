@@ -22,7 +22,7 @@ enum RZ_ESafehouseAction
 	RADIO,			// mission intel from the safehouse radio (Settlement and up)
 	MEDS,			// low-grade meds for a little Favor (every safehouse)
 	BOARD_READ,		// read the notice board (World/RZ_NoticeBoard.c)
-	BOARD_WRITE		// how to leave a note on it (the note itself is typed: /note in chat, or the board menu)
+	BOARD_WRITE		// how to leave a note on it (the board menu: a ready-made note or typed; without it /note in chat)
 }
 
 //------------------------------------------------------------------------------------------------

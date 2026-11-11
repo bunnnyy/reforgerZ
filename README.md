@@ -81,8 +81,9 @@ and one way to end it: **research the cure.**
   most, season after season.
 - **One world, one story**: missions, arcs, questlines and voices read the same world facts
   (the cure, the day, who holds a town, fixed facts of the setting), so the line doesn't shoot
-  after the cure and two stories don't use the same safehouse at once. Most mission content is
-  still to be switched over to them.
+  after the cure and two stories don't use the same safehouse at once. Contracts pick their towns
+  by who holds them, the origin story, the last orders and the Red Hand's pit are the same all
+  season, and a contract waits while the questline that tells its story runs.
 - **The Long Table**: some seasons, a small family in a farmhouse past the emptiest village. They
   set a place for whoever comes, the host on the road is the friendliest man in the Zone, and
   people who take that road don't always arrive. Eat with them, trade, find out, tell someone or
@@ -107,7 +108,8 @@ and one way to end it: **research the cure.**
   hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks, a repair screen for the cars and a shop screen at the quartermasters,
   spoken lines as subtitles, notes on a paper reader, and on the map only what you know. Gamepad
-  and console as well as keyboard and mouse (the HUD and notice cards show in Workbench play; the
+  and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
+  or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play; the
   notebook, talk, repair and shop screens, reader and subtitles are written and not yet played; the
   map icons are still to do).
 
@@ -141,8 +143,7 @@ Arland's AI world and vanilla's world managers now; AI in play is still to test
 yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Not built yet:** the content pass onto the world facts (see the roadmap's *Next*), and the
-approved designs for the rest of the season: the rest of the four majors, the cure's finale, the
+**Not built yet:** the approved designs for the rest of the season: the rest of the four majors, the cure's finale, the
 epilogue week, errands' margin, lock and epilogue cards and more, built in the order of
 [designs/PLAN.md](designs/PLAN.md). Built so far: the four majors (phase 5, simplified,
 [QUESTLINES.md](docs/QUESTLINES.md#the-majors)); the shared engine (phase 1); small

@@ -76,6 +76,9 @@ class RZ_Job_RealOrders : RZ_LeaderDelivery
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetLeaderJob(RZ_EFaction.MILITARY, RZ_ELoyalty.INDEPENDENT, RZ_Leaders.TONE_TALK, 6, 20);
+		// The Day 3 runner's orders are the Await Relief questline's story: not while it runs, and
+		// not once it has settled what they said
+		m_Req.NotWithQuest("orders");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -83,10 +86,6 @@ class RZ_Job_RealOrders : RZ_LeaderDelivery
 	{
 		RZ_Leader top = RZ_LeaderJob.Stronghold(gm, RZ_EFaction.MILITARY);
 		if (!CanRun(gm, RZ_EFaction.MILITARY) || !top || top == leader)
-			return 0;
-
-		// While the Await Relief questline follows the Day 3 runner, his orders are its story
-		if (RZ_Quest_AwaitRelief.IsRunning(gm))
 			return 0;
 
 		return 1;
@@ -100,7 +99,10 @@ class RZ_Job_RealOrders : RZ_LeaderDelivery
 		if (!top)
 			return false;
 
-		m_iSettlement = PickSettlementAway(gm, l.m_vPos, 1000, 3500, 20, 90);
+		// He died on the road into a town nobody lives in, else any town in reach
+		m_iSettlement = PickEmptySettlementAway(gm, l.m_vPos, 1000, 3500, 20, 90, -1, this);
+		if (m_iSettlement < 0)
+			m_iSettlement = PickSettlementAway(gm, l.m_vPos, 1000, 3500, 20, 90, -1, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -116,11 +118,13 @@ class RZ_Job_RealOrders : RZ_LeaderDelivery
 			return false;
 
 		SpawnGuards(gm, m_vPos, 4, 10, 40);
-		m_bAbandoned = Math.RandomFloat01() < 0.6;
+		// What the last orders said is canon (bastion.orders): the same words every time anyone
+		// reads them this season (docs/LORE.md, "Task Force Bastion")
+		m_bAbandoned = gm.GetFacts().CanonText("bastion.orders") != "relief";
 		if (m_bAbandoned)
-			m_sOrders = "FLASH. All cordon personnel inside the line: hold current positions indefinitely. No relief, no extraction. Assets inside the Zone are to be considered expended. Acknowledge.";
+			m_sOrders = "FLASH. Day 3. All cordon personnel inside the line: hold the line. No relief will be sent. No extraction. Units are authorised to act on their own discretion. Assets inside the Zone are to be considered expended. Acknowledge.";
 		else
-			m_sOrders = "PRIORITY. Hold current positions. Relief column assembling, ETA unconfirmed. Maintain discipline. You have not been forgotten.";
+			m_sOrders = "PRIORITY. Day 3. Hold the line. Relief column assembling, ETA unconfirmed. Maintain discipline. You have not been forgotten.";
 
 		m_sTitle = "The Real Orders";
 		m_sBrief = string.Format("The courier carrying command's last orders never reached us. His satchel is somewhere in %1. I want to read them before anyone tells me what they say. Bring them to me. The stronghold will want them too.",

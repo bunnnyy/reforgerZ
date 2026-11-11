@@ -85,6 +85,9 @@ class RZ_TownFilter
 	int m_iKinds;				// RZ_WorldFacts.KindBit(RZ_ETownKind...) bits; 0 = any kind
 	int m_iMinSize;				// the settlement's size, 0 any (RZ_Settlement.m_iSize: 2+ is a town or city)
 	int m_iExclude = -1;		// a settlement to leave out (the job's own start)
+	vector m_vFrom;				// with a distance: measured from here to the town's centre
+	float m_fMinDist;			// 0 = no limit
+	float m_fMaxDist;			// 0 = no limit
 }
 
 //------------------------------------------------------------------------------------------------
@@ -607,6 +610,13 @@ class RZ_WorldFacts
 
 			if (s.m_fInfection < filter.m_fMinInfection || s.m_fInfection > filter.m_fMaxInfection)
 				continue;
+
+			if (filter.m_fMinDist > 0 || filter.m_fMaxDist > 0)
+			{
+				float dist = RZ_Util.DistXZ(filter.m_vFrom, s.m_vCenter);
+				if (dist < filter.m_fMinDist || (filter.m_fMaxDist > 0 && dist > filter.m_fMaxDist))
+					continue;
+			}
 
 			if (missions && missions.IsSettlementBusy(i, asker))
 				continue;

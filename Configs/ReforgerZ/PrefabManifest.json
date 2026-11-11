@@ -5985,7 +5985,7 @@
     "m_fResyncSeconds": "60",
     "m_fMapRefreshSeconds": "20",
     "m_bLockLoadouts": "1",
-    "m_bBoardMenus": "0",
+    "m_bBoardMenus": "1",
     "m_bSubtitles": "1",
     "m_fSubtitleMin": "2.5",
     "m_fSubtitleMax": "8",

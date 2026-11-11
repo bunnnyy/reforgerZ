@@ -47,6 +47,8 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | The four majors, phase 5 of [the plan](../designs/PLAN.md#phases-18): one season-long story per faction (The Book Has to Balance, Await Relief, Every Name, Proof), their climaxes on the cure's milestones in a fixed order; the major lane, acts and `ActEnd`, `RZ_QuestVote` at the Haven's sittings, scenes for every new act, the absorbed questlines (R1, B1, H1, HC1, HC3) as acts; the dynamic fallbacks (squeeze, patience, nobody qualifies, last calls and grace, the guards, leads, between beats, hard stops); pay caps and the majors lane of the season budget; the codas at the north road; the season story in `last_season.json`; running jokes on the majors' flags; the runtime test's majors phase. Simplified: see each major | [QUESTLINES.md](QUESTLINES.md#the-majors), [DESIGN.md](DESIGN.md#the-majors) |
 | The Long Table: some seasons, one small family in a farmhouse past the emptiest village; data with bodies only near players, capped takings (never from a safehouse, a holding or a player) and their tells, suspicion and rumours, the host on the road, the guest rule, dealings (eat, a jar, declare a bite), found out with each faction's reaction, moving once, broken up; its two questlines, The House That Went Quiet and A Place at the Table | [The Long Table](DESIGN.md#the-long-table), [REPUTATION.md](REPUTATION.md#the-long-table) |
 | World facts: one layer content reads (the cure and the epilogue, stage, Bastion presence, the day, night, who holds a town and a filtered town pick, safehouses, live leader names), season flags shared with the questlines, canon facts made once a season, claims so two stories don't use the same house, leader or wanderer, `Fill` tokens for text (briefs filled when shown), `Changed` for news, one "can it run now" check every mission starter uses, and missions called off when the world makes them pointless | [World facts](DESIGN.md#world-facts) |
+| Controllers: the whole mod checked for a gamepad and a TV (every input has a pad binding or route, every screen opens, moves and closes without a mouse, no hover, typing or chat command needed, no text under 18 in any ReforgerZ layout); the notice board's ready-made notes and admin Clear, and **[Admin]** talk replies for the admins' chat commands | [UI.md](UI.md#controllers) |
+| Content on the world facts: the faction contracts pick towns by who holds them, Bastion's contracts and road posts follow Bastion presence, leader names in briefs are tokens, Patient Zero, The Real Orders and the Red Hand's pit read the canon, the lab, the helicopter and the pit are claimed, eight contracts wait while the questline that tells their story runs, the research jobs outside Halcyon stop with the cure, and shelling keeps off where people live | [World facts](DESIGN.md#world-facts), [Contracts that wait](QUESTLINES.md#contracts-that-wait-for-a-questline) |
 | The epilogue after the cure: the Perimeter stands down (no shots; whoever walks up to the line is turned back; the gates open with the wipe), research stops and running research and line jobs are called off, and the broadcast, guidance and the factions' lines follow | [The Perimeter](DESIGN.md#the-perimeter), [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | The shared engine (phase 1 of [the plan](../designs/PLAN.md#phases-18)): the clocks (season days, `RZ_GameTime` windows in real minutes), one check helper (Trust, Fear, threats, the price table, Pass / Short / Refused) and the ways through a job keyed by identity (the approach enum with PRESS, TRADE, TRICK and LEAVE), the deeds store (life and season), world memory (reasons, the signal ring, the town log, world records), the callback queue, notice lanes and the interruption budget, the marks spawner, the season budget in lanes with the seat ledger, and the set-piece calendar. Contracts already draw on the budget and leaders' pings and the Long Table's host on the lanes; most writers and readers come with the later phases | [The shared engine](DESIGN.md#the-shared-engine) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
@@ -96,8 +98,8 @@ The build-review fixes are done. Everything below is approved. The order of the 
   ([PC_SETUP.md](PC_SETUP.md#6-play-testing)).
 
 ### UI
-- **Controllers:** check the whole mod with a gamepad and fix what doesn't work
-  ([UI.md](UI.md#controllers)). Planned.
+- **Controllers in play:** play every screen with a pad, and look over the pages in the layout
+  editor where text grew to 18 ([UI.md](UI.md#controllers), "What needs Workbench").
 
 ### World interactions (from play-testing)
 - **The deploy panel and the map's icon layer:** the deploy-menu override that adds the background
@@ -137,15 +139,6 @@ The build-review fixes are done. Everything below is approved. The order of the 
   Phase 0's other proposed retunes (seeds on every unkept slot, the ones who ran at 6 points, weakened
   tribes posting no scouts) still wait for the author: `python3 tools/tribe_sim.py --proposed`.
 
-### Content on the world facts
-- Switch the rest of the content to the world facts ([DESIGN.md](DESIGN.md#world-facts), the
-  *Planned* line): contract town pickers by who holds a town (`PickTown`), Bastion contracts and
-  road posts by Bastion presence (a balance call to play-test: Aftermath's presence is 0.1),
-  briefs' days and copied leader names as tokens, the origin story, the last orders and the pit
-  as canon, the lab and the helicopter as claims, standalone contracts that share a questline's
-  premise kept out while it runs (the keys are in [QUESTLINES.md](QUESTLINES.md#the-questlines)),
-  research jobs outside Halcyon off after the cure, Bastion Shelling kept off lived-in places.
-
 ## Play-test priorities
 
 In this order, because later ones depend on earlier ones:
@@ -167,7 +160,8 @@ In this order, because later ones depend on earlier ones:
 4. **The core loop on Arland** for 2 hours: zombie density, spread rate, cure pace. Then the
    season's first days: are kills, specials and research per player-hour near the assumptions
    in [Season pacing](DESIGN.md#season-pacing)? Run `tools/pacing_sim.py` with what you saw and
-   adjust the Cure pace. Over the first weeks: does the status log's pace by play match how much
+   adjust the Cure pace. **Bastion presence:** in Overrun and Aftermath, are Bastion's contracts
+   (×0.48, ×0.37) and road posts too rare, or about right for an army that's run down? Over the first weeks: does the status log's pace by play match how much
    the server plays, and does a small group still feel its deliveries count? Is the lab's backlog
    a fair wait, or does a "come back tomorrow" feel like a wall? Do towns players work in clean up
    too easily over the longer season (Zombies > Kill infection)?
