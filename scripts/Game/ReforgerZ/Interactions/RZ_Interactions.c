@@ -772,7 +772,7 @@ class RZ_Interactions
 	//------------------------------------------------------------------------------------------------
 	protected bool OnScanEntity(IEntity e)
 	{
-		if (!e || ChimeraCharacter.Cast(e) || SCR_AIGroup.Cast(e))
+		if (!e || ChimeraCharacter.Cast(e) || SCR_AIGroup.Cast(e) || RZ_CampLife.IsDressing(e))
 			return true;
 
 		string name = RZ_ItemHelper.LowerName(e);

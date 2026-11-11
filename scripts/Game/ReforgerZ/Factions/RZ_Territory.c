@@ -1624,6 +1624,11 @@ class RZ_Territory
 			guardMax = 15;
 		}
 
+		// Camp life gives them jobs and dresses the place (RZ_CampLife)
+		array<IEntity> guardBodies = {};
+		array<IEntity> personBodies = {};
+		array<IEntity> keeperBodies = {};
+
 		ResourceName guardPrefab = GuardPrefab(h.m_eFaction);
 		for (int g = 0; g < guards && !guardPrefab.IsEmpty(); g++)
 		{
@@ -1632,6 +1637,7 @@ class RZ_Territory
 				continue;
 
 			h.m_aBodies.Insert(guard);
+			guardBodies.Insert(guard);
 			if (hostility)
 				hostility.WatchUnit(guard, h.m_eFaction);
 		}
@@ -1648,6 +1654,7 @@ class RZ_Territory
 			RZ_PuzzleObjectComponent.Tag(person, TAG, code, "", "Ask how things are");
 			RZ_ClueComponent.Tag(person, TAG, code, "Talk to " + h.m_aPeople[p]);
 			h.m_aBodies.Insert(person);
+			personBodies.Insert(person);
 			if (hostility)
 				hostility.WatchUnit(person, h.m_eFaction);
 		}
@@ -1657,13 +1664,30 @@ class RZ_Territory
 		{
 			IEntity qm = RZ_Util.SpawnPrefab(m_GM.GetQuartermasterPrefab(h.m_eFaction), RZ_Mission.LandPointNear(h.m_vPos, 1, 4), Math.RandomFloat(0, 360));
 			if (qm)
+			{
 				h.m_aBodies.Insert(qm);
+				keeperBodies.Insert(qm);
+			}
 		}
+
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (!camp)
+			return;
+
+		RZ_ECampPlace kind = RZ_ECampPlace.OUTPOST;
+		if (h.m_bStronghold)
+			kind = RZ_ECampPlace.STRONGHOLD;
+
+		camp.Enter("h" + h.m_iId.ToString(), h.GetTitle(), h.m_eFaction, kind, h.m_vPos, 0, guardPrefab, guardBodies, personBodies, keeperBodies);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void DespawnBodies(RZ_Holding h)
 	{
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (camp)
+			camp.Leave("h" + h.m_iId.ToString());
+
 		foreach (IEntity e : h.m_aBodies)
 		{
 			RZ_Util.DeleteUnit(e);
@@ -1729,6 +1753,11 @@ class RZ_Territory
 		}
 
 		m_GM.NotifyPlayer(playerId, h.m_aPeople[idx] + ", " + h.GetTitle(), text);
+
+		// They stop what they're doing while you talk
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (camp)
+			camp.HoldPersonNear(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------

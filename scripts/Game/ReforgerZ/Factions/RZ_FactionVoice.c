@@ -189,7 +189,7 @@ class RZ_FactionVoice
 		{
 			switch (f)
 			{
-				case RZ_EFaction.SURVIVORS: return "Dusk at " + place + ": a pot on the fire and somebody counting bowls twice.";
+				case RZ_EFaction.SURVIVORS: return "Supper at " + place + ". Before anyone eats, somebody reads a name. Then the bowls go round, counted twice.";
 				case RZ_EFaction.MILITARY: return "Evening mess at " + place + ". Somebody has found a tin of peaches and it's a whole event.";
 				case RZ_EFaction.BANDITS: return "Dusk at " + place + ". A fire in a barrel, a radio playing a station that went off the air days ago.";
 				case RZ_EFaction.INSTITUTE: return "Dinner at " + place + " is eaten standing up, next to the centrifuge.";
@@ -201,7 +201,7 @@ class RZ_FactionVoice
 			switch (f)
 			{
 				case RZ_EFaction.SURVIVORS: return "Night watch at " + place + ". Lamps go out one by one; the lookout stays.";
-				case RZ_EFaction.MILITARY: return "Night watch at " + place + ". The floodlight stays off: it draws them. Somebody coughs, and is told off for it.";
+				case RZ_EFaction.MILITARY: return "The roll at " + place + ". The sergeant reads every name on the board. The living answer \"Here.\" For the dead, the whole post answers together. Then the night watch.";
 				case RZ_EFaction.BANDITS: return "Night at " + place + ". Somebody on the roof whistles a tune, badly, to show they're awake.";
 				case RZ_EFaction.INSTITUTE: return "Night at " + place + ". The generator is switched to the freezers and the lights go dim.";
 			}

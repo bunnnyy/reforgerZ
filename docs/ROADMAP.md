@@ -3,7 +3,7 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** the systems under "Built" are written in Enforce Script (about 113,000 lines) and the
+**Status:** the systems under "Built" are written in Enforce Script (about 116,000 lines) and the
 game scripts **compile cleanly** against Arma Reforger 1.9. The game mode runs with no script
 exceptions on the server, in a test world with a fake player
 ([runtime test](WORKBENCH_SETUP.md#runtime-test-without-workbench)), and in Workbench play on Arland
@@ -29,6 +29,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Bastion checkpoints and Red Hand roadblocks inside the Zone (unsearched passage, tolls, searches), surrender, camps that warn and refuse, safe zones | [REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps) |
 | Per-player AI hostility (hidden faction variants), retaliation, disguises, Outlaw fallback | [REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you) |
 | Territory: strongholds, outposts, the territory tick, faction strength | [Territory](DESIGN.md#territory) |
+| Camp life: each faction's scenery round its holdings, safehouses, field stations and road posts (seeded, any map, only near players, nothing saved; a guard deletes anything usable and the scans ignore it), and its people's routines at the 3 places nearest players (sentry, patrol, sit, work, gather, stroll, the courier, sleep as a despawn; Bastion's shift change and roll, the Haven's supper), with one extra person per live place. The 21 compositions and the kits are still to build in Workbench | [Camp life](DESIGN.md#camp-life), [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits) |
 | Real supply trucks with AI crews (the truck leaves its yard once the whole crew has spawned and got in), shortages, escort, drive-in and theft | [Supply trucks](DESIGN.md#supply-trucks) |
 | Faction life: needs, morale, chatter, life events, truces and feuds, moments, rumours | [Faction life](DESIGN.md#faction-life), [REPUTATION.md](REPUTATION.md#morale-needs-truces-and-feuds) |
 | Haven safehouses: population tiers, upkeep, rescues, house rules, exile, notice boards (notes between sessions, `/note`) | [Haven safehouses](DESIGN.md#haven-safehouses) |
@@ -78,6 +79,8 @@ The prefabs were filled in by text edits on 2026-11-11; their reviewers found th
 - **The manual steps** the plugin still lists ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); the
   loadouts' gear, shop stock, the consumable effects and the reward crate were filled in by text
   edits and need a play-test.
+- **Camp life in Workbench:** the 21 compositions, the smart-action waypoint and the kits (two
+  evenings; [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)).
 - **Play it with a game client** on a local server, then a 2-hour session on Arland
   ([PC_SETUP.md](PC_SETUP.md#6-play-testing)).
 
@@ -187,6 +190,9 @@ In this order, because later ones depend on earlier ones:
     the toll, running and surrender fire at the right distances? Is the timed grudge enough to
     make the crew shoot, and does a surrender's stand-down stop them? Is a Fire Mission's horde
     check too strict or too loose; does the fence take the right things?
+    **Camp life:** do our groups use the compositions' smart actions and loop their patrol, do lone
+    characters join a group, do AI walk through run-time tents, and what do 3 live places cost in
+    server frame time?
 16. **Seasons:** a wipe end to end (backup, fresh start, the winner's rules, the hall of fame
     kept), and whether the rule sets feel different enough without being unfair. Are rough
     contract areas fun to search, or too vague at 500 m?

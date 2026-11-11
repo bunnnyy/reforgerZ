@@ -1170,6 +1170,10 @@ class RZ_Safehouses
 		h.m_bSpawned = true;
 		h.m_iSpawnedTier = h.GetTier();
 		int idx = m_aSafehouses.Find(h);
+		// Camp life gives them jobs and dresses the house (RZ_CampLife)
+		array<IEntity> guardBodies = {};
+		array<IEntity> personBodies = {};
+		array<IEntity> keeperBodies = {};
 
 		for (int i = 0; i < h.OccupantCount(); i++)
 		{
@@ -1178,6 +1182,7 @@ class RZ_Safehouses
 			{
 				TagOccupant(occupant, idx);
 				h.m_aBodies.Insert(occupant);
+				personBodies.Insert(occupant);
 			}
 		}
 
@@ -1187,6 +1192,7 @@ class RZ_Safehouses
 			if (guard)
 			{
 				h.m_aBodies.Insert(guard);
+				guardBodies.Insert(guard);
 
 				// Shooting at a safehouse guard turns the Haven's people there on you for a while
 				if (m_GM.GetHostility())
@@ -1199,14 +1205,20 @@ class RZ_Safehouses
 		{
 			IEntity qm = RZ_Util.SpawnPrefab(m_GM.GetQuartermasterPrefab(RZ_EFaction.SURVIVORS), RZ_Mission.LandPointNear(h.m_vPos, 1, 4), Math.RandomFloat(0, 360));
 			if (qm)
+			{
 				h.m_aBodies.Insert(qm);
+				keeperBodies.Insert(qm);
+			}
 		}
 
 		if (h.HasMedic())
 		{
 			IEntity medic = RZ_Util.SpawnPrefab(m_Settings.m_sMedicPrefab, RZ_Mission.LandPointNear(h.m_vPos, 3, 6), Math.RandomFloat(0, 360));
 			if (medic)
+			{
 				h.m_aBodies.Insert(medic);
+				keeperBodies.Insert(medic);
+			}
 		}
 
 		// Halcyon's flyer on the wall: the Haven clinic, Bastion's curfew, samples wanted
@@ -1216,11 +1228,19 @@ class RZ_Safehouses
 			if (flyer)
 				h.m_aBodies.Insert(flyer);
 		}
+
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (camp)
+			camp.Enter("s" + idx.ToString(), "Haven safehouse", RZ_EFaction.SURVIVORS, RZ_ECampPlace.SAFEHOUSE, h.m_vPos, 0, m_Settings.m_sGuardPrefab, guardBodies, personBodies, keeperBodies);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void DespawnBodies(RZ_Safehouse h)
 	{
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (camp)
+			camp.Leave("s" + m_aSafehouses.Find(h).ToString());
+
 		foreach (IEntity e : h.m_aBodies)
 		{
 			RZ_Util.DeleteUnit(e);
@@ -1384,6 +1404,11 @@ class RZ_Safehouses
 		}
 
 		TellStatus(playerId, h);
+
+		// They stop what they're doing while you talk
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (camp)
+			camp.HoldPersonNear(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------

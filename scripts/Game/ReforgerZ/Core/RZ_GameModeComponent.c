@@ -261,6 +261,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Faction life: needs, morale, radio chatter, life events, truces and feuds, remembered moments, rumours (docs/DESIGN.md, Factions in the background)", category: "ReforgerZ|Territory")]
 	protected ref RZ_FactionLifeSettings m_FactionLifeSettings;
 
+	[Attribute(desc: "Camp life: each faction's scenery around its holdings, safehouses and road posts (Kits), and its people's routines; piece and extra-people caps, waypoint prefabs (docs/DESIGN.md, Camp life)", category: "ReforgerZ|Territory")]
+	protected ref RZ_CampLifeSettings m_CampLifeSettings;
+
 	// ---------------------------------------------------------------- New-player guidance
 	[Attribute(desc: "Quiet in-world guidance: experience levels, contextual tips from nearby people, the first-life goal, the gentle start (docs/DESIGN.md)", category: "ReforgerZ|Guidance")]
 	protected ref RZ_GuidanceSettings m_GuidanceSettings;
@@ -400,6 +403,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Territory m_Territory;
 	protected ref RZ_SupplyLines m_Supply;
 	protected ref RZ_FactionLife m_FactionLife;
+	protected ref RZ_CampLife m_CampLife;
 	protected ref RZ_LongTable m_LongTable;
 	protected ref RZ_Interactions m_Interactions;
 	protected ref RZ_LooseItems m_LooseItems;
@@ -549,6 +553,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_FactionLifeSettings)
 			m_FactionLifeSettings = RZ_FactionLifeSettings.Cast(RZ_Util.NewWithDefaults("RZ_FactionLifeSettings"));
 
+		if (!m_CampLifeSettings)
+			m_CampLifeSettings = RZ_CampLifeSettings.Cast(RZ_Util.NewWithDefaults("RZ_CampLifeSettings"));
+
 		if (!m_InteractionSettings)
 			m_InteractionSettings = RZ_InteractionSettings.Cast(RZ_Util.NewWithDefaults("RZ_InteractionSettings"));
 
@@ -610,6 +617,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Perks = new RZ_FactionPerks(this);
 		m_Services = new RZ_FactionServices(this, m_ServiceSettings);
 		m_Checkpoints = new RZ_Checkpoints(this, m_CheckpointSettings);
+		m_CampLife = new RZ_CampLife(this, m_CampLifeSettings);
 		m_Broadcast = new RZ_Broadcast(this);
 		m_Perimeter = new RZ_Perimeter(this, m_PerimeterSettings);
 		m_Safehouses = new RZ_Safehouses(this, m_SafehouseSettings);
@@ -736,6 +744,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_StoryArcs.Tick(dt, ids, players);
 		m_Questlines.Tick(dt, ids, players);
 		m_Checkpoints.Tick(dt, ids, players);
+		// After the holdings, safehouses and road posts spawn or remove their bodies
+		m_CampLife.Tick(dt, ids, players);
 		// After everything that changes standing or spawns fights this tick
 		m_Hostility.Tick(dt, ids, players);
 		m_Broadcast.Tick(dt, m_fBroadcastMinutes, !ids.IsEmpty());
@@ -880,6 +890,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Territory GetTerritory() { return m_Territory; }
 	RZ_SupplyLines GetSupply() { return m_Supply; }
 	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
+	RZ_CampLife GetCampLife() { return m_CampLife; }
 	RZ_LongTable GetLongTable() { return m_LongTable; }
 	RZ_Interactions GetInteractions() { return m_Interactions; }
 	RZ_GuidanceSettings GetGuidanceSettings() { return m_GuidanceSettings; }
