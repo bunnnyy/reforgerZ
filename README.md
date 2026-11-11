@@ -61,6 +61,10 @@ setting, faction and loadout to make is listed in one **prefab manifest**, and a
 plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run). Start with
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
+**Designed, not built yet:** fourteen long questlines in the New Vegas style, with choices that
+cross between factions ([QUESTLINES.md](docs/QUESTLINES.md)), and the **Long Table**, a tiny
+cannibal family in one farmhouse ([LORE.md](docs/LORE.md#the-long-table)).
+
 ## Docs
 
 | Doc | What's in it |
@@ -70,6 +74,7 @@ plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
+| [QUESTLINES.md](docs/QUESTLINES.md) | Long questlines over many sessions, three per faction and two for the Long Table (designed, not built) |
 | [MOD_STACK.md](docs/MOD_STACK.md) | Which Workshop mods the server runs and why |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |

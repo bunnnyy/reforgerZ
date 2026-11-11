@@ -298,6 +298,83 @@ matter more than people, and it apologises for that, quietly:
 **Voice:** precise, a bit cold, sometimes guilty. *"Eight in ten. We write down the other two.
 Somebody has to, and they should be counted."*
 
+## The Long Table
+
+*Planned, not built.* How the house works in the world is in [DESIGN.md](DESIGN.md#the-long-table-planned);
+how players deal with it is in [REPUTATION.md](REPUTATION.md#the-long-table-planned); its two
+questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table).
+
+Not a faction. A family of four to seven people in one farmhouse, in one of the empty places
+nobody goes. They're kind to strangers. There's always an extra place set at supper. And they
+eat people.
+
+It started with the Haven's mouths. On Day 3 Ada Moravec opened her farmhouse past the last
+village to anyone the other houses couldn't feed. She had two grown sons, a daughter-in-law and a
+kitchen table long enough for twenty. The council sent her its mouths: the old, the sick, a man in
+a wheelchair, two men who couldn't stop coughing, and a boy of ten whose mother never made it to
+the gym. On Day 7 the Haven truck to the farm didn't come. On Day 8 the council's radio said there
+would be nothing for the farm that week: houses with workers came first. On Day 9 old Mr Halas
+died in the night. In the morning there was soup. Ada said grace and read his name out, the way
+every Haven house reads its dead at supper. Nobody asked. The ones who would have asked weren't
+strong enough to.
+
+On Day 10 one of the coughing men turned out to have a bite he hadn't declared, and by the next
+night Ada's daughter-in-law was sick. Her husband walked her out at dusk and came back alone. The
+family has asked every guest about bites ever since. By Day 12 the farm had stopped answering the
+radio. The council crossed the whole house off the List and said a prayer for it, and everyone
+agreed the infected must have got there first.
+
+The mouths are gone now. The family is still there, and the boy.
+
+**How the house runs.** Ada runs the kitchen, and the kitchen is the house:
+
+- **There's always a place set.** An extra bowl at the long table, for whoever comes.
+- **Everyone is welcome.** Her elder son, the host, meets travellers on the road with a flask of
+  something hot. He knows the roads, the trucks and who's short, and everything he says is true.
+- **Declare your bite.** They ask every guest, kindly, the way a Haven house does. A bitten guest
+  is fed, blessed and sent on their way.
+- **Grace.** Before supper Ada reads a name.
+- **Nothing is wasted.** That's the whole of the reason, and they say it often.
+
+They tell themselves they only took the ones who were going anyway. That was true for a week.
+
+**The hard edges.** The house is homely, and that's the horror of it:
+
+| What they don't say out loud | What it means | Where it shows in play (planned) |
+|---|---|---|
+| **Grace** | At a Haven house, the name read at supper is the dead. At Ada's, it's the meal | The host's invitation; A Place at the Table |
+| **"Nothing is wasted"** | It started with the dead. Then the dying. Then the ones nobody would come looking for | Wanderers who never arrive; rumours |
+| **"Declare your bite"** | Asked kindly, like a Haven house. A bitten guest is safe: they learned on Day 10 what the bitten do to a family | A bitten player is never set on; Halcyon's interest |
+| **The guestbook** | Every guest signs. Some names have a date and a small cross beside them, the way the List does | Proof in The House That Went Quiet |
+| **The boots** | A row of boots by the door, in too many sizes | A tell at the house |
+| **"Pork"** | What the jars are, when they're sold. The one Red Hand crew that buys them doesn't ask | Trade; Cargo |
+| **Strays** | Some of the people the Haven turned out, that the Red Hand kept track of, were sold on here | Cargo; The Price of the Door |
+| **The boy** | He isn't theirs. He came with the mouths. He eats what he's given and doesn't talk about it | The end of the house; the Kid wanderer |
+
+**How the others see them** (once they know):
+
+- **The Haven:** horror, and shame. It was one of their houses, and they sent it their mouths and
+  then sent it nothing. The Haven calls it "the house that went quiet" and never says more. Its
+  instinct is to bring them home, and walk them out.
+- **Bastion:** a line in a report: an infected cluster past the last village, cleared. It doesn't
+  fit anywhere on the board, so the commanding officer would rather burn it than count it. A
+  post or two has bought venison from a man with a flask.
+- **The Red Hand:** the code has five rules and none of them is about this. The boss says it
+  doesn't need one. One crew buys the jars, calls it pork and sells the farm strays; most crews
+  would hang the family off the lorry if they knew.
+- **Halcyon:** interested, and ashamed of being interested. The family never eats a bitten guest,
+  because of Day 10. The lab would like to know if they're right: whether eating the infected
+  spreads it. It would like one of them alive to ask, and a sample to be sure.
+
+**Voice:** homely, attentive, a little too interested in you. *"Sit, sit. You're thin. Where've you
+come from, and does anyone know you're out this way?"* Then grace: *"For what we are about to
+receive. For Tomas, who came from Levie."*
+
+**Writing them.** Never describe it. No kitchen work, no cellar contents, no word for what they
+are, from them or from the narrator. The horror is in ordinary things: the extra bowl, the boots,
+the names, the jars labelled by the day and not by what's in them. Other people may joke (the Red
+Hand says "pork"); the writing never does.
+
 ## Who's in charge
 
 Every place a faction holds has someone in charge, with a name, a past and opinions:
@@ -392,6 +469,7 @@ new outbreak, in a new Zone.
   - **Haven:** warm, worried, practical, sometimes darkly funny.
   - **Red Hand:** mocking and casual.
   - **Halcyon:** precise, a bit cold, sometimes guilty.
+  - **The Long Table** (planned): homely, attentive, a little too interested in you.
 - **Open channels** on the radio are people, not institutions. The Haven's is a tired woman:
   *"If you can hear this, Morton is open. Bring water if you can. Bring yourself either way."*
   Bastion's net still calls Command, which never answers. The Red Hand uses the open channel

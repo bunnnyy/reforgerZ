@@ -388,6 +388,47 @@ factions, and a 30-minute pause after one ends.
 
 They're headlines, never alerts.
 
+## The Long Table (planned)
+
+**Planned, not built.** A tiny cannibal family in one farmhouse ([LORE.md](LORE.md#the-long-table)).
+Where the house is and what it does in the world is in [DESIGN.md](DESIGN.md#the-long-table-planned);
+its questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table).
+
+**Not a fifth faction.** They're four to seven people with nothing to sell that a player should
+want. A Fame ladder would make eating people a way up, and a shop would be loot paid for in
+people. So there's no Fame, Infamy or Favor with them, no tiers, no shop, no perks, and no bit
+in the hostility mask. They remember each character the way a leader does, in three words:
+*guest* (ate with them), *family* (A Place at the Table) or *crossed* (refused them, or took proof
+to someone).
+
+| Dealing | What happens |
+|---|---|
+| **Eat with them** | A bowl (one food item) and true road news from the host. Safe, except under the guest rule |
+| **Trade** | A jar (a food item) for ammunition or medicine, once a visit |
+| **Declare your bite** | A blessing, and they'll never set on you while you're infected |
+| **Expose them** | Proof to a faction ([QUESTLINES.md](QUESTLINES.md#c1-the-house-that-went-quiet)): Fame with that faction |
+| **Break them up** | One of the questline's endings, or a fight |
+
+**The guest rule.** A player who ate with them and is still within 30 m of the house after 20:30,
+with no other player within 100 m and no infection, is set on by the family: a fight. Once a life.
+Anyone else, at any other time, is a guest.
+
+**Shooting them.** Until they're exposed they're a quiet farm family, so shooting one costs +6
+Haven Infamy, as for gunning down Rival Survivors who'd fought nobody. Once they've set on you,
+or once they're exposed, it costs nothing with anyone.
+
+**When they're exposed,** every faction reacts in its own way, within the usual caps:
+
+| Faction | Reacts | For players |
+|---|---|---|
+| The Haven | Morale −8 (shame); wants them walked out | Proof: Haven Fame. Family of the house when it's exposed: Haven Infamy +40 |
+| Bastion | Containment: if nobody else ends it within a real day, it burns the farm | Proof: Bastion Fame. Family: Bastion Infamy +20 |
+| The Red Hand | The boss purges any crew that bought from them; the open channel says "pork" and laughs | Proof: a little Red Hand Fame |
+| Halcyon | Wants one of them alive, and the mother's kitchen notebook | Proof, or one of them brought in: Halcyon Fame, a little research |
+
+Trading with them before anyone knew costs nothing. Only what a player did knowingly (the
+questlines' *(you)* flags) is held against them.
+
 ## What makes AI shoot you
 
 AI shoots individual players, not everyone on the player faction. ✅ all. Each faction's AI
