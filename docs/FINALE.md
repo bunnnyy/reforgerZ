@@ -416,9 +416,10 @@ On top:
 | **What everyone sees** | Within 150 m of the lab, the stand's line on the HUD under the noise meter (`StandPanel`, sent every 2 s): *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."* Routes, never players. A player whose HUD can't take it gets it as a short notice when a count moves 15 s; everyone gets a notice when the room changes hands |
 
 **Groups.** At most two friendly faction groups (**Groups at the lab**) stand 40–120 m out: the
-finisher's faction first, then factions whose route has active locks, then those a major sends (the
-Haven at the gate, Bastion under The Call Stands, the Red Hand under Stood for Nothing); never Bastion
-under Expended. Halcyon never takes sides: its guard is the lab's own. Within 1.5 km of the lab a
+finisher's faction first, then factions whose route has active locks, then those a major sends
+([QUESTLINES.md](QUESTLINES.md#the-stands-inputs): the Haven at the gate after The Whole of It,
+Bastion by its stance, the Red Hand on the lab's road by its last page); never Bastion under
+Expended. A group on the lab's road stands 150–250 m out. Halcyon never takes sides: its guard is the lab's own. Within 1.5 km of the lab a
 player locked to a side fighting a faction's route carries that faction's hostility bit, so its
 group fights them (never Halcyon's bit; not in Tally mode). The groups are removed when the stand ends.
 

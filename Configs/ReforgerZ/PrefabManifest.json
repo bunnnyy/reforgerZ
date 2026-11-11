@@ -5286,6 +5286,24 @@
    "notes": ""
   },
   {
+   "id": "UISeasonPage",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the Season page layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sSeasonPage"],
+   "listSlot": false,
+   "slotLabel": "UI > Season page",
+   "required": false,
+   "minimum": false,
+   "use": "The season tab: the majors, and in the epilogue the season as the Zone tells it (empty = Nothing here yet)",
+   "notes": ""
+  },
+  {
    "id": "UITalkReplyLayout",
    "kind": "manual",
    "system": "UI",
@@ -5658,7 +5676,7 @@
    "category": "ReforgerZ",
    "object": "Season",
    "field": "m_SeasonSettings",
-   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
+   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), minimum epilogue (56 h: a late cure pushes an After-weeks wipe back), weeks (10, timed modes only), warning (24 h), **No stand in the last hours** (off: near a timed wipe the stand is held back, [EPILOGUE.md](EPILOGUE.md#edge-cases)), **Story rules** (on: one small rule from each major that ended live, [QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
   },
   {
    "category": "World",
@@ -5846,7 +5864,7 @@
    "category": "Territory",
    "object": "Territory",
    "field": "m_TerritorySettings",
-   "covers": "**Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs"
+   "covers": "**Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs, **Haven guard** (on: a Haven group at the lab gate in the stand after The Whole of It)"
   },
   {
    "category": "Territory",
@@ -5999,6 +6017,8 @@
     "m_fMinEpilogueHours": "56",
     "m_iWipeWeeks": "10",
     "m_fWarnHours": "24",
+    "m_bStoryRules": "1",
+    "m_bNoStandLastHours": "0",
     "m_bHallOfFame": "1"
    }
   },
@@ -6578,7 +6598,8 @@
     "m_fVisibleRadius": "300",
     "m_iGuardCount": "1",
     "m_iOccupantCount": "2",
-    "m_bOutpostQuartermaster": "1"
+    "m_bOutpostQuartermaster": "1",
+    "m_bHavenGuard": "1"
    }
   },
   {

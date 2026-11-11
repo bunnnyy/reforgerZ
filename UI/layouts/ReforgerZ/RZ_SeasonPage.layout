@@ -1,0 +1,302 @@
+FrameWidgetClass "{E24505BF71C59D5F}" {
+ Name "SeasonPage"
+ Slot FrameWidgetSlot "{44935DBDF7F471F1}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+  Alignment 0 0
+ }
+ "Ignore Cursor" 0
+ {
+  FrameWidgetClass "{281385AB586C7B45}" {
+   Name "MajorsPanel"
+   Slot FrameWidgetSlot "{505D151075517334}" {
+    Anchor 0 0 0 0
+    PositionX 96
+    OffsetLeft 96
+    PositionY 168
+    OffsetTop 168
+    SizeX 564
+    OffsetRight -660
+    SizeY 840
+    OffsetBottom -1008
+    Alignment 0 0
+   }
+   {
+    ImageWidgetClass "{A6AAC8EDCD1ABB46}" {
+     Name "MajorsBg"
+     Slot FrameWidgetSlot "{952EE0CEE19FFC40}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 0.9
+     Size 1 1
+    }
+    TextWidgetClass "{2E796CC51C4C289C}" {
+     Name "MajorsLabel"
+     Slot FrameWidgetSlot "{12E6679FC0D89BC6}" {
+      Anchor 0 0 0 0
+      PositionX 23
+      OffsetLeft 23
+      PositionY 20
+      OffsetTop 20
+      SizeX 518
+      OffsetRight -541
+      SizeY 22
+      OffsetBottom -42
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "THE MAJORS"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{796D2D650AF8D1EF}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{4027B51F7A470DE0}" {
+     Name "MajorsList"
+     Slot FrameWidgetSlot "{DCCFFA07243930E3}" {
+      Anchor 0 0 0 0
+      PositionX 23
+      OffsetLeft 23
+      PositionY 48
+      OffsetTop 48
+      SizeX 518
+      OffsetRight -541
+      SizeY 772
+      OffsetBottom -820
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     Wrap 1
+     FontProperties FontProperties "{5CC0F73F499CBAF6}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+   }
+  }
+  FrameWidgetClass "{AE1DF7B11DF4848D}" {
+   Name "YouPanel"
+   Slot FrameWidgetSlot "{45ADB4FA9CD09998}" {
+    Anchor 0 0 0 0
+    PositionX 678
+    OffsetLeft 678
+    PositionY 168
+    OffsetTop 168
+    SizeX 564
+    OffsetRight -1242
+    SizeY 840
+    OffsetBottom -1008
+    Alignment 0 0
+   }
+   {
+    ImageWidgetClass "{321331838E28CDF9}" {
+     Name "YouBg"
+     Slot FrameWidgetSlot "{A2426B19135B280E}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 0.9
+     Size 1 1
+    }
+    TextWidgetClass "{BBD3BC8132FDAFB8}" {
+     Name "YouLabel"
+     Slot FrameWidgetSlot "{0D41335F14B744A5}" {
+      Anchor 0 0 0 0
+      PositionX 23
+      OffsetLeft 23
+      PositionY 20
+      OffsetTop 20
+      SizeX 518
+      OffsetRight -541
+      SizeY 22
+      OffsetBottom -42
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "AND YOU"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{ADE330F7788007D8}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{DE96427FA2B63867}" {
+     Name "YouList"
+     Slot FrameWidgetSlot "{164904AF50C4A6DB}" {
+      Anchor 0 0 0 0
+      PositionX 23
+      OffsetLeft 23
+      PositionY 48
+      OffsetTop 48
+      SizeX 518
+      OffsetRight -541
+      SizeY 772
+      OffsetBottom -820
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     Wrap 1
+     FontProperties FontProperties "{1C2E2D0BD5F8012A}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+   }
+  }
+  FrameWidgetClass "{5CDAB1F6FA41BAAB}" {
+   Name "ZonePanel"
+   Slot FrameWidgetSlot "{E6575C256CCD29C8}" {
+    Anchor 0 0 0 0
+    PositionX 1260
+    OffsetLeft 1260
+    PositionY 168
+    OffsetTop 168
+    SizeX 564
+    OffsetRight -1824
+    SizeY 840
+    OffsetBottom -1008
+    Alignment 0 0
+   }
+   {
+    ImageWidgetClass "{3CCA2A63A079E844}" {
+     Name "ZoneBg"
+     Slot FrameWidgetSlot "{4DC53630402D2F1A}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 0.9
+     Size 1 1
+    }
+    TextWidgetClass "{C109D013DCE52BEF}" {
+     Name "ZoneLabel"
+     Slot FrameWidgetSlot "{77ED1C807C2F02D6}" {
+      Anchor 0 0 0 0
+      PositionX 23
+      OffsetLeft 23
+      PositionY 20
+      OffsetTop 20
+      SizeX 518
+      OffsetRight -541
+      SizeY 22
+      OffsetBottom -42
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "AS THE ZONE TELLS IT"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{E2906BF4B77DBC4F}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    ScrollLayoutWidgetClass "{AFBD467577398AB6}" {
+     Name "ZoneScroll"
+     Slot FrameWidgetSlot "{B942F89E21FC0D40}" {
+      Anchor 0 0 0 0
+      PositionX 23
+      OffsetLeft 23
+      PositionY 48
+      OffsetTop 48
+      SizeX 518
+      OffsetRight -541
+      SizeY 772
+      OffsetBottom -820
+      Alignment 0 0
+     }
+     Color 0.431 0.416 0.376 1
+     style Small
+     {
+      SizeLayoutWidgetClass "{B3957D5CB7368A64}" {
+       Name "ZoneSize"
+       Slot AlignableSlot "{2ABC85A233DA39F6}" {
+        HorizontalAlign 0
+        VerticalAlign 0
+       }
+       AllowWidthOverride 1
+       WidthOverride 506
+       {
+        TextWidgetClass "{6A6209682A9AF36E}" {
+         Name "ZoneList"
+         Slot AlignableSlot "{2FC440955ACD34EC}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text ""
+         "Font Size" 18
+         "Min Font Size" 18
+         Wrap 1
+         FontProperties FontProperties "{7DB8FF6078DCBACC}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  TextWidgetClass "{DCACC133CABA8507}" {
+   Name "Waiting"
+   Slot FrameWidgetSlot "{30D47956C83E6609}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 778
+    OffsetRight -778
+    SizeY 40
+    OffsetBottom -40
+    Alignment 0.5 0.5
+   }
+   Color 0.91 0.886 0.816 1
+   Text "Asking around..."
+   "Font Size" 22
+   "Min Font Size" 22
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{695E254CB253ABEB}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+    Italic 1
+   }
+  }
+ }
+}

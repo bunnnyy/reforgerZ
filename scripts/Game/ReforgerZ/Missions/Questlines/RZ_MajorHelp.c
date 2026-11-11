@@ -186,6 +186,41 @@ class RZ_MajorHelp
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A coda's hall line ("At the barrier", "On the paper"): everyone who took part at `stage`, at
+	//! most 12, under the names policy, `first` (an identity, or "") named first. Nothing without the
+	//! epilogue or anyone there.
+	static void HallNames(RZ_QuestRun run, int stage, string label, string first)
+	{
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		if (!epi || !RZ_Epilogue.IsOn())
+			return;
+
+		array<string> idents = {};
+		if (!first.IsEmpty())
+			idents.Insert(first);
+
+		foreach (RZ_QuestPart p : run.m_aParts)
+		{
+			if (p.m_iStage == stage && !idents.Contains(p.m_sIdent) && idents.Count() < 12)
+				idents.Insert(p.m_sIdent);
+		}
+
+		if (idents.IsEmpty())
+			return;
+
+		string names = "";
+		foreach (int i, string ident : idents)
+		{
+			if (i > 0)
+				names += ", ";
+
+			names += RZ_EpiNames.Show(ident, epi.KnownName(ident));
+		}
+
+		epi.AddHallLine(string.Format("%1: %2.", label, names));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A stand-in's spot near a seat (never behind a lock).
 	static vector NearSeat(vector seat)
 	{

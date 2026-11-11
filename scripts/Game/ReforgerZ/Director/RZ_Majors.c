@@ -449,6 +449,7 @@ class RZ_StoryRecord
 	int branch = -1;
 	string line;				// the epilogue line, by who controls the cure when the cure comes
 	bool fallback;				// reached by defaults only (no next-season rule)
+	int atCure = -1;			// the ending as it stood at the cure (the story rules read it), -1 none
 	ref array<string> deciders = {};	// identities
 }
 
@@ -1061,7 +1062,9 @@ class RZ_Majors
 			return;
 		}
 
-		bool open = run.m_iMissionId >= 0 || run.m_fReadyAt >= 0 || act.m_bWatch;
+		// Offered only while the stage mission is on the offer list (one of the Slots), not while the
+		// stage is merely open; a watched inner line counts while it runs
+		bool open = run.m_iMissionId >= 0 || act.m_bWatch;
 		bool window = InWindow(act);
 
 		// Offered time, and offered evenings for set pieces
@@ -1403,6 +1406,97 @@ class RZ_Majors
 		return text;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! The notebook's season tab: each major as it stands (its act, the rule or stance, any last
+	//! call), then each ending told.
+	void SeasonLines(notnull array<string> result)
+	{
+		if (!m_Q)
+			return;
+
+		array<string> running = {};
+		foreach (RZ_QuestRun run : m_Q.GetRuns())
+		{
+			if (!run || run.m_bDone || !run.m_Line.IsMajor())
+				continue;
+
+			running.Insert(run.m_sKey);
+			string title = run.m_Line.m_sTitle;
+			title.ToUpper();
+			result.Insert(title);
+			string text = SeasonText(run);
+			array<string> parts = {};
+			text.Split("\n", parts, true);
+			foreach (string part : parts)
+			{
+				result.Insert(part);
+			}
+
+			result.Insert("");
+		}
+
+		foreach (RZ_StoryRecord r : m_aStories)
+		{
+			if (running.Contains(r.major))
+				continue;
+
+			string ending = EndingName(r.major, r.ending);
+			if (ending.IsEmpty())
+				continue;
+
+			result.Insert(string.Format("%1: %2.", RZ_Factions.GetName(r.faction), ending));
+			if (!r.line.IsEmpty())
+				result.Insert(r.line);
+
+			result.Insert("");
+		}
+	}
+
+	// ================================================================ The stand's inputs
+	//------------------------------------------------------------------------------------------------
+	//! A faction's group at the final stand that a major sends (the finale caps them at Groups at the
+	//! lab, the finisher's faction first, and adds Halcyon's own guard): the Haven at the gate after
+	//! The Whole of It (Territory > Haven guard); Bastion by stance (1 and 2 at the gate, 3 on the
+	//! lab's road, 4 none); the Red Hand on the lab's road when its last page balanced or stood for
+	//! nothing, unless Bastion holds that road.
+	static bool SendsStandGroup(RZ_GameModeComponent gm, int faction)
+	{
+		int stance = RZ_MajorHelp.World(gm, "orders.stance");
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS:
+			{
+				RZ_Territory territory = gm.GetTerritory();
+				if (territory && !territory.GetSettings().m_bHavenGuard)
+					return false;
+
+				return RZ_MajorHelp.World(gm, "proof.haven_gate") != 0;
+			}
+			case RZ_EFaction.MILITARY: return stance >= 1 && stance <= 3;
+			case RZ_EFaction.BANDITS:
+			{
+				int last = RZ_MajorHelp.World(gm, "book.last");
+				return (last == 1 || last == 2) && stance != 3;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The group stands on the lab's road (150-250 m out) rather than at the gate: Bastion's
+	//! checkpoint under stance 3, the Red Hand's crews by the last page.
+	static bool OnLabRoad(RZ_GameModeComponent gm, int faction)
+	{
+		if (faction == RZ_EFaction.MILITARY)
+			return RZ_MajorHelp.World(gm, "orders.stance") == 3;
+
+		if (faction == RZ_EFaction.BANDITS)
+			return SendsStandGroup(gm, faction);
+
+		return false;
+	}
+
 	// ================================================================ The season story
 	//------------------------------------------------------------------------------------------------
 	//! A major's ending in the season's record: its line (the epilogue line as it stands), whoever
@@ -1431,6 +1525,11 @@ class RZ_Majors
 		rec.branch = branch;
 		rec.line = line;
 		rec.fallback = fallback;
+		// The story rules read the ending as it stood at the cure: nothing after it carries over
+		RZ_CureResearch cure = s_Instance.m_GM.GetCure();
+		if (!cure || !cure.IsCured())
+			rec.atCure = ending;
+
 		rec.deciders.Clear();
 		if (deciders)
 		{
@@ -1458,22 +1557,167 @@ class RZ_Majors
 		string text = "";
 		foreach (RZ_StoryRecord first : m_aStories)
 		{
-			if (first.faction == controller && !first.line.IsEmpty())
-				text = first.line;
+			if (first.faction == controller)
+				text = LineFor(first, controller);
 		}
 
 		foreach (RZ_StoryRecord r : m_aStories)
 		{
-			if (r.faction == controller || r.line.IsEmpty())
+			string line = LineFor(r, controller);
+			if (r.faction == controller || line.IsEmpty())
 				continue;
 
 			if (!text.IsEmpty())
 				text += " ";
 
-			text += r.line;
+			text += line;
 		}
 
 		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A major's epilogue line by who controls the cure: its own faction (the "own" variant), another
+	//! (the line it wrote), nobody (controller -1: the no-cure variant).
+	static string LineFor(RZ_StoryRecord r, int controller)
+	{
+		string variant = "";
+		if (controller < 0)
+			variant = Variant(r.major, r.ending, false);
+		else if (r.faction == controller)
+			variant = Variant(r.major, r.ending, true);
+
+		if (!variant.IsEmpty())
+			return variant;
+
+		return r.line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The per-ending variants (docs/QUESTLINES.md, each ending's epilogue line). own: the major's
+	//! faction controls the cure; else no cure. "" keeps the ending's own line.
+	static string Variant(string major, int ending, bool own)
+	{
+		string key = major + ":" + ending.ToString();
+		if (own)
+		{
+			switch (key)
+			{
+				case "book:10": return "The cure was sold to the highest bidder. The book said who bid first.";
+				case "book:11": return "The cure was sold to the highest bidder. Everyone already knew the price.";
+				case "book:12": return "The Red Hand handed the cure out at the crossroads and wrote nothing down.";
+				case "book:13": return "The Red Hand sold the cure at the north road. Bastion has the names of everyone who bought.";
+				case "book:14": return "The Red Hand sold the cure at the north road and still couldn't make the book balance.";
+				case "orders:10": return "\"Command, Bastion. Cure secured. Requesting relief. Over.\" A long hiss. \"Bastion out.\"";
+				case "orders:11": return "Bastion issued the cure at the north road to anyone who asked, and told them what Bastion was.";
+				case "orders:12": return "Bastion issued the cure at the north road, against name and signature, for Command.";
+				case "orders:13": return "Bastion issued the cure at the north road. Nobody on the roster expected thanks.";
+				case "every_name:10": return "The Haven took the cure house to house and read every name at every door.";
+				case "every_name:11": return "The Haven took the cure house to house. Nobody opened the book.";
+				case "every_name:12": return "The Haven took the cure to the far house last, the way it took everything.";
+				case "every_name:13": return "The Haven gave the cure out against Bastion's cards, one name at a time.";
+				case "every_name:14": return "The Haven gave the cure out at the door, and the paying houses went first.";
+				case "proof:10": return "Halcyon published the method with the paper. Its first page starts three weeks before Day 1.";
+				case "proof:11": return "Halcyon published the method under Bastion's signature.";
+				case "proof:12": return "Halcyon published the method. Its first page says Day 1.";
+				case "proof:14": return "Halcyon published the method. The Red Hand had already sold the first page, two tins a copy.";
+			}
+
+			return "";
+		}
+
+		switch (key)
+		{
+			case "book:10": return "The gates never opened. The book balanced anyway.";
+			case "book:11": return "The gates never opened. Everyone's page is in somebody's stove.";
+			case "book:12": return "The gates never opened. The Red Hand never wrote another line.";
+			case "book:13": return "The gates never opened. Bastion still has the ledger.";
+			case "book:14": return "The gates never opened. Somebody still has the page.";
+			case "orders:10": return "The gates never opened. Bastion read the numbers to Command every night until the end. No reply.";
+			case "orders:11": return "The gates never opened. Bastion had already told its men the truth.";
+			case "orders:12": return "The gates never opened. Bastion answered for Command to the end.";
+			case "orders:13": return "The gates never opened. Each night the CO was alone on the net.";
+			case "every_name:10": return "The gates never opened. The Haven read every name anyway.";
+			case "every_name:11": return "The gates never opened. Nobody opened the book.";
+			case "every_name:12": return "The gates never opened. The far house was still last.";
+			case "every_name:13": return "The gates never opened. Bastion's cards were still on the nail.";
+			case "every_name:14": return "The gates never opened. The tins ran out first.";
+			case "proof:13": return "The paper is in the lab's safe, signed and never sent.";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A major's ending by name, for the hall's lines.
+	static string EndingName(string major, int ending)
+	{
+		switch (major + ":" + ending.ToString())
+		{
+			case "book:10": return "The book balances";
+			case "book:11": return "Sold by the page";
+			case "book:12": return "Sent off loud";
+			case "book:13": return "Bastion's file";
+			case "book:14": return "The book doesn't balance";
+			case "orders:10": return "The Call Stands";
+			case "orders:11": return "All Stations";
+			case "orders:12": return "Bastion, Command";
+			case "orders:13": return "Expended";
+			case "every_name:10": return "Every Name";
+			case "every_name:11": return "The Closed Book";
+			case "every_name:12": return "The Far House";
+			case "every_name:13": return "Counted";
+			case "every_name:14": return "Paid at the Door";
+			case "proof:10": return "The Whole of It";
+			case "proof:11": return "Under Seal";
+			case "proof:12": return "Day 1";
+			case "proof:13": return "Unsigned";
+			case "proof:14": return "Two Tins a Copy";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hall's "The season's stories": one line a major, with up to four names who decided it
+	//! (under the names policy), by who controls the cure (-1: none).
+	void HallLines(int controller, notnull array<string> result)
+	{
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		foreach (RZ_StoryRecord r : m_aStories)
+		{
+			string ending = EndingName(r.major, r.ending);
+			if (ending.IsEmpty())
+				continue;
+
+			string names = "";
+			foreach (int i, string ident : r.deciders)
+			{
+				string known = ident;
+				if (epi)
+					known = epi.KnownName(ident);
+
+				string shown = RZ_EpiNames.Show(ident, known);
+				if (i > 0 && i == r.deciders.Count() - 1)
+					names += " and ";
+				else if (i > 0)
+					names += ", ";
+
+				names += shown;
+			}
+
+			string text = string.Format("The season's stories: %1.", ending);
+			if (names.IsEmpty() || r.fallback)
+				text = string.Format("The season's stories: %1, and nobody decided it.", ending);
+			else
+				text = string.Format("The season's stories: %1, decided by %2.", ending, names);
+
+			string line = LineFor(r, controller);
+			if (!line.IsEmpty())
+				text += " " + line;
+
+			result.Insert(text);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

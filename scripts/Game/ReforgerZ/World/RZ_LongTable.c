@@ -827,7 +827,8 @@ class RZ_LongTable
 		{
 			m_bRolled = true;
 			source = "new";
-			if (Math.RandomFloat01() < Math.Clamp(m_Settings.m_fChance, 0, 1))
+			// Last season's Haven story moves the chance (Director/RZ_StoryRules.c)
+			if (Math.RandomFloat01() < Math.Clamp(m_Settings.m_fChance * RZ_StoryRules.TableChance(), 0, 1))
 				Found();
 			else
 				RZ_Log.Info("Long Table: none this season (the roll).");

@@ -10,14 +10,18 @@
 //! II. The Three Weeks (HC1, as built): proof.weeks and proof.pages from its ending.
 //! III. Authors (HC3 stages 1-4, as built).
 //! IV. The reading (75%, the last climax, a set piece at the lab's change of shift): the first page
-//!     (proof.first_page 1 Day 1, 2 the whole of it, 4 Bastion's countersignature).
+//!     (proof.first_page 1 Day 1, 2 the whole of it, 4 Bastion's countersignature). Then Before the
+//!     stand, until the stand begins: sell the director's pages to the boss's man (proof.pages 5),
+//!     clear that line (pay it, take the debt, lift them unseen), or swap the first page in the
+//!     records room unseen (proof.first_page 3). Settled as the stand begins (OnFinalStandStart):
+//!     a line nobody cleared is read on the Red Hand's channel, Two Tins a Copy.
 //! V. The final stand (the finale owns it): read as data when the cure is out.
 //! VI. The Paper (the epilogue's coda): the case carried to a table on the north road, just outside
 //!     the kill zone.
 //!
 //! Simplified (docs/QUESTLINES.md): Day One is a scene (the file and four takers), not Patient
-//! Zero's Ledger; "Before the stand" (selling or clearing the pages, the night swap) isn't built, so
-//! Two Tins a Copy can't happen; Unsigned is the default when no cure comes.
+//! Zero's Ledger; Before the stand's swap is any hour, unseen, with no disguise of its own; Unsigned is
+//! the default when no cure comes.
 class RZ_Major_Proof : RZ_Questline
 {
 	static const string KEY = "proof";
@@ -27,6 +31,7 @@ class RZ_Major_Proof : RZ_Questline
 	static const int S_AUTHORS = 120;
 	static const int S_READING_WAIT = 130;
 	static const int S_READING = 131;
+	static const int S_BEFORE = 135;
 	static const int S_STAND = 140;
 	static const int S_PAPER_WAIT = 150;
 	static const int S_PAPER = 151;
@@ -52,6 +57,7 @@ class RZ_Major_Proof : RZ_Questline
 	static const int E_M_SEAL = 11;
 	static const int E_M_DAY1 = 12;
 	static const int E_M_UNSIGNED = 13;
+	static const int E_M_TWOTINS = 14;
 
 	//------------------------------------------------------------------------------------------------
 	override void Define()
@@ -74,6 +80,9 @@ class RZ_Major_Proof : RZ_Questline
 		RZ_QuestStage reading = MissionStage(S_READING, "The reading", "\"Immunity serum. The methods chapter is eight in ten; we write down the other two. The first page is read to the authors at the change of shift.\"");
 		reading.GiveUp(4, "");
 
+		RZ_QuestStage before = MissionStage(S_BEFORE, "Before the stand", "The first page is written. Until the batch is made, the director's three pages are still loose somewhere, and so is the draft in the records room.");
+		before.GiveUp(4, "");
+
 		RZ_QuestStage stand = WaitStage(S_STAND, "The final stand", "\"We're making the batch. Whoever is at the lab in the next fifteen minutes is on the paper.\"");
 		stand.Wait(0);
 
@@ -87,7 +96,7 @@ class RZ_Major_Proof : RZ_Questline
 		Act(A_WEEKS, "The Three Weeks").Stage(S_WEEKS).AnchorCure(50).Need(4).Watch().LastCall("\"Nobody has asked about the first three weeks. The lab will take that as an answer.\"");
 		Act(A_AUTHORS, "Authors").Stage(S_AUTHORS).AnchorCure(75).Need(3).Watch();
 		Act(A_READING, "The reading").Stage(S_READING_WAIT).Stage(S_READING).Opens(75).Need(1).PatienceEvenings(2).SetPiece(17.5, 20.5).Climax().LastCall("The director reads the first page at tomorrow's change of shift. The draft stands if nobody asks.");
-		Act(A_STAND, "The final stand").Stage(S_STAND).PastGate();
+		Act(A_STAND, "The final stand").Stage(S_BEFORE).Stage(S_STAND).PastGate();
 		Act(A_PAPER, "The paper").Stage(S_PAPER_WAIT).Stage(S_PAPER).AnchorWipe().Need(0).Rank(0);
 	}
 
@@ -134,6 +143,7 @@ class RZ_Major_Proof : RZ_Questline
 				return RZ_Majors.ClimaxDone("every_name") && RZ_Majors.Reached(run, 75);
 			}
 			case S_READING: return Free(gm, run, S_READING);
+			case S_BEFORE: return gm.GetCure() && !gm.GetCure().IsFinalStand() && !gm.GetCure().IsCured();
 			case S_STAND: return gm.GetCure() && gm.GetCure().IsCured();
 			case S_PAPER_WAIT: return RZ_MajorHelp.CodaDue(gm, "orders");
 			case S_PAPER: return RZ_GameTime.GetHour() < 0 || RZ_GameTime.GetHour() >= 17.5 || !RZ_GameTime.IsCalibrated();
@@ -210,6 +220,7 @@ class RZ_Major_Proof : RZ_Questline
 		{
 			case S_DAYONE: return DayOneScene(gm, run, scene, director);
 			case S_READING: return ReadingScene(gm, run, scene, director);
+			case S_BEFORE: return BeforeScene(gm, run, scene, director);
 			case S_PAPER: return PaperScene(gm, run, scene, director);
 		}
 
@@ -287,7 +298,7 @@ class RZ_Major_Proof : RZ_Questline
 
 		int stance = RZ_MajorHelp.World(gm, "orders.stance");
 		RZ_Leader co = RZ_MajorHelp.Top(gm, RZ_EFaction.MILITARY);
-		run.SetFlag("terms", RZ_Majors.Bit(RZ_MajorHelp.World(gm, "authors.terms") == 1 || RZ_MajorHelp.World(gm, "authors.terms") == 2 || RZ_MajorHelp.World(gm, "weeks.bastion") != 0 || RZ_MajorHelp.World(gm, "proof.day_one") == 3));
+		run.SetFlag("terms", RZ_Majors.Bit(RZ_MajorHelp.World(gm, "authors.terms") == 1 || RZ_MajorHelp.World(gm, "authors.terms") == 2 || RZ_MajorHelp.World(gm, "weeks.bastion") != 0 || RZ_MajorHelp.World(gm, "proof.day_one") == 3 || RZ_MajorHelp.World(gm, "legacy.terms") != 0));
 		if (co && stance != 4)
 		{
 			int adj = scene.Person(RZ_MajorHelp.NearSeat(lab), "the CO's adjutant", "Talk to the adjutant", "\"Bastion secured this lab on Day 4. The paper could say so, over a signature.\"");
@@ -366,6 +377,122 @@ class RZ_Major_Proof : RZ_Questline
 		return true;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Before the stand: the boss's man at the Red Hand's seat (sell the pages; pay, take or lift the
+	//! line back) and the records room at the lab (the night swap). Nothing here decides the stage:
+	//! the stand's start settles it (SettleBefore).
+	protected bool BeforeScene(RZ_GameModeComponent gm, RZ_QuestRun run, RZ_QM_MajorScene scene, RZ_Leader director)
+	{
+		scene.m_sTitle = "Before the stand";
+		scene.m_sBrief = run.Fill("The first page is written, and the batch is close. {director}'s three pages from the site log are still loose, and so is the draft in the records room. Whatever happens to them happens before the stand.");
+		scene.m_eTier = RZ_ETier.STRANGER;
+		scene.m_iFame = 0;
+		scene.m_iFavor = 0;
+		scene.m_vPos = gm.GetLabPosition();
+		scene.m_fWindow = 5400;
+		scene.m_iTimeout = -1;
+		run.SetFlag("pages_held", RZ_Majors.Bit(RZ_MajorHelp.World(gm, "proof.pages") == 2));
+		bool canSwap = RZ_MajorHelp.World(gm, "proof.pages") == 2 || RZ_MajorHelp.World(gm, "weeks.public") != 0 || RZ_MajorHelp.World(gm, "proof.weeks") != 0;
+		run.SetFlag("can_swap", RZ_Majors.Bit(canSwap && RZ_MajorHelp.World(gm, "proof.first_page") != 2));
+
+		RZ_Leader boss = RZ_MajorHelp.Top(gm, RZ_EFaction.BANDITS);
+		if (boss)
+		{
+			int man = scene.Person(RZ_MajorHelp.NearSeat(boss.m_vPos), "the boss's man", "Talk to the boss's man", "\"Paper's paper. The boss buys paper. Two tins a copy, once it's printed.\"");
+			scene.Choice(man, "Sell him the director's pages [Red Hand: Known]").Needs(RZ_EFaction.BANDITS, 1).Only("pages_held").Side(RZ_EFaction.BANDITS, RZ_EFaction.INSTITUTE, 10, 15).Sets("sold").Says("He counts the pages, then counts them again, and writes the lab into the book.", "sold the director's pages to the Red Hand").Refused("You'd need the pages for that.");
+			scene.Choice(man, "Pay the lab's line off (40 Favor)").Bribe(RZ_EFaction.BANDITS, 40).Only("sold").Sets("cleared").Says("He crosses the line out and hands the pages back. \"Paid is paid.\"", "paid the lab's line in the book").Refused("\"There's no line to pay. Yet.\"");
+			scene.Choice(man, "Put the debt in your own name [Red Hand: Trusted]").Needs(RZ_EFaction.BANDITS, 2).Only("sold").Sets("debt_yours").Says("He writes your name where the lab's was. The pages come back across the table.", "took the lab's debt in their own name").Refused("\"Your name's not good for that much.\"");
+			scene.Choice(man, "Lift the pages from his satchel").Sneak().Way(RZ_EQuestApproach.SNEAK).Only("sold").Sets("lifted").Says("Two lookouts, one satchel, three pages. Nobody saw you, this time.", "lifted the pages from the boss's man").Refused("There's nothing in the satchel worth taking yet.");
+		}
+
+		int room = scene.Person(RZ_MajorHelp.NearSeat(gm.GetLabPosition()), "the records room", "Look in the records room", "Three filing cabinets, a draft in a folder marked FIRST PAGE, and the duty officer's chair, empty for now.");
+		scene.Choice(room, "Swap the first page in the draft").Sneak().Way(RZ_EQuestApproach.SNEAK).Only("can_swap").Sets("swapped").Says("The new first page says three weeks before Day 1, in a hand close enough. The old one goes in your pocket.", "swapped the first page in the records room").Refused("You'd need to know what the true page says first.");
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stand begins (or the act's hard stop): what was done before it is settled. A sold line
+	//! nobody cleared, with the book not sent off loud and the paper not already the whole of it, is
+	//! read on the Red Hand's channel: Two Tins a Copy. A swap the director finds stands under an
+	//! Idealist or Merciful director (the whole of it), else the draft goes back.
+	protected void SettleBefore(RZ_GameModeComponent gm, RZ_QuestRun run)
+	{
+		if (run.Flag("before_done") != 0)
+			return;
+
+		run.SetFlag("before_done", 1);
+		bool sold = run.Flag("sold") != 0;
+		bool cleared = run.Flag("cleared") != 0 || run.Flag("debt_yours") != 0 || run.Flag("lifted") != 0;
+		if (run.Flag("debt_yours") != 0)
+			RZ_MajorHelp.SetWorld(gm, "proof.debt_yours", 1);
+
+		int ending = run.Flag("ending", E_M_DAY1);
+		if (sold && !cleared)
+		{
+			RZ_MajorHelp.SetWorld(gm, "proof.pages", 5);
+			if (RZ_MajorHelp.World(gm, "book.last") != 4 && ending != E_M_WHOLE)
+			{
+				TwoTins(gm, run);
+				return;
+			}
+		}
+		else if (sold)
+		{
+			RZ_MajorHelp.SetWorld(gm, "proof.pages", 2);
+		}
+
+		if (run.Flag("swapped") == 0 || ending == E_M_WHOLE)
+			return;
+
+		RZ_MajorHelp.SetWorld(gm, "proof.first_page", 3);
+		bool keeps = RZ_MajorHelp.TopHas(gm, RZ_EFaction.INSTITUTE, RZ_ELeaderTrait.IDEALIST) || RZ_MajorHelp.TopHas(gm, RZ_EFaction.INSTITUTE, RZ_ELeaderTrait.MERCIFUL);
+		if (!keeps)
+		{
+			run.Note("The director found the swapped first page as the stand began, and put the draft back.");
+			return;
+		}
+
+		run.Note("The director found the swapped first page as the stand began, read it twice, and let it stand.");
+		run.SetFlag("ending", E_M_WHOLE);
+		ApplyEnding(gm, run, E_M_WHOLE, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Two Tins a Copy: the boss's man reads the pages on the Red Hand's channel as the stand begins.
+	protected void TwoTins(RZ_GameModeComponent gm, RZ_QuestRun run)
+	{
+		array<string> sellers = {};
+		RZ_MajorHelp.Deciders(run, S_BEFORE, RZ_EQuestApproach.SIDE, sellers);
+		RZ_MajorHelp.PayIdents(gm, sellers, RZ_EFaction.BANDITS, 5, 0);
+		NudgeMorale(gm, RZ_EFaction.INSTITUTE, -5);
+		NudgeMorale(gm, RZ_EFaction.BANDITS, 5);
+		SpreadRumour(gm, "\"Halcyon made this. It's in their own hand. Two tins a copy at any Red Hand camp.\"", 48);
+		Headline(gm, "The Red Hand's market has the lab's first page for sale, two tins a copy. The stickers are still on.");
+		if (gm.GetFactionLife())
+			gm.GetFactionLife().OpenChannelLine(RZ_EFaction.BANDITS, "Page one of the lab's own log, read out for anyone with a radio. The rest is two tins a copy.");
+
+		run.SetFlag("ending", E_M_TWOTINS);
+		RZ_Majors.SeasonStory(RZ_EFaction.INSTITUTE, KEY, E_M_TWOTINS, 3, "There's a copy of the lab's first page in every Red Hand camp.", sellers, false);
+		run.Note("The boss's man read the director's pages on the Red Hand's channel as the stand began.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnFinalStandStart(RZ_GameModeComponent gm, RZ_QuestRun run)
+	{
+		if (run.m_iStage != S_BEFORE)
+			return;
+
+		SettleBefore(gm, run);
+		gm.GetQuestlines().JumpTo(run, S_STAND);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A restart in the middle of the stand starts it before the questlines load: the end settles it.
+	override void OnFinalStandEnd(RZ_GameModeComponent gm, RZ_QuestRun run, bool won)
+	{
+		OnFinalStandStart(gm, run);
+	}
+
 	// ================================================================ How it goes on
 	//------------------------------------------------------------------------------------------------
 	override int Next(RZ_GameModeComponent gm, RZ_QuestRun run, int stage, int outcome)
@@ -377,6 +504,7 @@ class RZ_Major_Proof : RZ_Questline
 			case S_AUTHORS: return AfterAuthors(gm, run);
 			case S_READING_WAIT: return S_READING;
 			case S_READING: return AfterReading(gm, run, outcome, false);
+			case S_BEFORE: return S_BEFORE;
 			case S_STAND: return AfterStand(gm, run);
 			case S_PAPER_WAIT: return S_PAPER;
 			case S_PAPER: return AfterPaper(gm, run, false);
@@ -418,6 +546,14 @@ class RZ_Major_Proof : RZ_Questline
 			{
 				if (!fallback)
 					return S_DAYONE;
+
+				// Last season's paper started three weeks early (legacy.records): the lab reads the date itself
+				if (RZ_MajorHelp.World(gm, "legacy.records") != 0)
+				{
+					dayOne = 2;
+					line = "The director read the clinic's date on the open channel without being asked. Last season's paper said the same.";
+					break;
+				}
 
 				line = "The field lead went to the clinic in person and brought the file in. Day 1 stays the lab's.";
 				break;
@@ -509,7 +645,7 @@ class RZ_Major_Proof : RZ_Questline
 		run.SetFlag("ending", ending);
 		ApplyEnding(gm, run, ending, fallback);
 		ActEnd(gm, run, A_READING, first, EndingLine(ending));
-		return S_STAND;
+		return S_BEFORE;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -519,6 +655,7 @@ class RZ_Major_Proof : RZ_Questline
 		{
 			case E_M_WHOLE: return "The Whole of It. The paper starts three weeks before Day 1, with one word: Continue.";
 			case E_M_SEAL: return "Under Seal. The paper carries Bastion's signature.";
+			case E_M_TWOTINS: return "Two Tins a Copy. The Red Hand read the lab's first page before the lab did.";
 		}
 
 		return "Day 1. The lab's paper starts where the lab says it does.";
@@ -594,6 +731,14 @@ class RZ_Major_Proof : RZ_Questline
 	protected int AfterPaper(RZ_GameModeComponent gm, RZ_QuestRun run, bool fallback)
 	{
 		RZ_MajorHelp.SetWorld(gm, KEY + ".coda", 1);
+		// The hall's "On the paper": whoever set the case down first, then everyone who walked with it
+		array<string> first = {};
+		RZ_MajorHelp.Deciders(run, S_PAPER, -1, first);
+		string firstAuthor = "";
+		if (!first.IsEmpty())
+			firstAuthor = first[0];
+
+		RZ_MajorHelp.HallNames(run, S_PAPER, "On the paper", firstAuthor);
 		string line = "The paper is sealed in its case on a table on the north road, just outside the line. Somewhere a radio ham writes the last number down.";
 		if (fallback)
 			line = "Nobody carried the case, so the duty officer walked it down alone at dawn. It's on the table at the north road.";
@@ -613,6 +758,7 @@ class RZ_Major_Proof : RZ_Questline
 			case A_READING: return AfterReading(gm, run, -1, true);
 			case A_STAND:
 			{
+				SettleBefore(gm, run);
 				// No cure by the wipe: the paper is in the lab's safe, signed and never sent
 				if (!gm.GetCure() || !gm.GetCure().IsCured())
 				{
@@ -638,10 +784,17 @@ class RZ_Major_Proof : RZ_Questline
 	//------------------------------------------------------------------------------------------------
 	override string SeasonState(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
+		if (run.Flag("ending") == E_M_TWOTINS)
+			return "The first page: two tins a copy at the Red Hand's market.";
+
+		if (RZ_MajorHelp.World(gm, "proof.pages") == 5)
+			return "The lab is a line in the Red Hand's book.";
+
 		switch (RZ_MajorHelp.World(gm, "proof.first_page"))
 		{
 			case 1: return "The first page: Day 1.";
 			case 2: return "The first page: the whole of it.";
+			case 3: return "The first page: swapped in the records room.";
 			case 4: return "The first page: Bastion's countersignature.";
 		}
 

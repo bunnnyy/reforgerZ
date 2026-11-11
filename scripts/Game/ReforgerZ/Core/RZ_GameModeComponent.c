@@ -841,6 +841,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Questlines.Setup();
 		// Errands stand on the safehouses, holdings, wanderers, trucks and the world memory above
 		m_Errands.Setup();
+		// A fresh season: last season's story rules that aren't season numbers (weights, a dose, flags)
+		if (m_Seasons.IsFresh())
+			RZ_StoryRules.ApplyFresh(this);
+
 		// Traces (docs/TRACES.md): the first days' door marks from the canon, the safehouses, the
 		// holdings, the lab and the Long Table above, under the live ones the save kept
 		m_Traces.Setup();

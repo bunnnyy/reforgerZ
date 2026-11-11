@@ -109,6 +109,10 @@ class RZ_Quest_Census : RZ_Questline
 		if (gm.GetCure().IsCured() || gm.GetDirector().GetStageSettings().m_fMilitaryPresence <= 0)
 			return false;
 
+		// Await Relief's Expended: nobody left to count for (docs/QUESTLINES.md, Crossings)
+		if (RZ_MajorHelp.World(gm, "orders.stance") == 4)
+			return false;
+
 		RZ_FactionLife life = gm.GetFactionLife();
 		if (life && life.IsActive())
 		{

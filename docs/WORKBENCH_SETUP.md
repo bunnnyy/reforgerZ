@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **257 prefab fields**: 40 on `RZ_GameModeComponent`, 210 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **262 entries**: 160 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 69 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **258 prefab fields**: 40 on `RZ_GameModeComponent`, 211 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **263 entries**: 160 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 70 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -765,6 +765,7 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | the Radio page layout (UI/LAYOUTS.md) | — | UI > Radio page | optional | the Radio tab (empty = Nothing here yet) |
 | (existing prefab) | the Map key page layout (UI/LAYOUTS.md) | — | UI > Map key page | optional | the Map key tab (empty = Nothing here yet) |
 | (existing prefab) | the Hall page layout (UI/LAYOUTS.md) | — | UI > Hall page | optional | the Hall of fame tab (empty = Nothing here yet) |
+| (existing prefab) | the Season page layout (UI/LAYOUTS.md) | — | UI > Season page | optional | The season tab: the majors, and in the epilogue the season as the Zone tells it (empty = Nothing here yet) |
 | (existing prefab) | the TalkReply layout (UI/LAYOUTS.md) | — | UI > Talk reply layout | optional | the talk screen's reply rows (empty = no talk screen: a person's actions and notices) |
 | (existing prefab) | the CarJob layout (UI/LAYOUTS.md) | — | UI > Car job layout | optional | the car repair screen's job rows (empty = no repair screen: the car's actions and notices) |
 | (existing prefab) | UI/Textures/ReforgerZ/RZ_CarSide.png, imported as a texture (UI/LAYOUTS.md) | — | UI > Car picture | optional | the side view of the car on the repair screen (empty = the job markers on a plain panel). Import the PNG in the Resource Browser (it becomes RZ_CarSide.edds), then pick it here |
@@ -1278,7 +1279,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Category | Object | Field | Covers |
 |---|---|---|---|
 | ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)), **Day length** (4 real hours a game day, x6; 0 = the server's own clock; [DESIGN.md](DESIGN.md#the-clock)), **Keep time of day** (on: saved in state.json and set again at start) |
-| ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), weeks (10, timed modes only), warning (24 h), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
+| ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), minimum epilogue (56 h: a late cure pushes an After-weeks wipe back), weeks (10, timed modes only), warning (24 h), **No stand in the last hours** (off: near a timed wipe the stand is held back, [EPILOGUE.md](EPILOGUE.md#edge-cases)), **Story rules** (on: one small rule from each major that ended live, [QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
 | World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off) |
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
@@ -1312,7 +1313,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Haven | Safehouses | `m_SafehouseSettings` | **Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, caught chance (0.3 a minute in Final), declare multipliers by tier (1.15/1.25/1.4/1.5), meds cost (5), stragglers (4 h), leak chance (0.25), **notice boards** (on, 8 notes, 160 characters, one every 10 min, 3 days, **note filter**), body prefabs |
 | Wanderers | Wanderers | `m_WandererSettings` | **Enabled**, min and max count (6, 10), prices, spawn radius (400 m), walk speed, replace minutes (1440), bite chance, Infamy, body prefabs, Trader goods |
 | Leaders | Leaders | `m_LeaderSettings` | **Enabled**, quartermaster is leader (on), interim posts (1, territory off only), body radius (200 m), replace minutes (120), job minutes (30), danger scale, discovery, kill Infamy, body prefabs |
-| Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs |
+| Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs, **Haven guard** (on: a Haven group at the lab gate in the stand after The Whole of It) |
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)) |
@@ -1489,10 +1490,12 @@ five routes are left out of the questlines' phase: they only start at the gate.
 week runs scripted (`RZT_Epilogue.c`): the commit, the hall's freeze, beats and phase A; phase B;
 the tester bitten and dosed at the first outlet, and refused a second; two questlines begun and
 listed as loose ends, one closed live by a way and one as data; a named dead person's keepsake taken
-and handed in at a house, and the Last Entry; the chair's grey choice through its hold and a say at
+and handed in at a house, an epilogue deck card (Take a Name to the Board) true and writing a name
+home, and the Last Entry; the chair's grey choice through its hold and a say at
 the station; a town with crawlers cleared and taken back, the ridges and the Long Table's week
 closed; processing, the broadcast's tally, the tester walking out at the barrier (then a new life);
-and the wipe's lines, the names not brought home, every closing item at its end (`RZT epilogue check:
+and the wipe's lines, the names not brought home, `last_season.json`'s beats, every closing item at
+its end (`RZT epilogue check:
 <name>: OK|FAILED (...)`, then `RZT epilogue done: N checks OK, N FAILED`). Steps the test world can't
 supply (no outlet under the terms, no town with crawlers) are logged as skipped.
 
@@ -1501,7 +1504,9 @@ Book's send-off runs live once (its scene is ended as won), and every act is wal
 default to an ending (`RZT major <key> act <n> ...`, `RZT major <key> ENDED: ending <n>`). Then the
 fallback checks: three empty days (a day's worth of questline ticks with nobody online, three times
 over) fire nothing; and Proof's Day One with research just short of 25% and a fast pace is squeezed,
-sends its last call, and takes its default once a session's grace has passed (`RZT majors check:
+sends its last call, and takes its default once a session's grace has passed. Last, what the endings
+leave: the story rules' strength cap and Two Tins' dose, the epilogue lines by controller, the season
+tab's lines and the stand's groups by Bastion's stance (`RZT majors check:
 <name>: OK|FAILED (...)`, then `RZT majors done: N checks OK, N FAILED`).
 
 Last, it walks the player through every
@@ -1645,7 +1650,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:202` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:207` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
 ### Medium risk: big features, with a fallback (61)
@@ -1740,14 +1745,14 @@ quartermaster's Buy actions, **UI > Reader** and **Subtitles** off for cards. Ho
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:924` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
-| `UI/RZ_Notebook.c:197` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
+| `UI/RZ_UIData.c:927` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_Notebook.c:199` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
-| `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_UIData.c:947` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_Notebook.c:95` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
+| `UI/RZ_UIData.c:950` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:650` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
-| `UI/RZ_PlayerUIComponent.c:175` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:178` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
 | `UI/RZ_Menus.c:303` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
@@ -1979,7 +1984,10 @@ and `... dropped (<why>)`, `Epilogue: last call <item>`, `Epilogue: closed <item
 `Epilogue: a dose at <outlet> (N left).`, `Epilogue: brought home <name> to <place>.`, `Epilogue:
 <town> taken back.`, `Epilogue: grey choice N decided (...).`, `Epilogue: walked out (N in all)`,
 `Epilogue: a last entry by <name>: ...`, `Epilogue: admin <name>: ...`, `Epilogue: the Unsigned last
-day (N beats).`, `Seasons: a late cure pushes the wipe back to the minimum epilogue.`, `Territory:
+day (N beats).`, `Epilogue: the supper reading.`, `Epilogue: the 20:30 watch (N strokes).`, `Epilogue:
+second airing of <key>`, `Epilogue: last_season.json keeps N beats and the broadcast (...).`,
+`Epilogue: <name> went home to <place> by an errand.`, `Cure: the final stand is held back in the
+season's last hours (Season > No stand in the last hours).`, `Seasons: a late cure pushes the wipe back to the minimum epilogue.`, `Territory:
 <holding> stays as it is (the world settles in the epilogue).`),
 the majors' (`Majors: <key> act N (...) opens.`, `Majors: <key> act N squeezed (room N h, need N h). Last call.`
 or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squeezed|patience|nobody qualifies|hard stop).`,
@@ -1988,7 +1996,8 @@ or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squ
 `Majors: <key> is squeezed and takes <key>'s slot.`, `Majors: <key> act N (...) settled, result N.`,
 `Majors: <key> act N resolves at the hard stop, at half effect.`, `Majors: a page in the open: ...`,
 `Majors: season story for <key>: ending N (...).`, `Majors: <key> <kind> for one player clipped from N to N (the majors' caps)`,
-`Majors: <key> stage N went quiet; its act takes its default.`, `Calendar: <key>.<stage> holds evening N`),
+`Majors: <key> stage N went quiet; its act takes its default.`, `Calendar: <key>.<stage> holds evening N`,
+`Story rules: N from last season (...).`, `Story rules: the black market starts with N stolen doses.`), the errands' epilogue deck (`Errands: dealt epi_<card> to ...`),
 `Bastion checkpoint up near ...` / `Red Hand roadblock up near ...`,
 `Long Table: ... never arrived (hunger N, suspicion N, N taken).`, `Long Table: a player heard the rumour.`,
 `Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
@@ -2413,8 +2422,20 @@ when it happens)
 - [ ] In processing, walk up the north road unarmed: *"Name?"* instead of being turned back; *Give your
   name* at the barrier returns you to the deploy menu with no death screen (VERIFY) and puts you in the
   hall's *Walked out*; armed, you're turned back as before.
-- [ ] `/season` (or the notebook's action) lists the beats you've met, And you and Unfinished;
-  `/anonymous` turns your name into *a survivor* on boards and in the hall.
+- [ ] `/season` (or the notebook's action, or its The season tab with a pad: LB/RB to the last tab)
+  lists the beats you've met, And you and Unfinished; `/anonymous` turns your name into *a survivor*
+  on boards and in the hall.
+- [ ] The evening calendar: once the Gate has run, at 18:30 the Haven's open channel reads six names;
+  once the last call has run, at 20:30 Bastion's says *"Bastion listening. Nothing heard. Bastion
+  out."* and the roster board's line counts the strokes; 8 real hours (× Test scale) after a coda, its
+  line comes again on its faction's channel.
+- [ ] The epilogue deck: at a Haven house *Need a hand?* deals Pack for the Queue, Borrowed, Take a Name
+  to the Board or Clear the Way (an admin's **[Admin] Errands near here** says why the others weren't dealt); take Take a Name to the
+  Board: the Names board lists the name as home, by you. Before the cure none of them is dealt.
+- [ ] At the wipe, `last_season.json` has `broadcast` and up to 10 `beats`; the next season's first
+  spawn names "Last season's stories" when a major ended live (Season > Story rules).
+- [ ] **No stand in the last hours** on, After weeks set so the wipe is a day away: bring research to
+  100: no stand starts and everyone hears the director won't start the synthesis.
 - [ ] **Rule sets** `Winter, Fog` on a fresh season: both are named on first spawn; at night more
   specials; Fog Banks come more often. `No Vehicles`: no fixable cars, no trucks, no Recover the Bus.
 - [ ] The hall of fame shows on first spawn and on the notebook's Hall of fame tab; a delivered sample and a finished
@@ -2653,7 +2674,11 @@ when it happens)
   supper: the vote's rule is in the journal and the Haven's people say a line about it. Raise
   research to 49 percent with a fast pace (a sample run): a squeezed act's last call shows as a
   headline and in the journal, and its default follows a session later. Set **Lead points** 0 and
-  stall research at 48: settling day doesn't open until 50.
+  stall research at 48: settling day doesn't open until 50. The notebook's The season tab lists all
+  four majors with their act. After the reading, Before the stand is offered: sell the pages to the
+  boss's man (with `proof.pages` 2), leave the line, and start the stand: the Red Hand's channel reads
+  page one and the journal says Two Tins a Copy. With Bastion's stance 3 its group stands on the lab's
+  road (150–250 m out), not at the gate.
 - [ ] The cure finale ([FINALE.md](FINALE.md); Questlines on, **Wait scale** 0.1, research brought to
   90 with samples): at 75% a leader's "Ask about the cure." says to ask again; at 80% the stronghold
   leaders and the Doctor give the pitch; at 85% the four pitches and an unsigned one come on air once.

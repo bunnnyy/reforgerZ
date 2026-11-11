@@ -84,6 +84,7 @@ class RZ_UIFeed
 	static const int PAYLOAD_CAR = 8;		// the car repair screen: C, I, W, J records; F falls back; X|reason closes (Interactions/RZ_Cars.c)
 	static const int PAYLOAD_SHOP = 9;		// the shop screen: S and I records; X|reason closes (Factions/RZ_ShopScreen.c)
 	static const int PAYLOAD_DETAIL = 10;	// one journal row's detail, asked when it's selected (BuildDetail)
+	static const int PAYLOAD_SEASON = 11;	// the notebook's season tab, asked when it opens (BuildSeason)
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)
 	static const int TRIBE_ID_BASE = 200000;	// the packs' rows (what you know of them): -(base + pack id)
@@ -413,6 +414,8 @@ class RZ_UIFeed
 			payload = BuildBoard(playerId);
 		else if (kind == PAYLOAD_HALL)
 			payload = BuildHall();
+		else if (kind == PAYLOAD_SEASON)
+			payload = BuildSeason(playerId);
 		else
 			payload = BuildBackgrounds(playerId);
 
@@ -443,6 +446,45 @@ class RZ_UIFeed
 
 	//------------------------------------------------------------------------------------------------
 	//! The hall of fame (RZ_HallOfFame.BuildPayload), "" if it's off.
+	//------------------------------------------------------------------------------------------------
+	//! The season tab: M|line (each major as it stands, Director/RZ_Majors.c), Z|line (the season as
+	//! the Zone tells it, the epilogue's) and Y|line (your lines and what's still open). One record a
+	//! line.
+	protected string BuildSeason(int playerId)
+	{
+		string s = "";
+		array<string> majors = {};
+		if (RZ_Majors.Get())
+			RZ_Majors.Get().SeasonLines(majors);
+
+		foreach (string m : majors)
+		{
+			RZ_UILine rec = new RZ_UILine("M");
+			s += rec.Add(m).End();
+		}
+
+		array<string> zone = {};
+		array<string> you = {};
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		if (epi)
+			epi.SeasonParts(playerId, zone, you);
+
+		foreach (string z : zone)
+		{
+			RZ_UILine zr = new RZ_UILine("Z");
+			s += zr.Add(z).End();
+		}
+
+		foreach (string y : you)
+		{
+			RZ_UILine yr = new RZ_UILine("Y");
+			s += yr.Add(y).End();
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected string BuildHall()
 	{
 		RZ_HallOfFame hall = m_GM.GetHall();

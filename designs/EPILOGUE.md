@@ -8,7 +8,9 @@ boards, readables, the news, `/season`), the one dose-outlet table on the finale
 and the lab gate with the safe-ground rule, the four stronghold grey choices, the whole closure set
 (Last Rounds, Loose Ends, Bring Them Home, Quiet the Ridges, Take Back a Town, the Long Table's last
 week, the Walk Out, Settle Accounts, the Last Broadcast, Personal Goals, the Last Entry), the season
-block's lines, the names policy, the Unsigned last day and the late-cure push-back. This file keeps
+block's lines, the names policy, the Unsigned last day and the late-cure push-back; since then 13 of
+the epilogue deck's cards, the evening calendar as radio, the notebook's season tab, the leaders'
+quarter rate, No stand in the last hours and `last_season.json`'s plain lines. This file keeps
 only what isn't built. The rules that hold for all of it (one week, everything closes, nothing carries
 over but hall lines, the outside never answers) are in the doc and [PLAN.md](PLAN.md#the-epilogue-week).
 
@@ -76,14 +78,12 @@ over but hall lines, the outside never answers) are in the doc and [PLAN.md](PLA
 
 ## The evening calendar
 
-The epilogue's own set pieces on the majors' calendar, after Last Rounds: **the Haven's supper
-reading** (the chair reads the season's dead at 18:30 on free evenings once the Gate has run; the
-names on the house board and a clerk who reads them on request as its standing version), **Bastion's
-20:30 watch** after the last call (five minutes on the net, *"Bastion listening. Nothing heard.
-Bastion out."*, a stroke on the roster board; radio only, every evening), **second airings** (every
-piece again, words only, on the next free evening at least 8 real hours later) and **standing versions**
-for every piece, so a lunchtime player still gets them. The calendar works out how many evenings phase
-B holds from the time acceleration at the commit.
+The supper reading, Bastion's 20:30 watch and second airings are built as radio
+([docs/EPILOGUE.md](../docs/EPILOGUE.md#the-evening-calendar)). Still to build: the supper reading as a
+scene (the chair reads at the table at 18:30; the names on the house board and a clerk who reads them
+on request as its standing version), **standing versions** for every piece, so a lunchtime player
+still gets them, and the calendar working out how many evenings phase B holds from the time
+acceleration at the commit.
 
 ## Places, people and scenes
 
@@ -124,7 +124,7 @@ B holds from the time acceleration at the commit.
 
 | Item | Still to build |
 |---|---|
-| Last Rounds | The finale's routes' closing lines carried on the codas (the Haven's channel says her name, Bastion's last call reads the four R numbers, the cook at the lorry with `cook.line_paid`, *"Reference stock: wanted"*, *"WE TRIED."* on the lab gate); "At the barrier" and "On the paper" as epithets in the season block ([MAJORS.md](MAJORS.md)) |
+| Last Rounds | The finale's routes' closing lines carried on the codas (the Haven's channel says her name, Bastion's last call reads the four R numbers, the cook at the lorry with `cook.line_paid`, *"Reference stock: wanted"*, *"WE TRIED."* on the lab gate); "At the barrier" and "On the paper" as epithets on the names in the season block (today their own hall lines) |
 | Loose Ends | Each way's own checks and holds (the Fear check for the Well Story, the hold of the lane, the flight inside the warning zone); half the built ending's pay and its world effect at half through the epilogue's lane; a set piece's 600 m quiet |
 | Bring Them Home | More keepsakes: Bastion tags from His Effects' bodies and off a turned one from a military pack, a crewman's lighter, a debtor's last tin, ID cards off a named young laid down by name, researchers' notebooks, a driver's papers from a wreck (The Wreck's Name), a player's character who turned; Sedlak's box at the last roll; the deserter's KIA rubbed out; buying a keepsake back from the fence (the grey way) |
 | Quiet the Ridges | The factions' jobs: Bastion's Cull of a contact near a post, the Haven's Bring Them Home for a leader it knew, Halcyon's last reading at a lair at dusk (the paper's appendix), the Red Hand's book on which pack calls last (15 Favor a player); sitting the last call; the moat's last feeding; up to 3 names in the hall line |
@@ -143,40 +143,28 @@ to whoever reaches it first with names chalked on the lid.
 
 ## The epilogue deck: last errands
 
-Errands' epilogue deck, dealt by errands' dealer ([ERRANDS.md](ERRANDS.md#after-the-cure-the-epilogue-week)).
-Each sets `m_bAfterCure`, is offered only when its beat was picked (`NeedFlag("epilogue.beat.<key>")`)
-or its condition holds, pays through errands' small-pay ledger once per identity per beat, isn't
-limited by the season's two cards a day, and is picked per player (up to 2 at once, within 3 km).
-Bring a Cup and Read Them Out are built as the week's places' choices ([docs/EPILOGUE.md](../docs/EPILOGUE.md#places-and-scenes)).
+Thirteen cards are built ([docs/ERRANDS.md](../docs/ERRANDS.md#the-epilogue-deck)): Carry the Dose,
+Pack for the Queue, Borrowed, Take a Name to the Board, The Toll Man's Last Debt, Sign Here, Copies for
+the Far House, Clear the Way, The Last Watch, Last Letters, One Last Toll, Into the Record and Come In.
+Still to build, on the same dealer (`m_bAfterCure`, once per identity per subject):
 
 | Card | Giver | Built on | Offered when | The grey way |
 |---|---|---|---|---|
-| **Carry the Dose** | the route's people | a sealed cold box to a named holdout in an abandoned town | the route has outlets and a holdout is named | open it: your dose (if bitten), none for the holdout, 10 Infamy |
-| **Pack for the Queue** | a resident (Haven Known) | two things from their old house in the town they were rescued from | the house has rescued-in people | bring one and say you couldn't find the other |
-| **The Key Where It Was** | the kitchen note | find the key, give it to Petr in the queue | the note was read | use it yourself |
-| **Borrowed** | a fed house's head | 3 food back from the house that "borrowed" it | the season had borrowing | say you couldn't find them |
-| **Take a Name to the Board** | a resident or the Preacher | a dead person's name to the stand board, a house board or the Names board | a board exists and the record has dead nobody has written up | — |
-| **The Toll Man's Last Debt** | a Red Hand toll man | 3 food to the Haven house the crew took from | the Red Hand's route, or the book balanced | pocket it: 5 Haven Infamy |
-| **Sign Here** | Bastion's corporal | three names from the queue | the roster or census terms; Bastion Known | forge them |
-| **Copies for the Far House** | Halcyon | an unarmed delivery of the method to the farthest house | Published | sell the copies to the fence |
+| **The Key Where It Was** | the kitchen note | find the key, give it to Petr in the queue | the note was read (the newcomer's scenario) | use it yourself |
 | **His Effects, epilogue variants** (The Tags; The Wreck's Name) | the faction that lost the man or truck | the tags or papers to its nearest post | a lost man or truck | the fence buys the photo frame |
-| **Clear the Way** | the route's faction, or the Haven | loose ones on the road to the queue | infected within 1 km of the queue road | — |
-| **The Last Watch** | an outpost commander (Known) | hold the gate 10 minutes at the evening change of watch | the outpost held all season, or lost its commander | leave early |
-| **Last Letters** | the Courier | an unarmed delivery from the houses to the queue | the queue exists | — |
-| **One Last Toll** | a crew boss | a toll on the queue road, or talk the crew out of it | the Red Hand's route, or the book balanced | the toll |
-| **Into the Record** | Halcyon | a dead researcher's notebook to the paper's table or the lab | a researcher or courier died | — |
 | **Somebody Should Tell Them** | a resident | their relative runs with a pack: ends in Bring Them Home, or a grave | packs with names walking with them | — |
 | **The Boy** | a council head | escort the Kid to the queue or a house | the boy got out | — |
 | **Processing** (errands) | a pinned local | walk them to the queue, never to the barrier | a checkpoint within 1.5 km | talk them into supper |
 | **What the Cure Costs Here** (card 41) | a sick local | the outlet table decides the price | the terms keep this local from a dose | errands' card |
-| **Come In** (errands' amends) | a faction that hunts you | walk unarmed to its outlet or gate and wait | Watched or Hunted, before processing | — |
+
+The built cards' simplifications to finish: dealt by their conditions rather than by a picked beat
+(`NeedFlag("epilogue.beat.<key>")`), any number offered at once (the design: up to 2, within 3 km),
+Carry the Dose's holdout as a name with no person at the door, Copies for the Far House and Last
+Letters not checking that you're unarmed, The Last Watch at any hour (the design: the evening change
+of watch), Clear the Way's bend not checking for infected on the road first.
 
 ## Edge cases and settings
 
-- **No stand in the last hours** (Season, off): for admins with fixed restart days, the final stand is
-  held back in the last hours instead of the wipe being pushed.
-- **Leaders' off-screen deaths** at a quarter of the usual rate while the world settles; contracts that
-  take or raid an outpost not offered.
 - **The Unsigned last day in full:** the broadcast's long-stall line in place of the warnings, the
   majors' no-cure codas.
 - **Graves** for notable deaths before this shipped, from the journals of the dead; a death in the week
@@ -185,9 +173,6 @@ Bring a Cup and Read Them Out are built as the week's places' choices ([docs/EPI
   scenes with bodies (2 lasting, 1 evening). **Optional prefabs** still to add: sheet on posts, stencil
   board, price board, notice on a post, grave marker, wanted poster, trestle table, crate, bunting,
   ribbon, truck wreck, tape between posts, handcart, names board (one board prefab stands in for them).
-- **The journal's tab:** "As the Zone tells it", "Unfinished" and "And you" in the majors' "The season"
-  tab of the notebook (today a notice), whose whole list opens in processing.
-- **`last_season.json`:** the Last Broadcast's version and the 10 strongest beats as plain lines.
 
 ## Writing the epilogue
 
@@ -198,7 +183,7 @@ once per beat; the outside never answers and never changes its words; a rushed o
 plainly; a walk-out is a goodbye, never a joke; no pronouns for seeded names; the Long Table never
 described. **Still to write** (about 600 of the design's 885 lines): the route-neutral beats' echoes
 for every beat type, outpost commanders by loyalty, door notices and readable clauses by route, the
-deck's 19 cards (brief, success, failure, grey way), the lobbying lines, the standing versions.
+deck's last six cards (brief, success, failure, grey way), the lobbying lines, the standing versions.
 
 ## Risks
 

@@ -184,7 +184,7 @@ Frame (root, full screen)
 ├─ Text    Heading         at (96, 54), condensed bold 46: the tab's name (set by the script)
 ├─ Text    Header          at (96, 112), 840 wide, mono 18, dim: the sub-line (set by each page)
 ├─ Image   HeadRule        stretched from 96 to -96 at y 150, 2 high
-├─ Button  Tab0 … Tab4     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Journal, Radio, Map key, Hall of fame
+├─ Button  Tab0 … Tab5     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Journal, Radio, Map key, Hall of fame, The season
 │  └─ Overlay TabNBox
 │     ├─ Image  TabNBg      the open tab bone, the others #1A1D20 (tinted by the script)
 │     ├─ Panel  TabNLine    border, hidden on the open tab
@@ -200,7 +200,7 @@ The pages are the old menus' layouts with the frame parts (overlay, heading, hea
 close button, footer) taken out, and their content moved into the 90% safe area: every horizontal
 position and width scaled by 0.973 from the left margin, which moves from 72 to 96. Each page's
 root is a full-screen `Frame` named after it (`StandingPage`, `JournalPage`, `RadioPage`,
-`MapKeyPage`, `HallPage`). Widget names inside are unchanged, so the drawing code is too.
+`MapKeyPage`, `HallPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
 
 **Mouse.** The tabs, `CloseButton`, the journal row's root (`MissionRow`), the radio filter chip
 (`FilterButton`) and the notice board's `PostButton` are `Button`s. Long text sits in a
@@ -406,6 +406,25 @@ Frame HallPage (root)
 │  ├─ Text (label "PAST SEASONS")
 │  └─ Text PastList      wraps, 18, dim, in a ScrollLayout
 └─ Text   Waiting        centred, italic 22, "Reading the names..." (until the data arrives)
+```
+
+### The season page: `RZ_SeasonPage.layout`
+
+The hall page's three panels with their own names and labels (written as text, not opened in
+Workbench yet).
+
+```
+Frame SeasonPage (root)
+├─ Frame  MajorsPanel  (at (72, 168), 580 × 840)
+│  ├─ Text MajorsLabel  "THE MAJORS"
+│  └─ Text MajorsList   wraps, 18 (each major's title in capitals, then its lines; an ending told)
+├─ Frame  YouPanel     (at (670, 168), 580 × 840)
+│  ├─ Text YouLabel     "AND YOU"
+│  └─ Text YouList      wraps, 18 (your lines, then UNFINISHED and what's open)
+├─ Frame  ZonePanel    (at (1268, 168), 580 × 840)
+│  ├─ Text ZoneLabel    "AS THE ZONE TELLS IT"
+│  └─ Text ZoneList     wraps, 18, dim, in a ScrollLayout ZoneScroll (up and down scroll it)
+└─ Text   Waiting       centred, italic 22, "Asking around..." (until the data arrives)
 ```
 
 ## Talk screen: `RZ_TalkMenu.layout` and `RZ_TalkReply.layout`

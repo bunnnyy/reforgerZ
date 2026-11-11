@@ -74,6 +74,9 @@ class RZ_TerritorySettings
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon occupant (optional; empty = Puzzles > Civilian)", "et")]
 	ResourceName m_sHalcyonOccupantPrefab;
+
+	[Attribute("1", desc: "Haven guard: after Proof's The Whole of It (proof.haven_gate), a Haven group (Haven guard prefab) stands at the lab's gate in the final stand (docs/QUESTLINES.md, The stand's inputs)")]
+	bool m_bHavenGuard;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -251,6 +254,7 @@ class RZ_Territory
 	//------------------------------------------------------------------------------------------------
 	//! On when the setting is on and the map has settlements (after Setup).
 	bool IsActive() { return m_bActive; }
+	RZ_TerritorySettings GetSettings() { return m_Settings; }
 	bool IsEnabled() { return m_Settings.m_bEnabled; }
 	float GetClock() { return m_fClock; }
 	array<ref RZ_Holding> GetHoldings() { return m_aHoldings; }

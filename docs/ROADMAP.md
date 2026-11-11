@@ -125,16 +125,19 @@ The build-review fixes are done. Everything below is approved. The order of the 
   to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
   Traces' own phases 1 to 7 are built ([TRACES.md](TRACES.md)); what's left of it waits on other
   systems ([designs/TRACES.md](../designs/TRACES.md)).
-- Already built for them: phase 7, the epilogue week, simplified ([EPILOGUE.md](EPILOGUE.md); what's left
-  of it is in [designs/EPILOGUE.md](../designs/EPILOGUE.md): the epilogue deck, route marks, the
-  evening's own set pieces, titles from the best life, truth beats, the factions' jobs on the ridges,
-  the Walk Out's escorts; play-test the Walk Out's retirement and a week at Test scale 0.008); phase 6, the cure's finale, simplified ([FINALE.md](FINALE.md); what's left of
+- Already built for them: phase 7, the epilogue week, simplified ([EPILOGUE.md](EPILOGUE.md), with 13
+  cards of the epilogue deck in [ERRANDS.md](ERRANDS.md#the-epilogue-deck), the evening calendar as
+  radio and the notebook's season tab; what's left of it is in [designs/EPILOGUE.md](../designs/EPILOGUE.md):
+  the deck's last six cards, route marks, the supper reading as a scene and the standing versions,
+  titles from the best life, truth beats, the factions' jobs on the ridges, the Walk Out's escorts;
+  play-test the Walk Out's retirement and a week at Test scale 0.008); phase 6, the cure's finale, simplified ([FINALE.md](FINALE.md); what's left of
   it is in [designs/FINALE.md](../designs/FINALE.md): what waits on other systems, the carries, guard the
   door and the other moves, live tissue's remaining rules, the stand's and the majors' remaining
   pieces, the epilogue's carriers); phase 5, the four majors, simplified ([QUESTLINES.md](QUESTLINES.md#the-majors);
-  what's left of it is in [designs/MAJORS.md](../designs/MAJORS.md): next-season story rules, the
-  codas' standing versions and hall lines, the journal's own season tab, the stand inputs for the
-  finale, Before the stand, and the approaches each major lists as not built); phase 4, the mission style in full (the six story jobs, reputation's
+  with the story rules next season, the stand's inputs, the epilogue lines by controller, the hall's
+  lines, the season tab and Proof's Before the stand; what's left of it is in
+  [designs/MAJORS.md](../designs/MAJORS.md): the codas' standing versions and second airings,
+  leader stand-ins and channels, and the approaches each major lists as not built); phase 4, the mission style in full (the six story jobs, reputation's
   parley and settling up, lies and witnesses, dialogue's scenes for several players, borrowed kit,
   fallout errands, strangers at every spot kind (18 stranger routines and found hooks), locals,
   twists, board and radio asks, 7 more routines and 21 more cards: [MISSIONS.md](MISSIONS.md),
@@ -277,7 +280,8 @@ In this order, because later ones depend on earlier ones:
 19. **The majors on a real season** (phase 5): do the climaxes land in order on 2, 5 and 15
     regulars (settling day, the muster, the second sitting, the reading), does a squeeze's last call
     come early enough to be answered, and does a quiet server's act stay open without nagging? Watch
-    the `Majors:` log lines and the journal's season lines.
+    the `Majors:` log lines and the journal's season lines. Does the season tab read well on a TV,
+    and do the story rules' line and the hall's "The season's stories" say the right endings?
 20. **Traces:** do players stop at doors (the town's summary, the journal), does reading feel like a
     reward of its own with nothing paid, and are towns sparse enough (most with none to three marked
     doors)? Is the first days' sweep where the column's story says it was? Do the decals land on the

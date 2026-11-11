@@ -4,7 +4,7 @@ The small, personal jobs one named person asks of one player, each true because 
 world is true right now, and over the moment it stops being true. Contracts are the factions' work
 on the radio ([MISSIONS.md](MISSIONS.md)); questlines are the long stories
 ([QUESTLINES.md](QUESTLINES.md)); errands are everything in between. What's still to build (the
-epilogue cards, the other margin cards, promises and threads, His Effects in full) is
+the epilogue deck's last six, the other margin cards, promises and threads, His Effects in full) is
 designed in [designs/ERRANDS.md](../designs/ERRANDS.md). In the epilogue week a few of the epilogue
 deck's asks stand at the week's places instead of on the dealer: *Bring a cup* at the queue, *Read
 the names at supper* at a house, taking a name home ([EPILOGUE.md](EPILOGUE.md#places-and-scenes)).
@@ -326,6 +326,36 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **Hand to Hand** (margin: the Independent) | a Haven named person | the finale's routes are open, you've locked to none, a local at this house knows you | Promise: no pay, the local pinned, the record `errand.hands` with an epilogue line; six a player a season. Or don't. A promise moves no track |
 | **They Say You're With …** (lock card) | a Haven named person | you've locked to a route that isn't the Haven's, a local at this house knows you | Titled by your route (Bastion, the Red Hand, Halcyon; the Independent's: *They Say You're Doing It Yourself*). Talk it through; walk them to the next town, out of the stand's way; or carry one true word to your side. No pay; the local remembers |
 
+### The epilogue deck
+
+✅ 13 built (`Cards/Epilogue/`, `RZ_EpiCard`). The last errands, for the week after the cure
+([EPILOGUE.md](EPILOGUE.md#the-closing-work)): dealt by the same dealer, only while the epilogue runs
+(`m_bAfterCure`), once per identity per subject (a name, a house, a holding, a day's road), and
+outside the two cards a day. They read the epilogue's record (the route, its terms, the queue, the
+Names board, the named dead, who held each holding at the cure) and pay through the small-pay ledger;
+nothing carries into next season. *Simplified:* any number may be offered at once, as with any
+errand; the ones a beat would deal are dealt by their condition, not by the beat.
+
+| Card | Family, giver | True when | Ways |
+|---|---|---|---|
+| **Carry the Dose** | epilogue, a named person of the faction whose rules hold | the route has dose outlets, before processing | Carry the sealed box to a holdout in an empty village (15 s at the door): 6 Favor, 1 Fame. Open it yourself: the dose, if you're bitten and haven't had an outlet dose this life; 10 Infamy with the giver's faction either way |
+| **Pack for the Queue** | epilogue, a Haven named person; Known with the Haven | the house has people and the queue stands, before processing | Fetch both things from their old house in an empty village (30 s): 4 Favor, 1 Fame. Bring one and say the other was gone (10 s): 2 Favor |
+| **Borrowed** | epilogue, the storekeeper or cook | this house short, a fed house within 1.5 km | Ask that house for it back (10 s at its gate): 4 Favor, 2 food comes back. Say you couldn't find them: nothing moves |
+| **Take a Name to the Board** | epilogue, a Haven named person | a named dead person still lying out within 4 km, the Names board stands | Write the name on the board (10 s there): 3 Favor, 1 Fame; the wall lists it as home, by you |
+| **The Toll Man's Last Debt** | epilogue, a Red Hand named person | the Red Hand's route or its book balanced, a house within 3 km, before processing | Carry the tins to the house (at the gate): 5 Favor, +2 food there. Sell them back to the crew: 4 Favor, +5 Haven Infamy |
+| **Sign Here** | epilogue, a Bastion named person; Known with Bastion | Bastion's route on the roster or the column, the queue stands | Take three names at the queue (30 s): 5 Favor, 1 Fame. Write three yourself: 5 Favor; three in ten the corporal notices, +4 Bastion Infamy |
+| **Copies for the Far House** | epilogue, a Halcyon named person | Halcyon's route, the method published | Carry the method to the lived-in house farthest from the lab (10 s): 6 Favor, 1 Fame. Sell the copies to the fence: 6 Red Hand Favor, +5 Halcyon Infamy |
+| **Clear the Way** | epilogue, a Haven named person | the queue within 4 km, before processing | Hold the bend 400 m up the queue road for a minute: 5 Favor, 1 Fame (whatever's on the road comes to the noise) |
+| **The Last Watch** | epilogue, an outpost's named person; Known with them | the holding was theirs at the cure | Stand the gate for ten minutes: 8 Favor, 2 Fame |
+| **Last Letters** | epilogue, the Courier | the queue stands, before processing | Carry the bag to the queue (20 s): 4 Haven Favor, 1 Fame |
+| **One Last Toll** | epilogue, a Red Hand named person | the Red Hand's route or its book balanced, the queue stands, before processing | Stand the toll at the bend for two minutes: 6 Favor, +3 Haven Infamy. Talk the crew out of it (Trust 2 with the Red Hand): 3 Haven Favor |
+| **Into the Record** | epilogue, a Halcyon named person | one of Halcyon's named dead lies out within 4 km | Fetch the notebook (15 s where they fell): 5 Favor, 1 Fame; the name goes home to the lab |
+| **Come In** (amends) | epilogue, any holding's named person; Watched or Hunted by them | before processing | Walk up to the gate and wait a minute: amends (2 Infamy off) |
+
+*Not built* (designed in [designs/EPILOGUE.md](../designs/EPILOGUE.md#the-epilogue-deck-last-errands)):
+The Key Where It Was (needs the newcomer's scenario), His Effects' epilogue variants, Somebody Should
+Tell Them's epilogue version, The Boy, Processing and What the Cure Costs Here.
+
 ## Fallout
 
 `RZ_Errands.Fallout`, called by a failed story job ([DESIGN.md](DESIGN.md#story-blocks)). One errand of
@@ -495,6 +525,7 @@ scene people); the lines have two or three variants each, not always three; a ca
 the day's two even if declined; pay in kind is an effect (errands hand out no items; a stranger's gift
 is one common find). The margin cards read the majors' waits (the run's stage), and the lock cards read
 the finale's lock (`RouteOfPlayer`). Not built yet, and designed in
-[designs/ERRANDS.md](../designs/ERRANDS.md): the epilogue cards, the other majors' margin cards, promises
+[designs/ERRANDS.md](../designs/ERRANDS.md): the epilogue deck's last six ([above](#the-epilogue-deck)), the other
+majors' margin cards, promises
 and callbacks from errands, threads, His Effects in full (the effects as an item, a body near a post),
 chore slots per holding, and the `mission_errand` icon (the journal uses the unarmed icon).

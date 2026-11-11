@@ -270,7 +270,14 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 
 		vector relay = RelayPos(gm, run, co);
 		int crew = scene.Person(RZ_MajorHelp.NearSeat(relay), "the crew's radio man at the relay", "Talk to the radio man", "\"At half eight every post hears a word over the CO's call. You keep them off me for three minutes, the word's free.\"");
-		scene.Choice(crew, "Hold the relay for the crew (+25 Infamy)").Way(RZ_EQuestApproach.BETRAY).Needs(RZ_EFaction.BANDITS, RedHandRank(gm)).Side(RZ_EFaction.BANDITS, RZ_EFaction.MILITARY, 10, 15).HoldAt(relay, 180, OUT_EXPENDED, OUT_CALL).Says("The radio man keys up. Behind you, something on the hill hears the generator.", "held the relay for the Red Hand").Refused("\"The boss says you're not one of ours. Not for this.\"");
+		// Bastion's side: break the relay hold (+10 Bastion Fame), the call goes out as the CO says it
+		scene.Choice(crew, "Take the relay back for Bastion [Bastion: Known]").Way(RZ_EQuestApproach.FORCE).Needs(RZ_EFaction.MILITARY, 1).Only("!relay_taken").Side(RZ_EFaction.MILITARY, RZ_EFaction.BANDITS, 10, 5).Sets("relay_taken").Says("You pull the crew's lead out of the relay and sit on it. Whatever the CO says tonight, nobody talks over it.", "took the relay back for Bastion").Refused("The relay's Bastion's already.");
+
+		// The rations bribe: the quartermaster's tins go round before the call (All Stations' morale hit halved)
+		int qm = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "the quartermaster", "Talk to the quartermaster", "\"If the CO reads them something hard tonight, they'd take it better on a full stomach. I've tins. You've Favor.\"");
+		scene.Choice(qm, "Pay for rations before the call (30 Favor)").Bribe(RZ_EFaction.MILITARY, 30).Only("!rations").Sets("rations").Says("The tins go round the posts before half eight. Whatever comes over the net, they'll hear it fed.", "paid for the rations before the muster").Refused("\"They've eaten. Twice would be suspicious.\"");
+
+		scene.Choice(crew, "Hold the relay for the crew (+25 Infamy)").Way(RZ_EQuestApproach.BETRAY).Needs(RZ_EFaction.BANDITS, RedHandRank(gm)).Only("!relay_taken").Side(RZ_EFaction.BANDITS, RZ_EFaction.MILITARY, 10, 15).HoldAt(relay, 180, OUT_EXPENDED, OUT_CALL).Says("The radio man keys up. Behind you, something on the hill hears the generator.", "held the relay for the Red Hand").Refused("\"The boss says you're not one of ours. Not for this.\"");
 		return true;
 	}
 
@@ -474,7 +481,12 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 			}
 			case 2:
 			{
-				NudgeMorale(gm, RZ_EFaction.MILITARY, -8);
+				// The rations bribe halves the hit
+				int hit = -8;
+				if (run.Flag("rations") != 0)
+					hit = -4;
+
+				NudgeMorale(gm, RZ_EFaction.MILITARY, hit);
 				NudgeMorale(gm, RZ_EFaction.BANDITS, -3);
 				NudgeMorale(gm, RZ_EFaction.INSTITUTE, -3);
 				RZ_MajorHelp.PayIdents(gm, deciders, RZ_EFaction.MILITARY, 20, 0);
@@ -540,6 +552,7 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 	{
 		RZ_MajorHelp.SetWorld(gm, KEY + ".coda", 1);
 		RZ_MajorHelp.SetWorld(gm, KEY + ".last_line", 1);
+		RZ_MajorHelp.HallNames(run, S_CALL, "At the barrier", "");
 		string line = "At dawn Sedlak walked the tags to the north road and read the last roll, 150 metres short of the barrier. The loudspeaker read its processing order. It didn't say Bastion.";
 		if (fallback)
 			line = "The CO read the last call alone. At dawn Sedlak walked whoever was left to the north road and read the roll. The box of tags is back on the nail.";

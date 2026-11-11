@@ -32,6 +32,7 @@ class RZ_Epilogue
 	protected ref RZ_EpiOutlets m_Outlets;
 	protected ref RZ_EpiSpots m_Spots;
 	protected ref RZ_EpiClosing m_Closing;
+	protected ref RZ_EpiCalendar m_Calendar;
 
 	protected int m_iBuildStep = -1;		// ticks of the build after the cure (-1: none)
 	protected float m_fCheck;
@@ -54,6 +55,7 @@ class RZ_Epilogue
 		m_Outlets = new RZ_EpiOutlets(gm, this);
 		m_Spots = new RZ_EpiSpots(gm, this);
 		m_Closing = new RZ_EpiClosing(gm, this);
+		m_Calendar = new RZ_EpiCalendar(gm, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -539,6 +541,7 @@ class RZ_Epilogue
 		m_S.step = 0;
 		m_S.told.Clear();
 		RZ_WorldFacts.Get().SetFlag("story.built", 1);
+		StoryHallLines(m_S.faction);
 		m_Outlets.Setup();
 		m_bPlaced = false;
 		RZ_Log.Info(string.Format("Epilogue: story built (%1 beats, %2 players, %3 open items)", m_S.beats.Count(), m_S.playerIdents.Count(), m_Closing.OpenCount()));
@@ -677,6 +680,7 @@ class RZ_Epilogue
 		if (!ids.IsEmpty())
 		{
 			m_Closing.Tick(step, ids, players);
+			m_Calendar.Tick();
 			foreach (int playerId : ids)
 			{
 				TellFirst(playerId);
@@ -1055,10 +1059,69 @@ class RZ_Epilogue
 			if (IsBuilt())
 				AddHallLine("The cure: nobody. Nobody won.");
 
+			if (IsOn())
+				StoryHallLines(-1);
+
 			return;
 		}
 
 		m_Closing.OnWipe();
+		RecordLines();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! last_season.json keeps the Last Broadcast's version and the week's 10 strongest beats as plain
+	//! lines (for next season's text and the admin; nothing in them changes the rules).
+	protected void RecordLines()
+	{
+		RZ_SeasonRecord rec = RZ_Persistence.LoadSeason();
+		if (!rec || rec.season != m_GM.GetSeasons().GetSeason())
+			return;
+
+		if (m_S.broadcast >= 0)
+			rec.broadcast = RZ_EpiText.BroadcastName(m_S.broadcast);
+
+		array<RZ_EpiBeat> order = {};
+		foreach (RZ_EpiBeat b : m_S.beats)
+		{
+			if (!b.dropped)
+				order.Insert(b);
+		}
+
+		rec.beats.Clear();
+		while (rec.beats.Count() < 10 && !order.IsEmpty())
+		{
+			int best = 0;
+			for (int i = 1; i < order.Count(); i++)
+			{
+				if (order[i].weight > order[best].weight)
+					best = i;
+			}
+
+			string line = m_Beats.Text(order[best]);
+			if (!line.IsEmpty())
+				rec.beats.Insert(line);
+
+			order.Remove(best);
+		}
+
+		RZ_Persistence.SaveSeason(rec);
+		RZ_Log.Info(string.Format("Epilogue: last_season.json keeps %1 beats and the broadcast (%2).", rec.beats.Count(), rec.broadcast));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The majors' "The season's stories" lines, by who controls the cure (-1: no cure).
+	protected void StoryHallLines(int controller)
+	{
+		if (!RZ_Majors.Get())
+			return;
+
+		array<string> lines = {};
+		RZ_Majors.Get().HallLines(controller, lines);
+		foreach (string line : lines)
+		{
+			AddHallLine(line);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1206,6 +1269,8 @@ class RZ_Epilogue
 	//! line, the names, a thank-you.
 	void BoardNotes(int house, notnull array<string> authors, notnull array<string> texts)
 	{
+		// Last season's story rule (Every Name): the chair's line on the first day
+		RZ_StoryRules.BoardNotes(m_GM, authors, texts);
 		if (!IsBuilt() || m_S.lastDay)
 			return;
 
@@ -1268,6 +1333,53 @@ class RZ_Epilogue
 		}
 
 		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The notebook's season tab (RZ_UIFeed.BuildSeason): As the Zone tells it (the cure line and the
+	//! beats you've met; all of them in processing), and your lines with what's still open. Nothing
+	//! before the epilogue is built.
+	void SeasonParts(int playerId, notnull array<string> zone, notnull array<string> you)
+	{
+		if (!IsBuilt())
+			return;
+
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		if (m_S.lastDay)
+			zone.Insert("Nobody won. The perimeter will be maintained.");
+		else
+			zone.Insert(RZ_EpiText.CureLine(Route(), m_S.how, m_S.terms, m_S.faction, m_S.slow));
+
+		array<string> beats = {};
+		string met = m_Beats.MetText(ident, Phase() >= 3, 60);
+		met.Split("\n", beats, true);
+		foreach (string b : beats)
+		{
+			zone.Insert(b);
+		}
+
+		for (int i = 0; i < 3; i++)
+		{
+			string l = LineOf(ident, i);
+			if (!l.IsEmpty())
+				you.Insert(l);
+		}
+
+		if (m_S.lastDay)
+			return;
+
+		string open = m_Closing.UnfinishedText(playerId);
+		if (open.IsEmpty())
+			return;
+
+		you.Insert("");
+		you.Insert("UNFINISHED");
+		array<string> items = {};
+		open.Split("\n", items, true);
+		foreach (string item : items)
+		{
+			you.Insert(item);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -97,6 +97,20 @@ class RZ_ErrandRegistry
 		list.Insert(new RZ_Errand_CountForTheSitting());
 		list.Insert(new RZ_Errand_HandToHand());
 		list.Insert(new RZ_Errand_WithSide());
+		// The epilogue deck: dealt only in the week after the cure (Cards/Epilogue/, m_bAfterCure)
+		list.Insert(new RZ_Errand_CarryTheDose());
+		list.Insert(new RZ_Errand_PackForTheQueue());
+		list.Insert(new RZ_Errand_Borrowed());
+		list.Insert(new RZ_Errand_NameToTheBoard());
+		list.Insert(new RZ_Errand_TollMansDebt());
+		list.Insert(new RZ_Errand_SignHere());
+		list.Insert(new RZ_Errand_CopiesFarHouse());
+		list.Insert(new RZ_Errand_ClearTheWay());
+		list.Insert(new RZ_Errand_LastWatch());
+		list.Insert(new RZ_Errand_LastLetters());
+		list.Insert(new RZ_Errand_OneLastToll());
+		list.Insert(new RZ_Errand_IntoTheRecord());
+		list.Insert(new RZ_Errand_ComeIn());
 	}
 }
 

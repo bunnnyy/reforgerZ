@@ -234,6 +234,12 @@ class RZ_SeasonSettings
 	[Attribute("24", desc: "Players are warned this many real hours before the wipe is due (every hour, and on first spawn)")]
 	float m_fWarnHours;
 
+	[Attribute("1", desc: "Story rules: a fresh season after a cure also takes one small rule from each major that ended live last season, as it stood at the cure (docs/QUESTLINES.md, Next season: the story rules). Needs Winner rules")]
+	bool m_bStoryRules;
+
+	[Attribute("0", desc: "No stand in the last hours: for fixed restart days. With a timed wipe (After weeks, or whichever comes first) less than Minimum epilogue hours away and no cure yet, the final stand is held back (the season ends without a cure) instead of the wipe being pushed back (docs/EPILOGUE.md, Edge cases)")]
+	bool m_bNoStandLastHours;
+
 	[Attribute("1", desc: "Hall of fame: samples, the final stand, rescues, longest life, missions and each faction's Champion, per season and all time (hall_of_fame.json, never wiped)")]
 	bool m_bHallOfFame;
 }
@@ -380,6 +386,7 @@ class RZ_Seasons
 	protected int m_iRulesHalf = -1;		// the cure finale's half rule set on top (a faction), -1 none
 	protected int m_iRulesRoute;			// last season's cure finale route (route + 1; 5 the Independent)
 	protected int m_iRulesTerms;			// and its terms
+	protected ref array<string> m_aStoryRules = {};	// last season's majors' story rules ("major:ending")
 	protected bool m_bFresh;
 	protected bool m_bWipeDue;
 	protected string m_sWipeReason;
@@ -545,6 +552,9 @@ class RZ_Seasons
 		m_iRulesHalf = data.rulesHalf;
 		m_iRulesRoute = data.rulesRoute;
 		m_iRulesTerms = data.rulesTerms;
+		if (data.storyRules)
+			m_aStoryRules.Copy(data.storyRules);
+
 		m_bWipeDue = data.wipeDue;
 	}
 
@@ -558,6 +568,7 @@ class RZ_Seasons
 		data.rulesHalf = m_iRulesHalf;
 		data.rulesRoute = m_iRulesRoute;
 		data.rulesTerms = m_iRulesTerms;
+		data.storyRules.Copy(m_aStoryRules);
 		data.wipeDue = m_bWipeDue;
 		if (m_Hall)
 			m_Hall.SaveIfChanged();
@@ -585,6 +596,7 @@ class RZ_Seasons
 			m_iRulesHalf = -1;
 			m_iRulesRoute = 0;
 			m_iRulesTerms = 0;
+			m_aStoryRules.Clear();
 
 			// Only the season just ended counts: a record older than the hall's last season (a
 			// wipe by hand after a season without a cure) leaves nothing behind
@@ -594,6 +606,9 @@ class RZ_Seasons
 				m_iRulesHalf = last.halfRules;
 				m_iRulesRoute = last.route;
 				m_iRulesTerms = last.terms;
+				m_aStoryRules.Clear();
+				if (m_Settings.m_bStoryRules)
+					RZ_StoryRules.FromRecord(last, m_aStoryRules);
 			}
 		}
 		else
@@ -607,6 +622,7 @@ class RZ_Seasons
 		}
 
 		m_Hall.BeginSeason(m_iSeason, m_GM.GetWorldName());
+		RZ_StoryRules.Build(m_aStoryRules);
 		s_Mods = BuildMods();
 		string names = "none";
 		if (!s_Mods.IsNeutral())
@@ -638,6 +654,8 @@ class RZ_Seasons
 	{
 		RZ_SeasonMods mods = new RZ_SeasonMods();
 		AddWinnerRules(mods);
+		// Then the majors' story rules (one small rule each; strength at most 2 a faction in all)
+		mods.Add(RZ_StoryRules.Get().RuleSet());
 
 		// Names lower-cased with spaces dropped, as FindRuleSet compares them
 		array<string> picked = {};
@@ -819,6 +837,19 @@ class RZ_Seasons
 		}
 
 		return at;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Season > No stand in the last hours: no cure yet and a timed wipe closer than the minimum
+	//! epilogue: the final stand waits (it would push the wipe back otherwise).
+	bool HoldsStand()
+	{
+		if (!m_Settings.m_bNoStandLastHours || m_iCureUnix > 0)
+			return false;
+
+		int weeks = WeeksWipeAt();
+		int now = RZ_Guidance.UnixNow();
+		return weeks > 0 && now > 0 && weeks - now < MinEpilogueSeconds();
 	}
 
 	//------------------------------------------------------------------------------------------------

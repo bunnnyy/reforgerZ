@@ -37,6 +37,7 @@ class RZ_CureResearch
 	bool m_bCured;
 
 	protected bool m_bFinalStand;
+	protected bool m_bStandHeldTold;
 	protected float m_fFinalStandLeft;
 	protected float m_fAbandonedFor;
 	protected bool m_bStandReached;		// a player has been at the lab since the stand (re)started
@@ -112,6 +113,15 @@ class RZ_CureResearch
 			return STOLEN_ANTIDOTE_CAP + BLACK_MARKET_EXTRA;
 
 		return STOLEN_ANTIDOTE_CAP;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A fresh season's story rule (Two Tins a Copy): the black market starts with `count` stolen
+	//! doses, within its cap.
+	void SeedStolen(int count)
+	{
+		m_iStolenAntidotes = Math.Min(StolenCap(), m_iStolenAntidotes + Math.Max(0, count));
+		RZ_Log.Info(string.Format("Story rules: the black market starts with %1 stolen doses.", m_iStolenAntidotes));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1055,6 +1065,20 @@ class RZ_CureResearch
 	//------------------------------------------------------------------------------------------------
 	protected void StartFinalStand()
 	{
+		// Season > No stand in the last hours: near a fixed wipe the stand is held back instead of
+		// the wipe being pushed (docs/EPILOGUE.md, Edge cases)
+		if (m_GM.GetSeasons() && m_GM.GetSeasons().HoldsStand())
+		{
+			if (!m_bStandHeldTold)
+			{
+				m_bStandHeldTold = true;
+				m_GM.NotifyAll("Halcyon", "The batch is ready, and the gates open soon either way. The director won't start the synthesis this late.");
+				RZ_Log.Info("Cure: the final stand is held back in the season's last hours (Season > No stand in the last hours).");
+			}
+
+			return;
+		}
+
 		m_bFinalStand = true;
 		// Research has reached 100 once: a lost batch goes back to the lab's normal work, not to the finale
 		m_bGateOpen = true;
@@ -1065,6 +1089,10 @@ class RZ_CureResearch
 		RZ_CureFinale finale = RZ_CureFinale.Get();
 		if (finale && HasFinale())
 			finale.OnStandStarted();
+
+		// The questlines settle what must be settled before the stand (Proof's Before the stand)
+		if (m_GM.GetQuestlines())
+			m_GM.GetQuestlines().OnFinalStandStart();
 
 		if (finale && HasFinale() && finale.IsOpen())
 		{
@@ -1157,6 +1185,9 @@ class RZ_CureResearch
 		if (m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnFinalStandLost();
 
+		if (m_GM.GetQuestlines())
+			m_GM.GetQuestlines().OnFinalStandEnd(false);
+
 		m_GM.OnCureChanged();
 	}
 
@@ -1226,6 +1257,9 @@ class RZ_CureResearch
 		bool contest = finale && HasFinale();
 		if (contest)
 			finale.OnStandWon();
+
+		if (m_GM.GetQuestlines())
+			m_GM.GetQuestlines().OnFinalStandEnd(true);
 
 		vector lab = m_GM.GetLabPosition();
 		array<int> defenders = {};

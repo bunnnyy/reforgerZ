@@ -62,7 +62,9 @@ and one way to end it: **research the cure.**
   the example Short Weight, crossing each other through shared flags ([QUESTLINES.md](docs/QUESTLINES.md)).
 - **Four majors**, one season-long story per faction (The Book Has to Balance, Await Relief, Every
   Name, Proof), each a page its stronghold leader would rather burn, with climaxes on the cure's
-  milestones in order, council votes and a muster, and codas at the north road after the cure. Their
+  milestones in order, council votes and a muster, and codas at the north road after the cure. Each
+  ending leaves one small story rule for next season, a line in the hall and a page in the notebook's
+  season tab. Their
   defaults fire from what the server is really doing (research pace, hours played, who's engaging,
   the gap since the last beat), never on fixed days ([QUESTLINES.md](docs/QUESTLINES.md#the-majors)).
 - **The cure's finale** ([FINALE.md](docs/FINALE.md)): at 90% the lab's batch is missing one thing,
@@ -141,7 +143,7 @@ and one way to end it: **research the cure.**
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
   emblems, an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance, a notebook (standing, journal, radio, map key,
-  hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
+  hall of fame, the season) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks, a repair screen for the cars and a shop screen at the quartermasters,
   spoken lines as subtitles, notes on a paper reader, and on the map only what you know. Gamepad
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
@@ -155,7 +157,7 @@ The game scripts **compile without errors or warnings** against Arma Reforger 1.
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
 Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
-That's about 219,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+That's about 221,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
 was also checked against the base game's script source; the 95 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
@@ -181,14 +183,16 @@ yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do i
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
 **Not built yet:** the approved designs for the rest of the season: the rest of the four majors,
-of the cure's finale and of the epilogue week, errands' epilogue cards and more,
+of the cure's finale and of the epilogue week, the epilogue deck's last six cards and more,
 built in the order of [designs/PLAN.md](designs/PLAN.md). Built so far: the epilogue week (phase 7,
 simplified: the record and the hall's freeze, beats and carriers, the dose outlets, the queue and
-the lab gate, the grey choices, the closure set, [EPILOGUE.md](docs/EPILOGUE.md)); the cure's finale (phase 6,
+the lab gate, the grey choices, the closure set, the evening calendar, 13 cards of the epilogue
+deck, [EPILOGUE.md](docs/EPILOGUE.md)); the cure's finale (phase 6,
 simplified: the controller, the lock and its dialogue commit node, pitches and route assets, the five
 routes with their ways and branches, live tissue, pacts and the moves between routes, the stand as a
 fight for the clean room with its HUD line, Take the Lab and the Coat Run, terms,
-[FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified,
+[FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified, with next
+season's story rules, the stand's inputs, the hall's lines and the notebook's season tab,
 [QUESTLINES.md](docs/QUESTLINES.md#the-majors)); the shared engine (phase 1); small
 things everywhere (phase 3: errands' core, the mission style's framework and the world memory's
 writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, simplified: the six story
@@ -257,10 +261,10 @@ scripts/Game/ReforgerZ/
                  and the watch, reading, decals' list and boards, player traces
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, the season mood and grief, story arcs, the questline engine,
-                 the majors' engine (acts, votes, the dynamic fallbacks, the season story),
-                 headlines, the season budget and the set-piece calendar; Epilogue/: the
-                 epilogue week (the record, beats, the dose outlets, its places and scenes,
-                 the closing work)
+                 the majors' engine (acts, votes, the dynamic fallbacks, the season story, the
+                 stand's inputs), next season's story rules, headlines, the season budget and the
+                 set-piece calendar; Epilogue/: the epilogue week (the record, beats, the dose
+                 outlets, its places and scenes, the closing work, the evening calendar)
   Zombies/       spawner (any zombie mod's prefabs), the towns' crawlers, bodies and the agent
                  budget (roles, data parts, the sight rule, runtime groups), the tribes (seeds,
                  the daily rhythm, hunts, scouts, their bodies), their life cycle, borders and
@@ -282,7 +286,7 @@ scripts/Game/ReforgerZ/
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/ Tribes/ (the packs' contracts); the shared checks (Trust, Fear, prices) and
                  ways through a job; Story/ (the story kit, who decides, who benefits, reasons);
-                 Errands/ (the dealer, the routines, Cards/); Questlines/ (the author's base class,
+                 Errands/ (the dealer, the routines, Cards/ with the epilogue deck); Questlines/ (the author's base class,
                  approach helpers, the majors' scenes, the registry, one folder per faction with
                  its major, one for the Long Table, and Finale/: the cure finale's five routes,
                  desks, tissue hunts, items and route assets)

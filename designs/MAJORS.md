@@ -2,8 +2,9 @@
 
 **Status: built in part (phase 5), simplified.** Approved by the author on 2026-11-11. The engine
 (the major lane, acts, `ActEnd`, `RZ_QuestVote`, set pieces on the calendar, the dynamic fallbacks,
-the pay caps and the budget's majors lane, the season story record) and the four majors' acts,
-defaults and endings are built and live in [docs/QUESTLINES.md](../docs/QUESTLINES.md#the-majors) and
+the pay caps and the budget's majors lane, the season story record, the story rules next season, the
+stand's inputs and events, the epilogue lines by controller, the hall's lines and the season tab) and
+the four majors' acts, defaults and endings (with Proof's Before the stand) are built and live in [docs/QUESTLINES.md](../docs/QUESTLINES.md#the-majors) and
 [docs/DESIGN.md](../docs/DESIGN.md#the-majors). This file keeps only what is designed and not built yet.
 Each item names the major and act it belongs to; the built tables in QUESTLINES.md say what each act
 does today.
@@ -22,30 +23,11 @@ does today.
 
 ## Shared engine still to build
 
-- **Story rules next season:** `RZ_SeasonRuleSet.ForMajor(key, ending)` behind a new setting,
-  **Season > Story rules** (on). One small rule per major, at most half a winner's step, applied only
-  after a cure and only for majors that really ended (not by fallback), read from the ending as it
-  stood at the cure; merged after the controller's rules and the finale's half rule set, through
-  `RZ_SeasonMods.Add` and `Cap()`, never past the winner's own value, at most ±2 strength per faction
-  from story rules in all. New fields: Long Table chance ×0.5–1.5 (never over 1); a first-day exile
-  leak (at most 30%); one road post on a safehouse town's road; a contract weight (×0.9–1.1); a first
-  notice-board note; one stolen dose at the start; a seeded stronghold trait; read-only legacy flags
-  (`legacy.records`, `legacy.terms`); a two-day rumour. The rules per ending are in the endings below.
-- **The season story's other readers:** the epilogue line chosen by who *controls* the cure (the
-  finale's controller; today the season's winner), per-ending variants for another controller and
-  no cure; the hall-of-fame lines ("The season's stories" with up to four names, "At the barrier",
-  "On the paper") in the epilogue's season block (UI.md, UI/LAYOUTS.md).
-- **The journal's "The season" tab:** its own tab on the notebook (today the majors are journal rows
-  every player sees, with the act, the rule or stance, the leans and the last call under the brief).
-- **Offered time by the offer list:** count offered time only while the act's stage mission is on the
-  offer list (one of the two slots), not while its stage is merely open.
-- **Inputs to the finale's stand:** one group per faction at the lab, at most two of the majors'
-  groups (the finisher's faction first) plus Halcyon's guard; Bastion's by stance (1 and 2 at the
-  gate, 3 a checkpoint on the lab's road, 4 none); the Red Hand's lab-road group by the last page,
-  which doesn't come if Bastion holds that road; the Haven's by `proof.haven_gate` behind a
-  **Territory > Haven guard** setting; one decider for Take the Lab per stand (the last page
-  overrides Authors' stage 4), through the finale's controller; `OnFinalStandStart` and
-  `OnFinalStandEnd` events for questlines (won, lost or a holder change).
+- **Story rules' last pieces:** the Book balancing's crew-name greeting for a returning player (needs
+  crew names), Counted's one Bastion checkpoint on a safehouse town's road (needs road posts placed by
+  town), Paid at the Door's first-day exile leak at 30% (needs the exile leak, below).
+- **Stand events:** an event when the clean room changes holder (`OnFinalStandStart` and
+  `OnFinalStandEnd` are built).
 - **Leaders and scenes:** `SpawnLeaderAt(gm, leaderId, pos)` stand-ins in the leader's own body
   (today the scenes stand civilians in for them); run claims on seats from a summons to the tally;
   an "Ask about..." choice on other factions' stronghold leaders while a stage is open.
@@ -97,9 +79,6 @@ does today.
   outpost, the commander's +25 loyalty (or the stove under `orders.stove`), the nightly call line,
   Red Hand Talk checks one tier harder and the opener *"You're the one who gave Bastion the book."*;
   The book doesn't balance's Rogue swing.
-- **Next season (story rules):** balances: Red Hand strength +2 and the crew name's greeting; sold:
-  cross-faction trade ×1.1; Bastion's file: Bastion +2, Red Hand −2; doesn't balance: a Paranoid boss
-  seeded and The Rat ×1.1; sent off loud: nothing.
 - **Crossings:** R2 and R3 pick the rival's crew while the major runs; a Rein In on the rival counts
   as pulled into line; between beats, the book's line for "the crew in the woods" (the tribes).
 
@@ -119,10 +98,9 @@ does today.
   `book.bastion`, `haven.counted`, B2's Counted, `list.to_bastion`); "and the lab knew"; The Last
   Convoy run for the weakest post (`RZ_StoryArcs.StartFor`). At most two seats moved.
 - **Act V (the muster):** collecting every copy before "keep the call" (bribe the clerk 30 Favor, the
-  crew's recording past two lookouts, your own `orders.copy`; +5 Fame for the last one); the rations
-  bribe (30 Favor) halving All Stations' morale hit; walking the chair's clerk to the radio after
-  curfew; Bastion, Command's curfew walk in a Haven town (Curfew Patrol); Bastion's side breaking the
-  relay hold (+10 Bastion Fame); the commanders answering as text from their seats.
+  crew's recording past two lookouts, your own `orders.copy`; +5 Fame for the last one); walking the
+  chair's clerk to the radio after curfew; Bastion, Command's curfew walk in a Haven town (Curfew
+  Patrol); the commanders answering as text from their seats.
 - **Endings' extras:** Sedlak writing the decider on the roster; the presence floor (a quarter) under
   The Call Stands; the kettle line on air every night; All Stations' two struck-off men and no curfew
   under Counted; Bastion, Command's rank, curfew and the Rogue pulled into line; Expended's Deserter
@@ -132,12 +110,10 @@ does today.
   Sedlak can't be killed), the Haven walking first (All Stations or `orders.haven`), Deserters
   handing in their tags to answer "Here" (and `{count}` +1), Marek Fiala answering if the finale's
   route brought him home, the captain and the four R numbers (the finale's lore), "Continue." after
-  "Expended." with the lab's log in Bastion's file. "At the barrier" hall names.
-- **Next season (story rules):** The Call Stands: Bastion's share of road posts 0.6; All Stations:
-  Requisition ×0.9; Bastion, Command: Bastion strength +2; Expended: Bastion strength −2.
+  "Expended." with the lab's log in Bastion's file.
 - **Readers of the stance:** `RZ_LeaderVoice` and `RZ_FactionVoice` (the call's opening), the presence
-  floor, this season's curfew through `RZ_Seasons`, B2 (the call's wording, the forged-count risk,
-  can't start after Expended), B3 (talking him down one tier harder under 2 or 4), C1 (how fast an
+  floor, this season's curfew through `RZ_Seasons`, B2 (the call's wording, the forged-count risk),
+  B3 (talking him down one tier harder under 2 or 4), C1 (how fast an
   exposed house is burnt), No Reply losing its "Command answered" choice once a stance is set.
 
 ## Every Name
@@ -185,9 +161,6 @@ does today.
   stragglers, walk-off, paying houses' food, `MovePeople` within the floor and cap), `RZ_SupplyLines`
   (the far house last), Requisition (one weight per house, shared with B2 and the stance), Protection
   Racket and Red Hand raids skipping paying houses, the exile leak at 25–35%, `LapseRule(realHours)`.
-- **Next season (story rules):** Every Name: Long Table chance ×0.5 and the chair's line on the first
-  board; Far House: chance ×1.5; Counted: one Bastion checkpoint on a safehouse town's road; Paid at the
-  Door: the first day's leak at 30%; Closed Book: one line of gossip.
 
 ## Proof
 
@@ -203,19 +176,15 @@ does today.
   the chair's clerk, the adjutant, the boss's man); the director's two minutes on the open channel
   as a reading; the leverage's 25% (40%) chance the lab hears; ×0.9 at the quartermaster for standing
   with the director.
-- **Before the stand** (a stage until the stand begins): sell the pages to the boss's man (`proof.pages`
-  5); clear the line (40 Red Hand Favor, your own debt `proof.debt_yours`, or lift them at night);
-  the night swap of the first page in the records room (`proof.first_page` 3 *(you)*, a Halcyon coat
-  possible); the boss's man reading the log as the stand begins. With them, **Two Tins a Copy**.
-- **Act V:** the swap found as the stand begins; the author list by the finale's bystander rule; the
-  Haven group at the gate (`proof.haven_gate`, its prefab).
+- **Before the stand's rest:** the swap after 20:30 only, in a Halcyon coat (the duty officer the
+  watcher, a notebook number the cover), a ★ Lab Tech finding the draft at once, +8 Halcyon Infamy if
+  seen; +10 Red Hand Infamy when seen lifting the pages; the Red Hand's last page reading the lab's
+  line in the book (`proof.pages` 5).
+- **Act V:** the author list by the finale's bystander rule.
 - **Act VI (the Paper):** who carries the case (the adjutant, the field lead, or a beak courier);
   the author list with the Day 6 cohort and, with tribes, the tagged leaders; the radio ham's *"Got
-  it."*; siding with the Haven (the author list read at supper); putting the pages in the case; "On
-  the paper" hall lines.
-- **Next season (story rules):** the Whole of It: infection ×0.95 and `legacy.records`; Under Seal:
-  Bastion +2 and `legacy.terms`; Day 1: specials ×1.05 and the first rumour; Two Tins: Red Hand +2 and
-  one stolen dose.
+  it."*; siding with the Haven (the author list read at supper); putting the pages in the case; the
+  Red Hand crew on the road and a dead carrier's page (Two Tins a Copy off the road).
 
 ## Last Rounds: the codas in the epilogue week
 
@@ -245,7 +214,7 @@ epilogue's last day nears ([QUESTLINES.md](../docs/QUESTLINES.md#the-majors)). S
 | H2 The Price of the Door | Its flags table offers and tilt one head's vote at both sittings; `door.exile_home` as proof at the reading; its house as act IV's house |
 | H3 The Edge of Town | `walk.walks_stay`: the walker reads his eleven at the Gate |
 | Short Weight | Full Weight leans that head to the pot, Short Weight to the arrangement; starts twice as often during the Haven's acts II–IV |
-| B2 The Census | Counted and Forged feed the muster's count; reads the stance back; can't start after Expended |
+| B2 The Census | Counted and Forged feed the muster's count; reads the stance back |
 | B3 The Last Pilot | `pilot.line`'s name read in the last call; `pilot.stays` flies Bastion's group in (words) |
 | R2 Cargo, R3 The Well Story | Pick the rival's crew while the major runs; `cargo.freed` as proof at the Haven's reading; `well.stood` against the arrangement |
 | HC2 The Other Two | Its flags put names or numbers on the paper, ease the director's persuade, put page six in the open at the Haven's reading |

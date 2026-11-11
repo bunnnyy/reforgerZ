@@ -1,5 +1,5 @@
-//! The notebook (docs/UI.md, "The notebook"): one menu with five tabs, Standing, Journal, Radio,
-//! Map key and Hall of fame. The menu (RZ_NotebookMenu, layout RZ_NotebookMenu.layout) holds the
+//! The notebook (docs/UI.md, "The notebook"): one menu with six tabs, Standing, Journal, Radio,
+//! Map key, Hall of fame and The season. The menu (RZ_NotebookMenu, layout RZ_NotebookMenu.layout) holds the
 //! shared frame, the tabs with their unread counts and an empty `Page` frame; each tab is a page
 //! (RZ_NotebookPage) whose layout (UI > Notebook pages) is created into `Page` when the tab is
 //! shown, so switching tabs swaps the page instead of closing one menu and opening another.
@@ -17,14 +17,15 @@ enum RZ_ENotebookTab
 	JOURNAL,
 	RADIO,
 	MAP_KEY,
-	HALL
+	HALL,
+	SEASON
 }
 
 //------------------------------------------------------------------------------------------------
 //! Opening the notebook (client).
 class RZ_Notebook
 {
-	static const int TABS = 5;
+	static const int TABS = 6;
 
 	protected static int s_iLastTab = RZ_ENotebookTab.JOURNAL;
 	protected static int s_iAskedTab = -1;
@@ -110,6 +111,7 @@ class RZ_Notebook
 			case RZ_ENotebookTab.RADIO: return "RADIO";
 			case RZ_ENotebookTab.MAP_KEY: return "MAP KEY";
 			case RZ_ENotebookTab.HALL: return "HALL OF FAME";
+			case RZ_ENotebookTab.SEASON: return "THE SEASON";
 		}
 
 		return "";
@@ -212,6 +214,7 @@ class RZ_NotebookMenu : RZ_MenuBase
 			case RZ_ENotebookTab.RADIO: return new RZ_RadioPage();
 			case RZ_ENotebookTab.MAP_KEY: return new RZ_MapKeyPage();
 			case RZ_ENotebookTab.HALL: return new RZ_HallPage();
+			case RZ_ENotebookTab.SEASON: return new RZ_SeasonPage();
 		}
 
 		return new RZ_JournalPage();
@@ -978,6 +981,83 @@ class RZ_MapKeyPage : RZ_NotebookPage
 	override void Redraw()
 	{
 		RZ_UIW.SetText(m_wRoot, "Header", "WHAT THE MAP SHOWS YOU");
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The season tab (docs/UI.md, "The notebook"): the four majors as they stand, then, in the
+//! epilogue, the season as the Zone tells it, your lines and what's still open. Read only.
+class RZ_SeasonPage : RZ_NotebookPage
+{
+	//------------------------------------------------------------------------------------------------
+	override ResourceName Layout(RZ_UISettings settings)
+	{
+		return settings.m_sSeasonPage;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override int DataVersion()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui)
+			return 0;
+
+		return ui.GetSeasonVersion();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnOpened()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.Ask(RZ_UIFeed.PAYLOAD_SEASON);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Move(int dir)
+	{
+		RZ_UIW.Scroll(m_wRoot, "ZoneScroll", dir);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! M|line (the majors), Z|line (as the Zone tells it), Y|line (and you, unfinished)
+	override void Redraw()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		bool have = false;
+		if (ui)
+			have = !ui.GetSeason().IsEmpty();
+
+		RZ_UIW.Show(m_wRoot, "Waiting", !have);
+		if (!have)
+			return;
+
+		array<ref array<string>> recs = {};
+		RZ_MenuBase.Records(ui.GetSeason(), recs);
+		string majors = "";
+		string zone = "";
+		string you = "";
+		foreach (array<string> f : recs)
+		{
+			string tag = RZ_UIText.Str(f, 0);
+			string line = RZ_UIText.Str(f, 1) + "\n";
+			if (tag == "M")
+				majors += line;
+			else if (tag == "Z")
+				zone += line;
+			else if (tag == "Y")
+				you += line;
+		}
+
+		if (majors.IsEmpty())
+			majors = "No story this season yet.";
+
+		if (zone.IsEmpty())
+			zone = "The season isn't over. Nobody's writing it down yet.";
+
+		RZ_UIW.SetText(m_wRoot, "MajorsList", majors);
+		RZ_UIW.SetText(m_wRoot, "ZoneList", zone);
+		RZ_UIW.SetText(m_wRoot, "YouList", you);
 	}
 }
 

@@ -62,6 +62,7 @@ class RZ_SaveData
 	int rulesHalf = -1;		// the cure finale's half rule set on top (a faction), -1 none
 	int rulesRoute;			// last season's finale route + 1 (5: the Independent), 0 none
 	int rulesTerms;
+	ref array<string> storyRules = {};	// last season's majors' story rules in force (Director/RZ_StoryRules.c)
 	bool wipeDue;
 
 	bool hasLab;
@@ -163,6 +164,10 @@ class RZ_SeasonRecord
 	int partner;
 	int halfRules = -1;
 	ref array<string> deciders = {};
+	// The epilogue week's plain lines (Director/Epilogue/RZ_Epilogue.c, at the wipe): the Last
+	// Broadcast's version and the 10 strongest beats
+	string broadcast;
+	ref array<string> beats = {};
 }
 
 class RZ_Persistence

@@ -146,6 +146,7 @@ class RZ_ErrandDef
 	string m_sTitle;
 	string m_sFamily = "chore";	// telemetry and novelty: chore, house, aftermath, lost, line, dead, crews, amends, wanderer
 	bool m_bCard;				// once per player per season, at most Cards a day
+	bool m_bAfterCure;			// the epilogue deck: dealt only in the epilogue week, once per identity per subject, outside Cards a day
 	RZ_EErrandAnchor m_eAnchor;
 	int m_iFaction = -1;		// the giver's faction (ANY_HOLDING: the card picks)
 	string m_sRoles;			// roles that give it first ("cook,storekeeper"); others may speak for them

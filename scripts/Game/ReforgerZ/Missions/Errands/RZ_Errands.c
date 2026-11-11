@@ -1386,8 +1386,9 @@ class RZ_Errands
 		if (e.m_Def.m_bCard)
 		{
 			RZ_ErrandLedger ledger = Ledger(e.m_sIdent);
-			if (!ledger.cards.Contains(e.m_Def.m_sKey))
-				ledger.cards.Insert(e.m_Def.m_sKey);
+			string doneKey = CardDoneKey(e.m_Def, e.m_sSubject);
+			if (!ledger.cards.Contains(doneKey))
+				ledger.cards.Insert(doneKey);
 		}
 
 		int n;
@@ -1444,9 +1445,12 @@ class RZ_Errands
 				continue;
 
 			string no = "";
-			if (d.m_bCard && ledger.cards.Contains(d.m_sKey))
+			// The epilogue deck: only in the week, outside the day's cards, once per subject (below)
+			if (d.m_bAfterCure && !RZ_SeasonClock.IsEpilogue())
+				no = "only after the cure";
+			else if (d.m_bCard && !d.m_bAfterCure && ledger.cards.Contains(d.m_sKey))
 				no = "done this season";
-			else if (d.m_bCard && ledger.cardsToday >= m_Settings.m_iCardsPerDay)
+			else if (d.m_bCard && !d.m_bAfterCure && ledger.cardsToday >= m_Settings.m_iCardsPerDay)
 				no = "two cards today";
 			else if (!d.m_bCard && (ledger.CoolUntil(d.m_sKey) > now || ledger.CoolUntil(d.m_sKey + "|" + place) > now))
 				no = "cooling down";
@@ -1463,6 +1467,10 @@ class RZ_Errands
 				if (!d.Why(this, e))
 				{
 					no = "not true";
+				}
+				else if (d.m_bAfterCure && ledger.cards.Contains(CardDoneKey(d, e.m_sSubject)))
+				{
+					no = "done for this one";
 				}
 				else if (!d.Still(this, e))
 				{
@@ -1557,8 +1565,9 @@ class RZ_Errands
 			m_GM.GetFacts().SoftHold(dealt.m_sSubject, dealt.Owner());
 
 		m_aErrands.Insert(dealt);
-		// A card offered counts toward the day's; taken, it's done for the season (Take)
-		if (dealt.m_Def.m_bCard)
+		// A card offered counts toward the day's (not the epilogue deck's); taken, it's done for the
+		// season (Take)
+		if (dealt.m_Def.m_bCard && !dealt.m_Def.m_bAfterCure)
 			ledger.cardsToday++;
 
 		ledger.NoteFamily(dealt.m_Def.m_sFamily);
@@ -1571,6 +1580,17 @@ class RZ_Errands
 		why = string.Format("dealt %1. ", dealt.m_Def.m_sKey) + why;
 		RZ_Log.Info(string.Format("Errands: dealt %1 to %2 by %3 (%4)", dealt.m_Def.m_sKey, RZ_Util.PlayerName(playerId), p.m_sName, AskedWord(unasked)));
 		return dealt;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a taken card is remembered by in the ledger: its key, and for the epilogue deck its key
+	//! and subject (once per identity per beat or place).
+	static string CardDoneKey(RZ_ErrandDef d, string subject)
+	{
+		if (!d.m_bAfterCure)
+			return d.m_sKey;
+
+		return d.m_sKey + "|" + subject;
 	}
 
 	//------------------------------------------------------------------------------------------------
