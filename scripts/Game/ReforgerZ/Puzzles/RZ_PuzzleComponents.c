@@ -442,6 +442,71 @@ class RZ_PuzzleActionHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! "Read" / "Talk to": what RZ_ReadClueAction does, also called by the talk screen's greeting.
+	static void DoRead(RZ_GameModeComponent gm, IEntity owner, int playerId)
+	{
+		RZ_ClueComponent comp = RZ_ClueComponent.Cast(owner.FindComponent(RZ_ClueComponent));
+		if (RouteRead(gm, owner, playerId, comp))
+			return;
+
+		RZ_PuzzleMission m;
+		if (comp)
+			m = FindMission(gm, comp.GetMissionId());
+
+		if (!m)
+		{
+			// A person or thing an ordinary mission tagged (unarmed missions)
+			if (comp && gm.GetMissions())
+			{
+				RZ_Mission plain = gm.GetMissions().FindById(comp.GetMissionId());
+				if (plain && plain.m_eState == RZ_EMissionState.ACTIVE && plain.HandleTalk(gm, playerId, comp.GetClueIndex()))
+					return;
+			}
+
+			gm.NotifyPlayer(playerId, "Nothing", "Whatever was written here has run in the rain. You can't make out a word.");
+			return;
+		}
+
+		m.HandleRead(gm, playerId, comp.GetClueIndex(), owner);
+
+		// "Notes like that usually point somewhere" (new-player guidance, once)
+		if (gm.GetGuidance())
+			gm.GetGuidance().OnClueRead(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A choice slot (RZ_PuzzleChoiceAction), also a reply in the talk screen.
+	static void DoChoice(RZ_GameModeComponent gm, IEntity owner, int playerId, int option, IEntity user)
+	{
+		if (RouteChoice(gm, owner, playerId, option, user))
+			return;
+
+		int objectIndex;
+		RZ_PuzzleMission m = FindForObject(gm, owner, objectIndex);
+		if (m)
+			m.HandleChoice(gm, playerId, objectIndex, option, owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A use slot (RZ_PuzzleUseAction), also a reply in the talk screen.
+	static void DoUse(RZ_GameModeComponent gm, IEntity owner, int playerId, int value, IEntity user)
+	{
+		// A workbench's recipes 4-7 (world interactions)
+		if (RouteUse(gm, owner, playerId, value, user))
+			return;
+
+		int objectIndex;
+		RZ_PuzzleMission m = FindForObject(gm, owner, objectIndex);
+		if (!m)
+		{
+			gm.NotifyPlayer(playerId, "Nothing happens", "Whatever this was for, it's over.");
+			return;
+		}
+
+		m.HandleUse(gm, playerId, objectIndex, value, owner, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static RZ_PuzzleMission FindForObject(RZ_GameModeComponent gm, IEntity owner, out int objectIndex)
 	{
 		objectIndex = -1;

@@ -105,6 +105,8 @@ class RZ_ScreenGuard
 			return;
 
 		m_mOpen.Remove(playerId);
+		if (kind == KIND_TALK && m_GM.GetDialogue())
+			m_GM.GetDialogue().OnScreenGone(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -232,6 +234,9 @@ class RZ_ScreenGuard
 
 		if (kind != KIND_TALK)
 			return;
+
+		if (m_GM.GetDialogue())
+			m_GM.GetDialogue().OnScreenGone(playerId);
 
 		if (reason == "danger" && !speaker.IsEmpty())
 			m_GM.Say(playerId, speaker, faction, "\"Not now!\"");

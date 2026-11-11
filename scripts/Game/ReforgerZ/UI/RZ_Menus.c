@@ -127,6 +127,13 @@ class RZ_MenuBase : ChimeraMenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void OnBack(float value = 0, EActionTrigger reason = 0)
 	{
+		Back();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Esc or B. The talk screen leaves the conversation instead.
+	protected void Back()
+	{
 		Close();
 	}
 

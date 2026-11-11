@@ -300,7 +300,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 		}
 		else if (kind == RZ_UIFeed.PAYLOAD_TALK)
 		{
-			return;
+			RZ_TalkMenu.OnPayload(this, payload);
 		}
 		else
 		{
@@ -419,6 +419,29 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		gm.GetScreenGuard().OnClientClosed(playerId, kind);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A reply in the talk screen, or Leave (RZ_Dialogue.LEAVE), for the node with this serial.
+	void SendTalkPick(int serial, int replyId)
+	{
+		if (Replication.IsServer())
+			RpcAsk_TalkPick(serial, replyId);
+		else
+			Rpc(RpcAsk_TalkPick, serial, replyId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Checked on the server (RZ_Dialogue.Pick): the serial is current, the id was sent and enabled.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_TalkPick(int serial, int replyId)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = OwnerPlayerId();
+		if (!gm || playerId <= 0 || !gm.GetDialogue())
+			return;
+
+		gm.GetDialogue().Pick(playerId, serial, replyId);
 	}
 
 	// ================================================================ Client: commands

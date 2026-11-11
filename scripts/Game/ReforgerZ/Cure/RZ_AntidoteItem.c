@@ -30,6 +30,23 @@ class RZ_AntidoteSearchPredicate : InventorySearchPredicate
 class RZ_AntidoteHelper
 {
 	//------------------------------------------------------------------------------------------------
+	//! True if the character carries an antidote (the talk screen shows the need before you choose).
+	static bool Has(IEntity character)
+	{
+		if (!character)
+			return false;
+
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return false;
+
+		array<IEntity> items = {};
+		RZ_AntidoteSearchPredicate predicate = new RZ_AntidoteSearchPredicate();
+		inv.FindItems(items, predicate);
+		return !items.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Removes one antidote from the character's inventory. True if there was one.
 	static bool TakeOne(IEntity character)
 	{

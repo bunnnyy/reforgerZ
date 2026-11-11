@@ -20,7 +20,7 @@
   .worlddim { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(8,10,11,.42) 0%, rgba(8,10,11,.55) 38%, rgba(6,7,8,.82) 100%); }
 
   /* the talk panel across the bottom */
-  .talk { position: absolute; left: 0; right: 0; bottom: 0; height: 548px; background: var(--deep); border-top: 5px solid var(--acc); box-shadow: 0 -18px 60px rgba(0,0,0,.55); }
+  .talk { position: absolute; left: 0; right: 0; bottom: 0; height: 660px; background: var(--deep); border-top: 5px solid var(--acc); box-shadow: 0 -18px 60px rgba(0,0,0,.55); }
   .inner { position: absolute; left: 240px; right: 240px; top: 38px; bottom: 40px; }
 
   .who { display: flex; align-items: baseline; gap: 18px; }
@@ -42,10 +42,13 @@
   .r.on .pk.num { border-color: var(--acc); }
   .r .pk.a { margin-left: 6px; background: var(--acc); border-color: var(--acc); color: #15171a; }
 
-  .prompts { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 34px; padding-top: 18px; border-top: 1px solid #22262a; font: 600 18px/1 'JetBrains Mono', Consolas, monospace; color: var(--dim); letter-spacing: .04em; }
+  .prompts { position: absolute; left: 1160px; top: 230px; width: 280px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; padding-left: 24px; border-left: 1px solid #22262a; font: 600 18px/1 'JetBrains Mono', Consolas, monospace; color: var(--dim); letter-spacing: .04em; }
   .prompts > span { display: inline-flex; align-items: center; gap: 12px; }
   .prompts .pk { height: 30px; min-width: 30px; font-size: 15px; }
-  .prompts .kb { margin-left: auto; color: var(--faint); font-weight: 500; font-size: 16px; }
+  .prompts .kb { margin-top: 10px; color: var(--faint); font-weight: 500; font-size: 18px; line-height: 1.4; }
+  .r.no { color: #6e6a60; }
+  .r.no .pk.num { opacity: .5; }
+  .need { font: 500 18px/1 'JetBrains Mono', Consolas, monospace; color: var(--dim); }
 
   .callout { position: absolute; font: 600 14px/1.3 'JetBrains Mono', Consolas, monospace; color: rgba(242,194,48,.85); letter-spacing: .1em; }
 </style>
@@ -54,18 +57,18 @@
 <canvas class="scene" data-scene="dusk"></canvas>
 <div class="worlddim"></div>
 <div class="layer">
-  <div class="callout" style="left:240px;top:500px">TALK · THE WORLD STAYS IN VIEW, DIMMED ▼</div>
+  <div class="callout" style="left:240px;top:388px">TALK · THE WORLD STAYS IN VIEW, DIMMED ▼</div>
 
   <div class="talk">
     <div class="inner">
-      <div class="who"><b>Ines Calder</b><span>The Haven · council head · trusts you</span></div>
+      <div class="who"><b>Ines Calder</b><span>The Haven - council head - knows your name</span></div>
       <p class="said">“You're back. Good. The well in Beauregard has gone quiet, and quiet worries me more than screaming.”</p>
 
       <div class="replies">
         <div class="r on"><span class="pk num">1</span><span class="t">What's wrong with the well?</span><span class="tag">a job · Favor</span><span class="pk a">A</span></div>
         <div class="r"><span class="pk num">2</span><span class="t">Heard anything on the road?</span><span class="tag">news</span></div>
         <div class="r"><span class="pk num">3</span><span class="t">What do you make of me?</span></div>
-        <div class="r"><span class="pk num">4</span><span class="t">Let's see the stores.</span><span class="tag">trade</span></div>
+        <div class="r no"><span class="pk num">4</span><span class="t">Buy supplies</span><span class="need">(needs 20 Haven Favor, you have 12)</span></div>
         <div class="r out"><span class="pk num">5</span><span class="t">I'll be going.</span></div>
       </div>
 
@@ -73,12 +76,13 @@
         <span><span class="pk">D-pad</span>Choose</span>
         <span><span class="pk">A</span>Say it</span>
         <span><span class="pk">B</span>Leave</span>
-        <span class="kb">Keys 1–5 pick a reply · Esc leaves</span>
+        <span><span class="pk">LB/RB</span>More</span>
+        <span class="kb">Keys 1–7 pick a reply<br>Esc leaves</span>
       </div>
     </div>
   </div>
 
-  <div class="callout" style="left:1400px;top:672px;width:300px">◀ SELECTED: LIGHTER ROW, AMBER BAR. THE LAST REPLY IS ALWAYS A WAY OUT</div>
+  <div class="callout" style="left:1400px;top:968px;width:300px">◀ SELECTED: LIGHTER ROW, AMBER BAR. A REPLY YOU CAN'T TAKE SHOWS WHAT IT NEEDS. THE LAST IS ALWAYS A WAY OUT</div>
 </div>
 </body>
 </html>

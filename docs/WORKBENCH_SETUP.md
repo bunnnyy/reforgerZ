@@ -363,7 +363,7 @@ Players who pick a locked one keep its gear but play as Unemployed. The log warn
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **171 prefab fields**: 40 on `RZ_GameModeComponent`, 125 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **176 entries**: 146 prefabs the plugin creates, 16 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 14 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 33 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **172 prefab fields**: 40 on `RZ_GameModeComponent`, 126 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **177 entries**: 146 prefabs the plugin creates, 16 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 15 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 33 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -662,6 +662,7 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | the Radio page layout (UI/LAYOUTS.md) | — | UI > Radio page | optional | the Radio tab (empty = Nothing here yet) |
 | (existing prefab) | the Map key page layout (UI/LAYOUTS.md) | — | UI > Map key page | optional | the Map key tab (empty = Nothing here yet) |
 | (existing prefab) | the Hall page layout (UI/LAYOUTS.md) | — | UI > Hall page | optional | the Hall of fame tab (empty = Nothing here yet) |
+| (existing prefab) | the TalkReply layout (UI/LAYOUTS.md) | — | UI > Talk reply layout | optional | the talk screen's reply rows (empty = no talk screen: a person's actions and notices) |
 <!-- /manifest:prefabs -->
 
 ### Stand-in bases
@@ -880,8 +881,9 @@ aren't. The layouts are in `UI/layouts/ReforgerZ/`.
    2. Open `Prefabs/ReforgerZ/UI/RZ_Notebook.et` (written as text on vanilla's carryable notebook,
       with `RZ_NotebookGadgetComponent`): it should show the component, display name Notebook and
       weight 0.1 kg. **UI > Notebook prefab** points at it.
-   3. Open `RZ_ReaderMenu.layout` and `RZ_Hud.layout` (its new `SubtitlePanel`, hidden) the same
-      way. Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
+   3. Open `RZ_ReaderMenu.layout`, `RZ_TalkMenu.layout`, `RZ_TalkReply.layout` and `RZ_Hud.layout`
+      (its new `SubtitlePanel`, hidden) the same way. **UI > Talk reply layout** is set, so the
+      talk screen is on (**Dialogue > Talk screen**). Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
    4. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
       with the pad); after spawning, find the notebook in the inventory and take it in hand. If
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
@@ -1336,6 +1338,13 @@ session, tick off:
   other's log (owner-only notices).
 - [ ] Walk up to a Bastion checkpoint: its warning is a subtitle at the bottom centre in olive,
   not a card; a Perimeter loudspeaker too. With **Subtitles** off, they're cards again.
+- [ ] Talk to a Trader wanderer: the talk screen opens with their name, what they say and the
+  replies; "Buy supplies" shows its price and is dim with what it needs if you're short; pick a
+  reply with the D-pad and A, with 1–7, and with a click; B leaves. Their choice actions don't show
+  in the action menu while the screen is on. Walk off 6 m, or let an infected come close: it
+  closes ("Not now!"). Do the same with a leader's "Talk to whoever's in charge" (Ask for work
+  gives the job as a card, the leader's line in the screen) and a safehouse occupant.
+- [ ] With **UI > Talk reply layout** empty, Talk and the slots are actions with notices again.
 - [ ] Read a puzzle note, a guidance note at spawn and a letter from a search: each opens on the
   paper; a long one has pages (LB/RB, Q/E or the arrows); B or Esc closes it. Have an infected
   walk up while it's open: it closes by itself. A subtitle that comes while reading waits.

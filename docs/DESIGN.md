@@ -22,18 +22,19 @@ Code paths are under `scripts/Game/ReforgerZ/`.
 12. [Haven safehouses](#haven-safehouses)
 13. [Wanderers](#wanderers)
 14. [Leaders](#leaders)
-15. [Missions](#missions)
-16. [Story arcs and headlines](#story-arcs-and-headlines)
-17. [Questlines](#questlines)
-18. [World facts](#world-facts)
-19. [Town memory](#town-memory)
-20. [World interactions](#world-interactions)
-21. [New-player guidance](#new-player-guidance)
-22. [Cure research and the season's end](#cure-research-and-the-seasons-end)
-23. [Season pacing](#season-pacing)
-24. [Seasons](#seasons)
-25. [Loose items](#loose-items)
-26. [Persistence](#persistence)
+15. [Talking to people](#talking-to-people)
+16. [Missions](#missions)
+17. [Story arcs and headlines](#story-arcs-and-headlines)
+18. [Questlines](#questlines)
+19. [World facts](#world-facts)
+20. [Town memory](#town-memory)
+21. [World interactions](#world-interactions)
+22. [New-player guidance](#new-player-guidance)
+23. [Cure research and the season's end](#cure-research-and-the-seasons-end)
+24. [Season pacing](#season-pacing)
+25. [Seasons](#seasons)
+26. [Loose items](#loose-items)
+27. [Persistence](#persistence)
 
 ## Principles
 
@@ -901,6 +902,55 @@ On Arland that's about 9–10 leaders; on Everon about 16–20.
 *Simplified:* interim posts (territory off) are leader seats only, with no guards or shop.
 A leader's "people" who can see a rogue job are their faction's other seats within 60 m and,
 for the Haven, its wanderers.
+
+## Talking to people
+
+Code: `Dialogue/RZ_Dialogue.c`, `Dialogue/RZ_TalkSpeakers.c`; the screen is `UI/RZ_TalkMenu.c`
+([UI.md](UI.md#the-talk-screen)).
+
+Look at a person and the action menu shows one line, **Talk to ...**. It opens the talk screen:
+what they say, and your replies as a list. You stay in the conversation until you leave, walk
+off (6 m), wait 120 s with no reply, or danger comes (the [screen guard](UI.md#how-the-scripts-fit):
+then they say "Not now!" and it closes). You can't move while talking; the world keeps running.
+
+**Who:** stronghold and seat leaders (and the quartermaster's "Talk to whoever's in charge"),
+safehouse occupants, named people at holdings, the wanderers, the Long Table's people, and the
+people missions and questlines spawn. Any living character with the puzzle components. Bodies,
+objects, spots and doors keep their actions. Road posts have no speaker body.
+
+**One engine, built on what's there.** Every one of these people already has a Talk handler and
+up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
+
+- **Greeting:** their Talk handler, run while the engine *captures* the player's notices and
+  spoken lines whose title is the speaker's (a leader's is known; otherwise the first title the
+  greeting uses). Those lines go into the screen. Anything else (a contract offer, a standing
+  change) still comes as a card. A line from the speaker that arrives later (a treatment
+  finishing) also goes into the screen while it's open.
+- **Replies:** the person's visible choice and use slots (their labels are on the server), plus
+  **I'll be going.** A leader's are Ask for work, Heard anything?, What do you make of me?
+- **A pick** runs that slot's handler, capturing again. If it said nothing new (the answer was a
+  card), what they said stays.
+- **Shown before you choose, never rolled.** A reply you can't take stays in the list, dim, with
+  what it needs: a price in Favor in its label ("Buy supplies", needs 20 Haven Favor, you have 12),
+  "Give them your antidote" (you have none), "Share some food" (you have nothing to eat). There are
+  no dice.
+
+So every built rule (Rob's Infamy, the Trader's price, a leader's refusal at attitude −2, an
+exile's shut door) works exactly as built. Talk adds no rewards, no items and no memory.
+
+**Safety.** At most 32 conversations (and readers) on the server; a pick is checked for the
+current serial, a reply id that was sent and enabled, a living player in range and not in danger,
+and at most one every 0.3 s; Talk at most every 2 s. One node at a time goes to that player only.
+Nothing is saved.
+
+**The action list.** With the talk screen on (**Dialogue > Talk screen**, and **UI > Talk reply
+layout** set), a person's choice and use actions hide, and so do the quartermaster's leader
+actions for work, news and standing. Without it, or on a client where the screen can't open,
+nothing hides and Talk and the slots work as actions, with notices.
+
+*Simplified:* the quartermasters' shop and service actions stay actions (the shop screen is
+planned). Conversation files, topics, persuasion and threats, regard and promises are later
+ideas, not built.
 
 ## Missions
 

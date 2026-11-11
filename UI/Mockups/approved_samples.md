@@ -1,8 +1,11 @@
 # Screens the author approved on 2026-11-11 (inline samples, 680 px wide)
 
+The talk, subtitles and reader samples are now full-size mockups (`talk.html`, `hud.html`,
+`reader.html`) and screens in [docs/UI.md](../../docs/UI.md). The two below are still to mock up.
+
 The author's words: car repair "is perfect, keep that" (job card + rough side view of the car,
 short bonnet); talk, subtitles and reader "perfect", with "the text a bit easier to read, like what
-they are saying" (the readable versions below); the quartermaster shop screen was shown and asked
+they are saying" (the readable versions are in those mockups); the quartermaster shop screen was shown and asked
 for ("rather than the 100 scroll items in interact"). Palette from docs/UI.md: panel #121416,
 deeper panel #0f1113, bone #E8E2D0, bright bone #F4F0E6 for spoken text, dim #A39E90, faint
 #6d6a62, lines #22262a / #2e3236, Haven amber #E3A33B (accent and pad-button rings #6b5222),
@@ -33,31 +36,7 @@ headlight ellipse at (56,71) rx 5 ry 4 #E8E2D0; tail light rect at (308,64) 4x9 
 front wheel dashed circle (92,90) r16; rear wheel circle (262,90) r16 with hub r6; ground line y=107.
 Markers: 1 (76,55), 2 (102,51), 3 (92,90), 4 (286,70), 5 (160,49), r=9, ring r=13.
 
-## 2. Talk (dialogue)
-
-The world dimmed above. A panel across the bottom (deeper panel, a 3 px top border in the person's
-faction colour): the name in the faction colour (15 px, bold) then "The Haven · council head ·
-trusts you" (dim, 12 px); their line in bright bone at 18 px, line height 1.5, in quotes ("You're
-back. Good. The well in Beauregard has gone quiet, and quiet worries me more than screaming.");
-then the replies as rows at 14 px, each with a pad key number (1, 2, 3...), the selected one with a
-lighter background and a 3 px accent bar on the left; a reply may carry a dim tag on the right
-("a job · Favor", "trade"); the last reply is always a way out ("I'll be going.").
-
-## 3. Subtitles
-
-In play, at the bottom centre (max 80% wide), on a solid dark backing (rgba(12,14,15,.88), 4 px
-radius): the speaker's name on its own line in their faction colour (13 px, bold), then what they
-say in bright bone at 18 px, line height 1.45 ("Stop there. Hands where I can see them."). The notice
-cards stay where they are (top right), so the two never mix.
-
-## 4. Reader (notes, letters, books)
-
-The world dimmed (rgba(10,12,13,.72)); a sheet of paper in the middle (#EDE7D6, ink #1c1a16), about
-half the screen's height or more: the title (17 px, bold: "Note on the dashboard"), a dim line on the
-paper (#5f5c55, 12 px: "Folded twice, in pencil"), the text at 16 px, line height 1.6; at the foot
-"1 / 1" left (pages) and "B close" right. You can't move while it's open.
-
-## 5. Quartermaster's shop
+## 2. Quartermaster's shop
 
 Header: "Haven stores · Ada Reyes, quartermaster in Morton" left; right "You're Trusted · 64 Favor"
 (Favor in amber); a 2 px accent line under the header. Category tabs (LB/RB): Food and water,

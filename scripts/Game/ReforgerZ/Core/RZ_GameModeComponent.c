@@ -409,6 +409,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_LooseItems m_LooseItems;
 	protected ref RZ_UIFeed m_UIFeed;
 	protected ref RZ_ScreenGuard m_ScreenGuard;
+	protected ref RZ_Dialogue m_Dialogue;
 	protected ref RZ_Seasons m_Seasons;
 	protected ref RZ_WorldFacts m_Facts;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
@@ -472,6 +473,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_ScreenGuard)
 			m_ScreenGuard.Forget(playerId);
+
+		if (m_Dialogue)
+			m_Dialogue.Forget(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -617,6 +621,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Missions = new RZ_MissionManager(this);
 		m_UIFeed = new RZ_UIFeed(this);
 		m_ScreenGuard = new RZ_ScreenGuard(this);
+		m_Dialogue = new RZ_Dialogue(this);
 		m_Infection = new RZ_Infection(this, m_InfectionSettings);
 		m_BiteDetector = new RZ_BiteDetector(this, m_fBiteChance, m_fBiteReach, m_InfectionSettings);
 		m_Perks = new RZ_FactionPerks(this);
@@ -814,6 +819,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_DialogueSettings GetDialogueSettings() { return m_DialogueSettings; }
 	//! Server: open talk screens and readers, closed when danger comes (UI/RZ_ScreenGuard.c).
 	RZ_ScreenGuard GetScreenGuard() { return m_ScreenGuard; }
+	//! Server: open conversations in the talk screen (Dialogue/RZ_Dialogue.c).
+	RZ_Dialogue GetDialogue() { return m_Dialogue; }
 	RZ_Seasons GetSeasons() { return m_Seasons; }
 	//! What's true in the world right now, for content (docs/DESIGN.md, "World facts").
 	RZ_WorldFacts GetFacts() { return m_Facts; }
@@ -2366,6 +2373,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! filters for itself. Never both.
 	void NotifyPlayerAs(int playerId, string title, string text, RZ_ENoticeTag tag)
 	{
+		// A line from the person this player is talking to goes into the talk screen
+		if (m_Dialogue && m_Dialogue.Capture(playerId, title, text))
+			return;
+
 		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);
 		if (!pc)
 			return; // not connected: no screen to show it on
@@ -2386,6 +2397,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! "Subtitles"), owner-only like notices. speaker: their name; faction: RZ_EFaction or -1.
 	void Say(int playerId, string speaker, int faction, string text)
 	{
+		if (m_Dialogue && m_Dialogue.Capture(playerId, speaker, text))
+			return;
+
 		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);
 		if (!pc)
 			return;

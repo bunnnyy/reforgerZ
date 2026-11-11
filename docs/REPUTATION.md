@@ -336,9 +336,11 @@ line. You can also turn a rogue leader in: most rogue deliveries have a drop at 
 
 ### Talking to leaders
 
-Talk to a leader (their body, or `RZ_LeaderAction` on the quartermaster): **Ask for work**
-(their personal job, else the stronghold's contracts), **Ask for news** (other leaders'
-loyalties, hungry safehouses, noise, rumours) and **Ask what they think of you**. Radio
+Talk to a leader (their body, or "Talk to whoever's in charge" on the quartermaster) and the
+talk screen opens ([DESIGN.md](DESIGN.md#talking-to-people)): **Ask for work** (their personal
+job, else the stronghold's contracts), **Heard anything?** (other leaders' loyalties, hungry
+safehouses, noise, rumours) and **What do you make of me?**. Without the talk screen these are
+actions on the leader. Radio
 contracts are briefed in the voice of the nearest Loyal leader of the giver, whose traits set
 the pay.
 

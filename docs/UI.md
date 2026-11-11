@@ -83,7 +83,8 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Notebook: Map key | `map_legend.png` | The marker icons the map draws, with one line each | `RZ_MapKeyPage` | Static page built, not checked in play |
 | Notebook: Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallPage` | Page built, not checked in play; no mockup |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), and a box to write one with a Post button. Opened when you read the board, with **UI > Board menus** on | `RZ_NoticeBoardMenu` | Layout built; **Board menus** is off; no mockup |
-| Subtitles | `hud.png` (planned) | What people say outside the talk screen, at the bottom centre: the speaker in their faction colour, the line in bright bone ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` built as text in the HUD layout, not checked in play |
+| Talk | `talk.png` | A person's name and who they are, what they say in large type, your replies with what each needs ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play |
+| Subtitles | `hud.png` | What people say outside the talk screen, at the bottom centre: the speaker in their faction colour, the line in bright bone ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
 | The map | — | The marker icons on the vanilla map, per player ([below](#the-map)) | `RZ_MapIconsUI` | Layout built, not on the map yet |
 
@@ -185,6 +186,30 @@ to each of the 13 loadouts, so it works with any loadout.
 
 The notice board opens when you read a safehouse board, with **UI > Board menus** on.
 
+### The talk screen
+
+As approved (`talk.html`): the world stays in view, dimmed (#08090A at 55%); a panel 660 tall
+across the bottom (#0F1113) with a 5 px top border in their faction colour. Inside, 240 in from
+each side: their name in that colour (bold 30) and the sub-line, "The Haven - council head - knows
+your name" (21, dim); what they say (38, bright bone, in a box that scrolls with LB/RB or Q/E
+when it's long); your replies as a numbered list (25), the selected one lighter with an accent
+bar, a dim tag on the right ("a job", "news", "trade", "20 Haven Favor"), a reply you can't take
+dim with what it needs; the last is always "I'll be going.". The footer prompts sit in a column
+to the right of the replies.
+
+| | Keyboard and mouse | Gamepad |
+|---|---|---|
+| Choose | up/down, or **1–7** (`RZ_Reply1`–`7`) to say one at once | D-pad or left stick |
+| Say it | Enter, or click | A |
+| Leave | Esc | B |
+| Read more of a long line | Q/E, or the wheel | LB/RB |
+
+How it works is in [DESIGN.md](DESIGN.md#talking-to-people). The screen reads `PAYLOAD_TALK`:
+`T|serial|faction|name|sub|said` (line breaks as `^`), then `R|id|label|tag|need|enabled` per
+reply; `X|reason` closes it. A pick goes back as `RpcAsk_TalkPick(serial, id)`; Esc, B or another
+menu on top send Leave. If the menu can't open on a client, that client shows the line as a card,
+leaves, and shows the person's actions again (`RZ_TalkMenu.Available`).
+
 ### Subtitles and the reader
 
 **Subtitles.** What people say *outside* the talk screen shows at the **bottom centre**: a solid
@@ -212,7 +237,8 @@ Which lines are subtitles:
 | `RZ_Leaders` | a refusal at attitude −2 |
 | The screen guard | "Not now!" when danger closes a talk |
 
-Everything else stays a card; radio voices stay cards (they're radio).
+Everything else stays a card; radio voices stay cards (they're radio). While the talk screen is
+open, the person's own lines go into it instead.
 
 **The reader.** Notes open on a sheet of paper in the middle of the screen, as in `reader.html`: the
 world dimmed; the paper (#EDE7D6, ink #1C1A16) 960 × 800: the title (bold 34), a dim line on how it
@@ -294,6 +320,8 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 |---|---|---|
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes**; with Stealth on, stealth's own update (every second) hands it each player's visibility, sent the same way as a level 0–5 and whether it counts as hidden (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal (with the questlines the player is part of and the lab's line), background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the radio log on the client for this life. A notice board payload from the server opens the board menu |
+| `RZ_Dialogue`, `RZ_TalkSpeaker` (`RZ_TalkGeneric`, `RZ_TalkLeader`), `RZ_TalkNeeds` | server | Conversations: sessions, capture, replies and their needs, picks ([DESIGN.md](DESIGN.md#talking-to-people)) |
+| `RZ_TalkMenu` | client (`ChimeraMenuBase`) | The talk screen ([The talk screen](#the-talk-screen)) |
 | `RZ_Reader`, `RZ_ReaderMenu` | server, client | The reader: one player's paper, a page at a time ([Subtitles and the reader](#subtitles-and-the-reader)) |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk screens and readers and closes them in danger (below) |
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, sent as commands to the server, which checks them again. Registered with the first notice |

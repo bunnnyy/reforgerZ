@@ -153,6 +153,9 @@ class RZ_UISettings
 	[Attribute("700", desc: "Reader: about this many characters to a page; pages break at the end of a paragraph")]
 	int m_iReaderPageChars;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Talk screen: the layout of one reply row (UI/LAYOUTS.md, TalkReply). Empty = no talk screen: a person's actions and notices, as before", "layout")]
+	ResourceName m_sTalkReplyLayout;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Standing page layout (UI/LAYOUTS.md). Empty = the tab says Nothing here yet", "layout")]
 	ResourceName m_sStandingPage;
 

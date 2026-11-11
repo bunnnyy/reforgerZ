@@ -207,6 +207,7 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_NotebookMenu` | `RZ_NotebookMenu` | `RZ_NotebookMenu.layout` |
 | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu.layout` |
 | `RZ_ReaderMenu` | `RZ_ReaderMenu` | `RZ_ReaderMenu.layout` |
+| `RZ_TalkMenu` | `RZ_TalkMenu` | `RZ_TalkMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `RZ_RadioFilter`
@@ -378,6 +379,48 @@ Frame HallPage (root)
 │  └─ Text PastList      wraps, 14, dim, in a ScrollLayout
 └─ Text   Waiting        centred, italic 22, "Reading the names..." (until the data arrives)
 ```
+
+## Talk screen: `RZ_TalkMenu.layout` and `RZ_TalkReply.layout`
+
+The talk screen (`RZ_TalkMenu` preset), from `UI/Mockups/talk.html`. Written as text.
+
+```
+Frame (root, full screen)
+├─ Image   Dim             full screen, #08090A at 55% (flat; the mockup's gradient would need a texture)
+└─ Frame   TalkPanel       full width, 660 high, anchored to the bottom
+   ├─ Image  (TalkBg)        #0F1113
+   ├─ Image  TalkAccent      full width × 5, top edge, tinted with the faction colour
+   ├─ HorizontalLayout (TalkWho)  at (240, 34)
+   │  ├─ Text  TalkName      condensed bold 30, tinted with the faction colour
+   │  └─ Text  TalkSub       regular 21, dim, 18 after the name
+   ├─ ScrollLayout SaidScroll  at (240, 86), 1,340 × 170 (LB/RB and the wheel scroll it)
+   │  └─ SizeLayout (SaidWidth)  1,310 wide
+   │     └─ Text TalkSaid    regular 38, #F4F0E6, wraps
+   ├─ VerticalLayout Replies   at (240, 268), 1,120 wide: the reply rows
+   ├─ VerticalLayout Prompts   at (1400, 268), 280 wide: the footer prompts the script makes
+   ├─ Text   PromptsText     the same place, mono bold 18, dim: the static prompts, hidden once made
+   └─ Text   (KeysHint)      at (1400, 440), mono 18, faint: "KEYS 1-7 PICK A REPLY, ESC LEAVES"
+```
+
+`RZ_TalkReply.layout` (**UI > Talk reply layout**), one row, created into `Replies`. The root
+is a `Button` named `ReplyRow` (a click says it):
+
+```
+Button ReplyRow (root, 4 below it)
+└─ SizeLayout (ReplySize)    1,120 × 52
+   └─ Overlay (ReplyBox)
+      ├─ Image  ReplyBg       #1B1F22, shown on the selected row
+      ├─ Image  ReplyBar      5 × 52, left edge, tinted with the faction colour, shown on the selected row
+      └─ HorizontalLayout (ReplyLine)  padding 18 left, 20 right, centred vertically
+         ├─ SizeLayout (ReplyNumBox) 34 × 34, 20 before the text
+         │  └─ Overlay: Panel (ReplyNumLine, border #6B5222) and Text ReplyNum (mono bold 17, tinted)
+         ├─ Text   ReplyText     regular 25, fills the row (bright on the selected row, faint when it can't be picked)
+         ├─ Text   ReplyTag      mono 18, dim, right ("a job", "trade")
+         └─ Text   ReplyNeed     mono 18, dim, right, hidden unless the reply can't be picked
+```
+
+Unlike the mockup, the pad-key ring isn't rounded (a `Panel` border), and the selected row has
+no extra "A" key on its right (the prompts column shows it).
 
 ## Reader: `RZ_ReaderMenu.layout`
 

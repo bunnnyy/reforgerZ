@@ -36,33 +36,11 @@ class RZ_ReadClueAction : ScriptedUserAction
 		if (!gm || playerId <= 0)
 			return;
 
-		RZ_ClueComponent comp = RZ_ClueComponent.Cast(pOwnerEntity.FindComponent(RZ_ClueComponent));
-		if (RZ_PuzzleActionHelper.RouteRead(gm, pOwnerEntity, playerId, comp))
+		// A living person opens the talk screen, where it's on (docs/DESIGN.md, Talking to people)
+		if (gm.GetDialogue() && gm.GetDialogue().Open(playerId, pOwnerEntity, pUserEntity))
 			return;
 
-		RZ_PuzzleMission m;
-		if (comp)
-			m = RZ_PuzzleActionHelper.FindMission(gm, comp.GetMissionId());
-
-		if (!m)
-		{
-			// A person or thing an ordinary mission tagged (unarmed missions)
-			if (comp && gm.GetMissions())
-			{
-				RZ_Mission plain = gm.GetMissions().FindById(comp.GetMissionId());
-				if (plain && plain.m_eState == RZ_EMissionState.ACTIVE && plain.HandleTalk(gm, playerId, comp.GetClueIndex()))
-					return;
-			}
-
-			gm.NotifyPlayer(playerId, "Nothing", "Whatever was written here has run in the rain. You can't make out a word.");
-			return;
-		}
-
-		m.HandleRead(gm, playerId, comp.GetClueIndex(), pOwnerEntity);
-
-		// "Notes like that usually point somewhere" (new-player guidance, once)
-		if (gm.GetGuidance())
-			gm.GetGuidance().OnClueRead(playerId);
+		RZ_PuzzleActionHelper.DoRead(gm, pOwnerEntity, playerId);
 	}
 }
 
@@ -164,7 +142,8 @@ class RZ_PuzzleChoiceAction : ScriptedUserAction
 		if (comp && comp.IsSlotHidden(true, m_iOption))
 			return false;
 
-		return true;
+		// On a person, the replies are in the talk screen
+		return !RZ_TalkMenu.HidesSlotsOn(GetOwner());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -184,15 +163,7 @@ class RZ_PuzzleChoiceAction : ScriptedUserAction
 		if (!gm || playerId <= 0)
 			return;
 
-		if (RZ_PuzzleActionHelper.RouteChoice(gm, pOwnerEntity, playerId, m_iOption, pUserEntity))
-			return;
-
-		int objectIndex;
-		RZ_PuzzleMission m = RZ_PuzzleActionHelper.FindForObject(gm, pOwnerEntity, objectIndex);
-		if (!m)
-			return;
-
-		m.HandleChoice(gm, playerId, objectIndex, m_iOption, pOwnerEntity);
+		RZ_PuzzleActionHelper.DoChoice(gm, pOwnerEntity, playerId, m_iOption, pUserEntity);
 	}
 }
 
@@ -229,7 +200,7 @@ class RZ_PuzzleUseAction : ScriptedUserAction
 		if (comp && comp.IsSlotHidden(false, m_iValue))
 			return false;
 
-		return true;
+		return !RZ_TalkMenu.HidesSlotsOn(GetOwner());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -249,18 +220,6 @@ class RZ_PuzzleUseAction : ScriptedUserAction
 		if (!gm || playerId <= 0)
 			return;
 
-		// A workbench's recipes 4-7 (world interactions)
-		if (RZ_PuzzleActionHelper.RouteUse(gm, pOwnerEntity, playerId, m_iValue, pUserEntity))
-			return;
-
-		int objectIndex;
-		RZ_PuzzleMission m = RZ_PuzzleActionHelper.FindForObject(gm, pOwnerEntity, objectIndex);
-		if (!m)
-		{
-			gm.NotifyPlayer(playerId, "Nothing happens", "Whatever this was for, it's over.");
-			return;
-		}
-
-		m.HandleUse(gm, playerId, objectIndex, m_iValue, pOwnerEntity, pUserEntity);
+		RZ_PuzzleActionHelper.DoUse(gm, pOwnerEntity, playerId, m_iValue, pUserEntity);
 	}
 }

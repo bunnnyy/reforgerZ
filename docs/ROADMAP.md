@@ -48,7 +48,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Contracts that give a rough area (a 500 m circle) until you're close; Radio Operators and Trusted players get the spot | [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
-| The UI: an original icon set (61 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the notebook (Standing, Journal, Radio, Map key and Hall of fame as tabs, opened with N, the pause menu's Notebook button or the notebook item every life carries; gamepad and mouse), notices paced a few at a time by importance and sent only to their player, spoken lines as subtitles at the bottom of the screen, notes and letters in a paper reader (danger closes it), the notice board menu, chat commands (`/note`), a deploy-menu background panel with the loadout's gear and locked loadouts unavailable, and the marker icons on the map, fed per player from the server | [UI.md](UI.md) |
+| The UI: an original icon set (61 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the notebook (Standing, Journal, Radio, Map key and Hall of fame as tabs, opened with N, the pause menu's Notebook button or the notebook item every life carries; gamepad and mouse), notices paced a few at a time by importance and sent only to their player, a talk screen for every person who talks (their lines, your replies with what each needs shown before you choose; gamepad, keys 1–7 and mouse), spoken lines as subtitles at the bottom of the screen, notes and letters in a paper reader (danger closes it), the notice board menu, chat commands (`/note`), a deploy-menu background panel with the loadout's gear and locked loadouts unavailable, and the marker icons on the map, fed per player from the server | [UI.md](UI.md) |
 | Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout, with a vanilla or Workshop prefab for 152 of its entries and the 13 loadouts), the Workbench plugin **ReforgerZ: Create prefabs** (run for real; a second run changes nothing) with a dry run and a checklist fallback, `tools/icon_atlas.py` for the icon atlas and imageset, and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
 | The first Workbench build: 159 prefabs (156 the plugin made from the manifest, many of them on stand-in bases, plus the player controller with the HUD and the faction and loadout managers), the Arland world with the game mode, the four factions and their hidden variants and the 13 background loadouts, its scenario, the 12 UI layouts, the icon atlas and imageset, and the screens and their keys in the menu and input configs. It starts in Workbench play with no script exceptions | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), [UI.md](UI.md) |
 
@@ -84,18 +84,14 @@ The prefabs were filled in by text edits on 2026-11-11; their reviewers found th
 ### UI
 - **Controllers:** check the whole mod with a gamepad and fix what doesn't work
   ([UI.md](UI.md#controllers)). Planned.
-- **Talking to people:** F, then **Talk**, opens a dialogue screen: what they say, and your replies
-  as a list you pick with the mouse or a pad, instead of a long list of actions on them. Being
-  designed.
 - **The car repair screen:** a job card (each job, what you need, the button that does it) beside a
   rough side view of the car with each job lit where it is. Planned.
 - **The quartermaster's shop screen:** categories as tabs, items with their Favor price and the
   standing they need, a picture of the item, and a details panel with Buy, instead of a long list of
   actions. Planned.
-- **Mockups of the approved screens:** the car repair, talk, subtitles, reader and shop screens the
-  author approved are described in `UI/Mockups/approved_samples.md`. Make full-size mockups of them in
-  `UI/Mockups/` (`talk.html` and `reader.html` are half done), add them to the screens table in
-  [UI.md](UI.md), then delete that file.
+- **Mockups of the approved screens:** the car repair and shop screens the author approved are
+  described in `UI/Mockups/approved_samples.md`. Make full-size mockups of them in `UI/Mockups/`,
+  add them to the screens table in [UI.md](UI.md), then delete that file.
 
 ### World interactions (from play-testing)
 - **Loose loot:** loot lies in houses and you pick it up; no search prompts on furniture or
