@@ -3979,6 +3979,12 @@
    "covers": "Console prefab, takeover (30 s), cooldown (10 min, halved with power)"
   },
   {
+   "category": "World",
+   "object": "Long Table",
+   "field": "m_LongTableSettings",
+   "covers": "**Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table))"
+  },
+  {
    "category": "Director",
    "object": "Stages (list)",
    "covers": "Per-stage overrides; empty = the built-in four (8, 16 and 24 hours played; [DESIGN.md](DESIGN.md#season-pacing))"
@@ -4232,6 +4238,22 @@
    "label": "Radio station",
    "cls": "RZ_RadioStationSettings",
    "defaults": {"m_bEnabled": "1", "m_fTakeoverSeconds": "30", "m_fCooldownMinutes": "10"}
+  },
+  {
+   "field": "m_LongTableSettings",
+   "category": "World",
+   "label": "Long Table",
+   "cls": "RZ_LongTableSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_fChance": "0.75",
+    "m_fHungerPerHour": "6",
+    "m_fTakeHours": "3",
+    "m_fBodyRadius": "300",
+    "m_bHostOnRoad": "1",
+    "m_bGuestRule": "1",
+    "m_sTradeWords": "mag,magazine,ammo,cartridge,bandage,medkit,firstaid,first_aid,morphine,saline,tourniquet"
+   }
   },
   {
    "field": "m_EnvironmentSettings",

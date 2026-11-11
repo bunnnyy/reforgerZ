@@ -57,6 +57,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Radio station: a broadcast point players can take over to send preset messages (console prefab, cooldown; cosmetic only, docs/DESIGN.md, Time and environment)", category: "ReforgerZ|World")]
 	protected ref RZ_RadioStationSettings m_RadioStationSettings;
 
+	[Attribute(desc: "The Long Table: some seasons, one small family in one farmhouse in an empty part of the map, who are kind to strangers and eat people; its chance, hunger, takings, the host on the road, the guest rule, trade keywords (docs/DESIGN.md, The Long Table)", category: "ReforgerZ|World")]
+	protected ref RZ_LongTableSettings m_LongTableSettings;
+
 	// ---------------------------------------------------------------- Director / zombies
 	[Attribute(desc: "Stage overrides. Leave empty to use the built-in defaults", category: "ReforgerZ|Director")]
 	protected ref array<ref RZ_StageSettings> m_aStages;
@@ -367,6 +370,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Territory m_Territory;
 	protected ref RZ_SupplyLines m_Supply;
 	protected ref RZ_FactionLife m_FactionLife;
+	protected ref RZ_LongTable m_LongTable;
 	protected ref RZ_Interactions m_Interactions;
 	protected ref RZ_LooseItems m_LooseItems;
 	protected ref RZ_UIFeed m_UIFeed;
@@ -468,6 +472,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_RadioStationSettings)
 			m_RadioStationSettings = RZ_RadioStationSettings.Cast(RZ_Util.NewWithDefaults("RZ_RadioStationSettings"));
+
+		if (!m_LongTableSettings)
+			m_LongTableSettings = RZ_LongTableSettings.Cast(RZ_Util.NewWithDefaults("RZ_LongTableSettings"));
 
 		if (!m_StorySettings)
 			m_StorySettings = RZ_StorySettings.Cast(RZ_Util.NewWithDefaults("RZ_StorySettings"));
@@ -573,6 +580,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Territory = new RZ_Territory(this, m_TerritorySettings);
 		m_Supply = new RZ_SupplyLines(this, m_SupplySettings);
 		m_FactionLife = new RZ_FactionLife(this, m_FactionLifeSettings);
+		m_LongTable = new RZ_LongTable(this, m_LongTableSettings);
 		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
 
 		// A wipe that came due last run (the wipe cycle) or one by hand is carried out now:
@@ -621,6 +629,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_FactionLife.Setup();
 		m_Territory.Setup();
 		m_Supply.Setup();
+		// The Long Table: once a season, a farm far from every holding, safehouse and the lab
+		m_LongTable.Setup();
 		// Searching, cars, crafting, traps, fire, radios: keep off safehouses, holdings and the lab
 		m_Interactions.Setup();
 		// Arcs are made of the missions, wanderers, safehouses, territory and trucks above
@@ -676,6 +686,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Territory.Tick(dt, ids, players);
 		m_Supply.Tick(dt, ids, players);
 		m_FactionLife.Tick(dt, ids, players);
+		m_LongTable.Tick(dt, ids, players);
 		m_StoryArcs.Tick(dt, ids, players);
 		m_Questlines.Tick(dt, ids, players);
 		m_Checkpoints.Tick(dt, ids, players);
@@ -794,6 +805,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Territory GetTerritory() { return m_Territory; }
 	RZ_SupplyLines GetSupply() { return m_Supply; }
 	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
+	RZ_LongTable GetLongTable() { return m_LongTable; }
 	RZ_Interactions GetInteractions() { return m_Interactions; }
 	RZ_GuidanceSettings GetGuidanceSettings() { return m_GuidanceSettings; }
 	RZ_ContractSettings GetContractSettings() { return m_ContractSettings; }
@@ -2068,6 +2080,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Territory.Restore(data.territory);
 		m_Supply.Restore(data.supply);
 		m_FactionLife.Restore(data.factionLife);
+		m_LongTable.Restore(data.longTable);
 		m_TownMemory.Restore(data.towns);
 		m_PowerGrid.Restore(data.power);
 		m_RadioStation.Restore(data.radio);
@@ -2125,6 +2138,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_FactionLife && m_FactionLife.IsActive())
 			data.factionLife = m_FactionLife.Save();
+
+		if (m_LongTable && m_LongTable.IsEnabled())
+			data.longTable = m_LongTable.Save();
 
 		if (m_TownMemory && m_TownMemory.IsEnabled())
 			data.towns = m_TownMemory.Save();

@@ -81,6 +81,10 @@ class RZ_SaveData
 	// World interactions: searched spots, opened locks, burned buildings, stripped wrecks, fixable cars
 	ref RZ_InteractionSave interactions;
 
+	// The Long Table (World/RZ_LongTable.c): this season's roll, the farm, its people, hunger,
+	// suspicion, what it took, its tells on the road and what it remembers of each character
+	ref RZ_LongTableSave longTable;
+
 	ref array<ref RZ_SettlementSave> settlements = {};
 	ref array<ref RZ_PlayerProfile> profiles = {};
 }

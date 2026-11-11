@@ -26,7 +26,8 @@ class RZ_EventHelp
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A town where people live or a faction holds ground: a safehouse, a holding, the lab.
+	//! A town where people live or a faction holds ground: a safehouse, a holding, the lab, the
+	//! Long Table's farm.
 	static bool IsLivedIn(RZ_GameModeComponent gm, int idx)
 	{
 		RZ_Safehouses houses = gm.GetSafehouses();
@@ -35,6 +36,10 @@ class RZ_EventHelp
 
 		RZ_Territory territory = gm.GetTerritory();
 		if (territory && territory.IsActive() && territory.FindInTown(idx))
+			return true;
+
+		// The Long Table's farm: someone lives there, whatever else is true of it
+		if (gm.GetLongTable() && gm.GetLongTable().IsHouseTown(idx))
 			return true;
 
 		return gm.HasLab() && gm.GetLabSettlement() == idx;

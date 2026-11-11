@@ -1088,6 +1088,10 @@ class RZ_Safehouses
 				walked++;
 		}
 
+		// The ones who were just gone are alone on the roads (the Long Table may meet one of them)
+		if (m_GM.GetLongTable() && leaving - moved - walked > 0)
+			m_GM.GetLongTable().OnLeftOntoRoads(h.m_vPos, h.m_sName, leaving - moved - walked);
+
 		NotifyHaven(string.Format("The safehouse in %1 ran out of food. %2 people left (%3 to other safehouses). %4 remain. Bring food.",
 			h.m_sName, leaving, moved, h.m_iPopulation));
 	}

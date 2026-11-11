@@ -756,6 +756,125 @@ class RZ_Wanderers
 			w.Remember(ident, flag);
 	}
 
+	// ---------------------------------------------------------------- The Long Table (World/RZ_LongTable.c)
+	//------------------------------------------------------------------------------------------------
+	//! A living wanderer on the road as data (no body, nobody within `clear` m), walking a straight
+	//! route that passes within `radius` of pos. Never the Kid, nor someone bitten, held, escorted
+	//! or nudged. -1 if none.
+	int FindPassingNear(vector pos, float radius, float clear, array<IEntity> players)
+	{
+		foreach (RZ_Wanderer w : m_aList)
+		{
+			if (!w.m_bAlive || w.m_bHasBody || w.m_iHeldBy >= 0 || w.IsBitten() || w.m_iEscortPlayer > 0 || w.m_iNudgePlayer > 0)
+				continue;
+
+			if (w.m_eRole == RZ_EWandererRole.KID || w.m_eState != RZ_EWandererState.TRAVEL)
+				continue;
+
+			if (RZ_Util.NearestDistance(w.m_vPos, players) < clear)
+				continue;
+
+			if (RZ_LongTable.DistToSegmentXZ(pos, w.m_vPos, w.m_vDest) <= radius)
+				return w.m_iId;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a living wanderer is going ("the safehouse in Levie"), "" if nowhere.
+	string GetDestName(int id)
+	{
+		RZ_Wanderer w = Find(id);
+		if (!w || !w.m_bAlive)
+			return "";
+
+		return w.m_sDestName;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! RZ_EWandererRole of a wanderer, -1 if unknown.
+	int GetRole(int id)
+	{
+		RZ_Wanderer w = Find(id);
+		if (!w)
+			return -1;
+
+		return w.m_eRole;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone who never arrived: gone from the roads as data, with no news of a death (the Long
+	//! Table's "never arrived" is the news). Replaced like the dead, a real day later.
+	bool TakeOffRoad(int id)
+	{
+		RZ_Wanderer w = Find(id);
+		if (!w || !w.m_bAlive)
+			return false;
+
+		DespawnBody(w);
+		w.m_bAlive = false;
+		w.m_fDiedAt = m_fClock;
+		w.m_iEscortPlayer = -1;
+		w.m_iNudgePlayer = -1;
+		w.m_iHeldBy = -1;
+		w.m_fBittenLeft = -1;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The usual bitten wanderer (they head for a safehouse; an antidote within 20 minutes saves
+	//! them), for a questline that sent a bitten one on his way. False if they can't be.
+	bool BiteOnRoad(int id)
+	{
+		RZ_Wanderer w = Find(id);
+		if (!w || !w.m_bAlive || w.IsBitten() || w.m_iHeldBy >= 0)
+			return false;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		OnBitten(w, ids, players);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone takes to the roads with this role and first name (the Long Table's boy as the Kid,
+	//! its host as a Scavenger). Fills a dead slot or a free place. Their title, or "" if the roster
+	//! is full or it's the Kid and a Kid is already on the roads.
+	string AddWithRole(int role, string name, vector pos)
+	{
+		if (!m_Settings.m_bEnabled || m_GM.GetSettlements().IsEmpty())
+			return "";
+
+		if (role == RZ_EWandererRole.KID && HasRole(RZ_EWandererRole.KID))
+			return "";
+
+		int slot = -1;
+		foreach (int i, RZ_Wanderer old : m_aList)
+		{
+			if (!old.m_bAlive)
+			{
+				slot = i;
+				break;
+			}
+		}
+
+		if (slot < 0 && m_aList.Count() >= Math.Max(1, m_Settings.m_iMaxCount))
+			return "";
+
+		RZ_Wanderer w = Generate(role, RZ_Mission.LandPointNear(pos, 10, 40));
+		if (!name.IsEmpty())
+			w.m_sName = name;
+
+		if (slot >= 0)
+			m_aList[slot] = w;
+		else
+			m_aList.Insert(w);
+
+		return w.GetTitle();
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! A Haven wanderer's body within radius of pos (A Quiet Arrangement: "seen").
 	//! Returns their name, "" if nobody saw.
@@ -1736,6 +1855,10 @@ class RZ_Wanderers
 	protected void Die(RZ_Wanderer w, string how, int killer)
 	{
 		string text = string.Format("%1 %2 %3.", w.GetTitle(), how, WhereText(w));
+
+		// The infected's dead are "the dead" to the Long Table for an hour (A Place at the Table)
+		if (m_GM.GetLongTable())
+			m_GM.GetLongTable().OnWandererDied(w.m_vPos, w.GetTitle(), killer <= 0 && (how == "turned" || how.Contains("infected")));
 		DespawnBody(w);
 		w.m_bAlive = false;
 		w.m_fDiedAt = m_fClock;
@@ -2081,6 +2204,14 @@ class RZ_Wanderers
 			string questLine = m_GM.GetQuestlines().OnWandererTalk(playerId, w.m_iId);
 			if (!questLine.IsEmpty())
 				text += "\n" + questLine;
+		}
+
+		// What the road says about the farm past the last village (World/RZ_LongTable.c)
+		if (m_GM.GetLongTable() && w.m_eRole != RZ_EWandererRole.KID)
+		{
+			string tableLine = m_GM.GetLongTable().OnWandererTalk(playerId, w.m_iId, player.GetOrigin());
+			if (!tableLine.IsEmpty())
+				text += "\n" + tableLine;
 		}
 
 		if (w.IsBitten())

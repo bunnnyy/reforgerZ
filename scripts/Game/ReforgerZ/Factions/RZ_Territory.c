@@ -823,6 +823,10 @@ class RZ_Territory
 		if (idx == m_GM.GetLabSettlement() || s.m_fInfection >= 85 || RZ_Perimeter.IsNearLineAt(s.m_vCenter))
 			return 0;
 
+		// Nobody sets up next door to the Long Table's farm (World/RZ_LongTable.c)
+		if (m_GM.GetLongTable() && m_GM.GetLongTable().IsNearHouse(s.m_vCenter, 1500))
+			return 0;
+
 		// A placed quartermaster's town is some faction's stronghold, even before it is seated
 		if (QuartermasterTowns().Contains(idx))
 			return 0;

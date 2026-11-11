@@ -251,7 +251,7 @@ class RZ_PuzzleActionHelper
 
 	//------------------------------------------------------------------------------------------------
 	//! Wanderers (RZ_Wanderers.TAG), safehouse occupants (RZ_Safehouses.TAG_OCCUPANT), faction
-	//! leaders (RZ_Leaders.TAG) and named outpost people (RZ_Territory.TAG) reuse the puzzle civilian; guidance clues (RZ_GuidanceWorld.TAG) the note;
+	//! leaders (RZ_Leaders.TAG), named outpost people (RZ_Territory.TAG) and the Long Table's people (RZ_LongTable.TAG) reuse the puzzle civilian; guidance clues (RZ_GuidanceWorld.TAG) the note;
 	//! the power station (RZ_PowerGrid.TAG), radio station (RZ_RadioStation.TAG) and world interaction spots (RZ_Interactions.TAG) the generic object.
 	//! Their choice actions come here instead of to a mission.
 	//! True if `owner` is one of them (and the choice was handled).
@@ -292,6 +292,15 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetTerritory())
 				gm.GetTerritory().HandlePersonTalk(playerId, comp.GetObjectIndex());
+
+			return true;
+		}
+
+		// The Long Table's people: eat, trade a jar, declare a bite; the host on the road
+		if (comp.GetMissionId() == RZ_LongTable.TAG)
+		{
+			if (gm.GetLongTable())
+				gm.GetLongTable().HandleChoice(playerId, comp.GetObjectIndex(), option, owner, user);
 
 			return true;
 		}
@@ -382,6 +391,15 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetTerritory())
 				gm.GetTerritory().HandlePersonTalk(playerId, comp.GetClueIndex());
+
+			return true;
+		}
+
+		// The Long Table's people, and its tells on the road (a boot on the verge)
+		if (comp.GetMissionId() == RZ_LongTable.TAG)
+		{
+			if (gm.GetLongTable())
+				gm.GetLongTable().HandleRead(playerId, comp.GetClueIndex(), owner);
 
 			return true;
 		}

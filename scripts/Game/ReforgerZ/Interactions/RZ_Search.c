@@ -367,6 +367,26 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A loot pool item whose prefab name has one of the words (the Long Table's jar: a food
+	//! item), "" if the pool has none.
+	ResourceName PickFromPool(array<string> words)
+	{
+		array<ResourceName> found = {};
+		FromPool(words, found);
+		if (found.IsEmpty())
+			return "";
+
+		return found.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Search > Crowbar keywords (what forces a lock), for missions that force something.
+	string GetCrowbarWords()
+	{
+		return m_Settings.m_sCrowbarWords;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void FromPool(array<string> words, notnull array<ResourceName> into)
 	{
 		if (!m_Settings.m_aLootPool)
