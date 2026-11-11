@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# ReforgerZ runtime test on the Linux dedicated server (no Workbench, no game client).
+# ReforgerZ runtime test on the dedicated server (no Workbench, no game client).
 #
 #   SERVER_DIR=... tools/runtime_test/run.sh [seconds]     # default 5400 (all missions, all questlines, then the route)
+#   EXTRA_ADDONS_DIR=...                                   # a folder holding the Workshop dependencies in addon.gproj
 #
 # Needs the server installed (tools/compile_check.sh installs it). Boots a sub-scene of Arland
 # with RZ_GameModeComponent on GameMode_Plain, vanilla stand-ins for the minimum prefab slots
@@ -44,7 +45,11 @@ cp -r "$HERE/files/." "$ADDON/"
 "$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
 
 cd "$SERVER"
-timeout "${1:-5400}" "$BIN" -addonsDir "$(dirname "$ADDON")" -addons "$GUID" -profile "$PROFILE" \
+# Workshop dependencies come from EXTRA_ADDONS_DIR (comma-separated list, Windows form on Windows).
+winpath() { if command -v cygpath > /dev/null 2>&1; then cygpath -w "$1"; else printf '%s' "$1"; fi; }
+DIRS="$(winpath "$(dirname "$ADDON")")"
+[ -n "${EXTRA_ADDONS_DIR:-}" ] && DIRS="$DIRS,$(winpath "$EXTRA_ADDONS_DIR")"
+timeout "${1:-5400}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$PROFILE" \
 	-server "{7A1C2E3F4B5D6E71}Missions/RZTest.conf" -bindPort 2001 -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1
 LOG="$(ls -td "$PROFILE"/logs/logs_* | head -1)/console.log"
 

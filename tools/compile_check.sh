@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# ReforgerZ compile check on the Linux dedicated server (no Workbench, no Steam account).
+# ReforgerZ compile check on the dedicated server (no Workbench; on Linux no Steam account either).
 #
 #   tools/compile_check.sh            # install what's missing, compile, print ReforgerZ errors/warnings
 #   SERVER_DIR=... tools/compile_check.sh
+#   EXTRA_ADDONS_DIR=... tools/compile_check.sh   # a folder holding the Workshop dependencies in addon.gproj
 #
 # Installs SteamCMD and the Arma Reforger dedicated server (app 1874900, anonymous login, ~12 GB)
 # on first run, copies this repo into a test addon folder and starts the server just long enough
@@ -47,10 +48,24 @@ BIN="./ArmaReforgerServer"
 [ -f "$SERVER/ArmaReforgerServer.exe" ] && BIN="./ArmaReforgerServer.exe"
 cd "$SERVER"
 # -listScenarios compiles everything, prints the scenarios and exits; the timeout is a safety net.
-timeout "${TIMEOUT:-180}" "$BIN" -addonsDir "$ADDONS" -addons "$GUID" \
+# Dependencies (other than the base game) come from EXTRA_ADDONS_DIR; -addonsDir takes a comma-separated
+# list. On Windows the list is passed in Windows form (Git Bash only converts a single leading path).
+winpath() { if command -v cygpath > /dev/null 2>&1; then cygpath -w "$1"; else printf '%s' "$1"; fi; }
+DIRS="$(winpath "$ADDONS")"
+[ -n "${EXTRA_ADDONS_DIR:-}" ] && DIRS="$DIRS,$(winpath "$EXTRA_ADDONS_DIR")"
+rm -rf "$WORK/profile/logs"
+timeout "${TIMEOUT:-180}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" \
 	-profile "$WORK/profile" -listScenarios -logStats 0 > "$LOG" 2>&1
+# If the server didn't log to stdout (unconfirmed on Windows), use its console.log.
+if ! grep -q "Module: Game;" "$LOG"; then
+	C="$(ls -td "$WORK/profile"/logs/logs_* 2>/dev/null | head -1)/console.log"
+	[ -f "$C" ] && cp "$C" "$LOG"
+fi
 
 grep -E "\((E|W)\).*scripts/Game/ReforgerZ/|Can't compile" "$LOG"
+if grep -E "dependency '[0-9A-F]*' can't be added" "$LOG"; then
+	echo "Warning: a Workshop dependency in addon.gproj is missing; set EXTRA_ADDONS_DIR to a folder holding it."
+fi
 if grep -q "Module: Game;" "$LOG" && ! grep -q "Can't compile" "$LOG"; then
 	echo "OK: the Game module compiled ($(grep -cE '\(W\).*scripts/Game/ReforgerZ/' "$LOG") ReforgerZ warnings). Log: $LOG"
 	exit 0

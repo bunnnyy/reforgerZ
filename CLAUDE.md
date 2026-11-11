@@ -84,7 +84,8 @@ Write conservatively:
 - Works on any map: place things relative to settlements and landmarks, never fixed coordinates.
 - Optional prefabs are attributes on `RZ_GameModeComponent`; features that need one turn themselves off when it's empty.
 - Run `tools/compile_check.sh` before committing script changes: it compiles everything on the
-  Linux dedicated server and must exit 0 with no ReforgerZ errors or warnings.
+  dedicated server (Linux in the cloud; on the author's PC in Git Bash, see `docs/PC_SETUP.md`) and
+  must exit 0 with no ReforgerZ errors or warnings.
 - Script folders are lowercase `scripts/` (the Linux server is case-sensitive).
 - After changes to missions or cross-system logic, run `tools/runtime_test/run.sh` (60–90 min)
   and fix any script exception it reports.

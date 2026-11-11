@@ -14,3 +14,6 @@ __pycache__/
 
 # Claude Code agent worktrees
 .claude/worktrees/
+
+# This PC's own paths and details (docs/PC_SETUP.md)
+CLAUDE.local.md

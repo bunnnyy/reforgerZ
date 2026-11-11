@@ -848,8 +848,10 @@ commit that touches scripts.
 tools/compile_check.sh
 ```
 
-On Windows it runs in Git Bash with `SERVER_DIR` pointing at the Steam server
-([PC_SETUP.md](PC_SETUP.md#5-compile-check-and-runtime-test)).
+Once `addon.gproj` lists Workshop dependencies (step 3 of [1.1](#11-before-you-start-project-and-dependencies)),
+set `EXTRA_ADDONS_DIR` to a folder holding them; the check warns when one is missing. On Windows it
+runs in Git Bash with `SERVER_DIR` pointing at the Steam server
+([PC_SETUP.md](PC_SETUP.md#4-compile-check-and-runtime-test)).
 
 What it can't do:
 
