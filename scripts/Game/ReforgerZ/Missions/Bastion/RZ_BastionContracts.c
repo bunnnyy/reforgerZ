@@ -86,6 +86,7 @@ class RZ_Mission_RestoreComms : RZ_PuzzleMission
 		m_sPartsTown = p.m_sName;
 		m_vPos = m_vMast;
 		m_sTitle = "Restore Comms";
+		m_sDeed = "got the radio working at {town}";
 		m_sBrief = string.Format("Our relay on the hill above %1 is dead. The spares are in a crate in %2. Fit them and keep the mast company while it powers up.", s.m_sName, p.m_sName);
 		return true;
 	}
@@ -225,6 +226,7 @@ class RZ_Mission_CurfewPatrol : RZ_Mission_VisitPoints
 			m_fTimeLeft = Math.Clamp(secs + 300, 1200, 3600);
 
 		m_sTitle = "Curfew Patrol";
+		m_sDeed = "walked the curfew in {town}";
 		m_sBrief = string.Format("Curfew in %1 tonight. Walk the beat, four points, and put down at least %2 of them inside the town. Lights low.", s.m_sName, KILLS);
 		return true;
 	}
@@ -313,6 +315,7 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Delivery
 
 		PlaceInsideLater(m_vPos);
 		m_sTitle = "Weapons Cache";
+		m_sDeed = "found the rifles near {town}";
 		m_sBrief = string.Format("Our people left weapons in %1 in %2 when it fell: a long case with Bastion stencils, somewhere inside. Find it and bring it to %3. Don't get ideas about keeping it.", place, s.m_sName, meetName);
 		return true;
 	}
@@ -399,6 +402,7 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 		m_vPos = m_Watch.GetPos(gm);
 		m_iSettlement = gm.FindNearestSettlement(m_vPos);
 		m_sTitle = "Convoy Escort";
+		m_sDeed = "brought the convoy through {town}";
 		m_sBrief = string.Format("A supply truck leaves %1 for our post in %2 in two minutes. Ride with it and get it there. It will break down; they always do.", m_Watch.m_sFrom, m_Watch.m_sTo);
 		return true;
 	}
@@ -626,6 +630,7 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		m_Escort.m_fFollowGap = 5;
 		m_Escort.SetTalk(m_iId, 0, "Help him up (he follows you)|Patch him up (Nurse or Doctor)", m_iTalk, "Talk to the pilot");
 		m_sTitle = "Rescue the Pilot";
+		m_sDeed = "brought the pilot in from {town}";
 		m_sBrief = string.Format("The last helicopter put down hard outside %1 on its run. The mechanics will get the airframe back; the pilot is still out there, hurt, and Bastion has nobody else to fly it. Find him and walk him to %2.", s.m_sName, m_sDestName);
 		return m_Escort.Begin(gm, LandPointNear(m_vWreck, 3, 8));
 	}

@@ -18,6 +18,7 @@ behaviour, design, content or setup is complete until the docs match it.**
    - New, changed or removed **mission or event** → `docs/MISSIONS.md` (✅ only when it's in code; note any simplification)
    - New **prefab, component, action or attribute** the user must set up → `docs/WORKBENCH_SETUP.md`
    - New or changed **screen, icon or widget name** a script looks up → `docs/UI.md` and `UI/LAYOUTS.md`
+   - New, changed or removed **conversation** (`dialogue/**/*.rzd`) → `docs/DIALOGUE.md`'s list of conversations
    - New, changed or removed **Workshop dependency** → `docs/MOD_STACK.md`
    - Change to **setting or factions** → `docs/LORE.md` / `docs/REPUTATION.md`; to **tone or how text is written** → `docs/WRITING.md`
    - New or changed **tool, test script, Steam app, install step, folder or anything else the
@@ -64,6 +65,7 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `README.md` | What the mod is, feature summary, status, the doc list, the code tree |
 | `docs/LORE.md` | Setting (the sealed Zone), the factions as people, endings |
 | `docs/DESIGN.md` | How every system works, organised by system (simplifications marked inline) |
+| `docs/DIALOGUE.md` | Talking to people: the talk screen and its engine, conversation trees, checks and tags, effects, memory and `dialogue.json`, conditions, the `.rzd` format, its lint and simulator, the conversations |
 | `docs/INFECTED.md` | The infected: the spawner, the towns' crawlers, loose ones, heat hordes, infection adapts, the land grid, bodies and the agent budget, the tribes (planned) |
 | `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
 | `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
@@ -73,7 +75,7 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `docs/PC_SETUP.md` | The author's Windows PC, run by Claude Code: rules, Steam apps and paths, the repo, opening Workbench, local compile check and runtime test, play-testing, logs |
 | `docs/UI.md` | Art direction, the icon set, the screens, the UI scripts and data feeds, built vs planned (layout trees: `UI/LAYOUTS.md`) |
 | `docs/WORKBENCH_SETUP.md` | Turning the scripts into a playable mod: dependencies, factions, prefabs, settings, VERIFY list, the compile check, text lint and test tools, log lines, play-test checklist |
-| `docs/WRITING.md` | How player text is written: tone, the voices, by channel, grey choices, phrasing, the humour line, template rules, and what the text lint checks |
+| `docs/WRITING.md` | How player text is written: tone, the voices, by channel, the season mood and the voice bank, conversation lines, grey choices, phrasing, the humour line, template rules, and what the text lint checks |
 
 ## Writing style for docs
 - Plain, clear English, written for the mod author. Short sentences, tables for lists of things.
@@ -100,6 +102,9 @@ Write conservatively:
   dedicated server (Linux in the cloud; on the author's PC in Git Bash, see `docs/PC_SETUP.md`) and
   must exit 0 with no ReforgerZ errors or warnings.
 - Script folders are lowercase `scripts/` (the Linux server is case-sensitive).
+- Conversations are `.rzd` files in `dialogue/`: after changing one, run `python3 tools/dialogue_pack.py`
+  (the dialogue lint; it writes the generated packs in `Dialogue/Pack/`, never edited by hand) and
+  `--lock` when new ids ship (`docs/DIALOGUE.md`).
 - Run `python3 tools/voice_lint.py` after changing player text: it must print `voice_lint: OK`
   (the text lint: what it checks is in `docs/WRITING.md`, how to run it in `docs/WORKBENCH_SETUP.md`).
 - After changes to missions or cross-system logic, run `tools/runtime_test/run.sh` (60–90 min)

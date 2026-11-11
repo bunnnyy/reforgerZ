@@ -1,0 +1,81 @@
+# The Haven's leaders: the chair at the stronghold and the council heads at the safehouses.
+# Voice: warm, worried, practical, darkly funny sideways. The List is said sideways, never announced.
+
+conv haven.leader.bear
+for stronghold:haven, seat:haven/council_head
+topic "Ask about the bear on the door."
+prio flavour
+voice haven
+
+node start
+  say "Day two. The teacher's eleven slept in the gym, and somebody painted a bear on the doors so nobody would shoot through them."
+  say "Nobody did. So now every house with children has one."
+  > @eye "Why is one eye stitched shut?" -> eye
+  > @mine "Could I have one painted?" -> mine
+  > @other "Something else." -> hub
+
+node eye
+  say "Somebody touched it up with the wrong brush and nobody had the heart to start again. It has a patch on its belly too."
+  say "It's been through more than most of us. Leave it be."
+  > @back1 "Something else." -> hub
+
+node mine
+  say? tier:haven>=trusted :: "You've a ribbon, haven't you. That does the same job. People see it and put the rifle down."
+  say "It goes on doors, love, not on people. People get shot at anyway."
+  > @back2 "Something else." -> hub
+
+conv haven.leader.list
+for stronghold:haven, seat:haven/council_head
+when !exiled
+topic "Ask about the names on the list."
+prio world
+voice haven
+
+node start
+  say "Every house keeps one. Who's here, who's moved on, who's gone to a better house."
+  say "It's a list. You count people so you know when one's missing."
+  > @crossed "Some names are crossed out." -> press
+  > @drop "Fair enough." -> hub
+
+node press
+  say "Some are. People leave. People move to houses with more room."
+  > @why "Who crosses them out?" -> told | half | shut   check persuade haven 2 easier:merciful harder:paranoid bg:elder,nurse
+  > @let "Let it go." -> hub
+
+node told
+  say "Whoever's on the pencil that week. Some names go because the person went. Some go because the stores did."
+  say "I didn't say that. Eat something before you go."
+  do learn:haven.list
+  > @thanks "Thank you for telling me." -> hub
+
+node half
+  say "The council does. The council has its reasons, and its reasons have names too."
+  say "Ask me again when I know you better."
+  > @later "Another time, then." -> hub
+
+node shut
+  say "That's the council's book, not mine. Ask the council. They'll say the same."
+  > @fine "Something else, then." -> hub
+
+conv haven.leader.supper
+for stronghold:haven, seat:haven/council_head
+topic "Ask who they read out at supper."
+prio flavour
+voice haven
+
+node start
+  say "Before anyone eats, somebody reads a name. One of ours who's gone. Then the bowls go round, counted twice."
+  say? kin :: "We read one of yours, once. That's why there's always a bowl for you."
+  say "It's not much of a ceremony. It's what we've got."
+  > @stay "Can I stay for it?" -> stay
+  > @count "Why count the bowls twice?" -> count
+  > @other3 "Something else." -> hub
+
+node stay
+  say "Anyone can stay. Sit at the end, keep your hat off, and don't eat before the name."
+  > @back3 "I'll remember." -> hub
+
+node count
+  say "Once to see how many we've got. Once to see how many we are. If the numbers don't match, somebody goes without."
+  say "Usually me. Don't tell the children."
+  > @back4 "Something else." -> hub

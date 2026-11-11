@@ -355,6 +355,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Reputation: the 16 names and what each counts as, the forgiveness budget (30 per faction per life), the credit rule at 75 Fame, the Wildcard tier at posts, threats per life, the change notice (docs/REPUTATION.md, Reputations)", category: "ReforgerZ|Factions")]
 	protected ref RZ_ReputationSettings m_ReputationSettings;
 
+	[Attribute(desc: "Voice: the season mood the broadcast and every voice read, the voice bank's extra and disabled lines, and its debug log (docs/WRITING.md, The voice bank)", category: "ReforgerZ|Voice")]
+	protected ref RZ_VoiceSettings m_VoiceSettings;
+
 	// ------------------------------------------------------------------------------------------------ Shared
 	[Attribute(desc: "The shared engine: notice lanes and the interruption budget, the callback queue, the marks spawner, the season budget and its lanes, the set-piece calendar (docs/DESIGN.md, The shared engine)", category: "ReforgerZ|Shared")]
 	protected ref RZ_SharedSettings m_SharedSettings;
@@ -646,6 +649,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_ReputationSettings)
 			m_ReputationSettings = RZ_ReputationSettings.Cast(RZ_Util.NewWithDefaults("RZ_ReputationSettings"));
+		if (!m_VoiceSettings)
+			m_VoiceSettings = RZ_VoiceSettings.Cast(RZ_Util.NewWithDefaults("RZ_VoiceSettings"));
 
 		if (!m_SharedSettings)
 			m_SharedSettings = RZ_SharedSettings.Cast(RZ_Util.NewWithDefaults("RZ_SharedSettings"));
@@ -720,6 +725,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Seasons.Begin(loaded, last, wipedSeason);
 		// A fresh season (no save, or a wipe) starts with no flags, no canon and a new seed
 		m_Facts.Setup();
+		// Conversation trees and their memory (dialogue.json, dropped when the season changes)
+		m_Dialogue.GetTrees().Load();
 
 		if (m_aSettlements.IsEmpty())
 		{
@@ -906,6 +913,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Shared GetShared() { return m_Shared; }
 	RZ_SharedSettings GetSharedSettings() { return m_SharedSettings; }
 	RZ_ReputationSettings GetReputationSettings() { return m_ReputationSettings; }
+	RZ_VoiceSettings GetVoiceSettings() { return m_VoiceSettings; }
 	//! Server: the reputation names' change notice and the admin read-out (Factions/RZ_RepNames.c).
 	RZ_RepWatch GetRepWatch() { return m_RepWatch; }
 	RZ_CheckpointSettings GetCheckpointSettings() { return m_CheckpointSettings; }
@@ -2605,6 +2613,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Spawner && m_Spawner.CrawlersOn())
 			data.crawlers = m_Spawner.GetCrawlers().Save();
+
+		// Dialogue memory has its own file, written only when something changed
+		if (m_Dialogue)
+			m_Dialogue.GetTrees().SaveIfChanged();
 
 		// The time of day, so a restart carries on where the day stopped (Keep time of day)
 		float hour = RZ_GameTime.GetHour();

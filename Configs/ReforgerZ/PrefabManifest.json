@@ -4503,7 +4503,13 @@
    "category": "Factions",
    "object": "Reputation",
    "field": "m_ReputationSettings",
-   "covers": "**Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart) ([REPUTATION.md](REPUTATION.md#reputations))"
+   "covers": "**Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations))"
+  },
+  {
+   "category": "Voice",
+   "object": "Voice",
+   "field": "m_VoiceSettings",
+   "covers": "**Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank))"
   },
   {
    "category": "UI",
@@ -4515,7 +4521,7 @@
    "category": "Dialogue",
    "object": "Dialogue",
    "field": "m_DialogueSettings",
-   "covers": "The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120) ([UI.md](UI.md#how-the-scripts-fit))"
+   "covers": "The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit))"
   },
   {
    "category": "Shared",
@@ -5352,8 +5358,17 @@
     "m_fWildcardTollMult": "2",
     "m_iThreatsPerLife": "3",
     "m_fChangeHoldSeconds": "30",
-    "m_fChangeGapMinutes": "5"
+    "m_fChangeGapMinutes": "5",
+    "m_bCrewNames": "1",
+    "m_bLifeMemory": "1"
    }
+  },
+  {
+   "field": "m_VoiceSettings",
+   "category": "Voice",
+   "label": "Voice",
+   "cls": "RZ_VoiceSettings",
+   "defaults": {"m_bSeasonMood": "1", "m_bLog": "0", "m_iForceMood": "0"}
   },
   {
    "field": "m_UISettings",
@@ -5394,7 +5409,9 @@
     "m_fIdleSeconds": "120",
     "m_fDangerNear": "6",
     "m_fDangerClosing": "30",
-    "m_iMaxOpen": "32"
+    "m_iMaxOpen": "32",
+    "m_bTrees": "0",
+    "m_iTalkFavorPerDay": "20"
    }
   },
   {

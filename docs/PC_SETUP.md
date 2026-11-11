@@ -175,7 +175,10 @@ SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" 
 ```
 
 The text lint needs only Python and takes a second
-([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint)): `py tools/voice_lint.py`.
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint)): `py tools/voice_lint.py`. The compile check
+runs the dialogue lint first (`python3`, else `py -3`), and fails if a conversation pack is stale:
+after changing a `.rzd` file in `dialogue/`, run `py tools/dialogue_pack.py`
+([DIALOGUE.md](DIALOGUE.md#tools)). Without Python it warns and carries on.
 
 Run them as [long commands](#how-claude-drives-the-pc). On Windows the server doesn't quit after
 compiling, so the script's `timeout` stops it: the compile check always takes about 3 minutes.

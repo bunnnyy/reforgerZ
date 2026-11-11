@@ -786,7 +786,7 @@ class RZ_MissionManager
 			if (!forgiven && fame > 0)
 			{
 				// An explicit rival replaces the general rival table, so it isn't counted twice
-				m_GM.AddFame(playerId, m.m_eGiver, fame, !m.m_bHasRival);
+				m_GM.AddFame(playerId, m.m_eGiver, fame, !m.m_bHasRival, 0, m.DeedPhrase(m_GM));
 				text += string.Format("\n+%1 Fame with %2.", fame, giverName);
 			}
 

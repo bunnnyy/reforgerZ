@@ -50,6 +50,7 @@ class RZ_Mission_FuelForTheLights : RZ_PuzzleMission
 		m_iSettlement = h.m_iSettlement;
 		m_vGen = LandPointNear(h.m_vPos, 6, 14);
 		m_sTitle = "Fuel for the Lights";
+		m_sDeed = "kept the lights on in {town}";
 		m_sBrief = string.Format("The safehouse in %1 has a generator and nothing to put in it. Bring two jerrycans and pour them in. The lights will draw them, so stay a while.", h.m_sName);
 		return true;
 	}
@@ -162,6 +163,7 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 60, s.m_fRadius + 220);
 		m_fParticipationRadius = 120;
 		m_sTitle = "Harvest Guard";
+		m_sDeed = "guarded the harvest at {town}";
 		m_sBrief = string.Format("Farmers from the safehouses are bringing in what's left in the fields outside %1. Ten minutes of work. Keep the infected off them.", s.m_sName);
 		return true;
 	}
@@ -397,6 +399,7 @@ class RZ_Mission_WaterPurifier : RZ_Mission
 			return false;
 
 		m_sTitle = "Water Purifier";
+		m_sDeed = "fixed the water at {town}";
 		m_sBrief = string.Format("A water purifier came apart in %1: three parts, somewhere in the streets. Bring them to the Haven drop at the safehouse in %2 and nobody there gets sick from the well again.", s.m_sName, h.m_sName);
 		return true;
 	}
@@ -573,6 +576,7 @@ class RZ_Mission_FortifySafehouse : RZ_Mission_Hold
 		m_iSettlement = h.m_iSettlement;
 		m_fParticipationRadius = 80;
 		m_sTitle = "Fortify the Safehouse";
+		m_sDeed = "boarded up the house at {town}";
 		m_sBrief = string.Format("The safehouse in %1 is putting boards over its windows. The hammering will bring them. Stand with the people working.", h.m_sName);
 		return true;
 	}

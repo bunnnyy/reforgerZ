@@ -137,6 +137,9 @@ ASSIGN_FACTIONS = {"m_sHaven": "Haven", "m_sBastion": "Bastion", "m_sRedHand": "
 
 # By function name, in the voice files (first match wins).
 FUNCTION_CHANNELS = [
+    (r"VoiceDefaults\.c$", r".", "ambient"),
+    (r"RepVoice\.c$", r"Picture", "rumour"),
+    (r"RepVoice\.c$", r".", "leader"),
     (r"Broadcast\.c$", r".", "broadcast"),
     (r"Perimeter\.c$", r"Loud|Speaker|Warn|Line|Order", "loudspeaker"),
     (r"LeaderVoice\.c$", r".", "leader"),
@@ -391,10 +394,47 @@ def guess_register(lit):
     return "PLAIN"
 
 
+RZD_FACTIONS = {"haven": "Haven", "bastion": "Bastion", "redhand": "Red Hand", "halcyon": "Halcyon",
+                "table": "Long Table", "plain": "-"}
+# The generated packs repeat the .rzd text: the .rzd files themselves are read instead.
+PACK_DIR = os.path.join(SCRIPTS, "Dialogue", "Pack")
+
+
+def rzd_literals(root=ROOT):
+    """Player text in the conversation files (dialogue/**/*.rzd): each say ("speech"), each choice
+    label ("choice") and each topic label ("label"), with the faction from the file's voice."""
+    import dialogue_pack as dp
+    lits = []
+    convs, _ = dp.load_all()
+    for c in convs:
+        rel = os.path.relpath(c.path, root).replace(os.sep, "/")
+
+        def add(text, channel, line):
+            lit = Literal()
+            lit.file, lit.line, lit.text = rel, line, text
+            lit.calls, lit.target, lit.returned = [], "", False
+            lit.function = c.id
+            lit.faction = RZD_FACTIONS.get(c.voice, "-")
+            lit.channel = channel
+            lits.append(lit)
+
+        if c.label:
+            add(c.label, "label", c.line)
+        for n in c.nodes:
+            for kind, cond, val in n.items:
+                if kind == "say":
+                    add(val, "speech", n.line)
+            for ch in n.choices:
+                add(ch.label, "choice", ch.line)
+    return lits
+
+
 def inventory(root=ROOT):
     base = os.path.join(root, SCRIPTS)
     all_lits = []
     for dirpath, _, files in os.walk(base):
+        if os.path.relpath(dirpath, root) == PACK_DIR:
+            continue
         for name in sorted(files):
             if not name.endswith(".c"):
                 continue
@@ -412,6 +452,10 @@ def inventory(root=ROOT):
         lit.faction = guess_faction(lit)
         lit.register = guess_register(lit)
         lit.repeats = counts[lit.text]
+        kept.append(lit)
+    for lit in rzd_literals(root):
+        lit.register = guess_register(lit)
+        lit.repeats = 1
         kept.append(lit)
     return kept, all_lits
 

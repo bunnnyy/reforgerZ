@@ -67,6 +67,9 @@ class RZ_Deeds
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
 		p.EnsureArrays();
 		p.m_aKills[f] = p.m_aKills[f] + 1;
+		if (f == RZ_EFaction.BANDITS)
+			RZ_RepVoice.NoteCrewKill(gm, playerId);
+
 		RZ_SeasonDeeds season = Season();
 		if (season)
 			season.NoteTally(p.m_sIdentity, f, true);
@@ -82,6 +85,9 @@ class RZ_Deeds
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
 		p.EnsureArrays();
 		p.m_aJobs[f] = p.m_aJobs[f] + 1;
+		if (f == RZ_EFaction.BANDITS)
+			RZ_RepVoice.NoteRedHandJob(gm, playerId);
+
 		RZ_SeasonDeeds season = Season();
 		if (!season)
 			return;

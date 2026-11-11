@@ -81,6 +81,7 @@ class RZ_Mission_PowerTheLab : RZ_PuzzleMission
 		m_vPos = m_vGen;
 		m_iSettlement = gm.GetLabSettlement();
 		m_sTitle = "Power the Lab";
+		m_sDeed = "kept the lab's power on";
 		m_sBrief = string.Format("The lab's generator is running on fumes and a cracked regulator. There's a replacement at %1. Bring it and a jerrycan of fuel.", m_sPartPlace);
 		return true;
 	}
@@ -203,6 +204,7 @@ class RZ_Mission_InstallSensors : RZ_Mission_VisitPoints
 		m_vPos = s.m_vCenter;
 		m_fParticipationRadius = 0;
 		m_sTitle = "Install Sensors";
+		m_sDeed = "put the sensors up near {town}";
 		m_sBrief = string.Format("Halcyon wants sensors in three infested towns, starting with %1. Fifteen seconds to set each one up. They'll draw the specials in; that's the point.", s.m_sName);
 		return true;
 	}
@@ -252,6 +254,7 @@ class RZ_Mission_BloodDrive : RZ_PuzzleMission
 		m_iTalk = AddClue("The nurse", "A tired nurse with a cooler and a stack of bags. \"Uninfected blood is the only control we have. Sit, if you're willing.\"");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Give blood", m_iTalk, "Talk to the nurse");
 		m_sTitle = "Blood Drive";
+		m_sDeed = "gave blood when it was asked for";
 		m_sBrief = "The lab needs clean blood to test against. Come and give some. You'll feel it for a while.";
 		return true;
 	}
@@ -338,6 +341,7 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 			return false;
 
 		m_sTitle = "Cold Chain";
+		m_sDeed = "kept the cold chain cold";
 		m_sBrief = string.Format("A batch of antidotes for the clinic at the safehouse in %1. Once it's out of the cold box you have fifteen minutes. Run.", h.m_sName);
 		return true;
 	}
@@ -452,6 +456,7 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 1);
 		m_Escort.SetTalk(m_iId, 0, "Lead the way (she follows you)", m_iTalk, "Talk to the researcher");
 		m_sTitle = "Escort the Scientist";
+		m_sDeed = "walked a researcher through {town}";
 		m_sBrief = string.Format("One of our researchers needs readings from %1, %2 and %3. Collect her at the lab and keep her alive.", m_aSiteNames[0], m_aSiteNames[1], m_aSiteNames[2]);
 		return m_Escort.Begin(gm, m_vPos);
 	}

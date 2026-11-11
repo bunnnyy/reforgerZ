@@ -1,0 +1,55 @@
+# Bastion's leaders: the commanding officer at the stronghold and the outpost commanders.
+# Voice: clipped, procedural, tired; close with its own. Nobody is coming; they're all they have.
+
+conv bastion.leader.roster
+for stronghold:bastion, seat:bastion/outpost_lead
+topic "Ask about the board on the wall."
+prio world
+voice bastion
+
+node start
+  say "The roster. Every name, every duty, in grease pencil. A name on it eats, stands a watch, and is looked for if it doesn't come back."
+  say "The dead stay on it. We read them at the roll."
+  > @rubout "Do you ever rub a name out?" -> rubout
+  > @soldier "Procedure says you strike the dead." -> soldier   if bg:soldier,police
+  > @on "Could my name go on it?" -> sign
+  > @other "Something else." -> hub
+
+node rubout
+  say "One kind. A man listed KIA who walks back in. Then we rub out the KIA, not the man."
+  say "Hasn't happened often. It's happened."
+  > @back1 "Something else." -> hub
+
+node soldier
+  say "Procedure says a lot. Procedure was written by people who were coming back for us."
+  say "Nobody is coming. So the names stay. We're all we have."
+  do learn:bastion.roster
+  > @back2 "Understood." -> hub
+
+node sign
+  say? tier:bastion>=trusted :: "You're on it already, under civilians attached. Someone wrote it in last week. Nobody asked you."
+  say "Civilians get signed on. Families, mechanics. You'd stand a watch and eat what we eat. That's the whole contract."
+  > @think "I'll think about it." -> hub
+  > @why "What does it get me?" -> what
+
+node what
+  say "A name on a board, and somebody who comes looking if you don't answer the roll."
+  say "Out here that's most of what anyone has."
+  > @back3 "Something else." -> hub
+
+conv bastion.leader.command
+for stronghold:bastion, seat:bastion/outpost_lead
+topic "Ask if Command ever answers."
+prio flavour
+voice bastion
+
+node start
+  say "Every night. Effective strength, rounds, fuel, civilians sheltered. Then: requesting relief."
+  say "Then the operator writes: no reply. The sergeant chalks up a day."
+  > @stop "Why not stop calling?" -> stop
+  > @other4 "Something else." -> hub
+
+node stop
+  say "Every post hears the others. As long as the calls go out, nobody's the last one left."
+  say "First post that stops calling is the first post that's alone. Not us. Not tonight."
+  > @back4 "Something else." -> hub

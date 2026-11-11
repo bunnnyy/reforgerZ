@@ -127,6 +127,7 @@ class RZ_PostContact
 //! A Bastion checkpoint or a Red Hand roadblock. Data, plus bodies while a player is near.
 class RZ_RoadPost
 {
+	int m_iId;
 	RZ_EFaction m_eFaction;
 	vector m_vPos;
 	float m_fYaw;
@@ -135,6 +136,17 @@ class RZ_RoadPost
 	bool m_bSpawned;
 	ref array<IEntity> m_aBodies = {};
 	ref map<int, ref RZ_PostContact> m_mContacts = new map<int, ref RZ_PostContact>();
+	IEntity m_Speaker;		// Dialogue > Trees: someone to talk to at the barrier (weak; also in m_aBodies)
+
+	//------------------------------------------------------------------------------------------------
+	//! Who you talk to at the barrier.
+	string SpeakerName()
+	{
+		if (m_eFaction == RZ_EFaction.BANDITS)
+			return "The toll man";
+
+		return "The corporal at the barrier";
+	}
 
 	//------------------------------------------------------------------------------------------------
 	string GetTitle()
@@ -149,7 +161,10 @@ class RZ_RoadPost
 //------------------------------------------------------------------------------------------------
 class RZ_Checkpoints
 {
+	static const int TAG_POST = -12;	// RZ_PuzzleObjectComponent / RZ_ClueComponent mission id: a post's speaker
+
 	protected RZ_GameModeComponent m_GM;
+	protected int m_iNextPostId = 1;
 	protected RZ_CheckpointSettings m_Settings;
 	protected float m_fClock;
 	protected float m_fPostTimer;
@@ -283,6 +298,8 @@ class RZ_Checkpoints
 				continue;
 
 			RZ_RoadPost post = new RZ_RoadPost();
+			post.m_iId = m_iNextPostId;
+			m_iNextPostId++;
 			post.m_eFaction = f;
 			post.m_vPos = spot;
 			post.m_fYaw = RZ_Compass.Bearing(spot, at);
@@ -401,6 +418,7 @@ class RZ_Checkpoints
 			if (!post.m_bSpawned)
 				continue;
 
+			UpdateSpeaker(post, nearest);
 			foreach (int j, IEntity p : players)
 			{
 				float d = RZ_Util.DistXZ(p.GetOrigin(), post.m_vPos);
@@ -448,6 +466,152 @@ class RZ_Checkpoints
 		array<IEntity> crewBodies = {crew};
 		array<IEntity> none = {};
 		camp.Enter(PostKey(post), post.GetTitle(), post.m_eFaction, RZ_ECampPlace.ROAD_POST, post.m_vPos, post.m_fYaw, "", crewBodies, none, none);
+	}
+
+	// ================================================================ The speaker at the barrier
+	//------------------------------------------------------------------------------------------------
+	//! Dialogue > Trees only: one of the crew stands at the barrier to talk to while a player is
+	//! within 100 m (the body budget's speaker), and goes when nobody is. The crew stays an AI group.
+	protected void UpdateSpeaker(RZ_RoadPost post, float nearest)
+	{
+		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
+		bool wanted = trees && trees.IsOn() && nearest <= RZ_BodyBudget.SPEAKER_RANGE;
+		if (post.m_Speaker && (!wanted || !RZ_Util.IsCharacterAlive(post.m_Speaker)))
+		{
+			if (!wanted)
+			{
+				post.m_aBodies.RemoveItem(post.m_Speaker);
+				RZ_Util.DeleteUnit(post.m_Speaker);
+			}
+
+			post.m_Speaker = null;
+			return;
+		}
+
+		if (post.m_Speaker || !wanted)
+			return;
+
+		RZ_Territory territory = m_GM.GetTerritory();
+		RZ_Shared shared = m_GM.GetShared();
+		if (!territory || !shared)
+			return;
+
+		vector at = RZ_Mission.LandPointNear(post.m_vPos, 2, 4);
+		if (!shared.CanSpawnBody(RZ_BodyBudget.SPEAKER, at))
+			return;
+
+		IEntity e = RZ_Util.SpawnPrefab(territory.SpeakerPrefab(post.m_eFaction), at, post.m_fYaw);
+		if (!e)
+			return;
+
+		shared.AddBody(RZ_BodyBudget.SPEAKER, e);
+		RZ_PuzzleObjectComponent.Tag(e, TAG_POST, post.m_iId, "", ""); // VERIFY: the speaker prefab (territory's occupant, else the puzzle civilian) carries the puzzle components, so Talk shows on it
+		RZ_ClueComponent.Tag(e, TAG_POST, post.m_iId, "Talk to the " + post.SpeakerName().Substring(4, post.SpeakerName().Length() - 4));
+		post.m_Speaker = e;
+		post.m_aBodies.Insert(e);
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (hostility)
+			hostility.WatchUnit(e, post.m_eFaction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_RoadPost FindPost(int id)
+	{
+		foreach (RZ_RoadPost post : m_aPosts)
+		{
+			if (post.m_iId == id)
+				return post;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Talk to the speaker at the barrier: what this post does to you, in its voice. Its topics
+	//! come from the conversation trees (dialogue/posts/).
+	void HandleSpeakerTalk(int playerId, int id)
+	{
+		RZ_RoadPost post = FindPost(id);
+		if (!post)
+			return;
+
+		string title = post.SpeakerName() + ", " + post.GetTitle();
+		RZ_PostContact c = GetContact(post, playerId);
+		RZ_ETier tier = m_GM.GetTier(playerId, post.m_eFaction);
+		if (post.m_eFaction == RZ_EFaction.BANDITS)
+		{
+			if (c.m_bCleared)
+				m_GM.Say(playerId, title, post.m_eFaction, "\"You've paid. Go on, before I think of a reason you haven't.\"");
+			else if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.TRUSTED))
+				m_GM.Say(playerId, title, post.m_eFaction, "\"You're one of ours. Why are you talking to me? Drive.\"");
+			else if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
+				m_GM.Say(playerId, title, post.m_eFaction, string.Format("\"Red hand means stop. Stop means pay. %1 Favor, or walk round.\"", TollFor(playerId)));
+			else
+				m_GM.Say(playerId, title, post.m_eFaction, "\"You don't know us and we don't know you. That's a turn-round face.\"");
+
+			return;
+		}
+
+		if (c.m_bCleared)
+			m_GM.Say(playerId, title, post.m_eFaction, "\"You're done. Move along. Keep to the left of the road.\"");
+		else if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN) && tier != RZ_ETier.WILDCARD)
+			m_GM.Say(playerId, title, post.m_eFaction, "\"Cleared. You don't need to talk to me. Nobody needs to talk to me.\"");
+		else
+			m_GM.Say(playerId, title, post.m_eFaction, "\"Checkpoint. Hands on the barrier, a search, and you're through. Fifteen seconds if you don't argue.\"");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Red Hand toll for this player now: the setting, times the Wildcard's danger money.
+	int TollFor(int playerId)
+	{
+		int toll = Math.Max(0, m_Settings.m_iToll);
+		RZ_ReputationSettings rs = RZ_ReputationSettings.Get();
+		if (m_GM.GetTier(playerId, RZ_EFaction.BANDITS) == RZ_ETier.WILDCARD && rs.m_bWildcardPosts)
+			toll = RZ_Util.RoundToInt(toll * Math.Max(1, rs.m_fWildcardTollMult));
+
+		return toll;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! call:toll: pay the built toll at this roadblock now (Known or better, as built). The line said.
+	string PayToll(int playerId, int id)
+	{
+		RZ_RoadPost post = FindPost(id);
+		if (!post || post.m_eFaction != RZ_EFaction.BANDITS)
+			return "";
+
+		RZ_PostContact c = GetContact(post, playerId);
+		if (c.m_bCleared)
+			return "\"You've paid already. We're bandits, not thieves.\"";
+
+		if (!RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, RZ_EFaction.BANDITS), RZ_ETier.KNOWN))
+			return "\"Toll's for people we know. You're not people we know.\"";
+
+		int toll = TollFor(playerId);
+		int had = m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS);
+		if (!m_GM.SpendFavor(playerId, RZ_EFaction.BANDITS, toll))
+			return string.Format("\"%1 Favor. You've got %2. Walk round.\"", toll, had);
+
+		c.m_bCleared = true;
+		if (had == toll)
+			RZ_RepVoice.CrewEvent(m_GM, playerId, RZ_RepVoice.CREW_SKINT);
+
+		return string.Format("You pay the toll: %1 Favor. \"Pleasure. Mind the potholes.\" %2 Favor left.", toll, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! call:post_wave: this post lets you through without its search or toll, once, while it stands.
+	string WaveThrough(int playerId, int id)
+	{
+		RZ_RoadPost post = FindPost(id);
+		if (!post)
+			return "";
+
+		GetContact(post, playerId).m_bCleared = true;
+		if (post.m_eFaction == RZ_EFaction.BANDITS)
+			return "The car they use as a gate rolls back.";
+
+		return "The pole goes up.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -570,6 +734,9 @@ class RZ_Checkpoints
 				return;
 
 			int taken = RZ_FoodHelper.TakeFood(ent, m_aContraband, 3);
+			if (taken >= 3)
+				RZ_RepVoice.CrewEvent(m_GM, playerId, RZ_RepVoice.CREW_POCKETS);
+
 			if (taken > 0)
 				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, string.Format("Hands on the barrier. They go through everything. %1 things go into a crate marked CONFISCATED, and you're waved on.", taken));
 			else
@@ -587,7 +754,8 @@ class RZ_Checkpoints
 			if (wildcard)
 				runInfamy = rs.m_iWildcardRunInfamy;
 
-			m_GM.AddInfamy(playerId, RZ_EFaction.MILITARY, runInfamy, "ran a checkpoint", RZ_RepFlag.ACT);
+			m_GM.AddInfamy(playerId, RZ_EFaction.MILITARY, runInfamy, "ran the checkpoint at " + post.m_sNear, RZ_RepFlag.ACT);
+			RZ_RepVoice.NoteRan(m_GM, playerId);
 			if (hostility)
 				hostility.AddGrudge(playerId, RZ_EFaction.MILITARY, post.m_vPos);
 
@@ -679,10 +847,17 @@ class RZ_Checkpoints
 		if (dist > m_Settings.m_fStopRadius)
 			return;
 
+		// Reached a roadblock the same day you ran a Bastion checkpoint: the crews call that Legs
+		RZ_RepVoice.NoteRoadblock(m_GM, playerId);
+
 		// Known perk: the toll instead of a bullet
+		int hadFavor = m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS);
 		if (known && m_GM.SpendFavor(playerId, RZ_EFaction.BANDITS, toll))
 		{
 			c.m_bCleared = true;
+			if (hadFavor == toll)
+				RZ_RepVoice.CrewEvent(m_GM, playerId, RZ_RepVoice.CREW_SKINT);
+
 			m_GM.NotifyPlayer(playerId, title, string.Format("You pay the toll: %1 Favor. A grin with too few teeth. \"Safe travels.\" %2 Favor left.", toll, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS)));
 			return;
 		}

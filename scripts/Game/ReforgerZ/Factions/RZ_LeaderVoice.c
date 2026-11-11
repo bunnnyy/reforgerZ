@@ -318,18 +318,19 @@ class RZ_LeaderVoice
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The voice bank's "greeting" lines for the faction (Factions/RZ_VoiceDefaults.c), which read the
+	//! season mood and joke memory.
 	static string Greeting(RZ_Rng rng, RZ_EFaction faction)
 	{
-		array<string> lines = {};
-		switch (faction)
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm)
 		{
-			case RZ_EFaction.SURVIVORS: lines.Insert("\"You're back. Good. Every time someone walks in, I count them.\""); lines.Insert("\"Come in out of the cold. Mind the children.\""); break;
-			case RZ_EFaction.MILITARY: lines.Insert("\"State your business.\""); lines.Insert("\"You again. Fine. Make it quick.\""); break;
-			case RZ_EFaction.BANDITS: lines.Insert("\"Look who it is. Pockets full, I hope.\""); lines.Insert("\"Ah. My favourite stranger.\""); break;
-			case RZ_EFaction.INSTITUTE: lines.Insert("\"Don't touch anything labelled. Which is everything.\""); lines.Insert("\"Yes? I have a minute. Perhaps two.\""); break;
+			string line = RZ_VoiceBank.PickFor(gm, "greeting", faction, "", null, 0, vector.Zero);
+			if (!line.IsEmpty())
+				return line;
 		}
 
-		return rng.Pick(lines);
+		return "\"Yes?\"";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -20,6 +20,15 @@ LOG="$WORK/compile.log"
 GUID="$(sed -n 's/^ *GUID "\([0-9A-F]*\)".*/\1/p' "$ROOT/addon.gproj" | head -1)"
 
 mkdir -p "$WORK"
+# The conversation packs are generated from dialogue/**/*.rzd: the dialogue lint runs first and the
+# packs must be up to date (docs/DIALOGUE.md, "Tools").
+PY=""
+if command -v python3 > /dev/null 2>&1; then PY="python3"; elif command -v py > /dev/null 2>&1; then PY="py -3"; fi
+if [ -n "$PY" ]; then
+	$PY "$ROOT/tools/dialogue_pack.py" --check || { echo "FAILED: the dialogue lint (python3 tools/dialogue_pack.py)"; exit 1; }
+else
+	echo "Warning: no Python, so the dialogue lint didn't run (python3 tools/dialogue_pack.py --check)."
+fi
 if [ ! -f "$SERVER/ArmaReforgerServer" ] && [ ! -f "$SERVER/ArmaReforgerServer.exe" ]; then
 	if [ "$(uname -s)" != "Linux" ]; then
 		echo "No server in $SERVER. Install Arma Reforger Server from Steam (Library > Tools) and set SERVER_DIR to its folder."

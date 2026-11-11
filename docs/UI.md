@@ -213,7 +213,15 @@ to the right of the replies.
 | Leave | Esc | B |
 | Read more of a long line | Q/E, or the wheel | LB/RB |
 
-How it works is in [DESIGN.md](DESIGN.md#talking-to-people). The screen reads `PAYLOAD_TALK`:
+**With Dialogue > Trees on** ([DIALOGUE.md](DIALOGUE.md#trees-hubs-topics-and-nodes)) the same
+screen and payload carry the trees, with no new widgets: the person's built replies, then their
+topics (a "heard" tag on one you've had), **Something else.** for the next page of topics; in a
+node, its choices with the tag the check or price writes ("[Persuade - Haven - 1 of 2]", "[Fear 1
+of 2 - +3 Infamy]", "[2 food]", "[Doctor]"), dim with what it needs when you can't take one ("you
+have 1 food", "you've tried that"). What they say after a check opens with the result
+("[Persuaded]"). Tags are cut at 40 characters.
+
+How it works is in [DIALOGUE.md](DIALOGUE.md#the-talk-screen). The screen reads `PAYLOAD_TALK`:
 `T|serial|faction|name|sub|said` (line breaks as `^`), then `R|id|label|tag|need|enabled` per
 reply; `X|reason` closes it. A pick goes back as `RpcAsk_TalkPick(serial, id)`; Esc, B or another
 menu on top send Leave. If the menu can't open on a client, that client shows the line as a card,
@@ -335,7 +343,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 |---|---|---|
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes**; with Stealth on, stealth's own update (every second) hands it each player's visibility, sent the same way as a level 0–5 and whether it counts as hidden (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal (with the questlines the player is part of and the lab's line), background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the Radio tab's notices on the client for this life and the notebook's unread counts. A notice board payload from the server opens the board menu; a reader or talk payload opens those screens. Carries talk picks and closed screens back |
-| `RZ_Dialogue`, `RZ_TalkSpeaker` (`RZ_TalkGeneric`, `RZ_TalkLeader`), `RZ_TalkNeeds` | server | Conversations: sessions, capture, replies and their needs, picks ([DESIGN.md](DESIGN.md#talking-to-people)) |
+| `RZ_Dialogue`, `RZ_TalkSpeaker` (`RZ_TalkGeneric`, `RZ_TalkLeader`), `RZ_TalkNeeds`, `RZ_DialogueTrees` | server | Conversations: sessions, capture, replies and their needs, picks; with Trees on, topics, nodes, checks and their tags ([DIALOGUE.md](DIALOGUE.md)) |
 | `RZ_TalkMenu` | client (`ChimeraMenuBase`) | The talk screen ([The talk screen](#the-talk-screen)) |
 | `RZ_Reader`, `RZ_ReaderMenu` | server, client | The reader: one player's paper, a page at a time ([Subtitles and the reader](#subtitles-and-the-reader)) |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk screens and readers and closes them in danger (below) |

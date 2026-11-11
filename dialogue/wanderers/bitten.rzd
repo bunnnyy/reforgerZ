@@ -1,0 +1,32 @@
+# An ask: a wanderer who's been bitten. The antidote is always given, never taken (the built
+# "Give them your antidote"). Mercy, not jokes.
+
+conv wanderer.bitten.arm
+for wanderer
+when wbitten
+topic "Ask about the arm."
+prio ask
+voice plain
+
+node start
+  say "Don't. I know what it is. I've seen enough of them to know."
+  say "There's a house near enough, if I walk fast. Or there's nothing. I'm still deciding which."
+  > @give "Take my antidote." -> given   do call:slot:2
+  > @house "Get to a house. Declare it." -> house
+  > @sit "I'll sit with you a minute." -> sit
+
+node given
+  say "You'd give me that. To me. I don't know what to say."
+  > @back1 "Something else." -> hub
+
+node house
+  say "They'll help if they can. That's the rule. I'll go now, while my legs still work."
+  > @back2 "Something else." -> hub
+
+node sit
+  say "Thank you. Nobody's sat with me since the roads closed. Tell me something ordinary."
+  > @weather "The weather's turning." -> weather
+
+node weather
+  say "It is. Good. That's what I wanted."
+  > @back3 "Something else." -> hub

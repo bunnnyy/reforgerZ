@@ -1721,6 +1721,13 @@ class RZ_Territory
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A road post's speaker at the barrier (Dialogue > Trees): this faction's occupant prefab.
+	ResourceName SpeakerPrefab(RZ_EFaction f)
+	{
+		return OccupantPrefab(f);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected ResourceName OccupantPrefab(RZ_EFaction f)
 	{
 		ResourceName prefab;
@@ -1750,7 +1757,7 @@ class RZ_Territory
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		int phase = RoutinePhase(RZ_GameTime.GetHour());
-		string text = RZ_FactionVoice.PersonLine(rng, h.m_eFaction, h.m_aRoles[idx], phase, h.m_sName);
+		string text = RZ_FactionVoice.PersonLine(rng, h.m_eFaction, h.m_aRoles[idx], phase, h.m_sName, playerId, h.m_vPos);
 
 		RZ_FactionLife life = m_GM.GetFactionLife();
 		if (life)

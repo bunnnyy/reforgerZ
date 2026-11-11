@@ -1,6 +1,10 @@
 # Dialogue
 
-**Status: designed, not built.** Approved by the author on 2026-11-11.
+**Status: designed; phase 2 built.** Approved by the author on 2026-11-11. Phase 2 (the trees on the
+talk screen's `RZ_Dialogue` behind **Dialogue > Trees**, hubs and topics, checks shown before you choose,
+regard, claims and knowledge, `dialogue.json`, the `.rzd` format with its lint, simulator and
+`shipped.lock`, a post's speaker at the barrier, and 30 conversations) is built and lives in
+[docs/DIALOGUE.md](../docs/DIALOGUE.md). This file keeps only what's still to build.
 
 A server-side conversation system for everyone a player can talk to: stronghold and seat leaders,
 quartermasters, the eight wanderer roles, safehouse occupants, named people, road-post crews (who get a
@@ -102,40 +106,16 @@ all conversations in this one engine. Nobody builds a second talk system.
 
 ## 1. What it is
 
-Talking becomes one of the main ways into the Zone's stories. Everyone a player can talk to gets a **hub**:
-- a greeting in their voice;
-- the **verbs** that speaker always has (Ask for work, Share some food...);
-- up to four **topics**;
-- Leave.
+**Built:** the engine, hubs, nodes, checks and effects, memory, the guardrails on pay (no Fame, small Favor
+inside one daily budget, no items) and Trees off as today's game: [docs/DIALOGUE.md](../docs/DIALOGUE.md).
 
-Each topic is a short tree of **nodes**. In a node the speaker says one to three lines and the player picks
-a **choice**. A choice can carry a **check** (background, standing, persuade, threaten, lie, look, cost,
-evidence) and **effects** (flags, regard, Favor, items, mission outcomes). The speaker **remembers** what
-this character said and did.
+Still to build, on that engine: lies and being lied to (section 10), promises and callbacks (11), claims in
+someone else's kit (12), the multiplayer layer (14), barks, radio and strangers (16), asks dealt as errands
+(17), and the finale's and the last week's conversations (18).
 
-Everything runs on the server, and clients get one rendered node at a time, owner-only. Conversations are
-data: text files checked by a tool. Other systems add topics to a person's hub by setting the facts the
-topic reads, so a writer adds a file instead of editing someone else's.
-
-**Guardrails it keeps**
-- **No companions.** Nothing in a conversation makes an NPC follow, fight for or travel with a player.
-  Escorts stay mission or errand blocks that end at a place (at most 600 m for errands). The lint refuses
-  follow effects and escorts without a destination.
-- **No pause and no time skip.** The world runs while you talk. Danger ends the conversation.
-- **Nothing overpowered.**
-  - Talk never pays Fame. It pays small Favor, inside one daily budget per faction, and never items.
-  - Bigger rewards come only through a mission, errand or questline that talk starts or resolves, with
-    that piece's own pay and caps.
-  - No stronghold leader is moved, killed, threatened or replaced by talk.
-  - A disguise never unlocks a reward.
-- **Performance first.** Conditions are read only when someone talks, plus a 1-second check for each open
-  session (at most 64). Memory is capped, decays, and has its own save file. Nothing physical is left
-  behind.
-- **Any map, any server.** Speakers come from the systems that own them. Text uses world tokens, and places
-  come from the world facts, never coordinates.
-- **Off is today's game.** With **Dialogue > On** false (the default until the label test and a play-test
-  pass), every built action and line runs as it does now. The built memory bits and `PersuadeScore` are
-  untouched.
+**Guardrails the rest keeps:** no companions (the lint refuses follow effects and escorts without a
+destination; escorts stay mission or errand blocks ending at a place, at most 600 m for errands); no stronghold
+leader moved, killed, threatened or replaced by talk; a disguise never unlocks a reward.
 
 ## 2. Words
 
@@ -162,166 +142,64 @@ topic reads, so a writer adds a file instead of editing someone else's.
 
 ## 3. Who talks
 
-| Kind (`for`) | Who | Memory key | Default hub | Replaces today |
-|---|---|---|---|---|
-| `stronghold:<faction>` | The four stronghold leaders | `leader:<seat>:<generation>` | Verbs: Ask for work, Ask for news, How do I stand? First contact as a greet | `RZ_LeaderAction` TALK, WORK, NEWS, STANDING |
-| `seat:<faction>/<kind>` (`council_head`, `outpost_lead`, `crew_boss`, `field_lead`) | Council heads, outpost commanders, crew bosses, field leads | `leader:<seat>:<generation>`. Someone new in the chair starts with no regard or claims | The same verbs, plus the personal job (`offer:leader_job`) | Same |
-| `quartermaster:<faction>` | Shopkeepers away from a seat (at a seat, the quartermaster *is* the leader) | the holding | What's short?; requisition talk. Shop and services stay their own actions | — |
-| `wanderer:<role>` | Trader, Doctor, Scavenger, Deserter, Preacher, Courier, Kid, Mechanic | `wanderer:<id>` | Verbs: the role's special, Share some food, Rob (built rules); Give them your antidote while bitten | The wanderer's 4 choice slots |
-| `occupant` | Safehouse occupants | `house:<idx>` (memory per place: face and claims only) | How's the house?; asks | `HandleOccupantTalk` |
-| `named:<faction>` | The cook, the sentry, the toll man at holdings, plus errands' named people (4 per holding) | `named:<holding>:<idx>` | Shift talk; asks | `HandlePersonTalk` |
-| `post:<faction>` | A road post's **speaker at the barrier**: territory's occupant prefab for that faction (it has the generic set). It stands there while a player is within 100 m; the crew stays an AI group | `post:<faction>:<town>` | Verbs: Pay the toll, Surrender (when they apply). Searches and disguise claims | Notices only |
-| `quest:<key>.<role>` | People a stage or contract spawns (`SpawnPerson` with a conversation id) | `quest:<key>:<role>:<run>` | Whatever the stage writes | `SpawnPerson` choice labels |
-| `table:<role>` | The Long Table's host, mother, quiet son, the boy | the built per-life memory (three words) | Verbs: Sit down and eat, Trade for a jar | `RZ_LongTable.HandleChoice` |
-| `stranger:<kind>` | **New.** People who need help, at places where they'd be ([section 16](#strangers)) | `stranger:<id>` (per life; gone with them) | Their request | — |
-| `radio:<channel>` | **New.** No body: "Call on the channel" at a house radio with power, or a carried radio | `radio:<channel>` | Call-ins, distress calls, haggling ([section 16](#radio)) | — |
+**Built:** leaders (stronghold and seat), wanderers, occupants, named people at holdings, a road post's
+speaker at the barrier, and the Long Table's people, with their memory keys and the built refusals first
+([docs/DIALOGUE.md](../docs/DIALOGUE.md#who-talks)).
 
-**Built refusals come first**, before any hub. They are the existing rules, not new ones:
-- leader attitude −2 or below: "Not you.";
-- Haven exile at Haven speakers: the door stays shut;
-- wanderer attitude −2 or below: they refuse and run;
-- crossed with the Long Table: a shut door;
-- Kill on Sight with the speaker's faction: no talk.
+Still to build:
 
-There are two exceptions. First, an `always` topic (only the finale's route topics) still shows, with Leave
-beside it. Second, a refusing leader offers **Make it right** ([section 6](#make-it-right)).
+| Kind (`for`) | Who | Memory key | Default hub |
+|---|---|---|---|
+| `quartermaster:<faction>` | Shopkeepers away from a seat | the holding | What's short?; requisition talk. Shop and services stay their own actions |
+| `quest:<key>.<role>` | People a stage or contract spawns (`SpawnPerson` with a conversation id) | `quest:<key>:<role>:<run>` | Whatever the stage writes |
+| `stranger:<kind>` | People who need help, at places where they'd be ([section 16](#strangers)) | `stranger:<id>` | Their request |
+| `radio:<channel>` | No body: "Call on the channel" at a house radio with power, or a carried radio | `radio:<channel>` | Call-ins, distress calls, haggling ([section 16](#radio)) |
 
-**Claimed speakers.** A leader, wanderer or house that a running story holds (a world-facts claim) shows
-that story's topics first. For that turn, other conversations can't `offer`, `begin` or `start` anything
-that touches the claimed subject ("Not now. I've got enough on."). If a story claims a speaker
-mid-session, the next pick reads `when` again, and may send the player back to the hub.
+Also still to build: an `always` topic (the finale's route topics) shows even when the speaker refuses; a
+refusing leader offers **Make it right** ([section 6](#make-it-right)). **Claimed speakers:** a leader,
+wanderer or house that a running story holds shows that story's topics first, and other conversations can't
+`offer`, `begin` or `start` anything that touches the claimed subject that turn ("Not now. I've got enough on.").
 
 ## 4. How a session runs
 
-1. **Open.** A session opens in one of two ways:
-   - **Talk** within 4 m ("Talk to {name}");
-   - **a server-opened greet:** a post speaker at 35 m (for a player in that faction's kit below Known, so
-     a claim is offered whether or not they press Talk), a stranger at 10 m, or the host on the road.
+**Built:** Talk within range, picks checked against the serial and the live world, the fresh-node guard on
+priced choices, `end`, `hub` and `back`, the ways a session ends, danger, and the rates
+([docs/DIALOGUE.md](../docs/DIALOGUE.md#the-talk-screen)).
 
-   The server builds the hub and opens a session. The session holds the speaker key, the node, a serial
-   number, the choice ids it sent, the bindings and the time.
-2. **Pick.** A pick is `RpcAsk_DialoguePick(serial, choiceId)`. The server checks all of these:
-   - the serial is current, and the choice id was in the list it sent;
-   - the player is alive, in range and not in danger;
-   - the choice's `if`, the conversation's `when` and the scene's decided record still hold in the live
-     world.
-
-   A pick that fails a check is ignored, and the node is sent again ("They didn't catch that.").
-3. **Fresh-node guard.** Commit and cost choices are refused within 1.5 s of a node change. So a slot label
-   that hasn't refreshed can't trap anyone into paying or committing.
-4. **Special targets:** `end` closes, `hub` goes back to the topics, `back` goes to the previous node.
-5. **A session ends** when any of these happens:
-   - the player chooses Leave;
-   - the player is 6 m from the body (10 m from a moving wanderer);
-   - 120 s pass idle (45 s while another player is waiting for that speaker);
-   - the body is gone, or the player dies;
-   - danger (below);
-   - the player's kit changes ([section 12](#12-claims-in-someone-elses-kit)).
-6. **Danger.** Checked every second for each open session:
-   - the player took damage or fired a weapon;
-   - an infected is within 6 m of the player or the speaker;
-   - an infected within 30 m has closed in by 2 m or more since the last check.
-
-   Crawlers lying up in a town's doorways end nothing unless they're within 6 m. The speaker says one
-   "Not now!" line in their voice.
-7. **Resume.** A session ended by danger or range keeps its node for 60 s. Talk again in that time and it
-   resumes ("Where were we?"), if its conditions still hold. So ending a rival's session by luring an
-   infected only delays them.
-8. **Rates and caps:**
-   - one pick per serial, at least 0.3 s apart, and one Talk every 2 s;
-   - 64 sessions on the server, 6 per speaker;
-   - public scene nodes allow up to 16 (a sitting, a route topic with a crowd);
-   - at the cap, the session idle longest (over 30 s) is closed for the newcomer. Otherwise: "One at a
-     time."
-9. Sessions aren't saved. After a restart everyone starts from the hub.
+Still to build:
+- **Server-opened greets:** a post speaker at 35 m for a player in that faction's kit below Known (so a claim is
+  offered whether or not they press Talk), a stranger at 10 m, the host on the road.
+- **Resume:** a session ended by danger or range keeps its node for 60 s ("Where were we?").
+- **Per-speaker caps:** 6 sessions per speaker, 16 for public scene nodes; at the cap, the session idle longest
+  (over 30 s) is closed for the newcomer, else "One at a time."; 45 s idle while someone else is waiting.
+- **A change of kit ends the session** ([section 12](#12-claims-in-someone-elses-kit)).
 
 ## 5. The hub
 
-- **Layout:** the greeting, the verbs, up to 4 topics, More... (the next page), Leave.
-- **Verbs** never count toward the topic limit. Each is a `call:` to built behaviour, so Rob is the same
-  Rob, at the same price, whichever way you reach it.
+**Built:** the greeting, the verbs (the built replies), topics by priority with paging, once and daily,
+selectors and trait variants, and leaders who name who to see instead of giving errands
+([docs/DIALOGUE.md](../docs/DIALOGUE.md#trees-hubs-topics-and-nodes)).
 
-  | Speaker | Verbs |
-  |---|---|
-  | Leaders | Ask for work, Ask for news, How do I stand? (the tier cell and name, in voice) |
-  | Wanderers | The role's special, Share some food, Rob (+8 Haven Infamy, as built); Give them your antidote while bitten |
-  | Posts | Pay the toll; Surrender (Bastion, while Watched or Hunted) |
-  | The Long Table | Sit down and eat; Trade for a jar |
-
-- **Leaders never give errands.** Their hub has no errand asks. When a seat has work that is an errand, the
-  leader names the person to see ("Ask the cook. She's short again.").
-- **Selectors, not links.** A conversation says who says it (`for`) and when (`when`). At Talk the server
-  collects every conversation for that speaker kind whose `when` holds. The lists are indexed by kind at
-  start.
-- **Priority:** `quest` > `ask` > `world` > `reaction` > `flavour`. Quest topics are never dropped: they
-  page onto More.... Flavour rotates on a seed of the speaker and the day.
-- **Once and daily** count per character for each (conversation, speaker key). An ask done at one house
-  still shows at another. A topic you've heard is dimmed, not hidden, unless it's `once`.
-- **Injected topics.** Other systems open topics only by setting the flags and facts `when` reads.
-  Questlines, the majors, tribes, needs and morale, truces, lost outposts, the cure, the finale and the
-  epilogue all work this way. One example: the majors' "Ask {chair_short} about Day 7" on a stronghold
-  leader while that act is open. Nobody calls into the dialogue code.
-- **Variety without volume.** One conversation serves every council head, through:
-  - trait variants (`say? trait:greedy :: ...`);
-  - tier, regard and memory variants;
-  - world tokens.
-
-  Lines never use pronouns for seeded speakers (`{npc_short}` or the role instead). The majors already
-  write their stronghold leaders' lines this way.
+Still to build: **injected topics** from the systems that own them (questlines, the majors, tribes, needs and
+morale, truces, lost outposts, the cure, the finale, the epilogue) by setting the flags and facts `when` reads,
+for example the majors' "Ask {chair_short} about Day 7" on a stronghold leader while that act is open; quest
+topics that never drop but page onto More....
 
 ## 6. Memory: what is kept, where, and for how long
 
-**The built memory bits.** Leaders keep helped, crossed, saved and met; wanderers keep helped, wronged and
-saved. They're set only by the built events, and a `call:` to a built service sets them exactly as it does
-today. Dialogue's own effects never write a built bit. One change, owned by reputation: each entry is
-**life-stamped**. Memory from this life counts as built; memory from an earlier life counts at half
-(rounded toward zero), and is voiced once as the name, not the face: *"There was a Lukas who crossed me.
-You're not him. Are you?"* Met doesn't carry. See
-[REPUTATION_NAMES.md](REPUTATION_NAMES.md#12-face-and-name-one-scope-rule).
+**Built:** regard (−4 to +4, decaying a step a real day), faces, claims, seen nodes, passed and failed
+persuades, knowledge, attitude adding regard ÷ 2 with Trees on, persuade's +1 for remembered help, and
+life-stamped leader and wanderer memory ([docs/DIALOGUE.md](../docs/DIALOGUE.md#memory),
+[docs/REPUTATION.md](../docs/REPUTATION.md#face-and-name)).
 
-**What dialogue adds:**
-
-| What | Held for | Scope | How long | Cleared by |
-|---|---|---|---|---|
-| **Regard** (the words below) | each speaker key | per player | −4 to +4; moves 1 toward 0 each real day | time; Make it right sets it to 0 |
-| Face (they know you: you talked to them undisguised, or were caught by them) | each faction | per character | the life | death (a new life is a new face) |
-| Claims | each speaker key, in the one lie store | per character | the life; 6 per speaker (the oldest true claim drops first) | death, or exposure |
-| Promises (a held-errand kind) | each speaker key | per character | until kept, or broken (time up or death) | — |
-| Seen nodes, picked choices, passed checks | each (speaker key, conversation, choice id) | per character | the life | death |
-| Failed checks | each (speaker key, choice id) | per player (identity) | persuade: until your score for it rises; lies and threats: a real day | time |
-| Liar count | each faction | per player | 1 off each real day | time |
-| Knowledge: evidence | each key | per player | with its run, or the season | the run ending |
-| Knowledge: passing facts (the word at the wire, truck times, the watch) | each key | per player | until it expires (the word: the next 05:30; chatter: 2 hours of play) | time |
-| Season, run and scene records | the world | — | the season or run | — |
-| The Long Table | as built: guest, family, crossed | per character | the life | as built. No regard, no liar count |
-
-Catches, blown time and word gets round belong to the disguise system, not to dialogue memory
-([DISGUISE.md](DISGUISE.md#8-caught)).
-
-**Regard words:**
-
-| Word | Change | When |
-|---|---|---|
-| thanks | +1 | Only on a choice with a real cost or deed (the lint checks) |
-| kept | +1 | A promise kept |
-| broke | −1 | A promise broken |
-| threatened | −1 | Any threat, pass or fail |
-| slander | −1 | A wrong call-out or point-out |
-| vouched for a liar | −1 | [Section 14](#vouch) |
-| lied | −3 (Merciful −2, Paranoid −4) | A lie caught, now or later. This covers what missions called "caught lying"; there's no separate leader bit for it |
-
-**Who writes regard.** Dialogue, and errands on **named-person keys only**. Errands never write regard,
-memory or loyalty on a leader.
-
-**How regard is used:**
-- **Attitude.** Attitude adds regard ÷ 2, rounded toward zero. So talk moves a leader's or wanderer's
-  attitude by at most ±2, and the effect fades. A caught lie to a Paranoid leader can shut that door for a
-  day or two, never for the season.
-- **Persuade.** Persuade's "remembered help" means regard +2, or the built helped or saved bit (this life).
-- **Prices** read only the built bits, as today. So talk can't farm discounts.
-
-First contact uses the built met bit (this life). Lines addressed to the person ("Back again.", "You told
-me...") read face, claims and seen nodes, which are per character. So a new life is a new face.
+Still to build:
+- **Promises** (a held-errand kind, [section 11](#11-promises-callbacks-and-knowledge)) with their regard words
+  *kept* and *broke*.
+- **The liar count** per faction per player (1 off each real day), and failed lies and threats barred at that
+  speaker for a real day per player.
+- **Knowledge with expiry:** passing facts (the word at the wire until the next 05:30; chatter for 2 hours of
+  play, 32 at most), and evidence kept with its run.
+- **Who writes regard** beyond dialogue: errands, on named-person keys only, never on leaders.
 
 ### Make it right
 
@@ -334,217 +212,67 @@ me...") read face, claims and seen nodes, which are per character. So a new life
 
 ## 7. Conditions
 
-Terms are joined with `&`. `!` negates a term. Commas inside a term mean "any of". There is no OR across
-terms: write two choices instead. Every term reads an existing system.
+**Built:** the condition syntax and its keys, the quiet defaults for keys of designs not built yet, and "only
+what the player knows" ([docs/DIALOGUE.md](../docs/DIALOGUE.md#conditions)).
 
-| Key | Example | True when |
-|---|---|---|
-| `bg` | `bg:doctor,nurse` | the character's background is one of these |
-| `tier`, `standing` | `tier:haven>=trusted`, `standing:redhand=wildcard` | access tier (mixed tiers count one lower); the exact grid cell |
-| `fame`, `infamy` | `infamy:bastion>=some` | the number or band (low, some, high, extreme) |
-| `rep` | `rep:redhand=merciful_thug` | the reputation name for that cell. [REPUTATION_NAMES.md](REPUTATION_NAMES.md) owns the table |
-| `hunted`, `exiled`, `kin`, `owed` | `hunted:bastion` | Hunted or Kill on Sight; a Haven exile; kin of the fallen; owed a parley |
-| `flag`, `q`, `m` | `flag:list.read`, `q:every_name.act=1`, `m:act_house` | a season flag; the questline run's flag; the mission's `DialogueValue` |
-| `cflag`, `nmem` | `nmem:sold_pharmacy` | the character's own flag; this speaker's memory of this character |
-| `regard`, `face` | `regard>=2`, `face:bastion` | regard; this faction knows your face |
-| `seen`, `claim` | `seen:haven.head.mouths/start`, `claim:expected` | you've seen that node; you told this speaker that |
-| `knows`, `heard_lie` | `knows:bastion.word` | you learned it; you heard that lie |
-| `promise` | `promise:tins@house=open` | the state of a promise to this speaker or place |
-| `item`, `wearing`, `armed` | `item:food*3` | carries it (built keyword lists); wears it; a firearm in hand or slung |
-| `kit` | `kit:bastion=in_kit` | what kind of that faction's kit you wear: `own`, `issued`, `in_kit`, `signed_other`, `dead_mans`, `off_turned` ([DISGUISE.md](DISGUISE.md#3-kit)) |
-| `claimed`, `passing`, `caught` | `passing:bastion` | you've claimed to be one of them this visit; you're passing as one of them here; you're blown with them |
-| `bite_shown` | | the HUD shows a bite: the golden window or a stage |
-| `stage` | `stage:weakness+` | the HUD's infection stage |
-| `symptoms` | | others can see it: Weakness or Final, with no suppressant |
-| `declared` | | the bite was declared at a safehouse this life |
-| Time and season | `night`, `dusk`, `fog`, `hour>=17`, `day>=5`, `outbreak:overrun`, `cure>=50`, `finalstand`, `epilogue` | the world facts. `day` is the season day |
-| Speaker | `trait:greedy`, `loyalty:rogue`, `attitude>=1` | the speaker's record |
-| Place | `house:short`, `house:tier>=settlement`, `town:held=redhand`, `town:infection>=60`, `town:thick=@target`, `tribe:within(2500)`, `tribe:hungry`, `alpha:down` | the speaker's house or town, or a binding. `town:thick` is true once the player is inside that town while its crawlers are thick (infection 60+) |
-| Scene and vote | `decided`, `sitting:every_name.1`, `lean:workers`, `swayed` | the scene's record; the majors' vote (`RZ_QuestVote`) |
-| Finale | `finale:open`, `finale:can_commit=bastion`, `route:none` | the finale engine's answers; the route this identity locked to this season (`RouteOf`), kept for lines after the cure |
-| Outcome | `cure_held:bastion`, `cure_held:everyone`, `ending:every_name=every_name`, `was:every_name.reading` | who controls the cure (`finale.route`, or the handed-over faction); a major's ending; this player is on that scene's decider list |
-| Others | `others>=1`, `group` | other players within 8 m; someone from your vanilla group within 8 m |
-
-**Only what the player knows.** A lie's `truth`, and the `if` of any choice whose tag would show, may read
-only what the player knows:
-- their background, standing and reputation name;
-- their items and what they wear;
-- the HUD: `bite_shown`, `stage`, `symptoms`;
-- their own claims, flags and knowledge.
-
-No condition can read whether a cleaned bite took. The HUD hides that until the window would have closed,
-and dialogue keeps it hidden.
-
-**Quiet defaults** for keys from designs that aren't built yet:
-
-| Keys | Owner | Until it's built |
-|---|---|---|
-| `rep` | [REPUTATION_NAMES.md](REPUTATION_NAMES.md) | false; the standing strip and tags show the tier |
-| `tribe*`, `alpha*`, `{tribe:N}`, `{alpha:N}` | [INFECTED.md](INFECTED.md) (through the ecology adapter) | false; choices that need them hide |
-| `lean`, `sitting`, `sway`, `{lean}` | [MAJORS.md](MAJORS.md) | false; sway choices hide |
-| `finale:*`, `route`, `commit`, `cure_held` | [FINALE.md](FINALE.md) | `route:none` is true; `finale:open` is false; commits are refused |
-| `ending`, `was` | the majors' season story | false |
-| `kit`, `claimed`, `passing`, `caught` | [DISGUISE.md](DISGUISE.md) | `kit` reads only `own`; claim choices hide |
-| `stranger:*` | [ERRANDS.md](ERRANDS.md) | no strangers are dealt |
+Still to build, as their owners are built: `kit`, `claimed`, `passing`, `caught` (disguise); `tribe*`, `alpha*`
+(the tribes, through the infected adapter); `lean`, `sitting`, `swayed`, `decided` (the majors and scenes);
+`finale:*`, `route`, `cure_held`, `ending`, `was` (the finale and the season story); `promise`, `heard_lie`
+(promises and lies); `q:` and `m:` (questline and mission values); `declared` and `symptoms`; `group`.
 
 ## 8. Checks and tags (New Vegas style)
 
-The packer writes tags from the mechanics. Writers never type them, so a tag can't promise something the
-check doesn't test. **Tags show costs and requirements, never outcomes.** All checks go through the one
-check helper, `RZ_Checks`, shared with missions, errands, the majors and the finale.
+**Built:** background, standing, `persuade` (Trust), `threaten` (Fear, with its rules and the Hunted-cliff tag),
+`cost`, Pass / Short / Refused, trait modifiers, repeats, failure as a branch, and factionless speakers
+([docs/DIALOGUE.md](../docs/DIALOGUE.md#checks-and-tags)).
 
-| Check | Tag (panel, menu) | Short tag (action menu) | Score |
-|---|---|---|---|
-| Background (`if bg:`) | [Doctor] | [Doctor] | Shown only to characters with it. Not a roll: the line is simply theirs |
-| Standing (`if tier:`, `standing:`, `rep:`) | [Trusted · Haven], [Merciful Thug · Red Hand] | [Trusted] | Shown only when true |
-| `persuade F D` | [Persuade · Haven · 1 of 2] | [Persuade] | **Trust**, below |
-| `threaten F D` | [Threaten · +3 Bastion Infamy · Fear 2 of 2] | [Threaten] | **Fear** ([MISSION_STYLE.md](MISSION_STYLE.md#checks-persuade-and-fear)) |
-| `lie F D` | [Lie], shown only when the claim is false | [Lie] | Access rank with F, +1 ★ (Ex-Con, Raider, or the line's own list), plus the dialogue bonus. Against D plus hidden modifiers (below) |
-| `look F D [cover:<key>]` | [Full kit +2] [Watched −1] 1 of 2 | [Look] | **The look** ([DISGUISE.md](DISGUISE.md#6-looks)): fixed, shown before you commit |
-| `cost` | [20 Haven Favor], [3 food] | [20 Favor] | You can pay. Spent when picked (`TryBribe` semantics) |
-| Callout | [Evidence] | [Evidence] | You hold the truth for that lie |
-| `if bite_shown` | [Bitten] | [Bitten] | — |
-| Vouch | [Vouch] | [Vouch] | [Section 14](#vouch) |
-| `commit` | [Point of no return] | [No return] | `finale:can_commit`; always followed by a confirm node |
+Still to build:
 
-**Trust: the one persuade score** (decision 11). It's its own wrapper, so built questline checks never
-change. It adds up:
-- the access rank with F: Stranger 0, Known 1, Trusted 2, Champion 3; mixed tiers one less (Uneasy 0;
-  Tolerated and Wildcard 1; Respected 2); Watched −1. Hunted or worse: you can't persuade them, and the
-  choice shows greyed;
-- +1 for a ★ background in the check's list;
-- **at most +1 in total from dialogue:** remembered help (regard +2, or the built helped or saved bit this
-  life), or a vouch while the voucher stands within 8 m;
-- −1 if that faction's liar count is 2 or more;
-- −1 for crossing lines (QUESTLINES.md, "Crossing lines"). Finale stages never write that mark.
-
-Trait modifiers in the check move the difficulty (`easier:merciful` −1, `harder:paranoid` +1). Difficulty
-runs 1–4. A Known player passes a Trusted-level check only with help or a vouch, and nothing compresses the
-ladder further. The built `PersuadeScore` is untouched.
-
-**Results** (missions' rule, on top of the score):
-
-| Your score | Result | Where it goes |
+| Check | Tag | Score |
 |---|---|---|
-| at or over the difficulty | **Pass** | the pass node |
-| one under | **Short**: a halfway deal at a price the choice names (Favor, food, a promise, a smaller result) | the short node |
-| two or more under | **Refused**: that speaker won't hear that approach from you again this job | the refused node |
+| `lie F D` | [Lie], shown only when the claim is false | Access rank with F, +1 ★ (Ex-Con, Raider, or the line's own list), plus the dialogue bonus, against D plus hidden modifiers: the speaker's credulity (0 or +1, seeded, never shown), +1 Paranoid, +1 if this speaker caught you lying this life. A tell catches the lie whatever the score ([section 10](#10-lying-and-being-lied-to)) |
+| `look F D [cover:<key>]` | [Full kit +2] [Watched −1] 1 of 2 | **The look** ([DISGUISE.md](DISGUISE.md#6-looks)) |
+| Callout | [Evidence] | You hold the truth for that lie |
+| Vouch | [Vouch] | [Section 14](#vouch) |
+| `commit` | [Point of no return] | `finale:can_commit`; always followed by a confirm node |
 
-A choice can name two targets (`-> pass | fail`); then Short and Refused both go to the second. Scores are
-fixed and shown, so picking a choice you're short on is a choice. One try per person per job per identity.
-A failed check changes things only for the player who failed: nobody can fail on purpose to raise the price
-for others.
-
-**Lies** have hidden modifiers on top of D:
-- the speaker's credulity: 0 or +1, seeded per speaker and never shown;
-- +1 for a Paranoid speaker;
-- +1 if this speaker caught you lying this life.
-
-Pass or fail is never shown in advance. A tell catches the lie whatever the score
-([section 10](#10-lying-and-being-lied-to)). So a spreadsheet can give a range, never a certainty.
-
-**Threats** use the Fear score and its rules ([MISSION_STYLE.md](MISSION_STYLE.md#checks-persuade-and-fear)):
-- +3 Infamy with F, pass or fail (a scene may name more, up to 8), and regard *threatened*;
-- once per person, by anyone, for the season: after one threat by anyone, *"He's already scared. Of someone
-  else."*;
-- three per life per faction; after that it's always Refused (*"They're past scared."*) and still costs its
-  Infamy;
-- a failed threat is barred at that speaker for a real day, per player;
-- never remembered as a pass;
-- never on stronghold leaders (*"The boss doesn't scare."*), the Kid or the Long Table. A free-standing talk
-  threat is never offered inside a safe zone (strongholds, the lab) or a safehouse. Lore: guns stay quiet
-  in camp, and nobody fires near a house. A threat a mission writes into its own scene (Protection Racket's)
-  stays.
-- The tag carries the cost, the score against the difficulty, and the Hunted-cliff warning when the cost
-  would make you Hunted: "[Threaten · +3 Bastion Infamy · this makes you Hunted]".
-
-**Speakers with no faction** (strangers, factionless quest people, the Long Table):
-- persuade reads your Haven rank, at most 2 (they've heard the Haven's channel); ★ and the +1 dialogue bonus
-  apply. The Long Table is the exception: its rank counts 0;
-- Fear reads your highest earned Infamy with anyone, at most 2; the +3 is charged to the Haven, which counts
-  what's done to ordinary people. At Kill on Sight they won't listen;
-- there's no liar count;
-- the Long Table keeps no regard at all. It stays three words, so it never becomes a hidden fifth
-  reputation.
-
-**Repeats:**
-- A passed persuade or standing check is remembered per character, keyed by (speaker key, conversation,
-  choice id). The choice leads straight to its pass node again.
-- Lies, threats, looks and anything whose truth can change over time are never remembered. Each telling is
-  checked again and stores a new claim.
-- A failed persuade answers "You've said that already." until your score for that check is higher than when
-  it failed. The record is per player, so dying doesn't reset it.
-- A failed lie or threat is barred at that speaker for a real day, per player.
-
-**Failure is a branch.** The lint refuses:
-- a check whose fail node is `end`;
-- a fail node that offers only Leave.
-
-A failed persuade still leads somewhere: the speaker names someone who might help, the price goes up, or
-you get half the truth.
-
-**What's shown:**
-- The panel and the menu show every standing, persuade, threaten and look choice. One you'd fail is red,
-  with what it needs: "[Persuade · Haven · 1 of 2] (needs Trusted)".
-- Background lines show only to that background.
-- The action menu hides checks you'd fail. The node's text adds one line instead: "There's more they'd say
-  to someone they trusted."
-- After a check, the reply opens with "[Persuade · Haven: passed]", or in the hint fallback with the title
-  "Persuaded", "Short" or "Not persuaded".
-
-**Groups.** In a decide scene ([section 14](#14-multiplayer)), the best talker present can answer for
-everyone. That's intended ("send your Elder to the chair"), and decide-scene difficulties assume it. Each
-member still has their own one try per job. In a tally scene, each player sways only their own voter.
+- The −1 for the liar count (2 or more) in Trust, once lies are built.
+- **Groups.** In a decide scene the best talker present can answer for everyone; each member keeps their own
+  one try per job. In a tally scene each player sways only their own voter.
+- The design's non-modal deliveries (the panel, the action-menu donors that hide checks you'd fail with "There's
+  more they'd say to someone they trusted.", the hint fallback) are dropped in favour of the talk screen, which
+  shows every check with its score ([PLAN.md](PLAN.md#built-alongside-the-work-in-roadmap-next)).
 
 ## 9. Results (effects)
 
-Effects are joined with `;`. They run in order, on node entry (`do` on its own line) or with a choice. On a
-check choice, `do` runs on a pass, `short` on a Short, and `else` on a fail. Each effect goes through the
-system that owns it, with that system's caps.
+**Built:** `mark`, `cset`, `nset`, `regard`, `favor` (10 a conversation, 20 a faction a day), `cost`, `take`,
+`claim`, `learn`, `rumour`, `call` (the person's own replies, the safehouse hand-in, the toll, the post's
+passage, standing), `offer`, and no Fame, Infamy or items ever ([docs/DIALOGUE.md](../docs/DIALOGUE.md#what-a-choice-does)).
+
+Still to build, with scenes and the systems that own them:
 
 | Effect | Example | Does | Limit |
 |---|---|---|---|
-| `set`, `qset` | `set:ask.tins@house=1` | season and run flags | world effect: only in a scene. In a conversation that serves many speakers, a flag is scoped (`@house`, `@seat`, `@run`) |
-| `mark` | `mark:other_two.sorry` | a season flag that only ever goes from 0 to 1 | allowed anywhere |
-| `cset`, `nset` | `nset:honest` | a character flag; this speaker's memory of this character | personal |
-| `regard` | `regard:thanks` | the regard words | `thanks` only with a real cost or deed on the same choice |
-| `favor` | `favor:haven+5` | `AddFavor` | 10 per conversation; all talk shares **20 per faction, per player, per real day** (the small-pay ledger's talk line). Past it: "That's all I've got today." The choice still works, unpaid |
-| `cost` (on the choice) | `cost favor:haven 20`, `cost item:food*3` | `SpendFavor` or `take` | tagged |
-| `take`, `return` | `take:food*3`, `return:keepsake` | takes items by keyword; gives back only an item this character handed this speaker | never gives new items |
-| `claim`, `promise`, `later`, `learn` | `promise:tins@house:food*2`, `later:6h:scav.came_back`, `learn:halcyon.back_room` | memory, promises, callbacks, knowledge ([sections 10–11](#10-lying-and-being-lied-to)) | 6 claims, 3 promises, 10 callbacks per player |
-| `note`, `rumour` | `rumour:"..."@6` | a journal note on the run; gossip (`AddRumour`) | the existing caps |
-| `reveal` | `reveal` | the exact spot of the speaker's contract | only to players the contract's own rule allows (Trusted or a Radio Operator, as built); never behind a lie or a disguise |
-| `offer`, `begin` | `offer:leader_job`, `begin:other_two` | `StartIfCan` for this player and their vanilla group within 50 m; a questline's `TryBegin` | the mission's and the engine's own rules |
-| `errand` | `errand:house_tins` | asks the errands dealer to deal that card or routine to this player | the dealer's rules ([ERRANDS.md](ERRANDS.md)); never on a leader |
+| `set`, `qset` | `set:ask.tins@house=1` | season and run flags | world effect: only in a scene; scoped (`@house`, `@seat`, `@run`) in a conversation that serves many speakers |
+| `return` | `return:keepsake` | gives back only an item this character handed this speaker | never gives new items |
+| `promise`, `later` | `promise:tins@house:food*2`, `later:6h:scav.came_back` | promises and callbacks ([section 11](#11-promises-callbacks-and-knowledge)) | 3 promises, 10 callbacks per player |
+| `note` | `note:"..."` | a journal note on the run | the existing caps |
+| `reveal` | `reveal` | the exact spot of the speaker's contract | only to players the contract's own rule allows; never behind a lie or a disguise |
+| `begin` | `begin:other_two` | a questline's `TryBegin` | the engine's own rules |
+| `errand` | `errand:house_tins` | asks the errands dealer to deal that card | the dealer's rules ([ERRANDS.md](ERRANDS.md)); never on a leader |
 | `start`, `event` | `start:walk_back` | the stage mission's block or event (`OnDialogueEvent`) | the physical half of an outcome |
-| `resolve` | `resolve:all_in:"talked the head round"` | the stage's `Resolve`, with a **named** outcome | only from a conversation attached to that running stage's person; only outcomes talk finishes |
+| `resolve` | `resolve:all_in:"talked the head round"` | the stage's `Resolve` with a named outcome | only from a conversation attached to that running stage's person |
 | `approach` | `approach:talk:"asked about the stores"` | `Remember`: this player took part this way | personal |
-| `sway` | `sway:pot` | `RZ_QuestVote.Sway` | the vote's own rule (one sway per player per sitting) |
-| `reward` | `reward:haven:5:20:"walked them home"` | `Run.Reward` | quest conversations only; the engine's caps |
-| `call` | `call:work`, `call:rob`, `call:hand_in:food*2`, `call:toll:15`, `call:search`, `call:declare_bite`, `call:table_bite` | runs built behaviour unchanged | its own rules |
-| `hostile`, `flee` | `hostile:3` | a timed grudge (`AddGrudge`); the wanderer runs | grudges restart, never add up |
-| `pass`, `catch` | `pass:post`, `catch:bastion` | a passed look's result (one passage at this post while it stands, or the gate's 10 minutes); a caught look's result (held, kit taken, +3, one of three catches, word gets round) | the disguise system's own rules ([DISGUISE.md](DISGUISE.md#8-caught)) |
-| `commit` | `commit:bastion` | the finale route lock | a confirm node, and the engine's `CanCommit` |
+| `sway` | `sway:pot` | `RZ_QuestVote.Sway` | one sway per player per sitting |
+| `reward` | `reward:haven:5:20:"walked them home"` | `Run.Reward` | quest conversations only |
+| `call` | `call:work`, `call:rob`, `call:search`, `call:declare_bite`, `call:table_bite` | named calls for the built behaviours (today's `slot:N` covers them) | its own rules |
+| `hostile`, `flee` | `hostile:3` | a timed grudge; the wanderer runs | grudges restart |
+| `pass`, `catch` | `pass:post`, `catch:bastion` | a passed or caught look's result | DISGUISE.md's rules |
+| `commit` | `commit:bastion` | the finale route lock | a confirm node, and `CanCommit` |
 
-There's **no `fame`** (talk never pays Fame), **no `house`** (house numbers change through built hand-ins
-and stage outcomes), and **no `infamy`** (Infamy comes only from lie, threaten and look checks and built
-calls, so it always shows in a tag).
-
-**Personal and world:**
-- Memory, regard, character flags, standing, Favor, items, claims, promises, knowledge, sways and approaches
-  belong to the player who picked.
-- Season, run and scene flags, `resolve`, `start` and `commit` change the world. They're allowed only in a
-  scene, so they run once ([section 14](#14-multiplayer)). `commit` is personal in effect, but it runs only
-  from the finale's confirm node.
-- These are allowed anywhere: `mark`, `call` to built per-player services (hand-ins, the toll, the search),
-  `offer`, `begin` and `errand`.
-
-**Talk resolves talk.** A choice resolves only what talk itself finishes: talked round, paid, refused.
-Anything physical starts the stage's block with `start:`, and the stage resolves and pays when the block
-ends:
-- walking two people back to the road at dusk;
-- an escort to Bastion;
-- a delivery.
+**Personal and world.** Season, run and scene flags, `resolve`, `start` and `commit` change the world: they're
+allowed only in a scene, so they run once ([section 14](#14-multiplayer)). **Talk resolves talk:** anything
+physical starts the stage's block with `start:`, and the stage resolves and pays when the block ends.
 
 ## 10. Lying and being lied to
 
@@ -1010,159 +738,30 @@ season except hall-of-fame lines.
 
 ## 19. Authoring format (`.rzd`), pipeline and tools
 
-Files go in `dialogue/<area>/<name>.rzd` at the repo root. The areas are base, haven, bastion, redhand,
-halcyon, wanderers, residents, table, strangers, radio, barks, quests/<key>, majors/<key>, errands, finale and
-epilogue. A file holds one or more conversations. `#` starts a comment, and indentation is free.
+**Built:** the format for conversations, topics and greets (lines only), the packer with its lint, the
+simulator for one character, `dialogue/shipped.lock`, the compile check running the lint first, `/talkdebug`,
+and the writing rules ([docs/DIALOGUE.md](../docs/DIALOGUE.md#the-text-format-rzd),
+[docs/WRITING.md](../docs/WRITING.md#conversations)). The text source is the generated packs ("plan B").
 
-```
-conv <id>                       unique, dotted, never renamed once shipped
-for <speaker>[, <speaker>]      section 3 (seat:haven/council_head names one seat kind)
-when <conditions>               read when the hub is built, and again on every pick
-topic "<hub label>" | greet | bark
-prio quest|ask|world|reaction|flavour
-once | daily                    per character, per speaker key
-always                          shown even when the speaker refuses (finale routes only)
-opens approach <metres>         the server opens it when a matching player comes that close
-voice haven|bastion|redhand|halcyon|table|plain
-scene <id> run|speaker|house|season [who <conditions>]
-bind <name> = <picker>          picked once a session: town:thick_within(2500), house:nearest_short
-use <conv id>                   pull in shared nodes
-
-node <id> [shared] [public]
-  jump <conditions> -> <node>   checked in order on entry
-  say <text> [~lie:<key>[@<bind>]] [~truth:<key>]
-  say? <conditions> :: <text>   the first true variant replaces the next plain say
-  say (<role>) <text>           someone else in the scene
-  do <effects>                  on entry (in a scene: once, for the decider)
-  > @<id> <label> -> <pass>[ | <short>][ | <refused>] [check <kind> <args>] [cost <what>] [truth <cond>]
-      [tell <cond>|always] [if <cond>] [do <effects>] [short <effects>] [else <effects>] [found <effects>]
-      [decides] [label "<40 characters>"]
-  callout <lie key> -> <node>   appears with [Evidence] when the player holds the truth
-```
-
-- **The rules of a line:**
-  - A label is everything before the first ` -> `. Speech goes in quotes; actions are plain words ("Put three
-    tins in the stores.").
-  - Limits: labels 60 characters (40 in the action menu, `label` if needed), says 240, 7 choices a node.
-  - Faction keys are haven, bastion, redhand, halcyon, or `none` for factionless checks. Background ids are as
-    in code.
-- **Ids.**
-  - Every choice has an `@id`, unique in its conversation. Memory is keyed by conversation, node and choice id,
-    never by position, so moving or adding lines never scrambles saved records.
-  - `dialogue/shipped.lock` lists every shipped id. The lint refuses removing one; it can only be marked
-    `retired`.
-- **Tokens:** the world tokens (`Fill`) and the per-player tokens (`FillFor`), plus:
-  - `{player}`, `{npc}`, `{npc_short}`, `{house}`, `{resident}` (a seeded occupant name for this house);
-  - `{tier:f}`, `{rep:f}`, `{word:f}`, `{claim:key}`, `{bind:name}` (as `@name` in keys and `{town:@name}` in
-    text);
-  - `{decider}` (who decided the scene, through the names policy);
-  - `{lean}`, `{tribe:N}`, `{alpha:N}` (in the speaker's faction's own word), `{word:bastion.N}`,
-    `{kit_owner}`, `{dead_name}`.
-
-**Pipeline**
-1. **Text source.**
-   - **Plan A:** the server reads the `.rzd` files as addon resources at start (VERIFY: `FileIO` reads addon
-     files on the dedicated server). Clients compile nothing.
-   - **Plan B:** `tools/dialogue_pack.py` writes `scripts/Game/ReforgerZ/Dialogue/Pack/RZ_DialoguePack_<area>.c`,
-     generated and committed. It's split into many small functions (at most 150 `Add()` lines each).
-   - Either way, anything in the addon is on every client's disk. Only the optional
-     `$profile:ReforgerZ/dialogue/*.rzd` overrides, matched by conversation id, stay server-only.
-   - The voice bank (`RZ_VoiceDefaults.c`) holds single-line pools; `.rzd` holds conversations, greets and
-     barks. One text pipeline, one lint.
-2. `tools/compile_check.sh` runs the lint first and fails on lint errors.
-3. The server parses everything once at start into compiled tables. Conditions and effects become small typed
-   records, never parsed again.
-
-**Lint** (one lint for all player text, with a baseline that only shrinks)
-- **Errors, structure:**
-  - unique ids and stable choice ids; a shipped id removed;
-  - a missing target; an unreachable node; a path that can't end;
-  - unknown keys, effects or tokens;
-  - more than 7 choices; length limits.
-- **Errors, checks:**
-  - a check failing into `end` or a Leave-only node;
-  - a lie without `truth` or `tell always`;
-  - a `truth` that reads anything the player doesn't know ([section 7](#7-conditions));
-  - `regard:lied` outside a lie check;
-  - `regard:thanks` without a cost or deed on the same choice;
-  - a free-standing `threaten` in a conversation whose speaker is in a safe zone or safehouse, or on a stronghold
-    leader, the Kid or the Long Table.
-- **Errors, effects:**
-  - a world effect outside a scene;
-  - `decides` outside a scene;
-  - an unscoped season flag in a conversation that serves many speakers;
-  - a flag outside its owner's namespace, unless QUESTLINES.md's Crossings lists it;
-  - `fame`, `house` or `infamy` effects; Favor past the caps; `reward` outside quest conversations;
-  - `resolve` with an outcome name the questline doesn't declare (`dialogue/quests/<key>/outcomes.txt`,
-    cross-checked by the runtime test), or in a conversation not attached to a stage person;
-  - `reveal`, `offer`, `begin`, `learn`, `errand` or Favor reachable only through a claim or behind a lie;
-  - `errand` on a leader;
-  - `commit` without a confirm node, with tier, standing or memory terms, or outside an `always` topic.
-- **Errors, content:**
-  - an ask with no world condition;
-  - any follow or companion effect, or an escort without a destination;
-  - a bark with choices or more than one line;
-  - in `voice table` files, the banned-word list (no word for what they are, no kitchen or cellar contents);
-  - a name from LORE.md's Long Table (Halas, Tomas, Moravec) in any non-table file;
-  - "alpha", "tribe" or "crawler" in player text (each faction has its own words);
-  - `{player}` or a name token in a radio node, except a player's own broadcasts and honour lines.
-- **Warnings:**
-  - voice hints: Bastion lines with exclamation marks, Halcyon without numbers in long trees;
-  - more than 3 says;
-  - he, she, him or her in lines about a seeded speaker.
-
-**Simulator.**
-- `tools/dialogue_sim.py <conv> --bg doctor --tier haven=trusted --flag every_name.act=1` walks a tree and prints
-  what that character sees, tags included.
-- `--chars "doctor:haven=trusted" "unemployed:haven=known" --race` runs several characters through a scene in a
-  set order, to test decide holds, objections and tallies.
-
-**Runtime test.** It opens every conversation's start node with a fake player, runs each lie, promise and
-callback once, and logs anything that throws.
-
-**Debug.**
-- `/talkdebug` (admins): the nearest speaker's candidate conversations, and which `when` terms failed.
-- `/talkreset <scene>` (admins): clears a stuck scene.
-- Log lines:
-  - `Dialogue: loaded N conversations, M nodes`;
-  - `Dialogue: lint warnings N`;
-  - `Dialogue: scene <id> decided by <name> (<choice>)`;
-  - `Dialogue: scene <id> objection by <name>`;
-  - `Dialogue: session cap at <speaker>`;
-  - `Dialogue: budget reached <player> <faction>`.
-
-**Writing.** The rules go in [WRITING.md](../docs/WRITING.md) when dialogue is built:
-- **Lines:** one to three short lines a node, in the faction's voice, coloured by the speaker's traits.
-- **Choices:** no choice is labelled good or evil, and every option is something a person would say or do. Every
-  option costs something real, and the kind one usually pays least.
-- **The player's own voice by background:**
-  - Ex-Con and Raider: wry, quick ("[Lie] 'It's a rash.'");
-  - Unemployed and Drifter: plain, sometimes funny;
-  - Soldier and Police: procedural;
-  - Nurse, Doctor and Lab Technician: clinical and kind;
-  - Hunter, Mechanic and Radio Operator: practical, few words;
-  - Elder: slow, and knows everyone.
-- **Dark humour:**
-  - the Red Hand jokes about everything, and says its lies flatly;
-  - the Haven is darkly funny, sideways;
-  - Bastion is dry ("Bastion out.");
-  - Halcyon's is accidental guilt.
-- **Where the humour stops:** jokes go up, sideways or at oneself, never down at the bitten, volunteers,
-  exiles, children, the never-arrived or a named dead person. Never at the Long Table, never about the Kid,
-  never in a node about a walked-out person's family, never about how Rudi died. Mercy jobs carry no jokes. A
-  wry option is never the only way through.
-- **The Long Table is never described**, and no line elsewhere hints at it.
-- **Names:** frozen at the deed and passed through the note filter; `/anonymous` and the admin strike are
-  honoured; a name is never a joke's butt; never on air except a player's own broadcasts and honour lines.
-- **QA checklist for writers:**
-  - run the simulator for three backgrounds;
-  - read it aloud in voice;
-  - every fail goes somewhere;
-  - asks read the world;
-  - nothing free;
-  - no pronouns for seeded people;
-  - the Long Table rules;
-  - the three humour tests.
+Still to build:
+- **Keywords:** `scene <id> run|speaker|house|season [who <conditions>]`, `bind <name> = <picker>`, `use <conv id>`,
+  `opens approach <metres>`, `always`, `callout <lie key> -> <node>`; node options `shared` and `public`;
+  `say (<role>)` for someone else in the scene; choice options `truth`, `tell`, `found`, `decides`.
+- **Tokens:** `{resident}`, `{tier:f}`, `{rep:f}`, `{word:f}` (another faction's), `{claim:key}`, `{bind:name}` and
+  `{town:@name}`, `{decider}`, `{lean}`, `{tribe:N}`, `{alpha:N}`, `{word:bastion.N}`, `{kit_owner}`, `{dead_name}`.
+- **Text source:** the server reading `.rzd` files from the addon (plan A, VERIFY `FileIO` on addon files on the
+  dedicated server) and server-only `$profile:ReforgerZ/dialogue/*.rzd` overrides by conversation id.
+- **Lint:** a `truth` that reads what the player can't know; a lie without `truth` or `tell always`; world effects
+  and `decides` outside a scene; an unscoped season flag in a conversation that serves many speakers; a flag
+  outside its owner's namespace; `resolve` with an outcome name the questline doesn't declare
+  (`dialogue/quests/<key>/outcomes.txt`); `reveal`, `offer`, `begin`, `learn`, `errand` or Favor behind a claim or
+  a lie; `commit` without a confirm node; barks with choices; `{player}` in a radio node; Halcyon long trees
+  without numbers.
+- **Simulator:** `--chars ... --race` for several characters in a scene (holds, objections, tallies).
+- **Runtime test:** open every conversation's start node with a fake player and run each lie, promise and
+  callback once.
+- `/talkreset <scene>` (admins); log lines `Dialogue: scene <id> decided by <name> (<choice>)`,
+  `Dialogue: scene <id> objection by <name>`, `Dialogue: session cap at <speaker>`.
 
 ## 20. Fitting the existing systems
 
@@ -1185,25 +784,14 @@ callback once, and logs anything that throws.
 
 ## 21. Performance and saving
 
-- **Cost:**
-  - Talk builds a hub from the indexed list for that speaker kind: 20–60 conversations with compiled
-    conditions, a fraction of a millisecond.
-  - Picks are event-driven.
-  - The 1-second session check (range, idle, danger, kit) runs at most 64 sessions against the spawner's tracked
-    infected (at most 60).
-  - Barks are checked only for bodies within 6 m of a player.
-  - Strangers are placed as data; a body exists only within 150 m of a player, inside the body budget.
-- **Network:** one owner-only record per node change, at most 2,000 characters. Overheard lines are small
-  owner-only records.
-- **Saving.** Dialogue memory has its own file, `$profile:ReforgerZ/dialogue.json`, written at the 2-minute save
-  only when something changed:
-  - regard, failures, liar counts and knowledge per player;
-  - seen nodes, claims, promises and faces per character;
-  - scene records.
+**Built:** hubs built only at Talk from indexed, compiled conversations; one owner-only record per node;
+`dialogue.json` written at the 2-minute save when changed and dropped with the season
+([docs/DIALOGUE.md](../docs/DIALOGUE.md#saving-and-performance)).
 
-  The lie store and the callback queue are the shared stores (saved with world memory). It's about 3–5 KB per
-  active player, so a 100-player season is well under 1 MB (VERIFY on a busy server). Records decay on load, are
-  dropped at death or by age, and are wiped with the season. `state.json` doesn't grow.
+Still to build: barks checked only for bodies within 6 m of a player; strangers placed as data with a body only
+within 150 m, inside the body budget; overheard lines as small owner-only records; the lie store and callbacks
+saved with world memory; seen nodes capped at 512 per character if a busy server needs it (measure
+`dialogue.json` there).
 
 ## 22. Phases and the first content
 
@@ -1212,7 +800,7 @@ Dialogue lands across the plan's build order. Each step is playable on its own, 
 | Plan phase | Dialogue builds |
 |---|---|
 | 0. Fixes and spikes | The VERIFY spike (one evening): per-player donor labels, `PerformAction` on the client, replacing a hint, `FileIO` on addon files, moving with a menu open. The results pick the delivery and the text source. The owner-only payload for all personal text |
-| 2. Talk | The engine: sessions, hubs and slot donors; the panel (layout optional), the replacing hint and `/t`; `.rzd` with the lint, simulator, `shipped.lock` and runtime test; regard, claims and knowledge; `dialogue.json`. **About 30 conversations**, with Dialogue **off** by default and the legacy talk unchanged: the leaders' hub and the standing readout in four voices; first contact; the 8 wanderer roles; occupants (fed, short, after a death); two named people; two post speakers (Bastion's search, the Red Hand's toll); the Long Table's host and table; three asks. **Turned on** only after a play-test proves the per-player labels; otherwise the numbered `/t` fallback is used |
+| 2. Talk | **Built** ([docs/DIALOGUE.md](../docs/DIALOGUE.md)), on the talk screen. Still: the runtime test opening every start node. **Turned on** by default only after the per-player label test and a play-test pass |
 | 3. Small things | Errand asks through `errand:`, promises, callbacks and barks |
 | 4. The mission style | Lies, tells and the lie store; the multiplayer layer (overheard lines, decide holds and objections, tallies, vouch, call-outs); claims as look choices, cover details and point-out (with disguise's phase 1); strangers' voice |
 | 5. The majors | Sitting scenes and sways into `RZ_QuestVote`; "Ask about..." topics; set pieces as public scenes |
@@ -1222,18 +810,11 @@ Dialogue lands across the plan's build order. Each step is playable on its own, 
 
 ## 23. Docs in the same commits
 
-- **A new `docs/DIALOGUE.md`**, added only when the engine is built (decision 16). It owns the topic: how it
-  works, the format, conditions, effects, checks, scenes, delivery and the lint. DESIGN.md gets a short section
-  that links to it. CLAUDE.md's Doc map and the README's doc list change in the same commit.
-- **REPUTATION.md:** regard and its scope table; lies and the liar count; the Fear check; vouch, call-outs and
-  point-out; claims and signed-for kit; reputation-name tags; Make it right.
-- **WRITING.md:** dialogue lines, options and tags, the player's voice,
-  where the humour stops, the names policy, the word at the wire, crew names, notebook numbers.
-- **UI.md and UI/LAYOUTS.md:** the panel, the optional menu and their names, the slot donors, `/t`, and the
-  journal rows.
-- **WORKBENCH_SETUP.md:** no prefab changes, the settings, the VERIFY count and list, the log lines.
-- **MISSIONS.md and QUESTLINES.md:** talk approaches through dialogue, strangers and asks.
-- **ROADMAP.md, README.md** and CLAUDE.md's Doc map.
+`docs/DIALOGUE.md` exists (phase 2) and owns the topic. As each later part is built it goes there, with
+REPUTATION.md (lies and the liar count, vouch, call-outs and point-out, claims and signed-for kit, Make it
+right), WRITING.md (the word at the wire, notebook numbers, lies' tells), UI.md (the journal's "Promises" and
+"What you know" rows), WORKBENCH_SETUP.md (settings, VERIFY, log lines), MISSIONS.md and QUESTLINES.md
+(talk approaches, strangers and asks), ROADMAP.md and README.md.
 
 ---
 
@@ -1890,61 +1471,18 @@ and at a Red Hand roadblock you're turned round at 150 m ([DISGUISE.md](DISGUISE
 
 ## Engine needs
 
-- **A `Dialogue/` folder.** All server-side, except the client cache:
-  - `RZ_DialogueDB`: loads text resources or packs once, and indexes conversations by speaker kind;
-  - `RZ_DialogueParser`: Split, IndexOf, Substring, Trim and ToInt only;
-  - `RZ_DialogueCond`: compiled condition records, with one evaluator over the existing systems;
-  - `RZ_DialogueEffects`: the effect runner, calling owning systems with their caps;
-  - `RZ_Dialogue`: sessions, hubs, serials, the fresh-node guard, tells, overheard lines, danger, range, resume;
-  - `RZ_DialogueScenes`: decide records, the 5-second hold, objections and Stand with, plus tally sways into
-    `RZ_QuestVote`;
-  - `RZ_DialogueMemory`: regard, faces, claims (into the shared lie store), promises, failures, liar counts,
-    knowledge;
-  - `RZ_DialogueBarks`;
-  - `RZ_DialogueSettings`;
-  - `RZ_DialogueClient`: the client cache and the donor labels.
-- **Shared pieces it uses** (built once in the plan's phase 1): `RZ_Checks` (Trust, Fear, the look, Pass / Short /
-  Refused), `RZ_Ways` (keyed by identity), the lie store, the callback queue, the small-pay ledger (talk's 20 a
-  faction a day), the notice lanes, the body budget, `RZ_Names`, `Fill` and `FillFor`.
-- **Speaker adapters** (`RZ_DialogueSpeaker`) for: leader seat, quartermaster, wanderer, occupant, named person,
-  road-post speaker, quest person, Long Table role, stranger and radio channel. Each gives the kind, faction (or
-  none), traits, loyalty, seat, memory key, place (house, town, holding, nearest tribe) and its built refusal
-  rule. They're routed from the existing `RZ_PuzzleObjectComponent` tags (`RZ_Wanderers.TAG`, `RZ_Leaders.TAG`,
-  `RZ_Safehouses.TAG_OCCUPANT`, `RZ_Territory.TAG`, `RZ_LongTable.TAG`) and from `RZ_QuartermasterComponent`.
-  New: `RZ_Checkpoints` puts a speaker at the barrier (territory's occupant prefab for that faction) while a
-  player is within 100 m. The crew stays an AI group.
-- **Slot donors**, so no prefab edits are needed:
-  - `RZ_PuzzleChoiceAction`, `RZ_PuzzleUseAction`, `RZ_LeaderAction`, `RZ_StandingStatusAction` and the amends
-    `RZ_FactionServiceAction` read `RZ_DialogueClient` first in `GetActionNameScript` and `CanBeShownScript`, in a
-    fixed order: generic set 8 slots, quartermasters 6.
-  - Every other ReforgerZ action on that entity (shops, services, safehouse actions) hides while the local
-    player's session is on it.
-  - On the client, `PerformAction` sends `RpcAsk_DialoguePick(serial, choiceId)`. On the server, a donor does
-    nothing while that player has a session on that entity.
-  - VERIFY: labels refresh per local player when the cache changes; `PerformAction` runs on the performing client
-    (else `HasLocalEffectOnlyScript` answers from the cache).
-- **UI pipe:**
-  - `PAYLOAD_DIALOGUE` (kind 6; `PAYLOAD_KINDS` becomes 7), owner-only, at most 2,000 characters per record.
-    Record types: node, overheard, knowledge, close, and the shared personal kinds (errand, look, standing
-    notice, lock, epilogue line, detail).
-  - `RpcAsk_DialoguePick(serial, choiceId)` on `RZ_PlayerUIComponent`, with its own 0.3 s gap and one pick per
-    serial.
-  - A dialogue hint that replaces the previous dialogue hint instead of going through `QueueHint` (VERIFY:
-    `SCR_HintManagerComponent` can replace or clear a shown hint).
-  - `/t`, `/t <n>` and `/t 0` in `RZ_ChatCommands`.
-  - Journal rows for "Promises" (with time left) and "What you know".
-  - Dialogue never calls `NotifyPlayer`.
-- **Layouts and menus:**
-  - `RZ_DialoguePanel.layout`, an info display drawn beside `RZ_HudDisplay`. Names: `DialoguePanel`,
-    `DialogueAccent`, `DialogueEmblem`, `DialogueSpeaker`, `DialogueRole`, `DialogueStanding`, `DialogueLines`,
-    `ChoiceList`, `DialogueOthers`, `DialogueOverheard`, `DialogueHint`.
-  - `RZ_DialogueChoice.layout`: `ChoiceRow`, `ChoiceKey`, `ChoiceTag` (tinted: pass, short, would-fail, lie),
-    `ChoiceText`, `ChoiceSeen`.
-  - Optional `RZ_DialogueMenu.layout` (`ChimeraMenuBase`) with the same names plus `CloseButton`, a
-    `chimeraMenus.conf` entry, input actions `RZ_DialogueOpen` and `RZ_DialoguePick1`–`7` in the menu context
-    (VERIFY: whether the player can move with it open, and whether number keys clash).
-  - Settings UI > Dialogue panel and UI > Dialogue menu (off until built).
-  - A mockup `UI/Mockups/dialogue.html` and its preview.
+**Built** in phase 2 ([docs/DIALOGUE.md](../docs/DIALOGUE.md)): `RZ_DialogueDB` (the compiled packs, indexed by
+speaker kind), `RZ_DialogueCond` (conditions and tokens), `RZ_DialogueTrees` (hubs, nodes, checks, tags,
+effects), `RZ_DialogueMemory` (`dialogue.json`), the settings, speaker adapters for leaders, wanderers, occupants,
+named people, the road post's speaker and the Long Table, Trust through `RZ_Checks` with the dialogue bonus,
+regard in leader and wanderer attitude, the danger check (the talk screen's guard), `tools/dialogue_pack.py` and
+`tools/dialogue_sim.py`. The talk screen replaced the slot donors, the HUD panel, the hint fallback and `/t`
+(dropped: one modal screen with the pad, see [PLAN.md](PLAN.md#built-alongside-the-work-in-roadmap-next)).
+
+Still needed:
+- **`RZ_DialogueScenes`** (decide records, the 5-second hold, objections and Stand with, tally sways into
+  `RZ_QuestVote`) and **`RZ_DialogueBarks`**; speaker adapters for quartermasters, quest people, strangers and
+  radio channels.
 - **Hooks in existing code:**
   - `RZ_Leaders`, `RZ_Wanderers`, `RZ_Safehouses`, `RZ_Territory`, `RZ_Checkpoints` and `RZ_LongTable` expose
     their built behaviours as `call:` targets: work, news, standing, first_contact, share_food, rob,
@@ -1957,15 +1495,6 @@ and at a Red Hand roadblock you're turned round at 150 m ([DISGUISE.md](DISGUISE
     `SideWith` and `Run.Reward`, through `RZ_Ways`.
   - `RZ_Mission` gains `OnDialogueEvent(gm, playerId, key)` and `DialogueValue(key)`, plus `SetDialogue(convId)` on
     puzzle objects.
-- **Scores and memory:**
-  - Trust (`RZ_Checks.Trust`): rank, plus ★, plus at most +1 dialogue bonus, minus the liar count, minus crossing
-    lines; factionless speakers read the Haven rank (at most 2), the Long Table 0. The built `PersuadeScore` and
-    `TryPersuade` are untouched.
-  - Leader and wanderer `Attitude` add regard ÷ 2 only while Dialogue is on. Prices keep reading the built bits
-    only. Earlier-life memory at half (reputation's change).
-  - Make it right: a leader's amends contract clears that leader's built crossed bit once a season, through
-    `Forgive()`.
-  - `RZ_Reputation` gives a read-only name lookup (the tier until it exists).
 - **Knowledge recording:** the server sets `knows:` keys when it sends a player a line that carries one:
   `RZ_FactionLife` chatter, secure lines (including a new seeded word at the wire, changed at 05:30, three words
   with one right), clue reads in `RZ_PuzzleMission`, leaders' news, `~truth` lines, questline notes, and world
@@ -2003,44 +1532,14 @@ and at a Red Hand roadblock you're turned round at 150 m ([DISGUISE.md](DISGUISE
   - a "Call on the channel" action on house radios and the carried radio (`RZ_SecureRadio`'s channels; secure ones
     only for Radio Operators who've cracked them);
   - barks on the 1-second tick for bodies within 6 m of a player.
-- **The danger check,** every second for each open session (at most 64): the player took damage or fired; any
-  infected within 6 m of the player or the speaker; an infected within 30 m that has closed in by 2 m or more since
-  the last check, read from the spawner's tracked list (at most 60). A 60-second resume record for each ended
-  session.
-- **Tools:**
-  - `tools/dialogue_pack.py`: the lint, plus plan B's packs in small functions (at most 150 `Add()` lines each);
-  - `dialogue/shipped.lock` and per-quest `outcomes.txt`;
-  - `tools/dialogue_sim.py`, with `--chars` and `--race` for multi-player scenes;
-  - `tools/compile_check.sh` runs the lint first;
-  - `tools/runtime_test` opens every start node and runs each lie, promise and callback once.
-- **Text source:** plan A reads `.rzd` files as addon resources on the server (VERIFY: `FileIO` on addon paths on
-  the dedicated server; also measure parse time for the full set). Plan B is the generated packs. Optional
-  server-only overrides come from `$profile:ReforgerZ/dialogue/*.rzd`, by conversation id, behind a setting.
-- **Persistence:** a new `$profile:ReforgerZ/dialogue.json`, written at the 2-minute save only when something
-  changed. It holds per player: regard, failures, liar counts, knowledge; per character: seen nodes, passes,
-  claims, promises, faces; and scene records. It decays on load, drops records at death and by age, and is wiped
-  and backed up with the season. `state.json` doesn't grow.
-- **Debug:** `/talkdebug` and `/talkreset <scene>` (admins), and the log lines in
-  [section 19](#19-authoring-format-rzd-pipeline-and-tools).
 
 ## Settings
 
-`RZ_GameModeComponent > Dialogue`, a new settings class with no initialisers (defaults only in the attribute
-strings), created with `RZ_Util.NewWithDefaults` when missing:
-- On (off by default until the label test and a play-test pass);
-- Talk range 4 m; Leave range 6 m;
-- Idle seconds 120, and 45 while someone waits;
-- Max sessions 64; Per speaker 6; Scene sessions 16;
-- Overheard radius 8 m (0 off); Room radius 30 m;
-- Decide hold 5 s; Objections on;
-- Show failed checks on;
-- Vouching on; Call-outs on; Point-out on;
-- Rumour tick 15%;
-- Talk Favor per day 20;
-- Promise play hours 2; Promise real-day ceiling 3;
-- Barks on;
-- Make it right on;
-- Text source: resources, packs, or profile overrides.
+**Built** on `RZ_GameModeComponent > Dialogue`: **Trees** (off), **Talk Favor a day** (20), with the talk screen's
+range, idle seconds and danger ([docs/WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#5-settings-objects)).
+Still to add as their parts are built: 45 s idle while someone waits; per speaker 6, scene sessions 16;
+overheard radius 8 m, room radius 30 m; decide hold 5 s, objections; vouching, call-outs, point-out; the rumour
+tick (15%); promise play hours (2) and real-day ceiling (3); barks; Make it right; the text source.
 
 Strangers' settings (on, the 15-minute ceiling, the places) belong to Missions > Errands.
 

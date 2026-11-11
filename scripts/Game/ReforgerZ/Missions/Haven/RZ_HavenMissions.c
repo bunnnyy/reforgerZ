@@ -31,6 +31,7 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.7);
 		m_sTitle = "Supply Cache";
+		m_sDeed = "found a supply cache near {town}";
 		m_sBrief = string.Format("A Haven scout radioed about an untouched supply cache in %1. Secure it and hold the area for a minute.", s.m_sName);
 		return true;
 	}
@@ -103,6 +104,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.6);
 		m_sTitle = "Survivors Trapped";
+		m_sDeed = "got people out of {town}";
 		m_sBrief = string.Format("A family is barricaded inside a house in %1 and they're running out of time. Get to them and hold until help arrives.", s.m_sName);
 		return true;
 	}
@@ -202,6 +204,7 @@ class RZ_Mission_RadioRelay : RZ_Mission_Hold
 
 		m_vPos = HighPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius * 2);
 		m_sTitle = "Radio Relay";
+		m_sDeed = "fixed the radio relay at {town}";
 		m_sBrief = string.Format("Get to the high ground near %1 and keep the Haven relay broadcasting for 3 minutes. Every infected nearby will hear it.", s.m_sName);
 		return true;
 	}
@@ -273,6 +276,7 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 
 		m_fParticipationRadius = s.m_fRadius + 100;
 		m_sTitle = "Burn the Nest";
+		m_sDeed = "burnt the dead in {town}";
 		m_sBrief = string.Format("The slow ones lie up thick in %1, all in one place. Find it and burn it out.", s.m_sName);
 		return true;
 	}
@@ -388,6 +392,7 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 
 		PlaceInsideLater(m_vPos);
 		m_sTitle = "Medicine Run";
+		m_sDeed = "brought medicine to {town}";
 		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2: the supplies are on its shelves. Bring them back.", homeName, pharmacy.m_sName);
 		return true;
 	}
@@ -612,6 +617,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 			return false;
 
 		m_sTitle = "Missing Scout";
+		m_sDeed = "found the scout near {town}";
 		m_sBrief = string.Format("A Haven scout never came back from %1. Search the area, find his notes and bring them to the safehouse in %2.", s.m_sName, homeName);
 		return true;
 	}
@@ -702,6 +708,7 @@ class RZ_Mission_ClearTheRoad : RZ_Mission_KillTagged
 		}
 
 		m_sTitle = "Clear the Road";
+		m_sDeed = "cleared the road at {town}";
 		m_sBrief = string.Format("The road from %1 to %2 is crawling with infected. Clear every one of them, so the Haven can use it again.", a.m_sName, b.m_sName);
 		return true;
 	}
@@ -997,6 +1004,7 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
 		m_sTitle = "Rescue the Kids";
+		m_sDeed = "brought the children back from {town}";
 		m_sBrief = string.Format("Children are hiding in the school in %1. Get them out quietly. If it gets loud, everything in town will come.", s.m_sName);
 		return true;
 	}

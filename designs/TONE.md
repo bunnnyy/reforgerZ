@@ -1,13 +1,17 @@
 # Grey choices and dark humour
 
-**Status: designed, not built.** Approved by the author on 2026-11-11.
+**Status: designed; the standard, the lint, the season mood and the voice bank built.** Approved by the author
+on 2026-11-11.
 
 This piece decides how the existing voices speak, and sets the standard every choice is written to. It
 adds only small, data-only helpers.
 
 **Built so far:** the text standard (the tone, the voices, by channel, the grey test, phrasing, the humour line
 and the template rules) is in [WRITING.md](../docs/WRITING.md), and the inventory and the lint are in
-[WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#text-lint). Sections 2, 3.1, 3.6, 3.11, 4.1, 4.7 and 5 are kept
+[WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#text-lint). Phase 2 built the season mood (with the broadcast on the
+same ladder), temper, grief face to face, the voice bank with its first pools and the players' joke memory,
+`tools/voice_sim.py`, and the rules for conversation lines and for saying the word and crew names
+([WRITING.md](../docs/WRITING.md#the-season-mood)). Sections 2, 3.1, 3.6, 3.11, 4.1, 4.7 and 5 are kept
 below only as pointers, so the numbers other designs use still work. Everything else here is designed, not built.
 
 ## What changed in review
@@ -101,111 +105,40 @@ Built: [WRITING.md](../docs/WRITING.md#by-channel).
 
 ### 3.2 By the season's mood
 
-The season mood is one server-wide value, `RZ_WorldFacts.SeasonMood()`.
-- It is the broadcast's own table, moved into world facts, so the broadcast and every voice read the same
-  thing.
-- It adds no simulation.
-- It runs on stages and cure percent, not days, so it works at any season speed.
+**Built:** `SeasonMood()` with its ladder, the gate's step lighter, the holding rules, temper by morale, the joke
+share by mood face to face, and the broadcast on the same table with its two new lines
+([WRITING.md](../docs/WRITING.md#the-season-mood)).
 
-**The ladder (the first match wins):**
-
-| # | Mood | When (all built facts) | Joke share |
-|---|---|---|---|
-| 1 | **Epilogue** | `IsEpilogue()` | One wry line per place; people 1 in 3 |
-| 2 | **Hope** | The broadcast's breakthrough window is open: 90 online minutes from when players first heard the news (`RZ_Broadcast`, as built) | 1 in 3 |
-| 3 | **Bleak** | The broadcast's long stall (3 h with no research), or Overrun or Aftermath with the cure under 50% | 1 in 10 |
-| 4 | **Grim** | Collapse or later, or average infection 45+, or the 45-minute stall | 1 in 5 |
-| 5 | **Early** | Anything else | 1 in 3 |
-
-- **No gaps.** Early is the default. Aftermath at 50% or more is Grim. Early Outbreak at 25% or more is Early
-  unless infection is high.
-- **Hope has one source.** It is the built window. Faction voices celebrate for exactly as long as the broadcast
-  "evaluates reports". The window is runtime-only as built, so a restart ends it; that's fine for a mood.
-- **The gate.** While `AtFinaleGate()` is true, research stops by design.
-  - The stall timers don't count there, so the gate never reads as a stall.
-  - The mood is one step lighter (Grim reads as Early), because everyone can see the end.
-  - The gate adds race lines (3.4). It isn't a mood of its own.
-- **Holding a mood.** Hope and Epilogue start at once. Early, Grim and Bleak change only when the new condition
-  has held for two mood checks in a row (every 10 minutes, on the existing tick). A mood, once entered, holds for
-  at least 60 online minutes unless Hope or Epilogue takes over.
-
-**Temper: morale moves one faction one step.**
-- Each faction has a temper read from its own morale, with a gap so it doesn't flicker:
-  - one step bleaker below 30, back once morale is above 38;
-  - one step lighter above 75, back once it's below 67.
-- Steps run Hope/Early → Grim → Bleak. The Epilogue isn't shifted.
-- Morale isn't in the ladder, so nothing counts twice. A truck lost (−10) and the slow recovery toward 60 no
-  longer flip the server's mood within the hour; they nudge one faction's temper.
-- **The Red Hand is the exception.**
-  - Low temper changes its register to taunts; it doesn't change its share.
-  - Its open channel never drops below 1 in 5, except in grief.
-  - Its secure channel goes quiet in Bleak like everyone's.
-
-**Channel and mood combine by the lower.** A line's joke share is the lower of:
-- the channel cap (3.1);
-- the speaker faction's mood share after temper.
-
-For example, Bastion's open channel in Grim: the lower of 1 in 4 and 1 in 5 is 1 in 5.
-
-**The broadcast reads the same ladder.** Every built line stays, and two are new. The order is the built one,
-with the gate inserted after Hope:
-
-| State | Line | |
-|---|---|---|
-| Epilogue | The new order: *"...Processing will begin at the road checkpoints."* | built |
-| Hope | *"Reports of research inside the zone are being evaluated."* | built |
-| At the gate | *"The status of this area is under review. Remain where you are."* | **new** |
-| Bleak: long stall (never at the gate) | *"The perimeter will be maintained indefinitely."* | built |
-| Bleak: Overrun under 50% | *"The perimeter will be maintained."* | built |
-| Bleak: Aftermath under 50% | *"Residents are thanked for remaining indoors. Residents are thanked for remaining."* | **new** |
-| Grim | *"Residents are reminded that the perimeter is for your protection."* | built |
-| Early | *"Remain indoors. Aid is on its way."* | built |
-| Season over (any end) | *"The perimeter will be maintained."* plus the wipe note (`Core/RZ_Seasons.c`) | built |
-
-When the mood is built, [WRITING.md's table](../docs/WRITING.md#the-government-broadcast) is rewritten to this one. The guidance radio tip that quotes
-*"...the perimeter will be maintained"* stays true.
+Still to build:
+- **Channel and mood combine by the lower:** a radio line's joke share is the lower of the channel cap (3.1) and
+  the speaker faction's mood share after temper (Bastion's open channel in Grim: 1 in 5), when the radio's pools
+  move into the bank.
+- **The Red Hand's exception:** low temper changes its register to taunts, not its share; its open channel never
+  drops below 1 in 5, except in grief; its secure channel goes quiet in Bleak like everyone's.
 
 ### 3.3 Grief and other local overrides
 
-**Grief has two scopes.**
-- **Face to face, by place.** After a death the server knows about, wry and joke lines are skipped for listeners
-  within 1.5 km for 10 minutes. These deaths count:
-  - a leader, a wanderer or a named person;
-  - a Haven Champion's Remembered;
-  - a truck crew's funeral;
-  - a Turned Player;
-  - a death in a safehouse (`House().m_iDied` going up). This one quiets that safehouse's people for 30
-    minutes.
-- **Radio, for the whole faction.** When a faction loses a leader or a truck crew, or the Haven loses someone in
-  a house, that faction's open channel goes plain for 20 minutes, for everyone.
-- **The Red Hand's own send-off lines are exempt.** Its grief is loud, as the lore says.
-- **PvP deaths aren't tracked.** The low joke shares in Grim and Bleak cover them.
+**Built:** grief face to face for leaders' and wanderers' deaths (1.5 km, 10 minutes) and a death in a safehouse
+(30 minutes), read by the voice bank ([WRITING.md](../docs/WRITING.md#the-season-mood)).
 
-**A short house** jokes about the soup, the potatoes and the chores *more*, because that's how the Haven copes. It
-never jokes about who eats (the mouths), and not at all in the 30 minutes after a death in that house. The
-narrator never jokes about a shortage.
-
-**Feud or truce.** A feud sharpens the Red Hand's taunts and Bastion's lists. A truce allows a joke across the
-line: *"Bastion and the Red Hand shared a fire last night. Both counted the matches."*
-
-**The infected.** [INFECTED.md](INFECTED.md#people) owns the marks and each faction's words for them.
-- Only the Red Hand jokes about the infected, in its own words: "the furniture" for a town's slow ones, a crew
-  nickname for a pack ("the Postmen", "the Choir"), "the boss" for its leader.
-- The Haven names a pack's leader fondly, by who it was, and gives it a job, never a joke. When nobody knew who
-  it was, it's "the big one".
-- Halcyon never says "him" or "her" about them.
-- Near a pack's range at dusk (or in fog, which counts as dusk), the Haven's people go quiet.
-- Player text never says "alpha", "tribe" or "crawler". "Strays" is never used for the infected: it's the crews'
-  word for the people the Haven turned out.
-
-**A player they won't talk to.**
-- A leader whose attitude to a player is −2 or below has no line for them but the refusal, and nobody at that seat
-  jokes with them.
-- Wanderers who were robbed don't joke with the robber.
-
-**Stronghold pages** (majors). A stronghold leader never jokes about their own page: the book's back page, the Day
-3 orders, the List, the site-log pages. Once a page is in the open (`majors.pages_open`), rivals may gossip about
-it, plainly, and never as a joke in the first real day.
+Still to build:
+- **Grief's other sources:** named people, a Haven Champion's Remembered, a truck crew's funeral, a Turned Player.
+- **Radio grief:** when a faction loses a leader or a truck crew, or the Haven loses someone in a house, that
+  faction's open channel goes plain for 20 minutes, for everyone (the guard keeps the time; the radio's pools
+  read it once they're in the bank). The Red Hand's own send-off lines are exempt.
+- **A short house** jokes about the soup, the potatoes and the chores *more*, never about who eats, and not at
+  all in the 30 minutes after a death there. The narrator never jokes about a shortage.
+- **Feud or truce:** a feud sharpens the Red Hand's taunts and Bastion's lists; a truce allows a joke across the
+  line: *"Bastion and the Red Hand shared a fire last night. Both counted the matches."*
+- **The infected.** [INFECTED.md](INFECTED.md#people) owns the marks and each faction's words for them. Only the
+  Red Hand jokes about the infected, in its own words ("the furniture", a crew nickname for a pack, "the boss"
+  for its leader); the Haven names a pack's leader fondly, by who it was ("the big one" when nobody knew);
+  Halcyon never says "him" or "her" about them; near a pack's range at dusk (or in fog) the Haven's people go
+  quiet.
+- **A player they won't talk to:** nobody at a seat whose leader refuses a player jokes with them; wanderers who
+  were robbed don't joke with the robber.
+- **Stronghold pages** (majors): a stronghold leader never jokes about their own page; once a page is in the
+  open (`majors.pages_open`) rivals may gossip about it plainly, never as a joke in the first real day.
 
 ### 3.4 The race and the point of no return (90%)
 
@@ -326,39 +259,17 @@ Built: [WRITING.md](../docs/WRITING.md#the-voices).
 
 ### 3.7 Player lines in dialogue trees
 
-Dialogue is off by default (decision 13), so the vanilla fallback ships first. The rules are the same either way.
-- **A node may have one dry line** among its plain ones. It leads to the same result as the plain line it shadows;
-  only the reply changes.
-- **Only checks are tagged** (`[Nurse]`, `[Trusted with Bastion]`). Tone never is.
-- **A dry line is never the only kind option**, and never the only way to say no.
-- **No player line jokes** at the bitten, the volunteers, the exiled or the Kid.
-- **No reward for tone, ever.** A good dry line earns nothing, so there's nothing to farm.
-- **The vanilla fallback** (a person or puzzle object offers at most four choices): a dry line is dropped first, and
-  only shows when the real approaches leave a slot free. As a label it is 40 characters or fewer:
-  `Say: "Same as yesterday."`
+**Built:** the rules for conversation lines and choices ([WRITING.md](../docs/WRITING.md#conversations)).
+
+Still to build: a node's one **dry line**, which leads to the same result as the plain line it shadows (only the
+reply changes), and is never the only kind option or the only way to say no.
 
 ### 3.8 The faction's word for you, and crew names
 
-[REPUTATION_NAMES.md](REPUTATION_NAMES.md#9-the-factions-word-for-you) owns the words: what each faction calls you
-to your face, per life and per cell, the lock's overlay, set words and crew names. This piece owns only how they're
-said. The word reaches lines as `{player_word}`.
-
-**Rules:**
-- It is always the faction's own word, and never a moral word.
-- It's said face to face only. The narrator never says it, and it never goes on air.
-- A set word ("Sergeant {name}") is said as the faction says rank: Bastion plainly, the Haven with a smile, the Red
-  Hand as a reminder.
-- A disguise never changes the word anyone uses for you once they know who you are.
-
-**Red Hand crew names** (conflict 31). LORE: status in the Red Hand is a name, and the crew picks it, usually after
-something you'd rather they forgot.
-- A crew name is **leverage, not an honour.** It means the crews have something on you. Say it the way the crews
-  would: cheerfully, in front of people, as a reminder of what they know.
-- The names and what earns them (Lucky, Snack, Legs, Skint, Pockets, Bailiff, Sorry, Smoke) are reputation's.
-  Until you have one, you're "new face".
-- A crew name mocks the player's luck, nerve or skill. **It never mocks a kindness or a victim** (so "Nanny", for
-  walking the Kid home, is cut), and "Stray" is never one.
-- At Champion the boss says it; it still isn't respect. It's the book being polite.
+**Built:** saying the word and crew names ([WRITING.md](../docs/WRITING.md#conversations)). Still to build: a set
+word ("Sergeant {name}") said as each faction says rank (Bastion plainly, the Haven with a smile, the Red Hand as
+a reminder); at Champion the boss says the crew name, as the book being polite; a disguise never changes the word
+anyone uses for you once they know who you are.
 
 ### 3.9 Faction kit and disguises
 
@@ -395,23 +306,15 @@ Built: [WRITING.md](../docs/WRITING.md#information-comes-first), and the lint's 
 
 ### 3.12 Repeats
 
-- **Face to face:** the last 24 joke lines each player heard, with the real time, saved on the profile (across
-  lives). A joke heard in the last 24 real hours is swapped for a plain line from the same pool. Reconnects and the
-  daily restart don't wipe it.
-- **Shared channels:** the last 16 jokes each channel aired, with the time, saved with the season. No joke airs
+**Built:** face to face, the last 24 jokes each player heard with the real time, on the profile across lives; a
+joke heard in the last 24 real hours isn't said again, and a pool out of jokes falls back to plain lines; the
+minimum pool size checked by `tools/voice_sim.py` ([WRITING.md](../docs/WRITING.md#the-voice-bank)).
+
+Still to build:
+- **Shared channels:** the last 16 jokes each channel aired, with the time, saved with the season; no joke airs
   twice within 6 real hours.
-- **A pool that runs out falls back to plain lines.** Never repeat a joke to fill a gap.
-- **Minimum pool size.** A variant (a mood, a route, an ending) ships only when its joke lines number at least
-  1.5 × (how many times it's heard in its window × its joke share), at the fastest cadence. Otherwise the base pool
-  is used.
-  - The fastest cadence is a brand-new player: the radio every 12 minutes, and chatter every 10 minutes rotating
-    through the factions.
-  - A Merciful leader's joke pool, for a veteran who visits that seat about 10 times a day at 1 in 3:
-    10 × 1/3 × 1.5 = 5 joke lines at least.
-- **The epilogue's week.** The window is a real day, so a seat's epilogue pool needs the same 5 joke lines per
-  ending whether the epilogue is two days or seven. What a week adds is plain lines: a seat with too few is heard
-  word for word on day 5. So each stronghold and seat leader gets at least **8 plain lines per ending** for the
-  epilogue, and the closing work's people get their own lines, owned by EPILOGUE.md.
+- **The epilogue's week:** each stronghold and seat leader gets at least **8 plain lines per ending**, and the
+  closing work's people get their own lines, owned by EPILOGUE.md.
 
 ### 3.13 Content budget
 
@@ -634,7 +537,11 @@ Built: [WRITING.md](../docs/WRITING.md#dark-humour-not-edginess) (5.1–5.5) and
 
 ## 7. Engine needs
 
-- **Voice bank:** an `RZ_VoiceLine` attribute class made with `RZ_Util.NewWithDefaults`, with no field initialisers.
+- **Built in phase 2:** the voice bank (`RZ_VoiceLine`, `RZ_VoiceDefaults.c`, **Voice > Lines** and **Disabled**) for
+  face-to-face pools, `SeasonMood()` and temper with the broadcast reading it, `RZ_ToneGuard` face to face, the
+  players' joke memory, `tools/voice_sim.py`, the voice log and **Voice > Force mood**. Still needed below: the
+  bank's route and ending fields and the radio's pools, the shared channels' memory, grief's other feeds.
+- **Voice bank (the design in full):** an `RZ_VoiceLine` attribute class made with `RZ_Util.NewWithDefaults`, with no field initialisers.
   Fields: a stable id; channel; faction; kind (aside, chatter tail, rumour, opener, closer, reaction, notice hand,
   epilogue, race, pitch, route, word); register (PLAIN, WRY, JOKE, TAUNT, BLEAK, SILENCE); a mood mask; a trait mask;
   stage and cure ranges; up to two flag conditions (key, operator, value, so it can read `orders.stance` 1,

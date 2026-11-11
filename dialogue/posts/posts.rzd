@@ -1,0 +1,66 @@
+# Road posts: the speaker at the barrier (Dialogue > Trees puts one there while a player is within
+# 100 m). The crew stays an AI group. Search and toll are the built ones.
+
+conv post.bastion.search
+for post:bastion
+when !hunted:bastion
+topic "Ask about the search."
+prio world
+voice bastion
+
+node start
+  say "Hands on the barrier, pockets out. We take suppressors and explosives. Everything else you keep."
+  say "Fifteen seconds if you don't argue. Leave before we're done and that's running the checkpoint."
+  > @drill "I know the drill. Make it quick." -> waved | short | refused   check persuade bastion 2 bg:soldier,police
+  > @why "Why search civilians at all?" -> why
+  > @fine "Fine. Search me." -> hub
+
+node waved
+  say "You've done this before. From the other side. Go on, then."
+  do call:post_wave
+  > @thanks "Thanks, corporal." -> hub
+
+node short
+  say "Quick, I can do. Skipping it, I can't. Arms out."
+  > @ok "Arms out, then." -> hub
+
+node refused
+  say "Everybody knows the drill. Everybody gets searched. That's what makes it a drill."
+  > @ok2 "Fair." -> hub
+
+node why
+  say "Somebody walked a charge into a post up north. Since then, everyone gets searched. Even the ones we like."
+  say "Especially the ones we like. They're the ones who get close."
+  > @back1 "Something else." -> hub
+
+conv post.redhand.toll
+for post:redhand
+when !hunted:redhand
+topic "Ask about the toll."
+prio world
+voice redhand
+
+node start
+  say "Red hand means stop. Stop means pay. {toll} Favor, or walk round. It's only a few kilometres. Mostly dead people."
+  > @pay "Pay the toll." -> paid   if tier:redhand>=known   do call:toll
+  > @move "Move the car out of my way." -> moved | laughed | laughed   check threaten redhand 2
+  > @rudi "Is this Rudi's road?" -> rudi
+  > @walk "I'll walk round." -> hub
+
+node paid
+  say "Pleasure doing business. Mind the potholes. Some of them are people."
+  > @back1 "Something else." -> hub
+
+node moved
+  say "Fine. Fine! Move it, lads. Somebody write this one down."
+  do call:post_wave
+  > @back2 "Something else." -> hub
+
+node laughed
+  say "Look at that, lads, a hard face. Nice. Still costs the same."
+  > @pay2 "Pay the toll." -> paid   if tier:redhand>=known   do call:toll
+  > @round "Walk round." -> hub
+
+node rudi
+  say "Rudi was bitten."
+  > @back3 "Something else." -> hub

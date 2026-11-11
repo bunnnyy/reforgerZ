@@ -149,10 +149,12 @@ class RZ_WorldFacts
 	protected ref array<float> m_aRumourUntil = {};
 	protected ref RZ_WorldFactsSave m_Restored;
 	protected ref RZ_WorldMemory m_Memory = new RZ_WorldMemory();
+	protected ref RZ_SeasonMood m_Mood;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_WorldFacts(RZ_GameModeComponent gm)
 	{
+		m_Mood = new RZ_SeasonMood(gm);
 		m_GM = gm;
 	}
 
@@ -268,6 +270,7 @@ class RZ_WorldFacts
 			m_fClock += dt;
 			ExpireRumours();
 			m_Memory.Tick();
+			m_Mood.Tick(dt);
 		}
 
 		RZ_CureResearch cure = m_GM.GetCure();
@@ -275,6 +278,29 @@ class RZ_WorldFacts
 			Claim(LAB, CURE_OWNER);
 		else
 			Release(LAB, CURE_OWNER);
+	}
+
+	// ================================================================ The season mood
+	//------------------------------------------------------------------------------------------------
+	//! The season mood (Director/RZ_SeasonMood.c): Epilogue, Hope, Bleak, Grim or Early, with its
+	//! holding rules. Every voice and the broadcast read it.
+	RZ_EMood SeasonMood()
+	{
+		return m_Mood.Get();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The mood a faction's own lines use: the season mood moved one step by its morale.
+	RZ_EMood MoodFor(int faction)
+	{
+		return m_Mood.For(faction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Voice > Season mood on: the broadcast reads the mood's ladder.
+	bool SeasonMoodOn()
+	{
+		return RZ_VoiceSettings.Get().m_bSeasonMood;
 	}
 
 	// ================================================================ The cure and the season

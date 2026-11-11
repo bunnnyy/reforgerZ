@@ -1,6 +1,9 @@
 # Reputation names: the mixed picture
 
-**Status: designed, phase 1 built.** Approved by the author on 2026-11-11. Phase 1 (the 16 names and
+**Status: designed, phases 1 and 2 built.** Approved by the author on 2026-11-11. Phase 2 (the voice: manners,
+the opening line, what a leader makes of you in four voices, the faction's word for you, Red Hand crew names,
+the whole picture, deed phrases and local deeds, life-stamped memory) is built and lives in
+[REPUTATION.md](../docs/REPUTATION.md#what-people-call-you). Phase 1 (the 16 names and
 "counts as", Earned Fame and Feared, the flags of `AddInfamy` and the credit rule, one forgiveness budget across
 every built route, the debounced change notice, the card, the grid and the fallback text, the Wildcard search and
 toll, the admin read-out) is built and lives in [REPUTATION.md](../docs/REPUTATION.md#reputations); this file keeps
@@ -159,95 +162,30 @@ Settling up greys out at the budget's end with the built line: "Bastion has forg
 
 ## 4. Manners (for writing lines only)
 
-Lines are written per faction × manner: 32 pools instead of 64. **No rule reads a manner**, and the dialogue
-condition API doesn't expose one.
-
-| Manner | Cells | In a sentence |
-|---|---|---|
-| Unknown | Stranger | "Who are you?" |
-| Warm | Known, Trusted | They like you |
-| Devoted | Champion | They'd stand in front of you |
-| Wary | Watched, Mixed Bag | They're watching your hands |
-| Fond | Useful Trouble, Favourite Rascal | They like you, with a sigh |
-| Needed | Wildcard, Necessary Evil, Wild Child | They need you and fear you |
-| Hostile | Hunted, Kill on Sight | Bastion, the Red Hand and Halcyon shoot. The Haven: a shut door |
-| Owed | Hunted or Kill on Sight, with Earned Fame 15+ and a best deed | They shoot, but they owe you something |
-
-**As the speaker sees it.** Lines use `VoiceManner(speaker, playerId)`, not the faction's manner alone:
-
-| Speaker | Manner used |
-|---|---|
-| Loyal leader, guard, gate | The faction's manner |
-| Pragmatist leader | Hostile or Owed becomes Wary (he deals with people his faction hates, as built) |
-| Independent leader, attitude ≥ 0 | Hostile or Owed becomes Wary |
-| Rogue leader, attitude ≥ 0 | Hostile or Owed becomes Wary; Fond if he owes you |
-| Wanderer | Haven manner, then memory, as built |
-| The Deserter | Bastion's manner reversed: Bastion Hostile reads Warm, Warm or Devoted reads Hostile |
-
-**Weighting.** The runtime test logs time spent per cell. Pools are written heaviest for the cells players live in:
-Stranger, Known, Watched, Mixed Bag.
+**Built:** the manners and `VoiceManner` (Pragmatist, Independent and Rogue leaders)
+([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)). Still to build: the **Owed** manner (Hunted or
+Kill on Sight with Earned Fame 15+ and a best deed) with the parley; wanderers reading the Haven's manner and
+then their memory, and the Deserter reading Bastion's reversed, when wanderer greetings move into the voice bank.
+**Weighting:** the runtime test logs time spent per cell, so the pools are written heaviest for the cells players
+live in (Stranger, Known, Watched, Mixed Bag).
 
 ## 5. What people say
 
-**One opening line, never a speech.** `RZ_RepVoice.Opening(playerId, speaker)` takes the first of these that exists:
-1. A questline or major's deed line (the built crossing opener): "You're the one who gave Bastion the book."
-2. **A local deed at this seat** ([§15](#15-side-quests-what-reputation-gives-errands)): "You're the one who fixed the
-   pump."
-3. **Memory from this life:**
-   - saved, helped or crossed;
-   - kin of the fallen;
-   - the Long Table's guest, family or crossed.
-4. **The name from an earlier life:** once per leader per life, older memory voiced as a name, not a face
-   ([§12](#12-face-and-name-one-scope-rule)). "There was a Lukas who crossed me. You're not him. Are you?"
-5. **The reputation greeting** (faction × voice manner, coloured by traits). One time in three it carries a deed
-   callback ([§10](#10-deeds-and-tallies)).
-6. The generic greeting (today's `RZ_LeaderVoice.Greeting`).
+**Built:** the opening chain (a local deed at this seat, memory from this life, the name from an earlier life
+once per leader per life, the greeting by manner from the voice bank, the built greeting), Ask what they think in
+four voices with four variants and the rule line, and the writing rule (the name said aloud only when they say
+what they make of you) ([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)).
 
-**Ask what they think of you.** One template per faction. Deeds always follow a subject or a label, so no sentence
-starts with a lowercase phrase. Each template has four variants: both deeds, best only, worst only, neither.
-
-| Faction | Both deeds | Neither |
-|---|---|---|
-| Haven | "People have started calling you {rep}. You {best}. You also {worst}. I'd rather they didn't have to." | "People call you {rep}. Nobody can say why yet." |
-| Bastion | "Your file says {rep}. Commendation: {best}. Incident: {worst}. Both signed for." | "Your file says {rep}. The rest of the page is blank." |
-| Red Hand | "Crews call you {word}. The book says {rep}. Owed: {best}. Owing: {worst}. The book's never wrong, only late." | "The book says {rep}. Short entry." |
-| Halcyon | "We have you as {rep}. It's a category, not a judgement. Contribution: {best}. Incident: {worst}. Both are in the record." | "We have you as {rep}. Insufficient data." |
-
-- A tally can stand in for the worst deed ([§10](#10-deeds-and-tallies)): "You've put {kills} of ours down."
-- Who you work for comes from Fame totals: the faction you gave the most Fame this life. "You run for Bastion."
-  Rival-share Infamy needs no deed of its own.
-- The rule line follows, as now: "(The Haven: Useful Trouble. Counts as Known. Fame 46, Infamy 22. 30 of 30 left to
-  forgive.)"
-
-**Writing rule.** The name is said aloud only in four places:
-- Ask what they think of you;
-- the change notice;
-- bounty notices;
-- Red Hand banter.
-
-Every other line shows the manner without naming it. Lines cite only what's recorded: deeds, tallies, places, days,
-and the names of leaders and wanderers.
-
-**Sample greetings:**
-
-| | Haven | Bastion | Red Hand | Halcyon |
-|---|---|---|---|---|
-| Stranger | "New face. Shoes off, rifle by the door, and you'll get soup." | "Civilian. State your business. Briefly." | "Toll's ten. Or turn round. Your choice, your legs." | "Visitor. You may wait outside the yellow line." |
-| Known | "You came back. That's half of it." | "Cleared. Keep moving." | "New face. Toll, then smile." | "Courier. Leave it on the table, not on me." |
-| Watched | "You're welcome. Mostly. Leave the rifle by the door and we'll see." | "Uncleared. Stand there." | "Toll's ten. For you, two of the ten are personal." | "Subject of concern. You may wait outside the yellow line." |
-| Mixed Bag | "The council voted on you. It was a draw. Sit near the door." | "Your file's got two columns. Arms out." | "We like you less than we should, and you owe us more than you think." | "Inconclusive. We'll keep watching." |
-| Useful Trouble | "The council voted to like you. It was close." | "You're on two lists. One of them's good. Arms out anyway." | "Trouble. Useful trouble. That's practically a job title here." | "You're productive and you're a problem. We have a column for each." |
-| Wildcard | "Half the house wants to feed you. The other half's hiding the children. I'm doing both." | "Command would have you shot or decorated. Command isn't answering. Arms out." | "Danger money. Nothing personal." | "We have you down as 'unpredictable'. It isn't a criticism. It's a category." |
-| Necessary Evil | "We don't ask what you did. We ask you don't do it here." | "The CO says we need you. He didn't say we had to like it. Pass." | "We hate you a normal amount. We need you a lot more." | "The director says the data justifies you. The director says that about a lot of things." |
-| Wild Child | "Sit down. Don't shoot anything. I mean it this time." | "Your file's thicker than the roster. Proceed." | "Wild Child! Lock up the pit. And the bottles." | "There's a page on you in every notebook. Some of them are thank-yous." |
-| Champion | "Sit. You're not queuing, not after {best_place}." | "Sergeant's compliments. It's all he's got. He'd give you more." | "Make way. The boss's favourite, and the boss doesn't have favourites." | "Your samples are in a result. That's rarer than it sounds." |
-| Hostile | Through a shut door: "The door stays shut. That's all I'll say." | (shot) | (shot) | (shot) |
-| Owed (parley) | Through the door: "You {best}, and you {worst}. The door stays shut. I'm still talking to you, aren't I?" | "Halt. Hands. You {best}. You also {worst}. Both go in the log. Talk." | "You put {kills} of ours down, and you {best}. The book's got you on both pages. It has to balance. Here's the bill." | "Stop there. Contribution: {best}. Incident: {worst}. We wrote down both. Talk to the duty researcher, not the guards." |
-
-**Change notice.** Built, debounced and merged with the tier message
-([REPUTATION.md](../docs/REPUTATION.md#reputations)). Still to build: the line in voice from the nearest person of that
-faction (else its channel), with the rule in brackets: "(Hunted: their people shoot you. They still owe you a hearing
-at a gate.)"
+Still to build:
+- **Step 1 of the opening, the crossing opener:** a questline or major's deed line ("You're the one who gave
+  Bastion the book.").
+- **Kin and the Long Table in the opening:** kin of the fallen and the Long Table's guest, family or crossed.
+- **Who you work for:** the faction you gave the most Fame this life ("You run for Bastion."), and a tally
+  standing in for the worst deed in the openings ("You've put {kills} of ours down.").
+- **One time in three a deed callback** in the reputation greeting.
+- **The change notice in voice:** the line from the nearest person of that faction (else its channel), with the
+  rule in brackets: "(Hunted: their people shoot you. They still owe you a hearing at a gate.)"
+- **The owed greetings** (with the parley): "Halt. Hands. You {best}. You also {worst}. Both go in the log. Talk."
 
 ## 6. Talk: Fear, the parley and the knock
 
@@ -438,133 +376,46 @@ rule, Safe Harbour.
 
 ## 9. The faction's word for you
 
-What they call you to your face, per life:
+**Built:** the word per faction and cell, set words (`SetWord`), kin as "family", and Red Hand crew names from
+Lucky, Snack, Legs, Skint, Pockets and Sorry, given at Known or better and said as leverage
+([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)).
 
-| Cells | The Haven | Bastion | The Red Hand | Halcyon |
-|---|---|---|---|---|
-| Stranger | love | civilian | you | visitor |
-| Known | a friend of the house | civilian, cleared | new face, or crew name | courier |
-| Trusted | "the one with the ribbon" | auxiliary | crew name | field associate |
-| Champion | one of ours | on the roster | crew name, said by the boss | colleague |
-| Watched, Mixed Bag | a worry | uncleared | you | subject of concern |
-| Useful Trouble, Favourite Rascal | a worry we feed | flagged, useful | crew name | under review |
-| Wildcard, Necessary Evil, Wild Child | a worry we feed | flagged | crew name, said carefully | under review |
-| Hunted, Kill on Sight | put out | on the list | that one | excluded from the study |
-| Owed | put out, prayed for | on the list, with a note | in the book, both pages | excluded, with thanks |
-
-- **Set words.** `SetWord(playerId, f, text)` lets the majors and questlines set the word for the life ("Sergeant
-  {name}"). A set word wins unless you're Hostile.
-- **Remembered.** Kin of the fallen are "family" at their first safehouse, as built.
-- **After the lock** a one-word overlay is added ([§13](#13-the-lock-the-cure-and-the-season-record)).
-
-**Red Hand crew names: what the crew holds on you.** LORE: status in the Red Hand is a name, and the crew picks it,
-usually after something you'd rather they forgot. It isn't an honour; it's leverage. A crew name means the crews have
-something on you, which is also why your word counts with them (the majors' settling day: one step easier with a crew
-name).
-- **Never automatic, and never from your background.** Who you were doesn't matter. Who you've crossed does, and the
-  book remembers. Until you have one, you're "new face".
-- **Given at Known or better** with the Red Hand, by one of three things:
-  - a major (the pit, The book balances);
-  - the first thing below you do this life;
-  - a crew boss's dare (the Name Day card, [§15](#15-side-quests-what-reputation-gives-errands)).
-
-| Did (once a life, the first wins) | Name |
-|---|---|
-| Survived the cut dose | Lucky |
-| Bitten twice in one life | Snack |
-| Ran a Bastion checkpoint and reached a Red Hand roadblock the same day | Legs |
-| Paid a toll with exactly the Favor you had | Skint |
-| Had three things taken at one Bastion search | Pockets |
-| Laid down a tribe's leader (the crews call it "the boss", and one crew keeps a tribe fat as a moat) | Bailiff |
-| Killed a crewman, then did a Red Hand job the same day | Sorry |
-| Threw a signal smoke | Smoke |
-
-- **Next season:** a crew name carries over only through the majors' "The book balances", as words only: a returning
-  player is greeted by it ([MAJORS.md](MAJORS.md)).
-- "Stray" is never a crew name: it's the crews' word for the people the Haven turned out.
+Still to build:
+- **Owed** words: "put out, prayed for", "on the list, with a note", "in the book, both pages", "excluded, with
+  thanks" (with the parley); **after the lock** a one-word overlay ([§13](#13-the-lock-the-cure-and-the-season-record)).
+- **Crew names** from **Bailiff** (laid down a tribe's leader: with the tribes) and **Smoke** (threw a signal
+  smoke: needs a throw hook), from a major (the pit, The book balances) and from a crew boss's dare (the Name Day
+  card, [§15](#15-side-quests-what-reputation-gives-errands)).
+- **Next season:** a crew name carries over only through the majors' "The book balances", as words only.
 
 ## 10. Deeds and tallies
 
-**Per faction, per life:**
-- **Best:** the deed phrase of the biggest single Fame gain, with its day.
-- **Worst:** the phrase of the biggest single *direct* Infamy gain, with its day.
-- **Tallies:**
-  - **kills:** that faction's people killed, from retaliation kills and leader or wanderer kills;
-  - **jobs:** contracts completed for it.
-  - The life's existing samples count and people brought in are reused.
+**Built:** best and worst per faction with the kill-tally rule, kills and jobs, `m_sDeed` on the commonest
+contracts (37) with "did a job for us near {town}" for the rest, leaders' and checkpoints' phrases
+([REPUTATION.md](../docs/REPUTATION.md#reputations), [DESIGN.md](../docs/DESIGN.md#deeds)).
 
-The worst deed becomes the kill tally ("put nine of ours down") when 3 × kills beats the biggest single deed. A massacre
-outranks one +5.
-
-**Phrases:**
-- **Contracts:** each contract class sets `m_sDeed` in its constructor as a short past-tense verb phrase: "brought
-  medicine to {town}", "burnt the dead in {town}", "fenced the goods in {town}". {town} is the nearest named settlement
-  (`RZ_WorldFacts` naming), never a grid reference. Unwritten classes fall back to "did a job for us near {town}",
-  never the mission title. One call site in `RewardPlayer` covers every contract.
-- **Questline and major endings:** the participant's few words.
-- **House rules:** "fired at the door in {town}".
-- **Retaliation:** a kill adds to the tally only.
-- **Leaders and wanderers:** "shot {name}, who ran {town}".
-- **Running a checkpoint:** "ran the checkpoint at {town}".
-- **Tribes:** laying down a tribe's leader, in the faction's own word: "laid the big one down at its lair" (the Haven,
-  or its name if the Haven knows who it was), "put the heavy down" (Bastion), "evicted the boss up the quarry" (the Red
-  Hand), "brought in the index" (Halcyon).
-- **The Long Table's (you) flags:** their own phrase.
-- **Finale kills between locked players** are tagged *war* ([§13](#13-the-lock-the-cure-and-the-season-record)).
-
-**Storage** is built: the deeds store, life and season ([DESIGN.md](../docs/DESIGN.md#deeds)). Phrases are lowercase
-and past tense, and templates put them after a subject or label ([§5](#5-what-people-say)).
+Still to build: phrases for the remaining contract classes; questline and major endings' few words; house rules
+("fired at the door in {town}"); wanderer kills ("shot {name}, who ran {town}"); laying down a tribe's leader in
+each faction's word ("laid the big one down at its lair", "put the heavy down", "evicted the boss up the
+quarry", "brought in the index"); the Long Table's (you) flags; war deeds between locked players
+([§13](#13-the-lock-the-cure-and-the-season-record)).
 
 ## 11. The whole picture
 
-`Picture(playerId)` takes the two factions with your highest notoriety (Infamy breaks ties, then Fame) and says them in
-a wanderer's voice:
-- "Word is you're the Haven's Champion and Bastion's Bad News. I'll take the first half."
-- Unknown everywhere: "Nobody's heard of you. Enjoy it."
-- Notoriety 2+ with all four: "Everybody's got an opinion about you. None of them agree."
+**Built:** `Picture` and `PictureKind` (nine kinds), and wanderers saying it one time in four after the road
+news ([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)).
 
-**Where it's used:**
-- the standing screen's header;
-- wanderers, one time in four, **after** the road news, never instead of it;
-- the Deserter reads Bastion's side: "Bastion's got you as a Necessary Evil. Means they'll use you till you're used up.
-  Ask me how I know.";
-- the Long Table's host to an exile: "Put out, were you? There's always a place set.";
-- the epilogue, from the season record.
-
-**`PictureKind`** is a complete classification. The first that matches wins:
-
-| Kind | Means |
-|---|---|
-| WANTED | Hunted by two or more |
-| TORN | Hunted by one, Known or better with another |
-| OUTLAW | Hunted by one, Known or better with none |
-| MIXED | No Hunted; any mixed cell (Mixed Bag, Useful Trouble, Favourite Rascal, Wildcard, Necessary Evil, Wild Child) |
-| SIDED | Known or better with one or more, Watched by one or more |
-| FRIEND_OF_ALL | Known or better with two or more, Watched by none (most Drifters) |
-| ONE_SIDE | Known or better with exactly one, Watched by none |
-| WATCHED | Watched by one or more, Known by none |
-| UNKNOWN | Stranger with all four |
-
-None of these is called "independent". That word belongs to the finale's route.
+Still to build: the standing screen's header (`H` in the feed); the Deserter reading Bastion's side ("Bastion's
+got you as a Necessary Evil. Means they'll use you till you're used up. Ask me how I know."); the Long Table's
+host to an exile ("Put out, were you?"); the epilogue's picture from the season record.
 
 ## 12. Face and name: one scope rule
 
-| Scope | What | Keyed by |
-|---|---|---|
-| **Face (this life)** | Cells, Earned Fame and Feared, deeds and tallies, the word and crew name, the budget, memory from this life, recognition (`KnowsFace`), Fear's limits, parley and settling limits | The profile's current life |
-| **Name (this season)** | The season record ([§13](#13-the-lock-the-cure-and-the-season-record)), the hall of fame, a crew name carried by the book, the route at the lock | Identity, wiped with the season |
+**Built:** life-stamped leader and wanderer memory (earlier lives at half, met doesn't carry, old saves as an
+earlier life) and local deeds ([REPUTATION.md](../docs/REPUTATION.md#face-and-name)).
 
-**Leader and wanderer memory is life-stamped.** Today it's keyed by identity and survives death, so a new character is
-recognised and distrusted by people who never met them. Each memory entry now keeps the life number it was last written
-in. Dialogue's regard and errands' named-person regard sit on top of this; errands never write leader memory.
-
-| Memory | Effect on attitude, and how it's voiced |
-|---|---|
-| From this life | As built |
-| From an earlier life | Half, rounded toward zero: crossed −3 becomes −1 (never the "won't talk" line on its own), saved +2 becomes +1, helped +1 becomes 0. Voiced once as the name ([§5](#5-what-people-say), step 4). Met doesn't carry |
-
-Old saves load their entries as an earlier life. Questline participation stays by identity, as built: it's a world
-record, not a face.
+**Name (this season)**, still to build: the season record ([§13](#13-the-lock-the-cure-and-the-season-record)),
+a crew name carried by the book, the route at the lock, all keyed by identity and wiped with the season.
 
 ## 13. The lock, the cure and the season record
 
@@ -732,7 +583,7 @@ Reputation lands in four steps across the plan's build order.
 |---|---|---|
 | 0. Fixes | The `BastionContact` hold fix; amends paid uncapped on the Hunted path in `RewardPlayer`; the SHARE flag so disguise doubling stops hitting rival shares | Built bugs |
 | 1. Shared foundations | **Built** ([REPUTATION.md](../docs/REPUTATION.md#reputations)) | — |
-| 2. Talk | `RZ_RepVoice` and the opening chain; deeds, tallies and `m_sDeed`; Ask what they think; `FillFor` tokens; the faction's word and crew names; `Picture` and `PictureKind`; life-stamped memory; local deeds | The New Vegas feel; no new rules |
+| 2. Talk | **Built** ([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)) | — |
 | 4. The mission style | The Fear check's trait modifiers, tags and quiet successes (the check itself is built); the parley and the knock; `IsEmptyHanded`; amends reservations; settling up; the company you keep | New rules, each small and capped |
 | 6–7. Finale and ending | `CanSideWith`, the lock overlay, parley closed with fighting routes, war deeds; the season record and its APIs; barks and others-hear; the last week's hooks and "square" | Needs the finale and the epilogue |
 
@@ -923,33 +774,11 @@ debounced change notice, `RZ_Checks` (Trust, Fear, threats) and `RZ_Ways`, and t
   the item walk `RZ_FoodHelper.TakeFood` uses).
 - **Settling up:** a second price on the built Make amends action in `RZ_FactionServices` (10 Fame for 5 Infamy,
   through `Forgive`, 10 a real day), greyed out with a notice at the budget's end.
-- **`RZ_RepVoice`** (`Factions/RZ_RepVoice.c`), its lines in the voice bank:
-  - greeting pools per faction × manner, coloured by traits;
-  - `VoiceManner(speaker, playerId)` (Loyal, Pragmatist, Independent, Rogue, wanderer, the Deserter reversed);
-  - the Ask-what-they-think templates per faction, with four variants;
-  - bark, parley, knock and change lines;
-  - `Picture()` and `PictureKind()`;
-  - `Opening(playerId, speaker)`: crossing opener > local deed > memory this life > name from an earlier life (once per
-    leader per life) > reputation > generic.
-
-  Every pool has a generic fallback per manner. `RZ_LeaderVoice.Greeting` and `Opinion`, `RZ_Leaders.OpinionText` and
-  `HandleTalk`, wanderer talk and the Long Table host all route through it.
-- **Deeds and tallies** (`RZ_Deeds`, life scope): best and worst per faction (phrase plus day), kills and jobs;
-  `RZ_Mission.m_sDeed` per contract class with a {town} token, falling back to "did a job for us near {town}", written
-  in `RewardPlayer`; deeds also from questline and major endings, house rules, retaliation kills (tally), leader and
-  wanderer kills (name), running a checkpoint, tribe leaders laid down, and the Long Table's (you) flags; the kill-tally
-  rule for the worst deed (3 × kills).
-- **`RZ_WorldFacts.FillFor(text, playerId)`:** per-player tokens on top of `Fill`: {rep:f}, {word:f}, {best:f},
-  {worst:f}, {kills:f}, {jobs:f}, {picture}, {name}, {best_place:f}.
-- **The word:** a table per faction × cell, and `SetWord(playerId, f, text)` for the majors and questlines. Red Hand crew
-  names: event flags per life (cut dose survived, second bite, ran a checkpoint then reached a roadblock the same day,
-  an exact toll, three items taken at one search, a tribe's leader laid down, a crewman killed then a Red Hand job the
-  same day, a smoke thrown); a name is given at the first flag while Known or better, else "new face"; a major or Name
-  Day can also set one.
-- **Life-stamped memory:** `RZ_Leader` and `RZ_Wanderer` memory entries store the life number (`m_iLives`) they were
-  last written in; `Attitude` halves earlier-life memory, rounded toward zero; Met doesn't carry; old saves load as an
-  earlier life. `RZ_Leaders.SetLocalDeed` and `GetLocalDeed(seat, playerId)`: one phrase per player per seat,
-  life-stamped.
+- **`RZ_RepVoice`**, built in phase 2 ([REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)). Still: bark,
+  parley, knock and change lines; the crossing opener; `OpinionText` and the Long Table host routed through it; the
+  wanderers' greetings by manner; per-faction tokens (`{rep:f}`, `{word:f}`, `{best_place:f}`) for lines about
+  another faction; deed phrases for the remaining contracts, questline and major endings, house rules, wanderer
+  kills, tribe leaders and the Long Table's flags; Bailiff and Smoke, and crew names from a major or Name Day.
 - **UI:** `RZ_UIFeed.BuildStanding` appends to the `F` record (rep id, notoriety, word, note, budget left, owed) and puts
   the picture in `H`; `RZ_StandingMenu` fills `TierNameN`, a short `TierNoteN`, the budget in `InfamyValueN`, the first
   two lines of `LeadersN`, and the 16 `RepCell_<fame>_<infamy>` widgets (the name plus faction initials);

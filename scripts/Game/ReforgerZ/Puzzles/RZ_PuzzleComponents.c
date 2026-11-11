@@ -298,6 +298,15 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		// A road post's speaker at the barrier (Dialogue > Trees)
+		if (comp.GetMissionId() == RZ_Checkpoints.TAG_POST)
+		{
+			if (gm.GetCheckpoints())
+				gm.GetCheckpoints().HandleSpeakerTalk(playerId, comp.GetObjectIndex());
+
+			return true;
+		}
+
 		// The Long Table's people: eat, trade a jar, declare a bite; the host on the road
 		if (comp.GetMissionId() == RZ_LongTable.TAG)
 		{
@@ -393,6 +402,15 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetTerritory())
 				gm.GetTerritory().HandlePersonTalk(playerId, comp.GetClueIndex());
+
+			return true;
+		}
+
+		// A road post's speaker at the barrier (Dialogue > Trees)
+		if (comp.GetMissionId() == RZ_Checkpoints.TAG_POST)
+		{
+			if (gm.GetCheckpoints())
+				gm.GetCheckpoints().HandleSpeakerTalk(playerId, comp.GetClueIndex());
 
 			return true;
 		}

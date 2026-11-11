@@ -58,6 +58,7 @@ class RZ_Mission_CarTheft : RZ_Mission
 		m_vPos = m_vCar;
 		m_Zone.SetZone(shop, 25);
 		m_sTitle = "Car Theft";
+		m_sDeed = "brought in a car from {town}";
 		m_sBrief = string.Format("There's a car in %1 somebody wants. That one, not any one. Drive it to %2 and walk away from it.", s.m_sName, m_sShop);
 		return true;
 	}
@@ -181,6 +182,7 @@ class RZ_Mission_LootTheArmory : RZ_Mission_Delivery
 			return false;
 
 		m_sTitle = "Loot the Armory";
+		m_sDeed = "emptied the armoury at {town}";
 		m_sBrief = string.Format("The gun cage in %1 in %2 was never emptied. Cut it open (it'll be loud) and bring what's inside to %3.", place, s.m_sName, meetName);
 		return true;
 	}
@@ -269,6 +271,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		m_iTalk = AddClue("The keeper", "\"I know who sent you. We've nothing to spare. We've people to feed.\"");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Ask for the money|Leave it", m_iTalk, "Talk to the keeper");
 		m_sTitle = "Protection Racket";
+		m_sDeed = "collected in {town}";
 		m_sBrief = string.Format("The safehouse in %1 is late. Go and remind the keeper what our protection is worth. They pay, or they learn.", h.m_sName);
 		return true;
 	}
@@ -411,6 +414,7 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 		m_vPos = m_Watch.GetPos(gm);
 		m_iSettlement = gm.FindNearestSettlement(m_vPos);
 		m_sTitle = "Hijack the Convoy";
+		m_sDeed = "took a convoy near {town}";
 		m_sBrief = string.Format("Bastion's truck leaves %1 for %2 in a couple of minutes. Find a bend in the road. Whatever's on it is ours.", m_Watch.m_sFrom, m_Watch.m_sTo);
 		return true;
 	}
@@ -555,6 +559,7 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 0);
 		m_Escort.SetDestination(m_vMeet);
 		m_sTitle = "Bust Out";
+		m_sDeed = "broke one of ours out at {town}";
 		m_sBrief = string.Format("Bastion is holding some of ours in a stockade near %1. They owe us, and nobody pays from a stockade. Cut them out and walk them to %2. In one of their uniforms, the guards won't look twice.", postName, m_sMeetName);
 		return m_Escort.Begin(gm, LandPointNear(m_vGate, 3, 6));
 	}
@@ -850,6 +855,7 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 	{
 		m_iTarget = FindWanted(gm);
 		m_sTitle = "Collect the Bounty";
+		m_sDeed = "collected a bounty near {town}";
 		if (m_iTarget > 0)
 		{
 			IEntity t = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iTarget);

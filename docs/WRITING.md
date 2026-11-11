@@ -2,8 +2,8 @@
 
 How every line of player text in ReforgerZ is written: the tone, the voices, the rules each line
 follows, and the lint that checks them. Who the factions are as people, and the setting they speak
-from, is in [LORE.md](LORE.md). The voice bank, the season mood, grief and joke memory are designed
-in [designs/TONE.md](../designs/TONE.md) and not built yet.
+from, is in [LORE.md](LORE.md). Running jokes, the race and route lines, the radio's joke memory
+and the epilogue's variants are designed in [designs/TONE.md](../designs/TONE.md) and not built yet.
 
 ## Contents
 
@@ -13,6 +13,9 @@ in [designs/TONE.md](../designs/TONE.md) and not built yet.
 - [By channel](#by-channel)
 - [The government broadcast](#the-government-broadcast)
 - [Information comes first](#information-comes-first)
+- [The season mood](#the-season-mood)
+- [The voice bank](#the-voice-bank)
+- [Conversations](#conversations)
 - [Grey choices](#grey-choices)
 - [Phrasing choices and outcomes](#phrasing-choices-and-outcomes)
 - [Dark humour, not edginess](#dark-humour-not-edginess)
@@ -123,18 +126,103 @@ person's fear or pain.
 
 ## The government broadcast
 
-Until the cure the broadcast never changes its message, but its tone follows the state of the Zone
-(why it's there: [LORE.md](LORE.md#the-outside-world-silent-watching); how it runs:
-[DESIGN.md](DESIGN.md#the-government-broadcast)). The first match wins:
+Until the cure the broadcast never changes its message, but its tone follows the season mood
+([below](#the-season-mood); why it's there: [LORE.md](LORE.md#the-outside-world-silent-watching);
+how it runs: [DESIGN.md](DESIGN.md#the-government-broadcast)). The first match wins:
 
-| Zone state | Broadcast tone |
+| State | Broadcast tone |
 |---|---|
-| Early, cure progressing | *"Remain indoors. Aid is on its way."* |
-| Infection spreading, cure stalled | *"Residents are reminded that the perimeter is for your protection."* |
-| Overrun, little progress | *"The perimeter will be maintained."* |
-| Long stall | *"The perimeter will be maintained indefinitely."* |
-| Cure breakthroughs | *"Reports of research inside the zone are being evaluated."* |
 | The cure is out | The loop stops. Anyone who tunes in hears the new order: *"The quarantine order for this area has been lifted. Remain where you are. Processing will begin at the road checkpoints."* |
+| Hope (the breakthrough window) | *"Reports of research inside the zone are being evaluated."* |
+| At the finale gate (research stops by design) | *"The status of this area is under review. Remain where you are."* |
+| Bleak: the long stall | *"The perimeter will be maintained indefinitely."* |
+| Bleak: Aftermath, cure under 50% | *"Residents are thanked for remaining indoors. Residents are thanked for remaining."* |
+| Bleak: Overrun, cure under 50% | *"The perimeter will be maintained."* |
+| Grim | *"Residents are reminded that the perimeter is for your protection."* |
+| Early | *"Remain indoors. Aid is on its way."* |
+
+With **Voice > Season mood** off, the broadcast keeps its built table: the same lines, the gate's
+included, without the Aftermath line and without the mood's holding rules.
+
+## The season mood
+
+✅ Code: `Director/RZ_SeasonMood.c` (`RZ_WorldFacts.SeasonMood()`, `MoodFor(faction)`). One
+server-wide value every voice and the broadcast read. It runs on stages and cure percent, not days,
+so it works at any season speed, and adds no simulation. The ladder, first match wins:
+
+| Mood | When | Joke share face to face |
+|---|---|---|
+| **Epilogue** | after the cure | 1 in 3 |
+| **Hope** | the broadcast's breakthrough window: 90 online minutes from when players heard the news | 1 in 3 |
+| **Bleak** | the long stall (3 h with no research), or Overrun or Aftermath with the cure under 50% | 1 in 10 |
+| **Grim** | Collapse or later, average infection 45+, or the 45-minute stall | 1 in 5 |
+| **Early** | anything else | 1 in 3 |
+
+- **At the gate** research stops by design: the stall doesn't count, and the mood reads one step
+  lighter (Grim as Early, Bleak as Grim), because everyone can see the end.
+- **Holding.** Hope and the Epilogue start at once. The others change only after two checks in a row
+  (a check every 5 online minutes) and never before the mood has held 60 online minutes. Runtime
+  only: a restart starts from the ladder.
+- **Temper.** Each faction's morale moves its own lines one step: bleaker below 30 (back above 38),
+  lighter above 75 (back below 67). Steps run Hope/Early, Grim, Bleak; the Epilogue isn't shifted.
+- **Grief** (`RZ_ToneGuard`): after a leader's or wanderer's death, no wry or joke line is said face
+  to face within 1.5 km for 10 minutes; after a death in a safehouse, 30 minutes. The faction's
+  radio quiet is kept too, for when the radio's pools move into the bank.
+- Debug: **Voice > Force mood**; the log line `Voice: season mood <mood> (was <mood>)`.
+
+## The voice bank
+
+✅ Code: `Factions/RZ_VoiceBank.c`, its defaults in `Factions/RZ_VoiceDefaults.c` (one `Line()` a
+line). The single-line pools people say face to face, as data: leaders' greetings (`greeting`),
+their openings by manner (`opener`, said with Dialogue > Trees on), named people at holdings
+(`person`) and their routine asides at the meal, the night watch and shift change (`aside_meal`,
+`aside_night`, `aside_shift`). Each line has a stable id, a faction, a kind, a manner, a register
+(PLAIN, WRY, JOKE, TAUNT, BLEAK, SILENCE), the moods it's said in, the leader traits it suits, an
+optional condition in the conversation syntax (`cure>=50`), a weight and the text (with `{place}`).
+
+- **A pick** reads the speaker faction's mood, grief near the speaker, and the listener's **joke
+  memory**: the last 24 jokes (WRY, JOKE or TAUNT) that player heard, with the real time, kept on
+  the profile across lives. A joke heard in the last 24 real hours isn't said again; a joke is said
+  only at the mood's share; when there's no joke to say, a plain line; when there's no line at all,
+  the built one.
+- **Voice > Lines** adds a line or replaces a default with the same id; **Voice > Disabled** switches
+  ids off. **Voice > Log** writes every pick: `voice: face <faction> <register> <id> mood=<mood>
+  listener=<identity>`.
+- `python3 tools/voice_sim.py` replays the picker offline: pool sizes and joke shares per mood, and
+  which pools are too small for a veteran's day (a pool's jokes should number at least 1.5 × visits
+  × share; under that, the pool falls back to plain lines rather than repeat a joke).
+- *Not built yet:* the radio's pools, rumours and chatter in the bank, the shared channels' joke
+  memory and running jokes ([designs/TONE.md](../designs/TONE.md)).
+
+## Conversations
+
+Conversation lines ([DIALOGUE.md](DIALOGUE.md)) follow everything on this page, and these:
+
+- **Lines.** One to three short lines a node, in the faction's voice, coloured by the speaker's
+  traits. The speaker talks in the first person; no he, she, him or her for a seeded speaker.
+- **Choices** are things a person would say or do: speech in quotes, actions as plain words, 40
+  characters or fewer. No choice is labelled good or evil, and every option costs something real;
+  the kind one usually pays least. A wry line is never the only way through, and never the only
+  kind way.
+- **Tags are the engine's.** Writers never type "[Persuade]" or "(20 Favor)": the tag comes from
+  the check or the price, so it can't promise what isn't tested.
+- **The player's voice by background:** Ex-Con and Raider wry and quick; Unemployed and Drifter
+  plain, sometimes funny; Soldier and Police procedural; Nurse, Doctor and Lab Technician clinical
+  and kind; Hunter, Mechanic and Radio Operator practical, few words; the Elder slow, and knows
+  everyone.
+- **Failure is a branch:** a failed check names someone else, raises the price or gives half the
+  truth. Never a dead end.
+- **The word and crew names** ([REPUTATION.md](REPUTATION.md#what-people-call-you)) are said face to
+  face only, never on air and never by the narrator. The name itself is said aloud only when they
+  tell you what they make of you. A crew name is said the way the crews would: cheerfully, in front
+  of people, as a reminder of what they know. It mocks luck, nerve or skill, never a kindness or a
+  victim.
+- **Rudi** is the Red Hand's official lie, said flat: *"Rudi was bitten."* Nothing after it. The
+  boss's line stays LORE's: *"He let people pay later. You can't run a road like that."*
+- **The Long Table is never described.** Its people are homely and attentive; they ask where you're
+  going and whether anyone expects you. No line anywhere else hints at it.
+- The lint for conversations is `tools/dialogue_pack.py` ([DIALOGUE.md](DIALOGUE.md#tools)); the
+  checks below also read every `.rzd` line.
 
 ## Information comes first
 
@@ -286,8 +374,9 @@ Two tools check the scripts' text; how to run them is in
 [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint).
 
 - **`tools/strings_inventory.py`** lists every literal that can reach a player: notices, headlines,
-  rumours, briefs, labels and choices, clues, journal lines, outcomes, the guidance tips and the voice
-  pools. For each: its file and line, the channel (guessed from the call, the assignment or the
+  rumours, briefs, labels and choices, clues, journal lines, outcomes, the guidance tips, the voice
+  pools and the voice bank, and every line of the conversation files (`dialogue/**/*.rzd`: says as
+  talk-screen lines, labels as choices; the generated packs are skipped). For each: its file and line, the channel (guessed from the call, the assignment or the
   function), the faction (from the folder, or the nearest `case RZ_EFaction.X:`), a register guess
   (PLAIN, WRY, JOKE, TAUNT, BLEAK, SILENCE) and how often it repeats.
 - **`tools/voice_lint.py`** checks that list against the rules on this page:
@@ -297,7 +386,7 @@ Two tools check the scripts' text; how to run them is in
 | `length` | Radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers and talk-screen lines: 200 characters or fewer. Labels and choices: the action part 40 or fewer, the whole 64 or fewer. Briefs over 500: a warning only |
 | `bang` | `!` only in Red Hand lines, notice titles and loudspeakers (alarms) |
 | `format` | `%1`–`%9` only |
-| `token` | Every `{token}` is a `Fill` token or a questline's key |
+| `token` | Every `{token}` is a `Fill` token or a questline's key (a conversation's tokens in `.rzd` files, `{place}` in the voice bank) |
 | `never` | The never list: sexual violence, slurs, real countries and pandemics, internet talk |
 | `long-table` | No ambient line hints at the Long Table |
 | `infected` | No "alpha", "tribe" or "crawler"; "strays" never for the infected |

@@ -1,6 +1,9 @@
 # The plan: one season, end to end
 
-**Status: designed; phase 1 built.** Approved by the author on 2026-11-11. Phase 1 (the shared engine and
+**Status: designed; phases 1 and 2 built.** Approved by the author on 2026-11-11. Phase 2 (talk: dialogue's
+trees on the talk screen behind **Dialogue > Trees**, reputation's voice, tone's season mood and voice bank) is
+built and lives in [DIALOGUE.md](../docs/DIALOGUE.md), [REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)
+and [WRITING.md](../docs/WRITING.md#the-season-mood). Phase 1 (the shared engine and
 reputation's names) is built and lives in [DESIGN.md](../docs/DESIGN.md#the-shared-engine) and
 [REPUTATION.md](../docs/REPUTATION.md#reputations); the one body budget lives inside the tribes' agent budget
 ([INFECTED.md](../docs/INFECTED.md#the-one-body-budget)).
@@ -650,7 +653,7 @@ today's tree, and `docs/WRITING.md` (the writing guide moved out of LORE.md, eve
 |---|---|---|---|---|
 | **1. Shared foundations** | **Built** ([DESIGN.md](../docs/DESIGN.md#the-shared-engine), [REPUTATION.md](../docs/REPUTATION.md#reputations)), the one body budget inside the tribes' agent budget ([INFECTED.md](../docs/INFECTED.md#the-one-body-budget)). Of reputation's phase 1, the name grid, the credit rule, the budget across every built route, the change notice, the card, the Wildcard search and toll and `rep` are built | 0.5 | About 5,000 | The standing screen shows the mixed picture; amends are capped; Champions pay Fame for new Infamy. Nothing else visible changes |
 | *Tribes 1, in parallel* | Crawlers, the land grid, the plumbing, the agent budget, both off switches. `docs/INFECTED.md` is added here | 0.2, 0.3, the shared body budget | About 1,500 | Towns feel slow and full |
-| **2. Talk** | Dialogue's trees on the talk screen's `RZ_Dialogue` (**Dialogue > Trees** off by default, decision 13): hubs, `.rzd` text with the lint, the simulator and `shipped.lock`, regard, claims and knowledge, `dialogue.json`, about 30 conversations (leaders in four voices, the 8 wanderer roles, occupants, two named people, two post speakers, the Long Table, three asks). Reputation's voice: `RZ_RepVoice`, deed phrases and tallies, the faction's word and crew names (the new lore), `Picture`, life-stamped memory, local deeds. Tone's voice bank: `SeasonMood()` and temper (the broadcast reads the same table), grief and joke memory, the top pools moved into the bank, `tools/voice_sim.py`. The dialogue engine comes before every scene, sitting and commit node that uses it; all keep an action-menu fallback. `docs/DIALOGUE.md` is added here | Phase 1; the talk screen | About 6,000, plus about 1,000 lines of text | People talk in trees, in their own voices, and remember you this life |
+| **2. Talk** | **Built** ([DIALOGUE.md](../docs/DIALOGUE.md), [REPUTATION.md](../docs/REPUTATION.md#what-people-call-you), [WRITING.md](../docs/WRITING.md#the-season-mood)): the trees on the talk screen (**Dialogue > Trees** off, decision 13), the `.rzd` format with its lint, simulator and `shipped.lock`, regard, claims and knowledge, `dialogue.json`, 30 conversations; reputation's voice, the word and crew names, `Picture`, life-stamped memory, local deeds; the season mood and temper (the broadcast reads them), grief face to face, the voice bank with the leaders' and named people's pools and joke memory, `tools/voice_sim.py`. Still from this phase: the radio's pools and the shared channels' joke memory in the bank; deed phrases for the rest of the contracts | Phase 1; the talk screen | — | People talk in trees, in their own voices, and remember you this life |
 | *Tribes 2, in parallel* | One tribe end to end on Everon (the lair and resting ring, scouts and the scout rule on `RZ_Stealth`, **the day party**, the dusk call, a hunt, the dawn count), play-tested; then every tribe, with hunger's day doubling and the town-edge fields | Tribes 1 | About 1,800 | The wild has a rhythm, by day and by night |
 | **3. Small things everywhere** | Errands' core: the dealer, named people folded into territory's built ones and the camps' people, soft holds and the faults table, 24 routines at the four holding kinds, wanderer asks, 16 cards, telemetry and `/errands`. Missions' wave 1: the story kit, who benefits (`RZ_Mission_Choice` rebuilt on it), who decides, truths, world records, the reason lane and one weight clamp, the journal's detail payload. The 7 missions that become routines leave the pool as their routines land. **The epilogue's town log and season marks start recording here**, because the ending needs a whole season of them | Phases 1–2 | About 7,000 | Many small, relevant side quests; every built choice mission paying fairly |
 | *Tribes 3, in parallel* | The life cycle: succession, splits, borders, clans, lair moves, temperaments, habits | Tribes 2 | About 1,500 | The map changes week to week |
@@ -857,7 +860,7 @@ system is built, and each with CLAUDE.md's Doc map and the README's doc list in 
 |---|---|---|
 | `docs/WRITING.md` | Step 0 (with the lint): built | The writing guide, moved out of LORE.md, and tone's rules |
 | `docs/INFECTED.md` | Tribes phase 1 | Crawlers, tribes, day parties, the land, bodies |
-| `docs/DIALOGUE.md` | Phase 2 | Conversations, checks, tags, memory, lies, scenes |
+| `docs/DIALOGUE.md` | Phase 2 (added) | Conversations, checks, tags, memory; lies and scenes as they are built |
 | `docs/FINALE.md` | Phase 6 | Routes, the lock, the stand as a control fight, terms |
 
 **Everything else lands in the docs that already own the topic:**

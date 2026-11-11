@@ -944,6 +944,8 @@ class RZ_Safehouses
 		int dead = Math.Min(count, h.m_iPopulation);
 		RemovePopulation(idx, dead);
 		h.m_iDied = h.m_iDied + dead;
+		if (dead > 0)
+			RZ_ToneGuard.Death(h.m_vPos, RZ_EFaction.SURVIVORS, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1391,6 +1393,16 @@ class RZ_Safehouses
 
 	//------------------------------------------------------------------------------------------------
 	//! From an occupant's "Ask how things are".
+	//! A conversation's hand-in (Dialogue > Trees, call:hand_in:N): the built food delivery at this
+	//! house, for at most `count` items, paid as built.
+	void HandInFood(int playerId, int idx, IEntity user, int count)
+	{
+		RZ_Safehouse h = Get(idx);
+		if (h && user)
+			DeliverFood(playerId, h, user, Math.Max(1, count));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void HandleOccupantTalk(int playerId, int idx)
 	{
 		RZ_Safehouse h = Get(idx);
@@ -1450,9 +1462,9 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void DeliverFood(int playerId, RZ_Safehouse h, IEntity user)
+	protected void DeliverFood(int playerId, RZ_Safehouse h, IEntity user, int maxCount = 10)
 	{
-		int taken = RZ_FoodHelper.TakeFood(user, m_aFoodWords, 10);
+		int taken = RZ_FoodHelper.TakeFood(user, m_aFoodWords, maxCount);
 		if (taken <= 0)
 		{
 			m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "You've nothing they can eat. Tins, rations, bread: anything helps.");

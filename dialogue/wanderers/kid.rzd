@@ -1,0 +1,44 @@
+# The Kid: never a joke, never a threat. Two conversations: the name, and an ask while lost.
+
+conv wanderer.kid.name
+for wanderer:kid
+topic "Ask the kid's name."
+prio flavour
+voice plain
+
+node start
+  say "My mum said not to tell people my name. Then she said if I'm lost, tell a grown-up. I don't know which one you are."
+  > @mine "Here's mine first." -> name
+  > @ok "That's fine. Keep it." -> keep
+
+node name
+  say "Okay. That's fair. You can call me what my class called me. It's not very nice, so I won't say it."
+  say "I'm hungry, but I'm not supposed to say that either."
+  > @back1 "Something else." -> hub
+
+node keep
+  say "Thank you."
+  > @back2 "Something else." -> hub
+
+conv wanderer.kid.home
+for wanderer:kid
+when kidlost
+topic "Ask where home is."
+prio ask
+voice plain
+
+node start
+  say "There was a gym. With a bear on the door. They said they'd come back for the ones outside."
+  say "I waited. Then it got dark, so I walked."
+  > @show "I'll show you the way to a house." -> walk
+  > @later "Stay here. Someone will come." -> wait
+
+node walk
+  say "Is it far? I can walk far. I just can't walk at night."
+  do call:slot:0
+  > @back3 "Something else." -> hub
+
+node wait
+  say "Everyone says that."
+  > @show2 "I'll show you the way after all." -> walk
+  > @back4 "Something else." -> hub

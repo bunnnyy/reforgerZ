@@ -1,0 +1,45 @@
+# Named people at holdings: two of territory's built people get topics.
+
+conv named.redhand.tollman
+for named:redhand/toll_man
+topic "Ask who painted the hand."
+prio world
+voice redhand
+
+node start
+  say "The boss. On Rudi's shutter, the day the garage changed hands."
+  say "Rudi was bitten."
+  > @really "Was Rudi bitten?" -> really
+  > @toll "How's the toll today?" -> toll
+  > @other "Something else." -> hub
+
+node really
+  say "The toll man looks at the shutter, then at you, and says nothing at all."
+  > @back1 "Something else." -> hub
+
+node toll
+  say "Good. Tins, fuel, the odd watch. Bastion paid in bullets once. We counted that as a tip."
+  > @back2 "Something else." -> hub
+
+conv named.bastion.sentry
+for named:bastion/sentry
+topic "Ask about the roll."
+prio world
+voice bastion
+
+node start
+  say "When the night watch is set, the sergeant reads the whole roster out loud. The living answer: here."
+  say "For each of the dead, the whole post answers together. It gets longer every week."
+  > @hear "Can I listen tonight?" -> hear
+  > @how "How long does it take now?" -> how
+  > @other2 "Something else." -> hub
+
+node hear
+  say? night :: "You're hearing it. Stand still and keep your mouth shut."
+  say "Half past eight. Stand outside the wire. Don't answer for anyone."
+  > @back3 "Understood." -> hub
+
+node how
+  say "Longer than the call to Command. Shorter than it should be. We lost the count of the dead around Day nine."
+  say "No. That's not true. We know the count. We just don't say it."
+  > @back4 "Something else." -> hub

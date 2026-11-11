@@ -315,6 +315,9 @@ class RZ_Infection
 	//! From RZ_GameModeComponent.InfectPlayer, after the timer is set: the golden window opens.
 	void OnBite(int playerId, RZ_PlayerProfile profile)
 	{
+		// The crews notice a second bite in one life (Snack)
+		RZ_RepVoice.NoteBite(m_GM, playerId);
+
 		if (m_Settings.m_fGoldenSeconds <= 0)
 		{
 			TakeHold(playerId, profile);
@@ -990,6 +993,7 @@ class RZ_Infection
 				{
 					m_GM.CurePlayer(playerId);
 					m_GM.NotifyPlayer(playerId, title, "Whatever they cut it with, there was antidote in it. The grey goes out of the bite. The fever stays for a while.");
+					RZ_RepVoice.CrewEvent(m_GM, playerId, RZ_RepVoice.CREW_LUCKY);
 					return true;
 				}
 

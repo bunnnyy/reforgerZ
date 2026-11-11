@@ -1,0 +1,57 @@
+# The Long Table. Homely, attentive, a little too interested in you. Nothing is ever described.
+# No regard, no threats; the family's memory stays its three words (guest, family, crossed).
+
+conv table.road.host
+for table:road
+topic "Ask about the road ahead."
+prio world
+voice table
+
+node start
+  say "Clear to the bridge, if you keep off the verges. The trucks went through this morning, both of them."
+  say "Where are you headed? Is anyone expecting you?"
+  > @alone "Nobody. I'm on my own." -> alone
+  > @expected "They're expecting me back by dark." -> expected
+  > @road "Just passing." -> passing
+
+node alone
+  say "Then you'll eat with us. Mother cooks for twenty and there are never twenty. Supper's at half six."
+  do claim:alone
+  > @maybe "Maybe I will." -> hub
+  > @no "Another time." -> hub
+
+node expected
+  say "Then you'd best be on your way before the light goes. People worry. Come another day, with them."
+  do claim:expected
+  > @thanks "Thanks for the road." -> hub
+
+node passing
+  say "Everyone is. That's what roads are for. The offer stands, whenever you're passing next."
+  > @back1 "I'll remember." -> hub
+
+conv table.mother.house
+for table:mother
+when !table:crossed
+topic "Ask about the farm."
+prio flavour
+voice table
+
+node start
+  say "It was my husband's people's. Always a big house, always a long table. Sit, sit. You're thin."
+  say "Have you been bitten, love? We ask everyone. You can tell me."
+  > @no "No. Not bitten." -> fine
+  > @bite "I've a bite. Here." -> bitten   if bite_shown
+  > @boy "Is the boy yours?" -> boy
+
+node fine
+  say "Good. Then there's no hurry at all, is there. Stay as long as you like."
+  > @back1 "Something else." -> hub
+
+node bitten
+  say "Oh, love. Then you'll eat first, and we'll say a kind word over you, and you'll go before dark."
+  do call:slot:2
+  > @back2 "Something else." -> hub
+
+node boy
+  say "He came with the others. He's ours now. He eats what he's given."
+  > @back3 "Something else." -> hub

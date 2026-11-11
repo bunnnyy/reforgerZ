@@ -65,6 +65,12 @@ and one way to end it: **research the cure.**
   set a place for whoever comes, the host on the road is the friendliest man in the Zone, and
   people who take that road don't always arrive. Eat with them, trade, find out, tell someone or
   end it yourself ([LORE.md](docs/LORE.md#the-long-table)).
+- **People who talk back** ([DIALOGUE.md](docs/DIALOGUE.md)): with **Dialogue > Trees** on (off
+  by default until it's play-tested), the people you talk to have topics in their own voices, with
+  what each answer needs shown before you choose (persuade, a threat that always costs, a price, your
+  background) and no dice; they remember how you spoke to them this life. Each faction has its own
+  word for you, the Red Hand's crews give you a name you'd rather they hadn't, and leaders tell you
+  what they make of you. Talk never pays Fame.
 - **Notes between players**: a notice board at every Haven safehouse.
 - **Loot the world**: things lie loose in houses, on worktops and floors, and you pick them up;
   car boots and bodies to search; locked doors that keep the infected out (they bang on them)
@@ -86,8 +92,8 @@ and one way to end it: **research the cure.**
 
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
-That's about 129,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 59 `VERIFY` markers left in the game
+That's about 135,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+was also checked against the base game's script source; the 60 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -112,17 +118,20 @@ yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do i
 
 **Not built yet:** the content pass onto the world facts (see the roadmap's *Next*), and the
 approved designs for the rest of the season: the infected tribes and crawlers, the four majors, the
-cure's finale, the epilogue week, dialogue, errands and more, built in the order of
-[designs/PLAN.md](designs/PLAN.md). The towns' crawlers, the loose ones, heat hordes from towns, the land grid
-and the rest of what the tribes stand on are built (phase 1, [INFECTED.md](docs/INFECTED.md)).
+cure's finale, the epilogue week, dialogue's scenes, lies and strangers, errands and more, built in
+the order of [designs/PLAN.md](designs/PLAN.md). Built so far: the shared engine (phase 1); talk
+(phase 2: conversation trees, reputation's voice, the season mood and the voice bank,
+[DIALOGUE.md](docs/DIALOGUE.md)); the towns' crawlers, the loose ones, heat hordes from towns, the
+land grid and the rest of what the tribes stand on (tribes phase 1, [INFECTED.md](docs/INFECTED.md)).
 
 ## Docs
 
 | Doc | What's in it |
 |---|---|
 | [LORE.md](docs/LORE.md) | The sealed Zone, the factions as people, endings |
-| [WRITING.md](docs/WRITING.md) | How player text is written: tone, the voices, grey choices, the humour line, the text lint's rules |
+| [WRITING.md](docs/WRITING.md) | How player text is written: tone, the voices, the season mood and the voice bank, conversations, grey choices, the humour line, the text lint's rules |
 | [DESIGN.md](docs/DESIGN.md) | How every system works, by system |
+| [DIALOGUE.md](docs/DIALOGUE.md) | Talking to people: the talk screen, conversation trees, checks, memory, the `.rzd` format and its tools |
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
 | [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, tribes (planned) |
@@ -148,15 +157,16 @@ scripts/Game/ReforgerZ/
                  signals, the town log, world records), the marks spawner, the Long Table, the
                  land grid (water, height, trees, roads, bridges and wild land)
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
-                 the broadcast, story arcs, the questline engine, headlines, the season budget
-                 and the set-piece calendar
+                 the broadcast, the season mood and grief, story arcs, the questline engine,
+                 headlines, the season budget and the set-piece calendar
   Zombies/       spawner (any zombie mod's prefabs), the towns' crawlers, bodies and the agent
                  budget (roles, data parts, the sight rule, runtime groups), the tribes' settings,
                  bite detection, stealth (visibility, the infected's senses, losing them)
   Backgrounds/   backgrounds, personal goals, player profiles
   Factions/      reputation and its 16 names, quartermasters and shops, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,
-                 territory, supply trucks, faction life, camp life (scenery and routines)
+                 territory, supply trucks, faction life, camp life (scenery and routines),
+                 reputation's voice (the word for you, crew names, the picture), the voice bank
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/; the shared checks (Trust, Fear, prices) and
@@ -170,7 +180,8 @@ scripts/Game/ReforgerZ/
                  traps, generators, fire, secure radio, treating others
   Persistence/   save and load of mode state, the hall of fame
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person,
-                 what a reply needs
+                 what a reply needs; the trees (hubs, nodes, checks, effects), conditions,
+                 memory (dialogue.json); Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
                  the screen guard, the notice board, deploy-menu panel and loadout lock, the
@@ -201,8 +212,14 @@ tools/tribe_sim.py
                  simulates the infected tribes (planned) over a season on that pacing, on the
                  measured wild land of Arland, Everon and Cain and a Chernarus-size map, 2, 5 and
                  10 players
+dialogue/        the conversations as .rzd text (leaders, wanderers, residents, posts, table)
+                 and shipped.lock, the ids that have shipped
+tools/dialogue_pack.py, tools/dialogue_sim.py
+                 the dialogue lint and packer; walks a conversation as one character sees it
+tools/voice_sim.py
+                 replays the voice bank's picker: pool sizes and joke shares by mood
 tools/strings_inventory.py
-                 lists every line of player text in the scripts, with its channel and faction
+                 lists every line of player text in the scripts and the conversations
 tools/voice_lint.py, tools/voice_lint_baseline.txt
                  the text lint: checks player text against the writing rules; the baseline
                  holds today's findings, so only new or changed text fails

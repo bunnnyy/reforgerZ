@@ -94,6 +94,7 @@ class RZ_Mission_FieldSamples : RZ_Mission
 		m_vPos = s.m_vCenter;
 		m_fParticipationRadius = s.m_fRadius;
 		m_sTitle = "Field Samples";
+		m_sDeed = "brought samples back from {town}";
 		m_sBrief = string.Format("Halcyon needs tissue from regular infected. Kill %1 of them in %2 and the lab will take readings.", NEEDED, s.m_sName);
 		return true;
 	}
@@ -192,6 +193,7 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 			return false;
 
 		m_sTitle = "Water Survey";
+		m_sDeed = "tested the water at {town}";
 		m_sBrief = string.Format("Halcyon wants water samples from the wells in %1 and two towns nearby. Stand at each well for 10 seconds.", s.m_sName);
 		return true;
 	}
@@ -362,6 +364,7 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 		SpawnGuards(gm, m_vPos, 4, 10, 40);
 		m_fParticipationRadius = 0;
 		m_sTitle = "Research Data";
+		m_sDeed = "recovered the data at {town}";
 		if (clinic)
 			m_sBrief = string.Format("There's a hard drive with Halcyon's research somewhere in %1 in %2: a padded case, on a shelf or on the floor. Find it and take it to the lab. Bastion's drop in %3 would pay for it too.", clinic.m_sName, s.m_sName, b.m_sName);
 		else

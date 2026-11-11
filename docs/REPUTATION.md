@@ -85,8 +85,9 @@ their own (**Reputation > Names**, on; off shows the tier words only).
 - **Deeds.** The life keeps, per faction, its best deed (the biggest single Fame gain with a phrase)
   and its worst (the biggest direct Infamy gain), how many of their people you killed and how many
   jobs you did for them; the season keeps the same by identity ([DESIGN.md](DESIGN.md#deeds)).
-  Today only killing a leader writes a phrase ("shot Vlasak"); each contract's phrase comes with the
-  voices (planned).
+  Phrases come from contracts ("brought medicine to Levie"; "did a job for us near Morton" for one
+  without its own), a leader's killing ("shot Vlasak") and running a checkpoint. The worst deed reads
+  as the kill tally ("put 9 of ours down") once three times the kills outweigh it.
 - **The change notice.** A new name is told once it has held 30 s (a quick swing back says
   nothing), at most once per faction per 5 minutes; a tier change is always told at once. The first
   mixed name also gets a guidance tip: "People can like you and fear you at once." (**Reputation >
@@ -101,8 +102,96 @@ their own (**Reputation > Names**, on; off shows the tier words only).
   player's cells, Earned Fame and Feared, what's left to forgive, deeds, tallies and threats used,
   to the admin and to the log.
 
-What people say about your name (the voices, the faction's word for you, crew names, the whole
-picture, the parley) is planned: [REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md).
+### What people call you
+
+✅ Code: `Factions/RZ_RepVoice.c`. A name opens nothing: every rule still reads the tier. What's
+said aloud (the openings, what they make of you, the picture) is said only with **Dialogue > Trees**
+on ([DIALOGUE.md](DIALOGUE.md)); the word and crew names are kept either way.
+
+**Manners** are a writing tool, never a rule: the cell picks how a line sounds. Stranger is
+*unknown*; Known and Trusted *warm*; Champion *devoted*; Watched and Mixed Bag *wary*; Useful
+Trouble and Favourite Rascal *fond*; Wildcard, Necessary Evil and Wild Child *needed*; the Hunted
+cells *hostile*. A Pragmatist, or an Independent or Rogue leader who holds nothing against you,
+reads *hostile* as *wary*.
+
+**The word for you**, to your face, this life (`RZ_RepVoice.Word`, the `{word}` token):
+
+| Manner | The Haven | Bastion | The Red Hand | Halcyon |
+|---|---|---|---|---|
+| unknown | love | civilian | you | visitor |
+| warm | a friend of the house (Trusted: the one with the ribbon) | civilian, cleared (Trusted: auxiliary) | your crew name, else new face | courier (Trusted: field associate) |
+| devoted | one of ours | on the roster | your crew name | colleague |
+| wary | a worry | uncleared | you | subject of concern |
+| fond, needed | a worry we feed | flagged, useful / flagged | your crew name | under review |
+| hostile | put out | on the list | that one | excluded from the study |
+
+Kin of a fallen Champion are "family" to the Haven. A word the majors or questlines give
+(`SetWord`, "Sergeant Novak") wins unless they're hostile.
+
+**Red Hand crew names** are what the crews hold on you: leverage, not an honour. The first of these
+this life, while you're Known or better with the Red Hand, becomes your name, and a notice tells
+you; until then you're "new face" (**Reputation > Crew names**, on).
+
+| Did | Name |
+|---|---|
+| Survived the cut dose | Lucky |
+| Bitten twice in one life | Snack |
+| Ran a Bastion checkpoint and reached a Red Hand roadblock the same season day | Legs |
+| Paid a toll with exactly the Favor you had | Skint |
+| Had three things taken at one Bastion search | Pockets |
+| Killed one of theirs, then did a Red Hand job the same season day | Sorry |
+
+Bailiff (a pack's leader laid down) waits for the tribes, and Smoke (a signal smoke thrown) for a
+throw hook; the majors' and Name Day's names are planned
+([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)). Log line:
+`Reputation: crew name <name> for <player>`.
+
+**What they make of you.** With Trees on, a leader's **What do you make of me?** is one template
+per faction in four variants (both deeds, best only, worst only, neither), then what the leader
+remembers of this life, then the rule in brackets:
+
+| Faction | Both deeds | Neither |
+|---|---|---|
+| Haven | "People have started calling you {rep}. You {best}. You also {worst}. I'd rather they didn't have to." | "People call you {rep}. Nobody can say why yet." |
+| Bastion | "Your file says {rep}. Commendation: {best}. Incident: {worst}. Both signed for." | "Your file says {rep}. The rest of the page is blank." |
+| Red Hand | "Crews call you {word}. The book says {rep}. Owed: {best}. Owing: {worst}. The book's never wrong, only late." | "The book says {rep}. Short entry." |
+| Halcyon | "We have you as {rep}. It's a category, not a judgement. Contribution: {best}. Incident: {worst}. Both are in the record." | "We have you as {rep}. Insufficient data." |
+
+"(The Haven: Useful Trouble - counts as Known. Fame 46, Infamy 22. 30 of 30 left to forgive.)"
+
+**The opening.** With Trees on, a leader greets someone they've met with one line, the first that
+exists: a **local deed** at this seat ("You're the one who brought medicine to Levie.", written when
+you finish that leader's personal job); this life's memory (saved: "Here's the one I owe. Sit
+down."; crossed: "You. I remember."); the **name from an earlier life**, once per leader per life
+("There was a Lukas who crossed me once. Different face. Same name. Should I be worried?"); the
+greeting for your manner in the leader's voice, from the voice bank
+([WRITING.md](WRITING.md#the-voice-bank)); the built greeting.
+
+**The whole picture** (`RZ_RepVoice.Picture`): the two factions that know your name best, in a
+wanderer's voice: "Word is you're the Haven's Champion and Bastion's Bad News. I'll believe the
+better half." Unknown everywhere: "Nobody's heard of you. Enjoy it."; notoriety 2 or more with all
+four: "Everybody's got an opinion about you. None of them agree." With Trees on, a wanderer says it
+one time in four, after the road news. Its kinds (`picture:` in conditions), first match wins:
+WANTED (Hunted by two or more), TORN (Hunted by one, Known or better with another), OUTLAW, MIXED (any
+mixed cell), SIDED, FRIEND_OF_ALL, ONE_SIDE, WATCHED, UNKNOWN.
+
+**Tokens** for any line (`RZ_RepVoice.FillFor`): `{rep}`, `{word}`, `{best}`, `{worst}`, `{kills}`,
+`{jobs}`, `{picture}`, `{name}`, `{crew}`.
+
+### Face and name
+
+✅ **Leader and wanderer memory is life-stamped** (**Reputation > Life-stamped memory**, on). Each
+entry keeps the life it was written in. Memory from this life counts as built; memory from an
+earlier life counts at half, rounded toward zero (crossed −3 becomes −1, saved +2 becomes +1, helped
++1 becomes 0), and met doesn't carry, so a new character isn't refused by people who never met them.
+Old saves load their entries as an earlier life. Questline participation stays by identity.
+
+**Regard.** With Trees on, how you talk to a leader or wanderer adds regard ÷ 2 to their attitude,
+at most ±2 and fading a step a real day ([DIALOGUE.md](DIALOGUE.md#memory)). Prices still read
+only the built memory.
+
+The parley, the knock, settling up, the company you keep and the season record are planned:
+[REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md).
 
 
 ### Favor (currency)
@@ -417,7 +506,7 @@ line. You can also turn a rogue leader in: most rogue deliveries have a drop at 
 ### Talking to leaders
 
 Talk to a leader (their body, or "Talk to whoever's in charge" on the quartermaster) and the
-talk screen opens ([DESIGN.md](DESIGN.md#talking-to-people)): **Ask for work** (their personal
+talk screen opens ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)): **Ask for work** (their personal
 job, else the stronghold's contracts), **Heard anything?** (other leaders' loyalties, hungry
 safehouses, noise, rumours) and **What do you make of me?**. Without the talk screen these are
 actions on the leader. Radio

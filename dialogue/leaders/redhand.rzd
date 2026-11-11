@@ -1,0 +1,62 @@
+# The Red Hand's leaders: the boss at the stronghold and the crew bosses.
+# Voice: mocking, casual, always counting. Rudi's end is never a joke; the official lie is said flatly.
+
+conv redhand.leader.book
+for stronghold:redhand, seat:redhand/crew_boss
+topic "Ask about the book."
+prio world
+voice redhand
+
+node start
+  say "The book. Who owes, who's owed, and whose it was before they paid with it."
+  say "It has to balance. That's not the same as anyone being paid up. Nobody's ever out of the book. A man who owes nothing walks away."
+  > @first "What's the first line?" -> first
+  > @mine "What does it say about me?" -> mine
+  > @other "Something else." -> hub
+
+node first
+  say "Ten litres of diesel, on tick. Next to it, one word: paid."
+  say? stronghold :: "My handwriting. Still neat. I was trying back then."
+  say "Before my time. Ask the boss. Don't, actually."
+  > @rudi "Who was Rudi?" -> rudi
+  > @back1 "Something else." -> hub
+
+node rudi
+  say? stronghold :: "He let people pay later. You can't run a road like that."
+  say "Rudi was bitten."
+  > @back2 "Something else." -> hub
+
+node mine
+  say "Show you your own page? That's not how the book works."
+  > @look "Show me anyway." -> shown | teased | shut   check persuade redhand 2 harder:paranoid bg:excon,raider
+  > @leave1 "Keep it, then." -> hub
+
+node shown
+  say "Fine. You've got a page. It's not blank. Here's what it says."
+  do call:standing
+  > @back3 "Something else." -> hub
+
+node teased
+  say "Two lines. One of them's a number. Come back when you're worth a third."
+  > @back4 "Something else." -> hub
+
+node shut
+  say "The book's for reading out loud, at the right moment. This isn't it."
+  > @back5 "Something else." -> hub
+
+conv redhand.leader.toll
+for stronghold:redhand, seat:redhand/crew_boss
+topic "Ask why the hand is red."
+prio flavour
+voice redhand
+
+node start
+  say "Red hand means stop. Stop means pay. Pay means we're friends. See? Easy."
+  say "Bastion paints signs. We paint one sign. Everyone reads ours."
+  > @paint "Who painted the first one?" -> paint
+  > @other2 "Something else." -> hub
+
+node paint
+  say "The boss. On a garage shutter, Day seven. Over some marks that were already there."
+  say "Nobody asks about the marks. People who ask get a page."
+  > @back6 "Something else." -> hub

@@ -43,6 +43,12 @@ class RZ_DialogueSettings
 	[Attribute("32", desc: "Talk screens and readers open at once on the server, at most")]
 	int m_iMaxOpen;
 
+	[Attribute("0", desc: "Conversation trees on the talk screen: topics, checks shown before you choose, memory (docs/DIALOGUE.md). Off (the default) = the talk screen as built. Needs the talk screen")]
+	bool m_bTrees;
+
+	[Attribute("20", desc: "Trees: the most Favor talk pays a player with one faction in a real day (all conversations together)")]
+	int m_iTalkFavorPerDay;
+
 	protected static ref RZ_DialogueSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -69,6 +75,7 @@ class RZ_TalkReply
 	string m_sTag;		// a dim tag on the right ("a job", "trade", "20 Haven Favor")
 	string m_sNeed;		// what it needs, shown when it can't be picked
 	bool m_bEnabled = true;
+	bool m_bOwn;		// a tree's topic or choice: tagged by the trees, not by RZ_TalkNeeds
 }
 
 //------------------------------------------------------------------------------------------------
@@ -88,6 +95,7 @@ class RZ_TalkSession
 	ref array<ref RZ_TalkReply> m_aReplies = {};
 	bool m_bCapturing;
 	float m_fLastPick = -100;
+	ref RZ_DTalk m_Tree;				// Dialogue > Trees: the topics and the node (null when off)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -103,11 +111,26 @@ class RZ_Dialogue
 	protected ref map<int, ref RZ_TalkSession> m_mSessions = new map<int, ref RZ_TalkSession>();
 	protected ref map<int, float> m_mLastTalk = new map<int, float>();
 	protected int m_iSerial;
+	protected ref RZ_DialogueTrees m_Trees;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Dialogue(RZ_GameModeComponent gm)
 	{
 		m_GM = gm;
+		m_Trees = new RZ_DialogueTrees(gm);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Conversation trees (Dialogue > Trees): the database and memory, used only while it's on.
+	RZ_DialogueTrees GetTrees() { return m_Trees; }
+
+	//------------------------------------------------------------------------------------------------
+	//! The open conversation of a player, or null.
+	RZ_TalkSession GetSession(int playerId)
+	{
+		RZ_TalkSession s;
+		m_mSessions.Find(playerId, s);
+		return s;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -174,6 +197,7 @@ class RZ_Dialogue
 			return false;
 
 		m_mSessions.Insert(playerId, s);
+		s.m_Tree = m_Trees.Begin(s, user);
 		s.m_bCapturing = true;
 		adapter.Greet(m_GM, s, playerId, user);
 		s.m_bCapturing = false;
@@ -181,6 +205,17 @@ class RZ_Dialogue
 		// The handler may have ended it, or said nothing at all: no screen then
 		if (!m_mSessions.Contains(playerId))
 			return true;
+
+		// Trees: a greet whose `when` holds goes before the built greeting
+		if (s.m_Tree)
+		{
+			array<string> opening = {};
+			m_Trees.Opening(s, opening);
+			for (int i = opening.Count() - 1; i >= 0; i--)
+			{
+				s.m_aNew.InsertAt(opening[i], 0);
+			}
+		}
 
 		if (s.m_aNew.IsEmpty())
 		{
@@ -267,7 +302,24 @@ class RZ_Dialogue
 		guard.Touch(playerId);
 		s.m_aNew.Clear();
 		s.m_bCapturing = true;
-		s.m_Adapter.Pick(m_GM, s, playerId, replyId, user);
+		if (s.m_Tree && RZ_DialogueTrees.IsOurs(replyId))
+		{
+			bool goOn = m_Trees.Pick(s, replyId, user);
+			s.m_bCapturing = false;
+			if (!m_mSessions.Contains(playerId))
+				return;
+
+			if (!goOn)
+			{
+				End(playerId, "", true);
+				return;
+			}
+		}
+		else
+		{
+			s.m_Adapter.Pick(m_GM, s, playerId, replyId, user);
+		}
+
 		s.m_bCapturing = false;
 		if (!m_mSessions.Contains(playerId))
 			return;
@@ -332,7 +384,17 @@ class RZ_Dialogue
 		}
 
 		s.m_aReplies.Clear();
-		s.m_Adapter.Replies(m_GM, s, s.m_iPlayer, user, s.m_aReplies);
+		if (s.m_Tree && s.m_Tree.m_bInNode)
+		{
+			m_Trees.NodeReplies(s, s.m_aReplies);
+		}
+		else
+		{
+			s.m_Adapter.Replies(m_GM, s, s.m_iPlayer, user, s.m_aReplies);
+			if (s.m_Tree)
+				m_Trees.HubReplies(s, s.m_aReplies);
+		}
+
 		while (s.m_aReplies.Count() > 6)
 		{
 			s.m_aReplies.Remove(s.m_aReplies.Count() - 1);
@@ -340,7 +402,8 @@ class RZ_Dialogue
 
 		foreach (RZ_TalkReply r : s.m_aReplies)
 		{
-			RZ_TalkNeeds.Apply(m_GM, s.m_iPlayer, user, r);
+			if (!r.m_bOwn)
+				RZ_TalkNeeds.Apply(m_GM, s.m_iPlayer, user, r);
 		}
 
 		RZ_TalkReply leave = new RZ_TalkReply();

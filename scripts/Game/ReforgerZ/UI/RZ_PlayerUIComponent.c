@@ -65,7 +65,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
-	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100};	// per CMD_*
+	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100, -100};	// per CMD_*
 
 	//! Commands from the client (RZ_ChatCommands, the board menu)
 	static const int CMD_NOTE = 0;
@@ -73,6 +73,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_CLEAR_ALL = 2;
 	static const int CMD_REP = 3;		// "/rep <name>": an admin's reputation read-out (Factions/RZ_RepNames.c)
 	static const int CMD_TRIBES = 4;	// /tribes (admins): the infected, to the server log
+	static const int CMD_TALKDEBUG = 5;	// /talkdebug (admins): the conversation trees for the person you're talking to
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -513,6 +514,13 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				if (gm.GetRepWatch())
 					gm.GetRepWatch().Readout(playerId, note);
+				break;
+			}
+			case CMD_TALKDEBUG:
+			{
+				RZ_Dialogue dialogue = gm.GetDialogue();
+				if (dialogue)
+					dialogue.GetTrees().Debug(playerId, dialogue.GetSession(playerId));
 				break;
 			}
 			case CMD_TRIBES:

@@ -93,45 +93,20 @@ class RZ_FactionVoice
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One or two lines from a named guard or occupant. phase: RZ_Territory.PHASE_*.
-	static string PersonLine(RZ_Rng rng, RZ_EFaction f, string role, int phase, string place)
+	//! One or two lines from a named guard or occupant, from the voice bank (Factions/RZ_VoiceDefaults.c,
+	//! kinds person and aside_*). phase: RZ_Territory.PHASE_*. playerId and pos (optional) let the bank
+	//! read grief near them and the player's joke memory.
+	static string PersonLine(RZ_Rng rng, RZ_EFaction f, string role, int phase, string place, int playerId = 0, vector pos = "0 0 0")
 	{
-		array<string> lines = {};
-		switch (f)
-		{
-			case RZ_EFaction.SURVIVORS:
-				lines.Insert("\"Wipe your feet. Not that it matters any more. Habit.\""); lines.Insert("\"We grow what we can. Potatoes, mostly. Everyone in " + place + " is sick of potatoes.\""); lines.Insert("\"If you see my brother on the roads, he's tall, he limps. Tell him we're still here.\"");
-				break;
-			case RZ_EFaction.MILITARY:
-				lines.Insert("\"Move along, civilian. Nothing to see. That's an order, apparently.\""); lines.Insert("\"Every day, 'relief is on its way'. I've stopped counting. The sergeant hasn't.\""); lines.Insert("\"Keep your weapon slung near the post. Some of the lads are jumpy.\"");
-				break;
-			case RZ_EFaction.BANDITS:
-				lines.Insert("\"Nice boots. Joking. Mostly.\""); lines.Insert("\"Toll's fair. Tins, fuel, or a story we haven't heard. We've heard most of them.\""); lines.Insert("\"Bastion calls us bandits. We call it free enterprise. With knives.\"");
-				break;
-			case RZ_EFaction.INSTITUTE:
-			{
-				lines.Insert("\"Don't touch anything labelled. Don't touch anything unlabelled either.\"");
-				// What they say about the work follows the work (RZ_WorldFacts)
-				RZ_WorldFacts facts = RZ_WorldFacts.Get();
-				if (facts.IsCured())
-				{
-					lines.Insert("\"It's done. I keep checking the numbers anyway. Nobody has asked me to stop.\"");
-				}
-				else
-				{
-					lines.Insert("\"Bring us a sample from one of the big ones and you'll be more useful than half the people here.\"");
-					if (facts.CurePercent() >= 50)
-						lines.Insert("\"We're close. We've been close for a while.\"");
-					else
-						lines.Insert("\"We're nowhere near. Don't repeat that.\"");
-				}
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		string line = "";
+		if (gm)
+			line = RZ_VoiceBank.PickFor(gm, "person", f, "", null, playerId, pos, place);
 
-				break;
-			}
-		}
+		if (line.IsEmpty())
+			line = "\"Can't stop. Ask someone else.\"";
 
-		string line = rng.Pick(lines);
-		string routine = PhaseAside(f, phase);
+		string routine = PhaseAside(f, phase, playerId, pos);
 		if (!routine.IsEmpty())
 			line += " " + routine;
 
@@ -140,34 +115,24 @@ class RZ_FactionVoice
 
 	//------------------------------------------------------------------------------------------------
 	//! What a person says on top, at shift change, the evening meal or night watch.
-	protected static string PhaseAside(RZ_EFaction f, int phase)
+	protected static string PhaseAside(RZ_EFaction f, int phase, int playerId, vector pos)
 	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm)
+			return "";
+
+		string kind = "";
 		if (phase == RZ_Territory.PHASE_MEAL)
-		{
-			switch (f)
-			{
-				case RZ_EFaction.SURVIVORS: return "\"Sit, eat. There's always a bowl for whoever's at the door.\"";
-				case RZ_EFaction.MILITARY: return "\"Mess is open. Rations, same as yesterday. Help yourself, we're not checking.\"";
-				case RZ_EFaction.BANDITS: return "\"Dinner's on. Tins. Someone's written prices on them, so don't eat the expensive ones.\"";
-				case RZ_EFaction.INSTITUTE: return "\"We eat in shifts. Somebody always has to watch the incubators.\"";
-			}
-		}
+			kind = "aside_meal";
+		else if (phase == RZ_Territory.PHASE_NIGHT)
+			kind = "aside_night";
+		else if (phase == RZ_Territory.PHASE_MORNING || phase == RZ_Territory.PHASE_EVENING)
+			kind = "aside_shift";
 
-		if (phase == RZ_Territory.PHASE_NIGHT)
-		{
-			switch (f)
-			{
-				case RZ_EFaction.SURVIVORS: return "\"Keep your voice down. People are sleeping.\"";
-				case RZ_EFaction.MILITARY: return "\"Night watch. Talk quietly and keep your hands where I can see them.\"";
-				case RZ_EFaction.BANDITS: return "\"Night's when the money moves. Don't stand in the road.\"";
-				case RZ_EFaction.INSTITUTE: return "\"The night readings are the clean ones. Please don't bang the door.\"";
-			}
-		}
+		if (kind.IsEmpty())
+			return "";
 
-		if (phase == RZ_Territory.PHASE_MORNING || phase == RZ_Territory.PHASE_EVENING)
-			return "\"Shift change. Give me a minute. I can still help you.\"";
-
-		return "";
+		return RZ_VoiceBank.PickFor(gm, kind, f, "", null, playerId, pos);
 	}
 
 	//------------------------------------------------------------------------------------------------

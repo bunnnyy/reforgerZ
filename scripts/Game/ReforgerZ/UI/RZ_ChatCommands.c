@@ -1,6 +1,7 @@
 //! Chat commands (client): "/note your text" pins a note on the safehouse notice board you're at,
 //! "/noteclear" and "/noteclear all" clear boards (server admins), "/tribes" writes the infected to
-//! the server log (admins), "/rep <name>" reads a player's reputation (server admins;
+//! the server log (admins), "/talkdebug" reads the conversation trees of the person you're talking
+//! to (admins), "/rep <name>" reads a player's reputation (server admins;
 //! docs/REPUTATION.md, "Reputations"). The hall of fame is the notebook's Hall of fame tab.
 //! Each is sent to the server through RZ_PlayerUIComponent.SendCommand; the server checks
 //! everything again. Registered once, from the first notice the client receives
@@ -24,6 +25,7 @@ class RZ_ChatCommands
 		chat.GetCommandInvoker("noteclear").Insert(s_Instance.OnNoteClear);
 		chat.GetCommandInvoker("tribes").Insert(s_Instance.OnTribes);
 		chat.GetCommandInvoker("rep").Insert(s_Instance.OnRep);
+		chat.GetCommandInvoker("talkdebug").Insert(s_Instance.OnTalkDebug);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -44,6 +46,13 @@ class RZ_ChatCommands
 	protected void OnRep(SCR_ChatPanel panel, string data)
 	{
 		Send(RZ_PlayerUIComponent.CMD_REP, data);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "/talkdebug" (admins): conversation trees, read for the person you're talking to (docs/DIALOGUE.md).
+	protected void OnTalkDebug(SCR_ChatPanel panel, string data)
+	{
+		Send(RZ_PlayerUIComponent.CMD_TALKDEBUG, data);
 	}
 
 	//------------------------------------------------------------------------------------------------

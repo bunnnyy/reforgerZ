@@ -1927,6 +1927,36 @@ class RZ_LongTable
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A living member's role, whether they're out on the road, and their name (the talk screen's
+	//! trees). False if nobody is at that index.
+	bool MemberInfo(int idx, out int role, out bool onRoad, out string name)
+	{
+		RZ_TableMember m = MemberAt(idx);
+		if (!m)
+			return false;
+
+		role = m.m_eRole;
+		onRoad = m.m_bOnRoad;
+		name = m.m_sName;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! host, mother, son, boy, other: the word a conversation's speaker selector uses.
+	static string RoleWord(int role)
+	{
+		switch (role)
+		{
+			case RZ_ETableRole.MOTHER: return "mother";
+			case RZ_ETableRole.HOST: return "host";
+			case RZ_ETableRole.SON: return "son";
+			case RZ_ETableRole.BOY: return "boy";
+		}
+
+		return "other";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected RZ_TableMember MemberAt(int idx)
 	{
 		if (idx < 0 || idx >= m_aMembers.Count())

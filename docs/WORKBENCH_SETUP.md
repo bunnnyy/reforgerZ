@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **182 prefab fields**: 40 on `RZ_GameModeComponent`, 135 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **187 entries**: 146 prefabs the plugin creates, 24 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 17 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 39 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **182 prefab fields**: 40 on `RZ_GameModeComponent`, 135 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **187 entries**: 146 prefabs the plugin creates, 24 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 17 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 40 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -1045,7 +1045,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 38 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 39 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
@@ -1098,9 +1098,10 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
 | Factions | Services | `m_ServiceSettings` | **Fire Mission** (on, 60 min cooldown, 6 infected, 50 m, 30 s, kills at most 25, not within 250 m of people), **Fence** (on, keywords, 3 Favor an item, 8 a sale, 30 an hour), **Bounty board** (on, 60 to post, 40 paid, 3 at once, 2 h), booster (80) and medic (20) prices, **Amends** (15 Favor, ×1.5 each time, 5 Infamy, 15 a life, never below 15, every 30 min), armband and ribbon prefabs |
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
-| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart) ([REPUTATION.md](REPUTATION.md#reputations)) |
+| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations)) |
+| Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
-| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120) ([UI.md](UI.md#how-the-scripts-fit)) |
+| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
@@ -1171,7 +1172,18 @@ python3 tools/voice_lint.py --all              # every finding, the baseline's t
 python3 tools/voice_lint.py --self-test        # plants one bad line per check; each must be caught
 python3 tools/strings_inventory.py --summary   # how much text there is, by channel and faction
 python3 tools/strings_inventory.py --channel radio
+python3 tools/dialogue_pack.py                 # the dialogue lint; writes the packs from dialogue/**/*.rzd
+python3 tools/dialogue_pack.py --check         # lint, and fail if the packs or dialogue/shipped.lock are stale
+python3 tools/dialogue_pack.py --lock          # add newly shipped conversation and choice ids to the lock
+python3 tools/dialogue_sim.py haven.leader.list --bg nurse --tier haven=trusted   # one conversation as one character sees it
+python3 tools/voice_sim.py                     # the voice bank: pool sizes and joke shares by mood
 ```
+
+**Conversations** are written in `dialogue/**/*.rzd` and packed into
+`scripts/Game/ReforgerZ/Dialogue/Pack/` (generated and committed; never edit them). After changing a
+`.rzd` file, run `python3 tools/dialogue_pack.py` and commit the packs with it; `tools/compile_check.sh`
+runs `--check` first and fails on a lint error or a stale pack. The format, the lint and the
+simulator are in [DIALOGUE.md](DIALOGUE.md#the-text-format-rzd).
 
 `tools/voice_lint_baseline.txt` holds today's findings (the check, the file and a hash of the line),
 so the lint fails only on new or changed text. Fixing a line leaves a stale entry, which the lint
@@ -1283,7 +1295,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **59** lines with the tag, all in the game scripts (one is the comment in
+There are **60** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 11 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1304,11 +1316,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:172` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (30)
+### Medium risk: big features, with a fallback (31)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
+| `Factions/RZ_Checkpoints.c:508` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
 | `Core/RZ_Util.c:734` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:879` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:971` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
@@ -1326,7 +1339,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1015` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1101` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
-| `Cure/RZ_Infection.c:1174` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
+| `Cure/RZ_Infection.c:1178` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
@@ -1375,8 +1388,8 @@ people, **UI > Reader** and **Subtitles** off for cards. How the UI is put toget
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_UIData.c:923` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `Dialogue/RZ_Dialogue.c:377` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
-| `UI/RZ_PlayerUIComponent.c:160` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `Dialogue/RZ_Dialogue.c:440` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `UI/RZ_PlayerUIComponent.c:161` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
 
 ## 7. Log lines to check
@@ -1547,6 +1560,14 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 `World memory: town ...`; on a restart, `World memory: N reasons, N signals, N town logs, N world
 records.` and `Shared: N callbacks waiting, N season records.`
 
+Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
+`Dialogue: loaded 30 conversations, 97 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+memory from season N dropped (season M)` after a wipe) and `Dialogue: trees off` (on with **Dialogue >
+Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
+season mood <mood> (was <mood>)`, `Dialogue: budget reached <player> <faction>` (talk Favor for the
+day), `Reputation: crew name <name> for <player>`, `Dialogue debug: ...` (an admin's `/talkdebug`), and
+with **Voice > Log** on, `voice: face <faction> <register> <id> mood=<mood> listener=<identity>`.
+
 ## 8. Play-test checklist
 
 What to test first and why is in [ROADMAP.md](ROADMAP.md), "Play-test priorities". On a
@@ -1687,6 +1708,36 @@ session, tick off:
   closes ("Not now!"). Do the same with a leader's "Talk to whoever's in charge" (Ask for work
   gives the job as a card, the leader's line in the screen) and a safehouse occupant.
 - [ ] With **UI > Talk reply layout** empty, Talk and the slots are actions with notices again.
+- [ ] **Dialogue > Trees** off (the default): the talk screen is exactly as above, no topics, no
+  speaker at road posts, leaders greet as before.
+- [ ] **Trees** on ([DIALOGUE.md](DIALOGUE.md)): a council head's list shows the built replies, then
+  "Ask about the bear on the door." and the other topics; "Something else." pages when they don't
+  fit. In "Ask about the names on the list.", the persuade choice shows "[Persuade - Haven - N of 2]"
+  before you pick, and the reply opens with [Persuaded], [Short] or [Not persuaded]; a failed one is
+  dim ("you've tried that") next time. `/talkdebug` (admin) lists that speaker's conversations and
+  why each shows or not. As a Nurse, the line only Nurses see shows "[Nurse]"; as an Unemployed it
+  doesn't show at all.
+- [ ] Trees on, at a short safehouse: "Put two tins in the stores." shows "[2 food]", dim with "you
+  have 1 food" when you carry fewer; picking it hands in as built (2 Favor an item). Talk Favor stops
+  at 20 a faction a day ("That's all I've got today.").
+- [ ] Trees on, at a Red Hand roadblock: one of the crew stands at the barrier while you're within
+  100 m and goes when you leave. "Ask about the toll." pays the built toll; the threat shows "[Fear N
+  of 2 - +3 Infamy]", always costs the Infamy, and the pole goes up on a pass; nobody can threaten
+  that toll man again this season. At a Bastion checkpoint, a Soldier's "I know the drill." can wave
+  you through without the search. The Long Table's host on the road and the mother at the farm talk,
+  and nothing they say describes anything.
+- [ ] Trees on, a leader you've met greets you by your standing in their voice; finish their
+  personal job and the next greeting is "You're the one who ..."; "What do you make of me?" gives
+  the faction's template with your best and worst deeds and the rule in brackets. A Red Hand crew
+  name comes with its notice (pay a toll with exactly the Favor you have, while Known).
+- [ ] Die and come back: a leader who remembered you crossing them now counts it at half (the
+  attitude words in the talk screen's sub-line), says "There was a ... who crossed me once" once, and
+  topics marked once show again. `dialogue.json` is in `$profile:ReforgerZ` after the 2-minute save;
+  regard and passed persuades are still there after a restart.
+- [ ] The season mood: with **Voice > Force mood** on Bleak, the broadcast says "The perimeter will
+  be maintained." (or the Aftermath line), named people's jokes become rare, and the log has
+  `Voice: season mood bleak`. Kill a wanderer and talk to people within 1.5 km: no jokes for 10
+  minutes.
 - [ ] Read a puzzle note, a guidance note at spawn and a letter from a search: each opens on the
   paper; a long one has pages (LB/RB, Q/E or the arrows); B or Esc closes it. Have an infected
   walk up while it's open: it closes by itself. A subtitle that comes while reading waits.

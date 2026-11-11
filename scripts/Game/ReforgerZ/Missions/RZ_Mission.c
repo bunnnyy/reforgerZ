@@ -64,6 +64,7 @@ class RZ_Mission
 	//! The story (arc or questline) that started it: subjects that story claimed count as free
 	//! for this mission (RZ_WorldFacts claims). "" = none.
 	string m_sClaimParent;
+	string m_sDeed;			// what people say you did: a short past-tense phrase with {town} ("brought medicine to {town}")
 	//! Called off by the world, not failed by anyone (Withdraw): no pay, no blame, no penalty.
 	bool m_bWithdrawn;
 	string m_sWithdrawText;
@@ -633,6 +634,27 @@ class RZ_Mission
 			if (!m_aOfferedTo.Contains(playerId2))
 				gm.NotifyPlayerAs(playerId2, title, text, RZ_ENoticeTag.MISSION);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The deed phrase for the giver's best deed (docs/REPUTATION.md, "Deeds and tallies"): the
+	//! contract's own, else "did a job for us near {town}"; {town} is the nearest named settlement.
+	string DeedPhrase(RZ_GameModeComponent gm)
+	{
+		string phrase = m_sDeed;
+		if (phrase.IsEmpty())
+			phrase = "did a job for us near {town}";
+
+		string town = "the roads";
+		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
+		if (!s)
+			s = gm.GetSettlement(gm.FindNearestSettlement(m_vPos));
+
+		if (s)
+			town = s.m_sName;
+
+		phrase.Replace("{town}", town);
+		return phrase;
 	}
 
 	//------------------------------------------------------------------------------------------------

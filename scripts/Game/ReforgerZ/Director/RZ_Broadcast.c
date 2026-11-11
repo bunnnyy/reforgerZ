@@ -11,8 +11,8 @@ class RZ_Broadcast
 	protected float m_fStallSeconds;			// real seconds since cure research last moved
 	protected float m_fSinceBreakthrough = -1;	// seconds online since players heard the last breakthrough, -1 = none this session
 
-	protected static const float STALL_SECONDS = 2700;			// 45 min without research: "stalled"
-	protected static const float LONG_STALL_SECONDS = 10800;	// 3 h without research: "indefinitely"
+	static const float STALL_SECONDS = 2700;			// 45 min without research: "stalled"
+	static const float LONG_STALL_SECONDS = 10800;		// 3 h without research: "indefinitely"
 	protected static const float BREAKTHROUGH_SECONDS = 5400;	// breakthrough news lasts 90 min
 	protected static const int FIRST_DAY = 11;					// the Zone was sealed eleven days before the season starts
 	protected static const float PLAYED_MINUTES_PER_DAY = 480;	// fallback without a real clock: 8 hours played a day
@@ -31,6 +31,20 @@ class RZ_Broadcast
 	void OnBreakthrough()
 	{
 		m_fSinceBreakthrough = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The breakthrough window is open (the season mood's Hope).
+	bool InBreakthroughWindow()
+	{
+		return m_fSinceBreakthrough >= 0 && m_fSinceBreakthrough < BREAKTHROUGH_SECONDS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real seconds since research last moved.
+	float StallSeconds()
+	{
+		return m_fStallSeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -95,11 +109,36 @@ class RZ_Broadcast
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The table in docs/WRITING.md, "The government broadcast". The first match wins.
+	//! The table in docs/WRITING.md, "The government broadcast": the season mood's ladder (the same
+	//! one every voice reads), with the gate after Hope. The first match wins.
 	protected string GetToneLine()
 	{
-		if (m_fSinceBreakthrough >= 0 && m_fSinceBreakthrough < BREAKTHROUGH_SECONDS)
+		if (InBreakthroughWindow())
 			return "Reports of research inside the zone are being evaluated.";
+
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		if (facts && facts.AtFinaleGate())
+			return "The status of this area is under review. Remain where you are.";
+
+		if (facts && facts.SeasonMoodOn())
+		{
+			RZ_EMood mood = facts.SeasonMood();
+			if (mood == RZ_EMood.BLEAK)
+			{
+				if (m_fStallSeconds >= LONG_STALL_SECONDS)
+					return "The perimeter will be maintained indefinitely.";
+
+				if (m_GM.GetDirector().GetStage() >= RZ_EOutbreakStage.AFTERMATH)
+					return "Residents are thanked for remaining indoors. Residents are thanked for remaining.";
+
+				return "The perimeter will be maintained.";
+			}
+
+			if (mood == RZ_EMood.GRIM)
+				return "Residents are reminded that the perimeter is for your protection.";
+
+			return "Remain indoors. Aid is on its way.";
+		}
 
 		if (m_fStallSeconds >= LONG_STALL_SECONDS)
 			return "The perimeter will be maintained indefinitely.";

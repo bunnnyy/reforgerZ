@@ -123,6 +123,8 @@ class RZ_WandererSave
 	float bittenLeft = -1;
 	ref array<string> memIdent = {};
 	ref array<int> memFlags = {};
+	ref array<int> memLife = {};		// the life each entry's flags are from
+	ref array<int> memOld = {};			// what's remembered of earlier lives
 }
 
 //------------------------------------------------------------------------------------------------
@@ -155,6 +157,8 @@ class RZ_Wanderer
 	float m_fBittenLeft = -1;
 	ref array<string> m_aMemIdent = {};
 	ref array<int> m_aMemFlags = {};
+	ref array<int> m_aMemLife = {};
+	ref array<int> m_aMemOld = {};
 
 	// Runtime only
 	IEntity m_Body;
@@ -203,13 +207,71 @@ class RZ_Wanderer
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The life a player identity is on now (-1 unknown), for life-stamped memory.
+	protected static int LifeOf(string ident)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm)
+			return -1;
+
+		RZ_PlayerProfile p = gm.FindProfileByIdentity(ident);
+		if (!p)
+			return -1;
+
+		return p.m_iLives;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool LifeMemoryOn()
+	{
+		return RZ_ReputationSettings.Get().m_bLifeMemory;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What they remember of this player's current life (docs/REPUTATION.md, "Face and name").
+	//! With Reputation > Life-stamped memory off: everything, as before.
 	int GetMemory(string ident)
 	{
 		int idx = m_aMemIdent.Find(ident);
 		if (idx < 0 || idx >= m_aMemFlags.Count())
 			return 0;
 
+		if (!LifeMemoryOn())
+			return m_aMemFlags[idx] | m_aMemOld[idx];
+
+		if (m_aMemLife[idx] != LifeOf(ident))
+			return 0;
+
 		return m_aMemFlags[idx];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What they remember of this player's earlier lives (counted at half, voiced once as the name).
+	int OldMemory(string ident)
+	{
+		int idx = m_aMemIdent.Find(ident);
+		if (idx < 0 || idx >= m_aMemFlags.Count() || !LifeMemoryOn())
+			return 0;
+
+		int old = m_aMemOld[idx];
+		if (m_aMemLife[idx] != LifeOf(ident))
+			old = old | m_aMemFlags[idx];
+
+		return old & ~0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The life the current memory was written in (-1 none, or an old save's).
+	int MemoryLife(string ident)
+	{
+		int idx = m_aMemIdent.Find(ident);
+		if (!LifeMemoryOn())
+			return LifeOf(ident);
+
+		if (idx < 0 || idx >= m_aMemLife.Count())
+			return -1;
+
+		return m_aMemLife[idx];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -224,12 +286,23 @@ class RZ_Wanderer
 		if (ident.IsEmpty())
 			return; // a player id that's gone (RZ_GameModeComponent.GetProfile): nobody to remember
 
+		int life = LifeOf(ident);
 		int idx = m_aMemIdent.Find(ident);
 		if (idx < 0)
 		{
 			m_aMemIdent.Insert(ident);
 			m_aMemFlags.Insert(flag);
+			m_aMemLife.Insert(life);
+			m_aMemOld.Insert(0);
 			return;
+		}
+
+		// A new life: what was remembered becomes the earlier life's
+		if (m_aMemLife[idx] != life)
+		{
+			m_aMemOld[idx] = m_aMemOld[idx] | m_aMemFlags[idx];
+			m_aMemFlags[idx] = 0;
+			m_aMemLife[idx] = life;
 		}
 
 		m_aMemFlags[idx] = m_aMemFlags[idx] | flag;
@@ -260,6 +333,8 @@ class RZ_Wanderer
 		{
 			s.memIdent.Insert(ident);
 			s.memFlags.Insert(m_aMemFlags[i]);
+			s.memLife.Insert(m_aMemLife[i]);
+			s.memOld.Insert(m_aMemOld[i]);
 		}
 
 		return s;
@@ -290,6 +365,16 @@ class RZ_Wanderer
 			{
 				w.m_aMemIdent.Insert(s.memIdent[i]);
 				w.m_aMemFlags.Insert(s.memFlags[i]);
+				// An old save's memory loads as an earlier life
+				int life = -1;
+				int old = 0;
+				if (s.memLife && i < s.memLife.Count())
+					life = s.memLife[i];
+				if (s.memOld && i < s.memOld.Count())
+					old = s.memOld[i];
+
+				w.m_aMemLife.Insert(life);
+				w.m_aMemOld.Insert(old);
 			}
 		}
 
@@ -593,6 +678,20 @@ class RZ_Wanderers
 	}
 
 	// ================================================================ Lookups and hooks
+	//------------------------------------------------------------------------------------------------
+	//! The wanderer with this id, or null (Dialogue/RZ_TalkSpeakers.c).
+	RZ_Wanderer FindById(int id)
+	{
+		return Find(id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What this wanderer thinks of a player (the talk screen's trees).
+	int AttitudeOf(RZ_Wanderer w, int playerId)
+	{
+		return Attitude(w, playerId);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	protected RZ_Wanderer Find(int id)
 	{
@@ -1879,6 +1978,9 @@ class RZ_Wanderers
 	//! Death is permanent and makes the news. A replacement comes a real day later.
 	protected void Die(RZ_Wanderer w, string how, int killer)
 	{
+		// Grief: no jokes near where it happened for a while
+		RZ_ToneGuard.Death(w.m_vPos, -1);
+
 		string text = string.Format("%1 %2 %3.", w.GetTitle(), how, WhereText(w));
 
 		// The infected's dead are "the dead" to the Long Table for an hour (A Place at the Table)
@@ -2066,6 +2168,21 @@ class RZ_Wanderers
 		if ((mem & MEM_SAVED) != 0)
 			score += 2;
 
+		// Earlier lives at half, rounded toward zero (docs/REPUTATION.md, "Face and name")
+		int old = w.OldMemory(profile.m_sIdentity);
+		int oldScore = 0;
+		if ((old & MEM_WRONGED) != 0)
+			oldScore -= 3;
+		if ((old & MEM_HELPED) != 0)
+			oldScore += 1;
+		if ((old & MEM_SAVED) != 0)
+			oldScore += 2;
+
+		score += oldScore / 2;
+
+		// How you talk to them (Dialogue > Trees): regard / 2
+		score += RZ_DialogueMemory.AttitudeFrom(playerId, string.Format("wanderer:%1:%2", w.m_iId, w.m_iGeneration));
+
 		return score;
 	}
 
@@ -2238,6 +2355,10 @@ class RZ_Wanderers
 			if (!tableLine.IsEmpty())
 				text += "\n" + tableLine;
 		}
+
+		// Dialogue > Trees: one time in four, after the road news, what the roads say about you
+		if (RZ_RepVoice.TreesOn() && w.m_eRole != RZ_EWandererRole.KID && Math.RandomFloat01() < 0.25)
+			text += "\n" + RZ_RepVoice.Picture(m_GM, playerId);
 
 		if (w.IsBitten())
 			text += "\nThere's a dressing on their arm, already dark through. \"Don't. I know.\"";

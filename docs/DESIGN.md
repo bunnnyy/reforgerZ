@@ -518,8 +518,9 @@ every 10 minutes server-wide (5 with power). **Cosmetic and social only:** no Fa
 ### The government broadcast
 
 A looping flavour message to everyone every 25 minutes and on each player's first spawn.
-Its tone follows the cure and the outbreak ([LORE.md](LORE.md), "The outside world: silent, watching"; its
-lines: [WRITING.md](WRITING.md#the-government-broadcast)).
+Its tone follows the season mood, the one ladder every voice reads ([WRITING.md](WRITING.md#the-season-mood);
+[LORE.md](LORE.md), "The outside world: silent, watching"; its lines:
+[WRITING.md](WRITING.md#the-government-broadcast)).
 Its day count ("Day 14") is 11 plus the real days since the season started, so a season of
 about 45 days runs from Day 11 to about Day 56; without the server's clock, a day is 8 hours
 played. Notes, journals, the radio station and Bastion's orders use the same count.
@@ -999,52 +1000,12 @@ for the Haven, its wanderers.
 
 ## Talking to people
 
-Code: `Dialogue/RZ_Dialogue.c`, `Dialogue/RZ_TalkSpeakers.c`; the screen is `UI/RZ_TalkMenu.c`
-([UI.md](UI.md#the-talk-screen)).
-
-Look at a person and the action menu shows one line, **Talk to ...**. It opens the talk screen:
-what they say, and your replies as a list. You stay in the conversation until you leave, walk
-off (6 m), wait 120 s with no reply, or danger comes (the [screen guard](UI.md#how-the-scripts-fit):
-then they say "Not now!" and it closes). You can't move while talking; the world keeps running.
-
-**Who:** stronghold and seat leaders (and the quartermaster's "Talk to whoever's in charge"),
-safehouse occupants, named people at holdings, the wanderers, the Long Table's people, and the
-people missions and questlines spawn. Any living character with the puzzle components. Bodies,
-objects, spots and doors keep their actions. Road posts have no speaker body.
-
-**One engine, built on what's there.** Every one of these people already has a Talk handler and
-up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
-
-- **Greeting:** their Talk handler, run while the engine *captures* the player's notices and
-  spoken lines whose title is the speaker's (a leader's is known; otherwise the first title the
-  greeting uses). Those lines go into the screen. Anything else (a contract offer, a standing
-  change) still comes as a card. A line from the speaker that arrives later (a treatment
-  finishing) also goes into the screen while it's open.
-- **Replies:** the person's visible choice and use slots (their labels are on the server), plus
-  **I'll be going.** A leader's are Ask for work, Heard anything?, What do you make of me?
-- **A pick** runs that slot's handler, capturing again. If it said nothing new (the answer was a
-  card), what they said stays.
-- **Shown before you choose, never rolled.** A reply you can't take stays in the list, dim, with
-  what it needs: a price in Favor in its label ("Buy supplies", needs 20 Haven Favor, you have 12),
-  "Give them your antidote" (you have none), "Share some food" (you have nothing to eat). There are
-  no dice.
-
-So every built rule (Rob's Infamy, the Trader's price, a leader's refusal at attitude −2, an
-exile's shut door) works exactly as built. Talk adds no rewards, no items and no memory.
-
-**Safety.** At most 32 conversations (and readers) on the server; a pick is checked for the
-current serial, a reply id that was sent and enabled, a living player in range and not in danger,
-and at most one every 0.3 s; Talk at most every 2 s. One node at a time goes to that player only.
-Nothing is saved.
-
-**The action list.** With the talk screen on (**Dialogue > Talk screen**, and **UI > Talk reply
-layout** set), a person's choice and use actions hide, and so do the quartermaster's leader
-actions for work, news and standing. Without it, or on a client where the screen can't open,
-nothing hides and Talk and the slots work as actions, with notices.
-
-*Simplified:* the quartermasters' shop and service actions stay actions (the shop screen is
-planned). Conversation files, topics, persuasion and threats, regard and promises are later
-ideas, not built.
+Code: `Dialogue/`; the screen is `UI/RZ_TalkMenu.c`. Owned by [DIALOGUE.md](DIALOGUE.md): the
+talk screen and its engine (one engine that wraps every person's built Talk handler and replies,
+with what each reply needs shown before you choose and no dice), and the conversation trees on top
+(**Dialogue > Trees**, off by default: topics, checks shown before you pick, regard and memory, the
+`.rzd` text format and its tools, 30 conversations). How the screen looks is in
+[UI.md](UI.md#the-talk-screen).
 
 ## Missions
 
@@ -1471,7 +1432,7 @@ pick it. Tags show costs and requirements, never outcomes.
 |---|---|
 | Your access rank with the listener's faction (mixed tiers one lower, as built) | Stranger, Uneasy 0 · Known, Tolerated, Wildcard 1 · Trusted, Respected 2 · Champion 3 |
 | A background the option lists | +1 |
-| From dialogue (remembered help, or a vouch) | at most +1 (the caller passes it; dialogue's trees are planned) |
+| From dialogue (remembered help, or a vouch) | at most +1: dialogue's trees pass regard 2 or more, or the built helped or saved memory of this life ([DIALOGUE.md](DIALOGUE.md#checks-and-tags)); a vouch is planned |
 | A lie found out, or a questline you worked against them (the life records `lied.<f>`, `crossed.<f>`) | −1 each (nothing writes them yet) |
 
 Hunted or worse: they won't be persuaded. People with no faction read your score with the Haven, at
@@ -1521,8 +1482,10 @@ Code: `Core/RZ_Deeds.c`. One store, two scopes:
 A bigger deed replaces a smaller one; an equal one keeps the first. The worst deed reads as the kill
 tally ("put 9 of ours down") once three times the kills outweigh it. Written today: kills (retaliation
 kills, leaders), jobs and the ledger (every paid contract), the cells (every reputation change), the
-Infamy forgiven, "pressed" (threats), and a leader's killing ("shot Vlasak"). Each contract's own
-phrase comes with reputation's voices (planned).
+Infamy forgiven, "pressed" (threats), a leader's killing ("shot Vlasak"), running a checkpoint ("ran
+the checkpoint at Morton"), and each paid contract's phrase (`RZ_Mission.m_sDeed` with `{town}`,
+"brought medicine to Levie"; the commonest contracts have one, the rest say "did a job for us near
+{town}"). Reputation's voice says them back ([REPUTATION.md](REPUTATION.md#what-people-call-you)).
 
 ### World memory
 

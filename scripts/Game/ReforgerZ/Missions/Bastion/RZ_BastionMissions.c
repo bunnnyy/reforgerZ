@@ -271,6 +271,7 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 		m_fParticipationRadius = s.m_fRadius + 50;
 		PlacePiles(gm, s.m_vCenter, 0, s.m_fRadius * 0.7, 5);
 		m_sTitle = "Burn the Bodies";
+		m_sDeed = "burnt the dead in {town}";
 		m_sBrief = string.Format("Bastion wants the corpse piles in %1 burned before they spread the infection. There are five.", s.m_sName);
 		return true;
 	}
@@ -355,6 +356,7 @@ class RZ_Mission_Recon : RZ_Mission_VisitPoints
 		}
 
 		m_sTitle = "Recon";
+		m_sDeed = "scouted {town} for us";
 		m_sBrief = string.Format("Bastion needs eyes on the hills around %1. Reach three observation points and watch each for 15 seconds.", s.m_sName);
 		return true;
 	}
@@ -416,6 +418,7 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.9, s.m_fRadius + 80);
 		m_sTitle = "Checkpoint Duty";
+		m_sDeed = "stood a shift at the checkpoint near {town}";
 		m_sBrief = string.Format("Man the Bastion checkpoint outside %1 for 10 minutes. Let survivors through, stop everything else.", s.m_sName);
 		return true;
 	}
@@ -449,6 +452,7 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 200, s.m_fRadius + 600);
 		m_sTitle = "Missing Patrol";
+		m_sDeed = "found the patrol near {town}";
 		m_sBrief = string.Format("A Bastion patrol went silent outside %1. Find their last position and put down whatever they've become.", s.m_sName);
 		return true;
 	}
@@ -531,6 +535,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 
 		m_fParticipationRadius = 0;
 		m_sTitle = "Crash Site";
+		m_sDeed = "went to the crash near {town}";
 		m_sBrief = string.Format("The wreck of a Bastion helicopter lost in the first week lies near %1. Secure it and recover the black box. Bastion's drop is at %2. The Red Hand would pay for it at %3.", s.m_sName, b.m_sName, r.m_sName);
 		return true;
 	}
@@ -803,6 +808,7 @@ class RZ_Mission_Requisition : RZ_Mission_Choice
 
 		m_fParticipationRadius = 0;
 		m_sTitle = "Requisition";
+		m_sDeed = "brought in what the stores were short of";
 		m_sBrief = string.Format("Bastion is 'requisitioning' the Haven's supplies in %1. Take them to the Bastion drop at %2. Or carry them to the Haven in %3 and hand them back. Your call.", s.m_sName, b.m_sName, havenName);
 		return true;
 	}

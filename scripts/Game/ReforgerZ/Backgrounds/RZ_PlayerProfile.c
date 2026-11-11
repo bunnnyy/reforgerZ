@@ -81,6 +81,16 @@ class RZ_PlayerProfile
 	ref array<float> m_aRecDays = {};
 	ref array<float> m_aRecPinned = {};
 
+	// Reputation's voice, this life (Factions/RZ_RepVoice.c)
+	string m_sCrewName;							// what the Red Hand's crews call you ("" = new face)
+	ref array<string> m_aSetWord = {"", "", "", ""};	// a word the majors or questlines gave, per faction
+	int m_iRanDay = -1;							// season day a Bastion checkpoint was last run (Legs)
+	int m_iCrewKillDay = -1;					// season day a Red Hand person was last killed (Sorry)
+	int m_iBites;								// bites this life (Snack)
+	// Tone's joke memory, across lives (Factions/RZ_VoiceBank.c): the last jokes this player heard
+	ref array<string> m_aJokeIds = {};
+	ref array<int> m_aJokeUnix = {};
+
 	// Personal objective for this life (see RZ_Objectives)
 	int m_iObjType = -1;
 	int m_iObjTarget = -1;
@@ -114,6 +124,10 @@ class RZ_PlayerProfile
 		m_bGuideCounted = false;
 		m_bBoosted = false;
 		m_iCluesGiven = 0;
+		m_sCrewName = "";
+		m_iRanDay = -1;
+		m_iCrewKillDay = -1;
+		m_iBites = 0;
 		m_iObjType = -1;
 		m_iObjTarget = -1;
 		m_iObjGoal = 0;
@@ -149,6 +163,7 @@ class RZ_PlayerProfile
 			m_aWorstDay[i] = 0;
 			m_aKills[i] = 0;
 			m_aJobs[i] = 0;
+			m_aSetWord[i] = "";
 		}
 
 		m_aRecKeys.Clear();
@@ -220,6 +235,16 @@ class RZ_PlayerProfile
 			m_aKills = new array<int>();
 		if (!m_aJobs)
 			m_aJobs = new array<int>();
+		if (!m_aSetWord)
+			m_aSetWord = new array<string>();
+		while (m_aSetWord.Count() < RZ_Factions.COUNT)
+		{
+			m_aSetWord.Insert("");
+		}
+		if (!m_aJokeIds)
+			m_aJokeIds = new array<string>();
+		if (!m_aJokeUnix)
+			m_aJokeUnix = new array<int>();
 		if (!m_aRecKeys)
 			m_aRecKeys = new array<string>();
 		if (!m_aRecDays)

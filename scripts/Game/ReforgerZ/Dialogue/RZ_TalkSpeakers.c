@@ -60,6 +60,14 @@ class RZ_TalkSpeaker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Dialogue > Trees: who this is for conversation conditions (speaker selectors, memory key,
+	//! faction, the leader or wanderer, the house or post). False: no trees for this person.
+	bool Describe(RZ_GameModeComponent gm, RZ_TalkSession s, RZ_DCtx ctx)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Replies(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user, notnull array<ref RZ_TalkReply> replies)
 	{
 	}
@@ -98,6 +106,151 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	{
 		if (m_Owner)
 			RZ_PuzzleActionHelper.DoRead(gm, m_Owner, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Wanderers, safehouse occupants, named people at holdings, road post speakers and the Long
+	//! Table's people, by the tag their body carries. Mission and questline people have no trees yet.
+	override bool Describe(RZ_GameModeComponent gm, RZ_TalkSession s, RZ_DCtx ctx)
+	{
+		if (!m_Owner)
+			return false;
+
+		RZ_ClueComponent clue = RZ_ClueComponent.Cast(m_Owner.FindComponent(RZ_ClueComponent));
+		if (!clue)
+			return false;
+
+		int tag = clue.GetMissionId();
+		int idx = clue.GetClueIndex();
+		if (tag == RZ_Wanderers.TAG && gm.GetWanderers())
+			return DescribeWanderer(gm, idx, ctx);
+
+		if (tag == RZ_Safehouses.TAG_OCCUPANT && gm.GetSafehouses())
+			return DescribeOccupant(gm, idx, ctx);
+
+		if (tag == RZ_Territory.TAG && gm.GetTerritory())
+			return DescribeNamed(gm, idx, ctx);
+
+		if (tag == RZ_Checkpoints.TAG_POST && gm.GetCheckpoints())
+			return DescribePost(gm, idx, ctx);
+
+		if (tag == RZ_LongTable.TAG && gm.GetLongTable())
+			return DescribeTable(gm, idx, ctx);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool DescribeWanderer(RZ_GameModeComponent gm, int idx, RZ_DCtx ctx)
+	{
+		RZ_Wanderer w = gm.GetWanderers().FindById(idx);
+		if (!w)
+			return false;
+
+		string role = RZ_Wanderers.RoleName(w.m_eRole);
+		role.ToLower();
+		ctx.m_aKinds.Insert("wanderer:" + role);
+		ctx.m_aKinds.Insert("wanderer");
+		ctx.m_sKey = string.Format("wanderer:%1:%2", w.m_iId, w.m_iGeneration);
+		ctx.m_Wanderer = w;
+		ctx.m_sName = w.GetTitle();
+		ctx.m_sShort = w.GetShortName();
+		ctx.m_sRole = role;
+		ctx.m_iFaction = -1;
+		if (w.m_eRole == RZ_EWandererRole.KID)
+			ctx.m_bStronghold = true;	// nobody threatens the Kid
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool DescribeOccupant(RZ_GameModeComponent gm, int idx, RZ_DCtx ctx)
+	{
+		RZ_Safehouse h = gm.GetSafehouses().Get(idx);
+		if (!h)
+			return false;
+
+		ctx.m_aKinds.Insert("occupant");
+		ctx.m_sKey = "house:" + idx.ToString();
+		ctx.m_iHouse = idx;
+		ctx.m_iFaction = RZ_EFaction.SURVIVORS;
+		ctx.m_sName = "The people here";
+		ctx.m_sShort = "the house";
+		ctx.m_sRole = "occupant";
+		ctx.m_sPlace = h.m_sName;
+		ctx.m_bStronghold = true;	// nobody fires near a house, and nobody threatens in one
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool DescribeNamed(RZ_GameModeComponent gm, int idx, RZ_DCtx ctx)
+	{
+		RZ_Holding hold = gm.GetTerritory().GetHolding(idx / 10);
+		int person = idx % 10;
+		if (!hold || person < 0 || person >= hold.m_aPeople.Count() || person >= hold.m_aRoles.Count())
+			return false;
+
+		string f = RZ_DialogueDB.FactionWord(hold.m_eFaction);
+		string job = hold.m_aRoles[person];
+		string jobKey = job;
+		jobKey.Replace(" ", "_");
+		ctx.m_aKinds.Insert("named:" + f + "/" + jobKey);
+		ctx.m_aKinds.Insert("named:" + f);
+		ctx.m_aKinds.Insert("named");
+		ctx.m_sKey = string.Format("named:%1:%2", hold.m_iId, person);
+		ctx.m_iFaction = hold.m_eFaction;
+		ctx.m_sName = hold.m_aPeople[person];
+		ctx.m_sShort = hold.m_aPeople[person];
+		ctx.m_sRole = job;
+		ctx.m_sPlace = hold.m_sName;
+		ctx.m_bStronghold = hold.m_bStronghold;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool DescribePost(RZ_GameModeComponent gm, int idx, RZ_DCtx ctx)
+	{
+		RZ_RoadPost post = gm.GetCheckpoints().FindPost(idx);
+		if (!post)
+			return false;
+
+		string pf = RZ_DialogueDB.FactionWord(post.m_eFaction);
+		ctx.m_aKinds.Insert("post:" + pf);
+		ctx.m_aKinds.Insert("post");
+		ctx.m_sKey = string.Format("post:%1:%2", pf, post.m_sNear);
+		ctx.m_iPost = idx;
+		ctx.m_iFaction = post.m_eFaction;
+		ctx.m_sName = post.SpeakerName();
+		ctx.m_sShort = post.SpeakerName();
+		ctx.m_sRole = "post";
+		ctx.m_sPlace = post.m_sNear;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool DescribeTable(RZ_GameModeComponent gm, int idx, RZ_DCtx ctx)
+	{
+		int tableRole;
+		bool onRoad;
+		string name;
+		if (!gm.GetLongTable().MemberInfo(idx, tableRole, onRoad, name))
+			return false;
+
+		string roleWord = RZ_LongTable.RoleWord(tableRole);
+		if (onRoad)
+			ctx.m_aKinds.Insert("table:road");
+		else
+			ctx.m_aKinds.Insert("table:" + roleWord);
+
+		ctx.m_aKinds.Insert("table");
+		ctx.m_sKey = "table:" + roleWord;
+		ctx.m_iTableRole = tableRole;
+		ctx.m_iFaction = -1;
+		ctx.m_sName = name;
+		ctx.m_sShort = name;
+		ctx.m_sRole = roleWord;
+		ctx.m_bStronghold = true;	// never threatened
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -175,6 +328,47 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! stronghold:<f> or seat:<f>/<kind>, leader:<f>, leader. The memory key is the seat and the
+	//! generation, so someone new in the chair starts with no regard or claims.
+	override bool Describe(RZ_GameModeComponent gm, RZ_TalkSession s, RZ_DCtx ctx)
+	{
+		if (!m_Leader)
+			return false;
+
+		string f = RZ_DialogueDB.FactionWord(m_Leader.m_eFaction);
+		if (m_Leader.IsStronghold())
+			ctx.m_aKinds.Insert("stronghold:" + f);
+		else
+			ctx.m_aKinds.Insert("seat:" + f + "/" + SeatKind(m_Leader.m_eFaction));
+
+		ctx.m_aKinds.Insert("leader:" + f);
+		ctx.m_aKinds.Insert("leader");
+		ctx.m_sKey = string.Format("leader:%1:%2", m_Leader.m_iId, m_Leader.m_iGeneration);
+		ctx.m_iFaction = m_Leader.m_eFaction;
+		ctx.m_Leader = m_Leader;
+		ctx.m_sName = m_Leader.m_sName;
+		ctx.m_sShort = m_Leader.m_sShort;
+		ctx.m_sRole = m_Leader.m_sTitle;
+		ctx.m_sPlace = m_Leader.m_sPlace;
+		ctx.m_iHouse = m_Leader.m_iSafehouse;
+		ctx.m_bStronghold = m_Leader.IsStronghold();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string SeatKind(RZ_EFaction f)
+	{
+		switch (f)
+		{
+			case RZ_EFaction.SURVIVORS: return "council_head";
+			case RZ_EFaction.MILITARY: return "outpost_lead";
+			case RZ_EFaction.BANDITS: return "crew_boss";
+		}
+
+		return "field_lead";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Replies(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user, notnull array<ref RZ_TalkReply> replies)
 	{
 		replies.Insert(Reply(0, "Ask for work"));
@@ -185,8 +379,18 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 	//------------------------------------------------------------------------------------------------
 	override void Pick(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
-		if (m_Leader && gm.GetLeaders())
+		// Dialogue > Trees: what they make of you is said in their faction's voice (RZ_RepVoice)
+		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
+		if (replyId == 2 && trees && trees.IsOn() && m_Leader && gm.GetLeaders() && gm.GetLeaders().Attitude(m_Leader, playerId) > -2)
+		{
+			array<string> lines = {};
+			RZ_RepVoice.Verdict(gm, playerId, m_Leader.m_eFaction, m_Leader, lines);
+			s.m_aNew.InsertAll(lines);
+		}
+		else if (m_Leader && gm.GetLeaders())
+		{
 			gm.GetLeaders().HandleChoice(playerId, m_Leader.m_iId, replyId, m_Seat, user);
+		}
 
 		// What they think of you can change with the answer
 		if (m_Leader && gm.GetLeaders())

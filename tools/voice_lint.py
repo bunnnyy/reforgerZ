@@ -64,6 +64,11 @@ FORMULA_RE = re.compile(r"(\w+ out|over|out|thank you|thanks|please|go on|good)[
 WORLD_TOKENS = {"day", "day_text", "days_since_command", "days_since_command_words", "cure_state",
                 "cure_percent", "stage", "stage_tone", "time_of_day", "lab_town", "stolen_doses"}
 WORLD_KINDS = {"town", "owner", "flag", "canon", "canon_town", "leader", "leader_short", "leader_place"}
+# Tokens a conversation (.rzd) line may use (RZ_DialogueText.Fill, RZ_RepVoice.FillFor), and the voice
+# bank's context token {place} (RZ_VoiceBank.PickFor).
+DIALOGUE_TOKENS = {"npc", "npc_short", "player", "house", "resident", "word", "rep", "best", "worst", "kills",
+                   "jobs", "picture", "name", "crew", "place", "here", "faction", "role", "toll", "seat", "boss"}
+VOICE_TOKENS = {"place"}
 
 NEVER = [
     # Sexual violence is never mentioned
@@ -221,6 +226,10 @@ def check(lits, all_lits):
                 ok = name in WORLD_KINDS
             else:
                 ok = name in WORLD_TOKENS or name in known_keys
+                if lit.file.endswith(".rzd"):
+                    ok = ok or name in DIALOGUE_TOKENS
+                elif lit.file.endswith("RZ_VoiceDefaults.c"):
+                    ok = ok or name in VOICE_TOKENS
             if not ok:
                 findings.append(Finding("token", lit, "unknown token {%s}" % m.group(0)[1:-1]))
                 break
@@ -248,7 +257,8 @@ def check(lits, all_lits):
             person = None
             for m in TOKEN_RE.finditer(sentence):
                 name = m.group(1)
-                if name in ("leader", "leader_short") or (m.group(2) is None and name not in WORLD_TOKENS
+                if name in ("leader", "leader_short", "npc", "npc_short") or (m.group(2) is None and name not in WORLD_TOKENS
+                                                           and name not in DIALOGUE_TOKENS
                                                            and not NOT_PERSON_TOKEN.search(name)):
                     person = m
                     break

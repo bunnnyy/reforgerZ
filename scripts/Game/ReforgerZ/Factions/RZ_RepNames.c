@@ -81,6 +81,12 @@ class RZ_ReputationSettings
 	[Attribute("5", UIWidgets.Slider, "Change notice: minutes between name notices per faction (a tier change is always told)", "0 30 1")]
 	float m_fChangeGapMinutes;
 
+	[Attribute("1", desc: "Red Hand crew names: the first thing the crews hold on you this life (Known or better) becomes what they call you: Lucky, Snack, Legs, Skint, Pockets, Sorry (docs/REPUTATION.md, The word for you)")]
+	bool m_bCrewNames;
+
+	[Attribute("1", desc: "Life-stamped memory: leaders and wanderers count what they remember of an earlier life at half (rounded toward zero), and met doesn't carry. Off = memory by identity, as before")]
+	bool m_bLifeMemory;
+
 	protected static ref RZ_ReputationSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------

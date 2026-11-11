@@ -1,0 +1,89 @@
+# Safehouse occupants: the house as it is now (fed, short, after a death). Voice: the Haven's.
+# Nobody threatens anyone in a house. A short house jokes about the soup, never about who eats.
+
+conv occupant.house.fed
+for occupant
+when house:fed & !house:died
+topic "Ask how the house is doing."
+prio flavour
+voice haven
+
+node start
+  say "Fed, for once. Someone brought tins and someone else found a sack of potatoes in a shed. We're having both."
+  say "The children are arguing about the potatoes. That's how you know it's a good week."
+  > @tin "Leave a tin for the children." -> tin   cost item:food*1   do favor:haven+2; regard:thanks
+  > @fine "Good to hear." -> hub
+
+node tin
+  say "That'll be fought over. Thank you. Really."
+  > @back1 "Something else." -> hub
+
+conv occupant.house.short
+for occupant
+when house:short
+topic "Ask how the house is doing."
+prio ask
+voice haven
+
+node start
+  say "Half portions since the truck didn't come. The children eat first. Don't tell the council head I said."
+  say "The soup's mostly water. We've started calling it tea."
+  > @give "Put two tins in the stores." -> given   cost item:food*2   do call:hand_in:2; regard:thanks
+  > @what "What are you short of most?" -> what
+  > @sorry "I've nothing to give." -> nothing
+
+node given
+  say "That's two suppers for somebody. I won't say who."
+  > @back2 "Something else." -> hub
+
+node what
+  say "Anything in a tin. Bread doesn't last the walk. And somebody to fix the stove, but that's another story."
+  > @give2 "Put two tins in the stores." -> given   cost item:food*2   do call:hand_in:2; regard:thanks
+  > @back3 "Something else." -> hub
+
+node nothing
+  say "Nobody has. Come back if that changes. We'll still be here, most likely."
+  > @back4 "Something else." -> hub
+
+conv occupant.house.grief
+for occupant
+when house:died
+topic "Ask about the candle in the window."
+prio reaction
+voice haven
+
+node start
+  say "We lost someone. The council will read the name at supper."
+  say "You can stay for it, if you want. You don't have to have known them."
+  > @stay "I'll stay." -> stay
+  > @leave "I'll leave you to it." -> leave
+
+node stay
+  say "Sit at the end. Hat off. Nobody eats before the name."
+  > @back5 "Something else." -> hub
+
+node leave
+  say "Thank you for asking. Most people walk past the candle."
+  > @back6 "Something else." -> hub
+
+conv occupant.house.bear
+for occupant
+when !house:died
+topic "Ask about the bear on the door."
+prio flavour
+voice haven
+
+node start
+  say "So nobody shoots through the door. It doesn't always work. It works more than it doesn't."
+  say "The children touch it on the way out. For luck. Its nose is worn through."
+  > @back7 "Something else." -> hub
+
+conv occupant.house.candle
+for occupant
+when house:died
+greet
+prio reaction
+voice haven
+
+node start
+  say "There's a candle in the window, and people are talking more quietly than usual."

@@ -1,0 +1,51 @@
+# Halcyon's leaders: the research director at the lab and the field leads.
+# Voice: precise, a bit cold, sometimes guilty. Humour only by accident: exact words that land wrong.
+
+conv halcyon.leader.beaks
+for stronghold:halcyon, seat:halcyon/field_lead
+topic "Ask why they call you the beaks."
+prio flavour
+voice halcyon
+
+node start
+  say "The respirators. Long filters. From a distance we look like birds, apparently, or plague doctors."
+  say "Someone stencilled a plague doctor on a sample case as a joke. It is now on every case, door and van."
+  > @scrub "Why not scrub it off?" -> scrub
+  > @notebook "You still keep a notebook each?" -> notebook   if bg:labtech,doctor,nurse
+  > @other "Something else." -> hub
+
+node scrub
+  say "Nobody could think of a reason that was worth the solvent. We are short of solvent."
+  say "Also, people move out of our way. That has value."
+  > @back1 "Something else." -> hub
+
+node notebook
+  say "Numbered. Every reading, every sample, every volunteer. When one of us dies, the notebook belongs to the lab."
+  say "We read it into the record, page by page. It takes longer than the funeral."
+  do learn:halcyon.notebooks
+  > @back2 "Something else." -> hub
+
+conv halcyon.leader.numbers
+for stronghold:halcyon, seat:halcyon/field_lead
+when !epilogue
+topic "Ask how close the cure is."
+prio world
+voice halcyon
+
+node start
+  say "The number this morning was {cure_percent} percent. I wouldn't repeat it to anyone with a gun."
+  say "Eight in ten walk out of the trial dose. We write down the other two."
+  > @two "Who sits with the other two?" -> two
+  > @help "What would speed it up?" -> help
+  > @other3 "Something else." -> hub
+
+node two
+  say "Someone with a clipboard. Somebody has to, and they should be counted."
+  say "It isn't a good job. It's a necessary one. Those aren't the same, and I've stopped pretending they are."
+  > @back3 "Something else." -> hub
+
+node help
+  say "Samples. Live tissue from the big ones, cold and labelled. And time, which nobody can bring us."
+  say? need:samples :: "We are short this week. The field leads will pay for anything usable."
+  say "Ask the quartermaster what pays. I don't handle money. I handle consequences."
+  > @back4 "Something else." -> hub
