@@ -51,7 +51,7 @@ class RZ_Errand_NothingGoesOut : RZ_ErrandCard
 		if (!perimeter.GetNearestCheckpoint(e.m_vGiver, cp) || RZ_Util.DistXZ(cp, e.m_vGiver) > 1650)
 			return false;
 
-		e.m_vSubject = perimeter.PointInside(cp, perimeter.InwardAt(cp), 150);
+		e.m_vSubject = perimeter.PointInside(cp, perimeter.CheckpointInward(cp), 150);
 		e.m_sSubject = "line:" + RZ_SettlementScanner.GridReference(cp);
 		e.SetText("where_place", RZ_Util.DirectionText(e.m_vGiver, e.m_vSubject));
 		e.SetText("subject_place", RZ_Util.DirectionText(e.m_vGiver, e.m_vSubject));

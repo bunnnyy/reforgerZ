@@ -132,7 +132,7 @@ class RZ_EpiBeats
 		int day = RZ_WorldFacts.Get().Day();
 		foreach (int i, vector c : points)
 		{
-			vector at = c + perimeter.InwardAt(c) * 150;
+			vector at = c + perimeter.CheckpointInward(c) * 150;
 			Add("tally." + i.ToString(), "hub", "a barrier", at, string.Format("Chalk tallies on a board, counting to %1. Somebody's crossed them in fives.", day), "Somebody's counting the days on a board by the barrier.");
 		}
 	}

@@ -167,8 +167,7 @@ class RZ_TribeProps
 				if (RZ_Util.NearestDistance(site.m_vPos, players) > 1000)
 					continue;
 
-				int seed = Math.AbsInt(RZ_Util.RoundToInt(site.m_vPos[0] + site.m_vPos[2]));
-				int pick = seed % s.m_aKillSitePrefabs.Count();
+				int pick = RZ_Util.PickIndex(RZ_Util.RoundToInt(site.m_vPos[0] + site.m_vPos[2]), s.m_aKillSitePrefabs.Count());
 				Add(keys, spots, prefabs, tribes, "k" + SpotKey(site.m_vPos), site.m_vPos, s.m_aKillSitePrefabs[pick], -1);
 			}
 		}
@@ -246,8 +245,7 @@ class RZ_TribeProps
 	//! The same facing every time for a spot.
 	protected static float Yaw(vector pos)
 	{
-		int seed = Math.AbsInt(RZ_Util.RoundToInt(pos[0] * 3 + pos[2]));
-		int yaw = seed % 360;
+		int yaw = RZ_Util.PickIndex(RZ_Util.RoundToInt(pos[0] * 3 + pos[2]), 360);
 		return yaw;
 	}
 

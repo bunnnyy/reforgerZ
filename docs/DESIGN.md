@@ -418,11 +418,21 @@ placed by hand. **Nothing is built along the edge** except the road checkpoints.
   in a vehicle or a boat it's moved over you on each tick instead.
 - **Kill zone** (100 m): a warning shot (a sound and a near miss), then 8 seconds later you're
   shot by a sniper you never see.
-- **Sealed road checkpoints.** Where main roads reach the edge (up to 6 by default, 8 at most;
-  island maps may have none), the road ends in concrete blocks and a closed barrier, with 0–4
-  guards behind it. Nobody passes in either direction. Within 150 m the loudspeaker warns you;
-  closer than 60 m the guards shoot. The guards stand outside the playable area and can't be
-  hurt. Checkpoints come from the road network, or from placed `RZ_CheckpointMarkerEntity`s.
+- **Sealed road checkpoints.** Up to 6 by default, 8 at most, at least 800 m apart, the widest
+  roads first. The road ends in concrete blocks and a closed barrier, with 0–4 guards behind it
+  who can't be hurt. Nobody passes in either direction. Within 150 m the loudspeaker warns you;
+  closer than 60 m the guards shoot. Placed `RZ_CheckpointMarkerEntity`s win; otherwise the road
+  network gives them, once at start:
+  - **Roads that cross the line** (60 m inside the edge): the guards stand outside the playable area.
+  - **Roads that end at the shore**, filling what's left: where the edge runs at sea all round (an
+    island, as Everon and Arland are), no road crosses it, and the ways out are the quays, slipways and
+    beach roads. A road counts if it's a dead end (no other road within 15 m of its end) with the
+    sea within 40 m past it. The barrier stands 20 m back up the road, facing the sea, the guards
+    between it and the water. One with another road within 75 m of the barrier is left out, so
+    it never closes a road that goes on. On the dedicated server Everon gets 6 this way; Arland
+    gets none (its few shore roads all branch off roads that go on), so its line is the drones and
+    the snipers only, unless markers are placed.
+  - Walking away from a barrier (after the cure, the codas, errands at the line) goes back up its road.
 - **Blind spots.** The drones run a rotation; The Blind Spot mission opens a 250 m gap for
   ten minutes ([MISSIONS.md](MISSIONS.md), "Perimeter missions").
 - **Sea edges.** Where the edge runs out at sea it sits at least the sea margin offshore, so

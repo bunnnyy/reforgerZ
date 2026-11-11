@@ -823,7 +823,7 @@ class RZ_Strangers
 		if (!perimeter.GetNearestCheckpoint(at, cp) || RZ_Util.DistXZ(cp, at) > 450)
 			return false;
 
-		vector warn = perimeter.PointInside(cp, perimeter.InwardAt(cp), 150);
+		vector warn = perimeter.PointInside(cp, perimeter.CheckpointInward(cp), 150);
 		if (RZ_Util.DistXZ(warn, at) > 300)
 			return false;
 

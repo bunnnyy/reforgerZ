@@ -605,7 +605,7 @@ class RZ_CampLife
 		int x = RZ_Util.RoundToInt(pos[0]);
 		int z = RZ_Util.RoundToInt(pos[2]);
 		int s = x * 7919 + z * 6151 + faction * 31 + kind * 17;
-		return Math.AbsInt(s) % 2000000000 + 1;
+		return RZ_Util.PickIndex(s, 2000000000) + 1;
 	}
 
 	//------------------------------------------------------------------------------------------------
