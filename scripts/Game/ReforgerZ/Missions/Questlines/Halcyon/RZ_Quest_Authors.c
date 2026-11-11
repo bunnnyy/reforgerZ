@@ -954,7 +954,8 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 		if (run)
 			clinic = RZ_Questline.GetHouse(gm, run.Flag("clinic", -1));
 
-		if (!l || !clinic || !gm.GetLeaders())
+		// Not while another mission has her (its own stand-in is out there)
+		if (!l || l.m_iHeldBy >= 0 || !clinic || !gm.GetLeaders())
 			return false;
 
 		m_iLead = l.m_iId;

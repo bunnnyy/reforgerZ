@@ -1242,8 +1242,9 @@ class RZ_QM_WeeksReaders : RZ_QM_HalcyonScene
 		int duty = AddClue("The duty officer", QFill(gm, "The duty officer at the lab has a clipboard and a cold. \"If it's for {director}, it goes through me. She'll want to know who brought it.\""));
 		AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_DIRECTOR, duty, "Talk to the duty officer", "Give it to the director", "the duty officer at the lab");
 
+		// Her seat is offered unless another mission has her just now
 		RZ_Leader lead = SameLeader(gm, run, "lead");
-		if (lead && gm.GetLeaders())
+		if (lead && lead.m_iHeldBy < 0 && gm.GetLeaders())
 		{
 			m_iLead = lead.m_iId;
 			gm.GetLeaders().Hold(m_iLead, m_iId);
@@ -1441,9 +1442,10 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
+		// Not while another mission has her (its own stand-in is out there)
 		RZ_QuestRun run = Run(gm);
 		RZ_Leader l = SameLeader(gm, run, "lead");
-		if (!l)
+		if (!l || l.m_iHeldBy >= 0)
 			return false;
 
 		m_iLead = l.m_iId;

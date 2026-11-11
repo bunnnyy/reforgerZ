@@ -562,8 +562,9 @@ class RZ_QM_OtherTwoScene : RZ_QM_HalcyonScene
 	//! The field lead's stand-in at her station, held while the stage runs (-1 if she's gone).
 	protected int HoldLead(RZ_GameModeComponent gm)
 	{
+		// Not while another mission has her (its own stand-in is out there)
 		RZ_Leader l = SameLeader(gm, Run(gm), "lead");
-		if (!l || !gm.GetLeaders())
+		if (!l || l.m_iHeldBy >= 0 || !gm.GetLeaders())
 			return -1;
 
 		m_iLead = l.m_iId;
