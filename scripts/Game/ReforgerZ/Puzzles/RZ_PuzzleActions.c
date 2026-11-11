@@ -154,6 +154,10 @@ class RZ_PuzzleChoiceAction : ScriptedUserAction
 		if (comp && comp.GetSlotLabel(true, m_iOption) == RZ_Traps.BURN_LABEL)
 			return RZ_Traps.FireFuel(user) != null;
 
+		// On a fixable car, the jobs are in the repair screen
+		if (RZ_CarMenu.HidesSlotsOn(GetOwner()))
+			return false;
+
 		// On a person, the replies are in the talk screen
 		return !RZ_TalkMenu.HidesSlotsOn(GetOwner());
 	}

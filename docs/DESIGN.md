@@ -1785,8 +1785,8 @@ and locked so nobody can get in, with its prompts in front of its grille.
 
 | Step | How | Settings (defaults) |
 |---|---|---|
-| **Inspect** | Says what's missing: two or three of fuel, a battery, a tyre, spark plugs, all different | **Min parts** 2, **Max parts** 3 |
-| **Fit parts** | Battery, tyre and spark plugs (carryable items) lie in garages, come from car boots, **stripping** wrecks (one part each) and the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, Inspect and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
+| **Look over the car** | Says what's missing: two or three of fuel, a battery, a tyre, spark plugs, all different (on the repair screen, below, where it's used) | **Min parts** 2, **Max parts** 3 |
+| **Fit parts** | Battery, tyre and spark plugs (carryable items) lie in garages, come from car boots, **stripping** wrecks (one part each) and the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, the look and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
 | **Fuel it** | A full can, from siphoning a wreck (60% have some) or a petrol station's hand pump (10 heat). No tool needed | |
 | **Hotwire** | Long and loud: 45 s, half its heat when you start and all of it at the end. It fails about one time in three: the starter grinds, the heat is made all the same, and you try again. A Mechanic does it in 15 s and fails one time in ten | 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
 | **Or its keys** | Only a fifth of cars have keys in a house in their town: each building rolled there holds them one time in ten, lying with its loot (picking them up is finding them). A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
@@ -1794,6 +1794,16 @@ and locked so nobody can get in, with its prompts in front of its grille.
 
 A new project turns up elsewhere six hours after one is started. Projects in a save keep the parts
 they were missing.
+
+**The repair screen.** With **UI > Car job layout** set, **Look over the car** opens the car repair
+screen ([UI.md](UI.md#the-car-repair-screen)) instead of a notice, and the car's other prompts hide:
+five jobs (spark plugs, battery, tyre, fuel, ignition), each with what it needs or what you have
+and the button that does it, and **Start the engine**. Every job goes to the server, which checks
+that the screen is open on that car and you're beside it, then runs the same code as the actions
+above (the same tool, part, key and timer rules); what they would say shows in the screen. One job
+fits one part (the **Fit parts** action fits every part you carry at once). A job under way goes
+on if danger closes the screen. Without the layout, or where the screen can't open, the actions
+work as before.
 
 The Car Keys job ([MISSIONS.md](MISSIONS.md#unarmed-missions)) adds one more car for as long as it
 runs: it already runs, needs only its keys (always lying in the one house the job names) or hotwiring,

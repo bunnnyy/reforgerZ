@@ -3960,6 +3960,42 @@
    "minimum": false,
    "use": "the talk screen's reply rows (empty = no talk screen: a person's actions and notices)",
    "notes": ""
+  },
+  {
+   "id": "UICarJobLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the CarJob layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sCarJobLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Car job layout",
+   "required": false,
+   "minimum": false,
+   "use": "the car repair screen's job rows (empty = no repair screen: the car's actions and notices)",
+   "notes": ""
+  },
+  {
+   "id": "UICarPicture",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "UI/Textures/ReforgerZ/RZ_CarSide.png, imported as a texture (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sCarPicture"],
+   "listSlot": false,
+   "slotLabel": "UI > Car picture",
+   "required": false,
+   "minimum": false,
+   "use": "the side view of the car on the repair screen (empty = the job markers on a plain panel)",
+   "notes": "Import the PNG in the Resource Browser (it becomes RZ_CarSide.edds), then pick it here."
   }
  ],
  "additions": [

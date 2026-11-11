@@ -66,6 +66,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
 	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100, -100};	// per CMD_*
+	protected float m_fLastPick = -100;		// the last car job or purchase (PICK_GAP)
+	protected static const float PICK_GAP = 0.5;
 
 	//! Commands from the client (RZ_ChatCommands, the board menu)
 	static const int CMD_NOTE = 0;
@@ -305,6 +307,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			RZ_TalkMenu.OnPayload(this, payload);
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_CAR)
+		{
+			RZ_CarMenu.OnPayload(this, payload);
+		}
 		else
 		{
 			m_sBackgrounds = payload;
@@ -445,6 +451,42 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		gm.GetDialogue().Pick(playerId, serial, replyId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A job on the car repair screen (RZ_Cars.JOB_*) for the screen with this serial.
+	void SendCarJob(int serial, int job)
+	{
+		if (Replication.IsServer())
+			RpcAsk_CarJob(serial, job);
+		else
+			Rpc(RpcAsk_CarJob, serial, job);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Checked on the server (RZ_Cars.DoJob): the screen is open, the serial current, the car there
+	//! and the player beside it; then the same checks as the car's actions.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_CarJob(int serial, int job)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = OwnerPlayerId();
+		if (!gm || playerId <= 0 || !gm.GetInteractions() || !PickAllowed())
+			return;
+
+		gm.GetInteractions().GetCars().DoJob(playerId, serial, job);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a car job or a purchase at most every half second (a held button can't flood it).
+	protected bool PickAllowed()
+	{
+		float now = RZ_UIW.Now();
+		if (now - m_fLastPick < PICK_GAP)
+			return false;
+
+		m_fLastPick = now;
+		return true;
 	}
 
 	// ================================================================ Client: commands

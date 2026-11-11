@@ -1,0 +1,209 @@
+ButtonWidgetClass "{41E9D340198FFBD0}" {
+ Name "JobRow"
+ Slot LayoutSlot "{66E5C06A5E3A8035}" {
+  HorizontalAlign 3
+  VerticalAlign 0
+  Padding 0 0 0 6
+ }
+ style blank
+ {
+  SizeLayoutWidgetClass "{B384670EEE680B94}" {
+   Name "JobSize"
+   Slot ButtonWidgetSlot "{13D9D9DEE1345B01}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   AllowWidthOverride 1
+   WidthOverride 662
+   AllowHeightOverride 1
+   HeightOverride 76
+   {
+    OverlayWidgetClass "{660695556F16B530}" {
+     Name "JobBox"
+     Slot AlignableSlot "{D2379648B9C2316E}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{F5172F249E2C0A42}" {
+       Name "JobBg"
+       Slot OverlayWidgetSlot "{DB5634111BFAAA4C}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.106 0.122 0.133 1
+       Size 1 1
+      }
+      ImageWidgetClass "{B0F9E3279E4E0D20}" {
+       Name "JobBar"
+       Slot OverlayWidgetSlot "{321C8CD6655F00DB}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Size 5 76
+      }
+      HorizontalLayoutWidgetClass "{52A4E2019BA2B048}" {
+       Name "JobLine"
+       Slot OverlayWidgetSlot "{F6B6872D9D704B31}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 18 0 18 0
+       }
+       {
+        SizeLayoutWidgetClass "{75AC955B4595F678}" {
+         Name "JobNumBox"
+         Slot LayoutSlot "{C8027E82966EEA79}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 0 0 18 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 40
+         AllowHeightOverride 1
+         HeightOverride 40
+         {
+          OverlayWidgetClass "{DCE8841B502CFFE7}" {
+           Name "JobNumMark"
+           Slot AlignableSlot "{7CE6F0F913CA71ED}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            ImageWidgetClass "{A057DD4E91A87E05}" {
+             Name "JobDot"
+             Slot OverlayWidgetSlot "{BA7A7AC0D8FB9BD7}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.89 0.639 0.231 1
+             Size 1 1
+            }
+            TextWidgetClass "{4E93DD936128950E}" {
+             Name "JobNum"
+             Slot OverlayWidgetSlot "{F754D406EEC32ACC}" {
+              HorizontalAlign 1
+              VerticalAlign 1
+             }
+             Color 0.082 0.09 0.102 1
+             Text "2"
+             "Font Size" 20
+             "Min Font Size" 20
+             "Horizontal Alignment" Center
+             FontProperties FontProperties "{723D3C26ED0143AF}" {
+              Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
+        VerticalLayoutWidgetClass "{38412BF68FBD705A}" {
+         Name "JobText"
+         Slot LayoutSlot "{C633BB93605DCC27}" {
+          HorizontalAlign 3
+          VerticalAlign 1
+          SizeMode Fill
+          FillWeight 1
+         }
+         {
+          TextWidgetClass "{638D15CFAD79324E}" {
+           Name "JobName"
+           Slot LayoutSlot "{D406138C63578A88}" {
+            HorizontalAlign 0
+            VerticalAlign 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text "Battery"
+           "Font Size" 28
+           "Min Font Size" 28
+           FontProperties FontProperties "{9DCCF0753820FF53}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{3FA71C69B166473C}" {
+           Name "JobNeed"
+           Slot LayoutSlot "{193E672C931CFC41}" {
+            HorizontalAlign 0
+            VerticalAlign 0
+           }
+           Color 0.639 0.62 0.565 1
+           Text "In your bag"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{3D6968F5D110F62B}" {
+            Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          SizeLayoutWidgetClass "{F3D6D95B2ABAA256}" {
+           Name "JobProgressBox"
+           Slot LayoutSlot "{D2139F990F526201}" {
+            HorizontalAlign 0
+            VerticalAlign 0
+            Padding 0 4 0 0
+           }
+           AllowWidthOverride 1
+           WidthOverride 360
+           AllowHeightOverride 1
+           HeightOverride 6
+           {
+            ProgressBarWidgetClass "{F30C9A8F12055D6B}" {
+             Name "JobProgress"
+             Slot AlignableSlot "{081B71BC30675365}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             "Is Visible" 0
+             Color 0.89 0.639 0.231 1
+             style Simple
+             Maximum 1
+             Current 0.4
+            }
+           }
+          }
+         }
+        }
+        OverlayWidgetClass "{AD46122EF27F4182}" {
+         Name "JobButtonBox"
+         Slot LayoutSlot "{B39FBD4F9327CE5D}" {
+          HorizontalAlign 2
+          VerticalAlign 1
+          Padding 16 0 0 0
+         }
+         {
+          PanelWidgetClass "{43FDE4A35C8F84FF}" {
+           Name "JobButtonLine"
+           Slot OverlayWidgetSlot "{78076570DDB62F79}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.42 0.322 0.133 1
+           style outline_2px
+          }
+          TextWidgetClass "{E24065088B74778F}" {
+           Name "JobButton"
+           Slot OverlayWidgetSlot "{F42EAA9E46CFEFFE}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+            Padding 14 6 14 6
+           }
+           Color 0.89 0.639 0.231 1
+           Text "Fit"
+           "Font Size" 22
+           "Min Font Size" 22
+           FontProperties FontProperties "{FB846757BA556C00}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

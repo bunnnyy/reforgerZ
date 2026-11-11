@@ -1574,6 +1574,19 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The player's timed action, or null.
+	RZ_TimedTask GetTask(int playerId)
+	{
+		foreach (RZ_TimedTask t : m_aTasks)
+		{
+			if (t.m_iPlayerId == playerId)
+				return t;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Starts a timed action. Stay within reach (or still, for `still`) until it finishes.
 	RZ_TimedTask StartTask(int playerId, IEntity user, int kind, int spotId, int arg, float seconds, string label, bool still)
 	{
@@ -1604,6 +1617,7 @@ class RZ_Interactions
 				m_GM.NotifyPlayer(playerId, "Stopped", string.Format("%1 You leave %2 unfinished.", why, t.m_sLabel));
 
 			m_aTasks.Remove(i);
+			m_Cars.OnTaskStopped(playerId);
 		}
 	}
 
@@ -1626,6 +1640,7 @@ class RZ_Interactions
 			{
 				m_GM.NotifyPlayer(t.m_iPlayerId, "Stopped", string.Format("%1 You leave %2 unfinished.", why, t.m_sLabel));
 				m_aTasks.Remove(i);
+				m_Cars.OnTaskStopped(t.m_iPlayerId);
 				continue;
 			}
 

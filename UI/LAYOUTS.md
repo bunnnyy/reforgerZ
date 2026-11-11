@@ -1,8 +1,9 @@
 # The UI layouts
 
 The ReforgerZ layouts are in `UI/layouts/ReforgerZ/`: the HUD, the notice card, the notebook's
-frame and its five pages, the notice board, the journal and radio rows, the map icon and the
-background panel. They were written as text from the trees below and checked against every widget
+frame and its five pages, the notice board, the journal and radio rows, the talk screen, the
+reader, the car repair screen, the map icon and the background panel. They were written as text
+from the trees below and checked against every widget
 name and type the UI scripts look up.
 This file is their reference: the widget trees, the **names the scripts look up**, sizes, anchors,
 colours and fonts. When you change a layout, change its tree here too. What each screen is for,
@@ -208,10 +209,12 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu.layout` |
 | `RZ_ReaderMenu` | `RZ_ReaderMenu` | `RZ_ReaderMenu.layout` |
 | `RZ_TalkMenu` | `RZ_TalkMenu` | `RZ_TalkMenu.layout` |
+| `RZ_CarMenu` | `RZ_CarMenu` | `RZ_CarMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `RZ_RadioFilter`
-(**F**, pad **X**) and `RZ_Reply1` to `RZ_Reply7` (**1** to **7**) in `MenuContext`. The list with
+(**F**, pad **X**), `RZ_CarStart` (**T**, pad **Y**) and `RZ_Reply1` to `RZ_Reply7` (**1** to
+**7**) in `MenuContext`. The list with
 the pad routes is in [UI.md](../docs/UI.md#controllers). Esc, Q/E, up/down and Enter use the
 vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
 
@@ -448,6 +451,68 @@ Frame (root, full screen)
 ```
 
 Unlike the mockup, the paper has no grain or folds (they'd need a texture) and is a fixed 800 high.
+
+## Car repair screen: `RZ_CarMenu.layout` and `RZ_CarJob.layout`
+
+The car repair screen (`RZ_CarMenu` preset), from `UI/Mockups/car_repair.html`. Written as text.
+Positions inside `CarPanel` are from its top left.
+
+```
+Frame (root, full screen)
+├─ Image   Dim             full screen, #08090A at 60%
+└─ Frame   CarPanel        1,440 × 820, centred
+   ├─ Image  (CarBg)        #0F1113
+   ├─ Image  (CarAccent)    full width × 5, top edge, amber
+   ├─ Text   CarTitle       at (48, 34), 900 wide, condensed bold 34, bone ("The blue two-door")
+   ├─ Text   CarDone        right-aligned, ending at (1,320, 44), mono 22, dim ("2 of 5 done")
+   ├─ Button CloseButton    44 × 44 at (1,348, 30), "X" in amber
+   ├─ Image  (HeadRule)     at (48, 92), 1,344 × 2, #2A2E31
+   ├─ Frame  (CarView)      at (48, 120), 640 × 250, #0C0E0F with a #2A2E31 border
+   │  ├─ Image  CarPicture   at (0, 10), 640 × 213, #7B8790: the car's side view (UI > Car picture)
+   │  ├─ Text   (FrontLabel) at (14, 214), mono bold 18, faint, "FRONT"
+   │  └─ Frame  Marker0 … Marker4   46 × 46 each, centred on the job's place on the car (the
+   │     │                          mockup's points × 1.778, 10 lower with the picture: (135, 108),
+   │     │                          (181, 101), (164, 171), (508, 135), (284, 98))
+   │     ├─ Panel  MarkerRingN   the frame's size, border, hidden unless the job is selected (tinted)
+   │     ├─ Image  MarkerDotN    32 × 32 at (7, 7), tinted by the job's state
+   │     └─ Text   (MarkerNumN)  over the dot, mono bold 20, #15171A, "1" … "5"
+   ├─ Text   CarStatus      at (48, 392), 640 × 300, regular 24, #F4F0E6, wraps: what the last job said (hidden when empty)
+   ├─ Text   (JobsLabel)    at (730, 120), mono bold 18, dim, "THE JOBS"
+   ├─ VerticalLayout Jobs   at (730, 152), 662 wide: the job rows
+   ├─ HorizontalLayout Prompts  at (48, 740): the footer prompts the script makes
+   ├─ Text   PromptsText    the same place, mono bold 18, dim: the static footer, hidden once prompts are made
+   ├─ Text   StartNeed      right-aligned over the button, 20, dim ("Every part first"), hidden when it can start
+   └─ Button StartButton    340 × 56 at (1,052, 730)
+      └─ Overlay: Image StartBg (#1B1F22, amber when it can start) and Text StartText
+         (condensed bold 24, "START THE ENGINE": faint, dark on amber when it can start)
+```
+
+`RZ_CarJob.layout` (**UI > Car job layout**), one row, created into `Jobs`. The root is a
+`Button` named `JobRow` (a click does the job):
+
+```
+Button JobRow (root, 6 below it)
+└─ SizeLayout (JobSize)    662 × 76
+   └─ Overlay (JobBox)
+      ├─ Image  JobBg          #1B1F22, shown on the selected row
+      ├─ Image  JobBar         5 × 76, left edge, amber, shown on the selected row
+      └─ HorizontalLayout (JobLine)  padding 18 left and right, centred vertically
+         ├─ SizeLayout (JobNumBox) 40 × 40, 18 before the text
+         │  └─ Overlay: Image JobDot (tinted by state) and Text JobNum (mono bold 20, #15171A)
+         ├─ VerticalLayout (JobText)  fills the row
+         │  ├─ Text  JobName      condensed bold 28 (bright on the selected row, dim when it needs something)
+         │  ├─ Text  JobNeed      regular 21, dim: what you need or have, or "Fitting... 6 s"
+         │  └─ SizeLayout (JobProgressBox) 360 × 6, 4 below
+         │     └─ ProgressBar JobProgress   amber, shown while the job is under way
+         └─ Overlay JobButtonBox  right, hidden when the job has no button
+            ├─ Panel  (JobButtonLine)  border #6B5222
+            └─ Text   JobButton        mono bold 22, amber ("Fit", "Pour", "Hotwire", "Use the key")
+```
+
+State colours (the script tints them): done olive `#9AA35E`, can do now or under way amber
+`#E3A33B`, needs something first `#6E6A60`. Unlike the mockup, the markers, the ring and the pad
+keys are square (no circle texture), the row's button shows its word without the pad key (the
+footer prompts show A), and both wheels are drawn on the picture.
 
 ## Map icon: `RZ_MapIcon.layout`
 

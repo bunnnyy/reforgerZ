@@ -83,10 +83,10 @@ and one way to end it: **research the cure.**
   emblems, an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance, a notebook (standing, journal, radio, map key,
   hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
-  for everyone who talks, spoken lines as subtitles, notes on a paper reader, and on the map only
-  what you know. Gamepad and console as well as keyboard and mouse (the HUD and notice cards show
-  in Workbench play; the notebook, talk screen, reader and subtitles are written and not yet
-  played; the map icons are still to do).
+  for everyone who talks, a repair screen for the cars, spoken lines as subtitles, notes on a paper
+  reader, and on the map only what you know. Gamepad and console as well as keyboard and mouse (the
+  HUD and notice cards show in Workbench play; the notebook, talk screen, repair screen, reader and
+  subtitles are written and not yet played; the map icons are still to do).
 
 ## Status
 
@@ -186,7 +186,7 @@ scripts/Game/ReforgerZ/
                  memory (dialogue.json); Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
-                 the screen guard, the notice board, deploy-menu panel and loadout lock, the
+                 the car repair screen, the screen guard, the notice board, deploy-menu panel and loadout lock, the
                  map's icon layer, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
@@ -203,9 +203,9 @@ tools/prefab_manifest.py
                  checks the manifest against the scripts and writes the setup doc's tables
 UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previews (Previews/),
                  the layout guide (LAYOUTS.md), the layouts (layouts/ReforgerZ/), the icon
-                 atlas (Textures/ReforgerZ/) and its imageset (Imagesets/ReforgerZ/)
+                 atlas and the car picture (Textures/ReforgerZ/) and its imageset (Imagesets/ReforgerZ/)
 tools/render_ui.js
-                 renders the icon PNGs and the mockup previews (Node and Playwright)
+                 renders the icon PNGs, the mockup previews and the textures (Node and Playwright)
 tools/icon_atlas.py
                  packs the icons into the atlas and writes the imageset (Python and Pillow)
 tools/pacing_sim.py

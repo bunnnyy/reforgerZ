@@ -1,0 +1,831 @@
+FrameWidgetClass "{38130A52A986C600}" {
+ Name "CarMenu"
+ Slot FrameWidgetSlot "{72185AE1051BB2E6}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+  Alignment 0 0
+ }
+ {
+  ImageWidgetClass "{A0DFC48AAB036481}" {
+   Name "Dim"
+   Slot FrameWidgetSlot "{028A3CA679EC8DF0}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   Color 0.031 0.035 0.039 0.6
+   Size 1 1
+  }
+  FrameWidgetClass "{DC6949745F039391}" {
+   Name "CarPanel"
+   Slot FrameWidgetSlot "{6D7D98C8FBDAC932}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 1440
+    OffsetRight -1440
+    SizeY 820
+    OffsetBottom -820
+    Alignment 0.5 0.5
+   }
+   {
+    ImageWidgetClass "{5BF1F22522BBBB41}" {
+     Name "CarBg"
+     Slot FrameWidgetSlot "{C4AB231DD3E9B5F6}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.059 0.067 0.075 1
+     Size 1 1
+    }
+    ImageWidgetClass "{255578DBB09B117B}" {
+     Name "CarAccent"
+     Slot FrameWidgetSlot "{EA48216E56019B47}" {
+      Anchor 0 0 1 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 5
+      OffsetBottom -5
+      Alignment 0 0
+     }
+     Color 0.89 0.639 0.231 1
+     Size 1 1
+    }
+    TextWidgetClass "{89DF4C39EA42230B}" {
+     Name "CarTitle"
+     Slot FrameWidgetSlot "{0682D70B4F306583}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 34
+      OffsetTop 34
+      SizeX 900
+      OffsetRight -948
+      SizeY 44
+      OffsetBottom -78
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text "The blue two-door"
+     "Font Size" 34
+     "Min Font Size" 34
+     FontProperties FontProperties "{8A8AD86439FA8F4D}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{8A88A2F16E5CDE5B}" {
+     Name "CarDone"
+     Slot FrameWidgetSlot "{4518ED2964582BAA}" {
+      Anchor 0 0 0 0
+      PositionX 1000
+      OffsetLeft 1000
+      PositionY 44
+      OffsetTop 44
+      SizeX 320
+      OffsetRight -1320
+      SizeY 30
+      OffsetBottom -74
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "2 of 5 done"
+     "Font Size" 22
+     "Min Font Size" 22
+     "Horizontal Alignment" Right
+     FontProperties FontProperties "{0D136E9074469393}" {
+      Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{79E9250D43CFCF61}" {
+     Name "CloseButton"
+     Slot FrameWidgetSlot "{2716C6A499CFDC17}" {
+      Anchor 0 0 0 0
+      PositionX 1348
+      OffsetLeft 1348
+      PositionY 30
+      OffsetTop 30
+      SizeX 44
+      OffsetRight -1392
+      SizeY 44
+      OffsetBottom -74
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{5F5BEAEAE3735E74}" {
+       Name "CloseBox"
+       Slot ButtonWidgetSlot "{AFC9900F6B0CABC0}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{126DA99688AFABB8}" {
+         Name "CloseBg"
+         Slot OverlayWidgetSlot "{2805ED3C24D311DD}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{272861F282C7FC83}" {
+         Name "CloseText"
+         Slot OverlayWidgetSlot "{23CDCA59BE8FB135}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text "X"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{0DAB124FD25361A7}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ImageWidgetClass "{F6DA0CA14862452A}" {
+     Name "HeadRule"
+     Slot FrameWidgetSlot "{3699F504DA876310}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 92
+      OffsetTop 92
+      SizeX 1344
+      OffsetRight -1392
+      SizeY 2
+      OffsetBottom -94
+      Alignment 0 0
+     }
+     Color 0.165 0.18 0.192 1
+     Size 1 1
+    }
+    FrameWidgetClass "{68CB9830978697AF}" {
+     Name "CarView"
+     Slot FrameWidgetSlot "{C9065E1925D73617}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 120
+      OffsetTop 120
+      SizeX 640
+      OffsetRight -688
+      SizeY 250
+      OffsetBottom -370
+      Alignment 0 0
+     }
+     {
+      ImageWidgetClass "{6C59FEADAB899DCA}" {
+       Name "CarViewBg"
+       Slot FrameWidgetSlot "{1325DD08FD7347F2}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.047 0.055 0.059 1
+       Size 1 1
+      }
+      PanelWidgetClass "{731C1121F85426DE}" {
+       Name "CarViewLine"
+       Slot FrameWidgetSlot "{45821F5FA6F5356D}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      ImageWidgetClass "{2E523E3B3886ECF1}" {
+       Name "CarPicture"
+       Slot FrameWidgetSlot "{F7047BBC85748354}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 10
+        OffsetTop 10
+        SizeX 640
+        OffsetRight -640
+        SizeY 213
+        OffsetBottom -223
+        Alignment 0 0
+       }
+       Color 0.482 0.529 0.565 1
+       Size 1 1
+      }
+      TextWidgetClass "{5F8BB28932378DCA}" {
+       Name "FrontLabel"
+       Slot FrameWidgetSlot "{16426887D09C3BD6}" {
+        Anchor 0 0 0 0
+        PositionX 14
+        OffsetLeft 14
+        PositionY 214
+        OffsetTop 214
+        SizeX 120
+        OffsetRight -134
+        SizeY 26
+        OffsetBottom -240
+        Alignment 0 0
+       }
+       Color 0.431 0.416 0.376 1
+       Text "FRONT"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{0E7F49DFB371B5FD}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      FrameWidgetClass "{AD1EFAB7AB2EE008}" {
+       Name "Marker0"
+       Slot FrameWidgetSlot "{E805D0C7B227EFD7}" {
+        Anchor 0 0 0 0
+        PositionX 112
+        OffsetLeft 112
+        PositionY 85
+        OffsetTop 85
+        SizeX 46
+        OffsetRight -158
+        SizeY 46
+        OffsetBottom -131
+        Alignment 0 0
+       }
+       {
+        PanelWidgetClass "{AEDDED9B91254166}" {
+         Name "MarkerRing0"
+         Slot FrameWidgetSlot "{C905D1DAA5F8999A}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ImageWidgetClass "{357CC8EE05CC6677}" {
+         Name "MarkerDot0"
+         Slot FrameWidgetSlot "{8E295336D79F1CA0}" {
+          Anchor 0 0 0 0
+          PositionX 7
+          OffsetLeft 7
+          PositionY 7
+          OffsetTop 7
+          SizeX 32
+          OffsetRight -39
+          SizeY 32
+          OffsetBottom -39
+          Alignment 0 0
+         }
+         Color 0.89 0.639 0.231 1
+         Size 1 1
+        }
+        TextWidgetClass "{6772739FD3BF3C3B}" {
+         Name "MarkerNum0"
+         Slot FrameWidgetSlot "{25A821A254BFB7EA}" {
+          Anchor 0 0 0 0
+          PositionX 7
+          OffsetLeft 7
+          PositionY 9
+          OffsetTop 9
+          SizeX 32
+          OffsetRight -39
+          SizeY 28
+          OffsetBottom -37
+          Alignment 0 0
+         }
+         Color 0.082 0.09 0.102 1
+         Text "1"
+         "Font Size" 20
+         "Min Font Size" 20
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{B2B33832C7C5EEC9}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{8333A329DBFA22DC}" {
+       Name "Marker1"
+       Slot FrameWidgetSlot "{3A59AAD0533E584B}" {
+        Anchor 0 0 0 0
+        PositionX 158
+        OffsetLeft 158
+        PositionY 78
+        OffsetTop 78
+        SizeX 46
+        OffsetRight -204
+        SizeY 46
+        OffsetBottom -124
+        Alignment 0 0
+       }
+       {
+        PanelWidgetClass "{237BFCA9EC8B7A8B}" {
+         Name "MarkerRing1"
+         Slot FrameWidgetSlot "{993F2A3DD5943C4A}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ImageWidgetClass "{A508F5BC60B663D7}" {
+         Name "MarkerDot1"
+         Slot FrameWidgetSlot "{4E8B4454084B825F}" {
+          Anchor 0 0 0 0
+          PositionX 7
+          OffsetLeft 7
+          PositionY 7
+          OffsetTop 7
+          SizeX 32
+          OffsetRight -39
+          SizeY 32
+          OffsetBottom -39
+          Alignment 0 0
+         }
+         Color 0.89 0.639 0.231 1
+         Size 1 1
+        }
+        TextWidgetClass "{771ADE213C064B8A}" {
+         Name "MarkerNum1"
+         Slot FrameWidgetSlot "{0A8537CC9AE1D166}" {
+          Anchor 0 0 0 0
+          PositionX 7
+          OffsetLeft 7
+          PositionY 9
+          OffsetTop 9
+          SizeX 32
+          OffsetRight -39
+          SizeY 28
+          OffsetBottom -37
+          Alignment 0 0
+         }
+         Color 0.082 0.09 0.102 1
+         Text "2"
+         "Font Size" 20
+         "Min Font Size" 20
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{DAF4843538388BCC}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{1DED01FF3D2F713D}" {
+       Name "Marker2"
+       Slot FrameWidgetSlot "{9269DFB9F60D302C}" {
+        Anchor 0 0 0 0
+        PositionX 141
+        OffsetLeft 141
+        PositionY 148
+        OffsetTop 148
+        SizeX 46
+        OffsetRight -187
+        SizeY 46
+        OffsetBottom -194
+        Alignment 0 0
+       }
+       {
+        PanelWidgetClass "{3113612D1038F3AC}" {
+         Name "MarkerRing2"
+         Slot FrameWidgetSlot "{A1F2DA254F493BD2}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ImageWidgetClass "{F7484FC0E7D63306}" {
+         Name "MarkerDot2"
+         Slot FrameWidgetSlot "{35FA8E062D0C0E89}" {
+          Anchor 0 0 0 0
+          PositionX 7
+          OffsetLeft 7
+          PositionY 7
+          OffsetTop 7
+          SizeX 32
+          OffsetRight -39
+          SizeY 32
+          OffsetBottom -39
+          Alignment 0 0
+         }
+         Color 0.89 0.639 0.231 1
+         Size 1 1
+        }
+        TextWidgetClass "{4B665BCBEB750BBA}" {
+         Name "MarkerNum2"
+         Slot FrameWidgetSlot "{E11CA7DF27F995A4}" {
+          Anchor 0 0 0 0
+          PositionX 7
+          OffsetLeft 7
+          PositionY 9
+          OffsetTop 9
+          SizeX 32
+          OffsetRight -39
+          SizeY 28
+          OffsetBottom -37
+          Alignment 0 0
+         }
+         Color 0.082 0.09 0.102 1
+         Text "3"
+         "Font Size" 20
+         "Min Font Size" 20
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{7DE2BA41DE274C19}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{59C1EFDA4CF2CFC4}" {
+       Name "Marker3"
+       Slot FrameWidgetSlot "{3804115B9A5D45B5}" {
+        Anchor 0 0 0 0
+        PositionX 485
+        OffsetLeft 485
+        PositionY 112
+        OffsetTop 112
+        SizeX 46
+        OffsetRight -531
+        SizeY 46
+        OffsetBottom -158
+        Alignment 0 0
+       }
+       {
+        PanelWidgetClass "{156DEC70BF29B2CD}" {
+         Name "MarkerRing3"
+         Slot FrameWidgetSlot "{452E8C442CA948A0}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ImageWidgetClass "{DF40F9297291AD2F}" {
+         Name "MarkerDot3"
+         Slot FrameWidgetSlot "{C6B5CDEFB439797F}" {
+          Anchor 0 0 0 0
+          PositionX 7
+          OffsetLeft 7
+          PositionY 7
+          OffsetTop 7
+          SizeX 32
+          OffsetRight -39
+          SizeY 32
+          OffsetBottom -39
+          Alignment 0 0
+         }
+         Color 0.89 0.639 0.231 1
+         Size 1 1
+        }
+        TextWidgetClass "{E8C6336BD46D22B9}" {
+         Name "MarkerNum3"
+         Slot FrameWidgetSlot "{0D8E5541B2D9AC51}" {
+          Anchor 0 0 0 0
+          PositionX 7
+          OffsetLeft 7
+          PositionY 9
+          OffsetTop 9
+          SizeX 32
+          OffsetRight -39
+          SizeY 28
+          OffsetBottom -37
+          Alignment 0 0
+         }
+         Color 0.082 0.09 0.102 1
+         Text "4"
+         "Font Size" 20
+         "Min Font Size" 20
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{DDABBD5818138FAE}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+      FrameWidgetClass "{10063C8DE0C45F35}" {
+       Name "Marker4"
+       Slot FrameWidgetSlot "{FD6C4D95A985ACB9}" {
+        Anchor 0 0 0 0
+        PositionX 261
+        OffsetLeft 261
+        PositionY 75
+        OffsetTop 75
+        SizeX 46
+        OffsetRight -307
+        SizeY 46
+        OffsetBottom -121
+        Alignment 0 0
+       }
+       {
+        PanelWidgetClass "{1165F7E0E38AE55B}" {
+         Name "MarkerRing4"
+         Slot FrameWidgetSlot "{6D928187B7F56646}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ImageWidgetClass "{A0020E25B122BF62}" {
+         Name "MarkerDot4"
+         Slot FrameWidgetSlot "{97EA472B25B7D028}" {
+          Anchor 0 0 0 0
+          PositionX 7
+          OffsetLeft 7
+          PositionY 7
+          OffsetTop 7
+          SizeX 32
+          OffsetRight -39
+          SizeY 32
+          OffsetBottom -39
+          Alignment 0 0
+         }
+         Color 0.89 0.639 0.231 1
+         Size 1 1
+        }
+        TextWidgetClass "{B5DF7F7E24E1F7E1}" {
+         Name "MarkerNum4"
+         Slot FrameWidgetSlot "{72AD0D0D52772A67}" {
+          Anchor 0 0 0 0
+          PositionX 7
+          OffsetLeft 7
+          PositionY 9
+          OffsetTop 9
+          SizeX 32
+          OffsetRight -39
+          SizeY 28
+          OffsetBottom -37
+          Alignment 0 0
+         }
+         Color 0.082 0.09 0.102 1
+         Text "5"
+         "Font Size" 20
+         "Min Font Size" 20
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{E33450876C4C1F76}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    TextWidgetClass "{5CC5C48483DBDF6B}" {
+     Name "CarStatus"
+     Slot FrameWidgetSlot "{B91F0F4CFAA91807}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 392
+      OffsetTop 392
+      SizeX 640
+      OffsetRight -688
+      SizeY 300
+      OffsetBottom -692
+      Alignment 0 0
+     }
+     Color 0.957 0.941 0.902 1
+     Text ""
+     "Font Size" 24
+     "Min Font Size" 24
+     Wrap 1
+     FontProperties FontProperties "{179286080FFB4DB8}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    TextWidgetClass "{8D4F25B2908B1B66}" {
+     Name "JobsLabel"
+     Slot FrameWidgetSlot "{933997CC1877CCC1}" {
+      Anchor 0 0 0 0
+      PositionX 730
+      OffsetLeft 730
+      PositionY 120
+      OffsetTop 120
+      SizeX 662
+      OffsetRight -1392
+      SizeY 26
+      OffsetBottom -146
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "THE JOBS"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{5AC5DF6BFAC474A1}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    VerticalLayoutWidgetClass "{5600E2C1A698EABE}" {
+     Name "Jobs"
+     Slot FrameWidgetSlot "{8129DE91D7657A61}" {
+      Anchor 0 0 0 0
+      PositionX 730
+      OffsetLeft 730
+      PositionY 152
+      OffsetTop 152
+      SizeX 662
+      OffsetRight -1392
+      SizeY 420
+      OffsetBottom -572
+      Alignment 0 0
+     }
+    }
+    HorizontalLayoutWidgetClass "{EBD9D784A10D74EF}" {
+     Name "Prompts"
+     Slot FrameWidgetSlot "{8E43F3CFD13241CF}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 740
+      OffsetTop 740
+      SizeX 900
+      OffsetRight -948
+      SizeY 44
+      OffsetBottom -784
+      Alignment 0 0
+     }
+    }
+    TextWidgetClass "{33872AE3C6DFC9F2}" {
+     Name "PromptsText"
+     Slot FrameWidgetSlot "{D721A226DE854AD7}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 746
+      OffsetTop 746
+      SizeX 900
+      OffsetRight -948
+      SizeY 30
+      OffsetBottom -776
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "UP / DOWN  PICK    A  DO IT    Y  START    B  CLOSE"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{2E472488790E96F7}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{3FC2C77F7DDFB630}" {
+     Name "StartNeed"
+     Slot FrameWidgetSlot "{EB17CE8518DAEC3A}" {
+      Anchor 0 0 0 0
+      PositionX 1052
+      OffsetLeft 1052
+      PositionY 694
+      OffsetTop 694
+      SizeX 340
+      OffsetRight -1392
+      SizeY 30
+      OffsetBottom -724
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "Every part first"
+     "Font Size" 20
+     "Min Font Size" 20
+     "Horizontal Alignment" Right
+     FontProperties FontProperties "{8AD1797AF2FB6951}" {
+      Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{54016A6F277F739D}" {
+     Name "StartButton"
+     Slot FrameWidgetSlot "{C2FE072A3B1253C6}" {
+      Anchor 0 0 0 0
+      PositionX 1052
+      OffsetLeft 1052
+      PositionY 730
+      OffsetTop 730
+      SizeX 340
+      OffsetRight -1392
+      SizeY 56
+      OffsetBottom -786
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{BC480C07732404A7}" {
+       Name "StartBox"
+       Slot ButtonWidgetSlot "{6A409E9959D0A72A}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{7F491A0E869BE401}" {
+         Name "StartBg"
+         Slot OverlayWidgetSlot "{74A98C2785842B9F}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{29256A2FD8428B60}" {
+         Name "StartText"
+         Slot OverlayWidgetSlot "{084D493A3B877C47}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.431 0.416 0.376 1
+         Text "START THE ENGINE"
+         "Font Size" 24
+         "Min Font Size" 24
+         FontProperties FontProperties "{3F87F2DC2F7B66D9}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -1,9 +1,9 @@
 //! The screen guard (docs/UI.md, "The screen guard"). Server side.
 //!
-//! The talk screen and the reader stop you moving while the world keeps running, so the server
-//! watches every open one and closes it when the player is in danger: hurt, firing, an infected
-//! close by or closing in, dead, or (talk only) the person gone, too far away, or no reply for a
-//! while. Polled once a second on the game mode's SecondTick; each check is a few distance tests,
+//! The talk screen, the reader, the car repair screen and the shop screen stop you moving while
+//! the world keeps running, so the server watches every open one and closes it when the player is
+//! in danger: hurt, firing, an infected close by or closing in, dead, or (all but the reader) the
+//! person, car or quartermaster gone, too far away, or nothing picked for a while. Polled once a second on the game mode's SecondTick; each check is a few distance tests,
 //! and at most Dialogue > Open at most screens are open on the server.
 
 //------------------------------------------------------------------------------------------------
@@ -27,6 +27,8 @@ class RZ_ScreenGuard
 {
 	static const int KIND_READER = 1;
 	static const int KIND_TALK = 2;
+	static const int KIND_CAR = 3;		// the car repair screen (Interactions/RZ_Cars.c)
+	static const int KIND_SHOP = 4;		// the quartermaster's shop screen (Factions/RZ_ShopScreen.c)
 
 	protected static const float HURT_DROP = 0.5;
 	protected static const float CLOSING_STEP = 2;
@@ -105,8 +107,17 @@ class RZ_ScreenGuard
 			return;
 
 		m_mOpen.Remove(playerId);
+		Gone(playerId, kind);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The system behind a screen forgets it (closed by the player or by the guard).
+	protected void Gone(int playerId, int kind)
+	{
 		if (kind == KIND_TALK && m_GM.GetDialogue())
 			m_GM.GetDialogue().OnScreenGone(playerId);
+		else if (kind == KIND_CAR && m_GM.GetInteractions())
+			m_GM.GetInteractions().GetCars().OnScreenGone(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -168,7 +179,8 @@ class RZ_ScreenGuard
 		s.m_fHealth = hp;
 		RZ_DialogueSettings settings = RZ_DialogueSettings.Get();
 		bool talk = s.m_iKind == KIND_TALK;
-		if (talk && s.m_bHasSpeaker)
+		bool near = s.m_iKind != KIND_READER;	// talk, the car and the shop: you stay with them
+		if (near && s.m_bHasSpeaker)
 		{
 			if (!s.m_Speaker)
 				return "gone";
@@ -197,7 +209,7 @@ class RZ_ScreenGuard
 				return "danger";
 		}
 
-		if (!talk)
+		if (!near)
 			return "";
 
 		if (s.m_Speaker && RZ_Util.DistXZ(player.GetOrigin(), s.m_Speaker.GetOrigin()) > settings.m_fRange)
@@ -228,15 +240,15 @@ class RZ_ScreenGuard
 		{
 			if (kind == KIND_TALK)
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_TALK, "X|" + reason);
+			else if (kind == KIND_CAR)
+				ui.SendPayload(RZ_UIFeed.PAYLOAD_CAR, "X|" + reason);
 			else
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_READER, "");
 		}
 
+		Gone(playerId, kind);
 		if (kind != KIND_TALK)
 			return;
-
-		if (m_GM.GetDialogue())
-			m_GM.GetDialogue().OnScreenGone(playerId);
 
 		if (reason == "danger" && !speaker.IsEmpty())
 			m_GM.Say(playerId, speaker, faction, "\"Not now!\"");
@@ -248,6 +260,61 @@ class RZ_ScreenGuard
 		if (kind == KIND_TALK)
 			return "talk";
 
+		if (kind == KIND_CAR)
+			return "car repair";
+
+		if (kind == KIND_SHOP)
+			return "shop";
+
 		return "reader";
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Server: while a screen acts for its player (a car job, a purchase), what the game would tell
+//! that player as a notice is caught here instead and shown in the screen's status line
+//! (RZ_GameModeComponent.NotifyPlayerAs asks Take first). One at a time, synchronous only.
+class RZ_ScreenCapture
+{
+	protected static int s_iPlayer = -1;
+	protected static string s_sTitle;
+	protected static string s_sText;
+
+	//------------------------------------------------------------------------------------------------
+	static void Begin(int playerId)
+	{
+		s_iPlayer = playerId;
+		s_sTitle = "";
+		s_sText = "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True if the notice was caught (it's for the player a screen is acting for).
+	static bool Take(int playerId, string title, string text)
+	{
+		if (s_iPlayer < 0 || playerId != s_iPlayer)
+			return false;
+
+		s_sTitle = title;
+		if (!s_sText.IsEmpty())
+			s_sText += " ";
+
+		s_sText += text;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stops catching; what was caught ("" if nothing).
+	static string End()
+	{
+		s_iPlayer = -1;
+		return s_sText;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The title of the last notice caught (for a card when the screen closed meanwhile).
+	static string LastTitle()
+	{
+		return s_sTitle;
 	}
 }

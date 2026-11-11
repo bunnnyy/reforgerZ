@@ -156,6 +156,12 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourceNamePicker, "Talk screen: the layout of one reply row (UI/LAYOUTS.md, TalkReply). Empty = no talk screen: a person's actions and notices, as before", "layout")]
 	ResourceName m_sTalkReplyLayout;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Car repair screen: the layout of one job row (UI/LAYOUTS.md, CarJob). Empty = no repair screen: the car's actions and notices, as before", "layout")]
+	ResourceName m_sCarJobLayout;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Car repair screen: the side view of the car, a white line drawing (UI/Textures/ReforgerZ/RZ_CarSide.png, imported). Empty = the job markers on a plain panel", "edds")]
+	ResourceName m_sCarPicture;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Standing page layout (UI/LAYOUTS.md). Empty = the tab says Nothing here yet", "layout")]
 	ResourceName m_sStandingPage;
 
@@ -799,6 +805,15 @@ class RZ_UIW
 			return;
 
 		img.LoadImageFromSet(0, imageset, icon);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets an image from an imported texture (.edds), as vanilla's credits do. Nothing if empty.
+	static void Texture(Widget root, string name, ResourceName texture)
+	{
+		ImageWidget img = ImageWidget.Cast(Find(root, name));
+		if (img && !texture.IsEmpty())
+			img.LoadImageTexture(0, texture);
 	}
 
 	//------------------------------------------------------------------------------------------------

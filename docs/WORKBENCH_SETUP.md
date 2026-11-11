@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **182 prefab fields**: 40 on `RZ_GameModeComponent`, 135 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **187 entries**: 146 prefabs the plugin creates, 24 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 17 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 40 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **184 prefab fields**: 40 on `RZ_GameModeComponent`, 137 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **189 entries**: 146 prefabs the plugin creates, 24 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 19 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 40 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -679,6 +679,8 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | the Map key page layout (UI/LAYOUTS.md) | — | UI > Map key page | optional | the Map key tab (empty = Nothing here yet) |
 | (existing prefab) | the Hall page layout (UI/LAYOUTS.md) | — | UI > Hall page | optional | the Hall of fame tab (empty = Nothing here yet) |
 | (existing prefab) | the TalkReply layout (UI/LAYOUTS.md) | — | UI > Talk reply layout | optional | the talk screen's reply rows (empty = no talk screen: a person's actions and notices) |
+| (existing prefab) | the CarJob layout (UI/LAYOUTS.md) | — | UI > Car job layout | optional | the car repair screen's job rows (empty = no repair screen: the car's actions and notices) |
+| (existing prefab) | UI/Textures/ReforgerZ/RZ_CarSide.png, imported as a texture (UI/LAYOUTS.md) | — | UI > Car picture | optional | the side view of the car on the repair screen (empty = the job markers on a plain panel). Import the PNG in the Resource Browser (it becomes RZ_CarSide.edds), then pick it here |
 <!-- /manifest:prefabs -->
 
 ### Stand-in bases
@@ -973,8 +975,8 @@ without AI today: they keep standing where they spawn until they're based on an 
 
 Optional: without it every message is a vanilla hint, as before. How the UI works is in
 [UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md). Steps 1 to 4
-are done in the repo (step 4's notebook written as text: check it in Workbench, 4a); 5 and 6
-aren't. The layouts are in `UI/layouts/ReforgerZ/`.
+are done in the repo (step 4's menus written as text: check them in Workbench, 4a, and import the
+car picture, 4a.4); 5 and 6 aren't. The layouts are in `UI/layouts/ReforgerZ/`.
 
 1. **The feed** (done). `Prefabs/Characters/Core/RZ_PlayerController.et` inherits vanilla
    `DefaultPlayerControllerMP.et` and adds `RZ_PlayerUIComponent` (vanilla controllers already
@@ -1007,7 +1009,15 @@ aren't. The layouts are in `UI/layouts/ReforgerZ/`.
    3. Open `RZ_ReaderMenu.layout`, `RZ_TalkMenu.layout`, `RZ_TalkReply.layout` and `RZ_Hud.layout`
       (its new `SubtitlePanel`, hidden) the same way. **UI > Talk reply layout** is set, so the
       talk screen is on (**Dialogue > Talk screen**). Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
-   4. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
+      Open `RZ_CarMenu.layout` and `RZ_CarJob.layout` too: **UI > Car job layout** is set, so the
+      car repair screen is on.
+   4. **The car picture** (to do, two minutes). In the Resource Browser, import
+      `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on transparent, 1,440 × 480) with
+      the vanilla **TextureUIAtlas** preset, as the icon atlas was; it becomes `RZ_CarSide.edds`.
+      Set **UI > Car picture** on `RZ_GameMode.et` to it. Until then the repair screen's markers
+      sit on a plain dark panel. After changing `src/RZ_CarSide.svg`, run
+      `node tools/render_ui.js textures` and import again.
+   5. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
       with the pad); after spawning, find the notebook in the inventory and take it in hand. If
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
@@ -1425,14 +1435,14 @@ people, **UI > Reader** and **Subtitles** off for cards. How the UI is put toget
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:900` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:915` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:197` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_UIData.c:923` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:938` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:440` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
-| `UI/RZ_PlayerUIComponent.c:161` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:163` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
 
 ## 7. Log lines to check
@@ -1573,8 +1583,8 @@ now N percent.` (both only once a finale questline is registered),
 `Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
 `Long Table: found out (to N).`, `Long Table: the farm past ... is moving (quiet for a real day).` and
 `... opens again past ...`, `Long Table: broken up (N).`,
-`Screen guard: closed talk for player N (danger).` (or `reader`; `left`, `idle`, `gone`: a talk
-screen or reader the screen guard shut), `Status | infected N/100 agents (N entries; crawlers N, loose N), clusters N share N [N/N, ...], other
+`Screen guard: closed talk for player N (danger).` (or `reader`, `car repair`; `left`, `idle`,
+`gone`: a talk screen, reader or repair screen the screen guard shut), `Status | infected N/100 agents (N entries; crawlers N, loose N), clusters N share N [N/N, ...], other
 bodies N agents, hordes from towns N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
 doors N | active AI N/160 | land: ... | clock ..., day N min` (with Crawlers or Tribes on: agents near the
 budget all the time, or the active AI at its limit, means the budget is too high for the server),
@@ -2015,12 +2025,23 @@ editor's time of day)
   and set its MeshObject and RigidBody up the same way; if that fails, give it a vanilla item's
   mesh instead and keep "tyre" or "plank" in the file name. Planks on the ground still offer
   "Board up the doorway".
-- [ ] A fixable car: **Inspect** lists two or three parts and, while you carry no tool, says you
-  need a wrench or a toolkit. **Fit parts** refuses without one and works with the vanilla
+- [ ] A fixable car, with **UI > Car job layout** empty: **Look over the car** lists two or three
+  parts and, while you carry no tool, says you need a wrench or a toolkit. **Fit parts** refuses
+  without one and works with the vanilla
   repair-kit wrench (the Mechanic starts with one); **Fuel it** needs no tool. Hotwiring takes
   about 45 s (15 s as a Mechanic), draws infected, and fails about one time in three (rarely for
   a Mechanic) with "The wires spit..."; trying again can work. Keys are rare. Starting it gives a
   drivable car and the log line `Cars: ... fixed by player N.`
+- [ ] The same with the layout set: **Look over the car** opens the repair screen, and the car's
+  other prompts are gone. The header names the car with "N of 5 done"; the markers sit on the
+  car where the jobs are (the side view once **UI > Car picture** is set), olive done, amber you
+  can do, grey you need something; the selected row's marker has a ring. With the D-pad and A:
+  fit the battery (the row counts down, "Fitting... 6 s", then turns olive and the status line
+  says what was fitted); try a part you don't carry (the row says "None on you" and A does
+  nothing); hotwire ("No keys. About 45 s, loud, can fail") and watch it fail or work; then Y
+  starts the engine, the screen closes and the line is a card. Do the same with the mouse and with
+  Enter and T. B closes it; walk 6 m off with a job under way: it stops ("You moved away"). Let an
+  infected close in: the screen closes and the job goes on if you stay.
 - [ ] A locked place's outside door says "Locked" from outside and opens from inside (which
   unlocks it); its interior doors and shutting any door always work.
 - [ ] At the door: Unlock with the right key (the wrong one says which tag you need), Lock it

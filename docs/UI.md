@@ -9,8 +9,8 @@ every line of text are in [WRITING.md](WRITING.md).
 **Status:** the icon set, the mockups, the layouts, the icon atlas and its imageset, and the
 menu and input config overrides are built. In Workbench play the HUD works: the styled notice
 cards, the stealth visibility bars and the noise meter show. The notebook, the talk screen, the
-reader, the subtitles and notice pacing are written (their layouts as text) and compile, but
-haven't been played; the background panel and the map icons aren't in the game yet
+reader, the car repair screen, the subtitles and notice pacing are written (their layouts as text)
+and compile, but haven't been played; the background panel and the map icons aren't in the game yet
 ([Built and planned](#built-and-planned)).
 
 ## Art direction
@@ -87,6 +87,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Talk | `talk.png` | A person's name and who they are, what they say in large type, your replies with what each needs ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play |
 | Subtitles | `hud.png` | What people say outside the talk screen, at the bottom centre: the speaker in their faction colour, the line in bright bone ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
+| Car repair | — | A fixable car's job card (each job, what it needs, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
 | The map | — | The marker icons on the vanilla map, per player ([below](#the-map)) | `RZ_MapIconsUI` | Layout built, not on the map yet |
 
 The notice board isn't a notebook tab: it opens when you read a safehouse board, and Esc, B or
@@ -276,6 +277,53 @@ the server at its cap of open screens, it's a notice card; a client that can't o
 preset or layout) shows it as a card too. *Simplified:* the "how it looks" line is set only for
 flyers so far.
 
+### The car repair screen
+
+As approved: **Look over the car** at a fixable car ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix))
+opens a panel 1,440 × 820 in the middle of the screen, the world dimmed behind it. The header is the
+car ("The blue two-door") and "2 of 5 done". On the left, a side view of the car facing left (a
+white line drawing, tinted) with five numbered markers where the jobs are: 1 spark plugs at the
+front of the bonnet, 2 the battery by the windscreen, 3 the tyre on the front wheel, 4 fuel above
+the rear wheel, 5 the ignition behind the windscreen. Under it, what the last job said. On the
+right the job card, one row per job with the same number and colour: its name, what you need or
+what you have ("In your bag", "None on you", "Needs a wrench or a toolkit", "No keys. About 45 s,
+loud, can fail") and the button that does it (Fit, Pour, Hotwire, Use the key). A job under way
+shows "Fitting... 6 s" and a thin bar. Olive is done, amber you can do now (or are doing), grey you
+need something first. The selected row is lighter with an amber bar, and its marker on the car
+gets a ring. **Start the engine** sits bottom right, dim with what it still needs until it can go.
+
+| | Keyboard and mouse | Gamepad |
+|---|---|---|
+| Pick a job | up/down | D-pad or left stick |
+| Do it | Enter, or click the row | A |
+| Start the engine | **T** (`RZ_CarStart`), or click the button | Y |
+| Close | Esc, or the close button | B |
+
+You can't move while it's open; the world keeps running. A job you start goes on after the screen
+closes, as long as you stay close (the timed action's own rule). The screen guard closes it in
+danger, more than **Dialogue > Range** (6 m) from the car, or after **Idle seconds** (120) with no
+pick ([How the scripts fit](#how-the-scripts-fit)).
+
+**How it works.** The look reaches the server (`RZ_Cars.Inspect`), which opens a screen-guard entry
+and sends `PAYLOAD_CAR` to that player: `C|serial|car|done|5|status|can start|what start needs`,
+`I|what a look says` (the old notice, for the fallback), `W|job|seconds left|seconds` while a job
+is under way, and `J|job|state|name|need|button` per job; `X|reason` closes it. A pick goes back as
+`RpcAsk_CarJob(serial, job)`, at most two a second. The server checks the screen is open on that
+serial, the car is still there and you're within range and not busy, then runs the car's own code
+(`Fit` for one part, the hotwire or the key, `TryStart`); what it would have said as a notice is
+caught (`RZ_ScreenCapture`) and becomes the status line, and the screen is sent again. A fit or a
+hotwiring that finishes or stops sends it again too; starting the car closes it and its line is a
+card. **Fallbacks:** with **UI > Car job layout** empty, a client that can't open the menu (it says
+so, shows the look as a card, and uses the actions from then on), or the server at its cap of open
+screens (the client gets `F|busy` and shows the actions for a minute), the car's prompts and
+notices work as before. The client hides the car's prompts only while it would use the screen
+(`RZ_CarMenu.HidesSlotsOn`: the spot's read label is "Look over the car").
+
+**The picture** is `UI/Textures/ReforgerZ/RZ_CarSide.png` (1,440 × 480, white on transparent,
+rendered from `src/RZ_CarSide.svg` with `node tools/render_ui.js textures`), imported as a texture
+and set in **UI > Car picture**. Without it the markers sit on a plain dark panel. Both wheels are
+drawn: which job is missing shows on the markers, not the picture.
+
 ### The background picker
 
 The panel reads the picked loadout twice a second. Its **starting gear** is what that loadout
@@ -323,13 +371,14 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 | `RZ_OpenNotebook` | N | none: the pause menu's **Notebook** button, or the notebook item | `IngameContext` |
 | `RZ_RadioFilter` | F | X | `MenuContext` |
 | `RZ_Reply1` … `RZ_Reply7` | 1 … 7 | none: the D-pad and A pick a reply | `MenuContext` |
+| `RZ_CarStart` | T | Y | `MenuContext` |
 
 N is free in play (vanilla uses it only in the group menu and the map's pencil tool, other
 contexts). The pad has no free button in play, so Start (the pause menu) and the notebook item are
 its way into the notebook.
 
-**Status.** The notebook, the talk screen, the reader and the subtitles were built for the pad
-as well: every action they need has a pad binding or route, each sets the focus, the footers
+**Status.** The notebook, the talk screen, the reader, the car repair screen and the subtitles
+were built for the pad as well: every action they need has a pad binding or route, each sets the focus, the footers
 show prompts by device, and the new screens follow the TV sizes and the safe area. None of it
 has been played with a pad yet (the VERIFY list's UI part). The older screens' content (the
 notebook's pages, the notice board) keeps text under 18 px. A check of the whole mod with a
@@ -346,7 +395,9 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_Dialogue`, `RZ_TalkSpeaker` (`RZ_TalkGeneric`, `RZ_TalkLeader`), `RZ_TalkNeeds`, `RZ_DialogueTrees` | server | Conversations: sessions, capture, replies and their needs, picks; with Trees on, topics, nodes, checks and their tags ([DIALOGUE.md](DIALOGUE.md)) |
 | `RZ_TalkMenu` | client (`ChimeraMenuBase`) | The talk screen ([The talk screen](#the-talk-screen)) |
 | `RZ_Reader`, `RZ_ReaderMenu` | server, client | The reader: one player's paper, a page at a time ([Subtitles and the reader](#subtitles-and-the-reader)) |
-| `RZ_ScreenGuard` | server, once a second | Watches open talk screens and readers and closes them in danger (below) |
+| `RZ_Cars` (its repair screen part), `RZ_CarMenu` | server, client | The car repair screen ([above](#the-car-repair-screen)) |
+| `RZ_ScreenCapture` | server | While a screen acts for its player, catches what would have been that player's notice for the screen's status line |
+| `RZ_ScreenGuard` | server, once a second | Watches open talk screens, readers and repair screens and closes them in danger (below) |
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/rep`, sent as commands to the server, which checks them again. Registered with the first notice |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards and the subtitles |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
@@ -371,25 +422,28 @@ server picks one of the two per message, never both. `NotifyAll` stays a broadca
 > Styled notices** is off, or the HUD layout or the card layout is missing, the vanilla hint queue
 shows it exactly as before.
 
-**The screen guard** (`RZ_ScreenGuard`, server). The talk screen and the reader stop you moving
-while the world keeps running, so the server watches every open one, once a second on the game
+**The screen guard** (`RZ_ScreenGuard`, server). The talk screen, the reader and the car repair
+screen stop you moving while the world keeps running, so the server watches every open one, once a second on the game
 mode's `SecondTick`, and closes it when: you took damage or fired; an infected is within
 **Dialogue > Danger near** (6 m) of you or of the person you talk to, or one within **Danger
 closing** (30 m) came 2 m closer since the last check; you died, or the person is gone; and, for
 talk only, you're more than **Range** (6 m) from them or **Idle seconds** (120) passed with no
-reply. In danger the person says "Not now!" as a subtitle. At most **Open at most** (32) screens
+reply (the repair screen the same, from the car, with no pick). In danger the person says "Not now!" as a subtitle. At most **Open at most** (32) screens
 are open on the server; each check is a few distance tests. The client says when the player
 closes one (`RpcAsk_ScreenClosed`).
 
-**Turning it off.** Styled notices off gives the vanilla hints back. Taking
+**Turning it off.** Styled notices off gives the vanilla hints back. Emptying **UI > Car job
+layout** gives a fixable car its prompts and notices back. Taking
 `RZ_PlayerUIComponent` off the player controller (`Prefabs/Characters/Core/RZ_PlayerController.et`)
 stops all sending. To remove the UI entirely, delete the `UI/` code folder and the lines that use
 it: the `m_UISettings` attribute, `m_UIFeed` (creation, tick, spawn,
-`RecordGearSoon` and accessors), the `UsesMapIcons` check in `AddMapMarker`, the owner-only
+`RecordGearSoon` and accessors), the `UsesMapIcons` check in `AddMapMarker`, the screen capture and the owner-only
 branch at the top of `NotifyPlayer` and the block at the
 top of `QueueHint` (with the chat commands' registration) in `Core/RZ_GameModeComponent.c`, the
-board menu call in `World/RZ_NoticeBoard.c` (`SendMenu`), and the `OnClueRead` call in
-`Puzzles/RZ_PuzzleMission.c`. `RZ_LoadoutLock.c` and `RZ_MapIcons.c` can each be deleted on their
+board menu call in `World/RZ_NoticeBoard.c` (`SendMenu`), the `OnClueRead` call in
+`Puzzles/RZ_PuzzleMission.c`, the repair screen section of `Interactions/RZ_Cars.c` (with its
+calls in `Inspect`, `Hide`, `CompleteFit` and `CompleteHotwire`, and `OnTaskStopped` in
+`RZ_Interactions.c`) and the `RZ_CarMenu` check in `Puzzles/RZ_PuzzleActions.c`. `RZ_LoadoutLock.c` and `RZ_MapIcons.c` can each be deleted on their
 own (without the first, a locked pick spawns and plays as the default background). Then remove what names the UI's classes: point `RZ_GameMode.et` back at the vanilla player
 controller and clear its **UI** settings, and delete the two overrides in `Configs/System/` and
 the layouts in `UI/layouts/ReforgerZ/`.
@@ -405,9 +459,9 @@ reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; nine mockups and previews (with the talk screen, the reader and a subtitle). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item), the talk screen and its engine, the reader, the screen guard, the notice board menu, chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback |
-| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's and reader's written as text; the icon atlas and the `RZ_Icons` imageset; the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader and talk presets; N, 1–7 and the filter's X); the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, all but the map icon layout. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
+| Built | The icon set and its renderer; nine mockups and previews (with the talk screen, the reader and a subtitle). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item), the talk screen and its engine, the reader, the car repair screen, the screen guard, the notice board menu, chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback |
+| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's and car repair screen's written as text; the icon atlas and the `RZ_Icons` imageset; the car picture's PNG (to import: **UI > Car picture** is empty); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk and car presets; N, 1–7, T and the filter's X); the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, all but the map icon layout. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter |
-| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the subtitles; mouse clicks and the pad; the notice board menu (**UI > Board menus** is off); the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |
+| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the subtitles; mouse clicks and the pad; the notice board menu (**UI > Board menus** is off); the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |
 | Not done | The override of the vanilla deploy menu's layout that holds the background panel, so the panel doesn't show. The map configuration override with `RZ_MapIconsUI`, and **UI > Map icon layout** (empty: set, it turns the vanilla text markers off), so the map shows the vanilla markers. Images for the icons the scripts never swap (the map key's, the radio channel list, the HUD's radio, noise and paused icons, the background panel's): they draw as flat squares in their colour |
 | Planned | A sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm |

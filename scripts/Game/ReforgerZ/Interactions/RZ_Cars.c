@@ -8,7 +8,9 @@
 //! locked (vanilla's lock component, so nobody can get in), with the interaction spot just in front
 //! of its grille: inspect it ("Needs: fuel, a battery, a tyre"), fit parts (with a wrench or a
 //! toolkit), fuel it, hotwire it (about 45 s, 15 s for a Mechanic, loud, and it can fail) and
-//! start it. On the first start the parked copy is swapped for the drivable
+//! start it. With UI > Car job layout set, "Look over the car" opens the repair screen instead
+//! (docs/UI.md, "The car repair screen"): a job card beside a side view of the car, each job
+//! lit where it is, done through the same checks (DoJob); without it, the actions as before. On the first start the parked copy is swapped for the drivable
 //! car, and from then on it's an ordinary vehicle: vanilla repair handles damage, vanilla
 //! persistence (if the server runs it) saves it. A new project turns up somewhere else a few
 //! hours later. Wrecks are only ever wrecks: they're never fixable.
@@ -198,6 +200,25 @@ class RZ_Cars
 	protected static const float SHOW_RADIUS = 150;
 	protected static const float HIDE_RADIUS = 200;
 
+	//! The read label on a car project's spot. The client hides the car's action slots behind it
+	//! while it uses the repair screen (RZ_CarMenu.HidesSlotsOn).
+	static const string LOOK_LABEL = "Look over the car";
+
+	//! The repair screen's jobs, in the order of the job card and the markers on the car.
+	static const int JOB_SPARK = 0;
+	static const int JOB_BATTERY = 1;
+	static const int JOB_TYRE = 2;
+	static const int JOB_FUEL = 3;
+	static const int JOB_IGNITION = 4;
+	static const int JOB_START = 5;		// not a row: the Start the engine button
+	static const int JOBS = 5;
+
+	//! A job's state on the screen.
+	static const int STATE_DONE = 0;
+	static const int STATE_CAN = 1;		// you can do it now
+	static const int STATE_NEED = 2;	// you need something first
+	static const int STATE_WORKING = 3;	// you're doing it
+
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
 	protected RZ_CarSettings m_Settings;
@@ -209,6 +230,9 @@ class RZ_Cars
 	protected bool m_bOn;
 	protected ref map<int, IEntity> m_mStarted = new map<int, IEntity>();	// mission car id -> the vehicle it became
 	protected ref map<int, bool> m_mStartedWired = new map<int, bool>();
+	protected ref map<int, int> m_mScreenSpot = new map<int, int>();		// player -> the car spot their repair screen shows
+	protected ref map<int, int> m_mScreenSerial = new map<int, int>();	// player -> that screen's serial
+	protected int m_iNextSerial = 1;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Cars(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_CarSettings settings)
@@ -553,6 +577,7 @@ class RZ_Cars
 		if (s)
 			s.m_Body = null;
 
+		CloseScreensOn(c.m_iSpot, "gone");
 		m_Hub.RemoveSpot(c.m_iSpot);
 		c.m_iSpot = -1;
 	}
@@ -596,18 +621,34 @@ class RZ_Cars
 	//------------------------------------------------------------------------------------------------
 	void ProjectLabels(RZ_Spot s, out string read, out string choiceLabels)
 	{
-		read = "Inspect the car";
+		read = LOOK_LABEL;
 		choiceLabels = "Fit parts|Fuel it|Hotwire it (or use its keys)|Start the engine";
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Needs: fuel, a battery." The first inspect gets the "car" tip.
+	//! "Look over the car": the repair screen where it's used, else "Needs: fuel, a battery." as a
+	//! notice. The first look gets the "car" tip.
 	void Inspect(int playerId, RZ_Spot s, IEntity user)
 	{
 		RZ_CarProject c = Find(s.m_iRef);
 		if (!c)
 			return;
 
+		string text = InspectText(playerId, s, c, user);
+		if (!OpenScreen(playerId, s, text))
+			m_GM.NotifyPlayer(playerId, m_Hub.Title(s), text);
+
+		if (!c.m_aInspected.Contains(playerId))
+		{
+			c.m_aInspected.Insert(playerId);
+			RZ_Guidance.Report(playerId, "car", TownName(c));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a look over the car says: what's missing, the tool, the keys.
+	protected string InspectText(int playerId, RZ_Spot s, RZ_CarProject c, IEntity user)
+	{
 		string needs = "Nothing. It would run.";
 		if (c.m_iMissing != 0)
 			needs = string.Format("Needs: %1.", PartsText(c.m_iMissing));
@@ -623,12 +664,7 @@ class RZ_Cars
 		else if (c.m_bHasKeys)
 			keys = "No keys in it. A spare's often in a house nearby; or hotwire it.";
 
-		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), string.Format("%1, under a layer of dust. Nothing wrong you can't fix. %2 %3", m_Hub.Title(s), needs, keys));
-		if (!c.m_aInspected.Contains(playerId))
-		{
-			c.m_aInspected.Insert(playerId);
-			RZ_Guidance.Report(playerId, "car", TownName(c));
-		}
+		return string.Format("%1, under a layer of dust. Nothing wrong you can't fix. %2 %3", m_Hub.Title(s), needs, keys);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -640,31 +676,15 @@ class RZ_Cars
 			return;
 
 		string title = m_Hub.Title(s);
-		if (option == 0 || option == 1)
+		if (option == 0)
 		{
-			int mask = c.m_iMissing & PARTS_NOT_FUEL;
-			if (option == 1)
-				mask = c.m_iMissing & PART_FUEL;
+			Fit(playerId, s, c, PARTS_NOT_FUEL, user);
+			return;
+		}
 
-			if (mask == 0)
-			{
-				m_GM.NotifyPlayer(playerId, title, "It doesn't need that.");
-				return;
-			}
-
-			if (PartsCarried(user, mask) == 0)
-			{
-				m_GM.NotifyPlayer(playerId, title, string.Format("You've nothing it needs. It wants %1.", PartsText(mask)));
-				return;
-			}
-
-			if (option == 0 && NeedsTool(user))
-			{
-				m_GM.NotifyPlayer(playerId, title, "The bolts are rusted solid. You can't do this with your hands: you need a wrench or a toolkit.");
-				return;
-			}
-
-			m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_FIT, s.m_iId, mask, m_Settings.m_fFitSeconds, "the work on the car", false);
+		if (option == 1)
+		{
+			Fit(playerId, s, c, PART_FUEL, user);
 			return;
 		}
 
@@ -698,6 +718,34 @@ class RZ_Cars
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Starts fitting what the car is missing of `wanted` (PART_* bits) that the user carries: a
+	//! timed task, with a tool for anything but fuel.
+	protected void Fit(int playerId, RZ_Spot s, RZ_CarProject c, int wanted, IEntity user)
+	{
+		string title = m_Hub.Title(s);
+		int mask = c.m_iMissing & wanted;
+		if (mask == 0)
+		{
+			m_GM.NotifyPlayer(playerId, title, "It doesn't need that.");
+			return;
+		}
+
+		if (PartsCarried(user, mask) == 0)
+		{
+			m_GM.NotifyPlayer(playerId, title, string.Format("You've nothing it needs. It wants %1.", PartsText(mask)));
+			return;
+		}
+
+		if ((mask & PARTS_NOT_FUEL) != 0 && NeedsTool(user))
+		{
+			m_GM.NotifyPlayer(playerId, title, "The bolts are rusted solid. You can't do this with your hands: you need a wrench or a toolkit.");
+			return;
+		}
+
+		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_FIT, s.m_iId, mask, m_Settings.m_fFitSeconds, "the work on the car", false);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Fitting a battery, tyre or spark plugs needs a tool (Tool keywords) the user doesn't carry.
 	//! False when Tool keywords is empty.
 	protected bool NeedsTool(IEntity user)
@@ -727,7 +775,16 @@ class RZ_Cars
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A fit finished: on the repair screen if it's open, else as notices.
 	void CompleteFit(int playerId, RZ_Spot s, int mask, IEntity user)
+	{
+		bool captured = CaptureFor(playerId);
+		FinishFit(playerId, s, mask, user);
+		Release(playerId, captured);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FinishFit(int playerId, RZ_Spot s, int mask, IEntity user)
 	{
 		if (!s)
 			return;
@@ -769,7 +826,16 @@ class RZ_Cars
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The hotwiring finished: on the repair screen if it's open, else as notices.
 	void CompleteHotwire(int playerId, RZ_Spot s, int carId)
+	{
+		bool captured = CaptureFor(playerId);
+		FinishHotwire(playerId, s, carId);
+		Release(playerId, captured);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FinishHotwire(int playerId, RZ_Spot s, int carId)
 	{
 		RZ_CarProject c = Find(carId);
 		if (!c)
@@ -834,6 +900,378 @@ class RZ_Cars
 		m_GM.GetHeat().AddHeat(pos, m_Settings.m_fStartHeat);
 		m_GM.NotifyPlayer(playerId, title, "It catches on the second try and settles into a rough idle. The noise is enormous. It's yours, for as long as you can keep it.");
 		RZ_Log.Info(logLine);
+	}
+
+	// ================================================================ The repair screen
+	//------------------------------------------------------------------------------------------------
+	//! Opens the repair screen on this car for the player (docs/UI.md, "The car repair screen").
+	//! False when it isn't used (no job layout, no UI component): the caller shows the notice. At
+	//! the server's cap of open screens the client is told to use the actions for a minute.
+	protected bool OpenScreen(int playerId, RZ_Spot s, string inspectText)
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
+		if (!ui || !guard || RZ_UISettings.Get().m_sCarJobLayout.IsEmpty())
+			return false;
+
+		if (!guard.Open(playerId, RZ_ScreenGuard.KIND_CAR, s.m_Body, m_Hub.Title(s), -1))
+		{
+			ui.SendPayload(RZ_UIFeed.PAYLOAD_CAR, "F|busy");
+			return false;
+		}
+
+		m_mScreenSpot.Set(playerId, s.m_iId);
+		m_mScreenSerial.Set(playerId, m_iNextSerial);
+		m_iNextSerial++;
+		SendScreen(playerId, inspectText);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player has the repair screen open (on any car).
+	bool HasScreen(int playerId)
+	{
+		return m_mScreenSpot.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The screen guard or the player closed it: forget it.
+	void OnScreenGone(int playerId)
+	{
+		m_mScreenSpot.Remove(playerId);
+		m_mScreenSerial.Remove(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Closes the player's screen from here (the car started or went): the client and the guard.
+	protected void CloseScreen(int playerId, string reason)
+	{
+		if (!HasScreen(playerId))
+			return;
+
+		OnScreenGone(playerId);
+		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
+		if (guard)
+			guard.Close(playerId);
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		if (ui)
+			ui.SendPayload(RZ_UIFeed.PAYLOAD_CAR, "X|" + reason);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CloseScreensOn(int spotId, string reason)
+	{
+		if (spotId < 0 || m_mScreenSpot.IsEmpty())
+			return;
+
+		array<int> players = {};
+		foreach (int playerId, int shown : m_mScreenSpot)
+		{
+			if (shown == spotId)
+				players.Insert(playerId);
+		}
+
+		foreach (int p : players)
+		{
+			CloseScreen(p, reason);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Notices for this player go into their open screen until Release.
+	protected bool CaptureFor(int playerId)
+	{
+		if (!HasScreen(playerId))
+			return false;
+
+		RZ_ScreenCapture.Begin(playerId);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stops catching and redraws the screen with what was said; a card if the screen closed meanwhile.
+	protected void Release(int playerId, bool captured)
+	{
+		if (!captured)
+			return;
+
+		string said = RZ_ScreenCapture.End();
+		if (HasScreen(playerId))
+		{
+			SendScreen(playerId, said);
+			return;
+		}
+
+		if (!said.IsEmpty())
+			m_GM.NotifyPlayer(playerId, RZ_ScreenCapture.LastTitle(), said);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A fit or hotwiring stopped early (the player moved or was hurt): the screen shows it's over.
+	void OnTaskStopped(int playerId)
+	{
+		if (HasScreen(playerId))
+			SendScreen(playerId, "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A pick on the repair screen (RZ_PlayerUIComponent.RpcAsk_CarJob). Checked here: the screen is
+	//! open on this serial, the car is still there and the player beside it, nothing else is under
+	//! way; then the job runs through the same code as the car's actions, and the screen redraws
+	//! with what they would have said.
+	void DoJob(int playerId, int serial, int job)
+	{
+		int spotId;
+		int current;
+		if (!m_mScreenSpot.Find(playerId, spotId) || !m_mScreenSerial.Find(playerId, current) || serial != current)
+			return;
+
+		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
+		if (!guard || !guard.IsOpen(playerId, RZ_ScreenGuard.KIND_CAR))
+		{
+			OnScreenGone(playerId);
+			return;
+		}
+
+		guard.Touch(playerId);
+		RZ_Spot s = m_Hub.FindSpot(spotId);
+		RZ_CarProject c;
+		if (s)
+			c = Find(s.m_iRef);
+
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!c || !user || !RZ_Util.IsCharacterAlive(user))
+		{
+			CloseScreen(playerId, "gone");
+			return;
+		}
+
+		if (RZ_Util.DistXZ(user.GetOrigin(), s.m_vPos) > RZ_DialogueSettings.Get().m_fRange)
+			return;
+
+		if (m_Hub.HasTask(playerId))
+		{
+			SendScreen(playerId, "You're already at work on something. Finish it first, or step away to stop.");
+			return;
+		}
+
+		RZ_ScreenCapture.Begin(playerId);
+		switch (job)
+		{
+			case JOB_SPARK: Fit(playerId, s, c, PART_SPARK, user); break;
+			case JOB_BATTERY: Fit(playerId, s, c, PART_BATTERY, user); break;
+			case JOB_TYRE: Fit(playerId, s, c, PART_TYRE, user); break;
+			case JOB_FUEL: Fit(playerId, s, c, PART_FUEL, user); break;
+			case JOB_IGNITION: HandleProject(playerId, s, 2, user); break;
+			case JOB_START: HandleProject(playerId, s, 3, user); break;
+		}
+
+		Release(playerId, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The screen's payload: C|serial|title|done|jobs|status|can start|start need, I|inspect text,
+	//! W|job|seconds left|seconds in all while a job is under way, then J|job|state|name|need|button
+	//! per job.
+	protected void SendScreen(int playerId, string status)
+	{
+		int spotId;
+		int serial;
+		if (!m_mScreenSpot.Find(playerId, spotId) || !m_mScreenSerial.Find(playerId, serial))
+			return;
+
+		RZ_Spot s = m_Hub.FindSpot(spotId);
+		RZ_CarProject c;
+		if (s)
+			c = Find(s.m_iRef);
+
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		if (!c || !user || !ui)
+		{
+			CloseScreen(playerId, "gone");
+			return;
+		}
+
+		// The job under way on this car, if any
+		int working = -1;
+		RZ_TimedTask task = m_Hub.GetTask(playerId);
+		float seconds = 0;
+		if (task && task.m_iSpot == spotId)
+		{
+			working = TaskJob(task);
+			seconds = m_Settings.m_fFitSeconds;
+			if (task.m_iKind == RZ_Interactions.TASK_HOTWIRE)
+				seconds = HotwireSeconds(playerId);
+		}
+
+		string rows = "";
+		int done = 0;
+		for (int job = 0; job < JOBS; job++)
+		{
+			int state;
+			string name;
+			string need;
+			string button;
+			JobRow(playerId, c, job, user, working, state, name, need, button);
+			if (state == STATE_DONE)
+				done++;
+
+			rows += string.Format("\nJ|%1|%2|%3|%4|%5", job, state, name, RZ_UIText.Clean(need, 80), button);
+		}
+
+		bool hasKey = m_Hub.GetSearch().HasKey(playerId, CarKey(c));
+		bool canStart = c.m_iMissing == 0 && (c.m_bHotwired || hasKey) && working < 0;
+		string startNeed = "";
+		if (c.m_iMissing != 0)
+			startNeed = "Every part first";
+		else if (!c.m_bHotwired && !hasKey)
+			startNeed = "Keys or the wires first";
+
+		int startFlag = 0;
+		if (canStart)
+			startFlag = 1;
+
+		string payload = string.Format("C|%1|%2|%3|%4|%5|%6|%7", serial, RZ_UIText.Clean(RZ_Util.Capitalize(c.m_sNoun), 60), done, JOBS,
+			RZ_UIText.Clean(status, 400), startFlag, startNeed);
+		payload += "\nI|" + RZ_UIText.Clean(InspectText(playerId, s, c, user), 400);
+		if (working >= 0)
+			payload += string.Format("\nW|%1|%2|%3", working, Math.Max(0, task.m_fLeft), seconds);
+
+		ui.SendPayload(RZ_UIFeed.PAYLOAD_CAR, payload + rows);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The job a car task is doing (a fit's part, or the ignition), -1 for any other task.
+	protected int TaskJob(RZ_TimedTask t)
+	{
+		if (t.m_iKind == RZ_Interactions.TASK_HOTWIRE)
+			return JOB_IGNITION;
+
+		if (t.m_iKind != RZ_Interactions.TASK_FIT)
+			return -1;
+
+		if ((t.m_iArg & PART_FUEL) != 0)
+			return JOB_FUEL;
+		if ((t.m_iArg & PART_BATTERY) != 0)
+			return JOB_BATTERY;
+		if ((t.m_iArg & PART_TYRE) != 0)
+			return JOB_TYRE;
+
+		return JOB_SPARK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float HotwireSeconds(int playerId)
+	{
+		if (RZ_Interactions.IsBackground(m_GM, playerId, "mechanic"))
+			return m_Settings.m_fMechanicHotwireSeconds;
+
+		return m_Settings.m_fHotwireSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One row of the job card: its state, name, what you need (or have) and the button's word.
+	protected void JobRow(int playerId, RZ_CarProject c, int job, IEntity user, int working, out int state, out string name, out string need, out string button)
+	{
+		button = "";
+		if (job == JOB_IGNITION)
+		{
+			name = "Ignition";
+			if (working == job)
+			{
+				state = STATE_WORKING;
+				need = "Hotwiring";
+			}
+			else if (c.m_bHotwired && c.m_bWired)
+			{
+				state = STATE_DONE;
+				need = "Wired";
+			}
+			else if (c.m_bHotwired)
+			{
+				state = STATE_DONE;
+				need = "Key in it";
+			}
+			else if (m_Hub.GetSearch().HasKey(playerId, CarKey(c)))
+			{
+				state = STATE_CAN;
+				need = "Your key fits";
+				button = "Use the key";
+			}
+			else
+			{
+				state = STATE_CAN;
+				need = string.Format("No keys. About %1 s, loud, can fail", RZ_Util.RoundToInt(HotwireSeconds(playerId)));
+				button = "Hotwire";
+			}
+
+			return;
+		}
+
+		int bit = PART_SPARK;
+		name = "Spark plugs";
+		string doing = "Fitting";
+		string carried = "In your bag";
+		string none = "None on you";
+		string done = "Fitted";
+		button = "Fit";
+		if (job == JOB_BATTERY)
+		{
+			bit = PART_BATTERY;
+			name = "Battery";
+		}
+		else if (job == JOB_TYRE)
+		{
+			bit = PART_TYRE;
+			name = "Tyre";
+		}
+		else if (job == JOB_FUEL)
+		{
+			bit = PART_FUEL;
+			name = "Fuel";
+			doing = "Pouring";
+			carried = "A full can on you";
+			none = "No full can on you";
+			done = "In the tank";
+			button = "Pour";
+		}
+
+		if (working == job)
+		{
+			state = STATE_WORKING;
+			need = doing;
+			button = "";
+			return;
+		}
+
+		if ((c.m_iMissing & bit) == 0)
+		{
+			state = STATE_DONE;
+			need = done;
+			button = "";
+			return;
+		}
+
+		if (PartsCarried(user, bit) == 0)
+		{
+			state = STATE_NEED;
+			need = none;
+			button = "";
+			return;
+		}
+
+		if (bit != PART_FUEL && NeedsTool(user))
+		{
+			state = STATE_NEED;
+			need = "Needs a wrench or a toolkit";
+			button = "";
+			return;
+		}
+
+		state = STATE_CAN;
+		need = carried;
 	}
 
 	// ================================================================ Keys and the Mechanic

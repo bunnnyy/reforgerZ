@@ -2685,6 +2685,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! filters for itself. Never both.
 	void NotifyPlayerAs(int playerId, string title, string text, RZ_ENoticeTag tag)
 	{
+		// What a car job or a purchase answers goes into that screen's status line
+		if (RZ_ScreenCapture.Take(playerId, title, text))
+			return;
+
 		// A line from the person this player is talking to goes into the talk screen
 		if (m_Dialogue && m_Dialogue.Capture(playerId, title, text))
 			return;

@@ -3,6 +3,7 @@
 //
 //   node tools/render_ui.js icons     # UI/Icons/png/{64,128,color/64,color/128} and UI/Previews/icons_sheet.png
 //   node tools/render_ui.js screens   # every UI/Mockups/*.html at 1920x1080 (x2) into UI/Previews/<name>.png
+//   node tools/render_ui.js textures  # every UI/Textures/ReforgerZ/src/*.svg (x4) into UI/Textures/ReforgerZ/<name>.png
 //   node tools/render_ui.js all
 //
 // Needs Node and Playwright with its Chromium (require('playwright')). Nothing else.
@@ -129,6 +130,23 @@ function serve() {
   return new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve(server)));
 }
 
+// Textures the layouts load (the car repair screen's side view): white on transparent, 4x their
+// viewBox, for import in Workbench (docs/UI.md).
+async function renderTextures(browser) {
+  const dir = path.join(UI, 'Textures', 'ReforgerZ');
+  const src = path.join(dir, 'src');
+  if (!fs.existsSync(src)) return;
+  const page = await browser.newPage({ deviceScaleFactor: 4 });
+  for (const f of fs.readdirSync(src).filter((x) => x.endsWith('.svg'))) {
+    const svg = fs.readFileSync(path.join(src, f), 'utf8');
+    await page.setContent(`<!doctype html><html><head><style>html,body{margin:0;background:transparent} #t{display:inline-block} #t svg{display:block}</style></head><body><div id="t">${svg}</div></body></html>`);
+    const out = path.join(dir, f.replace('.svg', '.png'));
+    await page.locator('#t').screenshot({ path: out, omitBackground: true });
+    console.log('texture:', path.relative(ROOT, out));
+  }
+  await page.close();
+}
+
 async function renderScreens(browser, only) {
   const server = await serve();
   const port = server.address().port;
@@ -151,6 +169,7 @@ async function renderScreens(browser, only) {
   try {
     if (what === 'icons' || what === 'all') await renderIcons(browser);
     if (what === 'screens' || what === 'all') await renderScreens(browser, process.argv[3]);
+    if (what === 'textures' || what === 'all') await renderTextures(browser);
   } finally {
     await browser.close();
   }

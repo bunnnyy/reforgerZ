@@ -81,6 +81,8 @@ class RZ_UIFeed
 	static const int PAYLOAD_KINDS = 6;		// the kinds a client may ask for; the ones below are only sent
 	static const int PAYLOAD_TALK = 6;		// the talk screen: one node, or X|reason to close (Dialogue/RZ_Dialogue.c)
 	static const int PAYLOAD_READER = 7;	// the reader: P|title|how, then the text; "" closes it (UI/RZ_Reader.c)
+	static const int PAYLOAD_CAR = 8;		// the car repair screen: C, I, W, J records; F falls back; X|reason closes (Interactions/RZ_Cars.c)
+	static const int PAYLOAD_SHOP = 9;		// the shop screen: S and I records; X|reason closes (Factions/RZ_ShopScreen.c)
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;
