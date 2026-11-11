@@ -472,7 +472,7 @@ class RZ_GuidanceWorld
 	{
 		if (idx >= FLYER_BASE)
 		{
-			m_GM.NotifyPlayer(playerId, "Flyer on the wall", RZ_GuidanceText.FlyerText(LabTown(), true));
+			RZ_Reader.Show(m_GM, playerId, "Flyer on the wall", "Printed, pinned at the corners", RZ_GuidanceText.FlyerText(LabTown(), true));
 			m_Guide.OnClueRead(playerId);
 			return;
 		}
@@ -487,7 +487,7 @@ class RZ_GuidanceWorld
 			return;
 		}
 
-		m_GM.NotifyPlayer(playerId, c.m_sTitle, c.m_sText);
+		RZ_Reader.Show(m_GM, playerId, c.m_sTitle, "", c.m_sText);
 		m_Guide.OnClueRead(playerId);
 	}
 

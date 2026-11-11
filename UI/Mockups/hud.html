@@ -84,6 +84,11 @@
   .cap { font: 500 11px 'JetBrains Mono'; color: var(--faint); letter-spacing: .08em; margin: -6px 0 12px; }
   .live { position: absolute; left: 44px; bottom: 44px; }
   .callout { position: absolute; font: 600 12px 'JetBrains Mono'; color: rgba(242,194,48,.85); letter-spacing: .1em; }
+  /* subtitles: bottom centre, clear of the infection panel and the noise meter */
+  .sub { position: absolute; left: 50%; bottom: 204px; transform: translateX(-50%); width: 1100px; box-sizing: border-box;
+    padding: 16px 28px 20px; background: rgba(12,14,15,.88); border-radius: 4px; text-align: center; }
+  .sub b { display: block; font: 700 24px/1.2 Inter, sans-serif; color: #9AA35E; margin-bottom: 6px; }
+  .sub span { font: 400 32px/1.45 Inter, sans-serif; color: #F4F0E6; }
 </style>
 </head>
 <body>
@@ -167,9 +172,11 @@
       <div class="hd"><i data-i="status_broadcast"></i><div class="kind">Government broadcast</div><div class="time">19:30</div></div>
       <div class="txt">DAY 14. RESIDENTS ARE REMINDED THAT THE PERIMETER IS FOR YOUR PROTECTION.</div>
     </div>
-    <div class="queued">+2 QUEUED</div>
+    <div class="queued">+3 in your notebook</div>
   </div>
   <div class="callout" style="right:44px;top:66px">RZ_HudDisplay · notice cards ▼</div>
+  <div class="sub"><b>Bastion checkpoint</b><span>"Checkpoint. Walk to the barrier and wait to be searched."</span></div>
+  <div class="callout" style="left:410px;bottom:340px">RZ_HudDisplay · subtitles: what people say, bottom centre ▼</div>
 </div>
 </body>
 </html>

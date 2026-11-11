@@ -51,7 +51,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Contracts that give a rough area (a 500 m circle) until you're close; Radio Operators and Trusted players get the spot | [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
-| The UI: an original icon set (61 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the standing screen, journal, radio log and map key (keys and mouse), the notice board and hall of fame menus, chat commands (`/note`, `/hall`), a deploy-menu background panel with the loadout's gear, locked loadouts refused by the server, and the marker icons on the map, fed per player from the server | [UI.md](UI.md) |
+| The UI: an original icon set (61 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the notebook (Standing, Journal, Radio, Map key and Hall of fame as tabs, opened with N, the pause menu's Notebook button or the notebook item every life carries; gamepad and mouse), notices paced a few at a time by importance and sent only to their player, a talk screen for every person who talks (their lines, your replies with what each needs shown before you choose; gamepad, keys 1–7 and mouse), spoken lines as subtitles at the bottom of the screen, notes and letters in a paper reader (danger closes it), the notice board menu, chat commands (`/note`), a deploy-menu background panel with the loadout's gear and locked loadouts unavailable, and the marker icons on the map, fed per player from the server | [UI.md](UI.md) |
 | Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout, with a vanilla or Workshop prefab for 152 of its entries and the 13 loadouts), the Workbench plugin **ReforgerZ: Create prefabs** (run for real; a second run changes nothing) with a dry run and a checklist fallback, `tools/icon_atlas.py` for the icon atlas and imageset, and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
 | The first Workbench build: 159 prefabs (156 the plugin made from the manifest, many of them on stand-in bases, plus the player controller with the HUD and the faction and loadout managers), the Arland world with the game mode, the four factions and their hidden variants and the 13 background loadouts, its scenario, the 12 UI layouts, the icon atlas and imageset, and the screens and their keys in the menu and input configs. It starts in Workbench play with no script exceptions | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), [UI.md](UI.md) |
 
@@ -75,29 +75,16 @@ The build-review fixes are done. The design for the items marked "being designed
   ([PC_SETUP.md](PC_SETUP.md#6-play-testing)).
 
 ### UI
-- **The notebook:** one menu with every screen as a tab (Standing, Journal, Radio, Map key, Hall of
-  fame), opened with N, a Notebook button in the pause menu, or a notebook item used from the
-  inventory or in your hands. It replaces K, J, U and O, which clash with vanilla keys. Being
-  designed ([UI.md](UI.md#opening-the-screens)).
-- **Notice pacing:** notice cards arrive a few at a time, by importance, instead of all at once at
-  spawn. There's no separate notification log: the Radio tab keeps the radio messages and also
-  lists mission and world-event notices, each a filter of its own. Being designed.
 - **Controllers:** check the whole mod with a gamepad and fix what doesn't work
   ([UI.md](UI.md#controllers)). Planned.
-- **Talking to people:** F, then **Talk**, opens a dialogue screen: what they say, and your replies
-  as a list you pick with the mouse or a pad, instead of a long list of actions on them. Being
-  designed.
-- **Subtitles and the reader:** people's spoken lines as subtitles at the bottom of the screen, away
-  from the notice cards; notes and books open in a paper reader that stops you moving. Being designed.
 - **The car repair screen:** a job card (each job, what you need, the button that does it) beside a
   rough side view of the car with each job lit where it is. Planned.
 - **The quartermaster's shop screen:** categories as tabs, items with their Favor price and the
   standing they need, a picture of the item, and a details panel with Buy, instead of a long list of
   actions. Planned.
-- **Mockups of the approved screens:** the car repair, talk, subtitles, reader and shop screens the
-  author approved are described in `UI/Mockups/approved_samples.md`. Make full-size mockups of them in
-  `UI/Mockups/` (`talk.html` and `reader.html` are half done), add them to the screens table in
-  [UI.md](UI.md), then delete that file.
+- **Mockups of the approved screens:** the car repair and shop screens the author approved are
+  described in `UI/Mockups/approved_samples.md`. Make full-size mockups of them in `UI/Mockups/`,
+  add them to the screens table in [UI.md](UI.md), then delete that file.
 
 ### World interactions (from play-testing)
 - **Bodies** are looted with the vanilla inventory, with no search prompt. Planned.
@@ -199,8 +186,10 @@ In this order, because later ones depend on earlier ones:
 16. **Seasons:** a wipe end to end (backup, fresh start, the winner's rules, the hall of fame
     kept), and whether the rule sets feel different enough without being unfair. Are rough
     contract areas fun to search, or too vague at 500 m?
-17. **The UI** with a game client: does the owner-only feed arrive, does the timer agree with
-    the stage messages, do the menus open, fill and take clicks, do the map icons sit on their
+17. **The UI** with a game client and a gamepad: does the owner-only feed arrive, do notices come
+    a few at a time, does the timer agree with the stage messages, do the notebook (N, the pause
+    menu, the item), the talk screen and the reader open, fill, take clicks and the pad, and close
+    in danger, do the map icons sit on their
     spots while panning and zooming (once the map layer is set up), and does the deploy menu grey
     out locked loadouts ([UI.md](UI.md))?
 

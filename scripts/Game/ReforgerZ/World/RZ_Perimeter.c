@@ -696,7 +696,7 @@ class RZ_Perimeter
 			if (!m_mLastWarned.Find(playerId, last) || m_fClock - last >= WARN_REPEAT)
 			{
 				m_mLastWarned.Set(playerId, m_fClock);
-				m_GM.NotifyPlayer(playerId, LOUDSPEAKER, GetStoodDownText(pos));
+				m_GM.Say(playerId, LOUDSPEAKER, -1, GetStoodDownText(pos));
 			}
 		}
 
@@ -725,7 +725,7 @@ class RZ_Perimeter
 		if (!RZ_Util.MovePlayer(playerId, back))
 			return;
 
-		m_GM.NotifyPlayer(playerId, LOUDSPEAKER, text);
+		m_GM.Say(playerId, LOUDSPEAKER, -1, text);
 		RZ_Log.Info(string.Format("Perimeter (stood down): player %1 turned back from the line.", playerId));
 	}
 
@@ -775,7 +775,7 @@ class RZ_Perimeter
 			if (!m_mLastWarned.Find(playerId, last) || m_fClock - last >= WARN_REPEAT)
 			{
 				m_mLastWarned.Set(playerId, m_fClock);
-				m_GM.NotifyPlayer(playerId, LOUDSPEAKER, GetWarningText(pos));
+				m_GM.Say(playerId, LOUDSPEAKER, -1, GetWarningText(pos));
 			}
 		}
 
@@ -817,7 +817,7 @@ class RZ_Perimeter
 	protected void WarningShot(int playerId, IEntity player)
 	{
 		SpawnEffect(RZ_Util.RandomPointInRing(player.GetOrigin(), 3, 6));
-		m_GM.NotifyPlayer(playerId, LOUDSPEAKER, "A shot cracks past you and kicks up the ground.\n\"Final warning. Turn back now.\"\nGet away from the line: the next one won't miss.");
+		m_GM.Say(playerId, LOUDSPEAKER, -1, "A shot cracks past you and kicks up the ground.\n\"Final warning. Turn back now.\"\nGet away from the line: the next one won't miss.");
 	}
 
 	//------------------------------------------------------------------------------------------------

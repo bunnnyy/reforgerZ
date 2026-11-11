@@ -2543,7 +2543,7 @@ class RZ_Leaders
 
 		if (Attitude(l, playerId) <= -2)
 		{
-			m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Refuse(l.m_eFaction));
+			m_GM.Say(playerId, l.GetHeader(), l.m_eFaction, RZ_LeaderVoice.Refuse(l.m_eFaction));
 			return;
 		}
 
@@ -2591,7 +2591,7 @@ class RZ_Leaders
 
 		if (Attitude(l, playerId) <= -2)
 		{
-			m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Refuse(l.m_eFaction));
+			m_GM.Say(playerId, l.GetHeader(), l.m_eFaction, RZ_LeaderVoice.Refuse(l.m_eFaction));
 			return;
 		}
 
@@ -2615,13 +2615,7 @@ class RZ_Leaders
 	//! From RZ_LeaderAction on a quartermaster: the leader whose seat this is.
 	void HandleAction(int playerId, RZ_ELeaderAction kind, IEntity owner, IEntity user)
 	{
-		// On a quartermaster: that faction's leader. Elsewhere: whoever's seat is nearest
-		int faction = -1;
-		RZ_QuartermasterComponent qm = RZ_QuartermasterComponent.Cast(owner.FindComponent(RZ_QuartermasterComponent));
-		if (qm)
-			faction = qm.GetFaction();
-
-		RZ_Leader l = FindNearest(faction, owner.GetOrigin(), SEAT_RADIUS);
+		RZ_Leader l = FindSeat(owner);
 		if (!l)
 		{
 			m_GM.NotifyPlayer(playerId, "Nobody in charge", "Whoever ran this place isn't here. Someone says to come back in a day or two.");
@@ -2641,6 +2635,39 @@ class RZ_Leaders
 			case RZ_ELeaderAction.NEWS: HandleChoice(playerId, l.m_iId, 1, owner, user); break;
 			case RZ_ELeaderAction.STANDING: HandleChoice(playerId, l.m_iId, 2, owner, user); break;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The leader whose seat `owner` is at: on a quartermaster, that faction's leader; elsewhere,
+	//! whoever's seat is nearest. Null if nobody's there.
+	RZ_Leader FindSeat(IEntity owner)
+	{
+		if (!owner)
+			return null;
+
+		int faction = -1;
+		RZ_QuartermasterComponent qm = RZ_QuartermasterComponent.Cast(owner.FindComponent(RZ_QuartermasterComponent));
+		if (qm)
+			faction = qm.GetFaction();
+
+		return FindNearest(faction, owner.GetOrigin(), SEAT_RADIUS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a leader thinks of a player, in a few words (the talk screen's sub-line).
+	string AttitudeWords(RZ_Leader l, int playerId)
+	{
+		int attitude = Attitude(l, playerId);
+		if (attitude >= 3)
+			return "thinks well of you";
+		if (attitude >= 1)
+			return "knows your name";
+		if (attitude == 0)
+			return "doesn't know you yet";
+		if (attitude == -1)
+			return "has heard things about you";
+
+		return "won't deal with you";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2743,6 +2770,13 @@ class RZ_LeaderAction : ScriptedUserAction
 	protected RZ_ELeaderAction m_eKind;
 
 	//------------------------------------------------------------------------------------------------
+	//! With the talk screen, work, news and standing are replies there; only Talk stays.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return m_eKind == RZ_ELeaderAction.TALK || !RZ_TalkMenu.Available();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
 		switch (m_eKind)
@@ -2771,6 +2805,10 @@ class RZ_LeaderAction : ScriptedUserAction
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
 		if (!gm || playerId <= 0 || !gm.GetLeaders())
+			return;
+
+		// "Talk to whoever's in charge" opens the talk screen with the leader at this seat
+		if (m_eKind == RZ_ELeaderAction.TALK && gm.GetDialogue() && gm.GetDialogue().OpenSeat(playerId, pOwnerEntity, pUserEntity))
 			return;
 
 		gm.GetLeaders().HandleAction(playerId, m_eKind, pOwnerEntity, pUserEntity);

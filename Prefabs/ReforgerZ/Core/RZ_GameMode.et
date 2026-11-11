@@ -11,6 +11,13 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sNoticeLayout "{9DDD3521A90DB6BA}UI/layouts/ReforgerZ/RZ_NoticeCard.layout"
     m_sMissionRowLayout "{D3B8F2E9CFE9954B}UI/layouts/ReforgerZ/RZ_MissionRow.layout"
     m_sRadioRowLayout "{A9D709D45AF2C174}UI/layouts/ReforgerZ/RZ_RadioRow.layout"
+    m_sStandingPage "{C712EC69C8D01A1F}UI/layouts/ReforgerZ/RZ_StandingPage.layout"
+    m_sJournalPage "{47813396177D0DFF}UI/layouts/ReforgerZ/RZ_JournalPage.layout"
+    m_sRadioPage "{F10998E808395B7F}UI/layouts/ReforgerZ/RZ_RadioPage.layout"
+    m_sMapKeyPage "{82B0514CC2F0D006}UI/layouts/ReforgerZ/RZ_MapKeyPage.layout"
+    m_sHallPage "{FCD5A2E4F7512EFF}UI/layouts/ReforgerZ/RZ_HallPage.layout"
+    m_sTalkReplyLayout "{187F52CB9738023F}UI/layouts/ReforgerZ/RZ_TalkReply.layout"
+    m_sNotebookPrefab "{6C1F4A7B92D3E0C1}Prefabs/ReforgerZ/UI/RZ_Notebook.et"
    }
    m_sSpawnPointPrefab "{BAFE0A6ECC397363}Prefabs/ReforgerZ/Core/RZ_SpawnPoint.et"
    m_PowerSettings RZ_PowerSettings "{6AD67DC2B93AE26F}" {

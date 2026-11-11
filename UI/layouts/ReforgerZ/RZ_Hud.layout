@@ -18,14 +18,14 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
    Name "InfectionPanel"
    Slot FrameWidgetSlot "{5FFCEA150DD0BDF6}" {
     Anchor 0 1 0 1
-    PositionX 44
-    OffsetLeft 44
-    PositionY -44
-    OffsetTop -44
+    PositionX 96
+    OffsetLeft 96
+    PositionY -54
+    OffsetTop -54
     SizeX 430
-    OffsetRight -474
+    OffsetRight -526
     SizeY 150
-    OffsetBottom -106
+    OffsetBottom -96
     Alignment 0 1
    }
    "Is Visible" 0
@@ -404,14 +404,14 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
    Name "RadioPanel"
    Slot FrameWidgetSlot "{E6A8BED632E79092}" {
     Anchor 0 0 0 0
-    PositionX 44
-    OffsetLeft 44
-    PositionY 40
-    OffsetTop 40
+    PositionX 96
+    OffsetLeft 96
+    PositionY 54
+    OffsetTop 54
     SizeX 390
-    OffsetRight -434
+    OffsetRight -486
     SizeY 60
-    OffsetBottom -100
+    OffsetBottom -114
     Alignment 0 0
    }
    "Is Visible" 0
@@ -517,14 +517,14 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
    Name "NoisePanel"
    Slot FrameWidgetSlot "{AA898620BEC7C4A9}" {
     Anchor 0 1 0 1
-    PositionX 500
-    OffsetLeft 500
-    PositionY -52
-    OffsetTop -52
+    PositionX 552
+    OffsetLeft 552
+    PositionY -62
+    OffsetTop -62
     SizeX 300
-    OffsetRight -800
+    OffsetRight -852
     SizeY 26
-    OffsetBottom 26
+    OffsetBottom 36
     Alignment 0 1
     SizeToContent 1
    }
@@ -631,14 +631,14 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
    Name "SeenPanel"
    Slot FrameWidgetSlot "{320B349B6E109F7D}" {
     Anchor 0 1 0 1
-    PositionX 536
-    OffsetLeft 536
-    PositionY -80
-    OffsetTop -80
+    PositionX 588
+    OffsetLeft 588
+    PositionY -90
+    OffsetTop -90
     SizeX 300
-    OffsetRight -836
+    OffsetRight -888
     SizeY 16
-    OffsetBottom 64
+    OffsetBottom 74
     Alignment 0 1
     SizeToContent 1
    }
@@ -725,12 +725,12 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
    Name "NoticeArea"
    Slot FrameWidgetSlot "{449801ABD1428D22}" {
     Anchor 1 0 1 0
-    PositionX -44
-    OffsetLeft -44
+    PositionX -96
+    OffsetLeft -96
     PositionY 96
     OffsetTop 96
     SizeX 460
-    OffsetRight -416
+    OffsetRight -364
     SizeY 900
     OffsetBottom -996
     Alignment 1 0
@@ -757,6 +757,96 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
      "Horizontal Alignment" Right
      FontProperties FontProperties "{C4E2B0BAA8BCDC75}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+     }
+    }
+   }
+  }
+  VerticalLayoutWidgetClass "{5CC37220DFC50B15}" {
+   Name "SubtitlePanel"
+   Slot FrameWidgetSlot "{9CD50CF1DCDA2EA3}" {
+    Anchor 0.5 1 0.5 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY -204
+    OffsetTop -204
+    SizeX 1100
+    OffsetRight -1100
+    SizeY 100
+    OffsetBottom 104
+    Alignment 0.5 1
+    SizeToContent 1
+   }
+   "Is Visible" 0
+   {
+    OverlayWidgetClass "{0D2F29A6735C6BB0}" {
+     Name "SubtitleBox"
+     Slot LayoutSlot "{72DD6AAA6462C6BF}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+     }
+     {
+      ImageWidgetClass "{2DE8F6DFDC802FD2}" {
+       Name "SubtitleBg"
+       Slot OverlayWidgetSlot "{A2087D9FD6FBD46F}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.047 0.055 0.059 0.88
+       Size 1 1
+      }
+      SizeLayoutWidgetClass "{E1986C51A11CB942}" {
+       Name "SubtitleWidth"
+       Slot OverlayWidgetSlot "{4BE3563A34B38514}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 28 16 28 20
+       }
+       AllowWidthOverride 1
+       WidthOverride 1044
+       {
+        VerticalLayoutWidgetClass "{59CE57E3F9E574B9}" {
+         Name "SubtitleBody"
+         Slot AlignableSlot "{F33F08E85857A119}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         {
+          TextWidgetClass "{2EABBB00A9097755}" {
+           Name "SubtitleSpeaker"
+           Slot LayoutSlot "{B681C7D8437A56C8}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 0 0 6
+           }
+           Color 0.89 0.639 0.231 1
+           Text ""
+           "Font Size" 24
+           "Min Font Size" 24
+           "Horizontal Alignment" Center
+           FontProperties FontProperties "{A32D62348C632EA9}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{5595084075B4772C}" {
+           Name "SubtitleText"
+           Slot LayoutSlot "{AE00B6567A3D2954}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+           Color 0.957 0.941 0.902 1
+           Text ""
+           "Font Size" 32
+           "Min Font Size" 32
+           "Horizontal Alignment" Center
+           Wrap 1
+           FontProperties FontProperties "{E92FEE04024F3E2C}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
      }
     }
    }

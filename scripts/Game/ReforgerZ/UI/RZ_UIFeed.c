@@ -9,6 +9,7 @@
 //!   fields split by '|'; see BuildPayload).
 //! - The gear each background loadout really spawns with (seen at spawns), for the deploy panel.
 //! - Clues read in puzzle missions are remembered here per player, while the mission runs.
+//! - The notebook item (UI > Notebook prefab), given to every new life a few seconds after spawn.
 //!
 //! Nothing here changes the game. If RZ_PlayerUIComponent isn't on the player controller, every
 //! send is skipped.
@@ -77,7 +78,9 @@ class RZ_UIFeed
 	static const int PAYLOAD_MAP = 3;
 	static const int PAYLOAD_BOARD = 4;		// the notice board the player stands at (World/RZ_NoticeBoard.c)
 	static const int PAYLOAD_HALL = 5;		// the hall of fame (Persistence/RZ_HallOfFame.c)
-	static const int PAYLOAD_KINDS = 6;
+	static const int PAYLOAD_KINDS = 6;		// the kinds a client may ask for; the ones below are only sent
+	static const int PAYLOAD_TALK = 6;		// the talk screen: one node, or X|reason to close (Dialogue/RZ_Dialogue.c)
+	static const int PAYLOAD_READER = 7;	// the reader: P|title|how, then the text; "" closes it (UI/RZ_Reader.c)
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;
@@ -121,6 +124,27 @@ class RZ_UIFeed
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
 		if (ui)
 			ui.SendNewLife();
+
+		// The notebook item, once the inventory exists
+		if (!RZ_UISettings.Get().m_sNotebookPrefab.IsEmpty())
+			GetGame().GetCallqueue().CallLater(GiveNotebook, 3000, false, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every life carries the notebook (decision: in every loadout). One that doesn't fit lies at
+	//! their feet, and is cleaned up in time like any loose item.
+	protected void GiveNotebook(int playerId)
+	{
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!ent || !RZ_Util.IsCharacterAlive(ent) || RZ_NotebookItem.Carries(ent))
+			return;
+
+		IEntity item = RZ_Util.SpawnPrefab(RZ_UISettings.Get().m_sNotebookPrefab, ent.GetOrigin() + Vector(0, 0.3, 0));
+		if (!item)
+			return;
+
+		RZ_GameModeComponent.TrackLooseItem(item);
+		RZ_Util.InsertIntoInventory(ent, item);
 	}
 
 	// ================================================================ Pushed state

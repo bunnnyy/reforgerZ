@@ -9,6 +9,27 @@
 //! Notices: RZ_GameModeComponent.QueueHint calls PushNotice first. It returns false when styled
 //! notices are off, the layout has no NoticeStack, or no card layout is set; the vanilla hint is
 //! used then, exactly as before.
+
+//------------------------------------------------------------------------------------------------
+//! A spoken line waiting for the subtitle panel.
+class RZ_QueuedSubtitle
+{
+	string m_sSpeaker;
+	int m_iFaction;
+	string m_sText;
+}
+
+//------------------------------------------------------------------------------------------------
+//! A notice waiting for a card.
+class RZ_QueuedNotice
+{
+	string m_sTitle;
+	string m_sText;
+	ref RZ_NoticeStyle m_Style;
+	float m_fAt;
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_HudDisplay : SCR_InfoDisplayExtended
 {
 	protected static const float REFRESH = 0.2;
@@ -16,31 +37,31 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	protected static RZ_HudDisplay s_Instance;
 
 	protected float m_fRefresh;
-	protected ref array<string> m_aQTitles = {};
-	protected ref array<string> m_aQTexts = {};
-	protected ref array<ref RZ_NoticeStyle> m_aQStyles = {};
+	protected ref array<ref RZ_QueuedNotice> m_aQueue = {};
 	protected ref array<Widget> m_aCards = {};
 	protected ref array<float> m_aCardStart = {};
+	protected ref array<int> m_aCardPriority = {};
+	protected float m_fLastCardAt = -100;
+	protected int m_iToNotebook;		// notices that went to the notebook without a card
+	protected float m_fLifeSeen = -1;
+	protected ref array<ref RZ_QueuedSubtitle> m_aSubs = {};
+	protected float m_fSubUntil = -1;		// the line showing stays until then; -1 none showing
+	protected static const int SUB_WAITING = 4;
+	protected static const int SUB_CHARS = 130;	// about two lines at 32 px in 1,044 units
 
 	//------------------------------------------------------------------------------------------------
 	override protected void DisplayStartDraw(IEntity owner)
 	{
 		super.DisplayStartDraw(owner);
 		s_Instance = this;
-		GetGame().GetInputManager().AddActionListener("RZ_OpenStanding", EActionTrigger.DOWN, OpenStanding);
-		GetGame().GetInputManager().AddActionListener("RZ_OpenJournal", EActionTrigger.DOWN, OpenJournal);
-		GetGame().GetInputManager().AddActionListener("RZ_OpenRadio", EActionTrigger.DOWN, OpenRadio);
-		GetGame().GetInputManager().AddActionListener("RZ_OpenHall", EActionTrigger.DOWN, OpenHall);
+		GetGame().GetInputManager().AddActionListener("RZ_OpenNotebook", EActionTrigger.DOWN, OpenNotebook);
 		Refresh();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void DisplayStopDraw(IEntity owner)
 	{
-		GetGame().GetInputManager().RemoveActionListener("RZ_OpenStanding", EActionTrigger.DOWN, OpenStanding);
-		GetGame().GetInputManager().RemoveActionListener("RZ_OpenJournal", EActionTrigger.DOWN, OpenJournal);
-		GetGame().GetInputManager().RemoveActionListener("RZ_OpenRadio", EActionTrigger.DOWN, OpenRadio);
-		GetGame().GetInputManager().RemoveActionListener("RZ_OpenHall", EActionTrigger.DOWN, OpenHall);
+		GetGame().GetInputManager().RemoveActionListener("RZ_OpenNotebook", EActionTrigger.DOWN, OpenNotebook);
 		foreach (Widget w : m_aCards)
 		{
 			RZ_UIW.Remove(w);
@@ -48,6 +69,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 
 		m_aCards.Clear();
 		m_aCardStart.Clear();
+		m_aCardPriority.Clear();
 		if (s_Instance == this)
 			s_Instance = null;
 
@@ -68,27 +90,10 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 
 	// ================================================================ Input
 	//------------------------------------------------------------------------------------------------
-	protected void OpenStanding(float value = 0, EActionTrigger reason = 0)
+	//! N: the notebook, on the tab last used (docs/UI.md, "The notebook").
+	protected void OpenNotebook(float value = 0, EActionTrigger reason = 0)
 	{
-		RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_StandingMenu);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OpenJournal(float value = 0, EActionTrigger reason = 0)
-	{
-		RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_JournalMenu);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OpenRadio(float value = 0, EActionTrigger reason = 0)
-	{
-		RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_RadioLogMenu);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OpenHall(float value = 0, EActionTrigger reason = 0)
-	{
-		RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_HallOfFameMenu);
+		RZ_Notebook.Open(-1);
 	}
 
 	// ================================================================ Drawing
@@ -115,6 +120,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		}
 
 		DrawNotices(settings);
+		DrawSubtitle(settings);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -294,24 +300,62 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The notebook was opened: what went there unseen has been seen.
+	static void ClearNotebookCount()
+	{
+		if (s_Instance)
+			s_Instance.m_iToNotebook = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Waiting notices are kept most important first, then oldest first.
 	protected void Enqueue(string title, string text, RZ_NoticeStyle style)
 	{
-		// Under heavy traffic, drop the oldest waiting notices rather than lag minutes behind
-		int cap = Math.Max(1, RZ_UISettings.Get().m_iNoticeQueue);
-		while (m_aQTitles.Count() >= cap)
+		RZ_QueuedNotice q = new RZ_QueuedNotice();
+		q.m_sTitle = title;
+		q.m_sText = text;
+		q.m_Style = style;
+		q.m_fAt = RZ_UIW.Now();
+		int idx = m_aQueue.Count();
+		foreach (int i, RZ_QueuedNotice other : m_aQueue)
 		{
-			m_aQTitles.RemoveOrdered(0);
-			m_aQTexts.RemoveOrdered(0);
-			m_aQStyles.RemoveOrdered(0);
+			if (other.m_Style.m_iPriority < style.m_iPriority)
+			{
+				idx = i;
+				break;
+			}
 		}
 
-		m_aQTitles.Insert(title);
-		m_aQTexts.Insert(text);
-		m_aQStyles.Insert(style);
+		m_aQueue.InsertAt(q, idx);
+
+		// Past the cap the least important goes: one the Radio tab lists, if there is one
+		int cap = Math.Max(1, RZ_UISettings.Get().m_iNoticeQueue);
+		while (m_aQueue.Count() > cap)
+		{
+			int drop = m_aQueue.Count() - 1;
+			for (int d = m_aQueue.Count() - 1; d >= 0; d--)
+			{
+				if (m_aQueue[d].m_Style.IsLogged() && m_aQueue[d].m_Style.m_iPriority < RZ_ENoticePriority.URGENT)
+				{
+					drop = d;
+					break;
+				}
+			}
+
+			if (m_aQueue[drop].m_Style.IsLogged())
+				m_iToNotebook++;
+
+			m_aQueue.RemoveOrdered(drop);
+		}
+
 		DrawNotices(RZ_UISettings.Get());
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A few at a time, by importance (docs/UI.md, "Notices"): at most Notice cards at once, a new
+	//! one at most every Gap seconds; urgent ones skip the gap and may cut the least important card
+	//! short; low and normal ones the Radio tab lists drop out after Wait seconds (counted as "+N in
+	//! your notebook"); for Calm seconds after a new life only urgent and high ones show.
 	protected void DrawNotices(RZ_UISettings settings)
 	{
 		float now = RZ_UIW.Now();
@@ -321,36 +365,160 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			float share = (now - m_aCardStart[i]) / life;
 			if (share >= 1)
 			{
-				RZ_UIW.Remove(m_aCards[i]);
-				m_aCards.Remove(i);
-				m_aCardStart.Remove(i);
+				RemoveCard(i);
 				continue;
 			}
 
 			RZ_UIW.Progress(m_aCards[i], "CardLife", 1 - share);
 		}
 
-		Widget stack = RZ_UIW.Find(m_wRoot, "NoticeStack");
-		int maxCards = Math.Max(1, settings.m_iNoticeStack);
-		while (stack && !m_aQTitles.IsEmpty() && m_aCards.Count() < maxCards)
-		{
-			Widget card = RZ_UIW.Create(settings.m_sNoticeLayout, stack);
-			if (card)
-			{
-				FillCard(card, m_aQTitles[0], m_aQTexts[0], m_aQStyles[0]);
-				m_aCards.Insert(card);
-				m_aCardStart.Insert(now);
-			}
+		// A new life: last life's count belongs to last life's notebook
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		float lifeAt = -1;
+		if (ui)
+			lifeAt = ui.GetNewLifeAt();
 
-			m_aQTitles.RemoveOrdered(0);
-			m_aQTexts.RemoveOrdered(0);
-			m_aQStyles.RemoveOrdered(0);
-			if (!card)
-				break;
+		if (lifeAt != m_fLifeSeen)
+		{
+			m_fLifeSeen = lifeAt;
+			m_iToNotebook = 0;
 		}
 
-		RZ_UIW.Show(m_wRoot, "NoticeQueued", !m_aQTitles.IsEmpty());
-		RZ_UIW.SetText(m_wRoot, "NoticeQueued", string.Format("+%1 QUEUED", m_aQTitles.Count()));
+		// Waited too long: it's in the notebook already
+		float wait = Math.Max(5, settings.m_fNoticeWait);
+		for (int w = m_aQueue.Count() - 1; w >= 0; w--)
+		{
+			RZ_NoticeStyle st = m_aQueue[w].m_Style;
+			if (st.m_iPriority <= RZ_ENoticePriority.NORMAL && st.IsLogged() && now - m_aQueue[w].m_fAt > wait)
+			{
+				m_aQueue.RemoveOrdered(w);
+				m_iToNotebook++;
+			}
+		}
+
+		Widget stack = RZ_UIW.Find(m_wRoot, "NoticeStack");
+		int maxCards = Math.Max(1, settings.m_iNoticeStack);
+
+		// An urgent one doesn't wait behind a full stack: the least important card makes room
+		if (!m_aQueue.IsEmpty() && m_aQueue[0].m_Style.m_iPriority == RZ_ENoticePriority.URGENT && m_aCards.Count() >= maxCards)
+		{
+			int lowest = -1;
+			foreach (int c, int prio : m_aCardPriority)
+			{
+				if (prio < RZ_ENoticePriority.URGENT && (lowest < 0 || prio < m_aCardPriority[lowest]))
+					lowest = c;
+			}
+
+			if (lowest >= 0)
+				RemoveCard(lowest);
+		}
+
+		bool calm = lifeAt >= 0 && now - lifeAt < settings.m_fNoticeCalm;
+		while (stack && !m_aQueue.IsEmpty() && m_aCards.Count() < maxCards)
+		{
+			RZ_QueuedNotice q = m_aQueue[0];
+			int qp = q.m_Style.m_iPriority;
+			if (calm && qp < RZ_ENoticePriority.HIGH)
+				break;
+
+			if (qp < RZ_ENoticePriority.URGENT && now - m_fLastCardAt < settings.m_fNoticeGap)
+				break;
+
+			m_aQueue.RemoveOrdered(0);
+			Widget card = RZ_UIW.Create(settings.m_sNoticeLayout, stack);
+			if (!card)
+				break;
+
+			FillCard(card, q.m_sTitle, q.m_sText, q.m_Style);
+			m_aCards.Insert(card);
+			m_aCardStart.Insert(now);
+			m_aCardPriority.Insert(qp);
+			m_fLastCardAt = now;
+		}
+
+		RZ_UIW.Show(m_wRoot, "NoticeQueued", m_iToNotebook > 0);
+		RZ_UIW.SetText(m_wRoot, "NoticeQueued", string.Format("+%1 in your notebook", m_iToNotebook));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RemoveCard(int i)
+	{
+		RZ_UIW.Remove(m_aCards[i]);
+		m_aCards.RemoveOrdered(i);
+		m_aCardStart.RemoveOrdered(i);
+		m_aCardPriority.RemoveOrdered(i);
+	}
+
+	// ================================================================ Subtitles
+	//------------------------------------------------------------------------------------------------
+	//! From RZ_GameModeComponent.ShowSay (client). False = no subtitle panel, or Subtitles off:
+	//! the line becomes a card instead.
+	static bool PushSubtitle(string speaker, int faction, string text)
+	{
+		if (!s_Instance || !RZ_UISettings.Get().m_bSubtitles || !RZ_UIW.Find(s_Instance.m_wRoot, "SubtitlePanel"))
+			return false;
+
+		s_Instance.EnqueueSubtitle(speaker, faction, text);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line at a time; a long one is split into parts shown in turn. A newer line from the same
+	//! speaker replaces one of theirs still waiting; at most four wait.
+	protected void EnqueueSubtitle(string speaker, int faction, string text)
+	{
+		for (int i = m_aSubs.Count() - 1; i >= 0; i--)
+		{
+			if (m_aSubs[i].m_sSpeaker == speaker)
+				m_aSubs.RemoveOrdered(i);
+		}
+
+		array<string> parts = {};
+		RZ_UIText.SplitLine(text, SUB_CHARS, parts);
+		foreach (string part : parts)
+		{
+			RZ_QueuedSubtitle q = new RZ_QueuedSubtitle();
+			q.m_sSpeaker = speaker;
+			q.m_iFaction = faction;
+			q.m_sText = part;
+			m_aSubs.Insert(q);
+		}
+
+		while (m_aSubs.Count() > SUB_WAITING + parts.Count() - 1)
+		{
+			m_aSubs.RemoveOrdered(0);
+		}
+
+		DrawSubtitle(RZ_UISettings.Get());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On screen for shortest to longest seconds by length; held while the reader is open.
+	protected void DrawSubtitle(RZ_UISettings settings)
+	{
+		float now = RZ_UIW.Now();
+		bool held = RZ_ReaderMenu.IsOpen();
+		if (m_fSubUntil >= 0 && (now >= m_fSubUntil || held))
+		{
+			m_fSubUntil = -1;
+			RZ_UIW.Show(m_wRoot, "SubtitlePanel", false);
+		}
+
+		if (m_fSubUntil >= 0 || held || m_aSubs.IsEmpty())
+			return;
+
+		RZ_QueuedSubtitle q = m_aSubs[0];
+		m_aSubs.RemoveOrdered(0);
+		Color c = RZ_UIColor.Bone();
+		if (q.m_iFaction >= 0)
+			c = RZ_UIColor.Faction(q.m_iFaction);
+
+		RZ_UIW.SetText(m_wRoot, "SubtitleSpeaker", q.m_sSpeaker);
+		RZ_UIW.Tint(m_wRoot, "SubtitleSpeaker", c);
+		RZ_UIW.SetText(m_wRoot, "SubtitleText", q.m_sText);
+		RZ_UIW.Show(m_wRoot, "SubtitlePanel", true);
+		float seconds = q.m_sText.Length() / Math.Max(1, settings.m_fSubtitleCps);
+		m_fSubUntil = now + Math.Clamp(seconds, settings.m_fSubtitleMin, Math.Max(settings.m_fSubtitleMin, settings.m_fSubtitleMax));
 	}
 
 	//------------------------------------------------------------------------------------------------

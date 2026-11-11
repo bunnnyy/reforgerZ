@@ -1,0 +1,641 @@
+FrameWidgetClass "{AB5E9B60F341F09E}" {
+ Name "NotebookMenu"
+ Slot FrameWidgetSlot "{2B38544812FA495A}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+  Alignment 0 0
+ }
+ "Ignore Cursor" 0
+ {
+  ImageWidgetClass "{F5F8B18400326F0E}" {
+   Name "Dimmer"
+   Slot FrameWidgetSlot "{886F714CA3EB5E8D}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   Color 0.031 0.035 0.039 0.75
+   Size 1 1
+  }
+  FrameWidgetClass "{F177C48A5F99C9F3}" {
+   Name "Page"
+   Slot FrameWidgetSlot "{B4F4422BE9C1D910}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+  }
+  TextWidgetClass "{3F322C34F5492032}" {
+   Name "PageEmpty"
+   Slot FrameWidgetSlot "{99952D5DB099958F}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 900
+    OffsetRight -900
+    SizeY 40
+    OffsetBottom -40
+    Alignment 0.5 0.5
+   }
+   "Is Visible" 0
+   Color 0.639 0.62 0.565 1
+   Text "Nothing here yet."
+   "Font Size" 26
+   "Min Font Size" 26
+   "Horizontal Alignment" Center
+   FontProperties FontProperties "{603A27AD6612D3F3}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+    Italic 1
+   }
+  }
+  TextWidgetClass "{161665C2D92EDA10}" {
+   Name "Heading"
+   Slot FrameWidgetSlot "{98342C2D41CA2B63}" {
+    Anchor 0 0 0 0
+    PositionX 96
+    OffsetLeft 96
+    PositionY 54
+    OffsetTop 54
+    SizeX 860
+    OffsetRight -956
+    SizeY 56
+    OffsetBottom -110
+    Alignment 0 0
+   }
+   Color 0.91 0.886 0.816 1
+   Text "JOURNAL"
+   "Font Size" 46
+   "Min Font Size" 46
+   FontProperties FontProperties "{D84E354188C5D6A6}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{F2A70E18D134B3E2}" {
+   Name "Header"
+   Slot FrameWidgetSlot "{52D469E43544C85C}" {
+    Anchor 0 0 0 0
+    PositionX 96
+    OffsetLeft 96
+    PositionY 112
+    OffsetTop 112
+    SizeX 840
+    OffsetRight -936
+    SizeY 26
+    OffsetBottom -138
+    Alignment 0 0
+   }
+   Color 0.639 0.62 0.565 1
+   Text ""
+   "Font Size" 18
+   "Min Font Size" 18
+   FontProperties FontProperties "{D3AB2D9C3863DE1F}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  ImageWidgetClass "{278DD563DDC324C5}" {
+   Name "HeadRule"
+   Slot FrameWidgetSlot "{AAD4BE5FBE33DC33}" {
+    Anchor 0 0 1 0
+    PositionX 96
+    OffsetLeft 96
+    PositionY 150
+    OffsetTop 150
+    SizeX -192
+    OffsetRight 96
+    SizeY 2
+    OffsetBottom -152
+    Alignment 0 0
+   }
+   Color 0.227 0.247 0.259 1
+   Size 1 1
+  }
+  ButtonWidgetClass "{61DAE57790DF7A56}" {
+   Name "Tab0"
+   Slot FrameWidgetSlot "{DBF0DBA45C90276F}" {
+    Anchor 1 0 1 0
+    PositionX -952
+    OffsetLeft -952
+    PositionY 100
+    OffsetTop 100
+    SizeX 168
+    OffsetRight 784
+    SizeY 40
+    OffsetBottom -140
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{B807D0A424943F45}" {
+     Name "Tab0Box"
+     Slot ButtonWidgetSlot "{913BDD0D5A92745D}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{EC745A3D7AD9F4F6}" {
+       Name "Tab0Bg"
+       Slot OverlayWidgetSlot "{0133D3FCDDFC436F}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.102 0.114 0.125 1
+       Size 1 1
+      }
+      PanelWidgetClass "{BC7B3909AA64881E}" {
+       Name "Tab0Line"
+       Slot OverlayWidgetSlot "{3A3CE7E34F7692E5}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      TextWidgetClass "{C7496473A386B135}" {
+       Name "Tab0Text"
+       Slot OverlayWidgetSlot "{F2F1C9BCB9CFBAE6}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.639 0.62 0.565 1
+       Text "STANDING"
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{1A76DB4DCEB2D88D}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{850D65DFC1D5DBCD}" {
+       Name "TabBadge0"
+       Slot OverlayWidgetSlot "{DC1B8F0CE5B2E6B9}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 10 0
+       }
+       "Is Visible" 0
+       Color 0.949 0.761 0.188 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Right
+       FontProperties FontProperties "{F8BC5DF67D0453BA}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{A82370F08C579D33}" {
+   Name "Tab1"
+   Slot FrameWidgetSlot "{EA18F36726FEB69E}" {
+    Anchor 1 0 1 0
+    PositionX -780
+    OffsetLeft -780
+    PositionY 100
+    OffsetTop 100
+    SizeX 168
+    OffsetRight 612
+    SizeY 40
+    OffsetBottom -140
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{A47A28E1EA874C39}" {
+     Name "Tab1Box"
+     Slot ButtonWidgetSlot "{2B6D6862A8A3ED6D}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{0BDFC374F4F03738}" {
+       Name "Tab1Bg"
+       Slot OverlayWidgetSlot "{D3B132F7DD2CAD37}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.102 0.114 0.125 1
+       Size 1 1
+      }
+      PanelWidgetClass "{28289A338D75E234}" {
+       Name "Tab1Line"
+       Slot OverlayWidgetSlot "{FA03E7418DC52923}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      TextWidgetClass "{C1FFA0075D4893BE}" {
+       Name "Tab1Text"
+       Slot OverlayWidgetSlot "{98CD844EAADAF841}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.639 0.62 0.565 1
+       Text "JOURNAL"
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{B6E2B94BD585A627}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{DA2F8FA8D01BBC3A}" {
+       Name "TabBadge1"
+       Slot OverlayWidgetSlot "{E99C9B7E37DDF5D4}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 10 0
+       }
+       "Is Visible" 0
+       Color 0.949 0.761 0.188 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Right
+       FontProperties FontProperties "{9E0105E33F000CE1}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{91FAF4FD909D57C2}" {
+   Name "Tab2"
+   Slot FrameWidgetSlot "{789ED7904C64F78D}" {
+    Anchor 1 0 1 0
+    PositionX -608
+    OffsetLeft -608
+    PositionY 100
+    OffsetTop 100
+    SizeX 168
+    OffsetRight 440
+    SizeY 40
+    OffsetBottom -140
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{8DB9AC4CBF159846}" {
+     Name "Tab2Box"
+     Slot ButtonWidgetSlot "{C5C7ED5C094B7A80}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{C4B82BDF49886F21}" {
+       Name "Tab2Bg"
+       Slot OverlayWidgetSlot "{0596B740C5098ABA}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.102 0.114 0.125 1
+       Size 1 1
+      }
+      PanelWidgetClass "{C88D5D6AB6107A88}" {
+       Name "Tab2Line"
+       Slot OverlayWidgetSlot "{9D57C088186402B7}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      TextWidgetClass "{0A87BD36194370EF}" {
+       Name "Tab2Text"
+       Slot OverlayWidgetSlot "{5FEEFF099524A208}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.639 0.62 0.565 1
+       Text "RADIO"
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{52D4EB29FD5E1077}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{8C4F0839B1F0374F}" {
+       Name "TabBadge2"
+       Slot OverlayWidgetSlot "{A9984506051DFE04}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 10 0
+       }
+       "Is Visible" 0
+       Color 0.949 0.761 0.188 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Right
+       FontProperties FontProperties "{8B0F6CD2530FB5D6}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{510C981ACD2258D8}" {
+   Name "Tab3"
+   Slot FrameWidgetSlot "{273247B8B00FE1C6}" {
+    Anchor 1 0 1 0
+    PositionX -436
+    OffsetLeft -436
+    PositionY 100
+    OffsetTop 100
+    SizeX 168
+    OffsetRight 268
+    SizeY 40
+    OffsetBottom -140
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{43C68976D653474A}" {
+     Name "Tab3Box"
+     Slot ButtonWidgetSlot "{9C840137E79F6F9F}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{EEDCBF946530A714}" {
+       Name "Tab3Bg"
+       Slot OverlayWidgetSlot "{88D4B2B696A7EFF6}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.102 0.114 0.125 1
+       Size 1 1
+      }
+      PanelWidgetClass "{C8EC72C8F9D5DACF}" {
+       Name "Tab3Line"
+       Slot OverlayWidgetSlot "{CF8EC1AD5F0D4F00}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      TextWidgetClass "{4C1C2779579BB80B}" {
+       Name "Tab3Text"
+       Slot OverlayWidgetSlot "{C5429DA48FAA45C3}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.639 0.62 0.565 1
+       Text "MAP KEY"
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{6E0C6B394BFBEC27}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{5C1F72DDC89C1798}" {
+       Name "TabBadge3"
+       Slot OverlayWidgetSlot "{62CD511D2992468A}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 10 0
+       }
+       "Is Visible" 0
+       Color 0.949 0.761 0.188 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Right
+       FontProperties FontProperties "{99DB2ED1ECFCB71A}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{909FB72D25849327}" {
+   Name "Tab4"
+   Slot FrameWidgetSlot "{EA9F5FC8F402C4BF}" {
+    Anchor 1 0 1 0
+    PositionX -264
+    OffsetLeft -264
+    PositionY 100
+    OffsetTop 100
+    SizeX 168
+    OffsetRight 96
+    SizeY 40
+    OffsetBottom -140
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{D4D82D62E8F6DC54}" {
+     Name "Tab4Box"
+     Slot ButtonWidgetSlot "{9520DB735589FA7D}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{9811B815542A764C}" {
+       Name "Tab4Bg"
+       Slot OverlayWidgetSlot "{FB4EBF645908E494}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.102 0.114 0.125 1
+       Size 1 1
+      }
+      PanelWidgetClass "{B1F842223665281F}" {
+       Name "Tab4Line"
+       Slot OverlayWidgetSlot "{22BDD2E2957A697C}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      TextWidgetClass "{B4E3A9006BDA4ACB}" {
+       Name "Tab4Text"
+       Slot OverlayWidgetSlot "{1D37BBEAA1D7A5D2}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.639 0.62 0.565 1
+       Text "HALL OF FAME"
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{15A51273037ECF82}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{0A6A6551DAE54BB5}" {
+       Name "TabBadge4"
+       Slot OverlayWidgetSlot "{0B03E2120948117D}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 10 0
+       }
+       "Is Visible" 0
+       Color 0.949 0.761 0.188 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Right
+       FontProperties FontProperties "{A6B46ADC35AED97F}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{9024C31C01F26070}" {
+   Name "CloseButton"
+   Slot FrameWidgetSlot "{AE7C5F42D37AA351}" {
+    Anchor 1 0 1 0
+    PositionX -140
+    OffsetLeft -140
+    PositionY 54
+    OffsetTop 54
+    SizeX 44
+    OffsetRight 96
+    SizeY 44
+    OffsetBottom -98
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{26192CA72A4C7D5B}" {
+     Name "CloseBox"
+     Slot ButtonWidgetSlot "{656AC4A0CC5580FA}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{1C4B7055F63EE003}" {
+       Name "CloseBg"
+       Slot OverlayWidgetSlot "{63004DB5C4B6561A}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.102 0.114 0.125 1
+       Size 1 1
+      }
+      PanelWidgetClass "{7C49AF0640009677}" {
+       Name "CloseLine"
+       Slot OverlayWidgetSlot "{2777C56AA90F213B}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      TextWidgetClass "{09BD54E55795E508}" {
+       Name "CloseText"
+       Slot OverlayWidgetSlot "{D42BDCC85BD13C6F}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.91 0.886 0.816 1
+       Text "X"
+       "Font Size" 24
+       "Min Font Size" 24
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{2BA0C42B90C4D5E0}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  HorizontalLayoutWidgetClass "{33D3B0457B4CAAA7}" {
+   Name "Prompts"
+   Slot FrameWidgetSlot "{772905CAA8E6D93C}" {
+    Anchor 0 1 0 1
+    PositionX 96
+    OffsetLeft 96
+    PositionY -54
+    OffsetTop -54
+    SizeX 1100
+    OffsetRight -1196
+    SizeY 40
+    OffsetBottom 14
+    Alignment 0 1
+   }
+  }
+  TextWidgetClass "{339484B17334B019}" {
+   Name "PromptsText"
+   Slot FrameWidgetSlot "{BE296EE46A37FE91}" {
+    Anchor 0 1 0 1
+    PositionX 96
+    OffsetLeft 96
+    PositionY -54
+    OffsetTop -54
+    SizeX 1100
+    OffsetRight -1196
+    SizeY 26
+    OffsetBottom 28
+    Alignment 0 1
+   }
+   Color 0.639 0.62 0.565 1
+   Text "ESC / B  CLOSE      Q / E, LB / RB  TABS      F / X  RADIO FILTER"
+   "Font Size" 18
+   "Min Font Size" 18
+   FontProperties FontProperties "{AB8EA5F5E8A85B9C}" {
+    Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{46AFE0DBD876C76A}" {
+   Name "FooterNote"
+   Slot FrameWidgetSlot "{0AA6AE1FD5214B61}" {
+    Anchor 1 1 1 1
+    PositionX -96
+    OffsetLeft -96
+    PositionY -54
+    OffsetTop -54
+    SizeX 620
+    OffsetRight -524
+    SizeY 26
+    OffsetBottom 28
+    Alignment 1 1
+   }
+   Color 0.431 0.416 0.376 1
+   Text "N, OR START AND NOTEBOOK"
+   "Font Size" 18
+   "Min Font Size" 18
+   "Horizontal Alignment" Right
+   FontProperties FontProperties "{278E8337B5A04E3D}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+ }
+}

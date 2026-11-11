@@ -70,5 +70,13 @@ but they're worth playing for research:
 [Last Stand Core](https://reforger.armaplatform.com/workshop/56C5B1F99E03EFE4-LastStandCore),
 [ARMST Platform](https://reforger.armaplatform.com/workshop/6922BD179EEDD0D2).
 
+**Vanilla screens ReforgerZ touches.** It overrides two vanilla configs by GUID,
+`chimeraMenus.conf` and `chimeraInputCommon.conf` (to add its menus and keys), and mods the pause
+menu's script (`PauseMenuUI`) to add a **Notebook** button at run time, without overriding the
+pause menu's layout ([UI.md](UI.md#the-notebook)). Another mod that overrides either config file
+replaces ReforgerZ's, or is replaced by it, depending on load order: the notebook, talk and reader
+screens then don't open. A mod that only overrides the pause menu's layout is fine, as long as
+it keeps vanilla's Field Manual or Settings button (the Notebook button goes after it).
+
 > **Naming:** "ReforgedZ" already exists and is very close to "ReforgerZ". Consider a different
 > Workshop name before release ([LORE.md](LORE.md), "Name").

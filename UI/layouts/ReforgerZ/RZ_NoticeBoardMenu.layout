@@ -35,14 +35,14 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
    Name "Heading"
    Slot FrameWidgetSlot "{1CB5469C05099337}" {
     Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 40
-    OffsetTop 40
+    PositionX 96
+    OffsetLeft 96
+    PositionY 54
+    OffsetTop 54
     SizeX 1000
-    OffsetRight -1072
+    OffsetRight -1096
     SizeY 56
-    OffsetBottom -96
+    OffsetBottom -110
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
@@ -57,14 +57,14 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
    Name "Header"
    Slot FrameWidgetSlot "{D1F59CF20AF65E35}" {
     Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 100
-    OffsetTop 100
+    PositionX 96
+    OffsetLeft 96
+    PositionY 112
+    OffsetTop 112
     SizeX 1100
-    OffsetRight -1172
+    OffsetRight -1196
     SizeY 24
-    OffsetBottom -124
+    OffsetBottom -136
     Alignment 0 0
    }
    Color 0.639 0.62 0.565 1
@@ -79,14 +79,14 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
    Name "HeadRule"
    Slot FrameWidgetSlot "{74E7B8FDD2BB1686}" {
     Anchor 0 0 1 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 138
-    OffsetTop 138
-    SizeX -144
-    OffsetRight 72
+    PositionX 96
+    OffsetLeft 96
+    PositionY 150
+    OffsetTop 150
+    SizeX -192
+    OffsetRight 96
     SizeY 2
-    OffsetBottom -140
+    OffsetBottom -152
     Alignment 0 0
    }
    Color 0.227 0.247 0.259 1
@@ -96,14 +96,14 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
    Name "CloseButton"
    Slot FrameWidgetSlot "{69A8125BE87C6CE5}" {
     Anchor 1 0 1 0
-    PositionX -108
-    OffsetLeft -108
-    PositionY 40
-    OffsetTop 40
-    SizeX 36
-    OffsetRight 72
-    SizeY 36
-    OffsetBottom -76
+    PositionX -140
+    OffsetLeft -140
+    PositionY 54
+    OffsetTop 54
+    SizeX 44
+    OffsetRight 96
+    SizeY 44
+    OffsetBottom -98
     Alignment 0 0
    }
    style blank
@@ -156,20 +156,20 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
    Name "FooterKeys"
    Slot FrameWidgetSlot "{6625C853C439E917}" {
     Anchor 0 1 0 1
-    PositionX 72
-    OffsetLeft 72
-    PositionY -34
-    OffsetTop -34
+    PositionX 96
+    OffsetLeft 96
+    PositionY -54
+    OffsetTop -54
     SizeX 700
-    OffsetRight -772
-    SizeY 20
-    OffsetBottom 14
+    OffsetRight -796
+    SizeY 26
+    OffsetBottom 28
     Alignment 0 1
    }
    Color 0.639 0.62 0.565 1
-   Text "ESC  CLOSE"
-   "Font Size" 13
-   "Min Font Size" 13
+   Text "ESC / B  CLOSE      UP / DOWN  SCROLL"
+   "Font Size" 18
+   "Min Font Size" 18
    FontProperties FontProperties "{4ADFF6F601EA85B9}" {
     Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
    }
@@ -178,20 +178,20 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
    Name "FooterNote"
    Slot FrameWidgetSlot "{4F3097FE9142870B}" {
     Anchor 1 1 1 1
-    PositionX -72
-    OffsetLeft -72
-    PositionY -34
-    OffsetTop -34
+    PositionX -96
+    OffsetLeft -96
+    PositionY -54
+    OffsetTop -54
     SizeX 1000
-    OffsetRight -928
-    SizeY 20
-    OffsetBottom 14
+    OffsetRight -904
+    SizeY 26
+    OffsetBottom 28
     Alignment 1 1
    }
    Color 0.639 0.62 0.565 1
    Text "Notes come down by themselves after a few days."
-   "Font Size" 13
-   "Min Font Size" 13
+   "Font Size" 18
+   "Min Font Size" 18
    "Horizontal Alignment" Right
    FontProperties FontProperties "{AD66B0FFC9FB3431}" {
     Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
@@ -201,12 +201,12 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
    Name "BoardPanel"
    Slot FrameWidgetSlot "{D14DB3C932976271}" {
     Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
+    PositionX 96
+    OffsetLeft 96
     PositionY 168
     OffsetTop 168
-    SizeX 1100
-    OffsetRight -1172
+    SizeX 1070
+    OffsetRight -1166
     SizeY 840
     OffsetBottom -1008
     Alignment 0 0
@@ -233,11 +233,11 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
      Name "NotesScroll"
      Slot FrameWidgetSlot "{77D6079C5BA33D66}" {
       Anchor 0 0 1 1
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 24
       OffsetTop 24
-      SizeX -36
+      SizeX -35
       OffsetRight 12
       SizeY -48
       OffsetBottom 24
@@ -253,7 +253,7 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
         VerticalAlign 0
        }
        AllowWidthOverride 1
-       WidthOverride 1040
+       WidthOverride 1012
        {
         TextWidgetClass "{C97BC6C6B7F196B7}" {
          Name "Notes"
@@ -282,8 +282,8 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 800
-      OffsetRight -800
+      SizeX 778
+      OffsetRight -778
       SizeY 32
       OffsetBottom -32
       Alignment 0.5 0.5
@@ -305,12 +305,12 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
    Name "WriteBlock"
    Slot FrameWidgetSlot "{D46AB63D851670CF}" {
     Anchor 0 0 0 0
-    PositionX 1200
-    OffsetLeft 1200
+    PositionX 1194
+    OffsetLeft 1194
     PositionY 168
     OffsetTop 168
-    SizeX 648
-    OffsetRight -1848
+    SizeX 630
+    OffsetRight -1824
     SizeY 210
     OffsetBottom -378
     Alignment 0 0
@@ -338,12 +338,12 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
      Name "WriteLabel"
      Slot FrameWidgetSlot "{2E7F0E6CA47711C8}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 18
       OffsetTop 18
-      SizeX 600
-      OffsetRight -624
+      SizeX 584
+      OffsetRight -607
       SizeY 16
       OffsetBottom -34
       Alignment 0 0
@@ -360,12 +360,12 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
      Name "NoteInputBg"
      Slot FrameWidgetSlot "{58D85AD8869FA0DC}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 44
       OffsetTop 44
-      SizeX 600
-      OffsetRight -624
+      SizeX 584
+      OffsetRight -607
       SizeY 44
       OffsetBottom -88
       Alignment 0 0
@@ -377,12 +377,12 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
      Name "NoteInputLine"
      Slot FrameWidgetSlot "{20606276FB4865E5}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 44
       OffsetTop 44
-      SizeX 600
-      OffsetRight -624
+      SizeX 584
+      OffsetRight -607
       SizeY 44
       OffsetBottom -88
       Alignment 0 0
@@ -394,12 +394,12 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
      Name "NoteInput"
      Slot FrameWidgetSlot "{175996EB56A6756C}" {
       Anchor 0 0 0 0
-      PositionX 36
-      OffsetLeft 36
+      PositionX 35
+      OffsetLeft 35
       PositionY 50
       OffsetTop 50
-      SizeX 576
-      OffsetRight -612
+      SizeX 560
+      OffsetRight -595
       SizeY 32
       OffsetBottom -82
       Alignment 0 0
@@ -418,12 +418,12 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
      Name "NoteLimit"
      Slot FrameWidgetSlot "{E2ED0A7CC70E756E}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 100
       OffsetTop 100
-      SizeX 600
-      OffsetRight -624
+      SizeX 584
+      OffsetRight -607
       SizeY 40
       OffsetBottom -140
       Alignment 0 0
@@ -441,12 +441,12 @@ FrameWidgetClass "{A9B6403C25ADB862}" {
      Name "PostButton"
      Slot FrameWidgetSlot "{A81606B5715059A6}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 150
       OffsetTop 150
-      SizeX 180
-      OffsetRight -204
+      SizeX 175
+      OffsetRight -198
       SizeY 40
       OffsetBottom -190
       Alignment 0 0

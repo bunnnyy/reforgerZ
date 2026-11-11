@@ -17,7 +17,34 @@ enum RZ_ENoticeKind
 	SECURE_CHANNEL,	// a cracked secure channel
 	BROADCAST,		// the government broadcast
 	INFECTION,		// the bite, the stages, cures
-	EVENT			// world events
+	EVENT,			// world events
+	MISSION,		// contract offers, "this is the place", done, failed, refused (tagged by the server)
+	WORLD			// the state of the world at spawn: the outbreak, the news, the season, the hall
+}
+
+//------------------------------------------------------------------------------------------------
+//! How important a notice is: the HUD shows the most important first (docs/UI.md, "Notices").
+enum RZ_ENoticePriority
+{
+	LOW,		// news and welcome
+	NORMAL,		// radio and faction voices
+	HIGH,		// about you, now
+	URGENT		// danger to you, now: always first, and may cut a low card short
+}
+
+//------------------------------------------------------------------------------------------------
+//! What the server says a notice is (RZ_GameModeComponent.NotifyPlayerAs). AUTO: the client
+//! works it out from the title, as for every plain NotifyPlayer. MISSION, EVENT and WORLD also say
+//! where it's listed in the notebook's Radio tab; URGENT, HIGH and LOW only set its importance.
+enum RZ_ENoticeTag
+{
+	AUTO,
+	MISSION,	// offers, "this is the place", done, failed, refused
+	EVENT,		// world events
+	WORLD,		// the state of the world at spawn: the outbreak, the news, the season, the hall
+	URGENT,
+	HIGH,
+	LOW
 }
 
 //------------------------------------------------------------------------------------------------
@@ -57,13 +84,22 @@ class RZ_UISettings
 	[Attribute("9", desc: "Seconds a notice card stays on screen")]
 	float m_fNoticeSeconds;
 
-	[Attribute("3", desc: "Notice cards shown at once (newest on top); the rest wait their turn")]
+	[Attribute("2", desc: "Notice cards at once; the rest wait their turn, the most important first")]
 	int m_iNoticeStack;
 
-	[Attribute("8", desc: "Notices waiting at most; older ones are dropped under heavy traffic")]
+	[Attribute("2", desc: "Seconds between one card and the next (urgent cards don't wait)")]
+	float m_fNoticeGap;
+
+	[Attribute("45", desc: "Seconds a low or normal notice that's in the notebook's Radio tab waits for a card before it goes to the notebook only")]
+	float m_fNoticeWait;
+
+	[Attribute("4", desc: "Calm after spawn: for this many seconds after a new life only urgent and high notices show")]
+	float m_fNoticeCalm;
+
+	[Attribute("12", desc: "Notices waiting at most; past it the least important goes to the notebook only (or is dropped if it isn't listed there)")]
 	int m_iNoticeQueue;
 
-	[Attribute("40", desc: "Radio log: messages kept on the client for this life")]
+	[Attribute("60", desc: "Radio tab: radio, mission and world notices kept on the client for this life")]
 	int m_iRadioLogSize;
 
 	[Attribute("1", desc: "Show the infection timer (golden window, stages)")]
@@ -98,6 +134,45 @@ class RZ_UISettings
 
 	[Attribute("0", desc: "The safehouse notice board opens as a menu with a box to write in (RZ_NoticeBoardMenu; needs its layout and chimeraMenus entry, UI/LAYOUTS.md). Off = notices, and notes are written with /note in chat")]
 	bool m_bBoardMenus;
+
+	[Attribute("1", desc: "Subtitles: what people say outside the talk screen shows at the bottom centre (needs SubtitlePanel in the HUD layout). Off = notice cards, as before")]
+	bool m_bSubtitles;
+
+	[Attribute("2.5", desc: "Subtitles: shortest time a line stays (s)")]
+	float m_fSubtitleMin;
+
+	[Attribute("8", desc: "Subtitles: longest time a line stays (s); longer lines are split into parts shown in turn")]
+	float m_fSubtitleMax;
+
+	[Attribute("18", desc: "Subtitles: reading speed (characters per second) that sets how long a line stays")]
+	float m_fSubtitleCps;
+
+	[Attribute("1", desc: "The reader: notes, letters, orders and flyers open on a sheet of paper (RZ_ReaderMenu). Off = notice cards, as before")]
+	bool m_bReader;
+
+	[Attribute("700", desc: "Reader: about this many characters to a page; pages break at the end of a paragraph")]
+	int m_iReaderPageChars;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Talk screen: the layout of one reply row (UI/LAYOUTS.md, TalkReply). Empty = no talk screen: a person's actions and notices, as before", "layout")]
+	ResourceName m_sTalkReplyLayout;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Standing page layout (UI/LAYOUTS.md). Empty = the tab says Nothing here yet", "layout")]
+	ResourceName m_sStandingPage;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Journal page layout (UI/LAYOUTS.md)", "layout")]
+	ResourceName m_sJournalPage;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Radio page layout (UI/LAYOUTS.md)", "layout")]
+	ResourceName m_sRadioPage;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Map key page layout (UI/LAYOUTS.md)", "layout")]
+	ResourceName m_sMapKeyPage;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Hall of fame page layout (UI/LAYOUTS.md)", "layout")]
+	ResourceName m_sHallPage;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The notebook item every new life is given (Prefabs/ReforgerZ/UI/RZ_Notebook.et): taken into the hand it opens the notebook, the pad's way in besides the pause menu. Empty = none", "et")]
+	ResourceName m_sNotebookPrefab;
 
 	protected static ref RZ_UISettings s_Defaults;
 
@@ -174,6 +249,106 @@ class RZ_UIText
 			return "";
 
 		return f[i];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where to cut `text` at or before `limit` characters: after a sentence end, else at a space,
+	//! else at the limit.
+	static int CutAt(string text, int limit)
+	{
+		if (text.Length() <= limit)
+			return text.Length();
+
+		int space = -1;
+		for (int i = limit; i > limit / 2; i--)
+		{
+			string ch = text.Substring(i, 1);
+			if (ch == "\n")
+				return i + 1;
+
+			if (ch == " ")
+			{
+				string before = text.Substring(i - 1, 1);
+				if (before == "." || before == "?" || before == "!" || before == "\"")
+					return i + 1;
+
+				if (space < 0)
+					space = i + 1;
+			}
+		}
+
+		if (space > 0)
+			return space;
+
+		return limit;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A subtitle's parts: at most `limit` characters each (two lines), cut at sentence ends.
+	static void SplitLine(string text, int limit, notnull array<string> parts)
+	{
+		parts.Clear();
+		string rest = text.Trim();
+		int guard = 0;
+		while (!rest.IsEmpty() && guard < 20)
+		{
+			guard++;
+			int cut = CutAt(rest, limit);
+			string part = rest.Substring(0, cut);
+			parts.Insert(part.Trim());
+			rest = rest.Substring(cut, rest.Length() - cut);
+			rest = rest.Trim();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The reader's pages: whole paragraphs (split by line breaks) up to about `chars` characters a
+	//! page; a paragraph longer than a page is cut at a sentence end.
+	static void Paginate(string text, int chars, notnull array<string> pages)
+	{
+		pages.Clear();
+		int size = Math.Max(200, chars);
+		array<string> paras = {};
+		Split(text, "\n", paras);
+		string page = "";
+		foreach (string para : paras)
+		{
+			string p = para.Trim();
+			if (p.IsEmpty())
+				continue;
+
+			while (p.Length() > size)
+			{
+				if (!page.IsEmpty())
+				{
+					pages.Insert(page);
+					page = "";
+				}
+
+				int cut = CutAt(p, size);
+				string piece = p.Substring(0, cut);
+				pages.Insert(piece.Trim());
+				p = p.Substring(cut, p.Length() - cut);
+				p = p.Trim();
+			}
+
+			if (p.IsEmpty())
+				continue;
+
+			if (!page.IsEmpty() && page.Length() + p.Length() > size)
+			{
+				pages.Insert(page);
+				page = "";
+			}
+
+			if (page.IsEmpty())
+				page = p;
+			else
+				page += "\n\n" + p;
+		}
+
+		if (!page.IsEmpty() || pages.IsEmpty())
+			pages.Insert(page);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -358,9 +533,59 @@ class RZ_NoticeStyle
 {
 	int m_iKind = RZ_ENoticeKind.PLAIN;
 	int m_iFaction = -1;
+	int m_iPriority = RZ_ENoticePriority.NORMAL;
 
 	//------------------------------------------------------------------------------------------------
-	static RZ_NoticeStyle Classify(string title)
+	//! The kind from the title, then the server's tag (RZ_ENoticeTag): a mission, event or world tag
+	//! sets the kind (radio messages keep theirs), and the priority follows from both.
+	static RZ_NoticeStyle Classify(string title, int tag = RZ_ENoticeTag.AUTO)
+	{
+		RZ_NoticeStyle st = FromTitle(title);
+		bool radio = st.IsRadio();
+		if (tag == RZ_ENoticeTag.MISSION && !radio)
+			st.m_iKind = RZ_ENoticeKind.MISSION;
+		else if (tag == RZ_ENoticeTag.EVENT && !radio)
+			st.m_iKind = RZ_ENoticeKind.EVENT;
+		else if (tag == RZ_ENoticeTag.WORLD && !radio)
+			st.m_iKind = RZ_ENoticeKind.WORLD;
+
+		st.m_iPriority = PriorityFor(title, st.m_iKind, tag);
+		return st;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! docs/UI.md, "Notices": urgent is danger to you now, high is about you now, normal the radio
+	//! and faction voices, low the news and welcome. A tag decides; else the title.
+	static int PriorityFor(string title, int kind, int tag)
+	{
+		switch (tag)
+		{
+			case RZ_ENoticeTag.URGENT: return RZ_ENoticePriority.URGENT;
+			case RZ_ENoticeTag.HIGH: return RZ_ENoticePriority.HIGH;
+			case RZ_ENoticeTag.LOW: return RZ_ENoticePriority.LOW;
+			case RZ_ENoticeTag.MISSION: return RZ_ENoticePriority.HIGH;
+			case RZ_ENoticeTag.WORLD: return RZ_ENoticePriority.LOW;
+		}
+
+		if (kind == RZ_ENoticeKind.INFECTION)
+			return RZ_ENoticePriority.URGENT;
+
+		string t = title;
+		t.ToLower();
+		if (t == "horde" || t == "the final stand")
+			return RZ_ENoticePriority.URGENT;
+
+		if (t == "background unlocked" || t == "mission complete" || t == "mission failed" || Starts(t, "contract:") || t.EndsWith(" is locked"))
+			return RZ_ENoticePriority.HIGH;
+
+		if (Starts(t, "outbreak:") || t == "word on the roads" || t == "this season" || t == "hall of fame" || t == "radio")
+			return RZ_ENoticePriority.LOW;
+
+		return RZ_ENoticePriority.NORMAL;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static RZ_NoticeStyle FromTitle(string title)
 	{
 		RZ_NoticeStyle st = new RZ_NoticeStyle();
 		string t = title;
@@ -454,6 +679,14 @@ class RZ_NoticeStyle
 			}
 			case RZ_ENoticeKind.INFECTION: return "INFECTION";
 			case RZ_ENoticeKind.EVENT: return "WORLD EVENT";
+			case RZ_ENoticeKind.WORLD: return "THE ZONE";
+			case RZ_ENoticeKind.MISSION:
+			{
+				if (m_iFaction >= 0)
+					return "MISSION - " + RZ_Factions.GetShortName(m_iFaction);
+
+				return "MISSION";
+			}
 			case RZ_ENoticeKind.FACTION: return RZ_Factions.GetName(m_iFaction);
 		}
 
@@ -469,6 +702,7 @@ class RZ_NoticeStyle
 			case RZ_ENoticeKind.SECURE_CHANNEL: return "status_secure_radio";
 			case RZ_ENoticeKind.INFECTION: return "status_bitten";
 			case RZ_ENoticeKind.EVENT: return "mission_event";
+			case RZ_ENoticeKind.MISSION: return "mission_contract";
 			case RZ_ENoticeKind.OPEN_CHANNEL:
 			{
 				if (m_iFaction >= 0)
@@ -499,10 +733,16 @@ class RZ_NoticeStyle
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Goes in the radio log.
 	bool IsRadio()
 	{
 		return m_iKind == RZ_ENoticeKind.OPEN_CHANNEL || m_iKind == RZ_ENoticeKind.SECURE_CHANNEL || m_iKind == RZ_ENoticeKind.BROADCAST;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Listed in the notebook's Radio tab: radio messages, missions, world events and the world at spawn.
+	bool IsLogged()
+	{
+		return IsRadio() || m_iKind == RZ_ENoticeKind.MISSION || m_iKind == RZ_ENoticeKind.EVENT || m_iKind == RZ_ENoticeKind.WORLD;
 	}
 }
 
@@ -624,6 +864,19 @@ class RZ_UIW
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Gamepad: scroll the named ScrollLayout a step up (-1) or down (1).
+	static void Scroll(Widget root, string name, int dir)
+	{
+		ScrollLayoutWidget sc = ScrollLayoutWidget.Cast(Find(root, name));
+		if (!sc)
+			return;
+
+		float x, y;
+		sc.GetSliderPos(x, y);
+		sc.SetSliderPos(x, Math.Clamp(y + dir * 0.12, 0, 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Real seconds on this machine (for the client-side countdowns).
 	static float Now()
 	{
@@ -632,12 +885,65 @@ class RZ_UIW
 
 
 	//------------------------------------------------------------------------------------------------
-	static void OpenMenu(int preset)
+	//! The opened menu, or null (no preset in chimeraMenus.conf, or its layout is missing).
+	static MenuBase OpenMenu(int preset)
 	{
 		MenuManager mm = GetGame().GetMenuManager();
-		if (mm)
-			mm.OpenMenu(preset);
+		if (!mm)
+			return null;
+
+		return mm.OpenMenu(preset);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gamepad: give the named widget the focus, so the D-pad has something to move from.
+	//! VERIFY: WorkspaceWidget.SetFocusedWidget focuses a Button in a ChimeraMenuBase (vanilla's
+	//! pause menu does the same).
+	static void Focus(Widget root, string name)
+	{
+		Widget w = root;
+		if (!name.IsEmpty())
+			w = Find(root, name);
+
+		FocusWidget(w);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void FocusWidget(Widget w)
+	{
+		WorkspaceWidget ws = GetGame().GetWorkspace();
+		if (ws && w)
+			ws.SetFocusedWidget(w);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Footer prompts: vanilla's input button (WLib_InputNavigationButton), which shows the key or
+	//! the pad button for the action by the device in use. Created into the HorizontalLayout
+	//! named `parentName`; true if it was made (the layout's static PromptsText can then hide).
+	//! VERIFY: the prompt switches glyphs between keyboard and pad in our layouts.
+	static bool AddPrompt(Widget root, string parentName, string action, string label)
+	{
+		Widget parent = Find(root, parentName);
+		if (!parent)
+			return false;
+
+		Widget w = GetGame().GetWorkspace().CreateWidgets(PROMPT_LAYOUT, parent);
+		if (!w)
+			return false;
+
+		SCR_InputButtonComponent btn = SCR_InputButtonComponent.FindComponent(w);
+		if (!btn)
+		{
+			w.RemoveFromHierarchy();
+			return false;
+		}
+
+		btn.SetAction(action);
+		btn.SetLabel(label);
+		return true;
+	}
+
+	static const ResourceName PROMPT_LAYOUT = "{0EC7676429DDCBC6}UI/layouts/WidgetLibrary/Buttons/WLib_InputNavigationButton.layout";
 
 	//------------------------------------------------------------------------------------------------
 	//! Mouse: `handler` hears clicks on the named widget, or on root itself if name is "" (make it a

@@ -258,6 +258,10 @@ own [house rules](#haven-house-rules-and-exile).
 Every "fired on for a few minutes" here is the same timed grudge as
 [shooting back](#what-makes-ai-shoot-you): it restarts, never adds up.
 
+What the posts and camps say to you (the warnings, the search, the toll, the gate, the safe-zone
+rule) shows as a subtitle at the bottom of the screen, not a notice card; the outcomes with
+numbers (a surrender's Infamy, the toll paid) stay cards ([UI.md](UI.md#subtitles-and-the-reader)).
+
 ## Reputation clues
 
 Something other players can see ✅. At **Trusted** the Red Hand gives you a **red armband** and
@@ -334,9 +338,11 @@ line. You can also turn a rogue leader in: most rogue deliveries have a drop at 
 
 ### Talking to leaders
 
-Talk to a leader (their body, or `RZ_LeaderAction` on the quartermaster): **Ask for work**
-(their personal job, else the stronghold's contracts), **Ask for news** (other leaders'
-loyalties, hungry safehouses, noise, rumours) and **Ask what they think of you**. Radio
+Talk to a leader (their body, or "Talk to whoever's in charge" on the quartermaster) and the
+talk screen opens ([DESIGN.md](DESIGN.md#talking-to-people)): **Ask for work** (their personal
+job, else the stronghold's contracts), **Heard anything?** (other leaders' loyalties, hungry
+safehouses, noise, rumours) and **What do you make of me?**. Without the talk screen these are
+actions on the leader. Radio
 contracts are briefed in the voice of the nearest Loyal leader of the giver, whose traits set
 the pay.
 

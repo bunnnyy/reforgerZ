@@ -593,12 +593,24 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Listed in the notebook's Radio tab under Missions (a contract) or World (a world event).
 	void NotifyParticipants(RZ_GameModeComponent gm, string title, string text)
 	{
+		RZ_ENoticeTag tag = NoticeTag();
 		foreach (int playerId : m_aParticipants)
 		{
-			gm.NotifyPlayer(playerId, title, text);
+			gm.NotifyPlayerAs(playerId, title, text, tag);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What this mission's notices are (docs/UI.md, "Notices").
+	RZ_ENoticeTag NoticeTag()
+	{
+		if (m_bContract)
+			return RZ_ENoticeTag.MISSION;
+
+		return RZ_ENoticeTag.EVENT;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -607,19 +619,19 @@ class RZ_Mission
 	{
 		if (!m_bContract)
 		{
-			gm.NotifyAll(title, text);
+			gm.NotifyAllAs(title, text, RZ_ENoticeTag.EVENT);
 			return;
 		}
 
 		foreach (int playerId : m_aOfferedTo)
 		{
-			gm.NotifyPlayer(playerId, title, text);
+			gm.NotifyPlayerAs(playerId, title, text, RZ_ENoticeTag.MISSION);
 		}
 
 		foreach (int playerId2 : m_aParticipants)
 		{
 			if (!m_aOfferedTo.Contains(playerId2))
-				gm.NotifyPlayer(playerId2, title, text);
+				gm.NotifyPlayerAs(playerId2, title, text, RZ_ENoticeTag.MISSION);
 		}
 	}
 

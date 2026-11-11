@@ -2289,7 +2289,7 @@ class RZ_LongTable
 			m_fRoadLeft = 300;
 			m_aMetHost.Insert(ident);
 			Notice(playerId);
-			m_GM.NotifyPlayer(playerId, "On the road", string.Format("A man steps out from the hedge %1 with a flask, smiling like he's been waiting for you.", RZ_Util.DirectionText(p.GetOrigin(), at)));
+			m_GM.Say(playerId, host.m_sName, -1, string.Format("A man steps out from the hedge %1 with a flask, smiling like he's been waiting for you.", RZ_Util.DirectionText(p.GetOrigin(), at)));
 			return;
 		}
 	}

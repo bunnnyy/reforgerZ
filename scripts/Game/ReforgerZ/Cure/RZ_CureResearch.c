@@ -988,7 +988,7 @@ class RZ_CureResearch
 		m_fAbandonedFor = 0;
 		m_bStandReached = false;
 		m_fWaveTimer = WAVE_INTERVAL_SECONDS;
-		m_GM.NotifyAll("THE FINAL STAND", "The cure is being synthesized. Every infected for miles can sense it. Hold the lab for 15 minutes! A handful of steady people can do it; more of you draw more of them.");
+		m_GM.NotifyAllAs("THE FINAL STAND", "The cure is being synthesized. Every infected for miles can sense it. Hold the lab for 15 minutes! A handful of steady people can do it; more of you draw more of them.", RZ_ENoticeTag.URGENT);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -432,7 +432,7 @@ class RZ_MissionManager
 		if (deadDrop.IsEligible(m_GM, playerId))
 			return true;
 
-		m_GM.NotifyPlayer(playerId, "The Red Hand", "Nobody comes out to meet you. The Red Hand doesn't deal with you.");
+		m_GM.NotifyPlayerAs(playerId, "The Red Hand", "Nobody comes out to meet you. The Red Hand doesn't deal with you.", RZ_ENoticeTag.MISSION);
 		return false;
 	}
 
@@ -497,8 +497,8 @@ class RZ_MissionManager
 		if (m_GM.GetLeaders())
 			brief = m_GM.GetLeaders().VoiceBrief(m, playerId);
 
-		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(m.m_Req.m_eGiver),
-			string.Format("%1\n%2\n(%3)%4", m.m_sTitle, brief, where, bonus));
+		m_GM.NotifyPlayerAs(playerId, "Contract: " + RZ_Factions.GetName(m.m_Req.m_eGiver),
+			string.Format("%1\n%2\n(%3)%4", m.m_sTitle, brief, where, bonus), RZ_ENoticeTag.MISSION);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -706,7 +706,7 @@ class RZ_MissionManager
 			{
 				if (!m.IsEligible(m_GM, playerId))
 				{
-					m_GM.NotifyPlayer(playerId, m.m_sTitle, string.Format("%1 didn't hire you for this. You get nothing from them.", RZ_Factions.GetName(m.m_Req.m_eGiver)));
+					m_GM.NotifyPlayerAs(playerId, m.m_sTitle, string.Format("%1 didn't hire you for this. You get nothing from them.", RZ_Factions.GetName(m.m_Req.m_eGiver)), RZ_ENoticeTag.MISSION);
 					continue;
 				}
 
@@ -715,7 +715,7 @@ class RZ_MissionManager
 			}
 
 			if (!m.m_bContract)
-				m_GM.NotifyAll("Event over", m.GetSuccessText(m_GM));
+				m_GM.NotifyAllAs("Event over", m.GetSuccessText(m_GM), RZ_ENoticeTag.EVENT);
 		}
 		else
 		{
@@ -796,6 +796,6 @@ class RZ_MissionManager
 		}
 
 		m.OnRewardPlayer(m_GM, playerId);
-		m_GM.NotifyPlayer(playerId, "Mission complete", text);
+		m_GM.NotifyPlayerAs(playerId, "Mission complete", text, m.NoticeTag());
 	}
 }

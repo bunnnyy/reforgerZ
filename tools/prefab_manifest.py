@@ -26,6 +26,8 @@ PLUGIN = os.path.join(ROOT, "scripts", "WorkbenchGame", "ReforgerZ", "RZ_CreateP
 NOT_ON_PREFABS = {
     "RZ_SampleDeliveryActionBase",  # abstract base of the lab and dead-drop actions
 }
+# Vanilla component bases (outside our scripts) that make a class a component.
+VANILLA_COMPONENT_BASES = {"SCR_GadgetComponent", "ScriptGameComponent"}
 # Consumable effects are set on an item's consumable component by hand (see the entry notes).
 CONSUMABLE_EFFECTS = {"RZ_ConsumableAntidote", "RZ_ConsumableMed"}
 
@@ -229,7 +231,7 @@ def check(m, classes, enums):
         want = "ScriptedUserAction" if kind == "action" else "ScriptComponent"
         if kind == "component" and cls == "RZ_GameModeComponent":
             want = "SCR_BaseGameModeComponent"
-        if want not in chain:
+        if want not in chain and not (kind == "component" and VANILLA_COMPONENT_BASES & set(chain)):
             errors.append("%s: %s is listed as a %s but derives from %s" % (where, cls, kind, " > ".join(chain)))
         for kv in p["values"]:
             k, _, v = kv.partition("=")
@@ -243,7 +245,7 @@ def check(m, classes, enums):
     # Every component and action class in the code is used somewhere.
     for cls, info in sorted(classes.items()):
         chain = base_chain(classes, cls)
-        if ("ScriptComponent" in chain or "ScriptedUserAction" in chain) and cls.startswith("RZ_"):
+        if ("ScriptComponent" in chain or "ScriptedUserAction" in chain or VANILLA_COMPONENT_BASES & set(chain)) and cls.startswith("RZ_") and not cls.endswith("Class"):
             if cls not in used and cls not in NOT_ON_PREFABS:
                 errors.append("%s (%s) is on no prefab in the manifest" % (cls, info["file"]))
 

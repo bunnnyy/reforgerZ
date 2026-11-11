@@ -1,5 +1,5 @@
 FrameWidgetClass "{432BCEDB0507C337}" {
- Name "HallOfFameMenu"
+ Name "HallPage"
  Slot FrameWidgetSlot "{4DACC50A2541C4CE}" {
   Anchor 0 0 1 1
   PositionX 0
@@ -14,199 +14,16 @@ FrameWidgetClass "{432BCEDB0507C337}" {
  }
  "Ignore Cursor" 0
  {
-  ImageWidgetClass "{326B58A93777D3E6}" {
-   Name "Dimmer"
-   Slot FrameWidgetSlot "{B9B827007BF035F4}" {
-    Anchor 0 0 1 1
-    PositionX 0
-    OffsetLeft 0
-    PositionY 0
-    OffsetTop 0
-    SizeX 0
-    OffsetRight 0
-    SizeY 0
-    OffsetBottom 0
-    Alignment 0 0
-   }
-   Color 0.031 0.035 0.039 0.75
-   Size 1 1
-  }
-  TextWidgetClass "{7608A38835F9BB0D}" {
-   Name "Heading"
-   Slot FrameWidgetSlot "{4150C045C10191A5}" {
-    Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 40
-    OffsetTop 40
-    SizeX 1000
-    OffsetRight -1072
-    SizeY 56
-    OffsetBottom -96
-    Alignment 0 0
-   }
-   Color 0.91 0.886 0.816 1
-   Text "HALL OF FAME"
-   "Font Size" 46
-   "Min Font Size" 46
-   FontProperties FontProperties "{AB572070EBB00EB1}" {
-    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-   }
-  }
-  TextWidgetClass "{2F827EB5058787FE}" {
-   Name "Header"
-   Slot FrameWidgetSlot "{93A51ED793EE83FC}" {
-    Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 100
-    OffsetTop 100
-    SizeX 1100
-    OffsetRight -1172
-    SizeY 24
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   Color 0.639 0.62 0.565 1
-   Text ""
-   "Font Size" 17
-   "Min Font Size" 17
-   FontProperties FontProperties "{376CD5EC36C11BAC}" {
-    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
-   }
-  }
-  ImageWidgetClass "{86F346279F08C9B6}" {
-   Name "HeadRule"
-   Slot FrameWidgetSlot "{560EDB2D9D192BC3}" {
-    Anchor 0 0 1 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 138
-    OffsetTop 138
-    SizeX -144
-    OffsetRight 72
-    SizeY 2
-    OffsetBottom -140
-    Alignment 0 0
-   }
-   Color 0.227 0.247 0.259 1
-   Size 1 1
-  }
-  ButtonWidgetClass "{C33AA873B0BFCAC8}" {
-   Name "CloseButton"
-   Slot FrameWidgetSlot "{237E3FF34EE5BCFE}" {
-    Anchor 1 0 1 0
-    PositionX -108
-    OffsetLeft -108
-    PositionY 40
-    OffsetTop 40
-    SizeX 36
-    OffsetRight 72
-    SizeY 36
-    OffsetBottom -76
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{50FE85D9B68A0206}" {
-     Name "CloseBox"
-     Slot ButtonWidgetSlot "{A6F7CE627803A4D1}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{BA3B2E536C24DDD4}" {
-       Name "CloseBg"
-       Slot OverlayWidgetSlot "{7915ABECAD52135A}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.102 0.114 0.125 1
-       Size 1 1
-      }
-      PanelWidgetClass "{2E6FB11131E3EC80}" {
-       Name "CloseLine"
-       Slot OverlayWidgetSlot "{3E938C498F8D3115}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.227 0.247 0.259 1
-       style outline_2px
-      }
-      TextWidgetClass "{DB7897134D97FCB1}" {
-       Name "CloseText"
-       Slot OverlayWidgetSlot "{77A7A08DCBAACEC6}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.91 0.886 0.816 1
-       Text "X"
-       "Font Size" 20
-       "Min Font Size" 20
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{63DBF1364C7B1FEC}" {
-        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  TextWidgetClass "{EF6EE8EDA9B5A00A}" {
-   Name "FooterKeys"
-   Slot FrameWidgetSlot "{781CC08CC8100926}" {
-    Anchor 0 1 0 1
-    PositionX 72
-    OffsetLeft 72
-    PositionY -34
-    OffsetTop -34
-    SizeX 700
-    OffsetRight -772
-    SizeY 20
-    OffsetBottom 14
-    Alignment 0 1
-   }
-   Color 0.639 0.62 0.565 1
-   Text "ESC  CLOSE"
-   "Font Size" 13
-   "Min Font Size" 13
-   FontProperties FontProperties "{94B60CB600F5E8BF}" {
-    Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-   }
-  }
-  TextWidgetClass "{4CC8C72F91414274}" {
-   Name "FooterNote"
-   Slot FrameWidgetSlot "{A6E0F5ED2DD3D656}" {
-    Anchor 1 1 1 1
-    PositionX -72
-    OffsetLeft -72
-    PositionY -34
-    OffsetTop -34
-    SizeX 1000
-    OffsetRight -928
-    SizeY 20
-    OffsetBottom 14
-    Alignment 1 1
-   }
-   Color 0.639 0.62 0.565 1
-   Text "/hall in chat gives the same as a notice."
-   "Font Size" 13
-   "Min Font Size" 13
-   "Horizontal Alignment" Right
-   FontProperties FontProperties "{4DB07813364DD8AA}" {
-    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
-   }
-  }
   FrameWidgetClass "{DD30410291DD76D3}" {
    Name "SeasonPanel"
    Slot FrameWidgetSlot "{1CFAF653765E5C72}" {
     Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
+    PositionX 96
+    OffsetLeft 96
     PositionY 168
     OffsetTop 168
-    SizeX 580
-    OffsetRight -652
+    SizeX 564
+    OffsetRight -660
     SizeY 840
     OffsetBottom -1008
     Alignment 0 0
@@ -233,12 +50,12 @@ FrameWidgetClass "{432BCEDB0507C337}" {
      Name "SeasonLabel"
      Slot FrameWidgetSlot "{CE509319780CD62E}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 20
       OffsetTop 20
-      SizeX 532
-      OffsetRight -556
+      SizeX 518
+      OffsetRight -541
       SizeY 16
       OffsetBottom -36
       Alignment 0 0
@@ -255,12 +72,12 @@ FrameWidgetClass "{432BCEDB0507C337}" {
      Name "SeasonList"
      Slot FrameWidgetSlot "{EFE0369531CA81BD}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 48
       OffsetTop 48
-      SizeX 532
-      OffsetRight -556
+      SizeX 518
+      OffsetRight -541
       SizeY 772
       OffsetBottom -820
       Alignment 0 0
@@ -280,12 +97,12 @@ FrameWidgetClass "{432BCEDB0507C337}" {
    Name "AllTimePanel"
    Slot FrameWidgetSlot "{356EC77ABD700394}" {
     Anchor 0 0 0 0
-    PositionX 670
-    OffsetLeft 670
+    PositionX 678
+    OffsetLeft 678
     PositionY 168
     OffsetTop 168
-    SizeX 580
-    OffsetRight -1250
+    SizeX 564
+    OffsetRight -1242
     SizeY 840
     OffsetBottom -1008
     Alignment 0 0
@@ -312,12 +129,12 @@ FrameWidgetClass "{432BCEDB0507C337}" {
      Name "AllTimeLabel"
      Slot FrameWidgetSlot "{E346DA215DA40FBE}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 20
       OffsetTop 20
-      SizeX 532
-      OffsetRight -556
+      SizeX 518
+      OffsetRight -541
       SizeY 16
       OffsetBottom -36
       Alignment 0 0
@@ -334,12 +151,12 @@ FrameWidgetClass "{432BCEDB0507C337}" {
      Name "AllTimeList"
      Slot FrameWidgetSlot "{5A30C6695FCDB108}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 48
       OffsetTop 48
-      SizeX 532
-      OffsetRight -556
+      SizeX 518
+      OffsetRight -541
       SizeY 772
       OffsetBottom -820
       Alignment 0 0
@@ -359,12 +176,12 @@ FrameWidgetClass "{432BCEDB0507C337}" {
    Name "PastPanel"
    Slot FrameWidgetSlot "{6729ECB0AB9D7520}" {
     Anchor 0 0 0 0
-    PositionX 1268
-    OffsetLeft 1268
+    PositionX 1260
+    OffsetLeft 1260
     PositionY 168
     OffsetTop 168
-    SizeX 580
-    OffsetRight -1848
+    SizeX 564
+    OffsetRight -1824
     SizeY 840
     OffsetBottom -1008
     Alignment 0 0
@@ -391,12 +208,12 @@ FrameWidgetClass "{432BCEDB0507C337}" {
      Name "PastLabel"
      Slot FrameWidgetSlot "{23A91DA655512A46}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 20
       OffsetTop 20
-      SizeX 532
-      OffsetRight -556
+      SizeX 518
+      OffsetRight -541
       SizeY 16
       OffsetBottom -36
       Alignment 0 0
@@ -413,12 +230,12 @@ FrameWidgetClass "{432BCEDB0507C337}" {
      Name "PastScroll"
      Slot FrameWidgetSlot "{11B9B030DE36FC36}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 48
       OffsetTop 48
-      SizeX 532
-      OffsetRight -556
+      SizeX 518
+      OffsetRight -541
       SizeY 772
       OffsetBottom -820
       Alignment 0 0
@@ -433,7 +250,7 @@ FrameWidgetClass "{432BCEDB0507C337}" {
         VerticalAlign 0
        }
        AllowWidthOverride 1
-       WidthOverride 520
+       WidthOverride 506
        {
         TextWidgetClass "{D80AFF009CDFB6FC}" {
          Name "PastList"
@@ -464,8 +281,8 @@ FrameWidgetClass "{432BCEDB0507C337}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 800
-    OffsetRight -800
+    SizeX 778
+    OffsetRight -778
     SizeY 40
     OffsetBottom -40
     Alignment 0.5 0.5

@@ -585,6 +585,45 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Distance to the nearest living infected within `radius` of `pos`, or radius + 1 if none
+	//! (the screen guard, UI/RZ_ScreenGuard.c).
+	float NearestZombieDist(vector pos, float radius)
+	{
+		float best = radius + 1;
+		array<AIAgent> agents = {};
+		foreach (RZ_TrackedZombie z : m_aTracked)
+		{
+			if (!z.m_Entity || RZ_Util.DistXZ(z.m_vLastPos, pos) > radius + 60)
+				continue;
+
+			SCR_AIGroup group = SCR_AIGroup.Cast(z.m_Entity);
+			if (!group)
+			{
+				float d = RZ_Util.DistXZ(z.m_Entity.GetOrigin(), pos);
+				if (d < best && RZ_Util.IsCharacterAlive(z.m_Entity))
+					best = d;
+
+				continue;
+			}
+
+			agents.Clear();
+			group.GetAgents(agents);
+			foreach (AIAgent agent : agents)
+			{
+				IEntity member = agent.GetControlledEntity();
+				if (!member)
+					continue;
+
+				float md = RZ_Util.DistXZ(member.GetOrigin(), pos);
+				if (md < best && RZ_Util.IsCharacterAlive(member))
+					best = md;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void UpdateTracked(array<IEntity> players)
 	{
 		for (int i = m_aTracked.Count() - 1; i >= 0; i--)

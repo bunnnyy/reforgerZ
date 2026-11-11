@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **172 prefab fields**: 40 on `RZ_GameModeComponent`, 125 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **177 entries**: 145 prefabs the plugin creates, 21 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 11 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 35 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **179 prefab fields**: 40 on `RZ_GameModeComponent`, 132 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **184 entries**: 146 prefabs the plugin creates, 21 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 17 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 36 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -667,8 +667,15 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | the RZ_Icons imageset that tools/icon_atlas.py builds from UI/Icons/png/128 (UI/LAYOUTS.md) | — | UI > Icon imageset | optional | icons on the HUD, cards and menus (empty = the images set in the layouts) |
 | (existing prefab) | the NoticeCard layout (UI/LAYOUTS.md) | — | UI > Notice layout | optional | styled notice cards (empty = the vanilla hint) |
 | (existing prefab) | the MissionRow layout (UI/LAYOUTS.md) | — | UI > Mission row layout | optional | journal rows |
-| (existing prefab) | the RadioRow layout (UI/LAYOUTS.md) | — | UI > Radio row layout | optional | radio log rows |
+| (existing prefab) | the RadioRow layout (UI/LAYOUTS.md) | — | UI > Radio row layout | optional | rows of the notebook's Radio tab |
 | (existing prefab) | the MapIcon layout (UI/LAYOUTS.md) | — | UI > Map icon layout | optional | the ReforgerZ icons on the map, per player (empty = vanilla text markers for events and the lab). Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI) |
+| `RZ_Notebook.et` | a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg | `RZ_NotebookGadgetComponent` | UI > Notebook prefab | optional | given to every new life; taken into the hand it opens the notebook (the pad's way in besides the pause menu). Built as text in the repo; check in Workbench that it can be taken into the hand and put in a quick slot |
+| (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
+| (existing prefab) | the Journal page layout (UI/LAYOUTS.md) | — | UI > Journal page | optional | the Journal tab (empty = Nothing here yet) |
+| (existing prefab) | the Radio page layout (UI/LAYOUTS.md) | — | UI > Radio page | optional | the Radio tab (empty = Nothing here yet) |
+| (existing prefab) | the Map key page layout (UI/LAYOUTS.md) | — | UI > Map key page | optional | the Map key tab (empty = Nothing here yet) |
+| (existing prefab) | the Hall page layout (UI/LAYOUTS.md) | — | UI > Hall page | optional | the Hall of fame tab (empty = Nothing here yet) |
+| (existing prefab) | the TalkReply layout (UI/LAYOUTS.md) | — | UI > Talk reply layout | optional | the talk screen's reply rows (empty = no talk screen: a person's actions and notices) |
 <!-- /manifest:prefabs -->
 
 ### Stand-in bases
@@ -953,7 +960,8 @@ without AI today: they keep standing where they spawn until they're based on an 
 
 Optional: without it every message is a vanilla hint, as before. How the UI works is in
 [UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md). Steps 1 to 4
-are done in the repo; 5 and 6 aren't. The 12 layouts are in `UI/layouts/ReforgerZ/`.
+are done in the repo (step 4's notebook written as text: check it in Workbench, 4a); 5 and 6
+aren't. The layouts are in `UI/layouts/ReforgerZ/`.
 
 1. **The feed** (done). `Prefabs/Characters/Core/RZ_PlayerController.et` inherits vanilla
    `DefaultPlayerControllerMP.et` and adds `RZ_PlayerUIComponent` (vanilla controllers already
@@ -964,14 +972,33 @@ are done in the repo; 5 and 6 aren't. The 12 layouts are in `UI/layouts/Reforger
 3. **The HUD** (done). `RZ_Hud.layout` and `RZ_NoticeCard.layout` are built. The player
    controller's `SCR_HUDManagerComponent` has an info display of class `RZ_HudDisplay` with the HUD
    layout, and **UI > Notice layout** is set.
-4. **The menus** (done, on keys for now; not checked in play yet). The six menu layouts and the
-   two row layouts are built, with Buttons for the mouse; **UI > Mission row layout** and **Radio
-   row layout** are set. Two overrides of vanilla configs (same GUIDs) in `Configs/System/` add the
-   rest: `chimeraMenus.conf` the six menu presets, `chimeraInputCommon.conf` the five input actions
-   ([both](../UI/LAYOUTS.md#menus)). Their keys clash with vanilla ones, so opening the screens from
-   the map instead is planned ([UI.md](UI.md#opening-the-screens)). **UI > Board menus** is still
-   off (the board is a notice and notes are written with `/note`): turn it on once the notice
-   board's menu works.
+4. **The menus** (done as text; not checked in play yet). The notebook's frame
+   (`RZ_NotebookMenu.layout`), its five page layouts, the notice board's layout and the two row
+   layouts are built, with Buttons for the mouse; **UI > Mission row layout**, **Radio row
+   layout** and the five **page** layouts are set on `RZ_GameMode.et`. Two overrides of vanilla
+   configs (same GUIDs) in `Configs/System/` add the rest: `chimeraMenus.conf` the presets,
+   `chimeraInputCommon.conf` the input actions ([both](../UI/LAYOUTS.md#menus)). **UI > Board
+   menus** is still off (the board is a notice and notes are written with `/note`): turn it on
+   once the notice board's menu works.
+
+   **4a. Check the notebook in Workbench** (the author's steps; nothing here needs the editor
+   unless a check fails):
+   1. Open `UI/layouts/ReforgerZ/RZ_NotebookMenu.layout` and the five `RZ_*Page.layout` files in
+      the layout editor once, so Workbench registers them (it reads the GUIDs from their `.meta`
+      files). Check each page's content sits between the header rule and the footer, inside the
+      safe area, and nothing overlaps the tabs. If a page looks squeezed, widen it in the editor:
+      the script only looks up the names in UI/LAYOUTS.md.
+   2. Open `Prefabs/ReforgerZ/UI/RZ_Notebook.et` (written as text on vanilla's carryable notebook,
+      with `RZ_NotebookGadgetComponent`): it should show the component, display name Notebook and
+      weight 0.1 kg. **UI > Notebook prefab** points at it.
+   3. Open `RZ_ReaderMenu.layout`, `RZ_TalkMenu.layout`, `RZ_TalkReply.layout` and `RZ_Hud.layout`
+      (its new `SubtitlePanel`, hidden) the same way. **UI > Talk reply layout** is set, so the
+      talk screen is on (**Dialogue > Talk screen**). Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
+   4. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
+      with the pad); after spawning, find the notebook in the inventory and take it in hand. If
+      the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
+      button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
+      it's there.
 5. **The deploy panel** (to do). `RZ_BackgroundPanel.layout` is built, and its root already
    carries `RZ_BackgroundPanelComponent`. Find the vanilla deploy menu's layout in the Resource
    Browser (in 1.9 the log shows it opening `UI/layouts/Menus/DeployMenu/RoleSelectionMenu.layout`),
@@ -1057,7 +1084,8 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
 | Factions | Services | `m_ServiceSettings` | **Fire Mission** (on, 60 min cooldown, 6 infected, 50 m, 30 s, kills at most 25, not within 250 m of people), **Fence** (on, keywords, 3 Favor an item, 8 a sale, 30 an hour), **Bounty board** (on, 60 to post, 40 paid, 3 at once, 2 h), booster (80) and medic (20) prices, **Amends** (15 Favor, ×1.5 each time, 5 Infamy, 15 a life, never below 15, every 30 min), armband and ribbon prefabs |
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
-| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (3), queue (8), radio log size (40), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu) ([UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
+| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
+| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
 <!-- /manifest:settings -->
@@ -1203,8 +1231,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **51** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 4 are in `UI/`: two the UI's own, two the server's loadout
+There are **58** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 11 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -1212,7 +1240,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-2)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-9)
 come last.
 
 ### High risk: the core loop (2)
@@ -1278,15 +1306,24 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1382` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
 | `Factions/RZ_CampLife.c:1449` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
-### The UI (2)
+### The UI (9)
 
-None of these affect the game: the UI only reads. If the HUD or a menu misbehaves, turn **UI >
-Styled notices** off and every message goes back to the vanilla hint. How the UI is put together
-is in [UI.md](UI.md).
+None of these affect the game: the UI only reads, and the talk screen runs the handlers that are
+already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off and every
+message goes back to the vanilla hint; empty **UI > Talk reply layout** for the old actions on
+people, **UI > Reader** and **Subtitles** off for cards. How the UI is put together is in
+[UI.md](UI.md). Check the first five in one Workbench play with a pad plugged in.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_PlayerUIComponent.c:152` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_UIData.c:900` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_Notebook.c:197` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
+| `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
+| `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
+| `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
+| `UI/RZ_UIData.c:923` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `Dialogue/RZ_Dialogue.c:377` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `UI/RZ_PlayerUIComponent.c:158` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
 
 ## 7. Log lines to check
@@ -1351,7 +1388,7 @@ Warnings worth acting on:
 
 | Line | Means |
 |---|---|
-| `GUI (E): Menu preset 'RZ_StandingMenu' not found!` (and the other five) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override (`Configs/System/`) wasn't loaded ([the UI](#setting-up-the-ui)). Only the menus are missing |
+| `GUI (E): Menu preset 'RZ_NotebookMenu' not found!` (or another `RZ_` preset) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override (`Configs/System/`) wasn't loaded ([the UI](#setting-up-the-ui)). Only the menus are missing |
 | `No common zombie prefabs configured. ...` | Set Zombies > Common prefabs (logged as an error: no infected spawn) |
 | `Using N hand-placed settlement markers.` | Detection is off because markers are placed |
 | `No checkpoint barricade prefab set: road checkpoints are off.` | Set Perimeter > Barricade prefab |
@@ -1407,7 +1444,8 @@ now N percent.` (both only once a finale questline is registered),
 `Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
 `Long Table: found out (to N).`, `Long Table: the farm past ... is moving (quiet for a real day).` and
 `... opens again past ...`, `Long Table: broken up (N).`,
-`Fire Mission perk: player N, M infected killed.`, `Cars: the ... in ... fixed by player N.`, `Stealth: the infected take a perception factor (...)` (once, the
+`Screen guard: closed talk for player N (danger).` (or `reader`; `left`, `idle`, `gone`: a talk
+screen or reader the screen guard shut), `Fire Mission perk: player N, M infected killed.`, `Cars: the ... in ... fixed by player N.`, `Stealth: the infected take a perception factor (...)` (once, the
 first time infected near a player take it), `Note at ... by ...: ...`, `Season over. Cure goes to ...`,
 `Canon: <key> = <value>.` (a fixed fact of the setting, made the first time content asks, once a
 season; [DESIGN.md](DESIGN.md#world-facts)), `World change: <key>. <headline>` (for example
@@ -1500,7 +1538,7 @@ session, tick off:
   the winner's rules (the log and the first-spawn "This season" notice say which).
 - [ ] **Rule sets** `Winter, Fog` on a fresh season: both are named on first spawn; at night more
   specials; Fog Banks come more often. `No Vehicles`: no fixable cars, no trucks, no Recover the Bus.
-- [ ] The hall of fame shows on first spawn and with `/hall`; a delivered sample and a finished
+- [ ] The hall of fame shows on first spawn and on the notebook's Hall of fame tab; a delivered sample and a finished
   mission show up in it.
 - [ ] At a safehouse: "Read the notice board" (empty), `/note Water at the church, bring a bucket`,
   read again: your name and the note. A second note at once is refused; away from a safehouse
@@ -1511,14 +1549,38 @@ session, tick off:
   spot in the offer. A puzzle contract always gives its own positions.
 
 **UI** ([Setting up the UI](#setting-up-the-ui); the deploy-menu and map items need its steps 5 and 6)
-- [ ] A Haven channel message shows as an amber card with the speaker; three at once stack, the
-  rest queue; with **Styled notices** off they're vanilla hints again.
+- [ ] A Haven channel message shows as an amber card with the speaker; with **Styled notices** off
+  they're vanilla hints again.
+- [ ] Spawn: the background card comes first, then the outbreak and the rest one at a time (two
+  cards at most, about 2 s apart); nothing pours in. Get bitten while the welcome cards wait: the
+  bite card shows at once. Wait a minute with cards queued: "+N in your notebook" appears under
+  them, and the notebook's Radio tab lists them (filter Missions and World).
+- [ ] On a dedicated server with two clients, a contract offer to one player never reaches the
+  other's log (owner-only notices).
+- [ ] Walk up to a Bastion checkpoint: its warning is a subtitle at the bottom centre in olive,
+  not a card; a Perimeter loudspeaker too. With **Subtitles** off, they're cards again.
+- [ ] Talk to a Trader wanderer: the talk screen opens with their name, what they say and the
+  replies; "Buy supplies" shows its price and is dim with what it needs if you're short; pick a
+  reply with the D-pad and A, with 1–7, and with a click; B leaves. Their choice actions don't show
+  in the action menu while the screen is on. Walk off 6 m, or let an infected come close: it
+  closes ("Not now!"). Do the same with a leader's "Talk to whoever's in charge" (Ask for work
+  gives the job as a card, the leader's line in the screen) and a safehouse occupant.
+- [ ] With **UI > Talk reply layout** empty, Talk and the slots are actions with notices again.
+- [ ] Read a puzzle note, a guidance note at spawn and a letter from a search: each opens on the
+  paper; a long one has pages (LB/RB, Q/E or the arrows); B or Esc closes it. Have an infected
+  walk up while it's open: it closes by itself. A subtitle that comes while reading waits.
 - [ ] A bite shows the golden window counting down, then Fever with the track filling; a
   stabiliser shows PAUSED and the clock stops; the timer matches the stage messages within seconds.
 - [ ] Cracking a secure channel shows the indicator until the codes change.
-- [ ] K, J and U open Standing, Journal and Radio with real data; Q/E switch tabs; Esc closes.
-- [ ] O opens the hall of fame; with **Board menus** on, reading a board opens the board menu, and
-  typing in its box and pressing Post pins the note (the list refreshes).
+- [ ] N opens the notebook on Journal the first time, then on the tab last used; Q/E and LB/RB go
+  through Standing, Journal, Radio, Map key and Hall of fame with real data; up/down move the
+  journal's selection and scroll the other lists; X or F cycles the Radio filter through six
+  names; B or Esc closes. With a pad only: Start, Notebook, A opens it; the notebook item taken in
+  hand (inventory or quick slot) opens it and is put away when it closes.
+- [ ] A new contract offer shows a count on the Journal tab, a radio message one on Radio; looking
+  at the tab clears it.
+- [ ] With **Board menus** on, reading a board opens the board menu, and typing in its box and
+  pressing Post pins the note (the list refreshes); up/down scroll the notes.
 - [ ] In the deploy menu, a locked background shows LOCKED and how to unlock it, and the server
   refuses to spawn it, with the mouse and with a gamepad (the log says `asked to spawn with locked
   loadout`); after one life as Nurse the panel lists the Nurse's real gear.

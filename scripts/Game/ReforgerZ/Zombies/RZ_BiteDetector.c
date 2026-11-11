@@ -75,7 +75,7 @@ class RZ_BiteDetector
 		foreach (int i, IEntity ent : players)
 		{
 			int playerId = ids[i];
-			float hp = GetHealth(ent);
+			float hp = HealthOf(ent);
 			float last;
 			bool hadLast = m_mLastHealth.Find(playerId, last);
 			m_mLastHealth.Set(playerId, hp);
@@ -160,7 +160,8 @@ class RZ_BiteDetector
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected float GetHealth(IEntity ent)
+	//! A character's health (the default hit zone), 0 if it has none. Also the screen guard's damage check.
+	static float HealthOf(IEntity ent)
 	{
 		ChimeraCharacter c = ChimeraCharacter.Cast(ent);
 		if (!c)
