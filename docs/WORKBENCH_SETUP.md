@@ -33,14 +33,18 @@ Run **ReforgerZ: Create prefabs** (or follow the manual checklist). First:
 ### 1.1 Before you start: project and dependencies
 
 1. Subscribe to the dependencies in the game ([MOD_STACK.md](MOD_STACK.md)): at minimum
-   **Bacon Zombies**; Metabolism and Special Zombies are recommended.
-2. Arma Reforger Tools → **Add existing project** → pick this repo's `addon.gproj`.
-3. Project Settings → Dependencies: Arma Reforger is already there; add Bacon Zombies and
-   whatever else you use. Commit the changed `addon.gproj`.
-4. Open the Script Editor and compile (**F7**). The game scripts compile cleanly on 1.9; [the VERIFY list](#6-the-verify-list)
-   is what to watch in play.
-5. Make a world as a **sub-scene of Arland** and open it in the World Editor
-   ([world steps](#the-world)).
+   **Bacon Zombies** and **Special Zombies** (both are in `addon.gproj`); Metabolism is recommended.
+2. Arma Reforger Tools → **+ Add Project → Add Existing Project** → pick this repo's
+   `addon.gproj`, then **Open**.
+3. **File → Project Settings → Dependencies**: the repo's `addon.gproj` already lists Arma
+   Reforger, Bacon Zombies and Special Zombies. To add another mod, click **+**, then the new
+   row's **...**, and pick the mod's `addon.gproj` in the game's Workshop folder. Workbench only
+   loads a dependency it can find, so start it with that folder in `-addonsDir`
+   ([PC_SETUP.md](PC_SETUP.md#5-workbench)). Commit the changed `addon.gproj`.
+4. Open the Script Editor and compile (**F7**). The game scripts and the plugin compile cleanly on
+   1.9; [the VERIFY list](#6-the-verify-list) is what to watch in play.
+5. Open the repo's world, `Worlds/RZ_Arland/RZ_Arland.ent` (a **sub-scene of Arland**), in the
+   World Editor, or make another ([world steps](#the-world)).
 
 Look up classes in the Script Editor or the
 [Script API docs](https://community.bistudio.com/wikidata/external-data/arma-reforger/ArmaReforgerScriptAPIPublic/).
@@ -48,9 +52,10 @@ Look up classes in the Script Editor or the
 ### 1.2 Run "ReforgerZ: Create prefabs"
 
 The plugin in `scripts/WorkbenchGame/ReforgerZ/RZ_CreatePrefabsPlugin.c` reads the manifest and
-does as much of sections 2 to 4 as it can. **It has never been run**: its editor calls were checked
-against the 1.9 Workbench script declarations, and what only a run can show is marked `VERIFY`
-([the list](#the-workbench-plugin-9)). Expect a round of fixes the first time, and use the [manual checklist](#13-by-hand-the-manual-checklist) for
+does as much of sections 2 to 4 as it can. It compiles in Workbench 1.9 and its **dry run works**
+(with no bases in the manifest it reports 143 steps to do and 244 manual ones); a real run hasn't
+been tried yet. What only a real run can show is marked `VERIFY`
+([the list](#the-workbench-plugin-8)). Expect a round of fixes the first time, and use the [manual checklist](#13-by-hand-the-manual-checklist) for
 whatever it can't do.
 
 1. Compile the scripts (the plugin is in the Workbench script module, so `RZ_` classes must exist).
@@ -96,7 +101,7 @@ checklist to `PrefabChecklist.md` in the project folder (git ignores it), with w
 exists ticked. If even that fails, the tables in this doc are the same checklist.
 
 **Known limitations:**
-- Never run: names of editor calls may be wrong; each is in one helper in `RZ_WB`, so a fix is one edit.
+- Not run for real yet: names of editor calls may be wrong; each is in one helper in `RZ_WB`, so a fix is one edit.
 - It can't choose meshes, fill inventories (loadout gear, the reward crate), set collision layers
   (the interaction spot, the doorway blocker), make AI groups' members or pick vanilla bases.
 - Faction variants copy only the colour and name (with their own key): check the flag and identity
@@ -202,6 +207,10 @@ power and radio station, and whether "Search" spots appear in houses.
 | Save the world, and point a scenario (mission header) at it to play it | manual | yes |
 | Optional: place marker entities (RZ_SettlementMarkerEntity and the others) to override automatic picks | manual | — |
 <!-- /manifest:world -->
+
+The repo's world is `Worlds/RZ_Arland/RZ_Arland.ent`. To make another in Workbench 1.9: **File →
+Load World**, search `Arland` and open `worlds/Arland/Arland.ent`; then **File → New World →
+Sub-scene (of current world)**, and **File → Save World** into the project.
 
 ## 3. Factions and loadouts
 
@@ -890,14 +899,14 @@ test files are copied into a throwaway addon folder.
 grep -rn "VERIFY" scripts/
 ```
 
-There are **42** lines with the tag: 32 in the game scripts (one is the comment in `Core/RZ_Util.c`
-that explains them; 2 are in the UI) and 10 in the Workbench plugin (one is its header comment).
+There are **41** lines with the tag: 32 in the game scripts (one is the comment in `Core/RZ_Util.c`
+that explains them; 2 are in the UI) and 9 in the Workbench plugin (one is its header comment).
 Every name and signature question is settled: the game scripts compile on 1.9, and each call was
 checked against the base game's script source (its doc comments and how vanilla uses it). Each
 marker left is a **behaviour** only a play-test can show (for the plugin, a run in Workbench):
 replication, what the AI does, what a prefab carries. The game scripts' markers are grouped by
 risk; check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The
-[UI's](#the-ui-2) and the [plugin's](#the-workbench-plugin-9) come last.
+[UI's](#the-ui-2) and the [plugin's](#the-workbench-plugin-8) come last.
 
 ### High risk: the core loop (1)
 
@@ -954,19 +963,17 @@ is in [UI.md](UI.md).
 | `UI/RZ_PlayerUIComponent.c:150` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_LoadoutLock.c:9` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still spawns a locked pick as the default background |
 
-### The Workbench plugin (9)
+### The Workbench plugin (8)
 
-Paths are under `scripts/WorkbenchGame/ReforgerZ/`. The plugin isn't compiled by the server check,
-but its editor calls were checked against the 1.9 Workbench script declarations. What's left is
-what only a run in Workbench shows. None of these affect the game: if the plugin fails, make the
-prefabs by hand. Riskiest first.
+Paths are under `scripts/WorkbenchGame/ReforgerZ/`. The server check doesn't compile the plugin;
+Workbench does (**F7**), without errors, and its dry run works. What's left is what only a real run
+shows. None of these affect the game: if the plugin fails, make the prefabs by hand. Riskiest first.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
 | `RZ_CreatePrefabsPlugin.c:363` | `CreateEntityTemplate(src, absPath)` saves a prefab that inherits from the entity's prefab and writes its `.meta` | No prefab is saved: make prefabs by hand |
 | `RZ_CreatePrefabsPlugin.c:934` | API edits on a prefab loaded from its file, not only on world entities | Slots aren't wired: wire a placed instance and apply it to the prefab, or fill the slots by hand |
 | `RZ_CreatePrefabsPlugin.c:214` | The editor names: `ActionContexts`, `additionalActions`, `ParentContextList`, `UIInfo`, `Factions`, `FactionKey`, `m_bIsPlayable`, `m_aFriendlyFactionsIds`, `m_aPlayerLoadouts` and the rest | Actions without a context, factions or loadouts not found: compare with a vanilla `.et`/`.conf` and fix the constants |
-| `RZ_CreatePrefabsPlugin.c:536` | JSON load of nested classes and arrays, ignoring unknown keys | "Couldn't read the manifest": use the checklist from this doc |
 | `RZ_CreatePrefabsPlugin.c:492` | `BaseContainer.Get(key, string)` reads a string, ResourceName, number or colour as text | Filled slots look empty (it never overwrites, but may report wrongly); faction keys unreadable |
 | `RZ_CreatePrefabsPlugin.c:502` | `BaseContainer.Get(key, array<string>)` reads a string or ResourceName array | Lists look empty; friendly lists are rewritten with only the new key: check them |
 | `RZ_CreatePrefabsPlugin.c:1158` | factions inline on the FactionManager | Variants can't be added: do it by hand |

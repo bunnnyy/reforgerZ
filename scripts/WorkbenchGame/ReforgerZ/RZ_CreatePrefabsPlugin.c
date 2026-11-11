@@ -10,8 +10,8 @@
 //! A dry run only reports. "ReforgerZ: Write prefab checklist" writes the same work as a
 //! checklist file to follow by hand.
 //!
-//! HONEST WARNING: this plugin has never been compiled or run. Its editor calls were checked
-//! against the 1.9 Workbench script declarations; what only a run can show is marked VERIFY.
+//! Status: it compiles in Workbench 1.9 and its dry run works; a real run hasn't been tried.
+//! What only a real run can show is marked VERIFY.
 //! Each call sits in a small helper in RZ_WB below, so fixing one is one edit. Expect a round of fixes the first time; use the
 //! dry run first, and fall back to the checklist (or docs/WORKBENCH_SETUP.md) if it fails.
 
@@ -237,7 +237,7 @@ class RZ_WB
 	//------------------------------------------------------------------------------------------
 	static WorldEditorAPI Api()
 	{
-		WorldEditor worldEditor = WorldEditor.Cast(Workbench.GetModule(WorldEditor));
+		WorldEditor worldEditor = Workbench.GetModule(WorldEditor); // modules don't support Type.Cast
 		if (!worldEditor)
 			return null;
 		return worldEditor.GetApi();
@@ -280,7 +280,7 @@ class RZ_WB
 		string absPath;
 		if (!AbsolutePath(path, absPath, true))
 			return "";
-		ResourceManager rm = ResourceManager.Cast(Workbench.GetModule(ResourceManager));
+		ResourceManager rm = Workbench.GetModule(ResourceManager); // modules don't support Type.Cast
 		if (rm)
 		{
 			MetaFile meta = rm.GetMetaFile(absPath);
@@ -533,8 +533,8 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: JsonLoadContext reads nested script classes and arrays of them by member name,
-	// and ignores JSON keys that have no member
+	// JsonLoadContext reads nested script classes and arrays of them by member name, and ignores
+	// JSON keys that have no member (seen in Workbench 1.9)
 	static RZ_Manifest LoadManifest(string path)
 	{
 		JsonLoadContext ctx = new JsonLoadContext();

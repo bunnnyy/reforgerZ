@@ -74,7 +74,7 @@ Claude Code on Windows runs **Git Bash**. Things that trip it up:
 | Starting Workbench or the game | `powershell -NoProfile -Command 'Start-Process -FilePath "<Windows path to the .exe>"'`. Never run a program with a window in the foreground: the shell waits until it closes |
 | Long commands | The compile check: a 10-minute shell timeout. The runtime test and a full server: run them in the background and read the output when they finish. Don't ask the author anything while one runs |
 | A server left running after a cut-off run | `tasklist //FI "IMAGENAME eq ArmaReforgerServer.exe"`, then `taskkill //PID <pid> //F`, only for a server you started |
-| Workbench's windows | Computer use, if this session has it (the Claude desktop app's computer-use tools). Look only at the window the step needs: not Steam chat, friends, browser tabs, mail or other apps; if one pops up, ignore it. Without computer use, give the author one step at a time and wait for "done" |
+| Workbench's windows | Computer use, if this session has it (the Claude desktop app's computer-use tools). Look only at the window the step needs: not Steam chat, friends, browser tabs, mail or other apps; if one pops up, ignore it. Windows may not let Claude bring Workbench to the front while another app holds it: if clicks are refused, ask the author to click the Workbench window once. Without computer use, give the author one step at a time and wait for "done" |
 | Checking a Workbench result | Read its log instead of asking the author to copy text ([Logs](#logs)) |
 
 ## 1. The repo
@@ -149,14 +149,25 @@ SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" 
 SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" EXTRA_ADDONS_DIR="<Documents>/My Games/ArmaReforger/addons" tools/runtime_test/run.sh
 ```
 
-Run them as [long commands](#how-claude-drives-the-pc).
+Run them as [long commands](#how-claude-drives-the-pc). On Windows the server doesn't quit after
+compiling, so the script's `timeout` stops it: the compile check always takes about 3 minutes.
 What each shows and can't show, and how long it takes, is in
 [WORKBENCH_SETUP.md, section 6](WORKBENCH_SETUP.md#compile-check-without-workbench).
 
 ## 5. Workbench
 
 1. Steam must be running. Start `Arma Reforger Tools\Workbench\ArmaReforgerWorkbenchSteamDiag.exe`
-   ([how](#how-claude-drives-the-pc)).
+   ([how](#how-claude-drives-the-pc)), with `-WorkingDirectory` set to its folder and these
+   arguments (Windows paths; `-ArgumentList` in PowerShell):
+
+   ```
+   -gproj "<repo>\addon.gproj" -addonsDir "<library>\steamapps\common\Arma Reforger\addons,<Documents>\My Games\ArmaReforger\addons"
+   ```
+
+   `-gproj` opens the project without the launcher. Workbench doesn't look in the game's Workshop
+   folder by itself, so the dependencies in `addon.gproj` only load from a folder in `-addonsDir`.
+   The list replaces Workbench's default, so the game's own `addons` folder must be in it, or
+   Workbench can't find the base game.
 2. Follow [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md) from
    [section 1.1](WORKBENCH_SETUP.md#11-before-you-start-project-and-dependencies), step 2, in order.
    Claude drives Workbench with computer use, or guides the author through it one step at a time.
@@ -209,10 +220,6 @@ Written before the first run on the author's PC. Settle each on the first sessio
 
 | Step | What to check |
 |---|---|
-| 2 | The game keeps Workshop downloads in `Documents\My Games\ArmaReforger\addons\<Name>_<GUID>` (the dedicated server's layout; not seen on the game client) |
 | 3 | The game's Workshop button names (**Subscribe** or **Download**) |
-| 4 | Git Bash converts the `/c/...` paths for the Windows server; `timeout` is Git's (not Windows' `timeout.exe`) and stops it; the server's log reaches `compile.log` (if not, the script falls back to its `console.log`) |
-| 5 | Workbench lists the game's downloaded mods under **Project Settings → Dependencies**. If not, find where Workbench wants them (its own `addons` folder, or an `-addonsDir` start parameter) and write it in step 5 |
-| 5 | The Workbench launcher's button names in this Tools version |
 | 6 | The World Editor's **Play** and the Peer Tool names; the game's **Direct Join** menu; whether the game client needs `-addonsDir` and `-addons` to join a server running the unpublished mod |
-| Logs | The Workbench and game log folders, and where Workbench play keeps `$profile:` |
+| Logs | Where Workbench play keeps `$profile:` |

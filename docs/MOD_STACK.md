@@ -18,16 +18,18 @@ be swapped for another that offers the same kind of prefab.
 
 ## Required
 
+Both are dependencies in `addon.gproj`, so Workbench, the compile check and every server need them.
+
 | Mod | Role | How ReforgerZ uses it |
 |---|---|---|
 | [Bacon Zombies](https://reforger.armaplatform.com/workshop/622120A5448725E3) | Zombie AI, animations and prefabs (civilian, military, exploding, ranged, heavy) | Its group prefabs go in **Zombies > Common / Special / Horde prefabs**, and its faction must be hostile to all four ReforgerZ factions. Bite detection works with any zombie mod |
+| [Special Zombies](https://reforger.armaplatform.com/workshop/69BD721866937F85) | Special variants and destructible hives (needs Bacon Zombies) | Specials go in **Special prefabs** (they drop cure samples); runner, helmet and screamer variants in **Zombies > Adaptation**. To run without it, use Bacon's heavy, exploding and ranged zombies as specials and remove it from `addon.gproj` |
 
 ## Recommended
 
 | Mod | Role | How ReforgerZ uses it |
 |---|---|---|
 | [Metabolism](https://reforger.armaplatform.com/workshop/64E3272AFD56FEF7-Metabolism) | Hunger and thirst, **no sleep** | Its food items feed safehouses (by the **Food keywords**); its unsafe and safe water items fill the **Dirty / Clean water** slots. ReforgerZ can't read hunger itself, so the "hungry" tip waits for a bridge to call `RZ_Guidance.Report` |
-| [Special Zombies](https://reforger.armaplatform.com/workshop/69BD721866937F85) | Special variants and destructible hives | Specials go in **Special prefabs** (they drop cure samples); runner, helmet and screamer variants in **Zombies > Adaptation** |
 
 ## Optional
 

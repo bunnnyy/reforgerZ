@@ -66,13 +66,14 @@ The game scripts **compile without errors or warnings** against Arma Reforger 1.
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 That's about 76,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
 was also checked against the base game's script source; the 30 `VERIFY` markers left in the game
-scripts (and 9 in the plugin) are behaviours only a play-test can show, such as replication and
+scripts (and 8 in the plugin) are behaviours only a play-test can show, such as replication and
 what the AI does. The game mode also **runs on the server** in a test world with a fake player
 (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no script
-exceptions. There are no prefabs, layouts or configs yet, and nobody has played it. The icon
-set and mockups of every screen are done (`UI/`). Every prefab,
+exceptions. There's a world (a sub-scene of Arland) but no prefabs, layouts or configs yet, and
+nobody has played it. The icon set and mockups of every screen are done (`UI/`). Every prefab,
 setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
-plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run). Start with
+plugin, **ReforgerZ: Create prefabs**, makes what it can from it (it compiles in Workbench and its
+dry run works; a real run is next). Start with
 [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
@@ -124,6 +125,8 @@ scripts/Game/ReforgerZ/
                  the map's icon layer, notice styles, chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
+Worlds/RZ_Arland/
+                 the world: a sub-scene of Arland
 Configs/ReforgerZ/PrefabManifest.json
                  every prefab, slot, settings object, faction and loadout to set up
 tools/prefab_manifest.py
