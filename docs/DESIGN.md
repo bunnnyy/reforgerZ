@@ -1421,12 +1421,15 @@ grid on the back (two extra finds within 90 minutes), one in ten a puzzle missio
 
 ### Cars: easy projects, kept rare
 
-One fixable car per three settlements (at most 6, one per town); every other wreck is just a wreck.
-**Inspect** says what's missing (one or two of fuel, battery, tyre, spark plugs). Parts come from
-searches, **stripping** wrecks, the Mechanic and the Haven shop. **Fuel:** siphon a wreck (60% have
-some) or a petrol station hand pump (10 heat). **Start:** hotwire (20 s, 5 s for a Mechanic, 8 heat)
-or use its keys, then **Start the engine** (15 heat): the prop becomes a real vehicle with a quarter
-tank, and from then on it's vanilla. A new project turns up elsewhere six hours later.
+One fixable car per three settlements (at most 6, one per town); every other wreck is just a wreck,
+and is never fixable. A fixable car stands near players as the car it will become (one of the
+**Car prefabs**, named after it: "the beige saloon"), parked and locked so nobody can get in, with
+its prompts in front of its grille. **Inspect** says what's missing (one or two of fuel, battery, tyre, spark
+plugs). Parts come from searches, **stripping** wrecks, the Mechanic and the Haven shop. **Fuel:**
+siphon a wreck (60% have some) or a petrol station hand pump (10 heat). **Start:** hotwire (20 s,
+5 s for a Mechanic, 8 heat) or use its keys, then **Start the engine** (15 heat): the parked copy
+becomes the drivable car with a quarter tank, and from then on it's vanilla. A new project turns up
+elsewhere six hours later.
 
 The Car Keys job ([MISSIONS.md](MISSIONS.md#unarmed-missions)) adds one more car for as long as it
 runs: it already runs, needs only its keys (always in the one house the job names) or hotwiring,

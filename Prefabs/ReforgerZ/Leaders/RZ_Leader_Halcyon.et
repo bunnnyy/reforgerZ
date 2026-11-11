@@ -1,0 +1,117 @@
+SCR_ChimeraCharacter : "{4E29194BA809DF32}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_AC_Medic.et" {
+ ID "520EC961A090B1EE"
+ components {
+  SCR_CharacterFactionAffiliationComponent "{555C98D1CD949F3E}" {
+   "faction affiliation" "INST"
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    m_sFaction "INST"
+   }
+  }
+  SCR_CharacterDamageManagerComponent "{55872AD7B4E959F2}" {
+   EnableDamage 0
+  }
+  CharacterWeaponSlotComponent "{520EA1D2F659CFDC}" {
+   WeaponTemplate ""
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00E}" {
+     PrefabsToSpawn {
+      "{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et" "{983B57B8E95C1F52}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded_FIA.et" "{C3F1FA1E2EC2B345}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_USSR_01.et" "{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et"
+     }
+    }
+   }
+  }
+  RZ_ClueComponent "{6AD67DC2A51BF032}" {
+  }
+  RZ_PuzzleObjectComponent "{6AD67DC2A519EB25}" {
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A51D208D}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A51E97BB}" {
+      Name "Read"
+     }
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A5121D5E}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A5178599}" {
+      Name "Use"
+     }
+     m_iValue 0
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A50D3902}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A50E976F}" {
+      Name "Use"
+     }
+     m_iValue 1
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A50442EE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A539ACBE}" {
+      Name "Use"
+     }
+     m_iValue 2
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A53F5D4B}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A530DA38}" {
+      Name "Use"
+     }
+     m_iValue 3
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A5367C7D}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A52BE7B4}" {
+      Name "Choose"
+     }
+     m_iOption 0
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A52EADF5}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A5221135}" {
+      Name "Choose"
+     }
+     m_iOption 1
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A5D9C0CA}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A5DD33AB}" {
+      Name "Choose"
+     }
+     m_iOption 2
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A5D0CD40}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A5D41CAC}" {
+      Name "Choose"
+     }
+     m_iOption 3
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,30 @@
+GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
+ ID "5272E314F01B2DBE"
+ components {
+  ActionsManagerComponent "{6AD67DC2A13CB9DF}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A13CA2A8}" {
+     ContextName "default"
+     Position PointInfo "{7E7930F15FE28894}" {
+      Offset 0 0.8 0
+     }
+     Radius 1.1
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ChoiceDeliveryAction "{6AD67DC2A13CA1AD}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A13CAC39}" {
+      Name "Hand in"
+     }
+     m_eFaction MILITARY
+    }
+   }
+  }
+ }
+ coords 0 0 0
+ angles 0 0 0
+}

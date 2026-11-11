@@ -1,0 +1,266 @@
+SCR_ChimeraCharacter : "{3AE3C1A509298D9D}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_DenimJacket_2.et" {
+ ID "520EC961A090B1EE"
+ components {
+  SCR_CharacterFactionAffiliationComponent "{60DC952FF79A02F1}" {
+   "faction affiliation" "SURV"
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    m_sFaction "SURV"
+   }
+  }
+  SCR_CharacterDamageManagerComponent "{55872AD7B4E959F2}" {
+   EnableDamage 0
+  }
+  RZ_QuartermasterComponent "{6AD67DC2A1E343B4}" {
+   m_eFaction SURVIVORS
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   additionalActions {
+    RZ_StandingStatusAction "{6AD67DC2A1E201A5}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1E5F4B8}" {
+      Name "My standing"
+     }
+    }
+    RZ_LeaderAction "{6AD67DC2A1E4E6DF}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1E7E967}" {
+      Name "Talk"
+     }
+     m_eKind TALK
+    }
+    RZ_LeaderAction "{6AD67DC2A1995C65}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A19865EB}" {
+      Name "Ask for work"
+     }
+     m_eKind WORK
+    }
+    RZ_LeaderAction "{6AD67DC2A19BE6D5}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A19AF18C}" {
+      Name "Ask for news"
+     }
+     m_eKind NEWS
+    }
+    RZ_LeaderAction "{6AD67DC2A19D8CF1}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A19F7808}" {
+      Name "Ask about standing"
+     }
+     m_eKind STANDING
+    }
+    RZ_SafehouseAction "{6AD67DC2A19E0DDC}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A191F4A9}" {
+      Name "How are things here?"
+     }
+     m_eKind STATUS
+    }
+    RZ_SafehouseAction "{6AD67DC2A19365BC}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1927526}" {
+      Name "Hand over food"
+     }
+     m_eKind DELIVER_FOOD
+    }
+    RZ_SafehouseAction "{6AD67DC2A195F20C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1940281}" {
+      Name "Ask about the radio"
+     }
+     m_eKind RADIO
+    }
+    RZ_SafehouseAction "{6AD67DC2A1979DFD}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1968179}" {
+      Name "Get patched up"
+     }
+     m_eKind HEAL
+    }
+    RZ_SafehouseAction "{6AD67DC2A1881CC8}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A18B06E9}" {
+      Name "Tell them you're bitten"
+     }
+     m_eKind DECLARE_BITE
+    }
+    RZ_SafehouseAction "{6AD67DC2A18AAB56}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A18DA426}" {
+      Name "Ask for something for the fever"
+     }
+     m_eKind MEDS
+    }
+    RZ_SafehouseAction "{6AD67DC2A18F3CC2}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A18E33DC}" {
+      Name "Read the notice board"
+     }
+     m_eKind BOARD_READ
+    }
+    RZ_SafehouseAction "{6AD67DC2A1807637}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1836297}" {
+      Name "Leave a note on the board"
+     }
+     m_eKind BOARD_WRITE
+    }
+    RZ_FactionServiceAction "{6AD67DC2A182C025}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A185A0F8}" {
+      Name "Make amends"
+     }
+     m_eService AMENDS
+    }
+    RZ_FactionShopAction "{AE0076C8019B6111}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{82E5980E9B78638A}" {
+      Name "Buy"
+     }
+     m_eFaction SURVIVORS
+     m_eRequiredTier KNOWN
+     m_iFavorCost 5
+     m_sItemPrefab "{C22A2F123CD609FC}Prefabs/Items/Food/Meat_01_Dry.et"
+     m_sDisplayName "Dried meat"
+    }
+    RZ_FactionShopAction "{D63297BCE4F32653}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{31F804ECA437D73A}" {
+      Name "Buy"
+     }
+     m_eFaction SURVIVORS
+     m_eRequiredTier KNOWN
+     m_iFavorCost 4
+     m_sItemPrefab "{CDCC313B2FB76FE7}Prefabs/Items/Medicine/FieldDressing_01/Gauze_01.et"
+     m_sDisplayName "Bandage"
+    }
+    RZ_FactionShopAction "{7F9DD361D75ED524}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{24B5E4647F590DA6}" {
+      Name "Buy"
+     }
+     m_eFaction SURVIVORS
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 40
+     m_sItemPrefab "{3EB02CDAD5F23C82}Prefabs/Weapons/Rifles/SVD/Rifle_SVD.et"
+     m_sDisplayName "Hunting rifle"
+    }
+    RZ_FactionShopAction "{3D90881CD51747F4}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8B2C83BB1787712A}" {
+      Name "Buy"
+     }
+     m_eFaction SURVIVORS
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 6
+     m_sItemPrefab "{77595CB9F596E6AC}Prefabs/Weapons/Magazines/Magazine_762x54_SVD_10rnd_LPS.et"
+     m_sDisplayName "Hunting rifle magazine"
+    }
+    RZ_FactionShopAction "{D96BD52AB4AB573A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2EEC06F24B111F04}" {
+      Name "Buy"
+     }
+     m_eFaction SURVIVORS
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 15
+     m_sItemPrefab "{41A9C55B61F375F0}Prefabs/Items/Equipment/Backpacks/Backpack_Kolobok.et"
+     m_sDisplayName "Backpack"
+    }
+    RZ_FactionShopAction "{5CA56AC378C1C113}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{53FAFB21C5A0CE50}" {
+      Name "Buy"
+     }
+     m_eFaction SURVIVORS
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 12
+     m_sItemPrefab "{540C08AD5F21A5FA}Prefabs/Items/Equipment/Radios/Radio_R148_FIA.et"
+     m_sDisplayName "Radio"
+    }
+    RZ_FactionShopAction "{1698BA918CA90646}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{10F663A1DFDE8F45}" {
+      Name "Buy"
+     }
+     m_eFaction SURVIVORS
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 10
+     m_sItemPrefab "{7BE5A0EEE4464399}Prefabs/ReforgerZ/Interactions/RZ_FuelCan_Full.et"
+     m_sDisplayName "Jerrycan"
+    }
+    RZ_FactionShopAction "{27E07FF941A2C72F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6A906F86DB8E61EB}" {
+      Name "Buy"
+     }
+     m_eFaction SURVIVORS
+     m_eRequiredTier CHAMPION
+     m_iFavorCost 20
+     m_sItemPrefab "{0A101873E8C9274C}Prefabs/ReforgerZ/Interactions/RZ_Planks.et"
+     m_sDisplayName "Barricade planks"
+    }
+    RZ_FactionShopAction "{C8DDB05948A12AE8}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{58B9E85679A3B28C}" {
+      Name "Buy"
+     }
+     m_eFaction SURVIVORS
+     m_eRequiredTier CHAMPION
+     m_iFavorCost 15
+     m_sItemPrefab "{527D7C5D2E476BDC}Prefabs/Items/Medicine/SalineBag_01/SalineBag_USSR_01.et"
+     m_sDisplayName "Saline bag"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

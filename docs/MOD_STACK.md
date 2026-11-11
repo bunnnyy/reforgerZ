@@ -9,8 +9,9 @@ why they show up.
 
 **What the code actually depends on:** nothing by name. No ReforgerZ script references another
 mod's classes. Every link is a prefab slot you fill in Workbench (zombie prefabs, a nest, water
-and food items) or a keyword matched against prefab names (food, water, fuel, parts). A mod can
-be swapped for another that offers the same kind of prefab.
+and food items) or a keyword matched against prefab names (food, water, fuel, parts). The repo's
+prefabs do use the two required mods (below). A mod can be swapped for another that offers the
+same kind of prefab: refill the slots and rebase the prefabs built on it.
 
 > These were found on the Arma Reforger Workshop in November 2026. Before you lock the stack
 > in, check each page for the current game version, the last-updated date and the license.
@@ -22,20 +23,20 @@ Both are dependencies in `addon.gproj`, so Workbench, the compile check and ever
 
 | Mod | Role | How ReforgerZ uses it |
 |---|---|---|
-| [Bacon Zombies](https://reforger.armaplatform.com/workshop/622120A5448725E3) | Zombie AI, animations and prefabs (civilian, military, exploding, ranged, heavy) | Its group prefabs go in **Zombies > Common / Special / Horde prefabs**, and its faction must be hostile to all four ReforgerZ factions. Bite detection works with any zombie mod |
-| [Special Zombies](https://reforger.armaplatform.com/workshop/69BD721866937F85) | Special variants and destructible hives (needs Bacon Zombies) | Specials go in **Special prefabs** (they drop cure samples); runner, helmet and screamer variants in **Zombies > Adaptation**. To run without it, use Bacon's heavy, exploding and ranged zombies as specials and remove it from `addon.gproj` |
+| [Bacon Zombies](https://reforger.armaplatform.com/workshop/622120A5448725E3) | Zombie AI, animations and prefabs (civilian, military, exploding, ranged, heavy) | Its groups fill **Zombies > Common** and **Horde prefabs**; its variants fill the runner and helmet lists in **Zombies > Adaptation** and the Wedding Party's guests. Its zombie faction, hostile to all, comes with the vanilla FactionManager base, which Bacon overrides. Bite detection works with any zombie mod |
+| [Special Zombies](https://reforger.armaplatform.com/workshop/69BD721866937F85) | Special variants and destructible hives (needs Bacon Zombies) | Its specials fill **Zombies > Special prefabs** (they drop cure samples) and the screamer list in **Zombies > Adaptation**. The **Missions > Nest** prefab is built on its hive, `ZombieHive_Minor` (it spawns its own infected), and the Wedding Party's bride on its Shambler. To run without it, use Bacon's heavy, exploding and ranged zombies as specials, rebase the Nest and the bride, and remove it from `addon.gproj` |
 
 ## Recommended
 
 | Mod | Role | How ReforgerZ uses it |
 |---|---|---|
-| [Metabolism](https://reforger.armaplatform.com/workshop/64E3272AFD56FEF7-Metabolism) | Hunger and thirst, **no sleep** | Its food items feed safehouses (by the **Food keywords**); its unsafe and safe water items fill the **Dirty / Clean water** slots. ReforgerZ can't read hunger itself, so the "hungry" tip waits for a bridge to call `RZ_Guidance.Report` |
+| [Metabolism](https://reforger.armaplatform.com/workshop/64E3272AFD56FEF7-Metabolism) | Hunger and thirst, **no sleep** | Its food items feed safehouses (by the **Food keywords**); its unsafe and safe water items fill the **Dirty / Clean water** slots. It isn't in `addon.gproj` yet, so those two slots are empty. ReforgerZ can't read hunger itself, so the "hungry" tip waits for a bridge to call `RZ_Guidance.Report` |
 
 ## Optional
 
 | Mod | Role | How ReforgerZ uses it |
 |---|---|---|
-| [Zombie Hive](https://reforger.armaplatform.com/workshop/65F2F0F322747C37) | Destructible zombie spawners | A hive prefab in **Missions > Nest** enables Burn the Nest |
+| [Zombie Hive](https://reforger.armaplatform.com/workshop/65F2F0F322747C37) | Destructible zombie spawners | Not needed: the **Missions > Nest** prefab is built on Special Zombies' hive, so Burn the Nest doesn't need it. Only a choice of base for the Nest if you run without Special Zombies |
 | [Shop System (ekudmada)](https://reforger.armaplatform.com/workshop/5D2D1436D1FA5A13-ShopSystem) | General trading with currency or barter | Not needed for factions: their shops are our own quartermasters, gated by standing ([REPUTATION.md](REPUTATION.md)). Use it for general trading, or as the **Wandering Trader** prefab |
 | [Kodiis Building System](https://reforger.armaplatform.com/workshop/644F5B4619455A52) | Base building, code locks, storage | Not integrated. Last listed for 1.7, so test it with vanilla persistence first. ReforgerZ's own barricades are temporary and leave no traces |
 | [ENDURE Survival Systems](https://reforger.armaplatform.com/workshop/6A621851A4A3E54C) | Seasons, wetness, cold, hunger and thirst | An alternative to Metabolism, and a candidate for a planned Winter season. Check it has no sleep or energy mechanic first |

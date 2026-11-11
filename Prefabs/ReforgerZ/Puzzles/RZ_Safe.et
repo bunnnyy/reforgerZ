@@ -1,0 +1,107 @@
+GenericEntity : "{C3C7A8E9B6324130}Prefabs/Props/Furniture/Safe_01.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  RZ_ClueComponent "{6AD67DC2A1028D8D}" {
+  }
+  RZ_PuzzleObjectComponent "{6AD67DC2A1028E83}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A1028AB6}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A102881F}" {
+     ContextName "default"
+     Position PointInfo "{751938B065D68F1B}" {
+      Offset 0 0.6 0
+     }
+     Radius 1
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A105761B}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10577E7}" {
+      Name "Read"
+     }
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A1057588}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1057325}" {
+      Name "Use"
+     }
+     m_iValue 0
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A105718B}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1057F03}" {
+      Name "Use"
+     }
+     m_iValue 1
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A1057D57}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1057AD5}" {
+      Name "Use"
+     }
+     m_iValue 2
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A1057914}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10566A7}" {
+      Name "Use"
+     }
+     m_iValue 3
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A10564E0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1056285}" {
+      Name "Choose"
+     }
+     m_iOption 0
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A10560E0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1056E8E}" {
+      Name "Choose"
+     }
+     m_iOption 1
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A1056CDA}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1056AF4}" {
+      Name "Choose"
+     }
+     m_iOption 2
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A1056984}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A105573A}" {
+      Name "Choose"
+     }
+     m_iOption 3
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

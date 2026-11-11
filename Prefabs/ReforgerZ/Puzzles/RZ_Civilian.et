@@ -1,0 +1,102 @@
+SCR_ChimeraCharacter : "{DF7F8D5C05CC1AF6}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_2.et" {
+ ID "520EC961A090B1EE"
+ components {
+  SCR_CharacterFactionAffiliationComponent "{60DC952FF79A02F1}" {
+   "faction affiliation" "SURV"
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    m_sFaction "SURV"
+   }
+  }
+  RZ_ClueComponent "{6AD67DC2A16DA86B}" {
+  }
+  RZ_PuzzleObjectComponent "{6AD67DC2A16D419C}" {
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A16C0FDD}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A16F1D7D}" {
+      Name "Read"
+     }
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A16E1DA9}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A16120A8}" {
+      Name "Use"
+     }
+     m_iValue 0
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A160B39B}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A163DA8E}" {
+      Name "Use"
+     }
+     m_iValue 1
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A16568FC}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1646651}" {
+      Name "Use"
+     }
+     m_iValue 2
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A1670F73}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A166FCD6}" {
+      Name "Use"
+     }
+     m_iValue 3
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A1198B80}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A11B7072}" {
+      Name "Choose"
+     }
+     m_iOption 0
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A11A031F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A11D1793}" {
+      Name "Choose"
+     }
+     m_iOption 1
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A11CA7D4}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A11FCA47}" {
+      Name "Choose"
+     }
+     m_iOption 2
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A111463A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1106068}" {
+      Name "Choose"
+     }
+     m_iOption 3
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

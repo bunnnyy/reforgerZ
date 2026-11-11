@@ -1,0 +1,54 @@
+GenericEntity {
+ ID "5FBB7F552EFECBC4"
+ components {
+  SignalsManagerComponent "{4221008CD47BF557}" {
+  }
+  SoundComponent "{E0C835A19EC4CAA8}" {
+   Filenames {
+    "{6C46716BAD0C61A3}Sounds/Props/Military/Generators/Props_GeneratorFloodlight.acp"
+   }
+   DistanceManagement 0
+   IncludeInactive 1
+  }
+  MeshObject "{008AE40A176DD660}" {
+   Object "{0F55504A35401163}Assets/Props/Military/Radios/RadioStation_ANPRC77_01.xob"
+  }
+  SCR_BaseInteractiveLightComponent "{D4BC628B0F1A27B1}" {
+   m_aLightData {
+    SCR_BaseLightData "{24C4CF5FE29710B2}" {
+     m_eLightType POINT
+     m_vLightOffset 0 -0.05 0
+     m_vLightColor 1 0.075 0.075
+     m_fRadius 3
+     m_fIntensityClipEV -10
+     m_vFlareOffset 0 0 0
+     m_fScale 0.15
+     m_eLightFlags 0
+    }
+   }
+   m_fLV 2
+   m_eInitialLightState LIT_ON_SPAWN
+  }
+  RplComponent "{941D6EEC65A35927}" {
+   Enabled 1
+  }
+  Hierarchy "{D85E2754E0B0174E}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{50453A6A8F169E8B}Prefabs/Props/Airport/RunwayLightPortable_01/RunwayLightPortable_01_light.et" {
+   ID "C56924B5B20B3022"
+   components {
+    LightSourceVisualizationObject "{5A02839A0D5BE210}" {
+     Size 0.3
+     Color 1 0.075 0.075 1
+     LV 8
+    }
+    Hierarchy "{77376B8C41A0A561}" {
+    }
+   }
+   coords 0 -0.03 0
+  }
+ }
+}

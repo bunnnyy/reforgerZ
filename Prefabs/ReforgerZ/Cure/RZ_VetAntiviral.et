@@ -1,0 +1,63 @@
+GenericEntity : "{C98FCC6CA6C56069}Prefabs/Items/Medicine/AspirinBottle.et" {
+ ID "3472273B5965FE24"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5222EB4D07D865FA}" {
+     Name "Veterinary antiviral"
+     Description "Meant for cattle. It can hold the fever still for up to twenty minutes, and you'll cough for a while after."
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{8DED79D5F72E0C9D}" {
+     AnimationInstance "{4FCBEA45CAEBC9C0}anims/workspaces/player/player_main_1h.asi"
+     AnimationIKPose "{3E5C93E85F05C6B5}Assets/Weapons/Grenades/RGD5/anims/anm/p_rgd5_ik.anm"
+     AnimationAttachments {
+      AnimationAttachmentInfo "{25D18D32D887C924}" {
+       AnimGraph "{25B5CD66792F60F4}Assets/Items/Medicine/Workspaces/MorphineInjection_01.agr"
+       AnimInstance "{B900F61FD4D7F1DA}Assets/Items/Medicine/Workspaces/morphine_injection_player.asi"
+       BindingName "Gadget"
+      }
+     }
+    }
+    CustomAttributes {
+     ItemActionAnimAttributes "{FE82FAE1FA4718F4}" {
+      AnimationGraphTemplate "{DFFC0A34A77ADCB4}anims/workspaces/player/player_main.agr"
+      ActionAnimationCommandName "CMD_HealSelf"
+      ActionAnimDuration 4
+      AllowMovementDuringAction 1
+     }
+     CharacterModifierAttributes "{EAF6FB9DA3C606EC}" {
+      SpeedLimit 4
+      ADSSpeedLimit 4
+      SpeedLimitItemPrimaryAction 4
+      SpeedLimitHighready 4
+     }
+    }
+   }
+  }
+  RZ_MedItemComponent "{6AD67DC2A1558367}" {
+   m_eKind VET_ANTIVIRAL
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    RZ_UseMedAction "{6AD67DC2A1558DE2}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A15589D1}" {
+      Name "Take"
+     }
+    }
+   }
+  }
+  SCR_ConsumableItemComponent "{B8DDB2C1C1294E06}" {
+   m_eAnimVariable ADRIANOV
+   m_eUseMask 7
+   m_ConsumableEffect RZ_ConsumableMed "{BE7F21C96A395932}" {
+    m_bDeleteOnUse 1
+    m_bAllowInventoryUseWithoutHitZone 1
+    m_eKind VET_ANTIVIRAL
+   }
+  }
+ }
+ coords 0 0 0
+}

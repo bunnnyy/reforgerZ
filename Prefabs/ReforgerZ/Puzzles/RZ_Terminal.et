@@ -1,0 +1,140 @@
+GenericEntity : "{A9DC69EC1CE466A0}Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_on.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RZ_ClueComponent "{6AD67DC2A1094E21}" {
+  }
+  RZ_PuzzleObjectComponent "{6AD67DC2A10947B6}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A1094AAC}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A109370C}" {
+     ContextName "default"
+     Position PointInfo "{A5B960AC922F64D9}" {
+      Offset 0 0.3 0
+     }
+     Radius 0.9
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_KeypadAction "{6AD67DC2A1093EE3}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10926C0}" {
+      Name "0"
+     }
+     m_iKey 0
+    }
+    RZ_KeypadAction "{6AD67DC2A1092DE4}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10915B6}" {
+      Name "1"
+     }
+     m_iKey 1
+    }
+    RZ_KeypadAction "{6AD67DC2A1091881}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A109008E}" {
+      Name "2"
+     }
+     m_iKey 2
+    }
+    RZ_KeypadAction "{6AD67DC2A109F74E}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A109FE6A}" {
+      Name "3"
+     }
+     m_iKey 3
+    }
+    RZ_KeypadAction "{6AD67DC2A109E507}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A109EC9D}" {
+      Name "4"
+     }
+     m_iKey 4
+    }
+    RZ_KeypadAction "{6AD67DC2A109D382}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A109DADB}" {
+      Name "5"
+     }
+     m_iKey 5
+    }
+    RZ_KeypadAction "{6AD67DC2A109C19A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A109C91E}" {
+      Name "6"
+     }
+     m_iKey 6
+    }
+    RZ_KeypadAction "{6AD67DC2A109BC65}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A109A7AA}" {
+      Name "7"
+     }
+     m_iKey 7
+    }
+    RZ_KeypadAction "{6AD67DC2A109AA57}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A109958A}" {
+      Name "8"
+     }
+     m_iKey 8
+    }
+    RZ_KeypadAction "{6AD67DC2A10998CD}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1098008}" {
+      Name "9"
+     }
+     m_iKey 9
+    }
+    RZ_KeypadAction "{6AD67DC2A10876E4}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1087E2C}" {
+      Name "Clear"
+     }
+     m_iKey 10
+    }
+    RZ_KeypadAction "{6AD67DC2A10865C8}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1086D1A}" {
+      Name "Enter"
+     }
+     m_iKey 11
+    }
+    RZ_ReadClueAction "{6AD67DC2A108501E}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1085B65}" {
+      Name "Read"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

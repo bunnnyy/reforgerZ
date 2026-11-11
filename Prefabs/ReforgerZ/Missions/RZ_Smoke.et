@@ -1,0 +1,4 @@
+SCR_ReplicatedParticleEffectEntity : "{002FEEDB0213777D}Prefabs/Editor/EffectsModuleEntities/EffectModule_Particle_Smoke_Red.et" {
+ ID "5CAAA309C760D959"
+ coords 0 0 0
+}

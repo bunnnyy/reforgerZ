@@ -1,0 +1,251 @@
+SCR_ChimeraCharacter : "{2F912ED6E399FF47}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Unarmed.et" {
+ ID "520EC961A090BBD5"
+ components {
+  SCR_CharacterFactionAffiliationComponent "{520EC961FB0A2E90}" {
+   "faction affiliation" "MIL"
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    m_sFaction "MIL"
+   }
+  }
+  SCR_CharacterDamageManagerComponent "{55872AD7B4E959F2}" {
+   EnableDamage 0
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CAAFB9235E902}" {
+     PrefabsToSpawn {
+      "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.et" "{61D4F80E49BF9B12}Prefabs/Items/Equipment/Compass/Compass_SY183.et" "{922F95F91943F69A}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded_US.et" "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et" "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et" "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et" "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et" "{6E35D94130954509}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE_FreeRoamBuilding_Gadget.et"
+     }
+    }
+   }
+  }
+  RZ_QuartermasterComponent "{6AD67DC2A1B0537C}" {
+   m_eFaction MILITARY
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   additionalActions {
+    RZ_StandingStatusAction "{6AD67DC2A1B62A03}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1AC28EA}" {
+      Name "My standing"
+     }
+    }
+    RZ_LeaderAction "{6AD67DC2A1A23E74}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2584DC4}" {
+      Name "Talk"
+     }
+     m_eKind TALK
+    }
+    RZ_LeaderAction "{6AD67DC2A253409D}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2494A1A}" {
+      Name "Ask for work"
+     }
+     m_eKind WORK
+    }
+    RZ_LeaderAction "{6AD67DC2A2404021}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2462F8E}" {
+      Name "Ask for news"
+     }
+     m_eKind NEWS
+    }
+    RZ_LeaderAction "{6AD67DC2A271447C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2774108}" {
+      Name "Ask about standing"
+     }
+     m_eKind STANDING
+    }
+    RZ_FactionServiceAction "{6AD67DC2A26E0238}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A264170B}" {
+      Name "Make amends"
+     }
+     m_eService AMENDS
+    }
+    RZ_FactionShopAction "{B027677A63F64930}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A029DF26FD0F9105}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier KNOWN
+     m_iFavorCost 5
+     m_sItemPrefab "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et"
+     m_sDisplayName "Rations"
+    }
+    RZ_FactionShopAction "{D2A51C91F29181BE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C2E3A535CC81D7D}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier KNOWN
+     m_iFavorCost 6
+     m_sItemPrefab "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
+     m_sDisplayName "Morphine"
+    }
+    RZ_FactionShopAction "{634AD6F11C4980C7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7314848292A8EC4A}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier KNOWN
+     m_iFavorCost 4
+     m_sItemPrefab "{EC9BDA3D9DDD8795}Prefabs/Weapons/Flares/FlareStarParachute_M127A1_white.et"
+     m_sDisplayName "Flare"
+    }
+    RZ_FactionShopAction "{E85E51D802F82007}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6E1D01165A00270E}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 50
+     m_sItemPrefab "{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et"
+     m_sDisplayName "Service rifle"
+    }
+    RZ_FactionShopAction "{6205E99210EFAF61}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{90A1D0A53D01BCD0}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 6
+     m_sItemPrefab "{2EBF60EF24B108FC}Prefabs/Weapons/Magazines/Magazine_556x45_STANAG_30rnd_M855_Ball.et"
+     m_sDisplayName "Service rifle magazine"
+    }
+    RZ_FactionShopAction "{A3B0154B28CE4D8B}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{33FE6760DD33F298}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 35
+     m_sItemPrefab "{4B57C11AA5161760}Prefabs/Characters/Vests/Vest_PASGT/Vest_PASGT.et"
+     m_sDisplayName "Body armour"
+    }
+    RZ_FactionShopAction "{90862AA23E98ED2B}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{C6418782FA48895A}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 15
+     m_sItemPrefab "{FE5C49069C2499D9}Prefabs/Characters/HeadGear/Helmet_PASGT_01/Helmet_PASGT_01_cover.et"
+     m_sDisplayName "Helmet"
+    }
+    RZ_FactionShopAction "{6AD67DC2A21F0D10}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A215D947}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier CHAMPION
+     m_iFavorCost 30
+     m_sItemPrefab "{0657594EFC97C5A7}Prefabs/ReforgerZ/Factions/RZ_SignalSmoke.et"
+     m_sDisplayName "Signal smoke"
+    }
+    RZ_FactionShopAction "{4D9720FA5349E591}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{DFEB9FE2EDD9AFF4}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier CHAMPION
+     m_iFavorCost 90
+     m_sItemPrefab "{D2B48DEBEF38D7D7}Prefabs/Weapons/MachineGuns/M249/MG_M249.et"
+     m_sDisplayName "Machine gun"
+    }
+    RZ_FactionShopAction "{67085AB9DA32F626}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{55130B057ACFD14A}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier CHAMPION
+     m_iFavorCost 15
+     m_sItemPrefab "{4FCBBDF274FD2157}Prefabs/Weapons/Magazines/Box_556x45_M249_200rnd_Ball.et"
+     m_sDisplayName "Machine-gun ammo"
+    }
+    RZ_FactionShopAction "{26F01A31B7D86132}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{13D1272456DA5E70}" {
+      Name "Buy"
+     }
+     m_eFaction MILITARY
+     m_eRequiredTier CHAMPION
+     m_iFavorCost 15
+     m_sItemPrefab "{E8F00BF730225B00}Prefabs/Weapons/Grenades/Grenade_M67.et"
+     m_sDisplayName "Frag grenade"
+    }
+    RZ_RequisitionAction "{356D1444C4BCF3BF}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{D7AC4EB9CD504312}" {
+      Name "Requisition"
+     }
+     m_iFavorCost 5
+     m_sItemPrefab "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et"
+     m_sDisplayName "rations"
+    }
+    RZ_RequisitionAction "{F3D794AC45ACE146}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{EAE4F459B1735043}" {
+      Name "Requisition"
+     }
+     m_iFavorCost 6
+     m_sItemPrefab "{2EBF60EF24B108FC}Prefabs/Weapons/Magazines/Magazine_556x45_STANAG_30rnd_M855_Ball.et"
+     m_sDisplayName "service rifle magazine"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

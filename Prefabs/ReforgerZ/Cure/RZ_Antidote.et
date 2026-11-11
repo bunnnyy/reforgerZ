@@ -1,0 +1,39 @@
+GenericEntity : "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5222EB4D07D865FA}" {
+     Name "Antidote"
+     Description "One dose from Halcyon's lab. It cures a bite. Don't waste it on a scratch."
+     m_aItemHints {
+      SCR_InventoryItemHintUIInfo "{5E0EC111493B116F}" {
+       Name "Cures a bite"
+      }
+     }
+    }
+   }
+  }
+  SCR_ConsumableItemComponent "{59E68C4DC131E9FC}" {
+   m_ConsumableEffect RZ_ConsumableAntidote "{B903DF6B2EA07628}" {
+    m_bDeleteOnUse 1
+    m_bAllowInventoryUseWithoutHitZone 1
+   }
+  }
+  RZ_AntidoteItemComponent "{6AD67DC2A0BC54D9}" {
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    RZ_InjectAntidoteAction "{6AD67DC2A0BECC99}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A0B5A332}" {
+      Name "Inject antidote"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

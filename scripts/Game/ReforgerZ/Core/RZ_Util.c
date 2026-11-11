@@ -744,6 +744,21 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A point at the front of an entity's bounding box (a vehicle's grille), `up` metres above the
+	//! bottom of the box and `inset` metres back from its front (negative: in front of it), in world space.
+	static vector FrontOf(IEntity e, float up, float inset)
+	{
+		if (!e)
+			return vector.Zero;
+
+		vector boxMin;
+		vector boxMax;
+		e.GetBounds(boxMin, boxMax); // VERIFY: GetBounds is the model's box in the entity's own space and a vehicle's front is local +Z (vanilla SCR_AIDangerReaction_Vehicle reads GetBounds with CoordToParent the same way); if the spot lands behind the boot, use boxMin[2] + inset
+		vector atFront = Vector((boxMin[0] + boxMax[0]) * 0.5, boxMin[1] + up, boxMax[2] - inset);
+		return e.CoordToParent(atFront);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Sets a vehicle's fuel to a share of its tanks (a freshly fixed car). Does nothing without
 	//! a fuel manager.
 	static void SetVehicleFuel(IEntity vehicle, float share)

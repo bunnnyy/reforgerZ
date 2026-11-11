@@ -1,0 +1,911 @@
+FrameWidgetClass "{7F5BF82F17F978D7}" {
+ Name "JournalMenu"
+ Slot FrameWidgetSlot "{94B56AEB3CF0164B}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+  Alignment 0 0
+ }
+ "Ignore Cursor" 0
+ {
+  ImageWidgetClass "{96B94AA3D6BC685A}" {
+   Name "Dimmer"
+   Slot FrameWidgetSlot "{1DBE961BA77CEB92}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   Color 0.031 0.035 0.039 0.75
+   Size 1 1
+  }
+  TextWidgetClass "{8AB0131683901AC3}" {
+   Name "Heading"
+   Slot FrameWidgetSlot "{DF0E738B50B41D92}" {
+    Anchor 0 0 0 0
+    PositionX 72
+    OffsetLeft 72
+    PositionY 40
+    OffsetTop 40
+    SizeX 1000
+    OffsetRight -1072
+    SizeY 56
+    OffsetBottom -96
+    Alignment 0 0
+   }
+   Color 0.91 0.886 0.816 1
+   Text "JOURNAL"
+   "Font Size" 46
+   "Min Font Size" 46
+   FontProperties FontProperties "{E9E1EAA9F6E1DFCA}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{8946E7C7813B9CE5}" {
+   Name "Header"
+   Slot FrameWidgetSlot "{D9A6CBE399FBF9A6}" {
+    Anchor 0 0 0 0
+    PositionX 72
+    OffsetLeft 72
+    PositionY 100
+    OffsetTop 100
+    SizeX 1100
+    OffsetRight -1172
+    SizeY 24
+    OffsetBottom -124
+    Alignment 0 0
+   }
+   Color 0.639 0.62 0.565 1
+   Text ""
+   "Font Size" 17
+   "Min Font Size" 17
+   FontProperties FontProperties "{6D2A360A2916464D}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  ImageWidgetClass "{89182E5B72F5493F}" {
+   Name "HeadRule"
+   Slot FrameWidgetSlot "{2190126FDA8CC359}" {
+    Anchor 0 0 1 0
+    PositionX 72
+    OffsetLeft 72
+    PositionY 138
+    OffsetTop 138
+    SizeX -144
+    OffsetRight 72
+    SizeY 2
+    OffsetBottom -140
+    Alignment 0 0
+   }
+   Color 0.227 0.247 0.259 1
+   Size 1 1
+  }
+  ButtonWidgetClass "{1977453DF486A6BC}" {
+   Name "Tab0"
+   Slot FrameWidgetSlot "{CF05475809FE31F3}" {
+    Anchor 1 0 1 0
+    PositionX -612
+    OffsetLeft -612
+    PositionY 88
+    OffsetTop 88
+    SizeX 132
+    OffsetRight 480
+    SizeY 36
+    OffsetBottom -124
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{C17647494E9AE761}" {
+     Name "Tab0Box"
+     Slot ButtonWidgetSlot "{CD2BAB359446CBC2}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{1CBDEB65685E96BA}" {
+       Name "Tab0Bg"
+       Slot OverlayWidgetSlot "{75EE8521F621B85E}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.078 0.086 0.094 0.7
+       Size 1 1
+      }
+      PanelWidgetClass "{7B80A74986A40B0C}" {
+       Name "Tab0Line"
+       Slot OverlayWidgetSlot "{D9DF0F88289AD76C}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      TextWidgetClass "{86F9110A205B5DBD}" {
+       Name "Tab0Text"
+       Slot OverlayWidgetSlot "{253ED38776CDB8EC}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.639 0.62 0.565 1
+       Text "STANDING"
+       "Font Size" 13
+       "Min Font Size" 13
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{A379748194A00E20}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{B246DA066DAFA190}" {
+   Name "Tab1"
+   Slot FrameWidgetSlot "{270A45B50CDC02F8}" {
+    Anchor 1 0 1 0
+    PositionX -476
+    OffsetLeft -476
+    PositionY 88
+    OffsetTop 88
+    SizeX 132
+    OffsetRight 344
+    SizeY 36
+    OffsetBottom -124
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{B0835AB6381D8994}" {
+     Name "Tab1Box"
+     Slot ButtonWidgetSlot "{A7F9D75C4453D289}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{CD2EB50B7AE2E983}" {
+       Name "Tab1Bg"
+       Slot OverlayWidgetSlot "{1BF2B326E4CA645F}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.91 0.886 0.816 1
+       Size 1 1
+      }
+      TextWidgetClass "{E73892FD754DAD79}" {
+       Name "Tab1Text"
+       Slot OverlayWidgetSlot "{7F6B7BA94A9095AF}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.078 0.078 0.078 1
+       Text "JOURNAL"
+       "Font Size" 13
+       "Min Font Size" 13
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{1A528D6484FC4330}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{AD8E494D7E992F33}" {
+   Name "Tab2"
+   Slot FrameWidgetSlot "{8E0640094BBDA992}" {
+    Anchor 1 0 1 0
+    PositionX -340
+    OffsetLeft -340
+    PositionY 88
+    OffsetTop 88
+    SizeX 132
+    OffsetRight 208
+    SizeY 36
+    OffsetBottom -124
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{73C93BC74E5DCAB2}" {
+     Name "Tab2Box"
+     Slot ButtonWidgetSlot "{85C652E3AA698DF6}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{61A73EA8CACEF835}" {
+       Name "Tab2Bg"
+       Slot OverlayWidgetSlot "{30993BC3B130CAEA}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.078 0.086 0.094 0.7
+       Size 1 1
+      }
+      PanelWidgetClass "{EA37B9273ED6C1FD}" {
+       Name "Tab2Line"
+       Slot OverlayWidgetSlot "{617F4A6D7A26665B}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      TextWidgetClass "{1FEEBB0D41DE47DD}" {
+       Name "Tab2Text"
+       Slot OverlayWidgetSlot "{F477DF77F22CA588}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.639 0.62 0.565 1
+       Text "RADIO"
+       "Font Size" 13
+       "Min Font Size" 13
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{6E1D05FCA786D46C}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{B1F5EEB5F81FDBFF}" {
+   Name "Tab3"
+   Slot FrameWidgetSlot "{26E194E78021283D}" {
+    Anchor 1 0 1 0
+    PositionX -204
+    OffsetLeft -204
+    PositionY 88
+    OffsetTop 88
+    SizeX 132
+    OffsetRight 72
+    SizeY 36
+    OffsetBottom -124
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{8A0F7C3D9AD606D5}" {
+     Name "Tab3Box"
+     Slot ButtonWidgetSlot "{E6652506FDA9693C}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{D257EAD5AADB643D}" {
+       Name "Tab3Bg"
+       Slot OverlayWidgetSlot "{972A575F88B23815}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.078 0.086 0.094 0.7
+       Size 1 1
+      }
+      PanelWidgetClass "{547AD0D0DCAC4D39}" {
+       Name "Tab3Line"
+       Slot OverlayWidgetSlot "{80FCD43AD56013B0}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      TextWidgetClass "{BE2EAB3B8F54A21C}" {
+       Name "Tab3Text"
+       Slot OverlayWidgetSlot "{23A7DB08BA989140}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.639 0.62 0.565 1
+       Text "MAP KEY"
+       "Font Size" 13
+       "Min Font Size" 13
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{4DA043404A197936}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{E1A2B6790AAB9474}" {
+   Name "CloseButton"
+   Slot FrameWidgetSlot "{E6C79B8B55248415}" {
+    Anchor 1 0 1 0
+    PositionX -108
+    OffsetLeft -108
+    PositionY 40
+    OffsetTop 40
+    SizeX 36
+    OffsetRight 72
+    SizeY 36
+    OffsetBottom -76
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{6D52026628935F4E}" {
+     Name "CloseBox"
+     Slot ButtonWidgetSlot "{F03347C89D7368B1}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{D44FB830841FFE1A}" {
+       Name "CloseBg"
+       Slot OverlayWidgetSlot "{1E9994304F0E6686}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.102 0.114 0.125 1
+       Size 1 1
+      }
+      PanelWidgetClass "{87E7B9A77D3522C3}" {
+       Name "CloseLine"
+       Slot OverlayWidgetSlot "{818B9A88337FD070}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.227 0.247 0.259 1
+       style outline_2px
+      }
+      TextWidgetClass "{152990B21F5658E2}" {
+       Name "CloseText"
+       Slot OverlayWidgetSlot "{AB1D674C546A6968}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.91 0.886 0.816 1
+       Text "X"
+       "Font Size" 20
+       "Min Font Size" 20
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{77087B118EFB0AB1}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  TextWidgetClass "{DF04E167BE461B4F}" {
+   Name "FooterKeys"
+   Slot FrameWidgetSlot "{CE31BC69BCB4DE9B}" {
+    Anchor 0 1 0 1
+    PositionX 72
+    OffsetLeft 72
+    PositionY -34
+    OffsetTop -34
+    SizeX 700
+    OffsetRight -772
+    SizeY 20
+    OffsetBottom 14
+    Alignment 0 1
+   }
+   Color 0.639 0.62 0.565 1
+   Text "ESC  CLOSE      Q / E  TABS      UP / DOWN  SELECT"
+   "Font Size" 13
+   "Min Font Size" 13
+   FontProperties FontProperties "{B8D061D86C31A459}" {
+    Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{6BE4D7782A5A9C17}" {
+   Name "FooterNote"
+   Slot FrameWidgetSlot "{EDAA0D213903889C}" {
+    Anchor 1 1 1 1
+    PositionX -72
+    OffsetLeft -72
+    PositionY -34
+    OffsetTop -34
+    SizeX 1000
+    OffsetRight -928
+    SizeY 20
+    OffsetBottom 14
+    Alignment 1 1
+   }
+   Color 0.639 0.62 0.565 1
+   Text "Directions are rough on purpose. Nobody here has GPS."
+   "Font Size" 13
+   "Min Font Size" 13
+   "Horizontal Alignment" Right
+   FontProperties FontProperties "{E29F1BD8C49E45F6}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  FrameWidgetClass "{620485A62EF8AF0E}" {
+   Name "ListPanel"
+   Slot FrameWidgetSlot "{A5367E30CD0A639F}" {
+    Anchor 0 0 0 0
+    PositionX 72
+    OffsetLeft 72
+    PositionY 168
+    OffsetTop 168
+    SizeX 660
+    OffsetRight -732
+    SizeY 840
+    OffsetBottom -1008
+    Alignment 0 0
+   }
+   {
+    ImageWidgetClass "{1E716507FDFA6277}" {
+     Name "ListBg"
+     Slot FrameWidgetSlot "{EFED5025B2F834D0}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 0.9
+     Size 1 1
+    }
+    VerticalLayoutWidgetClass "{D49631F5AA52A5A5}" {
+     Name "ListColumn"
+     Slot FrameWidgetSlot "{A1007F2D30243DA4}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 8
+      OffsetTop 8
+      SizeX 0
+      OffsetRight 0
+      SizeY -16
+      OffsetBottom 8
+      Alignment 0 0
+     }
+     {
+      ScrollLayoutWidgetClass "{180B2BD762864219}" {
+       Name "ListScroll"
+       Slot LayoutSlot "{F82046CA75CE785E}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+        SizeMode Fill
+        FillWeight 1
+       }
+       Color 0.431 0.416 0.376 1
+       style Small
+       {
+        VerticalLayoutWidgetClass "{20B24509AE735C72}" {
+         Name "List"
+         Slot AlignableSlot "{9062CDAA85EFAAE5}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+        }
+       }
+      }
+      TextWidgetClass "{926493E91FDC4E39}" {
+       Name "LabStatus"
+       Slot LayoutSlot "{F4DBEEF61B19CD09}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 22 10 22 6
+       }
+       "Is Visible" 0
+       Color 0.639 0.62 0.565 1
+       Text ""
+       "Font Size" 13
+       "Min Font Size" 13
+       Wrap 1
+       FontProperties FontProperties "{5A9E768F93BBB839}" {
+        Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+       }
+      }
+     }
+    }
+    TextWidgetClass "{15B1E859B6A9050C}" {
+     Name "Empty"
+     Slot FrameWidgetSlot "{C3C042FB98557F67}" {
+      Anchor 0.5 0.5 0.5 0.5
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 600
+      OffsetRight -600
+      SizeY 32
+      OffsetBottom -32
+      Alignment 0.5 0.5
+     }
+     Color 0.639 0.62 0.565 1
+     Text "The radio is quiet."
+     "Font Size" 18
+     "Min Font Size" 18
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{7AC716FD695B6667}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+      Italic 1
+     }
+    }
+   }
+  }
+  FrameWidgetClass "{E814CF5A83E18A11}" {
+   Name "DetailPanel"
+   Slot FrameWidgetSlot "{D137154FC75D4EE4}" {
+    Anchor 0 0 0 0
+    PositionX 750
+    OffsetLeft 750
+    PositionY 168
+    OffsetTop 168
+    SizeX 1098
+    OffsetRight -1848
+    SizeY 840
+    OffsetBottom -1008
+    Alignment 0 0
+   }
+   {
+    ImageWidgetClass "{32E33DDEBBF0C661}" {
+     Name "DetailBg"
+     Slot FrameWidgetSlot "{5004A31D82CFEFEE}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 0.9
+     Size 1 1
+    }
+    ImageWidgetClass "{FFDCD71DBA04C83B}" {
+     Name "DetailAccent"
+     Slot FrameWidgetSlot "{12B0BAA9E48CF308}" {
+      Anchor 0 0 1 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 5
+      OffsetBottom -5
+      Alignment 0 0
+     }
+     Color 0.949 0.761 0.188 1
+     Size 1 1
+    }
+    ImageWidgetClass "{1FC967FEAA28540D}" {
+     Name "DetailIcon"
+     Slot FrameWidgetSlot "{515279F945176429}" {
+      Anchor 0 0 0 0
+      PositionX 34
+      OffsetLeft 34
+      PositionY 31
+      OffsetTop 31
+      SizeX 56
+      OffsetRight -90
+      SizeY 56
+      OffsetBottom -87
+      Alignment 0 0
+     }
+     Color 0.949 0.761 0.188 1
+     Size 56 56
+    }
+    TextWidgetClass "{946714DA6C1BB49E}" {
+     Name "DetailTitle"
+     Slot FrameWidgetSlot "{D97F7B721AEB5E03}" {
+      Anchor 0 0 0 0
+      PositionX 108
+      OffsetLeft 108
+      PositionY 30
+      OffsetTop 30
+      SizeX 956
+      OffsetRight -1064
+      SizeY 40
+      OffsetBottom -70
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text ""
+     "Font Size" 34
+     "Min Font Size" 34
+     FontProperties FontProperties "{FCB6AEDFA386C7CF}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{A620374DDBEC7EE5}" {
+     Name "DetailBy"
+     Slot FrameWidgetSlot "{E6F6AE7FC331A567}" {
+      Anchor 0 0 0 0
+      PositionX 108
+      OffsetLeft 108
+      PositionY 72
+      OffsetTop 72
+      SizeX 956
+      OffsetRight -1064
+      SizeY 20
+      OffsetBottom -92
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 15
+     FontProperties FontProperties "{A5AD7D36DAB67847}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    VerticalLayoutWidgetClass "{ED73F23F8BA9BCFA}" {
+     Name "DetailBody"
+     Slot FrameWidgetSlot "{2BB07425F5606791}" {
+      Anchor 0 0 0 0
+      PositionX 34
+      OffsetLeft 34
+      PositionY 112
+      OffsetTop 112
+      SizeX 1030
+      OffsetRight -1064
+      SizeY 712
+      OffsetBottom -824
+      Alignment 0 0
+     }
+     {
+      OverlayWidgetClass "{57696F2A47470821}" {
+       Name "BriefBox"
+       Slot LayoutSlot "{43140A618525BCFF}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 0 0 0 22
+       }
+       {
+        ImageWidgetClass "{CABEBDDA44C1960B}" {
+         Name "BriefBg"
+         Slot OverlayWidgetSlot "{FD064BA5316CF418}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.91 0.886 0.816 0.04
+         Size 1 1
+        }
+        ImageWidgetClass "{5EFE2AE63CB64B39}" {
+         Name "DetailBriefBar"
+         Slot OverlayWidgetSlot "{332DDC9E2FC70D98}" {
+          HorizontalAlign 0
+          VerticalAlign 3
+         }
+         Color 0.431 0.416 0.376 1
+         Size 3 1
+        }
+        TextWidgetClass "{D7122EDAA877CF13}" {
+         Name "DetailBrief"
+         Slot OverlayWidgetSlot "{4F78C48ED5487936}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 21 14 18 14
+         }
+         Color 0.867 0.839 0.761 1
+         Text ""
+         "Font Size" 18
+         "Min Font Size" 18
+         Wrap 1
+         FontProperties FontProperties "{7516D44644C9CB4A}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+          Italic 1
+         }
+        }
+       }
+      }
+      HorizontalLayoutWidgetClass "{5397707783A412C7}" {
+       Name "WhereRewards"
+       Slot LayoutSlot "{AA5974D358418A6B}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 0 0 0 22
+       }
+       {
+        VerticalLayoutWidgetClass "{7E5284DC1D11FC7A}" {
+         Name "WhereCol"
+         Slot LayoutSlot "{3B43E96128422D3F}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 0 40 0
+          SizeMode Fill
+          FillWeight 1
+         }
+         {
+          TextWidgetClass "{298E8020E2926DB1}" {
+           Name "WhereLabel"
+           Slot LayoutSlot "{DAEE932AC964ACCB}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+           Color 0.639 0.62 0.565 1
+           Text "WHERE"
+           "Font Size" 12
+           "Min Font Size" 12
+           FontProperties FontProperties "{10FA506FDAE2F0AB}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{B2FF5ACE97B07D02}" {
+           Name "DetailWhere"
+           Slot LayoutSlot "{C90A82A3B5F5313D}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 8 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 20
+           "Min Font Size" 20
+           Wrap 1
+           FontProperties FontProperties "{F186B85EE76FF454}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+         }
+        }
+        VerticalLayoutWidgetClass "{C454CFDA280225A6}" {
+         Name "RewardsCol"
+         Slot LayoutSlot "{D32BC584F6E448F9}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          SizeMode Fill
+          FillWeight 1
+         }
+         {
+          TextWidgetClass "{AC8FC496BD924308}" {
+           Name "RewardsLabel"
+           Slot LayoutSlot "{E976A0AC5023ED51}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+           Color 0.639 0.62 0.565 1
+           Text "REWARDS"
+           "Font Size" 12
+           "Min Font Size" 12
+           FontProperties FontProperties "{D4282BB970298D14}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{A8020A4C0FBA5CA4}" {
+           Name "DetailRewards"
+           Slot LayoutSlot "{6CCAD8285D4B32AF}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 8 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 13
+           "Min Font Size" 13
+           Wrap 1
+           FontProperties FontProperties "{B4BACD0FA531414E}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{8589876965D75D12}" {
+       Name "ReqBlock"
+       Slot LayoutSlot "{C5DD2F1AF1A0C72D}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 0 0 0 22
+       }
+       {
+        TextWidgetClass "{D516DA74BE234FFE}" {
+         Name "ReqLabel"
+         Slot LayoutSlot "{45851856812BE842}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text "REQUIREMENTS"
+         "Font Size" 12
+         "Min Font Size" 12
+         FontProperties FontProperties "{428CEBC9D0277B77}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{792B81274C3FA38D}" {
+         Name "DetailReq"
+         Slot LayoutSlot "{24E679AA2194C514}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 8 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Text ""
+         "Font Size" 16
+         "Min Font Size" 16
+         Wrap 1
+         FontProperties FontProperties "{5EF5315E0248B010}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+      VerticalLayoutWidgetClass "{C586AE379805CE75}" {
+       Name "CluesBlock"
+       Slot LayoutSlot "{FE3610B875B58AE5}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+       }
+       "Is Visible" 0
+       {
+        TextWidgetClass "{6CBAF8799F6A3D06}" {
+         Name "CluesLabel"
+         Slot LayoutSlot "{1D0571FFE9C9DFDD}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text "WHAT YOU KNOW"
+         "Font Size" 12
+         "Min Font Size" 12
+         FontProperties FontProperties "{E1373D152C02DB7C}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        OverlayWidgetClass "{FE60856009323A11}" {
+         Name "CluesPaper"
+         Slot LayoutSlot "{BC5D5BA06F3BCE96}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 10 0 0
+         }
+         {
+          ImageWidgetClass "{EC43198F16B49E69}" {
+           Name "CluesPaperBg"
+           Slot OverlayWidgetSlot "{CCAAADC7FAF4EA08}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.894 0.867 0.784 1
+           Size 1 1
+          }
+          TextWidgetClass "{23679435369F28B2}" {
+           Name "DetailClues"
+           Slot OverlayWidgetSlot "{EF13EF2CA600BA10}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 16 12 16 12
+           }
+           Color 0.137 0.129 0.11 1
+           Text ""
+           "Font Size" 16
+           "Min Font Size" 16
+           Wrap 1
+           FontProperties FontProperties "{9AD28ACCC2DB6C4F}" {
+            Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

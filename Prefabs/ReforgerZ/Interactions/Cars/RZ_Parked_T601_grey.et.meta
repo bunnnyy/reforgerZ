@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{8097ACB1E7C22502}Prefabs/ReforgerZ/Interactions/Cars/RZ_Parked_T601_grey.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

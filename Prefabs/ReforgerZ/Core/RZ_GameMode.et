@@ -1,0 +1,236 @@
+SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
+ ID "56B2B479C6B96951"
+ components {
+  SCR_RespawnSystemComponent "{56B2B4793051E7C9}" {
+   m_SpawnLogic SCR_MenuSpawnLogic "{5D36888CC966608A}" {
+   }
+  }
+  RZ_GameModeComponent "{6AD67DC2A8FD39B3}" {
+   m_UISettings RZ_UISettings "{4054E5A3C0EBB38F}" {
+    m_sIconImageset "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+    m_sNoticeLayout "{9DDD3521A90DB6BA}UI/layouts/ReforgerZ/RZ_NoticeCard.layout"
+    m_sMissionRowLayout "{D3B8F2E9CFE9954B}UI/layouts/ReforgerZ/RZ_MissionRow.layout"
+    m_sRadioRowLayout "{A9D709D45AF2C174}UI/layouts/ReforgerZ/RZ_RadioRow.layout"
+   }
+   m_sSpawnPointPrefab "{BAFE0A6ECC397363}Prefabs/ReforgerZ/Core/RZ_SpawnPoint.et"
+   m_PowerSettings RZ_PowerSettings "{6AD67DC2B93AE26F}" {
+    m_sControlPrefab "{9C7B3BF76C03455E}Prefabs/ReforgerZ/World/RZ_PowerControl.et"
+   }
+   m_RadioStationSettings RZ_RadioStationSettings "{6AD67DC2B9C6B8CF}" {
+    m_sConsolePrefab "{374E7FE27AB0A28C}Prefabs/ReforgerZ/World/RZ_RadioConsole.et"
+   }
+   m_ZombieSettings RZ_ZombieSettings "{6AD67DC2B04C2694}" {
+    m_aCommonPrefabs {
+     "{67E76BA71804B965}622120A5448725E3/Prefabs/Groups/Group_Zombies_CIV.et" "{F4B51B10FC3020C8}Prefabs/ReforgerZ/Zombies/RZ_Group_Zombies_US.et" "{5863D5862B11EB36}Prefabs/ReforgerZ/Zombies/RZ_Group_Zombies_USSR.et" "{E593353BDC00620D}Prefabs/ReforgerZ/Zombies/RZ_Group_Zombies_FIA.et"
+    }
+    m_aSpecialPrefabs {
+     "{6EAE8A148ED6FC90}Prefabs/Characters/Factions/INFECTED_CIV/Special/Infected_Character_Special_Bloater.et" "{8D2C0D0D86EC74B0}Prefabs/Characters/Factions/INFECTED_CIV/Special/Infected_Character_Special_Bomber.et" "{EDC41D57D46353C4}Prefabs/Characters/Factions/INFECTED_CIV/Special/Infected_Character_Special_Bomber_Spitter.et" "{164DD123072FEB38}Prefabs/Characters/Factions/INFECTED_CIV/Special/Infected_Character_Special_Exploder.et" "{C07242B84C36EBE9}Prefabs/Characters/Factions/INFECTED_CIV/Special/Infected_Character_Special_Exploder_Hazmat.et" "{05297DB3AF1170A8}Prefabs/Characters/Factions/INFECTED_CIV/Special/Infected_Character_Special_Exploder_Smoker.et" "{54F9129D60A3B145}Prefabs/Characters/Factions/INFECTED_CIV/Special/Infected_Character_Special_Shambler.et"
+    }
+    m_aHordePrefabs {
+     "{813B0F968868FA48}622120A5448725E3/Prefabs/Groups/Group_Zombies_CIV_Large.et" "{6AEA65C9E88BB0B2}622120A5448725E3/Prefabs/Groups/Group_Zombies_Horde.et"
+    }
+    m_sMoveWaypointPrefab "{750A8D1695BD6998}Prefabs/AI/Waypoints/AIWaypoint_Move.et"
+   }
+   m_AdaptationSettings RZ_AdaptationSettings "{6AD67DC2B0E9A642}" {
+    m_aRunnerPrefabs {
+     "{84862F078179934E}622120A5448725E3/Prefabs/Characters/Variants/Variant_Exploder1.et" "{E8D21BE73DBD1C60}622120A5448725E3/Prefabs/Characters/Variants/Variant_Exploder2.et"
+    }
+    m_aHelmetPrefabs {
+     "{2A5BF0C801520AE5}622120A5448725E3/Prefabs/Characters/Variants/Variant_US_Rifleman.et" "{3778201DBA9BDDDF}622120A5448725E3/Prefabs/Characters/Variants/Variant_US_Rifleman2.et" "{FAF1350A99D893E7}622120A5448725E3/Prefabs/Characters/Variants/Variant_USSR_Rifleman.et" "{D77F7DAF37BD0FD2}622120A5448725E3/Prefabs/Characters/Variants/Variant_USSR_Rifleman2.et"
+    }
+    m_aScreamerPrefabs {
+     "{C07242B84C36EBE9}Prefabs/Characters/Factions/INFECTED_CIV/Special/Infected_Character_Special_Exploder_Hazmat.et"
+    }
+   }
+   m_sLabPrefab "{0B09C9D0D94EBFA0}Prefabs/ReforgerZ/Cure/RZ_Lab.et"
+   m_sSamplePrefab "{D52D059BEC0A08CB}Prefabs/ReforgerZ/Cure/RZ_Sample.et"
+   m_sAntidotePrefab "{1CC82FE4BD6FBC0F}Prefabs/ReforgerZ/Cure/RZ_Antidote.et"
+   m_sRewardCratePrefab "{CBA44CB4CC05BDF5}Prefabs/ReforgerZ/Missions/RZ_RewardCrate.et"
+   m_sSurvivorGroupPrefab "{A8CFD4F756C1F8A8}Prefabs/ReforgerZ/Missions/RZ_SurvivorGroup.et"
+   m_sNestPrefab "{2101240AB193B42E}Prefabs/ReforgerZ/Missions/RZ_Nest.et"
+   m_sDeadDropPrefab "{E9CB23385761E74A}Prefabs/ReforgerZ/Missions/RZ_BanditDrop.et"
+   m_sMissionItemPrefab "{7EE5B7523935E900}Prefabs/ReforgerZ/Missions/RZ_MissionItem.et"
+   m_sDropPointHaven "{D3F2C92212B37851}Prefabs/ReforgerZ/Missions/RZ_Drop_Haven.et"
+   m_sDropPointBastion "{17A90BA42D946BF0}Prefabs/ReforgerZ/Missions/RZ_Drop_Bastion.et"
+   m_sDropPointRedHand "{62473BCDC7E3391E}Prefabs/ReforgerZ/Missions/RZ_Drop_RedHand.et"
+   m_sDropPointHalcyon "{2AC98467A2B8E161}Prefabs/ReforgerZ/Missions/RZ_Drop_Halcyon.et"
+   m_sHeliWreckPrefab "{C9D86498551640A0}Prefabs/ReforgerZ/Missions/RZ_HeliWreck.et"
+   m_sCorpsePilePrefab "{B7818F2EAA653F5D}Prefabs/ReforgerZ/Missions/RZ_CorpsePile.et"
+   m_sRedHandGroupPrefab "{D8DBF9689D8EEC50}Prefabs/ReforgerZ/Missions/RZ_RedHandGroup.et"
+   m_sFuelDepotPrefab "{3CD439A200378431}Prefabs/ReforgerZ/Missions/RZ_FuelDepot.et"
+   m_sRelayPrefab "{AFFE3F615B8D76B8}Prefabs/ReforgerZ/Missions/RZ_Relay.et"
+   m_sTraderPrefab "{10FDEDC5B8F1F587}Prefabs/ReforgerZ/Missions/RZ_Trader.et"
+   m_sExplosionPrefab "{912BF56422CCDEEA}Prefabs/ReforgerZ/Missions/RZ_Explosion.et"
+   m_ContractSettings RZ_ContractSettings "{6AD67DC2AD2B31F8}" {
+    m_sEscortCivilians "{CE68C0A1DB6F1C5D}Prefabs/ReforgerZ/Missions/RZ_EscortCivilians.et"
+    m_sEscortScientist "{84A78EC8DB8D7836}Prefabs/ReforgerZ/Missions/RZ_EscortScientist.et"
+    m_sEscortSoldier "{50D6FADD50587C50}Prefabs/ReforgerZ/Missions/RZ_EscortSoldier.et"
+    m_sCagePrefab "{59D9ACB21751B1FE}Prefabs/ReforgerZ/Missions/RZ_Cage.et"
+    m_sBusPrefab "{18DFF188760CADB0}Prefabs/ReforgerZ/Missions/RZ_Bus.et"
+    m_sBountyTargetPrefab "{B05C9AAC64CA7093}Prefabs/ReforgerZ/Missions/RZ_BountyTarget.et"
+    m_sBastionSquadPrefab "{2E94184DCF1B5ECE}Prefabs/ReforgerZ/Missions/RZ_BastionSquad.et"
+    m_sDroneWreckPrefab "{1421CA58F1A924A6}Prefabs/ReforgerZ/Missions/RZ_DroneWreck.et"
+    m_sSmokePrefab "{086B2A8D459B55AF}Prefabs/ReforgerZ/Missions/RZ_Smoke.et"
+   }
+   m_EventSettings RZ_EventSettings "{6AD67DC2AEF0ACB2}" {
+    m_sFogEffectPrefab "{A7F78EE7870DFAF0}Prefabs/ReforgerZ/Events/RZ_FogEffect.et"
+    m_sConvictGroupPrefab "{7C562A7F18374FC1}Prefabs/ReforgerZ/Events/RZ_Convicts.et"
+    m_sSniperPrefab "{67D5299FE05634A7}Prefabs/ReforgerZ/Events/RZ_Sniper.et"
+    m_sRivalGroupPrefab "{981939A4EFB00992}Prefabs/ReforgerZ/Events/RZ_RivalGroup.et"
+    m_sTruckWreckPrefab "{F0411B60624CE45C}Prefabs/ReforgerZ/Events/RZ_TruckWreck.et"
+    m_sCampPrefab "{C0ABBC3126399685}Prefabs/ReforgerZ/Events/RZ_RemnantCamp.et"
+    m_sHatchPrefab "{1BAC327573A3FC18}Prefabs/ReforgerZ/Events/RZ_Hatch.et"
+    m_aWeddingPrefabs {
+     "{288C31300D9DF682}622120A5448725E3/Prefabs/Characters/Variants/Variant_CIV_BusinessMan1.et" "{44D805D0B15979AC}622120A5448725E3/Prefabs/Characters/Variants/Variant_CIV_BusinessMan2.et" "{A1444929BDBCEEC7}622120A5448725E3/Prefabs/Characters/Variants/Variant_CIV_BusinessMan3.et"
+    }
+    m_sBridePrefab "{5F141BA0E6575017}Prefabs/ReforgerZ/Events/RZ_Bride.et"
+    m_sJewelleryPrefab "{569813E96626F706}Prefabs/ReforgerZ/Events/RZ_Jewellery.et"
+   }
+   m_sPuzzleNotePrefab "{DDF615B5570409D5}Prefabs/ReforgerZ/Puzzles/RZ_Note.et"
+   m_sPuzzleObjectPrefab "{CAD5C170947E26F9}Prefabs/ReforgerZ/Puzzles/RZ_PuzzleObject.et"
+   m_sKeypadPrefab "{A5DF901EA53122BA}Prefabs/ReforgerZ/Puzzles/RZ_Keypad.et"
+   m_sTerminalPrefab "{36B9E6FC6FAA3CAB}Prefabs/ReforgerZ/Puzzles/RZ_Terminal.et"
+   m_sPuzzleBodyPrefab "{48F2AD32DE427896}Prefabs/ReforgerZ/Puzzles/RZ_PuzzleBody.et"
+   m_sWellPrefab "{0D0AD4E244DC3F56}Prefabs/ReforgerZ/Puzzles/RZ_Well.et"
+   m_sBellPrefab "{B5798724D94E2E7E}Prefabs/ReforgerZ/Puzzles/RZ_Bell.et"
+   m_sFuseBoxPrefab "{E8C407772673EE47}Prefabs/ReforgerZ/Puzzles/RZ_FuseBox.et"
+   m_sRadioMastPrefab "{7964AC7B4762943F}Prefabs/ReforgerZ/Puzzles/RZ_RadioMast.et"
+   m_sSafePrefab "{141350D78F29F73A}Prefabs/ReforgerZ/Puzzles/RZ_Safe.et"
+   m_sScaleCratePrefab "{5CCF8DAA215791AB}Prefabs/ReforgerZ/Puzzles/RZ_ScaleCrate.et"
+   m_sCivilianPrefab "{D5006C19E40CE491}Prefabs/ReforgerZ/Puzzles/RZ_Civilian.et"
+   m_sLandmarkPrefab "{435D876B6908AB58}Prefabs/ReforgerZ/Puzzles/RZ_Landmark.et"
+   m_sBlinkLightPrefab "{7232B71A80B0BCF4}Prefabs/ReforgerZ/Puzzles/RZ_MorseLamp.et"
+   m_PerimeterSettings RZ_PerimeterSettings "{6AD67DC2B2BB94D2}" {
+    m_sDronePrefab "{642D82388A72A09E}Prefabs/ReforgerZ/Perimeter/RZ_Drone.et"
+    m_sWarningShotPrefab "{900AF5708F783E3B}Prefabs/ReforgerZ/Perimeter/RZ_WarningShot.et"
+    m_sBarricadePrefab "{22048012287A6757}Prefabs/ReforgerZ/Perimeter/RZ_Checkpoint.et"
+    m_sGuardPrefab "{68BEBAB6FC99ADE2}Prefabs/ReforgerZ/Perimeter/RZ_CheckpointGuard.et"
+    m_sSmugglerPrefab "{E09C59CD64505469}Prefabs/ReforgerZ/Perimeter/RZ_Smuggler.et"
+    m_sPackagePrefab "{1F3DB9A76794270D}Prefabs/ReforgerZ/Perimeter/RZ_Package.et"
+    m_sLineBodyPrefab "{1AB6179A8B67E03D}Prefabs/ReforgerZ/Perimeter/RZ_LineBody.et"
+   }
+   m_SafehouseSettings RZ_SafehouseSettings "{6AD67DC2B3FABC6C}" {
+    m_aOccupantPrefabs {
+     "{F267CAEFC0A5977A}Prefabs/ReforgerZ/Haven/RZ_SafehouseOccupant.et"
+    }
+    m_sGuardPrefab "{89F63D74B915A25E}Prefabs/ReforgerZ/Haven/RZ_SafehouseGuard.et"
+    m_sMedicPrefab "{815C7FCB8C221FF3}Prefabs/ReforgerZ/Haven/RZ_SafehouseMedic.et"
+   }
+   m_WandererSettings RZ_WandererSettings "{6AD67DC2B4424856}" {
+    m_sTraderPrefab "{3411827BA9C3E80D}Prefabs/ReforgerZ/Wanderers/RZ_Wanderer_Trader.et"
+    m_sDoctorPrefab "{63428EEECF5CC010}Prefabs/ReforgerZ/Wanderers/RZ_Wanderer_Doctor.et"
+    m_sScavengerPrefab "{07D2FFE7E5511A7D}Prefabs/ReforgerZ/Wanderers/RZ_Wanderer_Scavenger.et"
+    m_sDeserterPrefab "{E15BEBB755FFCE66}Prefabs/ReforgerZ/Wanderers/RZ_Wanderer_Deserter.et"
+    m_sPreacherPrefab "{64DE0D14D6C10A16}Prefabs/ReforgerZ/Wanderers/RZ_Wanderer_Preacher.et"
+    m_sCourierPrefab "{16D01C1D874D514E}Prefabs/ReforgerZ/Wanderers/RZ_Wanderer_Courier.et"
+    m_sKidPrefab "{5B5B6851A5477D02}Prefabs/ReforgerZ/Wanderers/RZ_Wanderer_Kid.et"
+    m_sMechanicPrefab "{3E040C0F73DA05FC}Prefabs/ReforgerZ/Wanderers/RZ_Wanderer_Mechanic.et"
+    m_aTraderGoods {
+     "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et" "{70BC751317551D9B}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01.et" "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et" "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et" "{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et" "{8B853CDD11BA916E}Prefabs/Weapons/Magazines/Magazine_9x18_PM_8rnd_Ball.et" "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et" "{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et"
+    }
+   }
+   m_LeaderSettings RZ_LeaderSettings "{6AD67DC2B51D0E70}" {
+    m_sHavenLeaderPrefab "{D5F88991398C10EA}Prefabs/ReforgerZ/Leaders/RZ_Leader_Haven.et"
+    m_sBastionLeaderPrefab "{6592F081196646EB}Prefabs/ReforgerZ/Leaders/RZ_Leader_Bastion.et"
+    m_sRedHandLeaderPrefab "{107CC0E8F3111405}Prefabs/ReforgerZ/Leaders/RZ_Leader_RedHand.et"
+    m_sHalcyonLeaderPrefab "{58F27F42964ACC7A}Prefabs/ReforgerZ/Leaders/RZ_Leader_Halcyon.et"
+    m_sCouncilHeadPrefab "{70CB458FA07F01CC}Prefabs/ReforgerZ/Leaders/RZ_CouncilHead.et"
+    m_sBastionOutpostPrefab "{AF96D259B26C1DA4}Prefabs/ReforgerZ/Leaders/RZ_Outpost_Bastion.et"
+    m_sRedHandOutpostPrefab "{DA78E230581B4F4A}Prefabs/ReforgerZ/Leaders/RZ_Outpost_RedHand.et"
+    m_sHalcyonOutpostPrefab "{92F65D9A3D409735}Prefabs/ReforgerZ/Leaders/RZ_Outpost_Halcyon.et"
+   }
+   m_TerritorySettings RZ_TerritorySettings "{6AD67DC2B6157AD1}" {
+    m_sHavenGuardPrefab "{AD57D562AAA1047D}Prefabs/ReforgerZ/Territory/RZ_Guard_Haven.et"
+    m_sBastionGuardPrefab "{5E86B5DA97C6C436}Prefabs/ReforgerZ/Territory/RZ_Guard_Bastion.et"
+    m_sRedHandGuardPrefab "{2B6885B37DB196D8}Prefabs/ReforgerZ/Territory/RZ_Guard_RedHand.et"
+    m_sHalcyonGuardPrefab "{63E63A1918EA4EA7}Prefabs/ReforgerZ/Territory/RZ_Guard_Halcyon.et"
+    m_sHavenOccupantPrefab "{6A06892169C48E4F}Prefabs/ReforgerZ/Territory/RZ_Occupant_Haven.et"
+    m_sBastionOccupantPrefab "{9ECF9635E354CC50}Prefabs/ReforgerZ/Territory/RZ_Occupant_Bastion.et"
+    m_sRedHandOccupantPrefab "{EB21A65C09239EBE}Prefabs/ReforgerZ/Territory/RZ_Occupant_RedHand.et"
+    m_sHalcyonOccupantPrefab "{A3AF19F66C7846C1}Prefabs/ReforgerZ/Territory/RZ_Occupant_Halcyon.et"
+   }
+   m_SupplySettings RZ_SupplySettings "{6AD67DC2B70C1892}" {
+    m_sHavenTruck "{3B1878A5D18423E3}Prefabs/ReforgerZ/Supply/RZ_Truck_Haven.et"
+    m_sBastionTruck "{4755398C9FF7C16C}Prefabs/ReforgerZ/Supply/RZ_Truck_Bastion.et"
+    m_sRedHandTruck "{32BB09E575809382}Prefabs/ReforgerZ/Supply/RZ_Truck_RedHand.et"
+    m_sHalcyonTruck "{7A35B64F10DB4BFD}Prefabs/ReforgerZ/Supply/RZ_Truck_Halcyon.et"
+    m_sHavenCrew "{737D90BDBB9E563D}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Haven.et"
+    m_sBastionCrew "{995C76BB993F5840}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Bastion.et"
+    m_sRedHandCrew "{ECB246D273480AAE}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_RedHand.et"
+    m_sHalcyonCrew "{A43CF9781613D2D1}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Halcyon.et"
+   }
+   m_GuidanceSettings RZ_GuidanceSettings "{6AD67DC2B8040E09}" {
+    m_sRadioPrefab "{6F4EF5D0232D4827}Prefabs/ReforgerZ/Guidance/RZ_WindupRadio.et"
+    m_sCarWreckPrefab "{02AC434CE3C3B56A}Prefabs/ReforgerZ/Guidance/RZ_CarWreck.et"
+    m_sDoorPrefab "{7453331C8D0ADA91}Prefabs/ReforgerZ/Guidance/RZ_ScratchedDoor.et"
+    m_sFlyerPrefab "{AD423D9FD53336F3}Prefabs/ReforgerZ/Guidance/RZ_Flyer.et"
+    m_sTableRadioPrefab "{E44F912178202A8A}Prefabs/ReforgerZ/Guidance/RZ_TableRadio.et"
+    m_sRaiderBodyPrefab "{86F6F05F0155A3EB}Prefabs/ReforgerZ/Guidance/RZ_DeadRaider.et"
+    m_sSoldierBodyPrefab "{F0865CA0C2974FEA}Prefabs/ReforgerZ/Guidance/RZ_DeadSoldier.et"
+    m_sBarricadePrefab "{D9F5EA3173D1A207}Prefabs/ReforgerZ/Guidance/RZ_Barricade.et"
+   }
+   m_InteractionSettings RZ_InteractionSettings "{7EFF2EC9C6B2E7D8}" {
+    m_sSpotPrefab "{9663558A51F14179}Prefabs/ReforgerZ/Interactions/RZ_InteractionSpot.et"
+   }
+   m_SearchSettings RZ_SearchSettings "{6AD67DC2B9820A51}" {
+    m_aLootPool {
+     "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et" "{50A68300B537EDFA}Prefabs/Items/Food/ArmyCrackers_Soviet_01.et" "{C22A2F123CD609FC}Prefabs/Items/Food/Meat_01_Dry.et" "{70BC751317551D9B}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01.et" "{630FB4AD4A735264}Prefabs/Items/Equipment/Canteens/Canteen_US_01.et" "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et" "{C3F1FA1E2EC2B345}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_USSR_01.et" "{AF3411AAF94D18C2}Prefabs/Items/Medicine/Gauze_02/Gauze_02.et" "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et" "{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et" "{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et" "{3A421547BC29F679}Prefabs/Items/Equipment/Flashlights/Flashlight_MX991/Flashlight_MX991.et" "{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et" "{243948B23D90BECB}Prefabs/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.et" "{61A705D76908160C}Prefabs/Items/Equipment/Watches/Watch_Orlik38/Watch_Orlik38.et" "{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et" "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et" "{8B853CDD11BA916E}Prefabs/Weapons/Magazines/Magazine_9x18_PM_8rnd_Ball.et" "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et" "{48720FC416263FC1}Prefabs/Weapons/Magazines/Vz58/Magazine_762x39_Vz58_30rnd_Ball.et" "{BBB50A815A2F916B}Prefabs/Weapons/Magazines/Magazine_545x39_AK_30rnd_Ball.et" "{2EBF60EF24B108FC}Prefabs/Weapons/Magazines/Magazine_556x45_STANAG_30rnd_M855_Ball.et" "{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et" "{8266820FFDE17477}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_01.et" "{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et" "{B0F4EAC29E9058EA}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_grey.et" "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et" "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et" "{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et" "{41A9C55B61F375F0}Prefabs/Items/Equipment/Backpacks/Backpack_Kolobok.et"
+    }
+    m_sKeyPrefab "{5AA89BFB40830FEB}Prefabs/ReforgerZ/Interactions/RZ_Key.et"
+    m_sDoorBlockerPrefab "{B77D568ABDAE0DE4}Prefabs/ReforgerZ/Interactions/RZ_DoorBlocker.et"
+   }
+   m_CarSettings RZ_CarSettings "{6AD67DC2BA6DBE76}" {
+    m_aCarPrefabs {
+     "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" "{9C3269FB43F989A3}Prefabs/Vehicles/Wheeled/S105/S105_darkblue.et" "{85F0BD6AF0F42D6D}Prefabs/Vehicles/Wheeled/S105/S105_red.et" "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" "{1B416443AC87C8C1}Prefabs/Vehicles/Wheeled/V2101/V2101_green.et" "{AE99BC6F557A648F}Prefabs/Vehicles/Wheeled/V2101/V2101_white.et" "{18DB666895492297}Prefabs/Vehicles/Wheeled/T601/T601_blue.et" "{F69FB3BEBCF96315}Prefabs/Vehicles/Wheeled/T601/T601_grey.et"
+    }
+    m_aParkedPrefabs {
+     "{869E3CA0810F56BD}Prefabs/ReforgerZ/Interactions/Cars/RZ_Parked_S105_beige.et" "{6140C612175D30E2}Prefabs/ReforgerZ/Interactions/Cars/RZ_Parked_S105_darkblue.et" "{05D5CFF0B9DF6AEA}Prefabs/ReforgerZ/Interactions/Cars/RZ_Parked_S105_red.et" "{442189E9F515E758}Prefabs/ReforgerZ/Interactions/Cars/RZ_Parked_V2101_beige.et" "{E5FA92D5E4C8BFCF}Prefabs/ReforgerZ/Interactions/Cars/RZ_Parked_V2101_green.et" "{8D8728EAD85B577D}Prefabs/ReforgerZ/Interactions/Cars/RZ_Parked_V2101_white.et" "{B10A4609CBA850D0}Prefabs/ReforgerZ/Interactions/Cars/RZ_Parked_T601_blue.et" "{8097ACB1E7C22502}Prefabs/ReforgerZ/Interactions/Cars/RZ_Parked_T601_grey.et"
+    }
+    m_sBatteryPrefab "{792B226A926394B6}Prefabs/ReforgerZ/Interactions/RZ_CarBattery.et"
+    m_sTyrePrefab "{995614D5E087F397}Prefabs/ReforgerZ/Interactions/RZ_Tyre.et"
+    m_sSparkPrefab "{6CEB9445ED635609}Prefabs/ReforgerZ/Interactions/RZ_SparkPlugs.et"
+    m_sFuelPrefab "{7BE5A0EEE4464399}Prefabs/ReforgerZ/Interactions/RZ_FuelCan_Full.et"
+   }
+   m_CraftSettings RZ_CraftSettings "{6AD67DC2BBC177FB}" {
+    m_sBandagePrefab "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
+    m_sMolotovPrefab "{7C9D5212448CE5DD}Prefabs/ReforgerZ/Interactions/RZ_Molotov.et"
+    m_sNoisemakerPrefab "{4D54E83B5BBADD07}Prefabs/ReforgerZ/Interactions/RZ_TinRattle.et"
+    m_sTripwirePrefab "{645A7C7B76A27EB9}Prefabs/ReforgerZ/Interactions/RZ_TripwireKit.et"
+    m_sSpikeTrapPrefab "{78A4BF5FD8650690}Prefabs/ReforgerZ/Interactions/RZ_SpikeTrapKit.et"
+    m_sTabletsPrefab "{AF005259833BF007}Prefabs/ReforgerZ/Interactions/RZ_Tablets.et"
+   }
+   m_TrapSettings RZ_TrapSettings "{6AD67DC2BB5CD356}" {
+    m_sBarricadePrefab "{828D8E56E748FB2D}Prefabs/ReforgerZ/Interactions/RZ_BoardedDoorway.et"
+    m_sTripwireSetPrefab "{F761D002FD52C881}Prefabs/ReforgerZ/Interactions/RZ_TripwireSet.et"
+    m_sSpikeSetPrefab "{7B1EE7B6D983A850}Prefabs/ReforgerZ/Interactions/RZ_SpikeSet.et"
+    m_sFireEffectPrefab "{3F2247E158D031FB}Prefabs/ReforgerZ/Interactions/RZ_FireEffect.et"
+   }
+   m_InfectionSettings RZ_InfectionSettings "{6AD67DC2A960A272}" {
+    m_sStabiliserPrefab "{67962F1550AA055F}Prefabs/ReforgerZ/Cure/RZ_Stabiliser.et"
+    m_sAntibioticsPrefab "{569E03D9B315ED4F}Prefabs/ReforgerZ/Cure/RZ_Antibiotics_Expired.et"
+    m_sVetAntiviralPrefab "{C90E42E6786BA8A5}Prefabs/ReforgerZ/Cure/RZ_VetAntiviral.et"
+    m_sCutDosePrefab "{1AF76402C4DA8D70}Prefabs/ReforgerZ/Cure/RZ_CutDose.et"
+    m_sSuppressantPrefab "{96347D58592B2004}Prefabs/ReforgerZ/Cure/RZ_FeverSuppressant.et"
+    m_sRemedyPrefab "{DAF5909ED0402830}Prefabs/ReforgerZ/Cure/RZ_HomeRemedy.et"
+   }
+   m_sQuartermasterHaven "{49D699E428FAE3A3}Prefabs/ReforgerZ/Factions/RZ_QM_Haven.et"
+   m_sQuartermasterBastion "{FA6C654C92ECF556}Prefabs/ReforgerZ/Factions/RZ_QM_Bastion.et"
+   m_sQuartermasterRedHand "{8F825525789BA7B8}Prefabs/ReforgerZ/Factions/RZ_QM_RedHand.et"
+   m_sQuartermasterHalcyon "{C70CEA8F1DC07FC7}Prefabs/ReforgerZ/Factions/RZ_QM_Halcyon.et"
+   m_sBastionHunterPrefab "{291AFE2B1958D55B}Prefabs/ReforgerZ/Factions/RZ_BastionHunters.et"
+   m_sRedHandHunterPrefab "{11D56596E9B1B015}Prefabs/ReforgerZ/Factions/RZ_RedHandHunters.et"
+   m_ServiceSettings RZ_ServiceSettings "{6AD67DC2B176FA83}" {
+    m_sRedHandArmbandPrefab "{BA563F1B0BE78BCF}Prefabs/ReforgerZ/Factions/RZ_RedHandArmband.et"
+    m_sHavenRibbonPrefab "{660D44DC3EEAEED9}Prefabs/ReforgerZ/Factions/RZ_HavenRibbon.et"
+   }
+   m_CheckpointSettings RZ_CheckpointSettings "{6AD67DC2B1C9558A}" {
+    m_sBastionBarrierPrefab "{DB5E4DB57C9B3EC5}Prefabs/ReforgerZ/Factions/RZ_BastionPostBarrier.et"
+    m_sRedHandBarrierPrefab "{ECCBB50B7FCE71E2}Prefabs/ReforgerZ/Factions/RZ_RedHandRoadblock.et"
+    m_sBastionCrewPrefab "{C02A0C68FB9A45BD}Prefabs/ReforgerZ/Factions/RZ_BastionPostCrew.et"
+    m_sRedHandCrewPrefab "{3790F412BF585C32}Prefabs/ReforgerZ/Factions/RZ_RedHandPostCrew.et"
+   }
+  }
+ }
+ PlayerControllerPrefab "{413BFD5621B68ECE}Prefabs/Characters/Core/RZ_PlayerController.et"
+ coords 0 0 0
+}

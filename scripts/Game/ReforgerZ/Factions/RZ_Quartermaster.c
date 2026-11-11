@@ -141,7 +141,7 @@ class RZ_FactionShopAction : ScriptedUserAction
 	[Attribute("25", desc: "Favor it costs")]
 	protected int m_iFavorCost;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Item, vehicle or crate to spawn next to the quartermaster", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Item or crate to spawn next to the quartermaster (never a vehicle or a car part: cars are only found)", "et")]
 	protected ResourceName m_sItemPrefab;
 
 	[Attribute("", desc: "Name shown in the action menu")]

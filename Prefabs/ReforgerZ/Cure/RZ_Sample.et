@@ -1,0 +1,17 @@
+GenericEntity : "{C98FCC6CA6C56069}Prefabs/Items/Medicine/AspirinBottle.et" {
+ ID "3472273B5965FE24"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5222EB4D07D865FA}" {
+     Name "Infected sample"
+     Description "Tissue from a special infected, sealed in a vial. Halcyon's lab needs these for the cure. The Red Hand pays for them."
+    }
+   }
+  }
+  RZ_SampleItemComponent "{6AD67DC2A087C3E9}" {
+   m_iValue 1
+  }
+ }
+ coords 0 0 0
+}

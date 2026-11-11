@@ -11,6 +11,12 @@ Everything you must create or configure is listed once, in the **prefab manifest
 reads it and makes what it can; the tables in sections 2 to 5 are generated from it and double
 as the manual checklist.
 
+A first pass is done, in Workbench 1.9 on Arland: the repo holds the plugin's prefabs, the
+faction and loadout managers, the world and its scenario, and most of the UI. Many prefabs are
+built on stand-ins ([what that means](#stand-in-bases)), and the deploy panel and the map's icons
+aren't set up yet ([the UI](#setting-up-the-ui)). This doc says how it was done, what's left, and
+how to do it again on another map.
+
 Work through the sections in order:
 
 1. [Create the prefabs](#1-create-the-prefabs)
@@ -41,8 +47,9 @@ Run **ReforgerZ: Create prefabs** (or follow the manual checklist). First:
    row's **...**, and pick the mod's `addon.gproj` in the game's Workshop folder. Workbench only
    loads a dependency it can find, so start it with that folder in `-addonsDir`
    ([PC_SETUP.md](PC_SETUP.md#5-workbench)). Commit the changed `addon.gproj`.
-4. Open the Script Editor and compile (**F7**). The game scripts and the plugin compile cleanly on
-   1.9; [the VERIFY list](#6-the-verify-list) is what to watch in play.
+4. Open the Script Editor and compile (**F7**). The game scripts compile cleanly on 1.9; the plugin
+   compiles with one warning (`Workbench.SearchResources` is obsolete in 1.9, but still works).
+   [The VERIFY list](#6-the-verify-list) is what to watch in play.
 5. Open the repo's world, `Worlds/RZ_Arland/RZ_Arland.ent` (a **sub-scene of Arland**), in the
    World Editor, or make another ([world steps](#the-world)).
 
@@ -52,18 +59,31 @@ Look up classes in the Script Editor or the
 ### 1.2 Run "ReforgerZ: Create prefabs"
 
 The plugin in `scripts/WorkbenchGame/ReforgerZ/RZ_CreatePrefabsPlugin.c` reads the manifest and
-does as much of sections 2 to 4 as it can. It compiles in Workbench 1.9 and its **dry run works**
-(with no bases in the manifest it reports 143 steps to do and 244 manual ones); a real run hasn't
-been tried yet. What only a real run can show is marked `VERIFY`
-([the list](#the-workbench-plugin-8)). Expect a round of fixes the first time, and use the [manual checklist](#13-by-hand-the-manual-checklist) for
-whatever it can't do.
+does as much of sections 2 to 4 as it can. It has run for real in Workbench 1.9 on the repo's
+world: **334 steps done, 8 skipped, 0 failed, 54 manual steps left**. What it made is in the repo:
+156 prefabs under `Prefabs/ReforgerZ/`, each with its `.meta`, and `RZ_GameMode.et` with 147 slots
+filled. Run a second time, it did nothing (0 done, 341 skipped, 0 failed): it reads back what's
+there and only fills what's empty. The real run settled every editor call the plugin wasn't sure
+of (saving a prefab with its `.meta`, editing a prefab loaded from its file, the editor's names,
+reading values back, the factions and loadouts inline on the managers, making folders), so it has
+no `VERIFY` left. Use the [manual checklist](#13-by-hand-the-manual-checklist) for whatever it
+can't do.
+
+**Known issue: check the game mode after a run.** The first run placed the game mode in the
+world as a plain `SCR_BaseGameMode` entity, not as an instance of `RZ_GameMode.et`, so without
+`RZ_GameModeComponent` (it was fixed by hand). Select it in the World Editor's Hierarchy: the
+prefab column must show `RZ_GameMode`. If it doesn't, delete it and drag `RZ_GameMode.et` in from
+`Prefabs/ReforgerZ/Core/`.
 
 1. Compile the scripts (the plugin is in the Workbench script module, so `RZ_` classes must exist).
 2. Open your Arland sub-scene in the World Editor.
 3. **Plugins → ReforgerZ: Create prefabs.** The options dialog opens with **Dry run** on. Run it
    once like that: it changes nothing and lists what it would do in the log (search for
    `[ReforgerZ]`).
-4. Turn **Dry run** off and run it again. Save the world afterwards.
+4. Turn **Dry run** off and run it again. Workbench's Diag build shows **Script Authorization
+   Required** when the plugin makes its folders (`FileIO.MakeDirectory`): answer **Yes**, or
+   **Yes to All** so it stops asking ([Workbench's dialogs](PC_SETUP.md#how-claude-drives-the-pc)).
+   Check the game mode (above), then save the world.
 5. Read the summary: *done*, *skipped* (already there), *failed* (with a reason) and *manual steps
    left*. Fix what failed, do the manual steps, and run it again: it never touches what exists.
 
@@ -71,11 +91,11 @@ whatever it can't do.
 
 | Step | What | Idempotent because |
 |---|---|---|
-| Prefabs | Creates each prefab at its path from its base, adds the components and actions with their values, and an `RplComponent` and `ActionsManagerComponent` (with a context) where needed. `@Antidote`-style values become that prefab's ResourceName | a prefab whose file exists is skipped |
+| Prefabs | Creates each prefab at its path from its base, adds the components and actions with their values, and an `RplComponent` and `ActionsManagerComponent` where needed. The manager's action context sits 0.5 m up with a 1.2 m radius: resize it by hand on big props (a tent, a wreck). `@Antidote`-style values become that prefab's ResourceName | a prefab whose file exists is skipped |
 | Loadouts | Creates the 13 loadout characters, each with `RZ_TreatOtherAction` | as above |
 | Game mode | Creates `RZ_GameMode.et`, creates its settings objects and fills every slot it has a prefab for | only empty slots are filled; lists only when empty |
-| World | Places the game mode in the open world; checks for a FactionManager and LoadoutManager | skipped if the world already has one |
-| Factions | Adds `SURV_H1`..`SURV_H15` and `SURV_OUTLAW` (with `SURV`'s colour and name, not playable) and the missing friendly keys; reports hostile pairs that are friendly | existing keys and friends are left alone |
+| World | Places the game mode in the open world (check it: the known issue above); checks for a FactionManager and LoadoutManager | skipped if the world already has a game mode with `RZ_GameModeComponent` |
+| Factions | Adds the missing `SURV_H1`..`SURV_H15` and `SURV_OUTLAW` to the placed FactionManager as bare factions (`SURV`'s colour and name, not playable, but no base config, so no flag or identity) and the missing friendly keys; reports hostile pairs that are friendly | existing keys and friends are left alone |
 | Loadout entries | Adds the 13 loadouts on `SURV` to the LoadoutManager | existing names are skipped |
 | Additions | Lists the changes to prefabs it doesn't own | — |
 
@@ -91,25 +111,29 @@ whatever it can't do.
 | Addon prefix | `$ReforgerZ:` | Where new prefabs are saved |
 
 **Bases.** The plugin builds each prefab on the entry's `basePrefab` (a ResourceName), else on a
-search for `baseFind` (a vanilla file name), else it leaves the prefab as a manual step. Only a
-few entries have a `baseFind` (`GameMode_Plain.et`, `SpawnPoint_Base.et`, `AIWaypoint_Move.et`),
-because vanilla names change between versions. For the rest, put the base you want in
-`basePrefab` and run it again; that's the quickest way to make many prefabs at once.
+search for `baseFind` (a vanilla file name), else it leaves the prefab as a manual step (or, with
+the empty-entity option on, makes it from a `GenericEntity`). Only three entries have a `baseFind`
+(`GameMode_Plain.et`, `SpawnPoint_Base.et`, `AIWaypoint_Move.et`), because vanilla names change
+between versions. Which bases the manifest names, and which are stand-ins, is in
+[section 4](#4-the-prefab-manifest).
 
 **The fallback.** **Plugins → ReforgerZ: Write prefab checklist** writes the whole manifest as a
 checklist to `PrefabChecklist.md` in the project folder (git ignores it), with what already
 exists ticked. If even that fails, the tables in this doc are the same checklist.
 
 **Known limitations:**
-- Not run for real yet: names of editor calls may be wrong; each is in one helper in `RZ_WB`, so a fix is one edit.
 - It can't choose meshes, fill inventories (loadout gear, the reward crate), set collision layers
-  (the interaction spot, the doorway blocker), make AI groups' members or pick vanilla bases.
-- Faction variants copy only the colour and name (with their own key): check the flag and identity
-  by hand. If the factions live in a referenced `.conf` rather than on the FactionManager entity, it
-  can't edit them. If it can't read a friendly list, it may replace it with only the new key, so check
-  the four friendly lists after the first real run.
+  (the interaction spot, the doorway blocker), make AI groups' members or set a group's faction
+  (`m_faction` was set by hand on the 23 group prefabs). It doesn't set characters' faction
+  affiliation either (set afterwards on the 13 loadouts and the 30 other characters).
+- Its faction variants are bare (no base config, so no flag or identity): keep the variants in
+  `RZ_FactionManager.et` ([section 3](#3-factions-and-loadouts)). If a FactionManager keeps its
+  factions in a referenced `.conf`, it can't edit them.
+- It doesn't set the UI slots or the game mode's player controller
+  ([Setting up the UI](#setting-up-the-ui)).
 - It doesn't overwrite anything: to redo a prefab, delete it first.
-- Shop stock beyond the antidote, stabiliser and cut dose, requisition items and loot tables are by hand.
+- Shop stock beyond the antidote, stabiliser, cut dose and signal smoke, requisition items and loot
+  tables are by hand.
 
 ### 1.3 By hand: the manual checklist
 
@@ -117,16 +141,17 @@ Work down the tables: [the minimum playable subset](#2-the-minimum-playable-subs
 [factions and loadouts](#3-factions-and-loadouts), then the rest of [the manifest](#4-the-prefab-manifest)
 system by system. For each prefab:
 
-1. Find the suggested base in the Resource Browser (vanilla paths and names differ between game
-   versions, so search by description) and **Create inherited prefab** at the path in the table
-   (all under `Prefabs/ReforgerZ/`).
+1. Take the entry's `basePrefab` from the manifest, or find the suggested base in the Resource
+   Browser (vanilla paths and names differ between game versions, so search by description), and
+   **Create inherited prefab** at the path in the table (all under `Prefabs/ReforgerZ/`).
 2. Add the components and actions in the **Add** column, with the attribute values shown.
    **The generic set** is `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`, `RZ_ReadClueAction`,
    4 × `RZ_PuzzleUseAction` (Value 0–3) and 4 × `RZ_PuzzleChoiceAction` (Option 0–3).
    **The clue set** is `RZ_ClueComponent` and `RZ_ReadClueAction`.
 3. Every prefab with an `RZ_` component needs an `RplComponent`; every prefab with an action
    needs an `ActionsManagerComponent` with at least one action context, and each action's
-   parent context set to it.
+   parent context set to it. Give the context a position and a radius (the plugin uses 0.5 m up
+   and 1.2 m): without them the game never offers its actions.
 4. Open `RZ_GameMode.et` and set the slot (the attribute's category, then its label).
 
 Slot names are the attribute's category, then its label: **Cure > Lab prefab** is the Lab prefab
@@ -144,9 +169,12 @@ python3 tools/prefab_manifest.py sync    # copy the settings objects' defaults f
 python3 tools/prefab_manifest.py docs    # regenerate the tables in this doc
 ```
 
+`docs` rewrites everything between each `<!-- manifest:... -->` marker in this doc and its end
+marker, so never edit inside them by hand: change the manifest and run it again.
+
 To use a prefab you already have (or a confirmed vanilla base), put its ResourceName
 (`{GUID}path.et`) in the entry's `basePrefab`. Lists (zombies, cars, the loot pool) take several,
-comma-separated.
+comma-separated. The plugin doesn't rebuild a prefab that exists: delete it first.
 
 ## 2. The minimum playable subset
 
@@ -173,7 +201,7 @@ and choice missions, and puzzles:
 | `RZ_Drop_Bastion.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction MILITARY) | Missions > Bastion drop point | the drops those missions name |
 | `RZ_Drop_RedHand.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction BANDITS) | Missions > Red Hand drop point | the drops those missions name; also Car Theft's chop shop |
 | `RZ_Drop_Halcyon.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction INSTITUTE) | Missions > Halcyon drop point | the drops those missions name |
-| (existing prefab) | Bacon Zombies civilian and military groups | — | Zombies > Common prefabs (list) | the infected |
+| (existing prefab) | Bacon Zombies' civilian group, and the repo's unarmed copies of its military groups (Prefabs/ReforgerZ/Zombies/: Bacon's own each have one infected with a pistol) | — | Zombies > Common prefabs (list) | the infected |
 | (existing prefab) | Special Zombies, or Bacon heavy, exploding and ranged | — | Zombies > Special prefabs (list) | samples, the cure |
 | (existing prefab) | a large Bacon group | — | Zombies > Horde prefabs (list) | hordes |
 | (existing prefab) | vanilla AIWaypoint_Move.et | — | Zombies > Move waypoint | hordes toward noise, unarmed missions, hunter squads, supply trucks, favourite spots |
@@ -190,31 +218,64 @@ power station's own control prefab (it falls back), world-interaction loot (sear
 nothing until the loot pool is filled), fixable cars, crafting and traps, and the treatments other than the antidote and the trial dose
 (stabiliser, low-grade meds).
 
-**On another map:** make another sub-scene with the same contents, then check the log lines in
-[section 7](#7-log-lines-to-check). If the map has no name labels and few buildings, place a few
-`RZ_SettlementMarkerEntity`s. Check the Perimeter rectangle, checkpoints, safehouses, territory,
-power and radio station, and whether "Search" spots appear in houses.
-
 ### The world
 
 <!-- manifest:world -->
 | Step | Plugin | Minimum |
 |---|---|---|
-| Make a world as a sub-scene of Arland (a new world with Arland as its parent; the menu name varies by version) | manual | yes |
-| Place a FactionManager (a vanilla FactionManager prefab) and fill in the factions below | checks it | yes |
-| Place a LoadoutManager (a vanilla LoadoutManager prefab) with the 13 loadouts on SURV | checks it | yes |
+| Make a world as a sub-scene of the map (File > Load World the map, then File > New World > Sub-scene (of current world)); the repo has Worlds/RZ_Arland | manual | yes |
+| Place RZ_FactionManager.et (Prefabs/MP/Managers/Factions/: the four factions, the 15 hidden variants and SURV_OUTLAW below) | checks it | yes |
+| Place RZ_LoadoutManager.et (Prefabs/MP/Managers/Loadouts/: the 13 loadouts on SURV) | checks it | yes |
+| Place the map's AI world (vanilla Prefabs/AI/SCR_AIWorld_Arland.et, _Eden or _Cain) and set its Soldiers and BTRlike navmesh files (on Arland worlds/GameMaster/Navmeshes/GM_Arland.nmn and GM_Arland_vehicles.nmn): without it no AI group gets members and there is no road network | manual | yes |
+| Place the vanilla world managers every game-mode world has: Prefabs/World/Game/PerceptionManager.et (without it the game crashes in the first frame after the first AI spawns), Prefabs/Systems/Radio/RadioManager.et (radios), Prefabs/MP/ScriptedChatEntity.et (text chat) and Prefabs/World/Game/ItemPreviewManager.et (inventory previews) | manual | yes |
 | Place RZ_GameMode.et in the world (one per world) | does it | yes |
+| Keep RZ_GameMode.et's spawn logic on SCR_MenuSpawnLogic (the deploy menu): GameMode_Plain's SCR_AutoSpawnLogic picks a random faction from all of them | manual | yes |
 | Save the world, and point a scenario (mission header) at it to play it | manual | yes |
 | Optional: place marker entities (RZ_SettlementMarkerEntity and the others) to override automatic picks | manual | — |
 <!-- /manifest:world -->
 
-The repo's world is `Worlds/RZ_Arland/RZ_Arland.ent`. To make another in Workbench 1.9: **File →
-Load World**, search `Arland` and open `worlds/Arland/Arland.ent`; then **File → New World →
-Sub-scene (of current world)**, and **File → Save World** into the project.
+**The repo's world** is `Worlds/RZ_Arland/RZ_Arland.ent`, a sub-scene of Arland. It holds eight
+entities: three repo prefabs and five vanilla ones.
+
+| Entity | Prefab |
+|---|---|
+| The game mode | `Prefabs/ReforgerZ/Core/RZ_GameMode.et` |
+| The FactionManager | `Prefabs/MP/Managers/Factions/RZ_FactionManager.et` ([section 3](#3-factions-and-loadouts)) |
+| The LoadoutManager | `Prefabs/MP/Managers/Loadouts/RZ_LoadoutManager.et` ([section 3](#3-factions-and-loadouts)) |
+| The AI world | vanilla `Prefabs/AI/SCR_AIWorld_Arland.et`, with its navmesh files set by hand to Arland's Game Master ones (`worlds/GameMaster/Navmeshes/GM_Arland.nmn` and `GM_Arland_vehicles.nmn`) |
+| The perception manager | vanilla `Prefabs/World/Game/PerceptionManager.et` |
+| The radio manager | vanilla `Prefabs/Systems/Radio/RadioManager.et` |
+| The chat | vanilla `Prefabs/MP/ScriptedChatEntity.et` |
+| The item preview manager | vanilla `Prefabs/World/Game/ItemPreviewManager.et` |
+
+Without an AI world no AI or infected spawn, and there's no road network
+([the log lines](#7-log-lines-to-check)). Without the perception manager the game crashes in the
+first frame after the first AI spawns: an access violation, with no script error in the log. Every
+vanilla game-mode world on Arland places a perception manager, and most also place the radio
+manager and the chat; the base map, `Arland.ent`, has none of them. The world has no music
+manager (vanilla's are `Prefabs/Sounds/Music/MusicManager_*.et`), so there's no music.
+Both faction and loadout managers inherit the vanilla ones and already hold
+everything in section 3. The world's scenario is `Missions/RZ_Arland.conf` (`{3487FFB701729EC7}`):
+an `SCR_MissionHeader` that points at the world, for 32 players. How to play it is in
+[PC_SETUP.md](PC_SETUP.md#6-play-testing).
+
+**On another map:** in Workbench 1.9, **File → Load World** and open the map's world; then **File →
+New World → Sub-scene (of current world)**, and **File → Save World** into the project. Drag in the
+same three prefabs and the map's AI world (an `SCR_AIWorld` prefab, with the map's navmesh files
+set), save, and give it a scenario: an `SCR_MissionHeader` config like `Missions/RZ_Arland.conf`,
+with **World** set to the new world. Then check the log lines in
+[section 7](#7-log-lines-to-check). If the map has no name labels and few buildings, place a few
+`RZ_SettlementMarkerEntity`s. Check the Perimeter rectangle, checkpoints, safehouses, territory,
+power and radio station, and whether "Search" spots appear in houses.
 
 ## 3. Factions and loadouts
 
-In the world's `FactionManager`:
+Both live in prefabs, placed in the repo's world ([The world](#the-world)):
+
+| Prefab | Inherits | Holds |
+|---|---|---|
+| `Prefabs/MP/Managers/Factions/RZ_FactionManager.et` | vanilla `FactionManager_Base.et` | the four factions below, the 15 hidden variants and `SURV_OUTLAW` |
+| `Prefabs/MP/Managers/Loadouts/RZ_LoadoutManager.et` | vanilla `LoadoutManager_Base.et` | the 13 loadouts, on `SURV` |
 
 <!-- manifest:factions -->
 | Key | In game | Used for |
@@ -226,8 +287,23 @@ In the world's `FactionManager`:
 | (the zombie mod's) | The infected | the zombie mod's own faction (Bacon Zombies): hostile to all four |
 <!-- /manifest:factions -->
 
+Each faction is built on a vanilla faction config, which gives it its flag and identity: `SURV`
+and `INST` on `CIV.conf`, `MIL` on `US.conf`, `BAND` on `FIA.conf`. Only `SURV` is playable. The
+colours are the faction accents in [UI/LAYOUTS.md](../UI/LAYOUTS.md). The infected's faction,
+`BACON_622120A5448725E3_FACTION`, comes with the base: Bacon Zombies overrides
+`FactionManager_Base.et` to add it, hostile to all. Vanilla factions are playable unless told
+otherwise, so `RZ_FactionManager.et` sets it not playable; otherwise players could join the infected.
+
+**Characters must name a faction that exists.** A character prefab names its faction twice: its
+`SCR_CharacterFactionAffiliationComponent` ("faction affiliation") and its editor UI info's
+`m_sFaction`. Vanilla characters say `CIV`, `US` or `FIA`, which don't exist here, and the deploy
+menu fails on a loadout whose character names a missing faction (a script exception in
+`SCR_LoadoutButton.SetLoadout`). Every ReforgerZ character sets both to its own faction (the
+loadouts, wanderers and civilians to `SURV`); do the same for any character you add.
+
 **Relations.** AI shoots individual players through the hidden variants below, so the base
-relations are the "nobody wants you dead" case. Set them in each faction's friendly list, both ways:
+relations are the "nobody wants you dead" case. They're set in each faction's friendly list, both
+ways; if you change one, change both:
 
 <!-- manifest:relations -->
 | | SURV | MIL | BAND | INST |
@@ -240,28 +316,31 @@ relations are the "nobody wants you dead" case. Set them in each faction's frien
 
 `SURV`–`BAND` friendly is what makes the Red Hand neutral by default.
 
-**The 15 hidden variant factions.** These let AI shoot one player and not another
-([REPUTATION.md](REPUTATION.md), "What makes AI shoot you"):
+**The hidden variant factions.** These let AI shoot one player and not another
+([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)). `SURV_H1` to `SURV_H15` are copies of
+`SURV` with only the key changed: built on `CIV.conf` like it, with the same name, colour, flag and
+identity, so they look like the Haven, but not playable and with no loadouts. The number is a
+bitmask of who shoots that player: 1 the Haven, 2 Bastion, 4 the Red Hand, 8 Halcyon, added up.
+Their friendly lists are `SURV`'s, but they don't matter: the modded faction check decides from
+the key. `SURV_OUTLAW`, only for the Outlaw fallback (**Hostility > Mode**), is the same but with
+real relations: friendly with nothing, and in nobody's friendly list. With all of them there, the
+log says `Hostility: bitmask mode, all 15 variant factions found.`
 
-1. Duplicate the `SURV` entry. Change only its **Faction key** to `SURV_H1`.
-2. Keep its name, colour, flag and identity the same, so it looks like the Haven. Turn
-   **Is Playable** off, and empty its loadout list.
-3. Repeat for `SURV_H2` up to `SURV_H15`. The number is a bitmask of who shoots that player:
-   1 the Haven, 2 Bastion, 4 the Red Hand, 8 Halcyon, added up.
-4. Their friendly lists don't matter: the modded faction check decides from the key. Copying
-   `SURV`'s is fine.
-5. **Optional, for the Outlaw fallback:** one more copy keyed `SURV_OUTLAW`, with real relations:
-   friendly with nothing (or only itself), and removed from the friendly lists of `SURV`, `MIL`,
-   `BAND` and `INST`.
+Keep the variants in the prefab. The plugin adds missing ones to a placed FactionManager as bare
+factions, without a base config, so they have no flag or identity; that's why they were moved
+into `RZ_FactionManager.et`. With it placed, the plugin finds them all and adds nothing.
 
 If the player faction key isn't `SURV`, the variants are `<key>_H1`..`<key>_H15` and
 `<key>_OUTLAW`. Missing variants only turn the feature off for the players who'd need them.
 
-**Loadouts.** In the world's `LoadoutManager`, on `SURV`, one loadout per background, named
-exactly as below. Each is a civilian character prefab with that background's starting gear and
-`RZ_TreatOtherAction` (so other players can treat you). Players who pick a locked one keep its
-gear but play as Unemployed. The log warns `No background matches loadout '...'` for a typo.
-The gear is a suggestion; the perks and flaws are in [DESIGN.md](DESIGN.md#backgrounds-and-personal-goals).
+**Loadouts.** `RZ_LoadoutManager.et` has one loadout per background on `SURV`, named exactly as
+below, each pointing at `Prefabs/ReforgerZ/Loadouts/RZ_Loadout_<Name>.et`. Those are characters
+affiliated with `SURV`, with `RZ_TreatOtherAction` (so other players can treat you), built on
+vanilla civilians, except Soldier (`Character_US_Unarmed`) and Raider (an armed FIA civilian). They
+wear and carry what their base character does: the suggested gear below is still to add by hand.
+Players who pick a locked one keep its gear but play as Unemployed. The log warns
+`No background matches loadout '...'` for a typo. The perks and flaws are in
+[DESIGN.md](DESIGN.md#backgrounds-and-personal-goals).
 
 <!-- manifest:loadouts -->
 | Loadout name | Prefab | Unlock | Suggested gear |
@@ -284,13 +363,28 @@ The gear is a suggestion; the perks and flaws are in [DESIGN.md](DESIGN.md#backg
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 146 prefabs the plugin creates, 15 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 32 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 145 prefabs the plugin creates, 16 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 32 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
 [minimum playable subset](#2-the-minimum-playable-subset); *optional* turns its feature off (or
 falls back) when empty. "(existing prefab)" means you
-fill the slot with a prefab you already have. All new prefabs go under `Prefabs/ReforgerZ/`.
+fill the slot with a prefab you already have. All new prefabs go under `Prefabs/ReforgerZ/`. The
+tables are generated from the manifest ([1.4](#14-changing-the-manifest)): change the manifest,
+not the tables.
+
+**Bases.** The manifest names a base (`basePrefab`) for 152 entries and all 13 loadouts: real
+ResourceNames from vanilla 1.9, Bacon Zombies and Special Zombies, picked by reading the game's
+resource database. The tables' **Suggested base** is what a prefab should be; `basePrefab` is what
+it's built on now, and many are [stand-ins](#stand-in-bases). Two more entries are found by name
+(`baseFind`: the spawn point and the move waypoint), the 9 entries set by hand (the hand-set lists
+and the UI files) need none, and seven have no base:
+
+| Entry | Why |
+|---|---|
+| `RZ_Drone.et`, `RZ_WarningShot.et`, Interactions > Crafting > Spear | Vanilla has nothing like them (no drone, no melee weapon) |
+| `RZ_InteractionSpot.et`, `RZ_DoorBlocker.et` | To make from an empty entity (the plugin's option) with collision added by hand; not made yet |
+| Interactions > General > Dirty water, Clean water | They're the survival mod's water bottles, and Metabolism isn't a dependency yet ([MOD_STACK.md](MOD_STACK.md)) |
 
 <!-- manifest:prefabs -->
 #### Core and cure
@@ -343,7 +437,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_Drop_RedHand.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction BANDITS) | Missions > Red Hand drop point | **minimum** | the drops those missions name; also Car Theft's chop shop |
 | `RZ_Drop_Halcyon.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction INSTITUTE) | Missions > Halcyon drop point | **minimum** | the drops those missions name |
 | `RZ_SurvivorGroup.et` | a civilian AI group on SURV | — | Missions > Survivor group | optional | Survivors Trapped, Training Day, Harvest Guard, The Bitten Friend, Trader Caravan, Protection Racket, the keeper's people in The Well Story; the fallback escort and bounty target |
-| `RZ_Nest.et` | a Zombie Hive prefab or a destructible prop with a damage manager | — | Missions > Nest | optional | Burn the Nest, Specimen from the Nest |
+| `RZ_Nest.et` | a destructible hive (Special Zombies' ZombieHive_Minor) or a prop with a damage manager | — | Missions > Nest | optional | Burn the Nest, Specimen from the Nest |
 | `RZ_BanditDrop.et` | a crate, barrel or car wreck prop | `RZ_SellSamplesToBanditsAction` | Missions > Dead drop | optional | Dead Drop |
 | `RZ_HeliWreck.et` | a helicopter wreck prop | the clue set | Missions > Helicopter wreck | optional | Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash and of The Last Pilot's Day 3 wreck; the last helicopter's crash in The Last Pilot |
 | `RZ_CorpsePile.et` | a body bag pile prop | — | Missions > Corpse pile | optional | look only: Burn the Bodies' piles and Memorial's bodies (both fall back to the puzzle object) |
@@ -386,7 +480,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| (existing prefab) | Bacon Zombies civilian and military groups | — | Zombies > Common prefabs (list) | **minimum** | the infected |
+| (existing prefab) | Bacon Zombies' civilian group, and the repo's unarmed copies of its military groups (Prefabs/ReforgerZ/Zombies/: Bacon's own each have one infected with a pistol) | — | Zombies > Common prefabs (list) | **minimum** | the infected |
 | (existing prefab) | Special Zombies, or Bacon heavy, exploding and ranged | — | Zombies > Special prefabs (list) | **minimum** | samples, the cure |
 | (existing prefab) | a large Bacon group | — | Zombies > Horde prefabs (list) | **minimum** | hordes |
 | (existing prefab) | vanilla AIWaypoint_Move.et | — | Zombies > Move waypoint | **minimum** | hordes toward noise, unarmed missions, hunter squads, supply trucks, favourite spots |
@@ -513,7 +607,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_Key.et` | a small item (a key or key ring) | `RZ_KeyItemComponent`; `RZ_ReadKeyTagAction` | Interactions > Search > Key prefab | optional | keys as real items (empty = keys are data for one life) |
 | `RZ_DoorBlocker.et` | an empty GenericEntity; add the collision-only box by hand (recipe below) | — | Interactions > Search > Doorway blocker | optional | keeps AI out of locked doorways near players. Needs only RplComponent, a collision-only MeshObject and a static RigidBody: see the doorway blocker recipe |
 | (existing prefab) | every item a search can find (vanilla and mod items) | — | Interactions > Search > Loot pool (list) | optional | searches find nothing until it's filled |
-| `RZ_CarProject.et` | a non-drivable car prop | the generic set | Interactions > Cars > Project prefab | optional | a fixable car before it runs |
+| (existing prefab) | the repo's parked copies of the Car prefabs (Prefabs/ReforgerZ/Interactions/Cars/), each with SCR_BaseLockComponent m_bIsLocked 1 | — | Interactions > Cars > Parked prefabs (list, the same order as Car prefabs) | optional | a fixable car before it runs: the same car, parked and locked. One per Car prefab, in the same order. A new car needs its own parked copy: inherit it and set its SCR_BaseLockComponent > m_bIsLocked |
 | (existing prefab) | vanilla drivable civilian cars | — | Interactions > Cars > Car prefabs (list) | optional | what a fixed car becomes (empty = no fixable cars) |
 | `RZ_CarBattery.et` | an item; keep "battery" in its name | — | Interactions > Cars > Battery | optional | car parts |
 | `RZ_Tyre.et` | an item; keep "tyre" in its name | — | Interactions > Cars > Tyre | optional | car parts |
@@ -557,12 +651,30 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| (existing prefab) | an imageset built from UI/Icons/png/64 (UI/LAYOUTS.md) | — | UI > Icon imageset | optional | icons on the HUD, cards and menus (empty = the images set in the layouts) |
+| (existing prefab) | the RZ_Icons imageset that tools/icon_atlas.py builds from UI/Icons/png/128 (UI/LAYOUTS.md) | — | UI > Icon imageset | optional | icons on the HUD, cards and menus (empty = the images set in the layouts) |
 | (existing prefab) | the NoticeCard layout (UI/LAYOUTS.md) | — | UI > Notice layout | optional | styled notice cards (empty = the vanilla hint) |
 | (existing prefab) | the MissionRow layout (UI/LAYOUTS.md) | — | UI > Mission row layout | optional | journal rows |
 | (existing prefab) | the RadioRow layout (UI/LAYOUTS.md) | — | UI > Radio row layout | optional | radio log rows |
 | (existing prefab) | the MapIcon layout (UI/LAYOUTS.md) | — | UI > Map icon layout | optional | the ReforgerZ icons on the map, per player (empty = vanilla text markers for events and the lab). Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI) |
 <!-- /manifest:prefabs -->
+
+### Stand-in bases
+
+Many bases only stand in for the real thing, often because vanilla 1.9 has nothing closer (no lab
+coat, armbands, children, bus, drone or melee weapon). What each one means in play, and what's
+still to do:
+
+| Prefabs | Built on | What's off, and what to do |
+|---|---|---|
+| The 23 AI groups | Vanilla FIA and US soldier groups (FIA fire team, sentry team, medical section, sharpshooter team; US sentry and light fire teams). Their faction (`m_faction`) was set by hand, as their names say | Members wear soldiers' kit and carry rifles: the escort civilians are armed FIA riflemen, the convicts carry rifles. Sizes are only roughly right. Give each group its own members |
+| Single characters: quartermasters, leaders, occupants, wanderers | Vanilla civilian, US and FIA characters. Their faction affiliation was set afterwards, as their names say | They keep their vanilla kits: set them by hand. Halcyon's people are FIA medics; the kid is an adult |
+| `RZ_Antidote.et`; `RZ_Stabiliser.et` and `RZ_CutDose.et` | Saline; morphine | They still apply the vanilla effect until their consumable effect is set by hand to `RZ_ConsumableAntidote` or `RZ_ConsumableMed` |
+| `RZ_Tyre.et`, `RZ_Planks.et`, `RZ_PortableGenerator.et`, `RZ_AlarmClock.et` | Props | No inventory item, so they can't be carried: base them on items |
+| `RZ_Molotov.et`, `RZ_Bottle.et`, `RZ_TinRattle.et` | Smoke grenades | Still smoke grenades: remove the smoke and give them a bottle or tin mesh |
+| `RZ_Explosion.et` | The vanilla mortar effect module | A real HE round: it damages what's near it |
+| `RZ_Nest.et` | Special Zombies' `ZombieHive_Minor` | It spawns its own infected |
+| `RZ_Lab.et` | A vanilla US tent | It can be destroyed (1000 HP) |
+| Looks only | Five items share the aspirin bottle (sample, vet antiviral, fever suppressant, home remedy, tablets); six are food packets (antibiotics, car battery, spark plugs, the tripwire and spike trap kits, firecracker); the fog is white smoke; the Red Hand armband and Haven ribbon are knitted hats; the bus is a UAZ van | Real models, from a mod or your own. The manifest's `basePrefab` says what every other one is |
 
 ### Add to prefabs you already have
 
@@ -575,7 +687,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | the Haven quartermaster | `RZ_FactionShopAction` (Faction SURVIVORS, Required tier KNOWN, Favor cost 8, Item prefab `RZ_CarBattery.et`, Display name Car battery) | car parts for sale (Known), if wanted; same for tyre and spark plugs | optional |
 | the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab) | optional |
 | any quartermaster | `RZ_FactionShopAction` | vanilla stock (suggested stock table); the Item prefab is a vanilla item, crate or vehicle | optional |
-| the player controller prefab the game mode uses (vanilla DefaultPlayerController.et or your copy; confirm in Workbench) | `RZ_PlayerUIComponent` | the UI's data feed: infection timer, secure radio, noise, standing, journal, backgrounds (docs/UI.md) | optional |
+| the player controller prefab the game mode uses (the repo's Prefabs/Characters/Core/RZ_PlayerController.et has it; RZ_GameMode.et's PlayerControllerPrefab points at it) | `RZ_PlayerUIComponent` | the UI's data feed: infection timer, secure radio, noise, standing, journal, backgrounds (docs/UI.md) | optional |
 <!-- /manifest:additions -->
 
 ### Notes by system
@@ -730,33 +842,42 @@ type takes the items whose prefab names contain its keywords (the lists are in
 ### Setting up the UI
 
 Optional: without it every message is a vanilla hint, as before. How the UI works is in
-[UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md).
+[UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md). Steps 1 to 4
+are done in the repo; 5 and 6 aren't. The 12 layouts are in `UI/layouts/ReforgerZ/`.
 
-1. **The feed.** Add `RZ_PlayerUIComponent` to the player controller prefab the game mode uses
-   (the addition in the table above). Vanilla controllers already have the `RplComponent` it needs.
-2. **The icons.** Import `UI/Icons/png/128/` as textures and build the `RZ_Icons` imageset, image
-   names = file names ([LAYOUTS.md](../UI/LAYOUTS.md#importing-the-icons)). Set **UI > Icon imageset**.
-3. **The HUD.** Build `RZ_Hud.layout` and `RZ_NoticeCard.layout`. On the player controller's
-   `SCR_HUDManagerComponent`, add an info display of class `RZ_HudDisplay` with the HUD layout.
-   Set **UI > Notice layout**.
-4. **The menus.** Build the six menu layouts and the two row layouts; set **UI > Mission row
-   layout** and **Radio row layout**. Make the tabs, the close button, the journal row's root,
-   the radio filter chip and the notice board's post button Buttons with the names in LAYOUTS.md,
-   for the mouse. Override `chimeraMenus.conf` with the six presets (`RZ_StandingMenu`,
-   `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu`, `RZ_NoticeBoardMenu`,
-   `RZ_HallOfFameMenu`) and the input config with `RZ_OpenStanding`, `RZ_OpenJournal`,
-   `RZ_OpenRadio`, `RZ_OpenHall` and `RZ_RadioFilter`. Once the notice board's layout works, turn
-   **UI > Board menus** on (off, the board is a notice and notes are written with `/note`).
-5. **The deploy panel.** Override the deploy menu's layout, add `RZ_BackgroundPanel.layout` on the
-   right, and put `RZ_BackgroundPanelComponent` on its root. Locked loadouts are refused by
-   `UI/RZ_LoadoutLock.c` with nothing to set up (**UI > Lock loadouts**).
-6. **The map.** Build `RZ_MapIcon.layout` and set **UI > Map icon layout**. Override the full-screen
-   map's configuration (search the Resource Browser for the map config the game mode uses) and add
-   `RZ_MapIconsUI` to its components. With the layout set, the vanilla text markers for world
-   events and the lab are off.
+1. **The feed** (done). `Prefabs/Characters/Core/RZ_PlayerController.et` inherits vanilla
+   `DefaultPlayerControllerMP.et` and adds `RZ_PlayerUIComponent` (vanilla controllers already
+   have the `RplComponent` it needs). `RZ_GameMode.et`'s **PlayerControllerPrefab** points at it.
+2. **The icons** (done). The icon atlas `UI/Textures/ReforgerZ/RZ_Icons.edds` and its imageset
+   `UI/Imagesets/ReforgerZ/RZ_Icons.imageset`, made with `tools/icon_atlas.py`
+   ([how](../UI/LAYOUTS.md#importing-the-icons)). **UI > Icon imageset** is set to it.
+3. **The HUD** (done). `RZ_Hud.layout` and `RZ_NoticeCard.layout` are built. The player
+   controller's `SCR_HUDManagerComponent` has an info display of class `RZ_HudDisplay` with the HUD
+   layout, and **UI > Notice layout** is set.
+4. **The menus** (done, on keys for now; not checked in play yet). The six menu layouts and the
+   two row layouts are built, with Buttons for the mouse; **UI > Mission row layout** and **Radio
+   row layout** are set. Two overrides of vanilla configs (same GUIDs) in `Configs/System/` add the
+   rest: `chimeraMenus.conf` the six menu presets, `chimeraInputCommon.conf` the five input actions
+   ([both](../UI/LAYOUTS.md#menus)). Their keys clash with vanilla ones, so opening the screens from
+   the map instead is planned ([UI.md](UI.md#opening-the-screens)). **UI > Board menus** is still
+   off (the board is a notice and notes are written with `/note`): turn it on once the notice
+   board's menu works.
+5. **The deploy panel** (to do). `RZ_BackgroundPanel.layout` is built, and its root already
+   carries `RZ_BackgroundPanelComponent`. Find the vanilla deploy menu's layout in the Resource
+   Browser (in 1.9 the log shows it opening `UI/layouts/Menus/DeployMenu/RoleSelectionMenu.layout`),
+   save an override of it in the addon, and add the panel as a child on the right. Locked loadouts
+   are refused by `UI/RZ_LoadoutLock.c` with nothing to set up (**UI > Lock loadouts**).
+6. **The map** (to do). `RZ_MapIcon.layout` is built, but **UI > Map icon layout** isn't set:
+   setting it turns the vanilla text markers for world events and the lab off, so set it together
+   with the map config. Override the full-screen map's configuration (search the Resource Browser
+   for the map config the game mode uses) and add `RZ_MapIconsUI` to its components.
 
-Each step works without the later ones: with only step 1, nothing shows; with steps 1–3, the HUD
-and styled cards work and the keys do nothing. Step 6 stands alone (after step 1).
+Also to do: default images for the icons the scripts never swap (the legend icons and the like).
+Set each such `Image` from the imageset in the layout editor.
+
+Each step works without the later ones: with steps 1–3 the HUD works (Workbench Play showed the
+styled notice cards, the stealth visibility bars and the noise meter). Step 6 stands alone (after
+step 1).
 
 ### Marker entities (no prefab needed)
 
@@ -903,14 +1024,14 @@ test files are copied into a throwaway addon folder.
 grep -rn "VERIFY" scripts/
 ```
 
-There are **46** lines with the tag: 37 in the game scripts (one is the comment in `Core/RZ_Util.c`
-that explains them; 2 are in the UI) and 9 in the Workbench plugin (one is its header comment).
-Every name and signature question is settled: the game scripts compile on 1.9, and each call was
-checked against the base game's script source (its doc comments and how vanilla uses it). Each
-marker left is a **behaviour** only a play-test can show (for the plugin, a run in Workbench):
-replication, what the AI does, what a prefab carries. The game scripts' markers are grouped by
-risk; check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The
-[UI's](#the-ui-2) and the [plugin's](#the-workbench-plugin-8) come last.
+There are **38** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 2 are in the UI). The Workbench plugin has none left: its real
+run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
+settled: the game scripts compile on 1.9, and each call was checked against the base game's script
+source (its doc comments and how vanilla uses it). Each marker left is a **behaviour** only a
+play-test can show: replication, what the AI does, what a prefab carries. They're grouped by risk;
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-2)
+come last.
 
 ### High risk: the core loop (1)
 
@@ -938,14 +1059,14 @@ No fallback. If this is wrong, nothing persists.
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: no door locks, the loot lock everywhere |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
-| `Core/RZ_Util.c:819` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
-| `Core/RZ_Util.c:905` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
+| `Core/RZ_Util.c:834` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:920` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
 | `Cure/RZ_Infection.c:1160` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
 
-### Low risk: contained or cosmetic (12)
+### Low risk: contained or cosmetic (13)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -957,6 +1078,7 @@ No fallback. If this is wrong, nothing persists.
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_KeyItem.c:81` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages, or leave **Key prefab** empty (data keys) |
+| `Core/RZ_Util.c:756` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
 | `Core/RZ_Util.c:743` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:1162` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
@@ -971,23 +1093,6 @@ is in [UI.md](UI.md).
 |---|---|---|
 | `UI/RZ_PlayerUIComponent.c:152` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_LoadoutLock.c:9` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still spawns a locked pick as the default background |
-
-### The Workbench plugin (8)
-
-Paths are under `scripts/WorkbenchGame/ReforgerZ/`. The server check doesn't compile the plugin;
-Workbench does (**F7**), without errors, and its dry run works. What's left is what only a real run
-shows. None of these affect the game: if the plugin fails, make the prefabs by hand. Riskiest first.
-
-| Where | Behaviour to check | If it fails |
-|---|---|---|
-| `RZ_CreatePrefabsPlugin.c:363` | `CreateEntityTemplate(src, absPath)` saves a prefab that inherits from the entity's prefab and writes its `.meta` | No prefab is saved: make prefabs by hand |
-| `RZ_CreatePrefabsPlugin.c:934` | API edits on a prefab loaded from its file, not only on world entities | Slots aren't wired: wire a placed instance and apply it to the prefab, or fill the slots by hand |
-| `RZ_CreatePrefabsPlugin.c:214` | The editor names: `ActionContexts`, `additionalActions`, `ParentContextList`, `UIInfo`, `Factions`, `FactionKey`, `m_bIsPlayable`, `m_aFriendlyFactionsIds`, `m_aPlayerLoadouts` and the rest | Actions without a context, factions or loadouts not found: compare with a vanilla `.et`/`.conf` and fix the constants |
-| `RZ_CreatePrefabsPlugin.c:492` | `BaseContainer.Get(key, string)` reads a string, ResourceName, number or colour as text | Filled slots look empty (it never overwrites, but may report wrongly); faction keys unreadable |
-| `RZ_CreatePrefabsPlugin.c:502` | `BaseContainer.Get(key, array<string>)` reads a string or ResourceName array | Lists look empty; friendly lists are rewritten with only the new key: check them |
-| `RZ_CreatePrefabsPlugin.c:1158` | factions inline on the FactionManager | Variants can't be added: do it by hand |
-| `RZ_CreatePrefabsPlugin.c:1360` | loadouts inline on the LoadoutManager | Loadout entries can't be added: do it by hand |
-| `RZ_CreatePrefabsPlugin.c:260` | `FileIO.MakeDirectory` on absolute paths and existing folders | Saving into a new folder fails: make the `Prefabs/ReforgerZ/...` folders by hand |
 
 ## 7. Log lines to check
 
@@ -1030,20 +1135,37 @@ the house is gone, `Long Table: broken up this season.` Arland's 14 settlements:
 after the nearest local place label (North Head, Angler Bluff, Sandbank, Heath Point) and the rest
 by grid reference (`Outskirts 13-29`).
 
+With the repo's world and prefabs (Workbench Play), the zombie, lab and barricade warnings are
+gone and these lines change (no road crosses the line on Arland, an island, so it has no road
+checkpoints):
+
+```
+[ReforgerZ] Stealth: on. ... searching 45 s: on.
+[ReforgerZ] Perimeter: 0 road checkpoints (from roads).
+[ReforgerZ] Supply trucks: Haven, Bastion, Red Hand, Halcyon.
+[ReforgerZ] Search: 30 items in the loot pool, 0 tables set by hand.
+[ReforgerZ] Locks: on the doors (the loot where no doors are found); keys are key items.
+[ReforgerZ] World interactions: on. 5 fixable cars on the map.
+[ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
+[ReforgerZ] Player 1 spawned with locked loadout 'Soldier': default background
+```
+
 Warnings worth acting on:
 
 | Line | Means |
 |---|---|
-| `GUI (E): Menu preset 'RZ_StandingMenu' not found!` (and the other five) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override isn't there yet ([the UI](#setting-up-the-ui)). Harmless until then |
+| `GUI (E): Menu preset 'RZ_StandingMenu' not found!` (and the other five) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override (`Configs/System/`) wasn't loaded ([the UI](#setting-up-the-ui)). Only the menus are missing |
 | `No common zombie prefabs configured. ...` | Set Zombies > Common prefabs (logged as an error: no infected spawn) |
 | `Using N hand-placed settlement markers.` | Detection is off because markers are placed |
 | `No checkpoint barricade prefab set: road checkpoints are off.` | Set Perimeter > Barricade prefab |
 | `Perimeter shore: N points along the edge with land within 600 m, M of them on a sea edge.` | Printed once, the first time a Perimeter mission is considered. N near 0 means the edge sits too far out to sea for missions at the line: lower **Sea margin** or set the **Override** rectangle |
 | `The Blind Spot: nowhere suitable at the line on this map, so it won't be offered.` (or The Crossing, Shot at the Line) | That mission found no dry spot clear of the checkpoints near the edge, and is off for this map. Same fix |
-| `No road network found: place RZ_CheckpointMarkerEntity entities ...` | The road network calls found no roads, or the map has none |
+| `AI (E): No AIWorld is present in the map.` / `Cannot spawn team members of group ..., AIWorld is missing in the world!` | Engine lines: the world has no AI world, so no AI or infected spawn. Place the map's AI world ([The world](#the-world)) |
+| `No road network found: place RZ_CheckpointMarkerEntity entities ...` | The road network comes from the AI world: the world has none, or the map has no roads. Without it there are no road checkpoints (unless markers are placed) and no road posts |
 | `Hostility: bitmask mode, only N of 15 variant factions ...` | Some `SURV_H` factions are missing |
 | `Hostility: outlaw mode, but the FactionManager has no SURV_OUTLAW.` | Add the Outlaw faction |
 | `No background matches loadout '...'` | A loadout name doesn't match a background |
+| `Player N spawned with locked loadout '...': default background` | The player picked a background they haven't unlocked: they keep its gear but play as Unemployed, the default background (**UI > Lock loadouts**) |
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
@@ -1175,7 +1297,7 @@ session, tick off:
   500 m and you're told the spot; a Radio Operator, or someone Trusted with Bastion, gets the exact
   spot in the offer. A puzzle contract always gives its own positions.
 
-**UI** (once the layouts exist; [Setting up the UI](#setting-up-the-ui))
+**UI** ([Setting up the UI](#setting-up-the-ui); the deploy-menu and map items need its steps 5 and 6)
 - [ ] A Haven channel message shows as an amber card with the speaker; three at once stack, the
   rest queue; with **Styled notices** off they're vanilla hints again.
 - [ ] A bite shows the golden window counting down, then Fever with the track filling; a

@@ -1,0 +1,34 @@
+GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  RZ_PlaceableComponent "{6AD67DC2A80CA418}" {
+   m_eKind BARRICADE
+  }
+  ActionsManagerComponent "{6AD67DC2A80CA106}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A80CAE5C}" {
+     ContextName "default"
+     Position PointInfo "{8043F18EB7C4939C}" {
+      Offset 0 0.1 0
+     }
+     Radius 0.9
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_PlaceAction "{6AD67DC2A80CAC34}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A80CADFC}" {
+      Name "Board it up"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

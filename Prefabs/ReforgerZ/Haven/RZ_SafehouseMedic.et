@@ -1,0 +1,36 @@
+SCR_ChimeraCharacter : "{1FFE2B88BEF51840}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_Turtleneck_2.et" {
+ ID "520EC961A090B1EE"
+ components {
+  SCR_CharacterFactionAffiliationComponent "{60DC952FF79A02F1}" {
+   "faction affiliation" "SURV"
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    m_sFaction "SURV"
+   }
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   additionalActions {
+    RZ_SafehouseAction "{6AD67DC2A314E319}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A317DBDE}" {
+      Name "Get patched up"
+     }
+     m_eKind HEAL
+    }
+    RZ_SafehouseAction "{6AD67DC2A3096240}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A3084685}" {
+      Name "Tell them you're bitten"
+     }
+     m_eKind DECLARE_BITE
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

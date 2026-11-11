@@ -1,0 +1,8 @@
+GenericEntity : "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et" {
+ ID "1F80A73AAE197BBE"
+ components {
+  RZ_MolotovComponent "{6AD67DC2A814F157}" {
+  }
+ }
+ coords 0 0 0
+}

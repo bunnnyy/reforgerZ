@@ -10,8 +10,9 @@
 //! A dry run only reports. "ReforgerZ: Write prefab checklist" writes the same work as a
 //! checklist file to follow by hand.
 //!
-//! Status: it compiles in Workbench 1.9 and its dry run works; a real run hasn't been tried.
-//! What only a real run can show is marked VERIFY.
+//! Status: compiled and run on Workbench 1.9 (Arland): every prefab with a base was made, the slots,
+//! faction variants and loadouts were added, and a second run changes nothing. Known issue: it may
+//! place the game mode as a plain entity instead of the prefab (see docs/WORKBENCH_SETUP.md).
 //! Each call sits in a small helper in RZ_WB below, so fixing one is one edit. Expect a round of fixes the first time; use the
 //! dry run first, and fall back to the checklist (or docs/WORKBENCH_SETUP.md) if it fails.
 
@@ -211,11 +212,16 @@ class RZ_WBSearch
 //! Every Workbench editor call, one small helper each. If an API name is wrong, fix it here.
 class RZ_WB
 {
-	// Editor names used in prefab and world data. VERIFY: each name against a vanilla .et/.conf.
+	// Editor names used in prefab and world data, as vanilla .et/.conf files spell them (1.9).
 	static const string ACTIONS_MANAGER = "ActionsManagerComponent";
 	static const string ACTION_CONTEXTS = "ActionContexts";
 	static const string ACTION_CONTEXT_CLASS = "UserActionContext";
 	static const string CONTEXT_NAME = "ContextName";
+	static const string CONTEXT_POSITION = "Position";
+	static const string CONTEXT_RADIUS = "Radius";
+	static const string CONTEXT_OMNI = "Omnidirectional";
+	static const string POINT_INFO_CLASS = "PointInfo";
+	static const string POINT_OFFSET = "Offset";
 	static const string ADDITIONAL_ACTIONS = "additionalActions";
 	static const string PARENT_CONTEXTS = "ParentContextList";
 	static const string UI_INFO = "UIInfo";
@@ -257,7 +263,7 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: FileIO.MakeDirectory works on absolute paths and on existing folders
+	// FileIO.MakeDirectory works on absolute paths and on existing folders (1.9)
 	static void MakeFolders(string absFile)
 	{
 		array<string> bits = {};
@@ -360,8 +366,8 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: CreateEntityTemplate(src, absolute .et path) saves a new prefab that inherits from
-	// the entity's prefab and writes its .meta (GUID)
+	// CreateEntityTemplate(src, absolute .et path) saves a new prefab that inherits from the entity's
+	// prefab and writes its .meta (GUID)
 	static bool SaveAsPrefab(WorldEditorAPI api, IEntitySource src, string absPath)
 	{
 		return api.CreateEntityTemplate(src, absPath);
@@ -489,7 +495,7 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: BaseContainer.Get(key, string) reads a string, ResourceName, number or colour as text
+	// BaseContainer.Get(key, string) reads a string, ResourceName, number or colour as text
 	static string GetText(BaseContainer container, string key)
 	{
 		string value;
@@ -499,7 +505,7 @@ class RZ_WB
 	}
 
 	//------------------------------------------------------------------------------------------
-	// VERIFY: BaseContainer.Get(key, array<string>) reads a string or ResourceName array
+	// BaseContainer.Get(key, array<string>) reads a string or ResourceName array
 	static void GetTextArray(BaseContainer container, string key, notnull array<string> items)
 	{
 		if (container)
@@ -794,6 +800,15 @@ class RZ_PrefabBuilder
 			return "";
 		array<ref ContainerIdPathEntry> contextPath = {new ContainerIdPathEntry(manager), new ContainerIdPathEntry(RZ_WB.ACTION_CONTEXTS, 0)};
 		RZ_WB.SetValue(m_Api, src, contextPath, RZ_WB.CONTEXT_NAME, "default");
+		// Without a position and a radius the game never offers the context's actions. Half a metre
+		// up and 1.2 m around suits most props; resize it on big ones (a tent, a wreck) by hand.
+		RZ_WB.SetValue(m_Api, src, contextPath, RZ_WB.CONTEXT_RADIUS, "1.2");
+		RZ_WB.SetValue(m_Api, src, contextPath, RZ_WB.CONTEXT_OMNI, "1");
+		if (RZ_WB.CreateObject(m_Api, src, contextPath, RZ_WB.CONTEXT_POSITION, RZ_WB.POINT_INFO_CLASS))
+		{
+			array<ref ContainerIdPathEntry> pointPath = {new ContainerIdPathEntry(manager), new ContainerIdPathEntry(RZ_WB.ACTION_CONTEXTS, 0), new ContainerIdPathEntry(RZ_WB.CONTEXT_POSITION)};
+			RZ_WB.SetValue(m_Api, src, pointPath, RZ_WB.POINT_OFFSET, "0 0.5 0");
+		}
 		return "default";
 	}
 
@@ -931,9 +946,8 @@ class RZ_PrefabBuilder
 
 	//------------------------------------------------------------------------------------------
 	//! Fills each empty slot of the game mode prefab's RZ_GameModeComponent.
-	// VERIFY: the WorldEditorAPI edits (SetVariableValue, CreateObjectVariableMember) also work on a
-	// prefab's entity source loaded from its file, not only on world entities. If not: place the
-	// prefab, wire the instance the same way, and apply the instance's changes to the prefab by hand.
+	// The WorldEditorAPI edits (SetVariableValue, CreateObjectVariableMember) also work on a prefab's
+	// entity source loaded from its file, not only on world entities (1.9).
 	protected void Wire(ResourceName gmPrefab)
 	{
 		Resource res = RZ_WB.LoadPrefab(gmPrefab);
@@ -1125,9 +1139,9 @@ class RZ_PrefabBuilder
 		}
 
 		if (!hasFactions)
-			m_Report.Manual("Place a vanilla FactionManager prefab in the world, then run the plugin again for the factions");
+			m_Report.Manual("Place RZ_FactionManager.et (Prefabs/MP/Managers/Factions/) in the world, then run the plugin again for the factions");
 		if (!hasLoadouts)
-			m_Report.Manual("Place a vanilla LoadoutManager prefab in the world, then run the plugin again for the loadouts");
+			m_Report.Manual("Place RZ_LoadoutManager.et (Prefabs/MP/Managers/Loadouts/) in the world, then run the plugin again for the loadouts");
 
 		foreach (RZ_MfWorldStep w : m_Manifest.world)
 		{
@@ -1155,8 +1169,8 @@ class RZ_PrefabBuilder
 			return;
 		}
 
-		// VERIFY: the factions are an object array on the FactionManager entity itself (not only in a
-		// referenced .conf); if they live in a .conf, open it and add the variants there by hand.
+		// The factions are an object array on the FactionManager entity itself; if a FactionManager keeps
+		// them in a referenced .conf instead, add the variants there by hand.
 		map<string, int> index = new map<string, int>();
 		int count = RZ_WB.ArrayCount(manager, RZ_WB.FACTIONS_LIST);
 		for (int i = 0; i < count; i++)
@@ -1357,7 +1371,7 @@ class RZ_PrefabBuilder
 			return;
 		}
 
-		// VERIFY: the loadouts are an object array on the LoadoutManager entity (SCR_LoadoutManager)
+		// The loadouts are an object array on the LoadoutManager entity (SCR_LoadoutManager)
 		array<string> have = {};
 		int count = RZ_WB.ArrayCount(manager, RZ_WB.LOADOUT_LIST);
 		for (int i = 0; i < count; i++)

@@ -2,13 +2,15 @@
 //! fixable car per town and a small server-wide cap (about one per three settlements); every
 //! other wreck is just a wreck you can search, strip for one part or siphon.
 //!
-//! A fixable car is data until it runs: where it stands, what it's missing (one or two of
-//! fuel, battery, tyre, spark plugs), whether its keys are in a house in that town and whether
-//! someone hotwired it. Near players it's a prop you can inspect ("Needs: fuel, battery"),
-//! fit parts to, fuel, hotwire (about 20 s, 5 s for a Mechanic, a little noise) and start. On
-//! the first start the prop is swapped for a real vehicle prefab, and from then on it's an
-//! ordinary vehicle: vanilla repair handles damage, vanilla persistence (if the server runs
-//! it) saves it. A new project turns up somewhere else a few hours later.
+//! A fixable car is data until it runs: which car it is, where it stands, what it's missing (one
+//! or two of fuel, battery, tyre, spark plugs), whether its keys are in a house in that town and
+//! whether someone hotwired it. Near players it stands as that car, parked and locked (vanilla's
+//! lock component, so nobody can get in), with the interaction spot just in front of its grille: inspect it
+//! ("Needs: fuel, battery"), fit parts, fuel it, hotwire it (about 20 s, 5 s for a Mechanic, a
+//! little noise) and start it. On the first start the parked copy is swapped for the drivable
+//! car, and from then on it's an ordinary vehicle: vanilla repair handles damage, vanilla
+//! persistence (if the server runs it) saves it. A new project turns up somewhere else a few
+//! hours later. Wrecks are only ever wrecks: they're never fixable.
 //!
 //! A mission car (Car Keys) is a project that already runs: it needs only its keys, which are in
 //! one house the mission names, or hotwiring. It isn't saved, doesn't trigger a replacement,
@@ -29,8 +31,8 @@ class RZ_CarSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Drivable vehicles a fixed car becomes (one at random). Empty = no fixable cars (wrecks still work)", "et")]
 	ref array<ResourceName> m_aCarPrefabs;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The car before it runs: a non-drivable car prop with the generic puzzle object's components. Empty = the interaction spot on the drivable prefab's position (Puzzles > Generic object)", "et")]
-	ResourceName m_sProjectPrefab;
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The same cars parked and locked, in the same order as Car prefabs: what stands there until it's fixed, with the interaction spot at its front. A missing entry shows only the interaction spot", "et")]
+	ref array<ResourceName> m_aParkedPrefabs;
 
 	[Attribute("0.34", desc: "Fixable cars per settlement on the map (about 1 per 3), at most one per town")]
 	float m_fPerSettlement;
@@ -132,6 +134,7 @@ class RZ_CarSave
 	bool hasKeys;
 	bool hotwired;
 	string noun;
+	int car = -1;		// index into Car prefabs; -1 in saves from before it was kept
 }
 
 //------------------------------------------------------------------------------------------------
@@ -158,8 +161,10 @@ class RZ_CarProject
 	int m_iMissionId = -1;	// a mission's car (Car Keys): not saved, not replaced
 	vector m_vKeyHouse;		// its keys are in the house here (mission cars)
 	bool m_bWired;			// started by hotwiring, not with its keys
+	int m_iCar = -1;		// index into Car prefabs (and Parked prefabs)
 
-	IEntity m_Body;
+	IEntity m_Body;			// the interaction spot
+	IEntity m_Car;			// the parked, locked car (none if Parked prefabs has no entry for it)
 	int m_iSpot = -1;
 	ref array<int> m_aInspected = {};
 }
@@ -232,6 +237,7 @@ class RZ_Cars
 			cs.hasKeys = c.m_bHasKeys;
 			cs.hotwired = c.m_bHotwired;
 			cs.noun = c.m_sNoun;
+			cs.car = c.m_iCar;
 			roster.list.Insert(cs);
 		}
 
@@ -272,6 +278,8 @@ class RZ_Cars
 				c.m_bHasKeys = cs.hasKeys;
 				c.m_bHotwired = cs.hotwired;
 				c.m_sNoun = cs.noun;
+				c.m_iCar = cs.car;
+				EnsureCar(c); // a save from before the car was kept: pick one and rename it now, before anything shows its name
 				m_aCars.Insert(c);
 			}
 		}
@@ -356,10 +364,77 @@ class RZ_Cars
 		}
 
 		c.m_bHasKeys = Math.RandomFloat01() < m_Settings.m_fKeysChance;
-		array<string> colours = {"blue", "white", "red", "grey", "green", "rust-brown", "yellow"};
-		array<string> kinds = {"hatchback", "estate", "saloon", "van", "pickup"};
-		c.m_sNoun = string.Format("the %1 %2", colours.GetRandomElement(), kinds.GetRandomElement());
+		EnsureCar(c);
 		return c;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Picks the car a project becomes when it has none (a new one, or a save from before this was
+	//! kept, or a Car prefabs list that got shorter), and names the project after it.
+	protected void EnsureCar(RZ_CarProject c)
+	{
+		if (!m_Settings.m_aCarPrefabs || m_Settings.m_aCarPrefabs.IsEmpty())
+		{
+			c.m_iCar = -1;
+			return;
+		}
+
+		if (c.m_iCar >= 0 && c.m_iCar < m_Settings.m_aCarPrefabs.Count())
+			return;
+
+		c.m_iCar = Math.RandomInt(0, m_Settings.m_aCarPrefabs.Count());
+		c.m_sNoun = NounFor(m_Settings.m_aCarPrefabs[c.m_iCar]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The drivable car this project becomes. Empty without Car prefabs.
+	protected ResourceName CarPrefab(RZ_CarProject c)
+	{
+		EnsureCar(c);
+		if (c.m_iCar < 0)
+			return "";
+
+		return m_Settings.m_aCarPrefabs[c.m_iCar];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The same car parked and locked (the same index in Parked prefabs). Empty if there's none.
+	protected ResourceName ParkedPrefab(RZ_CarProject c)
+	{
+		EnsureCar(c);
+		if (c.m_iCar < 0 || !m_Settings.m_aParkedPrefabs || c.m_iCar >= m_Settings.m_aParkedPrefabs.Count())
+			return "";
+
+		return m_Settings.m_aParkedPrefabs[c.m_iCar];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "the beige saloon", from the car prefab's file name (S105, V2101, T601 and UAZ are known).
+	static string NounFor(ResourceName prefab)
+	{
+		string fileName = prefab;
+		fileName.ToLower();
+		int slash = fileName.LastIndexOf("/");
+		if (slash >= 0)
+			fileName = fileName.Substring(slash + 1, fileName.Length() - slash - 1);
+
+		string kind = "car";
+		if (fileName.Contains("s105") || fileName.Contains("v2101"))
+			kind = "saloon";
+		else if (fileName.Contains("t601"))
+			kind = "two-door";
+		else if (fileName.Contains("uaz"))
+			kind = "jeep";
+
+		array<string> keys = {"darkblue", "lightblue", "beige", "white", "red", "green", "blue", "grey", "gray", "yellow", "black", "brown", "orange"};
+		array<string> words = {"dark blue", "light blue", "beige", "white", "red", "green", "blue", "grey", "grey", "yellow", "black", "brown", "orange"};
+		foreach (int i, string key : keys)
+		{
+			if (fileName.Contains(key))
+				return string.Format("the %1 %2", words[i], kind);
+		}
+
+		return "the " + kind;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -415,22 +490,29 @@ class RZ_Cars
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The car as it will be, parked and locked (nobody can get in), with the interaction spot that
+	//! carries its actions just in front of its grille. Without a parked prefab, only the spot, on the ground.
 	protected void Show(RZ_CarProject c)
 	{
-		ResourceName prefab = m_Settings.m_sProjectPrefab;
-		if (prefab.IsEmpty())
-			prefab = m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.OBJECT);
-
+		EnsureCar(c); // before the spot takes its name
 		c.m_iSpot = m_Hub.AddSpot(RZ_Interactions.KIND_CAR, c.m_vPos, "car", c.m_sNoun, c.m_iId, -1);
 		if (c.m_iSpot < 0)
 			return;
 
-		c.m_Body = RZ_Util.SpawnPrefab(prefab, c.m_vPos, c.m_fYaw);
+		vector spotPos = c.m_vPos;
+		ResourceName parked = ParkedPrefab(c);
+		if (!parked.IsEmpty())
+		{
+			c.m_Car = RZ_Util.SpawnPrefab(parked, c.m_vPos + Vector(0, 0.3, 0), c.m_fYaw);
+			if (c.m_Car)
+				spotPos = RZ_Util.FrontOf(c.m_Car, 0.8, -0.35); // just in front of the grille, where nothing of the car blocks a look at it
+		}
+
+		c.m_Body = RZ_Util.SpawnPrefab(m_Hub.GetSpotPrefab(), spotPos, c.m_fYaw);
 		RZ_Spot s = m_Hub.FindSpot(c.m_iSpot);
 		if (!c.m_Body || !s)
 		{
-			m_Hub.RemoveSpot(c.m_iSpot);
-			c.m_iSpot = -1;
+			Hide(c);
 			return;
 		}
 
@@ -443,7 +525,11 @@ class RZ_Cars
 		if (c.m_Body)
 			RZ_Util.DeleteUnit(c.m_Body);
 
+		if (c.m_Car)
+			RZ_Util.DeleteUnit(c.m_Car);
+
 		c.m_Body = null;
+		c.m_Car = null;
 		RZ_Spot s = m_Hub.FindSpot(c.m_iSpot);
 		if (s)
 			s.m_Body = null;
@@ -665,7 +751,7 @@ class RZ_Cars
 			return;
 		}
 
-		ResourceName prefab = m_Settings.m_aCarPrefabs.GetRandomElement();
+		ResourceName prefab = CarPrefab(c);
 		vector pos = c.m_vPos;
 		float yaw = c.m_fYaw;
 		string logLine = string.Format("Cars: %1 in %2 fixed by player %3.", c.m_sNoun, TownName(c), playerId);

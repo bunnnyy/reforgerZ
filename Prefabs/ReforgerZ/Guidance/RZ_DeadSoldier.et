@@ -1,0 +1,32 @@
+GenericEntity : "{963ACA78581E4E7B}Prefabs/Props/S2/S2_Body/S2_Body.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RZ_ClueComponent "{6AD67DC2A86B5AD8}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A86B446A}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A86B4274}" {
+     ContextName "default"
+     Position PointInfo "{E1C7FDE152895CE2}" {
+      Offset 0 0.2 0
+     }
+     Radius 1.1
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A86B4E0D}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A86B4D5E}" {
+      Name "Read"
+     }
+    }
+   }
+  }
+  RplComponent "{6AD67DC2A86B469A}" {
+  }
+ }
+ coords 0 0 0
+}

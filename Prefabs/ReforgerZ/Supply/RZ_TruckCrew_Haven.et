@@ -1,0 +1,8 @@
+SCR_AIGroup : "{6E725D44CA973C24}Prefabs/Groups/INDFOR/Group_FIA_SentryTeam.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_faction "SURV"
+ m_aUnitPrefabSlots {
+  "{11EB9A0D2A5899EA}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_DenimJacket_1.et" "{9503CB9B3463BA1E}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_AC.et"
+ }
+}

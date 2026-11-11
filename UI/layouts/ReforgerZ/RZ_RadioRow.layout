@@ -1,0 +1,149 @@
+OverlayWidgetClass "{79F7F2B28A452A0A}" {
+ Name "RadioRow"
+ Slot LayoutSlot "{87A4335E47237F09}" {
+  HorizontalAlign 3
+  VerticalAlign 0
+ }
+ {
+  ImageWidgetClass "{8D4EB4C67F75469B}" {
+   Name "RowAccent"
+   Slot OverlayWidgetSlot "{73E51B1ACE7BD2D6}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Opacity 0.06
+   Color 1 1 1 1
+   Size 1 1
+  }
+  ImageWidgetClass "{D0D19E09C0F3E094}" {
+   Name "RowRule"
+   Slot OverlayWidgetSlot "{5CD6DE98764CCF35}" {
+    HorizontalAlign 3
+    VerticalAlign 2
+   }
+   Color 1 1 1 0.05
+   Size 1 1
+  }
+  HorizontalLayoutWidgetClass "{89E53E0408A21E94}" {
+   Name "RowLine"
+   Slot OverlayWidgetSlot "{7F5A78CE12118B74}" {
+    HorizontalAlign 3
+    VerticalAlign 0
+    Padding 26 14 14 14
+   }
+   {
+    SizeLayoutWidgetClass "{CFC160377E3C3DEC}" {
+     Name "RowTimeBox"
+     Slot LayoutSlot "{8166269E4EFA4FAE}" {
+      HorizontalAlign 0
+      VerticalAlign 0
+      Padding 0 0 14 0
+     }
+     AllowWidthOverride 1
+     WidthOverride 74
+     {
+      TextWidgetClass "{9AA63E63F829AC21}" {
+       Name "RowTime"
+       Slot AlignableSlot "{90238C9A06D45F1E}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 0 3 0 0
+       }
+       Color 0.431 0.416 0.376 1
+       Text "19:42"
+       "Font Size" 14
+       "Min Font Size" 14
+       FontProperties FontProperties "{AA0F5CBDE18CB9C1}" {
+        Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+       }
+      }
+     }
+    }
+    ImageWidgetClass "{9AC2135557FC4B73}" {
+     Name "RowIcon"
+     Slot LayoutSlot "{4A96D263F5E24A61}" {
+      HorizontalAlign 0
+      VerticalAlign 0
+      Padding 0 0 14 0
+     }
+     Color 0.639 0.62 0.565 1
+     Size 30 30
+    }
+    SizeLayoutWidgetClass "{B7D4C7FDD0C8F1C7}" {
+     Name "RowTextColumn"
+     Slot LayoutSlot "{2E8C003CB29ED153}" {
+      HorizontalAlign 0
+      VerticalAlign 0
+     }
+     AllowWidthOverride 1
+     WidthOverride 1110
+     {
+      VerticalLayoutWidgetClass "{12D6AD9FF9D9DC01}" {
+       Name "RowBody"
+       Slot AlignableSlot "{A8BD424DFFE0695D}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+       }
+       {
+        HorizontalLayoutWidgetClass "{546136C70C89BD24}" {
+         Name "RowHead"
+         Slot LayoutSlot "{9F689BA5CE8638B3}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         {
+          TextWidgetClass "{7EB6B5C794033D54}" {
+           Name "RowChannel"
+           Slot LayoutSlot "{D3F5CBE7871CC2BE}" {
+            HorizontalAlign 0
+            VerticalAlign 2
+           }
+           Color 0.639 0.62 0.565 1
+           Text "OPEN CHANNEL - HAVEN"
+           "Font Size" 12
+           "Min Font Size" 12
+           FontProperties FontProperties "{F33E2E492892D8F1}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{863D56749A27257F}" {
+           Name "RowSpeaker"
+           Slot LayoutSlot "{C85450E09B3A494D}" {
+            HorizontalAlign 0
+            VerticalAlign 2
+            Padding 10 0 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Text "Ines Calder, council head in Morton"
+           "Font Size" 14
+           "Min Font Size" 14
+           FontProperties FontProperties "{1D94A224F8C3232C}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+         }
+        }
+        TextWidgetClass "{4F120C64B005DAAA}" {
+         Name "RowText"
+         Slot LayoutSlot "{FF6AAE2EEE7D8477}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+          Padding 0 4 0 0
+         }
+         Color 0.867 0.839 0.761 1
+         Text "If you can hear this, Morton is open. Bring water if you can."
+         "Font Size" 17
+         "Min Font Size" 17
+         Wrap 1
+         FontProperties FontProperties "{8A3224D9441D44B4}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

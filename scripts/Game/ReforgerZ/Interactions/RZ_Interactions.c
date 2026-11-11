@@ -1068,6 +1068,13 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The interaction spot prefab (else the generic puzzle object), for systems that place their own.
+	ResourceName GetSpotPrefab()
+	{
+		return SpotPrefab();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void UpdateSpots(array<IEntity> players)
 	{
 		for (int i = m_aSpots.Count() - 1; i >= 0; i--)

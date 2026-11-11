@@ -1,0 +1,31 @@
+GenericEntity : "{9B5FF7EECAD376FA}Prefabs/Weapons/Warheads/Warhead_Base.et" {
+ ID "9D9BE68EA2672F76"
+ components {
+  SignalsManagerComponent "{C572A75F88B55309}" {
+   Enabled 1
+  }
+  SoundComponent "{D092A75ECEFAE456}" {
+   Enabled 1
+   Filenames {
+    "{939A3AA380BB73CE}Sounds/Environment/Misc/Shots/Environment_Rifles_M16A2_Shot.acp"
+   }
+  }
+  TimerTriggerComponent "{55129E81CBAA1390}" {
+   PROJECTILE_EFFECTS {
+    SpawnParticleEffect "{86BEA5539F804A11}" {
+     UseFrameEvent 1
+     ParticleEffect "{2647741E60BE9355}Particles/Enviroment/Hit_dirt_enter_01.ptc"
+     SoundEvent "SOUND_SHOT"
+    }
+   }
+   TIMER 0.05
+  }
+  HitEffectComponent "{9D9BE68D6F65A10F}" {
+   ParticleEffect "{2647741E60BE9355}Particles/Enviroment/Hit_dirt_enter_01.ptc"
+  }
+  RplComponent "{FCF2C1014B746B80}" {
+   Enabled 1
+  }
+ }
+ coords 0 0 0
+}

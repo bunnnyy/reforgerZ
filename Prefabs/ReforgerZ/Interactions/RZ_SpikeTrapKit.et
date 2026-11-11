@@ -1,0 +1,21 @@
+GenericEntity : "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et" {
+ ID "2829E729DF7DE6D1"
+ components {
+  RZ_PlaceableComponent "{6AD67DC2A80BBD22}" {
+   m_eKind SPIKES
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    RZ_PlaceAction "{6AD67DC2A80BA7CE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A80BA3DC}" {
+      Name "Set the spike trap"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

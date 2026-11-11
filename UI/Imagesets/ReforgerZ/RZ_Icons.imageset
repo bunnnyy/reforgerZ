@@ -1,0 +1,371 @@
+ImageSetClass {
+ RefSize 1024 1024
+ Textures {
+  ImageSetTextureClass {
+   mpix 1
+   path "{4F5135BB88715DEC}UI/Textures/ReforgerZ/RZ_Icons.edds"
+  }
+ }
+ Images {
+  ImageSetDefClass faction_bastion {
+   Name "faction_bastion"
+   Pos 0 0
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass faction_halcyon {
+   Name "faction_halcyon"
+   Pos 128 0
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass faction_haven {
+   Name "faction_haven"
+   Pos 256 0
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass faction_infected {
+   Name "faction_infected"
+   Pos 384 0
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass faction_redhand {
+   Name "faction_redhand"
+   Pos 512 0
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_antidote {
+   Name "item_antidote"
+   Pos 640 0
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_bandage {
+   Name "item_bandage"
+   Pos 768 0
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_battery {
+   Name "item_battery"
+   Pos 896 0
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_fuelcan {
+   Name "item_fuelcan"
+   Pos 0 128
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_jewellery {
+   Name "item_jewellery"
+   Pos 128 128
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_key {
+   Name "item_key"
+   Pos 256 128
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_med {
+   Name "item_med"
+   Pos 384 128
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_molotov {
+   Name "item_molotov"
+   Pos 512 128
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_noisemaker {
+   Name "item_noisemaker"
+   Pos 640 128
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_planks {
+   Name "item_planks"
+   Pos 768 128
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_radio {
+   Name "item_radio"
+   Pos 896 128
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_sample {
+   Name "item_sample"
+   Pos 0 256
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_sparkplugs {
+   Name "item_sparkplugs"
+   Pos 128 256
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_spiketrap {
+   Name "item_spiketrap"
+   Pos 256 256
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_stabiliser {
+   Name "item_stabiliser"
+   Pos 384 256
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_tablets {
+   Name "item_tablets"
+   Pos 512 256
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_tripwire {
+   Name "item_tripwire"
+   Pos 640 256
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass item_tyre {
+   Name "item_tyre"
+   Pos 768 256
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_checkpoint {
+   Name "marker_checkpoint"
+   Pos 896 256
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_event {
+   Name "marker_event"
+   Pos 0 384
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_lab {
+   Name "marker_lab"
+   Pos 128 384
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_outpost {
+   Name "marker_outpost"
+   Pos 256 384
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_power {
+   Name "marker_power"
+   Pos 384 384
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_quartermaster {
+   Name "marker_quartermaster"
+   Pos 512 384
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_radio {
+   Name "marker_radio"
+   Pos 640 384
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_safehouse {
+   Name "marker_safehouse"
+   Pos 768 384
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_stronghold {
+   Name "marker_stronghold"
+   Pos 896 384
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass mission_arc {
+   Name "mission_arc"
+   Pos 0 512
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass mission_contract {
+   Name "mission_contract"
+   Pos 128 512
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass mission_event {
+   Name "mission_event"
+   Pos 256 512
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass mission_leader {
+   Name "mission_leader"
+   Pos 384 512
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass mission_perimeter {
+   Name "mission_perimeter"
+   Pos 512 512
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass mission_puzzle {
+   Name "mission_puzzle"
+   Pos 640 512
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass mission_unarmed {
+   Name "mission_unarmed"
+   Pos 768 512
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_bitten {
+   Name "status_bitten"
+   Pos 896 512
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_broadcast {
+   Name "status_broadcast"
+   Pos 0 640
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_door_forced {
+   Name "status_door_forced"
+   Pos 128 640
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_door_locked {
+   Name "status_door_locked"
+   Pos 256 640
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_door_unlocked {
+   Name "status_door_unlocked"
+   Pos 384 640
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_fever {
+   Name "status_fever"
+   Pos 512 640
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_final {
+   Name "status_final"
+   Pos 640 640
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_golden {
+   Name "status_golden"
+   Pos 768 640
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_noise {
+   Name "status_noise"
+   Pos 896 640
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_radio_open {
+   Name "status_radio_open"
+   Pos 0 768
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_secure_radio {
+   Name "status_secure_radio"
+   Pos 128 768
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_shortage {
+   Name "status_shortage"
+   Pos 256 768
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass status_weakness {
+   Name "status_weakness"
+   Pos 384 768
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass tier_champion {
+   Name "tier_champion"
+   Pos 512 768
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass tier_hunted {
+   Name "tier_hunted"
+   Pos 640 768
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass tier_kill_on_sight {
+   Name "tier_kill_on_sight"
+   Pos 768 768
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass tier_known {
+   Name "tier_known"
+   Pos 896 768
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass tier_mixed {
+   Name "tier_mixed"
+   Pos 0 896
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass tier_stranger {
+   Name "tier_stranger"
+   Pos 128 896
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass tier_trusted {
+   Name "tier_trusted"
+   Pos 256 896
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass tier_watched {
+   Name "tier_watched"
+   Pos 384 896
+   Size 128 128
+   Flags 0
+  }
+ }
+}

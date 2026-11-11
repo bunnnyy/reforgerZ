@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ReforgerZ talk</title>
+<link rel="stylesheet" href="common/zone.css">
+<script src="common/zone.js"></script>
+<style>
+  :root {
+    --deep: #0f1113;      /* deeper panel */
+    --spoken: #F4F0E6;    /* bright bone: what people say */
+    --row: #1b1f22;       /* the selected reply */
+    --ring: #6b5222;      /* pad-key rings, Haven */
+    --acc: var(--haven);  /* the speaker's faction */
+  }
+  body { font-family: Inter, 'Segoe UI', sans-serif; }
+  .mono, .callout, .tag, .prompts { font-family: 'JetBrains Mono', Consolas, monospace; }
+
+  /* the game view, dimmed, heavier towards the panel */
+  .worlddim { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(8,10,11,.42) 0%, rgba(8,10,11,.55) 38%, rgba(6,7,8,.82) 100%); }
+
+  /* the talk panel across the bottom */
+  .talk { position: absolute; left: 0; right: 0; bottom: 0; height: 548px; background: var(--deep); border-top: 5px solid var(--acc); box-shadow: 0 -18px 60px rgba(0,0,0,.55); }
+  .inner { position: absolute; left: 240px; right: 240px; top: 38px; bottom: 40px; }
+
+  .who { display: flex; align-items: baseline; gap: 18px; }
+  .who b { font: 700 30px/1 Inter, 'Segoe UI', sans-serif; color: var(--acc); letter-spacing: .01em; }
+  .who span { font: 400 21px/1 Inter, 'Segoe UI', sans-serif; color: var(--dim); }
+
+  .said { margin: 22px 0 0; max-width: 1330px; font: 400 38px/1.5 Inter, 'Segoe UI', sans-serif; color: var(--spoken); }
+
+  .replies { margin-top: 30px; width: 1120px; display: flex; flex-direction: column; gap: 4px; }
+  .r { display: flex; align-items: center; gap: 20px; height: 52px; padding: 0 20px 0 18px; border-left: 5px solid transparent; font: 400 25px/1 Inter, 'Segoe UI', sans-serif; color: var(--bone); }
+  .r .t { flex: 1; }
+  .r.on { background: var(--row); border-left-color: var(--acc); color: var(--spoken); }
+  .r.out { color: var(--dim); }
+  .tag { font: 500 18px/1 'JetBrains Mono', Consolas, monospace; color: var(--dim); letter-spacing: .02em; }
+  .r.on .tag { color: #C9C2AF; }
+
+  /* pad prompts: small rounded keys in the accent colour */
+  .pk { display: inline-flex; align-items: center; justify-content: center; flex: none; min-width: 34px; height: 34px; padding: 0 9px; border: 2px solid var(--ring); border-radius: 17px; color: var(--acc); background: rgba(227,163,59,.06); font: 700 17px/1 'JetBrains Mono', Consolas, monospace; }
+  .r.on .pk.num { border-color: var(--acc); }
+  .r .pk.a { margin-left: 6px; background: var(--acc); border-color: var(--acc); color: #15171a; }
+
+  .prompts { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 34px; padding-top: 18px; border-top: 1px solid #22262a; font: 600 18px/1 'JetBrains Mono', Consolas, monospace; color: var(--dim); letter-spacing: .04em; }
+  .prompts > span { display: inline-flex; align-items: center; gap: 12px; }
+  .prompts .pk { height: 30px; min-width: 30px; font-size: 15px; }
+  .prompts .kb { margin-left: auto; color: var(--faint); font-weight: 500; font-size: 16px; }
+
+  .callout { position: absolute; font: 600 14px/1.3 'JetBrains Mono', Consolas, monospace; color: rgba(242,194,48,.85); letter-spacing: .1em; }
+</style>
+</head>
+<body>
+<canvas class="scene" data-scene="dusk"></canvas>
+<div class="worlddim"></div>
+<div class="layer">
+  <div class="callout" style="left:240px;top:500px">TALK · THE WORLD STAYS IN VIEW, DIMMED ▼</div>
+
+  <div class="talk">
+    <div class="inner">
+      <div class="who"><b>Ines Calder</b><span>The Haven · council head · trusts you</span></div>
+      <p class="said">“You're back. Good. The well in Beauregard has gone quiet, and quiet worries me more than screaming.”</p>
+
+      <div class="replies">
+        <div class="r on"><span class="pk num">1</span><span class="t">What's wrong with the well?</span><span class="tag">a job · Favor</span><span class="pk a">A</span></div>
+        <div class="r"><span class="pk num">2</span><span class="t">Heard anything on the road?</span><span class="tag">news</span></div>
+        <div class="r"><span class="pk num">3</span><span class="t">What do you make of me?</span></div>
+        <div class="r"><span class="pk num">4</span><span class="t">Let's see the stores.</span><span class="tag">trade</span></div>
+        <div class="r out"><span class="pk num">5</span><span class="t">I'll be going.</span></div>
+      </div>
+
+      <div class="prompts">
+        <span><span class="pk">D-pad</span>Choose</span>
+        <span><span class="pk">A</span>Say it</span>
+        <span><span class="pk">B</span>Leave</span>
+        <span class="kb">Keys 1–5 pick a reply · Esc leaves</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout" style="left:1400px;top:672px;width:300px">◀ SELECTED: LIGHTER ROW, AMBER BAR. THE LAST REPLY IS ALWAYS A WAY OUT</div>
+</div>
+</body>
+</html>

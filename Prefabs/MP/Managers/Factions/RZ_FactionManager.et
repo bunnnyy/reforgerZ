@@ -1,0 +1,248 @@
+SCR_FactionManager : "{A242612865F2A48E}Prefabs/MP/Managers/Factions/FactionManager_Base.et" {
+ ID "56B2B4776E6E4499"
+ Factions {
+  SCR_Faction "{4DEB8C551D78EF23}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 1
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{E5C0D8163E2B287D}" : "{5EB46557DF2AA24F}Configs/Factions/US.conf" {
+   FactionKey "MIL"
+   FactionColor 0.604 0.639 0.369 1
+   UIInfo SCR_FactionUIInfo "{528C961236B7DCD3}" {
+    Name "Task Force Bastion"
+    m_sNameUpper "TASK FORCE BASTION"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "SURV" "INST"
+   }
+  }
+  SCR_Faction "{F2C37C1CC2C7B516}" : "{8053DB656DD18B14}Configs/Factions/FIA.conf" {
+   FactionKey "BAND"
+   FactionColor 0.784 0.208 0.169 1
+   UIInfo SCR_FactionUIInfo "{5570936866E0AD08}" {
+    Name "The Red Hand"
+    m_sNameUpper "THE RED HAND"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "SURV"
+   }
+  }
+  SCR_Faction "{0994CC0E5732D93B}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "INST"
+   FactionColor 0.310 0.722 0.690 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "Halcyon"
+    m_sNameUpper "HALCYON"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "SURV" "MIL"
+   }
+  }
+  SCR_Faction "{E9C67850105FD476}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H1"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{7E6D7B1DD8AACEB1}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H2"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{497B2EAF941026A0}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H3"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{8B5AC15374F34F0E}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H4"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{268241D2FB8B7E75}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H5"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{3A66F08B72BFA0FB}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H6"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{BF32D34F119C9046}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H7"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{127B8BDA7C2090CE}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H8"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{8D039FB901C68F87}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H9"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{218C2E648CD9AC25}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H10"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{326A473DB3E1D39E}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H11"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{B925FD52DB0A027C}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H12"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{08E477B69BBA6BC3}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H13"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{C2B6FBFA7C9EEB0E}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H14"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{000661400BEEFCAE}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_H15"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    "MIL" "BAND" "INST"
+   }
+  }
+  SCR_Faction "{E0A4C33D6EB2EB76}" : "{3FA20B01D950D31F}Configs/Factions/CIV.conf" {
+   FactionKey "SURV_OUTLAW"
+   FactionColor 0.890 0.639 0.231 1
+   UIInfo SCR_FactionUIInfo "{56B49118D8D0A9C5}" {
+    Name "The Haven"
+    m_sNameUpper "THE HAVEN"
+   }
+   m_bIsPlayable 0
+   m_aFriendlyFactionsIds {
+    
+   }
+  }
+  SCR_Faction "{622120A5448725E3}" : "{297E7D166247105C}622120A5448725E3/Configs/BaconZ_Faction.conf" {
+   m_bIsPlayable 0
+  }
+ }
+}

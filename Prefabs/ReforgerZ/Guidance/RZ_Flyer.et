@@ -1,0 +1,33 @@
+GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  RZ_ClueComponent "{6AD67DC2A8745D50}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A874586A}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A87459DA}" {
+     ContextName "default"
+     Position PointInfo "{EA179C12DA3F8E1F}" {
+      Offset 0 0 0
+     }
+     Radius 0.8
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A87447BD}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A874455E}" {
+      Name "Read"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,151 @@
+SCR_ChimeraCharacter : "{4E29194BA809DF32}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_AC_Medic.et" {
+ ID "520EC961A090B1EE"
+ components {
+  SCR_CharacterFactionAffiliationComponent "{555C98D1CD949F3E}" {
+   "faction affiliation" "INST"
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    m_sFaction "INST"
+   }
+  }
+  SCR_CharacterDamageManagerComponent "{55872AD7B4E959F2}" {
+   EnableDamage 0
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00E}" {
+     PrefabsToSpawn {
+      "{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et" "{983B57B8E95C1F52}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded_FIA.et" "{C3F1FA1E2EC2B345}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_USSR_01.et" "{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et" "{8B853CDD11BA916E}Prefabs/Weapons/Magazines/Magazine_9x18_PM_8rnd_Ball.et" "{8B853CDD11BA916E}Prefabs/Weapons/Magazines/Magazine_9x18_PM_8rnd_Ball.et"
+     }
+    }
+   }
+  }
+  RZ_QuartermasterComponent "{6AD67DC2A29B9DE0}" {
+   m_eFaction INSTITUTE
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   additionalActions {
+    RZ_StandingStatusAction "{6AD67DC2A29F84B1}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A293EFCB}" {
+      Name "My standing"
+     }
+    }
+    RZ_LeaderAction "{6AD67DC2A297202E}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A28B509E}" {
+      Name "Talk"
+     }
+     m_eKind TALK
+    }
+    RZ_LeaderAction "{6AD67DC2A28EF92C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A282518E}" {
+      Name "Ask for work"
+     }
+     m_eKind WORK
+    }
+    RZ_LeaderAction "{6AD67DC2A2B9FF47}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2BD6AEB}" {
+      Name "Ask for news"
+     }
+     m_eKind NEWS
+    }
+    RZ_LeaderAction "{6AD67DC2A2B0800E}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2B4E502}" {
+      Name "Ask about standing"
+     }
+     m_eKind STANDING
+    }
+    RZ_TrialDoseAction "{6AD67DC2A2AB81AD}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2AFE270}" {
+      Name "Ask for the trial dose"
+     }
+    }
+    RZ_FactionShopAction "{6AD67DC2A2A33FB0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2A48932}" {
+      Name "Buy"
+     }
+     m_eFaction INSTITUTE
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 60
+     m_sItemPrefab "{1CC82FE4BD6FBC0F}Prefabs/ReforgerZ/Cure/RZ_Antidote.et"
+     m_sDisplayName "Antidote"
+    }
+    RZ_FactionShopAction "{6AD67DC2A353B37C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A3570520}" {
+      Name "Buy"
+     }
+     m_eFaction INSTITUTE
+     m_eRequiredTier KNOWN
+     m_iFavorCost 40
+     m_sItemPrefab "{67962F1550AA055F}Prefabs/ReforgerZ/Cure/RZ_Stabiliser.et"
+     m_sDisplayName "Stabiliser"
+    }
+    RZ_FactionShopAction "{A37562352F9CC0BB}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7D35765C44D830B0}" {
+      Name "Buy"
+     }
+     m_eFaction INSTITUTE
+     m_eRequiredTier KNOWN
+     m_iFavorCost 6
+     m_sItemPrefab "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
+     m_sDisplayName "Painkillers"
+    }
+    RZ_FactionServiceAction "{6AD67DC2A3425409}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A347A973}" {
+      Name "Medic"
+     }
+     m_eService MEDIC
+    }
+    RZ_FactionServiceAction "{6AD67DC2A37DB453}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A371DC20}" {
+      Name "Immunity booster"
+     }
+     m_eService BOOSTER
+    }
+    RZ_FactionServiceAction "{6AD67DC2A3774D0C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A368AC02}" {
+      Name "Make amends"
+     }
+     m_eService AMENDS
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

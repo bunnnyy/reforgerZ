@@ -1,0 +1,106 @@
+StaticModelEntity : "{2D9FE00A724CD81B}Prefabs/Structures/Infrastructure/Sewage/ManholeCover_E_01/ManholeCover_E_01.et" {
+ ID "5498A197BD32DBFD"
+ components {
+  RZ_ClueComponent "{6AD67DC2A1FDD73C}" {
+  }
+  RZ_PuzzleObjectComponent "{6AD67DC2A1FD4EC7}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A1FDD234}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A1FDD00B}" {
+     ContextName "default"
+     Position PointInfo "{ED744F95B1C6CBEF}" {
+      Offset 0 0.1 0
+     }
+     Radius 1.2
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A1FDDECE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1FDDD33}" {
+      Name "Read"
+     }
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A1FDDB71}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1FDD9AF}" {
+      Name "Use"
+     }
+     m_iValue 0
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A1FDC4D0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1FDC2F7}" {
+      Name "Use"
+     }
+     m_iValue 1
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A1FDCE04}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1FDCC22}" {
+      Name "Use"
+     }
+     m_iValue 2
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A1FDCB4A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1FDC969}" {
+      Name "Use"
+     }
+     m_iValue 3
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A1FDB471}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1FDB29C}" {
+      Name "Choose"
+     }
+     m_iOption 0
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A1FDBE2A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1FDBC39}" {
+      Name "Choose"
+     }
+     m_iOption 1
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A1FDBB59}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1FDB962}" {
+      Name "Choose"
+     }
+     m_iOption 2
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A1FDA48A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1FDA29C}" {
+      Name "Choose"
+     }
+     m_iOption 3
+    }
+   }
+  }
+  RplComponent "{6AD67DC2A1FDD4D1}" {
+  }
+ }
+ coords 0 0 0
+}

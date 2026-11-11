@@ -1,0 +1,63 @@
+GenericEntity : "{50A68300B537EDFA}Prefabs/Items/Food/ArmyCrackers_Soviet_01.et" {
+ ID "2829E729DF7DE6D1"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5222EB4D07D865FA}" {
+     Name "Expired antibiotics"
+     Description "Two years past the date on the strip. They might buy you ten minutes, or do nothing at all. Expect nausea."
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{958913D988942E3F}" {
+     AnimationInstance "{4FCBEA45CAEBC9C0}anims/workspaces/player/player_main_1h.asi"
+     AnimationIKPose "{3E5C93E85F05C6B5}Assets/Weapons/Grenades/RGD5/anims/anm/p_rgd5_ik.anm"
+     AnimationAttachments {
+      AnimationAttachmentInfo "{11268D844A5D2C43}" {
+       AnimGraph "{25B5CD66792F60F4}Assets/Items/Medicine/Workspaces/MorphineInjection_01.agr"
+       AnimInstance "{B900F61FD4D7F1DA}Assets/Items/Medicine/Workspaces/morphine_injection_player.asi"
+       BindingName "Gadget"
+      }
+     }
+    }
+    CustomAttributes {
+     ItemActionAnimAttributes "{E4DEDEF4F79B6552}" {
+      AnimationGraphTemplate "{DFFC0A34A77ADCB4}anims/workspaces/player/player_main.agr"
+      ActionAnimationCommandName "CMD_HealSelf"
+      ActionAnimDuration 4
+      AllowMovementDuringAction 1
+     }
+     CharacterModifierAttributes "{0A0DD0BC48AB078A}" {
+      SpeedLimit 4
+      ADSSpeedLimit 4
+      SpeedLimitItemPrimaryAction 4
+      SpeedLimitHighready 4
+     }
+    }
+   }
+  }
+  RZ_MedItemComponent "{6AD67DC2A1520631}" {
+   m_eKind ANTIBIOTICS
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    RZ_UseMedAction "{6AD67DC2A1520DE9}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A152F636}" {
+      Name "Take"
+     }
+    }
+   }
+  }
+  SCR_ConsumableItemComponent "{30A3AA940FB7F4FE}" {
+   m_eAnimVariable ADRIANOV
+   m_eUseMask 7
+   m_ConsumableEffect RZ_ConsumableMed "{80497A0B3DFBB4AA}" {
+    m_bDeleteOnUse 1
+    m_bAllowInventoryUseWithoutHitZone 1
+    m_eKind ANTIBIOTICS
+   }
+  }
+ }
+ coords 0 0 0
+}

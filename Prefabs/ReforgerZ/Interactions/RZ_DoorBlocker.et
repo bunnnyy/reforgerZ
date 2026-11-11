@@ -1,0 +1,19 @@
+GenericEntity {
+ ID "8E8F9E9AE5056867"
+ components {
+  RigidBody "{FDD5CA8E0D7795E9}" {
+   ResponseIndex "Normal"
+   Geometries {
+    PhysicsBoxGeometry DoorBlocker {
+     LayerPreset "Building"
+     Extents 1.3 2.3 0.1
+    }
+   }
+   Static 1
+  }
+  RplComponent "{481D64A21CC3C0A0}" {
+   Enabled 1
+  }
+ }
+ coords 0 0 0
+}

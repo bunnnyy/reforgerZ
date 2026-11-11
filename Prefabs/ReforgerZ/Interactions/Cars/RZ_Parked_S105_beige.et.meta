@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{869E3CA0810F56BD}Prefabs/ReforgerZ/Interactions/Cars/RZ_Parked_S105_beige.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,70 @@
+SCR_LoadoutManager : "{AA4E7419A1FF65B0}Prefabs/MP/Managers/Loadouts/LoadoutManager_Base.et" {
+ ID "56B2B47708C4F23A"
+ m_aPlayerLoadouts {
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8F62E5}" {
+   m_sLoadoutName "Nurse"
+   m_sLoadoutResource "{0C6E5FC014460C41}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_Nurse.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8F390E}" {
+   m_sLoadoutName "Mechanic"
+   m_sLoadoutResource "{E12B3691332FE3D3}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_Mechanic.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8F10EA}" {
+   m_sLoadoutName "Hunter"
+   m_sLoadoutResource "{C9B1D4FF67BCB5A9}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_Hunter.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8F080E}" {
+   m_sLoadoutName "Police Officer"
+   m_sLoadoutResource "{810C66536D590986}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_PoliceOfficer.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8FE37B}" {
+   m_sLoadoutName "Ex-Con"
+   m_sLoadoutResource "{9FDB548ABABC74CC}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_ExCon.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8FDB8A}" {
+   m_sLoadoutName "Lab Technician"
+   m_sLoadoutResource "{9FAF5D0EBB1E1ACC}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_LabTechnician.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8FB3E6}" {
+   m_sLoadoutName "Radio Operator"
+   m_sLoadoutResource "{0FC98298A3201C11}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_RadioOperator.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8FA94B}" {
+   m_sLoadoutName "Unemployed"
+   m_sLoadoutResource "{8DE224DA827319E0}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_Unemployed.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8F8E25}" {
+   m_sLoadoutName "Soldier"
+   m_sLoadoutResource "{EB7717AFF5622836}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_Soldier.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8E6751}" {
+   m_sLoadoutName "Doctor"
+   m_sLoadoutResource "{CC244F583B636298}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_Doctor.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8E5D3D}" {
+   m_sLoadoutName "Raider"
+   m_sLoadoutResource "{EF2BE8CA851C9649}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_Raider.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8E3374}" {
+   m_sLoadoutName "Elder"
+   m_sLoadoutResource "{CC3AA145C360888B}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_Elder.et"
+   m_sAffiliatedFaction "SURV"
+  }
+  SCR_FactionPlayerLoadout "{6AD67DC2BC8E14A7}" {
+   m_sLoadoutName "Drifter"
+   m_sLoadoutResource "{C37F639C1D13D9A1}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_Drifter.et"
+   m_sAffiliatedFaction "SURV"
+  }
+ }
+}

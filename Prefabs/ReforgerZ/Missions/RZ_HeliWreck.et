@@ -1,0 +1,32 @@
+GenericEntity : "{E98385D7F126474C}Prefabs/Props/Wrecks/UH1H_wreck/UH1H_wreck_02_static.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RZ_ClueComponent "{6AD67DC2A128407E}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A1284A82}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A128485D}" {
+     ContextName "default"
+     Position PointInfo "{CF4E4A5DCFD05C33}" {
+      Offset 0 1 0
+     }
+     Radius 3.5
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A1283724}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A12835EB}" {
+      Name "Read"
+     }
+    }
+   }
+  }
+  RplComponent "{6AD67DC2A1284D0D}" {
+  }
+ }
+ coords 0 0 0
+}

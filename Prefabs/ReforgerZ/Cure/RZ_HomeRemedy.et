@@ -1,0 +1,63 @@
+GenericEntity : "{C98FCC6CA6C56069}Prefabs/Items/Medicine/AspirinBottle.et" {
+ ID "3472273B5965FE24"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5222EB4D07D865FA}" {
+     Name "Home remedy"
+     Description "Alcohol and herbs, boiled down on a stove. It buys you five minutes and leaves you drunk."
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{0387ED5FE870CD25}" {
+     AnimationInstance "{4FCBEA45CAEBC9C0}anims/workspaces/player/player_main_1h.asi"
+     AnimationIKPose "{3E5C93E85F05C6B5}Assets/Weapons/Grenades/RGD5/anims/anm/p_rgd5_ik.anm"
+     AnimationAttachments {
+      AnimationAttachmentInfo "{C16F564AB9FEF0F7}" {
+       AnimGraph "{25B5CD66792F60F4}Assets/Items/Medicine/Workspaces/MorphineInjection_01.agr"
+       AnimInstance "{B900F61FD4D7F1DA}Assets/Items/Medicine/Workspaces/morphine_injection_player.asi"
+       BindingName "Gadget"
+      }
+     }
+    }
+    CustomAttributes {
+     ItemActionAnimAttributes "{52B0D41AEC60569C}" {
+      AnimationGraphTemplate "{DFFC0A34A77ADCB4}anims/workspaces/player/player_main.agr"
+      ActionAnimationCommandName "CMD_HealSelf"
+      ActionAnimDuration 4
+      AllowMovementDuringAction 1
+     }
+     CharacterModifierAttributes "{B80E9E388536ADD9}" {
+      SpeedLimit 4
+      ADSSpeedLimit 4
+      SpeedLimitItemPrimaryAction 4
+      SpeedLimitHighready 4
+     }
+    }
+   }
+  }
+  RZ_MedItemComponent "{6AD67DC2A17BD55A}" {
+   m_eKind REMEDY
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    RZ_UseMedAction "{6AD67DC2A17BDC76}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A17BD8F9}" {
+      Name "Take"
+     }
+    }
+   }
+  }
+  SCR_ConsumableItemComponent "{F9CA774FD51939EB}" {
+   m_eAnimVariable ADRIANOV
+   m_eUseMask 7
+   m_ConsumableEffect RZ_ConsumableMed "{09BB63924A72B814}" {
+    m_bDeleteOnUse 1
+    m_bAllowInventoryUseWithoutHitZone 1
+    m_eKind REMEDY
+   }
+  }
+ }
+ coords 0 0 0
+}

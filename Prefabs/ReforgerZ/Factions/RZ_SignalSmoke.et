@@ -1,0 +1,8 @@
+GenericEntity : "{3343A055A83CB30D}Prefabs/Weapons/Grenades/M18/Smoke_M18_Red.et" {
+ ID "51F94178FC806356"
+ components {
+  RZ_FireMissionSmokeComponent "{6AD67DC2A1F4AA4D}" {
+  }
+ }
+ coords 0 0 0
+}

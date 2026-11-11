@@ -3,11 +3,13 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** everything under "Built" is written in Enforce Script (about 112,000 lines) and the
-game scripts **compile cleanly** against Arma Reforger 1.9. It also runs on the server in a test
-world with a fake player, with no script exceptions ([runtime test](WORKBENCH_SETUP.md#runtime-test-without-workbench)).
-It still needs prefabs, the behavioural `VERIFY` checks and a real play-test before it can be called working
-([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)). The Workbench plugin hasn't been compiled.
+**Status:** the systems under "Built" are written in Enforce Script (about 113,000 lines) and the
+game scripts **compile cleanly** against Arma Reforger 1.9. The game mode runs with no script
+exceptions on the server, in a test world with a fake player
+([runtime test](WORKBENCH_SETUP.md#runtime-test-without-workbench)), and in Workbench play on Arland
+with the first Workbench build. Before it can be called working it still needs proper prefabs in
+place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a game client
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
 ## Built
 
@@ -46,19 +48,48 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 | Contracts that give a rough area (a 500 m circle) until you're close; Radio Operators and Trusted players get the spot | [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | Cleanup of loose items (crates, samples, keys, purchases and finds left lying 30 min) | [Loose items](DESIGN.md#loose-items) |
 | Save and load of mode state | [Persistence](DESIGN.md#persistence) |
-| The UI: an original icon set (60 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the standing screen, journal, radio log and map key (keys and mouse), the notice board and hall of fame menus, chat commands (`/note`, `/hall`), a deploy-menu background panel with the loadout's gear and locked loadouts unavailable, and the marker icons on the map, fed per player from the server. Layouts are still to be built in Workbench | [UI.md](UI.md) |
-| Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout), the Workbench plugin **ReforgerZ: Create prefabs** with a dry run and a checklist fallback (it compiles in Workbench and the dry run works), and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
+| The UI: an original icon set (60 icons, SVG and PNG), mockups of every screen, and the scripts for the HUD (infection timer, secure-radio indicator, noise meter, styled notice cards with the vanilla hint as fallback), the standing screen, journal, radio log and map key (keys and mouse), the notice board and hall of fame menus, chat commands (`/note`, `/hall`), a deploy-menu background panel with the loadout's gear and locked loadouts unavailable, and the marker icons on the map, fed per player from the server | [UI.md](UI.md) |
+| Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout, with a vanilla or Workshop prefab for 152 of its entries and the 13 loadouts), the Workbench plugin **ReforgerZ: Create prefabs** (run for real; a second run changes nothing) with a dry run and a checklist fallback, `tools/icon_atlas.py` for the icon atlas and imageset, and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
+| The first Workbench build: 159 prefabs (156 the plugin made from the manifest, many of them on stand-in bases, plus the player controller with the HUD and the faction and loadout managers), the Arland world with the game mode, the four factions and their hidden variants and the 13 background loadouts, its scenario, the 12 UI layouts, the icon atlas and imageset, and the screens and their keys in the menu and input configs. It starts in Workbench play with no script exceptions | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), [UI.md](UI.md) |
 
 ## Next
 
-### Get it running
-- Set up the Workbench project (the game scripts already compile on 1.9).
-- Run **ReforgerZ: Create prefabs** as a dry run, fix what fails until it makes prefabs, then
-  run it for real (or follow the manual checklist). Make the minimum playable subset and the
-  factions, then play a 2-hour session on Arland ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
+### Get it playable
+- **Refine the stand-in prefabs.** Many bases are stand-ins (five items share the aspirin bottle,
+  the molotov is a smoke grenade, the AI groups are vanilla soldier groups), and the drone, the
+  warning shot, the interaction spot and the doorway blocker have no prefab yet
+  ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#4-the-prefab-manifest)).
+- **The manual steps** each run of the plugin lists (54 after the first): the loadouts' gear, the
+  reward crate's loot, shop stock, the consumable effects and the like.
+- **Play it with a game client** on a local server, then a 2-hour session on Arland
+  ([PC_SETUP.md](PC_SETUP.md#6-play-testing)).
 
-### Characters and UI
-- Build the UI layouts and the icon imageset in Workbench ([UI/LAYOUTS.md](../UI/LAYOUTS.md)).
+### UI
+- **The notebook:** one menu with every screen as a tab (Standing, Journal, Radio, Map key, Hall of
+  fame), opened with N, a Notebook button in the pause menu, or a notebook item used from the
+  inventory or in your hands. It replaces K, J, U and O, which clash with vanilla keys. Being
+  designed ([UI.md](UI.md#opening-the-screens)).
+- **Controllers:** check the whole mod with a gamepad and fix what doesn't work
+  ([UI.md](UI.md#controllers)). Planned.
+- **Talking to people:** F, then **Talk**, opens a dialogue screen: what they say, and your replies
+  as a list you pick with the mouse or a pad, instead of a long list of actions on them. Being
+  designed.
+- **Subtitles and the reader:** people's spoken lines as subtitles at the bottom of the screen, away
+  from the notice cards; notes and books open in a paper reader that stops you moving. Being designed.
+- **The car repair screen:** a job card (each job, what you need, the button that does it) beside a
+  rough side view of the car with each job lit where it is. Planned.
+- **The quartermaster's shop screen:** categories as tabs, items with their Favor price and the
+  standing they need, and a details panel with Buy, instead of a long list of actions. Planned.
+
+### World interactions (from play-testing)
+- **Loose loot:** loot lies in houses and you pick it up; no search prompts on furniture or
+  buildings, and keys and mission items are loose too. Being designed.
+- **Bodies** are looted with the vanilla inventory, with no search prompt. Planned.
+- **Burning a building** needs fuel in your hands; a thrown Molotov still does it. Being designed.
+- **Cars** are only ever found, never bought, and are harder to fix. Being built.
+- **The deploy panel and the map's icon layer:** the deploy-menu override that adds the background
+  panel, the map config override with `RZ_MapIconsUI` and the map icon layout (until it's set, the
+  vanilla text markers stay), and textures for the icons the scripts never swap ([UI.md](UI.md)).
 
 ### The cure's finale
 - One finale route per faction, opening at 90% research, that players can follow working for
@@ -79,38 +110,46 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 
 In this order, because later ones depend on earlier ones:
 
-1. **Compile in Workbench** (the game scripts already compile on the server), then the plugin:
-   a dry run, then a real run; note which editor calls needed fixing. Check the `VERIFY`
-   behaviours, riskiest first ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list)).
-2. **Per-player hostility.** A player Hunted by Bastion near a Bastion AI group: does it fire?
+1. **AI in Workbench play.** The first plays had no AI world in the world, so no AI or infected
+   spawned and there was no road network. With Arland's AI world added, `No road network found` is
+   gone. The next two plays crashed in the first frame after the first infected spawned, both at
+   the same address: the world had no perception manager, which every AI needs. The world now has
+   it, with the radio manager, the chat and the item preview manager that vanilla's game-mode
+   worlds also place. Play again and read the log ([PC_SETUP.md](PC_SETUP.md#logs)): do the
+   infected, AI groups and supply trucks spawn, and does it crash again? No road crosses the line
+   on Arland, so it has no road checkpoints; road posts inside the Zone use the same road network.
+2. **With a game client.** It has only run in Workbench play so far. Check the `VERIFY`
+   behaviours, riskiest first ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list));
+   several only show on a dedicated server.
+3. **Per-player hostility.** A player Hunted by Bastion near a Bastion AI group: does it fire?
    Do the deploy menu, chat and groups stay on `SURV`? If AI ignores the variants, switch to Outlaw.
-3. **The core loop on Arland** for 2 hours: zombie density, spread rate, cure pace. Then the
+4. **The core loop on Arland** for 2 hours: zombie density, spread rate, cure pace. Then the
    season's first days: are kills, specials and research per player-hour near the assumptions
    in [Season pacing](DESIGN.md#season-pacing)? Run `tools/pacing_sim.py` with what you saw and
    adjust the Cure pace. Over the first weeks: does the status log's pace by play match how much
    the server plays, and does a small group still feel its deliveries count? Is the lab's backlog
    a fair wait, or does a "come back tomorrow" feel like a wall? Do towns players work in clean up
    too easily over the longer season (Zombies > Kill infection)?
-4. **Supply trucks:** one truck from stronghold to outpost. Is the crew seated, and does it drive?
-5. **Noise:** how far a thrown bottle really leads infected; the favourite-spot rate.
+5. **Supply trucks:** one truck from stronghold to outpost. Is the crew seated, and does it drive?
+6. **Noise:** how far a thrown bottle really leads infected; the favourite-spot rate.
    **Stealth:** does the zombie mod take the perception factor and list players as targets (the
    log line, the VERIFY list)? Is lying low worth it without being a way to skip the infected
    (the checklist's 30/60/100 m test, day and night, against **Stealth** off)?
-6. **Puzzles** one by one, and whether replicated action labels work.
-7. **Searching:** do spots appear in houses? Search rates against town loot; how often a car is fixed.
+7. **Puzzles** one by one, and whether replicated action labels work.
+8. **Searching:** do spots appear in houses? Search rates against town loot; how often a car is fixed.
    **Door locks:** does the hooked door action compile, refuse only from outside, and get inside
    right on several building types? Do door spots stand at the right doors? If hooking fails,
    turn **Door locks** off (the lock goes back on the loot). **Keeping AI out:** does the AI door
    hook compile (else delete it)? Do blockers stand in the doorway, make AI route around a locked
    door after the navmesh rebuild, and cost little server time? Can anyone get trapped?
-8. **The Perimeter** on an island map and a land-locked one. On the island: do the three Perimeter missions put their spots on the shore (the `Perimeter shore:` log line), and is the coast under the drones often enough?
-9. **Safehouses:** upkeep timing, food keywords, the medic and bite declarations.
-   **Bites:** how often hits become bites in real fights (the protective clothing keywords),
-   whether the golden window is long enough to clean a bite mid-fight, whether the stamina hook
-   works (else the stages only make noise), and whether the meds' side effects are worth it.
-10. **Leaders:** loyalty drift and rogue-job discovery rates.
-11. **Guidance:** is anything too chatty for a level-0 player? Do the right speakers say it?
-12. **Story arcs** end to end (start one with `RZ_StoryArcs.Begin(kind)`) and how often they come.
+9. **The Perimeter** on an island map and a land-locked one. On the island: do the three Perimeter missions put their spots on the shore (the `Perimeter shore:` log line), and is the coast under the drones often enough?
+10. **Safehouses:** upkeep timing, food keywords, the medic and bite declarations.
+    **Bites:** how often hits become bites in real fights (the protective clothing keywords),
+    whether the golden window is long enough to clean a bite mid-fight, whether the stamina hook
+    works (else the stages only make noise), and whether the meds' side effects are worth it.
+11. **Leaders:** loyalty drift and rogue-job discovery rates.
+12. **Guidance:** is anything too chatty for a level-0 player? Do the right speakers say it?
+13. **Story arcs** end to end (start one with `RZ_StoryArcs.Begin(kind)`) and how often they come.
     **After the cure:** the line stands down (no drone, no shots, the new loudspeaker line), no
     samples drop, the lab refuses them, no Perimeter or Halcyon jobs appear.
     **Questlines** end to end with **Wait scale** at 0.1 (`RZ_Questlines.Begin(key)`): a restart
@@ -118,17 +157,18 @@ In this order, because later ones depend on earlier ones:
     it lands on Arland and a bigger map, how soon suspicion reaches 30 (hunger and takings), whether
     the guest rule's timing is fair and its fight fires, and whether the writing stays on the right
     side of the line.
-13. **Weather** accessors and the generator's noise.
-14. **Road posts and camps:** do posts go up on real roads ahead of players, and do the search,
+14. **Weather** accessors and the generator's noise.
+15. **Road posts and camps:** do posts go up on real roads ahead of players, and do the search,
     the toll, running and surrender fire at the right distances? Is the timed grudge enough to
     make the crew shoot, and does a surrender's stand-down stop them? Is a Fire Mission's horde
     check too strict or too loose; does the fence take the right things?
-15. **Seasons:** a wipe end to end (backup, fresh start, the winner's rules, the hall of fame
+16. **Seasons:** a wipe end to end (backup, fresh start, the winner's rules, the hall of fame
     kept), and whether the rule sets feel different enough without being unfair. Are rough
     contract areas fun to search, or too vague at 500 m?
-16. **The UI**, once the layouts exist: does the owner-only feed arrive, does the timer agree with
+17. **The UI** with a game client: does the owner-only feed arrive, does the timer agree with
     the stage messages, do the menus open, fill and take clicks, do the map icons sit on their
-    spots while panning and zooming, and does the deploy menu grey out locked loadouts ([UI.md](UI.md)).
+    spots while panning and zooming (once the map layer is set up), and does the deploy menu grey
+    out locked loadouts ([UI.md](UI.md))?
 
 ## Dropped
 

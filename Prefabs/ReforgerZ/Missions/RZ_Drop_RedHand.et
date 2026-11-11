@@ -1,0 +1,32 @@
+GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  ActionsManagerComponent "{6AD67DC2A13E28D6}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A13E17F5}" {
+     ContextName "default"
+     Position PointInfo "{CD3A0C40F083718D}" {
+      Offset 0 0.8 0
+     }
+     Radius 1.1
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ChoiceDeliveryAction "{6AD67DC2A13E1209}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A13E1394}" {
+      Name "Hand in"
+     }
+     m_eFaction BANDITS
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

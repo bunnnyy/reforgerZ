@@ -1,0 +1,173 @@
+SizeLayoutWidgetClass "{CDCA8B79A2AD6D88}" {
+ Name "NoticeCard"
+ Slot LayoutSlot "{48BAA2BCDD7ADED2}" {
+  HorizontalAlign 3
+  VerticalAlign 0
+  Padding 0 0 0 12
+ }
+ AllowWidthOverride 1
+ WidthOverride 460
+ {
+  OverlayWidgetClass "{E59AE0D68B79E5F6}" {
+   Name "CardBox"
+   Slot AlignableSlot "{A88EAADB80BBF38C}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    ImageWidgetClass "{EBD34F2857E5D70F}" {
+     Name "CardBg"
+     Slot OverlayWidgetSlot "{FF224DFCE0F66F5A}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.071 0.078 0.086 0.9
+     Size 1 1
+    }
+    PanelWidgetClass "{7646546690CACEC6}" {
+     Name "CardBorder"
+     Slot OverlayWidgetSlot "{E206E0E4437C455C}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.165 0.18 0.192 1
+     style outline_2px
+    }
+    VerticalLayoutWidgetClass "{36C33DB8C964D84A}" {
+     Name "CardBody"
+     Slot OverlayWidgetSlot "{DCC963547D5B882A}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+      Padding 16 16 16 16
+     }
+     {
+      HorizontalLayoutWidgetClass "{313AD9D9EE56F82E}" {
+       Name "CardHead"
+       Slot LayoutSlot "{4C1E7FEE8EE4A891}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+       }
+       {
+        ImageWidgetClass "{B8C81E0901709CE2}" {
+         Name "CardIcon"
+         Slot LayoutSlot "{234F26A53603FB8E}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 0 0 10 0
+         }
+         Color 0.639 0.62 0.565 1
+         Size 26 26
+        }
+        TextWidgetClass "{BE2ED72836AA0B41}" {
+         Name "CardKind"
+         Slot LayoutSlot "{258BF86F6992C163}" {
+          HorizontalAlign 3
+          VerticalAlign 1
+          Padding 0 0 10 0
+          SizeMode Fill
+          FillWeight 1
+         }
+         Color 0.639 0.62 0.565 1
+         Text "OPEN CHANNEL - HAVEN"
+         "Font Size" 12
+         "Min Font Size" 12
+         FontProperties FontProperties "{681B97E9A25F4AA2}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{FB84578054AB2A1C}" {
+         Name "CardTime"
+         Slot LayoutSlot "{34DB62815C37FD9E}" {
+          HorizontalAlign 2
+          VerticalAlign 1
+         }
+         Color 0.431 0.416 0.376 1
+         Text "19:42"
+         "Font Size" 12
+         "Min Font Size" 12
+         "Horizontal Alignment" Right
+         FontProperties FontProperties "{9D3B8DF1E81BF6B0}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+      TextWidgetClass "{4518E0444F3200F6}" {
+       Name "CardSpeaker"
+       Slot LayoutSlot "{68AAE62EF0CE2E8F}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 0 10 0 4
+       }
+       Color 0.91 0.886 0.816 1
+       Text "Ines Calder, council head in Morton"
+       "Font Size" 17
+       "Min Font Size" 17
+       Wrap 1
+       FontProperties FontProperties "{45D867AD09F1508A}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{4C68730CBC135D2F}" {
+       Name "CardText"
+       Slot LayoutSlot "{672530589522E33B}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+       }
+       Color 0.851 0.824 0.745 1
+       Text "If you can hear this, Morton is open. Bring water if you can. Bring yourself either way."
+       "Font Size" 16
+       "Min Font Size" 16
+       Wrap 1
+       FontProperties FontProperties "{DDF358F1C06D8F56}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+     }
+    }
+    ImageWidgetClass "{39E5EC87B22695AB}" {
+     Name "CardAccent"
+     Slot OverlayWidgetSlot "{DA7F56DC586198F3}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+     }
+     Color 0.639 0.62 0.565 1
+     Size 460 4
+    }
+    ImageWidgetClass "{534630068F58EAC4}" {
+     Name "CardHazard"
+     Slot OverlayWidgetSlot "{32C9C85C14067B9F}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+     }
+     "Is Visible" 0
+     Color 0.949 0.761 0.188 1
+     Size 460 8
+    }
+    SizeLayoutWidgetClass "{1196E9677C2EB697}" {
+     Name "CardLifeBox"
+     Slot OverlayWidgetSlot "{2D28EC004ACEEA3E}" {
+      HorizontalAlign 3
+      VerticalAlign 2
+     }
+     Opacity 0.7
+     AllowHeightOverride 1
+     HeightOverride 3
+     {
+      ProgressBarWidgetClass "{B1263063787C3D39}" {
+       Name "CardLife"
+       Slot AlignableSlot "{3479187855F28705}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.639 0.62 0.565 1
+       style Simple
+       Maximum 1
+       Current 1
+      }
+     }
+    }
+   }
+  }
+ }
+}

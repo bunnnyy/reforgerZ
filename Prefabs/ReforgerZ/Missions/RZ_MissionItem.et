@@ -1,0 +1,8 @@
+GenericEntity : "{6D56FED1E55A8F84}Prefabs/Items/Misc/IntelligenceFolder_E_01/IntelligenceFolder_E_01.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  RZ_MissionItemComponent "{6AD67DC2A13BEC9A}" {
+  }
+ }
+ coords 0 0 0
+}

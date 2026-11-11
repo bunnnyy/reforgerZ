@@ -1,0 +1,8 @@
+GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RZ_BlinkLightComponent "{6AD67DC2A1387D96}" {
+  }
+ }
+ coords 0 0 0
+}

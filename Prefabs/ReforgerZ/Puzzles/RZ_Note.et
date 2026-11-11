@@ -1,0 +1,30 @@
+GenericEntity : "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et" {
+ ID "52568765AFF8A3C9"
+ components {
+  RZ_ClueComponent "{6AD67DC2A1155650}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A1154078}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A1154E18}" {
+     ContextName "default"
+     Position PointInfo "{82FD0CAE4AD3C944}" {
+      Offset 0 0.05 0
+     }
+     Radius 0.6
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A1154C39}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1154A00}" {
+      Name "Read"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

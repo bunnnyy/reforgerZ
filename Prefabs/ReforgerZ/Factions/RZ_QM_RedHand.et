@@ -1,0 +1,273 @@
+SCR_ChimeraCharacter : "{B4977616CD19191A}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_AC_Scout.et" {
+ ID "520EC961A090B1EE"
+ components {
+  SCR_CharacterFactionAffiliationComponent "{555C98D1CD949F3E}" {
+   "faction affiliation" "BAND"
+  }
+  SCR_EditableCharacterComponent "{520EA1D2F659C85C}" {
+   m_UIInfo SCR_EditableEntityUIInfo "{5298E609432D192D}" {
+    m_sFaction "BAND"
+   }
+  }
+  SCR_CharacterDamageManagerComponent "{55872AD7B4E959F2}" {
+   EnableDamage 0
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00E}" {
+     PrefabsToSpawn {
+      "{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et" "{983B57B8E95C1F52}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded_FIA.et" "{C3F1FA1E2EC2B345}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_USSR_01.et" "{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et" "{8B853CDD11BA916E}Prefabs/Weapons/Magazines/Magazine_9x18_PM_8rnd_Ball.et" "{8B853CDD11BA916E}Prefabs/Weapons/Magazines/Magazine_9x18_PM_8rnd_Ball.et" "{540C08AD5F21A5FA}Prefabs/Items/Equipment/Radios/Radio_R148_FIA.et"
+     }
+    }
+   }
+  }
+  RZ_QuartermasterComponent "{6AD67DC2A231AFA3}" {
+   m_eFaction BANDITS
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   additionalActions {
+    RZ_StandingStatusAction "{6AD67DC2A235DC97}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A22970E0}" {
+      Name "My standing"
+     }
+    }
+    RZ_LeaderAction "{6AD67DC2A22A1E8F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A22FBFE2}" {
+      Name "Talk"
+     }
+     m_eKind TALK
+    }
+    RZ_LeaderAction "{6AD67DC2A2229BC7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A226225B}" {
+      Name "Ask for work"
+     }
+     m_eKind WORK
+    }
+    RZ_LeaderAction "{6AD67DC2A2DD2EF4}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2DEBD75}" {
+      Name "Ask for news"
+     }
+     m_eKind NEWS
+    }
+    RZ_LeaderAction "{6AD67DC2A2D475B1}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2C90DAB}" {
+      Name "Ask about standing"
+     }
+     m_eKind STANDING
+    }
+    RZ_FactionShopAction "{6AD67DC2A2CCFE1A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2C1AE6B}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier KNOWN
+     m_iFavorCost 12
+     m_sItemPrefab "{1AF76402C4DA8D70}Prefabs/ReforgerZ/Cure/RZ_CutDose.et"
+     m_sDisplayName "Cut dose"
+    }
+    RZ_FactionShopAction "{90C46B7AF2234F3D}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{F43E7561285C945C}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier KNOWN
+     m_iFavorCost 6
+     m_sItemPrefab "{98C79F5FAE12F9B6}Prefabs/Weapons/Attachments/Bayonets/Bayonet_6Kh4.et"
+     m_sDisplayName "Knife"
+    }
+    RZ_FactionShopAction "{3C2DDC61D1A6F0C9}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6D6809E932463CB9}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier KNOWN
+     m_iFavorCost 20
+     m_sItemPrefab "{C0F7DD85A86B2900}Prefabs/Weapons/Handguns/PM/Handgun_PM.et"
+     m_sDisplayName "Pistol"
+    }
+    RZ_FactionShopAction "{1FEBE76DE3B891E6}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3F46AD88CD6A2408}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier KNOWN
+     m_iFavorCost 3
+     m_sItemPrefab "{8B853CDD11BA916E}Prefabs/Weapons/Magazines/Magazine_9x18_PM_8rnd_Ball.et"
+     m_sDisplayName "Pistol magazine"
+    }
+    RZ_FactionShopAction "{F0071A66D61898F4}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8CB977B7AD255E8B}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 25
+     m_sItemPrefab "{E52C9791E1554A5F}Prefabs/Weapons/Attachments/Muzzle/Suppressor_M16/Suppressor_M16.et"
+     m_sDisplayName "M16 suppressor"
+    }
+    RZ_FactionShopAction "{386FBCC1C7F3D0A9}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3D8C9EA264CB53DA}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 25
+     m_sItemPrefab "{3B96FAC169E27037}Prefabs/Weapons/Attachments/Muzzle/Suppressor_PBS4/Suppressor_PBS4.et"
+     m_sDisplayName "AK suppressor"
+    }
+    RZ_FactionShopAction "{FD9F96F3E8D9146B}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{C22A35E544DBF49E}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 60
+     m_sItemPrefab "{6415B7923DE28C1B}Prefabs/Weapons/Rifles/SVD/Rifle_SVD_PSO.et"
+     m_sDisplayName "Scoped rifle"
+    }
+    RZ_FactionShopAction "{38045C9CCA0663E2}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{DCB425137280069B}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 6
+     m_sItemPrefab "{77595CB9F596E6AC}Prefabs/Weapons/Magazines/Magazine_762x54_SVD_10rnd_LPS.et"
+     m_sDisplayName "Scoped rifle magazine"
+    }
+    RZ_FactionShopAction "{DC7CAD9CA5F6E656}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3BC1D321EE828EC0}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier TRUSTED
+     m_iFavorCost 25
+     m_sItemPrefab "{97064F8597F2D7BF}Prefabs/Weapons/Explosives/DemoBlock_TSh400g/DemoBlock_TSh400g.et"
+     m_sDisplayName "Explosive charge"
+    }
+    RZ_FactionShopAction "{20853A2D990BC4D6}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{94C75DE675FA6EB2}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier CHAMPION
+     m_iFavorCost 45
+     m_sItemPrefab "{4CBDC206FEF9897C}Prefabs/Characters/Vests/Vest_6B3/Vest_6B3.et"
+     m_sDisplayName "Body armour"
+    }
+    RZ_FactionShopAction "{60BE95DC7FA69097}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{4DAA399D1F02A1DC}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier CHAMPION
+     m_iFavorCost 90
+     m_sItemPrefab "{A89BC9D55FFB4CD8}Prefabs/Weapons/MachineGuns/PKM/MG_PKM.et"
+     m_sDisplayName "Machine gun"
+    }
+    RZ_FactionShopAction "{8147333627EEEADA}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{024FB4F451CA887E}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier CHAMPION
+     m_iFavorCost 12
+     m_sItemPrefab "{A6737DA00653A39C}Prefabs/Weapons/Magazines/Box_762x54_PK_100rnd_Ball.et"
+     m_sDisplayName "Machine-gun ammo"
+    }
+    RZ_FactionShopAction "{483EF5ABF0F7DB34}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{77A0B4F721F4AB98}" {
+      Name "Buy"
+     }
+     m_eFaction BANDITS
+     m_eRequiredTier CHAMPION
+     m_iFavorCost 75
+     m_sItemPrefab "{1CC82FE4BD6FBC0F}Prefabs/ReforgerZ/Cure/RZ_Antidote.et"
+     m_sDisplayName "Stolen antidote"
+    }
+    RZ_FactionServiceAction "{6AD67DC2A2FDB50A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2F15354}" {
+      Name "Fence"
+     }
+     m_eService FENCE
+    }
+    RZ_FactionServiceAction "{6AD67DC2A2F7506F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2E8FEC8}" {
+      Name "Bounty board"
+     }
+     m_eService BOUNTY_BOARD
+    }
+    RZ_FactionServiceAction "{6AD67DC2A2EFDD59}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A2E3772C}" {
+      Name "Make amends"
+     }
+     m_eService AMENDS
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -1,13 +1,16 @@
 # UI and icons
 
 The ReforgerZ HUD, menus and icon set: how they look, what each screen shows, how the scripts
-feed them, and what's built. Building the layouts in Workbench is in
+feed them, and what's built. The layouts' widget trees and the icon atlas are in
 [UI/LAYOUTS.md](../UI/LAYOUTS.md); the setup steps are in
 [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui). The setting and the voices used in every line of
 text are in [LORE.md](LORE.md).
 
-**Status:** the icon set and the mockups are done. The scripts compile but have never run, and the layouts don't exist yet: they must be built in Workbench. Until
-then every message shows as the vanilla hint, as before.
+**Status:** the icon set, the mockups, the 12 layouts, the icon atlas and its imageset, and the
+menu and input config overrides are built. In Workbench play the HUD works: the styled notice
+cards, the stealth visibility bars and the noise meter show. The menus haven't been checked in
+play, the background panel and the map icons aren't in the game yet, and the menu keys clash with
+vanilla keys ([Built and planned](#built-and-planned)).
 
 ## Art direction
 
@@ -36,8 +39,8 @@ trefoil:
 | The infected | A spiked virion with a bite taken out of it |
 
 **Type.** Headings in a condensed bold, upper case with wide spacing (stencil-like); timers,
-distances and channel names in a mono face; body text in a plain sans. In the game, use the
-vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
+distances and channel names in a mono face; body text in a plain sans. In the game the layouts
+make do with the vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
 
 ## The icon set
 
@@ -58,7 +61,9 @@ transparent background, so the game can tint them. Every icon with its intended 
 `png/128/`. Coloured map and emblem variants (23, with a dark backing behind the plated markers'
 cut-out glyphs, and one per faction for strongholds, outposts and quartermasters) in
 `png/color/`. Re-render after editing: `node tools/render_ui.js icons` (needs Node and Playwright's
-Chromium, nothing else).
+Chromium, nothing else). The game reads the 60 white icons from one atlas,
+`UI/Textures/ReforgerZ/RZ_Icons.edds`, through the `RZ_Icons` imageset: after re-rendering, pack
+them again with `tools/icon_atlas.py` ([LAYOUTS.md](../UI/LAYOUTS.md#importing-the-icons)).
 
 ## Screens
 
@@ -67,20 +72,19 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 
 | Screen | Preview | What it shows | Script | Status |
 |---|---|---|---|---|
-| HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; up to three at once. The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on) | `RZ_HudDisplay` | Written |
-| Standing | `standing.png` | Per faction: tier, Fame, Infamy (with the tier bands marked), Favor, the leaders you've met and what they think of you, what the faction needs, a warning when it hunts you. Truces and feuds, and the tier grid | `RZ_StandingMenu` | Written; the tier grid is static |
-| Journal | `journal.png` | Active contracts, events, puzzles, leader jobs, arcs and questlines with type icon, giver, rough direction and distance and time left. The selected one in full: brief, where, requirements, rewards, and the puzzle clues you've read (or a questline's notes). Under the list, the lab's line: research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) | `RZ_JournalMenu` | Written; the mockup has no lab line yet |
-| Background picker | `background_picker.png` | A panel in the vanilla deploy menu: the picked background's name, perk, flaw, starting standing, starting gear, locked or available (with how to unlock), Legacy toward the Drifter. Locked loadouts are unavailable in the menu itself | `RZ_BackgroundPanelComponent`, `RZ_LoadoutLock.c` | Written |
-| Radio log | `radio_log.png` | What you heard this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice; a filter | `RZ_RadioLogMenu` | Written; the channel list is static |
-| Map key | `map_legend.png` | The marker icons in use, with one line each | `RZ_MapKeyMenu` | Layout only |
-| Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), and a box to write one with a Post button. Opened when you read the board, with **UI > Board menus** on | `RZ_NoticeBoardMenu` | Written; no mockup |
-| Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallOfFameMenu` | Written; no mockup |
-| The map | — | The marker icons on the vanilla map, per player ([below](#the-map)) | `RZ_MapIconsUI` | Written |
+| HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; up to three at once. The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer and the radio indicator not seen yet |
+| Standing | `standing.png` | Per faction: tier, Fame, Infamy (with the tier bands marked), Favor, the leaders you've met and what they think of you, what the faction needs, a warning when it hunts you. Truces and feuds, and the tier grid | `RZ_StandingMenu` | Layout built, not checked in play; the tier grid is static |
+| Journal | `journal.png` | Active contracts, events, puzzles, leader jobs, arcs and questlines with type icon, giver, rough direction and distance and time left. The selected one in full: brief, where, requirements, rewards, and the puzzle clues you've read (or a questline's notes). Under the list, the lab's line: research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) | `RZ_JournalMenu` | Layout built, not checked in play; the mockup has no lab line yet |
+| Background picker | `background_picker.png` | A panel in the vanilla deploy menu: the picked background's name, perk, flaw, starting standing, starting gear, locked or available (with how to unlock), Legacy toward the Drifter. Locked loadouts are unavailable in the menu itself | `RZ_BackgroundPanelComponent`, `RZ_LoadoutLock.c` | Layout built, not in the deploy menu yet |
+| Radio log | `radio_log.png` | What you heard this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice; a filter | `RZ_RadioLogMenu` | Layout built, not checked in play; the channel list is static |
+| Map key | `map_legend.png` | The marker icons the map draws, with one line each | `RZ_MapKeyMenu` | Static layout built, not checked in play |
+| Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), and a box to write one with a Post button. Opened when you read the board, with **UI > Board menus** on | `RZ_NoticeBoardMenu` | Layout built; **Board menus** is off; no mockup |
+| Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallOfFameMenu` | Layout built, not checked in play; no mockup |
+| The map | — | The marker icons on the vanilla map, per player ([below](#the-map)) | `RZ_MapIconsUI` | Layout built, not on the map yet |
 
-The menus share one frame: Standing, Journal, Radio and Map key are tabs (Q/E), Esc closes. Keys:
-**K** standing, **J** journal, **U** radio, **F** filter in the radio log, **O** the hall of fame
-(input actions you add; [LAYOUTS.md](../UI/LAYOUTS.md#menus)). The notice board and the hall of
-fame aren't tabs: Esc or the close button closes them.
+The menus share one frame: Standing, Journal, Radio and Map key are tabs (Q/E), Esc closes. The
+notice board and the hall of fame aren't tabs: Esc or the close button closes them. How the
+screens open is [below](#opening-the-screens).
 
 **Chat commands** (`RZ_ChatCommands`, client): `/note <text>` pins a note on the board you're at,
 `/noteclear` and `/noteclear all` clear boards (server admins), `/hall` shows the hall of fame
@@ -100,6 +104,17 @@ rewards, and its notes ("what you know so far") in the clues block. Its stage mi
 too, with their own time and pay. Both use the story arc icon (`mission_arc`); there's no
 questline icon of its own.
 
+### Opening the screens
+
+For now, with keys: the input override binds **K** standing, **J** journal, **U** radio and **O**
+the hall of fame, and **F** cycles the radio log's filter
+([LAYOUTS.md](../UI/LAYOUTS.md#menus)). The map key is reached only as a tab. The notice board
+opens when you read a safehouse board, with **UI > Board menus** on.
+
+K, J, U and O are vanilla keys too: K takes out the compass, O the watch, U accepts a group
+invite and a tap of J shows the task list hint. **Planned:** open the screens from the map
+instead, with tabs or a menu in the map. That's being designed; none of it is built.
+
 ### The background picker
 
 The panel reads the picked loadout twice a second. Its **starting gear** is what that loadout
@@ -110,7 +125,9 @@ A locked background's loadout is **unavailable** in the vanilla menu (**UI > Loc
 backgrounds payload. The 1.9 menu leaves unavailable loadouts out of its list when it builds it and
 greys their buttons when it refreshes (which one players see is a VERIFY). Vanilla never asks the
 server, so the server checks on spawn: a locked pick spawns as the default background. The panel
-says how to unlock it.
+says how to unlock it. In Workbench play the player spawned with the locked Soldier loadout and
+played as the default background: the server's check works; the menu's side is still to be
+checked.
 
 ### The map
 
@@ -120,6 +137,23 @@ for this player's list (on open, then every 20 s) and draws one icon per place, 
 a label, following pan and zoom. The list is what this player may know ([DESIGN.md](DESIGN.md#settlements-spawn-points-and-the-map)):
 contracts are never on it. With **UI > Map icon layout** set, the vanilla text markers for
 events and the lab are off; without it, the layer does nothing and those markers stay.
+
+## Controllers
+
+Everything in ReforgerZ must work on console (Xbox, PlayStation) and with a gamepad on PC, as well
+as with keyboard and mouse. This is a rule for the whole mod, agreed with the author (CLAUDE.md,
+"Design guardrails"); this section owns the details.
+
+| Rule | What it means |
+|---|---|
+| Every input has a gamepad binding | Each ReforgerZ action in `Configs/System/chimeraInputCommon.conf` binds a gamepad input next to its key |
+| Every screen works without a mouse | It opens from something a pad can reach, moves with the D-pad or left stick, switches tabs with the shoulder buttons (`MenuTabLeft`/`MenuTabRight`), confirms with A (`MenuSelect`) and closes with B (`MenuBack`) |
+| Nothing needs hover, typing or a chat command | What a tooltip says also shows when the item has focus; whatever a chat command does also has a button or an action |
+| Readable on a TV | Text no smaller than vanilla's own HUD text; nothing important in the outer edge of the screen |
+
+**Status.** The screens, the HUD and the chat commands were built for keyboard and mouse and
+haven't been checked with a gamepad yet. A check of the whole mod, and the fixes it finds, are
+planned ([ROADMAP.md](ROADMAP.md)).
 
 ## How the scripts fit
 
@@ -148,14 +182,17 @@ broadcast RPC. On the client, `QueueHint` classifies it, adds radio messages to 
 offers it to the HUD. If **UI > Styled notices** is off, or the HUD layout or the card layout is
 missing, the vanilla hint queue shows it exactly as before.
 
-**Turning it off.** Styled notices off gives the vanilla hints back. Leaving
-`RZ_PlayerUIComponent` off the controller stops all sending. To remove the UI entirely, delete
-`UI/` and the lines that use it: the `m_UISettings` attribute, `m_UIFeed` (creation, tick, spawn,
+**Turning it off.** Styled notices off gives the vanilla hints back. Taking
+`RZ_PlayerUIComponent` off the player controller (`Prefabs/Characters/Core/RZ_PlayerController.et`)
+stops all sending. To remove the UI entirely, delete the `UI/` code folder and the lines that use
+it: the `m_UISettings` attribute, `m_UIFeed` (creation, tick, spawn,
 `RecordGearSoon` and accessors), the `UsesMapIcons` check in `AddMapMarker` and the block at the
 top of `QueueHint` (with the chat commands' registration) in `Core/RZ_GameModeComponent.c`, the
 board menu call in `World/RZ_NoticeBoard.c` (`SendMenu`), and the `OnClueRead` call in
 `Puzzles/RZ_PuzzleMission.c`. `RZ_LoadoutLock.c` and `RZ_MapIcons.c` can each be deleted on their
-own.
+own. Then remove what names the UI's classes: point `RZ_GameMode.et` back at the vanilla player
+controller and clear its **UI** settings, and delete the two overrides in `Configs/System/` and
+the layouts in `UI/layouts/ReforgerZ/`.
 
 *Simplified:* notices are classified by their title, so an unusual title gets a plain card. The
 map's icons don't cluster or scale with zoom; outposts a player has seen are remembered for the
@@ -168,6 +205,9 @@ static parts of the layouts.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; six mockups and previews; the feed, the HUD, six menus with mouse support (four tabs, the notice board, the hall of fame), chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback, the radio log (all compile, never run) |
-| Workbench | The layouts, the imageset, the menu and input config entries, adding the component, the info display and the map component ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui)) |
-| Planned | A sound on new notices; mockups of the notice board and the hall of fame |
+| Built | The icon set and its renderer; six mockups and previews. In code: the feed, the HUD, six menus with mouse support (four tabs, the notice board, the hall of fame), chat commands, the deploy-menu panel with the loadout's gear, locked loadouts unavailable, the map's icon layer, styled notices with the vanilla fallback, the radio log |
+| Workbench files | The 12 layouts ([LAYOUTS.md](../UI/LAYOUTS.md)); the icon atlas and the `RZ_Icons` imageset; the menu and input config overrides in `Configs/System/` (Workbench finds the six menu presets); the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, all but the map icon layout. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
+| Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter |
+| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); the menus, their keys and their mouse clicks; the notice board menu (**UI > Board menus** is off); the chat commands; the deploy menu's side of locked loadouts ([above](#the-background-picker)) |
+| Not done | The override of the vanilla deploy menu's layout that holds the background panel, so the panel doesn't show. The map configuration override with `RZ_MapIconsUI`, and **UI > Map icon layout** (empty: set, it turns the vanilla text markers off), so the map shows the vanilla markers. Images for the icons the scripts never swap (the map key's, the radio log's channel list, the HUD's radio, noise and paused icons, the background panel's): they draw as flat squares in their colour |
+| Planned | Opening the screens from the map instead of with keys that clash with vanilla ([above](#opening-the-screens)); a sound on new notices; mockups of the notice board and the hall of fame |

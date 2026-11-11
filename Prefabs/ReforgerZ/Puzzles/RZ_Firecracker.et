@@ -1,0 +1,27 @@
+GenericEntity : "{50A68300B537EDFA}Prefabs/Items/Food/ArmyCrackers_Soviet_01.et" {
+ ID "2829E729DF7DE6D1"
+ components {
+  RZ_NoisemakerComponent "{6AD67DC2A802726B}" {
+   m_fHeat 15
+   m_fDelay 5
+   m_iPulses 4
+   m_fPulseInterval 3
+   m_bOnThrow 0
+   m_bDeleteAfter 1
+   m_sArmLabel "Light the fuse"
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    RZ_ArmNoisemakerAction "{6AD67DC2A8026DB7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A802565F}" {
+      Name "Light the fuse"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

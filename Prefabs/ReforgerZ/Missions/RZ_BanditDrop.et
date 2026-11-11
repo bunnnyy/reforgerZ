@@ -1,0 +1,28 @@
+GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  ActionsManagerComponent "{6AD67DC2A1367166}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A13668BF}" {
+     ContextName "default"
+     Position PointInfo "{65E72E35CC7AA3B5}" {
+      Offset 0 0.6 0
+     }
+     Radius 1
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_SellSamplesToBanditsAction "{6AD67DC2A136554A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A1365124}" {
+      Name "Sell samples"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

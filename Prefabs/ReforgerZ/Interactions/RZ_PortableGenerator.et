@@ -1,0 +1,30 @@
+GenericEntity : "{4F6BB0502ED3EFBB}Prefabs/Props/Military/Generators/GeneratorPortable_US_01_Off.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RZ_PlaceableComponent "{6AD67DC2A80E195A}" {
+   m_eKind GENERATOR
+  }
+  ActionsManagerComponent "{5298C80DC0D5555E}" {
+   additionalActions {
+    RZ_PlaceAction "{6AD67DC2A80E022F}" {
+     ParentContextList {
+      "powerswitch"
+     }
+     UIInfo UIInfo "{6AD67DC2A80E00D9}" {
+      Name "Set it down"
+     }
+    }
+    RZ_PlaceAction "{6AD67DC2A80E0F02}" {
+     ParentContextList {
+      "powerswitch"
+     }
+     UIInfo UIInfo "{6AD67DC2A80E0D28}" {
+      Name "Refuel"
+     }
+     m_bRefuel 1
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

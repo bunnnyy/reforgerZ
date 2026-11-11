@@ -1,0 +1,37 @@
+GenericEntity : "{8EB2B3B2F3572805}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_red_V1.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RZ_NoisemakerComponent "{6AD67DC2A805E42E}" {
+   m_fHeat 10
+   m_fDelay 30
+   m_iPulses 8
+   m_fPulseInterval 8
+   m_bOnThrow 0
+   m_bDeleteAfter 0
+   m_sArmLabel "Wind the alarm"
+  }
+  ActionsManagerComponent "{6AD67DC2A805D3D4}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A805DE79}" {
+     ContextName "default"
+     Position PointInfo "{3289903EFC10C4F2}" {
+      Offset 0 0.1 0
+     }
+     Radius 0.6
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ArmNoisemakerAction "{6AD67DC2A805DAD4}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A805C75F}" {
+      Name "Wind the alarm"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

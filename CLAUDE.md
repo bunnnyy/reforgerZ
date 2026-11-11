@@ -45,6 +45,7 @@ When you restructure, update the **Doc map** below and the README's doc list in 
 - [ ] The Doc map below lists exactly the files in `docs/`.
 - [ ] `VERIFY` count and prefab list in `docs/WORKBENCH_SETUP.md` are current.
 - [ ] `docs/PC_SETUP.md` still matches the tools, scripts and setup steps you touched.
+- [ ] Everything you added works with a gamepad (`docs/UI.md`, "Controllers").
 
 ## Doc map
 
@@ -98,6 +99,10 @@ Write conservatively:
   adaptation is light, nobody gets free loot or free Fame.
 - **Performance first:** simulate as data; only spawn bodies near players; no persistent physical traces.
 - Most of the map is abandoned. Factions hold only a few towns that make sense for them.
+- **Console and controller, for the whole mod:** everything works on console (Xbox, PlayStation)
+  and with a gamepad, not only with keyboard and mouse. Every input action has a gamepad binding;
+  every screen opens, moves and closes without a mouse; nothing needs hover, typing or a chat
+  command to reach it; text stays readable on a TV. The rules in full: `docs/UI.md`, "Controllers".
 
 ## Git
 - Work on the branch you're given. Commit in logical chunks. Never force-push.

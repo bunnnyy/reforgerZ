@@ -1,0 +1,106 @@
+SCR_DestructibleEntity : "{B17E628E5602C093}Prefabs/Structures/Cultural/Calvaries/BelfrySmall_01.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RZ_ClueComponent "{6AD67DC2A10F3CE5}" {
+  }
+  RZ_PuzzleObjectComponent "{6AD67DC2A10F30AB}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A10F38A6}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A10F26E8}" {
+     ContextName "default"
+     Position PointInfo "{16D94F9E3F0EE8EC}" {
+      Offset 0 1 0
+     }
+     Radius 2.2
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A10F22BD}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10F2E4E}" {
+      Name "Read"
+     }
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A10F2D98}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10F28D0}" {
+      Name "Use"
+     }
+     m_iValue 0
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A10F15DE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10F110C}" {
+      Name "Use"
+     }
+     m_iValue 1
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A10F1DB1}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10F18E7}" {
+      Name "Use"
+     }
+     m_iValue 2
+    }
+    RZ_PuzzleUseAction "{6AD67DC2A10F05B6}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10F00E0}" {
+      Name "Use"
+     }
+     m_iValue 3
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A10F0DA1}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10F08D3}" {
+      Name "Choose"
+     }
+     m_iOption 0
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A10FF5F0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10FF15C}" {
+      Name "Choose"
+     }
+     m_iOption 1
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A10FFA29}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10FF952}" {
+      Name "Choose"
+     }
+     m_iOption 2
+    }
+    RZ_PuzzleChoiceAction "{6AD67DC2A10FE223}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A10FE178}" {
+      Name "Choose"
+     }
+     m_iOption 3
+    }
+   }
+  }
+  RplComponent "{6AD67DC2A10F3ADE}" {
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,117 @@
+GenericEntity {
+ ID "EB677E3C306FEDD5"
+ components {
+  RigidBody "{CBE6C1AFC93EF43A}" {
+   ResponseIndex "NoCollision"
+   Geometries {
+    PhysicsBoxGeometry UserAction {
+     LayerPreset "Interaction"
+     Extents 0.4 0.4 0.4
+    }
+   }
+   Static 1
+  }
+  RZ_ClueComponent "{9500DF728EF67BCB}" {
+  }
+  RZ_PuzzleObjectComponent "{D617F27E9BB4176C}" {
+  }
+  ActionsManagerComponent "{00DB4E1D24E87F75}" {
+   ActionContexts {
+    UserActionContext "{46CFE7EC3B9D07B5}" {
+     ContextName "default"
+     Position PointInfo "{00C4627B95A9D5AC}" {
+      Offset 0 0 0
+     }
+     Radius 1
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{48250DEA0B06591C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{D189C6B65C861E4E}" {
+      Name "Read"
+     }
+    }
+    RZ_PuzzleUseAction "{D48E875E4EED172A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{EF3E7A2BCCD6E387}" {
+      Name "Use"
+     }
+     m_iValue 0
+    }
+    RZ_PuzzleUseAction "{B1F206B3866E516F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2DAF22691B3580AA}" {
+      Name "Use"
+     }
+     m_iValue 1
+    }
+    RZ_PuzzleUseAction "{9F588EA216EA8330}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{1BFA2DBCCAE2C84F}" {
+      Name "Use"
+     }
+     m_iValue 2
+    }
+    RZ_PuzzleUseAction "{299B0B0BBA0C72D7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8517E444D41B0A84}" {
+      Name "Use"
+     }
+     m_iValue 3
+    }
+    RZ_PuzzleChoiceAction "{5F8BD9C7FA6A01F3}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{290F50CE74D30244}" {
+      Name "Choose"
+     }
+     m_iOption 0
+    }
+    RZ_PuzzleChoiceAction "{FA68ECC4FF35CF1D}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{56D20EDA8DB249C4}" {
+      Name "Choose"
+     }
+     m_iOption 1
+    }
+    RZ_PuzzleChoiceAction "{4E6CF13CE7749378}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{CC33589311DAFF79}" {
+      Name "Choose"
+     }
+     m_iOption 2
+    }
+    RZ_PuzzleChoiceAction "{6E6096B9FA8F1A07}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B79067C0F7BC9380}" {
+      Name "Choose"
+     }
+     m_iOption 3
+    }
+   }
+  }
+  RplComponent "{506112EABAEC098B}" {
+   Enabled 1
+  }
+ }
+ coords 0 0 0
+}

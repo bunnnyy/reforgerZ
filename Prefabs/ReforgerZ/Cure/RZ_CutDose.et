@@ -1,0 +1,41 @@
+GenericEntity : "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5222EB4D07D865FA}" {
+     Name "Cut dose"
+     Description "The Red Hand's antidote, cut with who knows what. Half the time it cures you. The rest of the time it makes things worse."
+     m_aItemHints {
+      SCR_InventoryItemHintUIInfo "{5E04DAAE66DE1E77}" {
+       Name "Half the time, a cure"
+      }
+     }
+    }
+   }
+  }
+  SCR_ConsumableItemComponent "{59E68C74C5CEE74F}" {
+   m_ConsumableEffect RZ_ConsumableMed "{88AD6126CE467289}" {
+    m_bDeleteOnUse 1
+    m_bAllowInventoryUseWithoutHitZone 1
+    m_eKind CUT_DOSE
+   }
+  }
+  RZ_MedItemComponent "{6AD67DC2A1499546}" {
+   m_eKind CUT_DOSE
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    RZ_UseMedAction "{6AD67DC2A14CBECD}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A143C213}" {
+      Name "Take"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,34 @@
+GenericEntity : "{4417ED07902CE47E}Prefabs/Props/Military/Radios/RadioStation_ANPRC77_01.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  RZ_ClueComponent "{6AD67DC2A877B4AA}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A877B341}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A877B0E3}" {
+     ContextName "default"
+     Position PointInfo "{F069A8B68710764D}" {
+      Offset 0 0.3 0
+     }
+     Radius 0.9
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A877BF4B}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A877BD5A}" {
+      Name "Listen"
+     }
+     m_sLabel "Listen"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

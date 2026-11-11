@@ -1,0 +1,21 @@
+GenericEntity : "{50A68300B537EDFA}Prefabs/Items/Food/ArmyCrackers_Soviet_01.et" {
+ ID "2829E729DF7DE6D1"
+ components {
+  RZ_PlaceableComponent "{6AD67DC2A808408C}" {
+   m_eKind TRIPWIRE
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    RZ_PlaceAction "{6AD67DC2A8083621}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A8083292}" {
+      Name "Set the tripwire"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

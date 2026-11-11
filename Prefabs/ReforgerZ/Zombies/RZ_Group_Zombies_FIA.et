@@ -1,0 +1,6 @@
+Bacon_622120A5448725E3_InfectedGroup : "{BE9B93D322B48CB4}622120A5448725E3/Prefabs/Groups/Group_Zombies_FIA.et" {
+ ID "62651601183F5AEE"
+ m_aUnitPrefabSlots {
+  "{CB545044C3F57A9A}622120A5448725E3/Prefabs/Characters/Zombie_FIA.et" "{CB545044C3F57A9A}622120A5448725E3/Prefabs/Characters/Zombie_FIA.et" "{CB545044C3F57A9A}622120A5448725E3/Prefabs/Characters/Zombie_FIA.et" "{45AA0B2D6588401A}622120A5448725E3/Prefabs/Characters/Variants/Variant_FIA_Rifleman.et"
+ }
+}

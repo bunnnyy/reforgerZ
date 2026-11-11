@@ -1,0 +1,38 @@
+StaticModelEntity : "{095874B519DCF161}Prefabs/Structures/Military/Camps/TentUS_01/TentUS_01_Assembled.et" {
+ ID "527AC119B710AE74"
+ components {
+  RZ_LabComponent "{6AD67DC2A0AD4519}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A0AD34D7}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A0AD3D7F}" {
+     ContextName "default"
+     Position PointInfo "{4557B9EF7FCE4AD9}" {
+      Offset 0 1 0
+     }
+     Radius 3
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_DepositSamplesAction "{6AD67DC2A0AD2D5D}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A0AD1CF9}" {
+      Name "Deliver samples"
+     }
+    }
+    RZ_LabStatusAction "{6AD67DC2A0AD0D02}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A0ADFC53}" {
+      Name "Research status"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

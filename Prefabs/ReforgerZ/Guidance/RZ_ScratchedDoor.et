@@ -1,0 +1,20 @@
+GenericEntity : "{88416A0C54AAA9F3}Prefabs/Structures/BuildingParts/Doors/Door_Shed_02_EXT_COV_B_weathered.et" {
+ ID "0000000000000001"
+ components {
+  RZ_ClueComponent "{6AD67DC2A872E482}" {
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A872D720}" {
+     ParentContextList {
+      "SCR_DoorUserAction"
+     }
+     UIInfo UIInfo "{6AD67DC2A872D023}" {
+      Name "Read"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

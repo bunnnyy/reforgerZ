@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{9FAF5D0EBB1E1ACC}Prefabs/ReforgerZ/Loadouts/RZ_Loadout_LabTechnician.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

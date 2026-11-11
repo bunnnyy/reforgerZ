@@ -1,0 +1,41 @@
+GenericEntity : "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5222EB4D07D865FA}" {
+     Name "Stabiliser"
+     Description "A Halcyon autoinjector. It holds the fever still for about twenty minutes. Once a life."
+     m_aItemHints {
+      SCR_InventoryItemHintUIInfo "{5E04DAAE66DE1E77}" {
+       Name "Pauses the infection"
+      }
+     }
+    }
+   }
+  }
+  SCR_ConsumableItemComponent "{59E68C74C5CEE74F}" {
+   m_ConsumableEffect RZ_ConsumableMed "{DF6A80C00436DA38}" {
+    m_bDeleteOnUse 1
+    m_bAllowInventoryUseWithoutHitZone 1
+    m_eKind STABILISER
+   }
+  }
+  RZ_MedItemComponent "{6AD67DC2A0A3C2EF}" {
+   m_eKind STABILISER
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    RZ_UseMedAction "{6AD67DC2A0A6B76F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A15DA213}" {
+      Name "Take"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

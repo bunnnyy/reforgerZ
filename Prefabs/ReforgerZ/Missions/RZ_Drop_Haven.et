@@ -1,0 +1,29 @@
+GenericEntity : "{3AC9CDFE7E068E5E}Prefabs/Props/Services/Post/Mailbox_02.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  ActionsManagerComponent "{6AD67DC2A13D5B1B}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A13D44E4}" {
+     ContextName "default"
+     Position PointInfo "{AC059FC31BBA82B6}" {
+      Offset 0 0.8 0
+     }
+     Radius 1.1
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ChoiceDeliveryAction "{6AD67DC2A13D41CD}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A13D4A0A}" {
+      Name "Hand in"
+     }
+     m_eFaction SURVIVORS
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,11 @@
+GenericEntity : "{9DB69176CEF0EE97}Prefabs/Weapons/Grenades/Smoke_ANM8HC.et" {
+ ID "1F80A73AAE197BBE"
+ components {
+  RZ_NoisemakerComponent "{6AD67DC2A8163827}" {
+   m_fHeat 12
+   m_bOnThrow 1
+   m_bDeleteAfter 0
+  }
+ }
+ coords 0 0 0
+}

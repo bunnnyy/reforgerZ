@@ -64,26 +64,37 @@ and one way to end it: **research the cure.**
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
   emblems, an infection timer with the golden window, styled notice cards in each faction's
   colour, screens for standing, missions and the radio, and on the map only what you know
-  (layouts still to be built).
+  (the HUD and notice cards show in Workbench play; the map icons, and opening the screens from
+  the map, are still to do).
 
 ## Status
 
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
-That's about 112,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+That's about 113,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
 was also checked against the base game's script source; the 36 `VERIFY` markers left in the game
-scripts (and 8 in the plugin) are behaviours only a play-test can show, such as replication and
-what the AI does. The game mode also **runs on the server** in a test world with a fake player
-(`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no script
-exceptions. There's a world (a sub-scene of Arland) but no prefabs, layouts or configs yet, and
-nobody has played it. The icon set and mockups of every screen are done (`UI/`). Every prefab,
-setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
-plugin, **ReforgerZ: Create prefabs**, makes what it can from it (it compiles in Workbench and its
-dry run works; a real run is next). Start with
-[PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
+scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
+replication and what the AI does. The game mode also **runs on the server** in a test world with a
+fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
+script exceptions.
+
+The **first Workbench build** is in the repo. The plugin **ReforgerZ: Create prefabs** made 156
+prefabs from the **prefab manifest**, on vanilla, Bacon Zombies and Special Zombies bases; many are
+stand-ins for now, and four more have no base yet, so they aren't made. With the player controller
+and the faction and loadout managers, that's 159 prefabs. The world, a sub-scene of Arland, holds
+the game mode, the four factions with their hidden variants and the 13 background loadouts, and a
+scenario plays it. The UI layouts and the icon atlas are there too. In Workbench's World Editor
+**Play**, the mode starts with no script exceptions: towns, the Perimeter, safehouses, wanderers,
+leaders, territory, supply trucks, questlines and a first mission, with the HUD and notice cards on
+screen. Those first plays had no AI world in the world, so no AI or infected spawned; the next ones
+crashed when the first infected spawned, because the world had no perception manager. The world has
+Arland's AI world and vanilla's world managers now; AI in play is still to test
+([the roadmap](docs/ROADMAP.md#play-test-priorities)). Nobody has played it from the game client
+yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Designed, not built yet:** the content pass onto the world facts (see the roadmap's *Next*).
+**Not built yet:** the content pass onto the world facts (designed) and opening the screens from
+the map instead of with keys (being designed). See the roadmap's *Next*.
 
 ## Docs
 
@@ -133,15 +144,23 @@ scripts/Game/ReforgerZ/
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
 Worlds/RZ_Arland/
-                 the world: a sub-scene of Arland
+                 the world: a sub-scene of Arland with the game mode, the faction and
+                 loadout managers, Arland's AI world and vanilla's world managers
+Missions/        the scenario that plays it (RZ_Arland.conf)
+Prefabs/         ReforgerZ/: the prefabs made from the manifest; the player controller
+                 (Characters/Core/) and the faction and loadout managers (MP/Managers/)
 Configs/ReforgerZ/PrefabManifest.json
                  every prefab, slot, settings object, faction and loadout to set up
+Configs/System/  the vanilla menu and input configs, with the ReforgerZ screens and keys added
 tools/prefab_manifest.py
                  checks the manifest against the scripts and writes the setup doc's tables
 UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previews (Previews/),
-                 the layout guide (LAYOUTS.md)
+                 the layout guide (LAYOUTS.md), the layouts (layouts/ReforgerZ/), the icon
+                 atlas (Textures/ReforgerZ/) and its imageset (Imagesets/ReforgerZ/)
 tools/render_ui.js
                  renders the icon PNGs and the mockup previews (Node and Playwright)
+tools/icon_atlas.py
+                 packs the icons into the atlas and writes the imageset (Python and Pillow)
 tools/pacing_sim.py
                  simulates a season's research, the lab and the stages for 2, 5 and 10 players
 tools/compile_check.sh

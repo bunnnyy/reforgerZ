@@ -1,0 +1,32 @@
+GenericEntity : "{7E4A4D680FAD3461}Prefabs/Props/Medical/TableMedical_01/TableMedical_01.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RplComponent "{663A8139C659A3A3}" {
+   Enabled 1
+  }
+  ActionsManagerComponent "{6AD67DC2A13058D0}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A13047BF}" {
+     ContextName "default"
+     Position PointInfo "{BEADF597C85E9997}" {
+      Offset 0 0.8 0
+     }
+     Radius 1.1
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ChoiceDeliveryAction "{6AD67DC2A1304239}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A130405F}" {
+      Name "Hand in"
+     }
+     m_eFaction INSTITUTE
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

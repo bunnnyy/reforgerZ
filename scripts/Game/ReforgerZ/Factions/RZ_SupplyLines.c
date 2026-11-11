@@ -170,7 +170,8 @@ class RZ_SupplyTruck
 	IEntity m_Crew;
 	float m_fAge;
 	float m_fDeadline;
-	bool m_bBoarded;
+	bool m_bBoarded;		// its crew is aboard and on the way (until then it waits in the yard)
+	bool m_bNoDriverLogged;	// the log has said nobody came to drive it
 	vector m_vLastPos;
 	float m_fStill;
 	float m_fCheckTimer;
@@ -211,6 +212,8 @@ class RZ_SupplyLines
 	protected static const float PARKED_SECONDS = 900;
 	protected static const float CLEANUP_RADIUS = 300;
 	protected static const float TRUCK_SPEED = 4;			// m/s for the deadline (slow, generous)
+	protected static const float BOARD_WAIT = 90;			// s a truck waits for its whole crew before it goes with whoever is aboard
+	protected static const float BOARD_RADIUS = 30;			// crew further from the truck aren't seated (never pulled in from afar)
 	protected static const float SHORTAGE_TIP_RADIUS = 150;
 	protected static const float SHORTAGE_NEWS_RADIUS = 600;
 

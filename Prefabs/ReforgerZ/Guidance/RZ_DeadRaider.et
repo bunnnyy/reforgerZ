@@ -1,0 +1,33 @@
+GenericEntity : "{A31FE8E1B8C62C33}Prefabs/Props/Remains/SkeletonRemains/SkeletonRemains_06_complete.et" {
+ ID "F0DBA538AC2A0552"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  RZ_ClueComponent "{6AD67DC2A8692D0A}" {
+  }
+  ActionsManagerComponent "{6AD67DC2A86928EC}" {
+   ActionContexts {
+    UserActionContext "{6AD67DC2A869177B}" {
+     ContextName "default"
+     Position PointInfo "{1B4CE9374D6A1D79}" {
+      Offset 0 0.2 0
+     }
+     Radius 1.1
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{6AD67DC2A86913BE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2A8691F87}" {
+      Name "Read"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}
