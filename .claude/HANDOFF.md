@@ -53,6 +53,30 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 ee5f1f6: create `RZ_Sound_Bell.et` (the plugin makes it; add the sound), slot **World > Traces > Kit > Bell** (WBS §4, Traces)
 - 2026-11-12 ee5f1f6: create `RZ_Sound_Loudspeaker.et` (the plugin makes it; add the sound), slot **World > Traces > Kit > Loudspeaker** (WBS §4, Traces)
 
+**From the cloud's merges of 2026-11-12**
+- 2026-11-12 07730f4: `RZ_RadioCallAction` ("Call") on `RZ_WindupRadio.et`, and on any vanilla radio you made crackable (WBS §4, New-player guidance; "Add to prefabs you already have").
+- 2026-11-12 b0b0090: `RZ_PlayerEffectsComponent` on `Prefabs/Characters/Core/RZ_PlayerController.et`, next to `RZ_PlayerUIComponent` (WBS §4, "Add to prefabs you already have").
+- 2026-11-12 2990171: open the notebook's sixth tab, `UI/layouts/ReforgerZ/RZ_SeasonPage.layout` (written as text), in Workbench, fix what it reports and set **UI > Season page** (WBS §4, UI; "Setting up the UI").
+- 2026-11-12 2990171: `Prefabs/ReforgerZ/Core/RZ_GameMode.et` has no `m_UISettings` block since f034d6b (the layouts, the icon set, the notebook prefab were set there): check it's meant, and set them again if not (WBS §4, "Setting up the UI").
+- 2026-11-12 2990171: **Season > Story rules** (on by default) on the game mode's season settings (WBS §5).
+- 2026-11-12 34ab931: the settings object **World > Traces** (`m_TraceSettings`) on the game mode (WBS §5).
+- 2026-11-12 34ab931: Traces' Workbench spike, phase 0: the test atlas, decals on a door, the boards' fallback, the lit jars (WBS §4, "Traces: the Workbench spike (phase 0)"). Do it before the kit below.
+- 2026-11-12 34ab931: **World > Traces > Kit > Door marks atlas** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Door marks overlays** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Door board, Bastion** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Door board, the Haven** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Door board, the Red Hand** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Door board, Halcyon** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Door board, residents** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Grave** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Pyre** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Candle jars** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Season mark, rescue** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Season mark, burned and other jobs** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Season mark, taken** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Season mark, sealed** (WBS §4, Traces).
+- 2026-11-12 34ab931: **World > Traces > Kit > Season mark, emptied** (WBS §4, Traces).
+
 **Manual entries (WBS §4)**
 - 2026-11-11 55f071f: camp life. Make the smart-action waypoint `AI/RZ_WP_SmartAction.et`, the 49 compositions and the kits (WBS §4, "Camp life: the compositions and kits"). The 21 original pieces come first.
 - 2026-11-11 94217f5: tribe props: the kill-site props, the old lair, and the four faction marks on pack ground (WBS §4, Zombies).
@@ -60,16 +84,15 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 76b52d0: replace the stand-in bases, worst first: drugs' consumable effects, `RZ_Explosion.et` (a real HE round), `RZ_Nest.et` (spawns its own), the carryable generator and alarm clock, the molotov, bottle and tin (WBS §4, "Stand-in bases").
 
 **Engine checks**
-- 2026-11-11 76b52d0: check all 79 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …".
-- 2026-11-12 ee5f1f6: the VERIFY list is 83 now: the new ones are Traces' loop (`World/Traces/RZ_TraceSounds.c:46`) and lit windows (`UI/RZ_TraceLightsClient.c:56`), and the door-mark decals (`UI/RZ_DoorMarkClient.c:77`, `:106`) from the merge (WBS §6).
+- 2026-11-12 2990171: check all 95 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers.
 - 2026-11-11 76b52d0: Workbench's own script compile, the Windows compile check, then `tools/runtime_test/run.sh`. The last Linux run had 0 exceptions, 125/143 missions started and 10/15 questlines ended. On Linux, Special Zombies' `Scripts/` hides ours, so Windows is the real test (MOD_STACK).
 - 2026-11-11 76b52d0: the epilogue's Walk Out kills and deletes the character. Check that the player lands back in the deploy menu cleanly (new VERIFY).
-- 2026-11-11 76b52d0: measure a player's real run and sprint speed (m/s) and Bacon's run and sprint speed. Young infected are being tuned to about 10% faster than a sprinting player.
+- 2026-11-12 b0b0090: measure a player's real run and sprint speed in m/s (the code assumes about 4 and 5.5: VERIFY) and Bacon's run and sprint speed; the young's sprint is tuned to about 10% faster than a sprinting player (WBS §6).
 
 ## For the cloud
 
 - 2026-11-12 (PC): `tools/compile_check.sh` picked the Store's `python3` shortcut on Windows and failed the dialogue lint; patched it to probe python3/python/py like the runtime test (one-line fix, pushed). Windows compile check: OK, 0 ReforgerZ warnings.
-- 2026-11-12 (PC): the author wants the build on **Everon** now. PC is making `Worlds/RZ_Everon/RZ_Everon.ent` (sub-scene of Eden, `SCR_AIWorld_Eden`) and `Missions/RZ_Everon.conf`; Arland stays as the small test world. Done on the PC: world `{4A535A0DE93773EA}Worlds/RZ_Everon/RZ_Everon.ent` (sub-scene of Eden; AI world `SCR_AIWorld_Eden` with `Navmesh_GM_Eden_Soldier.conf` + `GM_Eden_vehicles.nmn`, the same managers as Arland), scenario `{933D8C91F1C91F38}Missions/RZ_Everon.conf`. Loads cleanly in Workbench and boots on the dedicated server (0 exceptions; 96 settlements, 14 holdings, 0 road checkpoints). Please update the docs (WBS "The world", README, PC_SETUP) to name Everon as the main world.
+- 2026-11-12 212e575 (cloud): Everon boots with 0 road checkpoints; cloud to investigate
 
 ## Claims
 
