@@ -41,20 +41,14 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	{
 		super.DisplayStartDraw(owner);
 		s_Instance = this;
-		GetGame().GetInputManager().AddActionListener("RZ_OpenStanding", EActionTrigger.DOWN, OpenStanding);
-		GetGame().GetInputManager().AddActionListener("RZ_OpenJournal", EActionTrigger.DOWN, OpenJournal);
-		GetGame().GetInputManager().AddActionListener("RZ_OpenRadio", EActionTrigger.DOWN, OpenRadio);
-		GetGame().GetInputManager().AddActionListener("RZ_OpenHall", EActionTrigger.DOWN, OpenHall);
+		GetGame().GetInputManager().AddActionListener("RZ_OpenNotebook", EActionTrigger.DOWN, OpenNotebook);
 		Refresh();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void DisplayStopDraw(IEntity owner)
 	{
-		GetGame().GetInputManager().RemoveActionListener("RZ_OpenStanding", EActionTrigger.DOWN, OpenStanding);
-		GetGame().GetInputManager().RemoveActionListener("RZ_OpenJournal", EActionTrigger.DOWN, OpenJournal);
-		GetGame().GetInputManager().RemoveActionListener("RZ_OpenRadio", EActionTrigger.DOWN, OpenRadio);
-		GetGame().GetInputManager().RemoveActionListener("RZ_OpenHall", EActionTrigger.DOWN, OpenHall);
+		GetGame().GetInputManager().RemoveActionListener("RZ_OpenNotebook", EActionTrigger.DOWN, OpenNotebook);
 		foreach (Widget w : m_aCards)
 		{
 			RZ_UIW.Remove(w);
@@ -83,27 +77,10 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 
 	// ================================================================ Input
 	//------------------------------------------------------------------------------------------------
-	protected void OpenStanding(float value = 0, EActionTrigger reason = 0)
+	//! N: the notebook, on the tab last used (docs/UI.md, "The notebook").
+	protected void OpenNotebook(float value = 0, EActionTrigger reason = 0)
 	{
-		RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_StandingMenu);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OpenJournal(float value = 0, EActionTrigger reason = 0)
-	{
-		RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_JournalMenu);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OpenRadio(float value = 0, EActionTrigger reason = 0)
-	{
-		RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_RadioLogMenu);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OpenHall(float value = 0, EActionTrigger reason = 0)
-	{
-		RZ_UIW.OpenMenu(ChimeraMenuPreset.RZ_HallOfFameMenu);
+		RZ_Notebook.Open(-1);
 	}
 
 	// ================================================================ Drawing

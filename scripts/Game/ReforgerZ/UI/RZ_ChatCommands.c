@@ -1,5 +1,6 @@
 //! Chat commands (client): "/note your text" pins a note on the safehouse notice board you're at,
-//! "/noteclear" and "/noteclear all" clear boards (server admins), "/hall" shows the hall of fame.
+//! "/noteclear" and "/noteclear all" clear boards (server admins). The hall of fame is the
+//! notebook's Hall of fame tab.
 //! Each is sent to the server through RZ_PlayerUIComponent.SendCommand; the server checks
 //! everything again. Registered once, from the first notice the client receives
 //! (RZ_GameModeComponent.QueueHint), so it works without any layout.
@@ -20,7 +21,6 @@ class RZ_ChatCommands
 		s_Instance = new RZ_ChatCommands();
 		chat.GetCommandInvoker("note").Insert(s_Instance.OnNote);
 		chat.GetCommandInvoker("noteclear").Insert(s_Instance.OnNoteClear);
-		chat.GetCommandInvoker("hall").Insert(s_Instance.OnHall);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -48,9 +48,4 @@ class RZ_ChatCommands
 			Send(RZ_PlayerUIComponent.CMD_CLEAR_BOARD, "");
 	}
 
-	//------------------------------------------------------------------------------------------------
-	protected void OnHall(SCR_ChatPanel panel, string data)
-	{
-		Send(RZ_PlayerUIComponent.CMD_HALL, "");
-	}
 }

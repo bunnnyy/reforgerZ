@@ -1,8 +1,9 @@
 # The UI layouts
 
-The ReforgerZ layouts are in `UI/layouts/ReforgerZ/`: the HUD, the notice card, six menus, the
-journal and radio rows, the map icon and the background panel (12 files). They were written as
-text from the trees below and checked against every widget name and type the UI scripts look up.
+The ReforgerZ layouts are in `UI/layouts/ReforgerZ/`: the HUD, the notice card, the notebook's
+frame and its five pages, the notice board, the journal and radio rows, the map icon and the
+background panel. They were written as text from the trees below and checked against every widget
+name and type the UI scripts look up.
 This file is their reference: the widget trees, the **names the scripts look up**, sizes, anchors,
 colours and fonts. When you change a layout, change its tree here too. What each screen is for,
 how the scripts work and what's built is in [docs/UI.md](../docs/UI.md); the mockups in
@@ -151,40 +152,51 @@ Unlike the mockup, `CardHazard` is plain hazard yellow: its stripes would need a
 
 ## Menus
 
-Four menus share a frame: Standing, Journal, Radio and Map key. Each layout has its own copy:
+### The notebook: `RZ_NotebookMenu.layout`
+
+The notebook's frame (the `RZ_NotebookMenu` preset). Each tab's page layout is created into
+`Page` when the tab is shown (**UI > Standing page** and the rest); the names inside the pages are
+looked up through the whole menu, so a page's `Header` is the frame's.
 
 ```
 Frame (root, full screen)
-├─ Image   (dark overlay, #08090A at 75%, so the world shows faintly)
-├─ Text    (Heading)       at (72, 40), condensed bold 46: the menu's name
-├─ Text    Header          at (72, 100), mono 17, dim: the sub-line
-├─ Image   (rule under the header, at y 138)
-├─ Button  Tab0 … Tab3     132 × 36 each, 4 apart, top right at y 88: Standing, Journal, Radio, Map key
-│  └─ Text  (tab name)     mono bold 13; the open tab bone with dark text, the others dark with a border
-├─ Button  CloseButton     36 × 36, top right at (-108, 40), with a Text "X"
-├─ Text    (footer keys)   bottom left, mono bold 13, dim ("ESC  CLOSE      Q / E  TABS")
-└─ Text    (footer note)   bottom right, mono 13, dim
+├─ Image   Dimmer          full screen, #08090A at 75%, so the world shows faintly
+├─ Frame   Page            full screen, empty: the page goes here
+├─ Text    PageEmpty       centred, italic 26, dim, "Nothing here yet." (shown when the page has no layout)
+├─ Text    Heading         at (96, 54), condensed bold 46: the tab's name (set by the script)
+├─ Text    Header          at (96, 112), 840 wide, mono 18, dim: the sub-line (set by each page)
+├─ Image   HeadRule        stretched from 96 to -96 at y 150, 2 high
+├─ Button  Tab0 … Tab4     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Journal, Radio, Map key, Hall of fame
+│  └─ Overlay TabNBox
+│     ├─ Image  TabNBg      the open tab bone, the others #1A1D20 (tinted by the script)
+│     ├─ Panel  TabNLine    border, hidden on the open tab
+│     ├─ Text   TabNText    mono bold 18, centred: dark on the open tab, dim on the others
+│     └─ Text   TabBadgeN   mono bold 18, hazard yellow, right: the count of new things (hidden at 0)
+├─ Button  CloseButton     44 × 44, top right at (-140, 54), with a Text "X"
+├─ HorizontalLayout Prompts  bottom left at (96, -54): the footer prompts the script makes (vanilla input buttons)
+├─ Text    PromptsText     the same place, mono bold 18, dim: the static footer, hidden once prompts are made
+└─ Text    FooterNote      bottom right at (-96, -54), mono 18, faint
 ```
 
-The notice board and the hall of fame use the same frame without the four tabs.
+The pages are the old menus' layouts with the frame parts (overlay, heading, header, rule, tabs,
+close button, footer) taken out, and their content moved into the 90% safe area: every horizontal
+position and width scaled by 0.973 from the left margin, which moves from 72 to 96. Each page's
+root is a full-screen `Frame` named after it (`StandingPage`, `JournalPage`, `RadioPage`,
+`MapKeyPage`, `HallPage`). Widget names inside are unchanged, so the drawing code is too.
 
 **Mouse.** The tabs, `CloseButton`, the journal row's root (`MissionRow`), the radio filter chip
 (`FilterButton`) and the notice board's `PostButton` are `Button`s. Long text sits in a
-`ScrollLayout` so the wheel scrolls it: `List`, `Log`, `Notes`, `Leaders0` to `Leaders3` and
-`PastList`. Menus show the cursor while open; if one doesn't, check its entry in
-`chimeraMenus.conf`.
+`ScrollLayout` so the wheel scrolls it, and on a pad up and down do: `ListScroll` (the journal),
+`LogScroll` (the radio), `NotesScroll`, `LeadersScroll0` to `LeadersScroll3` and `PastScroll`.
+Menus show the cursor while open; if one doesn't, check its entry in `chimeraMenus.conf`.
 
 **Menu presets.** `Configs/System/chimeraMenus.conf` is an override of the vanilla file (same
-GUID) with six presets added, each with its layout and class. Workbench finds them.
+GUID) with the ReforgerZ presets added, each with its layout and class. Workbench finds them.
 
 | Preset | Class | Layout |
 |---|---|---|
-| `RZ_StandingMenu` | `RZ_StandingMenu` | `RZ_StandingMenu.layout` |
-| `RZ_JournalMenu` | `RZ_JournalMenu` | `RZ_JournalMenu.layout` |
-| `RZ_RadioLogMenu` | `RZ_RadioLogMenu` | `RZ_RadioLogMenu.layout` |
-| `RZ_MapKeyMenu` | `RZ_MapKeyMenu` | `RZ_MapKeyMenu.layout` |
+| `RZ_NotebookMenu` | `RZ_NotebookMenu` | `RZ_NotebookMenu.layout` |
 | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu.layout` |
-| `RZ_HallOfFameMenu` | `RZ_HallOfFameMenu` | `RZ_HallOfFameMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `RZ_RadioFilter`
@@ -192,11 +204,13 @@ config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `
 the pad routes is in [UI.md](../docs/UI.md#controllers). Esc, Q/E, up/down and Enter use the
 vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
 
-### Standing: `RZ_StandingMenu.layout`
+### Standing page: `RZ_StandingPage.layout`
+
+Positions below are the old menu's (before the 0.973 scale into the safe area).
 
 ```
-Frame (root)
-├─ (menu frame: heading "STANDING", Header (the player, background and life), tabs, footer)
+Frame StandingPage (root)
+├─ (in the frame: Header, the player, background and life)
 ├─ Frame  (Factions)           at (72, 168), 1778 × 610
 │  └─ Frame ×4, one per faction, 431 × 610, 18 apart; names end in the faction number:
 │     0 the Haven, 1 Task Force Bastion, 2 the Red Hand, 3 Halcyon
@@ -225,11 +239,11 @@ Frame (root)
 └─ Text   Waiting              centred, italic 22, "Asking around..." (shown until the data arrives)
 ```
 
-### Journal: `RZ_JournalMenu.layout` and `RZ_MissionRow.layout`
+### Journal page: `RZ_JournalPage.layout` and `RZ_MissionRow.layout`
 
 ```
-Frame (root)
-├─ (menu frame: heading "JOURNAL", Header ("3 OPEN"), tabs, footer)
+Frame JournalPage (root)
+├─ (in the frame: Header, "3 OPEN")
 ├─ Frame  (list panel, at (72, 168), 660 × 840)
 │  ├─ VerticalLayout (list column)
 │  │  ├─ ScrollLayout (fills the column above LabStatus)
@@ -271,11 +285,11 @@ Button MissionRow (root)
    └─ Text   RowTime       right, at (-22, 34), mono 12, faint
 ```
 
-### Radio: `RZ_RadioLogMenu.layout` and `RZ_RadioRow.layout`
+### Radio page: `RZ_RadioPage.layout` and `RZ_RadioRow.layout`
 
 ```
-Frame (root)
-├─ (menu frame: heading "RADIO", Header "WHAT YOU HEARD THIS LIFE, NEWEST FIRST", tabs, footer with "F  FILTER")
+Frame RadioPage (root)
+├─ (in the frame: Header, "WHAT YOU HEARD AND WERE TOLD THIS LIFE, NEWEST FIRST")
 ├─ Frame  (channels panel, at (72, 168), 450 × 840): a static list of the channels, static icons and names
 └─ Frame  (log panel, at (546, 168), 1302 × 840)
    ├─ Button FilterButton   at (26, 16), 150 × 30, the bone chip; a click cycles the filter
@@ -284,8 +298,6 @@ Frame (root)
    │  └─ VerticalLayout Log   the rows, newest first
    └─ Text   Empty          centred, italic 18, "Nothing on the air yet."
 ```
-
-The radio log's `Header` is static text: its script doesn't set it.
 
 `RZ_RadioRow.layout` (**UI > Radio row layout**), as wide as the log, height fits:
 
@@ -302,10 +314,10 @@ Overlay (root)
       └─ Text   RowText       under them, 17, wraps
 ```
 
-### Map key: `RZ_MapKeyMenu.layout`
+### Map key page: `RZ_MapKeyPage.layout`
 
-Static: no names are looked up, and its `Header` is static text. It holds the menu frame and a
-legend panel at (72, 168), 640 × 840, with one row per marker the map draws: the icon in its colour
+Static: no names are looked up (the script sets only the frame's `Header`). It holds a
+legend panel at (72, 168), 640 × 840 before the scale, with one row per marker the map draws: the icon in its colour
 (32 × 32; the stronghold and outpost rows show three 24 × 24 icons in faction colours), the name
 in bold 15 and one line in 13, dim. Under WHO HOLDS WHAT: stronghold, outpost, Haven safehouse,
 Halcyon's lab. Under THE WORLD: world event and sealed checkpoint in hazard yellow, power station
@@ -317,12 +329,14 @@ hazard.
 
 ### Notice board: `RZ_NoticeBoardMenu.layout`
 
-Not a tab: no `Tab0`–`Tab3` (the menu frame's heading, `Header` and `CloseButton` only). Opened by
-the server when a player reads a safehouse board, with **UI > Board menus** on.
+Not a notebook tab: a frame of its own like the notebook's (heading at (96, 54), `Header` at
+(96, 112), `CloseButton` 44 × 44 at (-140, 54), the footer in mono 18 at (96, -54)), without tabs.
+Opened by the server when a player reads a safehouse board, with **UI > Board menus** on. Its
+panels are scaled into the safe area like the pages.
 
 ```
 Frame (root)
-├─ (menu frame: heading "SAFEHOUSE", Header "NOTICE BOARD: MORTON", CloseButton, footer "ESC  CLOSE")
+├─ (frame: heading "SAFEHOUSE", Header "NOTICE BOARD: MORTON", CloseButton, footer "ESC / B  CLOSE      UP / DOWN  SCROLL")
 ├─ Frame  (board panel, at (72, 168), 1100 × 840, the panel colour)
 │  ├─ ScrollLayout
 │  │  └─ Text  Notes       wraps, 18, bone
@@ -338,13 +352,11 @@ Frame (root)
 `NoteInput` is a single-line `EditBox`: the script reads it as an `EditBoxWidget`, and a
 multi-line edit box isn't one.
 
-### Hall of fame: `RZ_HallOfFameMenu.layout`
-
-Not a tab either: the menu frame's heading ("HALL OF FAME"), `Header` (the season) and `CloseButton`.
+### Hall of fame page: `RZ_HallPage.layout`
 
 ```
-Frame (root)
-├─ (menu frame: heading "HALL OF FAME", Header "SEASON 3", CloseButton, footer "ESC  CLOSE")
+Frame HallPage (root)
+├─ (in the frame: Header, "SEASON 3")
 ├─ Frame  (this season, at (72, 168), 580 × 840)
 │  ├─ Text (label "THIS SEASON")
 │  └─ Text SeasonList    wraps, 16 (each record: the category, then the name and value)

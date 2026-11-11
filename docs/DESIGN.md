@@ -1946,8 +1946,8 @@ Saved to `hall_of_fame.json`, which no wipe touches. **Season > Hall of fame** (
 | Champion of each faction | the most Fame anyone reached with that faction in one life |
 
 It's kept for **this season** and **all time**, plus a few lines for each of the last 10 seasons.
-Players get it on their first spawn of a session, after the news; `/hall` in chat shows it
-again, and the hall of fame menu (key **RZ_OpenHall**) shows it in full ([UI.md](UI.md)).
+Players get it on their first spawn of a session, after the news, and the notebook's Hall of
+fame tab shows it in full ([UI.md](UI.md#the-notebook)).
 
 *Simplified:* players are matched by their backend identity and shown by the name they last
 played under; at most 500 records are kept per list (the emptiest go first).

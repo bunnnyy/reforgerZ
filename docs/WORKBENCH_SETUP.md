@@ -363,7 +363,7 @@ Players who pick a locked one keep its gear but play as Unemployed. The log warn
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 145 prefabs the plugin creates, 16 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 33 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **171 prefab fields**: 40 on `RZ_GameModeComponent`, 125 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **176 entries**: 146 prefabs the plugin creates, 16 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 14 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 33 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -656,6 +656,12 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | the MissionRow layout (UI/LAYOUTS.md) | — | UI > Mission row layout | optional | journal rows |
 | (existing prefab) | the RadioRow layout (UI/LAYOUTS.md) | — | UI > Radio row layout | optional | radio log rows |
 | (existing prefab) | the MapIcon layout (UI/LAYOUTS.md) | — | UI > Map icon layout | optional | the ReforgerZ icons on the map, per player (empty = vanilla text markers for events and the lab). Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI) |
+| `RZ_Notebook.et` | a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg | `RZ_NotebookGadgetComponent` | UI > Notebook prefab | optional | given to every new life; taken into the hand it opens the notebook (the pad's way in besides the pause menu). Built as text in the repo; check in Workbench that it can be taken into the hand and put in a quick slot |
+| (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
+| (existing prefab) | the Journal page layout (UI/LAYOUTS.md) | — | UI > Journal page | optional | the Journal tab (empty = Nothing here yet) |
+| (existing prefab) | the Radio page layout (UI/LAYOUTS.md) | — | UI > Radio page | optional | the Radio tab (empty = Nothing here yet) |
+| (existing prefab) | the Map key page layout (UI/LAYOUTS.md) | — | UI > Map key page | optional | the Map key tab (empty = Nothing here yet) |
+| (existing prefab) | the Hall page layout (UI/LAYOUTS.md) | — | UI > Hall page | optional | the Hall of fame tab (empty = Nothing here yet) |
 <!-- /manifest:prefabs -->
 
 ### Stand-in bases
@@ -843,7 +849,8 @@ type takes the items whose prefab names contain its keywords (the lists are in
 
 Optional: without it every message is a vanilla hint, as before. How the UI works is in
 [UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md). Steps 1 to 4
-are done in the repo; 5 and 6 aren't. The 12 layouts are in `UI/layouts/ReforgerZ/`.
+are done in the repo (step 4's notebook written as text: check it in Workbench, 4a); 5 and 6
+aren't. The layouts are in `UI/layouts/ReforgerZ/`.
 
 1. **The feed** (done). `Prefabs/Characters/Core/RZ_PlayerController.et` inherits vanilla
    `DefaultPlayerControllerMP.et` and adds `RZ_PlayerUIComponent` (vanilla controllers already
@@ -854,14 +861,30 @@ are done in the repo; 5 and 6 aren't. The 12 layouts are in `UI/layouts/Reforger
 3. **The HUD** (done). `RZ_Hud.layout` and `RZ_NoticeCard.layout` are built. The player
    controller's `SCR_HUDManagerComponent` has an info display of class `RZ_HudDisplay` with the HUD
    layout, and **UI > Notice layout** is set.
-4. **The menus** (done, on keys for now; not checked in play yet). The six menu layouts and the
-   two row layouts are built, with Buttons for the mouse; **UI > Mission row layout** and **Radio
-   row layout** are set. Two overrides of vanilla configs (same GUIDs) in `Configs/System/` add the
-   rest: `chimeraMenus.conf` the six menu presets, `chimeraInputCommon.conf` the five input actions
-   ([both](../UI/LAYOUTS.md#menus)). Their keys clash with vanilla ones, so opening the screens from
-   the map instead is planned ([UI.md](UI.md#opening-the-screens)). **UI > Board menus** is still
-   off (the board is a notice and notes are written with `/note`): turn it on once the notice
-   board's menu works.
+4. **The menus** (done as text; not checked in play yet). The notebook's frame
+   (`RZ_NotebookMenu.layout`), its five page layouts, the notice board's layout and the two row
+   layouts are built, with Buttons for the mouse; **UI > Mission row layout**, **Radio row
+   layout** and the five **page** layouts are set on `RZ_GameMode.et`. Two overrides of vanilla
+   configs (same GUIDs) in `Configs/System/` add the rest: `chimeraMenus.conf` the presets,
+   `chimeraInputCommon.conf` the input actions ([both](../UI/LAYOUTS.md#menus)). **UI > Board
+   menus** is still off (the board is a notice and notes are written with `/note`): turn it on
+   once the notice board's menu works.
+
+   **4a. Check the notebook in Workbench** (the author's steps; nothing here needs the editor
+   unless a check fails):
+   1. Open `UI/layouts/ReforgerZ/RZ_NotebookMenu.layout` and the five `RZ_*Page.layout` files in
+      the layout editor once, so Workbench registers them (it reads the GUIDs from their `.meta`
+      files). Check each page's content sits between the header rule and the footer, inside the
+      safe area, and nothing overlaps the tabs. If a page looks squeezed, widen it in the editor:
+      the script only looks up the names in UI/LAYOUTS.md.
+   2. Open `Prefabs/ReforgerZ/UI/RZ_Notebook.et` (written as text on vanilla's carryable notebook,
+      with `RZ_NotebookGadgetComponent`): it should show the component, display name Notebook and
+      weight 0.1 kg. **UI > Notebook prefab** points at it.
+   3. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
+      with the pad); after spawning, find the notebook in the inventory and take it in hand. If
+      the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
+      button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
+      it's there.
 5. **The deploy panel** (to do). `RZ_BackgroundPanel.layout` is built, and its root already
    carries `RZ_BackgroundPanelComponent`. Find the vanilla deploy menu's layout in the Resource
    Browser (in 1.9 the log shows it opening `UI/layouts/Menus/DeployMenu/RoleSelectionMenu.layout`),
@@ -1156,7 +1179,7 @@ Warnings worth acting on:
 
 | Line | Means |
 |---|---|
-| `GUI (E): Menu preset 'RZ_StandingMenu' not found!` (and the other five) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override (`Configs/System/`) wasn't loaded ([the UI](#setting-up-the-ui)). Only the menus are missing |
+| `GUI (E): Menu preset 'RZ_NotebookMenu' not found!` (or another `RZ_` preset) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override (`Configs/System/`) wasn't loaded ([the UI](#setting-up-the-ui)). Only the menus are missing |
 | `No common zombie prefabs configured. ...` | Set Zombies > Common prefabs (logged as an error: no infected spawn) |
 | `Using N hand-placed settlement markers.` | Detection is off because markers are placed |
 | `No checkpoint barricade prefab set: road checkpoints are off.` | Set Perimeter > Barricade prefab |
@@ -1290,7 +1313,7 @@ session, tick off:
   the winner's rules (the log and the first-spawn "This season" notice say which).
 - [ ] **Rule sets** `Winter, Fog` on a fresh season: both are named on first spawn; at night more
   specials; Fog Banks come more often. `No Vehicles`: no fixable cars, no trucks, no Recover the Bus.
-- [ ] The hall of fame shows on first spawn and with `/hall`; a delivered sample and a finished
+- [ ] The hall of fame shows on first spawn and on the notebook's Hall of fame tab; a delivered sample and a finished
   mission show up in it.
 - [ ] At a safehouse: "Read the notice board" (empty), `/note Water at the church, bring a bucket`,
   read again: your name and the note. A second note at once is refused; away from a safehouse
@@ -1312,9 +1335,15 @@ session, tick off:
 - [ ] A bite shows the golden window counting down, then Fever with the track filling; a
   stabiliser shows PAUSED and the clock stops; the timer matches the stage messages within seconds.
 - [ ] Cracking a secure channel shows the indicator until the codes change.
-- [ ] K, J and U open Standing, Journal and Radio with real data; Q/E switch tabs; Esc closes.
-- [ ] O opens the hall of fame; with **Board menus** on, reading a board opens the board menu, and
-  typing in its box and pressing Post pins the note (the list refreshes).
+- [ ] N opens the notebook on Journal the first time, then on the tab last used; Q/E and LB/RB go
+  through Standing, Journal, Radio, Map key and Hall of fame with real data; up/down move the
+  journal's selection and scroll the other lists; X or F cycles the Radio filter through six
+  names; B or Esc closes. With a pad only: Start, Notebook, A opens it; the notebook item taken in
+  hand (inventory or quick slot) opens it and is put away when it closes.
+- [ ] A new contract offer shows a count on the Journal tab, a radio message one on Radio; looking
+  at the tab clears it.
+- [ ] With **Board menus** on, reading a board opens the board menu, and typing in its box and
+  pressing Post pins the note (the list refreshes); up/down scroll the notes.
 - [ ] In the deploy menu, a locked background shows LOCKED and how to unlock it, and the menu won't
   spawn it; after one life as Nurse the panel lists the Nurse's real gear.
 - [ ] The tabs, close button, journal rows and radio filter take clicks; the lists scroll.

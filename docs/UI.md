@@ -75,29 +75,29 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Screen | Preview | What it shows | Script | Status |
 |---|---|---|---|---|
 | HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer and the radio indicator not seen yet |
-| Standing | `standing.png` | Per faction: tier, Fame, Infamy (with the tier bands marked), Favor, the leaders you've met and what they think of you, what the faction needs, a warning when it hunts you. Truces and feuds, and the tier grid | `RZ_StandingMenu` | Layout built, not checked in play; the tier grid is static |
-| Journal | `journal.png` | Active contracts, events, puzzles, leader jobs, arcs and questlines with type icon, giver, rough direction and distance and time left. The selected one in full: brief, where, requirements, rewards, and the puzzle clues you've read (or a questline's notes). Under the list, the lab's line: research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) | `RZ_JournalMenu` | Layout built, not checked in play; the mockup has no lab line yet |
+| The notebook | — | One menu with five tabs, the five rows below, in this order ([below](#the-notebook)) | `RZ_NotebookMenu` | Frame and pages built as text, not checked in play |
+| Notebook: Standing | `standing.png` | Per faction: tier, Fame, Infamy (with the tier bands marked), Favor, the leaders you've met and what they think of you, what the faction needs, a warning when it hunts you. Truces and feuds, and the tier grid | `RZ_StandingPage` | Page built, not checked in play; the tier grid is static |
+| Notebook: Journal | `journal.png` | Active contracts, events, puzzles, leader jobs, arcs and questlines with type icon, giver, rough direction and distance and time left. The selected one in full: brief, where, requirements, rewards, and the puzzle clues you've read (or a questline's notes). Under the list, the lab's line: research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) | `RZ_JournalPage` | Page built, not checked in play; the mockup has no lab line yet |
 | Background picker | `background_picker.png` | A panel in the vanilla deploy menu: the picked background's name, perk, flaw, starting standing, starting gear, locked or available (with how to unlock), Legacy toward the Drifter. Locked loadouts are unavailable in the menu itself | `RZ_BackgroundPanelComponent`, `RZ_LoadoutLock.c` | Layout built, not in the deploy menu yet |
-| Radio log | `radio_log.png` | What you heard this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, and the mission and world notices; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioLogMenu` | Layout built, not checked in play; the channel list is static; the chip shows the six filter names |
-| Map key | `map_legend.png` | The marker icons the map draws, with one line each | `RZ_MapKeyMenu` | Static layout built, not checked in play |
+| Notebook: Radio | `radio_log.png` | What you heard and were told this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, and the mission and world notices; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
+| Notebook: Map key | `map_legend.png` | The marker icons the map draws, with one line each | `RZ_MapKeyPage` | Static page built, not checked in play |
+| Notebook: Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallPage` | Page built, not checked in play; no mockup |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), and a box to write one with a Post button. Opened when you read the board, with **UI > Board menus** on | `RZ_NoticeBoardMenu` | Layout built; **Board menus** is off; no mockup |
-| Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallOfFameMenu` | Layout built, not checked in play; no mockup |
 | The map | — | The marker icons on the vanilla map, per player ([below](#the-map)) | `RZ_MapIconsUI` | Layout built, not on the map yet |
 
-The menus share one frame: Standing, Journal, Radio and Map key are tabs (Q/E), Esc closes. The
-notice board and the hall of fame aren't tabs: Esc or the close button closes them. How the
-screens open is [below](#opening-the-screens).
+The notice board isn't a notebook tab: it opens when you read a safehouse board, and Esc, B or
+the close button close it.
 
 **Chat commands** (`RZ_ChatCommands`, client): `/note <text>` pins a note on the board you're at,
-`/noteclear` and `/noteclear all` clear boards (server admins), `/hall` shows the hall of fame
-as a notice. They work without any layout. Without the board menu, reading the board is a
-notice and notes are written with `/note`.
+`/noteclear` and `/noteclear all` clear boards (server admins). They work without any layout.
+Without the board menu, reading the board is a notice and notes are written with `/note`.
 
 **Rough areas in the journal.** A contract's "where" and direction are the rough circle ("around
 Morton (within 500 m)", "about 1.2 km NE") until the player knows the spot
 ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)). **Mouse:** click a tab to switch, the close button to
 close, a journal row to select it, the filter chip to cycle the radio filter; the wheel scrolls the
-lists (they sit in a ScrollLayout). Those widgets are Buttons in the layouts.
+lists (they sit in a ScrollLayout). Those widgets are Buttons in the layouts. On a pad, up and
+down scroll the same lists.
 
 **Questlines in the journal.** A questline you're part of ([DESIGN.md](DESIGN.md#questlines)) is
 a row of its own: the questline's title, its current stage as the "by" line, "Questline" where
@@ -140,16 +140,48 @@ notice is classified by its title on the client (`RZ_NoticeStyle.Classify`). Wit
 vanilla hint queue sorts the same way, with no expiry (it has nowhere else to go).
 *Simplified:* an odd title gets Normal; nothing is lost, it only waits.
 
-### Opening the screens
+### The notebook
 
-For now, with keys: the input override binds **K** standing, **J** journal, **U** radio and **O**
-the hall of fame, and **F** cycles the radio log's filter
-([LAYOUTS.md](../UI/LAYOUTS.md#menus)). The map key is reached only as a tab. The notice board
-opens when you read a safehouse board, with **UI > Board menus** on.
+One menu with five tabs, in this order: **Standing, Journal, Radio, Map key, Hall of fame.**
 
-K, J, U and O are vanilla keys too: K takes out the compass, O the watch, U accepts a group
-invite and a tap of J shows the task list hint. **Planned:** open the screens from the map
-instead, with tabs or a menu in the map. That's being designed; none of it is built.
+| Open it | Keyboard and mouse | Gamepad / console |
+|---|---|---|
+| A key | **N** (`RZ_OpenNotebook`) | — |
+| The pause menu | Esc, then **Notebook** | Start, then **Notebook**, A |
+| The notebook item | In the inventory, take it into your hand | The same, or from a quick slot |
+
+- It opens on the tab you last used this session (the first time: Journal).
+- LB/RB or Q/E switch tabs; clicking a tab works too. Up/down (D-pad, stick, arrows) move in the
+  journal's list and scroll the other tabs' lists; A or Enter selects the journal row with the
+  focus; X or F (or a click on the chip) cycles the Radio filter; B or Esc closes.
+- A tab with something new since you last looked carries a count: Journal the mission notices,
+  Radio everything it lists. Opening the notebook also clears the "+N in your notebook" line.
+- Opened from the item, the item is put away again when the notebook closes.
+- You can't move while it's open (it's a menu, like vanilla's). The world keeps running.
+
+**How it works.** `RZ_NotebookMenu` holds the shared frame (heading, sub-line, tabs with their
+counts, close button, footer prompts) and an empty `Page` frame. Each tab is a page
+(`RZ_NotebookPage`: `RZ_StandingPage`, `RZ_JournalPage`, `RZ_RadioPage`, `RZ_MapKeyPage`,
+`RZ_HallPage`) with its own layout (**UI > Standing page** and the rest); switching tabs removes
+the old page's widgets and creates the new page's layout inside `Page`, so the menu stays open and
+the pad focus is set again (the page's first row, else the open tab). A tab whose page layout is
+empty says "Nothing here yet". Each page asks for its payload when it's shown and redraws when a
+new copy arrives, as the old menus did. Nothing is saved; the last tab lives on the client for
+the session.
+
+**The pause menu button** (`RZ_PauseNotebook.c`, a `modded class PauseMenuUI`): when vanilla's
+pause menu opens, a button named `RZ_Notebook` is used if the layout has one; otherwise one is
+made from vanilla's own pause menu button layout and moved just after Field Manual, in the same
+focus column. Its click closes the pause menu and opens the notebook. No layout override is
+needed.
+
+**The notebook item** (`Prefabs/ReforgerZ/UI/RZ_Notebook.et`, `RZ_NotebookGadgetComponent`): a
+small notebook every new life is given a few seconds after spawn (**UI > Notebook prefab**; one
+that doesn't fit lies at your feet). Taken into the hand by its owner it opens the notebook; when
+the notebook closes, it goes back. *Simplified:* it's given at spawn by script rather than added
+to each of the 13 loadouts, so it works with any loadout.
+
+The notice board opens when you read a safehouse board, with **UI > Board menus** on.
 
 ### The background picker
 
@@ -213,9 +245,10 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes**; with Stealth on, stealth's own update (every second) hands it each player's visibility, sent the same way as a level 0–5 and whether it counts as hidden (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal (with the questlines the player is part of and the lab's line), background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the radio log on the client for this life. A notice board payload from the server opens the board menu |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk screens and readers and closes them in danger (below) |
-| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/hall`, sent as commands to the server, which checks them again. Registered with the first notice |
+| `RZ_ChatCommands` | client | `/note`, `/noteclear`, sent as commands to the server, which checks them again. Registered with the first notice |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards |
-| `RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu`, `RZ_NoticeBoardMenu`, `RZ_HallOfFameMenu` | client (`ChimeraMenuBase`) | Ask for their data on open, redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them |
+| `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
+| `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookGadgetComponent` | client | Open the notebook: N, the pause menu's button, the notebook item |
 | `RZ_BackgroundPanelComponent` | client (widget handler) | Watches the picked loadout in the deploy menu and shows its background and gear |
 | `SCR_BasePlayerLoadout` (modded, `RZ_LoadoutLock.c`) | server and client | Makes a locked background's loadout unavailable |
 | `RZ_MapIconsUI` | client (map component) | The icon layer on the map |

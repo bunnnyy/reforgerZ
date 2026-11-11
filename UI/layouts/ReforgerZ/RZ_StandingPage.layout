@@ -1,5 +1,5 @@
 FrameWidgetClass "{5FB84287E2908342}" {
- Name "StandingMenu"
+ Name "StandingPage"
  Slot FrameWidgetSlot "{BDD4F2EC9922BFBE}" {
   Anchor 0 0 1 1
   PositionX 0
@@ -14,430 +14,16 @@ FrameWidgetClass "{5FB84287E2908342}" {
  }
  "Ignore Cursor" 0
  {
-  ImageWidgetClass "{C0496905A6E9D118}" {
-   Name "Dimmer"
-   Slot FrameWidgetSlot "{64A668CEE9AF13C3}" {
-    Anchor 0 0 1 1
-    PositionX 0
-    OffsetLeft 0
-    PositionY 0
-    OffsetTop 0
-    SizeX 0
-    OffsetRight 0
-    SizeY 0
-    OffsetBottom 0
-    Alignment 0 0
-   }
-   Color 0.031 0.035 0.039 0.75
-   Size 1 1
-  }
-  TextWidgetClass "{C65A0804F4A270B8}" {
-   Name "Heading"
-   Slot FrameWidgetSlot "{767722C10200F383}" {
-    Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 40
-    OffsetTop 40
-    SizeX 1000
-    OffsetRight -1072
-    SizeY 56
-    OffsetBottom -96
-    Alignment 0 0
-   }
-   Color 0.91 0.886 0.816 1
-   Text "STANDING"
-   "Font Size" 46
-   "Min Font Size" 46
-   FontProperties FontProperties "{79FA5648DA236601}" {
-    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-   }
-  }
-  TextWidgetClass "{7E6F9EF392801078}" {
-   Name "Header"
-   Slot FrameWidgetSlot "{69D4BD6FF4BA6088}" {
-    Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 100
-    OffsetTop 100
-    SizeX 1100
-    OffsetRight -1172
-    SizeY 24
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   Color 0.639 0.62 0.565 1
-   Text ""
-   "Font Size" 17
-   "Min Font Size" 17
-   FontProperties FontProperties "{4479A887D67CD6FA}" {
-    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
-   }
-  }
-  ImageWidgetClass "{5AB8B342B1E1DC10}" {
-   Name "HeadRule"
-   Slot FrameWidgetSlot "{15DB86FCA5769D04}" {
-    Anchor 0 0 1 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 138
-    OffsetTop 138
-    SizeX -144
-    OffsetRight 72
-    SizeY 2
-    OffsetBottom -140
-    Alignment 0 0
-   }
-   Color 0.227 0.247 0.259 1
-   Size 1 1
-  }
-  ButtonWidgetClass "{8E96A2FD3DF0AAEF}" {
-   Name "Tab0"
-   Slot FrameWidgetSlot "{E6498A0F100A4C29}" {
-    Anchor 1 0 1 0
-    PositionX -612
-    OffsetLeft -612
-    PositionY 88
-    OffsetTop 88
-    SizeX 132
-    OffsetRight 480
-    SizeY 36
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{430B91E221C3FD85}" {
-     Name "Tab0Box"
-     Slot ButtonWidgetSlot "{727748BD599F066A}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{8581C1D53370636F}" {
-       Name "Tab0Bg"
-       Slot OverlayWidgetSlot "{4665BC235B604E9E}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.91 0.886 0.816 1
-       Size 1 1
-      }
-      TextWidgetClass "{2A2D24C00A167707}" {
-       Name "Tab0Text"
-       Slot OverlayWidgetSlot "{C099B58245DAEE8B}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.078 0.078 0.078 1
-       Text "STANDING"
-       "Font Size" 13
-       "Min Font Size" 13
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{D8485A4192CBC83E}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  ButtonWidgetClass "{4E06301893EE916F}" {
-   Name "Tab1"
-   Slot FrameWidgetSlot "{321244D85FED9B25}" {
-    Anchor 1 0 1 0
-    PositionX -476
-    OffsetLeft -476
-    PositionY 88
-    OffsetTop 88
-    SizeX 132
-    OffsetRight 344
-    SizeY 36
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{827E236FCD08B5A2}" {
-     Name "Tab1Box"
-     Slot ButtonWidgetSlot "{2A3387448251B9D2}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{5BF291095F8E34A1}" {
-       Name "Tab1Bg"
-       Slot OverlayWidgetSlot "{7FE04C977A639B9B}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.078 0.086 0.094 0.7
-       Size 1 1
-      }
-      PanelWidgetClass "{939531651BB5C281}" {
-       Name "Tab1Line"
-       Slot OverlayWidgetSlot "{AF96D2A1F562ED13}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.165 0.18 0.192 1
-       style outline_2px
-      }
-      TextWidgetClass "{C55CFD4D86A3CFBC}" {
-       Name "Tab1Text"
-       Slot OverlayWidgetSlot "{8759304DE6695991}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.639 0.62 0.565 1
-       Text "JOURNAL"
-       "Font Size" 13
-       "Min Font Size" 13
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{D5E000C4D40801CE}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  ButtonWidgetClass "{F69C976425AC46C8}" {
-   Name "Tab2"
-   Slot FrameWidgetSlot "{69B78516B17598DF}" {
-    Anchor 1 0 1 0
-    PositionX -340
-    OffsetLeft -340
-    PositionY 88
-    OffsetTop 88
-    SizeX 132
-    OffsetRight 208
-    SizeY 36
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{7125C4333EB72C61}" {
-     Name "Tab2Box"
-     Slot ButtonWidgetSlot "{E9462D75E900A491}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{42E48115DE203321}" {
-       Name "Tab2Bg"
-       Slot OverlayWidgetSlot "{14962B475B0F6EF1}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.078 0.086 0.094 0.7
-       Size 1 1
-      }
-      PanelWidgetClass "{62CB89AD886CD710}" {
-       Name "Tab2Line"
-       Slot OverlayWidgetSlot "{9583EB00D43027ED}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.165 0.18 0.192 1
-       style outline_2px
-      }
-      TextWidgetClass "{326727367CFFE6E8}" {
-       Name "Tab2Text"
-       Slot OverlayWidgetSlot "{103AB5D26B22693F}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.639 0.62 0.565 1
-       Text "RADIO"
-       "Font Size" 13
-       "Min Font Size" 13
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{63A5C19EB064E0C7}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  ButtonWidgetClass "{B35E88AC8C54E2C4}" {
-   Name "Tab3"
-   Slot FrameWidgetSlot "{4F1CDD4D0768D32D}" {
-    Anchor 1 0 1 0
-    PositionX -204
-    OffsetLeft -204
-    PositionY 88
-    OffsetTop 88
-    SizeX 132
-    OffsetRight 72
-    SizeY 36
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{3003923111F03A72}" {
-     Name "Tab3Box"
-     Slot ButtonWidgetSlot "{C47100521104F91F}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{C5F52B623BF41DAA}" {
-       Name "Tab3Bg"
-       Slot OverlayWidgetSlot "{CC3036C5757680D6}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.078 0.086 0.094 0.7
-       Size 1 1
-      }
-      PanelWidgetClass "{9364CE189929A56C}" {
-       Name "Tab3Line"
-       Slot OverlayWidgetSlot "{CE473321FD963174}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.165 0.18 0.192 1
-       style outline_2px
-      }
-      TextWidgetClass "{614E8766CABE2985}" {
-       Name "Tab3Text"
-       Slot OverlayWidgetSlot "{F6A1C29880792253}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.639 0.62 0.565 1
-       Text "MAP KEY"
-       "Font Size" 13
-       "Min Font Size" 13
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{8FDBD0307D96B87B}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  ButtonWidgetClass "{1B6BED18BB555EF5}" {
-   Name "CloseButton"
-   Slot FrameWidgetSlot "{B7CE4A6E788CADCB}" {
-    Anchor 1 0 1 0
-    PositionX -108
-    OffsetLeft -108
-    PositionY 40
-    OffsetTop 40
-    SizeX 36
-    OffsetRight 72
-    SizeY 36
-    OffsetBottom -76
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{CC6CB643FB07F11A}" {
-     Name "CloseBox"
-     Slot ButtonWidgetSlot "{31DABF70331E3781}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{6490D53229984A5A}" {
-       Name "CloseBg"
-       Slot OverlayWidgetSlot "{C8444731DDF5D30E}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.102 0.114 0.125 1
-       Size 1 1
-      }
-      PanelWidgetClass "{B60A9E1C95B7CB12}" {
-       Name "CloseLine"
-       Slot OverlayWidgetSlot "{546092B7EED530DF}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.227 0.247 0.259 1
-       style outline_2px
-      }
-      TextWidgetClass "{26AAE90E426E3E32}" {
-       Name "CloseText"
-       Slot OverlayWidgetSlot "{6AA9B2930D813560}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.91 0.886 0.816 1
-       Text "X"
-       "Font Size" 20
-       "Min Font Size" 20
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{A711D39BAC924B32}" {
-        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  TextWidgetClass "{CC19DC6C7C7FDDA6}" {
-   Name "FooterKeys"
-   Slot FrameWidgetSlot "{C0C0D03D0738EE35}" {
-    Anchor 0 1 0 1
-    PositionX 72
-    OffsetLeft 72
-    PositionY -34
-    OffsetTop -34
-    SizeX 700
-    OffsetRight -772
-    SizeY 20
-    OffsetBottom 14
-    Alignment 0 1
-   }
-   Color 0.639 0.62 0.565 1
-   Text "ESC  CLOSE      Q / E  TABS"
-   "Font Size" 13
-   "Min Font Size" 13
-   FontProperties FontProperties "{29F1CDABB49C8C8F}" {
-    Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-   }
-  }
-  TextWidgetClass "{37DEEE0712EE0807}" {
-   Name "FooterNote"
-   Slot FrameWidgetSlot "{F2303924C0024C24}" {
-    Anchor 1 1 1 1
-    PositionX -72
-    OffsetLeft -72
-    PositionY -34
-    OffsetTop -34
-    SizeX 1000
-    OffsetRight -928
-    SizeY 20
-    OffsetBottom 14
-    Alignment 1 1
-   }
-   Color 0.639 0.62 0.565 1
-   Text "Standing is for this life. Reach Champion and word gets around: your next life starts Known."
-   "Font Size" 13
-   "Min Font Size" 13
-   "Horizontal Alignment" Right
-   FontProperties FontProperties "{2485DDBC1A36CC6C}" {
-    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
-   }
-  }
   FrameWidgetClass "{355AABE661AD8789}" {
    Name "Factions"
    Slot FrameWidgetSlot "{65A006B789135FF1}" {
     Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
+    PositionX 96
+    OffsetLeft 96
     PositionY 168
     OffsetTop 168
-    SizeX 1778
-    OffsetRight -1850
+    SizeX 1730
+    OffsetRight -1826
     SizeY 610
     OffsetBottom -778
     Alignment 0 0
@@ -451,8 +37,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 431
-      OffsetRight -431
+      SizeX 419
+      OffsetRight -419
       SizeY 610
       OffsetBottom -610
       Alignment 0 0
@@ -496,12 +82,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "Emblem0"
        Slot FrameWidgetSlot "{5B3BCA4C343B8E9F}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 18
         OffsetTop 18
-        SizeX 54
-        OffsetRight -76
+        SizeX 53
+        OffsetRight -74
         SizeY 54
         OffsetBottom -72
         Alignment 0 0
@@ -513,12 +99,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FactionName0"
        Slot FrameWidgetSlot "{15E9C9E802175466}" {
         Anchor 0 0 0 0
-        PositionX 92
-        OffsetLeft 92
+        PositionX 90
+        OffsetLeft 90
         PositionY 30
         OffsetTop 30
-        SizeX 317
-        OffsetRight -409
+        SizeX 308
+        OffsetRight -398
         SizeY 30
         OffsetBottom -60
         Alignment 0 0
@@ -535,12 +121,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "TierBox0"
        Slot FrameWidgetSlot "{CC20A252998C536D}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 88
         OffsetTop 88
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 66
         OffsetBottom -154
         Alignment 0 0
@@ -588,8 +174,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 14
           PositionY 12
           OffsetTop 12
-          SizeX 42
-          OffsetRight -56
+          SizeX 41
+          OffsetRight -55
           SizeY 42
           OffsetBottom -54
           Alignment 0 0
@@ -601,12 +187,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "TierName0"
          Slot FrameWidgetSlot "{DEDAD978E901E313}" {
           Anchor 0 0 0 0
-          PositionX 70
-          OffsetLeft 70
+          PositionX 68
+          OffsetLeft 68
           PositionY 9
           OffsetTop 9
-          SizeX 303
-          OffsetRight -373
+          SizeX 295
+          OffsetRight -363
           SizeY 30
           OffsetBottom -39
           Alignment 0 0
@@ -623,12 +209,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "TierNote0"
          Slot FrameWidgetSlot "{20230339998D30D8}" {
           Anchor 0 0 0 0
-          PositionX 70
-          OffsetLeft 70
+          PositionX 68
+          OffsetLeft 68
           PositionY 40
           OffsetTop 40
-          SizeX 303
-          OffsetRight -373
+          SizeX 295
+          OffsetRight -363
           SizeY 18
           OffsetBottom -58
           Alignment 0 0
@@ -647,12 +233,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameLabel0"
        Slot FrameWidgetSlot "{38E0DB97414AFE4B}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 168
         OffsetTop 168
-        SizeX 200
-        OffsetRight -222
+        SizeX 195
+        OffsetRight -216
         SizeY 16
         OffsetBottom -184
         Alignment 0 0
@@ -669,12 +255,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameValue0"
        Slot FrameWidgetSlot "{7F6E11E6550CC504}" {
         Anchor 0 0 0 0
-        PositionX 259
-        OffsetLeft 259
+        PositionX 252
+        OffsetLeft 252
         PositionY 166
         OffsetTop 166
-        SizeX 150
-        OffsetRight -409
+        SizeX 146
+        OffsetRight -398
         SizeY 18
         OffsetBottom -184
         Alignment 0 0
@@ -692,12 +278,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameBarBox0"
        Slot FrameWidgetSlot "{10BB4B892940B24D}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 188
         OffsetTop 188
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 10
         OffsetBottom -198
         Alignment 0 0
@@ -744,12 +330,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox0Tick15"
          Slot FrameWidgetSlot "{6E6E5E399E7AEDF7}" {
           Anchor 0 0 0 0
-          PositionX 58
-          OffsetLeft 58
+          PositionX 56
+          OffsetLeft 56
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -60
+          OffsetRight -58
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -761,12 +347,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox0Tick40"
          Slot FrameWidgetSlot "{1FB8A16FB2677306}" {
           Anchor 0 0 0 0
-          PositionX 155
-          OffsetLeft 155
+          PositionX 151
+          OffsetLeft 151
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -157
+          OffsetRight -153
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -778,12 +364,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox0Tick75"
          Slot FrameWidgetSlot "{A8AA60BB36B3E4DF}" {
           Anchor 0 0 0 0
-          PositionX 290
-          OffsetLeft 290
+          PositionX 282
+          OffsetLeft 282
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -292
+          OffsetRight -284
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -797,12 +383,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyLabel0"
        Slot FrameWidgetSlot "{F6D9144025EAA28A}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 208
         OffsetTop 208
-        SizeX 200
-        OffsetRight -222
+        SizeX 195
+        OffsetRight -216
         SizeY 16
         OffsetBottom -224
         Alignment 0 0
@@ -819,12 +405,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyValue0"
        Slot FrameWidgetSlot "{8B3289768588992E}" {
         Anchor 0 0 0 0
-        PositionX 259
-        OffsetLeft 259
+        PositionX 252
+        OffsetLeft 252
         PositionY 206
         OffsetTop 206
-        SizeX 150
-        OffsetRight -409
+        SizeX 146
+        OffsetRight -398
         SizeY 18
         OffsetBottom -224
         Alignment 0 0
@@ -842,12 +428,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyBarBox0"
        Slot FrameWidgetSlot "{69A02F86E2449091}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 228
         OffsetTop 228
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 10
         OffsetBottom -238
         Alignment 0 0
@@ -894,12 +480,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox0Tick15"
          Slot FrameWidgetSlot "{5BB8C0B9C01FC203}" {
           Anchor 0 0 0 0
-          PositionX 58
-          OffsetLeft 58
+          PositionX 56
+          OffsetLeft 56
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -60
+          OffsetRight -58
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -911,12 +497,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox0Tick40"
          Slot FrameWidgetSlot "{95B1719CFA42CDBD}" {
           Anchor 0 0 0 0
-          PositionX 155
-          OffsetLeft 155
+          PositionX 151
+          OffsetLeft 151
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -157
+          OffsetRight -153
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -928,12 +514,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox0Tick75"
          Slot FrameWidgetSlot "{B689316818DD3E2A}" {
           Anchor 0 0 0 0
-          PositionX 290
-          OffsetLeft 290
+          PositionX 282
+          OffsetLeft 282
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -292
+          OffsetRight -284
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -947,12 +533,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FavorLabel0"
        Slot FrameWidgetSlot "{1C1294F9C18F1964}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 256
         OffsetTop 256
-        SizeX 80
-        OffsetRight -102
+        SizeX 78
+        OffsetRight -99
         SizeY 16
         OffsetBottom -272
         Alignment 0 0
@@ -969,12 +555,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FavorValue0"
        Slot FrameWidgetSlot "{66D4CF24A2C574BB}" {
         Anchor 0 0 0 0
-        PositionX 90
-        OffsetLeft 90
+        PositionX 88
+        OffsetLeft 88
         PositionY 246
         OffsetTop 246
-        SizeX 200
-        OffsetRight -290
+        SizeX 195
+        OffsetRight -283
         SizeY 30
         OffsetBottom -276
         Alignment 0 0
@@ -991,12 +577,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersRule0"
        Slot FrameWidgetSlot "{5EBF5A87CD51F0AE}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 288
         OffsetTop 288
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 1
         OffsetBottom -289
         Alignment 0 0
@@ -1008,12 +594,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersLabel0"
        Slot FrameWidgetSlot "{E906B79FA788BD1D}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 298
         OffsetTop 298
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 16
         OffsetBottom -314
         Alignment 0 0
@@ -1030,12 +616,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersScroll0"
        Slot FrameWidgetSlot "{C87023C579EE7481}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 318
         OffsetTop 318
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 134
         OffsetBottom -452
         Alignment 0 0
@@ -1050,7 +636,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
           VerticalAlign 0
          }
          AllowWidthOverride 1
-         WidthOverride 375
+         WidthOverride 365
          {
           TextWidgetClass "{9A562597A72A73B3}" {
            Name "Leaders0"
@@ -1075,12 +661,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "NeedBlock0"
        Slot FrameWidgetSlot "{47E32F3ED5C414A1}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 462
         OffsetTop 462
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 110
         OffsetBottom -572
         Alignment 0 0
@@ -1095,8 +681,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 0
           OffsetTop 0
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 1
           OffsetBottom -1
           Alignment 0 0
@@ -1112,8 +698,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 10
           OffsetTop 10
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 16
           OffsetBottom -26
           Alignment 0 0
@@ -1134,8 +720,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 30
           OffsetTop 30
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 16
           OffsetBottom -46
           Alignment 0 0
@@ -1156,8 +742,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 50
           OffsetTop 50
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 58
           OffsetBottom -108
           Alignment 0 0
@@ -1231,12 +817,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "Faction1"
      Slot FrameWidgetSlot "{385234A114D0F4B3}" {
       Anchor 0 0 0 0
-      PositionX 449
-      OffsetLeft 449
+      PositionX 437
+      OffsetLeft 437
       PositionY 0
       OffsetTop 0
-      SizeX 431
-      OffsetRight -880
+      SizeX 419
+      OffsetRight -856
       SizeY 610
       OffsetBottom -610
       Alignment 0 0
@@ -1280,12 +866,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "Emblem1"
        Slot FrameWidgetSlot "{E2F1EC9B911332AF}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 18
         OffsetTop 18
-        SizeX 54
-        OffsetRight -76
+        SizeX 53
+        OffsetRight -74
         SizeY 54
         OffsetBottom -72
         Alignment 0 0
@@ -1297,12 +883,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FactionName1"
        Slot FrameWidgetSlot "{8F8A4ED1BA4905CA}" {
         Anchor 0 0 0 0
-        PositionX 92
-        OffsetLeft 92
+        PositionX 90
+        OffsetLeft 90
         PositionY 30
         OffsetTop 30
-        SizeX 317
-        OffsetRight -409
+        SizeX 308
+        OffsetRight -398
         SizeY 30
         OffsetBottom -60
         Alignment 0 0
@@ -1319,12 +905,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "TierBox1"
        Slot FrameWidgetSlot "{5E4E4833B7459D54}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 88
         OffsetTop 88
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 66
         OffsetBottom -154
         Alignment 0 0
@@ -1372,8 +958,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 14
           PositionY 12
           OffsetTop 12
-          SizeX 42
-          OffsetRight -56
+          SizeX 41
+          OffsetRight -55
           SizeY 42
           OffsetBottom -54
           Alignment 0 0
@@ -1385,12 +971,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "TierName1"
          Slot FrameWidgetSlot "{AB91D821D5DCA94D}" {
           Anchor 0 0 0 0
-          PositionX 70
-          OffsetLeft 70
+          PositionX 68
+          OffsetLeft 68
           PositionY 9
           OffsetTop 9
-          SizeX 303
-          OffsetRight -373
+          SizeX 295
+          OffsetRight -363
           SizeY 30
           OffsetBottom -39
           Alignment 0 0
@@ -1407,12 +993,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "TierNote1"
          Slot FrameWidgetSlot "{11460B1B0B5B63C2}" {
           Anchor 0 0 0 0
-          PositionX 70
-          OffsetLeft 70
+          PositionX 68
+          OffsetLeft 68
           PositionY 40
           OffsetTop 40
-          SizeX 303
-          OffsetRight -373
+          SizeX 295
+          OffsetRight -363
           SizeY 18
           OffsetBottom -58
           Alignment 0 0
@@ -1431,12 +1017,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameLabel1"
        Slot FrameWidgetSlot "{BA091372F4B7644F}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 168
         OffsetTop 168
-        SizeX 200
-        OffsetRight -222
+        SizeX 195
+        OffsetRight -216
         SizeY 16
         OffsetBottom -184
         Alignment 0 0
@@ -1453,12 +1039,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameValue1"
        Slot FrameWidgetSlot "{F3932CD244479A09}" {
         Anchor 0 0 0 0
-        PositionX 259
-        OffsetLeft 259
+        PositionX 252
+        OffsetLeft 252
         PositionY 166
         OffsetTop 166
-        SizeX 150
-        OffsetRight -409
+        SizeX 146
+        OffsetRight -398
         SizeY 18
         OffsetBottom -184
         Alignment 0 0
@@ -1476,12 +1062,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameBarBox1"
        Slot FrameWidgetSlot "{26A2FAB68FEF2FE9}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 188
         OffsetTop 188
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 10
         OffsetBottom -198
         Alignment 0 0
@@ -1528,12 +1114,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox1Tick15"
          Slot FrameWidgetSlot "{6B9DD819645FDD70}" {
           Anchor 0 0 0 0
-          PositionX 58
-          OffsetLeft 58
+          PositionX 56
+          OffsetLeft 56
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -60
+          OffsetRight -58
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -1545,12 +1131,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox1Tick40"
          Slot FrameWidgetSlot "{BB4C45B1BD7AF023}" {
           Anchor 0 0 0 0
-          PositionX 155
-          OffsetLeft 155
+          PositionX 151
+          OffsetLeft 151
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -157
+          OffsetRight -153
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -1562,12 +1148,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox1Tick75"
          Slot FrameWidgetSlot "{9437048693E745F3}" {
           Anchor 0 0 0 0
-          PositionX 290
-          OffsetLeft 290
+          PositionX 282
+          OffsetLeft 282
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -292
+          OffsetRight -284
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -1581,12 +1167,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyLabel1"
        Slot FrameWidgetSlot "{EF9A78B16089E982}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 208
         OffsetTop 208
-        SizeX 200
-        OffsetRight -222
+        SizeX 195
+        OffsetRight -216
         SizeY 16
         OffsetBottom -224
         Alignment 0 0
@@ -1603,12 +1189,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyValue1"
        Slot FrameWidgetSlot "{6E96EB040553D834}" {
         Anchor 0 0 0 0
-        PositionX 259
-        OffsetLeft 259
+        PositionX 252
+        OffsetLeft 252
         PositionY 206
         OffsetTop 206
-        SizeX 150
-        OffsetRight -409
+        SizeX 146
+        OffsetRight -398
         SizeY 18
         OffsetBottom -224
         Alignment 0 0
@@ -1626,12 +1212,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyBarBox1"
        Slot FrameWidgetSlot "{A82E6E40B7206ED7}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 228
         OffsetTop 228
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 10
         OffsetBottom -238
         Alignment 0 0
@@ -1678,12 +1264,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox1Tick15"
          Slot FrameWidgetSlot "{77B5A95683DB6840}" {
           Anchor 0 0 0 0
-          PositionX 58
-          OffsetLeft 58
+          PositionX 56
+          OffsetLeft 56
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -60
+          OffsetRight -58
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -1695,12 +1281,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox1Tick40"
          Slot FrameWidgetSlot "{FDEFD9D19E8E438A}" {
           Anchor 0 0 0 0
-          PositionX 155
-          OffsetLeft 155
+          PositionX 151
+          OffsetLeft 151
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -157
+          OffsetRight -153
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -1712,12 +1298,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox1Tick75"
          Slot FrameWidgetSlot "{4ABEFED39C964556}" {
           Anchor 0 0 0 0
-          PositionX 290
-          OffsetLeft 290
+          PositionX 282
+          OffsetLeft 282
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -292
+          OffsetRight -284
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -1731,12 +1317,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FavorLabel1"
        Slot FrameWidgetSlot "{6E7149E416093EE0}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 256
         OffsetTop 256
-        SizeX 80
-        OffsetRight -102
+        SizeX 78
+        OffsetRight -99
         SizeY 16
         OffsetBottom -272
         Alignment 0 0
@@ -1753,12 +1339,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FavorValue1"
        Slot FrameWidgetSlot "{2E08CFECF13369AC}" {
         Anchor 0 0 0 0
-        PositionX 90
-        OffsetLeft 90
+        PositionX 88
+        OffsetLeft 88
         PositionY 246
         OffsetTop 246
-        SizeX 200
-        OffsetRight -290
+        SizeX 195
+        OffsetRight -283
         SizeY 30
         OffsetBottom -276
         Alignment 0 0
@@ -1775,12 +1361,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersRule1"
        Slot FrameWidgetSlot "{6DA2767705946C06}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 288
         OffsetTop 288
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 1
         OffsetBottom -289
         Alignment 0 0
@@ -1792,12 +1378,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersLabel1"
        Slot FrameWidgetSlot "{C332A8E87243506B}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 298
         OffsetTop 298
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 16
         OffsetBottom -314
         Alignment 0 0
@@ -1814,12 +1400,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersScroll1"
        Slot FrameWidgetSlot "{FF32BA6F04220A8D}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 318
         OffsetTop 318
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 134
         OffsetBottom -452
         Alignment 0 0
@@ -1834,7 +1420,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
           VerticalAlign 0
          }
          AllowWidthOverride 1
-         WidthOverride 375
+         WidthOverride 365
          {
           TextWidgetClass "{F4193CB9D4444017}" {
            Name "Leaders1"
@@ -1859,12 +1445,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "NeedBlock1"
        Slot FrameWidgetSlot "{D31C1EB41EE5C3A5}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 462
         OffsetTop 462
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 110
         OffsetBottom -572
         Alignment 0 0
@@ -1879,8 +1465,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 0
           OffsetTop 0
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 1
           OffsetBottom -1
           Alignment 0 0
@@ -1896,8 +1482,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 10
           OffsetTop 10
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 16
           OffsetBottom -26
           Alignment 0 0
@@ -1918,8 +1504,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 30
           OffsetTop 30
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 16
           OffsetBottom -46
           Alignment 0 0
@@ -1940,8 +1526,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 50
           OffsetTop 50
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 58
           OffsetBottom -108
           Alignment 0 0
@@ -2015,12 +1601,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "Faction2"
      Slot FrameWidgetSlot "{57B888F96AA2D86B}" {
       Anchor 0 0 0 0
-      PositionX 898
-      OffsetLeft 898
+      PositionX 874
+      OffsetLeft 874
       PositionY 0
       OffsetTop 0
-      SizeX 431
-      OffsetRight -1329
+      SizeX 419
+      OffsetRight -1293
       SizeY 610
       OffsetBottom -610
       Alignment 0 0
@@ -2064,12 +1650,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "Emblem2"
        Slot FrameWidgetSlot "{A030C0A639056127}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 18
         OffsetTop 18
-        SizeX 54
-        OffsetRight -76
+        SizeX 53
+        OffsetRight -74
         SizeY 54
         OffsetBottom -72
         Alignment 0 0
@@ -2081,12 +1667,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FactionName2"
        Slot FrameWidgetSlot "{DECC133E0E5CE754}" {
         Anchor 0 0 0 0
-        PositionX 92
-        OffsetLeft 92
+        PositionX 90
+        OffsetLeft 90
         PositionY 30
         OffsetTop 30
-        SizeX 317
-        OffsetRight -409
+        SizeX 308
+        OffsetRight -398
         SizeY 30
         OffsetBottom -60
         Alignment 0 0
@@ -2103,12 +1689,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "TierBox2"
        Slot FrameWidgetSlot "{9BBF1510D0E58310}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 88
         OffsetTop 88
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 66
         OffsetBottom -154
         Alignment 0 0
@@ -2156,8 +1742,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 14
           PositionY 12
           OffsetTop 12
-          SizeX 42
-          OffsetRight -56
+          SizeX 41
+          OffsetRight -55
           SizeY 42
           OffsetBottom -54
           Alignment 0 0
@@ -2169,12 +1755,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "TierName2"
          Slot FrameWidgetSlot "{8DCA0014103FEA1D}" {
           Anchor 0 0 0 0
-          PositionX 70
-          OffsetLeft 70
+          PositionX 68
+          OffsetLeft 68
           PositionY 9
           OffsetTop 9
-          SizeX 303
-          OffsetRight -373
+          SizeX 295
+          OffsetRight -363
           SizeY 30
           OffsetBottom -39
           Alignment 0 0
@@ -2191,12 +1777,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "TierNote2"
          Slot FrameWidgetSlot "{CEDA079FAC8572A9}" {
           Anchor 0 0 0 0
-          PositionX 70
-          OffsetLeft 70
+          PositionX 68
+          OffsetLeft 68
           PositionY 40
           OffsetTop 40
-          SizeX 303
-          OffsetRight -373
+          SizeX 295
+          OffsetRight -363
           SizeY 18
           OffsetBottom -58
           Alignment 0 0
@@ -2215,12 +1801,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameLabel2"
        Slot FrameWidgetSlot "{94113AE309A9BA30}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 168
         OffsetTop 168
-        SizeX 200
-        OffsetRight -222
+        SizeX 195
+        OffsetRight -216
         SizeY 16
         OffsetBottom -184
         Alignment 0 0
@@ -2237,12 +1823,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameValue2"
        Slot FrameWidgetSlot "{B317B3A26A5A0C8D}" {
         Anchor 0 0 0 0
-        PositionX 259
-        OffsetLeft 259
+        PositionX 252
+        OffsetLeft 252
         PositionY 166
         OffsetTop 166
-        SizeX 150
-        OffsetRight -409
+        SizeX 146
+        OffsetRight -398
         SizeY 18
         OffsetBottom -184
         Alignment 0 0
@@ -2260,12 +1846,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameBarBox2"
        Slot FrameWidgetSlot "{8ED96F44FC376597}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 188
         OffsetTop 188
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 10
         OffsetBottom -198
         Alignment 0 0
@@ -2312,12 +1898,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox2Tick15"
          Slot FrameWidgetSlot "{77E31860752F0F90}" {
           Anchor 0 0 0 0
-          PositionX 58
-          OffsetLeft 58
+          PositionX 56
+          OffsetLeft 56
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -60
+          OffsetRight -58
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -2329,12 +1915,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox2Tick40"
          Slot FrameWidgetSlot "{8663DA32CAEFAAEE}" {
           Anchor 0 0 0 0
-          PositionX 155
-          OffsetLeft 155
+          PositionX 151
+          OffsetLeft 151
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -157
+          OffsetRight -153
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -2346,12 +1932,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox2Tick75"
          Slot FrameWidgetSlot "{4F8E1350FD7CBCCA}" {
           Anchor 0 0 0 0
-          PositionX 290
-          OffsetLeft 290
+          PositionX 282
+          OffsetLeft 282
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -292
+          OffsetRight -284
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -2365,12 +1951,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyLabel2"
        Slot FrameWidgetSlot "{56251130754792E8}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 208
         OffsetTop 208
-        SizeX 200
-        OffsetRight -222
+        SizeX 195
+        OffsetRight -216
         SizeY 16
         OffsetBottom -224
         Alignment 0 0
@@ -2387,12 +1973,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyValue2"
        Slot FrameWidgetSlot "{97B5B97E38B0DB79}" {
         Anchor 0 0 0 0
-        PositionX 259
-        OffsetLeft 259
+        PositionX 252
+        OffsetLeft 252
         PositionY 206
         OffsetTop 206
-        SizeX 150
-        OffsetRight -409
+        SizeX 146
+        OffsetRight -398
         SizeY 18
         OffsetBottom -224
         Alignment 0 0
@@ -2410,12 +1996,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyBarBox2"
        Slot FrameWidgetSlot "{781CC7826743FE63}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 228
         OffsetTop 228
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 10
         OffsetBottom -238
         Alignment 0 0
@@ -2462,12 +2048,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox2Tick15"
          Slot FrameWidgetSlot "{BE58AF21D1C2739D}" {
           Anchor 0 0 0 0
-          PositionX 58
-          OffsetLeft 58
+          PositionX 56
+          OffsetLeft 56
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -60
+          OffsetRight -58
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -2479,12 +2065,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox2Tick40"
          Slot FrameWidgetSlot "{7BF3B3EAF0D5F98E}" {
           Anchor 0 0 0 0
-          PositionX 155
-          OffsetLeft 155
+          PositionX 151
+          OffsetLeft 151
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -157
+          OffsetRight -153
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -2496,12 +2082,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox2Tick75"
          Slot FrameWidgetSlot "{8B1650E9307FCB6B}" {
           Anchor 0 0 0 0
-          PositionX 290
-          OffsetLeft 290
+          PositionX 282
+          OffsetLeft 282
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -292
+          OffsetRight -284
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -2515,12 +2101,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FavorLabel2"
        Slot FrameWidgetSlot "{344F0376399213F3}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 256
         OffsetTop 256
-        SizeX 80
-        OffsetRight -102
+        SizeX 78
+        OffsetRight -99
         SizeY 16
         OffsetBottom -272
         Alignment 0 0
@@ -2537,12 +2123,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FavorValue2"
        Slot FrameWidgetSlot "{EBFD878005EB59E1}" {
         Anchor 0 0 0 0
-        PositionX 90
-        OffsetLeft 90
+        PositionX 88
+        OffsetLeft 88
         PositionY 246
         OffsetTop 246
-        SizeX 200
-        OffsetRight -290
+        SizeX 195
+        OffsetRight -283
         SizeY 30
         OffsetBottom -276
         Alignment 0 0
@@ -2559,12 +2145,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersRule2"
        Slot FrameWidgetSlot "{9E44DF11A6D93402}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 288
         OffsetTop 288
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 1
         OffsetBottom -289
         Alignment 0 0
@@ -2576,12 +2162,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersLabel2"
        Slot FrameWidgetSlot "{C087644225161451}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 298
         OffsetTop 298
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 16
         OffsetBottom -314
         Alignment 0 0
@@ -2598,12 +2184,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersScroll2"
        Slot FrameWidgetSlot "{6BA58DC8C9F540B2}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 318
         OffsetTop 318
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 134
         OffsetBottom -452
         Alignment 0 0
@@ -2618,7 +2204,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
           VerticalAlign 0
          }
          AllowWidthOverride 1
-         WidthOverride 375
+         WidthOverride 365
          {
           TextWidgetClass "{C457CFFA4E0F42CE}" {
            Name "Leaders2"
@@ -2643,12 +2229,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "NeedBlock2"
        Slot FrameWidgetSlot "{7974C8BA3791174C}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 462
         OffsetTop 462
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 110
         OffsetBottom -572
         Alignment 0 0
@@ -2663,8 +2249,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 0
           OffsetTop 0
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 1
           OffsetBottom -1
           Alignment 0 0
@@ -2680,8 +2266,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 10
           OffsetTop 10
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 16
           OffsetBottom -26
           Alignment 0 0
@@ -2702,8 +2288,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 30
           OffsetTop 30
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 16
           OffsetBottom -46
           Alignment 0 0
@@ -2724,8 +2310,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 50
           OffsetTop 50
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 58
           OffsetBottom -108
           Alignment 0 0
@@ -2799,12 +2385,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "Faction3"
      Slot FrameWidgetSlot "{DE614D5F5568775D}" {
       Anchor 0 0 0 0
-      PositionX 1347
-      OffsetLeft 1347
+      PositionX 1311
+      OffsetLeft 1311
       PositionY 0
       OffsetTop 0
-      SizeX 431
-      OffsetRight -1778
+      SizeX 419
+      OffsetRight -1730
       SizeY 610
       OffsetBottom -610
       Alignment 0 0
@@ -2848,12 +2434,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "Emblem3"
        Slot FrameWidgetSlot "{BAF9EB2A31208F84}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 18
         OffsetTop 18
-        SizeX 54
-        OffsetRight -76
+        SizeX 53
+        OffsetRight -74
         SizeY 54
         OffsetBottom -72
         Alignment 0 0
@@ -2865,12 +2451,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FactionName3"
        Slot FrameWidgetSlot "{E57B792A5E32475B}" {
         Anchor 0 0 0 0
-        PositionX 92
-        OffsetLeft 92
+        PositionX 90
+        OffsetLeft 90
         PositionY 30
         OffsetTop 30
-        SizeX 317
-        OffsetRight -409
+        SizeX 308
+        OffsetRight -398
         SizeY 30
         OffsetBottom -60
         Alignment 0 0
@@ -2887,12 +2473,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "TierBox3"
        Slot FrameWidgetSlot "{E4E3895C20BB0227}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 88
         OffsetTop 88
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 66
         OffsetBottom -154
         Alignment 0 0
@@ -2940,8 +2526,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 14
           PositionY 12
           OffsetTop 12
-          SizeX 42
-          OffsetRight -56
+          SizeX 41
+          OffsetRight -55
           SizeY 42
           OffsetBottom -54
           Alignment 0 0
@@ -2953,12 +2539,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "TierName3"
          Slot FrameWidgetSlot "{3CA0CA8F2032C75B}" {
           Anchor 0 0 0 0
-          PositionX 70
-          OffsetLeft 70
+          PositionX 68
+          OffsetLeft 68
           PositionY 9
           OffsetTop 9
-          SizeX 303
-          OffsetRight -373
+          SizeX 295
+          OffsetRight -363
           SizeY 30
           OffsetBottom -39
           Alignment 0 0
@@ -2975,12 +2561,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "TierNote3"
          Slot FrameWidgetSlot "{B1F928926A547792}" {
           Anchor 0 0 0 0
-          PositionX 70
-          OffsetLeft 70
+          PositionX 68
+          OffsetLeft 68
           PositionY 40
           OffsetTop 40
-          SizeX 303
-          OffsetRight -373
+          SizeX 295
+          OffsetRight -363
           SizeY 18
           OffsetBottom -58
           Alignment 0 0
@@ -2999,12 +2585,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameLabel3"
        Slot FrameWidgetSlot "{B72FE4D38187437B}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 168
         OffsetTop 168
-        SizeX 200
-        OffsetRight -222
+        SizeX 195
+        OffsetRight -216
         SizeY 16
         OffsetBottom -184
         Alignment 0 0
@@ -3021,12 +2607,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameValue3"
        Slot FrameWidgetSlot "{C599C8775F36D6C2}" {
         Anchor 0 0 0 0
-        PositionX 259
-        OffsetLeft 259
+        PositionX 252
+        OffsetLeft 252
         PositionY 166
         OffsetTop 166
-        SizeX 150
-        OffsetRight -409
+        SizeX 146
+        OffsetRight -398
         SizeY 18
         OffsetBottom -184
         Alignment 0 0
@@ -3044,12 +2630,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FameBarBox3"
        Slot FrameWidgetSlot "{817EA873F31C1760}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 188
         OffsetTop 188
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 10
         OffsetBottom -198
         Alignment 0 0
@@ -3096,12 +2682,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox3Tick15"
          Slot FrameWidgetSlot "{59A5C8F67AB3AA66}" {
           Anchor 0 0 0 0
-          PositionX 58
-          OffsetLeft 58
+          PositionX 56
+          OffsetLeft 56
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -60
+          OffsetRight -58
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -3113,12 +2699,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox3Tick40"
          Slot FrameWidgetSlot "{39F56BC8C36AFE98}" {
           Anchor 0 0 0 0
-          PositionX 155
-          OffsetLeft 155
+          PositionX 151
+          OffsetLeft 151
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -157
+          OffsetRight -153
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -3130,12 +2716,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "FameBarBox3Tick75"
          Slot FrameWidgetSlot "{297942F65F1CF91A}" {
           Anchor 0 0 0 0
-          PositionX 290
-          OffsetLeft 290
+          PositionX 282
+          OffsetLeft 282
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -292
+          OffsetRight -284
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -3149,12 +2735,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyLabel3"
        Slot FrameWidgetSlot "{7529818D1D83BB60}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 208
         OffsetTop 208
-        SizeX 200
-        OffsetRight -222
+        SizeX 195
+        OffsetRight -216
         SizeY 16
         OffsetBottom -224
         Alignment 0 0
@@ -3171,12 +2757,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyValue3"
        Slot FrameWidgetSlot "{279F87F0E03E0B8C}" {
         Anchor 0 0 0 0
-        PositionX 259
-        OffsetLeft 259
+        PositionX 252
+        OffsetLeft 252
         PositionY 206
         OffsetTop 206
-        SizeX 150
-        OffsetRight -409
+        SizeX 146
+        OffsetRight -398
         SizeY 18
         OffsetBottom -224
         Alignment 0 0
@@ -3194,12 +2780,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "InfamyBarBox3"
        Slot FrameWidgetSlot "{C891732A73068E2C}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 228
         OffsetTop 228
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 10
         OffsetBottom -238
         Alignment 0 0
@@ -3246,12 +2832,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox3Tick15"
          Slot FrameWidgetSlot "{5DDD1B85C6ED6C36}" {
           Anchor 0 0 0 0
-          PositionX 58
-          OffsetLeft 58
+          PositionX 56
+          OffsetLeft 56
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -60
+          OffsetRight -58
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -3263,12 +2849,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox3Tick40"
          Slot FrameWidgetSlot "{EC54AE7147FC3531}" {
           Anchor 0 0 0 0
-          PositionX 155
-          OffsetLeft 155
+          PositionX 151
+          OffsetLeft 151
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -157
+          OffsetRight -153
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -3280,12 +2866,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
          Name "InfamyBarBox3Tick75"
          Slot FrameWidgetSlot "{9B817A5786B9A59C}" {
           Anchor 0 0 0 0
-          PositionX 290
-          OffsetLeft 290
+          PositionX 282
+          OffsetLeft 282
           PositionY -3
           OffsetTop -3
           SizeX 2
-          OffsetRight -292
+          OffsetRight -284
           SizeY 16
           OffsetBottom -13
           Alignment 0 0
@@ -3299,12 +2885,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FavorLabel3"
        Slot FrameWidgetSlot "{98AB16B0E4BCCBCE}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 256
         OffsetTop 256
-        SizeX 80
-        OffsetRight -102
+        SizeX 78
+        OffsetRight -99
         SizeY 16
         OffsetBottom -272
         Alignment 0 0
@@ -3321,12 +2907,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "FavorValue3"
        Slot FrameWidgetSlot "{E366DFC94DB2D972}" {
         Anchor 0 0 0 0
-        PositionX 90
-        OffsetLeft 90
+        PositionX 88
+        OffsetLeft 88
         PositionY 246
         OffsetTop 246
-        SizeX 200
-        OffsetRight -290
+        SizeX 195
+        OffsetRight -283
         SizeY 30
         OffsetBottom -276
         Alignment 0 0
@@ -3343,12 +2929,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersRule3"
        Slot FrameWidgetSlot "{B279E3EB63B72D1A}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 288
         OffsetTop 288
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 1
         OffsetBottom -289
         Alignment 0 0
@@ -3360,12 +2946,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersLabel3"
        Slot FrameWidgetSlot "{BBFF8E6EE76CAF00}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 298
         OffsetTop 298
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 16
         OffsetBottom -314
         Alignment 0 0
@@ -3382,12 +2968,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "LeadersScroll3"
        Slot FrameWidgetSlot "{51A1FF341A5DB1C6}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 318
         OffsetTop 318
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 134
         OffsetBottom -452
         Alignment 0 0
@@ -3402,7 +2988,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
           VerticalAlign 0
          }
          AllowWidthOverride 1
-         WidthOverride 375
+         WidthOverride 365
          {
           TextWidgetClass "{36BA97065FFD500A}" {
            Name "Leaders3"
@@ -3427,12 +3013,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
        Name "NeedBlock3"
        Slot FrameWidgetSlot "{9014EA55DB130D2A}" {
         Anchor 0 0 0 0
-        PositionX 22
-        OffsetLeft 22
+        PositionX 21
+        OffsetLeft 21
         PositionY 462
         OffsetTop 462
-        SizeX 387
-        OffsetRight -409
+        SizeX 377
+        OffsetRight -398
         SizeY 110
         OffsetBottom -572
         Alignment 0 0
@@ -3447,8 +3033,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 0
           OffsetTop 0
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 1
           OffsetBottom -1
           Alignment 0 0
@@ -3464,8 +3050,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 10
           OffsetTop 10
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 16
           OffsetBottom -26
           Alignment 0 0
@@ -3486,8 +3072,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 30
           OffsetTop 30
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 16
           OffsetBottom -46
           Alignment 0 0
@@ -3508,8 +3094,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
           OffsetLeft 0
           PositionY 50
           OffsetTop 50
-          SizeX 387
-          OffsetRight -387
+          SizeX 377
+          OffsetRight -377
           SizeY 58
           OffsetBottom -108
           Alignment 0 0
@@ -3585,11 +3171,11 @@ FrameWidgetClass "{5FB84287E2908342}" {
    Name "RelationsPanel"
    Slot FrameWidgetSlot "{A8CCF1D923A30464}" {
     Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
+    PositionX 96
+    OffsetLeft 96
     PositionY 798
     OffsetTop 798
-    SizeX 880
+    SizeX 856
     OffsetRight -952
     SizeY 196
     OffsetBottom -994
@@ -3617,12 +3203,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "RelationsLabel"
      Slot FrameWidgetSlot "{BF2540CCEC84292A}" {
       Anchor 0 0 0 0
-      PositionX 22
-      OffsetLeft 22
+      PositionX 21
+      OffsetLeft 21
       PositionY 16
       OffsetTop 16
-      SizeX 836
-      OffsetRight -858
+      SizeX 813
+      OffsetRight -834
       SizeY 16
       OffsetBottom -32
       Alignment 0 0
@@ -3639,12 +3225,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "Relations"
      Slot FrameWidgetSlot "{2194C944D2E3F158}" {
       Anchor 0 0 0 0
-      PositionX 22
-      OffsetLeft 22
+      PositionX 21
+      OffsetLeft 21
       PositionY 40
       OffsetTop 40
-      SizeX 836
-      OffsetRight -858
+      SizeX 813
+      OffsetRight -834
       SizeY 146
       OffsetBottom -186
       Alignment 0 0
@@ -3668,8 +3254,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
     OffsetLeft 970
     PositionY 798
     OffsetTop 798
-    SizeX 874
-    OffsetRight -1844
+    SizeX 850
+    OffsetRight -1820
     SizeY 196
     OffsetBottom -994
     Alignment 0 0
@@ -3700,8 +3286,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
       OffsetLeft 18
       PositionY 14
       OffsetTop 14
-      SizeX 96
-      OffsetRight -114
+      SizeX 93
+      OffsetRight -111
       SizeY 18
       OffsetBottom -32
       Alignment 0 0
@@ -3719,12 +3305,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridHead1"
      Slot FrameWidgetSlot "{2E2F47290C444C52}" {
       Anchor 0 0 0 0
-      PositionX 117
-      OffsetLeft 117
+      PositionX 114
+      OffsetLeft 114
       PositionY 14
       OffsetTop 14
-      SizeX 182
-      OffsetRight -299
+      SizeX 177
+      OffsetRight -291
       SizeY 18
       OffsetBottom -32
       Alignment 0 0
@@ -3742,12 +3328,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridHead2"
      Slot FrameWidgetSlot "{DE54AC6858BE41ED}" {
       Anchor 0 0 0 0
-      PositionX 302
-      OffsetLeft 302
+      PositionX 294
+      OffsetLeft 294
       PositionY 14
       OffsetTop 14
-      SizeX 182
-      OffsetRight -484
+      SizeX 177
+      OffsetRight -471
       SizeY 18
       OffsetBottom -32
       Alignment 0 0
@@ -3765,12 +3351,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridHead3"
      Slot FrameWidgetSlot "{9CD8C6F02C392475}" {
       Anchor 0 0 0 0
-      PositionX 487
-      OffsetLeft 487
+      PositionX 474
+      OffsetLeft 474
       PositionY 14
       OffsetTop 14
-      SizeX 182
-      OffsetRight -669
+      SizeX 177
+      OffsetRight -651
       SizeY 18
       OffsetBottom -32
       Alignment 0 0
@@ -3788,12 +3374,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridHead4"
      Slot FrameWidgetSlot "{F822EE71352563D2}" {
       Anchor 0 0 0 0
-      PositionX 672
-      OffsetLeft 672
+      PositionX 654
+      OffsetLeft 654
       PositionY 14
       OffsetTop 14
-      SizeX 182
-      OffsetRight -854
+      SizeX 177
+      OffsetRight -831
       SizeY 18
       OffsetBottom -32
       Alignment 0 0
@@ -3815,8 +3401,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
       OffsetLeft 18
       PositionY 35
       OffsetTop 35
-      SizeX 96
-      OffsetRight -114
+      SizeX 93
+      OffsetRight -111
       SizeY 34
       OffsetBottom -69
       Alignment 0 0
@@ -3834,12 +3420,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell00"
      Slot FrameWidgetSlot "{B064D114BE72F82A}" {
       Anchor 0 0 0 0
-      PositionX 117
-      OffsetLeft 117
+      PositionX 114
+      OffsetLeft 114
       PositionY 35
       OffsetTop 35
-      SizeX 182
-      OffsetRight -299
+      SizeX 177
+      OffsetRight -291
       SizeY 34
       OffsetBottom -69
       Alignment 0 0
@@ -3851,12 +3437,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText00"
      Slot FrameWidgetSlot "{92992D16389DDBE4}" {
       Anchor 0 0 0 0
-      PositionX 125
-      OffsetLeft 125
+      PositionX 122
+      OffsetLeft 122
       PositionY 35
       OffsetTop 35
-      SizeX 174
-      OffsetRight -299
+      SizeX 169
+      OffsetRight -291
       SizeY 34
       OffsetBottom -69
       Alignment 0 0
@@ -3874,12 +3460,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell01"
      Slot FrameWidgetSlot "{5500369150EE22C9}" {
       Anchor 0 0 0 0
-      PositionX 302
-      OffsetLeft 302
+      PositionX 294
+      OffsetLeft 294
       PositionY 35
       OffsetTop 35
-      SizeX 182
-      OffsetRight -484
+      SizeX 177
+      OffsetRight -471
       SizeY 34
       OffsetBottom -69
       Alignment 0 0
@@ -3891,12 +3477,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText01"
      Slot FrameWidgetSlot "{FDC1A59C84D7F046}" {
       Anchor 0 0 0 0
-      PositionX 310
-      OffsetLeft 310
+      PositionX 302
+      OffsetLeft 302
       PositionY 35
       OffsetTop 35
-      SizeX 174
-      OffsetRight -484
+      SizeX 169
+      OffsetRight -471
       SizeY 34
       OffsetBottom -69
       Alignment 0 0
@@ -3914,12 +3500,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell02"
      Slot FrameWidgetSlot "{E60F7BD3722F02FF}" {
       Anchor 0 0 0 0
-      PositionX 487
-      OffsetLeft 487
+      PositionX 474
+      OffsetLeft 474
       PositionY 35
       OffsetTop 35
-      SizeX 182
-      OffsetRight -669
+      SizeX 177
+      OffsetRight -651
       SizeY 34
       OffsetBottom -69
       Alignment 0 0
@@ -3931,12 +3517,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText02"
      Slot FrameWidgetSlot "{DFE28F49FF4FC83D}" {
       Anchor 0 0 0 0
-      PositionX 495
-      OffsetLeft 495
+      PositionX 482
+      OffsetLeft 482
       PositionY 35
       OffsetTop 35
-      SizeX 174
-      OffsetRight -669
+      SizeX 169
+      OffsetRight -651
       SizeY 34
       OffsetBottom -69
       Alignment 0 0
@@ -3954,12 +3540,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell03"
      Slot FrameWidgetSlot "{C5F5CB25F7A97091}" {
       Anchor 0 0 0 0
-      PositionX 672
-      OffsetLeft 672
+      PositionX 654
+      OffsetLeft 654
       PositionY 35
       OffsetTop 35
-      SizeX 182
-      OffsetRight -854
+      SizeX 177
+      OffsetRight -831
       SizeY 34
       OffsetBottom -69
       Alignment 0 0
@@ -3971,12 +3557,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText03"
      Slot FrameWidgetSlot "{13D582AA196C4E2B}" {
       Anchor 0 0 0 0
-      PositionX 680
-      OffsetLeft 680
+      PositionX 662
+      OffsetLeft 662
       PositionY 35
       OffsetTop 35
-      SizeX 174
-      OffsetRight -854
+      SizeX 169
+      OffsetRight -831
       SizeY 34
       OffsetBottom -69
       Alignment 0 0
@@ -3998,8 +3584,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
       OffsetLeft 18
       PositionY 72
       OffsetTop 72
-      SizeX 96
-      OffsetRight -114
+      SizeX 93
+      OffsetRight -111
       SizeY 34
       OffsetBottom -106
       Alignment 0 0
@@ -4017,12 +3603,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell10"
      Slot FrameWidgetSlot "{AF1BBF7DEF5C1FC4}" {
       Anchor 0 0 0 0
-      PositionX 117
-      OffsetLeft 117
+      PositionX 114
+      OffsetLeft 114
       PositionY 72
       OffsetTop 72
-      SizeX 182
-      OffsetRight -299
+      SizeX 177
+      OffsetRight -291
       SizeY 34
       OffsetBottom -106
       Alignment 0 0
@@ -4034,12 +3620,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText10"
      Slot FrameWidgetSlot "{D96C78C44575396A}" {
       Anchor 0 0 0 0
-      PositionX 125
-      OffsetLeft 125
+      PositionX 122
+      OffsetLeft 122
       PositionY 72
       OffsetTop 72
-      SizeX 174
-      OffsetRight -299
+      SizeX 169
+      OffsetRight -291
       SizeY 34
       OffsetBottom -106
       Alignment 0 0
@@ -4057,12 +3643,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell11"
      Slot FrameWidgetSlot "{EE7158D60DAE5F06}" {
       Anchor 0 0 0 0
-      PositionX 302
-      OffsetLeft 302
+      PositionX 294
+      OffsetLeft 294
       PositionY 72
       OffsetTop 72
-      SizeX 182
-      OffsetRight -484
+      SizeX 177
+      OffsetRight -471
       SizeY 34
       OffsetBottom -106
       Alignment 0 0
@@ -4074,12 +3660,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText11"
      Slot FrameWidgetSlot "{B88E6A71E418E68C}" {
       Anchor 0 0 0 0
-      PositionX 310
-      OffsetLeft 310
+      PositionX 302
+      OffsetLeft 302
       PositionY 72
       OffsetTop 72
-      SizeX 174
-      OffsetRight -484
+      SizeX 169
+      OffsetRight -471
       SizeY 34
       OffsetBottom -106
       Alignment 0 0
@@ -4097,12 +3683,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell12"
      Slot FrameWidgetSlot "{B1C1D3A6B2218577}" {
       Anchor 0 0 0 0
-      PositionX 487
-      OffsetLeft 487
+      PositionX 474
+      OffsetLeft 474
       PositionY 72
       OffsetTop 72
-      SizeX 182
-      OffsetRight -669
+      SizeX 177
+      OffsetRight -651
       SizeY 34
       OffsetBottom -106
       Alignment 0 0
@@ -4114,12 +3700,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText12"
      Slot FrameWidgetSlot "{8DE51C2D6C9325E0}" {
       Anchor 0 0 0 0
-      PositionX 495
-      OffsetLeft 495
+      PositionX 482
+      OffsetLeft 482
       PositionY 72
       OffsetTop 72
-      SizeX 174
-      OffsetRight -669
+      SizeX 169
+      OffsetRight -651
       SizeY 34
       OffsetBottom -106
       Alignment 0 0
@@ -4137,12 +3723,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell13"
      Slot FrameWidgetSlot "{E16F1A3E51AFF16C}" {
       Anchor 0 0 0 0
-      PositionX 672
-      OffsetLeft 672
+      PositionX 654
+      OffsetLeft 654
       PositionY 72
       OffsetTop 72
-      SizeX 182
-      OffsetRight -854
+      SizeX 177
+      OffsetRight -831
       SizeY 34
       OffsetBottom -106
       Alignment 0 0
@@ -4154,12 +3740,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText13"
      Slot FrameWidgetSlot "{DC3CC26C7EB19E1C}" {
       Anchor 0 0 0 0
-      PositionX 680
-      OffsetLeft 680
+      PositionX 662
+      OffsetLeft 662
       PositionY 72
       OffsetTop 72
-      SizeX 174
-      OffsetRight -854
+      SizeX 169
+      OffsetRight -831
       SizeY 34
       OffsetBottom -106
       Alignment 0 0
@@ -4181,8 +3767,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
       OffsetLeft 18
       PositionY 109
       OffsetTop 109
-      SizeX 96
-      OffsetRight -114
+      SizeX 93
+      OffsetRight -111
       SizeY 34
       OffsetBottom -143
       Alignment 0 0
@@ -4200,12 +3786,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell20"
      Slot FrameWidgetSlot "{11E27C566FC76B10}" {
       Anchor 0 0 0 0
-      PositionX 117
-      OffsetLeft 117
+      PositionX 114
+      OffsetLeft 114
       PositionY 109
       OffsetTop 109
-      SizeX 182
-      OffsetRight -299
+      SizeX 177
+      OffsetRight -291
       SizeY 34
       OffsetBottom -143
       Alignment 0 0
@@ -4217,12 +3803,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText20"
      Slot FrameWidgetSlot "{EF13FBE2812A71DC}" {
       Anchor 0 0 0 0
-      PositionX 125
-      OffsetLeft 125
+      PositionX 122
+      OffsetLeft 122
       PositionY 109
       OffsetTop 109
-      SizeX 174
-      OffsetRight -299
+      SizeX 169
+      OffsetRight -291
       SizeY 34
       OffsetBottom -143
       Alignment 0 0
@@ -4240,12 +3826,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell21"
      Slot FrameWidgetSlot "{9304BEE2C80BDFA2}" {
       Anchor 0 0 0 0
-      PositionX 302
-      OffsetLeft 302
+      PositionX 294
+      OffsetLeft 294
       PositionY 109
       OffsetTop 109
-      SizeX 182
-      OffsetRight -484
+      SizeX 177
+      OffsetRight -471
       SizeY 34
       OffsetBottom -143
       Alignment 0 0
@@ -4257,12 +3843,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText21"
      Slot FrameWidgetSlot "{17CBD4F0C14D8EFA}" {
       Anchor 0 0 0 0
-      PositionX 310
-      OffsetLeft 310
+      PositionX 302
+      OffsetLeft 302
       PositionY 109
       OffsetTop 109
-      SizeX 174
-      OffsetRight -484
+      SizeX 169
+      OffsetRight -471
       SizeY 34
       OffsetBottom -143
       Alignment 0 0
@@ -4280,12 +3866,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell22"
      Slot FrameWidgetSlot "{DC60E5A85FA64A80}" {
       Anchor 0 0 0 0
-      PositionX 487
-      OffsetLeft 487
+      PositionX 474
+      OffsetLeft 474
       PositionY 109
       OffsetTop 109
-      SizeX 182
-      OffsetRight -669
+      SizeX 177
+      OffsetRight -651
       SizeY 34
       OffsetBottom -143
       Alignment 0 0
@@ -4297,12 +3883,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText22"
      Slot FrameWidgetSlot "{25912E4712B0F167}" {
       Anchor 0 0 0 0
-      PositionX 495
-      OffsetLeft 495
+      PositionX 482
+      OffsetLeft 482
       PositionY 109
       OffsetTop 109
-      SizeX 174
-      OffsetRight -669
+      SizeX 169
+      OffsetRight -651
       SizeY 34
       OffsetBottom -143
       Alignment 0 0
@@ -4320,12 +3906,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell23"
      Slot FrameWidgetSlot "{73E33882165EE639}" {
       Anchor 0 0 0 0
-      PositionX 672
-      OffsetLeft 672
+      PositionX 654
+      OffsetLeft 654
       PositionY 109
       OffsetTop 109
-      SizeX 182
-      OffsetRight -854
+      SizeX 177
+      OffsetRight -831
       SizeY 34
       OffsetBottom -143
       Alignment 0 0
@@ -4337,12 +3923,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText23"
      Slot FrameWidgetSlot "{445124F52FDDA43E}" {
       Anchor 0 0 0 0
-      PositionX 680
-      OffsetLeft 680
+      PositionX 662
+      OffsetLeft 662
       PositionY 109
       OffsetTop 109
-      SizeX 174
-      OffsetRight -854
+      SizeX 169
+      OffsetRight -831
       SizeY 34
       OffsetBottom -143
       Alignment 0 0
@@ -4364,8 +3950,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
       OffsetLeft 18
       PositionY 146
       OffsetTop 146
-      SizeX 96
-      OffsetRight -114
+      SizeX 93
+      OffsetRight -111
       SizeY 34
       OffsetBottom -180
       Alignment 0 0
@@ -4383,12 +3969,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell30"
      Slot FrameWidgetSlot "{6BBD7AD59E8FDE0D}" {
       Anchor 0 0 0 0
-      PositionX 117
-      OffsetLeft 117
+      PositionX 114
+      OffsetLeft 114
       PositionY 146
       OffsetTop 146
-      SizeX 182
-      OffsetRight -299
+      SizeX 177
+      OffsetRight -291
       SizeY 34
       OffsetBottom -180
       Alignment 0 0
@@ -4400,12 +3986,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText30"
      Slot FrameWidgetSlot "{788C0E09005521CC}" {
       Anchor 0 0 0 0
-      PositionX 125
-      OffsetLeft 125
+      PositionX 122
+      OffsetLeft 122
       PositionY 146
       OffsetTop 146
-      SizeX 174
-      OffsetRight -299
+      SizeX 169
+      OffsetRight -291
       SizeY 34
       OffsetBottom -180
       Alignment 0 0
@@ -4423,12 +4009,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell31"
      Slot FrameWidgetSlot "{5917CD70465D1476}" {
       Anchor 0 0 0 0
-      PositionX 302
-      OffsetLeft 302
+      PositionX 294
+      OffsetLeft 294
       PositionY 146
       OffsetTop 146
-      SizeX 182
-      OffsetRight -484
+      SizeX 177
+      OffsetRight -471
       SizeY 34
       OffsetBottom -180
       Alignment 0 0
@@ -4440,12 +4026,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText31"
      Slot FrameWidgetSlot "{3C58F5DF54FEA586}" {
       Anchor 0 0 0 0
-      PositionX 310
-      OffsetLeft 310
+      PositionX 302
+      OffsetLeft 302
       PositionY 146
       OffsetTop 146
-      SizeX 174
-      OffsetRight -484
+      SizeX 169
+      OffsetRight -471
       SizeY 34
       OffsetBottom -180
       Alignment 0 0
@@ -4463,12 +4049,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell32"
      Slot FrameWidgetSlot "{55B3F2544A7A2D67}" {
       Anchor 0 0 0 0
-      PositionX 487
-      OffsetLeft 487
+      PositionX 474
+      OffsetLeft 474
       PositionY 146
       OffsetTop 146
-      SizeX 182
-      OffsetRight -669
+      SizeX 177
+      OffsetRight -651
       SizeY 34
       OffsetBottom -180
       Alignment 0 0
@@ -4480,12 +4066,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText32"
      Slot FrameWidgetSlot "{65C79C679FB2C9E3}" {
       Anchor 0 0 0 0
-      PositionX 495
-      OffsetLeft 495
+      PositionX 482
+      OffsetLeft 482
       PositionY 146
       OffsetTop 146
-      SizeX 174
-      OffsetRight -669
+      SizeX 169
+      OffsetRight -651
       SizeY 34
       OffsetBottom -180
       Alignment 0 0
@@ -4503,12 +4089,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridCell33"
      Slot FrameWidgetSlot "{E4EB1367599DCA7D}" {
       Anchor 0 0 0 0
-      PositionX 672
-      OffsetLeft 672
+      PositionX 654
+      OffsetLeft 654
       PositionY 146
       OffsetTop 146
-      SizeX 182
-      OffsetRight -854
+      SizeX 177
+      OffsetRight -831
       SizeY 34
       OffsetBottom -180
       Alignment 0 0
@@ -4520,12 +4106,12 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Name "TierGridText33"
      Slot FrameWidgetSlot "{7DA8BD767DA29C37}" {
       Anchor 0 0 0 0
-      PositionX 680
-      OffsetLeft 680
+      PositionX 662
+      OffsetLeft 662
       PositionY 146
       OffsetTop 146
-      SizeX 174
-      OffsetRight -854
+      SizeX 169
+      OffsetRight -831
       SizeY 34
       OffsetBottom -180
       Alignment 0 0
@@ -4549,8 +4135,8 @@ FrameWidgetClass "{5FB84287E2908342}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 800
-    OffsetRight -800
+    SizeX 778
+    OffsetRight -778
     SizeY 40
     OffsetBottom -40
     Alignment 0.5 0.5

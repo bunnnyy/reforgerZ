@@ -20,7 +20,7 @@ class RZ_RadioEntry
 //! Server to client: owner-only RPCs, sent by RZ_UIFeed only when something changed (the infection
 //! timer also resyncs every minute; the client counts down between). Client to server: the
 //! menus ask for their data when they open (at most once every 2 s per player), and chat commands
-//! and the board menu send a command (/note, /noteclear, /hall; each at most every 2 s, and a
+//! and the board menu send a command (/note, /noteclear; each at most every 2 s, and a
 //! dropped one gets a short notice).
 //! On a listen server the owner is this machine, so calls go straight to the handler.
 class RZ_PlayerUIComponent : ScriptComponent
@@ -56,16 +56,19 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected int m_iRadioVersion;
 	protected ref array<ref RZ_RadioEntry> m_aRadio = {};
 	protected float m_fNewLifeAt = -1;
+	protected int m_iLogged;			// notices kept for the Radio tab this life
+	protected int m_iLoggedSeen;
+	protected int m_iMissions;			// mission notices this life (the Journal tab's count)
+	protected int m_iMissionsSeen;
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
-	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100};	// per CMD_*
+	protected ref array<float> m_aLastCommand = {-100, -100, -100};	// per CMD_*
 
 	//! Commands from the client (RZ_ChatCommands, the board menu)
 	static const int CMD_NOTE = 0;
 	static const int CMD_CLEAR_BOARD = 1;
 	static const int CMD_CLEAR_ALL = 2;
-	static const int CMD_HALL = 3;
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -245,6 +248,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 	{
 		m_fNewLifeAt = RZ_UIW.Now();
 		m_aRadio.Clear();
+		m_iLogged = 0;
+		m_iLoggedSeen = 0;
+		m_iMissions = 0;
+		m_iMissionsSeen = 0;
 		m_iRadioVersion++;
 		m_iInfState = RZ_EInfectionUI.NONE;
 		m_iListenFaction = -1;
@@ -380,7 +387,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ================================================================ Client: commands
 	//------------------------------------------------------------------------------------------------
-	//! A command for the server: CMD_NOTE with the note's text, the board clears (admins), the hall.
+	//! A command for the server: CMD_NOTE with the note's text, the board clears (admins).
 	void SendCommand(int cmd, string text)
 	{
 		if (Replication.IsServer())
@@ -441,17 +448,6 @@ class RZ_PlayerUIComponent : ScriptComponent
 					board.Clear(playerId, true);
 				break;
 			}
-			case CMD_HALL:
-			{
-				string hall = "";
-				if (gm.GetHall())
-					hall = gm.GetHall().BuildText();
-				if (hall.IsEmpty())
-					hall = "Nobody's name is on it yet.";
-
-				gm.NotifyPlayer(playerId, "Hall of fame", hall);
-				break;
-			}
 		}
 	}
 
@@ -471,6 +467,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		e.m_sTitle = title;
 		e.m_sText = text;
 		m_aRadio.InsertAt(e, 0);
+		m_iLogged++;
+		if (style.m_iKind == RZ_ENoticeKind.MISSION)
+			m_iMissions++;
+
 		int cap = Math.Max(5, RZ_UISettings.Get().m_iRadioLogSize);
 		while (m_aRadio.Count() > cap)
 		{
@@ -532,5 +532,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 	int GetRadioVersion() { return m_iRadioVersion; }
 	//! When this life began on this machine (RZ_UIW.Now), -1 before the first.
 	float GetNewLifeAt() { return m_fNewLifeAt; }
+	//! The notebook's counts: new since the tab was last looked at (this life).
+	int GetUnreadRadio() { return m_iLogged - m_iLoggedSeen; }
+	int GetUnreadJournal() { return m_iMissions - m_iMissionsSeen; }
+	void MarkRadioSeen() { m_iLoggedSeen = m_iLogged; }
+	void MarkJournalSeen() { m_iMissionsSeen = m_iMissions; }
 	array<ref RZ_RadioEntry> GetRadioLog() { return m_aRadio; }
 }

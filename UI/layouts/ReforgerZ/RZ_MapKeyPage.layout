@@ -1,5 +1,5 @@
 FrameWidgetClass "{3696773FB12B6F7C}" {
- Name "MapKeyMenu"
+ Name "MapKeyPage"
  Slot FrameWidgetSlot "{E0DA04C5C2915253}" {
   Anchor 0 0 1 1
   PositionX 0
@@ -14,430 +14,16 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
  }
  "Ignore Cursor" 0
  {
-  ImageWidgetClass "{ACC9FBD93A45BA94}" {
-   Name "Dimmer"
-   Slot FrameWidgetSlot "{1F29F844FC0B709E}" {
-    Anchor 0 0 1 1
-    PositionX 0
-    OffsetLeft 0
-    PositionY 0
-    OffsetTop 0
-    SizeX 0
-    OffsetRight 0
-    SizeY 0
-    OffsetBottom 0
-    Alignment 0 0
-   }
-   Color 0.031 0.035 0.039 0.75
-   Size 1 1
-  }
-  TextWidgetClass "{FF9E0AFA90F1D76A}" {
-   Name "Heading"
-   Slot FrameWidgetSlot "{E3DFF035636B44B5}" {
-    Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 40
-    OffsetTop 40
-    SizeX 1000
-    OffsetRight -1072
-    SizeY 56
-    OffsetBottom -96
-    Alignment 0 0
-   }
-   Color 0.91 0.886 0.816 1
-   Text "MAP KEY"
-   "Font Size" 46
-   "Min Font Size" 46
-   FontProperties FontProperties "{DDE9BAD873F6ECA7}" {
-    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-   }
-  }
-  TextWidgetClass "{A296D310B52595D4}" {
-   Name "Header"
-   Slot FrameWidgetSlot "{D092D39CDE9EFEEE}" {
-    Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 100
-    OffsetTop 100
-    SizeX 1100
-    OffsetRight -1172
-    SizeY 24
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   Color 0.639 0.62 0.565 1
-   Text "MARKERS YOU CAN SEE NOW. THE ZONE IS WIDER THAN ANY MAP."
-   "Font Size" 17
-   "Min Font Size" 17
-   FontProperties FontProperties "{F4BC9FF85A2952D2}" {
-    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
-   }
-  }
-  ImageWidgetClass "{39C194CD987F695A}" {
-   Name "HeadRule"
-   Slot FrameWidgetSlot "{E431E57DC18A5AD1}" {
-    Anchor 0 0 1 0
-    PositionX 72
-    OffsetLeft 72
-    PositionY 138
-    OffsetTop 138
-    SizeX -144
-    OffsetRight 72
-    SizeY 2
-    OffsetBottom -140
-    Alignment 0 0
-   }
-   Color 0.227 0.247 0.259 1
-   Size 1 1
-  }
-  ButtonWidgetClass "{BC32C6AA18C2A235}" {
-   Name "Tab0"
-   Slot FrameWidgetSlot "{BB570274845F0A3E}" {
-    Anchor 1 0 1 0
-    PositionX -612
-    OffsetLeft -612
-    PositionY 88
-    OffsetTop 88
-    SizeX 132
-    OffsetRight 480
-    SizeY 36
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{489A19822B87A24C}" {
-     Name "Tab0Box"
-     Slot ButtonWidgetSlot "{E78D1CA36788D4A7}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{B0D35C531E23498A}" {
-       Name "Tab0Bg"
-       Slot OverlayWidgetSlot "{7790A38DFFAB4103}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.078 0.086 0.094 0.7
-       Size 1 1
-      }
-      PanelWidgetClass "{66AB4CC202AE7D58}" {
-       Name "Tab0Line"
-       Slot OverlayWidgetSlot "{8720EA5CB59243C7}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.165 0.18 0.192 1
-       style outline_2px
-      }
-      TextWidgetClass "{ED079E98BE54D8CA}" {
-       Name "Tab0Text"
-       Slot OverlayWidgetSlot "{FA922CDE700F0197}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.639 0.62 0.565 1
-       Text "STANDING"
-       "Font Size" 13
-       "Min Font Size" 13
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{3FABB50B17C8B972}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  ButtonWidgetClass "{731933B449C5EB72}" {
-   Name "Tab1"
-   Slot FrameWidgetSlot "{CEA1699A630DE58C}" {
-    Anchor 1 0 1 0
-    PositionX -476
-    OffsetLeft -476
-    PositionY 88
-    OffsetTop 88
-    SizeX 132
-    OffsetRight 344
-    SizeY 36
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{B648AA3261C3FC0E}" {
-     Name "Tab1Box"
-     Slot ButtonWidgetSlot "{FD78A579EE4E6EEB}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{6A165BCCE8BB6BAB}" {
-       Name "Tab1Bg"
-       Slot OverlayWidgetSlot "{498AFE85E1604DF4}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.078 0.086 0.094 0.7
-       Size 1 1
-      }
-      PanelWidgetClass "{2EF9378CA3791274}" {
-       Name "Tab1Line"
-       Slot OverlayWidgetSlot "{B491119F7EEC94C9}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.165 0.18 0.192 1
-       style outline_2px
-      }
-      TextWidgetClass "{E6F96C189C29E43A}" {
-       Name "Tab1Text"
-       Slot OverlayWidgetSlot "{B579D1E791EC143C}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.639 0.62 0.565 1
-       Text "JOURNAL"
-       "Font Size" 13
-       "Min Font Size" 13
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{8EDD27FE9E6D3FD5}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  ButtonWidgetClass "{14FB9B1F5412B29C}" {
-   Name "Tab2"
-   Slot FrameWidgetSlot "{F63ADC9806D98E27}" {
-    Anchor 1 0 1 0
-    PositionX -340
-    OffsetLeft -340
-    PositionY 88
-    OffsetTop 88
-    SizeX 132
-    OffsetRight 208
-    SizeY 36
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{DBC9E0D4CC845124}" {
-     Name "Tab2Box"
-     Slot ButtonWidgetSlot "{380C7AC823442580}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{22C4C7DCB8E91B1F}" {
-       Name "Tab2Bg"
-       Slot OverlayWidgetSlot "{D077946792A7E2B0}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.078 0.086 0.094 0.7
-       Size 1 1
-      }
-      PanelWidgetClass "{248F52B7F479D305}" {
-       Name "Tab2Line"
-       Slot OverlayWidgetSlot "{C119A08CED1A928C}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.165 0.18 0.192 1
-       style outline_2px
-      }
-      TextWidgetClass "{CD9842C8D1020E16}" {
-       Name "Tab2Text"
-       Slot OverlayWidgetSlot "{5513B44FFE989377}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.639 0.62 0.565 1
-       Text "RADIO"
-       "Font Size" 13
-       "Min Font Size" 13
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{87D1A6A3FCEC596B}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  ButtonWidgetClass "{B033A93B998ED050}" {
-   Name "Tab3"
-   Slot FrameWidgetSlot "{2104F1B66EFD4441}" {
-    Anchor 1 0 1 0
-    PositionX -204
-    OffsetLeft -204
-    PositionY 88
-    OffsetTop 88
-    SizeX 132
-    OffsetRight 72
-    SizeY 36
-    OffsetBottom -124
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{1654F3723EE83FC9}" {
-     Name "Tab3Box"
-     Slot ButtonWidgetSlot "{997BE439883E7D9C}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{650FA86540BAFC59}" {
-       Name "Tab3Bg"
-       Slot OverlayWidgetSlot "{9F3CB12CB395054E}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.91 0.886 0.816 1
-       Size 1 1
-      }
-      TextWidgetClass "{2708FF5D214E66B6}" {
-       Name "Tab3Text"
-       Slot OverlayWidgetSlot "{C2562735ADAC7E8E}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.078 0.078 0.078 1
-       Text "MAP KEY"
-       "Font Size" 13
-       "Min Font Size" 13
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{7E57857EE230C26D}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  ButtonWidgetClass "{5E66E21CCC697CA8}" {
-   Name "CloseButton"
-   Slot FrameWidgetSlot "{58EECF3624D92184}" {
-    Anchor 1 0 1 0
-    PositionX -108
-    OffsetLeft -108
-    PositionY 40
-    OffsetTop 40
-    SizeX 36
-    OffsetRight 72
-    SizeY 36
-    OffsetBottom -76
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{B8928D6DAD7645D0}" {
-     Name "CloseBox"
-     Slot ButtonWidgetSlot "{6424A1D1D6F2F77C}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{79F99A0C6CF6B33C}" {
-       Name "CloseBg"
-       Slot OverlayWidgetSlot "{F9BC32D6639EFA3C}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.102 0.114 0.125 1
-       Size 1 1
-      }
-      PanelWidgetClass "{CED77C02F68E4D55}" {
-       Name "CloseLine"
-       Slot OverlayWidgetSlot "{B7362514CF805A46}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.227 0.247 0.259 1
-       style outline_2px
-      }
-      TextWidgetClass "{1B810D4E5C9548A3}" {
-       Name "CloseText"
-       Slot OverlayWidgetSlot "{F46B2F84DC45A083}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.91 0.886 0.816 1
-       Text "X"
-       "Font Size" 20
-       "Min Font Size" 20
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{84F2E5345FD93AB2}" {
-        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  TextWidgetClass "{D9583A6C6976D1AB}" {
-   Name "FooterKeys"
-   Slot FrameWidgetSlot "{357E2D1BB4009904}" {
-    Anchor 0 1 0 1
-    PositionX 72
-    OffsetLeft 72
-    PositionY -34
-    OffsetTop -34
-    SizeX 700
-    OffsetRight -772
-    SizeY 20
-    OffsetBottom 14
-    Alignment 0 1
-   }
-   Color 0.639 0.62 0.565 1
-   Text "ESC  CLOSE      Q / E  TABS"
-   "Font Size" 13
-   "Min Font Size" 13
-   FontProperties FontProperties "{876D2DAD59614215}" {
-    Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-   }
-  }
-  TextWidgetClass "{5DA21B73C6D508FB}" {
-   Name "FooterNote"
-   Slot FrameWidgetSlot "{311E7622C2223E9F}" {
-    Anchor 1 1 1 1
-    PositionX -72
-    OffsetLeft -72
-    PositionY -34
-    OffsetTop -34
-    SizeX 1000
-    OffsetRight -928
-    SizeY 20
-    OffsetBottom 14
-    Alignment 1 1
-   }
-   Color 0.639 0.62 0.565 1
-   Text "Contracts are never on the map: the journal gives a rough area."
-   "Font Size" 13
-   "Min Font Size" 13
-   "Horizontal Alignment" Right
-   FontProperties FontProperties "{D5B746347CE33734}" {
-    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
-   }
-  }
   FrameWidgetClass "{8EC7DEDD3C6055F0}" {
    Name "LegendPanel"
    Slot FrameWidgetSlot "{B84A822F044CAAE0}" {
     Anchor 0 0 0 0
-    PositionX 72
-    OffsetLeft 72
+    PositionX 96
+    OffsetLeft 96
     PositionY 168
     OffsetTop 168
-    SizeX 640
-    OffsetRight -712
+    SizeX 623
+    OffsetRight -719
     SizeY 840
     OffsetBottom -1008
     Alignment 0 0
@@ -481,12 +67,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "LegendGroup0"
      Slot FrameWidgetSlot "{D970216360DB133F}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 28
       OffsetTop 28
-      SizeX 592
-      OffsetRight -616
+      SizeX 576
+      OffsetRight -599
       SizeY 16
       OffsetBottom -44
       Alignment 0 0
@@ -503,12 +89,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key0_marker_stronghold_0"
      Slot FrameWidgetSlot "{717811E402A5F88D}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 60
       OffsetTop 60
-      SizeX 24
-      OffsetRight -48
+      SizeX 23
+      OffsetRight -46
       SizeY 24
       OffsetBottom -84
       Alignment 0 0
@@ -520,12 +106,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key0_marker_stronghold_1"
      Slot FrameWidgetSlot "{99A91C2F6E87EAAE}" {
       Anchor 0 0 0 0
-      PositionX 52
-      OffsetLeft 52
+      PositionX 51
+      OffsetLeft 51
       PositionY 60
       OffsetTop 60
-      SizeX 24
-      OffsetRight -76
+      SizeX 23
+      OffsetRight -74
       SizeY 24
       OffsetBottom -84
       Alignment 0 0
@@ -537,12 +123,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key0_marker_stronghold_2"
      Slot FrameWidgetSlot "{F91284193CACD30D}" {
       Anchor 0 0 0 0
-      PositionX 80
-      OffsetLeft 80
+      PositionX 78
+      OffsetLeft 78
       PositionY 60
       OffsetTop 60
-      SizeX 24
-      OffsetRight -104
+      SizeX 23
+      OffsetRight -101
       SizeY 24
       OffsetBottom -84
       Alignment 0 0
@@ -554,12 +140,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key0Name"
      Slot FrameWidgetSlot "{60C56323835C3C1B}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 54
       OffsetTop 54
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 20
       OffsetBottom -74
       Alignment 0 0
@@ -576,12 +162,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key0Line"
      Slot FrameWidgetSlot "{3126A2A772863DC5}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 74
       OffsetTop 74
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 18
       OffsetBottom -92
       Alignment 0 0
@@ -598,12 +184,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key1_marker_outpost_0"
      Slot FrameWidgetSlot "{854AE729FB3D0BF2}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 116
       OffsetTop 116
-      SizeX 24
-      OffsetRight -48
+      SizeX 23
+      OffsetRight -46
       SizeY 24
       OffsetBottom -140
       Alignment 0 0
@@ -615,12 +201,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key1_marker_outpost_1"
      Slot FrameWidgetSlot "{C205212062CF0C31}" {
       Anchor 0 0 0 0
-      PositionX 52
-      OffsetLeft 52
+      PositionX 51
+      OffsetLeft 51
       PositionY 116
       OffsetTop 116
-      SizeX 24
-      OffsetRight -76
+      SizeX 23
+      OffsetRight -74
       SizeY 24
       OffsetBottom -140
       Alignment 0 0
@@ -632,12 +218,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key1_marker_outpost_2"
      Slot FrameWidgetSlot "{F877F26FEFBE1FB9}" {
       Anchor 0 0 0 0
-      PositionX 80
-      OffsetLeft 80
+      PositionX 78
+      OffsetLeft 78
       PositionY 116
       OffsetTop 116
-      SizeX 24
-      OffsetRight -104
+      SizeX 23
+      OffsetRight -101
       SizeY 24
       OffsetBottom -140
       Alignment 0 0
@@ -649,12 +235,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key1Name"
      Slot FrameWidgetSlot "{DB7A9EC2B3E05F56}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 110
       OffsetTop 110
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 20
       OffsetBottom -130
       Alignment 0 0
@@ -671,12 +257,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key1Line"
      Slot FrameWidgetSlot "{C7DA851B1DF21C56}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 130
       OffsetTop 130
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 18
       OffsetBottom -148
       Alignment 0 0
@@ -693,12 +279,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key2_marker_safehouse"
      Slot FrameWidgetSlot "{65BAC5A907EEA22C}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 168
       OffsetTop 168
-      SizeX 32
-      OffsetRight -56
+      SizeX 31
+      OffsetRight -54
       SizeY 32
       OffsetBottom -200
       Alignment 0 0
@@ -710,12 +296,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key2Name"
      Slot FrameWidgetSlot "{DC3FC43BAC27BBC3}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 166
       OffsetTop 166
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 20
       OffsetBottom -186
       Alignment 0 0
@@ -732,12 +318,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key2Line"
      Slot FrameWidgetSlot "{A74F20628FF568D3}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 186
       OffsetTop 186
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 18
       OffsetBottom -204
       Alignment 0 0
@@ -754,12 +340,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key3_marker_lab"
      Slot FrameWidgetSlot "{B9E23FADDAA37D69}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 224
       OffsetTop 224
-      SizeX 32
-      OffsetRight -56
+      SizeX 31
+      OffsetRight -54
       SizeY 32
       OffsetBottom -256
       Alignment 0 0
@@ -771,12 +357,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key3Name"
      Slot FrameWidgetSlot "{862F5444305B5B55}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 222
       OffsetTop 222
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 20
       OffsetBottom -242
       Alignment 0 0
@@ -793,12 +379,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key3Line"
      Slot FrameWidgetSlot "{546E42FC34EEB89B}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 242
       OffsetTop 242
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 18
       OffsetBottom -260
       Alignment 0 0
@@ -815,12 +401,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "LegendGroup1"
      Slot FrameWidgetSlot "{E44E06CDDBA3BC89}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 296
       OffsetTop 296
-      SizeX 592
-      OffsetRight -616
+      SizeX 576
+      OffsetRight -599
       SizeY 16
       OffsetBottom -312
       Alignment 0 0
@@ -837,12 +423,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key4_marker_event"
      Slot FrameWidgetSlot "{DB44F4FEA217A5A6}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 324
       OffsetTop 324
-      SizeX 32
-      OffsetRight -56
+      SizeX 31
+      OffsetRight -54
       SizeY 32
       OffsetBottom -356
       Alignment 0 0
@@ -854,12 +440,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key4Name"
      Slot FrameWidgetSlot "{A0C4AD4D949A03BA}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 322
       OffsetTop 322
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 20
       OffsetBottom -342
       Alignment 0 0
@@ -876,12 +462,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key4Line"
      Slot FrameWidgetSlot "{7D1E783B92C01130}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 342
       OffsetTop 342
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 18
       OffsetBottom -360
       Alignment 0 0
@@ -898,12 +484,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key5_marker_power"
      Slot FrameWidgetSlot "{7D1524AB1AB29444}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 380
       OffsetTop 380
-      SizeX 32
-      OffsetRight -56
+      SizeX 31
+      OffsetRight -54
       SizeY 32
       OffsetBottom -412
       Alignment 0 0
@@ -915,12 +501,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key5Name"
      Slot FrameWidgetSlot "{FDE8D187A367AA3F}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 378
       OffsetTop 378
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 20
       OffsetBottom -398
       Alignment 0 0
@@ -937,12 +523,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key5Line"
      Slot FrameWidgetSlot "{A7A7A7F9DFDDFA71}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 398
       OffsetTop 398
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 18
       OffsetBottom -416
       Alignment 0 0
@@ -959,12 +545,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key6_marker_radio"
      Slot FrameWidgetSlot "{557479605E251F40}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 436
       OffsetTop 436
-      SizeX 32
-      OffsetRight -56
+      SizeX 31
+      OffsetRight -54
       SizeY 32
       OffsetBottom -468
       Alignment 0 0
@@ -976,12 +562,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key6Name"
      Slot FrameWidgetSlot "{862FB3230352716F}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 434
       OffsetTop 434
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 20
       OffsetBottom -454
       Alignment 0 0
@@ -998,12 +584,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key6Line"
      Slot FrameWidgetSlot "{23B52A12A2C15B9C}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 454
       OffsetTop 454
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 18
       OffsetBottom -472
       Alignment 0 0
@@ -1020,12 +606,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key7_marker_checkpoint"
      Slot FrameWidgetSlot "{591A044A20F4DBD5}" {
       Anchor 0 0 0 0
-      PositionX 24
-      OffsetLeft 24
+      PositionX 23
+      OffsetLeft 23
       PositionY 492
       OffsetTop 492
-      SizeX 32
-      OffsetRight -56
+      SizeX 31
+      OffsetRight -54
       SizeY 32
       OffsetBottom -524
       Alignment 0 0
@@ -1037,12 +623,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key7Name"
      Slot FrameWidgetSlot "{588D2E16AFCF604B}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 490
       OffsetTop 490
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 20
       OffsetBottom -510
       Alignment 0 0
@@ -1059,12 +645,12 @@ FrameWidgetClass "{3696773FB12B6F7C}" {
      Name "Key7Line"
      Slot FrameWidgetSlot "{C2517FE25EE30136}" {
       Anchor 0 0 0 0
-      PositionX 152
-      OffsetLeft 152
+      PositionX 148
+      OffsetLeft 148
       PositionY 510
       OffsetTop 510
-      SizeX 464
-      OffsetRight -616
+      SizeX 451
+      OffsetRight -599
       SizeY 18
       OffsetBottom -528
       Alignment 0 0

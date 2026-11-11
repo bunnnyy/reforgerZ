@@ -1,0 +1,19 @@
+GenericEntity : "{59E8CDFB824DE3B9}Prefabs/Props/Civilian/Notebook_01_Single_MarbleBlack_CP.et" {
+ ID "5256876588C6DFCB"
+ components {
+  RZ_NotebookGadgetComponent "{6C1F4A7B92D3E05A}" {
+  }
+  InventoryItemComponent "{59827E686F66AA7D}" {
+   Attributes SCR_ItemAttributeCollection "{59827E680A4F5131}" {
+    ItemDisplayName UIInfo "{59827E68154045CB}" {
+     Name "Notebook"
+     Description "Your notebook: standing, the jobs you know of, what you heard, the map key, the hall of fame. Take it in hand to read it."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes "{59827E68FFB78A9F}" {
+     Weight 0.1
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

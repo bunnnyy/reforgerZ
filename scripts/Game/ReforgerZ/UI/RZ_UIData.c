@@ -135,6 +135,24 @@ class RZ_UISettings
 	[Attribute("0", desc: "The safehouse notice board opens as a menu with a box to write in (RZ_NoticeBoardMenu; needs its layout and chimeraMenus entry, UI/LAYOUTS.md). Off = notices, and notes are written with /note in chat")]
 	bool m_bBoardMenus;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Standing page layout (UI/LAYOUTS.md). Empty = the tab says Nothing here yet", "layout")]
+	ResourceName m_sStandingPage;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Journal page layout (UI/LAYOUTS.md)", "layout")]
+	ResourceName m_sJournalPage;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Radio page layout (UI/LAYOUTS.md)", "layout")]
+	ResourceName m_sRadioPage;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Map key page layout (UI/LAYOUTS.md)", "layout")]
+	ResourceName m_sMapKeyPage;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Hall of fame page layout (UI/LAYOUTS.md)", "layout")]
+	ResourceName m_sHallPage;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The notebook item every new life is given (Prefabs/ReforgerZ/UI/RZ_Notebook.et): taken into the hand it opens the notebook, the pad's way in besides the pause menu. Empty = none", "et")]
+	ResourceName m_sNotebookPrefab;
+
 	protected static ref RZ_UISettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -722,6 +740,19 @@ class RZ_UIW
 			c.RemoveFromHierarchy();
 			c = next;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gamepad: scroll the named ScrollLayout a step up (-1) or down (1).
+	static void Scroll(Widget root, string name, int dir)
+	{
+		ScrollLayoutWidget sc = ScrollLayoutWidget.Cast(Find(root, name));
+		if (!sc)
+			return;
+
+		float x, y;
+		sc.GetSliderPos(x, y);
+		sc.SetSliderPos(x, Math.Clamp(y + dir * 0.12, 0, 1));
 	}
 
 	//------------------------------------------------------------------------------------------------
