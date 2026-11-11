@@ -85,6 +85,10 @@ class RZ_Job_RealOrders : RZ_LeaderDelivery
 		if (!CanRun(gm, RZ_EFaction.MILITARY) || !top || top == leader)
 			return 0;
 
+		// While the Await Relief questline follows the Day 3 runner, his orders are its story
+		if (RZ_Quest_AwaitRelief.IsRunning(gm))
+			return 0;
+
 		return 1;
 	}
 

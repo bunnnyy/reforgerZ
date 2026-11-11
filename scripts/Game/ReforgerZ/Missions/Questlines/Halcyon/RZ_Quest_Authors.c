@@ -36,7 +36,7 @@ class RZ_Quest_Authors : RZ_Questline
 	static const string FLAG_BATCH_SOLD = "halcyon_authors.batch_sold";	// set: the boss paid for the batch
 	static const string FLAG_FORMULA_SOLD = "halcyon_authors.formula_sold";	// set: the method was sold to the Red Hand (stage 2)
 	// Read from B3 (The Last Pilot, Bastion): the faction the pilot flew for, Halcyon = the samples
-	static const string FLAG_PILOT = "bastion_last_pilot.flew_for";
+	static const string FLAG_PILOT = "pilot.flew_for";
 
 	static const int S_START = 0;
 	static const int S_LETTER = 1;

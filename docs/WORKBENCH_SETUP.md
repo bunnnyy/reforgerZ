@@ -334,13 +334,13 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_SurvivorGroup.et` | a civilian AI group on SURV | — | Missions > Survivor group | optional | Survivors Trapped, Training Day, Harvest Guard, The Bitten Friend, Trader Caravan, Protection Racket, the keeper's people in The Well Story; the fallback escort and bounty target |
 | `RZ_Nest.et` | a Zombie Hive prefab or a destructible prop with a damage manager | — | Missions > Nest | optional | Burn the Nest, Specimen from the Nest |
 | `RZ_BanditDrop.et` | a crate, barrel or car wreck prop | `RZ_SellSamplesToBanditsAction` | Missions > Dead drop | optional | Dead Drop |
-| `RZ_HeliWreck.et` | a helicopter wreck prop | the clue set | Missions > Helicopter wreck | optional | Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash |
+| `RZ_HeliWreck.et` | a helicopter wreck prop | the clue set | Missions > Helicopter wreck | optional | Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash and of The Last Pilot's Day 3 wreck; the last helicopter's crash in The Last Pilot |
 | `RZ_CorpsePile.et` | a body bag pile prop | — | Missions > Corpse pile | optional | look only: Burn the Bodies' piles and Memorial's bodies (both fall back to the puzzle object) |
-| `RZ_RedHandGroup.et` | an AI group on BAND | — | Missions > Red Hand group | optional | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness, the crews in Learning the Drones and The Pit's Debtor, the guards in Tied Down; in the questlines the thief's friends (The Book), the van's guards and the raided camp (Cargo) and the crew at the well (The Well Story); default Red Hand hunter squad |
-| `RZ_FuelDepot.et` | fuel tanks with a damage manager | — | Missions > Fuel depot | optional | Arson |
+| `RZ_RedHandGroup.et` | an AI group on BAND | — | Missions > Red Hand group | optional | Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness, the crews in Learning the Drones and The Pit's Debtor, the guards in Tied Down; in the questlines the thief's friends (The Book), the van's guards and the raided camp (Cargo) and the crew at the well (The Well Story), the toll and the raid (The Census), the crews (The Last Pilot); default Red Hand hunter squad |
+| `RZ_FuelDepot.et` | fuel tanks with a damage manager | — | Missions > Fuel depot | optional | Arson; the look of The Last Pilot's Red Hand depot |
 | `RZ_Relay.et` | a radio mast with a damage manager | — | Missions > Relay | optional | Sabotage the Relay |
 | `RZ_Trader.et` | a character or vehicle (e.g. a Shop System trader) | — | Missions > Trader | optional | Wandering Trader |
-| `RZ_Explosion.et` | a mortar or shell impact effect | — | Missions > Explosion | optional | Bastion Shelling; charges in Blow the Bridge, shells in Fire Mission, Gas Station Fire's blast |
+| `RZ_Explosion.et` | a mortar or shell impact effect | — | Missions > Explosion | optional | Bastion Shelling; charges in Blow the Bridge, shells in Fire Mission, Gas Station Fire's blast, the burning helicopter in The Last Pilot |
 
 #### Contracts
 
@@ -352,7 +352,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection, The Three Weeks questline (falls back to the puzzle object) |
 | `RZ_Bus.et` | a drivable bus or truck (keeps its damage manager) | — | Missions > Contracts > Bus | optional | Recover the Bus (falls back to the Haven truck, then car prefabs) |
 | `RZ_BountyTarget.et` | an armed AI group or character | — | Missions > Contracts > Bounty target | optional | Collect the Bounty (falls back to the survivor group) |
-| `RZ_BastionSquad.et` | an AI group on MIL | — | Missions > Contracts > Bastion squad | optional | the stockade guards in Bust Out (falls back to the Bastion hunters, then crew) |
+| `RZ_BastionSquad.et` | an AI group on MIL | — | Missions > Contracts > Bastion squad | optional | the stockade guards in Bust Out, the arrest squad in Await Relief (falls back to the Bastion hunters, then crew) |
 | `RZ_DroneWreck.et` | a small wreck prop | — | Missions > Contracts > Crashed drone | optional | Medical Drone (falls back to the puzzle object) |
 | `RZ_Smoke.et` | a coloured smoke effect | — | Missions > Contracts > Smoke marker | optional | Fire Mission (none: the message says it) |
 
@@ -482,7 +482,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 | `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | the back-road scenario |
 | `RZ_ScratchedDoor.et` | a door or wall panel prop | the clue set | Guidance > Door prefab | optional | the basement scenario |
 | `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | the church scenario, safehouse flyers |
-| `RZ_TableRadio.et` | a radio prop | `RZ_ClueComponent`; `RZ_ReadClueAction` (Label Listen) | Guidance > Table radio prefab | optional | the farmhouse scenario |
+| `RZ_TableRadio.et` | a radio prop | `RZ_ClueComponent`; `RZ_ReadClueAction` (Label Listen) | Guidance > Table radio prefab | optional | the farmhouse scenario; beside the operators in No Reply and Await Relief, and The Census's nightly call |
 | `RZ_DeadRaider.et` | a body prop with a red hand on the jacket | the clue set | Guidance > Raider body prefab | optional | the attic scenario |
 | `RZ_DeadSoldier.et` | a Bastion soldier body prop | the clue set | Guidance > Soldier body prefab | optional | the barricade scenario |
 | `RZ_Barricade.et` | sandbags and a car on its side | — | Guidance > Barricade prefab | optional | barricade scenery |
@@ -1159,6 +1159,22 @@ session, tick off:
   notebook beside him (taken back), then ask him instead; read the trial records after dark;
   broker the lab road at the nurse's and carry the Cold Chain batch; on another run refuse both and
   walk the last one out with the walker at dusk.
+- [ ] Await Relief (**Wait scale** 0.1): at night an Independent Bastion commander offers the
+  operator's tape in person; take it (or copy it, unseen, with a radio), play it at the relay and
+  hold 3 min through the horde; walk the runner's three towns; on separate runs give the page to
+  the duty officer, the commander, a crew boss's radio man and the chair's clerk: the waits,
+  headlines and endings differ. No Reply's tape at an Independent commander's post starts it there.
+- [ ] The Census (faction life off, or Bastion short of supplies or security): count a house by
+  asking and from the watch point (seen: Haven Infamy), deliver and skim the ration crates, walk
+  the curfew gently and, on another run, let the toll in (the crew holds the road until dawn), then
+  the contribution, the raid (Red Hand group prefab) and the 20:30 call: as it is, high, low and
+  torn up end differently, and Requisition then skips spared houses and goes to refused ones first.
+- [ ] The Last Pilot (Perimeter on): finishing Last Helicopter starts it, and no Last Helicopter is
+  offered while the helicopter is dry. Fuel it, choose a load, bring the black box from the warning
+  zone (never the kill zone), then on separate runs talk him down, report him, help him to the far
+  LZ and sell him to the Red Hand: after Grounded there's no Last Helicopter for 2 real hours
+  (times **Wait scale**) and the next one names the new pilot; after the line, a Crashed Helicopter
+  event appears near the far LZ. Failing Rescue the Pilot also grounds the helicopter.
 - [ ] The Three Weeks (same settings): solve Patient Zero's Ledger, then it can begin. The driver
   sits at the edge of the town nearest the site, talks to someone Known with the Haven and not
   Trusted with Halcyon (or a Radio Operator), or after two shares of food; the site is well away

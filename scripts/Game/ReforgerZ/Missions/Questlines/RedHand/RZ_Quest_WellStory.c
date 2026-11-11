@@ -107,7 +107,8 @@ class RZ_Quest_WellStory : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! H2's house (door.house, when door.shut or door.bastion is set), else the Haven safehouse
+	//! H2's house (door.house, when door.shut or door.bastion is set), else B2's counted house
+	//! (census.counted), else the Haven safehouse
 	//! nearest the crew boss, else a quiet village under 30 infection 0.6-4 km away.
 	protected bool PickVillage(RZ_GameModeComponent gm, RZ_QuestRun run, RZ_Leader crew)
 	{
@@ -127,6 +128,12 @@ class RZ_Quest_WellStory : RZ_Questline
 			{
 				house = door;
 				shelter = " The house there stood up to the Red Hand once already, and put its barricades up.";
+			}
+			else if (houses.Get(RZ_RedHandQuest.World(gm, "census.counted") - 1))
+			{
+				// B2's first counted house (census.counted: its safehouse index + 1)
+				house = RZ_RedHandQuest.World(gm, "census.counted") - 1;
+				shelter = " Bastion counted the house there and gave it ration cards. It pays Bastion now.";
 			}
 			else
 			{
@@ -641,10 +648,12 @@ class RZ_QM_WellWhy : RZ_RedHandQuestMission
 		if (!run || !RZ_RedHandQuest.HasPos(run, "door"))
 			return false;
 
-		// Why: short of food, or paying Bastion now (H2's door.bastion, or a Bastion seat close by)
+		// Why: short of food, or paying Bastion now (H2's door.bastion, B2's census.counted, or a Bastion seat close by)
 		RZ_Safehouse h = RZ_Quest_WellStory.House(gm, run);
 		int reason = 1;
 		if (h && RZ_RedHandQuest.HasWorld(gm, "door.bastion") && RZ_RedHandQuest.World(gm, "door.house") - 1 == run.Flag("house", -1))
+			reason = 2;
+		else if (h && RZ_RedHandQuest.World(gm, "census.counted") - 1 == run.Flag("house", -1))
 			reason = 2;
 		else if (h && h.m_bShort)
 			reason = 1;

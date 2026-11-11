@@ -12,7 +12,10 @@ class RZ_QuestlineRegistry
 		q.Register(RZ_Quest_PriceOfTheDoor);
 		q.Register(RZ_Quest_EdgeOfTown);
 
-		// Task Force Bastion
+		// Task Force Bastion (Missions/Questlines/Bastion/)
+		q.Register(RZ_Quest_AwaitRelief);
+		q.Register(RZ_Quest_Census);
+		q.Register(RZ_Quest_LastPilot);
 
 		// The Red Hand (Missions/Questlines/RedHand/)
 		q.Register(RZ_Quest_TheBook);

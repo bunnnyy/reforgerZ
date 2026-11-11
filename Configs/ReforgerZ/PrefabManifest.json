@@ -761,7 +761,7 @@
    "slotLabel": "Missions > Helicopter wreck",
    "required": false,
    "minimum": false,
-   "use": "Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash",
+   "use": "Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash and of The Last Pilot's Day 3 wreck; the last helicopter's crash in The Last Pilot",
    "notes": ""
   },
   {
@@ -797,7 +797,7 @@
    "slotLabel": "Missions > Red Hand group",
    "required": false,
    "minimum": false,
-   "use": "Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness, the crews in Learning the Drones and The Pit's Debtor, the guards in Tied Down; in the questlines the thief's friends (The Book), the van's guards and the raided camp (Cargo) and the crew at the well (The Well Story); default Red Hand hunter squad",
+   "use": "Raid the Red Hand, Trader Caravan, raiders in Lab Defence and Convoy Escort, The Witness, the crews in Learning the Drones and The Pit's Debtor, the guards in Tied Down; in the questlines the thief's friends (The Book), the van's guards and the raided camp (Cargo) and the crew at the well (The Well Story), the toll and the raid (The Census), the crews (The Last Pilot); default Red Hand hunter squad",
    "notes": ""
   },
   {
@@ -815,7 +815,7 @@
    "slotLabel": "Missions > Fuel depot",
    "required": false,
    "minimum": false,
-   "use": "Arson",
+   "use": "Arson; the look of The Last Pilot's Red Hand depot",
    "notes": ""
   },
   {
@@ -869,7 +869,7 @@
    "slotLabel": "Missions > Explosion",
    "required": false,
    "minimum": false,
-   "use": "Bastion Shelling; charges in Blow the Bridge, shells in Fire Mission, Gas Station Fire's blast",
+   "use": "Bastion Shelling; charges in Blow the Bridge, shells in Fire Mission, Gas Station Fire's blast, the burning helicopter in The Last Pilot",
    "notes": ""
   },
   {
@@ -1008,7 +1008,7 @@
    "slotLabel": "Missions > Contracts > Bastion squad",
    "required": false,
    "minimum": false,
-   "use": "the stockade guards in Bust Out (falls back to the Bastion hunters, then crew)",
+   "use": "the stockade guards in Bust Out, the arrest squad in Await Relief (falls back to the Bastion hunters, then crew)",
    "notes": ""
   },
   {
@@ -2804,7 +2804,7 @@
    "slotLabel": "Guidance > Table radio prefab",
    "required": false,
    "minimum": false,
-   "use": "the farmhouse scenario",
+   "use": "the farmhouse scenario; beside the operators in No Reply and Await Relief, and The Census's nightly call",
    "notes": ""
   },
   {
