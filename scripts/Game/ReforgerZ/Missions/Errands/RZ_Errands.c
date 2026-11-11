@@ -356,6 +356,10 @@ class RZ_Errands
 			m_fSlow = 0;
 			// The world memory's town reasons are written whether errands are on or not
 			RZ_WorldWriters.WatchTowns(m_GM);
+			// The lie store's events (visits, road news, the rumour rounds), errands on or not
+			RZ_WorldFacts lieFacts = m_GM.GetFacts();
+			if (lieFacts)
+				lieFacts.Memory().Lies().Tick(m_GM, ids, players);
 		}
 
 		if (!IsOn())

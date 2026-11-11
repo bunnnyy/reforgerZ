@@ -1604,6 +1604,33 @@ prefab** it's text only, said once a session to a player passing within 40 m. Ma
 they're put back from the log at start. The epilogue will read the log and the records. Log lines:
 `World memory: reason <key> (<subject>) <text>`, `World memory: town <idx> <kind> <text>`.
 
+### Lies and witnesses
+
+Code: `World/RZ_Lies.c` (`RZ_Lies`, `RZ_Witness`), saved with the world memory. One lie store for
+missions, errands and dialogue: per player per season, 12 at most (the oldest goes), each with what
+would expose it. **Found out by events first**, never by hidden dice:
+
+| Test | What exposes it |
+|---|---|
+| Visit | A player Known or better with the faction lied to comes within 30 m of the subject's place |
+| Road news | A wanderer passes within 300 m of it |
+| The owner's tick | The owning system checks (`Lies().Test(key, subject)`): the next upkeep, the next collection |
+| Rumour | Only a claim nothing in the world can test: 15% at the next half-hour round and once more a real day later (+10 for a Talker), then it's buried |
+
+Found out, on the life it was told in: the speaker's regard *lied*, Infamy with the faction (2–5; a
+mission may name more), the life record `lied.<f>` (the liar count, −1 at Trust), and a voucher answers
+for it (+5). The life gone, the lie is buried with it. A lie never pays more than the truth: at most
+60% and no Fame (each caller's rule). The checks run on the errands' 30 s tick, errands on or not.
+
+**The witness rule** (`RZ_Witness.Seen`): "if seen" always means the act faction's people near the
+act (its holdings and road posts within 60 m; for the Haven a safehouse within 60 m or a wanderer within
+40 m), never a hidden player (stealth). Where no bodies are, a witness is rolled: 25% within 300 m of a
+lived-in place, else 5%. **Knowing:** dark acts count only when you knew: the tell was named to you, or
+the reply says it plainly; being tricked by a twist you never saw costs nothing.
+
+Log lines: `Story: lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <how>`,
+`Story: lie <key> caught now by <speaker>`.
+
 ### Callbacks
 
 Code: `Core/RZ_Callbacks.c`. One queue for missions' echoes, errands' follow-ups and dialogue's

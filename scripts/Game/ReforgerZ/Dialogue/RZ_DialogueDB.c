@@ -100,6 +100,7 @@ class RZ_DChoice
 class RZ_DNode
 {
 	string m_sId;
+	bool m_bPublic;			// overheard: its lines and the chosen label go to others within 8 m
 	ref array<ref RZ_DSay> m_aItems = {};
 	ref array<ref RZ_DChoice> m_aChoices = {};
 }
@@ -118,6 +119,8 @@ class RZ_DConv
 	int m_iPrio;			// 0 quest, 1 ask, 2 world, 3 reaction, 4 flavour
 	int m_iFlags;
 	string m_sVoice;
+	string m_sScene;		// a scene its decisions settle for the world ("" none)
+	string m_sSceneScope;	// "season" (one for the server) or "speaker" (one per speaker)
 	ref array<ref RZ_DNode> m_aNodes = {};
 
 	//------------------------------------------------------------------------------------------------
@@ -244,6 +247,26 @@ class RZ_DialogueDB
 		m_Conv.m_aNodes.Insert(n);
 		m_Node = n;
 		m_iNodes++;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Public()
+	{
+		if (m_Node)
+			m_Node.m_bPublic = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Scene(string id, string scope)
+	{
+		if (!m_Conv)
+		{
+			m_iBad++;
+			return;
+		}
+
+		m_Conv.m_sScene = id;
+		m_Conv.m_sSceneScope = scope;
 	}
 
 	//------------------------------------------------------------------------------------------------

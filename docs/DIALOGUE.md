@@ -4,15 +4,15 @@ How talking to people works: the talk screen and its engine, the conversation tr
 (**Dialogue > Trees**, off by default), what people remember, the checks shown before you choose,
 the `.rzd` text format, its lint and simulator, and the conversations that ship. How the screen
 looks and is driven with a pad is in [UI.md](UI.md#the-talk-screen); how lines are written is in
-[WRITING.md](WRITING.md#conversations). What's still to build (lies and tells, scenes with several
-players, promises, strangers, radio speakers, barks, disguise claims) is designed in
+[WRITING.md](WRITING.md#conversations). What's still to build (promises, strangers' and radio
+speakers' conversations, barks, claim lines in someone else's kit, the finale's commit) is designed in
 [designs/DIALOGUE.md](../designs/DIALOGUE.md).
 
 Code: `Dialogue/RZ_Dialogue.c` (sessions), `Dialogue/RZ_TalkSpeakers.c` (who someone is),
 `Dialogue/RZ_DialogueTrees.c` (hubs, nodes, checks, effects), `Dialogue/RZ_DialogueDB.c` (the
 compiled conversations), `Dialogue/RZ_DialogueCond.c` (conditions and tokens),
-`Dialogue/RZ_DialogueMemory.c` (memory and `dialogue.json`), `Dialogue/Pack/` (generated). Server
-only, except the screen.
+`Dialogue/RZ_DialogueMemory.c` (memory and `dialogue.json`), `Dialogue/RZ_DialogueScenes.c` (several
+players), `Dialogue/Pack/` (generated). Server only, except the screen.
 
 ## Contents
 
@@ -22,6 +22,7 @@ only, except the screen.
 - [Checks and tags](#checks-and-tags)
 - [What a choice does](#what-a-choice-does)
 - [Memory](#memory)
+- [Several players](#several-players)
 - [Conditions](#conditions)
 - [The text format (.rzd)](#the-text-format-rzd)
 - [Tools](#tools)
@@ -144,6 +145,7 @@ costs, never what comes of it.**
 | Standing (`if tier:...`) | [Trusted - Haven] | Shown only when true |
 | `persuade <faction> <difficulty>` | [Persuade - Haven - 1 of 2] | **Trust**: your access rank with the faction (mixed tiers one lower), +1 for a listed background, +1 at most from dialogue (regard 2 or more, or the built helped or saved memory of this life), −1 for a found-out lie or crossed lines. Hunted or worse: dim, "they won't hear it from you". Factionless speakers read your Haven rank, at most 2; the Long Table's rank counts 0 |
 | `threaten <faction> <difficulty>` | [Fear 1 of 2 - +3 Infamy] (": Hunted" when it would make you Hunted) | **Fear**, with the threat's rules: +3 Infamy and regard *threatened* whatever happens, once per person by anyone for the season ("Already scared. Of someone else."), three a life per faction, a refused threat barred a real day. Never on stronghold leaders, the Kid, the Long Table, or in safehouses (the lint refuses it, and the engine refuses it on a stronghold leader) |
+| `lie <faction> <difficulty>` | [Lie - 1 of 2], or [Lie - they'd see through it] | A **tell** catches it first, whatever the score: the bite showing, another faction's colours on you, or something else you already told this speaker. Without one, Trust against the difficulty (+1 under a vouch). Believed: a false claim in the [lie store](DESIGN.md#lies-and-witnesses), found out later by its rumour rounds (the speaker's regard *lied*, +2 Infamy). Caught now: regard *lied*, +2 Infamy and the liar count (−1 at Trust this life). The reply opens with "They believe you. For now." or "They don't believe a word of it." |
 | `cost favor:<faction> N` | [20 Haven Favor] | Dim with what it needs when you can't pay. Paid when picked |
 | `cost item:food*N` | [2 food] | Dim with "you have 1 food" when you can't. Taken when picked |
 
@@ -181,12 +183,14 @@ system's caps.
 | `learn` | `learn:haven.list` | Something you now know (`knows:` keys) |
 | `rumour` | `rumour:"..."@6` | Gossip on the roads (the world's rumours) |
 | `call` | `call:slot:2`, `call:hand_in:2`, `call:toll`, `call:post_wave`, `call:standing` | Built behaviour, unchanged: the person's own reply N; the safehouse food hand-in for N items (paid as built); the Red Hand toll at this roadblock (Known or better, as built); this post lets you through once while it stands; what they make of you, in their voice |
+| `decide` | `decide:all_in` | In a conversation with a `scene`: the pick waits 5 s for objections ([Several players](#several-players)), then writes the scene's record (who, which), once for the world |
+| `sway` | `sway:council.workers` | In a conversation with a `scene`: one contribution per player to a count its owner reads (`tally.<name>`) |
 | `offer` | `offer:leader_job` | A leader's personal job (the built Ask for work) |
 
 There is **no Fame, no Infamy and no item** from talk, ever: the lint refuses `fame`, `infamy` and
-`house` effects, and Infamy comes only from a tagged threat. Effects that change the world for
-everyone (season flags other than `mark`, mission outcomes, votes) wait for scenes, which are
-planned.
+`house` effects, and Infamy comes only from a tagged threat or a caught lie. Effects that change the
+world for everyone go through a scene's `decide` or `sway`; mission outcomes from talk wait for
+missions to take conversations.
 
 ## Memory
 
@@ -208,13 +212,41 @@ changes.
 
 **Regard words:** *thanks* +1 (only with a real cost or deed), *kept* +1, *broke* −1,
 *threatened* −1, *slander* −1, *vouched_liar* −1, *lied* −3 (a Merciful speaker −2, a Paranoid one
-−4). Only *thanks* and *threatened* are written today; the others come with promises, vouching and
-lies.
+−4). *kept* and *broke* come with promises; the rest are written today (a caught or found-out lie,
+a false call-out or point-out, a vouch for a liar).
 
 **What regard does.** With Trees on, a leader's and a wanderer's attitude adds regard ÷ 2 (rounded
 toward zero), so talk moves it by at most ±2 and it fades. Regard 2 or more is persuade's +1.
 Prices still read only the built memory, so talk can't farm discounts. The Long Table keeps no
 regard.
+
+## Several players
+
+`RZ_DialogueScenes`, with **Dialogue > Trees**. Each player has their own session, checks and memory;
+two players at one speaker can see different choices.
+
+- **Overheard.** A `public` node's lines, and the label someone picked there (tags stripped), go to
+  other players within **8 m**, owner-only, at most once every 10 s per listener.
+- **Deciding together.** A conversation may name a `scene <id> speaker|season`. A choice with
+  `decide:<value>` doesn't land at once: a **5 s hold** is told to the room (30 m). Anyone else
+  talking to that speaker sees **Object** (once per scene) and **Stand with**. Unobjected, the pick
+  lands for the decider and writes the scene's record (`scene.<key>`, a world record), once; later
+  visitors meet the result through `jump decided -> <node>`. One hold per speaker at a time.
+- **Tallies.** `sway:<name>` adds one contribution per player to `tally.<name>`; the owning system
+  counts at its own time.
+- **Vouch.** Trusted or better with the speaker's faction, within 8 m of someone talking to them:
+  "[Vouch] '{name}'s with me.'" For 5 minutes, while you stay within 8 m, their persuade and lie
+  checks there get +1 (inside the dialogue +1). A lie told under the vouch, found out, costs you +5
+  Infamy with that faction and regard *vouched_liar*. Once per pair per hour.
+- **Call it out.** For 20 s after someone near you picks a choice that tells the speaker something (a
+  claim or a lie): "[Call it out] '{name}'s lying.'" A lie: caught at once. True: regard *slander* for
+  you. Once per pair per hour; the caller gets nothing either way.
+- **Point them out.** Known or better with the speaker's faction, near someone in that faction's kit:
+  "[Point them out] 'That one's not yours.'" It's −1 at their next look ([REPUTATION.md](REPUTATION.md#borrowed-kit)),
+  two at most. Their own colours: regard *slander* for you. Once per pair per hour.
+
+*Simplified:* the social verbs are on your own hub with that speaker (open Talk while they talk), and
+"eligible to object" is anyone talking to the speaker.
 
 ## Conditions
 
@@ -240,6 +272,7 @@ reads true.
 | The Long Table | `table:guest`, `table:family`, `table:crossed` | its three words, as built |
 | You | `crew`, `picture:mixed` | you have a crew name; the whole picture ([REPUTATION.md](REPUTATION.md#what-people-call-you)) |
 | Others | `others>=1` | other players within 8 m |
+| Scenes | `decided`, `decided:all_in`, `swayed:council.workers` | this conversation's scene is decided (any, or that value); you've swayed that tally |
 
 **Only what the player knows** goes into a tag: background, standing, items, the HUD, their own
 memory. Nothing reads whether a cleaned bite took.
@@ -259,7 +292,8 @@ prio quest|ask|world|reaction|flavour
 once | daily                    per character, per speaker
 voice haven|bastion|redhand|halcyon|table|plain
 
-node <id>                       the first node is "start"
+scene <id> speaker|season      deciding together (Several players): one record per speaker, or one for the season
+node <id> [public]              the first node is "start"; public: others within 8 m overhear it
   jump <conditions> -> <node>   checked in order on entry
   say <text>                    one to three lines; 200 characters each
   say? <conditions> :: <text>   the first true variant replaces the next plain say
@@ -335,7 +369,9 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
   changed; dropped when the season number changes (a wipe). `state.json` doesn't grow.
 - **Log lines:** `Dialogue: loaded N conversations, M nodes`; `Dialogue: trees on|off`;
   `Dialogue: memory for N players`; `Dialogue: memory from season N dropped (season M)`;
-  `Dialogue: budget reached <player> <faction>`; `Dialogue: debug: ...` ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check)).
+  `Dialogue: budget reached <player> <faction>`; `Dialogue: debug: ...`; `Dialogue: scene <key> decided
+  <value> by <player>`, `Dialogue: scene <key> hold by <player> objected to by <player>`, `Dialogue: sway <name>
+  by <player> (now N)`, `Dialogue: <player> vouched for <player>` ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check)).
 
 ## Simplified, and not built yet
 
@@ -348,7 +384,8 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
   news don't record `knows:` keys yet, and the notebook has no "What you know" page yet.
 - *Simplified:* mission and questline people keep their built choices; `SpawnPerson` doesn't take a
   conversation yet.
-- **Planned** ([designs/DIALOGUE.md](../designs/DIALOGUE.md)): lies, tells and the lie store;
-  promises and callbacks through `later:`; scenes with several players (overheard lines, the decide
-  hold, objections, tallies, vouching, call-outs); claims in someone else's kit; Make it right;
-  strangers, radio speakers and barks; the finale's commit and the epilogue's topics.
+- **Planned** ([designs/DIALOGUE.md](../designs/DIALOGUE.md)): lies the player is *told*
+  (`~lie` lines, `heard_lie`, the `[Evidence]` call-out); promises and callbacks through `later:`;
+  claims in someone else's kit as conversation lines (the look itself is built); Make it right;
+  strangers', radio speakers' conversations and barks; the finale's commit and the epilogue's topics.
+  No shipped conversation uses scenes or lies yet.

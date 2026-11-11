@@ -1692,7 +1692,11 @@ memory from season N dropped (season M)` after a wipe) and `Dialogue: trees off`
 Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
 season mood <mood> (was <mood>)`, `Dialogue: budget reached <player> <faction>` (talk Favor for the
 day), `Reputation: crew name <name> for <player>`, `Dialogue debug: ...` (an admin's `/talkdebug`), and
-with **Voice > Log** on, `voice: face <faction> <register> <id> mood=<mood> listener=<identity>`.
+with **Voice > Log** on, `voice: face <faction> <register> <id> mood=<mood> listener=<identity>`. Several
+players: `Dialogue: scene <key> decided <value> by <player>`, `Dialogue: scene <key> hold by <player> objected to
+by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> vouched for <player>`. Lies: `Story:
+lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
+`Story: lie <key> caught now by <speaker>`.
 
 ## 8. Play-test checklist
 
@@ -1985,6 +1989,12 @@ call`; a Hunter is useful)
 - [ ] Settle up at a quartermaster: -10 Fame, -5 Infamy, twice a real day at most; refused once
   the forgiveness budget is spent. Group rules: a Known player arriving with a Watched friend is
   searched ("We search the whole car.").
+- [ ] Several players at one speaker (**Dialogue > Trees** on, a test `.rzd` with `scene`, `decide`,
+  `public` and `check lie`): a deciding pick shows the room its 5 s hold, a second player's Object
+  stops it, unobjected it lands once and `jump decided` routes the next visitor. A Trusted friend's
+  Vouch adds +1 to your lie's tag; a believed lie is found out within a real day or not at all, and
+  costs the voucher too; a Call it out on a true claim costs the caller regard. Overheard lines
+  reach a third player within 8 m and not at 9 m.
 - [ ] Bounty: a player at Kill on Sight with two factions is killed by another player; only the
   killer is paid, once, by one faction. Die to the infected (or a fall) while at Kill on Sight:
   nobody is paid. Collect the Bounty on a player pays only whoever killed them. With no player

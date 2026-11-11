@@ -95,6 +95,7 @@ class RZ_WorldMemorySave
 	ref array<ref RZ_TownLog> towns = {};
 	ref array<ref RZ_WorldRecord> records = {};
 	ref array<string> kindsSeen = {};
+	ref array<ref RZ_Lie> lies = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -126,6 +127,14 @@ class RZ_WorldMemory
 	protected ref array<ref RZ_Truth> m_aTruths = {};
 	protected ref array<string> m_aKindsSeen = {};		// record keys written this season (first of its kind)
 	protected ref map<string, int> m_mPins = new map<string, int>();	// "key|subject" -> readers holding it (runtime)
+	protected ref RZ_Lies m_Lies = new RZ_Lies();
+
+	//------------------------------------------------------------------------------------------------
+	//! The one lie store (World/RZ_Lies.c).
+	RZ_Lies Lies()
+	{
+		return m_Lies;
+	}
 
 	// ================================================================ Reasons
 	//------------------------------------------------------------------------------------------------
@@ -750,6 +759,7 @@ class RZ_WorldMemory
 		}
 
 		data.kindsSeen.Copy(m_aKindsSeen);
+		m_Lies.Save(data.lies);
 		return data;
 	}
 
@@ -758,6 +768,8 @@ class RZ_WorldMemory
 	{
 		if (!data)
 			return;
+
+		m_Lies.Restore(data.lies);
 
 		if (data.reasons)
 		{

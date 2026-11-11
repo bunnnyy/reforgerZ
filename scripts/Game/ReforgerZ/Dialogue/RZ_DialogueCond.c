@@ -24,6 +24,7 @@ class RZ_DCtx
 	int m_iTableRole = -1;			// RZ_ETableRole
 	bool m_bStronghold;				// a stronghold leader, or inside a stronghold or the lab: no threats
 	int m_iTown = -1;				// the nearest settlement
+	string m_sScene;				// the open topic's scene record key ("" none)
 
 	//------------------------------------------------------------------------------------------------
 	vector Pos()
@@ -229,6 +230,18 @@ class RZ_DialogueCond
 				return TownTerm(ctx, t);
 			case "others":
 				return Cmp(OthersNear(ctx), OpOr(t), t.m_iVal);
+			case "decided":
+			{
+				if (!facts || ctx.m_sScene.IsEmpty())
+					return false;
+
+				if (t.m_sArg.IsEmpty())
+					return facts.Flag("scene." + ctx.m_sScene) > 0;
+
+				return facts.Flag("scene." + ctx.m_sScene + "." + t.m_sArg) > 0;
+			}
+			case "swayed":
+				return facts && facts.Flag("tally." + t.m_sArg + "." + profile.m_sIdentity) > 0;
 			case "mood":
 				return facts && RZ_SeasonMood.Name(facts.SeasonMood()) == t.m_sArg;
 			case "met":

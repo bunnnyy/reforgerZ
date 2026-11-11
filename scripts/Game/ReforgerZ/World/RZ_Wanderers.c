@@ -2010,6 +2010,19 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A living wanderer within `radius` of pos (data or body): road news, a witness.
+	bool AnyNear(vector pos, float radius)
+	{
+		foreach (RZ_Wanderer w : m_aList)
+		{
+			if (w.m_bAlive && RZ_Util.DistXZ(w.m_vPos, pos) <= radius)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A tribe's hunt takes a wanderer as data (docs/INFECTED.md, the taken): a living wanderer with no
 	//! body within radius of pos, in the open. False if there's none.
 	bool TakeNear(vector pos, float radius)

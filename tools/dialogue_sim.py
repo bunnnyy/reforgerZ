@@ -167,6 +167,9 @@ def describe_choice(ch, conv, c):
                 tag = "[Persuade] (won't listen)"
                 return tag, shown, "disabled"
             tag = "[Persuade - %s - %d of %d]" % (fname or "you", score, d) if fname else "[Persuade - %d of %d]" % (score, d)
+        elif kind == "lie":
+            score = max(0, trust(ch, f, []))
+            tag = "[Lie - %d of %d]" % (score, d)
         else:
             score = fear(ch, f, check[3:])
             tag = "[Fear %d of %d - +3 Infamy]" % (score, d)

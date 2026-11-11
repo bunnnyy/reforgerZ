@@ -63,20 +63,25 @@ COND_KEYS = {
     "saved": (False, False), "crossed": (False, False), "crew": (False, False), "role": (True, False),
     "need": (True, False), "wbitten": (False, False), "kidlost": (False, False), "table": (True, False),
     "picture": (True, False), "stronghold": (False, False),
+    # Scenes: this conversation's scene is decided (any value, or decided:<value>); you swayed a tally
+    "decided": (False, False), "swayed": (True, False),
 }
-QUIET_KEYS = {"tribe", "alpha", "lean", "sitting", "swayed", "decided", "finale", "route", "cure_held", "ending",
+QUIET_KEYS = {"tribe", "alpha", "lean", "sitting", "finale", "route", "cure_held", "ending",
               "was", "kit", "claimed", "passing", "caught", "stranger", "promise", "heard_lie"}
 # Keys that read the world or the player's place in it: an ask needs one (docs/DIALOGUE.md, "Asks").
 WORLD_KEYS = {"house", "town", "need", "wbitten", "kidlost", "bg", "tier", "rep", "exiled", "bite_shown", "hunted",
               "outbreak", "cure", "flag", "stage", "infamy", "fame", "kin"}
-EFFECTS = {"mark", "cset", "nset", "regard", "favor", "take", "claim", "learn", "rumour", "call", "offer", "later"}
-WORLD_EFFECTS = {"set", "qset", "resolve", "start", "event", "commit", "sway", "reward", "pass", "catch", "errand",
+EFFECTS = {"mark", "cset", "nset", "regard", "favor", "take", "claim", "learn", "rumour", "call", "offer", "later",
+           "sway", "decide"}
+SCENE_EFFECTS = {"sway", "decide"}
+WORLD_EFFECTS = {"set", "qset", "resolve", "start", "event", "commit", "reward", "pass", "catch", "errand",
                  "promise", "approach", "reveal", "begin", "hostile", "flee", "note", "return"}
 FORBIDDEN_EFFECTS = {"fame", "house", "infamy", "follow", "escort", "companion"}
 REGARD_WORDS = {"thanks", "kept", "broke", "threatened", "slander", "vouched_liar", "lied"}
 CALLS = re.compile(r"^(slot:[0-9]|hand_in:[0-9]+|toll|post_wave|standing)$")
-CHECKS = {"persuade", "threaten"}
-LATER_CHECKS = {"lie", "look", "vouch", "commit"}
+CHECKS = {"persuade", "threaten", "lie"}
+LATER_CHECKS = {"look", "vouch", "commit"}
+SCENE_SCOPES = {"speaker", "season"}
 
 # Tokens a .rzd line may use beyond the world tokens (RZ_DialogueText.Fill, RZ_RepVoice.FillFor).
 DIALOGUE_TOKENS = {"npc", "npc_short", "player", "house", "resident", "word", "rep", "best", "worst", "kills",
@@ -126,6 +131,7 @@ class Node:
         self.line = line
         self.items = []     # ("say", cond, text) | ("jump", cond, target) | ("do", effects)
         self.choices = []
+        self.public = False
 
 
 class Conv:
@@ -142,6 +148,8 @@ class Conv:
         self.daily = False
         self.voice = "plain"
         self.nodes = []
+        self.scene = ""
+        self.scope = ""
 
     def node(self, nid):
         for n in self.nodes:
@@ -243,9 +251,10 @@ def parse_file(path):
                 bits = rest.split()
                 if not bits:
                     raise Problem("a node needs an id")
-                if len(bits) > 1:
-                    raise Problem("node options (%s) are for scenes, which come with phase 4" % " ".join(bits[1:]))
+                if len(bits) > 2 or (len(bits) == 2 and bits[1] != "public"):
+                    raise Problem("a node is 'node <id> [public]'")
                 node = Node(bits[0], n)
+                node.public = len(bits) == 2
                 conv.nodes.append(node)
             elif word in ("say", "say?", "jump", "do") or line.startswith(">"):
                 if node is None:
@@ -266,7 +275,12 @@ def parse_file(path):
                     node.items.append(("jump", cond.strip(), target.strip()))
                 else:
                     node.items.append(("do", "", rest))
-            elif word in ("scene", "bind", "use", "opens", "always", "callout"):
+            elif word == "scene":
+                bits = rest.split()
+                if len(bits) != 2 or bits[1] not in SCENE_SCOPES:
+                    raise Problem("a scene is 'scene <id> speaker|season'")
+                conv.scene, conv.scope = bits[0], bits[1]
+            elif word in ("bind", "use", "opens", "always", "callout"):
                 raise Problem("'%s' comes with a later phase (docs/DIALOGUE.md, 'Not built yet')" % word)
             else:
                 raise Problem("unknown keyword '%s'" % word)
@@ -368,6 +382,10 @@ def lint_effects(fx, where, conv, errs, favor_total):
             errs.append("%s: offer takes leader_job" % where)
         elif name == "offer" and not all(s.startswith(("leader", "stronghold", "seat")) for s in conv.speakers):
             errs.append("%s: offer is only for leaders" % where)
+        elif name in SCENE_EFFECTS and not conv.scene:
+            errs.append("%s: '%s' needs a scene in this conversation ('scene <id> speaker|season')" % (where, name))
+        elif name in SCENE_EFFECTS and not re.match(r"^[a-z0-9_.]+$", arg):
+            errs.append("%s: %s is %s:<word>" % (where, name, name))
         elif name == "take" and not re.match(r"^food\*[0-9]+$", arg):
             errs.append("%s: take is take:food*N" % where)
         elif name == "later" and not re.match(r"^[0-9]+h:[a-z0-9_.]+$", arg):
@@ -596,8 +614,12 @@ def pack_area(area, convs):
         flags = (1 if c.once else 0) | (2 if c.daily else 0) | (4 if c.kind == "greet" else 0)
         calls.append("db.Conv(%s, %s, %s, %s, %d, %d, %s);" % (esc(c.id), esc(",".join(c.speakers)), esc(c.when),
                                                              esc(c.label), PRIOS[c.prio], flags, esc(c.voice)))
+        if c.scene:
+            calls.append("db.Scene(%s, %s);" % (esc(c.scene), esc(c.scope)))
         for n in c.nodes:
             calls.append("db.Node(%s);" % esc(n.id))
+            if n.public:
+                calls.append("db.Public();")
             for kind, cond, val in n.items:
                 if kind == "say":
                     calls.append("db.Say(%s, %s);" % (esc(cond), esc(val)))

@@ -154,6 +154,10 @@ class RZ_DialogueTrees
 	void HubReplies(RZ_TalkSession s, notnull array<ref RZ_TalkReply> replies)
 	{
 		RZ_DTalk t = s.m_Tree;
+		RZ_DialogueScenes scenes = Scenes();
+		if (scenes)
+			scenes.HubVerbs(s, replies);
+
 		CollectTopics(t);
 		while (replies.Count() > MAX_REPLIES - 1 && !t.m_aTopics.IsEmpty())
 		{
@@ -280,7 +284,17 @@ class RZ_DialogueTrees
 	//! Our reply ids: topics, choices and More.
 	static bool IsOurs(int replyId)
 	{
-		return replyId == MORE || replyId >= TOPIC_BASE;
+		return replyId == MORE || replyId >= TOPIC_BASE || RZ_DialogueScenes.IsOurs(replyId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_DialogueScenes Scenes()
+	{
+		RZ_Dialogue dialogue = m_GM.GetDialogue();
+		if (!dialogue)
+			return null;
+
+		return dialogue.GetScenes();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -320,6 +334,18 @@ class RZ_DialogueTrees
 			return true;
 		}
 
+		if (RZ_DialogueScenes.IsOurs(replyId))
+		{
+			RZ_DialogueScenes scenes = Scenes();
+			if (scenes)
+				scenes.PickVerb(s, replyId, user);
+
+			if (s.m_aNew.IsEmpty())
+				s.m_aNew.InsertAll(s.m_aSaid);
+
+			return true;
+		}
+
 		if (replyId >= CHOICE_BASE)
 			return PickChoice(s, replyId - CHOICE_BASE, user);
 
@@ -337,6 +363,7 @@ class RZ_DialogueTrees
 		t.m_aHubSaid.Clear();
 		t.m_aHubSaid.InsertAll(s.m_aSaid);
 		t.m_Conv = c;
+		t.m_Ctx.m_sScene = RZ_DialogueScenes.SceneKey(c, t.m_Ctx);
 		t.m_sPrev = "";
 		t.m_iFavorPaid = 0;
 		NoteTopic(t, c);
@@ -426,6 +453,167 @@ class RZ_DialogueTrees
 			m_Memory.AddRegard(pid, ctx.m_sKey, "threatened");
 			verdict = FearVerdict(result);
 		}
+		else if (c.m_sCheck == "lie")
+		{
+			result = TellLie(s, c);
+			verdict = LieVerdict(result);
+		}
+
+		// A deciding pick in a scene waits 5 s for objections before it lands
+		if (HasEffect(c.m_aDo, "decide") && !ctx.m_sScene.IsEmpty())
+		{
+			RZ_WorldFacts sceneFacts = m_GM.GetFacts();
+			if (sceneFacts && sceneFacts.Flag("scene." + ctx.m_sScene) > 0)
+			{
+				s.m_aNew.Insert("\"It's been settled. You weren't here for it.\"");
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+
+			RZ_DialogueScenes scenes = Scenes();
+			if (scenes && result == RZ_ECheck.PASS)
+			{
+				if (!scenes.StartHold(s, ctx.m_sScene, idx, result, verdict, RZ_DialogueText.Fill(ctx, c.m_sLabel)))
+				{
+					s.m_aNew.Insert("\"Give it a moment. Someone's answering already.\"");
+					s.m_aNew.InsertAll(s.m_aSaid);
+					return true;
+				}
+
+				s.m_aNew.Insert("You're about to answer for everyone here. Anyone can object in the next few seconds.");
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+		}
+
+		return Land(s, c, result, verdict, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A deciding pick's hold ran out unobjected (RZ_DialogueScenes): it lands now.
+	bool FinishPick(RZ_TalkSession s, int idx, RZ_ECheck result, string verdict, IEntity user)
+	{
+		RZ_DTalk t = s.m_Tree;
+		if (!t || !t.m_bInNode || !t.m_Node || idx < 0 || idx >= t.m_Node.m_aChoices.Count())
+			return true;
+
+		return Land(s, t.m_Node.m_aChoices[idx], result, verdict, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool HasEffect(array<ref RZ_DEffect> effects, string name)
+	{
+		foreach (RZ_DEffect e : effects)
+		{
+			if (e.m_sName == name)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A [Lie] (check lie): a tell catches it first, whatever the score (the bite showing, another
+	//! faction's colours, a different claim already told this speaker); then Trust against the
+	//! difficulty, +1 under a vouch. Believed: a false claim in the lie store, found out later by the
+	//! rumour rounds. Caught now: regard *lied*, +2 Infamy, the liar count.
+	protected RZ_ECheck TellLie(RZ_TalkSession s, RZ_DChoice c)
+	{
+		RZ_DTalk t = s.m_Tree;
+		RZ_DCtx ctx = t.m_Ctx;
+		int pid = s.m_iPlayer;
+		RZ_DialogueScenes scenes = Scenes();
+		int bonus = 0;
+		if (scenes)
+			bonus = scenes.VouchBonus(pid);
+
+		RZ_ECheck result = RZ_Checks.Lie(m_GM, pid, c.m_iCheckFaction, Difficulty(ctx, c), HasTell(ctx), bonus);
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		string key = "talk." + t.m_Conv.m_sId + "/@" + c.m_sId;
+		if (result == RZ_ECheck.PASS)
+		{
+			RZ_Lie lie;
+			if (facts)
+			{
+				lie = facts.Memory().Lies().Tell(m_GM, pid, key, ctx.m_sKey, c.m_iCheckFaction, ctx.m_sKey, ctx.Pos(), RZ_ELieTest.RUMOUR, 2,
+					string.Format("%1 found out what you told them. It'll come up next time.", ctx.m_sName));
+				if (lie && ctx.m_Leader && ctx.m_Leader.HasTrait(RZ_ELeaderTrait.TALKER))
+					lie.talker = true;
+
+				if (lie && scenes)
+					facts.Memory().Lies().Vouched(lie, scenes.Voucher(pid));
+			}
+
+			if (scenes)
+				scenes.NoteClaim(s, lie);
+
+			return result;
+		}
+
+		// Caught now
+		m_Memory.AddRegard(pid, ctx.m_sKey, "lied", LieWeight(ctx));
+		if (RZ_Factions.IsValid(c.m_iCheckFaction))
+		{
+			m_GM.AddInfamy(pid, c.m_iCheckFaction, 2, "a lie, caught", RZ_RepFlag.ACT);
+			RZ_Deeds.AddLifeRecord(m_GM.GetProfile(pid), "lied." + c.m_iCheckFaction.ToString(), true);
+		}
+
+		RZ_Log.Info(string.Format("Story: lie %1 caught now by %2", key, ctx.m_sKey));
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A tell: the bite showing, another faction's colours on you, or a claim already told this speaker.
+	protected bool HasTell(RZ_DCtx ctx)
+	{
+		RZ_PlayerProfile profile = m_GM.GetProfile(ctx.m_iPlayer);
+		if (profile.m_iInfectionStage >= RZ_EInfectionStage.WEAKNESS)
+			return true;
+
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (hostility)
+		{
+			for (int f = 0; f < RZ_Factions.COUNT; f++)
+			{
+				if (f != ctx.m_iFaction && hostility.GetDisguise().WearsColours(ctx.m_iPlayer, f))
+					return true;
+			}
+		}
+
+		return m_Memory.HasPrefix(ctx.m_iPlayer, RZ_DialogueMemory.CLAIMS, ctx.m_sKey + "|");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string LieVerdict(RZ_ECheck result)
+	{
+		if (result == RZ_ECheck.PASS)
+			return "They believe you. For now.";
+
+		return "They don't believe a word of it.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rest of a pick: its effects, the next node, and what others within 8 m overhear.
+	protected bool Land(RZ_TalkSession s, RZ_DChoice c, RZ_ECheck result, string verdict, IEntity user)
+	{
+		RZ_DTalk t = s.m_Tree;
+		bool pub = t.m_Node && t.m_Node.m_bPublic;
+		string label = RZ_DialogueText.Fill(t.m_Ctx, c.m_sLabel);
+		bool goOn = LandPick(s, c, result, verdict, user);
+		RZ_DialogueScenes scenes = Scenes();
+		if (pub && scenes)
+			scenes.Overheard(s, label, s.m_aNew);
+
+		if (scenes && HasEffect(c.m_aDo, "claim") && c.m_sCheck != "lie")
+			scenes.NoteClaim(s, null);
+
+		return goOn;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool LandPick(RZ_TalkSession s, RZ_DChoice c, RZ_ECheck result, string verdict, IEntity user)
+	{
+		RZ_DTalk t = s.m_Tree;
 
 		// The effects, then the next node. Lines the effects say (a built reply's answer, a
 		// payment) come after the node's own.
@@ -573,6 +761,10 @@ class RZ_DialogueTrees
 		if (m_Memory.Regard(ctx.m_iPlayer, ctx.m_sKey) >= 2 || HelpedThisLife(ctx))
 			bonus = 1;
 
+		RZ_DialogueScenes scenes = Scenes();
+		if (scenes && scenes.VouchBonus(ctx.m_iPlayer) > 0)
+			bonus = 1;
+
 		if (ctx.m_iTableRole >= 0)
 		{
 			int score = bonus;
@@ -656,6 +848,14 @@ class RZ_DialogueTrees
 				r.m_bEnabled = false;
 				r.m_sNeed = "you've tried that";
 			}
+		}
+		else if (c.m_sCheck == "lie")
+		{
+			int lieScore = RZ_Checks.TrustScore(m_GM, ctx.m_iPlayer, c.m_iCheckFaction, "", 0);
+			if (HasTell(ctx))
+				tag = "[Lie - they'd see through it]";
+			else
+				tag = string.Format("[Lie - %1 of %2]", Math.Max(0, lieScore), Difficulty(ctx, c));
 		}
 		else if (c.m_sCheck == "threaten")
 		{
@@ -834,6 +1034,34 @@ class RZ_DialogueTrees
 				case "call":
 					Call(s, e.m_sArg, user);
 					break;
+				case "sway":
+				{
+					// One contribution per player to a count its owner reads
+					RZ_WorldFacts tally = m_GM.GetFacts();
+					string mine = "tally." + e.m_sArg + "." + m_GM.GetProfile(pid).m_sIdentity;
+					if (tally && tally.Flag(mine) == 0)
+					{
+						tally.SetFlag(mine, 1);
+						tally.SetFlag("tally." + e.m_sArg, tally.Flag("tally." + e.m_sArg) + 1);
+						RZ_Log.Info(string.Format("Dialogue: sway %1 by %2 (now %3)", e.m_sArg, RZ_Util.PlayerName(pid), tally.Flag("tally." + e.m_sArg)));
+					}
+
+					break;
+				}
+				case "decide":
+				{
+					// The scene's record: who, which, once for the world
+					RZ_WorldFacts scene = m_GM.GetFacts();
+					if (scene && !ctx.m_sScene.IsEmpty() && scene.Flag("scene." + ctx.m_sScene) == 0)
+					{
+						scene.SetFlag("scene." + ctx.m_sScene, 1);
+						scene.SetFlag("scene." + ctx.m_sScene + "." + e.m_sArg, 1);
+						scene.Memory().Record("scene." + ctx.m_sScene, ctx.m_sKey, e.m_sArg, RZ_WorldMemory.SOURCE_CHOICE, false);
+						RZ_Log.Info(string.Format("Dialogue: scene %1 decided %2 by %3", ctx.m_sScene, e.m_sArg, RZ_Util.PlayerName(pid)));
+					}
+
+					break;
+				}
 				case "offer":
 				{
 					if (ctx.m_Leader && m_GM.GetLeaders())

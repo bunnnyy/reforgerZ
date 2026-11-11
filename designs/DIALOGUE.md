@@ -1,6 +1,8 @@
 # Dialogue
 
-**Status: designed; phase 2 built.** Approved by the author on 2026-11-11. Phase 2 (the trees on the
+**Status: designed; phase 2 and the multiplayer layer built.** Approved by the author on 2026-11-11. Phase 4's
+multiplayer layer (overheard lines, decide and tally scenes, vouch, call-outs, point-out) and the player's lies
+are built and live in [docs/DIALOGUE.md](../docs/DIALOGUE.md#several-players). Phase 2 (the trees on the
 talk screen's `RZ_Dialogue` behind **Dialogue > Trees**, hubs and topics, checks shown before you choose,
 regard, claims and knowledge, `dialogue.json`, the `.rzd` format with its lint, simulator and
 `shipped.lock`, a post's speaker at the barrier, and 30 conversations) is built and lives in
@@ -233,7 +235,7 @@ Still to build:
 | `lie F D` | [Lie], shown only when the claim is false | Access rank with F, +1 ★ (Ex-Con, Raider, or the line's own list), plus the dialogue bonus, against D plus hidden modifiers: the speaker's credulity (0 or +1, seeded, never shown), +1 Paranoid, +1 if this speaker caught you lying this life. A tell catches the lie whatever the score ([section 10](#10-lying-and-being-lied-to)) |
 | `look F D [cover:<key>]` | [Full kit +2] [Watched −1] 1 of 2 | **The look** ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) |
 | Callout | [Evidence] | You hold the truth for that lie |
-| Vouch | [Vouch] | [Section 14](#vouch) |
+| Vouch | [Vouch] | [docs/DIALOGUE.md](../docs/DIALOGUE.md#several-players) |
 | `commit` | [Point of no return] | `finale:can_commit`; always followed by a confirm node |
 
 - The −1 for the liar count (2 or more) in Trust, once lies are built.
@@ -276,31 +278,12 @@ physical starts the stage's block with `start:`, and the stage resolves and pays
 
 ## 10. Lying and being lied to
 
-There is **one lie store** for the whole game, per player per season. Every record carries an
-**exposing condition**: what in the world would show it up. Dialogue's claims, missions' lies and errands'
-lies all go in it. A lie pays at most 60% of what the truth would have, and never Fame (one rule for every
-piece).
-
-**The player lies.** A `[Lie]` choice has a `truth` condition about something the player knows.
-- **True:** it isn't a lie. The tag doesn't show, the choice passes, and the claim is stored as true.
-- **False:** a **tell** catches it first, whatever the score:
-  - symptoms show, for a lie about a bite;
-  - another faction's armband, ribbon or colours, for "I'm with X" or "I'm not with them";
-  - your own kit with them, for "I'm not with them";
-  - this speaker holds a different claim from you;
-  - the writer's `tell` (`tell always` for a lie nobody could get away with: "Rudi sent me", because Rudi
-    has been dead since Day 7).
-
-  With no tell, the lie check runs. A claim to *be* one of them in their kit isn't a lie check: it's the
-  look ([section 12](#12-claims-in-someone-elses-kit)).
-- **Caught now:**
-  - the fail node, and regard *lied*;
-  - +2 Infamy with the faction (none with factionless speakers);
-  - the faction's liar count +1. At 2, that faction's persuade and lie checks are −1, and the count drops 1
-    each real day.
-  - A lie about a bite at a safehouse while it shows is the built "caught hiding a bite" instead (+15 Haven
-    Infamy, once per life). The two never stack.
-- **Believed:** the pass node, and a false claim goes in the lie store with its exposing condition.
+**Built:** the player's `[Lie]` (`check lie <faction> <difficulty>`: tells first, then Trust; believed into
+the one lie store, caught now with regard *lied*, +2 Infamy and the liar count) and the lie store found out by
+events first ([docs/DIALOGUE.md](../docs/DIALOGUE.md#checks-and-tags), [DESIGN.md](../docs/DESIGN.md#lies-and-witnesses)).
+Still to build: a lie's `truth` condition (true, it isn't a lie); a lie about a bite at a safehouse being the built
+"caught hiding a bite" instead; claims the world tests by the owner's own check ("expected back by six"); the
+speaker's next greeting saying so; `found` effects on things still running.
 
 **Found out, events first.** A believed lie is exposed by the first of these:
 - a visit by a player of that faction (who knows the truth, or whose presence tests it);
@@ -454,76 +437,17 @@ Dialogue is where a claim is spoken. The built AI behaviour doesn't change.
 
 ## 14. Multiplayer
 
-- **Private by default.** Each player has their own session, checks, memory and tags. Two players at the same
-  chair can see different choices.
-- **Who hears what.** Only two distances:
-  - **8 m: overheard.** A `public` node sends its lines and the chosen label, with tags stripped, to other
-    players within 8 m: "Mara, to the chair: 'Read it out.'". It goes owner-only, at most once every 10 s per
-    listener. A `~lie` line in a public node marks its listeners `heard_lie` too.
-  - **30 m: the room.** Scene results and holds go to everyone within 30 m.
-- **Who took part:** 60 s within 150 m, or a step done (the shared participation rule).
+**Built** ([docs/DIALOGUE.md](../docs/DIALOGUE.md#several-players)): overheard `public` nodes at 8 m, the
+decide hold with Object and Stand with and the scene record, tallies (`sway:`), vouching (+1, the voucher's
+liability through the lie store), call-outs and point-outs, as verbs on your own hub with the speaker.
 
-**Scenes.** A conversation can declare `scene <id> <scope> [who <conditions>]`. The scope is run, speaker,
-house or season. There are two kinds.
-
-**Decide (small shared moments).** Choices marked `decides` settle the scene for the world.
-- Only players who meet `who` can pick one. `who` defaults to the stage's own requirement, and to having
-  taken part. Others see the choice dimmed: "(only someone the house trusts can answer for it)".
-- **The hold.** A decisive pick starts a **5-second hold**, announced to the room: "Mara is about to answer for
-  the house: all four come in."
-  - Any other eligible participant in the room can **Object**, once per job. The hold is cancelled, and the
-    objector becomes the speaker for 60 s.
-  - Anyone in the room can **Stand with** the decider during the hold.
-  - When the hold ends unobjected, the pick writes the scene's record: who, which choice, when, and whether it
-    was a lie.
-- World effects run once. The result node's entry effects run once, for the decider. Personal effects go
-  only to the picker.
-- **With the decider:** the decider, their vanilla group within 150 m, and anyone who chose Stand with share
-  the result's pay. A bad mark lands on the decider alone. Everyone else who was eligible and did the work
-  gets half the Favor from the giver, with no Fame and no Infamy.
-- Everyone else in the scene moves to the result: "{decider} has already answered for the house." Later
-  visitors are routed by `jump decided`.
-- Every node in the scene checks the record on each pick, so no sibling path can decide twice.
-
-**Tally (anything that matters to the season).** `sway:` choices add one contribution each to a count the
-owning system keeps. For the majors' sittings that's `RZ_QuestVote`, which allows one sway per player per
-sitting. Nobody wins by being first: the owner counts at its own time (the vote at 20:30). Menu, panel and
-chat players are equal. Errands and their memory never move a vote.
-
-### Vouch
-
-One vouch mechanic, shared with disguise's sign-ins at barriers and the errands' Vouch card.
-- **Who, in talk:** a player Trusted or better with the speaker's faction, within 8 m of another player who is
-  talking to that speaker. They see "[Vouch for {name}] 'They're with me.'". (At a barrier, DISGUISE.md's
-  sign-in rule says who.)
-- **What it gives:** for 5 minutes, while the voucher stays within 8 m, the other player's persuade and lie
-  checks there get +1. This is inside the +1 dialogue cap.
-- **What it costs:** if a lie told under the vouch is found out (at once, or later by events or the rumour
-  tick), the voucher takes +5 Infamy with the faction (once per vouch), regard *vouched for a liar*, and
-  can't vouch for 2 hours.
-- **Limits:** once per pair per hour, and once per vouched player per speaker per life.
-- It costs the vouched player nothing and works only while the voucher is standing there, so there's no
-  consent step.
-
-### Call it out
-
-- **When:** for 20 s after **any** claim-carrying choice in a public node, true or false. Tags are stripped
-  from overheard lines, so the call-out showing up tells nobody anything. Others within 8 m see "[Call it
-  out] '{name}'s lying.'".
-- **If it was a lie:** the liar is caught now, and the lie's effect is undone if it's still running (a sway
-  removed, a passage revoked). The caller gets nothing: no regard, no Favor. So a throwaway character has
-  nothing to launder.
-- **If it was true:** the caller takes regard *slander*, and can't call out at that speaker again this life.
-- Once per pair per hour.
-
-**Point them out:** [section 12](#12-claims-in-someone-elses-kit).
-
-- **No double pay.** Paying effects are once per character per choice. Mission and questline pay follow their
-  own participant rules.
-- **Late joiners and restarts.** Decisions are scene records and flags (saved), so a late player meets the
-  result ("The council already voted. Workers first.").
-- **AFK.** Idle sessions end at 120 s (45 s while someone waits). They hold no scene: decisions live in
-  records, not sessions.
+Still to build:
+- **Who may decide:** a scene's `who <conditions>` (defaulting to the stage's own requirement and having taken
+  part); others see the choice dimmed: "(only someone the house trusts can answer for it)".
+- **With the decider:** the decider's vanilla group within 150 m and anyone who stood with them share the result's
+  pay; everyone else eligible gets half the Favor from the giver (missions' rule, once missions take conversations).
+- **The majors' sittings** read their tallies through `RZ_QuestVote`, one sway per player per sitting.
+- **No double pay; AFK sessions ending at 120 s (45 s while someone waits).**
 
 ## 15. Delivery
 
