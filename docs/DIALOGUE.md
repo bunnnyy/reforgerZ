@@ -366,9 +366,16 @@ The look itself (kit, colours, cover details, catches, word gets round) is reput
 - No disguise with the Haven (no uniform) or the Long Table. Point-out is under [Several
   players](#several-players).
 
-*Simplified:* kit kinds are own colours and their kit; signed-for kit, a dead man's and kit off the
-turned come with disguise's later phases. A post's speaker doesn't call out to you at 35 m; you
-press Talk. A catch taking your kit doesn't count as changing clothes.
+- **What the kit remembers** has its own words: `kit:issued`, `kit:signed_other`, `kit:dead_mans`,
+  `kit:off_turned` (*"You're still in our kit. Take it off before someone asks why."*).
+- **Cover details spoken** are choices: `do cover:name|dead|crew|notebook|paper`, shown with
+  `if cover:<key>` (you have it), the words as `{cover:<key>}` ("Kral", "Magpie", "31"). One you have
+  counts at your next look with them; one you don't is a lie, caught at once, so a node after it
+  checks `jump caught -> ...`. `claimed`: you've spoken a claim line to this speaker this life (one a
+  life). What a detail is worth is reputation's ([REPUTATION.md](REPUTATION.md#borrowed-kit)).
+
+*Simplified:* a post's speaker doesn't call out to you at 35 m; you press Talk. A catch taking your
+kit doesn't count as changing clothes.
 
 ## Barks
 
@@ -555,8 +562,8 @@ a `dry` choice with no plain twin.
 | Haven leaders at a sitting | Every Name's first and second sittings: a persuade to sway the speaker's vote to an option on the table (one sway a sitting) |
 | The 8 wanderer roles | The Trader's prices; the Doctor's work ([Doctor], [Nurse]); where the Scavenger has been (persuade: is it true); why the Deserter left ([Soldier], [Police]); the Preacher's bells; the Courier's letters; what still runs ([Mechanic]); the Kid's name; the Scavenger's clean chemist's (a lie for a tin, [Hunter] or [Police] see through it, [Evidence] once the Doctor tells you, and a callback greet 6 hours on); the Doctor on the chemist's and on Halcyon's back room (the truths); what Bastion makes of you, as the Deserter reads it |
 | Occupants | A fed house (leave a tin: 2 Haven Favor); the candle in the window after a death (a greet, and a topic: staying for the name is remembered 6 hours on); the bear on the door; who gets the bed by the stove (a short house: a public scene per house that someone Known with the Haven decides, with a sway for the room); a short house's promise of two tins (kept by the hand-in, with greets for kept and broken) |
-| Named people | The Red Hand toll man (who painted the hand; Rudi, said flatly); the Bastion sentry (the roll; a promise to walk the road and come back, kept by coming back); kit greets at Bastion, Red Hand and Halcyon holdings (own colours, or their kit on a stranger) |
-| Post speakers | Bastion's search (persuade with [Soldier], [Police]: the pole goes up); the Red Hand's toll (pay it, or threaten: Fear, +3 Red Hand Infamy); "Which unit?" and "Say you're crew." in their kit (a look, or the truth); "Word?" at Bastion's (three words, one right) |
+| Named people | The Red Hand toll man (who painted the hand; Rudi, said flatly); the Bastion sentry (the roll; a promise to walk the road and come back, kept by coming back); kit greets at Bastion, Red Hand and Halcyon holdings (own colours, or their kit on a stranger), and Bastion's on what the kit remembers (issued kit after your standing slipped, a dead man's, off the turned, signed out to someone else) |
+| Post speakers | Bastion's search (persuade with [Soldier], [Police]: the pole goes up); the Red Hand's toll (pay it, or threaten: Fear, +3 Red Hand Infamy); "Which unit?" and "Say you're crew." in their kit (a look, or the truth); "Word?" at Bastion's (three words, one right); a name who'll stand for you at Bastion's and what the crew calls you at the Red Hand's (a cover detail, then a look), and a notebook number to Halcyon's people (`posts/cover.rzd`) |
 | The Long Table | The host on the road (where you're headed, and is anyone expecting you; "Put out, were you?" to an exile); the mother at the farm (is the boy hers; [Bitten]: declare it, as built) |
 | Strangers | Where any stranger's headed; and for 15 routines, who they are: the girl at the tin man's house, the wife who drove to market, the pram of pans, the one shut in since Tuesday, the kids in the back seat, who the grave is for, the sleeve rolled down ([Doctor], [Nurse]), the farm, the sister in a barn, the husband across the line, the debt in the book, the one who hid, the one who got there first, the scratch off a fence |
 | The open channel | Call in what you've seen (a rumour, on air); listen for anyone calling (by the night and the mood); ask the crews about the toll |

@@ -311,15 +311,10 @@ refusing rewards behind a claim, and a change of clothes ending the session
 kit, a dead man's name and the Rogue's price are built too ([docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit),
 which owns kit, colours, the look, catches, word gets round and vouching at barriers).
 
+The other kit kinds as `kit:` words and cover details spoken as choices (`cover:<key>`, one claim line
+per speaker per life) are built too ([docs/DIALOGUE.md](../docs/DIALOGUE.md#claims-in-someone-elses-kit)).
+
 Still to build:
-- **The other kit kinds as `kit:` words** (`issued`, `signed_other`, `dead_mans`, `off_turned`) in conversations,
-  with their reactions: "You're still in our kit. Take it off before someone asks why." (issued).
-- **Cover details spoken as choices**, each `cover:<key>`, +1 at the look (Bastion's word at the wire is built
-  as `wire:N`):
-  - **a real name you've heard;**
-  - **a crew name** at the Red Hand ("What do they call you?"), your own or one heard on the open channel;
-  - **a notebook number** at Halcyon, only from a dead researcher's notebook;
-  - **a mission's paper**, where the stage provides one.
 - **A post speaker opening the claim** at 35 m (section 4), and an outpost gate's look giving 10 minutes inside.
 
 ## 13. Infection, time and items

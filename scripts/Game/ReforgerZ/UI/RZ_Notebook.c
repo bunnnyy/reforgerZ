@@ -473,6 +473,7 @@ class RZ_StandingPage : RZ_NotebookPage
 		array<ref array<string>> recs = {};
 		RZ_MenuBase.Records(ui.GetStanding(), recs);
 		array<string> leaders = {"", "", "", ""};
+		array<string> kit = {"", "", "", ""};
 		string relations = "";
 		// The reputation grid: which factions put you in each of the 16 cells (RepCell_<fame>_<infamy>)
 		array<string> cells = {};
@@ -501,6 +502,12 @@ class RZ_StandingPage : RZ_NotebookPage
 					cells[idx] = cells[idx] + RZ_RepNames.Initial(fac);
 				}
 			}
+			else if (tag == "K")
+			{
+				int kf = RZ_UIText.Int(f, 1);
+				if (kf >= 0 && kf < 4)
+					kit[kf] = string.Format("IN THEIR KIT\n%1\n\n", RZ_UIText.Str(f, 2));
+			}
 			else if (tag == "L")
 			{
 				int lf = RZ_UIText.Int(f, 1);
@@ -527,6 +534,8 @@ class RZ_StandingPage : RZ_NotebookPage
 			string text = leaders[i];
 			if (text.IsEmpty())
 				text = "Nobody's given you a name yet.";
+
+			text = kit[i] + text;
 
 			RZ_UIW.SetText(m_wRoot, "Leaders" + i.ToString(), text);
 		}

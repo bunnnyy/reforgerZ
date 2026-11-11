@@ -1644,7 +1644,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **95** lines with the tag, all in the game scripts (one is the comment in
+There are **97** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 14 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1693,6 +1693,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_DisguiseMarks.c:228`, `:277` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
 | `Factions/RZ_Disguise.c:774` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
 | `Factions/RZ_DisguiseMarks.c:431` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
+| `Factions/RZ_DisguiseMarks.c:208` | a worn piece's root parent is the character wearing it (kit marks saved across a restart) | Marks are never saved across a restart (no `kit mark put back` lines): after a restart a dead man's kit passes as clean, as before |
+| `Factions/RZ_DisguiseMarks.c:920` | `TryDeleteItem` through the wearer's inventory manager takes a worn piece off (the last week's homecoming and handing back) | The piece stays on after "He's home. Mark him.": its mark is gone either way, so it passes as clean kit |
 | `Core/RZ_Util.c:1199` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
 | `Cure/RZ_Infection.c:1181` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
@@ -2061,7 +2063,9 @@ errand.<key> talk pass|short|refused by <player>`, `Story: <key> resolved by han
 <faction>`, `Mirror: <title> won by <faction>` (or `won by both, half each`), `Story: <title> hold by
 <player> objected to by <player>`.
 
-Borrowed kit and the parley ([REPUTATION.md](REPUTATION.md#borrowed-kit)): `Disguise: <player> look
+Borrowed kit's rest: `Disguise: <player> gave <faction> a cover detail (<key>)` (or `... they don't
+have (<key>): a lie`), `Disguise: a kit mark put back on <player>'s <faction> after the restart`,
+`Disguise: the last week's lines (N caught this season, best-dressed ...)`. Borrowed kit and the parley ([REPUTATION.md](REPUTATION.md#borrowed-kit)): `Disguise: <player> look
 by <faction> at <place>: N of D (pass|caught) <tags>`, `Disguise: <player> caught by <faction> (catch N
 this life)`, `Disguise: <player> exposed to <faction> (<why>)`, `Story: <title> trick pass|refused by
 <identity>`; while passing, `Disguise: again look at <player> by <faction> at <place>`, `Disguise:
@@ -2648,6 +2652,15 @@ when it happens)
   while held at a barrier (`walked off while held`), shooting a guard while passing with infected
   10 m away (`exposed to` or `caught by`), relogging during a pass (the owed look still comes),
   swapping to fresh kit after a catch (the look still shows "[Caught before -1]").
+- [ ] Borrowed kit's rest: in Bastion kit at a road post, the HUD shows the eye and "PASS AS BASTION:
+  2 OF 2" from 150 m (on a pad too, nothing to press), and it goes when you pass, are caught or walk
+  200 m off. "Give a name that vouches for you." offers only the names you really have; pick one,
+  then the look ("gave Bastion a cover detail"); a second claim line at that speaker isn't offered
+  this life. Carry a mission item from a job against Bastion: "[Something of theirs on you -1]". After
+  the 90% lock, a look by another route's faction: "[Sworn to another side -1]". Wear marked kit,
+  restart the server, log in: "kit mark put back", and the look still fails. The notebook's Standing
+  page shows IN THEIR KIT above Bastion's leaders. After the cure, carry a dead man's jacket to his
+  post: "He's home. Mark him.", and the four factions' lines on the open channel once.
 - [ ] The parley: Hunted by Bastion with 15+ Earned Fame and a best deed, walk to a checkpoint
   empty-handed and alone: the shout at 150 m, no fire while you close, 10 s at the barrier, the
   leader's line and a reserved amends job (Burn the Bodies or Recon) you can take though Hunted.

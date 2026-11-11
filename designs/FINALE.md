@@ -25,7 +25,7 @@ lines the author approved. The plan is [PLAN.md](PLAN.md#the-build-order).
 | Needs | From | Until then |
 |---|---|---|
 | Promises (Hand to Hand, lock cards) | Errands | Not built |
-| The look's −1 at the lock, the word overlays | Disguise | Looks unchanged |
+| The word overlays (the look's −1 at the lock is built: [docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) | Disguise | No overlays |
 | `CanSideWith` as reputation's own | Reputation | The finale's own (built) |
 | `Forgive()` for Hand it in at a checkpoint | Reputation | Not built |
 | `SetPresenceFloor` | Majors | No floor |

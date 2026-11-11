@@ -39,6 +39,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected float m_fListenStamp;
 	protected int m_iNoise;
 	protected string m_sStand;			// the stand's HUD line (client)
+	protected string m_sLook;			// borrowed kit's look-coming line (client), "" hidden
 	protected float m_fStandUntil;
 	protected int m_iSeen = -1;			// visibility 0 (hidden) to 5; -1 = none (Stealth off): not shown
 	protected bool m_bSeenHidden;
@@ -216,6 +217,27 @@ class RZ_PlayerUIComponent : ScriptComponent
 		m_sStand = line;
 		m_fStandUntil = RZ_UIW.Now() + seconds;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Borrowed kit's look-coming line, RZ_Hud_Look (RZ_UIFeed.PushLook): "PASS AS BASTION: 2 OF 2",
+	//! held until the server sends "" (the look done, the kit off, 200 m on).
+	void SendLook(string line)
+	{
+		if (IsLocalOwner())
+			RpcDo_Look(line);
+		else
+			Rpc(RpcDo_Look, line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_Look(string line)
+	{
+		m_sLook = line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetLookLine() { return m_sLook; }
 
 	//------------------------------------------------------------------------------------------------
 	//! The stand's line while it's fresh, else "".

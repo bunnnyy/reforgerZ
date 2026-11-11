@@ -302,6 +302,18 @@ class RZ_DialogueCond
 				return mem.Due(pid, RZ_DialogueTrees.Scoped(ctx, t.m_sArg));
 			case "kit":
 				return KitTerm(ctx, t.m_sArg);
+			case "cover":
+			{
+				// Borrowed kit: you have this cover detail to give the speaker's faction (RZ_DisguiseClaims)
+				RZ_Disguise covers = Disguise(gm);
+				return covers && covers.IsOn() && RZ_Factions.IsValid(ctx.m_iFaction) && !covers.GetClaims().CoverText(pid, ctx.m_iFaction, t.m_sArg).IsEmpty();
+			}
+			case "claimed":
+			{
+				// One claim line per speaker per life (RZ_DisguiseClaims)
+				RZ_Disguise claims = Disguise(gm);
+				return claims && claims.GetClaims().ClaimedTo(pid, ctx.m_sKey);
+			}
 			case "passing":
 			{
 				RZ_Disguise passing = Disguise(gm);
@@ -585,6 +597,26 @@ class RZ_DialogueCond
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! {cover:name}, {cover:dead}, {cover:crew}, {cover:notebook}, {cover:paper}: the cover detail as
+	//! you'd say it to the speaker's faction ("Kral", "Magpie", "31"), "" if you have none.
+	static string CoverWords(RZ_DCtx ctx, string text)
+	{
+		RZ_Disguise d = Disguise(ctx.m_GM);
+		array<string> keys = {RZ_DisguiseClaims.KEY_NAME, RZ_DisguiseClaims.KEY_DEAD, RZ_DisguiseClaims.KEY_CREW, RZ_DisguiseClaims.KEY_NOTEBOOK, RZ_DisguiseClaims.KEY_PAPER};
+		string s = text;
+		foreach (string key : keys)
+		{
+			string words = "";
+			if (d && RZ_Factions.IsValid(ctx.m_iFaction))
+				words = d.GetClaims().SpokenWords(ctx.m_iPlayer, ctx.m_iFaction, key);
+
+			s.Replace("{cover:" + key + "}", words);
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! kit:own (the speaker faction's kit, worn as your own colours), kit:in_kit (their kit, below
 	//! Known with them), kit:full (their full kit), kit:other (another faction's colours), kit:any.
 	protected static bool KitTerm(RZ_DCtx ctx, string what)
@@ -617,6 +649,21 @@ class RZ_DialogueCond
 			case "own": return d.KitLevel(pid, f) > 0 && d.IsOwnColours(pid, f);
 			case "in_kit": return d.InTheirKit(pid, f);
 			case "full": return d.KitLevel(pid, f) >= 2;
+		}
+
+		// What the kit remembers (RZ_DisguiseMarks): issued, signed_other, dead_mans, off_turned
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(pid);
+		if (!me || !d.MarksOn() || d.KitLevel(pid, f) <= 0)
+			return false;
+
+		RZ_KitMark mark;
+		int kind = d.GetMarks().KindOf(me, pid, f, mark);
+		switch (what)
+		{
+			case "issued": return kind == RZ_DisguiseMarks.KIT_ISSUED;
+			case "signed_other": return kind == RZ_DisguiseMarks.KIT_SIGNED_OTHER;
+			case "dead_mans": return kind == RZ_DisguiseMarks.KIT_DEAD;
+			case "off_turned": return kind == RZ_DisguiseMarks.KIT_TURNED;
 		}
 
 		return false;
@@ -706,6 +753,9 @@ class RZ_DialogueText
 
 		if (s.Contains("{wire:"))
 			s = RZ_DialogueWire.Fill(ctx.m_GM, s);
+
+		if (s.Contains("{cover:"))
+			s = RZ_DialogueCond.CoverWords(ctx, s);
 		if (s.Contains("{toll}"))
 			s.Replace("{toll}", ctx.m_GM.GetCheckpoints().TollFor(ctx.m_iPlayer).ToString());
 

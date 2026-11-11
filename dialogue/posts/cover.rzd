@@ -1,0 +1,130 @@
+# Cover details spoken as choices (docs/REPUTATION.md, "Borrowed kit"; docs/DIALOGUE.md, "Claims in
+# someone else's kit"): a detail you really have (cover:<key>) counts at your next look with them for
+# ten minutes, naming that very detail. One you don't have is a lie, caught at once. One claim line per
+# speaker per life (claimed). The true answer, or leaving, costs nothing.
+
+conv post.bastion.cover
+for post:bastion
+when kit:in_kit & !caught & !claimed
+topic "Give a name that vouches for you."
+prio quest
+voice bastion
+
+node start
+  say "Whose section are you, then? Give me a name who'll stand for you."
+  > @leader "{cover:name} will stand for me." -> said   if cover:name   do cover:name
+  > @dead "{cover:dead} signed me on." -> said   if cover:dead   do cover:dead
+  > @leave "Never mind." -> hub
+
+node said
+  jump caught -> wrong
+  say "I'll remember that name. Now let's see the rest of you."
+  > @claim "One of yours. Let me through." -> passed | refused   check look bastion 2
+  > @wait "I'll wait." -> hub
+
+node passed
+  say "Go on. And if that name's wrong, it's both of you."
+  do call:post_wave
+  > @back1 "Something else." -> hub
+
+node refused
+  say "No. Hands on the barrier. That kit goes back where it came from."
+  > @back2 "Understood." -> hub
+
+node wrong
+  say "Never heard of him. Hands on the barrier."
+  > @back3 "Understood." -> hub
+
+conv post.redhand.cover
+for post:redhand
+when kit:in_kit & !caught & !claimed
+topic "Tell them what the crew calls you."
+prio quest
+voice redhand
+
+node start
+  say "Go on, then. What does the crew call you, and who says so?"
+  > @crew "They call me {cover:crew}." -> said   if cover:crew   do cover:crew
+  > @boss "Ask {cover:name}. He knows me." -> said   if cover:name   do cover:name
+  > @leave "Forget it." -> hub
+
+node said
+  jump caught -> wrong
+  say "Maybe. I've heard stupider names on better liars."
+  > @claim "One of yours. Wave me on." -> passed | caught2   check look redhand 2
+  > @wait "I'll pay the toll." -> hub
+
+node passed
+  say "Go on, then. And pay next time like everyone."
+  do call:post_wave
+  > @back1 "Something else." -> hub
+
+node caught2
+  say "No. Nobody's ever called you that. Turn out your pockets."
+  > @back2 "Fine." -> hub
+
+node wrong
+  say "Nobody calls you that. Nobody ever has."
+  > @back3 "Fine." -> hub
+
+conv named.halcyon.cover
+for named:halcyon
+when kit:in_kit & !caught & !claimed & cover:notebook
+topic "Give them a notebook number."
+prio quest
+voice halcyon
+
+node start
+  say "I don't have you on the rota. Which notebook are you writing in?"
+  > @book "Notebook {cover:notebook}, nights." -> said   do cover:notebook
+  > @leave "I'll check the rota." -> hub
+
+node said
+  jump caught -> wrong
+  say "Notebook {cover:notebook}. Yes, that's one of ours. Carry on, then, quietly."
+  > @back1 "Thank you." -> hub
+
+node wrong
+  say "There's no notebook with that number. Security, please."
+  > @back2 "Understood." -> hub
+
+# What the kit remembers, without any claim: their reactions to the other kit kinds.
+conv named.bastion.kit_issued
+for named:bastion
+when kit:issued & tier:bastion<known
+greet
+voice bastion
+daily
+
+node start
+  say "You're still in our kit. Take it off before someone asks why."
+
+conv named.bastion.kit_dead
+for named:bastion
+when kit:dead_mans & !passing
+greet
+voice bastion
+daily
+
+node start
+  say "That's issue kit with the name tape picked off. We know whose tape that was."
+
+conv named.bastion.kit_turned
+for named:bastion
+when kit:off_turned
+greet
+voice bastion
+daily
+
+node start
+  say "That jacket's been on one of the turned. You can smell it from here. Burn it."
+
+conv named.bastion.kit_signed
+for named:bastion
+when kit:signed_other & !passing
+greet
+voice bastion
+daily
+
+node start
+  say "That set's signed out of our stores, and not to you. The quartermaster keeps a book."

@@ -48,6 +48,7 @@ class RZ_Disguise
 	protected ref map<string, int> m_mKnownAt = new map<string, int>();		// "ident|f" -> real time last seen Known or better (issued kit)
 	protected ref RZ_DisguiseMarks m_Marks;
 	protected ref RZ_DisguiseWatch m_Watch;
+	protected ref RZ_DisguiseClaims m_Claims;
 	protected float m_fClock;
 	protected float m_fCheckTimer;
 
@@ -73,6 +74,23 @@ class RZ_Disguise
 		RZ_ItemHelper.Words(settings.m_sServiceWeaponWords, m_aServiceWords);
 		m_Marks = new RZ_DisguiseMarks(gm, this);
 		m_Watch = new RZ_DisguiseWatch(gm, this, settings);
+		m_Claims = new RZ_DisguiseClaims(gm, this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rest: spoken cover details, the look's last minuses, the HUD, the last week.
+	RZ_DisguiseClaims GetClaims()
+	{
+		return m_Claims;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A dead researcher's notebook number this player carries (one Halcyon look), 0 none.
+	int NotebookOf(int playerId)
+	{
+		int n;
+		m_mNotebook.Find(Ident(playerId), n);
+		return n;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -119,6 +137,7 @@ class RZ_Disguise
 		m_fCheckTimer += dt;
 		bool kitRead = m_fCheckTimer >= Math.Max(2, m_Settings.m_fDisguiseCheckSeconds);
 		m_Watch.Tick(dt, ids, players, kitRead);
+		m_Claims.Tick(dt, ids, players, kitRead);
 		if (!kitRead)
 			return;
 
@@ -128,6 +147,9 @@ class RZ_Disguise
 		{
 			int before = Wearing(ids[i]);
 			Read(ids[i], p);
+			if (MarksOn())
+				m_Marks.PutBack(ids[i], p);
+
 			int now = Wearing(ids[i]);
 			if (now >= 0 && now != before)
 				OnPutOn(ids[i], now, p);
@@ -525,6 +547,11 @@ class RZ_Disguise
 		if (!paper.IsEmpty())
 			return paper;
 
+		// A detail spoken in a conversation in the last 10 minutes names the very detail
+		string spoken = m_Claims.SpokenDetail(playerId, f);
+		if (!spoken.IsEmpty())
+			return spoken;
+
 		if (f == RZ_EFaction.MILITARY)
 		{
 			int day;
@@ -679,6 +706,7 @@ class RZ_Disguise
 
 		m_mPassUntil.Set(passKey, until);
 		m_Marks.OnPassed(playerId);
+		m_Claims.ClearLook(playerId);
 		if (seconds >= 0)
 			m_Watch.OnPassed(playerId, f, place);
 
@@ -754,6 +782,9 @@ class RZ_Disguise
 			}
 		}
 
+		string last;
+		score += m_Claims.MoreTags(playerId, f, me, last);
+		tags += last;
 		if (m_Watch.WordRound(f, me.GetOrigin()))
 		{
 			score--;
@@ -822,6 +853,8 @@ class RZ_Disguise
 		if (!lead.IsEmpty())
 			text = lead + " " + text;
 
+		m_Claims.ShowLook(playerId, f, score, difficulty, instant);
+
 		m_GM.Say(playerId, title, f, text);
 	}
 
@@ -839,6 +872,7 @@ class RZ_Disguise
 	//! Caught, with the look's paper (so the name given goes on Bastion's board, never a paper's).
 	void CaughtAt(int playerId, int f, IEntity me, string line, string paper)
 	{
+		m_Claims.OnCaught(playerId, f, me);
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		string kitText = BoardKit(playerId, f);
 		string named = "";

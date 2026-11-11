@@ -114,10 +114,12 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			DrawRadio(ui);
 			DrawNoise(ui, settings);
 			DrawStand(ui);
+			DrawLook(ui);
 		}
 		else
 		{
 			RZ_UIW.Show(m_wRoot, "StandPanel", false);
+			RZ_UIW.Show(m_wRoot, "LookPanel", false);
 			RZ_UIW.Show(m_wRoot, "InfectionPanel", false);
 			RZ_UIW.Show(m_wRoot, "RadioPanel", false);
 			RZ_UIW.Show(m_wRoot, "NoisePanel", false);
@@ -256,6 +258,21 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		RZ_UIW.Show(m_wRoot, "StandPanel", !line.IsEmpty());
 		if (!line.IsEmpty())
 			RZ_UIW.SetText(m_wRoot, "StandText", line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Borrowed kit's look coming, RZ_Hud_Look (docs/UI.md, the HUD): the Watched eye and "PASS AS
+	//! BASTION: 2 OF 2" above the stand's line, while a look is coming. A layout without LookPanel
+	//! shows nothing (the notices still carry it).
+	protected void DrawLook(RZ_PlayerUIComponent ui)
+	{
+		string line = ui.GetLookLine();
+		RZ_UIW.Show(m_wRoot, "LookPanel", !line.IsEmpty());
+		if (line.IsEmpty())
+			return;
+
+		RZ_UIW.Icon(m_wRoot, "LookIcon", "tier_watched");
+		RZ_UIW.SetText(m_wRoot, "LookText", line);
 	}
 
 	//------------------------------------------------------------------------------------------------

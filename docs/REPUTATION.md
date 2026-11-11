@@ -806,8 +806,9 @@ vanilla relations. Setup is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "Factio
 
 Code: `Factions/RZ_Disguise.c` (kit, claims, caught), `Factions/RZ_DisguiseWatch.c` (while you pass,
 word gets round, vouching), `Factions/RZ_DisguiseMarks.c` (whose kit it was, the nail list, the
-board); the look in `RZ_Checks.LookScore`. ✅ (disguise phases 1 to 3; settings **Factions >
-Hostility > Disguises**). Wearing a faction's kit does nothing by itself: you **claim** to be one of
+board), `Factions/RZ_DisguiseClaims.c` (cover details spoken, the look's last minuses, the HUD, the
+majors' tricks, the last week); the look in `RZ_Checks.LookScore`. ✅ (all of borrowed kit; settings
+**Factions > Hostility > Disguises**). Wearing a faction's kit does nothing by itself: you **claim** to be one of
 them, and they look at you. A pass buys passage and a moment, never goods, standing, services,
 contracts or the cure.
 
@@ -837,12 +838,20 @@ notice: "[Full kit +2] [Background +1] [They know your face −1] Pass as one of
 | One cover detail +1: Bastion's **word at the wire** (changes daily, read on Bastion's secure net when a Radio Operator cracks it), a crew name (Red Hand), a name you've heard (a leader of theirs you've met, or a dead man's from Bastion's nightly call), a dead researcher's notebook number (Halcyon, one look), a mission's paper | On the bounty notices (Kill on Sight with anyone) |
 | Dark or fog +1 (your light level as stealth reads it, else 20:30–05:00) | Each look already passed at this place; each tell; each point-out (two at most); under half health; the infection showing |
 | | **Word's round** there; **seen putting it on** (below); running; a gun in your hands (both VERIFY); a red armband the Red Hand gave someone else |
+| | **Something of theirs on you**: a mission item from a job against them (its rival) in your inventory; **sworn to another side**: after the 90% lock, every faction whose route you didn't choose, by identity, until the cure |
 
 Instant fail: the infection showing at Halcyon's look ("They see bites for a living."), three
 catches this life ("Your description is on the board at every post."), blown, kit that remembers
 whose it was ([below](#whose-kit-it-was)), and a dead man's name given at his own post.
-*Simplified:* the word is +1 when you've heard it; picking among three words (a wrong one fails at
-once) comes with claim lines in conversations ([DIALOGUE.md](../designs/DIALOGUE.md#12-claims-in-someone-elses-kit)).
+**Claim lines** (in conversations, [DIALOGUE.md](DIALOGUE.md#claims-in-someone-elses-kit)): Bastion's
+word at the wire is a choice of three (a wrong one fails at once). Other cover details are spoken as
+choices too, each shown only when you really have it: a leader of theirs you've met (`cover:name`), a
+dead man's name heard on the nightly call (`cover:dead`), your crew name (`cover:crew`), a dead
+researcher's notebook number (`cover:notebook`), a mission's paper (`cover:paper`, when a stage hands
+one: `RZ_DisguiseClaims.SetPaper`). A spoken detail counts at your next look with them for 10 minutes
+and names that very detail (so a dead man's name given at his own post still fails); one you don't
+have is a lie, caught at once. **One claim line per speaker per life.** Without a conversation the
+best detail you have counts at the look, as before.
 
 **Passing.** At a barrier: cleared for that post while it stands. At a gate: 10 minutes inside. While
 passing, that faction's AI looks past what it holds against you (not a fight's bit), your persuade
@@ -902,8 +911,11 @@ vouch bans you for 2 hours too. Without a vouch everyone is checked on their own
 
 #### Whose kit it was
 
-✅ (`RZ_DisguiseMarks`, **Kit marks**). Kit remembers whose it was. The marks are runtime (at most
-200, weak references): a restart forgets which pieces were which.
+✅ (`RZ_DisguiseMarks`, **Kit marks**). Kit remembers whose it was (at most 200 marks). **Across a
+restart:** the marks on pieces players wear are saved by the wearer's identity and the piece's prefab,
+and go back on a worn piece of that prefab and faction (without a mark) when that identity is next read
+wearing it (vanilla persistence brings the kit back; VERIFY a worn piece's root parent is the character).
+A piece lying in the world forgets its mark.
 
 | Kind | How a piece gets it | At their look | Elsewhere |
 |---|---|---|---|
@@ -944,6 +956,49 @@ within 150 m that can see you in Bastion colours opens up (the timed grudge). Un
 (**Shoots from** Watched or Strangers) a faction's AI holds its fire on someone in its kit who is
 more than 35 m from its people, without a claim, until they come closer.
 
+#### The look on the HUD and the standing page
+
+✅ (`RZ_Hud_Look`, [UI.md](UI.md#the-screens)). While a look is coming (the 150 m notice, an again
+look's 10 s warning), the HUD shows the Watched eye and **"PASS AS BASTION: 2 OF 2"** (or "SEEN
+THROUGH"), owner-only, sent only when it changes; it goes once the look is done, the kit comes off or
+you're 200 m on. The notices still carry the tags. The notebook's Standing page has, above the
+leaders of Bastion, the Red Hand and Halcyon, **IN THEIR KIT**: whether they know your face, catches
+this life (of 3), blown minutes left, their tells, and what their enemies do to their colours.
+
+#### Other people's stories, the stand and the majors
+
+- **The Haven's gossip.** A catch is told sideways, about food, at most once in six hours of play,
+  with the nearest town, as a rumour wanderers and leaders repeat for 12 hours: *"Somebody came to
+  Morton in a soldier's coat asking for bread. We gave him bread. The coat didn't fit."*
+- **The stand's spare rule.** A fight zone that spares a faction's friends (Known or better) also
+  spares a player locked on that faction's route who wears its colours.
+- **The majors' tricks** (hooks the majors call: `RZ_DisguiseClaims.RosterTrick`, `RecordsTrick`,
+  `MusterCallback`). Await Relief's Act IV roster in Bastion kit at night: the gate sentry's look at 2,
+  then the duty board's at 3, a name off the nail as the cover detail; passing the board signs the
+  roster as him, and the muster can say *"And whoever signed the roster as Kral: he's still dead."*
+  Proof's records room in a Halcyon coat at night: the duty officer's look at 3, a real notebook number
+  as the cover. Night is 20:30–05:00. Which act offers them is the majors' ([QUESTLINES.md](QUESTLINES.md#the-majors)).
+
+#### The last week
+
+✅ After the cure (the epilogue, [EPILOGUE.md](EPILOGUE.md)):
+- **The lock's −1 ends** at the cure: looks go back to their season rules.
+- **Bring them home.** A dead man's kit worn within 40 m of his post is taken in: Bastion puts his tag
+  on the nail and reads his name at the roll, the Red Hand writes his line in the book as "sent off",
+  Halcyon reads his notebook into the record and adds him to the authors (his fate on the list goes to
+  home). Kit off the turned is taken in at any Bastion holding: *"He's home. Mark him."*
+- **Give back borrowed kit.** Signed-for kit worn by someone else is handed back within 8 m of its
+  faction's quartermaster: no catch, no Infamy, and the buyer hears *"Your jacket came home. Clean,
+  mostly."* if they're on.
+- **Lines**, once, at the first kit read after the cure, on each faction's open channel from the
+  season's counts: Bastion's jackets on the wire, the Red Hand's best-dressed of the season (the most
+  looks passed by someone never caught, at least 3: an honour line, its name frozen and filtered, an
+  `/anonymous` player is "somebody"), Halcyon's coats returned, the Haven's ribbon line.
+- **The hall of fame** gets "Caught in someone else's kit: N times." and "Never caught: …" (the same
+  honour line).
+- *Simplified:* clean kit from the Red Hand's shelf isn't sold back at the fence (that needs a shop
+  action on the fence's prefab); the factions' lines are told once, not at each holding.
+
 #### Why it can't be abused
 
 The author's rule: disguises and faction armour are fine, but very hard to abuse. Each attempt, the
@@ -968,6 +1023,9 @@ rule that stops it, and what the log shows ([WORKBENCH_SETUP.md](WORKBENCH_SETUP
 | Walk behind a friend at a barrier | Everyone is checked on their own unless signed through, and the voucher answers for them | `signed ... through`, `voucher ... answers` |
 | Hide in a searched car | "We search the whole car" comes before any look: nobody in a searched car claims | `searched with the whole car` |
 | Get intel from lines | A pass says nothing their open channel doesn't | the look's line |
+| Say a name you never heard | A cover choice shows only when you have the detail; said without it, it's a lie, caught at once | `a cover detail they don't have` |
+| Try every cover line on one speaker | One claim line per speaker per life | `gave ... a cover detail` |
+| Carry their stolen papers through their gate | Something of theirs from a job against them is −1 at their look | the look's `[Something of theirs on you -1]` |
 | Farm the cards | Card pay is the errands' small-pay ledger, each card once a season; The Name on the Tape and Notebook 31 are never dealt to whoever killed the dead, once per name; Spot the Tells needs two different players caught over 2 days | `Errands: <card> taken by` |
 | Use colours as a licence to kill | Colours are refusals and timed grudges, never standing bits: retaliation still counts every kill | retaliation's lines |
 | Hide Infamy behind Fame | Tolerated and Wildcard players aren't disguised: they're treated by their real standing | — |
