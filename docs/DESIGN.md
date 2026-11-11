@@ -1351,7 +1351,8 @@ climax before it) and has a **default** (`ActDefault`): what happens when nobody
   reading, the last page (`RZ_Majors.ClimaxDone`: done, or that major isn't running).
 - **Scenes.** Every new act is one stage mission class, `RZ_QM_MajorScene`, filled in by the major's
   `BuildScene`: people at places (spawned only when a player comes within 300 m), up to four choices
-  each, a choice being data (a rank, a persuade, a bribe, unseen, a flag; a sway, a tabled option, a
+  each, a choice being data (a rank, a persuade, a bribe, unseen, a threat (Fear), a trick (the look),
+  a trade (items handed over), a flag; a sway, a tabled option, a
   swing of voters, a flag, a side's standing, the stage's outcome). A scene may hold a place (stay
   within 40 m; the noise brings waves every 75 s; 45 s with nobody there loses it) and close at the
   end of its window with its vote's tally or a timeout outcome. Dialogue is off by default, so every

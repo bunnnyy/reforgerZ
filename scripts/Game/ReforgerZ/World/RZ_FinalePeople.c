@@ -155,6 +155,15 @@ class RZ_FinalePeople
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A bag of theirs was spoiled on purpose: they give again (one draw back).
+	void GiveAgain(string key)
+	{
+		RZ_FinalePersonSave p = Get(key);
+		if (p && p.draws > 0)
+			p.draws = p.draws - 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	int Draws(string key)
 	{
 		RZ_FinalePersonSave p = Get(key);

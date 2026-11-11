@@ -358,7 +358,9 @@ count it as help, a switch pays at most the base and leaves season Fame alone, "
 
 ### Route assets and the 90% lock
 
-[FINALE.md](FINALE.md), §2, owns what an asset is worth in its route. The missions' side:
+The finale's side is built ([docs/FINALE.md](../docs/FINALE.md#before-the-gate-pitches-and-route-assets)):
+`RZ_FinaleAssets.Add(route, kind, identity, key)`, the limits, the lock card, playing an asset once, and the
+first story records that give one (`RZ_StoryKit.Record`). The missions' side still to build:
 
 | Asset | For example |
 |---|---|

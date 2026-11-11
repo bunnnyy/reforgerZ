@@ -1,6 +1,6 @@
 //! Who is talking to whom, and the one evaluator for conversation conditions (docs/DIALOGUE.md,
 //! "Conditions"). Every key reads a system that's already there; keys from designs that aren't
-//! built yet read false (route:none reads true). Server only.
+//! built yet read false. Server only.
 
 //------------------------------------------------------------------------------------------------
 //! One conversation's people: the player, and the speaker as the adapter describes them.
@@ -273,10 +273,12 @@ class RZ_DialogueCond
 			case "stronghold":
 				return ctx.m_Leader && ctx.m_Leader.IsStronghold();
 			case "route":
-				return t.m_sArg == "none";	// the finale isn't built: nobody has a route
+				return RZ_CureFinale.RouteTerm(t.m_sArg, pid);
+			case "finale":
+				return RZ_CureFinale.FinaleTerm(t.m_sArg, pid, ctx.m_Wanderer);
 		}
 
-		// Keys of designs not built yet (tribes, the majors, the finale, disguise, errands): quiet
+		// Keys of designs not built yet (tribes, the majors, disguise, errands): quiet
 		return false;
 	}
 

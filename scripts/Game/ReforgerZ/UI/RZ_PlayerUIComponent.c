@@ -38,6 +38,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected float m_fListenLeft;
 	protected float m_fListenStamp;
 	protected int m_iNoise;
+	protected string m_sStand;			// the stand's HUD line (client)
+	protected float m_fStandUntil;
 	protected int m_iSeen = -1;			// visibility 0 (hidden) to 5; -1 = none (Stealth off): not shown
 	protected bool m_bSeenHidden;
 	protected string m_sStanding;
@@ -186,6 +188,35 @@ class RZ_PlayerUIComponent : ScriptComponent
 			RpcDo_Say(speaker, faction, text);
 		else
 			Rpc(RpcDo_Say, speaker, faction, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stand's line under the noise meter (RZ_CureFinale), shown for `seconds` unless sent again.
+	//! Names routes, never players. "" clears it.
+	void SendStand(string line, float seconds)
+	{
+		if (IsLocalOwner())
+			RpcDo_Stand(line, seconds);
+		else
+			Rpc(RpcDo_Stand, line, seconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_Stand(string line, float seconds)
+	{
+		m_sStand = line;
+		m_fStandUntil = RZ_UIW.Now() + seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stand's line while it's fresh, else "".
+	string GetStandLine()
+	{
+		if (RZ_UIW.Now() > m_fStandUntil)
+			return "";
+
+		return m_sStand;
 	}
 
 	//------------------------------------------------------------------------------------------------

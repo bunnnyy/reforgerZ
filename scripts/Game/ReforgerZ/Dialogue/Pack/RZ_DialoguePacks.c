@@ -3,6 +3,7 @@ class RZ_DialoguePacks
 {
 	static void AddAll(RZ_DialogueDB db)
 	{
+		RZ_DialoguePack_finale.Add(db);
 		RZ_DialoguePack_leaders.Add(db);
 		RZ_DialoguePack_posts.Add(db);
 		RZ_DialoguePack_residents.Add(db);
@@ -12,6 +13,6 @@ class RZ_DialoguePacks
 
 	static int Count()
 	{
-		return 31;
+		return 46;
 	}
 }

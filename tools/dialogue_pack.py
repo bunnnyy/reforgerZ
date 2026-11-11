@@ -65,16 +65,20 @@ COND_KEYS = {
     "picture": (True, False), "stronghold": (False, False),
     # Scenes: this conversation's scene is decided (any value, or decided:<value>); you swayed a tally
     "decided": (False, False), "swayed": (True, False),
+    # The finale (docs/FINALE.md): finale:soon|pitch|open|locked|voice; route:none|haven|bastion|redhand|halcyon|indep
+    "finale": (True, False), "route": (True, False),
 }
-QUIET_KEYS = {"tribe", "alpha", "lean", "sitting", "finale", "route", "cure_held", "ending",
+FINALE_WORDS = {"soon", "pitch", "open", "locked", "voice"}
+ROUTE_WORDS = {"none", "haven", "bastion", "redhand", "halcyon", "indep"}
+QUIET_KEYS = {"tribe", "alpha", "lean", "sitting", "cure_held", "ending",
               "was", "kit", "claimed", "passing", "caught", "stranger", "promise", "heard_lie"}
 # Keys that read the world or the player's place in it: an ask needs one (docs/DIALOGUE.md, "Asks").
 WORLD_KEYS = {"house", "town", "need", "wbitten", "kidlost", "bg", "tier", "rep", "exiled", "bite_shown", "hunted",
               "outbreak", "cure", "flag", "stage", "infamy", "fame", "kin"}
 EFFECTS = {"mark", "cset", "nset", "regard", "favor", "take", "claim", "learn", "rumour", "call", "offer", "later",
-           "sway", "decide"}
+           "sway", "decide", "commit"}
 SCENE_EFFECTS = {"sway", "decide"}
-WORLD_EFFECTS = {"set", "qset", "resolve", "start", "event", "commit", "reward", "pass", "catch", "errand",
+WORLD_EFFECTS = {"set", "qset", "resolve", "start", "event", "reward", "pass", "catch", "errand",
                  "promise", "approach", "reveal", "begin", "hostile", "flee", "note", "return"}
 FORBIDDEN_EFFECTS = {"fame", "house", "infamy", "follow", "escort", "companion"}
 REGARD_WORDS = {"thanks", "kept", "broke", "threatened", "slander", "vouched_liar", "lied"}
@@ -132,6 +136,7 @@ class Node:
         self.items = []     # ("say", cond, text) | ("jump", cond, target) | ("do", effects)
         self.choices = []
         self.public = False
+        self.confirm = False
 
 
 class Conv:
@@ -146,6 +151,7 @@ class Conv:
         self.prio = "flavour"
         self.once = False
         self.daily = False
+        self.always = False
         self.voice = "plain"
         self.nodes = []
         self.scene = ""
@@ -246,16 +252,19 @@ def parse_file(path):
                 conv.once = True
             elif word == "daily":
                 conv.daily = True
+            elif word == "always":
+                conv.always = True
             elif word == "voice":
                 conv.voice = rest
             elif word == "node":
                 bits = rest.split()
                 if not bits:
                     raise Problem("a node needs an id")
-                if len(bits) > 2 or (len(bits) == 2 and bits[1] != "public"):
-                    raise Problem("a node is 'node <id> [public]'")
+                if len(bits) > 2 or (len(bits) == 2 and bits[1] not in ("public", "confirm")):
+                    raise Problem("a node is 'node <id> [public|confirm]'")
                 node = Node(bits[0], n)
-                node.public = len(bits) == 2
+                node.public = len(bits) == 2 and bits[1] == "public"
+                node.confirm = len(bits) == 2 and bits[1] == "confirm"
                 conv.nodes.append(node)
             elif word in ("say", "say?", "jump", "do") or line.startswith(">"):
                 if node is None:
@@ -283,7 +292,7 @@ def parse_file(path):
                     raise Problem("a scene is 'scene <id> speaker|season [who <conditions>]'")
                 conv.scene, conv.scope = bits[0], bits[1]
                 conv.who = who.strip()
-            elif word in ("bind", "use", "opens", "always", "callout"):
+            elif word in ("bind", "use", "opens", "callout"):
                 raise Problem("'%s' comes with a later phase (docs/DIALOGUE.md, 'Not built yet')" % word)
             else:
                 raise Problem("unknown keyword '%s'" % word)
@@ -350,6 +359,10 @@ def lint_cond(cond, where, errs):
             errs.append("%s: unknown tier '%s'" % (where, val))
         if key == "trait" and arg not in TRAITS:
             errs.append("%s: unknown trait '%s'" % (where, arg))
+        if key == "finale" and arg not in FINALE_WORDS:
+            errs.append("%s: finale is finale:soon|pitch|open|locked|voice" % where)
+        if key == "route" and arg not in ROUTE_WORDS:
+            errs.append("%s: route is route:none|haven|bastion|redhand|halcyon|indep" % where)
     return keys
 
 
@@ -389,6 +402,8 @@ def lint_effects(fx, where, conv, errs, favor_total):
             errs.append("%s: '%s' needs a scene in this conversation ('scene <id> speaker|season')" % (where, name))
         elif name in SCENE_EFFECTS and not re.match(r"^[a-z0-9_.]+$", arg):
             errs.append("%s: %s is %s:<word>" % (where, name, name))
+        elif name == "commit" and arg not in ROUTE_WORDS - {"none"}:
+            errs.append("%s: commit is commit:haven|bastion|redhand|halcyon|indep" % where)
         elif name == "take" and not re.match(r"^food\*[0-9]+$", arg):
             errs.append("%s: take is take:food*N" % where)
         elif name == "later" and not re.match(r"^[0-9]+h:[a-z0-9_.]+$", arg):
@@ -567,6 +582,31 @@ def lint(convs):
                         fail = c.node(t)
                         if fail and not fail.choices:
                             errs.append("%s:%d (%s/@%s): the fail node '%s' offers only Leave" % (rel(c.path), ch.line, c.id, ch.id, t))
+        # The finale's commit (docs/DIALOGUE.md, "The finale's commit"): only in a confirm node
+        has_confirm = False
+        for n in c.nodes:
+            wn = "%s:%d (%s/%s)" % (rel(c.path), n.line, c.id, n.id)
+            commits = [ch for ch in n.choices if "commit:" in ch.do]
+            for kind, cond, val in n.items:
+                if kind == "do" and "commit:" in val:
+                    errs.append("%s: commit runs only from a choice, never on entering a node" % wn)
+            for ch in n.choices:
+                if "commit:" in ch.short or "commit:" in ch.els:
+                    errs.append("%s: commit is never a check's short or else" % wn)
+            if not n.confirm:
+                if commits:
+                    errs.append("%s: commit only from a confirm node ('node %s confirm')" % (wn, n.id))
+                continue
+            has_confirm = True
+            if len(commits) != 1:
+                errs.append("%s: a confirm node has exactly one commit choice" % wn)
+            if len(commits) == len(n.choices):
+                errs.append("%s: a confirm node also offers a way back" % wn)
+            for ch in commits:
+                if ch.cond or ch.check or ch.cost:
+                    errs.append("%s: a commit choice has no if, check or cost (the finale decides who may lock)" % wn)
+        if c.always and not has_confirm:
+            errs.append("%s: 'always' is only for the finale's route topics (a topic with a confirm node)" % where_c)
     return errs, warns
 
 
@@ -616,7 +656,7 @@ def esc(s):
 def pack_area(area, convs):
     calls = []
     for c in convs:
-        flags = (1 if c.once else 0) | (2 if c.daily else 0) | (4 if c.kind == "greet" else 0)
+        flags = (1 if c.once else 0) | (2 if c.daily else 0) | (4 if c.kind == "greet" else 0) | (8 if c.always else 0)
         calls.append("db.Conv(%s, %s, %s, %s, %d, %d, %s);" % (esc(c.id), esc(",".join(c.speakers)), esc(c.when),
                                                              esc(c.label), PRIOS[c.prio], flags, esc(c.voice)))
         if c.scene and c.who:
@@ -627,6 +667,8 @@ def pack_area(area, convs):
             calls.append("db.Node(%s);" % esc(n.id))
             if n.public:
                 calls.append("db.Public();")
+            if n.confirm:
+                calls.append("db.Confirm();")
             for kind, cond, val in n.items:
                 if kind == "say":
                     calls.append("db.Say(%s, %s);" % (esc(cond), esc(val)))

@@ -107,6 +107,7 @@ class RZ_FinaleSettings
 class RZ_FinaleSave
 {
 	bool routesOpen;
+	bool pitched;
 	int gateUnix;
 	int worth;
 	ref array<float> tracks = {};
@@ -141,6 +142,8 @@ class RZ_FinaleSave
 	int trays = 3;
 	int trayUnix;
 	ref array<int> trayOut = {};
+	ref array<int> lockSeen = {};		// the last real time each route had an active lock
+	int cameMask;						// routes that counted toward the room at a stand (finale.came)
 	bool coatUsed;
 	bool takeUsed;
 	bool coatPassed;
@@ -163,6 +166,7 @@ class RZ_FinaleSave
 	float bayZ;
 	ref RZ_FinaleItemsSave items;
 	ref RZ_FinalePeopleSave people;
+	ref RZ_FinaleAssetsSave assets;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -211,6 +215,7 @@ class RZ_CureFinale
 	protected ref RZ_FinaleSave m_S = new RZ_FinaleSave();
 	protected ref RZ_FinaleItems m_Items;
 	protected ref RZ_FinalePeople m_People;
+	protected ref RZ_FinaleAssets m_Assets;
 
 	protected float m_fCheck;
 	protected float m_fMile;
@@ -219,6 +224,7 @@ class RZ_CureFinale
 	protected bool m_bSealing;
 	protected bool m_bStandOn;
 	protected float m_fStandLine;
+	protected float m_fStandHud;
 	protected int m_iLastCount;			// whole seconds of the leading count last told
 	protected ref array<IEntity> m_aGroups = {};		// the friendly groups at the stand (never saved)
 	protected bool m_bStandPrep;						// the stand's groups and Take the Lab are due
@@ -236,6 +242,7 @@ class RZ_CureFinale
 		s_Instance = this;
 		m_Items = new RZ_FinaleItems(gm, this);
 		m_People = new RZ_FinalePeople(gm, this);
+		m_Assets = new RZ_FinaleAssets(gm);
 		Pad();
 	}
 
@@ -260,6 +267,7 @@ class RZ_CureFinale
 	RZ_FinaleSettings GetSettings() { return m_Settings; }
 	RZ_FinaleItems GetItems() { return m_Items; }
 	RZ_FinalePeople GetPeople() { return m_People; }
+	RZ_FinaleAssets GetAssets() { return m_Assets; }
 
 	//------------------------------------------------------------------------------------------------
 	protected void Pad()
@@ -276,6 +284,7 @@ class RZ_CureFinale
 		while (m_S.fight.Count() < ROUTES * ROUTES) { m_S.fight.Insert(0); }
 		while (m_S.trayOut.Count() < ROUTES) { m_S.trayOut.Insert(0); }
 		while (m_S.counts.Count() < ROUTES) { m_S.counts.Insert(0); }
+		while (m_S.lockSeen.Count() < ROUTES) { m_S.lockSeen.Insert(0); }
 	}
 
 	// ================================================================ Names
@@ -309,6 +318,94 @@ class RZ_CureFinale
 		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A route as conversations write it: haven, bastion, redhand, halcyon, indep. NONE otherwise.
+	static int RouteOfWord(string word)
+	{
+		switch (word)
+		{
+			case "haven": return HAVEN;
+			case "bastion": return BASTION;
+			case "redhand": return REDHAND;
+			case "halcyon": return HALCYON;
+			case "indep": return INDEP;
+		}
+
+		return NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The dialogue condition route:<word> (none, haven, bastion, redhand, halcyon, indep): the
+	//! player's lock this season.
+	static bool RouteTerm(string word, int playerId)
+	{
+		int mine = NONE;
+		if (s_Instance && IsOn())
+			mine = s_Instance.RouteOfPlayer(playerId);
+
+		if (word == "none")
+			return mine == NONE;
+
+		return mine != NONE && mine == RouteOfWord(word);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The dialogue condition finale:<what>:
+	//!   soon    the finale is on, research is 75 or more and the gate isn't reached ("Ask me again")
+	//!   pitch   the finale is on, research is 80 or more, and the cure isn't out (the pitches)
+	//!   open    the routes are open (the commit topics)
+	//!   locked  this player is written down for a route
+	//!   voice   this wanderer speaks for the Independent route: the Doctor, else the Courier
+	static bool FinaleTerm(string what, int playerId, RZ_Wanderer w)
+	{
+		if (!s_Instance || !IsOn())
+			return false;
+
+		RZ_CureResearch cure = s_Instance.m_GM.GetCure();
+		float pct = 0;
+		if (cure)
+			pct = cure.ShownProgress();
+
+		switch (what)
+		{
+			case "soon": return !s_Instance.m_S.routesOpen && !s_Instance.IsCured() && pct >= 75;
+			case "pitch": return !s_Instance.IsCured() && pct >= 80;
+			case "open": return s_Instance.IsOpen();
+			case "locked": return s_Instance.RouteOfPlayer(playerId) != NONE;
+			case "voice": return s_Instance.IsIndependentVoice(w);
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Independent's voice among the wanderers: the Doctor while one lives, else the Courier
+	//! (with neither, the unsigned sheet at the lab gate: the desk).
+	bool IsIndependentVoice(RZ_Wanderer w)
+	{
+		if (!w || !m_GM.GetWanderers())
+			return false;
+
+		array<int> doctors = {};
+		m_GM.GetWanderers().GetLiving(RZ_Wanderers.RoleBit(RZ_EWandererRole.DOCTOR), doctors);
+		if (w.m_eRole == RZ_EWandererRole.DOCTOR)
+			return true;
+
+		return doctors.IsEmpty() && w.m_eRole == RZ_EWandererRole.COURIER;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the Independent has a voice on the road (the desk then takes no names).
+	bool HasIndependentVoice()
+	{
+		if (!m_GM.GetWanderers())
+			return false;
+
+		array<int> voices = {};
+		m_GM.GetWanderers().GetLiving(RZ_Wanderers.RoleBit(RZ_EWandererRole.DOCTOR) | RZ_Wanderers.RoleBit(RZ_EWandererRole.COURIER), voices);
+		return !voices.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -372,6 +469,39 @@ class RZ_CureFinale
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The route's best argument (its pitch, before the admission).
+	static string PitchLine(int r)
+	{
+		switch (r)
+		{
+			case HAVEN: return "\"The cure goes hand to hand, to the people the others would leave till last.\"";
+			case BASTION: return "\"Order: a queue, a register, nobody trampled at the gate.\"";
+			case REDHAND: return "\"It reaches anyone who can pay, including people nobody else would serve.\"";
+			case HALCYON: return "\"Published, fast, checked, with every author named.\"";
+			case INDEP: return "\"Four lots of people are about to tell you the cure is theirs. It isn't anyone's yet.\"";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! At 85 percent each route's pitch goes on air once, naming nobody: the four on their factions'
+	//! open channels, the Independent's as an unsigned voice on the open channel.
+	protected void AirPitches()
+	{
+		m_S.pitched = true;
+		RZ_FactionLife life = m_GM.GetFactionLife();
+		for (int r = 0; r < INDEP; r++)
+		{
+			if (life)
+				life.OpenChannelLine(r, PitchLine(r) + " " + Admission(r));
+		}
+
+		m_GM.NotifyAllAs("Open channel", "A voice nobody signs for: " + PitchLine(INDEP) + " " + Admission(INDEP), RZ_ENoticeTag.EVENT);
+		RZ_Log.Info("Finale: the routes' pitches went on air at 85 percent.");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! What locked players are called on top of their word ("attached"...).
 	static string LockWord(int r)
 	{
@@ -398,8 +528,10 @@ class RZ_CureFinale
 		Pad();
 		m_Items.Restore(data.items);
 		m_People.Restore(data.people);
+		m_Assets.Restore(data.assets);
 		m_S.items = null;
 		m_S.people = null;
+		m_S.assets = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -407,6 +539,7 @@ class RZ_CureFinale
 	{
 		m_S.items = m_Items.Save();
 		m_S.people = m_People.Save();
+		m_S.assets = m_Assets.Save();
 		return m_S;
 	}
 
@@ -712,6 +845,11 @@ class RZ_CureFinale
 	string LockCard(int playerId, int r)
 	{
 		string bring = m_Items.CarriedText(Ident(playerId), r);
+		string assets = m_Assets.Text(Ident(playerId), r);
+		if (!assets.IsEmpty() && !bring.IsEmpty())
+			bring += ", ";
+
+		bring += assets;
 		if (bring.IsEmpty())
 			bring = "nothing yet but yourself";
 
@@ -781,6 +919,18 @@ class RZ_CureFinale
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A route with no active lock for 3 real days (x the wait scale), counted from the gate: its
+	//! sworn stages pause and its claims are let go, until a lock is active again.
+	bool RoutePaused(int r)
+	{
+		if (r < 0 || r >= ROUTES || !m_S.routesOpen || ActiveLocks(r) > 0)
+			return false;
+
+		int last = Math.MaxInt(m_S.lockSeen[r], m_S.gateUnix);
+		return RZ_SeasonClock.Now() - last >= 3 * DAY * WaitScale();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The route questline's title ("The One Who Didn't Turn"...).
 	static string RouteTitle(int r)
 	{
@@ -840,6 +990,9 @@ class RZ_CureFinale
 
 		// A save from before the finale, already at the gate: the routes open now
 		RZ_CureResearch cure = m_GM.GetCure();
+		if (!m_S.pitched && !m_S.routesOpen && cure && !IsCured() && cure.ShownProgress() >= 85)
+			AirPitches();
+
 		if (!m_S.routesOpen && cure && cure.IsAtFinaleGate())
 			OnGate();
 
@@ -881,6 +1034,12 @@ class RZ_CureFinale
 			return;
 
 		m_iDeskTry = now + 60;
+		for (int seen = 0; seen < ROUTES; seen++)
+		{
+			if (ActiveLocks(seen) > 0)
+				m_S.lockSeen[seen] = now;
+		}
+
 		for (int r = 0; r < ROUTES; r++)
 		{
 			if (m_aDesks[r] >= 0 && missions.FindById(m_aDesks[r]))
@@ -1427,6 +1586,9 @@ class RZ_CureFinale
 				m_S.counts[c] = Math.Max(0, m_S.counts[c] - dt);
 		}
 
+		if (counting != NONE)
+			m_S.cameMask = m_S.cameMask | (1 << counting);
+
 		if (counting != NONE && m_S.counts[counting] >= TakeTime(counting))
 			TakeRoom(counting, HOW_FORCE);
 
@@ -1489,10 +1651,29 @@ class RZ_CureFinale
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "CLEAN ROOM: Bastion. The Haven taking: 0:35 of 0:60." to everyone within 150 m of the lab,
-	//! when a count moves by 15 s or the room changes. Names routes, never players.
+	//! "CLEAN ROOM: Bastion. The Haven taking: 0:35 of 0:60." to everyone within 150 m of the lab:
+	//! the HUD line under the noise meter, sent every 2 s while it's live (STAND_LINE_SECONDS); a
+	//! notice instead when a count moves by 15 s or the room changes, for a player whose HUD can't
+	//! take it. Names routes, never players.
 	protected void TellStandLine(array<IEntity> players, float dt)
 	{
+		m_fStandHud += dt;
+		if (m_fStandHud >= 2)
+		{
+			m_fStandHud = 0;
+			string hud = StandLine();
+			vector at = m_GM.GetLabPosition();
+			foreach (IEntity hp : players)
+			{
+				if (RZ_Util.DistXZ(hp.GetOrigin(), at) > LAB_RADIUS)
+					continue;
+
+				RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(hp));
+				if (ui)
+					ui.SendStand(hud, 5);
+			}
+		}
+
 		m_fStandLine += dt;
 		int lead = NONE;
 		float leadCount = 0;
@@ -1511,6 +1692,34 @@ class RZ_CureFinale
 
 		m_iLastCount = bucket;
 		m_fStandLine = 0;
+		string line = StandLine();
+		vector lab = m_GM.GetLabPosition();
+		foreach (IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), lab) > LAB_RADIUS)
+				continue;
+
+			int pid = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(p);
+			if (!RZ_PlayerUIComponent.GetFor(pid))
+				m_GM.NotifyPlayerAs(pid, "The stand", line, RZ_ENoticeTag.LOW);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stand's line: who holds the room and the leading count, by route.
+	string StandLine()
+	{
+		int lead = NONE;
+		float leadCount = 0;
+		for (int r = 0; r < ROUTES; r++)
+		{
+			if (m_S.counts[r] > leadCount)
+			{
+				leadCount = m_S.counts[r];
+				lead = r;
+			}
+		}
+
 		string holder = "nobody";
 		if (m_S.holder >= 0)
 			holder = RZ_Factions.GetShortName(PayFaction(m_S.holder));
@@ -1520,17 +1729,10 @@ class RZ_CureFinale
 
 		string line = string.Format("CLEAN ROOM: %1.", holder);
 		if (lead != NONE)
-			line += string.Format(" %1 taking: %2 of %3.", RouteName(lead), Clock(leadCount), Clock(TakeTime(lead)));
+			line += string.Format(" %1 taking: %2 of %3.", RZ_Util.Capitalize(RouteName(lead)), Clock(leadCount), Clock(TakeTime(lead)));
 
-		vector lab = m_GM.GetLabPosition();
-		foreach (IEntity p : players)
-		{
-			if (RZ_Util.DistXZ(p.GetOrigin(), lab) > LAB_RADIUS)
-				continue;
-
-			int pid = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(p);
-			m_GM.NotifyPlayerAs(pid, "The stand", line, RZ_ENoticeTag.LOW);
-		}
+		line.ToUpper();
+		return line;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1626,6 +1828,16 @@ class RZ_CureFinale
 	{
 		m_bStandOn = false;
 		ClearGroups();
+
+		// The stand board's "CAME FOR IT: {n}": how many routes counted toward the room (never names)
+		int came = 0;
+		for (int bit = 0; bit < ROUTES; bit++)
+		{
+			if ((m_S.cameMask & (1 << bit)) != 0)
+				came++;
+		}
+
+		RZ_WorldFacts.Get().SetFlag("finale.came", came);
 		int c = m_S.holder;
 		m_S.controller = c;
 		if (c == NONE)
@@ -2621,6 +2833,13 @@ class RZ_CureFinale
 			string bring = m_Items.CarriedText(Ident(playerId), -1);
 			if (!bring.IsEmpty())
 				s += "\nWhat you'd bring: " + bring + ".";
+
+			for (int r = 0; r < ROUTES; r++)
+			{
+				string assets = m_Assets.Text(Ident(playerId), r);
+				if (!assets.IsEmpty())
+					s += string.Format("\nWhat you'd bring to %1: %2.", RouteName(r), assets);
+			}
 		}
 
 		if (IsFrozen())

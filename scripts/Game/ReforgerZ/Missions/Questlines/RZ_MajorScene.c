@@ -44,6 +44,13 @@ class RZ_SceneChoice
 	int m_iHoldWin = -1;
 	int m_iHoldLost = -1;
 	bool m_bSneak;					// needs to be unseen (the scene's quiet watch)
+	int m_iFear;					// a threat (Fear) at this difficulty (0: none), at m_iFearFaction's person
+	int m_iFearFaction = -1;
+	int m_iFearInfamy = 3;
+	int m_iTrick;					// a trick (the look in m_iTrickFaction's kit) at this difficulty (0: none)
+	int m_iTrickFaction = -1;
+	RZ_EErrandItem m_eTradeItem;	// items handed over (none: no trade)
+	int m_iTradeCount;
 
 	//------------------------------------------------------------------------------------------------
 	RZ_SceneChoice Decides(int outcome, bool success = true)
@@ -177,6 +184,38 @@ class RZ_SceneChoice
 	{
 		m_bSneak = true;
 		m_iApproach = RZ_EQuestApproach.SNEAK;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A threat at this person: Fear (RZ_Checks.Threaten) at `difficulty`, +`infamy` with `faction`
+	//! whatever happens, once a season per person by anyone.
+	RZ_SceneChoice Threaten(int faction, int difficulty, int infamy = 3)
+	{
+		m_iFearFaction = faction;
+		m_iFear = Math.ClampInt(difficulty, 1, 4);
+		m_iFearInfamy = infamy;
+		m_iApproach = RZ_EQuestApproach.PRESS;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A trick: passing in `faction`'s kit (the look, RZ_Ways.PassAs) at `difficulty` (1-3).
+	RZ_SceneChoice Trick(int faction, int difficulty)
+	{
+		m_iTrickFaction = faction;
+		m_iTrick = Math.ClampInt(difficulty, 1, 3);
+		m_iApproach = RZ_EQuestApproach.TRICK;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A trade: `count` of an item kind (RZ_EErrandItem: food, fuel, a battery, medical) handed over.
+	RZ_SceneChoice Trade(RZ_EErrandItem item, int count)
+	{
+		m_eTradeItem = item;
+		m_iTradeCount = count;
+		m_iApproach = RZ_EQuestApproach.TRADE;
 		return this;
 	}
 }
@@ -409,6 +448,50 @@ class RZ_QM_MajorScene : RZ_QM_HalcyonScene
 			if (!TryBribe(gm, playerId, bf, c.m_iBribe))
 				return false;
 		}
+
+		return AllowedWays(gm, run, playerId, c);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A threat, a trick or a trade: the item check first (nothing is taken on a refusal), then the
+	//! roll. Each tells the player why not.
+	protected bool AllowedWays(RZ_GameModeComponent gm, RZ_QuestRun run, int playerId, RZ_SceneChoice c)
+	{
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (c.m_iTradeCount > 0 && (!me || RZ_Errands.CountItems(me, c.m_eTradeItem) < c.m_iTradeCount))
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "You haven't got that to give.");
+			return false;
+		}
+
+		string person = "scene." + m_sTitle;
+		if (c.m_iSpot >= 0 && c.m_iSpot < m_aSpotNames.Count())
+			person = person + "." + m_aSpotNames[c.m_iSpot];
+
+		m_Ways.m_sTitle = m_sTitle;
+		if (c.m_iFear > 0)
+		{
+			int listener = c.m_iFearFaction;
+			if (listener < 0)
+				listener = m_iGiver;
+
+			if (m_Ways.TryFear(gm, playerId, person, listener, m_iGiver, c.m_iFear, false, c.m_iFearInfamy) != RZ_ECheck.PASS)
+			{
+				Remember(gm, playerId, RZ_EQuestApproach.PRESS, "didn't scare them");
+				gm.NotifyPlayer(playerId, m_sTitle, run.Fill(c.m_sRefused));
+				return false;
+			}
+		}
+
+		if (c.m_iTrick > 0 && m_Ways.PassAs(gm, playerId, person, c.m_iTrickFaction, c.m_iTrick, "") != RZ_ECheck.PASS)
+		{
+			Remember(gm, playerId, RZ_EQuestApproach.TRICK, "was seen through");
+			gm.NotifyPlayer(playerId, m_sTitle, run.Fill(c.m_sRefused));
+			return false;
+		}
+
+		if (c.m_iTradeCount > 0)
+			RZ_Errands.TakeItems(me, c.m_eTradeItem, c.m_iTradeCount);
 
 		return true;
 	}

@@ -110,9 +110,11 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			DrawInfection(ui, settings);
 			DrawRadio(ui);
 			DrawNoise(ui, settings);
+			DrawStand(ui);
 		}
 		else
 		{
+			RZ_UIW.Show(m_wRoot, "StandPanel", false);
 			RZ_UIW.Show(m_wRoot, "InfectionPanel", false);
 			RZ_UIW.Show(m_wRoot, "RadioPanel", false);
 			RZ_UIW.Show(m_wRoot, "NoisePanel", false);
@@ -240,6 +242,17 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 
 		RZ_UIW.SetText(m_wRoot, "NoiseText", word);
 		DrawSeen(ui);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stand's line under the noise meter (docs/FINALE.md, "The stand"): routes, never players.
+	//! Hidden unless the server sent one in the last few seconds; a layout without StandPanel shows nothing.
+	protected void DrawStand(RZ_PlayerUIComponent ui)
+	{
+		string line = ui.GetStandLine();
+		RZ_UIW.Show(m_wRoot, "StandPanel", !line.IsEmpty());
+		if (!line.IsEmpty())
+			RZ_UIW.SetText(m_wRoot, "StandText", line);
 	}
 
 	//------------------------------------------------------------------------------------------------

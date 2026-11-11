@@ -9,8 +9,8 @@
 //!       or willing: donors at a Haven medic (the other way); then three bags in the lab's cold store
 //!   III Nobody's Index (open): live tissue
 //!   IV  For Everyone (sworn, last): a tray off the books, then the batch sheet: "Released to: -"
-//! Simplified: one unit from another route's subject, the sit-in at the gate and the on-air carry
-//! aren't built.
+//! One unit from another route's subject counts as a bag; Twice and the Scavenger stand in when
+//! fewer than three of the eight are alive. Simplified: the on-air carry isn't built.
 class RZ_Route_OneEach : RZ_FinaleRoute
 {
 	protected static const float BAG_COLD = 900;
@@ -137,10 +137,24 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 					asked++;
 				}
 
-				int gate = scene.Person(scene.m_vPos, "the Doctor at the lab gate", "Talk to the Doctor", "\"If the eight can't, the houses' donors can. It's slower.\"");
-				scene.Choice(gate, "Donors at a Haven medic instead").Only("short").Decides(OUT_OTHER).Says("Donors at a Haven medic, one by one. Nobody's, all of them.", "asked the houses' donors");
 				if (eight.Count() < 3)
 					run.SetFlag("short", 1);
+
+				int gate = scene.Person(scene.m_vPos, "the Doctor at the lab gate", "Talk to the Doctor", "\"If the eight can't, the houses' donors can. It's slower.\"");
+				scene.Choice(gate, "Donors at a Haven medic instead").Only("short").Decides(OUT_OTHER).Says("Donors at a Haven medic, one by one. Nobody's, all of them.", "asked the houses' donors");
+				if (run.Flag("short") != 0 && Finale().GetPeople().IsAlive("twice"))
+				{
+					// The eight's fallback: Twice, who has the same luck, and the Scavenger
+					int twice = scene.Person(PersonAt("twice", lab), "a man the crews call Twice", "Talk to Twice", "\"Killed in action once. Bitten once. Neither took. For everyone? Fine.\"");
+					RZ_QM_RouteScene.Cast(scene).TrackSubject(twice, "twice");
+					scene.Choice(twice, "Pay his debt and ask [30 Favor]").Sets("do:ask:twice").Says("A yes, and a bag, at the edge of the town at dusk.", "asked Twice");
+				}
+
+				if (run.Flag("short") != 0)
+				{
+					int scav = scene.Person(RZ_Mission.LandPointNear(scene.m_vPos, 30, 60), "the Scavenger at the lab gate", "Talk to the Scavenger", "\"Bitten twice on the road. Ate well both times. Want some?\"");
+					scene.Choice(scav, "Share food and ask [2 food]").Trade(RZ_EErrandItem.FOOD, 2).Sets("do:scav").Says("A bag, given over a tin of peaches. \"For everyone. Even them.\"", "asked the Scavenger");
+				}
 
 				return true;
 			}
@@ -149,6 +163,7 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 				scene.m_vPos = lab;
 				int duty = DutyOfficer(gm, scene, "\"Blood? The lab never refuses blood. For whom?\" \"For everyone.\" \"Right.\"");
 				scene.Choice(duty, "Store a bag, for everyone").Sets(string.Format("do:store:bag:3:%1", OUT_PIECE)).Says("Logged: for everyone.", "stored a bag for everyone");
+				scene.Choice(duty, "Store another route's unit, for everyone").Way(RZ_EQuestApproach.BETRAY).Sets("do:store_any").Says("A bag, a vial, a dose that was meant for someone's route. Logged: for everyone.", "stored another route's unit for everyone");
 				if (run.Flag("door") == OUT_OTHER)
 					scene.Choice(duty, "The donors' bags, for everyone").Decides(OUT_PIECE).Says("Three donors' bags in the cold store. Logged: for everyone.", "stored the donors' bags");
 
@@ -169,6 +184,12 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 				scene.Choice(director, "Released to: nobody").Only("tray").Persuade(RZ_EFaction.INSTITUTE, SheetStep(gm), "labtech").Decides(OUT_LAST).Says("\"Everyone. Fine.\" The director writes a dash.", "had the director write the sheet").Refused("\"Somebody has to be on the label.\"");
 				scene.Choice(clerk2, "Fill in the sheet [40 Favor]").Only("tray").Bribe(RZ_EFaction.INSTITUTE, 40).Decides(OUT_LAST).Says("The duty officer fills it in: Released to: -", "bought the batch sheet");
 				scene.Choice(lead, "Fill it in yourself [unseen]").Only("tray").Sneak().Decides(OUT_LAST).Says("The records room at night. A dash where a name goes.", "filled in the batch sheet at night");
+				int still = scene.Person(RZ_Mission.LandPointNear(RZ_WorldFacts.Get().CanonPos("redhand.still"), 8, 20), "the still's crew", "Talk to the crew", "\"Trays? We've one we're not using. It's yours for a price.\"");
+				scene.Choice(still, "Buy a tray at the still [30 Red Hand Favor]").Bribe(RZ_EFaction.BANDITS, 30).Sets("do:tray").Says("A tray in a cold box that smells of diesel. A deal's a deal.", "bought a tray at the still");
+				int store = scene.Person(RZ_Mission.LandPointNear(lab, 20, 40), "the lab's night store", "Look at the night store", "A cold room with a padlock and a rota. Nobody's on the rota at the change of shift.");
+				scene.Choice(store, "Steal a tray [unseen]").Sneak().Sets("do:tray").Says("Ninety seconds. A tray under your coat, and a gap on the shelf.", "stole a tray for nobody");
+				int sit = scene.Person(LabGate(gm), "the lab gate at the change of shift", "Look at the gate", "\"Released to: -\". It needs saying where the shift can see it.");
+				scene.Choice(sit, "Sit in at the gate, unarmed [10 min]").Only("tray").Sets("do:sitin").HoldAt(LabGate(gm), 600, OUT_LAST, -1).Says("You sit down in the gate with nothing in your hands. The shift has to step round you.", "sat in at the lab gate");
 				return true;
 			}
 		}
@@ -255,6 +276,22 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 		if (code == "tray" && !Finale().TakeTray(m_iRoute))
 			return "\"No tray. Not while you've one out, or we've none in.\"";
 
+		if (code == "scav" && run.Flag("scav") != 0)
+			return "\"I gave. Once is generous.\"";
+
+		if (code == "store_any" && Finale().GetItems().CountAny(IdentOf(gm, playerId), RZ_CureFinale.INDEP) <= 0)
+			return "You haven't got anything of anyone's with you.";
+
+		if (code == "sitin")
+		{
+			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+			if (me && RZ_Util.IsArmed(me))
+				return "\"Not with that. A sit-in is hands empty.\"";
+
+			if (!Between(17, 18) && !Between(5, 6))
+				return "\"At the change of shift. Half five, morning or evening.\"";
+		}
+
 		return super.CanDo(gm, run, playerId, code);
 	}
 
@@ -279,6 +316,29 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 		if (code == "tray")
 		{
 			run.SetFlag("tray", 1);
+			return -1;
+		}
+
+		if (code == "scav")
+		{
+			run.SetFlag("scav", 1);
+			GiveItem(gm, playerId, "bag", "a bag of the Scavenger's blood", PlayerPos(playerId), ColdFor(gm, playerId, BAG_COLD));
+			return -1;
+		}
+
+		if (code == "store_any")
+		{
+			// One unit from another route's subject: her bag, a tube, a dose, a vial
+			int handed = Finale().GetItems().HandInAny(IdentOf(gm, playerId), RZ_CureFinale.INDEP);
+			if (handed <= 0)
+				return -1;
+
+			int stored = run.Flag("stored.bag") + 1;
+			run.SetFlag("stored.bag", stored);
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("The lab signs it into the cold store: %1 of 3.", stored));
+			if (stored >= 3)
+				return OUT_PIECE;
+
 			return -1;
 		}
 
