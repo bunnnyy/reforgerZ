@@ -19,12 +19,33 @@ same kind of prefab: refill the slots and rebase the prefabs built on it.
 
 ## Required
 
-Both are dependencies in `addon.gproj`, so Workbench, the compile check and every server need them.
+Both are dependencies in `addon.gproj`, so Workbench and every server need them (the compile check
+needs Bacon Zombies; it leaves Special Zombies out, see [below](#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
 
 | Mod | Role | How ReforgerZ uses it |
 |---|---|---|
 | [Bacon Zombies](https://reforger.armaplatform.com/workshop/622120A5448725E3) | Zombie AI, animations and prefabs (civilian, military, exploding, ranged, heavy) | Its groups fill **Zombies > Common** and **Horde prefabs**; its civilian characters fill **Zombies > Crawlers** (it has no slow prefab: crawlers move as fast as the rest, about 3.7 m/s), its exploder the bloated crawlers, and its empty `Group_Zombies_Base` **Zombies > Empty group** (runtime groups, [INFECTED.md](INFECTED.md#runtime-groups)); its variants fill the runner and helmet lists in **Zombies > Adaptation** and the Wedding Party's guests. Its zombie faction, hostile to all, comes with the vanilla FactionManager base, which Bacon overrides. Bite detection works with any zombie mod |
-| [Special Zombies](https://reforger.armaplatform.com/workshop/69BD721866937F85) | Special variants and destructible hives (needs Bacon Zombies) | Its specials fill **Zombies > Special prefabs** (they drop cure samples) and the screamer list in **Zombies > Adaptation**. The **Missions > Nest** prefab is built on its hive, `ZombieHive_Minor` (it spawns its own infected), and the Wedding Party's bride on its Shambler. To run without it, use Bacon's heavy, exploding and ranged zombies as specials, rebase the Nest and the bride, and remove it from `addon.gproj` |
+| [Special Zombies](https://reforger.armaplatform.com/workshop/69BD721866937F85) | Special variants and destructible hives (needs Bacon Zombies) | Its specials fill **Zombies > Special prefabs** (they drop cure samples) and the screamer list in **Zombies > Adaptation**. The **Missions > Nest** prefab is built on its hive, `ZombieHive_Minor` (it spawns its own infected), and the Wedding Party's bride on its Shambler. To run without it, use Bacon's heavy, exploding and ranged zombies as specials, rebase the Nest and the bride, and remove it from `addon.gproj`. **It breaks ReforgerZ on a Linux server** (below) |
+
+### Special Zombies stops ReforgerZ loading on a Linux server
+
+**On a Linux dedicated server, with Special Zombies as a dependency, none of ReforgerZ's scripts
+load.** There's no error: the server starts, and the game mode simply isn't there. Special Zombies
+keeps its scripts in `Scripts/` (capital S); ours are in lowercase `scripts/`, which the
+case-sensitive Linux server needs. With both loaded, the Game module never finds ours.
+
+How it was found: the [compile check](WORKBENCH_SETUP.md#compile-check-without-workbench) printed
+OK for every commit after Special Zombies went into `addon.gproj`, but compiled nothing of
+ReforgerZ. A sentinel script with one known warning showed it: the warning was missing with Special
+Zombies loaded and back without it. The code merged in that time had two compile errors nobody saw.
+
+Until it's resolved, either:
+- **host on Windows** (paths there aren't case-sensitive), or
+- **drop Special Zombies** (as in the row above) for a Linux server.
+
+The compile check, the runtime test and the zombie lab drop it from their throwaway copy of
+`addon.gproj` for this reason. Workbench runs on Windows and isn't affected. Open issue:
+[ROADMAP.md](ROADMAP.md#get-it-playable).
 
 ## Recommended
 

@@ -1142,6 +1142,15 @@ repo into a test addon folder, starts the server just long enough to compile, an
 ReforgerZ errors and warnings. Exit code 0 means the Game module compiled. Run it before every
 commit that touches scripts.
 
+**It leaves Special Zombies out.** On a Linux dedicated server, with Special Zombies as a
+dependency, ReforgerZ's scripts don't load at all, without an error (verified with this check;
+the cause, how it was found and what to do are in
+[MOD_STACK.md](MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)). So for a
+real server, host on Windows or drop Special Zombies until it's resolved. The check removes it
+from its throwaway copy of `addon.gproj`, and plants a sentinel script with one known warning: if
+the log doesn't show that warning, nothing of ReforgerZ was compiled and the check fails. The
+runtime test and the zombie lab drop Special Zombies the same way.
+
 ```bash
 tools/compile_check.sh
 ```

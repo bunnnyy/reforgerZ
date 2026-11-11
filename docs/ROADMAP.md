@@ -64,6 +64,11 @@ The build-review fixes are done. Everything below is approved. The order of the 
 [designs/PLAN.md](../designs/PLAN.md#the-build-order), which also lists what it builds alongside these items.
 
 ### Get it playable
+- **Special Zombies on a Linux server (open issue).** With it as a dependency, a Linux dedicated
+  server loads none of ReforgerZ's scripts, without an error
+  ([MOD_STACK.md](MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)). Until
+  it's resolved, host on Windows or drop Special Zombies. Find a fix (ask its author, or check
+  whether a newer server finds both folders), then confirm a Linux server with it loads the mode.
 - **Untested in play:** the fixable cars' names, the parked cars' lock, the tyre and planks as
   items (built by text on vanilla `Item_Base`), and the unarmed zombie groups
   (`Prefabs/ReforgerZ/Zombies/`).
@@ -133,7 +138,8 @@ In this order, because later ones depend on earlier ones:
    on Arland, so it has no road checkpoints; road posts inside the Zone use the same road network.
 2. **With a game client.** It has only run in Workbench play so far. Check the `VERIFY`
    behaviours, riskiest first ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list));
-   several only show on a dedicated server.
+   several only show on a dedicated server. Host it on Windows, or on Linux without Special
+   Zombies: on Linux with it, the mode doesn't load at all ([Next](#get-it-playable)).
 3. **Per-player hostility.** A player Hunted by Bastion near a Bastion AI group: does it fire?
    Do the deploy menu, chat and groups stay on `SURV`? If AI ignores the variants, switch to Outlaw.
 4. **The core loop on Arland** for 2 hours: zombie density, spread rate, cure pace. Then the
