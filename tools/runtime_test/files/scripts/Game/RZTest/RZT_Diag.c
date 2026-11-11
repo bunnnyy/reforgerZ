@@ -75,6 +75,15 @@ modded class RZ_MissionManager
 	int RZT_Active() { return m_aActive.Count(); }
 }
 
+modded class RZ_Questlines
+{
+	void RZT_Keys(notnull array<string> keys)
+	{
+		foreach (RZ_Questline line : m_aLines)
+			keys.Insert(line.m_sKey);
+	}
+}
+
 modded class RZ_GameModeComponent
 {
 	protected int m_iRZTSec;
@@ -82,6 +91,15 @@ modded class RZ_GameModeComponent
 	protected ref array<string> m_aRZTRouteName = {};
 	protected int m_iRZTStep;
 	protected bool m_bRZTMissionsDone;
+	protected bool m_bRZTQuestsDone;
+	protected ref array<string> m_aRZTQuestKeys;
+	protected int m_iRZTQuest = -1;
+	protected int m_iRZTQuestSec;
+	protected int m_iRZTQuestStage = -2;
+	protected int m_iRZTQuestMission = -1;
+	protected int m_iRZTQuestMissionSec;
+	protected int m_iRZTQuestEnded;
+	protected int m_iRZTQuestStages;
 	protected int m_iRZTDoneAt;
 
 	override void NotifyPlayer(int playerId, string title, string text)
@@ -126,6 +144,97 @@ modded class RZ_GameModeComponent
 		GetGame().GetCallqueue().CallLater(RZT_Tick, 1000, true);
 	}
 
+	// Questlines, one at a time: begin it, fast-forward its waits, go to each stage mission and end
+	// it (alternately won and failed), until it ends, fizzles or is stuck for 6 minutes.
+	void RZT_QuestTick()
+	{
+		RZ_Questlines q = GetQuestlines();
+		if (!q || !q.IsEnabled())
+		{
+			Print("RZT questlines: off");
+			m_bRZTQuestsDone = true;
+			return;
+		}
+		if (!m_aRZTQuestKeys)
+		{
+			m_aRZTQuestKeys = {};
+			q.RZT_Keys(m_aRZTQuestKeys);
+			Print(string.Format("RZT questlines: %1 registered", m_aRZTQuestKeys.Count()));
+		}
+		if (m_iRZTQuest < 0 || m_iRZTQuestSec > 360)
+		{
+			if (m_iRZTQuest >= 0)
+				Print(string.Format("RZT quest %1 STUCK at stage %2 after 6 min", m_aRZTQuestKeys[m_iRZTQuest], m_iRZTQuestStage));
+			m_iRZTQuest++;
+			m_iRZTQuestSec = 0;
+			m_iRZTQuestStage = -2;
+			m_iRZTQuestMission = -1;
+			if (m_iRZTQuest >= m_aRZTQuestKeys.Count())
+			{
+				Print(string.Format("RZT all questlines tried: %1 of %2 reached an ending, %3 stages entered", m_iRZTQuestEnded, m_aRZTQuestKeys.Count(), m_iRZTQuestStages));
+				m_bRZTQuestsDone = true;
+				return;
+			}
+			string key = m_aRZTQuestKeys[m_iRZTQuest];
+			bool began = q.Begin(key);
+			if (!began && !q.FindRunByKey(key))
+			{
+				Print(string.Format("RZT quest %1 did not start (CanStart false)", key));
+				m_iRZTQuestSec = 999;
+				return;
+			}
+			Print(string.Format("RZT quest %1 started", key));
+		}
+		m_iRZTQuestSec++;
+		string qkey = m_aRZTQuestKeys[m_iRZTQuest];
+		RZ_QuestRun run = q.FindRunByKey(qkey);
+		if (!run || run.m_bDone)
+		{
+			int ending = q.WorldFlag(qkey + ".ending", -1);
+			if (ending >= 0)
+			{
+				m_iRZTQuestEnded++;
+				Print(string.Format("RZT quest %1 ENDED: ending %2", qkey, ending));
+			}
+			else
+				Print(string.Format("RZT quest %1 fizzled or was dropped at stage %2", qkey, m_iRZTQuestStage));
+			m_iRZTQuestSec = 999;
+			return;
+		}
+		if (run.m_iStage != m_iRZTQuestStage)
+		{
+			m_iRZTQuestStage = run.m_iStage;
+			m_iRZTQuestStages++;
+			Print(string.Format("RZT quest %1 stage %2", qkey, run.m_iStage));
+		}
+		if (run.m_iMissionId < 0)
+		{
+			// Waiting: move the clocks back so the wait is over (test only)
+			run.m_fStageAt = run.m_fStageAt - 1800;
+			run.m_iStageUnix = run.m_iStageUnix - 43200;
+			m_iRZTQuestMission = -1;
+			return;
+		}
+		RZ_Mission m = GetMissions().FindById(run.m_iMissionId);
+		if (!m)
+			return;
+		if (m.m_iId != m_iRZTQuestMission)
+		{
+			m_iRZTQuestMission = m.m_iId;
+			m_iRZTQuestMissionSec = 0;
+			Print(string.Format("RZT quest %1 stage %2 mission '%3'", qkey, run.m_iStage, m.m_sTitle));
+		}
+		m_iRZTQuestMissionSec++;
+		RZT_Fake.MoveTo(m.m_vPos);
+		if (m_iRZTQuestMissionSec >= 10 && m.m_eState == RZ_EMissionState.ACTIVE)
+		{
+			if ((m_iRZTQuestStages + m_iRZTQuest) % 3 == 2)
+				m.m_eState = RZ_EMissionState.FAILED;
+			else
+				m.m_eState = RZ_EMissionState.SUCCEEDED;
+		}
+	}
+
 	void RZT_Tick()
 	{
 		m_iRZTSec++;
@@ -140,12 +249,18 @@ modded class RZ_GameModeComponent
 			if (!GetMissions().RZT_Step())
 			{
 				m_bRZTMissionsDone = true;
-				m_iRZTDoneAt = m_iRZTSec;
 				Print("RZT all mission types tried: " + GetMissions().RZT_Summary());
 			}
 		}
 		if (!m_bRZTMissionsDone)
 			return;
+		if (!m_bRZTQuestsDone)
+		{
+			RZT_QuestTick();
+			if (m_bRZTQuestsDone)
+				m_iRZTDoneAt = m_iRZTSec;
+			return;
+		}
 		int rel = m_iRZTSec - m_iRZTDoneAt;
 		// Then every 20 s the next stop on the route
 		if (rel > 0 && rel % 20 == 0 && m_iRZTStep < m_aRZTRoute.Count())

@@ -847,10 +847,12 @@ What it can't do:
 
 `tools/runtime_test/run.sh` runs the game mode on the same server, in a sub-scene of Arland with
 vanilla stand-ins for the minimum prefabs and a fake player (a spawned civilian the systems see as
-online). It starts every mission type one at a time and ends each, walks the player through every
-settlement, the safehouses and the lab, into the Perimeter, to death and a second life, and logs
-every notice the player is sent. It prints the script exceptions (there should be none), how many
-mission types started and which didn't. It takes about 45 minutes.
+online). It starts every mission type one at a time and ends each. Then it begins every questline
+in turn, skips its waits, goes to each stage mission and ends it, and follows the questline to an
+ending (or reports where it fizzled or got stuck). Last, it walks the player through every
+settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
+every notice the player is sent, and prints the script exceptions (there should be none), how many
+mission types started and which didn't, and how far each questline got. It takes about an hour.
 
 ```bash
 SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
@@ -858,7 +860,7 @@ SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
 
 | What it shows | What it can't |
 |---|---|
-| Script exceptions on real code paths; startup and save/load; missions' Setup, rewards and cleanup; the Perimeter; spawn and death; the text players get | Anything a client does (UI, menus, input, replication), real AI behaviour against a player, your prefabs and their components |
+| Script exceptions on real code paths; startup and save/load; missions' Setup, rewards and cleanup; questline stages, branches and endings (by success and failure only, not every approach); the Perimeter; spawn and death; the text players get | Anything a client does (UI, menus, input, replication), real AI behaviour against a player, your prefabs and their components |
 
 A mission that doesn't start usually needs a world state the test doesn't create (a town at the
 right infection, an optional prefab, a faction standing). None of this is part of the mod: the
