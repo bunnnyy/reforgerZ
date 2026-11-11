@@ -157,6 +157,21 @@ class RZ_Hearing
 		m_aHeardAt.Insert(now);
 		m_aHeardRadius.Insert(radius);
 		Sound(at, radius);
+		if (amount >= 8)
+			Reckless(at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The reckless young: a hunting group of young goes to any loud noise within 400 m ahead of it,
+	//! leaving the hunt (the others go on).
+	protected void Reckless(vector at)
+	{
+		array<ref RZ_TrackedZombie> tracked = m_GM.GetSpawner().GetTracked();
+		foreach (RZ_TrackedZombie z : tracked)
+		{
+			if (z.m_Plan && z.m_Plan.IsDriven() && z.m_Plan.ChaseNoise(m_BH, at))
+				m_iLeads++;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

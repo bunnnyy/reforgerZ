@@ -467,7 +467,8 @@ The author's change: the wild is never empty by day, but the tribe never comes i
 - **Where:** a day walk of 3–5 points in the range, along forest edges and field margins, never in a
   settlement's radius, no man's land or the line's margin (rain keeps it to the woods). A **hungry**
   tribe's walk goes out to a **field at a town's edge**, outside its radius and outside no man's land,
-  never into either.
+  never into either, and players within 1.5 km of its range hear the Haven's warning that morning:
+  *"The Quarry lot are hungry. Their walkers will come right down to the fields today..."*
 - **Hop and hold:** legs of 100–200 m at walk-stop (0.7 m/s as data), then 4–6 minutes still.
 - **Bodies:** at most 6 day-party bodies near one player cluster (**Day party bodies**), from every
   tribe together; never within 400 m of a player in their gentle start. When one appears within 350 m
@@ -550,7 +551,14 @@ and it never switches.
   the night's losses past half of who set out (the first wave is capped by it too): without that cap
   the simulator's worst first hunt lost 64–75% of a tribe, and 1–2 tribes a season were wiped.
 - **The hide rule.** Lost for 60 s (no group has seen you) and 300 m from all of them, or in no man's
-  land: it goes home. *Simplified:* "indoors behind a closed door" isn't read yet; going indoors works
+  land: it goes home, and for the rest of that night heat within 300 m of where it lost you never sets
+  it on anyone (a siege's banging doesn't bring it back).
+- **Logged out.** If its target logs out, the hunt waits where it is for 10 minutes (the tribe's
+  clock); the same character back in that time is hunted again, from there.
+- **Empty nights.** A pack that sets out three nights running and takes nobody drops its least-worn
+  trail (until its places are worked out again), and the log says so.
+- **The reckless young.** A hunting group of young goes to any loud noise (8 heat or more) within 400 m
+  ahead of it, leaving the hunt to the others. *Simplified:* "indoors behind a closed door" isn't read yet; going indoors works
   through sight (the layer's senses never see through walls).
 - **Taken:** a player its bodies kill (below) ends the hunt, and the tribe feeds.
 
@@ -590,10 +598,10 @@ and it never switches.
   never two within 1 km of one player.
 - **Samples** only when a player was within 150 m: the alpha 2 in Prime and 3 in Decline (none while
   Rising), 3 times a season per tribe; a guard 1 under a Prime or older alpha, one a tribe every 2 played
-  hours; a lone one 2, once. Hunters, scouts, the young, day parties and splinters drop none, and
+  hours and at most 4 a played hour on the whole server; a lone one 2, once. Hunters, scouts, the young, day parties and splinters drop none, and
   nothing does in a staged fight's silent kills. Town specials are scaled by the tribes' share of
   samples over the last 10 played hours (never below ×0.6), so specials per player-hour stay near the
-  season pacing's. After the cure, none.
+  season pacing's. After the cure, none. The status log prints samples a player-hour (packs, guards).
 
 ### Scouts
 
@@ -1454,20 +1462,14 @@ always told.
 
 ## Planned
 
-What's left of the design, in [designs/INFECTED.md](../designs/INFECTED.md) and
-[designs/BEHAVIOUR.md](../designs/BEHAVIOUR.md):
-- **The life cycle's rest:** what [waits](#the-signs) for a sign of its own (the clans' relay, the
-  border moving the ranges, hunting grounds following the prey, stragglers, snow tracks).
-- **The people's rest:** the Haven's warnings about day parties in the fields; trucks taken on any road
-  a trail crosses; the jobs' rest (Clear the Trail on a truck road and the others the design lists);
-  the questline hooks still to write; the epilogue reading the beats.
-- **The finale's live tissue's rest** ([designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules)):
-  the great one's +3, best first within reach, the same pack never twice in 6 season days, and
-  Fury's road toward the lab.
-- **The behaviour layer's rest** ([designs/BEHAVIOUR.md](../designs/BEHAVIOUR.md)): forest edge points
-  in the land cache, low ground on a leg, the formations' re-plan and ETA, the young's stares at houses.
-- **Heat hordes and lookers** from a tribe's day party by day and its hunters at night; crawlers'
-  placement shifting indoors when a pack passes; members crossing between ranges.
+What's left is in [designs/INFECTED.md](../designs/INFECTED.md) and
+[designs/BEHAVIOUR.md](../designs/BEHAVIOUR.md): the model's small rules (prey-scored trails, the
+border moving the ranges, snow tracks, the clans' relay), the call's and the hunt's rest (stragglers,
+two callers, a cunning pack on your back trail), crawlers giving way in their placement and heat hordes
+from a pack's own groups, scouts' posts over the night's trails, the jobs' rest and the questline hooks,
+the epilogue reading the last week's beats; the behaviour layer's few small rules (the notice rate's
+calibration, the formations' re-plan, forest edge points) and its untested levers. The finale's live
+tissue's rest is [designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules)'s.
 
 ## The simulator
 

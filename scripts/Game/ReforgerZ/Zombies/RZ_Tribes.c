@@ -183,6 +183,10 @@ class RZ_Tribes
 	protected ref array<float> m_aLastInfection = {};
 	protected float m_fTribeSamples;		// samples dropped by tribe bodies, fading over 10 played hours
 	protected float m_fAllSamples;
+	protected ref array<float> m_aGuardSampleAt = {};	// played minutes of guard samples in the last hour
+	protected float m_fGuardSamples;		// since the start, for samples per player-hour
+	protected float m_fPackSamples;
+	protected float m_fPlayerHours;
 	protected ref RZ_TribesSave m_Restored;
 	protected bool m_bToldDormant;
 	protected bool m_bToldNone;
@@ -363,6 +367,8 @@ class RZ_Tribes
 	{
 		if (!IsEnabled())
 			return;
+
+		m_fPlayerHours += players.Count() * dt / 3600;
 
 		RZ_Land land = m_GM.GetLand();
 		if (!land || !land.IsReady())
@@ -1258,6 +1264,39 @@ class RZ_Tribes
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Empty nights (rule 9): a pack that set out three nights running and took nobody drops its
+	//! least-worn trail (worked out again with its places), so its hunting moves somewhere else.
+	protected void EmptyNight(RZ_Tribe t)
+	{
+		if (!t.m_bHunted)
+			return;
+
+		if (t.m_bTookTonight)
+		{
+			t.m_iEmptyNights = 0;
+			return;
+		}
+
+		t.m_iEmptyNights++;
+		if (t.m_iEmptyNights < 3 || t.m_aTrails.Count() < 2)
+			return;
+
+		t.m_iEmptyNights = 0;
+		int worst = 0;
+		for (int i = 1; i < t.m_aTrails.Count(); i++)
+		{
+			if (i < t.m_aWear.Count() && worst < t.m_aWear.Count() && t.m_aWear[i] < t.m_aWear[worst])
+				worst = i;
+		}
+
+		t.m_aTrails.Remove(worst);
+		if (worst < t.m_aWear.Count())
+			t.m_aWear.Remove(worst);
+
+		RZ_Log.Info(string.Format("Tribes: %1 took nobody three nights running and drops a trail (%2 left).", t.m_sPlace, t.m_aTrails.Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The day party (docs/INFECTED.md, Day parties), from 07:00: a fifth of the tribe by default
 	//! (twice that when hungry, never over half), hunters and young only, in groups of 2-3, each
 	//! walking its own day walk by hop and hold. Nobody the day after a feed, in a storm, during the
@@ -1273,7 +1312,12 @@ class RZ_Tribes
 		float share = Math.Clamp(m_Settings.m_fDayPartyShare, 0, 0.25);
 		bool hungry = t.Band() >= 2;
 		if (hungry)
+		{
 			share = Math.Min(0.5, share * 2);
+			// The Haven's warning: hungry walkers come right down to the fields by day
+			if (m_People.IsOn())
+				Tell(t.RangeCentre(), t.HuntRadius() + 1500, "The Haven", string.Format("%1 are hungry. Their walkers will come right down to the fields today, in broad daylight. Nobody past the hedges.", Capitalize(m_People.NameAt(t, RZ_EFaction.SURVIVORS))));
+		}
 
 		// The two weak days after a succession: half a day party
 		if (t.IsWeakDays())
@@ -1518,6 +1562,7 @@ class RZ_Tribes
 				t.m_iPendingYoung = 0;
 			}
 
+			EmptyNight(t);
 			t.m_iAtDusk = t.Members();
 			t.m_iLostTonight = 0;
 			t.m_aDeadTonight.Clear();
@@ -1525,6 +1570,7 @@ class RZ_Tribes
 			t.m_bHunted = false;
 			t.m_bDawnCalled = false;
 			t.m_aBlocked.Clear();
+			t.m_aDeafTo.Clear();
 			t.m_fSetOutHour = Math.RandomFloat(19.5, 20.5);
 		}
 
@@ -2817,10 +2863,12 @@ class RZ_Tribes
 			return;
 
 		float played = m_fClock / 60;
-		if (played - t.m_fGuardSampleAt < 120 || !PlayerWithin(at, 150))
+		if (played - t.m_fGuardSampleAt < 120 || !PlayerWithin(at, 150) || !GuardSampleRoom(played))
 			return;
 
 		t.m_fGuardSampleAt = played;
+		m_aGuardSampleAt.Insert(played);
+		m_fGuardSamples += 1;
 		m_GM.SpawnSamples(at, 1);
 		OnSample(1, true);
 		m_People.OnSampleNear(t, at);
@@ -2847,7 +2895,23 @@ class RZ_Tribes
 	{
 		m_fAllSamples += n;
 		if (tribe)
+		{
 			m_fTribeSamples += n;
+			m_fPackSamples += n;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! At most 4 guard samples a played hour on the whole server.
+	protected bool GuardSampleRoom(float played)
+	{
+		for (int i = m_aGuardSampleAt.Count() - 1; i >= 0; i--)
+		{
+			if (played - m_aGuardSampleAt[i] >= 60)
+				m_aGuardSampleAt.Remove(i);
+		}
+
+		return m_aGuardSampleAt.Count() < 4;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3398,6 +3462,8 @@ class RZ_Tribes
 		}
 
 		RZ_Log.Info(string.Format("Status | tribes: phase %1, counted nights %2, town specials x%3 | %4", typename.EnumToString(RZ_ETribePhase, m_ePhase), m_iCountedNights, Math.Round(TownSpecialMult() * 100) / 100, m_Bodies.StatusText()));
+		float ph = Math.Max(0.01, m_fPlayerHours);
+		RZ_Log.Info(string.Format("Status | samples a player-hour: packs %1 (guards %2), over %3 player-hours", Math.Round(m_fPackSamples / ph * 100) / 100, Math.Round(m_fGuardSamples / ph * 100) / 100, Math.Round(m_fPlayerHours * 10) / 10));
 		if (m_Settings.m_bLifeCycle)
 			RZ_Log.Info(string.Format("Status | tribes' life: %1 | %2", m_Life.StatusText(), m_Borders.StatusText()));
 

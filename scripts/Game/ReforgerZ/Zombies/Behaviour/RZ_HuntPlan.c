@@ -1019,6 +1019,32 @@ class RZ_GroupPlan
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A hunting group of young and a loud noise within 400 m ahead of it: it leaves the hunt and runs
+	//! to the noise (RZ_Hearing.Reckless). True if it went.
+	bool ChaseNoise(RZ_Behaviour bh, vector at)
+	{
+		RZ_BodyState leader = Leader();
+		if (!m_Link || !leader || leader.m_eKind != RZ_EBodyKind.YOUNG || AnyEngaged())
+			return false;
+
+		vector to = at - m_vCentre;
+		to[1] = 0;
+		float d = to.Length();
+		if (d > 400 || d < 20)
+			return false;
+
+		to.Normalize();
+		if (vector.Dot(to, m_vHeading) < 0.3)
+			return false;
+
+		LeaveHunt(false);
+		m_vLead = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(at, 0, d * 0.15 + 2));
+		m_fLeadUntil = bh.Now() + 90;
+		m_eLeadGait = RZ_EGait.RUN;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! How far this group hears a sound of `radius`: its leader's kind and its pack's shots habit.
 	float HearingRange(RZ_Behaviour bh, float radius)
 	{

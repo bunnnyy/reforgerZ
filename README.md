@@ -165,7 +165,9 @@ board and radio asks and errands' phase 4 cards,
 (phase 2: conversation trees, reputation's voice, the season mood and the voice bank,
 [DIALOGUE.md](docs/DIALOGUE.md)); the towns' crawlers, the loose ones, heat hordes from towns, the
 land grid, the tribes' daily life and hunts, their life cycle (succession, borders, splits, lair
-moves, new tribes, memory), the behaviour layer and the crawlers' daily life, and the people's side
+moves, new tribes, memory), the behaviour layer (with hearing, blood, shrieks, doors, reactions, the
+young's sprint and the close moves on the player's machine: the ankle grab's hold, the stagger, the
+knockdown) and the crawlers' daily life, and the people's side
 (each faction's words and marks, knowing, skills, your dead run, the moat, 13 contracts and the
 reworked events, the cure's hooks and the last week), and the great one with its Gathering and Night of
 Many Calls, the packs' signs and call sounds, the bright moon and the map's range rings (tribes phases
@@ -217,9 +219,11 @@ scripts/Game/ReforgerZ/
                  memory, the people's side (words, knowing, your dead run, the moat, the last
                  week; the tag and the call box), the great one, signs and sounds (props,
                  call sounds, the moon), bite detection, stealth
-                 (visibility, the infected's senses, losing them)
-    Behaviour/   the behaviour layer: Bacon's hooks, steering modes, senses, formations,
-                 hunt strategies, navigation, the kinds' attacks, the crawlers' daily life
+                 (visibility, the infected's senses, losing them), the player effects component
+                 (the close moves played on the player's machine)
+    Behaviour/   the behaviour layer: Bacon's hooks, steering modes, senses, hearing, blood
+                 and shrieks, formations, hunt strategies, reactions, doors, navigation, the
+                 kinds' attacks and their effects (server side), the crawlers' daily life
   Backgrounds/   backgrounds, personal goals, player profiles
   Factions/      reputation and its 16 names, quartermasters, shops and the shop screen's server
                  side, perks, services, hunter squads, bounties,

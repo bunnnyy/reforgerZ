@@ -1625,10 +1625,10 @@ waves N).`, `Tribes: <place> lost player N and goes home.`, `Tribes: <place> too
 (hunger N, young true).`, `Tribes: someone from <town> ran, and joins <place> at dusk.`, `Tribes:
 <place> gains N young at dusk (...)`, `Tribes: a counted night (N so far).`, `Tribes: <place> dawn
 count: N of N came home.`, `Tribes: <place> lost its leader; the vigil at <grid> until dawn.`,
-`Tribes: <place> has a new voice at first light.`, `Tribes: someone walked into the lair at <place>.`
+`Tribes: <place> has a new voice at first light.`, `Tribes: someone walked into the lair at <place>.`, `Tribes: <place> took nobody three nights running and drops a trail (N left).`, `Tribes: <place>'s hunt picks player N up again.`, `Tribes: <place> moved house (Lead Them Away), to <place>.`, `Behaviour | the infected broke a weak door at <grid>`
 Every 5 minutes the status log adds `Status | tribe ...` per tribe, `Status | tribes: phase DAY,
 counted nights N, town specials x1 | pack bodies spawned N, hunts N, break-offs N, scout calls N,
-packs N` and `Status | behaviour: steer N, engage N, recover N, by waypoint N; hunts N (started N),
+packs N`, `Status | samples a player-hour: packs N (guards N), over N player-hours` and `Status | behaviour: steer N, engage N, recover N, by waypoint N; hunts N (started N),
 releases N, take-backs N, unsticks N, moves landed N, hand-offs N, leaps N, charges N (stumbles N),
 young sprints N, holds N (kicked free N), staggers N, knockdowns N, sound leads N, blood leads N,
 shrieks N, doors: went round N, broken N, regroups N, rings asleep N (woken N) |
@@ -2037,6 +2037,10 @@ call`; a Hunter is useful)
 - [ ] **Doors:** hide in a locked house with a second door open: after about 30 s of banging they come
   round to it. In a locked shed or barn at night with a bold pack's hunt (or the big one) outside: the
   door gives after about 45 s, with a warning first; a house by a holding or a safehouse never does.
+- [ ] **A hunt's small rules:** get hunted and log out for 5 minutes: back in, they come on again from
+  where they waited; after 10, they've gone home. Lose a hunt, then bang a door near where they lost
+  you: they don't come back that night. A hungry pack's morning: the Haven's warning, and walkers at a
+  town's edge. Throw a bottle ahead of a hunt with young: the young peel off to it.
 - [ ] **The resting ring:** the lair by day from 300 m: the status line counts rings asleep; walk in to
   200 m: woken, and they see you as before.
 - [ ] **The ankle grab** (a crawler street, crouched or prone, or a hunched one lying up): a hit holds
