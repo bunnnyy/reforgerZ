@@ -8,6 +8,7 @@ class RZ_QuestlineRegistry
 	{
 		// The Haven
 		q.Register(RZ_Quest_ShortWeight);
+		q.Register(RZ_Quest_TheList);
 
 		// Task Force Bastion
 

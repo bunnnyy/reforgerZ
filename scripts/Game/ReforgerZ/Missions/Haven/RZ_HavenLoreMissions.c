@@ -10,7 +10,9 @@
 //! (full pay; +3 Haven Infamy if the council put them out; if they're alive, the family goes
 //! after them and the house is one fewer), tell the council (75%), or keep it quiet (40%; a
 //! wanderer who asked for it remembers). ★ Police/Elder: more Fame, and the list says more.
-//! Needs a safehouse, the note and the civilian.
+//! Needs a safehouse, the note and the civilian. One name is this contract; who crosses names out,
+//! and why, is the questline The List, which can open once it's done (world flag "list.contract",
+//! Missions/Questlines/Haven/RZ_Quest_TheList.c).
 class RZ_Mission_TheList : RZ_PuzzleMission
 {
 	protected int m_iHouse = -1;
@@ -398,6 +400,15 @@ class RZ_Mission_TheList : RZ_PuzzleMission
 	{
 		if (wanderers && m_iWanderer >= 0)
 			wanderers.RememberPlayer(m_iWanderer, playerId, flag);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Somebody asked, and found out: the questline The List can open at this house (its council
+	//! head asks the bigger question). The flag holds the safehouse, + 1.
+	override void OnSuccess(RZ_GameModeComponent gm)
+	{
+		if (gm.GetQuestlines())
+			gm.GetQuestlines().SetWorldFlag("list.contract", m_iHouse + 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
