@@ -57,7 +57,8 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 
 ## Next
 
-The build-review fixes are done. The design for the items marked "being designed" is approved and being built.
+The build-review fixes are done. Everything below is approved. The order of the larger work is
+[designs/PLAN.md](../designs/PLAN.md#the-build-order), which also lists what it builds alongside these items.
 
 ### Get it playable
 - **Untested in play:** the fixable cars' names, the parked cars' lock, the tyre and planks as
@@ -92,25 +93,16 @@ The build-review fixes are done. The design for the items marked "being designed
   panel, the map config override with `RZ_MapIconsUI` and the map icon layout (until it's set, the
   vanilla text markers stay), and textures for the icons the scripts never swap ([UI.md](UI.md)).
 
-### The cure's finale
-- One finale route per faction, opening at 90% research, that players can follow working for
-  either faction: designed separately. The hook is built: registering one (`IsCureFinale`) stops
-  research at 90% until a finale adds research with `RZ_CureResearch.AddFinaleResearch`
-  ([Cure research](DESIGN.md#cure-research-and-the-seasons-end)).
-
-### Infected tribes and town crawlers
-- Designed, not built: tribes of infected in the wild land, each with a lair, a range and an
-  alpha, out by day too but lighter (a small day party on its trails; the full hunt only at
-  night); town crawlers drawn from each town's infection. The land grid they need is built and
-  measured ([DESIGN.md](DESIGN.md#the-land-grid)), and so is one held waypoint per group. Next: the
-  crawlers, the land grid in use and the rest of the plumbing (runtime groups, a silent kill), with
-  their own doc.
-- Before the tribes' code, `tools/tribe_sim.py` simulates them as data over a season on the
-  45-day pacing (`--legacy` for the old one) at 2, 5 and 10 players, on the wild land the land
-  survey measured on Arland, Everon and Cain (and a Chernarus-size map), with the infected's sight
-  the zombie lab measured: tribe counts, clans, hunger, growth, first-night losses, and fights per
-  km walked by day and by night. It prints the numbers it tuned against the design, with the reason
-  for each. Arland's wild land (0.4-1.1 km²) is too small for a tribe.
+### The season's designs
+- The approved designs for the rest of the game (the infected tribes and crawlers, the four majors,
+  the cure's finale, the epilogue week, dialogue, errands, the mission style, reputation names,
+  disguise and tone) are in [designs/](../designs/README.md). Their build order, from step 0 (now)
+  to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
+- Already built for them: the cure's 90% hook (`IsCureFinale`, `AddFinaleResearch`;
+  [Cure research](DESIGN.md#cure-research-and-the-seasons-end)), the land grid
+  ([DESIGN.md](DESIGN.md#the-land-grid)), one held waypoint per group, and `tools/tribe_sim.py`,
+  which simulates the tribes as data over a season at 2, 5 and 10 players on the wild land the land
+  survey measured, and prints the numbers it tuned against the design.
 
 ### Content on the world facts
 - Switch the rest of the content to the world facts ([DESIGN.md](DESIGN.md#world-facts), the

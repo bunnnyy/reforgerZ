@@ -103,9 +103,11 @@ Arland's AI world and vanilla's world managers now; AI in play is still to test
 yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Not built yet:** the content pass onto the world facts, and the infected tribes in the wild with
-crawlers in the towns (designed; see the roadmap's *Next*). The land grid the tribes need is built
-and measured on the base maps, off by default.
+**Not built yet:** the content pass onto the world facts (see the roadmap's *Next*), and the
+approved designs for the rest of the season: the infected tribes and crawlers, the four majors, the
+cure's finale, the epilogue week, dialogue, errands and more, built in the order of
+[designs/PLAN.md](designs/PLAN.md). The land grid the tribes need is built and measured on the base
+maps, off by default.
 
 ## Docs
 
@@ -121,6 +123,7 @@ and measured on the base maps, off by default.
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
+| [designs/](designs/README.md) | Approved designs not built yet (the four majors, the cure's finale, the epilogue week, infected tribes, dialogue, errands, the mission style, reputation names, disguise, tone) and the build plan. Each moves into `docs/` as it's built |
 
 ## Code
 
