@@ -121,6 +121,7 @@ modded class RZ_GameModeComponent
 	protected bool m_bRZTMissionsDone;
 	protected bool m_bRZTQuestsDone;
 	protected bool m_bRZTMajorsDone;
+	protected bool m_bRZTFinaleDone;
 	protected ref array<string> m_aRZTQuestKeys;
 	protected int m_iRZTQuest = -1;
 	protected int m_iRZTQuestSec;
@@ -400,6 +401,9 @@ modded class RZ_GameModeComponent
 			Print("RZT respawned fake player (second life)");
 			HandlePlayerSpawned(RZT_Fake.ID, e2);
 		}
+		// Last, the cure finale's phase (RZT_Finale.c): it ends with the cure, which stands the line down
+		if (rel > 20 * 17 + 160 && !m_bRZTFinaleDone)
+			m_bRZTFinaleDone = RZT_Finale.Tick(this);
 		if (m_iRZTSec % 60 == 0)
 			Print(string.Format("RZT t=%1 active missions=%2 alive=%3", m_iRZTSec, GetMissions().RZT_Active(), RZ_Util.IsCharacterAlive(RZT_Fake.s_Ent)));
 	}

@@ -394,6 +394,13 @@ class RZT_Prep
 	//! That Went Quiet (which exposes the house), and Authors last (it needs the final stand).
 	static void Order(notnull array<string> keys)
 	{
+		// The cure finale's routes start only at the gate: the finale's own phase runs them (RZT_Finale.c)
+		for (int r = keys.Count() - 1; r >= 0; r--)
+		{
+			if (keys[r].StartsWith("route_"))
+				keys.RemoveOrdered(r);
+		}
+
 		int well = keys.Find("well");
 		int cargo = keys.Find("cargo");
 		if (well > cargo && cargo >= 0)
