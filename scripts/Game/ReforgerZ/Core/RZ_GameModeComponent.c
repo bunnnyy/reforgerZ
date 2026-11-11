@@ -66,6 +66,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "The Long Table: some seasons, one small family in one farmhouse in an empty part of the map, who are kind to strangers and eat people; its chance, hunger, takings, the host on the road, the guest rule, trade keywords (docs/DESIGN.md, The Long Table)", category: "ReforgerZ|World")]
 	protected ref RZ_LongTableSettings m_LongTableSettings;
 
+	[Attribute(desc: "Traces: the world's environmental storytelling. Door marks written by the people who were there (Bastion's search code, the Haven's bears and candles, the Red Hand's hands and tallies, Halcyon's beaks, residents' words, the infected's scratches), read by standing at a door; decals or boards; player traces; the kit of optional prefabs (docs/TRACES.md)", category: "ReforgerZ|World")]
+	protected ref RZ_TraceSettings m_TraceSettings;
+
 	// ---------------------------------------------------------------- Director / zombies
 	[Attribute(desc: "Stage overrides. Leave empty to use the built-in defaults", category: "ReforgerZ|Director")]
 	protected ref array<ref RZ_StageSettings> m_aStages;
@@ -417,6 +420,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[RplProp()]
 	protected string m_sReplLockedBuildings;	// ";key;key;": locked buildings near players (RZ_DoorLocks, for the door action)
 
+	[RplProp()]
+	protected string m_sReplDoorMarks;			// marked doors near players, for the clients' decals (World/Traces/RZ_TraceDraw.c)
+
 	// ---------------------------------------------------------------- Runtime (server)
 	protected static RZ_GameModeComponent s_Instance;
 
@@ -453,6 +459,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_FactionLife m_FactionLife;
 	protected ref RZ_CampLife m_CampLife;
 	protected ref RZ_LongTable m_LongTable;
+	protected ref RZ_Traces m_Traces;
 	protected ref RZ_Land m_Land;
 	protected ref RZ_Tribes m_Tribes;
 	protected bool m_bClockSet;			// the day length and the saved time of day were applied
@@ -602,6 +609,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_LongTableSettings)
 			m_LongTableSettings = RZ_LongTableSettings.Cast(RZ_Util.NewWithDefaults("RZ_LongTableSettings"));
+
+		if (!m_TraceSettings)
+			m_TraceSettings = RZ_TraceSettings.Cast(RZ_Util.NewWithDefaults("RZ_TraceSettings"));
 
 		if (!m_StorySettings)
 			m_StorySettings = RZ_StorySettings.Cast(RZ_Util.NewWithDefaults("RZ_StorySettings"));
@@ -759,6 +769,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Tribes = new RZ_Tribes(this, m_TribeSettings);
 		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_LootSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
 		m_Errands = new RZ_Errands(this, m_ErrandSettings);
+		m_Traces = new RZ_Traces(this, m_TraceSettings);
 
 		// A wipe that came due last run (the wipe cycle) or one by hand is carried out now:
 		// backup, then fresh
@@ -827,6 +838,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Questlines.Setup();
 		// Errands stand on the safehouses, holdings, wanderers, trucks and the world memory above
 		m_Errands.Setup();
+		// Traces (docs/TRACES.md): the first days' door marks from the canon, the safehouses, the
+		// holdings, the lab and the Long Table above, under the live ones the save kept
+		m_Traces.Setup();
 		m_Hostility.Init();
 		if (m_bHasLab)
 			AddMapMarker(m_vLabPos, "Halcyon lab");
@@ -890,6 +904,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Supply.Tick(dt, ids, players);
 		m_FactionLife.Tick(dt, ids, players);
 		m_LongTable.Tick(dt, ids, players);
+		m_Traces.Tick(dt, ids, players);
 		m_StoryArcs.Tick(dt, ids, players);
 		m_Questlines.Tick(dt, ids, players);
 		m_Checkpoints.Tick(dt, ids, players);
@@ -1066,6 +1081,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
 	RZ_CampLife GetCampLife() { return m_CampLife; }
 	RZ_LongTable GetLongTable() { return m_LongTable; }
+	//! Traces (docs/TRACES.md): door marks, their reading, the player traces. Server only.
+	RZ_Traces GetTraces() { return m_Traces; }
+	//! World > Traces, on every machine (the clients' decals read the kit).
+	RZ_TraceSettings GetTraceSettings() { return m_TraceSettings; }
 	//! The land grid (docs/DESIGN.md, The land grid). Check IsReady(): off by default, and read over
 	//! the first minutes of the first start.
 	RZ_Land GetLand() { return m_Land; }
@@ -1234,6 +1253,18 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_EOutbreakStage GetReplicatedStage() { return m_iReplStage; }
 	bool IsReplicatedCured() { return m_bReplCured; }
 	string GetLockedBuildings() { return m_sReplLockedBuildings; }
+	string GetDoorMarks() { return m_sReplDoorMarks; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the marked doors near players, for the clients' decals (RZ_TraceDraw).
+	void SetDoorMarks(string list)
+	{
+		if (list == m_sReplDoorMarks)
+			return;
+
+		m_sReplDoorMarks = list;
+		Replication.BumpMe();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: which buildings near players are locked, for the client side of the door action.
@@ -1717,6 +1748,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// The tribes' scouts, and the behaviour layer (senses, plans, bodies) once a second
 		m_Tribes.SecondTick(ids, players);
 		m_Behaviour.Tick(ids, players);
+		// Traces: a town's doors on entry, a door read after 2 s standing at it
+		m_Traces.SecondTick(ids, players);
 
 		// The land grid's first reading, a few squares a second (nothing once it's read)
 		m_Land.Step();
@@ -1795,6 +1828,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			if (RZ_Behaviour.IsOn())
 				RZ_Log.Info("Status | " + m_Behaviour.StatusText());
 		}
+		if (m_Traces.IsOn())
+			RZ_Log.Info("Status | " + m_Traces.StatusText());
+
 		RZ_Log.Info(string.Format("Status | players %1 | cure %2 percent (milestone %3, final stand %4, waiting %5, lab full %6, at the 90 gate %7, pace by play %8 percent) | %9",
 			playerCount, RZ_Util.RoundToInt(m_Cure.m_fProgress), m_Cure.m_iMilestone, m_Cure.IsFinalStand(),
 			RZ_Util.RoundToInt(m_Cure.GetBacklog()), m_Cure.IsLabFull(), m_Cure.IsAtFinaleGate(),
@@ -2861,6 +2897,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Headlines.Restore(data.news);
 		m_Interactions.Restore(data.interactions);
 		m_Errands.Restore(data.errands);
+		m_Traces.Restore(data.traces);
 		if (m_Spawner.GetCrawlers())
 			m_Spawner.GetCrawlers().Restore(data.crawlers);
 
@@ -2968,6 +3005,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Errands)
 			data.errands = m_Errands.Save();
+
+		if (m_Traces && m_Traces.IsOn())
+			data.traces = m_Traces.Save();
 
 		if (m_Spawner && m_Spawner.CrawlersOn())
 			data.crawlers = m_Spawner.GetCrawlers().Save();

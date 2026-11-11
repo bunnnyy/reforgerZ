@@ -417,6 +417,21 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Another system's look-only prop (Traces' boards and scenes) counts as scenery too.
+	static void AddDressing(IEntity e)
+	{
+		if (s_aPieces && e && !s_aPieces.Contains(e))
+			s_aPieces.Insert(e);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void RemoveDressing(IEntity e)
+	{
+		if (s_aPieces && e)
+			s_aPieces.RemoveItem(e);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A piece of scenery (or a part of one): the interaction scan leaves it alone.
 	static bool IsDressing(IEntity e)
 	{

@@ -404,10 +404,11 @@ real day.
 | **Found hooks**: a bite on a stranger | a fresh event (a job's site) | the hook | Send them to the nearest house, or [Nurse or Doctor] look at the arm first: they wait at its gate for **Who's at the Gate** |
 
 **Found hooks.** When a job ends at a site, one site in five (**Found hook chance**, 0.2) holds, for 2
-hours, someone hiding there, someone who got there first, a bite on a stranger, or **an old mark**:
-Haven chalk, a Bastion stencil or a crossed-out red hand about whatever runs near there, dated some
-days ago and maybe wrong now. The mark is read once by whoever passes within 30 m; nobody asks
-anything.
+hours, someone hiding there, someone who got there first, a bite on a stranger, or **an old mark**
+from Traces' door-mark grammar: a marked door near the site, else a mark a few days old by whoever
+holds the ground near there, maybe wrong now ([TRACES.md](TRACES.md#errands-old-mark)). The mark is
+read once by whoever passes within 30 m, at their own level; nobody asks anything. With Traces off,
+or no town near the site, it holds no old mark.
 
 *Simplified:* a stranger stands at the spot itself rather than at an out-of-sight point 60–90 m off
 (VERIFY); a crossroads is a road post's surroundings, not every junction; a campfire is a stove fire or

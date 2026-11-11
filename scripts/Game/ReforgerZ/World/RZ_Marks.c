@@ -7,6 +7,9 @@
 //! | PROPS    | 30      | missions' props and chalk, tone's ambient notice prop, the Long      |
 //! |          |         | Table's tells                                                        |
 //! | SIGNS    | 30      | the tribes' signs                                                    |
+//! | DOORS    | 24      | Traces' boards beside marked doors (8 a cluster; up within 60 m)     |
+//! | TRACES   | 40      | Traces' scene props: graves, ash, candles (World > Traces; 12 a      |
+//! |          |         | cluster)                                                             |
 //!
 //! A mark is data: a place (on the verge, 6-10 m off a road's centre line, when it asks for it),
 //! a prefab, a line of text, a salience, how long it lasts. Its prop is spawned only while a player
@@ -21,7 +24,9 @@ enum RZ_EMarkPool
 	SEASON,
 	EPILOGUE,
 	PROPS,
-	SIGNS
+	SIGNS,
+	DOORS,		// Traces' boards beside marked doors
+	TRACES		// Traces' scene props
 }
 
 //------------------------------------------------------------------------------------------------
@@ -46,6 +51,9 @@ class RZ_Marks
 {
 	protected static const float CHECK_SECONDS = 5;
 	protected static const float VERGE_SEARCH = 80;
+	protected static const int DOOR_BOARDS = 24;
+	protected static const int DOOR_BOARDS_CLUSTER = 8;
+	protected static const float CLUSTER_RADIUS = 150;
 
 	protected RZ_SharedSettings m_Settings;
 	protected ref array<ref RZ_Mark> m_aMarks = {};
@@ -77,9 +85,57 @@ class RZ_Marks
 			case RZ_EMarkPool.EPILOGUE: return m_Settings.m_iEpilogueMarks;
 			case RZ_EMarkPool.PROPS: return m_Settings.m_iPropMarks;
 			case RZ_EMarkPool.SIGNS: return m_Settings.m_iSignMarks;
+			case RZ_EMarkPool.DOORS: return DOOR_BOARDS;
+			case RZ_EMarkPool.TRACES: return RZ_TraceSettings.Get().m_iProps;
 		}
 
 		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Props of `pool` up at once within 150 m of each other; 0 = no limit.
+	protected int ClusterCap(RZ_EMarkPool pool)
+	{
+		if (pool == RZ_EMarkPool.DOORS)
+			return DOOR_BOARDS_CLUSTER;
+
+		if (pool == RZ_EMarkPool.TRACES)
+			return RZ_TraceSettings.Get().m_iPropsCluster;
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawn and despawn radius: Traces' door boards come up within 60 m and go past 90 m.
+	protected float SpawnRadius(RZ_EMarkPool pool)
+	{
+		if (pool == RZ_EMarkPool.DOORS)
+			return 60;
+
+		return m_Settings.m_fMarkSpawnRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float DespawnRadius(RZ_EMarkPool pool)
+	{
+		if (pool == RZ_EMarkPool.DOORS)
+			return 90;
+
+		return m_Settings.m_fMarkDespawnRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Props of `pool` standing within 150 m of pos.
+	protected int SpawnedNear(RZ_EMarkPool pool, vector pos)
+	{
+		int n = 0;
+		foreach (RZ_Mark m : m_aMarks)
+		{
+			if (m.m_ePool == pool && m.m_Entity && RZ_Util.DistXZ(m.m_vPos, pos) <= CLUSTER_RADIUS)
+				n++;
+		}
+
+		return n;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -100,8 +156,9 @@ class RZ_Marks
 	//! Put a mark down (or move the one with this key). onVerge: on the verge of the road nearest
 	//! `at` (within 80 m), else `at` itself. days: season days it lasts, < 0 until Remove(). When the
 	//! pool is full, the oldest of the lowest salience that isn't protected makes room; if none can,
-	//! the new mark is text only. True if it has a prop.
-	bool Place(RZ_EMarkPool pool, string key, vector at, ResourceName prefab, string text, int salience = 1, float days = -1, bool protect = false, bool onVerge = true)
+	//! the new mark is text only. yaw: the facing in degrees (a board facing out of a wall), < 0 any.
+	//! True if it has a prop.
+	bool Place(RZ_EMarkPool pool, string key, vector at, ResourceName prefab, string text, int salience = 1, float days = -1, bool protect = false, bool onVerge = true, float yaw = -1)
 	{
 		if (key.IsEmpty())
 			return false;
@@ -115,6 +172,9 @@ class RZ_Marks
 			m.m_vPos = Verge(at, m_Settings.m_fVergeMin, m_Settings.m_fVergeMax);
 
 		m.m_fYaw = Math.RandomFloat(0, 360);
+		if (yaw >= 0)
+			m.m_fYaw = yaw;
+
 		m.m_sPrefab = prefab;
 		m.m_sText = text;
 		m.m_iSalience = salience;
@@ -224,14 +284,17 @@ class RZ_Marks
 				continue;
 
 			float closest = RZ_Util.NearestDistance(m.m_vPos, players);
-			if (!m.m_Entity && closest <= m_Settings.m_fMarkSpawnRadius)
+			int cluster = ClusterCap(m.m_ePool);
+			if (!m.m_Entity && closest <= SpawnRadius(m.m_ePool) && (cluster <= 0 || SpawnedNear(m.m_ePool, m.m_vPos) < cluster))
 			{
 				m.m_Entity = RZ_Util.SpawnPrefab(m.m_sPrefab, RZ_Util.GroundPos(m.m_vPos), m.m_fYaw);
 				m.m_fUpAt = m_fClock;
 				if (!m.m_Entity)
 					m.m_bTextOnly = true;	// a broken prefab: text from now on
+				else if (m.m_ePool == RZ_EMarkPool.DOORS || m.m_ePool == RZ_EMarkPool.TRACES)
+					Guard(m);
 			}
-			else if (m.m_Entity && closest > m_Settings.m_fMarkDespawnRadius && m_fClock - m.m_fUpAt >= m_Settings.m_fMarkMinutes * 60)
+			else if (m.m_Entity && closest > DespawnRadius(m.m_ePool) && m_fClock - m.m_fUpAt >= m_Settings.m_fMarkMinutes * 60)
 			{
 				Despawn(m);
 			}
@@ -239,10 +302,29 @@ class RZ_Marks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! Traces' props: nothing a player could use survives (the dressing guard), and the interaction
+	//! scan, loot spots and landmark finder leave them alone (marked as dressing).
+	protected void Guard(RZ_Mark m)
+	{
+		if (!RZ_DressingGuard.Strip(m.m_Entity, m.m_sPrefab))
+		{
+			m.m_Entity = null;
+			m.m_bTextOnly = true;
+			return;
+		}
+
+		RZ_CampLife.AddDressing(m.m_Entity);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void Despawn(RZ_Mark m)
 	{
 		if (m.m_Entity)
+		{
+			RZ_CampLife.RemoveDressing(m.m_Entity);
 			SCR_EntityHelper.DeleteEntityAndChildren(m.m_Entity);
+		}
 
 		m.m_Entity = null;
 	}

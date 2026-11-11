@@ -104,7 +104,9 @@ a pad writes a note without typing; a server admin clears the board with X (Dele
 `/tribes` (server admins) writes the infected to the server log (`/tribes stir` and `/tribes site`
 are play-test aids; the status log prints the summary anyway: [INFECTED.md](INFECTED.md#admin-visibility));
 `/rep <name>` (server admins) reads a player's reputation ([REPUTATION.md](REPUTATION.md#reputations));
-`/talkdebug` (server admins) reads the conversation trees of the person you're talking to; `/mydead
+`/talkdebug` (server admins) reads the conversation trees of the person you're talking to; `/traces`
+(server admins) writes the door marks near you to the server log, with `town`, `write` and `clear`
+as play-test aids ([TRACES.md](TRACES.md#admin-saving-and-the-log)); `/mydead
 hidden` or `/mydead shown` keeps your name out of public text if you die out there
 ([INFECTED.md](INFECTED.md#your-dead-run)). They work without any layout. With **Board menus** off,
 reading the board is a notice and notes are written with `/note` only.
@@ -217,6 +219,16 @@ of. The place is the title, the level is "by" and stands where a job's time left
 direction to its rough area, and the names you've heard under the place with what you know as its
 brief and detail; the rewards line says what each level shows. Your last character's fate is a row
 too ([INFECTED.md](INFECTED.md#knowing)). On the map each is a range ring ([below](#the-map)).
+
+**Read on doors.** Once your character has read a door mark ([TRACES.md](TRACES.md#reading-a-door)), the
+journal has one row of kind DOORS (the puzzle icon, `mission_puzzle`; its id `-300000`): the title
+"Read on doors", "N read" where a job's time left goes, the newest line as its brief; its detail lists
+the last 12 lines, newest first, each with the town and the day. It goes with the life.
+
+**Door marks as decals.** With **World > Traces > Door drawing** on *Decals* and the kit's atlas set,
+the HUD's update (`RZ_HudDisplay`) also draws the marked doors near you as decals on their walls
+(`RZ_DoorMarkClient`, every 2 s, within 70 m), from a short list the game mode replicates. Nothing to
+press: a door's words come by standing at it ([TRACES.md](TRACES.md#doors-you-can-see)).
 
 The notice board opens when you read a safehouse board, with **UI > Board menus** on (the default).
 
@@ -472,7 +484,7 @@ share it, each only in its own screen.
 | Input actions | Every `RZ_` action in `chimeraInputCommon.conf` has a pad binding or a route (the table above) | `RZ_BoardClear` added with its pad button |
 | The screens | The notebook, the notice board, the talk screen, the reader, the car repair screen and the shop each open from something a pad reaches (an action, the pause menu, the notebook item, a talk), close with B, set the focus and move with the D-pad and shoulders. The HUD, the subtitles, the map icons and the deploy panel only show | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
 | Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-7 or D-pad and A") |
-| Hover, typing, chat | No screen uses hover or a tooltip. The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
+| Hover, typing, chat | No screen uses hover or a tooltip. The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
 | Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The reputation grid's headers now read "FAME" and "INFAMY UNDER 15" and so on, and its cells are condensed bold so the longest names fit. The vanilla deploy menu's own footer (15–16) is vanilla's |
 
 **What needs Workbench** (it can't be checked as text):
@@ -503,8 +515,9 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_ScreenCapture` | server | While a screen acts for its player, catches what would have been that player's notice for the screen's status line |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair and shop screens and closes them in danger (below) |
 | `RZ_PlayerEffectsComponent` | on the player controller | The infected's close moves on the owner's machine: a hold (with the hint and Jump to kick free), a stagger, a knockdown; the server decides each one ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
-| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/rep`, `/talkdebug`, `/mydead`, `/season`, `/anonymous`, `/lastentry`, `/epilogue`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)), but the admins' `/epilogue` |
+| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/traces`, `/rep`, `/talkdebug`, `/mydead`, `/season`, `/anonymous`, `/lastentry`, `/epilogue`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)), but the admins' `/epilogue` |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards and the subtitles |
+| `RZ_DoorMarkClient` | client, from the HUD's update | Traces' door marks as decals near the player, from the game mode's replicated list and the kit's atlas ([TRACES.md](TRACES.md#doors-you-can-see)); nothing without the atlas |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
 | `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookGadgetComponent` | client | Open the notebook: N, the pause menu's button, the notebook item |
 | `RZ_BackgroundPanelComponent` | client (widget handler) | Watches the picked loadout in the deploy menu and shows its background and gear |

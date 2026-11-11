@@ -119,6 +119,12 @@ and one way to end it: **research the cure.**
   can make promises they'll hold you to, people say a line as you pass, strangers tell you who they
   are, and anyone can call on the open channel. The season keeps the name you made, whatever face
   you come back with. Talk never pays Fame.
+- **Doors that talk** ([TRACES.md](docs/TRACES.md)): chalk, paint and stencils beside a few doors in each
+  town, written from the town's real history: Bastion's search code from the first days, the Haven's
+  bears and candles, the Red Hand's hands and tallies, Halcyon's beak, residents' last words, the
+  infected's scratches. Stand at one and anyone reads the gist; a Police Officer reads Bastion's code,
+  a Hunter how old the scratches are. Graves, ash and candles where players died or burned the dead.
+  Nothing pays.
 - **Notes between players**: a notice board at every Haven safehouse.
 - **Loot the world**: things lie loose in houses, on worktops and floors, and you pick them up;
   bodies looted like any body, car boots to search; locked doors that keep the infected out (they bang on them)
@@ -144,8 +150,8 @@ The game scripts **compile without errors or warnings** against Arma Reforger 1.
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
 Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
-That's about 210,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 91 `VERIFY` markers left in the game
+That's about 215,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+was also checked against the base game's script source; the 93 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -200,7 +206,8 @@ knockdown) and the crawlers' daily life, and the people's side
 (each faction's words and marks, knowing, skills, your dead run, the moat, 13 contracts and the
 reworked events, the cure's hooks and the last week), and the great one with its Gathering and Night of
 Many Calls, the packs' signs and call sounds, the bright moon and the map's range rings (tribes phases
-1 to 5, [INFECTED.md](docs/INFECTED.md)).
+1 to 5, [INFECTED.md](docs/INFECTED.md)); and Traces' door marks, doors you can see and player traces (its phases 1, 2 and 5,
+[TRACES.md](docs/TRACES.md); the scenes, sound and light are still designed only).
 
 ## Docs
 
@@ -213,6 +220,7 @@ Many Calls, the packs' signs and call sounds, the bright moon and the map's rang
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
 | [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes and their life cycle, borders, memory, who they are, how they move and hunt, the crawlers' life, the people's side (words, knowing, skills, your dead run, the moat, the cure, the last week), the great one, signs and sounds, the simulator's numbers |
+| [TRACES.md](docs/TRACES.md) | Traces: door marks written by the people who were there (who wrote what, how to read them by background, where they come from), doors you can see, player traces |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards |
 | [QUESTLINES.md](docs/QUESTLINES.md) | The four majors (one season-long story per faction) and the long questlines over many sessions, three per faction and two for the Long Table |
@@ -239,6 +247,8 @@ scripts/Game/ReforgerZ/
                  writers, the marks spawner, the Long Table, the land grid (water, height, trees,
                  roads, bridges and wild land), named people, the finale's people and the faults
                  table
+    Traces/      Traces: the door-mark grammar, the first days, doors on the map, the writers
+                 and the watch, reading, decals' list and boards, player traces
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, the season mood and grief, story arcs, the questline engine,
                  the majors' engine (acts, votes, the dynamic fallbacks, the season story),

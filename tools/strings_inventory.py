@@ -52,6 +52,8 @@ CHANNELS = {
     "hint":        "a guidance tip (voiced or plain)",
     "speech":      "a line on the talk screen (Say)",
     "ambient":     "a line from the voice pools (people, routines, life events)",
+    "trace":       "a trace's line: a town's doors, a scene, a grave (World/Traces)",
+    "door":        "a door mark's line by level (World/Traces/RZ_TraceText.c)",
     "setting":     "an attribute's default text",
     "text":        "prose whose channel couldn't be guessed",
 }
@@ -138,6 +140,8 @@ ASSIGN_FACTIONS = {"m_sHaven": "Haven", "m_sBastion": "Bastion", "m_sRedHand": "
 # By function name, in the voice files (first match wins).
 FUNCTION_CHANNELS = [
     (r"VoiceDefaults\.c$", r".", "ambient"),
+    (r"/Traces/RZ_TraceText\.c$", r"Door|Words|Know|Read|Glance|Age|Scratch", "door"),
+    (r"/Traces/", r".", "trace"),
     (r"/Errands/", r".", "speech"),
     (r"RepVoice\.c$", r"Picture", "rumour"),
     (r"RepVoice\.c$", r".", "leader"),

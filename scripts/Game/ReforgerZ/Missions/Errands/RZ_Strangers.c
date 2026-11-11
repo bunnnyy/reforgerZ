@@ -137,7 +137,7 @@ class RZ_FoundHook
 	string kind;		// hiding, first, bitten, mark
 	vector at;
 	float until;		// the strangers' clock
-	string text;		// an old mark's words
+	string text;		// an old mark: its door's key in Traces' grammar (RZ_Traces.OldMarkKey)
 	bool read;
 }
 
@@ -288,8 +288,11 @@ class RZ_Strangers
 			h.kind = "bitten";
 		else
 		{
+			// An old mark comes from Traces' grammar (decision 15): none without it, or without a town
 			h.kind = "mark";
-			h.text = OldMark(m.m_vPos);
+			h.text = RZ_Traces.OldMarkKey(m.m_vPos);
+			if (h.text.IsEmpty())
+				return;
 		}
 
 		m_aHooks.Insert(h);
@@ -299,36 +302,6 @@ class RZ_Strangers
 		}
 
 		RZ_Log.Info(string.Format("Errands: found hook %1 at %2 after %3", h.kind, RZ_SettlementScanner.GridReference(h.at), m.m_sTitle));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! An old mark at a job's site: a faction's chalk or stencil about whatever runs near here, as
-	//! someone knew it on some day, maybe wrong now.
-	protected string OldMark(vector at)
-	{
-		int day = Math.Max(1, RZ_SeasonClock.Day() - Math.RandomInt(2, 9));
-		RZ_Tribes tribes = m_GM.GetTribes();
-		string place = "";
-		if (tribes)
-		{
-			RZ_Tribe t = tribes.NearestTribe(at, 3000);
-			if (t)
-				place = t.m_sPlace;
-		}
-
-		if (place.IsEmpty())
-		{
-			array<string> plain = {
-				string.Format("Chalk on a door: an X, a ring round it, and \"Day %1\". The Haven's way of saying somebody checked, and it was bad.", day),
-				string.Format("A Bastion stencil on a wall: CLEARED, DAY %1. Somebody has written \"no\" under it in pencil.", day)};
-			return plain.GetRandomElement();
-		}
-
-		array<string> marks = {
-			string.Format("Chalk on a gatepost: \"%1. Not after 7. Day %2.\" The 7 has been gone over twice.", RZ_Util.Capitalize(place), day),
-			string.Format("A Bastion stencil, half rubbed off: CONTACT, %1, DAY %2. Under it someone has drawn a clock.", place, day),
-			string.Format("A red hand on a fence post, crossed out, and under it: \"%1 eats here. Day %2.\" Nobody has painted over it.", RZ_Util.Capitalize(place), day)};
-		return marks.GetRandomElement();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -451,8 +424,11 @@ class RZ_Strangers
 				if (RZ_Util.DistXZ(p.GetOrigin(), h.at) > 30)
 					continue;
 
+				// Read at this reader's level: what a Police Officer or a Hunter sees in it is theirs
+				string line = RZ_Traces.OldMarkLine(h.text, ids[i]);
 				h.read = true;
-				m_GM.NotifyPlayer(ids[i], "An old mark", h.text);
+				if (!line.IsEmpty())
+					m_GM.NotifyPlayer(ids[i], "An old mark", line);
 				break;
 			}
 		}
