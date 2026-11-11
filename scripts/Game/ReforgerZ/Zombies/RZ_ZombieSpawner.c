@@ -72,8 +72,9 @@ class RZ_TrackedZombie
 	// With Zombies > Crawlers or Tribes on (docs/INFECTED.md, "Bodies"): what it's for, the data it
 	// writes back to, and each member, so the code knows who died where
 	RZ_EInfectedRole m_eRole;	// NONE: as before (missions, specials, the old roamers)
-	int m_iTribe = -1;			// tribes (planned, phase 2)
-	bool m_bHunting;			// a tribe's hunt on its trail: stealth never makes it lose anyone (phase 2)
+	int m_iTribe = -1;			// the tribe it belongs to (Zombies/RZ_Tribes.c), -1 none
+	bool m_bHunting;			// a tribe's hunt on its trail: stealth never makes it lose anyone
+	ref RZ_GroupPlan m_Plan;	// a tribe group's plan in the behaviour layer (Zombies/Behaviour), or null
 	RZ_InfectedPart m_Part;		// weak: the data part it writes back to, or null
 	ResourceName m_sPrefab;
 	bool m_bRuntimeGroup;		// a character prefab put in an empty group (RZ_InfectedBodies.WrapInGroup)
@@ -169,6 +170,7 @@ class RZ_ZombieSpawner
 	//! spawner exactly as before.
 	bool IsPlumbingOn() { return CrawlersOn() || TribesOn(); }
 	RZ_Crawlers GetCrawlers() { return m_Crawlers; }
+	RZ_ZombieSettings GetSettings() { return m_Settings; }
 	RZ_InfectedBudget GetBudget() { return m_Budget; }
 	RZ_BodyBudget GetBodies() { return m_Bodies; }
 	float GetDensityPerSize() { return m_Settings.m_fDensityPerSize; }
@@ -323,6 +325,92 @@ class RZ_ZombieSpawner
 		m_Budget.Add(pos, z.Agents());
 		m_iTickAgents += z.Agents();
 		return z;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A tribe's group (Zombies/RZ_TribeBodies.c): `count` characters, the first `young` of them from
+	//! youngPrefabs, in a runtime group, each steered and blind from its spawn frame (the behaviour
+	//! layer, lab B1) before and after it joins. A group prefab spawns as it is (not steered). Null
+	//! if nothing spawned.
+	RZ_TrackedZombie SpawnTribeUnit(vector pos, array<ResourceName> prefabs, array<ResourceName> youngPrefabs, int count, int young, RZ_EInfectedRole role, int tribe, RZ_EBodyKind kind)
+	{
+		if (!prefabs || prefabs.IsEmpty())
+			return null;
+
+		float yaw = Math.RandomFloat(0, 360);
+		ResourceName firstPrefab = prefabs.GetRandomElement();
+		RZ_EBodyKind firstKind = kind;
+		if (young > 0 && youngPrefabs && !youngPrefabs.IsEmpty())
+		{
+			firstPrefab = youngPrefabs.GetRandomElement();
+			firstKind = RZ_EBodyKind.YOUNG;
+		}
+
+		IEntity first = RZ_Util.SpawnPrefab(firstPrefab, pos, yaw);
+		if (!first)
+			return null;
+
+		IEntity unit = first;
+		bool runtime = false;
+		if (!SCR_AIGroup.Cast(first) && ChimeraCharacter.Cast(first))
+		{
+			RZ_Behaviour.Blind(first, firstKind);
+			SCR_AIGroup group = RZ_InfectedBodies.WrapInGroup(first, m_Settings.m_sEmptyGroupPrefab);
+			RZ_Behaviour.Blind(first, firstKind);
+			if (group)
+			{
+				unit = group;
+				runtime = true;
+				for (int i = 1; i < count; i++)
+				{
+					ResourceName prefab = prefabs.GetRandomElement();
+					RZ_EBodyKind memberKind = kind;
+					if (i < young && youngPrefabs && !youngPrefabs.IsEmpty())
+					{
+						prefab = youngPrefabs.GetRandomElement();
+						memberKind = RZ_EBodyKind.YOUNG;
+					}
+
+					IEntity more = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(pos, 3, 7)), yaw);
+					RZ_Behaviour.Blind(more, memberKind);
+					if (RZ_InfectedBodies.AddToGroup(group, more))
+						RZ_Behaviour.Blind(more, memberKind);
+				}
+			}
+		}
+
+		RZ_TrackedZombie z = Track(unit, pos, false, -1, -1, firstPrefab);
+		z.m_eRole = role;
+		z.m_iTribe = tribe;
+		z.m_bRuntimeGroup = runtime;
+		if (runtime)
+			z.m_iAgents = count;
+
+		m_Budget.Add(pos, z.Agents());
+		m_iTickAgents += z.Agents();
+		return z;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Agents that may spawn at pos this tick: the cluster's room, the server's, the tick's, and the
+	//! tracked cap. 0 with both switches off.
+	int SpawnRoom(vector pos)
+	{
+		if (!IsPlumbingOn() || m_aTracked.Count() >= m_Settings.m_iGlobalCap)
+			return 0;
+
+		return Math.Min(m_Budget.RoomAt(pos), TickRoom());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The closest a body may spawn to a player here (x0.75 in fog, less in a Fog Bank).
+	float MinSpawnDistance(vector pos)
+	{
+		float minMult = m_fEnvMinSpawnMult;
+		if (m_bFogBank && RZ_Util.DistXZ(pos, m_vFogPos) <= m_fFogRadius)
+			minMult = Math.Min(minMult, m_fFogSpawnMult);
+
+		return m_Settings.m_fMinSpawnDistance * minMult;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -561,6 +649,10 @@ class RZ_ZombieSpawner
 		float chance = stage.m_fSpecialChance * m_fEventSpecialMult * m_fEnvSpecialMult * RZ_Seasons.Mods().m_fSpecialMult;
 		if (m_GM.GetAdaptation())
 			chance = chance * m_GM.GetAdaptation().SpecialMult();
+
+		// Tribe samples are budget-neutral: town specials scaled by the tribes' share (never below x0.6)
+		if (m_GM.GetTribes() && m_GM.GetTribes().IsEnabled())
+			chance = chance * m_GM.GetTribes().TownSpecialMult();
 
 		return chance;
 	}
@@ -1115,6 +1207,10 @@ class RZ_ZombieSpawner
 				continue;
 
 			float nearest = RZ_Util.NearestDistance(z.m_vLastPos, players);
+			// An alpha wounded in the last 10 minutes stays until every player is 1.5 km away
+			if (z.m_iTribe >= 0 && m_GM.GetTribes() && m_GM.GetTribes().KeepBody(z, nearest))
+				continue;
+
 			// A part's bodies go back to data, with their survivors, once every player is beyond the
 			// range they appear at (600 m) and a margin, so they don't flicker in and out
 			if (z.m_Part && nearest > RZ_Crawlers.PART_SPAWN_RANGE + 100 && RZ_InfectedBodies.Unseen(z.m_vLastPos, players))
@@ -1199,6 +1295,10 @@ class RZ_ZombieSpawner
 				z.m_Part.m_iKilled = z.m_Part.m_iKilled + 1;
 		}
 
+		// A tribe's: its losses, the vigil, its samples (docs/INFECTED.md, Samples)
+		if (z.m_iTribe >= 0 && m_GM.GetTribes())
+			m_GM.GetTribes().OnMemberKilled(z, at, silent);
+
 		if (silent)
 			return;
 
@@ -1222,6 +1322,10 @@ class RZ_ZombieSpawner
 		RZ_InfectedPart part = z.m_Part;
 		if (!part)
 			return;
+
+		RZ_TribePart tribePart = RZ_TribePart.Cast(part);
+		if (tribePart && m_GM.GetTribes())
+			m_GM.GetTribes().OnPartEnds(tribePart, z);
 
 		part.m_iCount = Math.Max(0, survivors);
 		part.m_vPos = z.m_vLastPos;

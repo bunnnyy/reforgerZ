@@ -108,10 +108,15 @@ class RZ_BiteDetector
 		bool grabbed = m_mLastHitAt.Find(playerId, lastHit) && m_fClock - lastHit <= GRAB_SECONDS;
 		m_mLastHitAt.Set(playerId, m_fClock);
 
+		// A hunter's lunge that landed (the behaviour layer): the bite chance x1.5, still capped at 0.6
+		float lunge = 1;
+		if (RZ_Behaviour.IsOn())
+			lunge = m_GM.GetBehaviour().OnPlayerHit(playerId, ent);
+
 		if (m_GM.GetProfile(playerId).IsInfected())
 			return;
 
-		if (Math.RandomFloat01() < BiteChance(ent, hp, grabbed))
+		if (Math.RandomFloat01() < Math.Min(0.6, BiteChance(ent, hp, grabbed) * lunge))
 		{
 			m_GM.InfectPlayer(playerId);
 			return;

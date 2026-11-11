@@ -149,6 +149,8 @@ class RZ_Land
 	protected int m_iLakes;
 	protected int m_iLairs;
 	protected ref array<int> m_aLairByKind = {};	// [0] forest, then one per LAIR_KINDS
+	protected ref array<vector> m_aNoMans = {};		// no man's land: circles round lived-in places
+	protected ref array<float> m_aNoMansR = {};
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Land(RZ_GameModeComponent gm, RZ_TribeSettings settings)
@@ -1265,12 +1267,18 @@ class RZ_Land
 
 		// near: 1 not wild, 2 within 800 m of a settlement (fields), 4 too close for a lair
 		RZ_WorldFacts facts = m_GM.GetFacts();
+		m_aNoMans.Clear();
+		m_aNoMansR.Clear();
 		foreach (int si, RZ_Settlement s : m_GM.GetSettlements())
 		{
 			bool livedIn = facts && facts.IsLivedIn(si);
 			float keep = s.m_fRadius + 100;
 			if (livedIn)
+			{
 				keep = s.m_fRadius + 300;
+				m_aNoMans.Insert(s.m_vCenter);
+				m_aNoMansR.Insert(keep);
+			}
 
 			Stamp(near, s.m_vCenter, keep, 1);
 			Stamp(near, s.m_vCenter, s.m_fRadius + 800, 2);
@@ -1285,6 +1293,8 @@ class RZ_Land
 		{
 			Stamp(near, p, 400, 1);
 			Stamp(near, p, peopleGap, 4);
+			m_aNoMans.Insert(p);
+			m_aNoMansR.Insert(400);
 		}
 
 		// No-lair land (docs/INFECTED.md, "The land"): 300 m round the finale's lower store and
@@ -1352,6 +1362,46 @@ class RZ_Land
 			m_iLairs++;
 			m_aLairByKind[kind] = m_aLairByKind[kind] + 1;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No man's land (docs/INFECTED.md): the 300 m round every lived-in place's edge (a lived-in
+	//! town's radius, or 100 m round a holding, safehouse or the lab). No hunt and no day party goes in.
+	bool InNoMansLand(vector pos)
+	{
+		foreach (int i, vector c : m_aNoMans)
+		{
+			if (RZ_Util.DistXZ(c, pos) < m_aNoMansR[i])
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest point of no man's land's edge to pos. False if there's none.
+	bool NearestNoMansLand(vector pos, out vector edge)
+	{
+		float best = 1000000;
+		bool any = false;
+		foreach (int i, vector c : m_aNoMans)
+		{
+			float d = RZ_Util.DistXZ(c, pos) - m_aNoMansR[i];
+			if (d >= best)
+				continue;
+
+			vector dir = pos - c;
+			dir[1] = 0;
+			if (dir.Length() < 1)
+				continue;
+
+			dir.Normalize();
+			best = d;
+			edge = RZ_Util.GroundPos(c + dir * m_aNoMansR[i]);
+			any = true;
+		}
+
+		return any;
 	}
 
 	//------------------------------------------------------------------------------------------------

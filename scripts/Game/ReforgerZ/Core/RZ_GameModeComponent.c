@@ -91,8 +91,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Stealth: each player's visibility (stance, speed, light, weather, noise), the infected near them seeing the most visible one, losing a hidden player, the missions' sight and notice rules (docs/DESIGN.md, Stealth)", category: "ReforgerZ|Zombies")]
 	protected ref RZ_StealthSettings m_StealthSettings;
 
-	[Attribute(desc: "Tribes (docs/INFECTED.md): the land grid (wild land, read once and cached), the agent budget, the engine's active-AI limit, loose ones walking somewhere and heat hordes from towns. The tribes themselves are planned", category: "ReforgerZ|Zombies")]
+	[Attribute(desc: "Tribes (docs/INFECTED.md): the land grid (wild land, read once and cached), packs in the wild with lairs, scouts, day parties, dusk calls and night hunts, the agent budget, the engine's active-AI limit, loose ones walking somewhere and heat hordes from towns", category: "ReforgerZ|Zombies")]
 	protected ref RZ_TribeSettings m_TribeSettings;
+
+	[Attribute(desc: "Behaviour (docs/INFECTED.md, How they move and hunt): our code drives the tribes' bodies beyond striking range (blind steering, formations, flanks, stalks, the climb gate, water and stairs, speed caps, LOD) and Bacon fights at striking range", category: "ReforgerZ|Zombies")]
+	protected ref RZ_BehaviourSettings m_BehaviourSettings;
 
 	[Attribute(desc: "Crawlers (docs/INFECTED.md): the towns' slow infected, placed by the time of day, drifting to noise, the kill ledger, reinforcements from the buildings, stir, scavengers and sieges. Off: towns as before", category: "ReforgerZ|Zombies")]
 	protected ref RZ_CrawlerSettings m_CrawlerSettings;
@@ -404,6 +407,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_HeatMap m_Heat;
 	protected ref RZ_ZombieSpawner m_Spawner;
 	protected ref RZ_Stealth m_Stealth;
+	protected ref RZ_Behaviour m_Behaviour;
 	protected ref RZ_Adaptation m_Adaptation;
 	protected ref RZ_TownMemory m_TownMemory;
 	protected ref RZ_Environment m_Environment;
@@ -551,6 +555,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_TribeSettings)
 			m_TribeSettings = RZ_TribeSettings.Cast(RZ_Util.NewWithDefaults("RZ_TribeSettings"));
 
+		if (!m_BehaviourSettings)
+			m_BehaviourSettings = RZ_BehaviourSettings.Cast(RZ_Util.NewWithDefaults("RZ_BehaviourSettings"));
+
 		if (!m_CrawlerSettings)
 			m_CrawlerSettings = RZ_CrawlerSettings.Cast(RZ_Util.NewWithDefaults("RZ_CrawlerSettings"));
 
@@ -678,6 +685,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Director = new RZ_Director(this, m_aStages);
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings, m_CrawlerSettings, m_TribeSettings);
 		m_Stealth = new RZ_Stealth(this, m_StealthSettings);
+		m_Behaviour = new RZ_Behaviour(this, m_BehaviourSettings);
 		m_Missions = new RZ_MissionManager(this);
 		m_UIFeed = new RZ_UIFeed(this);
 		m_ScreenGuard = new RZ_ScreenGuard(this);
@@ -757,8 +765,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// the lab, the Long Table's farm and the line, so after all of them. Loads its cache or starts
 		// reading the map, a few squares a second from the one-second tick
 		m_Land.Setup();
-		// The engine's active-AI limit, raised for the infected's budget
+		// The engine's active-AI limit, raised for the infected's budget; the behaviour layer
 		m_Tribes.Setup();
+		m_Behaviour.Setup();
 		// Searching, cars, crafting, traps, fire, radios: keep off safehouses, holdings and the lab
 		m_Interactions.Setup();
 		// Arcs are made of the missions, wanderers, safehouses, territory and trucks above
@@ -805,6 +814,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Heat.Decay(dt);
 		m_Director.Tick(dt, !ids.IsEmpty()); // the outbreak's clock runs only while someone plays
 		m_Spawner.Tick(dt, players);
+		// The tribes after the spawner: their bodies spawn inside the same budget (docs/INFECTED.md)
+		m_Tribes.Tick(dt, ids, players);
 		m_Adaptation.Tick(dt, ids, players);
 		m_TownMemory.Tick(dt);
 		m_Environment.Tick(dt, ids, players);
@@ -997,6 +1008,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! the first minutes of the first start.
 	RZ_Land GetLand() { return m_Land; }
 	RZ_Tribes GetTribes() { return m_Tribes; }
+	RZ_Behaviour GetBehaviour() { return m_Behaviour; }
 	RZ_BiteDetector GetBiteDetector() { return m_BiteDetector; }
 	RZ_Interactions GetInteractions() { return m_Interactions; }
 	RZ_GuidanceSettings GetGuidanceSettings() { return m_GuidanceSettings; }
@@ -1570,6 +1582,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// A shot gives you away at once (docs/DESIGN.md, Stealth), and closes a talk or a note
 		m_Stealth.OnPlayerShot(playerID, suppressed);
+		m_Behaviour.OnShot(playerID, shooter.GetOrigin(), suppressed);
 		m_ScreenGuard.OnShot(playerID);
 
 		// House rules and wanderers who were shot at
@@ -1597,6 +1610,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_Util.GetAlivePlayers(ids, players);
 		m_BiteDetector.Check(ids, players);
 		m_Stealth.Tick(1, ids, players);
+		// The tribes' scouts, and the behaviour layer (senses, plans, bodies) once a second
+		m_Tribes.SecondTick(ids, players);
+		m_Behaviour.Tick(ids, players);
+
 		// The land grid's first reading, a few squares a second (nothing once it's read)
 		m_Land.Step();
 
@@ -1668,7 +1685,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			m_Spawner.GetTrackedCount(), m_Missions.GetActive().Count()) + " | move waypoints " + RZ_GroupOrders.CountWaypoints().ToString());
 		// The infected (docs/INFECTED.md, Admin visibility): the budget, crawlers, the land, the engine's AI
 		if (m_Spawner.IsPlumbingOn())
+		{
 			RZ_Log.Info("Status | " + m_Spawner.StatusText() + " | " + RZ_Tribes.ActiveAIText() + " | " + m_Tribes.LandText() + " | " + ClockText());
+			m_Tribes.StatusLines();
+			if (RZ_Behaviour.IsOn())
+				RZ_Log.Info("Status | " + m_Behaviour.StatusText());
+		}
 		RZ_Log.Info(string.Format("Status | players %1 | cure %2 percent (milestone %3, final stand %4, waiting %5, lab full %6, at the 90 gate %7, pace by play %8 percent) | %9",
 			playerCount, RZ_Util.RoundToInt(m_Cure.m_fProgress), m_Cure.m_iMilestone, m_Cure.IsFinalStand(),
 			RZ_Util.RoundToInt(m_Cure.GetBacklog()), m_Cure.IsLabFull(), m_Cure.IsAtFinaleGate(),
@@ -2132,6 +2154,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		vector pos = ent.GetOrigin();
 		RZ_Util.KillCharacter(ent);
+		// Turned in the open near a tribe's range: it takes them (docs/INFECTED.md, the taken)
+		m_Tribes.OnTurned(playerId, pos);
 
 		// World event: the turned player roams with their gear nearby
 		RZ_Mission_TurnedPlayer turned = new RZ_Mission_TurnedPlayer();
@@ -2200,6 +2224,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (special && !m_Cure.IsCured())
 		{
 			SpawnSamples(pos, 1);
+			m_Tribes.OnSample(1, false);
 			m_Guidance.OnSpecialKilled(pos);
 		}
 
@@ -2517,6 +2542,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_Spawner.GetCrawlers())
 			m_Spawner.GetCrawlers().Restore(data.crawlers);
 
+		m_Tribes.Restore(data.tribes);
+
 		if (data.hasTimeOfDay)
 			m_fSavedHour = data.timeOfDay;
 
@@ -2605,6 +2632,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Spawner && m_Spawner.CrawlersOn())
 			data.crawlers = m_Spawner.GetCrawlers().Save();
+
+		if (m_Tribes && m_Tribes.IsEnabled())
+			data.tribes = m_Tribes.Save();
 
 		// The time of day, so a restart carries on where the day stopped (Keep time of day)
 		float hour = RZ_GameTime.GetHour();

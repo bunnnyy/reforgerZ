@@ -1884,6 +1884,10 @@ class RZ_Wanderers
 		// The infected's dead are "the dead" to the Long Table for an hour (A Place at the Table)
 		if (m_GM.GetLongTable())
 			m_GM.GetLongTable().OnWandererDied(w.m_vPos, w.GetTitle(), killer <= 0 && (how == "turned" || how.Contains("infected")));
+		// Taken in the open near a tribe's range: that tribe took them (docs/INFECTED.md)
+		if (m_GM.GetTribes())
+			m_GM.GetTribes().OnWandererDied(w.m_vPos, w.GetTitle(), how, killer);
+
 		DespawnBody(w);
 		w.m_bAlive = false;
 		w.m_fDiedAt = m_fClock;
@@ -1898,6 +1902,23 @@ class RZ_Wanderers
 			m_GM.AddInfamy(killer, RZ_EFaction.SURVIVORS, m_Settings.m_iKillInfamy);
 			m_GM.NotifyPlayer(killer, "The Haven", string.Format("Everyone will know who killed %1. (+%2 Haven Infamy)", w.GetShortName(), m_Settings.m_iKillInfamy));
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A tribe's hunt takes a wanderer as data (docs/INFECTED.md, the taken): a living wanderer with no
+	//! body within radius of pos, in the open. False if there's none.
+	bool TakeNear(vector pos, float radius)
+	{
+		foreach (RZ_Wanderer w : m_aList)
+		{
+			if (!w.m_bAlive || w.m_Body || w.m_bSettled || RZ_Util.DistXZ(w.m_vPos, pos) > radius)
+				continue;
+
+			Die(w, "was taken by the infected", -1);
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

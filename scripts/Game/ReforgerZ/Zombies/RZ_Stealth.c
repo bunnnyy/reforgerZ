@@ -852,8 +852,9 @@ class RZ_Stealth
 		if (s.m_bOwnRead && (changed || (most >= 0 && s.m_fSinceSet >= REAPPLY_SECONDS)))
 			touched = Apply(s, living, factor);
 
-		// Their mission steers them, or they must keep coming: they never lose anyone
-		if (held || z.m_iMissionId != -1)
+		// Their mission steers them, or they must keep coming, or the behaviour layer drives them (its
+		// own memory loses a player): stealth's search never runs on them
+		if (held || z.m_iMissionId != -1 || (z.m_Plan && z.m_Plan.IsDriven()))
 		{
 			if (s.m_fSearchLeft > 0)
 				EndSearch(z, s, false);
@@ -884,6 +885,13 @@ class RZ_Stealth
 		{
 			if (RZ_Senses.HasPerception(m))
 				senses = true;
+
+			// A body the behaviour layer steers is blind on purpose: our senses judge for it
+			if (RZ_Behaviour.IsSteered(m))
+			{
+				took++;
+				continue;
+			}
 
 			if (RZ_Senses.SetFactor(m, factor))
 				took++;

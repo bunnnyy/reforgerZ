@@ -12,7 +12,7 @@ enum RZ_EInfectedRole
 	CRAWLER,	// a town's own, slow infected
 	LOOSE,		// a loose one walking somewhere in the countryside
 	SCAVENGER,	// a town's crawlers out at a kill site (a data part)
-	ALPHA,		// tribes (planned, phase 2): the roles below are read by stealth already
+	ALPHA,		// a tribe's (Zombies/RZ_Tribes.c); stealth reads the roles
 	GUARD,
 	HUNTER,
 	SCOUT,
@@ -46,6 +46,7 @@ class RZ_InfectedPart
 	RZ_TrackedZombie m_Body;		// weak: the tracked unit while it has bodies, null as data
 	int m_iKilled;					// members killed (not silently) since it was made
 	string m_sNote;					// for the admin dump
+	float m_fSpeed;					// m/s as data; 0 = the data speed (a day party's hop is slower)
 
 	//------------------------------------------------------------------------------------------------
 	bool HasBody()
@@ -62,7 +63,11 @@ class RZ_InfectedPart
 			return;
 
 		float d = RZ_Util.DistXZ(m_vPos, m_vTarget);
-		float step = RZ_InfectedBodies.DATA_SPEED * dt;
+		float speed = RZ_InfectedBodies.DATA_SPEED;
+		if (m_fSpeed > 0)
+			speed = m_fSpeed;
+
+		float step = speed * dt;
 		if (d <= step || d < 1)
 		{
 			m_vPos = m_vTarget;

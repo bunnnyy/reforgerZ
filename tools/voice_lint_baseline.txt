@@ -18,7 +18,6 @@ infected	scripts/Game/ReforgerZ/Missions/Halcyon/RZ_HalcyonMissions.c	f7a18a2bfa
 infected	scripts/Game/ReforgerZ/Zombies/RZ_Crawlers.c	dcffa7bc3230  # crawlers off
 infected	scripts/Game/ReforgerZ/Zombies/RZ_Crawlers.c	f847588adc8e  # crawlers: ledger %1, stirred towns %2, out %3, kill sites...
 infected	scripts/Game/ReforgerZ/Zombies/RZ_Tribes.c	088222c1d1d3  # Only a server admin can use /tribes.
-infected	scripts/Game/ReforgerZ/Zombies/RZ_Tribes.c	106efa5a5671  # land: %1 km2 wild, %2 slots, no tribes yet (planned)
 infected	scripts/Game/ReforgerZ/Zombies/RZ_Tribes.c	1dff8eecbe11  # land: reading the map (tribes dormant)
 infected	scripts/Game/ReforgerZ/Zombies/RZ_Tribes.c	265028652705  # tribes off
 infected	scripts/Game/ReforgerZ/Zombies/RZ_ZombieSpawner.c	37dbb4b0f043  # infected: %1 entries (crawlers and tribes off)

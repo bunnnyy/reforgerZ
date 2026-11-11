@@ -132,6 +132,26 @@ class RZ_GroupOrders
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Takes the group's held waypoint off its list without deleting it (the behaviour layer's
+	//! walk-stop: Bacon's Roam walks to a slot under 25 m only with no waypoint). The next Order puts
+	//! it back.
+	static void Clear(IEntity e)
+	{
+		SCR_AIGroup group = SCR_AIGroup.Cast(e);
+		if (!group)
+			return;
+
+		RZ_HeldWaypoint h = Find(group);
+		if (!h || !h.m_Waypoint)
+			return;
+
+		array<AIWaypoint> current = {};
+		group.GetWaypoints(current);
+		if (current.Find(h.m_Waypoint) >= 0)
+			group.RemoveWaypoint(h.m_Waypoint);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Deletes an AI group's held waypoint and forgets the group (RZ_Util.DeleteUnit).
 	static void Release(IEntity group)
 	{
