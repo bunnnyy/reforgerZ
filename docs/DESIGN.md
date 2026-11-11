@@ -1086,7 +1086,9 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   a withdrawal. Protection Racket opens The Pot at the house, Crash Site Buy It Back, Distress Call and
   Survivors Trapped The Name on the Tag ([ERRANDS.md](ERRANDS.md#fallout)). Jobs without one have a
   **fallout line** (`RZ_MissionReasons.FalloutLine`): what the world says next, told after the fail
-  text (the Tier 0 audit's 16 jobs).
+  text. The Tier 0 audit's 27 jobs each have one, write `t0.<key>` at their town when they end (read
+  into the next one's brief there, `Tier0Read`), and keep their choices to someone they were offered
+  to ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)).
 - **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice slots
   (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` (Survivors Trapped's mother).
 - **Reasons and the reason lane.** When the world has posted a reason ([World memory](#world-memory)),
@@ -1616,7 +1618,7 @@ until used up (`DrawTruth`, `FoundTruth`, `UseTruth`). 64 at most.
 | Part | Written by |
 |---|---|
 | Signals | bites (a player's own: one per 10 minutes), deaths (the background and how long they lasted, never the name), supply trucks lost (who robbed them as the server-only cause), shells (the Fire Mission perk and contract; who called them as the cause), burned buildings, trial doses |
-| Reasons | `house.hungry` (safehouse upkeep: short posts it, fed clears it), `house.truck_lost` and `post.truck_lost` (supply trucks), `town.infested` (a town turning infested or overrun, checked every 30 s), `town.shelled`, `leader.died`, `wanderer.bitten`, `cure.<percent>` (the lab's milestones) |
+| Reasons | `house.hungry` (safehouse upkeep: short posts it, fed clears it), `house.truck_lost` and `post.truck_lost` (supply trucks), `town.infested` (a town turning infested or overrun, checked every 30 s), `town.shelled`, `leader.died`, `wanderer.bitten`, `cure.<percent>` (the lab's milestones), `house.bitten` (a bite declared at a safehouse, or a man walked out of it), `house.lost_to` (errands' Somebody Should Tell Them) |
 | The town log | a contract or event finished in a town (the best slot: salience 2, 3 for an event or a questline stage, the paid players named) or failed there (the worst), people brought in (3), a town burned (4), an outpost taken (3) |
 | World records | errands ([ERRANDS.md](ERRANDS.md)), and who benefits (`<key>.went_to`) |
 

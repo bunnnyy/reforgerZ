@@ -58,6 +58,24 @@ class RZ_ErrandSettings
 	[Attribute("1", desc: "Strangers: a passer-by met only at a spot where one makes sense (a road people use, an approach, a town edge at dusk, a fresh event), at most one per player every 15-25 minutes and 6 on the server")]
 	bool m_bStrangers;
 
+	[Attribute("0.2", UIWidgets.Slider, "Found hook chance: after a job ends at a site, this share of sites holds a stranger (someone hiding, someone who got there first, a bite) or an old mark, for 2 hours", "0 1 0.05")]
+	float m_fHookChance;
+
+	[Attribute("1", desc: "Dark cards: the strangers and cards where you can sell someone (Wrong Side of the Toll, She Waves at the Line, My Sister at Morton's knowing way)")]
+	bool m_bDarkCards;
+
+	[Attribute("0.2", UIWidgets.Slider, "Twist chance: a card that can have a twist (the giver lies or hides something) has it this often, at most one errand in three a player and never two in a row", "0 1 0.05")]
+	float m_fTwistChance;
+
+	[Attribute("1", desc: "Board asks: a safehouse's notice board shows up to two asks from the house, signed with its name, apart from the players' notes")]
+	bool m_bBoardAsks;
+
+	[Attribute("1", desc: "Radio asks: now and then one player near a house hears a personal line that someone there could use a hand (never broadcast), inside the interruption budget")]
+	bool m_bRadioAsks;
+
+	[Attribute("60", UIWidgets.Slider, "Radio asks: real minutes between two to one player", "10 360 5")]
+	float m_fRadioAskMinutes;
+
 	[Attribute("1", desc: "The hall of fame's \"Most people helped\" line: errands done, until the cure. It pays nothing")]
 	bool m_bHelpedLine;
 
@@ -157,6 +175,7 @@ class RZ_Errands
 	protected ref RZ_NamedPeople m_People;
 	protected ref RZ_Faults m_Faults;
 	protected ref RZ_Strangers m_Strangers;
+	protected ref RZ_Locals m_Locals;
 	protected ref array<ref RZ_ErrandDef> m_aDefs = {};
 	protected ref array<ref RZ_Errand> m_aErrands = {};
 	protected ref array<ref RZ_Fallout> m_aFallout = {};
@@ -174,6 +193,8 @@ class RZ_Errands
 	protected ref RZ_ErrandsSave m_Restored;
 	protected int m_iNextId = 1;
 	protected int m_iCallCursor;
+	protected int m_iRadioCursor;
+	protected ref map<string, float> m_mLastRadio = new map<string, float>();	// ident -> clock of the last radio ask
 	protected float m_fClock;
 	protected float m_fSlow;
 	protected float m_fTelemetry;
@@ -188,10 +209,12 @@ class RZ_Errands
 		m_People = new RZ_NamedPeople(gm);
 		m_Faults = new RZ_Faults(gm);
 		m_Strangers = new RZ_Strangers(gm, this);
+		m_Locals = new RZ_Locals(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	RZ_Strangers GetStrangers() { return m_Strangers; }
+	RZ_Locals GetLocals() { return m_Locals; }
 
 	//------------------------------------------------------------------------------------------------
 	//! A player's shot within `radius` of pos in the last `seconds` (strangers' "a fight" rule).
@@ -238,6 +261,7 @@ class RZ_Errands
 			}
 
 			m_People.Restore(m_Restored.houses);
+			m_Locals.Restore(m_Restored.locals);
 			if (m_Restored.counterKeys && m_Restored.counterValues)
 			{
 				for (int i = 0; i < m_Restored.counterKeys.Count() && i < m_Restored.counterValues.Count(); i++)
@@ -282,6 +306,7 @@ class RZ_Errands
 		}
 
 		m_People.Save(data.houses);
+		m_Locals.Save(data.locals);
 		foreach (string key, int value : m_mCounters)
 		{
 			data.counterKeys.Insert(key);
@@ -309,6 +334,13 @@ class RZ_Errands
 		l.Ensure();
 		m_mLedgers.Set(ident, l);
 		return l;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A saved server counter (Fresh Chalk's reading day: "read.<tribe>").
+	void SetCounter(string key, int value)
+	{
+		m_mCounters.Set(key, value);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -401,13 +433,16 @@ class RZ_Errands
 			return;
 
 		TickSteps(dt, ids, players);
+		m_Strangers.TickSteps(dt, ids, players);
 		if (slow)
 		{
 			m_Faults.Tick(players, m_Settings.m_fFaultChance);
 			WatchHouses();
+			m_Locals.Watch();
 			Keep(ids, players);
 			m_Strangers.Tick(SLOW_TICK, ids, players, m_Settings.m_bStrangers);
 			CallOuts(ids, players);
+			RadioAsks(ids, players);
 			ExpireTalks(ids, players);
 			MarkLines(ids, players);
 		}
@@ -565,6 +600,10 @@ class RZ_Errands
 			int before;
 			if (m_mHousePop.Find(i, before) && h.m_iPopulation > before)
 				m_mTookIn.Set(i, RZ_SeasonClock.Day());
+
+			// Its locals are among the people a house loses, as often as their share
+			if (m_mHousePop.Find(i, before) && h.m_iPopulation < before)
+				m_Locals.OnHouseLost(i, before - h.m_iPopulation, before);
 
 			m_mHousePop.Set(i, h.m_iPopulation);
 		}
@@ -1501,6 +1540,15 @@ class RZ_Errands
 		}
 
 		RZ_Errand dealt = made[pick];
+		// Twists vary per deal: at Twist chance, one errand in three a player at most, never two in a row
+		ledger.sinceTwist++;
+		if (dealt.m_Def.m_bTwists && ledger.sinceTwist >= 3 && Math.RandomFloat01() < m_Settings.m_fTwistChance)
+		{
+			dealt.m_bTwist = true;
+			ledger.sinceTwist = 0;
+			RZ_Log.Info(string.Format("Errands: %1 for %2 has its twist", dealt.m_Def.m_sKey, RZ_Util.PlayerName(playerId)));
+		}
+
 		dealt.m_iId = m_iNextId;
 		m_iNextId++;
 		dealt.m_bUnasked = unasked;
@@ -1588,6 +1636,10 @@ class RZ_Errands
 
 		if (d.m_bCard)
 			s *= 1.5;
+
+		// A house whose own you sold: x0.5 for the season (Wrong Side of the Toll)
+		if (e.m_iHouse >= 0 && ledger.shy.Contains(e.m_iHouse))
+			s *= 0.5;
 
 		return s;
 	}
@@ -1970,6 +2022,50 @@ class RZ_Errands
 		return give;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A house whose fit for this player is x0.5 for the season.
+	void HouseShy(int playerId, int house)
+	{
+		RZ_ErrandLedger ledger = Ledger(m_GM.GetProfile(playerId).m_sIdentity);
+		if (house >= 0 && !ledger.shy.Contains(house))
+			ledger.shy.Insert(house);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A few Favor outside an errand (a stranger's house, a card's second payer), through the same
+	//! hourly ledger: x the pay scale, diminishing, inside the hour's cap. Hunted: nothing. Returns what
+	//! was paid, and tells the player.
+	int SmallFavor(int playerId, int f, int amount)
+	{
+		if (amount <= 0 || !RZ_Factions.IsValid(f) || playerId <= 0)
+			return 0;
+
+		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		if (RZ_Reputation.IsHunted(profile.GetTier(f)))
+			return 0;
+
+		RZ_ErrandLedger ledger = Ledger(profile.m_sIdentity);
+		int hour = RZ_SeasonClock.Now() / 3600;
+		if (ledger.hourUnix != hour)
+		{
+			ledger.hourUnix = hour;
+			ledger.hourFavor = 0;
+			ledger.hourCount = 0;
+		}
+
+		array<float> steps = {1.0, 1.0, 0.75, 0.5, 0.25};
+		float favor = amount * m_Settings.m_fPayScale * steps[Math.Min(ledger.hourCount, steps.Count() - 1)];
+		int paid = Math.Min(RZ_Util.RoundToInt(favor), Math.Max(0, m_Settings.m_iFavorPerHour - ledger.hourFavor));
+		ledger.hourCount++;
+		if (paid <= 0)
+			return 0;
+
+		m_GM.AddFavor(playerId, f, paid);
+		ledger.hourFavor += paid;
+		m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), string.Format("+%1 %2 Favor.", paid, RZ_Factions.GetName(f)));
+		return paid;
+	}
+
 	// ================================================================ Unasked: a holding's people wave you over
 	//------------------------------------------------------------------------------------------------
 	//! Every 30 s, three players at most (round-robin): a player passing within 30 m of a safehouse's
@@ -2009,6 +2105,106 @@ class RZ_Errands
 			m_mLastUnasked.Set(m_GM.GetProfile(playerId).m_sIdentity, m_fClock);
 			m_GM.Say(playerId, caller.m_sTitle, caller.m_iFaction, e.Fill("{giver} waves you over."));
 			ShowOffer(e, m_People.BodyOf(caller.m_sKey));
+		}
+	}
+
+	// ================================================================ Board and radio asks
+	//------------------------------------------------------------------------------------------------
+	//! The first routine this giver would deal this player now, without dealing it; null if none.
+	//! (A board or radio ask is only ever something true: the ask itself is still "Anything need doing?")
+	RZ_ErrandDef DryDeal(int playerId, RZ_NamedPerson p)
+	{
+		RZ_ErrandLedger ledger = Ledger(m_GM.GetProfile(playerId).m_sIdentity);
+		int now = RZ_SeasonClock.Now();
+		string place = PlaceKey(p);
+		foreach (RZ_ErrandDef d : m_aDefs)
+		{
+			if (d.m_bCard || !Anchored(d, p))
+				continue;
+
+			if (ledger.CoolUntil(d.m_sKey) > now || ledger.CoolUntil(d.m_sKey + "|" + place) > now || PlaceCooling(d.m_sKey, place))
+				continue;
+
+			if ((d.m_bTimed && !RZ_GameTime.IsCalibrated()) || !d.ForWhom(this, playerId, p))
+				continue;
+
+			RZ_Errand e = NewErrand(d, playerId, p, p.m_vPos);
+			if (d.Why(this, e) && d.Still(this, e) && (e.m_sSubject.IsEmpty() || SubjectFree(e)) && AnyWay(e))
+				return d;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A safehouse board's strip of asks (Missions > Errands > Board asks): up to two lines, signed
+	//! with the house's name, apart from the players' notes. Only what's true for the reader now.
+	void BoardAsks(int playerId, int house, notnull array<string> result)
+	{
+		if (!IsOn() || !m_Settings.m_bBoardAsks)
+			return;
+
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (!houses || houses.IsExiled(playerId))
+			return;
+
+		array<string> seen = {};
+		for (int i = 0; i < RZ_NamedPeople.HOUSE_PEOPLE && result.Count() < 2; i++)
+		{
+			RZ_NamedPerson p = m_People.FromHouse(house, i);
+			if (!p)
+				continue;
+
+			RZ_ErrandDef d = DryDeal(playerId, p);
+			if (!d || seen.Contains(d.m_sKey))
+				continue;
+
+			seen.Insert(d.m_sKey);
+			result.Insert(string.Format("%1. Ask %2, the %3.", d.m_sTitle, p.m_sName, p.m_sRole));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Radio asks (Missions > Errands > Radio asks): every 30 s one player, round-robin. Near a house
+	//! (300 m to 1.5 km) where something is true for them, and inside every rule of an unasked offer
+	//! and the interruption budget, one personal line: "If you're near Levie, Mara at the stove could
+	//! use a hand." Never broadcast, so it can't bait an ambush.
+	protected void RadioAsks(array<int> ids, array<IEntity> players)
+	{
+		if (!m_Settings.m_bRadioAsks || ids.IsEmpty())
+			return;
+
+		m_iRadioCursor = (m_iRadioCursor + 1) % ids.Count();
+		int playerId = ids[m_iRadioCursor];
+		IEntity me = players[m_iRadioCursor];
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		float last;
+		if (m_mLastRadio.Find(ident, last) && m_fClock - last < m_Settings.m_fRadioAskMinutes * 60)
+			return;
+
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (!houses || houses.IsExiled(playerId) || !MayInterrupt(playerId, me))
+			return;
+
+		int house = houses.FindNearest(me.GetOrigin(), 1500);
+		RZ_Safehouse h = houses.Get(house);
+		if (!h || RZ_Util.DistXZ(h.m_vPos, me.GetOrigin()) < 300)
+			return;
+
+		for (int i = 0; i < RZ_NamedPeople.HOUSE_PEOPLE; i++)
+		{
+			RZ_NamedPerson p = m_People.FromHouse(house, i);
+			if (!p || !DryDeal(playerId, p))
+				continue;
+
+			RZ_NoticeLanes lanes = RZ_NoticeLanes.Get();
+			if (lanes && !lanes.TryContact(playerId, RZ_EContact.ERRAND))
+				return;
+
+			m_mLastRadio.Set(ident, m_fClock);
+			m_GM.NotifyPlayer(playerId, "On the Haven's channel", string.Format("\"If you're near %1, %2 the %3 could use a hand. Only if you're passing.\"", h.m_sName, p.m_sName, p.m_sRole));
+			RZ_Log.Info(string.Format("Errands: radio ask to %1 for %2 at %3", RZ_Util.PlayerName(playerId), p.m_sName, h.m_sName));
+			return;
 		}
 	}
 
@@ -2300,7 +2496,7 @@ class RZ_Errands
 				s.done, s.favor, s.fame, s.amends) + ways + " | ";
 		}
 
-		RZ_Log.Info(text);
+		RZ_Log.Info(text + m_Strangers.Telemetry());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2339,6 +2535,9 @@ class RZ_Errands
 			if (e.m_iAsker == nearest)
 				text += string.Format("\n%1 from %2 (%3)", e.m_Def.m_sTitle, e.m_sGiverName, StateWord(e));
 		}
+
+		// Where a stranger could find someone standing here now (decision 14), and the locals
+		text += string.Format("\nStranger spots here: %1. Strangers out: %2. Locals: %3.", m_Strangers.SpotsAt(at, nearest), m_Strangers.LiveCount(), m_Locals.Count());
 
 		RZ_Log.Info("Errands admin view: " + text);
 		return text;

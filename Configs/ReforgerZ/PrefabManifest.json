@@ -4637,7 +4637,7 @@
    "category": "Zombies",
    "object": "Behaviour",
    "field": "m_BehaviourSettings",
-   "covers": "**Enabled** (on; off: tribe groups take held waypoints and Bacon's own senses), steer factor (0 = blind), contact radius (8 m), take-back multiple (2.5), sight checks a second (12), **notice rate** (0.15, tune in play), hunter sight (220/190 m), shot hearing (170 m), spacing (3 m), flank radius (140/100 m) and angle (70), stalk distance (115/75 m), **Strategies** (on), **Own attacks** (on: the hunter's lunge), special move gap (10 s), **Climb limit** (1.4 m grab height), unstick out of sight (on), LOD bands (60,150,300 m), debug log ([INFECTED.md](INFECTED.md#how-they-move-and-hunt))"
+   "covers": "**Enabled** (on; off: tribe groups take held waypoints and Bacon's own senses), steer factor (0 = blind), contact radius (8 m), take-back multiple (2.5), sight checks a second (12), **notice rate** (0.15, tune in play), hunter sight (220/190 m), shot hearing (170 m), spacing (3 m), flank radius (140/100 m) and angle (70), stalk distance (115/75 m), **Strategies** (on: rush, stalk, pincer, encircle, flush, bait, herd, ambush), **Own attacks** (on: the hunter's lunge, the young's leap, the alpha's charge), special move gap (10 s), **Climb limit** (1.4 m grab height), unstick out of sight (on), LOD bands (60,150,300 m), debug log, **Crawler life** (on), **Sleep lying crawlers** (on), **Crawler speed cap** (0 = Bacon's speed; see the lab's slow-motion note) ([INFECTED.md](INFECTED.md#how-they-move-and-hunt))"
   },
   {
    "category": "Zombies",
@@ -4671,7 +4671,7 @@
    "category": "Missions",
    "object": "Errands",
    "field": "m_ErrandSettings",
-   "covers": "**Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), the \"Most people helped\" line (on), telemetry (30 min), debug log (off)"
+   "covers": "**Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), strangers (on), found hooks (0.2 of job sites), dark cards (on), twist chance (0.2), board asks (on), radio asks (on, 60 min apart a player), the \"Most people helped\" line (on), telemetry (30 min), debug log (off)"
   },
   {
    "category": "Missions",
@@ -4842,7 +4842,7 @@
    "category": "Dialogue",
    "object": "Dialogue",
    "field": "m_DialogueSettings",
-   "covers": "The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit))"
+   "covers": "The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120; 45 while another player waits at the same person); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit))"
   },
   {
    "category": "Shared",
@@ -5201,6 +5201,12 @@
     "m_bCallOut": "1",
     "m_bWandererAsks": "1",
     "m_bStrangers": "1",
+    "m_fHookChance": "0.2",
+    "m_bDarkCards": "1",
+    "m_fTwistChance": "0.2",
+    "m_bBoardAsks": "1",
+    "m_bRadioAsks": "1",
+    "m_fRadioAskMinutes": "60",
     "m_bHelpedLine": "1",
     "m_fTelemetryMinutes": "30",
     "m_bDebugLog": "0"

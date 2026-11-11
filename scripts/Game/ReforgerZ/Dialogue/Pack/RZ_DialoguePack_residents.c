@@ -82,5 +82,24 @@ class RZ_DialoguePack_residents
 		db.Node("nothing");
 		db.Say("", "\"Nobody has. Come back if that changes. We'll still be here, most likely.\"");
 		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("occupant.house.stove_bed", "occupant", "house:short & !house:died", "Ask who gets the bed by the stove.", 2, 0, "haven");
+		db.Scene("stove_bed", "speaker", "tier:haven>=known");
+		db.Node("start");
+		db.Public();
+		db.Jump("decided", "settled");
+		db.Say("", "\"There's one bed by the stove and three who want it. The old man, the girl with the cough, the new one who stood the gate.\"");
+		db.Say("", "\"The council says whoever the house trusts can choose. That might be you. Everyone's listening, so choose kindly.\"");
+		db.Choice("old", "\"The old man. He's cold all the time.\"", "chosen", "", "", "", "", "", "decide:old", "", "");
+		db.Choice("girl", "\"The girl with the cough.\"", "chosen", "", "", "", "", "", "decide:girl", "", "");
+		db.Choice("gate", "\"The one who stood the gate last night.\"", "chosen", "", "", "", "", "", "decide:gate", "", "");
+		db.Choice("vote", "\"Put a hand up for the girl.\"", "hub", "", "", "", "", "", "sway:stove.girl", "", "");
+		db.Choice("notme", "\"That's not mine to say.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("chosen");
+		db.Public();
+		db.Say("", "\"Then that's settled. Nobody's happy, which is how you know it's fair.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("settled");
+		db.Say("", "\"Somebody settled the bed by the stove already. Nobody argues about it now. Out loud.\"");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 }

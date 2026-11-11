@@ -121,6 +121,7 @@ class RZ_DConv
 	string m_sVoice;
 	string m_sScene;		// a scene its decisions settle for the world ("" none)
 	string m_sSceneScope;	// "season" (one for the server) or "speaker" (one per speaker)
+	ref RZ_DCond m_SceneWho;	// who may decide (`scene <id> <scope> who <conditions>`); null: whoever may take the choice
 	ref array<ref RZ_DNode> m_aNodes = {};
 
 	//------------------------------------------------------------------------------------------------
@@ -257,7 +258,7 @@ class RZ_DialogueDB
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void Scene(string id, string scope)
+	void Scene(string id, string scope, string who = "")
 	{
 		if (!m_Conv)
 		{
@@ -267,6 +268,8 @@ class RZ_DialogueDB
 
 		m_Conv.m_sScene = id;
 		m_Conv.m_sSceneScope = scope;
+		if (!who.IsEmpty())
+			m_Conv.m_SceneWho = Compile(who);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -153,6 +153,7 @@ class RZ_ErrandDef
 	int m_iNeed = -1;			// RZ_ENeed it answers (score x1.2 while it's the giver faction's need)
 	float m_fWeight = 1;
 	bool m_bTimed;				// needs a running game clock (RZ_GameTime.IsCalibrated)
+	bool m_bTwists;				// can have a twist (the giver lies or hides something): rolled at Twist chance
 	ref array<ref RZ_ErrandWay> m_aWays = {};
 	ref array<string> m_aOffer = {};	// the ask, in the giver's voice
 	ref array<string> m_aOver = {};		// the world changed: "Never mind. The truck came in after all."
@@ -264,6 +265,7 @@ class RZ_Errand
 	bool m_bNoisy;				// a shot near it while it ran
 	bool m_bUnasked;			// a call-out, not an ask
 	bool m_bFallout;			// a failed story job's fallout (RZ_Fallout): pays at most m_iCap
+	bool m_bTwist;				// its twist is true this time (the same replies show either way)
 	int m_iCap = -1;			// Favor cap, -1 none
 	float m_fOfferedAt;			// the dealer's clock
 	float m_fTakenAt;
@@ -339,6 +341,8 @@ class RZ_ErrandLedger
 	ref array<int> amendsDone = {0, 0, 0, 0};
 	ref array<string> families = {};		// the last three families dealt
 	int helped;								// errands done this season ("Most people helped")
+	ref array<int> shy = {};				// houses whose fit for you is x0.5 for the season (sold one of theirs)
+	int sinceTwist = 9;						// errands dealt since the last twist (one in three at most)
 
 	//------------------------------------------------------------------------------------------------
 	void Ensure()
@@ -370,6 +374,9 @@ class RZ_ErrandLedger
 
 		if (!families)
 			families = new array<string>();
+
+		if (!shy)
+			shy = new array<int>();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -426,4 +433,5 @@ class RZ_ErrandsSave
 	ref array<ref RZ_NamedHouseSave> houses = {};
 	ref array<string> counterKeys = {};		// the server's errand counters (per house: turns done)
 	ref array<int> counterValues = {};
+	ref array<ref RZ_Local> locals = {};		// World/RZ_Locals.c
 }

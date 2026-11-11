@@ -1582,6 +1582,12 @@ class RZ_Safehouses
 		}
 
 		profile.m_bBiteDeclared = true;
+		// A bite declared here: the house has a bitten resident today (errands' Sit With Him, Masks Off)
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		int houseIdx = m_aSafehouses.Find(h);
+		if (facts && houseIdx >= 0)
+			facts.Memory().PostReason("house.bitten", RZ_WorldFacts.Safehouse(houseIdx), string.Format("Someone at %1 declared a bite.", h.m_sName), h.m_vPos, RZ_EFaction.SURVIVORS, 1);
+
 		if (profile.m_bDeclareSlowed)
 		{
 			m_GM.NotifyPlayer(playerId, title, "\"Again? We've nothing left that would help, not twice. You can stay. Sit by the door, where it's cooler.\"");

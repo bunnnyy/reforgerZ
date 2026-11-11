@@ -155,6 +155,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	protected int m_iTalk = -1;
 	protected int m_iReceiptClue = -1;
 	protected int m_iDaughterClue = -1;
+	protected RZ_WorldRecord m_SpokeFor;		// "racket.speak_for" at this house: who promised (weak; the memory owns it)
 	protected ref array<int> m_aActs = {};
 	protected ref RZ_Ways m_Ways = new RZ_Ways("Protection Racket");
 
@@ -205,8 +206,18 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iHouse = gm.GetSafehouses().PickRandom();
-		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+		// Never a house that pays by arrangement (A Quiet Arrangement seen through in its town)
+		RZ_Safehouse h;
+		for (int tries = 0; tries < 4; tries++)
+		{
+			m_iHouse = gm.GetSafehouses().PickRandom();
+			h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+			if (h && !PaysByArrangement(h))
+				break;
+
+			h = null;
+		}
+
 		if (!h)
 			return false;
 
@@ -222,6 +233,11 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		array<float> weights = {0.45, 0.25, 0.2};
 		if (gm.GetMissions().IsTypeRunning(RZ_Mission_TheLedger))
 			weights[2] = 0;
+
+		// Paid twice needs another crew boss within 6 km to have taken the first payment
+		RZ_Leaders leaders = gm.GetLeaders();
+		if (!leaders || !leaders.FindNearest(RZ_EFaction.BANDITS, h.m_vPos, 6000))
+			weights[1] = 0;
 
 		m_sTruth = m_Story.Truth(HouseKey(), values, weights);
 
@@ -242,7 +258,21 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		m_sTitle = "Protection Racket";
 		m_sDeed = "collected in {town}";
 		m_sBrief = string.Format("The safehouse in %1 is late. Everyone's late this week. Go and remind the storekeeper what our protection is worth.", h.m_sName);
+
+		// Someone promised to speak for the house at this collection
+		m_SpokeFor = RZ_WorldFacts.Get().Memory().FindRecord("racket.speak_for", HouseKey());
+		if (m_SpokeFor)
+			m_sBrief += " The storekeeper will remind you that somebody promised to speak for the house this time.";
+
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A Quiet Arrangement was seen through in the house's town: it pays the crews by arrangement.
+	protected bool PaysByArrangement(RZ_Safehouse h)
+	{
+		RZ_WorldRecord r = RZ_WorldFacts.Get().Memory().FindRecord("t0.quiet_arrangement", RZ_WorldFacts.Town(h.m_iSettlement));
+		return r && r.value == "done";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -385,7 +415,12 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	protected void Persuade(RZ_GameModeComponent gm, int playerId)
 	{
-		RZ_ECheck result = m_Ways.TryTrust(gm, playerId, "keeper", RZ_EFaction.SURVIVORS, 2, "nurse,police");
+		// Whoever promised to speak for the house last time is heard: one step easier
+		int difficulty = 2;
+		if (m_SpokeFor && m_SpokeFor.idents.Contains(gm.GetProfile(playerId).m_sIdentity))
+			difficulty = 1;
+
+		RZ_ECheck result = m_Ways.TryTrust(gm, playerId, "keeper", RZ_EFaction.SURVIVORS, difficulty, "nurse,police");
 		if (result == RZ_ECheck.REFUSED)
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "\"Don't you talk to me like a friend.\" She won't hear it from you again.");
@@ -395,6 +430,8 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		if (result == RZ_ECheck.SHORT)
 		{
 			RZ_Deeds.AddLifeRecord(gm.GetProfile(playerId), "speak_for", true);
+			array<int> promised = {playerId};
+			RZ_StoryKit.Record(this, "speak_for", HouseKey(), "1", promised);
 			gm.NotifyPlayer(playerId, m_sTitle, "\"Fine. But you speak for us at the next collection. You.\"");
 		}
 
@@ -544,6 +581,11 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 			epilogue = string.Format("%1's stores still have tally marks for every tin the Red Hand took. Some are in a different pencil.", m_sHouse);
 
 		RZ_StoryKit.Record(this, m_iHouse.ToString(), HouseKey(), m_sHow, m_aParticipants, epilogue, "board");
+
+		// The callback note: some hours of the collector's play later, near the house
+		RZ_Shared shared = gm.GetShared();
+		if (shared && m_iCollector > 0 && m_sHow != "receipt")
+			shared.GetCallbacks().Queue(m_iCollector, "A note at " + m_sHouse, string.Format("Pinned where the receipt used to be, in the storekeeper's hand: \"Collected by the Red Hand, Day %1. We ate anyway.\"", RZ_SeasonClock.Day()), m_vPos);
 	}
 
 	//------------------------------------------------------------------------------------------------

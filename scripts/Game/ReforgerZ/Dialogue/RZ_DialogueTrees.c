@@ -462,6 +462,13 @@ class RZ_DialogueTrees
 		// A deciding pick in a scene waits 5 s for objections before it lands
 		if (HasEffect(c.m_aDo, "decide") && !ctx.m_sScene.IsEmpty())
 		{
+			if (t.m_Conv && t.m_Conv.m_SceneWho && !RZ_DialogueCond.Holds(ctx, t.m_Conv.m_SceneWho))
+			{
+				s.m_aNew.Insert("\"It's not your call. Not here.\"");
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+
 			RZ_WorldFacts sceneFacts = m_GM.GetFacts();
 			if (sceneFacts && sceneFacts.Flag("scene." + ctx.m_sScene) > 0)
 			{
@@ -891,6 +898,13 @@ class RZ_DialogueTrees
 				r.m_bEnabled = false;
 				r.m_sNeed = string.Format("you have %1 food", food);
 			}
+		}
+
+		// Who may decide: a deciding choice in a scene with `who` is dimmed for everyone else
+		if (r.m_bEnabled && t.m_Conv && t.m_Conv.m_SceneWho && HasEffect(c.m_aDo, "decide") && !RZ_DialogueCond.Holds(ctx, t.m_Conv.m_SceneWho))
+		{
+			r.m_bEnabled = false;
+			r.m_sNeed = "only someone " + ctx.m_sShort + " trusts can answer for it";
 		}
 
 		r.m_sTag = tag;

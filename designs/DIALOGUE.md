@@ -441,13 +441,14 @@ Dialogue is where a claim is spoken. The built AI behaviour doesn't change.
 decide hold with Object and Stand with and the scene record, tallies (`sway:`), vouching (+1, the voucher's
 liability through the lie store), call-outs and point-outs, as verbs on your own hub with the speaker.
 
-Still to build:
-- **Who may decide:** a scene's `who <conditions>` (defaulting to the stage's own requirement and having taken
-  part); others see the choice dimmed: "(only someone the house trusts can answer for it)".
+Also built: a scene's `who <conditions>` (others see the choice dimmed), the 45 s idle while someone waits, and
+the first shipped scene (the bed by the stove). Still to build:
+- **Who may decide, by default:** the stage's own requirement and having taken part, when a mission's scene names
+  no `who`.
 - **With the decider:** the decider's vanilla group within 150 m and anyone who stood with them share the result's
   pay; everyone else eligible gets half the Favor from the giver (missions' rule, once missions take conversations).
 - **The majors' sittings** read their tallies through `RZ_QuestVote`, one sway per player per sitting.
-- **No double pay; AFK sessions ending at 120 s (45 s while someone waits).**
+- **No double pay** once missions pay through conversations.
 
 ## 15. Delivery
 

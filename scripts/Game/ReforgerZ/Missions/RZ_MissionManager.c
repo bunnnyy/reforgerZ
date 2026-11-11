@@ -307,6 +307,8 @@ class RZ_MissionManager
 
 		// Briefs often open with a place or a name ("the chemist's in ...")
 		mission.m_sBrief = RZ_Util.Capitalize(mission.m_sBrief);
+		// The Tier 0 audit: a job that ended here before says how it went
+		RZ_MissionReasons.Tier0Read(mission);
 		m_aActive.Insert(mission);
 		m_fSpotsAt = -1; // its props count from now
 		OnStarted(mission);
@@ -814,6 +816,16 @@ class RZ_MissionManager
 
 		// Faction strength and morale
 		m_GM.OnContractFinished(m, success);
+
+		// The Tier 0 audit: the job's record at its place (`t0.<key>`)
+		if (success)
+			RZ_MissionReasons.Tier0Ended(m, true, paid);
+		else
+			RZ_MissionReasons.Tier0Ended(m, false, m.m_aParticipants);
+
+		// A found hook at one site in five: a stranger or an old mark (docs/ERRANDS.md, "Strangers")
+		if (m_GM.GetErrands() && m_GM.GetErrands().IsOn() && !m.m_bWithdrawn)
+			m_GM.GetErrands().GetStrangers().JobEnded(m);
 
 		// The town log: what was done here, and by whom (World/RZ_WorldWriters.c)
 		if (success)

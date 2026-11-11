@@ -87,3 +87,31 @@ voice haven
 
 node start
   say "There's a candle in the window, and people are talking more quietly than usual."
+
+# Deciding together (docs/DIALOGUE.md, "Several players"): the bed by the stove. Only someone the
+# house knows can answer for it; the others in the room hear it (public) and can Object or Stand with.
+conv occupant.house.stove_bed
+for occupant
+when house:short & !house:died
+topic "Ask who gets the bed by the stove."
+prio world
+voice haven
+scene stove_bed speaker who tier:haven>=known
+
+node start public
+  jump decided -> settled
+  say "There's one bed by the stove and three who want it. The old man, the girl with the cough, the new one who stood the gate."
+  say "The council says whoever the house trusts can choose. That might be you. Everyone's listening, so choose kindly."
+  > @old "The old man. He's cold all the time." -> chosen   do decide:old
+  > @girl "The girl with the cough." -> chosen   do decide:girl
+  > @gate "The one who stood the gate last night." -> chosen   do decide:gate
+  > @vote "Put a hand up for the girl." -> hub   do sway:stove.girl
+  > @notme "That's not mine to say." -> hub
+
+node chosen public
+  say "Then that's settled. Nobody's happy, which is how you know it's fair."
+  > @back1 "Something else." -> hub
+
+node settled
+  say "Somebody settled the bed by the stove already. Nobody argues about it now. Out loud."
+  > @back2 "Something else." -> hub

@@ -1108,14 +1108,14 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | Stealth | `m_StealthSettings` | **Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth)) |
 | Zombies | Tribes | `m_TribeSettings` | **Enabled** (on; off: no land grid, no tribes, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20), the **role prefabs** (alpha, guard, hunter, scout, young; empty lists fall back), **Day party share** (0.2; 0 = none), day party group (2-3), day party bodies near a cluster (6), **Counted night minutes** (20), **Scout sight** (120 m), **Your dead run** (Described), **Life cycle** (on), hunger a counted night (3), split at (24), the looks' prefabs, **People** (on: words, knowing, the packs' contracts and events, the moat, the call box, the stand's waves, the last week), **Name filter** (words), the **ID card**, **tag** and **call box** prefabs, the map of the crews (15 Favor) and the tag frequencies (25 Favor) ([INFECTED.md](INFECTED.md#tribes), [People](INFECTED.md#people)) |
-| Zombies | Behaviour | `m_BehaviourSettings` | **Enabled** (on; off: tribe groups take held waypoints and Bacon's own senses), steer factor (0 = blind), contact radius (8 m), take-back multiple (2.5), sight checks a second (12), **notice rate** (0.15, tune in play), hunter sight (220/190 m), shot hearing (170 m), spacing (3 m), flank radius (140/100 m) and angle (70), stalk distance (115/75 m), **Strategies** (on), **Own attacks** (on: the hunter's lunge), special move gap (10 s), **Climb limit** (1.4 m grab height), unstick out of sight (on), LOD bands (60,150,300 m), debug log ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
+| Zombies | Behaviour | `m_BehaviourSettings` | **Enabled** (on; off: tribe groups take held waypoints and Bacon's own senses), steer factor (0 = blind), contact radius (8 m), take-back multiple (2.5), sight checks a second (12), **notice rate** (0.15, tune in play), hunter sight (220/190 m), shot hearing (170 m), spacing (3 m), flank radius (140/100 m) and angle (70), stalk distance (115/75 m), **Strategies** (on: rush, stalk, pincer, encircle, flush, bait, herd, ambush), **Own attacks** (on: the hunter's lunge, the young's leap, the alpha's charge), special move gap (10 s), **Climb limit** (1.4 m grab height), unstick out of sight (on), LOD bands (60,150,300 m), debug log, **Crawler life** (on), **Sleep lying crawlers** (on), **Crawler speed cap** (0 = Bacon's speed; see the lab's slow-motion note) ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
 | Zombies | Crawlers | `m_CrawlerSettings` | **Enabled** (on; off: towns as before), **Prefabs** (Bacon's civilian characters; empty = Common), bloated prefabs and share (0.05, towns at 70+ from Overrun), group size (1-3), kill ledger half-life (30 played minutes), reinforcement distance (200 m), drift radius (300 m) and seconds (90), stir (stirred at 50, -20 an hour, 5 heat a minute up to 60), siege minutes (10), scavengers (2-4) ([INFECTED.md](INFECTED.md#towns-the-crawlers)) |
 | Zombies | (top level) |  | Presence heat (0.5/tick), vehicle heat (+4/tick) |
 | Backgrounds | Backgrounds (list) |  | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
 | Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
 | Missions | (top level) |  | Reward crate, mission item, drop points and the optional mission prefabs |
 | Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
-| Missions | Errands | `m_ErrandSettings` | **Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), the "Most people helped" line (on), telemetry (30 min), debug log (off) |
+| Missions | Errands | `m_ErrandSettings` | **Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), strangers (on), found hooks (0.2 of job sites), dark cards (on), twist chance (0.2), board asks (on), radio asks (on, 60 min apart a player), the "Most people helped" line (on), telemetry (30 min), debug log (off) |
 | Missions | Story | `m_MissionStorySettings` | **Enabled** (the story kit: who decides, who benefits), the **reason lane** (on, 30 min apart, within 3 km of the reason), the one weight clamp (x0.75-1.3) |
 | Missions | Contracts | `m_ContractSettings` | **Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) |  | The puzzle prefabs, **Scale counts items** (off), landmark name |
@@ -1144,7 +1144,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
-| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit)) |
+| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120; 45 while another player waits at the same person); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
@@ -1461,7 +1461,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/Behaviour/RZ_CrawlerLife.c:226` | a crawler group's agent switched off with `DeactivateAI` (lying up by day) stays in its group and wakes with `ActivateAI` (lab B12: awake in 0.2 s, moving in 6.5 s), and a sleeping body hit by a player is woken by the player near it | Sleeping crawlers drop out of their groups or don't wake: set **Behaviour > Sleep lying crawlers** off (they stand hunched instead) |
 | `Zombies/Behaviour/RZ_Behaviour.c:975` | a light bleed opened from the server on a player's arm or leg (`AddParticularBleeding`) replicates and bleeds at the usual rate (a hunter's lunge that lands) | The lunge still makes the bite chance x1.5; with no bleed, set **Behaviour > Own attacks** off if it misbehaves |
 | `Factions/RZ_CampLife.c:678` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
-| `Missions/Errands/RZ_Strangers.c:338` | a stranger is placed at the spot itself, 150–350 m ahead of the player (no line-of-sight test for the design's out-of-sight point 60–90 m off) | If one visibly pops in, set **Missions > Errands > Strangers** off |
+| `Missions/Errands/RZ_Strangers.c:967` | a stranger is placed at the spot itself, 150–350 m ahead of the player (or 60–90 m from a stopped car), with no line-of-sight test for the design's out-of-sight point 60–90 m off | If one visibly pops in, set **Missions > Errands > Strangers** off |
 
 ### Low risk: contained or cosmetic (20)
 
@@ -1732,7 +1732,7 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 records.` and `Shared: N callbacks waiting, N season records.`
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 26 routines and 18 cards, N players with a ledger.`; while running, `Errands:
+start, `Errands: on, 33 routines and 39 cards, N players with a ledger.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
@@ -1766,8 +1766,11 @@ lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road
 `Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: crash at <grid> is <truth>`, `Errands: fallout <card> at <grid>
-from <title> (cap N Favor, N participant(s) first)`. Strangers: `Errands: stranger roof|tin for <player> at
-<grid>`, `Errands: stranger roof|tin done by <player>`.
+from <title> (cap N Favor, N participant(s) first)`. Strangers: `Errands: stranger <kind> for <player> at
+<grid> (<spot>)`, `Errands: stranger <kind> done by <player>`, `Errands: stranger <kind> killed by <player>`,
+`Errands: found hook <kind> at <grid> after <title>`; `Errands: radio ask to <player> for <name> at <house>`,
+`Errands: <key> for <player> has its twist`; locals: `Locals: <name> (<role>) made at <house> by <player>
+(pinned|unpinned)`, `Locals: <name> at <house> died with the house's losses`, `Locals: <name> killed (by <player>)`.
 
 ## 8. Play-test checklist
 
@@ -2449,17 +2452,44 @@ on the talk screen says why something wasn't dealt)
 - [ ] Survivors Trapped: after the hold the mother appears with three choices (a 5 s hold); nobody in
   90 s sends them to the nearest house; a bitten father (one time in four) is seen by a Nurse or
   Doctor and walked out at the door.
-- [ ] A Tier 0 job failing (Walk Him Out, The Rat) sends its fallout line after the fail text.
+- [ ] A Tier 0 job failing (Walk Him Out, The Rat, a leader job such as Debt Collection) sends its fallout
+  line after the fail text; the next one offered in that town says in its brief how the last went.
+  A player it wasn't offered to picking one of its choices hears "It's not your call".
+- [ ] Walk Him Out, let walk on: at dusk the next season day, near a holding's approach, the stranger
+  Still Walking may ask the way to the lab.
+- [ ] Protection Racket: a Short persuade, then the next collection at that house: the brief mentions
+  the promise. Collected: a note at the house comes back some hours of play later.
+- [ ] The bed by the stove (Dialogue > Trees on, a short house): someone Known with the Haven decides;
+  a Stranger sees the choices dimmed ("only someone ... trusts"); the room hears it. Leave a talk open
+  with another player standing beside the person: it closes after 45 s.
 
-**Strangers** (Missions > Errands > Strangers)
-- [ ] Walk a road you've used a lot (by day), toward a safehouse's approach, or to a town edge at dusk
-  or in fog: a stranger may stand 150–350 m ahead (`Errands: stranger ...`). Crossing empty country,
-  standing still, in a car, with another player outside your group within 300 m, or within 2 km of the
-  Long Table's farm: nobody, however long you wait.
+**Strangers** (Missions > Errands > Strangers; the admin reply names the spot kinds where you stand)
+- [ ] Walk a road you've used a lot (by day), toward a safehouse's approach, past a road post, along a
+  wanderer's way, or to a town edge at dusk or in fog: a stranger may stand 150–350 m ahead
+  (`Errands: stranger <kind> ... (<spot>)`). Crossing empty country, standing still, in a car, with
+  another player outside your group within 300 m, near a lair, or within 2 km of the Long Table's
+  farm: nobody, however long you wait.
+- [ ] Stop your car 20 s by day near a wreck or on a used road and get out: someone walks up 60–90 m
+  off (Two in the Back, The Funeral for the Car). Boil water on a stove after dark: Warm Hands may
+  come to the fire; let him sit 5 real minutes for one true thing.
 - [ ] Up on the Roof: "Talk them down" refuses with infected within 25 m; done, +1 at the nearest house
-  and 4 Haven Favor. The Last Tin (2+ food on you, a hungry house within 1.5 km): a tin for a true tip.
+  and 4 Haven Favor. The Last Tin: a tin for a true tip, and he greets you at his house's gate later
+  (a local on an occupant: **Talk to {name}**, "You gave me a tin on the road").
+- [ ] Ways that send you somewhere (walk her past the post, dig with her) say where; the stranger waits
+  10 minutes while you do it, then gives up. Only you or your group can answer them.
+- [ ] Kill a stranger: +15 Infamy with their people, and no stranger finds you for a real day.
 - [ ] They call out once at 40 m and are gone 5 minutes later or once you're 150 m away; the next one
   comes 15–25 minutes later at the earliest, never at the same spot within 2 hours.
+- [ ] Found hooks: finish a few jobs; at about one site in five a stranger is there afterwards, or an
+  old mark is read out as you pass within 30 m. A bitten stranger sent on waits at the house's gate:
+  **Who's at the Gate** there.
+- [ ] Locals: a local dies with their house's losses now and then, and only players who knew them hear.
+- [ ] Board asks: read a safehouse board while something is true there: up to two "{house} asks" lines
+  above the notes. Radio asks: walk 300 m–1.5 km from such a house: one personal line on the Haven's
+  channel, at most once an hour.
+- [ ] A few cards end to end: Vouch at a Haven house (Known), Borrowed Green after declaring a bite at a
+  house with a Bastion post toward the lab, Name Day at a Red Hand camp (no crew name yet), Shoes in a
+  Row by day near a lair. A lie (Fresh Chalk without looking) is found later and costs a little Infamy.
 - [ ] Dress Rehearsal (Known with the Red Hand, a Bastion post within 2 km, disguises on): at the
   barrier not passing as Bastion, it's over and the open channel laughs.
 - [ ] Live Capture: lure the special into the cage and drop the door within 4 m; it vanishes without

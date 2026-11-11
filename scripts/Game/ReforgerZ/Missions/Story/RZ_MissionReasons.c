@@ -117,6 +117,119 @@ class RZ_MissionReasons
 		if (t == RZ_Mission_TheWitness)
 			return "What she saw goes with her.";
 
+		// The leader jobs and Rein In (the rest of the Tier 0 audit)
+		if (t == RZ_Job_ShutTheDoor)
+			return "The door stays open a while longer. The council will ask someone else, and sooner.";
+
+		if (t == RZ_Job_RealOrders)
+			return "The orders stay in the safe. The post goes on reading the ones it was given.";
+
+		if (t == RZ_Job_LocalLaw)
+			return "The town settles it the old way. Nobody writes down how.";
+
+		if (t == RZ_Job_OffBookRequisition)
+			return "The stores stay on the book, and the post stays short. Someone signs for it anyway.";
+
+		if (t == RZ_Job_DesertionRoute)
+			return "The men stay where they were put. One of them stops talking to anyone.";
+
+		if (t == RZ_Job_HonourAmongThieves)
+			return "The crews settle it with each other. The book has one name fewer in it.";
+
+		if (t == RZ_Job_DebtCollection)
+			return "The debt stays where it was, and grows. The book doesn't forget a name.";
+
+		if (t == RZ_Job_PatientsNotSamples)
+			return "The trial goes on as written. The patients are numbers again by morning.";
+
+		if (t == RZ_Job_TheNotebook)
+			return "The notebook stays where it fell. Somebody else's handwriting goes into the record instead.";
+
+		if (t == RZ_Job_PrivateCollection)
+			return "The collection stays private. The director never asks about it, which is an answer.";
+
+		if (t == RZ_Mission_ReinIn)
+			return "The outpost carries on as it likes. The stronghold notes it, and waits.";
+
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Tier 0 audit's record key for a job that was already there (docs/DESIGN.md, "Story
+	//! blocks"): each writes `t0.<key>` at its place when it ends (done or failed), and the next one
+	//! offered there reads it in its brief. "" if `t` isn't one of the 27.
+	static string Tier0Key(typename t)
+	{
+		if (t == RZ_Mission_WalkHimOut) return "walk_him_out";
+		if (t == RZ_Mission_BittenFriend) return "bitten_friend";
+		if (t == RZ_Mission_TheList) return "the_list";
+		if (t == RZ_Mission_TheLedger) return "the_ledger";
+		if (t == RZ_Mission_QuietArrangement) return "quiet_arrangement";
+		if (t == RZ_Mission_Requisition) return "requisition";
+		if (t == RZ_Mission_SecureTheShipment) return "secure_shipment";
+		if (t == RZ_Mission_NoReply) return "no_reply";
+		if (t == RZ_Mission_LearningTheDrones) return "learning_drones";
+		if (t == RZ_Mission_PitsDebtor) return "pits_debtor";
+		if (t == RZ_Mission_TiedDown) return "tied_down";
+		if (t == RZ_Mission_SerumTrial) return "serum_trial";
+		if (t == RZ_Event_RivalSurvivors) return "rival_survivors";
+		if (t == RZ_Mission_TheRat) return "the_rat";
+		if (t == RZ_Mission_SilentVillage) return "silent_village";
+		if (t == RZ_Mission_TheWitness) return "the_witness";
+		if (t == RZ_Job_ShutTheDoor) return "shut_the_door";
+		if (t == RZ_Job_RealOrders) return "real_orders";
+		if (t == RZ_Job_LocalLaw) return "local_law";
+		if (t == RZ_Job_OffBookRequisition) return "off_book";
+		if (t == RZ_Job_DesertionRoute) return "desertion_route";
+		if (t == RZ_Job_HonourAmongThieves) return "honour_thieves";
+		if (t == RZ_Job_DebtCollection) return "debt_collection";
+		if (t == RZ_Job_PatientsNotSamples) return "patients_samples";
+		if (t == RZ_Job_TheNotebook) return "the_notebook";
+		if (t == RZ_Job_PrivateCollection) return "private_collection";
+		if (t == RZ_Mission_ReinIn) return "rein_in";
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a Tier 0 job's record is kept: its town, else its grid square.
+	static string Tier0Subject(RZ_Mission m)
+	{
+		if (m.m_iSettlement >= 0)
+			return RZ_WorldFacts.Town(m.m_iSettlement);
+
+		return "grid:" + RZ_SettlementScanner.GridReference(m.m_vPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A Tier 0 job ended: `t0.<key>` at its place, done or failed, with who was there.
+	static void Tier0Ended(RZ_Mission m, bool success, array<int> players)
+	{
+		string key = Tier0Key(m.Type());
+		if (key.IsEmpty() || m.m_bWithdrawn)
+			return;
+
+		string value = "failed";
+		if (success)
+			value = "done";
+
+		RZ_WorldFacts.Get().Memory().Record("t0." + key, Tier0Subject(m), value, RZ_WorldMemory.SOURCE_STORY, false, players);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A Tier 0 job offered where the last one ended: its brief says how that went.
+	static void Tier0Read(RZ_Mission m)
+	{
+		string key = Tier0Key(m.Type());
+		if (key.IsEmpty())
+			return;
+
+		RZ_WorldRecord r = RZ_WorldFacts.Get().Memory().FindRecord("t0." + key, Tier0Subject(m));
+		if (!r)
+			return;
+
+		if (r.value == "done")
+			m.m_sBrief += " The last time this came up here, someone saw it through. People remember that.";
+		else
+			m.m_sBrief += " The last time this came up here, nobody did. People remember that too.";
 	}
 }

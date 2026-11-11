@@ -826,6 +826,14 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 		super.OnFailed(gm);
 		if (!m_bDelivered)
 			RZ_StoryKit.Fallout(gm, this, "buy_back", m_vPos, "the black box from the wreck");
+
+		// Time up with the box still out there: whoever comes next finds it already taken
+		if (!m_bDelivered && !m_bWithdrawn && m_sTruth != "line" && m_Story && !gm.GetRedHandGroupPrefab().IsEmpty())
+		{
+			RZ_Truth kept = RZ_WorldFacts.Get().Memory().FindTruth(m_Story.m_sKey, "wreck:" + RZ_SettlementScanner.GridReference(m_vPos));
+			if (kept)
+				kept.value = "taken";
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
