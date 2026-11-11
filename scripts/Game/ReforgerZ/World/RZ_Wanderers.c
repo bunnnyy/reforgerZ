@@ -649,6 +649,17 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A mission is using this person (Hold): no body, no movement.
+	bool IsHeld(int id)
+	{
+		RZ_Wanderer w = Find(id);
+		if (!w)
+			return false;
+
+		return w.m_iHeldBy >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Living wanderers with a role in roleMask (shuffled), for missions and story arcs that
 	//! need people on the road without holding them.
 	void GetLiving(int roleMask, notnull array<int> result)
@@ -693,13 +704,18 @@ class RZ_Wanderers
 
 	//------------------------------------------------------------------------------------------------
 	//! A living Haven wanderer with a role in roleMask, not near any player, for a mission
-	//! to use as a character (it then holds them). -1 if none.
+	//! to use as a character (it then holds them). Never one a story has claimed
+	//! (RZ_WorldFacts). -1 if none.
 	int FindForMission(int roleMask)
 	{
 		array<int> options = {};
+		RZ_WorldFacts facts = m_GM.GetFacts();
 		foreach (RZ_Wanderer w : m_aList)
 		{
 			if (!w.m_bAlive || w.m_iHeldBy >= 0 || w.m_bHasBody || w.IsBitten() || w.m_iEscortPlayer > 0)
+				continue;
+
+			if (facts && facts.IsClaimed(RZ_WorldFacts.Wanderer(w.m_iId)))
 				continue;
 
 			if ((RoleBit(w.m_eRole) & roleMask) == 0)

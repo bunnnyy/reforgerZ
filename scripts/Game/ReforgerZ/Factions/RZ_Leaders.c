@@ -1619,6 +1619,7 @@ class RZ_Leaders
 		array<ref RZ_Mission> candidates = {};
 		array<float> weights = {};
 		float total = 0;
+		int online = GetGame().GetPlayerManager().GetPlayerCount();
 		foreach (typename t : m_aJobTypes)
 		{
 			RZ_Mission m = RZ_Mission.Cast(t.Spawn());
@@ -1629,7 +1630,11 @@ class RZ_Leaders
 			if (m.m_iJobFaction != l.m_eFaction || m.m_iJobLoyalty != l.m_eLoyalty)
 				continue;
 
+			// The same check as any mission (RZ_MissionManager.CanRunNow): world gates and facts,
+			// No Vehicles, one of each type, its claims free. The leader's own weight comes next
 			m.m_iLeaderId = l.m_iId;
+			if (!m_GM.GetMissions().CanRunNow(m, online, false))
+				continue;
 			float w = m.GetLeaderWeight(m_GM, l) * ToneBias(l, m.m_iJobTone);
 			if (w <= 0)
 				continue;
@@ -1919,6 +1924,10 @@ class RZ_Leaders
 			if (!l.IsPresent() || l.IsStronghold() || l.m_iHeldBy >= 0)
 				continue;
 
+			// A story is counting on them (RZ_WorldFacts claims): nothing happens to them off-screen
+			if (m_GM.GetFacts().IsClaimed(RZ_WorldFacts.Leader(l.m_iId)))
+				continue;
+
 			if (RZ_Util.NearestDistance(l.m_vPos, players) < 400)
 				continue;
 
@@ -1968,23 +1977,32 @@ class RZ_Leaders
 
 	//------------------------------------------------------------------------------------------------
 	//! A leader dies off-screen because of something a mission did (Bastion raiding a camp
-	//! someone sold out). Stronghold leaders never die.
-	void KillOffscreen(int leaderId, string how)
+	//! someone sold out). Stronghold leaders never die, and nor does one a mission holds or a
+	//! story has claimed (RZ_WorldFacts): false if it didn't happen.
+	bool KillOffscreen(int leaderId, string how)
 	{
 		RZ_Leader l = Get(leaderId);
-		if (!l || !l.IsPresent() || l.IsStronghold())
-			return;
+		if (!l || !l.IsPresent() || l.IsStronghold() || l.m_iHeldBy >= 0)
+			return false;
+
+		if (m_GM.GetFacts().IsClaimed(RZ_WorldFacts.Leader(leaderId)))
+			return false;
 
 		Die(l, how, -1);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A story moves a leader out of their seat (a questline's ending): replaced like a death,
 	//! with this headline. Never a stronghold leader. False if they can't be moved.
-	bool RemoveFromSeat(int leaderId, string headline)
+	bool RemoveFromSeat(int leaderId, string headline, string byOwner = "")
 	{
 		RZ_Leader l = Get(leaderId);
 		if (!l || !l.IsPresent() || l.IsStronghold() || l.m_iHeldBy >= 0)
+			return false;
+
+		// Another story is counting on them (a story may move a leader it claimed itself)
+		if (m_GM.GetFacts().IsClaimedByOther(RZ_WorldFacts.Leader(leaderId), byOwner))
 			return false;
 
 		Dismiss(l, headline);

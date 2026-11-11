@@ -5,6 +5,16 @@ class RZ_StandingRequirement
 	RZ_EStandingCheck m_eCheck;
 }
 
+//! When in the day a mission may start (RZ_MissionRequirements.m_eTime). With no game clock
+//! (no time and weather manager) every value passes.
+enum RZ_ETimeGate
+{
+	ANY,
+	NIGHT,			// 20:30 to 05:00
+	DUSK_OR_NIGHT,	// from 18:30 to 05:00
+	DAY				// not night (05:00 to 20:30)
+}
+
 //! Who a faction contract is offered to (docs/MISSIONS.md, "Who gets offered what").
 //! Everything is checked on the server. World conditions (stage, cure, player
 //! count) decide whether the contract appears at all; player conditions decide
@@ -35,9 +45,19 @@ class RZ_MissionRequirements
 	int m_iMaxStage = RZ_EOutbreakStage.AFTERMATH;
 	float m_fMinCure = 0;
 	bool m_bNotCured;
-	float m_fMinMilitary = 0;		// stage military presence, 0..1
+	//! Halcyon's work is cure research, so a contract or event Halcyon gives stops once the cure is
+	//! out (the default). Set this for Halcyon work that still makes sense after the cure.
+	bool m_bAfterCure;
+	float m_fMinMilitary = 0;		// Bastion presence (RZ_WorldFacts.BastionPresence), 0..1
 	float m_fMaxMilitary = 1;
 	int m_iMinPlayers = 1;
+
+	// 5. World facts (docs/DESIGN.md, "World facts"), checked with the world state above
+	RZ_ETimeGate m_eTime = RZ_ETimeGate.ANY;
+	ref array<string> m_aFlagsSet = {};			// season flags that must be set (HasFlag)
+	ref array<string> m_aFlagsUnset = {};		// season flags that must not be set
+	ref array<string> m_aNotWhileQuest = {};	// questline keys that mustn't be running
+	ref array<string> m_aNotAfterQuest = {};	// questline keys that mustn't have reached an ending
 
 	//------------------------------------------------------------------------------------------------
 	void Need(RZ_EFaction faction, RZ_EStandingCheck check)
@@ -73,6 +93,103 @@ class RZ_MissionRequirements
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Only while this season flag is set (RZ_WorldFacts.HasFlag).
+	void NeedFlag(string key)
+	{
+		m_aFlagsSet.Insert(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Only while this season flag isn't set.
+	void NeedNoFlag(string key)
+	{
+		m_aFlagsUnset.Insert(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Not while this questline runs (its stages tell the same story).
+	void NotWhileQuest(string questKey)
+	{
+		m_aNotWhileQuest.Insert(questKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Not once this questline has reached an ending this season (it settled the story).
+	void NotAfterQuest(string questKey)
+	{
+		m_aNotAfterQuest.Insert(questKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Neither while this questline runs nor after it ended: its premise belongs to it.
+	void NotWithQuest(string questKey)
+	{
+		NotWhileQuest(questKey);
+		NotAfterQuest(questKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The world facts part of IsWorldOk: cure, time of day, season flags, questlines.
+	bool AreFactsOk(RZ_GameModeComponent gm)
+	{
+		RZ_WorldFacts facts = gm.GetFacts();
+		if (!facts)
+			return true;
+
+		if (facts.IsCured() && (m_bNotCured || (m_eGiver == RZ_EFaction.INSTITUTE && !m_bAfterCure)))
+			return false;
+
+		if (!IsTimeOk(facts))
+			return false;
+
+		foreach (string need : m_aFlagsSet)
+		{
+			if (!facts.HasFlag(need))
+				return false;
+		}
+
+		foreach (string unset : m_aFlagsUnset)
+		{
+			if (facts.HasFlag(unset))
+				return false;
+		}
+
+		RZ_Questlines quests = gm.GetQuestlines();
+		if (quests)
+		{
+			foreach (string running : m_aNotWhileQuest)
+			{
+				if (quests.IsRunning(running))
+					return false;
+			}
+
+			foreach (string ended : m_aNotAfterQuest)
+			{
+				if (quests.HasEnded(ended))
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsTimeOk(RZ_WorldFacts facts)
+	{
+		if (m_eTime == RZ_ETimeGate.ANY || !facts.KnowsTime())
+			return true;
+
+		switch (m_eTime)
+		{
+			case RZ_ETimeGate.NIGHT: return facts.IsNight();
+			case RZ_ETimeGate.DUSK_OR_NIGHT: return facts.IsNight() || facts.IsDusk();
+			case RZ_ETimeGate.DAY: return !facts.IsNight();
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! World conditions only. Checked before a contract is created.
 	bool IsWorldOk(RZ_GameModeComponent gm, int playerCount)
 	{
@@ -87,14 +204,12 @@ class RZ_MissionRequirements
 		if (cure.m_fProgress < m_fMinCure)
 			return false;
 
-		if (m_bNotCured && cure.IsCured())
-			return false;
-
 		float military = gm.GetDirector().GetStageSettings().m_fMilitaryPresence;
 		if (military < m_fMinMilitary || military > m_fMaxMilitary)
 			return false;
 
-		return true;
+		// The cure (and Halcyon's default), the time of day, season flags and questlines
+		return AreFactsOk(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -159,6 +274,13 @@ class RZ_MissionRequirements
 
 		if (m_iMinPlayers > 1)
 			text += string.Format(", %1+ players online", m_iMinPlayers);
+
+		switch (m_eTime)
+		{
+			case RZ_ETimeGate.NIGHT: text += ", at night"; break;
+			case RZ_ETimeGate.DUSK_OR_NIGHT: text += ", from dusk"; break;
+			case RZ_ETimeGate.DAY: text += ", by day"; break;
+		}
 
 		return text;
 	}

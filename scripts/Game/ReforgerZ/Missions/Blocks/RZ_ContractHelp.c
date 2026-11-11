@@ -42,7 +42,8 @@ class RZ_ContractHelp
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A random safehouse whose town no running mission is using, -1 if none.
+	//! A random safehouse whose town no running mission is using and no story has claimed
+	//! (RZ_WorldFacts), -1 if none.
 	static int PickFreeSafehouse(RZ_GameModeComponent gm)
 	{
 		RZ_Safehouses houses = gm.GetSafehouses();
@@ -52,6 +53,9 @@ class RZ_ContractHelp
 		array<int> options = {};
 		for (int i = 0; i < houses.Count(); i++)
 		{
+			if (gm.GetFacts().IsClaimed(RZ_WorldFacts.Safehouse(i)))
+				continue;
+
 			if (!gm.GetMissions().IsSettlementBusy(houses.Get(i).m_iSettlement))
 				options.Insert(i);
 		}

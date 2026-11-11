@@ -371,6 +371,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_LooseItems m_LooseItems;
 	protected ref RZ_UIFeed m_UIFeed;
 	protected ref RZ_Seasons m_Seasons;
+	protected ref RZ_WorldFacts m_Facts;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -543,6 +544,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// First: the season's rules (RZ_Seasons.Mods) are read by the systems below
 		m_Seasons = new RZ_Seasons(this, m_SeasonSettings);
+		// The shared world facts (season flags, canon, claims) every system and mission reads
+		m_Facts = new RZ_WorldFacts(this);
 		m_Heat = new RZ_HeatMap();
 		m_LooseItems = new RZ_LooseItems(this, m_fLooseItemMinutes);
 		m_Adaptation = new RZ_Adaptation(this, m_AdaptationSettings);
@@ -590,6 +593,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			RZ_Log.Info(string.Format("Last season (%1, season %2) the cure went to %3.", last.world, last.season, last.winnerName));
 
 		m_Seasons.Begin(loaded, last, wipedSeason);
+		// A fresh season (no save, or a wipe) starts with no flags, no canon and a new seed
+		m_Facts.Setup();
 
 		if (m_aSettlements.IsEmpty())
 		{
@@ -688,6 +693,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_UIFeed.Tick(dt, ids, players);
 		m_LooseItems.Tick(dt, players);
 		m_Seasons.Tick(dt, ids);
+		m_Facts.Tick(dt, ids);
 
 		foreach (int i, IEntity ent : players)
 		{
@@ -741,6 +747,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_UIFeed GetUIFeed() { return m_UIFeed; }
 	RZ_UISettings GetUISettings() { return m_UISettings; }
 	RZ_Seasons GetSeasons() { return m_Seasons; }
+	//! What's true in the world right now, for content (docs/DESIGN.md, "World facts").
+	RZ_WorldFacts GetFacts() { return m_Facts; }
 	int GetSeasonWinner() { return m_iSeasonWinner; }
 
 	//------------------------------------------------------------------------------------------------
@@ -2071,6 +2079,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_TownMemory.Restore(data.towns);
 		m_PowerGrid.Restore(data.power);
 		m_RadioStation.Restore(data.radio);
+		m_Facts.Restore(data.facts);
 		m_StoryArcs.Restore(data.story);
 		m_Questlines.Restore(data.questlines);
 		m_Headlines.Restore(data.news);
@@ -2140,6 +2149,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Questlines && m_Questlines.IsEnabled())
 			data.questlines = m_Questlines.Save();
+
+		if (m_Facts)
+			data.facts = m_Facts.Save();
 
 		if (m_Headlines)
 			data.news = m_Headlines.Save();
