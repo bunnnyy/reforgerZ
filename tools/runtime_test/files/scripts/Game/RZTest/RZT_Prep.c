@@ -1,7 +1,8 @@
 // Test-only (not part of the mod): the world state the runtime test forces so that every built
-// questline starts and ends once, and so that Convoy Escort, Hijack the Convoy, Mobile Lab and the
-// Locked Bunker can start in a fresh test world (designs/PLAN.md, step 0.4). Each forced change is
-// logged as "RZT forced: ...".
+// questline starts and ends once, and so that every mission type can start in a fresh test world:
+// stand-ins for the optional prefabs a mission needs, a spread of town infection before each one,
+// trucks for the convoys and Mobile Lab (designs/PLAN.md, step 0.4). Each forced change is logged
+// as "RZT forced: ...".
 
 modded class RZ_Questlines
 {
@@ -152,12 +153,22 @@ class RZT_Prep
 	static const string REDHAND_TRUCK = "{C75DAB159B434B77}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_cargo_CIV_grey.et";
 	static const string HALCYON_TRUCK = "{43C4AF1EEBD001CE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_ambulance.et";
 	static const string KEYPAD = "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et";
+	// Stand-ins for the optional prefab slots the test world leaves empty
+	static const string PROP = "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et";
+	static const string PERSON = "{8C7093AF368F496A}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_1.et";
+	static const string GROUP = "{5BEA04939D148B1D}Prefabs/Groups/INDFOR/Group_FIA_FireTeam.et";
+
+	// How many times the mission phase tries a Setup that picks a random spot (dry ground, a free town)
+	static const int TRIES = 8;
 
 	// The hour the questline phase holds: dusk (The Edge of Town), night (Await Relief's tape, the
 	// Census's curfew), the nightly call (19:00-22:30) and supper at the Long Table all at once
 	static const float HOUR = 20.75;
 
 	protected static float s_fCureBefore = -1;
+	protected static bool s_bSpreadSaid;
+	protected static int s_iHavenFame = -1;
+	protected static int s_iHavenInfamy;
 
 	// ================================================================ The mission phase
 	//------------------------------------------------------------------------------------------------
@@ -165,6 +176,22 @@ class RZT_Prep
 	static void BeforeMission(RZ_GameModeComponent gm, typename t)
 	{
 		string name = t.ToString();
+
+		// Every mission starts from the same spread of towns, whatever the missions before it did to
+		// them (Mobile Lab's calm towns would otherwise leave nothing for the 20-90 infection range)
+		array<float> spread = {20, 45, 75, 95};
+		foreach (int idx, RZ_Settlement st : gm.GetSettlements())
+		{
+			st.m_fInfection = spread[idx % spread.Count()];
+		}
+
+		if (!s_bSpreadSaid)
+		{
+			s_bSpreadSaid = true;
+			Print("RZT forced: before each mission, towns at infection 20, 45, 75 and 95 in turn");
+		}
+
+		StandIns(gm, name);
 		if (name == "RZ_Mission_ConvoyEscort" || name == "RZ_Mission_HijackTheConvoy")
 		{
 			// Both ride Bastion's next supply truck: Bastion's trucks must run
@@ -207,7 +234,7 @@ class RZT_Prep
 		if (name == "RZ_Event_LockedBunker")
 		{
 			// The keypad prop, and an empty town that isn't overrun
-			gm.RZT_SetKeypad(KEYPAD);
+			gm.RZT_StandIn("keypad", KEYPAD);
 			foreach (RZ_Settlement town : gm.GetSettlements())
 			{
 				if (town.m_fInfection > 90)
@@ -215,6 +242,70 @@ class RZT_Prep
 			}
 
 			Print("RZT forced: a keypad prefab and no town above 90 infection, for " + name);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The optional prefab a mission needs (its GetWeight is 0 without it), as a vanilla stand-in:
+	//! a crate for a prop, a civilian for a person, an FIA fire team for a group.
+	protected static void StandIns(RZ_GameModeComponent gm, string name)
+	{
+		string slot;
+		string prefab = PROP;
+		if (name == "RZ_Mission_BurnTheNest" || name == "RZ_Mission_SpecimenFromTheNest")
+			slot = "nest";
+		else if (name == "RZ_Mission_CrashSite" || name == "RZ_Event_CrashedHelicopter")
+			slot = "heliwreck";
+		else if (name == "RZ_Mission_BanditDeadDrop")
+			slot = "deaddrop";
+		else if (name == "RZ_Mission_Arson")
+			slot = "fueldepot";
+		else if (name == "RZ_Mission_SabotageRelay")
+			slot = "relay";
+		else if (name == "RZ_Mission_SmugglersLedger")
+			slot = "landmark";
+		else if (name == "RZ_Mission_WeighingVault")
+			slot = "scale";
+		else if (name == "RZ_Event_WanderingTrader")
+		{
+			slot = "trader";
+			prefab = PERSON;
+		}
+
+		if (!slot.IsEmpty())
+		{
+			if (gm.RZT_StandIn(slot, prefab))
+				Print(string.Format("RZT forced: a stand-in %1 prefab, for %2", slot, name));
+			return;
+		}
+
+		// Collect the Bounty and The Sniper: the bounty target (a loner on SURV)
+		RZ_ContractSettings cs = gm.GetContractSettings();
+		if ((name == "RZ_Mission_CollectTheBounty" || name == "RZ_Event_TheSniper") && cs && cs.m_sBountyTargetPrefab.IsEmpty())
+		{
+			cs.m_sBountyTargetPrefab = PERSON;
+			Print("RZT forced: a stand-in bounty target, for " + name);
+			return;
+		}
+
+		// Rival Survivors: their armed group
+		RZ_EventSettings es = gm.GetEventSettings();
+		if (name == "RZ_Event_RivalSurvivors" && es && es.m_sRivalGroupPrefab.IsEmpty())
+		{
+			es.m_sRivalGroupPrefab = GROUP;
+			Print("RZT forced: a stand-in rival group, for " + name);
+			return;
+		}
+
+		// Kill the Officer: a commander body that can die (the test world's outposts already stand
+		// the same civilian in, through the puzzle civilian fallback)
+		RZ_LeaderSettings ls;
+		if (gm.GetLeaders())
+			ls = gm.GetLeaders().GetSettings();
+		if (name == "RZ_Mission_KillTheOfficer" && ls && ls.m_sBastionOutpostPrefab.IsEmpty())
+		{
+			ls.m_sBastionOutpostPrefab = PERSON;
+			Print("RZT forced: a stand-in Bastion outpost commander, for " + name);
 		}
 	}
 
@@ -298,10 +389,19 @@ class RZT_Prep
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The order the test runs them in: A Place at the Table before The House That Went Quiet
-	//! (which exposes the house), and Authors last (it needs the final stand).
+	//! The order the test runs them in: The Well Story before Cargo (Cargo's purge ending dismisses
+	//! the crew boss The Well Story needs, and the test world has only one), A Place at the Table before The House
+	//! That Went Quiet (which exposes the house), and Authors last (it needs the final stand).
 	static void Order(notnull array<string> keys)
 	{
+		int well = keys.Find("well");
+		int cargo = keys.Find("cargo");
+		if (well > cargo && cargo >= 0)
+		{
+			keys.RemoveOrdered(well);
+			keys.InsertAt("well", cargo);
+		}
+
 		array<string> last = {"table", "authors"};
 		foreach (string key : last)
 		{
@@ -359,7 +459,14 @@ class RZT_Prep
 				bool offered = false;
 				if (gm.GetLongTable())
 					offered = gm.GetLongTable().RZT_Offer(RZT_Fake.ID);
-				Print(string.Format("RZT forced: the Long Table's offer to the tester (%1)", offered));
+				// The offer is for someone the Haven doesn't already take in (below Trusted/Respected);
+				// the mission phase leaves the tester well liked
+				RZ_PlayerProfile tester = gm.GetProfile(RZT_Fake.ID);
+				s_iHavenFame = tester.m_aFame[RZ_EFaction.SURVIVORS];
+				s_iHavenInfamy = tester.m_aInfamy[RZ_EFaction.SURVIVORS];
+				tester.m_aFame[RZ_EFaction.SURVIVORS] = 0;
+				tester.m_aInfamy[RZ_EFaction.SURVIVORS] = 0;
+				Print(string.Format("RZT forced: the Long Table's offer to the tester (%1), the tester a stranger to the Haven", offered));
 				break;
 			}
 			case "table":
@@ -395,6 +502,11 @@ class RZT_Prep
 	static void Tick(RZ_GameModeComponent gm, string key, RZ_QuestRun run)
 	{
 		HoldHour();
+		// The Three Weeks' driver won't be taken in hand while a player stands within 250 m of him
+		// (his body would vanish in front of them), and a wanderer may walk up to a new player
+		if (key == "weeks" && run.m_iStage == RZ_Quest_ThreeWeeks.S_DRIVER && run.m_iMissionId < 0)
+			AwayFrom(gm, run.Flag("driver", -1));
+
 		// Authors' last stages wait for the final stand
 		if (key == "authors" && run.m_iStage == RZ_Quest_Authors.S_STAND_WAIT && gm.GetCure() && !gm.GetCure().IsFinalStand())
 		{
@@ -407,6 +519,15 @@ class RZT_Prep
 	//! After the questline ended, fizzled or was given up on.
 	static void AfterQuest(RZ_GameModeComponent gm, string key)
 	{
+		if (key == "place" && s_iHavenFame >= 0)
+		{
+			RZ_PlayerProfile tester = gm.GetProfile(RZT_Fake.ID);
+			tester.m_aFame[RZ_EFaction.SURVIVORS] = s_iHavenFame;
+			tester.m_aInfamy[RZ_EFaction.SURVIVORS] = s_iHavenInfamy;
+			s_iHavenFame = -1;
+			Print("RZT forced: the tester's standing with the Haven put back");
+		}
+
 		if (key == "authors" && gm.GetCure() && s_fCureBefore >= 0)
 		{
 			gm.GetCure().RZT_StopStand(s_fCureBefore);
@@ -507,6 +628,33 @@ class RZT_Prep
 		}
 
 		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tester goes to the town farthest from wanderer `id` if he's within 300 m of them.
+	static void AwayFrom(RZ_GameModeComponent gm, int id)
+	{
+		vector at;
+		if (!RZT_Fake.s_Ent || !gm.GetWanderers() || !gm.GetWanderers().GetPosition(id, at))
+			return;
+
+		if (RZ_Util.DistXZ(at, RZT_Fake.s_Ent.GetOrigin()) >= 300)
+			return;
+
+		vector dest = at;
+		float farDist = 0;
+		foreach (RZ_Settlement s : gm.GetSettlements())
+		{
+			float d = RZ_Util.DistXZ(at, s.m_vCenter);
+			if (d > farDist)
+			{
+				farDist = d;
+				dest = s.m_vCenter;
+			}
+		}
+
+		RZT_Fake.MoveTo(dest);
+		Print(string.Format("RZT forced: the tester moved %1 m away from wanderer %2", RZ_Util.RoundToInt(farDist), id));
 	}
 
 	//------------------------------------------------------------------------------------------------

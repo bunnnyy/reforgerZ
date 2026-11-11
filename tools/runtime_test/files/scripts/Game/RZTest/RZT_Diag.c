@@ -25,19 +25,29 @@ modded class RZ_MissionManager
 				return false;
 			typename t = m_aTypes[m_iRZTNext];
 			m_iRZTNext++;
-			m_RZTCur = RZ_Mission.Cast(t.Spawn());
+			RZT_Prep.BeforeMission(m_GM, t);
+			// A Setup that picks a random spot (dry ground, a free town) may miss; the manager would
+			// just try again later, so the test has a few goes
+			bool ok = false;
+			int tries = 0;
+			while (!ok && tries < RZT_Prep.TRIES)
+			{
+				tries++;
+				m_RZTCur = RZ_Mission.Cast(t.Spawn());
+				if (!m_RZTCur)
+					break;
+				m_RZTCur.Configure(m_GM);
+				ok = StartMission(m_RZTCur);
+			}
 			if (!m_RZTCur)
 			{
 				Print("RZT mission " + t.ToString() + " SPAWN FAILED");
 				m_iRZTPhase = 0;
 				return true;
 			}
-			m_RZTCur.Configure(m_GM);
-			RZT_Prep.BeforeMission(m_GM, t);
-			bool ok = StartMission(m_RZTCur);
 			if (ok)
 				m_iRZTStarted++;
-			Print(string.Format("RZT mission %1 '%2' contract=%3 started=%4", t.ToString(), m_RZTCur.m_sTitle, m_RZTCur.m_bContract, ok));
+			Print(string.Format("RZT mission %1 '%2' contract=%3 started=%4 tries=%5", t.ToString(), m_RZTCur.m_sTitle, m_RZTCur.m_bContract, ok, tries));
 			if (!ok)
 			{
 				m_RZTCur = null;
@@ -69,6 +79,23 @@ modded class RZ_MissionManager
 			m_iRZTPhase = 0;
 		}
 		return true;
+	}
+
+	//! While a questline waits for its stage mission: every other mission (not a questline's stage)
+	//! ends, so a contract the manager put on the board can't hold the stage's town for the hour it
+	//! lasts (a real stage waits hours before it gives up; the test's waits are scaled down).
+	int RZT_ClearOthers()
+	{
+		int count = 0;
+		foreach (RZ_Mission m : m_aActive)
+		{
+			if (m.m_iQuestRun < 0 && m.m_eState == RZ_EMissionState.ACTIVE)
+			{
+				m.m_eState = RZ_EMissionState.FAILED;
+				count++;
+			}
+		}
+		return count;
 	}
 
 	string RZT_Summary() { return string.Format("%1 of %2 started, %3 marked won", m_iRZTStarted, m_aTypes.Count(), m_iRZTWon); }
@@ -106,11 +133,32 @@ modded class RZ_GameModeComponent
 	protected int m_iRZTDeaths;
 	protected int m_iRZTDoneAt;
 
-	//! The Locked Bunker's keypad (test only: a stand-in prop when the world sets none).
-	void RZT_SetKeypad(ResourceName prefab)
+	//! A stand-in for an optional prefab slot the test world leaves empty (test only). True if the
+	//! slot was empty and now holds `prefab`.
+	bool RZT_StandIn(string slot, ResourceName prefab)
 	{
-		if (m_sKeypadPrefab.IsEmpty())
+		if (slot == "keypad" && m_sKeypadPrefab.IsEmpty())
 			m_sKeypadPrefab = prefab;
+		else if (slot == "nest" && m_sNestPrefab.IsEmpty())
+			m_sNestPrefab = prefab;
+		else if (slot == "deaddrop" && m_sDeadDropPrefab.IsEmpty())
+			m_sDeadDropPrefab = prefab;
+		else if (slot == "heliwreck" && m_sHeliWreckPrefab.IsEmpty())
+			m_sHeliWreckPrefab = prefab;
+		else if (slot == "fueldepot" && m_sFuelDepotPrefab.IsEmpty())
+			m_sFuelDepotPrefab = prefab;
+		else if (slot == "relay" && m_sRelayPrefab.IsEmpty())
+			m_sRelayPrefab = prefab;
+		else if (slot == "trader" && m_sTraderPrefab.IsEmpty())
+			m_sTraderPrefab = prefab;
+		else if (slot == "landmark" && m_sLandmarkPrefab.IsEmpty())
+			m_sLandmarkPrefab = prefab;
+		else if (slot == "scale" && m_sScaleCratePrefab.IsEmpty())
+			m_sScaleCratePrefab = prefab;
+		else
+			return false;
+
+		return true;
 	}
 
 	override void NotifyPlayer(int playerId, string title, string text)
@@ -234,6 +282,10 @@ modded class RZ_GameModeComponent
 		}
 		if (run.m_iMissionId < 0)
 		{
+			// Nothing else on the board holds the stage's town (RZ_MissionManager.RZT_ClearOthers)
+			int cleared = GetMissions().RZT_ClearOthers();
+			if (cleared > 0)
+				Print(string.Format("RZT forced: %1 other mission(s) ended while quest %2 waits for its stage", cleared, qkey));
 			// Waiting: move the clocks back so the wait is over (test only)
 			run.m_fStageAt = run.m_fStageAt - 1800;
 			run.m_iStageUnix = run.m_iStageUnix - 43200;

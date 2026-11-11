@@ -1250,15 +1250,34 @@ vanilla stand-ins for the minimum prefabs and a fake player (a spawned civilian 
 online). It starts every mission type one at a time and ends each. Then it begins every questline
 in turn, skips its waits, goes to each stage mission and ends it as won, and follows the questline to
 an ending (or reports where it fizzled or got stuck). A fresh test world meets few start conditions,
-so the test forces them (each logged as `RZT forced: ...`): before the questlines, no town overrun,
-the season a couple of days old, every safehouse full and hungry, every seat but the strongholds
-Independent, a Long Table, a scavenger on the roads, a Red Hand van and the clock held at dusk;
-before each questline, the flags and state its start reads (Walk Him Out done, Bastion short of
-supplies, the Last Helicopter's LZ kept, Patient Zero's ledger solved, the farm found, the host's
-offer to the tester, research at 80 percent and, for Authors, the final stand, stopped again after).
-Where a stage mission ended as plain "done" would loop, the test reports the outcome that moves the
-story on. Before Convoy Escort and Hijack the Convoy it sets a Bastion truck and crew, before Mobile
-Lab a Halcyon truck and quiet towns near the lab, and before the Locked Bunker a keypad prop. Last, it walks the player through every
+so the test forces them (each logged as `RZT forced: ...`).
+
+**Missions.** Before each mission the towns go back to a spread of infection (20, 45, 75 and 95 in
+turn), whatever earlier missions did to them. A Setup that misses (a random spot in the sea, every
+town of its range busy) gets up to 8 goes, as the manager would try again later (`tries=` in the
+log line). An optional prefab a mission needs gets a vanilla stand-in, set before that mission and
+left set: a crate for the nest (Burn the Nest, Specimen from the Nest), the helicopter wreck (Crash
+Site, Crashed Helicopter), the dead drop, the fuel depot (Arson), the relay, the fallback landmark
+(The Smuggler's Ledger) and the scale crate (The Weighing Vault); a civilian for the trader, the
+bounty target (Collect the Bounty, The Sniper) and the Bastion outpost commander (Kill the Officer);
+an FIA fire team for the rival group. Convoy Escort and Hijack the Convoy get a Bastion truck and
+crew, Mobile Lab a Halcyon truck and quiet towns near the lab, the Locked Bunker a keypad prop.
+
+**Questlines.** Before the first: no town overrun, the season a couple of days old, every
+safehouse full and hungry, every seat but the strongholds Independent, a Long Table, a scavenger on
+the roads, a Red Hand van and the clock held at dusk. Before each, the flags and state its start
+reads: Walk Him Out done, Bastion short of supplies, the Last Helicopter's LZ kept, Patient Zero's
+ledger solved, the farm found, the host's offer to the tester (who is made a stranger to the Haven
+for it, and put back after: the offer is for someone the Haven doesn't take in), research at 80
+percent and, for Authors, the final stand, stopped again after. The Well Story runs before Cargo
+(Cargo's purge ending dismisses the one crew boss it needs). While a questline waits for its stage
+mission, every mission that isn't a questline stage is ended, so a contract on the board can't hold
+the stage's town for the hour it lasts (a real stage waits hours before it gives up; the test's
+waits are scaled down). While The Three Weeks waits for its driver, the tester keeps 300 m from him
+(the stage won't start with a player within 250 m). Where a stage mission ended as plain "done"
+would loop, the test reports the outcome that moves the story on.
+
+Last, it walks the player through every
 settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
 every notice the player is sent, and prints the script exceptions (there should be none), how many
 mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes. If the fake player dies outside the Perimeter test (a mission or the line got him), it says where and respawns him.
@@ -1272,8 +1291,11 @@ SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
 | Script exceptions on real code paths; startup and save/load; missions' Setup, rewards and cleanup; questline stages, branches and endings (by success and failure only, not every approach); the Perimeter; spawn and death; the text players get | Anything a client does (UI, menus, input, replication), real AI behaviour against a player, your prefabs and their components |
 
 A mission or questline that still doesn't start needs a world state the test doesn't create (an
-outpost of the right faction, a spot on the map, the weather). None of this is part of the mod: the
-test files are copied into a throwaway addon folder.
+outpost of the right faction, a spot on the map, the weather). Expected on Arland: **Gas Station
+Fire** starts only when the island's petrol station is in a town nobody holds, which depends on the
+season's territory roll (about one run in three). The test world has no AI navigation (`No AIWorld`
+in the log), so a spawned group has no members, and a mission built on one may end by itself early
+(`ended by itself` in the log). None of this is part of the mod: the test files are copied into a throwaway addon folder.
 
 ### Zombie lab: Bacon's real AI, measured
 
