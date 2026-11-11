@@ -90,6 +90,14 @@ class RZ_Quest_TheList : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Retired while the majors run: its stages are Every Name's act III (RZ_Major_EveryName). It
+	//! stays registered so saved runs load.
+	override bool StartsOnItsOwn()
+	{
+		return !RZ_Majors.IsOn();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Needs two safehouses, the chair, an Independent or Rogue council head, a farm out past the
 	//! last village and the note, the object and the civilian. Opens after the contract The List,
 	//! or once a safehouse has gone hungry or lost people lately.

@@ -1305,6 +1305,133 @@ example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
 
 Player-facing text follows [WRITING.md](WRITING.md).
 
+### The majors
+
+Code: `Director/RZ_Majors.c` (the clocks, `RZ_QuestVote`, the pay caps, the season story), the base
+class's majors part in `Missions/Questlines/RZ_Questline.c`, the scenes in
+`Missions/Questlines/RZ_MajorScene.c` and `RZ_MajorHelp.c`. Settings: **Director > Majors**. The four
+stories, their acts and endings are in [QUESTLINES.md](QUESTLINES.md#the-majors); their stage
+missions in [MISSIONS.md](MISSIONS.md#the-majors-acts).
+
+A **major** is a questline that calls `Major()` in its Define: one per faction, a season long, its
+climax on a cure milestone. Its stages are grouped into **acts** (`Act(id, name)` with `.Stage()`,
+`.AnchorCure()`, `.AnchorStage()`, `.AnchorWipe()`, `.Need()`, `.Patience()`, `.PatienceEvenings()`,
+`.SetPiece(from, to)`, `.LastCall()`, `.Climax()`, `.PastGate()`, `.Watch()`, `.Opens()`, `.Rank()`).
+Each act opens on its own trigger (its first stage's `IsReady`: a milestone, a stage, the act or
+climax before it) and has a **default** (`ActDefault`): what happens when nobody decides it.
+
+- **The lane.** Majors run outside **Max active** and the one-per-faction rule, so a faction's
+  smaller stories run beside its major. A major starts as soon as its `CanStart` is true (checked
+  every minute, no roll), runs once a season and never fizzles: a stage that can't happen waits, a
+  retry loop doesn't end it, and a stage that goes quiet takes its act's default. At most **Slots**
+  (2) majors' stage missions are offered at once; a squeezed act takes a slot from one that isn't
+  squeezed or engaged. Inner lines a major starts itself (HC1, HC3) are in the lane too, and never
+  start on their own while the majors run (`StartsOnItsOwn`).
+- **Absorbed lines.** The Book (R1) and Await Relief (B1) are their faction's majors under their own
+  keys: a built ending inside the major (`Finish` in their own `Next`) becomes an act's result
+  (`AfterInnerEnding`, applying the built consequences) and the major goes on. Every Name uses The
+  List's (H1) stage missions under a new key; H1 stays registered (saved runs load) and isn't offered.
+  With **Majors** off, The Book and Await Relief run as their built questlines, and The List, The Three
+  Weeks and Authors start on their own again.
+- **`ActEnd(run, act, outcome, line)`** settles an act inside a run without ending it: it sets
+  `<key>.act<n>` (and `<key>.climax` for the climax), notes the line, tells the participants and
+  marks a beat. `<key>.ending` is set only at the major's real end (after its coda).
+- **Set pieces** hold the evening on the [set-piece calendar](#the-set-piece-calendar) from their
+  offer window until they resolve; one that finds the evening held waits, at most twice. The
+  climaxes keep their order through their gates: settling day, the muster, the second sitting, the
+  reading, the last page (`RZ_Majors.ClimaxDone`: done, or that major isn't running).
+- **Scenes.** Every new act is one stage mission class, `RZ_QM_MajorScene`, filled in by the major's
+  `BuildScene`: people at places (spawned only when a player comes within 300 m), up to four choices
+  each, a choice being data (a rank, a persuade, a bribe, unseen, a flag; a sway, a tabled option, a
+  swing of voters, a flag, a side's standing, the stage's outcome). A scene may hold a place (stay
+  within 40 m; the noise brings waves every 75 s; 45 s with nobody there loses it) and close at the
+  end of its window with its vote's tally or a timeout outcome. Dialogue is off by default, so every
+  sway, ask and persuade is an action on a person.
+
+**Votes (`RZ_QuestVote`).** A tally kept in the run's flags: voters with a lean each, options tabled
+(two from the start, offers only when carried), one sway per player per vote (by identity), and
+the tally with a tie-break (the chair's lean). A conversation's `sway:<major key>.<vote>.<word>`
+([DIALOGUE.md](DIALOGUE.md#several-players)) swings one voter to that option per contribution at the
+tally. Errands and their memory never move a vote. Used by the Haven's two sittings.
+
+#### Dynamic fallbacks (decision 10)
+
+No major runs on fixed days. Each act's default fires from what is happening on the server, read on
+the questline tick (every 10 s with players online; nothing moves on an empty server).
+
+| Signal | What it is |
+|---|---|
+| Research position and pace | Worked research; its gain a real day over the last 3 real days that had play |
+| Hours played a day | Hours with someone online, over the last 7 real days |
+| Room left | Hours of play before the act's anchor: (milestone − research) ÷ pace × hours a day; for a stage, the stage clock's minutes to go; for a coda, real hours until the epilogue's last day. Unlimited while research stalls |
+| The faction's state | Its stronghold Under Pressure (the clocks pause), its morale |
+| Offered time | Play time while the act's stage is open (in its window, for a set piece) and a player who qualifies (the act's rank with the faction) is online. Offered evenings: 30 real minutes of it in one evening |
+| Touches, engagement | A touch is anything a player does in a stage (`Did`); engaged: a stage mission with someone in it, or touched in the last session (2 hours of play) |
+| Beat gap | Hours of play since the major's last beat (an act opened or ended, a default) |
+| Stalled | Research rose less than **Stall points** (1) over the last 3 real days with play, and the lab's backlog is empty |
+
+A default fires on the first of these, once the guards allow it:
+1. **Squeeze:** the room left is less than the need of this act and of the acts after it with the
+   same anchor. A **last call** goes out (the act's own line, as a headline and a rumour, and in the
+   journal), then a **grace** of **Grace sessions** (1) of offered time; with nobody who qualifies on
+   for two sessions, plain hours count. The default fires when the grace runs out or the anchor
+   arrives.
+2. **Patience** (acts that have one): offered time or offered evenings down to the last one: a last
+   call, then the grace.
+3. **Nobody qualifies** (set pieces): two evenings with players online but nobody who qualifies; it
+   runs as data. Other acts wait for their squeeze, because a player may grow into them.
+
+**The guards:** an engaged act holds for at most **Hold limit** (1 session), then the default comes
+anyway; at most one default per major a session unless squeezed (the breather); a patience default
+that costs morale waits while the faction's morale is under 30; nothing ticks while the faction's
+stronghold is Under Pressure or nobody is online. Defaults pay nobody (`RZ_Majors.Enter(key, true)`)
+and a default that ran as data is told one headline a real day, in order.
+
+**Lead:** while research is stalled, a climax (or the Red Hand's last page) may open up to **Lead
+points** (5) before its milestone, if the climax before it has resolved, the major's beat gap is at
+least 3 sessions and a player who qualifies is online (`RZ_Majors.Reached`). Never past the gate,
+and it never moves research.
+
+**Between beats:** a beat gap of **Between beats** (4) sessions while the next act waits on a
+milestone more than 6 sessions away: that faction's smaller stories are considered first and start
+twice as often, and one of its people says a line about what's coming, once a real day. It never
+opens an act, pays nobody and moves no vote.
+
+**Hard stops:** at the gate (research 90%, the stand or the cure), and in the wipe's last 24 hours
+with no cure, every act still open that doesn't run past the gate takes its default at half world
+effect, paying nobody (`RZ_Majors.HardStops`). Past the gate run only A
+Week On, the stand acts and the codas (and with no cure at the wipe, those too).
+
+**Pay and the budget.** While the engine runs a major's hooks (`RZ_Majors.Enter`), `NudgeMorale` and
+`NudgeStrength` draw on the [season budget](#the-season-budget)'s majors lane, and standing goes
+through the majors' caps (`ClipPay`): per player per faction 25 Fame, 40 Infamy and 60 Favor over one
+major, 40, 40 and 80 across all majors a season. A stage mission's own contract pay is outside it.
+Each major sets at most three season weights (`SetContractWeight`).
+
+**The season story.** Each major's ending writes `RZ_Majors.SeasonStory(faction, key, ending,
+branch, line, deciders, fallback)`: its epilogue line and up to four deciders by identity. It's saved
+with the questlines and written into `last_season.json` (`stories`) at the cure and at a wipe without
+one. At the cure the epilogue line is told as a headline: the controlling faction's major first, then
+one line from each other major.
+
+**The journal.** Every player sees the four majors in their journal (the questline rows): the act,
+the rule or stance in force, the voters' leans in words, and any last call, under the stage's brief.
+
+| Setting (Director > Majors) | Default | What it does |
+|---|---|---|
+| Enabled | on | The four majors (needs Questlines on) |
+| Lead points | 5 | How far before its milestone a climax may open while research stalls (0: never) |
+| Grace sessions | 1 | The grace after a last call |
+| Hold limit | 1 | How long an engaged act can hold its anchor |
+| Stall points | 1 | Research over 3 real days with play below which it counts as stalled |
+| Between beats | 4 | The beat gap, in sessions, before a major fills it |
+| Slots | 2 | Majors' stage missions offered at once |
+
+*Simplified:* offered time counts while an act's stage is open, not only while it's on the offer
+list; story rules for the next season, the hall-of-fame lines, the codas' standing versions and
+second airings, and the journal's own "The season" tab are planned
+([designs/MAJORS.md](../designs/MAJORS.md)).
+
 ## World facts
 
 Code: `World/RZ_WorldFacts.c`, reached as `gm.GetFacts()` or `RZ_WorldFacts.Get()` (never null:
@@ -1361,9 +1488,11 @@ canon town can change hands during the season: read `TownOwner` when you use it.
 | `origin.clinic` | town | the clinic the first patient was brought to | the town or city nearest the site, not the lab's or the site's own |
 | `origin.patient` | words | his surname | a surname |
 | `origin.told`, `origin.told.month` | number (`CanonInt`) | the date the Institute was told | day 3–24, month 1–12 |
-| `bastion.orders` | words | what the last orders said | `expended` (60%) or `relief` |
+| `bastion.orders` | words | what the last orders said | `expended`, always (pinned by Await Relief; "Command meant to come and couldn't" is only what some posts believe) |
 | `redhand.pit` | spot | where the Red Hand's fight pit is | 60–150 m behind the boss's seat at the Red Hand stronghold, else a crew boss's seat, else its stronghold or an outpost, else outside a quiet town |
 | `redhand.pit.town`, `redhand.pit.seat` | town; number | the pit's town; the seat it's behind (a leader id, -1 none: `LeaderName(id)` names whoever sits there now) | made with the pit |
+| `redhand.crossroads` | spot | Rudi's crossroads (the Red Hand's major) | the road junction (the road point with the most others within 30 m) 300–800 m from the boss's seat, not within 400 m of a safehouse or the lab and off the line; without roads, a dry spot 300–800 m out |
+| `day2.checkpoint` | spot | where the Day 2 column was turned back (the majors' codas) | the sealed road checkpoint nearest the Haven stronghold's safehouse, preferring the north; without checkpoints, that safehouse. The walks and readings halt 150 m short of it toward the stronghold, the paper's table 110 m (`RZ_MajorHelp.NorthRoad`) |
 
 **Claims.** Who is using a subject right now, so two stories don't use the same house, leader or
 wanderer at once. `Claim(subject, owner)` (true if it was free or already that owner's),
@@ -1711,7 +1840,7 @@ is logged (`Budget: <lane> morale <n> for <faction> clipped to <n>`) and becomes
 
 | Lane | Morale | Strength | Draws on it |
 |---|---|---|---|
-| Majors | ±20 per faction a season; ±15 per major; ±10 a call | ±8; ±5 per major; ±5 a call | the majors (planned) |
+| Majors | ±20 per faction a season; ±15 per major; ±10 a call | ±8; ±5 per major; ±5 a call | the majors ([The majors](#the-majors)) |
 | Contracts and errands | ±10 per faction a season day | ±4 per faction a season day | every contract's morale and strength today; errands (planned) |
 | The finale | ±10 per faction, never clipped by the majors | ±5 per faction | the finale (planned) |
 | The epilogue | ±5 per faction, inside the majors lane | — | the epilogue week (planned) |
@@ -1729,7 +1858,7 @@ dusk window (18:30–20:30) entered with a player online. One set piece an eveni
 `Hold(key, pos)` holds the evening until `Release(key)`; a set piece that finds it held waits for the
 next free one, and after two waits (**Shared > Set piece waits**) `MustRun` says it runs at the next
 free hour. Errands deal nothing within 600 m of the set piece holding the evening (`IsQuietAt`).
-Saved with the season. The majors and the epilogue's pieces book it (planned).
+Saved with the season. The majors' set pieces book it ([The majors](#the-majors)); the epilogue's pieces will (planned).
 
 ## Town memory
 

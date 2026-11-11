@@ -195,8 +195,16 @@ optional condition in the conversation syntax (`cure>=50`), a weight and the tex
 - `python3 tools/voice_sim.py` replays the picker offline: pool sizes and joke shares per mood, and
   which pools are too small for a veteran's day (a pool's jokes should number at least 1.5 × visits
   × share; under that, the pool falls back to plain lines rather than repeat a joke).
+- **Running jokes on the majors' flags** (`RunningJokes` in the defaults): people's lines that run
+  while a state stands and stop when it changes, never on a day. The Red Hand's kettle for Bastion
+  while `orders.stance` is unset or 1, and "expended" at 4; Bastion's call at 1, "civilians first" at
+  2, Command answering at 3; the Haven's rule (`haven.rule` 1–4, the arrangement said sideways); the
+  Red Hand's book jokes until `book.debts_dead`, then a plain line; Halcyon noticing once a page is
+  in the open (`majors.pages_open`). They're ordinary `person` lines with a condition, so the joke
+  memory and the mood's share apply.
 - *Not built yet:* the radio's pools, rumours and chatter in the bank, the shared channels' joke
-  memory and running jokes ([designs/TONE.md](../designs/TONE.md)).
+  memory, and the running jokes on the open channels (the nightly kettle line on air)
+  ([designs/TONE.md](../designs/TONE.md)).
 
 ## Conversations
 

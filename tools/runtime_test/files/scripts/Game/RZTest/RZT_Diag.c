@@ -120,6 +120,7 @@ modded class RZ_GameModeComponent
 	protected int m_iRZTStep;
 	protected bool m_bRZTMissionsDone;
 	protected bool m_bRZTQuestsDone;
+	protected bool m_bRZTMajorsDone;
 	protected ref array<string> m_aRZTQuestKeys;
 	protected int m_iRZTQuest = -1;
 	protected int m_iRZTQuestSec;
@@ -174,6 +175,7 @@ modded class RZ_GameModeComponent
 	override void OnGameModeStart()
 	{
 		super.OnGameModeStart();
+		RZT_Majors.Off(this);
 		for (int i = 0; i < GetSettlements().Count(); i++)
 		{
 			if (i % 3 == 1)
@@ -349,7 +351,13 @@ modded class RZ_GameModeComponent
 		if (!m_bRZTQuestsDone)
 		{
 			RZT_QuestTick();
-			if (m_bRZTQuestsDone)
+			return;
+		}
+		// The majors' phase (RZT_Majors.c): their acts, then the fallback checks
+		if (!m_bRZTMajorsDone)
+		{
+			m_bRZTMajorsDone = RZT_Majors.Tick(this);
+			if (m_bRZTMajorsDone)
 				m_iRZTDoneAt = m_iRZTSec;
 			return;
 		}

@@ -236,7 +236,10 @@ two players at one speaker can see different choices.
   someone {name} trusts can answer for it"* (a sway is still theirs to add).
 - **Waiting your turn.** A conversation left without a reply ends after 120 s (**Dialogue > Idle seconds**), or after
   45 s while another player stands within 8 m of the same person.
-- **Tallies.** `sway:<name>` adds one contribution per player to `tally.<name>`; the owning system
+- **Tallies.** `sway:<name>` adds one contribution per player to `tally.<name>`. A major's vote
+  reads its own: `sway:every_name.first.pot` (the major's key, the vote, the option's word: `pot`,
+  `workers`, `cards`, `tins`) swings one voter to that option per contribution when the sitting is
+  tallied ([DESIGN.md](DESIGN.md#the-majors)); the owning system
   counts at its own time.
 - **Vouch.** Trusted or better with the speaker's faction, within 8 m of someone talking to them:
   "[Vouch] '{name}'s with me.'" For 5 minutes, while you stay within 8 m, their persuade and lie

@@ -981,13 +981,11 @@ class RZ_WorldFacts
 			case "origin.patient": return RZ_NoteText.Surname(rng);
 			case "origin.told": return rng.Int(3, 25).ToString();
 			case "origin.told.month": return rng.Int(1, 13).ToString();
-			case "bastion.orders":
-			{
-				if (rng.Chance(0.6))
-					return "expended";
-
-				return "relief";
-			}
+			// Pinned (the majors, Await Relief): the Day 3 orders said "expended". "Command meant to
+			// come and couldn't" is only what some posts believe, in rumours
+			case "bastion.orders": return "expended";
+			case "redhand.crossroads": return RedHandCrossroads();
+			case "day2.checkpoint": return Day2Checkpoint();
 			case "redhand.pit": return RedHandPit(rng);
 			case "redhand.pit.seat":
 			{
@@ -1125,6 +1123,96 @@ class RZ_WorldFacts
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Rudi's crossroads (the Red Hand's major), a spot: the road junction nearest the Red Hand
+	//! stronghold's seat, 300-800 m out (outside the camp), not within 400 m of a safehouse or the lab
+	//! and off the line. A junction is the road point with the most other road points within 30 m.
+	//! Without roads: a dry spot 300-800 m from the seat.
+	protected string RedHandCrossroads()
+	{
+		RZ_Leaders leaders = m_GM.GetLeaders();
+		if (!leaders)
+			return "";
+
+		RZ_Leader boss = leaders.GetStronghold(RZ_EFaction.BANDITS);
+		if (!boss)
+			return "";
+
+		array<vector> points = {};
+		RZ_Perimeter.RoadPointsNear(boss.m_vPos, 800, points);
+		vector best = vector.Zero;
+		int bestCount = -1;
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		for (int i = 0; i < points.Count(); i += 3)
+		{
+			vector p = points[i];
+			float d = RZ_Util.DistXZ(p, boss.m_vPos);
+			if (d < 300 || d > 800 || RZ_Perimeter.IsNearLineAt(p))
+				continue;
+
+			if (m_GM.HasLab() && RZ_Util.DistXZ(p, m_GM.GetLabPosition()) < 400)
+				continue;
+
+			if (houses && houses.FindNearest(p, 400) >= 0)
+				continue;
+
+			int near = 0;
+			foreach (vector q : points)
+			{
+				if (RZ_Util.DistXZ(p, q) <= 30)
+					near++;
+			}
+
+			if (near > bestCount)
+			{
+				bestCount = near;
+				best = p;
+			}
+		}
+
+		if (best == vector.Zero)
+			best = RZ_Mission.LandPointNear(boss.m_vPos, 300, 800);
+
+		return PosText(best);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the Day 2 column was turned back (the majors' codas), a spot: the sealed road checkpoint
+	//! nearest the Haven stronghold's safehouse, preferring the north. Without checkpoints, the
+	//! stronghold safehouse's gate. The stand point and the paper's table are measured from it
+	//! (RZ_Majors.NorthRoad).
+	protected string Day2Checkpoint()
+	{
+		vector home = vector.Zero;
+		int chair = RZ_HavenQuest.ChairHouse(m_GM);
+		if (chair >= 0)
+			home = m_GM.GetSafehouses().Get(chair).m_vPos;
+		else if (m_GM.GetSafehouses() && m_GM.GetSafehouses().Count() > 0)
+			home = m_GM.GetSafehouses().Get(0).m_vPos;
+
+		array<vector> posts = {};
+		if (m_GM.GetPerimeter())
+			m_GM.GetPerimeter().GetCheckpoints(posts);
+
+		vector best = home;
+		float bestScore = float.MAX;
+		foreach (vector cp : posts)
+		{
+			// North counts: a checkpoint 1 km further but north of the house scores as close
+			float score = RZ_Util.DistXZ(cp, home) - Math.Clamp(cp[2] - home[2], -1000, 1000) * 0.3;
+			if (score < bestScore)
+			{
+				bestScore = score;
+				best = cp;
+			}
+		}
+
+		if (best == vector.Zero)
+			return "";
+
+		return PosText(best);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1604,7 +1692,7 @@ class RZ_WorldFacts
 	static bool IsBuiltInCanon(string key)
 	{
 		array<string> keys = {"origin.site", "origin.site.town", "origin.clinic", "origin.patient", "origin.told", "origin.told.month",
-			"bastion.orders", "redhand.pit", "redhand.pit.town", "redhand.pit.seat"};
+			"bastion.orders", "redhand.pit", "redhand.pit.town", "redhand.pit.seat", "redhand.crossroads", "day2.checkpoint"};
 		return keys.Contains(key);
 	}
 

@@ -1,11 +1,15 @@
 # Questlines
 
-Long stories that run over many sessions, New Vegas style: three per faction, and two for the
-Long Table. Each stage can be done several ways. Choices set flags that later stages, other
+Long stories that run over many sessions, New Vegas style: one season-long major per faction
+([The majors](#the-majors)), the smaller stories beside them (three per faction at first, and two for
+the Long Table). Each stage can be done several ways. Choices set flags that later stages, other
 questlines and the ending read. Every ending pays the player and moves the world a little,
 always through systems that already exist.
 
-**Status: all fourteen are built** (each section notes how the code differs from the design; the example Short Weight is in [MISSIONS.md](MISSIONS.md#questlines)).
+**Status: all fourteen are built, and the four majors** (each section notes how the code differs from the design; the example Short Weight is in [MISSIONS.md](MISSIONS.md#questlines)).
+While the majors run, five of the fourteen live inside them: H1 is Every Name's act III, B1 is Await
+Relief's acts I–III, R1 is The Book Has to Balance's acts 2–3, and HC1 and HC3 are Proof's inner
+lines. Their sections below stay as their own stages' reference.
 How a questline runs (stages, waits, conditions, flags, who
 takes part, saving) is in [DESIGN.md](DESIGN.md), "Questlines". Who the people are is in
 [LORE.md](LORE.md); standing, tiers and leaders are in [REPUTATION.md](REPUTATION.md); the
@@ -32,6 +36,150 @@ missions the stages reuse are in [MISSIONS.md](MISSIONS.md).
 
 A session is a few hours of play. A questline usually takes 2–5 real days, because of its
 waits and because some stages only open at dusk, at night or at a cure percentage.
+
+## The majors
+
+✅ Built (phase 5, simplified as each major says). One season-long story per faction, its climax
+on a cure milestone. Each stronghold leader has a page they'd rather burn, and every page put in the
+open (`majors.pages_open`) makes the next leader's "read it" one step easier, once. How the lane,
+the acts, the votes and the dynamic fallbacks work: [DESIGN.md](DESIGN.md#the-majors). Their stage
+missions: [MISSIONS.md](MISSIONS.md#the-majors-acts). What's still designed only:
+[designs/MAJORS.md](../designs/MAJORS.md).
+
+| Major | Faction | Key | Grows out of | Climax | The page |
+|---|---|---|---|---|---|
+| [The Book Has to Balance](#the-book-has-to-balance) | The Red Hand | `book` | R1 The Book (acts 2–3) | Settling day, 50% | The book's back page |
+| [Await Relief](#await-relief) | Bastion | `orders` | B1 Await Relief (acts I–III) | The muster, 60% | The Day 3 orders |
+| [Every Name](#every-name) | The Haven | `every_name` | H1 The List (act III) | The second sitting, Aftermath or 70%, after the muster | The List |
+| [Proof](#proof) | Halcyon | `proof` | HC1 (`weeks`) and HC3 (`authors`) as inner lines | The reading, 75% | The three site-log pages |
+
+The climaxes come in that order. After the cure each major has a coda (its last act) in the
+epilogue: the Haven's Gate, Bastion's last call and last roll, the Paper, then the Red Hand's last
+line, in that order, at the north road (`day2.checkpoint`) and Rudi's crossroads.
+
+**Rules every major keeps.** One per faction, outside Max active. Every act has a default, which
+pays nobody and reads the stronghold leader's traits or the rule in force. Stronghold leaders are
+never replaced; their traits are only read. Pay goes through the majors' caps (25 Fame, 40 Infamy,
+60 Favor per player per faction a major; 40, 40, 80 across them), and world effects through the
+season budget's majors lane. A major's ending writes the season's story (`last_season.json`).
+Persuade is the built fixed score. Every sway, ask and persuade is an action on a person in the
+act's scene.
+
+### The Book Has to Balance
+
+The Red Hand ([LORE.md](LORE.md#the-red-hand)). The boss holds the book, and the cure is coming:
+when the line stands down, a toll is a lorry across a road, and the Red Hand is only what it's owed.
+The back page (who outside owes it) goes missing in front of every crew. Code:
+`Missions/Questlines/RedHand/RZ_Major_Book.c` (a subclass of R1's class).
+
+| Act | Opens | Anchor, need, patience | What players do | Default | Status |
+|---|---|---|---|---|---|
+| 1. Send him off | Collapse's second evening; a set piece 16:00–21:00 at Rudi's crossroads | 50%; 1; 2 offered evenings | Ask a crew boss to come (persuade 1, ★ Ex-Con), pay a greedy one (15 Favor), hold the crossroads 4 min | The crews send Rudi off without players; the page goes missing the same way | ✅ |
+| 2. The torn page | After act 1 (R1 stages 1–2, as built) | 50%; 1 | As R1 | The thief burns the page and runs (`book.burnt`, `book.thief` 5) | ✅ |
+| 3. Who gets the page | After act 2 (R1 stages 3–6, as built) | 50%; 3 | As R1; its endings are the act's results (the page in the book, kept, Bastion's, burnt) | The page stays out; the thief goes in the pit | ✅ |
+| 4. Settling day | 50% (or a lead), a session after act 3; a set piece | the muster; 1; 2 offered evenings | Hold the crossroads while it's read; laugh him off (Known); name him (persuade 2, only with the page in the book); speak for him (persuade 2); stand with him (+15 Infamy); tell Bastion where the crews will be (Bastion: Known); offer his crew a Haven door (Haven: Known) | Page in the book: laughed off; else purged half the time | ✅ |
+| 5. The last page | 80% (or a lead), a session after settling day, after the reading; at the boss's seat | the gate; 1; 2 offered evenings | Stand for nothing (persuade 2); sell it by the page (whole book); send it off loud (persuade 2, 1 with a Paranoid or Pragmatist boss, a living thief or a broken book); keep the first page out (Trusted); lift the book for Bastion (unseen); hand the bill to the lab (Halcyon: Known; refused under stance 1 or 3: stand for nothing instead); warn the director | The boss's traits: Paranoid or Pragmatist send it off loud; Greedy sells a whole book; Ruthless, Greedy or a broken book: the boss takes what's owed; else the bill | ✅ |
+| 6. At the lab road | The final stand | past the gate | Sent off loud: hold the fire at the crossroads 3 min first. Then `book.stand` from the last page (1 held the road, 2 took the room, 3 beaten off, 4 nothing) | Read as data | ✅ simplified: the stand itself is the finale's; Take the Lab runs as built |
+| 7. The last line | The epilogue, after the Paper | the wipe | Stand at the lorry for your line; ask about the first line (Trusted); hold the crossroads for the dead | The boss closes the book alone | ✅ |
+
+| Ending (`book.last`) | The world | Epilogue line | Status |
+|---|---|---|---|
+| **The book balances** (1 the bill, 2 stood for nothing) | Red Hand morale +7, strength +3; the deciders +15 Red Hand Fame; Debt Collection ×1.2; stood for nothing: a Halcyon–Red Hand truce | *"When the gates opened, the boss of the Red Hand walked out with a book under one arm, and everyone in it watched."* | ✅ |
+| **Sold by the page** (3) | Red Hand morale +3, strength +3; the deciders +15 Red Hand Fame | *"...everyone in the Zone had bought their own page back from the Red Hand."* | ✅ |
+| **Sent off loud** (4) | Red Hand morale −5, then +5 after the fire; `book.debts_dead`; a page in the open; a Haven–Red Hand truce; Protection Racket and A Quiet Arrangement ×0.8; holders of the fire +15 Red Hand and +10 Haven Fame | *"...the Red Hand walked out with nothing written down. Some of them went home."* | ✅ |
+| **Bastion's file** (5) | Red Hand morale −7, strength −2; Bastion morale +5; a Bastion–Red Hand feud; Bust Out ×1.2 | *"...Bastion handed over a ledger with half the Zone in it."* | ✅ |
+| **The book doesn't balance** (6) | Red Hand morale −5; The Rat ×1.2 | *"...the Red Hand's book still didn't balance. Somebody had the page."* | ✅ |
+
+*Simplified:* the forgery, the sale of the page to the rival, the chair's bid for the ash and the
+crew name at the pit aren't built; the sale by the page and the bill are one choice each (no courier
+run, no doses moved); the crews at the crossroads are words, and the lorry and bonfire props aren't
+used. R1's own endings still pay as built, inside the caps.
+
+### Await Relief
+
+Bastion ([LORE.md](LORE.md#task-force-bastion)). The burst after the call is Bastion's own Day 3
+signal; the runner's page says "expended". The CO has known since Day 3. Before the gates open, the
+CO says in front of every post what Bastion is. Command never answers. Code:
+`Missions/Questlines/Bastion/RZ_Major_Orders.c` (a subclass of B1's class).
+
+| Act | Opens | Anchor, need, patience | What players do | Default | Status |
+|---|---|---|---|---|---|
+| I. Reply received | Collapse, after a nightly call (B1 stages 1–2); any commander gives it if no Independent one exists | the muster; 2 | As B1 | A patrol walks the runner's road; the page goes in the stove | ✅ |
+| II. Who reads it | B1 stage 3, as built | the muster; 1 | As B1 | The stove | ✅ |
+| III. The reckoning | B1 stages 4–5; its endings are the act's results (`orders.reckoning` 1–4) | the muster; 2 | As B1 | The branch settles itself at half effect | ✅ |
+| IV. Effective Strength | Overrun, a session after act III; at the radio by the CO's seat | the muster; 3 | The confession, then the true count from the three posts nearest the stronghold: ask (Known; Independent: persuade 2, ★ Police or Soldier), read the roster at night (unseen), or buy the quartermaster's copy (15 Favor); hand the CO the count | The count stays padded (`orders.padded` 3) | ✅ |
+| V. The muster | 60% (or a lead), a session after act IV, after settling day; a set piece at the nightly call (19:00–22:30) | the gate; 1; 2 offered evenings | Keep the call (Known); read it to them (persuade 3, easier with the true count, proof, a Merciful or Idealist CO, `weeks.public`, a page in the open; harder with a Paranoid CO) and hold the stronghold's gate 3 min; answer it yourself (persuade 2, Known enough with the Haven counted, proof the lab knew, or a Ruthless or Paranoid CO); hold the relay for the Red Hand 3 min (Trusted, or Known with `orders.rh_knows`, `.mocked` or `pilot.redhand`; always Trusted after `book.settled` 5) | The CO decides alone: a Merciful or Idealist CO after "The men were told": All Stations; a Ruthless or Paranoid CO: Bastion, Command; else the call stands | ✅ |
+| VI. The last call and the last roll | The epilogue, after the Gate | the wipe | Read the last call at the radio; stand at the halt on the north road for Sedlak's roll | The CO reads it alone; Sedlak walks whoever's left | ✅ |
+
+| Ending (`orders.stance`) | The world | Status |
+|---|---|---|
+| **The Call Stands** (1) | Bastion morale +6, strength +3; the deciders +20 Bastion Fame | ✅ |
+| **All Stations** (2) | Bastion morale −8; Red Hand and Halcyon morale −3; a Haven–Bastion truce; a page in the open; Requisition ×0.8, Hearts and Minds ×1.2; the deciders +20 Bastion and +10 Haven Fame | ✅ |
+| **Bastion, Command** (3) | Bastion morale +8, strength +5; Haven morale −8; Requisition and Checkpoint Duty ×1.2; the deciders +25 Bastion Fame | ✅ |
+| **Expended** (4) | Bastion morale −10, strength −5; Red Hand morale +5; a Bastion–Red Hand feud; Struck Off and Requisition ×1.2 | ✅ |
+
+*Simplified:* the copies aren't collected before "keep the call", the padding isn't reported or
+covered post by post, the disguise trick, the curfew walk and Bastion's side at the relay aren't
+offered; the presence floor, the curfew and the one-night mute aren't set; the rank and crew names
+aren't kept.
+
+### Every Name
+
+The Haven ([LORE.md](LORE.md#the-haven)). When there isn't enough, who is the Haven for? The council
+writes the second rule down, then keeps or changes it once someone has found out what the first
+council did, and whose pencil it was. Code: `Missions/Questlines/Haven/RZ_Major_EveryName.c` (a
+subclass of H1's class, under a new key).
+
+| Act | Opens | Anchor, need, patience | What players do | Default | Status |
+|---|---|---|---|---|---|
+| I. The ones who can't work | The season's first evening; a set piece 17:00–21:00 at the house nearest the stronghold | Collapse; 1; 3 offered evenings | Talk the head round (persuade 2, 1 with a Merciful head; ★ Elder, Nurse, Doctor), pay the stores (20 Favor), walk two to a Bastion post (Bastion: Known), walk two back to the road | A Merciful or Idealist head takes all four; any other turns two away | ✅ |
+| II. The first sitting | Collapse, a house short (or the Haven's need is food; Overrun anyway); a session later, a set piece at supper | Overrun; 1; the first offered evening | Speak for a rule to each head (Known); table Bastion's cards (Bastion: Known) or the crossroads' tins (15 Red Hand Favor); read the best-fed house's stores (unseen: one head to the pot). The vote (`RZ_QuestVote`) is taken at the end of supper; the chair breaks ties | The council votes as data | ✅ |
+| III. The List | After the first sitting, once a house has lost people or The List contract is done (H1 stages 1–4, as built) | 70%; 4 | As H1; sets `list.truth` (1 the farm and whose hand, 2 only "a farm out that way") | Knowledge only: the open stages close | ✅ |
+| IV. The hungry week | Overrun, or Haven morale under 45; at the family's house, else the hungriest | 70%; 2; 3 sessions | Pay for the food (30 Favor), hold the house, walk two to a Bastion post, walk three to the far house. The heads lean the way it went | The rule's own answer | ✅ |
+| V. The second sitting | Aftermath or 70% (or a lead), never before the muster; a set piece at supper | the gate; 1; the first offered evening | The vote again, from the first's leans; read the List out (persuade 2, easier with proof and a page in the open, harder with half the truth) and hold the gate 3 min; give the copies to the chair; carry them to Bastion or a crew boss (unseen) | Votes as data; the List is kept unless the chair knows the truth and is Merciful or Idealist | ✅ |
+| VI. A week on | After the sitting: a house goes short, or a 2-session gap | past the gate; 1; 2 sessions | By the rule: split it between the houses (the pot), feed the far house (20 Favor), pay the collection (25 Red Hand Favor) | The numbers stand | ✅ simplified: one scene, a choice per rule |
+| VII. The Gate | The epilogue's first evening | the wipe | Stand with the chair at the bend; read the crossed names yourself (persuade 2, ★ Elder, with the truth, when the ending isn't Every Name); hold the road | The chair reads it with the houses' people | ✅ |
+
+| Ending | The rule (`haven.rule`) | The world | Status |
+|---|---|---|---|
+| **Every Name** | 1, the pot, and the List read | H1's "The names read" (Haven morale −8, `list.read`, a head steps down); a page in the open; the deciders +15 Haven Fame | ✅ |
+| **The Closed Book** | 1, the pot, the List kept | Haven morale +3; `list.buried`; the deciders +10 Haven Fame | ✅ |
+| **The Far House** | 2, workers first | Haven morale +5 (−8 if the List was read), strength +3 | ✅ |
+| **Counted** | 3, Bastion's cards (`haven.counted`) | Haven morale −5; Bastion morale +5, strength +3; Requisition ×0.8 | ✅ |
+| **Paid at the Door** | 4, the arrangement (`haven.paying`) | Haven morale −5; Red Hand morale +5, strength +3; A Quiet Arrangement ×1.2 | ✅ |
+
+*Simplified:* the raid on the first sitting, the winter store, the bus driver and the boy, the
+other factions' pages at supper, the cards' curfew and the rule's readers in upkeep, trucks and
+Requisition aren't built; the family are words.
+
+### Proof
+
+Halcyon ([LORE.md](LORE.md#halcyon)). The paper is the only thing from this Zone that will ever go
+out. Its first page says Day 1; the clinic's file says three weeks earlier, and the director's site
+log says what the lab did with them. Code: `Missions/Questlines/Halcyon/RZ_Major_Proof.c`.
+
+| Act | Opens | Anchor, need, patience | What players do | Default | Status |
+|---|---|---|---|---|---|
+| I. Day One | Early Outbreak | 25%; 2 | At the clinic: copy the margin first (unseen). Then hand the file in sealed, ask the director to read the date (persuade 2, ★ Doctor, Lab Tech), give it to Bastion's adjutant or the chair's clerk. Sets `proof.day_one` (1–4) and `weeks.records` | The field lead fetches it: Day 1 stays the lab's | ✅ simplified: a scene, not Patient Zero's Ledger |
+| II. The Three Weeks | 25%, a session after act I, or at once after the copy: HC1 starts (as built) | 50%; 4 | As HC1; `proof.weeks` and `proof.pages` from its ending | Not started when squeezed: nobody asked (`proof.weeks` 0) | ✅ |
+| III. Authors | 50%: HC3 starts (as built); done at its stage 5 | 75%; 3 | As HC3; it publishes `authors.terms` | Goes on | ✅ |
+| IV. The reading | 75% (or a lead), after the second sitting; a set piece 17:30–20:30 at the lab, never in a stand | the gate; 1; 2 offered evenings | Ask for the whole of it (persuade 3, easier when the Zone knows, the pages were read, the volunteers named, a page in the open, an Idealist or Merciful director; harder with a Paranoid or Ruthless one or nobody asked); stand with the director (Trusted); put the pages on the table; take up the chair's question (Haven: Known, when the clerk sits); have Bastion countersign (Bastion: Known, with terms, the file or the notebook; never under Expended) | The director's draft stands | ✅ |
+| V. The final stand | The cure | past the gate | The finale's; HC3 reads it as built | — | ✅ |
+| VI. The Paper | The epilogue, after Bastion's walk | the wipe | Walk the case to the table on the north road (110 m, outside the kill zone) and set it down | The duty officer walks it down alone | ✅ |
+
+| Ending (`proof.first_page`) | The world | Status |
+|---|---|---|
+| **The Whole of It** (2) | Halcyon morale −8 (−3 if the three weeks were public), Haven morale +5; a Haven–Halcyon truce; a page in the open; `proof.haven_gate`; the director's two minutes on the open channel | ✅ |
+| **Under Seal** (4) | Bastion strength +3; Halcyon morale −5, Haven −3 | ✅ |
+| **Day 1** (1) | The Zone didn't know: Halcyon morale +5, strength +2. It knew: "Origin: under investigation", Haven morale −3, a rumour | ✅ |
+| **Unsigned** | No cure by the wipe: the paper stays in the lab's safe | ✅ |
+
+*Simplified:* "Before the stand" (selling or clearing the pages, the night swap) isn't built, so
+Two Tins a Copy can't happen; HC1's new choice (keeping the director's pages) isn't built, so the
+pages-on-the-table choice needs `proof.pages` 2 from another source.
+
+---
+
 
 ## How to read a questline
 
@@ -104,6 +252,9 @@ Siding against a faction matters in that faction's own questlines:
 ## The Haven
 
 ### H1. The List
+
+While the majors run, H1's stages 1–4 are [Every Name](#every-name)'s act III, and its endings are
+reached through the second sitting; H1 isn't offered on its own.
 
 Every Haven house keeps a list of names, and some are quietly crossed out. A woman at a safehouse
 found her husband's name crossed out while he was still out on a supply run. He never came
@@ -235,7 +386,8 @@ season days, so it tests the house's wire.
 
 ### B1. Await Relief
 
-✅ Built ([MISSIONS.md](MISSIONS.md#await-relief-task-force-bastion)); the changes from this design
+While the majors run, B1 is [Await Relief](#await-relief)'s acts I–III, and its endings are act III's
+results. ✅ Built ([MISSIONS.md](MISSIONS.md#await-relief-task-force-bastion)); the changes from this design
 are listed under its endings.
 
 Every night the operator reads the numbers to Command and writes "No reply". Some posts chase a
@@ -395,6 +547,9 @@ people what it looks like from the ground.
 
 ### R1. The Book
 
+While the majors run, R1 is [The Book Has to Balance](#the-book-has-to-balance)'s acts 2–3, and its
+endings are act 3's results.
+
 Everything owed is in the book, and the book has to balance. Last week somebody tore a page out:
 the one nobody is meant to read, with who *outside* the Red Hand owes it and for what. A Bastion
 outpost commander for rifles that fell off the inventory, a Halcyon field lead for live ones, a
@@ -508,6 +663,8 @@ refunded; the poisoned well doesn't start Fever Town.
 
 ### HC1. The Three Weeks
 
+While the majors run, HC1 is [Proof](#proof)'s act II and starts only from it.
+
 The first case was three weeks before the gates closed, and the Institute was told. Someone
 wrote "notify the Institute" in the margin and underlined it twice. A young field lead has found
 the clinic's copy and wants to know what the lab did with those three weeks. The research
@@ -587,6 +744,9 @@ as `walk.knows_other_two` and `walk.lab_road`.
 | **Sold** | Red Hand Fame +15, 40 Red Hand Favor; 35% found out: Haven Infamy +25 | A headline about something new in the Red Hand's pit |
 
 ### HC3. Authors
+
+While the majors run, HC3 is [Proof](#proof)'s act III and the stand, and starts only from it; it
+publishes `authors.terms`.
 
 At half research, the cure stops being a hope and becomes something a person can own. The
 research director would trade what the lab knows for Bastion's guns at the final stand. A field
@@ -775,6 +935,18 @@ events and rumours. A flag is 1 when set, unless its row gives other values.
 | `pilot.lz_kept` | Last Helicopter | B3 | Someone kept an LZ: B3 can start |
 | `pilot.down_until` (Unix time), `pilot.down_reason` (1 new pilot, 2 airframe), `pilot.new_pilot`, `pilot.back_told` | B3; Rescue the Pilot | Last Helicopter, Rescue the Pilot | The helicopter is grounded or lost until then; the first run after says why (`new_pilot` seeds the new pilot's name, `back_told` marks it said) |
 | `pilot.stays`, `pilot.grounded`, `pilot.line`, `pilot.redhand`, `pilot.heli_lost`, `pilot.dead` | B3; Rescue the Pilot (`dead`) | B3 (`dead`); (facts) | How the last pilot's story ended; the helicopter lost; its pilot dead (B3 never starts) |
+| `majors.pages_open` | the majors (the book read whole, Sent off loud, All Stations, the List read, the whole of the first page) | every major's "read it" check | One step easier, once per major |
+| `book.sendoff`, `book.rival` | The Book Has to Balance, act 1 | settling day | How many crew bosses came and stayed (0–3); the rival's seat id + 1 (0: the boss's second) |
+| `book.settled` | settling day | the muster | 1 laughed off, 2 purged, 3 pulled into line, 4 walked to the Haven, 5 Bastion raided the camp (the Expended betray needs Trusted), 6 stood with |
+| `book.last`, `book.stand`, `book.debts_dead`, `book.first_page`, `book.coda` | the last page, the stand, the last line | the last line; the epilogue | The last page's answer (1–6); how the Red Hand turned up at the stand (1–4); every debt died with the book; the boss keeps the first page; the coda ran |
+| `orders.reckoning`, `orders.count`, `orders.padded` | Await Relief, acts III–IV | the muster, the last call | B1's ending + 1; the true count; posts still padded |
+| `orders.stance` | the muster | the Haven's sittings (no cards after 4), the reading (no countersignature under 4), the last page (no bill under 1 or 3), the voice bank, the last call | 1 the call stands, 2 all stations, 3 Bastion, Command, 4 expended |
+| `orders.coda`, `orders.last_line` | the last roll | Proof's paper | The last call and roll ran |
+| `every_name.family`, `every_name.week`, `every_name.ending`, `every_name.held`, `every_name.far_fed`, `every_name.crossed_read`, `every_name.coda` | Every Name | its own acts; Bastion's last call (after the Gate) | The family (1 all in, 2 two to Bastion, 3 two turned away); the hungry week's answer; the ending (0 Every Name … 4 Paid at the Door); A Week On held; the far house fed; the crossed names read at the Gate; the Gate ran |
+| `haven.rule`, `haven.counted`, `haven.paying` | the sittings | the muster ("Answer it yourself" at Known under 3), the voice bank | 1 the pot, 2 workers first, 3 Bastion's cards, 4 the arrangement |
+| `list.truth` | Every Name, act III | the second sitting | 1 the farm and whose hand, 2 only "a farm out that way" |
+| `proof.day_one`, `proof.copy`, `proof.weeks`, `proof.pages`, `proof.first_page`, `proof.haven_gate`, `proof.coda` | Proof | the muster (`day_one` 3), the reading, the last page | Who knows the date (1–4); a copy of the margin; HC1's ending (0 nobody asked, 1 record, 2 public, 3 Bastion); where the site-log pages went (1 stove, 3 read, 4 Bastion's file); the first page (1, 2, 4); a Haven group at the gate; the paper sealed |
+| `authors.terms` | HC3 stage 3 | the reading | 1 agreed, 2 bargained, 3 refused |
 | `book.bastion` | R1 | B1, Bust Out | Bastion knows which of its commanders sold rifles: B1's outpost commander is that one, if they're still in the chair (value: that commander's leader seat id + 1; 0 if nobody on the page is still in the chair). Bust Out ×1.2 |
 | `book.returned`, `book.kept`, `book.burnt` | R1 | — | What became of the page (or `book.bastion`) |
 | `book.thief` | R1 | — | The thief: 1 went in the pit, 2 someone took his place, 3 his debt was paid, 4 walked to the Haven, 5 ran |

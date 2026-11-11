@@ -108,6 +108,13 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! An inner line of Proof (Halcyon's major) while the majors run: only Proof starts it.
+	override bool StartsOnItsOwn()
+	{
+		return !RZ_Majors.IsOn();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanStart(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (!gm.GetQuestlines() || gm.GetQuestlines().WorldFlag(FLAG_RECORDS) != 1)

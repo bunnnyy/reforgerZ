@@ -1,11 +1,11 @@
 # Designs
 
-**Status: designed; phases 1 to 4 and tribes phases 1 to 5 built.** Approved by the author on 2026-11-11.
+**Status: designed; phases 1 to 4, phase 5 in part and tribes phases 1 to 5 built.** Approved by the author on 2026-11-11.
 
 This folder holds the approved designs for the rest of the game: who you are, what you do, how it sounds,
 the four majors, the cure's finale, the epilogue week and the infected. Phases 1 to 4 of the plan (the shared engine,
 reputation's names; talk: the trees, the voices, the season mood and the voice bank; small things everywhere:
-errands' core, the mission style's framework, the world memory's writers; the mission style in full) and tribes phases 1 to 5 (the crawlers, the land
+errands' core, the mission style's framework, the world memory's writers; the mission style in full), phase 5 in part (the four majors' engine and stories) and tribes phases 1 to 5 (the crawlers, the land
 grid in use, the agent budget, which is also the one body budget; the tribes and the behaviour layer; their life cycle;
 the people's side: words, knowing, the packs' contracts and events, the cure's hooks, the last week; the great one, signs and
 sounds) are in code; they
@@ -32,6 +32,6 @@ live in `docs/`.
 | [DISGUISE.md](DISGUISE.md) | Borrowed kit and faction colours: what's left after phase 1 (built: [docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)): the side jobs still to build, phases 2 and 3 | Phase 4 built (disguise phase 1); phase 8 (phases 2 and 3) |
 | [INFECTED.md](INFECTED.md) | Tribes in the wild and crawlers in the towns: lairs, ranges, alphas, day parties, hunts, the land, the last week | Steps 0.2 and 0.3; tribes phases 1 to 5 built ([docs/INFECTED.md](../docs/INFECTED.md)) but for the small rules each section lists, the people's rest and the finale's live tissue (with phase 6) |
 | [BEHAVIOUR.md](BEHAVIOUR.md) | What's left of how the infected move and hunt (the layer is built: [docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)): hearing beyond shots, blood, shrieks, doors, the reactions table, the regroup, the ankle grab and the client effects, the small rules | Tribes phases 1–3 built; the rest not yet scheduled, the client effects after a client test |
-| [MAJORS.md](MAJORS.md) | One season-long story per faction, climaxes on cure milestones, dynamic fallbacks from what's happening on the server | Phase 5 |
+| [MAJORS.md](MAJORS.md) | What's left of the four majors (the engine and the four stories' acts, defaults, endings and codas are built: [docs/QUESTLINES.md](../docs/QUESTLINES.md#the-majors)): story rules, hall lines, the season tab, the stand's inputs, Before the stand, the remaining approaches and crossings | Phase 5 built in part |
 | [FINALE.md](FINALE.md) | The fight for control of the cure at 90%: five routes, the lock, the race, the stand as a control fight, terms | Phase 6 |
 | [EPILOGUE.md](EPILOGUE.md) | The week after the cure (168 hours): the Zone remembers the season, and closing work lets every story finish | Phase 7 (records from phase 3) |

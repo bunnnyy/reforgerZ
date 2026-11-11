@@ -194,7 +194,7 @@ Underneath the discipline, it does things nobody puts in the log:
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
 | **"No reply"** | Every night the log says the same thing, and everyone knows it will. Some operators swear they've heard something on the net after the call. Nobody leaves that written down: a post that starts waiting again stops looking after itself. | The nightly call on Bastion's open channel; the rumour that Bastion has a radio to the outside; No Reply, where something answers on the Command net and you decide what the log says (it is never Command, and who it was is never said); the Await Relief questline, where the broken burst after the call turns out to be Bastion's own Day 3 signal, still looping off a relay nobody acknowledged ([QUESTLINES.md](QUESTLINES.md#b1-await-relief)) |
-| **"Expended"** | Nobody at the posts knows what the last orders said. Some think Command meant to come and couldn't. Others have heard a word they don't repeat. Any copy that reaches the stronghold goes into the stove: the roster can carry "nobody is coming", and nobody wants to find out if it can carry "nobody ever meant to". | The Real Orders; the Day 3 runner's page in Await Relief |
+| **"Expended"** | Nobody at the posts knows what the last orders said. Some think Command meant to come and couldn't. Others have heard a word they don't repeat. The orders said "expended", and the CO knows: the stronghold's own operator decoded the Day 3 burst that night, and the CO read the whole text, burned it and said nothing. Any copy that reaches the stronghold goes into the stove: the roster can carry "nobody is coming", and nobody wants to find out if it can carry "nobody ever meant to". The one line the runner's page lost: *"Priority remains Institute site and personnel."* | The Real Orders; the Day 3 runner's page and the CO's confession in Await Relief ([QUESTLINES.md](QUESTLINES.md#await-relief)) |
 | **"Relief is on its way"** | What the loudspeakers still tell the towns, like the government's broadcast. Nobody at Bastion believes it, and no soldier says it to your face except as a joke. A town that thinks it's waiting keeps the curfew. | The loudspeaker at a Bastion post ("The man reading it has stopped believing it"); a soldier's "Every day, 'relief is on its way'. I've stopped counting." |
 | **"Struck off"** | Walking out on the rest is the worst thing a soldier can do, and it's rare. A deserter is struck off the strength as "KIA. Body not recovered", because nobody will say the other word on the net. His name stays on the board, his nail stays empty, and at the roll nobody answers for him. Then someone is sent to bring him home, one way or the other. | Struck Off, where a man on the roster as killed in action turns up alive ("You don't know what they're doing out there"; the Deserter wanderer knows where he sleeps), and Bastion's way is his tag on the empty nail; Desertion Route, where a commander lets two go and tells nobody; the two who walk off in Await Relief; the rumour that Bastion shoots its own deserters |
 | **"One of ours"** | Hurt one of theirs and you've hurt all of them. Bastion doesn't ask who started it. It keeps a list, it sends people, and it has a stockade. You come off the list by working it off, by paying, or by walking up to a checkpoint with empty hands. | Hit one of Bastion's people and its guns nearby turn on you ([shooting back](REPUTATION.md#what-makes-ai-shoot-you)); Bastion's Revenge need in a feud; Hunted by Bastion (its AI shoots you; hunter squads get your last position); Kill the Officer (Kill on Sight); "You're on a list here" at a camp gate; the stockade in Bust Out; amends (Burn the Bodies, Recon), paying, and Surrender ([REPUTATION.md](REPUTATION.md#working-off-infamy)) |
@@ -238,7 +238,7 @@ the tank under its forecourt. He told the queue it was empty, and that night sol
 to the same people, by the can: for money, then tins, then wedding rings. One of them had been at
 the front of that queue all day, and had nothing left to pay with. Rudi let them have ten litres on
 tick and wrote it in the back of his order book. That was the boss, and it's the first line in the
-book.
+book: *"Day 2. Ten litres, on tick."*
 
 From Day 3 the boss kept Rudi's tally, and wrote down more than diesel: who came round the back,
 what they paid with, and whose it had been. Rudi gave his new partner a bed in the office. On Day 4
@@ -255,7 +255,8 @@ tank key and his boots, put him out of his own garage at dusk and held the shutt
 hammered on it for a long time. By morning it was true.
 
 The boss painted one red hand over the marks Rudi's hands had left on the shutter, said it meant
-stop, and wrote *"Paid"* against the first line in the book. The tank key went on a new belt, and
+stop, and wrote *"Paid"* against the first line in the book. Under Rudi's last sum, in the same hand:
+*"Day 7. R. Kasper. Bitten."* The shutter is still at the crossroads, and the crews call it Rudi's. The tank key went on a new belt, and
 from then on diesel went only to lorries with a red hand on them, for a cut of the toll. The lorry
 on the hill road had its hand by noon. By Day 10 every crossroads that wanted diesel had one.
 

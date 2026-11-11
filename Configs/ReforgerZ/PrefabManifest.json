@@ -4754,6 +4754,12 @@
    "covers": "**Enabled**, max active (2, one per faction), minutes between (30), start chance (0.5), retry hours (6), once per season (on), **Wait scale** (1; 0.1 for a quick test) ([DESIGN.md](DESIGN.md#questlines))"
   },
   {
+   "category": "Director",
+   "object": "Majors",
+   "field": "m_MajorSettings",
+   "covers": "**Enabled** (on; needs Questlines on), lead points (5), grace sessions (1), hold limit (1), stall points (1), between beats (4), slots (2) ([DESIGN.md](DESIGN.md#the-majors))"
+  },
+  {
    "category": "Zombies",
    "object": "Zombie settings",
    "field": "m_ZombieSettings",
@@ -5106,6 +5112,21 @@
     "m_fRetryHours": "6",
     "m_bOncePerSeason": "1",
     "m_fWaitScale": "1"
+   }
+  },
+  {
+   "field": "m_MajorSettings",
+   "category": "Director",
+   "label": "Majors",
+   "cls": "RZ_MajorSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_fLeadPoints": "5",
+    "m_fGraceSessions": "1",
+    "m_fHoldLimit": "1",
+    "m_fStallPoints": "1",
+    "m_fBetweenBeats": "4",
+    "m_iSlots": "2"
    }
   },
   {

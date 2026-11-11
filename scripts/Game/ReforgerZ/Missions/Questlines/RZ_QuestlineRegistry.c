@@ -11,14 +11,15 @@ class RZ_QuestlineRegistry
 		q.Register(RZ_Quest_TheList);
 		q.Register(RZ_Quest_PriceOfTheDoor);
 		q.Register(RZ_Quest_EdgeOfTown);
+		q.Register(RZ_Major_EveryName);
 
 		// Task Force Bastion (Missions/Questlines/Bastion/)
-		q.Register(RZ_Quest_AwaitRelief);
+		q.Register(RZ_Major_Orders);
 		q.Register(RZ_Quest_Census);
 		q.Register(RZ_Quest_LastPilot);
 
 		// The Red Hand (Missions/Questlines/RedHand/)
-		q.Register(RZ_Quest_TheBook);
+		q.Register(RZ_Major_Book);
 		q.Register(RZ_Quest_Cargo);
 		q.Register(RZ_Quest_WellStory);
 
@@ -26,6 +27,7 @@ class RZ_QuestlineRegistry
 		q.Register(RZ_Quest_ThreeWeeks);
 		q.Register(RZ_Quest_OtherTwo);
 		q.Register(RZ_Quest_Authors);
+		q.Register(RZ_Major_Proof);
 
 		// Unaligned groups
 		// The Long Table (World/RZ_LongTable.c; only in a season that has one)
@@ -44,7 +46,8 @@ class RZ_QuestlineRegistry
 			"orders", "census", "pilot",
 			"book", "cargo", "well",
 			"weeks", "other_two", "authors",
-			"table", "place"};
+			"table", "place",
+			"every_name", "proof"};
 		return keys.Contains(key);
 	}
 }

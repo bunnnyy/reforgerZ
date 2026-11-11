@@ -93,6 +93,26 @@ class RZ_Director
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Played minutes until `stage` begins (0 once it has; a large number when a stage before it only
+	//! advances on infection). The majors' room before a stage anchor.
+	float MinutesToStage(int stage)
+	{
+		if (m_eStage >= stage)
+			return 0;
+
+		float total = -m_fStageMinutes;
+		for (int i = m_eStage; i < stage && i < m_aStages.Count(); i++)
+		{
+			if (m_aStages[i].m_fDurationMinutes <= 0)
+				return 100000 * 60;
+
+			total += m_aStages[i].m_fDurationMinutes / m_GM.GetSeasonSpeed();
+		}
+
+		return Math.Max(0, total);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_StageSettings GetStageSettings()
 	{
 		return m_aStages[m_eStage];

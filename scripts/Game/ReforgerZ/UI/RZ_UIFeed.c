@@ -770,7 +770,7 @@ class RZ_UIFeed
 			int id = -run.m_iId;
 			RZ_UILine lnQ = new RZ_UILine("M");
 			lnQ.AddInt(id).AddInt(RZ_EMissionKindUI.QUESTLINE).AddInt(run.m_Line.m_iFaction).Add(run.m_Line.m_sTitle).Add(stageTitle).Add(where).Add(dir);
-			lnQ.AddInt(-1).Add("Whoever takes the next step").AddInt(0).AddInt(0).Add(run.m_Line.JournalText(m_GM, run)).Add(part);
+			lnQ.AddInt(-1).Add("Whoever takes the next step").AddInt(0).AddInt(0).Add(q.JournalFor(run)).Add(part);
 			s += lnQ.End();
 
 			foreach (int n, string note : run.m_aNotes)

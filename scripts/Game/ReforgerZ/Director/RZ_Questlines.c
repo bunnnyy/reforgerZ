@@ -111,6 +111,8 @@ class RZ_QuestlinesSave
 	ref array<int> worldValues = {};
 	ref array<string> rumours = {};
 	ref array<float> rumourUntil = {};
+	// The majors' readings, pay caps and season story (Director/RZ_Majors.c)
+	ref RZ_MajorsSave majors;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -326,6 +328,10 @@ class RZ_QuestRun
 		if (ident.IsEmpty())
 			return;
 
+		// A touch, for a major's clock (RZ_Majors.IsEngaged)
+		if (m_Owner)
+			m_mFlags.Set("mc.touch", RZ_Util.RoundToInt(m_Owner.GetClock()));
+
 		foreach (RZ_QuestPart p : m_aParts)
 		{
 			if (p.m_sIdent != ident || p.m_iStage != m_iStage)
@@ -442,6 +448,18 @@ class RZ_QuestRun
 
 		fame = Math.ClampInt(fame, -MAX_FAME, MAX_FAME);
 		favor = Math.ClampInt(favor, 0, MAX_FAVOR);
+
+		// A major's pay stays inside its caps (RZ_Majors.ClipPay)
+		bool major = m_Line && m_Line.IsMajor() && RZ_Majors.Acting().IsEmpty();
+		if (major)
+			RZ_Majors.Enter(m_sKey);
+
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		fame = RZ_Majors.ClipPay(ident, faction, "fame", fame);
+		favor = RZ_Majors.ClipPay(ident, faction, "favor", favor);
+		if (major)
+			RZ_Majors.Leave();
+
 		string text = why;
 		if (fame != 0)
 		{
@@ -662,6 +680,8 @@ class RZ_Questlines
 	protected float m_fCheck;
 	protected int m_iNextRunId = 1;
 	protected bool m_bHasCureFinale;	// a registered questline is a cure finale route (RZ_Questline.IsCureFinale)
+	protected ref RZ_Majors m_Majors;	// the majors' clocks and season story (Director/RZ_Majors.c)
+	protected float m_fMajorCheck;
 
 	protected static const float CHECK_SECONDS = 10;
 	protected static const float RETRY_SECONDS = 180;	// a stage mission that couldn't start tries again after this
@@ -671,8 +691,12 @@ class RZ_Questlines
 	{
 		m_GM = gm;
 		m_Settings = settings;
+		m_Majors = new RZ_Majors(gm, this, gm.GetMajorSettings());
 		RZ_QuestlineRegistry.RegisterAll(this);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_Majors GetMajors() { return m_Majors; }
 
 	//------------------------------------------------------------------------------------------------
 	bool IsEnabled() { return m_Settings.m_bEnabled; }
@@ -845,6 +869,7 @@ class RZ_Questlines
 			data.lastAt.Insert(m_aLastAt[i]);
 		}
 
+		data.majors = m_Majors.Save();
 		return data;
 	}
 
@@ -899,6 +924,7 @@ class RZ_Questlines
 	{
 		m_fClock = m_Restored.clock;
 		m_fNextChance = m_Restored.nextChance;
+		m_Majors.Restore(m_Restored.majors);
 		if (m_Restored.doneKeys)
 		{
 			foreach (string done : m_Restored.doneKeys)
@@ -993,12 +1019,27 @@ class RZ_Questlines
 				m_aRuns.Remove(i);
 		}
 
+		// The majors: their clocks, and a major whose start is due starts now (no roll)
+		m_Majors.Tick(CHECK_SECONDS, ids);
+		m_fMajorCheck += CHECK_SECONDS;
+		if (m_fMajorCheck >= 60)
+		{
+			m_fMajorCheck = 0;
+			TryStartMajors();
+		}
+
 		if (m_fClock < m_fNextChance)
 			return;
 
 		float mean = Math.Max(5, m_Settings.m_fMinutesBetween) * 60;
 		m_fNextChance = m_fClock + Math.RandomFloat(mean * 0.75, mean * 1.25);
-		if (Math.RandomFloat01() >= m_Settings.m_fStartChance)
+
+		// Between beats a major's faction's smaller stories start twice as often
+		float chance = m_Settings.m_fStartChance;
+		if (m_Majors.AnyBetween())
+			chance = Math.Min(1, chance * 2);
+
+		if (Math.RandomFloat01() >= chance)
 			return;
 
 		TryStartAny();
@@ -1032,8 +1073,9 @@ class RZ_Questlines
 			run.m_fReadyAt = m_fClock;
 		}
 
-		// The wait is over, but the stage can't happen: it waits, then fizzles
-		if (st.m_fGiveUpHours > 0 && m_fClock - run.m_fReadyAt >= st.m_fGiveUpHours * 3600 * scale)
+		// The wait is over, but the stage can't happen: it waits, then fizzles (a major never
+		// fizzles: its act's clock decides when the default moves it on)
+		if (!run.m_Line.IsMajor() && st.m_fGiveUpHours > 0 && m_fClock - run.m_fReadyAt >= st.m_fGiveUpHours * 3600 * scale)
 		{
 			run.m_iEnding = -1;
 			run.m_sEndText = run.Fill(st.m_sFizzle);
@@ -1054,6 +1096,11 @@ class RZ_Questlines
 			return;
 
 		run.m_fNextTry = m_fClock + RETRY_SECONDS;
+
+		// At most two majors' stage missions are offered at once (RZ_Majors.MayOffer)
+		if (run.m_Line.IsMajor() && !m_Majors.MayOffer(run))
+			return;
+
 		StartStageMission(run, st, playerCount);
 	}
 
@@ -1113,7 +1160,17 @@ class RZ_Questlines
 	{
 		int from = run.m_iStage;
 		run.m_iMissionId = -1;
+		bool major = run.m_Line.IsMajor();
+		if (major)
+			RZ_Majors.Enter(run.m_sKey);
+
 		int next = run.m_Line.Next(m_GM, run, from, outcome);
+		if (major && (next == RZ_Questline.END || !run.m_Line.GetStage(next)))
+			next = MajorGoesOn(run);
+
+		if (major)
+			RZ_Majors.Leave();
+
 		if (next == RZ_Questline.END || !run.m_Line.GetStage(next))
 		{
 			EndRun(run);
@@ -1124,11 +1181,73 @@ class RZ_Questlines
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A major's stage came to an end of the absorbed line inside it (R1's, B1's, H1's endings):
+	//! that becomes an act's result and the major goes on. A fizzle inside a major is its act's
+	//! default instead (a major never fizzles). Returns the next stage, or END at the major's end.
+	protected int MajorGoesOn(RZ_QuestRun run)
+	{
+		if (run.m_iEnding >= 0)
+		{
+			int cont = run.m_Line.AfterInnerEnding(m_GM, run, run.m_iEnding);
+			if (cont == RZ_Questline.END)
+				return RZ_Questline.END;
+
+			run.m_iEnding = -1;
+			run.m_sEndText = "";
+			return cont;
+		}
+
+		RZ_MajorAct act = run.m_Line.ActOf(run.m_iStage);
+		if (!act)
+			return RZ_Questline.END;
+
+		RZ_Log.Info(string.Format("Majors: %1 stage %2 went quiet; its act takes its default.", run.m_sKey, run.m_iStage));
+		run.m_sEndText = "";
+		RZ_Majors.Enter(run.m_sKey, true);
+		int next = run.m_Line.ActDefault(m_GM, run, act);
+		RZ_Majors.Enter(run.m_sKey);
+		RZ_Majors.MarkBeat(run);
+		return next;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Moves a major on to `stage` (its act's default, a hard stop): a stage mission still out goes
+	//! with it. END: the run ends (on the ending its default set).
+	void JumpTo(RZ_QuestRun run, int stage)
+	{
+		if (!run || run.m_bDone)
+			return;
+
+		Withdraw(run);
+		if (stage == RZ_Questline.END || !run.m_Line.GetStage(stage))
+		{
+			EndRun(run);
+			return;
+		}
+
+		EnterStage(run, stage);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes a run's stage mission off the board without deciding the stage (it's offered again).
+	void Withdraw(RZ_QuestRun run)
+	{
+		if (!run || run.m_iMissionId < 0)
+			return;
+
+		RZ_Mission m = m_GM.GetMissions().FindById(run.m_iMissionId);
+		run.m_iMissionId = -1;
+		run.m_fNextTry = m_fClock + RETRY_SECONDS;
+		if (m && m.m_eState == RZ_EMissionState.ACTIVE)
+			m.m_eState = RZ_EMissionState.FAILED;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void EnterStage(RZ_QuestRun run, int stage)
 	{
 		RZ_QuestStage st = run.m_Line.GetStage(stage);
 		int visits = run.Visits(stage) + 1;
-		if (visits > Math.MaxInt(1, st.m_iMaxVisits))
+		if (visits > Math.MaxInt(1, st.m_iMaxVisits) && !run.m_Line.IsMajor())
 		{
 			// A loop that keeps failing ends here, cleanly
 			run.m_iEnding = -1;
@@ -1145,7 +1264,13 @@ class RZ_Questlines
 		run.m_fNextTry = 0;
 		run.m_iOutcome = -1;
 		RZ_Log.Info(string.Format("Questline %1: stage '%2'.", run.m_Line.m_sTitle, run.Fill(st.m_sTitle)));
+		bool major = run.m_Line.IsMajor() && RZ_Majors.Acting().IsEmpty();
+		if (major)
+			RZ_Majors.Enter(run.m_sKey);
+
 		run.m_Line.OnStageBegin(m_GM, run, stage);
+		if (major)
+			RZ_Majors.Leave();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1176,7 +1301,13 @@ class RZ_Questlines
 		{
 			// Other questlines can read how this one ended: WorldFlag("<key>.ending")
 			SetWorldFlag(run.m_sKey + ".ending", run.m_iEnding);
+			bool major = run.m_Line.IsMajor() && RZ_Majors.Acting().IsEmpty();
+			if (major)
+				RZ_Majors.Enter(run.m_sKey);
+
 			run.m_Line.OnEnding(m_GM, run, run.m_iEnding);
+			if (major)
+				RZ_Majors.Leave();
 			if (!m_aDone.Contains(run.m_sKey))
 				m_aDone.Insert(run.m_sKey);
 
@@ -1231,10 +1362,18 @@ class RZ_Questlines
 			order[j] = tmp;
 		}
 
-		foreach (int idx : order)
+		// Between beats, the major's faction's smaller stories go first
+		for (int pass = 0; pass < 2; pass++)
 		{
-			if (CanConsider(m_aLines[idx]) && Begin(m_aLines[idx].m_sKey))
-				return;
+			foreach (int idx : order)
+			{
+				bool between = m_Majors.IsBetween(m_aLines[idx].m_iFaction);
+				if ((pass == 0) != between)
+					continue;
+
+				if (CanConsider(m_aLines[idx]) && Begin(m_aLines[idx].m_sKey))
+					return;
+			}
 		}
 	}
 
@@ -1244,7 +1383,7 @@ class RZ_Questlines
 		int n = 0;
 		foreach (RZ_QuestRun run : m_aRuns)
 		{
-			if (!run.m_bDone)
+			if (!run.m_bDone && !InMajorLane(run.m_Line))
 				n++;
 		}
 
@@ -1252,10 +1391,34 @@ class RZ_Questlines
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A major, or an inner line a major starts (HC1, HC3 under Proof): outside Max active and the
+	//! one-per-faction rule.
+	protected bool InMajorLane(RZ_Questline line)
+	{
+		return line && (line.IsMajor() || !line.StartsOnItsOwn());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every major not running and not done this season starts as soon as its CanStart says so.
+	protected void TryStartMajors()
+	{
+		if (!RZ_Majors.IsOn())
+			return;
+
+		foreach (RZ_Questline line : m_aLines)
+		{
+			if (!line.IsMajor() || FindRunByKey(line.m_sKey) || m_aDone.Contains(line.m_sKey))
+				continue;
+
+			Begin(line.m_sKey);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Not running, its slot (faction) free, not done this season, not fizzled lately.
 	protected bool CanConsider(RZ_Questline line)
 	{
-		if (FindRunByKey(line.m_sKey))
+		if (FindRunByKey(line.m_sKey) || InMajorLane(line))
 			return false;
 
 		if (m_Settings.m_bOncePerSeason && m_aDone.Contains(line.m_sKey))
@@ -1263,7 +1426,7 @@ class RZ_Questlines
 
 		foreach (RZ_QuestRun run : m_aRuns)
 		{
-			if (!run.m_bDone && run.m_Line.GetSlot() == line.GetSlot())
+			if (!run.m_bDone && !InMajorLane(run.m_Line) && run.m_Line.GetSlot() == line.GetSlot())
 				return false;
 		}
 
@@ -1280,6 +1443,9 @@ class RZ_Questlines
 	{
 		RZ_Questline line = FindLine(key);
 		if (!m_Settings.m_bEnabled || !line || FindRunByKey(key))
+			return false;
+
+		if (line.IsMajor() && !RZ_Majors.IsOn())
 			return false;
 
 		RZ_QuestRun run = NewRun(line);
@@ -1420,6 +1586,22 @@ class RZ_Questlines
 
 	// ================================================================ Journal
 	//------------------------------------------------------------------------------------------------
+	//! The journal's brief: the questline's own, and for a major the season view under it (its act,
+	//! the rule or stance in force, the leans, any last call).
+	string JournalFor(RZ_QuestRun run)
+	{
+		string text = run.m_Line.JournalText(m_GM, run);
+		if (!run.m_Line.IsMajor())
+			return text;
+
+		string season = m_Majors.SeasonText(run);
+		if (season.IsEmpty())
+			return text;
+
+		return text + "\n\n" + season;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Does this player see the questline in their journal? Anyone who took part (by identity),
 	//! and anyone the current stage's mission was offered to or who is taking part in it.
 	bool IsVisibleTo(RZ_QuestRun run, int playerId)
@@ -1428,6 +1610,10 @@ class RZ_Questlines
 			return false;
 
 		if (run.PlayerTookPart(m_GM, playerId))
+			return true;
+
+		// The majors are the season's stories: everyone sees them (the journal's season view)
+		if (run.m_Line && run.m_Line.IsMajor())
 			return true;
 
 		RZ_Mission m = m_GM.GetMissions().FindById(run.m_iMissionId);
