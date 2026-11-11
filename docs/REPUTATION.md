@@ -172,7 +172,7 @@ remembers of this life, then the rule in brackets:
 "(The Haven: Useful Trouble - counts as Known. Fame 46, Infamy 22. 30 of 30 left to forgive.)"
 
 **The opening.** With Trees on, a leader greets someone they've met with one line, the first that
-exists: a **local deed** at this seat ("You're the one who brought medicine to Levie.", written when
+exists: at a Haven seat, once a life, kin of a fallen Champion are greeted as family; a **local deed** at this seat ("You're the one who brought medicine to Levie.", written when
 you finish that leader's personal job); this life's memory (saved: "Here's the one I owe. Sit
 down."; crossed: "You. I remember."); the **name from an earlier life**, once per leader per life
 ("There was a Lukas who crossed me once. Different face. Same name. Should I be worried?"); a
@@ -180,10 +180,16 @@ down."; crossed: "You. I remember."); the **name from an earlier life**, once pe
 ([WRITING.md](WRITING.md#the-race-and-the-lock)); then, unless they're hostile, one time in four
 **who you work for** when it's another faction (the one you've given the most Fame, 15 or more:
 "You run for Bastion. Noted. Arms out.") and one time in three your **best deed** ("You're the one
-who held the lab."); the greeting for your manner in the leader's voice, from the voice bank
+who held the lab."); one time in four, when no worst deed says it, the **tally** ("You've put 4 of
+ours in the ground. I count. Somebody has to."); the greeting for your manner in the leader's voice, from the voice bank
 ([WRITING.md](WRITING.md#the-voice-bank)), with the owed's own ("Halt. Hands. You {best}. You also
 {worst}. Both go in the log. Talk.") and a set word said the way each faction says a rank; the built
 greeting.
+
+**The change notice in voice.** With Trees on, a new name is told in the faction's voice (the voice
+bank's `change` lines, by manner), with the rule in brackets: *"Your file's been updated. Useful
+Trouble. Initialled. (Useful Trouble - counts as Known)"*; for the Hunted, "(Hunted: their people shoot
+you. They still owe you a hearing at a gate.)" when they're owed. Without a line, the plain notice.
 
 **The whole picture** (`RZ_RepVoice.Picture`): the two factions that know your name best, in a
 wanderer's voice: "Word is you're the Haven's Champion and Bastion's Bad News. I'll believe the

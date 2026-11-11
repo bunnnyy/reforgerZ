@@ -15,6 +15,7 @@ action), `Dialogue/RZ_DialogueTrees.c` (hubs, nodes, checks, effects), `Dialogue
 compiled conversations), `Dialogue/RZ_DialogueCond.c` (conditions and tokens),
 `Dialogue/RZ_DialogueMemory.c` (memory and `dialogue.json`), `Dialogue/RZ_DialogueScenes.c` (several
 players), `Dialogue/RZ_DialogueVotes.c` (the majors' sittings), `Dialogue/RZ_DialogueBarks.c` (barks),
+`Dialogue/RZ_DialogueWire.c` (Bastion's word at the wire),
 `Dialogue/Pack/` (generated). Server only, except the screen.
 
 ## Contents
@@ -72,11 +73,14 @@ up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
 So every built rule (Rob's Infamy, the Trader's price, a leader's refusal at attitude −2, an
 exile's shut door) works exactly as built.
 
-**Safety.** At most 32 conversations (and readers) on the server, and 6 with one person at once (at
-the cap, the one idle longest, over 30 s, gives way; else "One at a time."); a pick is checked for the
+**Safety.** At most 32 conversations (and readers) on the server, and 6 with one person at once (16
+while someone there is in a public node; at the cap, the one idle longest, over 30 s, gives way; else
+"One at a time."); a pick is checked for the
 current serial, a reply id that was sent and enabled, a living player in range and not in danger,
 and at most one every 0.3 s; Talk at most every 2 s. One node at a time goes to that player only
-(the owner-only `PAYLOAD_TALK`). Sessions aren't saved.
+(the owner-only `PAYLOAD_TALK`). Sessions aren't saved. With Trees on, a conversation in a node
+that danger or distance ended picks up where it was if you talk to the same person within 60 s
+("Where were we?"), without running the node's effects again.
 
 **The action list.** With the talk screen on (**Dialogue > Talk screen**, and **UI > Talk reply
 layout** set), a person's choice and use actions hide, and so do the quartermaster's leader
@@ -159,7 +163,7 @@ costs, never what comes of it.**
 | Standing (`if tier:...`) | [Trusted - Haven] | Shown only when true |
 | `persuade <faction> <difficulty>` | [Persuade - Haven - 1 of 2] | **Trust**: your access rank with the faction (mixed tiers one lower), +1 for a listed background, +1 at most from dialogue (regard 2 or more, or the built helped or saved memory of this life), −1 for a found-out lie or crossed lines. Hunted or worse: dim, "they won't hear it from you". Factionless speakers read your Haven rank, at most 2; the Long Table's rank counts 0 |
 | `threaten <faction> <difficulty>` | [Fear 1 of 2 - +3 Infamy] (": Hunted" when it would make you Hunted) | **Fear**, with the threat's rules: +3 Infamy and regard *threatened* whatever happens, once per person by anyone for the season ("Already scared. Of someone else."), three a life per faction, a refused threat barred a real day. Never on stronghold leaders, the Kid, the Long Table, or in safehouses (the lint refuses it, and the engine refuses it on a stronghold leader) |
-| `lie <faction> <difficulty>` | [Lie - 1 of 2], or [Lie - they'd see through it] | A **tell** catches it first, whatever the score: the bite showing, another faction's colours on you, or something else you already told this speaker. Without one, Trust against the difficulty (+1 under a vouch). Believed: a false claim in the [lie store](DESIGN.md#lies-and-witnesses), found out later by its rumour rounds (the speaker's regard *lied*, +2 Infamy). Caught now: regard *lied*, +2 Infamy and the liar count (−1 at Trust this life). The reply opens with "They believe you. For now." or "They don't believe a word of it." A choice's `truth <conditions>` makes it true while they hold: then it's no lie, with no tag and no check. A caught or found-out lie is said at that speaker's next greeting (`nmem:lied`) |
+| `lie <faction> <difficulty>` | [Lie - 1 of 2], or [Lie - they'd see through it] | A **tell** catches it first, whatever the score: the bite showing, another faction's colours on you, or something else you already told this speaker. Without one, Trust against the difficulty (+1 under a vouch). Believed: a false claim in the [lie store](DESIGN.md#lies-and-witnesses), found out later by its rumour rounds (the speaker's regard *lied*, +2 Infamy). Caught now: regard *lied*, +2 Infamy and the liar count (−1 at Trust this life), and no more lies at that speaker for a real day ("they caught you lying today"). The reply opens with "They believe you. For now." or "They don't believe a word of it." A choice's `truth <conditions>` makes it true while they hold: then it's no lie, with no tag and no check. A caught or found-out lie is said at that speaker's next greeting (`nmem:lied`) |
 | `look <faction> <difficulty>` | [Full kit +2] [Watched -1] [Look - Bastion - 2 of 2], or [Look - Bastion - they'd see through it] | **The look** ([REPUTATION.md](REPUTATION.md#borrowed-kit)): a claim to be one of them, its score shown before you pick. Dim with the reason when you can't claim at all (Hunted, not in their kit, your own colours, too many tells, caught three times, blown). A leader of theirs or anyone inside their wire sees through it: caught. Passed: you pass (at a road post while it stands, elsewhere 10 minutes); caught: the built catch ([Claims](#claims-in-someone-elses-kit)) |
 | `callout <lie key>` (a choice option) | [Evidence] | Shown only to a player who was told that lie and knows the truth ([Lies you're told](#lies-youre-told)) |
 | `cost favor:<faction> N` | [20 Haven Favor] | Dim with what it needs when you can't pay. Paid when picked |
@@ -205,6 +209,7 @@ system's caps.
 | `promise` | `promise:house.tins@here:2h` | A promise to this speaker, in the words of the choice that made it ([Promises](#promises-and-callbacks)) |
 | `keep` | `keep:house.tins@here` | Keeps that promise, if it's open |
 | `later` | `later:6h:scav.came_back` | A callback: `due:scav.came_back` reads true once you've played 6 more hours |
+| `wire` | `wire:2` | Says the second of today's three words at the wire to Bastion's people: the right one counts at your next look today; a wrong one is caught at once |
 
 There is **no Fame, no Infamy and no item** from talk, ever: the lint refuses `fame`, `infamy` and
 `house` effects, and Infamy comes only from a tagged threat, a caught lie or a caught claim. Effects
@@ -342,7 +347,10 @@ The look itself (kit, colours, cover details, catches, word gets round) is reput
   up in their kit (`post.bastion.claim`, `post.redhand.claim`); a pass waves you through that post
   (`call:post_wave`), a catch is the built one (+3 Infamy, the kit taken, blown 60 minutes).
 - **Cover details** you can say (the word at the wire heard today, a crew name, a real name) count at
-  the look as built.
+  the look as built. **The word at the wire** is also a choice: Bastion's post asks "Word?" and offers
+  three words, shuffled daily, one of them today's (`{wire:1}` to `{wire:3}`, `wire:N`). The right one
+  is +1 at the look; a wrong one is caught at once; "Haven't had it today." runs the look without it.
+  A friend can tell you the word over voice.
 - **No rewards through a claim.** While you're passing as a faction, your persuade score with it
   counts 0 and you can't threaten its people. The lint refuses Favor, `offer`, `learn` and the like on
   a look choice or the node it passes into.
@@ -356,7 +364,7 @@ The look itself (kit, colours, cover details, catches, word gets round) is reput
 
 *Simplified:* kit kinds are own colours and their kit; signed-for kit, a dead man's and kit off the
 turned come with disguise's later phases. A post's speaker doesn't call out to you at 35 m; you
-press Talk.
+press Talk. A catch taking your kit doesn't count as changing clothes.
 
 ## Barks
 
@@ -425,6 +433,7 @@ write two choices. Every key reads a system that's already there; keys of design
 | The lock | `route:none`, `any`, `in`, `out`, `independent`, `unsided`, `won`, `lost`, `route:bastion`..., `lockdays<2` | your route at the 90% lock ([FINALE.md](FINALE.md#the-lock)): in is the speaker faction's route, out another faction's; in, out and independent until the cure; unsided while routes are open; won and lost after the cure; real days since you locked |
 | The season record | `title:bastion=necessary_evil`, `seasoned:bastion` | the name your best life made with them this season; an earlier life stood out with them ([REPUTATION.md](REPUTATION.md#the-season-record)) |
 | Reputation | `owed:bastion`, `setword:bastion` | Hunted and still owed a hearing (the parley); a word a major or questline set |
+| Factions | `truce:redhand`, `feud:bastion` | the speaker's faction and that one have a truce or a feud now |
 | Where | `radio` | on the open channel |
 
 **Only what the player knows** goes into a tag: background, standing, items, the HUD, their own
@@ -467,8 +476,8 @@ conversation, node and choice id, never by position.
 plus `{npc}`, `{npc_short}`, `{role}`, `{here}` (the speaker's town or holding), `{house}`,
 `{faction}`, `{player}`, `{boss}` (the speaker faction's stronghold leader), `{toll}` (your Red Hand
 toll now), reputation's `{rep}`, `{word}`, `{best}`, `{worst}`, `{kills}`, `{jobs}`, `{picture}`,
-`{name}`, `{crew}` for the speaker's faction, `{title:<faction>}` (the season record's title) and a
-stranger's `{their:<key>}`.
+`{name}`, `{crew}` for the speaker's faction, `{title:<faction>}` (the season record's title), a
+stranger's `{their:<key>}`, and `{wire:1}` to `{wire:3}` (today's offered words at Bastion's wire).
 
 **The pipeline.** `tools/dialogue_pack.py` lints every file and writes them as generated Enforce
 Script, `scripts/Game/ReforgerZ/Dialogue/Pack/RZ_DialoguePack_<area>.c` (functions of at most 150
@@ -507,7 +516,7 @@ a `dry` choice with no plain twin.
 
 ## The conversations
 
-✅ 90 conversations, 206 nodes (`python3 tools/dialogue_pack.py --list`), 11 of them barks.
+✅ 91 conversations, 212 nodes (`python3 tools/dialogue_pack.py --list`), 11 of them barks.
 
 | Speaker | Conversations |
 |---|---|
@@ -520,7 +529,7 @@ a `dry` choice with no plain twin.
 | The 8 wanderer roles | The Trader's prices; the Doctor's work ([Doctor], [Nurse]); where the Scavenger has been (persuade: is it true); why the Deserter left ([Soldier], [Police]); the Preacher's bells; the Courier's letters; what still runs ([Mechanic]); the Kid's name; the Scavenger's clean chemist's (a lie for a tin, [Hunter] or [Police] see through it, [Evidence] once the Doctor tells you, and a callback greet 6 hours on); the Doctor on the chemist's and on Halcyon's back room (the truths); what Bastion makes of you, as the Deserter reads it |
 | Occupants | A fed house (leave a tin: 2 Haven Favor); the candle in the window after a death (a greet, and a topic: staying for the name is remembered 6 hours on); the bear on the door; who gets the bed by the stove (a short house: a public scene per house that someone Known with the Haven decides, with a sway for the room); a short house's promise of two tins (kept by the hand-in, with greets for kept and broken) |
 | Named people | The Red Hand toll man (who painted the hand; Rudi, said flatly); the Bastion sentry (the roll; a promise to walk the road and come back, kept by coming back); kit greets at Bastion, Red Hand and Halcyon holdings (own colours, or their kit on a stranger) |
-| Post speakers | Bastion's search (persuade with [Soldier], [Police]: the pole goes up); the Red Hand's toll (pay it, or threaten: Fear, +3 Red Hand Infamy); "Which unit?" and "Say you're crew." in their kit (a look, or the truth) |
+| Post speakers | Bastion's search (persuade with [Soldier], [Police]: the pole goes up); the Red Hand's toll (pay it, or threaten: Fear, +3 Red Hand Infamy); "Which unit?" and "Say you're crew." in their kit (a look, or the truth); "Word?" at Bastion's (three words, one right) |
 | The Long Table | The host on the road (where you're headed, and is anyone expecting you; "Put out, were you?" to an exile); the mother at the farm (is the boy hers; [Bitten]: declare it, as built) |
 | Strangers | Where any stranger's headed; and for 15 routines, who they are: the girl at the tin man's house, the wife who drove to market, the pram of pans, the one shut in since Tuesday, the kids in the back seat, who the grave is for, the sleeve rolled down ([Doctor], [Nurse]), the farm, the sister in a barn, the husband across the line, the debt in the book, the one who hid, the one who got there first, the scratch off a fence |
 | The open channel | Call in what you've seen (a rumour, on air); listen for anyone calling (by the night and the mood); ask the crews about the toll |

@@ -346,6 +346,10 @@ class RZ_DialogueCond
 			}
 			case "radio":
 				return ctx.m_bRadio;
+			case "truce":
+				return RelationTerm(ctx, t, true);
+			case "feud":
+				return RelationTerm(ctx, t, false);
 		}
 
 		// Keys of designs not built yet (tribes, the majors, the finale, disguise, errands): quiet
@@ -555,6 +559,20 @@ class RZ_DialogueCond
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! truce:<f>, feud:<f>: the speaker's faction and the one named, now (faction life).
+	protected static bool RelationTerm(RZ_DCtx ctx, RZ_DTerm t, bool truce)
+	{
+		RZ_FactionLife life = ctx.m_GM.GetFactionLife();
+		if (!life || !RZ_Factions.IsValid(ctx.m_iFaction) || !RZ_Factions.IsValid(t.m_iFaction))
+			return false;
+
+		if (truce)
+			return life.HasTruce(ctx.m_iFaction, t.m_iFaction);
+
+		return life.HasFeud(ctx.m_iFaction, t.m_iFaction);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static RZ_Disguise Disguise(RZ_GameModeComponent gm)
 	{
 		RZ_Hostility hostility = gm.GetHostility();
@@ -683,6 +701,9 @@ class RZ_DialogueText
 
 		if (s.Contains("{title:"))
 			s = Titles(ctx, s);
+
+		if (s.Contains("{wire:"))
+			s = RZ_DialogueWire.Fill(ctx.m_GM, s);
 		if (s.Contains("{toll}"))
 			s.Replace("{toll}", ctx.m_GM.GetCheckpoints().TollFor(ctx.m_iPlayer).ToString());
 

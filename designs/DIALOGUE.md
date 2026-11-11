@@ -171,8 +171,6 @@ priced choices, `end`, `hub` and `back`, the ways a session ends, danger, and th
 Still to build:
 - **Server-opened greets:** a post speaker at 35 m for a player in that faction's kit below Known (so a claim is
   offered whether or not they press Talk), a stranger at 10 m, the host on the road.
-- **Resume:** a session ended by danger or range keeps its node for 60 s ("Where were we?").
-- **A larger cap for public scene nodes** (16 sessions, where the built cap is 6 a person).
 
 ## 5. The hub
 
@@ -193,8 +191,7 @@ life-stamped leader and wanderer memory ([docs/DIALOGUE.md](../docs/DIALOGUE.md#
 [docs/REPUTATION.md](../docs/REPUTATION.md#face-and-name)).
 
 Still to build:
-- **The liar count** per faction per player (1 off each real day), and failed lies and threats barred at that
-  speaker for a real day per player.
+- **The liar count** per faction per player, 1 off each real day.
 - **Knowledge with expiry:** passing facts (the word at the wire until the next 05:30; chatter for 2 hours of
   play, 32 at most), and evidence kept with its run.
 - **Who writes regard** beyond dialogue: errands, on named-person keys only, never on leaders.
@@ -322,9 +319,8 @@ Still to build:
   their reactions: "You're still in our kit. Take it off before someone asks why." (issued). Kit a quartermaster
   sold is signed out to its buyer: worn by anyone else it fails the look at once ("That's Weber's jacket. Signed
   for.").
-- **Cover details spoken as choices**, each `cover:<key>`, +1 at the look:
-  - **Bastion's word at the wire:** three words offered, shuffled daily, one right; a wrong word fails at once;
-    saying you haven't got it runs the look without the detail;
+- **Cover details spoken as choices**, each `cover:<key>`, +1 at the look (Bastion's word at the wire is built
+  as `wire:N`):
   - **a real name you've heard:** a dead man's name at his own post fails at once;
   - **a crew name** at the Red Hand ("What do they call you?"), your own or one heard on the open channel;
   - **a notebook number** at Halcyon, only from a dead researcher's notebook;

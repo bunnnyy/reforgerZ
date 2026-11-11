@@ -182,10 +182,10 @@ what they make of you) ([REPUTATION.md](../docs/REPUTATION.md#what-people-call-y
 Still to build:
 - **Step 1 of the opening, the crossing opener:** a questline or major's deed line ("You're the one who gave
   Bastion the book.").
-- **Kin and the Long Table in the opening:** kin of the fallen and the Long Table's guest, family or crossed.
-- **A tally standing in for the worst deed** in the openings ("You've put {kills} of ours down.").
-- **The change notice in voice:** the line from the nearest person of that faction (else its channel), with the
-  rule in brackets: "(Hunted: their people shoot you. They still owe you a hearing at a gate.)"
+- **The Long Table in the opening:** its guest, family or crossed (kin of the fallen, the tally and the change
+  notice in the faction's voice are built).
+- **The change notice from a person:** said by the nearest person of that faction when there is one (today it's
+  the faction's voice as a notice).
 
 ## 6. Talk: Fear, the parley and the knock
 

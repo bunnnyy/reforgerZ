@@ -39,6 +39,49 @@ class RZ_VoiceDefaults
 		Routes(lines);
 		Looks(lines);
 		Owed(lines);
+		Changes(lines);
+		Relations(lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The change notice in the faction's voice (RZ_RepVoice.ChangeLine, Trees on): a new name, said
+	//! by manner; the rule follows in brackets. {rep} is the listener's new name with them.
+	protected static void Changes(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+
+		Line(lines, "haven.change.warm", HAVEN, "change", "warm", P, 0, "", "\"The houses are calling you {rep} now. Wipe your feet anyway.\"");
+		Line(lines, "haven.change.devoted", HAVEN, "change", "devoted", P, 0, "", "\"{rep}. That's what they say at supper now, when they say you.\"");
+		Line(lines, "haven.change.mixed", HAVEN, "change", "wary", W, 0, "", "\"The council has a new word for you: {rep}. It argued about it. It argues about everything.\"");
+		Line(lines, "haven.change.hostile", HAVEN, "change", "hostile", P, 0, "", "\"The doors are shut to you now. Nobody's happy about it.\"");
+		Line(lines, "bastion.change.warm", BASTION, "change", "warm", P, 0, "", "\"Your file's been updated. {rep}. Initialled.\"");
+		Line(lines, "bastion.change.mixed", BASTION, "change", "fond", W, 0, "", "\"New entry: {rep}. The column for good and the column for trouble are both getting long.\"");
+		Line(lines, "bastion.change.hostile", BASTION, "change", "hostile", P, 0, "", "\"You're on the list. Every post has the list.\"");
+		Line(lines, "redhand.change.warm", REDHAND, "change", "warm", W, 0, "", "\"The book's got a new line for you. {rep}. Don't let it go to your head. It's in pencil.\"");
+		Line(lines, "redhand.change.needed", REDHAND, "change", "needed", W, 0, "", "\"{rep}, the crews say. Said fondly. Mostly fondly.\"");
+		Line(lines, "redhand.change.hostile", REDHAND, "change", "hostile", P, 0, "", "\"Your page in the book is red now, top to bottom.\"");
+		Line(lines, "halcyon.change.warm", HALCYON, "change", "warm", P, 0, "", "\"You've been recategorised: {rep}. It's a category, not a compliment.\"");
+		Line(lines, "halcyon.change.mixed", HALCYON, "change", "wary", P, 0, "", "\"Your category changed: {rep}. The data disagree with each other. So do we.\"");
+		Line(lines, "halcyon.change.hostile", HALCYON, "change", "hostile", P, 0, "", "\"You are excluded from the study. Effective now.\"");
+		Line(lines, "any.change.owed", -1, "change", "owed", P, 0, "", "\"They want you dead now, and they owe you a hearing. Both, at once.\"");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A feud sharpens the Red Hand's taunts and Bastion's lists; a truce allows one joke across the
+	//! line. Face to face (people at holdings), read from faction life's truces and feuds.
+	protected static void Relations(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+		RZ_ERegister J = RZ_ERegister.JOKE;
+
+		Line(lines, "redhand.person.truce.bastion", REDHAND, "person", "", J, 0, "truce:bastion", "\"We shared a fire with Bastion last night. Both sides counted the matches.\"");
+		Line(lines, "bastion.person.truce.redhand", BASTION, "person", "", W, 0, "truce:redhand", "\"There's a truce with the Red Hand. We've been told to log it as weather.\"");
+		Line(lines, "haven.person.truce.redhand", HAVEN, "person", "", W, 0, "truce:redhand", "\"The Red Hand sent a sack of flour under the truce. We're checking it for a price tag.\"");
+		Line(lines, "redhand.person.feud.bastion", REDHAND, "person", "", J, 0, "feud:bastion", "\"Bastion's at war with us again. Good. They're more fun angry.\"");
+		Line(lines, "bastion.person.feud.redhand", BASTION, "person", "", P, 0, "feud:redhand", "\"The Red Hand list is longer this week. Read it twice before your shift.\"");
+		Line(lines, "halcyon.person.feud.bastion", HALCYON, "person", "", P, 0, "feud:bastion", "\"Bastion and the lab aren't speaking. The samples still arrive. Nobody signs for them.\"");
 	}
 
 	//------------------------------------------------------------------------------------------------

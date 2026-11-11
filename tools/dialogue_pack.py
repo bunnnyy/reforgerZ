@@ -76,6 +76,8 @@ COND_KEYS = {
     # The finale's lock and the season record
     "route": (True, False), "lockdays": (False, True), "title": (True, True), "seasoned": (True, False),
     "owed": (True, False), "setword": (True, False), "radio": (False, False),
+    # The speaker's faction and another: a truce or a feud now (faction life)
+    "truce": (True, False), "feud": (True, False),
 }
 QUIET_KEYS = {"tribe", "alpha", "lean", "finale", "cure_held", "ending", "was", "claimed", "stranger"}
 KIT_ARGS = {"own", "in_kit", "full", "other", "any"}
@@ -85,7 +87,7 @@ ROUTE_ARGS = {"none", "any", "in", "out", "independent", "unsided", "won", "lost
 WORLD_KEYS = {"house", "town", "need", "wbitten", "kidlost", "bg", "tier", "rep", "exiled", "bite_shown", "hunted",
               "outbreak", "cure", "flag", "stage", "infamy", "fame", "kin"}
 EFFECTS = {"mark", "cset", "nset", "regard", "favor", "take", "claim", "learn", "rumour", "call", "offer", "later",
-           "sway", "decide", "promise", "keep"}
+           "sway", "decide", "promise", "keep", "wire"}
 SCENE_EFFECTS = {"sway", "decide"}
 WORLD_EFFECTS = {"set", "qset", "resolve", "start", "event", "commit", "reward", "pass", "catch", "errand",
                  "approach", "reveal", "begin", "hostile", "flee", "note", "return"}
@@ -102,7 +104,7 @@ SCENE_SCOPES = {"speaker", "season"}
 DIALOGUE_TOKENS = {"npc", "npc_short", "player", "house", "resident", "word", "rep", "best", "worst", "kills",
                    "jobs", "picture", "name", "crew", "place", "here", "faction", "role", "toll", "seat", "boss"}
 # Tokens with an argument a conversation may use: a stranger's own words, the season's title with a faction
-DIALOGUE_KINDS = {"their", "title"}
+DIALOGUE_KINDS = {"their", "title", "wire"}
 # Tokens that would put a player on air (a radio conversation never uses them)
 PERSONAL_TOKENS = {"player", "name", "crew", "word", "rep", "best", "worst", "kills", "jobs", "picture", "title"}
 MARK_RE = re.compile(r"\s+~(lie|truth):([a-z0-9_.@]+)\s*$")
@@ -394,7 +396,7 @@ def lint_cond(cond, where, errs):
             errs.append("%s: kit is kit:own, in_kit, full, other or any" % where)
         if key == "route" and arg not in ROUTE_ARGS:
             errs.append("%s: route is route:none, any, in, out, independent, unsided, won, lost or a route's name" % where)
-        if key in ("title", "seasoned", "owed", "setword") and arg not in ("haven", "bastion", "redhand", "halcyon"):
+        if key in ("title", "seasoned", "owed", "setword", "truce", "feud") and arg not in ("haven", "bastion", "redhand", "halcyon"):
             errs.append("%s: '%s' needs a faction (haven, bastion, redhand, halcyon)" % (where, key))
         if key in ("sitting", "tabled") and (arg or "").count(".") != (1 if key == "sitting" else 2):
             errs.append("%s: %s is %s:<major>.<vote>%s" % (where, key, key, "" if key == "sitting" else ".<word>"))
@@ -447,6 +449,8 @@ def lint_effects(fx, where, conv, errs, favor_total):
             errs.append("%s: promise is promise:<key>[:<hours>h]" % where)
         elif name == "keep" and not re.match(r"^[a-z0-9_.@]+$", arg):
             errs.append("%s: keep is keep:<key>" % where)
+        elif name == "wire" and (arg not in ("1", "2", "3") or not all(sp in ("post:bastion", "named:bastion") or sp.startswith("named:bastion/") for sp in conv.speakers)):
+            errs.append("%s: wire is wire:1, 2 or 3, said to Bastion's people" % where)
     return names
 
 
@@ -462,6 +466,8 @@ def lint_text(text, where, conv, errs, warns):
             errs.append("%s: {their:...} is a stranger's own words (for stranger:...)" % where)
         if name == "title" and arg not in ("haven", "bastion", "redhand", "halcyon"):
             errs.append("%s: {title:<faction>}" % where)
+        if name == "wire" and arg not in ("1", "2", "3"):
+            errs.append("%s: {wire:1}, {wire:2} or {wire:3}" % where)
         if name in PERSONAL_TOKENS and any(sp.startswith("radio") for sp in conv.speakers):
             errs.append("%s: no name on air: %s in a radio conversation" % (where, m.group(0)))
     if INFECTED_WORDS.search(text):

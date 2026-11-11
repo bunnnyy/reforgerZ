@@ -627,6 +627,14 @@ class RZ_RepVoice
 		string manner = VoiceManner(gm, playerId, l.m_eFaction, l);
 		if (manner != "hostile" && manner != "owed")
 		{
+			// Kin of a fallen Haven Champion, at the Haven's seats, once a life per leader
+			string kinKey = seat + "|kin";
+			if (p.m_bFallenKin && l.m_eFaction == RZ_EFaction.SURVIVORS && trees && !trees.GetMemory().Has(playerId, RZ_DialogueMemory.NOTES, kinKey))
+			{
+				trees.GetMemory().Add(playerId, RZ_DialogueMemory.NOTES, kinKey);
+				return "\"Family. Sit by me. We read the name every supper, you know. We haven't stopped.\"";
+			}
+
 			string aside = WhoYouWorkFor(gm, playerId, l);
 			if (!aside.IsEmpty())
 				return aside;
@@ -637,12 +645,35 @@ class RZ_RepVoice
 				return string.Format("\"You're the one who %1.\"", best);
 		}
 
+		// One time in four, a tally standing in for the worst deed: how many of theirs you've put down
+		string tally = KillsLine(p, l.m_eFaction);
+		if (!tally.IsEmpty() && Math.RandomInt(0, 4) == 0)
+			return tally;
+
 		string line = RZ_VoiceBank.PickFor(gm, "opener", l.m_eFaction, manner, l, playerId, l.m_vPos);
 		if (!line.IsEmpty())
 			return FillFor(gm, playerId, l.m_eFaction, line);
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		return RZ_LeaderVoice.Greeting(rng, l.m_eFaction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "You've put 4 of ours down." in their voice, when the tally is 3 or more and no worst deed says it.
+	protected static string KillsLine(RZ_PlayerProfile p, int faction)
+	{
+		int kills = p.m_aKills[faction];
+		if (kills < 3 || !RZ_Deeds.WorstText(p, faction).IsEmpty())
+			return "";
+
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return string.Format("\"You've put %1 of ours in the ground. I count. Somebody has to.\"", kills);
+			case RZ_EFaction.MILITARY: return string.Format("\"%1 of ours, by your hand. It's in the log. So are you.\"", kills);
+			case RZ_EFaction.BANDITS: return string.Format("\"%1 of the crew. The book has a page just for you. It's a long page.\"", kills);
+		}
+
+		return string.Format("\"%1 of our people. We recorded each one. We record everything.\"", kills);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -666,6 +697,34 @@ class RZ_RepVoice
 			mem.NoteTopic(playerId, key);
 
 		return line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The change notice in the faction's voice (the voice bank's `change` lines, by manner), then
+	//! the rule in brackets: "(Hunted: their people shoot you. They still owe you a hearing at a
+	//! gate.)". "" with Trees off or no line: the plain notice stays.
+	static string ChangeLine(RZ_GameModeComponent gm, int playerId, int faction)
+	{
+		if (!TreesOn() || !RZ_Factions.IsValid(faction))
+			return "";
+
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		int fame = p.GetFame(faction);
+		int infamy = p.GetInfamy(faction);
+		string manner = VoiceManner(gm, playerId, faction, null);
+		string line = RZ_VoiceBank.PickFor(gm, "change", faction, manner, null, playerId, vector.Zero);
+		if (line.IsEmpty())
+			return "";
+
+		line = FillFor(gm, playerId, faction, line);
+		RZ_ETier tier = gm.GetTier(playerId, faction);
+		string rule = string.Format("(%1)", RZ_RepNames.NameWithRule(fame, infamy));
+		if (RZ_Reputation.IsHunted(tier) && IsOwed(gm, playerId, faction))
+			rule = "(Hunted: their people shoot you. They still owe you a hearing at a gate.)";
+		else if (RZ_Reputation.IsHunted(tier))
+			rule = "(Hunted: their people shoot you.)";
+
+		return line + " " + rule;
 	}
 
 	//------------------------------------------------------------------------------------------------

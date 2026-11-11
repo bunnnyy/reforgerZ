@@ -184,6 +184,27 @@ class RZ_DialogueTrees
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The player changed clothes since the conversation opened (or since the last pick that changed
+	//! them). A catch taking the kit isn't a change of clothes: that's accepted as the new kit.
+	bool KitChanged(RZ_TalkSession s)
+	{
+		RZ_DTalk t = s.m_Tree;
+		int now = KitNow(s.m_iPlayer);
+		if (!t || now == t.m_iKit)
+			return false;
+
+		RZ_Hostility hostility = m_GM.GetHostility();
+		int was = t.m_iKit / 10;
+		if (t.m_iKit >= 0 && hostility && hostility.GetDisguise().IsBlown(s.m_iPlayer, was))
+		{
+			t.m_iKit = now;
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool InTheirKit(int playerId, int f)
 	{
 		RZ_Hostility hostility = m_GM.GetHostility();
@@ -219,6 +240,30 @@ class RZ_DialogueTrees
 
 		// What's still promised to this speaker, with the play left
 		m_Memory.OpenLines(s.m_iPlayer, t.m_Ctx.m_sKey, lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Back into a node a moment after danger or distance ended the conversation (no entry effects
+	//! run again). False if the conversation no longer holds.
+	bool Resume(RZ_TalkSession s, string convId, string nodeId, notnull array<string> lines)
+	{
+		RZ_DTalk t = s.m_Tree;
+		RZ_DConv c = m_DB.Find(convId);
+		if (!t || !c || !RZ_DialogueCond.Holds(t.m_Ctx, c.m_When) || Refuses(t.m_Ctx))
+			return false;
+
+		RZ_DNode node = c.GetNode(nodeId);
+		if (!node)
+			return false;
+
+		t.m_Conv = c;
+		t.m_Node = node;
+		t.m_bInNode = true;
+		t.m_sPrev = "";
+		t.m_fNodeAt = RZ_UIW.Now();
+		t.m_Ctx.m_sScene = RZ_DialogueScenes.SceneKey(c, t.m_Ctx);
+		LinesFor(t.m_Ctx, node, lines);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -557,6 +602,13 @@ class RZ_DialogueTrees
 		}
 		else if (c.m_sCheck == "lie" && !IsTrue(ctx, c))
 		{
+			if (LieBarred(ctx))
+			{
+				s.m_aNew.Insert("\"Not again. Not today.\"");
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+
 			result = TellLie(s, c);
 			verdict = LieVerdict(result);
 		}
@@ -672,8 +724,9 @@ class RZ_DialogueTrees
 			return result;
 		}
 
-		// Caught now
+		// Caught now: no more lies at this speaker for a real day
 		m_Memory.AddRegard(pid, ctx.m_sKey, "lied", LieWeight(ctx));
+		m_Memory.NoteTopic(pid, ctx.m_sKey + "|lie_caught");
 		if (RZ_Factions.IsValid(c.m_iCheckFaction))
 		{
 			m_GM.AddInfamy(pid, c.m_iCheckFaction, 2, "a lie, caught", RZ_RepFlag.ACT);
@@ -710,6 +763,14 @@ class RZ_DialogueTrees
 	protected bool IsTrue(RZ_DCtx ctx, RZ_DChoice c)
 	{
 		return c.m_Truth && !c.m_Truth.IsEmpty() && RZ_DialogueCond.Holds(ctx, c.m_Truth);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This speaker caught a lie from this player in the last real day.
+	protected bool LieBarred(RZ_DCtx ctx)
+	{
+		int at = m_Memory.TopicAt(ctx.m_iPlayer, ctx.m_sKey + "|lie_caught");
+		return at > 0 && RZ_SeasonClock.Now() - at < RZ_DialogueMemory.DAY;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -839,6 +900,9 @@ class RZ_DialogueTrees
 
 		if (!s.m_Tree)
 			return false;
+
+		// Kit the conversation itself changed (a catch takes it) doesn't end the conversation
+		t.m_iKit = KitNow(s.m_iPlayer);
 
 		array<string> extra = {};
 		if (!verdict.IsEmpty())
@@ -1107,6 +1171,12 @@ class RZ_DialogueTrees
 		else if (c.m_sCheck == "lie")
 		{
 			int lieScore = RZ_Checks.TrustScore(m_GM, ctx.m_iPlayer, c.m_iCheckFaction, "", 0);
+			if (LieBarred(ctx))
+			{
+				r.m_bEnabled = false;
+				r.m_sNeed = "they caught you lying today";
+			}
+
 			if (HasTell(ctx))
 				tag = "[Lie - they'd see through it]";
 			else
@@ -1328,6 +1398,14 @@ class RZ_DialogueTrees
 				case "keep":
 					m_Memory.Keep(pid, Scoped(ctx, e.m_sArg));
 					break;
+				case "wire":
+				{
+					// Bastion's word at the wire: right, it counts at the next look; wrong, caught
+					if (RZ_DialogueWire.Say(m_GM, pid, e.m_sArg.ToInt(), user))
+						s.m_aNew.Insert("(A nod at the word.)");
+
+					break;
+				}
 				case "later":
 				{
 					// later:6h:key: due:key once this player has played that long (words only)

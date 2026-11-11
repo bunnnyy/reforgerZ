@@ -426,6 +426,11 @@ class RZ_RepWatch
 		if (RZ_RepNames.IsMixed(cell))
 			text += " People can like you and fear you at once.";
 
+		// With Trees on: said in the faction's voice, with the rule in brackets
+		string voiced = RZ_RepVoice.ChangeLine(m_GM, playerId, faction);
+		if (!voiced.IsEmpty())
+			text = voiced;
+
 		m_GM.NotifyPlayerAs(playerId, RZ_Factions.GetName(faction), text, RZ_ENoticeTag.HIGH);
 		RZ_Guidance guide = m_GM.GetGuidance();
 		if (guide && RZ_RepNames.IsMixed(cell))

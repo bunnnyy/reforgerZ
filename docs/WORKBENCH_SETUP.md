@@ -2167,7 +2167,9 @@ when it happens)
   so once. The Bastion sentry's "I'll check the road and come back." is kept by talking to them again.
 - [ ] Trees on, in Bastion kit you aren't Known in, at a checkpoint's speaker: "Answer as one of
   theirs." shows the look's tags and "[Look - Bastion - N of 2]" before you pick; a pass waves you
-  through, a catch takes the kit. Change your jacket mid-conversation: it ends ("Didn't you just
+  through, a catch takes the kit (and the conversation carries on). "Give the word at the wire."
+  offers three words: today's (heard on Bastion's secure net) adds a cover detail to the look; a wrong
+  one is caught at once. Change your jacket mid-conversation: it ends ("Didn't you just
   change?"). Named Bastion people greet you with "Where did you get that jacket?".
 - [ ] Trees on, walk past a short safehouse's occupants, a Red Hand crewman (with a crew name) and the
   lost Kid: each barks one line as a subtitle, at most one a minute, and the same person not again for

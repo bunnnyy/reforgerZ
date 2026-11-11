@@ -73,7 +73,7 @@ VOICE_TOKENS = {"place"}
 # The voice bank's openers are filled for the listener too (RZ_RepVoice.Opening: reputation's FillFor)
 VOICE_LISTENER_TOKENS = {"word", "best", "worst", "crew", "rep", "kills", "jobs", "name"}
 # A conversation's tokens with an argument: a stranger's own words, the season's title with a faction
-DIALOGUE_KINDS = {"their", "title"}
+DIALOGUE_KINDS = {"their", "title", "wire"}
 
 NEVER = [
     # Sexual violence is never mentioned

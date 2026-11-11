@@ -128,8 +128,7 @@ Still to build:
   read it once they're in the bank). The Red Hand's own send-off lines are exempt.
 - **A short house** jokes about the soup, the potatoes and the chores *more*, never about who eats, and not at
   all in the 30 minutes after a death there. The narrator never jokes about a shortage.
-- **Feud or truce:** a feud sharpens the Red Hand's taunts and Bastion's lists; a truce allows a joke across the
-  line: *"Bastion and the Red Hand shared a fire last night. Both counted the matches."*
+- **Feud or truce** on the channels (face to face is built: [WRITING.md](../docs/WRITING.md#the-voice-bank)).
 - **The infected.** [INFECTED.md](INFECTED.md#people) owns the marks and each faction's words for them. Only the
   Red Hand jokes about the infected, in its own words ("the furniture", a crew nickname for a pack, "the boss"
   for its leader); the Haven names a pack's leader fondly, by who it was ("the big one" when nobody knew);

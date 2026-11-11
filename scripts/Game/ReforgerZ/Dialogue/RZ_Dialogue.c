@@ -99,6 +99,17 @@ class RZ_TalkSession
 }
 
 //------------------------------------------------------------------------------------------------
+//! Where a conversation was when danger or distance ended it: Talk to the same person within 60 s
+//! picks it up again ("Where were we?").
+class RZ_TalkResume
+{
+	IEntity m_Speaker;		// weak
+	string m_sConv;
+	string m_sNode;
+	float m_fAt;
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_Dialogue
 {
 	static const int LEAVE = 99;
@@ -107,11 +118,14 @@ class RZ_Dialogue
 	protected static const int MAX_SAID = 1400;
 	protected static const int PER_SPEAKER = 6;		// conversations with one person at once
 	protected static const float IDLE_BUMP = 30;		// at the cap, the one idle this long gives way
+	protected static const int PER_SPEAKER_SCENE = 16;	// ...while someone there is in a public node
+	protected static const float RESUME_SECONDS = 60;
 	protected static const string LINE_BREAK = "^";
 
 	protected RZ_GameModeComponent m_GM;
 	protected ref map<int, ref RZ_TalkSession> m_mSessions = new map<int, ref RZ_TalkSession>();
 	protected ref map<int, float> m_mLastTalk = new map<int, float>();
+	protected ref map<int, ref RZ_TalkResume> m_mResume = new map<int, ref RZ_TalkResume>();
 	protected int m_iSerial;
 	protected ref RZ_DialogueTrees m_Trees;
 	protected ref RZ_DialogueScenes m_Scenes;
@@ -146,7 +160,7 @@ class RZ_Dialogue
 		array<int> changed = {};
 		foreach (int playerId, RZ_TalkSession s : m_mSessions)
 		{
-			if (s.m_Tree && m_Trees.KitNow(playerId) != s.m_Tree.m_iKit)
+			if (s.m_Tree && m_Trees.KitChanged(s))
 				changed.Insert(playerId);
 		}
 
@@ -313,6 +327,16 @@ class RZ_Dialogue
 			{
 				s.m_aNew.InsertAt(opening[i], 0);
 			}
+
+			// Cut off a moment ago by danger or distance: back where it was
+			array<string> resumed = {};
+			if (Resume(s, resumed))
+			{
+				KeepHubSaid(s);
+				s.m_aNew.Clear();
+				s.m_aNew.Insert("\"Where were we?\"");
+				s.m_aNew.InsertAll(resumed);
+			}
 		}
 
 		if (s.m_aNew.IsEmpty())
@@ -327,6 +351,43 @@ class RZ_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The hub's greeting is kept for going back to the hub from a resumed node.
+	protected void KeepHubSaid(RZ_TalkSession s)
+	{
+		s.m_Tree.m_aHubSaid.Clear();
+		s.m_Tree.m_aHubSaid.InsertAll(s.m_aNew);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A conversation in a node, ended by danger or distance: kept 60 s for the same person.
+	protected void KeepForResume(RZ_TalkSession s)
+	{
+		if (!s || !s.m_Tree || !s.m_Tree.m_bInNode || !s.m_Tree.m_Conv || !s.m_Tree.m_Node)
+			return;
+
+		RZ_TalkResume r = new RZ_TalkResume();
+		r.m_Speaker = s.m_Speaker;
+		r.m_sConv = s.m_Tree.m_Conv.m_sId;
+		r.m_sNode = s.m_Tree.m_Node.m_sId;
+		r.m_fAt = RZ_UIW.Now();
+		m_mResume.Set(s.m_iPlayer, r);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool Resume(RZ_TalkSession s, notnull array<string> lines)
+	{
+		RZ_TalkResume r;
+		if (!m_mResume.Find(s.m_iPlayer, r))
+			return false;
+
+		m_mResume.Remove(s.m_iPlayer);
+		if (r.m_Speaker != s.m_Speaker || RZ_UIW.Now() - r.m_fAt > RESUME_SECONDS)
+			return false;
+
+		return m_Trees.Resume(s, r.m_sConv, r.m_sNode, lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! At most 6 conversations with one person (the open channel has no cap). At the cap, the one
 	//! idle longest (over 30 s) gives way; else there's no room.
 	protected bool RoomAt(IEntity owner)
@@ -336,7 +397,14 @@ class RZ_Dialogue
 
 		array<RZ_TalkSession> with = {};
 		SessionsWith(owner, with);
-		if (with.Count() < PER_SPEAKER)
+		int cap = PER_SPEAKER;
+		foreach (RZ_TalkSession pub : with)
+		{
+			if (pub.m_Tree && pub.m_Tree.m_Node && pub.m_Tree.m_Node.m_bPublic)
+				cap = PER_SPEAKER_SCENE;
+		}
+
+		if (with.Count() < cap)
 			return true;
 
 		float now = RZ_UIW.Now();
@@ -423,12 +491,13 @@ class RZ_Dialogue
 
 		if (!s.m_Speaker || (!IsPerson(s.m_Speaker) && !RZ_TalkRadio.Cast(s.m_Adapter)) || RZ_Util.DistXZ(user.GetOrigin(), s.m_Speaker.GetOrigin()) > RZ_DialogueSettings.Get().m_fRange)
 		{
+			KeepForResume(s);
 			End(playerId, "left", true);
 			return;
 		}
 
 		// A change of clothes since it opened ends it (also checked on the tick)
-		if (s.m_Tree && m_Trees.KitNow(playerId) != s.m_Tree.m_iKit)
+		if (s.m_Tree && m_Trees.KitChanged(s))
 		{
 			string name = s.m_sName;
 			End(playerId, "", true);
@@ -471,6 +540,7 @@ class RZ_Dialogue
 	//! The screen is gone: the player closed it, or the screen guard did (it told the client).
 	void OnScreenGone(int playerId)
 	{
+		KeepForResume(GetSession(playerId));
 		m_mSessions.Remove(playerId);
 	}
 
@@ -479,6 +549,7 @@ class RZ_Dialogue
 	{
 		m_mSessions.Remove(playerId);
 		m_mLastTalk.Remove(playerId);
+		m_mResume.Remove(playerId);
 		m_Trees.GetBarks().Forget(playerId);
 	}
 

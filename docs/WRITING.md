@@ -206,8 +206,11 @@ optional condition in the conversation syntax (`cure>=50`), a weight and the tex
   in the open (`majors.pages_open`). They're ordinary `person` lines with a condition, so the joke
   memory and the mood's share apply.
 - **More kinds:** `route` (face to face after the 90% lock, [below](#the-race-and-the-lock)),
-  `look_pass` and `look_caught` ([below](#faction-kit-and-disguises)), and the openers' `owed`
-  manner and set-word lines. An opener is filled for the listener too: `{word}`, `{best}`, `{worst}`,
+  `look_pass` and `look_caught` ([below](#faction-kit-and-disguises)), `change` (the change notice in
+  the faction's voice, by manner), and the openers' `owed` manner and set-word lines.
+- **Feud or truce** (`truce:<f>`, `feud:<f>` on people's lines): a feud sharpens the Red Hand's taunts
+  and Bastion's lists; a truce allows one joke across the line: *"We shared a fire with Bastion last
+  night. Both sides counted the matches."* An opener is filled for the listener too: `{word}`, `{best}`, `{worst}`,
   `{crew}` (reputation's tokens).
 - **Nobody jokes with a player their leader refuses:** at a seat whose leader holds you at −2 or
   below, the bank picks only plain lines.
