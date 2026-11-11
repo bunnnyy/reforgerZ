@@ -4440,6 +4440,12 @@
    "covers": "**Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy)"
   },
   {
+   "category": "Factions",
+   "object": "Reputation",
+   "field": "m_ReputationSettings",
+   "covers": "**Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart) ([REPUTATION.md](REPUTATION.md#reputations))"
+  },
+  {
    "category": "UI",
    "object": "UI",
    "field": "m_UISettings",
@@ -4450,6 +4456,12 @@
    "object": "Dialogue",
    "field": "m_DialogueSettings",
    "covers": "The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120) ([UI.md](UI.md#how-the-scripts-fit))"
+  },
+  {
+   "category": "Shared",
+   "object": "Shared",
+   "field": "m_SharedSettings",
+   "covers": "**Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine))"
   },
   {
    "category": "Map",
@@ -5235,6 +5247,24 @@
    }
   },
   {
+   "field": "m_ReputationSettings",
+   "category": "Factions",
+   "label": "Reputation",
+   "cls": "RZ_ReputationSettings",
+   "defaults": {
+    "m_bNames": "1",
+    "m_iForgiveBudget": "30",
+    "m_bCreditRule": "1",
+    "m_iCreditFrom": "75",
+    "m_bWildcardPosts": "1",
+    "m_iWildcardRunInfamy": "6",
+    "m_fWildcardTollMult": "2",
+    "m_iThreatsPerLife": "3",
+    "m_fChangeHoldSeconds": "30",
+    "m_fChangeGapMinutes": "5"
+   }
+  },
+  {
    "field": "m_UISettings",
    "category": "UI",
    "label": "UI",
@@ -5274,6 +5304,49 @@
     "m_fDangerNear": "6",
     "m_fDangerClosing": "30",
     "m_iMaxOpen": "32"
+   }
+  },
+  {
+   "field": "m_SharedSettings",
+   "category": "Shared",
+   "label": "Shared",
+   "cls": "RZ_SharedSettings",
+   "defaults": {
+    "m_bLanes": "1",
+    "m_fContactGapMinutes": "4",
+    "m_fBarkGapSeconds": "60",
+    "m_fBarkSpeakerMinutes": "10",
+    "m_bCallbacks": "1",
+    "m_iCallbacksPerPlayer": "10",
+    "m_iCallbackPool": "100",
+    "m_fCallbackRadius": "1000",
+    "m_fCallbackGapHours": "1",
+    "m_fCallbackDays": "3",
+    "m_fEpilogueCallbackHours": "24",
+    "m_bMarks": "1",
+    "m_fMarkSpawnRadius": "150",
+    "m_fMarkDespawnRadius": "200",
+    "m_fMarkMinutes": "10",
+    "m_iSeasonMarks": "40",
+    "m_iEpilogueMarks": "100",
+    "m_iPropMarks": "30",
+    "m_iSignMarks": "30",
+    "m_fVergeMin": "6",
+    "m_fVergeMax": "10",
+    "m_iMajorMorale": "20",
+    "m_iMajorStrength": "8",
+    "m_iPerMajorMorale": "15",
+    "m_iPerMajorStrength": "5",
+    "m_iPerCallMorale": "10",
+    "m_iPerCallStrength": "5",
+    "m_iContractMorale": "10",
+    "m_iContractStrength": "4",
+    "m_iContractLoyaltyFloor": "30",
+    "m_iFinaleMorale": "10",
+    "m_iFinaleStrength": "5",
+    "m_iEpilogueMorale": "5",
+    "m_fSetPieceQuietRadius": "600",
+    "m_iSetPieceWaits": "2"
    }
   }
  ],

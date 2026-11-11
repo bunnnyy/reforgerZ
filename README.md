@@ -28,7 +28,9 @@ and one way to end it: **research the cure.**
 - **Four factions that remember you**: the Haven, Task Force Bastion, the Red Hand and Halcyon.
   Fame and Infamy unlock quartermaster shops and perks (artillery on a horde, a fence, a bounty
   board, an immunity booster), or bring hunter squads, bounties and AI that shoots *you* and
-  nobody else. Bastion checkpoints and Red Hand roadblocks on the roads search you, take a toll
+  nobody else. Each of the 16 Fame x Infamy cells has a name ("Merciful Thug", "Useful Trouble"),
+  shown with what it counts as; each faction forgives at most 30 Infamy a life, and at 75 Fame
+  every new wrong costs Fame too. Bastion checkpoints and Red Hand roadblocks on the roads search you, take a toll
   or let you surrender. A faction's uniform gets you past its people, until you're caught.
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
@@ -80,7 +82,7 @@ and one way to end it: **research the cure.**
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
 That's about 122,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 57 `VERIFY` markers left in the game
+was also checked against the base game's script source; the 59 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -131,22 +133,26 @@ maps, off by default.
 scripts/Game/ReforgerZ/
   Core/          game mode component (the hub), helpers, map markers, loose-item cleanup,
                  seasons (the winner's rules, rule sets, the wipe cycle), AI groups' move
-                 orders (one held waypoint each)
+                 orders (one held waypoint each); the shared engine: the clocks, deeds, the
+                 callback queue
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
                  town memory, the power grid, the radio station, the world facts (what content
-                 reads: season flags, canon, claims, text tokens), the Long Table, the land grid
-                 (water, height, trees, roads, bridges and wild land; off by default)
+                 reads: season flags, canon, claims, text tokens) and its world memory (reasons,
+                 signals, the town log, world records), the marks spawner, the Long Table, the
+                 land grid (water, height, trees, roads, bridges and wild land; off by default)
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
-                 the broadcast, story arcs, the questline engine, headlines
+                 the broadcast, story arcs, the questline engine, headlines, the season budget
+                 and the set-piece calendar
   Zombies/       spawner (any zombie mod's prefabs), bite detection, stealth (visibility, the
                  infected's senses, losing them)
   Backgrounds/   backgrounds, personal goals, player profiles
-  Factions/      reputation, quartermasters and shops, perks, services, hunter squads, bounties,
+  Factions/      reputation and its 16 names, quartermasters and shops, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,
                  territory, supply trucks, faction life, camp life (scenery and routines)
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
-                 Events/ Leaders/ Unarmed/ Perimeter/; Questlines/ (the author's base class,
+                 Events/ Leaders/ Unarmed/ Perimeter/; the shared checks (Trust, Fear, prices) and
+                 ways through a job; Questlines/ (the author's base class,
                  approach helpers, the registry, one folder per faction and one for the Long Table)
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
   Cure/          research, lab, samples, antidotes, infection stages, treatments and meds
@@ -160,7 +166,7 @@ scripts/Game/ReforgerZ/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
                  the screen guard, the notice board, deploy-menu panel and loadout lock, the
-                 map's icon layer, notice styles, chat commands
+                 map's icon layer, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist
 Worlds/RZ_Arland/

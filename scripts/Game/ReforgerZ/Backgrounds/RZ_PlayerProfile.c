@@ -58,6 +58,29 @@ class RZ_PlayerProfile
 	ref array<int> m_aAmendsPaid = {0, 0, 0, 0};	// paid amends per faction this life (each costs more)
 	ref array<int> m_aAmendsWorked = {0, 0, 0, 0};	// Infamy worked off by paying, per faction this life (capped)
 
+	// Reputation this life (docs/REPUTATION.md, "Reputations"), per faction
+	ref array<int> m_aFameGained = {0, 0, 0, 0};	// every positive Fame gain (Earned Fame = the lower of this and Fame)
+	ref array<int> m_aInfamyDirect = {0, 0, 0, 0};	// positive Infamy gains, rival shares left out (Feared = the lower of this and Infamy)
+	ref array<int> m_aForgiven = {0, 0, 0, 0};		// the forgiveness budget used (Forgive)
+	ref array<int> m_aThreats = {0, 0, 0, 0};		// Fear threats used (RZ_Checks.Threaten)
+	ref array<int> m_aRepSeen = {-1, -1, -1, -1};	// the reputation cell last told (RZ_ERep), -1 = not yet
+
+	// Deeds this life (Core/RZ_Deeds.c, life scope), per faction: the biggest single Fame gain and
+	// direct Infamy gain with their phrase and season day, and the tallies
+	ref array<string> m_aBestDeed = {"", "", "", ""};
+	ref array<int> m_aBestAmount = {0, 0, 0, 0};
+	ref array<int> m_aBestDay = {0, 0, 0, 0};
+	ref array<string> m_aWorstDeed = {"", "", "", ""};
+	ref array<int> m_aWorstAmount = {0, 0, 0, 0};
+	ref array<int> m_aWorstDay = {0, 0, 0, 0};
+	ref array<int> m_aKills = {0, 0, 0, 0};			// that faction's people killed
+	ref array<int> m_aJobs = {0, 0, 0, 0};			// contracts completed for it
+	// Life records (what this character did: "pressed", "hid_bite"...): key, season day, and the
+	// season day a bad one stays pinned until (0 = not pinned). At most RZ_Deeds.LIFE_RECORDS
+	ref array<string> m_aRecKeys = {};
+	ref array<float> m_aRecDays = {};
+	ref array<float> m_aRecPinned = {};
+
 	// Personal objective for this life (see RZ_Objectives)
 	int m_iObjType = -1;
 	int m_iObjTarget = -1;
@@ -113,7 +136,24 @@ class RZ_PlayerProfile
 			m_aFavor[i] = 0;
 			m_aAmendsPaid[i] = 0;
 			m_aAmendsWorked[i] = 0;
+			m_aFameGained[i] = 0;
+			m_aInfamyDirect[i] = 0;
+			m_aForgiven[i] = 0;
+			m_aThreats[i] = 0;
+			m_aRepSeen[i] = RZ_RepNames.GetRep(fame, infamy);
+			m_aBestDeed[i] = "";
+			m_aBestAmount[i] = 0;
+			m_aBestDay[i] = 0;
+			m_aWorstDeed[i] = "";
+			m_aWorstAmount[i] = 0;
+			m_aWorstDay[i] = 0;
+			m_aKills[i] = 0;
+			m_aJobs[i] = 0;
 		}
+
+		m_aRecKeys.Clear();
+		m_aRecDays.Clear();
+		m_aRecPinned.Clear();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -151,6 +191,115 @@ class RZ_PlayerProfile
 		while (m_aAmendsWorked.Count() < RZ_Factions.COUNT)
 		{
 			m_aAmendsWorked.Insert(0);
+		}
+
+		// Reputation and deeds (older saves have none: zero, and the cell not told yet)
+		if (!m_aFameGained)
+			m_aFameGained = new array<int>();
+		if (!m_aInfamyDirect)
+			m_aInfamyDirect = new array<int>();
+		if (!m_aForgiven)
+			m_aForgiven = new array<int>();
+		if (!m_aThreats)
+			m_aThreats = new array<int>();
+		if (!m_aRepSeen)
+			m_aRepSeen = new array<int>();
+		if (!m_aBestDeed)
+			m_aBestDeed = new array<string>();
+		if (!m_aBestAmount)
+			m_aBestAmount = new array<int>();
+		if (!m_aBestDay)
+			m_aBestDay = new array<int>();
+		if (!m_aWorstDeed)
+			m_aWorstDeed = new array<string>();
+		if (!m_aWorstAmount)
+			m_aWorstAmount = new array<int>();
+		if (!m_aWorstDay)
+			m_aWorstDay = new array<int>();
+		if (!m_aKills)
+			m_aKills = new array<int>();
+		if (!m_aJobs)
+			m_aJobs = new array<int>();
+		if (!m_aRecKeys)
+			m_aRecKeys = new array<string>();
+		if (!m_aRecDays)
+			m_aRecDays = new array<float>();
+		if (!m_aRecPinned)
+			m_aRecPinned = new array<float>();
+
+		while (m_aFameGained.Count() < RZ_Factions.COUNT)
+		{
+			m_aFameGained.Insert(0);
+		}
+
+		while (m_aInfamyDirect.Count() < RZ_Factions.COUNT)
+		{
+			m_aInfamyDirect.Insert(0);
+		}
+
+		while (m_aForgiven.Count() < RZ_Factions.COUNT)
+		{
+			m_aForgiven.Insert(0);
+		}
+
+		while (m_aThreats.Count() < RZ_Factions.COUNT)
+		{
+			m_aThreats.Insert(0);
+		}
+
+		while (m_aRepSeen.Count() < RZ_Factions.COUNT)
+		{
+			m_aRepSeen.Insert(-1);
+		}
+
+		while (m_aBestDeed.Count() < RZ_Factions.COUNT)
+		{
+			m_aBestDeed.Insert("");
+		}
+
+		while (m_aBestAmount.Count() < RZ_Factions.COUNT)
+		{
+			m_aBestAmount.Insert(0);
+		}
+
+		while (m_aBestDay.Count() < RZ_Factions.COUNT)
+		{
+			m_aBestDay.Insert(0);
+		}
+
+		while (m_aWorstDeed.Count() < RZ_Factions.COUNT)
+		{
+			m_aWorstDeed.Insert("");
+		}
+
+		while (m_aWorstAmount.Count() < RZ_Factions.COUNT)
+		{
+			m_aWorstAmount.Insert(0);
+		}
+
+		while (m_aWorstDay.Count() < RZ_Factions.COUNT)
+		{
+			m_aWorstDay.Insert(0);
+		}
+
+		while (m_aKills.Count() < RZ_Factions.COUNT)
+		{
+			m_aKills.Insert(0);
+		}
+
+		while (m_aJobs.Count() < RZ_Factions.COUNT)
+		{
+			m_aJobs.Insert(0);
+		}
+
+		while (m_aRecDays.Count() < m_aRecKeys.Count())
+		{
+			m_aRecDays.Insert(0);
+		}
+
+		while (m_aRecPinned.Count() < m_aRecKeys.Count())
+		{
+			m_aRecPinned.Insert(0);
 		}
 
 		while (m_aFame.Count() < RZ_Factions.COUNT)
@@ -198,22 +347,76 @@ class RZ_PlayerProfile
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Returns how much actually changed after clamping.
+	//! Returns how much actually changed after clamping. A gain counts toward Earned Fame.
 	int AddFame(RZ_EFaction f, int amount)
 	{
 		EnsureArrays();
 		int before = m_aFame[f];
 		m_aFame[f] = Math.ClampInt(before + amount, 0, RZ_Reputation.FAME_MAX);
-		return m_aFame[f] - before;
+		int changed = m_aFame[f] - before;
+		if (changed > 0)
+			m_aFameGained[f] = m_aFameGained[f] + changed;
+
+		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	int AddInfamy(RZ_EFaction f, int amount)
+	//! Returns how much actually changed after clamping. share = true: a rival share, which never
+	//! counts toward Feared.
+	int AddInfamy(RZ_EFaction f, int amount, bool share = false)
 	{
 		EnsureArrays();
 		int before = m_aInfamy[f];
 		m_aInfamy[f] = Math.ClampInt(before + amount, 0, RZ_Reputation.INFAMY_MAX);
-		return m_aInfamy[f] - before;
+		int changed = m_aInfamy[f] - before;
+		if (changed > 0 && !share)
+			m_aInfamyDirect[f] = m_aInfamyDirect[f] + changed;
+
+		return changed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lower of current Fame and the Fame gained this life: a background's start and Word gets
+	//! around don't count (docs/REPUTATION.md, "Earned this life").
+	int EarnedFame(int f)
+	{
+		EnsureArrays();
+		return Math.Min(m_aFame[f], m_aFameGained[f]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lower of current Infamy and the direct Infamy gained this life (no rival shares, no
+	//! background start).
+	int Feared(int f)
+	{
+		EnsureArrays();
+		return Math.Min(m_aInfamy[f], m_aInfamyDirect[f]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Infamy this faction will still forgive this life (Reputation > Forgiveness budget).
+	int ForgiveLeft(int f)
+	{
+		EnsureArrays();
+		int budget = RZ_ReputationSettings.Get().m_iForgiveBudget;
+		if (budget <= 0)
+			return RZ_Reputation.INFAMY_MAX;
+
+		return Math.Max(0, budget - m_aForgiven[f]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int ThreatsUsed(int f)
+	{
+		EnsureArrays();
+		return m_aThreats[f];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void UseThreat(int f)
+	{
+		EnsureArrays();
+		m_aThreats[f] = m_aThreats[f] + 1;
 	}
 
 	//------------------------------------------------------------------------------------------------

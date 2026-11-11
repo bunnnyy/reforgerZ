@@ -1,6 +1,10 @@
 # Reputation names: the mixed picture
 
-**Status: designed, not built.** Approved by the author on 2026-11-11.
+**Status: designed, phase 1 built.** Approved by the author on 2026-11-11. Phase 1 (the 16 names and
+"counts as", Earned Fame and Feared, the flags of `AddInfamy` and the credit rule, one forgiveness budget across
+every built route, the debounced change notice, the card, the grid and the fallback text, the Wildcard search and
+toll, the admin read-out) is built and lives in [REPUTATION.md](../docs/REPUTATION.md#reputations); this file keeps
+only what's still to build.
 
 Each of the 16 cells of the existing Fame × Infamy grid gets a name, as in New Vegas. The 7 plain cells keep their
 tier names. The 9 mixed cells get Mixed Bag, Useful Trouble, Favourite Rascal, Bad News, Wildcard, Necessary Evil,
@@ -90,11 +94,8 @@ reads.
 
 - **Manners are a writing tool only.** Every rule reads a tier or a number the standing card shows, and REPUTATION.md
   states it as a rule. Players learn two things: the tier (what you can do) and the name (what they call you).
-- **Two fixes underneath:**
-  - the credit runs out at Fame 75+ ([§3.2](#32-the-credit-runs-out-fame-75));
-  - one forgiveness budget for every way of working Infamy off ([§3.3](#33-one-forgiveness-budget)).
-- **Earned this life** ([§3.1](#31-earned-this-life)): what a background starts with, Word gets around, and rival
-  shares never count as something you did.
+- **Built in phase 1:** the credit rule at Fame 75+, one forgiveness budget, and Earned this life
+  ([REPUTATION.md](../docs/REPUTATION.md#reputations)). The later routes join the budget ([§3.3](#3-three-rules-underneath)).
 - **One Fear check** for every threat in the game, with the quiet success on built FORCE stages
   ([§6.1](#the-fear-check-one-threat-score)). It's tagged honestly, cliff included.
 - **The parley** for the Hunted who are owed: local by its conditions, closed while a squad or fight of that faction
@@ -126,117 +127,35 @@ nothing.** The few rules this design adds read either a tier (Wildcard, Hunted) 
 Infamy bands, the budget left). REPUTATION.md lists all of them.
 
 A mixed reputation is the story of this life. Infamy still never fades by itself. It can be worked off only from one
-capped budget ([§3.3](#33-one-forgiveness-budget)). The next character starts fresh, as today: background standing,
+capped budget ([§3.3](../docs/REPUTATION.md#working-off-infamy)). The next character starts fresh, as today: background standing,
 Word gets around, Remembered.
 
 ## 2. The sixteen reputations
 
-Bands as today: Low < 15, Some 15–39, High 40–74, Extreme 75+.
-
-| Fame ↓ / Infamy → | Low | Some | High | Extreme |
-|---|---|---|---|---|
-| **Low** | Stranger | Watched | Hunted | Kill on Sight |
-| **Some** | Known | **Mixed Bag** *(Uneasy)* | **Bad News** *(Hunted)* | **Merciful Thug** *(Kill on Sight)* |
-| **High** | Trusted | **Useful Trouble** *(Tolerated)* | **Wildcard** *(Wildcard)* | **Soft-Hearted Devil** *(Hunted)* |
-| **Extreme** | Champion | **Favourite Rascal** *(Respected)* | **Necessary Evil** *(Wildcard)* | **Wild Child** *(Wildcard)* |
-
-**New Vegas equivalents:**
-- Mixed Bag = Mixed; Useful Trouble = Smiling Troublemaker; Favourite Rascal = Good-Natured Rascal;
-- Bad News = Sneering Punk; Wildcard = Unpredictable; Necessary Evil = Dark Hero;
-- Merciful Thug, Soft-Hearted Devil and Wild Child keep their names.
-- Plain cells: Stranger = Neutral, Known = Accepted, Trusted = Liked, Champion = Idolized, Watched = Shunned,
-  Hunted = Hated, Kill on Sight = Vilified.
-
-**Showing them:**
-- **Plain cells use the tier word.** The people and the rules say the same thing.
-- **Name first, rule second:** "Useful Trouble · counts as Known", "Soft-Hearted Devil · Hunted". The mixed tier
-  words Uneasy, Tolerated and Respected stay in code and in REPUTATION.md's tier table as access classes. Players see
-  "counts as" instead. Wildcard is the name of its own cell and of its tier.
-- **Requirements always say tiers** ("Trusted with Bastion"). Mixed cells count one step lower, as built.
-- **The Fame 75+ corner** (Wild Child and Necessary Evil aren't Hunted) is kept, because the credit runs out
-  ([§3.2](#32-the-credit-runs-out-fame-75)). At 75+ Fame they owe you a lot, but every new wrong spends it.
-
-**Notoriety** with a faction is the higher of your Fame band and Infamy band (0–3), from current values. It measures
-how well their people know your name. It feeds lines and "others hear".
-
-| Notoriety | Cells |
-|---|---|
-| 0 | Stranger |
-| 1 | Known, Watched, Mixed Bag |
-| 2 | Trusted, Hunted, Bad News, Useful Trouble, Wildcard |
-| 3 | Champion, Kill on Sight, Merciful Thug, Soft-Hearted Devil, Favourite Rascal, Necessary Evil, Wild Child |
+**Built:** the names, how they're shown ("counts as"), and notoriety are in
+[REPUTATION.md](../docs/REPUTATION.md#reputations). Still to build here: the voices that say them ([§5](#5-what-people-say)).
 
 ## 3. Three rules underneath
 
-### 3.1 Earned this life
+**Built:** Earned this life, the credit rule (Fame 75+) and the one forgiveness budget with `Forgive()` across the
+built routes (amends contracts, paying, surrender) are in [REPUTATION.md](../docs/REPUTATION.md#working-off-infamy).
+Being **owed** (the parley) will read Earned Fame 15+ and a recorded best deed.
 
-For each faction, the profile keeps two running totals for this life:
-- **Fame gained:** the sum of positive Fame gains;
-- **Direct Infamy gained:** the sum of positive Infamy gains, except those flagged SHARE.
+### 3.3 The routes still to join the budget
 
-From those:
-- **Earned Fame(f)** = the lower of current Fame and Fame gained this life.
-- **Feared(f)** = the lower of current Infamy and direct Infamy gained this life.
-
-Neither counts:
-- a background's starting standing (Ex-Con 25 Bastion Infamy, Raider 15, Police +20, Drifter +15);
-- Word gets around;
-- Infamy that arrives as a rival share (`AddFame`'s rival loop passes SHARE).
-
-Amends lower current values, so they lower these as well.
-
-| Used by | Reads |
-|---|---|
-| Being **owed** (the parley) | Earned Fame 15+ and a recorded best deed |
-| The **Fear** check | Feared band, and backing (Earned Fame with the giver) |
-| Deed lines | Only recorded deeds ([§10](#10-deeds-and-tallies)) |
-
-A fresh Ex-Con has nothing to threaten Bastion with. A Drifter who shoots crewmen is owed nothing.
-
-### 3.2 The credit runs out (Fame 75+)
-
-While your Fame with a faction is 75 or more, every Infamy gain with it also takes the same amount off that Fame. The
-amount is the final one, after disguise doubling and the stronghold leader's temper. It stops once Fame is below 75.
-
-- Wild Child (75+/75+) who kills one more guard slides to Soft-Hearted Devil (High/Extreme), which is Hunted.
-- Necessary Evil slides toward Wildcard, then Hunted.
-- A Champion's accidental 3 Infamy costs 3 Fame.
-
-Killing their people now needs as much good work as it does harm. It's never free. The unlock of a Champion
-background is kept, because it's recorded at the moment it's earned. REPUTATION.md states this rule under "Standing
-tiers", and the tier notice explains a Champion → Trusted drop ("your credit ran out").
-
-### 3.3 One forgiveness budget
-
-Each faction forgives at most **30 Infamy per life**. The amount is counted after the stronghold leader's temper: a
-Merciful leader's ×1.2 makes each job count for more, but not the total. Every route draws from it, through one
-helper, `Forgive()`:
+Each of these goes through `Forgive()` when it's built, inside the same 30 a life. The finale's price doors open a
+route and **forgive nothing**.
 
 | Route | Who | Takes off | Limits besides the budget |
 |---|---|---|---|
-| Amends contracts | Watched with the giver (as built); the owed through a parley | The contract's Fame | — |
-| Paying in Favor (built) | Anyone the quartermaster serves, not Kill on Sight | 5 a payment | ×1.5 each time; at most 15 of the 30; every 30 min; never below 15 (money doesn't buy a clean name) |
 | Settling up in Fame ([§7](#7-settling-up)) | Anyone the quartermaster serves | 5 for 10 Fame | 10 a real day |
-| Surrender (built, Bastion) | Bastion Infamy 15+, empty-handed | 8 | Once an hour, by identity |
 | Hand it in (the finale's Bastion route: a thief surrenders with the box) | As surrender | 8 | As surrender. With the budget spent, the box is still taken in and no Infamy comes off |
-| Parley amends ([§6.2](#62-the-parley-for-the-owed)) | The owed, while Hunted | The contract's Fame | One offer per parley |
+| Parley amends ([§6.2](#62-the-parley-for-the-owed)) | The owed, while Hunted | The contract's Fame | One offer per parley; no extra Merciful count |
 | Make it right ([DIALOGUE.md](DIALOGUE.md#make-it-right)) | A player a leader holds at −2 or below | The amends contract's Fame | Clears that leader's built crossed bit once a season |
 | Errand amends ([ERRANDS.md](ERRANDS.md)) | 15+ Infamy with that faction | 2 at a time | 8 a life; never below 15 |
 | Come In (the epilogue's amends, [EPILOGUE.md](EPILOGUE.md)) | As the epilogue sets | Its own amount | — |
 
-**When the budget is spent:**
-- Amends contracts pay their Fame as ordinary Fame, with rival shares.
-- Surrender is a search and the hold, with no Infamy off.
-- Paying and settling are greyed out: "Bastion has forgiven you all it will this life."
-
-The card shows what's left ("12 of 30 left to forgive").
-
-So a little trouble (up to 30) can be cleaned completely, and more can only be softened. A Watched player and a mixed
-player are treated the same. The finale's price doors open a route and **forgive nothing**.
-
-**Code:** `RZ_GameModeComponent.Forgive(playerId, f, amount, reason)` returns what was actually taken off. Every route
-calls it. That includes `RZ_MissionManager.RewardPlayer`, whose `m_bAmends && IsWatchedOrWorse` branch would otherwise
-pay a Hunted parley job with no cap. The double Merciful count goes too: parley amends get no extra ×1.2.
+Settling up greys out at the budget's end with the built line: "Bastion has forgiven you all it will this life."
 
 ## 4. Manners (for writing lines only)
 
@@ -325,80 +244,41 @@ and the names of leaders and wanderers.
 | Hostile | Through a shut door: "The door stays shut. That's all I'll say." | (shot) | (shot) | (shot) |
 | Owed (parley) | Through the door: "You {best}, and you {worst}. The door stays shut. I'm still talking to you, aren't I?" | "Halt. Hands. You {best}. You also {worst}. Both go in the log. Talk." | "You put {kills} of ours down, and you {best}. The book's got you on both pages. It has to balance. Here's the bill." | "Stop there. Contribution: {best}. Incident: {worst}. We wrote down both. Talk to the duty researcher, not the guards." |
 
-**Change notice.** It's shown when the cell changes.
-- **Merged with the built tier message.** A tier change already notifies, and that message now leads with the name.
-  The only new notices are moves between cells of the same tier.
-- **Debounced.** The new cell must hold for 30 s. At most one notice per faction per 5 minutes, unless the tier
-  changed. So hovering at 39 ↔ 40 doesn't spam.
-- **Title:** "<Faction>: <Name>". **Speaker:** the nearest person of that faction, else its channel.
-- **Text:** one line in voice, then the rule in brackets: "(Hunted: their people shoot you. They still owe you a
-  hearing at a gate.)"
-- It travels owner-only, in the shared personal payload.
+**Change notice.** Built, debounced and merged with the tier message
+([REPUTATION.md](../docs/REPUTATION.md#reputations)). Still to build: the line in voice from the nearest person of that
+faction (else its channel), with the rule in brackets: "(Hunted: their people shoot you. They still owe you a hearing
+at a gate.)"
 
 ## 6. Talk: Fear, the parley and the knock
 
 ### The Fear check: one threat score
 
-Every threat in the game uses one check: missions' Press, the quiet success on built FORCE stages, errand cards,
-and dialogue's `threaten`. It lives in `RZ_Checks` beside the persuade score and the look.
-[MISSION_STYLE.md](MISSION_STYLE.md#checks-persuade-and-fear) owns Fear, its results and its limits; this file owns
-the reputation numbers it reads (Feared, Earned Fame) and the quiet success. In short:
+**Built:** the score (Feared band or backing, +1 for a listed background, nothing for being armed), unaffiliated
+listeners (your highest earned Infamy, at most 2, charged to the Haven), Pass / Short / Refused, the cost (+3, up to
+8, and the life record "pressed"), the limits (once per person by anyone, three per life per faction, a failed threat
+barred a real day, never a stronghold leader), the enum (PRESS, TRADE, TRICK and LEAVE appended once) and the quiet
+success's helper (`m_iMenaceDifficulty`, `TryMenace`): [DESIGN.md](../docs/DESIGN.md#checks-and-ways).
 
-**The score.** A fixed score, not a roll:
-
-| Part | Score |
-|---|---|
-| **Feared band** with the listener's faction (Infamy earned this life, [§3.1](#31-earned-this-life)) | 15–39 gives 1; 40+ gives 2 |
-| **Backing:** your Earned Fame with the giver, when the giver isn't the listener's faction (a Red Hand Champion collecting from a Haven storekeeper) | 15–39 gives 1; 40+ gives 2 |
-| **Fear** | the higher of the two |
-| A ★ background the check lists (usually Ex-Con, Raider or Soldier) | +1 |
-| Being armed | nothing: in Arma everyone carries a gun |
-
-**Unaffiliated listeners** (Rival Survivors, a stage's stranger, a wanderer): the score uses your highest earned
-Infamy with anyone, at most 2. The Infamy a threat costs is charged to the Haven, which counts what's done to
-ordinary people, as built for wanderers and Rival Survivors. At Kill on Sight they won't listen: they shoot, or a
-wanderer runs.
-
-**Difficulty** is 1 (easy), 2 (normal) or 3 (hard), set by the writer. Traits may move it: a Ruthless listener one
-harder (`harder:ruthless`), a Paranoid one one easier (`easier:paranoid`). A faction you worked against in a
-questline ending adds 1, as built.
-
-**Results:**
-- **Press** (new threats): Pass at or over the difficulty; **Short** at one under (a halfway deal at a price the
-  option names); **Refused** at two or more under: they call their people out, or bar the door.
-- **Built FORCE stages** (Read the Page, Collect, Protection Racket, The Driver, Meet the Driver, Debt Collection,
-  The Ledger, and any stage written with a threat) keep working as built, and keep recording FORCE. **The quiet
-  success** is reputation's addition: a stage may set `m_iMenaceDifficulty` (0–3; 0 = none). If your Fear reaches
-  it, the threat works quietly: the stage's better outcome, so nobody tells the crew and the camp isn't on guard.
-  Below it, you get the built outcome.
-
-**The cost:** +3 Infamy with the listener's faction, pass or fail, as the built FORCE threat costs. A scene may name
-more, up to 8. Missions add the life record "pressed"; dialogue adds regard *threatened*.
-
-**The limits:**
-- **Once per person, by anyone,** for the season. After one threat by anyone: "He's already scared. Of someone else."
-  A group can't line up its members to find the best score.
-- **Three per life per faction.** After that it's always Refused ("They're past scared."), and still costs its
-  Infamy. Taking cheap Infamy to unlock threats doesn't pay.
-- **A failed threat is barred** at that speaker for a real day.
-- **Never on stronghold leaders.** The option is shown greyed: "The boss doesn't scare." Never during a parley.
-- **Free-standing talk threats** are never offered in safe zones (strongholds, the lab) or safehouses. A threat a
-  mission writes into its own scene, such as Protection Racket's, stays.
-- **Memory:** a threatened leader or wanderer remembers being crossed, life-stamped ([§12](#12-face-and-name-one-scope-rule)).
-
-**The enum.** `RZ_EQuestApproach` gets PRESS, TRADE, TRICK and LEAVE appended once, in that order, so saved runs keep
-their numbers. Built threat stages keep recording FORCE.
-
-**The tag tells the cost and what it needs, never the outcome:**
-- "[Threaten · +3 Bastion Infamy · Fear 2 of 2]";
-- "[Threaten · +3 Bastion Infamy · this makes you Hunted]", when the estimated cost (after doubling, temper and
-  credit erosion) moves you into a Hunted cell.
+Still to build:
+- **Trait modifiers** on the difficulty: a Ruthless listener one harder (`harder:ruthless`), a Paranoid one one
+  easier (`easier:paranoid`); a faction you worked against in a questline ending adds 1 (the crossing record).
+- **The quiet success on the built FORCE stages** (Read the Page, Collect, Protection Racket, The Driver, Meet the
+  Driver, Debt Collection, The Ledger, and any stage written with a threat): each sets `m_iMenaceDifficulty` and
+  writes its quiet outcome (the stage's better outcome: nobody tells the crew and the camp isn't on guard). Below it,
+  the built outcome, still recorded as FORCE.
+- **Where threats are offered:** the stronghold leader's option greyed ("The boss doesn't scare."); never during a
+  parley; free-standing talk threats never in safe zones (strongholds, the lab) or safehouses (a threat a mission
+  writes into its own scene stays). After one threat by anyone: "He's already scared. Of someone else."
+- **Memory:** a threatened leader or wanderer remembers being crossed, life-stamped ([§12](#12-face-and-name-one-scope-rule));
+  dialogue adds regard *threatened*.
+- **The tag** in this form: "[Threaten · +3 Bastion Infamy · Fear 2 of 2]", "[Threaten · +3 Bastion Infamy · this
+  makes you Hunted]" (the built `FearTag` gives the cost and the Hunted warning).
 
 Short Weight's "Lean on him" stays what it is: a persuade with ★ Police, Ex-Con or Elder. Only threats use Fear.
 
 ### 6.2 The parley (for the owed)
 
-**Who is owed:** Hunted or Kill on Sight with a faction, Earned Fame 15+ with it ([§3.1](#31-earned-this-life)), and a
+**Who is owed:** Hunted or Kill on Sight with a faction, Earned Fame 15+ with it ([§3.1](../docs/REPUTATION.md#reputations)), and a
 recorded best deed with it this life. In the grid that's Bad News, Merciful Thug and Soft-Hearted Devil, but only for
 someone who earned the Fame this life.
 
@@ -469,7 +349,7 @@ although you're Hunted:
 - If none can find a place now: "Come back later." The 2 hours aren't used.
 - **The job finishes by its own rules, where it says.** Nothing is handed in at the gate, so there's no return trip and
   no free second parley.
-- It works off its Fame as Infamy, from the budget ([§3.3](#33-one-forgiveness-budget)).
+- It works off its Fame as Infamy, from the budget ([§3.3](../docs/REPUTATION.md#working-off-infamy)).
 - That faction's AI still shoots you elsewhere. The jobs are away from its people, and Medicine Run ends at a
   safehouse drop, where an unarmed exile isn't shot.
 
@@ -508,7 +388,7 @@ The built **Make amends** action at a faction's quartermaster gains a second pri
 **Why it can't launder:**
 - **Spent Fame is gone.** It can drop your Fame band and your tier. That's the price.
 - No contract is involved, so nothing dodges rival shares. That Fame was earned with its shares already.
-- With [§3.2](#32-the-credit-runs-out-fame-75), Fame above 75 isn't dead weight: it's what your next mistake costs.
+- With [§3.2](../docs/REPUTATION.md#standing-tiers), Fame above 75 isn't dead weight: it's what your next mistake costs.
   Spending it is a real choice.
 - Hopping across a band edge costs Fame on both axes, and the Infamy doesn't come back for free. It's once a real day,
   and within 30 a life.
@@ -520,16 +400,10 @@ settling.
 
 ## 8. Gates, roads and the company you keep
 
-**The Wildcard tier** (High/High, Extreme/High and Extreme/Extreme: Wildcard, Necessary Evil, Wild Child). It counts as
-Known, so:
-
-| Post | What happens |
-|---|---|
-| Bastion checkpoint | Searched like a stranger: "Arms out." Running *this* search costs +6 Bastion Infamy, not +3: they searched you because they don't trust you, and running proves it. Credit erosion applies |
-| Red Hand roadblock | The toll is 20, not 10: "Danger money." If you also wear Halcyon colours, the lab-coat toll and this one take the higher of the two (20), never both |
-
-REPUTATION.md's Waved through and Toll pass lines change to "Known or better, not Wildcard". There's no danger money on
-shop prices.
+**The Wildcard tier** is built: searched at Bastion checkpoints (running that search +6) and the toll ×2 at Red
+Hand roadblocks ([REPUTATION.md](../docs/REPUTATION.md#checkpoints-roadblocks-and-camps)). Still to build with disguise:
+if you also wear Halcyon colours, the lab-coat toll and this one take the higher of the two (20), never both. There's
+no danger money on shop prices.
 
 **The company you keep.** A vanilla group that arrives together (members within 50 m of each other) is treated
 together:
@@ -638,10 +512,8 @@ outranks one +5.
 - **The Long Table's (you) flags:** their own phrase.
 - **Finale kills between locked players** are tagged *war* ([§13](#13-the-lock-the-cure-and-the-season-record)).
 
-**Storage.** Phrases are lowercase and past tense, plus the day, and templates put them after a subject or label
-([§5](#5-what-people-say)). A bigger deed replaces a smaller one; an equal one keeps the first. They're saved with the
-profile per life in the shared deeds store (`RZ_Deeds`, life scope), and the season record keeps the season's biggest by
-identity ([§13](#13-the-lock-the-cure-and-the-season-record)).
+**Storage** is built: the deeds store, life and season ([DESIGN.md](../docs/DESIGN.md#deeds)). Phrases are lowercase
+and past tense, and templates put them after a subject or label ([§5](#5-what-people-say)).
 
 ## 11. The whole picture
 
@@ -810,39 +682,19 @@ or at notoriety 3 within 30 m. Barks and others-hear never name a player who is 
 
 ## 17. In the UI
 
-**The standing card** (no new widgets on the card):
-- `TierNameN`: the name, upper case.
-- `TierIconN`: as today.
-- `TierNoteN`: at most 42 characters:
-  - "COUNTS AS KNOWN · SEARCHED · TOLL 20" (Wildcard);
-  - "HUNTED · THEY OWE YOU A HEARING" (owed);
-  - "COUNTS AS KNOWN" otherwise.
-- The word, and the nearest met leader's verdict, are the first two lines of `LeadersN`: "The crews call you Lucky."
-- `InfamyValueN` adds the budget: "36 · 12 TO FORGIVE".
-- `Header`: the whole picture.
+**Built** ([REPUTATION.md](../docs/REPUTATION.md#reputations), [UI.md](../docs/UI.md#the-notebook)): the card's name and
+note, the budget on `InfamyValueN`, the code-filled grid (`RepCell_<fame>_<infamy>`), the feed's new `F` fields, the
+fallback text, the first-mixed-name tip, the `/rep` read-out and the log line on every cell change.
 
-**The grid** becomes code-filled. The layout lists 16 Text widgets, `RepCell_<fame>_<infamy>`. The code writes each
-cell's name and the initials of the factions that put you there, so the layout has no static names.
-
-**The feed.** The `F` record gets fields on the end: rep id, notoriety, word, note, budget left, owed. `H` carries the
-picture. Older layouts still parse.
-
-**Notices:**
-- **One per approach.** Priority: the gate's own line (with the bark folded in), then a change notice, then a tip.
-- Anything lower waits until 30 s after the last notice from this system, and is dropped if older than 2 minutes.
-- Without layouts they're vanilla hints, so the queue matters even more.
-- All of them are owner-only, through the shared personal payload.
-
-**Fallback text** ("Ask what they think of you", `DescribeStanding`): "The Haven: Useful Trouble (counts as Known; Fame
-46, Infamy 22, 30 of 30 left to forgive; Favor 30)".
-
-**Journal:** a parley's job reads "Amends: works off Infamy · finishes where the job says".
-
-**Guidance:** one tip on your first mixed name: "People can like you and fear you at once. Press K to see what they call
-you."
-
-**Admin read-out:** the `rep` chat command (admins only) prints a player's cells, Earned Fame and Feared, budget, word,
-deeds and tallies. There's also a log line on every cell change.
+Still to build:
+- `TierNoteN` for the owed: "HUNTED · THEY OWE YOU A HEARING" (the feed's owed field is sent as 0 until the parley).
+- The word, and the nearest met leader's verdict, as the first two lines of `LeadersN`: "The crews call you Lucky."
+  (the feed's word field is sent empty until the word exists).
+- `Header`: the whole picture, carried in `H`.
+- **Notices, one per approach.** Priority: the gate's own line (with the bark folded in), then a change notice, then
+  a tip. Anything lower waits until 30 s after the last notice from this system, and is dropped if older than 2
+  minutes; a rule of the shared notice lanes.
+- **Journal:** a parley's job reads "Amends: works off Infamy · finishes where the job says".
 
 ## 18. Multiplayer, saving, performance
 
@@ -879,9 +731,9 @@ Reputation lands in four steps across the plan's build order.
 | Plan phase | Builds | Why then |
 |---|---|---|
 | 0. Fixes | The `BastionContact` hold fix; amends paid uncapped on the Hunted path in `RewardPlayer`; the SHARE flag so disguise doubling stops hitting rival shares | Built bugs |
-| 1. Shared foundations | The 16 names and "counts as"; Earned Fame and Feared; `AddInfamy` flags and the credit rule; `Forgive()` across every built route; the debounced change notice; the card, the grid and the fallback text; the Wildcard search and toll; the admin read-out; settings | Closes today's holes and makes the names honest |
+| 1. Shared foundations | **Built** ([REPUTATION.md](../docs/REPUTATION.md#reputations)) | — |
 | 2. Talk | `RZ_RepVoice` and the opening chain; deeds, tallies and `m_sDeed`; Ask what they think; `FillFor` tokens; the faction's word and crew names; `Picture` and `PictureKind`; life-stamped memory; local deeds | The New Vegas feel; no new rules |
-| 4. The mission style | The Fear check (with `RZ_Checks`) and its tags; the parley and the knock; `IsEmptyHanded`; amends reservations; settling up; the company you keep | New rules, each small and capped |
+| 4. The mission style | The Fear check's trait modifiers, tags and quiet successes (the check itself is built); the parley and the knock; `IsEmptyHanded`; amends reservations; settling up; the company you keep | New rules, each small and capped |
 | 6–7. Finale and ending | `CanSideWith`, the lock overlay, parley closed with fighting routes, war deeds; the season record and its APIs; barks and others-hear; the last week's hooks and "square" | Needs the finale and the epilogue |
 
 ## 20. Guardrails
@@ -919,14 +771,14 @@ Reputation lands in four steps across the plan's build order.
 
 | Doc | Change |
 |---|---|
-| REPUTATION.md | "Standing tiers" gains the credit rule and the name grid. A new "Reputations" section after it: names, the faction's word, deeds, the picture, face and name. "Working off Infamy" becomes the one budget table. The Fear check. The checkpoints table: Wildcard search, toll 20, groups, the parley and the knock. Surrender's approach fix. Disguises: links to DISGUISE's look. Leaders: life-stamped memory. The lock and the season record. "How it maps to code" |
+| REPUTATION.md | Done in phase 1: the credit rule, the names, the budget table, the Wildcard rows, "How it maps to code". Still: in "Reputations", the faction's word, the picture, face and name; the checkpoints' groups, the parley and the knock; Disguises: links to DISGUISE's look; Leaders: life-stamped memory; the lock and the season record |
 | WRITING.md (the writing guide, moved out of LORE.md) | How each faction says a name; the word; crew names "after something you'd rather they forgot" |
 | DESIGN.md | Questlines: the Fear check and the quiet success (`m_iMenaceDifficulty`); wanderers' picture line; leaders' local deeds |
 | MISSIONS.md | Amends: the parley offer and the budget; `m_sDeed` in "Writing a contract" |
 | QUESTLINES.md | Threat stages that have a quiet success |
-| UI.md and UI/LAYOUTS.md | The `RepCell_*` grid, the note length, `LeadersN` first lines, notice priority |
+| UI.md and UI/LAYOUTS.md | Done in phase 1: the `RepCell_*` grid, the note. Still: `LeadersN` first lines, notice priority |
 | WORKBENCH_SETUP.md | Factions > Reputation settings, log lines, the play-test checklist |
-| ROADMAP.md and README | Planned → Built per step; "Dropped": danger money on prices, manner job weights, Call it square, background crew names, each with one line of reason |
+| ROADMAP.md and README | Planned → Built per step; "Dropped" (danger money on prices is there since phase 1): manner job weights, Call it square, background crew names, each with one line of reason |
 
 ---
 
@@ -1035,50 +887,22 @@ Bastion; the third has Bastion Infamy 41 and is a Wildcard.
 
 ## Engine needs
 
-- **`RZ_Reputation`** (`Factions/RZ_Reputation.c`), all pure functions on the existing `Band()`:
-  - `enum RZ_ERep` (16 cells, append-only) and `enum RZ_EPictureKind` (9, in match order);
-  - `GetRep(fame, infamy)`, `GetRepName`, `GetNotoriety`, `GetRepNote` (at most 42 characters);
-  - `GetManner`, for writing only.
+Built in phase 1 and not repeated here: `RZ_ERep` and the names (`Factions/RZ_RepNames.c`), the profile's gains,
+budget and threats, `AddInfamy`/`AddFame` with their flags and the credit rule, `Forgive()` on the built routes, the
+debounced change notice, `RZ_Checks` (Trust, Fear, threats) and `RZ_Ways`, and the Wildcard tier at posts
+([REPUTATION.md](../docs/REPUTATION.md#how-it-maps-to-code), [DESIGN.md](../docs/DESIGN.md#checks-and-ways)).
 
-  Unchanged: `RZ_ETier`, `GetTier`, `GetAccessRank`, `RZ_EStandingCheck` and the hostility code.
-- **`RZ_PlayerProfile`** per life, saved and cleared on a new life:
-  - `m_aFameGained[4]` and `m_aInfamyDirect[4]` (gross gains this life);
-  - `m_aForgiven[4]` (budget used);
-  - `m_aSettleUnix[4]` and `m_aParleyUnix[4]` (server time);
-  - `m_aThreats[4]` (Fear threats used this life).
-
-  Helpers: `EarnedFame(f)` = min(current, gained) and `Feared(f)` = min(current Infamy, direct gained). The built
-  `m_aAmendsWorked` stays as the paying sub-cap.
-- **`RZ_GameModeComponent`:**
-  - **`AddInfamy(player, faction, amount, why, flags, deed)`** with flags SHARE (a rival share: not direct, never
-    doubled) and ACT (done in sight: may double while passing). `AddFame`'s rival loop, a mission's rival Infamy on
-    completion, `RZ_Questline.ChangeStanding` and `RZ_QuestApproach.SideWith` pass SHARE. After the disguise and temper
-    scaling, if the player's Fame with that faction is 75+, the same amount is taken off that Fame (the credit rule)
-    before `CheckTierChange`. Offline profiles never double.
-  - **`AddFame`** takes an optional deed text, and marks SMALL pay (errands), left out of season Fame, the Trusted goal
-    and records.
-  - **`Forgive(playerId, f, amount, reason)`:** applies the temper, clamps to the 30 budget (a setting), records it, and
-    returns what was taken off. Called by `RZ_MissionManager.RewardPlayer`'s amends branch (pays ordinary Fame once the
-    budget is spent), by `RZ_FactionServices` paying (keeps its floor of 15 and its sub-cap of 15), by
-    `RZ_Checkpoints.Surrender`, by parley amends, by settling up, by Make it right, by errand amends, by the epilogue's
-    Come In and by the finale's Hand it in.
-  - **`CheckTierChange`** also detects a cell change: a debounced notice (30 s hold, one per faction per 5 min unless
-    the tier changed), with the tier message leading with the name. Log line: `Reputation: <player> <faction> <name>
-    (<tier>)`.
-- **`RZ_Checks.Fear`** (the shared check helper, owned by the mission style): Feared band or backing (at most 2), +1 ★, against a difficulty with trait
-  modifiers; Pass / Short / Refused; once per person by anyone (by person id); three per life per faction; a failed
-  threat barred a real day by identity; once per person for the season; refused on stronghold leaders, during a parley, and for free-standing talk in
-  safe zones and safehouses; unaffiliated speakers use the highest earned Infamy with anyone (at most 2) and charge the Haven; writes
-  crossed memory, life-stamped; tags with the estimated cost and the Hunted-cliff warning.
-- **`RZ_Ways`** (the approach helpers, keyed by identity): `m_iMenaceDifficulty` and a quiet-success outcome on built
-  FORCE options; `RZ_EQuestApproach` gets PRESS, TRADE, TRICK and LEAVE appended once.
+- **`RZ_RepNames`** additions: `enum RZ_EPictureKind` (9, in match order); `GetManner`, for writing only.
+- **`RZ_PlayerProfile`** per life: `m_aSettleUnix[4]` and `m_aParleyUnix[4]` (server time).
+- **Call sites marked `ACT`** one by one (today a direct gain without SHARE counts as done in sight), and offline
+  profiles never doubled.
+- **`Forgive()` callers still to come:** parley amends, settling up, Make it right, errand amends, the epilogue's Come
+  In and the finale's Hand it in.
+- **`RZ_Checks`:** the trait modifiers; refused during a parley and for free-standing talk in safe zones and
+  safehouses; crossed memory written, life-stamped.
 - **`RZ_Checkpoints`:**
-  - the Wildcard tier is searched at Bastion checkpoints, and running that search costs +6 (a setting);
-  - the Red Hand toll is ×2 for the Wildcard tier, and takes the higher of that and the lab-coat toll;
+  - the lab-coat toll, and the Wildcard toll taking the higher of the two;
   - group search before any look, per-member tolls, the camp line (vanilla group, 50 m);
-  - **fix `BastionContact`'s approach hold:** only while distance falls, at most 90 s per approach, closed while a
-    Bastion hunter squad is within 1 km or any `RZ_HostileZone` or grudge of Bastion has the player, and the approach
-    uses the surrender hour (by identity);
   - surrender's 5-minute hold ends if the player arms within 200 m or fires.
 - **The parley** in `RZ_Checkpoints` (posts, camps, the lab and field station gates):
   - the closing conditions: a squad of that faction within 1 km, any zone or grudge, another player within 150 m, the
@@ -1145,13 +969,9 @@ Bastion; the third has Bastion Infamy 41 and is a Wildcard.
   - **After the lock:** the word overlay, and parley and settling closed with factions on a fighting route; war deeds;
     at the cure, locks end and parley reopens with everyone.
 - **For the disguise look:** `Notoriety(identity, f)` and `KnowsFace(identity, f, pos)`.
-- **Settings:** a new `RZ_ReputationSettings` on the game mode (Factions > Reputation). No initialisers: defaults live
-  only in the attribute strings, and a missing object is created with `RZ_Util.NewWithDefaults`. Settings: names on;
-  the forgiveness budget 30; credit erosion on; the Wildcard search on, its run Infamy 6, the toll multiplier 2; Fear's
-  threats per life per faction 3; the quiet success on; parley on, with 120 min, 1 km squad radius, 150 m alone radius,
+- **Settings** still to add to the built `RZ_ReputationSettings` (Factions > Reputation): the quiet success on; parley on, with 120 min, 1 km squad radius, 150 m alone radius,
   200 m hold radius and 90 s walk; settling on, at 2 Fame per Infamy and 10 a day; group rules on; crew names on; barks
-  on and others hear on, with 25 m / 30 m and 10 min; change-notice debounce 30 s and 5 min.
-- **Admin:** the `rep <player>` chat command in `RZ_ChatCommands` (admins only).
+  on and others hear on, with 25 m / 30 m and 10 min.
 - **Tests:** `tools/compile_check.sh` after each step. A runtime-test path walks a fake player through the cells with
   `AddFame` and `AddInfamy`, and checks: the debounced change notice and its log line; credit erosion at 75+; that the
   budget stops every route at 30 and paying at 15 and 15; Earned Fame and Feared ignoring background and SHARE; Fear's

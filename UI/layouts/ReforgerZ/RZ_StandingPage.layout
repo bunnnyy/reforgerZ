@@ -3434,7 +3434,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{B99977E9A946D700}" {
-     Name "TierGridText00"
+     Name "RepCell_3_0"
      Slot FrameWidgetSlot "{92992D16389DDBE4}" {
       Anchor 0 0 0 0
       PositionX 122
@@ -3474,7 +3474,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{3D13BB6FF234C9B1}" {
-     Name "TierGridText01"
+     Name "RepCell_3_1"
      Slot FrameWidgetSlot "{FDC1A59C84D7F046}" {
       Anchor 0 0 0 0
       PositionX 302
@@ -3488,7 +3488,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
-     Text "RESPECTED"
+     Text "FAVOURITE RASCAL"
      "Font Size" 11
      "Min Font Size" 11
      "Vertical Alignment" Center
@@ -3514,7 +3514,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{4488121FEFF6FBFF}" {
-     Name "TierGridText02"
+     Name "RepCell_3_2"
      Slot FrameWidgetSlot "{DFE28F49FF4FC83D}" {
       Anchor 0 0 0 0
       PositionX 482
@@ -3528,7 +3528,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
-     Text "WILDCARD"
+     Text "NECESSARY EVIL"
      "Font Size" 11
      "Min Font Size" 11
      "Vertical Alignment" Center
@@ -3554,7 +3554,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{B0385E2A18FCFE4F}" {
-     Name "TierGridText03"
+     Name "RepCell_3_3"
      Slot FrameWidgetSlot "{13D582AA196C4E2B}" {
       Anchor 0 0 0 0
       PositionX 662
@@ -3568,7 +3568,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
-     Text "WILDCARD"
+     Text "WILD CHILD"
      "Font Size" 11
      "Min Font Size" 11
      "Vertical Alignment" Center
@@ -3617,7 +3617,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{80A10DEEF6F39FC3}" {
-     Name "TierGridText10"
+     Name "RepCell_2_0"
      Slot FrameWidgetSlot "{D96C78C44575396A}" {
       Anchor 0 0 0 0
       PositionX 122
@@ -3657,7 +3657,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{18A0B5AA34010EBC}" {
-     Name "TierGridText11"
+     Name "RepCell_2_1"
      Slot FrameWidgetSlot "{B88E6A71E418E68C}" {
       Anchor 0 0 0 0
       PositionX 302
@@ -3671,7 +3671,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
-     Text "TOLERATED"
+     Text "USEFUL TROUBLE"
      "Font Size" 11
      "Min Font Size" 11
      "Vertical Alignment" Center
@@ -3697,7 +3697,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{77F3F94DB2BE69EE}" {
-     Name "TierGridText12"
+     Name "RepCell_2_2"
      Slot FrameWidgetSlot "{8DE51C2D6C9325E0}" {
       Anchor 0 0 0 0
       PositionX 482
@@ -3737,7 +3737,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{5693AA09925A5D10}" {
-     Name "TierGridText13"
+     Name "RepCell_2_3"
      Slot FrameWidgetSlot "{DC3CC26C7EB19E1C}" {
       Anchor 0 0 0 0
       PositionX 662
@@ -3751,7 +3751,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.894 0.51 0.435 1
-     Text "HUNTED"
+     Text "SOFT-HEARTED DEVIL"
      "Font Size" 11
      "Min Font Size" 11
      "Vertical Alignment" Center
@@ -3800,7 +3800,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{320B53DCA1B715EE}" {
-     Name "TierGridText20"
+     Name "RepCell_1_0"
      Slot FrameWidgetSlot "{EF13FBE2812A71DC}" {
       Anchor 0 0 0 0
       PositionX 122
@@ -3840,7 +3840,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{3EE88A0667DBAD88}" {
-     Name "TierGridText21"
+     Name "RepCell_1_1"
      Slot FrameWidgetSlot "{17CBD4F0C14D8EFA}" {
       Anchor 0 0 0 0
       PositionX 302
@@ -3854,7 +3854,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
-     Text "UNEASY"
+     Text "MIXED BAG"
      "Font Size" 11
      "Min Font Size" 11
      "Vertical Alignment" Center
@@ -3880,7 +3880,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{DFAEB2516950C889}" {
-     Name "TierGridText22"
+     Name "RepCell_1_2"
      Slot FrameWidgetSlot "{25912E4712B0F167}" {
       Anchor 0 0 0 0
       PositionX 482
@@ -3894,7 +3894,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.894 0.51 0.435 1
-     Text "HUNTED"
+     Text "BAD NEWS"
      "Font Size" 11
      "Min Font Size" 11
      "Vertical Alignment" Center
@@ -3920,7 +3920,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{117A688C2DA47D87}" {
-     Name "TierGridText23"
+     Name "RepCell_1_3"
      Slot FrameWidgetSlot "{445124F52FDDA43E}" {
       Anchor 0 0 0 0
       PositionX 662
@@ -3934,7 +3934,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
       Alignment 0 0
      }
      Color 0.894 0.51 0.435 1
-     Text "KILL ON SIGHT"
+     Text "MERCIFUL THUG"
      "Font Size" 11
      "Min Font Size" 11
      "Vertical Alignment" Center
@@ -3983,7 +3983,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{D8FC17DB9C07C01D}" {
-     Name "TierGridText30"
+     Name "RepCell_0_0"
      Slot FrameWidgetSlot "{788C0E09005521CC}" {
       Anchor 0 0 0 0
       PositionX 122
@@ -4023,7 +4023,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{C33EA9B158654E01}" {
-     Name "TierGridText31"
+     Name "RepCell_0_1"
      Slot FrameWidgetSlot "{3C58F5DF54FEA586}" {
       Anchor 0 0 0 0
       PositionX 302
@@ -4063,7 +4063,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{CACE8CB1314E7BCD}" {
-     Name "TierGridText32"
+     Name "RepCell_0_2"
      Slot FrameWidgetSlot "{65C79C679FB2C9E3}" {
       Anchor 0 0 0 0
       PositionX 482
@@ -4103,7 +4103,7 @@ FrameWidgetClass "{5FB84287E2908342}" {
      Size 1 1
     }
     TextWidgetClass "{75A3409059C6C592}" {
-     Name "TierGridText33"
+     Name "RepCell_0_3"
      Slot FrameWidgetSlot "{7DA8BD767DA29C37}" {
       Anchor 0 0 0 0
       PositionX 662

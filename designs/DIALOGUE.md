@@ -329,7 +329,7 @@ me...") read face, claims and seen nodes, which are per character. So a new life
 - It offers that faction's built amends contract, given by that leader.
 - When it's done, regard goes to 0, and the built crossed bit is cleared, once a season per leader.
 - The Infamy it works off goes through `Forgive()`, inside the 30-per-life budget
-  ([REPUTATION_NAMES.md](REPUTATION_NAMES.md#33-one-forgiveness-budget)).
+  ([REPUTATION_NAMES.md](../docs/REPUTATION.md#working-off-infamy)).
 - This changes a built rule, so REPUTATION.md changes in the same commit.
 
 ## 7. Conditions

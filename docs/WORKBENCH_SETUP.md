@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **179 prefab fields**: 40 on `RZ_GameModeComponent`, 132 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **184 entries**: 146 prefabs the plugin creates, 21 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 17 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 36 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **179 prefab fields**: 40 on `RZ_GameModeComponent`, 132 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **184 entries**: 146 prefabs the plugin creates, 21 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 17 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 38 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -1032,7 +1032,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 33 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 38 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
@@ -1084,8 +1084,10 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform keywords** per faction, 2 pieces, checked every 10 s, blown for 15 min), the three AI faction keys |
 | Factions | Services | `m_ServiceSettings` | **Fire Mission** (on, 60 min cooldown, 6 infected, 50 m, 30 s, kills at most 25, not within 250 m of people), **Fence** (on, keywords, 3 Favor an item, 8 a sale, 30 an hour), **Bounty board** (on, 60 to post, 40 paid, 3 at once, 2 h), booster (80) and medic (20) prices, **Amends** (15 Favor, ×1.5 each time, 5 Infamy, 15 a life, never below 15, every 30 min), armband and ribbon prefabs |
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
+| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120) ([UI.md](UI.md#how-the-scripts-fit)) |
+| Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
 <!-- /manifest:settings -->
@@ -1231,7 +1233,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **58** lines with the tag, all in the game scripts (one is the comment in
+There are **59** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 11 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1249,7 +1251,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:156` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:163` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
 ### Medium risk: big features, with a fallback (29)
@@ -1284,7 +1286,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:540` | an empty group prefab (vanilla `Group_Base.et`) stays alive until a member joins, takes the character's faction, and a spawned lone character joins it and takes its waypoints | Lone occupants and single guards stand where they spawn, as before: empty **Camp life > Group prefab**. Guards that are AI groups still take jobs |
 | `Factions/RZ_CampLife.c:678` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 
-### Low risk: contained or cosmetic (18)
+### Low risk: contained or cosmetic (19)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1305,6 +1307,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:855` | the road network's points follow every drivable road near a camp | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
 | `Factions/RZ_CampLife.c:1382` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
 | `Factions/RZ_CampLife.c:1449` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `Puzzles/RZ_GameTime.c:68` | the game clock's measured rate matches the server's time acceleration (the log line `Clocks: the game clock runs x<rate>`) | Until it's measured, game-clock windows count as 1:1 time; a wrong rate makes a set piece's evening and a window's real minutes longer or shorter, nothing else |
 
 ### The UI (9)
 
@@ -1323,7 +1326,7 @@ people, **UI > Reader** and **Subtitles** off for cards. How the UI is put toget
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_UIData.c:923` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:377` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
-| `UI/RZ_PlayerUIComponent.c:158` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:159` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
 
 ## 7. Log lines to check
@@ -1453,6 +1456,19 @@ season; [DESIGN.md](DESIGN.md#world-facts)), `World change: <key>. <headline>` (
 pointless: the cure, or its truck's post changed hands), `The cure is out: N running mission(s)
 called off.`, `Perimeter (stood down): player N turned back from the line.`, and `Season N is
 over (...). The wipe happens at the next restart.`
+
+The shared engine and reputation names ([DESIGN.md](DESIGN.md#the-shared-engine),
+[REPUTATION.md](REPUTATION.md#reputations)), while running:
+`Reputation: <player> <faction> <name> (<tier>)` (every change of name),
+`Reputation: <player> <faction> forgave N (<route>), N left to forgive` and `... forgive N refused, 0 left
+to forgive (...)` (the forgiveness budget), `Reputation: <player> <faction> credit rule, -N Fame for the
+Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player> threatened <person>
+(pass|short|refused)`, `Clocks: the game clock runs xN (a game day is N real minutes).` (once, when it's
+first measured), `Callbacks: queued for ...` and `Callbacks: told ...`, `Note at <safehouse>, unsigned:
+...` (a callback whose character died), `Budget: <lane> morale|strength N for <faction> clipped to N (...)`,
+`Calendar: <key> holds evening N`, `... waits (...)` and `... released`, `World memory: reason ...` and
+`World memory: town ...`; on a restart, `World memory: N reasons, N signals, N town logs, N world
+records.` and `Shared: N callbacks waiting, N season records.`
 
 ## 8. Play-test checklist
 
@@ -1591,6 +1607,27 @@ session, tick off:
 
 **Factions**
 - [ ] Hunted by Bastion near Bastion AI: they shoot you, not a friend next to you.
+- [ ] Reputation names ([REPUTATION.md](REPUTATION.md#reputations)): do two jobs for the Haven and
+  shoot a Haven guard (Fame about 20, Infamy about 18): 30 s later a card says "They call you Mixed
+  Bag - counts as Stranger now", once, with the guidance tip; swing back across the line inside
+  30 s and nothing is said. The log has `Reputation: ... Mixed Bag (Uneasy)`. The notebook's
+  Standing page shows MIXED BAG, "COUNTS AS STRANGER", the Infamy with "TO FORGIVE", and an H in
+  the Mixed Bag cell of the grid; with a pad the page opens and scrolls as before.
+- [ ] The forgiveness budget (set **Reputation > Forgiveness budget** to 10): at Watched, an amends
+  contract takes Infamy off; the next pays Fame instead with "has forgiven you all it will this
+  life"; paying at the quartermaster is refused with the same line; Ask what they think of you says
+  "0 of 10 left to forgive". A new life starts with the whole budget again.
+- [ ] The credit rule: at Champion (75+ Fame), shoot one of theirs: Fame drops by the Infamy gained,
+  and a drop to Trusted says "Your credit ran out".
+- [ ] The Wildcard tier (about 50 Fame and 45 Infamy with Bastion, then the Red Hand): a Bastion
+  checkpoint searches you ("Arms out"); leaving the barrier early costs 6 Infamy. A Red Hand
+  roadblock asks 20 Favor.
+- [ ] `/rep <your name>` as an admin prints the four factions; as a non-admin it's refused.
+- [ ] Notice lanes ([DESIGN.md](DESIGN.md#notice-lanes)): walk past two leaders who have work for
+  you within 4 minutes: only the first catches your eye; the second does once the 4 minutes are up.
+- [ ] Contracts and the season budget: finish several contracts for one faction in one session; the
+  log shows `Budget: contracts morale ... clipped` once that faction has moved 10 morale that season
+  day, and a failed contract never takes an outpost leader's loyalty below 30.
 - [ ] Your deploy menu, chat and group stay on the Haven while you're on a variant.
 - [ ] An exile with a gun near a safehouse is shot; without one, the door is just shut.
 - [ ] Shooting a guard makes nearby guards of that faction fire back for about 3 minutes.

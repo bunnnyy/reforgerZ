@@ -77,7 +77,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 |---|---|---|---|---|
 | HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer and the radio indicator not seen yet |
 | The notebook | — | One menu with five tabs, the five rows below, in this order ([below](#the-notebook)) | `RZ_NotebookMenu` | Frame and pages built as text, not checked in play |
-| Notebook: Standing | `standing.png` | Per faction: tier, Fame, Infamy (with the tier bands marked), Favor, the leaders you've met and what they think of you, what the faction needs, a warning when it hunts you. Truces and feuds, and the tier grid | `RZ_StandingPage` | Page built, not checked in play; the tier grid is static |
+| Notebook: Standing | `standing.png` | Per faction: the reputation's name (the tier icon beside it) and its note (what it counts as; for the Wildcard tier "COUNTS AS KNOWN - SEARCHED - TOLL 20"), Fame, Infamy (with the tier bands marked, and "36 - 12 TO FORGIVE" while there's Infamy), Favor, the leaders you've met and what they think of you, what the faction needs, a warning when it hunts you. Truces and feuds, and the reputation grid: the 16 names, with each faction's initial (H, B, R, C) in the cell you stand in ([REPUTATION.md](REPUTATION.md#reputations)) | `RZ_StandingPage` | Page built, not checked in play |
 | Notebook: Journal | `journal.png` | Active contracts, events, puzzles, leader jobs, arcs and questlines with type icon, giver, rough direction and distance and time left. The selected one in full: brief, where, requirements, rewards, and the puzzle clues you've read (or a questline's notes). Under the list, the lab's line: research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) | `RZ_JournalPage` | Page built, not checked in play; the mockup has no lab line yet |
 | Background picker | `background_picker.png` | A panel in the vanilla deploy menu: the picked background's name, perk, flaw, starting standing, starting gear, locked or available (with how to unlock), Legacy toward the Drifter. Locked loadouts are unavailable in the menu itself | `RZ_BackgroundPanelComponent`, `RZ_LoadoutLock.c` | Layout built, not in the deploy menu yet |
 | Notebook: Radio | `radio_log.png` | What you heard and were told this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, and the mission and world notices; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
@@ -143,6 +143,11 @@ mission messages through `RZ_Mission.NotifyParticipants` and `NotifyInterested`)
 notice is classified by its title on the client (`RZ_NoticeStyle.Classify`). Without the HUD the
 vanilla hint queue sorts the same way, with no expiry (it has nowhere else to go).
 *Simplified:* an odd title gets Normal; nothing is lost, it only waits.
+
+**Notice lanes** sit on the server, above this pacing: they decide whether something that speaks to
+a player unasked (a leader catching your eye, the Long Table's host on the road, later radio offers,
+wanderers and errands) may speak at all, at most one such contact every 4 minutes. Urgent notices
+and anything you asked for are never held. The rules are in [DESIGN.md](DESIGN.md#notice-lanes).
 
 ### The notebook
 
@@ -382,8 +387,8 @@ the layouts in `UI/layouts/ReforgerZ/`.
 map's icons don't cluster or scale with zoom; outposts a player has seen are remembered for the
 session only.
 Journal rewards are the mission's base Fame and Favor ("about"), before leader traits and
-background multipliers. The tier grid on the standing screen and the radio channel list are
-static parts of the layouts.
+background multipliers. The radio channel list is a static part of its layout; the standing page's
+reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
 
 ## Built and planned
 

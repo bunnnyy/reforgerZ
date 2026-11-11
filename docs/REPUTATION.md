@@ -28,8 +28,8 @@ Each faction tracks **Fame 0–100** and **Infamy 0–100** for your current lif
 
 - Helping a faction gives Fame with it, and usually Infamy with its rival.
 - Hurting a faction (killing its people, stealing, sabotage, siding against it) gives Infamy.
-- Neither goes down on its own. You work Infamy off with **amends** ✅
-  ([Working off Infamy](#working-off-infamy)).
+- Neither goes down on its own. You work Infamy off with **amends** ✅, all from one budget
+  of 30 per faction per life ([Working off Infamy](#working-off-infamy)).
 
 ### Standing tiers
 
@@ -45,7 +45,65 @@ Each faction tracks **Fame 0–100** and **Infamy 0–100** for your current lif
   Wildcard = Known; Uneasy = Stranger.
 - **Negative tiers:** Watched → Hunted → Kill on Sight. The faction comes after you.
 
-Players are told when their tier changes, not on every point.
+**The tier is the only rule word.** Shops, perks, contract requirements, persuade ranks and the AI
+hostility bitmask all read the tier. What people call you is the cell's name
+([Reputations](#reputations)), and a name opens nothing.
+
+**The credit runs out (Fame 75+)** ✅. While your Fame with a faction is 75 or more, every Infamy
+gain with it also takes the same amount off that Fame: the final amount, after a uniform's doubling
+and the stronghold leader's temper. It stops once Fame is below 75. So Wild Child (75+/75+) who
+kills one more guard slides toward Soft-Hearted Devil, which is Hunted, and a Champion's accidental
+3 Infamy costs 3 Fame. A Champion background unlock is kept: it's recorded when it's earned. A
+Champion → Trusted drop says why: "Your credit ran out." (**Reputation > Credit rule**, from
+**Credit from**, 75.)
+
+Players are told when their tier changes, not on every point. The tier notice leads with the name
+when the name isn't the tier word: "They call you Useful Trouble - counts as Known now."
+
+### Reputations
+
+✅ Each of the 16 cells has a name. The 7 plain cells keep their tier word; the 9 mixed cells get
+their own (**Reputation > Names**, on; off shows the tier words only).
+
+| Fame ↓ / Infamy → | Low | Some | High | Extreme |
+|---|---|---|---|---|
+| **Low** | Stranger | Watched | Hunted | Kill on Sight |
+| **Some** | Known | **Mixed Bag** *(Uneasy)* | **Bad News** *(Hunted)* | **Merciful Thug** *(Kill on Sight)* |
+| **High** | Trusted | **Useful Trouble** *(Tolerated)* | **Wildcard** *(Wildcard)* | **Soft-Hearted Devil** *(Hunted)* |
+| **Extreme** | Champion | **Favourite Rascal** *(Respected)* | **Necessary Evil** *(Wildcard)* | **Wild Child** *(Wildcard)* |
+
+- **Name first, rule second:** "Useful Trouble - counts as Known", "Soft-Hearted Devil - Hunted".
+  The mixed tier words Uneasy, Tolerated and Respected stay in code and in the tier table as access
+  classes; players see "counts as" instead. Requirements always say tiers ("Trusted with Bastion").
+- **Notoriety** (0-3) is the higher of your Fame band and Infamy band with a faction: how well its
+  people know your name. It's in the standing feed; the voices and the disguise look will read it.
+- **Earned this life.** The profile keeps two totals per faction for this life: every Fame gain, and
+  every direct Infamy gain (rival shares left out). **Earned Fame** is the lower of current Fame and
+  Fame gained; **Feared** the lower of current Infamy and direct Infamy gained. A background's start
+  and Word gets around count for neither, and amends lower both. The Fear check reads them
+  ([DESIGN.md](DESIGN.md#checks-and-ways)), so a fresh Ex-Con has nothing to threaten Bastion with.
+- **Deeds.** The life keeps, per faction, its best deed (the biggest single Fame gain with a phrase)
+  and its worst (the biggest direct Infamy gain), how many of their people you killed and how many
+  jobs you did for them; the season keeps the same by identity ([DESIGN.md](DESIGN.md#deeds)).
+  Today only killing a leader writes a phrase ("shot Vlasak"); each contract's phrase comes with the
+  voices (planned).
+- **The change notice.** A new name is told once it has held 30 s (a quick swing back says
+  nothing), at most once per faction per 5 minutes; a tier change is always told at once. The first
+  mixed name also gets a guidance tip: "People can like you and fear you at once." (**Reputation >
+  Change hold seconds**, **Change gap minutes**.) A log line on every change:
+  `Reputation: <player> <faction> <name> (<tier>)`.
+- **The card** on the notebook's Standing page shows the name, what it counts as, and how much is
+  left to forgive; its 16-cell grid is filled in by code, with each faction's initial in the cell you
+  stand in ([UI.md](UI.md#the-notebook)). Without the layouts, **Ask what they think of you** at a
+  quartermaster gives the same, one line a faction: "The Haven: Useful Trouble (counts as Known;
+  Fame 46, Infamy 22, 30 of 30 left to forgive; Favor 30)".
+- **The admin read-out:** `/rep <name>` in chat (server admins; empty for yourself) prints a
+  player's cells, Earned Fame and Feared, what's left to forgive, deeds, tallies and threats used,
+  to the admin and to the log.
+
+What people say about your name (the voices, the faction's word for you, crew names, the whole
+picture, the parley) is planned: [REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md).
+
 
 ### Favor (currency)
 
@@ -202,15 +260,28 @@ players they like.
 
 ## Working off Infamy
 
-Infamy never fades on its own. Three ways to work it off ✅, each capped so none is a reset:
+Infamy never fades on its own. ✅ **One forgiveness budget:** each faction forgives at most **30
+Infamy per life** (**Reputation > Forgiveness budget**), whatever the route. Every route goes through
+one call, `Forgive()`: the stronghold leader's temper first (a Merciful leader makes each amount
+count ×1.2, never the total), then what's left of the budget:
 
-| Way | What it takes | How much |
-|---|---|---|
-| **Amends contracts** | Watched with the giver: the contract works Infamy off instead of paying Fame ([MISSIONS.md](MISSIONS.md)) | the contract's Fame, as Infamy off |
-| **Paying** | "Pay to make amends" at any quartermaster, in that faction's own Favor | 5 Infamy for 15 Favor; each payment this life costs ×1.5 more; at most 15 Infamy a life per faction, once every 30 minutes, and never below 15 (the Watched line): the rest takes amends contracts. Kill on Sight: refused |
-| **Surrender** | Bastion only, at one of its checkpoints ([below](#checkpoints-roadblocks-and-camps)) | 8 Bastion Infamy, once an hour |
+| Way | What it takes | How much | Limits besides the budget |
+|---|---|---|---|
+| **Amends contracts** | Watched with the giver: the contract works Infamy off instead of paying Fame ([MISSIONS.md](MISSIONS.md)) | the contract's Fame, as Infamy off | — |
+| **Paying** | "Pay to make amends" at any quartermaster, in that faction's own Favor | 5 Infamy for 15 Favor; each payment this life costs ×1.5 more | at most 15 of the 30, once every 30 minutes, never below 15 (the Watched line). Kill on Sight: refused |
+| **Surrender** | Bastion only, at one of its checkpoints ([below](#checkpoints-roadblocks-and-camps)) | 8 Bastion Infamy | once an hour, by identity |
 
-The stronghold leader's temper applies to all three (a Merciful leader forgives ×1.2).
+**When the budget is spent:**
+- An amends contract pays its Fame as ordinary Fame, rival shares and all: "Bastion has forgiven you
+  all it will this life. The work counts as Fame instead."
+- Surrender is a search and the hold, with no Infamy off.
+- Paying is refused with the same line.
+
+So a little trouble (up to 30) can be cleaned completely, and more can only be softened. A Watched
+player and a mixed one are treated the same. Every forgiveness is logged. The later routes (the
+parley, settling up in Fame, Make it right, errand amends, the epilogue's Come In and the finale's
+Hand it in) are planned and will draw on the same budget
+([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)).
 
 ## Checkpoints, roadblocks and camps
 
@@ -227,11 +298,12 @@ life's ([DESIGN.md](DESIGN.md#camp-life)); none of it changes who is waved throu
 
 | Post | You are | What happens |
 |---|---|---|
-| Bastion checkpoint | Known or better | Waved through, unsearched |
+| Bastion checkpoint | Known or better, not the Wildcard tier | Waved through, unsearched |
+| | The Wildcard tier (Wildcard, Necessary Evil, Wild Child) | Searched like a stranger: "Arms out." They search you because they don't trust you, so running this search costs +6 Bastion Infamy, not +3 (**Reputation > Wildcard at posts**, **Wildcard run Infamy**) |
 | | Anyone else | Told at 150 m to walk to the barrier. At the barrier (35 m) for 15 s: searched, and up to three contraband items taken (suppressors, explosives: a setting). Leave the barrier before it's done and you've **run** it: +3 Bastion Infamy and the post fires on you for a few minutes |
 | | Hunted | Shot (as everywhere); or [surrender](#surrender) |
 | Red Hand roadblock | Trusted or better | Waved through |
-| | Known | Pay the **toll** at the barrier (10 Red Hand Favor) and pass. Can't pay: treated as a stranger |
+| | Known | Pay the **toll** at the barrier (10 Red Hand Favor) and pass. Can't pay: treated as a stranger. The Wildcard tier pays danger money: 20 (**Reputation > Wildcard toll**, ×2) |
 | | Anyone else | Told at 150 m to turn around. At the barrier: fired on for a few minutes |
 | | Hunted | Shot |
 
@@ -242,7 +314,8 @@ starts again.
 
 At a Bastion checkpoint, a player with Bastion Infamy (15 or more: Watched or Hunted) who walks to
 the barrier **with no firearm** and waits 10 seconds gives themselves up: searched, 8 Bastion
-Infamy off, and Bastion's AI holds its fire on them for 5 minutes, whatever their standing,
+Infamy off (from the [forgiveness budget](#working-off-infamy); once it's spent, nothing comes off),
+and Bastion's AI holds its fire on them for 5 minutes, whatever their standing,
 fights or grudges say (and forgets those fights). A Hunted player walking up unarmed within 150 m
 isn't shot while they come in: only while they get closer (or wait at the barrier), until they've
 hung back for 30 s in one approach, with their surrender hour free, and not while a Bastion squad sent after them
@@ -533,10 +606,21 @@ checkpoints keep a curfew ([DESIGN.md](DESIGN.md#seasons)).
 ## How it maps to code
 
 - `RZ_PlayerProfile`: Fame, Infamy and Favor per faction for the current life, plus the
-  persistent Champion list and background unlocks.
+  persistent Champion list and background unlocks. Per life also: Fame gained and direct Infamy
+  gained (`EarnedFame`, `Feared`), the budget used (`m_aForgiven`, `ForgiveLeft`), threats used, the
+  name last told, and the life's deeds (`Core/RZ_Deeds.c`).
 - `RZ_Reputation`: the tier table, access ranks, standing checks, the rival table, display names.
-- `RZ_GameModeComponent`: `AddFame`, `AddInfamy`, `AddFavor`, `SpendFavor`, `GetTier`. Every
-  Infamy change goes through the stronghold leader's temper (`RZ_Leaders.ScaleInfamy`).
+  `RZ_RepNames` (`Factions/RZ_RepNames.c`): the 16 names (`RZ_ERep`, append-only), "counts as", the
+  card's note, notoriety; `RZ_RepWatch`, the debounced change notice and `/rep`;
+  `RZ_ReputationSettings` (**Factions > Reputation**).
+- `RZ_GameModeComponent`: `AddFame(player, faction, amount, rivals, flags, deed)` and
+  `AddInfamy(player, faction, amount, why, flags, deed)`, with the flags (`RZ_RepFlag`) `SHARE` (a
+  rival share: never doubled, never Feared; the rival table, a mission's rival, questline standing
+  and siding pass it), `ACT` (done in sight) and `SMALL` (errands' small pay: left out of season Fame
+  and the hall of fame); the credit rule; `Forgive(player, faction, amount, why)`, the one budget;
+  `AddFavor`, `SpendFavor`, `GetTier`. Every Infamy gain goes through the stronghold leader's temper
+  (`RZ_Leaders.ScaleInfamy`). *Simplified:* a direct gain without SHARE counts as done in sight, as
+  before, so a uniform still doubles it; call sites aren't yet marked ACT one by one.
 - `RZ_QuartermasterComponent` marks a faction contact; `RZ_FactionShopAction` sells one item
   (`RZ_SupplyLines.FindShopState` for shortages, `PriceMult` for leaders and morale).
 - Missions: `m_eGiver` gets Fame, an optional `m_eRival` gets Infamy, `m_iFavorReward` pays out,

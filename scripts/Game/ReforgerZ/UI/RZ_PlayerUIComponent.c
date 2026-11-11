@@ -65,12 +65,13 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
-	protected ref array<float> m_aLastCommand = {-100, -100, -100};	// per CMD_*
+	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100};	// per CMD_*
 
 	//! Commands from the client (RZ_ChatCommands, the board menu)
 	static const int CMD_NOTE = 0;
 	static const int CMD_CLEAR_BOARD = 1;
 	static const int CMD_CLEAR_ALL = 2;
+	static const int CMD_REP = 3;		// "/rep <name>": an admin's reputation read-out (Factions/RZ_RepNames.c)
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -505,6 +506,12 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				if (board)
 					board.Clear(playerId, true);
+				break;
+			}
+			case CMD_REP:
+			{
+				if (gm.GetRepWatch())
+					gm.GetRepWatch().Readout(playerId, note);
 				break;
 			}
 		}

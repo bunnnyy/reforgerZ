@@ -343,6 +343,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Bastion checkpoints and Red Hand roadblocks inside the Zone, surrender, camps that warn and refuse, safe zones (docs/REPUTATION.md)", category: "ReforgerZ|Factions")]
 	protected ref RZ_CheckpointSettings m_CheckpointSettings;
 
+	[Attribute(desc: "Reputation: the 16 names and what each counts as, the forgiveness budget (30 per faction per life), the credit rule at 75 Fame, the Wildcard tier at posts, threats per life, the change notice (docs/REPUTATION.md, Reputations)", category: "ReforgerZ|Factions")]
+	protected ref RZ_ReputationSettings m_ReputationSettings;
+
+	// ------------------------------------------------------------------------------------------------ Shared
+	[Attribute(desc: "The shared engine: notice lanes and the interruption budget, the callback queue, the marks spawner, the season budget and its lanes, the set-piece calendar (docs/DESIGN.md, The shared engine)", category: "ReforgerZ|Shared")]
+	protected ref RZ_SharedSettings m_SharedSettings;
+
 	// ---------------------------------------------------------------- Map
 	[Attribute("1", desc: "Show world events and the lab on the map as vanilla text markers, when the icon layer isn't set up (UI > Map icon layout). Turn off if markers misbehave", category: "ReforgerZ|Map")]
 	protected bool m_bMapMarkers;
@@ -423,6 +430,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Dialogue m_Dialogue;
 	protected ref RZ_Seasons m_Seasons;
 	protected ref RZ_WorldFacts m_Facts;
+	protected ref RZ_Shared m_Shared;
+	protected ref RZ_RepWatch m_RepWatch;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -487,6 +496,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Dialogue)
 			m_Dialogue.Forget(playerId);
+
+		if (m_Shared)
+			m_Shared.Forget(playerId);
+
+		if (m_RepWatch)
+			m_RepWatch.Forget(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -614,6 +629,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_SeasonSettings)
 			m_SeasonSettings = RZ_SeasonSettings.Cast(RZ_Util.NewWithDefaults("RZ_SeasonSettings"));
 
+		if (!m_ReputationSettings)
+			m_ReputationSettings = RZ_ReputationSettings.Cast(RZ_Util.NewWithDefaults("RZ_ReputationSettings"));
+
+		if (!m_SharedSettings)
+			m_SharedSettings = RZ_SharedSettings.Cast(RZ_Util.NewWithDefaults("RZ_SharedSettings"));
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -624,6 +645,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Seasons = new RZ_Seasons(this, m_SeasonSettings);
 		// The shared world facts (season flags, canon, claims) every system and mission reads
 		m_Facts = new RZ_WorldFacts(this);
+		// The shared engine (notice lanes, callbacks, marks, the season budget and calendar, the
+		// season's deeds) and the reputation names' change notice
+		m_Shared = new RZ_Shared(this, m_SharedSettings);
+		m_RepWatch = new RZ_RepWatch(this);
 		m_Heat = new RZ_HeatMap();
 		m_LooseItems = new RZ_LooseItems(this, m_fLooseItemMinutes);
 		m_Adaptation = new RZ_Adaptation(this, m_AdaptationSettings);
@@ -793,6 +818,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_LooseItems.Tick(dt, players);
 		m_Seasons.Tick(dt, ids);
 		m_Facts.Tick(dt, ids);
+		m_Shared.Tick(dt, ids, players);
+		m_RepWatch.Tick(dt);
 
 		foreach (int i, IEntity ent : players)
 		{
@@ -854,6 +881,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Seasons GetSeasons() { return m_Seasons; }
 	//! What's true in the world right now, for content (docs/DESIGN.md, "World facts").
 	RZ_WorldFacts GetFacts() { return m_Facts; }
+	//! Server: the shared engine (Core/RZ_Shared.c): notice lanes, callbacks, marks, the season budget.
+	RZ_Shared GetShared() { return m_Shared; }
+	RZ_SharedSettings GetSharedSettings() { return m_SharedSettings; }
+	RZ_ReputationSettings GetReputationSettings() { return m_ReputationSettings; }
+	//! Server: the reputation names' change notice and the admin read-out (Factions/RZ_RepNames.c).
+	RZ_RepWatch GetRepWatch() { return m_RepWatch; }
+	RZ_CheckpointSettings GetCheckpointSettings() { return m_CheckpointSettings; }
 	int GetSeasonWinner() { return m_iSeasonWinner; }
 
 	//------------------------------------------------------------------------------------------------
@@ -1358,6 +1392,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			bg = fallback;
 		}
 
+		// The old character's waiting callbacks become board notes before the new life starts
+		if (m_Shared)
+			m_Shared.OnNewLife(playerId, profile);
+
 		profile.StartNewLife(bg);
 		// Experience and refresher first: the first life that counts gets "Find the Haven"
 		m_Guidance.BeginLife(playerId, profile);
@@ -1576,9 +1614,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Fame with `faction`. With applyRivals, the faction's rivals also add a little
-	//! Infamy (RZ_Reputation.GetRivalShare). Negative amounts lower Fame.
-	//! The player is only told when their tier changes, not on every point.
-	void AddFame(int playerId, RZ_EFaction faction, int amount, bool applyRivals = true)
+	//! Infamy (RZ_Reputation.GetRivalShare), as rival shares (RZ_RepFlag.SHARE). Negative amounts
+	//! lower Fame. flags: RZ_RepFlag.SMALL (errands) is left out of season Fame and the hall of
+	//! fame. deed: a short past-tense phrase for the life's best deed (RZ_Deeds), "" for none.
+	//! The player is told when their tier changes, and (debounced) when their name does.
+	void AddFame(int playerId, RZ_EFaction faction, int amount, bool applyRivals = true, int flags = 0, string deed = "")
 	{
 		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
 			return;
@@ -1586,9 +1626,17 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_PlayerProfile profile = GetProfile(playerId);
 		RZ_ETier before = profile.GetTier(faction);
 		int gained = profile.AddFame(faction, amount);
-		OnFameGained(faction, gained);
-		if (gained > 0 && GetHall())
-			GetHall().NoteFame(playerId, faction, profile.GetFame(faction));
+		bool smallPay = (flags & RZ_RepFlag.SMALL) != 0;
+		if (!smallPay)
+		{
+			OnFameGained(faction, gained);
+			if (gained > 0 && GetHall())
+				GetHall().NoteFame(playerId, faction, profile.GetFame(faction));
+
+			if (gained > 0)
+				RZ_Deeds.NoteBest(profile, faction, gained, deed);
+		}
+
 		CheckTierChange(playerId, faction, before);
 
 		if (!applyRivals || amount <= 0)
@@ -1598,8 +1646,101 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			int infamy = RZ_Util.RoundToInt(amount * RZ_Reputation.GetRivalShare(faction, f) * RivalMult(faction, f));
 			if (infamy > 0)
-				AddInfamy(playerId, f, infamy, true, true);
+				AddInfamy(playerId, f, infamy, "rival share", RZ_RepFlag.SHARE);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Infamy with `faction` (docs/REPUTATION.md, "Standing tiers"). Gains only: Infamy comes off
+	//! through Forgive(), the one forgiveness budget (a negative amount is passed on to it).
+	//! why: a few words for the log. flags (RZ_RepFlag):
+	//! - SHARE: a share, not something the faction saw you do (the rival share of Fame, a mission's
+	//!   rival Infamy, a questline's standing). Never doubled by a uniform, never counts as Feared.
+	//! - ACT: done in sight: while you're passing in that faction's kit it doubles (RZ_Disguise).
+	//!   Direct gains without SHARE are treated as done in sight, as before.
+	//! deed: a short past-tense phrase for the life's worst deed (RZ_Deeds), "" for none.
+	//! The credit rule: while Fame with the faction is 75 or more (Reputation > Credit from), the
+	//! same amount also comes off that Fame, after the disguise and the stronghold leader's temper.
+	void AddInfamy(int playerId, RZ_EFaction faction, int amount, string why = "", int flags = 0, string deed = "")
+	{
+		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
+			return;
+
+		if (amount < 0)
+		{
+			Forgive(playerId, faction, -amount, why);
+			return;
+		}
+
+		bool share = (flags & RZ_RepFlag.SHARE) != 0;
+		// Caught in a faction's uniform: Infamy with it doubles (RZ_Disguise). Never a share
+		if (!share && m_Hostility)
+			amount = m_Hostility.ScaleInfamyForDisguise(playerId, faction, amount);
+
+		// The faction's stronghold leader sets its temper: Paranoid harsher, Merciful a little softer
+		if (m_Leaders)
+			amount = m_Leaders.ScaleInfamy(faction, amount);
+
+		RZ_PlayerProfile profile = GetProfile(playerId);
+		RZ_ETier before = profile.GetTier(faction);
+		int added = profile.AddInfamy(faction, amount, share);
+
+		// The credit runs out: new Infamy at 75 Fame or more costs the same Fame
+		RZ_ReputationSettings rs = RZ_ReputationSettings.Get();
+		if (rs.m_bCreditRule && added > 0 && profile.GetFame(faction) >= rs.m_iCreditFrom)
+		{
+			profile.AddFame(faction, -added);
+			RZ_Log.Info(string.Format("Reputation: %1 %2 credit rule, -%3 Fame for the Infamy (%4)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(faction), added, why));
+		}
+
+		if (added > 0 && !share)
+			RZ_Deeds.NoteWorst(profile, faction, added, deed);
+
+		CheckTierChange(playerId, faction, before);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The one forgiveness budget (docs/REPUTATION.md, "Working off Infamy"): takes up to `amount`
+	//! Infamy off with `f`, after the stronghold leader's temper (a Merciful leader makes each
+	//! amount count for more, never the total), within what's left of the budget this life
+	//! (Reputation > Forgiveness budget, 30) and the Infamy there is. Every route that works Infamy
+	//! off calls it: amends contracts, paying the quartermaster, surrender. Returns what came off,
+	//! 0 when the budget is spent. tempered: the caller already applied the temper (paying, which
+	//! clamps the tempered amount to its own floor). Logged.
+	int Forgive(int playerId, RZ_EFaction f, int amount, string reason, bool tempered = false)
+	{
+		if (amount <= 0 || playerId <= 0 || !RZ_Factions.IsValid(f))
+			return 0;
+
+		RZ_PlayerProfile profile = GetProfile(playerId);
+		int want = amount;
+		if (m_Leaders && !tempered)
+			want = -m_Leaders.ScaleInfamy(f, -amount);
+
+		want = Math.Min(want, Math.Min(profile.ForgiveLeft(f), profile.GetInfamy(f)));
+		if (want <= 0)
+		{
+			RZ_Log.Info(string.Format("Reputation: %1 %2 forgive %3 refused, %4 left to forgive (%5)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), amount, profile.ForgiveLeft(f), reason));
+			return 0;
+		}
+
+		RZ_ETier before = profile.GetTier(f);
+		int taken = -profile.AddInfamy(f, -want);
+		profile.EnsureArrays();
+		profile.m_aForgiven[f] = profile.m_aForgiven[f] + taken;
+		if (m_Shared)
+			m_Shared.GetSeasonDeeds().NoteForgiven(profile.m_sIdentity, f, taken);
+
+		RZ_Log.Info(string.Format("Reputation: %1 %2 forgave %3 (%4), %5 left to forgive", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), taken, reason, profile.ForgiveLeft(f)));
+		CheckTierChange(playerId, f, before);
+		return taken;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The budget is spent: "The Haven has forgiven you all it will this life."
+	string ForgiveSpentText(RZ_EFaction f)
+	{
+		return RZ_Util.Capitalize(RZ_Factions.GetNameInText(f)) + " has forgiven you all it will this life.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1632,32 +1773,6 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Infamy with `faction`. Negative amounts work Infamy off (amends).
-	//! scaled = false: the caller already applied the disguise and leader scaling (paid amends,
-	//! which clamp the scaled amount to their floor and life cap).
-	//! share = true: a share, not something the faction saw you do (the rival share of Fame,
-	//! a mission's rival Infamy, a questline's standing): a uniform you wear neither doubles it
-	//! nor is blown by it.
-	void AddInfamy(int playerId, RZ_EFaction faction, int amount, bool scaled = true, bool share = false)
-	{
-		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
-			return;
-
-		// Caught in a faction's uniform: Infamy with it doubles (RZ_Disguise)
-		if (scaled && !share && m_Hostility && amount > 0)
-			amount = m_Hostility.ScaleInfamyForDisguise(playerId, faction, amount);
-
-		// The faction's stronghold leader sets its temper: Paranoid harsher, Merciful forgives faster
-		if (scaled && m_Leaders)
-			amount = m_Leaders.ScaleInfamy(faction, amount);
-
-		RZ_PlayerProfile profile = GetProfile(playerId);
-		RZ_ETier before = profile.GetTier(faction);
-		profile.AddInfamy(faction, amount);
-		CheckTierChange(playerId, faction, before);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	void AddFavor(int playerId, RZ_EFaction faction, int amount)
 	{
 		if (amount == 0 || playerId <= 0 || !RZ_Factions.IsValid(faction))
@@ -1685,30 +1800,62 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One line per faction: "The Haven: Known (Fame 20, Infamy 0, Favor 35)".
+	//! One line per faction, the card's fallback text: "The Haven: Useful Trouble (counts as Known;
+	//! Fame 46, Infamy 22, 30 of 30 left to forgive; Favor 30)".
 	string DescribeStanding(int playerId)
 	{
 		RZ_PlayerProfile profile = GetProfile(playerId);
+		int budget = RZ_ReputationSettings.Get().m_iForgiveBudget;
 		string text = "";
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{
-			text += string.Format("%1: %2 (Fame %3, Infamy %4, Favor %5)\n", RZ_Factions.GetName(f),
-				RZ_Reputation.GetTierName(profile.GetTier(f)), profile.GetFame(f), profile.GetInfamy(f), profile.GetFavor(f));
+			int fame = profile.GetFame(f);
+			int infamy = profile.GetInfamy(f);
+			string shown = RZ_RepNames.Shown(fame, infamy);
+			string rule = RZ_RepNames.CountsAs(fame, infamy);
+			string ruleText = "";
+			if (rule != shown)
+				ruleText = "counts as " + rule + "; ";
+
+			string budgetText = "";
+			if (budget > 0)
+				budgetText = string.Format(", %1 of %2 left to forgive", profile.ForgiveLeft(f), budget);
+
+			text += string.Format("%1: %2 (%3Fame %4, Infamy %5%6; Favor %7)\n", RZ_Factions.GetName(f), shown, ruleText,
+				fame, infamy, budgetText, profile.GetFavor(f));
 		}
 
 		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! After every standing change: the tier notice at once (leading with the name when it isn't
+	//! the tier word), and the name's own notice, debounced (RZ_RepWatch).
 	protected void CheckTierChange(int playerId, RZ_EFaction faction, RZ_ETier before)
 	{
 		RZ_PlayerProfile profile = GetProfile(playerId);
 		RZ_ETier after = profile.GetTier(faction);
+		if (m_RepWatch)
+			m_RepWatch.OnStanding(playerId, faction, after != before);
+
 		if (after == before)
 			return;
 
-		NotifyPlayerAs(playerId, RZ_Factions.GetName(faction), string.Format("Your standing is now %1 (was %2).",
-			RZ_Reputation.GetTierName(after), RZ_Reputation.GetTierName(before)), RZ_ENoticeTag.HIGH);
+		int fame = profile.GetFame(faction);
+		int infamy = profile.GetInfamy(faction);
+		string text = string.Format("Your standing is now %1 (was %2).", RZ_Reputation.GetTierName(after), RZ_Reputation.GetTierName(before));
+		string shown = RZ_RepNames.Shown(fame, infamy);
+		if (shown != RZ_Reputation.GetTierName(after))
+		{
+			text = string.Format("They call you %1 now. Your standing is %2 (was %3).", RZ_RepNames.NameWithRule(fame, infamy),
+				RZ_Reputation.GetTierName(after), RZ_Reputation.GetTierName(before));
+		}
+
+		// A Champion who drops because new Infamy ate into the Fame: say why
+		if (before == RZ_ETier.CHAMPION && after == RZ_ETier.TRUSTED && RZ_ReputationSettings.Get().m_bCreditRule && infamy > 0)
+			text += " Your credit ran out: at 75 Fame, every new wrong costs Fame too.";
+
+		NotifyPlayerAs(playerId, RZ_Factions.GetName(faction), text, RZ_ENoticeTag.HIGH);
 
 		if (after == RZ_ETier.CHAMPION && !profile.IsChampionOf(faction))
 			OnBecameChampion(playerId, faction);
@@ -2255,7 +2402,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			m_mProfiles.Set(p.m_sIdentity, p);
 		}
 
-		m_Director.Restore(data.stage, data.stageMinutes);
+		m_Director.Restore(data.stage, data.stageMinutes, data.playedMinutes);
 		m_Cure.Restore(data.cureProgress, data.cureMilestone, data.cured, data.labAntidotes, data.stolenAntidotes, data.labStabilisers);
 		m_Cure.RestoreLab(data);
 		if (data.seasonFame)
@@ -2283,6 +2430,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_PowerGrid.Restore(data.power);
 		m_RadioStation.Restore(data.radio);
 		m_Facts.Restore(data.facts);
+		m_Shared.Restore(data.shared);
 		m_StoryArcs.Restore(data.story);
 		m_Questlines.Restore(data.questlines);
 		m_Headlines.Restore(data.news);
@@ -2300,6 +2448,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		data.world = GetWorldId();
 		data.stage = m_Director.GetStage();
 		data.stageMinutes = m_Director.GetStageMinutes();
+		data.playedMinutes = m_Director.GetPlayedMinutes();
 		data.cureProgress = m_Cure.m_fProgress;
 		data.cureMilestone = m_Cure.m_iMilestone;
 		data.cured = m_Cure.IsCured();
@@ -2359,6 +2508,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Facts)
 			data.facts = m_Facts.Save();
+
+		if (m_Shared)
+			data.shared = m_Shared.Save();
 
 		if (m_Headlines)
 			data.news = m_Headlines.Save();

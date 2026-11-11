@@ -587,7 +587,8 @@ class RZ_FactionServices
 	// ================================================================ Amends
 	//------------------------------------------------------------------------------------------------
 	//! Pay the quartermaster's faction to work off a little Infamy with it. Each payment costs more,
-	//! at most m_iAmendsLifeCap per life, never below the Watched line, once every half hour.
+	//! at most m_iAmendsLifeCap per life, never below the Watched line, once every half hour, and
+	//! all of it from the one forgiveness budget (RZ_GameModeComponent.Forgive).
 	protected void Amends(int playerId, IEntity owner)
 	{
 		RZ_QuartermasterComponent qm;
@@ -610,7 +611,7 @@ class RZ_FactionServices
 
 		int infamy = p.GetInfamy(f);
 		int minInfamy = Math.Max(0, m_Settings.m_iAmendsFloor);
-		int lifeRoom = m_Settings.m_iAmendsLifeCap - p.m_aAmendsWorked[f];
+		int lifeRoom = Math.Min(m_Settings.m_iAmendsLifeCap - p.m_aAmendsWorked[f], p.ForgiveLeft(f));
 		// The stronghold leader's temper first (Merciful: more), then the floor and the life cap
 		int amount = m_Settings.m_iAmendsInfamy;
 		RZ_Leaders leaders = m_GM.GetLeaders();
@@ -621,6 +622,12 @@ class RZ_FactionServices
 		if (infamy <= minInfamy)
 		{
 			m_GM.NotifyPlayer(playerId, name, "\"Nothing to pay for. Whatever's left, you work off with your hands, not your Favor.\"");
+			return;
+		}
+
+		if (p.ForgiveLeft(f) <= 0)
+		{
+			m_GM.NotifyPlayer(playerId, name, "\"No. Not for Favor, not for anything.\" " + m_GM.ForgiveSpentText(f));
 			return;
 		}
 
@@ -648,8 +655,8 @@ class RZ_FactionServices
 
 		m_mAmendsAt.Set(key, m_fClock);
 		p.m_aAmendsPaid[f] = p.m_aAmendsPaid[f] + 1;
-		m_GM.AddInfamy(playerId, f, -amount, false);
-		p.m_aAmendsWorked[f] = p.m_aAmendsWorked[f] + Math.Max(0, infamy - p.GetInfamy(f));
+		int taken = m_GM.Forgive(playerId, f, amount, "paid amends", true);
+		p.m_aAmendsWorked[f] = p.m_aAmendsWorked[f] + taken;
 		m_GM.NotifyPlayer(playerId, name, string.Format("%1 Favor changes hands and someone crosses out a line in a book. Infamy with %2 is now %3. The next payment will cost %4.",
 			cost, RZ_Factions.GetNameInText(f), p.GetInfamy(f), AmendsCost(p.m_aAmendsPaid[f])));
 	}
