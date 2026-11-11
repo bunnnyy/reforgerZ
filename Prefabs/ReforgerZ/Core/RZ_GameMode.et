@@ -9,6 +9,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
    m_RadioStationSettings RZ_RadioStationSettings "{6AD67DC2B9C6B8CF}" {
     m_sConsolePrefab "{374E7FE27AB0A28C}Prefabs/ReforgerZ/World/RZ_RadioConsole.et"
    }
+   m_EpilogueSettings RZ_EpilogueSettings "{6AD760988CA48ABA}" {
+    m_sBoardPrefab "{01522F015D3ABAE5}Prefabs/ReforgerZ/World/RZ_EpilogueBoard.et"
+    m_sCandlePrefab "{A77C01701B4A793C}Prefabs/ReforgerZ/World/RZ_EpilogueCandle.et"
+    m_sTablePrefab "{A38ED7351B2ED020}Prefabs/ReforgerZ/World/RZ_EpilogueTable.et"
+   }
    m_ZombieSettings RZ_ZombieSettings "{6AD67DC2B04C2694}" {
     m_aCommonPrefabs {
      "{67E76BA71804B965}622120A5448725E3/Prefabs/Groups/Group_Zombies_CIV.et" "{F4B51B10FC3020C8}Prefabs/ReforgerZ/Zombies/RZ_Group_Zombies_US.et" "{5863D5862B11EB36}Prefabs/ReforgerZ/Zombies/RZ_Group_Zombies_USSR.et" "{E593353BDC00620D}Prefabs/ReforgerZ/Zombies/RZ_Group_Zombies_FIA.et"
@@ -55,6 +60,14 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sIdCardPrefab "{9B7E24A83266BD0B}Prefabs/ReforgerZ/Zombies/RZ_IdCard.et"
     m_sTagPrefab "{67764A46B22A9E9C}Prefabs/ReforgerZ/Zombies/RZ_TribeTag.et"
     m_sCallBoxPrefab "{4D96DFDB98A9C365}Prefabs/ReforgerZ/Zombies/RZ_CallBox.et"
+    m_aKillSitePrefabs {
+     "{EA8D922E189837C2}Prefabs/Props/Civilian/Suitcase_04_open.et" "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et"
+    }
+    m_sOldLairPrefab "{158A49327BE741D9}Prefabs/Props/Furniture/BunkBed_01/BunkBed_01_Mattress.et"
+    m_sHavenMarkPrefab "{4F84EBD43F03FB1F}Prefabs/Structures/Signs/Traffic/VergePost/StoneVergePost_01_D_V1.et"
+    m_sBastionMarkPrefab "{D0E4F05E07E40B24}Prefabs/Structures/Signs/Military/SignMinefield_01/SignMinefield_01.et"
+    m_sRedHandMarkPrefab "{52DF7372676313FC}Prefabs/Structures/BuildingParts/Graffiti/Graffiti_FIA_V1.et"
+    m_sHalcyonMarkPrefab "{1BC300CA46DEDA79}Prefabs/Structures/Signs/Warnings/SignNoEntryBothDir_01_pole.et"
    }
    m_CrawlerSettings RZ_CrawlerSettings "{084EF510E01C3F9A}" {
     m_aPrefabs {
