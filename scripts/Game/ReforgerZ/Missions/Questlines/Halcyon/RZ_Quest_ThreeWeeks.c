@@ -894,6 +894,11 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 			m_aPages.Insert(clue);
 		}
 
+		// The site's pack is held still, and its bodies keep 150 m from the store (docs/QUESTLINES.md)
+		RZ_Tribe pack = RZ_TribePeople.HoldSite(gm, site, m_iId);
+		if (pack)
+			ClaimSubject(gm, RZ_TribeContract.Claim(pack.m_iId));
+
 		m_sItemName = "the code";
 		m_sTitle = "The Three Weeks: the site";
 		m_sBrief = QFill(gm, "The closed site is {site_place}, grid {site_grid}. Dr Wolff went into the store there on Day 3 and her team stayed outside. The store has a six-figure lock. Her team will have had the code between them.");
@@ -1063,6 +1068,10 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 				m_bCage = m_Capture.Begin(gm, m_iId, m_iSettlement, LandPointNear(site, 15, 30), m_vLair, OBJ_CAGE);
 			}
 		}
+
+		RZ_Tribe pack = RZ_TribePeople.HoldSite(gm, site, m_iId);
+		if (pack)
+			ClaimSubject(gm, RZ_TribeContract.Claim(pack.m_iId));
 
 		m_sItemName = "the notebook";
 		m_sTitle = "The Three Weeks: the team lead";

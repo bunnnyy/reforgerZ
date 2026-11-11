@@ -1,9 +1,10 @@
 # Infected: tribes and crawlers
 
-**Status: designed; phases 1, 2 and 3 are built** ([docs/INFECTED.md](../docs/INFECTED.md)): crawlers, the
-land, bodies and the budget, the tribes' daily life and hunts, and their life cycle. What's left here is
-designed: people and content (phase 4), the great alpha and signs (phase 5), and the few life-cycle
-rules still waiting for a sign. Approved by the author on 2026-11-11.
+**Status: designed; phases 1 to 4 are built** ([docs/INFECTED.md](../docs/INFECTED.md)): crawlers, the
+land, bodies and the budget, the tribes' daily life and hunts, their life cycle, and the people's side
+([People](../docs/INFECTED.md#people)). What's left here is designed: phase 4's rest ([People](#people)),
+the finale's live tissue (it goes in with the finale), the great alpha and signs (phase 5), and the few
+life-cycle rules still waiting for a sign. Approved by the author on 2026-11-11.
 
 ## What changed in review
 
@@ -185,9 +186,7 @@ Your own dead character may run with one.
 
 **Moved:** the setting is in [LORE.md](../docs/LORE.md#what-the-infected-do), the writing rules in
 [WRITING.md](../docs/WRITING.md#writing-the-infected), and the faction words are under
-[People](#people). Still designed from it: **Alpha Sighting** (`Missions/Halcyon/RZ_HalcyonMissions.c`)
-becomes **The Lone One** (decision 13, option b): it targets a lone one when there is one, else today's
-special, and its brief never says "alpha" (phase 4).
+[docs/INFECTED.md](../docs/INFECTED.md#the-words). The Lone One (decision 13, option b) is built.
 
 ## The model
 
@@ -336,34 +335,24 @@ from before tribes existed seeds them on load, as at a season's start.
 3. **Roles, the taken, the ones who ran, hunger, hunts as data, the night's commitment, post-feed
    sleep** (rules 3–9) and their life-cycle parts (the guard's place, the young coming of age, bonds,
    trucks taken as data, starving, trail scoring by wear, habits and echoes): **built**
-   ([Tribes](../docs/INFECTED.md#tribes), [The life cycle](../docs/INFECTED.md#the-life-cycle)). Still designed: a Haven walk-out, a
-   leader's off-screen bite or a Bastion patrol as the taken; Haven-allied wanderers going round Hungry
-   ranges and the Haven truck waiting for dawn; trail scoring by prey; empty nights (three running:
-   drop the worst trail); the hunger rises for a fed moat or near the Long Table (rule 19).
+   ([Tribes](../docs/INFECTED.md#tribes), [The life cycle](../docs/INFECTED.md#the-life-cycle)). Still designed: a leader's
+   off-screen bite or a Bastion patrol as the taken; trail scoring by prey; empty nights (three running:
+   drop the worst trail).
 10. **Disturbance, splitting, borders, absorbing and merging, ageing, succession, lone ones,
     displacement and vacuums** (rules 10–18): **built** ([The life cycle](../docs/INFECTED.md#the-life-cycle),
-    [Borders](../docs/INFECTED.md#borders)). Still designed: contracts, culls and Fire Missions on a lair as causes (only
-    shells are, today), Bastion's *"Not our sector"* and *"Papa-four: no contact"*, frenzy nights as a
-    border-fight cause, a caught alpha's succession (with the finale's live tissue), and the border's
-    offset moving the ranges.
-19. **Fed by people** (said only sideways; see [People](#people)):
-    - **The Red Hand's fat moat.** A Red Hand camp within 3 km feeds one tribe that lies between it and
-      Bastion's nearest holding. That tribe's hunger rises 3 a counted night and never goes above 40. It
-      gains a member a season day, up to 22. It stays settled and doesn't split. If a finale route takes
-      its alpha alive (the Red Hand route's live tissue, sold by its crew), the moat rule stops for that
-      tribe until its succession ([FINALE.md](FINALE.md)).
-    - **The Long Table.** A tribe whose range comes within 1 km of the Long Table's farm also gains only
-      3 hunger a counted night, and its trails and day walks turn back 1 km short of the farm.
+    [Borders](../docs/INFECTED.md#borders)). Still designed: Bastion's *"Papa-four: no contact"*, frenzy nights as a
+    border-fight cause, the finale's live tissue, and the border's offset moving the ranges.
+19. **Fed by people:** **built** ([The dark corners](../docs/INFECTED.md#the-dark-corners)). Still designed:
+    the moat rule stopping for a tribe whose alpha a finale route took alive, until its succession.
 20. **Memory, abandoned lairs, seasonal pull and burned land** (rules 20–23): **built**
     ([Memory](../docs/INFECTED.md#memory), [The life cycle](../docs/INFECTED.md#the-life-cycle)). Still designed: an abandoned lair's
     finds as items from the search table (a line today), and tracks always fresh in snow.
-24. **After the cure.** Nobody new turns, and the tribes run down over the epilogue's week. The rules
-    are in [After the cure: the last week](#after-the-cure-the-last-week).
+24. **After the cure:** **built** ([The last week](../docs/INFECTED.md#the-last-week)).
 25. **Day parties:** **built** ([Day parties](../docs/INFECTED.md#day-parties)). Still designed: the Furious
     tribe's walking the capture road.
 
-**Caps:** **built** ([docs/INFECTED.md](../docs/INFECTED.md)) but for: one great alpha per map (phase 5); frenzy nights
-(one at a time, at most one every 3 season days, none in the first 2); props (30 on the server).
+**Caps:** **built** ([docs/INFECTED.md](../docs/INFECTED.md)) but for: one great alpha per map (phase 5); props (30 on
+the server).
 
 ### Scaling by map
 
@@ -456,8 +445,7 @@ player-hour by source.
 
 **Built** ([The daily rhythm](../docs/INFECTED.md#the-daily-rhythm), [The call](../docs/INFECTED.md#the-call), [How a hunt comes for
 you](../docs/INFECTED.md#how-a-hunt-comes-for-you)). Still designed: the alpha's echo shifting the times; the
-stragglers after a bad night (06:00–07:30); the Radio Operator's relay line and the Hunter's reading of
-the nearest call; two callers when restless; *"a short-handed call after a quiet day"*; a cunning tribe
+stragglers after a bad night (06:00–07:30); the Hunter's reading of the nearest call; two callers when restless; *"a short-handed call after a quiet day"*; a cunning tribe
 putting a group on your back trail; heat that a hunt lost you at ignored within 300 m for the rest of
 that night; a hunted player who logs out (the hunt waits 10 real minutes).
 
@@ -466,21 +454,21 @@ that night; a hunted player who logs out (the hunt waits 10 real minutes).
 **Built** ([Tribes](../docs/INFECTED.md#seeds-and-places), [Memory](../docs/INFECTED.md#memory), [Who they are](../docs/INFECTED.md#who-they-are),
 [The signs](../docs/INFECTED.md#the-signs)). The signs table now lives in the docs. Still designed:
 - the factions' voices for an alpha's history (the Haven's *"The Quarry lot are Josef Hruby's now. He
-  drove the school bus."*, Bastion's contact log, the Red Hand's new boss, Halcyon's tag time, a Haven
-  elder's warning on the road) and their names for a tribe ([People](#people), phase 4);
+  drove the school bus."*, Bastion's contact log, the Red Hand's new boss, a Haven elder's warning on
+  the road): their names and dusk voices are built ([People](../docs/INFECTED.md#people));
 - where it lies up by its look (dust-grey under cover, outdoor with the widest range and highest
   posts); the Radio Operator and the Hunter naming a tribe from its call pattern;
 - relayed calls ridge to ridge, the stragglers after a bad night (06:00–07:30), the reckless young
   going to any noise within 400 m ahead of a hunt;
-- the young coming home to the wire (phase 4), hunting grounds following the prey;
+- hunting grounds following the prey;
 - breaking a habit by taking its prey away (rerouting trucks, stopping the walks), which needs those.
 
 ## Day parties
 
 **Built** ([Day parties](../docs/INFECTED.md#day-parties)). Still designed: the Hunter's tracks line for a day party
 (*"Three, this morning, along the hedge toward the quarry. Young ones."*) is built as the general
-tracks line; Haven gossip when a tribe is hungry (phase 4); Furious tribes' day parties on the capture
-road; day parties shrinking after the cure (the last week).
+tracks line; the Haven's warning about day parties in the fields when a tribe is hungry; Furious tribes'
+day parties on the capture road.
 
 ## Towns: the crawlers
 
@@ -625,23 +613,12 @@ fog and storms lower a player's visibility. The table says only what tribes and 
 | **Winter** (the rule set) | Lairs move into empty villages' barns from Overrun. A Hunter always reads tracks as fresh in snow | Thicker in the dark towns |
 | No game clock | Always day: day parties walk, scouts post, nobody hunts | As by day |
 
-**Frenzy nights** (one at a time, at most one every 3 season days, none in the first 2)
-- **Every Ridge Calls** (Night of the Dead, reworked).
-  - It's announced at dusk: *"Every ridge is calling tonight."*
-  - All night, every tribe hunts 3 trails, its range doubles, and it ignores fear places and borders. Up
-    to 2 Border Nights are staged on the server.
-  - The commitment rule still holds, so a frenzy is many hunts, not one endless one.
-  - At its height, today's 20 minutes of ×2 bodies and specials still applies to crawlers.
-- **Red Dusk** (new).
-  - It comes at most once every 7 season days, from Collapse, and only at a clear dusk.
-  - The tribes within 3 km of one point frenzy: range ×1.75, hunting toward the nearest lived-in place's
-    wire.
-  - *"The sun's going down red over the hills, and they're all calling."*
-  - *Simplified:* the engine's sky isn't changed. The event only runs when the real sunset is visible.
+**Frenzy nights** (Every Ridge Calls and Red Dusk): **built** ([docs/INFECTED.md](../docs/INFECTED.md#contracts-and-events),
+[MISSIONS.md](../docs/MISSIONS.md#world-events)). Still designed: a frenzy ignoring fear places and borders, with up to
+2 Border Nights staged, and the crawlers' ×2 at its height lasting the night.
 
-**Chain reactions:** built ([docs/INFECTED.md](../docs/INFECTED.md)) but for: Siren Test (crawlers within 2 km converge,
-tribes with a bells habit come, the others keep away from that town that night) and Bastion's culls
-(phase 4).
+**Chain reactions:** built ([docs/INFECTED.md](../docs/INFECTED.md)) but for Siren Test's other tribes keeping away
+from that town that night (the bells habit's tribes coming is built).
 
 **Animal tells** (text only; once per range an hour, at most one a minute per player):
 - over a lair by day: *"No birds in this wood."*
@@ -867,7 +844,7 @@ near it. Whether stealth's search can lose a player depends on what the group is
 | A scout's pack (day, dusk or fog) | common, ×1 | Yes. Then it goes home |
 | **A hunt on its trail** (from the dusk set-out to the dawn walk) | horde, ×0.9 (a crowd on the move looks ahead) | **No.** Like a mission horde, its own rules end it: the hide rule and the commitment |
 | **The Furious last wave** at the final stand, and everything within 1.5 km of the lab during the stand | never lowered (built) | **No** |
-| The Tribe Moves (as Horde Migration is today) | horde, ×0.9 | Yes: staying out of its sight is the point |
+| The Tribe Moves | horde, ×0.9 | Yes: staying out of its sight is the point |
 | Crawlers | common, ×1 | Yes; town hordes as today |
 
 **How the scout rule uses it.** The scout's radius is `RZ_Stealth.SightRadius(playerId, Scout sight)`
@@ -887,221 +864,31 @@ search, and the group carries on where it was going.
 
 ## People
 
-### What each speaker calls them
-
-Every line carries the place, so players can tell that four names are one tribe. The journal keeps, for
-each tribe a character has heard of, every name they've heard for it under that place: *"The quarry: the
-Quarry lot (Haven), Papa-two (Bastion), the Postmen (Red Hand), P-02 (Halcyon)."*
-
-| Speaker | Crawlers | A tribe | The alpha | The young | A lone one | A line |
-|---|---|---|---|---|---|---|
-| **The Haven** | stay-at-homes | "the Quarry lot", or "Josef's lot" when they know who he was | by name when someone knew him (about 1 in 3: a walk-out, a runner, a farmer), else "the big one" | by name: "Pavel's with them now" | "the one on his own" | *"Nobody on the Levie road after seven. The Quarry lot are out."* |
-| **Bastion** | statics | Contact Papa-two, the quarry (numbered as found, on the contact board) | the heavy | new contacts | a single | *"Contact Papa-two, the quarry, twenty plus, one heavy. Cull pending. No reply. Bastion out."* |
-| **The Red Hand** | the furniture | a crew with a nickname, given after something it would rather forget, the way the crews name people: the Postmen (always on time), the Choir (loud at dusk), the Farmhands, the Commuters (the column). Always "up the quarry" or similar | the boss | new hires | "a boss who lost" | *"The Postmen up the quarry. Same as us: the boss is whoever's got something on the rest."* |
-| **Halcyon** | sessile cases | Pack P-02 (quarry) | the index | recent conversions | an isolate | *"P-02 (quarry): the index is in its third week as lead. Please don't shoot it."* |
-| **The Long Table** | — | the neighbours | — | — | — | *"The neighbours came past on Tuesday. We stayed in."* |
-
-Tokens `{tribe:N}`, `{alpha:N}` and `{young:N}` resolve to the speaker's word, the place and the name, or
-the description where a name isn't allowed.
-
-**Faction marks** where a road enters a range. They're dated, and **Read the mark** says who wrote one
-and when, so an old mark can be wrong:
-- Haven chalk: *QUARRY LOT. NOT AFTER 7.*
-- a Bastion stencil: *P-2 · QUARRY · 20+ · HVY · 1930*
-- a red hand with a line through it, and *POSTMEN*
-- a Halcyon plate with the plague doctor stencilled on it: *P-02 · I d19*
-
-They're props only near players, or text without the props.
-
-### The factions
-
-| Faction | Wants | Does |
-|---|---|---|
-| **The Haven** | Its roads safe at night, and its people laid down by name | Reroutes: Haven-allied wanderers and runners go round Hungry ranges at night, and the Haven truck waits for dawn when its road crosses one. Its channel warns, including about day parties in the fields when a tribe is hungry. It knows names. It ends up living with Bastion's displaced tribes |
-| **Bastion** | Contacts counted and culled near its posts, and the truck roads clear | Keeps the contact board. Reads contacts and culls on the nightly call. Culls only while its presence is 0.2 or more: every stage before Aftermath (at 0.1) |
-| **The Red Hand** | Tribes used: a moat against Bastion, nights the tolls can charge for, stock for the pit, bait for rivals | Keeps one tribe fat as a moat. Nicknames everything. The fence sells stolen Halcyon tags and Halcyon's tag frequencies |
-| **Halcyon** | Alphas alive and old, until the lab needs one | Tags, maps and watches. Wants an index for the finale. Apologises. The Zone calls its people the beaks |
-
-- **The moat rule** (from Grounds, now on tribes). Sometimes the territory tick wants a take whose
-  straight line, from the taker's nearest holding, crosses the range of a tribe whose alpha is Prime or
-  older. That take waits. The third time it's blocked, it goes through: *"they found a way round."* The
-  Red Hand scores its camp towns higher when its fed tribe lies between them and Bastion.
-- **Killing a tagged Prime alpha** costs +2 Halcyon Infamy: *"a year of data."*
-- **The Red Hand's tolls** at night on a road with a tribe's habit cost one tin more: *"Night rate. The
-  Postmen are out."* This is flavour on the existing toll.
-
-### Dark corners
-
-All said sideways; the rules are in [The model](#the-model).
-- **The walk-outs.** A house's walk-outs feed the nearest tribe. The young that come home stand at the
-  wire at dusk. It's never announced, only gossip.
-- **Not our sector.** Bastion's culls push tribes onto the Haven, and the log says so in three words.
-- **The fat moat.** A Red Hand crew keeps a tribe fed. What with is never said. The rumour is that the
-  book's debtors walk out to the wood.
-- **Good condition.** Halcyon lets a tagged alpha hunt because the tissue gets better with age. *"P-02
-  took a courier on the north road. The index is in good condition. We're sorry."*
-- **The old wall.** The Long Table leaves something at the border. It's never said what.
-- **Your dead run.** A character who dies on a tribe's land runs with it afterwards.
-  - **Who counts:**
-    - a character killed by a tribe's bodies (model rule 4's attribution);
-    - or one who dies to the infected or turns out in the open, within 1.5 × a range radius.
-
-    It counts only after a life of 10 minutes or more, once per player a season day, and for at most 3
-    players' young per tribe at once. They come back as a young at the next dusk.
-  - **The name** (**Zombies > Tribes > Your dead run**: off, described, or named; described by default):
-    - the name always shows on the ID card, in the dead player's own journal, and to their group;
-    - public text (headlines, the Haven channel, gossip, road news) uses a description, *"a man in a blue
-      jacket"*, unless the server is set to named;
-    - even then, a player can opt out with `/mydead hidden`;
-    - a **name filter** word list replaces any name that matches with the description.
-  - **The look** is the tribe's, or military for a Soldier or a Police Officer.
-  - **When it's put down,** it drops a readable ID card (an optional readable prefab, else a line): the
-    name, the background, the day and place they died.
-  - **Gear:** their own body and kit stay where they fell (vanilla persistence). The young is a new body
-    with nothing on it.
-  - **Where it shows:** Haven gossip, wanderers' road news and the journal: *"Runs with the Quarry lot
-    now."*
-  - **A Turned Player** who turns in the open inside a range runs that night with the tribe's young, still
-    in their gear (the existing event), and is a young from then on.
-
-### Player skills
-
-| Background | Reads |
-|---|---|
-| ★ **Hunter** | **Tracks**, at a trail point, a day walk, a kill site or a lair, within 40 m, once every 3 minutes: how many (give or take two), which way, how fresh, whether a big one was with them, and how worn the trail is. *"Nine or ten, heading for the river, last night. A big one in the middle. Young ones all over the place. They come this way most nights."* By day: *"Three, this morning, along the hedge toward the quarry."* Also gets a warning line as soon as a scout starts seeing them: *"The birds just went up off the ridge."* |
-| ★ **Radio Operator** | **The relays.** Hears the dusk calls as a moving line (*"Calls passing west, ridge to ridge, from the Quarry toward the Hollow."*), what each call says ([The call](../docs/INFECTED.md#the-call)), calling contests (*"The Hollow answered weaker tonight."*), and Bastion's contact reports and culls |
-| ★ **Lab Technician** | **Halcyon tags**: a tagged alpha's rough area (300 m), its stage, and its hunger (lean or fed). From a sample: which tribe, and how long its alpha has led |
-| ★ **Soldier** | **The contact board.** Bastion's contacts, every tribe Bastion has read, are in their journal from spawn, dated. Hears a soldier alpha's shift change for what it is |
-| ★ **Police** | **The column**, the Day 2 tribe, by sight: its range is Read from spawn |
-| ★ **Elder** | **Who they were**: the Haven-known alphas and young |
-| ★ **Ex-Con** | **The Red Hand's nicknames**, and which crew feeds the moat |
-
-### Knowing
-
-Per character, like the outposts you've seen; lost with the life.
-
-| Level | How you get it | What you get |
-|---|---|---|
-| **Heard of** | The radio, a rumour, a wanderer, a Haven channel line | Its place and the name you heard, and a rough area (a 500 m circle) in the journal |
-| **Read** | You heard its call from its range edge, read a mark, or a Hunter read its tracks | Its range on your map (with the planned icon layer), and its mood while you're near |
-| **Mapped** | You saw its lair or its alpha, tracked it home, or a faction gave or sold you its map | Lair, alpha, size, temperament and habits, as of that day |
-
-Ways to learn:
-- **Ask about the roads** at a Haven safehouse (Known): the three nearest tribes, the Haven's names for
-  them, and their mood.
-- **The contact board** at Bastion's quartermaster (Known).
-- **The map of the crews** from the Red Hand's fence, for Favor.
-- **Halcyon's range map**, from 25% research.
-- **A tag.**
-
-Without the icon layer, all of it is journal text.
-
-### Jobs
-
-These are contracts. Each one:
-- uses `CanRunNow` and `Tribe(id)` claims;
-- counts its research ×0.75, through the lab's backlog (built);
-- is offered only within an hour of play before its window, so it can't outlive its night.
-
-Halcyon's jobs stop with the cure. Bring Them Home, Cull and Clear the Trail run after it, with no
-samples ([The last week](#after-the-cure-the-last-week)).
-
-| Job | Giver, needs | What | Result |
-|---|---|---|---|
-| **Not Tonight** (draw a pack off a safehouse) | Haven, Any, unarmed is fine; ★ Radio Op: more Fame. Offered from 17:00 game time | A hunting party will reach a house's wire tonight (a back-door habit, or a Hungry tribe testing the wire). Before 21:00, make noise at a marked spot 500–700 m off its trail. The hunt hears it as data (model rule 7) and turns. Get clear | Fame and Favor; the habit −30. If it reaches the wire anyway: no pay, and two people lost from the house |
-| **Bring Them Home** | Haven, Known; ★ Elder, ★ Nurse | A named young: a walk-out, a runner, a wanderer, a player's character. Find it with its tribe's young (by day it may be out with the day party), put it down, and bring its ID card or keepsake to a safehouse | Haven Fame and Favor. The name is read at every house (a player's character as the server's name setting allows). Not offered for anyone in your group, anyone who died within 300 m of you, or anyone who died within the last season day. One delivery per player a season day. After the cure it's part of the epilogue's closing work ([EPILOGUE.md](EPILOGUE.md)) |
-| **Escort at Dawn** | Haven, Known; ★ Hunter. Offered from 03:30 | Walk 3–5 people from a house across a tribe's range between 05:00 and 06:30, while the tribe walks home and before the day party is out, staying off its trails | People at the house they reach; Fame and Favor. One lost for each part that meets them |
-| **Contact Report** | Bastion, Any; ★ Hunter, ★ Radio Op, ★ Soldier; an amends contract. Offered from 17:30 | At dusk, count the calls from two listening points within 600 m of the lair, 30 s at each, without a scout seeing you | The tribe is Mapped for you and on Bastion's contact board (Read for Bastion's Known) |
-| **Clear the Trail** | Bastion, Trusted; presence 0.2+ | On a trail within 3 km of a Bastion holding, or on a truck road, kill 6 of the tribe in one night | Fame. The trail is dropped for 3 counted nights, the habit there −50, disturbance +30 |
-| **Cull** | Bastion, Trusted (Champion for a Prime alpha); presence 0.2+ | Kill the alpha, or 3 of its guard, of a tribe within 3 km of a Bastion holding. Bastion's smoke is allowed | Fame. Disturbance 100, so the tribe is displaced away from Bastion (within the displacement cap), and the Haven hears where it went |
-| **Burn the Lair** | Haven or Bastion, Trusted; needs fire on. Offered 09:00–13:00 | A Mapped lair. Between 11:00 and 14:00, while the day party is out and the rest lie up, set fire within 30 m of it and get out before the guard is up | Fame. The lair moves, and the land is burned (no lair) for 3 season days. A splinter if 4 or more died |
-| **Break the Habit** | Bastion or the Red Hand (whoever's trucks use the road), Known. Offered an hour before the habit's hour | A tribe with a road hour on a supply road. Be at the place at its hour and kill 4 of its hunters there | The habit −60 (gone under 10, so usually two contracts over a season). Fame and Favor |
-| **Bait the Crew** (bait one tribe into another) | Red Hand, Trusted; ★ Radio Op: twice the noise. Offered at dusk, only with no other player within 500 m of the border | Two tribes that border. Make enough noise across the border that one tribe's hunting party crosses into the other's range: a Border Night with you in it | Fame and Favor; the weaker tribe loses. Zombie Bait's Infamy if either lands on a faction's people |
-| **Plant a Tag** | Halcyon, Known; ★ Lab Tech | An alpha, Prime or older, by day or in its post-feed sleep. The tag item's own action, **Tag it**, works with the alpha within 8 m while the tribe hasn't noticed you (no scout call and no hunt targeting you). Hold it 5 s, then get away | Research +1. The tribe is tagged: Lab Techs and Halcyon's Trusted see its alpha's rough area, and the range map shows it |
-| **Track Them Home** | Halcyon or Bastion, Any, unarmed; ★ Hunter. Offered from 03:30 | At dawn, follow a returning tribe at 80–200 m to its lair without its scouts or its last part seeing you | The lair is Mapped for you and the giver; a little research or Fame |
-| **Capture the Index** | Halcyon, Champion. From the gate, each finale route's live-tissue act builds on it ([FINALE.md](FINALE.md)) | An alpha, Prime or older. Live Capture's rules: wound it to a third of its health and get within 3 m to tie it, hold it 30 s while it fights (its guard comes), then carry the case to the lab before it wakes (**Specimen wake minutes**, 12), with the tribe following | Before the gate, Live Capture's research. From the gate, a route's live tissue. A succession, and Furious |
-| **The Lone One** (Alpha Sighting, renamed; decision 13) | Halcyon; or the Haven, when it knew him | Kill a lone one for 2 samples, or lay it down by name for the Haven | Samples, or Haven Fame and Favor |
-
-Also: **Stock the Pit** (Red Hand, Known) cages two young alive with Live Capture for the next Fight Pit
-or House Rules: *"Fresh hires, from the Postmen."*
-
-### World events
-
-| Event | When | What |
-|---|---|---|
-| **Every Ridge Calls** (reworked Night of the Dead) | As today | A frenzy night everywhere ([The land](#the-land)) |
-| **Red Dusk** (new) | At most once every 7 season days, from Collapse, at a clear dusk | A regional frenzy ([The land](#the-land)) |
-| **Border Night** (new) | A border fight resolves with a player within 800 m | Both tribes' hunters come to the border or the bridge for up to 20 minutes, with the calls. Ambush both, or keep out of it. It's heard, then found: the loser's parts go home, and its losses are counted off out of sight ([Bodies](#bodies)) |
-| **The Clash** (new) | A challenge at a Declining alpha's lair, with a player within 1 km | At dusk the tribe stands in a ring 20–40 m from the lair while the two meet, for up to 3 minutes. Then the loser walks away alone, as a lone one, and the ring follows the winner. Step in: kill the challenger and the old alpha keeps the tribe a while longer; kill the old alpha and the challenger takes over with no vigil and no splinter. A Halcyon-Known player within 300 m gets one shared observation (research +1) |
-| **The Vigil** (new) | An alpha dies with a player within 1.5 km | The tribe gathers where it fell, facing it, until dawn or 30 real minutes. Its samples lie by the body inside the ring, kept from the loose-item cleanup while it lasts |
-| **The Tribe Moves** (reworked Horde Migration) | A lair move out of the range, a displacement, or a nomad's move | A tribe walks across the map as a data herd, shown as two groups within 600 m of a player. *"The Quarry lot are moving north."* 10 or more kills leave its abandoned lair's finds to whoever follows it back. Stealth can lower its sight, as it does Horde Migration's today |
-| **Furious** (new) | After an alpha is caught alive | For 2 counted nights the tribe's trails run along the capture route toward the lab, every night whatever its hunger, stopping at the lab's no man's land plus P. By day its day parties walk that road, inside the day caps. Couriers and columns need an escort. If it's still Furious at the final stand, it comes with the last wave; only the most recently Furious tribe comes. Haven: *"Whatever they took from the Quarry, the Quarry lot want it back."* |
-| **A Gathering** (new) | Every 4 season days and on frenzy nights, while the great alpha lives | A clan hunt toward the nearest lived-in place's wire, in waves |
-| **Night of Many Calls** (new) | The great alpha dies | Every ridge calls, and every border reopens for 2 counted nights |
-
-### Existing content that changes
-
-Each is a small edit to a picker, a brief or a reward. With tribes off, or no fitting tribe, each keeps
-today's behaviour.
-
-| Mission or system | Becomes |
-|---|---|
-| Night of the Dead, Horde Migration | Every Ridge Calls, The Tribe Moves |
-| Alpha Sighting | **The Lone One** (decision 13, option b): targets a lone one when there is one, else today's special |
-| Burn the Nest | The reworded brief ([lore](#what-the-infected-do-lore)); the crawler nest |
-| Hunt the Screamer | A tribe's posted scout when there's one in reach (the scout rule is literally its premise), else as today |
-| Live Capture | Can take a guard or a young; Capture the Index builds on it |
-| Lead Them Away | The drifting horde is a hunting party heading for the house, or a moving tribe |
-| Zombie Bait | At night within 2 km of a range, its horde is that tribe's hunters; by day, its day party; otherwise crawlers |
-| Blow the Bridge | Picks a tribe crossing a bridge first, when the grid found one |
-| Recon | "Where the next horde is forming" names the hungriest tribe |
-| Fire Mission, Bastion Shelling | On a lair: disturbance +50 (never a claimed tribe) |
-| Mass Grave | Crawlers in the pit; the nearest tribe's hunger −20 |
-| Siren Test | Crawlers converge; tribes come only with a bells habit |
-| Crashed Helicopter | Inside a range, the horde that comes is the tribe's hunters (by day, its day party) |
-| Missing Patrol, Military Remnant Camp | Their turned soldiers are a military tribe's young when one is near |
-| Walk Him Out | "Walk on" feeds the nearest tribe within 2 km (a named young) instead of +5 infection |
-| Hunter squads | Won't follow a target into a range at night |
-| Wanderers | Haven-allied ones go round Hungry ranges at night. Bites in the open inside a range feed it. Their road news names tribes, with the place |
-| Supply trucks | Taken as data on any road a trail crosses (capped, at night only), which teaches a road habit. The Haven truck waits for dawn on a Hungry range's road |
-| Spawn points and the gentle start | Spawn points keep 1 km from lairs. Scouts never call on a player in their gentle start, hunts never target one, and no day party spawns within 400 m of one |
-| Final stand | Waves from the crawlers of towns within 3 km of the lab and the nearest tribe's hunters ([The season](#the-season)) |
-
-### Questline hooks
-
-Each within the usual questline limits.
-- **HC1 The Three Weeks:** its site stages claim the site tribe, so its bodies keep 150 m from the store.
-  Dr Wolff and `weeks.captured` are unchanged.
-- **H3 The Edge of Town:** each walk feeds the tribe that learned that edge. An ending that stops the
-  walks leaves that tribe Hungry (+20 hunger), and it tests the house's wire for a few nights.
-- **B1 Await Relief:** the Day 3 runner's road crosses the column's range, and his page can be at an old
-  kill site (decided with the questline).
-- **R1 The Book:** a page for "the crew in the woods", the moat's feeding, as a rumour.
-- **HC3 Authors:** tagged alphas are numbered in the paper's appendix.
-- **The finale routes** ([FINALE.md](FINALE.md)): each route's Act III is live tissue, and Halcyon's route,
-  The Lower Store, claims the site tribe in Act II.
-- **Seeds for later questlines** (the four majors don't use tribes): the Haven's Bring Them Home chain;
-  Bastion's Not Our Sector; the Red Hand's The Moat; Halcyon's Index (partly taken up by the finale's
-  live tissue).
-
-### A session, as it should feel
-
-On Everon:
-1. A new player follows the Haven channel toward Morton. At noon she crosses a field of slow ones, and
-   sees a still figure on the ridge above the Levie road. At the hedge line two quick ones come along the
-   field edge, stop, and come on. She lies flat in the grass until they've passed.
-2. A veteran Hunter reads the ditch: *"Ten, last night, toward the bridge. A big one with them. Most
-   nights."*
-3. At dusk the Quarry calls, long, three short and a long. Across the valley the Hollow answers, weaker
-   than last week.
-4. Two Halcyon players want the Quarry's index for the finale. A Haven player wants it left alone: it
-   keeps the Red Hand's Postmen off the Morton road, and a man in a blue jacket runs with it now, her
-   friend's last character.
-5. That night the Quarry's hunt takes a wanderer on the Levie road, then comes for the Halcyon pair,
-   loses five, and breaks off with one long call. At dawn there are fewer answers.
-6. It fed, so the next day nobody is out on the Quarry's paths. The pair tag the alpha at noon, in its
-   post-feed sleep, and come back for it at dusk while the hunters are out.
-7. A Red Hand player who bought the frequency from the fence is already on the ridge.
+**Built** ([docs/INFECTED.md](../docs/INFECTED.md#people)): the words, voices, marks (as text), knowing and
+the ways to learn, skills, your dead run, the dark corners, the factions' sides, the moat rule, the 12
+contracts, The Lone One, the events, the changed missions listed in
+[MISSIONS.md](../docs/MISSIONS.md), and HC1's and H3's hooks ([QUESTLINES.md](../docs/QUESTLINES.md)).
+Still designed:
+- **Tokens** `{tribe:N}`, `{alpha:N}` and `{young:N}`, resolving to the speaker's word, the place and the
+  name (or the description where a name isn't allowed).
+- **Stock the Pit** (Red Hand, Known): cage two young alive with Live Capture for the next Fight Pit or
+  House Rules: *"Fresh hires, from the Postmen."*
+- **The changed missions not yet changed:** Live Capture can take a guard or a young; Lead Them Away's
+  drifting horde is a hunting party heading for the house, or a moving tribe; Blow the Bridge picks a
+  tribe crossing a bridge first; Missing Patrol's and the Military Remnant Camp's turned soldiers are a
+  military tribe's young when one is near.
+- **The jobs' rest:** Clear the Trail on a truck road; Burn the Lair's splinter when 4 or more died;
+  Bait the Crew's Zombie Bait Infamy when either side lands on a faction's people; Track Them Home's
+  "not closer than 80 m"; a Furious tribe's day parties walking the capture road, and couriers and
+  columns needing an escort.
+- **Frenzies** ignoring fear places and borders, with up to 2 Border Nights staged on a frenzy night.
+- **Questline hooks:** B1 Await Relief (the Day 3 runner's road crosses the column's range, and his page
+  can be at an old kill site); R1 The Book (a page for "the crew in the woods", the moat's feeding, as a
+  rumour); HC3 Authors (tagged alphas numbered in the paper's appendix); the finale routes' Act III live
+  tissue and The Lower Store claiming the site tribe in Act II ([FINALE.md](FINALE.md)); seeds for later
+  questlines (the Haven's Bring Them Home chain, Bastion's Not Our Sector, the Red Hand's The Moat,
+  Halcyon's Index).
+- **Props** (phase 5): the marks, the ID card's look, kill-site things.
 
 ## The season
 
@@ -1141,28 +928,15 @@ By map:
 **Time of day** is in [Tribes](../docs/INFECTED.md#the-daily-rhythm), [Day parties](#day-parties) and [The land](#the-land)
 (weather and light). Bastion's routines are unchanged, and soldier alphas echo them.
 
-**Events through the season**
-- **Frenzy nights:** Every Ridge Calls as often as Night of the Dead today, and Red Dusk at most once every
-  7 season days, from Collapse.
-- **Where the life cycle puts them:** Border Nights, Clashes and the Vigil, staged only near players.
-- **When a tribe moves on:** The Tribe Moves, when it's displaced or moves.
-- **After a capture:** Furious.
-- **While a great alpha lives:** a Gathering every 4 season days.
-- **The limits:** at most one frenzy at a time, never in the first 2 season days, and no more than one
-  every 3.
+**Events through the season:** built ([MISSIONS.md](../docs/MISSIONS.md#world-events)) but for the Gathering every 4
+season days while a great alpha lives (phase 5).
 
-**The cure.** On the built research: the Cure pace, the pace by play, the lab's capacity of 3% a real
+**The cure.** The 25%, 50%, 75%, final stand, won and lost rows are built ([The cure](../docs/INFECTED.md#the-cure)). On the built research: the Cure pace, the pace by play, the lab's capacity of 3% a real
 day, the cold store, and the 90% finale gate.
 
 | Research | Tribes and crawlers |
 |---|---|
-| 25%, Field antiviral | **Halcyon's range map:** players Known with Halcyon see the ranges Halcyon has read or tagged (not the lairs) |
-| 50%, Bite treatment | **The call box** (Halcyon's quartermaster, Trusted, 2 a real day, one per player a real day) plays a recorded dusk call for 90 s. At night it draws the hunters and young of the nearest tribe within 1.5 km (as a data noise, so it works with no bodies near), never the alpha or the guard. By day the crawlers drift to it, and so does a day party within 1.5 km, since day noise draws only the day party. It never works within 300 m of a lived-in place, or within 150 m of another player who isn't in your group. Lab Techs read a sample's tribe and how long its alpha has led |
-| 75%, Immunity serum | Fewer of the bitten turn: each person taken comes back as a young only half the time, and the ones who ran are halved |
 | 90%, the finale's gate | **Live tissue.** Each finale route's Act III needs a live specimen, carried to the lab in Live Capture's case. [FINALE.md](FINALE.md), "Live tissue", owns the order of specimens and the acts. The tribes' side: the best specimen is an alpha, Prime or older (at its lair by day while its day party is out, or on its trail at night), else a lone one, else two guards (they stay at the lair by day); with tribes off or none in reach, two Live Capture specials. The case can be taken from whoever carries it, like a robbed truck. **Whoever hands it in credits a route's track: a locked player their own, an unsided one the route they choose** (conflict 44). An alpha counts +2, a great alpha +3, never past 9 before Act IV. The same tribe can't give tissue twice within 6 season days, so a one-tribe map's next route takes a lone one or guards. Each alpha caught means a succession and a Furious tribe on the lab road. No route can be locked out: every route has a fallback |
-| 100%, the final stand | The waves come from the crawlers of towns within 3 km of the lab and from the nearest tribe's hunters, with the total kept between 70% and 130% of today's waves. Clearing the lab's neighbours first helps, but never trivialises the stand. The most recently Furious tribe, if it's still Furious, comes with the last wave. Stealth never lowers anything within 1.5 km of the lab during the stand (built) |
-| Won | Infection drops 70% everywhere, as today, and the crawlers with it. Nobody new turns, and the tribes run down over the epilogue's week ([The last week](#after-the-cure-the-last-week)) |
-| Lost | The tribes that came go home. The lab's nearest tribe is Hungry for a season day |
 
 Research never changes the infected themselves. It changes what people know, and how many of the living
 turn. Tribe samples are budget-neutral: town specials are scaled down by the tribes' share, so specials
@@ -1175,57 +949,11 @@ option is for its seeds to start in Prime too.
 
 ## After the cure: the last week
 
-The epilogue lasts **one week: 168 real hours** from the cure to the wipe (decision 12; today's setting is
-48). The epilogue's own design ([EPILOGUE.md](EPILOGUE.md)) owns the closing quests and scenes. This
-section owns what the infected do in that week, so that every story with them in it can be finished
-inside it, whether the server is busy or quiet.
-
-**Nobody new turns** (model rule 24):
-- no young (taken or ran), no new tribes, no splits, and no players' young;
-- people a tribe kills still feed it (−25 hunger), but they don't come back;
-- nothing drops samples (built), and Halcyon gives no more tribe work (built: it gives no more work by
-  default). Bring Them Home, Cull and Clear the Trail keep running.
-
-**The tribes run down on the epilogue's own clock**, real hours, so a quiet server's ridges go quiet too:
-- **Hunger** rises 15 every 12 real hours instead of by counted nights.
-- **Starving** (100) loses a fifth of the tribe (at least 1) every 12 real hours. They lie down where they
-  are and don't get up; they never join the crawlers.
-- **No break-ups and no lone ones.** However small it gets, a tribe keeps its lair and its alpha.
-- **An alpha killed after the cure ends its tribe.** The vigil until dawn, then the rest scatter and die out
-  within a day. Nobody takes up the call.
-- **Shrinking shows.** The day party shrinks with the tribe, and a tribe under 8 sends none and hunts as
-  data only (the weakened rule). The calls answer thinner every evening: *"The Quarry still calls. There's
-  hardly anyone left to come."*
-- **The last call.** On the last dusk before the wipe falls due, every alpha still living calls once, and
-  nothing answers. At dawn it lies down at its lair.
-
-The young and the hunters go first, and the guard last. A typical tribe of 18 at hunger 30 starts
-starving on about day 3, is down to a handful by day 5, and is its alpha and one or two more at the last
-call. A tribe that keeps feeding lasts a little longer. These rates are a starting point for the
-simulator.
-
-**A town cleared stays cleared:**
-- the kill ledger stops halving, so every crawler killed stays off the town's count;
-- a town's infection never rises after the cure: `AddInfection` refuses rises in the epilogue (no spread
-  source is left after the 70% drop anyway, no starving walkers come in, and nobody new turns);
-- stir, scavenging and drift to noise go on, with fewer of them.
-
-**What the infected hand the epilogue** (conflict 42: Grounds' beats become tribe beats):
-
-| Beat | From |
-|---|---|
-| **Still calling** | An alpha alive at the cure: its name (in each faction's word), its tribe's place, and how many answer each evening |
-| **Brought home** | An alpha or a named young laid down by name, its ID card or keepsake carried to a house or a post, and who did it |
-| **Taken alive for the lab** | An alpha a finale route caught: the index in the isolation room |
-| **Killed** or **burned out** | An alpha killed, or a lair burned, and who did it |
-| **Walking with it** | Up to 3 named young still running with each tribe, players' characters among them (by the name setting) |
-| **The great alpha** | If one lived this season: its name, its clan, and its fate |
-
-**The closing work that touches the infected** is designed in [EPILOGUE.md](EPILOGUE.md): Quiet the Ridges
-(hunt the last alphas, or let them die out), Bring Them Home (the tags, ID cards and keepsakes of the
-named dead, the tribes' young among them, carried back to their houses and posts) and Take Back a Town
-(the rule above makes it possible). They pay nothing that carries into next season except hall-of-fame
-lines.
+**Built** ([The last week](../docs/INFECTED.md#the-last-week)), with the beats kept for the epilogue. Still
+designed: the epilogue reading them, and two more beats: **Walking with it** (up to 3 named young still
+running with each tribe, players' characters among them by the name setting) and **The great alpha**
+(phase 5). The closing work that touches the infected (Quiet the Ridges, Bring Them Home as closing
+work, Take Back a Town) is [EPILOGUE.md](EPILOGUE.md)'s.
 
 ## From Grounds to tribes: the rename table
 
@@ -1344,7 +1072,8 @@ place. Check every rule against the signs table: a rule without a sign waits. Re
 the real rules at Season speed 1 and faster and all map sizes before tuning.
 Docs: INFECTED, ROADMAP.
 
-**Phase 4, people and content** (about 2,000 lines). Each faction's words, voice and marks, with the place
+**Phase 4, people and content** (about 2,000 lines; **built** but for [what's left](#people) and the
+live tissue, [docs/INFECTED.md](../docs/INFECTED.md#people)). Each faction's words, voice and marks, with the place
 anchor. Skills. Knowledge levels and the ways to learn them. The 13 contracts (offered only within an hour
 of their window; Alpha Sighting renamed The Lone One) and the 9 events (2 reworked). The changed missions
 with their fallbacks, and the wanderer, truck, hunter-squad and spawn-point rules. Your dead run with its

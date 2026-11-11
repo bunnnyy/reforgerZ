@@ -427,8 +427,11 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 		if (option == 1)
 		{
 			m_fRewardScale = 0.6;
+
+			// He walks toward the trees: the nearest pack within 2 km takes him, else the town
+			bool pack = gm.GetTribes() && gm.GetTribes().GetPeople().WalksOn(m_vPos, m_sMan);
 			RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-			if (s)
+			if (s && !pack)
 				s.AddInfection(5);
 
 			gm.NotifyPlayer(playerId, m_sTitle, "He shakes your hand, and walks on toward the trees. You don't watch him go. Somewhere out there, later tonight, he'll stop being him. The council won't ask which you chose.");

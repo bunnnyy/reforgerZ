@@ -98,8 +98,10 @@ the close button close it.
 `/noteclear` and `/noteclear all` clear boards (server admins); `/tribes` (server admins) writes the
 infected to the server log (`/tribes stir` and `/tribes site` are play-test aids; the status log prints
 the summary anyway, so nothing needs typing: [INFECTED.md](INFECTED.md#admin-visibility)); `/rep <name>`
-(server admins) reads a player's reputation ([REPUTATION.md](REPUTATION.md#reputations)). They work
-without any layout. Without the board menu, reading the board is a notice and notes are written with `/note`.
+(server admins) reads a player's reputation ([REPUTATION.md](REPUTATION.md#reputations)); `/mydead
+hidden` or `/mydead shown` keeps your name out of public text if you die out there, which the notebook
+item's action *"If I die: say my name, or don't"* also does, without typing
+([INFECTED.md](INFECTED.md#your-dead-run)). They work without any layout. Without the board menu, reading the board is a notice and notes are written with `/note`.
 
 **Rough areas in the journal.** A contract's "where" and direction are the rough circle ("around
 Morton (within 500 m)", "about 1.2 km NE") until the player knows the spot
@@ -202,6 +204,12 @@ do. Never on the map. Selecting any row asks the server for that row's **detail*
 (`RZ_PlayerUIComponent.AskDetail`, payload kind 10, `D|id|told|found|went`, at most 1,500
 characters, a few a second at most): its "What you've found" and "Who it went to" go at the top of
 the clues block (`DetailClues`), so the journal's 6,000-character list is never cut for them.
+
+**The packs in the journal.** Each pack your character knows of is a row (kind EVENT, its id
+`-(200000 + pack)`): the place as the title, the level (Heard of, Read, Mapped) as "by", a direction to
+its rough area, and the names you've heard under the place with what you know as its brief and
+detail; your last character's fate is a row too ([INFECTED.md](INFECTED.md#knowing)). Text only: the
+map's range rings are planned.
 
 The notice board opens when you read a safehouse board, with **UI > Board menus** on.
 
@@ -458,7 +466,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_ShopScreen`, `RZ_ShopOpenAction`, `RZ_ShopMenu` | server, server, client | The shop screen ([above](#the-shop-screen)) |
 | `RZ_ScreenCapture` | server | While a screen acts for its player, catches what would have been that player's notice for the screen's status line |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair and shop screens and closes them in danger (below) |
-| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/rep`, sent as commands to the server, which checks them again. Registered with the first notice |
+| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/rep`, `/mydead`, sent as commands to the server, which checks them again. Registered with the first notice |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards and the subtitles |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
 | `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookGadgetComponent` | client | Open the notebook: N, the pause menu's button, the notebook item |

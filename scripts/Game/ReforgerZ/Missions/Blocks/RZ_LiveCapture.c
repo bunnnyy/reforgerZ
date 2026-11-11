@@ -95,6 +95,14 @@ class RZ_LiveCapture
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The mission brings its own special (Capture the Index: a pack's leader, tagged with the
+	//! mission's id): the block never spawns one at the lair.
+	void UseOwnSpecial()
+	{
+		m_bSpecialSpawned = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool IsLost()
 	{
 		return m_eState == RZ_ECaptureState.LOST;

@@ -855,6 +855,9 @@ class RZ_Territory
 					score += 1;
 				if (s.m_fInfection >= 15)
 					score += 0.5;
+				// Its fed pack in the woods between the town and Bastion (the fat moat)
+				if (m_GM.GetTribes())
+					score = score * m_GM.GetTribes().GetPeople().CampScore(s.m_vCenter);
 				break;
 			}
 			case RZ_EFaction.SURVIVORS:
@@ -1234,6 +1237,13 @@ class RZ_Territory
 		}
 
 		if (!best)
+			return false;
+
+		// The moat rule: a take across the ground of a pack whose leader is in its prime or older
+		// waits; the third time, they find a way round (docs/INFECTED.md, The factions)
+		RZ_Holding from = FindHolding(f, best.m_vPos, 100000);
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (from && tribes && tribes.GetPeople().BlocksTake(best.m_iId, from.m_vPos, best.m_vPos))
 			return false;
 
 		TakeOver(best, f);

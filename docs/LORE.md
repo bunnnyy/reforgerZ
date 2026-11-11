@@ -568,16 +568,16 @@ either way.
 ### What people say
 
 Players only ever get guesses, and nobody is marked right. Every line names the place, so players can
-tell four names mean one pack. The factions' own words for them are planned in the game
-([designs/INFECTED.md](../designs/INFECTED.md#people)); as people:
+tell four names mean one pack. The words each faction uses in the game, and its marks, are in
+[INFECTED.md](INFECTED.md#the-words); as people:
 
-| Who | How they see them |
-|---|---|
-| Halcyon | Numbered packs and an "index" it wants alive, because the tissue gets better with age. Its notebooks name the behaviour, never the cause |
-| The Haven | The slow ones stayed home; the quick ones went with whoever called. It uses a leader's name when someone knew him |
-| Bastion | Contacts, counted and culled near its posts, and what it pushes away is "not our sector" |
-| The Red Hand | Every crew's got a boss. The boss is whoever's got something on the rest. Same as them |
-| The Long Table | *"The neighbours came past on Tuesday. We stayed in."* |
+| Who | Their words | How they see them |
+|---|---|---|
+| Halcyon | Pack P-02, the index, recent conversions, sessile cases, an isolate. The Zone calls Halcyon's people the beaks, after the plague doctor on their plates | Numbered packs and an index it wants alive, because the tissue gets better with age. Its notebooks name the behaviour, never the cause. It apologises |
+| The Haven | the Quarry lot (or Josef's lot), the big one, the young by name, the stay-at-homes, the one on his own. Chalk on the signposts: *NOT AFTER 7* | The slow ones stayed home; the quick ones went with whoever called. It uses a leader's name when someone knew him, and reads the young's names at supper when they're brought home |
+| Bastion | Contact Papa-two on the contact board, the heavy, new contacts, statics, a single | Contacts, counted and culled near its posts, and what it pushes away is "not our sector". "No reply" |
+| The Red Hand | a crew with a nickname (the Postmen, the Choir, the Farmhands, the Commuters), the boss, new hires, the furniture, a boss who lost | Every crew's got a boss. The boss is whoever's got something on the rest. Same as them. It charges a night rate when they're out |
+| The Long Table | the neighbours | *"The neighbours came past on Tuesday. We stayed in."* |
 
 **Hard edges, always said sideways:** the Haven walks people to the edge of town at dusk, and a pack
 has learned the hour; Bastion's culls push the packs into Haven country; a Red Hand crew keeps one pack

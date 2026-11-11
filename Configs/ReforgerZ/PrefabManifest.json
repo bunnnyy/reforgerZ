@@ -779,7 +779,7 @@
    "slotLabel": "Missions > Helicopter wreck",
    "required": false,
    "minimum": false,
-   "use": "Crash Site, Crashed Helicopter, Two Bearings; the look of Rescue the Pilot's crash and of The Last Pilot's Day 3 wreck; the last helicopter's crash in The Last Pilot",
+   "use": "Crash Site, Two Bearings; the look of Rescue the Pilot's crash and of The Last Pilot's Day 3 wreck; the last helicopter's crash in The Last Pilot",
    "notes": ""
   },
   {
@@ -1547,6 +1547,60 @@
    "notes": ""
   },
   {
+   "id": "TribeTag",
+   "kind": "create",
+   "system": "Zombies",
+   "path": "Prefabs/ReforgerZ/Zombies/RZ_TribeTag.et",
+   "basePrefab": "{59E8CDFB824DE3B9}Prefabs/Props/Civilian/Notebook_01_Single_MarbleBlack_CP.et",
+   "baseFind": "",
+   "baseHint": "a small carryable item (a vanilla small prop that can be picked up); display name Halcyon tag",
+   "components": [],
+   "actions": [{"cls": "RZ_TagAction", "values": [], "name": "Tag it"}],
+   "slots": ["m_TribeSettings.m_sTagPrefab"],
+   "listSlot": false,
+   "slotLabel": "Zombies > Tribes > Tag prefab",
+   "required": false,
+   "minimum": false,
+   "use": "Plant a Tag (Halcyon) and the Red Hand fence's stolen tag: Tag it on a pack's leader within 8 m",
+   "notes": "Set the action's duration to 5 s (hold it). Check in Workbench that the action shows on the item in the hand and on the ground"
+  },
+  {
+   "id": "TribeCallBox",
+   "kind": "create",
+   "system": "Zombies",
+   "path": "Prefabs/ReforgerZ/Zombies/RZ_CallBox.et",
+   "basePrefab": "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.et",
+   "baseFind": "",
+   "baseHint": "a small radio or speaker item (a vanilla handheld radio); display name Call box",
+   "components": [],
+   "actions": [{"cls": "RZ_CallBoxAction", "values": [], "name": "Play the recorded call"}],
+   "slots": ["m_TribeSettings.m_sCallBoxPrefab"],
+   "listSlot": false,
+   "slotLabel": "Zombies > Tribes > Call box prefab",
+   "required": false,
+   "minimum": false,
+   "use": "the call box Halcyon lends from 50% (Trusted, 2 a real day): 90 s of a recorded dusk call as a data noise",
+   "notes": "Put it down and use it; it's used up when it plays"
+  },
+  {
+   "id": "TribeIdCard",
+   "kind": "create",
+   "system": "Zombies",
+   "path": "Prefabs/ReforgerZ/Zombies/RZ_IdCard.et",
+   "basePrefab": "{59E8CDFB824DE3B9}Prefabs/Props/Civilian/Notebook_01_Single_MarbleBlack_CP.et",
+   "baseFind": "",
+   "baseHint": "a small flat carryable item (a card or a wallet); display name ID card",
+   "components": [],
+   "actions": [],
+   "slots": ["m_TribeSettings.m_sIdCardPrefab"],
+   "listSlot": false,
+   "slotLabel": "Zombies > Tribes > ID card prefab",
+   "required": false,
+   "minimum": false,
+   "use": "dropped where a named young is put down (its text is told to whoever is near); cleared like loose items",
+   "notes": "Bring Them Home uses the mission item instead"
+  },
+  {
    "id": "AdaptRunners",
    "kind": "external",
    "system": "Zombies",
@@ -1751,7 +1805,8 @@
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=6"], "name": "Read the notice board"},
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=7"], "name": "Leave a note on the board"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=6"], "name": "Ask about the roads"}
    ],
    "slots": ["m_sQuartermasterHaven"],
    "listSlot": false,
@@ -1789,7 +1844,8 @@
       "m_sDisplayName=Signal smoke"
      ],
      "name": "Buy"
-    }
+    },
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=7"], "name": "Contact board"}
    ],
    "slots": ["m_sQuartermasterBastion"],
    "listSlot": false,
@@ -1823,7 +1879,9 @@
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=0"], "name": "Fence"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=1"], "name": "Bounty board"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=8"], "name": "Map of the crews"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=9"], "name": "Tag frequencies"}
    ],
    "slots": ["m_sQuartermasterRedHand"],
    "listSlot": false,
@@ -1863,7 +1921,9 @@
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=3"], "name": "Medic"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=2"], "name": "Immunity booster"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=10"], "name": "Range map"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=11"], "name": "Call box"}
    ],
    "slots": ["m_sQuartermasterHalcyon"],
    "listSlot": false,
@@ -4032,7 +4092,7 @@
    "baseFind": "",
    "baseHint": "a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg",
    "components": [{"cls": "RZ_NotebookGadgetComponent", "values": [], "name": ""}],
-   "actions": [],
+   "actions": [{"cls": "RZ_DeadNameAction", "values": [], "name": "If I die: say my name, or don't"}],
    "slots": ["m_UISettings.m_sNotebookPrefab"],
    "listSlot": false,
    "slotLabel": "UI > Notebook prefab",
@@ -4571,7 +4631,7 @@
    "category": "Zombies",
    "object": "Tribes",
    "field": "m_TribeSettings",
-   "covers": "**Enabled** (on; off: no land grid, no tribes, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20), the **role prefabs** (alpha, guard, hunter, scout, young; empty lists fall back), **Day party share** (0.2; 0 = none), day party group (2-3), day party bodies near a cluster (6), **Counted night minutes** (20), **Scout sight** (120 m), **Your dead run** (Described) ([INFECTED.md](INFECTED.md#tribes))"
+   "covers": "**Enabled** (on; off: no land grid, no tribes, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20), the **role prefabs** (alpha, guard, hunter, scout, young; empty lists fall back), **Day party share** (0.2; 0 = none), day party group (2-3), day party bodies near a cluster (6), **Counted night minutes** (20), **Scout sight** (120 m), **Your dead run** (Described), **Life cycle** (on), hunger a counted night (3), split at (24), the looks' prefabs, **People** (on: words, knowing, the packs' contracts and events, the moat, the call box, the stand's waves, the last week), **Name filter** (words), the **ID card**, **tag** and **call box** prefabs, the map of the crews (15 Favor) and the tag frequencies (25 Favor) ([INFECTED.md](INFECTED.md#tribes), [People](INFECTED.md#people))"
   },
   {
    "category": "Zombies",
@@ -5022,7 +5082,11 @@
     "m_bLifeCycle": "1",
     "m_fHungerPerNight": "3",
     "m_iSplitAt": "24",
-    "m_eYourDeadRun": "1"
+    "m_eYourDeadRun": "1",
+    "m_bPeople": "1",
+    "m_sNameFilter": "",
+    "m_iCrewMapFavor": "15",
+    "m_iFrequencyFavor": "25"
    }
   },
   {

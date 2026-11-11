@@ -338,6 +338,23 @@ class RZ_Tribe
 	int m_iNoHuntUntil;			// ...it doesn't hunt toward until this counted night
 	bool m_bShortNight;			// the night after a border fight: one trail
 	int m_iDisturbNoise;		// the last remembered noise that disturbed the lair
+	// People (Zombies/RZ_TribePeople.c)
+	int m_iContact;				// Bastion's contact number on its board, numbered as found (0: not on it)
+	int m_iTagDay = -1;			// the season day Halcyon's tag went in (-1: untagged)
+	string m_sTaggedBy;			// who planted it (an identity)
+	float m_fFrenzy;			// tonight's frenzy: the hunting range's multiplier (0: none)
+	int m_iFuriousUntil = -1;	// Furious until this counted night (after its alpha was caught alive)
+	int m_iFuriousOrder;		// the order it went Furious in: only the most recent comes to the final stand
+	bool m_bMoat;				// the Red Hand's fed tribe (rule 19)
+	float m_fHungryUntil = -1;	// season days: kept at least Hungry until then (a lost final stand, a questline)
+	int m_iNoWireNight = -1;	// Not Tonight: no wire trail toward a house on this counted night
+	int m_iTrailOff = -1;		// Clear the Trail: this trail is dropped...
+	int m_iTrailOffUntil = -1;	// ...until this counted night
+	int m_iLentAlpha = -1;		// Capture the Index: the mission whose body the alpha is
+	ref array<string> m_aMarkText = {"", "", "", ""};	// each faction's mark where a road enters the range (by RZ_EFaction)
+	ref array<int> m_aMarkDay = {0, 0, 0, 0};
+	ref array<ref RZ_NamedYoung> m_aNamed = {};			// named young running with it (players' characters among them)
+	int m_iWalkouts;			// walk-outs it was fed (dark corners)
 
 	//------------------------------------------------------------------------------------------------
 	bool IsRover()
@@ -505,6 +522,10 @@ class RZ_Tribe
 	//! The range for hunting tonight: x1.25 hungry, x1.5 desperate or worse.
 	float HuntRadius()
 	{
+		// A frenzy night (Every Ridge Calls, Red Dusk): its range x2 or x1.75, whatever its temperament
+		if (m_fFrenzy > 0)
+			return m_fRadius * m_fFrenzy;
+
 		// A territorial tribe never hunts beyond its range
 		if (m_eTemper == RZ_ETemperament.TERRITORIAL)
 			return m_fRadius;
@@ -573,6 +594,26 @@ class RZ_Tribe
 			m_aTaken.Remove(m_aTaken.Count() - 1);
 		}
 	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A named young (docs/INFECTED.md, "Your dead run" and "Bring Them Home"): someone taken who runs with
+//! the tribe now. A player's character is shown by their public text unless the server and the
+//! player allow the name.
+class RZ_NamedYoung
+{
+	string m_sName;			// the real name (the ID card, their own journal, their group)
+	string m_sPublic;		// what public text says: the name, or a description
+	string m_sIdent;		// a player's identity ("" for anyone else)
+	int m_iPlayerId;		// the player then (their group, for Bring Them Home's exclusions)
+	string m_sWhat;			// "Driver"
+	int m_iDay;				// the season day they died
+	float m_fDays;			// RZ_SeasonClock.Days() then
+	string m_sWhere;		// "on the road to Morton"
+	vector m_vAt;
+	ref array<string> m_aNear = {};	// identities of the players within 300 m when they died
+	bool m_bWalkout;		// a Haven walk-out
+	bool m_bPlayer;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -650,6 +691,29 @@ class RZ_TribeSave
 	int bonds;
 	int noHuntToward;
 	int noHuntUntil;
+	// People
+	int contact;
+	int tagDay = -1;
+	string taggedBy;
+	int furiousUntil = -1;
+	int furiousOrder;
+	bool moat;
+	float hungryUntil = -1;
+	int trailOff = -1;
+	int trailOffUntil = -1;
+	ref array<string> markText = {};
+	ref array<int> markDay = {};
+	ref array<string> namedName = {};
+	ref array<string> namedPublic = {};
+	ref array<string> namedIdent = {};
+	ref array<string> namedWhat = {};
+	ref array<int> namedDay = {};
+	ref array<float> namedDays = {};
+	ref array<string> namedWhere = {};
+	ref array<float> namedX = {};
+	ref array<float> namedZ = {};
+	ref array<bool> namedWalkout = {};
+	int walkouts;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -707,4 +771,5 @@ class RZ_TribesSave
 	ref array<ref RZ_TribeSave> rovers = {};
 	ref array<ref RZ_BorderSave> borders = {};
 	ref RZ_TribeLifeSave life;
+	ref RZ_TribePeopleSave people;
 }

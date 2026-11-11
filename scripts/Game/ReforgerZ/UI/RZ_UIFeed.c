@@ -86,6 +86,7 @@ class RZ_UIFeed
 	static const int PAYLOAD_DETAIL = 10;	// one journal row's detail, asked when it's selected (BuildDetail)
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)
+	static const int TRIBE_ID_BASE = 200000;	// the packs' rows (what you know of them): -(base + pack id)
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;
@@ -593,6 +594,7 @@ class RZ_UIFeed
 
 		s += BuildQuestlines(playerId, ent, from);
 		s += BuildErrands(playerId, ent, from);
+		s += BuildInfected(playerId, ent, from);
 
 		array<ref RZ_UIClue> clues;
 		if (m_mClues.Find(playerId, clues))
@@ -641,6 +643,38 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The packs this character knows of (docs/INFECTED.md, Knowing), as journal records: the place as
+	//! the title, the level as "by", a rough area, the names heard under the place. Journal text only;
+	//! the map's range rings are planned.
+	protected string BuildInfected(int playerId, IEntity ent, vector from)
+	{
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (!tribes || !tribes.GetPeople().IsOn())
+			return "";
+
+		array<int> ids = {};
+		array<string> titles = {};
+		array<string> bys = {};
+		array<vector> wheres = {};
+		array<string> briefs = {};
+		tribes.GetPeople().JournalFor(playerId, from, ids, titles, bys, wheres, briefs);
+		string s = "";
+		foreach (int i, int tribe : ids)
+		{
+			string dir = "";
+			if (ent && wheres[i] != vector.Zero)
+				dir = RZ_Util.DirectionText(from, wheres[i]);
+
+			RZ_UILine ln = new RZ_UILine("M");
+			ln.AddInt(-(TRIBE_ID_BASE + tribe)).AddInt(RZ_EMissionKindUI.EVENT).AddInt(-1).Add(titles[i]).Add(bys[i]).Add(titles[i]).Add(dir);
+			ln.AddInt(-1).Add("").AddInt(0).AddInt(0).Add(briefs[i]).Add("0");
+			s += ln.End();
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One journal row's detail, sent when the row is selected (at most 1,500 characters, so the
 	//! list's 6,000 is never cut for it): D|id|what they told you|what you've found|who it went to.
 	string BuildDetail(int playerId, int id)
@@ -648,7 +682,24 @@ class RZ_UIFeed
 		string told = "";
 		string found = "";
 		string went = "";
-		if (id <= -ERRAND_ID_BASE && m_GM.GetErrands())
+		if (id <= -TRIBE_ID_BASE)
+		{
+			RZ_Tribes tribes = m_GM.GetTribes();
+			array<int> tids = {};
+			array<string> ttitles = {};
+			array<string> tbys = {};
+			array<vector> twheres = {};
+			array<string> tbriefs = {};
+			if (tribes)
+				tribes.GetPeople().JournalFor(playerId, vector.Zero, tids, ttitles, tbys, twheres, tbriefs);
+
+			int at = tids.Find(-id - TRIBE_ID_BASE);
+			if (at < 0)
+				return "";
+
+			told = tbriefs[at];
+		}
+		else if (id <= -ERRAND_ID_BASE && m_GM.GetErrands())
 		{
 			RZ_Errand e = m_GM.GetErrands().FindById(-id - ERRAND_ID_BASE);
 			if (!e || e.m_iAsker != playerId)

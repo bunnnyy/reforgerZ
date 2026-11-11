@@ -28,7 +28,7 @@ class RZ_Mission
 	vector m_vPos;
 
 	bool m_bContract = true;		// false = world event, open to everyone
-	bool m_bGlobal;					// no single location (Night of the Dead, Storm...)
+	bool m_bGlobal;					// no single location (Every Ridge Calls, Storm...)
 	bool m_bHasGiver = true;		// false = no faction pays (most world events)
 	RZ_EFaction m_eGiver = RZ_EFaction.SURVIVORS;
 	int m_iFameReward = 10;

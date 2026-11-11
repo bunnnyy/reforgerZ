@@ -254,7 +254,7 @@ class RZT_Prep
 		string prefab = PROP;
 		if (name == "RZ_Mission_BurnTheNest" || name == "RZ_Mission_SpecimenFromTheNest")
 			slot = "nest";
-		else if (name == "RZ_Mission_CrashSite" || name == "RZ_Event_CrashedHelicopter")
+		else if (name == "RZ_Mission_CrashSite")
 			slot = "heliwreck";
 		else if (name == "RZ_Mission_BanditDeadDrop")
 			slot = "deaddrop";

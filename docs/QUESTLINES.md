@@ -218,6 +218,11 @@ finished Walk Him Out.
 HC1 ended with the three weeks public (`weeks.public`), the houses don't trust the lab: brokering
 it needs Trusted with the Haven.
 
+**The packs** ✅ ([INFECTED.md](INFECTED.md#people)): each "walk on" feeds the nearest pack within
+2 km of the edge (a named young, a walk-out) instead of raising the town's infection. An ending that
+stops the walks (the lab road, the cut dose) leaves that pack hungry: +20 hunger, kept hungry for 2
+season days, so it tests the house's wire.
+
 | Ending | You get | The world |
 |---|---|---|
 | **The lab road** | Haven Fame +15, Halcyon Fame +15 | Research +2; Haven morale −4 when the first of the other two are written up (a headline names them, or numbers them if HC2 ended that way); a Haven–Halcyon truce starts if the rules allow; `walk.lab_road` |
@@ -520,7 +525,9 @@ people are stand-ins at each seat, and reaching the director needs Trusted, or K
 Tech or Doctor. Stage 5 is a wait that also waits out a final stand, then the raid or the walk-out as
 missions.
 The personal rewards ("Fame +15 with whoever you gave it to") are paid at the choice, within the
-engine's caps. It opens on `weeks.records`, which Patient Zero and Patient Zero's
+engine's caps. **The packs** ✅: the site stages (2 and 3) hold the pack whose ground takes in the
+site (its claim, so it doesn't move or split while they run), and its groups keep 150 m from the store
+(their data spots are pushed out, so bodies appear outside). It opens on `weeks.records`, which Patient Zero and Patient Zero's
 Ledger set when they're solved.
 
 **Needs:** Known with Halcyon. ★ Lab Tech, ★ Doctor, ★ Radio Op.

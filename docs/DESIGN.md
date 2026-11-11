@@ -214,7 +214,7 @@ Every update, for the infected the spawner tracks (groups and their members) wit
 - **Never lowered for infected that must keep coming:** every horde tied to a mission (the holds
   and waves, and most event and questline hordes), and everything within 1.5 km of the lab during
   the final stand. They keep their own factor. Three hordes are the exception, because staying out
-  of sight is the point there: Lead Them Away, The Clockwork Horde and the Horde Migration event.
+  of sight is the point there: Lead Them Away, The Clockwork Horde and The Tribe Moves event.
 - With the vanilla `SCR_AICombatComponent` on the infected, the factor is set as its multiplier.
   The AI's own update applies it on top of its alert state, and would overwrite a factor set
   straight on the perception. If that component has no vanilla utility AI behind it (a mod's own
@@ -952,7 +952,7 @@ settlements above 8). Names come from a seed; roster, positions and memories are
 - **Travel:** travel → rest (10–20 min at a safehouse, 3–8 min in a town) → somewhere new,
   0.6–3.5 km away. Routes never cross water or the quarantine line.
 - **They react to the world** (every 30 s): an overrun, loud or line-side destination is
-  dropped; a horde or noise nearby makes them hide; Night of the Dead or a storm makes them
+  dropped; a horde or noise nearby makes them hide; Every Ridge Calls or a storm makes them
   shelter. Rarely, an infected bites one: players within 1.5 km hear about it, the wanderer
   heads for a safehouse, and an antidote within 20 minutes saves them: a player chooses **Give
   them your antidote** (it takes the place of the Mechanic's "Ask about cars" while bitten).

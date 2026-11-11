@@ -606,7 +606,23 @@ class RZ_Checkpoints
 		if (disguise && disguise.WearsColours(playerId, RZ_EFaction.INSTITUTE))
 			toll = Math.Max(toll, base * 2);
 
+		// The night rate: one more on a road one of the crews in the woods hunts at night
+		if (!NightRate(playerId).IsEmpty())
+			toll++;
+
 		return toll;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Night rate. The Postmen are out." at night on a road a pack hunts at its hour, else "".
+	protected string NightRate(int playerId)
+	{
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (!ent || !tribes || !tribes.IsEnabled())
+			return "";
+
+		return tribes.GetPeople().NightRate(ent.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -992,6 +1008,7 @@ class RZ_Checkpoints
 		}
 
 		bool known = !armyColours && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN);
+		// The Wildcard tier pays danger money, and there's a night rate (TollFor)
 		int toll = TollFor(playerId);
 		if (!c.m_bWarned && dist <= m_Settings.m_fWarnRadius)
 		{
@@ -1001,7 +1018,7 @@ class RZ_Checkpoints
 			else if (claim)
 				disguise.ShowComing(playerId, RZ_EFaction.BANDITS, 2, PostKey(post), "", title);
 			else if (known)
-				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, string.Format("\"Toll road. %1 Favor and you're a friend. Walk up slow.\"", toll));
+				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, string.Format("\"Toll road. %1 Favor and you're a friend. Walk up slow.\" %2", toll, NightRate(playerId)).Trim());
 			else
 				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"This road's ours. Turn around. Come any closer and we start shooting.\"");
 		}

@@ -456,7 +456,11 @@ class RZ_Mission_ZombieBait : RZ_Mission
 		if (gm.GetHeat().GetHeat(m_vPos) < HEAT_NEEDED)
 			return;
 
-		gm.GetSpawner().SpawnHorde(m_vPos, 400);
+		// Within 2 km of a pack's ground, its hunters come (by day its walkers); else the town's own
+		bool pack = gm.GetTribes() && gm.GetTribes().GetPeople().PackComes(m_vPos, 2000);
+		if (!pack)
+			gm.GetSpawner().SpawnHorde(m_vPos, 400);
+
 		NotifyParticipants(gm, m_sTitle, "They heard it. A horde is coming. Get clear!");
 		m_eState = RZ_EMissionState.SUCCEEDED;
 	}

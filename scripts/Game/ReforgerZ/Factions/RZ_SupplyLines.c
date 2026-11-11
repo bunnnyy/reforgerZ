@@ -775,6 +775,15 @@ class RZ_SupplyLines
 		if (!DestinationOf(dest, destPos, destName))
 			return;
 
+		// The Haven truck waits for dawn when its road crosses a hungry pack's ground at night
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (f == RZ_EFaction.SURVIVORS && tribes && tribes.GetPeople().IsOn() && tribes.GetPhase() != RZ_ETribePhase.DAY && tribes.GetPeople().CrossesHungry(top.m_vPos, destPos))
+		{
+			m_aConvoyTo[f] = -1;
+			RZ_Log.Info(string.Format("Supply: the Haven truck for %1 waits for dawn: its road crosses a hungry pack's ground.", destName));
+			return;
+		}
+
 		RZ_SupplyTruck t = SpawnTruck(f, top, destPos);
 		if (!t)
 			return;
