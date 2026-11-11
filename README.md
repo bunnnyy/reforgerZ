@@ -84,7 +84,7 @@ and one way to end it: **research the cure.**
 
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
-That's about 126,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
+That's about 125,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
 was also checked against the base game's script source; the 58 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
