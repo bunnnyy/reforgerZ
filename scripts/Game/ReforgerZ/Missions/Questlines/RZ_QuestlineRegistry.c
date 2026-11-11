@@ -18,5 +18,6 @@ class RZ_QuestlineRegistry
 		// Unaligned groups
 		// The Long Table (World/RZ_LongTable.c; only in a season that has one)
 		q.Register(RZ_Quest_HouseWentQuiet);
+		q.Register(RZ_Quest_PlaceAtTable);
 	}
 }

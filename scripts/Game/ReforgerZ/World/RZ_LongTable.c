@@ -1233,6 +1233,14 @@ class RZ_LongTable
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The house was told where the dead are (A Place at the Table): less hungry for the living.
+	void Feed(float amount)
+	{
+		if (Exists() && amount > 0)
+			m_fHunger = Math.Max(0, m_fHunger - amount);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Suspicion rises (tells found, questlines' flags), capped at 100.
 	void AddSuspicion(float amount, string why)
 	{
@@ -1289,8 +1297,10 @@ class RZ_LongTable
 		if (TakeCrossing("table.bastion_knows") || TakeCrossing("cargo.bastion_knows"))
 			Expose(RZ_EFaction.MILITARY, -1);
 
-		// The proof from other lines starts the questline at "Who to tell"
-		if (q.WorldFlag("table.found_by_haven") > 0 || q.WorldFlag("list.found_by_haven") > 0 || q.WorldFlag("cargo.buyer_known") > 0)
+		// Other lines' finds start the questline: H1 at the guest stage, R2 and C2 at "Who to tell"
+		bool found = q.WorldFlag("table.found_by_haven") > 0 || q.WorldFlag("list.found_by_haven") > 0;
+		bool proof = q.WorldFlag("cargo.buyer_known") > 0 || q.WorldFlag("place.undercover") > 0 || q.WorldFlag("place.proof") > 0;
+		if (found || proof)
 			TryBeginC1();
 	}
 
