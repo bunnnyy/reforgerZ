@@ -28,13 +28,13 @@
 //! none runs after the cure.
 class RZ_Quest_Authors : RZ_Questline
 {
-	static const string KEY = "halcyon_authors";
-	static const string FLAG_BASTION_KEY = "halcyon_authors.bastion_key";	// set: Bastion holds a key to the clean room
-	static const string FLAG_GUARD = "halcyon_authors.guard";				// set: a Bastion group held the lab gate through the stand
-	static const string FLAG_OPEN = "halcyon_authors.open";				// set: the method went to the Haven's clinics for nothing
-	static const string FLAG_LEAD_FIRST = "halcyon_authors.lead_first";	// set: the field lead's name is first on the paper
-	static const string FLAG_BATCH_SOLD = "halcyon_authors.batch_sold";	// set: the boss paid for the batch
-	static const string FLAG_FORMULA_SOLD = "halcyon_authors.formula_sold";	// set: the method was sold to the Red Hand (stage 2)
+	static const string KEY = "authors";
+	static const string FLAG_BASTION_KEY = "authors.bastion_key";	// set: Bastion holds a key to the clean room
+	static const string FLAG_GUARD = "authors.guard";				// set: a Bastion group held the lab gate through the stand
+	static const string FLAG_OPEN = "authors.open";				// set: the method went to the Haven's clinics for nothing
+	static const string FLAG_LEAD_FIRST = "authors.lead_first";	// set: the field lead's name is first on the paper
+	static const string FLAG_BATCH_SOLD = "authors.batch_sold";	// set: the boss paid for the batch
+	static const string FLAG_FORMULA_SOLD = "authors.formula_sold";	// set: the method was sold to the Red Hand (stage 2)
 	// Read from B3 (The Last Pilot, Bastion): the faction the pilot flew for, Halcyon = the samples
 	static const string FLAG_PILOT = "pilot.flew_for";
 

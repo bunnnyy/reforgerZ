@@ -668,10 +668,10 @@ barracks there if there is one. Needs a lab, the note, a civilian and the puzzle
 
 | Ending | Branch | Consequences | Status |
 |---|---|---|---|
-| **In the record** | The director's | Halcyon morale +3, research +1; everyone who took part +4 Halcyon Fame; the field lead leaves her station (replaced; walked to a safehouse: +1 person there); a rumour (8 hours); `halcyon_three_weeks.record`, `halcyon_three_weeks.lead_left` | ✅ |
-| **Out on the open channel** | Public | Halcyon morale −10; a headline by who read it (and a quiet one if the raid wasn't held); the rumour "Halcyon made this" for 48 hours (the engine's longest); `halcyon_three_weeks.public` (H3's lab road is harder) | ✅ |
-| **Bastion's file** | Bastion's | Bastion strength +3; a headline and a rumour (12 hours); `halcyon_three_weeks.bastion` (Authors starts with Bastion's terms on the table) | ✅ |
-| *(any)* **She's at the lab** | caught at stage 3 | Research +2 at stage 3; a headline: the director spoke about her for two minutes on the open channel; `halcyon_three_weeks.captured` | ✅ |
+| **In the record** | The director's | Halcyon morale +3, research +1; everyone who took part +4 Halcyon Fame; the field lead leaves her station (replaced; walked to a safehouse: +1 person there); a rumour (8 hours); `weeks.record`, `weeks.lead_left` | ✅ |
+| **Out on the open channel** | Public | Halcyon morale −10; a headline by who read it (and a quiet one if the raid wasn't held); the rumour "Halcyon made this" for 48 hours (the engine's longest); `weeks.public` (H3's lab road is harder) | ✅ |
+| **Bastion's file** | Bastion's | Bastion strength +3; a headline and a rumour (12 hours); `weeks.bastion` (Authors starts with Bastion's terms on the table) | ✅ |
+| *(any)* **She's at the lab** | caught at stage 3 | Research +2 at stage 3; a headline: the director spoke about her for two minutes on the open channel; `weeks.captured` | ✅ |
 
 *Simplified:* the notebook is carried as data, not an item: anyone who was part of the story can
 hand it over at stage 4. The people at the seats are stand-ins (the duty officer, the adjutant,
@@ -701,12 +701,12 @@ Needs a lab, the note, a civilian and the puzzle object. Code:
 
 | Ending | Branch | Consequences | Status |
 |---|---|---|---|
-| **Named** | the names to the director | Everyone who took part +8 Haven and +8 Halcyon Fame; Haven morale +5; the headline "The lab put fourteen names on its paper last night. The Haven read them at supper." (the number is generated); a Haven–Halcyon truce if faction life allows one now (only then a rumour says so); `halcyon_other_two.named` | ✅ |
-| **Brought home** | the names to the Haven | Everyone +10 Haven Fame; Halcyon morale −3; a headline that says what became of the room; `halcyon_other_two.haven_names` | ✅ |
-| **The work goes on** | numbers (also when nobody names them in time) | Everyone +5 Halcyon Fame; research +2; Haven morale −3; a quiet headline; `halcyon_other_two.numbers` (H3's headline gives numbers) | ✅ |
-| **Sold** | stage 4 | A headline about something new in the Red Hand's pit; 35% the Haven finds out: +15 Haven Infamy for whoever sold (the engine's cap; the design says 25); `halcyon_other_two.sold` | ✅ |
+| **Named** | the names to the director | Everyone who took part +8 Haven and +8 Halcyon Fame; Haven morale +5; the headline "The lab put fourteen names on its paper last night. The Haven read them at supper." (the number is generated); a Haven–Halcyon truce if faction life allows one now (only then a rumour says so); `other_two.named` | ✅ |
+| **Brought home** | the names to the Haven | Everyone +10 Haven Fame; Halcyon morale −3; a headline that says what became of the room; `other_two.haven_names` | ✅ |
+| **The work goes on** | numbers (also when nobody names them in time) | Everyone +5 Halcyon Fame; research +2; Haven morale −3; a quiet headline; `other_two.numbers` (H3's headline gives numbers) | ✅ |
+| **Sold** | stage 4 | A headline about something new in the Red Hand's pit; 35% the Haven finds out: +15 Haven Infamy for whoever sold (the engine's cap; the design says 25); `other_two.sold` | ✅ |
 
-Every ending also sets `halcyon_other_two.ward` (1 closed, 2 moved to the lab, 3 kept, 4 sold from,
+Every ending also sets `other_two.ward` (1 closed, 2 moved to the lab, 3 kept, 4 sold from,
 5 gone with the field lead) and spreads a rumour (8 hours); reported, the field lead is replaced.
 
 *Simplified:* the people are stand-ins, and the brother is a standing figure until he's walked
@@ -738,13 +738,13 @@ run after the cure. It holds Halcyon's questline slot until the stand. Code:
 
 | Ending | Branch | Consequences | Status |
 |---|---|---|---|
-| **The Red Hand's batch** | took the money | Whoever took it: +10 Red Hand Fame, +15 Halcyon Infamy (the engine's caps); Halcyon morale −10; a headline that says what happened (stolen, held, or lost to the infected); `halcyon_authors.batch_sold` | ✅ |
-| **Under Bastion's guard** | agreed or bargained | Everyone who took part +10 Bastion and +10 Halcyon Fame; Bastion strength +3; Haven morale −3; a headline (a key in the CO's pocket, or two guards and no key; the squad at the gate only if one stood there); `halcyon_authors.bastion_key` (agreed), `halcyon_authors.guard` (a squad held the gate) | ✅ |
-| **Open doors** | the method reached the clinic, and nobody reported her | Everyone +10 Halcyon and +10 Haven Fame; infection −3 in every safehouse town (as Leak the Data); a headline: the field lead's name is first on the paper; `halcyon_authors.open`, `halcyon_authors.lead_first` | ✅ |
+| **The Red Hand's batch** | took the money | Whoever took it: +10 Red Hand Fame, +15 Halcyon Infamy (the engine's caps); Halcyon morale −10; a headline that says what happened (stolen, held, or lost to the infected); `authors.batch_sold` | ✅ |
+| **Under Bastion's guard** | agreed or bargained | Everyone who took part +10 Bastion and +10 Halcyon Fame; Bastion strength +3; Haven morale −3; a headline (a key in the CO's pocket, or two guards and no key; the squad at the gate only if one stood there); `authors.bastion_key` (agreed), `authors.guard` (a squad held the gate) | ✅ |
+| **Open doors** | the method reached the clinic, and nobody reported her | Everyone +10 Halcyon and +10 Haven Fame; infection −3 in every safehouse town (as Leak the Data); a headline: the field lead's name is first on the paper; `authors.open`, `authors.lead_first` | ✅ |
 | **The lab alone** | anything else | Everyone +10 Halcyon Fame; a headline on how the stand went | ✅ |
 
 The endings are taken in that order. Each tells those who took part who stood at the lab (up to
-four names). Sold at stage 2: `halcyon_authors.formula_sold`.
+four names). Sold at stage 2: `authors.formula_sold`.
 
 *Simplified:* the letter and the cold case are carried as data. "A Bastion checkpoint goes up on
 the lab's road" is a Bastion group on that road during the stand, not a road post. Fame +25 and
