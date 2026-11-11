@@ -79,7 +79,7 @@ Write conservatively:
 - Run `tools/compile_check.sh` before committing script changes: it compiles everything on the
   Linux dedicated server and must exit 0 with no ReforgerZ errors or warnings.
 - Script folders are lowercase `scripts/` (the Linux server is case-sensitive).
-- After changes to missions or cross-system logic, run `tools/runtime_test/run.sh` (about an hour)
+- After changes to missions or cross-system logic, run `tools/runtime_test/run.sh` (60–90 min)
   and fix any script exception it reports.
 
 ## Design guardrails (agreed with the author)

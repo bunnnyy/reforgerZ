@@ -3,7 +3,7 @@
 //! Long Table (World/RZ_LongTable.c), and never described: the writing stays on the boots, the
 //! names, the jars.
 //!
-//! 0. Somebody noticed (wait, none): routes in. table.found_by_haven (H1): to stage 2.
+//! 0. Somebody noticed (wait, none): routes in. list.found_table (H1): to stage 2.
 //!    cargo.buyer_known (R2), place.undercover or place.proof (C2): the proof is done, stage 4.
 //!    The house found out by everyone: stage 4.
 //! 1. Never arrived: the last road of someone who never arrived (a boot on the verge, a satchel
@@ -236,16 +236,17 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 
 		RZ_Questlines q = gm.GetQuestlines();
 		bool noticed = t.GetSuspicion() >= 30 && t.WasHeard();
-		bool crossing = q.WorldFlag("table.found_by_haven") > 0 || q.WorldFlag("list.found_by_haven") > 0 || ProofFromCrossing(gm);
+		bool crossing = q.WorldFlag("list.found_table") > 0 || ProofFromCrossing(gm);
 		if (!noticed && !crossing && !t.IsExposed())
 			return false;
 
-		// Who never arrived: the house's last, or (none yet) somebody the road remembers
+		// Who never arrived: the house's last, or (none yet, or H2's exile, who came by van with
+		// nothing, so left no trail) somebody the road remembers
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		string lost = t.GetLostName();
 		string from = t.GetLostFrom();
 		string dest = t.GetLostTo();
-		if (lost.IsEmpty())
+		if (lost.IsEmpty() || t.GetLostRole() == RZ_LongTable.ROLE_NO_BAG)
 		{
 			lost = "A Haven runner called " + RZ_NoteText.FirstName(rng);
 			from = NearOther(gm, t.GetHousePos(), t.GetSettlement());
@@ -286,7 +287,7 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 	override void OnBegin(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		RZ_Questlines q = gm.GetQuestlines();
-		bool routed = ProofFromCrossing(gm) || Table(gm).IsExposed() || q.WorldFlag("table.found_by_haven") > 0 || q.WorldFlag("list.found_by_haven") > 0;
+		bool routed = ProofFromCrossing(gm) || Table(gm).IsExposed() || q.WorldFlag("list.found_table") > 0;
 		if (!routed)
 			run.Note("{lost} left {from} for {to} and never got there. Their road runs past a farm past {town}, the one with smoke in the chimney.");
 	}
@@ -399,7 +400,7 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 				}
 
 				RZ_Questlines q = gm.GetQuestlines();
-				if (q.WorldFlag("table.found_by_haven") > 0 || q.WorldFlag("list.found_by_haven") > 0)
+				if (q.WorldFlag("list.found_table") > 0)
 				{
 					run.SetFlag("from_haven", 1);
 					return S_GUEST;
@@ -1091,7 +1092,7 @@ class RZ_QM_TableProof : RZ_QM_TableBase
 		m_vHouse = t.GetHousePos();
 		m_vBoy = LandPointNear(m_vHouse, 160, 220);
 		string last = "the last one is from three days ago";
-		if (!t.GetLostName().IsEmpty())
+		if (!t.GetLostName().IsEmpty() && t.GetLostRole() != RZ_LongTable.ROLE_NO_BAG)
 			last = "the last one is " + t.ShortLost();
 
 		m_iBook = AddClue("The guestbook", QFill(gm, "The guestbook, on a shelf by the door. Every guest has signed it, in pencil, in ink, in a child's capitals. Some names have a date beside them and a small cross, the way the Haven's List does it. ") + RZ_Util.Capitalize(last) + ".");

@@ -100,6 +100,9 @@ modded class RZ_GameModeComponent
 	protected int m_iRZTQuestMissionSec;
 	protected int m_iRZTQuestEnded;
 	protected int m_iRZTQuestStages;
+	protected bool m_bRZTDeathTest;
+	protected int m_iRZTDeadFor;
+	protected int m_iRZTDeaths;
 	protected int m_iRZTDoneAt;
 
 	override void NotifyPlayer(int playerId, string title, string text)
@@ -161,10 +164,10 @@ modded class RZ_GameModeComponent
 			q.RZT_Keys(m_aRZTQuestKeys);
 			Print(string.Format("RZT questlines: %1 registered", m_aRZTQuestKeys.Count()));
 		}
-		if (m_iRZTQuest < 0 || m_iRZTQuestSec > 360)
+		if (m_iRZTQuest < 0 || m_iRZTQuestSec > 900)
 		{
 			if (m_iRZTQuest >= 0)
-				Print(string.Format("RZT quest %1 STUCK at stage %2 after 6 min", m_aRZTQuestKeys[m_iRZTQuest], m_iRZTQuestStage));
+				Print(string.Format("RZT quest %1 STUCK at stage %2 after 15 min", m_aRZTQuestKeys[m_iRZTQuest], m_iRZTQuestStage));
 			m_iRZTQuest++;
 			m_iRZTQuestSec = 0;
 			m_iRZTQuestStage = -2;
@@ -212,6 +215,7 @@ modded class RZ_GameModeComponent
 			// Waiting: move the clocks back so the wait is over (test only)
 			run.m_fStageAt = run.m_fStageAt - 1800;
 			run.m_iStageUnix = run.m_iStageUnix - 43200;
+			run.m_fNextTry = 0;
 			m_iRZTQuestMission = -1;
 			return;
 		}
@@ -238,6 +242,19 @@ modded class RZ_GameModeComponent
 	void RZT_Tick()
 	{
 		m_iRZTSec++;
+		if (m_iRZTSec > 5 && !m_bRZTDeathTest && RZT_Fake.s_Ent && !RZ_Util.IsCharacterAlive(RZT_Fake.s_Ent))
+		{
+			m_iRZTDeadFor++;
+			if (m_iRZTDeadFor >= 5)
+			{
+				m_iRZTDeadFor = 0;
+				m_iRZTDeaths++;
+				vector at = RZT_Fake.s_Ent.GetOrigin();
+				Print(string.Format("RZT fake player died at %1 (death %2); respawning", at, m_iRZTDeaths));
+				IEntity again = RZT_Fake.Spawn(m_aRZTRoute[0]);
+				HandlePlayerSpawned(RZT_Fake.ID, again);
+			}
+		}
 		if (m_iRZTSec == 3)
 		{
 			IEntity e = RZT_Fake.Spawn(m_aRZTRoute[0]);
@@ -280,6 +297,7 @@ modded class RZ_GameModeComponent
 		}
 		if (rel == 20 * 17 + 60)
 		{
+			m_bRZTDeathTest = true;
 			RZT_Fake.MoveTo(Vector(110, 0, 2000));
 			Print("RZT moved into the Perimeter kill zone");
 		}

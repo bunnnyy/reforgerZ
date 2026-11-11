@@ -260,6 +260,8 @@ class RZ_LongTable
 	protected static const float TELL_SUSPICION = 5;
 	protected static const float RUMOUR_SUSPICION = 30;
 	protected static const float MOVE_SUSPICION = 80;
+	protected static const float LIST_READ_SUSPICION = 30;	// H1's The names read (list.read)
+	static const int ROLE_NO_BAG = -2;			// Taken: H2's exile, with nothing to carry (no satchel, no trail)
 	protected static const int SHOT_INFAMY = 6;
 	protected static const int FAMILY_HAVEN_INFAMY = 40;
 	protected static const int FAMILY_BASTION_INFAMY = 20;
@@ -374,6 +376,27 @@ class RZ_LongTable
 	{
 		return m_eState == RZ_ETableState.EXPOSED;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The farm the Haven sent its mouths to (H1 The List): the house's first farm, if it hasn't
+	//! moved, as a settlement index; -1 in a season without one or once it has moved away.
+	int MouthsFarm()
+	{
+		if (m_eState == RZ_ETableState.NONE || m_bMoved)
+			return -1;
+
+		return m_iSettlement;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Somebody still lives at the farm outside settlement idx (open or found out, not moving).
+	bool LivesAt(int idx)
+	{
+		return IsOpen() && idx >= 0 && idx == m_iSettlement;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool WasBurnt() { return m_bBurnt; }
 
 	//------------------------------------------------------------------------------------------------
 	//! "Levie", the settlement the farm is past.
@@ -1287,30 +1310,25 @@ class RZ_LongTable
 		if (TakeCrossing("table.supplier_cut") || TakeCrossing("cargo.supplier_cut"))
 			m_bSlowed = true;
 
-		// H2 The Price of the Door: the exile the crew sold on is one of the people who never arrived
-		if (TakeCrossing("cargo.exile") && m_eState == RZ_ETableState.ACTIVE)
+		// H2 The Price of the Door: the exile walked to the crew is one of the people who never
+		// arrived. Only the flag crosses, not his name or his house, so he's spoken of as H2 tells
+		// him: the man the Haven put out for taking bread. He had nothing to carry (no satchel).
+		if (TakeCrossing("door.exile_sold") && m_eState == RZ_ETableState.ACTIVE)
 		{
-			RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
-			string exile = ManName(rng);
-			string town = GetTownName();
-			RZ_Safehouses houses = m_GM.GetSafehouses();
-			RZ_Safehouse h;
-			if (houses)
-				h = houses.Get(houses.FindNearest(m_vHouse));
-
-			if (h)
-				town = h.m_sName;
-
-			Taken(exile, town, "wherever the Red Hand's van was going", vector.Zero, -1,
-				string.Format("%1, put out of the safehouse in %2 for stealing from the stores, went off in a Red Hand van. Nobody has seen him since.", exile, town));
+			Taken("the man who took bread", "the Haven", "wherever the Red Hand's van was going", vector.Zero, ROLE_NO_BAG,
+				"The man the Haven put out for taking bread was walked to a Red Hand crew, and went off in their van. Nobody has seen him since.");
 		}
+
+		// H1 The List, The names read: every house heard the crossed-out names, the farm's too
+		if (TakeCrossing("list.read"))
+			AddSuspicion(LIST_READ_SUSPICION, "the List was read out");
 
 		// R2's Bastion raid: Bastion knows the farm
 		if (TakeCrossing("table.bastion_knows") || TakeCrossing("cargo.bastion_knows"))
 			Expose(RZ_EFaction.MILITARY, -1);
 
 		// Other lines' finds start the questline: H1 at the guest stage, R2 and C2 at "Who to tell"
-		bool found = q.WorldFlag("table.found_by_haven") > 0 || q.WorldFlag("list.found_by_haven") > 0;
+		bool found = q.WorldFlag("list.found_table") > 0;
 		bool proof = q.WorldFlag("cargo.buyer_known") > 0 || q.WorldFlag("place.undercover") > 0 || q.WorldFlag("place.proof") > 0;
 		if (found || proof)
 			TryBeginC1();
@@ -1429,7 +1447,7 @@ class RZ_LongTable
 		NotifyHaven(text + " Somebody has stopped waiting up.");
 
 		// Couriers and traders carry bags: the satchel turns up at a Red Hand fence
-		if (role == RZ_EWandererRole.COURIER || role == RZ_EWandererRole.TRADER || Math.RandomFloat01() < 0.3)
+		if (role == RZ_EWandererRole.COURIER || role == RZ_EWandererRole.TRADER || (role != ROLE_NO_BAG && Math.RandomFloat01() < 0.3))
 			Satchel(who);
 
 		Publish();
@@ -2371,6 +2389,10 @@ class RZ_LongTable
 		if (m_eState == RZ_ETableState.EXPOSED && Math.RandomFloat01() < 0.5)
 		{
 			line = string.Format("\"Everyone knows about the farm past %1 now. I keep thinking about the bowls. They set one for everybody.\"", GetTownName());
+		}
+		else if (recent && m_iLostRole == ROLE_NO_BAG && Math.RandomFloat01() < 0.5)
+		{
+			line = string.Format("\"The Haven put a man out for taking bread, and a Red Hand crew drove him off in a van. Nobody's seen him since. That van goes out past %1 at night, toward the farm with the smoke.\"", GetTownName());
 		}
 		else if (recent && Math.RandomFloat01() < 0.5)
 		{

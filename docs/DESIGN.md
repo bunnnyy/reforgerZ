@@ -572,14 +572,17 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md
   within 600 m, not the Kid, not bitten, held or escorted) whose straight route passes within
   1.5 km of the farm, at most one a real day; else someone who walked out of a hungry safehouse
   alone in the last six hours (upkeep's leavers who found no other house). Never from a safehouse
-  or a holding, never a player. H2's sold exile (`cargo.exile`) is one more. Each lowers hunger by
+  or a holding, never a player. H2's exile walked to the crew (`door.exile_sold`) is one more,
+  spoken of as "the man the Haven put out for taking bread" (only the flag crosses, not his name;
+  no satchel, and C1 doesn't follow his road). Each lowers hunger by
   40, raises suspicion by 10 and leaves its tells: *"never arrived"* in the news (a quiet headline;
   Haven-Known players are told; not a death, though the roster replaces the wanderer a real day
   later as it does the dead), a boot on the verge where they were last seen (a note prop while a
   player is within 150 m, for two real days), and for a courier or a trader (else 30% of the time)
   their satchel at a Red Hand fence (the Red Hand's open channel laughs about it; a rumour).
 - **Suspicion** also rises with tells found (+5 a boot, +2 the boots by the door at a first meal,
-  +15 the guest rule) and with other questlines' flag `table.suspicion_add`. Wanderers talk about
+  +15 the guest rule), +30 once H1 reads the List out (`list.read`), and with other questlines'
+  flag `table.suspicion_add`. Wanderers talk about
   anyone who never arrived in the last three real days (half the time); at 30 the rumours start
   too (*"There's smoke past Levie most evenings. Nobody lives out there. Nobody should."*), and
   someone who hears either from a wanderer, or finds a boot, then starts

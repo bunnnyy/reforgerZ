@@ -109,7 +109,7 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 18 | The Informant | Trusted, Watched+ by the Red Hand | 🔒 not Police/Soldier | Pose as a buyer at a Red Hand dead drop and report who shows up | Fame; the Red Hand loses a little strength (+10 Red Hand Infamy for the buyer the moment he's spotted, even if the names never arrive) | ✅ *wait 60 s for the seller, buy, then reach any safehouse; spotted 20%, +30% carrying a gun* |
 | 19 | Recover the Bus | Champion | ★ Mechanic: tunes it to half a tank | Get a bus or truck running and drive it to a safehouse | Fame | ✅ *it starts with a splash of fuel; any bus, truck or van counts, also after the depot's bus is wrecked; the Haven keeps it (it leaves the world)* |
 | 20 | Memorial | Champion | | Collect ID tags of the dead from an overrun city | Fame | ✅ *five bodies, 8 s each, then any safehouse; the bodies are the corpse pile prop (else the puzzle object), and it never appears without either* |
-| 21 | The List | Known, a safehouse | ★ Police/Elder: more Fame; the list says when the line was drawn | A name is crossed off a safehouse's list. Read the list and talk to a council member, and they point somewhere: a cairn at the edge of town (walked out after a bite), a bedroll on the road out (put out by the council), a packed bag at a landmark (left on their own), or the person, alive in another town. Then **tell the family**, **tell the council** or **keep it quiet** | Family: Fame (+3 Haven Infamy if the council put them out; alive: the family goes after them, the safehouse is one fewer). Council: 75%. Quiet: 40% | ✅ *one of the four truths at random; the living one is a Haven wanderer when one is free (they remember a council told, or a secret kept), else a generated person. Only a player the job is open to can choose. Code: `Missions/Haven/RZ_HavenLoreMissions.c`* |
+| 21 | The List | Known, a safehouse | ★ Police/Elder: more Fame; the list says when the line was drawn | A name is crossed off a safehouse's list. Read the list and talk to a council member, and they point somewhere: a cairn at the edge of town (walked out after a bite), a bedroll on the road out (put out by the council), a packed bag at a landmark (left on their own), or the person, alive in another town. Then **tell the family**, **tell the council** or **keep it quiet** | Family: Fame (+3 Haven Infamy if the council put them out; alive: the family goes after them, the safehouse is one fewer). Council: 75%. Quiet: 40% | ✅ *one of the four truths at random; the living one is a Haven wanderer when one is free (they remember a council told, or a secret kept), else a generated person. Only a player the job is open to can choose. Done, it can open the questline [The List](#the-list-the-haven) (who crosses names out, and why). Code: `Missions/Haven/RZ_HavenLoreMissions.c`* |
 
 **Amends:** Medicine Run and Survivors Trapped work off Haven Infamy while you're Watched.
 
@@ -337,9 +337,9 @@ They need at least one safehouse. Code: `Missions/Haven/RZ_HavenHouseMissions.c`
 
 | # | Contract | From | Needs | Bg | What you do | Result | Status |
 |---|---|---|---|---|---|---|---|
-| 1 | Walk Him Out | Haven | Known, dusk | ★ Nurse: reads the bite; ★ Nurse/Elder: more Fame | A bitten member declared it himself. At dusk he waits at the edge of town. **End it here** or **let him walk on** | End it: Fame. Walk on: 60% Fame, town infection +5. Nobody comes in 40 min: he turns | ✅ *he waits rather than walking with you; only a player the job is open to can choose* |
+| 1 | Walk Him Out | Haven | Known, dusk | ★ Nurse: reads the bite; ★ Nurse/Elder: more Fame | A bitten member declared it himself. At dusk he waits at the edge of town. **End it here** or **let him walk on** | End it: Fame. Walk on: 60% Fame, town infection +5. Nobody comes in 40 min: he turns | ✅ *he waits rather than walking with you; only a player the job is open to can choose. Done, it can open the questline [The Edge of Town](#the-edge-of-town-the-haven), whose first and fifth stages are this contract* |
 | 2 | The Ledger | Haven | Known | ★ Elder: more Fame | A member has been taking extra from the stores. **Threaten** them, **pay their debt** (20 Haven Favor), or **tell them to disappear** | Threaten or pay: Fame. Warn off: no pay, +3 Haven Infamy. They remember you | ✅ *only a player the job is open to can choose (checked before the Favor is spent)* |
-| 3 | A Quiet Arrangement | Red Hand | Known | ★ Ex-Con: lookouts spot you at 25 m | A safehouse keeper pays the Red Hand to be left alone. Carry the envelope to a Red Hand drop without being seen by two Haven lookouts or a wanderer | Small Red Hand Fame, Favor. Seen: +12 Haven Infamy at once. Never delivered: the safehouse loses 2 people | ✅ *the lookouts are props* |
+| 3 | A Quiet Arrangement | Red Hand | Known | ★ Ex-Con: lookouts spot you at 25 m | A safehouse keeper pays the Red Hand to be left alone. Carry the envelope to a Red Hand drop without being seen by two Haven lookouts or a wanderer | Small Red Hand Fame, Favor. Seen: +12 Haven Infamy at once. Never delivered: the safehouse loses 2 people | ✅ *the lookouts are props; the first stage of [The Price of the Door](#the-price-of-the-door-the-haven-or-the-red-hand) is this walk* |
 | – | Letters (the Courier's job) | Haven, via a Courier wanderer | Any | | Carry letters to a safehouse or quiet town 0.8–4 km away | Small Haven Fame, Favor: only the one who asked, and anyone with them at the drop (taking the letters off them pays nobody) | ✅ |
 
 ## Leader missions
@@ -447,6 +447,102 @@ all picked at the start. Code: `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c
 *Simplified:* the storekeeper, the runner and the crate are standing props with talk, choice and
 use actions; only the optional lookouts are AI. The sick girl is in the text, not in the world.
 
+### The List (the Haven)
+
+Who crosses names off the Haven's lists, and why ([QUESTLINES.md](QUESTLINES.md#h1-the-list)). One
+crossed-out name is the contract The List (Haven #21); this questline opens once that has been done
+this season (its council head asks, if they're free to), or once a safehouse has gone hungry or lost
+people lately. Needs two safehouses, an Independent or Rogue council head, a farm past the last
+village (a small place far from every safehouse, held by nobody) and the note, the object and the
+civilian. Text keys: the council head who asks and their house, the chair (the Haven's stronghold
+leader), the wife and her husband, the farm. Code:
+`Missions/Questlines/Haven/RZ_Quest_TheList.c`; pieces shared by the Haven's questlines in
+`RZ_HavenQuestHelp.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **Find the husband** | Haven contract, Known, ★ Police (grids on the trail), ★ Radio Op; 60 min; 10 Fame, 10 Favor | His wife at the safehouse; his note in the town he went to, his pack in a second town, and in a third him (half the time: *bring him home*, +1 person) or his last letter. Each place shows its clue once the one before was read. *Bribe*: talk to a Scavenger wanderer with a food item on you, and he sells the last sighting (the end of the trail). ★ Radio Op: talking to the wife gives the same grid (his last call) | Stage 2 (him home is proof at stage 6). Time up: once more, then stage 2 without him | ✅ |
+| 2 | **Three copies of the List** | Haven contract, Known, ★ Elder; 90 min; 12 Fame, 12 Favor | The asking house's list is the first copy. At each other safehouse: *talk* to its council head (Merciful: yes; Loyal: only if you're Trusted, or a Known ★ Elder; Paranoid: never; the rest: Known; the chair: no, and now knows someone's asking); *sneak*: read the list in its stores after dark, past two lookouts (within 18 m or noticed: +8 Haven Infamy and "stolen", the copy still counts); *bribe*: leave 3 food for its stores. *Side with the Red Hand*: the nearest crew's tally man sells their list of strays for 15 Red Hand Favor (+3 Red Hand Fame) | Three copies (fewer on a map without the houses): stage 3. Copies are kept, so a retry keeps them. Time up: once more, then stage 3 with what you have | ✅ |
+| 3 | **Read the pattern** | Haven contract, Known, ★ Elder/Police (the method spelled out, more Fame); 60 min; 12 Fame, 10 Favor | At the asking house, the copies side by side and its ration notes: the day crossed out in every house, and the portions that went that day, name the farm. Choose one of three places; wrong is 5 minutes' wait; twice wrong, or fewer than three copies, is half the truth ("a farm out that way"). *Talk* to the chair while Trusted: half the story (the farm itself) and a request to stop | Stage 4. Time up: once more, then half the truth | ✅ |
+| 4 | **Go and look** | Haven contract, Known; 60 min; 12 Fame, 10 Favor | An empty farm, 3 to 5 infected about. *Look round*: stand 10 s at each of three places (nine graves, ten names). *Leave and report* from the gate. With half the truth the farm is a rough area, not a spot. In a season with the [Long Table](REPUTATION.md#the-long-table) its house is the farm (unless it moved before this began): within 200 m, somebody lives there (`list.found_table`: [The House That Went Quiet](#the-house-that-went-quiet-the-long-table) begins at its guest stage, and the family has noticed you); if the family has gone, 60 m finds the long table left laid, or burnt | Stage 5, either way (after two tries without anyone going) | ✅ *at the Long Table's farm there's nothing to look round: getting there is the finding, and the meal is the house's own* |
+| 5 | **Someone's been asking** | Wait | 2 hours of play; a rumour and a quiet headline. The chair has a word for anyone who took part | Stage 6 | ✅ |
+| 6 | **The chair's decision** | Haven contract, Known, ★ Elder; 60 min; 10 Fame, 10 Favor; in the chair's voice | The copies on a table at the chair's seat. *Read it out* (Trusted, a ★ Elder who is Known, or Known with the husband home; Known once B2's `census.refused` is set), then hold the gate on the road in for 3 minutes while the bells bring two waves (the reader: +10 Haven Fame, 30 Favor). *Give the copies to the chair* (+5 Haven Fame, 20 Favor). *Side with Bastion*: carry them to the nearest Bastion seat within 6 km (+10 Bastion Fame and +15 Haven Infamy, then +5 Bastion Fame and 30 Favor; exiles online take +5 Bastion Infamy, as Names for Bastion). *Side with the Red Hand*: sell them to the nearest crew (+10 Red Hand Fame, 40 Favor; one time in five the houses find out: +15 Haven Infamy); with stage 2's Red Hand copy, a runner meets you just outside town. Either road passes two of the house's lookouts (one with the Red Hand copy): seen within 35 m, or by a Haven wanderer, and the copies are taken back (+8 Haven Infamy) | The ending | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **The names read** | Read out | Haven morale −8; everyone who took part +10 Haven Fame, and the council head who asked remembers them as having saved them; the council head whose house crossed out the most names leaves the chair (if it's still the same person); `list.read` (the Long Table's suspicion +30). A headline and a rumour (8 hours) | ✅ |
+| **Buried** | The copies to the chair, taken back by the lookouts, or nobody chose | Everyone who took part +5 Haven Fame, and the chair remembers them as having helped; `list.buried`. A quiet headline and a rumour | ✅ |
+| **The census** | To Bastion | Haven morale −10; `list.to_bastion` (B2 starts at its stage 3). A headline and a rumour | ✅ |
+| **Sold** | To the Red Hand | `list.to_redhand` (R2); found out: `list.sold_known` and a headline, otherwise a quiet one. A rumour | ✅ *the exile-leak chance isn't raised: `list.to_redhand` is published for it* |
+
+*Simplified:* the council heads and the chair are the real leaders, talked to as usual; the wife,
+the husband, the stores, the lookouts, the tally man and the copies are props, and the farm's
+people are only in the text (at the Long Table's farm, the family are the house's own people).
+Choices the design marks *(you)* are kept as season-wide flags and in who took part, not per life.
+
+### The Price of the Door (the Haven, or the Red Hand)
+
+A safehouse pays the Red Hand to be left alone, and this month the price is a man
+([QUESTLINES.md](QUESTLINES.md#h2-the-price-of-the-door)). Stage 1 is A Quiet Arrangement's walk
+(Haven house contract 3), with its lookouts. Needs a safehouse under pressure (hungry, or it has
+lost people lately; not the chair's house, not one at the Preacher's prayers) with a Red Hand crew
+within 6 km, and the note, the object and the civilian. Half the time it's the Haven's version (its
+council head, if Independent or Rogue, asks), else the Red Hand's (the crew boss asks): they differ
+in who gives stages 1, 2 and the tins. Text keys: the house, its council head, the crew boss, the
+exile and the town by his barn. Code: `Missions/Questlines/Haven/RZ_Quest_PriceOfTheDoor.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **Carry the envelope** | The version's contract (Haven or Red Hand), Known, ★ Ex-Con; 45 min; 8 Fame, 15 Favor | Under the loose board by the door: *take it sealed*, *sneak*: open it first (the exile's name and grid, `door.knows`), or *leave it* (refused, no pay). Two of the house's lookouts on the way to the crew's drop (150–250 m outside the crew boss's seat): within 35 m (25 m ★ Ex-Con), or a Haven wanderer near, +12 Haven Infamy. Only the carrier hands it over | Delivered (`door.paid`): stage 2. Refused or time up: stage 3 | ✅ |
+| 2 | **The man at the grid** | The version's contract, Known; 60 min; 12 Fame, 12 Favor | The exile in a barn outside a town 0.8–3 km away, an escort (a figure, or the survivor group). *Talk*: warn him (he takes to the roads as a new wanderer if the roster has room; `door.exile_warned`). *Talk*: bring him back to plead (he follows you to the house; `door.exile_home`). *Betray*: walk him to the crew's drop past two lookouts (seen within 35 m, or a Haven wanderer near him: +15 Haven Infamy; `door.exile_sold`). The Haven pays for warning him or bringing him home, the Red Hand for walking him over; the other side's choices pay nothing (warning him for the Red Hand: +3 Haven Fame, +5 Red Hand Infamy; walking him over for the Haven: +5 Red Hand Fame). Time up: the crew found him | The talk (stage 4) | ✅ |
+| 3 | **The crew comes to collect** | Haven contract, Known, ★ Ex-Con; 50 min; 15 Fame, 15 Favor | The crew boss at the gate on the road in (70–90 m out). *Bribe*: 40 Haven Favor or 25 Red Hand Favor. *Persuade* the Red Hand (difficulty 2, Ex-Con +1): the debt is yours (`door.debt_yours`). *Force* (only with the Red Hand group prefab): tell him no, and a raid comes a minute later; hold the gate 3 minutes or kill the raiders. *Side with Bastion*: carry the house's bread (−2 food) to the nearest Bastion seat within 6 km for a patrol (+4 Bastion Fame). Time up: the crew takes two people (never below two) | Stage 4 | ✅ |
+| 4 | **A day of talk**, then **the vote** | Wait, 2 hours of play; then Haven contract, Known, ★ Elder; 45 min; 8 Fame, 8 Favor | At the house: *talk*: speak for the council head (Known), or *persuade*: speak against them (the Haven, difficulty 2, Elder +1): the cook takes the chair. With the exile home, speak for him first (the same check): he's let back in, +1 person. Skipped if the council head left the chair during the wait. Time up: they keep the chair | Stage 5 (or the ending) | ✅ |
+| 5 | **The house stands, or pays** | By how the month went | Held, or Bastion's patrol: the contract Fortify the Safehouse at this house (Known, 15 Fame, 15 Favor; the town is Barricaded); held with R3's `well.stood`, no barricades: straight to the ending. Paid, bought off, collected or sold: the envelope walk again, with tins. The debt: the first instalment near the crew boss's seat (Red Hand contract, anyone not Hunted; 6 Fame, 10 Favor): fight in the pit (hold the ring 200 s through 4 waves, as House Rules) or pay 20 Red Hand Favor | The ending. Time up: once more, then Paid in tins | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **Stands alone** | The gate held | Everyone who took part +10 Haven Fame, +10 Red Hand Infamy, and the crew boss remembers them as having crossed him; the council head leaves the chair if the vote went that way; `door.shut`. A headline and a rumour | ✅ |
+| **Under Bastion** | Bastion's patrol | Everyone +10 Bastion Fame, +8 Haven Fame; the council head as above; `door.bastion`, `door.shut`. A headline and a rumour | ✅ *Bastion's road posts aren't more likely near the town: the flags are published instead* |
+| **Paid in tins** | Paid, bought off, collected, sold; every fallback | Everyone +5 Red Hand Fame, +5 Haven Fame (whoever carried the tins: +5 Red Hand Fame, 15 Favor more); the house −4 food; `door.tins`. A quiet headline and a rumour | ✅ *a one-off −4 food stands in for "1 food every second upkeep, never raided by that crew"* |
+| **The debt is yours** | The debt | Everyone +10 Red Hand Fame, +10 Haven Fame (whoever paid the instalment: +5 Haven Fame more); `door.debt_yours` (R1). A quiet headline and a rumour | ✅ |
+
+*Simplified:* the crew boss at the gate is a stand-in figure (the real one stays at his seat); the
+envelope, the tins and the bread are carried by a player, not as items. Bastion's checkpoint "for
+the night" is a line of text. "The cook takes the chair" is in words: the seat is filled by the
+leaders' usual successor. Walked to the crew in a season with a Long Table, the exile is one of the
+people who never arrive (`door.exile_sold`, read by the Long Table and R2).
+
+### The Edge of Town (the Haven)
+
+The walks at the edge of town against the lab's trial dose
+([QUESTLINES.md](QUESTLINES.md#h3-the-edge-of-town)). Stages 1 and 5 ("the walks stay") are the
+contract Walk Him Out at the walker's house; the lab road is the contract Cold Chain. Starts after
+anyone has finished Walk Him Out this season, with the lab there and the cure not out. Needs a
+safehouse of four or more (the walker's), another for the nurse (one with a medic if there is one;
+else the same house), and the note, the object and the civilian. Text keys: the walker and his
+house, the nurse and hers, the bitten man, the research director. Code:
+`Missions/Questlines/Haven/RZ_Quest_EdgeOfTown.c`.
+
+| # | Stage | Kind | Approaches | Leads to | Status |
+|---|---|---|---|---|---|
+| 1 | **One more walk** | Haven contract (Walk Him Out), Known, ★ Nurse/Elder; dusk only; 40 min; 15 Fame, 15 Favor | *End it* or *let him walk on*, as in the contract. Or take him to the lab for the trial dose: he follows you (an escort); at the lab, 8 in 10 he walks out and goes home (+1 person, `walk.lab_saved`), else Halcyon writes him down (half pay) | Stage 2. Nobody came: another bite, another dusk, once | ✅ |
+| 2 | **The walker's tally** | Haven contract, Known, ★ Elder; 60 min; 10 Fame, 10 Favor | At the edge of the walker's town: three graves (5 s at each) and the tally. *Talk*: ask him for the names. *Sneak*: read his notebook by the graves while he's on watch (more than 15 m from him, not noticed; seen: he takes it back and won't talk to you). ★ Elder: he asks you to walk the next one with him | Stage 3. Time up: once more, then on | ✅ |
+| 3 | **The lab's numbers** | Haven contract, Known, ★ Lab Tech/Doctor; 60 min; 12 Fame, 10 Favor | At the lab: *persuade* a night-shift field lead (Halcyon, difficulty 2; Lab Tech, Doctor +1), *sneak*: the trial records after dark (noticed, or shots near: +8 Halcyon Infamy), or *bribe* a courier (20 Halcyon Favor). Any: `walk.knows_other_two` (HC2 opens at its stage 2) | Stage 4. Time up: once more, then on without | ✅ |
+| 4 | **Two offers** | Wait, 2 hours of play; then Haven contract, Known, ★ Nurse/Doctor; 60 min; 10 Fame, 10 Favor | Radio Operators who took part hear the director's offer on the secure channel; everyone hears both from the nurse. *Persuade*: broker the lab road (Known with Halcyon, and the Haven at difficulty 2, or 1 after a man was saved at stage 1, 2 again with HC1's `weeks.public`; Nurse, Doctor +1; only with the mission item and the Haven drop point). *Talk*: refuse both. *Side with the Red Hand*: the cut dose (Trusted with the Red Hand; +5 Red Hand Fame; the Haven pays nothing). Time up: the walks stay | Stage 5 on that branch | ✅ |
+| 5 | **Make it real** | By the branch | The lab road: Cold Chain from the lab to the nurse's house (Halcyon, Known; 12 Fame, 15 Favor, and +10 Haven Fame; no cure threshold). The walks stay: Walk Him Out again, the walker's last walk, at dusk. The cut dose: carry a crate from the nearest Red Hand seat to the nurse's house (Red Hand contract, Known, ★ Ex-Con; 6 Fame, 10 Favor, and +6 Red Hand Fame, 20 Favor for the carrier), past Halcyon's courier (within 35 m, 25 m ★ Ex-Con: +8 Halcyon Infamy) | The ending; the cut dose: stage 6. Failed twice: The walks stay | ✅ |
+| 6 | **A session later** | Wait (the cut dose only) | 2 hours of play | The cut dose | ✅ |
+
+| Ending | Branch | Consequences | Status |
+|---|---|---|---|
+| **The lab road** | Lab road | Everyone who took part +5 Haven Fame, +5 Halcyon Fame; research +2; Haven morale −4; a headline names the first of the other two (numbers them with HC2's `other_two.numbers`); a Haven–Halcyon truce if the usual rules allow (`walk.truce`); `walk.lab_road`. A rumour | ✅ |
+| **The walks stay** | Both refused; every fallback | Everyone +10 Haven Fame; Halcyon morale −3; `walk.walks_stay`. A quiet headline names the walker, and a rumour | ✅ *the walker and the nurse are in the text, not people the world keeps* |
+| **The cut dose** | The cut dose | Everyone who sided with the Red Hand +10 Haven Infamy; the walker's house −2 people (never below two); `walk.cut_dose` (R1). A headline and a rumour | ✅ |
+
+*Simplified:* the walker, the nurse, the field lead, the courier and the man at the edge of town are
+standing figures; the man taken to the lab is an escort (data, a figure, or the survivor group). The
+director's offer reaches Radio Operators as a message. Dusk is 16:30 to 21:00 game time, as for Walk
+Him Out (any time if the clock isn't known).
+
 ### The House That Went Quiet (the Long Table)
 
 C1 in [QUESTLINES.md](QUESTLINES.md#c1-the-house-that-went-quiet): seven stages, five endings. Only
@@ -459,7 +555,7 @@ rumour, found a tell, ate there, met the host) and to everyone who took part. Co
 
 | # | Stage | Kind | Approaches | Leads to | Status |
 |---|---|---|---|---|---|
-| 0 | **Somebody noticed** | Wait (none) | Routes it: H1's `table.found_by_haven` to stage 2; R2's `cargo.buyer_known`, C2's `place.undercover` or `place.proof`, or the house already found out, to stage 4 | 1, 2 or 4 | ✅ |
+| 0 | **Somebody noticed** | Wait (none) | Routes it: H1's `list.found_table` to stage 2; R2's `cargo.buyer_known`, C2's `place.undercover` or `place.proof`, or the house already found out, to stage 4 | 1, 2 or 4 | ✅ |
 | 1 | **Never arrived** | In person, Any, ★ Hunter, Police; 60 min; no pay | The last road of the last one who never arrived: a boot on the verge, a satchel at a fence, the farm gate (a step chain). ★ Hunter or Police: each gives the next one's grid | The gate: 2. Time up: 1 again, once | ✅ |
 | 2 | **Guest** | In person, Any, ★ Nurse, Elder; 60 min | Whoever keeps the road now, on the lane 160 m out. *Talk*: accept, walk up and eat at the table (`table.guest`, yours; the guest rule watches the rest of the visit). *Sneak*: decline, then lie up a minute on the rise behind the farm unseen (seen: they're wary at stage 3). *Declare a bite* (infected): blessed and sent on, past the boots. Shooting the host ends it | 3. Time up: 2 again, once | ✅ |
 | 3 | **Proof** | In person, Any, ★ Nurse, Elder; 60 min | Three of the guestbook (its last small cross is the last one taken), the boots, the letters in the drawer, the cellar (the mother's key, once the boy has said where it hangs; or a crowbar, which they hear) and the boy's one thing. *Sneak*: at supper (18:30–20:30) nobody sees you; otherwise any of them within 20 m (30 m if wary), shots, heat or the infected's notice and you're caught. *Talk*: the boy at the stream, 160–220 m out, unarmed, ★ Nurse or Elder only. *Force*: caught, they set on you; shoot at the house and you start it (+6 Haven Infamy a death until you've found something); win and the house is open | Three: 4. Caught and shut out, or time up: 3 again (three tries). The house finished in the fight: 6 | ✅ |
