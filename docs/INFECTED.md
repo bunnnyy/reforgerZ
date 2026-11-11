@@ -1022,17 +1022,72 @@ per player rises by **Notice rate** (0.15) × stealth's visibility × facing (1 
 0.4 the group stops a few seconds and one body makes a sound (heard before seen); at 1 it's aware and the
 tribe decides (a day hunt, the lair fighting, or the night's hunt). Line of sight is the terrain between
 (script samples) and within 80 m a physics trace (B13: 0.002 and 0.021 ms; 12 a second, **Sight checks a
-second**). Hearing: an unsuppressed shot gives a group a lead from 170 m × its kind (suppressed 30 m),
-15% of the distance off, and it walks to look; the lair's ring by day is deaf. A hunt's target is
+second**), each check kept 2 s. Hearing: an unsuppressed shot gives a group a lead from 170 m × its kind
+(suppressed 30 m), 15% of the distance off; other sounds, blood and shrieks below. The lair's ring by day
+is deaf. A hunt's target is
 remembered where it was last seen, never where it really is; a night hunt on its trail keeps contact by
 sight alone (lying still doesn't shake it), a day group needs to see you.
+
+**Hearing, blood and shrieks** (`Zombies/Behaviour/RZ_Hearing.c`). Every sound gives a steered group
+(not hunting, not the deaf ring) a **lead**: a spot off by 15% of the distance, walked to look, never a
+fix on you. A fresh lead (under 30 s old) is replaced only by a nearer one. Each kind multiplies the
+radius (crawlers ×1.5, the young ×1.2, alphas ×0.8; a pack's shots habit ×1.5).
+
+| Sound | Radius |
+|---|---|
+| A player sprinting / running / walking / crouched (their speed over the last second; still or prone: nothing) | 30 / 20 / 8 / 3 m, once a second |
+| A player in a moving vehicle | 200 m, every 5 s |
+| A heat of 8 or more at once (bells, noisemakers, sirens, a banged door, a fire): every heat the map is given is heard (a modded `RZ_HeatMap.AddHeat`) | heat × 10 m, at most 400 m |
+| A heat of 2 to 8 at once: a door, a forced lock, a search | 40 m |
+| Smaller heat, and trickles (presence, a generator) | not a sound |
+
+A sound within 25 m of one heard in the last 10 s, no louder, isn't heard again.
+
+**Blood.** A bleeding player (the damage manager's bleeding state) drops a point of scent every 10 s:
+the last 6, kept 60 s after the bleeding stops. Every 10 s a group within its kind's blood radius of
+the newest point (hunters 250 m, the young and alphas 200, scouts 150, guards 100, crawlers 60) gets a
+lead there, ±20 m. It pulls them along your trail; it never gives them you.
+
+**Shrieks.** When a group with young in it becomes aware of a player, half the time one shrieks (a
+sound): its own pack's groups within 200 m by day (300 m at night) get a lead at the shrieker, ±20 m,
+and players within 300 m hear *"A shriek, close by, and an answer from further off. They know."* (one
+line in 90 s). A group shrieks at most once in 30 s, and a shriek heard is never passed on, so it never
+chains across the map. *Simplified:* scouts don't shriek (their call is the scout rule's). The built
+Aftermath screamers keep their heat; they're the town version.
+
+**Reactions** (to a shot, fire, losses, wounds and vehicles):
+
+| Event | Crawler | Young | Hunter, scout, guard | Alpha (by temperament) |
+|---|---|---|---|---|
+| **Gunfire heard** (a lead) | Bacon's own, the built drift | Rushes the lead at a run | Freezes 3 s, then marches to a point a third of the way off to one side of the shot (it comes round, not straight in) | Bold: comes at a run, with a roar. Cautious: holds. Others: as hunters |
+| **Fire** (a building burning or smouldering: traps' scorch radius) | — | No slot inside it; an engaged body in it is taken back and moved 20 m off | Same | Same |
+| **Losses** (the group down by half in a hunt) | — | Keeps coming | The regroup, once a target: 60–100 m back toward cover at a run, then the hunt goes on; halved again, it goes home | Bold: presses. Cautious: goes home. Others: as hunters |
+| **Wounded** | — | Keeps coming | A hunter under 40% health breaks off to 50–80 m toward cover and holds 2 minutes, then comes back | Under 50%: the group goes home |
+| **Player in a vehicle** | Lets it go beyond 20 m | Chases it to 60 m | Lets it go beyond 30 m | As hunters; it charges a vehicle within 30 m only at foot speed (under 6 m/s) |
+
+At most **3 elements** join one hunt, and at most **2 strategies** run near one player cluster (150 m):
+a third hunt there takes one already running.
+
+**Doors** (`Zombies/Behaviour/RZ_Doors.c`, on top of the built doorway blockers, banging and the siege
+cap; Bacon opens shut, unlocked doors itself, B10):
+- **Another way in.** After 30 s banging at a locked building's door, the infected there go round to
+  another of its outside doors within 20 m that stands open: a group the layer drives runs there as one
+  (its engaged bodies taken back), any other is sent with its held waypoint (VERIFY that Bacon follows
+  it with a target inside). With none, they wait out the siege cap and leave.
+- **A weak door breaks.** Only for a pack's leader, or a bold pack's night hunt with 3 or more at the
+  door, and only a door whose building's or door's prefab name has a **Weak door words** word (Shed,
+  Barn, Garage, Wood). Never within 150 m of a holding, a safehouse or the lab (their outposts and
+  quartermasters with them). At 20 s of banging a tell (*"The door is starting to give..."*, more heat);
+  at 45 s the lock is forced (the built Forced state: open and broken until the reset) and the door
+  swings open. Hiding behind a locked door stays a real escape, but not always behind a shed's.
 
 **Formations** (slots written every second near players, every 3 s beyond 300 m): file on a night trail
 and going home, a loose line by day, a wedge for the core, flanking pairs, a ring at the lair, the kill
 site and the vigil. Spacing widens as the group nears its target (4 m at 200 m to 20 m within 40 m), and
 a strike fans out on an arc round the target, closing. Slots are kept 3 m apart (**Spacing**) and 8 m
 off the alpha, enforced in code (B20). Walk-stop takes the group's waypoint off its list so Bacon walks
-to slots under 25 m (B7); a march puts the held waypoint at the goal, at most every 5 s.
+to slots under 25 m (B7); a march puts the held waypoint at the goal, at most every **Order gap** (5 s) unless the goal moved 15 m, and the
+whole layer moves at most **Orders per 5 s** (40) waypoints in 5 s (the rest wait a tick).
 
 **Strategies** by temperament (the top two weights, 70/30; a Rising alpha's tribe uses the cautious
 weights; **Strategies** off: everyone rushes):
@@ -1068,6 +1123,13 @@ in a tribe's two weak days no pincer, encircle or herd. Lone ones and splinters 
   closes under 1 m in 8 s on a target within 40 m is taken back with a sidestep.
 - **LOD** (B12): bodies think every loop within 60 m of a player, then at LOD 2, 4 and 6 beyond 150 and
   300 m (**LOD bands**).
+- **The resting ring asleep** (L14, as the crawlers lie up; with **Sleep lying crawlers** on): the lair's
+  deaf ring by day, holding, with no player within 250 m, has its steered bodies' AI off; a player
+  within 220 m, a hunt or any other order wakes it.
+
+**Releases and tells.** A release comes 0.2–1.2 s after its cause, each body its own (a hit or a player
+within 3 m: at once). Not hunting, hunters freeze 3–5 s when a player within 120 m looks their way
+(at most every 20 s), and the young jump between places in their group every 6–12 s (3–7 m).
 
 **Attacks.** Bacon's melee stays the hit and its damage; each kind adds one move, and its effect is
 status (a hold, a stagger, a knockdown, a light bleed), never extra damage. One special move lands on a
@@ -1112,7 +1174,8 @@ somewhere, in a stirred town or with a player within 150 m is left alone.
 groups near players; 100 agents with half steered measured p99 11.93 ms on the lab box (the target is
 12.5). The status log's behaviour line counts bodies per mode, hunts, releases, take-backs, unsticks,
 moves landed, hand-offs, leaps and charges (with stumbles), young sprints, holds (kicked free),
-staggers and knockdowns, and the crawlers asleep, woken and herded.
+staggers and knockdowns, sound and blood leads, shrieks, doors gone round and broken, regroups, rings
+asleep and woken, and the crawlers asleep, woken and herded.
 
 ## People
 
@@ -1397,9 +1460,8 @@ What's left of the design, in [designs/INFECTED.md](../designs/INFECTED.md) and
 - **The finale's live tissue's rest** ([designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules)):
   the great one's +3, best first within reach, the same pack never twice in 6 season days, and
   Fury's road toward the lab.
-- **The behaviour layer's rest:** shrieks passed between groups; blood scent; the hearing table beyond
-  shots; doors (another way in, weak doors); the reactions table; the regroup;
-  forest edge points in the land cache.
+- **The behaviour layer's rest** ([designs/BEHAVIOUR.md](../designs/BEHAVIOUR.md)): forest edge points
+  in the land cache, low ground on a leg, the formations' re-plan and ETA, the young's stares at houses.
 - **Heat hordes and lookers** from a tribe's day party by day and its hunters at night; crawlers'
   placement shifting indoors when a pack passes; members crossing between ranges.
 

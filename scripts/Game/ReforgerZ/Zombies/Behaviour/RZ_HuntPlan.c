@@ -100,6 +100,9 @@ class RZ_HuntLink
 	bool m_bHerdStirred;
 	vector m_vAmbush;
 
+	static const int MAX_ELEMENTS = 3;
+	static const float CLUSTER_RADIUS = 150;
+
 	//------------------------------------------------------------------------------------------------
 	bool IsAlive()
 	{
@@ -286,15 +289,30 @@ class RZ_HuntLink
 			bodies += counted.Living();
 		}
 
+		// At most 3 elements on one player
+		int elements = Math.Min(plans.Count(), MAX_ELEMENTS);
 		RZ_EStrategy chosen = strategy;
 		if (chosen == RZ_EStrategy.NONE)
-			chosen = Choose(temper, plans.Count(), bodies, day, rising, ctx);
+			chosen = Choose(temper, elements, bodies, day, rising, ctx);
+
+		// At most 2 strategies near one player cluster: a third takes one already running there
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (ent)
+		{
+			array<int> near = {};
+			bh.StrategiesNear(ent.GetOrigin(), CLUSTER_RADIUS, near);
+			if (near.Count() >= 2 && near.Find(chosen) < 0)
+				chosen = near[0];
+		}
 
 		RZ_HuntLink link = bh.NewLink(playerId, chosen, relentless, day);
 		link.Apply(ctx);
 		foreach (int i, RZ_GroupPlan p : plans)
 		{
-			p.JoinHunt(link, i, plans.Count());
+			if (i >= elements)
+				break;
+
+			p.JoinHunt(link, i, elements);
 		}
 
 		return link;
@@ -328,6 +346,15 @@ class RZ_GroupPlan
 	bool m_bRising;
 	IEntity m_KeepClear;			// weak: the alpha; this group's slots keep 8 m off it
 	float m_fHearMult = 1;			// its tribe's shots habit: it hears shots from 1.5 times as far
+	float m_fShriekAt = -100;		// its last shriek (RZ_Hearing)
+	protected vector m_vVia;		// going round to another door (RZ_InfectedDoors), or the regroup, until m_fViaUntil
+	protected float m_fViaUntil;
+	protected int m_iPeak;			// the most bodies it had in this hunt (losses: down by half)
+	protected bool m_bRegrouped;	// the regroup, once a target
+	protected int m_iRegroupTarget = -1;
+	protected RZ_EGait m_eLeadGait = RZ_EGait.WALKSTOP;
+	protected float m_fLookFreezeAt = -100;
+	protected bool m_bAsleep;		// the resting ring by day, its AI off
 
 	// The hunt
 	protected RZ_HuntLink m_Link;	// weak: owned by RZ_Behaviour
@@ -472,6 +499,9 @@ class RZ_GroupPlan
 		m_bLeg2 = false;
 		m_bRoared = false;
 		m_bAmbushSet = false;
+		m_iPeak = Living();
+		if (link.m_iTarget != m_iRegroupTarget)
+			m_bRegrouped = false;
 		if (link.m_eStrategy == RZ_EStrategy.RUSH)
 			m_eHunt = RZ_EHuntState.STRIKE;
 	}
@@ -597,6 +627,9 @@ class RZ_GroupPlan
 			Fallback(bh, z);
 			return;
 		}
+
+		if (Rest(bh, nearest))
+			return;
 
 		if (nearest > 300 && bh.Now() < m_fNextFull)
 			return;
@@ -817,7 +850,12 @@ class RZ_GroupPlan
 			}
 
 			if (meter >= 1 && !m_Link)
+			{
 				m_iNoticed = id;
+				RZ_TrackedZombie me = Owner();
+				if (me && (leader.m_eKind == RZ_EBodyKind.YOUNG || m_iYoungFirst > 0))
+					bh.GetHearing().MaybeShriek(this, leader.m_Body, me.m_iTribe);
+			}
 		}
 	}
 
@@ -908,8 +946,98 @@ class RZ_GroupPlan
 		if (d > radius * bh.Kind(leader.m_eKind).m_fHearing * m_fHearMult)
 			return;
 
-		m_vLead = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(at, 0, d * 0.15 + 2));
+		// The reactions table (docs/INFECTED.md, Reactions): the young rush it; hunters, scouts and
+		// guards freeze 3 s, then come round to the shooter's side; an alpha comes roaring if bold,
+		// holds if cautious, else like the hunters
+		vector lead = RZ_Util.RandomPointInRing(at, 0, d * 0.15 + 2);
+		RZ_EGait gait = RZ_EGait.MARCH;
+		bool flank = true;
+		if (leader.m_eKind == RZ_EBodyKind.YOUNG)
+		{
+			gait = RZ_EGait.RUN;
+			flank = false;
+		}
+		else if (leader.m_eKind == RZ_EBodyKind.ALPHA && m_iTemper == RZ_ETemperament.CAUTIOUS)
+		{
+			return;
+		}
+		else if (leader.m_eKind == RZ_EBodyKind.ALPHA && m_iTemper == RZ_ETemperament.BOLD)
+		{
+			gait = RZ_EGait.RUN;
+			flank = false;
+			RZ_BaconBody.Say(leader.m_Body, "SOUND_TARGET");
+		}
+
+		if (flank)
+		{
+			m_fFreezeUntil = bh.Now() + 3;
+			vector toShot = at - m_vCentre;
+			toShot[1] = 0;
+			vector side = Vector(-toShot[2], 0, toShot[0]);
+			if (Math.RandomFloat01() < 0.5)
+				side = side * -1;
+
+			lead = lead + side * 0.35;
+		}
+
+		m_vLead = RZ_Util.GroundPos(lead);
 		m_fLeadUntil = bh.Now() + 90;
+		m_eLeadGait = gait;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A lead from a sound, a scent or a shriek (RZ_Hearing): a spot err off, walked to look; never a
+	//! fix. Not while hunting or deaf (the lair ring by day); a fresh lead (under 30 s old) is replaced
+	//! only by a nearer one.
+	bool TakeLead(RZ_Behaviour bh, vector at, float err)
+	{
+		if (!m_bDriven || m_bDeaf || m_Link || !Leader())
+			return false;
+
+		float now = bh.Now();
+		if (now < m_fLeadUntil && now > m_fLeadUntil - 60 && RZ_Util.DistXZ(m_vCentre, at) >= RZ_Util.DistXZ(m_vCentre, m_vLead))
+			return false;
+
+		m_vLead = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(at, 0, err));
+		m_fLeadUntil = now + 90;
+		m_eLeadGait = RZ_EGait.WALKSTOP;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Another way in (RZ_InfectedDoors): for 25 s the group goes round to `via`, another open outside
+	//! door of the building its target is in; bodies banging at the locked one are taken back to it.
+	void GoRound(RZ_Behaviour bh, vector via)
+	{
+		m_vVia = via;
+		m_fViaUntil = bh.Now() + 25;
+		foreach (RZ_BodyState b : m_aBodies)
+		{
+			if (b.m_Body && b.m_eMode == RZ_EBodyMode.ENGAGE && RZ_Util.DistXZ(b.m_Body.GetOrigin(), via) > 4)
+				bh.TakeBack(b, via);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far this group hears a sound of `radius`: its leader's kind and its pack's shots habit.
+	float HearingRange(RZ_Behaviour bh, float radius)
+	{
+		RZ_BodyState leader = Leader();
+		if (!leader)
+			return 0;
+
+		return radius * bh.Kind(leader.m_eKind).m_fHearing * m_fHearMult;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far this group smells blood (its leader's kind).
+	float BloodRange(RZ_Behaviour bh)
+	{
+		RZ_BodyState leader = Leader();
+		if (!leader)
+			return 0;
+
+		return bh.Kind(leader.m_eKind).m_fBlood;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -941,7 +1069,7 @@ class RZ_GroupPlan
 		if (!m_bDeaf && bh.Now() < m_fLeadUntil)
 		{
 			goal = m_vLead;
-			gait = RZ_EGait.WALKSTOP;
+			gait = m_eLeadGait;
 			if (RZ_Util.DistXZ(m_vCentre, m_vLead) < 10)
 				m_fLeadUntil = Math.Min(m_fLeadUntil, bh.Now() + 20);
 		}
@@ -1001,7 +1129,15 @@ class RZ_GroupPlan
 		}
 
 		float now = Now();
-		if (m_bWaypointOn && (RZ_Util.DistXZ(goal, m_vWaypointAt) < 15 || now - m_fWaypointAt < 5))
+		RZ_Behaviour bh = RZ_Behaviour.Get();
+		float gap = 5;
+		if (bh)
+			gap = Math.Max(1, bh.GetSettings().m_fOrderGap);
+
+		if (m_bWaypointOn && (RZ_Util.DistXZ(goal, m_vWaypointAt) < 15 || now - m_fWaypointAt < gap))
+			return;
+
+		if (bh && !bh.TakeOrder())
 			return;
 
 		ResourceName wp = RZ_GameModeComponent.GetInstance().GetSpawner().GetMoveWaypointPrefab();
@@ -1040,6 +1176,23 @@ class RZ_GroupPlan
 		}
 
 		float now = bh.Now();
+		if (React(bh, link, target))
+			return;
+
+		// Going round to another door, or the regroup: there first, at a run
+		if (now < m_fViaUntil)
+		{
+			if (RZ_Util.DistXZ(m_vCentre, m_vVia) > 4)
+			{
+				m_vAnchor = m_vVia;
+				m_eFormation = RZ_EFormation.CLUSTER;
+				SetWaypoint(RZ_EGait.RUN, m_vVia);
+				return;
+			}
+
+			m_fViaUntil = 0;
+		}
+
 		RZ_BodyState leader = Leader();
 		float memory = 30;
 		if (leader)
@@ -1116,6 +1269,117 @@ class RZ_GroupPlan
 
 		if (m_eHunt == RZ_EHuntState.STRIKE)
 			Strike(bh, link, d);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The reactions table's hunt rows (docs/INFECTED.md, Reactions). True: this group is out of the
+	//! hunt (or regrouping started), nothing more this tick.
+	protected bool React(RZ_Behaviour bh, RZ_HuntLink link, IEntity target)
+	{
+		RZ_BodyState leader = Leader();
+		if (!leader)
+			return false;
+
+		RZ_EBodyKind kind = leader.m_eKind;
+		// A player in a vehicle: crawlers let it go beyond 20 m, the young chase it to 60 m, the rest 30 m
+		if (RZ_Util.IsInVehicle(target))
+		{
+			float limit = 30;
+			if (kind == RZ_EBodyKind.YOUNG)
+				limit = 60;
+			else if (kind == RZ_EBodyKind.CRAWLER)
+				limit = 20;
+
+			if (RZ_Util.DistXZ(m_vCentre, target.GetOrigin()) > limit)
+			{
+				LeaveHunt(true);
+				Order(bh);
+				return true;
+			}
+		}
+
+		// A wounded alpha (under half its health) goes home with its guard
+		foreach (RZ_BodyState b : m_aBodies)
+		{
+			if (!b.m_Body || b.m_eKind != RZ_EBodyKind.ALPHA || b.m_bWentHome)
+				continue;
+
+			float full = RZ_Util.GetCharacterMaxHealth(b.m_Body);
+			if (full > 0 && b.m_fHealth >= 0 && b.m_fHealth < full * 0.5)
+			{
+				b.m_bWentHome = true;
+				GoHome(bh);
+				return true;
+			}
+		}
+
+		// Losses: down by half
+		int living = Living();
+		if (living > m_iPeak)
+			m_iPeak = living;
+
+		if (m_iPeak < 2 || living * 2 > m_iPeak || kind == RZ_EBodyKind.YOUNG || kind == RZ_EBodyKind.CRAWLER)
+			return false;
+
+		if (kind == RZ_EBodyKind.ALPHA && m_iTemper == RZ_ETemperament.BOLD)
+			return false;
+
+		if (kind == RZ_EBodyKind.ALPHA && m_iTemper == RZ_ETemperament.CAUTIOUS)
+		{
+			GoHome(bh);
+			return true;
+		}
+
+		if (m_bRegrouped)
+		{
+			// Halved again after the regroup: give up
+			if (link.CountPlans() <= 1)
+				link.m_bOver = true;
+
+			GoHome(bh);
+			return true;
+		}
+
+		Regroup(bh, link);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The regroup (once a target): 60-100 m back from the target toward cover, at a run, then on with
+	//! the hunt. Engaged bodies are taken back unless a player is close in sight.
+	protected void Regroup(RZ_Behaviour bh, RZ_HuntLink link)
+	{
+		m_bRegrouped = true;
+		m_iRegroupTarget = link.m_iTarget;
+		m_iPeak = Living();
+		vector away = m_vCentre - link.m_vLastKnown;
+		away[1] = 0;
+		if (away.Length() < 1)
+			away = RZ_Behaviour.RandomDir();
+
+		away.Normalize();
+		m_vVia = CoverPoint(bh, link.m_vLastKnown, away, Math.RandomFloat(60, 100));
+		m_fViaUntil = bh.Now() + 40;
+		array<IEntity> players = PlayersNow();
+		foreach (RZ_BodyState b : m_aBodies)
+		{
+			if (b.m_Body && b.m_eMode == RZ_EBodyMode.ENGAGE && !PlayerInSight(b.m_Body.GetOrigin(), players, RZ_Behaviour.NEVER_TAKE_BACK))
+				bh.TakeBack(b, m_vVia);
+		}
+
+		bh.CountRegroup();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Out of the hunt and back where it came from.
+	protected void GoHome(RZ_Behaviour bh)
+	{
+		RZ_TrackedZombie z = Owner();
+		vector home = m_vCentre;
+		if (z)
+			home = z.m_vHome;
+
+		OrderHome(home);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1527,6 +1791,8 @@ class RZ_GroupPlan
 		if (m_Link)
 			target = m_Link.m_TargetEnt;
 
+		Tells(bh, players, now);
+		freeze = now < m_fFreezeUntil;
 		array<vector> released = {};
 		foreach (int i, RZ_BodyState b : m_aBodies)
 		{
@@ -1547,19 +1813,50 @@ class RZ_GroupPlan
 			if (!foe)
 				foe = closest;
 
+			if (b.m_eMode == RZ_EBodyMode.ENGAGE && Wounded(bh, b, pos, foe, now))
+				continue;
+
+			if (b.m_eMode == RZ_EBodyMode.ENGAGE && bh.NearFire(pos))
+			{
+				// Fire: an engaged body near it is taken back and moved 20 m off
+				vector off = pos - m_vCentre;
+				if (foe)
+					off = pos - foe.GetOrigin();
+
+				off[1] = 0;
+				if (off.Length() < 1)
+					off = RZ_Behaviour.RandomDir();
+
+				off.Normalize();
+				bh.TakeBack(b, RZ_Util.GroundPos(pos + off * 20));
+				continue;
+			}
+
 			switch (b.m_eMode)
 			{
 				case RZ_EBodyMode.STEER:
 				{
 					if (ShouldRelease(bh, b, pos, closest, nd, foe, striking, released))
 					{
-						bh.Release(b);
+						// The reaction delay: 0.2-1.2 s, unless hit or touched
+						if (b.m_bHit || nd <= RZ_Behaviour.CONTACT_BLIND)
+							bh.Release(b);
+						else
+							bh.ReleaseSoon(b);
+
 						released.Insert(pos);
 						break;
 					}
 
 					vector slot = slots[i];
 					if (freeze)
+						slot = pos;
+
+					if (now < b.m_fBrokeOffUntil)
+						slot = b.m_vBrokeOffAt;
+
+					// Fire: no slot within a burning building's reach
+					if (!freeze && bh.NearFire(slot))
 						slot = pos;
 
 					SteerBody(bh, b, pos, slot, stalking, freeze, players);
@@ -1578,6 +1875,102 @@ class RZ_GroupPlan
 			}
 		}
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A wounded hunter (under 40% of its health) breaks off to 50-80 m from its target and holds
+	//! there until the next approach (2 minutes). True: taken back this tick.
+	protected bool Wounded(RZ_Behaviour bh, RZ_BodyState b, vector pos, IEntity foe, float now)
+	{
+		if (b.m_eKind != RZ_EBodyKind.HUNTER || !foe || now < b.m_fBrokeOffUntil)
+			return false;
+
+		float full = RZ_Util.GetCharacterMaxHealth(b.m_Body);
+		if (full <= 0 || b.m_fHealth < 0 || b.m_fHealth >= full * 0.4)
+			return false;
+
+		vector away = pos - foe.GetOrigin();
+		away[1] = 0;
+		if (away.Length() < 1)
+			away = RZ_Behaviour.RandomDir();
+
+		away.Normalize();
+		b.m_vBrokeOffAt = CoverPoint(bh, foe.GetOrigin(), away, Math.RandomFloat(50, 80));
+		b.m_fBrokeOffUntil = now + 120;
+		bh.TakeBack(b, b.m_vBrokeOffAt);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The kinds' tells while not hunting (docs/INFECTED.md, The kinds): hunters freeze for 3-5 s when
+	//! a player within 120 m looks their way (at most every 20 s); the young jump between slots (every
+	//! 6-12 s a new place in the group, 3-7 m off).
+	protected void Tells(RZ_Behaviour bh, array<IEntity> players, float now)
+	{
+		if (m_Link)
+			return;
+
+		if (m_eKind == RZ_EBodyKind.HUNTER && now - m_fLookFreezeAt >= 20)
+		{
+			foreach (IEntity p : players)
+			{
+				if (RZ_Util.DistXZ(p.GetOrigin(), m_vCentre) > 120 || RZ_Behaviour.AngleOff(p, m_vCentre) > 15)
+					continue;
+
+				if (RZ_InfectedBodies.TerrainBlocks(p.GetOrigin(), m_vCentre))
+					continue;
+
+				m_fLookFreezeAt = now;
+				m_fFreezeUntil = Math.Max(m_fFreezeUntil, now + Math.RandomFloat(3, 5));
+				break;
+			}
+		}
+
+		foreach (RZ_BodyState b : m_aBodies)
+		{
+			if (!b.m_Body || b.m_eKind != RZ_EBodyKind.YOUNG || now < b.m_fJumpAt)
+				continue;
+
+			b.m_fJumpAt = now + Math.RandomFloat(6, 12);
+			b.m_vJitter = RZ_Util.RandomPointInRing(vector.Zero, 3, 7);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The resting ring asleep (L14, as the crawlers lie up): a deaf ring (the lair by day) with no
+	//! player within 250 m has its AI off; a player within 220 m, a hit, or any order but the ring
+	//! wakes it. True: asleep, nothing more to do.
+	protected bool Rest(RZ_Behaviour bh, float nearest)
+	{
+		bool want = m_bDeaf && !m_Link && m_eOrder == RZ_EPlanOrder.HOLD && nearest > 250 && bh.GetSettings().m_bSleepLying;
+		if (m_bAsleep && (!m_bDeaf || m_Link || m_eOrder != RZ_EPlanOrder.HOLD || nearest <= 220 || !bh.GetSettings().m_bSleepLying))
+		{
+			m_bAsleep = false;
+			foreach (RZ_BodyState w : m_aBodies)
+			{
+				RZ_CrawlerLife.SetAI(w.m_Body, true);
+			}
+
+			bh.CountRingWoke();
+			return false;
+		}
+
+		if (!m_bAsleep && want)
+		{
+			m_bAsleep = true;
+			foreach (RZ_BodyState s : m_aBodies)
+			{
+				if (s.m_Body && s.m_eMode == RZ_EBodyMode.STEER)
+					RZ_CrawlerLife.SetAI(s.m_Body, false);
+			}
+
+			bh.CountRingSlept();
+		}
+
+		return m_bAsleep;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsAsleep() { return m_bAsleep; }
 
 	//------------------------------------------------------------------------------------------------
 	protected static IEntity NearestPlayer(vector pos, array<IEntity> players)
@@ -1607,6 +2000,10 @@ class RZ_GroupPlan
 
 		if (nd <= RZ_Behaviour.CONTACT_BLIND)
 			return true;
+
+		// A wounded hunter holding off comes back only in the next approach
+		if (bh.Now() < b.m_fBrokeOffUntil)
+			return false;
 
 		if (closest && nd <= bh.GetSettings().m_fContactRadius && !RZ_InfectedBodies.TerrainBlocks(pos, closest.GetOrigin()))
 			return true;

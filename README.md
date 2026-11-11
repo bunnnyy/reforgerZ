@@ -127,7 +127,7 @@ the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#com
 On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
 Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
 That's about 167,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 80 `VERIFY` markers left in the game
+was also checked against the base game's script source; the 82 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no

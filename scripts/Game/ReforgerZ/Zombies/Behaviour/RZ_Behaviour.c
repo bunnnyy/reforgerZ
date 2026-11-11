@@ -82,6 +82,15 @@ class RZ_BehaviourSettings
 	[Attribute("5", desc: "Young rest seconds: how long it runs at a run between sprints (4-6 with the random part)")]
 	float m_fYoungRestSeconds;
 
+	[Attribute("Shed,Barn,Garage,Wood", desc: "Weak door words: a locked door whose building's or door's prefab name has one of these (comma-separated, any case) can be broken by a pack's leader, or by a bold pack's night hunt with 3 or more at it, after 45 s of banging; never within 150 m of a holding, safehouse or the lab. Empty: no door ever breaks")]
+	string m_sWeakDoorWords;
+
+	[Attribute("5", desc: "Order gap (s): a group's held waypoint is moved at most this often (unless its goal moved 15 m or more)")]
+	float m_fOrderGap;
+
+	[Attribute("40", desc: "Orders per 5 s: held-waypoint moves the whole layer may make in 5 s, so a big fight can't flood the AI with orders; the rest wait a tick")]
+	int m_iOrdersPer5s;
+
 	[Attribute("10", desc: "Special move gap (s): at most one special move lands on one player in this long, from all the infected together")]
 	float m_fSpecialMoveGap;
 
@@ -137,7 +146,8 @@ class RZ_KindProfile
 	float m_fWalkCap = 1;		// walk-stop (no group waypoint): 1 = Bacon's walk (1.45 m/s moving)
 	float m_fMarchCap = 1;		// a held waypoint at RUN: 0.45 = about 2 m/s
 	float m_fSight = 1;			// x Hunter sight
-	float m_fHearing = 1;		// x the shot radius
+	float m_fHearing = 1;		// x the shot radius and every other sound's
+	float m_fBlood = 150;		// m: a bleeding player's newest drop this near gives a lead
 	float m_fMemory = 30;		// s after losing a target before giving up
 	float m_fEngage = 25;		// E: released to Bacon this close to its target
 	float m_fClimb = 1.4;		// grab height it may climb; < 0 never
@@ -186,6 +196,12 @@ class RZ_BodyState
 	float m_fChargeReady;
 	float m_fChargeUntil = -1;		// charging until (the alpha)
 	float m_fStumbleUntil = -1;		// a missed charge: capped low until
+	// Reactions and tells
+	bool m_bReleasing;				// a release is coming (the 0.2-1.2 s reaction delay)
+	float m_fBrokeOffUntil = -1;	// a wounded hunter holds off until then
+	vector m_vBrokeOffAt;
+	bool m_bWentHome;				// a wounded alpha took its group home
+	float m_fJumpAt;				// a young's next erratic slot jump
 }
 
 //------------------------------------------------------------------------------------------------
@@ -209,6 +225,7 @@ class RZ_Behaviour
 	protected ref array<float> m_aLodBands = {};
 	protected ref map<int, vector> m_mPlayerPos = new map<int, vector>();
 	protected ref map<int, float> m_mPlayerStillSince = new map<int, float>();
+	protected ref map<int, float> m_mPlayerSpeed = new map<int, float>();
 	protected ref map<int, float> m_mSpecialAt = new map<int, float>();
 	protected ref map<int, float> m_mBleedAt = new map<int, float>();
 	protected ref array<vector> m_aStuckMarks = {};
@@ -229,9 +246,21 @@ class RZ_Behaviour
 	protected int m_iCharges;
 	protected int m_iStumbles;
 	protected int m_iSprints;
+	protected int m_iRegroups;
+	protected int m_iOrdersLeft;
+	protected float m_fOrdersAt;
+	protected int m_iRingSlept;
+	protected int m_iRingWoke;
 	protected ref map<int, float> m_mChargedAt = new map<int, float>();
 	protected ref RZ_CrawlerLife m_Crawlers;
 	protected ref RZ_AttackEffects m_Effects;
+	protected ref RZ_Hearing m_Hearing;
+	protected ref RZ_InfectedDoors m_Doors;
+	// The 2 s sight cache (from, to, when, seen)
+	protected ref array<IEntity> m_aLosFrom = {};
+	protected ref array<IEntity> m_aLosTo = {};
+	protected ref array<float> m_aLosAt = {};
+	protected ref array<bool> m_aLosSeen = {};
 
 	static const float CONTACT_BLIND = 3;		// any player this close releases a body, sight or not
 	static const float SHOT_CONTACT = 30;		// an unsuppressed shot this close releases it
@@ -257,6 +286,8 @@ class RZ_Behaviour
 		ParseLodBands();
 		m_Crawlers = new RZ_CrawlerLife(gm, this);
 		m_Effects = new RZ_AttackEffects(gm, this);
+		m_Hearing = new RZ_Hearing(gm, this);
+		m_Doors = new RZ_InfectedDoors(gm, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -271,6 +302,8 @@ class RZ_Behaviour
 	RZ_BehaviourSettings GetSettings() { return m_Settings; }
 	float Now() { return m_fNow; }
 	RZ_AttackEffects GetEffects() { return m_Effects; }
+	RZ_Hearing GetHearing() { return m_Hearing; }
+	RZ_InfectedDoors GetDoors() { return m_Doors; }
 	bool IsNight() { return m_bNight; }
 
 	//------------------------------------------------------------------------------------------------
@@ -304,6 +337,7 @@ class RZ_Behaviour
 		crawler.m_fMarchCap = 0.45;
 		crawler.m_fSight = 0.27;
 		crawler.m_fHearing = 1.5;
+		crawler.m_fBlood = 60;
 		crawler.m_fMemory = 20;
 		crawler.m_fEngage = 12;
 		crawler.m_fClimb = -1;
@@ -314,6 +348,7 @@ class RZ_Behaviour
 		RZ_KindProfile young = new RZ_KindProfile();
 		young.m_fSight = 0.82;
 		young.m_fHearing = 1.2;
+		young.m_fBlood = 200;
 		young.m_fMemory = 30;
 		young.m_fEngage = 35;
 		young.m_fStanceMin = 0.85;
@@ -324,6 +359,7 @@ class RZ_Behaviour
 		RZ_KindProfile hunter = new RZ_KindProfile();
 		hunter.m_fMarchCap = 0.45;
 		hunter.m_fMemory = 90;
+		hunter.m_fBlood = 250;
 		hunter.m_fEngage = 25;
 		hunter.m_fStanceMin = 0.72;
 		hunter.m_fStanceMax = 0.82;
@@ -341,6 +377,7 @@ class RZ_Behaviour
 		guard.m_fMarchCap = 0.45;
 		guard.m_fSight = 0.91;
 		guard.m_fMemory = 60;
+		guard.m_fBlood = 100;
 		guard.m_fEngage = 30;
 		guard.m_fClimb = 1.2;
 		m_aKinds.Insert(guard);
@@ -351,6 +388,7 @@ class RZ_Behaviour
 		alpha.m_fSight = 0.73;
 		alpha.m_fHearing = 0.8;
 		alpha.m_fMemory = 120;
+		alpha.m_fBlood = 200;
 		alpha.m_fEngage = 40;
 		alpha.m_fClimb = -1;
 		m_aKinds.Insert(alpha);
@@ -463,6 +501,7 @@ class RZ_Behaviour
 		m_bNight = facts && facts.IsNight();
 		m_iChecksLeft = Math.Max(1, m_Settings.m_iSightChecks);
 		TrackPlayers(ids, players);
+		PruneSightCache();
 
 		for (int li = m_aLinks.Count() - 1; li >= 0; li--)
 		{
@@ -481,6 +520,8 @@ class RZ_Behaviour
 
 		m_Crawlers.Tick(players);
 		m_Effects.Tick(ids, players);
+		if (IsOn())
+			m_Hearing.Tick(ids, players);
 
 		if (m_Settings.m_bDebugLog)
 		{
@@ -502,8 +543,12 @@ class RZ_Behaviour
 			int id = ids[i];
 			vector at = p.GetOrigin();
 			vector was;
-			if (!m_mPlayerPos.Find(id, was) || RZ_Util.DistXZ(was, at) > 1)
+			bool had = m_mPlayerPos.Find(id, was);
+			if (!had || RZ_Util.DistXZ(was, at) > 1)
 				m_mPlayerStillSince.Set(id, m_fNow);
+
+			if (had)
+				m_mPlayerSpeed.Set(id, RZ_Util.DistXZ(was, at));
 
 			m_mPlayerPos.Set(id, at);
 		}
@@ -518,6 +563,66 @@ class RZ_Behaviour
 			return 0;
 
 		return m_fNow - since;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player's ground speed over the last second (m/s), 0 unknown.
+	float PlayerSpeed(int playerId)
+	{
+		float v;
+		if (m_mPlayerSpeed.Find(playerId, v))
+			return v;
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fire (docs/INFECTED.md, Reactions): a building burning or still smouldering near pos.
+	bool NearFire(vector pos)
+	{
+		RZ_Interactions hub = m_GM.GetInteractions();
+		return hub && hub.GetTraps() && hub.GetTraps().IsScorched(pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The release's reaction delay: 0.2-1.2 s after the cause, each body its own (a hit, or a player
+	//! within 3 m, releases at once).
+	void ReleaseSoon(RZ_BodyState b)
+	{
+		if (!b || b.m_bReleasing || b.m_eMode == RZ_EBodyMode.ENGAGE)
+			return;
+
+		b.m_bReleasing = true;
+		GetGame().GetCallqueue().CallLater(ReleaseNow, Math.RandomInt(200, 1200), false, b);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReleaseNow(RZ_BodyState b)
+	{
+		if (!b)
+			return;
+
+		b.m_bReleasing = false;
+		if (b.m_Body && RZ_Util.IsCharacterAlive(b.m_Body))
+			Release(b);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The strategies of hunts on players within radius of pos (at most 2 near one cluster).
+	void StrategiesNear(vector pos, float radius, notnull array<int> strategies)
+	{
+		foreach (RZ_HuntLink link : m_aLinks)
+		{
+			if (!link.IsAlive() || link.m_bOver || !link.m_TargetEnt)
+				continue;
+
+			if (RZ_Util.DistXZ(link.m_TargetEnt.GetOrigin(), pos) > radius)
+				continue;
+
+			int st = link.m_eStrategy;
+			if (strategies.Find(st) < 0)
+				strategies.Insert(st);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -570,6 +675,7 @@ class RZ_Behaviour
 			return;
 
 		b.m_eMode = RZ_EBodyMode.ENGAGE;
+		b.m_bReleasing = false;
 		b.m_fModeAt = m_fNow;
 		b.m_fFarSince = 0;
 		b.m_fClosing = -1;
@@ -744,8 +850,45 @@ class RZ_Behaviour
 	//! a hill or a house; false if the second's checks are used up.
 	bool LineOfSight(IEntity from, IEntity to)
 	{
-		if (!from || !to || !TakeCheck())
+		if (!from || !to)
 			return false;
+
+		for (int i = m_aLosFrom.Count() - 1; i >= 0; i--)
+		{
+			if (m_aLosFrom[i] == from && m_aLosTo[i] == to)
+				return m_aLosSeen[i];
+		}
+
+		if (!TakeCheck())
+			return false;
+
+		bool seen = LineOfSightNow(from, to);
+		m_aLosFrom.Insert(from);
+		m_aLosTo.Insert(to);
+		m_aLosAt.Insert(m_fNow);
+		m_aLosSeen.Insert(seen);
+		return seen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sight checks are kept 2 s (Sight checks a second), so a group re-checking a player costs nothing.
+	protected void PruneSightCache()
+	{
+		for (int i = m_aLosAt.Count() - 1; i >= 0; i--)
+		{
+			if (m_fNow - m_aLosAt[i] >= 2 || !m_aLosFrom[i] || !m_aLosTo[i])
+			{
+				m_aLosFrom.Remove(i);
+				m_aLosTo.Remove(i);
+				m_aLosAt.Remove(i);
+				m_aLosSeen.Remove(i);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool LineOfSightNow(IEntity from, IEntity to)
+	{
 
 		vector a = from.GetOrigin();
 		vector b = to.GetOrigin();
@@ -1189,7 +1332,11 @@ class RZ_Behaviour
 			return;
 		}
 
-		if (!m_Settings.m_bOwnAttacks || !target || m_fNow < b.m_fChargeReady || d < 12 || d > 30 || RZ_Util.IsInVehicle(target))
+		if (!m_Settings.m_bOwnAttacks || !target || m_fNow < b.m_fChargeReady || d < 12 || d > 30)
+			return;
+
+		// A player in a vehicle only at foot speed (under 6 m/s)
+		if (RZ_Util.IsInVehicle(target) && PlayerSpeed(targetId) >= 6)
 			return;
 
 		float last;
@@ -1256,6 +1403,28 @@ class RZ_Behaviour
 
 		return false;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One held-waypoint move may be made now (Orders per 5 s across the layer).
+	bool TakeOrder()
+	{
+		if (m_fNow - m_fOrdersAt >= 5)
+		{
+			m_fOrdersAt = m_fNow;
+			m_iOrdersLeft = Math.Max(1, m_Settings.m_iOrdersPer5s);
+		}
+
+		if (m_iOrdersLeft <= 0)
+			return false;
+
+		m_iOrdersLeft--;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void CountRegroup() { m_iRegroups++; }
+	void CountRingSlept() { m_iRingSlept++; }
+	void CountRingWoke() { m_iRingWoke++; }
 
 	//------------------------------------------------------------------------------------------------
 	void CountHandOff()
@@ -1330,7 +1499,8 @@ class RZ_Behaviour
 
 		string text = string.Format("behaviour: steer %1, engage %2, recover %3, by waypoint %4; hunts %5 (started %6)", steer, engage, recover, undriven, m_aLinks.Count(), m_iHuntsStarted);
 		text += string.Format(", releases %1, take-backs %2, unsticks %3, moves landed %4, hand-offs %5, leaps %6, charges %7 (stumbles %8), young sprints %9", m_iReleases, m_iTakeBacks, m_iUnsticks, m_iMovesLanded, m_iHandOffs, m_iLeaps, m_iCharges, m_iStumbles, m_iSprints);
-		text += ", " + m_Effects.StatusText();
+		text += ", " + m_Effects.StatusText() + ", " + m_Hearing.StatusText() + ", " + m_Doors.StatusText();
+		text += string.Format(", regroups %1, rings asleep %2 (woken %3)", m_iRegroups, m_iRingSlept, m_iRingWoke);
 		text += " | " + m_Crawlers.StatusText();
 		return text;
 	}
