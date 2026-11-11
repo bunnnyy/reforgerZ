@@ -113,7 +113,6 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_MobileLab);
 
 		// Hard edges as contracts (Missions/Halcyon/RZ_HalcyonLoreMissions.c, Missions/Haven/RZ_HavenLoreMissions.c)
-		mgr.RegisterType(RZ_Mission_TheThreeWeeks);
 		mgr.RegisterType(RZ_Mission_TheAuthorList);
 		mgr.RegisterType(RZ_Mission_TheList);
 

@@ -14,6 +14,7 @@ class RZ_QuestlineRegistry
 		// The Red Hand
 
 		// Halcyon
+		q.Register(RZ_Quest_ThreeWeeks);
 
 		// Unaligned groups
 	}

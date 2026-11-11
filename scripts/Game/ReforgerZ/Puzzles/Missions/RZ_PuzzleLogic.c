@@ -327,6 +327,9 @@ class RZ_Mission_PatientZeroLedger : RZ_PuzzleMission
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		gm.GetCure().AddResearch(3, "Patient zero of the " + GetLocationName(gm) + " ward was identified.");
+
+		// The ward's first case is known: The Three Weeks can begin
+		RZ_Quest_ThreeWeeks.NoteClinicRecords(gm);
 	}
 }
 
