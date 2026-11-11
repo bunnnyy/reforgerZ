@@ -82,7 +82,7 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 
 		if (destName.IsEmpty())
 		{
-			int town = PickSettlementAway(gm, m_vStart, 800, 3500, 0, 60);
+			int town = PickSettlementAwayNotHeldBy(gm, m_vStart, 800, 3500, 0, 60, RZ_Factions.Bit(RZ_EFaction.MILITARY) | RZ_Factions.Bit(RZ_EFaction.BANDITS), -1, this);
 			RZ_Settlement s = gm.GetSettlement(town);
 			if (!s)
 				return false;
@@ -299,6 +299,10 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.KNOWN, 15, 15);
 		m_Req.Bonus("nurse");
 		m_Req.Bonus("elder");
+		// On its own, not while The Edge of Town tells this walk's story (its stages use it)
+		if (m_iQuestRun < 0)
+			m_Req.NotWhileQuest("walk");
+
 		m_fBonusFameMult = 1.25;
 		m_fTimeLeft = 2400;
 		m_fParticipationRadius = 0;
@@ -666,6 +670,10 @@ class RZ_Mission_QuietArrangement : RZ_Mission_Delivery
 	{
 		SetContract(RZ_EFaction.BANDITS, RZ_ETier.KNOWN, 8, 15);
 		m_Req.Bonus("excon");
+		// On its own, not while The Price of the Door tells this walk's story
+		if (m_iQuestRun < 0)
+			m_Req.NotWhileQuest("door");
+
 		m_fTimeLeft = 2700;
 		m_fParticipationRadius = 0;
 	}
@@ -691,7 +699,10 @@ class RZ_Mission_QuietArrangement : RZ_Mission_Delivery
 
 		m_iSettlement = h.m_iSettlement;
 		m_sHouse = h.m_sName;
-		int camp = PickSettlementAway(gm, h.m_vPos, 800, 2500, 20, 90);
+		// The crew's drop: outside a Red Hand town, else one nobody holds
+		int camp = PickHeldSettlementAway(gm, RZ_EFaction.BANDITS, h.m_vPos, 800, 2500, -1, this);
+		if (camp < 0)
+			camp = PickSettlementAwayNotHeldBy(gm, h.m_vPos, 800, 2500, 20, 90, OthersBits(RZ_EFaction.BANDITS), -1, this);
 		RZ_Settlement s = gm.GetSettlement(camp);
 		if (!s)
 			return false;

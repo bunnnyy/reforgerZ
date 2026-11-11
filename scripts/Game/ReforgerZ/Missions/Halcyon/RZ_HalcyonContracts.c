@@ -60,7 +60,12 @@ class RZ_Mission_PowerTheLab : RZ_PuzzleMission
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
 		vector lab = gm.GetLabPosition();
-		RZ_Settlement s = gm.GetSettlement(PickSettlementAway(gm, lab, 500, 3000, 0, 90));
+		// A part from a town nobody lives in, else any town in reach
+		int partTown = PickEmptySettlementAway(gm, lab, 500, 3000, 0, 90, -1, this);
+		if (partTown < 0)
+			partTown = PickSettlementAway(gm, lab, 500, 3000, 0, 90, -1, this);
+
+		RZ_Settlement s = gm.GetSettlement(partTown);
 		if (!s)
 			return false;
 
@@ -185,7 +190,7 @@ class RZ_Mission_InstallSensors : RZ_Mission_VisitPoints
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 50, 100);
+		m_iSettlement = PickEmptySettlement(gm, 50, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -575,7 +580,7 @@ class RZ_Mission_SpecimenFromTheNest : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 50, 100);
+		m_iSettlement = PickEmptySettlement(gm, 50, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -736,7 +741,8 @@ class RZ_Mission_MedicalDrone : RZ_Mission_Delivery
 
 //------------------------------------------------------------------------------------------------
 //! #17 Patient Zero: follow the outbreak back through four towns (RZ_StepChain). In each a note or
-//! a body names the next town; the fourth is where it started: search the records for 45 s while
+//! a body names the next town; the fourth is the canon clinic (origin.clinic), where the first
+//! patient (origin.patient) was brought: search the records for 45 s while
 //! what's left of the town comes for you. ★ Lab Tech: the clues also give the grid.
 class RZ_Mission_PatientZero : RZ_PuzzleMission
 {
@@ -757,6 +763,8 @@ class RZ_Mission_PatientZero : RZ_PuzzleMission
 		SetContract(RZ_EFaction.INSTITUTE, RZ_ETier.CHAMPION, 50, 40);
 		m_Req.Bonus("labtech");
 		m_Req.m_bNotCured = true;
+		// Not while The Three Weeks follows the same records
+		m_Req.NotWhileQuest("weeks");
 		m_fTimeLeft = 5400;
 		m_fParticipationRadius = 0;
 	}
@@ -773,14 +781,20 @@ class RZ_Mission_PatientZero : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 30, 100);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
+		if (!PickChain(gm))
 			return false;
 
-		m_aTowns.Insert(m_iSettlement);
-		if (!RZ_StepChain.PickTowns(gm, s.m_vCenter, 4, 600, 2500, 0, 100, m_aTowns))
-			return false;
+		RZ_Settlement s = gm.GetSettlement(m_aTowns[0]);
+		m_iSettlement = m_aTowns[0];
+		RZ_WorldFacts facts = gm.GetFacts();
+		string patient = facts.CanonText("origin.patient");
+		string siteTown;
+		RZ_Settlement site = gm.GetSettlement(facts.CanonSettlement("origin.site.town"));
+		if (site)
+			siteTown = site.m_sName;
+
+		int toldDay = facts.CanonInt("origin.told", 3, 24);
+		int toldMonth = facts.CanonInt("origin.told.month", 1, 12);
 
 		m_Chain.SetMission(m_iId);
 		for (int i = 0; i < 4; i++)
@@ -797,7 +811,7 @@ class RZ_Mission_PatientZero : RZ_PuzzleMission
 			{
 				st.m_iGuards = 6;
 				st.m_bSpecialGuard = true;
-				st.m_iClue = AddClue("The clinic records", "A filing cabinet in a ransacked clinic. The first admission is three weeks before the Zone was sealed: a man brought in from a closed site in the hills, with a fever nobody could name. Someone wrote 'notify the Institute' in the margin and underlined it twice.");
+				st.m_iClue = AddClue("The clinic records", ClinicText(patient, siteTown, toldDay, toldMonth));
 				st.m_sReadLabel = "Read the records";
 			}
 			else
@@ -815,6 +829,54 @@ class RZ_Mission_PatientZero : RZ_PuzzleMission
 		m_sTitle = "Patient Zero";
 		m_sBrief = string.Format("We think we can trace the outbreak back to the first case. It starts in %1: a body with a hospital bracelet. Follow where it leads.", s.m_sName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Four towns, the last the canon clinic (origin.clinic: the same clinic all season, whoever
+	//! follows the trail). The three before it lead toward it. Without a canon clinic (no town on
+	//! the map), a chain from an infested town as before.
+	protected bool PickChain(RZ_GameModeComponent gm)
+	{
+		int clinic = gm.GetFacts().CanonSettlement("origin.clinic");
+		RZ_Settlement c = gm.GetSettlement(clinic);
+		if (c && !IsTownBusy(gm, clinic))
+		{
+			array<int> back = {clinic};
+			if (RZ_StepChain.PickTowns(gm, c.m_vCenter, 4, 600, 2500, 0, 100, back))
+			{
+				for (int i = back.Count() - 1; i >= 0; i--)
+				{
+					m_aTowns.Insert(back[i]);
+				}
+
+				return true;
+			}
+		}
+
+		m_aTowns.Clear();
+		int start = PickSettlement(gm, 30, 100, this);
+		RZ_Settlement s = gm.GetSettlement(start);
+		if (!s)
+			return false;
+
+		m_aTowns.Insert(start);
+		return RZ_StepChain.PickTowns(gm, s.m_vCenter, 4, 600, 2500, 0, 100, m_aTowns);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first admission, with the canon facts: the patient's surname, the town below the site,
+	//! the day the Institute was told (docs/LORE.md, "Halcyon").
+	protected string ClinicText(string patient, string siteTown, int toldDay, int toldMonth)
+	{
+		string from = "a closed site in the hills";
+		if (!siteTown.IsEmpty())
+			from = "a closed site in the hills above " + siteTown;
+
+		string who = "a man";
+		if (!patient.IsEmpty())
+			who = "a man called " + patient;
+
+		return string.Format("A filing cabinet in a ransacked clinic. The first admission is three weeks before the gates closed: %1, brought in from %2, with a fever nobody could name. Someone wrote 'notify the Institute' in the margin and underlined it twice. Under it, in another pen: 'Told %3.%4.'", who, from, toldDay, toldMonth);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -917,7 +979,7 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 		if (SetupFromPack(gm))
 			return true;
 
-		m_iSettlement = PickSettlement(gm, 40, 100);
+		m_iSettlement = PickEmptySettlement(gm, 40, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -1197,7 +1259,8 @@ class RZ_Mission_MobileLab : RZ_Mission
 	override bool Setup(RZ_GameModeComponent gm)
 	{
 		vector lab = gm.GetLabPosition();
-		int dest = PickSettlementAway(gm, lab, 1000, 4000, 0, 25);
+		// The annex goes where it's quiet: never a Bastion or Red Hand town
+		int dest = PickSettlementAwayNotHeldBy(gm, lab, 1000, 4000, 0, 25, RZ_Factions.Bit(RZ_EFaction.MILITARY) | RZ_Factions.Bit(RZ_EFaction.BANDITS), -1, this);
 		RZ_Settlement s = gm.GetSettlement(dest);
 		if (!s)
 			return false;

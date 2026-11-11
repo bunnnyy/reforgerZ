@@ -2485,6 +2485,21 @@ on the talk screen says why something wasn't dealt)
   the truth is written off or the gap); the five choices are on his kit, "Talk him back" is a Trust
   check; killing him drops a tag that the roster board at the post takes ("Hang his tag on the nail").
 
+**Contracts on the world facts** ([DESIGN.md](DESIGN.md#world-facts), "What uses it")
+- [ ] Retake the Town, Burn the Nest and Checkpoint Duty never land in a town with a safehouse, a
+  holding or the lab; the Haven's Harvest Guard never in a Bastion or Red Hand holding; Fence the
+  Goods' fence and Crash Site's drops sit in their faction's town when one is in reach.
+- [ ] Patient Zero twice in one season: both trails end at the same clinic, and the records name
+  the same man and date. The Real Orders read the same words every time.
+- [ ] Fight Pit and The Pit's Debtor use the same ring all season, and never run at once.
+- [ ] Start Await Relief, The Edge of Town or Cargo (`RZ_Questlines.Begin(key)`): The Real Orders,
+  Walk Him Out and Tied Down aren't offered on their own while it runs (their questline stages
+  still start).
+- [ ] Kill the Officer's brief names whoever sits in the chair when you open the journal (kill the
+  commander some other way, wait for the new one, read it again).
+- [ ] In Aftermath, Bastion's contracts and road posts are rarer; Bastion Shelling and the Fire
+  Mission never pick a town within 300 m of a safehouse or holding.
+
 **The story jobs** (wave 3; check the log's `Story:` lines for the truth drawn)
 - [ ] Protection Racket: the storekeeper's options change when the receipt (paid twice) or the girl
   (her cut) has been read; Press costs Haven Infamy through the threat; Cover it takes 4 food or 20

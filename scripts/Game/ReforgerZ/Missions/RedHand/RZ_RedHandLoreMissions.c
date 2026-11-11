@@ -16,32 +16,50 @@ class RZ_RedHandEdges
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Where the Red Hand runs a pit: behind a crew boss's seat (as House Rules), else outside a
-	//! town (as Fight Pit). False if neither exists.
+	//! The Red Hand's pit: one all season, the canon spot redhand.pit (docs/DESIGN.md, "World
+	//! facts": behind the boss's seat at the stronghold, else a crew boss's, else outside a Red Hand
+	//! holding or a quiet town). Fight Pit and The Pit's Debtor use it. `place` is for a brief: it
+	//! holds the seat's tokens, filled when the brief is shown. False if the map has no spot for it.
 	static bool FindPit(RZ_GameModeComponent gm, out vector pos, out string place)
 	{
-		RZ_Leaders leaders = gm.GetLeaders();
-		if (leaders)
-		{
-			array<RZ_Leader> seats = {};
-			leaders.GetFactionLeaders(RZ_EFaction.BANDITS, seats);
-			if (!seats.IsEmpty())
-			{
-				RZ_Leader seat = seats.GetRandomElement();
-				pos = RZ_Mission.LandPointNear(seat.m_vPos, 60, 150);
-				place = string.Format("the garages behind %1's camp in %2", seat.m_sShort, seat.m_sPlace);
-				return true;
-			}
-		}
-
-		int town = RZ_Mission.PickSettlement(gm, 0, 70);
-		RZ_Settlement s = gm.GetSettlement(town);
-		if (!s)
+		RZ_WorldFacts facts = gm.GetFacts();
+		if (facts.CanonText("redhand.pit").IsEmpty())
 			return false;
 
-		pos = RZ_Mission.LandPointNear(s.m_vCenter, s.m_fRadius * 0.9, s.m_fRadius + 100);
-		place = "the old yard outside " + s.m_sName;
+		pos = facts.CanonPos("redhand.pit");
+		place = PitPlace(gm);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The leader id of the seat the pit is behind (redhand.pit.seat), -1 if it isn't behind one.
+	static int PitSeat(RZ_GameModeComponent gm)
+	{
+		RZ_WorldFacts facts = gm.GetFacts();
+		if (facts.CanonText("redhand.pit").IsEmpty())
+			return -1;
+
+		string seat = facts.CanonText("redhand.pit.seat");
+		if (seat.IsEmpty())
+			return -1;
+
+		return seat.ToInt();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "the garages behind {leader_short:7}'s camp in {leader_place:7}", or "the old yard outside
+	//! Morton": words for a brief (Fill turns the tokens into whoever sits there now).
+	static string PitPlace(RZ_GameModeComponent gm)
+	{
+		int seat = PitSeat(gm);
+		if (seat >= 0)
+			return string.Format("the garages behind {leader_short:%1}'s camp in {leader_place:%1}", seat);
+
+		RZ_Settlement s = gm.GetSettlement(gm.GetFacts().CanonSettlement("redhand.pit.town"));
+		if (s)
+			return "the old yard outside " + s.m_sName;
+
+		return "the old yard";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -475,8 +493,8 @@ class RZ_Mission_LearningTheDrones : RZ_PuzzleMission
 }
 
 //------------------------------------------------------------------------------------------------
-//! The Pit's Debtor (Red Hand, Known). The pit is the one Fight Pit and House Rules use (behind a
-//! crew boss's seat, else outside a town). Nobody volunteered, so a debtor goes in, and you're his
+//! The Pit's Debtor (Red Hand, Known). The pit is the season's one pit, the canon spot Fight Pit
+//! uses too (RZ_RedHandEdges.FindPit), and it holds it. Nobody volunteered, so a debtor goes in, and you're his
 //! second. Talk to him: **pay what he owes** (DEBT_FAVOR Red Hand Favor, only if the Red Hand
 //! hired you: checked before the Favor is taken; pays PAY_SCALE), **rig the pens** (caught
 //! RIG_CAUGHT of the time: Red Hand Infamy at once, failed; else keep him standing in the ring for
@@ -486,6 +504,13 @@ class RZ_Mission_LearningTheDrones : RZ_PuzzleMission
 //! ★ Ex-Con: caught rigging RIG_CAUGHT_EXCON, half the chance of being seen walking him out.
 class RZ_Mission_PitsDebtor : RZ_PuzzleMission
 {
+	//------------------------------------------------------------------------------------------------
+	//! The pit is this job's while it runs (a claim): not a Fight Pit there at the same time
+	override void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
+	{
+		result.Insert(RZ_WorldFacts.PIT);
+	}
+
 	protected ref RZ_Escort m_Escort = new RZ_Escort();
 	protected vector m_vPit;
 	protected string m_sPit;
@@ -1022,6 +1047,10 @@ class RZ_Mission_TiedDown : RZ_PuzzleMission
 	{
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.KNOWN, 30, 25);
 		m_Req.Bonus("hunter");
+		// The Cargo questline tells the long version of this story; not both at once
+		if (m_iQuestRun < 0)
+			m_Req.NotWhileQuest("cargo");
+
 		m_fTimeLeft = 3600;
 		m_fParticipationRadius = 0;
 	}
@@ -1037,10 +1066,6 @@ class RZ_Mission_TiedDown : RZ_PuzzleMission
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
 		if (RZ_CargoVan.VanPrefab(gm).IsEmpty() || !HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !HasPrefab(gm, RZ_EPuzzleProp.OBJECT) || !HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
-			return 0;
-
-		// The Cargo questline tells the long version of this story; not both at once
-		if (gm.GetQuestlines() && gm.GetQuestlines().FindRunByKey("cargo"))
 			return 0;
 
 		return 0.7;
@@ -1061,7 +1086,8 @@ class RZ_Mission_TiedDown : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 80);
+		// The lookout's note is outside a town the crews don't hold
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 80, RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;

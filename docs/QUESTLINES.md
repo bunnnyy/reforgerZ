@@ -99,6 +99,28 @@ Siding against a faction matters in that faction's own questlines:
   with it ("You're the one who sold the List.").
 - **The world:** the flags in [Crossings](#crossings) open, close or bend stages in other lines.
 
+### Contracts that wait for a questline
+
+A standalone contract that tells part of a questline's story isn't offered while that questline
+runs, so a player never meets the short and the long version of one story at once. The gate is
+the questline's key (`NotWhileQuest`, [DESIGN.md](DESIGN.md#world-facts)), and it's set only when
+the contract is on its own: a questline that runs the same mission as a stage isn't stopped by
+it. ✅ all.
+
+| Key | Contract kept out | Why |
+|---|---|---|
+| `list` | The List (Haven #21) | The same crossed-out names; it opens the questline when it's done |
+| `door` | A Quiet Arrangement | Stage 1 is its walk |
+| `walk` | Walk Him Out | Stages 1 and 5 are this contract |
+| `orders` | The Real Orders (also once the questline has ended) | The Day 3 runner's orders are its story |
+| `pilot` | Rescue the Pilot | The questline has the pilot |
+| `cargo` | Tied Down | Cargo is its long version, with the same van |
+| `well` | Protection Racket | A place that doesn't pay |
+| `weeks` | Patient Zero | The same clinic records; it opens the questline when it's done |
+
+Last Helicopter has no flights while The Last Pilot has the helicopter, and No Reply never runs at
+the post of a running Await Relief (both their own checks).
+
 ---
 
 ## The Haven

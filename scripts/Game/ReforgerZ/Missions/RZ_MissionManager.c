@@ -649,7 +649,7 @@ class RZ_MissionManager
 			// what the faction needs right now (lost trucks, deaths, research), and the majors' season
 			// weights; their product is clamped once (Missions > Story > Weight clamp)
 			if (contract)
-				w = w * WeightMult(m);
+				w = w * WeightMult(m) * PresenceMult(m);
 
 			candidates.Insert(m);
 			weights.Insert(w);
@@ -679,6 +679,20 @@ class RZ_MissionManager
 			candidates.Remove(pick);
 			weights.Remove(pick);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bastion's contracts come as often as Bastion is still out on the roads (docs/DESIGN.md,
+	//! "Outbreak stages"): x1 at full presence, x0.37 in Aftermath (0.1). Outside the clamp below,
+	//! because it's the world's state, not a lean. A contract whose own weight already follows
+	//! presence (m_bPresenceWeighted) isn't scaled twice.
+	float PresenceMult(RZ_Mission m)
+	{
+		if (!m || m.m_bPresenceWeighted || m.m_Req.m_eGiver != RZ_EFaction.MILITARY)
+			return 1;
+
+		float presence = Math.Clamp(m_GM.GetFacts().BastionPresence(), 0, 1);
+		return 0.3 + 0.7 * presence;
 	}
 
 	//------------------------------------------------------------------------------------------------

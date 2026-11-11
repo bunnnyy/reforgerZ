@@ -37,7 +37,8 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 10, 70);
+		// The drop is outside a Red Hand town or one nobody holds
+		m_iSettlement = PickSettlementNotHeldBy(gm, 10, 70, OthersBits(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -137,12 +138,15 @@ class RZ_Mission_FenceTheGoods : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 80);
+		// The crate was left in a town nobody lives in; the fence is in a Red Hand town when one is in reach
+		m_iSettlement = PickEmptySettlement(gm, 0, 80, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
 
-		int fenceIdx = PickSettlementAway(gm, s.m_vCenter, 1000, 4000, 0, 100);
+		int fenceIdx = PickHeldSettlementAway(gm, RZ_EFaction.BANDITS, s.m_vCenter, 1000, 4000, m_iSettlement, this);
+		if (fenceIdx < 0)
+			fenceIdx = PickSettlementAwayNotHeldBy(gm, s.m_vCenter, 1000, 4000, 0, 100, OthersBits(RZ_EFaction.BANDITS), m_iSettlement, this);
 		RZ_Settlement fence = gm.GetSettlement(fenceIdx);
 		if (!fence)
 			return false;
@@ -187,7 +191,7 @@ class RZ_Mission_PharmacyHeist : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 20, 80);
+		m_iSettlement = PickEmptySettlement(gm, 20, 80, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -218,9 +222,16 @@ class RZ_Mission_PharmacyHeist : RZ_Mission_Hold
 }
 
 //------------------------------------------------------------------------------------------------
-//! #5 Fight Pit: survive waves of infected in a ring while the Red Hand bets on you.
+//! #5 Fight Pit: survive waves of infected in a ring while the Red Hand bets on you. The ring is
+//! the season's one pit (the canon spot redhand.pit, RZ_RedHandEdges.FindPit), and it holds it.
 class RZ_Mission_FightPit : RZ_Mission_Hold
 {
+	//------------------------------------------------------------------------------------------------
+	override void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
+	{
+		result.Insert(RZ_WorldFacts.PIT);
+	}
+
 	protected string m_sStockCrew;			// Stock the Pit: the caged young's crew ("" none)
 	protected ResourceName m_sStockPrefab;
 
@@ -246,14 +257,16 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 70);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
+		string place;
+		if (!RZ_RedHandEdges.FindPit(gm, m_vPos, place))
 			return false;
 
-		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.9, s.m_fRadius + 100);
+		m_iSettlement = gm.FindNearestSettlement(m_vPos);
+		if (IsTownBusy(gm, m_iSettlement))
+			return false;
+
 		m_sTitle = "Fight Pit";
-		m_sBrief = string.Format("The Red Hand runs a fight pit outside %1. Step into the ring and survive four minutes. They're betting on you.", s.m_sName);
+		m_sBrief = string.Format("The Red Hand's pit is in %1. Step into the ring and survive four minutes. They're betting on you.", place);
 
 		// Stock the Pit: two caged young come out in the last round (docs/MISSIONS.md)
 		RZ_Tribes tribes = gm.GetTribes();
@@ -312,14 +325,16 @@ class RZ_Mission_SmugglersRun : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 80);
+		// Never from or to a Bastion town: that's the one place a courier doesn't walk into
+		int bastion = RZ_Factions.Bit(RZ_EFaction.MILITARY);
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 80, bastion, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
 
-		int destIdx = PickSettlementAway(gm, s.m_vCenter, 2000, 10000, 0, 100);
+		int destIdx = PickSettlementAwayNotHeldBy(gm, s.m_vCenter, 2000, 10000, 0, 100, bastion, m_iSettlement, this);
 		if (destIdx < 0)
-			destIdx = PickSettlementAway(gm, s.m_vCenter, 1000, 10000, 0, 100);
+			destIdx = PickSettlementAwayNotHeldBy(gm, s.m_vCenter, 1000, 10000, 0, 100, bastion, m_iSettlement, this);
 
 		RZ_Settlement dest = gm.GetSettlement(destIdx);
 		if (!dest)
@@ -427,7 +442,8 @@ class RZ_Mission_ZombieBait : RZ_Mission
 			return true;
 		}
 
-		m_iSettlement = PickSettlement(gm, 0, 70);
+		// A town on Bastion's way that nobody lives in: the crews bait Bastion, not the Haven's houses
+		m_iSettlement = PickEmptySettlement(gm, 0, 70, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -510,7 +526,15 @@ class RZ_Mission_Arson : RZ_Mission_DestroyTarget
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 70);
+		// Outside a town with a Bastion outpost, else one nobody holds (never a stronghold: they never fall)
+		RZ_TownFilter outposts = new RZ_TownFilter();
+		outposts.m_iHeldBy = RZ_EFaction.MILITARY;
+		outposts.m_iKinds = RZ_WorldFacts.KindBit(RZ_ETownKind.OUTPOST);
+		outposts.m_fMaxInfection = 70;
+		m_iSettlement = gm.GetFacts().PickTown(outposts, this);
+		if (m_iSettlement < 0)
+			m_iSettlement = PickEmptySettlement(gm, 0, 70, this);
+
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -558,7 +582,14 @@ class RZ_Mission_SabotageRelay : RZ_Mission_DestroyTarget
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 60);
+		// Near a town with a Haven safehouse, else one neither Bastion nor the Red Hand holds
+		RZ_TownFilter houses = new RZ_TownFilter();
+		houses.m_iHeldBy = RZ_EFaction.SURVIVORS;
+		houses.m_fMaxInfection = 60;
+		m_iSettlement = gm.GetFacts().PickTown(houses, this);
+		if (m_iSettlement < 0)
+			m_iSettlement = PickSettlementNotHeldBy(gm, 0, 60, RZ_Factions.Bit(RZ_EFaction.MILITARY) | RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
+
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -582,6 +613,14 @@ class RZ_Mission_SabotageRelay : RZ_Mission_DestroyTarget
 class RZ_Mission_StealAntidotes : RZ_Mission_Hold
 {
 	static const int STOLEN_DOSES = 2;
+
+	//------------------------------------------------------------------------------------------------
+	//! It holds the lab (a claim, docs/DESIGN.md "World facts"): never while another story is there
+	override void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
+	{
+		if (IsStandalone())
+			result.Insert(RZ_WorldFacts.LAB);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)

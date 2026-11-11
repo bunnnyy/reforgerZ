@@ -16,6 +16,7 @@ class RZ_Mission_ClearSettlement : RZ_Mission
 		{
 			SetContract(RZ_EFaction.MILITARY, RZ_ETier.STRANGER, 15, 15);
 			m_Req.m_fMinMilitary = 0.3;
+			m_bPresenceWeighted = true;
 			m_Req.Bonus("police");
 			m_Req.Bonus("soldier");
 			m_fBonusFameMult = 1.25;
@@ -41,7 +42,8 @@ class RZ_Mission_ClearSettlement : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 50, 100);
+		// A town to take back is one nobody lives in
+		m_iSettlement = PickEmptySettlement(gm, 50, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -107,6 +109,13 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 	protected bool m_bWarned;
 	protected bool m_bLanded;
 
+	//------------------------------------------------------------------------------------------------
+	//! The helicopter is the run's (a claim, docs/DESIGN.md "World facts")
+	override void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
+	{
+		result.Insert(RZ_WorldFacts.HELI);
+	}
+
 	protected static const float LZ_RADIUS = 40;
 	protected static const float COUNTDOWN = 720;
 	protected static const float GROUND_TIME = 180;	// it lands this long before it leaves
@@ -119,6 +128,8 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 	{
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.STRANGER, 25, 20);
 		m_Req.m_fMinMilitary = 0.2;
+		m_Req.m_bNeedsHeli = true;
+		m_bPresenceWeighted = true;
 		m_fTimeLeft = COUNTDOWN;
 		m_fParticipationRadius = 0; // decided at departure, see OnUpdate
 	}
@@ -159,7 +170,7 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 70);
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 70, RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -242,6 +253,14 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 	protected bool m_bForceLab;
 
 	//------------------------------------------------------------------------------------------------
+	//! At the lab it holds the lab (a claim, docs/DESIGN.md "World facts"), so no other story uses it
+	override void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
+	{
+		if (m_bAtLab && IsStandalone())
+			result.Insert(RZ_WorldFacts.LAB);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		m_bAtLab = gm.HasLab() && (m_bForceLab || Math.RandomInt(0, 3) == 0);
@@ -289,7 +308,7 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 			return true;
 		}
 
-		m_iSettlement = PickSettlement(gm, 30, 90);
+		m_iSettlement = PickEmptySettlement(gm, 30, 90, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -370,7 +389,8 @@ class RZ_Mission_Recon : RZ_Mission_VisitPoints
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 100);
+		// Eyes on someone else's hills, never Bastion's own
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 100, RZ_Factions.Bit(RZ_EFaction.MILITARY), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -430,6 +450,7 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 	{
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.KNOWN, 25, 25);
 		m_Req.m_fMinMilitary = 0.2;
+		m_bPresenceWeighted = true;
 		m_Req.Bonus("police");
 		m_Req.Bonus("soldier");
 		SetRival(RZ_EFaction.BANDITS, 5);
@@ -450,7 +471,8 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 55, 95);
+		// Sealing off a town nobody lives in any more
+		m_iSettlement = PickEmptySettlement(gm, 55, 95, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -499,7 +521,7 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 20, 100);
+		m_iSettlement = PickEmptySettlement(gm, 20, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -634,8 +656,14 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 			m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 150, s.m_fRadius + 600);
 		}
 
-		int bastionTown = PickSettlementAway(gm, m_vPos, 800, 5000, 0, 60);
-		int redHandTown = PickSettlementAway(gm, m_vPos, 800, 5000, 0, 100, bastionTown);
+		// Each drop where its faction really is, when it holds a town in reach
+		int bastionTown = PickHeldSettlementAway(gm, RZ_EFaction.MILITARY, m_vPos, 800, 5000, -1, this);
+		if (bastionTown < 0)
+			bastionTown = PickSettlementAway(gm, m_vPos, 800, 5000, 0, 60, -1, this);
+
+		int redHandTown = PickHeldSettlementAway(gm, RZ_EFaction.BANDITS, m_vPos, 800, 5000, bastionTown, this);
+		if (redHandTown < 0)
+			redHandTown = PickSettlementAway(gm, m_vPos, 800, 5000, 0, 100, bastionTown, this);
 		RZ_Settlement b = gm.GetSettlement(bastionTown);
 		RZ_Settlement r = gm.GetSettlement(redHandTown);
 		if (!b || !r)
@@ -909,7 +937,8 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 80);
+		// The camp is outside a town nobody lives in (a crew's own holdings never fall)
+		m_iSettlement = PickEmptySettlement(gm, 0, 80, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -1013,7 +1042,9 @@ class RZ_Mission_Requisition : RZ_Mission_Choice
 		if (!s || IsTownBusy(gm, m_iSettlement))
 			return false;
 
-		int bastionTown = PickSettlementAway(gm, s.m_vCenter, 800, 5000, 0, 100);
+		int bastionTown = PickHeldSettlementAway(gm, RZ_EFaction.MILITARY, s.m_vCenter, 800, 5000, m_iSettlement, this);
+		if (bastionTown < 0)
+			bastionTown = PickSettlementAway(gm, s.m_vCenter, 800, 5000, 0, 100, m_iSettlement, this);
 		RZ_Settlement b = gm.GetSettlement(bastionTown);
 		if (!b)
 			return false;

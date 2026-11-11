@@ -209,8 +209,8 @@ class RZ_Job_OverTheFence : RZ_LeaderDelivery
 			return false;
 
 		m_sTitle = "Over the Fence";
-		m_sBrief = string.Format("The Bastion post in %1 has medicine it can't use and no bread. We have bread. The council says Bastion can't be trusted. The council isn't feeding this house. Take this sack to %2 and they'll send back what we agreed.",
-			post.m_sPlace, post.m_sShort);
+		m_sBrief = string.Format("The Bastion post in %1 has medicine it can't use and no bread. We have bread. The council says Bastion can't be trusted. The council isn't feeding this house. Take this sack to {leader_short:%2} and they'll send back what we agreed.",
+			post.m_sPlace, post.m_iId);
 		return true;
 	}
 

@@ -72,7 +72,8 @@ class RZ_Mission_CurfewPatrol : RZ_Mission_VisitPoints
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 15, 65);
+		// Curfew where people are about: never in a Red Hand town or the lab's
+		m_iSettlement = PickSettlementNotHeldBy(gm, 15, 65, RZ_Factions.Bit(RZ_EFaction.BANDITS) | RZ_Factions.Bit(RZ_EFaction.INSTITUTE), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -174,7 +175,8 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 60, 100);
+		// Left when the town fell: a town nobody lives in now
+		m_iSettlement = PickEmptySettlement(gm, 60, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -522,6 +524,13 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 //! Nurse or Doctor patches him up (★). An AI body that dies fails it.
 class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 {
+	//------------------------------------------------------------------------------------------------
+	//! The helicopter's crash is the story: it holds the helicopter (a claim, docs/DESIGN.md "World facts")
+	override void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
+	{
+		result.Insert(RZ_WorldFacts.HELI);
+	}
+
 	protected ref RZ_Escort m_Escort = new RZ_Escort();
 	protected vector m_vWreck;
 	protected vector m_vDest;
@@ -542,6 +551,9 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		m_Req.Bonus("nurse");
 		m_Req.Bonus("doctor");
 		m_Req.m_fMinMilitary = RZ_Quest_LastPilot.MIN_PRESENCE;
+		m_Req.m_bNeedsHeli = true;
+		// Not while The Last Pilot's story has its pilot
+		m_Req.NotWhileQuest("pilot");
 		m_fTimeLeft = 3600;
 		m_fParticipationRadius = 0;
 	}
@@ -552,8 +564,8 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		if (!RZ_Escort.HasRoom(gm) || !HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
 			return 0;
 
-		// Only while the helicopter flies, and not while The Last Pilot's story has its pilot
-		if (RZ_Quest_LastPilot.IsHelicopterDown(gm) || RZ_Quest_LastPilot.IsRunning(gm))
+		// Only while the helicopter flies (m_bNeedsHeli; the questline's own grounding too)
+		if (RZ_Quest_LastPilot.IsHelicopterDown(gm))
 			return 0;
 
 		return 1;
@@ -562,7 +574,7 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 20, 95);
+		m_iSettlement = PickSettlementNotHeldBy(gm, 20, 95, RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -733,7 +745,7 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
 		m_vLab = gm.GetLabPosition();
-		m_iSettlement = PickSettlementAway(gm, m_vLab, 1000, 4000, 0, 90);
+		m_iSettlement = PickSettlementAwayNotHeldBy(gm, m_vLab, 1000, 4000, 0, 90, RZ_Factions.Bit(RZ_EFaction.BANDITS), -1, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -887,7 +899,7 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 		if (!s)
 			return false;
 
-		RZ_Settlement src = gm.GetSettlement(PickSettlementAway(gm, s.m_vCenter, 1500, 3000, 50, 100));
+		RZ_Settlement src = gm.GetSettlement(PickEmptySettlementAway(gm, s.m_vCenter, 1500, 3000, 50, 100, m_iSettlement, this));
 		if (!src)
 			return false;
 
@@ -1243,6 +1255,7 @@ class RZ_Mission_FireMission : RZ_Mission
 	protected static const float MARK_RADIUS = 80;
 	protected static const float STRIKE_DELAY = 30;
 	protected static const float STRIKE_RADIUS = 45;
+	protected static const float SAFE_DISTANCE = 300;	// m from where people live
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -1262,10 +1275,12 @@ class RZ_Mission_FireMission : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
+		// Never where people live: no target within SAFE_DISTANCE of a safehouse, holding or the lab
 		array<int> towns = {};
+		RZ_WorldFacts facts = gm.GetFacts();
 		foreach (int i, RZ_Settlement s : gm.GetSettlements())
 		{
-			if (s.m_fInfection >= 50 && !gm.GetMissions().IsSettlementBusy(i))
+			if (s.m_fInfection >= 50 && !gm.GetMissions().IsSettlementBusy(i, this) && !facts.IsNearLivedIn(s.m_vCenter, s.m_fRadius * 0.5 + SAFE_DISTANCE))
 				towns.Insert(i);
 		}
 

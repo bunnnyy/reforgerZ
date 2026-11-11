@@ -407,7 +407,10 @@ different thing ([DESIGN.md](DESIGN.md#the-perimeter)): they stay sealed to ever
 
 **Road posts.** Every 15 minutes, if fewer than two are up, a Bastion checkpoint or a Red Hand
 roadblock may go up on a road 350–1,000 m from a random player, within 2.5 km of one of that
-faction's holdings (not near the line, a safehouse, a holding or another post). It stays 45
+faction's holdings (not near the line, a safehouse, a holding or another post). Bastion's turn
+comes up as often as Bastion is still out on the roads: its post goes up on a chance of
+0.3 + 0.7 × Bastion presence (every time in Early Outbreak, about a third of the time in
+Aftermath), else the Red Hand tries; a curfew's night posts always go up. It stays 45
 minutes. It's data: the barrier and its crew (the territory guard prefab unless set) exist only
 while a player is within 600 m, and its crew counts for retaliation. It needs territory and the
 road network. Its fire barrel and nest beside the barrier, and the crew leaning there, are camp

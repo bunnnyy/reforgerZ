@@ -185,6 +185,8 @@ class RZ_Event_BastionShelling : RZ_Mission
 {
 	protected bool m_bWarned;
 
+	protected static const float SAFE_DISTANCE = 300;	// m from where people live to the nearest shell
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -206,12 +208,20 @@ class RZ_Event_BastionShelling : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		// Never the lab's town: filter it out first, so a map where it's the only one in range just has none
+		// Never where people live: no town with a safehouse, a holding or the lab within SAFE_DISTANCE
+		// of where the shells fall. Filtered first, so a map where every town in range is lived in
+		// just has none
 		array<int> towns = {};
+		RZ_WorldFacts facts = gm.GetFacts();
 		foreach (int i, RZ_Settlement t : gm.GetSettlements())
 		{
-			if (t.m_fInfection >= 60 && !t.m_bHasLab && !gm.GetMissions().IsSettlementBusy(i))
-				towns.Insert(i);
+			if (t.m_fInfection < 60 || t.m_bHasLab || gm.GetMissions().IsSettlementBusy(i, this))
+				continue;
+
+			if (facts.IsNearLivedIn(t.m_vCenter, t.m_fRadius * 0.8 + SAFE_DISTANCE))
+				continue;
+
+			towns.Insert(i);
 		}
 
 		if (towns.IsEmpty())

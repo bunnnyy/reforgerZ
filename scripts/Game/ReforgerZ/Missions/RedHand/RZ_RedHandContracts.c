@@ -44,7 +44,8 @@ class RZ_Mission_CarTheft : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 70);
+		// Somebody else's car: never in a Red Hand town
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 70, RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -190,6 +191,9 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		SetContract(RZ_EFaction.BANDITS, RZ_ETier.TRUSTED, 25, 35);
 		SetRival(RZ_EFaction.SURVIVORS, 10);
 		m_Req.Deny("elder");
+		// Not while The Well Story tells what happens to a place that doesn't pay
+		if (m_iQuestRun < 0)
+			m_Req.NotWhileQuest("well");
 		m_fTimeLeft = 2400;
 		m_fParticipationRadius = 0;
 	}
@@ -798,7 +802,14 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 80);
+		// A town with a Bastion outpost (its stockade), else any town with a Bastion post near it
+		RZ_TownFilter outposts = new RZ_TownFilter();
+		outposts.m_iHeldBy = RZ_EFaction.MILITARY;
+		outposts.m_iKinds = RZ_WorldFacts.KindBit(RZ_ETownKind.OUTPOST);
+		m_iSettlement = gm.GetFacts().PickTown(outposts, this);
+		if (m_iSettlement < 0)
+			m_iSettlement = PickSettlement(gm, 0, 80, this);
+
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -1017,7 +1028,8 @@ class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 80);
+		// The dossier comes from somewhere Bastion doesn't hold
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 80, RZ_Factions.Bit(RZ_EFaction.MILITARY), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -1205,7 +1217,8 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 		if (TargetPrefab(gm).IsEmpty())
 			return false;
 
-		m_iSettlement = PickSettlement(gm, 0, 80);
+		// He hides outside a town nobody lives in
+		m_iSettlement = PickEmptySettlement(gm, 0, 80, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -1382,12 +1395,17 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 		if (!l)
 			return false;
 
+		// The officer is this job's (a claim): no other story moves or uses him while it runs
+		if (!ClaimSubject(gm, RZ_WorldFacts.Leader(l.m_iId)))
+			return false;
+
 		m_iTarget = l.m_iId;
 		m_sTarget = l.m_sName;
 		m_vPos = l.m_vPos;
 		m_iSettlement = gm.FindNearestSettlement(l.m_vPos);
 		m_sTitle = "Kill the Officer";
-		m_sBrief = string.Format("%1 runs Bastion's post in %2, and runs it well. That's the problem. Make it a worse post.", l.m_sName, l.m_sPlace);
+		// The seat's tokens: the name is whoever sits there when the brief is read
+		m_sBrief = string.Format("{leader:%1} runs Bastion's post in {leader_place:%1}, and runs it well. That's the problem. Make it a worse post.", l.m_iId);
 		return true;
 	}
 
@@ -1440,6 +1458,8 @@ class RZ_Mission_TakeTheLab : RZ_Mission_Hold
 	{
 		SetContract(RZ_EFaction.BANDITS, RZ_ETier.CHAMPION, 60, 60);
 		SetRival(RZ_EFaction.INSTITUTE, 40);
+		// The batch is the cure: once it's out, there's nothing to carry off
+		m_Req.m_bNotCured = true;
 		m_fHoldNeeded = 90;
 		m_fHoldRadius = 10;
 		m_fTimeLeft = 900;

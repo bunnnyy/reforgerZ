@@ -36,7 +36,8 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 0, 45);
+		// The fields of a town the Haven can work: never in a Bastion or Red Hand holding
+		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 45, RZ_Factions.Bit(RZ_EFaction.MILITARY) | RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -149,7 +150,7 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 20, 85);
+		m_iSettlement = PickEmptySettlement(gm, 20, 85, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -318,7 +319,8 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 10, 85);
+		// The Red Hand's drop: outside a town nobody else holds
+		m_iSettlement = PickSettlementNotHeldBy(gm, 10, 85, OthersBits(RZ_EFaction.BANDITS), this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -480,7 +482,7 @@ class RZ_Mission_RecoverTheBus : RZ_Mission
 		if (!h)
 			return false;
 
-		m_iSettlement = PickSettlementAway(gm, h.m_vPos, 1000, 4000, 15, 90);
+		m_iSettlement = PickEmptySettlementAway(gm, h.m_vPos, 1000, 4000, 15, 90, -1, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
@@ -648,7 +650,7 @@ class RZ_Mission_Memorial : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 65, 100);
+		m_iSettlement = PickEmptySettlement(gm, 65, 100, this);
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;

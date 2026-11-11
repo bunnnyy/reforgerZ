@@ -101,7 +101,12 @@ class RZ_Mission_SilentVillage : RZ_PuzzleMission
 		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_vCellar, 0, "Force the cellar door", "");
 
 		int steps = AddClue("The crypt steps", "Steps go down behind the altar. The air coming up is warm and sweet. Something below breathes, slowly, a lot of somethings, in time.");
-		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, RZ_Util.RandomPointInRing(m_vChurch, 3, 6), 1, "", "Burn it|Seal the steps|Call Halcyon to study it", steps, "Listen at the steps");
+		// Halcyon studies it only while there's research to do: after the cure, two ways
+		string ways = "Burn it|Seal the steps|Call Halcyon to study it";
+		if (gm.GetFacts().IsCured())
+			ways = "Burn it|Seal the steps";
+
+		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, RZ_Util.RandomPointInRing(m_vChurch, 3, 6), 1, "", ways, steps, "Listen at the steps");
 
 		gm.GetSpawner().SetSuppressed(m_iSettlement, true);
 
