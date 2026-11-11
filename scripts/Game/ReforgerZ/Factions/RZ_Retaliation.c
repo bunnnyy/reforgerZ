@@ -25,6 +25,7 @@ class RZ_WatchedUnit
 	IEntity m_Anchor;
 	RZ_EFaction m_eFaction;
 	float m_fAge;
+	bool m_bComplete;	// every member has spawned (or we stopped waiting): no more are added
 	ref array<IEntity> m_aMembers = {};
 	ref array<float> m_aHealth = {};
 	ref array<bool> m_aAlive = {};
@@ -131,10 +132,17 @@ class RZ_Retaliation
 				continue;
 			}
 
-			if (w.m_aMembers.IsEmpty())
+			// A group's members spawn over several frames: keep adding them until it's complete
+			if (!w.m_bComplete)
 			{
 				Expand(w);
-				if (w.m_aMembers.IsEmpty() && w.m_fAge > EXPAND_GIVE_UP)
+				if (RZ_Util.HasAllMembers(w.m_Anchor) || w.m_fAge > EXPAND_GIVE_UP)
+					w.m_bComplete = true;
+			}
+
+			if (w.m_aMembers.IsEmpty())
+			{
+				if (w.m_bComplete)
 					m_aUnits.Remove(i);
 
 				continue;
@@ -145,11 +153,17 @@ class RZ_Retaliation
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Adds the unit's members that aren't watched yet (members spawn one by one).
 	protected void Expand(RZ_WatchedUnit w)
 	{
-		RZ_Util.GetUnitMembers(w.m_Anchor, w.m_aMembers);
-		foreach (IEntity member : w.m_aMembers)
+		array<IEntity> found = {};
+		RZ_Util.GetUnitMembers(w.m_Anchor, found);
+		foreach (IEntity member : found)
 		{
+			if (!member || w.m_aMembers.Contains(member))
+				continue;
+
+			w.m_aMembers.Insert(member);
 			w.m_aHealth.Insert(RZ_Util.GetCharacterHealth(member));
 			w.m_aAlive.Insert(RZ_Util.IsCharacterAlive(member));
 		}
