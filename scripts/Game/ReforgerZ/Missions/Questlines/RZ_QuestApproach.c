@@ -113,10 +113,13 @@ class RZ_QuestApproach
 //------------------------------------------------------------------------------------------------
 //! Stealth for one place: a player stays "quiet" while nobody fired within the radius since
 //! Watch() and they haven't been noticed there (too much heat where they stand, or an infected
-//! close for too long: RZ_Stealth). Once noticed, they stay noticed for this mission.
+//! close for too long: RZ_NoticeTracker, slower to notice a player who is hard to see). Once
+//! noticed, they stay noticed for this mission. A person in the scene who sees anyone within N m
+//! should use RZ_Stealth.SightRadius(playerId, N): the same N at normal visibility, less for a
+//! player lying low in the dark (docs/DESIGN.md, "Stealth").
 class RZ_QuestStealth
 {
-	ref RZ_Stealth m_Stealth = new RZ_Stealth();
+	ref RZ_NoticeTracker m_Notice = new RZ_NoticeTracker();
 	protected vector m_vCenter;
 	protected float m_fRadius = 120;
 	protected bool m_bWatching;
@@ -138,10 +141,10 @@ class RZ_QuestStealth
 		if (!m_bWatching)
 			return;
 
-		m_Stealth.Track(gm, ids, players, dt, m_vCenter, m_fRadius);
+		m_Notice.Track(gm, ids, players, dt, m_vCenter, m_fRadius);
 		foreach (int i, IEntity p : players)
 		{
-			if (RZ_Util.DistXZ(p.GetOrigin(), m_vCenter) <= m_fRadius && !m_aNoticed.Contains(ids[i]) && m_Stealth.IsNoticed(gm, p))
+			if (RZ_Util.DistXZ(p.GetOrigin(), m_vCenter) <= m_fRadius && !m_aNoticed.Contains(ids[i]) && m_Notice.IsNoticed(gm, p))
 				m_aNoticed.Insert(ids[i]);
 		}
 	}
@@ -169,7 +172,7 @@ class RZ_QuestStealth
 			return false;
 
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-		return !ent || !m_Stealth.IsNoticed(gm, ent);
+		return !ent || !m_Notice.IsNoticed(gm, ent);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -188,7 +191,7 @@ class RZ_QuestStealth
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		string why = "";
 		if (ent)
-			why = m_Stealth.GetReason(gm, ent);
+			why = m_Notice.GetReason(gm, ent);
 
 		if (why.IsEmpty() && m_aNoticed.Contains(playerId))
 			why = "They've already seen you here.";

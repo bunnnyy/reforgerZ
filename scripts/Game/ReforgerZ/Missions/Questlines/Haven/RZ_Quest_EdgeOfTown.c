@@ -835,7 +835,7 @@ class RZ_QM_EdgeTally : RZ_HavenQM
 		if (idx != m_iBook || m_bTally)
 			return;
 
-		bool seen = !m_Quiet.IsQuiet(gm, playerId) || IsNear(playerId, m_vWalker, SEEN_RADIUS);
+		bool seen = !m_Quiet.IsQuiet(gm, playerId) || IsNear(playerId, m_vWalker, RZ_Stealth.SightRadius(playerId, SEEN_RADIUS));
 		if (seen)
 		{
 			if (!m_aCaught.Contains(playerId))
@@ -1270,7 +1270,7 @@ class RZ_QM_EdgeCutDose : RZ_HavenQM
 		if (HasBonus(gm, carrier))
 			radius = SEEN_RADIUS_BONUS;
 
-		string who = m_Courier.SeenBy(gm, ent.GetOrigin(), radius, false);
+		string who = m_Courier.SeenBy(gm, ent.GetOrigin(), radius, false, carrier);
 		if (who.IsEmpty())
 			return;
 

@@ -348,7 +348,7 @@ class RZ_QM_ShortWeightAsk : RZ_QuestMission
 			return;
 
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-		bool seen = !m_Quiet.IsQuiet(gm, playerId) || (ent && RZ_Util.DistXZ(ent.GetOrigin(), m_vKeeper) <= SEEN_RADIUS);
+		bool seen = !m_Quiet.IsQuiet(gm, playerId) || (ent && RZ_Util.DistXZ(ent.GetOrigin(), m_vKeeper) <= RZ_Stealth.SightRadius(playerId, SEEN_RADIUS));
 		if (seen)
 		{
 			SetQFlag(gm, "caught", 1);

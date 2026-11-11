@@ -3,7 +3,7 @@
 What's built, what's next, what to test first, and what was dropped. How each system works
 is in [DESIGN.md](DESIGN.md).
 
-**Status:** everything under "Built" is written in Enforce Script (about 76,000 lines) and the
+**Status:** everything under "Built" is written in Enforce Script (about 112,000 lines) and the
 game scripts **compile cleanly** against Arma Reforger 1.9. It also runs on the server in a test
 world with a fake player, with no script exceptions ([runtime test](WORKBENCH_SETUP.md#runtime-test-without-workbench)).
 It still needs prefabs, the behavioural `VERIFY` checks and a real play-test before it can be called working
@@ -16,6 +16,7 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
 | Settlement detection, rotating spawn points, mission announcements, per-player map icons (vanilla text markers without them) | [Settlements](DESIGN.md#settlements-spawn-points-and-the-map) |
 | The Director: four outbreak stages, infection spread, paced for a season of about 45 real days from about 2 to 20 regulars (research scaled to the last week's player-hours; season speed and cure pace for other season lengths; `tools/pacing_sim.py` checks the tuning) | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread), [Season pacing](DESIGN.md#season-pacing) |
 | Heat from presence, vehicles, gunfire (suppressors quieter), noisemakers; hordes toward noise | [Heat and noise](DESIGN.md#heat-and-noise) |
+| Stealth: each player's visibility (stance, speed, light, weather, noise), the infected near them seeing the most visible player, losing a hidden player (search, then give up), gentler mission sight and notice checks for someone lying low, visibility on the HUD; any zombie mod (perception, or by distance) | [Stealth](DESIGN.md#stealth) |
 | Zombie spawner for any zombie mod, bite detection (scratches and bites, protective clothing), the golden window and wound cleaning, staged infection, the Turned Player | [Zombies](DESIGN.md#zombies-bites-and-infection) |
 | Treatments from day one: antidote and stabiliser stocks scaled by research, Halcyon's trial dose, safehouse bite declarations, five low-grade meds with side effects | [Treatments](DESIGN.md#treatments) |
 | Light adaptation: specials after breakthroughs, one trait per stage, favourite spots | [Infection adapts](DESIGN.md#infection-adapts) |
@@ -92,6 +93,9 @@ In this order, because later ones depend on earlier ones:
    too easily over the longer season (Zombies > Kill infection)?
 4. **Supply trucks:** one truck from stronghold to outpost. Is the crew seated, and does it drive?
 5. **Noise:** how far a thrown bottle really leads infected; the favourite-spot rate.
+   **Stealth:** does the zombie mod take the perception factor and list players as targets (the
+   log line, the VERIFY list)? Is lying low worth it without being a way to skip the infected
+   (the checklist's 30/60/100 m test, day and night, against **Stealth** off)?
 6. **Puzzles** one by one, and whether replicated action labels work.
 7. **Searching:** do spots appear in houses? Search rates against town loot; how often a car is fixed.
    **Door locks:** does the hooked door action compile, refuse only from outside, and get inside

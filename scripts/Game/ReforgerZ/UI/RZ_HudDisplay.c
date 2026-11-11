@@ -1,5 +1,6 @@
 //! The ReforgerZ HUD (docs/UI.md, "HUD"): the infection timer with its stages and the golden
-//! window, the secure-radio indicator, a subtle noise meter, and the styled notice cards.
+//! window, the secure-radio indicator, a subtle noise meter with how visible you are above it
+//! (Stealth on), and the styled notice cards.
 //!
 //! An SCR_InfoDisplay: add it to the HUD manager's info displays on the player controller and
 //! give it the layout from UI/LAYOUTS.md ("HUD"). It reads only RZ_PlayerUIComponent's client
@@ -110,6 +111,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			RZ_UIW.Show(m_wRoot, "InfectionPanel", false);
 			RZ_UIW.Show(m_wRoot, "RadioPanel", false);
 			RZ_UIW.Show(m_wRoot, "NoisePanel", false);
+			RZ_UIW.Show(m_wRoot, "SeenPanel", false);
 		}
 
 		DrawNotices(settings);
@@ -205,7 +207,10 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	{
 		RZ_UIW.Show(m_wRoot, "NoisePanel", settings.m_bNoiseMeter);
 		if (!settings.m_bNoiseMeter)
+		{
+			RZ_UIW.Show(m_wRoot, "SeenPanel", false);
 			return;
+		}
 
 		int level = ui.GetNoise();
 		for (int i = 1; i <= 6; i++)
@@ -228,6 +233,42 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			word = "HEARD";
 
 		RZ_UIW.SetText(m_wRoot, "NoiseText", word);
+		DrawSeen(ui);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How visible you are (Stealth, docs/DESIGN.md), above the noise meter: five segments and a
+	//! word. Not shown with Stealth off (the server never sends it).
+	protected void DrawSeen(RZ_PlayerUIComponent ui)
+	{
+		int seen = ui.GetSeen();
+		RZ_UIW.Show(m_wRoot, "SeenPanel", seen >= 0);
+		if (seen < 0)
+			return;
+
+		bool hidden = ui.IsSeenHidden();
+		for (int s = 1; s <= 5; s++)
+		{
+			Color lit = RZ_UIColor.Bone();
+			if (s > seen)
+				lit = RZ_UIW.Rgb(70, 68, 62);
+			else if (hidden)
+				lit = RZ_UIColor.Good();
+			else if (s >= 5)
+				lit = RZ_UIColor.Stage(RZ_EInfectionUI.WEAKNESS);
+
+			RZ_UIW.Tint(m_wRoot, "Seen" + s.ToString(), lit);
+		}
+
+		string state = "SEEN";
+		if (hidden)
+			state = "HIDDEN";
+		else if (seen >= 5)
+			state = "IN PLAIN SIGHT";
+		else if (seen <= 2)
+			state = "LOW";
+
+		RZ_UIW.SetText(m_wRoot, "SeenText", state);
 	}
 
 	// ================================================================ Notice cards

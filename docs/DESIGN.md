@@ -12,27 +12,28 @@ Code paths are under `scripts/Game/ReforgerZ/`.
 2. [Settlements, spawn points and the map](#settlements-spawn-points-and-the-map)
 3. [The Director: outbreak stages and spread](#the-director-outbreak-stages-and-spread)
 4. [Heat and noise](#heat-and-noise)
-5. [Zombies, bites and infection](#zombies-bites-and-infection)
-6. [Infection adapts](#infection-adapts)
-7. [The Perimeter](#the-perimeter)
-8. [Time and environment](#time-and-environment)
-9. [Backgrounds and personal goals](#backgrounds-and-personal-goals)
-10. [Factions in the background](#factions-in-the-background)
-11. [Haven safehouses](#haven-safehouses)
-12. [Wanderers](#wanderers)
-13. [Leaders](#leaders)
-14. [Missions](#missions)
-15. [Story arcs and headlines](#story-arcs-and-headlines)
-16. [Questlines](#questlines)
-17. [World facts](#world-facts)
-18. [Town memory](#town-memory)
-19. [World interactions](#world-interactions)
-20. [New-player guidance](#new-player-guidance)
-21. [Cure research and the season's end](#cure-research-and-the-seasons-end)
-22. [Season pacing](#season-pacing)
-23. [Seasons](#seasons)
-24. [Loose items](#loose-items)
-25. [Persistence](#persistence)
+5. [Stealth](#stealth)
+6. [Zombies, bites and infection](#zombies-bites-and-infection)
+7. [Infection adapts](#infection-adapts)
+8. [The Perimeter](#the-perimeter)
+9. [Time and environment](#time-and-environment)
+10. [Backgrounds and personal goals](#backgrounds-and-personal-goals)
+11. [Factions in the background](#factions-in-the-background)
+12. [Haven safehouses](#haven-safehouses)
+13. [Wanderers](#wanderers)
+14. [Leaders](#leaders)
+15. [Missions](#missions)
+16. [Story arcs and headlines](#story-arcs-and-headlines)
+17. [Questlines](#questlines)
+18. [World facts](#world-facts)
+19. [Town memory](#town-memory)
+20. [World interactions](#world-interactions)
+21. [New-player guidance](#new-player-guidance)
+22. [Cure research and the season's end](#cure-research-and-the-seasons-end)
+23. [Season pacing](#season-pacing)
+24. [Seasons](#seasons)
+25. [Loose items](#loose-items)
+26. [Persistence](#persistence)
 
 ## Principles
 
@@ -135,8 +136,107 @@ caps at 200 per square.
   Infected that a mission controls walk to a nearby noise and stay about 90 s. That's what
   the unarmed missions are built on ([MISSIONS.md](MISSIONS.md), "Unarmed missions").
 - **Being noticed** (puzzles and unarmed missions): heat where you stand above a threshold,
-  or an infected within 10–12 m of you for 6–8 s.
+  or an infected within 10–12 m of you for 6–8 s (slower while you're hard to see:
+  [Stealth](#stealth)).
 - Other mods can add heat with `RZ_GameModeComponent.ReportNoise(pos, heat)`.
+
+## Stealth
+
+Code: `Zombies/RZ_Stealth.c`. Settings: **Zombies > Stealth**.
+
+How visible each living player is, worked out on the server once a second (not per frame), and
+what the infected near them make of it. It works with any zombie mod. If the mod's infected use
+the engine's perception, stealth changes how fast they recognise a player and reads who they're
+after. If they use a plain aggro radius, their senses don't change and losing them goes by
+distance. **Stealth off:** infected perception is never touched, nobody counts as hidden, and
+missions work exactly as before.
+
+### Visibility
+
+Every living player has a visibility from 0 (hidden) to 1 (in plain sight). It's the stance,
+speed, light and weather multiplied together, plus recent noise, capped at 1.
+
+| Input | Default |
+|---|---|
+| Stance | standing ×1, crouched ×0.6, prone ×0.3 |
+| Speed (how far you moved since the last update) | still (under 0.4 m/s) ×0.7, walking (under 2.6) ×0.85, running (under 5) ×1, sprinting ×1.25 |
+| Light | 60% the engine's light on you (sun, moon, lamps, your own torch) and 40% the clock (day 1, dusk 0.6, night 0.25). Turned into a multiplier from ×0.4 in the dark to ×1 in daylight. If the engine's light can't be read, the clock alone |
+| Weather | fog or a fog bank ×0.75; rain ×0.85, or a storm ×0.7 instead; the Fog rule set's shorter sight (×0.85) |
+| Noise | +0.5 right after a shot (a suppressed one +0.18), fading over 10 s; +0.35 for a loud noise within 15 m (a bell, a forced lock, a noisemaker at your feet) |
+| In a vehicle | always 1 |
+
+Some results: walking in daylight 0.85; crouched and still in daylight 0.42; prone in daylight
+0.21; walking at night 0.41; prone and still at night 0.1. Under **0.3** counts as hidden. Other
+systems ask `RZ_Stealth.GetVisibility(playerId)` (1 with Stealth off) and
+`RZ_Stealth.IsHidden(playerId, threshold)` (always false with Stealth off). A new life starts at 1.
+
+### The infected near you
+
+Every update, for the infected the spawner tracks (groups and their members) within **60 m** of a
+player, each member's perception factor is set to:
+
+> its own factor × the base for its kind × a factor from the **most visible** player within 60 m of any member of its group
+
+- **Base by kind:** common ×1, special ×1.2 (sharper), horde member ×0.9 (a crowd on the move
+  looks ahead). The coming kinds (crawlers, scouts, alphas) get their own base in the same place.
+- **From the player:** ×0.3 for someone fully hidden, up to ×1.2 for someone in plain sight. Walking
+  in daylight gives about ×1.07, prone in daylight ×0.49, walking at night ×0.67, prone and still
+  at night ×0.39.
+- **The most visible player counts.** A friend lying prone can't hide you while you stand next to
+  him.
+- With nobody within 60 m, a group goes back to its base. At most 40 infected are touched an
+  update; the rest wait their turn.
+- **Never lowered for infected that must keep coming:** a mission's horde (holds and waves), and
+  everything within 1.5 km of the lab during the final stand. They keep their own factor. The two
+  stealth missions' hordes (Lead Them Away, The Clockwork Horde) are the exception, because
+  staying unseen is the job there.
+- With the vanilla `SCR_AICombatComponent` on the infected, the factor is set as its multiplier.
+  The AI's own update applies it on top of its alert state, and would overwrite a factor set
+  straight on the perception. Without that component, the factor goes on the
+  `PerceptionComponent`. Without either, nothing changes (logged once).
+- The factor only changes how fast they recognise what they see. Hearing is the engine's own. The
+  engine already sees stance and light, so stealth's factor comes on top, which is why it never
+  goes below ×0.3.
+
+### Losing them
+
+A group that has a player as its target can lose them:
+
+1. **Who it has:** the player among its members' engine targets (enemy or detected) seen or heard
+   most recently. For infected without engine perception, a member within 20 m of a player it
+   could see (not hidden), or within 4 m of anyone, is on that player.
+2. **Lost:** that player has stayed under **0.35** visibility, unseen and unheard, for **8 s**.
+3. **Search:** the group walks to where it last had them and looks about for **45 s**. If it sees
+   or hears anyone in that time, its own AI takes over.
+4. **Give up:** a horde goes on to where it was sent; anything else goes back toward where it
+   spawned.
+
+Never for mission infected (their mission steers them) or the final stand. It needs a group and
+the move waypoint (**Zombies > Move waypoint**); without them only the senses change. The waypoint
+stealth gives a group is deleted with the group.
+
+### Stealth in missions
+
+Missions use the score only to go easier on someone lying low, never harder. A player at
+visibility 0.6 or more (standing in daylight, even keeping still) is seen exactly as before.
+
+| Check | With Stealth on |
+|---|---|
+| Being noticed ([Heat and noise](#heat-and-noise)): puzzles, unarmed missions, the questlines' sneak | The heat limit is unchanged. The "infected close to you for 6–8 s" timer runs at full speed at 0.6 visibility and up, down to 0.35 of it for someone fully hidden: about half as fast lying still in the dark |
+| People who see anyone within N m: Haven lookouts and the Haven wanderers near them, the storekeeper, the walker, Halcyon's courier, the Long Table's family, Quiet Count's specials (50 m) | N at 0.6 visibility and up, down to 0.6 × N for someone fully hidden: Quiet Count's 50 m is about 33 m lying still in the dark |
+
+Shots nearby still spoil a sneak. In a questline stage, a person who sees anyone within N m checks
+`RZ_Stealth.SightRadius(playerId, N)` (see [Writing a questline](#writing-a-questline)).
+
+### The HUD
+
+Above the noise meter, five segments and a word: **HIDDEN** (under 0.3), **LOW**, **SEEN**, **IN PLAIN
+SIGHT**. It's sent only when it changes, and not shown with Stealth off ([UI.md](UI.md#screens)).
+
+*Simplified:* speed is how far you moved between updates, so a sprint that stops just before an
+update reads as still. The stance and the engine's light are read on the server (both on the
+VERIFY list). Infected without engine perception are judged "on you" by distance. A lone infected
+character that isn't in a group never searches, because it has no waypoints.
 
 ## Zombies, bites and infection
 
@@ -326,6 +426,7 @@ Time is never skipped or changed. The environment is read every 30 s and nudges 
 The game clock's night is 20:30 to 05:00.
 
 - **They hear further:** a quarter of every bit of heat also reaches the four neighbouring squares.
+- **They see less:** you're harder to see in the dark, unless you carry a light ([Stealth](#stealth)).
 - **Specials** are ×1.25 as common.
 - **Human AI patrols less:** each holding shows one guard fewer (never under one), standing
   closer to its centre; half the hunter-squad rounds are skipped.
@@ -338,6 +439,7 @@ The game clock's night is 20:30 to 05:00.
 - **Storms** (the Storm event, or rain 0.6+ with wind 10 m/s+) ground Bastion's helicopter
   (no Last Helicopter contract), and wanderers shelter.
 - Players hear one line when rain or fog sets in, at most every 20 minutes each.
+- Fog, fog banks, rain and storms also make you harder to see ([Stealth](#stealth)).
 - **Fog banks** (the Fog Bank event): one region at a time where heat added is ×0.6 and infected
   may spawn twice as close. The engine's fog is global, so it isn't touched; an optional mist
   prop is the only look.
@@ -944,7 +1046,8 @@ example is `Missions/Questlines/Haven/RZ_Quest_ShortWeight.c`.
      player;
    - sneak: `m_Quiet.Watch(pos, radius)`, then `m_Quiet.IsQuiet(gm, playerId)` (no shots in the
      radius since, not noticed by heat or the infected), `m_Quiet.Spot(playerId)` when someone in
-     the scene sees them;
+     the scene sees them; a person who sees anyone within N m checks
+     `RZ_Stealth.SightRadius(playerId, N)` ([Stealth](#stealth));
    - force: `RZ_UnitWatch` for a spawned group, `SpawnGuards` and `OnZombiesKilled` for the
      infected, `RZ_Util.IsArmed` for a threat;
    - bribe: `TryBribe(gm, playerId, faction, cost)` (spends Favor, says so if they're short);

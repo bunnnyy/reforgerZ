@@ -82,6 +82,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Infection adapts a little: specials after breakthroughs, one trait per stage (runner, helmet, screamer prefabs), favourite spots (docs/DESIGN.md, Infection adapts)", category: "ReforgerZ|Zombies")]
 	protected ref RZ_AdaptationSettings m_AdaptationSettings;
 
+	[Attribute(desc: "Stealth: each player's visibility (stance, speed, light, weather, noise), the infected near them seeing the most visible one, losing a hidden player, the missions' sight and notice rules (docs/DESIGN.md, Stealth)", category: "ReforgerZ|Zombies")]
+	protected ref RZ_StealthSettings m_StealthSettings;
+
 	[Attribute("0.5", desc: "Heat per tick each player gives off just by being somewhere", category: "ReforgerZ|Zombies")]
 	protected float m_fHeatPresence;
 
@@ -371,6 +374,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Director m_Director;
 	protected ref RZ_HeatMap m_Heat;
 	protected ref RZ_ZombieSpawner m_Spawner;
+	protected ref RZ_Stealth m_Stealth;
 	protected ref RZ_Adaptation m_Adaptation;
 	protected ref RZ_TownMemory m_TownMemory;
 	protected ref RZ_Environment m_Environment;
@@ -457,6 +461,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_aWelcomed.RemoveItem(playerId);
 		if (m_BiteDetector)
 			m_BiteDetector.Forget(playerId);
+
+		if (m_Stealth)
+			m_Stealth.Forget(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -468,7 +475,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_bServerRunning && GetGame() && GetGame().GetCallqueue())
 		{
 			GetGame().GetCallqueue().Remove(ServerTick);
-			GetGame().GetCallqueue().Remove(BiteCheck);
+			GetGame().GetCallqueue().Remove(SecondTick);
 			SaveState();
 		}
 
@@ -487,6 +494,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_AdaptationSettings)
 			m_AdaptationSettings = RZ_AdaptationSettings.Cast(RZ_Util.NewWithDefaults("RZ_AdaptationSettings"));
+
+		if (!m_StealthSettings)
+			m_StealthSettings = RZ_StealthSettings.Cast(RZ_Util.NewWithDefaults("RZ_StealthSettings"));
 
 		if (!m_TownMemorySettings)
 			m_TownMemorySettings = RZ_TownMemorySettings.Cast(RZ_Util.NewWithDefaults("RZ_TownMemorySettings"));
@@ -592,6 +602,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Cure = new RZ_CureResearch(this);
 		m_Director = new RZ_Director(this, m_aStages);
 		m_Spawner = new RZ_ZombieSpawner(this, m_ZombieSettings);
+		m_Stealth = new RZ_Stealth(this, m_StealthSettings);
 		m_Missions = new RZ_MissionManager(this);
 		m_UIFeed = new RZ_UIFeed(this);
 		m_Infection = new RZ_Infection(this, m_InfectionSettings);
@@ -683,8 +694,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		UpdateReplicated();
 		m_bServerRunning = true;
 		GetGame().GetCallqueue().CallLater(ServerTick, m_fTickSeconds * 1000, true);
-		// Bites need a faster check than the main tick to catch individual hits
-		GetGame().GetCallqueue().CallLater(BiteCheck, 1000, true);
+		// Bites need a faster check than the main tick to catch individual hits, and stealth a
+		// faster update for the infected near players
+		GetGame().GetCallqueue().CallLater(SecondTick, 1000, true);
 
 		RZ_Log.Info(string.Format("Started. %1 settlements, stage %2, cure %3 percent, state %4.",
 			m_aSettlements.Count(), RZ_StageSettings.GetStageName(m_Director.GetStage()),
@@ -773,6 +785,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Director GetDirector() { return m_Director; }
 	RZ_HeatMap GetHeat() { return m_Heat; }
 	RZ_ZombieSpawner GetSpawner() { return m_Spawner; }
+	RZ_Stealth GetStealth() { return m_Stealth; }
 	RZ_Adaptation GetAdaptation() { return m_Adaptation; }
 	RZ_TownMemory GetTownMemory() { return m_TownMemory; }
 	RZ_Environment GetEnvironment() { return m_Environment; }
@@ -1286,6 +1299,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_Objectives.Assign(this, profile, bg, controlledEntity.GetOrigin());
 
 		m_BiteDetector.Reset(playerId);
+		m_Stealth.Forget(playerId);
 		m_Infection.OnPlayerSpawned(playerId);
 		m_UIFeed.OnPlayerSpawned(playerId);
 		m_UIFeed.RecordGearSoon(playerId, GetPickedLoadoutName(playerId));
@@ -1418,10 +1432,14 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			return;
 
 		float heat = m_fHeatPerShot * GetPlayerBackground(playerID).m_fNoiseMult;
-		if (RZ_Util.IsSuppressed(weapon))
+		bool suppressed = RZ_Util.IsSuppressed(weapon);
+		if (suppressed)
 			heat = heat * m_fSuppressedHeatMult;
 
 		m_Heat.AddHeat(shooter.GetOrigin(), heat);
+
+		// A shot gives you away at once (docs/DESIGN.md, Stealth)
+		m_Stealth.OnPlayerShot(playerID, suppressed);
 
 		// House rules and wanderers who were shot at
 		m_Safehouses.OnPlayerShot(playerID, shooter.GetOrigin());
@@ -1439,9 +1457,14 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void BiteCheck()
+	//! Once a second: bites, and stealth (which updates at its own pace, Stealth > Update seconds).
+	protected void SecondTick()
 	{
-		m_BiteDetector.Check();
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		m_BiteDetector.Check(ids, players);
+		m_Stealth.Tick(1, ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------

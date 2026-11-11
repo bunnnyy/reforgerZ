@@ -1,7 +1,7 @@
 //! Unarmed missions (docs/MISSIONS.md, "Unarmed missions"):
 //! low-level contracts about stealth, noise and thinking for new characters and unarmed
 //! backgrounds. They use the noisemakers (any loud noise: RZ_HeatMap.FindRecentNoise) and
-//! the "being noticed" check (RZ_Stealth), and pay small Fame. This file has the ones where
+//! the "being noticed" check (RZ_NoticeTracker), and pay small Fame. This file has the ones where
 //! something is carried; RZ_UnarmedTasks.c has the rest.
 
 //------------------------------------------------------------------------------------------------
@@ -115,7 +115,7 @@ class RZ_Mission_PharmacyLure : RZ_Mission_Delivery
 	protected vector m_vPharmacy;
 	protected ref array<IEntity> m_aGuards = {};
 	protected ref array<IEntity> m_aWaypoints = {};
-	protected ref RZ_Stealth m_Stealth = new RZ_Stealth();
+	protected ref RZ_NoticeTracker m_Notice = new RZ_NoticeTracker();
 	protected float m_fLuredFor;
 	protected bool m_bLured;
 	protected bool m_bTaken;
@@ -174,9 +174,9 @@ class RZ_Mission_PharmacyLure : RZ_Mission_Delivery
 		}
 
 		m_vPos = m_vPharmacy;
-		m_Stealth.m_fHeatThreshold = 45;
-		m_Stealth.m_fZombieRadius = 10;
-		m_Stealth.m_fZombieSeconds = 6;
+		m_Notice.m_fHeatThreshold = 45;
+		m_Notice.m_fZombieRadius = 10;
+		m_Notice.m_fZombieSeconds = 6;
 		m_sTitle = "Pharmacy Lure";
 		m_sBrief = string.Format("%1 in %2 still has antibiotics on the shelves, and a crowd of them standing in the aisles. Don't fight them. Throw something loud well away from the door, let them go and look, then walk in. Bring the medicine to %3.",
 			what, s.m_sName, dropName);
@@ -186,7 +186,7 @@ class RZ_Mission_PharmacyLure : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override protected void OnDeliveryTick(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		m_Stealth.Track(gm, ids, players, dt, m_vPharmacy, 150);
+		m_Notice.Track(gm, ids, players, dt, m_vPharmacy, 150);
 
 		// A noise near the pharmacy pulls them out; after a while they drift back in
 		vector noise;
@@ -218,11 +218,11 @@ class RZ_Mission_PharmacyLure : RZ_Mission_Delivery
 
 		m_bTaken = true;
 		IEntity player = GetGame().GetPlayerManager().GetPlayerControlledEntity(carrier);
-		if (player && m_Stealth.IsNoticed(gm, player))
+		if (player && m_Notice.IsNoticed(gm, player))
 		{
 			m_fRewardScale = 0.6;
 			RZ_UnarmedHelper.SteerUnits(gm, m_aGuards, player.GetOrigin(), m_aWaypoints);
-			gm.NotifyPlayer(carrier, m_sTitle, m_Stealth.GetReason(gm, player) + " They turn from the shelves toward you. Run.");
+			gm.NotifyPlayer(carrier, m_sTitle, m_Notice.GetReason(gm, player) + " They turn from the shelves toward you. Run.");
 			return;
 		}
 
@@ -368,7 +368,7 @@ class RZ_Mission_WaterRun : RZ_Mission_Delivery
 	protected int m_iRisky = -1;
 	protected bool m_bFast;
 	protected bool m_bSpilled;
-	protected ref RZ_Stealth m_Stealth = new RZ_Stealth();
+	protected ref RZ_NoticeTracker m_Notice = new RZ_NoticeTracker();
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -450,7 +450,7 @@ class RZ_Mission_WaterRun : RZ_Mission_Delivery
 		if (!risky)
 			return;
 
-		m_Stealth.Track(gm, ids, players, dt, risky.m_vCenter, risky.m_fRadius + 50);
+		m_Notice.Track(gm, ids, players, dt, risky.m_vCenter, risky.m_fRadius + 50);
 		if (m_iCarrier <= 0)
 			return;
 
@@ -459,10 +459,10 @@ class RZ_Mission_WaterRun : RZ_Mission_Delivery
 			return;
 
 		m_bFast = true;
-		if (!m_bSpilled && m_Stealth.IsNoticed(gm, carrier))
+		if (!m_bSpilled && m_Notice.IsNoticed(gm, carrier))
 		{
 			m_bSpilled = true;
-			gm.NotifyPlayer(m_iCarrier, m_sTitle, m_Stealth.GetReason(gm, carrier) + " You run, and the water slops out with every step.");
+			gm.NotifyPlayer(m_iCarrier, m_sTitle, m_Notice.GetReason(gm, carrier) + " You run, and the water slops out with every step.");
 		}
 	}
 

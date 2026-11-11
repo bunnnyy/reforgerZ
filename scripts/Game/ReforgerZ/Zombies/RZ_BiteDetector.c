@@ -65,15 +65,12 @@ class RZ_BiteDetector
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void Check()
+	//! Once a second, with the living players.
+	void Check(array<int> ids, array<IEntity> players)
 	{
 		m_fClock += CHECK_SECONDS;
 		if (m_fChance <= 0)
 			return;
-
-		array<int> ids = {};
-		array<IEntity> players = {};
-		RZ_Util.GetAlivePlayers(ids, players);
 
 		foreach (int i, IEntity ent : players)
 		{

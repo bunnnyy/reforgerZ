@@ -126,6 +126,8 @@ class RZ_Environment
 	protected float m_fRainNewsAt = -10000;
 	protected float m_fFogNewsAt = -10000;
 	protected bool m_bFogBank;
+	protected vector m_vFogBankPos;
+	protected float m_fFogBankRadius;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Environment(RZ_GameModeComponent gm, RZ_EnvironmentSettings settings)
@@ -145,6 +147,8 @@ class RZ_Environment
 	void StartFogBank(vector pos, float radius, float heatMult, float spawnMult)
 	{
 		m_bFogBank = true;
+		m_vFogBankPos = pos;
+		m_fFogBankRadius = radius;
 		m_GM.GetHeat().SetFogBank(true, pos, radius, heatMult);
 		m_GM.GetSpawner().SetFogBank(true, pos, radius, spawnMult);
 	}
@@ -155,6 +159,16 @@ class RZ_Environment
 		m_bFogBank = false;
 		m_GM.GetHeat().SetFogBank(false, vector.Zero, 0, 1);
 		m_GM.GetSpawner().SetFogBank(false, vector.Zero, 0, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fog where pos is: the weather's, or inside a Fog Bank (stealth, RZ_Stealth).
+	bool IsInFog(vector pos)
+	{
+		if (IsFoggy())
+			return true;
+
+		return m_bFogBank && RZ_Util.DistXZ(pos, m_vFogBankPos) <= m_fFogBankRadius;
 	}
 
 	//------------------------------------------------------------------------------------------------
