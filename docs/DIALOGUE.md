@@ -227,11 +227,15 @@ two players at one speaker can see different choices.
 
 - **Overheard.** A `public` node's lines, and the label someone picked there (tags stripped), go to
   other players within **8 m**, owner-only, at most once every 10 s per listener.
-- **Deciding together.** A conversation may name a `scene <id> speaker|season`. A choice with
+- **Deciding together.** A conversation may name a `scene <id> speaker|season [who <conditions>]`. A choice with
   `decide:<value>` doesn't land at once: a **5 s hold** is told to the room (30 m). Anyone else
   talking to that speaker sees **Object** (once per scene) and **Stand with**. Unobjected, the pick
   lands for the decider and writes the scene's record (`scene.<key>`, a world record), once; later
-  visitors meet the result through `jump decided -> <node>`. One hold per speaker at a time.
+  visitors meet the result through `jump decided -> <node>`. One hold per speaker at a time. With
+  `who`, only those the conditions hold for may decide; everyone else sees the choice dimmed, *"only
+  someone {name} trusts can answer for it"* (a sway is still theirs to add).
+- **Waiting your turn.** A conversation left without a reply ends after 120 s (**Dialogue > Idle seconds**), or after
+  45 s while another player stands within 8 m of the same person.
 - **Tallies.** `sway:<name>` adds one contribution per player to `tally.<name>`; the owning system
   counts at its own time.
 - **Vouch.** Trusted or better with the speaker's faction, within 8 m of someone talking to them:
@@ -292,7 +296,7 @@ prio quest|ask|world|reaction|flavour
 once | daily                    per character, per speaker
 voice haven|bastion|redhand|halcyon|table|plain
 
-scene <id> speaker|season      deciding together (Several players): one record per speaker, or one for the season
+scene <id> speaker|season [who <conditions>]   deciding together (Several players): one record per speaker, or one for the season; who may decide
 node <id> [public]              the first node is "start"; public: others within 8 m overhear it
   jump <conditions> -> <node>   checked in order on entry
   say <text>                    one to three lines; 200 characters each
@@ -344,7 +348,7 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
 
 ## The conversations
 
-✅ 30 conversations, 97 nodes (`python3 tools/dialogue_pack.py --list`).
+✅ 31 conversations, 100 nodes (`python3 tools/dialogue_pack.py --list`).
 
 | Speaker | Conversations |
 |---|---|
@@ -353,7 +357,7 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
 | Red Hand leaders | The book (the first line, Rudi, persuade to see your own page, which reads it out in the book's voice); why the hand is red |
 | Halcyon leaders | Why they're called the beaks ([Lab Technician], [Doctor], [Nurse]: the notebooks); how close the cure is (the other two) |
 | The 8 wanderer roles | The Trader's prices; the Doctor's work ([Doctor], [Nurse]); where the Scavenger has been (persuade: is it true); why the Deserter left ([Soldier], [Police]); the Preacher's bells; the Courier's letters; what still runs ([Mechanic]); the Kid's name |
-| Occupants | A fed house (leave a tin: 2 Haven Favor); the candle in the window after a death (a greet, and a topic); the bear on the door |
+| Occupants | A fed house (leave a tin: 2 Haven Favor); the candle in the window after a death (a greet, and a topic); the bear on the door; who gets the bed by the stove (a short house: a public scene per house that someone Known with the Haven decides, with a sway for the room) |
 | Named people | The Red Hand toll man (who painted the hand; Rudi, said flatly); the Bastion sentry (the roll) |
 | Post speakers | Bastion's search (persuade with [Soldier], [Police]: the pole goes up); the Red Hand's toll (pay it, or threaten: Fear, +3 Red Hand Infamy) |
 | The Long Table | The host on the road (where you're headed, and is anyone expecting you); the mother at the farm (is the boy hers; [Bitten]: declare it, as built) |
@@ -388,4 +392,4 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
   (`~lie` lines, `heard_lie`, the `[Evidence]` call-out); promises and callbacks through `later:`;
   claims in someone else's kit as conversation lines (the look itself is built); Make it right;
   strangers', radio speakers' conversations and barks; the finale's commit and the epilogue's topics.
-  No shipped conversation uses scenes or lies yet.
+  One shipped conversation uses a scene (the bed by the stove); none uses lies yet.

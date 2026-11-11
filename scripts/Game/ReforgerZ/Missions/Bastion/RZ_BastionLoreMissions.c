@@ -517,7 +517,16 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		if (RZ_ContractHelp.CountSafehouses(gm) == 0)
 			return 0;
 
-		return 1.2;
+		// A post that cooked its count, or orders read on the air, wants the numbers right (x1.2 each,
+		// inside the one weight clamp)
+		float weight = 1.2;
+		if (RZ_WorldFacts.Get().Memory().NewestRecord("errand.the_count", 3))
+			weight *= 1.2;
+
+		if (gm.GetQuestlines() && gm.GetQuestlines().HasWorldFlag("orders.read"))
+			weight *= 1.2;
+
+		return weight;
 	}
 
 	//------------------------------------------------------------------------------------------------

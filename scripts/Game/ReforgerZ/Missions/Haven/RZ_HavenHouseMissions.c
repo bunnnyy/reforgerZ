@@ -345,6 +345,8 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 
 		// He's left the safehouse for good, whatever happens next
 		houses.RemovePopulation(m_iHouse, 1);
+		// The house has a bitten man today (errands' Sit With Him and Borrowed Green read it)
+		RZ_WorldFacts.Get().Memory().PostReason("house.bitten", RZ_WorldFacts.Safehouse(m_iHouse), string.Format("%1 was bitten on a supply run.", m_sMan), h.m_vPos, RZ_EFaction.SURVIVORS, 1);
 
 		m_sTitle = "Walk Him Out";
 		m_sBrief = string.Format("%1 was bitten on a supply run. He told the council himself. At dusk he walks out past the %2 edge of %3, so the children don't have to see what comes after. Walk with him. At the edge he'll ask you for one last thing.",
@@ -419,6 +421,7 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 		m_aParticipants.Insert(playerId);
 		if (option == 0)
 		{
+			RecordWalk(playerId, "ended");
 			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You stay with him until it's done. Then you walk back to %1 alone. Someone has left a light on for you.", m_sTown));
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
@@ -426,6 +429,7 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 
 		if (option == 1)
 		{
+			RecordWalk(playerId, "walked on");
 			m_fRewardScale = 0.6;
 			RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 			if (s)
@@ -437,9 +441,22 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The record `walk.out` (his name: ended, walked on or turned): the stranger Still Walking and
+	//! the Edge of Town read it.
+	protected void RecordWalk(int playerId, string value)
+	{
+		array<int> who = {};
+		if (playerId > 0)
+			who.Insert(playerId);
+
+		RZ_WorldFacts.Get().Memory().Record("walk.out", m_sMan, value, RZ_WorldMemory.SOURCE_STORY, true, who);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Nobody came. He turned at the edge of town.
 	override void OnFailed(RZ_GameModeComponent gm)
 	{
+		RecordWalk(-1, "turned");
 		array<int> ids = {};
 		array<IEntity> players = {};
 		RZ_Util.GetAlivePlayers(ids, players);

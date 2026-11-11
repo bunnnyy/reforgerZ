@@ -137,7 +137,7 @@ approved designs for the rest of the season: the infected tribes and crawlers, t
 cure's finale, the epilogue week, errands' margin, lock and epilogue cards and more, built in the
 order of [designs/PLAN.md](designs/PLAN.md). Built so far: the shared engine (phase 1); small
 things everywhere (phase 3: errands' core, the mission style's framework and the world memory's
-writers, [ERRANDS.md](docs/ERRANDS.md)); most of the mission style in full (phase 4: the six story
+writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, simplified: the six story
 jobs with truths, lies and fallout, reputation's parley and settling up, lies and witnesses,
 dialogue's scenes for several players, borrowed kit, strangers at their spots, locals, twists,
 board and radio asks and errands' phase 4 cards,

@@ -203,6 +203,10 @@ cure goes to with nobody in the room, next season's rules), through flags on `Ad
   above 39 (they can make you Known, never Trusted), at most 10 a faction a season day, no rival
   shares, and left out of the hall of fame's Fame lines and the best deed too. Errand Favor is at
   most 40 an hour, with diminishing returns ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)).
+  Their dark ways cost Infamy only when someone saw (the witness rule) or you knew: selling a woman
+  to a toll or a crew lad seen by the Haven's +12 Haven Infamy, robbing the dead in front of the
+  digger +3; killing a stranger or a local costs what killing a wanderer does (+15). Their lies go
+  into the one lie store and cost 2–5 when found ([ERRANDS.md](ERRANDS.md#strangers)).
 - **A switched side** in a choice mission (`RZ_RepFlag.SWITCH`): the side that got the result pays
   at most the mission's base; its Fame counts for you and your tier but not for the season
   ([DESIGN.md](DESIGN.md#story-blocks)).

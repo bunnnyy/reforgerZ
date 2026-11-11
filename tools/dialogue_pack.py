@@ -150,6 +150,7 @@ class Conv:
         self.nodes = []
         self.scene = ""
         self.scope = ""
+        self.who = ""
 
     def node(self, nid):
         for n in self.nodes:
@@ -276,10 +277,12 @@ def parse_file(path):
                 else:
                     node.items.append(("do", "", rest))
             elif word == "scene":
-                bits = rest.split()
-                if len(bits) != 2 or bits[1] not in SCENE_SCOPES:
-                    raise Problem("a scene is 'scene <id> speaker|season'")
+                head, sep, who = rest.partition(" who ")
+                bits = head.split()
+                if len(bits) != 2 or bits[1] not in SCENE_SCOPES or (sep and not who.strip()):
+                    raise Problem("a scene is 'scene <id> speaker|season [who <conditions>]'")
                 conv.scene, conv.scope = bits[0], bits[1]
+                conv.who = who.strip()
             elif word in ("bind", "use", "opens", "always", "callout"):
                 raise Problem("'%s' comes with a later phase (docs/DIALOGUE.md, 'Not built yet')" % word)
             else:
@@ -453,6 +456,8 @@ def lint(convs):
         if any(s.startswith("table") for s in c.speakers) and c.voice != "table":
             errs.append("%s: the Long Table's people speak in voice table" % where_c)
         when_keys = lint_cond(c.when, where_c + " when", errs)
+        if c.who:
+            lint_cond(c.who, where_c + " who", errs)
         if c.prio == "ask" and not (when_keys & WORLD_KEYS):
             errs.append("%s: an ask must read the world (house, town, need, a bite, the speaker's state...)" % where_c)
         if not c.nodes:
@@ -614,7 +619,9 @@ def pack_area(area, convs):
         flags = (1 if c.once else 0) | (2 if c.daily else 0) | (4 if c.kind == "greet" else 0)
         calls.append("db.Conv(%s, %s, %s, %s, %d, %d, %s);" % (esc(c.id), esc(",".join(c.speakers)), esc(c.when),
                                                              esc(c.label), PRIOS[c.prio], flags, esc(c.voice)))
-        if c.scene:
+        if c.scene and c.who:
+            calls.append("db.Scene(%s, %s, %s);" % (esc(c.scene), esc(c.scope), esc(c.who)))
+        elif c.scene:
             calls.append("db.Scene(%s, %s);" % (esc(c.scene), esc(c.scope)))
         for n in c.nodes:
             calls.append("db.Node(%s);" % esc(n.id))

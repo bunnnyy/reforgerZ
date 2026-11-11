@@ -78,6 +78,14 @@ occupant.house.short/@give
 occupant.house.short/@give2
 occupant.house.short/@sorry
 occupant.house.short/@what
+occupant.house.stove_bed
+occupant.house.stove_bed/@back1
+occupant.house.stove_bed/@back2
+occupant.house.stove_bed/@gate
+occupant.house.stove_bed/@girl
+occupant.house.stove_bed/@notme
+occupant.house.stove_bed/@old
+occupant.house.stove_bed/@vote
 post.bastion.search
 post.bastion.search/@back1
 post.bastion.search/@drill

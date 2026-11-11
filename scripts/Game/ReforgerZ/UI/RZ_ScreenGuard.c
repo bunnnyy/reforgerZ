@@ -31,6 +31,10 @@ class RZ_ScreenGuard
 	static const int KIND_SHOP = 4;		// the quartermaster's shop screen (Factions/RZ_ShopScreen.c)
 
 	protected static const float HURT_DROP = 0.5;
+
+	protected static const float WAITING_IDLE = 45;		// AFK while someone waits at the same person
+
+	protected static const float WAITING_RANGE = 8;
 	protected static const float CLOSING_STEP = 2;
 
 	protected RZ_GameModeComponent m_GM;
@@ -217,10 +221,31 @@ class RZ_ScreenGuard
 		if (s.m_Speaker && RZ_Util.DistXZ(player.GetOrigin(), s.m_Speaker.GetOrigin()) > settings.m_fRange)
 			return "left";
 
-		if (m_fClock - s.m_fLastPickAt > settings.m_fIdleSeconds)
+		// AFK: the usual idle limit, or 45 s while someone else waits at the same person (talk only)
+		float idle = settings.m_fIdleSeconds;
+		if (talk && s.m_Speaker && SomeoneWaits(s.m_iPlayerId, s.m_Speaker.GetOrigin()))
+			idle = Math.Min(idle, WAITING_IDLE);
+
+		if (m_fClock - s.m_fLastPickAt > idle)
 			return "idle";
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Another player stands within 8 m of the speaker (waiting their turn).
+	protected bool SomeoneWaits(int playerId, vector speaker)
+	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			if (ids[i] != playerId && RZ_Util.DistXZ(p.GetOrigin(), speaker) <= WAITING_RANGE)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

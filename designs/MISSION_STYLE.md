@@ -692,7 +692,12 @@ The first errand's tip is [ERRANDS.md](ERRANDS.md)'s.
   Honour Among Thieves, Debt Collection, Patients Not Samples, The Notebook, Private Collection; and
   Rein In.
 
-The audit, for example on **Walk Him Out**:
+**The audit is built** for all 27 ([MISSIONS.md](../docs/MISSIONS.md#who-gets-offered-what)): a fallout
+line, the `t0.<key>` record written at their town and read by the next one there, the decider rule, and
+Walk Him Out's `walk.out` and `house.bitten`. What it still leaves: check tags on the choices that have
+none, and the tribes reading `walk.out` (a man walked on feeding the nearest tribe as a named young).
+
+The audit, as designed, for example on **Walk Him Out**:
 - tags on its two choices (the ★ Nurse bite read is already there);
 - the decider rules;
 - a world record `walked.<name>` (ended, or walked on), which H3 and the tribes read (a man walked on
@@ -770,18 +775,18 @@ Roof) and the 5 stage-only missions are done ([MISSIONS.md](../docs/MISSIONS.md)
 
 ## Worked examples
 
-**Built** (wave 3, [MISSIONS.md](../docs/MISSIONS.md)): Protection Racket, Lost Colleague, Crash Site,
+**Built** (wave 3 and phase 4's second pass, [MISSIONS.md](../docs/MISSIONS.md)): Protection Racket, Lost Colleague, Crash Site,
 Distress Call (Fake Distress Call merged in), Struck Off (Hunt the Deserter merged in) and Survivors
 Trapped, each with its truths, the main ways, a world record, its lies and its fallout, as each row
 there says, simplified. What the six worked examples still add:
 
 | Job | Still to build |
 |---|---|
-| Protection Racket | Off the book (a Rogue boss; Rein In's drop pays the stronghold); the paid-twice truth needing another crew boss within 6 km; skipping houses that pay by arrangement; the Short persuade's "speak for us" record being read at the next collection; the council head's regard; the callback note; R3's season weight on time-up |
+| Protection Racket | Off the book (a Rogue boss; Rein In's drop pays the stronghold); the council head's regard; R3's season weight on time-up |
 | Lost Colleague | Sold (his sister, the fence); the step chain and shortcuts to him; the escort (or ★ Nurse patching him); the Haven medic for the notebook; the Doctor wanderer slot and the filter's water need; His Notebook (Notebook 31) as the hiding truth's fallout; the arc's ×3 |
-| Crash Site | The recovery team at minute 15; the sneak lift; the carriers' ways other than force (persuade, bribe, the trick with the flight order); the quiet commander's pay and loyalty; the nail (tags, 70%); the open channel by hand at the radio station; time up turning the truth into Already taken; the 90% lock |
-| Distress Call | The Sneak out the back; the Nurse's dress-and-hide; "My sister's in {town}" and Bastion's post as destinations; the callback at her house; the named young in a tribe's range |
-| Struck Off | Press and Trade at a Haven door; the commander's loyalty for the stores book; ★ Hunter and ★ Soldier finding shortcuts; let him go as a Deserter wanderer; `count.cooked` and `orders.read` weights; the epilogue roll on the majors' coda |
+| Crash Site | The recovery team at minute 15; the sneak lift; the carriers' ways other than force (persuade, bribe, the trick with the flight order); the quiet commander's pay and loyalty; the nail (tags, 70%); the open channel by hand at the radio station; the 90% lock |
+| Distress Call | The Sneak out the back; the Nurse's dress-and-hide; "My sister's in {town}" and Bastion's post as destinations; the named young in a tribe's range |
+| Struck Off | Press and Trade at a Haven door; the commander's loyalty for the stores book; ★ Hunter and ★ Soldier finding shortcuts; let him go as a Deserter wanderer; the epilogue roll on the majors' coda |
 | Survivors Trapped | The Nurse's dress-and-hide and the "hid a bite" life record; reasons (`horde.passed`); civilians sheltered on Bastion's call; the Watched amends rule's exception for Bastion is built |
 
 ### 7. After the lock

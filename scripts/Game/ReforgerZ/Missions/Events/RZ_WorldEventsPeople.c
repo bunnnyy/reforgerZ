@@ -578,7 +578,19 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 		SpawnRewardAt(gm, m_vSpot);
 		RZ_Safehouses houses = gm.GetSafehouses();
 		if (houses && houses.Count() > 0)
+		{
 			houses.AddRescued(m_vSpot, 2, m_aParticipants);
+			// The callback at her house: some hours of each rescuer's play later, near it
+			RZ_Safehouse home = houses.Get(houses.FindNearest(m_vSpot));
+			RZ_Shared shared = gm.GetShared();
+			if (home && shared)
+			{
+				foreach (int rescuer : m_aParticipants)
+				{
+					shared.GetCallbacks().Queue(rescuer, "At " + home.m_sName, string.Format("The woman with the limp is on the bench by the door. \"You took the barricade down. %1 still talks about it. He tells it better every time.\"", m_sCaller), home.m_vPos);
+				}
+			}
+		}
 
 		RZ_StoryKit.Record(this, "saved", m_sCaller, m_sTruth, m_aParticipants, string.Format("In %1's school, a radio with the batteries taken out, and a note: \"In case we need to call again. We won't.\"", GetLocationName(gm)), "board");
 	}
