@@ -83,10 +83,11 @@ and one way to end it: **research the cure.**
   emblems, an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance, a notebook (standing, journal, radio, map key,
   hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
-  for everyone who talks, a repair screen for the cars, spoken lines as subtitles, notes on a paper
-  reader, and on the map only what you know. Gamepad and console as well as keyboard and mouse (the
-  HUD and notice cards show in Workbench play; the notebook, talk screen, repair screen, reader and
-  subtitles are written and not yet played; the map icons are still to do).
+  for everyone who talks, a repair screen for the cars and a shop screen at the quartermasters,
+  spoken lines as subtitles, notes on a paper reader, and on the map only what you know. Gamepad
+  and console as well as keyboard and mouse (the HUD and notice cards show in Workbench play; the
+  notebook, talk, repair and shop screens, reader and subtitles are written and not yet played; the
+  map icons are still to do).
 
 ## Status
 
@@ -165,7 +166,8 @@ scripts/Game/ReforgerZ/
                  budget (roles, data parts, the sight rule, runtime groups), the tribes' settings,
                  bite detection, stealth (visibility, the infected's senses, losing them)
   Backgrounds/   backgrounds, personal goals, player profiles
-  Factions/      reputation and its 16 names, quartermasters and shops, perks, services, hunter squads, bounties,
+  Factions/      reputation and its 16 names, quartermasters, shops and the shop screen's server
+                 side, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,
                  territory, supply trucks, faction life, camp life (scenery and routines),
                  reputation's voice (the word for you, crew names, the picture), the voice bank
@@ -186,7 +188,7 @@ scripts/Game/ReforgerZ/
                  memory (dialogue.json); Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
-                 the car repair screen, the screen guard, the notice board, deploy-menu panel and loadout lock, the
+                 the car repair and shop screens, the screen guard, the notice board, deploy-menu panel and loadout lock, the
                  map's icon layer, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugin: ReforgerZ: Create prefabs, Write prefab checklist

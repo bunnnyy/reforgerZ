@@ -205,10 +205,10 @@ and choice missions, and puzzles:
 | (existing prefab) | Special Zombies, or Bacon heavy, exploding and ranged | — | Zombies > Special prefabs (list) | samples, the cure |
 | (existing prefab) | a large Bacon group | — | Zombies > Horde prefabs (list) | hordes |
 | (existing prefab) | vanilla AIWaypoint_Move.et | — | Zombies > Move waypoint | hordes toward noise, unarmed missions, hunter squads, supply trucks, favourite spots |
-| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), `RZ_FactionServiceAction` (Service AMENDS) | Factions > Haven quartermaster | the Haven shop, leader and safehouse services |
-| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionServiceAction` (Service AMENDS), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke) | Factions > Bastion quartermaster | the Bastion shop and leader |
-| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 3 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS) | Factions > Red Hand quartermaster | the Red Hand black market and leader |
-| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 3 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS) | Factions > Halcyon quartermaster | the Halcyon shop, leader, antidotes and the trial dose |
+| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), `RZ_FactionServiceAction` (Service AMENDS) | Factions > Haven quartermaster | the Haven shop, leader and safehouse services |
+| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionServiceAction` (Service AMENDS), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke) | Factions > Bastion quartermaster | the Bastion shop and leader |
+| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 3 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS) | Factions > Red Hand quartermaster | the Red Hand black market and leader |
+| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 3 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS) | Factions > Halcyon quartermaster | the Halcyon shop, leader, antidotes and the trial dose |
 <!-- /manifest:minimum -->
 
 No towns, spawn points or lab need placing: they're generated at start. With only this,
@@ -364,7 +364,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **184 prefab fields**: 40 on `RZ_GameModeComponent`, 137 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **189 entries**: 146 prefabs the plugin creates, 24 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 19 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 40 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **185 prefab fields**: 40 on `RZ_GameModeComponent`, 138 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **190 entries**: 146 prefabs the plugin creates, 24 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 20 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 40 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -508,10 +508,10 @@ and the UI files) need none, and seven have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), `RZ_FactionServiceAction` (Service AMENDS) | Factions > Haven quartermaster | **minimum** | the Haven shop, leader and safehouse services. Add RZ_FactionShopAction entries for vanilla stock by hand (suggested stock below) |
-| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionServiceAction` (Service AMENDS), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke) | Factions > Bastion quartermaster | **minimum** | the Bastion shop and leader. Add one RZ_RequisitionAction per ammo or rations item, and shop actions for vanilla stock, by hand |
-| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 3 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS) | Factions > Red Hand quartermaster | **minimum** | the Red Hand black market and leader |
-| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 3 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS) | Factions > Halcyon quartermaster | **minimum** | the Halcyon shop, leader, antidotes and the trial dose |
+| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), `RZ_FactionServiceAction` (Service AMENDS) | Factions > Haven quartermaster | **minimum** | the Haven shop, leader and safehouse services. Add RZ_FactionShopAction entries for vanilla stock by hand (suggested stock below) |
+| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionServiceAction` (Service AMENDS), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke) | Factions > Bastion quartermaster | **minimum** | the Bastion shop and leader. Add one RZ_RequisitionAction per ammo or rations item, and shop actions for vanilla stock, by hand |
+| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 3 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS) | Factions > Red Hand quartermaster | **minimum** | the Red Hand black market and leader |
+| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 3 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS) | Factions > Halcyon quartermaster | **minimum** | the Halcyon shop, leader, antidotes and the trial dose |
 
 #### Faction consequences
 
@@ -681,6 +681,7 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | the TalkReply layout (UI/LAYOUTS.md) | — | UI > Talk reply layout | optional | the talk screen's reply rows (empty = no talk screen: a person's actions and notices) |
 | (existing prefab) | the CarJob layout (UI/LAYOUTS.md) | — | UI > Car job layout | optional | the car repair screen's job rows (empty = no repair screen: the car's actions and notices) |
 | (existing prefab) | UI/Textures/ReforgerZ/RZ_CarSide.png, imported as a texture (UI/LAYOUTS.md) | — | UI > Car picture | optional | the side view of the car on the repair screen (empty = the job markers on a plain panel). Import the PNG in the Resource Browser (it becomes RZ_CarSide.edds), then pick it here |
+| (existing prefab) | the ShopItem layout (UI/LAYOUTS.md) | — | UI > Shop item layout | optional | the quartermaster's shop screen's item rows (empty = no shop screen: the Buy, Requisition and service actions) |
 <!-- /manifest:prefabs -->
 
 ### Stand-in bases
@@ -767,8 +768,13 @@ on every quartermaster are how players reach stronghold leaders and council head
 
 Each `RZ_FactionShopAction` sells one thing: **Faction**, **Required tier** (Stranger, Known,
 Trusted or Champion), **Favor cost**, **Item prefab** (an item or crate, spawned next to the
-quartermaster) and **Display name**. The action is always shown; the server checks tier and Favor
-when it's used. **Never a vehicle or a car part** (battery, tyre, spark plugs, fuel can, any
+quartermaster) and **Display name**. The action is always shown (or, with the shop screen on, is a
+row on it); the server checks tier and Favor when it's used. The four quartermaster prefabs carry
+`RZ_ShopOpenAction` (**Trade**, first in the list), which opens the shop screen while **UI > Shop
+item layout** is set; then the Buy, Requisition and service actions hide from the action menu. A
+quartermaster you build yourself needs it too. The screen sorts the items into tabs by their
+prefab path and name ([UI.md](UI.md#the-shop-screen)); give an item a plain name (a medicine under
+`/Medicine/`, food under `/Food/`) and it lands in the right one. **Never a vehicle or a car part** (battery, tyre, spark plugs, fuel can, any
 vehicle prefab): cars are only ever found, so the server refuses such an action and logs it.
 `RZ_RequisitionAction` has the same cost, item and name; the cost is the full price (a Trusted
 player pays half, once an hour). Set it up for ammo and rations only, each an item a shop action
@@ -1010,7 +1016,9 @@ car picture, 4a.4); 5 and 6 aren't. The layouts are in `UI/layouts/ReforgerZ/`.
       (its new `SubtitlePanel`, hidden) the same way. **UI > Talk reply layout** is set, so the
       talk screen is on (**Dialogue > Talk screen**). Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
       Open `RZ_CarMenu.layout` and `RZ_CarJob.layout` too: **UI > Car job layout** is set, so the
-      car repair screen is on.
+      car repair screen is on. The same for `RZ_ShopMenu.layout` and `RZ_ShopItem.layout` (**UI >
+      Shop item layout** is set, so the shop screen is on), and open one quartermaster prefab to
+      see **Trade** (`RZ_ShopOpenAction`) at the top of its actions.
    4. **The car picture** (to do, two minutes). In the Resource Browser, import
       `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on transparent, 1,440 × 480) with
       the vanilla **TextureUIAtlas** preset, as the icon atlas was; it becomes `RZ_CarSide.edds`.
@@ -1348,8 +1356,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **60** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 11 are in the UI, the talk screen and the server's loadout
+There are **62** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 13 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -1357,7 +1365,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-9)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-11)
 come last.
 
 ### High risk: the core loop (2)
@@ -1425,24 +1433,27 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1382` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
 | `Factions/RZ_CampLife.c:1449` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
-### The UI (9)
+### The UI (11)
 
-None of these affect the game: the UI only reads, and the talk screen runs the handlers that are
-already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off and every
-message goes back to the vanilla hint; empty **UI > Talk reply layout** for the old actions on
-people, **UI > Reader** and **Subtitles** off for cards. How the UI is put together is in
+None of these affect the game: the UI only reads, and the talk, repair and shop screens run the
+handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
+and every message goes back to the vanilla hint; empty **UI > Talk reply layout** for the old
+actions on people, **Car job layout** for a car's actions, **Shop item layout** for a
+quartermaster's Buy actions, **UI > Reader** and **Subtitles** off for cards. How the UI is put together is in
 [UI.md](UI.md). Check the first five in one Workbench play with a pad plugged in.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:915` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:918` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:197` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_UIData.c:938` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:941` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:440` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:163` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
+| `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
 | `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
 
 ## 7. Log lines to check
@@ -1583,8 +1594,8 @@ now N percent.` (both only once a finale questline is registered),
 `Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
 `Long Table: found out (to N).`, `Long Table: the farm past ... is moving (quiet for a real day).` and
 `... opens again past ...`, `Long Table: broken up (N).`,
-`Screen guard: closed talk for player N (danger).` (or `reader`, `car repair`; `left`, `idle`,
-`gone`: a talk screen, reader or repair screen the screen guard shut), `Status | infected N/100 agents (N entries; crawlers N, loose N), clusters N share N [N/N, ...], other
+`Screen guard: closed talk for player N (danger).` (or `reader`, `car repair`, `shop`; `left`,
+`idle`, `gone`: a screen the screen guard shut), `Status | infected N/100 agents (N entries; crawlers N, loose N), clusters N share N [N/N, ...], other
 bodies N agents, hordes from towns N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
 doors N | active AI N/160 | land: ... | clock ..., day N min` (with Crawlers or Tribes on: agents near the
 budget all the time, or the active AI at its limit, means the budget is too high for the server),
@@ -1662,6 +1673,16 @@ session, tick off:
 - [ ] A quartermaster sells an item at the right tier and refuses one above it. No quartermaster
   offers a vehicle, a car part or a jerrycan. A Bastion Trusted player can requisition rations and
   a rifle magazine (once an hour, half price).
+- [ ] The shop screen: **Trade** at the Haven quartermaster opens it, and the Buy actions are gone
+  from the action menu. The header says whose stores they are, your standing and your Favor; LB/RB
+  (Q/E) switch tabs and skip empty ones; up/down move in the list, which scrolls. A Champion item
+  is dim with a lock and "Needs Champion with the Haven"; its picture is darkened. The picture
+  shows the selected item, turns with the right stick (left/right, or a click) and shows its
+  description and weight. A buys: the item lies by the quartermaster, the Favor drops in the header
+  and the status line says "Here's your ...". With too little Favor A says so without asking the
+  server. At Bastion as Trusted, the Services tab has Requisition (Sign out) and Make amends (Ask).
+  B closes it; walk 6 m off or let an infected close in and it closes. With **UI > Shop item
+  layout** empty, Trade is gone and the Buy actions are back.
 - [ ] Purification tablets: carry `RZ_Tablets.et` and untreated water; **Purify water** at a
   workbench uses one tablet and gives safe water.
 - [ ] Stop and restart the server: stage, infection, research and your standing are back.

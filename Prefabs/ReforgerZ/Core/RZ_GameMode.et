@@ -18,6 +18,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sHallPage "{FCD5A2E4F7512EFF}UI/layouts/ReforgerZ/RZ_HallPage.layout"
     m_sTalkReplyLayout "{187F52CB9738023F}UI/layouts/ReforgerZ/RZ_TalkReply.layout"
     m_sCarJobLayout "{CE4B7C77AA100CFB}UI/layouts/ReforgerZ/RZ_CarJob.layout"
+    m_sShopItemLayout "{73145BE069067DCE}UI/layouts/ReforgerZ/RZ_ShopItem.layout"
     m_sNotebookPrefab "{6C1F4A7B92D3E0C1}Prefabs/ReforgerZ/UI/RZ_Notebook.et"
    }
    m_sSpawnPointPrefab "{BAFE0A6ECC397363}Prefabs/ReforgerZ/Core/RZ_SpawnPoint.et"

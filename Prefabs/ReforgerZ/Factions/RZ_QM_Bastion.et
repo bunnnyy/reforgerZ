@@ -26,6 +26,14 @@ SCR_ChimeraCharacter : "{2F912ED6E399FF47}Prefabs/Characters/Factions/BLUFOR/US_
   }
   ActionsManagerComponent "{520EA1D2F659CE02}" {
    additionalActions {
+    RZ_ShopOpenAction "{B9727E4C97CF7921}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{E4EAC1AB7A732FF6}" {
+      Name "Trade"
+     }
+    }
     RZ_StandingStatusAction "{6AD67DC2A1B62A03}" {
      ParentContextList {
       "default"

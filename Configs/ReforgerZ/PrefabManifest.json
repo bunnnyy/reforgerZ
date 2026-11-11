@@ -1556,6 +1556,7 @@
    "baseHint": "a civilian character without AI (damage off)",
    "components": [{"cls": "RZ_QuartermasterComponent", "values": ["m_eFaction=0"], "name": ""}],
    "actions": [
+    {"cls": "RZ_ShopOpenAction", "values": [], "name": "Trade"},
     {"cls": "RZ_StandingStatusAction", "values": [], "name": "My standing"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
@@ -1589,6 +1590,7 @@
    "baseHint": "a soldier character without AI (damage off)",
    "components": [{"cls": "RZ_QuartermasterComponent", "values": ["m_eFaction=1"], "name": ""}],
    "actions": [
+    {"cls": "RZ_ShopOpenAction", "values": [], "name": "Trade"},
     {"cls": "RZ_StandingStatusAction", "values": [], "name": "My standing"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
@@ -1625,6 +1627,7 @@
    "baseHint": "a civilian character without AI in rough clothes (damage off)",
    "components": [{"cls": "RZ_QuartermasterComponent", "values": ["m_eFaction=2"], "name": ""}],
    "actions": [
+    {"cls": "RZ_ShopOpenAction", "values": [], "name": "Trade"},
     {"cls": "RZ_StandingStatusAction", "values": [], "name": "My standing"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
@@ -1657,6 +1660,7 @@
    "baseHint": "a character in a lab coat without AI (damage off)",
    "components": [{"cls": "RZ_QuartermasterComponent", "values": ["m_eFaction=3"], "name": ""}],
    "actions": [
+    {"cls": "RZ_ShopOpenAction", "values": [], "name": "Trade"},
     {"cls": "RZ_StandingStatusAction", "values": [], "name": "My standing"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
@@ -3996,6 +4000,24 @@
    "minimum": false,
    "use": "the side view of the car on the repair screen (empty = the job markers on a plain panel)",
    "notes": "Import the PNG in the Resource Browser (it becomes RZ_CarSide.edds), then pick it here."
+  },
+  {
+   "id": "UIShopItemLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the ShopItem layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sShopItemLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Shop item layout",
+   "required": false,
+   "minimum": false,
+   "use": "the quartermaster's shop screen's item rows (empty = no shop screen: the Buy, Requisition and service actions)",
+   "notes": ""
   }
  ],
  "additions": [

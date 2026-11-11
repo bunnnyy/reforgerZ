@@ -228,6 +228,13 @@ requisition action set to one ✅. The items below are a suggested starting list
 the local leader's traits and memory (within ±20%), × a shortage (+25–50% where a supply truck
 didn't arrive), × the faction's morale (0.95–1.1). The server checks tier and Favor when you buy.
 
+**Trade** at a quartermaster opens the shop screen ✅ ([UI.md](UI.md#the-shop-screen)): the same
+stock in tabs (food and water, medical, gear and tools, weapons and ammo; Requisition and the
+quartermaster's services on a Services tab), each item with the price it costs *you* there now and,
+when you can't have it, why ("Needs Champion with the Haven", "Not until the next truck"). Buying
+there runs the same checks as the Buy action. Without the screen's layout the Buy actions show as
+before.
+
 ### The Haven
 
 | Tier | Shop | Perk / service |
@@ -711,7 +718,9 @@ checkpoints keep a curfew ([DESIGN.md](DESIGN.md#seasons)).
   (`RZ_Leaders.ScaleInfamy`). *Simplified:* a direct gain without SHARE counts as done in sight, as
   before, so a uniform still doubles it; call sites aren't yet marked ACT one by one.
 - `RZ_QuartermasterComponent` marks a faction contact; `RZ_FactionShopAction` sells one item
-  (`RZ_SupplyLines.FindShopState` for shortages, `PriceMult` for leaders and morale).
+  (`Quote` is every check and the price for one player; `Buy` takes the Favor; `RZ_SupplyLines.FindShopState`
+  for shortages, `PriceMult` for leaders and morale). `RZ_ShopOpenAction` ("Trade") and
+  `RZ_ShopScreen` (`Factions/RZ_ShopScreen.c`) put a quartermaster's actions on the shop screen.
 - Missions: `m_eGiver` gets Fame, an optional `m_eRival` gets Infamy, `m_iFavorReward` pays out,
   `m_iLeaderId` is the leader whose traits scale it.
 - `RZ_FactionPerks`: perks, hunter squads, bounties and the bounty board, the safehouse location

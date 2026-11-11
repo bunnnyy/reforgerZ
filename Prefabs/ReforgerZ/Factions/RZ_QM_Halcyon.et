@@ -26,6 +26,14 @@ SCR_ChimeraCharacter : "{4E29194BA809DF32}Prefabs/Characters/Factions/INDFOR/FIA
   }
   ActionsManagerComponent "{520EA1D2F659CE02}" {
    additionalActions {
+    RZ_ShopOpenAction "{1E236D9E1DDBC6D9}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3F3E91F2E0322B22}" {
+      Name "Trade"
+     }
+    }
     RZ_StandingStatusAction "{6AD67DC2A29F84B1}" {
      ParentContextList {
       "default"

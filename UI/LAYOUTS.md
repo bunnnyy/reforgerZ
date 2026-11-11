@@ -2,7 +2,7 @@
 
 The ReforgerZ layouts are in `UI/layouts/ReforgerZ/`: the HUD, the notice card, the notebook's
 frame and its five pages, the notice board, the journal and radio rows, the talk screen, the
-reader, the car repair screen, the map icon and the background panel. They were written as text
+reader, the car repair and shop screens, the map icon and the background panel. They were written as text
 from the trees below and checked against every widget
 name and type the UI scripts look up.
 This file is their reference: the widget trees, the **names the scripts look up**, sizes, anchors,
@@ -210,11 +210,12 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_ReaderMenu` | `RZ_ReaderMenu` | `RZ_ReaderMenu.layout` |
 | `RZ_TalkMenu` | `RZ_TalkMenu` | `RZ_TalkMenu.layout` |
 | `RZ_CarMenu` | `RZ_CarMenu` | `RZ_CarMenu.layout` |
+| `RZ_ShopMenu` | `RZ_ShopMenu` | `RZ_ShopMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `RZ_RadioFilter`
-(**F**, pad **X**), `RZ_CarStart` (**T**, pad **Y**) and `RZ_Reply1` to `RZ_Reply7` (**1** to
-**7**) in `MenuContext`. The list with
+(**F**, pad **X**), `RZ_CarStart` (**T**, pad **Y**), `RZ_TurnPreview` (the pad's right stick) and
+`RZ_Reply1` to `RZ_Reply7` (**1** to **7**) in `MenuContext`. The list with
 the pad routes is in [UI.md](../docs/UI.md#controllers). Esc, Q/E, up/down and Enter use the
 vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
 
@@ -513,6 +514,78 @@ State colours (the script tints them): done olive `#9AA35E`, can do now or under
 `#E3A33B`, needs something first `#6E6A60`. Unlike the mockup, the markers, the ring and the pad
 keys are square (no circle texture), the row's button shows its word without the pad key (the
 footer prompts show A), and both wheels are drawn on the picture.
+
+## Shop screen: `RZ_ShopMenu.layout` and `RZ_ShopItem.layout`
+
+The quartermaster's shop screen (`RZ_ShopMenu` preset), from `UI/Mockups/shop.html`. Written as
+text. Positions inside `ShopPanel` are from its top left.
+
+```
+Frame (root, full screen)
+├─ Image   Dim             full screen, #08090A at 60%
+└─ Frame   ShopPanel       1,600 × 880, centred
+   ├─ Image  (ShopBg)       #121416
+   ├─ Image  ShopAccent     full width × 5, top edge, tinted with the faction colour
+   ├─ Text   ShopTitle      at (48, 28), condensed bold 36, bone ("Haven stores")
+   ├─ Text   ShopSub        at (48, 74), regular 22, dim ("Ada Reyes, quartermaster in Morton")
+   ├─ Text   ShopStanding   right-aligned, ending at (1,472, 30), regular 24, bone ("You're Trusted")
+   ├─ Text   ShopFavor      right-aligned under it, mono bold 28, tinted with the faction colour ("64 Favor")
+   ├─ Button CloseButton    44 × 44 at (1,508, 30), "X" in amber
+   ├─ Image  HeadRule       at (48, 112), 1,504 × 2, tinted with the faction colour
+   ├─ Button Tab0 … Tab4    284 × 48 each at (48 + 304 × N, 132), hidden when the tab is empty
+   │  └─ Overlay: Image TabNBg (#1A1D20; the open tab in the faction colour) and
+   │     Text TabNText (mono bold 20: FOOD AND WATER, MEDICAL, GEAR AND TOOLS, WEAPONS AND AMMO, SERVICES)
+   ├─ Frame  (ItemList)     at (48, 200), 820 × 560, #0F1113
+   │  ├─ ScrollLayout ItemScroll   fills it (the pad's up/down keep the selected row in view)
+   │  │  └─ SizeLayout (ItemWidth) 820 wide
+   │  │     └─ VerticalLayout Items   the item rows
+   │  └─ Text  ItemsEmpty   centred, regular 24, dim, "Nothing on this shelf."
+   ├─ Frame  Details        at (900, 200), 652 × 560, hidden when nothing is selected
+   │  ├─ Frame  (PreviewBox)  652 × 300
+   │  │  ├─ Image  (PreviewBg)     #0F1113
+   │  │  ├─ Image  (PreviewFloor)  the bottom 60, #16191C
+   │  │  ├─ Frame  PreviewSlot     fills the box: the script makes the item preview in it
+   │  │  ├─ Image  PreviewDim      fills the box, black at 55%, shown when you can't have it
+   │  │  ├─ Button PreviewButton   fills the box, no visual: a click turns the picture
+   │  │  ├─ Panel  (PreviewLine)   border #22262A
+   │  │  ├─ Text   (PreviewLabel)  at (16, 12), mono bold 18, faint, "3D PREVIEW"
+   │  │  └─ Image  PreviewLock     56 × 56, centred, shown when it's above your standing
+   │  ├─ Text   DetailName    at (0, 318), condensed bold 32
+   │  ├─ Text   DetailDesc    at (0, 362), 652 × 110, regular 22, #D9D2BE, wraps: its description and weight
+   │  ├─ Text   DetailPrice   at (0, 486), mono bold 28, tinted ("4 Favor")
+   │  ├─ Text   DetailHave    at (0, 524), mono 20, dim ("you have 64")
+   │  ├─ Text   DetailLocked  right-aligned at (320, 482), mono bold 22, red, "LOCKED", shown when you can't have it
+   │  ├─ Text   DetailNeed    right-aligned at (220, 516), 432 wide, regular 22, dim: why not
+   │  └─ Button BuyButton     240 × 60 at (412, 490), hidden when you can't have it
+   │     └─ Overlay: Image BuyBg (the faction colour; dark when you can't afford it) and
+   │        Text BuyText (condensed bold 26, #15171A: BUY, SIGN OUT, ASK)
+   ├─ Text   ShopStatus     at (48, 772), 1,504 wide, regular 22, #F4F0E6, wraps: what the last purchase said (hidden when empty)
+   ├─ HorizontalLayout Prompts  at (48, 822): the footer prompts the script makes
+   └─ Text   PromptsText    the same place, mono bold 18, dim: the static footer, hidden once prompts are made
+```
+
+The picture is vanilla's `ItemPreviewWidget`, made by the script inside `PreviewSlot`
+(`GameWidgetType.ItemPreviewWidgetTypeID`, anchored to fill it), so the layout needs no preview
+widget of its own.
+
+`RZ_ShopItem.layout` (**UI > Shop item layout**), one row, created into `Items`. The root is a
+`Button` named `ItemRow` (a click selects it):
+
+```
+Button ItemRow (root, 4 below it)
+└─ SizeLayout (ItemSize)    820 × 64
+   └─ Overlay (ItemBox)
+      ├─ Image  ItemBg         #1B1F22, shown on the selected row
+      ├─ Image  ItemBar        5 × 64, left edge, tinted with the faction colour, on the selected row
+      └─ HorizontalLayout (ItemLine)  padding 22 left and right, centred vertically
+         ├─ Image  ItemLock    26 × 26, the status_door_locked icon, shown when it's above your standing
+         ├─ Text   ItemName    regular 26, fills the row (bright on the selected row, faint when you can't have it)
+         ├─ Text   ItemNeed    mono 20, dim, right: why not, shown when you can't have it
+         └─ Text   ItemPrice   mono bold 22, right, tinted ("4 Favor"; empty for a service)
+```
+
+Unlike the mockup, the rows have no item icon (the picture on the right shows the item), and the
+lock is the door-lock icon from the imageset.
 
 ## Map icon: `RZ_MapIcon.layout`
 

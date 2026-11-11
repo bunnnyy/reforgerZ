@@ -162,6 +162,9 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourceNamePicker, "Car repair screen: the side view of the car, a white line drawing (UI/Textures/ReforgerZ/RZ_CarSide.png, imported). Empty = the job markers on a plain panel", "edds")]
 	ResourceName m_sCarPicture;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Shop screen: the layout of one item row (UI/LAYOUTS.md, ShopItem). Empty = no shop screen: a quartermaster's Buy, Requisition and service actions, as before", "layout")]
+	ResourceName m_sShopItemLayout;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Standing page layout (UI/LAYOUTS.md). Empty = the tab says Nothing here yet", "layout")]
 	ResourceName m_sStandingPage;
 

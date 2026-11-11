@@ -311,6 +311,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			RZ_CarMenu.OnPayload(this, payload);
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_SHOP)
+		{
+			RZ_ShopMenu.OnPayload(this, payload);
+		}
 		else
 		{
 			m_sBackgrounds = payload;
@@ -475,6 +479,30 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		gm.GetInteractions().GetCars().DoJob(playerId, serial, job);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Buy (or ask for) row `index` of the shop screen with this serial.
+	void SendShopBuy(int serial, int index)
+	{
+		if (Replication.IsServer())
+			RpcAsk_ShopBuy(serial, index);
+		else
+			Rpc(RpcAsk_ShopBuy, serial, index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Checked on the server (RZ_ShopScreen.Buy): the screen is open, the serial current, the
+	//! quartermaster there; then the same checks as the Buy action (standing, Favor, stock).
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_ShopBuy(int serial, int index)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = OwnerPlayerId();
+		if (!gm || playerId <= 0 || !PickAllowed())
+			return;
+
+		RZ_ShopScreen.Buy(gm, playerId, serial, index);
 	}
 
 	//------------------------------------------------------------------------------------------------

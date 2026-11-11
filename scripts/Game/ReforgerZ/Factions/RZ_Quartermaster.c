@@ -187,6 +187,8 @@ class RZ_QuartermasterHelper
 //! Tier and Favor live only on the server. Rather than replicating them to grey
 //! the action out, the action is always shown and the server checks on use: if
 //! the player's tier or Favor is too low, nothing is taken and they're told why.
+//! While the shop screen is used (RZ_ShopMenu) the action hides and the screen lists it instead;
+//! a purchase there goes through the same Quote and Buy.
 class RZ_FactionShopAction : ScriptedUserAction
 {
 	[Attribute("0", UIWidgets.ComboBox, "Faction that sells this", "", ParamEnumArray.FromEnum(RZ_EFaction))]
@@ -204,6 +206,10 @@ class RZ_FactionShopAction : ScriptedUserAction
 	[Attribute("", desc: "Name shown in the action menu")]
 	protected string m_sDisplayName;
 
+	static const int STATE_OPEN = 0;	// for sale to this player
+	static const int STATE_LOCKED = 1;	// not at their standing
+	static const int STATE_OUT = 2;		// nobody can have it here right now
+
 	//------------------------------------------------------------------------------------------------
 	ResourceName GetItemPrefab()
 	{
@@ -217,10 +223,29 @@ class RZ_FactionShopAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	RZ_EFaction GetFaction()
+	{
+		return m_eFaction;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetDisplayName()
+	{
+		return m_sDisplayName;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
 		outName = string.Format("Buy %1 (%2 Favor, %3)", m_sDisplayName, m_iFavorCost, RZ_Reputation.GetTierName(m_eRequiredTier));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hidden on a quartermaster while this machine uses the shop screen: it's a row there.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return !RZ_ShopMenu.HidesActionsOn(GetOwner());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -240,6 +265,18 @@ class RZ_FactionShopAction : ScriptedUserAction
 		if (!gm || playerId <= 0)
 			return;
 
+		Buy(gm, playerId, pOwnerEntity, pUserEntity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What it costs this player at this quartermaster now, or -1 if they can't have it. Then
+	//! `refusal` is what they're told when they try, `need` a short line for the shop screen
+	//! ("Needs Champion with the Haven") and `state` STATE_LOCKED or STATE_OUT. Takes nothing.
+	int Quote(RZ_GameModeComponent gm, int playerId, IEntity owner, out string refusal, out string need, out int state)
+	{
+		refusal = "";
+		need = "";
+		state = STATE_OPEN;
 		string factionName = RZ_Factions.GetName(m_eFaction);
 		RZ_ETier tier = gm.GetTier(playerId, m_eFaction);
 
@@ -248,7 +285,7 @@ class RZ_FactionShopAction : ScriptedUserAction
 		RZ_Leaders leaders = gm.GetLeaders();
 		RZ_Leader leader;
 		if (leaders)
-			leader = leaders.FindAt(m_eFaction, pOwnerEntity.GetOrigin());
+			leader = leaders.FindAt(m_eFaction, owner.GetOrigin());
 
 		// Only for people the stronghold ranks below Known: a better customer keeps their own tier
 		bool rogueFavour = false;
@@ -258,8 +295,10 @@ class RZ_FactionShopAction : ScriptedUserAction
 		{
 			if (RZ_Reputation.GetAccessRank(m_eRequiredTier) > 1)
 			{
-				gm.NotifyPlayer(playerId, factionName, string.Format("\"%1 is for people the stronghold trusts. I can do the basics for you, quietly. Not that.\"", m_sDisplayName));
-				return;
+				refusal = string.Format("\"%1 is for people the stronghold trusts. I can do the basics for you, quietly. Not that.\"", m_sDisplayName);
+				need = "Only the basics, quietly";
+				state = STATE_LOCKED;
+				return -1;
 			}
 
 			// Treated as Known, whatever the stronghold thinks
@@ -268,48 +307,51 @@ class RZ_FactionShopAction : ScriptedUserAction
 
 		if (m_eFaction == RZ_EFaction.SURVIVORS && RZ_Reputation.IsHunted(tier))
 		{
-			gm.NotifyPlayer(playerId, factionName, "The door stays shut. Nobody here will sell you anything.");
-			return;
+			refusal = "The door stays shut. Nobody here will sell you anything.";
+			need = "They won't sell to you";
+			state = STATE_LOCKED;
+			return -1;
 		}
 
 		// A Haven safehouse only stocks what its size allows (Shelter: Known, Community and
 		// Settlement: Trusted, Town: Champion). A quartermaster away from a safehouse sells everything.
 		if (m_eFaction == RZ_EFaction.SURVIVORS && gm.GetSafehouses())
 		{
-			int cap = gm.GetSafehouses().GetShopRankCap(pOwnerEntity.GetOrigin());
+			int cap = gm.GetSafehouses().GetShopRankCap(owner.GetOrigin());
 			if (cap >= 0 && RZ_Reputation.GetAccessRank(m_eRequiredTier) > cap)
 			{
-				gm.NotifyPlayer(playerId, factionName, string.Format("This safehouse is too small to stock %1. A bigger one might have it.", m_sDisplayName));
-				return;
+				refusal = string.Format("This safehouse is too small to stock %1. A bigger one might have it.", m_sDisplayName);
+				need = "A bigger safehouse stocks it";
+				state = STATE_OUT;
+				return -1;
 			}
 		}
 
 		if (!RZ_Reputation.IsAtLeast(tier, m_eRequiredTier) || RZ_Reputation.IsHunted(tier))
 		{
-			gm.NotifyPlayer(playerId, factionName, string.Format("They won't sell you %1. You need to be %2 with them (you're %3).",
-				m_sDisplayName, RZ_Reputation.GetTierName(m_eRequiredTier), RZ_Reputation.GetTierName(tier)));
-			return;
-		}
+			refusal = string.Format("They won't sell you %1. You need to be %2 with them (you're %3).",
+				m_sDisplayName, RZ_Reputation.GetTierName(m_eRequiredTier), RZ_Reputation.GetTierName(tier));
+			need = string.Format("Needs %1 with %2", RZ_Reputation.GetTierName(m_eRequiredTier), RZ_Factions.GetNameInText(m_eFaction));
+			if (RZ_Reputation.IsHunted(tier))
+				need = "They won't sell to you";
 
-		if (m_sItemPrefab.IsEmpty())
-		{
-			gm.NotifyPlayer(playerId, factionName, "They're out of stock.");
-			return;
+			state = STATE_LOCKED;
+			return -1;
 		}
 
 		// Cars are only ever found: no quartermaster sells a vehicle or a car part
-		if (RZ_QuartermasterHelper.IsForbiddenStock(m_sItemPrefab))
+		if (m_sItemPrefab.IsEmpty() || RZ_QuartermasterHelper.IsForbiddenStock(m_sItemPrefab))
 		{
-			RZ_Log.Warn("Shop action '" + m_sDisplayName + "' sells a vehicle or a car part (" + m_sItemPrefab + "): refused. Cars are only found");
-			gm.NotifyPlayer(playerId, factionName, "They're out of stock.");
-			return;
+			refusal = "They're out of stock.";
+			need = "Out of stock";
+			state = STATE_OUT;
+			return -1;
 		}
 
 		// Antidotes come only from the lab's stock (docs/DESIGN.md, "Cure research"): Halcyon sells
 		// the doses the lab has made; anyone else (the Red Hand) only the doses stolen from it
-		bool antidote = m_sItemPrefab == gm.GetAntidotePrefab();
 		bool fromLab = m_eFaction == RZ_EFaction.INSTITUTE;
-		if (antidote && gm.GetCure())
+		if (IsAntidote(gm))
 		{
 			int doses = gm.GetCure().GetStolenAntidotes();
 			if (fromLab)
@@ -317,51 +359,49 @@ class RZ_FactionShopAction : ScriptedUserAction
 
 			if (doses <= 0)
 			{
+				refusal = "\"Antidotes? Fresh out. Somebody would have to fetch us some from the lab.\"";
 				if (fromLab)
-					gm.NotifyPlayer(playerId, factionName, string.Format("\"No doses left. The lab makes one about every %1 minutes, faster as the research goes. Come back.\"", RZ_Util.RoundToInt(gm.GetCure().AntidoteInterval() / 60)));
-				else
-					gm.NotifyPlayer(playerId, factionName, "\"Antidotes? Fresh out. Somebody would have to fetch us some from the lab.\"");
-				return;
+					refusal = string.Format("\"No doses left. The lab makes one about every %1 minutes, faster as the research goes. Come back.\"", RZ_Util.RoundToInt(gm.GetCure().AntidoteInterval() / 60));
+
+				need = "No doses left";
+				state = STATE_OUT;
+				return -1;
 			}
 		}
 
 		// Stabilisers at Halcyon come from the lab's small stock too, and cost double until the
 		// research reaches 50% (docs/DESIGN.md, "Treatments"). Anywhere else it's an ordinary item.
-		bool stabiliser = false;
-		float stockMult = 1;
-		if (fromLab && gm.GetCure() && gm.GetInfection())
-		{
-			ResourceName stabPrefab = gm.GetInfection().GetSettings().m_sStabiliserPrefab;
-			stabiliser = !stabPrefab.IsEmpty() && m_sItemPrefab == stabPrefab;
-		}
-
-		if (stabiliser)
+		float supplyMult = 1;
+		if (IsLabStabiliser(gm))
 		{
 			if (gm.GetCure().GetLabStabilisers() <= 0)
 			{
-				gm.NotifyPlayer(playerId, factionName, string.Format("\"No stabilisers. We make about one every %1 minutes, and they go fast. Come back.\"", RZ_Util.RoundToInt(gm.GetCure().StabiliserInterval() / 60)));
-				return;
+				refusal = string.Format("\"No stabilisers. We make about one every %1 minutes, and they go fast. Come back.\"", RZ_Util.RoundToInt(gm.GetCure().StabiliserInterval() / 60));
+				need = "None left";
+				state = STATE_OUT;
+				return -1;
 			}
 
-			stockMult = gm.GetCure().StabiliserPriceMult();
+			supplyMult = gm.GetCure().StabiliserPriceMult();
 		}
 
 		// Supply lines (docs/DESIGN.md): a shop whose truck didn't get through is short until the
 		// next one does (some items out, the top tier maybe locked, dearer); a stronghold Under
 		// Pressure keeps its top tier back. Morale moves prices a little.
-		float supplyMult = stockMult;
 		RZ_SupplyLines supply = gm.GetSupply();
 		RZ_SupplyState shortage;
 		if (supply)
-			shortage = supply.FindShopState(m_eFaction, pOwnerEntity.GetOrigin());
+			shortage = supply.FindShopState(m_eFaction, owner.GetOrigin());
 
 		bool topTier = RZ_Reputation.GetAccessRank(m_eRequiredTier) >= 3;
 		if (shortage && shortage.m_bShortage)
 		{
 			if ((topTier && shortage.m_bTopLocked) || supply.IsOutOfStock(shortage, m_sDisplayName))
 			{
-				gm.NotifyPlayer(playerId, factionName, string.Format("No %1 until the next truck gets through.", m_sDisplayName));
-				return;
+				refusal = string.Format("No %1 until the next truck gets through.", m_sDisplayName);
+				need = "Not until the next truck";
+				state = STATE_OUT;
+				return -1;
 			}
 
 			supplyMult = supplyMult * shortage.m_fPriceMult;
@@ -371,10 +411,12 @@ class RZ_FactionShopAction : ScriptedUserAction
 		if (topTier && territory && territory.IsUnderPressure(m_eFaction))
 		{
 			RZ_Holding top = territory.GetStronghold(m_eFaction);
-			if (top && RZ_Util.DistXZ(top.m_vPos, pOwnerEntity.GetOrigin()) < 150)
+			if (top && RZ_Util.DistXZ(top.m_vPos, owner.GetOrigin()) < 150)
 			{
-				gm.NotifyPlayer(playerId, factionName, string.Format("Not while we're under pressure. The %1 stays locked up until things calm down.", m_sDisplayName));
-				return;
+				refusal = string.Format("Not while we're under pressure. The %1 stays locked up until things calm down.", m_sDisplayName);
+				need = "Locked up while they're under pressure";
+				state = STATE_OUT;
+				return -1;
 			}
 		}
 
@@ -388,19 +430,60 @@ class RZ_FactionShopAction : ScriptedUserAction
 		if (cost > 0 && supplyMult != 1)
 			cost = Math.Max(1, RZ_Util.RoundToInt(cost * supplyMult));
 
+		return cost;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The antidote, which only the lab's (or the stolen) stock sells.
+	protected bool IsAntidote(RZ_GameModeComponent gm)
+	{
+		return gm.GetCure() && m_sItemPrefab == gm.GetAntidotePrefab();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A stabiliser at Halcyon, from the lab's small stock.
+	protected bool IsLabStabiliser(RZ_GameModeComponent gm)
+	{
+		if (m_eFaction != RZ_EFaction.INSTITUTE || !gm.GetCure() || !gm.GetInfection())
+			return false;
+
+		ResourceName stabPrefab = gm.GetInfection().GetSettings().m_sStabiliserPrefab;
+		return !stabPrefab.IsEmpty() && m_sItemPrefab == stabPrefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Buys it for the player (server): the checks in Quote, then the Favor, the item next to the
+	//! quartermaster and the lab's stock. Every outcome is told as a notice. True if bought.
+	bool Buy(RZ_GameModeComponent gm, int playerId, IEntity owner, IEntity user)
+	{
+		string factionName = RZ_Factions.GetName(m_eFaction);
+		string refusal;
+		string need;
+		int state;
+		int cost = Quote(gm, playerId, owner, refusal, need, state);
+		if (cost < 0)
+		{
+			if (state == STATE_OUT && !m_sItemPrefab.IsEmpty() && RZ_QuartermasterHelper.IsForbiddenStock(m_sItemPrefab))
+				RZ_Log.Warn("Shop action '" + m_sDisplayName + "' sells a vehicle or a car part (" + m_sItemPrefab + "): refused. Cars are only found");
+
+			gm.NotifyPlayer(playerId, factionName, refusal);
+			return false;
+		}
+
 		if (!gm.SpendFavor(playerId, m_eFaction, cost))
 		{
 			gm.NotifyPlayer(playerId, factionName, string.Format("%1 costs %2 Favor here. You have %3.", m_sDisplayName, cost, gm.GetProfile(playerId).GetFavor(m_eFaction)));
-			return;
+			return false;
 		}
 
-		if (!RZ_QuartermasterHelper.SpawnNear(m_sItemPrefab, pOwnerEntity, pUserEntity))
+		if (!RZ_QuartermasterHelper.SpawnNear(m_sItemPrefab, owner, user))
 		{
 			gm.AddFavor(playerId, m_eFaction, cost); // refund
-			return;
+			return false;
 		}
 
-		if (antidote && gm.GetCure())
+		bool fromLab = m_eFaction == RZ_EFaction.INSTITUTE;
+		if (IsAntidote(gm))
 		{
 			if (fromLab)
 				gm.GetCure().TakeLabAntidote();
@@ -408,10 +491,11 @@ class RZ_FactionShopAction : ScriptedUserAction
 				gm.GetCure().TakeStolenAntidote();
 		}
 
-		if (stabiliser)
+		if (IsLabStabiliser(gm))
 			gm.GetCure().TakeStabiliser();
 
 		gm.NotifyPlayer(playerId, factionName, string.Format("Here's your %1, for %2 Favor. %3 Favor left.", m_sDisplayName, cost, gm.GetProfile(playerId).GetFavor(m_eFaction)));
+		return true;
 	}
 }
 
@@ -488,6 +572,78 @@ class RZ_RequisitionAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Hidden on a quartermaster while this machine uses the shop screen: it's a row there.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return !RZ_ShopMenu.HidesActionsOn(GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool HasLocalEffectOnlyScript()
+	{
+		return false;
+	}
+
+	ResourceName GetItemPrefab() { return m_sItemPrefab; }
+	string GetDisplayName() { return m_sDisplayName; }
+	//! What it charges: half the full price, rounded up.
+	int GetPrice() { return RZ_FactionPerks.RequisitionPrice(m_iFavorCost); }
+
+	//------------------------------------------------------------------------------------------------
+	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
+		if (!gm || playerId <= 0)
+			return;
+
+		Requisition(gm, playerId, pOwnerEntity, pUserEntity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Signs it out for the player (server): the action, or its row on the shop screen.
+	void Requisition(RZ_GameModeComponent gm, int playerId, IEntity pOwnerEntity, IEntity pUserEntity)
+	{
+		// Each tier hands out only its own tier's stock, and Requisition is Bastion Trusted
+		if (!m_sItemPrefab.IsEmpty())
+		{
+			int rank = RZ_QuartermasterHelper.StockRank(pOwnerEntity, m_sItemPrefab);
+			bool forbidden = RZ_QuartermasterHelper.IsForbiddenStock(m_sItemPrefab);
+			if (forbidden || rank < 0 || rank > RZ_Reputation.GetAccessRank(RZ_ETier.TRUSTED))
+			{
+				RZ_Log.Warn("Requisition '" + m_sDisplayName + "' (" + m_sItemPrefab + ") isn't Trusted stock here (a shop action on this quartermaster at Trusted or below, never a vehicle or a car part): refused");
+				gm.NotifyPlayer(playerId, RZ_Factions.GetName(RZ_EFaction.MILITARY), string.Format("\"We don't sign out %1. Buy it, if you can.\"", m_sDisplayName));
+				return;
+			}
+		}
+
+		gm.TryRequisition(playerId, pOwnerEntity, pUserEntity, m_sItemPrefab, m_sDisplayName, m_iFavorCost);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! "Trade": opens the quartermaster's shop screen (Factions/RZ_ShopScreen.c, docs/UI.md "The
+//! shop screen"). Shown only while this machine uses the screen; then the Buy, Requisition and
+//! service actions hide, and come back without it.
+class RZ_ShopOpenAction : ScriptedUserAction
+{
+	//------------------------------------------------------------------------------------------------
+	override bool GetActionNameScript(out string outName)
+	{
+		outName = "Trade";
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool CanBeShownScript(IEntity user)
+	{
+		return RZ_ShopMenu.Available();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool HasLocalEffectOnlyScript()
 	{
 		return false;
@@ -504,19 +660,6 @@ class RZ_RequisitionAction : ScriptedUserAction
 		if (!gm || playerId <= 0)
 			return;
 
-		// Each tier hands out only its own tier's stock, and Requisition is Bastion Trusted
-		if (!m_sItemPrefab.IsEmpty())
-		{
-			int rank = RZ_QuartermasterHelper.StockRank(pOwnerEntity, m_sItemPrefab);
-			bool forbidden = RZ_QuartermasterHelper.IsForbiddenStock(m_sItemPrefab);
-			if (forbidden || rank < 0 || rank > RZ_Reputation.GetAccessRank(RZ_ETier.TRUSTED))
-			{
-				RZ_Log.Warn("Requisition '" + m_sDisplayName + "' (" + m_sItemPrefab + ") isn't Trusted stock here (a shop action on this quartermaster at Trusted or below, never a vehicle or a car part): refused");
-				gm.NotifyPlayer(playerId, RZ_Factions.GetName(RZ_EFaction.MILITARY), string.Format("\"We don't sign out %1. Buy it, if you can.\"", m_sDisplayName));
-				return;
-			}
-		}
-
-		gm.TryRequisition(playerId, pOwnerEntity, pUserEntity, m_sItemPrefab, m_sDisplayName, m_iFavorCost);
+		RZ_ShopScreen.Open(gm, playerId, pOwnerEntity, pUserEntity);
 	}
 }

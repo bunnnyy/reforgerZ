@@ -118,6 +118,8 @@ class RZ_ScreenGuard
 			m_GM.GetDialogue().OnScreenGone(playerId);
 		else if (kind == KIND_CAR && m_GM.GetInteractions())
 			m_GM.GetInteractions().GetCars().OnScreenGone(playerId);
+		else if (kind == KIND_SHOP)
+			RZ_ShopScreen.OnScreenGone(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -242,6 +244,8 @@ class RZ_ScreenGuard
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_TALK, "X|" + reason);
 			else if (kind == KIND_CAR)
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_CAR, "X|" + reason);
+			else if (kind == KIND_SHOP)
+				ui.SendPayload(RZ_UIFeed.PAYLOAD_SHOP, "X|" + reason);
 			else
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_READER, "");
 		}

@@ -1,0 +1,121 @@
+ButtonWidgetClass "{1876E8282EA1FA5A}" {
+ Name "ItemRow"
+ Slot LayoutSlot "{3382F98EF0D07D7C}" {
+  HorizontalAlign 3
+  VerticalAlign 0
+  Padding 0 0 0 4
+ }
+ style blank
+ {
+  SizeLayoutWidgetClass "{242E6E2391180247}" {
+   Name "ItemSize"
+   Slot ButtonWidgetSlot "{C947513A3ACC4A8E}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   AllowWidthOverride 1
+   WidthOverride 820
+   AllowHeightOverride 1
+   HeightOverride 64
+   {
+    OverlayWidgetClass "{3C3648450EFDF097}" {
+     Name "ItemBox"
+     Slot AlignableSlot "{2BE019CD04DDCFF9}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{381239926BEEB873}" {
+       Name "ItemBg"
+       Slot OverlayWidgetSlot "{1BE2EB6D6D581309}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.106 0.122 0.133 1
+       Size 1 1
+      }
+      ImageWidgetClass "{55AFDC18C1472E81}" {
+       Name "ItemBar"
+       Slot OverlayWidgetSlot "{6648B10DAB4D60A5}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Size 5 64
+      }
+      HorizontalLayoutWidgetClass "{AD0F9BE710742DD9}" {
+       Name "ItemLine"
+       Slot OverlayWidgetSlot "{1EB7EE4FFA5003CD}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 22 0 22 0
+       }
+       {
+        ImageWidgetClass "{34E588DB49A1BBC6}" {
+         Name "ItemLock"
+         Slot LayoutSlot "{D10591CE2CBE62B6}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 0 0 12 0
+         }
+         "Is Visible" 0
+         Color 0.639 0.62 0.565 1
+         Size 26 26
+        }
+        TextWidgetClass "{4397512C9696EF8E}" {
+         Name "ItemName"
+         Slot LayoutSlot "{2BBA5B68553CDAC7}" {
+          HorizontalAlign 3
+          VerticalAlign 1
+          SizeMode Fill
+          FillWeight 1
+         }
+         Color 0.91 0.886 0.816 1
+         Text "Canned food"
+         "Font Size" 26
+         "Min Font Size" 26
+         FontProperties FontProperties "{36268219C5CE21F1}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{EC457B87AD5441B7}" {
+         Name "ItemNeed"
+         Slot LayoutSlot "{F7D666B847B1A11F}" {
+          HorizontalAlign 2
+          VerticalAlign 1
+          Padding 16 0 0 0
+         }
+         "Is Visible" 0
+         Color 0.639 0.62 0.565 1
+         Text "Champion"
+         "Font Size" 20
+         "Min Font Size" 20
+         FontProperties FontProperties "{BA1178D25D84E247}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{5D78E4C486D0D62E}" {
+         Name "ItemPrice"
+         Slot LayoutSlot "{89547E5B52571CFA}" {
+          HorizontalAlign 2
+          VerticalAlign 1
+          Padding 24 0 0 0
+         }
+         Color 0.89 0.639 0.231 1
+         Text "4 Favor"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{79F5F7E09C7FE9FC}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

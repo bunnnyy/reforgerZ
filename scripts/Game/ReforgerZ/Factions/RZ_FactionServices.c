@@ -249,6 +249,23 @@ class RZ_FactionServiceAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Hidden on a quartermaster while this machine uses the shop screen: it's a row on its
+	//! Services tab.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return !RZ_ShopMenu.HidesActionsOn(GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The label the action menu shows, for the shop screen's Services tab.
+	string GetLabel()
+	{
+		string label;
+		GetActionNameScript(label);
+		return label;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool HasLocalEffectOnlyScript()
 	{
 		return false;
@@ -262,10 +279,18 @@ class RZ_FactionServiceAction : ScriptedUserAction
 
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
-		if (!gm || playerId <= 0 || !gm.GetServices())
+		if (!gm || playerId <= 0)
 			return;
 
-		gm.GetServices().Perform(playerId, m_eService, pOwnerEntity, pUserEntity);
+		Run(gm, playerId, pOwnerEntity, pUserEntity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Performs the service for the player (server): the action, or its row on the shop screen.
+	void Run(RZ_GameModeComponent gm, int playerId, IEntity pOwnerEntity, IEntity pUserEntity)
+	{
+		if (gm.GetServices())
+			gm.GetServices().Perform(playerId, m_eService, pOwnerEntity, pUserEntity);
 	}
 }
 

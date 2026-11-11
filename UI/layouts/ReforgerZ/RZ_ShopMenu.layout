@@ -1,0 +1,1009 @@
+FrameWidgetClass "{163B15DC43871999}" {
+ Name "ShopMenu"
+ Slot FrameWidgetSlot "{4C274F2252CBEBF9}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+  Alignment 0 0
+ }
+ {
+  ImageWidgetClass "{2654D85F994EBA65}" {
+   Name "Dim"
+   Slot FrameWidgetSlot "{6391E658C7F0E75D}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   Color 0.031 0.035 0.039 0.6
+   Size 1 1
+  }
+  FrameWidgetClass "{1A25E31CCF823B83}" {
+   Name "ShopPanel"
+   Slot FrameWidgetSlot "{BBEA2FE0F253647A}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 1600
+    OffsetRight -1600
+    SizeY 880
+    OffsetBottom -880
+    Alignment 0.5 0.5
+   }
+   {
+    ImageWidgetClass "{C5D9E379E99D7947}" {
+     Name "ShopBg"
+     Slot FrameWidgetSlot "{18DC118A850C06A2}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 1
+     Size 1 1
+    }
+    ImageWidgetClass "{81D12D648AD9C5FD}" {
+     Name "ShopAccent"
+     Slot FrameWidgetSlot "{D30A551BDE49C568}" {
+      Anchor 0 0 1 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 5
+      OffsetBottom -5
+      Alignment 0 0
+     }
+     Color 0.89 0.639 0.231 1
+     Size 1 1
+    }
+    TextWidgetClass "{1F6572EE10B3F820}" {
+     Name "ShopTitle"
+     Slot FrameWidgetSlot "{9EE04885C85493F4}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 28
+      OffsetTop 28
+      SizeX 900
+      OffsetRight -948
+      SizeY 44
+      OffsetBottom -72
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text "Haven stores"
+     "Font Size" 36
+     "Min Font Size" 36
+     FontProperties FontProperties "{21960C798F185BA1}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{02FD0A1871D80240}" {
+     Name "ShopSub"
+     Slot FrameWidgetSlot "{9B3CD5E2946177BE}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 74
+      OffsetTop 74
+      SizeX 900
+      OffsetRight -948
+      SizeY 30
+      OffsetBottom -104
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "Ines Calder's quartermaster in Morton"
+     "Font Size" 22
+     "Min Font Size" 22
+     FontProperties FontProperties "{D03823DC1034D248}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    TextWidgetClass "{420BC040A758CA7C}" {
+     Name "ShopStanding"
+     Slot FrameWidgetSlot "{929BB282DE4215B6}" {
+      Anchor 0 0 0 0
+      PositionX 1052
+      OffsetLeft 1052
+      PositionY 30
+      OffsetTop 30
+      SizeX 420
+      OffsetRight -1472
+      SizeY 30
+      OffsetBottom -60
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text "You're Trusted"
+     "Font Size" 24
+     "Min Font Size" 24
+     "Horizontal Alignment" Right
+     FontProperties FontProperties "{078B0B6D9FF5B2D6}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    TextWidgetClass "{4EDF3E750A65B794}" {
+     Name "ShopFavor"
+     Slot FrameWidgetSlot "{5F6500F0F16B5F75}" {
+      Anchor 0 0 0 0
+      PositionX 1052
+      OffsetLeft 1052
+      PositionY 64
+      OffsetTop 64
+      SizeX 420
+      OffsetRight -1472
+      SizeY 34
+      OffsetBottom -98
+      Alignment 0 0
+     }
+     Color 0.89 0.639 0.231 1
+     Text "64 Favor"
+     "Font Size" 28
+     "Min Font Size" 28
+     "Horizontal Alignment" Right
+     FontProperties FontProperties "{F7C70B12FAAB38A2}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    ButtonWidgetClass "{B8921C058E1805D3}" {
+     Name "CloseButton"
+     Slot FrameWidgetSlot "{9290E4523B189907}" {
+      Anchor 0 0 0 0
+      PositionX 1508
+      OffsetLeft 1508
+      PositionY 30
+      OffsetTop 30
+      SizeX 44
+      OffsetRight -1552
+      SizeY 44
+      OffsetBottom -74
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{2336BF3E7EFEE1EE}" {
+       Name "CloseBox"
+       Slot ButtonWidgetSlot "{D9EF5CA8BA4F1AA9}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{642BC803E1894989}" {
+         Name "CloseBg"
+         Slot OverlayWidgetSlot "{33A4D5C9015803F3}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{08B055DC68D76353}" {
+         Name "CloseText"
+         Slot OverlayWidgetSlot "{E7BCA0AF8493FC2E}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text "X"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{AF0E9A0C04BD9E6A}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ImageWidgetClass "{7041E1D6ECAE1762}" {
+     Name "HeadRule"
+     Slot FrameWidgetSlot "{A31BA3E8721B0810}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 112
+      OffsetTop 112
+      SizeX 1504
+      OffsetRight -1552
+      SizeY 2
+      OffsetBottom -114
+      Alignment 0 0
+     }
+     Color 0.89 0.639 0.231 1
+     Size 1 1
+    }
+    ButtonWidgetClass "{840D1055146F99E1}" {
+     Name "Tab0"
+     Slot FrameWidgetSlot "{2C134CAEC73F90E5}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 132
+      OffsetTop 132
+      SizeX 284
+      OffsetRight -332
+      SizeY 48
+      OffsetBottom -180
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{ED2636BC64B14389}" {
+       Name "Tab0Box"
+       Slot ButtonWidgetSlot "{A4CE83F440C63838}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{E5819E0567ABFAEE}" {
+         Name "Tab0Bg"
+         Slot OverlayWidgetSlot "{81E79BA06D5C2BE0}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.102 0.114 0.125 1
+         Size 1 1
+        }
+        TextWidgetClass "{AEDAFA2D41A7246D}" {
+         Name "Tab0Text"
+         Slot OverlayWidgetSlot "{C6C8AE29A11F8A61}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.639 0.62 0.565 1
+         Text "FOOD AND WATER"
+         "Font Size" 20
+         "Min Font Size" 20
+         FontProperties FontProperties "{5A2002ED3B287997}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{C3A5F7BF47C4638B}" {
+     Name "Tab1"
+     Slot FrameWidgetSlot "{3A9DADD89AB04275}" {
+      Anchor 0 0 0 0
+      PositionX 352
+      OffsetLeft 352
+      PositionY 132
+      OffsetTop 132
+      SizeX 284
+      OffsetRight -636
+      SizeY 48
+      OffsetBottom -180
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{155F33BCE8AA2672}" {
+       Name "Tab1Box"
+       Slot ButtonWidgetSlot "{4625C04928111958}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{EB11510A778E7DBE}" {
+         Name "Tab1Bg"
+         Slot OverlayWidgetSlot "{CE62DE449CD4F895}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.102 0.114 0.125 1
+         Size 1 1
+        }
+        TextWidgetClass "{F89F942DFF10E627}" {
+         Name "Tab1Text"
+         Slot OverlayWidgetSlot "{FFB7B7B2FCD3D50A}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.639 0.62 0.565 1
+         Text "MEDICAL"
+         "Font Size" 20
+         "Min Font Size" 20
+         FontProperties FontProperties "{3332D6071B911D58}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{6F591B60450575D3}" {
+     Name "Tab2"
+     Slot FrameWidgetSlot "{2188C715B5862375}" {
+      Anchor 0 0 0 0
+      PositionX 656
+      OffsetLeft 656
+      PositionY 132
+      OffsetTop 132
+      SizeX 284
+      OffsetRight -940
+      SizeY 48
+      OffsetBottom -180
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{5207D890DDDCD24C}" {
+       Name "Tab2Box"
+       Slot ButtonWidgetSlot "{E711B14F00751735}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{57905C6A9B885DD8}" {
+         Name "Tab2Bg"
+         Slot OverlayWidgetSlot "{4E090F43605781F1}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.102 0.114 0.125 1
+         Size 1 1
+        }
+        TextWidgetClass "{44833E31E17A5392}" {
+         Name "Tab2Text"
+         Slot OverlayWidgetSlot "{B4C53A68EF3B9258}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.639 0.62 0.565 1
+         Text "GEAR AND TOOLS"
+         "Font Size" 20
+         "Min Font Size" 20
+         FontProperties FontProperties "{3E6C02A2057AE313}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{F10238D61ED046A0}" {
+     Name "Tab3"
+     Slot FrameWidgetSlot "{3E808895DE05A322}" {
+      Anchor 0 0 0 0
+      PositionX 960
+      OffsetLeft 960
+      PositionY 132
+      OffsetTop 132
+      SizeX 284
+      OffsetRight -1244
+      SizeY 48
+      OffsetBottom -180
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{EB2D5FDDB21C3B8A}" {
+       Name "Tab3Box"
+       Slot ButtonWidgetSlot "{B1C721F63159EB11}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{A1155F56459D055E}" {
+         Name "Tab3Bg"
+         Slot OverlayWidgetSlot "{60806C56AE6F1E18}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.102 0.114 0.125 1
+         Size 1 1
+        }
+        TextWidgetClass "{7399406C40F6A2CF}" {
+         Name "Tab3Text"
+         Slot OverlayWidgetSlot "{0272F3413C5065B6}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.639 0.62 0.565 1
+         Text "WEAPONS AND AMMO"
+         "Font Size" 20
+         "Min Font Size" 20
+         FontProperties FontProperties "{9D8A7B4F5CAFBFAA}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{8DF86E7A24F4DCE5}" {
+     Name "Tab4"
+     Slot FrameWidgetSlot "{151D65BFDB55DDA3}" {
+      Anchor 0 0 0 0
+      PositionX 1264
+      OffsetLeft 1264
+      PositionY 132
+      OffsetTop 132
+      SizeX 284
+      OffsetRight -1548
+      SizeY 48
+      OffsetBottom -180
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{F8D87B6476E53D55}" {
+       Name "Tab4Box"
+       Slot ButtonWidgetSlot "{7EA828C145BBA89E}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{2C6DC215434B4E05}" {
+         Name "Tab4Bg"
+         Slot OverlayWidgetSlot "{FBEE8FFA08E266A2}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.102 0.114 0.125 1
+         Size 1 1
+        }
+        TextWidgetClass "{2AC39EDB57B0AB2C}" {
+         Name "Tab4Text"
+         Slot OverlayWidgetSlot "{EF8BE6197E338433}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.639 0.62 0.565 1
+         Text "SERVICES"
+         "Font Size" 20
+         "Min Font Size" 20
+         FontProperties FontProperties "{30EB9439A01DB6F1}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    FrameWidgetClass "{16BB0C752A53BEAC}" {
+     Name "ItemList"
+     Slot FrameWidgetSlot "{52438844AC4A679D}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 200
+      OffsetTop 200
+      SizeX 820
+      OffsetRight -868
+      SizeY 560
+      OffsetBottom -760
+      Alignment 0 0
+     }
+     {
+      ImageWidgetClass "{23516D0BABD44406}" {
+       Name "ItemListBg"
+       Slot FrameWidgetSlot "{326406DD47513DA5}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.059 0.067 0.075 1
+       Size 1 1
+      }
+      ScrollLayoutWidgetClass "{1A057D6BB411E9E7}" {
+       Name "ItemScroll"
+       Slot FrameWidgetSlot "{EFDD323D7BBA9023}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.431 0.416 0.376 1
+       style Small
+       {
+        SizeLayoutWidgetClass "{F5C3443F529D5219}" {
+         Name "ItemWidth"
+         Slot AlignableSlot "{B1F4A7C440D3CE86}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 820
+         {
+          VerticalLayoutWidgetClass "{99DBBB3D980C8F95}" {
+           Name "Items"
+           Slot AlignableSlot "{AB78F08579C4E837}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+          }
+         }
+        }
+       }
+      }
+      TextWidgetClass "{5A6B084252800580}" {
+       Name "ItemsEmpty"
+       Slot FrameWidgetSlot "{D970A2EA0B9A543D}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 260
+        OffsetTop 260
+        SizeX 820
+        OffsetRight -820
+        SizeY 40
+        OffsetBottom -300
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.639 0.62 0.565 1
+       Text "Nothing on this shelf."
+       "Font Size" 24
+       "Min Font Size" 24
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{688EF03FDB0C6336}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+     }
+    }
+    FrameWidgetClass "{E2032D866E50E134}" {
+     Name "Details"
+     Slot FrameWidgetSlot "{8F5E0EAF0455BC34}" {
+      Anchor 0 0 0 0
+      PositionX 900
+      OffsetLeft 900
+      PositionY 200
+      OffsetTop 200
+      SizeX 652
+      OffsetRight -1552
+      SizeY 560
+      OffsetBottom -760
+      Alignment 0 0
+     }
+     {
+      FrameWidgetClass "{423464BD687307FC}" {
+       Name "PreviewBox"
+       Slot FrameWidgetSlot "{0EE95A17292C0838}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 652
+        OffsetRight -652
+        SizeY 300
+        OffsetBottom -300
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{A57F477AE82823E9}" {
+         Name "PreviewBg"
+         Slot FrameWidgetSlot "{2E058617B7F8D840}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.059 0.067 0.075 1
+         Size 1 1
+        }
+        ImageWidgetClass "{F903A96F0179F031}" {
+         Name "PreviewFloor"
+         Slot FrameWidgetSlot "{7006E1D40D2BB378}" {
+          Anchor 0 1 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY -60
+          OffsetTop -60
+          SizeX 0
+          OffsetRight 0
+          SizeY 60
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.086 0.098 0.11 1
+         Size 1 1
+        }
+        FrameWidgetClass "{47FA30DCAC01D776}" {
+         Name "PreviewSlot"
+         Slot FrameWidgetSlot "{055A854369DA0BCD}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+        }
+        ImageWidgetClass "{DF623FC5100670B8}" {
+         Name "PreviewDim"
+         Slot FrameWidgetSlot "{B612DAB8AA670F54}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0 0 0 0.55
+         Size 1 1
+        }
+        ButtonWidgetClass "{924B3D5BB075674E}" {
+         Name "PreviewButton"
+         Slot FrameWidgetSlot "{6B9F7844E9F5A4BE}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         style blank
+        }
+        PanelWidgetClass "{F83104A110F02AE8}" {
+         Name "PreviewLine"
+         Slot FrameWidgetSlot "{BA7E5FA8C363DF8F}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.133 0.149 0.165 1
+         style outline_2px
+        }
+        TextWidgetClass "{F28D5E9E35913D14}" {
+         Name "PreviewLabel"
+         Slot FrameWidgetSlot "{CD74159F2AD797E9}" {
+          Anchor 0 0 0 0
+          PositionX 16
+          OffsetLeft 16
+          PositionY 12
+          OffsetTop 12
+          SizeX 300
+          OffsetRight -316
+          SizeY 26
+          OffsetBottom -38
+          Alignment 0 0
+         }
+         Color 0.431 0.416 0.376 1
+         Text "3D PREVIEW"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{E105308951A85F52}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{A9FBCFE1D5321815}" {
+         Name "PreviewLock"
+         Slot FrameWidgetSlot "{16C9D0C0C00B70DF}" {
+          Anchor 0 0 0 0
+          PositionX 298
+          OffsetLeft 298
+          PositionY 122
+          OffsetTop 122
+          SizeX 56
+          OffsetRight -354
+          SizeY 56
+          OffsetBottom -178
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.639 0.62 0.565 1
+         Size 1 1
+        }
+       }
+      }
+      TextWidgetClass "{50AA3EABB38DBBBF}" {
+       Name "DetailName"
+       Slot FrameWidgetSlot "{3B1A170E1604E94A}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 318
+        OffsetTop 318
+        SizeX 652
+        OffsetRight -652
+        SizeY 40
+        OffsetBottom -358
+        Alignment 0 0
+       }
+       Color 0.91 0.886 0.816 1
+       Text "Canned food"
+       "Font Size" 32
+       "Min Font Size" 32
+       FontProperties FontProperties "{14BA3A2583CE1CCB}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{7610A113046D01CD}" {
+       Name "DetailDesc"
+       Slot FrameWidgetSlot "{D8432316D0AFC1B5}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 362
+        OffsetTop 362
+        SizeX 652
+        OffsetRight -652
+        SizeY 110
+        OffsetBottom -472
+        Alignment 0 0
+       }
+       Color 0.851 0.824 0.745 1
+       Text "A tin of something. The label is gone."
+       "Font Size" 22
+       "Min Font Size" 22
+       Wrap 1
+       FontProperties FontProperties "{46869FC6E845AC1D}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      TextWidgetClass "{982FFC647E3595C0}" {
+       Name "DetailPrice"
+       Slot FrameWidgetSlot "{1C621245439AEB8A}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 486
+        OffsetTop 486
+        SizeX 300
+        OffsetRight -300
+        SizeY 34
+        OffsetBottom -520
+        Alignment 0 0
+       }
+       Color 0.89 0.639 0.231 1
+       Text "4 Favor"
+       "Font Size" 28
+       "Min Font Size" 28
+       FontProperties FontProperties "{D149031678BEE060}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{612D8F36B3BD5C71}" {
+       Name "DetailHave"
+       Slot FrameWidgetSlot "{FFAF0A2DC5B9EB52}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 524
+        OffsetTop 524
+        SizeX 300
+        OffsetRight -300
+        SizeY 30
+        OffsetBottom -554
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "you have 64"
+       "Font Size" 20
+       "Min Font Size" 20
+       FontProperties FontProperties "{72FB901F1F989E6D}" {
+        Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+       }
+      }
+      TextWidgetClass "{BB5A2042B9CE1AD2}" {
+       Name "DetailLocked"
+       Slot FrameWidgetSlot "{D758554466F60E55}" {
+        Anchor 0 0 0 0
+        PositionX 320
+        OffsetLeft 320
+        PositionY 482
+        OffsetTop 482
+        SizeX 332
+        OffsetRight -652
+        SizeY 30
+        OffsetBottom -512
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.784 0.208 0.169 1
+       Text "LOCKED"
+       "Font Size" 22
+       "Min Font Size" 22
+       "Horizontal Alignment" Right
+       FontProperties FontProperties "{F3368E4ABFCF4C3B}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{2F32D94EF58A1CAD}" {
+       Name "DetailNeed"
+       Slot FrameWidgetSlot "{9067C52B141E7C9A}" {
+        Anchor 0 0 0 0
+        PositionX 220
+        OffsetLeft 220
+        PositionY 516
+        OffsetTop 516
+        SizeX 432
+        OffsetRight -652
+        SizeY 40
+        OffsetBottom -556
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.639 0.62 0.565 1
+       Text ""
+       "Font Size" 22
+       "Min Font Size" 22
+       "Horizontal Alignment" Right
+       FontProperties FontProperties "{4DB3DA26D58D36B7}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      ButtonWidgetClass "{030683C87E0337FB}" {
+       Name "BuyButton"
+       Slot FrameWidgetSlot "{C3E0EAD102631DA7}" {
+        Anchor 0 0 0 0
+        PositionX 412
+        OffsetLeft 412
+        PositionY 490
+        OffsetTop 490
+        SizeX 240
+        OffsetRight -652
+        SizeY 60
+        OffsetBottom -550
+        Alignment 0 0
+       }
+       style blank
+       {
+        OverlayWidgetClass "{A72A9E396F244CD8}" {
+         Name "BuyBox"
+         Slot ButtonWidgetSlot "{2E84380169C81BCC}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          ImageWidgetClass "{55F31898DF8CD4C0}" {
+           Name "BuyBg"
+           Slot OverlayWidgetSlot "{F6C8B6F63F2D4866}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.89 0.639 0.231 1
+           Size 1 1
+          }
+          TextWidgetClass "{F108E2826BF9222E}" {
+           Name "BuyText"
+           Slot OverlayWidgetSlot "{ADC49F216A9E6683}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+           }
+           Color 0.082 0.09 0.102 1
+           Text "BUY"
+           "Font Size" 26
+           "Min Font Size" 26
+           FontProperties FontProperties "{797766D3C5840556}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+    TextWidgetClass "{72191474DB1202A8}" {
+     Name "ShopStatus"
+     Slot FrameWidgetSlot "{5AE55A8AEC654250}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 772
+      OffsetTop 772
+      SizeX 1504
+      OffsetRight -1552
+      SizeY 40
+      OffsetBottom -812
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.957 0.941 0.902 1
+     Text ""
+     "Font Size" 22
+     "Min Font Size" 22
+     Wrap 1
+     FontProperties FontProperties "{470A97A89A665554}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    HorizontalLayoutWidgetClass "{8D55A5F8630D44F8}" {
+     Name "Prompts"
+     Slot FrameWidgetSlot "{596C9D377D9EB71B}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 822
+      OffsetTop 822
+      SizeX 1100
+      OffsetRight -1148
+      SizeY 40
+      OffsetBottom -862
+      Alignment 0 0
+     }
+    }
+    TextWidgetClass "{7EFD393AA80CB9D8}" {
+     Name "PromptsText"
+     Slot FrameWidgetSlot "{9E364C27EA519236}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 828
+      OffsetTop 828
+      SizeX 1504
+      OffsetRight -1552
+      SizeY 30
+      OffsetBottom -858
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "LB / RB  CATEGORY    UP / DOWN  ITEM    A  BUY    RIGHT STICK  TURN    B  CLOSE"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{E26B7E7FF03AB3F3}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}
