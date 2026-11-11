@@ -37,10 +37,10 @@ class RZ_QuestlineRegistry
 	static bool IsDesigned(string key)
 	{
 		array<string> keys = {
-			"haven_the_list", "haven_price_of_the_door", "haven_edge_of_town",
-			"bastion_no_reply", "bastion_the_census", "bastion_last_pilot",
-			"redhand_the_book", "redhand_cargo", "redhand_well_story",
-			"halcyon_three_weeks", "halcyon_other_two", "halcyon_authors",
+			"list", "door", "walk",
+			"orders", "census", "pilot",
+			"book", "cargo", "well",
+			"weeks", "other_two", "authors",
 			"table_house_went_quiet", "table_place_at_the_table"};
 		return keys.Contains(key);
 	}

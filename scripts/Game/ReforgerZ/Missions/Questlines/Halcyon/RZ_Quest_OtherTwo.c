@@ -26,15 +26,15 @@
 //! back room. Needs a safehouse with people, a Halcyon field station, the note and a civilian.
 class RZ_Quest_OtherTwo : RZ_Questline
 {
-	static const string KEY = "halcyon_other_two";
-	static const string FLAG_NUMBERS = "halcyon_other_two.numbers";		// set: the lab kept numbers (H3's headline gives numbers)
-	static const string FLAG_NAMED = "halcyon_other_two.named";			// set: the lab put names on its paper
-	static const string FLAG_HAVEN_NAMES = "halcyon_other_two.haven_names";	// set: the Haven read the names, the lab didn't
-	static const string FLAG_WARD = "halcyon_other_two.ward";				// set: the back room: 1 closed, 2 moved to the lab, 3 kept, 4 sold from, 5 gone
-	static const string FLAG_SOLD = "halcyon_other_two.sold";				// set: one of the other two went to the Red Hand's pit
+	static const string KEY = "other_two";
+	static const string FLAG_NUMBERS = "other_two.numbers";		// set: the lab kept numbers (H3's headline gives numbers)
+	static const string FLAG_NAMED = "other_two.named";			// set: the lab put names on its paper
+	static const string FLAG_HAVEN_NAMES = "other_two.haven_names";	// set: the Haven read the names, the lab didn't
+	static const string FLAG_WARD = "other_two.ward";				// set: the back room: 1 closed, 2 moved to the lab, 3 kept, 4 sold from, 5 gone
+	static const string FLAG_SOLD = "other_two.sold";				// set: one of the other two went to the Red Hand's pit
 	// Read from H3 (The Edge of Town, the Haven): the names H3's author publishes; see docs/QUESTLINES.md, "Crossings"
-	static const string FLAG_H3_KNOWS = "haven_edge_of_town.knows_other_two";	// starts at the back room
-	static const string FLAG_H3_LAB_ROAD = "haven_edge_of_town.lab_road";		// the clerk talks to the Haven's people
+	static const string FLAG_H3_KNOWS = "walk.knows_other_two";	// starts at the back room
+	static const string FLAG_H3_LAB_ROAD = "walk.lab_road";		// the clerk talks to the Haven's people
 
 	static const int S_START = 0;
 	static const int S_NUMBER = 1;

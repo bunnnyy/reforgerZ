@@ -518,7 +518,7 @@ people are stand-ins at each seat, and reaching the director needs Trusted, or K
 Tech or Doctor. Stage 5 is a wait that also waits out a final stand, then the raid or the walk-out as
 missions.
 The personal rewards ("Fame +15 with whoever you gave it to") are paid at the choice, within the
-engine's caps. It opens on `halcyon_three_weeks.records`, which Patient Zero and Patient Zero's
+engine's caps. It opens on `weeks.records`, which Patient Zero and Patient Zero's
 Ledger set when they're solved.
 
 **Needs:** Known with Halcyon. ★ Lab Tech, ★ Doctor, ★ Radio Op.
@@ -560,7 +560,7 @@ sister's (Haven) contracts, offered to anyone Known with either; her house is pi
 rather than a few minutes. Stage 2's courier is an escort. Sold ends the line at stage 4; the
 names to the chair is Brought home; leaving the numbers, or nobody naming them, is The work goes
 on. Sold's Haven Infamy is the engine's 15. It doesn't start after the cure. It reads H3's flags
-as `haven_edge_of_town.knows_other_two` and `haven_edge_of_town.lab_road`.
+as `walk.knows_other_two` and `walk.lab_road`.
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
@@ -710,7 +710,7 @@ events and rumours. A flag is 1 when set, unless its row gives other values.
 | `door.paid`, `door.knows`, `door.tins`, `door.exile_home`, `door.exile_warned`, `door.head_replaced` | H2 | (none yet) | The envelope was carried, or opened; the house pays in tins; the exile came home, or took to the roads; the house voted its council head out |
 | `walk.lab_saved`, `walk.walks_stay`, `walk.truce` | H3 | (none yet) | A bitten man walked out of the lab; the walks stay; the lab road began with a truce |
 | `other_two.numbers` | HC2 | H3 | The lab road's headline gives numbers, not names |
-| `halcyon_other_two.numbers` | HC2 | H3 | The lab road's headline gives numbers, not names |
+| `other_two.numbers` | HC2 | H3 | The lab road's headline gives numbers, not names |
 | `orders.mocked` | B1 | R1 | The boss owes you: returning the page needs only Known |
 | `orders.haven` | B1 | B2; Requisition | The chair's house is never asked for a contribution, and Requisition never comes to it |
 | `orders.stove`, `orders.read` | B1 | (facts) | Where the Day 3 page went: into the stove, or read to a post's men |
@@ -738,10 +738,10 @@ events and rumours. A flag is 1 when set, unless its row gives other values.
 | `well.stood` | R3 | H2 | The house stands: H2's "Stands alone" needs no barricades (which house: `well.house`) |
 | `well.town`, `well.house` | R3 | — | R3's village (settlement index + 1) and its safehouse (index + 1; 0 if it has none) |
 | `well.paid`, `well.warned`, `well.done`, `well.faked`, `well.tested` | R3 | — | What happened at the well |
-| `halcyon_three_weeks.public` | HC1 | H3 | Brokering the lab road needs Trusted with the Haven |
-| `halcyon_three_weeks.bastion` | HC1 | HC3 | HC3 starts at stage 2 |
-| `halcyon_three_weeks.records` | Patient Zero, Patient Zero's Ledger | HC1 | HC1 can start: the clinic records are out |
-| `halcyon_three_weeks.record`, `.captured`, `.lead_left` | HC1 | (facts) | The notebook is in the lab's record; Dr Wolff is in the lab's isolation room; the field lead left her station |
-| `halcyon_other_two.named`, `.haven_names`, `.ward`, `.sold` | HC2 | (facts) | The lab named its volunteers; the Haven did instead; the back room (1 closed, 2 at the lab, 3 kept, 4 sold from, 5 gone); one of the other two is in the Red Hand's pit |
-| `halcyon_authors.bastion_key`, `.guard`, `.open`, `.lead_first`, `.batch_sold`, `.formula_sold` | HC3 | (facts) | Bastion holds a key to the clean room; a Bastion squad held the lab gate; the method went to the Haven's clinics; the field lead's name is first on the paper; the boss paid for the batch; the method was sold to the Red Hand |
+| `weeks.public` | HC1 | H3 | Brokering the lab road needs Trusted with the Haven |
+| `weeks.bastion` | HC1 | HC3 | HC3 starts at stage 2 |
+| `weeks.records` | Patient Zero, Patient Zero's Ledger | HC1 | HC1 can start: the clinic records are out |
+| `weeks.record`, `.captured`, `.lead_left` | HC1 | (facts) | The notebook is in the lab's record; Dr Wolff is in the lab's isolation room; the field lead left her station |
+| `other_two.named`, `.haven_names`, `.ward`, `.sold` | HC2 | (facts) | The lab named its volunteers; the Haven did instead; the back room (1 closed, 2 at the lab, 3 kept, 4 sold from, 5 gone); one of the other two is in the Red Hand's pit |
+| `authors.bastion_key`, `.guard`, `.open`, `.lead_first`, `.batch_sold`, `.formula_sold` | HC3 | (facts) | Bastion holds a key to the clean room; a Bastion squad held the lab gate; the method went to the Haven's clinics; the field lead's name is first on the paper; the boss paid for the batch; the method was sold to the Red Hand |
 | `place.undercover` | C2 | C1 | C1's proof is done |

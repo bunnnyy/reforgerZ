@@ -25,13 +25,13 @@
 //! Rogue field lead, a Scavenger wanderer and a site to be found.
 class RZ_Quest_ThreeWeeks : RZ_Questline
 {
-	static const string KEY = "halcyon_three_weeks";
-	static const string FLAG_RECORDS = "halcyon_three_weeks.records";		// read: the clinic records were found (Patient Zero, its Ledger)
-	static const string FLAG_PUBLIC = "halcyon_three_weeks.public";		// set: the notebook was read out (H3: the lab road is harder)
-	static const string FLAG_BASTION = "halcyon_three_weeks.bastion";		// set: Bastion has it (HC3 starts with its terms on the table)
-	static const string FLAG_RECORD = "halcyon_three_weeks.record";		// set: it went into the lab's record
-	static const string FLAG_CAPTURED = "halcyon_three_weeks.captured";	// set: Dr Wolff is in the lab's isolation room
-	static const string FLAG_LEAD_LEFT = "halcyon_three_weeks.lead_left";	// set: the field lead left her station
+	static const string KEY = "weeks";
+	static const string FLAG_RECORDS = "weeks.records";		// read: the clinic records were found (Patient Zero, its Ledger)
+	static const string FLAG_PUBLIC = "weeks.public";		// set: the notebook was read out (H3: the lab road is harder)
+	static const string FLAG_BASTION = "weeks.bastion";		// set: Bastion has it (HC3 starts with its terms on the table)
+	static const string FLAG_RECORD = "weeks.record";		// set: it went into the lab's record
+	static const string FLAG_CAPTURED = "weeks.captured";	// set: Dr Wolff is in the lab's isolation room
+	static const string FLAG_LEAD_LEFT = "weeks.lead_left";	// set: the field lead left her station
 
 	static const int S_DRIVER = 0;
 	static const int S_SITE = 1;
