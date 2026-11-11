@@ -76,7 +76,9 @@ was also checked against the base game's script source; the 41 `VERIFY` markers 
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
-script exceptions.
+script exceptions. A **zombie lab** (`tools/zombie_lab/`) measures Bacon Zombies' own AI on the same
+server, on Everon: what it sees and hears, speeds, groups and waypoints, and server frame time with
+up to 140 agents.
 
 The **first Workbench build** is in the repo. The plugin **ReforgerZ: Create prefabs** made 156
 prefabs from the **prefab manifest**, on vanilla, Bacon Zombies and Special Zombies bases; many are
@@ -93,8 +95,9 @@ Arland's AI world and vanilla's world managers now; AI in play is still to test
 yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Not built yet:** the content pass onto the world facts (designed) and opening the screens from
-the map instead of with keys (being designed). See the roadmap's *Next*.
+**Not built yet:** the content pass onto the world facts, and the infected tribes in the wild with
+crawlers in the towns (designed; see the roadmap's *Next*). The land grid the tribes need is built
+and measured on the base maps, off by default.
 
 ## Docs
 
@@ -116,10 +119,12 @@ the map instead of with keys (being designed). See the roadmap's *Next*.
 ```
 scripts/Game/ReforgerZ/
   Core/          game mode component (the hub), helpers, map markers, loose-item cleanup,
-                 seasons (the winner's rules, rule sets, the wipe cycle)
+                 seasons (the winner's rules, rule sets, the wipe cycle), AI groups' move
+                 orders (one held waypoint each)
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
                  town memory, the power grid, the radio station, the world facts (what content
-                 reads: season flags, canon, claims, text tokens), the Long Table
+                 reads: season flags, canon, claims, text tokens), the Long Table, the land grid
+                 (water, height, trees, roads, bridges and wild land; off by default)
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, story arcs, the questline engine, headlines
   Zombies/       spawner (any zombie mod's prefabs), bite detection, stealth (visibility, the
@@ -163,11 +168,21 @@ tools/icon_atlas.py
                  packs the icons into the atlas and writes the imageset (Python and Pillow)
 tools/pacing_sim.py
                  simulates a season's research, the lab and the stages for 2, 5 and 10 players
+tools/tribe_sim.py
+                 simulates the infected tribes (planned) over a season on that pacing, on the
+                 measured wild land of Arland, Everon and Cain and a Chernarus-size map, 2, 5 and
+                 10 players
 tools/compile_check.sh
                  compiles the scripts on the dedicated server, no Workbench needed (Linux,
                  or Windows in Git Bash)
 tools/runtime_test/
                  runs the game mode on that server with a fake player (test only, not the mod)
+tools/zombie_lab/
+                 measures Bacon Zombies' own AI on that server, on Everon: groups, waypoints,
+                 sight, sharing, speeds, health, the clock, frame time (test only, not the mod)
+tools/land_survey/
+                 reads the land grid on Arland, Everon and Cain on that server and reports what
+                 it found (test only, not the mod)
 .claude/skills/pc-setup/
                  /pc-setup for Claude Code on your PC: points it at docs/PC_SETUP.md
 addon.gproj      the project file (mod ID, dependencies)

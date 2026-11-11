@@ -1,0 +1,20 @@
+SubScene {
+ Parent "{853E92315D1D9EFE}worlds/Eden/Eden.ent"
+}
+SCR_BaseGameMode RZLandGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" {
+ coords 1000 50 1000
+ components {
+  RZ_GameModeComponent "{6D0F1A2B3C4D5E61}" {
+   m_sLabPrefab "{A5AC0827E24C1929}Prefabs/Props/Core/SupplyBox_Base.et"
+   m_TribeSettings RZ_TribeSettings "{5A2B3C4D5E6F7081}" {
+    m_bLandSurvey 1
+   }
+  }
+ }
+}
+SCR_AIWorld RZLandAIWorld : "{70CCCF16487C927F}Prefabs/AI/SCR_AIWorld_Eden.et" {
+ coords 1000 50 1020
+}
+SCR_FactionManager RZLandFactions : "{4A188E44289B9A50}Prefabs/MP/Managers/Factions/FactionManager_Editor.et" {
+ coords 1000 50 1010
+}

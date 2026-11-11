@@ -4018,6 +4018,12 @@
    "field": "m_StealthSettings",
    "covers": "**Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth))"
   },
+  {
+   "category": "Zombies",
+   "object": "Tribes",
+   "field": "m_TribeSettings",
+   "covers": "Tribes are planned; for now only the **Land survey** (off): the land grid of water, height, trees, roads, bridges and wild land, read at the first start and cached in the profile; land squares read a second (20) ([DESIGN.md](DESIGN.md#the-land-grid))"
+  },
   {"category": "Zombies", "object": "(top level)", "covers": "Presence heat (0.5/tick), vehicle heat (+4/tick)"},
   {
    "category": "Backgrounds",
@@ -4383,6 +4389,13 @@
     "m_fMissionSightMin": "0.6",
     "m_fMissionNoticeMin": "0.35"
    }
+  },
+  {
+   "field": "m_TribeSettings",
+   "category": "Zombies",
+   "label": "Tribes",
+   "cls": "RZ_TribeSettings",
+   "defaults": {"m_bLandSurvey": "0", "m_iLandCellsPerSecond": "20"}
   },
   {
    "field": "m_ContractSettings",

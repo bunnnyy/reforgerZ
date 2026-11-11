@@ -92,7 +92,8 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Deletes a character or an AI group including all of its members.
+	//! Deletes a character or an AI group including all of its members and its held move waypoint
+	//! (RZ_GroupOrders).
 	static void DeleteUnit(IEntity e)
 	{
 		if (!e)
@@ -101,6 +102,7 @@ class RZ_Util
 		SCR_AIGroup group = SCR_AIGroup.Cast(e);
 		if (group)
 		{
+			RZ_GroupOrders.Release(group);
 			array<AIAgent> agents = {};
 			group.GetAgents(agents);
 			foreach (AIAgent agent : agents)
@@ -329,41 +331,21 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Give an AI group a move waypoint. Does nothing for non-groups or without a waypoint prefab.
+	//! Send an AI group to a point with its one held move waypoint (RZ_GroupOrders): it goes there
+	//! after any waypoints of its own ahead of it. A new order replaces the last one, and nothing is
+	//! spawned after the first. Does nothing for non-groups or without a waypoint prefab.
 	static void SendGroupTo(IEntity e, vector target, ResourceName waypointPrefab)
 	{
-		SCR_AIGroup group = SCR_AIGroup.Cast(e);
-		if (!group || waypointPrefab.IsEmpty())
-			return;
-
-		AIWaypoint wp = AIWaypoint.Cast(SpawnPrefab(waypointPrefab, target));
-		if (wp)
-			group.AddWaypoint(wp);
+		RZ_GroupOrders.Order(e, target, waypointPrefab, false);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Replace an AI group's waypoints with one move waypoint (hordes that change course).
-	//! Deletes the waypoints it removes. Returns the new waypoint, or null.
+	//! Send an AI group straight to a point (hordes that change course): every other waypoint it has
+	//! is taken off and deleted, and its held waypoint (RZ_GroupOrders) is moved there. Returns the
+	//! held waypoint (the same entity on every order; DeleteUnit deletes it with the group), or null.
 	static IEntity RedirectGroup(IEntity e, vector target, ResourceName waypointPrefab)
 	{
-		SCR_AIGroup group = SCR_AIGroup.Cast(e);
-		if (!group || waypointPrefab.IsEmpty())
-			return null;
-
-		array<AIWaypoint> current = {};
-		group.GetWaypoints(current);
-		foreach (AIWaypoint old : current)
-		{
-			group.RemoveWaypoint(old);
-			if (old)
-				SCR_EntityHelper.DeleteEntityAndChildren(old);
-		}
-
-		AIWaypoint wp = AIWaypoint.Cast(SpawnPrefab(waypointPrefab, target));
-		if (wp)
-			group.AddWaypoint(wp);
-
-		return wp;
+		return RZ_GroupOrders.Order(e, target, waypointPrefab, true);
 	}
 
 	//------------------------------------------------------------------------------------------------

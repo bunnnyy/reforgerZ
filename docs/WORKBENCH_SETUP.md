@@ -921,6 +921,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | Stealth | `m_StealthSettings` | **Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth)) |
+| Zombies | Tribes | `m_TribeSettings` | Tribes are planned; for now only the **Land survey** (off): the land grid of water, height, trees, roads, bridges and wild land, read at the first start and cached in the profile; land squares read a second (20) ([DESIGN.md](DESIGN.md#the-land-grid)) |
 | Zombies | (top level) |  | Presence heat (0.5/tick), vehicle heat (+4/tick) |
 | Backgrounds | Backgrounds (list) |  | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
 | Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
@@ -968,7 +969,10 @@ on the cure unless you pick a timed mode) does it for you: when the season is ov
 writes `wipe.json`, and the next restart backs `state.json` up to `state_season<N>.json` and starts
 fresh ([DESIGN.md](DESIGN.md#seasons)); restart the server some time after players are told. The
 last winner is kept in `$profile:ReforgerZ/last_season.json` and the hall of fame in
-`hall_of_fame.json`; no wipe touches either. For a season with rules, set **Season > Rule sets**
+`hall_of_fame.json`; no wipe touches either. With **Zombies > Tribes > Land survey** on, the land
+grid is cached in `land_<map>_<number>.json` there too; no wipe touches it. The number comes from
+the terrain's heights, so a map update that changes only objects (new forests, buildings or roads)
+keeps the old file: delete it and the next start reads the map again. For a season with rules, set **Season > Rule sets**
 (e.g. `Winter, No Vehicles`) before the fresh season starts. Give admins `/noteclear` for the
 notice boards (server admins are whoever the server config lists).
 
@@ -1022,6 +1026,69 @@ A mission that doesn't start usually needs a world state the test doesn't create
 right infection, an optional prefab, a faction standing). None of this is part of the mod: the
 test files are copied into a throwaway addon folder.
 
+### Zombie lab: Bacon's real AI, measured
+
+`tools/zombie_lab/run.sh` measures what Bacon Zombies' own AI does, on the same server, in a
+sub-scene of Everon with Bacon loaded. It finds open fields and wood edges far apart on the map and
+runs its experiments at once, each at its own place:
+
+| Experiment | What it measures |
+|---|---|
+| Runtime groups | An empty Bacon group filled with `AddAIEntityToGroup` (4 members, and 1): faction, waypoints, survival, deleting itself when its members die; a Bacon group prefab for comparison |
+| Waypoints | The held waypoint behind `RZ_Util.SendGroupTo`, `RedirectGroup` and `DeleteUnit` (expect one waypoint entity for three completed orders, the same one after a redirect, and none left after `DeleteUnit`); one group for 30 minutes: a long order, 5 minutes idle, a fight on the way to a second waypoint, then one held waypoint moved and re-added for each order |
+| Perception | One infected placed 25 to 200 m from a target that is still (standing, crouched, prone) or running: within 30 s, does it see it, count it an enemy, charge? By day, night and fog, in the open and at a wood edge, with perception factors 0.25 to 2; how far a standing man is seen; a target behind a hill as the control |
+| Sharing, memory, gunfire | Whether Bacon's shared target brings infected that can't see you (listeners beyond a crest from one that can); how long and where a chaser keeps going after you vanish; who comes to a gunshot (a weapon-fire danger event from script, and a real shot) |
+| Speeds | Move-order and chase speeds of the civilian, military, exploder, heavy and bomber prefabs |
+| Health | Reading and setting health, regeneration, and what each way of removing an infected leaves (body, loose items, the group, an exploder's blast) |
+| Clock | The day's real length, `SetDayDuration`, and (a second short boot) the clock after a restart |
+| Frame time | The server's frame time with 0, 60, 100 and 140 agents at AI LOD 0 (half walking), then at their natural LOD |
+
+```bash
+SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder holding BaconZombies_622120A5448725E3> tools/zombie_lab/run.sh
+```
+
+It takes about 45 minutes (`QUICK=1`: about 12, one trial of each kind; `ONLY=share,perception-core`
+runs only the experiments named, listed in `run.sh`) and prints every result as a table, plus any
+script exceptions. The infected are held at AI LOD 0, as near a player (on the 1.9 server they stay
+at LOD 0 with no player at all, so this changes nothing yet). Started with `-server`, the server always
+listens on UDP 2001 (it ignores `-bindPort`), so on Linux the lab runs it in its own network namespace
+(`unshare -n`) and it can sit beside another server; on Windows, stop any other server first.
+
+| What it shows | What it can't |
+|---|---|
+| Bacon's sight, sharing, hearing, speeds and idle behaviour against a spawned character; group and waypoint plumbing; health; server cost per agent | A real player (a client's movement, noise, camera), Bacon's behaviour under the mod's own spawner and settings, other zombie mods |
+
+None of this is part of the mod: the lab's files are copied into a throwaway addon folder whose
+`addon.gproj` gains Bacon Zombies as a dependency.
+
+### Land survey without Workbench
+
+`tools/land_survey/run.sh` measures the land grid ([DESIGN.md](DESIGN.md#the-land-grid)) on the
+base maps, with no Workshop mods. For each of Arland, Everon and Cain it boots a sub-scene of the
+map with the game mode, the map's `SCR_AIWorld` (the road network comes with it) and **Zombies >
+Tribes > Land survey** on, waits for the grid, prints what it found, then boots the map again to
+load the grid from its cache. It takes about 25 minutes for all three (Everon and Cain take 2 to 3
+minutes to boot, and 2 to 4 more to read). Name maps to run fewer; `CACHE_RUN=0` skips the second
+boots.
+
+```bash
+SERVER_DIR=~/rz_check/server tools/land_survey/run.sh            # arland everon cain
+SERVER_DIR=~/rz_check/server CACHE_RUN=0 tools/land_survey/run.sh everon
+```
+
+It prints, per map: the grid's size, the reading time (the work and the longest second), its
+memory, the land and the wild land (and how much each wild-land rule takes), the tribe slots at
+1 per 4, 6 and 9 km², rivers, lakes, roads, every inferred bridge or ford with the nearest bridge
+prefab on the map (and the bridge prefabs it didn't find), ridge posts, valley lines, forests,
+fields, lair candidates and the prefabs it took for barns, sheds and the rest, a tree histogram,
+the server's memory before and after, and the cache file. A picture of each grid is saved to
+`<WORK_DIR>/land_survey/<map>_map.txt`. On Linux it runs the server in its own network namespace
+(`unshare -n`, as root), so it can run beside the runtime test; elsewhere don't run both at once.
+
+| What it shows | What it can't |
+|---|---|
+| The engine calls the grid makes, on real maps: terrain, water types, river entities, the entity query, the road network; what it costs; the cache written and read back | Maps other than the three, Workshop maps with other prefab names, how the wild land changes as holdings and safehouses do over a season (it reads one fresh start) |
+
 ### The markers
 
 ```bash
@@ -1034,7 +1101,9 @@ lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
 source (its doc comments and how vanilla uses it). Each marker left is a **behaviour** only a
-play-test can show: replication, what the AI does, what a prefab carries. They're grouped by risk;
+play-test can show: replication, what the AI does, what a prefab carries. The land grid
+(`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
+engine calls on Arland, Everon and Cain. They're grouped by risk;
 check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-2)
 come last.
 
@@ -1051,21 +1120,21 @@ No fallback. If this is wrong, nothing persists.
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Core/RZ_Util.c:600` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
-| `Core/RZ_Util.c:745` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
+| `Core/RZ_Util.c:582` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
+| `Core/RZ_Util.c:727` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:971` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
-| `Core/RZ_Util.c:773` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
+| `Core/RZ_Util.c:755` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Interactions.c:703` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
-| `Core/RZ_Util.c:529` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
+| `Core/RZ_Util.c:511` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:246` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:861`, `:876` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `World/RZ_Perimeter.c:872`, `:887` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Door locks** off (locks go back on the loot) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: no door locks, the loot lock everywhere |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
-| `Core/RZ_Util.c:881` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
-| `Core/RZ_Util.c:967` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
+| `Core/RZ_Util.c:863` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:949` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
 | `Cure/RZ_Infection.c:1160` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
@@ -1081,14 +1150,14 @@ No fallback. If this is wrong, nothing persists.
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:260` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: use **Set it alight** on the building instead |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
-| `Core/RZ_Util.c:715` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
-| `Core/RZ_Util.c:492` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
-| `Core/RZ_Util.c:548` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
+| `Core/RZ_Util.c:697` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
+| `Core/RZ_Util.c:474` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
+| `Core/RZ_Util.c:530` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_KeyItem.c:81` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages, or leave **Key prefab** empty (data keys) |
-| `Core/RZ_Util.c:803` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
-| `Core/RZ_Util.c:790` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
+| `Core/RZ_Util.c:785` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
+| `Core/RZ_Util.c:772` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:1162` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
 
@@ -1196,8 +1265,12 @@ Warnings worth acting on:
 | `Long Table: none this season (no empty place far enough from everyone on this map).` | Every settlement is too infected or within 400 m of a holding, leader seat, safehouse or the lab (the last of the small-map steps): no house this season. Fewer outposts (**Territory > Outposts per faction**) leave room |
 | `Requirements: no questline has the key '...' (docs/QUESTLINES.md lists them); the gate never closes.` | A mission's `NotWhileQuest`/`NotAfterQuest`/`NotWithQuest` names a key that is neither registered nor designed: a typo. Use the key from [QUESTLINES.md](QUESTLINES.md#the-questlines) |
 | `Save file is corrupt or from an incompatible version, ignoring.` | The save didn't load (or the JSON save behaviour in the VERIFY list is wrong) |
+| `Land: ... roads: none found (no road network; no bridges) ...` | The world has no `SCR_AIWorld` (or its road network is empty): place the map's AI world prefab (`SCR_AIWorld_Eden.et` and the like), which the infected need anyway |
+| `Land survey: the cached grid ... doesn't read; reading the map again.` / `Land survey: could not write ...` | The cache in `$profile:ReforgerZ/` is damaged or can't be written: the map is read again at each start (a few minutes, tribes dormant meanwhile) |
 
-While running: `Status | ...` lines every few minutes (stage, infection, zombies, missions, cure,
+While running: `Status | ...` lines every few minutes (stage, infection, zombies, missions, move
+waypoints in the world (one per AI group with an order at most: a number that keeps climbing is a
+leak), cure,
 the lab's backlog, whether it's full, whether research waits at the finale's gate, and the pace by
 play in percent),
 `Cure: the lab's backlog is full; N of N research from a mission was lost.`,

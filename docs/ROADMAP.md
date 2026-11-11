@@ -19,6 +19,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | The Director: four outbreak stages, infection spread, paced for a season of about 45 real days from about 2 to 20 regulars (research scaled to the last week's player-hours; season speed and cure pace for other season lengths; `tools/pacing_sim.py` checks the tuning) | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread), [Season pacing](DESIGN.md#season-pacing) |
 | Heat from presence, vehicles, gunfire (suppressors quieter), noisemakers; hordes toward noise | [Heat and noise](DESIGN.md#heat-and-noise) |
 | Stealth: each player's visibility (stance, speed, light, weather, noise), the infected near them seeing the most visible player, losing a hidden player (search, then give up), gentler mission sight and notice checks for someone lying low, visibility on the HUD; any zombie mod (perception, or by distance) | [Stealth](DESIGN.md#stealth) |
+| One move waypoint per AI group: every order moves the same waypoint (no order leaves one in the world), deleted with the group; checked on the server with Bacon Zombies | [Principles](DESIGN.md#principles) |
 | Zombie spawner for any zombie mod, bite detection (scratches and bites, protective clothing), the golden window and wound cleaning, staged infection, the Turned Player | [Zombies](DESIGN.md#zombies-bites-and-infection) |
 | Treatments from day one: antidote and stabiliser stocks scaled by research, Halcyon's trial dose, safehouse bite declarations, five low-grade meds with side effects | [Treatments](DESIGN.md#treatments) |
 | Light adaptation: specials after breakthroughs, one trait per stage, favourite spots | [Infection adapts](DESIGN.md#infection-adapts) |
@@ -41,7 +42,8 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | World facts: one layer content reads (the cure and the epilogue, stage, Bastion presence, the day, night, who holds a town and a filtered town pick, safehouses, live leader names), season flags shared with the questlines, canon facts made once a season, claims so two stories don't use the same house, leader or wanderer, `Fill` tokens for text (briefs filled when shown), `Changed` for news, one "can it run now" check every mission starter uses, and missions called off when the world makes them pointless | [World facts](DESIGN.md#world-facts) |
 | The epilogue after the cure: the Perimeter stands down (no shots; whoever walks up to the line is turned back; the gates open with the wipe), research stops and running research and line jobs are called off, and the broadcast, guidance and the factions' lines follow | [The Perimeter](DESIGN.md#the-perimeter), [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
-| World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars (only ever found: two or three missing parts, a wrench or toolkit to fit them, long loud hotwiring that can fail, rare keys; the tyre and planks are carryable items), crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
+| The land grid, off by default: water, height, trees, buildings, roads and inferred bridges in 250 m squares, ridges, valleys, forests, lair candidates and wild land, read once and cached; measured on Arland, Everon and Cain (`tools/land_survey/`). Nothing uses it yet: it's the ground the infected tribes will live on | [The land grid](DESIGN.md#the-land-grid) |
+| World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
 | Cure research, antidotes, the final stand, the season's winner; the pace by play (research ×0.25 to ×2.5 for the last week's player-hours); the lab's capacity (a backlog worked through at 3% a real day, capped at 4 days of work as a backstop: samples refused and mission research lost while it's full, +25% on what fills a near-empty backlog to half a day); breakthrough news held until someone is online; the finale's 90% gate as a hook, used only once a finale questline is registered, with a fallback of 1% a real day after a week there | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Seasons: next-season rules from the last winner, rule sets (Winter, Fog, Military Collapse, No Vehicles, or your own), the wipe cycle (only on the cure after an epilogue by default; a timed wipe after N weeks for admins who pick it; backup and announcements), the hall of fame | [Seasons](DESIGN.md#seasons) |
@@ -108,6 +110,20 @@ The build-review fixes are done. The design for the items marked "being designed
   either faction: designed separately. The hook is built: registering one (`IsCureFinale`) stops
   research at 90% until a finale adds research with `RZ_CureResearch.AddFinaleResearch`
   ([Cure research](DESIGN.md#cure-research-and-the-seasons-end)).
+
+### Infected tribes and town crawlers
+- Designed, not built: tribes of infected in the wild land, each with a lair, a range and an
+  alpha, out by day too but lighter (a small day party on its trails; the full hunt only at
+  night); town crawlers drawn from each town's infection. The land grid they need is built and
+  measured ([DESIGN.md](DESIGN.md#the-land-grid)), and so is one held waypoint per group. Next: the
+  crawlers, the land grid in use and the rest of the plumbing (runtime groups, a silent kill), with
+  their own doc.
+- Before the tribes' code, `tools/tribe_sim.py` simulates them as data over a season on the
+  45-day pacing (`--legacy` for the old one) at 2, 5 and 10 players, on the wild land the land
+  survey measured on Arland, Everon and Cain (and a Chernarus-size map), with the infected's sight
+  the zombie lab measured: tribe counts, clans, hunger, growth, first-night losses, and fights per
+  km walked by day and by night. It prints the numbers it tuned against the design, with the reason
+  for each. Arland's wild land (0.4-1.1 km²) is too small for a tribe.
 
 ### Content on the world facts
 - Switch the rest of the content to the world facts ([DESIGN.md](DESIGN.md#world-facts), the

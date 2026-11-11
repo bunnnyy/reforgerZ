@@ -64,6 +64,7 @@ class RZ_TrackedZombie
 	vector m_vGoal;			// where a horde was sent
 	bool m_bHasGoal;
 	ref RZ_SenseState m_Sense;	// stealth's view of it (Zombies/RZ_Stealth.c), once a player was near
+	ref RZ_HeldWaypoint m_Held;	// a group's one move waypoint (Core/RZ_GroupOrders.c): every order moves it; deleted when the record goes
 }
 
 //! Spawns zombies only near players and removes them when nobody is around.
@@ -158,10 +159,20 @@ class RZ_ZombieSpawner
 		z.m_bScreamer = screamer;
 		z.m_vLastPos = pos;
 		z.m_vHome = pos;
+		// Its group's held waypoint (none spawned until the first order)
+		z.m_Held = RZ_GroupOrders.Hold(ent);
 		// Groups spawn their members a frame later, so read the real count on the next tick
 		z.m_iLastAlive = -1;
 		m_aTracked.Insert(z);
 		return z;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stops tracking m_aTracked[i]: its group's held waypoint goes with the record.
+	protected void Untrack(int i)
+	{
+		RZ_GroupOrders.Drop(m_aTracked[i].m_Held);
+		m_aTracked.Remove(i);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -287,7 +298,7 @@ class RZ_ZombieSpawner
 				continue;
 
 			RZ_Util.DeleteUnit(z.m_Entity);
-			m_aTracked.Remove(i);
+			Untrack(i);
 		}
 	}
 
@@ -587,7 +598,7 @@ class RZ_ZombieSpawner
 				if (z.m_iLastAlive > 0)
 					m_GM.OnZombiesKilled(z.m_iSettlement, z.m_iMissionId, z.m_bSpecial, z.m_vLastPos, z.m_iLastAlive);
 
-				m_aTracked.Remove(i);
+				Untrack(i);
 				continue;
 			}
 
@@ -603,7 +614,7 @@ class RZ_ZombieSpawner
 
 			if (alive <= 0)
 			{
-				m_aTracked.Remove(i);
+				Untrack(i);
 				continue;
 			}
 
@@ -612,7 +623,7 @@ class RZ_ZombieSpawner
 			if (z.m_iMissionId == -1 && RZ_Util.NearestDistance(z.m_vLastPos, players) > m_Settings.m_fDespawnRadius)
 			{
 				RZ_Util.DeleteUnit(z.m_Entity);
-				m_aTracked.Remove(i);
+				Untrack(i);
 			}
 		}
 	}
@@ -812,7 +823,7 @@ class RZ_ZombieSpawner
 			if (m_aTracked[i].m_Entity != e)
 				continue;
 
-			m_aTracked.Remove(i);
+			Untrack(i);
 			RZ_Util.DeleteUnit(e);
 			return true;
 		}

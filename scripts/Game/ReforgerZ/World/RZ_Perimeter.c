@@ -479,6 +479,17 @@ class RZ_Perimeter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! IsNearLine with the warning zone and the checkpoints' warning radius widened by `extra` metres
+	//! (the land grid keeps wild land 200 m back from the line). False if there's no Perimeter.
+	bool IsNearLineWithin(vector pos, float extra)
+	{
+		if (!m_bActive)
+			return false;
+
+		return EdgeDistance(pos) < m_fWarn + extra || GetCheckpointDistance(pos) < m_Settings.m_fCheckpointWarnRadius + extra;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! IsNearLine without a game mode reference. False if there's no Perimeter.
 	static bool IsNearLineAt(vector pos)
 	{

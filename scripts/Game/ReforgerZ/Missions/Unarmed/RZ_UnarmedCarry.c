@@ -57,8 +57,8 @@ class RZ_UnarmedHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Send every unit in `units` to target (drops the dead ones). Returns the waypoints made,
-	//! for the mission to delete later.
+	//! Send every unit in `units` to target (drops the dead ones). Adds each group's held waypoint
+	//! to `waypoints` once, for the mission to delete later (DeleteUnit also deletes it with the group).
 	static void SteerUnits(RZ_GameModeComponent gm, array<IEntity> units, vector target, array<IEntity> waypoints)
 	{
 		ResourceName wp = gm.GetSpawner().GetMoveWaypointPrefab();
@@ -72,7 +72,7 @@ class RZ_UnarmedHelper
 			}
 
 			IEntity made = RZ_Util.RedirectGroup(unit, target, wp);
-			if (made && waypoints)
+			if (made && waypoints && !waypoints.Contains(made))
 				waypoints.Insert(made);
 		}
 	}
