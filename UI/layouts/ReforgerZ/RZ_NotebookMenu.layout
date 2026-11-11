@@ -136,12 +136,12 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    Name "Tab0"
    Slot FrameWidgetSlot "{DBF0DBA45C90276F}" {
     Anchor 1 0 1 0
-    PositionX -1124
-    OffsetLeft -1124
+    PositionX -952
+    OffsetLeft -952
     PositionY 100
     OffsetTop 100
     SizeX 168
-    OffsetRight 956
+    OffsetRight 784
     SizeY 40
     OffsetBottom -140
     Alignment 0 0
@@ -213,12 +213,12 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    Name "Tab1"
    Slot FrameWidgetSlot "{EA18F36726FEB69E}" {
     Anchor 1 0 1 0
-    PositionX -952
-    OffsetLeft -952
+    PositionX -780
+    OffsetLeft -780
     PositionY 100
     OffsetTop 100
     SizeX 168
-    OffsetRight 784
+    OffsetRight 612
     SizeY 40
     OffsetBottom -140
     Alignment 0 0
@@ -290,12 +290,12 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    Name "Tab2"
    Slot FrameWidgetSlot "{789ED7904C64F78D}" {
     Anchor 1 0 1 0
-    PositionX -780
-    OffsetLeft -780
+    PositionX -608
+    OffsetLeft -608
     PositionY 100
     OffsetTop 100
     SizeX 168
-    OffsetRight 612
+    OffsetRight 440
     SizeY 40
     OffsetBottom -140
     Alignment 0 0
@@ -363,85 +363,8 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
     }
    }
   }
-  ButtonWidgetClass "{510C981ACD2258D8}" {
-   Name "Tab3"
-   Slot FrameWidgetSlot "{273247B8B00FE1C6}" {
-    Anchor 1 0 1 0
-    PositionX -608
-    OffsetLeft -608
-    PositionY 100
-    OffsetTop 100
-    SizeX 168
-    OffsetRight 440
-    SizeY 40
-    OffsetBottom -140
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{43C68976D653474A}" {
-     Name "Tab3Box"
-     Slot ButtonWidgetSlot "{9C840137E79F6F9F}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{EEDCBF946530A714}" {
-       Name "Tab3Bg"
-       Slot OverlayWidgetSlot "{88D4B2B696A7EFF6}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.102 0.114 0.125 1
-       Size 1 1
-      }
-      PanelWidgetClass "{C8EC72C8F9D5DACF}" {
-       Name "Tab3Line"
-       Slot OverlayWidgetSlot "{CF8EC1AD5F0D4F00}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.165 0.18 0.192 1
-       style outline_2px
-      }
-      TextWidgetClass "{4C1C2779579BB80B}" {
-       Name "Tab3Text"
-       Slot OverlayWidgetSlot "{C5429DA48FAA45C3}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.639 0.62 0.565 1
-       Text "MAP KEY"
-       "Font Size" 18
-       "Min Font Size" 18
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{6E0C6B394BFBEC27}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-      TextWidgetClass "{5C1F72DDC89C1798}" {
-       Name "TabBadge3"
-       Slot OverlayWidgetSlot "{62CD511D2992468A}" {
-        HorizontalAlign 2
-        VerticalAlign 1
-        Padding 0 0 10 0
-       }
-       "Is Visible" 0
-       Color 0.949 0.761 0.188 1
-       Text ""
-       "Font Size" 18
-       "Min Font Size" 18
-       "Horizontal Alignment" Right
-       FontProperties FontProperties "{99DB2ED1ECFCB71A}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
   ButtonWidgetClass "{909FB72D25849327}" {
-   Name "Tab4"
+   Name "Tab3"
    Slot FrameWidgetSlot "{EA9F5FC8F402C4BF}" {
     Anchor 1 0 1 0
     PositionX -436
@@ -457,14 +380,14 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    style blank
    {
     OverlayWidgetClass "{D4D82D62E8F6DC54}" {
-     Name "Tab4Box"
+     Name "Tab3Box"
      Slot ButtonWidgetSlot "{9520DB735589FA7D}" {
       HorizontalAlign 3
       VerticalAlign 3
      }
      {
       ImageWidgetClass "{9811B815542A764C}" {
-       Name "Tab4Bg"
+       Name "Tab3Bg"
        Slot OverlayWidgetSlot "{FB4EBF645908E494}" {
         HorizontalAlign 3
         VerticalAlign 3
@@ -473,7 +396,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
        Size 1 1
       }
       PanelWidgetClass "{B1F842223665281F}" {
-       Name "Tab4Line"
+       Name "Tab3Line"
        Slot OverlayWidgetSlot "{22BDD2E2957A697C}" {
         HorizontalAlign 3
         VerticalAlign 3
@@ -482,7 +405,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
        style outline_2px
       }
       TextWidgetClass "{B4E3A9006BDA4ACB}" {
-       Name "Tab4Text"
+       Name "Tab3Text"
        Slot OverlayWidgetSlot "{1D37BBEAA1D7A5D2}" {
         HorizontalAlign 1
         VerticalAlign 1
@@ -497,7 +420,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
        }
       }
       TextWidgetClass "{0A6A6551DAE54BB5}" {
-       Name "TabBadge4"
+       Name "TabBadge3"
        Slot OverlayWidgetSlot "{0B03E2120948117D}" {
         HorizontalAlign 2
         VerticalAlign 1
@@ -518,7 +441,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    }
   }
   ButtonWidgetClass "{08E423A9D4088971}" {
-   Name "Tab5"
+   Name "Tab4"
    Slot FrameWidgetSlot "{9AAD1F05235407AE}" {
     Anchor 1 0 1 0
     PositionX -264
@@ -534,14 +457,14 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    style blank
    {
     OverlayWidgetClass "{73142ED244EBF707}" {
-     Name "Tab5Box"
+     Name "Tab4Box"
      Slot ButtonWidgetSlot "{250AA1E267132575}" {
       HorizontalAlign 3
       VerticalAlign 3
      }
      {
       ImageWidgetClass "{1F8CC32AF21E5383}" {
-       Name "Tab5Bg"
+       Name "Tab4Bg"
        Slot OverlayWidgetSlot "{F45034EA446A7A33}" {
         HorizontalAlign 3
         VerticalAlign 3
@@ -550,7 +473,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
        Size 1 1
       }
       PanelWidgetClass "{6562DBA107C470C1}" {
-       Name "Tab5Line"
+       Name "Tab4Line"
        Slot OverlayWidgetSlot "{A34E100D6150A517}" {
         HorizontalAlign 3
         VerticalAlign 3
@@ -559,7 +482,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
        style outline_2px
       }
       TextWidgetClass "{B604459CB399EE29}" {
-       Name "Tab5Text"
+       Name "Tab4Text"
        Slot OverlayWidgetSlot "{553C2E5110F75DB9}" {
         HorizontalAlign 1
         VerticalAlign 1
@@ -574,7 +497,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
        }
       }
       TextWidgetClass "{C9F2035F8B3F6378}" {
-       Name "TabBadge5"
+       Name "TabBadge4"
        Slot OverlayWidgetSlot "{36A404BBA6366F29}" {
         HorizontalAlign 2
         VerticalAlign 1

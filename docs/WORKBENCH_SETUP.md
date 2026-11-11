@@ -15,7 +15,7 @@ A first pass is done, in Workbench 1.9 on Arland and Everon: the repo holds the 
 (the quartermasters' and the notebook's actions among them), camp life's 49 compositions, its
 smart-action waypoint and six kits, the faction and loadout managers, the worlds (Everon, the main
 one, and Arland) and their scenarios, and most of the UI. Many prefabs are built on stand-ins
-([what that means](#stand-in-bases)), and the deploy panel isn't set up yet
+([what that means](#stand-in-bases)), and the spawn screen and the map key aren't set up yet
 ([the UI](#setting-up-the-ui)); the map's icons and the car picture are. This doc says how it was done, what's left, and
 how to do it again on another map.
 
@@ -232,7 +232,7 @@ houses until the loot pool is filled), fixable cars, crafting and traps, and the
 | Place the map's AI world (vanilla Prefabs/AI/SCR_AIWorld_Arland.et, _Eden or _Cain) and set its Soldiers and BTRlike navmesh files (on Everon Navmesh_GM_Eden_Soldier.conf and GM_Eden_vehicles.nmn; on Arland worlds/GameMaster/Navmeshes/GM_Arland.nmn and GM_Arland_vehicles.nmn): without it no AI group gets members and there is no road network | manual | yes |
 | Place the vanilla world managers every game-mode world has: Prefabs/World/Game/PerceptionManager.et (without it the game crashes in the first frame after the first AI spawns), Prefabs/Systems/Radio/RadioManager.et (radios), Prefabs/MP/ScriptedChatEntity.et (text chat) and Prefabs/World/Game/ItemPreviewManager.et (inventory previews) | manual | yes |
 | Place RZ_GameMode.et in the world (one per world) | does it | yes |
-| Keep RZ_GameMode.et's spawn logic on SCR_MenuSpawnLogic (the deploy menu) with Forced faction SURV, so the menu opens on the loadout picker: GameMode_Plain's SCR_AutoSpawnLogic picks a random faction from all of them | manual | yes |
+| Keep RZ_GameMode.et's spawn logic on SCR_MenuSpawnLogic with Forced faction SURV: our spawn screen (the background picker) opens through its deploy-menu handler, with no faction or group step. GameMode_Plain's SCR_AutoSpawnLogic picks a random faction from all of them and opens no screen | manual | yes |
 | Save the world, and point a scenario (mission header) at it to play it | manual | yes |
 | Optional: place marker entities (RZ_SettlementMarkerEntity and the others) to override automatic picks | manual | — |
 <!-- /manifest:world -->
@@ -373,7 +373,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **258 prefab fields**: 40 on `RZ_GameModeComponent`, 211 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **263 entries**: 160 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 70 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **259 prefab fields**: 40 on `RZ_GameModeComponent`, 212 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **264 entries**: 160 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 71 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -768,11 +768,12 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | the MissionRow layout (UI/LAYOUTS.md) | — | UI > Mission row layout | optional | journal rows |
 | (existing prefab) | the RadioRow layout (UI/LAYOUTS.md) | — | UI > Radio row layout | optional | rows of the notebook's Radio tab |
 | (existing prefab) | the MapIcon layout (UI/LAYOUTS.md) | — | UI > Map icon layout | optional | the ReforgerZ icons on the map, per player (empty = vanilla text markers for events and the lab). Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI) |
+| (existing prefab) | the SpawnRow layout (UI/LAYOUTS.md) | — | UI > Spawn row layout | optional | our spawn screen, the background picker, in place of vanilla's deploy menu (empty = vanilla's deploy menu). Needs the RZ_SpawnMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
+| (existing prefab) | the MapLegend layout (UI/LAYOUTS.md) | — | UI > Map legend layout | optional | the map key in the full-screen map's bottom-left, shown zoomed out (empty = no legend; needs the map icon layout) |
 | `RZ_Notebook.et` | a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg | `RZ_NotebookGadgetComponent`; `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given to every new life; taken into the hand it opens the notebook (the pad's way in besides the pause menu). Built as text in the repo; check in Workbench that it can be taken into the hand and put in a quick slot |
 | (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
 | (existing prefab) | the Journal page layout (UI/LAYOUTS.md) | — | UI > Journal page | optional | the Journal tab (empty = Nothing here yet) |
 | (existing prefab) | the Radio page layout (UI/LAYOUTS.md) | — | UI > Radio page | optional | the Radio tab (empty = Nothing here yet) |
-| (existing prefab) | the Map key page layout (UI/LAYOUTS.md) | — | UI > Map key page | optional | the Map key tab (empty = Nothing here yet) |
 | (existing prefab) | the Hall page layout (UI/LAYOUTS.md) | — | UI > Hall page | optional | the Hall of fame tab (empty = Nothing here yet) |
 | (existing prefab) | the Season page layout (UI/LAYOUTS.md) | — | UI > Season page | optional | The season tab: the majors, and in the epilogue the season as the Zone tells it (empty = Nothing here yet) |
 | (existing prefab) | the TalkReply layout (UI/LAYOUTS.md) | — | UI > Talk reply layout | optional | the talk screen's reply rows (empty = no talk screen: a person's actions and notices) |
@@ -1201,7 +1202,8 @@ wells, pumps or radios with actions).
 
 Optional: without it every message is a vanilla hint, as before. How the UI works is in
 [UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md). Steps 1 to 4
-and 6 are done in the repo (step 4's menus written as text: check them in Workbench, 4a); 5 isn't. The layouts are in `UI/layouts/ReforgerZ/`.
+and 6 are done in the repo (step 4's menus written as text: check them in Workbench, 4a); 5 and
+6's map key aren't. The layouts are in `UI/layouts/ReforgerZ/`.
 
 1. **The feed** (done). `Prefabs/Characters/Core/RZ_PlayerController.et` inherits vanilla
    `DefaultPlayerControllerMP.et` and adds `RZ_PlayerUIComponent` (vanilla controllers already
@@ -1248,18 +1250,22 @@ and 6 are done in the repo (step 4's menus written as text: check them in Workbe
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
       it's there.
-5. **The deploy panel** (to do). `RZ_BackgroundPanel.layout` is built, and its root already
-   carries `RZ_BackgroundPanelComponent`. It can't go in as an override of vanilla's
-   `RoleSelectionMenu.layout`: one saved from the packed vanilla file breaks the menu (joining a
-   faction never updates its right panel). The author wants our own spawn screen in its place
-   (planned). Until then the vanilla deploy menu stays: `RZ_GameMode.et`'s `SCR_MenuSpawnLogic`
-   forces the `SURV` faction (**Forced faction**), so it opens straight on the spawn map with the
-   loadout picker. Locked loadouts are refused by the server (`UI/RZ_LoadoutLock.c`) with nothing
-   to set up (**UI > Lock loadouts**).
+5. **The spawn screen** (to do: written as text). Our own screen replaces vanilla's deploy menu
+   ([UI.md](UI.md#the-spawn-screen)). `RZ_SpawnMenu.layout` and `RZ_SpawnRow.layout` are written,
+   and `Configs/System/chimeraMenus.conf` has the `RZ_SpawnMenu` preset. Open both layouts in the
+   layout editor once (so Workbench registers their GUIDs), then set **UI > Spawn row layout** to
+   `RZ_SpawnRow.layout`: from then on the screen opens instead of vanilla's deploy menu. Nothing
+   else changes: keep `RZ_GameMode.et`'s `SCR_MenuSpawnLogic` with **Forced faction** `SURV` (its
+   deploy-menu handler is what opens the screen; there's no faction or group step), and locked
+   loadouts are refused by the server (`UI/RZ_LoadoutLock.c`, **UI > Lock loadouts**). Empty, or
+   with the preset missing, vanilla's deploy menu opens as before.
 6. **The map** (done; not seen in play yet). `Configs/Map/MapFullscreen.conf` overrides vanilla's
    full-screen map config (same GUID, `{1B8AC767E06A0ACD}`) with `RZ_MapIconsUI` added to its
    `m_aUIComponents`, and **UI > Map icon layout** is set to `RZ_MapIcon.layout`, which turns the
-   vanilla text markers for world events and the lab off.
+   vanilla text markers for world events and the lab off. **The map key** (to do): open
+   `RZ_MapLegend.layout` (written as text) in the layout editor once, then set **UI > Map legend
+   layout** to it. It needs no config of its own: `RZ_MapIconsUI` makes it in the map's bottom-left,
+   and the `RZ_MapLegend` input (**I**, pad **Y**) is in `chimeraInputCommon.conf`'s `MapContext`.
 
 Also to do: default images for the icons the scripts never swap (the legend icons and the like).
 Set each such `Image` from the imageset in the layout editor.
@@ -1346,7 +1352,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
 | Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
-| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
+| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120; 45 while another player waits at the same person); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
@@ -1645,8 +1651,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **95** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 14 are in the UI, the talk screen and the server's loadout
+There are **97** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -1654,7 +1660,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-12)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-14)
 come last.
 
 ### High risk: the core loop (2)
@@ -1672,36 +1678,36 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
 | `Factions/RZ_Checkpoints.c:531` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
-| `Core/RZ_Util.c:749` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
+| `Core/RZ_Util.c:749` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the spawn screen's places, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:894` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:980` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:922` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Loot.c:178` | furniture inside buildings is found as static entities | Loose loot lies only on up to five floor points in each building's box |
 | `Interactions/RZ_Loot.c:941` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
 | `Core/RZ_Util.c:678` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
-| `World/RZ_Perimeter.c:246` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:881`, `:896` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `World/RZ_Perimeter.c:264` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
+| `World/RZ_Perimeter.c:919`, `:934` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Locks** off (nothing is locked) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: nothing is locked and no keys are cut |
 | `Interactions/RZ_Interactions.c:332` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
-| `Core/RZ_Util.c:1030` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
-| `Core/RZ_Util.c:1113`, `:1235` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
+| `Core/RZ_Util.c:1046` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:1251`, `:1129` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
 | `Factions/RZ_Disguise.c:999`, `Factions/RZ_DisguiseMarks.c:567`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
 | `Factions/RZ_DisguiseWatch.c:185` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
 | `Factions/RZ_DisguiseMarks.c:228`, `:277` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
 | `Factions/RZ_Disguise.c:774` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
 | `Factions/RZ_DisguiseMarks.c:431` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
-| `Core/RZ_Util.c:1199` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
+| `Core/RZ_Util.c:1215` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
 | `Cure/RZ_Infection.c:1181` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
-| `UI/RZ_LoadoutLock.c:49` | the server asks `SCR_LoadoutManager.CanAssignLoadout_S` before it assigns the loadout a player picks (1.9's `SCR_PlayerLoadoutComponent.Rpc_RequestLoadout_S` does) | A locked pick is assigned; the spawn check below still refuses it |
+| `UI/RZ_LoadoutLock.c:50` | the server asks `SCR_LoadoutManager.CanAssignLoadout_S` before it assigns the loadout a player picks (1.9's `SCR_PlayerLoadoutComponent.Rpc_RequestLoadout_S` does) | A locked pick is assigned; the spawn check below still refuses it |
 | `Zombies/RZ_InfectedBodies.c:175` | a physics trace from a player's eyes (`TraceMove`, world and entities) is stopped by buildings, walls and trees, and 16 of them a server tick cost little (crawler spawns use it: no body within 300 m of a player who could see the spot) | If traces never hit, crawlers spawn only behind terrain or beyond 300 m, so towns fill thinner near players (watch `/tribes`: towns well under their base). If they show in the frame time, lower `TRACES_PER_TICK` in `RZ_InfectedBodies` (a spot counts as seen once they're used up) |
-| `UI/RZ_LoadoutLock.c:66` | the server asks `SCR_BaseGameMode.CanPlayerSpawn_S` for every spawn request, with the prefab the client asked for (1.9's respawn system does) | A locked loadout can spawn: the player keeps its gear for that life but plays as the default background (`ResolveBackground`, the log line below). Check with a fresh profile: pick Soldier, press spawn (mouse and gamepad); it must refuse |
+| `UI/RZ_LoadoutLock.c:67` | the server asks `SCR_BaseGameMode.CanPlayerSpawn_S` for every spawn request, with the prefab the client asked for (1.9's respawn system does) | A locked loadout can spawn: the player keeps its gear for that life but plays as the default background (`ResolveBackground`, the log line below). Check with a fresh profile: pick Soldier, press spawn (mouse and gamepad); it must refuse |
 | `Core/RZ_Util.c:473` | a smart-action waypoint set from script (`SetSmartActionEntity`) sends a ReforgerZ faction group to the composition's tagged sentinel, and vanilla's sit, lean and observation behaviours run for our groups in a mod world | People walk to the piece and stand by it: empty **Camp life > Smart action waypoint** and they loiter beside the pieces instead |
 | `Core/RZ_Util.c:555` | an empty group prefab (vanilla `Group_Base.et`) stays alive until a member joins, takes the character's faction, and a spawned lone character joins it and takes its waypoints | Lone occupants and single guards stand where they spawn, as before: empty **Camp life > Group prefab**. Guards that are AI groups still take jobs |
 | `Zombies/Behaviour/RZ_CrawlerLife.c:226` | a crawler group's agent switched off with `DeactivateAI` (lying up by day) stays in its group and wakes with `ActivateAI` (lab B12: awake in 0.2 s, moving in 6.5 s), and a sleeping body hit by a player is woken by the player near it | Sleeping crawlers drop out of their groups or don't wake: set **Behaviour > Sleep lying crawlers** off (they stand hunched instead) |
@@ -1713,14 +1719,14 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
 | `Factions/RZ_CampLife.c:772` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:943` | a stranger is placed at the spot itself, 150–350 m ahead of the player (or 60–90 m from a stopped car), with no line-of-sight test for the design's out-of-sight point 60–90 m off | If one visibly pops in, set **Missions > Errands > Strangers** off |
-| `Zombies/RZ_TribeProps.c:68`, `:350` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
+| `Zombies/RZ_TribeProps.c:68`, `:348` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
 | `Cure/RZ_CureFinale.c:1429` | the cure finale's clean room: the lab prefab has no named child entity to read, so a land point 15–25 m from the lab stands in; check it's somewhere players can stand and fight | Move the lab, or a lab prefab with the room as a child entity (planned) |
 | `Cure/RZ_CureFinale.c:1531` | an unconscious player still counts in the clean room (only alive is read) | A downed player holds the room until killed: fine for a first play-test; reading the unconscious state is planned |
 | `Cure/RZ_CureFinale.c:1936` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
 | `UI/RZ_DoorMarkClient.c:77`, `:106` | Traces' door marks as decals: a small sphere query on a client at a door's mark point finds the same static building the server resolved the door from, and `World.CreateDecal` with lifetime 0 projects a static decal from the door atlas (the cell by `atlasNum`, the age by the colour's alpha) onto its wall, removed again with `RemoveDecal` ([the spike](#traces-the-workbench-spike-phase-0), VERIFY 1–3) | Set **World > Traces > Door drawing** to *Boards* and fill the kit's boards, or *Text*: the words come either way |
 | `World/Traces/RZ_TraceSounds.c:46` | Traces' loops (the radio's hiss, the generator's hum): `RZ_AmbientLoopComponent` starts its looped event with `SoundComponent.SoundEvent` on each client that streams the prop in, and `Terminate` stops it when the server deletes the prop past 120 m (the spike's VERIFY 6) | Empty **World > Traces > Kit > Radio hiss** and **Generator hum**: the radio's line still comes as a subtitle |
 | `UI/RZ_TraceLightsClient.c:56` | Lit windows (S2): a client-side `LightEntity.CreateLight` point light 1.5 m inside a lived-in building's door shows at its windows and doesn't bleed through the walls (the spike's VERIFY 5) | Leave **World > Traces > Lit windows** off (the default); the lanterns (S1) don't need it |
-| `Director/Epilogue/RZ_EpilogueClosing.c:951` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the deploy menu, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
+| `Director/Epilogue/RZ_EpilogueClosing.c:951` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
 ### Low risk: contained or cosmetic (20)
@@ -1747,29 +1753,31 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1523` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
 | `Factions/RZ_CampLife.c:1590` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
-### The UI (12)
+### The UI (14)
 
 None of these affect the game: the UI only reads, and the talk, repair and shop screens run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
 and every message goes back to the vanilla hint; empty **UI > Talk reply layout** for the old
 actions on people, **Car job layout** for a car's actions, **Shop item layout** for a
-quartermaster's Buy actions, **UI > Reader** and **Subtitles** off for cards. How the UI is put together is in
+quartermaster's Buy actions, **Spawn row layout** for vanilla's deploy menu, **UI > Reader** and **Subtitles** off for cards. How the UI is put together is in
 [UI.md](UI.md). Check the first five in one Workbench play with a pad plugged in.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:927` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
-| `UI/RZ_Notebook.c:199` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
+| `UI/RZ_UIData.c:936` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_Notebook.c:197` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
-| `UI/RZ_Notebook.c:95` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_UIData.c:950` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
+| `UI/RZ_UIData.c:959` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:650` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:178` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
-| `UI/RZ_Menus.c:303` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
-| `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
+| `UI/RZ_Menus.c:304` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
+| `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
+| `UI/RZ_SpawnMenu.c:19` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
+| `UI/RZ_MapIcons.c:189` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
 
 ## 7. Log lines to check
 
@@ -1937,7 +1945,7 @@ Warnings worth acting on:
 | `Hostility: outlaw mode, but the FactionManager has no SURV_OUTLAW.` | Add the Outlaw faction |
 | `No background matches loadout '...'` | A loadout name doesn't match a background |
 | `Player N asked to spawn with locked loadout '...': refused` | The player picked a background they haven't unlocked, and the server refused the spawn (**UI > Lock loadouts**). Normal now and then; often from one player, their client lets them pick it |
-| `Player N spawned with locked loadout '...': default background` | A locked loadout got past the spawn check (see `UI/RZ_LoadoutLock.c:66` in the VERIFY list): they keep its gear but play as Unemployed, the default background |
+| `Player N spawned with locked loadout '...': default background` | A locked loadout got past the spawn check (see `UI/RZ_LoadoutLock.c:67` in the VERIFY list): they keep its gear but play as Unemployed, the default background |
 | `Shop action '...' sells a vehicle or a car part (...): refused. Cars are only found` | A quartermaster's shop action is set to a vehicle, a car part or fuel: change its Item prefab |
 | `Requisition '...' (...) isn't Trusted stock here ...: refused` | A requisition action hands out something its quartermaster doesn't sell at Trusted or below: point it at a Trusted (or lower) shop item, or add one |
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
@@ -2442,7 +2450,7 @@ when it happens)
 - [ ] Take a wanderer's keepsake where they died and hand it in at a house: the Names board lists it;
   die carrying one and it lies where you fell.
 - [ ] In processing, walk up the north road unarmed: *"Name?"* instead of being turned back; *Give your
-  name* at the barrier returns you to the deploy menu with no death screen (VERIFY) and puts you in the
+  name* at the barrier returns you to the spawn screen with no death screen (VERIFY) and puts you in the
   hall's *Walked out*; armed, you're turned back as before.
 - [ ] `/season` (or the notebook's action, or its The season tab with a pad: LB/RB to the last tab)
   lists the beats you've met, And you and Unfinished; `/anonymous` turns your name into *a survivor*
@@ -2470,7 +2478,7 @@ when it happens)
   500 m and you're told the spot; a Radio Operator, or someone Trusted with Bastion, gets the exact
   spot in the offer. A puzzle contract always gives its own positions.
 
-**UI** ([Setting up the UI](#setting-up-the-ui); the deploy-menu and map items need its steps 5 and 6)
+**UI** ([Setting up the UI](#setting-up-the-ui); the spawn screen and map items need its steps 5 and 6)
 - [ ] A Haven channel message shows as an amber card with the speaker; with **Styled notices** off
   they're vanilla hints again.
 - [ ] Spawn: the background card comes first, then the outbreak and the rest one at a time (two
@@ -2554,7 +2562,7 @@ when it happens)
   stabiliser shows PAUSED and the clock stops; the timer matches the stage messages within seconds.
 - [ ] Cracking a secure channel shows the indicator until the codes change.
 - [ ] N opens the notebook on Journal the first time, then on the tab last used; Q/E and LB/RB go
-  through Standing, Journal, Radio, Map key and Hall of fame with real data; up/down move the
+  through Standing, Journal, Radio, Hall of fame and The season with real data; up/down move the
   journal's selection and scroll the other lists; X or F cycles the Radio filter through six
   names; B or Esc closes. With a pad only: Start, Notebook, A opens it; the notebook item taken in
   hand (inventory or quick slot) opens it and is put away when it closes.
@@ -2574,14 +2582,26 @@ when it happens)
   standing (yours with nobody within 50 m).
 - [ ] On a TV or at 1920×1080 from a couch: every page of the notebook, the notice board, the
   notice cards and the HUD are readable; nothing runs into what's below it (the Standing page's
-  labels, the reputation grid's header row, the map key).
-- [ ] In the deploy menu, a locked background shows LOCKED and how to unlock it, and the server
-  refuses to spawn it, with the mouse and with a gamepad (the log says `asked to spawn with locked
-  loadout`); after one life as Nurse the panel lists the Nurse's real gear.
+  labels, the reputation grid's header row).
+- [ ] The spawn screen opens at the first spawn (after the welcome screen, if any) and after each
+  death, never vanilla's deploy menu or role selection, and asks for no faction or group. With a
+  pad only: up/down go through the 13 backgrounds with the panel following (name, perk, flaw, gear,
+  standing, Legacy), left/right change where you start, A deploys and you spawn there as that
+  background; B opens the pause menu, and closing it brings the screen back. Text reads from a couch.
+- [ ] On the spawn screen a locked background shows LOCKED and how to unlock it, and A on it says
+  so and sends nothing; the server refuses it anyway (the log says `asked to spawn with locked
+  loadout` if a client sends one). After one life as Nurse, its gear lists the Nurse's real gear.
+  With a respawn timer, Deploy counts down and then works. With **UI > Spawn row layout** empty,
+  vanilla's deploy menu is back.
 - [ ] The tabs, close button, journal rows and radio filter take clicks; the lists scroll.
 - [ ] Open the map: the lab, the safehouses, the strongholds and a world event show with their
   icons and stay on their spots while you pan and zoom; an outpost appears after you've been near
   it (or once you're Known with its faction); no contract is ever on it.
+- [ ] The map key: open the full-screen map zoomed out and the key is in the bottom-left, its icons
+  in their colours; zoom in on a town and it fades out, zoom out and it comes back. I (pad Y) hides
+  it and shows it again, and it stays hidden the next time you open the map. It covers none of
+  vanilla's own map widgets; if the fade starts too early or too late, change **UI > Legend full
+  zoom** and **Legend gone zoom**.
 
 **Factions**
 - [ ] Hunted by Bastion near Bastion AI: they shoot you, not a friend next to you.
@@ -2606,7 +2626,7 @@ when it happens)
 - [ ] Contracts and the season budget: finish several contracts for one faction in one session; the
   log shows `Budget: contracts morale ... clipped` once that faction has moved 10 morale that season
   day, and a failed contract never takes an outpost leader's loyalty below 30.
-- [ ] Your deploy menu, chat and group stay on the Haven while you're on a variant.
+- [ ] Your spawn screen's places, chat and group stay on the Haven while you're on a variant.
 - [ ] An exile with a gun near a safehouse is shot; without one, the door is just shut.
 - [ ] Shooting a guard makes nearby guards of that faction fire back for about 3 minutes.
 - [ ] Borrowed kit: a Stranger in full Bastion kit at a checkpoint gets the look's tags at 150 m

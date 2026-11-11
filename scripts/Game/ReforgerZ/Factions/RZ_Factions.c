@@ -116,7 +116,7 @@ class RZ_Factions
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The base player faction key ("SURV"): spawn points, the deploy menu, the player controller.
+	//! The base player faction key ("SURV"): spawn points, the spawn screen, the player controller.
 	static string GetPlayerKey()
 	{
 		return s_sPlayerKey;

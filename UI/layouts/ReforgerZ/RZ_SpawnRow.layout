@@ -1,0 +1,105 @@
+ButtonWidgetClass "{6D38237B689FCCE2}" {
+ Name "SpawnRow"
+ Slot LayoutSlot "{C6CD06C465CB258B}" {
+  HorizontalAlign 3
+  VerticalAlign 0
+  Padding 0 0 0 4
+ }
+ style blank
+ {
+  SizeLayoutWidgetClass "{B875EEF82E05680B}" {
+   Name "RowSize"
+   Slot ButtonWidgetSlot "{7E3A47900450ECB0}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   AllowWidthOverride 1
+   WidthOverride 560
+   AllowHeightOverride 1
+   HeightOverride 50
+   {
+    OverlayWidgetClass "{2F8FED640A4383A5}" {
+     Name "RowBox"
+     Slot AlignableSlot "{2120CB4D8D2804D9}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{AAB37B2155283CD5}" {
+       Name "RowBg"
+       Slot OverlayWidgetSlot "{932F5242B3222464}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.106 0.122 0.133 1
+       Size 1 1
+      }
+      ImageWidgetClass "{FC06EB3F38887A05}" {
+       Name "RowBar"
+       Slot OverlayWidgetSlot "{79ADDE23C300CB19}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.91 0.886 0.816 1
+       Size 5 50
+      }
+      HorizontalLayoutWidgetClass "{113C1189DF50426A}" {
+       Name "RowLine"
+       Slot OverlayWidgetSlot "{082922CFD973131D}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 22 0 22 0
+       }
+       {
+        ImageWidgetClass "{8833EC2143583218}" {
+         Name "RowLock"
+         Slot LayoutSlot "{6C4A41DADDCE149E}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 0 0 12 0
+         }
+         "Is Visible" 0
+         Color 0.639 0.62 0.565 1
+         Size 24 24
+        }
+        TextWidgetClass "{D2C5D59CD9D52FFB}" {
+         Name "RowName"
+         Slot LayoutSlot "{8B687A4D101AFA52}" {
+          HorizontalAlign 3
+          VerticalAlign 1
+          SizeMode Fill
+          FillWeight 1
+         }
+         Color 0.91 0.886 0.816 1
+         Text "Radio Operator"
+         "Font Size" 26
+         "Min Font Size" 26
+         FontProperties FontProperties "{4F2DBC5539CD87D9}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{54184BD47FAEA48A}" {
+         Name "RowState"
+         Slot LayoutSlot "{C5A7DC15EC457018}" {
+          HorizontalAlign 2
+          VerticalAlign 1
+          Padding 16 0 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text ""
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{97D7551D7F858892}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

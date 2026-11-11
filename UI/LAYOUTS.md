@@ -2,7 +2,7 @@
 
 The ReforgerZ layouts are in `UI/layouts/ReforgerZ/`: the HUD, the notice card, the notebook's
 frame and its five pages, the notice board, the journal and radio rows, the talk screen, the
-reader, the car repair and shop screens, the map icon and the background panel. They were written as text
+reader, the car repair and shop screens, the spawn screen, the map icon and the map legend. They were written as text
 from the trees below and checked against every widget
 name and type the UI scripts look up.
 This file is their reference: the widget trees, the **names the scripts look up**, sizes, anchors,
@@ -36,8 +36,8 @@ mockup, its section says so.
 - **Icons** are `Image` widgets, and no layout sets an image yet. An icon a script swaps gets its
   image by name from **UI > Icon imageset**, and its tint. An icon marked *static* below draws as
   a flat square in its colour until it's given its image from the `RZ_Icons` imageset in the
-  layout editor (not done yet). The map key's and the Radio page's static icons are named after
-  their icon (`Key2_marker_safehouse`, `Chan6_status_secure_radio`).
+  layout editor (not done yet). The Radio page's static icons are named after their icon
+  (`Chan6_status_secure_radio`).
 - **Fonts.** The game's UI fonts (`UI/Fonts/` in 1.9) have no mono or serif face. Where the trees
   say *mono* (and the clue paper's *serif*), the layouts use Roboto:
   `UI/Fonts/Roboto/Roboto_Bold.fnt` or `Roboto_Regular.fnt`. Everything else is RobotoCondensed:
@@ -184,7 +184,7 @@ Frame (root, full screen)
 ├─ Text    Heading         at (96, 54), condensed bold 46: the tab's name (set by the script)
 ├─ Text    Header          at (96, 112), 840 wide, mono 18, dim: the sub-line (set by each page)
 ├─ Image   HeadRule        stretched from 96 to -96 at y 150, 2 high
-├─ Button  Tab0 … Tab5     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Journal, Radio, Map key, Hall of fame, The season
+├─ Button  Tab0 … Tab4     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Journal, Radio, Hall of fame, The season
 │  └─ Overlay TabNBox
 │     ├─ Image  TabNBg      the open tab bone, the others #1A1D20 (tinted by the script)
 │     ├─ Panel  TabNLine    border, hidden on the open tab
@@ -200,7 +200,7 @@ The pages are the old menus' layouts with the frame parts (overlay, heading, hea
 close button, footer) taken out, and their content moved into the 90% safe area: every horizontal
 position and width scaled by 0.973 from the left margin, which moves from 72 to 96. Each page's
 root is a full-screen `Frame` named after it (`StandingPage`, `JournalPage`, `RadioPage`,
-`MapKeyPage`, `HallPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
+`HallPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
 
 **Mouse.** The tabs, `CloseButton`, the journal row's root (`MissionRow`), the radio filter chip
 (`FilterButton`) and the notice board's `PostButton` are `Button`s. Long text sits in a
@@ -219,11 +219,13 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_TalkMenu` | `RZ_TalkMenu` | `RZ_TalkMenu.layout` |
 | `RZ_CarMenu` | `RZ_CarMenu` | `RZ_CarMenu.layout` |
 | `RZ_ShopMenu` | `RZ_ShopMenu` | `RZ_ShopMenu.layout` |
+| `RZ_SpawnMenu` | `RZ_SpawnMenu` | `RZ_SpawnMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `RZ_RadioFilter`
 (**F**, pad **X**), `RZ_CarStart` (**T**, pad **Y**), `RZ_TurnPreview` (the pad's right stick) and
-`RZ_Reply1` to `RZ_Reply7` (**1** to **7**) in `MenuContext`. The list with
+`RZ_Reply1` to `RZ_Reply7` (**1** to **7**) in `MenuContext`, and `RZ_MapLegend` (**I**, pad **Y**) in
+`MapContext`. The list with
 the pad routes is in [UI.md](../docs/UI.md#controllers). Esc, Q/E, up/down and Enter use the
 vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
 
@@ -346,19 +348,6 @@ Overlay (root)
       ├─ Text   RowSpeaker    after RowChannel, 18, dim
       └─ Text   RowText       under them, 18, wraps
 ```
-
-### Map key page: `RZ_MapKeyPage.layout`
-
-Static: no names are looked up (the script sets only the frame's `Header`). It holds a
-legend panel at (72, 168), 640 × 840 before the scale, with one row per marker the map draws: the icon in its colour
-(32 × 32; the stronghold and outpost rows show three 24 × 24 icons in faction colours), the name
-in bold 18 and one line in 18, dim. Under WHO HOLDS WHAT: stronghold, outpost, Haven safehouse,
-Halcyon's lab. Under THE WORLD: world event and sealed checkpoint in hazard yellow, power station
-and radio station in bone. The icons are static.
-
-Unlike the mockup (`UI/Mockups/map_legend.html`), it has no Quartermaster or Perimeter rows,
-because `RZ_UIFeed.BuildMap` sends neither, and the power station is bone, as on the map, not
-hazard.
 
 ### Notice board: `RZ_NoticeBoardMenu.layout`
 
@@ -641,32 +630,98 @@ Frame (root, 28 × 28, top-left anchor, ignores the cursor)
 └─ Text   Label      under the icon, offset (-60, 30), 148 wide, centred, 18, bone, a dark shadow offset by 1
 ```
 
-## Background panel: `RZ_BackgroundPanel.layout`
+## Map legend: `RZ_MapLegend.layout`
 
-The panel for the vanilla deploy menu. Its root already carries the `RZ_BackgroundPanelComponent`
-script handler and anchors itself top-right, offset (-48, 120), 560 wide. It isn't in the game
-yet: it goes into an override of the deploy menu's layout, which isn't made
-([setup step 5](../docs/WORKBENCH_SETUP.md#setting-up-the-ui)).
+The map key on the full-screen map (**UI > Map legend layout**), created into the map's root by
+`RZ_MapIconsUI` when the map opens, with the icon layer. Written as text. The script sets each
+`Key_<icon>` image from the imageset and tints it as the map does (the stronghold in Bastion's
+olive and the outpost in the Red Hand's red, as examples; the safehouse amber, the lab teal, the
+event, the checkpoint and the range ring hazard yellow, the stations bone), and fades the root
+with the zoom (`SetOpacity`; hidden at 0). Positions are from the root's top left.
 
 ```
-Frame (root, 560 wide, anchor top-right, offset (-48, 120))
-├─ Image  (panel background, top bar 5 units bone)
-├─ Text   (label "BACKGROUND")
-├─ VerticalLayout PanelBody        shown once the picked loadout is a background
-│  ├─ Image  (background icon, 58 × 58: item_radio or similar, static)
-│  ├─ Text   BgName                 condensed bold 36
-│  ├─ (state chip, with a border)
-│  │  ├─ Image  StateIcon           16 × 16 (status_door_unlocked / status_door_locked)
-│  │  └─ Text   StateText           mono bold 18: AVAILABLE / LOCKED
-│  ├─ Text   (label "PERK")  │ Text BgPerk      18, #BFD39B, wraps
-│  ├─ Text   (label "FLAW")  │ Text BgFlaw      18, #E4826F, wraps
-│  ├─ Text   (label "STARTING STANDING") │ Text BgStanding  mono bold 18, wraps
-│  ├─ Text   (label "STARTING GEAR")     │ Text BgGear      18, wraps
-│  └─ Overlay LockedBlock           with a border, shown when locked
-│     └─ Text  LockedText           18, dim, wraps
-├─ Text        Legacy               mono bold 18, dim
-└─ ProgressBar LegacyBar            160 × 8, fill #E3A33B, beside Legacy
+Frame MapLegend (root, 540 × 316, anchor bottom-left, offset (96, -54): inside the safe area)
+├─ Image  (LegendBg)       #121416 at 90%
+├─ Image  (LegendAccent)   full width × 5, top edge, bone
+├─ Panel  (LegendLine)     border #2A2E31
+├─ Text   (LegendTitle)    at (20, 16), condensed bold 26, "MAP KEY"
+├─ Text   (LegendSub)      right-aligned, ending at (520, 22), mono bold 18, dim, "COLOUR: WHOSE IT IS"
+├─ Text   (label "WHO HOLDS WHAT") at (20, 60)        ├─ Text (label "THE WORLD") at (280, 60)
+├─ Image  Key_marker_stronghold   28 × 28 at (20, 92)  ├─ Image Key_marker_event       at (280, 92)
+├─ Image  Key_marker_outpost      at (20, 128)         ├─ Image Key_marker_checkpoint  at (280, 128)
+├─ Image  Key_marker_safehouse    at (20, 164)         ├─ Image Key_marker_power       at (280, 164)
+├─ Image  Key_marker_lab          at (20, 200)         ├─ Image Key_marker_radio       at (280, 200)
+│                                                     └─ Image Key_marker_range       at (280, 236)
+├─ Text   (KeyName_<icon>) beside each icon, 10 to its right, condensed bold 18, bone: Stronghold,
+│         Outpost, Haven safehouse, Halcyon's lab; World event, Sealed checkpoint, Power station,
+│         Radio station, A pack's ground
+├─ HorizontalLayout LegendPrompt   bottom left at (20, -14): the script makes the RZ_MapLegend prompt ("Hide the key")
+└─ Text   LegendPromptText         the same place, mono bold 18, dim, "I / Y  HIDE THE KEY": hidden once the prompt is made
 ```
 
-`BgGear` lists what the loadout spawned with the last time anyone took it, or the background's
-gear line until then. A locked loadout is unavailable in the menu itself (`RZ_LoadoutLock.c`).
+Unlike the mockup (`UI/Mockups/map_legend.html`), it has no Quartermaster or Perimeter rows,
+because `RZ_UIFeed.BuildMap` sends neither.
+
+## Spawn screen: `RZ_SpawnMenu.layout` and `RZ_SpawnRow.layout`
+
+The spawn screen (`RZ_SpawnMenu` preset), from `UI/Mockups/background_picker.html`, in place of
+vanilla's deploy menu. Written as text. It fills the screen (no world behind it: you have no body
+yet).
+
+```
+Frame (root, full screen)
+├─ Image   (Backdrop)      full screen, #0B0D0E
+├─ Text    (Heading)       at (96, 54), condensed bold 46, "WHO YOU WERE"
+├─ Text    (Header)        at (96, 112), mono 18, dim: one line on what the pick decides
+├─ Image   (HeadRule)      at (96, 150), 1,728 × 2, #3A3F42
+├─ Frame   (List)          at (96, 170), 560 × 730
+│  ├─ Image (ListBg)        #0F1113
+│  ├─ ScrollLayout RowScroll  fills it (the pad's up/down keep the picked row in view)
+│  │  └─ SizeLayout (RowWidth) 560 wide
+│  │     └─ VerticalLayout Rows   the background rows
+│  └─ Text  ListEmpty       centred, regular 24, dim, "Waiting for the Zone to answer." (hidden)
+├─ Frame   (Panel)         at (696, 170), 1,128 × 730; positions inside from its top left
+│  ├─ Image (PanelBg)       #121416 at 90%; Image (PanelAccent) 5 high, bone; Panel (PanelLine) border
+│  ├─ Text  (label "BACKGROUND") at (32, 24)
+│  ├─ Frame PanelBody       fills the panel, shown once a background is picked
+│  │  ├─ Text  BgName        at (32, 52), condensed bold 46 (the script sends it in capitals)
+│  │  ├─ Image StateIcon     24 × 24 at (32, 118) (status_door_unlocked / status_door_locked)
+│  │  ├─ Text  StateText     at (66, 118), mono bold 20, tinted: AVAILABLE, LOCKED, NOT ON THIS SERVER
+│  │  ├─ Image (PanelRule)   at (32, 160), 1,064 × 2, #2A2E31
+│  │  ├─ Text  (label "PERK") at (32, 180)  │ Text BgPerk at (32, 210), 500 × 150, regular 24, #BFD39B, wraps
+│  │  ├─ Text  (label "FLAW") at (32, 372)  │ Text BgFlaw at (32, 402), 500 × 90, regular 24, #E4826F, wraps
+│  │  ├─ Text  (label "STARTING GEAR") at (580, 180)     │ Text BgGear at (580, 210), 516 × 150, regular 24, wraps
+│  │  ├─ Text  (label "STARTING STANDING") at (580, 372) │ Text BgStanding at (580, 402), 516 × 110, mono bold 22, wraps
+│  │  └─ Overlay LockedBlock at (32, 530), 1,064 × 110, #0D0F11 at 82% with a border, shown when locked
+│  │     └─ Text  LockedText  regular 22, dim, wraps, padding 20 left and right: how to unlock it
+│  ├─ Text  Legacy          at (32, 672), mono bold 20, dim ("LEGACY 6 / 10 - THE DRIFTER AT 10")
+│  └─ Overlay (LegacyTrack) at (700, 680), 240 × 10: Image (LegacyTrackBg) #2A2E31 and ProgressBar LegacyBar, fill #E3A33B
+├─ Text    (label "START")  at (696, 928)
+├─ Button  PlacePrev       40 × 40 at (788, 922), "<" on #1A1D20 (a click: the previous place)
+├─ Text    PlaceName       at (838, 924), 420 wide, centred, condensed bold 28: the spawn point's name
+├─ Button  PlaceNext       40 × 40 at (1,268, 922), ">" (the next place); both arrows hidden with one place
+├─ Text    PlaceCount      at (1,322, 930), mono bold 18, dim ("2 OF 7")
+├─ Text    SpawnStatus     at (696, 974), 740 wide, regular 22, #F4F0E6: why nothing happened (hidden when empty)
+├─ Button  DeployButton    360 × 72 at (1,464, 920)
+│  └─ Overlay: Image DeployBg (bone; #1B1F22 while it can't go) and Text DeployText (condensed bold 30:
+│     DEPLOY, DEPLOY IN 0:08, ON YOUR WAY; dark on bone, dim when it can't go)
+├─ HorizontalLayout Prompts  bottom left at (96, -54): the footer prompts the script makes
+└─ Text    PromptsText     the same place, mono bold 18, dim: the static footer, hidden once prompts are made
+```
+
+`RZ_SpawnRow.layout` (**UI > Spawn row layout**), one background, created into `Rows`. The root is
+a `Button` named `SpawnRow` (a click picks it):
+
+```
+Button SpawnRow (root, 4 below it)
+└─ SizeLayout (RowSize)    560 × 50
+   └─ Overlay (RowBox)
+      ├─ Image  RowBg        #1B1F22, shown on the picked row
+      ├─ Image  RowBar       5 × 50, left edge, bone, on the picked row
+      └─ HorizontalLayout (RowLine)  padding 22 left and right, centred vertically
+         ├─ Image  RowLock   24 × 24, the status_door_locked icon, shown when it's locked
+         ├─ Text   RowName   regular 26, fills the row (bright on the picked row, faint when locked)
+         └─ Text   RowState  mono bold 18, dim, right: LOCKED, or empty
+```
+
+Unlike the mockup, the panel has no background icon and the gear is one line of text, not chips.
