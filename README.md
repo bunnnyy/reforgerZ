@@ -84,7 +84,9 @@ plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run
 [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Designed, not built yet:** the content pass onto the world facts (see the roadmap's *Next*).
+**Designed, not built yet:** the content pass onto the world facts, and the infected tribes in the
+wild with crawlers in the towns (see the roadmap's *Next*). The land grid the tribes need is built
+and measured on the base maps, off by default.
 
 ## Docs
 
@@ -109,7 +111,8 @@ scripts/Game/ReforgerZ/
                  seasons (the winner's rules, rule sets, the wipe cycle)
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
                  town memory, the power grid, the radio station, the world facts (what content
-                 reads: season flags, canon, claims, text tokens), the Long Table
+                 reads: season flags, canon, claims, text tokens), the Long Table, the land grid
+                 (water, height, trees, roads, bridges and wild land; off by default)
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, story arcs, the questline engine, headlines
   Zombies/       spawner (any zombie mod's prefabs), bite detection, stealth (visibility, the
@@ -151,6 +154,9 @@ tools/runtime_test/
 tools/zombie_lab/
                  measures Bacon Zombies' own AI on that server, on Everon: groups, waypoints,
                  sight, sharing, speeds, health, the clock, frame time (test only, not the mod)
+tools/land_survey/
+                 reads the land grid on Arland, Everon and Cain on that server and reports what
+                 it found (test only, not the mod)
 .claude/skills/pc-setup/
                  /pc-setup for Claude Code on your PC: points it at docs/PC_SETUP.md
 addon.gproj      the project file (mod ID, dependencies)

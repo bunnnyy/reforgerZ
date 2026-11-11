@@ -85,6 +85,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Stealth: each player's visibility (stance, speed, light, weather, noise), the infected near them seeing the most visible one, losing a hidden player, the missions' sight and notice rules (docs/DESIGN.md, Stealth)", category: "ReforgerZ|Zombies")]
 	protected ref RZ_StealthSettings m_StealthSettings;
 
+	[Attribute(desc: "Tribes (planned). For now only the land survey: the land grid of water, height, trees, roads, bridges and wild land, read once and cached (off by default; docs/DESIGN.md, The land grid)", category: "ReforgerZ|Zombies")]
+	protected ref RZ_TribeSettings m_TribeSettings;
+
 	[Attribute("0.5", desc: "Heat per tick each player gives off just by being somewhere", category: "ReforgerZ|Zombies")]
 	protected float m_fHeatPresence;
 
@@ -401,6 +404,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_SupplyLines m_Supply;
 	protected ref RZ_FactionLife m_FactionLife;
 	protected ref RZ_LongTable m_LongTable;
+	protected ref RZ_Land m_Land;
 	protected ref RZ_Interactions m_Interactions;
 	protected ref RZ_LooseItems m_LooseItems;
 	protected ref RZ_UIFeed m_UIFeed;
@@ -497,6 +501,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_StealthSettings)
 			m_StealthSettings = RZ_StealthSettings.Cast(RZ_Util.NewWithDefaults("RZ_StealthSettings"));
+
+		if (!m_TribeSettings)
+			m_TribeSettings = RZ_TribeSettings.Cast(RZ_Util.NewWithDefaults("RZ_TribeSettings"));
 
 		if (!m_TownMemorySettings)
 			m_TownMemorySettings = RZ_TownMemorySettings.Cast(RZ_Util.NewWithDefaults("RZ_TownMemorySettings"));
@@ -621,6 +628,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Supply = new RZ_SupplyLines(this, m_SupplySettings);
 		m_FactionLife = new RZ_FactionLife(this, m_FactionLifeSettings);
 		m_LongTable = new RZ_LongTable(this, m_LongTableSettings);
+		m_Land = new RZ_Land(this, m_TribeSettings);
 		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
 
 		// A wipe that came due last run (the wipe cycle) or one by hand is carried out now:
@@ -673,6 +681,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Supply.Setup();
 		// The Long Table: once a season, a farm far from every holding, safehouse and the lab
 		m_LongTable.Setup();
+		// The land grid (off by default): its wild land keeps clear of the towns, holdings, safehouses,
+		// the lab, the Long Table's farm and the line, so after all of them. Loads its cache or starts
+		// reading the map, a few squares a second from the one-second tick
+		m_Land.Setup();
 		// Searching, cars, crafting, traps, fire, radios: keep off safehouses, holdings and the lab
 		m_Interactions.Setup();
 		// Arcs are made of the missions, wanderers, safehouses, territory and trucks above
@@ -881,6 +893,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_SupplyLines GetSupply() { return m_Supply; }
 	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
 	RZ_LongTable GetLongTable() { return m_LongTable; }
+	//! The land grid (docs/DESIGN.md, The land grid). Check IsReady(): off by default, and read over
+	//! the first minutes of the first start.
+	RZ_Land GetLand() { return m_Land; }
 	RZ_Interactions GetInteractions() { return m_Interactions; }
 	RZ_GuidanceSettings GetGuidanceSettings() { return m_GuidanceSettings; }
 	RZ_ContractSettings GetContractSettings() { return m_ContractSettings; }
@@ -1457,7 +1472,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Once a second: bites, and stealth (which updates at its own pace, Stealth > Update seconds).
+	//! Once a second: bites, stealth (which updates at its own pace, Stealth > Update seconds) and the
+	//! land grid's first reading.
 	protected void SecondTick()
 	{
 		array<int> ids = {};
@@ -1465,6 +1481,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_Util.GetAlivePlayers(ids, players);
 		m_BiteDetector.Check(ids, players);
 		m_Stealth.Tick(1, ids, players);
+		// The land grid's first reading, a few squares a second (nothing once it's read)
+		m_Land.Step();
 	}
 
 	//------------------------------------------------------------------------------------------------
