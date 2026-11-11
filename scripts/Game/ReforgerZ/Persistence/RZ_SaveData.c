@@ -62,6 +62,7 @@ class RZ_SaveData
 	int rulesHalf = -1;		// the cure finale's half rule set on top (a faction), -1 none
 	int rulesRoute;			// last season's finale route + 1 (5: the Independent), 0 none
 	int rulesTerms;
+	ref array<string> storyRules = {};	// last season's majors' story rules in force (Director/RZ_StoryRules.c)
 	bool wipeDue;
 
 	bool hasLab;

@@ -906,6 +906,11 @@ class RZ_Leaders
 
 		if (role == RZ_ELeaderRole.STRONGHOLD)
 		{
+			// Last season's story can seed the first boss's trait (Director/RZ_StoryRules.c)
+			int seeded = RZ_StoryRules.SeedTrait(f);
+			if (generation == 0 && seeded >= 0 && l.m_iTraitA != seeded && l.m_iTraitB != seeded)
+				l.m_iTraitA = seeded;
+
 			l.m_eLoyalty = RZ_ELoyalty.LOYAL;
 			l.m_iScore = 100;
 			return l;

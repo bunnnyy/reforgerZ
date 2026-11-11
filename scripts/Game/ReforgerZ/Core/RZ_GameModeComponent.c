@@ -827,6 +827,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Questlines.Setup();
 		// Errands stand on the safehouses, holdings, wanderers, trucks and the world memory above
 		m_Errands.Setup();
+		// A fresh season: last season's story rules that aren't season numbers (weights, a dose, flags)
+		if (m_Seasons.IsFresh())
+			RZ_StoryRules.ApplyFresh(this);
+
 		m_Hostility.Init();
 		if (m_bHasLab)
 			AddMapMarker(m_vLabPos, "Halcyon lab");

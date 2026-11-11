@@ -1395,7 +1395,7 @@ the questline tick (every 10 s with players online; nothing moves on an empty se
 | Hours played a day | Hours with someone online, over the last 7 real days |
 | Room left | Hours of play before the act's anchor: (milestone − research) ÷ pace × hours a day; for a stage, the stage clock's minutes to go; for a coda, real hours until the epilogue's last day. Unlimited while research stalls |
 | The faction's state | Its stronghold Under Pressure (the clocks pause), its morale |
-| Offered time | Play time while the act's stage is open (in its window, for a set piece) and a player who qualifies (the act's rank with the faction) is online. Offered evenings: 30 real minutes of it in one evening |
+| Offered time | Play time while the act's stage mission is on the offer list (one of the **Slots**; a watched inner line while it runs), in its window for a set piece, and a player who qualifies (the act's rank with the faction) is online. Offered evenings: 30 real minutes of it in one evening |
 | Touches, engagement | A touch is anything a player does in a stage (`Did`); engaged: a stage mission with someone in it, or touched in the last session (2 hours of play) |
 | Beat gap | Hours of play since the major's last beat (an act opened or ended, a default) |
 | Stalled | Research rose less than **Stall points** (1) over the last 3 real days with play, and the lab's backlog is empty |
@@ -1442,10 +1442,20 @@ Each major sets at most three season weights (`SetContractWeight`).
 branch, line, deciders, fallback)`: its epilogue line and up to four deciders by identity. It's saved
 with the questlines and written into `last_season.json` (`stories`) at the cure and at a wipe without
 one. At the cure the epilogue line is told as a headline: the controlling faction's major first, then
-one line from each other major.
+one line from each other major. Each ending's line has three versions (`RZ_Majors.LineFor`): when its
+own faction controls the cure, when another does, and with no cure. The same record gives next
+season's story rules ([QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)), read from the
+ending as it stood at the cure (`atCure`), and the hall's lines
+([QUESTLINES.md](QUESTLINES.md#the-seasons-lines-and-the-season-tab)).
 
 **The journal.** Every player sees the four majors in their journal (the questline rows): the act,
 the rule or stance in force, the voters' leans in words, and any last call, under the stage's brief.
+The notebook's **The season** tab shows the same for all four at once, and each ending told
+([UI.md](UI.md#the-notebook)).
+
+**Stand events.** `RZ_Questline.OnFinalStandStart` and `OnFinalStandEnd(won)` reach every running
+line when the final stand starts and when it's won or lost (`RZ_Questlines`, from
+`RZ_CureResearch`); a major's hooks run inside its caps. Proof's Before the stand settles on them.
 
 | Setting (Director > Majors) | Default | What it does |
 |---|---|---|
@@ -1457,10 +1467,8 @@ the rule or stance in force, the voters' leans in words, and any last call, unde
 | Between beats | 4 | The beat gap, in sessions, before a major fills it |
 | Slots | 2 | Majors' stage missions offered at once |
 
-*Simplified:* offered time counts while an act's stage is open, not only while it's on the offer
-list; story rules for the next season, the hall-of-fame lines, the codas' standing versions and
-second airings, and the journal's own "The season" tab are planned
-([designs/MAJORS.md](../designs/MAJORS.md)).
+*Simplified:* the stand events don't fire on a change of holder in the clean room. What's still
+designed only is in [designs/MAJORS.md](../designs/MAJORS.md).
 
 ## World facts
 
@@ -2613,7 +2621,9 @@ An **Independent** cure goes by its terms instead: open, half the Haven's and ha
 one side, that faction's at half; sold, only the Red Hand's black market; kept back, nothing. Then
 **at most one half rule set** goes on top: a deal partner's, else the season's Fame leader's when it
 isn't the winner (**Finale > Fame leader rule**). A half rule set moves every number half-way to
-neutral and leaves its switches off (`RZ_SeasonRuleSet.Half`). Everything is combined and capped as
+neutral and leaves its switches off (`RZ_SeasonRuleSet.Half`). Last come the majors' **story rules**
+(one small rule per major that ended live, **Season > Story rules**; the table is in
+[QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)). Everything is combined and capped as
 below.
 
 ### Rule sets

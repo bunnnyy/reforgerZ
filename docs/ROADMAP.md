@@ -119,9 +119,10 @@ The build-review fixes are done. Everything below is approved. The order of the 
   the Walk Out's escorts; play-test the Walk Out's retirement and a week at Test scale 0.008); phase 6, the cure's finale, simplified ([FINALE.md](FINALE.md); what's left of
   it is in [designs/FINALE.md](../designs/FINALE.md): the subjects' branches, the moves, route assets and
   pitches, the rest of each route's ways, the dialogue commit node); phase 5, the four majors, simplified ([QUESTLINES.md](QUESTLINES.md#the-majors);
-  what's left of it is in [designs/MAJORS.md](../designs/MAJORS.md): next-season story rules, the
-  codas' standing versions and hall lines, the journal's own season tab, the stand inputs for the
-  finale, Before the stand, and the approaches each major lists as not built); phase 4, the mission style in full (the six story jobs, reputation's
+  with the story rules next season, the stand's inputs, the epilogue lines by controller, the hall's
+  lines, the season tab and Proof's Before the stand; what's left of it is in
+  [designs/MAJORS.md](../designs/MAJORS.md): the codas' standing versions and second airings,
+  leader stand-ins and channels, and the approaches each major lists as not built); phase 4, the mission style in full (the six story jobs, reputation's
   parley and settling up, lies and witnesses, dialogue's scenes for several players, borrowed kit,
   fallout errands, strangers at every spot kind (18 stranger routines and found hooks), locals,
   twists, board and radio asks, 7 more routines and 21 more cards: [MISSIONS.md](MISSIONS.md),
@@ -258,7 +259,8 @@ In this order, because later ones depend on earlier ones:
 19. **The majors on a real season** (phase 5): do the climaxes land in order on 2, 5 and 15
     regulars (settling day, the muster, the second sitting, the reading), does a squeeze's last call
     come early enough to be answered, and does a quiet server's act stay open without nagging? Watch
-    the `Majors:` log lines and the journal's season lines.
+    the `Majors:` log lines and the journal's season lines. Does the season tab read well on a TV,
+    and do the story rules' line and the hall's "The season's stories" say the right endings?
 
 ## Dropped
 

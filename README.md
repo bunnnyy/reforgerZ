@@ -62,7 +62,9 @@ and one way to end it: **research the cure.**
   the example Short Weight, crossing each other through shared flags ([QUESTLINES.md](docs/QUESTLINES.md)).
 - **Four majors**, one season-long story per faction (The Book Has to Balance, Await Relief, Every
   Name, Proof), each a page its stronghold leader would rather burn, with climaxes on the cure's
-  milestones in order, council votes and a muster, and codas at the north road after the cure. Their
+  milestones in order, council votes and a muster, and codas at the north road after the cure. Each
+  ending leaves one small story rule for next season, a line in the hall and a page in the notebook's
+  season tab. Their
   defaults fire from what the server is really doing (research pace, hours played, who's engaging,
   the gap since the last beat), never on fixed days ([QUESTLINES.md](docs/QUESTLINES.md#the-majors)).
 - **The cure's finale** ([FINALE.md](docs/FINALE.md)): at 90% the lab's batch is missing one thing,

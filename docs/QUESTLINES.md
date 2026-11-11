@@ -108,7 +108,7 @@ CO says in front of every post what Bastion is. Command never answers. Code:
 | II. Who reads it | B1 stage 3, as built | the muster; 1 | As B1 | The stove | ✅ |
 | III. The reckoning | B1 stages 4–5; its endings are the act's results (`orders.reckoning` 1–4) | the muster; 2 | As B1 | The branch settles itself at half effect | ✅ |
 | IV. Effective Strength | Overrun, a session after act III; at the radio by the CO's seat | the muster; 3 | The confession, then the true count from the three posts nearest the stronghold: ask (Known; Independent: persuade 2, ★ Police or Soldier), read the roster at night (unseen), or buy the quartermaster's copy (15 Favor); hand the CO the count | The count stays padded (`orders.padded` 3) | ✅ |
-| V. The muster | 60% (or a lead), a session after act IV, after settling day; a set piece at the nightly call (19:00–22:30) | the gate; 1; 2 offered evenings | Keep the call (Known); read it to them (persuade 3, easier with the true count, proof, a Merciful or Idealist CO, `weeks.public`, a page in the open; harder with a Paranoid CO) and hold the stronghold's gate 3 min; answer it yourself (persuade 2, Known enough with the Haven counted, proof the lab knew, or a Ruthless or Paranoid CO); hold the relay for the Red Hand 3 min (Trusted, or Known with `orders.rh_knows`, `.mocked` or `pilot.redhand`; always Trusted after `book.settled` 5) | The CO decides alone: a Merciful or Idealist CO after "The men were told": All Stations; a Ruthless or Paranoid CO: Bastion, Command; else the call stands | ✅ |
+| V. The muster | 60% (or a lead), a session after act IV, after settling day; a set piece at the nightly call (19:00–22:30) | the gate; 1; 2 offered evenings | Keep the call (Known); read it to them (persuade 3, easier with the true count, proof, a Merciful or Idealist CO, `weeks.public`, a page in the open; harder with a Paranoid CO) and hold the stronghold's gate 3 min; answer it yourself (persuade 2, Known enough with the Haven counted, proof the lab knew, or a Ruthless or Paranoid CO); hold the relay for the Red Hand 3 min (Trusted, or Known with `orders.rh_knows`, `.mocked` or `pilot.redhand`; always Trusted after `book.settled` 5); take the relay back for Bastion first (Bastion: Known; +10 Bastion Fame, the crew can't hold it); pay the quartermaster for rations before the call (30 Bastion Favor: All Stations' morale hit halved) | The CO decides alone: a Merciful or Idealist CO after "The men were told": All Stations; a Ruthless or Paranoid CO: Bastion, Command; else the call stands | ✅ |
 | VI. The last call and the last roll | The epilogue, after the Gate | the wipe | Read the last call at the radio; stand at the halt on the north road for Sedlak's roll | The CO reads it alone; Sedlak walks whoever's left | ✅ |
 
 | Ending (`orders.stance`) | The world | Status |
@@ -119,8 +119,7 @@ CO says in front of every post what Bastion is. Command never answers. Code:
 | **Expended** (4) | Bastion morale −10, strength −5; Red Hand morale +5; a Bastion–Red Hand feud; Struck Off and Requisition ×1.2 | ✅ |
 
 *Simplified:* the copies aren't collected before "keep the call", the padding isn't reported or
-covered post by post, the disguise trick, the curfew walk and Bastion's side at the relay aren't
-offered; the presence floor, the curfew and the one-night mute aren't set; the rank and crew names
+covered post by post, the disguise trick and the curfew walk aren't offered; the presence floor, the curfew and the one-night mute aren't set; the rank and crew names
 aren't kept.
 
 ### Every Name
@@ -163,7 +162,8 @@ log says what the lab did with them. Code: `Missions/Questlines/Halcyon/RZ_Major
 | I. Day One | Early Outbreak | 25%; 2 | At the clinic: copy the margin first (unseen). Then hand the file in sealed, ask the director to read the date (persuade 2, ★ Doctor, Lab Tech), give it to Bastion's adjutant or the chair's clerk. Sets `proof.day_one` (1–4) and `weeks.records` | The field lead fetches it: Day 1 stays the lab's | ✅ simplified: a scene, not Patient Zero's Ledger |
 | II. The Three Weeks | 25%, a session after act I, or at once after the copy: HC1 starts (as built) | 50%; 4 | As HC1; `proof.weeks` and `proof.pages` from its ending | Not started when squeezed: nobody asked (`proof.weeks` 0) | ✅ |
 | III. Authors | 50%: HC3 starts (as built); done at its stage 5 | 75%; 3 | As HC3; it publishes `authors.terms` | Goes on | ✅ |
-| IV. The reading | 75% (or a lead), after the second sitting; a set piece 17:30–20:30 at the lab, never in a stand | the gate; 1; 2 offered evenings | Ask for the whole of it (persuade 3, easier when the Zone knows, the pages were read, the volunteers named, a page in the open, an Idealist or Merciful director; harder with a Paranoid or Ruthless one or nobody asked); stand with the director (Trusted); put the pages on the table; take up the chair's question (Haven: Known, when the clerk sits); have Bastion countersign (Bastion: Known, with terms, the file or the notebook; never under Expended) | The director's draft stands | ✅ |
+| IV. The reading | 75% (or a lead), after the second sitting; a set piece 17:30–20:30 at the lab, never in a stand | the gate; 1; 2 offered evenings | Ask for the whole of it (persuade 3, easier when the Zone knows, the pages were read, the volunteers named, a page in the open, an Idealist or Merciful director; harder with a Paranoid or Ruthless one or nobody asked); stand with the director (Trusted); put the pages on the table; take up the chair's question (Haven: Known, when the clerk sits); have Bastion countersign (Bastion: Known, with terms, the file or the notebook, or last season's `legacy.terms`; never under Expended) | The director's draft stands | ✅ |
+| Before the stand | After the reading, until the final stand begins; at the boss's seat and the lab's records room | past the gate | Sell the director's pages to the boss's man (Red Hand: Known, with the pages; +10 Red Hand Fame, +15 Halcyon Infamy). Once they're sold, clear the line: pay it (40 Red Hand Favor), put the debt in your own name (Red Hand: Trusted; `proof.debt_yours`), or lift them from his satchel unseen. Swap the first page of the draft in the records room unseen (with the pages, `weeks.public` or the three weeks asked about) | Settled as the stand begins: a line nobody cleared (the book not sent off loud, the paper not already the whole of it) is read on the Red Hand's channel: **Two Tins a Copy**. A swap stands under an Idealist or Merciful director (the whole of it, `proof.first_page` 3), else the draft goes back | ✅ simplified: the swap is any hour, with no disguise of its own |
 | V. The final stand | The cure | past the gate | The finale's ([FINALE.md](FINALE.md)); HC3 reads it as built | — | ✅ |
 | VI. The Paper | The epilogue, after Bastion's walk | the wipe | Walk the case to the table on the north road (110 m, outside the kill zone) and set it down | The duty officer walks it down alone | ✅ |
 
@@ -172,11 +172,78 @@ log says what the lab did with them. Code: `Missions/Questlines/Halcyon/RZ_Major
 | **The Whole of It** (2) | Halcyon morale −8 (−3 if the three weeks were public), Haven morale +5; a Haven–Halcyon truce; a page in the open; `proof.haven_gate`; the director's two minutes on the open channel | ✅ |
 | **Under Seal** (4) | Bastion strength +3; Halcyon morale −5, Haven −3 | ✅ |
 | **Day 1** (1) | The Zone didn't know: Halcyon morale +5, strength +2. It knew: "Origin: under investigation", Haven morale −3, a rumour | ✅ |
+| **Two Tins a Copy** (checked first, as the stand begins) | The sellers +5 Red Hand Fame; Halcyon morale −5, Red Hand +5; "Halcyon made this" as a rumour for 48 hours; the boss's man reads page one on the Red Hand's channel; epilogue line *"There's a copy of the lab's first page in every Red Hand camp."* | ✅ |
 | **Unsigned** | No cure by the wipe: the paper stays in the lab's safe | ✅ |
 
-*Simplified:* "Before the stand" (selling or clearing the pages, the night swap) isn't built, so
-Two Tins a Copy can't happen; HC1's new choice (keeping the director's pages) isn't built, so the
-pages-on-the-table choice needs `proof.pages` 2 from another source.
+*Simplified:* HC1's new choice (keeping the director's pages) isn't built, so the pages-on-the-table
+choice and the sale need `proof.pages` 2 from another source; the Red Hand's last page doesn't read
+the lab's line in the book (`proof.pages` 5). With last season's `legacy.records`, Day One's default
+is the director reading the date (`proof.day_one` 2).
+
+### Next season: the story rules
+
+✅ Built (`Director/RZ_StoryRules.c`). A fresh season after a cure takes one small rule from each
+major that ended live last season (not by its defaults alone), read from its ending as it stood at
+the cure: nothing the codas change carries over (**Season > Story rules**, on; it needs Winner
+rules). The rules go on top of the controller's rules and the finale's half rule set, through the
+same combine and caps ([DESIGN.md](DESIGN.md#next-season-rules-from-the-last-winner)), and move a
+faction's strength at most 2 in all. Players hear them as one line, "Last season's stories". A
+season that ended without a cure leaves none.
+
+| Major | Ending | Next season |
+|---|---|---|
+| The Book | The book balances | Red Hand strength +2 |
+| | Sold by the page | Trader Caravan offered ×1.1 |
+| | Sent off loud | Nothing |
+| | Bastion's file | Bastion +2, Red Hand −2 |
+| | The book doesn't balance | The first boss is Paranoid; The Rat ×1.1 |
+| Await Relief | The Call Stands | Bastion's share of road posts 0.6 (meets the winner's in the middle) |
+| | All Stations | Requisition ×0.9 |
+| | Bastion, Command | Bastion strength +2 |
+| | Expended | Bastion strength −2 |
+| Every Name | Every Name | The Long Table's chance ×0.5; the chair's line on every house board on the first real day |
+| | The Closed Book | One rumour for two days |
+| | The Far House | The Long Table's chance ×1.5 (never over 1) |
+| Proof | The Whole of It | Starting infection ×0.95; `legacy.records` (act I's default reads the date) |
+| | Under Seal | Bastion strength +2; `legacy.terms` (the countersignature has its terms) |
+| | Day 1 | Specials ×1.05; one rumour for two days |
+| | Two Tins a Copy | Red Hand strength +2; the black market starts with one stolen dose |
+
+*Not built:* the Book's balancing greets a returning player by last season's crew name (there are no
+crew names); Counted's one Bastion checkpoint on a safehouse town's road (road posts aren't placed
+by town) and Paid at the Door's first-day exile leak (no leak exists) leave nothing.
+
+### The stand's inputs
+
+✅ Built. The final stand belongs to the finale ([FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room));
+the majors decide which faction groups a major sends to it (`RZ_Majors.SendsStandGroup`), inside
+the finale's **Groups at the lab** cap, the finisher's faction first:
+
+| Faction | Sends a group when | Where |
+|---|---|---|
+| The Haven | Proof ended The Whole of It (`proof.haven_gate`) and **Territory > Haven guard** is on | At the gate |
+| Bastion | The stance is 1 or 2; under 3 its checkpoint; never under 4 | 1–2 at the gate; 3 on the lab's road (150–250 m out) |
+| The Red Hand | The last page balanced or stood for nothing (`book.last` 1–2), unless Bastion holds the road (stance 3) | On the lab's road |
+
+Take the Lab has one decider: the finale offers it to the Red Hand route unless the last page closed
+it (`book.last` 1–4). Questlines hear the stand through `OnFinalStandStart` and `OnFinalStandEnd`
+([DESIGN.md](DESIGN.md#the-majors)); *not built:* an event when the clean room changes holder.
+
+### The season's lines and the season tab
+
+✅ Built.
+- **Epilogue lines** by who controls the cure: each ending has a line for when its own faction
+  controls it (*"Command, Bastion. Cure secured. Requesting relief. Over." A long hiss. "Bastion
+  out."*), the one it wrote for another controller, and one for no cure (*"The gates never opened.
+  The book balanced anyway."*).
+- **The hall's lines** in the season block, under the epilogue's names policy
+  ([EPILOGUE.md](EPILOGUE.md#names)): "The season's stories", one line a major with its ending and up
+  to four who decided it, at the epilogue's commit (with no cure, at the wipe); "At the barrier",
+  everyone at Bastion's last roll; "On the paper", whoever set the case down first, then everyone who
+  walked it.
+- **The season tab** of the notebook ([UI.md](UI.md#the-notebook)): every major as it stands (its
+  act, the rule or stance, the leans, any last call) and each ending told; in the epilogue, *As the
+  Zone tells it* and *And you* with what's unfinished.
 
 ---
 

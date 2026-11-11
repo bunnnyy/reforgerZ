@@ -115,6 +115,15 @@ class RZ_CureResearch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A fresh season's story rule (Two Tins a Copy): the black market starts with `count` stolen
+	//! doses, within its cap.
+	void SeedStolen(int count)
+	{
+		m_iStolenAntidotes = Math.Min(StolenCap(), m_iStolenAntidotes + Math.Max(0, count));
+		RZ_Log.Info(string.Format("Story rules: the black market starts with %1 stolen doses.", m_iStolenAntidotes));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void RZ_CureResearch(RZ_GameModeComponent gm)
 	{
 		m_GM = gm;
@@ -1066,6 +1075,10 @@ class RZ_CureResearch
 		if (finale && HasFinale())
 			finale.OnStandStarted();
 
+		// The questlines settle what must be settled before the stand (Proof's Before the stand)
+		if (m_GM.GetQuestlines())
+			m_GM.GetQuestlines().OnFinalStandStart();
+
 		if (finale && HasFinale() && finale.IsOpen())
 		{
 			m_GM.NotifyAllAs("THE FINAL STAND", "The cure is being synthesized. Every infected for miles can sense it. Hold the lab for 15 minutes. Whoever holds the clean room when it's done controls the cure.", RZ_ENoticeTag.URGENT);
@@ -1157,6 +1170,9 @@ class RZ_CureResearch
 		if (m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnFinalStandLost();
 
+		if (m_GM.GetQuestlines())
+			m_GM.GetQuestlines().OnFinalStandEnd(false);
+
 		m_GM.OnCureChanged();
 	}
 
@@ -1226,6 +1242,9 @@ class RZ_CureResearch
 		bool contest = finale && HasFinale();
 		if (contest)
 			finale.OnStandWon();
+
+		if (m_GM.GetQuestlines())
+			m_GM.GetQuestlines().OnFinalStandEnd(true);
 
 		vector lab = m_GM.GetLabPosition();
 		array<int> defenders = {};

@@ -1592,6 +1592,52 @@ class RZ_Questlines
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The final stand (re)starts (RZ_CureResearch.StartFinalStand): every running line hears it.
+	void OnFinalStandStart()
+	{
+		array<RZ_QuestRun> runs = {};
+		foreach (RZ_QuestRun r : m_aRuns)
+		{
+			if (!r.m_bDone)
+				runs.Insert(r);
+		}
+
+		foreach (RZ_QuestRun run : runs)
+		{
+			bool major = run.m_Line.IsMajor();
+			if (major)
+				RZ_Majors.Enter(run.m_sKey);
+
+			run.m_Line.OnFinalStandStart(m_GM, run);
+			if (major)
+				RZ_Majors.Leave();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The final stand ended: won (the cure) or lost (the batch).
+	void OnFinalStandEnd(bool won)
+	{
+		array<RZ_QuestRun> runs = {};
+		foreach (RZ_QuestRun r : m_aRuns)
+		{
+			if (!r.m_bDone)
+				runs.Insert(r);
+		}
+
+		foreach (RZ_QuestRun run : runs)
+		{
+			bool major = run.m_Line.IsMajor();
+			if (major)
+				RZ_Majors.Enter(run.m_sKey);
+
+			run.m_Line.OnFinalStandEnd(m_GM, run, won);
+			if (major)
+				RZ_Majors.Leave();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A wanderer is talked to: a questline may add a line. "" if none.
 	string OnWandererTalk(int playerId, int wandererId)
 	{

@@ -50,6 +50,9 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected string m_sMap;
 	protected string m_sBoard;
 	protected string m_sHall;
+	protected string m_sSeason;
+	protected int m_iSeasonVersion;
+	protected float m_fSeasonAsk = -100;
 	protected int m_iBoardVersion;
 	protected int m_iHallVersion;
 	protected int m_iMapVersion;
@@ -308,6 +311,11 @@ class RZ_PlayerUIComponent : ScriptComponent
 			m_sHall = payload;
 			m_iHallVersion++;
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_SEASON)
+		{
+			m_sSeason = payload;
+			m_iSeasonVersion++;
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_READER)
 		{
 			OnReader(payload);
@@ -444,11 +452,25 @@ class RZ_PlayerUIComponent : ScriptComponent
 		if (!gm || !gm.GetUIFeed())
 			return;
 
+		float now = RZ_UIW.Now();
+		// The season tab asks with its own kind (after the ones only sent)
+		if (kind == RZ_UIFeed.PAYLOAD_SEASON)
+		{
+			if (now - m_fSeasonAsk < ASK_GAP)
+				return;
+
+			m_fSeasonAsk = now;
+			int asker = OwnerPlayerId();
+			if (asker > 0)
+				SendPayload(kind, gm.GetUIFeed().BuildPayload(asker, kind));
+
+			return;
+		}
+
 		// A cheap spam guard per kind: the menus ask once when they open, the map every 20 s
 		if (kind < 0 || kind >= RZ_UIFeed.PAYLOAD_KINDS)
 			return;
 
-		float now = RZ_UIW.Now();
 		if (now - m_aLastAsk[kind] < ASK_GAP)
 			return;
 
@@ -763,6 +785,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	string GetMap() { return m_sMap; }
 	string GetBoard() { return m_sBoard; }
 	string GetHall() { return m_sHall; }
+	string GetSeason() { return m_sSeason; }
+	int GetSeasonVersion() { return m_iSeasonVersion; }
 	string GetReader() { return m_sReader; }
 	int GetReaderVersion() { return m_iReaderVersion; }
 	int GetBoardVersion() { return m_iBoardVersion; }

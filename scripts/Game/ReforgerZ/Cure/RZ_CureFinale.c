@@ -1722,7 +1722,16 @@ class RZ_CureFinale
 				continue;
 
 			// VERIFY: a spawned group honours the players' hostility bits (else it fights only the infected)
-			IEntity grp = RZ_Util.SpawnPrefab(prefab, RZ_Mission.LandPointNear(lab, 40, 120));
+			// A major's group on the lab's road stands further out (RZ_Majors.OnLabRoad)
+			float fromDist = 40;
+			float toDist = 120;
+			if (RZ_Majors.OnLabRoad(m_GM, g))
+			{
+				fromDist = 150;
+				toDist = 250;
+			}
+
+			IEntity grp = RZ_Util.SpawnPrefab(prefab, RZ_Mission.LandPointNear(lab, fromDist, toDist));
 			if (!grp)
 				continue;
 
@@ -1741,13 +1750,8 @@ class RZ_CureFinale
 		if (ActiveLocks(f) > 0)
 			return true;
 
-		if (f == HAVEN)
-			return RZ_MajorHelp.World(m_GM, "proof.haven_gate") != 0;
-
-		if (f == BASTION)
-			return stance == 1;
-
-		return RZ_MajorHelp.World(m_GM, "book.last") == 2;
+		// The majors' inputs to the stand (Director/RZ_Majors.c, SendsStandGroup)
+		return RZ_Majors.SendsStandGroup(m_GM, f);
 	}
 
 	//------------------------------------------------------------------------------------------------

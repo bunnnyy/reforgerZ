@@ -522,7 +522,7 @@ calendar. Needs Puzzles > Civilian (or the generic object).
 | | Sent off loud (5), at the crossroads | the Red Hand, any standing; 5 Fame, 10 Favor | 1 hour; a 3-minute hold | ✅ |
 | | The last line (7), at the crossroads | the Red Hand, any standing, after the cure; no pay | 1 hour, 17:00–22:00 | ✅ |
 | Await Relief | Effective Strength (IV), at the CO's radio and the three nearest posts | Bastion, Known; 6 Fame, 15 Favor | 90 minutes | ✅ |
-| | The muster (V), at the CO's radio and the relay | Bastion, Known; 10 Fame, 20 Favor | 90 minutes, 19:00–22:30; a 3-minute hold at the gate or the relay | ✅ |
+| | The muster (V), at the CO's radio, the quartermaster and the relay | Bastion, Known; 10 Fame, 20 Favor | 90 minutes, 19:00–22:30; a 3-minute hold at the gate or the relay | ✅ |
 | | The last call (VI), at the radio and the halt on the north road | Bastion, any standing, after the cure; no pay | 2 hours | ✅ |
 | Every Name | The ones who can't work (I), at the edge of the house nearest the stronghold | the Haven, any standing; 5 Fame, 10 Favor | 1 hour, 17:00–21:00 | ✅ |
 | | The first sitting (II), at the chair's safehouse | the Haven, any standing; 5 Fame, 10 Favor | 90 minutes at supper; the vote at the end | ✅ |
@@ -532,6 +532,7 @@ calendar. Needs Puzzles > Civilian (or the generic object).
 | | The Gate (VII), at the bend on the north road | the Haven, any standing, after the cure; no pay | 90 minutes, 17:00–22:00; a hold | ✅ |
 | Proof | Day One (I), at the clinic, the lab, Bastion's and the Haven's strongholds | Halcyon, Known; 10 Fame, 15 Favor | 90 minutes | ✅ |
 | | The reading (IV), at the lab | Halcyon, Known; 10 Fame, 20 Favor | 90 minutes, 17:30–20:30 | ✅ |
+| | Before the stand (V), at the boss's seat and the lab's records room | Halcyon, any standing; no pay | 90 minutes, offered again until the stand begins | ✅ |
 | | The Paper (VI), from the lab gate to the table on the north road | Halcyon, any standing, after the cure; no pay | 90 minutes, from 17:30 | ✅ |
 
 Our Crossroads and Coup Talk stay out of the random pool and Training Day stays a Bastion leader job;

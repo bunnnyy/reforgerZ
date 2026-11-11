@@ -868,13 +868,13 @@ class RZ_EpiBeats
 
 	//------------------------------------------------------------------------------------------------
 	//! The journal's "As the Zone tells it": every beat met (all of them in processing), 12 at most.
-	string MetText(string ident, bool all)
+	string MetText(string ident, bool all, int most = 12)
 	{
 		string text = "";
 		int n = 0;
 		foreach (RZ_EpiBeat b : List())
 		{
-			if (n >= 12)
+			if (n >= most)
 				break;
 
 			if (!all && !m_Epi.Data().met.Contains(ident + "|" + b.key))

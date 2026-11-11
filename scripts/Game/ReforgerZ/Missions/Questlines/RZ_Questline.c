@@ -365,6 +365,19 @@ class RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The final stand (re)starts (RZ_Questlines.OnFinalStandStart): a running line may settle what
+	//! must be settled before it. A major's pay and effects go through its caps.
+	void OnFinalStandStart(RZ_GameModeComponent gm, RZ_QuestRun run)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The final stand ended: won (the cure), or lost (the batch ruined, research back to 90).
+	void OnFinalStandEnd(RZ_GameModeComponent gm, RZ_QuestRun run, bool won)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The journal's brief for the current stage. Default: the stage's text, filled in.
 	string JournalText(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{

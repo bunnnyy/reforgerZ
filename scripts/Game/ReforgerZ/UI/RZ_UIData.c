@@ -182,6 +182,9 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Hall of fame page layout (UI/LAYOUTS.md)", "layout")]
 	ResourceName m_sHallPage;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: The season page layout (UI/LAYOUTS.md): the majors, and in the epilogue the season as the Zone tells it", "layout")]
+	ResourceName m_sSeasonPage;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The notebook item every new life is given (Prefabs/ReforgerZ/UI/RZ_Notebook.et): taken into the hand it opens the notebook, the pad's way in besides the pause menu. Empty = none", "et")]
 	ResourceName m_sNotebookPrefab;
 

@@ -136,12 +136,12 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    Name "Tab0"
    Slot FrameWidgetSlot "{DBF0DBA45C90276F}" {
     Anchor 1 0 1 0
-    PositionX -952
-    OffsetLeft -952
+    PositionX -1124
+    OffsetLeft -1124
     PositionY 100
     OffsetTop 100
     SizeX 168
-    OffsetRight 784
+    OffsetRight 956
     SizeY 40
     OffsetBottom -140
     Alignment 0 0
@@ -213,12 +213,12 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    Name "Tab1"
    Slot FrameWidgetSlot "{EA18F36726FEB69E}" {
     Anchor 1 0 1 0
-    PositionX -780
-    OffsetLeft -780
+    PositionX -952
+    OffsetLeft -952
     PositionY 100
     OffsetTop 100
     SizeX 168
-    OffsetRight 612
+    OffsetRight 784
     SizeY 40
     OffsetBottom -140
     Alignment 0 0
@@ -290,12 +290,12 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    Name "Tab2"
    Slot FrameWidgetSlot "{789ED7904C64F78D}" {
     Anchor 1 0 1 0
-    PositionX -608
-    OffsetLeft -608
+    PositionX -780
+    OffsetLeft -780
     PositionY 100
     OffsetTop 100
     SizeX 168
-    OffsetRight 440
+    OffsetRight 612
     SizeY 40
     OffsetBottom -140
     Alignment 0 0
@@ -367,12 +367,12 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    Name "Tab3"
    Slot FrameWidgetSlot "{273247B8B00FE1C6}" {
     Anchor 1 0 1 0
-    PositionX -436
-    OffsetLeft -436
+    PositionX -608
+    OffsetLeft -608
     PositionY 100
     OffsetTop 100
     SizeX 168
-    OffsetRight 268
+    OffsetRight 440
     SizeY 40
     OffsetBottom -140
     Alignment 0 0
@@ -444,12 +444,12 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
    Name "Tab4"
    Slot FrameWidgetSlot "{EA9F5FC8F402C4BF}" {
     Anchor 1 0 1 0
-    PositionX -264
-    OffsetLeft -264
+    PositionX -436
+    OffsetLeft -436
     PositionY 100
     OffsetTop 100
     SizeX 168
-    OffsetRight 96
+    OffsetRight 268
     SizeY 40
     OffsetBottom -140
     Alignment 0 0
@@ -510,6 +510,83 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
        "Min Font Size" 18
        "Horizontal Alignment" Right
        FontProperties FontProperties "{A6B46ADC35AED97F}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+   }
+  }
+  ButtonWidgetClass "{08E423A9D4088971}" {
+   Name "Tab5"
+   Slot FrameWidgetSlot "{9AAD1F05235407AE}" {
+    Anchor 1 0 1 0
+    PositionX -264
+    OffsetLeft -264
+    PositionY 100
+    OffsetTop 100
+    SizeX 168
+    OffsetRight 96
+    SizeY 40
+    OffsetBottom -140
+    Alignment 0 0
+   }
+   style blank
+   {
+    OverlayWidgetClass "{73142ED244EBF707}" {
+     Name "Tab5Box"
+     Slot ButtonWidgetSlot "{250AA1E267132575}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{1F8CC32AF21E5383}" {
+       Name "Tab5Bg"
+       Slot OverlayWidgetSlot "{F45034EA446A7A33}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.102 0.114 0.125 1
+       Size 1 1
+      }
+      PanelWidgetClass "{6562DBA107C470C1}" {
+       Name "Tab5Line"
+       Slot OverlayWidgetSlot "{A34E100D6150A517}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      TextWidgetClass "{B604459CB399EE29}" {
+       Name "Tab5Text"
+       Slot OverlayWidgetSlot "{553C2E5110F75DB9}" {
+        HorizontalAlign 1
+        VerticalAlign 1
+       }
+       Color 0.639 0.62 0.565 1
+       Text "THE SEASON"
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{BBB76284E21AED36}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{C9F2035F8B3F6378}" {
+       Name "TabBadge5"
+       Slot OverlayWidgetSlot "{36A404BBA6366F29}" {
+        HorizontalAlign 2
+        VerticalAlign 1
+        Padding 0 0 10 0
+       }
+       "Is Visible" 0
+       Color 0.949 0.761 0.188 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Right
+       FontProperties FontProperties "{31D7AC947E62FC59}" {
         Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
       }
