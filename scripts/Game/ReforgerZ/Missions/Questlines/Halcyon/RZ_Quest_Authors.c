@@ -82,6 +82,7 @@ class RZ_Quest_Authors : RZ_Questline
 
 	static const float CURE_START = 50;
 	static const float CURE_READY = 75;
+	static const float CURE_LATE = 90;		// too close to the stand to start: it would only fizzle
 
 	//------------------------------------------------------------------------------------------------
 	override void Define()
@@ -121,7 +122,7 @@ class RZ_Quest_Authors : RZ_Questline
 	override bool CanStart(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		RZ_CureResearch cure = gm.GetCure();
-		if (!gm.HasLab() || !cure || cure.m_fProgress < CURE_START || cure.IsCured() || cure.IsFinalStand())
+		if (!gm.HasLab() || !cure || cure.m_fProgress < CURE_START || cure.m_fProgress >= CURE_LATE || cure.IsCured() || cure.IsFinalStand())
 			return false;
 
 		if (!RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))

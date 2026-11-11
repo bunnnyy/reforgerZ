@@ -79,6 +79,8 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	static const int E_NUMBERS = 2;
 	static const int E_SOLD = 3;
 
+	static const float WALK_HOME_RANGE = 3500;		// the sister's house, from the field station, when one is this close
+
 	//------------------------------------------------------------------------------------------------
 	override void Define()
 	{
@@ -110,23 +112,44 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	//------------------------------------------------------------------------------------------------
 	override bool CanStart(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
-		if (!gm.HasLab() || !gm.GetLeaders() || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
+		// Once the cure is out, nobody is volunteering for the trial dose any more
+		if (!gm.HasLab() || gm.GetCure().IsCured() || !gm.GetLeaders() || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
 			return false;
 
 		RZ_Safehouses houses = gm.GetSafehouses();
 		if (!houses || houses.Count() == 0)
 			return false;
 
+		RZ_Leader lead = RZ_QM_HalcyonScene.PickFieldLead(gm, true);
+		if (!lead)
+			return false;
+
+		// Her house: one with people, within a walk of the field station if there is one (he has to
+		// be walked home from it before he turns), else the nearest
 		array<int> options = {};
+		int nearest = -1;
+		float nearestDist = float.MAX;
 		for (int i = 0; i < houses.Count(); i++)
 		{
 			RZ_Safehouse cand = houses.Get(i);
-			if (cand && cand.m_iPopulation >= 3 && cand.m_iSettlement >= 0)
+			if (!cand || cand.m_iPopulation < 3 || cand.m_iSettlement < 0)
+				continue;
+
+			float dist = RZ_Util.DistXZ(cand.m_vPos, lead.m_vPos);
+			if (dist <= WALK_HOME_RANGE)
 				options.Insert(i);
+
+			if (dist < nearestDist)
+			{
+				nearestDist = dist;
+				nearest = i;
+			}
 		}
 
-		RZ_Leader lead = RZ_QM_HalcyonScene.PickFieldLead(gm, true);
-		if (options.IsEmpty() || !lead)
+		if (options.IsEmpty() && nearest >= 0)
+			options.Insert(nearest);
+
+		if (options.IsEmpty())
 			return false;
 
 		int idx = options.GetRandomElement();
@@ -495,14 +518,18 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The sister's council head has a word while it runs.
+	//! The sister's council head has a word while it runs: about him until his end is known, then
+	//! about the names.
 	override string OnLeaderTalk(RZ_GameModeComponent gm, RZ_QuestRun run, int playerId, int leaderId)
 	{
 		RZ_Leader l = gm.GetLeaders().Get(leaderId);
 		if (!l || l.m_iSafehouse != run.Flag("house", -1))
 			return "";
 
-		return string.Format("%1 nods toward the door. \"{sister} still walks up the hill every morning. If you're going up there, find out what they did with him. She'll want his name back.\"", l.m_sShort);
+		if (run.Flag("brother") == 0)
+			return string.Format("%1 nods toward the door. \"{sister} still walks up the hill every morning. If you're going up there, find out what they did with {brother}.\"", l.m_sShort);
+
+		return string.Format("%1 keeps their voice down. \"{sister} has the lab's paper now. She wants every number on it to have a name, not just his.\"", l.m_sShort);
 	}
 }
 
@@ -901,7 +928,7 @@ class RZ_QM_OtherBrother : RZ_QM_OtherTwoScene
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
-		SetSister(10, 15, 3600);
+		SetSister(10, 15, 5400);
 		m_Req.Bonus("nurse");
 	}
 
@@ -939,11 +966,12 @@ class RZ_QM_OtherBrother : RZ_QM_OtherTwoScene
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Long enough to walk home at a steady pace, from when the first player reaches the room.
+	//! Long enough to walk home at a steady pace (an hour at most), from when the first player
+	//! reaches the room.
 	protected float TimeFor(RZ_GameModeComponent gm, int playerId)
 	{
 		float walk = RZ_Util.DistXZ(m_vBed, m_vHome) / 1.1;
-		return Math.Clamp(walk * 1.3 + 240, 600, 2700);
+		return Math.Clamp(walk * 1.3 + 240, 600, 3600);
 	}
 
 	//------------------------------------------------------------------------------------------------

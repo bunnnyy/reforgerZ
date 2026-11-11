@@ -89,6 +89,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 
 		RZ_QuestStage answer = WaitStage(S_ANSWER, "The lab answers", "Wolff's notebook has gone where it went. The lab will answer, in a day or so.");
 		answer.Wait(120, 24);
+		answer.GiveUp(48, "Whatever the lab meant to say about the notebook, it never said it.");
 
 		RZ_QuestStage raid = MissionStage(S_RAID, "The raid", "Since the notebook was read out, the Red Hand is sure the lab has more to hide, and a crew is coming to look. Hold the lab.");
 		raid.GiveUp(4, "The Red Hand never came for the lab after all. The notebook is still all anyone talks about.");
@@ -264,11 +265,15 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The driver has to be alive and free; the raid waits out a final stand and never comes after the cure.
+	//! The driver has to be alive and free. The lab answers after a final stand, not during one (so
+	//! the story knows whether the cure is out); the raid never comes during a stand or after the cure.
 	override bool IsReady(RZ_GameModeComponent gm, RZ_QuestRun run, int stage)
 	{
 		if (stage == S_DRIVER)
 			return DriverFree(gm, run.Flag("driver", -1));
+
+		if (stage == S_ANSWER)
+			return !gm.GetCure().IsFinalStand();
 
 		if (stage == S_RAID)
 			return !gm.GetCure().IsFinalStand() && !gm.GetCure().IsCured();
@@ -373,7 +378,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 		}
 		else if (outcome == OUT_SNEAK)
 		{
-			run.Note("You took the notebook and left her in the store. She didn't look up.");
+			run.Note("Somebody took the notebook and left her in the store. She didn't look up.");
 		}
 		else if (outcome == OUT_LOOSE)
 		{
@@ -472,7 +477,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 			ChangeStanding(gm, run, RZ_EFaction.INSTITUTE, 4, 0);
 			gm.GetCure().AddResearch(1, "Dr Wolff's notebook went into the lab's record.");
 			LeadLeaves(gm, run);
-			SpreadRumour(gm, "\"Halcyon burned some pages in the stove the other night. Notebook pages. They don't burn paper. Paper is precious.\"", 8);
+			SpreadRumour(gm, "\"Halcyon burned notebook pages in the stove the other night. Halcyon never burns paper.\"", 8);
 			return;
 		}
 
@@ -551,7 +556,10 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 			if (run.m_iBranch == BR_PUBLIC)
 				return run.Fill("Everyone has heard the notebook now. The lab will answer, one way or another.");
 
-			return run.Fill("The notebook is in the lab's record, most of it. {lead} will hear which pages went in the stove.");
+			if (RZ_QM_HalcyonScene.SameLeader(gm, run, "lead"))
+				return run.Fill("The notebook is in the lab's record, most of it. {lead} will hear which pages went in the stove.");
+
+			return run.Fill("The notebook is in the lab's record, most of it.");
 		}
 
 		if (run.m_iStage == S_WALKOUT && !RZ_QM_HalcyonScene.SameLeader(gm, run, "lead"))
@@ -1192,6 +1200,8 @@ class RZ_QM_WeeksReaders : RZ_QM_HalcyonScene
 		m_sItemName = "the notebook";
 		m_sTitle = "The Three Weeks: who reads it";
 		m_sBrief = QFill(gm, "Dr Wolff's notebook says the Institute was told on the first day of the three weeks, and wrote back \"Continue.\" {director} wants it in the record. {lead} wants it out. Bastion, the Haven and the Red Hand would all read it. Take it to one of them.");
+		if (m_iLead < 0)
+			m_sBrief = QFill(gm, "Dr Wolff's notebook says the Institute was told on the first day of the three weeks, and wrote back \"Continue.\" {director} wants it in the record. Bastion, the Haven and the Red Hand would all read it. Take it to one of them.");
 		return true;
 	}
 
