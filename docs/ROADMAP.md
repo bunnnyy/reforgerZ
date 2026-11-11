@@ -41,7 +41,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | World facts: one layer content reads (the cure and the epilogue, stage, Bastion presence, the day, night, who holds a town and a filtered town pick, safehouses, live leader names), season flags shared with the questlines, canon facts made once a season, claims so two stories don't use the same house, leader or wanderer, `Fill` tokens for text (briefs filled when shown), `Changed` for news, one "can it run now" check every mission starter uses, and missions called off when the world makes them pointless | [World facts](DESIGN.md#world-facts) |
 | The epilogue after the cure: the Perimeter stands down (no shots; whoever walks up to the line is turned back; the gates open with the wipe), research stops and running research and line jobs are called off, and the broadcast, guidance and the factions' lines follow | [The Perimeter](DESIGN.md#the-perimeter), [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Town memory and journals of the dead | [Town memory](DESIGN.md#town-memory) |
-| World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars, crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
+| World interactions: searching, locked doors (the vanilla door action hooked; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars (only ever found: two or three missing parts, a wrench or toolkit to fit them, long loud hotwiring that can fail, rare keys; the tyre and planks are carryable items), crafting, traps, generators, fire, water, treating others, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, spawn scenarios, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
 | Cure research, antidotes, the final stand, the season's winner; the pace by play (research ×0.25 to ×2.5 for the last week's player-hours); the lab's capacity (a backlog worked through at 3% a real day, capped at 4 days of work as a backstop: samples refused and mission research lost while it's full, +25% on what fills a near-empty backlog to half a day); breakthrough news held until someone is online; the finale's 90% gate as a hook, used only once a finale questline is registered, with a fallback of 1% a real day after a week there | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
 | Seasons: next-season rules from the last winner, rule sets (Winter, Fog, Military Collapse, No Vehicles, or your own), the wipe cycle (only on the cure after an epilogue by default; a timed wipe after N weeks for admins who pick it; backup and announcements), the hall of fame | [Seasons](DESIGN.md#seasons) |
@@ -62,16 +62,14 @@ The prefabs were filled in by text edits on 2026-11-11; their reviewers found th
 - **Shops:** no vehicles and no car parts in any quartermaster's stock or requisitions. Replace or
   remove the Haven medkit (vanilla `MedicalKit_01_FIA` heals without limit). The Trusted
   machine-gun requisition hands out a Champion item.
-- **Cars:** make `RZ_Tyre.et` and `RZ_Planks.et` carryable inventory items. Make fixing harder, as
-  `RZ_CarSettings` attributes: two or three missing parts, a wrench or toolkit to fit them, longer and
-  louder hotwiring that can fail, rarer keys.
 - **People:** checkpoint guards get their rifles back; occupants lose their shop-tier armour; the
   council head and the bounty target's faction must fit their missions.
 - **Items and loadouts:** the tablet keywords must match `RZ_Tablets.et`; the server enforces
   locked loadouts.
 - **Docs** for all of the above: WORKBENCH_SETUP, MISSIONS, DESIGN, REPUTATION.
-- **Untested in play:** the fixable cars' names, the parked cars' lock, and the unarmed zombie
-  groups (`Prefabs/ReforgerZ/Zombies/`).
+- **Untested in play:** the fixable cars' names, the parked cars' lock, the tyre and planks as
+  items (built by text on vanilla `Item_Base`), and the unarmed zombie groups
+  (`Prefabs/ReforgerZ/Zombies/`).
 
 ### Get it playable
 - **Refine the stand-in prefabs.** Many bases are stand-ins (five items share the aspirin bottle,
@@ -113,7 +111,6 @@ The prefabs were filled in by text edits on 2026-11-11; their reviewers found th
   buildings, and keys and mission items are loose too. Being designed.
 - **Bodies** are looted with the vanilla inventory, with no search prompt. Planned.
 - **Burning a building** needs fuel in your hands; a thrown Molotov still does it. Being designed.
-- **Cars** are only ever found, never bought, and are harder to fix. Being built.
 - **The deploy panel and the map's icon layer:** the deploy-menu override that adds the background
   panel, the map config override with `RZ_MapIconsUI` and the map icon layout (until it's set, the
   vanilla text markers stay), and textures for the icons the scripts never swap ([UI.md](UI.md)).
@@ -163,7 +160,8 @@ In this order, because later ones depend on earlier ones:
    log line, the VERIFY list)? Is lying low worth it without being a way to skip the infected
    (the checklist's 30/60/100 m test, day and night, against **Stealth** off)?
 7. **Puzzles** one by one, and whether replicated action labels work.
-8. **Searching:** do spots appear in houses? Search rates against town loot; how often a car is fixed.
+8. **Searching:** do spots appear in houses? Search rates against town loot; how often a car is fixed
+   now that it takes two or three parts, a tool and a hotwiring that can fail.
    **Door locks:** does the hooked door action compile, refuse only from outside, and get inside
    right on several building types? Do door spots stand at the right doors? If hooking fails,
    turn **Door locks** off (the lock goes back on the loot). **Keeping AI out:** does the AI door

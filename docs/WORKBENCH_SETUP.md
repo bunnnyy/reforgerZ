@@ -346,7 +346,7 @@ Players who pick a locked one keep its gear but play as Unemployed. The log warn
 | Loadout name | Prefab | Unlock | Suggested gear |
 |---|---|---|---|
 | `Nurse` | `RZ_Loadout_Nurse.et` | — | medical bag, bandages, morphine, saline; no weapon |
-| `Mechanic` | `RZ_Loadout_Mechanic.et` | — | toolbox, jerrycan, wrench; work clothes |
+| `Mechanic` | `RZ_Loadout_Mechanic.et` | — | wrench, jerrycan; work clothes |
 | `Hunter` | `RZ_Loadout_Hunter.et` | — | hunting rifle, 5 rounds, hunting jacket |
 | `Police Officer` | `RZ_Loadout_PoliceOfficer.et` | — | pistol, one magazine, police jacket |
 | `Ex-Con` | `RZ_Loadout_ExCon.et` | — | knife; plain clothes |
@@ -610,7 +610,7 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | the repo's parked copies of the Car prefabs (Prefabs/ReforgerZ/Interactions/Cars/), each with SCR_BaseLockComponent m_bIsLocked 1 | — | Interactions > Cars > Parked prefabs (list, the same order as Car prefabs) | optional | a fixable car before it runs: the same car, parked and locked. One per Car prefab, in the same order. A new car needs its own parked copy: inherit it and set its SCR_BaseLockComponent > m_bIsLocked |
 | (existing prefab) | vanilla drivable civilian cars | — | Interactions > Cars > Car prefabs (list) | optional | what a fixed car becomes (empty = no fixable cars) |
 | `RZ_CarBattery.et` | an item; keep "battery" in its name | — | Interactions > Cars > Battery | optional | car parts |
-| `RZ_Tyre.et` | an item; keep "tyre" in its name | — | Interactions > Cars > Tyre | optional | car parts |
+| `RZ_Tyre.et` | an inventory item with a tyre mesh; keep "tyre" in its name | — | Interactions > Cars > Tyre | optional | car parts. The repo's is vanilla Item_Base with the UAZ tyre's mesh: 9 kg, 2x2 |
 | `RZ_SparkPlugs.et` | an item; keep "spark" in its name | — | Interactions > Cars > Spark | optional | car parts |
 | `RZ_FuelCan_Full.et` | a full jerrycan item | — | Interactions > Cars > Fuel prefab | optional | siphoning, pumps, fuel, fire |
 | `RZ_BoardedDoorway.et` | planks across a door frame, with collision | — | Interactions > Traps > Barricade prefab | optional | the boarded doorway |
@@ -631,7 +631,7 @@ and the UI files) need none, and seven have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_Planks.et` | a planks item | `RZ_PlaceableComponent` (Kind BARRICADE); `RZ_PlaceAction` | (loot or shop) | optional | barricades |
+| `RZ_Planks.et` | an inventory item with a planks mesh | `RZ_PlaceableComponent` (Kind BARRICADE); `RZ_PlaceAction` | (loot or shop) | optional | barricades. The repo's is vanilla Item_Base with the junk planks' mesh: 4 kg, 2x2. Its prefab name has "plank", so crafting uses it too |
 | `RZ_PortableGenerator.et` | a generator item | `RZ_PlaceableComponent` (Kind GENERATOR); `RZ_PlaceAction`; `RZ_PlaceAction` (Refuel on) | (loot or shop) | optional | a generator |
 | `RZ_Bottle.et` | a vanilla grenade with the explosion removed and a bottle mesh | `RZ_NoisemakerComponent` (Heat 20, On throw on, Delete after on) | (loot or shop) | optional | a thrown noise |
 | `RZ_Firecracker.et` | a small item | `RZ_NoisemakerComponent` (Heat 15, Delay 5, Pulses 4, Pulse interval 3, On throw off, Delete after on, Arm label Light the fuse); `RZ_ArmNoisemakerAction` | (loot or shop) | optional | a timed noise |
@@ -669,7 +669,7 @@ still to do:
 | The 23 AI groups | Vanilla FIA and US soldier groups (FIA fire team, sentry team, medical section, sharpshooter team; US sentry and light fire teams). Their faction (`m_faction`) was set by hand, as their names say | Members wear soldiers' kit and carry rifles: the escort civilians are armed FIA riflemen, the convicts carry rifles. Sizes are only roughly right. Give each group its own members |
 | Single characters: quartermasters, leaders, occupants, wanderers | Vanilla civilian, US and FIA characters. Their faction affiliation was set afterwards, as their names say | They keep their vanilla kits: set them by hand. Halcyon's people are FIA medics; the kid is an adult |
 | `RZ_Antidote.et`; `RZ_Stabiliser.et` and `RZ_CutDose.et` | Saline; morphine | They still apply the vanilla effect until their consumable effect is set by hand to `RZ_ConsumableAntidote` or `RZ_ConsumableMed` |
-| `RZ_Tyre.et`, `RZ_Planks.et`, `RZ_PortableGenerator.et`, `RZ_AlarmClock.et` | Props | No inventory item, so they can't be carried: base them on items |
+| `RZ_PortableGenerator.et`, `RZ_AlarmClock.et` | Props | No inventory item, so they can't be carried: base them on items, as `RZ_Tyre.et` and `RZ_Planks.et` are (vanilla `Item_Base` with the prop's mesh, a RigidBody and the item's weight, volume and size) |
 | `RZ_Molotov.et`, `RZ_Bottle.et`, `RZ_TinRattle.et` | Smoke grenades | Still smoke grenades: remove the smoke and give them a bottle or tin mesh |
 | `RZ_Explosion.et` | The vanilla mortar effect module | A real HE round: it damages what's near it |
 | `RZ_Nest.et` | Special Zombies' `ZombieHive_Minor` | It spawns its own infected |
@@ -934,7 +934,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6, rare 0.1, electronics 0.1), locks and their shares, **Door locks** (on; off = the lock on the loot), **Key prefab**, force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
-| Interactions | Cars | `m_CarSettings` | Car prefabs, project prefab, per settlement (0.34), max (6), parts and keywords, hotwire and siphon timings, Mechanic part cost (12) |
+| Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), siphon and pump timings, Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix)) |
 | Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
 | Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs |
 | Interactions | Secure radio | `m_RadioCrackSettings` | Crack seconds (60), listen minutes (20), line minutes (4), range (3 km), interrupts, house radio keywords |
@@ -1200,7 +1200,7 @@ now N percent.` (both only once a finale questline is registered),
 `Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
 `Long Table: found out (to N).`, `Long Table: the farm past ... is moving (quiet for a real day).` and
 `... opens again past ...`, `Long Table: broken up (N).`,
-`Fire Mission perk: player N, M infected killed.`, `Stealth: the infected take a perception factor (...)` (once, the
+`Fire Mission perk: player N, M infected killed.`, `Cars: the ... in ... fixed by player N.`, `Stealth: the infected take a perception factor (...)` (once, the
 first time infected near a player take it), `Note at ... by ...: ...`, `Season over. Cure goes to ...`,
 `Canon: <key> = <value>.` (a fixed fact of the setting, made the first time content asks, once a
 season; [DESIGN.md](DESIGN.md#world-facts)), `World change: <key>. <headline>` (for example
@@ -1459,6 +1459,19 @@ session, tick off:
 - [ ] A stove offers "Brew a home remedy" with alcohol and herbs in your pack.
 - [ ] A wanderer can be talked to and remembers you.
 - [ ] "Search" spots appear in a house; a search finds something from the loot pool.
+- [ ] A tyre and a bundle of planks (spawn them, or from a search) lie on the ground looking like
+  a tyre and planks, show the pick-up prompt, go into a backpack and show a sensible inventory
+  preview. Both were built by text on vanilla `Item_Base` with the prop's mesh. If either has no
+  pick-up prompt or falls through the ground, open it in Workbench next to `Prefabs/Items/Food/MRE.et`
+  and set its MeshObject and RigidBody up the same way; if that fails, give it a vanilla item's
+  mesh instead and keep "tyre" or "plank" in the file name. Planks on the ground still offer
+  "Board up the doorway".
+- [ ] A fixable car: **Inspect** lists two or three parts and, while you carry no tool, says you
+  need a wrench or a toolkit. **Fit parts** refuses without one and works with the vanilla
+  repair-kit wrench (the Mechanic starts with one); **Fuel it** needs no tool. Hotwiring takes
+  about 45 s (15 s as a Mechanic), draws infected, and fails about one time in three (rarely for
+  a Mechanic) with "The wires spit..."; trying again can work. Keys are rare. Starting it gives a
+  drivable car and the log line `Cars: ... fixed by player N.`
 - [ ] A locked place's outside door says "Locked" from outside and opens from inside (which
   unlocks it); its interior doors and shutting any door always work.
 - [ ] At the door: Unlock with the right key (the wrong one says which tag you need), Lock it

@@ -1,19 +1,42 @@
-GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
- ID "F0DBA538AC2A0552"
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "508AB2013EEE1E00"
  components {
-  RplComponent "{5624A88DC2D9928D}" {
-   Enabled 1
+  MeshObject "{6AD67DC2C17A0011}" {
+   Object "{41CCACD46E51481C}Assets/Props/Garbage/Generic/Junk_01/Junk_01_planks.xob"
+  }
+  RigidBody "{6AD67DC2C17A0012}" {
+   Mass 4
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Planks"
+     Description "A bundle of old planks. Put it down in a doorway to board it up."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 4
+     SizeSetupStrategy Manual
+     ItemVolume 6000
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{6AD67DC2C17A0013}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 1.4
+     }
+    }
+    m_Size SLOT_2x2
+   }
   }
   RZ_PlaceableComponent "{6AD67DC2A80CA418}" {
    m_eKind BARRICADE
   }
-  ActionsManagerComponent "{6AD67DC2A80CA106}" {
+  ActionsManagerComponent "{508AB5952B584B2E}" {
    ActionContexts {
-    UserActionContext "{6AD67DC2A80CAE5C}" {
-     ContextName "default"
-     Position PointInfo "{8043F18EB7C4939C}" {
-      Offset 0 0.1 0
-     }
+    UserActionContext "{508AC2ABEC97066C}" {
      Radius 0.9
      Omnidirectional 1
     }

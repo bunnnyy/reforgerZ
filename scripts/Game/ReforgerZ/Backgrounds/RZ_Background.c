@@ -112,7 +112,7 @@ class RZ_Background
 		switch (id)
 		{
 			case "nurse": return "Medical bag, bandages, morphine, saline. No weapon.";
-			case "mechanic": return "Toolbox, jerrycan, wrench, work clothes.";
+			case "mechanic": return "Wrench, jerrycan, work clothes.";
 			case "hunter": return "Hunting rifle, five rounds, hunting jacket.";
 			case "police": return "Pistol, one magazine, police jacket.";
 			case "excon": return "Knife, plain clothes.";
@@ -144,7 +144,7 @@ class RZ_Background
 		outList.Insert(b);
 
 		b = Make("mechanic", "Mechanic",
-			"Starts with a toolbox and a jerrycan, enough to get a car running. Hotwires a car in seconds.",
+			"Starts with a wrench and a jerrycan, enough to get a car running. Hotwires a car in a third of the time, and rarely botches it.",
 			"Clumsy and loud: draws 25% more zombie attention.");
 		b.m_fNoiseMult = 1.25;
 		outList.Insert(b);

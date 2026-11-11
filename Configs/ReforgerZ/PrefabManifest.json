@@ -3018,9 +3018,7 @@
    "baseHint": "the repo's parked copies of the Car prefabs (Prefabs/ReforgerZ/Interactions/Cars/), each with SCR_BaseLockComponent m_bIsLocked 1",
    "components": [],
    "actions": [],
-   "slots": [
-    "m_CarSettings.m_aParkedPrefabs"
-   ],
+   "slots": ["m_CarSettings.m_aParkedPrefabs"],
    "listSlot": true,
    "slotLabel": "Interactions > Cars > Parked prefabs (list, the same order as Car prefabs)",
    "required": false,
@@ -3069,9 +3067,9 @@
    "kind": "create",
    "system": "World interactions",
    "path": "Prefabs/ReforgerZ/Interactions/RZ_Tyre.et",
-   "basePrefab": "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et",
+   "basePrefab": "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et",
    "baseFind": "",
-   "baseHint": "an item; keep \"tyre\" in its name",
+   "baseHint": "an inventory item with a tyre mesh; keep \"tyre\" in its name",
    "components": [],
    "actions": [],
    "slots": ["m_CarSettings.m_sTyrePrefab"],
@@ -3080,7 +3078,7 @@
    "required": false,
    "minimum": false,
    "use": "car parts",
-   "notes": ""
+   "notes": "The repo's is vanilla Item_Base with the UAZ tyre's mesh: 9 kg, 2x2"
   },
   {
    "id": "SparkPlugs",
@@ -3357,9 +3355,9 @@
    "kind": "create",
    "system": "Loot items",
    "path": "Prefabs/ReforgerZ/Interactions/RZ_Planks.et",
-   "basePrefab": "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et",
+   "basePrefab": "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et",
    "baseFind": "",
-   "baseHint": "a planks item",
+   "baseHint": "an inventory item with a planks mesh",
    "components": [{"cls": "RZ_PlaceableComponent", "values": ["m_eKind=0"], "name": ""}],
    "actions": [{"cls": "RZ_PlaceAction", "values": [], "name": "Board it up"}],
    "slots": [],
@@ -3368,7 +3366,7 @@
    "required": false,
    "minimum": false,
    "use": "barricades",
-   "notes": ""
+   "notes": "The repo's is vanilla Item_Base with the junk planks' mesh: 4 kg, 2x2. Its prefab name has \"plank\", so crafting uses it too"
   },
   {
    "id": "PortableGenerator",
@@ -3740,7 +3738,7 @@
    "basePrefab": "{C97B985FCFC3E4D6}Prefabs/Characters/Factions/CIV/ConstructionWorker/Character_CIV_ConstructionWorker_2.et",
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
-   "gear": "toolbox, jerrycan, wrench; work clothes",
+   "gear": "wrench, jerrycan; work clothes",
    "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
   },
   {
@@ -4130,7 +4128,7 @@
    "category": "Interactions",
    "object": "Cars",
    "field": "m_CarSettings",
-   "covers": "Car prefabs, project prefab, per settlement (0.34), max (6), parts and keywords, hotwire and siphon timings, Mechanic part cost (12)"
+   "covers": "Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), siphon and pump timings, Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix))"
   },
   {
    "category": "Interactions",
@@ -4705,12 +4703,17 @@
     "m_sFuelWords": "jerrycan,jerry_can,fuelcan,fuel_can,canister",
     "m_sContainerWords": "jerrycan_empty,empty_jerrycan,canister_empty,empty_canister,fuelcan_empty",
     "m_sWreckWords": "wreck,carwreck,car_wreck,burntcar,burnt_car,car_burnt",
-    "m_fHotwireSeconds": "20",
-    "m_fMechanicHotwireSeconds": "5",
-    "m_fHotwireHeat": "8",
+    "m_iMinParts": "2",
+    "m_iMaxParts": "3",
+    "m_sToolWords": "wrench,spanner,toolkit,tool_kit,toolbox,tool_box,repairkit,repair_kit",
+    "m_fHotwireSeconds": "45",
+    "m_fMechanicHotwireSeconds": "15",
+    "m_fHotwireHeat": "20",
+    "m_fHotwireFailChance": "0.35",
+    "m_fMechanicHotwireFailChance": "0.1",
     "m_fStartHeat": "15",
-    "m_fKeysChance": "0.5",
-    "m_fKeyFindChance": "0.2",
+    "m_fKeysChance": "0.2",
+    "m_fKeyFindChance": "0.1",
     "m_fFitSeconds": "8",
     "m_fStripSeconds": "12",
     "m_fSiphonSeconds": "15",
