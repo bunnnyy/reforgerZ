@@ -493,12 +493,8 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 			q.SetWorldFlag(FLAG_PUBLIC, 1);
 			NudgeMorale(gm, RZ_EFaction.INSTITUTE, -10);
 			Headline(gm, run.Fill(PublicHeadline(run)));
-			if (run.Flag("raid") == 2 && gm.GetCure())
-			{
-				int taken = gm.GetCure().StealLabAntidotes(2);
-				if (taken > 0)
-					Headline(gm, string.Format("The Red Hand went through the lab's store room looking for more pages. They found %1 antidote doses instead.", taken));
-			}
+			if (run.Flag("raid") == 2)
+				Headline(gm, "The Red Hand went through the lab's store room looking for more pages, and found nothing they could read.", false);
 
 			SpreadRumour(gm, "\"Halcyon made this. Ask them about the three weeks and watch their faces.\"", 48);
 			return;

@@ -392,7 +392,7 @@ from the design: the driver waits at the edge of the town nearest the site, and 
 can also talk him round (they heard his call on Day 3). The notebook is carried as data; stage 4's
 people are stand-ins at each seat, and reaching the director needs Trusted, or Known as a Lab
 Tech or Doctor. Stage 5 is a wait that also waits out a final stand, then the raid or the walk-out as
-missions; a raid not held costs the lab up to two antidote doses to the Red Hand's black market.
+missions.
 The personal rewards ("Fame +15 with whoever you gave it to") are paid at the choice, within the
 engine's caps. It opens on `halcyon_three_weeks.records`, which Patient Zero and Patient Zero's
 Ledger set when they're solved.

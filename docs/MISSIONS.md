@@ -469,7 +469,7 @@ barracks there if there is one. Needs a lab, the note, a civilian and the puzzle
 | Ending | Branch | Consequences | Status |
 |---|---|---|---|
 | **In the record** | The director's | Halcyon morale +3, research +1; everyone who took part +4 Halcyon Fame; the field lead leaves her station (replaced; walked to a safehouse: +1 person there); a rumour (8 hours); `halcyon_three_weeks.record`, `halcyon_three_weeks.lead_left` | ✅ |
-| **Out on the open channel** | Public | Halcyon morale −10; a headline by who read it; the rumour "Halcyon made this" for 48 hours (the engine's longest); raid not held: the Red Hand takes up to 2 doses from the lab's antidote stock to its black market (within its cap); `halcyon_three_weeks.public` (H3's lab road is harder) | ✅ |
+| **Out on the open channel** | Public | Halcyon morale −10; a headline by who read it (and a quiet one if the raid wasn't held); the rumour "Halcyon made this" for 48 hours (the engine's longest); `halcyon_three_weeks.public` (H3's lab road is harder) | ✅ |
 | **Bastion's file** | Bastion's | Bastion strength +3; a headline and a rumour (12 hours); `halcyon_three_weeks.bastion` (Authors starts with Bastion's terms on the table) | ✅ |
 | *(any)* **She's at the lab** | caught at stage 3 | Research +2 at stage 3; a headline: the director spoke about her for two minutes on the open channel; `halcyon_three_weeks.captured` | ✅ |
 
