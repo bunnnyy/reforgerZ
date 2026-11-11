@@ -75,7 +75,9 @@ was also checked against the base game's script source; the 36 `VERIFY` markers 
 scripts (and 9 in the plugin) are behaviours only a play-test can show, such as replication and
 what the AI does. The game mode also **runs on the server** in a test world with a fake player
 (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no script
-exceptions. There are no prefabs, layouts or configs yet, and nobody has played it. The icon
+exceptions. A **zombie lab** (`tools/zombie_lab/`) measures Bacon Zombies' own AI on the same
+server, on Everon: what it sees and hears, speeds, groups and waypoints, and server frame time with
+up to 140 agents. There are no prefabs, layouts or configs yet, and nobody has played it. The icon
 set and mockups of every screen are done (`UI/`). Every prefab,
 setting, faction and loadout to make is listed in one **prefab manifest**, and a Workbench
 plugin, **ReforgerZ: Create prefabs**, makes what it can from it (also never run). Start with
@@ -146,6 +148,9 @@ tools/compile_check.sh
                  or Windows in Git Bash)
 tools/runtime_test/
                  runs the game mode on that server with a fake player (test only, not the mod)
+tools/zombie_lab/
+                 measures Bacon Zombies' own AI on that server, on Everon: groups, waypoints,
+                 sight, sharing, speeds, health, the clock, frame time (test only, not the mod)
 .claude/skills/pc-setup/
                  /pc-setup for Claude Code on your PC: points it at docs/PC_SETUP.md
 addon.gproj      the project file (mod ID, dependencies)
