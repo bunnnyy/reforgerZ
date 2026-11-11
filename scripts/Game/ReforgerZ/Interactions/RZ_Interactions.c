@@ -76,7 +76,7 @@ class RZ_InteractionSettings
 	[Attribute("water_dirty,dirty_water,untreated,unsafe_water,water_unsafe", desc: "Untreated water keywords (boiled or purified into safe water)")]
 	string m_sDirtyWaterWords;
 
-	[Attribute("purification,purifying,watertablet,water_tablet", desc: "Water purification tablet keywords")]
+	[Attribute("purification,purifying,watertablet,water_tablet,rz_tablets", desc: "Water purification tablet keywords (prefab name, lower case; rz_tablets is the repo's RZ_Tablets.et)")]
 	string m_sTabletWords;
 
 	[Attribute("well,waterpump,water_pump,handpump,hand_pump,pump_water", desc: "Well and water pump prefab name keywords")]

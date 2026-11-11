@@ -338,8 +338,9 @@ below, each pointing at `Prefabs/ReforgerZ/Loadouts/RZ_Loadout_<Name>.et`. Those
 affiliated with `SURV`, with `RZ_TreatOtherAction` (so other players can treat you), built on
 vanilla civilians, except Soldier (`Character_US_Unarmed`) and Raider (an armed FIA civilian). They
 wear and carry what their base character does: the suggested gear below is still to add by hand.
-Players who pick a locked one keep its gear but play as Unemployed. The log warns
-`No background matches loadout '...'` for a typo. The perks and flaws are in
+The server won't assign or spawn a locked one (**UI > Lock loadouts**; with it off, a locked pick
+keeps its gear but plays as Unemployed). The log warns `No background matches loadout '...'` for a
+typo. The perks and flaws are in
 [DESIGN.md](DESIGN.md#backgrounds-and-personal-goals).
 
 <!-- manifest:loadouts -->
@@ -363,7 +364,7 @@ Players who pick a locked one keep its gear but play as Unemployed. The log warn
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 145 prefabs the plugin creates, 16 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 32 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **165 prefab fields**: 40 on `RZ_GameModeComponent`, 119 in its settings objects, and 6 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **170 entries**: 145 prefabs the plugin creates, 16 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 9 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 32 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -456,7 +457,7 @@ and the UI files) need none, and seven have no base:
 | `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Hunt the Deserter, Struck Off |
 | `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection, The Three Weeks questline (falls back to the puzzle object) |
 | `RZ_Bus.et` | a drivable bus or truck (keeps its damage manager) | — | Missions > Contracts > Bus | optional | Recover the Bus (falls back to the Haven truck, then car prefabs) |
-| `RZ_BountyTarget.et` | an armed AI group or character | — | Missions > Contracts > Bounty target | optional | Collect the Bounty (falls back to the survivor group) |
+| `RZ_BountyTarget.et` | an armed AI group or character on SURV (a loner, not a faction's man) | — | Missions > Contracts > Bounty target | optional | Collect the Bounty (falls back to the survivor group) |
 | `RZ_BastionSquad.et` | an AI group on MIL | — | Missions > Contracts > Bastion squad | optional | the stockade guards in Bust Out, the arrest squad in Await Relief (falls back to the Bastion hunters, then crew) |
 | `RZ_DroneWreck.et` | a small wreck prop | — | Missions > Contracts > Crashed drone | optional | Medical Drone (falls back to the puzzle object) |
 | `RZ_Smoke.et` | a coloured smoke effect | — | Missions > Contracts > Smoke marker | optional | Fire Mission (none: the message says it) |
@@ -523,7 +524,7 @@ and the UI files) need none, and seven have no base:
 | `RZ_Drone.et` | a small quadcopter mesh with a hum and a light; no collision or physics | — | Perimeter > Drone prefab | optional | one drone over a player in the warning zone |
 | `RZ_WarningShot.et` | a gunshot sound or impact effect | — | Perimeter > Warning shot prefab | optional | the warning shot |
 | `RZ_Checkpoint.et` | concrete blocks and a closed barrier (a composition) | — | Perimeter > Barricade prefab | optional | road checkpoints (required for checkpoints) |
-| `RZ_CheckpointGuard.et` | a soldier without AI, or a figure prop | — | Perimeter > Guard prefab | optional | 0-4 per checkpoint |
+| `RZ_CheckpointGuard.et` | a soldier without AI with his rifle (no grenades), or a figure prop | — | Perimeter > Guard prefab | optional | 0-4 per checkpoint |
 | `RZ_Smuggler.et` | a civilian without AI (the Red Hand runner) | — | Perimeter > Smuggler prefab | optional | The Blind Spot (falls back to the civilian) |
 | `RZ_Package.et` | a small box item | `RZ_MissionItemComponent` | Perimeter > Package prefab | optional | The Blind Spot, The Crossing (falls back to the mission item) |
 | `RZ_LineBody.et` | a body prop | the clue set | Perimeter > Line body prefab | optional | Shot at the Line (falls back to the puzzle body) |
@@ -533,7 +534,7 @@ and the UI files) need none, and seven have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_SafehouseMedic.et` | a civilian without AI | 2 × `RZ_SafehouseAction` (Kind HEAL, DECLARE_BITE) | Haven > Medic prefab | optional | Settlement and up (the quartermaster's actions work without it) |
-| `RZ_SafehouseOccupant.et` | a civilian without AI, or a seated prop | the generic set | Haven > Occupant prefabs (list) | optional | 3-6 people shown (empty = the civilian); add more variants to the list by hand |
+| `RZ_SafehouseOccupant.et` | a civilian without AI, or a seated prop (no armour or weapons: nothing a shop sells) | the generic set | Haven > Occupant prefabs (list) | optional | 3-6 people shown (empty = the civilian); add more variants to the list by hand |
 | `RZ_SafehouseGuard.et` | an armed AI character or group on SURV | — | Haven > Guard prefab | optional | guards; they shoot armed exiles |
 | `RZ_Wanderer_Trader.et` | a civilian without AI (stands still while seen), or a one-man AI group on SURV (walks; give it a gun to fight back) | the generic set | Wanderers > Trader prefab | optional | the trader's body (falls back to the civilian) |
 | `RZ_Wanderer_Doctor.et` | a civilian without AI (stands still while seen), or a one-man AI group on SURV (walks; give it a gun to fight back) | the generic set | Wanderers > Doctor prefab | optional | the doctor's body (falls back to the civilian) |
@@ -553,7 +554,7 @@ and the UI files) need none, and seven have no base:
 | `RZ_Leader_Bastion.et` | a soldier without AI (damage off) | the generic set | Leaders > Bastion leader | optional | optional body next to the quartermaster |
 | `RZ_Leader_RedHand.et` | a character without AI (damage off) | the generic set | Leaders > Red Hand leader | optional | optional body next to the quartermaster |
 | `RZ_Leader_Halcyon.et` | a character in a lab coat without AI (damage off) | the generic set | Leaders > Halcyon leader | optional | optional body next to the quartermaster |
-| `RZ_CouncilHead.et` | a civilian without AI (damage off) | the generic set | Leaders > Council head | optional | optional body per safehouse |
+| `RZ_CouncilHead.et` | a civilian without AI on SURV, damage on (a council head can die and be replaced) | the generic set | Leaders > Council head | optional | optional body per safehouse |
 | `RZ_Outpost_Bastion.et` | a soldier without AI | the generic set | Leaders > Bastion outpost commander | optional | optional outpost leader (falls back to the faction leader, then the civilian); Kill the Officer needs the Bastion one to be able to die |
 | `RZ_Outpost_RedHand.et` | a character without AI | the generic set | Leaders > Red Hand crew boss | optional | optional outpost leader (falls back to the faction leader, then the civilian); Kill the Officer needs the Bastion one to be able to die |
 | `RZ_Outpost_Halcyon.et` | a character without AI | the generic set | Leaders > Halcyon field lead | optional | optional outpost leader (falls back to the faction leader, then the civilian); Kill the Officer needs the Bastion one to be able to die |
@@ -566,10 +567,10 @@ and the UI files) need none, and seven have no base:
 | `RZ_Guard_Bastion.et` | an armed AI character or small group on MIL | — | Territory > Bastion guard | optional | guards at holdings; watched for retaliation; Bastion's squads at the lab during the final stand in Authors |
 | `RZ_Guard_RedHand.et` | an armed AI character or small group on BAND | — | Territory > Red Hand guard | optional | guards at holdings; watched for retaliation |
 | `RZ_Guard_Halcyon.et` | an armed AI character or small group on INST | — | Territory > Halcyon guard | optional | guards at holdings; watched for retaliation; the extra guard at the lab gate during the final stand in Authors |
-| `RZ_Occupant_Haven.et` | a character without AI in the faction's clothes | the generic set | Territory > Haven occupant | optional | the named people (empty = the civilian) |
-| `RZ_Occupant_Bastion.et` | a character without AI in the faction's clothes | the generic set | Territory > Bastion occupant | optional | the named people (empty = the civilian) |
-| `RZ_Occupant_RedHand.et` | a character without AI in the faction's clothes | the generic set | Territory > Red Hand occupant | optional | the named people (empty = the civilian) |
-| `RZ_Occupant_Halcyon.et` | a character without AI in the faction's clothes | the generic set | Territory > Halcyon occupant | optional | the named people (empty = the civilian) |
+| `RZ_Occupant_Haven.et` | a character without AI in the faction's clothes (no armour or weapons: nothing a shop sells) | the generic set | Territory > Haven occupant | optional | the named people (empty = the civilian) |
+| `RZ_Occupant_Bastion.et` | a character without AI in the faction's clothes (no armour or weapons: nothing a shop sells) | the generic set | Territory > Bastion occupant | optional | the named people (empty = the civilian) |
+| `RZ_Occupant_RedHand.et` | a character without AI in the faction's clothes (no armour or weapons: nothing a shop sells) | the generic set | Territory > Red Hand occupant | optional | the named people (empty = the civilian) |
+| `RZ_Occupant_Halcyon.et` | a character without AI in the faction's clothes (no armour or weapons: nothing a shop sells) | the generic set | Territory > Halcyon occupant | optional | the named people (empty = the civilian) |
 | `RZ_Truck_Haven.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Haven truck | optional | the supply truck |
 | `RZ_Truck_Bastion.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Bastion truck | optional | the supply truck |
 | `RZ_Truck_RedHand.et` | a drivable vehicle (keeps its damage manager) | — | Supply > Red Hand truck | optional | the supply truck; the truck in Tied Down and the van in the Cargo questline (needed for both) |
@@ -644,8 +645,8 @@ and the UI files) need none, and seven have no base:
 |---|---|---|---|---|---|
 | (existing prefab) | items from the loot pool | — | Interactions > Search > Loot tables (each table's three lists) | optional | exact loot per building type (optional; empty tables are filled from the pool by keywords) |
 | (existing prefab) | any item | — | Interactions > Crafting > Extra recipes (each output) | optional | extra workbench recipes (optional) |
-| (existing prefab) | vanilla items, crates or vehicles | — | Each shop action's Item prefab | optional | quartermaster stock beyond what the plugin adds (see the suggested stock) |
-| (existing prefab) | vanilla ammo or rations | — | Each requisition action's Item prefab | optional | Bastion's Requisition (Trusted pays half, once an hour) |
+| (existing prefab) | vanilla items or crates (never a vehicle or a car part: refused) | — | Each shop action's Item prefab | optional | quartermaster stock beyond what the plugin adds (see the suggested stock) |
+| (existing prefab) | vanilla ammo or rations the same quartermaster sells at Trusted or below | — | Each requisition action's Item prefab | optional | Bastion's Requisition (Trusted pays half, once an hour) |
 
 #### UI
 
@@ -684,9 +685,8 @@ still to do:
 | every player character prefab used by a loadout (the plugin's RZ_Loadout_*.et get it already) | `RZ_TreatOtherAction` | other players can treat you | required |
 | any vanilla radio prefab you want crackable | `RZ_TuneRadioAction` | secure radio channels (the wind-up radio gets it already) | optional |
 | quartermasters you placed by hand (not from the manifest) | `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionServiceAction` (Service AMENDS) | standing, the stronghold leader and amends (the plugin's quartermasters get these already; also add the faction's services: Fence and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon) | optional |
-| the Haven quartermaster | `RZ_FactionShopAction` (Faction SURVIVORS, Required tier KNOWN, Favor cost 8, Item prefab `RZ_CarBattery.et`, Display name Car battery) | car parts for sale (Known), if wanted; same for tyre and spark plugs | optional |
-| the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab) | optional |
-| any quartermaster | `RZ_FactionShopAction` | vanilla stock (suggested stock table); the Item prefab is a vanilla item, crate or vehicle | optional |
+| the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab to one this quartermaster sells at Trusted or below; anything else is refused) | optional |
+| any quartermaster | `RZ_FactionShopAction` | vanilla stock (suggested stock table); the Item prefab is a vanilla item or crate, never a vehicle or a car part (refused: cars are only found) | optional |
 | the player controller prefab the game mode uses (the repo's Prefabs/Characters/Core/RZ_PlayerController.et has it; RZ_GameMode.et's PlayerControllerPrefab points at it) | `RZ_PlayerUIComponent` | the UI's data feed: infection timer, secure radio, noise, standing, journal, backgrounds (docs/UI.md) | optional |
 <!-- /manifest:additions -->
 
@@ -732,10 +732,14 @@ a rougher town, Halcyon's next to the lab). Their positions are saved. The four 
 on every quartermaster are how players reach stronghold leaders and council heads.
 
 Each `RZ_FactionShopAction` sells one thing: **Faction**, **Required tier** (Stranger, Known,
-Trusted or Champion), **Favor cost**, **Item prefab** (an item, crate or vehicle, spawned next
-to the quartermaster) and **Display name**. The action is always shown; the server checks tier
-and Favor when it's used. `RZ_RequisitionAction` has the same cost, item and name; the cost is
-the full price (a Trusted player pays half, once an hour). Set it up for ammo and rations only.
+Trusted or Champion), **Favor cost**, **Item prefab** (an item or crate, spawned next to the
+quartermaster) and **Display name**. The action is always shown; the server checks tier and Favor
+when it's used. **Never a vehicle or a car part** (battery, tyre, spark plugs, fuel can, any
+vehicle prefab): cars are only ever found, so the server refuses such an action and logs it.
+`RZ_RequisitionAction` has the same cost, item and name; the cost is the full price (a Trusted
+player pays half, once an hour). Set it up for ammo and rations only, each an item a shop action
+on the **same quartermaster** sells at Trusted or below: Requisition is a Trusted perk, so
+anything stocked only at Champion (or not stocked there) is refused and logged.
 You can also put `RZ_ChoiceDeliveryAction` on a quartermaster so it accepts hand-ins.
 
 - **Antidotes.** A shop action whose item is the **Cure > Antidote** prefab sells from a stock, not
@@ -753,8 +757,8 @@ Suggested starting stock for the shop actions you add by hand (from [REPUTATION.
 
 | Faction | Known | Trusted | Champion |
 |---|---|---|---|
-| Haven | canned food, water, bandages, crowbar, car parts | hunting rifle, ammo, backpack, radio, jerrycan | pickup, van, fortification kit, good medkit |
-| Bastion | rations, morphine, flares | service rifle, body armour, helmet, NVGs | machine gun, grenades, military truck |
+| Haven | canned food, water, bandages, crowbar | hunting rifle, ammo, backpack, radio | fortification kit (barricade planks), saline bag |
+| Bastion | rations, morphine, flares | service rifle, body armour, helmet, NVGs | machine gun, grenades, signal smoke |
 | Red Hand | knife, pistol, cut dose | suppressor, scoped rifle, explosives | rare military gear, a stolen antidote |
 | Halcyon | antiseptic, painkillers, stabiliser | antidote, stim kit, gas mask | — |
 
@@ -866,7 +870,7 @@ are done in the repo; 5 and 6 aren't. The 12 layouts are in `UI/layouts/Reforger
    carries `RZ_BackgroundPanelComponent`. Find the vanilla deploy menu's layout in the Resource
    Browser (in 1.9 the log shows it opening `UI/layouts/Menus/DeployMenu/RoleSelectionMenu.layout`),
    save an override of it in the addon, and add the panel as a child on the right. Locked loadouts
-   are refused by `UI/RZ_LoadoutLock.c` with nothing to set up (**UI > Lock loadouts**).
+   are refused by the server (`UI/RZ_LoadoutLock.c`) with nothing to set up (**UI > Lock loadouts**).
 6. **The map** (to do). `RZ_MapIcon.layout` is built, but **UI > Map icon layout** isn't set:
    setting it turns the vanilla text markers for world events and the lab off, so set it together
    with the map config. Override the full-screen map's configuration (search the Resource Browser
@@ -1024,8 +1028,9 @@ test files are copied into a throwaway addon folder.
 grep -rn "VERIFY" scripts/
 ```
 
-There are **39** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 2 are in the UI). The Workbench plugin has none left: its real
+There are **42** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 4 are in `UI/`: two the UI's own, two the server's loadout
+lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
 source (its doc comments and how vanilla uses it). Each marker left is a **behaviour** only a
@@ -1041,15 +1046,15 @@ No fallback. If this is wrong, nothing persists.
 |---|---|---|
 | `Persistence/RZ_SaveData.c:156` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 
-### Medium risk: big features, with a fallback (22)
+### Medium risk: big features, with a fallback (24)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Core/RZ_Util.c:580` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
-| `Core/RZ_Util.c:725` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
+| `Core/RZ_Util.c:600` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
+| `Core/RZ_Util.c:745` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:971` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
-| `Core/RZ_Util.c:753` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
+| `Core/RZ_Util.c:773` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Interactions.c:703` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
 | `Core/RZ_Util.c:529` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:246` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
@@ -1059,14 +1064,16 @@ No fallback. If this is wrong, nothing persists.
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: no door locks, the loot lock everywhere |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
-| `Core/RZ_Util.c:861` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
-| `Core/RZ_Util.c:947` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
+| `Core/RZ_Util.c:881` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:967` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
 | `Cure/RZ_Infection.c:1160` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
+| `UI/RZ_LoadoutLock.c:49` | the server asks `SCR_LoadoutManager.CanAssignLoadout_S` before it assigns the loadout a player picks (1.9's `SCR_PlayerLoadoutComponent.Rpc_RequestLoadout_S` does) | A locked pick is assigned; the spawn check below still refuses it |
+| `UI/RZ_LoadoutLock.c:66` | the server asks `SCR_BaseGameMode.CanPlayerSpawn_S` for every spawn request, with the prefab the client asked for (1.9's respawn system does) | A locked loadout can spawn: the player keeps its gear for that life but plays as the default background (`ResolveBackground`, the log line below). Check with a fresh profile: pick Soldier, press spawn (mouse and gamepad); it must refuse |
 
-### Low risk: contained or cosmetic (14)
+### Low risk: contained or cosmetic (15)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1074,13 +1081,14 @@ No fallback. If this is wrong, nothing persists.
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:260` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: use **Set it alight** on the building instead |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
-| `Core/RZ_Util.c:695` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
+| `Core/RZ_Util.c:715` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
 | `Core/RZ_Util.c:492` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
+| `Core/RZ_Util.c:548` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_KeyItem.c:81` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages, or leave **Key prefab** empty (data keys) |
-| `Core/RZ_Util.c:783` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
-| `Core/RZ_Util.c:770` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
+| `Core/RZ_Util.c:803` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
+| `Core/RZ_Util.c:790` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:1162` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
 
@@ -1093,7 +1101,7 @@ is in [UI.md](UI.md).
 | Where | Behaviour to check | If it fails |
 |---|---|---|
 | `UI/RZ_PlayerUIComponent.c:152` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
-| `UI/RZ_LoadoutLock.c:9` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still spawns a locked pick as the default background |
+| `UI/RZ_LoadoutLock.c:15` | what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | The panel can't show a locked background's unlock hint if the menu hides it. The server still refuses to spawn a locked pick |
 
 ## 7. Log lines to check
 
@@ -1148,7 +1156,7 @@ checkpoints):
 [ReforgerZ] Locks: on the doors (the loot where no doors are found); keys are key items.
 [ReforgerZ] World interactions: on. 5 fixable cars on the map.
 [ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
-[ReforgerZ] Player 1 spawned with locked loadout 'Soldier': default background
+[ReforgerZ] Player 1 asked to spawn with locked loadout 'Soldier': refused
 ```
 
 Warnings worth acting on:
@@ -1166,7 +1174,10 @@ Warnings worth acting on:
 | `Hostility: bitmask mode, only N of 15 variant factions ...` | Some `SURV_H` factions are missing |
 | `Hostility: outlaw mode, but the FactionManager has no SURV_OUTLAW.` | Add the Outlaw faction |
 | `No background matches loadout '...'` | A loadout name doesn't match a background |
-| `Player N spawned with locked loadout '...': default background` | The player picked a background they haven't unlocked: they keep its gear but play as Unemployed, the default background (**UI > Lock loadouts**) |
+| `Player N asked to spawn with locked loadout '...': refused` | The player picked a background they haven't unlocked, and the server refused the spawn (**UI > Lock loadouts**). Normal now and then; often from one player, their client lets them pick it |
+| `Player N spawned with locked loadout '...': default background` | A locked loadout got past the spawn check (see `UI/RZ_LoadoutLock.c:66` in the VERIFY list): they keep its gear but play as Unemployed, the default background |
+| `Shop action '...' sells a vehicle or a car part (...): refused. Cars are only found` | A quartermaster's shop action is set to a vehicle, a car part or fuel: change its Item prefab |
+| `Requisition '...' (...) isn't Trusted stock here ...: refused` | A requisition action hands out something its quartermaster doesn't sell at Trusted or below: point it at a Trusted (or lower) shop item, or add one |
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
@@ -1247,13 +1258,17 @@ session, tick off:
 - [ ] The status line's **pace by play** is 100 percent for the season's first two real days, then
   follows the player-hours played (e.g. about 250 percent for two people playing 2–3 hours a day).
 - [ ] A contract is offered by radio, completes, and pays Fame and Favor; a tier change is announced.
-- [ ] A quartermaster sells an item at the right tier and refuses one above it.
+- [ ] A quartermaster sells an item at the right tier and refuses one above it. No quartermaster
+  offers a vehicle, a car part or a jerrycan. A Bastion Trusted player can requisition rations and
+  a rifle magazine (once an hour, half price).
+- [ ] Purification tablets: carry `RZ_Tablets.et` and untreated water; **Purify water** at a
+  workbench uses one tablet and gives safe water.
 - [ ] Stop and restart the server: stage, infection, research and your standing are back.
 - [ ] Restart the server during the final stand with nobody on: it doesn't count as abandoned
   while the server is empty, and the first player to spawn is told the stand is running.
 - [ ] Loose items (set **Loose item minutes** to 2 to test): a dropped sample and a bought item
   left on the ground vanish once nobody is within 150 m; the same items in your pack, in a car's
-  storage, or lying next to a running mission stay. A bought vehicle is never removed.
+  storage, or lying next to a running mission stay. A vehicle is never removed.
 - [ ] Messages that arrive together (the three on spawn) show in the order they were sent.
 - [ ] With nobody online for a while, the stage minutes and town infection don't move; with
   **Season speed** at 4, a stage change, a territory tick and a truck come four times as often.
@@ -1308,8 +1323,9 @@ session, tick off:
 - [ ] K, J and U open Standing, Journal and Radio with real data; Q/E switch tabs; Esc closes.
 - [ ] O opens the hall of fame; with **Board menus** on, reading a board opens the board menu, and
   typing in its box and pressing Post pins the note (the list refreshes).
-- [ ] In the deploy menu, a locked background shows LOCKED and how to unlock it, and the menu won't
-  spawn it; after one life as Nurse the panel lists the Nurse's real gear.
+- [ ] In the deploy menu, a locked background shows LOCKED and how to unlock it, and the server
+  refuses to spawn it, with the mouse and with a gamepad (the log says `asked to spawn with locked
+  loadout`); after one life as Nurse the panel lists the Nurse's real gear.
 - [ ] The tabs, close button, journal rows and radio filter take clicks; the lists scroll.
 - [ ] Open the map: the lab, the safehouses, the strongholds and a world event show with their
   icons and stay on their spots while you pan and zoom; an outpost appears after you've been near
@@ -1324,7 +1340,9 @@ session, tick off:
   pieces walks past Bastion AI and is told so; Infamy with Bastion while wearing it is doubled.
 - [ ] Bounty: a player at Kill on Sight with two factions is killed by another player; only the
   killer is paid, once, by one faction. Die to the infected (or a fall) while at Kill on Sight:
-  nobody is paid. Collect the Bounty on a player pays only whoever killed them.
+  nobody is paid. Collect the Bounty on a player pays only whoever killed them. With no player
+  wanted, the hiding man (Bounty target, on SURV) shoots back at whoever comes near, and killing
+  him pays.
 - [ ] A Bastion outpost leader dies and is replaced (Replace minutes at 1): when that outpost is
   later abandoned or taken, the new leader leaves with it.
 - [ ] A supply truck leaves, is driven by its crew, and arrives. Its whole crew gets in before it

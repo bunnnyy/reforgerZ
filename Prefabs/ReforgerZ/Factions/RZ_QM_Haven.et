@@ -220,19 +220,6 @@ SCR_ChimeraCharacter : "{3AE3C1A509298D9D}Prefabs/Characters/Factions/CIV/Generi
      m_sItemPrefab "{540C08AD5F21A5FA}Prefabs/Items/Equipment/Radios/Radio_R148_FIA.et"
      m_sDisplayName "Radio"
     }
-    RZ_FactionShopAction "{1698BA918CA90646}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{10F663A1DFDE8F45}" {
-      Name "Buy"
-     }
-     m_eFaction SURVIVORS
-     m_eRequiredTier TRUSTED
-     m_iFavorCost 10
-     m_sItemPrefab "{7BE5A0EEE4464399}Prefabs/ReforgerZ/Interactions/RZ_FuelCan_Full.et"
-     m_sDisplayName "Jerrycan"
-    }
     RZ_FactionShopAction "{27E07FF941A2C72F}" {
      ParentContextList {
       "default"

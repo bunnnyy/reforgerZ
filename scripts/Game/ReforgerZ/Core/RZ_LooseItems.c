@@ -41,7 +41,7 @@ class RZ_LooseItems
 	int Count() { return m_aItems.Count(); }
 
 	//------------------------------------------------------------------------------------------------
-	//! Start watching a spawned item. Vehicles are never tracked (a bought car isn't litter).
+	//! Start watching a spawned item. Vehicles are never tracked (a fixed car isn't litter).
 	void Track(IEntity e)
 	{
 		if (!e || m_fAbandonSeconds <= 0 || Vehicle.Cast(e))

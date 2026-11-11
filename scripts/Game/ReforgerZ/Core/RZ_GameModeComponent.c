@@ -1207,18 +1207,25 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The loadout the player picked in the deploy menu, "" if unknown.
-	string GetPickedLoadoutName(int playerId)
+	//! The loadout the server assigned the player (their pick in the deploy menu), null if none.
+	SCR_BasePlayerLoadout GetPickedLoadout(int playerId)
 	{
 		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);
 		if (!pc)
-			return "";
+			return null;
 
 		SCR_PlayerLoadoutComponent loadoutComp = SCR_PlayerLoadoutComponent.Cast(pc.FindComponent(SCR_PlayerLoadoutComponent));
 		if (!loadoutComp)
-			return "";
+			return null;
 
-		SCR_BasePlayerLoadout loadout = loadoutComp.GetLoadout();
+		return loadoutComp.GetLoadout();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The loadout the player picked in the deploy menu, "" if unknown.
+	string GetPickedLoadoutName(int playerId)
+	{
+		SCR_BasePlayerLoadout loadout = GetPickedLoadout(playerId);
 		if (!loadout)
 			return "";
 
@@ -1233,7 +1240,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (loadoutName.IsEmpty())
 			return GetDefaultBackground();
 
-		// The server's own lock check: vanilla never calls IsLoadoutAvailable(playerId) (UI/RZ_LoadoutLock.c)
+		// A last safety net: the server already refuses a locked loadout and a spawn with its
+		// prefab (UI/RZ_LoadoutLock.c), so this only catches a spawn that went another way
 		if (RZ_UISettings.Get().m_bLockLoadouts && IsLoadoutLocked(playerId, loadoutName))
 		{
 			RZ_Log.Warn("Player " + playerId + " spawned with locked loadout '" + loadoutName + "': default background");
@@ -1251,9 +1259,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a background loadout this player hasn't unlocked (the deploy menu refuses it,
-	//! UI/RZ_LoadoutLock.c, and ResolveBackground falls back to the default). False for loadouts
-	//! that aren't backgrounds.
+	//! Server: a background loadout this player hasn't unlocked (the server won't assign it or
+	//! spawn its prefab, UI/RZ_LoadoutLock.c, and ResolveBackground falls back to the default).
+	//! False for loadouts that aren't backgrounds.
 	bool IsLoadoutLocked(int playerId, string loadoutName)
 	{
 		if (!m_aBackgrounds || playerId <= 0)

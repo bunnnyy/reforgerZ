@@ -537,10 +537,11 @@ Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 | **Elder** (Champion with the Haven) | Trusted by the Haven from the start | 30% louder | Haven +40 (Trusted) |
 | **Drifter** (10 Legacy points) | Known with every faction | No gear | +15 with all four |
 
-The last five are unlocked through **Legacy**, which carries across lives. The deploy menu won't
-spawn a locked background (**UI > Lock loadouts**, on by default); with that off, or if the menu
-lets one through, the player keeps its gear for that life but plays as Unemployed, and is told
-how to unlock it.
+The last five are unlocked through **Legacy**, which carries across lives. The server won't
+assign or spawn a locked background (**UI > Lock loadouts**, on by default), whatever the client
+asks for, so it holds with a gamepad or a modified client too; the deploy menu also shows it as
+unavailable. With the lock off, or if a locked pick gets through another way, the player keeps
+its gear for that life but plays as Unemployed, and is told how to unlock it.
 
 **Personal goals.** Each life gets one goal, flavoured by background (the Hunter heads for
 their cabin, the Ex-Con goes back for an old stash): reach a town 1.2–4 km away, survive a while,
@@ -1960,7 +1961,7 @@ and requisition purchases, search finds, crafted items and treatments, the wind-
 Wedding Party's jewellery and the Crashed Helicopter's wreck. One that lies untouched
 for **30 minutes** (**World > Loose item minutes**; 0 = off) with no player within 150 m is
 removed. Never removed: anything in a pack, a container or a vehicle's storage (its clock starts
-again when it's put down), vehicles (a bought car isn't litter), and anything within 300 m of a
+again when it's put down), vehicles (a fixed car isn't litter), and anything within 300 m of a
 running mission. At most 300 are tracked; past that the oldest carried entry is forgotten, else
 the oldest abandoned item goes early. Not saved: after a restart, older items are left alone.
 

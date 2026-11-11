@@ -690,7 +690,13 @@ class RZ_Event_TheSniper : RZ_Mission
 				return;
 			}
 
-			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Sniper.m_Unit, FIGHT_RADIUS, false);
+			// The sniper prefab is a Red Hand (BAND) group; the bounty target it falls back to is on
+			// SURV, as Collect the Bounty needs. Mark the fight for the faction he's really on.
+			RZ_EFaction side = RZ_EFaction.BANDITS;
+			if (RZ_EventHelp.Settings(gm).m_sSniperPrefab.IsEmpty())
+				side = RZ_EFaction.SURVIVORS;
+
+			RZ_Hostility.MarkFight(side, m_Sniper.m_Unit, FIGHT_RADIUS, false);
 			return;
 		}
 
