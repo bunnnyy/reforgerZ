@@ -279,6 +279,15 @@ class RZ_PuzzleActionHelper
 		}
 
 		// A safehouse's named person (World/RZ_NamedPeople.c)
+		// A stranger at a spot (Missions/Errands/RZ_Strangers.c)
+		if (comp.GetMissionId() == RZ_Strangers.TAG)
+		{
+			if (gm.GetErrands())
+				gm.GetErrands().GetStrangers().HandleChoice(playerId, comp.GetObjectIndex(), option, owner, user);
+
+			return true;
+		}
+
 		if (comp.GetMissionId() == RZ_NamedPeople.TAG_HOUSE)
 		{
 			if (gm.GetErrands())

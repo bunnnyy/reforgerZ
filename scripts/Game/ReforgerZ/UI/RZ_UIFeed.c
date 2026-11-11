@@ -863,7 +863,7 @@ class RZ_UIFeed
 			return RZ_EMissionKindUI.ARC;
 
 		if (t == RZ_Mission_CarKeys
-			|| t == RZ_Mission_LeadThemAway || t == RZ_Mission_RooftopRescue
+			|| t == RZ_Mission_LeadThemAway
 			|| t == RZ_Mission_TrailOfClues || t == RZ_Mission_BarterChain || t == RZ_Mission_Distraction || t == RZ_Mission_QuietCount)
 			return RZ_EMissionKindUI.UNARMED;
 

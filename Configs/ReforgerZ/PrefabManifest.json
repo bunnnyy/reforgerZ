@@ -5058,6 +5058,7 @@
     "m_fFaultChance": "0.25",
     "m_bCallOut": "1",
     "m_bWandererAsks": "1",
+    "m_bStrangers": "1",
     "m_bHelpedLine": "1",
     "m_fTelemetryMinutes": "30",
     "m_bDebugLog": "0"

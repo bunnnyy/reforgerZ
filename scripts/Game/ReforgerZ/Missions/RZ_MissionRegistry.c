@@ -120,7 +120,6 @@ class RZ_MissionRegistry
 
 		// Unarmed missions (Missions/Unarmed/): stealth, noise and thinking, small Fame
 		mgr.RegisterType(RZ_Mission_LeadThemAway);
-		mgr.RegisterType(RZ_Mission_RooftopRescue);
 		mgr.RegisterType(RZ_Mission_TrailOfClues);
 		mgr.RegisterType(RZ_Mission_Distraction);
 		mgr.RegisterType(RZ_Mission_QuietCount);

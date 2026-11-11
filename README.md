@@ -59,8 +59,8 @@ and one way to end it: **research the cure.**
 - **Errands**: small, true jobs named people ask in person: the cook whose pot is thin, the
   sergeant whose relief is asleep in a car, the technician whose freezers are short of fuel, the
   Doctor on the road with a bitten stranger before dark. 24 routines at safehouses, posts, camps and
-  stations, the wanderers' asks and 17 hand-written cards; they pay little, and remember you
-  ([ERRANDS.md](docs/ERRANDS.md)).
+  stations, the wanderers' asks, strangers met only where one makes sense, and 18 hand-written
+  cards; they pay little, and remember you ([ERRANDS.md](docs/ERRANDS.md)).
 - **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
   sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself only
   after the cure's epilogue (the line stands down, the gates open with the wipe; a timed wipe is
@@ -130,10 +130,13 @@ yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do i
 
 **Not built yet:** the content pass onto the world facts (see the roadmap's *Next*), and the
 approved designs for the rest of the season: the infected tribes and crawlers, the four majors, the
-cure's finale, the epilogue week, dialogue's scenes, lies and strangers, errands and more, built in
-the order of [designs/PLAN.md](designs/PLAN.md). Built so far: the shared engine (phase 1); small
+cure's finale, the epilogue week, locals and twists, errands' other cards and more, built in the
+order of [designs/PLAN.md](designs/PLAN.md). Built so far: the shared engine (phase 1); small
 things everywhere (phase 3: errands' core, the mission style's framework and the world memory's
-writers, [ERRANDS.md](docs/ERRANDS.md)); talk
+writers, [ERRANDS.md](docs/ERRANDS.md)); most of the mission style in full (phase 4: the six story
+jobs with truths, lies and fallout, reputation's parley and settling up, lies and witnesses,
+dialogue's scenes for several players, borrowed kit, strangers at their spots,
+[MISSIONS.md](docs/MISSIONS.md)); talk
 (phase 2: conversation trees, reputation's voice, the season mood and the voice bank,
 [DIALOGUE.md](docs/DIALOGUE.md)); the towns' crawlers, the loose ones, heat hordes from towns, the
 land grid, the tribes' daily life and hunts and the behaviour layer (tribes phases 1 and 2,

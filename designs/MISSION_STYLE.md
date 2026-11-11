@@ -765,9 +765,8 @@ For example, **Retake the Town**:
 Power Surge, Siren Test, Gas Station Fire, Bastion Shelling, Storm, Turned Player. They post reasons (a
 horde passed, a town was shelled) and answer none.
 
-**Out of the pool, still to do:** Rooftop Rescue leaves the pool when the stranger routine Up on the
-Roof lands ([ERRANDS.md](ERRANDS.md)). The 9 merges, the 12 dropped, the other 6 that became errands
-and the 5 stage-only missions are done ([MISSIONS.md](../docs/MISSIONS.md)).
+The 9 merges, the 12 dropped, the 7 that became errands (Rooftop Rescue is the stranger Up on the
+Roof) and the 5 stage-only missions are done ([MISSIONS.md](../docs/MISSIONS.md)).
 
 ## Worked examples
 

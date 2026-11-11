@@ -1374,7 +1374,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **65** lines with the tag, all in the game scripts (one is the comment in
+There are **70** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 13 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1395,7 +1395,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:178` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (34)
+### Medium risk: big features, with a fallback (35)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1431,6 +1431,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:555` | an empty group prefab (vanilla `Group_Base.et`) stays alive until a member joins, takes the character's faction, and a spawned lone character joins it and takes its waypoints | Lone occupants and single guards stand where they spawn, as before: empty **Camp life > Group prefab**. Guards that are AI groups still take jobs |
 | `Zombies/Behaviour/RZ_Behaviour.c:953` | a light bleed opened from the server on a player's arm or leg (`AddParticularBleeding`) replicates and bleeds at the usual rate (a hunter's lunge that lands) | The lunge still makes the bite chance x1.5; with no bleed, set **Behaviour > Own attacks** off if it misbehaves |
 | `Factions/RZ_CampLife.c:678` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Missions/Errands/RZ_Strangers.c:338` | a stranger is placed at the spot itself, 150–350 m ahead of the player (no line-of-sight test for the design's out-of-sight point 60–90 m off) | If one visibly pops in, set **Missions > Errands > Strangers** off |
 
 ### Low risk: contained or cosmetic (20)
 
@@ -1473,7 +1474,7 @@ quartermaster's Buy actions, **UI > Reader** and **Subtitles** off for cards. Ho
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_UIData.c:943` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `Dialogue/RZ_Dialogue.c:440` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `Dialogue/RZ_Dialogue.c:494` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:167` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
@@ -1665,7 +1666,7 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 records.` and `Shared: N callbacks waiting, N season records.`
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 26 routines and 17 cards, N players with a ledger.`; while running, `Errands:
+start, `Errands: on, 26 routines and 18 cards, N players with a ledger.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
@@ -1699,7 +1700,8 @@ lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road
 `Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: crash at <grid> is <truth>`, `Errands: fallout <card> at <grid>
-from <title> (cap N Favor, N participant(s) first)`.
+from <title> (cap N Favor, N participant(s) first)`. Strangers: `Errands: stranger roof|tin for <player> at
+<grid>`, `Errands: stranger roof|tin done by <player>`.
 
 ## 8. Play-test checklist
 
@@ -2317,6 +2319,18 @@ on the talk screen says why something wasn't dealt)
   90 s sends them to the nearest house; a bitten father (one time in four) is seen by a Nurse or
   Doctor and walked out at the door.
 - [ ] A Tier 0 job failing (Walk Him Out, The Rat) sends its fallout line after the fail text.
+
+**Strangers** (Missions > Errands > Strangers)
+- [ ] Walk a road you've used a lot (by day), toward a safehouse's approach, or to a town edge at dusk
+  or in fog: a stranger may stand 150–350 m ahead (`Errands: stranger ...`). Crossing empty country,
+  standing still, in a car, with another player outside your group within 300 m, or within 2 km of the
+  Long Table's farm: nobody, however long you wait.
+- [ ] Up on the Roof: "Talk them down" refuses with infected within 25 m; done, +1 at the nearest house
+  and 4 Haven Favor. The Last Tin (2+ food on you, a hungry house within 1.5 km): a tin for a true tip.
+- [ ] They call out once at 40 m and are gone 5 minutes later or once you're 150 m away; the next one
+  comes 15–25 minutes later at the earliest, never at the same spot within 2 hours.
+- [ ] Dress Rehearsal (Known with the Red Hand, a Bastion post within 2 km, disguises on): at the
+  barrier not passing as Bastion, it's over and the open channel laughs.
 - [ ] Live Capture: lure the special into the cage and drop the door within 4 m; it vanishes without
   a sample, the cage area gets loud, after 30 s the case appears; deliver it at the lab drop before
   12 minutes. Killing it fails; wounding it to a third and standing over it ties it.

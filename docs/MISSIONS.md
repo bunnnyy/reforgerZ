@@ -15,13 +15,13 @@ people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md).
 | [The Red Hand's hard edges](#the-red-hands-hard-edges) | 3 | — |
 | [World events](#world-events) | 22 | — (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 15 | — |
-| [Unarmed missions](#unarmed-missions) (Water Run and Medicine Before Dark are errands now) | 7 | — |
+| [Unarmed missions](#unarmed-missions) (Water Run and Medicine Before Dark are errands now; Rooftop Rescue is the stranger Up on the Roof) | 6 | — |
 | [Perimeter missions](#perimeter-missions) | 3 | — |
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 27, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **149** | **—** |
-| [Errands](ERRANDS.md) (not missions: asked in person) | 24 routines, 2 wanderers' asks, 17 cards | about 44 more cards, strangers ([designs/ERRANDS.md](../designs/ERRANDS.md)) |
+| **Total** | **148** | **—** |
+| [Errands](ERRANDS.md) (not missions: asked in person) | 24 routines, 2 wanderers' asks, 2 strangers, 18 cards | about 42 more cards, the other strangers ([designs/ERRANDS.md](../designs/ERRANDS.md)) |
 | [Questlines](#questlines) | 15 questlines, about 90 stage missions (not counted above) | — |
 
 ## Who gets offered what
@@ -324,7 +324,6 @@ leads** and **being noticed** ([DESIGN.md](DESIGN.md), "Heat and noise"; lying l
 | # | Mission | From | Bg | What you do | Result | Status |
 |---|---|---|---|---|---|---|
 | 3 | Lead Them Away | Haven | ★ Radio Op: more Fame | A horde drifts toward a safehouse. Lead it with noise to a quarry 550–750 m away | Fame, Favor. It arrives: fails, two people die. Killed instead: half pay | ✅ *the quarry is a grid reference* |
-| 4 | Rooftop Rescue | Haven | ★ Mechanic: 15 m is clear enough | A survivor is stuck up a building. Talk them down when no infected is within 25 m | Fame, Favor; they join a safehouse | ✅ *they wait at the foot of the building* |
 | 5 | Trail of Clues | Haven (for a wanderer) | ★ Police: grid references | Follow a note, then a bag, then a third clue to a missing person | Alive (half the time): they join a safehouse. Dead: their last letter, 70% pay | ✅ |
 | 7 | Barter Chain | Haven, through three wanderers (a wanderer's ask: "Need a hand?") | | Each wants what the next has; the last wants food | 2 Fame, 8 Favor (errands' pay); all three remember you | ✅ *only the food changes hands; started from one of them when nothing else is asked, offered to that player alone ([ERRANDS.md](ERRANDS.md#the-wanderers-asks))* |
 | 8 | Distraction | Any faction | | Someone makes noise across the street while someone else searches a guarded cellar for 3 minutes | Fame, Favor, a reward crate. Doable alone with alarm clocks | ✅ |
@@ -927,7 +926,7 @@ Every background has contracts it shines at, and some it's shut out of.
 | Background | Shines at | Shut out of |
 |---|---|---|
 | Nurse | Medicine Run, Bitten Friend, Walk Him Out, Rescue the Pilot, Cold Chain | — |
-| Mechanic | Crash Site, Junction Boxes, Rooftop Rescue, Recover the Bus, Convoy Escort, Blow the Bridge, Car Theft | — |
+| Mechanic | Crash Site, Junction Boxes, Recover the Bus, Convoy Escort, Blow the Bridge, Car Theft | — |
 | Hunter | Rescue the Kids, Smuggler's Run, Hunt the Screamer, Letters (the quiet way), Harvest Guard, Tied Down | — |
 | Police | Checkpoint Duty, Trail of Clues, The Rat, The Armory, Double Agent | The Informant |
 | Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, Bust Out, The Pit's Debtor | Raid the Red Hand (until Champion with Bastion) |

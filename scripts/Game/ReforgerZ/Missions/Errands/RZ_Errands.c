@@ -55,6 +55,9 @@ class RZ_ErrandSettings
 	[Attribute("1", desc: "Wanderers' asks: \"Need a hand?\" on the wanderers (the Doctor's Before Dark, Barter Chain, Wanted Poster)")]
 	bool m_bWandererAsks;
 
+	[Attribute("1", desc: "Strangers: a passer-by met only at a spot where one makes sense (a road people use, an approach, a town edge at dusk, a fresh event), at most one per player every 15-25 minutes and 6 on the server")]
+	bool m_bStrangers;
+
 	[Attribute("1", desc: "The hall of fame's \"Most people helped\" line: errands done, until the cure. It pays nothing")]
 	bool m_bHelpedLine;
 
@@ -153,6 +156,7 @@ class RZ_Errands
 	protected RZ_ErrandSettings m_Settings;
 	protected ref RZ_NamedPeople m_People;
 	protected ref RZ_Faults m_Faults;
+	protected ref RZ_Strangers m_Strangers;
 	protected ref array<ref RZ_ErrandDef> m_aDefs = {};
 	protected ref array<ref RZ_Errand> m_aErrands = {};
 	protected ref array<ref RZ_Fallout> m_aFallout = {};
@@ -183,6 +187,17 @@ class RZ_Errands
 		m_Settings = settings;
 		m_People = new RZ_NamedPeople(gm);
 		m_Faults = new RZ_Faults(gm);
+		m_Strangers = new RZ_Strangers(gm, this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_Strangers GetStrangers() { return m_Strangers; }
+
+	//------------------------------------------------------------------------------------------------
+	//! A player's shot within `radius` of pos in the last `seconds` (strangers' "a fight" rule).
+	bool RecentShot(vector pos, float radius, float seconds)
+	{
+		return ShotNear(pos, radius, seconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -391,6 +406,7 @@ class RZ_Errands
 			m_Faults.Tick(players, m_Settings.m_fFaultChance);
 			WatchHouses();
 			Keep(ids, players);
+			m_Strangers.Tick(SLOW_TICK, ids, players, m_Settings.m_bStrangers);
 			CallOuts(ids, players);
 			ExpireTalks(ids, players);
 			MarkLines(ids, players);
