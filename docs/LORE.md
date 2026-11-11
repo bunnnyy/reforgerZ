@@ -137,9 +137,9 @@ Underneath, it is doing things nobody would put in a report:
 
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
-| **"No reply"** | Every night the log says the same thing. Some operators swear they've heard something on the net. Nobody writes that down. | The nightly call on Bastion's open channel; the rumour that Bastion has a radio to the outside |
+| **"No reply"** | Every night the log says the same thing. Some operators swear they've heard something on the net. Nobody writes that down. | The nightly call on Bastion's open channel; the rumour that Bastion has a radio to the outside; No Reply, where something answers on the Command net and you decide what the log says (it is never Command, and who it was is never said) |
 | **"Expended"** | Nobody knows what the last orders said. Some posts think "relief is coming". Others have heard a word they don't repeat. Any copy that reaches the stronghold goes into the stove. | The Real Orders |
-| **"Struck off"** | A deserter's name is struck off the roster and written up as killed in action, so the numbers add up when relief comes. Then someone is sent to find him. | Hunt the Deserter; Desertion Route; the Deserter wanderer; the rumour that Bastion shoots its own deserters |
+| **"Struck off"** | A deserter's name is struck off the roster and written up as killed in action, so the numbers add up when relief comes. Then someone is sent to find him. | Hunt the Deserter; Desertion Route; Struck Off, where a man on the roster as killed in action turns up alive (the Deserter wanderer knows where he sleeps); the rumour that Bastion shoots its own deserters |
 | **The bunker** | Stores that Bastion never told anyone about, not even its own posts. | The Deserter's Map arc |
 | **"Contribution"** | Food taken from civilians "for their protection". It's never called a tax, and on a bad week it's never written down. | Requisition; Off-Book Requisition |
 | **"Fell off the inventory"** | Rifles that went to the Red Hand for fuel and fresh food. Ledgers where rations "spoil" and diesel "evaporates". | Rifles for Sale; Burn the Ledger |

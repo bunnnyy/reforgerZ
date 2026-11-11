@@ -348,7 +348,7 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 |---|---|---|---|---|---|
 | `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route (falls back to the survivor group, then data) |
 | `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment |
-| `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Hunt the Deserter |
+| `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Hunt the Deserter, Struck Off |
 | `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection (falls back to the puzzle object) |
 | `RZ_Bus.et` | a drivable bus or truck (keeps its damage manager) | — | Missions > Contracts > Bus | optional | Recover the Bus (falls back to the Haven truck, then car prefabs) |
 | `RZ_BountyTarget.et` | an armed AI group or character | — | Missions > Contracts > Bounty target | optional | Collect the Bounty (falls back to the survivor group) |
@@ -1188,6 +1188,11 @@ session, tick off:
   move as data and stand as a civilian figure when they stop. A fourth escort contract never starts.
 - [ ] Rescue the Pilot: help him up (talk, or stand beside him 10 s) and he follows you; the clock
   stops for a Nurse; killing his AI body fails it.
+- [ ] No Reply: the operator's bearing and the mast's cross within 45 m of the source; a Radio
+  Operator away from the post gets a bearing every 2 minutes; the log choices appear on the
+  operator only after the source is found, and only a player Known with Bastion can pick one.
+- [ ] Struck Off: the trader (or the Deserter wanderer) gives his grid; the four choices are on his
+  kit; killing him drops a tag that the roster board at the post takes ("Hang his tag on the nail").
 - [ ] Live Capture: lure the special into the cage and drop the door within 4 m; it vanishes without
   a sample, the cage area gets loud, after 30 s the case appears; deliver it at the lab drop before
   12 minutes. Killing it fails; wounding it to a third and standing over it ties it.

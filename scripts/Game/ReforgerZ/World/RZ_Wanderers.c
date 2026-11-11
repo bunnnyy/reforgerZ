@@ -2357,6 +2357,14 @@ class RZ_Wanderers
 			return;
 		}
 
+		// Struck Off: he knows where the man on the roster sleeps
+		string tip = RZ_Mission_StruckOff.DeserterTip(m_GM);
+		if (!tip.IsEmpty())
+		{
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), tip);
+			return;
+		}
+
 		foreach (RZ_Mission m : m_GM.GetMissions().GetActive())
 		{
 			if (!m.m_bContract || m.m_Req.m_eGiver != RZ_EFaction.MILITARY || m.m_bGlobal)

@@ -9,7 +9,7 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 
 | Kind | In code | Designed, not built |
 |---|---|---|
-| [Faction contracts](#faction-contracts) (20 designed per faction) | 80 | — |
+| [Faction contracts](#faction-contracts) (20 per faction, plus Bastion's two hard edges) | 82 | — |
 | [World events](#world-events) | 25 | — (3 more are covered by other systems) |
 | [Puzzle missions](#puzzle-missions) | 17 | — |
 | [Unarmed missions](#unarmed-missions) | 11 | — |
@@ -17,7 +17,7 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 32, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **176** | **—** |
+| **Total** | **178** | **—** |
 
 ## Who gets offered what
 
@@ -133,6 +133,8 @@ Soldier, Doctor, Raider, Elder, Drifter.
 | 18 | Secure the Shipment | Champion | | Escort a Halcyon sample shipment | **Choice:** Bastion Fame (Halcyon Infamy) or let it reach the lab (Halcyon Fame, research) | ✅ *a courier on foot; divert her by talking to her* |
 | 19 | Blow the Bridge | Champion | ★ Mechanic/Soldier: two charges, not three | Plant charges to stop a horde heading for a safe town | Fame; the horde turns back. Killed to the last instead: paid all the same. It arrives: +10 infection there | ✅ *no real bridge: a choke point on its way; the horde is data until a player is within 600 m; each charge spot is a puzzle object (stand by it 10 s), listed by grid; the clock covers the horde's whole walk* |
 | 20 | Fire Mission | Champion | | Mark three hordes with smoke for artillery | Fame | ✅ *10 s within 80 m marks one; 30 s later the strike kills it outright* |
+| 21 | No Reply | Known | ★ Radio Op: takes the second bearing on their own set, anywhere 400 m+ from the post; 1.25× Fame | A post's radio operator heard an answer on the Command net after the nightly call, and it comes back every hour. He gives a bearing from the post; take a second at a relay mast, draw both lines, find the source where they cross, then tell him what goes in the log | **Choice:** *"No reply"*: paid. What you found: 1.25× Fame, Bastion morale −4. *"Command answered"*: morale +6, 60% pay; 35% the stronghold asks for the transcript: no pay, +10 Bastion Infamy for whoever chose it | ✅ *the post is an outpost commander's seat (else a territory outpost, else the stronghold); never runs without one. The source is one of three, at random: a tape of Day 1 traffic on a timer, a Bastion set someone inside the Zone was keying (gone when you arrive), or nothing at all. It is never Command and never anyone outside; who did it is never said. The operator is the puzzle civilian, the mast the radio mast, the source the puzzle object (the table radio from guidance stands by the operator if set)* |
+| 22 | Struck Off | Trusted | | A soldier written up as killed in action is alive. A Haven trader in a nearby town saw him (or ask the Deserter wanderer about Bastion: he knows where he sleeps). Find him and decide | **Choice:** back on the roster (walk him to the post): 80%, Bastion morale +3, strength +1. Arrest him (walk him to the post): Fame. The Haven (walk him to a safehouse, +1 there): the Haven pays instead (12 Fame, 15 Favor), 25% Bastion hears of it (+15 Infamy). Bastion's way: carry his tag to the empty nail at the post: 60% | ✅ *he is an escort (Contracts > Escort soldier); the choices are on his kit (the puzzle object) and on him; dead any other way, his tag drops where he fell and the nail pays 60%. The tag is the mission item. Needs a safehouse and a Bastion post; never runs while Hunt the Deserter does* |
 
 **Amends:** Burn the Bodies and Recon work off Bastion Infamy while you're Watched. So do
 surrendering at a Bastion checkpoint and paying Favor ([REPUTATION.md](REPUTATION.md#working-off-infamy)).
@@ -397,6 +399,6 @@ Every background has contracts it shines at, and some it's shut out of.
 | Police | Checkpoint Duty, Trail of Clues, The Rat, Curfew Patrol, Loot the Armory, Double Agent | The Informant |
 | Ex-Con | Dead Drop, Fence the Goods, A Quiet Arrangement, Time-Lock Safe, Bust Out | Raid the Red Hand (until Champion with Bastion) |
 | Lab Tech | Field Samples, Water Survey, Quiet Count, Steal the Antidotes, Water Purifier, Install Sensors, Patient Zero | — |
-| Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, Restore Comms, Install Sensors, Medical Drone | — |
+| Radio Op | Radio Relay, Recon, Zombie Bait, Lead Them Away, Restore Comms, No Reply, Install Sensors, Medical Drone | — |
 | Unemployed | +50% Fame from every contract (and Infamy worked off by amends) | — |
 | Elder (unlock) | Walk Him Out, The Ledger, The Bell Order, The Silent Village | Requisition, Protection Racket |

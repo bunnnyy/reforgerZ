@@ -58,6 +58,9 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_SecureTheShipment);
 		mgr.RegisterType(RZ_Mission_BlowTheBridge);
 		mgr.RegisterType(RZ_Mission_FireMission);
+		// Bastion's hard edges (Missions/Bastion/RZ_BastionLoreMissions.c)
+		mgr.RegisterType(RZ_Mission_NoReply);
+		mgr.RegisterType(RZ_Mission_StruckOff);
 
 		// The Red Hand
 		mgr.RegisterType(RZ_Mission_BanditDeadDrop);
