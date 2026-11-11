@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ReforgerZ runtime test on the Linux dedicated server (no Workbench, no game client).
 #
-#   SERVER_DIR=... tools/runtime_test/run.sh [seconds]     # default 3600 (all missions, all questlines, then the route)
+#   SERVER_DIR=... tools/runtime_test/run.sh [seconds]     # default 5400 (all missions, all questlines, then the route)
 #
 # Needs the server installed (tools/compile_check.sh installs it). Boots a sub-scene of Arland
 # with RZ_GameModeComponent on GameMode_Plain, vanilla stand-ins for the minimum prefab slots
@@ -33,7 +33,7 @@ cp -r "$HERE/files/." "$ADDON/"
 python3 "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
 
 cd "$SERVER"
-timeout "${1:-3600}" ./ArmaReforgerServer -addonsDir "$(dirname "$ADDON")" -addons "$GUID" -profile "$PROFILE" \
+timeout "${1:-5400}" ./ArmaReforgerServer -addonsDir "$(dirname "$ADDON")" -addons "$GUID" -profile "$PROFILE" \
 	-server "{7A1C2E3F4B5D6E71}Missions/RZTest.conf" -bindPort 2001 -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1
 LOG="$(ls -td "$PROFILE"/logs/logs_* | head -1)/console.log"
 
@@ -42,7 +42,7 @@ echo "Script exceptions: $(grep -c 'Virtual Machine Exception' "$LOG")"
 grep -A6 'Virtual Machine Exception' "$LOG" | grep -E 'Reason|Function|scripts/' | sort | uniq -c | head -20
 grep -E 'RZT all mission types tried' "$LOG" | sed 's/.*RZT //'
 grep -E 'RZT mission .* started=0' "$LOG" | sed -E 's/.*RZT mission ([A-Za-z_]+).*/  did not start: \1/'
-grep -E 'RZT (fake player already dead|killing)' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT (fake player already dead|killing|fake player died)' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (questlines:|all questlines tried|quest .* (ENDED|STUCK|fizzled|did not start))' "$LOG" | sed 's/.*RZT /  /'
 grep -q 'Virtual Machine Exception' "$LOG" && exit 1
 exit 0
