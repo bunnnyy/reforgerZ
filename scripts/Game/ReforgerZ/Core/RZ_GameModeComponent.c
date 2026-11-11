@@ -342,6 +342,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "UI: styled notice cards (off = the vanilla hint), the infection timer, noise meter, radio log size, icon imageset and row layouts (docs/UI.md, UI/LAYOUTS.md)", category: "ReforgerZ|UI")]
 	protected ref RZ_UISettings m_UISettings;
 
+	// ---------------------------------------------------------------- Dialogue
+	[Attribute(desc: "Talking to people: the talk screen, its range and idle time, and the danger that closes it and the reader (docs/DESIGN.md, Talking to people)", category: "ReforgerZ|Dialogue")]
+	protected ref RZ_DialogueSettings m_DialogueSettings;
+
 	// ---------------------------------------------------------------- Debug
 	[Attribute("1", desc: "Log a world status summary every few minutes", category: "ReforgerZ|Debug")]
 	protected bool m_bStatusLog;
@@ -404,6 +408,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Interactions m_Interactions;
 	protected ref RZ_LooseItems m_LooseItems;
 	protected ref RZ_UIFeed m_UIFeed;
+	protected ref RZ_ScreenGuard m_ScreenGuard;
 	protected ref RZ_Seasons m_Seasons;
 	protected ref RZ_WorldFacts m_Facts;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
@@ -464,6 +469,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Stealth)
 			m_Stealth.Forget(playerId);
+
+		if (m_ScreenGuard)
+			m_ScreenGuard.Forget(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -540,6 +548,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_GuidanceSettings)
 			m_GuidanceSettings = RZ_GuidanceSettings.Cast(RZ_Util.NewWithDefaults("RZ_GuidanceSettings"));
 
+		if (!m_DialogueSettings)
+			m_DialogueSettings = RZ_DialogueSettings.Cast(RZ_Util.NewWithDefaults("RZ_DialogueSettings"));
+
 		if (!m_TerritorySettings)
 			m_TerritorySettings = RZ_TerritorySettings.Cast(RZ_Util.NewWithDefaults("RZ_TerritorySettings"));
 
@@ -605,6 +616,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Stealth = new RZ_Stealth(this, m_StealthSettings);
 		m_Missions = new RZ_MissionManager(this);
 		m_UIFeed = new RZ_UIFeed(this);
+		m_ScreenGuard = new RZ_ScreenGuard(this);
 		m_Infection = new RZ_Infection(this, m_InfectionSettings);
 		m_BiteDetector = new RZ_BiteDetector(this, m_fBiteChance, m_fBiteReach, m_InfectionSettings);
 		m_Perks = new RZ_FactionPerks(this);
@@ -799,6 +811,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Infection GetInfection() { return m_Infection; }
 	RZ_UIFeed GetUIFeed() { return m_UIFeed; }
 	RZ_UISettings GetUISettings() { return m_UISettings; }
+	RZ_DialogueSettings GetDialogueSettings() { return m_DialogueSettings; }
+	//! Server: open talk screens and readers, closed when danger comes (UI/RZ_ScreenGuard.c).
+	RZ_ScreenGuard GetScreenGuard() { return m_ScreenGuard; }
 	RZ_Seasons GetSeasons() { return m_Seasons; }
 	//! What's true in the world right now, for content (docs/DESIGN.md, "World facts").
 	RZ_WorldFacts GetFacts() { return m_Facts; }
@@ -1438,8 +1453,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_Heat.AddHeat(shooter.GetOrigin(), heat);
 
-		// A shot gives you away at once (docs/DESIGN.md, Stealth)
+		// A shot gives you away at once (docs/DESIGN.md, Stealth), and closes a talk or a note
 		m_Stealth.OnPlayerShot(playerID, suppressed);
+		m_ScreenGuard.OnShot(playerID);
 
 		// House rules and wanderers who were shot at
 		m_Safehouses.OnPlayerShot(playerID, shooter.GetOrigin());
@@ -1465,6 +1481,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_Util.GetAlivePlayers(ids, players);
 		m_BiteDetector.Check(ids, players);
 		m_Stealth.Tick(1, ids, players);
+		// Open talk screens and readers close when danger comes
+		m_ScreenGuard.Tick();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2319,23 +2337,100 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	// ================================================================ Notifications
 	//------------------------------------------------------------------------------------------------
+	//! Everyone: a broadcast.
 	void NotifyAll(string title, string text)
 	{
-		RpcDo_Notify(-1, title, text);
-		Rpc(RpcDo_Notify, -1, title, text);
+		RpcDo_Notify(-1, title, text, RZ_ENoticeTag.AUTO);
+		Rpc(RpcDo_Notify, -1, title, text, RZ_ENoticeTag.AUTO);
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One player: a notice card (docs/UI.md, "Notices"). Its importance comes from its title.
 	void NotifyPlayer(int playerId, string title, string text)
 	{
-		RpcDo_Notify(playerId, title, text);
-		Rpc(RpcDo_Notify, playerId, title, text);
+		NotifyPlayerAs(playerId, title, text, RZ_ENoticeTag.AUTO);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Broadcast, with each client filtering for itself. Fine at this message rate.
+	//! One player, with a tag that sets what the notice is (a mission, a world event, the world at
+	//! spawn) or how important it is (RZ_ENoticeTag). Sent to that player's machine only, through
+	//! RZ_PlayerUIComponent; only a controller without it gets the old broadcast that each client
+	//! filters for itself. Never both.
+	void NotifyPlayerAs(int playerId, string title, string text, RZ_ENoticeTag tag)
+	{
+		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);
+		if (!pc)
+			return; // not connected: no screen to show it on
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.Cast(pc.FindComponent(RZ_PlayerUIComponent));
+		if (ui)
+		{
+			ui.SendNotice(title, text, tag);
+			return;
+		}
+
+		RpcDo_Notify(playerId, title, text, tag);
+		Rpc(RpcDo_Notify, playerId, title, text, tag);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A person speaks to one player: a subtitle at the bottom of the screen (docs/UI.md,
+	//! "Subtitles"), owner-only like notices. speaker: their name; faction: RZ_EFaction or -1.
+	void Say(int playerId, string speaker, int faction, string text)
+	{
+		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);
+		if (!pc)
+			return;
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.Cast(pc.FindComponent(RZ_PlayerUIComponent));
+		if (!ui)
+		{
+			NotifyPlayer(playerId, speaker, text);
+			return;
+		}
+
+		ui.SendSay(speaker, faction, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A person speaks to everyone alive within `radius` of `pos`.
+	void SayNear(vector pos, float radius, string speaker, int faction, string text)
+	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), pos) <= radius)
+				Say(ids[i], speaker, faction, text);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: a notice for this machine's player (RZ_PlayerUIComponent.RpcDo_Notice).
+	void ShowNotice(string title, string text, int tag)
+	{
+		if (System.IsConsoleApp())
+			return;
+
+		QueueHint(title, text, tag);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: a spoken line for this machine's player (RZ_PlayerUIComponent.RpcDo_Say).
+	void ShowSay(string speaker, int faction, string text)
+	{
+		if (System.IsConsoleApp())
+			return;
+
+		QueueHint(speaker, text, RZ_ENoticeTag.AUTO);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The fallback for NotifyAll and for controllers without RZ_PlayerUIComponent: a broadcast,
+	//! with each client filtering for itself.
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
-	protected void RpcDo_Notify(int targetPlayerId, string title, string text)
+	protected void RpcDo_Notify(int targetPlayerId, string title, string text, int tag)
 	{
 		if (System.IsConsoleApp())
 			return; // dedicated server has no screen
@@ -2343,7 +2438,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (targetPlayerId != -1 && SCR_PlayerController.GetLocalPlayerId() != targetPlayerId)
 			return;
 
-		QueueHint(title, text);
+		QueueHint(title, text, tag);
 	}
 
 	// ---------------------------------------------------------------- Client hint queue
@@ -2357,7 +2452,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected static const int HINT_QUEUE_MAX = 8;
 
 	//------------------------------------------------------------------------------------------------
-	protected void QueueHint(string title, string text)
+	protected void QueueHint(string title, string text, int tag)
 	{
 		// Chat commands (/note, /noteclear, /hall): registered once, here, on the client
 		RZ_ChatCommands.Register();

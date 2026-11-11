@@ -4189,6 +4189,12 @@
    "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (3), queue (8), radio log size (40), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu) ([UI/LAYOUTS.md](../UI/LAYOUTS.md))"
   },
   {
+   "category": "Dialogue",
+   "object": "Dialogue",
+   "field": "m_DialogueSettings",
+   "covers": "The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120) ([UI.md](UI.md#how-the-scripts-fit))"
+  },
+  {
    "category": "Map",
    "object": "(top level)",
    "covers": "**Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout)"
@@ -4947,6 +4953,13 @@
     "m_bLockLoadouts": "1",
     "m_bBoardMenus": "0"
    }
+  },
+  {
+   "field": "m_DialogueSettings",
+   "category": "Dialogue",
+   "label": "Dialogue",
+   "cls": "RZ_DialogueSettings",
+   "defaults": {"m_fRange": "6", "m_fIdleSeconds": "120", "m_fDangerNear": "6", "m_fDangerClosing": "30", "m_iMaxOpen": "32"}
   }
  ],
  "topLevelDefaults": {

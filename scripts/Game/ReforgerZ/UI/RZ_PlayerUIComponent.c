@@ -153,6 +153,26 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A notice for this player only (RZ_GameModeComponent.NotifyPlayerAs). tag: RZ_ENoticeTag.
+	void SendNotice(string title, string text, int tag)
+	{
+		if (IsLocalOwner())
+			RpcDo_Notice(title, text, tag);
+		else
+			Rpc(RpcDo_Notice, title, text, tag);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spoken line for this player only (RZ_GameModeComponent.Say): a subtitle.
+	void SendSay(string speaker, int faction, string text)
+	{
+		if (IsLocalOwner())
+			RpcDo_Say(speaker, faction, text);
+		else
+			Rpc(RpcDo_Say, speaker, faction, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! level: 0 hidden to 5 in plain sight (RZ_UIFeed.PushVisibility); hidden: under Stealth > Hidden below.
 	void SendVisibility(int level, bool hidden)
 	{
@@ -200,6 +220,24 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_Notice(string title, string text, int tag)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm)
+			gm.ShowNotice(title, text, tag);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_Say(string speaker, int faction, string text)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm)
+			gm.ShowSay(speaker, faction, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A new life: the radio log and the timers belong to the last one.
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_NewLife()
@@ -244,6 +282,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			m_sHall = payload;
 			m_iHallVersion++;
+		}
+		else if (kind == RZ_UIFeed.PAYLOAD_TALK || kind == RZ_UIFeed.PAYLOAD_READER)
+		{
+			return;
 		}
 		else
 		{
@@ -310,6 +352,28 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		SendPayload(kind, gm.GetUIFeed().BuildPayload(playerId, kind));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player closed the reader or the talk screen (kind: RZ_ScreenGuard.KIND_*).
+	void SendScreenClosed(int kind)
+	{
+		if (Replication.IsServer())
+			RpcAsk_ScreenClosed(kind);
+		else
+			Rpc(RpcAsk_ScreenClosed, kind);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_ScreenClosed(int kind)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = OwnerPlayerId();
+		if (!gm || playerId <= 0 || !gm.GetScreenGuard())
+			return;
+
+		gm.GetScreenGuard().OnClientClosed(playerId, kind);
 	}
 
 	// ================================================================ Client: commands

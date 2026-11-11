@@ -148,10 +148,23 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 
 | Rule | What it means |
 |---|---|
-| Every input has a gamepad binding | Each ReforgerZ action in `Configs/System/chimeraInputCommon.conf` binds a gamepad input next to its key |
-| Every screen works without a mouse | It opens from something a pad can reach, moves with the D-pad or left stick, switches tabs with the shoulder buttons (`MenuTabLeft`/`MenuTabRight`), confirms with A (`MenuSelect`) and closes with B (`MenuBack`) |
+| Every input has a gamepad binding or a pad route | Each ReforgerZ action in `Configs/System/chimeraInputCommon.conf` binds a gamepad input next to its key, or what it does is reached another way on a pad (the table below) |
+| Every screen works without a mouse | It opens from something a pad can reach, moves with the D-pad or left stick, switches tabs with the shoulder buttons (`MenuTabLeft`/`MenuTabRight`), confirms with A (`MenuSelect`) and closes with B (`MenuBack`). Each screen gives a widget the focus when it opens (`RZ_UIW.Focus`), so the D-pad has something to move from |
 | Nothing needs hover, typing or a chat command | What a tooltip says also shows when the item has focus; whatever a chat command does also has a button or an action |
-| Readable on a TV | Text no smaller than vanilla's own HUD text; nothing important in the outer edge of the screen |
+| Readable on a TV | Sizes at 1920×1080: no text under 18 px and body text 26 px or more on the new screens (talk, reader, subtitles); the tabs and footers of the older screens are 18 px. Nothing important within 96 px of the left and right edges or 54 px of the top and bottom (a 90% safe area). Footer prompts are vanilla's input button (`RZ_UIW.AddPrompt`, `WLib_InputNavigationButton`), which shows the key or the pad button by the device in use |
+
+**The input actions** (all in `Configs/System/chimeraInputCommon.conf`; menus also use vanilla's
+`MenuUp`/`MenuDown`, `MenuSelect`, `MenuBack` and `MenuTabLeft`/`MenuTabRight`):
+
+| Action | Keyboard | Gamepad | Context |
+|---|---|---|---|
+| `RZ_OpenNotebook` | N | none: the pause menu's **Notebook** button, or the notebook item | `IngameContext` |
+| `RZ_RadioFilter` | F | X | `MenuContext` |
+| `RZ_Reply1` … `RZ_Reply7` | 1 … 7 | none: the D-pad and A pick a reply | `MenuContext` |
+
+N is free in play (vanilla uses it only in the group menu and the map's pencil tool, other
+contexts). The pad has no free button in play, so Start (the pause menu) and the notebook item are
+its way into the notebook.
 
 **Status.** The screens, the HUD and the chat commands were built for keyboard and mouse and
 haven't been checked with a gamepad yet. A check of the whole mod, and the fixes it finds, are
@@ -165,6 +178,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 |---|---|---|
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes**; with Stealth on, stealth's own update (every second) hands it each player's visibility, sent the same way as a level 0–5 and whether it counts as hidden (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal (with the questlines the player is part of and the lab's line), background, map, notice board and hall of fame data when asked. Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the radio log on the client for this life. A notice board payload from the server opens the board menu |
+| `RZ_ScreenGuard` | server, once a second | Watches open talk screens and readers and closes them in danger (below) |
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/hall`, sent as commands to the server, which checks them again. Registered with the first notice |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards |
 | `RZ_StandingMenu`, `RZ_JournalMenu`, `RZ_RadioLogMenu`, `RZ_MapKeyMenu`, `RZ_NoticeBoardMenu`, `RZ_HallOfFameMenu` | client (`ChimeraMenuBase`) | Ask for their data on open, redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them |
@@ -179,10 +193,24 @@ is one string (one record per line, fields split by `|`, at most 6000 characters
 menu opens; the map's every 20 s while it's open. Each kind can be asked for at most every 2 s.
 Nothing is replicated to other players.
 
-**Notices.** Every message still goes through `RZ_GameModeComponent.NotifyPlayer` and its
-broadcast RPC. On the client, `QueueHint` classifies it, adds radio messages to the radio log, and
-offers it to the HUD. If **UI > Styled notices** is off, or the HUD layout or the card layout is
-missing, the vanilla hint queue shows it exactly as before.
+**Notices.** Every message still goes through `RZ_GameModeComponent.NotifyPlayer` (or
+`NotifyPlayerAs`, with a tag). Text for one player goes **only to that player's machine**: an
+owner-only RPC on their `RZ_PlayerUIComponent` (`RpcDo_Notice`; spoken lines `RpcDo_Say`). Only a
+controller without the component gets the old broadcast that each client filters for itself; the
+server picks one of the two per message, never both. `NotifyAll` stays a broadcast. On the client,
+`QueueHint` classifies it, adds radio messages to the radio log, and offers it to the HUD. If **UI
+> Styled notices** is off, or the HUD layout or the card layout is missing, the vanilla hint queue
+shows it exactly as before.
+
+**The screen guard** (`RZ_ScreenGuard`, server). The talk screen and the reader stop you moving
+while the world keeps running, so the server watches every open one, once a second on the game
+mode's `SecondTick`, and closes it when: you took damage or fired; an infected is within
+**Dialogue > Danger near** (6 m) of you or of the person you talk to, or one within **Danger
+closing** (30 m) came 2 m closer since the last check; you died, or the person is gone; and, for
+talk only, you're more than **Range** (6 m) from them or **Idle seconds** (120) passed with no
+reply. In danger the person says "Not now!" as a subtitle. At most **Open at most** (32) screens
+are open on the server; each check is a few distance tests. The client says when the player
+closes one (`RpcAsk_ScreenClosed`).
 
 **Turning it off.** Styled notices off gives the vanilla hints back. Taking
 `RZ_PlayerUIComponent` off the player controller (`Prefabs/Characters/Core/RZ_PlayerController.et`)

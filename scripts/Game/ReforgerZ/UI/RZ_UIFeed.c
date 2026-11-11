@@ -77,7 +77,9 @@ class RZ_UIFeed
 	static const int PAYLOAD_MAP = 3;
 	static const int PAYLOAD_BOARD = 4;		// the notice board the player stands at (World/RZ_NoticeBoard.c)
 	static const int PAYLOAD_HALL = 5;		// the hall of fame (Persistence/RZ_HallOfFame.c)
-	static const int PAYLOAD_KINDS = 6;
+	static const int PAYLOAD_KINDS = 6;		// the kinds a client may ask for; the ones below are only sent
+	static const int PAYLOAD_TALK = 6;		// the talk screen: one node, or X|reason to close (Dialogue/RZ_Dialogue.c)
+	static const int PAYLOAD_READER = 7;	// the reader: P|title|how, then the text; "" closes it (UI/RZ_Reader.c)
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;

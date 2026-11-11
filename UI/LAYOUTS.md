@@ -12,7 +12,9 @@ mockup, its section says so.
 ## Conventions
 
 - **Reference resolution** 1920×1080. Sizes are in layout units at that size; the HUD pieces
-  anchor to their corner, menus fill the screen.
+  anchor to their corner, menus fill the screen. Everything that matters stays inside the 90% safe
+  area: 96 units from the left and right edges, 54 from the top and bottom
+  ([UI.md](../docs/UI.md#controllers), "Readable on a TV").
 - **Names matter.** The scripts find widgets with `FindAnyWidget(name)`. Every name in the trees
   must be spelt exactly. A widget that's missing is skipped, so a simpler layout still works. The
   layouts name every widget; one shown in brackets, a description like `(panel background)` or a
@@ -85,7 +87,7 @@ full-screen `Frame` with no background that ignores the cursor.
 
 ```
 Frame  (root, full screen)
-├─ Frame  InfectionPanel        430 × 150, anchor bottom-left, offset (44, -44)
+├─ Frame  InfectionPanel        430 × 150, anchor bottom-left, offset (96, -54)
 │  ├─ Image   (panel background)
 │  ├─ Image   InfectionAccent   5 × full height, left edge          tinted by stage
 │  ├─ Image   FinalGlow         full size, red #D2412F 35%, shown in the Final stage
@@ -103,22 +105,22 @@ Frame  (root, full screen)
 │     └─ Overlay PausedRow      4 below the note, fits its content, border #4FB8B0 50%
 │        ├─ Image  (item_stabiliser icon, 18 × 18, #4FB8B0, static)
 │        └─ Text   PausedText   mono bold 12, #4FB8B0
-├─ Frame  RadioPanel            390 × 60, anchor top-left, offset (44, 40)
+├─ Frame  RadioPanel            390 × 60, anchor top-left, offset (96, 54)
 │  ├─ Image   (panel background)
 │  ├─ Image   RadioAccent       4 × 60, left edge                   faction colour
 │  ├─ Image   RadioIcon         34 × 34 at (12, 13)                 status_secure_radio, static, tinted
 │  ├─ Text    RadioChannel      at (60, 10), mono bold 13           faction colour
 │  └─ Text    RadioSub          at (60, 32), mono 13, dim
-├─ HorizontalLayout NoisePanel  anchor bottom-left, offset (500, -52), 10 apart, 85% opacity
+├─ HorizontalLayout NoisePanel  anchor bottom-left, offset (552, -62), 10 apart, 85% opacity
 │  ├─ Image   (status_noise icon, 26 × 26, bone, static)
 │  ├─ HorizontalLayout (3 apart)
 │  │  └─ Image Noise1 … Noise6  14 × 8 each, no texture (tinted lit or dim)
 │  └─ Text    NoiseText         mono bold 12, dim (QUIET, HEARD, LOUD, VERY LOUD)
-├─ HorizontalLayout SeenPanel   anchor bottom-left, offset (536, -80), 10 apart, 85% opacity; hidden until the server sends a visibility (Stealth on)
+├─ HorizontalLayout SeenPanel   anchor bottom-left, offset (588, -90), 10 apart, 85% opacity; hidden until the server sends a visibility (Stealth on)
 │  ├─ HorizontalLayout (3 apart)
 │  │  └─ Image Seen1 … Seen5    14 × 8 each, no texture (tinted lit, dim, or green when hidden)
 │  └─ Text    SeenText          mono bold 12, dim (HIDDEN, LOW, SEEN, IN PLAIN SIGHT)
-└─ VerticalLayout (NoticeArea)  460 wide, anchor top-right, offset (-44, 96)
+└─ VerticalLayout (NoticeArea)  460 wide, anchor top-right, offset (-96, 96)
    ├─ VerticalLayout NoticeStack  the notice cards
    └─ Text   NoticeQueued       under the stack, right-aligned, mono 12, faint ("+2 QUEUED")
 ```
@@ -185,11 +187,10 @@ GUID) with six presets added, each with its layout and class. Workbench finds th
 | `RZ_HallOfFameMenu` | `RZ_HallOfFameMenu` | `RZ_HallOfFameMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
-config (same GUID) that adds five actions: `RZ_OpenStanding` (**K**), `RZ_OpenJournal` (**J**),
-`RZ_OpenRadio` (**U**) and `RZ_OpenHall` (**O**) in `IngameContext`, and `RZ_RadioFilter` (**F**)
-in `MenuContext`. K, J, U and O clash with vanilla keys; opening the screens from the map instead
-is planned ([UI.md](../docs/UI.md#opening-the-screens)). Esc, Q/E and up/down use the vanilla menu
-actions.
+config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `RZ_RadioFilter`
+(**F**, pad **X**) and `RZ_Reply1` to `RZ_Reply7` (**1** to **7**) in `MenuContext`. The list with
+the pad routes is in [UI.md](../docs/UI.md#controllers). Esc, Q/E, up/down and Enter use the
+vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
 
 ### Standing: `RZ_StandingMenu.layout`
 

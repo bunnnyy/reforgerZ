@@ -18,14 +18,14 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
    Name "InfectionPanel"
    Slot FrameWidgetSlot "{5FFCEA150DD0BDF6}" {
     Anchor 0 1 0 1
-    PositionX 44
-    OffsetLeft 44
-    PositionY -44
-    OffsetTop -44
+    PositionX 96
+    OffsetLeft 96
+    PositionY -54
+    OffsetTop -54
     SizeX 430
-    OffsetRight -474
+    OffsetRight -526
     SizeY 150
-    OffsetBottom -106
+    OffsetBottom -96
     Alignment 0 1
    }
    "Is Visible" 0
@@ -404,14 +404,14 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
    Name "RadioPanel"
    Slot FrameWidgetSlot "{E6A8BED632E79092}" {
     Anchor 0 0 0 0
-    PositionX 44
-    OffsetLeft 44
-    PositionY 40
-    OffsetTop 40
+    PositionX 96
+    OffsetLeft 96
+    PositionY 54
+    OffsetTop 54
     SizeX 390
-    OffsetRight -434
+    OffsetRight -486
     SizeY 60
-    OffsetBottom -100
+    OffsetBottom -114
     Alignment 0 0
    }
    "Is Visible" 0
@@ -517,14 +517,14 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
    Name "NoisePanel"
    Slot FrameWidgetSlot "{AA898620BEC7C4A9}" {
     Anchor 0 1 0 1
-    PositionX 500
-    OffsetLeft 500
-    PositionY -52
-    OffsetTop -52
+    PositionX 552
+    OffsetLeft 552
+    PositionY -62
+    OffsetTop -62
     SizeX 300
-    OffsetRight -800
+    OffsetRight -852
     SizeY 26
-    OffsetBottom 26
+    OffsetBottom 36
     Alignment 0 1
     SizeToContent 1
    }
@@ -631,14 +631,14 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
    Name "SeenPanel"
    Slot FrameWidgetSlot "{320B349B6E109F7D}" {
     Anchor 0 1 0 1
-    PositionX 536
-    OffsetLeft 536
-    PositionY -80
-    OffsetTop -80
+    PositionX 588
+    OffsetLeft 588
+    PositionY -90
+    OffsetTop -90
     SizeX 300
-    OffsetRight -836
+    OffsetRight -888
     SizeY 16
-    OffsetBottom 64
+    OffsetBottom 74
     Alignment 0 1
     SizeToContent 1
    }
@@ -725,12 +725,12 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
    Name "NoticeArea"
    Slot FrameWidgetSlot "{449801ABD1428D22}" {
     Anchor 1 0 1 0
-    PositionX -44
-    OffsetLeft -44
+    PositionX -96
+    OffsetLeft -96
     PositionY 96
     OffsetTop 96
     SizeX 460
-    OffsetRight -416
+    OffsetRight -364
     SizeY 900
     OffsetBottom -996
     Alignment 1 0

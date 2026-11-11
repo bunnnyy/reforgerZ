@@ -21,6 +21,21 @@ enum RZ_ENoticeKind
 }
 
 //------------------------------------------------------------------------------------------------
+//! What the server says a notice is (RZ_GameModeComponent.NotifyPlayerAs). AUTO: the client
+//! works it out from the title, as for every plain NotifyPlayer. MISSION, EVENT and WORLD also say
+//! where it's listed in the notebook's Radio tab; URGENT, HIGH and LOW only set its importance.
+enum RZ_ENoticeTag
+{
+	AUTO,
+	MISSION,	// offers, "this is the place", done, failed, refused
+	EVENT,		// world events
+	WORLD,		// the state of the world at spawn: the outbreak, the news, the season, the hall
+	URGENT,
+	HIGH,
+	LOW
+}
+
+//------------------------------------------------------------------------------------------------
 //! The infection timer's state, as sent to the client.
 enum RZ_EInfectionUI
 {
@@ -632,12 +647,65 @@ class RZ_UIW
 
 
 	//------------------------------------------------------------------------------------------------
-	static void OpenMenu(int preset)
+	//! The opened menu, or null (no preset in chimeraMenus.conf, or its layout is missing).
+	static MenuBase OpenMenu(int preset)
 	{
 		MenuManager mm = GetGame().GetMenuManager();
-		if (mm)
-			mm.OpenMenu(preset);
+		if (!mm)
+			return null;
+
+		return mm.OpenMenu(preset);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Gamepad: give the named widget the focus, so the D-pad has something to move from.
+	//! VERIFY: WorkspaceWidget.SetFocusedWidget focuses a Button in a ChimeraMenuBase (vanilla's
+	//! pause menu does the same).
+	static void Focus(Widget root, string name)
+	{
+		Widget w = root;
+		if (!name.IsEmpty())
+			w = Find(root, name);
+
+		FocusWidget(w);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void FocusWidget(Widget w)
+	{
+		WorkspaceWidget ws = GetGame().GetWorkspace();
+		if (ws && w)
+			ws.SetFocusedWidget(w);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Footer prompts: vanilla's input button (WLib_InputNavigationButton), which shows the key or
+	//! the pad button for the action by the device in use. Created into the HorizontalLayout
+	//! named `parentName`; true if it was made (the layout's static PromptsText can then hide).
+	//! VERIFY: the prompt switches glyphs between keyboard and pad in our layouts.
+	static bool AddPrompt(Widget root, string parentName, string action, string label)
+	{
+		Widget parent = Find(root, parentName);
+		if (!parent)
+			return false;
+
+		Widget w = GetGame().GetWorkspace().CreateWidgets(PROMPT_LAYOUT, parent);
+		if (!w)
+			return false;
+
+		SCR_InputButtonComponent btn = SCR_InputButtonComponent.FindComponent(w);
+		if (!btn)
+		{
+			w.RemoveFromHierarchy();
+			return false;
+		}
+
+		btn.SetAction(action);
+		btn.SetLabel(label);
+		return true;
+	}
+
+	static const ResourceName PROMPT_LAYOUT = "{0EC7676429DDCBC6}UI/layouts/WidgetLibrary/Buttons/WLib_InputNavigationButton.layout";
 
 	//------------------------------------------------------------------------------------------------
 	//! Mouse: `handler` hears clicks on the named widget, or on root itself if name is "" (make it a
