@@ -39,6 +39,11 @@ class RZ_CureResearch
 	protected int m_iLabAntidotes;
 	protected int m_iStolenAntidotes;
 
+	//! Final stands lost since the server started, and how many of them the Red Hand stole (not
+	//! saved: a restart starts the stand again). A questline compares them before and after a stand.
+	protected int m_iBatchesLost;
+	protected int m_iBatchesStolen;
+
 	static const float FINAL_STAND_SECONDS = 900;
 	static const float ABANDON_LIMIT_SECONDS = 90;
 	static const float WAVE_INTERVAL_SECONDS = 150;
@@ -85,6 +90,12 @@ class RZ_CureResearch
 
 	//------------------------------------------------------------------------------------------------
 	int GetStolenAntidotes() { return m_iStolenAntidotes; }
+
+	//------------------------------------------------------------------------------------------------
+	int GetBatchesLost() { return m_iBatchesLost; }
+
+	//------------------------------------------------------------------------------------------------
+	int GetBatchesStolen() { return m_iBatchesStolen; }
 
 	//------------------------------------------------------------------------------------------------
 	int GetLabStabilisers() { return m_iLabStabilisers; }
@@ -450,6 +461,7 @@ class RZ_CureResearch
 		m_bFinalStand = false;
 		m_fProgress = 90;
 		m_iMilestone = 3;
+		m_iBatchesLost++;
 		m_GM.NotifyAll(title, text);
 		if (m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnFinalStandLost();
@@ -467,6 +479,7 @@ class RZ_CureResearch
 			return false;
 
 		m_iStolenAntidotes = Math.Min(StolenCap(), m_iStolenAntidotes + 2);
+		m_iBatchesStolen++;
 		LoseBatch("The batch is gone", "The Red Hand walked out of the clean room with the batch while Halcyon was holding the doors. It won't cure anyone in their hands: it needs the lab. Research has dropped to 90 percent, and Halcyon has to start the synthesis again.");
 		return true;
 	}
