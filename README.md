@@ -92,6 +92,8 @@ and one way to end it: **research the cure.**
 
 The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
 the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
+On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
+Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
 That's about 135,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
 was also checked against the base game's script source; the 60 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as

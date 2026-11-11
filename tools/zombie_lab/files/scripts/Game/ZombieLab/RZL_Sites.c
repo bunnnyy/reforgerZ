@@ -29,7 +29,7 @@ class RZL_Site
 
 class RZL_Sites
 {
-	static const float MIN_APART = 1400;
+	float m_fApart = 1400;		// sites at least this far apart (m)
 	static const float LINE_CLEAR = 8;
 	static const int LINE_TREES_MAX = 2;
 	static const float OPEN_CLEAR = 25;
@@ -173,7 +173,7 @@ class RZL_Sites
 	{
 		foreach (RZL_Site s : m_aSites)
 		{
-			if (RZL.DistXZ(s.m_vT, c) < MIN_APART)
+			if (RZL.DistXZ(s.m_vT, c) < m_fApart)
 				return false;
 		}
 		return true;

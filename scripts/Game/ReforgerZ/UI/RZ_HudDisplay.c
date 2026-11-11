@@ -497,7 +497,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	protected void DrawSubtitle(RZ_UISettings settings)
 	{
 		float now = RZ_UIW.Now();
-		bool held = RZ_ReaderMenu.IsOpen();
+		bool held = RZ_ReaderMenu.IsShowing();
 		if (m_fSubUntil >= 0 && (now >= m_fSubUntil || held))
 		{
 			m_fSubUntil = -1;
