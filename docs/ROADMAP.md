@@ -54,13 +54,36 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 
 ## Next
 
+Work in this order: the fixes below, then one combined design for everything marked "being
+designed" (shown to the author before anything is built), then the build.
+
+### Fixes from the build review (first)
+The prefabs were filled in by text edits on 2026-11-11; their reviewers found these. A fix run was
+stopped part-way: its edits to `RZ_Quartermaster.c` and `RZ_SupplyLines.c` are unreviewed, so
+check them first.
+- **Shops:** no vehicles and no car parts in any quartermaster's stock or requisitions. Replace or
+  remove the Haven medkit (vanilla `MedicalKit_01_FIA` heals without limit). The Trusted
+  machine-gun requisition hands out a Champion item.
+- **Cars:** make `RZ_Tyre.et` and `RZ_Planks.et` carryable inventory items. Make fixing harder, as
+  `RZ_CarSettings` attributes: two or three missing parts, a wrench or toolkit to fit them, longer and
+  louder hotwiring that can fail, rarer keys.
+- **Supply crews** board only once all their members have spawned (`RZ_SupplyLines`).
+- **People:** checkpoint guards get their rifles back; occupants lose their shop-tier armour; the
+  council head and the bounty target's faction must fit their missions.
+- **Items and loadouts:** the tablet keywords must match `RZ_Tablets.et`; the server enforces
+  locked loadouts.
+- **Docs** for all of the above: WORKBENCH_SETUP, MISSIONS, DESIGN, REPUTATION.
+- **Compile check** (`tools/compile_check.sh`): not run since the fixable-car change.
+- **Untested in play:** the fixable cars' names, the parked cars' lock, and the unarmed zombie
+  groups (`Prefabs/ReforgerZ/Zombies/`).
+
 ### Get it playable
 - **Refine the stand-in prefabs.** Many bases are stand-ins (five items share the aspirin bottle,
-  the molotov is a smoke grenade, the AI groups are vanilla soldier groups), and the drone, the
-  warning shot, the interaction spot and the doorway blocker have no prefab yet
+  the molotov is a smoke grenade, the drone is a radio box), and none is checked in play yet
   ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#4-the-prefab-manifest)).
-- **The manual steps** each run of the plugin lists (54 after the first): the loadouts' gear, the
-  reward crate's loot, shop stock, the consumable effects and the like.
+- **The manual steps** the plugin still lists ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); the
+  loadouts' gear, shop stock, the consumable effects and the reward crate were filled in by text
+  edits and need a play-test.
 - **Play it with a game client** on a local server, then a 2-hour session on Arland
   ([PC_SETUP.md](PC_SETUP.md#6-play-testing)).
 
@@ -82,7 +105,12 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 - **The car repair screen:** a job card (each job, what you need, the button that does it) beside a
   rough side view of the car with each job lit where it is. Planned.
 - **The quartermaster's shop screen:** categories as tabs, items with their Favor price and the
-  standing they need, and a details panel with Buy, instead of a long list of actions. Planned.
+  standing they need, a picture of the item, and a details panel with Buy, instead of a long list of
+  actions. Planned.
+- **Mockups of the approved screens:** the car repair, talk, subtitles, reader and shop screens the
+  author approved are described in `UI/Mockups/approved_samples.md`. Make full-size mockups of them in
+  `UI/Mockups/` (`talk.html` and `reader.html` are half done), add them to the screens table in
+  [UI.md](UI.md), then delete that file.
 
 ### World interactions (from play-testing)
 - **Loose loot:** loot lies in houses and you pick it up; no search prompts on furniture or
