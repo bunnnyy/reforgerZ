@@ -158,6 +158,10 @@ class RZ_SeasonRecord
 	int partner;
 	int halfRules = -1;
 	ref array<string> deciders = {};
+	// The epilogue week's plain lines (Director/Epilogue/RZ_Epilogue.c, at the wipe): the Last
+	// Broadcast's version and the 10 strongest beats
+	string broadcast;
+	ref array<string> beats = {};
 }
 
 class RZ_Persistence

@@ -1166,7 +1166,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Category | Object | Field | Covers |
 |---|---|---|---|
 | ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)), **Day length** (4 real hours a game day, x6; 0 = the server's own clock; [DESIGN.md](DESIGN.md#the-clock)), **Keep time of day** (on: saved in state.json and set again at start) |
-| ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), minimum epilogue (56 h: a late cure pushes an After-weeks wipe back), weeks (10, timed modes only), warning (24 h), **Story rules** (on: one small rule from each major that ended live, [QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
+| ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), minimum epilogue (56 h: a late cure pushes an After-weeks wipe back), weeks (10, timed modes only), warning (24 h), **No stand in the last hours** (off: near a timed wipe the stand is held back, [EPILOGUE.md](EPILOGUE.md#edge-cases)), **Story rules** (on: one small rule from each major that ended live, [QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
 | World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off) |
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
@@ -1843,7 +1843,10 @@ and `... dropped (<why>)`, `Epilogue: last call <item>`, `Epilogue: closed <item
 `Epilogue: a dose at <outlet> (N left).`, `Epilogue: brought home <name> to <place>.`, `Epilogue:
 <town> taken back.`, `Epilogue: grey choice N decided (...).`, `Epilogue: walked out (N in all)`,
 `Epilogue: a last entry by <name>: ...`, `Epilogue: admin <name>: ...`, `Epilogue: the Unsigned last
-day (N beats).`, `Seasons: a late cure pushes the wipe back to the minimum epilogue.`, `Territory:
+day (N beats).`, `Epilogue: the supper reading.`, `Epilogue: the 20:30 watch (N strokes).`, `Epilogue:
+second airing of <key>`, `Epilogue: last_season.json keeps N beats and the broadcast (...).`,
+`Epilogue: <name> went home to <place> by an errand.`, `Cure: the final stand is held back in the
+season's last hours (Season > No stand in the last hours).`, `Seasons: a late cure pushes the wipe back to the minimum epilogue.`, `Territory:
 <holding> stays as it is (the world settles in the epilogue).`),
 the majors' (`Majors: <key> act N (...) opens.`, `Majors: <key> act N squeezed (room N h, need N h). Last call.`
 or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squeezed|patience|nobody qualifies|hard stop).`,
@@ -1852,7 +1855,8 @@ or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squ
 `Majors: <key> is squeezed and takes <key>'s slot.`, `Majors: <key> act N (...) settled, result N.`,
 `Majors: <key> act N resolves at the hard stop, at half effect.`, `Majors: a page in the open: ...`,
 `Majors: season story for <key>: ending N (...).`, `Majors: <key> <kind> for one player clipped from N to N (the majors' caps)`,
-`Majors: <key> stage N went quiet; its act takes its default.`, `Calendar: <key>.<stage> holds evening N`),
+`Majors: <key> stage N went quiet; its act takes its default.`, `Calendar: <key>.<stage> holds evening N`,
+`Story rules: N from last season (...).`, `Story rules: the black market starts with N stolen doses.`), the errands' epilogue deck (`Errands: dealt epi_<card> to ...`),
 `Bastion checkpoint up near ...` / `Red Hand roadblock up near ...`,
 `Long Table: ... never arrived (hunger N, suspicion N, N taken).`, `Long Table: a player heard the rumour.`,
 `Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
@@ -2206,8 +2210,20 @@ when it happens)
 - [ ] In processing, walk up the north road unarmed: *"Name?"* instead of being turned back; *Give your
   name* at the barrier returns you to the deploy menu with no death screen (VERIFY) and puts you in the
   hall's *Walked out*; armed, you're turned back as before.
-- [ ] `/season` (or the notebook's action) lists the beats you've met, And you and Unfinished;
-  `/anonymous` turns your name into *a survivor* on boards and in the hall.
+- [ ] `/season` (or the notebook's action, or its The season tab with a pad: LB/RB to the last tab)
+  lists the beats you've met, And you and Unfinished; `/anonymous` turns your name into *a survivor*
+  on boards and in the hall.
+- [ ] The evening calendar: once the Gate has run, at 18:30 the Haven's open channel reads six names;
+  once the last call has run, at 20:30 Bastion's says *"Bastion listening. Nothing heard. Bastion
+  out."* and the roster board's line counts the strokes; 8 real hours (× Test scale) after a coda, its
+  line comes again on its faction's channel.
+- [ ] The epilogue deck: at a Haven house *Need a hand?* deals Pack for the Queue, Borrowed, Take a Name
+  to the Board or Clear the Way (an admin's **[Admin] Errands near here** says why the others weren't dealt); take Take a Name to the
+  Board: the Names board lists the name as home, by you. Before the cure none of them is dealt.
+- [ ] At the wipe, `last_season.json` has `broadcast` and up to 10 `beats`; the next season's first
+  spawn names "Last season's stories" when a major ended live (Season > Story rules).
+- [ ] **No stand in the last hours** on, After weeks set so the wipe is a day away: bring research to
+  100: no stand starts and everyone hears the director won't start the synthesis.
 - [ ] **Rule sets** `Winter, Fog` on a fresh season: both are named on first spawn; at night more
   specials; Fog Banks come more often. `No Vehicles`: no fixable cars, no trucks, no Recover the Bus.
 - [ ] The hall of fame shows on first spawn and on the notebook's Hall of fame tab; a delivered sample and a finished
@@ -2389,7 +2405,11 @@ when it happens)
   supper: the vote's rule is in the journal and the Haven's people say a line about it. Raise
   research to 49 percent with a fast pace (a sample run): a squeezed act's last call shows as a
   headline and in the journal, and its default follows a session later. Set **Lead points** 0 and
-  stall research at 48: settling day doesn't open until 50.
+  stall research at 48: settling day doesn't open until 50. The notebook's The season tab lists all
+  four majors with their act. After the reading, Before the stand is offered: sell the pages to the
+  boss's man (with `proof.pages` 2), leave the line, and start the stand: the Red Hand's channel reads
+  page one and the journal says Two Tins a Copy. With Bastion's stance 3 its group stands on the lab's
+  road (150–250 m out), not at the gate.
 - [ ] The cure finale ([FINALE.md](FINALE.md); Questlines on, **Wait scale** 0.1, research brought to
   90 with samples): the gate news and the lab's line come once; the cure shows 90; the five routes'
   opening lines are heard and each route's desk stands by its stronghold leader (the Independent's at

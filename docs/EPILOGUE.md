@@ -73,8 +73,8 @@ faction, from the current profile, not the season's best life.
 **Epilogue > The world settles** (on): `RZ_WorldFacts.HoldingsFrozen()` is true in the week. The
 territory tick keeps only its floor (no town taken or dropped), a questline ending that would hand
 over an outpost is words only and logged, and The Last Convoy doesn't start. Fights, trucks,
-missions, questlines, the tribes and the crawlers carry on. *Not built:* leaders' off-screen deaths at
-a quarter of the rate.
+missions, questlines, the tribes and the crawlers carry on. Leaders' off-screen deaths (bites and
+raids) come at a quarter of their rate.
 
 ## Beats
 
@@ -110,10 +110,24 @@ say it), no route marks (the finale's are planned), no Since beats for a house t
 | **The reel** | Each player's latest radio-station broadcast from before the cure (12, one a day first), one every 20 minutes to players with a radio, 3 a session; the anonymous skipped. In processing the station's fourth preset is *"This is Mara, at the north road. Going home."* |
 | **Boards** | Pinned notes that don't count toward the 8: names brought home, *"If we put you out, come and eat."*, last notes in processing |
 | **Readables** | 3 in 10 found in the week are dated in it (*"Gone to the queue at the north road. Took the dog."*), never naming the farm's town |
-| **The journal** | `/season` or the notebook's *The season, as the Zone tells it*: the cure line, every beat you've met (all of them in processing), **And you**, **Unfinished** (open closing work, last calls, what you carry, your last goal) |
+| **The journal** | The notebook's **The season** tab ([UI.md](UI.md#the-notebook)), `/season` or the notebook item's action: *As the Zone tells it* (the cure line, every beat you've met, all of them in processing), **And you**, **Unfinished** (open closing work, last calls, what you carry, your last goal); the tab also shows the four majors |
 
-*Simplified:* no secure-channel lines, no Haven channel echo of the broadcast, no journal tab (a
-notice), leaders' topics as one notice, not a dialogue tree.
+*Simplified:* no secure-channel lines, no Haven channel echo of the broadcast, leaders' topics as one
+notice, not a dialogue tree.
+
+### The evening calendar
+
+After Last Rounds the week keeps three evening habits, as radio only, so none takes the set-piece
+calendar's evening (`RZ_EpilogueCalendar.c`):
+
+| Habit | When | What |
+|---|---|---|
+| **The supper reading** | 18:30 each game day, once the Gate has run | The chair reads six of the season's dead on the Haven's open channel, round the list (*"Supper, and the names. ... And the ones we never had names for."*), the ones the Haven put out too if the chair chose *All of them*; the house boards keep the names |
+| **Bastion's 20:30 watch** | 20:30 each game day, once the last call has run, unless the CO closed the net | *"Bastion listening. Nothing heard. Bastion out."* on Bastion's open channel, and a stroke on the roster board (its beat counts them) |
+| **Second airings** | The first evening (18:00–22:00) at least 8 real hours (× Test scale) after a coda ran, one a game day | The coda's epilogue line again, words only, on its faction's open channel |
+
+*Simplified:* the supper reading has no scene (the chair at the table, a clerk who reads the names on
+request), and the codas have no standing versions yet.
 
 ## The dose outlets
 
@@ -218,8 +232,10 @@ adds only lines to the season block, at the event or at the wipe, each under the
 each Loose End's ending, *"Brought home: 9 names. The first on the wall: ..."*, *"The ridges went
 quiet on Day 52. The last to call was the lot at ..."*, *"Towns taken back after the cure: 3 (...)"*,
 *"Walked out: Mara, Day 52, ... and 4 more."*, *"Left the Zone square with all four: ..."*, *"The last
-broadcast: the names."*, *"5 finished what they came for."*, archived last entries, and on the
-Unsigned last day *"The cure: nobody. Nobody won."* They're shown with the season in the hall's notice
+broadcast: the names."*, *"5 finished what they came for."*, archived last entries, the majors'
+"The season's stories", "At the barrier" and "On the paper"
+([QUESTLINES.md](QUESTLINES.md#the-seasons-lines-and-the-season-tab)), and on the Unsigned last day
+*"The cure: nobody. Nobody won."* They're shown with the season in the hall's notice
 and menu, and archived with it at the wipe.
 
 ## Names
@@ -236,6 +252,7 @@ beat, or removes a last entry; logged.
 | Case | What happens |
 |---|---|
 | **No cure: the Unsigned last day** | When an After-weeks wipe is under Warn hours away with no cure, `IsLastDay()` is true (`IsEpilogue()` isn't: the cure can still come). The record is built without a route, its beats show, and chalk tallies stand 150 m up from each barrier. No closing work, no outlets, no Walk Out. The hall: *"Nobody won."* A cure that day rebuilds the record with a route |
+| **No stand in the last hours** | **Season > No stand in the last hours** (off), for fixed restart days: with a timed wipe closer than **Minimum epilogue hours** and no cure yet, the final stand doesn't start (*"The director won't start the synthesis this late."*), so the season ends on the Unsigned last day instead of the wipe being pushed back |
 | **A late cure** | A cure under **Season > Minimum epilogue hours** (56) before an After-weeks wipe pushes the wipe back to the cure plus the minimum, and says so (also in *whichever comes first*) |
 | **A restart mid-week** | The record, beats, items, names, entries, outlet stocks, choices and the phase are saved; marks, people and tables come back near players |
 | **Shipping mid-season** | The season counters (a house's dead and rescued this season) start when this ships |
@@ -245,7 +262,9 @@ beat, or removes a last entry; logged.
 `/epilogue` (admins): `status`, `phase A|B|C`, `strike <name or beat>`, `rebuild` (or, before the
 cure, `preview`: the beats it would pick, in the log), `close <item>` (as data now), `lastnotes
 <name>`. Players: `/season`, `/anonymous [off]`, `/lastentry <text>`; the notebook's two actions do the
-first two without typing. Log lines: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check). The runtime
+first two without typing (and the notebook's The season tab). At the wipe, `last_season.json` also keeps
+the Last Broadcast's version (`broadcast`) and the week's 10 strongest beats as plain lines (`beats`).
+Log lines: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check). The runtime
 test's last phase runs the week at Test scale 0.02
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#runtime-test-without-workbench)).
 
@@ -259,8 +278,9 @@ the Long Table's family as text at the queue.
 **The epilogue deck**, the last errands on errands' dealer, is
 [ERRANDS.md](ERRANDS.md#the-epilogue-deck)'s: 13 cards built.
 
-**Planned** ([designs/EPILOGUE.md](../designs/EPILOGUE.md)): the deck's last six cards, route marks, the evening calendar's own set pieces (the supper reading, the 20:30
-watch, second airings), titles from the season's best life, the truth beats and "What you didn't tell
-me", the factions' jobs on the ridges (Cull, the last reading, the bet), Take Back a Town's givers,
-graves for deaths before this shipped, the Long Table's family as bodies, the Walk Out's escorts and
-fallback with no checkpoint, the journal's tab, "No stand in the last hours".
+**Planned** ([designs/EPILOGUE.md](../designs/EPILOGUE.md)): the deck's last six cards, route marks,
+the supper reading as a scene and the codas' standing versions, titles from the season's best life,
+the fuller record, the truth beats and "What you didn't tell me", the factions' jobs on the ridges
+(Cull, the last reading, the bet), Take Back a Town's givers, graves for deaths before this shipped,
+the Long Table's family as bodies, scenes that move and escort, the Walk Out's escorts and fallback
+with no checkpoint, the epilogue's own settings and prop prefabs.

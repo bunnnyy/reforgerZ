@@ -37,6 +37,7 @@ class RZ_CureResearch
 	bool m_bCured;
 
 	protected bool m_bFinalStand;
+	protected bool m_bStandHeldTold;
 	protected float m_fFinalStandLeft;
 	protected float m_fAbandonedFor;
 	protected bool m_bStandReached;		// a player has been at the lab since the stand (re)started
@@ -1064,6 +1065,20 @@ class RZ_CureResearch
 	//------------------------------------------------------------------------------------------------
 	protected void StartFinalStand()
 	{
+		// Season > No stand in the last hours: near a fixed wipe the stand is held back instead of
+		// the wipe being pushed (docs/EPILOGUE.md, Edge cases)
+		if (m_GM.GetSeasons() && m_GM.GetSeasons().HoldsStand())
+		{
+			if (!m_bStandHeldTold)
+			{
+				m_bStandHeldTold = true;
+				m_GM.NotifyAll("Halcyon", "The batch is ready, and the gates open soon either way. The director won't start the synthesis this late.");
+				RZ_Log.Info("Cure: the final stand is held back in the season's last hours (Season > No stand in the last hours).");
+			}
+
+			return;
+		}
+
 		m_bFinalStand = true;
 		// Research has reached 100 once: a lost batch goes back to the lab's normal work, not to the finale
 		m_bGateOpen = true;

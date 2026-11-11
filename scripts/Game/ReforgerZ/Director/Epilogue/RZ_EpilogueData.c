@@ -225,6 +225,15 @@ class RZ_EpilogueSave
 	ref array<string> reelIdents = {};
 	ref array<string> reelLines = {};
 	ref array<int> reelDays = {};
+
+	// The evening calendar (RZ_EpilogueCalendar.c)
+	int supperDay = -1;						// the game day of the last supper reading
+	int watchDay = -1;						// the game day of the last 20:30 watch
+	int watchStrokes;						// strokes on the roster board
+	ref array<string> codaKeys = {};		// codas seen run (major keys) and when
+	ref array<int> codaUnix = {};
+	ref array<string> aired = {};			// second airings done
+	int airedDay = -1;
 }
 
 //------------------------------------------------------------------------------------------------

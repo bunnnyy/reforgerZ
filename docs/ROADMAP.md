@@ -113,10 +113,12 @@ The build-review fixes are done. Everything below is approved. The order of the 
   the cure's finale, the epilogue week, dialogue, errands, the mission style, reputation names,
   disguise and tone) are in [designs/](../designs/README.md). Their build order, from step 0 (now)
   to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
-- Already built for them: phase 7, the epilogue week, simplified ([EPILOGUE.md](EPILOGUE.md); what's left
-  of it is in [designs/EPILOGUE.md](../designs/EPILOGUE.md): the epilogue deck, route marks, the
-  evening's own set pieces, titles from the best life, truth beats, the factions' jobs on the ridges,
-  the Walk Out's escorts; play-test the Walk Out's retirement and a week at Test scale 0.008); phase 6, the cure's finale, simplified ([FINALE.md](FINALE.md); what's left of
+- Already built for them: phase 7, the epilogue week, simplified ([EPILOGUE.md](EPILOGUE.md), with 13
+  cards of the epilogue deck in [ERRANDS.md](ERRANDS.md#the-epilogue-deck), the evening calendar as
+  radio and the notebook's season tab; what's left of it is in [designs/EPILOGUE.md](../designs/EPILOGUE.md):
+  the deck's last six cards, route marks, the supper reading as a scene and the standing versions,
+  titles from the best life, truth beats, the factions' jobs on the ridges, the Walk Out's escorts;
+  play-test the Walk Out's retirement and a week at Test scale 0.008); phase 6, the cure's finale, simplified ([FINALE.md](FINALE.md); what's left of
   it is in [designs/FINALE.md](../designs/FINALE.md): the subjects' branches, the moves, route assets and
   pitches, the rest of each route's ways, the dialogue commit node); phase 5, the four majors, simplified ([QUESTLINES.md](QUESTLINES.md#the-majors);
   with the story rules next season, the stand's inputs, the epilogue lines by controller, the hall's

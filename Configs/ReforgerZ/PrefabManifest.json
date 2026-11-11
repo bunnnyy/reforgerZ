@@ -4799,7 +4799,7 @@
    "category": "ReforgerZ",
    "object": "Season",
    "field": "m_SeasonSettings",
-   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), minimum epilogue (56 h: a late cure pushes an After-weeks wipe back), weeks (10, timed modes only), warning (24 h), **Story rules** (on: one small rule from each major that ended live, [QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
+   "covers": "**Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), minimum epilogue (56 h: a late cure pushes an After-weeks wipe back), weeks (10, timed modes only), warning (24 h), **No stand in the last hours** (off: near a timed wipe the stand is held back, [EPILOGUE.md](EPILOGUE.md#edge-cases)), **Story rules** (on: one small rule from each major that ended live, [QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons))"
   },
   {
    "category": "World",
@@ -5135,6 +5135,7 @@
     "m_iWipeWeeks": "10",
     "m_fWarnHours": "24",
     "m_bStoryRules": "1",
+    "m_bNoStandLastHours": "0",
     "m_bHallOfFame": "1"
    }
   },

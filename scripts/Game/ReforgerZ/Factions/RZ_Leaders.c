@@ -2058,6 +2058,11 @@ class RZ_Leaders
 		if (m_Settings.m_fDangerScale <= 0)
 			return;
 
+		// While the world settles in the epilogue week, a quarter of the rate (docs/EPILOGUE.md)
+		float settle = 1;
+		if (m_GM.GetFacts().HoldingsFrozen())
+			settle = 0.25;
+
 		foreach (RZ_Leader l : m_aList)
 		{
 			if (!l.IsPresent() || l.IsStronghold() || l.m_iHeldBy >= 0)
@@ -2075,8 +2080,8 @@ class RZ_Leaders
 			if (s)
 				infection = s.m_fInfection;
 
-			float bite = (0.01 + infection / 100 * 0.03) * m_Settings.m_fDangerScale;
-			float raid = 0.01 * m_Settings.m_fDangerScale;
+			float bite = (0.01 + infection / 100 * 0.03) * m_Settings.m_fDangerScale * settle;
+			float raid = 0.01 * m_Settings.m_fDangerScale * settle;
 			RZ_Safehouses houses = m_GM.GetSafehouses();
 			if (l.m_eRole == RZ_ELeaderRole.SAFEHOUSE && houses && houses.Get(l.m_iSafehouse) && houses.Get(l.m_iSafehouse).m_bShort)
 				raid = raid * 2;

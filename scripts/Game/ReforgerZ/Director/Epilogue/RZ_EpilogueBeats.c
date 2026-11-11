@@ -607,7 +607,7 @@ class RZ_EpiBeats
 
 		if (b.key == "roster")
 		{
-			string net = "NO REPLY: one stroke for every 20:30 since the cure.";
+			string net = string.Format("NO REPLY: one stroke for every 20:30 since the cure. %1 so far.", s.watchStrokes);
 			if (s.choices[1] == 2)
 				net = net + " NET CLOSED.";
 

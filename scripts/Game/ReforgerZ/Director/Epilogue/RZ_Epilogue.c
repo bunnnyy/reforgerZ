@@ -32,6 +32,7 @@ class RZ_Epilogue
 	protected ref RZ_EpiOutlets m_Outlets;
 	protected ref RZ_EpiSpots m_Spots;
 	protected ref RZ_EpiClosing m_Closing;
+	protected ref RZ_EpiCalendar m_Calendar;
 
 	protected int m_iBuildStep = -1;		// ticks of the build after the cure (-1: none)
 	protected float m_fCheck;
@@ -54,6 +55,7 @@ class RZ_Epilogue
 		m_Outlets = new RZ_EpiOutlets(gm, this);
 		m_Spots = new RZ_EpiSpots(gm, this);
 		m_Closing = new RZ_EpiClosing(gm, this);
+		m_Calendar = new RZ_EpiCalendar(gm, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -678,6 +680,7 @@ class RZ_Epilogue
 		if (!ids.IsEmpty())
 		{
 			m_Closing.Tick(step, ids, players);
+			m_Calendar.Tick();
 			foreach (int playerId : ids)
 			{
 				TellFirst(playerId);
@@ -1063,6 +1066,47 @@ class RZ_Epilogue
 		}
 
 		m_Closing.OnWipe();
+		RecordLines();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! last_season.json keeps the Last Broadcast's version and the week's 10 strongest beats as plain
+	//! lines (for next season's text and the admin; nothing in them changes the rules).
+	protected void RecordLines()
+	{
+		RZ_SeasonRecord rec = RZ_Persistence.LoadSeason();
+		if (!rec || rec.season != m_GM.GetSeasons().GetSeason())
+			return;
+
+		if (m_S.broadcast >= 0)
+			rec.broadcast = RZ_EpiText.BroadcastName(m_S.broadcast);
+
+		array<RZ_EpiBeat> order = {};
+		foreach (RZ_EpiBeat b : m_S.beats)
+		{
+			if (!b.dropped)
+				order.Insert(b);
+		}
+
+		rec.beats.Clear();
+		while (rec.beats.Count() < 10 && !order.IsEmpty())
+		{
+			int best = 0;
+			for (int i = 1; i < order.Count(); i++)
+			{
+				if (order[i].weight > order[best].weight)
+					best = i;
+			}
+
+			string line = m_Beats.Text(order[best]);
+			if (!line.IsEmpty())
+				rec.beats.Insert(line);
+
+			order.Remove(best);
+		}
+
+		RZ_Persistence.SaveSeason(rec);
+		RZ_Log.Info(string.Format("Epilogue: last_season.json keeps %1 beats and the broadcast (%2).", rec.beats.Count(), rec.broadcast));
 	}
 
 	//------------------------------------------------------------------------------------------------
