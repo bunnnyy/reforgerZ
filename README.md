@@ -27,8 +27,9 @@ and one way to end it: **research the cure.**
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
-- **178 missions**: faction contracts, world events, puzzle missions, unarmed stealth jobs,
-  missions at the quarantine line, morally grey Haven work and leaders' off-book jobs. Contracts
+- **181 missions**: faction contracts (a few about what a faction would rather not say), world
+  events, puzzle missions, unarmed stealth jobs, missions at the quarantine line, morally grey
+  Haven work and leaders' off-book jobs. Contracts
   name a rough area until you're close, unless you're a Radio Operator or trusted by the giver.
 - **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
   sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself after
