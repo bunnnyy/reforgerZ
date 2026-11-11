@@ -43,6 +43,7 @@ fi
 
 rm -rf "$ADDON" "$PROFILE/profile/ReforgerZ" && mkdir -p "$ADDON"
 cp "$ROOT/addon.gproj" "$ADDON/"
+sed -i 's/ *"69BD721866937F85"//' "$ADDON/addon.gproj"	# Special Zombies' "Scripts/" hides ours on Linux (see compile_check.sh)
 cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
 cp -r "$HERE/files/." "$ADDON/"
 "$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
