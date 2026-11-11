@@ -184,6 +184,15 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 	override void OnStageBegin(RZ_GameModeComponent gm, RZ_QuestRun run, int stage)
 	{
 		CheckNurse(gm, run);
+		RZ_Safehouse nurseHouse = RZ_HavenQuest.LiveHouse(gm, run.Flag("nursehouse", -1));
+		RZ_Safehouse walkHouse = RZ_HavenQuest.LiveHouse(gm, run.Flag("walkhouse", -1));
+		if (stage == S_NUMBERS && gm.HasLab())
+			run.SetPlace(gm.GetLabPosition(), run.Text("lab"));
+		else if ((stage == S_OFFERS || stage == S_LATER) && nurseHouse)
+			run.SetPlace(nurseHouse.m_vPos, nurseHouse.m_sName);
+		else if (walkHouse)
+			run.SetPlace(walkHouse.m_vPos, walkHouse.m_sName);
+
 		if (stage == S_WALK && run.Visits(S_WALK) <= 1)
 		{
 			run.Note("{walker} has walked eleven people out of {walkhouse}. He comes back alone, and doesn't talk about it.");
@@ -427,7 +436,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 			{
 				q.SetWorldFlag("walk.cut_dose", 1);
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 0, 10, RZ_EQuestApproach.SIDE);
-				ChangePopulation(gm, run.Flag("walkhouse", -1), -2);
+				RZ_HavenQuest.TakePeople(gm, run.Flag("walkhouse", -1), 2);
 				NudgeMorale(gm, RZ_EFaction.SURVIVORS, -3);
 				Headline(gm, "Half of them walked out. The Red Hand calls that a good rate.");
 				SpreadRumour(gm, "\"The Red Hand's dose works half the time. The houses owe them for every one of it.\"", 8);

@@ -221,6 +221,23 @@ class RZ_HavenQuest
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! People leave safehouse `house` (taken, lost), at most `count` and never below the upkeep floor
+	//! of two (docs/QUESTLINES.md, "Limits every questline keeps"). Returns how many left.
+	static int TakePeople(RZ_GameModeComponent gm, int house, int count)
+	{
+		RZ_Safehouse h = LiveHouse(gm, house);
+		if (!h)
+			return 0;
+
+		int gone = Math.MinInt(count, h.m_iPopulation - RZ_Safehouses.UPKEEP_FLOOR);
+		if (gone <= 0)
+			return 0;
+
+		RZ_Questline.ChangePopulation(gm, house, -gone);
+		return gone;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The house has gone to the Preacher's prayers (story arc The Quiet Congregation).
 	static bool IsPraying(RZ_GameModeComponent gm, int idx)
 	{

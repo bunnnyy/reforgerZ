@@ -221,6 +221,19 @@ class RZ_Quest_TheList : RZ_Questline
 	override void OnStageBegin(RZ_GameModeComponent gm, RZ_QuestRun run, int stage)
 	{
 		CheckAsker(gm, run);
+		RZ_Settlement farm = gm.GetSettlement(run.Flag("farm", -1));
+		RZ_Leader chair = RZ_HavenQuest.SeatHolder(gm, run.Flag("chair", -1));
+		if (stage == S_FARM && farm && run.Flag("half_truth") != 1)
+			run.SetPlace(farm.m_vCenter, farm.m_sName);
+		else if (stage == S_CHAIR && chair)
+			run.SetPlace(chair.m_vPos, chair.m_sPlace);
+		else if (stage != S_FARM)
+		{
+			RZ_Safehouse home = RZ_HavenQuest.LiveHouse(gm, run.Flag("house", -1));
+			if (home)
+				run.SetPlace(home.m_vPos, home.m_sName);
+		}
+
 		if (stage == S_HUSBAND && run.Visits(S_HUSBAND) <= 1)
 		{
 			if (run.Flag("from_contract") == 1)

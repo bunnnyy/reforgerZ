@@ -156,6 +156,13 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 	override void OnStageBegin(RZ_GameModeComponent gm, RZ_QuestRun run, int stage)
 	{
 		CheckBoss(gm, run);
+		RZ_Settlement barn = gm.GetSettlement(run.Flag("barn", -1));
+		RZ_Safehouse home = RZ_HavenQuest.LiveHouse(gm, run.Flag("house", -1));
+		if (stage == S_GRID && barn)
+			run.SetPlace(barn.m_vCenter, barn.m_sName);
+		else if (home)
+			run.SetPlace(home.m_vPos, home.m_sName);
+
 		if (stage == S_ENVELOPE)
 		{
 			if (run.Flag("side") == 1)
@@ -352,8 +359,10 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 		{
 			// Nobody stopped them: they took what they came for
 			run.SetFlag("path", PATH_PAID);
-			RZ_Questline.ChangePopulation(gm, run.Flag("house", -1), -2);
-			run.Note("Nobody stood at the gate. The crew took two people from {house} as the price, and left.");
+			if (RZ_HavenQuest.TakePeople(gm, run.Flag("house", -1), 2) > 0)
+				run.Note("Nobody stood at the gate. The crew took people from {house} as the price, and left.");
+			else
+				run.Note("Nobody stood at the gate. The crew took what food {house} had left, as the price.");
 		}
 
 		return S_TALK;
