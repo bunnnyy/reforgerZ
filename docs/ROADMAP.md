@@ -70,7 +70,8 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
   inventory or in your hands. It replaces K, J, U and O, which clash with vanilla keys. Being
   designed ([UI.md](UI.md#opening-the-screens)).
 - **Notice pacing:** notice cards arrive a few at a time, by importance, instead of all at once at
-  spawn. There's no separate notification log; the Radio tab keeps the radio messages. Being designed.
+  spawn. There's no separate notification log: the Radio tab keeps the radio messages and also
+  lists mission and world-event notices, each a filter of its own. Being designed.
 - **Controllers:** check the whole mod with a gamepad and fix what doesn't work
   ([UI.md](UI.md#controllers)). Planned.
 - **Talking to people:** F, then **Talk**, opens a dialogue screen: what they say, and your replies
