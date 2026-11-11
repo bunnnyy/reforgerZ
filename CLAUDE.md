@@ -29,6 +29,14 @@ behaviour, design, content or setup is complete until the docs match it.**
 3. **One source of truth per topic.** Don't explain the same thing in two docs.
    Link to the doc that owns the topic instead.
 
+### Designs (`designs/`)
+Approved designs that aren't built yet live in `designs/` (index and build steps: `designs/README.md`,
+order of work: `designs/PLAN.md`). They are not docs:
+- A design file says "designed, not built" and never describes built behaviour.
+- When a design (or part of one) is built, its content moves into the `docs/` file that owns the topic
+  (Doc map below) or a new doc, and the design file is trimmed or deleted, **in the same commit as the code**.
+- `docs/` may link to a design for what's planned, but never restates it.
+
 ### You may (and should) restructure docs
 - **Add** a doc when a topic outgrows its section.
 - **Merge** docs that overlap or are too small to stand alone.
@@ -41,13 +49,15 @@ When you restructure, update the **Doc map** below and the README's doc list in 
 ### Before committing, check
 - [ ] Every doc statement you touched matches the code. Docs say "planned" for anything not built.
 - [ ] No doc mentions a dropped idea except the roadmap's "Dropped" list.
-- [ ] No broken relative links (`grep -o '([^)]*\.md)' -r README.md docs/`).
+- [ ] No broken relative links (`grep -o '([^)]*\.md)' -r README.md docs/ designs/`).
 - [ ] The Doc map below lists exactly the files in `docs/`.
 - [ ] `VERIFY` count and prefab list in `docs/WORKBENCH_SETUP.md` are current.
 - [ ] `docs/PC_SETUP.md` still matches the tools, scripts and setup steps you touched.
 - [ ] Everything you added works with a gamepad (`docs/UI.md`, "Controllers").
 
 ## Doc map
+
+The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` (see above).
 
 | File | Owns |
 |---|---|
