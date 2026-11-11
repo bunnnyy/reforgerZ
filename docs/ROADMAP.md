@@ -73,6 +73,11 @@ It still needs prefabs, the behavioural `VERIFY` checks and a real play-test bef
   night); town crawlers drawn from each town's infection. The land grid they need is built and
   measured ([DESIGN.md](DESIGN.md#the-land-grid)). Next: the crawlers, the land grid in use and the
   plumbing (runtime groups, one held waypoint per group, a silent kill), with their own doc.
+- Before the tribes' code, `tools/tribe_sim.py` simulates them as data over a season on the
+  45-day pacing (`--legacy` for the old one) on Arland, Everon and a Chernarus-size map at 2, 5 and
+  10 players: tribe counts, clans, hunger, growth, first-night losses, and fights per km walked
+  by day and by night. It prints the numbers it tuned against the design, with the reason for
+  each. Run it again with the wild land the land survey measures (`--wild everon=31`).
 
 ### Content on the world facts
 - Switch the rest of the content to the world facts ([DESIGN.md](DESIGN.md#world-facts), the
