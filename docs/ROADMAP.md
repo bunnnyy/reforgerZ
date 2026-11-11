@@ -178,8 +178,9 @@ In this order, because later ones depend on earlier ones:
    the same address: the world had no perception manager, which every AI needs. The world now has
    it, with the radio manager, the chat and the item preview manager that vanilla's game-mode
    worlds also place. Play again and read the log ([PC_SETUP.md](PC_SETUP.md#logs)): do the
-   infected, AI groups and supply trucks spawn, and does it crash again? No road crosses the line
-   on Arland, so it has no road checkpoints; road posts inside the Zone use the same road network.
+   infected, AI groups and supply trucks spawn, and does it crash again? Arland has no road
+   checkpoints (no road crosses its line, and its shore roads all branch off roads that go on);
+   road posts inside the Zone use the same road network.
 2. **With a game client.** It has only run in Workbench play so far. Check the `VERIFY`
    behaviours, riskiest first ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list));
    several only show on a dedicated server. Host it on Windows, or on Linux without Special

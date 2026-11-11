@@ -240,7 +240,8 @@ houses until the loot pool is filled), fixable cars, crafting and traps, and the
 **The repo's worlds.** The main world is **Everon**: `Worlds/RZ_Everon/RZ_Everon.ent`
 (`{4A535A0DE93773EA}`), a sub-scene of Eden, played by `Missions/RZ_Everon.conf`
 (`{933D8C91F1C91F38}`). It boots on the dedicated server with no script exceptions, 96 settlements,
-14 holdings and no road checkpoints (being looked into). **Arland** stays as the small test world:
+14 holdings and, in the cloud's boot of Eden (2026-11-12), 6 road checkpoints, all at roads that end
+at the shore ([The Perimeter](DESIGN.md#the-perimeter)). **Arland** stays as the small test world:
 `Worlds/RZ_Arland/RZ_Arland.ent`, a sub-scene of Arland. Each holds eight entities: three repo
 prefabs and five vanilla ones.
 
@@ -1785,7 +1786,10 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] World facts: season seed S, 0 canon facts, 0 season flags.
 [ReforgerZ] Settlement scan: 2 named, 12 building clusters, took 83 ms.
 [ReforgerZ] Perimeter: x 70 to 3913, z 488 to 3788. Warning zone 300 m, kill zone 100 m.
-[ReforgerZ] No checkpoint barricade prefab set: road checkpoints are off.
+[ReforgerZ] Perimeter checkpoints: 4 roads come within 350 m of the edge; 0 crossings of the checkpoint line (60 m inside the edge): 0 used, 0 closer than 800 m to another.
+[ReforgerZ] Perimeter checkpoints: 148 roads, 10 road ends with the sea within 40 m past them: 0 usable, 7 at a junction, 0 with the barrier in the sea or outside the line, 3 with another road within 75 m of the barrier.
+[ReforgerZ] Perimeter checkpoints: 0 usable road ends at the shore: 0 used, 0 closer than 800 m to another, 0 not needed (at most 6 on a map).
+[ReforgerZ] No checkpoint barricade prefab set: road checkpoints are off (the roads give 0 spots).
 [ReforgerZ] Power grid: the factory outside Beauregard at grid 31-27 (picked), 14 towns in its region, dark, locked up.
 [ReforgerZ] Radio station: the radio mast near Beauregard at grid 31-27 (picked).
 [ReforgerZ] Haven safehouses: 2 (picked).
@@ -1897,12 +1901,13 @@ after the nearest local place label (North Head, Angler Bluff, Sandbank, Heath P
 by grid reference (`Outskirts 13-29`).
 
 With the repo's world and prefabs (Workbench Play), the zombie, lab and barricade warnings are
-gone and these lines change (no road crosses the line on Arland, an island, so it has no road
-checkpoints):
+gone and these lines change (on Arland, an island, no road crosses the line and its few shore
+roads all branch off roads that go on, so it has no road checkpoints):
 
 ```
 [ReforgerZ] Stealth: on. ... searching 45 s: on.
 [ReforgerZ] Perimeter: 0 road checkpoints (from roads).
+[ReforgerZ] Perimeter: no road checkpoints on this map (the lines above say why). Place RZ_CheckpointMarkerEntity entities on roads to add them.
 [ReforgerZ] Supply trucks: Haven, Bastion, Red Hand, Halcyon.
 [ReforgerZ] Search: 30 items in the loot pool, 0 tables set by hand.
 [ReforgerZ] Locks: on the outside doors; keys are key items.
@@ -1918,7 +1923,12 @@ Warnings worth acting on:
 | `GUI (E): Menu preset 'RZ_NotebookMenu' not found!` (or another `RZ_` preset) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override (`Configs/System/`) wasn't loaded ([the UI](#setting-up-the-ui)). Only the menus are missing |
 | `No common zombie prefabs configured. ...` | Set Zombies > Common prefabs (logged as an error: no infected spawn) |
 | `Using N hand-placed settlement markers.` | Detection is off because markers are placed |
-| `No checkpoint barricade prefab set: road checkpoints are off.` | Set Perimeter > Barricade prefab |
+| `No checkpoint barricade prefab set: road checkpoints are off (the roads give N spots).` | Set Perimeter > Barricade prefab; N is how many checkpoints it would build |
+| `Perimeter checkpoints: N roads come within 350 m of the edge; M crossings of the checkpoint line ...` | Roads that cross the line. N = 0 means the edge runs at sea all round (an island): the shore lines below fill in |
+| `Perimeter checkpoints: N roads, M road ends with the sea within 40 m past them: K usable, ...` | Roads that end at the shore, and why the rest were left out: an end at a junction, a barrier in the sea or outside the line, or another road within 75 m of the barrier (it would close that road). Everon: about 7 usable |
+| `Perimeter checkpoint at grid G: a road ends at the shore (road W m wide), N guards.` (or "a road crosses the line", "a placed marker") | One line per checkpoint built. 0 guards: no Perimeter > Guard prefab, or water behind a shore barrier |
+| `Perimeter: the checkpoint barricade prefab didn't spawn at grid G, ...` | The barricade prefab is set but doesn't spawn: check its path |
+| `Perimeter: no road checkpoints on this map (the lines above say why). ...` | The `Perimeter checkpoints:` lines say what was found. Place `RZ_CheckpointMarkerEntity`s on roads, or accept a line without checkpoints (Arland) |
 | `Perimeter shore: N points along the edge with land within 600 m, M of them on a sea edge.` | Printed once, the first time a Perimeter mission is considered. N near 0 means the edge sits too far out to sea for missions at the line: lower **Sea margin** or set the **Override** rectangle |
 | `The Blind Spot: nowhere suitable at the line on this map, so it won't be offered.` (or The Crossing, Shot at the Line) | That mission found no dry spot clear of the checkpoints near the edge, and is off for this map. Same fix |
 | `AI (E): No AIWorld is present in the map.` / `Cannot spawn team members of group ..., AIWorld is missing in the world!` | Engine lines: the world has no AI world, so no AI or infected spawn. Place the map's AI world ([The world](#the-world)) |

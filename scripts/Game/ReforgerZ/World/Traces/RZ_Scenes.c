@@ -338,7 +338,7 @@ class RZ_Scenes
 		if (best != vector.Zero || !perimeter)
 			return best;
 
-		vector p2 = cp + perimeter.InwardAt(cp) * ((minD + maxD) * 0.5);
+		vector p2 = cp + perimeter.CheckpointInward(cp) * ((minD + maxD) * 0.5);
 		if (RZ_Perimeter.IsNearLineAt(p2))
 			return vector.Zero;
 
@@ -925,8 +925,7 @@ class RZ_Scenes
 
 		s.faction = faction;
 		s.b = RZ_WorldFacts.Get().Day();
-		int post = Math.AbsInt(RZ_Util.RoundToInt(pos[0] + pos[2]));
-		s.a = 1 + post % 9;
+		s.a = 1 + RZ_Util.PickIndex(RZ_Util.RoundToInt(pos[0] + pos[2]), 9);
 		s.text = "someone";
 		if (who.StartsWith("someone who"))
 			s.text = who;
@@ -1262,8 +1261,7 @@ class RZ_Scenes
 	{
 		RZ_TraceKit kit = m_Traces.GetKit();
 		vector at = Pos(s);
-		int spin = Math.AbsInt(RZ_Util.RoundToInt(s.x * 7 + s.z * 13));
-		spin = spin % 360;
+		int spin = RZ_Util.PickIndex(RZ_Util.RoundToInt(s.x * 7 + s.z * 13), 360);
 		float yaw = Yaw(s, spin);
 		switch (s.kind)
 		{

@@ -39,13 +39,13 @@ class RZ_PerimeterSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Warning shot: a gunshot sound or bullet impact effect spawned a few metres from the player (optional: a message without it)", "et")]
 	ResourceName m_sWarningShotPrefab;
 
-	[Attribute("1", desc: "Sealed road checkpoints where roads reach the edge")]
+	[Attribute("1", desc: "Sealed road checkpoints where roads cross the edge or, where it runs at sea, end at the shore")]
 	bool m_bCheckpoints;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Checkpoint barricade: a small composition of concrete blocks and a closed barrier. Checkpoints are off without it", "et")]
 	ResourceName m_sBarricadePrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Checkpoint guard: a soldier character without AI, or a prop. Stands outside the playable area and can't be hurt", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Checkpoint guard: a soldier character without AI, or a prop. Stands behind the barrier (outside the playable area, or toward the water at the shore) and can't be hurt", "et")]
 	ResourceName m_sGuardPrefab;
 
 	[Attribute("2", UIWidgets.Slider, "Guards behind each barricade", "0 4 1")]
@@ -107,6 +107,16 @@ class RZ_ShorePoint
 	float m_fLand;		// metres from the edge to the first dry ground: 0 where the edge runs over land
 }
 
+//! A spot for a road checkpoint, while they're being picked.
+class RZ_CheckpointSpot
+{
+	vector m_vPos;		// the barricade, on the road
+	vector m_vInward;	// unit vector back up the road, into the Zone
+	float m_fWidth;		// the road's width (main roads first)
+	bool m_bShore;		// a road that ends at the shore, not one that crosses the line
+	string m_sWhy;		// for the log
+}
+
 //! The Perimeter: the unseen cordon at the edge of the playable world, on any map.
 //! Nothing is built along it except the sealed road checkpoints.
 //!
@@ -116,9 +126,10 @@ class RZ_ShorePoint
 //! - Warning zone: one drone over the player (attached to them, so it follows without
 //!   polling) and the loudspeaker. The drone goes when they leave.
 //! - Kill zone: a warning shot, then after a grace period, a fatal one.
-//! - Road checkpoints: a barricade where a road reaches the edge, guards outside the
-//!   playable area. Found from the road network or RZ_CheckpointMarkerEntity. Spawned
-//!   once at start. Loudspeaker near them, lethal close to them.
+//! - Road checkpoints: a barricade where a road crosses the edge (guards outside the
+//!   playable area) or, where the edge runs at sea, where a road ends at the shore (guards
+//!   between the barrier and the water). Found from the road network or
+//!   RZ_CheckpointMarkerEntity. Spawned once at start. Loudspeaker near them, lethal close to them.
 //! - Blind spots: a stretch where nothing happens for a while (The Blind Spot mission).
 //! - After the cure (RZ_WorldFacts.IsCured) the line stands down: the drones go home, nobody
 //!   shoots, and the loudspeakers read the new order. The barriers stay closed: the gates open
@@ -141,6 +152,7 @@ class RZ_Perimeter
 	protected ref map<int, ref RZ_PerimeterContact> m_mContacts = new map<int, ref RZ_PerimeterContact>();
 	protected ref map<int, float> m_mLastWarned = new map<int, float>();
 	protected ref array<vector> m_aCheckpoints = {};
+	protected ref array<vector> m_aCheckpointInward = {};	// back up each checkpoint's road
 	protected ref array<IEntity> m_aCheckpointProps = {};
 	protected ref array<ref RZ_BlindSpot> m_aBlindSpots = {};
 	protected int m_iNextBlindSpot = 1;
@@ -158,6 +170,12 @@ class RZ_Perimeter
 	protected static const float GUARD_DEPTH = 20;		// guards stand this far outside the edge
 	protected static const float MIN_SIZE = 1000;
 	protected static const int MAX_CHECKPOINTS = 8;
+	protected static const float SHORE_REACH = 40;		// a road "ends at the shore" if the sea starts this close past its end
+	protected static const float SHORE_REACH_STEP = 5;
+	protected static const float SHORE_SETBACK = 20;	// a shore checkpoint's barricade stands this far back up the road
+	protected static const float SHORE_GUARD_DEPTH = 8;	// and its guards this far past it, toward the water
+	protected static const float ROAD_JOIN = 15;		// another road this close to a road's end: a junction, not a dead end
+	protected static const float THROUGH_CLEAR = 15;	// keep other roads this far outside a shore checkpoint's lethal radius
 	protected static const float SHORE_SPACING = 100;	// metres between shore points along the edge
 	protected static const int MAX_SHORE_POINTS = 400;	// spacing grows on big maps to stay under this
 	protected static const float SHORE_WALK = 600;		// how far in (m) to look for land; further in, the point is left out
@@ -539,6 +557,26 @@ class RZ_Perimeter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Unit vector back up the road, into the Zone, from the checkpoint nearest pos (InwardAt without
+	//! checkpoints). Use it to walk away from a barrier: a shore checkpoint faces the sea, not the edge.
+	vector CheckpointInward(vector pos)
+	{
+		float best = float.MAX;
+		vector dir = InwardAt(pos);
+		foreach (int i, vector cp : m_aCheckpoints)
+		{
+			float d = RZ_Util.DistXZ(pos, cp);
+			if (d < best && i < m_aCheckpointInward.Count())
+			{
+				best = d;
+				dir = m_aCheckpointInward[i];
+			}
+		}
+
+		return dir;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The sealed road checkpoints (the map's icon layer shows them).
 	void GetCheckpoints(notnull array<vector> result)
 	{
@@ -722,7 +760,7 @@ class RZ_Perimeter
 		vector checkpoint;
 		if (GetCheckpointDistance(pos) < m_Settings.m_fCheckpointKillRadius && GetNearestCheckpoint(pos, checkpoint))
 		{
-			back = checkpoint + InwardAt(checkpoint) * (m_Settings.m_fCheckpointKillRadius + TURN_BACK_MARGIN);
+			back = checkpoint + CheckpointInward(checkpoint) * (m_Settings.m_fCheckpointKillRadius + TURN_BACK_MARGIN);
 			text = "\"Back behind the barrier. You will be called for processing.\" Nobody raises a rifle, and nobody lets you closer either. You walk back up the road.";
 		}
 		else
@@ -908,26 +946,30 @@ class RZ_Perimeter
 
 	// ================================================================ Checkpoints
 	//------------------------------------------------------------------------------------------------
-	//! Placed markers win; otherwise roads that reach the edge. Spawned once, never moved.
+	//! Placed markers win; otherwise roads that cross the checkpoint line, then roads that end at
+	//! the shore (quays and slipways: where the line runs at sea, as on an island, these are the
+	//! only ways out). Spawned once, never moved. Each step logs what it found and why spots were
+	//! left out (docs/WORKBENCH_SETUP.md, "Log lines").
 	protected void SetupCheckpoints()
 	{
 		if (!m_Settings.m_bCheckpoints)
-			return;
-
-		if (m_Settings.m_sBarricadePrefab.IsEmpty())
 		{
-			RZ_Log.Info("No checkpoint barricade prefab set: road checkpoints are off.");
+			RZ_Log.Info("Perimeter: road checkpoints are turned off on the game mode.");
 			return;
 		}
 
-		array<vector> spots = {};
+		array<ref RZ_CheckpointSpot> spots = {};
 		string source = "markers";
 		array<RZ_CheckpointMarkerEntity> markers = RZ_CheckpointMarkerEntity.GetAll();
 		if (!markers.IsEmpty())
 		{
 			foreach (RZ_CheckpointMarkerEntity marker : markers)
 			{
-				spots.Insert(marker.GetOrigin());
+				RZ_CheckpointSpot placed = new RZ_CheckpointSpot();
+				placed.m_vPos = marker.GetOrigin();
+				placed.m_vInward = InwardAt(placed.m_vPos);
+				placed.m_sWhy = "a placed marker";
+				spots.Insert(placed);
 			}
 		}
 		else
@@ -936,22 +978,43 @@ class RZ_Perimeter
 			FindRoadExits(spots);
 		}
 
-		int cap = Math.Min(m_Settings.m_iMaxCheckpoints, MAX_CHECKPOINTS);
-		foreach (vector spot : spots)
+		if (m_Settings.m_sBarricadePrefab.IsEmpty())
+		{
+			RZ_Log.Info(string.Format("No checkpoint barricade prefab set: road checkpoints are off (the %1 give %2 spots).", source, spots.Count()));
+			return;
+		}
+
+		int cap = CheckpointCap();
+		int over = 0;
+		foreach (RZ_CheckpointSpot spot : spots)
 		{
 			if (m_aCheckpoints.Count() >= cap)
-				break;
+			{
+				over++;
+				continue;
+			}
 
 			BuildCheckpoint(spot);
 		}
 
 		RZ_Log.Info(string.Format("Perimeter: %1 road checkpoints (from %2).", m_aCheckpoints.Count(), source));
+		if (over > 0)
+			RZ_Log.Info(string.Format("Perimeter checkpoints: %1 more markers left out (at most %2 on a map).", over, cap));
+
+		if (m_aCheckpoints.IsEmpty())
+			RZ_Log.Warn("Perimeter: no road checkpoints on this map (the lines above say why). Place RZ_CheckpointMarkerEntity entities on roads to add them.");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Where roads cross the checkpoint line (m_fCheckpointInset inside the edge), widest
-	//! roads first, spaced apart. Empty if the map has no road network.
-	protected void FindRoadExits(notnull array<vector> result)
+	protected int CheckpointCap()
+	{
+		return Math.Clamp(m_Settings.m_iMaxCheckpoints, 0, MAX_CHECKPOINTS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spots, best first: roads that cross the checkpoint line, then (if there's room) roads
+	//! that end at the shore; the widest roads first, spaced apart. Empty without a road network.
+	protected void FindRoadExits(notnull array<ref RZ_CheckpointSpot> result)
 	{
 		RoadNetworkManager roads = GetRoadNetwork();
 		if (!roads)
@@ -960,11 +1023,35 @@ class RZ_Perimeter
 			return;
 		}
 
-		array<vector> crossings = {};
-		array<float> widths = {};
+		int cap = CheckpointCap();
+		array<ref RZ_CheckpointSpot> crossings = {};
+		int nearRoads = FindLineCrossings(roads, crossings);
+		int found = crossings.Count();
+		int crowded = PickSpaced(crossings, result, cap);
+		RZ_Log.Info(string.Format("Perimeter checkpoints: %1 roads come within %2 m of the edge; %3 crossings of the checkpoint line (%4 m inside the edge): %5 used, %6 closer than %7 m to another.",
+			nearRoads, RZ_Util.RoundToInt(m_fWarn + 50), found, RZ_Util.RoundToInt(m_Settings.m_fCheckpointInset), result.Count(), crowded,
+			RZ_Util.RoundToInt(m_Settings.m_fCheckpointSpacing)));
+
+		if (result.Count() >= cap)
+			return;
+
+		array<ref RZ_CheckpointSpot> shore = {};
+		FindShoreEnds(roads, shore);
+		int before = result.Count();
+		found = shore.Count();
+		crowded = PickSpaced(shore, result, cap);
+		RZ_Log.Info(string.Format("Perimeter checkpoints: %1 usable road ends at the shore: %2 used, %3 closer than %4 m to another, %5 not needed (at most %6 on a map).",
+			found, result.Count() - before, crowded, RZ_Util.RoundToInt(m_Settings.m_fCheckpointSpacing), shore.Count(), cap));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where roads cross the checkpoint line (m_fCheckpointInset inside the edge). Returns how many
+	//! roads come near the edge at all (0 where the edge runs at sea all round).
+	protected int FindLineCrossings(RoadNetworkManager roads, notnull array<ref RZ_CheckpointSpot> crossings)
+	{
 		float inset = m_Settings.m_fCheckpointInset;
 		float band = m_fWarn + 50;
-
+		int nearRoads = 0;
 		for (int side = 0; side < 4; side++)
 		{
 			vector stripMin, stripMax;
@@ -977,6 +1064,7 @@ class RZ_Perimeter
 				if (!road)
 					continue;
 
+				nearRoads++;
 				array<vector> points = {};
 				road.GetPoints(points);
 				float width = road.GetWidth(); // main roads are wider
@@ -990,35 +1078,186 @@ class RZ_Perimeter
 
 					float t = d0 / (d0 - d1);
 					vector crossing = points[k - 1] + (points[k] - points[k - 1]) * t;
-					crossings.Insert(RZ_Util.GroundPos(crossing));
-					widths.Insert(width);
+					RZ_CheckpointSpot spot = new RZ_CheckpointSpot();
+					spot.m_vPos = RZ_Util.GroundPos(crossing);
+					spot.m_vInward = InwardAt(crossing);
+					spot.m_fWidth = width;
+					spot.m_sWhy = "a road crosses the line";
+					crossings.Insert(spot);
 				}
 			}
 		}
 
-		while (!crossings.IsEmpty() && result.Count() < MAX_CHECKPOINTS)
+		return nearRoads;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Roads that end at the shore: a dead end with the sea within SHORE_REACH past it (a quay, a
+	//! slipway, a beach road). The barricade stands SHORE_SETBACK back up the road, facing the sea.
+	//! Left out: an end at a junction, a barricade in the sea or outside the line, and one with
+	//! another road inside its lethal radius (it would close that road too).
+	protected void FindShoreEnds(RoadNetworkManager roads, notnull array<ref RZ_CheckpointSpot> shore)
+	{
+		array<BaseRoad> all = {};
+		roads.GetRoadsInAABB(Vector(m_fMinX, -1000, m_fMinZ), Vector(m_fMaxX, 10000, m_fMaxZ), all);
+		float clear = m_Settings.m_fCheckpointKillRadius + THROUGH_CLEAR;
+		int atShore = 0;
+		int joined = 0;
+		int wet = 0;
+		int through = 0;
+		foreach (BaseRoad road : all)
+		{
+			if (!road)
+				continue;
+
+			array<vector> points = {};
+			road.GetPoints(points);
+			int n = points.Count();
+			if (n < 2)
+				continue;
+
+			for (int e = 0; e < 2; e++)
+			{
+				int tipIdx = 0;
+				int step = 1;
+				if (e == 1)
+				{
+					tipIdx = n - 1;
+					step = -1;
+				}
+
+				vector tip = points[tipIdx];
+				int back = tipIdx + step;
+				while (back > 0 && back < n - 1 && RZ_Util.DistXZ(points[back], tip) < SHORE_SETBACK)
+				{
+					back += step;
+				}
+
+				vector inward = points[back] - tip;
+				inward[1] = 0;
+				if (inward.Length() < 1)
+					continue;
+
+				inward.Normalize();
+				if (!SeaPast(tip, inward * -1))
+					continue;
+
+				atShore++;
+				if (OtherRoadWithin(roads, road, tip, ROAD_JOIN))
+				{
+					joined++;
+					continue;
+				}
+
+				vector ground = RZ_Util.GroundPos(points[back]);
+				if (RZ_Util.IsWater(ground) || EdgeDistance(ground) <= m_fKill)
+				{
+					wet++;
+					continue;
+				}
+
+				if (OtherRoadWithin(roads, road, ground, clear))
+				{
+					through++;
+					continue;
+				}
+
+				// The query can list a road twice
+				bool twice = false;
+				foreach (RZ_CheckpointSpot had : shore)
+				{
+					if (RZ_Util.DistXZ(had.m_vPos, ground) < 1)
+						twice = true;
+				}
+
+				if (twice)
+					continue;
+
+				RZ_CheckpointSpot spot = new RZ_CheckpointSpot();
+				spot.m_vPos = ground;
+				spot.m_vInward = inward;
+				spot.m_fWidth = road.GetWidth();
+				spot.m_bShore = true;
+				spot.m_sWhy = "a road ends at the shore";
+				shore.Insert(spot);
+			}
+		}
+
+		RZ_Log.Info(string.Format("Perimeter checkpoints: %1 roads, %2 road ends with the sea within %3 m past them: %4 usable, %5 at a junction, %6 with the barrier in the sea or outside the line, %7 with another road within %8 m of the barrier.",
+			all.Count(), atShore, RZ_Util.RoundToInt(SHORE_REACH), shore.Count(), joined, wet, through, RZ_Util.RoundToInt(clear)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True if the sea starts within SHORE_REACH of `tip`, looking along `outward`.
+	protected bool SeaPast(vector tip, vector outward)
+	{
+		for (float d = 0; d <= SHORE_REACH; d += SHORE_REACH_STEP)
+		{
+			if (RZ_Util.IsWater(RZ_Util.GroundPos(tip + outward * d)))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True if a road other than `self` passes within `radius` of pos.
+	protected static bool OtherRoadWithin(RoadNetworkManager roads, BaseRoad self, vector pos, float radius)
+	{
+		array<BaseRoad> found = {};
+		roads.GetRoadsInAABB(Vector(pos[0] - radius, -1000, pos[2] - radius), Vector(pos[0] + radius, 10000, pos[2] + radius), found);
+		foreach (BaseRoad other : found)
+		{
+			if (!other || other == self)
+				continue;
+
+			array<vector> points = {};
+			other.GetPoints(points);
+			if (points.Count() == 1 && RZ_Util.DistXZ(points[0], pos) < radius)
+				return true;
+
+			for (int k = 1; k < points.Count(); k++)
+			{
+				if (RZ_Util.DistToSegmentXZ(pos, points[k - 1], points[k]) < radius)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Moves the widest candidates into result while it has room, skipping any closer than the
+	//! spacing to one already there. Returns how many were skipped for spacing.
+	protected int PickSpaced(notnull array<ref RZ_CheckpointSpot> candidates, notnull array<ref RZ_CheckpointSpot> result, int cap)
+	{
+		int crowded = 0;
+		while (!candidates.IsEmpty() && result.Count() < cap)
 		{
 			int best = 0;
-			foreach (int j, float w : widths)
+			foreach (int j, RZ_CheckpointSpot c : candidates)
 			{
-				if (w > widths[best])
+				if (c.m_fWidth > candidates[best].m_fWidth)
 					best = j;
 			}
 
-			vector candidate = crossings[best];
-			crossings.Remove(best);
-			widths.Remove(best);
-
+			RZ_CheckpointSpot candidate = candidates[best];
 			bool tooClose = false;
-			foreach (vector taken : result)
+			foreach (RZ_CheckpointSpot taken : result)
 			{
-				if (RZ_Util.DistXZ(taken, candidate) < m_Settings.m_fCheckpointSpacing)
+				if (RZ_Util.DistXZ(taken.m_vPos, candidate.m_vPos) < m_Settings.m_fCheckpointSpacing)
 					tooClose = true;
 			}
 
-			if (!tooClose)
+			if (tooClose)
+				crowded++;
+			else
 				result.Insert(candidate);
+
+			candidates.Remove(best);
 		}
+
+		return crowded;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1055,33 +1294,50 @@ class RZ_Perimeter
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Barricade on the road facing the edge; guards behind it, outside the playable area.
-	protected void BuildCheckpoint(vector spot)
+	//! Barricade on the road facing out; guards behind it: outside the playable area for a road that
+	//! crosses the line, between the barrier and the water for one that ends at the shore.
+	protected void BuildCheckpoint(RZ_CheckpointSpot spot)
 	{
-		vector inward = InwardAt(spot);
+		vector inward = spot.m_vInward;
 		vector outward = inward * -1;
-		float yaw = RZ_Compass.Bearing(spot, spot + outward * 10);
-		IEntity barricade = RZ_Util.SpawnPrefab(m_Settings.m_sBarricadePrefab, RZ_Util.GroundPos(spot), yaw);
+		float yaw = RZ_Compass.Bearing(spot.m_vPos, spot.m_vPos + outward * 10);
+		IEntity barricade = RZ_Util.SpawnPrefab(m_Settings.m_sBarricadePrefab, RZ_Util.GroundPos(spot.m_vPos), yaw);
 		if (!barricade)
+		{
+			RZ_Log.Warn(string.Format("Perimeter: the checkpoint barricade prefab didn't spawn at grid %1, so there's no checkpoint there.",
+				RZ_SettlementScanner.GridReference(spot.m_vPos)));
 			return;
+		}
 
 		m_aCheckpointProps.Insert(barricade);
-		m_aCheckpoints.Insert(spot);
+		m_aCheckpoints.Insert(spot.m_vPos);
+		m_aCheckpointInward.Insert(inward);
 
-		vector edge = spot - inward * EdgeDistance(spot);
+		vector behind = spot.m_vPos + outward * SHORE_GUARD_DEPTH;
+		if (!spot.m_bShore)
+			behind = spot.m_vPos - inward * EdgeDistance(spot.m_vPos) + outward * GUARD_DEPTH;
+
 		vector across = Vector(inward[2], 0, -inward[0]);
 		int guards = Math.Clamp(m_Settings.m_iGuardsPerCheckpoint, 0, 4);
+		int stood = 0;
 		for (int g = 0; g < guards; g++)
 		{
 			float lateral = (g - (guards - 1) * 0.5) * 4;
-			vector guardPos = RZ_Util.GroundPos(edge + outward * GUARD_DEPTH + across * lateral);
+			vector guardPos = RZ_Util.GroundPos(behind + across * lateral);
+			if (spot.m_bShore && RZ_Util.IsWater(guardPos))
+				continue;
+
 			IEntity guard = RZ_Util.SpawnPrefab(m_Settings.m_sGuardPrefab, guardPos, yaw + 180);
 			if (!guard)
 				continue;
 
 			MakeUntouchable(guard);
 			m_aCheckpointProps.Insert(guard);
+			stood++;
 		}
+
+		RZ_Log.Info(string.Format("Perimeter checkpoint at grid %1: %2 (road %3 m wide), %4 guards.",
+			RZ_SettlementScanner.GridReference(spot.m_vPos), spot.m_sWhy, RZ_Util.RoundToInt(spot.m_fWidth), stood));
 	}
 
 	//------------------------------------------------------------------------------------------------
