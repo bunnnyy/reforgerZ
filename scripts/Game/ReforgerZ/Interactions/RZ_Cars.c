@@ -2,12 +2,13 @@
 //! fixable car per town and a small server-wide cap (about one per three settlements); every
 //! other wreck is just a wreck you can search, strip for one part or siphon.
 //!
-//! A fixable car is data until it runs: which car it is, where it stands, what it's missing (one
-//! or two of fuel, battery, tyre, spark plugs), whether its keys are in a house in that town and
-//! whether someone hotwired it. Near players it stands as that car, parked and locked (vanilla's
-//! lock component, so nobody can get in), with the interaction spot just in front of its grille: inspect it
-//! ("Needs: fuel, battery"), fit parts, fuel it, hotwire it (about 20 s, 5 s for a Mechanic, a
-//! little noise) and start it. On the first start the parked copy is swapped for the drivable
+//! A fixable car is data until it runs: which car it is, where it stands, what it's missing (two
+//! or three of fuel, battery, tyre, spark plugs by default), whether its keys are in a house in
+//! that town (rare) and whether someone hotwired it. Near players it stands as that car, parked and
+//! locked (vanilla's lock component, so nobody can get in), with the interaction spot just in front
+//! of its grille: inspect it ("Needs: fuel, a battery, a tyre"), fit parts (with a wrench or a
+//! toolkit), fuel it, hotwire it (about 45 s, 15 s for a Mechanic, loud, and it can fail) and
+//! start it. On the first start the parked copy is swapped for the drivable
 //! car, and from then on it's an ordinary vehicle: vanilla repair handles damage, vanilla
 //! persistence (if the server runs it) saves it. A new project turns up somewhere else a few
 //! hours later. Wrecks are only ever wrecks: they're never fixable.
@@ -76,22 +77,37 @@ class RZ_CarSettings
 	[Attribute("wreck,carwreck,car_wreck,burntcar,burnt_car,car_burnt", desc: "Wreck keywords (search the boot, strip a part, siphon)")]
 	string m_sWreckWords;
 
-	[Attribute("20", desc: "Seconds to hotwire")]
+	[Attribute("2", desc: "Fewest parts a new fixable car is missing (1 to 4: fuel, battery, tyre, spark plugs)")]
+	int m_iMinParts;
+
+	[Attribute("3", desc: "Most parts a new fixable car is missing (at least Min parts, at most 4)")]
+	int m_iMaxParts;
+
+	[Attribute("wrench,spanner,toolkit,tool_kit,toolbox,tool_box,repairkit,repair_kit", desc: "Tool keywords: one of these must be carried to fit a battery, tyre or spark plugs (kept, not used up; fuel needs none). Empty = no tool needed")]
+	string m_sToolWords;
+
+	[Attribute("45", desc: "Seconds to hotwire")]
 	float m_fHotwireSeconds;
 
-	[Attribute("5", desc: "Seconds to hotwire for a Mechanic")]
+	[Attribute("15", desc: "Seconds to hotwire for a Mechanic")]
 	float m_fMechanicHotwireSeconds;
 
-	[Attribute("8", desc: "Heat hotwiring makes (sparks, the starter)")]
+	[Attribute("20", desc: "Heat hotwiring makes (sparks, the starter): half when it starts, all of it at the end, whether it worked or not")]
 	float m_fHotwireHeat;
+
+	[Attribute("0.35", desc: "Chance a hotwiring fails at the end (the heat is made anyway; try again)")]
+	float m_fHotwireFailChance;
+
+	[Attribute("0.1", desc: "Chance a Mechanic's hotwiring fails")]
+	float m_fMechanicHotwireFailChance;
 
 	[Attribute("15", desc: "Heat an engine starting makes")]
 	float m_fStartHeat;
 
-	[Attribute("0.5", desc: "Chance a fixable car's keys are in a house in its town")]
+	[Attribute("0.2", desc: "Chance a fixable car's keys are in a house in its town")]
 	float m_fKeysChance;
 
-	[Attribute("0.2", desc: "Chance a search in that town finds them")]
+	[Attribute("0.1", desc: "Chance a search in that town finds them")]
 	float m_fKeyFindChance;
 
 	[Attribute("8", desc: "Seconds to fit parts or fuel")]
@@ -344,7 +360,8 @@ class RZ_Cars
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One or two of fuel, battery, tyre, spark plugs.
+	//! Min parts to Max parts (two or three by default) of fuel, battery, tyre, spark plugs, all
+	//! different. Saved projects keep what they were missing.
 	protected RZ_CarProject Generate(int town, vector pos)
 	{
 		RZ_CarProject c = new RZ_CarProject();
@@ -354,13 +371,16 @@ class RZ_Cars
 		c.m_vPos = pos;
 		c.m_fYaw = Math.RandomFloat(0, 360);
 
+		int fewest = Math.Clamp(m_Settings.m_iMinParts, 1, 4);
+		int most = Math.Clamp(m_Settings.m_iMaxParts, fewest, 4);
+		int count = Math.RandomIntInclusive(fewest, most);
 		array<int> parts = {PART_FUEL, PART_BATTERY, PART_TYRE, PART_SPARK};
-		int first = parts.GetRandomElement();
-		c.m_iMissing = first;
-		if (Math.RandomFloat01() < 0.6)
+		c.m_iMissing = 0;
+		for (int k = 0; k < count && !parts.IsEmpty(); k++)
 		{
-			int second = parts.GetRandomElement();
-			c.m_iMissing = c.m_iMissing | second;
+			int pick = Math.RandomInt(0, parts.Count());
+			c.m_iMissing = c.m_iMissing | parts[pick];
+			parts.Remove(pick);
 		}
 
 		c.m_bHasKeys = Math.RandomFloat01() < m_Settings.m_fKeysChance;
@@ -593,6 +613,9 @@ class RZ_Cars
 		if (c.m_iMissing != 0)
 			needs = string.Format("Needs: %1.", PartsText(c.m_iMissing));
 
+		if ((c.m_iMissing & PARTS_NOT_FUEL) != 0 && NeedsTool(user))
+			needs += " Nothing comes off or goes on without a wrench or a toolkit.";
+
 		string keys = "No keys in it. You could hotwire it.";
 		if (c.m_bHotwired)
 			keys = "The wires under the dash are already stripped and twisted together.";
@@ -636,6 +659,12 @@ class RZ_Cars
 				return;
 			}
 
+			if (option == 0 && NeedsTool(user))
+			{
+				m_GM.NotifyPlayer(playerId, title, "The bolts are rusted solid. You can't do this with your hands: you need a wrench or a toolkit.");
+				return;
+			}
+
 			m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_FIT, s.m_iId, mask, m_Settings.m_fFitSeconds, "the work on the car", false);
 			return;
 		}
@@ -670,6 +699,19 @@ class RZ_Cars
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Fitting a battery, tyre or spark plugs needs a tool (Tool keywords) the user doesn't carry.
+	//! False when Tool keywords is empty.
+	protected bool NeedsTool(IEntity user)
+	{
+		array<string> toolWords = {};
+		RZ_ItemHelper.Words(m_Settings.m_sToolWords, toolWords);
+		if (toolWords.IsEmpty())
+			return false;
+
+		return !RZ_ItemHelper.Has(user, m_Settings.m_sToolWords);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected int PartsCarried(IEntity user, int mask)
 	{
 		int found = 0;
@@ -694,6 +736,13 @@ class RZ_Cars
 		RZ_CarProject c = Find(s.m_iRef);
 		if (!c)
 			return;
+
+		// The tool went while they worked
+		if ((mask & PARTS_NOT_FUEL) != 0 && NeedsTool(user))
+		{
+			m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "You reach for the wrench and it isn't there. Nothing gets fitted with bare hands.");
+			return;
+		}
 
 		int fitted = 0;
 		if ((mask & PART_FUEL) != 0 && RZ_ItemHelper.Take(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, 1) > 0)
@@ -727,9 +776,19 @@ class RZ_Cars
 		if (!c)
 			return;
 
+		m_GM.GetHeat().AddHeat(c.m_vPos, m_Settings.m_fHotwireHeat);
+		float failChance = m_Settings.m_fHotwireFailChance;
+		if (RZ_Interactions.IsBackground(m_GM, playerId, "mechanic"))
+			failChance = m_Settings.m_fMechanicHotwireFailChance;
+
+		if (Math.RandomFloat01() < failChance)
+		{
+			m_GM.NotifyPlayer(playerId, c.m_sNoun, "The wires spit, the starter grinds and grinds, and then nothing. Everything nearby heard that. Strip them back and try again.");
+			return;
+		}
+
 		c.m_bHotwired = true;
 		c.m_bWired = true;
-		m_GM.GetHeat().AddHeat(c.m_vPos, m_Settings.m_fHotwireHeat);
 		m_GM.NotifyPlayer(playerId, c.m_sNoun, "A spark, a cough from the starter. The wires are live.");
 	}
 

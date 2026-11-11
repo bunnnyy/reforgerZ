@@ -21,7 +21,7 @@ SCR_ChimeraCharacter : "{C97B985FCFC3E4D6}Prefabs/Characters/Factions/CIV/Constr
     ItemsInitConfigurationItem "{AAF42A1C0E2DB681}" {
      TargetStorage "Back/Backpack_Kolobok.et"
      PrefabsToSpawn {
-      "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et"
+      "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et" "{33B2DFDCD0EBA3DB}Prefabs/Items/Equipment/Kits/RepairKit_01/RepairKit_01_wrench.et"
      }
     }
    }

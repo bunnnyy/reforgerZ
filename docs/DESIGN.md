@@ -524,7 +524,7 @@ Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 | Background | Perk | Flaw | Starting standing |
 |---|---|---|---|
 | Nurse | Medical supplies. Treats other players in 8 s, even with a bandage. Infection takes 50% longer | Unarmed | Haven +10 |
-| Mechanic | Toolbox and jerrycan. Hotwires a car in 5 s | 25% louder | — |
+| Mechanic | Wrench and jerrycan. Hotwires a car in 15 s and rarely fails | 25% louder | — |
 | Hunter | Hunting rifle, 25% quieter | Little ammo | Bastion −10 |
 | Police Officer | Sidearm | — | Bastion +20 (Known), Red Hand −25 (Watched) |
 | Ex-Con | Knife | Infection kills 20% faster | Red Hand +25 (Known), Bastion −25 (Watched), Haven −10 |
@@ -1421,17 +1421,24 @@ open it. Key items don't survive a restart; data keys don't survive a death.
 ([LORE.md](LORE.md), "Writing guide"). One in five has a key inside, about one in seven a stash
 grid on the back (two extra finds within 90 minutes), one in ten a puzzle mission circled on a map.
 
-### Cars: easy projects, kept rare
+### Cars: found, rare and hard to fix
 
-One fixable car per three settlements (at most 6, one per town); every other wreck is just a wreck,
-and is never fixable. A fixable car stands near players as the car it will become (one of the
-**Car prefabs**, named after it: "the beige saloon"), parked and locked so nobody can get in, with
-its prompts in front of its grille. **Inspect** says what's missing (one or two of fuel, battery, tyre, spark
-plugs). Parts come from searches, **stripping** wrecks, the Mechanic and the Haven shop. **Fuel:**
-siphon a wreck (60% have some) or a petrol station hand pump (10 heat). **Start:** hotwire (20 s,
-5 s for a Mechanic, 8 heat) or use its keys, then **Start the engine** (15 heat): the parked copy
-becomes the drivable car with a quarter tank, and from then on it's vanilla. A new project turns up
-elsewhere six hours later.
+Cars are only ever found, never bought. One fixable car per three settlements (at most 6, one per
+town); every other wreck is just a wreck, and is never fixable. A fixable car stands near players
+as the car it will become (one of the **Car prefabs**, named after it: "the beige saloon"), parked
+and locked so nobody can get in, with its prompts in front of its grille.
+
+| Step | How | Settings (defaults) |
+|---|---|---|
+| **Inspect** | Says what's missing: two or three of fuel, a battery, a tyre, spark plugs, all different | **Min parts** 2, **Max parts** 3 |
+| **Fit parts** | Battery, tyre and spark plugs (carryable items) come from searches, **stripping** wrecks (one part each) and the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, Inspect and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
+| **Fuel it** | A full can, from siphoning a wreck (60% have some) or a petrol station's hand pump (10 heat). No tool needed | |
+| **Hotwire** | Long and loud: 45 s, half its heat when you start and all of it at the end. It fails about one time in three: the starter grinds, the heat is made all the same, and you try again. A Mechanic does it in 15 s and fails one time in ten | 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
+| **Or its keys** | Only a fifth of cars have keys in a house in their town, and each search there finds them one time in ten. A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
+| **Start the engine** | 15 heat. The parked copy becomes the drivable car with a quarter tank, and from then on it's vanilla | |
+
+A new project turns up elsewhere six hours after one is started. Projects in a save keep the parts
+they were missing.
 
 The Car Keys job ([MISSIONS.md](MISSIONS.md#unarmed-missions)) adds one more car for as long as it
 runs: it already runs, needs only its keys (always in the one house the job names) or hotwiring,

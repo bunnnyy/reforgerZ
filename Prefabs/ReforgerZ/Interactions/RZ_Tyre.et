@@ -1,4 +1,43 @@
-GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
- ID "F0DBA538AC2A0552"
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  MeshObject "{6AD67DC2C17A0001}" {
+   Object "{67E1230FFB8E67BF}Assets/Props/VehicleParts/Wheel_UAZ469/Tire_UAZ469.xob"
+  }
+  RigidBody "{6AD67DC2C17A0002}" {
+   Mass 9
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Tyre"
+     Description "A car tyre on its rim, still holding air. Heavy and awkward."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 9
+     SizeSetupStrategy Manual
+     ItemVolume 7000
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{6AD67DC2C17A0003}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 1.4
+     }
+    }
+    m_Size SLOT_2x2
+   }
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     Radius 0.5
+    }
+   }
+  }
+ }
  coords 0 0 0
 }
