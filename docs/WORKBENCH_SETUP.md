@@ -1381,8 +1381,8 @@ session, tick off:
   operator only after the source is found, and only a player Known with Bastion can pick one.
 - [ ] Struck Off (offered from broadcast Day 13, so not on a fresh season's first two days): the
   trader (or the Deserter wanderer) gives his grid; his KIA date on the roster is between Day 11 and
-  yesterday; the four choices are on his kit; killing him drops a tag that the roster board at the
-  post takes ("Hang his tag on the nail").
+  two days ago (the day the trader saw him), and always Day 11 on Day 13; the four choices are on his
+  kit; killing him drops a tag that the roster board at the post takes ("Hang his tag on the nail").
 - [ ] Live Capture: lure the special into the cage and drop the door within 4 m; it vanishes without
   a sample, the cage area gets loud, after 30 s the case appears; deliver it at the lab drop before
   12 minutes. Killing it fails; wounding it to a third and standing over it ties it.

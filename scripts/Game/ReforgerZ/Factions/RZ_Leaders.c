@@ -1963,7 +1963,7 @@ class RZ_Leaders
 		if (l.m_eFaction == RZ_EFaction.MILITARY)
 		{
 			if (m_GM.HasLab())
-				return "was bitten. A friend from the post went to the lab with them, and came back alone";
+				return "was bitten. A friend from the post took them to the lab. The dose didn't take, and the friend brought them home";
 
 			return "was bitten. A friend from the post sat with them to the end";
 		}

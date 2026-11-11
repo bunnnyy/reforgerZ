@@ -433,7 +433,7 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 //! - **Bastion's way:** he stays struck off. Carry his tag to the empty nail at the post: 60%.
 //! If he dies any other way, his tag is all that's left: the same 60% at the nail.
 //! In ten days only one soldier walked out (docs/LORE.md, Private Fiala on Day 7), so his KIA is
-//! dated from Day 11 to yesterday, and the trader saw him two days ago: never before Day 13.
+//! dated from Day 11 to two days ago, the day the trader saw him: never before Day 13.
 class RZ_Mission_StruckOff : RZ_PuzzleMission
 {
 	protected ref RZ_Escort m_Escort = new RZ_Escort();
@@ -478,7 +478,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	protected static const int FOUND_OUT_INFAMY = 15;
 	protected static const int MAX_TAG_SPAWNS = 4;
 	protected static const int FIRST_KIA_DAY = 11;	// after the first ten days (Fiala, Day 7, was the only one)
-	protected static const int MIN_DAY = 13;		// the trader saw him two days ago, after Day 11
+	protected static const int MIN_DAY = 13;		// the trader saw him two days ago, on Day 11 or later
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -524,12 +524,12 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		m_vWitness = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
 		m_sSurname = RZ_NoteText.Surname(m_Rng);
 		m_sName = "Private " + m_sSurname;
-		// Struck off from Day 11 to yesterday (Int's max is exclusive)
+		// Struck off from Day 11 to the day the trader saw him, two days ago (Int's max is exclusive)
 		int today = MIN_DAY;
 		if (gm.GetFacts())
 			today = Math.Max(MIN_DAY, gm.GetFacts().Day());
 
-		string day = RZ_NoteText.Day(m_Rng.Int(FIRST_KIA_DAY, today));
+		string day = RZ_NoteText.Day(m_Rng.Int(FIRST_KIA_DAY, today - 1));
 
 		m_iWitnessClue = AddClue("A Haven trader", string.Format("\"Your lot's uniform, patch cut off. Paid me in rifle rounds for two tins of fish and asked if the Haven takes soldiers.\" She points past the last houses. \"He sleeps rough out there, grid %1. He jumps at every sound. Don't tell him it was me.\"",
 			RZ_SettlementScanner.GridReference(m_vHide)));

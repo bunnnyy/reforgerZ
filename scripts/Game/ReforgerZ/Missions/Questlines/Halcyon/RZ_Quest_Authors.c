@@ -105,7 +105,7 @@ class RZ_Quest_Authors : RZ_Questline
 		RZ_QuestStage answer = MissionStage(S_ANSWER, "The CO's answer", "{co} wants a locked crate, a key, and a guard on the clean room. Somebody has to take {co} the lab's answer.");
 		answer.GiveUp(4, "Nobody answered {co} for the lab. Bastion took the silence as no.");
 
-		RZ_QuestStage offer = MissionStage(S_OFFER, "The Red Hand's offer", "{boss} has heard what the lab is cooking. He'll buy the batch outright, and leave the lab alone during the final stand.");
+		RZ_QuestStage offer = MissionStage(S_OFFER, "The Red Hand's offer", "{boss} has heard what the lab is cooking, and will buy the batch outright, and leave the lab alone during the final stand.");
 		offer.GiveUp(4, "Nobody went to hear the Red Hand's offer. It stands, they say, the way their offers do.");
 
 		RZ_QuestStage ready = MissionStage(S_READY, "Ready the lab", "Past three quarters, the final push is close. {director} wants the lab ready for it.");
@@ -1253,7 +1253,7 @@ class RZ_QM_AuthorsOffer : RZ_QM_HalcyonScene
 
 		m_vPos = meet;
 		m_iSettlement = gm.FindNearestSettlement(meet);
-		m_iOfferClue = AddClue("The boss's man", QFill(gm, "\"{boss} wants the batch. All of it, the moment it's made. He'll pay like nobody's ever paid for anything in here, and his crews will leave the lab alone while the dead come for it. Or they won't.\" He smiles. \"Up to you.\""));
+		m_iOfferClue = AddClue("The boss's man", QFill(gm, "\"{boss} wants the batch. All of it, the moment it's made. Pays like nobody's ever paid for anything in here, and the crews will leave the lab alone while the dead come for it. Or they won't.\" He smiles. \"Up to you.\""));
 		AddSpot(meet, RZ_EPuzzleProp.CIVILIAN, OBJ_MAN, m_iOfferClue, "Talk to the boss's man", string.Format("Turn him down and tell the director|Take the money (%1 Red Hand Favor)", MONEY_FAVOR), meetName);
 
 		RZ_Leader co = Top(gm, RZ_EFaction.MILITARY);
